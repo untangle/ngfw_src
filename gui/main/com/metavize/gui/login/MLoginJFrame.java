@@ -23,7 +23,6 @@ import javax.swing.*;
 import com.metavize.gui.main.MMainJFrame;
 import com.metavize.gui.util.*;
 import com.metavize.mvvm.*;
-import com.metavize.mvvm.engine.*;
 import com.metavize.mvvm.security.*;
 
 
@@ -161,7 +160,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
         acceptJButton = new javax.swing.JButton();
         statusJProgressBar = new javax.swing.JProgressBar();
         logoLabel = new javax.swing.JLabel();
-        backgroundJLabel = new javax.swing.JLabel();
+        backgroundJLabel = new com.metavize.gui.widgets.IconLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Metavize EdgeGuard v1.2 Login");
@@ -365,7 +364,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(48, 96, 48, 96);
         contentJPanel.add(logoLabel, gridBagConstraints);
 
-        backgroundJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/images/LightGreyBackground1600x1200.png")));
+        backgroundJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/images/LightGreyBackground400x128.png")));
         backgroundJLabel.setDoubleBuffered(true);
         backgroundJLabel.setFocusable(false);
         backgroundJLabel.setMaximumSize(new java.awt.Dimension(330, 385));

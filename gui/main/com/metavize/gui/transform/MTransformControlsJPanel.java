@@ -58,7 +58,7 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
 
         // SETUP EXPAND DIALOG
 	if(greyBackgroundImageIcon == null)
-	    greyBackgroundImageIcon = new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/metavize/gui/images/DarkGreyBackground1600x1200.png"));
+	    greyBackgroundImageIcon = new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/metavize/gui/images/DarkGreyBackground400x128.png"));
         expandJDialog = new JDialog( Util.getMMainJFrame(), "expanded controls window", true);
         expandJDialog.setSize(MIN_SIZE);
         expandJDialog.addComponentListener( 
@@ -68,7 +68,7 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
                 }
             } );
         expandJDialog.getContentPane().setLayout(new GridBagLayout());
-	expandJDialog.getContentPane().add(new JLabel("",greyBackgroundImageIcon,JLabel.CENTER), greyBackgroundConstraints);
+	expandJDialog.getContentPane().add(new com.metavize.gui.widgets.IconLabel("",greyBackgroundImageIcon,JLabel.CENTER), greyBackgroundConstraints);
         
     }
     
@@ -196,7 +196,7 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
         saveJButton = new javax.swing.JButton();
         readoutJLabel = new javax.swing.JLabel();
         tintJPanel = new javax.swing.JPanel();
-        backgroundJLabel = new javax.swing.JLabel();
+        backgroundJLabel = new com.metavize.gui.widgets.IconLabel();
 
         setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -324,7 +324,7 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
         tintJPanel.setPreferredSize(new java.awt.Dimension(596, 380));
         add(tintJPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
 
-        backgroundJLabel.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/metavize/gui/transform/ControlsBackground596x380.png")));
+        backgroundJLabel.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/metavize/gui/transform/ControlsBackground400x128.png")));
         backgroundJLabel.setDoubleBuffered(true);
         add(backgroundJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
 

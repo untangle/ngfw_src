@@ -171,7 +171,7 @@ public class UpgradeJDialog extends javax.swing.JDialog implements java.awt.even
         detailJTextArea1 = new javax.swing.JTextArea();
         detailNameJTextField = new javax.swing.JTextField();
         commitJButton = new javax.swing.JButton();
-        backgroundJLabel = new javax.swing.JLabel();
+        backgroundJLabel = new com.metavize.gui.widgets.IconLabel();
 
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
@@ -467,7 +467,7 @@ public class UpgradeJDialog extends javax.swing.JDialog implements java.awt.even
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         getContentPane().add(jTabbedPane, gridBagConstraints);
 
-        backgroundJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/images/DarkGreyBackground1600x1200.png")));
+        backgroundJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/images/DarkGreyBackground400x128.png")));
         backgroundJLabel.setDoubleBuffered(true);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;

@@ -69,7 +69,7 @@ public class BackupRestoreJDialog extends javax.swing.JDialog implements java.aw
         restoreJPanel = new javax.swing.JPanel();
         contentJPanel2 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
-        backgroundJLabel = new javax.swing.JLabel();
+        backgroundJLabel = new com.metavize.gui.widgets.IconLabel();
 
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
@@ -273,7 +273,7 @@ public class BackupRestoreJDialog extends javax.swing.JDialog implements java.aw
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         getContentPane().add(jTabbedPane, gridBagConstraints);
 
-        backgroundJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/images/DarkGreyBackground1600x1200.png")));
+        backgroundJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/images/DarkGreyBackground400x128.png")));
         backgroundJLabel.setDoubleBuffered(true);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;

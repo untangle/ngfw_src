@@ -29,7 +29,7 @@ public class NetworkProceedJDialog extends javax.swing.JDialog implements java.a
         proceedJButton = new javax.swing.JButton();
         messageJLabel = new javax.swing.JLabel();
         labelJLabel = new javax.swing.JLabel();
-        backgroundJLabel = new javax.swing.JLabel();
+        backgroundJLabel = new com.metavize.gui.widgets.IconLabel();
 
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
@@ -104,7 +104,7 @@ public class NetworkProceedJDialog extends javax.swing.JDialog implements java.a
 
         backgroundJLabel.setFont(new java.awt.Font("Default", 0, 12));
         backgroundJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        backgroundJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/images/LightGreyBackground1600x1200.png")));
+        backgroundJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/images/LightGreyBackground400x128.png")));
         backgroundJLabel.setDoubleBuffered(true);
         backgroundJLabel.setFocusable(false);
         backgroundJLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);

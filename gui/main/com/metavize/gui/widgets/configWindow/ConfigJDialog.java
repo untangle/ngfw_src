@@ -84,7 +84,7 @@ public class ConfigJDialog extends javax.swing.JDialog implements java.awt.event
         closeJButton = new javax.swing.JButton();
         reloadJButton = new javax.swing.JButton();
         saveJButton = new javax.swing.JButton();
-        backgroundJLabel = new javax.swing.JLabel();
+        backgroundJLabel = new com.metavize.gui.widgets.IconLabel();
 
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
@@ -169,7 +169,7 @@ public class ConfigJDialog extends javax.swing.JDialog implements java.awt.event
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 10, 10);
         getContentPane().add(saveJButton, gridBagConstraints);
 
-        backgroundJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/images/DarkGreyBackground1600x1200.png")));
+        backgroundJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/images/DarkGreyBackground400x128.png")));
         backgroundJLabel.setDoubleBuffered(true);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;

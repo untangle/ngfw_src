@@ -235,7 +235,7 @@ public class MPipelineJPanel extends javax.swing.JPanel {
         mPipelineJScrollPane = new javax.swing.JScrollPane();
         contentJPanel = new javax.swing.JPanel();
         transformJPanel = new MRackJPanel();
-        jLabel1 = new javax.swing.JLabel();
+        jLabel1 = new com.metavize.gui.widgets.IconLabel();
 
         setLayout(new java.awt.GridBagLayout());
 
@@ -275,7 +275,7 @@ public class MPipelineJPanel extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(10, 0, 10, 10);
         add(mPipelineJScrollPane, gridBagConstraints);
 
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/pipeline/VerticalScrollBar42x1200.png")));
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/pipeline/VerticalScrollBar42x128.png")));
         jLabel1.setDoubleBuffered(true);
         jLabel1.setOpaque(true);
         gridBagConstraints = new java.awt.GridBagConstraints();

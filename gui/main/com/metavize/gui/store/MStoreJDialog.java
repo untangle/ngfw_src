@@ -48,7 +48,7 @@ public class MStoreJDialog extends javax.swing.JDialog implements java.awt.event
         mTransformJPanel1 = new javax.swing.JPanel();
         accountJLabel1 = new javax.swing.JLabel();
         priceJLabel = new javax.swing.JLabel();
-        backgroundJLabel = new javax.swing.JLabel();
+        backgroundJLabel = new com.metavize.gui.widgets.IconLabel();
 
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -124,7 +124,7 @@ public class MStoreJDialog extends javax.swing.JDialog implements java.awt.event
         getContentPane().add(mTransformJPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 200, 210, 90));
 
         backgroundJLabel.setFont(new java.awt.Font("Arial", 0, 12));
-        backgroundJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/images/LightGreyBackground1600x1200.png")));
+        backgroundJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/images/LightGreyBackground400x128.png")));
         backgroundJLabel.setDoubleBuffered(true);
         getContentPane().add(backgroundJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
 

@@ -222,7 +222,7 @@ public class MMainJFrame extends javax.swing.JFrame {
         configurationSpacerJPanel1 = new javax.swing.JPanel();
         upgradeJButton = new javax.swing.JButton();
         mPipelineJPanel = new com.metavize.gui.pipeline.MPipelineJPanel();
-        backgroundJLabel = new javax.swing.JLabel();
+        backgroundJLabel = new com.metavize.gui.widgets.IconLabel();
 
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
@@ -552,7 +552,7 @@ public class MMainJFrame extends javax.swing.JFrame {
         gridBagConstraints.weighty = 1.0;
         getContentPane().add(mPipelineJPanel, gridBagConstraints);
 
-        backgroundJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/main/MainBackground1600x1200.png")));
+        backgroundJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/main/MainBackground1600x128.png")));
         backgroundJLabel.setDoubleBuffered(true);
         backgroundJLabel.setFocusable(false);
         backgroundJLabel.setOpaque(true);
