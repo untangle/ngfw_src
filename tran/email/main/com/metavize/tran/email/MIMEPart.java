@@ -614,17 +614,16 @@ public class MIMEPart
             //CBufferWrapper zCDummy = new CBufferWrapper(null);
             //zLog.debug("encoded file start tag: " + zCDummy.renew(zStart) + ", " + zStart);
             //zLog.debug("encoded file: " + zBodys);
-
             //zLog.debug("encoded file end tag: " + zCDummy.renew(zEnd) + ", " + zEnd);
 
-            ArrayList zTmpBodys = MLLine.toBuffer(zBodys, true);
+            ArrayList zRawBodys = MLLine.toBuffer(zBodys, true);
 
             ArrayList zList = new ArrayList();
             zList.add(zStart);
-            zList.addAll(zTmpBodys);
+            zList.addAll(zRawBodys);
             zList.add(zEnd);
 
-            String zFileName = zCName.toString();
+            String zFileName = zTmpFile.getName();
             File zFile = decodeBufs(zList, zFileName);
 
             //zLog.debug("MIME part decoded file: " + zFile.getAbsolutePath());
@@ -634,9 +633,9 @@ public class MIMEPart
             if (null == zScanResult)
             {
                 /* restore this MIME part */
-                MLLine.fromBuffer(zTmpBodys, zBodys, true);
+                MLLine.fromBuffer(zRawBodys, zBodys, true);
 
-                zTmpBodys.clear(); /* release, let GC process */
+                zRawBodys.clear(); /* release, let GC process */
                 zList.clear(); /* release, let GC process */
                 zStart = null; /* release, let GC process */
                 zEnd = null; /* release, let GC process */
@@ -648,7 +647,7 @@ public class MIMEPart
                 true == zScanResult.isClean())
             {
                 /* restore this MIME part */
-                MLLine.fromBuffer(zTmpBodys, zBodys, true);
+                MLLine.fromBuffer(zRawBodys, zBodys, true);
             }
             else
             {
@@ -664,7 +663,7 @@ public class MIMEPart
                 zTmp = null; /* release, let GC process */
             }
 
-            zTmpBodys.clear(); /* release, let GC process */
+            zRawBodys.clear(); /* release, let GC process */
             zList.clear(); /* release, let GC process */
             zStart = null; /* release, let GC process */
             zEnd = null; /* release, let GC process */
@@ -894,11 +893,22 @@ public class MIMEPart
          */
         try
         {
-            return File.createTempFile(zCTmpFile.toString(), null);
+            String zTmpFile;
+            if (null == zCTmpFile)
+            {
+                zLog.error("this MIME part contains an encoded file attachment but its Content-Type and/or Content-Disposition header field(s) does/do not specify a name or filename value: " + zContentTDs);
+                zTmpFile = null;
+            }
+            else
+            {
+                zTmpFile = zCTmpFile.toString();
+            }
+
+            return File.createTempFile(zTmpFile, null);
         }
         catch (IOException e)
         {
-            throw new ModifyException("Unable to find the name of the file for this MIME part; this MIME part contains a Content-Type and/or Content-Disposition header field but neither field specifies a name or filename type: " + e);
+            throw new ModifyException("Unable to generate a name for the file in this MIME part: " + e);
         }
     }
 
