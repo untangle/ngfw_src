@@ -141,7 +141,7 @@ Description: The Metavize Client
 
 Package: mvvm
 Architecture: any
-Depends: catchall-mv, sudo, postgresql-mv, iptables-mv, restore-mv, kiosk-mv, libxml2
+Depends: catchall-mv, sudo, postgresql-mv, iptables-mv, restore-mv, kiosk-mv, libxml2, kernel-mv
 Conflicts: xenon, xenon-dbg
 XB-Price: 0
 XB-Display-Name: Metavize Server
