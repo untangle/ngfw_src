@@ -22,8 +22,8 @@ public class MRackJPanel extends JPanel {
 
     private GridBagConstraints transformConstraints;
     private GridBagConstraints transformPanelConstraints;
-    private ImageIcon RackBottom;
-    private ImageIcon RackTop;
+    // private ImageIcon RackBottom;
+    // private ImageIcon RackTop;
     private ImageIcon RackLeftFull;
     private ImageIcon RackRightFull;
     private ImageIcon RackLeftShort;
@@ -45,8 +45,8 @@ public class MRackJPanel extends JPanel {
         rackMiddleConstraints = new GridBagConstraints(0, 1, 1, 1, 0d, 0d, GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(0,0,0,12), 0, 0);
         rackBottomConstraints = new GridBagConstraints(0, 2, 1, 1, 0d, 0d, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(1 + 39,0,0,12), 0, 0);
 
-        RackBottom = new ImageIcon( getClass().getResource("/com/metavize/gui/pipeline/BottomRack718x39.png") );
-        RackTop = new ImageIcon( getClass().getResource("/com/metavize/gui/pipeline/TopRack718x39.png") );
+        // RackBottom = new ImageIcon( getClass().getResource("/com/metavize/gui/pipeline/BottomRack718x39.png") );
+        // RackTop = new ImageIcon( getClass().getResource("/com/metavize/gui/pipeline/TopRack718x39.png") );
         RackLeftFull = new ImageIcon( getClass().getResource("/com/metavize/gui/pipeline/LeftRack59x100.png") );
         RackRightFull = new ImageIcon( getClass().getResource("/com/metavize/gui/pipeline/RightRack59x100.png") );
         RackLeftShort = new ImageIcon( getClass().getResource("/com/metavize/gui/pipeline/LeftRack59x1.png") );
