@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mvvm-transform>
+  <transform-desc name="reporting-transform"
+                  display-name="EdgeReport (beta)"
+                  classname="com.metavize.tran.reporting.ReportingTransformImpl"
+                  gui-classname="com.metavize.tran.reporting.gui.MTransformJPanel"/>
+</mvvm-transform>

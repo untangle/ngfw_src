@@ -1,0 +1,273 @@
+/*
+ * Copyright (c) 2003 Metavize Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Metavize Inc. ("Confidential Information").  You shall
+ * not disclose such Confidential Information.
+ *
+ *  $Id: jtcp.c,v 1.11 2005/02/10 07:12:30 rbscott Exp $
+ */
+
+#include <jni.h>
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <linux/ip.h>
+#include <signal.h>
+
+#include <libnetcap.h>
+#include <mvutil/libmvutil.h>
+#include <mvutil/errlog.h>
+#include <mvutil/debug.h>
+#include <mvutil/unet.h>
+
+#include "jnetcap.h"
+#include "jsession.h"
+#include "jerror.h"
+#include JH_TCPSession
+
+#define VERIFY_TCP_SESSION(session) if ( (session)->protocol != IPPROTO_TCP ) \
+   return jnetcap_error( JNETCAP_ERROR_ARGS, ERR_CRITICAL, \
+                         "TCP: Expecting a TCP session: %d\n", (session)->protocol )
+
+#define VERIFY_TCP_SESSION_VOID(session) if ( (session)->protocol != IPPROTO_TCP ) \
+   return jnetcap_error_void( JNETCAP_ERROR_ARGS, ERR_CRITICAL, \
+                              "TCP: Expecting a TCP Session: %d\n", (session)->protocol )
+
+static void _tcp_callback( jlong session_ptr, netcap_callback_action_t type, jint flags );
+
+static __inline__ int* _get_sock_ptr( netcap_session_t* session, int if_client )
+{
+    return ( if_client == JNI_TRUE ) ? &session->client_sock : &session->server_sock;
+}
+
+static __inline__ int _get_sock( netcap_session_t* session, int if_client )
+{
+    return *(_get_sock_ptr( session, if_client ));
+}
+
+/*
+ * Class:     com_metavize_jnetcap_NetcapTCPSession
+ * Method:    setServerEndpoint
+ * Signature: (JIJI)I
+ */
+JNIEXPORT jint JNICALL JF_TCPSession( setServerEndpoint )
+  (JNIEnv *env, jclass _class, jlong session_ptr, jlong client_addr, jint client_port, 
+   jlong server_addr,  jint server_port )
+{
+    netcap_session_t* session;
+
+    JLONG_TO_SESSION( session, session_ptr );
+    
+    VERIFY_TCP_SESSION( session );
+
+    if ( session->srv_state == CONN_STATE_COMPLETING || session->srv_state == CONN_STATE_COMPLETE ) {
+        return errlog( ERR_CRITICAL, "Cannot modify server endpoint after completing the connection\n" );
+    }
+
+    session->srv.cli.host.s_addr = JLONG_TO_UINT( client_addr );
+    /* XXX Should verify that the port is between 0 and 0xFFFF */
+    session->srv.cli.port        = (u_short)client_port;
+    session->srv.srv.host.s_addr = JLONG_TO_UINT( server_addr );
+    session->srv.srv.port        = (u_short)server_port;
+
+    return 0;
+}
+
+/*
+ * Class:     com_metavize_jnetcap_NetcapTCPSession
+ * Method:    serverStart
+ * Signature: (JI)I
+ */
+JNIEXPORT void JNICALL JF_TCPSession( serverStart )
+    ( JNIEnv *env, jclass _class, jlong session_ptr, jint flags )
+{
+    return _tcp_callback( session_ptr, SRV_START_COMPLETE, flags );
+}
+
+/*
+ * Class:     com_metavize_jnetcap_NetcapTCPSession
+ * Method:    serverComplete
+ * Signature: (JI)I
+ */
+JNIEXPORT void JNICALL JF_TCPSession( serverComplete )
+    ( JNIEnv *env, jclass _class, jlong session_ptr, jint flags )
+{
+    _tcp_callback( session_ptr, SRV_COMPLETE, flags );
+}
+
+/*
+ * Class:     com_metavize_jnetcap_NetcapTCPSession
+ * Method:    clientComplete
+ * Signature: (JI)I
+ */
+JNIEXPORT void JNICALL JF_TCPSession( clientComplete )
+    ( JNIEnv *env, jclass _class, jlong session_ptr, jint flags )
+{
+    _tcp_callback( session_ptr, CLI_COMPLETE, flags );
+}
+
+/*
+ * Class:     com_metavize_jnetcap_NetcapTCPSession
+ * Method:    clientReset
+ * Signature: (JI)I
+ */
+JNIEXPORT void JNICALL JF_TCPSession( clientReset )
+    ( JNIEnv *env, jclass _class, jlong session_ptr, jint flags )
+{
+    _tcp_callback( session_ptr, CLI_RESET, flags );
+}
+
+/*
+ * Class:     com_metavize_jnetcap_NetcapTCPSession
+ * Method:    close
+ * Signature: (JZI)I
+ */
+JNIEXPORT void JNICALL JF_TCPSession( close )
+  (JNIEnv *env, jclass _class, jlong session_ptr, jboolean if_client )
+{
+    netcap_session_t* session;
+    int* sock_ptr = NULL;
+    int  sock;
+
+    JLONG_TO_SESSION_VOID( session, session_ptr );
+    
+    VERIFY_TCP_SESSION_VOID( session );
+    
+    sock_ptr = _get_sock_ptr( session, if_client );
+    sock = *sock_ptr;
+    *sock_ptr = -1;
+
+    /* XXX Check state here? */
+    if ( sock > 0 && close( sock ) < 0 ) {
+        return jnetcap_error_void( JNETCAP_ERROR_STT, ERR_CRITICAL, "close: %s", errstr );
+    }        
+}
+
+/*
+ * Class:     com_metavize_jnetcap_NetcapTCPSession
+ * Method:    read
+ * Signature: (JZ[B)I
+ */
+JNIEXPORT int JNICALL JF_TCPSession( read )
+  (JNIEnv *env, jclass _class, jlong session_ptr, jboolean if_client, jbyteArray _data )
+{
+    netcap_session_t* session;
+    jbyte* data;
+    int ret = 0;
+    int data_len;
+    int sock;
+
+    JLONG_TO_SESSION( session, session_ptr );
+    
+    VERIFY_TCP_SESSION( session );
+
+    sock = _get_sock( session, if_client );
+
+    if ( sock < 0 ) return errlog( ERR_CRITICAL, "Unable to read from an uninitialized socket\n" );
+    
+    /* Convert the byte array */
+    if (( data = (*env)->GetByteArrayElements( env, _data, NULL )) == NULL ) return errlogmalloc();
+    
+    data_len = (*env)->GetArrayLength( env, _data );
+    
+    do { 
+        if (( ret = read( sock, (char*)data, data_len )) < 0 ) ret = perrlog( "read" );
+    } while ( 0 );
+
+    (*env)->ReleaseByteArrayElements( env, _data, data, 0 );
+    
+    return ret;
+}
+
+
+/*
+ * Class:     com_metavize_jnetcap_NetcapTCPSession
+ * Method:    write
+ * Signature: (JZ[B)I
+ */
+JNIEXPORT int JNICALL JF_TCPSession( write )
+  (JNIEnv *env, jclass _class, jlong session_ptr, jboolean if_client, jbyteArray _data )
+{
+    netcap_session_t* session;
+    jbyte* data;
+    int ret = 0;
+    int data_len;
+    int sock;
+
+    JLONG_TO_SESSION( session, session_ptr );
+    
+    VERIFY_TCP_SESSION( session );
+
+    sock = _get_sock( session, if_client );
+    
+    if ( sock < 0 ) return errlog( ERR_CRITICAL, "Unable to write to uninitialized socket\n" );
+    
+    /* Convert the byte array */
+    if (( data = (*env)->GetByteArrayElements( env, _data, NULL )) == NULL ) return errlogmalloc();
+    
+    data_len = (*env)->GetArrayLength( env, _data );
+    
+    do { 
+        if ( write( sock, (char*)data, data_len ) < 0 ) ret = perrlog( "write" );
+    } while ( 0 );
+
+    (*env)->ReleaseByteArrayElements( env, _data, data, 0 );
+    
+    return ret;
+}
+
+
+/*
+ * Class:     com_metavize_jnetcap_NetcapTCPSession
+ * Method:    blocking
+ * Signature: (JZZ)I
+ */
+JNIEXPORT void JNICALL JF_TCPSession( blocking )
+  (JNIEnv *env, jclass _class, jlong session_ptr, jboolean if_client, jboolean mode )
+{
+    netcap_session_t* session;
+    int ret;
+    int sock = -1;
+
+    JLONG_TO_SESSION_VOID( session, session_ptr );
+    VERIFY_TCP_SESSION_VOID( session );
+    
+    sock = _get_sock( session, if_client );
+
+    if ( mode == JNI_TRUE ) ret = unet_blocking_enable( sock );
+    else                    ret = unet_blocking_disable( sock );
+    
+    if ( ret < 0 ) {
+        return jnetcap_error_void( JNETCAP_ERROR_STT, ERR_CRITICAL, 
+                                   "TCP: Unable to change blocking flags for fd: %d\n", sock );
+    }
+}
+
+static void _tcp_callback( jlong session_ptr, netcap_callback_action_t action, jint _flags )
+{
+    netcap_session_t* session;
+    int flags = 0;
+
+    JLONG_TO_SESSION_VOID( session, session_ptr );
+    VERIFY_TCP_SESSION_VOID( session );    
+    
+    if ( session->protocol != IPPROTO_TCP ) {
+        return jnetcap_error_void( JNETCAP_ERROR_ARGS, ERR_CRITICAL, 
+                                   "TCP: Expecting a TCP session: %d\n", session->protocol );
+    }
+
+    if ( _flags & JN_TCPSession( NON_LOCAL_BIND )) flags |= SRV_COMPLETE_NONLOCAL_BIND;
+    
+    if ( session->callback( session, action, flags ) < 0 ) {
+        debug( 2, "TCP: callback failed=%d\n", action );
+
+        /* Throw an error, but print a debugging message */
+        jnetcap_error_throw( JNETCAP_ERROR_STT, "TCP: callback failed action=%d\n", action );
+    }
+}
+

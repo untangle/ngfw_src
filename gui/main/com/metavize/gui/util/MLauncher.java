@@ -1,0 +1,72 @@
+/*
+ * MLauncher.java
+ *
+ * Created on January 19, 2005, 8:37 PM
+ */
+
+package com.metavize.gui.util;
+
+
+import com.metavize.gui.login.MLoginJFrame;
+
+import javax.swing.UIManager;
+import java.awt.Toolkit;
+import java.lang.reflect.Constructor;    
+import java.security.*;
+
+import java.net.URLClassLoader;
+import java.net.URL;
+/**
+ *
+ * @author inieves
+ */
+public class MLauncher {
+        
+    public static void main(String args[]) {
+        
+        // start a shutdown hook
+        Runtime.getRuntime().addShutdownHook( new ShutdownHookThread() );
+        
+        // give all these class loaders full permissions
+        Policy.setPolicy(
+                new Policy(){
+                    public PermissionCollection getPermissions(CodeSource codeSource){
+                        Permissions permissions = new Permissions();
+                        permissions.add(new AllPermission());
+                        return permissions;
+                    }
+                    public void refresh(){
+                    }
+                }
+        );
+
+        // set up the new class loader
+        MURLClassLoader mURLClassLoader = new MURLClassLoader( Thread.currentThread().getContextClassLoader() );
+        Util.setClassLoader( mURLClassLoader );
+        Thread.currentThread().setContextClassLoader(mURLClassLoader);
+    
+        // apply the new class loader to future swing threads
+        try{ 
+            java.awt.EventQueue eq = java.awt.Toolkit.getDefaultToolkit().getSystemEventQueue();
+            eq.invokeAndWait(new Runnable() {
+                public void run() {
+                    Thread.currentThread().setContextClassLoader(Util.getClassLoader());
+                }
+            });
+        }
+        catch(Exception e){
+            System.err.println(e);
+        }
+        
+        // load and start the login dialog
+        new MLoginJFrame(args);
+    }
+
+    
+    static private class ShutdownHookThread extends Thread {
+        public void run(){
+            
+        }
+    }
+        
+}

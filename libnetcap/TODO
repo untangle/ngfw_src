@@ -1,0 +1,28 @@
+TODO:
+
+- add interfaces knowledge (move from xenon?)
+- add marking for interfaces
+- netcap should supply indev and outdev for udp (done via SO_PKTINFO)
+- fix spin if failed in beginning of handle_x() in server (because EPOLLIN flag stays)
+- fix icmp description
+- rename queue (queue is OS dependant)
+
+DONE:
+
+rework props to pkt 
+send msg to server, server will unsubscribe/subscribe
+epoll
+physdev is also disabled - reenable for 2.6
+added indev and outdev to addrs
+add IP_TOS cmsg on udp_send (udpsend kernel patch)
+add global udp fd for sending packets
+udp with seperate hook and spoofing function
+warning if no hooks when subscribe
+add a cleanup function (kills all rdr and free's hooks)
+thread pool
+block current connections flag
+broadcast fix (resending will cause duplication on the original interface)
+
+FUTURE:
+
+- put a gateway/bridge flag ?

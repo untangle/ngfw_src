@@ -1,0 +1,83 @@
+# BUNNICULA server settings
+#
+
+## Simply function for taking a string, trim surround space, and the convert
+## space separators to the token string. ( eg join_string " a b c " ";" -> "a;b;c"
+join_string() {
+    echo $1 | sed -e 's/^ *//g' -e 's/ *$//g' -e "s/ \\+/$2/g"
+}
+
+# Use the following to configure your local installation
+BUNNICULA_LOGDIR=@PREFIX@/var/log/mvvm
+BUNNICULA_RUNDIR=@PREFIX@/var/run
+BUNNICULA_CONSOLE_LOG=$BUNNICULA_LOGDIR/console.log
+BUNNICULA_WRAPPER_LOG=$BUNNICULA_LOGDIR/wrapper.log
+BUNNICULA_CMD=@PREFIX@/usr/bin/bunnicula_wrapper.sh
+BUNNICULA_USER=root
+
+BUNNICULA_ARGS=""
+
+
+GUARDS_OUT="80"
+GUARDS_OUT_RES=""
+GUARDS_IN=""
+
+# enabled by default
+if [ "x$MVVM_ALLOW_IN_HTTP" = "xfalse" ]; then
+    GUARDS_IN="$GUARDS_IN 80"
+fi
+
+# disabled by default
+if [ "x$MVVM_ALLOW_OUT_HTTPS" = "xtrue" ]; then
+    # not restricted by default
+    if [ "x$MVVM_ALLOW_OUT_RES" = "xtrue" -a "x$MVVM_ALLOW_OUT_NET" != "x" ]; then
+        if [ "x$MVVM_ALLOW_OUT_MASK" = "x" ]; then
+            GUARDS_OUT_RES="$GUARDS_OUT_RES 443:$MVVM_ALLOW_OUT_NET"
+        else
+            GUARDS_OUT_RES="$GUARDS_OUT_RES 443:$MVVM_ALLOW_OUT_NET/$MVVM_ALLOW_OUT_MASK"
+        fi
+    fi
+else
+    GUARDS_OUT="$GUARDS_OUT 443"
+fi
+
+GUARDS_OUT=-Dargon.guard.outside=`join_string "$GUARDS_OUT" ","`
+GUARDS_OUT_RES=-Dargon.guard.outside.regulated=`join_string "$GUARDS_OUT_RES" ";"`
+GUARDS_IN=-Dargon.guard.inside=`join_string "$GUARDS_IN" ","`
+
+## Append the guards
+BUNNICULA_ARGS="$BUNNICULA_ARGS $GUARDS_OUT $GUARDS_IN $GUARDS_OUT_RES"
+
+if [ "x${USER}" = "xroot" ]; then
+        BUNNICULA_NICENESS=-15
+else
+        BUNNICULA_NICENESS=0
+fi
+
+#
+# Profiling
+#
+PROFILE_BUNNICULA_YJP=${PROFILE_BUNNICULA_YJP=$:-no}
+
+#
+# JAVA options
+#
+
+# NOTE: this setting is required
+# JAVA_HOME=/usr/lib/j2se/1.4/jre
+JAVA_HOME=${JAVA_HOME:-@DEFAULT_JAVA_HOME@}
+
+if [ "x$PROFILE_BUNNICULA_YJP" = "xyes" ] ; then
+    JAVA_OPTS_SUN="-XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:NewRatio=3"
+else
+    JAVA_OPTS_SUN="-XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+UseConcMarkSweepGC -XX:+UseParNewGC -XX:NewRatio=3"
+fi
+JAVA_OPTS_BEA="-Xgcpause -Xgcprio:pausetime -Xss64k"
+JAVA_OPTS_COMMON="-ea -Xdebug -verbose:gc -Xms128m -Xmx256m -server"
+
+if [ -f $JAVA_HOME/bin/console ] ; then
+    JAVA_OPTS="$JAVA_OPTS_COMMON $JAVA_OPTS_BEA" #   BEA
+else
+    JAVA_OPTS="$JAVA_OPTS_COMMON $JAVA_OPTS_SUN" #   SUN
+fi
+

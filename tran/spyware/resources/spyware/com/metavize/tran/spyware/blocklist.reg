@@ -1,0 +1,1258 @@
+REGEDIT4
+
+;; ----------------------------------------------------------------------------
+;;                    Spyware & Adware ActiveX Blocker File
+;;                         Copyright by Spyware-Guide.com
+;;  
+;; This file will set the "Kill Bit" for dubious ActiveX controls, preventing  
+;; them from ever being run inside Internet Explorer. 
+;; 
+;;   THIS FILE IS PROVIDED ON AN "AS IS" BASIS WITHOUT WARRANTIES OF ANY KIND 
+;;   EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO, THE IMPLIED  
+;;   WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE,  QUIET  
+;;   ENJOYMENT, NONINFRINGEMENT OR TITLE.  USE AT YOUR OWN RISK! 
+;;  
+;; For more information, visit : http://www.spywareguide.com/blockfile.php 
+;; File stats: 
+;;     Generated on    : 2004-8-31 20:39:42
+;;     CLSIDs included : 412
+;;  
+;; ----------------------------------------------------------------------------
+
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{00000000-0000-0000-0000-000000000001}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{00000000-0000-0000-0000-000000000221}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{00000000-5eb9-11d5-9d45-009027c14662}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{00000000-8633-1405-0b53-2c8830e9faec}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{00000000-cddc-0704-0b53-2c8830e9faec}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{00000000-d9e3-4bc6-a0bd-3d0ca4be5271}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{00000012-890e-4aac-afd9-eff6954a34dd}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{0000001d-ba9b-11d2-bdf1-0090272a6d78}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{000000da-0786-4633-87c6-1aa7a4429ef1}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{000000f1-34e3-4633-87c6-1aa7a44296da}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{000004cc-e4ff-4f2c-bc30-dbef0b983bc9}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{00000580-c637-11d5-831c-00105ad6acf0}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{00000ef1-0786-4633-87c6-1aa7a44296da}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{00000ef1-34e3-4633-87c6-1aa7a44296da}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{00041a26-7033-432c-94c7-6371de343822}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{000e7270-cc7a-0786-8e7a-da09b51938a6}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{0019c3e2-dd48-4a6d-ab2d-8d32436313d9}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{0019c3e2-dd48-4a6d-abcd-8d32436313d9}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{001dae60-95c0-11d3-924e-009027950886}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{0054ad19-7e4e-4ae4-b275-20f237280f5c}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{014da6c1-189f-421a-88cd-07cfe51cff10}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{014da6c9-189f-421a-88cd-07cfe51cff10}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{02c20140-76f8-4763-83d5-b660107b7a90}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{0352960f-47be-11d5-ab93-00d0b760b4eb}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{03d3ad2f-c841-443f-8a21-a7d2a62b6626}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{03fde7ea-c8c4-413f-bea1-f8c1b8b39ea6}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{04707538-0b03-4658-89e9-a9af56462959}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{0494d0d9-f8e0-41ad-92a3-14154ece70ac}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{05bbb56a-2a69-4a5c-bfda-43295dd67434}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{06dfedaa-6196-11d5-bfc8-00508b4a487d}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{07b18ea1-a523-4961-b6bb-170de4475cca}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{08d536e8-06f5-458f-b5d1-e975d2da08db}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{08e1c8e1-e565-44fc-a766-c9539bb3abb7}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{08ee9c58-d8b4-4977-8198-9c771cd8c451}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{093f9cf8-0de1-491c-95d5-5ec257bd4ca3}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{0a5cf411-f0bf-4af8-a2a4-8233f3109bed}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{0a68c5a2-64ae-4415-88a2-6542304a4745}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{0abcb7d9-375d-47aa-b7f6-f6fbc353c692}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{0cec7e32-884c-11d4-86ec-00105ad18acb}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{0cef79d8-d373-11d3-a7d3-00062962bf17}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{0ddbb570-0396-44c9-986a-8f6f61a51c2f}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{0ec7cf46-c5b4-480c-8f94-eb34b98ccf44}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{0f5b6a38-b470-4446-b453-c248d8fb3a4b}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{1000026a-8230-4dd4-be4f-6889d1e74167}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{10064867-c162-4299-93a0-305a21bd8c14}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{11111111-1111-1111-1111-111111111111}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{11990e9f-2a4d-11d6-9507-02608cdd2842}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{11b6f65d-7b8d-43cb-9aae-17234a1db33a}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{11bf0e2b-4229-4adc-9c11-1c6968731018}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{1230cb21-c88d-11cf-b347-000000000000}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{13258718-b804-4092-8496-55f80aedbf1f}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{136a9d1d-1f4b-43d4-8359-6f2382449255}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{14b3d246-6274-40b5-8d50-6c2ade2ab29b}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{1502ab76-0376-4b7b-8226-d34c941072f2}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{15589fa1-c456-11ce-bf01-00aa0055595a}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{166348f1-2c41-4c9f-86bb-eb2b8ade030c}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{17127a1c-1c1b-4430-b042-e1ca653d68e2}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{1717a4a5-d63a-4f70-b373-ae4aa46d1236}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{175d860b-bc50-4cfa-9d50-68ffc4fdf9fb}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{179e4b4a-76c3-4f65-bced-c9fa1a28d2ef}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{189210a0-36c2-11d7-9928-444553540000}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{197ab1d7-a7dd-4c86-a938-1fcc0db21b85}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{19dfb2cb-9b27-11d4-b192-0050dab79376}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{1ae63cf9-7c7a-49c8-8475-961ddd2b230a}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{1b0e7716-898e-48cc-9690-4e338e8de1d3}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{1b80440d-b4c0-49d7-8d2f-77f16777629b}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{1c78ab3f-a857-482e-80c0-3a1e5238a565}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{1d4ee8ca-9b69-4c8f-8e7b-3e2940b329fa}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{1d870c86-aa3c-4451-81e4-71d480a1a652}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{1e6f1d6a-1f20-11d4-8859-00a0cce26836}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{1f48aa48-c53a-4e21-85e7-ac7cc6b5ffa2}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{1f48aa48-c53a-4e21-85e7-ac7cc6b5ffa6}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{1f48aa48-c53a-4e21-85e7-ac7cc6b5ffa7}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{1f48aa48-c53a-4e21-85e7-ac7cc6b5ffa8}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{20000273-8230-4dd4-be4f-6889d1e74167}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{2048b51e-8d74-4762-82ce-b48cf545eeea}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{205ff73b-ca67-11d5-99dd-444553540000}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{205ff73b-ca67-11d5-99dd-444553540002}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{20a03a4c-9faf-45d5-a5c2-b6c49774e03c}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{21301d69-b8f1-46aa-b0b5-09ee2285914c}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{22941a26-7033-432c-94c7-6371de343822}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{23ddae8c-6a79-4d62-80aa-e95d89cb9811}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{24eeef0e-3cf3-407e-b84c-a71b6752f953}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{25f1bb0d-2d8c-4dda-ad46-684719d09b7e}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{25f7fa20-3fc3-11d7-b487-00d05990014c}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{267d5bd3-0dc2-4724-a196-7f4794fbb9eb}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{26e8361f-bce7-4f75-a347-98c88b418322}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{26fd5192-a97c-4b48-a5d7-2420cfdcfdf2}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{29cac0b6-d6c2-4395-8289-bf3fbf27ad5f}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{29d91500-f352-4523-8ff5-6ca1e71690a7}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{29eeff42-f3fa-11d5-a9d5-00500413153c}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{2aa62e92-e009-4a0c-8b7a-02dc4216050c}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{2abe804b-4d3a-41bf-a172-304627874b45}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{2af8ced6-5bd8-4310-a90c-9664efb16b10}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{2b3452c5-1b9a-440f-a203-f6ed0f64c895}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{2b54bd2f-78c0-4eaf-8347-7f37454fc61d}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{2c0f2aea-3a9b-46db-a7be-80ff329e415d}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{2c38a62e-d257-40e8-8bb7-5624e38feb0a}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{2cf0b992-5eeb-4143-99c0-5297ef71f443}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{2cf0b992-5eeb-4143-99c0-5297ef71f44a}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{2d556983-83d7-4630-9aa5-27c74ca27b79}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{2df623aa-c813-4442-b7b5-04aa303d4089}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{2e12b523-3d4c-4fac-9b04-0376a8f5e879}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{30000273-8230-4dd4-be4f-6889d1e74167}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{30402ff4-3e71-4a1c-9b4b-1cd3486a9fb2}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{31995c64-cb4d-483e-82c2-ccffe2f66cab}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{319a68db-06d0-46da-9f93-a810d5a70836}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{337d0c1d-4053-4fab-af2b-45c2f7b0faa6}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{337d0c1d-4053-4fab-af2b-45c2f7b0faa7}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{34d516ea-40e3-4e3b-8ba8-505112738ed5}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{354e36b0-ef0a-4827-bb38-3fb574d6ed08}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{35cc7369-c6eb-4a64-ab05-44cf0b5087a0}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{36372a5f-1436-4a70-b808-59f6dfd36658}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{3717df55-0396-463d-98b7-647c7dc6898a}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{3717df57-0396-463d-98b7-647c7dc6898a}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{3750bfa3-1392-4af3-af86-9d2d4776e5a4}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{3789cbf0-c4ca-4e98-b93b-22acf0587fba}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{38545c2a-03cd-42c3-bc62-c537a6d5a8f6}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{386a771c-e96a-421f-8ba7-32f1b706892f}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{388d7ebb-cbb9-4126-8db2-86dc6863a206}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{392be62b-e7de-430a-8859-0afe677de6e1}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{39af31dd-eafc-45ea-a56c-385b52e25cc0}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{3a279869-c6b6-4410-a041-0435de6ad916}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{3b99f202-145a-4e5a-ac7b-88a36910bf5e}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{3c5ba506-6c30-4738-9ced-797acadea8dc}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{3d7247de-5db8-11d4-8a72-0050da2ee1be}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{3d7247e8-5db8-11d4-8a72-0050da2ee1be}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{3e8a1971-45a5-45ee-828b-8c78431c0bd4}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{4006e7b2-0fb2-4345-b388-083b138e80af}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{405fd721-04ef-4ef2-ab96-fb31d32d4643}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{40ac4d2d-491d-11d4-aaf2-0008c75dcd2b}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{42040532-2221-4ef7-8f16-9779ab7aaa98}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{42f2d240-b23c-11d6-8c73-70a05dc10000}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{450a8754-6700-4170-8263-252e9a86de06}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{4580026c-022a-4fda-87bc-eda848d0b7a6}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{47cc4dcd-bbc9-47a3-a677-44db2559e0d8}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{47e42ea5-af8c-4d78-9937-aa40354b3018}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{4844c262-3ff3-4f24-9ea1-5d5b811dd653}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{499db658-1909-420b-931a-4a8caefd232f}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{4c4871fd-30f6-4430-8834-bc75d58f1529}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{4c759ec6-96bd-4551-a320-e61a1d68437f}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{4cbbc676-507f-11d0-b98b-000000000000}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{4cc0faf8-6048-421c-9fe2-261a9ece5f80}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{4cebbc6b-5cee-4644-80cf-38980bae93f6}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{5074851c-f67a-488e-a9c9-c244573f4068}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{51958169-d5e3-11d1-aa42-0000e842e40a}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{53e10c2c-43b2-4657-ba29-aae179e7d35c}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{53f066f0-a4c0-4f46-83eb-2dfd03f938cf}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{54744354-0b7d-4dd4-9ef8-b0723de67cf5}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{54e7e082-1da6-412e-96b5-c290fcef5329}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{54ed9b49-81d1-4866-95a6-30f01de0047e}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{556dde35-e955-11d0-a707-000000521958}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{563e5df0-2c1c-4513-bbf5-d380536bb8fc}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{569bf8c2-d1e5-43fd-9053-380fdebd0a20}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{57c469e8-923a-4623-bc67-d9e18c97a2ed}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{57e69d5a-6539-4d7d-9637-775de8a385b4}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{5843a29e-1246-11d4-ba8c-0050da707acd}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{586dde35-e955-11d0-a707-000000521958}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{58a7073d-4ec4-46a9-bdbd-fddcc47544ee}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{58f0b492-a42e-435a-bcbf-c6b2608077ba}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{59450db0-341d-4436-b380-b8377d8b6796}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{5a3a5040-4210-11d7-bd2e-00080e34122f}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{5a66328b-926d-468b-82aa-e1ed55c6c17c}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{5c015aa7-3392-4044-90cc-8e95019cfff1}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{5dd7b3be-fdec-4563-b038-ff80f2345b89}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{5f1abcdb-a875-46c1-8345-b72a4567e483}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{5f5564ac-de7a-4dcd-9296-32e71a35dcb6}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{5f5564ac-de7a-4dcd-9296-32e71a35dcb7}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{60381d4b-8129-449a-a5f2-5417ad0571cc}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{6085fb5b-c281-4b9c-8e5d-d2792ea30d2f}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{60e78cac-e9a7-4302-b9ee-8582ede22fbf}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{6231d512-e4a4-4df2-be62-5b8f0ee348ef}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{6270dfc1-edfb-4bc4-be8c-842740ba290b}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{63b78bc1-a711-4d46-ad2f-c581ac420d41}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{657b9354-bb3b-4500-a9b0-109b4fa64815}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{65b818e1-f4d8-4f96-a1df-35f3d1c86194}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{665acd90-4541-4836-9fe4-062386bb8f05}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{666dde35-e955-11d0-a707-000000521958}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{669695bc-a811-4a9d-8cdf-ba8c795f261e}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{66f67511-2665-4c34-9e20-fac2c0954ef2}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{67355a47-1544-4905-b698-4d7e5b62ec32}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{69555be2-9a78-11d2-ba91-00600827878d}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{69a4f9ff-e915-11d5-a9f1-009099104002}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{69fd62b1-0216-4c31-8d55-840ed86b7c8f}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{6b12dabb-0b7c-44fa-b0b3-4baff3790256}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{6c413541-29a1-4ffe-894c-9d68313c9f73}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{6cc1c918-ae8b-4373-a5b4-28ba1851e39a}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{6cc1c91a-ae8b-4373-a5b4-28ba1851e39a}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{6d0ac7f7-b628-4581-a8b2-14d97f24aa76}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{6d55490c-1bd4-4790-ba31-84d261316e28}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{6d6ddf37-b491-49d3-8733-600fa16940a0}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{6d8f256b-6ab8-4398-8f86-1e56207db77a}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{6eb5b540-1e74-4d91-a7f0-5b758d333702}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{6ef3ae25-5a7d-40c2-9b44-9ed0068621c0}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{7011471d-3f74-498e-88e1-c0491200312d}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{702ad576-fddb-4d0f-9811-a43252064684}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{70522fa2-4656-11d5-b0e9-0050dac24e8f}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{706f3805-27d7-478d-80e5-e25d2bb030b3}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{71ed4fba-4024-4bbe-91dc-9704c93f453e}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{7250994f-210d-4abc-8c4d-b2c014529fd8}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{72a58725-2635-4725-8c53-676dfd1feb8d}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{72f81209-6c73-4de7-a3dc-408a8bd472fb}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{72ff22a1-8bf1-11d5-9a3d-000021506a27}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{731918d2-517a-47e2-886a-3bc1380c591d}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{73f0fd85-bd47-4a95-86d1-de38860462c1}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{75d1f3b2-2a21-11d7-97b9-0010dc2a6243}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{760a9dde-1433-4a7c-8189-d6735bb5d3dd}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{765e6b09-6832-4738-bdbe-25f226ba2ab0}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{77f1268b-6c19-4c61-962d-54691a128cd2}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{7852e0ff-f138-434e-bc32-760d05debb33}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{788a7678-38d7-4eec-9d20-67a86d21a7fd}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{79e390e0-1aa2-11d7-a4ee-00e0299ac815}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{7dd896a9-7aeb-430f-955b-cd125604fdcb}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{7e4de558-ebd9-4373-a34c-523d23b9eddb}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{7e53c1b1-49f0-498b-b0f8-b4bbf924a4ac}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{80672997-d58c-4190-9843-c6c61af8fe97}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{81f0756d-1409-4dae-8df3-b35f517bf65c}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{82599e0a-8c81-11d7-9f97-0050fc5441cb}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{82b98006-7a56-11d2-a26f-00c04f962769}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{832f1d48-1d15-4e0d-8e37-4d5822c3537b}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{834261e1-dd97-4177-853b-c907e5d5bd6e}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{841a9192-5690-11d4-a258-0040954a01be}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{85a702ba-ea8f-4b83-aa07-07a5186acd7e}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{85c2c2a1-3f20-4ead-adc3-bd3217391543}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{868b015f-3515-44db-b0ad-182cd058985e}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{8699d723-6dc6-47d3-b55c-489ba006b917}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{8702d9e1-890b-4bf2-a233-fa44e582b2de}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{87067f04-de4c-4688-bc3c-4fcf39d609e7}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{8721f16d-cbf8-4ce5-b924-18d64e12e77e}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{8952a998-1e7e-4716-b23d-3dbe03910972}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{89820200-ecbd-11cf-8b85-00aa005b4383}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{8a05273a-2ea5-42de-aa75-59ea7d9d50d7}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{8a0dcbda-6e20-489c-9041-c1e8a0352e75}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{8a880893-e6b2-4c29-b168-181a4ef6b852}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{8ae10ee3-84be-4d3c-8106-7020bf3f0142}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{8c6c6922-6258-44ac-9912-53964ac55272}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{8cdc6a46-08ab-435b-a3fa-7cc00e74ec9f}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{8dce908e-9e35-11d3-9431-009099104002}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{8e4c16f3-45c8-4b24-99e6-f55082b7c4f1}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{8f4e5661-f99e-4b3e-8d85-0ea71c0748e4}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{8fb0f3e2-5193-11d7-9f88-0050fc5441cb}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{907ca0e5-ce84-11d6-9508-02608cdd2842}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{90da654c-083c-11d6-8a9d-0050ba8452c0}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{90e34f98-e3e6-4cd7-a592-e964fed8af78}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{910e7499-6311-4843-8eb0-0100a7955a1f}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{914afb33-550b-4bd0-b4ef-8da185504836}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{91df007c-2f7f-4731-be1f-38c1c13ceb8b}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{92c7d65c-52f3-4545-8a35-213d730db1ed}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{94326e3f-f51f-4863-a832-4acd0d7d4bc3}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{946b0485-8f8c-4c35-a6e7-d2115e3b0b4f}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{947e6d5a-4b9f-4cf4-91b3-562ca8d03313}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{94837f90-a2ca-4a8a-9da0-b5438ec563ea}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{965e6b07-6832-4738-bdbe-25f226ba2ab0}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{96b01a48-1317-4a87-91f7-10116f755705}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{96be1d9a-9e54-4344-a27a-37c088d64fb4}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{96da5bee-4acc-476c-b3ec-54c6730c4293}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{98aba9ae-699d-4966-8fde-1f894ef22eb4}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{98d7b53e-b1d2-4755-b0a4-703e18ff91e8}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{99410cde-6f16-42ce-9d49-3807f78f0287}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{99b0b113-6f25-49c9-8ecf-2fddd3edff6a}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{9c691a33-7dda-4c2f-be4c-c176083f35cf}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{9c813b33-52a2-466d-8c51-eb4189c1ff98}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{9dbafccf-592f-ffff-ffff-00608cec297b}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{9ddc8f6d-bc51-46cb-b185-ebf34d52a175}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{9e7138ee-4e7b-11d5-94ef-006008a4ed7f}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{9eb320ce-be1d-4304-a081-4b4665414bef}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{9f2c17ac-9aa4-4c3a-82c7-ea7bcf00f03d}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{a041b850-57ad-493f-8fdc-4f1b15c0d16f}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{a045dc85-fc44-45be-8a50-e4f9c62c9a84}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{a097840a-61f8-4b89-8693-f68f641cc838}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{a0bd4ff5-d828-11d3-9eb5-00600837e6ee}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{a0f0d762-d1de-43af-b70e-d87864743eb3}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{a116a5c1-ad77-446c-992a-f56200b112db}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{a1cd9b9f-6fcf-4a4a-b5b2-e6949340c57c}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{a1dc3241-b122-195f-b21a-000000000000}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{a28c2a31-3ab0-4118-922f-f6b3184f5495}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{a3e02b37-8608-4f57-ad58-ab91f32ba4f4}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{a49aa76f-7215-4f80-97d6-9a7e16a5fee1}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{a4a435cf-3583-11d4-91bd-0048546a1450}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{a6250fb8-2206-499e-a7aa-e1ec437e71c0}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{a67ba5e3-5b79-11d6-a711-00c12601eade}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{a76066c9-941b-4209-9d96-0ac80501100d}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{a8b9f08f-2fc4-4ade-9049-cfba586971ba}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{a9ef28a2-55d1-480b-a403-84928d59f556}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{aaaaaaaa-cccc-cccc-dddd-100000000000}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{ab1e62eb-3de3-428f-a417-64ab3c9b6cf0}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{ab29a544-d6b4-4e36-a1f8-d3e34fc7b00a}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{ab4dd0f0-38da-4f48-aafe-7de7323bb6b2}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{abd45f35-2e4c-44c0-a075-6ef1de75398e}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{ad688740-5246-40c3-af27-090006046834}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{ad7fafb0-16d6-40c3-af27-585d6e6453fd}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{af60118d-901b-4add-97d8-1676ec3a7cea}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{afdbb6d0-6b96-419c-8bc6-ff0b99368c0b}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{b195b3b3-8a05-11d3-97a4-0004aca6948e}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{b2c03e2e-2219-4ff9-810a-540aca63f8d9}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{b405ee45-1aa2-410d-a6cf-1a74371dcd62}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{b5e60a66-0c51-4894-8df8-cbdf4e478d58}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{b5ef836b-7582-4d82-9246-17f6c40ddf0f}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{b8109574-690a-4f65-989d-0ccd9bb077ff}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{b83fc273-3522-4cc6-92ec-75cc86678da4}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{b843da96-2b2d-447e-90ab-b92929aa11af}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{b8875bfe-b021-11d4-bfa8-00508b8e9bd3}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{b8a04596-1c1b-48b6-9268-f2f86c9d55bc}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{b8ab2281-447f-482b-86e9-1f0ed5973637}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{b9f28c0a-58df-4158-a3b2-5e0f9c4c6ee8}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{ba3d9f56-5ec1-497d-881a-93a28f58d9ad}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{bb9aaaf3-4f8d-48b5-a565-ff3e58433dc2}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{bc0d2038-2de5-4a6f-92bc-b18a3e0de32a}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{bcd5534b-2f54-428e-b3f3-e03b6f10a233}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{bd11a280-2e73-11cf-b6cf-00aa00a74daf}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{be168ad8-d3dd-432c-b367-06d36a1aed15}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{bf279130-3f58-4e26-8043-cd5688a4d4c9}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{bf4b360b-1717-4bea-8c5b-6936de82e8f6}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{bfbae8da-9920-4166-a5a4-ebd03f59abf5}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{c049960f-5186-4b2a-af8a-a723c8e6fc26}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{c14b4055-a29b-420c-9d24-71c04956189c}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{c1c2ac28-5e4b-4228-b7a0-05e986ffce14}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{c1e58a84-95b3-4630-b8c2-d06b77b7a0fc}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{c1fb8842-5281-45ce-a271-8fd5f117ba5f}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{c209c230-4abf-4e84-a91c-d69c977ecc53}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{c298fb42-e3e2-11d3-adcd-0050dac24e8f}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{c3516ef2-41d5-4e97-8688-77ada93fb0eb}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{c389f2cf-26ed-11d5-a212-004005f6feb6}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{c4d99500-4c77-11d4-93b7-0040950570ba}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{c61c874f-60bb-4ee7-8afa-92dc85b180c9}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{c6a02de1-73ef-463a-8566-bd7af8b63f88}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{c776136e-fdb9-4f4b-837d-90593fb5a3fa}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{c7ade150-743d-11d4-8141-00e029626f6a}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{c7b05b62-c8d7-438c-840b-4994daaa8eee}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{c82b55f0-60e0-478c-bc55-e4e22f11301d}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{c89bb48c-15d9-4f4f-803e-95d90f62be62}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{ca0b9b71-c2af-11d3-b376-0800460222f0}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{ca7ccb52-6922-47e5-b784-3a3f82c51863}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{ca92b524-bc8a-4610-bd2c-6bd3e28155d0}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{cc87b8b6-5947-46fa-9734-68196fcf9632}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{cc916b4b-be44-4026-a19d-8c74bbd23361}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{cc94d0f5-8932-4203-a734-6d7730b6c305}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{cce83e45-30b2-4bae-b1f5-25d128d27a43}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{cdbcfeae-10ba-482c-9f6e-fc67207082d8}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{ce31a1f7-3d90-4874-8fbe-a5d97f8bc8f1}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{ce6e551b-b8f9-4b24-81fd-59d9162da495}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{ceb29da4-7afa-4f24-b3cd-17351d590df0}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{d06855e1-7758-430f-9e20-274d32c0472e}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{d14641fa-445b-448e-9994-209f7af15641}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{d14d6793-9b65-11d3-80b6-00500487bdba}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{d157330a-9ef3-49f8-9a67-4141ac41add4}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{d319662b-d5bf-4538-adf3-8d3e36362608}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{d34f08c5-4f18-477c-86cb-1a9beecfe37b}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{d34f641f-5210-4eb0-8ed5-9179f47e15b7}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{d35a69a7-7a34-4c67-814a-3f508c0bf371}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{d48f2e28-68e2-4920-9848-d6e6c7ab3eb7}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{d53b810f-6219-11d4-95b6-0040950375e7}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{d5c778f1-cf13-4e70-adf0-45a953e7cb8b}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{d6862a22-1dd6-11d3-bb7c-444553540000}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{d6dff6d8-b94b-4720-b730-1c38c7065c3b}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{d6e66235-7aa6-44ed-a06c-6f2033b1d993}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{d7b3e460-9968-4191-bd6f-beed1bc18482}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{d7d7004c-a763-4f8c-b0d4-55a7e017e69d}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{d8e25c53-9508-4f5c-9249-d98d438891d5}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{d8efadf1-9009-11d6-8c73-608c5dc19089}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{d9a5a49c-60eb-4c07-8570-8fb8fe825e7c}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{d9ec0a76-03bf-11d4-a509-0090270f86e3}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{da9a0b1e-9b7b-11d3-b8a4-00c04f79641c}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{db0aad08-ca9f-4c1e-b4e1-ad3d63ee20f9}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{dbae7000-01ec-4162-8feb-8a27ac937ca0}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{dd521a1d-1f98-11d4-9676-00e018981b9e}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{dd770a75-ce18-11d5-98d8-00e018981b9e}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{dfaba77c-f8bb-4ab9-bed7-7d48ae103e24}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{e0b795b4-fd95-4abd-a375-27962efce8cf}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{e0b9b5fe-b66e-4fb0-a1d9-726f0e743cfd}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{e0ce16cb-741c-4b24-8d04-a817856e07f4}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{e2b2b5a1-b48c-4886-a318-723916a01024}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{e2f2b9d0-96b9-4b25-b90c-636ecb207d18}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{e44151c8-0c6c-4a7d-b677-4fcc9552e957}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{e4c5d394-e44c-43f9-be9d-acb344936b8a}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{e5e4e352-6947-44ee-a420-db84efd3fe93}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{e6d5237d-a6c7-4c83-a67f-f9f15586fa62}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{e8edb60c-951e-4130-93dc-faf1ad25f8e7}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{e9407738-a996-421a-a309-5c93c699e10a}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{e9c87343-0e63-4aca-9b76-b155333ee67a}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{eb6afdab-e16d-430b-a5ee-0408a12289dc}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{eb9bdd24-ccf1-4a87-98c0-579dba9bda83}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{ebbd88e5-c372-469d-b4c5-1fe00352ab9b}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{ec788b03-a743-4274-ac9e-db4f2a03f515}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{ed3adb6e-5aa9-41b0-9ddc-6f31a34552be}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{ee2589eb-7fc8-44db-a892-573f2c4b41e0}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{ee392a64-f30b-47c8-a363-cda1cec7dc1b}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{efb22865-f3bc-4309-adfa-c8e078a7f762}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{efcf25f1-c8f9-4c53-a03d-68d5c19225d0}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{f0230524-9d39-4e84-8452-41c592961ea7}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{f08555b0-9cc3-11d2-aa8e-000000000000}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{f0aa2376-f073-4e57-86e8-0238f99087c7}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{f17edbc0-3eb2-11d3-ab74-00a0c9a522f2}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{f1a51f21-59df-4486-ba31-5b816da481eb}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{f20ae630-6de2-43ca-a988-7cd40c36ef0b}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{f325e940-45ee-11d7-a420-444553540000}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{f332d106-2ef3-45c4-baf2-0f739d76b26a}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{f420a442-7538-48df-a3f1-c55bde3bbb56}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{f5192746-22d6-41bd-9d2d-1e75d14fbd3c}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{f76fda04-87fa-4717-91f6-4bb5be9fd2bb}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{f7f808f0-6f7d-442c-93e3-4a4827c2e4c8}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{f9765480-72d1-11d4-a75a-004f49045a87}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{fa13a9fa-ca9b-11d2-9780-00104b242ea3}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{fbaa0b9e-a059-43e4-9699-76eb0aeb975b}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{fc327b3f-377b-4cb7-8b61-27cd69816bc3}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{fc327b3f-377b-4cb7-8b61-27cd69816bc}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{fc3a74e5-f281-4f10-ae1e-733078684f3c}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{fc87a650-207d-4392-a6a1-82adbc56fa64}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{fe1a240f-b247-4e06-a600-30e28f5af3a0}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{fee7fd53-3356-4d4d-8978-2c4ae3a7e109}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{ff65677a-8977-48ca-916a-dff81b037df3}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{ffd2825e-0785-40c5-9a41-518f53a8261f}]
+"Compatibility Flags"=dword:00000400
+

@@ -1,0 +1,184 @@
+\" $Id: libnetcap.3,v 1.1 2004/11/09 19:39:57 dmorris Exp $
+
+.TH LIBNETCAP 3  "08 15 2002" "libnetcap 0.5.0" ""
+.SH NAME
+libnetcap \- "libnetcap" Transparent Proxy Library
+
+.SH DESCRIPTION
+Tprox - transparent proxy library
+
+
+.SH SYNOPSIS
+.nf
+.ft B
+#include <libnetcap.h>
+
+PROXY MANAGEMENT ROUTINES:
+
+\fBnetcap_init();\fP 
+
+\fBnetcap_cleanup();\fP 
+
+\fBnetcap_thread_donate (void * arg)\fP
+
+\fBnetcap_thread_undonate (int thread_id)\fP
+
+\fBnetcap_tcp_hook_register   (netcap_tcp_hook_t hook)\fP 
+
+\fBnetcap_tcp_hook_unregister (netcap_tcp_hook_t hook)\fP
+
+\fBnetcap_udp_hook_register   (netcap_udp_hook_t hook)\fP 
+
+\fBnetcap_udp_hook_unregister (netcap_udp_hook_t hook)\fP
+
+\fBnetcap_addrs_free(netcap_addrs_t * addrs)\fP  
+
+\fBnetcap_subscribe (int flags, void * arg,
+                         int proto, char * indev, char * outdev,
+                         in_addr_t * src, u_int shost_netmask, u_short src_port, 
+                         in_addr_t * dst, u_int dhost_netmask, u_short dst_port)\fP 
+
+\fBnetcap_unsubscribe (int traffic_id)\fP 
+
+\fBnetcap_unsubscribe_all ()\fP 
+
+\fBnetcap_udp_send (char* data, int datalen, netcap_udpprop_t* props)\fP
+
+\fBnetcap_udpprop_free (netcap_udpprop_t* props)\fP
+
+\fBnetcap_udpprop_create ()\fP
+
+
+NETCAP INFORMATION ROUTINES:
+
+const char*  netcap_version(void);
+
+void         netcap_debug_set_level(int lev);
+
+NETCAP HOOK TYPE:
+
+void netcap_hook (netcap_addrs_t * prox);
+
+.ft
+.LP
+.ft B
+
+
+
+.PP
+.SH NETCAP MANAGEMENT ROUTINES
+.nf
+
+\fBnetcap_init()\fP 
+This initializes the library, and must be called before any other functions.
+If you dont do this, all behavior is undefined.
+
+\fBnetcap_cleanup()\fP 
+This will deallocate all resources and remove all rules from the kernel
+
+\fBnetcap_thread_donate (void * arg)\fP
+This donates a thread to the thread pool used to capture connections
+You must donate atleast one thread to capture any connections
+This will not return unless there is an error.
+Arg is ignored, it is there simply to be compatible with pthread_create
+
+\fBnetcap_thread_undonate (int thread_id)\fP 
+This is unimplemented
+
+\fBnetcap_hook_tcp_register   (netcap_tcp_hook_t hook)\fP  
+This registers a tcp hook to be called when a connection is intercepted.
+You can have as many hooks as you like. All hooks will receive the same 'addrs'.
+
+\fBnetcap_hook_tcp_unregister (netcap_tcp_hook_t hook)\fP 
+This removes a hook from the list of tcp hooks
+
+\fBnetcap_hook_udp_register   (netcap_udp_hook_t hook)\fP  
+This registers a udp hook to be called when a packed is intercepted.
+You can have as many hooks as you like. All hooks will receive the same 'addrs'.
+
+\fBnetcap_hook_udp_unregister (netcap_udp_hook_t hook)\fP 
+This removes a hook from the list of udp hooks
+
+\fBnetcap_addrs_free(netcap_addrs_t * addrs)\fP  
+Frees the resources of the netcap_addrs_t 
+You should call this on any addrs passed to the hook
+
+\fBnetcap_traffic_subscribe (int flags, void * arg,
+                         int proto, char * indev, char * outdev,
+                         in_addr_t * src, u_int shost_netmask, u_short src_port, 
+                         in_addr_t * dst, u_int dhost_netmask, u_short dst_port)\fP 
+This function creates a subscription with the given attributes.
+You can use any of the selectors provided (indev, outdev, src, dst, src_port, dst_port).
+If no selectors are specified, behavior is undefined.
+If netmask doesnt make sense and isnt in network order - behavior is undefined.
+Parameters:
+flags            flags for this subscription - see libnetcap.h for options
+arg              any thing you wish - it will be passed to the hook when this rule matches
+proto            the protocol, either IPPROTO_TCP or IPPROTO_UDP. 
+indev            the incoming device of traffic to be proxied (NULL if not used)
+outdev           the outgoing device of traffic to be proxied (NULL if not used)
+src              the source addr of the traffic to be proxied (NULL if not used)
+dst              the destination addr of the traffic to be proxied (NULL if not used)
+src_netmask      the source netmask of the traffic to be proxied 
+src_netmask      the destination netmask of the traffic to be proxied 
+src_port         the source port of traffic to be proxied. (0 if not used)
+dst_port         the destination port of traffic to be proxied. (0 if not used)
+
+\fBnetcap_traffic_unsubscribe (int traffic_id)\fP
+Unsubscribe a previous subscription
+Parameters:
+traffic_id       the value returned by traffic_subscribe()
+
+\fBnetcap_traffic_unsubscribe_all ()\fP
+Unsubscribe a all previous subscriptions
+
+\fBnetcap_udp_send (char* data, int datalen, netcap_udpprop_t* props)\fP
+Send a udp packet with property props
+
+\fBnetcap_udpprop_free (netcap_udpprop_t* props)\fP
+Free some udp properties, you must do this after you have received them via the hook.
+
+\fBnetcap_udpprop_create ()\fP
+Create some udp properties
+
+
+.PP
+.SH NETCAP INFORMATION ROUTINES
+\fBnetcap_version()\fP returns version information string
+
+\fBnetcap_debug_set_level(int value)\fP sets the debug level 
+This does nothing if not compiled with DEBUG_ON defined.
+Value is anywhere from 0 to 10, 10 showing the most information.
+
+.PP
+.SH FLAGS
+\fNETCAP_HALF_OPEN\fP   
+This flap tells netcap to only open the first half of the connection.
+The server.sock will be -1 in this case.
+This is recommended as completeing the connection will block a thread in the pool
+If all the threads in the pool are blocked, then no new connections will be accepted
+The recommended behavior is to use this flag, and then in the hook spawn a new thread/proc
+that will complete the connection.
+
+\fNETCAP_FLAG_SUDO\fP   
+This flags tells all firewall updates to be 'sudoed'.
+You need to have your /etc/sudoers file setup so that it does not require a password.
+This is useful if you dont want to run your application as root
+
+\fNETCAP_FLAG_BLOCK_CURRENT\fP
+This flag tells libnetcap to interrupt/reset current connections that match a subscription.
+
+\fNETCAP_FLAG_GET_ALL\fP
+This flag tells libnetcap to pass all intercepted connections to the hook, 
+whether or not the server could be contacted. The server sock will be set to -2.
+
+.PP
+.SH EXAMPLE
+
+
+.SH BUGS
+
+
+
+
+

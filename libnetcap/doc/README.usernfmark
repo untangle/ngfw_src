@@ -1,0 +1,127 @@
+This file documents userland access to access netfilter
+marks (see man iptables). There are three basic access methods:
+
+1) Receiving the nfmark via UDP ancillary data.
+
+2) Receiving the nfmark via a TCP getsockopt call.
+
+3) Sending syn-ack with an arbitrary nfmark using setsockopt.
+
+EXAMPLE USER CODE
+
+1) Receiving the nfmark via UDP ancillary data:
+
+#define IP_RECVNFMARK  22
+#define IP_SENDNFMARK  23
+#define IP_FIRSTNFMARK 24
+
+
+    int const           one = 1, zero = 0;
+    /*
+     * Enable ancilliary data for nfmark
+     */
+    if (setsockopt(sFd, SOL_IP, IP_RECVNFMARK,
+              &one, sizeof(one)) < 0) {
+        exit(1);
+    }
+  
+    for (;;) {
+    	msgh.msg_name = NULL;
+    	msgh.msg_namelen = 0;
+    	msgh.msg_iov = &iovec;
+    	msgh.msg_iovlen = 1;
+    	msgh.msg_control = msg_control;
+    	msgh.msg_controllen = CONTROLLEN;
+    	msgh.msg_flags = 0;
+
+        if (nRead = recvmsg (sFd, &msgh, 0) < 0) {
+            perror ("recvmsg");
+            close (sFd);
+            return (ERROR);
+        }
+              /* Receive auxiliary data in msgh */
+        for (cmsg = CMSG_FIRSTHDR(&msgh);
+               cmsg != NULL;
+               cmsg = CMSG_NXTHDR(&msgh,cmsg)) {
+            if (cmsg->cmsg_level == SOL_IP
+                        && cmsg->cmsg_type == IP_RECVNFMARK) {
+                nfmarkptr = (unsigned int *) CMSG_DATA(cmsg);
+                received_nfmark = *nfmarkptr;
+                break;
+            }
+        }
+        if (cmsg == NULL) {
+                      /*
+                       * Error: IP_NFMARK not enabled or small buffer
+                       * or I/O error.
+                       */
+             printf("cmsg error\n");
+        }
+        printf("mark: %08x\n", received_nfmark);
+    }
+
+2) Receiving the nfmark via a TCP getsockopt call:
+  
+        unsigned long nfmark;
+	int len;
+        if ((newFd = accept (sFd, (struct sockaddr *) &clientAddr,
+            &sockAddrSize)) == ERROR) {
+            perror ("accept");
+            close (sFd);
+            return (ERROR);
+        }
+	len = sizeof(nfmark);
+	if (getsockopt(newFd, SOL_IP, IP_FIRSTNFMARK,
+	                    &nfmark, &len) < 0) {
+	    perror("getsockopt: SO_IP: IP_FIRSTNFMARK");
+	    exit(1);
+	}
+	printf("\nnfmark------->%08x\n", nfmark);
+
+
+3) Sending syn-ack with an arbitrary nfmark using setsockopt:
+
+struct ip_sendnfmark_opt {
+	unsigned int		on;
+	unsigned int		mark;
+} opt;
+  
+    int const           one = 1, zero = 0;
+    int len;
+
+    len = sizeof(opt);
+    if (getsockopt(sFd, SOL_IP, IP_SENDNFMARK,
+	                    &opt, &len) < 0) {
+        perror("setsockopt: SO_IP: IP_SENDNFMARK");
+        exit(1);
+    }
+    printf("before: len=%d on=%d mark=%08x\n", len, opt.on, opt.mark);
+
+    /*
+     * Enable sending data 0x20 nfmark
+     */
+
+    opt.on = 1;
+    opt.mark = 0x20;
+
+    if (setsockopt(sFd, SOL_IP, IP_SENDNFMARK,
+	                   &opt, sizeof(opt)) < 0) {
+        perror("sendpacket: IP_SENDNFMARK");
+        exit(1);
+    }
+
+    len = sizeof(opt);
+    if (getsockopt(sFd, SOL_IP, IP_SENDNFMARK,
+	                    &opt, &len) < 0) {
+        perror("setsockopt: SO_IP: IP_SENDNFMARK");
+        exit(1);
+    }
+    printf("after: len=%d on=%d mark=%08x\n", len, opt.on, opt.mark);
+  
+    /* connect to server */
+
+    if (connect (sFd, (struct sockaddr *) &serverAddr, sockAddrSize) == ERROR) {
+        perror ("connect");
+        close (sFd);
+        return (ERROR);
+    }

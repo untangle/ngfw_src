@@ -1,0 +1,67 @@
+#! /bin/sh
+
+MVVM_LOGDIR="/var/log/mvvm"
+MVVM_CACHEDIR="/var/lib/mvvm"
+
+USER=root
+GROUP=adm
+
+# setting up the user account we use to run the daemons
+#adduser --no-create-home \
+#        --disabled-login \
+#        --gecos "" \
+#        --firstuid 10000 \
+#        ${USER} 2>/dev/null
+#
+# giving that guy NOPASSWD sudo privileges for iptables
+#SUDOERS_FILE=/etc/sudoers
+#SUDO_LINE="${USER}   ALL=NOPASSWD: /usr/bin/mkg"
+#
+#chmod 640 ${SUDOERS_FILE}
+#if [ -z "`grep ${USER} ${SUDOERS_FILE}`" ] ; then
+#    echo ${SUDO_LINE} >> ${SUDOERS_FILE}
+#else
+#    sed -i -e "s|^${USER}.*|${SUDO_LINE}|g" ${SUDOERS_FILE}
+#fi
+#chmod 440 ${SUDOERS_FILE}
+
+# modify limit to support many file descriptors
+LIMITS_FILE=/etc/security/limits.conf
+LIMITS_LINE="${USER}    soft    nofile  128000"
+LIMITS_LINE2="${USER}   hard    nofile  128000"
+
+if [ -z "`grep ${USER} ${LIMITS_FILE}`" ] ; then
+    echo ${LIMITS_LINE} >> ${LIMITS_FILE}
+    echo ${LIMITS_LINE2} >> ${LIMITS_FILE}
+else
+    sed -i -e "s|^${USER}.*soft.*|${LIMITS_LINE}|g" ${LIMITS_FILE}
+    sed -i -e "s|^${USER}.*hard.*|${LIMITS_LINE2}|g" ${LIMITS_FILE}
+fi
+
+# tell PAM (login and su) to read the limits file
+LOGIN_LINE="session    required   pam_limits.so"
+
+LOGIN_FILE=/etc/pam.d/login
+if [ -z "`grep pam_limits.so ${LOGIN_FILE}`" ] ; then
+    echo ${LOGIN_LINE} >> ${LOGIN_FILE}
+else
+    sed -i -e "s|^.*pam_limits.so.*|${LOGIN_LINE}|g" ${LOGIN_FILE}
+fi
+
+LOGIN_FILE=/etc/pam.d/su
+if [ -z "`grep pam_limits.so ${LOGIN_FILE}`" ] ; then
+    echo ${LOGIN_LINE} >> ${LOGIN_FILE}
+else
+    sed -i -e "s|^.*pam_limits.so.*|${LOGIN_LINE}|g" ${LOGIN_FILE}
+fi
+
+
+# right permissions for all those dirs
+/bin/chown -R $USER:$GROUP ${MVVM_LOGDIR} ${MVVM_CACHEDIR}
+/bin/chmod 775 ${MVVM_LOGDIR} ${MVVM_CACHEDIR}
+
+# start mvvm
+if [ -x "/etc/init.d/mvvm" ]; then
+    update-rc.d mvvm defaults 50 > /dev/null
+    /etc/init.d/mvvm start
+fi

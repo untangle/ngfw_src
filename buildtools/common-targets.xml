@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+
+<!--
+Copyright (c) 2004, 2005 Metavize Inc.
+All rights reserved.
+
+This software is the confidential and proprietary information of
+Metavize Inc. ("Confidential Information").  You shall
+not disclose such Confidential Information.
+
+$Id: common-targets.xml,v 1.11 2005/02/06 04:24:53 dmorris Exp $
+-->
+
+<project name="common-targets" basedir=".">
+  <!-- main targets -->
+  <target name="all"       depends="install"/>
+  <target name="gensrc"    depends="prepare,pkg.gensrc"/>
+  <target name="compile"   depends="gensrc,pkg.compile"/>
+<!--   <target name="install"   depends="compile,pkg.install"/> -->
+  <target name="clean"     depends="pkg.clean"/>
+
+  <target name="install">
+    <!-- map all files to datestamp, if any are newer, run xdoclet -->
+    <fileset id="touched" dir="./" includes="**/*">
+      <depend targetdir="${build.dist}">
+        <mapper type="merge" to="stamp-${ant.project.name}"/>
+      </depend>
+    </fileset>
+    <pathconvert pathsep=" " refid="touched" property="touchedList"/>
+    <if>
+      <not><equals arg1="${touchedList}" arg2="" /></not>
+      <then>
+        <antcall target="compile" inheritAll="true"/>
+        <antcall target="pkg.install" inheritAll="true"/>
+	<touch file="${build.dist}/stamp-${ant.project.name}"/>
+      </then>
+      <else>
+        <echo message="Skipping '${ant.project.name}'"/>
+      </else>
+    </if>
+  </target>
+
+  <!-- init targets -->
+  <target name="prepare">
+    <tstamp/>
+    <mkdir dir="${build.root}"/>
+    <mkdir dir="${build.classes}"/>
+    <mkdir dir="${build.jar}"/>
+    <mkdir dir="${build.docs}"/>
+    <mkdir dir="${build.docs.api}"/>
+    <mkdir dir="${build.tmp}"/>
+    <mkdir dir="${build.gensrc}"/>
+  </target>
+
+  <!-- clean targets -->
+  <target name="clean.nuke">
+    <delete dir="${build.root}" failonerror="false"/>
+  </target>
+
+</project>

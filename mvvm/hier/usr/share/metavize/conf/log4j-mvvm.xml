@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<!-- ===================================================================== -->
+<!--                                                                       -->
+<!--  Log4j Configuration for MVVM                                         -->
+<!--                                                                       -->
+<!--     Configuration of all mvvm loggers lives here.                     -->
+<!--                                                                       -->
+<!-- ===================================================================== -->
+
+<!-- $Id: log4j-mvvm.xml,v 1.15 2005/03/15 04:40:16 amread Exp $ -->
+
+<!--
+   | For more configuration infromation and examples see the Jakarta Log4j
+   | website: http://jakarta.apache.org/log4j
+ -->
+
+
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/"
+                     debug="false">
+
+  <appender name="MVVMLog" class="org.apache.log4j.RollingFileAppender">
+    <errorHandler class="org.apache.log4j.helpers.OnlyOnceErrorHandler"/>
+    <param name="File" value="${bunnicula.home}/log/mvvm.log"/>
+    <param name="Append" value="true"/>
+    <param name="MaxFileSize" value="500KB"/>
+    <param name="MaxBackupIndex" value="9"/>
+    <param name="Threshold" value="WARN"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{ABSOLUTE} %-5p [%c{1}] %m%n"/>
+    </layout>
+  </appender>
+
+  <!-- User Logger -->
+
+  <appender name="eventlog" class="com.metavize.mvvm.logging.HibernateAppender"/>
+
+  <category name="eventlog">
+    <priority value="ALL"/>
+    <appender-ref ref="eventlog"/>
+  </category>
+
+  <!-- #       DEBUG           every allocation and release -->
+  <!-- #       INFO            periodic buffer pool statistics and all
+                               gc-reclaimed buffers are noted -->
+
+  <category name="com.metavize.mvvm.engine">
+    <priority value="WARN"/>
+  </category>
+
+  <category name="com.metavize.mvvm.argon">
+    <priority value="WARN"/>
+  </category>
+
+  <!-- temporary XXX -->
+  <category name="com.metavize.mvvm.argon.TCPHook">
+    <priority value="WARN"/>
+  </category>
+
+  <category name="com.metavize.jnetcap">
+    <priority value="WARN"/>
+  </category>
+
+  <category name="com.metavize.jvector">
+    <priority value="WARN"/>
+  </category>
+
+  <category name="net.sf.hibernate">
+    <priority value="WARN"/>
+  </category>
+
+  <!-- ======================= -->
+  <!-- Setup the Root category -->
+  <!-- ======================= -->
+
+  <!-- All MVVM logs go to the MVVMLog file -->
+  <root>
+    <priority value="WARN"/>
+    <appender-ref ref="MVVMLog"/>
+  </root>
+</log4j:configuration>

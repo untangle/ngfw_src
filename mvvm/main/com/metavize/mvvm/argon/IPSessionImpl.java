@@ -1,0 +1,91 @@
+/*
+ * Copyright (c) 2003 Metavize Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Metavize Inc. ("Confidential Information").  You shall
+ * not disclose such Confidential Information.
+ *
+ *  $Id: IPSessionImpl.java,v 1.5 2005/01/31 01:15:12 rbscott Exp $
+ */
+
+package com.metavize.mvvm.argon;
+
+import java.net.InetAddress;
+
+public abstract class IPSessionImpl extends SessionImpl implements IPSession 
+{
+    protected final short protocol;
+    protected final InetAddress clientAddr;
+    protected final InetAddress serverAddr;
+    protected final int clientPort;
+    protected final int serverPort;
+    protected final byte clientIntf;
+    protected final byte serverIntf;
+
+    public IPSessionImpl( IPNewSessionRequest request )
+    {
+        super( request );
+        protocol      = request.protocol();
+        clientAddr    = request.clientAddr();
+        clientPort    = request.clientPort();
+        clientIntf    = request.clientIntf();
+
+        serverPort    = request.serverPort();
+        serverAddr    = request.serverAddr();
+        serverIntf    = request.serverIntf();
+    }
+
+    /* IPSessionDesc */
+    /** This should be abstract and reference the sub functions. */
+    public short protocol()
+    {
+        return protocol;
+    }
+
+    public InetAddress clientAddr() 
+    {
+        return clientAddr;
+    }
+    
+    public InetAddress serverAddr()
+    {
+        return serverAddr;
+    }
+
+    public int clientPort()
+    {
+        return clientPort;
+    }
+    
+    public int serverPort()
+    {
+        return serverPort;
+    }
+
+    public byte clientIntf()
+    {     
+        return clientIntf;
+    }
+    
+    public byte serverIntf()
+    {
+        return serverIntf;
+    }
+    
+    /* IPSession */
+    public void release()
+    {
+        /* Maybe someday */
+    }
+
+    public void scheduleTimer( long delay ) throws IllegalArgumentException
+    {
+        /* XX need some implementation */
+    }
+
+    public void cancelTimer()
+    {
+        /* Possible, unless just using the vectoring */
+    }
+}

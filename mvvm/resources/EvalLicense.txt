@@ -1,0 +1,120 @@
+                               METAVIZE INC.
+                           EVALUATION AGREEMENT
+
+
+1. Demonstration Software. The Demonstration Software is: Metavize EdgeGuard.
+
+2. Grant of License. The Company grants to Evaluator, during the Evaluation
+   Period, the nontransferable, nonexclusive license to use one (1) copy of
+   the Demonstration Software on one (1) computer for the sole purpose of
+   internal evaluation and testing for suitability for purchase of a license
+   by Evaluator only. Title to the Demonstration Software shall remain with
+   the Company at all times. Evaluator assigns to the Company all rights
+   associated with any input or suggestions provided by Evaluator to the
+   Company concerning the Demonstration Software.
+
+3. Evaluation Period. The "Evaluation Period" shall begin upon installation
+   of the Demonstration Software to Evaluator and shall continue until
+   (a) terminated by either party upon written notice; (b) thirty (30) days
+   after installation of the Demonstration Software; or (c) activation of
+   disabling code embedded in the Demonstration Software.
+
+4. Exclusions.  Evaluator shall not:
+a. copy any part of the Demonstration Software except to make one copy for
+   back-up purposes;
+b. reverse compile or reverse assemble any portion of the
+   Demonstration Software or circumvent any disabling code;
+c. distribute, disclose, market, rent, lease, or transfer the
+   Demonstration Software;
+d. export the Demonstration Software;
+e. disclose benchmarks or other comparisons of the Demonstration Software
+   without the Company's prior written consent;
+f. disclose any Confidential Information provided by the Company;
+g. modify the Demonstration Software;
+h. allow others to make or obtain copies of the Demonstration Software; or 
+i. use the Demonstration Software for production purposes.
+
+5. "Confidential Information" means the Demonstration Software, documentation
+   related to the Demonstration Software, the Company's confidential
+   marketing plans, the contents, design and functional characteristics of
+   the Demonstration Software, the results of evaluating the Demonstration
+   Software, and any other information disclosed by the Company which is
+   marked "Confidential," "Proprietary," or in some other manner to indicate
+   its confidential nature. "Confidential Information" does not include
+   information that (a) is in the public domain in its compiled form at the
+   time it is disclosed or enters in the public domain in its compiled form
+   other than through an infringement of the rights of the Company; (b) is
+   known to Evaluator, without restriction, in its compiled form, at the time
+   of disclosure; or (c) is independently developed by Evaluator without any
+   use of the Confidential Information.
+
+6. Evaluation Procedures.  At the Company's request, Evaluator shall:
+a. allow representatives of the Company to visit the evaluation site upon
+   prior notice; 
+b. establish a formal communications liaison between the Company and specific
+   Evaluator personnel; 
+c. maintain and deliver to the Company activity and performance logs; 
+d. timely complete questionnaires prepared by the Company, and respond
+   to inquiries from the Company, relating to the Demonstration Software; and
+e. do such other reasonable things relating to the Demonstration Software as
+   the Company may request.
+
+7. Support. The Company may during the Evaluation Period make available
+   updates, enhancements, and/or modifications to the Demonstration Software
+   and may provide such updates to Evaluator. Use by Evaluator of such
+   updates, enhancements, and/or modifications to the Demonstration Software
+   shall be subject to all terms and conditions of this Agreement and shall
+   expire at the end of the Evaluation Period.
+
+8. Use of Demonstration Software After Evaluation Period. At the end of the
+   Evaluation Period, Evaluator will either purchase a license to continue
+   using the Demonstration Software at the Company's then-current rates, if
+   applicable, or return all copies of the Demonstration Software and any
+   related materials to the Company.
+
+9. Restricted Rights of Government Users: If an end user of the Demonstration
+   Software is an agency, department, or other entity of the United States
+   Government (the "Government"), Government use, duplication, reproduction,
+   release, modification, disclosure, or transfer of the Demonstration
+   Software, or any related documentation of any kind, including without
+   limitation technical data, is restricted in accordance with Federal
+   Acquisition Regulation ("FAR") 12.212 for civilian agencies and Defense
+   Federal Acquisition Regulation Supplement ("DFARS") 227.7202 for military
+   agencies. The Demonstration Software is commercial computer software and
+   may be accompanied by commercial computer software documentation. The use
+   of the Demonstration Software and related documentation by the Government
+   is further restricted in accordance with the terms of this Agreement, or
+   any modification to this Agreement.
+
+10. SPECIFIC DISCLAIMER OF WARRANTY AND LIMITATION OF LIABILITY. THE
+    EVALUATOR UNDERSTANDS AND AGREES THAT THE DEMONSTRATION SOFTWARE IS
+    PROVIDED FOR EVALUATION PURPOSES ONLY, AND EVALUATOR WILL NOT USE THE
+    DEMONSTRATION SOFTWARE OUTSIDE OF AN EVALUATION ENVIRONMENT. THE COMPANY
+    DOES NOT WARRANT THAT THE DEMONSTRATION SOFTWARE IS ERROR-FREE OR THAT IT
+    WILL INTERFACE WITH ANY OF EVALUATOR'S COMPUTER SYSTEMS OR NETWORKS
+    WITHOUT ANY PROBLEMS. EVALUATOR AGREES THAT EVALUATOR WILL MAKE NO CLAIM
+    AGAINST THE COMPANY BASED ON USE OF THE DEMONSTRATION SOFTWARE. THE
+    DEMONSTRATION SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND,
+    EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NO LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND
+    NONINFRINGEMENT. THE COMPANY WILL NOT BE LIABLE TO EVALUATOR FOR ANY
+    DAMAGES, INCLUDING BUT NOT LIMITED TO ANY LOST PROFITS, LOST SAVINGS, OR
+    OTHER INCIDENTAL OR CONSEQUENTIAL DAMAGES ARISING IN TORT, CONTRACT, OR
+    OTHERWISE, OR FOR ANY CLAIM BY ANY OTHER PARTY, ARISING OUT OF THE USE OF
+    OR INABILITY TO USE THE DEMONSTRATION SOFTWARE EVEN IF THE COMPANY HAS
+    BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+
+11. Governing Law: This Agreement shall be governed by the laws of the State
+    of California, U.S.A, without regard to its conflicts of laws rules. If
+    either party employs attorneys to enforce any rights arising out of or
+    relating to this Agreement, the prevailing party shall be entitled to
+    recover reasonable attorney's fees. The parties consent to the exclusive
+    jurisdiction of the California courts.
+
+12. Entire Agreement: This Agreement constitutes the entire agreement between
+    the parties concerning Evaluator's use of the Demonstration Software.
+    This Agreement supersedes any prior verbal understanding between the
+    parties and any Evaluator purchase order or other ordering document,
+    regardless of whether such document is received by the Company before or
+    after execution of this Agreement. This Agreement may be amended only in
+    a writing signed by an authorized officer of the Company.

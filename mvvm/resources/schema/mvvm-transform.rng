@@ -1,0 +1,15 @@
+<element name="mvvm-transform"
+         xmlns="http://relaxng.org/ns/structure/1.0">
+
+  <interleave>
+    <element name="transform-desc">
+      <attribute name="name"/>
+      <attribute name="parent-transform"/>
+      <attribute name="classname"/>
+      <attribute name="single-instance"/>
+      <attribute name="display-name"/>
+      <attribute name="gui-classname"/>
+    </element>
+  </interleave>
+
+</element>

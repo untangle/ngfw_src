@@ -1,0 +1,82 @@
+<?xml version="1.0"?>
+
+<!--
+Copyright (c) 2004 Metavize Inc.
+All rights reserved.
+
+This software is the confidential and proprietary information of
+Metavize Inc. ("Confidential Information").  You shall
+not disclose such Confidential Information.
+
+$Id: build.xml,v 1.5 2005/03/22 01:27:49 inieves Exp $
+-->
+
+<project name="jvector" basedir="." default="all">
+  <import file="../buildtools/buildmagic.xml"/>
+
+  <!-- main targets -->
+  <target name="pkg.gensrc" depends=""/>
+  <target name="pkg.compile" depends="compile.jvector, jni.jvector, jar.jvector"/>
+  <target name="pkg.jar" depends="compile.jvector"/>
+  <target name="pkg.install" depends="install.jvector"/>
+  <target name="pkg.clean" depends="clean.nuke"/>
+
+  <!-- jvector.jar -->
+
+  <property name="build.jvector" value="${build.root}/jvector"/>
+  <property name="src.jvector" value="src"/>
+  <property name="jni.dst.jvector" value="jni_includes"/>
+
+  <target name="compile.jvector" depends="prepare">
+    <mkdir dir="${build.jvector}"/>
+
+    <depend srcdir="${src.jvector}" destdir="${build.jvector}"
+            cache="${build.depcache}/jvector" closure="yes">
+    </depend>
+
+    <javac destdir="${build.jvector}"
+           debug="on"
+           optimize="false"
+           deprecation="on"
+           source="1.5"
+	   target="1.5"
+           includeAntRuntime="false">
+
+      <src path="${src.jvector}"/>
+      
+      <classpath refid="jnetcap.classpath"/>
+      <classpath refid="mvvm.thirdparty.classpath"/>
+
+      <include name="com/metavize/jvector/*.java"/>
+    </javac>
+  </target>
+
+  <target name="jni.jvector">
+    <mkdir dir="${jni.dst.jvector}"/>
+    <javah destdir="${jni.dst.jvector}" classpath="${build.jvector}">
+      <class name="com.metavize.jvector.SocketQueue"/>
+      <class name="com.metavize.jvector.OutgoingSocketQueue"/>
+      <class name="com.metavize.jvector.IncomingSocketQueue"/>
+      <class name="com.metavize.jvector.Relay"/>
+      <class name="com.metavize.jvector.Vector"/>
+      <class name="com.metavize.jvector.Sink"/>
+      <class name="com.metavize.jvector.Source"/>
+      <class name="com.metavize.jvector.TCPSink"/>
+      <class name="com.metavize.jvector.TCPSource"/>
+      <class name="com.metavize.jvector.UDPSource"/>
+      <class name="com.metavize.jvector.UDPSink"/>
+      <class name="com.metavize.jvector.SocketQueueImpl"/>
+      <class name="com.metavize.jvector.Crumb"/>
+    </javah>
+  </target>
+
+  <target name="jar.jvector" depends="compile.jvector">
+    <jar destfile="${build.jar}/jvector.jar" index="yes">
+      <fileset dir="${build.jvector}"/>
+    </jar>
+  </target>
+
+  <target name="install.jvector" depends="jar.jvector">
+    <copy file="${build.jar}/jvector.jar" todir="${dist.mvvm.lib}"/>
+  </target>
+</project>

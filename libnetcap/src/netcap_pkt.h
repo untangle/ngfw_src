@@ -1,0 +1,26 @@
+/*
+ * Copyright (c) 2003 Metavize Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Metavize Inc. ("Confidential Information").  You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id: netcap_pkt.h,v 1.1 2004/11/09 19:39:59 dmorris Exp $
+ */
+#ifndef __NETCAP_PKT_
+#define __NETCAP_PKT_
+
+#include <netinet/in.h>
+
+#include "libnetcap.h"
+
+netcap_pkt_t*  netcap_pkt_malloc (void);
+int            netcap_pkt_init   (netcap_pkt_t* pkt);
+netcap_pkt_t*  netcap_pkt_create (void);
+
+struct iphdr* netcap_pkt_get_ip_hdr ( netcap_pkt_t* pkt );
+struct tcphdr* netcap_pkt_get_tcp_hdr ( netcap_pkt_t* pkt );
+
+
+#endif

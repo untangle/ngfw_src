@@ -1,0 +1,308 @@
+<?xml version="1.0"?>
+
+<!--
+Copyright (c) 2004, 2005 Metavize Inc.
+All rights reserved.
+
+This software is the confidential and proprietary information of
+Metavize Inc. ("Confidential Information").  You shall
+not disclose such Confidential Information.
+
+$Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
+-->
+
+<project name="tran" basedir="." default="all">
+
+  <!-- Null out compile so default install won't run it This is so the
+       top will be pkg.install, which calls transforms sequentially
+       They must be sequential, because some depend on others. http
+       must be fully built before httpblocker can be built.  -->
+  <target name="compile"/>
+
+  <import file="../buildtools/buildmagic.xml"/>
+
+  <property name="transforms"
+            value="http,virus,airgap,reporting,protofilter,test,sophos,fprot,hauri,spyware,httpblocker,email"/>
+
+
+  <!--              -->
+  <!-- main targets -->
+  <!--              -->
+
+  <target name="pkg.gensrc">
+    <foreach target="xdoclet.tran" param="tran.name" inheritall="true"
+             parallel="false" list="${transforms}"/>
+  </target>
+  <target name="pkg.compile">
+    <foreach target="compile.tran" param="tran.name" inheritall="true"
+             parallel="false" list="${transforms}"/>
+  </target>
+  <target name="pkg.jar">
+    <foreach target="mar.tran" param="tran.name" inheritall="true"
+             parallel="false" list="${transforms}"/>
+  </target>
+  <target name="pkg.install">
+    <foreach target="install.tran" param="tran.name" inheritall="true"
+             parallel="false" list="${transforms}"/>
+  </target>
+
+  <target name="pkg.clean" depends="clean.nuke"/>
+
+
+  <!--              -->
+  <!-- build tran   -->
+  <!--              -->
+
+  <target name="xdoclet.tran" depends="prepare">
+
+    <mkdir dir="${build.gensrc}/${tran.name}"/>
+
+    <hibernatedoclet destdir="${build.gensrc}/${tran.name}"
+                     excludedtags="@version,@author,@todo">
+      <fileset dir="${tran.name}/${src.main}">
+        <include name="com/metavize/tran/${tran.name}/**"/>
+      </fileset>
+      <!-- XXX XDoclet needs to see mapping for superclass, blah -->
+      <fileset dir="../mvvm/main">
+        <include name="com/metavize/mvvm/logging/LogEvent.java"/>
+      </fileset>
+      <hibernate version="2.0"/>
+    </hibernatedoclet>
+
+    <mkdir dir="${build.root}/${tran.name}"/>
+
+    <jrc srcdir="${tran.name}/${src.main}" destdir="${build.root}/${tran.name}" tempdir="/tmp"
+         keepjava="true" xmlvalidation="true">
+      <include name="**/*jrxml"/>
+    </jrc>
+
+  </target>
+
+  <!--              -->
+  <!-- compile tran -->
+  <!--              -->
+
+  <target name="compile.tran">
+
+    <mkdir dir="${build.root}/${tran.name}"/>
+
+    <antcall target="compile.${tran.name}" inheritAll="true"/>
+
+    <exec executable="${buildtool.base}/dependset.sh">
+      <arg value="${build.root}/${tran.name}"/>
+      <arg value="${build.depcache}/${tran.name}.patternset"/>
+    </exec>
+
+    <depend srcdir="${tran.name}/${src.main}"
+            destdir="${build.root}/${tran.name}"
+            cache="${build.depcache}/${tran.name}" closure="yes">
+      <patternset includesfile="${build.depcache}/${tran.name}.patternset"/>
+    </depend>
+
+    <if> <equals arg1="${tran.name}" arg2="virus"/> <then>
+        <property name="extra.classes" value="../tran/output/jar/http-transform.mar"/>
+    </then> </if>
+    <if> <equals arg1="${tran.name}" arg2="sophos"/> <then>
+        <property name="extra.classes" value="../tran/output/jar/virus-transform.mar:../tran/output/jar/http-transform.mar"/>
+    </then> </if>
+    <if> <equals arg1="${tran.name}" arg2="fprot"/> <then>
+        <property name="extra.classes" value="../tran/output/jar/virus-transform.mar:../tran/output/jar/http-transform.mar"/>
+    </then> </if>
+    <if> <equals arg1="${tran.name}" arg2="hauri"/> <then>
+        <property name="extra.classes" value="../tran/output/jar/virus-transform.mar:../tran/output/jar/http-transform.mar"/>
+    </then> </if>
+    <if> <equals arg1="${tran.name}" arg2="email"/> <then>
+        <property name="extra.classes" value="../tran/output/jar/sophos-transform.mar:../tran/output/jar/fprot-transform.mar:../tran/output/jar/hauri-transform.mar"/>
+    </then> </if>
+    <if> <equals arg1="${tran.name}" arg2="spyware"/> <then>
+        <property name="extra.classes" value="../tran/output/jar/http-transform.mar"/>
+    </then> </if>
+    <if> <equals arg1="${tran.name}" arg2="httpblocker"/> <then>
+        <property name="extra.classes" value="../tran/output/jar/http-transform.mar"/>
+    </then> </if>
+
+    <javac destdir="${build.root}/${tran.name}"
+           debug="on"
+           optimize="false"
+           deprecation="on"
+           source="1.5"
+           includeAntRuntime="false">
+
+      <src path="${tran.name}/${src.main}"/>
+      <src path="${build.gensrc}/${tran.name}"/>
+
+      <classpath refid="netbeans.classpath"/>
+      <classpath refid="gui.classpath"/>
+      <classpath refid="hibernate.classpath"/>
+      <classpath refid="log4j.classpath"/>
+      <classpath refid="jfreechart.classpath"/>
+      <classpath refid="jasperreports.classpath"/>
+      <classpath refid="mvvm-client.classpath"/>
+      <classpath refid="mvvm.classpath"/>
+      <classpath path="${extra.classes}"/>
+      <classpath refid="jnlp.classpath"/>
+
+      <include name="com/metavize/tran/${tran.name}/**"/>
+    </javac>
+
+  </target>
+
+  <!--              -->
+  <!-- mar tran     -->
+  <!--              -->
+
+  <target name="mar.tran" depends="xdoclet.tran, compile.tran">
+
+    <mkdir dir="${build.root}/${tran.name}/META-INF"/>
+
+    <jar destfile="${build.jar}/${tran.name}-transform.mar" index="yes">
+      <fileset dir="${build.root}/${tran.name}"/>
+      <fileset dir="${build.gensrc}/${tran.name}"/>
+      <fileset dir="${tran.name}/${src.main}/">
+        <include name="**/*png"/>
+      </fileset>
+      <fileset dir="${tran.name}/${src.resources}/${tran.name}"/>
+    </jar>
+
+    <antcall target="jar.${tran.name}" inheritAll="true"/>
+
+  </target>
+
+  <!--              -->
+  <!-- install tran -->
+  <!--              -->
+
+  <target name="install.tran" depends="mar.tran">
+    <copy file="${build.jar}/${tran.name}-transform.mar"
+          todir="${dist.mvvm.toolbox}"/>
+    <copy file="${build.jar}/${tran.name}-transform.mar"
+          todir="${dist.mvvm.webstart}"/>
+
+    <copy todir="${build.dist}" failonerror="false">
+      <fileset dir="${tran.name}/hier"/>
+    </copy>
+
+    <antcall target="install.${tran.name}" inheritAll="true"/>
+
+    <signjar jar="${dist.mvvm.webstart}/${tran.name}-transform.mar"
+          keystore="../gui/keystore" alias="software key"
+          storepass="WbDP5uz\N" />
+  </target>
+
+  <!--              -->
+  <!-- custom       -->
+  <!--              -->
+
+  <target name="install.test"/>
+  <target name="install.spyware"/>
+  <target name="install.http"/>
+  <target name="install.virus"/>
+
+  <target name="install.sophos">
+    <copy todir="${dist.mvvm.schema}/sophos-transform">
+      <fileset dir="virus/hier/${suffix.mvvm.schema}/virus-transform"/>
+    </copy>
+  </target>
+
+  <target name="install.fprot">
+    <copy todir="${dist.mvvm.schema}/fprot-transform">
+      <fileset dir="virus/hier/${suffix.mvvm.schema}/virus-transform"/>
+    </copy>
+  </target>
+
+  <target name="install.hauri">
+    <copy todir="${dist.mvvm.schema}/hauri-transform">
+      <fileset dir="virus/hier/${suffix.mvvm.schema}/virus-transform"/>
+    </copy>
+  </target>
+
+  <target name="install.httpblocker"/>
+  <target name="install.airgap"/>
+  <target name="install.reporting"/>
+  <target name="install.email"/>
+  <target name="install.protofilter"/>
+
+  <!--              -->
+  <!-- custom       -->
+  <!--              -->
+
+  <target name="jar.test"/>
+  <target name="jar.spyware"/>
+  <target name="jar.http"/>
+  <target name="jar.virus"/>
+  <target name="jar.httpblocker"/>
+  <target name="jar.protofilter"/>
+  <target name="jar.airgap"/>
+  <target name="jar.reporting"/>
+  <target name="jar.email"> <!-- include Sophos, Fprot, and Hauri Scanners -->
+    <jar destfile="${build.jar}/${tran.name}-transform.mar" index="yes"
+         update="true">
+      <fileset dir="${build.root}/sophos"/>
+      <fileset dir="sophos/${src.main}">
+        <include name="**/*png"/>
+      </fileset>
+      <fileset dir="${build.root}/fprot"/>
+      <fileset dir="fprot/${src.main}">
+        <include name="**/*png"/>
+      </fileset>
+      <fileset dir="${build.root}/hauri"/>
+      <fileset dir="hauri/${src.main}">
+        <include name="**/*png"/>
+      </fileset>
+      <fileset dir="${build.root}/virus"/>
+    </jar>
+  </target>
+  <target name="jar.sophos"> <!-- include Virus Abstract transform -->
+    <jar destfile="${build.jar}/${tran.name}-transform.mar" index="yes"
+         update="true">
+      <fileset dir="${build.root}/virus"/>
+      <fileset dir="${build.gensrc}/virus"/>
+    </jar>
+  </target>
+  <target name="jar.fprot"> <!-- include Virus Abstract transform -->
+    <jar destfile="${build.jar}/${tran.name}-transform.mar" index="yes"
+         update="true">
+      <fileset dir="${build.root}/virus"/>
+      <fileset dir="${build.gensrc}/virus"/>
+    </jar>
+  </target>
+  <target name="jar.hauri"> <!-- include Virus Abstract transform -->
+    <jar destfile="${build.jar}/${tran.name}-transform.mar" index="yes"
+         update="true">
+      <fileset dir="${build.root}/virus"/>
+      <fileset dir="${build.gensrc}/virus"/>
+    </jar>
+  </target>
+
+  <target name="compile.test"/>
+  <target name="compile.spyware"/>
+  <target name="compile.http"/>
+  <target name="compile.virus"/>
+  <target name="compile.sophos"/>
+  <target name="compile.fprot"/>
+  <target name="compile.hauri"/>
+  <target name="compile.httpblocker"/>
+  <target name="compile.airgap"/>
+  <target name="compile.reporting"/>
+  <target name="compile.email"/>
+  <target name="compile.protofilter">     <!-- build LoadPatterns.java -->
+    <!-- map all files to LoadPatterns.java, if any are newer, run mkLoadPatterns.sh -->
+    <fileset id="pat.fileset" dir="./protofilter/pattern-build/"
+             includes="**/*.pat,**/*.java,mkLoadPatterns.sh">
+      <depend targetdir="protofilter/main/com/metavize/tran/protofilter/">
+        <mapper type="merge" to="LoadPatterns.java"/>
+      </depend>
+    </fileset>
+    <pathconvert pathsep=" " refid="pat.fileset" property="patList"/>
+    <if>
+      <not><equals arg1="${patList}" arg2="" /></not>
+      <then>
+        <exec executable="/bin/sh" failonerror="true">
+          <arg value="-c"/>
+          <arg value="./protofilter/pattern-build/mkLoadPatterns.sh"/>
+        </exec>
+      </then>
+    </if>
+  </target>
+
+</project>

@@ -1,0 +1,9 @@
+Make sure that you preload libsig before running this code, this replaces all of the signal handling methods so that they work properly with java:
+
+EG:
+export LD_PRELOAD=/opt/j2sdk1.4.2_05/jre/lib/i386/libjsig.so
+java com.metavize.jnetcap.Test Subscribe
+
+Also, jrockit doesn't work properly because it uses the signal USR1 to start and stop the threads.  The system calls are not a fan of this kind of behavior, and so sun it is, for now at least.
+
+1. Inserted into /jnetcap/ in order to figure out how to test.

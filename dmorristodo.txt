@@ -1,0 +1,2 @@
+make /usr/share/java/reporting with jasper thirdparty jars.
+split mar and transform jar

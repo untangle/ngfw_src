@@ -1,0 +1,4 @@
+
+for nonlocal binding you MUST do this first
+echo 1 > /proc/sys/net/ipv4/ip_nonlocal_bind
+echo 1 > /proc/sys/net/ipv4/ip_forward

@@ -1,0 +1,57 @@
+
+1) What's what?
+
+	doc/        - the man files and other documentation
+	debian/     - stuff for building debian packages
+	include/    - the include stuff that will be installed
+	lib/        - the build directory
+	src/        - the source
+	test/       - testing / sample applications
+	patches/    - kernel patches to support libnetcap
+	iptables-1.2.9    - modified iptables to support bitmark match
+	                    extensions required for libnetcap
+
+2) Overview
+	
+	Libnetcap is a library that "captures" connections.
+	It captures a connection in the sense that it will insert itself as a man-in-the-middle
+	and it will create two sockets (one for the client, one for the server)
+	and it passes these up to the application
+
+
+3) How it works?
+
+	To create a proxy you create a list of traffic descriptions you wish to intercept
+	(currently the selectors are: input device, output device, source, destination, source port
+	 destination port, and protocol)
+
+	it redirects traffic with firewall redirect rules
+	libnetcap has an abstract concept of a redirect 
+	the actualy details of each redirect will differ a lot between systems
+	you must remember to remove redirects before exitting
+	(or you can just flush them by hand if you wish)
+
+
+4) Currently supported architectures
+	
+	Linux 2.4+ with iptables
+	hopefully BSD will be coming soon
+
+5) needed packages to build
+	fakeroot
+	debhelper
+	iptables
+	kernel patches
+	libssl-dev (for test)
+
+6) Notes for iptables
+	libnetcap requires an iptable extenstion, bitmark match, to add
+	--bitexact <value>/<mask>, --anyone <mask>, and --anyzed <mask>
+	matches. The required kernel enhancements are incorporated in the
+	kernel patches dated 091204 and after. To enhance iptables, copy
+	libipt_bitmark.*o to /usr/local/lib/iptables.
+
+
+
+
+	

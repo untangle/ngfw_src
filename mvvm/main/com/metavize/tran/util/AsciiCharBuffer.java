@@ -1,0 +1,259 @@
+/*
+ * Copyright (c) 2004 Metavize Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Metavize Inc. ("Confidential Information").  You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id: AsciiCharBuffer.java,v 1.1.1.1 2004/12/01 23:32:23 amread Exp $
+ */
+
+package com.metavize.tran.util;
+
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.ReadOnlyBufferException;
+
+public class AsciiCharBuffer implements CharSequence
+{
+    private ByteBuffer bb;
+    private boolean readOnly;
+
+    private AsciiCharBuffer(ByteBuffer bb, boolean readOnly)
+    {
+        this.bb = bb;
+    }
+
+    public static AsciiCharBuffer wrap(ByteBuffer bb)
+    {
+        return new AsciiCharBuffer(bb.duplicate(), false);
+    }
+
+    public ByteBuffer getWrappedBuffer()
+    {
+        return bb;
+    }
+
+    public AsciiCharBuffer asReadOnlyBuffer()
+    {
+        return new AsciiCharBuffer(bb.duplicate(), true);
+    }
+
+    public int capacity()
+    {
+        return bb.capacity();
+    }
+
+    public char charAt(int i)
+    {
+        return (char)bb.get(bb.position() + i);
+    }
+
+    public AsciiCharBuffer clear()
+    {
+        bb.clear();
+        return this;
+    }
+
+    public AsciiCharBuffer compact()
+    {
+        bb.compact();
+        return this;
+    }
+
+    public int compareTo(Object o)
+    {
+        AsciiCharBuffer cb = (AsciiCharBuffer)o;
+        return bb.compareTo(cb.bb);
+    }
+
+    public AsciiCharBuffer duplicate()
+    {
+        return new AsciiCharBuffer(bb.duplicate(), false);
+    }
+
+    public boolean equals(Object o)
+    {
+        if (!(o instanceof AsciiCharBuffer)) {
+            return false;
+        }
+        AsciiCharBuffer cb = (AsciiCharBuffer)o;
+
+        return bb.equals(cb.bb);
+    }
+
+    public AsciiCharBuffer flip()
+    {
+        bb.flip();
+        return this;
+    }
+
+    public char get()
+    {
+        return (char)bb.get();
+    }
+
+    public AsciiCharBuffer get(char[] dst)
+    {
+        return get(dst, 0, dst.length);
+    }
+
+    public AsciiCharBuffer get(char[] dst, int off, int l)
+    {
+        for (int i = off; i < off + l; i++) {
+            dst[i] = (char)bb.get();
+        }
+
+        return this;
+    }
+
+    public char get(int i)
+    {
+        return (char)bb.get(i);
+    }
+
+    public boolean hasArray()
+    {
+        return false;
+    }
+
+    public boolean hasRemaining()
+    {
+        return bb.hasRemaining();
+    }
+
+    public int hashCode()
+    {
+        return bb.hashCode();
+    }
+
+    public boolean isDirect()
+    {
+        return false;
+    }
+
+    public boolean isReadOnly()
+    {
+        return bb.isReadOnly();
+    }
+
+    public int length()
+    {
+        return bb.remaining();
+    }
+
+    public int limit()
+    {
+        return bb.limit();
+    }
+
+    public AsciiCharBuffer limit(int limit)
+    {
+        bb.limit(limit);
+        return this;
+    }
+
+    public AsciiCharBuffer mark()
+    {
+        bb.mark();
+        return this;
+    }
+
+    public ByteOrder order()
+    {
+        return bb.order();
+    }
+
+    public int position()
+    {
+        return bb.position();
+    }
+
+    public AsciiCharBuffer position(int np)
+    {
+        bb.position(np);
+        return this;
+    }
+
+    public AsciiCharBuffer put(char c)
+    {
+        if (readOnly) { new ReadOnlyBufferException(); }
+        bb.put((byte)c);
+        return this;
+    }
+
+    public AsciiCharBuffer put(int i, char c)
+    {
+        bb.put(i, (byte)c);
+        return this;
+    }
+
+    public AsciiCharBuffer put(char[] src, int off, int l)
+    {
+        if (readOnly) { new ReadOnlyBufferException(); }
+        for (int i = off; i < off + l; i++) {
+            bb.put((byte)src[i]);
+        }
+        return this;
+    }
+
+    public AsciiCharBuffer put(char[] src)
+    {
+        if (readOnly) { new ReadOnlyBufferException(); }
+        return put(src, 0, src.length);
+    }
+
+    public AsciiCharBuffer put(String src, int s, int e)
+    {
+        if (readOnly) { new ReadOnlyBufferException(); }
+        for (int i = s; i < s + e; i++) {
+            bb.put((byte)src.charAt(i));
+        }
+        return this;
+    }
+
+    public AsciiCharBuffer put(String src)
+    {
+        if (readOnly) { new ReadOnlyBufferException(); }
+        return put(src, 0, src.length());
+    }
+
+    public AsciiCharBuffer slice()
+    {
+        return new AsciiCharBuffer(bb.slice(), false);
+    }
+
+    public CharSequence subSequence(int s, int e)
+    {
+        ByteBuffer dup = bb.duplicate();
+        dup.position(bb.position() + s);
+        dup.limit(bb.position() + e);
+        return new AsciiCharBuffer(dup, false);
+    }
+
+    public int remaining()
+    {
+        return bb.remaining();
+    }
+
+    public AsciiCharBuffer reset()
+    {
+        bb.reset();
+        return this;
+    }
+
+    public AsciiCharBuffer rewind()
+    {
+        bb.rewind();
+        return this;
+    }
+
+    public String toString()
+    {
+        ByteBuffer dup = bb.duplicate();
+        byte[] sb = new byte[dup.remaining()];
+        dup.get(sb);
+        return new String(sb);
+    }
+}

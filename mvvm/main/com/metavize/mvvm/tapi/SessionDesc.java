@@ -1,0 +1,32 @@
+/*
+ * Copyright (c) 2004, 2005 Metavize Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Metavize Inc. ("Confidential Information").  You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id: SessionDesc.java,v 1.5 2005/01/06 02:39:41 jdi Exp $
+ */
+
+package com.metavize.mvvm.tapi;
+
+public interface SessionDesc {
+
+    /**
+     * <code>id</code> returns the session's unique identifier, a positive integer >= 1.
+     * All sessions have a unique id assigned by Argon.  This will eventually, of course,
+     * wrap around.  This will take long enough, and any super-long-lived sessions that
+     * get wrapped to will not be duplicated, so the rollover is ok.
+     *
+     * @return an <code>int</code> giving the unique ID of the session.
+     */
+    int id();
+
+    /**
+     * The <code>stats</code> method returns statistics for this session.
+     *
+     * @return a <code>SessionStats</code> giving the current statistics for this session
+     */
+    SessionStats stats();
+}

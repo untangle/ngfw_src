@@ -1,0 +1,8 @@
+usr/share/metavize/toolbox
+usr/share/metavize/web
+usr/share/metavize/web/ROOT
+usr/share/metavize/web/webstart
+usr/share/metavize/web/session-dumper
+var/log/mvvm
+var/lib/mvvm
+

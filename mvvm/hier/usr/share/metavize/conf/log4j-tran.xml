@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<!-- ===================================================================== -->
+<!--                                                                       -->
+<!--  Log4j Configuration for MVVM                                         -->
+<!--                                                                       -->
+<!--     Configuration of all mvvm loggers lives here.                     -->
+<!--                                                                       -->
+<!-- ===================================================================== -->
+
+<!-- $Id: log4j-tran.xml,v 1.15 2005/03/15 23:55:05 jdi Exp $ -->
+
+<!--
+   | For more configuration infromation and examples see the Jakarta Log4j
+   | website: http://jakarta.apache.org/log4j
+ -->
+
+
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" debug="false">
+
+  <appender name="TranLog" class="org.apache.log4j.RollingFileAppender">
+    <param name="File" value="${bunnicula.home}/log/@TranLogFileName@.log"/>
+    <param name="Append" value="true"/>
+    <param name="MaxFileSize" value="5000KB"/>
+    <param name="MaxBackupIndex" value="9"/>
+    <param name="Threshold" value="ALL"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{ABSOLUTE} %-5p [%c{1}] %m%n"/>
+    </layout>
+  </appender>
+
+  <!-- #      DEBUG           new session debugging -->
+  <!-- #      INFO            each new session -->
+  <!-- #      WARN            exceptions -->
+  <category name="com.metavize.mvvm.tapi.MPipe">
+    <priority value="WARN"/>
+  </category>
+
+  <category name="com.metavize.mvvm.tapi.Dispatcher">
+    <priority value="WARN"/>
+  </category>
+
+  <!-- # Session Event messages: all events delivered to transform, logged just before delivery -->
+  <!-- # from the delivery/execution thread. -->
+  <!-- #      DEBUG          Data events -->
+  <!-- #      INFO           shutdown, close, other session events. -->
+  <!-- #      WARN           New session, new session request events -->
+  <category name="com.metavize.mvvm.tapi.SessionEvent">
+    <!-- No logging by default -->
+    <priority value="ERROR"/>
+  </category>
+
+  <!-- # Internal Session messages, -->
+  <!-- #      DEBUG           session read/write state change, read/write statistics -->
+  <!-- #      INFO            (currently same as WARN) -->
+  <!-- #      WARN             exceptions or unusual conditions  -->
+  <category name="com.metavize.mvvm.tapi.Session">
+    <priority value="WARN"/>
+  </category>
+
+  <category name="com.metavize.mvvm.tapi.TCPSession">
+    <priority value="WARN"/>
+  </category>
+
+  <category name="com.metavize.mvvm.tapi.UDPSession">
+    <priority value="WARN"/>
+  </category>
+
+  <category name="com.metavize.mvvm.tapi.SessionTimes">
+    <priority value="WARN"/>
+  </category>
+
+  <category name="com.metavize.tran.virus">
+    <priority value="WARN"/>
+  </category>
+
+  <category name="com.metavize.tran.protofilter">
+    <priority value="WARN"/>
+  </category>
+
+  <category name="com.metavize.tran.spyware">
+    <priority value="WARN"/>
+  </category>
+
+  <category name="com.metavize.mvvm.tran">
+    <priority value="WARN"/>
+  </category>
+
+  <category name="com.metavize.tran">
+    <priority value="WARN"/>
+  </category>
+
+  <category name="net.sf.hibernate">
+    <priority value="WARN"/>
+  </category>
+
+  <!-- ======================= -->
+  <!-- Setup the Root category -->
+  <!-- ======================= -->
+
+  <!-- All Transform logs go to individual transform log files -->
+  <root>
+    <priority value="WARN"/>
+    <appender-ref ref="TranLog"/>
+  </root>
+</log4j:configuration>

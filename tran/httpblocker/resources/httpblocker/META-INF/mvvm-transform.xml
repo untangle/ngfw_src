@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+Copyright (c) 2004, 2005 Metavize Inc.
+All rights reserved.
+
+This software is the confidential and proprietary information of
+Metavize Inc. ("Confidential Information").  You shall
+not disclose such Confidential Information.
+
+$Id: mvvm-transform.xml,v 1.6 2005/02/24 02:53:06 amread Exp $
+-->
+
+<mvvm-transform>
+  <transform-desc name="httpblocker-transform"
+                  parent-transform="http-transform"
+                  display-name="Web Content Control"
+                  classname="com.metavize.tran.httpblocker.HttpBlockerImpl"
+                  gui-classname="com.metavize.tran.httpblocker.gui.MTransformJPanel"/>
+</mvvm-transform>

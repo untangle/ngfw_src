@@ -1,0 +1,40 @@
+# Change this as necessary to build into a location other than /space/build
+
+# This should be in your environment:
+#   BUILD_ROOT=~/build
+
+# Change this as necessary when XMLDiff is somewhere else. (Note: only used for testing)
+XMLDIFF_HOME=/opt/xmldiff
+
+# You shouldn't need to change anything past here.
+
+ANTCONTRIB_HOME=../../downloads/ant-contrib-0.6
+ANTCPPTASKS_HOME=../../downloads/cpptasks-1.0b1
+ANT_HOME=../../downloads/apache-ant-1.6.0
+CONCURRENT_HOME=../../downloads/concurrent-1.3.4
+DERBY_HOME=../../downloads/incubating-derby-10.0.2.1-lib
+HIBERNATE_EXT_HOME=../../downloads/hibernate-extensions-2.1.3
+HIBERNATE_HOME=../../downloads/hibernate-2.1.8
+ITEXT_HOME=../../downloads/itext-1.2
+JAF_HOME=../../downloads/jaf-1.0.2
+JASPER_REPORTS_HOME=../../downloads/jasperreports-0.6.4
+JAVAMAIL_HOME=../../downloads/javamail-1.3.1
+JAVASSIST_HOME=../../downloads/javassist-3.0RC1
+JFREECHART_HOME=../../downloads/jfreechart-0.9.21
+JNLP_HOME=../../downloads/jnlp
+JSS_HOME=../../downloads/jss-3.4
+JUNIT_HOME=../../downloads/junit3.8.1
+KUNSTSTOFF_HOME=../../downloads/kunststoff-2_0_1
+LOG4J_HOME=../../downloads/logging-log4j-1.2.9
+TOMCAT_EMBED_HOME=../../downloads/jakarta-tomcat-5.0.28-embed
+TROVE_HOME=../../downloads/trove
+POSTGRES_HOME=../../downloads/postgres-jdbc-7.4_215
+XDOCLET_HOME=../../downloads/xdoclet-lib-1.2.2
+NETBEANS_HOME=../../downloads/netbeans-3.5
+
+# XXX soon obsolete
+JAVASSIST_HOME=../../downloads/javassist-3.0RC1
+JXPATH_HOME=../../downloads/commons-jxpath-1.1
+
+# ANT_OPTS="-DIVB_HOME=\"${XMLDIFFHOME}\""
+# export LD_LIBRARY_PATH=../../downloads/jss-3.4:4:../../downloads/nss-3.6/lib

@@ -1,0 +1,327 @@
+/*
+ * Copyright (c) 2005 Metavize Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Metavize Inc. ("Confidential Information").  You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id: VirusSettings.java,v 1.9 2005/02/25 02:45:28 amread Exp $
+ */
+
+package com.metavize.tran.virus;
+
+import java.io.Serializable;
+import java.util.List;
+
+import com.metavize.mvvm.security.Tid;
+
+/**
+ * Settings for the VirusTransform.
+ *
+ * @author <a href="mailto:amread@nyx.net">Aaron Read</a>
+ * @version 1.0
+ * @hibernate.class
+ * table="TR_VIRUS_SETTINGS"
+ */
+public class VirusSettings implements Serializable
+{
+    private static final long serialVersionUID = -7246008133224046834L;
+
+    private Long id;
+    private Tid tid;
+    private boolean ftpDisableResume = true;
+    private boolean httpDisableResume = true;
+    private int tricklePercent = 50;
+    private String ftpDisableResumeDetails = "no description";
+    private String httpDisableResumeDetails = "no description";
+    private String tricklePercentDetails = "no description";
+    private VirusConfig httpInbound;
+    private VirusConfig httpOutbound;
+    private VirusConfig ftpInbound;
+    private VirusConfig ftpOutbound;
+    private List httpMimeTypes;
+    private List extensions;
+
+    // constructors -----------------------------------------------------------
+
+    /**
+     * Hibernate constructor.
+     */
+    public VirusSettings() { }
+
+    public VirusSettings(Tid tid)
+    {
+        this.tid = tid;
+    }
+
+    // accessors --------------------------------------------------------------
+
+    /**
+     * @hibernate.id
+     * column="SETTINGS_ID"
+     * generator-class="native"
+     */
+    private Long getId()
+    {
+        return id;
+    }
+
+    private void setId(Long id)
+    {
+        this.id = id;
+    }
+
+    /**
+     * Transform id for these settings.
+     *
+     * @return tid for these settings
+     * @hibernate.many-to-one
+     * column="TID"
+     * unique="true"
+     * not-null="true"
+     */
+    public Tid getTid()
+    {
+        return tid;
+    }
+
+    public void setTid(Tid tid)
+    {
+        this.tid = tid;
+    }
+
+    /**
+     * Disable resume of FTP download.
+     *
+     * @return true if FTP resume is disabled.
+     * @hibernate.property
+     * column="DISABLE_FTP_RESUME"
+     */
+    public boolean getFtpDisableResume()
+    {
+        return ftpDisableResume;
+    }
+
+    public void setFtpDisableResume(boolean ftpDisableResume)
+    {
+        this.ftpDisableResume = ftpDisableResume;
+    }
+
+
+    /**
+     * Disable resume of HTTP download.
+     *
+     * @return true if HTTP resume is disabled.
+     * @hibernate.property
+     * column="DISABLE_HTTP_RESUME"
+     */
+    public boolean getHttpDisableResume()
+    {
+        return httpDisableResume;
+    }
+
+    public void setHttpDisableResume(boolean httpDisableResume)
+    {
+        this.httpDisableResume = httpDisableResume;
+    }
+
+    /**
+     * The trickle rate.
+     *
+     * @return the trickle rate, between 0 and 100.
+     * @hibernate.property
+     * column="TRICKLE_PERCENT"
+     */
+    public int getTricklePercent()
+    {
+        return tricklePercent;
+    }
+
+    public void setTricklePercent(int tricklePercent)
+    {
+        if (0 > tricklePercent || 100 < tricklePercent) {
+            throw new IllegalArgumentException("bad trickle rate: "
+                                               + tricklePercent);
+        }
+
+        this.tricklePercent = tricklePercent;
+    }
+
+    /**
+     * XXX what is this for?
+     *
+     * @return XXX
+     * @hibernate.property
+     * column="FTP_DISABLE_RESUME_DETAILS"
+     */
+    public String getFtpDisableResumeDetails()
+    {
+        return ftpDisableResumeDetails;
+    }
+
+    public void setFtpDisableResumeDetails(String ftpDisableResumeDetails)
+    {
+        this.ftpDisableResumeDetails = ftpDisableResumeDetails;
+    }
+
+    /**
+     * XXX what is this for?
+     *
+     * @return XXX
+     * @hibernate.property
+     * column="HTTP_DISABLE_RESUME_DETAILS"
+     */
+    public String getHttpDisableResumeDetails()
+    {
+        return httpDisableResumeDetails;
+    }
+
+    public void setHttpDisableResumeDetails(String httpDisableResumeDetails)
+    {
+        this.httpDisableResumeDetails = httpDisableResumeDetails;
+    }
+
+    /**
+     * XXX what is this for?
+     *
+     * @return XXX
+     * @hibernate.property
+     * column="TRICKLE_PERCENT_DETAILS"
+     */
+    public String getTricklePercentDetails()
+    {
+        return tricklePercentDetails;
+    }
+
+    public void setTricklePercentDetails(String tricklePercentDetails)
+    {
+        this.tricklePercentDetails = tricklePercentDetails;
+    }
+
+    /**
+     * Inbound HTTP virus settings.
+     *
+     * @return inbound HTTP settings.
+     * @hibernate.many-to-one
+     * column="HTTP_INBOUND"
+     * cascade="all"
+     * not-null="true"
+     */
+    public VirusConfig getHttpInbound()
+    {
+        return httpInbound;
+    }
+
+    public void setHttpInbound(VirusConfig httpInbound)
+    {
+        this.httpInbound = httpInbound;
+    }
+
+    /**
+     * Outbound HTTP virus settings.
+     *
+     * @return outbound HTTP settings.
+     * @hibernate.many-to-one
+     * column="HTTP_OUTBOUND"
+     * cascade="all"
+     * not-null="true"
+     */
+    public VirusConfig getHttpOutbound()
+    {
+        return httpOutbound;
+    }
+
+    public void setHttpOutbound(VirusConfig httpOutbound)
+    {
+        this.httpOutbound = httpOutbound;
+    }
+
+    /**
+     * Inbound FTP virus settings.
+     *
+     * @return inbound FTP settings.
+     * @hibernate.many-to-one
+     * column="FTP_INBOUND"
+     * cascade="all"
+     * not-null="true"
+     */
+    public VirusConfig getFtpInbound()
+    {
+        return ftpInbound;
+    }
+
+    public void setFtpInbound(VirusConfig ftpInbound)
+    {
+        this.ftpInbound = ftpInbound;
+    }
+
+    /**
+     * Outbound FTP virus settings.
+     *
+     * @return outbound FTP settings.
+     * @hibernate.many-to-one
+     * column="FTP_OUTBOUND"
+     * cascade="all"
+     * not-null="true"
+     */
+    public VirusConfig getFtpOutbound()
+    {
+        return ftpOutbound;
+    }
+
+    public void setFtpOutbound(VirusConfig ftpOutbound)
+    {
+        this.ftpOutbound = ftpOutbound;
+    }
+
+    /**
+     * Set of scanned mime types
+     *
+     * @return the list of scanned mime types.
+     * @hibernate.list
+     * cascade="all-delete-orphan"
+     * table="TR_VIRUS_VS_MT"
+     * @hibernate.collection-key
+     * column="SETTINGS_ID"
+     * @hibernate.collection-index
+     * column="POSITION"
+     * @hibernate.collection-many-to-many
+     * class="com.metavize.mvvm.tran.MimeTypeRule"
+     * column="RULE_ID"
+     */
+    public List getHttpMimeTypes()
+    {
+        return httpMimeTypes;
+    }
+
+    public void setHttpMimeTypes(List httpMimeTypes)
+    {
+        this.httpMimeTypes = httpMimeTypes;
+    }
+
+    /**
+     * Extensions to be scanned.
+     *
+     * @return the set of scanned extensions.
+     * @hibernate.list
+     * cascade="all-delete-orphan"
+     * table="TR_VIRUS_VS_EXT"
+     * @hibernate.collection-key
+     * column="SETTINGS_ID"
+     * @hibernate.collection-index
+     * column="POSITION"
+     * @hibernate.collection-many-to-many
+     * class="com.metavize.mvvm.tran.StringRule"
+     * column="RULE_ID"
+     */
+    public List getExtensions()
+    {
+        return extensions;
+    }
+
+    public void setExtensions(List extensions)
+    {
+        this.extensions = extensions;
+    }
+}

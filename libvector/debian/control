@@ -1,0 +1,11 @@
+Source: libvector
+Section: devel
+Priority: optional
+Maintainer: Dirk Morris <dmorris@metavize.com>
+Standards-Version: 3.2.1
+Build-Depends: libc6-dev (>= 2.2.5-6)
+
+Package: libvector
+Architecture: any
+Depends: libc6 (>= 2.2.5-6)
+Description:  Metavize's Vectoring library

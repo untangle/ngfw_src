@@ -1,0 +1,13 @@
+TODO:
+ht_remove (does it remove dups?)
+
+DONE:
+
+mvpoll key's need to unregister from mvpoll upon razeing
+add ht_get_elem_list 
+add ht_get_key_list 
+add util_thread (uthread)
+global init
+add dup function to list
+have ht_get_bucket list return list dup
+add hash_num_entries() function

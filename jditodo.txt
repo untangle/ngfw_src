@@ -1,0 +1,28 @@
+dirk's laundry
+
+returning readbuf isn't right wrt read limit
+
+killSession() (TCP and UDP) broken when exception occurs in handler (eg: blocker null pointer)
+
+script list for dirk
+    init.d/bunnicula stale pid problem
+
+    sudo for running bunnicula in devel mode
+
+    flushing of iptables rules from xenon wrapper to bunnicula wrapper
+
+    adding of settability of:
+        TCP windowing
+        what other parameters?
+
+add reset handling to transforms, remove close handling
+
+remove console.log
+
+remove Transform.preStart
+
+fix argon to use singletons
+
+test killExistingSessions() shutdown
+
+test to make sure session state is updated at appropriate time (for closing/shutdown)

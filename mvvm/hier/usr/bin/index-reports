@@ -1,0 +1,89 @@
+#!/bin/sh
+
+main_index=@MVVM_WEB@/reports/index.html
+
+
+
+update_transform ()
+{
+    ls $1/*-daily.html >/dev/null 2>&1 || return
+
+    tran_dir=$1
+    tran_name=$(cat $tran_dir/name)
+    rel_dir=$(echo $1 | sed -e 's/^\(.*\/reports\)/./')
+
+    echo "processing report: $tran_name"
+
+    cat >>$main_index <<EOF
+<tr><td colspan="2"><b>$tran_name</b></td></tr>
+EOF
+
+cat $tran_dir/report-files | while read line; do
+    base_name=$(echo $line | cut -d: -f2)
+    rep_name=$(echo $line | cut -d: -f3-)
+    if [ xsummarizer != "x$base_name" ]; then
+        cat >>$main_index <<EOF
+<tr>
+<td>$rep_name: </td>
+<td>daily (<a href="$rel_dir/$base_name-daily.html">HTML</a> | <a href="$rel_dir/$base_name-daily.pdf">PDF</a>) </td>
+<td>weekly (<a href="$rel_dir/$base_name-weekly.html">HTML</a> | <a href="$rel_dir/$base_name-weekly.pdf">PDF</a>) </td>
+</tr>
+EOF
+    fi
+done
+
+}
+
+mkdir -p @MVVM_WEB@/reports
+cd @MVVM_WEB@/reports
+
+cat >$main_index <<EOF
+<html>
+<head><title>Metavize EdgeGuard Reports (beta)</title></head>
+<body>
+<table><tr>
+<td><img src="LogoNoText64x64.gif"/></td>
+<td><b>Metavize EdgeGuard Reports</b></td>
+</tr></table>
+<p/>
+EOF
+
+if [ ! -f summarization-daily.html ]; then
+    cat >>$main_index <<EOF
+<i>No reports are available, please check back tomorrow morning.</i>
+</body>
+</html>
+EOF
+    exit
+fi
+
+cat >>$main_index <<EOF
+<table cellspacing="5">
+EOF
+
+echo "processing general summary"
+cat >>$main_index <<EOF
+<tr><td colspan="2"><b>General Summary</b></td></tr>
+EOF
+
+cat >>$main_index <<EOF
+<tr>
+<td></td>
+<td>daily (<a href="summarization-daily.html">HTML</a>)</td>
+<td>weekly (<a href="summarization-weekly.html">HTML</a>)</td>
+</tr>
+<p>
+EOF
+
+for f in @MVVM_REPORTS@/*; do
+    if [ -d $f ]; then
+        update_transform $f
+    fi
+done
+
+cat >>$main_index <<EOF
+</table>
+</body>
+</html>
+EOF
+

@@ -1,0 +1,278 @@
+/*
+ * Copyright (c) 2003 Metavize Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Metavize Inc. ("Confidential Information").  You shall
+ * not disclose such Confidential Information.
+ *
+ *  $Id: IPTraffic.java,v 1.8 2005/03/09 07:00:10 rbscott Exp $
+ */
+
+package com.metavize.jnetcap;
+
+import java.net.InetAddress;
+import java.net.Inet4Address;
+
+/* XXX This is not a good name */
+/* This should probably be more generic, but it doesn't exactly apply for TCP, it is mainly only
+ * for ICMP and UDP.  TCP packets died above netcap when we stopped catching SYN/ACKS *
+ * All of the methods apply for TCP except for the send method which should only be for UDP traffic
+ * objects */
+/* XXX Could potentially be abstract */
+public class IPTraffic {
+    /**
+     * The items with this bit are lockable, meaning once the lock flag is set
+     * you are no longer able to modify these values
+     */
+    private static final int LOCKABLE_MASK  = 0x4000;
+    private static final int FLAG_HOST      = 0x001 | LOCKABLE_MASK;
+    private static final int FLAG_PORT      = 0x002 | LOCKABLE_MASK;
+    private static final int FLAG_INTERFACE = 0x003 | LOCKABLE_MASK;
+    private static final int FLAG_TTL       = 0x004;
+    private static final int FLAG_TOS       = 0x005;
+    private static final int FLAG_MARK_EN   = 0x006 | LOCKABLE_MASK;
+    private static final int FLAG_MARK      = 0x007 | LOCKABLE_MASK;
+    private static final int FLAG_MASK      = 0x0FF | LOCKABLE_MASK;
+    
+    private static final int FLAG_SRC       = 0x100;
+    private static final int FLAG_SRC_MASK  = 0x100;
+
+    private final MutableEndpoint src;
+    private final MutableEndpoint dst;
+
+    /**
+     * A lock on values that shouldn't be mutable after a certain point.</p>
+     * For instance, you cannot modify the destination IP of a UDP session once the session
+     * has started */
+    protected boolean locked = false;
+    
+    /* Pointer to the netcap_pkt_t structure in netcap */
+    protected CPointer pointer;
+    
+    private IPTraffic()
+    {
+        this.src = new IPTrafficEndpoint( true );
+        this.dst = new IPTrafficEndpoint( false );
+    }
+
+    public IPTraffic( InetAddress src, int srcPort, InetAddress dst, int dstPort ) 
+    {
+        this();
+
+        /* Create a new destination with the other parameters set to their defaults */
+        pointer = new CPointer ( createIPTraffic( Inet4AddressConverter.toLong( src ), srcPort,
+                                                  Inet4AddressConverter.toLong( dst ), dstPort ));
+    }
+
+    public IPTraffic( Endpoints endpoints ) 
+    {
+        this( endpoints.client().host(), endpoints.client().port(), 
+              endpoints.server().host(), endpoints.server().port());
+    }
+
+    /**
+     * Create a new IPTraffic with the endpoints with the option of
+     * swapping the client and server endpoint.
+     * @param endpoints - src and destination.  (client is src, server is dst)
+     * @param swapped - whether or not to swap the endpoints.
+     */
+    public static IPTraffic makeSwapped( Endpoints endpoints )
+    {
+        return new IPTraffic( endpoints.server().host(), endpoints.server().port(), 
+                              endpoints.client().host(), endpoints.client().port());        
+    }
+
+    protected IPTraffic( CPointer pointer ) 
+    {
+        this();
+        this.pointer = pointer;
+    }
+
+    public long pointer() { return pointer.value(); }
+
+    public MutableEndpoint src() 
+    { 
+        return src;
+    }
+
+    public MutableEndpoint dst() 
+    { 
+        return dst;
+    }
+
+    /* XXX Create helper get methods that do error checking */
+    public byte ttl() 
+    {
+        return (byte)getIntValue( FLAG_TTL );
+    }
+
+    public byte tos() 
+    {
+        return (byte)getIntValue( FLAG_TOS );
+    }
+
+
+    public boolean isMarkEnabled()
+    {
+        return ( getIntValue( FLAG_MARK_EN ) == 0 ) ? false : true;
+    }
+
+    public int mark()
+    {
+        return getIntValue( FLAG_MARK );
+    }
+
+    public void ttl( byte value )
+    { 
+        setIntValue( FLAG_TTL, (int)value );
+    }
+    
+    public void tos( byte value )
+    {
+        setIntValue( FLAG_TOS, (int)value );
+    }
+
+    public void isMarkEnabled( boolean isEnabled )
+    {
+        int value = ( isEnabled ) ? 1 : 0;
+        setIntValue( FLAG_MARK_EN, value );
+    }
+
+    public void mark( int value )
+    {
+        setIntValue( FLAG_MARK, value );
+    }
+
+
+    public void raze()
+    { 
+        raze( pointer.value() );
+        pointer.raze();
+    }
+
+    public void send( byte[] data ) { if ( send( pointer.value(), data ) < 0 ) Netcap.error(); }
+    public void send( String data ) { send( data.getBytes()); }
+
+    public void lock()
+    {
+        locked = true;
+    }
+
+    private long   getLongValue         ( int req )
+    { 
+        /* How to handle error here ?? */
+        return getLongValue( pointer.value(), req );
+    }
+
+    private int    getIntValue          ( int req )
+    {
+        int temp = getIntValue( pointer.value(), req );
+        if ( temp < 0 ) Netcap.error( "getIntValue: " + req );
+        return temp;
+    }
+
+    private String getStringValue       ( int req )
+    { 
+        String temp = getStringValue( pointer.value(), req );
+        if ( temp == null ) Netcap.error( "getStringValue: " + req );
+        return temp;
+    }
+
+    private void setLongValue ( int req, long value ) 
+    {
+        checkLock( req );
+        if ( setLongValue( pointer.value(), req, value ) < 0 ) Netcap.error( "setLongValue: " + req );
+    }
+
+    private void setIntValue ( int req, int value ) 
+    {
+        checkLock( req );
+        if ( setIntValue( pointer.value(), req, value ) < 0 ) Netcap.error( "setIntValue: " + req );
+    }
+
+    private void setStringValue ( int req, String value ) 
+    {
+        checkLock( req );
+        if ( setStringValue( pointer.value(), req, value ) < 0 ) Netcap.error( "setStringValue: " + req );
+    }
+
+    private void checkLock( int req )
+    {
+        if ( locked && (( req & LOCKABLE_MASK ) == LOCKABLE_MASK )) {
+            Netcap.error( "Attempt to modify a locked value" );
+        }
+    }
+
+    static
+    {
+        Netcap.load();
+    }    
+
+    /* XXX Consolidate all of the get/set functions into a group of package functions
+     * inside of the Netcap class */
+    private static native long   createIPTraffic ( long src, int srcPort, long dst, int dstPort );
+    private static native long   getLongValue    ( long packetPointer, int req );
+    private static native int    getIntValue     ( long packetPointer, int req );
+    private static native String getStringValue  ( long packetPointer, int req );
+    private static native int    setLongValue    ( long packetPointer, int req, long value );
+    private static native int    setIntValue     ( long packetPointer, int req, int value );
+    private static native int    setStringValue  ( long packetPointer, int req, String value );
+    private static native int    send            ( long packetPointer, byte[] data );
+    private static native void   raze            ( long packetPointer );
+    
+    private class IPTrafficEndpoint implements MutableEndpoint {
+        private final boolean ifSrc;
+
+        IPTrafficEndpoint( boolean ifSrc ) 
+        {
+            this.ifSrc = ifSrc;
+        }
+        
+        public InetAddress host() 
+        {
+            return Inet4AddressConverter.toAddress( getLongValue( buildMask( FLAG_HOST )));
+        }
+        
+        public int port()
+        {
+            return getIntValue( buildMask( FLAG_PORT ));
+        }
+
+        public String interfaceName() 
+        {
+            return getStringValue( buildMask( FLAG_INTERFACE ));
+        }
+
+        public byte interfaceId()
+        {
+            return (byte)getIntValue( buildMask( FLAG_INTERFACE ));
+        }
+
+        public void host( InetAddress address ) 
+        {
+            setLongValue( buildMask( FLAG_HOST ), Inet4AddressConverter.toLong( address ));
+        }
+        
+        public void port( int port ) 
+        { 
+            setIntValue( buildMask( FLAG_PORT ), port );
+        }
+        
+        public void interfaceName( String name ) {
+            setStringValue( buildMask( FLAG_INTERFACE ), name );
+        }
+
+        public void interfaceId( byte id )
+        {
+            setIntValue( buildMask( FLAG_INTERFACE ), id );
+        }
+
+
+        private int buildMask( int type ) 
+        {
+            int mask = ( ifSrc ) ? FLAG_SRC_MASK : 0;
+            return mask | type;
+        }
+    }
+}

@@ -1,0 +1,20 @@
+/var/log/xenon/console.log {
+rotate 6
+daily
+compress
+copytruncate
+}
+
+/var/log/xenon/wrapper.log {
+rotate 6
+daily
+compress
+copytruncate
+}
+
+/var/log/xenon/apt.log {
+rotate 6
+daily
+compress
+copytruncate
+}

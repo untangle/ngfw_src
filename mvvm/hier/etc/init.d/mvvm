@@ -1,0 +1,190 @@
+#! /bin/sh
+# $Id: mvvm,v 1.10 2005/03/22 01:51:56 cng Exp $
+
+# Read the networking configuration parameters, this must be parsed before running the
+# defaults.
+MVVM_PARAMS_FILE=@PREFIX@/usr/share/metavize/conf/networking.sh
+if [ -f "$MVVM_PARAMS_FILE"  -a ! -d "$MVVM_PARAMS_FILE" ]; then
+    . $MVVM_PARAMS_FILE
+fi
+
+if [ -f @PREFIX@/etc/default/bunnicula ] ; then
+    . @PREFIX@/etc/default/bunnicula
+fi
+
+BUNNICULA_LOGDIR=${BUNNICULA_LOGDIR:-@PREFIX@/var/log/mvvm}
+BUNNICULA_RUNDIR=${BUNNICULA_RUNDIR:-@PREFIX@/var/run}
+BUNNICULA_NICENESS=${BUNNICULA_NICENESS:-0}
+BUNNICULA_CONSOLE_LOG=${BUNNICULA_CONSOLE_LOG:-$BUNNICULA_LOGDIR/console.log}
+BUNNICULA_WRAPPER_LOG=${BUNNICULA_WRAPPER_LOG:-$BUNNICULA_LOGDIR/wrapper.log}
+BUNNICULA_CMD=${BUNNICULA_CMD:-@PREFIX@/usr/bin/bunnicula_wrapper.sh}
+BUNNICULA_USER=${BUNNICULA_USER:-$USER}
+
+BUNN_PID="bunnicula.pid"
+BUNN_CHUSER=" --chuid $BUNNICULA_USER:$BUNNICULA_USER "
+
+# if in the build
+if [ "x" != "x@PREFIX@" ] ; then
+    BUNN_CHUSER=""
+    BUNN_NICENESS="0"
+    if [ "$USER" != "root" ] ; then
+        echo "sudo $0 $*"
+        exec sudo $0 $*
+    fi
+fi
+
+
+case "$1" in
+    start)
+        echo -n "Starting MVVM: "
+
+        # This is a hack to not start during install phase
+        if [ ! -z "`cat /proc/cmdline | grep mv_install`" ] ; then
+            echo "Skipping."
+            exit
+        fi
+
+        if [ -f ${BUNNICULA_RUNDIR}/${BUNN_PID} ] ; then
+            pid=`cat ${BUNNICULA_RUNDIR}/${BUNN_PID}`
+            if [ -z "`ps ax | awk '{print $1}' | grep \"^$pid$\"`" ] ; then
+                echo -n "Removing Stale PIDfile  (file:`cat ${BUNNICULA_RUNDIR}/${BUNN_PID}` pid:$pid) "
+                rm -f ${BUNNICULA_RUNDIR}/${BUNN_PID}
+            else
+                echo "Already started."
+                exit
+            fi
+        fi
+
+        echo -n "[."
+
+        start-stop-daemon --start \
+            --background --make-pidfile -q \
+            --pidfile ${BUNNICULA_RUNDIR}/${BUNN_PID} \
+            --chdir ${BUNNICULA_RUNDIR} \
+            --nicelevel ${BUNNICULA_NICENESS} \
+            $BUNN_CHUSER \
+            --exec ${BUNNICULA_CMD} -- ${BUNNICULA_ARGS}
+
+        if [ $? != "0" ] ; then
+            exit
+        fi
+        echo -n "." ; sleep 1 ; echo -n "." ; sleep 1 # time for console.log to be rm'd
+
+        # Wait for completion
+        for i in `seq 1 120` ; do
+            EXPC="`cat $BUNNICULA_CONSOLE_LOG 2>/dev/null | grep -i exception `"
+            FINI="`cat $BUNNICULA_CONSOLE_LOG 2>/dev/null | grep -i 'vegetables' `"
+            sleep 1
+            echo -n "."
+            if [ "x" != "x$EXPC" ] ; then
+                if [ ! -z "`echo $EXPC | grep -i \"address already in use\"`" ] ; then
+                    echo -e "x]\nAddress already in use. Will attempt to rebind for five minutes."
+                else
+                    echo -e "x]\nException in $BUNNICULA_CONSOLE_LOG"
+                    if [ "x" != "x@PREFIX@" ] ; then
+                        $0 stop
+                        exit
+                    fi
+                    exit
+                fi
+            fi
+            if [ "x" != "x$FINI" ] ; then
+                break
+            fi
+        done
+
+        # Wait for completion, ignore exceptions because they are transform exceptions
+        for i in `seq 1 120` ; do
+            FINI="`cat $BUNNICULA_CONSOLE_LOG 2>/dev/null | grep -i 'postInit complete' `"
+            sleep 1
+            echo -n "."
+            if [ "x" != "x$FINI" ] ; then
+                echo "]"
+                exit
+            fi
+        done
+
+        echo "x]"
+        ;;
+
+    stop)
+        echo -n "Stopping MVVM: "
+
+        if [ ! -f ${BUNNICULA_RUNDIR}/${BUNN_PID} ] ; then
+            echo "Not Running."
+            exit
+        fi
+
+        echo -n "[."
+
+        # Attempt polite kill first
+        start-stop-daemon -s INT --stop \
+            -q \
+            --pidfile ${BUNNICULA_RUNDIR}/${BUNN_PID}
+        code=$?
+        if [ $code != "0" ] ; then
+            exit
+        fi
+
+        rm -f ${BUNNICULA_RUNDIR}/${BUNN_PID}  &> /dev/null
+
+        # Wait for completion
+        tick=0
+        for i in `seq 1 10` ; do
+            FINI="`cat $BUNNICULA_CONSOLE_LOG 2>/dev/null | grep -i 'shutdown complete' `"
+            sleep 1
+            echo -n "."
+            if [ "x" != "x$FINI" ] ; then
+                sleep 1 ; echo -n "." ; sleep 1
+                echo ".]"
+                exit
+            fi
+            if [ -z "`ps awwx | grep java | grep bunnicula | awk '{print $1}'`" ] ; then
+                if [ $tick -ge 5 ] ; then
+                    break
+                else
+                    tick=$(($tick+1))
+                fi
+            fi
+        done
+
+        # Attempt more aggressive kill now
+        echo -n "ungraceful exit"
+        kill -INT `ps awwx | grep java | grep bunnicula | awk '{print $1}' | grep -v $$ ` &>/dev/null
+        kill `ps awwx | grep java | grep bunnicula | awk '{print $1}' | grep -v $$ ` &>/dev/null
+
+        # Wait for completion
+        for i in `seq 1 20` ; do
+            FINI="`cat $BUNNICULA_CONSOLE_LOG 2>/dev/null | grep -i 'shutdown complete' `"
+            sleep 1
+            echo -n "."
+            if [ "x" != "x$FINI" ] ; then
+                sleep 1 ; echo -n "." ; sleep 1
+                echo "x]"
+                exit
+            fi
+            if [ -z "`ps awwx | grep java | grep bunnicula | awk '{print $1}'`" ] ; then
+                if [ $tick -ge 5 ] ; then
+                    echo "xx]"
+                    exit
+                else
+                    tick=$(($tick+1))
+                fi
+            fi
+        done
+
+        echo "xxx]"
+        ;;
+
+    restart|force-reload)
+        $0 stop
+        sleep 1
+        $0 start
+        ;;
+
+    *)
+        echo "Usage: /etc/init.d/mvvm {start|stop|restart|force-reload}"
+        exit
+esac
+
+exit 0

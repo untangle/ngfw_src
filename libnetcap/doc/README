@@ -1,0 +1,23 @@
+
+
+
+
+rdr: 
+	A "redirect"
+ 	This represents a rule in the firewall which redirects traffic to a local socket
+
+traffic:
+	A description of traffic
+
+subscription:
+	A netcap subscription
+
+server:
+	The main netcap server. This handles all events:
+
+	Netcap Messages (internal messages only: shutdown, new sub, rem sub, etc)
+	Intercepted TCP Sessions.
+	Intercepted UDP Sessions.
+	Completed TCP Sessions (Only when HALF OPEN is not specified) 
+	
+	

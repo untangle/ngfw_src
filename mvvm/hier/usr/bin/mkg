@@ -1,0 +1,119 @@
+#!/bin/sh
+#
+# Copyright (c) 2003, 2004, 2005 Metavize Inc.
+# All rights reserved.
+#
+# This software is the confidential and proprietary information of
+# Metavize Inc. ("Confidential Information").  You shall
+# not disclose such Confidential Information.
+#
+# $Id: mkg,v 1.12 2005/03/23 06:06:18 amread Exp $
+#
+
+prefix=@PREFIX@
+pkglist=@FAKE_PKG_LIST@
+instlist=@FAKE_INST_LIST@
+APT_LOG=@PREFIX@/var/log/mvvm/apt.log
+
+INST_OPTS=" -o DPkg::Options::=--force-confnew --yes --force-yes --fix-broken "
+UPGD_OPTS=" -o DPkg::Options::=--force-confnew --yes --force-yes --fix-broken "
+UPDT_OPTS=" --yes --force-yes "
+REMO_OPTS=" --yes --force-yes --fix-broken --purge "
+
+DEBUG_OPTS=" -o Debug::pkgDPkgPM=true "
+
+printusage()
+{
+    echo "usage:"
+    echo "mkg installed"
+    echo "mkg available"
+    echo "mkg install <mackage>"
+    echo "mkg update"
+    echo "mkg upgrade"
+    echo "mkg remove"
+    exit 1
+}
+
+aptlog()
+{
+        echo -e "----------" >> $APT_LOG
+        echo $1 >> $APT_LOG
+        date >> $APT_LOG
+        echo -e "----------\n" >> $APT_LOG
+}
+
+instlist()
+{
+    for t in $prefix/usr/share/metavize/toolbox/*.mar; do
+        echo "$(basename $t .mar) 10.0"
+    done
+}
+
+pkglist()
+{
+    for t in $prefix/usr/share/metavize/toolbox/*.mar; do
+        p="$(basename $t .mar)"
+        echo "Package: $p"
+        echo "Version: 10.0"
+        echo "Architecture: any"
+        echo "Depends: mvvm"
+        echo "Price: 666"
+        echo "Display-Name: $p"
+        echo "Description: Fake description"
+        echo " blah blah blah"
+        echo
+    done
+}
+
+
+if [ $# -lt 1 ] ; then
+    printusage
+fi
+
+if [ -z $prefix ] ; then
+    # invoked in real environment
+    if [ "$1" = "installed" ] ; then
+        (dpkg-query -W '*-transform'
+            dpkg-query -W '*-casing' ;
+            dpkg-query -W 'metavize-client';
+            dpkg-query -W 'mvvm') 2>/dev/null \
+                | awk '{ if ($2) printf("%s %s\n",$1,$2) }'
+    elif [ "$1" = "available" ] ; then
+        pkgs=$(apt-cache search '.-transform$|^-casing$|^mvvm$|^metavize-client$'\
+            | cut -d ' ' -f 1)
+        for pkg in $pkgs; do
+            apt-cache show --no-all-versions $pkg
+        done
+    elif [ "$1" = "install" ] ; then
+        aptlog "apt-get install $INST_OPTS \"$2-transform\""
+        apt-get install $INST_OPTS "$2-transform" 2>&1 | tee -a $APT_LOG   # XXX the way i create mackage name is wrong
+        aptlog "done"
+    elif [ "$1" = "update" ] ; then
+        aptlog "apt-get update $UPDT_OPTS"
+        apt-get update $UPDT_OPTS 2>&1 | tee -a $APT_LOG
+        aptlog "done"
+    elif [ "$1" = "upgrade" ] ; then
+        aptlog "apt-get upgrade $UPGD_OPTS"
+        apt-get dist-upgrade $UPGD_OPTS 2>&1 | tee -a $APT_LOG
+        aptlog "done"
+    elif [ "$1" = "remove" ] ; then
+        aptlog "apt-get remove $REMO_OPTS \"$2-transform\""
+        apt-get remove $REMO_OPTS "$2-transform" 2>&1 | tee -a $APT_LOG
+        aptlog "done"
+    fi
+else
+    # invoked in development environment
+    if [ "$1" = "installed" ] ; then
+        instlist
+    elif [ "$1" = "install" ] ; then
+        instlist
+    elif [ "$1" = "update" ] ; then
+        : # XXX
+    elif [ "$1" = "upgrade" ] ; then
+        : # XXX
+    elif [ "$1" = "remove" ] ; then
+        echo "remove not supported in build environment"
+    elif [ "$1" = "available" ] ; then
+        pkglist
+    fi
+fi

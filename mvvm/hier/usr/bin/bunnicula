@@ -1,0 +1,109 @@
+#!/bin/sh
+
+NAME=bunnicula
+DESC="Metavize Bunnicula MVVM server"
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+JAVA_HOME=${JAVA_HOME:-/opt/java}
+
+## Configure IPV4 parameters
+
+# Not optional, complain if fail
+echo 1  > /proc/sys/net/ipv4/ip_forward
+if [ $? != 0 ] ; then exit 1 ; fi
+echo 1  > /proc/sys/net/ipv4/ip_nonlocal_bind
+if [ $? != 0 ] ; then exit 1 ; fi
+
+# Optional
+if [ -f /proc/sys/net/ipv4/tcp_synack_retries ] ; then
+    echo 0  > /proc/sys/net/ipv4/tcp_synack_retries ;
+fi
+if [ -f /proc/sys/net/ipv4/tcp_syncookies ] ; then
+    echo 1  > /proc/sys/net/ipv4/tcp_syncookies ;
+fi
+if [ -f /proc/sys/net/ipv4/netfilter/ip_conntrack_tcp_timeout_time_wait ] ; then
+    echo 30 > /proc/sys/net/ipv4/netfilter/ip_conntrack_tcp_timeout_time_wait ;
+fi
+
+# remove tomcat persisted sessions
+find @PREFIX@ -name SESSIONS.ser -exec rm -f '{}' ';'
+
+# make self-signed certificate
+# XXX this certificate could perhaps be more filled out with info
+# gathered during the install
+if [ ! -e @MVVM_CONF@/keystore ]; then
+    $JAVA_HOME/bin/keytool -genkey -keyalg RSA -keystore @MVVM_CONF@/keystore \
+        -alias tomcat -keypass changeit -storepass changeit \
+        -dname "cn=$(hostname), ou=devices"
+fi
+
+# make empty reports dir, if none
+if [ ! -e @MVVM_REPORTS@/index.html ]; then @PREFIX@/usr/bin/index-reports; fi
+
+# add user and mvvm database just in case
+su postgres -c "createuser --createdb --no-adduser metavize" 2>/dev/null
+createdb -O metavize -U metavize mvvm 2>/dev/null
+
+
+# Read the networking configuration parameters, this must be parsed before running the
+# defaults.
+MVVM_PARAMS_FILE=@PREFIX@/usr/share/metavize/conf/networking.sh
+if [ -f "$MVVM_PARAMS_FILE"  -a ! -d "$MVVM_PARAMS_FILE" ]; then
+    . $MVVM_PARAMS_FILE
+fi
+
+# read configuration options
+if [ -f "@PREFIX@/etc/default/$NAME" -a ! -d "@PREFIX@/etc/default/$NAME" ] ; then
+        . @PREFIX@/etc/default/$NAME
+fi
+
+# This parameter comes from the MVVM_PARAMS_FILE
+if [ -f /proc/sys/net/ipv4/tcp_window_scaling ] ; then
+    ## If undefined or non-true, disable window scaling
+    val=0
+
+    if [ "x$TCP_WINDOW_SCALING_EN" = "xtrue" ]; then
+        val=1
+    fi
+
+    echo $val > /proc/sys/net/ipv4/tcp_window_scaling ;
+fi
+
+
+CLASSPATH="$JAVA_HOME/lib/tools.jar:@MVVM_HOME@/conf:@MVVM_HOME@/lib/bootstrap.jar"
+
+#
+# build environment tweeks
+#
+if [ "x" != "x@PREFIX@" ] ; then
+    PATH=@PREFIX@/usr/bin:$PATH
+fi
+
+for f in @THIRDPARTY_LIB@/*jar ; do
+    CLASSPATH="$CLASSPATH:$f"
+done
+
+export PATH LD_LIBRARY_PATH JAVA _OPTS CLASSPATH JAVA_HOME
+
+#
+# profiling tweeks
+#
+if [ "x$PROFILE_BUNNICULA_YJP" = "xyes" ] ; then
+    echo "YJP profiling support enabled (concurrent garbage collection disabled)"
+    YJP_HOME=/opt/yjp
+    LD_LIBRARY_PATH=$YJP_HOME/bin/linux:$LD_LIBRARY_PATH
+    JAVA_OPTS="-agentlib:yjpagent $JAVA_OPTS"
+fi
+
+fdlimit=1
+for i in `seq 21` ; do
+    ulimit -n $fdlimit;
+    fdlimit=$(($fdlimit*2));
+done
+
+exec $JAVA_HOME/bin/java \
+    -Djava.endorsed.dirs=@ENDORSED_LIB@ \
+    -Djava.library.path=@ALPINE_LIB@ \
+    -Dbunnicula.home=@MVVM_HOME@ \
+    -Dargon.shield.cfg_file=@MVVM_HOME@/conf/shield.cfg \
+    ${JAVA_OPTS} $* \
+    com.metavize.mvvm.engine.Main

@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE jasperReport PUBLIC "-//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+
+<jasperReport name="HttpViolators" whenNoDataType="AllSectionsNoDetail" pageWidth="276" pageHeight="791" columnWidth="276" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" isFloatColumnFooter="true">
+  <import value="java.util.*"/>
+  <import value="net.sf.jasperreports.engine.*"/>
+  <import value="net.sf.jasperreports.engine.data.*"/>
+  <parameter name="startTime" class="java.sql.Timestamp">
+  </parameter>
+  <parameter name="endTime" class="java.sql.Timestamp">
+  </parameter>
+  <queryString><![CDATA[
+  SELECT name, total_violations, count(*) AS violations
+  FROM (SELECT count(*) AS total_violations FROM tr_httpblk_evt_blk blk
+  WHERE blk.time_stamp > $P{startTime} AND blk.time_stamp < $P{endTime}) AS violations,
+  tr_httpblk_evt_blk blk
+  JOIN tr_http_req_line USING (request_id)
+  JOIN tr_http_evt_req USING (request_id)
+  JOIN pipeline_info USING (session_id)
+  JOIN addr_map ON c_client_addr = addr
+  WHERE blk.time_stamp > $P{startTime} AND blk.time_stamp < $P{endTime}
+  AND NOT c_client_addr ISNULL
+  GROUP BY name, total_violations
+  ORDER BY violations DESC
+  ]]></queryString>
+  <field name="name" class="java.lang.String">
+  </field>
+  <field name="violations" class="java.lang.Long">
+  </field>
+  <field name="total_violations" class="java.lang.Long">
+  </field>
+  <variable name="n" class="java.lang.Integer" calculation="Count">
+    <variableExpression><![CDATA[$F{name}]]></variableExpression>
+  </variable>
+  <background>
+    <band>
+    </band>
+  </background>
+  <title>
+    <band height="14">
+      <staticText>
+        <reportElement key="staticText" positionType="Float" mode="Opaque" x="53" y="0" width="169" height="14"/>
+        <box topBorder="None" topBorderColor="#0" leftBorder="None" leftBorderColor="#0" bottomBorder="None" bottomBorderColor="#0" rightBorder="None" rightBorderColor="#ffffff"/>
+        <textElement textAlignment="Center">
+          <font fontName="SansSerif" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+        </textElement>
+        <text><![CDATA[Policy Violations]]></text>
+      </staticText>
+    </band>
+  </title>
+  <pageHeader>
+    <band height="13">
+      <staticText>
+        <reportElement key="staticText" positionType="Float" mode="Opaque" x="0" y="0" width="169" height="13"/>
+        <box topBorder="None" topBorderColor="#0" leftBorder="None" leftBorderColor="#0" bottomBorder="None" bottomBorderColor="#0" rightBorder="None" rightBorderColor="#ffffff"/>
+        <textElement>
+          <font fontName="SansSerif" size="9" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+        </textElement>
+        <text><![CDATA[Name]]></text>
+      </staticText>
+      <staticText>
+        <reportElement key="staticText" positionType="Float" mode="Opaque" x="172" y="0" width="62" height="13"/>
+        <box topBorder="None" topBorderColor="#0" leftBorder="None" leftBorderColor="#0" bottomBorder="None" bottomBorderColor="#0" rightBorder="None" rightBorderColor="#ffffff"/>
+        <textElement textAlignment="Right">
+          <font fontName="SansSerif" size="9" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+        </textElement>
+        <text><![CDATA[Violations]]></text>
+      </staticText>
+      <staticText>
+        <reportElement positionType="Float" x="234" y="0" width="42" height="13"/>
+        <textElement textAlignment="Right">
+          <font fontName="SansSerif" size="9" isItalic="true"/>
+        </textElement>
+        <text><![CDATA[%Violations]]></text>
+      </staticText>
+    </band>
+  </pageHeader>
+  <columnHeader>
+    <band>
+    </band>
+  </columnHeader>
+  <detail>
+    <band height="13">
+      <printWhenExpression><![CDATA[new Boolean($V{n}.intValue() < 20)]]></printWhenExpression>
+      <textField pattern="">
+        <reportElement key="textField" positionType="Float" mode="Opaque" x="172" y="0" width="62" height="13"/>
+        <box topBorderColor="#0" leftBorderColor="#0" bottomBorderColor="#0" rightBorderColor="#ffffff"/>
+        <textElement textAlignment="Right">
+          <font fontName="Monospaced" size="9" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+        </textElement>
+        <textFieldExpression class="java.lang.Long"><![CDATA[$F{violations}]]></textFieldExpression>
+      </textField>
+      <textField pattern="">
+        <reportElement key="textField" positionType="Float" mode="Opaque" x="0" y="0" width="169" height="13"/>
+        <box topBorderColor="#0" leftBorderColor="#0" bottomBorderColor="#0" rightBorderColor="#ffffff"/>
+        <textElement>
+          <font fontName="SansSerif" size="9" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+        </textElement>
+        <textFieldExpression class="java.lang.String"><![CDATA[$F{name}]]></textFieldExpression>
+      </textField>
+      <textField>
+        <reportElement positionType="Float" x="234" y="0" width="42" height="13"/>
+        <textElement textAlignment="Right">
+          <font fontName="Monospaced" size="9" isItalic="true"/>
+        </textElement>
+        <textFieldExpression class="java.lang.String"><![CDATA[Math.round($F{violations}.doubleValue() / $F{total_violations}.doubleValue() * 100) + "%"]]></textFieldExpression>
+      </textField>
+    </band>
+  </detail>
+  <columnFooter>
+    <band height="13">
+      <textField pattern="">
+        <reportElement key="textField" positionType="Float" mode="Opaque" x="172" y="0" width="62" height="13"/>
+        <box topBorder="None" topBorderColor="#0" leftBorder="None" leftBorderColor="#0" bottomBorder="None" bottomBorderColor="#0" rightBorder="None" rightBorderColor="#ffffff"/>
+        <textElement textAlignment="Right">
+          <font fontName="Monospaced" size="9" isBold="true" isItalic="true" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+        </textElement>
+        <textFieldExpression class="java.lang.Long"><![CDATA[$F{total_violations}]]></textFieldExpression>
+      </textField>
+      <staticText>
+        <reportElement key="staticText" positionType="Float" mode="Opaque" x="0" y="0" width="169" height="13"/>
+        <box topBorder="None" topBorderColor="#0" leftBorder="None" leftBorderColor="#0" bottomBorder="None" bottomBorderColor="#0" rightBorder="None" rightBorderColor="#ffffff"/>
+        <textElement>
+          <font fontName="SansSerif" size="9" isBold="true" isItalic="true" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+        </textElement>
+        <text><![CDATA[Totals:]]></text>
+      </staticText>
+      <staticText>
+        <reportElement positionType="Float" x="234" y="0" width="42" height="13"/>
+        <textElement textAlignment="Right">
+          <font fontName="Monospaced" size="9" isBold="true" isItalic="true"/>
+        </textElement>
+        <text><![CDATA[100%]]></text>
+      </staticText>
+    </band>
+  </columnFooter>
+  <pageFooter>
+    <band height="30">
+    </band>
+  </pageFooter>
+  <summary>
+    <band>
+    </band>
+  </summary>
+</jasperReport>

@@ -1,0 +1,36 @@
+#!/bin/sh
+
+set -e
+
+if [ $# -eq 0 ]; then
+    echo "usage; $0 [ usb | local ]"
+    exit 1
+fi
+
+method=$1
+
+mkdir -p @MVVM_DUMP@
+
+case $method in
+    usb)
+        mount /dev/sda1 /mnt
+        outdir=/mnt
+        ;;
+    local)
+        outdir=@MVVM_DUMP@
+        ;;
+esac
+
+datestamp=$(date '+%Y%m%d%H%M')
+
+pg_dump -U postgres -Ft mvvm | gzip > $outdir/mvvmdb-$datestamp.tar.gz
+
+tar zcf $outdir/files-$datestamp.tar.gz --ignore-failed-read -C @PREFIX@ \
+    etc/network/interfaces \
+    etc/resolv.conf \
+    usr/share/metavize/conf/networking.sh \
+    usr/share/metavize/conf/shield.cfg
+
+if [ $method = "usb" ]; then
+    umount /mnt
+fi

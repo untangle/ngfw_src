@@ -1,0 +1,169 @@
+ifndef ALPINE_MAKE
+ALPINE_MAKE	= true
+
+ifndef PRODUCTION
+  USE_DEBUG:=true
+else
+  USE_DEBUG:=false
+endif	
+
+## Location of the src in each sub directory, the sub directory make may overwrite this value
+src_path=src
+
+## Random unique target string suffix to guarantee that the default ensure dir target does
+## not conflict with any other targets
+dir_target=ensure_dir_target
+
+## Location of the build directory
+alpine_root     = $(dir $(word $(words $(MAKEFILE_LIST)),$(MAKEFILE_LIST)))../
+alpine_root    := $(shell mkdir -p $(alpine_root)/ &> /dev/null && cd $(alpine_root)/ &> /dev/null && pwd)
+# build_dist     ?= /tmp/jdimv
+build_dist     ?= $(alpine_root)/output
+build_prefix   ?= $(build_dist)
+build_lib_path  = ${build_dist}/usr/lib/mvvm
+build_inc_path  = ${build_dist}/usr/include
+
+java_include_base=/opt/java/include
+
+local_lib_path=lib
+
+## Permissions
+dir_mode=755
+lib_mode=644
+inc_mode=644
+
+## Debug package identifiers stored here to avoid conflicts
+MVUTIL_PKG    = 255
+NETCAP_PKG    = 201
+VECTOR_PKG    = 202
+JNETCAP_PKG   = 210
+JVECTOR_PKG   = 211
+
+## This crazy command gets the relative path of the base directory.  (EG. if you are in
+## libnetcap, this will resolve to ./../bin (which is just ../bin) and if you are in
+## the base directory this will just resolve to ./bin
+
+BINDIR        = $(alpine_root)/buildtools
+
+CC	      = gcc
+DEFINES       = -D_GNU_SOURCE -D_REENTRANT
+WARNINGS      = -Wall
+OPTIMIZATIONS = -fomit-frame-pointer
+INC           = include ${build_dist}/usr/include
+INC_FLAGS     = $(patsubst %,-I%,$(INC))
+LDDIR         = ../lib $(build_lib_path)
+LDDIR_FLAGS   = $(patsubst %,-L%,$(LDDIR))
+LIBS	      =
+LIBS_FLAGS    = -pthread $(patsubst %,-l%,$(LIBS)) --warn-common
+FLAGS        += -g -ggdb -fpic
+CFLAGS        =  $(FLAGS) $(DEFINES) $(WARNINGS) $(OPTIMIZATIONS) $(INC_FLAGS) $(LDDIR_FLAGS)
+
+RANLIB        = ranlib
+AR            = ar
+LD            = ld
+LN            = ln
+STRIP         = strip
+
+JAVA_HOME      ?= /opt/java
+ANT_HOME        = $(alpine_root)/../downloads/apache-ant-1.6.2
+ANTCONTRIB_VERSION = 0.6
+ANTCONTRIB_HOME = $(alpine_root)/../downloads/ant-contrib-$(ANTCONTRIB_VERSION)
+JASPER_REPORTS_VERSION = 0.6.4
+JASPER_REPORTS_HOME = $(alpine_root)/../downloads/jasperreports-$(JASPER_REPORTS_VERSION)
+# ANT_CLASSPATH   = $(ANT_HOME)/lib/ant.jar:$(ANTCONTRIB_HOME)/lib/ant-contrib-$(ANTCONTRIB_VERSION).jar:$(JASPER_REPORTS_HOME)/dist/jasperreports-$(JASPER_REPORTS_VERSION).jar
+ANT_CLASSPATH   = $(ANT_HOME)/lib/ant.jar:$(ANTCONTRIB_HOME)/lib/ant-contrib-$(ANTCONTRIB_VERSION).jar
+ANT             = CLASSPATH=$(ANT_CLASSPATH) JAVA_HOME=$(JAVA_HOME) $(ANT_HOME)/bin/ant -Dworld.root=$(build_dist) -Dbuild.prefix=$(build_prefix) -emacs
+
+ENSUREDIR   =   $(BINDIR)/ensure-dir.sh
+INSTALL_DATA=   $(BINDIR)/install.sh
+
+ifeq ($(strip $(USE_DEBUG)),true)
+    DEFINES  +=  -DDEBUG_ON $(if $(DEBUG_PKG),-DDEBUG_PKG=$(DEBUG_PKG),)
+    FLAGS    += -g -ggdb
+    STRIPCMD  = /bin/true -Not_stripping_DEBUG_MODE
+else
+    OPTIMIZATIONS += -funroll-loops -fomit-frame-pointer
+    FLAGS    += $(WARNINGS) $(OPTIMIZATIONS)
+    LDFLAGS  += -s
+    STRIPCMD  = echo "Stripping debug symbols..." ; $(STRIP) --strip-debug --remove-section=.note --remove-section=.comment -x
+endif
+
+## Do not use all or build as the name of the default rule, because then that will override the
+## build target in child directories, make always builds with the first rule, so this will default
+## to make build
+default: all
+
+# The funny ${<:.c=.o} insures that the object is stored in the same directory as the .c file.
+%.o: %.c
+	@echo "==> gcc $@"
+	@${CC} -c $< ${CFLAGS} -o ${<:.c=.o}
+
+## To use this target, you must define the objects varible
+%.a: $(local_lib_path).$(dir_target)
+	@$(ENSUREDIR) $(local_lib_path)
+	@echo "==> ld ($(objects)) => $@, $(local_lib_path)/$@"
+	@$(LD) $(LDFLAGS) -r -o tmp.o $(patsubst %,$(src_path)/%,$(objects))
+	@$(STRIPCMD) tmp.o
+	@$(AR) -cr $(local_lib_path)/$@ tmp.o
+	@$(RANLIB) $(local_lib_path)/$@
+	@$(RM) tmp.o
+
+%.$(dir_target):
+	@if [ ! -d $(@:.$(dir_target)=) ] ; then echo "==> Ensure Directory '$(@:.$(dir_target)=)'" ; fi
+	@$(ENSUREDIR) $(@:.$(dir_target)=) $(dir_mode)
+
+clean.default:
+	@echo "==> clean *.class, *.o, *.core, core.*, $(src_path)/version.h, test"
+	@${RM} -f `find . -name "*.class"`
+	@${RM} -f `find . -name "*.o"`
+	@${RM} -f `find . -name "*.core"`
+	@${RM} -f `find . -name "core.*"`
+	@${RM} -f $(src_path)/version.h
+	@if test -f test/Makefile; then make -C test clean ; fi
+	@if test -f example/Makefile; then make -C example clean; fi
+
+distclean.default: clean.default
+	${RM} -f `find . -name "*~"`
+	${RM} -f `find . -name "#*"`
+	${RM} -f `find . -name ".#*"`
+
+test.default: test/Makefile
+	make -C test
+
+tags.default:
+	@echo "==> TAGS: Tags for this library are created from the alpine directory"
+
+## ant targets
+## Only call this target if the ANT hasn't been invoked
+ant.clean.default ant.build.default ant.install.default:
+ifndef ANT_INVOKED
+	@echo "==> ant $(patsubst ant.%.default,%,$@)"
+	@$(ANT) $(patsubst ant.%.default,%,$@)
+endif
+
+ant.all.default: build
+ifndef ANT_INVOKED
+	@echo "==> ant"
+	@$(ANT)
+endif
+
+## Define INSTALL_LIB if you want to install a .a (must also define lib_file_name)
+## If there are any includes to install, then define install_includes to a space separated list of values
+build.default: $(build_lib_path).$(dir_target) $(build_inc_path).$(dir_target) $(install_includes)
+ifdef INSTALL_LIB
+	mkdir -p $(build_lib_path)
+	@echo "==> $(local_lib_path)/$(lib_file_name) => $(build_lib_path)/$(lib_file_name)"
+	@rm -f $(build_lib_path)/$(lib_file_name)
+	@$(INSTALL_DATA) -m $(lib_mode) $(local_lib_path)/$(lib_file_name) $(build_lib_path)
+endif
+	@for i in $(install_includes) ; do \
+		echo "==> $$i => $(build_inc_path)" ; \
+		$(INSTALL_DATA) -m $(inc_mode) $$i $(build_inc_path) ; \
+	done
+
+$(src_path)/version.h: VERSION
+	@echo "==> $@"
+	@rm -f $@
+	@sed -e 's/.*/#define VERSION "&"/' $< > $@
+
+endif ## ALPINE_MAKE

@@ -1,0 +1,156 @@
+/*
+ * Copyright (c) 2003,2004 Metavize Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Metavize Inc. ("Confidential Information").  You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id: Vector.java,v 1.14 2005/02/10 06:37:58 rbscott Exp $
+ */
+
+package com.metavize.jvector;
+
+import org.apache.log4j.Logger;
+
+import java.util.ListIterator;
+import java.util.LinkedList;
+
+public class Vector
+{
+    /* These are the C return codes for the vectoring machine */
+    public static final int ACTION_ERROR    = -1;
+    public static final int ACTION_NOTHING  = 0;
+    public static final int ACTION_DEQUEUE  = 1;
+    public static final int ACTION_SHUTDOWN = 2;
+
+    /* For setting the debug level, type should be one of the following constants */
+    private static final int JVECTOR_DEBUG  = 1;
+    private static final int MVUTIL_DEBUG   = 2;
+    private static final int VECTOR_DEBUG   = 3;
+
+    /* For telling the vectoring machine to shutdown */
+    private static final int MSG_SHUTDOWN = 1;
+
+    protected static final Logger logger = Logger.getLogger( Vector.class );
+
+    /* Most of these should/could be static */
+    private native int  vector_create (int list);
+    private native int  vector_raze (int vecptr);
+    private native int  vector_send_msg (int vecptr, int msg, int arg);
+    private native void vector_set_timeout (int vecptr, int timeout_sec);
+    private native int  vector (int vecptr);
+
+    private native int  list_create (int flags);
+    private native int  list_add_tail (int listptr, int val);
+    private native int  list_raze (int listptr);
+
+    private static native int cLoad();
+
+    private static native void debugLevel( int type, int level );
+    
+    public static void jvectorDebugLevel( int level ) { debugLevel( JVECTOR_DEBUG, level ); }
+    public static void mvutilDebugLevel( int level ) { debugLevel( MVUTIL_DEBUG, level ); }
+    public static void vectorDebugLevel( int level ) { debugLevel( VECTOR_DEBUG, level ); }
+
+    private int vec_ptr = 0;
+    private int list_ptr;
+
+    /* This list is always razed */
+
+    public Vector (LinkedList list)
+    {
+        list_ptr = list_create(0);
+        
+        for ( ListIterator<Relay>iter = list.listIterator() ; iter.hasNext() ;) {
+            Relay relay = iter.next();
+            if ( list_add_tail(list_ptr,relay.get_relay()) == 0 ) {
+                logError( "list_add_tail: failed" );
+                throw new IllegalStateException( "Failed to add to tail of the relay list" );
+            }
+        }
+
+        vec_ptr = vector_create(list_ptr);
+    }
+
+    public int vector()
+    {
+        return vector(vec_ptr);
+    }
+
+    /**
+     * Set the vector timeout in msec
+     */
+    public void timeout(int msec)
+    {
+        vector_set_timeout(vec_ptr, msec);
+    }
+
+    public void raze()
+    {
+        if ( vec_ptr != 0 ) vector_raze( vec_ptr );
+        vec_ptr = 0;
+
+        /* Raze the associated list */
+        if ( list_ptr != 0 ) list_raze( list_ptr );
+        list_ptr = 0;
+    }
+
+
+    public void shutdown()
+    {
+        if ( vec_ptr == 0 ) return;
+        vector_send_msg( vec_ptr, MSG_SHUTDOWN, 0 );
+    }
+
+    static
+    {
+        logInfo( "Loading Vector" );
+        System.loadLibrary("alpine");
+        cLoad();
+    }
+
+    /**
+     * This doesn't do anything, but it will automatically call the static method 
+     * once the first time Vector is initialized */
+    public static void load() 
+    {
+    }
+
+    /* Debugging and logging, setup this way so we could add functionality to register
+     * a logger, rather than forcing the user to support log4j. */
+    static void logDebug( Object o )
+    {
+        logger.debug( o );
+    }
+
+    static void logInfo( Object o )
+    {
+        logger.info( o );
+    }
+
+    static void logWarn( Object o )
+    {
+        logger.warn( o );
+    }
+
+    static void logError( Object o )
+    {
+        logger.error( o );
+    }
+
+    static void logFatal( Object o )
+    {
+        logger.fatal( o );
+    }
+
+    static boolean isDebugEnabled()
+    {
+        return logger.isDebugEnabled();
+    }
+
+    static boolean isInfoEnabled()
+    {
+        return logger.isInfoEnabled();
+    }
+}

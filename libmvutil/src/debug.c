@@ -1,0 +1,120 @@
+/* $Id: debug.c,v 1.4 2005/01/20 21:49:10 rbscott Exp $ */
+#include "debug.h"
+
+#include <stdio.h>
+#include <stdarg.h>
+#include <string.h>
+#include <sys/time.h>
+#include <time.h>
+#include <stdlib.h>
+#include "errlog.h"
+
+#define DATE_DEFAULT  1
+#define LEVEL_DEFAULT 0
+#define OUT_DEFAULT   stdout
+
+struct debug_pkgs {
+    int level;
+    FILE* output;
+    int date;
+};
+
+static struct debug_pkgs pkgs[DEBUG_MAX_PKGS];
+
+int  _debug(int pkg, int level, char *lpszFmt, ...)
+{
+    if (pkgs[pkg].level >= level)
+    {
+        va_list argptr;
+        if (!pkgs[pkg].output) return 0;
+
+        va_start(argptr, lpszFmt);
+
+        if (pkgs[pkg].date) {
+            struct timeval tv;
+            struct tm tm;
+            
+            gettimeofday(&tv,NULL);
+            if (!localtime_r(&tv.tv_sec,&tm))
+                perrlog("gmtime_r");
+            
+            fprintf (pkgs[pkg].output,"%02i-%02i %02i:%02i:%02i.%06li| ",tm.tm_mon+1,tm.tm_mday,tm.tm_hour,tm.tm_min,tm.tm_sec,(long)tv.tv_usec);
+        }
+
+        OUT_LOCK();
+          
+        vfprintf(pkgs[pkg].output,lpszFmt, argptr);
+
+        va_end(argptr);
+
+        fflush(pkgs[pkg].output);
+
+        OUT_UNLOCK();
+    }
+
+	return 0;
+}
+
+int  _debug_nodate(int pkg, int level, char *lpszFmt, ...)
+{
+
+    if (pkgs[pkg].level >= level)
+    {
+        va_list argptr;
+        if (!pkgs[pkg].output) return 0;
+
+        va_start(argptr, lpszFmt);
+          
+        OUT_LOCK();
+
+        vfprintf(pkgs[pkg].output,lpszFmt, argptr);
+
+        va_end(argptr);
+
+        fflush(pkgs[pkg].output);
+
+        OUT_UNLOCK();
+    }
+
+	return 1;
+}
+
+void _debug_set_output(int pkg, FILE * out)
+{
+    pkgs[pkg].output=out;
+}
+
+void _debug_date_toggle(int pkg, int onoff)
+{
+    pkgs[pkg].date = onoff;  
+}
+
+void _debug_set_level(int pkg, int lev)
+{
+    pkgs[pkg].level = lev;
+}
+
+int  _debug_get_level(int pkg)
+{
+    return pkgs[pkg].level;
+}
+
+int  _debug_init()
+{
+    int i;
+    
+    for (i=0;i<DEBUG_MAX_PKGS;i++) {
+        pkgs[i].level  = LEVEL_DEFAULT;
+        pkgs[i].date   = DATE_DEFAULT;
+        pkgs[i].output = OUT_DEFAULT;
+    }
+    
+    if (!output_lock) {
+        if (sem_init(&_output_lock,0,1)<0)
+            return -1;
+        output_lock = &_output_lock;
+    }
+
+    return 0;
+}
+

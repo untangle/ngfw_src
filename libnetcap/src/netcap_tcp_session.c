@@ -1,0 +1,221 @@
+#include <stdlib.h>
+
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+
+#include <mvutil/debug.h>
+#include <mvutil/errlog.h>
+#include <mvutil/unet.h>
+
+#include <libnetcap.h>
+
+
+#include "netcap_queue.h"
+#include "netcap_session.h"
+#include "netcap_sesstable.h"
+#include "netcap_tcp.h"
+
+int netcap_tcp_session_init( netcap_session_t* netcap_sess,
+                             in_addr_t client_addr, u_short client_port, int client_sock,
+                             in_addr_t server_addr, u_short server_port, int server_sock,
+                             int protocol, netcap_intf_t cli_intf, netcap_intf_t srv_intf, 
+                             int flags, u_int seq )
+{
+    netcap_endpoints_t endpoints;
+
+    netcap_endpoints_bzero(&endpoints);
+
+    endpoints.protocol = IPPROTO_TCP;
+    endpoints.cli.port = client_port;
+    endpoints.srv.port = server_port;
+
+    memcpy( &endpoints.cli.host, &client_addr, sizeof( in_addr_t ));
+    memcpy( &endpoints.srv.host, &server_addr, sizeof( in_addr_t ));
+
+    netcap_sess->cli_intf = endpoints.cli.intf = cli_intf;
+    netcap_sess->srv_intf = endpoints.srv.intf = srv_intf;
+    
+    // Create a new session without mailboxes
+    if ( netcap_session_init( netcap_sess, &endpoints, !NC_SESSION_IF_MB ) < 0 ) {
+        return errlog(ERR_CRITICAL,"netcap_session_init");
+    }
+    
+    // Initialize the tcp mailbox
+    if (mailbox_init(&netcap_sess->tcp_mb)<0) {
+        netcap_nc_session__destroy(netcap_sess, !NC_SESSION_IF_MB);
+        return errlog(ERR_CRITICAL,"mailbox_init\n");
+    }
+    
+    /* client*/
+    netcap_sess->client_sock = client_sock;
+
+    /* server */
+    netcap_sess->server_sock = server_sock;
+
+    /* XXX The if statement isn't necessary since this function is only for TCP */
+    netcap_sess->protocol = protocol;
+
+    if (netcap_sess->protocol == IPPROTO_TCP) {
+
+        if (netcap_sess->client_sock > 0) {
+            netcap_sess->cli_state = CONN_STATE_COMPLETE;
+        } else {
+            netcap_sess->cli_state = CONN_STATE_INCOMPLETE;
+        }
+        
+        if (netcap_sess->server_sock > 0) {
+            netcap_sess->srv_state = CONN_STATE_COMPLETE;
+        } else {
+            netcap_sess->srv_state = CONN_STATE_INCOMPLETE;
+        }
+
+        netcap_sess->callback = netcap_tcp_callback;
+    }
+
+    /* Create it in SYN mode by default */
+    netcap_sess->syn_mode = 1;
+
+    /* Set the sequence number */
+    netcap_sess->seq = seq;
+    
+    return 0;
+}
+
+netcap_session_t* netcap_tcp_session_create(in_addr_t client_addr, u_short client_port, int client_sock,
+                                            in_addr_t server_addr, u_short server_port, int server_sock,
+                                            int protocol,
+                                            netcap_intf_t cli_intf, netcap_intf_t srv_intf, 
+                                            int flags, u_int seq )
+{
+    int ret;
+    netcap_session_t* netcap_sess;
+    
+    if ((netcap_sess = netcap_tcp_session_malloc()) == NULL) {
+        return errlog_null(ERR_CRITICAL,"netcap_udp_session_malloc");
+    }
+
+    ret = netcap_tcp_session_init ( netcap_sess, client_addr, client_port,
+                                    client_sock, server_addr, server_port,
+                                    server_sock, protocol, cli_intf, srv_intf, flags,seq);
+
+    if ( ret < 0) {
+        if ( netcap_tcp_session_free(netcap_sess)) {
+            errlog(ERR_CRITICAL,"netcap_udp_session_free");
+        }
+
+        return errlog_null(ERR_CRITICAL,"netcap_udp_session_init");        
+    }
+
+    return netcap_sess;
+}
+
+int netcap_tcp_session_destroy(int if_lock,netcap_session_t* netcap_sess)
+{
+    tcp_msg_t* msg;
+    int err=0;
+    
+    if ( netcap_sess == NULL ) {
+        return errlog(ERR_CRITICAL,"Invalid arguments\n");
+    }
+
+    netcap_sesstable_remove_session(if_lock, netcap_sess);
+
+    /* If you removed the endpoints, then you ended an actual session */
+    if ( netcap_sess->remove_tuples ) {
+        if ( netcap_shield_rep_end_session( netcap_sess->cli.cli.host.s_addr ) < 0 ) {
+            errlog(ERR_CRITICAL,"netcap_shield_rep_end_session\n");
+            err--;
+        }
+    }
+
+    if ( netcap_tcp_session_close ( netcap_sess) ) {
+        errlog(ERR_CRITICAL,"netcap_tcp_session_close\n");
+        err--;
+    }
+
+    // Clear out the tcp mailbox
+    while((msg = (tcp_msg_t*)mailbox_try_get(&netcap_sess->tcp_mb))) {
+        if ( msg->type == TCP_MSG_SYN ) {
+            if ( msg->pkt != NULL ) netcap_pkt_raze (msg->pkt);
+            if ( msg->fd > 0 ) {
+                if ( close (msg->fd )  < 0 ) perrlog("close");
+            }
+        }
+
+        free(msg);
+    }
+    
+    if (mailbox_destroy(&netcap_sess->tcp_mb)<0) {
+        errlog(ERR_WARNING,"mailbox_destroy failed\n");
+        err--;
+    }
+
+    // Destroy the session
+    if ( netcap_nc_session__destroy(netcap_sess,!NC_SESSION_IF_MB) ) {
+        errlog(ERR_CRITICAL,"netcap_session_destroy");
+        err--;
+    }
+
+    return err;
+}
+
+int netcap_tcp_session_raze(int if_lock, netcap_session_t* netcap_sess)
+{
+    int err = 0;
+
+    if ( netcap_sess == NULL ) {
+        return errlog(ERR_CRITICAL,"Invalid arguments\n");
+    }
+
+    if ( netcap_tcp_session_destroy(if_lock, netcap_sess) < 0 ) {
+        err -= 1;
+        errlog(ERR_CRITICAL,"netcap_tcp_session_destroy");
+    }
+
+    if ( netcap_tcp_session_free(netcap_sess) < 0 ) {
+        err -= 2;
+        errlog(ERR_CRITICAL,"netcap_tcp_session_free");
+    }
+
+    return err;
+}
+
+
+int netcap_tcp_session_close(netcap_session_t* netcap_sess)
+{
+    if ( !netcap_sess ) {
+        errlog(ERR_CRITICAL,"Invalid Arguments\n");
+        return -1;
+    }
+
+    if (netcap_sess->client_sock >=0 && (close(netcap_sess->client_sock) < 0)) {
+        errlog(ERR_WARNING,"Problem closing socket (%i): %s \n",netcap_sess->client_sock,strerror(errno));
+    }
+
+    if (netcap_sess->server_sock >= 0 && (close(netcap_sess->server_sock) < 0)) {
+        errlog(ERR_WARNING,"Problem closing socket (%i): %s \n",netcap_sess->server_sock,strerror(errno));
+    }
+
+    netcap_sess->client_sock = -1;
+    netcap_sess->server_sock = -1;
+
+    return 0;
+}
+
+void netcap_tcp_session_debug(netcap_session_t* netcap_sess, int level, char *msg)
+{    
+    if ( netcap_sess == NULL ) {
+        debug( level, "NULL Session!!" );
+        return;
+    }
+
+    if ( msg == NULL ) {
+        errlog( ERR_WARNING, "netcap_tcp_session_debug: NULL msg argument" );
+        msg = "";
+    }
+
+    debug_nodate(level, "%s :: (%s:%-5i -> %s:%-5i)\n", msg, 
+                 unet_inet_ntoa( netcap_sess->cli.cli.host.s_addr ), netcap_sess->cli.cli.port,
+                 unet_next_inet_ntoa( netcap_sess->srv.srv.host.s_addr ), netcap_sess->srv.srv.port );
+}

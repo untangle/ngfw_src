@@ -1,0 +1,11 @@
+#! /bin/sh
+
+# stop mvvm
+if [ -x "/etc/init.d/mvvm" ]; then
+    /etc/init.d/mvvm stop
+fi
+
+if [ "$1" = "purge" ] ; then
+    rm -f /etc/init.d/mvvm
+    update-rc.d mvvm remove > /dev/null
+fi

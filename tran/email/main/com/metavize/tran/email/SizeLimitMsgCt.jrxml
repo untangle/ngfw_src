@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created using an evaluation version of JasperAssistant (http://www.jasperassistant.com) -->
+<!DOCTYPE jasperReport PUBLIC "-//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+
+<jasperReport name="SizeLimitMsgCt" whenNoDataType="AllSectionsNoDetail" pageWidth="276" pageHeight="791" columnWidth="276" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" isFloatColumnFooter="true">
+    <property name="com.jasperassistant.designer.HGuides" value="91,93,154,154,156,156,233,233,235"/>
+    <property name="com.jasperassistant.designer.GridWidth" value="12"/>
+    <property name="com.jasperassistant.designer.GridHeight" value="12"/>
+    <property name="com.jasperassistant.designer.Rulers" value="true"/>
+    <property name="com.jasperassistant.designer.SnapToGrid" value="true"/>
+    <property name="com.jasperassistant.designer.Margins" value="true"/>
+    <property name="ireport.scriptlethandling" value="2"/>
+    <property name="com.jasperassistant.designer.Grid" value="true"/>
+    <property name="com.jasperassistant.designer.SnapToGuides" value="true"/>
+    <import value="java.util.*"/>
+    <import value="net.sf.jasperreports.engine.*"/>
+    <import value="net.sf.jasperreports.engine.data.*"/>
+    <parameter name="startTime" class="java.sql.Timestamp">
+    </parameter>
+    <parameter name="endTime" class="java.sql.Timestamp">
+    </parameter>
+    <queryString><![CDATA[
+SELECT T2.smtp_sender as RCOL1A,
+       T2.rfc822_from as RCOL1B,
+       count(T2.rfc822_from) as RCOL2
+FROM tr_email_szlimit_evt T1,
+     tr_email_message_info T2
+WHERE T2.id = T1.msg_id and
+      T2.time_stamp >= $P{startTime} and T2.time_stamp <= $P{endTime}
+GROUP BY T2.smtp_sender, T2.rfc822_from
+ORDER BY RCOL1A ASC, RCOL1B ASC, RCOL2 DESC
+     ]]></queryString>
+    <field name="RCOL1A" class="java.lang.String">
+    </field>
+    <field name="RCOL1B" class="java.lang.String">
+    </field>
+    <field name="RCOL2" class="java.lang.Long">
+    </field>
+    <variable name="n" class="java.lang.Integer" calculation="Count">
+        <variableExpression><![CDATA[$F{RCOL2}]]></variableExpression>
+    </variable>
+    <variable name="totalCt" class="java.lang.Long" calculation="Sum">
+        <variableExpression><![CDATA[$F{RCOL2}]]></variableExpression>
+    </variable>
+    <background>
+        <band>
+        </band>
+    </background>
+    <title>
+        <band height="14">
+            <staticText>
+                <reportElement key="staticText" positionType="Float" mode="Opaque" x="53" y="0" width="169" height="14"/>
+                <box topBorder="None" topBorderColor="#0" leftBorder="None" leftBorderColor="#0" bottomBorder="None" bottomBorderColor="#0" rightBorder="None" rightBorderColor="#ffffff"/>
+                <textElement textAlignment="Center">
+                    <font fontName="SansSerif" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+                </textElement>
+                <text><![CDATA[Message size limit block results]]></text>
+            </staticText>
+        </band>
+    </title>
+    <pageHeader>
+        <band height="13">
+            <staticText>
+                <reportElement key="staticText" positionType="Float" mode="Opaque" x="0" y="0" width="91" height="13"/>
+                <box topBorder="None" topBorderColor="#0" leftBorder="None" leftBorderColor="#0" bottomBorder="None" bottomBorderColor="#0" rightBorder="None" rightBorderColor="#ffffff"/>
+                <textElement>
+                    <font fontName="SansSerif" size="9" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+                </textElement>
+                <text><![CDATA[Sender]]></text>
+            </staticText>
+            <staticText>
+                <reportElement key="staticText" positionType="Float" mode="Opaque" x="92" y="0" width="62" height="13"/>
+                <box topBorder="None" topBorderColor="#0" leftBorder="None" leftBorderColor="#0" bottomBorder="None" bottomBorderColor="#0" rightBorder="None" rightBorderColor="#ffffff"/>
+                <textElement textAlignment="Right">
+                    <font fontName="SansSerif" size="9" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+                </textElement>
+                <text><![CDATA[]]></text>
+            </staticText>
+            <staticText>
+                <reportElement key="staticText-1" mode="Opaque" x="156" y="0" width="77" height="13"/>
+                <box topBorder="None" topBorderColor="#0" leftBorder="None" leftBorderColor="#0" bottomBorder="None" bottomBorderColor="#0" rightBorder="None" rightBorderColor="#ffffff"/>
+                <textElement textAlignment="Right">
+                    <font fontName="SansSerif" size="9" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+                </textElement>
+                <text><![CDATA[Msg cnt]]></text>
+            </staticText>
+            <staticText>
+                <reportElement positionType="Float" x="234" y="0" width="42" height="13"/>
+                <textElement textAlignment="Right">
+                    <font fontName="SansSerif" size="9" isItalic="true"/>
+                </textElement>
+                <text><![CDATA[]]></text>
+                <!-- <text><![CDATA[%Count]]></text> -->
+            </staticText>
+        </band>
+    </pageHeader>
+    <columnHeader>
+        <band>
+        </band>
+    </columnHeader>
+    <detail>
+        <band height="13">
+            <printWhenExpression><![CDATA[new Boolean($V{n}.intValue() < 20)]]></printWhenExpression>
+            <textField pattern="">
+                <reportElement key="textField" positionType="Float" mode="Opaque" x="92" y="0" width="62" height="13"/>
+                <box topBorderColor="#0" leftBorderColor="#0" bottomBorderColor="#0" rightBorderColor="#ffffff"/>
+                <textElement textAlignment="Right">
+                    <font fontName="Monospaced" size="9" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+                </textElement>
+                <textFieldExpression class="java.lang.String"><![CDATA[""]]></textFieldExpression>
+            </textField>
+            <textField pattern="">
+                <reportElement key="textField" positionType="Float" mode="Opaque" x="0" y="0" width="91" height="13"/>
+                <box topBorderColor="#0" leftBorderColor="#0" bottomBorderColor="#0" rightBorderColor="#ffffff"/>
+                <textElement>
+                    <font fontName="SansSerif" size="9" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+                </textElement>
+                <textFieldExpression class="java.lang.String"><![CDATA[
+null == $F{RCOL1A} ? $F{RCOL1B} : $F{RCOL1A}
+                 ]]></textFieldExpression>
+            </textField>
+            <textField pattern="">
+                <reportElement key="textField" mode="Opaque" x="155" y="0" width="78" height="13"/>
+                <box topBorderColor="#0" leftBorderColor="#0" bottomBorderColor="#0" rightBorderColor="#ffffff"/>
+                <textElement textAlignment="Right">
+                    <font fontName="Monospaced" size="9" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+                </textElement>
+                <textFieldExpression class="java.lang.String"><![CDATA[""]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement key="textField" mode="Opaque" x="156" y="0" width="77" height="13"/>
+                <textElement textAlignment="Right">
+                    <font fontName="Monospaced" size="9" isItalic="false"/>
+                </textElement>
+                <textFieldExpression class="java.lang.Long"><![CDATA[$F{RCOL2}]]></textFieldExpression>
+                <!-- <textFieldExpression class="java.lang.String"><![CDATA[Math.round($F{RCOL2}.doubleValue() / $V{totalCt}.doubleValue() * 100) + "%"]]></textFieldExpression> -->
+            </textField>
+        </band>
+    </detail>
+    <columnFooter>
+        <band height="13">
+            <textField pattern="">
+                <reportElement key="textField" positionType="Float" mode="Opaque" x="92" y="0" width="62" height="13"/>
+                <box topBorder="None" topBorderColor="#0" leftBorder="None" leftBorderColor="#0" bottomBorder="None" bottomBorderColor="#0" rightBorder="None" rightBorderColor="#ffffff"/>
+                <textElement textAlignment="Right">
+                    <font fontName="Monospaced" size="9" isBold="true" isItalic="true" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+                </textElement>
+                <textFieldExpression class="java.lang.String"><![CDATA[""]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement key="staticText" positionType="Float" mode="Opaque" x="0" y="0" width="91" height="13"/>
+                <box topBorder="None" topBorderColor="#0" leftBorder="None" leftBorderColor="#0" bottomBorder="None" bottomBorderColor="#0" rightBorder="None" rightBorderColor="#ffffff"/>
+                <textElement>
+                    <font fontName="SansSerif" size="9" isBold="true" isItalic="true" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+                </textElement>
+                <text><![CDATA[Totals:]]></text>
+            </staticText>
+            <textField pattern="">
+                <reportElement key="textField" mode="Opaque" x="156" y="0" width="77" height="13"/>
+                <box topBorder="None" topBorderColor="#0" leftBorder="None" leftBorderColor="#0" bottomBorder="None" bottomBorderColor="#0" rightBorder="None" rightBorderColor="#ffffff"/>
+                <textElement textAlignment="Right">
+                    <font fontName="Monospaced" size="9" isBold="true" isItalic="true" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+                </textElement>
+                <textFieldExpression class="java.lang.Long"><![CDATA[$V{totalCt}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement positionType="Float" x="234" y="0" width="42" height="13"/>
+                <textElement textAlignment="Right">
+                    <font fontName="Monospaced" size="9" isBold="true" isItalic="true"/>
+                </textElement>
+                <text><![CDATA[]]></text>
+                <!-- <text><![CDATA[100%]]></text> -->
+            </staticText>
+        </band>
+    </columnFooter>
+    <pageFooter>
+        <band height="30">
+        </band>
+    </pageFooter>
+    <summary>
+        <band>
+        </band>
+    </summary>
+</jasperReport>

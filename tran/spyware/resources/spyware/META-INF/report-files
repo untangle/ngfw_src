@@ -1,0 +1,5 @@
+com/metavize/tran/spyware/SpywareMaster.jasper:summary:Summary
+com/metavize/tran/spyware/SpywareActiveXDetail.jasper:activex:ActiveX Incidents
+com/metavize/tran/spyware/SpywareAccessDetail.jasper:access:Access Incidents
+com/metavize/tran/spyware/SpywareCookieDetail.jasper:cookie:Cookie Incidents
+com.metavize.tran.spyware.SpywareSummarizer:summarizer:Summarizer

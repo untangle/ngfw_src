@@ -1,0 +1,175 @@
+libnetcap (0.8.0-0) testing; urgency=low
+
+  * Moving the session handling from xenon down to netcap.
+
+ -- Robert Scott <rbscott@bebe>  Thu, 19 Aug 2004 17:14:06 -0700
+
+libnetcap (0.7.1-2) testing; urgency=low
+
+  * auto build
+
+ -- Dirk Morris <dmorris@bebe>  Wed, 11 Aug 2004 15:20:09 -0700
+
+libnetcap (0.7.1-1) testing; urgency=low
+
+  * auto build
+
+ -- Dirk Morris <dmorris@bebe>  Wed,  4 Aug 2004 19:12:55 -0700
+
+libnetcap (0.7.1-0) testing; urgency=low
+
+  * interface change
+
+ -- Dirk Morris <dmorris@bebe>  Fri, 30 Jul 2004 11:04:21 -0700
+
+libnetcap (0.7.0-4) testing; urgency=low
+
+  * auto build
+
+ -- Dirk Morris <dmorris@bebe>  Fri, 30 Jul 2004 11:04:21 -0700
+
+libnetcap (0.7.0-3) testing; urgency=low
+
+  * auto build
+
+ -- Dirk Morris <dmorris@bebe>  Thu, 29 Jul 2004 18:26:32 -0700
+
+libnetcap (0.7.0-2) testing; urgency=low
+
+  * auto build
+
+ -- Dirk Morris <dmorris@bebe>  Thu, 29 Jul 2004 12:29:52 -0700
+
+libnetcap (0.7.0-1) testing; urgency=low
+
+  * auto build
+
+ -- Dirk Morris <dmorris@bebe>  Thu, 22 Jul 2004 13:40:33 -0700
+
+libnetcap (0.7.0-0) testing; urgency=low
+
+  * auto build
+
+ -- Dirk Morris <dmorris@bebe>  Thu, 22 Jul 2004 13:39:09 -0700
+
+libnetcap (0.6.2-10) testing; urgency=low
+
+  * auto build
+
+ -- Dirk Morris <dmorris@bebe>  Mon, 12 Jul 2004 15:12:44 -0700
+
+libnetcap (0.6.2-9) testing; urgency=low
+
+  * auto build
+
+ -- Dirk Morris <dmorris@bebe>  Thu,  8 Jul 2004 14:39:11 -0700
+
+libnetcap (0.6.2-8) testing; urgency=low
+
+  * auto build
+
+ -- root <root@bebe>  Tue,  6 Jul 2004 19:07:12 -0700
+
+libnetcap (0.6.2-7) testing; urgency=low
+
+  * auto build
+
+ -- root <root@bebe>  Tue,  6 Jul 2004 19:07:09 -0700
+
+libnetcap (0.6.2-6) testing; urgency=low
+
+  * auto build
+
+ -- Dirk Morris <dmorris@bebe>  Tue,  6 Jul 2004 19:07:09 -0700
+
+libnetcap (0.6.2-5) testing; urgency=low
+
+  * auto build
+
+ -- Dirk Morris <dmorris@bebe>  Tue,  6 Jul 2004 19:06:41 -0700
+
+libnetcap (0.6.2-4) testing; urgency=low
+
+  * auto build
+
+ -- root <root@bebe>  Tue,  6 Jul 2004 19:06:40 -0700
+
+libnetcap (0.6.2-3) testing; urgency=low
+
+  * auto build
+
+ -- root <root@bebe>  Tue,  6 Jul 2004 19:06:37 -0700
+
+libnetcap (0.6.2-2) testing; urgency=low
+
+  * auto build
+
+ -- Dirk Morris <dmorris@bebe>  Tue,  6 Jul 2004 19:04:19 -0700
+
+libnetcap (0.6.2-1) testing; urgency=low
+
+  * auto build
+
+ -- Dirk Morris <dmorris@bebe>  Tue,  6 Jul 2004 19:03:48 -0700
+
+libnetcap (0.6.2-0) testing; urgency=low
+
+  * auto build
+
+ -- Dirk Morris <dmorris@bebe>  Tue,  4 May 2004 11:39:49 -0700
+
+libnetcap (0.6.1) testing; urgency=low
+
+  * auto build
+
+ -- Dirk Morris <dmorris@bebe>  Fri,  2 Apr 2004 13:47:02 -0800
+
+libnetcap (0.6.0) testing; urgency=low
+
+  * icmp, syn added, interface changes again
+
+ -- Dirk Morris <dmorris@bebe>  Thu, 11 Mar 2004 17:54:50 -0800
+
+libnetcap (0.5.1-0) testing; urgency=low
+
+  * changed udpprop_free, significant interface changes needs new version
+
+ -- Dirk Morris <dmorris@bebe>  Thu, 11 Mar 2004 17:54:50 -0800
+
+libnetcap (0.5-2) testing; urgency=low
+
+  * auto build
+
+ -- Dirk Morris <dmorris@bebe>  Thu, 11 Mar 2004 17:54:50 -0800
+
+libnetcap (0.5-1) testing; urgency=low
+
+  * auto build
+
+ -- Dirk Morris <dmorris@bebe>  Thu, 26 Feb 2004 15:37:19 -0800
+
+libnetcap (0.5-0) testing; urgency=low
+
+  * minor rewrite, now uses epoll
+
+ -- Dirk Morris <dmorris@bebe>  Tue, 26 Feb 2004 14:24:46 -0800
+
+libnetcap (0.3.3) testing; urgency=low
+
+  * auto build
+
+ -- Dirk Morris <dmorris@bebe>  Tue, 24 Feb 2004 18:24:46 -0800
+
+libnetcap (0.3.2) testing; urgency=low
+
+  * auto build
+
+ -- Dirk Morris <dmorris@bebe>  Fri, 20 Feb 2004 12:03:16 -0800
+
+libnetcap (0.3.1) testing; urgency=low
+
+  * foobar
+	
+ -- Dirk Morris <dmorris@metavize.com>  Thu, 12 Dec 2002 13:32:12 -0700
+
+

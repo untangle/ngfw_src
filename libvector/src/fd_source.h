@@ -1,0 +1,34 @@
+/*
+ * Copyright (c) 2003 Metavize Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Metavize Inc. ("Confidential Information").  You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id: fd_source.h,v 1.2 2004/11/10 20:56:44 dmorris Exp $
+ */
+#ifndef __FD_SOURCE_H_
+#define __FD_SOURCE_H_
+
+#include "source.h"
+
+typedef struct fd_source {
+
+    source_t base;
+
+    int fd;
+
+    mvpoll_key_t* key;
+    
+} fd_source_t;
+
+source_t* fd_source_create (int fd);
+
+event_t*  fd_source_get_event (source_t* src);
+mvpoll_key_t* fd_source_get_event_key (source_t* src);
+int       fd_source_shutdown (source_t* src);
+void      fd_source_raze (source_t* src);
+
+
+#endif

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mvvm-transform>
+  <transform-desc name="airgap-transform"
+                  display-name="Packet Attack Shield"
+                  classname="com.metavize.tran.airgap.AirgapTransformImpl"
+                  gui-classname="com.metavize.tran.airgap.gui.MTransformJPanel"/>
+</mvvm-transform>

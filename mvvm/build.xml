@@ -1,0 +1,448 @@
+<?xml version="1.0"?>
+
+<!--
+Copyright (c) 2004, 2005 Metavize Inc.
+All rights reserved.
+
+This software is the confidential and proprietary information of
+Metavize Inc. ("Confidential Information").  You shall
+not disclose such Confidential Information.
+
+$Id: build.xml,v 1.93 2005/03/22 01:27:49 inieves Exp $
+-->
+
+<project name="mvvm" basedir="." default="all">
+
+  <import file="../buildtools/buildmagic.xml"/>
+
+  <!-- properties -->
+  <property name="mnp.package" value="com.metavize.mvvm.smith.mnp.requests"/>
+  <property name="mnp.xsd" value="../../xenon/xml/mnp.xsd"/>
+
+  <!-- main targets -->
+  <target name="pkg.gensrc"/>
+  <target name="pkg.compile"
+          depends="compile.bootstrap, compile.util, compile.mvvm-client,
+                   compile.mvvm, compile.http-invoker"/>
+  <target name="pkg.jar"
+          depends="jar.bootstrap, jar.util, jar.mvvm-client, jar.mvvm,
+                   jar.http-invoker"/>
+  <target name="pkg.install"
+          depends="install.hier, install.bootstrap, install.util,
+                   install.mvvm-client, install.mvvm, install.http-invoker,
+                   install.thirdparty, install.sessionDumper,
+                   install.servlet.reports"/>
+  <target name="pkg.clean" depends="clean.nuke"/>
+
+  <target name="gensrc.xdoclet" depends="prepare">
+    <!-- map all files to datestamp, if any are newer, run xdoclet -->
+    <fileset id="xdoclet.fileset" dir="./" includes="**/*.java">
+      <depend targetdir="${build.gensrc}">
+        <mapper type="merge" from="*pat$$" to="xdoclet-datestamp"/>
+      </depend>
+    </fileset>
+
+    <pathconvert pathsep=" " refid="xdoclet.fileset" property="xdocletList"/>
+    <if>
+      <not><equals arg1="${xdocletList}" arg2="" /></not>
+      <then>
+        <hibernatedoclet destdir="${build.gensrc}"
+                         excludedtags="@version,@author,@todo" verbose="true">
+          <fileset dir="${src.main}">
+            <include name="**/*.java"/>
+            <exclude name="com/metavize/mvvm/util/**"/>
+            <exclude name="com/metavize/mvvm/argon/**"/>
+            <exclude name="com/metavize/mvvm/tapi/**"/>
+          </fileset>
+          <hibernate version="2.0"/>
+        </hibernatedoclet>
+        <touch file="${build.gensrc}/xdoclet-datestamp"/>
+      </then>
+    </if>
+  </target>
+
+  <!-- bootstrap.jar -->
+  <property name="src.bootstrap" value="bootstrap"/>
+  <property name="build.bootstrap" value="${build.root}/bootstrap"/>
+
+  <target name="compile.bootstrap" depends="prepare">
+    <mkdir dir="${build.bootstrap}"/>
+
+    <exec executable="${buildtool.base}/dependset.sh">
+      <arg value="${build.bootstrap}"/>
+      <arg value="${build.depcache}/bootstrap.patternset"/>
+    </exec>
+
+    <depend srcdir="${src.bootstrap}" destdir="${build.bootstrap}"
+            cache="${build.depcache}/bootstrap" closure="yes">
+      <patternset includesfile="${build.depcache}/bootstrap.patternset"/>
+    </depend>
+
+    <javac destdir="${build.bootstrap}"
+           debug="on"
+           optimize="false"
+           deprecation="on"
+           source="1.5"
+	   target="1.5"
+           includeAntRuntime="false">
+
+      <classpath refid="mvvm.thirdparty.classpath"/>
+
+      <src path="${src.bootstrap}"/>
+
+      <include name="**/*java"/>
+    </javac>
+  </target>
+
+  <target name="jar.bootstrap" depends="compile.bootstrap">
+    <jar destfile="${build.jar}/bootstrap.jar" index="yes">
+      <fileset dir="${build.bootstrap}"/>
+    </jar>
+  </target>
+
+  <target name="install.bootstrap" depends="jar.bootstrap">
+    <copy file="${build.jar}/bootstrap.jar" todir="${dist.mvvm.lib}"/>
+  </target>
+
+  <!-- mvvm-client.jar -->
+  <property name="build.mvvm-client" value="${build.root}/mvvm-client"/>
+
+  <target name="compile.mvvm-client">
+    <mkdir dir="${build.mvvm-client}"/>
+
+    <exec executable="${buildtool.base}/dependset.sh">
+      <arg value="${build.mvvm-client}"/>
+      <arg value="${build.depcache}/mvvm-client.patternset"/>
+    </exec>
+
+    <depend srcdir="${src.main}" destdir="${build.mvvm-client}"
+            cache="${build.depcache}/mvvm-client" closure="yes">
+      <patternset includesfile="${build.depcache}/mvvm-client.patternset"/>
+    </depend>
+
+    <javac destdir="${build.mvvm-client}"
+           debug="on"
+           optimize="false"
+           deprecation="on"
+           source="1.5"
+	   target="1.5"
+           includeAntRuntime="false">
+
+      <classpath refid="jnetcap.classpath"/>
+      <classpath refid="jvector.classpath"/>
+      <classpath refid="mvvm.thirdparty.classpath"/>
+      <classpath path="${build.jar}/bootstrap.jar"/>
+
+      <src path="${src.main}"/>
+
+      <include name="com/metavize/mvvm/MvvmRemoteContextFactory.java"/>
+      <include name="com/metavize/mvvm/Period.java"/>
+      <include name="com/metavize/mvvm/reporting/BaseSummarizer.java"/>
+      <include name="com/metavize/mvvm/tran/*.java"/>
+      <include name="com/metavize/mvvm/client/*.java"/>
+      <include name="com/metavize/mvvm/tapi/client/*.java"/>
+      <include name="com/metavize/mvvm/util/SessionUtil.java"/>
+      <include name="com/metavize/mvvm/util/PortServiceNames.java"/>
+    </javac>
+  </target>
+
+  <target name="jar.mvvm-client" depends="compile.mvvm-client">
+    <jar destfile="${build.jar}/mvvm-client.jar" index="yes">
+      <fileset dir="${build.mvvm-client}"/>
+    </jar>
+  </target>
+
+  <target name="install.mvvm-client" depends="jar.mvvm-client">
+    <copy file="${build.jar}/mvvm-client.jar" todir="${dist.mvvm.lib}"/>
+  </target>
+
+  <!-- util.jar -->
+
+  <property name="build.util" value="${build.root}/util"/>
+
+  <target name="compile.util" depends="jar.bootstrap, jar.mvvm">
+    <mkdir dir="${build.util}"/>
+
+    <exec executable="${buildtool.base}/dependset.sh">
+      <arg value="${build.util}"/>
+      <arg value="${build.depcache}/util.patternset"/>
+    </exec>
+
+    <depend srcdir="${src.main}" destdir="${build.util}"
+            cache="${build.depcache}/util" closure="yes">
+      <patternset includesfile="${build.depcache}/util.patternset"/>
+    </depend>
+
+    <javac destdir="${build.util}"
+           debug="on"
+           optimize="false"
+           deprecation="on"
+           source="1.5"
+	   target="1.5"
+           includeAntRuntime="false">
+
+      <src path="${src.main}"/>
+
+      <classpath refid="jnetcap.classpath"/>
+      <classpath refid="jvector.classpath"/>
+      <classpath refid="jfreechart.classpath"/>
+      <classpath refid="mvvm.thirdparty.classpath"/>
+      <classpath path="${build.jar}/bootstrap.jar"/>
+      <classpath path="${build.jar}/mvvm.jar"/>
+
+      <include name="com/metavize/mvvm/engine/SocketInvokerStub.java"/>
+      <include name="com/metavize/mvvm/reporting/**/*.java"/>
+      <include name="com/metavize/mvvm/util/RemoteClient.java"/>
+      <include name="com/metavize/mvvm/engine/MvvmTransformHandler.java"/>
+    </javac>
+  </target>
+
+  <target name="jar.util" depends="compile.util">
+    <jar destfile="${build.jar}/util.jar" index="yes">
+      <fileset dir="${build.util}"/>
+      <fileset dir="../gui/main">
+        <include name="com/metavize/gui/icons/LogoNoText64x64.gif"/>
+      </fileset>
+    </jar>
+  </target>
+
+  <target name="install.util" depends="jar.util">
+    <copy file="${build.jar}/util.jar" todir="${dist.mvvm.lib}"/>
+  </target>
+
+  <!-- mvvm.jar -->
+
+  <property name="build.mvvm" value="${build.root}/mvvm"/>
+
+  <target name="compile.mvvm" depends="jar.bootstrap">
+    <mkdir dir="${build.mvvm}"/>
+
+    <exec executable="${buildtool.base}/dependset.sh">
+      <arg value="${build.mvvm}"/>
+      <arg value="${build.depcache}/mvvm.patternset"/>
+    </exec>
+
+    <depend srcdir="${src.main}" destdir="${build.mvvm}"
+            cache="${build.depcache}/mvvm" closure="yes"
+            classpath="${build.bootstrap}">
+      <patternset includesfile="${build.depcache}/mvvm.patternset"/>
+    </depend>
+
+    <javac destdir="${build.mvvm}"
+           debug="on"
+           optimize="false"
+           deprecation="on"
+           source="1.5"
+	   target="1.5"
+           includeAntRuntime="false">
+
+      <classpath refid="jnetcap.classpath"/>
+      <classpath refid="jvector.classpath"/>
+      <classpath refid="mvvm.thirdparty.classpath"/>
+      <classpath path="${build.jar}/bootstrap.jar"/>
+
+      <src path="${src.main}"/>
+
+      <include name="com/metavize/mvvm/MvvmContext.java"/>
+      <include name="com/metavize/mvvm/argon/*"/>
+      <include name="com/metavize/mvvm/engine/*"/>
+      <include name="com/metavize/mvvm/logging/**"/>
+      <include name="com/metavize/mvvm/security/**"/>
+      <include name="com/metavize/mvvm/tapi/**"/>
+      <include name="com/metavize/mvvm/tran/**"/>
+      <include name="com/metavize/mvvm/type/**"/>
+      <include name="com/metavize/tran/token/**"/>
+      <include name="com/metavize/tran/util/**"/>
+    </javac>
+  </target>
+
+  <target name="jar.mvvm" depends="compile.mvvm, gensrc.xdoclet">
+    <jar destfile="${build.jar}/mvvm.jar" index="yes">
+      <fileset dir="${build.gensrc}">
+        <include name="**/*.hbm.xml"/>
+      </fileset>
+      <fileset dir="${build.mvvm}"/>
+
+      <!-- XXX dirty hack for store icons -->
+
+      <fileset dir="../gui/main">
+        <include name="**/IconOrg*png"/>
+        <include name="**/IconDesc*png"/>
+      </fileset>
+
+      <fileset dir="../tran/test/main">
+        <include name="**/*png"/>
+      </fileset>
+      <fileset dir="../tran/airgap/main">
+        <include name="**/*png"/>
+      </fileset>
+      <fileset dir="../tran/email/main">
+        <include name="**/*png"/>
+      </fileset>
+      <fileset dir="../tran/fprot/main">
+        <include name="**/*png"/>
+      </fileset>
+      <fileset dir="../tran/httpblocker/main">
+        <include name="**/*png"/>
+      </fileset>
+      <fileset dir="../tran/protofilter/main">
+        <include name="**/*png"/>
+      </fileset>
+      <fileset dir="../tran/reporting/main">
+        <include name="**/*png"/>
+      </fileset>
+      <fileset dir="../tran/sophos/main">
+        <include name="**/*png"/>
+      </fileset>
+      <fileset dir="../tran/spyware/main">
+        <include name="**/*png"/>
+      </fileset>
+      <fileset dir="../tran/virus/main">
+        <include name="**/*png"/>
+      </fileset>
+      <fileset dir="../tran/hauri/main">
+        <include name="**/*png"/>
+      </fileset>
+    </jar>
+  </target>
+
+  <target name="install.mvvm" depends="jar.mvvm">
+    <copy file="${build.jar}/mvvm.jar" todir="${dist.mvvm.lib}"/>
+  </target>
+
+  <property name="build.mvvm" value="${build.root}/mvvm"/>
+
+  <!-- http-invoker.war" -->
+
+  <property name="build.http-invoker" value="${build.root}/http-invoker"/>
+
+  <target name="compile.http-invoker" depends="jar.bootstrap">
+    <mkdir dir="${build.http-invoker}"/>
+
+    <exec executable="${buildtool.base}/dependset.sh">
+      <arg value="${build.http-invoker}"/>
+      <arg value="${build.depcache}/http-invoker.patternset"/>
+    </exec>
+
+    <depend srcdir="${src.main}"
+            destdir="${build.http-invoker}"
+            cache="${build.depcache}/http-invoker" closure="yes">
+      <patternset includesfile="${build.depcache}/http-invoker.patternset"/>
+    </depend>
+
+    <javac destdir="${build.http-invoker}"
+           debug="on"
+           optimize="false"
+           deprecation="on"
+           source="1.5"
+	   target="1.5"
+           includeAntRuntime="false">
+
+      <classpath refid="mvvm.thirdparty.classpath"/>
+      <classpath path="${build.jar}/bootstrap.jar"/>
+
+      <src path="${src.main}"/>
+
+      <include name="com/metavize/mvvm/servlet/invoker/HttpInvokerServlet.java"/>
+    </javac>
+  </target>
+
+  <target name="jar.http-invoker" depends="compile.http-invoker">
+    <jar destfile="${build.jar}/http-invoker.jar" index="yes">
+      <fileset dir="${build.http-invoker}"/>
+      <fileset dir="${build.gensrc}">
+        <include name="**/*.hbm.xml"/>
+      </fileset>
+    </jar>
+  </target>
+
+  <target name="install.http-invoker" depends="jar.http-invoker">
+    <copy file="${build.jar}/http-invoker.jar"
+          todir="${dist.mvvm.web}/http-invoker/WEB-INF/lib"/>
+  </target>
+
+  <!-- thirdparty -->
+
+  <target name="install.thirdparty" depends="install.hier">
+    <mkdir dir="${dist.thirdparty.lib}"/>
+
+    <!-- XXX move to own package(s) -->
+    <copy todir="${dist.thirdparty.lib}" flatten="yes">
+      <fileset refid="activation.jarset"/>
+      <fileset refid="concurrent.jarset"/>
+      <fileset refid="hibernate.jarset"/>
+      <fileset refid="itext.jarset"/>
+      <fileset refid="jasperreports.jarset"/>
+      <fileset refid="jasperreports.lib.jarset"/>
+      <fileset refid="javamail.jarset"/>
+      <fileset refid="jfreechart.jarset"/>
+      <fileset refid="junit.jarset"/>
+      <fileset refid="log4j.jarset"/>
+      <fileset refid="postgresql.jarset"/>
+      <fileset refid="tomcat.jarset"/>
+      <fileset refid="trove.jarset"/>
+    </copy>
+
+    <!-- java endorsed directory -->
+
+    <mkdir dir="${dist.endorsed.lib}"/>
+
+    <copy todir="${dist.endorsed.lib}">
+      <fileset dir="${HIBERNATE_HOME}/lib">
+        <include name="xerces-*.jar"/>
+      </fileset>
+    </copy>
+
+    <!-- XXX Tomcat Manager, not for distribution -->
+    <mkdir dir="${dist.mvvm.web}/manager"/>
+    <copy todir="${dist.mvvm.web}/manager">
+      <fileset dir="${TOMCAT_EMBED_HOME}/webapps/manager"/>
+    </copy>
+
+  </target>
+
+  <target name="install.sessionDumper" depends="install.hier">
+    <copy todir="${dist.mvvm.web}/session-dumper/WEB-INF/lib">
+      <fileset dir="${build.jar}">
+        <include name="mvvm-client.jar"/>
+      </fileset>
+    </copy>
+  </target>
+
+  <target name="install.servlet.proxool" depends="install.hier">
+    <copy todir="${dist.mvvm.web}/proxool/WEB-INF/lib">
+      <fileset refid="proxool.jarset"/>
+    </copy>
+  </target>
+
+  <target name="install.servlet.reports" depends="install.hier">
+    <copy todir="${dist.mvvm.reports}"
+          file="../gui/main/com/metavize/gui/icons/LogoNoText64x64.gif"/>
+  </target>
+
+  <!-- hier targets -->
+
+  <target name="install.hier">
+    <mkdir dir="${dist.log}"/>
+    <mkdir dir="${dist.var.run}"/>
+    <mkdir dir="${dist.mvvm.data}"/>
+
+    <copy todir="${build.dist}" filtering="true">
+      <fileset dir="${src.hier}"/>
+    </copy>
+
+    <exec executable="sh">
+      <arg line='-c "if ! [ -a ${dist.mvvm.log} ] ; then ln -fs ${build.prefix}/${suffix.log}/ ${dist.mvvm.log} ; fi "'/>
+    </exec>
+
+    <chmod perm="ugo+rx">
+      <fileset dir="${build.dist}/usr/bin"/>
+      <fileset dir="${build.dist}/etc/init.d"/>
+      <fileset dir="${build.dist}/etc/cron.daily"/>
+      <fileset file="${build.dist}/usr/share/metavize/mvvm_restart.sh"/>
+      <fileset file="${build.dist}/usr/share/metavize/ssh_enable.sh"/>
+      <fileset file="${build.dist}/usr/share/metavize/ssh_disable.sh"/>
+    </chmod>
+  </target>
+
+</project>

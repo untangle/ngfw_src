@@ -1,0 +1,222 @@
+/*
+ * Copyright (c) 2003, 2004, 2005 Metavize Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Metavize Inc. ("Confidential Information").  You shall
+ * not disclose such Confidential Information.
+ *
+ *  $Id: AbstractEventHandler.java,v 1.1 2005/01/30 09:20:31 amread Exp $
+ */
+
+package com.metavize.mvvm.tapi;
+
+import com.metavize.mvvm.tapi.event.*;
+import com.metavize.mvvm.tran.TransformContext;
+
+
+public abstract class AbstractEventHandler implements SessionEventListener {
+
+    protected AbstractTransform xform;
+
+    protected AbstractEventHandler()
+    {
+        TransformContext tc = TransformContextFactory.context();
+        xform = (AbstractTransform)tc.transform();
+    }
+
+    public void handleTimer(IPSessionEvent event)
+    {
+    }
+
+    protected long incrementCount(int i)
+    {
+        return xform.incrementCount(i, 1);
+    }
+
+    protected long incrementCount(int i, long delta)
+    {
+        return xform.incrementCount(i, delta);
+    }
+
+    /*
+    // This should be enhanced. XXX
+    public void handleMPipeHeartbeatRequest(MPipeHeartbeatRequestEvent event)
+    {
+        // Check to make sure the client health is good.  XXX
+        boolean ok = true;
+        MPipe mPipe = event.mPipe();
+        try {
+            // What does it mean for exection from here? XXX
+
+            if (ok) {
+                mPipe.sendOkHeartbeat();
+            } else {
+                // XXX
+                mPipe.sendErrHeartbeat("foo", MNPConstants.ERROR, "");
+            }
+        } catch (MPipeException x) {
+            // XXX
+        }
+    }
+    */
+
+
+    //////////////////////////////////////////////////////////////////////
+    // TCP
+    //////////////////////////////////////////////////////////////////////
+
+    public void handleTCPNewSessionRequest(TCPNewSessionRequestEvent event)
+        throws MPipeException
+    {
+        /* accept */
+    }
+
+    public void handleTCPNewSession(TCPSessionEvent event)
+        throws MPipeException
+    {
+        /* ignore */
+    }
+
+    public void handleTCPClientFIN(TCPSessionEvent event)
+        throws MPipeException
+    {
+        // Just go ahead and shut down the other side.  The transform will override
+        // this method if it wants to keep the other side open.
+        TCPSession sess = event.session();
+        sess.shutdownServer();
+    }
+
+    public void handleTCPServerFIN(TCPSessionEvent event)
+        throws MPipeException
+    {
+        // Just go ahead and shut down the other side.  The transform will override
+        // this method if it wants to keep the other side open.
+        TCPSession sess = event.session();
+        sess.shutdownClient();
+    }
+
+    public void handleTCPClientRST(TCPSessionEvent event)
+        throws MPipeException
+    {
+        // Just go ahead and reset the other side.  The transform will override
+        // this method if it wants to keep the other side open.
+        TCPSession sess = event.session();
+        sess.resetServer();
+    }
+
+    public void handleTCPServerRST(TCPSessionEvent event)
+        throws MPipeException
+    {
+        // Just go ahead and reset the other side.  The transform will override
+        // this method if it wants to keep the other side open.
+        TCPSession sess = event.session();
+        sess.resetClient();
+    }
+
+    public void handleTCPFinalized(TCPSessionEvent event)
+        throws MPipeException
+    {
+    }
+
+    public IPDataResult handleTCPClientChunk(TCPChunkEvent event)
+        throws MPipeException
+    {
+        // Default just sends the bytes onwards.
+        return IPDataResult.PASS_THROUGH;
+    }
+
+    public IPDataResult handleTCPServerChunk(TCPChunkEvent event)
+        throws MPipeException
+    {
+        // Default just sends the bytes onwards.
+        return IPDataResult.PASS_THROUGH;
+    }
+
+    public IPDataResult handleTCPServerWritable(TCPSessionEvent event)
+        throws MPipeException
+    {
+        // Default writes nothing more.
+        return IPDataResult.SEND_NOTHING;
+    }
+
+    public IPDataResult handleTCPClientWritable(TCPSessionEvent event)
+        throws MPipeException
+    {
+        // Default writes nothing more.
+        return IPDataResult.SEND_NOTHING;
+    }
+
+
+    //////////////////////////////////////////////////////////////////////
+    // UDP
+    //////////////////////////////////////////////////////////////////////
+
+    public void handleUDPNewSessionRequest(UDPNewSessionRequestEvent event)
+        throws MPipeException
+    {
+        /* accept */
+    }
+
+    public void handleUDPNewSession(UDPSessionEvent event)
+        throws MPipeException
+    {
+        /* ignore */
+    }
+
+    public void handleUDPClientExpired(UDPSessionEvent event)
+        throws MPipeException
+    {
+        // Current assumption: A single expire will be generated on one side of the pipeline,
+        // which will travel across it.  Another possibility would be to hit them all at once.
+        // Just go ahead and expire the other side.  The transform will override
+        // this method if it wants to keep the other side open.
+        UDPSession sess = event.session();
+        sess.expireServer();
+    }
+
+    public void handleUDPServerExpired(UDPSessionEvent event)
+        throws MPipeException
+    {
+        // Current assumption: A single expire will be generated on one side of the pipeline,
+        // which will travel across it.  Another possibility would be to hit them all at once.
+        // Just go ahead and expire the other side.  The transform will override
+        // this method if it wants to keep the other side open.
+        UDPSession sess = event.session();
+        sess.expireClient();
+    }
+
+    public IPDataResult handleUDPServerWritable(UDPSessionEvent event)
+        throws MPipeException
+    {
+        // Default writes nothing more.
+        return IPDataResult.SEND_NOTHING;
+    }
+
+    public IPDataResult handleUDPClientWritable(UDPSessionEvent event)
+        throws MPipeException
+    {
+        // Default writes nothing more.
+        return IPDataResult.SEND_NOTHING;
+    }
+
+    public void handleUDPFinalized(UDPSessionEvent event)
+        throws MPipeException
+    {
+    }
+
+    public IPDataResult handleUDPClientPacket(UDPPacketEvent event)
+        throws MPipeException
+    {
+        // Default just sends the packet onwards.
+        return IPDataResult.PASS_THROUGH;
+    }
+
+    public IPDataResult handleUDPServerPacket(UDPPacketEvent event)
+        throws MPipeException
+    {
+        // Default just sends the packet onwards.
+        return IPDataResult.PASS_THROUGH;
+    }
+
+}

@@ -1,0 +1,83 @@
+/*
+ * Copyright (c) 2003 - 2005 Metavize Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Metavize Inc. ("Confidential Information").  You shall
+ * not disclose such Confidential Information.
+ *
+ *  $Id: MPipeManagerImpl.java,v 1.7 2005/01/30 09:20:31 amread Exp $
+ */
+
+package com.metavize.mvvm.tapi.impl;
+
+import java.net.*;
+import java.util.*;
+
+import com.metavize.mvvm.tapi.*;
+import com.metavize.mvvm.tran.Transform;
+
+/**
+ * Service-provider & manager class for MPipes.
+ *
+ * <p>A <code>MPipeManager</code> is a concrete subclass of this class
+ * that has a zero-argument constructor and implements the abstract
+ * methods herein.  A given Meta Node virtual machine maintains a single
+ * system-wide default manager instance, which is returned by the {@link
+ * #manager manager} method.  The first invocation of that method will locate
+ * and cache the default provider as specified below.
+ *
+ * We also add internally used functionality here.
+ *
+ * @author <a href="mailto:jdi@SLAB"></a>
+ * @version 1.0
+ */
+class MPipeManagerImpl extends MPipeManager {
+
+    // List of mPipes we manage for the transform
+    protected List allMPipes;
+
+    protected MPipeManagerImpl()
+    {
+        allMPipes = new ArrayList();
+    }
+
+    /**
+     * The <code>plumbLocal</code> method connects the MetaSmith to a MPIPE
+
+     * on the local machine.  No remote MPIPE may be contacted in this way.
+     *
+     */
+    public MPipe plumbLocal(Transform tran, PipeSpec pipeSpec)
+    {
+        // Class is configurable by changing MPipeManagers, so we can
+        // hard code it here.
+        MPipeImpl mPipe = new MPipeImpl(this, tran, pipeSpec);
+
+        synchronized(allMPipes) {
+            allMPipes.add(mPipe);
+        }
+        return mPipe;
+    }
+
+    private static final MPipe[] MPIPE_PROTO = new MPipe[0];
+
+    public MPipe[] mPipes()
+    {
+        return (MPipe[])allMPipes.toArray(MPIPE_PROTO);
+    }
+
+    // MPipe calls in here after destroying.
+    protected void destroyed(MPipe mPipe) {
+        synchronized(allMPipes) {
+            allMPipes.remove(mPipe);
+        }
+    }
+
+    // MVVM Context calls in here when restarting the whole mvvm, after destroying all
+    // the transforms.  We just do cleanup.
+    public void destroy() {
+        allMPipes = null;
+        super.destroy();
+    }
+}

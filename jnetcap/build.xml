@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+
+<!--
+Copyright (c) 2004 Metavize Inc.
+All rights reserved.
+
+This software is the confidential and proprietary information of
+Metavize Inc. ("Confidential Information").  You shall
+not disclose such Confidential Information.
+
+$Id: build.xml,v 1.7 2005/03/22 01:27:49 inieves Exp $
+-->
+
+<project name="jnetcap" basedir="." default="all">
+  <import file="../buildtools/buildmagic.xml"/>
+
+  <!-- main targets -->
+  <target name="pkg.gensrc" depends=""/>
+  <target name="pkg.compile" depends="compile.jnetcap, jni.jnetcap, jar.jnetcap"/>
+  <target name="pkg.jar" depends="compile.jnetcap"/>
+  <target name="pkg.install" depends="install.jnetcap"/>
+  <target name="pkg.clean" depends="clean.nuke"/>
+
+  <!-- jnetcap.jar -->
+
+  <property name="build.jnetcap" value="${build.root}/jnetcap"/>
+  <property name="src.jnetcap" value="src"/>
+  <property name="jni.dst.jnetcap" value="jni_includes"/>
+
+  <target name="compile.jnetcap" depends="prepare">
+    <mkdir dir="${build.jnetcap}"/>
+    <depend srcdir="${src.jnetcap}" destdir="${build.jnetcap}"
+            cache="${build.depcache}/jnetcap" closure="yes">
+    </depend>
+
+    <javac destdir="${build.jnetcap}"
+           debug="on"
+           optimize="false"
+           deprecation="on"
+           source="1.5"
+	   target="1.5"
+           includeAntRuntime="false">
+
+      <src path="${src.jnetcap}"/>
+
+      <include name="com/metavize/jnetcap/*.java"/>
+      <classpath refid="mvvm.thirdparty.classpath"/>
+    </javac>
+  </target>
+
+  <target name="jni.jnetcap">
+    <mkdir dir="${jni.dst.jnetcap}"/>
+    <javah destdir="${jni.dst.jnetcap}" classpath="${build.jnetcap}" verbose="false">
+      <class name="com.metavize.jnetcap.Subscription"/>
+      <class name="com.metavize.jnetcap.InterfaceSet"/> 
+      <class name="com.metavize.jnetcap.Netcap"/>
+      <class name="com.metavize.jnetcap.IPTraffic"/>
+      <class name="com.metavize.jnetcap.NetcapUDPSession"/>
+      <class name="com.metavize.jnetcap.NetcapSession"/>
+      <class name="com.metavize.jnetcap.SubscriptionGenerator"/>
+      <class name="com.metavize.jnetcap.NetcapTCPSession"/>
+      <class name="com.metavize.jnetcap.Shield"/>
+    </javah>
+  </target>
+
+  <target name="jar.jnetcap" depends="compile.jnetcap">
+    <jar destfile="${build.jar}/jnetcap.jar" index="yes">
+      <fileset dir="${build.jnetcap}"/>
+    </jar>
+  </target>
+
+  <target name="install.jnetcap" depends="jar.jnetcap">
+    <mkdir dir="${dist.mvvm.lib}"/>
+    <copy file="${build.jar}/jnetcap.jar" todir="${dist.mvvm.lib}"/>
+  </target>
+</project>

@@ -1,0 +1,12 @@
+#!/bin/sh
+
+cutoff="now() - interval '7 days'";
+
+echo "$cutoff"
+
+for c in @MVVM_SCHEMA@/*/rollup.sql; do
+    psql -U metavize -v cutoff="$cutoff" -f $c mvvm
+done
+
+echo "VACUUM ANALYZE;" | psql -U metavize mvvm
+

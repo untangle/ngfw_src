@@ -1,0 +1,241 @@
+<?xml version="1.0"?>
+
+<!--
+Copyright (c) 2004, 2005 Metavize Inc.
+All rights reserved.
+
+This software is the confidential and proprietary information of
+Metavize Inc. ("Confidential Information").  You shall
+not disclose such Confidential Information.
+
+$Id: common-classpaths.xml,v 1.32 2005/02/10 23:25:44 jdi Exp $
+-->
+
+<project name="common-classpaths" basedir=".">
+
+  <!-- Metavize classpath -->
+  <!-- XXX separate into a interface jar for transforms -->
+  <fileset id="mvvm.jarset" file="../mvvm/output/jar/mvvm.jar"/>
+
+  <path id="mvvm.classpath">
+    <fileset refid="mvvm.jarset"/>
+  </path>
+
+  <!-- Metavize Remote Client classpath -->
+  <fileset id="mvvm-client.jarset" file="../mvvm/output/jar/mvvm-client.jar"/>
+
+  <path id="mvvm-client.classpath">
+    <fileset refid="mvvm-client.jarset"/>
+  </path>
+
+  <fileset id="gui.jarset" file="../gui/output/jar/gui.jar"/>
+
+  <path id="gui.classpath">
+    <fileset refid="gui.jarset"/>
+  </path>
+
+  <!-- Http Transform classpath -->
+  <fileset id="http.jarset" file="../tran/output/jar/http-transform.mar"/>
+
+  <path id="http.classpath">
+    <fileset refid="http.jarset"/>
+  </path>
+
+  <!-- JNetcap classpath -->
+  <fileset id="jnetcap.jarset" file="../jnetcap/output/jar/jnetcap.jar"/>
+
+  <path id="jnetcap.classpath">
+    <fileset refid="jnetcap.jarset"/>
+  </path>
+
+  <!-- JVector classpath -->
+  <fileset id="jvector.jarset" file="../jvector/output/jar/jvector.jar"/>
+
+  <path id="jvector.classpath">
+    <fileset refid="jvector.jarset"/>
+  </path>
+
+  <!-- Thirdparty classpath -->
+  <fileset id="tomcat.jarset" dir="${TOMCAT_EMBED_HOME}">
+    <include name="lib/*jar"/>
+  </fileset>
+
+  <path id="tomcat.classpath">
+    <fileset refid="tomcat.jarset"/>
+  </path>
+
+  <fileset id="trove.jarset" dir="${TROVE_HOME}">
+    <include name="lib/trove.jar"/>
+  </fileset>
+
+  <path id="trove.classpath">
+    <fileset refid="trove.jarset"/>
+  </path>
+
+  <fileset id="hibernate.jarset" dir="${HIBERNATE_HOME}">
+    <include name="hibernate2.jar"/>
+    <include name="lib/*.jar"/>
+  </fileset>
+
+  <fileset id="hibernate.gui.jarset" dir="${HIBERNATE_HOME}">
+    <include name="hibernate2.jar"/>
+    <include name="lib/odmg*jar"/>
+    <include name="lib/commons-logging*jar"/>
+    <include name="cglib*jar"/>
+  </fileset>
+
+  <path id="hibernate.classpath">
+    <fileset refid="hibernate.jarset"/>
+  </path>
+
+  <fileset id="proxool.jarset" dir="${HIBERNATE_HOME}">
+    <include name="lib/proxool*.jar"/>
+  </fileset>
+
+  <path id="proxool.classpath">
+    <fileset refid="proxool.jarset"/>
+  </path>
+
+  <fileset id="concurrent.jarset" dir="${CONCURRENT_HOME}">
+    <include name="lib/concurrent.jar"/>
+  </fileset>
+
+  <path id="concurrent.classpath">
+    <fileset refid="concurrent.jarset"/>
+  </path>
+
+  <fileset id="javamail.jarset" dir="${JAVAMAIL_HOME}">
+    <include name="mail.jar"/>
+  </fileset>
+
+  <path id="javamail.classpath">
+    <fileset refid="javamail.jarset"/>
+  </path>
+
+  <fileset id="activation.jarset" dir="${JAF_HOME}">
+    <include name="activation.jar"/>
+  </fileset>
+
+  <path id="activation.classpath">
+    <fileset refid="activation.jarset"/>
+  </path>
+
+  <fileset id="junit.jarset" dir="${JUNIT_HOME}">
+    <include name="junit.jar"/>
+  </fileset>
+
+  <path id="junit.classpath">
+    <fileset refid="junit.jarset"/>
+  </path>
+
+  <fileset id="log4j.jarset" dir="${LOG4J_HOME}/dist/lib">
+    <include name="log4j-1.2.9.jar"/>
+  </fileset>
+
+  <path id="log4j.classpath">
+    <fileset refid="log4j.jarset"/>
+  </path>
+
+  <fileset id="netbeans.jarset" dir="${NETBEANS_HOME}">
+    <include name="netbeans-3.5.jar"/>
+  </fileset>
+
+  <path id="netbeans.classpath">
+    <fileset refid="netbeans.jarset"/>
+  </path>
+
+  <fileset id="itext.jarset" dir="${ITEXT_HOME}">
+    <include name="itext-1.2.jar"/>
+  </fileset>
+
+  <path id="itext.classpath">
+    <fileset refid="itext.jarset"/>
+  </path>
+
+  <fileset id="kunststoff.jarset" dir="${KUNSTSTOFF_HOME}">
+    <include name="kunststoff-mv.jar"/>
+  </fileset>
+
+  <path id="kunststoff.classpath">
+    <fileset refid="kunststoff.jarset"/>
+  </path>
+
+  <fileset id="jfreechart.jarset" dir="${JFREECHART_HOME}">
+    <include name="jfreechart-0.9.21.jar"/>
+    <include name="jcommon-0.9.6.jar"/>
+  </fileset>
+
+  <path id="jfreechart.classpath">
+    <fileset refid="jfreechart.jarset"/>
+  </path>
+
+  <fileset id="jnlp.jarset" dir="${JNLP_HOME}">
+    <include name="jnlp.jar"/>
+  </fileset>
+
+  <path id="jnlp.classpath">
+    <fileset refid="jnlp.jarset"/>
+  </path>
+
+  <fileset id="jasperreports.jarset" dir="${JASPER_REPORTS_HOME}/dist">
+    <include name="jasperreports-0.6.4.jar"/>
+  </fileset>
+
+  <fileset id="jasperreports.lib.jarset" dir="${JASPER_REPORTS_HOME}/lib">
+    <include name="*.jar"/>
+    <exclude name="servlet.jar"/>
+    <exclude name="commons-digester*"/>
+    <exclude name="commons-logging*"/>
+  </fileset>
+
+  <fileset id="jasperreports.build.jarset" dir="${JASPER_REPORTS_HOME}/lib">
+    <include name="*.jar"/>
+    <exclude name="servlet.jar"/>
+  </fileset>
+
+  <path id="jasperreports.classpath">
+    <fileset refid="jasperreports.jarset"/>
+    <fileset refid="jasperreports.build.jarset"/>
+  </path>
+
+  <fileset id="hibernatedoclet.jarset" dir="${XDOCLET_HOME}">
+    <include name="commons-collections-2.0.jar"/>
+    <include name="commons-logging.jar"/>
+    <include name="xdoclet-1.2.2.jar"/>
+    <include name="xdoclet-hibernate-module-1.2.2.jar"/>
+    <include name="xdoclet-xdoclet-module-1.2.2.jar"/>
+    <include name="xjavadoc-1.1.jar"/>
+  </fileset>
+
+  <path id="hibernatedoclet.classpath">
+    <fileset refid="hibernatedoclet.jarset"/>
+  </path>
+
+  <path id="codegen.classpath">
+    <path refid="hibernate.classpath"/>
+    <path refid="hibernate.tools.classpath"/>
+  </path>
+
+  <fileset id="postgresql.jarset" dir="${POSTGRES_HOME}">
+    <include name="*jdbc3.jar"/>
+  </fileset>
+
+  <path id="gui.thirdparty.classpath">
+    <path refid="netbeans.jarset"/>
+    <path refid="kunststoff.jarset"/>
+    <path refid="jfreechart.jarset"/>
+    <path refid="log4j.jarset"/>
+  </path>
+
+  <path id="mvvm.thirdparty.classpath">
+    <path refid="activation.classpath"/>
+    <path refid="concurrent.classpath"/>
+    <path refid="hibernate.classpath"/>
+    <path refid="jasperreports.classpath"/>
+    <path refid="javamail.classpath"/>
+    <path refid="junit.classpath"/>
+    <path refid="log4j.classpath"/>
+    <path refid="tomcat.classpath"/>
+    <path refid="trove.classpath"/>
+  </path>
+</project>

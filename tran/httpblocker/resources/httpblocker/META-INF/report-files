@@ -1,0 +1,3 @@
+com/metavize/tran/httpblocker/HttpMaster.jasper:summary:Summary
+com/metavize/tran/httpblocker/HttpBlockDetail.jasper:block-detail:Policy Violations
+com.metavize.tran.httpblocker.BlockerSummarizer:summarizer:Summarizer

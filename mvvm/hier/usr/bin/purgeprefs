@@ -1,0 +1,3 @@
+#!/bin/sh
+
+dropdb -U metavize mvvm

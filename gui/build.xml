@@ -1,0 +1,127 @@
+<?xml version="1.0"?>
+
+<!--
+Copyright (c) 2004, 2005 Metavize Inc.
+All rights reserved.
+
+This software is the confidential and proprietary information of
+Metavize Inc. ("Confidential Information").  You shall
+not disclose such Confidential Information.
+
+$Id: build.xml,v 1.21 2005/03/22 01:27:49 inieves Exp $
+-->
+
+<project name="gui" basedir="." default="all">
+
+  <import file="../buildtools/buildmagic.xml"/>
+
+  <!-- main targets -->
+  <target name="pkg.gensrc"/>
+  <target name="pkg.compile" depends="compile.gui"/>
+  <target name="pkg.jar"     depends="jar.gui"/>
+  <target name="pkg.install" depends="install.hier, install.gui, install.webstart"/>
+  <target name="pkg.clean"   depends="clean.nuke"/>
+
+  <property name="build.gui" value="${build.root}/gui"/>
+
+  <target name="compile.gui">
+    <mkdir dir="${build.gui}"/>
+
+    <exec executable="${buildtool.base}/dependset.sh">
+      <arg value="${build.gui}"/>
+      <arg value="${build.depcache}/gui.patternset"/>
+    </exec>
+
+    <depend srcdir="${src.main}" destdir="${build.gui}"
+            cache="${build.depcache}/gui" closure="yes">
+      <patternset includesfile="${build.depcache}/gui.patternset"/>
+    </depend>
+
+    <javac destdir="${build.gui}"
+           debug="on"
+           optimize="false"
+           deprecation="on"
+           source="1.5"
+	   target="1.5"
+           includeAntRuntime="false">
+
+      <classpath refid="mvvm.classpath"/>
+      <classpath refid="mvvm-client.classpath"/>
+
+      <classpath refid="jfreechart.classpath"/>
+      <classpath refid="netbeans.classpath"/>
+      <classpath refid="kunststoff.classpath"/>
+
+      <src path="${src.main}"/>
+    </javac>
+  </target>
+
+  <target name="jar.gui" depends="compile.gui">
+    <jar destfile="${build.jar}/gui.jar" index="yes">
+      <fileset dir="${build.gui}"/>
+      <fileset dir="${src.main}">
+        <include name="**/*png"/>
+        <include name="**/*gif"/>
+        <include name="**/*jpg"/>
+      </fileset>
+      <fileset dir="../mvvm/resources">
+        <include name="EvalLicense.txt"/>
+      </fileset>
+    </jar>
+  </target>
+
+  <target name="install.gui" depends="jar.gui">
+    <copy file="${build.jar}/gui.jar" todir="${dist.mvvm.lib}"/>
+  </target>
+
+  <target name="install.hier">
+    <copy todir="${dist.mvvm.webstart}/WEB-INF/lib">
+      <fileset refid="mvvm-client.jarset"/>
+    </copy>
+
+    <!-- filtered files -->
+    <copy todir="${build.dist}" filtering="true">
+      <fileset dir="${src.hier}">
+        <exclude name="**/*.png"/>
+        <exclude name="**/*.gif"/>
+        <exclude name="**/*.jpg"/>
+      </fileset>
+    </copy>
+
+    <!-- binary files -->
+    <copy todir="${build.dist}" filtering="false">
+      <fileset dir="${src.hier}">
+        <include name="**/*.png"/>
+        <include name="**/*.gif"/>
+        <include name="**/*.jpg"/>
+      </fileset>
+    </copy>
+
+    <chmod perm="ugo+rx">
+      <fileset dir="${build.dist}/usr/bin"/>
+    </chmod>
+  </target>
+
+  <target name="install.webstart" depends="jar.gui">
+
+    <copy todir="${dist.mvvm.webstart}" flatten="true">
+      <fileset refid="gui.jarset"/>
+      <fileset refid="hibernate.gui.jarset"/>
+      <fileset refid="jfreechart.jarset"/>
+      <fileset refid="jnlp.jarset"/>
+      <fileset refid="kunststoff.jarset"/>
+      <fileset refid="log4j.jarset"/>
+      <fileset refid="mvvm-client.jarset"/>
+      <fileset refid="netbeans.jarset"/>
+    </copy>
+
+    <signjar keystore="./keystore" alias="software key"
+             storepass="WbDP5uz\N" lazy="true">
+      <fileset dir="${dist.mvvm.webstart}">
+        <include name="*.jar"/>
+      </fileset>
+    </signjar>
+
+  </target> <!-- install.webstart -->
+
+</project>
