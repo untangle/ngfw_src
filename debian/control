@@ -78,6 +78,16 @@ Description: The Hauri AntiVirus
  The Hauri AntiVirus Scanner is able to scan and block inbound and outbound viruses, in
  both Web/http traffic and ftp traffic.
 
+Package: clam-transform
+Architecture: any
+Depends: mvvm, clam-av, http-casing
+XB-Price: 666
+XB-Display-Name: Clam AntiVirus
+XB-Rack-Position: 5
+Description: The Clam AntiVirus
+ The Clam AntiVirus Scanner is able to scan and block inbound and outbound viruses, in
+ both Web/http traffic and ftp traffic.
+
 Package: sophos-transform
 Architecture: any
 Depends: mvvm, sophos-mv, http-casing

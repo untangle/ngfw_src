@@ -1,0 +1,3 @@
+#! /bin/sh
+
+mcli -t 30 register clam-transform 2>/dev/null || true
