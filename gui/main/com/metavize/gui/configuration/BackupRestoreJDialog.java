@@ -74,14 +74,14 @@ public class BackupRestoreJDialog extends javax.swing.JDialog implements java.aw
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-        setTitle("Upgrade Controls");
+        setTitle("Backup and Restore");
         setModal(true);
         setResizable(false);
         closeJButton.setFont(new java.awt.Font("Default", 0, 12));
         closeJButton.setDoubleBuffered(true);
         closeJButton.setFocusPainted(false);
         closeJButton.setFocusable(false);
-        closeJButton.setText("Close \"Backup and Restore\" Window");
+        closeJButton.setText("Close Window");
         closeJButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 closeJButtonActionPerformed(evt);
@@ -285,7 +285,7 @@ public class BackupRestoreJDialog extends javax.swing.JDialog implements java.aw
         getContentPane().add(backgroundJLabel, gridBagConstraints);
 
         java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-        setBounds((screenSize.width-630)/2, (screenSize.height-372)/2, 630, 372);
+        setBounds((screenSize.width-630)/2, (screenSize.height-402)/2, 630, 402);
     }//GEN-END:initComponents
 
     private void backupUSBKeyJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backupUSBKeyJButtonActionPerformed

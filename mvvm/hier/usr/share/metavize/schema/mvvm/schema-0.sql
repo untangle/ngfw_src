@@ -92,7 +92,7 @@ CREATE TABLE string_rule (rule_id int8 NOT NULL,
 
 CREATE TABLE mvvm_evt_pipeline (
     event_id int8 NOT NULL,
-    session_info int8,
+    pipeline_info int8,
     time_stamp timestamp,
     PRIMARY KEY (event_id));
 
@@ -181,7 +181,7 @@ ALTER TABLE transform_desc ADD CONSTRAINT FK1C0963A41446F FOREIGN KEY (tid) REFE
 
 CREATE INDEX idx_string_rule ON string_rule (string);
 
-ALTER TABLE mvvm_evt_pipeline ADD CONSTRAINT FK9CF995D62F5A0D7 FOREIGN KEY (session_info) REFERENCES pipeline_info;
+ALTER TABLE mvvm_evt_pipeline ADD CONSTRAINT FK9CF995D62F5A0D7 FOREIGN KEY (pipeline_info) REFERENCES pipeline_info ON DELETE CASCADE;
 
 ALTER TABLE ipmaddr_dir_entries ADD CONSTRAINT FKC67DE356B5257E75 FOREIGN KEY (ipmaddr_dir_id) REFERENCES ipmaddr_dir;
 

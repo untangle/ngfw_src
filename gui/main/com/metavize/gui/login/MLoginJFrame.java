@@ -6,12 +6,15 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: MLoginJFrame.java,v 1.13 2005/02/28 23:03:57 inieves Exp $
+ * $Id: MLoginJFrame.java,v 1.17 2005/03/25 20:17:08 inieves Exp $
  */
 
 package com.metavize.gui.login;
 
+import javax.jnlp.BasicService;
+import javax.jnlp.ServiceManager;
 import java.awt.*;
+import java.net.URL;
 import java.lang.Thread;
 import java.lang.reflect.*;
 import javax.security.auth.login.FailedLoginException;
@@ -39,6 +42,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
     // login
     private int portAddress;
     private String hostName;
+    private boolean secure;
 
 
     public MLoginJFrame(final String[] args) {
@@ -160,7 +164,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
         backgroundJLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Metavize EdgeGuard Client Login");
+        setTitle("Metavize EdgeGuard v1.2 Login");
         setIconImage((new javax.swing.ImageIcon( this.getClass().getResource("/com/metavize/gui/icons/LogoNoText16x16.gif"))).getImage());
         setName("loginJFrame");
         setResizable(false);
@@ -269,6 +273,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 10, 0);
         entryJPanel.add(passJPasswordField, gridBagConstraints);
 
+        serverJTextField.setEditable(false);
         serverJTextField.setFont(new java.awt.Font("Arial", 0, 12));
         serverJTextField.setDoubleBuffered(true);
         serverJTextField.setMaximumSize(new java.awt.Dimension(133, 20));
@@ -484,7 +489,12 @@ public class MLoginJFrame extends javax.swing.JFrame {
 		    
 		    // CHECK THE USER INPUT
                     Thread.sleep(1000);
-                    hostName = serverJTextField.getText();
+                    // hostName = serverJTextField.getText();
+                    BasicService bs = (BasicService) ServiceManager.lookup("javax.jnlp.BasicService");
+                    URL codeBase = bs.getCodeBase();
+                    hostName = codeBase.getHost();
+                    // This might be unsafe: XX
+                    secure = !codeBase.getProtocol().equals("http");
                 }
                 catch(Exception e){
                     e.printStackTrace();
@@ -498,15 +508,15 @@ public class MLoginJFrame extends javax.swing.JFrame {
                 while( retryLogin < RETRY_COUNT ){
 
                     try{
-                        mvvmContext = MvvmRemoteContextFactory.login(hostName, loginJTextField.getText(), new String(passJPasswordField.getPassword()), 0, Util.getClassLoader() );
+                        mvvmContext = MvvmRemoteContextFactory.login(hostName, loginJTextField.getText(), new String(passJPasswordField.getPassword()), 0, Util.getClassLoader(), secure);
                         if( loginJTextField.getText().equals("egdemo") ){
                             Util.setIsDemo(true);
                         }
                         else{
                             Util.setIsDemo(false);
                         }
-                        Util.getClassLoader().setServer(hostName, "80", "webstart/");
-			Util.setServerName(hostName);
+                        // Util.getClassLoader().setServer(hostName, "80", "webstart/");
+			// Util.setServerName(hostName);
                         Util.setMvvmContext(mvvmContext);
 			
 			// (UPDATE GUI) READOUT SUCCESS
@@ -567,7 +577,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
 				public void run () {
 				    MLoginJFrame.this.setVisible(false);
 				    mMainJFrame.setBounds( Util.generateCenteredBounds(MLoginJFrame.this.getBounds(), mMainJFrame.getWidth(), mMainJFrame.getHeight()) );
-				    mMainJFrame.setTitle( "Metavize EdgeGuard Client  (logged in as: " + loginJTextField.getText() + "@" + hostName + ":" + portAddress + ")" );
+				    mMainJFrame.setTitle( "Metavize EdgeGuard v1.2 (logged in as: " + loginJTextField.getText() + "@" + hostName + ":" + portAddress + ")" );
 				    if(Util.getIsDemo())
 					mMainJFrame.setTitle( mMainJFrame.getTitle() + "  [DEMO MODE]" );
 				    mMainJFrame.setExtendedState(Frame.MAXIMIZED_BOTH);

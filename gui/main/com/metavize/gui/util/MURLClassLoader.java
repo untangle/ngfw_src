@@ -6,6 +6,8 @@
 
 package com.metavize.gui.util;
 
+import javax.jnlp.BasicService;
+import javax.jnlp.ServiceManager;
 import java.io.InputStream;
 import java.net.*;
 
@@ -15,27 +17,24 @@ import java.net.*;
  */
 public class MURLClassLoader extends URLClassLoader {
     
-    private static String hostName = null;
-    private static String portNumber = null;
-    private static String pathName = null ;
-    
+    private URL codeBase = null;
     
     public MURLClassLoader(ClassLoader parent){
         super( new URL[0], parent );
         //System.err.println("@ Created new class loader with parent: " + parent);
-    }
-    
-    public void setServer(String hostName, String portNumber, String pathName){
-        // store the config info
-        this.hostName = hostName;
-        this.portNumber = portNumber;
-        this.pathName = pathName;
+        try {
+            BasicService bs = (BasicService) ServiceManager.lookup("javax.jnlp.BasicService");
+            codeBase = bs.getCodeBase();
+        } catch (Exception x) {
+            // Can't happen.
+            throw new Error("JNLP missing");
+        }
     }
     
     public void addMar(String marName){
         URL newURL = null;
         try{
-            newURL = new URL("http://" + hostName + ":" + portNumber + "/" + pathName + marName + ".mar");
+            newURL = new URL(codeBase, marName + ".mar");
             //System.err.println("@ Adding URL to MURLClassLoader: " + newURL.toString() );
             super.addURL(newURL);
             //System.err.println("  |--> Added: " + newURL);

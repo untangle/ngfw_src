@@ -8,7 +8,7 @@ This software is the confidential and proprietary information of
 Metavize Inc. ("Confidential Information").  You shall
 not disclose such Confidential Information.
 
-$Id: build.xml,v 1.93 2005/03/22 01:27:49 inieves Exp $
+$Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
 -->
 
 <project name="mvvm" basedir="." default="all">
@@ -426,6 +426,8 @@ $Id: build.xml,v 1.93 2005/03/22 01:27:49 inieves Exp $
     <mkdir dir="${dist.log}"/>
     <mkdir dir="${dist.var.run}"/>
     <mkdir dir="${dist.mvvm.data}"/>
+    <mkdir dir="${dist.mvvm.conf}/etc"/>
+    <mkdir dir="${dist.mvvm.conf}/etc/network"/>
 
     <copy todir="${build.dist}" filtering="true">
       <fileset dir="${src.hier}"/>

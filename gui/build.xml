@@ -8,7 +8,7 @@ This software is the confidential and proprietary information of
 Metavize Inc. ("Confidential Information").  You shall
 not disclose such Confidential Information.
 
-$Id: build.xml,v 1.21 2005/03/22 01:27:49 inieves Exp $
+$Id: build.xml,v 1.22 2005/03/25 04:00:30 jdi Exp $
 -->
 
 <project name="gui" basedir="." default="all">
@@ -51,6 +51,7 @@ $Id: build.xml,v 1.21 2005/03/22 01:27:49 inieves Exp $
       <classpath refid="jfreechart.classpath"/>
       <classpath refid="netbeans.classpath"/>
       <classpath refid="kunststoff.classpath"/>
+      <classpath refid="jnlp.classpath"/>
 
       <src path="${src.main}"/>
     </javac>

@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: HttpBlockerHandler.java,v 1.8 2005/02/25 00:31:39 amread Exp $
+ * $Id: HttpBlockerHandler.java,v 1.9 2005/03/25 03:51:16 amread Exp $
  */
 
 package com.metavize.tran.httpblocker;
@@ -29,6 +29,10 @@ import org.apache.log4j.Logger;
 
 public class HttpBlockerHandler extends HttpStateMachine
 {
+    private static final int SCAN = Transform.GENERIC_1_COUNTER;
+    private static final int BLOCK = Transform.GENERIC_1_COUNTER;
+    private static final int PASS = Transform.GENERIC_2_COUNTER;
+
     private static final Logger logger = Logger
         .getLogger(HttpBlockerHandler.class);
 
@@ -79,7 +83,7 @@ public class HttpBlockerHandler extends HttpStateMachine
         this.requestHeader = requestHeader;
         c2sPersistent = isPersistent(requestHeader);
 
-        transform.incrementCount(Transform.GENERIC_0_COUNTER, 1); // scan
+        transform.incrementCount(SCAN, 1);
         c2sReplacement = Blacklist.BLACKLIST
             .checkRequest(getSession().clientAddr(),
                           requestLine, requestHeader);
@@ -90,7 +94,7 @@ public class HttpBlockerHandler extends HttpStateMachine
             Token[] c2s = new Token[] { requestLine, requestHeader };
             return new TokenResult(null, c2s);
         } else {
-            transform.incrementCount(Transform.GENERIC_1_COUNTER, 1); // block
+            transform.incrementCount(BLOCK, 1);
             requests.remove(requests.size() - 1); // dequeue request line
             return new TokenResult();
         }
@@ -152,14 +156,14 @@ public class HttpBlockerHandler extends HttpStateMachine
         logger.debug("chekResponse returns: " + s2cReplacement);
 
         if (null == s2cReplacement) {
-            transform.incrementCount(Transform.GENERIC_2_COUNTER, 1); // pass
+            transform.incrementCount(PASS, 1);
 
             Token[] response = new Token[] { statusLine, responseHeader };
 
             return new TokenResult(response, null);
         } else { /* block */
             s2cPersistent = isPersistent(responseHeader);
-            transform.incrementCount(Transform.GENERIC_1_COUNTER, 1); // BLOCK
+            transform.incrementCount(BLOCK, 1);
 
             return new TokenResult();
         }

@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: HttpInvokerStub.java,v 1.11 2005/02/25 02:45:29 amread Exp $
+ * $Id: HttpInvokerStub.java,v 1.12 2005/03/25 03:51:16 amread Exp $
  */
 
 package com.metavize.mvvm.engine;
@@ -45,7 +45,7 @@ public class HttpInvokerStub implements InvocationHandler, Serializable
     public HttpInvokerStub(LoginSession ls, URL url, Object cacheId,
                            ClassLoader classLoader)
     {
-        this(ls,url,cacheId,0,classLoader);
+        this(ls, url, cacheId, 0, classLoader);
     }
 
     public Object invoke(Object proxy, Method method, Object[] args)

@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: VirusRuleEvent.java,v 1.8 2005/03/11 03:34:57 cng Exp $
+ * $Id: VirusRuleEvent.java,v 1.9 2005/03/25 03:51:16 amread Exp $
  */
 package com.metavize.tran.email;
 
@@ -15,7 +15,6 @@ import java.nio.charset.*;
 import java.util.*;
 
 import com.metavize.mvvm.logging.LogEvent;
-import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.tran.virus.VirusScannerResult;
 
 /**
@@ -25,6 +24,7 @@ import com.metavize.tran.virus.VirusScannerResult;
  * @version 1.0
  * @hibernate.class
  * table="TR_EMAIL_VIRUS_EVT"
+ * mutable="false"
  */
 public class VirusRuleEvent extends LogEvent
 {

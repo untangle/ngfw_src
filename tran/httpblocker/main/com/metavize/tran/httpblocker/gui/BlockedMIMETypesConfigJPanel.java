@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: BlockedMIMETypesConfigJPanel.java,v 1.8 2005/02/11 08:31:48 rbscott Exp $
+ * $Id: BlockedMIMETypesConfigJPanel.java,v 1.9 2005/03/25 22:07:22 amread Exp $
  */
 package com.metavize.tran.httpblocker.gui;
 
@@ -89,7 +89,7 @@ class MIMETypeTableModel extends MSortedTableModel{
             // newElem.setCategory( (String) rowVector.elementAt(2) );
             newElem.setMimeType( new MimeType( (String)rowVector.elementAt(2) ));
             newElem.setLive( ((Boolean) rowVector.elementAt(3)).booleanValue() );
-            newElem.setDescription( (String) rowVector.elementAt(4) );
+            newElem.setName( (String) rowVector.elementAt(4) );
                         
             // XXX Alerts newAlerts= (Alerts)NodeType.type(Alerts.class).instantiate();
             // XXX newAlerts.generateCriticalAlerts( ((Boolean) rowVector.elementAt(5)).booleanValue() );
@@ -120,7 +120,7 @@ class MIMETypeTableModel extends MSortedTableModel{
             // row.add(newElem.getCategory());
             row.add(newElem.getMimeType().getType());
             row.add(Boolean.valueOf(newElem.isLive()));
-            row.add(newElem.getDescription());
+            row.add(newElem.getName());
 
             // alerts
             // if(newElem.alerts() == null)

@@ -39,11 +39,11 @@ cd @MVVM_WEB@/reports
 
 cat >$main_index <<EOF
 <html>
-<head><title>Metavize EdgeGuard Reports (beta)</title></head>
+<head><title>Metavize EdgeReport (preview)</title></head>
 <body>
 <table><tr>
 <td><img src="LogoNoText64x64.gif"/></td>
-<td><b>Metavize EdgeGuard Reports</b></td>
+<td><b>Metavize EdgeReport</b></td>
 </tr></table>
 <p/>
 EOF

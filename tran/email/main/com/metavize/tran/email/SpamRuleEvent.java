@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: SpamRuleEvent.java,v 1.7 2005/03/16 04:00:04 cng Exp $
+ * $Id: SpamRuleEvent.java,v 1.8 2005/03/25 03:51:16 amread Exp $
  */
 package com.metavize.tran.email;
 
@@ -16,11 +16,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.apache.log4j.Logger;
 
 import com.metavize.mvvm.logging.LogEvent;
-import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.tran.util.*;
+import org.apache.log4j.Logger;
 
 /**
  * Log e-mail message spam rule (message contains spam) event.
@@ -29,6 +28,7 @@ import com.metavize.tran.util.*;
  * @version 1.0
  * @hibernate.class
  * table="TR_EMAIL_SPAM_EVT"
+ * mutable="false"
  */
 public class SpamRuleEvent extends LogEvent
 {
@@ -45,7 +45,7 @@ public class SpamRuleEvent extends LogEvent
     private final static Pattern HITSP = Pattern.compile(HITS, Pattern.CASE_INSENSITIVE);
     private final static Pattern REQUIREDP = Pattern.compile(REQUIRED, Pattern.CASE_INSENSITIVE);
     private final static Pattern TESTSP = Pattern.compile(TESTS, Pattern.CASE_INSENSITIVE);
-         
+
     private final static int COL_SZ = MLHandler.READSZ;
 
     /* class variables */
@@ -239,7 +239,7 @@ public class SpamRuleEvent extends LogEvent
                 {
                     if (COL_SZ >= (TRUNCATED_STR.length() + zTests.length()))
                     {
-                        /* if we have space for TRUNCATED_STR, add it */ 
+                        /* if we have space for TRUNCATED_STR, add it */
                         zTests = zTests.concat(TRUNCATED_STR);
                     }
                     zLog.warn("Unable to store all Spam tests from X-Spam-Status field: " + zStr + " (maximum column size is " + COL_SZ + " chars, truncating to " + zTests.length() + " chars)");

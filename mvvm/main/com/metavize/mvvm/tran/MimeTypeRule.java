@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: MimeTypeRule.java,v 1.7 2005/03/12 01:54:31 amread Exp $
+ * $Id: MimeTypeRule.java,v 1.8 2005/03/25 22:07:22 amread Exp $
  */
 
 package com.metavize.mvvm.tran;
@@ -31,21 +31,24 @@ public class MimeTypeRule extends Rule
      */
     public MimeTypeRule() { }
 
+    // XXX inconstant constuctor
     public MimeTypeRule(MimeType mimeType)
     {
         this.mimeType = mimeType;
     }
 
+    // XXX inconstant constuctor
     public MimeTypeRule(MimeType mimeType, boolean live)
     {
         super(live);
         this.mimeType = mimeType;
     }
 
-    public MimeTypeRule(MimeType mimeType, String name, String category,
+    // XXX inconstant constuctor
+    public MimeTypeRule(MimeType mimeType, String name, String description,
                         boolean live)
     {
-        super(name, category, live);
+        super(name, description, live);
         this.mimeType = mimeType;
     }
 

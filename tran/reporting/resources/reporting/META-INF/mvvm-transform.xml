@@ -2,7 +2,7 @@
 
 <mvvm-transform>
   <transform-desc name="reporting-transform"
-                  display-name="EdgeReport (beta)"
+                  display-name="EdgeReport (preview)"
                   classname="com.metavize.tran.reporting.ReportingTransformImpl"
                   gui-classname="com.metavize.tran.reporting.gui.MTransformJPanel"/>
 </mvvm-transform>

@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: HttpBlockerImpl.java,v 1.18 2005/03/23 06:58:20 amread Exp $
+ * $Id: HttpBlockerImpl.java,v 1.20 2005/03/25 23:50:02 amread Exp $
  */
 
 package com.metavize.tran.httpblocker;
@@ -134,7 +134,7 @@ public class HttpBlockerImpl extends SoloTransform implements HttpBlocker
         settings.setBlockedExtensions(s);
 
         s = new ArrayList();
-        s.add(new MimeTypeRule(new MimeType("application/octet-stream"), "data", "unknown", false));
+        s.add(new MimeTypeRule(new MimeType("application/octet-stream"), "unspecified data", "byte stream", false));
 
         s.add(new MimeTypeRule(new MimeType("application/x-msdownload"), "Microsoft download", "executable", false));
         s.add(new MimeTypeRule(new MimeType("application/exe"), "executable", "executable", false));

@@ -6,21 +6,21 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: MLMessageInfo.java,v 1.8 2005/03/23 21:36:42 cng Exp $
+ * $Id: MLMessageInfo.java,v 1.9 2005/03/25 03:51:16 amread Exp $
  */
 package com.metavize.tran.email;
 
 import java.nio.ByteBuffer;
-import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CharacterCodingException;
+import java.nio.charset.CharsetDecoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.apache.log4j.Logger;
 
 import com.metavize.tran.util.*;
+import org.apache.log4j.Logger;
 
 /**
  * Log e-mail message info.
@@ -29,6 +29,7 @@ import com.metavize.tran.util.*;
  * @version 1.0
  * @hibernate.class
  * table="TR_EMAIL_MESSAGE_INFO"
+ * mutable="false"
  */
 public class MLMessageInfo
 {

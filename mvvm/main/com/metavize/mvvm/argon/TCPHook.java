@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: TCPHook.java,v 1.27 2005/02/10 06:37:58 rbscott Exp $
+ *  $Id: TCPHook.java,v 1.28 2005/03/25 02:58:25 rbscott Exp $
  */
 
 package com.metavize.mvvm.argon;
@@ -154,7 +154,7 @@ public class TCPHook implements NetcapHook
                 netcapTCPSession.tcpServerSide().blocking( false );
                 ifServerComplete = true;
             } catch ( Exception e ) {
-                logger.error( "TCP - Unable to complete connection to the server", e );
+                logger.info( "TCP - Unable to complete connection to the server", e );
                 ifServerComplete = false;
             }
             
@@ -176,7 +176,7 @@ public class TCPHook implements NetcapHook
 
                 ifClientComplete = true;
             } catch ( Exception e ) {
-                logger.error( "TCP - Unable to complete connection to the client", e );
+                logger.warn( "TCP - Unable to complete connection to the client", e );
                 ifClientComplete = false;
             }
             

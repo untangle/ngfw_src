@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: SizeLimitEvent.java,v 1.2 2005/02/05 04:47:30 cng Exp $
+ * $Id: SizeLimitEvent.java,v 1.3 2005/03/25 03:51:16 amread Exp $
  */
 package com.metavize.tran.email;
 
@@ -14,7 +14,6 @@ import java.nio.*;
 import java.util.*;
 
 import com.metavize.mvvm.logging.LogEvent;
-import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.tran.util.*;
 
 /**
@@ -24,6 +23,7 @@ import com.metavize.tran.util.*;
  * @version 1.0
  * @hibernate.class
  * table="TR_EMAIL_SZLIMIT_EVT"
+ * mutable="false"
  */
 public class SizeLimitEvent extends LogEvent
 {

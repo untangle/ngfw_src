@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: TransformStats.java,v 1.4 2005/02/25 02:45:29 amread Exp $
+ *  $Id: TransformStats.java,v 1.5 2005/03/25 02:24:27 jdi Exp $
  */
 
 package com.metavize.mvvm.tran;
@@ -28,27 +28,27 @@ public class TransformStats implements Serializable
 {
     private static final long serialVersionUID = 5196595597614966041L;
 
-    protected long c2tBytes = 0;
-    protected long t2sBytes = 0;
-    protected long s2tBytes = 0;
-    protected long t2cBytes = 0;
+    protected volatile long c2tBytes = 0;
+    protected volatile long t2sBytes = 0;
+    protected volatile long s2tBytes = 0;
+    protected volatile long t2cBytes = 0;
 
-    protected long c2tChunks = 0;
-    protected long t2sChunks = 0;
-    protected long s2tChunks = 0;
-    protected long t2cChunks = 0;
+    protected volatile long c2tChunks = 0;
+    protected volatile long t2sChunks = 0;
+    protected volatile long s2tChunks = 0;
+    protected volatile long t2cChunks = 0;
 
-    protected int udpSessionCount = 0;
-    protected int tcpSessionCount = 0;
-    protected int udpSessionTotal = 0;
-    protected int tcpSessionTotal = 0;
+    protected volatile int udpSessionCount = 0;
+    protected volatile int tcpSessionCount = 0;
+    protected volatile int udpSessionTotal = 0;
+    protected volatile int tcpSessionTotal = 0;
 
-    protected int udpSessionRequestTotal = 0;
-    protected int tcpSessionRequestTotal = 0;
+    protected volatile int udpSessionRequestTotal = 0;
+    protected volatile int tcpSessionRequestTotal = 0;
 
-    protected Date startDate;
-    protected Date lastConfigureDate;
-    protected Date lastActivityDate;
+    protected volatile Date startDate;
+    protected volatile Date lastConfigureDate;
+    protected volatile Date lastActivityDate;
 
     public TransformStats() {
         long now = MetaEnv.currentTimeMillis();

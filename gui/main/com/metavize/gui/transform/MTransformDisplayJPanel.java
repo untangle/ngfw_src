@@ -443,8 +443,12 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
                 label.setText( Long.toString( count/1000l ) + "." + Long.toString( count%1000l ) + " K" + suffix);
             else if(count < 1000000000l)
                 label.setText( Long.toString( count/1000000l ) + "." + Long.toString( (count%1000000l)/1000l ) + " M" + suffix);
-            else if(count >= 1000000000l)
-                label.setText( Long.toString( count/1000000000l ) + "." + Long.toString( (count%1000000000l)/1000000l ) + " T" + suffix);
+            else if(count < 1000000000000l)
+                label.setText( Long.toString( count/1000000000l ) + "." + Long.toString( (count%1000000000l)/1000000l ) + " G" + suffix);
+	    else if(count < 1000000000000000l)
+                label.setText( Long.toString( count/1000000000000l ) + "." + Long.toString( (count%1000000000000l)/1000000000l ) + " T" + suffix);
+	    else
+                label.setText( Long.toString( count/1000000000000000l ) + "." + Long.toString( (count%1000000000000000l)/1000000000000l ) + " P" + suffix);
         }
     
         private void resetCounters(){

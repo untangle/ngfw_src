@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: HttpBlockerEvent.java,v 1.8 2005/03/15 02:11:53 amread Exp $
+ * $Id: HttpBlockerEvent.java,v 1.9 2005/03/25 03:51:16 amread Exp $
  */
 
 package com.metavize.tran.httpblocker;
@@ -48,7 +48,7 @@ public class HttpBlockerEvent extends LogEvent
      * @return the request line.
      * @hibernate.many-to-one
      * column="REQUEST_ID"
-     * cascade="none"
+     * cascade="save-update"
      */
     public RequestLine getRequestLine()
     {

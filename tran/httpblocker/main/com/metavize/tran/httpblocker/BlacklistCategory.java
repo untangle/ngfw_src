@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: BlacklistCategory.java,v 1.6 2005/03/15 02:11:53 amread Exp $
+ * $Id: BlacklistCategory.java,v 1.7 2005/03/25 03:19:52 amread Exp $
  */
 
 package com.metavize.tran.httpblocker;
@@ -20,7 +20,6 @@ import java.io.Serializable;
  * @version 1.0
  * @hibernate.class
  * table="TR_HTTPBLK_BLCAT"
- * mutable="false"
  */
 public class BlacklistCategory implements Serializable
 {

@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: VirusLogEvent.java,v 1.5 2005/03/15 02:11:52 amread Exp $
+ * $Id: VirusLogEvent.java,v 1.6 2005/03/25 03:51:15 amread Exp $
  */
 
 package com.metavize.tran.virus;
@@ -64,7 +64,7 @@ public class VirusLogEvent extends LogEvent
      *
      * @return the scan result.
      * @hibernate.property
-     * cascade="all"
+     * cascade="save-update"
      * type="com.metavize.tran.virus.VirusScannerResultUserType"
      * @hibernate.column
      * name="CLEAN"

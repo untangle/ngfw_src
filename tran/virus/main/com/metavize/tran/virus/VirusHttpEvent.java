@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: VirusHttpEvent.java,v 1.1 2005/01/29 06:24:50 amread Exp $
+ * $Id: VirusHttpEvent.java,v 1.2 2005/03/25 03:51:15 amread Exp $
  */
 
 package com.metavize.tran.virus;
@@ -21,6 +21,7 @@ import com.metavize.tran.http.RequestLine;
  * @version 1.0
  * @hibernate.class
  * table="TR_VIRUS_EVT_HTTP"
+ * mutable="false"
  */
 public class VirusHttpEvent extends LogEvent
 {
@@ -48,7 +49,7 @@ public class VirusHttpEvent extends LogEvent
      * @return the request line.
      * @hibernate.many-to-one
      * column="REQUEST_LINE"
-     * cascade="all"
+     * cascade="save-update"
      */
     public RequestLine getRequestLine()
     {
@@ -65,7 +66,7 @@ public class VirusHttpEvent extends LogEvent
      *
      * @return the scan result.
      * @hibernate.property
-     * cascade="all"
+     * cascade="save-update"
      * type="com.metavize.tran.virus.VirusScannerResultUserType"
      * @hibernate.column
      * name="CLEAN"

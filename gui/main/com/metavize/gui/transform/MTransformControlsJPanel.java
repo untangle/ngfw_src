@@ -59,7 +59,7 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
         // SETUP EXPAND DIALOG
 	if(greyBackgroundImageIcon == null)
 	    greyBackgroundImageIcon = new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/metavize/gui/images/DarkGreyBackground1600x1200.png"));
-        expandJDialog = new JDialog( Util.getMMainJFrame(), "expanded controls", true);
+        expandJDialog = new JDialog( Util.getMMainJFrame(), "expanded controls window", true);
         expandJDialog.setSize(MIN_SIZE);
         expandJDialog.addComponentListener( 
             new java.awt.event.ComponentAdapter() {
@@ -216,10 +216,10 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridwidth = 4;
-        gridBagConstraints.ipadx = 565;
-        gridBagConstraints.ipady = 307;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 15, 0);
         contentJPanel.add(mTabbedPane, gridBagConstraints);
 
         removeJButton.setFont(new java.awt.Font("Arial", 0, 12));
@@ -228,28 +228,26 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
         removeJButton.setFocusPainted(false);
         removeJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         removeJButton.setIconTextGap(0);
-        removeJButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
-        removeJButton.setMaximumSize(null);
-        removeJButton.setMinimumSize(null);
+        removeJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
+        removeJButton.setMaximumSize(new java.awt.Dimension(130, 25));
+        removeJButton.setMinimumSize(new java.awt.Dimension(130, 25));
         removeJButton.setPreferredSize(new java.awt.Dimension(130, 25));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
-        gridBagConstraints.ipadx = 63;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(15, 0, 0, 0);
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         contentJPanel.add(removeJButton, gridBagConstraints);
 
         expandJButton.setFont(new java.awt.Font("Arial", 0, 12));
+        expandJButton.setText("<html><b>Expand</b> Settings</html>");
         expandJButton.setDoubleBuffered(true);
         expandJButton.setFocusPainted(false);
         expandJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         expandJButton.setIconTextGap(0);
-        expandJButton.setText("<html><b>Expand</b> Controls</html>");
-        expandJButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
-        expandJButton.setMaximumSize(null);
-        expandJButton.setMinimumSize(null);
-        expandJButton.setPreferredSize(new java.awt.Dimension(110, 25));
+        expandJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
+        expandJButton.setMaximumSize(new java.awt.Dimension(140, 25));
+        expandJButton.setMinimumSize(new java.awt.Dimension(140, 25));
+        expandJButton.setPreferredSize(new java.awt.Dimension(140, 25));
         expandJButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 expandJButtonActionPerformed(evt);
@@ -257,11 +255,10 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
         });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
-        gridBagConstraints.ipadx = 53;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(15, 30, 0, 0);
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 160, 0, 0);
         contentJPanel.add(expandJButton, gridBagConstraints);
 
         reloadJButton.setFont(new java.awt.Font("Arial", 0, 12));
@@ -270,9 +267,9 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
         reloadJButton.setFocusPainted(false);
         reloadJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         reloadJButton.setIconTextGap(0);
-        reloadJButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
-        reloadJButton.setMaximumSize(null);
-        reloadJButton.setMinimumSize(null);
+        reloadJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
+        reloadJButton.setMaximumSize(new java.awt.Dimension(110, 25));
+        reloadJButton.setMinimumSize(new java.awt.Dimension(110, 25));
         reloadJButton.setPreferredSize(new java.awt.Dimension(110, 25));
         reloadJButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -281,11 +278,10 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
         });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
-        gridBagConstraints.ipadx = 56;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(15, 76, 0, 0);
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 114);
         contentJPanel.add(reloadJButton, gridBagConstraints);
 
         saveJButton.setFont(new java.awt.Font("Arial", 0, 12));
@@ -294,9 +290,9 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
         saveJButton.setFocusPainted(false);
         saveJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         saveJButton.setIconTextGap(0);
-        saveJButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
-        saveJButton.setMaximumSize(null);
-        saveJButton.setMinimumSize(null);
+        saveJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
+        saveJButton.setMaximumSize(new java.awt.Dimension(110, 25));
+        saveJButton.setMinimumSize(new java.awt.Dimension(110, 25));
         saveJButton.setPreferredSize(new java.awt.Dimension(110, 25));
         saveJButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -305,11 +301,9 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
         });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
-        gridBagConstraints.ipadx = 56;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(15, 4, 0, 0);
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         contentJPanel.add(saveJButton, gridBagConstraints);
 
         socketJPanel.add(contentJPanel, java.awt.BorderLayout.CENTER);
@@ -382,11 +376,11 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
 
             // place new window in the center of parent window and show
             MTransformControlsJPanel.this.expandJDialog.setBounds( Util.generateCenteredBounds(Util.getMMainJFrame().getBounds(), expandJDialog.getWidth(), expandJDialog.getHeight()) );
-	    expandJButton.setText("<html><b>Collapse</b> Controls</html>");
+	    expandJButton.setText("<html><b>Collapse</b> Settings</html>");
             MTransformControlsJPanel.this.expandJDialog.setVisible(true);
 
             // cleanup after new window is closed
-	    expandJButton.setText("<html><b>Expand</b> Controls</html>");
+	    expandJButton.setText("<html><b>Expand</b> Settings</html>");
             MTransformControlsJPanel.this.expandJDialog.getContentPane().remove(contentJPanel);
             MTransformControlsJPanel.this.socketJPanel.add(contentJPanel);
             MTransformControlsJPanel.this.socketJPanel.validate();

@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: SSCTLDefinition.java,v 1.15 2005/03/11 03:34:57 cng Exp $
+ * $Id: SSCTLDefinition.java,v 1.16 2005/03/25 23:22:39 jdi Exp $
  */
 
 package com.metavize.tran.email;
@@ -51,7 +51,7 @@ public class SSCTLDefinition implements Serializable
 
     /* settings */
     private String scanStrength = DEF_STRENGTH;
-    private Action actionOnDetect = Action.BLOCK_AND_WARN_SENDER;
+    private Action actionOnDetect = Action.PASS;
     private boolean scan = true;
     private boolean copyOnBlock = false;
     private String notes = NO_NOTES;

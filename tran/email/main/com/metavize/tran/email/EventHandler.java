@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: EventHandler.java,v 1.21 2005/03/22 18:21:38 cng Exp $
+ * $Id: EventHandler.java,v 1.22 2005/03/25 23:22:39 jdi Exp $
  */
 package com.metavize.tran.email;
 
@@ -496,14 +496,14 @@ public class EventHandler extends AbstractEventHandler
 
     private boolean getSpamOption(XMailScannerCache zCache, boolean bMsgIsUploaded, int iType)
     {
-        return ((true == bMsgIsUploaded && true == zCache.getSpamInboundOption(iType)) ||
-                (false == bMsgIsUploaded && true == zCache.getSpamOutboundOption(iType))) ? true : false;
+        return ((true == bMsgIsUploaded && true == zCache.getSpamOutboundOption(iType)) ||
+                (false == bMsgIsUploaded && true == zCache.getSpamInboundOption(iType))) ? true : false;
     }
 
     private boolean getVirusOption(XMailScannerCache zCache, boolean bMsgIsUploaded, int iType)
     {
-        return ((true == bMsgIsUploaded && true == zCache.getVirusInboundOption(iType)) ||
-                (false == bMsgIsUploaded && true == zCache.getVirusOutboundOption(iType))) ? true : false;
+        return ((true == bMsgIsUploaded && true == zCache.getVirusOutboundOption(iType)) ||
+                (false == bMsgIsUploaded && true == zCache.getVirusInboundOption(iType))) ? true : false;
     }
 
     private void filter(TCPSession zSession, XMailScannerSession zXMSession, XMSEnv zEnv, MLHandler zHandler)

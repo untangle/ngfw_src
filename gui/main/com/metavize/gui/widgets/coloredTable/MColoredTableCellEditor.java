@@ -198,17 +198,14 @@ public class MColoredTableCellEditor extends DefaultCellEditor implements KeyLis
             if( selectedValue.equals(newValue) ){
                 //System.err.println("unchanged:" + newValue.toString() +": from:" + selectedValue.toString() + ":");
                 ((MSortedTableModel)mColoredJTable.getModel()).setRowState(selectedState, selectedRow);
-		System.err.println("A");
             }
             else{
 		if(editedComponent instanceof MPasswordField){
 		    if( ((MPasswordField)editedComponent).getGeneratesChangeEvent() ){
-					System.err.println("B");
 			((MSortedTableModel)mColoredJTable.getModel()).setRowChanged(selectedRow);
 		    }
 		}
 		else{
-		    		System.err.println("C");
 		    ((MSortedTableModel)mColoredJTable.getModel()).setRowChanged(selectedRow);
 		}
                 //System.err.println("changed:" + newValue.toString() +": from:" + selectedValue.toString() + ":");

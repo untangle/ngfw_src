@@ -25,7 +25,7 @@ datestamp=$(date '+%Y%m%d%H%M')
 
 pg_dump -U postgres -Ft mvvm | gzip > $outdir/mvvmdb-$datestamp.tar.gz
 
-tar zcf $outdir/files-$datestamp.tar.gz --ignore-failed-read -C @PREFIX@ \
+tar zcf $outdir/files-$datestamp.tar.gz --ignore-failed-read -C @PREFIX@/ \
     etc/network/interfaces \
     etc/resolv.conf \
     usr/share/metavize/conf/networking.sh \

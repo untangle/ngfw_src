@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: VirusTransformImpl.java,v 1.20 2005/03/12 01:54:30 amread Exp $
+ * $Id: VirusTransformImpl.java,v 1.21 2005/03/25 22:48:54 amread Exp $
  */
 package com.metavize.tran.virus;
 
@@ -231,9 +231,9 @@ public class VirusTransformImpl extends AbstractTransform
     {
         VirusSettings vs = new VirusSettings(getTid());
         vs.setHttpInbound(new VirusConfig(true, true, "Scan incoming files"));
-        vs.setHttpOutbound(new VirusConfig(true, true, "Scan outgoing files" ));
+        vs.setHttpOutbound(new VirusConfig(false, true, "Scan outgoing files" ));
         vs.setFtpInbound(new VirusConfig(true, true, "Scan incoming files" ));
-        vs.setFtpOutbound(new VirusConfig(true, true, "Scan outgoing files" ));
+        vs.setFtpOutbound(new VirusConfig(false, true, "Scan outgoing files" ));
 
         /**
          * FIXME, need list with booleans

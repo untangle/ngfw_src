@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: Blacklist.java,v 1.23 2005/03/23 06:58:20 amread Exp $
+ * $Id: Blacklist.java,v 1.24 2005/03/25 03:51:16 amread Exp $
  */
 
 package com.metavize.tran.httpblocker;
@@ -300,12 +300,16 @@ class Blacklist
         String category = findCategory(revHost, domains, domainCats);
 
         if (null != category) {
+            eventLogger.info(new HttpBlockerEvent(requestLine, Reason.DOMAIN,
+                                                  category));
             return settings.getBlockTemplate().render(host, uri, category);
         }
 
         category = findCategory(url, urls, urlCats);
 
         if (null != category) {
+            eventLogger.info(new HttpBlockerEvent(requestLine, Reason.URI,
+                                                  category));
             return settings.getBlockTemplate().render(host, uri, category);
         }
 

@@ -233,7 +233,7 @@ public class MEditTableJPanel extends javax.swing.JPanel implements ListSelectio
 
         removeJButton.setFont(new java.awt.Font("Dialog", 0, 12));
         removeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/widgets/editTable/IconMinus24x24.png")));
-        removeJButton.setToolTipText("<html><b>Remove Row</b> - Use this button to remove a row  in a table.</html>");
+        removeJButton.setToolTipText("<html><b>Remove Row</b> - Use this button to remove a row in a table.</html>");
         removeJButton.setDoubleBuffered(true);
         removeJButton.setFocusPainted(false);
         removeJButton.setFocusable(false);
@@ -259,7 +259,7 @@ public class MEditTableJPanel extends javax.swing.JPanel implements ListSelectio
 
         fillJButton.setFont(new java.awt.Font("Dialog", 0, 12));
         fillJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/widgets/editTable/IconFill24x24.png")));
-        fillJButton.setToolTipText("<html><b>Fill Check Boxes</b> - Use this button to check or uncheck all the checkboxes in a row.</html>");
+        fillJButton.setToolTipText("<html><b>Fill Check Boxes</b> - Use this button to check or uncheck all the checkboxes in a column.</html>");
         fillJButton.setDoubleBuffered(true);
         fillJButton.setFocusPainted(false);
         fillJButton.setFocusable(false);

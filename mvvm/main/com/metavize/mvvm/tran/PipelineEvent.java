@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: PipelineEvent.java,v 1.1 2005/01/27 02:12:39 amread Exp $
+ * $Id: PipelineEvent.java,v 1.2 2005/03/25 03:51:16 amread Exp $
  */
 
 package com.metavize.mvvm.tran;
@@ -22,6 +22,7 @@ import com.metavize.mvvm.logging.LogEvent;
  * @version 1.0
  * @hibernate.class
  * table="MVVM_EVT_PIPELINE"
+ * mutable="false"
  */
 public class PipelineEvent extends LogEvent
 {
@@ -43,15 +44,15 @@ public class PipelineEvent extends LogEvent
      *
      * @return the pipeline info.
      * @hibernate.many-to-one
-     * column="SESSION_INFO"
+     * column="PIPELINE_INFO"
      * cascade="all"
      */
-    public PipelineInfo getSessionInfo()
+    public PipelineInfo getPipelineInfo()
     {
         return info;
     }
 
-    public void setSessionInfo(PipelineInfo info)
+    public void setPipelineInfo(PipelineInfo info)
     {
         this.info = info;
     }

@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: StringRule.java,v 1.5 2005/03/12 01:54:30 amread Exp $
+ * $Id: StringRule.java,v 1.6 2005/03/25 22:07:22 amread Exp $
  */
 
 package com.metavize.mvvm.tran;
@@ -30,11 +30,13 @@ public class StringRule extends Rule
      */
     public StringRule() { }
 
+    // XXX inconstant constuctor
     public StringRule(String string)
     {
         this.string = string;
     }
 
+    // XXX inconstant constuctor
     public StringRule(String string, String name, String category,
                       boolean live)
     {

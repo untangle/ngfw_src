@@ -3,7 +3,8 @@ package com.metavize.tran.reporting.gui;
 
 import com.metavize.gui.util.Util;
 
-import javax.jnlp.*;
+import javax.jnlp.BasicService;
+import javax.jnlp.ServiceManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -30,9 +31,10 @@ public class BrowserLaunchJPanel extends JPanel implements ActionListener {
     public void actionPerformed(ActionEvent e){
 	
 	try{
-	    URL newURL = new URL("http://" + Util.getServerName() + "/reports");
-	    System.err.println("Showing: " + newURL.toString() );
 	    BasicService bs = (BasicService) ServiceManager.lookup("javax.jnlp.BasicService");
+            URL codeBase = bs.getCodeBase();
+	    URL newURL = new URL(codeBase, "../reports");
+	    System.err.println("Showing: " + newURL.toString() );
 	    bs.showDocument(newURL);
 	}
 	catch(Exception f){

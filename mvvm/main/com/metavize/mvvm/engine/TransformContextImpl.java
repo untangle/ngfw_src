@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: TransformContextImpl.java,v 1.37 2005/03/18 02:34:49 amread Exp $
+ *  $Id: TransformContextImpl.java,v 1.38 2005/03/25 02:08:09 jdi Exp $
  */
 
 package com.metavize.mvvm.engine;
@@ -35,6 +35,7 @@ import com.metavize.mvvm.tran.TransformDesc;
 import com.metavize.mvvm.tran.TransformException;
 import com.metavize.mvvm.tran.TransformManager;
 import com.metavize.mvvm.tran.TransformState;
+import com.metavize.mvvm.tran.TransformStats;
 import com.metavize.mvvm.tran.UndeployException;
 import net.sf.hibernate.HibernateException;
 import net.sf.hibernate.Query;
@@ -189,6 +190,11 @@ class TransformContextImpl implements TransformContext
     public TransformState getRunState()
     {
         return transform.getRunState();
+    }
+
+    public TransformStats getStats()
+    {
+        return transform.getStats();
     }
 
     // package private methods ------------------------------------------------

@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: NetworkingManagerImpl.java,v 1.9 2005/03/09 07:00:10 rbscott Exp $
+ *  $Id: NetworkingManagerImpl.java,v 1.10 2005/03/25 20:02:46 rbscott Exp $
  */
 
 package com.metavize.mvvm.engine;
@@ -200,7 +200,7 @@ public class NetworkingManagerImpl implements NetworkingManager
             }
             in.close();
         } catch ( Exception ex ) {
-            logger.error( "Error reading file: ", ex );
+            logger.warn( "Error reading file: ", ex );
         }
 
         try {

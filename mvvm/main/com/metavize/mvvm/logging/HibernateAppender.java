@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: HibernateAppender.java,v 1.27 2005/03/21 21:37:14 amread Exp $
+ * $Id: HibernateAppender.java,v 1.28 2005/03/25 03:51:16 amread Exp $
  */
 
 package com.metavize.mvvm.logging;
@@ -202,7 +202,7 @@ public class HibernateAppender extends AppenderSkeleton
 
         private void persist(List l)
         {
-            logger.debug("persisting: " + l.size());
+            logger.debug(tid + " persisting: " + l.size());
 
             Session s;
             if (null == tctxRef) {

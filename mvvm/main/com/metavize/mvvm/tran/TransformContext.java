@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: TransformContext.java,v 1.7 2005/02/24 02:53:06 amread Exp $
+ * $Id: TransformContext.java,v 1.8 2005/03/25 02:08:09 jdi Exp $
  */
 
 package com.metavize.mvvm.tran;
@@ -59,4 +59,6 @@ public interface TransformContext
     IPSessionDesc[] liveSessionDescs();
 
     TransformState getRunState();
+
+    TransformStats getStats();
 }

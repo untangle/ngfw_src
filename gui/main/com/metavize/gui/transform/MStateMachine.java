@@ -139,7 +139,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
 			System.err.println("REMOVING: " + transformName);
 		    Util.updateDependencies();
 		    mTransformControlsJPanel.collapseControlPanel();
-                    Util.getMPipelineJPanel().removeTransform(transformContext);            
+                    Util.getMPipelineJPanel().removeTransform(transformContext);
                 }
             };
             removeThread.start();

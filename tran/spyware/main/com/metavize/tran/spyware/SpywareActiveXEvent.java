@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: SpywareActiveXEvent.java,v 1.4 2005/03/19 23:04:20 amread Exp $
+ * $Id: SpywareActiveXEvent.java,v 1.5 2005/03/25 03:51:16 amread Exp $
  */
 
 package com.metavize.tran.spyware;
@@ -70,7 +70,7 @@ public class SpywareActiveXEvent extends LogEvent
      * @return the request line.
      * @hibernate.many-to-one
      * column="REQUEST_ID"
-     * cascade="none"
+     * cascade="save-update"
      */
     public RequestLine getRequestLine()
     {

@@ -30,9 +30,9 @@ public class AboutJDialog extends ConfigJDialog {
     private JScrollPane contentJScrollPane;
     private JEditorPane contentJEditorPane;
     
-    private static String aboutString = "<html><b>Version:</b> " 
+    private static String aboutString = "<html><b>Build:</b> " 
 	+ Util.getMvvmContext().toolboxManager().mackageDesc("mvvm").getInstalledVersion()
-	+ "<br><br><b>Readme:</b> http://www.metavize.com/egevalquickstart<br><br><b>Website: </b>http://www.metavize.com</html>";
+	+ "<br><br><b>Readme:</b> http://www.metavize.com/egquickstart<br><br><b>Website: </b>http://www.metavize.com</html>";
 
     public AboutJDialog( ) {
         super(Util.getMMainJFrame());

@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: CustomRuleEvent.java,v 1.5 2005/02/11 00:09:13 cng Exp $
+ * $Id: CustomRuleEvent.java,v 1.7 2005/03/25 19:37:17 cng Exp $
  */
 package com.metavize.tran.email;
 
@@ -15,16 +15,16 @@ import java.util.*;
 import java.util.regex.*;
 
 import com.metavize.mvvm.logging.LogEvent;
-import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.tran.util.*;
 
 /**
- * Log e-mail message custom rule (message contains virus) event.
+ * Log e-mail message custom rule event.
  *
  * @author <a href="mailto:cng@metavize.com">C Ng</a>
  * @version 1.0
  * @hibernate.class
  * table="TR_EMAIL_CUSTOM_EVT"
+ * mutable="false"
  */
 public class CustomRuleEvent extends LogEvent
 {

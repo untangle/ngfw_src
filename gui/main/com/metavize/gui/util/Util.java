@@ -39,7 +39,6 @@ public class Util {
     public static final int LINENO_MIN_WIDTH = 30; /* # */
     public static final int STATUS_MIN_WIDTH = 55; /* status */
 
-    private static String serverName;
     private static ClassLoader initClassLoader = null;
     private static MURLClassLoader mURLClassLoader = null;
     private static boolean killThreads = false;
@@ -128,9 +127,6 @@ public class Util {
 	}	
     }
 
-
-    public static String getServerName(){ return serverName; }
-    public static void setServerName(String serverNameX){ serverName = serverNameX; }
 
     public static Object getPipelineSync(){ return pipelineSync; }
 

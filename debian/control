@@ -37,7 +37,7 @@ Description: The Metavize Web Content Filter
 
 Package: email-transform
 Architecture: any
-Depends: mvvm, fprot-mv, sophos-mv, hauri-mv, spamassassin, spamc
+Depends: mvvm, spamassassin, spamc
 Conflicts: xmailscanner-transform
 XB-Price: 666
 XB-Display-Name: eMail SpamGuard
@@ -103,7 +103,7 @@ Package: reporting-transform
 Architecture: any
 Depends: mvvm
 XB-Price: 666
-XB-Display-Name: EdgeReport (beta)
+XB-Display-Name: EdgeReport (preview)
 XB-Rack-Position: 1000
 Description: The Metavize Report Generator
  EdgeReport generates document reports about activities on your network.
@@ -131,7 +131,7 @@ Description: The Metavize Client
 
 Package: mvvm
 Architecture: any
-Depends: catchall-mv, sudo, postgresql-mv, iptables-mv, restore-mv
+Depends: catchall-mv, sudo, postgresql-mv, iptables-mv, restore-mv, libxml2
 Conflicts: xenon, xenon-dbg
 XB-Price: 0
 XB-Display-Name: Metavize Server
