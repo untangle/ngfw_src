@@ -21,14 +21,14 @@ import java.awt.*;
 import javax.swing.*;
 
 
-public class IconLabel extends JLabel {
+public class MTiledIconLabel extends JLabel {
 
-    public IconLabel()
+    public MTiledIconLabel()
     {
         super();
     }
     
-    public IconLabel(String a, ImageIcon b, int c)
+    public MTiledIconLabel(String a, ImageIcon b, int c)
     {
         super(a, b, c);
     }

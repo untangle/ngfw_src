@@ -83,9 +83,9 @@ public class MPipelineJPanel extends javax.swing.JPanel {
 
 
     private synchronized MTransformJPanel getMTransformJPanel(String transformName){
-    Tid[] transformInstances = transformManager.transformInstances();
-    if(transformInstances == null) return null;  if(transformInstances.length == 0) return null;
-    return (MTransformJPanel) transformContextHashtable.get( transformInstances[0] );
+	Tid[] transformInstances = transformManager.transformInstances();
+	if(transformInstances == null) return null;  if(transformInstances.length == 0) return null;
+	return (MTransformJPanel) transformContextHashtable.get( transformInstances[0] );
     }
 
     private synchronized void addToRack(TransformContext transformContext, MTransformJPanel mTransformJPanel) {
@@ -145,7 +145,7 @@ public class MPipelineJPanel extends javax.swing.JPanel {
             }
         }
 
-        mMainJFrame.setButtonEnabled(name, true);
+        mMainJFrame.setTransformButtonDeployable(name);
         removeFromRack(transformContext);
     }
 
@@ -235,7 +235,7 @@ public class MPipelineJPanel extends javax.swing.JPanel {
         mPipelineJScrollPane = new javax.swing.JScrollPane();
         contentJPanel = new javax.swing.JPanel();
         transformJPanel = new MRackJPanel();
-        jLabel1 = new com.metavize.gui.widgets.IconLabel();
+        scrollbarBackground = new com.metavize.gui.widgets.MTiledIconLabel();
 
         setLayout(new java.awt.GridBagLayout());
 
@@ -245,8 +245,8 @@ public class MPipelineJPanel extends javax.swing.JPanel {
         setOpaque(false);
         mPipelineJScrollPane.setBackground(new java.awt.Color(51, 51, 51));
         mPipelineJScrollPane.setBorder(null);
-        mPipelineJScrollPane.setHorizontalScrollBarPolicy(javax.swing.JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        mPipelineJScrollPane.setVerticalScrollBarPolicy(javax.swing.JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        mPipelineJScrollPane.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        mPipelineJScrollPane.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         mPipelineJScrollPane.setDoubleBuffered(true);
         mPipelineJScrollPane.setMinimumSize(new java.awt.Dimension(720, 21));
         mPipelineJScrollPane.setOpaque(false);
@@ -275,24 +275,24 @@ public class MPipelineJPanel extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(10, 0, 10, 10);
         add(mPipelineJScrollPane, gridBagConstraints);
 
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/pipeline/VerticalScrollBar42x128.png")));
-        jLabel1.setDoubleBuffered(true);
-        jLabel1.setOpaque(true);
+        scrollbarBackground.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/pipeline/VerticalScrollBar42x100.png")));
+        scrollbarBackground.setDoubleBuffered(true);
+        scrollbarBackground.setOpaque(true);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.VERTICAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         gridBagConstraints.weighty = 1.0;
-        add(jLabel1, gridBagConstraints);
+        add(scrollbarBackground, gridBagConstraints);
 
     }//GEN-END:initComponents
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel contentJPanel;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane mPipelineJScrollPane;
+    private javax.swing.JLabel scrollbarBackground;
     private javax.swing.JPanel transformJPanel;
     // End of variables declaration//GEN-END:variables
 

@@ -52,7 +52,7 @@ public class PlainJDialog extends javax.swing.JDialog implements java.awt.event.
         buttonGroup1 = new javax.swing.ButtonGroup();
         contentJPanel = new javax.swing.JPanel();
         closeJButton = new javax.swing.JButton();
-        backgroundJLabel = new com.metavize.gui.widgets.IconLabel();
+        backgroundJLabel = new com.metavize.gui.widgets.MTiledIconLabel();
 
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
@@ -89,7 +89,7 @@ public class PlainJDialog extends javax.swing.JDialog implements java.awt.event.
         gridBagConstraints.insets = new java.awt.Insets(0, 10, 10, 0);
         getContentPane().add(closeJButton, gridBagConstraints);
 
-        backgroundJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/images/DarkGreyBackground400x128.png")));
+        backgroundJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/images/DarkGreyBackground1600x100.png")));
         backgroundJLabel.setDoubleBuffered(true);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;

@@ -58,8 +58,8 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
 
         // SETUP EXPAND DIALOG
 	if(greyBackgroundImageIcon == null)
-	    greyBackgroundImageIcon = new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/metavize/gui/images/DarkGreyBackground400x128.png"));
-        expandJDialog = new JDialog( Util.getMMainJFrame(), "expanded controls window", true);
+	    greyBackgroundImageIcon = new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/metavize/gui/images/DarkGreyBackground1600x100.png"));
+        expandJDialog = new JDialog( Util.getMMainJFrame(), "expanded settings window", true);
         expandJDialog.setSize(MIN_SIZE);
         expandJDialog.addComponentListener( 
             new java.awt.event.ComponentAdapter() {
@@ -196,7 +196,7 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
         saveJButton = new javax.swing.JButton();
         readoutJLabel = new javax.swing.JLabel();
         tintJPanel = new javax.swing.JPanel();
-        backgroundJLabel = new com.metavize.gui.widgets.IconLabel();
+        backgroundJLabel = new com.metavize.gui.widgets.MTiledIconLabel();
 
         setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -312,7 +312,7 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
 
         readoutJLabel.setFont(new java.awt.Font("Default", 0, 12));
         readoutJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        readoutJLabel.setText("Controls expanded...");
+        readoutJLabel.setText("Settings expanded...");
         readoutJLabel.setBorder(new javax.swing.border.EtchedBorder());
         readoutJLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         readoutJLabel.setIconTextGap(0);
@@ -324,9 +324,10 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
         tintJPanel.setPreferredSize(new java.awt.Dimension(596, 380));
         add(tintJPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
 
-        backgroundJLabel.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/metavize/gui/transform/ControlsBackground400x128.png")));
+        backgroundJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/images/LightGreyBackground1600x100.png")));
+        backgroundJLabel.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(128, 127, 127)));
         backgroundJLabel.setDoubleBuffered(true);
-        add(backgroundJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
+        add(backgroundJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 596, 380));
 
     }//GEN-END:initComponents
 

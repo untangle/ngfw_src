@@ -18,6 +18,7 @@ import com.metavize.gui.store.*;
 import com.metavize.gui.transform.*;
 import com.metavize.gui.upgrade.*;
 import com.metavize.gui.util.*;
+
 import com.metavize.mvvm.*;
 import com.metavize.mvvm.security.*;
 import com.metavize.mvvm.tran.*;
@@ -25,175 +26,173 @@ import com.metavize.mvvm.tran.*;
 
 public class MMainJFrame extends javax.swing.JFrame {
 
-    final int UPGRADE_THREAD_SLEEP_MILLIS = 60 * (60 * 1000); // X * (minutes)
 
-    private static MvvmContext mvvmContext;
-    private static ToolboxManager toolboxManager;
-    private static TransformManager transformManager;
 
+    // CONSTANTS
+    private static final int UPGRADE_THREAD_SLEEP_MILLIS = 60 * (60 * 1000); // X * (minutes)
     private static final Dimension MIN_SIZE = new Dimension(1024, Util.determineMinHeight(768));
     private static final Dimension MAX_SIZE = new Dimension(1600, 1200);
+
+    // STORE AND TOOLBOX IMPLEMENTATION
+    private Hashtable storeHashtable;
+    private Hashtable toolboxHashtable;
     private GridBagConstraints gridBagConstraints;
-    private Hashtable storeHashtable, toolboxHashtable;
-    private Object lock;
-    private UpdateCheckThread updateCheckThread;
-    private JProgressBar statusJProgressBar;
 
 
-    /** Creates new form asdf */
+
     public MMainJFrame() {
-        this.statusJProgressBar = Util.getStatusJProgressBar();
         Util.setMMainJFrame(this);
-        mvvmContext = Util.getMvvmContext();
-        toolboxManager = mvvmContext.toolboxManager();
-        transformManager = mvvmContext.transformManager();
         storeHashtable = new Hashtable();
         toolboxHashtable = new Hashtable();
-        gridBagConstraints = new GridBagConstraints(0, GridBagConstraints.RELATIVE, 1, 1, 1d, 0d, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0,1,3,3), 0, 0);
-        MTransformJButton mTransformJButton;
+        gridBagConstraints = new GridBagConstraints(0, GridBagConstraints.RELATIVE, 1, 1, 1d, 0d,
+						    GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
+						    new Insets(0,1,3,3), 0, 0);
 
         // INIT GUI
         initComponents();
+        storeJScrollPane.getVerticalScrollBar().setUnitIncrement(5);
+        toolboxJScrollPane.getVerticalScrollBar().setUnitIncrement(5);
+        configurationJScrollPane.getVerticalScrollBar().setUnitIncrement(5);
+
+	// OVERRIDE SCREENSIZE TO DEAL WITH LAUNCH BAR
 	java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-        setBounds((screenSize.width-1024)/2, (screenSize.height-768)/2, 1024, 768)
-;
+        setBounds((screenSize.width-1024)/2, (screenSize.height-768)/2, 1024, 768);
 
 
         Util.updateDependencies();
 
 
         // QUERY AND LOAD BUTTONS INTO TOOLBOX
-        statusJProgressBar.setString("populating Toolbox...");
-        MackageDesc[] installedMackages = toolboxManager.installed();
+        Util.getStatusJProgressBar().setString("populating Toolbox...");
+        MackageDesc[] installedMackages = Util.getToolboxManager().installed();
         Tid[] transformInstances;
-        String transformName;
+        String toolboxTransformName;
+	MTransformJButton toolboxMTransformJButton;
 
         for(int i=0; i<installedMackages.length; i++){
             if( installedMackages[i].getType() != MackageDesc.TRANSFORM_TYPE )
                 continue;
-
-            transformName = installedMackages[i].getName();
-            if( transformName.equals("http-transform") || transformName.equals("virus-transform") )
+            toolboxTransformName = installedMackages[i].getName();
+	    if( toolboxTransformName.equals("http-transform") || toolboxTransformName.equals("virus-transform") )
                 continue;
-
-            statusJProgressBar.setValue(64 + (int) ((((float)i)/(float)installedMackages.length)*16f) );
-            mTransformJButton = new MTransformJButton(installedMackages[i]);
-            toolboxHashtable.put( transformName, mTransformJButton );
-            //mTransformJButton.setMessage("(ready to install)");
-            mTransformJButton.setMessage(null);
-            // IF THE TRANSFORM IS ALREADY INSTANTIATED, MAKE SURE THE BUTTON CANNOT BE CLICKED AGAIN
-            transformInstances = transformManager.transformInstances( transformName );
-            if(  transformInstances != null && transformInstances.length > 0){
-                //mTransformJButton.setMessage("(installed)");
-                mTransformJButton.setMessage(null);
-                mTransformJButton.setEnabled(false);
-                mTransformJButton.setTT("Successfully installed...");
+            Util.getStatusJProgressBar().setValue(64 + (int) ((((float)i)/(float)installedMackages.length)*16f) );
+            toolboxMTransformJButton = new MTransformJButton(installedMackages[i]);
+            toolboxHashtable.put( toolboxTransformName, toolboxMTransformJButton );
+            transformInstances = Util.getTransformManager().transformInstances( toolboxTransformName );
+            if(  Util.isArrayEmpty(transformInstances) ){
+		setTransformButtonDeployable(toolboxTransformName);
             }
             else{
-                mTransformJButton.setTT("Ready to be installed...");
+		setTransformButtonDeployed(toolboxTransformName);
             }
-            this.addMTransformJButtonToToolbox( mTransformJButton );
+            this.addMTransformJButtonToToolbox( toolboxMTransformJButton );
         }
-    statusJProgressBar.setValue(80);
+	Util.getStatusJProgressBar().setValue(80);
 
 
 
         // QUERY AND LOAD BUTTONS INTO STORE
-        statusJProgressBar.setString("populating Store...");
-        MackageDesc[] storeMackages = toolboxManager.uninstalled();
-
+        Util.getStatusJProgressBar().setString("populating Store...");
+        MackageDesc[] storeMackages = Util.getToolboxManager().uninstalled();
+	String storeTransformName;	
+	MTransformJButton storeMTransformJButton;
         for(int i=0; i<storeMackages.length; i++){
             if( storeMackages[i].getType() != MackageDesc.TRANSFORM_TYPE )
                 continue;
-            if( storeMackages[i].getName().equals("http-transform") || storeMackages[i].getName().equals("virus-transform") )
+	    storeTransformName = storeMackages[i].getName();
+            if( storeTransformName.equals("http-transform") || storeTransformName.equals("virus-transform") )
                 continue;
-
-            statusJProgressBar.setValue(80 + (int) ((((float)i)/(float)storeMackages.length)*16f) );
-            if(!toolboxHashtable.containsKey(storeMackages[i].getName())){
-                mTransformJButton = new MTransformJButton(storeMackages[i]);
-                //mTransformJButton.setMessage("(available)");
-                mTransformJButton.setMessage(null);
-                mTransformJButton.setTT("Ready for procurement...");
-                storeHashtable.put(storeMackages[i].getName(), mTransformJButton);
-                this.addMTransformJButtonToStore(mTransformJButton);
+            Util.getStatusJProgressBar().setValue(80 + (int) ((((float)i)/(float)storeMackages.length)*16f) );
+            if(!toolboxHashtable.containsKey(storeTransformName)){
+                storeMTransformJButton = new MTransformJButton(storeMackages[i]);
+                storeHashtable.put(storeTransformName, storeMTransformJButton);
+                addMTransformJButtonToStore(storeMTransformJButton);
+		setTransformButtonProcurable(storeTransformName);
             }
         }
-    statusJProgressBar.setValue(96);
-
-
-
-
-
-        // INITIALIZE GUI
-        // statusJProgressBar.setString("Initializing user interface");
-        // statusJProgressBar.setValue(64);
-        //((MPipelineJPanel)mPipelineJPanel).updateView();
-        storeJScrollPane.getVerticalScrollBar().setUnitIncrement(5);
-        toolboxJScrollPane.getVerticalScrollBar().setUnitIncrement(5);
-        configurationJScrollPane.getVerticalScrollBar().setUnitIncrement(5);
-
+	Util.getStatusJProgressBar().setValue(96);
 
         // UPDATE/UPGRADE
-        updateCheckThread = new UpdateCheckThread();
-        updateCheckThread.setContextClassLoader( Util.getClassLoader() );
-        updateCheckThread.start();
+        (new UpdateCheckThread()).start();
     }
 
-    public void setButtonEnabled(String transformName, boolean enabled){
-        MTransformJButton targetButton = (MTransformJButton) toolboxHashtable.get(transformName);
+
+
+    public void setTransformButtonDeployable(String transformName){
+        final MTransformJButton targetButton = (MTransformJButton) toolboxHashtable.get(transformName);
         if(targetButton == null)
             return;
-
-        targetButton.setMessage(null);
-        targetButton.setTT("Ready to be installed...");
-        /*
-          if(enabled)
-          targetButton.setMessage("(ready to install)");
-          else
-          targetButton.setMessage("(installed)");
-        **/
-        targetButton.setEnabled(enabled);
+	Runnable updateButtonInSwing = new Runnable(){
+		public void run(){
+		    targetButton.setMessage(null);
+		    targetButton.setTT("Ready to be deployed to rack...");
+		    targetButton.setEnabled(true);
+		}
+	    };
+	SwingUtilities.invokeLater( updateButtonInSwing );
     }
 
+    public void setTransformButtonDeployed(String transformName){
+	final MTransformJButton targetButton = (MTransformJButton) toolboxHashtable.get(transformName);
+        if(targetButton == null)
+            return;
+	Runnable updateButtonInSwing = new Runnable(){
+		public void run(){
+		    targetButton.setMessage(null);
+		    targetButton.setTT("Currently deployed to rack...");
+		    targetButton.setEnabled(false);
+		}
+	    };
+	SwingUtilities.invokeLater( updateButtonInSwing );
+    }
 
-
+    public void setTransformButtonProcurable(String transformName){
+	final MTransformJButton targetButton = (MTransformJButton) storeHashtable.get(transformName);
+        if(targetButton == null)
+            return;
+	Runnable updateButtonInSwing = new Runnable(){
+		public void run(){
+		    targetButton.setMessage(null);
+		    targetButton.setTT("Ready to be procured...");
+		    targetButton.setEnabled(true);
+		}
+	    };
+	SwingUtilities.invokeLater( updateButtonInSwing );
+    }
 
     public void updateJButton(final int count){
-    SwingUtilities.invokeLater( new Runnable() {
-        public void run() {
-            if( count == 0 ){
-            upgradeJButton.setText("<html><center>Upgrade<br>(no upgrades)</center></html>");
-            upgradeJButton.setEnabled(true);
-            upgradeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/upgrade/IconUnavailable32x32.png")));
-            }
-            else if( count == 1 ){
-            upgradeJButton.setText("<html><center><b>Upgrade<br>(1 upgrade)</b></center></html>");
-            upgradeJButton.setEnabled(true);
-            upgradeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/upgrade/IconAvailable32x32.png")));
-            }
-            else if( count > 1){
-            upgradeJButton.setText("<html><center><b>Upgrade<br>(" + count + " upgrades)</b></center></html>");
-            upgradeJButton.setEnabled(true);
-            upgradeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/upgrade/IconAvailable32x32.png")));
-            }
-            else if( count == -1){
-            upgradeJButton.setText("<html><center>Upgrade<br>(unavailable)</center></html>");
-            upgradeJButton.setEnabled(true);
-            }
-            else if( count == -2 ){
-            upgradeJButton.setText("<html><center>Upgrade<br>(connecting...)</center></html>");
-            upgradeJButton.setEnabled(true);
-            }
-            else if( count == -3 ){
-            upgradeJButton.setText("<html><center>Upgrade<br>(checking...)</center></html>");
-            upgradeJButton.setEnabled(true);
-            }
-        } } );
+	Runnable updateButtonInSwing = new Runnable(){
+		public void run() {
+		    if( count == 0 ){
+			upgradeJButton.setText("<html><center>Upgrade<br>(no upgrades)</center></html>");
+			upgradeJButton.setEnabled(true);
+			upgradeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/upgrade/IconUnavailable32x32.png")));
+		    }
+		    else if( count == 1 ){
+			upgradeJButton.setText("<html><center><b>Upgrade<br>(1 upgrade)</b></center></html>");
+			upgradeJButton.setEnabled(true);
+			upgradeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/upgrade/IconAvailable32x32.png")));
+		    }
+		    else if( count > 1){
+			upgradeJButton.setText("<html><center><b>Upgrade<br>(" + count + " upgrades)</b></center></html>");
+			upgradeJButton.setEnabled(true);
+			upgradeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/upgrade/IconAvailable32x32.png")));
+		    }
+		    else if( count == -1){
+			upgradeJButton.setText("<html><center>Upgrade<br>(unavailable)</center></html>");
+			upgradeJButton.setEnabled(true);
+		    }
+		    else if( count == -2 ){
+			upgradeJButton.setText("<html><center>Upgrade<br>(checking...)</center></html>");
+			upgradeJButton.setEnabled(true);
+		    }
+		}
+	    };
+	SwingUtilities.invokeLater( updateButtonInSwing );
     }
+    
 
-    public Dimension getMinimumSize(){
-        return MIN_SIZE;
-    }
+    public Dimension getMinimumSize(){ return MIN_SIZE; } // used for form resizing
 
 
     private void initComponents() {//GEN-BEGIN:initComponents
@@ -222,7 +221,7 @@ public class MMainJFrame extends javax.swing.JFrame {
         configurationSpacerJPanel1 = new javax.swing.JPanel();
         upgradeJButton = new javax.swing.JButton();
         mPipelineJPanel = new com.metavize.gui.pipeline.MPipelineJPanel();
-        backgroundJLabel = new com.metavize.gui.widgets.IconLabel();
+        backgroundJLabel = new com.metavize.gui.widgets.MTiledIconLabel();
 
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
@@ -552,7 +551,7 @@ public class MMainJFrame extends javax.swing.JFrame {
         gridBagConstraints.weighty = 1.0;
         getContentPane().add(mPipelineJPanel, gridBagConstraints);
 
-        backgroundJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/main/MainBackground1600x128.png")));
+        backgroundJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/main/MainBackground1600x100.png")));
         backgroundJLabel.setDoubleBuffered(true);
         backgroundJLabel.setFocusable(false);
         backgroundJLabel.setOpaque(true);
@@ -570,19 +569,59 @@ public class MMainJFrame extends javax.swing.JFrame {
     }//GEN-END:initComponents
 
     private void backupJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backupJButtonActionPerformed
-        new BackupRestoreThread();
+	try{
+	    BackupRestoreJDialog backupRestoreJDialog = new BackupRestoreJDialog();
+	    backupRestoreJDialog.setBounds( Util.generateCenteredBounds( Util.getMMainJFrame().getBounds(),
+									 backupRestoreJDialog.getWidth(),
+									 backupRestoreJDialog.getHeight()) );
+	    backupRestoreJDialog.setVisible(true);
+	}
+	catch(Exception e){
+	    try{ Util.handleExceptionWithRestart("Error showing backup and restore panel", e);}
+	    catch(Exception f){Util.handleExceptionNoRestart("Error showing backup and restore panel", f);}
+	}
     }//GEN-LAST:event_backupJButtonActionPerformed
 
     private void networkJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_networkJButtonActionPerformed
-        new NetworkThread();
+	try{
+	    NetworkJDialog networkJDialog = new NetworkJDialog();
+	    networkJDialog.setBounds( Util.generateCenteredBounds( Util.getMMainJFrame().getBounds(), 
+								   networkJDialog.getWidth(), 
+								   networkJDialog.getHeight()) );
+	    networkJDialog.setVisible(true);
+	}
+	catch(Exception e){
+	    try{ Util.handleExceptionWithRestart("Error showing network settings", e); }
+	    catch(Exception f){ Util.handleExceptionNoRestart("Error showing network settings", f); }
+	}
     }//GEN-LAST:event_networkJButtonActionPerformed
 
     private void licenseJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_licenseJButtonActionPerformed
-        new LicenseThread();
+	try{
+	    LicenseJDialog licenseJDialog = new LicenseJDialog();
+	    licenseJDialog.setBounds( Util.generateCenteredBounds( Util.getMMainJFrame().getBounds(), 
+								   licenseJDialog.getWidth(), 
+								   licenseJDialog.getHeight()) );
+	    licenseJDialog.setVisible(true);
+	}
+	catch(Exception e){
+	    try{ Util.handleExceptionWithRestart("Error showing license", e); }
+	    catch(Exception f){ Util.handleExceptionNoRestart("Error showing license", f); }
+	}
     }//GEN-LAST:event_licenseJButtonActionPerformed
 
     private void aboutJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutJButtonActionPerformed
-        new AboutThread();
+	try{
+	    AboutJDialog aboutJDialog = new AboutJDialog();
+	    aboutJDialog.setBounds( Util.generateCenteredBounds( Util.getMMainJFrame().getBounds(), 
+								 aboutJDialog.getWidth(), 
+								 aboutJDialog.getHeight()) );
+	    aboutJDialog.setVisible(true);
+	}
+	catch(Exception e){
+	    try{ Util.handleExceptionWithRestart("Error showing about", e); }
+	    catch(Exception f){ Util.handleExceptionNoRestart("Error showing about", f); }
+	}
     }//GEN-LAST:event_aboutJButtonActionPerformed
 
     private void formComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentResized
@@ -590,19 +629,58 @@ public class MMainJFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_formComponentResized
 
     private void upgradeJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_upgradeJButtonActionPerformed
-    new UpgradeThread();
+	try{
+	    MackageDesc[] mackageDesc = null;
+	    UpgradeJDialog upgradeJDialog =  new UpgradeJDialog(MMainJFrame.this, Util.getToolboxManager());
+	    upgradeJDialog.setBounds( Util.generateCenteredBounds( MMainJFrame.this.getBounds(), 
+								   upgradeJDialog.getWidth(), 
+								   upgradeJDialog.getHeight()) );
+	    upgradeJDialog.update();
+	    upgradeJDialog.setVisible(true);
+	    mackageDesc = Util.getToolboxManager().upgradable();
+	    
+	    if( Util.isArrayEmpty(mackageDesc) )
+		updateJButton(0);
+	    else
+		updateJButton(mackageDesc.length);
+	}
+	catch(Exception e){
+	    try{ Util.handleExceptionWithRestart("Error checking for upgrades on server", e); }
+	    catch(Exception f){
+		Util.handleExceptionNoRestart("Error checking for upgrades on server", f);
+		updateJButton(-1);
+	    }
+	}
+	
     }//GEN-LAST:event_upgradeJButtonActionPerformed
+
+    private void adminJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_adminJButtonActionPerformed
+	try{
+	    AdminConfigJDialog adminConfigJDialog = new AdminConfigJDialog();
+	    adminConfigJDialog.setBounds( Util.generateCenteredBounds( Util.getMMainJFrame().getBounds(), 
+								       adminConfigJDialog.getWidth(), 
+								       adminConfigJDialog.getHeight()) );
+	    adminConfigJDialog.setVisible(true);
+	}
+	catch(Exception e){
+	    try{ Util.handleExceptionWithRestart("Error changing admins", e); }
+	    catch(Exception f){ Util.handleExceptionNoRestart("Error changing admins", f); }
+	}
+    }//GEN-LAST:event_adminJButtonActionPerformed
+
+    private void exitForm(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_exitForm
+        Util.exit(0);
+    }//GEN-LAST:event_exitForm
+
 
     public void addMTransformJButtonToStore(MTransformJButton mTransformJButton){
         if(mTransformJButton == null)
             return;
-
         mTransformJButton.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
                     storeActionPerformed(evt);
                 }
             });
-
         storeScrollJPanel.add(mTransformJButton, gridBagConstraints, 0);
         storeJScrollPane.getVerticalScrollBar().setValue(0);
         mTabbedPane.setSelectedIndex(0);
@@ -611,42 +689,38 @@ public class MMainJFrame extends javax.swing.JFrame {
     public void addMTransformJButtonToToolbox(MTransformJButton mTransformJButton){
         if(mTransformJButton == null)
             return;
-
         mTransformJButton.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
                     toolboxActionPerformed(evt);
                 }
             });
-
         toolboxScrollJPanel.add(mTransformJButton, gridBagConstraints, 0);
         toolboxJScrollPane.getVerticalScrollBar().setValue(0);
         mTabbedPane.setSelectedIndex(1);
     }
 
     private void storeActionPerformed(java.awt.event.ActionEvent evt){
-        new StoreThread(evt);
+        MTransformJButton targetMTransformJButton = (MTransformJButton) evt.getSource();
+        MStoreJDialog mStoreJDialog = new MStoreJDialog(MMainJFrame.this, true, targetMTransformJButton.duplicate());
+	mStoreJDialog.setBounds( Util.generateCenteredBounds(MMainJFrame.this.getBounds(), mStoreJDialog.getWidth(), mStoreJDialog.getHeight()) );
+	mStoreJDialog.setVisible(true);
+	if(mStoreJDialog.getPurchasedMTransformJButton() != null)
+	    targetMTransformJButton.purchase(storeHashtable, toolboxHashtable, storeScrollJPanel, toolboxScrollJPanel, mTabbedPane);
     }
-
-
+    
+    
+    
     private void toolboxActionPerformed(java.awt.event.ActionEvent evt){
-        MTransformJButton mTransformJButton = ((MTransformJButton) evt.getSource());
+	MTransformJButton targetMTransformJButton = ((MTransformJButton) evt.getSource());
         if( (evt.getModifiers() & ActionEvent.SHIFT_MASK) > 0){
-            mTransformJButton.uninstall(storeHashtable, toolboxHashtable, storeScrollJPanel, toolboxScrollJPanel, mTabbedPane);
+            targetMTransformJButton.uninstall(storeHashtable, toolboxHashtable, storeScrollJPanel, toolboxScrollJPanel, mTabbedPane);
         }
         else{
-            mTransformJButton.install();
+            targetMTransformJButton.install();
         }
     }
 
 
-    private void adminJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_adminJButtonActionPerformed
-        new AdminConfigThread();
-    }//GEN-LAST:event_adminJButtonActionPerformed
-
-
-    private void exitForm(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_exitForm
-        Util.exit(0);
-    }//GEN-LAST:event_exitForm
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton aboutJButton;
     private javax.swing.JButton adminJButton;
@@ -674,226 +748,34 @@ public class MMainJFrame extends javax.swing.JFrame {
     private javax.swing.JButton upgradeJButton;
     // End of variables declaration//GEN-END:variables
 
-    private class BackupRestoreThread extends Thread {
-	public BackupRestoreThread(){
-	    //backupJButton.setEnabled(false);
-	    //(new Thread(this)).start();
-            run();
-	}
-        public void run(){
-            try{
-                BackupRestoreJDialog backupRestoreJDialog = new BackupRestoreJDialog();
-                backupRestoreJDialog.setBounds( Util.generateCenteredBounds(Util.getMMainJFrame().getBounds(), backupRestoreJDialog.getWidth(), backupRestoreJDialog.getHeight()) );
-                backupRestoreJDialog.setVisible(true);
-            }
-            catch(Exception e){
-                try{ Util.handleExceptionWithRestart("Error showing backup and restore panel", e); }
-                catch(Exception f){
-                    Util.handleExceptionNoRestart("Error showing backup and restore panel", f);
-                }
-            }
-	    finally{
-		//backupJButton.setEnabled(true);
-	    }
-        }
-    }
-    
-    private class NetworkThread extends Thread {
-	public NetworkThread(){
-	    //networkJButton.setEnabled(false);
-	    //(new Thread(this)).start();
-            run();
-	}
-        public void run(){
-            try{
-                NetworkJDialog networkJDialog = new NetworkJDialog();
-                networkJDialog.setBounds( Util.generateCenteredBounds(Util.getMMainJFrame().getBounds(), networkJDialog.getWidth(), networkJDialog.getHeight()) );
-                networkJDialog.setVisible(true);
-            }
-            catch(Exception e){
-                try{ Util.handleExceptionWithRestart("Error showing network settings", e); }
-                catch(Exception f){
-                    Util.handleExceptionNoRestart("Error showing network settings", f);
-                }
-            }
-	    finally{
-		//networkJButton.setEnabled(true);
-	    }
-        }
-    }
-        
-    private class LicenseThread extends Thread {
-    public LicenseThread(){
-        //licenseJButton.setEnabled(false);
-        //(new Thread(this)).start();
-        run();
-    }
-        public void run(){
-            try{
-                LicenseJDialog licenseJDialog = new LicenseJDialog();
-                licenseJDialog.setBounds( Util.generateCenteredBounds(Util.getMMainJFrame().getBounds(), licenseJDialog.getWidth(), licenseJDialog.getHeight()) );
-                licenseJDialog.setVisible(true);
-            }
-            catch(Exception e){
-                try{ Util.handleExceptionWithRestart("Error showing license", e); }
-                catch(Exception f){
-                    Util.handleExceptionNoRestart("Error showing license", f);
-                }
-            }
-        finally{
-            //licenseJButton.setEnabled(true);
-        }
-        }
-    }
-
-
-    private class AboutThread extends Thread {
-    public AboutThread(){
-        //aboutJButton.setEnabled(false);
-        //(new Thread(this)).start();
-        run();
-    }
-        public void run(){
-            try{
-                AboutJDialog aboutJDialog = new AboutJDialog();
-                aboutJDialog.setBounds( Util.generateCenteredBounds(Util.getMMainJFrame().getBounds(), aboutJDialog.getWidth(), aboutJDialog.getHeight()) );
-                aboutJDialog.setVisible(true);
-
-            }
-            catch(Exception e){
-                try{ Util.handleExceptionWithRestart("Error showing about", e); }
-                catch(Exception f){
-                    Util.handleExceptionNoRestart("Error showing about", f);
-                }
-            }
-        finally{
-            //aboutJButton.setEnabled(true);
-        }
-        }
-    }
-
-
-    private class AdminConfigThread extends Thread {
-    public AdminConfigThread(){
-        //adminJButton.setEnabled(false);
-        //(new Thread(this)).start();
-        run();
-    }
-        public void run(){
-            try{
-                AdminConfigJDialog adminConfigJDialog = new AdminConfigJDialog();
-                adminConfigJDialog.setBounds( Util.generateCenteredBounds(Util.getMMainJFrame().getBounds(), adminConfigJDialog.getWidth(), adminConfigJDialog.getHeight()) );
-                adminConfigJDialog.setVisible(true);
-
-            }
-            catch(Exception e){
-                try{ Util.handleExceptionWithRestart("Error changing admins", e); }
-                catch(Exception f){
-                    Util.handleExceptionNoRestart("Error changing admins", f);
-                }
-            }
-        finally{
-            //adminJButton.setEnabled(true);
-        }
-        }
-    }
-
-    private class StoreThread extends Thread {
-        ActionEvent event;
-        public StoreThread(ActionEvent event){
-        this.event = event;
-        ((MTransformJButton) event.getSource()).setEnabled(false);
-        (new Thread(this)).start();
-    }
-        public void run(){
-            MTransformJButton mTransformJButton = null;
-            MStoreJDialog mStoreJDialog = new MStoreJDialog(MMainJFrame.this, true, ((MTransformJButton) event.getSource()).duplicate());
-            mStoreJDialog.setBounds( Util.generateCenteredBounds(MMainJFrame.this.getBounds(), mStoreJDialog.getWidth(), mStoreJDialog.getHeight()) );
-            mStoreJDialog.setVisible(true);
-            mTransformJButton = mStoreJDialog.getPurchasedMTransformJButton();
-
-            if(mTransformJButton != null){
-                mTransformJButton = ((MTransformJButton) event.getSource());
-                mTransformJButton.purchase(storeHashtable, toolboxHashtable, storeScrollJPanel, toolboxScrollJPanel, mTabbedPane);
-            }
-        else{
-        ((MTransformJButton) event.getSource()).setEnabled(true);
-        }
-        }
-    }
-
-    private class UpgradeThread extends Thread {
-    public UpgradeThread(){
-        upgradeJButton.setEnabled(false);
-        (new Thread(this)).start();
-    }
-        public void run(){
-            try{
-                ToolboxManager toolboxManager;
-                MackageDesc[] mackageDesc = null;
-                toolboxManager = mvvmContext.toolboxManager();
-                UpgradeJDialog upgradeJDialog =  new UpgradeJDialog(MMainJFrame.this, toolboxManager);
-                upgradeJDialog.setBounds( Util.generateCenteredBounds(MMainJFrame.this.getBounds(), upgradeJDialog.getWidth(), upgradeJDialog.getHeight()) );
-                upgradeJDialog.update();
-                upgradeJDialog.setVisible(true);
-                mackageDesc = toolboxManager.upgradable();
-
-                if( (mackageDesc == null) || (mackageDesc.length == 0) )
-                    updateJButton(0);
-                else
-                    updateJButton(mackageDesc.length);
-            }
-            catch(Exception e){
-                try{ Util.handleExceptionWithRestart("Error checking for upgrades on server", e); }
-                catch(Exception f){
-                    Util.handleExceptionNoRestart("Error checking for upgrades on server", f);
-                    updateJButton(-1);
-                }
-            }
-        finally{
-        SwingUtilities.invokeLater( new Runnable() {
-            public void run() {
-                upgradeJButton.setEnabled(true);
-            } } );
-        }
-        }
-    }
 
 
     private class UpdateCheckThread extends Thread {
-        private MackageDesc[] mackageDesc;
         public void UpdateCheckThread(){
             this.setDaemon(true);
+	    this.setContextClassLoader(Util.getClassLoader());
         }
         public void run() {
-
-            try{
-                ToolboxManager toolboxManager;
-
-                while(true){
+	    MackageDesc[] mackageDescs;
+	    while(true){
+		try{
                     if(Util.getKillThreads())
                         return;
                     updateJButton(-2);
-                    toolboxManager = mvvmContext.toolboxManager();
-                    // toolboxManager.update();
-
-                    updateJButton(-3);
-                    mackageDesc = toolboxManager.upgradable();
-                    if( (mackageDesc == null) || (mackageDesc.length == 0) )
+		    mackageDescs = Util.getToolboxManager().upgradable();
+                    if( Util.isArrayEmpty(mackageDescs) )
                         updateJButton(0);
                     else
-                        updateJButton(mackageDesc.length);
+                        updateJButton(mackageDescs.length);
                     Thread.sleep(UPGRADE_THREAD_SLEEP_MILLIS);
-                }
-            }
-            catch(Exception e){  // handle exception more gracefully
-                //try{ Util.handleExceptionWithRestart("Error checking for upgrades on server", e); }
-                //catch(Exception f){
-                Util.handleExceptionNoRestart("Error auto checking for upgrades on server", e);
-                updateJButton(-1);
-                //   return;
-                //}
-            }
+		}
+		catch(Exception e){
+		    Util.handleExceptionNoRestart("Error auto checking for upgrades on server", e);
+		    updateJButton(-1);
+		    try{ Thread.sleep(UPGRADE_THREAD_SLEEP_MILLIS); }
+		    catch(Exception f){ Util.handleExceptionNoRestart("Error waiting on upgrade thread", f); }
+		}
+	    }
         }
     }
 

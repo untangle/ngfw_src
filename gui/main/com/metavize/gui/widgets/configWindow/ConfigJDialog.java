@@ -84,7 +84,7 @@ public class ConfigJDialog extends javax.swing.JDialog implements java.awt.event
         closeJButton = new javax.swing.JButton();
         reloadJButton = new javax.swing.JButton();
         saveJButton = new javax.swing.JButton();
-        backgroundJLabel = new com.metavize.gui.widgets.IconLabel();
+        backgroundJLabel = new com.metavize.gui.widgets.MTiledIconLabel();
 
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
@@ -106,7 +106,7 @@ public class ConfigJDialog extends javax.swing.JDialog implements java.awt.event
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        gridBagConstraints.insets = new java.awt.Insets(15, 15, 15, 15);
         getContentPane().add(contentJTabbedPane, gridBagConstraints);
 
         closeJButton.setFont(new java.awt.Font("Default", 0, 12));
@@ -125,7 +125,7 @@ public class ConfigJDialog extends javax.swing.JDialog implements java.awt.event
         gridBagConstraints.gridy = 1;
         gridBagConstraints.ipadx = 50;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 10, 10, 0);
+        gridBagConstraints.insets = new java.awt.Insets(0, 15, 15, 0);
         getContentPane().add(closeJButton, gridBagConstraints);
 
         reloadJButton.setFont(new java.awt.Font("Arial", 0, 12));
@@ -146,7 +146,7 @@ public class ConfigJDialog extends javax.swing.JDialog implements java.awt.event
         gridBagConstraints.ipadx = 50;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTHEAST;
         gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 10, 10);
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 15, 15);
         getContentPane().add(reloadJButton, gridBagConstraints);
 
         saveJButton.setFont(new java.awt.Font("Arial", 0, 12));
@@ -166,10 +166,10 @@ public class ConfigJDialog extends javax.swing.JDialog implements java.awt.event
         gridBagConstraints.gridy = 1;
         gridBagConstraints.ipadx = 40;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTHEAST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 10, 10);
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 15, 15);
         getContentPane().add(saveJButton, gridBagConstraints);
 
-        backgroundJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/images/DarkGreyBackground400x128.png")));
+        backgroundJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/images/DarkGreyBackground1600x100.png")));
         backgroundJLabel.setDoubleBuffered(true);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;

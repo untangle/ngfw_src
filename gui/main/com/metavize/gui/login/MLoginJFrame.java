@@ -160,7 +160,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
         acceptJButton = new javax.swing.JButton();
         statusJProgressBar = new javax.swing.JProgressBar();
         logoLabel = new javax.swing.JLabel();
-        backgroundJLabel = new com.metavize.gui.widgets.IconLabel();
+        backgroundJLabel = new com.metavize.gui.widgets.MTiledIconLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Metavize EdgeGuard v1.2 Login");
@@ -364,7 +364,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(48, 96, 48, 96);
         contentJPanel.add(logoLabel, gridBagConstraints);
 
-        backgroundJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/images/LightGreyBackground400x128.png")));
+        backgroundJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/images/LightGreyBackground1600x100.png")));
         backgroundJLabel.setDoubleBuffered(true);
         backgroundJLabel.setFocusable(false);
         backgroundJLabel.setMaximumSize(new java.awt.Dimension(330, 385));
@@ -496,7 +496,6 @@ public class MLoginJFrame extends javax.swing.JFrame {
                     secure = !codeBase.getProtocol().equals("http");
                 }
                 catch(Exception e){
-                    e.printStackTrace();
                     resetLogin("No server at host:port");
                     Util.handleExceptionNoRestart("Error in host:port", e);
                     return;
@@ -535,12 +534,16 @@ public class MLoginJFrame extends javax.swing.JFrame {
 			return;
 		    }
 		    catch(com.metavize.mvvm.client.InvocationTargetExpiredException e){
+			Util.handleExceptionNoRestart("Error:", e);
 		    }
 		    catch(com.metavize.mvvm.client.InvocationConnectionException e){
+			Util.handleExceptionNoRestart("Error:", e);
 		    }
 		    catch(MvvmConnectException e){
+			Util.handleExceptionNoRestart("Error:", e);
 		    }
 		    catch(Exception e){
+			Util.handleExceptionNoRestart("Error:", e);
 		    }
                     finally{
                         retryLogin++;
@@ -587,10 +590,13 @@ public class MLoginJFrame extends javax.swing.JFrame {
                     }
                     
 		    catch(com.metavize.mvvm.client.InvocationTargetExpiredException e){
+			Util.handleExceptionNoRestart("Error:", e);
 		    }
 		    catch(com.metavize.mvvm.client.InvocationConnectionException e){
+			Util.handleExceptionNoRestart("Error:", e);
 		    }
 		    catch(Exception e){
+			Util.handleExceptionNoRestart("Error:", e);
 		    }
                     finally{
                         retryClient++;
