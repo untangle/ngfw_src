@@ -14,7 +14,7 @@ $Id: mvvm-transform.xml,v 1.2 2005/03/08 23:05:46 inieves Exp $
 <mvvm-transform>
   <transform-desc name="clam-transform"
                   parent-transform="http-transform"
-                  display-name="Hauri AntiVirus Scanner"
-                  classname="com.metavize.tran.clam.HauriTransform"
+                  display-name="Clam AntiVirus Scanner"
+                  classname="com.metavize.tran.clam.ClamTransform"
                   gui-classname="com.metavize.tran.clam.gui.MTransformJPanel"/>
 </mvvm-transform>
