@@ -581,7 +581,6 @@ public class MIMEPart
             {
                 zTmpFile = getTmpFile();
                 zCName = getFileName(zTmpFile);
-zLog.info("file name: " + zCName);
                 zName = zCName.get();
                 zName.rewind();
                 
@@ -596,7 +595,6 @@ zLog.info("file name: " + zCName);
             {
                 zTmpFile = getTmpFile();
                 zCName = getFileName(zTmpFile);
-zLog.info("file name: " + zCName);
                 zName = zCName.get();
                 zName.rewind();
                 
