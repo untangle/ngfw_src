@@ -45,7 +45,6 @@ $Id: build.xml,v 1.22 2005/03/25 04:00:30 jdi Exp $
 	   target="1.5"
            includeAntRuntime="false">
 
-      <classpath refid="mvvm.classpath"/>
       <classpath refid="mvvm-client.classpath"/>
 
       <classpath refid="jfreechart.classpath"/>
