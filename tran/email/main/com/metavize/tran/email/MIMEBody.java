@@ -356,13 +356,17 @@ public class MIMEBody
         {
             zMIMEPart = (MIMEPart) zMPIter.next();
             zScanResult = zMIMEPart.scan(zReplacement, zScanner, bReplace);
-            if (null == zReturnResult)
+            if (null == zReturnResult &&
+                (null != zScanResult &&
+                 false == zScanResult.isClean()))
             {
-                /* we only log 1st virus result */
+                /* we only log 1st infected virus result */
                 zReturnResult = zScanResult;
+                //zLog.debug("1st scan result: " + zReturnResult);
             }
         }
 
+        //zLog.debug("return scan result: " + zReturnResult);
         return zReturnResult;
     }
 

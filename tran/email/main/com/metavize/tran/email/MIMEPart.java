@@ -668,6 +668,7 @@ public class MIMEPart
             zStart = null; /* release, let GC process */
             zEnd = null; /* release, let GC process */
 
+            //zLog.debug("scanner: " + zScanner + ", result: " + zScanResult);
             return zScanResult;
         }
         /* else MIME part body has nested object - scan nested object */
