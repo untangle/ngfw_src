@@ -102,6 +102,7 @@ public final class Netcap {
     }
     
     private static native boolean isBroadcast( long address );
+    public static  native boolean isBridgeAlive();
 
     private static native boolean isMulticast( long address );
 

@@ -618,6 +618,20 @@ JNIEXPORT jboolean JNICALL JF_Netcap( isBroadcast )
 
 /*
  * Class:     com_metavize_jnetcap_Netcap
+ * Method:    isBridgeAlive
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL JF_Netcap( isBridgeAlive )
+    ( JNIEnv* env, jclass _class )
+{    
+    if ( netcap_interface_bridge_exists() == 1 )
+        return JNI_TRUE;
+        
+    return JNI_FALSE;
+}
+
+/*
+ * Class:     com_metavize_jnetcap_Netcap
  * Method:    isMulticast
  * Signature: (J)Z
  */

@@ -528,6 +528,10 @@ int netcap_intfset_to_string ( char* dst, int dst_len, netcap_intfset_t* intfset
 /**
  * Interface functions
  */
+
+/* Return 1 if the bridge exists, 0 otherwise */
+int netcap_interface_bridge_exists( void );
+
 /* Limit traffic to just this subnet */
 int netcap_interface_limit_subnet   (char* dev_inside, char* dev_outside);
 

@@ -79,6 +79,43 @@ static int _get_interface_address ( char* interface_name, in_addr_t* address, in
 int _command_port_guard( netcap_intf_t gate, int protocol, char* ports, char* guest, int if_add );
 
 /**
+ * Return 1 if the bridge exists, 0 otherwise
+ */
+int netcap_interface_bridge_exists( void )
+{
+    struct ifreq interfaces[NETCAP_MAX_INTERFACES];
+    struct ifconf conf;
+    int  sockfd, i;
+    
+    /* Clear out all of the interface names */
+    bzero( _if_names, sizeof(_if_names));
+
+    /* XXX Have to make sure to close this socket */
+    sockfd = socket( PF_INET, SOCK_DGRAM, 0 );
+
+    if ( sockfd < 0 ) return perrlog("socket");
+
+    conf.ifc_len = sizeof(interfaces);
+    conf.ifc_req = interfaces;
+
+    if ( ioctl( sockfd, SIOCGIFCONF, &conf ) < 0 )
+        return perrlog("ioctl");
+
+    if ( close( sockfd ))
+        perrlog( "close" );
+    
+    i = conf.ifc_len / sizeof(struct ifreq);
+    
+    for ( ; --i >= 0 ; ) {
+        if ( strncmp( interfaces[i].ifr_name, "br0", 3 ) == 0 ) {
+            return 1;
+        }
+    }
+    
+    return 0;
+}
+
+/**
  *
  */
 int netcap_interface_init ()

@@ -39,7 +39,11 @@ public class Argon
 
     /* Whether or not to subscribe to local traffic */
     protected static boolean ifLocal = false;
-
+    
+    /* True if there was an error on initialization, 
+     * a real shutdown does not occur if this is false */
+    protected static boolean isValid = true;
+    
     /* Subscription manager */
     protected static final SubscriptionManager subManager = new SubscriptionManager();
 
@@ -84,6 +88,18 @@ public class Argon
 
     public static void main( String args[] )
     {
+        if ( !Netcap.isBridgeAlive()) {
+            /* essentially, Go into fake mode */
+            logger.error( "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" );
+            logger.error( "Bridge does not exist, going into fake mode" );
+            logger.error( "Bridge does not exist, going into fake mode" );
+            logger.error( "Bridge does not exist, going into fake mode" );
+            logger.error( "Bridge does not exist, going into fake mode" );
+            logger.error( "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" );
+            isValid = false;
+            return;
+        }
+            
         /* Get an instance of the shield */
         shield = Shield.getInstance();
 
@@ -381,6 +397,18 @@ public class Argon
     public static void destroy() 
     {
         logger.debug( "Shutting down" );
+        
+        if ( !isValid ) {
+            /* essentially, Go into fake mode */
+            logger.error( "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" );
+            logger.error( "Error on startup, no shutdown" );
+            logger.error( "Error on startup, no shutdown" );
+            logger.error( "Error on startup, no shutdown" );
+            logger.error( "Error on startup, no shutdown" );            
+            logger.error( "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" );
+            return;
+        }
+
         
         /* Remove both of the hooks to guarantee that no new sessions are created */
         Netcap.unregisterTCPHook();
