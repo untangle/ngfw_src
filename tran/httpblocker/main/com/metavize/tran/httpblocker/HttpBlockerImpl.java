@@ -54,7 +54,7 @@ public class HttpBlockerImpl extends SoloTransform implements HttpBlocker
                                           IPMaddr.anyAddr, PortRange.ANY,
                                           IPMaddr.anyAddr, PortRange.ANY);
         pipeSpec = new PipeSpec("http-blocker", Fitting.HTTP_TOKENS,
-                                s, Affinity.BEGIN);
+                                s, Affinity.CLIENT);
     }
 
     // HttpBlocker methods ----------------------------------------------------

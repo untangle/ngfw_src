@@ -26,11 +26,12 @@ import com.metavize.mvvm.argon.IPSessionDesc;
  */
 public class PipeSpec
 {
-    private String name;
-    private Fitting input;
-    private Fitting output;
-    private Affinity affinity;
-    private Set subscriptions;
+    private final String name;
+    private final Fitting input;
+    private final Fitting output;
+    private final Affinity affinity;
+    private final int strength; // [ 0 - 32 ]
+    private final Set subscriptions;
 
     // constructors -----------------------------------------------------------
 
@@ -50,6 +51,7 @@ public class PipeSpec
         this.input = this.output = type;
         this.subscriptions = subscriptions;
         this.affinity = affinity;
+        this.strength = 0;
     }
 
     /**
@@ -69,6 +71,7 @@ public class PipeSpec
         this.subscriptions = new HashSet();
         this.subscriptions.add(subscription);
         this.affinity = affinity;
+        this.strength = 0;
     }
 
     /**
@@ -87,6 +90,8 @@ public class PipeSpec
         this.input = input;
         this.output = output;
         this.subscriptions = subscriptions;
+        this.affinity = Affinity.CLIENT;
+        this.strength = 0;
     }
 
     /**
@@ -106,6 +111,8 @@ public class PipeSpec
         this.output = output;
         this.subscriptions = new HashSet();
         this.subscriptions.add(subscription);
+        this.affinity = Affinity.CLIENT;
+        this.strength = 0;
     }
 
     /**
@@ -122,16 +129,19 @@ public class PipeSpec
         this.input = this.output = type;
         this.affinity = affinity;
         this.subscriptions = new HashSet();
+        this.strength = 0;
     }
 
     // business methods -------------------------------------------------------
 
+    public void setSubscriptions(Set subscriptions)
+    {
+        this.subscriptions.clear();
+        this.subscriptions.addAll(subscriptions);
+    }
+
     public boolean addSubscription(Subscription sub)
     {
-        if (null == subscriptions) {
-            subscriptions = new HashSet();
-        }
-
         return subscriptions.add(sub);
     }
 
@@ -149,16 +159,6 @@ public class PipeSpec
 
     // accessors --------------------------------------------------------------
 
-    public Set getSubscriptions()
-    {
-        return subscriptions;
-    }
-
-    public void setSubscriptions(Set subscriptions)
-    {
-        this.subscriptions = subscriptions;
-    }
-
     public Fitting getOutput()
     {
         return output;
@@ -172,6 +172,17 @@ public class PipeSpec
     public Affinity getAffinity()
     {
         return affinity;
+    }
+
+    /**
+     * Strength is between 0 and 32 where 32 is closer to its affinity
+     * and 0 is closer to the "middle".
+     *
+     * @return the strength.
+     */
+    public int getStrength()
+    {
+        return strength;
     }
 
     public String getName()

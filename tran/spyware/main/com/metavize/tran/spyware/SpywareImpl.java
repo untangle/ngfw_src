@@ -16,10 +16,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
@@ -70,9 +69,9 @@ public class SpywareImpl extends AbstractTransform implements Spyware
 
     private final PipeSpec[] pipeSpecs = new PipeSpec[]
         { new PipeSpec("spyware-http", Fitting.HTTP_TOKENS,
-                       new Subscription(Protocol.TCP), Affinity.END),
+                       new Subscription(Protocol.TCP), Affinity.SERVER),
           new PipeSpec("spyware-byte", Fitting.OCTET_STREAM,
-                       new Subscription(Protocol.TCP), Affinity.END) };
+                       new Subscription(Protocol.TCP), Affinity.SERVER) };
     private final MPipe[] mPipes = new MPipe[2];
     private final SessionEventListener[] listeners = new SessionEventListener[]
         { tokenAdaptor, streamHandler };
@@ -201,7 +200,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
     {
         List rules = settings.getActiveXRules();
         InputStream is = getClass().getClassLoader().getResourceAsStream(ACTIVEX_LIST);
-        
+
         if (null == is) {
             logger.error("Could not find: " + ACTIVEX_LIST);
             return;
@@ -254,7 +253,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         }
 
         logger.info("Checking for cookie  updates...");
-        
+
         HashSet ruleHash = new HashSet();
         for (Iterator i=rules.iterator() ; i.hasNext() ; ) {
             StringRule rule = (StringRule) i.next();
@@ -301,7 +300,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
             IPMaddrRule rule = (IPMaddrRule) i.next();
             ruleHash.add(rule.getIpMaddr());
         }
-        
+
         try {
             InputStreamReader isr = new InputStreamReader(is);
             BufferedReader br = new BufferedReader(isr);

@@ -14,9 +14,11 @@ package com.metavize.mvvm.tapi;
 // XXX make this an enum when i dump xdoclet
 public class Affinity
 {
-    // XXX BEGIN and END are ambiguous, relative to client? inside vs outside?
-    public static final Affinity BEGIN = new Affinity("begin");
-    public static final Affinity END = new Affinity("end");
+    public static final Affinity CLIENT = new Affinity("client");
+    public static final Affinity SERVER = new Affinity("server");
+
+    public static final Affinity INSIDE = new Affinity("inside");
+    public static final Affinity OUTSIDE = new Affinity("outside");
 
     private String affinity;
 

@@ -18,11 +18,11 @@ import com.metavize.mvvm.tapi.Affinity;
 import com.metavize.mvvm.tapi.Fitting;
 import com.metavize.mvvm.tapi.Interface;
 import com.metavize.mvvm.tapi.LiveSubscription;
+import com.metavize.mvvm.tapi.MPipe;
 import com.metavize.mvvm.tapi.PipeSpec;
 import com.metavize.mvvm.tapi.Protocol;
 import com.metavize.mvvm.tapi.SoloTransform;
 import com.metavize.mvvm.tapi.Subscription;
-import com.metavize.mvvm.tapi.MPipe;
 import com.metavize.mvvm.tapi.TransformContextFactory;
 import com.metavize.mvvm.tran.IPMaddr;
 import com.metavize.mvvm.tran.PortRange;
@@ -60,7 +60,7 @@ public class TestTransformImpl extends SoloTransform
         s.add(new Subscription(Protocol.UDP));
 
         pipeSpec = new PipeSpec("test", Fitting.OCTET_STREAM, s,
-                                Affinity.END);
+                                Affinity.SERVER);
     }
 
     protected void initializeSettings()
@@ -144,19 +144,19 @@ public class TestTransformImpl extends SoloTransform
 
     public void reconfigure()
     {
-	MPipe mPipe = getMPipe();
+    MPipe mPipe = getMPipe();
 
         if (noTCP && (tcpSub != null)) {
             logger.debug("Removing TCP Sub");
-	    if ( mPipe != null )
-		mPipe.removeSubscription(this.tcpSub);
-	    
+        if ( mPipe != null )
+        mPipe.removeSubscription(this.tcpSub);
+
             tcpSub = null;
         }
         if (noUDP && (udpSub != null)) {
             logger.debug("Removing UDP Sub");
-	    if ( mPipe != null )
-		mPipe.removeSubscription(udpSub);
+        if ( mPipe != null )
+        mPipe.removeSubscription(udpSub);
             udpSub = null;
         }
 
@@ -166,8 +166,8 @@ public class TestTransformImpl extends SoloTransform
                 (Protocol.TCP, Interface.ANY, Interface.ANY,
                  IPMaddr.anyAddr, PortRange.ANY, IPMaddr.anyAddr,
                  new PortRange(minPort, maxPort));
-	    if ( mPipe != null )
-		this.tcpSub = mPipe.addSubscription(sub);
+        if ( mPipe != null )
+        this.tcpSub = mPipe.addSubscription(sub);
         }
         if (!noUDP && (udpSub == null)) {
             logger.debug("Adding UDP Sub");
@@ -175,8 +175,8 @@ public class TestTransformImpl extends SoloTransform
                 (Protocol.UDP, Interface.ANY, Interface.ANY,
                  IPMaddr.anyAddr, PortRange.ANY, IPMaddr.anyAddr,
                  new PortRange(minPort,maxPort));
-	    if ( mPipe != null )
-		this.udpSub = mPipe.addSubscription(sub);
+        if ( mPipe != null )
+        this.udpSub = mPipe.addSubscription(sub);
         }
     }
 

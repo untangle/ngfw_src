@@ -43,7 +43,7 @@ public class ProtoFilterImpl extends SoloTransform implements ProtoFilter
         Set set = new HashSet();
         set.add(new Subscription(Protocol.TCP));
         set.add(new Subscription(Protocol.UDP));
-        this.pipeSpec = new PipeSpec("protofilter", Fitting.OCTET_STREAM, set, Affinity.BEGIN);
+        this.pipeSpec = new PipeSpec("protofilter", Fitting.OCTET_STREAM, set, Affinity.CLIENT);
     }
 
     public ProtoFilterSettings getProtoFilterSettings()

@@ -1,5 +1,4 @@
-# MVVM server settings
-#
+# MVVM server settings -*-sh-*-
 
 ## Simply function for taking a string, trim surround space, and the convert
 ## space separators to the token string. ( eg join_string " a b c " ";" -> "a;b;c"

@@ -53,9 +53,9 @@ public class VirusTransformImpl extends AbstractTransform
     private final VirusScanner scanner;
 
     private final PipeSpec[] pipeSpecs = new PipeSpec[]
-        { new PipeSpec("virus-ftp", Fitting.FTP_STREAM, Affinity.END),
-          new PipeSpec("virus-ftp-data", Fitting.OCTET_STREAM, Affinity.END),
-          new PipeSpec("virus-http", Fitting.HTTP_TOKENS, Affinity.END) };
+        { new PipeSpec("virus-ftp", Fitting.FTP_STREAM, Affinity.SERVER),
+          new PipeSpec("virus-ftp-data", Fitting.OCTET_STREAM, Affinity.SERVER),
+          new PipeSpec("virus-http", Fitting.HTTP_TOKENS, Affinity.SERVER) };
 
     private final MPipe[] mPipes = new MPipe[3];
     private final SessionEventListener[] listeners = new SessionEventListener[]
