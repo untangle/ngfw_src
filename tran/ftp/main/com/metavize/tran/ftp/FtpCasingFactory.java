@@ -1,42 +1,41 @@
 /*
- * Copyright (c) 2004 Metavize Inc.
+ * Copyright (c) 2004, 2005 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: HttpCasingFactory.java,v 1.1 2004/12/10 23:27:47 amread Exp $
+ * $Id: FtpCasingFactory.java,v 1.1 2004/12/10 23:27:47 amread Exp $
  */
 
-package com.metavize.tran.http;
+package com.metavize.tran.ftp;
 
 import com.metavize.tran.token.Casing;
 import com.metavize.tran.token.CasingFactory;
-import com.metavize.tran.token.Parser;
-import com.metavize.tran.token.Unparser;
 
-class HttpCasingFactory implements CasingFactory
+
+class FtpCasingFactory implements CasingFactory
 {
     private static final Object LOCK = new Object();
 
-    private static HttpCasingFactory HTTP_CASING_FACTORY;
+    private static FtpCasingFactory FTP_CASING_FACTORY;
 
-    private HttpCasingFactory() { }
+    private FtpCasingFactory() { }
 
-    static HttpCasingFactory factory()
+    static FtpCasingFactory factory()
     {
         synchronized (LOCK) {
-            if (null == HTTP_CASING_FACTORY) {
-                HTTP_CASING_FACTORY = new HttpCasingFactory();
+            if (null == FTP_CASING_FACTORY) {
+                FTP_CASING_FACTORY = new FtpCasingFactory();
             }
         }
 
-        return HTTP_CASING_FACTORY;
+        return FTP_CASING_FACTORY;
     }
 
     public Casing casing(boolean inside)
     {
-        return new HttpCasing(inside);
+        return new FtpCasing(inside);
     }
 }

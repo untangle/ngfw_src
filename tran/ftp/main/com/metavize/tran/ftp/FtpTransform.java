@@ -8,7 +8,7 @@
  *
  * $Id: HttpTransform.java,v 1.11 2005/01/30 09:20:30 amread Exp $
  */
-package com.metavize.tran.http;
+package com.metavize.tran.ftp;
 
 import com.metavize.mvvm.tapi.Fitting;
 import com.metavize.mvvm.tapi.PipeSpec;
@@ -18,26 +18,25 @@ import com.metavize.tran.token.CasingAdaptor;
 import com.metavize.tran.token.CasingTransform;
 import org.apache.log4j.Logger;
 
-
-public class HttpTransform extends CasingTransform
+public class FtpTransform extends CasingTransform
 {
-    private final Logger logger = Logger.getLogger(HttpTransform.class);
+    private final Logger logger = Logger.getLogger(FtpTransform.class);
 
     private final PipeSpec insidePipeSpec;
     private final PipeSpec outsidePipeSpec;
 
     // constructors -----------------------------------------------------------
 
-    public HttpTransform()
+    public FtpTransform()
     {
         // inside PipeSpec
         Subscription s = new Subscription(Protocol.TCP);
-        insidePipeSpec = new PipeSpec("http-inside", Fitting.HTTP_STREAM,
-                                      Fitting.HTTP_TOKENS, s);
+        insidePipeSpec = new PipeSpec("ftp-inside", Fitting.FTP_STREAM,
+                                      Fitting.FTP_TOKENS, s);
 
         // outside PipeSpec
-        outsidePipeSpec = new PipeSpec("http-outside", Fitting.HTTP_TOKENS,
-                                       Fitting.HTTP_STREAM, s);
+        outsidePipeSpec = new PipeSpec("ftp-outside", Fitting.FTP_TOKENS,
+                                       Fitting.FTP_STREAM, s);
     }
 
     // CasingTransform methods ------------------------------------------------
@@ -57,12 +56,12 @@ public class HttpTransform extends CasingTransform
     protected void preStart()
     {
         // inside
-        CasingAdaptor ih = new CasingAdaptor(HttpCasingFactory.factory(),
+        CasingAdaptor ih = new CasingAdaptor(FtpCasingFactory.factory(),
                                              true);
         getInsideMPipe().setSessionEventListener(ih);
 
         // outside
-        CasingAdaptor oh = new CasingAdaptor(HttpCasingFactory.factory(),
+        CasingAdaptor oh = new CasingAdaptor(FtpCasingFactory.factory(),
                                              false);
         getOutsideMPipe().setSessionEventListener(oh);
 
