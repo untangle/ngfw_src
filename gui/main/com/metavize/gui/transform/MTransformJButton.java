@@ -309,6 +309,7 @@ public class MTransformJButton extends JButton {
 
         try{
         this.setContextClassLoader( Util.getClassLoader() );
+	MTransformJButton.this.setEnabled(false);
         (new Thread(this)).start();
         }
         catch(Exception e){
