@@ -91,6 +91,10 @@
     <priority value="WARN"/>
   </category>
 
+  <category name="com.metavize.tran.email">
+    <priority value="WARN"/>
+  </category>
+
   <category name="com.metavize.mvvm.tran">
     <priority value="WARN"/>
   </category>
