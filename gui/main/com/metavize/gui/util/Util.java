@@ -7,9 +7,9 @@
 package com.metavize.gui.util;
 
 import java.awt.*;
-import java.util.Vector;
+import java.util.*;
 import javax.swing.*;
-import java.util.StringTokenizer;
+import javax.jnlp.*;
 
 import java.net.*;
 
@@ -42,8 +42,29 @@ public class Util {
     public static MvvmContext getMvvmContext(){ return mvvmContext; }
     public static ToolboxManager getToolboxManager() { return toolboxManager; }
     public static TransformManager getTransformManager() { return transformManager; }
-    
+    ///////////////////////////////////
 
+    // CODEBASE /////////////////
+    private static URL serverCodeBase;
+
+    public static URL getServerCodeBase(){
+	if(serverCodeBase != null)
+	    return serverCodeBase;
+	else{
+	    try{
+		BasicService basicService = (BasicService) ServiceManager.lookup("javax.jnlp.BasicService");
+		serverCodeBase = basicService.getCodeBase();
+	    }
+	    catch(Exception e){
+		Util.handleExceptionNoRestart("Error:", e);
+	    }
+	    finally{
+		return serverCodeBase;
+	    }
+	}
+	    
+    }
+    /////////////////////////////////
 
 
     private static String undetectedMessage  = "<html>To access this functionality, you must install an AntiVirus Scanner Softwawre Appliance.</html>";
