@@ -46,9 +46,16 @@ public class NatEventHandler extends AbstractEventHandler
     /* All of the other rules */
     /* Use an empty list rather than null */
     private List<RedirectMatcher> redirectList = new LinkedList<RedirectMatcher>();
+
+    /* tracks the open TCP ports for NAT */
+    private final PortList tcpPortList;
+    
+    /* Tracks the open UDP ports for NAT */
+    private final PortList udpPortList;
+
     
     /* Setup, singleton  */
-    NatEventHandler() 
+    NatEventHandler()
     {
     }
 
