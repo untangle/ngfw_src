@@ -68,7 +68,7 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
                 }
             } );
         expandJDialog.getContentPane().setLayout(new GridBagLayout());
-	expandJDialog.getContentPane().add(new com.metavize.gui.widgets.IconLabel("",greyBackgroundImageIcon,JLabel.CENTER), greyBackgroundConstraints);
+	expandJDialog.getContentPane().add(new com.metavize.gui.widgets.MTiledIconLabel("",greyBackgroundImageIcon,JLabel.CENTER), greyBackgroundConstraints);
         
     }
     
