@@ -119,11 +119,6 @@ public class NatEventHandler extends AbstractEventHandler
             /* Change the source in the request */
             nat.redirect( request );
             
-            /* Fix the port */
-            switch( protocol ) {
-                
-            }
-            
             /* XXX What about the case where you have NAT and redirect */
             /* XXX Possibly check for redirects here */
             return true;
