@@ -23,6 +23,9 @@ fi
 if [ -f /proc/sys/net/ipv4/netfilter/ip_conntrack_tcp_timeout_time_wait ] ; then
     echo 30 > /proc/sys/net/ipv4/netfilter/ip_conntrack_tcp_timeout_time_wait ;
 fi
+if [ -f /proc/sys/net/ipv4/ip_queue_maxlen ]; then
+    echo 4096 > /proc/sys/net/ipv4/ip_queue_maxlen ;
+fi
 
 # remove tomcat persisted sessions
 find @PREFIX@ -name SESSIONS.ser -exec rm -f '{}' ';'
