@@ -11,8 +11,6 @@
 
 package com.metavize.gui.login;
 
-import javax.jnlp.BasicService;
-import javax.jnlp.ServiceManager;
 import java.awt.*;
 import java.net.URL;
 import java.lang.Thread;
@@ -38,24 +36,10 @@ public class MLoginJFrame extends javax.swing.JFrame {
     private String args[];
     private MMainJFrame mMainJFrame;
 
-    // login
-    private int portAddress;
-    private String hostName;
-    private boolean secure;
 
 
     public MLoginJFrame(final String[] args) {
 	this.args = args;
-        // setup look and feel
-        try {
-          com.incors.plaf.kunststoff.KunststoffLookAndFeel kunststoffLnF = new com.incors.plaf.kunststoff.KunststoffLookAndFeel();
-          kunststoffLnF.setCurrentTheme(new com.incors.plaf.kunststoff.KunststoffTheme());
-          UIManager.setLookAndFeel(kunststoffLnF);
-          Toolkit.getDefaultToolkit().setDynamicLayout(true);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
 
         Util.setMLoginJFrame(this);
 
@@ -64,11 +48,14 @@ public class MLoginJFrame extends javax.swing.JFrame {
 		    initComponents();
 		    Util.setStatusJProgressBar(statusJProgressBar);
 		    MLoginJFrame.this.setBounds( Util.generateCenteredBounds(null, MLoginJFrame.this.getWidth(), MLoginJFrame.this.getHeight()) );
+		    serverJTextField.setText( Util.getServerCodeBase().getHost() );
+		    /*
 		    if(args.length>=1){
 			serverJTextField.setText(args[0]);
 		    }
 		    else
 			serverJTextField.setText("localhost");
+		    */
 		    MLoginJFrame.this.setVisible(true);
 		    loginJTextField.requestFocus();
 		} } );
@@ -489,11 +476,10 @@ public class MLoginJFrame extends javax.swing.JFrame {
 		    // CHECK THE USER INPUT
                     Thread.sleep(1000);
                     // hostName = serverJTextField.getText();
-                    BasicService bs = (BasicService) ServiceManager.lookup("javax.jnlp.BasicService");
-                    URL codeBase = bs.getCodeBase();
-                    hostName = codeBase.getHost();
+                    // URL codeBase = Util.getServerCodeBase();
+                    // hostName = codeBase.getHost();
                     // This might be unsafe: XX
-                    secure = !codeBase.getProtocol().equals("http");
+                    // secure = !codeBase.getProtocol().equals("http");
                 }
                 catch(Exception e){
                     resetLogin("No server at host:port");
@@ -506,7 +492,11 @@ public class MLoginJFrame extends javax.swing.JFrame {
                 while( retryLogin < RETRY_COUNT ){
 
                     try{
-                        mvvmContext = MvvmRemoteContextFactory.login(hostName, loginJTextField.getText(), new String(passJPasswordField.getPassword()), 0, Util.getClassLoader(), secure);
+                        mvvmContext = MvvmRemoteContextFactory.login(Util.getServerCodeBase().getHost(),
+								     loginJTextField.getText(),
+								     new String(passJPasswordField.getPassword()),
+								     0, Util.getClassLoader(),
+								     Util.getServerCodeBase().getProtocol().equals("https"));
                         if( loginJTextField.getText().equals("egdemo") ){
                             Util.setIsDemo(true);
                         }
@@ -579,7 +569,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
 				public void run () {
 				    MLoginJFrame.this.setVisible(false);
 				    mMainJFrame.setBounds( Util.generateCenteredBounds(MLoginJFrame.this.getBounds(), mMainJFrame.getWidth(), mMainJFrame.getHeight()) );
-				    mMainJFrame.setTitle( "Metavize EdgeGuard v1.2 (logged in as: " + loginJTextField.getText() + "@" + hostName + ":" + portAddress + ")" );
+				    mMainJFrame.setTitle( "Metavize EdgeGuard v1.2 (logged in as: " + loginJTextField.getText() + "@" + Util.getServerCodeBase().getHost() + ")" );
 				    if(Util.getIsDemo())
 					mMainJFrame.setTitle( mMainJFrame.getTitle() + "  [DEMO MODE]" );
 				    mMainJFrame.setExtendedState(Frame.MAXIMIZED_BOTH);
