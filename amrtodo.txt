@@ -4,7 +4,6 @@ MVVM
 -------------------------------------------------------------------------------
 
 - schema conversion infrastructure
-- blacklist pl/sql
 - keep track of login sessions
 - client side libraries for efficient communication?
 
