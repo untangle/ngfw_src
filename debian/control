@@ -53,7 +53,7 @@ Depends: mvvm
 Conflicts: protoanalyzer-transform
 XB-Price: 1000
 XB-Display-Name: Rogue Protocol Control
-XB-Rack-Position: 6
+XB-Rack-Position: 7
 Description: The Metavize Rogue Protocol Control
  The Rogue Protocol Control is able to identify and selectively block various Peer-to-Peer
  communication and download protocols, such as AIM, IM, IRC, GNUTELLA, etc.
@@ -73,7 +73,7 @@ Architecture: any
 Depends: mvvm, hauri-mv, http-casing
 XB-Price: 1000
 XB-Display-Name: Hauri AntiVirus
-XB-Rack-Position: 5
+XB-Rack-Position: 6
 Description: The Hauri AntiVirus
  The Hauri AntiVirus Scanner is able to scan and block inbound and outbound viruses, in
  both Web/http traffic and ftp traffic.
