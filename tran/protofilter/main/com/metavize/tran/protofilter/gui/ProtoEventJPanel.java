@@ -88,20 +88,20 @@ public class ProtoEventJPanel extends MEditTableJPanel {
     
 //     public Vector generateRows(Object transformDescNode){
 //         LogEvent newEvent;
-//         ProtoAnalyzerLogEvent tempEvent;
+//         ProtoFilterLogEvent tempEvent;
 //         Vector allRows = new Vector();
 //         Vector row;
 //         int counter = 1;
 //         LogEvent logEvents[] = null;
         
-//         logEvents = Util.getMvvmContext().loggingManager().transformLogEvents(super.transformContext.getTid(), "com.metavize.tran.protoanalyzer.ProtoAnalyzerLogEvent");
+//         logEvents = Util.getMvvmContext().loggingManager().transformLogEvents(super.transformContext.getTid(), "com.metavize.tran.protofilter.ProtoFilterLogEvent");
         
 //         for(int i=0; i<logEvents.length; i++){
 //             newEvent = logEvents[i];
             
             
-//             if(newEvent instanceof ProtoAnalyzerLogEvent){
-//                     tempEvent = (ProtoAnalyzerLogEvent) newEvent;
+//             if(newEvent instanceof ProtoFilterLogEvent){
+//                     tempEvent = (ProtoFilterLogEvent) newEvent;
 //                     row = new Vector(6);
 
 //                     row.add(new Integer(counter));

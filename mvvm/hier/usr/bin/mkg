@@ -57,10 +57,10 @@ pkglist()
         echo "Version: 10.0"
         echo "Architecture: any"
         echo "Depends: mvvm"
-        echo "Price: 666"
+        echo "Price: 1000"
         echo "Display-Name: $p"
         echo "Description: Fake description"
-        echo " blah blah blah"
+        echo " Fake Long Descrption"
         echo
     done
 }

@@ -455,6 +455,11 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       <fileset dir="${src.hier}"/>
     </copy>
 
+    <copy tofile="${build.dist}/tmp/pkg-list" filtering="true">
+      <fileset file="../debian/control"/>
+    </copy>
+
+
     <exec executable="sh">
       <arg line='-c "if ! [ -a ${dist.mvvm.log} ] ; then ln -fs ${build.prefix}/${suffix.log}/ ${dist.mvvm.log} ; fi "'/>
     </exec>

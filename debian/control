@@ -8,7 +8,7 @@ Standards-Version: 3.5.2
 Package: test-transform
 Architecture: any
 Depends: mvvm
-XB-Price: 666
+XB-Price: 1000
 XB-Display-Name: Test
 Description: The Metavize Test Software Appliance
  The Tester serves as a simple testbench to evaluate various
@@ -18,7 +18,7 @@ Package: http-casing
 Architecture: any
 Depends: mvvm
 Conflicts: http-transform
-XB-Price: 666
+XB-Price: 1000
 XB-Display-Name: Web/http Decoder
 Description: The Metavize Web/http Decoder
  The Web/http Decoder allows other Devices to parse and analyze Web/http traffic
@@ -27,7 +27,7 @@ Description: The Metavize Web/http Decoder
 Package: httpblocker-transform
 Architecture: any
 Depends: mvvm, http-casing, urlblacklist.com-mv
-XB-Price: 666
+XB-Price: 1000
 XB-Display-Name: Web Content Control
 XB-Rack-Position: 2
 Description: The Metavize Web Content Filter
@@ -39,7 +39,7 @@ Package: email-transform
 Architecture: any
 Depends: mvvm, spamassassin, spamc, libnet-dns-perl
 Conflicts: xmailscanner-transform
-XB-Price: 666
+XB-Price: 1000
 XB-Display-Name: eMail SpamGuard
 XB-Rack-Position: 3
 Description: The Metavize eMail SpamGuard
@@ -51,7 +51,7 @@ Package: protofilter-transform
 Architecture: any
 Depends: mvvm
 Conflicts: protoanalyzer-transform
-XB-Price: 666
+XB-Price: 1000
 XB-Display-Name: Rogue Protocol Control
 XB-Rack-Position: 6
 Description: The Metavize Rogue Protocol Control
@@ -61,7 +61,7 @@ Description: The Metavize Rogue Protocol Control
 Package: fprot-transform
 Architecture: any
 Depends: mvvm, fprot-mv, http-casing
-XB-Price: 666
+XB-Price: 1000
 XB-Display-Name: F-Prot AntiVirus Scanner
 XB-Rack-Position: 5
 Description: The F-Prot AntiVirus
@@ -71,7 +71,7 @@ Description: The F-Prot AntiVirus
 Package: hauri-transform
 Architecture: any
 Depends: mvvm, hauri-mv, http-casing
-XB-Price: 666
+XB-Price: 1000
 XB-Display-Name: Hauri AntiVirus
 XB-Rack-Position: 5
 Description: The Hauri AntiVirus
@@ -81,7 +81,7 @@ Description: The Hauri AntiVirus
 Package: clam-transform
 Architecture: any
 Depends: mvvm, clamav, clamav-daemon, http-casing
-XB-Price: 666
+XB-Price: 1000
 XB-Display-Name: Clam AntiVirus
 XB-Rack-Position: 5
 Description: The Clam AntiVirus
@@ -91,7 +91,7 @@ Description: The Clam AntiVirus
 Package: sophos-transform
 Architecture: any
 Depends: mvvm, sophos-mv, http-casing
-XB-Price: 666
+XB-Price: 1000
 XB-Display-Name: Sophos AntiVirus Scanner
 XB-Rack-Position: 4
 Description: The Sophos AntiVirus
@@ -101,7 +101,7 @@ Description: The Sophos AntiVirus
 Package: airgap-transform
 Architecture: any
 Depends: mvvm
-XB-Price: 666
+XB-Price: 1000
 XB-Display-Name: Packet Attack Shield
 XB-Rack-Position: 0
 Description: The Metavize Packet Attack Shield
@@ -112,7 +112,7 @@ Description: The Metavize Packet Attack Shield
 Package: reporting-transform
 Architecture: any
 Depends: mvvm
-XB-Price: 666
+XB-Price: 1000
 XB-Display-Name: EdgeReport (preview)
 XB-Rack-Position: 1000
 Description: The Metavize Report Generator
@@ -121,7 +121,7 @@ Description: The Metavize Report Generator
 Package: spyware-transform
 Architecture: any
 Depends: mvvm, http-casing
-XB-Price: 666
+XB-Price: 1000
 XB-Display-Name: Spyware Blocker
 XB-Rack-Position: 1
 Description: The Metavize Spyware Blocker

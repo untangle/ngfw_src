@@ -1,4 +1,4 @@
-# BUNNICULA server settings
+# MVVM server settings
 #
 
 ## Simply function for taking a string, trim surround space, and the convert
@@ -9,13 +9,13 @@ join_string() {
 
 
 # Use the following to configure your local installation
-BUNNICULA_LOGDIR=@PREFIX@/var/log/mvvm
-BUNNICULA_RUNDIR=@PREFIX@/var/run
-BUNNICULA_CONSOLE_LOG=$BUNNICULA_LOGDIR/console.log
-BUNNICULA_WRAPPER_LOG=$BUNNICULA_LOGDIR/wrapper.log
-BUNNICULA_CMD=@PREFIX@/usr/bin/bunnicula_wrapper.sh
-BUNNICULA_USER=root
-BUNNICULA_ARGS=""
+MVVM_LOGDIR=@PREFIX@/var/log/mvvm
+MVVM_RUNDIR=@PREFIX@/var/run
+MVVM_CONSOLE_LOG=$MVVM_LOGDIR/console.log
+MVVM_WRAPPER_LOG=$MVVM_LOGDIR/wrapper.log
+MVVM_CMD=@PREFIX@/usr/bin/mvvm.sh
+MVVM_USER=root
+MVVM_ARGS=""
 
 GUARDS_OUT="80"
 GUARDS_OUT_RES=""
@@ -51,18 +51,18 @@ if [ "x" != "x@PREFIX@" ] ; then
 fi
 
 ## Append the guards
-BUNNICULA_ARGS="$BUNNICULA_ARGS $GUARDS_OUT $GUARDS_IN $GUARDS_OUT_RES"
+MVVM_ARGS="$MVVM_ARGS $GUARDS_OUT $GUARDS_IN $GUARDS_OUT_RES"
 
 if [ "x${USER}" = "xroot" ]; then
-        BUNNICULA_NICENESS=-15
+        MVVM_NICENESS=-15
 else
-        BUNNICULA_NICENESS=0
+        MVVM_NICENESS=0
 fi
 
 #
 # Profiling
 #
-PROFILE_BUNNICULA_YJP=${PROFILE_BUNNICULA_YJP=$:-no}
+PROFILE_MVVM_YJP=${PROFILE_MVVM_YJP=$:-no}
 
 #
 # JAVA options
@@ -72,7 +72,7 @@ PROFILE_BUNNICULA_YJP=${PROFILE_BUNNICULA_YJP=$:-no}
 # JAVA_HOME=/usr/lib/j2se/1.4/jre
 JAVA_HOME=${JAVA_HOME:-@DEFAULT_JAVA_HOME@}
 
-if [ "x$PROFILE_BUNNICULA_YJP" = "xyes" ] ; then
+if [ "x$PROFILE_MVVM_YJP" = "xyes" ] ; then
     JAVA_OPTS_SUN="-XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:NewRatio=3"
 else
     JAVA_OPTS_SUN="-XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+UseConcMarkSweepGC -XX:+UseParNewGC -XX:NewRatio=3"

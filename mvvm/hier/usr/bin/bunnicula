@@ -87,7 +87,7 @@ export PATH LD_LIBRARY_PATH JAVA _OPTS CLASSPATH JAVA_HOME
 #
 # profiling tweeks
 #
-if [ "x$PROFILE_BUNNICULA_YJP" = "xyes" ] ; then
+if [ "x$PROFILE_MVVM_YJP" = "xyes" ] ; then
     echo "YJP profiling support enabled (concurrent garbage collection disabled)"
     YJP_HOME=/opt/yjp
     LD_LIBRARY_PATH=$YJP_HOME/bin/linux:$LD_LIBRARY_PATH
