@@ -1,0 +1,1 @@
+DELETE FROM pipeline_info WHERE (SELECT pipeline_info FROM mvvm_evt_pipeline WHERE time_stamp < :cutoff);
