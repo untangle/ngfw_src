@@ -235,6 +235,7 @@ public class POPHandler extends MLHandler
                 if (Constants.NO_MSGSZ_LIMIT == iReadDataLimit ||
                     zEnv.getReadDataCt() < iReadDataLimit)
                 {
+                    //zLog.debug("read more (reply): " + zEnv.getReadDataCt() + ", " + iReadDataLimit);
                     return; /* data is not complete - get rest of data */
                 }
 
@@ -250,6 +251,7 @@ public class POPHandler extends MLHandler
                     bRejectData = true; /* reject message data */
                 }
                 rejectData();
+                //zLog.debug("read more reject (reply): " + zEnv.getReadDataCt() + ", " + iReadDataLimit);
                 return; /* data is not complete - get rest of data */
             }
             /* else data is now complete */

@@ -126,7 +126,7 @@ public class IMAPHandler extends MLHandler
     /* DATAOK = fetch ok; msg follows */
     private final static String DATAOK = MSEQ_NO + " " + FETCH_KEY + ".+?" + SZVAL + Constants.PEOLINE;
     /* EODATA = fetch cmd ack; msg sent */
-    private final static String EODATA = TAG_ID + " OK (UID )??" + FETCH_KEY + ".+?" + Constants.PEOLINE;
+    private final static String EODATA = TAG_ID + " OK( UID)??( " + FETCH_KEY + ")??.*?" + Constants.PEOLINE;
     protected final static Pattern SERVICEOPENP = Pattern.compile(SERVICEOPEN, Pattern.CASE_INSENSITIVE);
     private final static Pattern SERVICECLOSEP = Pattern.compile(SERVICECLOSE, Pattern.CASE_INSENSITIVE);
     private final static Pattern CONTREQP = Pattern.compile(CONTREQ);
@@ -245,6 +245,7 @@ public class IMAPHandler extends MLHandler
                 if (Constants.NO_MSGSZ_LIMIT == iReadDataLimit ||
                     zEnv.getReadDataCt() < iReadDataLimit)
                 {
+                    //zLog.debug("read more (cmd): " + zEnv.getReadDataCt() + ", " + iReadDataLimit);
                     return; /* data is not complete - get rest of append data */
                 }
 
@@ -260,6 +261,7 @@ public class IMAPHandler extends MLHandler
                     bRejectData = true; /* reject message data */
                 }
                 rejectData();
+                //zLog.debug("read more reject (cmd): " + zEnv.getReadDataCt() + ", " + iReadDataLimit);
                 return; /* data is not complete - get rest of append data */
             }
             /* else data is now complete */
@@ -379,6 +381,7 @@ public class IMAPHandler extends MLHandler
                 if (Constants.NO_MSGSZ_LIMIT == iReadDataLimit ||
                     zEnv.getReadDataCt() < iReadDataLimit)
                 {
+                    //zLog.debug("read more (reply): " + zEnv.getReadDataCt() + ", " + iReadDataLimit);
                     return; /* data is not complete - get rest of fetch data */
                 }
 
@@ -394,6 +397,7 @@ public class IMAPHandler extends MLHandler
                     bRejectData = true; /* reject message data */
                 }
                 rejectData();
+                //zLog.debug("read more reject (reply): " + zEnv.getReadDataCt() + ", " + iReadDataLimit);
                 return; /* data is not complete - get rest of fetch data */
             }
             /* else data is now complete */

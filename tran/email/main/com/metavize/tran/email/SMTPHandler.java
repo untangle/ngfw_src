@@ -217,6 +217,7 @@ public class SMTPHandler extends MLHandler
             {
                 if (zEnv.getReadDataCt() < iMsgSzLimit)
                 {
+                    //zLog.debug("read more (cmd): " + zEnv.getReadDataCt() + ", " + iReadDataLimit);
                     return; /* data is not complete - get rest of data */
                 }
 
@@ -229,6 +230,7 @@ public class SMTPHandler extends MLHandler
                     bRejectData = true; /* reject message data */
                 }
                 rejectData();
+                //zLog.debug("read more reject (cmd): " + zEnv.getReadDataCt() + ", " + iReadDataLimit);
                 return; /* data is not complete - get rest of data */
             }
             /* else data is now complete */
