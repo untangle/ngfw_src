@@ -100,7 +100,7 @@ if [ -z $prefix ] ; then
         t1=$(stat -L -c %Y /vmlinuz)
 
         if [ $t0 -ne $t1 ]; then
-            echo "new kernel, rebooting"
+            aptlog "new kernel, rebooting"
             reboot
         fi
 
