@@ -121,10 +121,10 @@ int  netcap_queue_read (char *buffer, int max, netcap_pkt_t* pkt)
     struct tcphdr* tcph;
     struct udphdr* udph;
     
-    status = ipq_read(ipq_h, buffer, max, -1);
+    status = ipq_read(ipq_h, buffer, max, 0 );
 
     if ( status == 0 ) {
-        errlog( ERR_WARNING, "ipq_read: Packet was not available.\n" );
+        errlog(ERR_WARNING,"ipq_read: %s\n", strerror(ipq_get_msgerr(buffer)));
         return 0;
     }
     
