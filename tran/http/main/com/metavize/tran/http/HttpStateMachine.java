@@ -11,6 +11,7 @@
 
 package com.metavize.tran.http;
 
+import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.tran.token.AbstractTokenHandler;
 import com.metavize.tran.token.Chunk;
 import com.metavize.tran.token.EndMarker;
@@ -18,7 +19,6 @@ import com.metavize.tran.token.Header;
 import com.metavize.tran.token.Token;
 import com.metavize.tran.token.TokenEvent;
 import com.metavize.tran.token.TokenResult;
-import com.metavize.mvvm.tapi.TCPSession;
 
 public abstract class HttpStateMachine extends AbstractTokenHandler
 {

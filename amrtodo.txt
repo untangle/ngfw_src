@@ -12,3 +12,6 @@ HTTP
 
 - make update-blacklist faster (index after)
 - factor out request passing in HttpStateMachine
+
+
+- ADD port SMTP to IMAP, POP to foundry.

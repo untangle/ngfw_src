@@ -66,6 +66,7 @@ public class SpywareHttpHandler extends HttpStateMachine
     private String extension = "";
     private String mimeType = "";
     private RequestLine responseRequest;
+    private StatusLine statusLine;
 
     SpywareHttpHandler(TCPSession session, SpywareImpl transform)
     {
@@ -110,6 +111,8 @@ public class SpywareHttpHandler extends HttpStateMachine
 
     protected TokenResult doStatusLine(StatusLine statusLine)
     {
+        this.statusLine = statusLine;
+
         logger.debug("got status line");
 
         if (100 != statusLine.getStatusCode()) {
@@ -124,8 +127,14 @@ public class SpywareHttpHandler extends HttpStateMachine
     {
         logger.debug("got response header");
         mimeType = header.getValue("content-type");
-        Header h = serverCookie(header);
-        h  = addCookieKillers( h );
+
+        Header h;
+        if (100 != statusLine.getStatusCode()) {
+            h = serverCookie(header);
+            h  = addCookieKillers( h );
+        } else {
+            h = header;
+        }
 
         return new TokenResult(new Token[] { h }, null);
     }

@@ -29,7 +29,7 @@ import org.apache.log4j.Logger;
 
 public class HttpBlockerHandler extends HttpStateMachine
 {
-    private static final int SCAN = Transform.GENERIC_1_COUNTER;
+    private static final int SCAN = Transform.GENERIC_0_COUNTER;
     private static final int BLOCK = Transform.GENERIC_1_COUNTER;
     private static final int PASS = Transform.GENERIC_2_COUNTER;
 
@@ -123,7 +123,6 @@ public class HttpBlockerHandler extends HttpStateMachine
                 Token[] resp = (Token[])l.toArray(new Token[l.size()]);
                 return new TokenResult(resp, null);
             } else {
-                logger.debug("outstanding requests, queueing response");
                 responseQueue.add(generateResponse(c2sReplacement,
                                                    c2sPersistent));
                 return new TokenResult();
@@ -184,18 +183,22 @@ public class HttpBlockerHandler extends HttpStateMachine
     {
         logger.debug("in doResponseBodyEnd: " + em);
 
-        List l = new LinkedList();
+        if (100 == statusLine.getStatusCode()) {
+            return new TokenResult(new Token[] { em }, null);
+        } else {
+            List l = new LinkedList();
 
-        if (null == s2cReplacement) {
-            l.add(em);
-            dequeueDeferred(l);
-        } else { /* block */
-            l = generateResponse(s2cReplacement, s2cPersistent);
-            dequeueDeferred(l);
+            if (null == s2cReplacement) {
+                l.add(em);
+                dequeueDeferred(l);
+            } else { /* block */
+                l = generateResponse(s2cReplacement, s2cPersistent);
+                dequeueDeferred(l);
+            }
+
+            Token[] r = (Token[])l.toArray(new Token[l.size()]);
+            return new TokenResult(r, null);
         }
-
-        Token[] r = (Token[])l.toArray(new Token[l.size()]);
-        return new TokenResult(r, null);
     }
 
     // private methods --------------------------------------------------------

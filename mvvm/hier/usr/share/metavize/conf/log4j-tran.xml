@@ -75,6 +75,14 @@
     <priority value="WARN"/>
   </category>
 
+  <category name="com.metavize.tran.http">
+    <priority value="WARN"/>
+  </category>
+
+  <category name="com.metavize.tran.httpblocker">
+    <priority value="WARN"/>
+  </category>
+
   <category name="com.metavize.tran.protofilter">
     <priority value="WARN"/>
   </category>
