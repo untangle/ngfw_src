@@ -7,7 +7,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: jnetcap.h,v 1.17 2005/03/09 07:00:10 rbscott Exp $
+ *  $Id: jnetcap_src.sh,v 1.5 2005/01/31 01:15:12 rbscott Exp $
  */
 
 #ifndef __JNETCAP_H_

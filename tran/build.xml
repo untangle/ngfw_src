@@ -22,7 +22,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <import file="../buildtools/buildmagic.xml"/>
 
   <property name="transforms"
-            value="http,virus,airgap,reporting,protofilter,test,sophos,fprot,hauri,spyware,httpblocker,email"/>
+            value="http,virus,airgap,reporting,protofilter,test,sophos,fprot,hauri,clam,spyware,httpblocker,email"/>
 
 
   <!--              -->
@@ -111,8 +111,11 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
     <if> <equals arg1="${tran.name}" arg2="hauri"/> <then>
         <property name="extra.classes" value="../tran/output/jar/virus-transform.mar:../tran/output/jar/http-transform.mar"/>
     </then> </if>
+    <if> <equals arg1="${tran.name}" arg2="clam"/> <then>
+        <property name="extra.classes" value="../tran/output/jar/virus-transform.mar:../tran/output/jar/http-transform.mar"/>
+    </then> </if>
     <if> <equals arg1="${tran.name}" arg2="email"/> <then>
-        <property name="extra.classes" value="../tran/output/jar/sophos-transform.mar:../tran/output/jar/fprot-transform.mar:../tran/output/jar/hauri-transform.mar"/>
+        <property name="extra.classes" value="../tran/output/jar/sophos-transform.mar:../tran/output/jar/fprot-transform.mar:../tran/output/jar/hauri-transform.mar:../tran/output/jar/clam-transform.mar"/>
     </then> </if>
     <if> <equals arg1="${tran.name}" arg2="spyware"/> <then>
         <property name="extra.classes" value="../tran/output/jar/http-transform.mar"/>
@@ -216,6 +219,12 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
     </copy>
   </target>
 
+  <target name="install.clam">
+    <copy todir="${dist.mvvm.schema}/clam-transform">
+      <fileset dir="virus/hier/${suffix.mvvm.schema}/virus-transform"/>
+    </copy>
+  </target>
+
   <target name="install.httpblocker"/>
   <target name="install.airgap"/>
   <target name="install.reporting"/>
@@ -249,6 +258,10 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       <fileset dir="hauri/${src.main}">
         <include name="**/*png"/>
       </fileset>
+      <fileset dir="${build.root}/clam"/>
+      <fileset dir="clam/${src.main}">
+        <include name="**/*png"/>
+      </fileset>
       <fileset dir="${build.root}/virus"/>
     </jar>
   </target>
@@ -273,6 +286,13 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       <fileset dir="${build.gensrc}/virus"/>
     </jar>
   </target>
+  <target name="jar.clam"> <!-- include Virus Abstract transform -->
+    <jar destfile="${build.jar}/${tran.name}-transform.mar" index="yes"
+         update="true">
+      <fileset dir="${build.root}/virus"/>
+      <fileset dir="${build.gensrc}/virus"/>
+    </jar>
+  </target>
 
   <target name="compile.test"/>
   <target name="compile.spyware"/>
@@ -281,6 +301,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <target name="compile.sophos"/>
   <target name="compile.fprot"/>
   <target name="compile.hauri"/>
+  <target name="compile.clam"/>
   <target name="compile.httpblocker"/>
   <target name="compile.airgap"/>
   <target name="compile.reporting"/>

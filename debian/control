@@ -80,7 +80,7 @@ Description: The Hauri AntiVirus
 
 Package: clam-transform
 Architecture: any
-Depends: mvvm, clam-av, http-casing
+Depends: mvvm, clamav, clamav-daemon, http-casing
 XB-Price: 666
 XB-Display-Name: Clam AntiVirus
 XB-Rack-Position: 5

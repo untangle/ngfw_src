@@ -80,8 +80,8 @@ public class LoadPatterns {
 		pats.put("OpenFT : P2P network (implemented in giFT library)",new ProtoFilterPattern("OpenFT : P2P network (implemented in giFT library)","Peer to Peer","OpenFT : P2P network (implemented in giFT library)","x-openftalias: [-)(0-9a-z ~.]","ok",false,false,false));
 		pats.put("POP3",new ProtoFilterPattern("POP3","Email"," Post Office Protocol version 3 (popular e-mail protocol) - RFC 1939","^(\\+ok |-err )","good",false,false,false));
 		pats.put("pressplay",new ProtoFilterPattern("pressplay","Music"," A legal music distribution site (http://pressplay.com)","user-agent: nsplayer","ok",false,false,false));
-		pats.put("Quake 2, Quake 3, Quake World, Half Life",new ProtoFilterPattern("Quake 2, Quake 3, Quake World, Half Life","Video Game"," popular computer games.","^\\xff\\xff\\xff\\xffget(info|challenge)","good",false,false,false));
 		pats.put("Quake 1",new ProtoFilterPattern("Quake 1","Video Game"," A popular computer game.","^\\x80\\x0c\\x01quake\\x03","marginal",false,false,false));
+		pats.put("Quake 2, Quake 3, Quake World, Half Life",new ProtoFilterPattern("Quake 2, Quake 3, Quake World, Half Life","Video Game"," popular computer games.","^\\xff\\xff\\xff\\xffget(info|challenge)","good",false,false,false));
 		pats.put("RDP",new ProtoFilterPattern("RDP","Remote Deskop"," Remote Desktop Protocol (used in Windows Terminal Services)","rdpdr.*cliprdr.*rdpsnd","ok",false,false,false));
 		pats.put("rlogin",new ProtoFilterPattern("rlogin","System Administration"," remote login (RFC 1282)","^[a-z][a-z0-9][a-z0-9]+/[1-9][0-9]?[0-9]?[0-9]?00","ok",false,false,false));
 		pats.put("RTSP",new ProtoFilterPattern("RTSP","Networking"," Real Time Streaming Protocol - http://www.rtsp.org/","rtsp/1.0 200 ok","good",false,false,false));

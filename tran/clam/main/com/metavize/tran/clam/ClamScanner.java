@@ -36,10 +36,10 @@ public class ClamScanner implements VirusScanner {
     public VirusScannerResult scanFile (String pathName)
         throws IOException, InterruptedException
     {
-        /* Clam ViRobot SDK can process some special files (zip/etc) and
+        /* Clam  SDK can process some special files (zip/etc) and
          * by default, it handles these special files
          */
-        Process proc = Runtime.getRuntime().exec("nice -n 19 virobot " + pathName);
+        Process proc = Runtime.getRuntime().exec("nice -n 19 clamdscan " + pathName);
         InputStream is  = proc.getInputStream();
         OutputStream os = proc.getOutputStream();
         BufferedReader in = new BufferedReader(new InputStreamReader(is));
@@ -47,21 +47,33 @@ public class ClamScanner implements VirusScanner {
 
         String virusName = null;
         String s;
-        int i;
+        int i = 0;
 
         /**
          * Drain sweep output
          */
         while ((s = in.readLine()) != null) {
             /**
-             * virobot output
-             * "/home/dmorris/q347558.exe.2  Infection: W32/Swen.A@mm"
-             * This returns the 3rd word
+             * clam found output:
+             * /home/dmorris/q347558.exe: Worm.Gibe.F FOUND
+             *
+             * ----------- SCAN SUMMARY -----------
+             * Infected files: 1
+             * Time: 0.016 sec (0 m 0 s)
              */
-            if (s.startsWith(" Detected")) {
+            /**
+             * clam not found output:
+             * /home/dmorris/foo: OK
+             *
+             * ----------- SCAN SUMMARY -----------
+             * Infected files: 0
+             * Time: 0.002 sec (0 m 0 s)
+            */
+
+            if (virusName == null) {
                 StringTokenizer st = new StringTokenizer(s);
                 String str = null;
-
+                
                 for (i=0 ; st.hasMoreTokens() ; i++) {
                     str = st.nextToken();
 
@@ -92,11 +104,12 @@ public class ClamScanner implements VirusScanner {
                 return VirusScannerResult.INFECTED;
             else
                 return new VirusScannerResult(false,virusName,false);
+        case 2:
         case 255:
-            logger.error("virobot exit code error: " + i);
+            logger.error("clamdscan exit code error: " + i);
             return null;
         default:
-            logger.error("Unknown virobot exit code: " + i);
+            logger.error("Unknown clamdscan exit code: " + i);
             return null;
         }
     }
@@ -104,7 +117,7 @@ public class ClamScanner implements VirusScanner {
     public VirusScannerResult scanBufs(List bufs)
         throws IOException, InterruptedException
     {
-        File fileBuf = File.createTempFile("virobot-cache",null);
+        File fileBuf = File.createTempFile("clamdscan-cache",null);
         FileChannel outFile = (new FileOutputStream(fileBuf)).getChannel();
 
         ByteBuffer bb;

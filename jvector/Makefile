@@ -61,6 +61,7 @@ endif
 clean: ant.clean clean.default
 	@$(RM) $(local_lib_path)/$(lib_file_name)
 	@$(RM) ./jni_includes/*.h
+	@$(RM) ./src/jni_header.h
 
 test: all test.default
 

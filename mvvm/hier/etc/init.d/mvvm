@@ -160,12 +160,12 @@ case "$1" in
             echo -n "."
             if [ "x" != "x$FINI" ] ; then
                 sleep 1 ; echo -n "." ; sleep 1
-                echo "x]"
+                echo "]"
                 exit
             fi
             if [ -z "`ps awwx | grep java | grep bunnicula | awk '{print $1}'`" ] ; then
                 if [ $tick -ge 5 ] ; then
-                    echo "xx]"
+                    echo "]"
                     exit
                 else
                     tick=$(($tick+1))
@@ -173,7 +173,7 @@ case "$1" in
             fi
         done
 
-        echo "xxx]"
+        echo "x]"
         ;;
 
     restart|force-reload)
