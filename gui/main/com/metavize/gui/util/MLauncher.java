@@ -57,6 +57,18 @@ public class MLauncher {
         catch(Exception e){
             System.err.println(e);
         }
+
+	// set the proper look and feel, and dynamic resizing
+        try {
+          com.incors.plaf.kunststoff.KunststoffLookAndFeel kunststoffLnF = new com.incors.plaf.kunststoff.KunststoffLookAndFeel();
+          kunststoffLnF.setCurrentTheme(new com.incors.plaf.kunststoff.KunststoffTheme());
+          UIManager.setLookAndFeel(kunststoffLnF);
+          Toolkit.getDefaultToolkit().setDynamicLayout(true);
+        }
+        catch (Exception e) {
+            Util.handleExceptionNoRestart("Error:", e);
+        }
+
         
         // load and start the login dialog
         new MLoginJFrame(args);
