@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: HauriScanner.java,v 1.4 2005/03/11 03:33:48 cng Exp $
+ * $Id: ClamScanner.java,v 1.4 2005/03/11 03:33:48 cng Exp $
  */
 package com.metavize.tran.clam;
 
@@ -27,16 +27,16 @@ import org.apache.log4j.Logger;
 import com.metavize.tran.virus.VirusScanner;
 import com.metavize.tran.virus.VirusScannerResult;
 
-public class HauriScanner implements VirusScanner {
+public class ClamScanner implements VirusScanner {
 
-    private static final Logger logger = Logger.getLogger(HauriScanner.class.getName());
+    private static final Logger logger = Logger.getLogger(ClamScanner.class.getName());
 
-    public HauriScanner() {}
+    public ClamScanner() {}
 
     public VirusScannerResult scanFile (String pathName)
         throws IOException, InterruptedException
     {
-        /* Hauri ViRobot SDK can process some special files (zip/etc) and
+        /* Clam ViRobot SDK can process some special files (zip/etc) and
          * by default, it handles these special files
          */
         Process proc = Runtime.getRuntime().exec("nice -n 19 virobot " + pathName);

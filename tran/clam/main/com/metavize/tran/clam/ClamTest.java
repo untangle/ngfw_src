@@ -6,23 +6,23 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: HauriTest.java,v 1.1 2005/02/26 04:11:31 dmorris Exp $
+ * $Id: ClamTest.java,v 1.1 2005/02/26 04:11:31 dmorris Exp $
  */
 package com.metavize.tran.clam;
 
 import com.metavize.tran.virus.VirusScanner;
 import com.metavize.tran.virus.VirusScannerResult;
 
-public class HauriTest
+public class ClamTest
 {
     public static void main(String args[])
     {
         if (args.length < 1) {
-            System.err.println("Usage: java HauriTest <filename>");
+            System.err.println("Usage: java ClamTest <filename>");
             System.exit(1);
         }
 
-        HauriScanner scanner = new HauriScanner();
+        ClamScanner scanner = new ClamScanner();
         VirusScannerResult result = null;
         
         try {
