@@ -3,8 +3,8 @@ package com.metavize.tran.reporting.gui;
 
 import com.metavize.gui.util.Util;
 
-import javax.jnlp.BasicService;
 import javax.jnlp.ServiceManager;
+import javax.jnlp.BasicService;
 
 import javax.swing.*;
 import java.awt.*;
@@ -29,34 +29,31 @@ public class BrowserLaunchJPanel extends JPanel implements ActionListener {
 	launchJButton.setMaximumSize(new Dimension(225, 25));
 	launchJButton.setSize(new Dimension(225, 25));
 	launchJButton.addActionListener(this);
-
+	this.add(launchJButton, launchJButtonConstraints);
 
 	try{
-	    BasicService bs = (BasicService) ServiceManager.lookup("javax.jnlp.BasicService");
-            URL codeBase = bs.getCodeBase();
-	    URL newURL = new URL(codeBase, "../reports");
+	    URL newURL = new URL( Util.getServerCodeBase(), "../reports");
 	    launchJLabel = new JLabel();
 	    launchJLabel.setFont(new java.awt.Font("Arial", 0, 11));
 	    launchJLabel.setText("<html><center><br>To view reports from another browser, go to:<br>" + newURL.toString() + "</center></html>");
+	    this.add(launchJLabel, launchJLabelConstraints);
 	}
 	catch(Exception f){
 	    Util.handleExceptionNoRestart("Error:", f);
 	}
 	
 
-	this.add(launchJButton, launchJButtonConstraints);
-	this.add(launchJLabel, launchJLabelConstraints);
+
+
 							    
     }
 
     public void actionPerformed(ActionEvent e){
-	
+	 
 	try{
-	    BasicService bs = (BasicService) ServiceManager.lookup("javax.jnlp.BasicService");
-            URL codeBase = bs.getCodeBase();
-	    URL newURL = new URL(codeBase, "../reports");
+	    URL newURL = new URL( Util.getServerCodeBase(), "../reports");
 	    System.err.println("Showing: " + newURL.toString() );
-	    bs.showDocument(newURL);
+	    ((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);
 	}
 	catch(Exception f){
 	    f.printStackTrace();
