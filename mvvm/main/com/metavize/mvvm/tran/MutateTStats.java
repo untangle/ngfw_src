@@ -28,76 +28,124 @@ public final class MutateTStats {
     protected static final int CLIENT_TO_SERVER = 1;
     protected static final int SERVER_TO_CLIENT = 2;
 
-    public static void readData(int direction, Session sess, long bytes) {
-        TransformStats stats = sess.mPipe().transform().getStats();
-        if (direction == CLIENT_TO_SERVER) {
-            stats.c2tChunks++;
-            stats.c2tBytes += bytes;
-        } else {
-            stats.s2tChunks++;
-            stats.s2tBytes += bytes;
+    private static TransformStats safeStats(Session sess) {
+        try {
+            // Transform may not be running any more
+            return sess.mPipe().transform().getStats();
+        } catch (IllegalStateException x) {
+            return null;
         }
-        stats.lastActivityDate.setTime(MetaEnv.currentTimeMillis());
+    }
+
+    private static TransformStats safeStats(MPipe pipe) {
+        try {
+            // Transform may not be running any more
+            return pipe.transform().getStats();
+        } catch (IllegalStateException x) {
+            return null;
+        }
+    }
+
+    public static void readData(int direction, Session sess, long bytes) {
+        TransformStats stats = safeStats(sess);
+        if (stats == null)
+            return;
+        synchronized(stats) {
+            if (direction == CLIENT_TO_SERVER) {
+                stats.c2tChunks++;
+                stats.c2tBytes += bytes;
+            } else {
+                stats.s2tChunks++;
+                stats.s2tBytes += bytes;
+            }
+            stats.lastActivityDate.setTime(MetaEnv.currentTimeMillis());
+        }
     }
 
     public static void wroteData(int direction, Session sess, long bytes) {
-        TransformStats stats = sess.mPipe().transform().getStats();
-        if (direction == CLIENT_TO_SERVER) {
-            stats.t2sChunks++;
-            stats.t2sBytes += bytes;
-        } else {
-            stats.t2cChunks++;
-            stats.t2cBytes += bytes;
+        TransformStats stats = safeStats(sess);
+        if (stats == null)
+            return;
+        synchronized(stats) {
+            if (direction == CLIENT_TO_SERVER) {
+                stats.t2sChunks++;
+                stats.t2sBytes += bytes;
+            } else {
+                stats.t2cChunks++;
+                stats.t2cBytes += bytes;
+            }
+            stats.lastActivityDate.setTime(MetaEnv.currentTimeMillis());
         }
-        stats.lastActivityDate.setTime(MetaEnv.currentTimeMillis());
     }
 
     public static void addTCPSession(MPipe mPipe) {
-        TransformStats stats = mPipe.transform().getStats();
-        stats.tcpSessionCount++;
-        stats.tcpSessionTotal++;
-        stats.lastActivityDate.setTime(MetaEnv.currentTimeMillis());
+        TransformStats stats = safeStats(mPipe);
+        if (stats == null)
+            return;
+        synchronized(stats) {
+            stats.tcpSessionCount++;
+            stats.tcpSessionTotal++;
+            stats.lastActivityDate.setTime(MetaEnv.currentTimeMillis());
+        }
     }
 
     public static void removeTCPSession(MPipe mPipe) {
-        TransformStats stats;
-        try {
-            // Transform may not be running any more
-            stats = mPipe.transform().getStats();
-        } catch (IllegalStateException x) {
+        TransformStats stats = safeStats(mPipe);
+        if (stats == null)
             return;
+        synchronized(stats) {
+            stats.tcpSessionCount--;
+            // Last activity date already set by state change
         }
-        stats.tcpSessionCount--;
-        // Last activity date already set by state change
     }
 
     public static void addUDPSession(MPipe mPipe) {
-        TransformStats stats = mPipe.transform().getStats();
-        stats.udpSessionCount++;
-        stats.udpSessionTotal++;
-        stats.lastActivityDate.setTime(MetaEnv.currentTimeMillis());
+        TransformStats stats = safeStats(mPipe);
+        if (stats == null)
+            return;
+        synchronized(stats) {
+            stats.udpSessionCount++;
+            stats.udpSessionTotal++;
+            stats.lastActivityDate.setTime(MetaEnv.currentTimeMillis());
+        }
     }
 
     public static void removeUDPSession(MPipe mPipe) {
-        TransformStats stats = mPipe.transform().getStats();
-        stats.udpSessionCount--;
-        // Last activity date already set by state change
+        TransformStats stats = safeStats(mPipe);
+        if (stats == null)
+            return;
+        synchronized(stats) {
+            stats.udpSessionCount--;
+            // Last activity date already set by state change
+        }
     }
 
     public static void requestTCPSession(MPipe mPipe) {
-        TransformStats stats = mPipe.transform().getStats();
-        stats.tcpSessionRequestTotal++;
-        stats.lastActivityDate.setTime(MetaEnv.currentTimeMillis());
+        TransformStats stats = safeStats(mPipe);
+        if (stats == null)
+            return;
+        synchronized(stats) {
+            stats.tcpSessionRequestTotal++;
+            stats.lastActivityDate.setTime(MetaEnv.currentTimeMillis());
+        }
     }
 
     public static void requestUDPSession(MPipe mPipe) {
-        TransformStats stats = mPipe.transform().getStats();
-        stats.udpSessionRequestTotal++;
-        stats.lastActivityDate.setTime(MetaEnv.currentTimeMillis());
+        TransformStats stats = safeStats(mPipe);
+        if (stats == null)
+            return;
+        synchronized(stats) {
+            stats.udpSessionRequestTotal++;
+            stats.lastActivityDate.setTime(MetaEnv.currentTimeMillis());
+        }
     }
 
     public static void sessionStateChanged(MPipe mPipe) {
-        TransformStats stats = mPipe.transform().getStats();
-        stats.lastActivityDate.setTime(MetaEnv.currentTimeMillis());
+        TransformStats stats = safeStats(mPipe);
+        if (stats == null)
+            return;
+        synchronized(stats) {
+            stats.lastActivityDate.setTime(MetaEnv.currentTimeMillis());
+        }
     }
 }
