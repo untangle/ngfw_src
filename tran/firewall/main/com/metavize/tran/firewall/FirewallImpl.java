@@ -31,27 +31,29 @@ import net.sf.hibernate.Session;
 import net.sf.hibernate.Transaction;
 import org.apache.log4j.Logger;
 
-public class ProtoFilterImpl extends SoloTransform implements ProtoFilter
+public class FirewallImpl extends SoloTransform implements Firewall
 {
     private static final Logger logger = Logger.getLogger(ProtoFilterImpl.class);
     private final PipeSpec pipeSpec;
     private ProtoFilterSettings settings = null;
     private EventHandler handler = null;
 
-    public ProtoFilterImpl()
+    public FirewallImpl()
     {
-        Set set = new HashSet();
-        set.add(new Subscription(Protocol.TCP));
-        set.add(new Subscription(Protocol.UDP));
-        this.pipeSpec = new PipeSpec("protofilter", Fitting.OCTET_STREAM, set, Affinity.BEGIN);
+        Set subscriptions = new HashSet();
+        subscriptions.add(new Subscription(Protocol.TCP));
+        subscriptions.add(new Subscription(Protocol.UDP));
+        
+        /* Have to figure out pipeline ordering, this should always next to towards the outside */
+        this.pipeSpec = new PipeSpec( "firewall", Fitting.OCTET_STREAM, subscriptions, Affinity.BEGIN );
     }
 
-    public ProtoFilterSettings getProtoFilterSettings()
+    public FirewallSettings getFirewallSettings()
     {
         return this.settings;
     }
 
-    public void setProtoFilterSettings(ProtoFilterSettings settings)
+    public void setFirewallSettings(FirewallSettings settings)
     {
         Session s = TransformContextFactory.context().openSession();
         try {
@@ -75,7 +77,7 @@ public class ProtoFilterImpl extends SoloTransform implements ProtoFilter
             reconfigure();
         }
         catch (TransformException exn) {
-            logger.error("Could not save ProtoFilter settings", exn);
+            logger.error("Could not save Firewall settings", exn);
         }
     }
 
@@ -87,12 +89,12 @@ public class ProtoFilterImpl extends SoloTransform implements ProtoFilter
 
     protected void initializeSettings()
     {
-        ProtoFilterSettings settings = new ProtoFilterSettings(this.getTid());
+        FirewallSettings settings = new FirewallSettings(this.getTid());
         logger.info("Initializing Settings...");
 
         updateToCurrent(settings);
 
-        setProtoFilterSettings(settings);
+        setFirewallSettings(settings);
     }
 
     protected void postInit(String[] args)
@@ -101,9 +103,9 @@ public class ProtoFilterImpl extends SoloTransform implements ProtoFilter
         try {
             Transaction tx = s.beginTransaction();
 
-            Query q = s.createQuery("from ProtoFilterSettings hbs where hbs.tid = :tid");
+            Query q = s.createQuery("from FirewallSettings hbs where hbs.tid = :tid");
             q.setParameter("tid", getTid());
-            this.settings = (ProtoFilterSettings)q.uniqueResult();
+            this.settings = (FirewallSettings)q.uniqueResult();
 
             updateToCurrent(this.settings);
 
@@ -132,13 +134,13 @@ public class ProtoFilterImpl extends SoloTransform implements ProtoFilter
 
     public    void reconfigure() throws TransformException
     {
-        ProtoFilterSettings settings = getProtoFilterSettings();
+        FirewallSettings settings = getFirewallSettings();
         ArrayList enabledPatternsList = new ArrayList();
 
         logger.info("Reconfigure()");
 
         if (settings == null) {
-            throw new TransformException("Failed to get ProtoFilter settings: " + settings);
+            throw new TransformException("Failed to get Firewall settings: " + settings);
         }
 
         List curPatterns = settings.getPatterns();
@@ -146,7 +148,7 @@ public class ProtoFilterImpl extends SoloTransform implements ProtoFilter
             logger.warn("NULL pattern list. Continuing anyway...");
         else {
             for (Iterator i=curPatterns.iterator() ; i.hasNext() ; ) {
-                ProtoFilterPattern pat = (ProtoFilterPattern)i.next();
+                FirewallPattern pat = (FirewallPattern)i.next();
 
                 if ( pat.getLog() || pat.getAlert() || pat.isBlocked() ) {
                     logger.info("Matching on pattern \"" + pat.getProtocol() + "\"");
@@ -164,7 +166,7 @@ public class ProtoFilterImpl extends SoloTransform implements ProtoFilter
     }
 
 
-    private   void updateToCurrent(ProtoFilterSettings settings)
+    private   void updateToCurrent(FirewallSettings settings)
     {
         if (settings == null) {
             logger.error("NULL Protofilter Settings");
@@ -187,7 +189,7 @@ public class ProtoFilterImpl extends SoloTransform implements ProtoFilter
              * Look for updates
              */
             for (Iterator i=curPatterns.iterator() ; i.hasNext() ; ) {
-                ProtoFilterPattern pat = (ProtoFilterPattern) i.next();
+                FirewallPattern pat = (FirewallPattern) i.next();
                 String name = pat.getProtocol();
                 String def  = pat.getDefinition();
 
@@ -196,7 +198,7 @@ public class ProtoFilterImpl extends SoloTransform implements ProtoFilter
                      * Key is present in current config
                      * Update definition and description if needed
                      */
-                    ProtoFilterPattern newpat = (ProtoFilterPattern)allPatterns.get(name);
+                    FirewallPattern newpat = (FirewallPattern)allPatterns.get(name);
                     if (newpat == null) {
                         logger.error("Missing pattern");
                         continue;
@@ -223,7 +225,7 @@ public class ProtoFilterImpl extends SoloTransform implements ProtoFilter
              * Whatever is left in allPatterns at this point, is not in the curPatterns
              */
             for (Iterator i=allPatterns.values().iterator() ; i.hasNext() ; ) {
-                ProtoFilterPattern pat = (ProtoFilterPattern) i.next();
+                FirewallPattern pat = (FirewallPattern) i.next();
                 logger.info("UPDATE: Adding New Pattern (" + pat.getProtocol() + ")");
                 curPatterns.add(pat);
             }
@@ -236,11 +238,11 @@ public class ProtoFilterImpl extends SoloTransform implements ProtoFilter
 
     public Object getSettings()
     {
-        return getProtoFilterSettings();
+        return getFirewallSettings();
     }
 
     public void setSettings(Object settings)
     {
-        setProtoFilterSettings((ProtoFilterSettings)settings);
+        setFirewallSettings((FirewallSettings)settings);
     }
 }

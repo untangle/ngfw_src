@@ -12,8 +12,8 @@ package com.metavize.tran.protofilter;
 
 import com.metavize.mvvm.tran.Transform;
 
-public interface ProtoFilter extends Transform
+public interface Firewall extends Transform
 {
-    ProtoFilterSettings getProtoFilterSettings();
-    void setProtoFilterSettings(ProtoFilterSettings settings);
+    FirewallSettings getFirewallSettings();
+    void setFirewallSettings( FirewallSettings settings );
 }
