@@ -29,15 +29,21 @@ public class AboutJDialog extends ConfigJDialog {
     
     private JScrollPane contentJScrollPane;
     private JEditorPane contentJEditorPane;
-    
-    private static String aboutString = "<html><b>Build:</b> " 
-	+ Util.getMvvmContext().toolboxManager().mackageDesc("mvvm").getInstalledVersion()
-	+ "<br><br><b>Readme:</b> http://www.metavize.com/egquickstart<br><br><b>Website: </b>http://www.metavize.com</html>";
+
+    private static String buildString;
+    private static String aboutString = "<br><br><b>Readme:</b> http://www.metavize.com/egquickstart<br><br><b>Website: </b>http://www.metavize.com</html>";
 
     public AboutJDialog( ) {
         super(Util.getMMainJFrame());
 
-	contentJEditorPane = new JEditorPane("text/html", aboutString);
+        try{
+            buildString = "<html><b>Build:</b> " + Util.getMvvmContext().toolboxManager().mackageDesc("mvvm").getInstalledVersion();
+        }
+        catch(Exception e){
+            buildString = "<html><b>Build:</b> unknown";
+        }
+        
+	contentJEditorPane = new JEditorPane("text/html", buildString + aboutString);
 	contentJEditorPane.setEditable(false);
 	contentJEditorPane.setFont(new java.awt.Font("Arial", 11, 0) );
 	contentJScrollPane = new JScrollPane( contentJEditorPane );
