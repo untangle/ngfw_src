@@ -17,7 +17,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectStreamClass;
 import java.lang.reflect.Proxy;
 
-
 class ProxyInputStream extends ObjectInputStream
 {
     private ClassLoader targetCl;
@@ -66,7 +65,8 @@ class ProxyInputStream extends ObjectInputStream
             if ((cl.getModifiers() & java.lang.reflect.Modifier.PUBLIC) == 0) {
                 if (hasNonPublicInterface) {
                     if (nonPublicLoader != cl.getClassLoader()) {
-                        throw new IllegalAccessError("conflicting non-public interface class loaders");
+                        throw new IllegalAccessError
+                            ("conflicting non-public interface class loaders");
                     }
                 } else {
                     nonPublicLoader = cl.getClassLoader();
@@ -77,7 +77,8 @@ class ProxyInputStream extends ObjectInputStream
         }
 
         try {
-            return Proxy.getProxyClass(hasNonPublicInterface ? nonPublicLoader : latestLoader,
+            return Proxy.getProxyClass(hasNonPublicInterface
+                                       ? nonPublicLoader : latestLoader,
                                        classObjs);
         } catch (IllegalArgumentException e) {
             throw new ClassNotFoundException(null, e);

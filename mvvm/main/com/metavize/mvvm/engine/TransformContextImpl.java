@@ -47,6 +47,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
+import org.apache.commons.logging.LogFactory;
 
 class TransformContextImpl implements TransformContext
 {
@@ -226,6 +227,14 @@ class TransformContextImpl implements TransformContext
         } finally {
             ct.setContextClassLoader(classLoader);
             // left TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        }
+
+        LogFactory.release(classLoader);
+
+        try {
+            sessionFactory.close();
+        } catch (HibernateException exn) {
+            logger.warn("could not close Hibernate SessionFactory", exn);
         }
 
         Session s = MvvmContextFactory.context().openSession();

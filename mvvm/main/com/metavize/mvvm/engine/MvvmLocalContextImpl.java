@@ -165,6 +165,12 @@ public class MvvmLocalContextImpl extends MvvmContextImpl
 
         mailSender = null; // XXX destroy method
         adminManager = null; // XXX destroy method
+
+        try {
+            sessionFactory.close();
+        } catch (HibernateException exn) {
+            logger.warn("could not close Hibernate SessionFactory", exn);
+        }
     }
 
     // protected methods ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

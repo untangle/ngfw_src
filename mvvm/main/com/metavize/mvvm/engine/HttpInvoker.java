@@ -64,9 +64,12 @@ class HttpInvoker extends InvokerBase
     protected void handleStream(InputStream is, OutputStream os,
                                 boolean isLocal)
     {
+        ObjectOutputStream oos = null;
+        ProxyInputStream pis = null;
+
         try {
-            ProxyInputStream pis = new ProxyInputStream(is);
-            ObjectOutputStream oos = new ObjectOutputStream(os);
+            pis = new ProxyInputStream(is);
+            oos = new ObjectOutputStream(os);
             HttpInvocation hi = (HttpInvocation)pis.readObject();
 
             LoginSession loginSession = hi.loginSession;
@@ -131,6 +134,22 @@ class HttpInvoker extends InvokerBase
             logger.warn("ClassNotFoundException in HttpInvoker", exn);
         } catch (Exception exn) {
             logger.warn("Exception in HttpInvoker", exn);
+        } finally {
+            if (null != oos) {
+                try {
+                    oos.close();
+                } catch (IOException exn) {
+                    logger.warn("could not close output stream", exn);
+                }
+            }
+
+            if (null != pis) {
+                try {
+                    pis.close();
+                } catch (IOException exn) {
+                    logger.warn("could not close input stream", exn);
+                }
+            }
         }
     }
 

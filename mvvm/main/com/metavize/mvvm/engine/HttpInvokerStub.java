@@ -65,17 +65,24 @@ public class HttpInvokerStub implements InvocationHandler, Serializable
                                   method.getDeclaringClass().getName());
 
         ObjectOutputStream oos = new ObjectOutputStream(huc.getOutputStream());
+        try {
+            oos.writeObject(inv);
+            oos.writeObject(args);
+        } finally {
+            oos.close();
+        }
 
-        oos.writeObject(inv);
-        oos.writeObject(args);
+        Object o = null;
 
         ProxyInputStream pis = new ProxyInputStream(huc.getInputStream());
-
-        Object o;
-        if (classLoader != null) {
-            o = pis.readObject(classLoader);
-        } else {
-            o = pis.readObject();
+        try {
+            if (classLoader != null) {
+                o = pis.readObject(classLoader);
+            } else {
+                o = pis.readObject();
+            }
+        } finally {
+            pis.close();
         }
 
         if (null == o) {

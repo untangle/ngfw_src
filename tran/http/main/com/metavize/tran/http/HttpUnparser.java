@@ -40,7 +40,7 @@ class HttpUnparser implements Unparser
     private static final int CONTENT_LENGTH_ENCODING = 1;
     private static final int CHUNKED_ENCODING = 2;
 
-    private final Logger logger = Logger.getLogger(HttpUnparser.class);
+    private final Logger logger = Logger.getLogger(HttpUnparser.class.getName());
 
     // used to keep request with header, IIS requires this
     private final Queue outputQueue = new LinkedList();

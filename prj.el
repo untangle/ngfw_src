@@ -20,7 +20,7 @@
  '(jde-global-classpath
    '("../downloads/concurrent-1.3.4/lib/concurrent.jar"
      "../downloads/hibernate-2.1.8/hibernate2.jar"
-     "../downloads/hibernate-2.1.8/lib/c3p0-0.8.4.5.jar"
+     "../downloads/hibernate-2.1.8/lib/commons-logging-1.0.4.jar"
      "../downloads/hibernate-2.1.8/lib/proxool-0.8.3.jar"
      "../downloads/jakarta-tomcat-5.0.28-embed/lib/catalina-optional.jar"
      "../downloads/jakarta-tomcat-5.0.28-embed/lib/catalina.jar"
