@@ -50,21 +50,21 @@ public class SpywareEventHandler extends AbstractEventHandler
         if (null == list) {
             subnetSet = null;
         } else {
-            this.subnetSet = new IPSetTrie();
+            IPSetTrie set = new IPSetTrie();
 
-            logger.debug("detecting spyware");
             for (Iterator i = list.iterator(); i.hasNext(); ) {
                 IPMaddrRule se = (IPMaddrRule)i.next();
                 IPMaddr ipm = se.getIpMaddr();
-                subnetSet.add(ipm,(Object)se);
+                set.add(ipm,(Object)se);
             }
+
+            this.subnetSet = set;
         }
     }
 
     public void handleTCPNewSessionRequest(TCPNewSessionRequestEvent event)
     {
         if (null != subnetSet) {
-            logger.debug("detecting spyware");
             detectSpyware(event.sessionRequest(), true);
         } else {
             logger.debug("spyware detection disabled");
@@ -74,7 +74,6 @@ public class SpywareEventHandler extends AbstractEventHandler
     public void handleUDPNewSessionRequest(UDPNewSessionRequestEvent event)
     {
         if (null != subnetSet) {
-            logger.debug("detecting spyware");
             detectSpyware(event.sessionRequest(), true);
         } else {
             logger.debug("spyware detection disabled");
@@ -90,22 +89,24 @@ public class SpywareEventHandler extends AbstractEventHandler
         transform.incrementCount(Transform.GENERIC_0_COUNTER); // SCAN COUNTER
 
         if (ir == null) {
+            logger.debug("Subnet scan: " + ipm.toString() + " -> clean.");
             if (release) { ipr.release(); }
             return;
         }
 
+        logger.debug("Subnet scan: " + ipm.toString() + " -> DETECTED.");
         transform.incrementCount(Transform.GENERIC_1_COUNTER); // DETECT COUNTER
 
-        System.out.println("-------------------- Detected Spyware --------------------");
-        System.out.println("Spyware Name  : " + ir.getName());
-        System.out.println("Host          : " + ipr.clientAddr().getHostAddress() + ":" + ipr.clientPort());
-        System.out.println("Suspicious IP : " + ipr.serverAddr().getHostAddress() + ":" + ipr.serverPort());
-        System.out.println("Matches       : " + ir.getIpMaddr());
+        logger.info("-------------------- Detected Spyware --------------------");
+        logger.info("Spyware Name  : " + ir.getName());
+        logger.info("Host          : " + ipr.clientAddr().getHostAddress() + ":" + ipr.clientPort());
+        logger.info("Suspicious IP : " + ipr.serverAddr().getHostAddress() + ":" + ipr.serverPort());
+        logger.info("Matches       : " + ir.getIpMaddr());
         if (ipr instanceof TCPNewSessionRequest)
-            System.out.println("Protocol      : TCP");
+            logger.info("Protocol      : TCP");
         if (ipr instanceof UDPNewSessionRequest)
-            System.out.println("Protocol      : UDP");
-        System.out.println("----------------------------------------------------------");
+            logger.info("Protocol      : UDP");
+        logger.info("----------------------------------------------------------");
 
         eventLogger.info(new SpywareAccessEvent(ipr.id(), ir.getName(), ir.getIpMaddr(), ir.isLive()));
 

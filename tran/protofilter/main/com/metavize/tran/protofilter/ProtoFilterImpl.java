@@ -167,7 +167,7 @@ public class ProtoFilterImpl extends SoloTransform implements ProtoFilter
     private   void updateToCurrent(ProtoFilterSettings settings)
     {
         if (settings == null) {
-            logger.error("NULL Protofilter Settings");
+            logger.error("NULL ProtoFilter Settings");
             return;
         }
 

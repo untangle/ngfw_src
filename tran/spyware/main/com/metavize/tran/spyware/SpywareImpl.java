@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.ArrayList;
 import java.util.List;
@@ -76,7 +77,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
     private final SessionEventListener[] listeners = new SessionEventListener[]
         { tokenAdaptor, streamHandler };
 
-    private SpywareSettings settings;
+    private SpywareSettings spySettings;
 
     // constructors -----------------------------------------------------------
 
@@ -86,7 +87,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
 
     public SpywareSettings getSpywareSettings()
     {
-        return settings;
+        return this.spySettings;
     }
 
     public void setSpywareSettings(SpywareSettings settings)
@@ -96,7 +97,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
             Transaction tx = s.beginTransaction();
 
             s.saveOrUpdateCopy(settings);
-            this.settings = settings;
+            this.spySettings = settings;
 
             tx.commit();
         } catch (HibernateException exn) {
@@ -115,13 +116,14 @@ public class SpywareImpl extends AbstractTransform implements Spyware
     // Transform methods ------------------------------------------------------
 
     // XXX aviod
+
     public void reconfigure()
     {
-        if (settings.getSpywareEnabled()) {
-            streamHandler.subnetList(settings.getSubnetRules());
+        logger.info("Reconfigure.");
+        if (this.spySettings.getSpywareEnabled()) {
+            streamHandler.subnetList(this.spySettings.getSubnetRules());
         }
     }
-
 
     public void dumpSessions()
     {
@@ -153,17 +155,16 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         }
     }
 
-
     protected void initializeSettings()
     {
         SpywareSettings settings = new SpywareSettings(getTid());
-        List s = initActiveX();
-        settings.setActiveXRules(s);
-        s = initCookie();
-        settings.setCookieRules(s);
-        s = initSubnet();
-        settings.setSubnetRules(s);
+        settings.setActiveXRules(new ArrayList());
+        settings.setCookieRules(new ArrayList());
+        settings.setSubnetRules(new ArrayList());
 
+        updateActiveX(settings);
+        updateCookie(settings);
+        updateSubnet(settings);
         setSpywareSettings(settings);
     }
 
@@ -176,7 +177,11 @@ public class SpywareImpl extends AbstractTransform implements Spyware
             Query q = s.createQuery
                 ("from SpywareSettings ss where ss.tid = :tid");
             q.setParameter("tid", getTid());
-            settings = (SpywareSettings)q.uniqueResult();
+            this.spySettings = (SpywareSettings)q.uniqueResult();
+
+            updateActiveX(this.spySettings);
+            updateCookie(this.spySettings);
+            updateSubnet(this.spySettings);
 
             tx.commit();
         } catch (HibernateException exn) {
@@ -192,15 +197,22 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         reconfigure();
     }
 
-    private List initActiveX()
+    private void updateActiveX(SpywareSettings settings)
     {
-        List l = new ArrayList();
-
-        InputStream is = getClass().getClassLoader()
-            .getResourceAsStream(ACTIVEX_LIST);
+        List rules = settings.getActiveXRules();
+        InputStream is = getClass().getClassLoader().getResourceAsStream(ACTIVEX_LIST);
+        
         if (null == is) {
-            logger.warn("could not find: " + ACTIVEX_LIST);
-            return l;
+            logger.error("Could not find: " + ACTIVEX_LIST);
+            return;
+        }
+
+        logger.info("Checking for activeX updates...");
+
+        HashSet ruleHash = new HashSet();
+        for (Iterator i=rules.iterator() ; i.hasNext() ; ) {
+            StringRule rule = (StringRule) i.next();
+            ruleHash.add(rule.getString());
         }
 
         try {
@@ -211,32 +223,42 @@ public class SpywareImpl extends AbstractTransform implements Spyware
                 Matcher matcher = ACTIVEX_PATTERN.matcher(line);
                 if (matcher.matches()) {
                     String clsid = matcher.group(1);
-                    logger.debug("added clsid: " + clsid);
-                    l.add(new StringRule(clsid));
+
+                    if (!ruleHash.contains(clsid)) {
+                        logger.debug("ADDING activeX Rule: " + clsid);
+                        rules.add(new StringRule(clsid));
+                    }
                 }
             }
         } catch (IOException exn) {
-            logger.warn("could not read file", exn);
+            logger.error("Could not read file: " + ACTIVEX_LIST, exn);
         } finally {
             try {
                 is.close();
             } catch (IOException exn) {
-                logger.warn("could not close file", exn);
+                logger.warn("Could not close file: " + ACTIVEX_LIST, exn);
             }
         }
 
-        return l;
+        return;
     }
 
-    private List initCookie()
+    private void updateCookie(SpywareSettings settings)
     {
-        List l = new ArrayList();
+        List rules = settings.getCookieRules();
+        InputStream is = getClass().getClassLoader().getResourceAsStream(COOKIE_LIST);
 
-        InputStream is = getClass().getClassLoader()
-            .getResourceAsStream(COOKIE_LIST);
         if (null == is) {
-            logger.warn("could not find: " + COOKIE_LIST);
-            return l;
+            logger.error("Could not find: " + COOKIE_LIST);
+            return;
+        }
+
+        logger.info("Checking for cookie  updates...");
+        
+        HashSet ruleHash = new HashSet();
+        for (Iterator i=rules.iterator() ; i.hasNext() ; ) {
+            StringRule rule = (StringRule) i.next();
+            ruleHash.add(rule.getString());
         }
 
         try {
@@ -244,32 +266,42 @@ public class SpywareImpl extends AbstractTransform implements Spyware
             BufferedReader br = new BufferedReader(isr);
 
             for (String line = br.readLine(); null != line; line = br.readLine()) {
-                l.add(new StringRule(line));
+                if (!ruleHash.contains(line)) {
+                    logger.debug("ADDING cookie Rule: " + line);
+                    rules.add(new StringRule(line));
+                }
             }
         } catch (IOException exn) {
-            logger.warn("could not read file", exn);
+            logger.error("Could not read file: " + COOKIE_LIST, exn);
         } finally {
             try {
                 is.close();
             } catch (IOException exn) {
-                logger.warn("could not close file", exn);
+                logger.warn("Could not close file: " + COOKIE_LIST, exn);
             }
         }
 
-        return l;
+        return;
     }
 
-    private List initSubnet()
+    private void updateSubnet(SpywareSettings settings)
     {
-        List l = new ArrayList();
+        List rules = settings.getSubnetRules();
+        InputStream is = getClass().getClassLoader().getResourceAsStream(SUBNET_LIST);
 
-        InputStream is = getClass().getClassLoader()
-            .getResourceAsStream(SUBNET_LIST);
         if (null == is) {
-            logger.warn("could not find: " + SUBNET_LIST);
-            return l;
+            logger.warn("Could not find: " + SUBNET_LIST);
+            return;
         }
 
+        logger.info("Checking for subnet  updates...");
+
+        HashSet ruleHash = new HashSet();
+        for (Iterator i=rules.iterator() ; i.hasNext() ; ) {
+            IPMaddrRule rule = (IPMaddrRule) i.next();
+            ruleHash.add(rule.getIpMaddr());
+        }
+        
         try {
             InputStreamReader isr = new InputStreamReader(is);
             BufferedReader br = new BufferedReader(isr);
@@ -281,19 +313,22 @@ public class SpywareImpl extends AbstractTransform implements Spyware
                 String description = tok.nextToken();
                 String name = tok.nextToken();
 
-                l.add(new IPMaddrRule(IPMaddr.parse(addr), name, description));
+                if (!ruleHash.contains(IPMaddr.parse(addr))) {
+                    logger.debug("ADDING subnet Rule: " + addr);
+                    rules.add(new IPMaddrRule(IPMaddr.parse(addr), name, description));
+                }
             }
         } catch (IOException exn) {
-            logger.warn("could not read file", exn);
+            logger.error("Could not read file: " + SUBNET_LIST, exn);
         } finally {
             try {
                 is.close();
             } catch (IOException exn) {
-                logger.warn("could not close file", exn);
+                logger.warn("Could not close file: " + SUBNET_LIST, exn);
             }
         }
 
-        return l;
+        return;
     }
 
     // XXX soon to be deprecated ----------------------------------------------

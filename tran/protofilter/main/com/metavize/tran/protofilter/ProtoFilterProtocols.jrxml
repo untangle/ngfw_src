@@ -2,7 +2,7 @@
 <!-- Created using an evaluation version of JasperAssistant (http://www.jasperassistant.com) -->
 <!DOCTYPE jasperReport PUBLIC "-//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
 
-<jasperReport name="ProtofilterProtocols" whenNoDataType="AllSectionsNoDetail" pageWidth="276" pageHeight="791" columnWidth="276" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" isFloatColumnFooter="true">
+<jasperReport name="ProtoFilterProtocols" whenNoDataType="AllSectionsNoDetail" pageWidth="276" pageHeight="791" columnWidth="276" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" isFloatColumnFooter="true">
   <import value="java.util.*"/>
   <import value="net.sf.jasperreports.engine.*"/>
   <import value="net.sf.jasperreports.engine.data.*"/>

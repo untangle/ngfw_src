@@ -69,7 +69,7 @@
                     <subreportParameterExpression><![CDATA[$P{endTime}]]></subreportParameterExpression>
                 </subreportParameter>
                 <connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-                <subreportExpression class="java.lang.String"><![CDATA["com/metavize/tran/protofilter/ProtofilterLogged.jasper"]]></subreportExpression>
+                <subreportExpression class="java.lang.String"><![CDATA["com/metavize/tran/protofilter/ProtoFilterLogged.jasper"]]></subreportExpression>
             </subreport>
             <subreport>
                 <reportElement key="subreport-1" positionType="Float" mode="Opaque" x="297" y="74" width="276" height="45"/>
@@ -80,7 +80,7 @@
                     <subreportParameterExpression><![CDATA[$P{endTime}]]></subreportParameterExpression>
                 </subreportParameter>
                 <connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-                <subreportExpression class="java.lang.String"><![CDATA["com/metavize/tran/protofilter/ProtofilterBlocked.jasper"]]></subreportExpression>
+                <subreportExpression class="java.lang.String"><![CDATA["com/metavize/tran/protofilter/ProtoFilterBlocked.jasper"]]></subreportExpression>
             </subreport>
 <!--             <subreport> -->
 <!--                 <reportElement key="subreport-2" positionType="Float" mode="Opaque" x="0" y="130" width="276" height="44"/> -->
@@ -91,7 +91,7 @@
 <!--                     <subreportParameterExpression><![CDATA[$P{endTime}]]></subreportParameterExpression> -->
 <!--                 </subreportParameter> -->
 <!--                 <connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression> -->
-<!--                 <subreportExpression class="java.lang.String"><![CDATA["com/metavize/tran/protofilter/ProtofilterProtocols.jasper"]]></subreportExpression> -->
+<!--                 <subreportExpression class="java.lang.String"><![CDATA["com/metavize/tran/protofilter/ProtoFilterProtocols.jasper"]]></subreportExpression> -->
 <!--             </subreport> -->
 <!--             <subreport isUsingCache="false"> -->
 <!--                 <reportElement key="subreport" positionType="Float" mode="Opaque" x="297" y="130" width="276" height="44"/> -->
@@ -102,7 +102,7 @@
 <!--                     <subreportParameterExpression><![CDATA[$P{endTime}]]></subreportParameterExpression> -->
 <!--                 </subreportParameter> -->
 <!--                 <connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression> -->
-<!--                 <subreportExpression class="java.lang.String"><![CDATA["com/metavize/tran/protofilter/ProtofilterProtocols.jasper"]]></subreportExpression> -->
+<!--                 <subreportExpression class="java.lang.String"><![CDATA["com/metavize/tran/protofilter/ProtoFilterProtocols.jasper"]]></subreportExpression> -->
 <!--             </subreport> -->
         </band>
     </title>

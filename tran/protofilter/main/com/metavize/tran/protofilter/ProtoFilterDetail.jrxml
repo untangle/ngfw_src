@@ -2,7 +2,7 @@
 <!-- Created using an evaluation version of JasperAssistant (http://www.jasperassistant.com) -->
 <!DOCTYPE jasperReport PUBLIC "-//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
 
-<jasperReport name="ProtofilterDetail" pageWidth="612" pageHeight="791" whenNoDataType="AllSectionsNoDetail" columnWidth="572" leftMargin="20" rightMargin="20" topMargin="30" bottomMargin="30">
+<jasperReport name="ProtoFilterDetail" pageWidth="612" pageHeight="791" whenNoDataType="AllSectionsNoDetail" columnWidth="572" leftMargin="20" rightMargin="20" topMargin="30" bottomMargin="30">
     <property name="com.jasperassistant.designer.GridWidth" value="12"/>
     <property name="com.jasperassistant.designer.GridHeight" value="12"/>
     <property name="com.jasperassistant.designer.HGuides" value="109,112,204,207,493,495"/>
