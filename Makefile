@@ -9,6 +9,7 @@ lib_name       = alpine
 lib_file_name  = lib$(lib_name).so
 packages      ?= "all"
 
+## Inserting a simple modification.
 
 
 %: %.pre_base %.post_base ;
