@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: BlockedURLsConfigJPanel.java,v 1.9 2005/03/22 21:54:50 inieves Exp $
+ * $Id: BlockedURLsConfigJPanel.java,v 1.10 2005/03/30 02:07:41 inieves Exp $
  */
 package com.metavize.tran.httpblocker.gui;
 
@@ -67,7 +67,7 @@ class BlockedURLTableModel extends MSortedTableModel{
         addTableColumn( tableColumnModel,  0, C0_MW, false, false, true,  false, Integer.class, null, "#");
         addTableColumn( tableColumnModel,  1, C1_MW, false, false, false, false, String.class,  null, "status");
         addTableColumn( tableColumnModel,  2, C2_MW, true,  true,  false, false, String.class,  "uncategorized", "category");
-        addTableColumn( tableColumnModel,  3, C3_MW, true,  true,  false, false, String.class,  "http://", "URL");
+        addTableColumn( tableColumnModel,  3, C3_MW, true,  true,  false, false, String.class,  "http:", "URL");
         addTableColumn( tableColumnModel,  4, C4_MW, false, true,  false, false, Boolean.class, "true", "<html><b><center>block</center></b></html>");
         //        addTableColumn( tableColumnModel,  5,  55, false, true,  false, false, Boolean.class, "false", "alert");
         //        addTableColumn( tableColumnModel,  6,  55, false, true,  false, false, Boolean.class, "true", "log");
