@@ -79,11 +79,14 @@ public class IMAPHandler extends MLHandler
 
     /* currently, we only handle complete (not partial) messages
      * BODY[]
-     * BODY.PEEK[] - ignored for now
+     * BODY.PEEK[]
      * RFC822 = BODY[]
+     *
+     * we explicitly exclude partial messages
+     * BODY[]<0.2048>
+     * BODY.PEEK[]<1024.2048>
      */
-    private final static String BODY = "(BODY\\[]|RFC822[[^\\.]&&[^S]&&[^I]&&[^Z]&&[^E]])+?";
-    //private final static String BODY = "(BODY((.PEEK)??)\\[]|RFC822[[^\\.]&&[^S]&&[^I]&&[^Z]&&[^E]])+?";
+    private final static String BODY = "(BODY((.PEEK)??)\\[\\][^<]|RFC822[^\\.])+?";
 
     /* for now,
      * we do not handle fetches of message parts
