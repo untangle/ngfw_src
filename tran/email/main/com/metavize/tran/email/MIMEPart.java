@@ -886,18 +886,17 @@ public class MIMEPart
          */
         CBufferWrapper zCTmpFile = (null != zCDName ? zCDName : zCTName);
 
-        /* this MIME part contains Content-Type and/or
-         * Content-Disposition header field
-         * but neither specifies name or filename type
-         * so create random temp name
-         */
         try
         {
             String zTmpFile;
             if (null == zCTmpFile)
             {
-                zLog.error("this MIME part contains an encoded file attachment but its Content-Type and/or Content-Disposition header field(s) does/do not specify a name or filename value: " + zContentTDs);
-                zTmpFile = null;
+                /* this MIME part contains Content-Type and/or
+                 * Content-Disposition header field
+                 * but neither specifies name or filename type
+                 * so use random prefix
+                 */
+                zTmpFile = "MVeMSG";
             }
             else
             {
