@@ -18,7 +18,8 @@ import com.metavize.gui.main.MMainJFrame;
 import com.metavize.gui.pipeline.MPipelineJPanel;
 import com.metavize.gui.widgets.editTable.*;
 
-import com.metavize.mvvm.MvvmContext;
+import com.metavize.mvvm.*;
+import com.metavize.mvvm.tran.*;
 import com.metavize.mvvm.client.*;
 
 
@@ -27,6 +28,23 @@ import com.metavize.mvvm.client.*;
  * @author  Ian Nieves
  */
 public class Util {
+    
+    // SERVER PROXIES ///////////////
+    private static MvvmContext mvvmContext;
+    private static ToolboxManager toolboxManager;
+    private static TransformManager transformManager;
+
+    public static void setMvvmContext(MvvmContext mvvmContextX){
+	mvvmContext = mvvmContextX;
+	toolboxManager = mvvmContext.toolboxManager();
+	transformManager = mvvmContext.transformManager();
+    }
+    public static MvvmContext getMvvmContext(){ return mvvmContext; }
+    public static ToolboxManager getToolboxManager() { return toolboxManager; }
+    public static TransformManager getTransformManager() { return transformManager; }
+    
+
+
 
     private static String undetectedMessage  = "<html>To access this functionality, you must install an AntiVirus Scanner Softwawre Appliance.</html>";
     private static EmailDetectionJPanel emailDetectionSophosJPanel;
@@ -47,7 +65,7 @@ public class Util {
     private static boolean isDemo = false;
     private static JProgressBar statusJProgressBar;
     private static MPipelineJPanel mPipelineJPanel;
-    private static MvvmContext mvvmContext;
+    
     private static MMainJFrame mMainJFrame;
     private static MLoginJFrame mLoginJFrame;
     private static String[] args;
@@ -144,9 +162,6 @@ public class Util {
 
     public static MPipelineJPanel getMPipelineJPanel(){ return mPipelineJPanel; }
     public static void setMPipelineJPanel(MPipelineJPanel mPipelineJPanelX){ mPipelineJPanel = mPipelineJPanelX; }
-
-    public static MvvmContext getMvvmContext(){ return mvvmContext; }
-    public static void setMvvmContext(MvvmContext mvvmContextX){ mvvmContext = mvvmContextX; }
 
     public static void setMLoginJFrame(MLoginJFrame mLoginJFrameX){ mLoginJFrame = mLoginJFrameX; }
     public static JFrame getMLoginJFrame(){ return mLoginJFrame; }
@@ -333,5 +348,14 @@ public class Util {
         {
             return iMinValue;
         }
+    }
+
+    public static boolean isArrayEmpty(Object[] inArray){
+	if( inArray == null )
+	    return true;
+	else if( inArray.length <= 0 )
+	    return true;
+	else
+	    return false;
     }
 }
