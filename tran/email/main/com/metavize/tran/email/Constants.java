@@ -199,9 +199,14 @@ public class Constants
     /* virus was removed */
     public final static byte VIRUSREMOVEDBA[] = { 'A', ' ', 'v', 'i', 'r', 'u', 's', ' ', 'w', 'a', 's', ' ', 'd', 'e', 't', 'e', 'c', 't', 'e', 'd', ' ', 'a', 'n', 'd', ' ', 'r', 'e', 'm', 'o', 'v', 'e', 'd', ' ', 'f', 'r', 'o', 'm', ' ', 't', 'h', 'i', 's', ' ', 'm', 'e', 's', 's', 'a', 'g', 'e', ':', 13, 10 };
 
-    public final static byte BASE64STARTBA[] = { 'b', 'e', 'g', 'i', 'n', '-', 'b', 'a', 's', 'e', '6', '4', ' ', '6', '0', '0', ' ' };
+    /* we prefer to set file access as 600 but 
+     * we may use scanners
+     * that run as daemons and cannot read files with root read-only access
+     * so we must create decoded files with access set to 644
+     */
+    public final static byte BASE64STARTBA[] = { 'b', 'e', 'g', 'i', 'n', '-', 'b', 'a', 's', 'e', '6', '4', ' ', '6', '4', '4', ' ' };
     public final static byte BASE64ENDBA[] = { '=', '=', '=', '=' };
-    public final static byte UUENCODESTARTBA[] = { 'b', 'e', 'g', 'i', 'n', ' ', '6', '0', '0', ' ' };
+    public final static byte UUENCODESTARTBA[] = { 'b', 'e', 'g', 'i', 'n', ' ', '6', '4', '4', ' ' };
     public final static byte UUENCODEENDBA[] = { 'e', 'n', 'd' };
 
     public final static int RDEXCDIR_VAL = 0;

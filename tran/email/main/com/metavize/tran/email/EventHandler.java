@@ -25,6 +25,7 @@ import com.metavize.mvvm.*;
 import com.metavize.mvvm.tapi.*;
 import com.metavize.mvvm.tapi.event.*;
 import com.metavize.mvvm.tran.Transform;
+import com.metavize.tran.clam.ClamScanner;
 import com.metavize.tran.fprot.FProtScanner;
 import com.metavize.tran.hauri.HauriScanner;
 import com.metavize.tran.sophos.SophosScanner;
@@ -1296,7 +1297,7 @@ public class EventHandler extends AbstractEventHandler
 
         case Constants.CLAMAV_ID:
             zVirusScanner = new ClamScanner();
-            zLog.debug("using Clam clamscan");
+            zLog.debug("using Clam clamdscan");
             break;
 
         default:
@@ -1308,63 +1309,59 @@ public class EventHandler extends AbstractEventHandler
         return;
     }
 
-    /* TEMPORARY - ignore cached settings
-     * - if FProtAV is installed, then use FProtAV
-     * - if FProtAV is not installed but SophosAV is installed,
-     *   then use SophosAV
-     * - if FProtAV and SophosAV are not installed but HauriAV is installed,
+    /* TEMPORARY - ignore cached settings for now (mirror gui selection order)
+     * - if SophosAV is installed, then use SophosAV
+     * - if SophosAV is not installed but FProtAV is installed,
+     *   then use FProtAV
+     * - if SophosAV and FProtAV are not installed but HauriAV is installed,
      *   then use HauriAV
-     * - if FProtAV, SophosAV, and HauriAV are not installed but ClamAV is installed,
+     * - if SophosAV, FProtAV, and HauriAV are not installed
+     *   but ClamAV is installed,
      *   then use ClamAV
-     * - if FProtAV, SophosAV, HauriAV, and ClamAV are not installed,
+     * - if SophosAV, FProtAV, HauriAV, and ClamAV are not installed,
      *   then do not scan for virus
      */
     private void setVirusScanner(XMailScannerCache zCache)
     {
-        File zFile = new File("/usr/bin/f-prot");
+        File zFile = new File("/usr/bin/sweep");
+        if (true == zFile.exists())
+        {
+            zVirusScanner = new SophosScanner();
+            zCache.setAVScanner(Constants.SOPHOSAV_ID);
+            zLog.debug("Sophos sweep found");
+            return;
+        }
+
+        zFile = new File("/usr/bin/f-prot");
         if (true == zFile.exists())
         {
             zVirusScanner = new FProtScanner();
             zCache.setAVScanner(Constants.FPROTAV_ID);
             zLog.debug("F-Prot f-prot found");
-        }
-        else
-        {
-            zFile = new File("/usr/bin/sweep");
-            if (true == zFile.exists())
-            {
-                zVirusScanner = new SophosScanner();
-                zCache.setAVScanner(Constants.SOPHOSAV_ID);
-                zLog.debug("Sophos sweep found");
-            }
-            else
-            {
-                zFile = new File("/usr/bin/virobot");
-                if (true == zFile.exists())
-                {
-                    zVirusScanner = new HauriScanner();
-                    zCache.setAVScanner(Constants.HAURIAV_ID);
-                    zLog.debug("Hauri virobot found");
-                }
-                else
-                {
-                    zFile = new File("/usr/bin/clamscan");
-                    if (true == zFile.exists())
-                    {
-                        zVirusScanner = new ClamScanner();
-                        zCache.setAVScanner(Constants.CLAMAV_ID);
-                        zLog.debug("Clam clamscan found");
-                    }
-                    else
-                    {
-                        zVirusScanner = null;
-                        zCache.setAVScanner(Constants.NOAV_ID);
-                        zLog.debug("virus scanner not found");
-                    }
-                }
-            }
+            return;
         }
 
+        zFile = new File("/usr/bin/virobot");
+        if (true == zFile.exists())
+        {
+            zVirusScanner = new HauriScanner();
+            zCache.setAVScanner(Constants.HAURIAV_ID);
+            zLog.debug("Hauri virobot found");
+            return;
+        }
+
+        zFile = new File("/usr/bin/clamdscan");
+        if (true == zFile.exists())
+        {
+            zVirusScanner = new ClamScanner();
+            zCache.setAVScanner(Constants.CLAMAV_ID);
+            zLog.debug("Clam clamdscan found");
+            return;
+        }
+
+        zVirusScanner = null;
+        zCache.setAVScanner(Constants.NOAV_ID);
+        zLog.debug("virus scanner not found");
         return;
     }
 }

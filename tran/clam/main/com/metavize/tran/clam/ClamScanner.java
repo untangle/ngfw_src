@@ -36,7 +36,7 @@ public class ClamScanner implements VirusScanner {
     public VirusScannerResult scanFile (String pathName)
         throws IOException, InterruptedException
     {
-        /* Clam  SDK can process some special files (zip/etc) and
+        /* Clam clamdscan can process special files (archives/zip/etc) and
          * by default, it handles these special files
          */
         Process proc = Runtime.getRuntime().exec("nice -n 19 clamdscan " + pathName);
@@ -47,37 +47,37 @@ public class ClamScanner implements VirusScanner {
 
         String virusName = null;
         String s;
-        int i = 0;
+        int i;
 
         /**
-         * Drain sweep output
+         * Drain clamdscan output
          */
         while ((s = in.readLine()) != null) {
             /**
-             * clam found output:
+             * This returns the 2nd word if " FOUND" is present:
+             *
+             * clamdscan found output:
              * /home/dmorris/q347558.exe: Worm.Gibe.F FOUND
              *
              * ----------- SCAN SUMMARY -----------
              * Infected files: 1
              * Time: 0.016 sec (0 m 0 s)
-             */
-            /**
-             * clam not found output:
+             *
+             * clamdscan not found output:
              * /home/dmorris/foo: OK
              *
              * ----------- SCAN SUMMARY -----------
              * Infected files: 0
              * Time: 0.002 sec (0 m 0 s)
-            */
+             */
 
-            if (virusName == null) {
+            if (true == s.endsWith(" FOUND")) {
                 StringTokenizer st = new StringTokenizer(s);
                 String str = null;
                 
-                for (i=0 ; st.hasMoreTokens() ; i++) {
+                for (i = 0 ; true == st.hasMoreTokens() ; i++) {
                     str = st.nextToken();
-
-                    if (i==1) {
+                    if (1 == i) {
                         virusName = str;
                         break;
                     }
@@ -85,17 +85,17 @@ public class ClamScanner implements VirusScanner {
             }
         }
 
-        /**
-         * PROGRAM EXIT CODES
-         * 0      Normal exit.  Nothing found, nothing done.
-         * 1      Virus Found
-         * 255    Error
-         */
         proc.waitFor();
         i = proc.exitValue();
         in.close();
         is.close();
 
+        /**
+         * PROGRAM EXIT CODES
+         * 0 : NO virus found.
+         * 1 : Virus(ese) found.
+         * 2 : An error occured.
+         */
         switch(i) {
         case 0:
             logger.info("clamdscan: clean");
@@ -108,12 +108,9 @@ public class ClamScanner implements VirusScanner {
                 logger.info("clamdscan: infected (" + virusName + ")");
                 return new VirusScannerResult(false,virusName,false);
             }
-        case 2:
-        case 255:
-            logger.error("clamdscan exit code error: " + i);
-            return null;
         default:
-            logger.error("Unknown clamdscan exit code: " + i);
+        case 2:
+            logger.error("clamdscan exit code error: " + i);
             return null;
         }
     }
@@ -129,7 +126,7 @@ public class ClamScanner implements VirusScanner {
         for (int i = 0; i < bufs.size(); i++) {
             bb = (ByteBuffer)bufs.get(i);
             bb.flip();
-            while (bb.remaining()>0)
+            while (0 < bb.remaining())
                 outFile.write(bb);
         }
         outFile.close();
