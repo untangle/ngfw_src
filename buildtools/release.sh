@@ -24,6 +24,6 @@ if [ x$email = xfalse ] ; then
     cat debian/release_list | mail -s release pkgs@metavize.com
 fi
 rm -f debian/release_list
-cvs commit -m"release" debian/*.version debian/changelog
+svn commit -m"release" debian/*.version debian/changelog
 echo "done."
 
