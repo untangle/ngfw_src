@@ -94,7 +94,16 @@ if [ -z $prefix ] ; then
         aptlog "done"
     elif [ "$1" = "upgrade" ] ; then
         aptlog "apt-get upgrade $UPGD_OPTS"
+
+        t0=$(stat -L -c %Y /vmlinuz)
         apt-get dist-upgrade $UPGD_OPTS 2>&1 | tee -a $APT_LOG
+        t1=$(stat -L -c %Y /vmlinuz)
+
+        if [ $t0 -ne $t1 ]; then
+            echo "new kernel, rebooting"
+            reboot
+        fi
+
         aptlog "done"
     elif [ "$1" = "remove" ] ; then
         aptlog "apt-get remove $REMO_OPTS \"$2-transform\""
