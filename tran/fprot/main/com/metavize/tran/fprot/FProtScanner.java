@@ -88,13 +88,18 @@ public class FProtScanner implements VirusScanner {
 
         switch(i) {
         case 0:
+            logger.info("f-prot: clean");
             return VirusScannerResult.CLEAN;
         case 3:
         case 8:
-            if (virusName == null)
+            if (virusName == null) {
+                logger.info("f-prot: infected (unknown)");
                 return VirusScannerResult.INFECTED;
-            else
+            }
+            else {
+                logger.info("f-prot: infected (" + virusName + ")");
                 return new VirusScannerResult(false,virusName,false);
+            }
         case 6:
             return VirusScannerResult.CLEAN;
         case 1:

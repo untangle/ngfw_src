@@ -7,6 +7,7 @@ join_string() {
     echo $1 | sed -e 's/^ *//g' -e 's/ *$//g' -e "s/ \\+/$2/g"
 }
 
+
 # Use the following to configure your local installation
 BUNNICULA_LOGDIR=@PREFIX@/var/log/mvvm
 BUNNICULA_RUNDIR=@PREFIX@/var/run
@@ -14,9 +15,7 @@ BUNNICULA_CONSOLE_LOG=$BUNNICULA_LOGDIR/console.log
 BUNNICULA_WRAPPER_LOG=$BUNNICULA_LOGDIR/wrapper.log
 BUNNICULA_CMD=@PREFIX@/usr/bin/bunnicula_wrapper.sh
 BUNNICULA_USER=root
-
 BUNNICULA_ARGS=""
-
 
 GUARDS_OUT="80"
 GUARDS_OUT_RES=""
@@ -44,6 +43,12 @@ fi
 GUARDS_OUT=-Dargon.guard.outside=`join_string "$GUARDS_OUT" ","`
 GUARDS_OUT_RES=-Dargon.guard.outside.regulated=`join_string "$GUARDS_OUT_RES" ";"`
 GUARDS_IN=-Dargon.guard.inside=`join_string "$GUARDS_IN" ","`
+
+# if in the build
+if [ "x" != "x@PREFIX@" ] ; then
+    GUARDS_OUT=""
+    GUARDS_IN=""
+fi
 
 ## Append the guards
 BUNNICULA_ARGS="$BUNNICULA_ARGS $GUARDS_OUT $GUARDS_IN $GUARDS_OUT_RES"
@@ -80,4 +85,5 @@ if [ -f $JAVA_HOME/bin/console ] ; then
 else
     JAVA_OPTS="$JAVA_OPTS_COMMON $JAVA_OPTS_SUN" #   SUN
 fi
+
 

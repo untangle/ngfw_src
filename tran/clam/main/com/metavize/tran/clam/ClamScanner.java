@@ -98,12 +98,16 @@ public class ClamScanner implements VirusScanner {
 
         switch(i) {
         case 0:
+            logger.info("clamdscan: clean");
             return VirusScannerResult.CLEAN;
         case 1:
-            if (virusName == null)
+            if (virusName == null) {
+                logger.info("clamdscan: infected (unknown)");
                 return VirusScannerResult.INFECTED;
-            else
+            } else {
+                logger.info("clamdscan: infected (" + virusName + ")");
                 return new VirusScannerResult(false,virusName,false);
+            }
         case 2:
         case 255:
             logger.error("clamdscan exit code error: " + i);

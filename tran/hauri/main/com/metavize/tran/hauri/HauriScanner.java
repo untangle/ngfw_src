@@ -86,12 +86,16 @@ public class HauriScanner implements VirusScanner {
 
         switch(i) {
         case 0:
+            logger.info("virobot: clean");
             return VirusScannerResult.CLEAN;
         case 1:
-            if (virusName == null)
+            if (virusName == null) {
+                logger.info("virobot: infected (unknown)");
                 return VirusScannerResult.INFECTED;
-            else
+            } else {
+                logger.info("virobot: infected (" + virusName + ")");
                 return new VirusScannerResult(false,virusName,false);
+            }
         case 255:
             logger.error("virobot exit code error: " + i);
             return null;

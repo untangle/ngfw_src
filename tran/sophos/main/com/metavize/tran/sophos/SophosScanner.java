@@ -85,12 +85,16 @@ public class SophosScanner implements VirusScanner
 
         switch(i) {
         case 0:
+            logger.info("sweep: clean");
             return VirusScannerResult.CLEAN;
-        case 3:
-            if (virusName == null)
+        case 3: 
+            if (virusName == null) {
+                logger.info("sweep: infected (unknown)");
                 return VirusScannerResult.INFECTED;
-            else
+            } else {
+                logger.info("sweep: infected (" + virusName + ")");
                 return new VirusScannerResult(false,virusName,false);
+            }
         case 2:
         case 1:
             logger.error("sweep exit code error: " + i);
