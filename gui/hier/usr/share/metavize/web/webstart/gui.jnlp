@@ -26,10 +26,10 @@ MackageDesc[] mds = mc.toolboxManager().installed();
 <!-- JNLP File for Metavize Application -->
 <jnlp spec="1.0+" codebase="<%=cb%>" href="<%=href%>">
   <information>
-    <title>Metavize EdgeGuard Client @ <%=host%></title>
+    <title>Metavize EdgeGuard Client @ <%=host%>  </title>
     <vendor>Metavize, Inc.</vendor>
     <homepage href="http://www.metavize.com"/>
-    <description>Metavize EdgeGuard Client @ <%=host%></description>
+    <description>Metavize EdgeGuard Client @ <%=host%>  </description>
     <description kind="short">Metavize EdgeGuard Client for configuring, controlling, and monitoring the Metavize EdgeGuard Server.</description>
     <icon href="images/LogoNoText96x96.gif" kind="splash" width="96" height="96"/>
     <icon href="images/LogoNoText32x32.gif" width="32" height="32"/>
