@@ -6,12 +6,15 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: ProtoFilterSettings.java,v 1.8 2005/02/25 02:45:29 amread Exp $
+ * $Id: NatSettings.java,v 1.8 2005/02/25 02:45:29 amread Exp $
  */
 
-package com.metavize.tran.protofilter;
+package com.metavize.tran.nat;
+
+import java.util.List;
 
 import com.metavize.mvvm.security.Tid;
+
 
 import com.metavize.mvvm.tran.IPaddr;
 
@@ -25,6 +28,9 @@ import com.metavize.mvvm.tran.IPaddr;
  */
 public class NatSettings implements java.io.Serializable
 {
+    private Long id;
+    private Tid tid;
+
     /* XXX Must be updated */
     private static final long serialVersionUID = 2664348127860496780L;
 
@@ -34,31 +40,29 @@ public class NatSettings implements java.io.Serializable
     /* Also could be considered internal address, must set with ifconfig */
     private IPaddr gateway;
 
-    
-    /* Primary */
-    private IPaddr nameserver1;
-
-    /* Secondary */
-    private IPaddr nameserver2;
-    
-    /* Tertiary */
-    private IPaddr nameserver3;
+    /* The Suggested nameserver, greyed out if DNS Masq is disabled. */
+    private IPaddr nameserver;
     
     /* External Address */
     private IPaddr externalAddress;
 
     /* True if DNS Masquerading is enabled */
-    private IPaddr isDnsMasqEnabled;
+    private boolean isDnsMasqEnabled;
+
+    /* Redirect rules */
+    private List redirectList = null;
 
     /**
      * Hibernate constructor.
      */
-    private NatSettings() {}
+    private NatSettings()
+    {
+    }
 
     /**
      * Real constructor
      */
-    public NatSettings(Tid tid)
+    public NatSettings( Tid tid )
     {
         this.tid = tid;
     }
@@ -111,7 +115,7 @@ public class NatSettings implements java.io.Serializable
     
     public void setInternalAddress( IPaddr addr ) 
     {
-        internatlAddress = addr;
+        internalAddress = addr;
     }
 
     /**
@@ -128,7 +132,7 @@ public class NatSettings implements java.io.Serializable
     
     public void setInternalSubnet( IPaddr addr ) 
     {
-        internatlSubnet = addr;
+        internalSubnet = addr;
     }
 
     /**
@@ -146,58 +150,6 @@ public class NatSettings implements java.io.Serializable
     public void setGateway( IPaddr addr ) 
     {
         gateway = addr;
-    }
-
-    /**
-     * Get the primary nameserver to use for the internal network.
-     *
-     * @return internal subnet.
-     * @hibernate.property
-     * column="NAMESERVER_A"
-     */
-    public IPaddr getNameserver1()
-    {
-        return nameserver1;
-    }
-    
-    public void setNameserver1( IPaddr addr ) 
-    {
-        nameserver1 = addr;
-    }
-
-
-    /**
-     * Get the secondary nameserver to use for the internal network.
-     *
-     * @return internal subnet.
-     * @hibernate.property
-     * column="NAMESERVER_B"
-     */
-    public IPaddr getNameserver2()
-    {
-        return nameserver2;
-    }
-    
-    public void setNameserver2( IPaddr addr ) 
-    {
-        nameserver2 = addr;
-    }
-
-    /**
-     * Get the tertiary nameserver to use for the internal network.
-     *
-     * @return internal subnet.
-     * @hibernate.property
-     * column="NAMESERVER_B"
-     */
-    public IPaddr getNameserver3()
-    {
-        return nameserver3;
-    }
-    
-    public void setNameserver3( IPaddr addr ) 
-    {
-        nameserver3 = addr;
     }
 
     /**
@@ -232,5 +184,28 @@ public class NatSettings implements java.io.Serializable
     public void setDnsMasqEnabled( boolean b ) 
     {
         this.isDnsMasqEnabled = b;
+    }
+
+        /**
+     * Pattern rules.
+     *
+     * @return the list of Patterns
+     * @hibernate.list
+     * cascade="all-delete-orphan"
+     * @hibernate.collection-key
+     * column="SETTINGS_ID"
+     * @hibernate.collection-index
+     * column="POSITION"
+     * @hibernate.collection-one-to-many
+     * class="com.metavize..RedirectRule"
+     */
+    public List getRedirectList() 
+    {
+        return redirectList;
+    }
+    
+    public void setRedirectList( List s ) 
+    { 
+        redirectList = s;
     }
 }

@@ -8,7 +8,7 @@
  *
  * $Id: ProtoFilter.java,v 1.4 2005/01/30 03:09:59 dmorris Exp $
  */
-package com.metavize.tran.protofilter;
+package com.metavize.tran.nat;
 
 import com.metavize.mvvm.tran.Transform;
 

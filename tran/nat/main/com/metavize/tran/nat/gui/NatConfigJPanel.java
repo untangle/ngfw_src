@@ -70,11 +70,9 @@ class NatTableModel extends MSortedTableModel{
     }
     
     public TableColumnModel getTableColumnModel(){
-        
-	NatFilterPattern tempPattern = new NatFilterPattern();
-
         DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
         //                                 #  min    rsz    edit   remv   desc   typ            def
+        /*
         addTableColumn( tableColumnModel,  0, C0_MW, false, false, true,  false, Integer.class, null, sc.TITLE_INDEX );
         addTableColumn( tableColumnModel,  1, C1_MW, false, false, false, false, String.class,  null, sc.TITLE_STATUS );
         addTableColumn( tableColumnModel,  2, C2_MW, true,  true,  false, false, String.class,  sc.EMPTY_CATEGORY, sc.TITLE_CATEGORY );
@@ -84,13 +82,16 @@ class NatTableModel extends MSortedTableModel{
         addTableColumn( tableColumnModel,  6, C6_MW, false, true,  false, false, Boolean.class, "false", sc.bold( sc.TITLE_LOG ));
         addTableColumn( tableColumnModel,  7, C7_MW, true,  true,  false, false, String.class,  sc.empty("no signature"), "signature");
         addTableColumn( tableColumnModel,  8, 0, false, false, true,  false, String.class,  tempPattern.getQuality(), "quality");
+        */
         return tableColumnModel;
     }
     
     public Object generateSettings(Vector dataVector){
         Vector rowVector;
+        /*
         Nat transform = (Nat)transformContext.transform();
         NatSettings transformSettings = transform.getProtoFilterSettings();
+        */
 
         List elemList = new ArrayList();
         /**
@@ -108,13 +109,15 @@ class NatTableModel extends MSortedTableModel{
             elemList.add(newElem);
         }
         **/
-
-        transformSettings.setPatterns(elemList); 
-        return transformSettings;
+        
+        return null;
+        // transformSettings.setPatterns(elemList); 
+        // return transformSettings;
     }
     
     public Vector generateRows(Object transformSettings){
         Vector allRows = new Vector();
+        /* 
         Vector row;
         RedirectRule newElem;
         List elemList = ((ProtoFilterSettings)transformSettings).getPatterns();
@@ -133,6 +136,7 @@ class NatTableModel extends MSortedTableModel{
 	    row.add(newElem.getQuality());
             allRows.add(row);
         }
+        */
         return allRows;
     }
 }

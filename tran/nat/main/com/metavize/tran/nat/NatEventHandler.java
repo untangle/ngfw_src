@@ -9,79 +9,158 @@
  * $Id: EventHandler.java,v 1.7 2005/03/15 02:11:52 amread Exp $
  */
 
-package com.metavize.tran.protofilter;
+package com.metavize.tran.nat;
 
 // import java.nio.*;
 import java.util.List;
-
+import java.util.LinkedList;
 import java.util.Iterator;
 
+import com.metavize.mvvm.tapi.Protocol;
+
 import com.metavize.mvvm.MvvmContextFactory;
-import com.metavize.mvvm.tapi.*;
-import com.metavize.mvvm.tapi.event.*;
+
+import com.metavize.mvvm.tapi.AbstractEventHandler;
+import com.metavize.mvvm.tapi.IPNewSessionRequest;
+import com.metavize.mvvm.tapi.MPipeException;
+
+import com.metavize.mvvm.tapi.event.TCPNewSessionRequestEvent;
+import com.metavize.mvvm.tapi.event.UDPNewSessionRequestEvent;
+
 import com.metavize.mvvm.tran.Transform;
 import org.apache.log4j.Logger;
 
-public class EventHandler extends AbstractEventHandler
+public class NatEventHandler extends AbstractEventHandler
 {
-    private final Logger logger = Logger.getLogger(EventHandler.class);
+    private final Logger logger = Logger.getLogger(NatEventHandler.class);
     private final Logger eventLogger = MvvmContextFactory.context().eventLogger();
 
-    private List ruleList = null;
+    /* match to determine whether a session is natted */
+    /* XXX Probably need to initialized this with a value */
+    private RedirectMatcher nat;
 
-    private boolean quickExit = true;
-    private boolean rejectSilently = true;
+    /* match to determine  whether a session is directed for the dmz */
+    /* XXX Probably need to initialized this with a value */
+    private RedirectMatcher dmz;
 
-    /* True to reject all, false to accept by default */
-    private boolean isDefaultBlock = true;
+    /* All of the other rules */
+    /* Use an empty list rather than null */
+    private List<RedirectMatcher> redirectList = new LinkedList<RedirectMatcher>();
     
-    public EventHandler() 
+    /* Setup, singleton  */
+    NatEventHandler() 
     {
     }
 
     public void handleTCPNewSessionRequest( TCPNewSessionRequestEvent event )
         throws MPipeException
-    {
-        isBlo/* accept */
+    {        
+        handleNewSessionRequest( event.sessionRequest(), Protocol.TCP );
     }
 
-    public void handleUDPNewSessionRequest(UDPNewSessionRequestEvent event)
+    public void handleUDPNewSessionRequest( UDPNewSessionRequestEvent event )
         throws MPipeException
     {
-        /* accept */
-    }
-    
-    public void ruleList( List ruleList )
-    {
-        this.ruleList = patternList;
+        handleNewSessionRequest( event.sessionRequest(), Protocol.UDP );
     }
 
-    /* Returns true if the session should be rejected */
-    private boolean isBlocked( IPNewIPSessionRequest session, Protoctol protocol )
+    public void handleNewSessionRequest( IPNewSessionRequest request, Protocol protocol )
     {
-        /* Retrieve the default policy */
-        isBlocked = defaultPolicy;
-        
-        for ( Iterator iter = ruleList.iterator() ; iter.hasNext(); ) {
-            FirewallRuleMatcher matcher = (FirewallRuleMatcher)iter.next();
-            
-            /* Do not iterate disabled rules, or rules that do not match */
-            if ( !rule.isEnabled() || !rule.isMatch( sess, protocol )) {
-                continue;
-            }
-            
-            if ( rule.isBlocker()) {
-                return true;
-            }
-            
-            if ( quickExit ) {
-                /* Return on first match */
-                return false;
-            } else {
-                isBlocked = false;
-            }
+        /* Check for NAT, Redirects or DMZ */
+        if ( isNat(  request, protocol ) ||
+             isRedirect(  request, protocol ) || 
+             isDmz(  request,  protocol )) {
+            request.release();
+            return;
         }
         
-        return isBlocked();
+        /* If nat is on, and this session wasn't natted, redirected or dmzed, it
+         * must be rejected */
+        if ( nat.isEnabled()) {
+            /* XXX How should the session be rejected */
+            request.rejectSilently();
+            return;
+        } 
+        
+        /* Otherwise release the session */
+        request.release();
     }
+
+    RedirectMatcher getNat() {
+        return nat;
+    }
+    
+    void setNat( RedirectMatcher nat ) {
+        this.nat = nat;
+    }
+
+    RedirectMatcher getDmz() {
+        return dmz;
+    }
+    
+    void setDmz( RedirectMatcher dmz ) {
+        this.dmz = dmz;
+    }
+
+    List <RedirectMatcher> getRedirectList() {
+        return redirectList;
+    }
+    
+    void setRedirectList( List<RedirectMatcher>redirectList ) {
+        this.redirectList = redirectList;
+    }
+
+    /**
+     * Determine if a session is natted, and if necessary, rewrite its session information.
+     */
+    private boolean isNat( IPNewSessionRequest request, Protocol protocol )
+    {
+        if ( nat.isMatch( request, protocol )) {
+            /* Change the source in the request */
+            nat.redirect( request );
+            
+            /* Fix the port */
+            switch( protocol ) {
+                
+            }
+            
+            /* XXX What about the case where you have NAT and redirect */
+            /* XXX Possibly check for redirects here */
+            return true;
+        }
+
+        return false;
+    }
+    
+    /**
+     * Determine if a session is redirected, and if necessary, rewrite its session information.
+     */
+    private boolean isRedirect( IPNewSessionRequest request, Protocol protocol )
+    {
+        for ( Iterator<RedirectMatcher> iter = redirectList.iterator(); iter.hasNext(); ) {
+            RedirectMatcher matcher = iter.next();
+            
+            if ( matcher.isMatch( request, protocol )) {
+                /* Redirect the session */
+                matcher.redirect( request );
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Determine if a session is for the DMZ, and if necessary, rewrite its session information.
+     */
+    private boolean isDmz( IPNewSessionRequest request, Protocol protocol )
+    {
+        if ( dmz.isMatch( request, protocol )) {
+            dmz.redirect( request );
+            return true;
+        }
+        return false;
+    }
+
+    
+    
 }

@@ -23,8 +23,9 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
     public MTransformControlsJPanel(MTransformJPanel mTransformJPanel) {
         super(mTransformJPanel);
 
-        this.mTabbedPane.insertTab("Protocol Block List", null, new ProtoConfigJPanel(mTransformJPanel.getTransformContext()), null, 0);
-        //this.eventTabbedPane.insertTab("Protocol Block List", null, new ProtoEventJPanel(mTransformJPanel.getTransformContext()), null, 0);
+        /*
+        this.mTabbedPane.insertTab("Redirection List", null, new ProtoConfigJPanel(mTransformJPanel.getTransformContext()), null, 0);
+        */
     }
     
 }
