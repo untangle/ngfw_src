@@ -23,7 +23,7 @@ import org.apache.log4j.Logger;
 
 public class EventHandler extends AbstractEventHandler
 {
-    private final Logger logger = Logger.getLogger(EventHandler.class.getName());
+    private final Logger logger = Logger.getLogger(EventHandler.class);
     private final Logger eventLogger = MvvmContextFactory.context().eventLogger();
 
     private ArrayList  _patternList = null;

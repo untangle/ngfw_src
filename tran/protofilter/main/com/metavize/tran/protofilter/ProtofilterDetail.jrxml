@@ -185,7 +185,7 @@ ORDER BY time_stamp]]></queryString>
             <textField>
                 <reportElement positionType="Float" x="206" y="14" width="287" height="12"/>
                 <textElement/>
-                <textFieldExpression class="java.lang.String"><![CDATA[$F{blocked}.booleanValue() ? "passed" : "blocked"]]></textFieldExpression>
+                <textFieldExpression class="java.lang.String"><![CDATA[$F{blocked}.booleanValue() ? "blocked" : "passed"]]></textFieldExpression>
             </textField>
             <textField>
                 <reportElement positionType="Float" x="112" y="14" width="92" height="12"/>
