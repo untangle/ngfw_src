@@ -142,6 +142,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       <include name="com/metavize/mvvm/engine/ProxyInputStream.java"/>
       <include name="com/metavize/mvvm/client/*.java"/>
       <include name="com/metavize/mvvm/logging/LoggingManager.java"/>
+      <include name="com/metavize/mvvm/logging/LogEvent.java"/>
       <include name="com/metavize/mvvm/tapi/*Desc.java"/>
       <include name="com/metavize/mvvm/tran/*.java"/>
       <exclude name="com/metavize/mvvm/tran/MutateTStats.java"/>
@@ -162,6 +163,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
         <include name="com/metavize/mvvm/engine/ProxyInputStream.class"/>
         <include name="com/metavize/mvvm/client/*.class"/>
         <include name="com/metavize/mvvm/logging/LoggingManager.class"/>
+        <include name="com/metavize/mvvm/logging/LogEvent.class"/>
         <include name="com/metavize/mvvm/tapi/*Desc.class"/>
         <include name="com/metavize/mvvm/tran/*.class"/>
         <exclude name="com/metavize/mvvm/tran/MutateTStats.class"/>
