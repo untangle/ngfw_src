@@ -23,6 +23,8 @@ import java.lang.InterruptedException;
 import java.lang.Process;
 import java.nio.*;
 import java.nio.channels.FileChannel;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.CharsetEncoder;
 import java.util.*;
 import java.util.regex.*;
 import org.apache.log4j.Logger;
@@ -569,6 +571,7 @@ public class MIMEPart
     {
         if (null == zNested)
         {
+            File zTmpFile;
             CBufferWrapper zCName;
             ByteBuffer zName;
             ByteBuffer zStart;
@@ -576,7 +579,9 @@ public class MIMEPart
 
             if (true == isEncoding(BASE64P))
             {
-                zCName = getFileName();
+                zTmpFile = getTmpFile();
+                zCName = getFileName(zTmpFile);
+zLog.info("file name: " + zCName);
                 zName = zCName.get();
                 zName.rewind();
                 
@@ -589,7 +594,9 @@ public class MIMEPart
             }
             else if (true == isEncoding(UUENCODEP))
             {
-                zCName = getFileName();
+                zTmpFile = getTmpFile();
+                zCName = getFileName(zTmpFile);
+zLog.info("file name: " + zCName);
                 zName = zCName.get();
                 zName.rewind();
                 
@@ -625,6 +632,7 @@ public class MIMEPart
             //zLog.debug("MIME part decoded file: " + zFile.getAbsolutePath());
             VirusScannerResult zScanResult = zScanner.scanFile(zFile.getAbsolutePath());
             zFile.delete(); /* delete decoded file */
+            zTmpFile.delete(); /* delete tmp file */
             if (null == zScanResult)
             {
                 /* restore this MIME part */
@@ -841,11 +849,11 @@ public class MIMEPart
         return;
     }
 
-    private CBufferWrapper getFileName() throws ModifyException
+    private File getTmpFile() throws ModifyException
     {
         if (null == zContentTDs)
         {
-            throw new ModifyException("Unable to find the name of file for this MIME part; this MIME part contains encoded data that is not named");
+            throw new ModifyException("Unable to find the name of the file for this MIME part; this MIME part contains a Content-Transfer-Encoding header field but does not contain a Content-Type or Content-Disposition header field");
         }
 
         CBufferWrapper zCLine;
@@ -879,7 +887,39 @@ public class MIMEPart
         /* we prefer to use filename from MIME Content-Disposition rather than
          * name from MIME Content-Type
          */
-        return (null != zCDName) ? zCDName : zCTName;
+        CBufferWrapper zCTmpFile = (null != zCDName ? zCDName : zCTName);
+
+        /* this MIME part contains Content-Type and/or
+         * Content-Disposition header field
+         * but neither specifies name or filename type
+         * so create random temp name
+         */
+        try
+        {
+            return File.createTempFile(zCTmpFile.toString(), null);
+        }
+        catch (IOException e)
+        {
+            throw new ModifyException("Unable to find the name of the file for this MIME part; this MIME part contains a Content-Type and/or Content-Disposition header field but neither field specifies a name or filename type: " + e);
+        }
+    }
+
+    private CBufferWrapper getFileName(File zFile) throws ModifyException
+    {
+        String zTmpFileName = zFile.getName();
+        ByteBuffer zLine;
+        try
+        {
+            CharsetEncoder zEncoder = Constants.CHARSET.newEncoder();
+            zLine = zEncoder.encode(CharBuffer.wrap(zTmpFileName));
+            zLine.position(zLine.limit());
+        }
+        catch (CharacterCodingException e)
+        {
+            throw new ModifyException("Unable to find the name of the file for this MIME part; this MIME part contains a Content-Type and/or Content-Disposition header field but neither field specifies a name or filename type: " + e);
+        }
+
+        return new CBufferWrapper(zLine);
     }
 
     private CBufferWrapper stripQuotes(CBufferWrapper zCLine, int iStart)
