@@ -12,8 +12,8 @@ package com.metavize.tran.protofilter;
 
 import com.metavize.mvvm.tran.Transform;
 
-public interface Firewall extends Transform
+public interface Nat extends Transform
 {
-    FirewallSettings getFirewallSettings();
-    void setFirewallSettings( FirewallSettings settings );
+    NatSettings getNatSettings();
+    void setNatSettings( NatSettings settings );
 }

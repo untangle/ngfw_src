@@ -11,41 +11,56 @@
 
 package com.metavize.tran.protofilter;
 
-import java.util.List;
-import java.util.LinkedList;
-
 import com.metavize.mvvm.security.Tid;
 
+import com.metavize.mvvm.tran.IPaddr;
+
 /**
- * Settings for the ProtoFilter transform.
+ * Settings for the Nat transform.
  *
  * @author <a href="mailto:rbscott@metavize.com">Robert Scott</a>
  * @version 1.0
  * @hibernate.class
- * table="TR_FIREWALL_SETTINGS"
+ * table="TR_NAT_SETTINGS"
  */
-public class FirewallSettings implements java.io.Serializable
+public class NatSettings implements java.io.Serializable
 {
     /* XXX Must be updated */
     private static final long serialVersionUID = 2664348127860496780L;
 
-    private List rules = null;
+    private IPaddr internalAddress;
+    private IPaddr internalSubnet;
 
-    private boolean quickExit;
-    private boolean rejectSilently;    
+    /* Also could be considered internal address, must set with ifconfig */
+    private IPaddr gateway;
+
+    
+    /* Primary */
+    private IPaddr nameserver1;
+
+    /* Secondary */
+    private IPaddr nameserver2;
+    
+    /* Tertiary */
+    private IPaddr nameserver3;
+    
+    /* External Address */
+    private IPaddr externalAddress;
+
+    /* True if DNS Masquerading is enabled */
+    private IPaddr isDnsMasqEnabled;
 
     /**
      * Hibernate constructor.
      */
-    private FirewallSettings() {}
+    private NatSettings() {}
 
     /**
      * Real constructor
      */
-    public FirewallSettings(Tid tid)
+    public NatSettings(Tid tid)
     {
         this.tid = tid;
-        this.patterns = new LinkedList();
     }
 
     /**
@@ -83,59 +98,139 @@ public class FirewallSettings implements java.io.Serializable
     }
 
     /**
+     * Get the base of the internal address.
+     *
+     * @return internal Address.
+     * @hibernate.property
+     * column="INTERNAL_ADDR"
+     */
+    public IPaddr getInternalAddress()
+    {
+        return internalAddress;
+    }
+    
+    public void setInternalAddress( IPaddr addr ) 
+    {
+        internatlAddress = addr;
+    }
+
+    /**
+     * Get the subnet of the internal addresses.
+     *
+     * @return internal subnet.
+     * @hibernate.property
+     * column="INTERNAL_SUBNET"
+     */
+    public IPaddr getInternalSubnet()
+    {
+        return internalSubnet;
+    }
+    
+    public void setInternalSubnet( IPaddr addr ) 
+    {
+        internatlSubnet = addr;
+    }
+
+    /**
+     * Get the gateway of the internal addresses.
+     *
+     * @return internal subnet.
+     * @hibernate.property
+     * column="INTERNAL_SUBNET"
+     */
+    public IPaddr getGateway()
+    {
+        return gateway;
+    }
+    
+    public void setGateway( IPaddr addr ) 
+    {
+        gateway = addr;
+    }
+
+    /**
+     * Get the primary nameserver to use for the internal network.
+     *
+     * @return internal subnet.
+     * @hibernate.property
+     * column="NAMESERVER_A"
+     */
+    public IPaddr getNameserver1()
+    {
+        return nameserver1;
+    }
+    
+    public void setNameserver1( IPaddr addr ) 
+    {
+        nameserver1 = addr;
+    }
+
+
+    /**
+     * Get the secondary nameserver to use for the internal network.
+     *
+     * @return internal subnet.
+     * @hibernate.property
+     * column="NAMESERVER_B"
+     */
+    public IPaddr getNameserver2()
+    {
+        return nameserver2;
+    }
+    
+    public void setNameserver2( IPaddr addr ) 
+    {
+        nameserver2 = addr;
+    }
+
+    /**
+     * Get the tertiary nameserver to use for the internal network.
+     *
+     * @return internal subnet.
+     * @hibernate.property
+     * column="NAMESERVER_B"
+     */
+    public IPaddr getNameserver3()
+    {
+        return nameserver3;
+    }
+    
+    public void setNameserver3( IPaddr addr ) 
+    {
+        nameserver3 = addr;
+    }
+
+    /**
+     * Get the subnet of the internal addresses.
+     *
+     * @return internal subnet.
+     * @hibernate.property
+     * column="EXTERNAL_ADDR"
+     */
+    public IPaddr getExternalAddress()
+    {
+        return externalAddress;
+    }
+    
+    public void setExternalAddress( IPaddr addr ) 
+    {
+        externalAddress = addr;
+    }
+
+    /**
      * If true, exit on the first positive or negative match.  Otherwise, exit
      * on the first negative match.
      *
      * @hibernate.property
-     * column="QUICKEXIT"
+     * column="DNS_MASQ_EN"
      */
-    public boolean isQuickExit()
+    public boolean isDnsMasqEnabled()
     {
-        return this.quickExit;
+        return isDnsMasqEnabled;
     }
 
-    public void setQuickExit( boolean b ) 
+    public void setDnsMasqEnabled( boolean b ) 
     {
-        this.quickExit = b;
-    }
-
-    /**
-     *  If true, the session is rejected quietly (default), otherwise the connection
-     *  is rejected silently.
-     *
-     * @hibernate.property
-     * column="REJECTSILENT"
-     */
-    public boolean isRejectSilently()
-    {
-        return this.rejectSilently;
-    }
-
-    public void setRejectSilently( boolean b ) 
-    {
-        this.rejectSilently = b;
-    }
-
-    /**
-     * Firewall rules.
-     *
-     * @return the list of Firewall Rules
-     * @hibernate.list
-     * cascade="all-delete-orphan"
-     * @hibernate.collection-key
-     * column="SETTINGS_ID"
-     * @hibernate.collection-index
-     * column="POSITION"
-     * @hibernate.collection-one-to-many
-     * class="com.metavize.tran.firewall.FirewallRule"
-     */
-    public List getRules()
-    {
-        return rules;
-    }
-
-    public void setRules(List s ) 
-    { 
-        this.rules = s;
+        this.isDnsMasqEnabled = b;
     }
 }

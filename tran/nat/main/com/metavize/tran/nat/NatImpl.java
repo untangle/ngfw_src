@@ -31,29 +31,29 @@ import net.sf.hibernate.Session;
 import net.sf.hibernate.Transaction;
 import org.apache.log4j.Logger;
 
-public class FirewallImpl extends SoloTransform implements Firewall
+public class NatImpl extends SoloTransform implements Firewall
 {
-    private static final Logger logger = Logger.getLogger(ProtoFilterImpl.class);
+    private static final Logger logger = Logger.getLogger( NatImpl.class );
     private final PipeSpec pipeSpec;
-    private ProtoFilterSettings settings = null;
+    private NatSettings settings = null;
     private EventHandler handler = null;
 
-    public FirewallImpl()
+    public NatImpl()
     {
         Set subscriptions = new HashSet();
         subscriptions.add(new Subscription(Protocol.TCP));
         subscriptions.add(new Subscription(Protocol.UDP));
         
         /* Have to figure out pipeline ordering, this should always next to towards the outside */
-        this.pipeSpec = new PipeSpec( "firewall", Fitting.OCTET_STREAM, subscriptions, Affinity.BEGIN );
+        this.pipeSpec = new PipeSpec( "nat", Fitting.OCTET_STREAM, subscriptions, Affinity.BEGIN );
     }
 
-    public FirewallSettings getFirewallSettings()
+    public NatSettings getNatSettings()
     {
         return this.settings;
     }
 
-    public void setFirewallSettings(FirewallSettings settings)
+    public void setNatSettings( NatSettings settings)
     {
         Session s = TransformContextFactory.context().openSession();
         try {
@@ -64,12 +64,12 @@ public class FirewallImpl extends SoloTransform implements Firewall
 
             tx.commit();
         } catch (HibernateException exn) {
-            logger.warn("could not get HttpBlockerSettings", exn);
+            logger.warn( "Could not get NatSettings", exn );
         } finally {
             try {
                 s.close();
             } catch (HibernateException exn) {
-                logger.warn("could not close hibernate sessino", exn);
+                logger.warn( "Could not close hibernate sessino", exn );
             }
         }
 
@@ -77,7 +77,7 @@ public class FirewallImpl extends SoloTransform implements Firewall
             reconfigure();
         }
         catch (TransformException exn) {
-            logger.error("Could not save Firewall settings", exn);
+            logger.error( "Could not save Nat settings", exn );
         }
     }
 
@@ -89,12 +89,12 @@ public class FirewallImpl extends SoloTransform implements Firewall
 
     protected void initializeSettings()
     {
-        FirewallSettings settings = new FirewallSettings(this.getTid());
+        NatSettings settings = new NatSettings(this.getTid());
         logger.info("Initializing Settings...");
 
         updateToCurrent(settings);
 
-        setFirewallSettings(settings);
+        setNatSettings(settings);
     }
 
     protected void postInit(String[] args)
@@ -103,9 +103,9 @@ public class FirewallImpl extends SoloTransform implements Firewall
         try {
             Transaction tx = s.beginTransaction();
 
-            Query q = s.createQuery("from FirewallSettings hbs where hbs.tid = :tid");
+            Query q = s.createQuery("from NatSettings hbs where hbs.tid = :tid");
             q.setParameter("tid", getTid());
-            this.settings = (FirewallSettings)q.uniqueResult();
+            this.settings = (NatSettings)q.uniqueResult();
 
             updateToCurrent(this.settings);
 
@@ -132,117 +132,43 @@ public class FirewallImpl extends SoloTransform implements Firewall
         getMPipe().setSessionEventListener(this.handler);
     }
 
-    public    void reconfigure() throws TransformException
+    public void reconfigure() throws TransformException
     {
-        FirewallSettings settings = getFirewallSettings();
-        ArrayList enabledPatternsList = new ArrayList();
+        NatSettings settings = getNatSettings();
 
-        logger.info("Reconfigure()");
+        logger.info( "Reconfigure()" );
 
-        if (settings == null) {
-            throw new TransformException("Failed to get Firewall settings: " + settings);
+        if ( settings == null ) {
+            throw new TransformException( "Failed to get Nat settings: " + settings );
         }
+        
+        /* Update the settings */
+        
+        /* Start/stop DNS Masquerading */
 
-        List curPatterns = settings.getPatterns();
-        if (curPatterns == null)
-            logger.warn("NULL pattern list. Continuing anyway...");
-        else {
-            for (Iterator i=curPatterns.iterator() ; i.hasNext() ; ) {
-                FirewallPattern pat = (FirewallPattern)i.next();
-
-                if ( pat.getLog() || pat.getAlert() || pat.isBlocked() ) {
-                    logger.info("Matching on pattern \"" + pat.getProtocol() + "\"");
-                    enabledPatternsList.add(pat);
-                }
-            }
-        }
-
-        if (this.handler == null) this.handler = new EventHandler();
-        handler.patternList(enabledPatternsList);
-        handler.byteLimit(settings.getByteLimit());
-        handler.chunkLimit(settings.getChunkLimit());
-        handler.unknownString(settings.getUnknownString());
-        handler.stripZeros(settings.isStripZeros());
+        
     }
 
 
-    private   void updateToCurrent(FirewallSettings settings)
+    private void updateToCurrent(NatSettings settings)
     {
-        if (settings == null) {
-            logger.error("NULL Protofilter Settings");
+        if ( settings == null ) {
+            logger.error( "NULL Nat Settings" );
             return;
         }
-
-        HashMap    allPatterns = LoadPatterns.getPatterns(); /* Global List of Patterns */
-        List       curPatterns = settings.getPatterns(); /* Current list of Patterns */
-
-        if (curPatterns == null) {
-            /**
-             * First time initialization
-             */
-            logger.info("UPDATE: Importing patterns...");
-            settings.setPatterns(new ArrayList(allPatterns.values()));
-            curPatterns = settings.getPatterns();
-        }
-        else {
-            /**
-             * Look for updates
-             */
-            for (Iterator i=curPatterns.iterator() ; i.hasNext() ; ) {
-                FirewallPattern pat = (FirewallPattern) i.next();
-                String name = pat.getProtocol();
-                String def  = pat.getDefinition();
-
-                if (allPatterns.containsKey(name)) {
-                    /**
-                     * Key is present in current config
-                     * Update definition and description if needed
-                     */
-                    FirewallPattern newpat = (FirewallPattern)allPatterns.get(name);
-                    if (newpat == null) {
-                        logger.error("Missing pattern");
-                        continue;
-                    }
-
-                    if (!newpat.getDescription().equals(pat.getDescription())) {
-                        logger.info("UPDATE: Updating Description for Pattern (" + name + ")");
-                        pat.setDescription(newpat.getDescription());
-                    }
-                    if (!newpat.getDefinition().equals(pat.getDefinition())) {
-                        logger.info("UPDATE: Updating Definition  for Pattern (" + name + ")");
-                        pat.setDefinition(newpat.getDefinition());
-                    }
-
-                    /**
-                     * Remove it, its been accounted for
-                     */
-                    allPatterns.remove(name);
-                }
-            }
-
-            /**
-             * Add all the necessary new patterns
-             * Whatever is left in allPatterns at this point, is not in the curPatterns
-             */
-            for (Iterator i=allPatterns.values().iterator() ; i.hasNext() ; ) {
-                FirewallPattern pat = (FirewallPattern) i.next();
-                logger.info("UPDATE: Adding New Pattern (" + pat.getProtocol() + ")");
-                curPatterns.add(pat);
-            }
-        }
-
-        logger.info("UPDATE: Complete");
+        
+        logger.info( "Update Settings Complete" );
     }
 
     // XXX soon to be deprecated ----------------------------------------------
 
     public Object getSettings()
     {
-        return getFirewallSettings();
+        return getNatSettings();
     }
 
     public void setSettings(Object settings)
     {
-        setFirewallSettings((FirewallSettings)settings);
+        setNatSettings((NatSettings)settings);
     }
 }
