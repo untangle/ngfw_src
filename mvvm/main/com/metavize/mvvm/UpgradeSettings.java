@@ -25,8 +25,8 @@ public class UpgradeSettings implements Serializable
 {
     private static final long serialVersionUID = -6231213396376580006L;
 
-    private boolean autoUpgrade;
     private Long id;
+    private boolean autoUpgrade = true;
     private Period period;
 
     // constructors -----------------------------------------------------------
