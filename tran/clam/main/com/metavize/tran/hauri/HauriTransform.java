@@ -8,7 +8,7 @@
  *
  * $Id: HauriTransform.java,v 1.1 2005/02/26 04:11:31 dmorris Exp $
  */
-package com.metavize.tran.hauri;
+package com.metavize.tran.clam;
 
 import com.metavize.tran.virus.VirusTransformImpl;
 

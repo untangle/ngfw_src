@@ -8,7 +8,7 @@
  *
  * $Id: HauriScanner.java,v 1.4 2005/03/11 03:33:48 cng Exp $
  */
-package com.metavize.tran.hauri;
+package com.metavize.tran.clam;
 
 import java.io.BufferedReader;
 import java.io.File;
