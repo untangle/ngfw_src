@@ -20,6 +20,7 @@ public class MackageDesc implements Serializable
     /* XXX change to enum in 1.5 */
     public static final int SYSTEM_TYPE = 0;
     public static final int TRANSFORM_TYPE = 1;
+    public static final int CASING_TYPE = 2;
 
     private final String name;
     private final String displayName;
@@ -42,12 +43,18 @@ public class MackageDesc implements Serializable
         name = (String)m.get("package");
         // XXX hack
         boolean isTransform = name.endsWith("-transform");
+        boolean isCasing = name.endsWith("-casing");
 
         displayName = (String)m.get("display-name");
 
         // XXX type
-        type = isTransform ? MackageDesc.TRANSFORM_TYPE
-                : MackageDesc.SYSTEM_TYPE;
+        if (isTransform) {
+            type = TRANSFORM_TYPE;
+        } else if (isCasing) {
+            type = CASING_TYPE;
+        } else {
+            type = SYSTEM_TYPE;
+        }
 
         // versions
         availableVersion = (String)m.get("version");
