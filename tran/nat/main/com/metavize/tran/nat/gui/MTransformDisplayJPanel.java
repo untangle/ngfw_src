@@ -8,7 +8,7 @@
  *
  * $Id: MTransformDisplayJPanel.java,v 1.3 2005/02/01 07:00:11 inieves Exp $
  */
-package com.metavize.tran.protofilter.gui;
+package com.metavize.tran.nat.gui;
 
 import com.metavize.gui.transform.*;
 import com.metavize.gui.pipeline.MPipelineJPanel;

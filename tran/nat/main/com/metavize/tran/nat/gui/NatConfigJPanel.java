@@ -8,7 +8,7 @@
  *
  * $Id: ProtoConfigJPanel.java,v 1.13 2005/03/22 03:19:22 inieves Exp $
  */
-package com.metavize.tran.protofilter.gui;
+package com.metavize.tran.nat.gui;
 
 import com.metavize.mvvm.tran.Transform;
 import com.metavize.gui.transform.*;
@@ -17,8 +17,6 @@ import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.gui.widgets.editTable.*;
 import com.metavize.gui.util.*;
 
-import com.metavize.tran.protofilter.*;
-
 import java.awt.*;
 import java.util.*;
 import java.util.List;
@@ -26,9 +24,9 @@ import javax.swing.*;
 import javax.swing.table.*;
 import javax.swing.event.*;
 
-public class ProtoConfigJPanel extends MEditTableJPanel{
+public class NatConfigJPanel extends MEditTableJPanel{
 
-    public ProtoConfigJPanel(TransformContext transformContext) {
+    public NatConfigJPanel(TransformContext transformContext) {
         super(true, true);
         super.setFillJButtonEnabled( false );
         super.setInsets(new Insets(4, 4, 2, 2));
@@ -37,14 +35,14 @@ public class ProtoConfigJPanel extends MEditTableJPanel{
         super.setAddRemoveEnabled(true);
         
         // create actual table model
-        ProtoTableModel protoTableModel = new ProtoTableModel(transformContext);
+        NatTableModel protoTableModel = new NatTableModel(transformContext);
         this.setTableModel( protoTableModel );
 
     }
 }
 
 
-class ProtoTableModel extends MSortedTableModel{ 
+class NatTableModel extends MSortedTableModel{ 
 
     private static final int T_TW = Util.TABLE_TOTAL_WIDTH;
     private static final int C0_MW = Util.LINENO_MIN_WIDTH; /* # */
@@ -59,13 +57,13 @@ class ProtoTableModel extends MSortedTableModel{
 
     private static final StringConstants sc = StringConstants.getInstance();
     
-    //    private ProtoFilterPattern tempElem;
+    //    private NatFilterPattern tempElem;
     //    private Alerts tempAlerts;
     
-    ProtoTableModel(TransformContext transformContext){
+    NatTableModel(TransformContext transformContext){
         super(transformContext);
                 
-        //        tempElem = (ProtoFilterPattern) NodeType.type(ProtoFilterPattern.class).instantiate();
+        //        tempElem = (NatFilterPattern) NodeType.type(NatFilterPattern.class).instantiate();
         //        tempAlerts = tempElem.alerts();
         
         refresh();
@@ -73,7 +71,7 @@ class ProtoTableModel extends MSortedTableModel{
     
     public TableColumnModel getTableColumnModel(){
         
-	ProtoFilterPattern tempPattern = new ProtoFilterPattern();
+	NatFilterPattern tempPattern = new NatFilterPattern();
 
         DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
         //                                 #  min    rsz    edit   remv   desc   typ            def
@@ -91,11 +89,11 @@ class ProtoTableModel extends MSortedTableModel{
     
     public Object generateSettings(Vector dataVector){
         Vector rowVector;
-        ProtoFilter transform = (ProtoFilter)transformContext.transform();
-        ProtoFilterSettings transformSettings = transform.getProtoFilterSettings();
+        Nat transform = (Nat)transformContext.transform();
+        NatSettings transformSettings = transform.getProtoFilterSettings();
 
-        ProtoFilterPattern newElem = new ProtoFilterPattern();
         List elemList = new ArrayList();
+        /**
         for(int i=0; i<dataVector.size(); i++){
             rowVector = (Vector) dataVector.elementAt(i);
             newElem = new ProtoFilterPattern();
@@ -109,6 +107,7 @@ class ProtoTableModel extends MSortedTableModel{
 
             elemList.add(newElem);
         }
+        **/
 
         transformSettings.setPatterns(elemList); 
         return transformSettings;
@@ -117,7 +116,7 @@ class ProtoTableModel extends MSortedTableModel{
     public Vector generateRows(Object transformSettings){
         Vector allRows = new Vector();
         Vector row;
-        ProtoFilterPattern newElem;
+        RedirectRule newElem;
         List elemList = ((ProtoFilterSettings)transformSettings).getPatterns();
         int count = 0;
         for (Iterator i = elemList.iterator() ; i.hasNext() ; count++) {

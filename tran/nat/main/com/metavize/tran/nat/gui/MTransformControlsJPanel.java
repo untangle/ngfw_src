@@ -4,11 +4,10 @@
  * Created on March 25, 2004, 6:11 PM
  */
 
-package com.metavize.tran.protofilter.gui;
+package com.metavize.tran.nat.gui;
 
 import com.metavize.gui.transform.*;
 import com.metavize.gui.pipeline.MPipelineJPanel;
-import com.metavize.tran.protofilter.*;
 import com.metavize.gui.widgets.editTable.*;
 import com.metavize.gui.util.*;
 
