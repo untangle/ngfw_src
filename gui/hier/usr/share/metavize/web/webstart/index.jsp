@@ -3,8 +3,9 @@
 <%
 
 String host=request.getHeader("host");
+String scheme=request.getScheme();
 String ctxPath=request.getContextPath();
-String cb = "http://" + host + ctxPath + "/";
+String cb = scheme + "://" + host + ctxPath + "/";
 String pageName = request.getServletPath();
 
 boolean isIndex    = pageName.equals("/index.html");
