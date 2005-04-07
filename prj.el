@@ -32,6 +32,6 @@
      "../downloads/trove/lib/trove.jar"
      "./mvvm/output/jar/mvvm.jar"
      "./mvvm/output/jar/tranutil.jar"
-     "./http/output/jar/http-transform.mar"
+     "./http/output/jar/http-casing.mar"
      "./jnetcap/output/jar/jnetcap.jar"
      "./jvector/output/jar/jvector.jar")))

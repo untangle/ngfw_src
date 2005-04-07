@@ -13,7 +13,7 @@ $Id: mvvm-transform.xml,v 1.6 2005/03/08 23:05:46 inieves Exp $
 
 <mvvm-transform>
   <transform-desc name="sophos-transform"
-                  parent-transform="http-transform"
+                  parent-transform="http-casing"
                   display-name="Sophos AntiVirus Scanner"
                   classname="com.metavize.tran.sophos.SophosTransform"
                   gui-classname="com.metavize.tran.sophos.gui.MTransformJPanel"/>

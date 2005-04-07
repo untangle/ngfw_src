@@ -35,7 +35,7 @@ $Id: common-classpaths.xml,v 1.32 2005/02/10 23:25:44 jdi Exp $
   </path>
 
   <!-- Http Transform classpath -->
-  <fileset id="http.jarset" file="../tran/output/jar/http-transform.mar"/>
+  <fileset id="http.jarset" file="../tran/output/jar/http-casing.mar"/>
 
   <path id="http.classpath">
     <fileset refid="http.jarset"/>

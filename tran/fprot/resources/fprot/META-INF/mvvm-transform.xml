@@ -13,7 +13,7 @@ $Id: mvvm-transform.xml,v 1.6 2005/03/08 23:05:46 inieves Exp $
 
 <mvvm-transform>
   <transform-desc name="fprot-transform"
-                  parent-transform="http-transform"
+                  parent-transform="http-casing"
                   display-name="F-Prot AntiVirus Scanner"
                   classname="com.metavize.tran.fprot.FProtTransform"
                   gui-classname="com.metavize.tran.fprot.gui.MTransformJPanel"/>

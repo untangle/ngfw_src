@@ -13,7 +13,7 @@ $Id: mvvm-transform.xml,v 1.5 2005/02/24 02:53:06 amread Exp $
 
 <mvvm-transform>
   <transform-desc name="spyware-transform"
-                  parent-transform="http-transform"
+                  parent-transform="http-casing"
                   display-name="Spyware Blocker"
                   classname="com.metavize.tran.spyware.SpywareImpl"
                   gui-classname="com.metavize.tran.spyware.gui.MTransformJPanel"/>
