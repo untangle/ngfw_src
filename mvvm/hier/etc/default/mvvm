@@ -76,7 +76,7 @@ if [ "x$PROFILE_MVVM_YJP" = "xyes" ] ; then
 else
     JAVA_OPTS_SUN="-XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+UseConcMarkSweepGC -XX:+UseParNewGC -XX:NewRatio=3"
 fi
-JAVA_OPTS_BEA="-Xgcpause -Xgcprio:pausetime -Xss64k"
+JAVA_OPTS_BEA="-Xgcpause -Xgcprio:pausetime"
 # Java Options:
 #  Minimum at 128m so we don't blow out smaller (512MB) machines
 #  Maximum at 512m so we get enough space for stacks
