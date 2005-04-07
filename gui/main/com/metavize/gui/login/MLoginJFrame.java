@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: MLoginJFrame.java,v 1.17 2005/03/25 20:17:08 inieves Exp $
+ * $Id$
  */
 
 package com.metavize.gui.login;
@@ -57,7 +57,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
 			serverJTextField.setText("localhost");
 		    */
 		    MLoginJFrame.this.setVisible(true);
-		    loginJTextField.requestFocus();
+		    //loginJTextField.requestFocus();
 		} } );
         resetLogin("Please enter your login and password.");
     }
@@ -215,15 +215,10 @@ public class MLoginJFrame extends javax.swing.JFrame {
         loginJTextField.setDoubleBuffered(true);
         loginJTextField.setMinimumSize(new java.awt.Dimension(150, 20));
         loginJTextField.setPreferredSize(new java.awt.Dimension(150, 20));
-        loginJTextField.setRequestFocusEnabled(false);
+        loginJTextField.setVerifyInputWhenFocusTarget(false);
         loginJTextField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 loginJTextFieldActionPerformed(evt);
-            }
-        });
-        loginJTextField.addCaretListener(new javax.swing.event.CaretListener() {
-            public void caretUpdate(javax.swing.event.CaretEvent evt) {
-                loginJTextFieldCaretUpdate(evt);
             }
         });
 
@@ -245,11 +240,6 @@ public class MLoginJFrame extends javax.swing.JFrame {
                 passJPasswordFieldActionPerformed(evt);
             }
         });
-        passJPasswordField.addCaretListener(new javax.swing.event.CaretListener() {
-            public void caretUpdate(javax.swing.event.CaretEvent evt) {
-                passJPasswordFieldCaretUpdate(evt);
-            }
-        });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -262,18 +252,15 @@ public class MLoginJFrame extends javax.swing.JFrame {
         serverJTextField.setEditable(false);
         serverJTextField.setFont(new java.awt.Font("Arial", 0, 12));
         serverJTextField.setDoubleBuffered(true);
+        serverJTextField.setFocusable(false);
         serverJTextField.setMaximumSize(new java.awt.Dimension(133, 20));
         serverJTextField.setMinimumSize(new java.awt.Dimension(133, 20));
         serverJTextField.setPreferredSize(new java.awt.Dimension(150, 20));
         serverJTextField.setRequestFocusEnabled(false);
+        serverJTextField.setVerifyInputWhenFocusTarget(false);
         serverJTextField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 serverJTextFieldActionPerformed(evt);
-            }
-        });
-        serverJTextField.addCaretListener(new javax.swing.event.CaretListener() {
-            public void caretUpdate(javax.swing.event.CaretEvent evt) {
-                serverJTextFieldCaretUpdate(evt);
             }
         });
 
@@ -300,7 +287,6 @@ public class MLoginJFrame extends javax.swing.JFrame {
         acceptJButton.setText("Login");
         acceptJButton.setDoubleBuffered(true);
         acceptJButton.setPreferredSize(new java.awt.Dimension(64, 64));
-        acceptJButton.setRequestFocusEnabled(false);
         acceptJButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 acceptJButtonActionPerformed(evt);
@@ -398,20 +384,8 @@ public class MLoginJFrame extends javax.swing.JFrame {
             acceptJButton.doClick();
     }//GEN-LAST:event_loginJTextFieldActionPerformed
 
-    private void serverJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_serverJTextFieldCaretUpdate
-        //updateAcceptJButtonState();
-    }//GEN-LAST:event_serverJTextFieldCaretUpdate
-
     // handle movement of the caret in the pass field
-    private void passJPasswordFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_passJPasswordFieldCaretUpdate
-        //updateAcceptJButtonState();
-    }//GEN-LAST:event_passJPasswordFieldCaretUpdate
-
     // handle movement of the caret in the login field
-    private void loginJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_loginJTextFieldCaretUpdate
-        //updateAcceptJButtonState();
-    }//GEN-LAST:event_loginJTextFieldCaretUpdate
-
     // update the accept button to only be pressable when both the login and pass fields have some actual text
     private void updateAcceptJButtonState(){
         return;
