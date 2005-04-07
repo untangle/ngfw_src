@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: HttpParser.java,v 1.24 2005/03/17 02:47:47 amread Exp $
+ * $Id$
  */
 
 package com.metavize.tran.http;
@@ -680,6 +680,15 @@ public class HttpParser implements Parser
             case '[': sb.append("%5B"); break;
             case ']': sb.append("%5D"); break;
             case '`': sb.append("%60"); break;
+            case '%':
+                if (uri.length() - 1 < i + 2
+                    || (!isHex((byte)uri.charAt(i + 1))
+                        && !isHex((byte)uri.charAt(i + 2)))) {
+                    sb.append("%25");
+                } else {
+                    sb.append('%');
+                }
+                break;
             default: sb.append(c); break;
             }
         }
