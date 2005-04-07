@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: Main.java,v 1.15 2005/03/22 03:48:36 amread Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.engine;
@@ -92,7 +92,12 @@ public class Main
         logger.info("setting up properties");
         setProperties();
         logger.info("starting mvvm");
-        startMvvm();
+        try {
+            startMvvm();
+        } catch (Exception exn) {
+            logger.warn("could not start mvvm", exn);
+            System.exit(1);
+        }
         System.out.println("MVVM startup complete: \"Today vegetables...tomorrow the world!\"");
         logger.info("restarting transforms and socket invoker");
         restartTransfoms();
