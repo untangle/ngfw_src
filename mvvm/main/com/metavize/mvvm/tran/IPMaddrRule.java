@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: IPMaddrRule.java,v 1.6 2005/03/25 22:07:22 amread Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.tran;
@@ -31,9 +31,10 @@ public class IPMaddrRule extends Rule
     public IPMaddrRule() { }
 
     // XXX inconstant constuctor
-    public IPMaddrRule(IPMaddr ipMaddr, String name, String description)
+    public IPMaddrRule(IPMaddr ipMaddr, String name, String category,
+                       String description)
     {
-        super(name, description);
+        super(name, category, description);
         this.ipMaddr = ipMaddr;
     }
 

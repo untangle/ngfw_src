@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: Rule.java,v 1.11 2005/03/25 22:07:22 amread Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.tran;
@@ -44,23 +44,42 @@ public class Rule implements Serializable
      */
     public Rule() { }
 
-    // XXX inconstant constuctor
-    public Rule(String name, String description, boolean live)
+    public Rule(boolean live)
     {
-        this.name = name;
-        this.description = description;
         this.live = live;
     }
 
-    // XXX inconstant constuctor
-    public Rule(String name, String description)
+    public Rule(boolean live, String name)
     {
+        this.live = live;
         this.name = name;
+    }
+
+    public Rule(String name, String category, String description, boolean live)
+    {
+        this.live = live;
+        this.name = name;
+        this.category = category;
         this.description = description;
     }
 
-    public Rule(boolean live)
+    public Rule(String name, String category, String description)
     {
+        this.name = name;
+        this.category = category;
+        this.description = description;
+    }
+
+    public Rule(String name, String category)
+    {
+        this.name = name;
+        this.category = category;
+    }
+
+    public Rule(String name, String category, boolean live)
+    {
+        this.name = name;
+        this.category = category;
         this.live = live;
     }
 

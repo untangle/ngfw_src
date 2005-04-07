@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: UriRule.java,v 1.3 2005/02/10 22:28:12 jdi Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.tran;
@@ -32,9 +32,6 @@ public class UriRule extends Rule
      */
     public UriRule() { }
 
-    /**
-     * USE THIS ONE to create a UriRule with an initial URI value.
-     */
     public UriRule(URI uri) {
         this.uri = uri;
     }

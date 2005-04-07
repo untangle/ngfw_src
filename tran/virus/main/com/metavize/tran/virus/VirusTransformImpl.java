@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: VirusTransformImpl.java,v 1.21 2005/03/25 22:48:54 amread Exp $
+ * $Id$
  */
 package com.metavize.tran.virus;
 
@@ -247,14 +247,14 @@ public class VirusTransformImpl extends AbstractTransform
          * audio/.*  false
          */
         List s = new ArrayList();
-        s.add(new MimeTypeRule(new MimeType("application/x-javascript*"), "JavaScript", "executable", false));
-        s.add(new MimeTypeRule(new MimeType("application/x-shockwave-flash*"), "Shockwave Flash", "executable", false));
-        s.add(new MimeTypeRule(new MimeType("application/*"), "applications", "misc", true));
+        s.add(new MimeTypeRule(new MimeType("application/x-javascript*"), "JavaScript", "executable", "[no description]", false));
+        s.add(new MimeTypeRule(new MimeType("application/x-shockwave-flash*"), "Shockwave Flash", "executable", "[no description]", false));
+        s.add(new MimeTypeRule(new MimeType("application/*"), "applications", "misc", "[no description]", true));
 
-        s.add(new MimeTypeRule(new MimeType("image/*"), "images", "image", false));
-        s.add(new MimeTypeRule(new MimeType("video/*"), "video", "video", false));
-        s.add(new MimeTypeRule(new MimeType("text/*"), "text", "text", false));
-        s.add(new MimeTypeRule(new MimeType("audio/*"), "audio", "audio", false));
+        s.add(new MimeTypeRule(new MimeType("image/*"), "images", "image", "[no description]", false));
+        s.add(new MimeTypeRule(new MimeType("video/*"), "video", "video", "[no description]", false));
+        s.add(new MimeTypeRule(new MimeType("text/*"), "text", "text", "[no description]", false));
+        s.add(new MimeTypeRule(new MimeType("audio/*"), "audio", "audio", "[no description]", false));
 
         vs.setHttpMimeTypes(s);
 

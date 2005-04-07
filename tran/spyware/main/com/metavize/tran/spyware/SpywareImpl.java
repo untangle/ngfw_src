@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: SpywareImpl.java,v 1.11 2005/02/09 20:38:31 jdi Exp $
+ * $Id$
  */
 
 package com.metavize.tran.spyware;
@@ -314,7 +314,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
 
                 if (!ruleHash.contains(IPMaddr.parse(addr))) {
                     logger.debug("ADDING subnet Rule: " + addr);
-                    rules.add(new IPMaddrRule(IPMaddr.parse(addr), name, description));
+                    rules.add(new IPMaddrRule(IPMaddr.parse(addr), name, "[no category]", description));
                 }
             }
         } catch (IOException exn) {
