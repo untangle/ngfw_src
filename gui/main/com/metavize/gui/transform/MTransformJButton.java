@@ -29,7 +29,6 @@ public class MTransformJButton extends JButton {
 
     private MackageDesc mackageDesc;
 
-
     private GridBagConstraints gridBagConstraints;
     private JProgressBar statusJProgressBar;
     private JLabel statusJLabel;
@@ -138,349 +137,187 @@ public class MTransformJButton extends JButton {
         this.setFocusPainted(false);
         this.setContentAreaFilled(true);
         this.setOpaque(true);
-
-
     }
-
-    public void setTT(String status){
-    this.setToolTipText( "<html>" + "<b>Description:</b><br>" + toolTipString + "<br>" + "<b>Status:</b><br>" + status + "<br>" + "</html>");
-    }
-
-    public void setMessage(String message){
-        if(message == null){
-            statusJLabel.setVisible(false);
-        }
-        else{
-            statusJLabel.setText(message);
-            statusJLabel.setVisible(true);
-        }
-    }
-
-    public void setIndeterminate(boolean indeterminate){
-        statusJProgressBar.setVisible(indeterminate);
-        statusJProgressBar.setIndeterminate(indeterminate);
-    }
-
-    public void setEnabled(boolean enabled){
-        super.setEnabled(enabled);
-
-        organizationIconJLabel.setEnabled(enabled);
-        descriptionIconJLabel.setEnabled(enabled);
-        nameJLabel.setEnabled(enabled);
-        //statusJProgressBar.setEnabled(enabled);
-        //statusJLabel.setEnabled(enabled);
-
-    }
-
-    public void install(){
-        if(Util.getIsDemo())
-            return;
-        Thread installThread = new InstallThread(Util.getMPipelineJPanel());
-    }
-
-    public void uninstall(Hashtable storeHashtableX, Hashtable toolboxHashtableX,
-                        JPanel storeJPanelX, JPanel toolboxJPanelX,
-                        JTabbedPane tabbedPaneX)  {
-        if(Util.getIsDemo())
-            return;
-        UninstallThread uninstallThread = new UninstallThread(Util.getMvvmContext().toolboxManager(), storeHashtableX,
-                                                              toolboxHashtableX, storeJPanelX, toolboxJPanelX,
-                                                              Util.getMMainJFrame(), tabbedPaneX);
-    }
-
-    public void purchase(Hashtable storeHashtableX, Hashtable toolboxHashtableX,
-                        JPanel storeJPanelX, JPanel toolboxJPanelX,
-                        JTabbedPane tabbedPaneX)  {
-
-        if(Util.getIsDemo())
-            return;
-        PurchaseThread purchaseThread = new PurchaseThread(Util.getMvvmContext().toolboxManager(), storeHashtableX,
-                                                           toolboxHashtableX, storeJPanelX, toolboxJPanelX,
-                                                           Util.getMMainJFrame(), tabbedPaneX);
-    }
-
-
-    //    public JToolTip createToolTip(){
-    //    return new MMultilineToolTip(300);
-    // }
 
     public MTransformJButton duplicate(){
         return new  MTransformJButton( mackageDesc );
     }
 
-    public String getFullDescription(){
-        return new String( mackageDesc.getLongDescription() );
+
+    // CONVENIENCE WRAPPERS FOR MACKAGE /////////
+    public String getFullDescription(){ return new String( mackageDesc.getLongDescription() ); }
+    public String getShortDescription(){ return new String( mackageDesc.getShortDescription() ); }
+    public String getName(){ return mackageDesc.getName(); }
+    public String getDisplayName(){ return mackageDesc.getDisplayName(); }
+    public double getPrice(){ return mackageDesc.getPrice(); }
+    ////////////////////////////////////////////
+
+    // VIEW UPDATING ///////////
+    private void updateView(final String message, final String toolTip, final boolean isEnabled){
+	SwingUtilities.invokeLater( new Runnable() { public void run() {
+		MTransformJButton.this.setMessage(message);
+		MTransformJButton.this.setTT(toolTip);
+		MTransformJButton.this.setEnabled(isEnabled);
+	} } );
     }
 
-    public String getShortDescription(){
-        return new String( mackageDesc.getShortDescription() );
+    public void setDeployableView(){ updateView(null, "Ready to be deployed to rack.", true); }
+    public void setProcurableView(){ updateView(null, "Ready to be procured from store.", true); }
+    public void setDeployedView(){ updateView(null, "Deployed.", false); }
+
+    public void setDeployingView(){ updateView("deploying", "Deploying.", false); }
+    public void setProcuringView(){ updateView("procuring", "Procuring.", false); }
+    public void setRemovingFromToolboxView(){ updateView("removing", "Removing from Toolbox.", false); }
+    public void setRemovingFromRackView(){ updateView("removing", "Removing from Rack.", false); }
+
+    public void setFailedProcureView(){ updateView(null, "Failed Procurement.", false); }
+    public void setFailedDeployView(){ updateView(null, "Failed Deployment.", false); }
+    public void setFailedRemoveView(){ updateView(null, "Failed Removal from Rack.", false); }
+    /////////////////////////////
+
+
+    // VIEW UPDATE HELPERS //////////////////
+    public void setTT(String status){
+	this.setToolTipText( "<html>" + "<b>Description:</b><br>" + toolTipString + "<br>" + "<b>Status:</b><br>" + status + "<br>" + "</html>");
     }
 
-    public String getName(){
-        return mackageDesc.getName();
+    public void setMessage(String message){
+        if(message == null){
+            statusJLabel.setVisible(false);
+	    statusJProgressBar.setIndeterminate(false);
+	    statusJProgressBar.setVisible(false);
+        }
+        else{
+            statusJLabel.setText(message);
+            statusJLabel.setVisible(true);
+	    statusJProgressBar.setIndeterminate(true);
+	    statusJProgressBar.setVisible(true);
+        }
     }
 
+    public void setEnabled(boolean enabled){
+        super.setEnabled(enabled);
+        organizationIconJLabel.setEnabled(enabled);
+        descriptionIconJLabel.setEnabled(enabled);
+        nameJLabel.setEnabled(enabled);
+    }
+    ///////////////////////////////////
 
-    public String getDisplayName(){
-        return mackageDesc.getDisplayName();
+    // PROCURE, DEPLOY, AND REMOVAL ////////////////
+    public void install(){
+        if(Util.getIsDemo())
+            return;
+        new InstallThread();
     }
 
-    public double getPrice(){
-        return mackageDesc.getPrice();
+    public void uninstall(){
+        if(Util.getIsDemo())
+            return;
+        new UninstallThread();
     }
 
-
-
-
+    public void purchase(){
+        if(Util.getIsDemo())
+            return;
+        new PurchaseThread();
+    }
 
     private class InstallThread extends Thread {
 
-        MTransformJPanel mTransformJPanel;
-        MPipelineJPanel mPipelineJPanel;
-
-        public InstallThread(MPipelineJPanel mPipelineJPanel){
-        try{
-        this.mPipelineJPanel = mPipelineJPanel;
-        this.setContextClassLoader( Util.getClassLoader() );
-        MTransformJButton.this.setEnabled(false);
-        (new Thread(this)).start();
+        public InstallThread(){
+	    this.setContextClassLoader( Util.getClassLoader() );
+	    MTransformJButton.this.setEnabled(false);
+	    (new Thread(this)).start();
         }
-        catch(Exception e){
-        e.printStackTrace();
-        }
-        }
-
+	
         public void run(){
-            MTransformJButton.this.setMessage("(waiting)");
-            MTransformJButton.this.setIndeterminate(true);
-            MTransformJButton.this.setEnabled(false);
-
-            synchronized( Util.getPipelineSync() ){
-                MTransformJButton.this.setMessage("(installing)");
-                try{
-                    mTransformJPanel = mPipelineJPanel.addTransform(MTransformJButton.this.getName());
-                }
-                catch(Exception e){
-                    try{
-                        Util.handleExceptionWithRestart("Error installing transform",  e);
-                    }
-                    catch(Exception f){
-                        statusJLabel.setVisible(true);
-                        MTransformJButton.this.setMessage("(Fail install)");
-                        MTransformJButton.this.setIndeterminate(false);
-                        MTransformJButton.this.setEnabled(true);
-            MTransformJButton.this.setTT("Failed install...");
+	    MTransformJPanel mTransformJPanel;
+	    // SHOW THE USER WHATS GOING ON
+	    MTransformJButton.this.setDeployingView();
+	    // START TO INSTALL THE TRANSFORM
+	    try{
+		mTransformJPanel = Util.getMPipelineJPanel().addTransform(MTransformJButton.this.getName());
+	    }
+	    catch(Exception e){
+		try{
+		    Util.handleExceptionWithRestart("Error installing transform",  e);
+		}
+		catch(Exception f){
                         Util.handleExceptionNoRestart("Error installing transform",  f);
-                    }
-                    return;
-                }
-                MTransformJButton.this.setMessage(null);
-                MTransformJButton.this.setIndeterminate(false);
-                MTransformJButton.this.setEnabled(false);
-        MTransformJButton.this.setTT("Successfully installed...");
-                mTransformJPanel.focus();
-            }
-            return;
+			MTransformJButton.this.setFailedDeployView();
+		}
+		return;
+	    }
+	    // LET THE USER KNOW WERE DONE
+	    MTransformJButton.this.setDeployedView();
         }
     }
-
+    
 
     private class PurchaseThread extends Thread {
 
-        ToolboxManager toolboxManager;
-        ActionListener[] actionListeners;
-        Hashtable storeHashtable;
-        Hashtable toolboxHashtable;
-        JPanel storeJPanel;
-        JPanel toolboxJPanel;
-        MMainJFrame parentFrame;
-        JTabbedPane tabbedPane;
+        public PurchaseThread(){
+	    this.setContextClassLoader( Util.getClassLoader() );
+	    MTransformJButton.this.setEnabled(false);
+	    (new Thread(this)).start();
+	}    
 
-        public PurchaseThread(ToolboxManager toolboxManagerX, Hashtable storeHashtableX,
-                              Hashtable toolboxHashtableX, JPanel storeJPanelX,
-                              JPanel toolboxJPanelX, MMainJFrame parentFrameX, JTabbedPane tabbedPaneX){
-            toolboxManager = toolboxManagerX;
-            storeHashtable = storeHashtableX;
-            toolboxHashtable = toolboxHashtableX;
-            storeJPanel = storeJPanelX;
-            toolboxJPanel = toolboxJPanelX;
-            parentFrame = parentFrameX;
-            tabbedPane = tabbedPaneX;
-
-        try{
-        this.setContextClassLoader( Util.getClassLoader() );
-	MTransformJButton.this.setEnabled(false);
-        (new Thread(this)).start();
-        }
-        catch(Exception e){
-        e.printStackTrace();
-        }
+	public void run() {	    
+	    // SHOW THE USER WHATS GOING ON
+	    MTransformJButton.this.setProcuringView();
+	    // START TO DOWNLOAD THE TRANSFORM
+	    try{
+		int dashIndex = MTransformJButton.this.getName().indexOf('-');
+		Util.getToolboxManager().install(MTransformJButton.this.getName().substring(0, dashIndex));
+		Util.getMMainJFrame().addMTransformJButtonToToolbox(MTransformJButton.this);
+	    }
+	    catch(Exception e){
+		try{
+		    Util.handleExceptionWithRestart("error purchasing transform: " +  MTransformJButton.this.getName(),  e);
+		}
+		catch(Exception f){
+		    Util.handleExceptionNoRestart("Error purchasing transform:", f);
+		    MTransformJButton.this.setFailedProcureView();
+		}
+		return;
+	    }	    
+	    // LET THE USER KNOW WERE DONE
+	    MTransformJButton.this.setDeployableView();
+	}
     }
-
-        public void run() {
-
-        try{
-        SwingUtilities.invokeAndWait( new Runnable() {
-            public void run() {
-            MTransformJButton.this.setMessage("(waiting)");
-            MTransformJButton.this.setIndeterminate(true);
-            MTransformJButton.this.setEnabled(false);
-            } } );
-        }catch(Exception e){e.printStackTrace();}
-
-            synchronized( Util.getPipelineSync() ){
-
-        try{
-        SwingUtilities.invokeAndWait( new Runnable() {
-            public void run() {
-                MTransformJButton.this.setMessage("downloading");
-                MTransformJButton.this.setIndeterminate(true);
-                MTransformJButton.this.setEnabled(false);
-            } } );
-        }catch(Exception e){e.printStackTrace();}
-
-                try{
-                    int dashIndex = MTransformJButton.this.getName().indexOf('-');
-                    toolboxManager.install(MTransformJButton.this.getName().substring(0, dashIndex));
-
-            SwingUtilities.invokeAndWait( new Runnable() {
-                public void run() {
-                MTransformJButton.this.setMessage("downloaded");
-                } } );
-                }
-                catch(Exception e){
-                    try{
-                        Util.handleExceptionWithRestart("error purchasing transform: " +  MTransformJButton.this.getName(),  e);
-                    }
-                    catch(Exception f){
-
-            try{
-            SwingUtilities.invokeAndWait( new Runnable() {
-                public void run() {
-                MTransformJButton.this.setMessage("(Fail download)");
-                MTransformJButton.this.setIndeterminate(false);
-                MTransformJButton.this.setEnabled(true);
-                MTransformJButton.this.setTT("Failed download...");
-                } } );
-            }catch(Exception g){g.printStackTrace();}
-
-            Util.handleExceptionNoRestart("Error purchasing transform",  f);
-                        return;
-                    }
-                }
-                actionListeners = MTransformJButton.this.getActionListeners();
-                for(int i=0; i<actionListeners.length; i++){
-                    MTransformJButton.this.removeActionListener(actionListeners[i]);
-                }
-        try{
-            SwingUtilities.invokeAndWait( new Runnable() {
-                public void run() {
-                storeHashtable.remove(MTransformJButton.this);
-                toolboxHashtable.put(MTransformJButton.this.getName(), MTransformJButton.this);
-                storeJPanel.remove(MTransformJButton.this);
-                storeJPanel.revalidate();
-                storeJPanel.repaint();
-                parentFrame.addMTransformJButtonToToolbox(MTransformJButton.this);
-                toolboxJPanel.revalidate();
-                toolboxJPanel.repaint();
-                } } );
-        }
-        catch(Exception e){
-            e.printStackTrace();
-        }
-
-        try{
-        SwingUtilities.invokeAndWait( new Runnable() {
-            public void run() {
-                MTransformJButton.this.setMessage(null);
-                MTransformJButton.this.setIndeterminate(false);
-                MTransformJButton.this.setEnabled(true);
-                MTransformJButton.this.setTT("Ready to install...");
-            } } );
-        }catch(Exception e){e.printStackTrace();}
-
-            }
-        }
-    }
+    
 
     private class UninstallThread extends Thread {
 
-        ToolboxManager toolboxManager;
-        ActionListener[] actionListeners;
-        Hashtable storeHashtable;
-        Hashtable toolboxHashtable;
-        JPanel storeJPanel;
-        JPanel toolboxJPanel;
-        MMainJFrame parentFrame;
-        JTabbedPane tabbedPane;
-
-        public UninstallThread(ToolboxManager toolboxManagerX, Hashtable storeHashtableX,
-                               Hashtable toolboxHashtableX, JPanel storeJPanelX, JPanel toolboxJPanelX,
-                               MMainJFrame parentFrameX, JTabbedPane tabbedPaneX){
-            toolboxManager = toolboxManagerX;
-            storeHashtable = storeHashtableX;
-            toolboxHashtable = toolboxHashtableX;
-            storeJPanel = storeJPanelX;
-            toolboxJPanel = toolboxJPanelX;
-            parentFrame = parentFrameX;
-            tabbedPane = tabbedPaneX;
-        try{
-        MTransformJButton.this.setEnabled(false);
-        (new Thread(this)).start();
-        }
-        catch(Exception e){
-        e.printStackTrace();
-        }
-    }
+        public UninstallThread(){
+	    this.setContextClassLoader( Util.getClassLoader() );
+	    MTransformJButton.this.setEnabled(false);
+	    (new Thread(this)).start();
+	}
 
         public void run() {
-            MTransformJButton.this.setMessage("(waiting)");
-            MTransformJButton.this.setIndeterminate(true);
-            MTransformJButton.this.setEnabled(false);
-            synchronized( Util.getPipelineSync() ){
 
-                MTransformJButton.this.setMessage("deleting");
-                MTransformJButton.this.setIndeterminate(true);
-                MTransformJButton.this.setEnabled(false);
-                try{
-                    int dashIndex = MTransformJButton.this.getName().indexOf('-');
-                    toolboxManager.uninstall(MTransformJButton.this.getName().substring(0, dashIndex));
-                    MTransformJButton.this.setMessage("deleted");
-                }
-                catch(Exception e){
-                    try{
-                        Util.handleExceptionWithRestart("error deleting transform: " +  MTransformJButton.this.getName(),  e);
-                    }
-                    catch(Exception f){
-                        MTransformJButton.this.setMessage("(fail delete)");
-                        MTransformJButton.this.setIndeterminate(false);
-                        MTransformJButton.this.setEnabled(true);
-            MTransformJButton.this.setTT("Failed remove from toolbox...");
-                        Util.handleExceptionNoRestart("Error deleting transform",  f);
-                        return;
-                    }
-                }
-                actionListeners = MTransformJButton.this.getActionListeners();
-                for(int i=0; i<actionListeners.length; i++){
-                    MTransformJButton.this.removeActionListener(actionListeners[i]);
-                }
-                toolboxHashtable.remove(MTransformJButton.this);
-                storeHashtable.put(MTransformJButton.this.getName(), MTransformJButton.this);
-                toolboxJPanel.remove(MTransformJButton.this);
-                toolboxJPanel.revalidate();
-                toolboxJPanel.repaint();
-                storeJPanel.revalidate();
-                storeJPanel.repaint();
-                parentFrame.addMTransformJButtonToStore(MTransformJButton.this);
-        tabbedPane.repaint();
-
-                MTransformJButton.this.setMessage("(available)");
-                MTransformJButton.this.setIndeterminate(false);
-                MTransformJButton.this.setEnabled(true);
-        MTransformJButton.this.setTT("Available for procurememt...");
-
-            }
+	    // SHOW THE USER WHATS GOING ON
+	    MTransformJButton.this.setRemovingFromToolboxView();
+	    // REMOVE THE TRANSFORM
+	    try{
+		int dashIndex = MTransformJButton.this.getName().indexOf('-');
+		Util.getToolboxManager().uninstall(MTransformJButton.this.getName().substring(0, dashIndex));
+		Util.getMMainJFrame().addMTransformJButtonToStore(MTransformJButton.this);
+	    }
+	    catch(Exception e){
+		try{
+		    Util.handleExceptionWithRestart("error removing transform: " +  MTransformJButton.this.getName(),  e);
+		}
+		catch(Exception f){
+		    Util.handleExceptionNoRestart("Error removing transform:", f);
+		    MTransformJButton.this.setFailedRemoveView();
+		}
+		return;
+	    }
+	    // LET THE USER KNOW WE ARE DONE
+	    MTransformJButton.this.setProcurableView();
         }
     }
-
+    ///////////////////////////////////////
 }

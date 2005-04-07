@@ -66,24 +66,19 @@ public class MMainJFrame extends javax.swing.JFrame {
         Util.getStatusJProgressBar().setString("populating Toolbox...");
         MackageDesc[] installedMackages = Util.getToolboxManager().installed();
         Tid[] transformInstances;
-        String toolboxTransformName;
 	MTransformJButton toolboxMTransformJButton;
 
         for(int i=0; i<installedMackages.length; i++){
             if( installedMackages[i].getType() != MackageDesc.TRANSFORM_TYPE )
                 continue;
-            toolboxTransformName = installedMackages[i].getName();
-	    if( toolboxTransformName.equals("http-transform") || toolboxTransformName.equals("virus-transform") )
-                continue;
             Util.getStatusJProgressBar().setValue(64 + (int) ((((float)i)/(float)installedMackages.length)*16f) );
             toolboxMTransformJButton = new MTransformJButton(installedMackages[i]);
-            toolboxHashtable.put( toolboxTransformName, toolboxMTransformJButton );
-            transformInstances = Util.getTransformManager().transformInstances( toolboxTransformName );
+            transformInstances = Util.getTransformManager().transformInstances( toolboxMTransformJButton.getName() );
             if(  Util.isArrayEmpty(transformInstances) ){
-		setTransformButtonDeployable(toolboxTransformName);
+		toolboxMTransformJButton.setDeployableView();
             }
             else{
-		setTransformButtonDeployed(toolboxTransformName);
+		toolboxMTransformJButton.setDeployedView();
             }
             this.addMTransformJButtonToToolbox( toolboxMTransformJButton );
         }
@@ -94,20 +89,14 @@ public class MMainJFrame extends javax.swing.JFrame {
         // QUERY AND LOAD BUTTONS INTO STORE
         Util.getStatusJProgressBar().setString("populating Store...");
         MackageDesc[] storeMackages = Util.getToolboxManager().uninstalled();
-	String storeTransformName;	
 	MTransformJButton storeMTransformJButton;
         for(int i=0; i<storeMackages.length; i++){
             if( storeMackages[i].getType() != MackageDesc.TRANSFORM_TYPE )
-                continue;
-	    storeTransformName = storeMackages[i].getName();
-            if( storeTransformName.equals("http-transform") || storeTransformName.equals("virus-transform") )
-                continue;
             Util.getStatusJProgressBar().setValue(80 + (int) ((((float)i)/(float)storeMackages.length)*16f) );
-            if(!toolboxHashtable.containsKey(storeTransformName)){
+            if(!toolboxHashtable.containsKey( storeMackages[i].getName() )){
                 storeMTransformJButton = new MTransformJButton(storeMackages[i]);
-                storeHashtable.put(storeTransformName, storeMTransformJButton);
+		storeMTransformJButton.setProcurableView();
                 addMTransformJButtonToStore(storeMTransformJButton);
-		setTransformButtonProcurable(storeTransformName);
             }
         }
 	Util.getStatusJProgressBar().setValue(96);
@@ -116,49 +105,6 @@ public class MMainJFrame extends javax.swing.JFrame {
         (new UpdateCheckThread()).start();
     }
 
-
-
-    public void setTransformButtonDeployable(String transformName){
-        final MTransformJButton targetButton = (MTransformJButton) toolboxHashtable.get(transformName);
-        if(targetButton == null)
-            return;
-	Runnable updateButtonInSwing = new Runnable(){
-		public void run(){
-		    targetButton.setMessage(null);
-		    targetButton.setTT("Ready to be deployed to rack...");
-		    targetButton.setEnabled(true);
-		}
-	    };
-	SwingUtilities.invokeLater( updateButtonInSwing );
-    }
-
-    public void setTransformButtonDeployed(String transformName){
-	final MTransformJButton targetButton = (MTransformJButton) toolboxHashtable.get(transformName);
-        if(targetButton == null)
-            return;
-	Runnable updateButtonInSwing = new Runnable(){
-		public void run(){
-		    targetButton.setMessage(null);
-		    targetButton.setTT("Currently deployed to rack...");
-		    targetButton.setEnabled(false);
-		}
-	    };
-	SwingUtilities.invokeLater( updateButtonInSwing );
-    }
-
-    public void setTransformButtonProcurable(String transformName){
-	final MTransformJButton targetButton = (MTransformJButton) storeHashtable.get(transformName);
-        if(targetButton == null)
-            return;
-	Runnable updateButtonInSwing = new Runnable(){
-		public void run(){
-		    targetButton.setMessage(null);
-		    targetButton.setTT("Ready to be procured...");
-		    targetButton.setEnabled(true);
-		}
-	    };
-	SwingUtilities.invokeLater( updateButtonInSwing );
-    }
 
     public void updateJButton(final int count){
 	Runnable updateButtonInSwing = new Runnable(){
@@ -673,47 +619,98 @@ public class MMainJFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_exitForm
 
 
-    public void addMTransformJButtonToStore(MTransformJButton mTransformJButton){
-        if(mTransformJButton == null)
-            return;
+    public MTransformJButton getButton(String name){
+	if( toolboxHashtable.containsKey(name) )
+	    return (MTransformJButton) toolboxHashtable.get(name);
+	else
+	    return (MTransformJButton) storeHashtable.get(name);
+    }
+
+    public void addMTransformJButtonToStore(final MTransformJButton mTransformJButton){
+
+	// SETUP BUTTON ACTION
+	ActionListener[] actionListeners = mTransformJButton.getActionListeners();
+	for(int i=0; i<actionListeners.length; i++)
+	    mTransformJButton.removeActionListener(actionListeners[i]);
         mTransformJButton.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
                     storeActionPerformed(evt);
                 }
             });
-        storeScrollJPanel.add(mTransformJButton, gridBagConstraints, 0);
-        storeJScrollPane.getVerticalScrollBar().setValue(0);
-        mTabbedPane.setSelectedIndex(0);
+
+	// REMOVE FROM TOOLBOX IF IT ALREADY EXISTS
+	if( toolboxHashtable.remove(mTransformJButton.getName()) != null ){
+	    SwingUtilities.invokeLater( new Runnable() { public void run() {
+		MMainJFrame.this.toolboxScrollJPanel.remove(mTransformJButton);
+		MMainJFrame.this.toolboxScrollJPanel.revalidate();
+		MMainJFrame.this.toolboxScrollJPanel.repaint();
+	    } } );
+	}
+
+	// PUT INTO STORE
+	if( !storeHashtable.contains(mTransformJButton.getName()) ){
+	    MMainJFrame.this.storeHashtable.put(mTransformJButton.getName(), mTransformJButton);
+	    SwingUtilities.invokeLater( new Runnable() { public void run() {
+		MMainJFrame.this.storeScrollJPanel.add(mTransformJButton, gridBagConstraints, 0);
+		MMainJFrame.this.storeJScrollPane.getVerticalScrollBar().setValue(0);
+		MMainJFrame.this.storeScrollJPanel.revalidate();
+		MMainJFrame.this.storeScrollJPanel.repaint();
+		MMainJFrame.this.mTabbedPane.setSelectedIndex(0);
+	    } } );
+	}
+
     }
 
-    public void addMTransformJButtonToToolbox(MTransformJButton mTransformJButton){
-        if(mTransformJButton == null)
-            return;
+    public void addMTransformJButtonToToolbox(final MTransformJButton mTransformJButton){
+
+	// SETUP BUTTON ACTION
+	ActionListener[] actionListeners = mTransformJButton.getActionListeners();
+	for(int i=0; i<actionListeners.length; i++)
+	    mTransformJButton.removeActionListener(actionListeners[i]);
         mTransformJButton.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
                     toolboxActionPerformed(evt);
                 }
             });
-        toolboxScrollJPanel.add(mTransformJButton, gridBagConstraints, 0);
-        toolboxJScrollPane.getVerticalScrollBar().setValue(0);
-        mTabbedPane.setSelectedIndex(1);
+
+	// REMOVE FROM STORE IF IT ALREADY EXISTS
+	if( storeHashtable.remove(mTransformJButton.getName()) != null ){
+	    SwingUtilities.invokeLater( new Runnable() { public void run() {
+		MMainJFrame.this.storeScrollJPanel.remove(mTransformJButton);
+		MMainJFrame.this.storeScrollJPanel.revalidate();
+		MMainJFrame.this.storeScrollJPanel.repaint();
+	    } } );
+	}
+
+	// PUT INTO TOOLBOX
+	if( !toolboxHashtable.contains(mTransformJButton.getName()) ){
+	    MMainJFrame.this.toolboxHashtable.put(mTransformJButton.getName(), mTransformJButton);
+	    SwingUtilities.invokeLater( new Runnable() { public void run() {
+		MMainJFrame.this.toolboxScrollJPanel.add(mTransformJButton, gridBagConstraints, 0);
+		MMainJFrame.this.toolboxJScrollPane.getVerticalScrollBar().setValue(0);
+		MMainJFrame.this.toolboxScrollJPanel.revalidate();
+		MMainJFrame.this.toolboxScrollJPanel.repaint();
+		MMainJFrame.this.mTabbedPane.setSelectedIndex(1);
+	    } } );
+	}
+
     }
+
+
 
     private void storeActionPerformed(java.awt.event.ActionEvent evt){
         MTransformJButton targetMTransformJButton = (MTransformJButton) evt.getSource();
-        MStoreJDialog mStoreJDialog = new MStoreJDialog(MMainJFrame.this, true, targetMTransformJButton.duplicate());
-	mStoreJDialog.setBounds( Util.generateCenteredBounds(MMainJFrame.this.getBounds(), mStoreJDialog.getWidth(), mStoreJDialog.getHeight()) );
-	mStoreJDialog.setVisible(true);
-	if(mStoreJDialog.getPurchasedMTransformJButton() != null)
-	    targetMTransformJButton.purchase(storeHashtable, toolboxHashtable, storeScrollJPanel, toolboxScrollJPanel, mTabbedPane);
-    }
-    
-    
+        StoreJDialog storeJDialog = new StoreJDialog(targetMTransformJButton.duplicate());
+	storeJDialog.setBounds( Util.generateCenteredBounds(MMainJFrame.this.getBounds(), storeJDialog.getWidth(), storeJDialog.getHeight()) );
+	storeJDialog.setVisible(true);
+	if(storeJDialog.getPurchasedMTransformJButton() != null)
+	    targetMTransformJButton.purchase();
+    }    
     
     private void toolboxActionPerformed(java.awt.event.ActionEvent evt){
 	MTransformJButton targetMTransformJButton = ((MTransformJButton) evt.getSource());
         if( (evt.getModifiers() & ActionEvent.SHIFT_MASK) > 0){
-            targetMTransformJButton.uninstall(storeHashtable, toolboxHashtable, storeScrollJPanel, toolboxScrollJPanel, mTabbedPane);
+            targetMTransformJButton.uninstall();
         }
         else{
             targetMTransformJButton.install();
