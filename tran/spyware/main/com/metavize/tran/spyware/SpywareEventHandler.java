@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: SpywareEventHandler.java,v 1.8 2005/03/15 02:11:52 amread Exp $
+ * $Id$
  */
 package com.metavize.tran.spyware;
 
@@ -23,7 +23,6 @@ import com.metavize.mvvm.tapi.event.TCPNewSessionRequestEvent;
 import com.metavize.mvvm.tapi.event.UDPNewSessionRequestEvent;
 import com.metavize.mvvm.tran.IPMaddr;
 import com.metavize.mvvm.tran.IPMaddrRule;
-import com.metavize.mvvm.tran.Transform;
 import com.metavize.tran.util.IPSet;
 import com.metavize.tran.util.IPSetTrie;
 import org.apache.log4j.Logger;
@@ -86,8 +85,6 @@ public class SpywareEventHandler extends AbstractEventHandler
 
         IPMaddrRule ir = (IPMaddrRule)this.subnetSet.getMostSpecific(ipm);
 
-        transform.incrementCount(Transform.GENERIC_0_COUNTER); // SCAN COUNTER
-
         if (ir == null) {
             logger.debug("Subnet scan: " + ipm.toString() + " -> clean.");
             if (release) { ipr.release(); }
@@ -95,7 +92,7 @@ public class SpywareEventHandler extends AbstractEventHandler
         }
 
         logger.debug("Subnet scan: " + ipm.toString() + " -> DETECTED.");
-        transform.incrementCount(Transform.GENERIC_1_COUNTER); // DETECT COUNTER
+        transform.incrementCount(Spyware.ADDRESS);
 
         logger.info("-------------------- Detected Spyware --------------------");
         logger.info("Spyware Name  : " + ir.getName());
@@ -111,7 +108,7 @@ public class SpywareEventHandler extends AbstractEventHandler
         eventLogger.info(new SpywareAccessEvent(ipr.id(), ir.getName(), ir.getIpMaddr(), ir.isLive()));
 
         if (ir.isLive()) {
-            transform.incrementCount(Transform.GENERIC_2_COUNTER); // BLOCK COUNTER
+            transform.incrementCount(Spyware.BLOCK);
             if (ipr instanceof TCPNewSessionRequest)
                 ((TCPNewSessionRequest)ipr).rejectReturnRst();
             if (ipr instanceof UDPNewSessionRequest)

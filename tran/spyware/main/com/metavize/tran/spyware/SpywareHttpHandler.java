@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: SpywareHttpHandler.java,v 1.15 2005/03/15 02:11:52 amread Exp $
+ * $Id$
  */
 
 package com.metavize.tran.spyware;
@@ -24,7 +24,6 @@ import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.mvvm.tapi.TransformContextFactory;
 import com.metavize.mvvm.tran.StringRule;
-import com.metavize.mvvm.tran.Transform;
 import com.metavize.tran.http.HttpStateMachine;
 import com.metavize.tran.http.RequestLine;
 import com.metavize.tran.http.StatusLine;
@@ -46,10 +45,6 @@ public class SpywareHttpHandler extends HttpStateMachine
         = Pattern.compile("<object");
     private static final Pattern CLSID_PATTERN
         = Pattern.compile("clsid:([0-9\\-]*)");
-
-    private static final int SCAN = Transform.GENERIC_0_COUNTER;
-    private static final int DETECT = Transform.GENERIC_1_COUNTER;
-    private static final int BLOCK = Transform.GENERIC_2_COUNTER;
 
     private static final Logger logger = Logger
         .getLogger(SpywareHttpHandler.class);
@@ -78,7 +73,6 @@ public class SpywareHttpHandler extends HttpStateMachine
     protected TokenResult doRequestLine(RequestLine requestLine)
     {
         logger.debug("got request line");
-        transform.incrementCount(SCAN);
 
         reqQueue.offer(requestLine);
 
@@ -119,7 +113,6 @@ public class SpywareHttpHandler extends HttpStateMachine
             responseRequest = (RequestLine)reqQueue.remove();
         }
 
-        transform.incrementCount(SCAN);
         return new TokenResult(new Token[] { statusLine }, null);
     }
 
@@ -173,7 +166,7 @@ public class SpywareHttpHandler extends HttpStateMachine
         }
 
         for (Iterator i = cookies.iterator(); i.hasNext(); ) {
-            transform.incrementCount(DETECT);
+            transform.incrementCount(Spyware.COOKIE);
             String cookie = (String)i.next();
             Map m = CookieParser.parseCookie(cookie);
             String domain = (String)m.get("domain");
@@ -189,7 +182,7 @@ public class SpywareHttpHandler extends HttpStateMachine
 
             if (badDomain) {
                 logger.debug("blocking cookie: " + domain);
-                transform.incrementCount(BLOCK);
+                transform.incrementCount(Spyware.BLOCK);
 
                 eventLogger.info(new SpywareCookieEvent(getSession().id(), responseRequest, domain, true));
                 i.remove();
@@ -213,7 +206,7 @@ public class SpywareHttpHandler extends HttpStateMachine
         if (null == setCookies) { return h; }
 
         for (Iterator i = setCookies.iterator(); i.hasNext(); ) {
-            transform.incrementCount(DETECT);
+            transform.incrementCount(Spyware.COOKIE);
             String v = (String)i.next();
 
             logger.debug("handling server cookie: " + v);
@@ -231,7 +224,7 @@ public class SpywareHttpHandler extends HttpStateMachine
 
             if (badDomain) {
                 logger.debug("cookie deleted: " + domain);
-                transform.incrementCount(BLOCK);
+                transform.incrementCount(Spyware.BLOCK);
                 eventLogger.info(new SpywareCookieEvent(getSession().id(), responseRequest, domain, false));
                 i.remove();
             } else {
@@ -316,7 +309,6 @@ public class SpywareHttpHandler extends HttpStateMachine
         Matcher m = OBJECT_PATTERN.matcher(cb);
         if (m.find()) {
             logger.debug("found activex tag");
-            transform.incrementCount(DETECT);
             int os = m.start();
             m = CLSID_PATTERN.matcher(cb);
 
@@ -337,6 +329,7 @@ public class SpywareHttpHandler extends HttpStateMachine
                 logger.debug("looked up activeX in: " + (t1 - t0) + " ms");
 
                 if (null != rule) {
+                    transform.incrementCount(Spyware.ACTIVE_X);
                     block = rule.isLive();
                     ident = rule.getString();
                 }
@@ -352,7 +345,7 @@ public class SpywareHttpHandler extends HttpStateMachine
 
             if (block) {
                 logger.debug("blocking activeX");
-                transform.incrementCount(BLOCK);
+                transform.incrementCount(Spyware.BLOCK);
                 eventLogger.info(new SpywareActiveXEvent(getSession().id(), responseRequest, ident));
                 int len = findEnd(cb, os);
                 if (-1 == len) {
