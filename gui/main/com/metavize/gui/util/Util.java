@@ -61,22 +61,24 @@ public class Util {
 	    finally{
 		return serverCodeBase;
 	    }
-	}
-	    
+	}	    
     }
     /////////////////////////////////
-
 
     private static String undetectedMessage  = "<html>To access this functionality, you must install an AntiVirus Scanner Softwawre Appliance.</html>";
     private static EmailDetectionJPanel emailDetectionSophosJPanel;
     private static EmailDetectionJPanel emailDetectionFprotJPanel;
     private static EmailDetectionJPanel emailDetectionHauriJPanel;
+    private static EmailDetectionJPanel emailDetectionClamJPanel;
     private static MEditTableJPanel virusMEditTableJPanel;
 
-    /* DefaultTableColumnModel constants */
+
+    // DefaultTableColumnModel constants /////////
     public static final int TABLE_TOTAL_WIDTH = 471; /* in pixels (contains extra pixel) */
     public static final int LINENO_MIN_WIDTH = 30; /* # */
     public static final int STATUS_MIN_WIDTH = 55; /* status */
+    //////////////////////////////////////////////
+
 
     private static ClassLoader initClassLoader = null;
     private static MURLClassLoader mURLClassLoader = null;
@@ -109,54 +111,48 @@ public class Util {
     }
 
 
-    public static void setVirusMEditTableJPanel(MEditTableJPanel virusMEditTableJPanelX){ /* System.err.println("Settings email: " + virusMEditTableJPanelX); */ virusMEditTableJPanel = virusMEditTableJPanelX; }
-    public static void setEmailDetectionSophosJPanel(EmailDetectionJPanel emailDetectionJPanel){ /* System.err.println("Setting sophos: " + emailDetectionJPanel); */ emailDetectionSophosJPanel = emailDetectionJPanel; }
-    public static void setEmailDetectionFprotJPanel(EmailDetectionJPanel emailDetectionJPanel){ /* System.err.println("Setting fprot: " + emailDetectionJPanel); */ emailDetectionFprotJPanel = emailDetectionJPanel; }
-    public static void setEmailDetectionHauriJPanel(EmailDetectionJPanel emailDetectionJPanel){ /* System.err.println("Setting fprot: " + emailDetectionJPanel); */ emailDetectionHauriJPanel = emailDetectionJPanel; }
+    public static void setVirusMEditTableJPanel(MEditTableJPanel virusMEditTableJPanelX){ virusMEditTableJPanel = virusMEditTableJPanelX; }
+    public static void setEmailDetectionSophosJPanel(EmailDetectionJPanel emailDetectionJPanel){ emailDetectionSophosJPanel = emailDetectionJPanel; }
+    public static void setEmailDetectionFprotJPanel(EmailDetectionJPanel emailDetectionJPanel){ emailDetectionFprotJPanel = emailDetectionJPanel; }
+    public static void setEmailDetectionHauriJPanel(EmailDetectionJPanel emailDetectionJPanel){ emailDetectionHauriJPanel = emailDetectionJPanel; }
     public static void updateDependencies(){
-	// System.err.println("UPDATING");
 	if( virusMEditTableJPanel != null){
-	    // System.err.println("email transform detected");
 	    if(emailDetectionSophosJPanel != null)
 		emailDetectionSophosJPanel.setDetected(true);
 	    if(emailDetectionFprotJPanel != null)
 		emailDetectionFprotJPanel.setDetected(true);
             if(emailDetectionHauriJPanel != null)
 		emailDetectionHauriJPanel.setDetected(true);
+            if(emailDetectionClamJPanel != null)
+		emailDetectionClamJPanel.setDetected(true);
 	}
 	else{
-	    // System.err.println("no email transform detected");
 	    if(emailDetectionSophosJPanel != null)
 		emailDetectionSophosJPanel.setDetected(false);
 	    if(emailDetectionFprotJPanel != null)
 		emailDetectionFprotJPanel.setDetected(false);
             if(emailDetectionHauriJPanel != null)
 		emailDetectionHauriJPanel.setDetected(false);
+            if(emailDetectionClamJPanel != null)
+		emailDetectionClamJPanel.setDetected(false);
 	}
-
-	/*
-	if(emailDetectionSophosJPanel != null)
-	    System.err.println("sophos detected");
-	else
-	    System.err.println("no sophos detected");
-	if(emailDetectionFprotJPanel != null)
-	    System.err.println("fprot detected");
-	else
-	    System.err.println("no fprot detected");
-	*/
 
 	if(virusMEditTableJPanel != null){
 	    int index = ((JTabbedPane)virusMEditTableJPanel.getParent()).indexOfComponent(virusMEditTableJPanel);
 	    if( emailDetectionSophosJPanel!=null ){
-		((JTabbedPane)virusMEditTableJPanel.getParent()).setTitleAt(index, "AntiVirus (by Sophos)");
+		((JTabbedPane)virusMEditTableJPanel.getParent()).setTitleAt(index, "Sophos AntiVirus");
 		virusMEditTableJPanel.setMessage( null );
 	    }
             else if( emailDetectionFprotJPanel!=null ){
-		((JTabbedPane)virusMEditTableJPanel.getParent()).setTitleAt(index, "AntiVirus (by F-Prot)");
+		((JTabbedPane)virusMEditTableJPanel.getParent()).setTitleAt(index, "F-Prot AntiVirus");
 		virusMEditTableJPanel.setMessage( null );
 	    }
             else if( emailDetectionHauriJPanel!=null ){
-		((JTabbedPane)virusMEditTableJPanel.getParent()).setTitleAt(index, "AntiVirus (by Hauri)");
+		((JTabbedPane)virusMEditTableJPanel.getParent()).setTitleAt(index, "Hauri AntiVirus");
+		virusMEditTableJPanel.setMessage( null );
+	    }
+	    else if( emailDetectionClamJPanel!=null ){
+		((JTabbedPane)virusMEditTableJPanel.getParent()).setTitleAt(index, "Clam AntiVirus");
 		virusMEditTableJPanel.setMessage( null );
 	    }
 	    else{
@@ -214,7 +210,6 @@ public class Util {
             parentBounds = defaultScreenBounds;
         }
 
-
         int xCenter = parentBounds.x + parentBounds.width/2;
         int yCenter = parentBounds.y + parentBounds.height/2;
         childBounds = new Rectangle( (xCenter-(childWidth/2)),
@@ -222,17 +217,10 @@ public class Util {
                                      childWidth,
                                      childHeight );
 
-        //System.err.println("");
-        //System.err.println("parentBound: " + parentBounds);
-        //System.err.println("childBound: " + childBounds);
-
-
         if(childBounds.x < 0)
             childBounds.x = 0;
         if(childBounds.y < 0)
             childBounds.y = 0;
-
-
 
         return childBounds;
     }
@@ -242,24 +230,18 @@ public class Util {
 	StringBuffer stringBuffer = new StringBuffer();
 	String tempString;
 	int currentLineLength = 0;
-	//boolean lastBR = false;
 	while( stringTokenizer.hasMoreTokens() ){
 	    tempString = stringTokenizer.nextToken();
-	    //lastBR = false;
 	
 	    if( currentLineLength + tempString.length() >= lineLength ){
 		stringBuffer.append("<br>" + tempString + " ");
 		currentLineLength = tempString.length() + 1;
-		//lastBR = true;
 	    }
 	    else{
 		stringBuffer.append(tempString + " ");
 		currentLineLength += (tempString.length() + 1);
 	    }
 	}
-	//if( !lastBR ){
-	//stringBuffer.append("<br>");
-	//}
 	return stringBuffer.toString();
     }
 
@@ -274,9 +256,7 @@ public class Util {
     }
     
     public static void resizeCheck(Component resizableComponent, Dimension minSize, Dimension maxSize){
-
         Dimension currentSize = new Dimension( resizableComponent.getSize() );
-
         boolean resetSize = false;
         if(currentSize.width < minSize.width){
             currentSize.width = minSize.width;
@@ -297,7 +277,6 @@ public class Util {
         if(resetSize){
             resizableComponent.setSize(currentSize);
         }
-
     }
 
     public static void handleExceptionNoRestart(String output, Exception e){
