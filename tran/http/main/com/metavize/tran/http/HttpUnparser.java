@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: HttpUnparser.java,v 1.11 2005/03/17 02:47:47 amread Exp $
+ * $Id$
  */
 
 package com.metavize.tran.http;
@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import com.metavize.tran.token.AbstractUnparser;
 import com.metavize.tran.token.Chunk;
 import com.metavize.tran.token.EndMarker;
 import com.metavize.tran.token.Header;
@@ -24,8 +25,9 @@ import com.metavize.tran.token.UnparseEvent;
 import com.metavize.tran.token.UnparseResult;
 import com.metavize.tran.token.Unparser;
 import org.apache.log4j.Logger;
+import com.metavize.mvvm.tapi.TCPSession;
 
-class HttpUnparser implements Unparser
+class HttpUnparser extends AbstractUnparser
 {
     private static final ByteBuffer[] BYTE_BUFFER_PROTO = new ByteBuffer[0];
 
@@ -50,14 +52,10 @@ class HttpUnparser implements Unparser
     private int transferEncoding;
     private String sessStr;
 
-    HttpUnparser(HttpCasing httpCasing)
+    HttpUnparser(TCPSession session, boolean clientSide, HttpCasing httpCasing)
     {
+        super(session, clientSide);
         this.httpCasing = httpCasing;
-    }
-
-    public void newSession(UnparseEvent ue)
-    {
-        sessStr = ue.unparseSession().toString();
     }
 
     public TokenStreamer endSession() { return null; }

@@ -22,18 +22,17 @@ import com.metavize.mvvm.tapi.Pipeline;
 import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.mvvm.tapi.TCPSessionDesc;
 import com.metavize.mvvm.tran.MimeType;
+import com.metavize.tran.token.AbstractParser;
 import com.metavize.tran.token.Chunk;
 import com.metavize.tran.token.EndMarker;
 import com.metavize.tran.token.Header;
 import com.metavize.tran.token.ParseEvent;
 import com.metavize.tran.token.ParseResult;
-import com.metavize.tran.token.ParseSession;
-import com.metavize.tran.token.Parser;
 import com.metavize.tran.token.Token;
 import com.metavize.tran.token.TokenStreamer;
 import org.apache.log4j.Logger;
 
-public class HttpParser implements Parser
+public class HttpParser extends AbstractParser
 {
     private static final byte SP = ' ';
     private static final byte HT = '\t';
@@ -62,17 +61,12 @@ public class HttpParser implements Parser
     private static final int END_MARKER_STATE = 10;
 
     private final HttpCasing casing;
+    private final byte[] buf = new byte[BUFFER_SIZE];
+    private final String sessStr;
 
     private final Logger logger = Logger.getLogger(HttpParser.class);
     private final Logger eventLogger = MvvmContextFactory.context()
         .eventLogger();
-
-    private final byte[] buf = new byte[BUFFER_SIZE];
-
-    private int sessionId;
-    private Pipeline pipeline;
-    private boolean isResponse;
-    private String sessStr = null;
 
     private RequestLine requestLine;
     private StatusLine statusLine;
@@ -83,29 +77,26 @@ public class HttpParser implements Parser
     private int contentLength; /* counts down content-length and chunks */
     private int lengthCounter; /* counts up to final */
 
-    HttpParser(HttpCasing casing)
+    // constructors -----------------------------------------------------------
+
+    HttpParser(TCPSession session, boolean clientSide, HttpCasing casing)
     {
+        super(session, clientSide);
         this.casing = casing;
+        this.sessStr = "HttpParser sid: " + session.id()
+            + (clientSide ? " client-side" : " server-side");
+
+        lineBuffering(true);
     }
 
-    public void newSession(ParseEvent pe)
-    {
-        ParseSession ps = pe.parseSession();
-
-        sessionId = ps.session().id();
-        pipeline = MvvmContextFactory.context().pipelineFoundry()
-            .getPipeline(sessionId);
-
-        sessStr = ps.toString();
-
-        isResponse = !ps.isFirst();
-
-        ps.lineBuffering(true);
-    }
+    // Parser methods ---------------------------------------------------------
 
     public TokenStreamer endSession()
     {
         if (state != PRE_FIRST_LINE_STATE) {
+            Pipeline pipeline = MvvmContextFactory.context().pipelineFoundry()
+                .getPipeline(session.id());
+
             return new TokenStreamer(pipeline)
                 {
                     private boolean sent = false;
@@ -129,8 +120,7 @@ public class HttpParser implements Parser
 
     public ParseResult parse(ParseEvent pe) throws HttpParseException
     {
-        ParseSession ps = pe.parseSession();
-        ps.cancelTimer();
+        cancelTimer();
 
         ByteBuffer b = pe.chunk();
         logger.debug(sessStr + "parsing chunk: " + b);
@@ -197,7 +187,7 @@ public class HttpParser implements Parser
 
                     assert !b.hasRemaining();
 
-                    if (isResponse) {
+                    if (!clientSide) {
                         HttpMethod method = requestLine.getMethod();
                         logger.debug(sessStr + "handling response: " + method);
                         if (HttpMethod.HEAD == method) {
@@ -208,21 +198,21 @@ public class HttpParser implements Parser
                     if (NO_BODY == transferEncoding) {
                         state = END_MARKER_STATE;
                     } else if (CLOSE_ENCODING == transferEncoding) {
-                        ps.lineBuffering(false);
+                        lineBuffering(false);
                         b = null;
                         state = CLOSED_BODY_STATE;
                         done = true;
                     } else if (CHUNKED_ENCODING == transferEncoding) {
-                        ps.lineBuffering(true);
+                        lineBuffering(true);
                         b = null;
                         state = CHUNK_LENGTH_STATE;
                         done = true;
                     } else if (CONTENT_LENGTH_ENCODING == transferEncoding) {
-                        ps.lineBuffering(false);
+                        lineBuffering(false);
                         assert !b.hasRemaining();
 
                         if (0 < contentLength) {
-                            ps.readLimit(contentLength);
+                            readLimit(contentLength);
                             b = null;
                             state = CONTENT_LENGTH_BODY_STATE;
                             done = true;
@@ -251,7 +241,7 @@ public class HttpParser implements Parser
                         // XXX handle trailer
                         state = END_MARKER_STATE;
                     } else {
-                        ps.readLimit(contentLength);
+                        readLimit(contentLength);
                         b = null;
                         done = true;
                     }
@@ -274,10 +264,10 @@ public class HttpParser implements Parser
                         b = null;
                         state = LAST_CHUNK_STATE;
                     } else {
-                        ps.lineBuffering(false);
+                        lineBuffering(false);
                         assert !b.hasRemaining();
 
-                        ps.readLimit(contentLength);
+                        readLimit(contentLength);
                         b = null;
 
                         state = CHUNK_BODY_STATE;
@@ -292,11 +282,11 @@ public class HttpParser implements Parser
                     l.add(chunk(b));
 
                     if (0 == contentLength) {
-                        ps.lineBuffering(true);
+                        lineBuffering(true);
                         b = null;
                         state = CHUNK_END_STATE;
                     } else {
-                        ps.readLimit(contentLength);
+                        readLimit(contentLength);
                         b = null;
                     }
 
@@ -346,11 +336,11 @@ public class HttpParser implements Parser
                     logger.debug(sessStr + "in END_MARKER_STATE");
                     EndMarker endMarker = EndMarker.MARKER;
                     l.add(endMarker);
-                    ps.lineBuffering(true);
+                    lineBuffering(true);
                     b = null;
                     state = PRE_FIRST_LINE_STATE;
 
-                    if (isResponse) {
+                    if (!clientSide) {
                         String contentType = header.getValue("content-type");
                         String mimeType = null == contentType ? null
                             : MimeType.getType(contentType);
@@ -360,8 +350,8 @@ public class HttpParser implements Parser
                         eventLogger.info(evt);
                     } else {
                         HttpRequestEvent evt = new HttpRequestEvent
-                            (sessionId, requestLine, header.getValue("host"),
-                             lengthCounter);
+                            (session.id(), requestLine,
+                             header.getValue("host"), lengthCounter);
                         eventLogger.info(evt);
                     }
 
@@ -375,26 +365,27 @@ public class HttpParser implements Parser
 
         logger.debug(sessStr + "returing readBuffer: " + b);
 
-        ps.scheduleTimer(TIMEOUT);
+        scheduleTimer(TIMEOUT);
         return new ParseResult((Token[])l.toArray(new Token[l.size()]), b);
     }
 
     public void handleTimer(ParseEvent e)
     {
-        TCPSession ts = e.parseSession().session();
-        byte cs = ts.clientState();
-        byte ss = ts.serverState();
+        byte cs = session.clientState();
+        byte ss = session.serverState();
 
         logger.debug(sessStr + " handling timer cs=" + cs + " ss=" + ss);
 
         if (cs == TCPSessionDesc.HALF_OPEN_OUTPUT
             && ss == TCPSessionDesc.HALF_OPEN_INPUT) {
             logger.debug(sessStr + "closing session because its in halfstate");
-            ts.shutdownClient();
+            session.shutdownClient();
         } else {
-            e.parseSession().scheduleTimer(TIMEOUT);
+            scheduleTimer(TIMEOUT);
         }
     }
+
+    // private methods --------------------------------------------------------
 
     private boolean completeLine(ByteBuffer b)
     {
@@ -433,7 +424,7 @@ public class HttpParser implements Parser
     private Object firstLine(ByteBuffer data)
         throws HttpParseException
     {
-        if (isResponse) {
+        if (!clientSide) {
             requestLine = casing.dequeueRequest();
             return statusLine = statusLine(data);
         } else {

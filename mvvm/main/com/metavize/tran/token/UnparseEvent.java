@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: UnparseEvent.java,v 1.3 2005/01/14 00:41:20 amread Exp $
+ * $Id$
  */
 
 package com.metavize.tran.token;
@@ -14,17 +14,10 @@ package com.metavize.tran.token;
 public class UnparseEvent
 {
     private Token node;
-    private UnparseSession us;
 
-    UnparseEvent(UnparseSession us, Token node)
+    UnparseEvent(Token node)
     {
         this.node = node;
-        this.us = us;
-    }
-
-    public UnparseSession unparseSession()
-    {
-        return us;
     }
 
     public Token node()

@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: CasingAdaptor.java,v 1.17 2005/03/17 02:47:47 amread Exp $
+ * $Id$
  */
 
 package com.metavize.tran.token;
@@ -33,7 +33,7 @@ import org.apache.log4j.Logger;
 public class CasingAdaptor extends AbstractEventHandler
 {
     private final CasingFactory casingFactory;
-    private final boolean first;
+    private final boolean clientSide;
 
     private final Map casings = new ConcurrentHashMap();
 
@@ -41,35 +41,30 @@ public class CasingAdaptor extends AbstractEventHandler
         .pipelineFoundry();
     private final Logger logger = Logger.getLogger(CasingAdaptor.class);
 
-    public CasingAdaptor(CasingFactory casingFactory, boolean first)
+    public CasingAdaptor(CasingFactory casingFactory, boolean clientSide)
     {
         this.casingFactory = casingFactory;
-        this.first = first;
+        this.clientSide = clientSide;
     }
 
     public void handleTCPNewSession(TCPSessionEvent e)
     {
         logger.debug("new session");
-        TCPSession s = e.session();
+        TCPSession session = e.session();
 
-        Casing casing = casingFactory.casing(first);
-        Pipeline pipeline = pipeFoundry.getPipeline(s.id());
-        logger.debug("setting: " + pipeline + " for: " + s.id());
-        addCasing(s, casing, pipeline);
+        Casing casing = casingFactory.casing(session, clientSide);
+        Pipeline pipeline = pipeFoundry.getPipeline(session.id());
+        logger.debug("setting: " + pipeline + " for: " + session.id());
+        addCasing(session, casing, pipeline);
 
         Parser parser = casing.parser();
         Unparser unparser = casing.unparser();
 
-        if (first) {
-            s.serverReadLimit(8);
+        if (clientSide) {
+            session.serverReadLimit(8);
         } else {
-            s.clientReadLimit(8);
+            session.clientReadLimit(8);
         }
-
-        ParseSession parseSession = new ParseSession(s, first);
-        parser.newSession(new ParseEvent(parseSession, null));
-        UnparseSession unparseSession = new UnparseSession(s, first);
-        unparser.newSession(new UnparseEvent(unparseSession, null));
     }
 
     public IPDataResult handleTCPClientChunk(TCPChunkEvent e)
@@ -80,7 +75,7 @@ public class CasingAdaptor extends AbstractEventHandler
         logger.debug("client direction: " + e.session().direction());
         logger.debug("client inbound: " + inbound);
 
-        if (first) {
+        if (clientSide) {
             return parse(e, false);
         } else {
             return unparse(e, false);
@@ -95,7 +90,7 @@ public class CasingAdaptor extends AbstractEventHandler
         logger.debug("server direction: " + e.session().direction());
         logger.debug("server inbound: " + inbound);
 
-        if (first) {
+        if (clientSide) {
             return unparse(e, true);
         } else {
             return parse(e, true);
@@ -109,7 +104,7 @@ public class CasingAdaptor extends AbstractEventHandler
         TCPSession s = (TCPSession)e.ipsession();
         Casing c = getCasing(s);
 
-        if (first) {
+        if (clientSide) {
             ts = c.parser().endSession();
         } else {
             ts = c.unparser().endSession();
@@ -129,7 +124,7 @@ public class CasingAdaptor extends AbstractEventHandler
         TCPSession s = (TCPSession)e.ipsession();
         Casing c = getCasing(s);
 
-        if (first) {
+        if (clientSide) {
             ts = c.unparser().endSession();
         } else {
             ts = c.parser().endSession();
@@ -153,7 +148,7 @@ public class CasingAdaptor extends AbstractEventHandler
         TCPSession s = (TCPSession)e.ipsession();
 
         Parser p = getCasing(s).parser();
-        p.handleTimer(new ParseEvent(new ParseSession(s, first), null));
+        p.handleTimer(new ParseEvent(null));
         // XXX unparser doesnt get one, does it need it?
     }
 
@@ -231,9 +226,8 @@ public class CasingAdaptor extends AbstractEventHandler
 
         UnparseResult ur;
         try {
-            UnparseSession unparseSession = new UnparseSession(s, first);
             Unparser u = casing.unparser();
-            ur = u.unparse(new UnparseEvent(unparseSession, tok));
+            ur = u.unparse(new UnparseEvent(tok));
         } catch (Exception exn) { /* not just UnparseException */
             logger.error("internal error, closing connection", exn);
             if (s2c) {
@@ -276,8 +270,7 @@ public class CasingAdaptor extends AbstractEventHandler
         ParseResult pr;
         try {
             Parser p = casing.parser();
-            pr = p.parse(new ParseEvent(new ParseSession(s, first),
-                                        e.chunk()));
+            pr = p.parse(new ParseEvent(e.chunk()));
         } catch (Exception exn) { /* not just the ParseException */
             logger.error("closing connection", exn);
             if (s2c) {

@@ -6,12 +6,14 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: CasingFactory.java,v 1.3 2005/01/29 00:20:22 amread Exp $
+ * $Id$
  */
 
 package com.metavize.tran.token;
 
+import com.metavize.mvvm.tapi.TCPSession;
+
 public interface CasingFactory
 {
-    Casing casing(boolean first);
+    Casing casing(TCPSession session, boolean clientSide);
 }

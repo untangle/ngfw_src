@@ -1,20 +1,19 @@
 /*
- * Copyright (c) 2004 Metavize Inc.
+ * Copyright (c) 2004, 2005 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: HttpCasingFactory.java,v 1.1 2004/12/10 23:27:47 amread Exp $
+ * $Id$
  */
 
 package com.metavize.tran.http;
 
+import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.tran.token.Casing;
 import com.metavize.tran.token.CasingFactory;
-import com.metavize.tran.token.Parser;
-import com.metavize.tran.token.Unparser;
 
 class HttpCasingFactory implements CasingFactory
 {
@@ -35,8 +34,8 @@ class HttpCasingFactory implements CasingFactory
         return HTTP_CASING_FACTORY;
     }
 
-    public Casing casing(boolean inside)
+    public Casing casing(TCPSession session, boolean clientSide)
     {
-        return new HttpCasing(inside);
+        return new HttpCasing(session, clientSide);
     }
 }
