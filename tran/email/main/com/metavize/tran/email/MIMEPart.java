@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: MIMEPart.java,v 1.6 2005/03/17 02:18:58 cng Exp $
+ * $Id$
  */
 package com.metavize.tran.email;
 
@@ -624,7 +624,49 @@ public class MIMEPart
             zList.add(zEnd);
 
             String zFileName = zTmpFile.getName();
-            File zFile = decodeBufs(zList, zFileName);
+            File zFile;
+            try
+            {
+                zFile = decodeBufs(zList, zFileName);
+            }
+            catch (IOException e)
+            {
+                /* restore this MIME part */
+                MLLine.fromBuffer(zRawBodys, zBodys, true);
+
+                zRawBodys.clear(); /* release, let GC process */
+                zList.clear(); /* release, let GC process */
+                zStart = null; /* release, let GC process */
+                zEnd = null; /* release, let GC process */
+
+                zTmpFile.delete(); /* delete tmp file */
+
+                /* we cannot determine if uudecode failed because
+                 * data was not encoded or
+                 * of some unknown cause
+                 */
+                zLog.error("This MIME part contains encoded data that could not be decoded; bypassing this MIME part: " + e);
+                return null;
+            }
+            catch (InterruptedException e)
+            {
+                /* restore this MIME part */
+                MLLine.fromBuffer(zRawBodys, zBodys, true);
+
+                zRawBodys.clear(); /* release, let GC process */
+                zList.clear(); /* release, let GC process */
+                zStart = null; /* release, let GC process */
+                zEnd = null; /* release, let GC process */
+
+                zTmpFile.delete(); /* delete tmp file */
+
+                /* we cannot determine if uudecode failed because
+                 * data was not encoded or
+                 * of some unknown cause
+                 */
+                zLog.error("This MIME part contains encoded data that could not be decoded; bypassing this MIME part: " + e);
+                return null;
+            }
 
             //zLog.debug("MIME part decoded file: " + zFile.getAbsolutePath());
             VirusScannerResult zScanResult = zScanner.scanFile(zFile.getAbsolutePath());
@@ -995,7 +1037,7 @@ public class MIMEPart
 
         /* create decoded version of encoded file */
         File zFileOut = File.createTempFile("ubd", null, zTmpDir);
-        //zLog.debug("MIME part encoded file: " + zFile.getAbsolutePath());
+        //zLog.debug("MIME part encoded file: " + zFileIn.getAbsolutePath());
         Process zPrc = Runtime.getRuntime().exec("uudecode -o " + zFileOut.getAbsolutePath() + " " + zFileIn.getAbsolutePath());
 
         zPrc.waitFor();
@@ -1011,7 +1053,8 @@ public class MIMEPart
 
         default:
         case PRC_FAILURE:
-            throw new IOException("Unable to decode file in this MIME part: " + zFileName);
+            zFileOut.delete(); /* delete decoded file */
+            throw new IOException("Unable to decode encoded data located in this MIME part: " + zFileName + ", uudecode exit code: " + iExitCode);
         }
     }
 }

@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: EventHandler.java,v 1.22 2005/03/25 23:22:39 jdi Exp $
+ * $Id$
  */
 package com.metavize.tran.email;
 
@@ -797,7 +797,7 @@ public class EventHandler extends AbstractEventHandler
         catch (IOException e)
         {
             /* let message pass through as is */
-            zLog.error("Unable to send/retrieve e-mail message to/from scanner (please check that this scanner has been installed and configured (e.g., with correct permissions): " + e);
+            zLog.error("Unable to send/retrieve e-mail message to/from scanner (please check that this scanner has been installed and configured (e.g., with correct permissions)): " + e);
             handleException(zEnv, zHandler, zDatas, e);
             return null;
         }
@@ -864,7 +864,7 @@ public class EventHandler extends AbstractEventHandler
         catch (IOException e)
         {
             /* let message pass through as is */
-            zLog.error("Unable to send e-mail message to scanner (please check that this scanner has been installed and configured (e.g., with correct permissions): " + e);
+            zLog.error("Unable to send e-mail message to scanner (please check that uudecode or this scanner has been installed and configured (e.g., with correct permissions) or you have sufficient disk space in " + Constants.BASEPATH + "): " + e);
             handleException(zEnv, zHandler, e);
             return null;
         }
