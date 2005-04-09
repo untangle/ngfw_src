@@ -12,7 +12,6 @@
 set -e
 
 JAVA_HOME=${JAVA_HOME:-@DEFAULT_JAVA_HOME@}
-# XXX we shouldn't need bootstrap
 
 CLASSPATH="@MVVM_LIB@/util.jar:@MVVM_LIB@/mvvm-client.jar:@THIRDPARTY_LIB@/log4j-1.2.8.jar:@THIRDPARTY_LIB@/hibernate2.jar:@THIRDPARTY_LIB@/odmg-3.0.jar:$CLASSPATH"
 
