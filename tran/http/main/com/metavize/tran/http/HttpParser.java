@@ -26,7 +26,6 @@ import com.metavize.tran.token.AbstractParser;
 import com.metavize.tran.token.Chunk;
 import com.metavize.tran.token.EndMarker;
 import com.metavize.tran.token.Header;
-import com.metavize.tran.token.ParseEvent;
 import com.metavize.tran.token.ParseResult;
 import com.metavize.tran.token.Token;
 import com.metavize.tran.token.TokenStreamer;
@@ -118,11 +117,10 @@ public class HttpParser extends AbstractParser
         }
     }
 
-    public ParseResult parse(ParseEvent pe) throws HttpParseException
+    public ParseResult parse(ByteBuffer b) throws HttpParseException
     {
         cancelTimer();
 
-        ByteBuffer b = pe.chunk();
         logger.debug(sessStr + "parsing chunk: " + b);
         List l = new LinkedList();
 
@@ -369,7 +367,7 @@ public class HttpParser extends AbstractParser
         return new ParseResult((Token[])l.toArray(new Token[l.size()]), b);
     }
 
-    public void handleTimer(ParseEvent e)
+    public void handleTimer()
     {
         byte cs = session.clientState();
         byte ss = session.serverState();

@@ -148,7 +148,7 @@ public class CasingAdaptor extends AbstractEventHandler
         TCPSession s = (TCPSession)e.ipsession();
 
         Parser p = getCasing(s).parser();
-        p.handleTimer(new ParseEvent(null));
+        p.handleTimer();
         // XXX unparser doesnt get one, does it need it?
     }
 
@@ -227,7 +227,7 @@ public class CasingAdaptor extends AbstractEventHandler
         UnparseResult ur;
         try {
             Unparser u = casing.unparser();
-            ur = u.unparse(new UnparseEvent(tok));
+            ur = u.unparse(tok);
         } catch (Exception exn) { /* not just UnparseException */
             logger.error("internal error, closing connection", exn);
             if (s2c) {
@@ -270,7 +270,7 @@ public class CasingAdaptor extends AbstractEventHandler
         ParseResult pr;
         try {
             Parser p = casing.parser();
-            pr = p.parse(new ParseEvent(e.chunk()));
+            pr = p.parse(e.chunk());
         } catch (Exception exn) { /* not just the ParseException */
             logger.error("closing connection", exn);
             if (s2c) {

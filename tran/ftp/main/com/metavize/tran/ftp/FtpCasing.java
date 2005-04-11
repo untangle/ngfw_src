@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: FtpCasing.java,v 1.7 2005/03/17 02:47:47 amread Exp $
+ * $Id$
  */
 
 package com.metavize.tran.ftp;
@@ -22,8 +22,6 @@ class FtpCasing extends AbstractCasing
     private final FtpUnparser unparser;
     private final String insideStr;
     private final Logger logger = Logger.getLogger(FtpCasing.class);
-
-    private RequestLine request;
 
     // constructors -----------------------------------------------------------
 

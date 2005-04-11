@@ -6,19 +6,21 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: FtpParser.java,v 1.24 2005/03/17 02:47:47 amread Exp $
+ * $Id$
  */
 
 package com.metavize.tran.ftp;
 
+import java.nio.ByteBuffer;
+
 import com.metavize.mvvm.MvvmContextFactory;
-import com.metavize.tran.token.ParseEvent;
+import com.metavize.tran.token.AbstractParser;
+import com.metavize.tran.token.ParseException;
 import com.metavize.tran.token.ParseResult;
-import com.metavize.tran.token.Parser;
 import com.metavize.tran.token.TokenStreamer;
 import org.apache.log4j.Logger;
 
-public class FtpParser implements Parser
+public class FtpParser extends AbstractParser
 {
     private final FtpCasing casing;
 
@@ -30,15 +32,11 @@ public class FtpParser implements Parser
         this.casing = casing;
     }
 
-    public void newSession(ParseEvent pe)
-    {
-    }
-
     public TokenStreamer endSession()
     {
     }
 
-    public ParseResult parse(ParseEvent pe) throws FtpParseException
+    public ParseResult parse(ByteBuffer buf) throws ParseException
     {
     }
 }

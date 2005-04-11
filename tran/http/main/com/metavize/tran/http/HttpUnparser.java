@@ -16,16 +16,16 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.tran.token.AbstractUnparser;
 import com.metavize.tran.token.Chunk;
 import com.metavize.tran.token.EndMarker;
 import com.metavize.tran.token.Header;
 import com.metavize.tran.token.TokenStreamer;
-import com.metavize.tran.token.UnparseEvent;
 import com.metavize.tran.token.UnparseResult;
 import com.metavize.tran.token.Unparser;
 import org.apache.log4j.Logger;
-import com.metavize.mvvm.tapi.TCPSession;
+import com.metavize.tran.token.Token;
 
 class HttpUnparser extends AbstractUnparser
 {
@@ -60,29 +60,28 @@ class HttpUnparser extends AbstractUnparser
 
     public TokenStreamer endSession() { return null; }
 
-    public UnparseResult unparse(UnparseEvent ue)
+    public UnparseResult unparse(Token token)
     {
-        Object n = ue.node();
-        logger.debug(sessStr + " got unparse event node: " + n);
+        logger.debug(sessStr + " got unparse event node: " + token);
 
-        if (n instanceof StatusLine) {
+        if (token instanceof StatusLine) {
             logger.debug(sessStr + " got status line!");
             transferEncoding = CLOSE_ENCODING;
-            return statusLine((StatusLine)n);
-        } else if (n instanceof RequestLine) {
+            return statusLine((StatusLine)token);
+        } else if (token instanceof RequestLine) {
             logger.debug(sessStr + " got request line!");
-            return requestLine((RequestLine)n);
-        } else if (n instanceof Header) {
+            return requestLine((RequestLine)token);
+        } else if (token instanceof Header) {
             logger.debug(sessStr + " got header!");
-            return header((Header)n);
-        } else if (n instanceof Chunk) {
+            return header((Header)token);
+        } else if (token instanceof Chunk) {
             logger.debug(sessStr + " got chunk!");
-            return chunk((Chunk)n);
-        } else if (n instanceof EndMarker) {
+            return chunk((Chunk)token);
+        } else if (token instanceof EndMarker) {
             logger.debug(sessStr + " got endmarker");
             return endMarker();
         } else {
-            throw new IllegalArgumentException("unexpected: " + n.getClass());
+            throw new IllegalArgumentException("unexpected: " + token);
         }
     }
 

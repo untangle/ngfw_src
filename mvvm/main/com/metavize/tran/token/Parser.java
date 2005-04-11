@@ -11,10 +11,11 @@
 
 package com.metavize.tran.token;
 
+import java.nio.ByteBuffer;
 
 public interface Parser
 {
     TokenStreamer endSession();
-    ParseResult parse(ParseEvent pe) throws ParseException;
-    void handleTimer(ParseEvent pe);
+    ParseResult parse(ByteBuffer chunk) throws ParseException;
+    void handleTimer();
 }
