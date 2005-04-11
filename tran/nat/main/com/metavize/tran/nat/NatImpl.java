@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: ProtoFilterImpl.java,v 1.12 2005/02/11 22:47:01 jdi Exp $
+ * $Id$
  */
 package com.metavize.tran.nat;
 
@@ -59,7 +59,8 @@ public class NatImpl extends SoloTransform implements Nat
         subscriptions.add(new Subscription(Protocol.UDP));
         
         /* Have to figure out pipeline ordering, this should always next to towards the outside */
-        this.pipeSpec = new PipeSpec( "nat", Fitting.OCTET_STREAM, subscriptions, Affinity.BEGIN );
+        this.pipeSpec = new PipeSpec( "nat", Fitting.OCTET_STREAM, subscriptions, Affinity.INSIDE, 
+                                      PipeSpec.STRENGTH_MAX - 1 );
     }
 
     public NatSettings getNatSettings()

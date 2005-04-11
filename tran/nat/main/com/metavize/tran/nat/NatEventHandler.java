@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: EventHandler.java,v 1.7 2005/03/15 02:11:52 amread Exp $
+ * $Id$
  */
 
 package com.metavize.tran.nat;
@@ -26,6 +26,10 @@ import com.metavize.mvvm.tapi.MPipeException;
 
 import com.metavize.mvvm.tapi.event.TCPNewSessionRequestEvent;
 import com.metavize.mvvm.tapi.event.UDPNewSessionRequestEvent;
+import com.metavize.mvvm.tapi.event.UDPSessionEvent;
+import com.metavize.mvvm.tapi.event.TCPSessionEvent;
+
+import com.metavize.mvvm.tapi.IPSession;
 
 import com.metavize.mvvm.tran.Transform;
 import org.apache.log4j.Logger;
@@ -34,6 +38,23 @@ public class NatEventHandler extends AbstractEventHandler
 {
     private final Logger logger = Logger.getLogger(NatEventHandler.class);
     private final Logger eventLogger = MvvmContextFactory.context().eventLogger();
+
+    /* XXXXXX This should be 15000 */
+    //private static final int TCP_NAT_PORT_START = 55000;
+    //private static final int TCP_NAT_PORT_END   = 60000;
+
+    /* XXXXXX This should be 15000 */
+    //private static final int UDP_NAT_PORT_START = 55000;
+    //private static final int UDP_NAT_PORT_END   = 60000;
+
+    /* XXXXXX This is a small range in order to test that the list is working */
+    private static final int TCP_NAT_PORT_START = 55000;
+    private static final int TCP_NAT_PORT_END   = 55100;
+
+    /* XXXXXX This should be 15000 */
+    private static final int UDP_NAT_PORT_START = 55000;
+    private static final int UDP_NAT_PORT_END   = 55100;
+
 
     /* match to determine whether a session is natted */
     /* XXX Probably need to initialized this with a value */
@@ -57,6 +78,8 @@ public class NatEventHandler extends AbstractEventHandler
     /* Setup, singleton  */
     NatEventHandler()
     {
+        tcpPortList = PortList.makePortList( TCP_NAT_PORT_START, TCP_NAT_PORT_END );
+        udpPortList = PortList.makePortList( UDP_NAT_PORT_START, UDP_NAT_PORT_END );
     }
 
     public void handleTCPNewSessionRequest( TCPNewSessionRequestEvent event )
@@ -93,6 +116,19 @@ public class NatEventHandler extends AbstractEventHandler
         request.release();
     }
 
+    public void handleTCPFinalized(TCPSessionEvent event)
+        throws MPipeException
+    {
+        releasePort( Protocol.TCP, event.ipsession());
+    }
+    
+    public void handleUDPFinalized(UDPSessionEvent event)
+        throws MPipeException
+    {
+        releasePort( Protocol.UDP, event.ipsession());
+    }
+
+
     RedirectMatcher getNat() {
         return nat;
     }
@@ -122,10 +158,18 @@ public class NatEventHandler extends AbstractEventHandler
      */
     private boolean isNat( IPNewSessionRequest request, Protocol protocol )
     {
+        int port;
+
         if ( nat.isMatch( request, protocol )) {
             /* Change the source in the request */
             nat.redirect( request );
+
+            /* Set the client port */
+            port = getNextPort( protocol );
+            request.clientPort( port );
             
+            logger.debug( "Redirecting session to port: " + port );
+
             /* XXX What about the case where you have NAT and redirect */
             /* XXX Possibly check for redirects here */
             return true;
@@ -163,6 +207,44 @@ public class NatEventHandler extends AbstractEventHandler
         return false;
     }
 
-    
-    
+
+    /**
+     * Retrieve the next port from the port list
+     */
+    private int getNextPort( Protocol protocol )
+    {                
+        int port;
+        port = getPortList( protocol ).getNextPort();
+        return port;
+    }
+
+    /**
+     * Release a port and place and back onto the port list
+     */
+    private void releasePort( Protocol protocol, IPSession session )
+    {
+        int port = session.clientPort();
+        PortList pList = getPortList( protocol );
+
+
+        /* XXXX This is very lame, should just be an object that is attached to the session */
+        if ( session.clientAddr().equals( nat.getRedirectAddress()) && pList.isInPortRange( port )) {
+            logger.debug( "Releasing port: " + port );
+            
+            getPortList( protocol ).releasePort( port );
+        } else {
+            logger.debug( "Ignoring non-natted port: " + port );
+        }
+    }
+
+    private PortList getPortList( Protocol protocol )
+    {
+        if ( protocol == Protocol.UDP ) {
+            return udpPortList;
+        } else if ( protocol == Protocol.TCP ) {
+            return tcpPortList;
+        }
+
+        throw new IllegalArgumentException( "Unknown protocol: " + protocol );
+    }
 }

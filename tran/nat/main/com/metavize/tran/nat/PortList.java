@@ -6,19 +6,19 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: ProtoFilterImpl.java,v 1.12 2005/02/11 22:47:01 jdi Exp $
+ * $Id$
  */
 package com.metavize.tran.nat;
 
 import java.util.List;
 import java.util.LinkedList;
 
-class NatPortList {
+class PortList {
     private final List<Integer> portList = new LinkedList<Integer>();
     final int start;
     final int end;
     
-    private NatPortList( int start, int end ) {        
+    private PortList( int start, int end ) {        
         this.start = start;
         this.end   = end;
 
@@ -27,7 +27,7 @@ class NatPortList {
         }
     }
     
-    static NatPortList makePortList( int start, int end )
+    static PortList makePortList( int start, int end )
     {
         if ( start < 0 || start > 65535 ) {
             throw new IllegalArgumentException( "Invalid start port" + start );
@@ -41,15 +41,24 @@ class NatPortList {
             throw new IllegalArgumentException( "Start(" + start + ") < end(" + end + ")" );
         }
 
-        return new NatPortList( int protocol, start, end );
+        return new PortList( start, end );
     }
     
-    int getNextPort()
+    boolean isInPortRange( int port )
+    {
+        if ( start <= port && port <=  end ) {
+            return true;
+        }
+        
+        return false;
+    }
+    
+    synchronized int getNextPort()
     {
         return portList.remove( 0 );                
     }
 
-    void addPort( int port )
+    synchronized void releasePort( int port )
     {
         if ( start > port || port > end ) {
             throw new IllegalArgumentException( "Invalid port" + port );
