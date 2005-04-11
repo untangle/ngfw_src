@@ -13,14 +13,14 @@ package com.metavize.tran.token;
 
 import com.metavize.mvvm.tapi.TCPSession;
 
-public abstract class AbstractParser implements Parser
+public abstract class AbstractTokenizer implements Tokenizer
 {
     protected final TCPSession session;
     protected final boolean clientSide;
 
     // constructors -----------------------------------------------------------
 
-    protected AbstractParser(TCPSession session, boolean clientSide)
+    protected AbstractTokenizer(TCPSession session, boolean clientSide)
     {
         this.session = session;
         this.clientSide = clientSide;;

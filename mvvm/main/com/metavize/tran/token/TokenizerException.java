@@ -1,34 +1,34 @@
 /*
- * Copyright (c) 2004 Metavize Inc.
+ * Copyright (c) 2004, 2005 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: UnparseException.java,v 1.1.1.1 2004/12/01 23:32:23 amread Exp $
+ * $Id$
  */
 
 package com.metavize.tran.token;
 
-public class UnparseException extends Exception
+public class TokenizerException extends Exception
 {
-    public UnparseException()
+    public TokenizerException()
     {
         super();
     }
 
-    public UnparseException(String message)
+    public TokenizerException(String message)
     {
         super(message);
     }
 
-    public UnparseException(String message, Throwable cause)
+    public TokenizerException(String message, Throwable cause)
     {
         super(message, cause);
     }
 
-    public UnparseException(Throwable cause)
+    public TokenizerException(Throwable cause)
     {
         super(cause);
     }

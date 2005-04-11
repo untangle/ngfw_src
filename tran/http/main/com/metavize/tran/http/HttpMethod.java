@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: HttpMethod.java,v 1.4 2005/02/25 02:45:29 amread Exp $
+ * $Id$
  */
 
 package com.metavize.tran.http;
@@ -77,6 +77,8 @@ public class HttpMethod
     {
         return key;
     }
+
+    // Object methods ---------------------------------------------------------
 
     public String toString() { return method; }
 

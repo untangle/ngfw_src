@@ -13,9 +13,9 @@ package com.metavize.tran.token;
 
 import java.nio.ByteBuffer;
 
-public interface Parser
+public interface Tokenizer
 {
     TokenStreamer endSession();
-    ParseResult parse(ByteBuffer chunk) throws ParseException;
+    TokenizerResult tokenize(ByteBuffer chunk) throws TokenizerException;
     void handleTimer();
 }

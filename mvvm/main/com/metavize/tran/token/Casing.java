@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: Casing.java,v 1.4 2005/03/17 02:47:47 amread Exp $
+ * $Id$
  */
 
 package com.metavize.tran.token;
@@ -14,6 +14,6 @@ package com.metavize.tran.token;
 
 public interface Casing
 {
-    Parser parser();
-    Unparser unparser();
+    Tokenizer tokenizer();
+    Untokenizer untokenizer();
 }

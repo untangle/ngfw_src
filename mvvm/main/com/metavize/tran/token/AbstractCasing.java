@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: AbstractCasing.java,v 1.2 2005/01/25 02:03:34 amread Exp $
+ * $Id$
  */
 
 package com.metavize.tran.token;
@@ -17,6 +17,6 @@ public abstract class AbstractCasing implements Casing
 {
     private final Logger logger = Logger.getLogger(AbstractCasing.class);
 
-    public abstract Parser parser();
-    public abstract Unparser unparser();
+    public abstract Tokenizer tokenizer();
+    public abstract Untokenizer untokenizer();
 }

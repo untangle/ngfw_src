@@ -4,7 +4,7 @@
 (jde-project-file-version "1.0")
 
 (setq transforms '("airgap" "email" "fprot" "http" "httpblocker" "protofilter"
-                   "reporting" "sophos" "spyware" "test" "virus"))
+                   "reporting" "sophos" "spyware" "test" "virus" "ftp"))
 (setq jni-projects '("jnetcap" "jvector"))
 
 (jde-set-variables

@@ -11,8 +11,8 @@
 
 package com.metavize.tran.token;
 
-public interface Unparser
+public interface Untokenizer
 {
     TokenStreamer endSession();
-    UnparseResult unparse(Token token) throws UnparseException;
+    UntokenizerResult untokenize(Token token) throws UntokenizerException;
 }

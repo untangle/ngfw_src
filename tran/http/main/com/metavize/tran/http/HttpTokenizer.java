@@ -22,16 +22,17 @@ import com.metavize.mvvm.tapi.Pipeline;
 import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.mvvm.tapi.TCPSessionDesc;
 import com.metavize.mvvm.tran.MimeType;
-import com.metavize.tran.token.AbstractParser;
+import com.metavize.tran.token.AbstractTokenizer;
 import com.metavize.tran.token.Chunk;
 import com.metavize.tran.token.EndMarker;
 import com.metavize.tran.token.Header;
-import com.metavize.tran.token.ParseResult;
 import com.metavize.tran.token.Token;
 import com.metavize.tran.token.TokenStreamer;
+import com.metavize.tran.token.TokenizerException;
+import com.metavize.tran.token.TokenizerResult;
 import org.apache.log4j.Logger;
 
-public class HttpParser extends AbstractParser
+public class HttpTokenizer extends AbstractTokenizer
 {
     private static final byte SP = ' ';
     private static final byte HT = '\t';
@@ -63,7 +64,7 @@ public class HttpParser extends AbstractParser
     private final byte[] buf = new byte[BUFFER_SIZE];
     private final String sessStr;
 
-    private final Logger logger = Logger.getLogger(HttpParser.class);
+    private final Logger logger = Logger.getLogger(HttpTokenizer.class);
     private final Logger eventLogger = MvvmContextFactory.context()
         .eventLogger();
 
@@ -78,17 +79,17 @@ public class HttpParser extends AbstractParser
 
     // constructors -----------------------------------------------------------
 
-    HttpParser(TCPSession session, boolean clientSide, HttpCasing casing)
+    HttpTokenizer(TCPSession session, boolean clientSide, HttpCasing casing)
     {
         super(session, clientSide);
         this.casing = casing;
-        this.sessStr = "HttpParser sid: " + session.id()
+        this.sessStr = "HttpTokenizer sid: " + session.id()
             + (clientSide ? " client-side" : " server-side");
 
         lineBuffering(true);
     }
 
-    // Parser methods ---------------------------------------------------------
+    // Tokenizer methods ------------------------------------------------------
 
     public TokenStreamer endSession()
     {
@@ -117,7 +118,7 @@ public class HttpParser extends AbstractParser
         }
     }
 
-    public ParseResult parse(ByteBuffer b) throws HttpParseException
+    public TokenizerResult tokenize(ByteBuffer b) throws TokenizerException
     {
         cancelTimer();
 
@@ -364,7 +365,7 @@ public class HttpParser extends AbstractParser
         logger.debug(sessStr + "returing readBuffer: " + b);
 
         scheduleTimer(TIMEOUT);
-        return new ParseResult((Token[])l.toArray(new Token[l.size()]), b);
+        return new TokenizerResult((Token[])l.toArray(new Token[l.size()]), b);
     }
 
     public void handleTimer()
@@ -419,8 +420,7 @@ public class HttpParser extends AbstractParser
         }
     }
 
-    private Object firstLine(ByteBuffer data)
-        throws HttpParseException
+    private Object firstLine(ByteBuffer data) throws TokenizerException
     {
         if (!clientSide) {
             requestLine = casing.dequeueRequest();
@@ -431,7 +431,7 @@ public class HttpParser extends AbstractParser
     }
 
     // Request-Line   = Method SP Request-URI SP HTTP-Version CRLF
-    private RequestLine requestLine(ByteBuffer data) throws HttpParseException
+    private RequestLine requestLine(ByteBuffer data) throws TokenizerException
     {
         transferEncoding = NO_BODY;
 
@@ -447,7 +447,7 @@ public class HttpParser extends AbstractParser
     }
 
     // Status-Line = HTTP-Version SP Status-Code SP Reason-Phrase CRLF
-    private StatusLine statusLine(ByteBuffer data) throws HttpParseException
+    private StatusLine statusLine(ByteBuffer data) throws TokenizerException
     {
         transferEncoding = CLOSE_ENCODING;
 
@@ -473,7 +473,7 @@ public class HttpParser extends AbstractParser
     }
 
     // HTTP-Version   = "HTTP" "/" 1*DIGIT "." 1*DIGIT
-    private String version(ByteBuffer data) throws HttpParseException
+    private String version(ByteBuffer data) throws TokenizerException
     {
         eat(data, "HTTP");
         eat(data, '/');
@@ -485,7 +485,7 @@ public class HttpParser extends AbstractParser
     }
 
     // Reason-Phrase  = *<TEXT, excluding CR, LF>
-    private String reasonPhrase(ByteBuffer b) throws HttpParseException
+    private String reasonPhrase(ByteBuffer b) throws TokenizerException
     {
         int l = b.remaining();
 
@@ -504,19 +504,19 @@ public class HttpParser extends AbstractParser
     //     | ...
     //     | extension-code
     // extension-code = 3DIGIT
-    private int statusCode(ByteBuffer b) throws HttpParseException
+    private int statusCode(ByteBuffer b) throws TokenizerException
     {
         int i = eatDigits(b);
 
         if (1000 < i || 100 > i) {
             // assumes no status codes begin with 0
-            throw new HttpParseException("expected 3*DIGIT, got: " + i);
+            throw new TokenizerException("expected 3*DIGIT, got: " + i);
         }
 
         return i;
     }
 
-    private Header header(ByteBuffer data) throws HttpParseException
+    private Header header(ByteBuffer data) throws TokenizerException
     {
         Header header = new Header();
 
@@ -539,7 +539,7 @@ public class HttpParser extends AbstractParser
     //                  and consisting of either *TEXT or combinations
     //                  of token, separators, and quoted-string>
     private void field(Header header, ByteBuffer data)
-        throws HttpParseException
+        throws TokenizerException
     {
         String key = token(data).trim();
         eat(data, ':');
@@ -570,13 +570,13 @@ public class HttpParser extends AbstractParser
         header.addField(key, value);
     }
 
-    private Chunk closedBody(ByteBuffer buffer) throws HttpParseException
+    private Chunk closedBody(ByteBuffer buffer) throws TokenizerException
     {
         lengthCounter += buffer.remaining();
         return new Chunk(buffer.slice());
     }
 
-    private int chunkLength(ByteBuffer b) throws HttpParseException
+    private int chunkLength(ByteBuffer b) throws TokenizerException
     {
         int i = 0;
 
@@ -605,7 +605,7 @@ public class HttpParser extends AbstractParser
 
     // chunk          = chunk-size [ chunk-extension ] CRLF
     //                  chunk-data CRLF
-    private Chunk chunk(ByteBuffer buffer) throws HttpParseException
+    private Chunk chunk(ByteBuffer buffer) throws TokenizerException
     {
         int remaining = buffer.remaining();
         contentLength -= remaining;
@@ -617,13 +617,13 @@ public class HttpParser extends AbstractParser
     }
 
     // trailer        = *(entity-header CRLF)
-    private void handleTrailer(ByteBuffer data) throws HttpParseException
+    private void handleTrailer(ByteBuffer data) throws TokenizerException
     {
         header(data);
     }
 
     // Request-URI    = "*" | absoluteURI | abs_path | authority
-    private URI requestUri(ByteBuffer b) throws HttpParseException
+    private URI requestUri(ByteBuffer b) throws TokenizerException
     {
         int l = b.remaining();
 
@@ -633,7 +633,7 @@ public class HttpParser extends AbstractParser
             buf[i] = b.get();
 
             if (0 == i && '/' != buf[0]) {
-                throw new HttpParseException("URI not absolute");
+                throw new TokenizerException("URI not absolute");
             }
 
             if (SP == buf[i] || HT == buf[i]) {
@@ -650,7 +650,7 @@ public class HttpParser extends AbstractParser
         try {
             return escapeUri(uri);
         } catch (URISyntaxException exn) {
-            throw new HttpParseException(exn);
+            throw new TokenizerException(exn);
         }
     }
 
@@ -685,9 +685,7 @@ public class HttpParser extends AbstractParser
         return new URI(sb.toString());
     }
 
-    // Generic private parser functions ---------------------------------------
-
-    private void eat(ByteBuffer data, String s) throws HttpParseException
+    private void eat(ByteBuffer data, String s) throws TokenizerException
     {
         byte[] sb = s.getBytes();
         for (int i = 0; i < sb.length; i++) {
@@ -783,18 +781,18 @@ public class HttpParser extends AbstractParser
 
     // CRLF           = CR LF
     // in our implementation, CR is optional
-    private void eatCrLf(ByteBuffer b) throws HttpParseException
+    private void eatCrLf(ByteBuffer b) throws TokenizerException
     {
         byte b1 = b.get();
         boolean ate = LF == b1 || CR == b1 && LF == b.get();
         if (!ate) {
-            throw new HttpParseException("CRLF expected: " + b1);
+            throw new TokenizerException("CRLF expected: " + b1);
         }
     }
 
     // DIGIT          = <any US-ASCII digit "0".."9">
     // this method reads 1*DIGIT
-    private int eatDigits(ByteBuffer b) throws HttpParseException
+    private int eatDigits(ByteBuffer b) throws TokenizerException
     {
         boolean foundOne = false;
         int i = 0;
@@ -809,7 +807,7 @@ public class HttpParser extends AbstractParser
         }
 
         if (!foundOne) {
-            throw new HttpParseException("no digits found, next digit: "
+            throw new TokenizerException("no digits found, next digit: "
                                          + b.get(b.position()));
         }
 

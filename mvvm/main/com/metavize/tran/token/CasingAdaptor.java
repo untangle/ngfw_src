@@ -57,8 +57,8 @@ public class CasingAdaptor extends AbstractEventHandler
         logger.debug("setting: " + pipeline + " for: " + session.id());
         addCasing(session, casing, pipeline);
 
-        Parser parser = casing.parser();
-        Unparser unparser = casing.unparser();
+        Tokenizer tokenizer = casing.tokenizer();
+        Untokenizer untokenizer = casing.untokenizer();
 
         if (clientSide) {
             session.serverReadLimit(8);
@@ -105,9 +105,9 @@ public class CasingAdaptor extends AbstractEventHandler
         Casing c = getCasing(s);
 
         if (clientSide) {
-            ts = c.parser().endSession();
+            ts = c.tokenizer().endSession();
         } else {
-            ts = c.unparser().endSession();
+            ts = c.untokenizer().endSession();
         }
 
         if (null != ts) {
@@ -125,9 +125,9 @@ public class CasingAdaptor extends AbstractEventHandler
         Casing c = getCasing(s);
 
         if (clientSide) {
-            ts = c.unparser().endSession();
+            ts = c.untokenizer().endSession();
         } else {
-            ts = c.parser().endSession();
+            ts = c.tokenizer().endSession();
         }
 
         if (null != ts) {
@@ -147,9 +147,9 @@ public class CasingAdaptor extends AbstractEventHandler
     {
         TCPSession s = (TCPSession)e.ipsession();
 
-        Parser p = getCasing(s).parser();
+        Tokenizer p = getCasing(s).tokenizer();
         p.handleTimer();
-        // XXX unparser doesnt get one, does it need it?
+        // XXX untokenizer doesnt get one, does it need it?
     }
 
     // CasingDesc utils -------------------------------------------------------
@@ -224,10 +224,10 @@ public class CasingAdaptor extends AbstractEventHandler
 
         assert !b.hasRemaining();
 
-        UnparseResult ur;
+        UntokenizerResult ur;
         try {
-            Unparser u = casing.unparser();
-            ur = u.unparse(tok);
+            Untokenizer u = casing.untokenizer();
+            ur = u.untokenize(tok);
         } catch (Exception exn) { /* not just UnparseException */
             logger.error("internal error, closing connection", exn);
             if (s2c) {
@@ -267,10 +267,10 @@ public class CasingAdaptor extends AbstractEventHandler
         Casing casing = casingDesc.casing;
         Pipeline pipeline = casingDesc.pipeline;
 
-        ParseResult pr;
+        TokenizerResult pr;
         try {
-            Parser p = casing.parser();
-            pr = p.parse(e.chunk());
+            Tokenizer p = casing.tokenizer();
+            pr = p.tokenize(e.chunk());
         } catch (Exception exn) { /* not just the ParseException */
             logger.error("closing connection", exn);
             if (s2c) {

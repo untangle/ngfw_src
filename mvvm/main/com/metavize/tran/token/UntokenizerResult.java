@@ -6,20 +6,20 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: UnparseResult.java,v 1.2 2005/01/10 23:15:02 amread Exp $
+ * $Id$
  */
 
 package com.metavize.tran.token;
 
 import java.nio.ByteBuffer;
 
-public class UnparseResult
+public class UntokenizerResult
 {
     // XXX make List<ByteBuffer> when no XDoclet
     private ByteBuffer[] result;
 
     // XXX make List<ByteBuffer> when no XDoclet
-    public UnparseResult(ByteBuffer[] result)
+    public UntokenizerResult(ByteBuffer[] result)
     {
         this.result = result;
     }

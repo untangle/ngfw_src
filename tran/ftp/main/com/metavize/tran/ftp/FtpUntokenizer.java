@@ -11,23 +11,23 @@
 
 package com.metavize.tran.ftp;
 
-import com.metavize.tran.token.AbstractUnparser;
-import com.metavize.tran.token.UnparseResult;
-import org.apache.log4j.Logger;
+import com.metavize.tran.token.AbstractUntokenizer;
 import com.metavize.tran.token.Token;
+import com.metavize.tran.token.Untokenizeresult;
+import org.apache.log4j.Logger;
 
-class FtpUnparser extends AbstractUnparser
+class FtpUntokenizer extends AbstractUntokenizer
 {
-    private final Logger logger = Logger.getLogger(FtpUnparser.class);
+    private final Logger logger = Logger.getLogger(FtpUntokenizer.class);
 
     private final FtpCasing ftpCasing;
 
-    FtpUnparser(FtpCasing ftpCasing)
+    FtpUntokenizer(FtpCasing ftpCasing)
     {
         this.ftpCasing = ftpCasing;
     }
 
-    public UnparseResult unparse(Token token)
+    public Untokenizeresult untokenize(Token token)
     {
     }
 }
