@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: IPaddr.java,v 1.5 2005/03/23 04:52:38 rbscott Exp $
+ *  $Id$
  */
 
 package com.metavize.mvvm.tran.firewall;
@@ -25,11 +25,11 @@ import java.net.UnknownHostException;
  */
 public class IPMatcher
 {
-    private static final String SUBNET_MARKER    = "/";
-    private static final String RANGE_MARKER     = "-";
-    private static final String WILDCARD_MARKER  = "*";
+    public static final String MARKER_SUBNET    = "/";
+    public static final String MARKER_RANGE     = "-";
+    public static final String MARKER_WILDCARD  = "*";
     
-    private static final IPMatcher WILDCARD_MATCHER = new IPMatcher( 0, 0, false );
+    public static final IPMatcher MATCHER_ALL = new IPMatcher( 0, 0, false );
 
     static final int INADDRSZ = 4;
 
@@ -77,6 +77,12 @@ public class IPMatcher
         this.base   = tmpBase;
         this.second = tmpSecond;
     }
+
+    public IPMatcher( Inet4Address base )
+    {
+        this.second = this.base   = toLong( base );
+        isRange     = true;
+    }
     
     /* Internal for creating ip matchers */
     IPMatcher( long base, long second, boolean isRange )
@@ -102,14 +108,14 @@ public class IPMatcher
 
         str = str.trim();
 
-        if ( str.indexOf( SUBNET_MARKER ) > 0 ) {
-            marker = SUBNET_MARKER;
+        if ( str.indexOf( MARKER_SUBNET ) > 0 ) {
+            marker = MARKER_SUBNET;
             isRange = false;
-        } else if ( str.indexOf( RANGE_MARKER ) > 0 ) {
-            marker = RANGE_MARKER;
+        } else if ( str.indexOf( MARKER_RANGE ) > 0 ) {
+            marker = MARKER_RANGE;
             isRange = true;            
-        } else if ( str.equalsIgnoreCase( WILDCARD_MARKER )) {
-            return WILDCARD_MATCHER;
+        } else if ( str.equalsIgnoreCase( MARKER_WILDCARD )) {
+            return MATCHER_ALL;
         } else {
             base = toLong( str );
             /* Just an address a range where the start and end are the same */
@@ -162,7 +168,7 @@ public class IPMatcher
         /* Validation */
         for ( int c = 0 ; c < tmp.length ; c++ ) {
             int part = Integer.parseInt( tmp[c] );
-            if ( part < 0 || val > 255 ) {
+            if (( part < 0 ) || ( part > 255 )) {
                 throw new IllegalArgumentException( "Each component must be between 0 and 255 " + tmp);
             }
             

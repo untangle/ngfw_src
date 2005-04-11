@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: IPaddr.java,v 1.5 2005/03/23 04:52:38 rbscott Exp $
+ *  $Id$
  */
 
 package com.metavize.mvvm.tran.firewall;
@@ -25,10 +25,10 @@ import java.net.UnknownHostException;
  */
 public class PortMatcher implements Serializable
 {
-    private static final String RANGE_MARKER    = "-";
-    private static final int    PORT_MASK       = 0xFFFF;
-    private static final String WILDCARD_MARKER = "*";
-    private static final PortMatcher WILDCARD_MATCHER = new PortMatcher( 0, PORT_MASK );
+    public static final String MARKER_RANGE    = "-";
+    public static final int    PORT_MASK       = 0xFFFF;
+    public static final String MARKER_WILDCARD = "*";
+    public static final PortMatcher MATCHER_ALL = new PortMatcher( 0, PORT_MASK );
 
     /* Base port of the range for the rule */
     private final int start;
@@ -72,8 +72,8 @@ public class PortMatcher implements Serializable
 
         str = str.trim();
         
-        if ( str.indexOf( RANGE_MARKER ) > 0 ) {
-            String strArray[] = str.split( RANGE_MARKER, 3 );
+        if ( str.indexOf( MARKER_RANGE ) > 0 ) {
+            String strArray[] = str.split( MARKER_RANGE, 3 );
             
             if ( strArray.length != 2 ) {
                 throw new IllegalArgumentException( "Invalid PortMatcher, more than two components" + str );
@@ -95,8 +95,8 @@ public class PortMatcher implements Serializable
             }
 
             return new PortMatcher( start, end );
-        } else if ( str.equalsIgnoreCase( WILDCARD_MARKER )) {
-            return WILDCARD_MATCHER;
+        } else if ( str.equalsIgnoreCase( MARKER_WILDCARD )) {
+            return MATCHER_ALL;
         }
 
         start = Integer.parseInt( str );

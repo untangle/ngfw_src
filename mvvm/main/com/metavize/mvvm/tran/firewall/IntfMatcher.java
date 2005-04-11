@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: IPaddr.java,v 1.5 2005/03/23 04:52:38 rbscott Exp $
+ *  $Id$
  */
 
 package com.metavize.mvvm.tran.firewall;
@@ -23,10 +23,10 @@ import com.metavize.mvvm.argon.IntfConverter;
 public class IntfMatcher
 {
     /* XXX this just won't work at all for three interfaces */
-    private static final IntfMatcher MATCHER_ALL = new IntfMatcher( true, true );
-    private static final IntfMatcher MATCHER_IN  = new IntfMatcher( true, false );
-    private static final IntfMatcher MATCHER_OUT = new IntfMatcher( false, true );
-    private static final IntfMatcher MATCHER_NIL = new IntfMatcher( false, false );
+    public static final IntfMatcher MATCHER_ALL = new IntfMatcher( true, true );
+    public static final IntfMatcher MATCHER_IN  = new IntfMatcher( true, false );
+    public static final IntfMatcher MATCHER_OUT = new IntfMatcher( false, true );
+    public static final IntfMatcher MATCHER_NIL = new IntfMatcher( false, false );
 
     public final boolean isInsideEnabled;
     public final boolean isOutsideEnabled;

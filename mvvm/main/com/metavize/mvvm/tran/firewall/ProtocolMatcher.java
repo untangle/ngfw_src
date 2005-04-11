@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: IPaddr.java,v 1.5 2005/03/23 04:52:38 rbscott Exp $
+ *  $Id$
  */
 
 package com.metavize.mvvm.tran.firewall;
@@ -23,10 +23,10 @@ import com.metavize.mvvm.tapi.Protocol;
 public class ProtocolMatcher
 {
     private static final String WILDCARD_MARKER  = "*";
-    private static final ProtocolMatcher MATCHER_ALL = new ProtocolMatcher( true, true );
-    private static final ProtocolMatcher MATCHER_TCP = new ProtocolMatcher( true, false );
-    private static final ProtocolMatcher MATCHER_UDP = new ProtocolMatcher( false, true );
-    private static final ProtocolMatcher MATCHER_NIL = new ProtocolMatcher( false, false );
+    public static final ProtocolMatcher MATCHER_ALL = new ProtocolMatcher( true, true );
+    public static final ProtocolMatcher MATCHER_TCP = new ProtocolMatcher( true, false );
+    public static final ProtocolMatcher MATCHER_UDP = new ProtocolMatcher( false, true );
+    public static final ProtocolMatcher MATCHER_NIL = new ProtocolMatcher( false, false );
 
     public final boolean isTcpEnabled;
     public final boolean isUdpEnabled;
