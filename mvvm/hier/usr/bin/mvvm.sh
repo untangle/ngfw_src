@@ -7,6 +7,7 @@ MVVM_LAUNCH=${MVVM_LAUNCH:-"@PREFIX@/usr/bin/bunnicula"}
 
 reapChildHardest() {
     echo "mvvm.sh: Killing -9 all bunnicula \"$pid\" (`date`)" >> $MVVM_WRAPPER_LOG
+    kill -3 $pid
     kill -9 $pid
     kill -9 `ps awwx | grep java | grep bunnicula | awk '{print $1}'` 2>/dev/null
     flushIptables ; exit
@@ -33,6 +34,7 @@ reapChildHarder() {
 
 reapChild() {
     echo "mvvm.sh: shutting down bunnicula " >> $MVVM_WRAPPER_LOG
+    kill -3 $pid
     @PREFIX@/usr/bin/mcli -t 20000 shutdown &> /dev/null
     sleep 1
     kill -INT $pid
