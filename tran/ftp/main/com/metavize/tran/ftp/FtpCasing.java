@@ -13,32 +13,32 @@ package com.metavize.tran.ftp;
 
 import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.tran.token.AbstractCasing;
-import com.metavize.tran.token.Tokenizer;
-import com.metavize.tran.token.Untokenizer;
+import com.metavize.tran.token.Parser;
+import com.metavize.tran.token.Unparser;
 
 class FtpCasing extends AbstractCasing
 {
-    private final Tokenizer tokenizer;
-    private final FtpUntokenizer untokenizer;
+    private final Parser parser;
+    private final FtpUnparser unparser;
 
     // constructors -----------------------------------------------------------
 
     FtpCasing(TCPSession session, boolean clientSide)
     {
-        tokenizer = clientSide ? new FtpClientTokenizer(session)
-            : new FtpServerTokenizer(session);
-        untokenizer = new FtpUntokenizer(session, clientSide);
+        parser = clientSide ? new FtpClientParser(session)
+            : new FtpServerParser(session);
+        unparser = new FtpUnparser(session, clientSide);
     }
 
     // Casing methods ---------------------------------------------------------
 
-    public Tokenizer tokenizer()
+    public Parser parser()
     {
-        return tokenizer;
+        return parser;
     }
 
-    public Untokenizer untokenizer()
+    public Unparser unparser()
     {
-        return untokenizer;
+        return unparser;
     }
 }

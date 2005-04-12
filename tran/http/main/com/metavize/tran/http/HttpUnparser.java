@@ -17,17 +17,17 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 import com.metavize.mvvm.tapi.TCPSession;
-import com.metavize.tran.token.AbstractUntokenizer;
+import com.metavize.tran.token.AbstractUnparser;
 import com.metavize.tran.token.Chunk;
 import com.metavize.tran.token.EndMarker;
 import com.metavize.tran.token.Header;
 import com.metavize.tran.token.Token;
 import com.metavize.tran.token.TokenStreamer;
-import com.metavize.tran.token.Untokenizer;
-import com.metavize.tran.token.UntokenizerResult;
+import com.metavize.tran.token.UnparseResult;
+import com.metavize.tran.token.Unparser;
 import org.apache.log4j.Logger;
 
-class HttpUntokenizer extends AbstractUntokenizer
+class HttpUnparser extends AbstractUnparser
 {
     private static final ByteBuffer[] BYTE_BUFFER_PROTO = new ByteBuffer[0];
 
@@ -42,7 +42,7 @@ class HttpUntokenizer extends AbstractUntokenizer
     private static final int CONTENT_LENGTH_ENCODING = 1;
     private static final int CHUNKED_ENCODING = 2;
 
-    private final Logger logger = Logger.getLogger(HttpUntokenizer.class);
+    private final Logger logger = Logger.getLogger(HttpUnparser.class);
 
     // used to keep request with header, IIS requires this
     private final Queue outputQueue = new LinkedList();
@@ -52,7 +52,7 @@ class HttpUntokenizer extends AbstractUntokenizer
     private int transferEncoding;
     private String sessStr;
 
-    HttpUntokenizer(TCPSession session, boolean clientSide,
+    HttpUnparser(TCPSession session, boolean clientSide,
                     HttpCasing httpCasing)
     {
         super(session, clientSide);
@@ -61,7 +61,7 @@ class HttpUntokenizer extends AbstractUntokenizer
 
     public TokenStreamer endSession() { return null; }
 
-    public UntokenizerResult untokenize(Token token)
+    public UnparseResult unparse(Token token)
     {
         logger.debug(sessStr + " got unparse event node: " + token);
 
@@ -86,31 +86,31 @@ class HttpUntokenizer extends AbstractUntokenizer
         }
     }
 
-    private UntokenizerResult statusLine(StatusLine s)
+    private UnparseResult statusLine(StatusLine s)
     {
         logger.debug(sessStr + " status-line");
 
         queueOutput(s.getBytes());
 
-        return new UntokenizerResult(BYTE_BUFFER_PROTO);
+        return new UnparseResult(BYTE_BUFFER_PROTO);
     }
 
-    private UntokenizerResult requestLine(RequestLine rl)
+    private UnparseResult requestLine(RequestLine rl)
     {
         logger.debug(sessStr + " request-line");
         ByteBuffer buf = ByteBuffer.allocate(BUFFER_SIZE);
 
         HttpMethod method = rl.getMethod();
-        logger.debug(sessStr + " Untokenizer got method: " + method);
+        logger.debug(sessStr + " Unparser got method: " + method);
 
         httpCasing.queueRequest(rl);
 
         queueOutput(rl.getBytes());
 
-        return new UntokenizerResult(BYTE_BUFFER_PROTO);
+        return new UnparseResult(BYTE_BUFFER_PROTO);
     }
 
-    private UntokenizerResult header(Header h)
+    private UnparseResult header(Header h)
     {
         logger.debug(sessStr + " header");
 
@@ -123,17 +123,17 @@ class HttpUntokenizer extends AbstractUntokenizer
 
         queueOutput(h.getBytes());
 
-        return new UntokenizerResult(BYTE_BUFFER_PROTO);
+        return new UnparseResult(BYTE_BUFFER_PROTO);
     }
 
-    private UntokenizerResult chunk(Chunk c)
+    private UnparseResult chunk(Chunk c)
     {
         logger.debug(sessStr + " chunk");
 
         ByteBuffer cBuf = c.getBytes();
 
         if (CHUNKED_ENCODING == transferEncoding && 0 == cBuf.remaining()) {
-            return new UntokenizerResult(BYTE_BUFFER_PROTO);
+            return new UnparseResult(BYTE_BUFFER_PROTO);
         }
 
         ByteBuffer buf;
@@ -158,14 +158,14 @@ class HttpUntokenizer extends AbstractUntokenizer
         }
 
         if (outputQueue.isEmpty()) {
-            return new UntokenizerResult(new ByteBuffer[] { buf });
+            return new UnparseResult(new ByteBuffer[] { buf });
         } else {
             queueOutput(buf);
             return dequeueOutput();
         }
     }
 
-    private UntokenizerResult endMarker()
+    private UnparseResult endMarker()
     {
         logger.debug(sessStr + " GOT END MARER!!");
 
@@ -176,7 +176,7 @@ class HttpUntokenizer extends AbstractUntokenizer
         }
 
         if (outputQueue.isEmpty()) {
-            return new UntokenizerResult(null == buf ? BYTE_BUFFER_PROTO
+            return new UnparseResult(null == buf ? BYTE_BUFFER_PROTO
                                      : new ByteBuffer[] { buf });
         } else {
             if (null != buf) {
@@ -194,7 +194,7 @@ class HttpUntokenizer extends AbstractUntokenizer
         outputQueue.add(buf);
     }
 
-    private UntokenizerResult dequeueOutput()
+    private UnparseResult dequeueOutput()
     {
         ByteBuffer buf = ByteBuffer.allocate(size);
 
@@ -208,6 +208,6 @@ class HttpUntokenizer extends AbstractUntokenizer
         size = 0;
         outputQueue.clear();
 
-        return new UntokenizerResult(new ByteBuffer[] { buf });
+        return new UnparseResult(new ByteBuffer[] { buf });
     }
 }

@@ -14,26 +14,26 @@ package com.metavize.tran.ftp;
 import java.nio.ByteBuffer;
 
 import com.metavize.mvvm.tapi.TCPSession;
-import com.metavize.tran.token.AbstractTokenizer;
+import com.metavize.tran.token.AbstractParser;
+import com.metavize.tran.token.ParseException;
+import com.metavize.tran.token.ParseResult;
 import com.metavize.tran.token.Token;
 import com.metavize.tran.token.TokenStreamer;
-import com.metavize.tran.token.TokenizerException;
-import com.metavize.tran.token.TokenizerResult;
 
-public class FtpServerTokenizer extends AbstractTokenizer
+public class FtpServerParser extends AbstractParser
 {
     private static final char SP = ' ';
     private static final char HYPHEN = '-';
     private static final char CR = '\r';
     private static final char LF = '\n';
 
-    FtpServerTokenizer(TCPSession session)
+    FtpServerParser(TCPSession session)
     {
         super(session, false);
         lineBuffering(true);
     }
 
-    public TokenizerResult tokenize(ByteBuffer buf) throws TokenizerException
+    public ParseResult parse(ByteBuffer buf) throws ParseException
     {
         ByteBuffer dup = buf.duplicate();
 
@@ -41,7 +41,7 @@ public class FtpServerTokenizer extends AbstractTokenizer
             int replyCode = replyCode(dup);
 
             if (-1 == replyCode) {
-                throw new TokenizerException("expected reply code");
+                throw new ParseException("expected reply code");
             }
 
             switch (dup.get()) {
@@ -51,7 +51,7 @@ public class FtpServerTokenizer extends AbstractTokenizer
                 String message = new String(ba);
 
                 FtpReply reply = new FtpReply(replyCode, message);
-                return new TokenizerResult(new Token[] { reply }, null);
+                return new ParseResult(new Token[] { reply }, null);
             }
 
             case HYPHEN: {
@@ -59,7 +59,7 @@ public class FtpServerTokenizer extends AbstractTokenizer
                 while (3 < --i && LF != dup.get(i));
 
                 if (LF != dup.get(i++)) {
-                    return new TokenizerResult(null, buf);
+                    return new ParseResult(null, buf);
                 }
 
                 ByteBuffer end = dup.duplicate();
@@ -68,7 +68,7 @@ public class FtpServerTokenizer extends AbstractTokenizer
                 int endCode = replyCode(end);
 
                 if (-1 == endCode || HYPHEN != end.get()) {
-                    return new TokenizerResult(null, buf);
+                    return new ParseResult(null, buf);
                 }
 
                 byte[] mb = new byte[dup.remaining() + end.remaining()];
@@ -78,15 +78,15 @@ public class FtpServerTokenizer extends AbstractTokenizer
                 String message = new String(mb);
 
                 FtpReply reply = new FtpReply(replyCode, message);
-                return new TokenizerResult(new Token[] { reply }, null);
+                return new ParseResult(new Token[] { reply }, null);
             }
 
             default:
-                throw new TokenizerException("expected a space");
+                throw new ParseException("expected a space");
             }
 
         } else {
-            return new TokenizerResult(null, buf);
+            return new ParseResult(null, buf);
         }
     }
 

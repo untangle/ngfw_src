@@ -14,6 +14,6 @@ package com.metavize.tran.token;
 
 public interface Casing
 {
-    Tokenizer tokenizer();
-    Untokenizer untokenizer();
+    Parser parser();
+    Unparser unparser();
 }

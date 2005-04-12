@@ -13,9 +13,19 @@ package com.metavize.tran.token;
 
 import java.nio.ByteBuffer;
 
-public interface Tokenizer
+public class UnparseResult
 {
-    TokenStreamer endSession();
-    TokenizerResult tokenize(ByteBuffer chunk) throws TokenizerException;
-    void handleTimer();
+    // XXX make List<ByteBuffer> when no XDoclet
+    private ByteBuffer[] result;
+
+    // XXX make List<ByteBuffer> when no XDoclet
+    public UnparseResult(ByteBuffer[] result)
+    {
+        this.result = result;
+    }
+
+    public ByteBuffer[] result()
+    {
+        return result;
+    }
 }

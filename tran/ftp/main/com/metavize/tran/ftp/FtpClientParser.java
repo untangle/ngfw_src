@@ -14,25 +14,25 @@ package com.metavize.tran.ftp;
 import java.nio.ByteBuffer;
 
 import com.metavize.mvvm.tapi.TCPSession;
-import com.metavize.tran.token.AbstractTokenizer;
+import com.metavize.tran.token.AbstractParser;
+import com.metavize.tran.token.ParseException;
+import com.metavize.tran.token.ParseResult;
 import com.metavize.tran.token.Token;
 import com.metavize.tran.token.TokenStreamer;
-import com.metavize.tran.token.TokenizerException;
-import com.metavize.tran.token.TokenizerResult;
 
-public class FtpClientTokenizer extends AbstractTokenizer
+public class FtpClientParser extends AbstractParser
 {
     private static final char SP = ' ';
     private static final char CR = '\r';
     private static final char LF = '\n';
 
-    FtpClientTokenizer(TCPSession session)
+    FtpClientParser(TCPSession session)
     {
         super(session, true);
         lineBuffering(true);
     }
 
-    public TokenizerResult tokenize(ByteBuffer buf) throws TokenizerException
+    public ParseResult parse(ByteBuffer buf) throws ParseException
     {
         if (completeLine(buf)) {
             byte[] ba = new byte[buf.remaining()];
@@ -42,7 +42,7 @@ public class FtpClientTokenizer extends AbstractTokenizer
             String fnStr = new String(ba, 0, i);
             FtpFunction fn = FtpFunction.getInstance(fnStr);
             if (null == fn) {
-                throw new TokenizerException("Unknown FTP function: " + fnStr);
+                throw new ParseException("Unknown FTP function: " + fnStr);
             }
 
             while (SP == ba[++i]);
@@ -51,9 +51,9 @@ public class FtpClientTokenizer extends AbstractTokenizer
 
             FtpCommand cmd = new FtpCommand(fn, arg);
 
-            return new TokenizerResult(new Token[] { cmd }, null);
+            return new ParseResult(new Token[] { cmd }, null);
         } else {
-            return new TokenizerResult(null, buf);
+            return new ParseResult(null, buf);
         }
     }
 

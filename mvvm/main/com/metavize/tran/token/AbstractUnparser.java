@@ -13,12 +13,12 @@ package com.metavize.tran.token;
 
 import com.metavize.mvvm.tapi.TCPSession;
 
-public abstract class AbstractUntokenizer implements Untokenizer
+public abstract class AbstractUnparser implements Unparser
 {
     protected final TCPSession session;
     protected final boolean clientSide;
 
-    protected AbstractUntokenizer(TCPSession session, boolean clientSide)
+    protected AbstractUnparser(TCPSession session, boolean clientSide)
     {
         this.session = session;
         this.clientSide = clientSide;

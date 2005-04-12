@@ -14,23 +14,23 @@ package com.metavize.tran.ftp;
 import java.nio.ByteBuffer;
 
 import com.metavize.mvvm.tapi.TCPSession;
-import com.metavize.tran.token.AbstractUntokenizer;
+import com.metavize.tran.token.AbstractUnparser;
 import com.metavize.tran.token.Token;
 import com.metavize.tran.token.TokenStreamer;
-import com.metavize.tran.token.UntokenizerResult;
+import com.metavize.tran.token.UnparseResult;
 
-class FtpUntokenizer extends AbstractUntokenizer
+class FtpUnparser extends AbstractUnparser
 {
     private final byte[] CRLF = new byte[] { 13, 10 };
 
-    public FtpUntokenizer(TCPSession session, boolean clientSide)
+    public FtpUnparser(TCPSession session, boolean clientSide)
     {
         super(session, clientSide);
     }
 
-    public UntokenizerResult untokenize(Token token)
+    public UnparseResult unparse(Token token)
     {
-        return new UntokenizerResult(new ByteBuffer[] { token.getBytes() });
+        return new UnparseResult(new ByteBuffer[] { token.getBytes() });
     }
 
     public TokenStreamer endSession() { return null; }

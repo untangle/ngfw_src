@@ -11,24 +11,24 @@
 
 package com.metavize.tran.token;
 
-public class TokenizerException extends Exception
+public class UnparseException extends Exception
 {
-    public TokenizerException()
+    public UnparseException()
     {
         super();
     }
 
-    public TokenizerException(String message)
+    public UnparseException(String message)
     {
         super(message);
     }
 
-    public TokenizerException(String message, Throwable cause)
+    public UnparseException(String message, Throwable cause)
     {
         super(message, cause);
     }
 
-    public TokenizerException(Throwable cause)
+    public UnparseException(Throwable cause)
     {
         super(cause);
     }

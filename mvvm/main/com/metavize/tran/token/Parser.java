@@ -11,5 +11,11 @@
 
 package com.metavize.tran.token;
 
+import java.nio.ByteBuffer;
 
-public abstract class AbstractCasing implements Casing { }
+public interface Parser
+{
+    TokenStreamer endSession();
+    ParseResult parse(ByteBuffer chunk) throws ParseException;
+    void handleTimer();
+}

@@ -13,13 +13,13 @@ package com.metavize.tran.http;
 
 import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.tran.token.AbstractCasing;
-import com.metavize.tran.token.Tokenizer;
-import com.metavize.tran.token.Untokenizer;
+import com.metavize.tran.token.Parser;
+import com.metavize.tran.token.Unparser;
 
 class HttpCasing extends AbstractCasing
 {
-    private final HttpTokenizer tokenizer;
-    private final HttpUntokenizer untokenizer;
+    private final HttpParser parser;
+    private final HttpUnparser unparser;
 
     private RequestLine request;
 
@@ -27,20 +27,20 @@ class HttpCasing extends AbstractCasing
 
     HttpCasing(TCPSession session, boolean clientSide)
     {
-        tokenizer = new HttpTokenizer(session, clientSide, this);
-        untokenizer = new HttpUntokenizer(session, clientSide, this);
+        parser = new HttpParser(session, clientSide, this);
+        unparser = new HttpUnparser(session, clientSide, this);
     }
 
     // Casing methods ---------------------------------------------------------
 
-    public Untokenizer untokenizer()
+    public Unparser unparser()
     {
-        return untokenizer;
+        return unparser;
     }
 
-    public Tokenizer tokenizer()
+    public Parser parser()
     {
-        return tokenizer;
+        return parser;
     }
 
     // package private methods ------------------------------------------------
