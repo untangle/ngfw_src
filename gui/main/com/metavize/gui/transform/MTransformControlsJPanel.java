@@ -34,9 +34,10 @@ import org.netbeans.lib.awtextra.AbsoluteLayout;
  */
 public class MTransformControlsJPanel extends javax.swing.JPanel {
  
+    
     // EXPANDING/CONTACTING
-    private static final Dimension MIN_SIZE = new Dimension(800, 600);
-    private static final Dimension MAX_SIZE = new Dimension(1600, 1200);
+    protected final Dimension MIN_SIZE = new Dimension(800, 600);
+    protected final Dimension MAX_SIZE = new Dimension(1600, 1200);
     private AbsoluteConstraints oldConstraints;
     private JDialog expandJDialog;
     private static final int EXPAND_WIDTH = 700;
