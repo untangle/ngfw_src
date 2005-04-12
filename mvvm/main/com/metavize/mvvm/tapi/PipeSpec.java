@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: PipeSpec.java,v 1.1 2005/01/30 09:20:31 amread Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.tapi;
@@ -26,11 +26,14 @@ import com.metavize.mvvm.argon.IPSessionDesc;
  */
 public class PipeSpec
 {
+    public static final int STRENGTH_MAX = 32;
+    public static final int STRENGTH_MIN = 0;
+
     private final String name;
     private final Fitting input;
     private final Fitting output;
     private final Affinity affinity;
-    private final int strength; // [ 0 - 32 ]
+    private final int strength; // [ STRENGTH_MIN - STRENGTH_MAX ]
     private final Set subscriptions;
 
     // constructors -----------------------------------------------------------
@@ -53,6 +56,34 @@ public class PipeSpec
         this.affinity = affinity;
         this.strength = 0;
     }
+
+    /**
+     * Make a spec for a pipe that does not change the stream's type
+     * using a set of subscriptions.
+     *
+     * @param name name for debugging.
+     * @param type type of input and output.
+     * @param subscriptions multiple subscriptions.
+     * @param affinity where in pipeline.
+     */
+    public PipeSpec(String name, Fitting type, Set subscriptions,
+                    Affinity affinity, int strength)
+    {
+        this.name = name;
+        this.input = this.output = type;
+        this.subscriptions = subscriptions;
+        this.affinity = affinity;
+        if (strength < STRENGTH_MIN) {
+            strength = STRENGTH_MIN;
+        }
+        
+        if (strength > STRENGTH_MAX) {
+            strength = STRENGTH_MAX;
+        }
+
+        this.strength = strength;
+    }
+
 
     /**
      * Make a spec for a pipe that does not change the stream's type
