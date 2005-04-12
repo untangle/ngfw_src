@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: IPSessionDescImpl.java,v 1.6 2005/01/07 01:23:55 jdi Exp $
+ *  $Id$
  */
 
 package com.metavize.mvvm.tapi.client;
@@ -20,6 +20,8 @@ class IPSessionDescImpl extends SessionDescImpl implements IPSessionDesc {
     protected byte clientState;
     protected byte serverState;
 
+    protected short protocol;
+
     protected byte clientIntf;
     protected byte serverIntf;
 
@@ -29,13 +31,14 @@ class IPSessionDescImpl extends SessionDescImpl implements IPSessionDesc {
     protected int clientPort;
     protected int serverPort;
 
-    protected IPSessionDescImpl(int id, SessionStats stats,
+    protected IPSessionDescImpl(int id, short protocol, SessionStats stats,
                                 byte clientState, byte serverState,
                                 byte clientIntf, byte serverIntf,
                                 InetAddress clientAddr, InetAddress serverAddr,
                                 int clientPort, int serverPort)
     {
         super(id, stats);
+        this.protocol = protocol;
         this.clientState = clientState;
         this.serverState = serverState;
         this.clientIntf = clientIntf;
@@ -46,6 +49,11 @@ class IPSessionDescImpl extends SessionDescImpl implements IPSessionDesc {
         this.serverPort = serverPort;
     }
 
+    public short protocol()
+    {
+        return protocol;
+    }
+    
     public byte clientIntf()
     {
         return clientIntf;

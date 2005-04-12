@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: NewSessionRequest.java,v 1.1 2005/01/06 02:39:41 jdi Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.tapi;
@@ -29,4 +29,30 @@ public interface NewSessionRequest
      * @return the <code>MPipe</code> that this session is for
      */
     MPipe mPipe();
+
+    /**
+     * Attaches the given object to this session request.
+     *
+     * <p> An attached object may later be retrieved via the {@link #attachment
+     * attachment} method of the session itself.  (The attached object is automatically
+     * attached to the session, assuming the request is allowed).
+     * Only one object may be attached at a time; invoking
+     * this method causes any previous attachment to be discarded.  The current
+     * attachment may be discarded by attaching <tt>null</tt>.  </p>
+     *
+     * @param  ob
+     *         The object to be attached; may be <tt>null</tt>
+     *
+     * @return  The previously-attached object, if any,
+     *          otherwise <tt>null</tt>
+     */
+    Object attach(Object ob);
+
+    /**
+     * Retrieves the current attachment.  </p>
+     *
+     * @return  The object currently attached to this session,
+     *          or <tt>null</tt> if there is no attachment
+     */
+    Object attachment();
 }

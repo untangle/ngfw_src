@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: IPSessionImpl.java,v 1.42 2005/03/22 01:05:54 jdi Exp $
+ *  $Id$
  */
 
 package com.metavize.mvvm.tapi.impl;
@@ -57,7 +57,12 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
             timesLogger = Logger.getLogger("com.metavize.mvvm.tapi.SessionTimes");
         logger = disp.mPipe().sessionLogger();
     }
-    
+
+    public short protocol()
+    {   
+        return ((com.metavize.mvvm.argon.IPSession)pSession).protocol();
+    }
+
     public InetAddress clientAddr()
     {
         return ((com.metavize.mvvm.argon.IPSession)pSession).clientAddr();

@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: Dispatcher.java,v 1.22 2005/02/07 22:15:39 amread Exp $
+ *  $Id$
  */
 
 package com.metavize.mvvm.tapi.impl;
@@ -317,6 +317,7 @@ class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {
             TCPSessionImpl session = new TCPSessionImpl(this, pSession,
                                                     td.getTcpClientReadBufferSize(),
                                                     td.getTcpServerReadBufferSize());
+            session.attach(treq.attachment());
             registerPipelineListener(pSession, session);
             if (RWSessionStats.DoDetailedTimes)
                 madeSessionTime = MetaEnv.currentTimeMillis();
@@ -378,21 +379,21 @@ class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {
             TransformDesc td = tt.getTransformDesc();
             sessionId = request.id();
 
-            UDPNewSessionRequestImpl treq = new UDPNewSessionRequestImpl(this, request);
+            UDPNewSessionRequestImpl ureq = new UDPNewSessionRequestImpl(this, request);
             if (RWSessionStats.DoDetailedTimes)
                 dispatchRequestTime = MetaEnv.currentTimeMillis();
             MutateTStats.requestUDPSession(mPipe);
 
             // Give the request event to the user, to give them a chance to reject the session.
             logger.debug("sending UDP new session request event");
-            UDPNewSessionRequestEvent revent = new UDPNewSessionRequestEvent(mPipe, treq);
+            UDPNewSessionRequestEvent revent = new UDPNewSessionRequestEvent(mPipe, ureq);
             dispatchUDPNewSessionRequest(revent);
 
             if (RWSessionStats.DoDetailedTimes)
                 requestHandledTime = MetaEnv.currentTimeMillis();
 
             // Check the session only if it was not rejected.
-            switch (treq.state()) {
+            switch (ureq.state()) {
             case com.metavize.mvvm.argon.IPNewSessionRequest.REJECTED:
             case com.metavize.mvvm.argon.IPNewSessionRequest.REJECTED_SILENT:
                 logger.debug("rejecting");
@@ -412,6 +413,7 @@ class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {
             UDPSessionImpl session = new UDPSessionImpl(this, pSession,
                                                     td.getUdpMaxPacketSize(),
                                                     td.getUdpMaxPacketSize());
+            session.attach(ureq.attachment());
             registerPipelineListener(pSession, session);
             if (RWSessionStats.DoDetailedTimes)
                 madeSessionTime = MetaEnv.currentTimeMillis();

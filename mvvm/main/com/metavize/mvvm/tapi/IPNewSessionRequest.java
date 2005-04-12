@@ -6,58 +6,15 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: IPNewSessionRequest.java,v 1.4 2005/01/23 18:33:20 jdi Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.tapi;
 
 import java.net.InetAddress;
+import com.metavize.mvvm.argon.SessionEndpoints;
 
-public interface IPNewSessionRequest extends NewSessionRequest {
-
-    /**
-     * Returns an argon interface for the client.</p>
-     *
-     * @return a <code>byte</code> giving the client interface of the session.
-     */
-    byte clientIntf();
-
-    /**
-     * Returns an argon interface for the server.</p>
-     *
-     * @return a <code>byte</code> giving the server interface of the session.
-     */
-    byte serverIntf();
-
-    /**
-     * Gets the Client Address of this session. </p>
-     *
-     * @return  the client address
-     */
-    InetAddress clientAddr();
-
-    /**
-     * Gets the Server Address of this session. </p>
-     *
-     * @return  the server addr.
-     */
-    InetAddress serverAddr();
-
-    // We provide these here, confident that nothing other than UDP or TCP
-    // will be a session, others will be stateless.  (Or this will just be 0)
-
-    /**
-     * Gets the client port for this session.</p>
-     * @return the client port.
-     */
-    int clientPort();
-
-    /**
-     * Gets the server port for this session.</p>
-     * @return the server port.
-     */
-    int serverPort();
-
+public interface IPNewSessionRequest extends NewSessionRequest, SessionEndpoints {
 
     /**
      * Sets the client address for this session.</p>

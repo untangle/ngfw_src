@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: IPNewSessionRequestImpl.java,v 1.3 2005/01/23 18:33:20 jdi Exp $
+ *  $Id$
  */
 
 package com.metavize.mvvm.tapi.impl;
@@ -18,6 +18,8 @@ import com.metavize.mvvm.tapi.MPipe;
 abstract class IPNewSessionRequestImpl implements IPNewSessionRequest {
 
     protected MPipeImpl mPipe;
+
+    protected volatile Object attachment = null;
 
     /**
      * The pipeline request that corresponds to this (transform) request.
@@ -36,6 +38,10 @@ abstract class IPNewSessionRequestImpl implements IPNewSessionRequest {
 
     public int id() {
         return pRequest.id();
+    }
+
+    public short protocol() {
+        return pRequest.protocol();
     }
 
     public InetAddress clientAddr() {
@@ -110,5 +116,15 @@ abstract class IPNewSessionRequestImpl implements IPNewSessionRequest {
         return pRequest.state();
     }
         
+    public Object attach(Object ob)
+    {
+        Object oldOb = attachment;
+        attachment = ob;
+        return oldOb;
+    }
 
+    public Object attachment()
+    {
+        return attachment;
+    }
 }

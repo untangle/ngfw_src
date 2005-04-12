@@ -6,12 +6,13 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: UDPSessionDescImpl.java,v 1.8 2005/01/06 02:39:41 jdi Exp $
+ *  $Id$
  */
 
 package com.metavize.mvvm.tapi.client;
 
 import com.metavize.mvvm.tapi.*;
+import com.metavize.mvvm.argon.SessionEndpoints;
 import java.net.InetAddress;
 
 public class UDPSessionDescImpl extends IPSessionDescImpl implements UDPSessionDesc {
@@ -22,7 +23,7 @@ public class UDPSessionDescImpl extends IPSessionDescImpl implements UDPSessionD
                               InetAddress clientAddr, InetAddress serverAddr,
                               int clientPort, int serverPort)
     {
-        super(id, stats, clientState, serverState,
+        super(id, SessionEndpoints.PROTO_UDP, stats, clientState, serverState,
               clientIntf, serverIntf, clientAddr, serverAddr, clientPort, serverPort);
     }
 }
