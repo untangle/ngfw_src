@@ -21,8 +21,8 @@ import com.metavize.tran.nat.*;
 
 public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransformControlsJPanel{
     
-    MIN_SIZE = new Dimension(640, 480);
-    MAX_SIZE = new Dimension(640, 1200);
+    super.MIN_SIZE = new Dimension(640, 480);
+    super.MAX_SIZE = new Dimension(640, 1200);
     
     private NatSettings natSettings;
         

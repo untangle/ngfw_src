@@ -36,8 +36,8 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
  
     
     // EXPANDING/CONTACTING
-    protected final Dimension MIN_SIZE = new Dimension(800, 600);
-    protected final Dimension MAX_SIZE = new Dimension(1600, 1200);
+    protected Dimension MIN_SIZE = new Dimension(800, 600);
+    protected Dimension MAX_SIZE = new Dimension(1600, 1200);
     private AbsoluteConstraints oldConstraints;
     private JDialog expandJDialog;
     private static final int EXPAND_WIDTH = 700;
