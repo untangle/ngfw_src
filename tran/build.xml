@@ -22,7 +22,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <import file="../buildtools/buildmagic.xml"/>
 
   <property name="transforms"
-            value="ftp,http,virus,airgap,reporting,protofilter,test,sophos,fprot,hauri,clam,spyware,httpblocker,email"/>
+            value="nat,ftp,http,virus,airgap,reporting,protofilter,test,sophos,fprot,hauri,clam,spyware,httpblocker,email"/>
 
 
   <!--              -->
@@ -232,6 +232,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <!--              -->
 
   <target name="install.test"/>
+  <target name="install.nat"/>
   <target name="install.spyware"/>
   <target name="install.http"/>
   <target name="install.ftp"/>
@@ -266,12 +267,14 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <target name="install.reporting"/>
   <target name="install.email"/>
   <target name="install.protofilter"/>
+  
 
   <!--              -->
   <!-- custom       -->
   <!--              -->
 
   <target name="jar.test"/>
+  <target name="jar.nat"/>
   <target name="jar.spyware"/>
   <target name="jar.http"/>
   <target name="jar.ftp"/>
@@ -332,6 +335,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   </target>
 
   <target name="compile.test"/>
+  <target name="compile.nat"/>
   <target name="compile.spyware"/>
   <target name="compile.http"/>
   <target name="compile.ftp"/>

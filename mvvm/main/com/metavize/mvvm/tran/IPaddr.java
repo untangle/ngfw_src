@@ -7,7 +7,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: IPaddr.java,v 1.5 2005/03/23 04:52:38 rbscott Exp $
+ *  $Id$
  */
 
 package com.metavize.mvvm.tran;
@@ -51,12 +51,22 @@ public class IPaddr implements Serializable
 
         return new IPaddr( (Inet4Address)InetAddress.getByName( dotNotation ));
     }
+    
+    public static IPaddr and( IPaddr addr1, IPaddr addr2 ) 
+    {
+        return addr1.and( addr2 );
+    }
 
     public InetAddress getAddr()
     {
         return addr;
     }
 
+    public IPaddr and( IPaddr addr2 )
+    {
+        return null;
+    }
+    
     public boolean isEmpty()
     {
         if ( addr == null ) 
