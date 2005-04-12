@@ -3,10 +3,9 @@
 
 DIR=@PREFIX@/var/log/mvvm/
 
-if [ -z "$1" ] ; then
-    loop=1
-else
+if ! [ -z "$1" ] ; then
     clear
+    loop=$1
 fi
 
 while true ; do
@@ -16,10 +15,10 @@ while true ; do
         warn="`grep -i Warning $DIR/$i | wc -l`"
         echo "$i $exc $err $warn" | awk '{ printf "%-18s Except: %-4s Error: %-4s Warn: %-4s\n",$1,$2,$3,$4 }'
     done
-    if ! [ -z "$loop" ] ; then 
+    if [ -z "$loop" ] ; then 
         exit 0
     else
-        sleep 1
+        sleep $loop
         clear
     fi
 done
