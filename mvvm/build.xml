@@ -136,21 +136,22 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       <src path="${src.main}"/>
 
       <include name="com/metavize/mvvm/*.java"/>
-      <include name="com/metavize/mvvm/engine/SocketInvokerStub.java"/>
-      <include name="com/metavize/mvvm/engine/HttpInvokerStub.java"/>
-      <include name="com/metavize/mvvm/engine/HttpInvocation.java"/>
-      <include name="com/metavize/mvvm/engine/ProxyInputStream.java"/>
+      <include name="com/metavize/mvvm/argon/SessionEndpoints.java"/>
       <include name="com/metavize/mvvm/client/*.java"/>
-      <include name="com/metavize/mvvm/logging/LoggingManager.java"/>
+      <include name="com/metavize/mvvm/engine/HttpInvocation.java"/>
+      <include name="com/metavize/mvvm/engine/HttpInvokerStub.java"/>
+      <include name="com/metavize/mvvm/engine/ProxyInputStream.java"/>
+      <include name="com/metavize/mvvm/engine/SocketInvokerStub.java"/>
       <include name="com/metavize/mvvm/logging/LogEvent.java"/>
+      <include name="com/metavize/mvvm/logging/LoggingManager.java"/>
+      <include name="com/metavize/mvvm/security/*.java"/>
       <include name="com/metavize/mvvm/tapi/*Desc.java"/>
       <include name="com/metavize/mvvm/tapi/SessionStats.java"/>
+      <include name="com/metavize/mvvm/tapi/client/*.java"/>
       <include name="com/metavize/mvvm/tran/*.java"/>
       <exclude name="com/metavize/mvvm/tran/MutateTStats.java"/>
-      <include name="com/metavize/mvvm/security/*.java"/>
-      <include name="com/metavize/mvvm/tapi/client/*.java"/>
-      <include name="com/metavize/mvvm/util/SessionUtil.java"/>
       <include name="com/metavize/mvvm/util/PortServiceNames.java"/>
+      <include name="com/metavize/mvvm/util/SessionUtil.java"/>
     </javac>
   </target>
 
@@ -158,21 +159,22 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
     <jar destfile="${build.jar}/mvvm-client.jar" index="yes">
       <fileset dir="${build.mvvm-client}">
         <include name="com/metavize/mvvm/*.class"/>
-        <include name="com/metavize/mvvm/engine/SocketInvokerStub*.class"/>
-        <include name="com/metavize/mvvm/engine/HttpInvokerStub*.class"/>
-        <include name="com/metavize/mvvm/engine/HttpInvocation*.class"/>
-        <include name="com/metavize/mvvm/engine/ProxyInputStream*.class"/>
+        <include name="com/metavize/mvvm/argon/SessionEndpoints*.class"/>
         <include name="com/metavize/mvvm/client/*.class"/>
-        <include name="com/metavize/mvvm/logging/LoggingManager*.class"/>
+        <include name="com/metavize/mvvm/engine/HttpInvocation*.class"/>
+        <include name="com/metavize/mvvm/engine/HttpInvokerStub*.class"/>
+        <include name="com/metavize/mvvm/engine/ProxyInputStream*.class"/>
+        <include name="com/metavize/mvvm/engine/SocketInvokerStub*.class"/>
         <include name="com/metavize/mvvm/logging/LogEvent*.class"/>
+        <include name="com/metavize/mvvm/logging/LoggingManager*.class"/>
+        <include name="com/metavize/mvvm/security/*.class"/>
         <include name="com/metavize/mvvm/tapi/*Desc*.class"/>
         <include name="com/metavize/mvvm/tapi/SessionStats*.class"/>
+        <include name="com/metavize/mvvm/tapi/client/*.class"/>
         <include name="com/metavize/mvvm/tran/*.class"/>
         <exclude name="com/metavize/mvvm/tran/MutateTStats*.class"/>
-        <include name="com/metavize/mvvm/security/*.class"/>
-        <include name="com/metavize/mvvm/tapi/client/*.class"/>
-        <include name="com/metavize/mvvm/util/SessionUtil*.class"/>
         <include name="com/metavize/mvvm/util/PortServiceNames*.class"/>
+        <include name="com/metavize/mvvm/util/SessionUtil*.class"/>
       </fileset>
     </jar>
   </target>
