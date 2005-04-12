@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: RemoteClient.java,v 1.25 2005/02/24 02:53:06 amread Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.util;
@@ -523,7 +523,11 @@ public class RemoteClient
 
     private static String pkgName(String mkg)
     {
-        return (mkg + "-transform");
+        if (mkg.equals("http") || mkg.equals("ftp")) {
+            return (mkg + "-casing");
+        } else {
+            return (mkg + "-transform");
+        }
     }
 
     private static final int DEFAULT_PAD = 25;

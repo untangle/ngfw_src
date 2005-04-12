@@ -14,15 +14,23 @@ Description: The Metavize Test Software Appliance
  The Tester serves as a simple testbench to evaluate various
  new and advanced functionalities of the Metavize Server.
 
+Package: ftp-casing
+Architecture: any
+Depends: mvvm
+XB-Price: 1000
+XB-Display-Name: FTP Decoder
+Description: The Metavize FTP casing
+ Casing for the FTP protocol.
+
 Package: http-casing
 Architecture: any
 Depends: mvvm
 Conflicts: http-transform
 XB-Price: 1000
-XB-Display-Name: Web/http Decoder
+XB-Display-Name: Web/HTTP Decoder
 Description: The Metavize Web/http Decoder
- The Web/http Decoder allows other Devices to parse and analyze Web/http traffic
- and documents.
+ The Web/http Decoder allows other Devices to parse and analyze
+ Web/http traffic and documents.
 
 Package: httpblocker-transform
 Architecture: any
@@ -31,9 +39,10 @@ XB-Price: 1000
 XB-Display-Name: Web Content Control
 XB-Rack-Position: 2
 Description: The Metavize Web Content Filter
- The Web Content Control allows Web traffic to be filtered based on web address,
- MIME type, file extension, content category, etc.  You can also specify web
- addresses and specific clients that should not be blocked.
+ The Web Content Control allows Web traffic to be filtered based on
+ web address, MIME type, file extension, content category, etc.  You
+ can also specify web addresses and specific clients that should not
+ be blocked.
 
 Package: email-transform
 Architecture: any
@@ -43,9 +52,9 @@ XB-Price: 1000
 XB-Display-Name: eMail SpamGuard
 XB-Rack-Position: 3
 Description: The Metavize eMail SpamGuard
- The eMail SpamGuard is able to block incoming and outgoing SMTP, POP3, and IMAP emails
- based on the existence of a Virus, Spam, or keywords in various parts of the
- email.
+ The eMail SpamGuard is able to block incoming and outgoing SMTP,
+ POP3, and IMAP emails based on the existence of a Virus, Spam, or
+ keywords in various parts of the email.
 
 Package: protofilter-transform
 Architecture: any
@@ -55,8 +64,9 @@ XB-Price: 1000
 XB-Display-Name: Rogue Protocol Control
 XB-Rack-Position: 7
 Description: The Metavize Rogue Protocol Control
- The Rogue Protocol Control is able to identify and selectively block various Peer-to-Peer
- communication and download protocols, such as AIM, IM, IRC, GNUTELLA, etc.
+ The Rogue Protocol Control is able to identify and selectively block
+ various Peer-to-Peer communication and download protocols, such as
+ AIM, IM, IRC, GNUTELLA, etc.
 
 Package: fprot-transform
 Architecture: any
@@ -65,8 +75,8 @@ XB-Price: 1000
 XB-Display-Name: F-Prot AntiVirus Scanner
 XB-Rack-Position: 5
 Description: The F-Prot AntiVirus
- The F-Prot AntiVirus Scanner is able to scan and block inbound and outbound viruses, in
- both Web/http traffic and ftp traffic.
+ The F-Prot AntiVirus Scanner is able to scan and block inbound and
+ outbound viruses, in both Web/http traffic and ftp traffic.
 
 Package: hauri-transform
 Architecture: any
@@ -75,8 +85,8 @@ XB-Price: 1000
 XB-Display-Name: Hauri AntiVirus
 XB-Rack-Position: 6
 Description: The Hauri AntiVirus
- The Hauri AntiVirus Scanner is able to scan and block inbound and outbound viruses, in
- both Web/http traffic and ftp traffic.
+ The Hauri AntiVirus Scanner is able to scan and block inbound and outbound
+ viruses, in both Web/http traffic and ftp traffic.
 
 Package: clam-transform
 Architecture: any
@@ -85,8 +95,8 @@ XB-Price: 1000
 XB-Display-Name: Clam AntiVirus
 XB-Rack-Position: 5
 Description: The Clam AntiVirus
- The Clam AntiVirus Scanner is able to scan and block inbound and outbound viruses, in
- both Web/http traffic and ftp traffic.
+ The Clam AntiVirus Scanner is able to scan and block inbound and
+ outbound viruses, in both Web/http traffic and ftp traffic.
 
 Package: sophos-transform
 Architecture: any
@@ -95,8 +105,8 @@ XB-Price: 1000
 XB-Display-Name: Sophos AntiVirus Scanner
 XB-Rack-Position: 4
 Description: The Sophos AntiVirus
- The Sophos AntiVirus Scanner is able to scan and block inbound and outbound viruses, in
- both http traffic and ftp traffic.
+ The Sophos AntiVirus Scanner is able to scan and block inbound and
+ outbound viruses, in both http traffic and ftp traffic.
 
 Package: airgap-transform
 Architecture: any
@@ -105,9 +115,9 @@ XB-Price: 1000
 XB-Display-Name: Packet Attack Shield
 XB-Rack-Position: 0
 Description: The Metavize Packet Attack Shield
- The Packet Attack Shield is able to prevent packet based attacks on the internal
- network.  This is done primarily through the use of an air gap, although other
- techniques will be available.
+ The Packet Attack Shield is able to prevent packet based attacks on
+ the internal network.  This is done primarily through the use of an
+ air gap, although other techniques will be available.
 
 Package: reporting-transform
 Architecture: any
@@ -125,9 +135,10 @@ XB-Price: 1000
 XB-Display-Name: Spyware Blocker
 XB-Rack-Position: 1
 Description: The Metavize Spyware Blocker
- The Spyware Blocker detects and prevents Spyware infections, going to client systems via ActiveX controls,
- and cookies.  It is also able to prevent communication between a client system and a
- known Spyware website/host.
+ The Spyware Blocker detects and prevents Spyware infections, going to
+ client systems via ActiveX controls, and cookies.  It is also able to
+ prevent communication between a client system and a known Spyware
+ website/host.
 
 Package: metavize-client
 Architecture: any

@@ -158,7 +158,11 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
 
     <mkdir dir="${build.root}/${tran.name}/META-INF"/>
 
-    <if> <equals arg1="${tran.name}" arg2="http"/>
+    <if>
+      <or>
+        <equals arg1="${tran.name}" arg2="http"/>
+        <equals arg1="${tran.name}" arg2="ftp"/>
+      </or>
     <then>
       <jar destfile="${build.jar}/${tran.name}-casing.mar" index="yes">
     <fileset dir="${build.root}/${tran.name}"/>
@@ -191,7 +195,11 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
 
   <target name="install.tran" depends="mar.tran">
 
-    <if> <equals arg1="${tran.name}" arg2="http"/>
+    <if>
+      <or>
+        <equals arg1="${tran.name}" arg2="http"/>
+        <equals arg1="${tran.name}" arg2="ftp"/>
+      </or>
     <then>
       <copy file="${build.jar}/${tran.name}-casing.mar"
         todir="${dist.mvvm.toolbox}"/>
@@ -212,7 +220,11 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
 
     <antcall target="install.${tran.name}" inheritAll="true"/>
 
-    <if> <equals arg1="${tran.name}" arg2="http"/>
+    <if>
+      <or>
+        <equals arg1="${tran.name}" arg2="http"/>
+        <equals arg1="${tran.name}" arg2="ftp"/>
+      </or>
     <then>
     <signjar jar="${dist.mvvm.webstart}/${tran.name}-casing.mar"
           keystore="../gui/keystore" alias="software key"
