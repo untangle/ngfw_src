@@ -42,9 +42,9 @@ public class NetworkJDialog extends ConfigJDialog {
         JScrollPane contentJScrollPane = new JScrollPane( networkJPanel );
         contentJScrollPane.setHorizontalScrollBarPolicy( ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER );
         contentJScrollPane.setVerticalScrollBarPolicy( ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS );
-        this.contentJTabbedPane.setTitleAt(0, "Advanced Network Settings");
+        this.contentJTabbedPane.setTitleAt(0, "Network Settings");
         this.contentJPanel.add(contentJScrollPane);
-        this.setTitle("Advanced Network Settings");
+        this.setTitle("Network Settings");
         MIN_SIZE = new Dimension(640, 480);
         MAX_SIZE = new Dimension(640, 1200);
 

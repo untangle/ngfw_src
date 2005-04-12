@@ -340,7 +340,7 @@ public class MMainJFrame extends javax.swing.JFrame {
 
         networkJButton.setFont(new java.awt.Font("Arial", 0, 12));
         networkJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText32x32.png")));
-        networkJButton.setText("<html>Advanced<br>Network Settings</html>");
+        networkJButton.setText("<html>Network<br>Settings</html>");
         networkJButton.setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.EtchedBorder(), new javax.swing.border.EmptyBorder(new java.awt.Insets(2, 2, 2, 0))));
         networkJButton.setDoubleBuffered(true);
         networkJButton.setFocusPainted(false);
