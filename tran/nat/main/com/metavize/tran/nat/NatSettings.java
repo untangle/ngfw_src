@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: NatSettings.java,v 1.8 2005/02/25 02:45:29 amread Exp $
+ * $Id$
  */
 
 package com.metavize.tran.nat;
@@ -34,8 +34,9 @@ public class NatSettings implements java.io.Serializable
     /* XXX Must be updated */
     private static final long serialVersionUID = 2664348127860496780L;
 
-    private IPaddr internalAddress;
-    private IPaddr internalSubnet;
+    private boolean natEnabled;
+    private IPaddr natInternalAddress;
+    private IPaddr natInternalSubnet;
 
     /* Also could be considered internal address, must set with ifconfig */
     private IPaddr gateway;
@@ -104,18 +105,35 @@ public class NatSettings implements java.io.Serializable
     /**
      * Get the base of the internal address.
      *
-     * @return internal Address.
+     * @return is NAT is being used.
      * @hibernate.property
-     * column="INTERNAL_ADDR"
+     * column="NAT_ENABLED"
      */
-    public IPaddr getInternalAddress()
+    public boolean getNatEnabled()
     {
-        return internalAddress;
+	return natEnabled;
+    }
+
+    public void setNatEnabled( boolean enabled )
+    {
+	natEnabled = enabled;
     }
     
-    public void setInternalAddress( IPaddr addr ) 
+    /**
+     * Get the base of the internal address.
+     *
+     * @return internal Address.
+     * @hibernate.property
+     * column="NAT_INTERNAL_ADDR"
+     */
+    public IPaddr getNatInternalAddress()
     {
-        internalAddress = addr;
+        return natInternalAddress;
+    }
+    
+    public void setNatInternalAddress( IPaddr addr ) 
+    {
+        natInternalAddress = addr;
     }
 
     /**
@@ -123,16 +141,16 @@ public class NatSettings implements java.io.Serializable
      *
      * @return internal subnet.
      * @hibernate.property
-     * column="INTERNAL_SUBNET"
+     * column="NAT_INTERNAL_SUBNET"
      */
-    public IPaddr getInternalSubnet()
+    public IPaddr getNatInternalSubnet()
     {
-        return internalSubnet;
+        return natInternalSubnet;
     }
     
-    public void setInternalSubnet( IPaddr addr ) 
+    public void setNatInternalSubnet( IPaddr addr ) 
     {
-        internalSubnet = addr;
+        natInternalSubnet = addr;
     }
 
     /**
