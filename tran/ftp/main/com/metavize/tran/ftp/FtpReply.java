@@ -12,6 +12,7 @@
 package com.metavize.tran.ftp;
 
 import java.nio.ByteBuffer;
+import java.util.StringTokenizer;
 
 import com.metavize.tran.token.Token;
 
@@ -24,7 +25,7 @@ import com.metavize.tran.token.Token;
  */
 public class FtpReply implements Token
 {
-    private final short replyCode;
+    private final int replyCode;
     private final String message;
 
     public FtpReply(int replyCode, String message)
@@ -48,13 +49,13 @@ public class FtpReply implements Token
     // Token methods ---------------------------------------------------------
 
     /**
-     * Does not include the final CRLF.
+     * Includes final CRLF.
      *
      * @return a <code>ByteBuffer</code> value
      */
     public ByteBuffer getBytes()
     {
-        StringBuilder sb = new StringBuilder(message.length() + 5);
+        StringBuilder sb = new StringBuilder(message.length() + 10);
         sb.append(replyCode);
 
         StringTokenizer tok = new StringTokenizer(message, "\n");
@@ -67,7 +68,8 @@ public class FtpReply implements Token
                     sb.append(line);
                     sb.append("\r\n");
                 } else {  /* last line */
-                    sb.append('-');
+                    sb.append(replyCode);
+                    sb.append(' ');
                     sb.append(line);
                 }
             }
@@ -75,6 +77,8 @@ public class FtpReply implements Token
             sb.append(line);
         }
 
-        return sb.toString().getBytes();
+        sb.append("\r\n");
+
+        return ByteBuffer.wrap(sb.toString().getBytes());
     }
 }

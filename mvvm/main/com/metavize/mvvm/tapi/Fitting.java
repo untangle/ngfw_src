@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: Fitting.java,v 1.1 2005/01/30 09:20:31 amread Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.tapi;
@@ -28,6 +28,8 @@ public class Fitting
     public static final Fitting TOKEN_STREAM = new Fitting("token-stream");
     public static final Fitting HTTP_TOKENS
         = new Fitting("http-tokens", TOKEN_STREAM);
+    public static final Fitting FTP_TOKENS
+        = new Fitting("ftp-tokens", TOKEN_STREAM);
 
     private String type;
     private Fitting parent;

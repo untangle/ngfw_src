@@ -11,23 +11,27 @@
 
 package com.metavize.tran.ftp;
 
+import java.nio.ByteBuffer;
+
+import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.tran.token.AbstractUntokenizer;
 import com.metavize.tran.token.Token;
+import com.metavize.tran.token.TokenStreamer;
 import com.metavize.tran.token.UntokenizerResult;
-import org.apache.log4j.Logger;
 
 class FtpUntokenizer extends AbstractUntokenizer
 {
-    private final Logger logger = Logger.getLogger(FtpUntokenizer.class);
+    private final byte[] CRLF = new byte[] { 13, 10 };
 
-    private final FtpCasing ftpCasing;
-
-    FtpUntokenizer(FtpCasing ftpCasing)
+    public FtpUntokenizer(TCPSession session, boolean clientSide)
     {
-        this.ftpCasing = ftpCasing;
+        super(session, clientSide);
     }
 
     public UntokenizerResult untokenize(Token token)
     {
+        return new UntokenizerResult(new ByteBuffer[] { token.getBytes() });
     }
+
+    public TokenStreamer endSession() { return null; }
 }

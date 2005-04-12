@@ -11,6 +11,7 @@
 
 package com.metavize.tran.ftp;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -116,6 +117,6 @@ public class FtpFunction
 
     Object readResolve()
     {
-        return getInstance(key);
+        return getInstance(commandName);
     }
 }

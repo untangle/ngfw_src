@@ -13,6 +13,6 @@ package com.metavize.tran.token;
 
 public interface Untokenizer
 {
-    TokenStreamer endSession();
     UntokenizerResult untokenize(Token token) throws UntokenizerException;
+    TokenStreamer endSession();
 }

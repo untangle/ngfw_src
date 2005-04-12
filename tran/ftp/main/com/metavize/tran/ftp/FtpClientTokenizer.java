@@ -13,27 +13,22 @@ package com.metavize.tran.ftp;
 
 import java.nio.ByteBuffer;
 
-import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.tran.token.AbstractTokenizer;
+import com.metavize.tran.token.Token;
 import com.metavize.tran.token.TokenStreamer;
 import com.metavize.tran.token.TokenizerException;
 import com.metavize.tran.token.TokenizerResult;
-import org.apache.log4j.Logger;
 
 public class FtpClientTokenizer extends AbstractTokenizer
 {
-    private static final char SP = '\r';
+    private static final char SP = ' ';
     private static final char CR = '\r';
     private static final char LF = '\n';
 
-    private final FtpCasing casing;
-
-    private final Logger logger = Logger.getLogger(FtpClientTokenizer.class);
-    private final Logger eventLogger = MvvmContextFactory.context().eventLogger();
-
-    FtpClientTokenizer(FtpCasing casing)
+    FtpClientTokenizer(TCPSession session)
     {
-        this.casing = casing;
+        super(session, true);
         lineBuffering(true);
     }
 
@@ -52,18 +47,17 @@ public class FtpClientTokenizer extends AbstractTokenizer
 
             while (SP == ba[++i]);
 
-            String arg = new String(i, ba.length - i);
+            String arg = new String(ba, i, ba.length - i - 2); // no CRLF
 
             FtpCommand cmd = new FtpCommand(fn, arg);
 
-            return new TokenizerResult(cmd, null);
+            return new TokenizerResult(new Token[] { cmd }, null);
         } else {
-            buf.compact();
             return new TokenizerResult(null, buf);
         }
     }
 
-    public TokenStreamer endSession() { }
+    public TokenStreamer endSession() { return null; }
 
     // private methods --------------------------------------------------------
 
@@ -77,7 +71,8 @@ public class FtpClientTokenizer extends AbstractTokenizer
     private boolean completeLine(ByteBuffer buf)
     {
         int l = buf.limit();
-        return buf.remaining() >= 2
-            && buf.get(l - 2) == CR && buf.get(l - 1) == LF;
+
+        return buf.remaining() >= 2 && buf.get(l - 2) == CR
+            && buf.get(l - 1) == LF;
     }
 }

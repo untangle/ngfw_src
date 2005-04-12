@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: HttpTransform.java,v 1.11 2005/01/30 09:20:30 amread Exp $
+ * $Id$
  */
 package com.metavize.tran.ftp;
 
@@ -20,6 +20,8 @@ import org.apache.log4j.Logger;
 
 public class FtpTransform extends CasingTransform
 {
+    static final String CRLF = "\r\n";
+
     private final Logger logger = Logger.getLogger(FtpTransform.class);
 
     private final PipeSpec insidePipeSpec;

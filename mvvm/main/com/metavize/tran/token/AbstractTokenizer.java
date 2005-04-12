@@ -64,4 +64,8 @@ public abstract class AbstractTokenizer implements Tokenizer
     {
         session.cancelTimer();
     }
+
+    // no-ops methods ---------------------------------------------------------
+
+    public void handleTimer() { }
 }

@@ -91,33 +91,6 @@ public class HttpTokenizer extends AbstractTokenizer
 
     // Tokenizer methods ------------------------------------------------------
 
-    public TokenStreamer endSession()
-    {
-        if (state != PRE_FIRST_LINE_STATE) {
-            Pipeline pipeline = MvvmContextFactory.context().pipelineFoundry()
-                .getPipeline(session.id());
-
-            return new TokenStreamer(pipeline)
-                {
-                    private boolean sent = false;
-
-                    public boolean closeWhenDone() { return true; }
-
-                    protected Token nextToken()
-                    {
-                        if (sent) {
-                            return null;
-                        } else {
-                            sent = true;
-                            return EndMarker.MARKER;
-                        }
-                    }
-                };
-        } else {
-            return null;
-        }
-    }
-
     public TokenizerResult tokenize(ByteBuffer b) throws TokenizerException
     {
         cancelTimer();
@@ -366,6 +339,33 @@ public class HttpTokenizer extends AbstractTokenizer
 
         scheduleTimer(TIMEOUT);
         return new TokenizerResult((Token[])l.toArray(new Token[l.size()]), b);
+    }
+
+    public TokenStreamer endSession()
+    {
+        if (state != PRE_FIRST_LINE_STATE) {
+            Pipeline pipeline = MvvmContextFactory.context().pipelineFoundry()
+                .getPipeline(session.id());
+
+            return new TokenStreamer(pipeline)
+                {
+                    private boolean sent = false;
+
+                    public boolean closeWhenDone() { return true; }
+
+                    protected Token nextToken()
+                    {
+                        if (sent) {
+                            return null;
+                        } else {
+                            sent = true;
+                            return EndMarker.MARKER;
+                        }
+                    }
+                };
+        } else {
+            return null;
+        }
     }
 
     public void handleTimer()

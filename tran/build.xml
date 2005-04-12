@@ -22,7 +22,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <import file="../buildtools/buildmagic.xml"/>
 
   <property name="transforms"
-            value="http,virus,airgap,reporting,protofilter,test,sophos,fprot,hauri,clam,spyware,httpblocker,email"/>
+            value="ftp,http,virus,airgap,reporting,protofilter,test,sophos,fprot,hauri,clam,spyware,httpblocker,email"/>
 
 
   <!--              -->
@@ -161,22 +161,22 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
     <if> <equals arg1="${tran.name}" arg2="http"/>
     <then>
       <jar destfile="${build.jar}/${tran.name}-casing.mar" index="yes">
-	<fileset dir="${build.root}/${tran.name}"/>
-	<fileset dir="${build.gensrc}/${tran.name}"/>
-	<fileset dir="${tran.name}/${src.main}/">
-	  <include name="**/*png"/>
-	</fileset>
-	<fileset dir="${tran.name}/${src.resources}/${tran.name}"/>
+    <fileset dir="${build.root}/${tran.name}"/>
+    <fileset dir="${build.gensrc}/${tran.name}"/>
+    <fileset dir="${tran.name}/${src.main}/">
+      <include name="**/*png"/>
+    </fileset>
+    <fileset dir="${tran.name}/${src.resources}/${tran.name}"/>
       </jar>
-    </then> 
+    </then>
     <else>
       <jar destfile="${build.jar}/${tran.name}-transform.mar" index="yes">
-	<fileset dir="${build.root}/${tran.name}"/>
-	<fileset dir="${build.gensrc}/${tran.name}"/>
-	<fileset dir="${tran.name}/${src.main}/">
-	  <include name="**/*png"/>
-	</fileset>
-	<fileset dir="${tran.name}/${src.resources}/${tran.name}"/>
+    <fileset dir="${build.root}/${tran.name}"/>
+    <fileset dir="${build.gensrc}/${tran.name}"/>
+    <fileset dir="${tran.name}/${src.main}/">
+      <include name="**/*png"/>
+    </fileset>
+    <fileset dir="${tran.name}/${src.resources}/${tran.name}"/>
       </jar>
     </else>
     </if>
@@ -194,15 +194,15 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
     <if> <equals arg1="${tran.name}" arg2="http"/>
     <then>
       <copy file="${build.jar}/${tran.name}-casing.mar"
-	    todir="${dist.mvvm.toolbox}"/>
+        todir="${dist.mvvm.toolbox}"/>
       <copy file="${build.jar}/${tran.name}-casing.mar"
-	    todir="${dist.mvvm.webstart}"/>
+        todir="${dist.mvvm.webstart}"/>
     </then>
     <else>
       <copy file="${build.jar}/${tran.name}-transform.mar"
-	    todir="${dist.mvvm.toolbox}"/>
+        todir="${dist.mvvm.toolbox}"/>
       <copy file="${build.jar}/${tran.name}-transform.mar"
-	    todir="${dist.mvvm.webstart}"/>
+        todir="${dist.mvvm.webstart}"/>
     </else>
     </if>
 
@@ -234,6 +234,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <target name="install.test"/>
   <target name="install.spyware"/>
   <target name="install.http"/>
+  <target name="install.ftp"/>
   <target name="install.virus"/>
 
   <target name="install.sophos">
@@ -273,6 +274,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <target name="jar.test"/>
   <target name="jar.spyware"/>
   <target name="jar.http"/>
+  <target name="jar.ftp"/>
   <target name="jar.virus"/>
   <target name="jar.httpblocker"/>
   <target name="jar.protofilter"/>
@@ -332,6 +334,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <target name="compile.test"/>
   <target name="compile.spyware"/>
   <target name="compile.http"/>
+  <target name="compile.ftp"/>
   <target name="compile.virus"/>
   <target name="compile.sophos"/>
   <target name="compile.fprot"/>

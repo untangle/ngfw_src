@@ -6,13 +6,14 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: FtpCasingFactory.java,v 1.1 2004/12/10 23:27:47 amread Exp $
+ * $Id$
  */
 
 package com.metavize.tran.ftp;
 
 import com.metavize.tran.token.Casing;
 import com.metavize.tran.token.CasingFactory;
+import com.metavize.mvvm.tapi.TCPSession;
 
 
 class FtpCasingFactory implements CasingFactory
@@ -34,8 +35,8 @@ class FtpCasingFactory implements CasingFactory
         return FTP_CASING_FACTORY;
     }
 
-    public Casing casing(boolean inside)
+    public Casing casing(TCPSession session, boolean inside)
     {
-        return new FtpCasing(inside);
+        return new FtpCasing(session, inside);
     }
 }

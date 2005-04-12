@@ -11,6 +11,8 @@
 
 package com.metavize.tran.ftp;
 
+import java.nio.ByteBuffer;
+
 import com.metavize.tran.token.Token;
 
 /**
@@ -31,5 +33,18 @@ public class FtpCommand implements Token
     {
         this.command = command;
         this.argument = argument;
+    }
+
+    // Token methods ----------------------------------------------------------
+
+    public ByteBuffer getBytes()
+    {
+        String cmd = command.toString();
+
+        StringBuffer sb = new StringBuffer(cmd.length() + 2 + argument.length());
+        sb.append(cmd);
+        sb.append("\r\n");
+        sb.append(argument);
+        return ByteBuffer.wrap(sb.toString().getBytes());
     }
 }
