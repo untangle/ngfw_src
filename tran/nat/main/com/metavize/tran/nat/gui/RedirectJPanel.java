@@ -1,7 +1,12 @@
 /*
- * NetworkJPanel.java
+ * Copyright (c) 2003, 2004, 2005 Metavize Inc.
+ * All rights reserved.
  *
- * Created on February 22, 2005, 1:10 PM
+ * This software is the confidential and proprietary information of
+ * Metavize Inc. ("Confidential Information").  You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id: NatEventHandler.java 194 2005-04-06 19:13:55Z rbscott $
  */
 
 package com.metavize.tran.nat.gui;
@@ -12,13 +17,24 @@ import java.awt.*;
  *
  * @author  inieves
  */
-public class NatJPanel_1 extends javax.swing.JPanel {
+public class RedirectJPanel extends javax.swing.JPanel {
     
     /** Creates new form NetworkJPanel */
-    public NatJPanel_1() {
+    public RedirectJPanel() {
         initComponents();
     }
-    
+
+    public void refresh( Object settings ) throws Exception {
+        throw new NullPointerException();
+    }
+
+    public void save( Object settings ) throws Exception {
+        throw new NullPointerException();        
+    }
+
+    public boolean isValid( ) {
+        throw new NullPointerException();
+    }    
     
     private void initComponents() {//GEN-BEGIN:initComponents
         java.awt.GridBagConstraints gridBagConstraints;

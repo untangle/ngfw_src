@@ -20,9 +20,8 @@ import javax.swing.event.*;
 import com.metavize.tran.nat.*;
 
 public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransformControlsJPanel{
-    
-    super.MIN_SIZE = new Dimension(640, 480);
-    super.MAX_SIZE = new Dimension(640, 1200);
+    protected Dimension MIN_SIZE = new Dimension(640, 480);
+    protected Dimension MAX_SIZE = new Dimension(640, 1200);
     
     private NatSettings natSettings;
         
@@ -38,48 +37,54 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
         JScrollPane natJScrollPane = new JScrollPane( natJPanel );
         natJScrollPane.setHorizontalScrollBarPolicy( ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER );
         natJScrollPane.setVerticalScrollBarPolicy( ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS );
-        super.mTabbedPane.addTab("NAT", null, natJScrollPanel);
+        super.mTabbedPane.addTab("NAT", null, natJScrollPane );
         
         // SETUP REDIRECT
         redirectJPanel = new RedirectJPanel();
         JScrollPane redirectJScrollPane = new JScrollPane( redirectJPanel );
         redirectJScrollPane.setHorizontalScrollBarPolicy( ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER );
         redirectJScrollPane.setVerticalScrollBarPolicy( ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS );
-        super.mTabbedPane.addTab("Redirect", null, redirectJScrollPanel);
+        super.mTabbedPane.addTab("Redirect", null, redirectJScrollPane );
         
         // SETUP DHCP
         dhcpJPanel = new DhcpJPanel();
         JScrollPane dhcpJScrollPane = new JScrollPane( dhcpJPanel );
         dhcpJScrollPane.setHorizontalScrollBarPolicy( ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER );
         dhcpJScrollPane.setVerticalScrollBarPolicy( ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS );
-        super.mTabbedPane.addTab("DHCP", null, dhcpJScrollPanel);
+        super.mTabbedPane.addTab("DHCP", null, dhcpJScrollPane );
         
         refreshAll();
     }
     
-    public void refreshAll(){ asdf
-        natSettings = super.mTransformJPanel.getTransformContext().getNatSettings();
-        natJPanel.refresh( natSettings );
-        redirectJPanel.refresh( natSettings );
-        dhcpJPanel.refresh( natSettings );
-        validateAll();
+    public void refreshAll()  {
+        try {
+            natSettings = ((Nat)super.mTransformJPanel.getTransformContext().transform()).getNatSettings();
+            natJPanel.refresh( natSettings );
+            redirectJPanel.refresh( natSettings );
+            dhcpJPanel.refresh( natSettings );
+            validateAll();
+        } catch ( Exception e ) {
+        }
     }
     
-    public void saveAll(){
+    public void saveAll() {
         if( validateAll() == false)
             return;
-        natJPanel.save( natSettings );
-        redirectJPanel.save( natSettings );
-        dhcpJPanel.save( natSettings );
-        super.mTransformJPanel.getTransformContext().setNatSettings( natSettings );
+        try {
+            natJPanel.save( natSettings );
+            redirectJPanel.save( natSettings );
+            dhcpJPanel.save( natSettings );
+            ((Nat)super.mTransformJPanel.getTransformContext().transform()).setNatSettings( natSettings );
+        } catch ( Exception e ) {
+
+        }
     }
 
     public boolean validateAll(){
-        return     natJPanel.validate()
-                && redirectJPanel.validate()
-                && dhcpJPanel.validate();
+        return     natJPanel.isValid()
+            && redirectJPanel.isValid()
+            && dhcpJPanel.isValid();
     }
-    
 }
 
 

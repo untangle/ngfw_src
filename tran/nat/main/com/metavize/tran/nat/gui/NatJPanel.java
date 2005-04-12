@@ -1,7 +1,12 @@
 /*
- * NetworkJPanel.java
+ * Copyright (c) 2003, 2004, 2005 Metavize Inc.
+ * All rights reserved.
  *
- * Created on February 22, 2005, 1:10 PM
+ * This software is the confidential and proprietary information of
+ * Metavize Inc. ("Confidential Information").  You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id: NatEventHandler.java 194 2005-04-06 19:13:55Z rbscott $
  */
 
 package com.metavize.tran.nat.gui;
@@ -9,18 +14,20 @@ package com.metavize.tran.nat.gui;
 import java.awt.*;
 
 import com.metavize.tran.nat.*;
+import com.metavize.gui.util.Util;
+import com.metavize.mvvm.tran.IPaddr;
 
 /**
  *
  * @author  inieves
  */
-public class NetworkJPanel extends javax.swing.JPanel {
+public class NatJPanel extends javax.swing.JPanel {
     
     private Color INVALID_COLOR = Color.PINK;
     private Color BACKGROUND_COLOR = new Color(238, 238, 238);
     
 
-    public NetworkJPanel() {
+    public NatJPanel() {
         initComponents();
     }
     
@@ -39,7 +46,7 @@ public class NetworkJPanel extends javax.swing.JPanel {
         boolean isDhcpEnabled;
         
         // PARSE THE SETTINGS INTO FORM VALUES
-        natEnabled = natSettings.isNatEnabled();
+        natEnabled = natSettings.getNatEnabled();
         natInternalAddress = natSettings.getNatInternalAddress().toString();
         natInternalSubnet  = natSettings.getNatInternalSubnet().toString();
         natInternalNetwork = IPaddr.and(natSettings.getNatInternalAddress(), natSettings.getNatInternalSubnet()).toString();
@@ -53,12 +60,12 @@ public class NetworkJPanel extends javax.swing.JPanel {
             natDisabledJRadioButton.setSelected(true);
         internalAddressIPaddrJTextField.setText( natInternalAddress );
         internalSubnetIPaddrJTextField.setText( natInternalSubnet );
-        internalJTextField.setText( natInternalNetwork );
+        internalNetworkJTextField.setText( natInternalNetwork );
         externalAddressJTextField.setText( natExternalAddress );
         if( isDhcpEnabled )
             externalMethodJTextField.setText("Dynamic via DHCP");
         else
-            externalMethodsJTextField.setText("Manually specified");
+            externalMethodJTextField.setText("Manually specified");
     }
 
     
@@ -73,7 +80,7 @@ public class NetworkJPanel extends javax.swing.JPanel {
         IPaddr natInternalSubnet;
         
         // PARSE THE FORM INTO SAVABLE VALUES
-        natEnabled = natEnabledJRadioButtons.isSelected();
+        natEnabled = natEnabledJRadioButton.isSelected();
         natInternalAddress = IPaddr.parse(internalAddressIPaddrJTextField.getText() );
         natInternalSubnet  = IPaddr.parse(internalSubnetIPaddrJTextField.getText() );
         
@@ -85,7 +92,7 @@ public class NetworkJPanel extends javax.swing.JPanel {
     
     
     
-    public boolean validate() {
+    public boolean isValid() {
         boolean isValid = true;
 
         // ENABLED ///////////
