@@ -11,11 +11,16 @@
 
 package com.metavize.tran.ftp;
 
+import java.nio.ByteBuffer;
+
+import com.metavize.tran.token.Token;
+
 /**
- * FTP server reply to a command. As defined in RFC 959 section 4.2.
+ * FTP server reply to a command.
  *
  * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
+ * @see "RFC 959, Section 4.2"
  */
 public class FtpReply implements Token
 {

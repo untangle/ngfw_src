@@ -12,35 +12,32 @@
 package com.metavize.tran.ftp;
 
 import com.metavize.tran.token.AbstractCasing;
-import com.metavize.tran.token.Parser;
-import com.metavize.tran.token.Unparser;
-import org.apache.log4j.Logger;
+import com.metavize.tran.token.Tokenizer;
+import com.metavize.tran.token.Untokenizer;
 
 class FtpCasing extends AbstractCasing
 {
-    private final FtpParser parser;
-    private final FtpUnparser unparser;
-    private final String insideStr;
-    private final Logger logger = Logger.getLogger(FtpCasing.class);
+    private final Tokenizer tokenizer;
+    private final FtpUntokenizer unparser;
 
     // constructors -----------------------------------------------------------
 
-    FtpCasing(boolean inside)
+    FtpCasing(boolean clientSide)
     {
-        insideStr = inside ? "inside " : "outside";
-        parser = new FtpParser(this);
-        unparser = new FtpUnparser(this);
+        tokenizer = clientSide ? new FtpClientTokenizer()
+            : FtpServerTokenizer();
+        untokenizer = new FtpUntokenizer(this);
     }
 
     // Casing methods ---------------------------------------------------------
 
-    public Unparser unparser()
+    public Tokenizer tokenizer()
     {
-        return unparser;
+        return tokenizer;
     }
 
-    public Parser parser()
+    public Untokenizer untokenizer()
     {
-        return parser;
+        return untokenizer;
     }
 }

@@ -13,7 +13,7 @@ package com.metavize.tran.ftp;
 
 import com.metavize.tran.token.AbstractUntokenizer;
 import com.metavize.tran.token.Token;
-import com.metavize.tran.token.Untokenizeresult;
+import com.metavize.tran.token.UntokenizerResult;
 import org.apache.log4j.Logger;
 
 class FtpUntokenizer extends AbstractUntokenizer
@@ -27,7 +27,7 @@ class FtpUntokenizer extends AbstractUntokenizer
         this.ftpCasing = ftpCasing;
     }
 
-    public Untokenizeresult untokenize(Token token)
+    public UntokenizerResult untokenize(Token token)
     {
     }
 }

@@ -11,22 +11,25 @@
 
 package com.metavize.tran.ftp;
 
+import com.metavize.tran.token.Token;
+
 /**
- * Describe class <code>FtpCommand</code> here.
+ * FTP command.
  *
  * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
+ * @see "RFC 959, Section 4"
  */
 public class FtpCommand implements Token
 {
-    private final FtpCommandName command;
+    private final FtpFunction command;
     private final String argument;
 
-    public FtpCommand(FtpCommandName command, String argument)
+    // constructors -----------------------------------------------------------
+
+    public FtpCommand(FtpFunction command, String argument)
     {
         this.command = command;
         this.argument = argument;
     }
-
-
 }
