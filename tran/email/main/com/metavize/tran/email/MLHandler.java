@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: MLHandler.java,v 1.14 2005/03/15 02:11:53 amread Exp $
+ * $Id$
  */
 package com.metavize.tran.email;
 
@@ -474,7 +474,7 @@ public class MLHandler
             return true;
         }
 
-        if (READSZ == iPosition)
+        if (zLine.capacity() == iPosition)
         {
             /* line does not end with EOL
              * - although data can be fragmented,
@@ -485,18 +485,17 @@ public class MLHandler
              *   request another
              *   (hopefully, next line will make sense)
              */
-            //zLog.debug("readline (no EOL - buffer is full): " + zCLine + ", " + zLine);
             /* we are passing through line so we do not need to save it */
             zEnv.resetReadCLine();
             zEnv.setFixedResult(Constants.PASS_THROUGH);
 
             CBufferWrapper zTmp = new CBufferWrapper(zLine);
-            throw new ReadException("Passing through data fragment; line is full and is not terminated by end-of-line: " + zTmp);
+            throw new ReadException("Passing through data fragment; line is full and is not terminated by end-of-line: " + zTmp + ", " + zLine);
         }
         /* else no EOL yet and buffer has space for more */
 
-        //zLog.debug("readline (no EOL - read more): " + zLine);
-        zLog.debug("readline (no EOL - read more)");
+        //zLog.debug("readline (no EOL - read more): " + zCLine + ", " + zLine);
+        zLog.debug("readline (no EOL - read more): " + zLine);
         zEnv.setFixedResult(Constants.READ_MORE_NO_WRITE);
         return false;
     }
@@ -581,19 +580,18 @@ public class MLHandler
              * buffer does not contain any EOL
              * (e.g., buffer is very long)
              */
-            if (READSZ == iPosition)
+            if (zLine.capacity() == iPosition)
             {
                 /* line does not end with EOL
                  * - although data can be fragmented,
                  *   each line must end with EOL
                  */
-                //zLog.debug("readdata (no EOL - buffer is full): " + zCLine + ", " + zLine);
-                throw new ReadException("Passing through data fragment; line is full and is not terminated by end-of-line: " + zCDummy.renew(zLine));
+                throw new ReadException("Passing through data fragment; line is full and is not terminated by end-of-line: " + zCLine + ", " + zLine);
             }
             /* else no EOL yet and buffer has space for more */
 
-            //zLog.debug("readdata (no EOL - read more): " + zLine);
-            zLog.debug("readdata (no EOL - read more)");
+            //zLog.debug("readdata (no EOL - read more): " + zCLine + ", " + zLine);
+            zLog.debug("readdata (no EOL - read more): " + zLine);
             zEnv.setFixedResult(Constants.READ_MORE_NO_WRITE);
         }
         else
