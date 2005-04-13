@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: Shield.c,v 1.1 2005/01/31 01:15:12 rbscott Exp $
+ *  $Id$
  */
 
 #include <jni.h>
@@ -89,6 +89,39 @@ JNIEXPORT void JNICALL JF_Shield( config )
 
     (*env)->ReleaseStringUTFChars( env, file_name, file_str );
 }
+
+/*
+ * Class:     com_metavize_jnetcap_Shield
+ * Method:    dump
+ * Signature: (LI);
+ */
+JNIEXPORT void JNICALL JF_Shield( status )
+  (JNIEnv *env, jobject _this, jlong ip, jint port )
+{
+    struct sockaddr_in dst;
+    int fd;
+    
+    memcpy( &dst.sin_addr, &ip, sizeof( struct in_addr ));
+    dst.sin_port = htons((u_short)port );
+    dst.sin_family = AF_INET;
+    
+    if (( fd = socket( AF_INET, SOCK_DGRAM, IPPROTO_UDP )) < 0 ) 
+    {
+        perrlog( "socket" );
+        return jnetcap_error_void( JNETCAP_ERROR_STT, ERR_CRITICAL, "Unable to open a UDP socket\n" );
+    }
+
+    do {
+        if ( netcap_shield_status( fd, &dst ) < 0 ) {
+            jnetcap_error( JNETCAP_ERROR_STT, ERR_CRITICAL, "netcap_shield_status\n" );
+            break;
+        }
+    } while ( 0 );
+    
+    if ( close( fd ) < 0 )
+        perrlog( "close" );
+}
+
 
 /*
  * Class:     com_metavize_jnetcap_Shield

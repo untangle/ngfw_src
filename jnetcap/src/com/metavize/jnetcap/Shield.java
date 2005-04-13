@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: Shield.java,v 1.1 2005/01/31 01:15:12 rbscott Exp $
+ *  $Id$
  */
 
 package com.metavize.jnetcap;
@@ -51,6 +51,16 @@ public final class Shield
      * @param size - Size of the chunk in bytes.
      */
     public native void addChunk( long address, short protocol, int size );
+    
+    /**
+     * Dump out the state of the shield in XML and return it in String
+     */
+    public void status( InetAddress ip, int port )
+    {
+        status( Inet4AddressConverter.toLong( ip ), port );
+    }
+    
+    private native void status( long ip, int port );
 
     /* Singleton enforcement */    
     public static Shield getInstance()
