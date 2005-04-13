@@ -12,6 +12,7 @@
 package com.metavize.mvvm.util;
 
 import java.util.List;
+import java.net.InetAddress;
 
 import com.metavize.mvvm.MackageDesc;
 import com.metavize.mvvm.MvvmContext;
@@ -143,6 +144,10 @@ public class RemoteClient
             userLogs(args[1]);
         } else if (args[0].equalsIgnoreCase("resetLogs")) {
             resetLogs();
+        } else if (args[0].equalsIgnoreCase("shieldStatus")) {
+            shieldStatus( args[1], args[2] );
+        } else if (args[0].equalsIgnoreCase("shieldReconfigure")) {
+            shieldReconfigure();
         } else {
             System.out.print("dont know: ");
             for (int i = 0; i < args.length; i++) {
@@ -508,6 +513,25 @@ public class RemoteClient
         mc.loggingManager().resetAllLogs();
     }
 
+    /**
+     * <code>shieldStatus</code> Sends out the current state of the shield
+     * via UDP to the host and port specified in the command line
+     */
+    private static void shieldStatus( String host, String port ) throws Exception
+    {
+        mc.argonManager().shieldStatus( InetAddress.getByName( host ), Integer.parseInt( port ));
+    }
+
+    /**
+     * <code>shieldStatus</code> Sends out the current state of the shield
+     * via UDP to the host and port specified in the command line
+     */
+    private static void shieldReconfigure() throws Exception
+    {
+        mc.argonManager().shieldReconfigure();
+    }
+    
+
     // helper functions -------------------------------------------------------
 
     private static boolean isInstalled(String mackageName)
@@ -595,5 +619,8 @@ public class RemoteClient
         System.out.println("  apt commands:");
         System.out.println("    mcli register mackage-name");
         System.out.println("    mcli unregister mackage-name");
+        System.out.println("  argon commands:");
+        System.out.println("    mcli shieldStatus <ip> <port>");
+        System.out.println("    mcli shieldReconfigure");
     }
 }

@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: MvvmLocalContextImpl.java,v 1.39 2005/02/24 04:09:36 amread Exp $
+ *  $Id$
  */
 
 package com.metavize.mvvm.engine;
@@ -14,6 +14,9 @@ package com.metavize.mvvm.engine;
 
 import com.metavize.mvvm.MvvmLocalContext;
 import com.metavize.mvvm.argon.Argon;
+import com.metavize.mvvm.ArgonManager;
+import com.metavize.mvvm.argon.ArgonManagerImpl;
+
 import com.metavize.mvvm.security.MvvmLogin;
 import com.metavize.mvvm.tapi.MPipeManager;
 import com.metavize.mvvm.tapi.PipelineFoundry;
@@ -143,6 +146,7 @@ public class MvvmLocalContextImpl extends MvvmContextImpl
 
         pipelineFoundry = null; // XXX destroy method
         networkingManager = null;
+        argonManager = null;
 
         if (null != mPipeManager) {
             try {
@@ -195,6 +199,9 @@ public class MvvmLocalContextImpl extends MvvmContextImpl
 
         // Retrieve the networking configuration manager
         networkingManager = NetworkingManagerImpl.getInstance();
+
+        // Retrieve the argon manager
+        argonManager = ArgonManagerImpl.getInstance();
 
         // start vectoring:
         String argonFake = System.getProperty(ARGON_FAKE_KEY);

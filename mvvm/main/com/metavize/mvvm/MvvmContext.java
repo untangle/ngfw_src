@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: MvvmContext.java,v 1.5 2005/03/23 04:52:36 amread Exp $
+ *  $Id$
  */
 
 package com.metavize.mvvm;
@@ -16,6 +16,7 @@ import java.io.IOException;
 import com.metavize.mvvm.logging.LoggingManager;
 import com.metavize.mvvm.security.AdminManager;
 import com.metavize.mvvm.tran.TransformManager;
+import com.metavize.mvvm.ArgonManager;
 
 /**
  * Provides an interface to get major MVVM components from
@@ -68,6 +69,11 @@ public interface MvvmContext
      * @return a <code>NetworkingManager</code> value
      */
     NetworkingManager networkingManager();
+
+    /**
+     * Retrieve the argon manager.
+     */
+    ArgonManager argonManager();
 
     /**
      * Save settings to local hard drive.

@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: MvvmContextImpl.java,v 1.12 2005/03/23 07:05:29 amread Exp $
+ *  $Id$
  */
 
 package com.metavize.mvvm.engine;
@@ -16,6 +16,7 @@ import java.io.IOException;
 import com.metavize.mvvm.MailSender;
 import com.metavize.mvvm.MvvmContext;
 import com.metavize.mvvm.NetworkingManager;
+import com.metavize.mvvm.ArgonManager;
 import com.metavize.mvvm.ToolboxManager;
 import com.metavize.mvvm.logging.LoggingManager;
 import com.metavize.mvvm.security.AdminManager;
@@ -39,6 +40,7 @@ public abstract class MvvmContextImpl extends MvvmContextBase
     protected ToolboxManagerImpl toolboxManager;
     protected TransformManagerImpl transformManager;
     protected NetworkingManager networkingManager;
+    protected ArgonManager argonManager;
 
     protected MvvmContextImpl() { }
 
@@ -70,6 +72,11 @@ public abstract class MvvmContextImpl extends MvvmContextBase
     public NetworkingManager networkingManager()
     {
         return networkingManager;
+    }
+
+    public ArgonManager argonManager()
+    {
+        return argonManager;
     }
 
     public void localBackup() throws IOException
