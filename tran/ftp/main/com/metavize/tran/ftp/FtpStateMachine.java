@@ -6,14 +6,14 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: FtpStateMachine.java,v 1.10 2005/01/28 10:27:31 amread Exp $
+ * $Id$
  */
 
 package com.metavize.tran.ftp;
 
 import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.tran.token.AbstractTokenHandler;
-import com.metavize.tran.token.TokenEvent;
+import com.metavize.tran.token.Token;
 import com.metavize.tran.token.TokenResult;
 
 public abstract class FtpStateMachine extends AbstractTokenHandler
@@ -29,12 +29,12 @@ public abstract class FtpStateMachine extends AbstractTokenHandler
 
     // AbstractTokenHandler methods -------------------------------------------
 
-    public TokenResult handleClientToken(TokenEvent e)
+    public TokenResult handleClientToken(Token token)
     {
         return null; // XXX implement
     }
 
-    public TokenResult handleServerToken(TokenEvent e)
+    public TokenResult handleServerToken(Token token)
     {
         return null; // XXX implement
     }

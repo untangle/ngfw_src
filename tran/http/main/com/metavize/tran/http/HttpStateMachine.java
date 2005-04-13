@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: HttpStateMachine.java,v 1.10 2005/01/28 10:27:31 amread Exp $
+ * $Id$
  */
 
 package com.metavize.tran.http;
@@ -17,7 +17,6 @@ import com.metavize.tran.token.Chunk;
 import com.metavize.tran.token.EndMarker;
 import com.metavize.tran.token.Header;
 import com.metavize.tran.token.Token;
-import com.metavize.tran.token.TokenEvent;
 import com.metavize.tran.token.TokenResult;
 
 public abstract class HttpStateMachine extends AbstractTokenHandler
@@ -60,10 +59,8 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
 
     // AbstractTokenHandler methods -------------------------------------------
 
-    public TokenResult handleClientToken(TokenEvent e)
+    public TokenResult handleClientToken(Token token)
     {
-        Token token = e.token();
-
         clientState = nextClientState(token);
 
         switch (clientState) {
@@ -88,10 +85,8 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
         }
     }
 
-    public TokenResult handleServerToken(TokenEvent e)
+    public TokenResult handleServerToken(Token token)
     {
-        Token token = e.token();
-
         serverState = nextServerState(token);
 
         switch (serverState) {

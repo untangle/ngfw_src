@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: TokenAdaptor.java,v 1.27 2005/01/30 09:20:30 amread Exp $
+ * $Id$
  */
 
 package com.metavize.tran.token;
@@ -146,7 +146,7 @@ public class TokenAdaptor extends AbstractEventHandler
     public void handleTimer(IPSessionEvent e)
     {
         TokenHandler th = getHandler(e.ipsession());
-        th.handleTimer(new TokenEvent((TCPSessionEvent)e, null));
+        th.handleTimer();
     }
 
     // HandlerDesc utils ------------------------------------------------------
@@ -218,9 +218,9 @@ public class TokenAdaptor extends AbstractEventHandler
 
         TokenResult tr;
         if (s2c) {
-            tr = handler.handleServerToken(new TokenEvent(e, token));
+            tr = handler.handleServerToken(token);
         } else {
-            tr = handler.handleClientToken(new TokenEvent(e, token));
+            tr = handler.handleClientToken(token);
         }
 
         TCPSession s = e.session();

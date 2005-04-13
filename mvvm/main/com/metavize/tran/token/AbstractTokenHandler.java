@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: AbstractTokenHandler.java,v 1.6 2005/01/30 09:20:30 amread Exp $
+ * $Id$
  */
 
 package com.metavize.tran.token;
@@ -34,7 +34,7 @@ public abstract class AbstractTokenHandler implements TokenHandler
 
     // public methods ---------------------------------------------------------
 
-    public void handleTimer(TokenEvent e)
+    public void handleTimer()
     {
         logger.info("timer not handled");
     }
