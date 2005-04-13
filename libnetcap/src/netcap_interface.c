@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: netcap_interface.c,v 1.13 2005/03/09 07:00:10 rbscott Exp $
+ * $Id$
  */
 #include "netcap_interface.h"
 
@@ -337,10 +337,16 @@ static int _netcap_interface_marking               ( int if_add )
                   "--physdev-in %s -j MARK --set-mark %d"
 
   /* Rules to block u-turns(going out on the same interface the packet came in) */
-  /* Use 0x1F as the mask, this guarantees that antisubcribed packets do not get
-   * matched */
+  /* Use 0x1F as the mask, this guarantees that antisubcribed packets 
+   * matched.
+   * 04/13/05 - UPDATE: 0x1F is not necessary since antisubscribed packets are set
+   * to 0x10 by the antisubscribe rules, therefore the lower bits will always be zero once they get
+   * to this point.  0x1f also causes problems, if all outgoing UDP packets are antisubscribed,
+   * (This is necessary to enable local traffic), then broadcasts are not caught properly.
+   * EG: packet marked 0x13 would not be prevented from going out the incorrect interface
+   */
 #define UTURN_BASE "/sbin/iptables -t filter -%c OUTPUT -m mark -m physdev --physdev-out %s " \
-                   "--mark %d/0x1F -j DROP"
+                   "--mark %d/0x0F -j DROP"
 
   for ( c = _if_count ; c-- > 0  ; ) {
       /* Build the command for each interface, Mark interface eth0 with 1, eth1 with 2, etc*/

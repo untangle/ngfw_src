@@ -1,4 +1,4 @@
-/* $Id: netcap_udp.c,v 1.6 2005/03/09 07:00:10 rbscott Exp $ */
+/* $Id$ */
 #include "netcap_udp.h"
 
 #include <stdlib.h>
@@ -328,6 +328,9 @@ static int _netcap_udp_sendto (int sock, void* data, size_t data_len, int flags,
     netcap_intf_t      dst_intf;
     char               dst_intf_str[NETCAP_MAX_IF_NAME_LEN];
 
+    /* Antisubscribe all outgoing UDP packets */
+    u_int              mark = 0x10;
+
     dst_intf_str[0] = '\0';
 
 #ifdef DEBUG_ON
@@ -420,26 +423,30 @@ static int _netcap_udp_sendto (int sock, void* data, size_t data_len, int flags,
         debug ( 10, "UDP: Sending to interface to '%s'\n", dst_intf_str );
     }
 
+    /* The bit for antisubscribe is reserved, and is always set on outgoing packets */
     if ( pkt->is_marked ) {
-        cmsg = my__cmsg_nxthdr( msg.msg_control, msg.msg_controllen, cmsg );
-        if ( cmsg == NULL ) { 
-            errlog( ERR_CRITICAL, "No more CMSG Room\n" );
-            goto err_out;
-        }
-        
-        cmsg->cmsg_len = CMSG_LEN(sizeof(unsigned long));
-        cmsg->cmsg_level = SOL_IP;
-        cmsg->cmsg_type  = IP_SENDNFMARK;
-        memcpy( CMSG_DATA( cmsg ), &pkt->nfmark, sizeof(pkt->nfmark));
-
-        debug( 10, "UDP: Sending packet with mark: %#10x\n", pkt->nfmark );
+        mark |= pkt->nfmark;
     }
 
-    /* XXX add options support */
+    cmsg = my__cmsg_nxthdr( msg.msg_control, msg.msg_controllen, cmsg );
+    if ( cmsg == NULL ) { 
+        errlog( ERR_CRITICAL, "No more CMSG Room\n" );
+        goto err_out;
+    }
+    
+    cmsg->cmsg_len = CMSG_LEN(sizeof(unsigned long));
+    cmsg->cmsg_level = SOL_IP;
+    cmsg->cmsg_type  = IP_SENDNFMARK;
+    memcpy( CMSG_DATA( cmsg ), &mark, sizeof(pkt->nfmark));
+    
+    debug( 10, "UDP: Sending packet with mark: %#10x\n", mark );
+
+    /* XXX add options support ( XXX is_marked ) */
     msg.msg_controllen = CMSG_SPACE(sizeof(pkt->src.host)) + CMSG_SPACE(sizeof(pkt->src.port)) + 
         CMSG_SPACE(sizeof(pkt->tos)) + CMSG_SPACE(sizeof(pkt->ttl)) + 
-        (( dst_intf_len )   ? CMSG_SPACE( dst_intf_len ) : 0 )  + 
-        (( pkt->is_marked ) ? CMSG_SPACE( sizeof( pkt->nfmark )) : 0 );
+        CMSG_SPACE(sizeof(mark)) +
+        (( dst_intf_len )   ? CMSG_SPACE( dst_intf_len ) : 0 );
+        
 
 
     debug( 10, "sending udp %s:%i -> ", inet_ntoa(pkt->src.host), pkt->src.port );
