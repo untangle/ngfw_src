@@ -15,6 +15,7 @@ import java.nio.ByteBuffer;
 import java.util.StringTokenizer;
 
 import com.metavize.tran.token.Token;
+import com.metavize.tran.util.AsciiCharBuffer;
 
 /**
  * FTP server reply to a command.
@@ -57,6 +58,7 @@ public class FtpReply implements Token
     {
         StringBuilder sb = new StringBuilder(message.length() + 10);
         sb.append(replyCode);
+        sb.append(' ');
 
         StringTokenizer tok = new StringTokenizer(message, "\n");
         String line = tok.nextToken();
@@ -80,5 +82,12 @@ public class FtpReply implements Token
         sb.append("\r\n");
 
         return ByteBuffer.wrap(sb.toString().getBytes());
+    }
+
+    // Object methods ---------------------------------------------------------
+
+    public String toString()
+    {
+        return AsciiCharBuffer.wrap(getBytes()).toString();
     }
 }

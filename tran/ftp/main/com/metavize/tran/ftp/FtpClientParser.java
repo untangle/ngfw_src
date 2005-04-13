@@ -38,16 +38,17 @@ public class FtpClientParser extends AbstractParser
             byte[] ba = new byte[buf.remaining()];
             buf.get(ba);
 
-            int i = SP == ba[3] ? 3 : 4;
+            int i = Character.isWhitespace((char)ba[3]) ? 3 : 4;
             String fnStr = new String(ba, 0, i);
             FtpFunction fn = FtpFunction.getInstance(fnStr);
             if (null == fn) {
-                throw new ParseException("Unknown FTP function: " + fnStr);
+                throw new ParseException("Unknown FTP function: '" + fnStr + "'");
             }
 
             while (SP == ba[++i]);
 
-            String arg = new String(ba, i, ba.length - i - 2); // no CRLF
+            String arg = (ba.length - 2 <= i) ? null
+                : new String(ba, i, ba.length - i - 2); // no CRLF
 
             FtpCommand cmd = new FtpCommand(fn, arg);
 

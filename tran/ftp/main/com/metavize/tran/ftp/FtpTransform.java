@@ -16,14 +16,9 @@ import com.metavize.mvvm.tapi.Protocol;
 import com.metavize.mvvm.tapi.Subscription;
 import com.metavize.tran.token.CasingAdaptor;
 import com.metavize.tran.token.CasingTransform;
-import org.apache.log4j.Logger;
 
 public class FtpTransform extends CasingTransform
 {
-    static final String CRLF = "\r\n";
-
-    private final Logger logger = Logger.getLogger(FtpTransform.class);
-
     private final PipeSpec insidePipeSpec;
     private final PipeSpec outsidePipeSpec;
 

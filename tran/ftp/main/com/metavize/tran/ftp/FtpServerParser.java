@@ -37,7 +37,7 @@ public class FtpServerParser extends AbstractParser
     {
         ByteBuffer dup = buf.duplicate();
 
-        if (completeReply(dup)) {
+        if (completeLine(dup)) {
             int replyCode = replyCode(dup);
 
             if (-1 == replyCode) {
@@ -59,7 +59,7 @@ public class FtpServerParser extends AbstractParser
                 while (3 < --i && LF != dup.get(i));
 
                 if (LF != dup.get(i++)) {
-                    return new ParseResult(null, buf);
+                    return new ParseResult(null, buf.compact());
                 }
 
                 ByteBuffer end = dup.duplicate();
@@ -68,12 +68,12 @@ public class FtpServerParser extends AbstractParser
                 int endCode = replyCode(end);
 
                 if (-1 == endCode || HYPHEN != end.get()) {
-                    return new ParseResult(null, buf);
+                    return new ParseResult(null, buf.compact());
                 }
 
                 byte[] mb = new byte[dup.remaining() + end.remaining()];
+                dup.get(mb, 0, dup.remaining());
 
-                dup.get(mb);
                 end.get(mb, dup.remaining(), end.remaining());
                 String message = new String(mb);
 
@@ -86,7 +86,7 @@ public class FtpServerParser extends AbstractParser
             }
 
         } else {
-            return new ParseResult(null, buf);
+            return new ParseResult(null, buf.compact());
         }
     }
 
@@ -128,7 +128,7 @@ public class FtpServerParser extends AbstractParser
      * @param buf to check.
      * @return true if a complete line.
      */
-    private boolean completeReply(ByteBuffer buf)
+    private boolean completeLine(ByteBuffer buf)
     {
         int l = buf.limit();
         return buf.remaining() >= 2 && buf.get(l - 2) == CR

@@ -15,12 +15,13 @@ import java.nio.ByteBuffer;
 
 public class ParseResult
 {
+    private static final Token[] TOKEN_PROTO = new Token[0];
     private Token[] results;
     private ByteBuffer readBuffer;
 
     public ParseResult(Token[] results, ByteBuffer readBuffer)
     {
-        this.results = results;
+        this.results = null == results ? TOKEN_PROTO : results;
         this.readBuffer = readBuffer;
     }
 
