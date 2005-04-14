@@ -5,15 +5,6 @@ Maintainer: Dirk Morris <dmorris@metavize.com>
 Build-Depends: debhelper (>> 3.0.0)
 Standards-Version: 3.5.2
 
-Package: test-transform
-Architecture: any
-Depends: mvvm
-XB-Price: 1000
-XB-Display-Name: Test
-Description: The Metavize Test Software Appliance
- The Tester serves as a simple testbench to evaluate various
- new and advanced functionalities of the Metavize Server.
-
 Package: ftp-casing
 Architecture: any
 Depends: mvvm
@@ -24,13 +15,35 @@ Description: The Metavize FTP casing
 
 Package: http-casing
 Architecture: any
-Depends: mvvm
-Conflicts: http-transform
+Depends: mvvm, http-casing
 XB-Price: 1000
 XB-Display-Name: Web/HTTP Decoder
 Description: The Metavize Web/http Decoder
  The Web/http Decoder allows other Devices to parse and analyze
  Web/http traffic and documents.
+
+Package: airgap-transform
+Architecture: any
+Depends: mvvm
+XB-Price: 1000
+XB-Display-Name: Packet Attack Shield
+XB-Rack-Position: 0
+Description: The Metavize Packet Attack Shield
+ The Packet Attack Shield is able to prevent packet based attacks on
+ the internal network.  This is done primarily through the use of an
+ air gap, although other techniques will be available.
+
+Package: spyware-transform
+Architecture: any
+Depends: mvvm, http-casing
+XB-Price: 1000
+XB-Display-Name: Spyware Blocker
+XB-Rack-Position: 1
+Description: The Metavize Spyware Blocker
+ The Spyware Blocker detects and prevents Spyware infections,
+ going to client systems via ActiveX controls, and cookies.
+ It is also able to prevent communication between a client
+ system and a known Spyware website/host.
 
 Package: httpblocker-transform
 Architecture: any
@@ -56,17 +69,15 @@ Description: The Metavize eMail SpamGuard
  POP3, and IMAP emails based on the existence of a Virus, Spam, or
  keywords in various parts of the email.
 
-Package: protofilter-transform
+Package: sophos-transform
 Architecture: any
-Depends: mvvm
-Conflicts: protoanalyzer-transform
+Depends: mvvm, sophos-mv, http-casing
 XB-Price: 1000
-XB-Display-Name: Rogue Protocol Control
-XB-Rack-Position: 7
-Description: The Metavize Rogue Protocol Control
- The Rogue Protocol Control is able to identify and selectively block
- various Peer-to-Peer communication and download protocols, such as
- AIM, IM, IRC, GNUTELLA, etc.
+XB-Display-Name: Sophos AntiVirus Scanner
+XB-Rack-Position: 4
+Description: The Sophos AntiVirus
+ The Sophos AntiVirus Scanner is able to scan and block inbound and
+ outbound viruses, in both http traffic and ftp traffic.
 
 Package: fprot-transform
 Architecture: any
@@ -85,39 +96,51 @@ XB-Price: 1000
 XB-Display-Name: Hauri AntiVirus
 XB-Rack-Position: 6
 Description: The Hauri AntiVirus
- The Hauri AntiVirus Scanner is able to scan and block inbound and outbound
- viruses, in both Web/http traffic and ftp traffic.
+ The Hauri AntiVirus Scanner is able to scan and block inbound and
+ outbound viruses, in both Web/http traffic and ftp traffic.
 
 Package: clam-transform
 Architecture: any
 Depends: mvvm, clamav, clamav-daemon, http-casing
 XB-Price: 1000
 XB-Display-Name: Clam AntiVirus
-XB-Rack-Position: 5
+XB-Rack-Position: 7
 Description: The Clam AntiVirus
  The Clam AntiVirus Scanner is able to scan and block inbound and
  outbound viruses, in both Web/http traffic and ftp traffic.
 
-Package: sophos-transform
+Package: protofilter-transform
 Architecture: any
-Depends: mvvm, sophos-mv, http-casing
+Depends: mvvm
+Conflicts: protoanalyzer-transform
 XB-Price: 1000
-XB-Display-Name: Sophos AntiVirus Scanner
-XB-Rack-Position: 4
-Description: The Sophos AntiVirus
- The Sophos AntiVirus Scanner is able to scan and block inbound and
- outbound viruses, in both http traffic and ftp traffic.
+XB-Display-Name: Rogue Protocol Control
+XB-Rack-Position: 8
+Description: The Metavize Rogue Protocol Control
+ The Rogue Protocol Control is able to identify and selectively block
+ various Peer-to-Peer communication and download protocols, such as
+ AIM, IM, IRC, GNUTELLA, etc.
 
-Package: airgap-transform
+Package: nat-transform
 Architecture: any
 Depends: mvvm
 XB-Price: 1000
-XB-Display-Name: Packet Attack Shield
-XB-Rack-Position: 0
-Description: The Metavize Packet Attack Shield
- The Packet Attack Shield is able to prevent packet based attacks on
- the internal network.  This is done primarily through the use of an
- air gap, although other techniques will be available.
+XB-Display-Name: Firewall / Internet Sharing
+XB-Rack-Position: 9
+Description: The Metavize Firewall / Internet Sharing Software Appliance
+ The Firewall / Internet Sharing Software Appliance allows a single public IP address to be
+ shared by an entire network of computers.  Specifically, NAT, DHCP, and Redirect functionalities
+ are provided.
+
+Package: firewall-transform
+Architecture: any
+Depends: mvvm
+XB-Price: 1000
+XB-Display-Name: Firewall / IP Blocker
+XB-Rack-Position: 10
+Description: The Metavize Firewall / IP Blocker Software Appliance
+ The Firewall / IP Blocker Software Appliance allows network traffic to be blocked based on IP level
+ information.  Blocking criteria includes direction, source, destination, protocol (TCP or UDP), port, etc.
 
 Package: reporting-transform
 Architecture: any
@@ -128,17 +151,15 @@ XB-Rack-Position: 1000
 Description: The Metavize Report Generator
  EdgeReport generates document reports about activities on your network.
 
-Package: spyware-transform
+Package: test-transform
 Architecture: any
-Depends: mvvm, http-casing
+Depends: mvvm
 XB-Price: 1000
-XB-Display-Name: Spyware Blocker
-XB-Rack-Position: 1
-Description: The Metavize Spyware Blocker
- The Spyware Blocker detects and prevents Spyware infections, going to
- client systems via ActiveX controls, and cookies.  It is also able to
- prevent communication between a client system and a known Spyware
- website/host.
+XB-Display-Name: Test
+XB-RackPosition: 1001
+Description: The Metavize Test Software Appliance
+ The Tester serves as a simple testbench to evaluate various
+ new and advanced functionalities of the Metavize Server.
 
 Package: metavize-client
 Architecture: any
