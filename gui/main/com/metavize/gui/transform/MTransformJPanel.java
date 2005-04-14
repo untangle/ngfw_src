@@ -154,8 +154,8 @@ public class MTransformJPanel extends javax.swing.JPanel {
 
         controlsJToggleButton.setFont(new java.awt.Font("Default", 0, 12));
         controlsJToggleButton.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/metavize/gui/transform/IconControlsClosed28x28.png")));
-        controlsJToggleButton.setText("Show Controls");
-        controlsJToggleButton.setToolTipText("<HTML>\nThe <B>Controls Button</B> allows you to show and hide the configuration, management,<BR>\nand visualization controls of a given transform.  Press the Controls Button once to show the<BR>\ncontrols, and press the button again to hide the controls.\n</HTML>");
+        controlsJToggleButton.setText("Show Settings");
+        controlsJToggleButton.setToolTipText("<HTML>\nThe <B>Settings Button</B> allows you to show and hide the configuration, management,<BR>\nand visualization settings of a given transform.  Press the Settings Button once to show the<BR>\nsettings, and press the button again to hide the settings.\n</HTML>");
         controlsJToggleButton.setAlignmentX(0.5F);
         controlsJToggleButton.setDoubleBuffered(true);
         controlsJToggleButton.setFocusPainted(false);

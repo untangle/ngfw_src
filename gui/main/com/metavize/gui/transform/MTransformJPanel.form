@@ -73,8 +73,8 @@
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
           <Connection code="new javax.swing.ImageIcon( Util.getClassLoader().getResource(&quot;com/metavize/gui/transform/IconControlsClosed28x28.png&quot;))" type="code"/>
         </Property>
-        <Property name="text" type="java.lang.String" value="Show Controls"/>
-        <Property name="toolTipText" type="java.lang.String" value="&lt;HTML&gt;&#xa;The &lt;B&gt;Controls Button&lt;/B&gt; allows you to show and hide the configuration, management,&lt;BR&gt;&#xa;and visualization controls of a given transform.  Press the Controls Button once to show the&lt;BR&gt;&#xa;controls, and press the button again to hide the controls.&#xa;&lt;/HTML&gt;"/>
+        <Property name="text" type="java.lang.String" value="Show Settings"/>
+        <Property name="toolTipText" type="java.lang.String" value="&lt;HTML&gt;&#xa;The &lt;B&gt;Settings Button&lt;/B&gt; allows you to show and hide the configuration, management,&lt;BR&gt;&#xa;and visualization settings of a given transform.  Press the Settings Button once to show the&lt;BR&gt;&#xa;settings, and press the button again to hide the settings.&#xa;&lt;/HTML&gt;"/>
         <Property name="alignmentX" type="float" value="0.5"/>
         <Property name="doubleBuffered" type="boolean" value="true"/>
         <Property name="focusPainted" type="boolean" value="false"/>
