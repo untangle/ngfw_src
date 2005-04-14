@@ -10,24 +10,23 @@ import com.metavize.mvvm.tran.TransformState;
 import com.metavize.gui.util.Util;
 
 import javax.swing.*;
+import java.awt.event.*;
 
 /**
  *
  * @author  inieves
  */
-public class BlinkJLabel extends JLabel implements Runnable {
+public class BlinkJLabel extends JLabel implements ActionListener {
     
-    private static final long BLINK_DELAY = 750l;
+    private static final int BLINK_DELAY_MILLIS = 750;
     
     private static ImageIcon iconOnState, iconOffState, iconStoppedState, iconPausedState;
     private Icon lastIcon;
     private volatile boolean blink = false;
-    private Thread blinkThread;
-    private TransformState transformState;
+    private Timer blinkTimer;
 
     
-    public BlinkJLabel() {
-        
+    public BlinkJLabel() {        
         if(iconOnState == null)  
             iconOnState = new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/metavize/gui/transform/IconOnState28x28.png"));
         if(iconOffState == null)
@@ -36,70 +35,85 @@ public class BlinkJLabel extends JLabel implements Runnable {
             iconStoppedState = new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/metavize/gui/transform/IconStoppedState28x28.png"));
         if(iconPausedState == null)
             iconPausedState = new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/metavize/gui/transform/IconAttentionState28x28.png"));
-        
-        blinkThread = new Thread(this);
-        blinkThread.start();
-    }
-    
-    public void setOnState(){ blink(false);  this.setIcon(iconOnState); }
-    public void setOffState(){ blink(false); this.setIcon(iconOffState); }
-    public void setStartingState(){ this.setIcon(iconOnState); blink(true); }
-    public void setStoppingState(){ this.setIcon(iconOffState); blink(true); }
-    public void setRemovingState(){ blink(false); this.setIcon(iconPausedState); }
-    public void setTransferState(){ blink(false); this.setIcon(iconPausedState); }
-    public void setProblemState(){ this.setIcon(iconStoppedState); blink(true); }
-    
-    
-    public void blink(boolean blink){
-        synchronized(this){
-            if(this.blink == blink)
-                return;
-            this.blink = blink;
-            if(blink){
-                this.notify();
-                lastIcon = this.getIcon();
-            }
-        }
-    }
-    
-    public void run() {
-        
-        while(true){
-            
-            synchronized(this){
-                try{
-                    if(!blink)
-                        this.wait();
-                }
-                catch(Exception e){}
-            }
-            
-            while(true){
-                
-                // blink paused state
-                synchronized(this){
-                    if(blink){
-                        this.setIcon(iconPausedState);
-                    }
-                    else
-                        break;
-                }
-                try{Thread.sleep(BLINK_DELAY);}catch(Exception e){}    
-            
-                // blink activity state
-                synchronized(this){
-                    if(blink){
-                        this.setIcon(lastIcon);
-                    }
-                    else
-                        break;
-                }
-                try{Thread.sleep(BLINK_DELAY);}catch(Exception e){}
 
-            }
-            
-        }
-        
-    }    
+	blinkTimer = new Timer( BLINK_DELAY_MILLIS, (ActionListener) this );
+	blinkTimer.setInitialDelay( 0 );
+    }
+
+
+    // VIEW STATE ////////////////////////
+    public static final int PROBLEM_STATE = 0;
+    public static final int PROCESSING_STATE = 1;
+    public static final int REMOVING_STATE = 2;
+    public static final int ON_STATE = 3;
+    public static final int OFF_STATE = 4;
+    public static final int STARTING_STATE = 5;
+    public static final int STOPPING_STATE = 6;
+
+    public void setViewState( int viewState ){
+	switch(viewState){
+	case PROBLEM_STATE : 
+	    lastIcon = iconStoppedState;
+	    this.setIcon(lastIcon);
+	    blink(true);
+	    break;
+	case PROCESSING_STATE :
+	    lastIcon = this.getIcon();
+	    this.setIcon(iconPausedState);
+	    blink(true);
+	    break;
+	case ON_STATE :
+	    this.setIcon(iconOnState);
+	    blink(false);
+	    break;
+	case OFF_STATE :
+	    this.setIcon(iconOffState);
+	    blink(false);
+	    break;
+	case STARTING_STATE :
+	    lastIcon = iconOnState;
+	    this.setIcon(lastIcon);
+	    blink(true);
+	    break;
+	case STOPPING_STATE :
+	case REMOVING_STATE :
+	    lastIcon = iconOffState;
+	    this.setIcon(lastIcon);
+	    blink(true);
+	    break;
+	}
+    }
+    /////////////////////////////////////////
+
+
+    // BLINKING ////////////////////////////
+    public void blink(boolean blink){
+	if(this.blink == blink)
+	    return;
+	this.blink = blink;
+	synchronized(this){
+	    if(blink)
+		blinkTimer.start();
+	    else
+		blinkTimer.restart();
+	}
+    }
+
+    public void actionPerformed(ActionEvent evt){
+	synchronized(this){
+	    if(!blink){
+		blinkTimer.stop();
+		this.setIcon(lastIcon);
+		return;
+	    }
+	}
+
+	if( this.getIcon() != iconPausedState )
+	    this.setIcon(iconPausedState);
+	else
+	    this.setIcon(lastIcon);
+    }
+    //////////////////////////////////////
+
     
 }

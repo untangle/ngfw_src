@@ -31,8 +31,6 @@ public class MStateMachine implements java.awt.event.ActionListener {
     private MTransformDisplayJPanel mTransformDisplayJPanel;
     private TransformContext transformContext;
     
-    private TransformState lastTransformState;
-    
     public MStateMachine(MTransformJPanel mTransformJPanel,
                          MTransformControlsJPanel mTransformControlsJPanel,
                          MTransformDisplayJPanel mTransformDisplayJPanel) {
@@ -47,40 +45,35 @@ public class MStateMachine implements java.awt.event.ActionListener {
          this.saveJButton = mTransformControlsJPanel.saveJButton();
          this.reloadJButton = mTransformControlsJPanel.reloadJButton();
          this.removeJButton = mTransformControlsJPanel.removeJButton();
-         
-         
-         updateTransformState();
+                  
+         new RefreshStateThread();
     }
+
  
-    // handle any of the actions that might occur
-    public void actionPerformed(java.awt.event.ActionEvent evt) {
-                
+    // ACTION MULTIPLEXER ///////////////////////////////
+    public void actionPerformed(java.awt.event.ActionEvent evt) {              
         Object source = evt.getSource();
-        
+
+	System.err.println("Event: " + evt.toString() );
+
         if( Util.getIsDemo() && !source.equals(reloadJButton) )
             return;
-        
         try{
-            if( source.equals(saveJButton) ){ doSaveAll(); }
-            else if( source.equals(reloadJButton) ){ doRefreshAll(); }
-            else if( source.equals(removeJButton) ){ doRemove(); }
+            if( source.equals(saveJButton) ){ new SaveThread(); }
+            else if( source.equals(reloadJButton) ){ new RefreshThread(); }
+            else if( source.equals(removeJButton) ){ new RemoveThread(false); }
             else if( source.equals(powerJToggleButton) ){ 
 		int modifiers = evt.getModifiers();
 		if( (modifiers & java.awt.event.ActionEvent.SHIFT_MASK) > 0 ){
 		    if( (modifiers & java.awt.event.ActionEvent.CTRL_MASK) == 0 ){
-			doRemove();
+			new RemoveThread(false);
 		    }
 		    else{
-			Util.getMPipelineJPanel().removeAllTransforms();
-			Util.setEmailDetectionFprotJPanel(null);
-			Util.setEmailDetectionSophosJPanel(null);
-                        Util.setEmailDetectionHauriJPanel(null);
-			Util.setVirusMEditTableJPanel(null);
-
+			//new RemoveThread(true);  this is not totally safe at this point, removing for now
 		    }
 		}
 		else{
-		    doPower(); 
+		    new PowerThread(); 
 		}
 	    }
             else{ Util.printMessage("error: unknown action source: " + source); }
@@ -91,172 +84,209 @@ public class MStateMachine implements java.awt.event.ActionListener {
             }
             catch(Exception f){
                 Util.handleExceptionNoRestart("Error getting last state", f);
-                doProblem();
+                setProblemView(true);
             }
         }
     }
-    
-    // handle the various outcomes
-    private void doSaveAll(){
-        doProcessing();
-        stateJLabel.setTransferState();
-        Thread saveThread = new Thread() {
-            public void run() {
-                mTransformControlsJPanel.saveAll();
-                updateTransformState();
-            }
-        };
-        saveThread.start();
+    ////////////////////////////////////////////
+
+
+    // ACTION THREADS //////////////////////////
+    class SaveThread extends Thread{
+	public SaveThread(){
+	    setProcessingView(false);
+	    this.start();
+	}
+	public void run(){
+	    try{
+		mTransformControlsJPanel.saveAll();
+		refreshState(true);
+	    }
+	    catch(Exception e){
+		try{
+		    Util.handleExceptionWithRestart("Error doing save", e);
+		}
+		catch(Exception f){
+		    Util.handleExceptionNoRestart("Error doing save", f);
+		    setProblemView(true);
+		}
+	    }
+	}
     }
-    private void doRefreshAll(){
-        doProcessing();
-        stateJLabel.setTransferState();
-        Thread refreshThread = new Thread() {
-            public void run() {
-                mTransformControlsJPanel.refreshAll();
-                updateTransformState();
-            }
-        };
-        refreshThread.start();
+
+
+    class RefreshThread extends Thread{
+	public RefreshThread(){
+	    setProcessingView(false);
+	    this.start();
+	}
+	public void run(){
+	    try{
+		mTransformControlsJPanel.refreshAll();
+		refreshState(true);
+	    }
+	    catch(Exception e){
+		try{
+		    Util.handleExceptionWithRestart("Error doing refresh", e);
+		}
+		catch(Exception f){
+		    Util.handleExceptionNoRestart("Error doing refresh", f);
+		    setProblemView(true);
+		}
+	    }
+	}
     }
-    private void doRemove(){
-        doProcessing();
-        stateJLabel.setRemovingState();
-        synchronized( Util.getPipelineSync() ){
-            Thread removeThread = new Thread() {
-                public void run() {
-                    mTransformDisplayJPanel.killGraph();
-		    String transformName = transformContext.getTransformDesc().getName();
-		    if(transformName.equals("fprot-transform"))
-			Util.setEmailDetectionFprotJPanel(null);
-		    else if(transformName.equals("sophos-transform"))
-			Util.setEmailDetectionSophosJPanel(null);
-                    else if(transformName.equals("hauri-transform"))
-			Util.setEmailDetectionHauriJPanel(null);
-		    else if(transformName.equals("email-transform"))
-			Util.setVirusMEditTableJPanel(null);
+
+    class RemoveThread extends Thread{
+	private boolean removeAll;
+	public RemoveThread(boolean removeAll){
+	    this.removeAll = removeAll;
+	    setRemovingView(false);
+	    this.start();
+	}
+	public void run(){
+	    try{
+		mTransformDisplayJPanel.killGraph();
+		String transformName = transformContext.getTransformDesc().getName();
+		if( removeAll || transformName.equals("sophos-transform") )
+		    Util.setEmailDetectionSophosJPanel(null);
+		if( removeAll || transformName.equals("fprot-transform") )
+		    Util.setEmailDetectionFprotJPanel(null);
+		if( removeAll || transformName.equals("hauri-transform") )
+		    Util.setEmailDetectionHauriJPanel(null);
+		if( removeAll || transformName.equals("clam-transform") )
+		    Util.setEmailDetectionHauriJPanel(null);
+		if( removeAll || transformName.equals("email-transform"))
+		    Util.setVirusMEditTableJPanel(null);
+		Util.updateDependencies();
+		if( removeAll )
+		    Util.getMPipelineJPanel().removeAllTransforms();
+		else
+		    Util.getMPipelineJPanel().removeTransform(transformContext);
+	    }
+	    catch(Exception e){
+		try{
+		    Util.handleExceptionWithRestart("Error doing remove", e);
+		}
+		catch(Exception f){
+		    Util.handleExceptionNoRestart("Error doing remove", f);
+		    setProblemView(true);
+		}
+	    }
+	}
+    }
+
+    class PowerThread extends Thread{
+	private final boolean powerOn;
+	public PowerThread(){
+	    powerOn = powerJToggleButton.isSelected();
+	    if( powerOn )
+		setStartingView(false);
+	    else
+		setStoppingView(false);
+	    this.start();
+	}
+
+	public void run(){
+	    try{
+		if(powerOn)
+		    transformContext.transform().start();
+		else
+		    transformContext.transform().stop();
+		
+		SwingUtilities.invokeLater( new Runnable() { public void run(){
+		    if( powerOn )
+			setOnView(true);
 		    else
-			System.err.println("REMOVING: " + transformName);
-		    Util.updateDependencies();
-		    mTransformControlsJPanel.collapseControlPanel();
-                    Util.getMPipelineJPanel().removeTransform(transformContext);
-                }
-            };
-            removeThread.start();
-        }
+			setOffView(true);
+		}});
+	    }
+	    catch(Exception e){
+		try{
+		    Util.handleExceptionWithRestart("Error doing power", e);
+		}
+		catch(Exception f){
+		    Util.handleExceptionNoRestart("Error doing power", f);
+		    setProblemView(true);
+		}
+	    }	    
+	}
     }
-    private void doPower(){
-        //System.err.println("doPower: " + powerJToggleButton.isSelected() );
-        doProcessing();
-        Thread powerThread = new Thread() {
-            public void run() {
-                try{
-                    if( powerJToggleButton.isSelected() ){
-                        stateJLabel.setStartingState();
-                        transformContext.transform().start();
-                        mTransformDisplayJPanel.setUpdateGraph(true);
-                        stateJLabel.setOnState();
-                    }
-                    else {
-                        stateJLabel.setStoppingState();
-                        mTransformDisplayJPanel.setUpdateGraph(false);
-                        transformContext.transform().stop();
-                        stateJLabel.setOffState();
-                        
-                    }
-                }
-                catch(Exception e){
-                    try{
-                        Util.handleExceptionWithRestart("Error doing power", e);
-                    }
-                    catch(Exception f){
-                        Util.handleExceptionNoRestart("Error doing power", f);
-                        updateTransformState();
-                        return;
-                    }
-                }
-                updateTransformState();
-            }
-        };
-        powerThread.start();
-    }
+    ///////////////////////////////////////////////
+
     
+    // VIEW SETTING //////////////////////////////// 
+    private void setProcessingView(boolean doLater){ setView( doLater, false, false, false, false, false, null, true, BlinkJLabel.PROCESSING_STATE ); }
+    private void setProblemView(boolean doLater){    setView( doLater, false, false, false, true,  false, null, true, BlinkJLabel.PROBLEM_STATE ); }
+    private void setStartingView(boolean doLater){ setView( doLater, false, false, false, false, false, null, false, BlinkJLabel.STARTING_STATE ); }
+    private void setStoppingView(boolean doLater){ setView( doLater, false, false, false, false, false, null, false, BlinkJLabel.STOPPING_STATE ); }
+    private void setRemovingView(boolean doLater){ setStoppingView(doLater); }
+    private void setOnView(boolean doLater){ 	    setView( doLater, true, true, true, true, true, true, true,  BlinkJLabel.ON_STATE ); }
+    private void setOffView(boolean doLater){ 	    setView( doLater, true, true, true, true, true, false, false, BlinkJLabel.OFF_STATE ); }
     
-    // statically set the buttons and visuals for when there are problems
-    private void doProblem(){
-        //System.err.println("doProblem");
-        mTransformControlsJPanel.setAllEnabled(false);
-        //mTransformControlsJPanel.mTabbedPane.setEnabled(false);
-        saveJButton.setEnabled(false);
-        reloadJButton.setEnabled(false);
-        removeJButton.setEnabled(true);
-        powerJToggleButton.setEnabled(true);
-        stateJLabel.setProblemState();
-        mTransformDisplayJPanel.setUpdateGraph(false);
-        
-        if(Util.getIsDemo())
-            powerJToggleButton.setEnabled(false);
+    private void setView(final boolean doLater, final boolean allControlsEnabled, final boolean saveEnabled,
+			 final boolean refreshEnabled, final boolean removeEnabled, final boolean powerEnabled,
+			 final Boolean powerOn, final boolean updateGraph, final int ledState){
+
+	Runnable runnable = new Runnable(){
+		public void run(){
+		    mTransformControlsJPanel.setAllEnabled( allControlsEnabled );
+		    saveJButton.setEnabled( saveEnabled );
+		    reloadJButton.setEnabled( refreshEnabled );
+		    removeJButton.setEnabled( removeEnabled );
+		    if( Util.getIsDemo() )
+			powerJToggleButton.setEnabled(false);
+		    else
+			powerJToggleButton.setEnabled( powerEnabled );
+		    
+		    if( powerOn != null){
+			boolean wasEnabled = powerJToggleButton.isEnabled();
+			powerJToggleButton.setEnabled(false);
+			powerJToggleButton.setSelected( powerOn );
+			powerJToggleButton.setEnabled(wasEnabled);
+		    }
+		    mTransformDisplayJPanel.setUpdateGraph( updateGraph );
+		    stateJLabel.setViewState( ledState );
+		}
+	    };
+	if( doLater )
+	    SwingUtilities.invokeLater( runnable );
+	else
+	    runnable.run();
     }
-    
-    // statically prevent buttons from being pressed
-    private void doProcessing(){
-        //System.err.println("doProcessing");
-        //mTransformControlsJPanel.mTabbedPane.setEnabled(false);
-        mTransformControlsJPanel.setAllEnabled(false);
-        saveJButton.setEnabled(false);
-        reloadJButton.setEnabled(false);
-        removeJButton.setEnabled(false);
-        powerJToggleButton.setEnabled(false);
+    ///////////////////////////////////////////////
+
+
+    // STATE REFRESHING //////////////////////////
+    private void refreshState(boolean doLater){
+	TransformState transformState = transformContext.transform().getRunState();
+	if( TransformState.RUNNING.equals( transformState ) )
+	    setOnView(doLater);
+	else if( TransformState.INITIALIZED.equals( transformState ) )
+	    setOffView(doLater);
+	else
+	    setProblemView(doLater);
     }
-    
-    // statically set the buttons and visuals for when there is no problem
-    private void doNoProblem(TransformState transformState){
-        if( !TransformState.RUNNING.equals(transformState) && !TransformState.INITIALIZED.equals(transformState) )
-            return;
-        mTransformControlsJPanel.setAllEnabled(true);
-        //mTransformControlsJPanel.mTabbedPane.setEnabled(true);
-        saveJButton.setEnabled(true);
-        reloadJButton.setEnabled(true);
-        removeJButton.setEnabled(true);
-        powerJToggleButton.setEnabled(false);
-        powerJToggleButton.setSelected( TransformState.RUNNING.equals(transformState) ? true : false );
-        powerJToggleButton.setEnabled(true);
-        if(TransformState.RUNNING.equals(transformState)){
-            stateJLabel.setOnState();
-            mTransformDisplayJPanel.setUpdateGraph(true);
-        }
-        else if(TransformState.INITIALIZED.equals(transformState)){
-            stateJLabel.setOffState();
-            mTransformDisplayJPanel.setUpdateGraph(false);
-        }
-        if(Util.getIsDemo())
-            powerJToggleButton.setEnabled(false);
+     
+    class RefreshStateThread extends Thread{
+	public RefreshStateThread(){
+	    this.start();
+	}
+	public void run(){
+	    try{
+		refreshState(true);
+	    }
+	    catch(Exception e){
+		try{
+		    Util.handleExceptionWithRestart("Error refreshing state", e);
+		}
+		catch(Exception f){
+		    Util.handleExceptionNoRestart("Error refreshing state: ", f);
+		    setProblemView(true);
+		}
+	    }
+	}
     }
-    
-    // statically set the visual for the latest state
-    private boolean updateTransformState(){
-        //System.err.println("updateTransformState");
-         try{
-            lastTransformState = transformContext.transform().getRunState();
-         }
-         catch(Exception e){
-            try{
-                Util.handleExceptionWithRestart("Error getting last state", e);
-            }
-            catch(Exception f){
-                Util.handleExceptionNoRestart("Error getting last state: ", f);
-                doProblem();
-                return true;
-            }
-         }
-         if( TransformState.RUNNING.equals(lastTransformState) || TransformState.INITIALIZED.equals(lastTransformState)){
-             doNoProblem(lastTransformState);
-         }
-         else{
-             doProblem();
-             return true;
-         }
-         return false;
-    }
+    ///////////////////////////////////
     
 }
