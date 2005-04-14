@@ -84,7 +84,6 @@ public class Util {
     private static MURLClassLoader mURLClassLoader = null;
     private static boolean killThreads = false;
     private static final boolean PRINT_MESSAGES = true;
-    private static Boolean pipelineSync;
     private static boolean isDemo = false;
     private static JProgressBar statusJProgressBar;
     private static MPipelineJPanel mPipelineJPanel;
@@ -98,7 +97,6 @@ public class Util {
     private static Vector log;
 
     static{
-        pipelineSync = new Boolean(false);
         log = new Vector();
     }
 
@@ -111,11 +109,19 @@ public class Util {
     }
 
 
-    public static void setVirusMEditTableJPanel(MEditTableJPanel virusMEditTableJPanelX){ virusMEditTableJPanel = virusMEditTableJPanelX; }
-    public static void setEmailDetectionSophosJPanel(EmailDetectionJPanel emailDetectionJPanel){ emailDetectionSophosJPanel = emailDetectionJPanel; }
-    public static void setEmailDetectionFprotJPanel(EmailDetectionJPanel emailDetectionJPanel){ emailDetectionFprotJPanel = emailDetectionJPanel; }
-    public static void setEmailDetectionHauriJPanel(EmailDetectionJPanel emailDetectionJPanel){ emailDetectionHauriJPanel = emailDetectionJPanel; }
-    public static void updateDependencies(){
+    public synchronized static void setVirusMEditTableJPanel(MEditTableJPanel virusMEditTableJPanelX){
+	virusMEditTableJPanel = virusMEditTableJPanelX;
+    }
+    public synchronized static void setEmailDetectionSophosJPanel(EmailDetectionJPanel emailDetectionJPanel){
+	emailDetectionSophosJPanel = emailDetectionJPanel;
+    }
+    public synchronized static void setEmailDetectionFprotJPanel(EmailDetectionJPanel emailDetectionJPanel){
+	emailDetectionFprotJPanel = emailDetectionJPanel;
+    }
+    public synchronized static void setEmailDetectionHauriJPanel(EmailDetectionJPanel emailDetectionJPanel){
+	emailDetectionHauriJPanel = emailDetectionJPanel;
+    }
+    public synchronized static void updateDependencies(){
 	if( virusMEditTableJPanel != null){
 	    if(emailDetectionSophosJPanel != null)
 		emailDetectionSophosJPanel.setDetected(true);
@@ -163,7 +169,6 @@ public class Util {
     }
 
 
-    public static Object getPipelineSync(){ return pipelineSync; }
 
     public static ClassLoader getInitClassLoader(){ return initClassLoader; }
     public static void setInitClassLoader(ClassLoader initClassLoaderX){ initClassLoader = initClassLoaderX;}
