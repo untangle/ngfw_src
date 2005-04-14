@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: VirusRuleEvent.java,v 1.9 2005/03/25 03:51:16 amread Exp $
+ * $Id$
  */
 package com.metavize.tran.email;
 
@@ -29,7 +29,6 @@ import com.metavize.tran.virus.VirusScannerResult;
 public class VirusRuleEvent extends LogEvent
 {
     /* constants */
-    public final static String EMPTY_NAME = "";
 
     /* class variables */
 
@@ -49,7 +48,7 @@ public class VirusRuleEvent extends LogEvent
         this.zAction = zAction.getKey();
         if (null == zScanResult)
         {
-            zName = EMPTY_NAME;
+            zName = Constants.EMPTYSTR;
             bIsClean = true;
             bRemoved = false;
         }

@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: MIMEBody.java,v 1.3 2005/03/11 03:34:57 cng Exp $
+ * $Id$
  */
 package com.metavize.tran.email;
 
@@ -356,17 +356,23 @@ public class MIMEBody
         {
             zMIMEPart = (MIMEPart) zMPIter.next();
             zScanResult = zMIMEPart.scan(zReplacement, zScanner, bReplace);
-            if (null == zReturnResult &&
-                (null != zScanResult &&
-                 false == zScanResult.isClean()))
+            //zLog.debug("scan result: " + zScanResult);
+
+            if (null != zScanResult)
             {
-                /* we only log 1st infected virus result */
-                zReturnResult = zScanResult;
-                //zLog.debug("1st scan result: " + zReturnResult);
+                /* we only log 1st result or
+                 * 1st infected virus result
+                 */
+                if (null == zReturnResult ||
+                    true == zReturnResult.isClean())
+                {
+                    zReturnResult = zScanResult;
+                    //zLog.debug("return result: " + zReturnResult);
+                }
             }
         }
 
-        //zLog.debug("return scan result: " + zReturnResult);
+        //zLog.debug("final return result: " + zReturnResult);
         return zReturnResult;
     }
 

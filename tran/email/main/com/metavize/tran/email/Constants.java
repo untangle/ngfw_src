@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: Constants.java,v 1.13 2005/03/11 21:07:03 cng Exp $
+ * $Id$
  */
 package com.metavize.tran.email;
 
@@ -217,6 +217,7 @@ public class Constants
     public final static int MDFEXCDIR_VAL = 5;
     public final static int DEFAULTDIR_VAL = 6;
 
+    public final static String EMPTYSTR = "";
     public final static String XMPREFIX = "xms";
 
     public final static int FATAL_EXIT = -1;

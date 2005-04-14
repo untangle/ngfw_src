@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: CustomRuleEvent.java,v 1.7 2005/03/25 19:37:17 cng Exp $
+ * $Id$
  */
 package com.metavize.tran.email;
 
@@ -29,7 +29,6 @@ import com.metavize.tran.util.*;
 public class CustomRuleEvent extends LogEvent
 {
     /* constants */
-    private final static String EMPTY_PATTERN = "";
 
     /* instance variables */
     private MLMessageInfo zMsgInfo;
@@ -70,7 +69,7 @@ public class CustomRuleEvent extends LogEvent
         }
         else
         {
-            zPattern = EMPTY_PATTERN;
+            zPattern = Constants.EMPTYSTR;
             zExchValue = null;
         }
 

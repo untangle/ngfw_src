@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: MLMessageInfo.java,v 1.9 2005/03/25 03:51:16 amread Exp $
+ * $Id$
  */
 package com.metavize.tran.email;
 
@@ -36,7 +36,6 @@ public class MLMessageInfo
     /* constants */
     private static final Logger zLog = Logger.getLogger(MLMessageInfo.class.getName());
 
-    private final static String EMPTY_STR = "";
     private final static String TRUNCATED_STR = ",...";
     private final static String COMMA_DELIM = ",";
 
@@ -381,7 +380,7 @@ public class MLMessageInfo
             return null;
         }
 
-        String zStr = EMPTY_STR;
+        String zStr = Constants.EMPTYSTR;
 
         String zTmp;
         CBufferWrapper zCLine;
@@ -410,11 +409,11 @@ public class MLMessageInfo
                 }
                 catch (CharacterCodingException e)
                 {
-                    zLog.error("Unable to decode field: " + zCLine + ": " + e);
+                    zLog.warn("field contains non-ascii characters; stripping non-ascii characters from field: " + zCLine + ", " + e);
 
-                    /* restore ByteBuffer state */
-                    zLine.position(iPosition);
-                    return EMPTY_STR;
+                    /* we found field command so skip over it */
+                    zLine.position(zMatcher.end());
+                    zTmp = MVChar.stripNonASCII(zLine);
                 }
 
                 /* restore ByteBuffer state */

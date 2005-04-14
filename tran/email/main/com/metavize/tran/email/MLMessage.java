@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: MLMessage.java,v 1.10 2005/03/11 03:34:57 cng Exp $
+ * $Id$
  */
 package com.metavize.tran.email;
 
@@ -50,7 +50,6 @@ public class MLMessage
     /* constants */
     private static final Logger zLog = Logger.getLogger(MLMessage.class.getName());
 
-    private final static String EMPTYSTR = "";
     private final static byte EMPTYSTRBA[] = { ' ' };
 
     private final static String SQUOTESTR = "\\'";
@@ -949,8 +948,9 @@ public class MLMessage
         }
         catch (CharacterCodingException e)
         {
-            zLog.error("Unable to decode line: " + zLine + ": " + e);
-            return CharBuffer.wrap(EMPTYSTR); /* replace undecodeable line with empty string */
+            zLog.warn("line contains non-ascii characters; stripping non-ascii characters from line: " + zLine + ", " + e);
+            zLine.rewind();
+            return CharBuffer.wrap(MVChar.stripNonASCII(zLine));
         }
     }
 

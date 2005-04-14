@@ -1159,12 +1159,12 @@ public class EventHandler extends AbstractEventHandler
                 }
                 catch (CharacterCodingException e)
                 {
-                    zLog.error("Unable to decode notification recipient: " + zCLine + ": " + e);
+                    zLog.warn("recipient list contains non-ascii characters; stripping non-ascii characters from list: " + zCLine + ", " + e);
 
-                    /* restore ByteBuffer state */
-                    zLine.limit(iLimit);
-                    zLine.position(iPosition);
-                    return null;
+                    /* we found field command so skip over it */
+                    zLine.position(zMatcher.end());
+                    zLine.limit(iPosition);
+                    azSLines[iIdx] = MVChar.stripNonASCII(zLine);
                 }
 
                 /* restore ByteBuffer state */
@@ -1250,7 +1250,7 @@ public class EventHandler extends AbstractEventHandler
         {
             /* new/unidentified exception
              * (someone handled new exception but didn't add it here yet
-             *  - should it here now)
+             *  - should add it here now)
              */
             iDir = Constants.DEFAULTDIR_VAL;
             bResend = true;

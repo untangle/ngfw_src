@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: IMAPHandler.java,v 1.8 2005/02/24 03:46:39 cng Exp $
+ * $Id$
  */
 package com.metavize.tran.email;
 
@@ -286,6 +286,19 @@ public class IMAPHandler extends MLHandler
 
             if (false == bRejectData)
             {
+                /* forcibly recalculate message size and
+                 * exclude EOD length from new message size
+                 * - we may have modified message
+                 *   (e.g., fragmented long lines and
+                 *    appended EOL at end of each fragment)
+                 */
+                int iEODSz = zEnv.getReadDataCt() - zReadDataSz.intValue();
+                //zLog.debug("msg size (org): " + zMsg.getSize() + ", msg size (read): " + zReadDataSz.intValue() + ", read size: " + zEnv.getReadDataCt() + ", EOD size: " + iEODSz);
+                zMsg.clearSize();
+                //zLog.debug("msg size (new): " + zMsg.getSize());
+                zMsg.setSize(zMsg.getSize() - iEODSz);
+                //zLog.debug("msg size (new - EOD): " + zMsg.getSize());
+
                 setAppendEOData(zEnv);
             }
             else
@@ -422,6 +435,19 @@ public class IMAPHandler extends MLHandler
 
             if (false == bRejectData)
             {
+                /* forcibly recalculate message size and
+                 * exclude EOD length from new message size
+                 * - we may have modified message
+                 *   (e.g., fragmented long lines and
+                 *    appended EOL at end of each fragment)
+                 */
+                int iEODSz = zEnv.getReadDataCt() - zReadDataSz.intValue();
+                //zLog.debug("msg size (org): " + zMsg.getSize() + ", msg size (read): " + zReadDataSz.intValue() + ", read size: " + zEnv.getReadDataCt() + ", EOD size: " + iEODSz);
+                zMsg.clearSize();
+                //zLog.debug("msg size (new): " + zMsg.getSize());
+                zMsg.setSize(zMsg.getSize() - iEODSz);
+                //zLog.debug("msg size (new - EOD): " + zMsg.getSize());
+
                 setFetchEOData(zEnv);
             }
             else

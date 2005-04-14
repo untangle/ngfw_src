@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: POPHandler.java,v 1.6 2005/02/24 03:46:39 cng Exp $
+ * $Id$
  */
 package com.metavize.tran.email;
 
@@ -272,6 +272,16 @@ public class POPHandler extends MLHandler
 
             if (false == bRejectData)
             {
+                /* forcibly recalculate message size
+                 * - we may have modified message
+                 *   (e.g., fragmented long lines and
+                 *    appended EOL at end of fragments)
+                 */
+                //zLog.debug("msg size (org): " + zMsg.getSize());
+                zMsg.clearSize();
+                //zLog.debug("msg size (new): " + zMsg.getSize());
+                zMsg.getSize();
+
                 setEOData(zEnv);
             }
             else

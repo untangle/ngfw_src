@@ -142,6 +142,7 @@ public class MLHandler
      * For now, we'll apply these limits to RFC 1939 and 1730/2060 too.
      */
     public final static int READSZ = 1024; /* round up from 1000 */
+    public final static int FRAGSZ = 1022; /* arbitrary size */
 
     /* endpoint types */
     public final static int DRIVER = Constants.CLIENT;
@@ -150,6 +151,7 @@ public class MLHandler
     private final static int MAX_LINE_SZ = 65536;
     private final static int EOS = -1; /* end of stream indicator */
     private final static int COPYALL = -1;
+    private final static int COPYFRAG = -2;
 
     private final static int REJECT_BUFFER_CT = 10;
 
@@ -466,7 +468,7 @@ public class MLHandler
 
         if (true == isMatch(zCLine, zEOLPattern))
         {
-            copy(zCLine, COPYALL);
+            copy(zCLine, COPYALL, null);
 
             /* if we have complete line,
              * we'll let caller decide what result to return
@@ -540,8 +542,7 @@ public class MLHandler
                  *  before client can send additional commands and
                  *  server only sends replies after client issues commands)
                  */
-                zEnv.incrementReadDataCt(copy(zCLine, COPYALL));
-                zDatas.add(zCLine);
+                zEnv.incrementReadDataCt(copy(zCLine, COPYALL, zDatas));
 
                 /* if we have complete data,
                  * we'll let caller decide what result to return
@@ -582,17 +583,27 @@ public class MLHandler
              */
             if (zLine.capacity() == iPosition)
             {
-                /* line does not end with EOL
-                 * - although data can be fragmented,
-                 *   each line must end with EOL
+                /* this buffer does not end with EOL
+                 * so copy buffer (FRAGSZ bytes) and
+                 * append EOLINE at end of each fragment
+                 * (iCopySz excludes EOLINE byte that we appended
+                 *  - ReadDataCt includes data that we read and
+                 *    not any data that we added)
                  */
-                throw new ReadException("Passing through data fragment; line is full and is not terminated by end-of-line: " + zCLine + ", " + zLine);
-            }
-            /* else no EOL yet and buffer has space for more */
+                zEnv.incrementReadDataCt(copy(zCLine, COPYFRAG, zDatas));
 
-            //zLog.debug("readdata (no EOL - read more): " + zCLine + ", " + zLine);
-            zLog.debug("readdata (no EOL - read more): " + zLine);
-            zEnv.setFixedResult(Constants.READ_MORE_NO_WRITE);
+                ///* line does not end with EOL
+                // * - although data can be fragmented,
+                // *   each line must end with EOL
+                // */
+                //throw new ReadException("Passing through data fragment; line is full and is not terminated by end-of-line: " + zCLine + ", " + zLine);
+            }
+            else /* no EOL yet and buffer has space for more */
+            {
+                //zLog.debug("readdata (no EOL - read more): " + zCLine + ", " + zLine);
+                zLog.debug("readdata (no EOL - read more): " + zLine);
+                zEnv.setFixedResult(Constants.READ_MORE_NO_WRITE);
+            }
         }
         else
         {
@@ -607,15 +618,13 @@ public class MLHandler
                 /* this buffer does not end with EOL
                  * so copy up to and including last EOL
                  */
-                iCopySz = copy(zCLine, iEnd);
+                iCopySz = copy(zCLine, iEnd, zDatas);
             }
             else
             {
                 /* this buffer ends with EOL so simply copy its contents */
-                iCopySz = copy(zCLine, COPYALL);
+                iCopySz = copy(zCLine, COPYALL, zDatas);
             }
-
-            zDatas.add(zCLine);
 
             /* note that since we modified original read buffer,
              * we cannot use READ_MORE_NO_WRITE here
@@ -632,21 +641,21 @@ public class MLHandler
     /* replace Smith buffer with private copy of buffer
      * (copy contents of current backing buffer to new buffer)
      */
-    private static int copy(CBufferWrapper zCLine, int iCopySz) throws ReadException
+    private static int copy(CBufferWrapper zCLine, int iCopySz, ArrayList zList) throws ReadException
     {
         ByteBuffer zLine = zCLine.get(); /* get source buffer for copy op */
+        zLine.rewind();
 
         ByteBuffer zCopyLine;
         int iSz;
 
         if (COPYALL == iCopySz)
         {
-            iSz = zLine.position();
+            iSz = zLine.limit();
             zCopyLine = ByteBuffer.allocate(iSz); /* allocate new buffer */
 
             try
             {
-                zLine.rewind();
                 zCopyLine.put(zLine); /* we don't set limit since we allocated buffer to exact size */
                 zLine.clear(); /* reset so that we can recycle this buffer */
             }
@@ -655,6 +664,55 @@ public class MLHandler
                 zLine.clear(); /* reset so that we can recycle this buffer */
                 throw new ReadException("Unable to copy read buffer (it is larger than originally requested)");
             }
+
+            zCLine.renew(zCopyLine); /* swap original buffer with copy */
+            //zLog.debug("copy all: " + zCLine + ", " + zCopyLine);
+
+            if (null != zList)
+            {
+                zList.add(zCLine);
+            }
+        }
+        else if (COPYFRAG == iCopySz)
+        {
+            CBufferWrapper zTmpCLine = zCLine;
+            int iTmpSz = FRAGSZ;
+            iSz = 0;
+
+            while (FRAGSZ <= zLine.remaining())
+            {
+                if (null == zTmpCLine)
+                {
+                    zTmpCLine = new CBufferWrapper(zLine);
+                }
+
+                iSz += FRAGSZ;
+                zCopyLine = ByteBuffer.allocate(iTmpSz + Constants.EOLINEBA.length); /* allocate new buffer */
+
+                /* copy bytes from start to FRAGSZ
+                 * from this buffer to new buffer
+                 */
+                for (int iIdx = 0; iTmpSz > iIdx; iIdx++)
+                {
+                    zCopyLine.put(zLine.get()); /* we don't set limit since we allocated buffer to exact size */
+                }
+
+                zCopyLine.put(Constants.EOLINEBA);
+
+                zTmpCLine.renew(zCopyLine); /* swap original buffer with copy */
+                //zLog.debug("copy frag (no EOL): " + zTmpCLine + ", " + zCopyLine);
+
+                if (null != zList)
+                {
+                    zList.add(zTmpCLine);
+                }
+
+                zTmpCLine = null;
+            }
+
+            zLine.compact(); /* move remaining bytes to start of this buffer */
+            //zLog.debug("org (compact): " + zLine);
+            zLog.debug("org (compact)");
         }
         else
         {
@@ -666,17 +724,22 @@ public class MLHandler
              */
             for (int iIdx = 0; iSz > iIdx; iIdx++)
             {
-                zCopyLine.put(iIdx, zLine.get(iIdx)); /* we don't set limit since we allocated buffer to exact size */
+                zCopyLine.put(zLine.get()); /* we don't set limit since we allocated buffer to exact size */
             }
 
-            zLine.position(iSz);
             zLine.compact(); /* move remaining bytes to start of this buffer */
             //zLog.debug("org (compact): " + zLine);
             zLog.debug("org (compact)");
+
+            zCLine.renew(zCopyLine); /* swap original buffer with copy */
+            //zLog.debug("copy frag (EOL): " + zCLine + ", " + zCopyLine);
+
+            if (null != zList)
+            {
+                zList.add(zCLine);
+            }
         }
 
-        //zLog.debug("copy: " + zCLine + ", " + zCopyLine);
-        zCLine.renew(zCopyLine); /* swap original buffer with copy */
         return iSz;
     }
 
@@ -1184,7 +1247,10 @@ public class MLHandler
         }
         catch (CharacterCodingException e)
         {
-            zLog.error("Unable to encode line: " + zUNLine + " : " + e);
+            /* in this case, if we can't decode user name, then ignore
+             * because we probably can't search and match user name later
+             */ 
+            zLog.error("Unable to encode user name: " + zUNLine + ", " + e);
             return zNoUser;
         }
 

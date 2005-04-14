@@ -39,6 +39,10 @@ public class MIMEPart
 {
     /* constants */
     private static final Logger zLog = Logger.getLogger(MIMEPart.class.getName());
+
+    private final static int BASE64_LINESZ = 76; /* excludes EOL */
+    private final static int UUENCODE_LINESZ = 61; /* excludes EOL */
+
     private final static String BASE64 = "BASE64";
     private final static String UUENCODE = "UUENCODE";
     private final static Pattern BASE64P = Pattern.compile(BASE64, Pattern.CASE_INSENSITIVE);
@@ -576,6 +580,7 @@ public class MIMEPart
             ByteBuffer zName;
             ByteBuffer zStart;
             ByteBuffer zEnd;
+            int iLineSz;
 
             if (true == isEncoding(BASE64P))
             {
@@ -590,6 +595,8 @@ public class MIMEPart
                 zStart.put(Constants.LINEFEEDBA);
 
                 zEnd = Constants.getBase64End().duplicate();
+
+                iLineSz = BASE64_LINESZ;
             }
             else if (true == isEncoding(UUENCODEP))
             {
@@ -604,6 +611,8 @@ public class MIMEPart
                 zStart.put(Constants.LINEFEEDBA);
 
                 zEnd = Constants.getUuencodeEnd().duplicate();
+
+                iLineSz = UUENCODE_LINESZ;
             }
             else
             {
@@ -617,35 +626,33 @@ public class MIMEPart
             //zLog.debug("encoded file end tag: " + zCDummy.renew(zEnd) + ", " + zEnd);
 
             ArrayList zRawBodys = MLLine.toBuffer(zBodys, true);
-
-            ArrayList zList = new ArrayList();
-            zList.add(zStart);
-            zList.addAll(zRawBodys);
-            zList.add(zEnd);
-
             String zFileName = zTmpFile.getName();
+
             File zFile;
             try
             {
-                zFile = decodeBufs(zList, zFileName);
+                zFile = decodeBufs(zStart, zRawBodys, zEnd, zFileName, iLineSz);
             }
             catch (IOException e)
             {
                 /* restore this MIME part */
                 MLLine.fromBuffer(zRawBodys, zBodys, true);
 
+                /* we cannot determine if uudecode failed because
+                 * data was not encoded or
+                 * of unknown cause
+                 */
+                zLog.error("This MIME part contains encoded data that could not be decoded; bypassing this MIME part: " + e);
+                zLog.error(zContentTDs);
+                zLog.error(zContentEncodes);
+                zLog.error(zBodys);
+
                 zRawBodys.clear(); /* release, let GC process */
-                zList.clear(); /* release, let GC process */
                 zStart = null; /* release, let GC process */
                 zEnd = null; /* release, let GC process */
 
                 zTmpFile.delete(); /* delete tmp file */
 
-                /* we cannot determine if uudecode failed because
-                 * data was not encoded or
-                 * of some unknown cause
-                 */
-                zLog.error("This MIME part contains encoded data that could not be decoded; bypassing this MIME part: " + e);
                 return null;
             }
             catch (InterruptedException e)
@@ -654,7 +661,6 @@ public class MIMEPart
                 MLLine.fromBuffer(zRawBodys, zBodys, true);
 
                 zRawBodys.clear(); /* release, let GC process */
-                zList.clear(); /* release, let GC process */
                 zStart = null; /* release, let GC process */
                 zEnd = null; /* release, let GC process */
 
@@ -678,7 +684,6 @@ public class MIMEPart
                 MLLine.fromBuffer(zRawBodys, zBodys, true);
 
                 zRawBodys.clear(); /* release, let GC process */
-                zList.clear(); /* release, let GC process */
                 zStart = null; /* release, let GC process */
                 zEnd = null; /* release, let GC process */
 
@@ -706,7 +711,6 @@ public class MIMEPart
             }
 
             zRawBodys.clear(); /* release, let GC process */
-            zList.clear(); /* release, let GC process */
             zStart = null; /* release, let GC process */
             zEnd = null; /* release, let GC process */
 
@@ -1015,24 +1019,88 @@ public class MIMEPart
         return false;
     }
 
-    private File decodeBufs(ArrayList zList, String zFileName) throws IOException, InterruptedException
+    private File decodeBufs(ByteBuffer zStart, ArrayList zList, ByteBuffer zEnd, String zFileName, int iLineSz) throws IOException, InterruptedException
     {
         /* copy encoded data to file */
         File zTmpDir = new File(Constants.BASEPATH);
         File zFileIn = File.createTempFile("ube", null, zTmpDir);
         FileChannel zOutFile = (new FileOutputStream(zFileIn)).getChannel();
 
+        zStart.rewind();
+        zOutFile.write(zStart);
+
+        ByteBuffer zWriteLine = ByteBuffer.allocate(iLineSz + 1);
+        boolean bCopyMore = false;
+
         ByteBuffer zLine;
+        int iPosition;
+        int iLimit;
+        int iIdx;
+        byte bChar;
 
         for (Iterator zIter = zList.iterator(); true == zIter.hasNext(); )
         {
             zLine = (ByteBuffer) zIter.next();
-            zLine.flip();
-            while (0 < zLine.remaining())
+            iPosition = zLine.position();
+            iLimit = zLine.limit();
+
+            /* if CR or LF is present at end of any line,
+             * ignore CR or LF
+             * (we do not ignore CR or LF that are present within any line)
+             */
+            for (iIdx = iLimit - 1; 0 < iIdx; iIdx--)
             {
-                zOutFile.write(zLine);
+                bChar = zLine.get(iIdx);
+                if ((byte) '\r' == bChar || (byte) '\n' == bChar)
+                {
+                    continue;
+                }
+
+                iIdx++;
+                break;
             }
+
+            zLine.rewind();
+            zLine.limit(iIdx); /* limit copy range */
+
+            while (true)
+            {
+                bCopyMore = copy(zLine, zWriteLine, iLineSz);
+                if (true == bCopyMore)
+                {
+                    /* done with this buffer; continue to next */
+                    break; /* while */
+                }
+
+                zWriteLine.rewind();
+                zOutFile.write(zWriteLine);
+
+                zWriteLine.clear(); /* reset and recycle */
+            }
+
+            /* restore */
+            zLine.limit(iLimit);
+            zLine.position(iPosition);
         }
+
+        /* write out last line */
+        if (true == bCopyMore)
+        {
+            zWriteLine.put((byte) '\n');
+
+            /* use flip (instead of rewind)
+             * since flip sets limit to position
+             * before it rewinds position
+             * (zWriteLine may contain partial line so flip is necessary)
+             */
+            zWriteLine.flip();
+            zOutFile.write(zWriteLine);
+        }
+
+        zWriteLine = null; /* release; let GC process */
+
+        zEnd.rewind();
+        zOutFile.write(zEnd);
         zOutFile.close();
 
         /* create decoded version of encoded file */
@@ -1055,6 +1123,30 @@ public class MIMEPart
         case PRC_FAILURE:
             zFileOut.delete(); /* delete decoded file */
             throw new IOException("Unable to decode encoded data located in this MIME part: " + zFileName + ", uudecode exit code: " + iExitCode);
+        }
+    }
+
+    /* copy (at most) up to iCopySz */
+    private boolean copy(ByteBuffer zSrcLine, ByteBuffer zDstLine, int iCopySz)
+    {
+        int iAvail = zDstLine.remaining() - 1;
+        int iSz = (iAvail < iCopySz) ? iAvail : iCopySz;
+
+        int iIdx;
+
+        for (iIdx = 0; 0 < zSrcLine.remaining() && iIdx < iSz; iIdx++)
+        {
+            zDstLine.put(zSrcLine.get());
+        }
+
+        if (iIdx < iSz)
+        {
+            return true; /* copy more */
+        }
+        else
+        {
+            zDstLine.put((byte) '\n');
+            return false; /* copy no more */
         }
     }
 }

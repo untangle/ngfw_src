@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: SpamRuleEvent.java,v 1.8 2005/03/25 03:51:16 amread Exp $
+ * $Id$
  */
 package com.metavize.tran.email;
 
@@ -36,7 +36,6 @@ public class SpamRuleEvent extends LogEvent
     private static final Logger zLog = Logger.getLogger(SpamRuleEvent.class.getName());
 
     private final static String ZERO_SCORE = "0.0";
-    private final static String EMPTY_STR = "";
     private final static String TRUNCATED_STR = ",...";
 
     private final static String HITS = " (hits|score)=";
@@ -209,7 +208,7 @@ public class SpamRuleEvent extends LogEvent
         }
 
         zScore = zStr.substring(iStart, iEnd);
-        zTests = EMPTY_STR;
+        zTests = Constants.EMPTYSTR;
 
         boolean bFoundTests = false;
 
