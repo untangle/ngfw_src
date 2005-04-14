@@ -54,8 +54,6 @@ public class MStateMachine implements java.awt.event.ActionListener {
     public void actionPerformed(java.awt.event.ActionEvent evt) {              
         Object source = evt.getSource();
 
-	System.err.println("Event: " + evt.toString() );
-
         if( Util.getIsDemo() && !source.equals(reloadJButton) )
             return;
         try{
