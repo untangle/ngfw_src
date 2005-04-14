@@ -292,6 +292,11 @@ public class MLoginJFrame extends javax.swing.JFrame {
                 acceptJButtonActionPerformed(evt);
             }
         });
+        acceptJButton.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                acceptJButtonKeyPressed(evt);
+            }
+        });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -358,6 +363,11 @@ public class MLoginJFrame extends javax.swing.JFrame {
 
         pack();
     }//GEN-END:initComponents
+
+    private void acceptJButtonKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_acceptJButtonKeyPressed
+        if( evt.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER )
+            acceptJButton.doClick();
+    }//GEN-LAST:event_acceptJButtonKeyPressed
 
     private void acceptJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_acceptJButtonActionPerformed
         try{
