@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: Blacklist.java,v 1.24 2005/03/25 03:51:16 amread Exp $
+ * $Id$
  */
 
 package com.metavize.tran.httpblocker;
@@ -129,7 +129,7 @@ class Blacklist
             String[] l2 = new String[count];
 
             rs = s.executeQuery("SELECT domain, category " + domClause
-                                  + " ORDER BY domain ASC");
+                                + " ORDER BY domain ASC");
             int i = 0;
             while(rs.next()) {
                 l1[i] = rs.getString(1);
@@ -209,6 +209,9 @@ class Blacklist
             host = header.getValue("host");
         }
         host = host.toLowerCase();
+        while ('.' == host.charAt(host.length() - 1)) {
+            host = host.substring(0, host.length() - 1);
+        }
 
         if (passClient(clientIp)) {
             return null;
