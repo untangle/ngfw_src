@@ -22,7 +22,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <import file="../buildtools/buildmagic.xml"/>
 
   <property name="transforms"
-	    value="nat,ftp,http,virus,airgap,reporting,protofilter,test,sophos,fprot,hauri,clam,spyware,httpblocker,email"/>
+        value="nat,http,virus,airgap,reporting,protofilter,test,sophos,fprot,hauri,clam,spyware,httpblocker,email"/>
 
 
   <!--              -->
@@ -280,7 +280,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <target name="install.reporting"/>
   <target name="install.email"/>
   <target name="install.protofilter"/>
-  
+
 
   <!--              -->
   <!-- custom       -->

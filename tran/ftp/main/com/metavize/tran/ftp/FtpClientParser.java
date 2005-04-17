@@ -40,9 +40,9 @@ public class FtpClientParser extends AbstractParser
 
             int i = Character.isWhitespace((char)ba[3]) ? 3 : 4;
             String fnStr = new String(ba, 0, i);
-            FtpFunction fn = FtpFunction.getInstance(fnStr);
+            FtpFunction fn = FtpFunction.valueOf(fnStr.toUpperCase());
             if (null == fn) {
-                throw new ParseException("Unknown FTP function: '" + fnStr + "'");
+                throw new ParseException("Unknown FTP function: " + fnStr);
             }
 
             while (SP == ba[++i]);

@@ -18,11 +18,17 @@ import com.metavize.tran.token.TokenResult;
 
 public abstract class FtpStateMachine extends AbstractTokenHandler
 {
+    private final FtpDataHandler dataHandler;
+
     // constructors -----------------------------------------------------------
 
     protected FtpStateMachine(TCPSession session)
     {
         super(session);
+
+        dataHandler = new FtpDataHandler();
+
+
     }
 
     // protected abstract -----------------------------------------------------
@@ -34,9 +40,19 @@ public abstract class FtpStateMachine extends AbstractTokenHandler
         return null; // XXX implement
     }
 
-    public TokenResult handleServerToken(Token token)
+    public TokenResult handleServerToken(FtpCommand command)
     {
-        return null; // XXX implement
+        switch (command.getFunction()) {
+        case PORT:
+            StringTokenizer tok = new StringTokenizer(command.getArgument());
+            String addr = tok.nextToken() + "." + tok.nextToken()
+                + "." + tok.nextToken() + "." + tok.nextToken();
+            String port = 256 * Integer.parseInt(tok.nextToken())
+                + Integer.parseInt(tok.nextToken());
+
+
+
+        }
     }
 
     private int nextClientState(Object o)
@@ -47,5 +63,12 @@ public abstract class FtpStateMachine extends AbstractTokenHandler
     private int nextServerState(Object o)
     {
         return -1; // XXX implement
+    }
+
+    private class FtpDataHandler extends AbstractEventHandler
+    {
+        final MPipe mPipe = new MPipe("ftp-data", Fitting.OCTET_STREAM,
+                                      Affinity.SERVER);
+
     }
 }

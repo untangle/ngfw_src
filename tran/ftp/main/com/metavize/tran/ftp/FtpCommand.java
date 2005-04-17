@@ -25,22 +25,34 @@ import com.metavize.tran.util.AsciiCharBuffer;
  */
 public class FtpCommand implements Token
 {
-    private final FtpFunction command;
+    private final FtpFunction function;
     private final String argument;
 
     // constructors -----------------------------------------------------------
 
-    public FtpCommand(FtpFunction command, String argument)
+    public FtpCommand(FtpFunction function, String argument)
     {
-        this.command = command;
+        this.function = function;
         this.argument = argument;
+    }
+
+    // bean methods -----------------------------------------------------------
+
+    public FtpFunction getFunction()
+    {
+        return function;
+    }
+
+    public String getArgument()
+    {
+        return argument;
     }
 
     // Token methods ----------------------------------------------------------
 
     public ByteBuffer getBytes()
     {
-        String cmd = command.toString();
+        String cmd = function.toString();
 
         int l = cmd.length() + 2 + (null == argument ? 0 : argument.length());
 
