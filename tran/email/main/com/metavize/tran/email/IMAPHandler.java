@@ -286,19 +286,6 @@ public class IMAPHandler extends MLHandler
 
             if (false == bRejectData)
             {
-                /* forcibly recalculate message size and
-                 * exclude EOD length from new message size
-                 * - we may have modified message
-                 *   (e.g., fragmented long lines and
-                 *    appended EOL at end of each fragment)
-                 */
-                int iEODSz = zEnv.getReadDataCt() - zReadDataSz.intValue();
-                //zLog.debug("msg size (org): " + zMsg.getSize() + ", msg size (read): " + zReadDataSz.intValue() + ", read size: " + zEnv.getReadDataCt() + ", EOD size: " + iEODSz);
-                zMsg.clearSize();
-                //zLog.debug("msg size (new): " + zMsg.getSize());
-                zMsg.setSize(zMsg.getSize() - iEODSz);
-                //zLog.debug("msg size (new - EOD): " + zMsg.getSize());
-
                 setAppendEOData(zEnv);
             }
             else
@@ -435,19 +422,6 @@ public class IMAPHandler extends MLHandler
 
             if (false == bRejectData)
             {
-                /* forcibly recalculate message size and
-                 * exclude EOD length from new message size
-                 * - we may have modified message
-                 *   (e.g., fragmented long lines and
-                 *    appended EOL at end of each fragment)
-                 */
-                int iEODSz = zEnv.getReadDataCt() - zReadDataSz.intValue();
-                //zLog.debug("msg size (org): " + zMsg.getSize() + ", msg size (read): " + zReadDataSz.intValue() + ", read size: " + zEnv.getReadDataCt() + ", EOD size: " + iEODSz);
-                zMsg.clearSize();
-                //zLog.debug("msg size (new): " + zMsg.getSize());
-                zMsg.setSize(zMsg.getSize() - iEODSz);
-                //zLog.debug("msg size (new - EOD): " + zMsg.getSize());
-
                 setFetchEOData(zEnv);
             }
             else
@@ -589,7 +563,9 @@ public class IMAPHandler extends MLHandler
             zLine = zDataOK.get();
         }
 
-        zLog.debug("(SODATA): " + zLine);
+        zLog.debug("resend...");
+        //zLog.debug("(SODATA): " + zCDummy.renew(zLine) + ", " + zLine);
+        //zLog.debug("(SODATA): " + zLine);
 
         /* resend message data */
         if (true == bUseAppendCmd)
@@ -601,8 +577,15 @@ public class IMAPHandler extends MLHandler
         }
         else
         {
-            //zLog.debug("resend message: " + zMsg);
-            zLog.debug("(EODATA): " + zEODatas);
+            zLog.debug("resend all data (fetch)");
+
+            //zLog.debug("message: " + zMsg);
+            //for (Iterator zIter = zEODatas.iterator(); true == zIter.hasNext(); )
+            //{
+            //    zCDummy.renew((ByteBuffer) zIter.next());
+            //    zLog.debug("(EODATA): " + zCDummy);
+            //}
+            //zLog.debug("(EODATA): " + zEODatas);
 
             zEnv.sendToDriver(zLine);
             zEnv.convertToDriver(zMsgDatas);
@@ -1111,11 +1094,17 @@ public class IMAPHandler extends MLHandler
 
     private void unsetAppendData(XMSEnv zEnv)
     {
-        zLog.debug("append all data");
+        zLog.debug("resend all data (append)");
+
         zStateMachine.reset(DNC_INT, DNC_INT);
 
-        //zLog.debug("resend message: " + zMsg);
-        zLog.debug("(EODATA): " + zEODatas);
+        //zLog.debug("message: " + zMsg);
+        //for (Iterator zIter = zEODatas.iterator(); true == zIter.hasNext(); )
+        //{
+        //    zCDummy.renew((ByteBuffer) zIter.next());
+        //    zLog.debug("(EODATA): " + zCDummy);
+        //}
+        //zLog.debug("(EODATA): " + zEODatas);
 
         /* resend message data */
         zEnv.convertToPassenger(zMsgDatas);

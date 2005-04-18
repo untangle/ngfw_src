@@ -272,16 +272,6 @@ public class POPHandler extends MLHandler
 
             if (false == bRejectData)
             {
-                /* forcibly recalculate message size
-                 * - we may have modified message
-                 *   (e.g., fragmented long lines and
-                 *    appended EOL at end of fragments)
-                 */
-                //zLog.debug("msg size (org): " + zMsg.getSize());
-                zMsg.clearSize();
-                //zLog.debug("msg size (new): " + zMsg.getSize());
-                zMsg.getSize();
-
                 setEOData(zEnv);
             }
             else
@@ -391,9 +381,12 @@ ByteBuffer contains data */
             zLine = zDataOK.get();
         }
 
-        zLog.debug("(SODATA): " + zLine);
+        zLog.debug("resend all data (retrieve)");
+        //zLog.debug("(SODATA): " + zCDummy.renew(zLine) + ", " + zLine);
+        //zLog.debug("(SODATA): " + zLine);
         //zLog.debug("message: " + zMsg);
-        zLog.debug("(EODATA): " + zEOData);
+        //zLog.debug("(EODATA): " + zCDummy.renew(zEOData) + ", " + zEOData);
+        //zLog.debug("(EODATA): " + zEOData);
 
         /* resend message data */
         zEnv.sendToDriver(zLine);

@@ -252,16 +252,6 @@ public class SMTPHandler extends MLHandler
 
             if (false == bRejectData)
             {
-                /* forcibly recalculate message size
-                 * - we may have modified message
-                 *   (e.g., fragmented long lines and
-                 *    appended EOL at end of fragments)
-                 */
-                //zLog.debug("msg size (org): " + zMsg.getSize());
-                zMsg.clearSize();
-                //zLog.debug("msg size (new): " + zMsg.getSize());
-                zMsg.getSize();
-
                 setEOData(zEnv);
             }
             else
@@ -454,7 +444,8 @@ public class SMTPHandler extends MLHandler
             return true;
         }
 
-        //zLog.debug("resend message: " + zMsg);
+        zLog.debug("resend...");
+        //zLog.debug("message: " + zMsg);
         ArrayList zRcpts = zMsg.getRcpt();
 
         ByteBuffer zLine;
@@ -724,8 +715,9 @@ public class SMTPHandler extends MLHandler
 
     private void unsetData(XMSEnv zEnv)
     {
-        zLog.debug("resend data");
-        zLog.debug("(SODATA): " + zData);
+        zLog.debug("resend data...");
+        //zLog.debug("(SODATA): " + zCDummy.renew(zData) + ", " + zData);
+        //zLog.debug("(SODATA): " + zData);
 
         zStateMachine.reset(DNC_INT, DATAOK_INT);
 
@@ -748,7 +740,8 @@ public class SMTPHandler extends MLHandler
         ByteBuffer zEOLine = ByteBuffer.wrap(Constants.EOLINEBA, Constants.EOLINEBA.length, 0);
 
         //zLog.debug("message: " + zMsg);
-        zLog.debug("(EODATA): " + zEOLine + ", " + zEOData);
+        //zLog.debug("(EODATA): " + zCDummy.renew(zEOLine) + ", " + zEOLine + zCDummy.renew(zEOData) + ", " + ", " + zEOData);
+        //zLog.debug("(EODATA): " + zEOLine + ", " + zEOData);
 
         /* resend message data */
         zEnv.convertToPassenger(zMsgDatas);

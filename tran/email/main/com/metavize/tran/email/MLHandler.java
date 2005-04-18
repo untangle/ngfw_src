@@ -142,7 +142,7 @@ public class MLHandler
      * For now, we'll apply these limits to RFC 1939 and 1730/2060 too.
      */
     public final static int READSZ = 1024; /* round up from 1000 */
-    public final static int FRAGSZ = 1022; /* arbitrary size */
+    public final static int FRAGSZ = 1024; /* arbitrary size */
 
     /* endpoint types */
     public final static int DRIVER = Constants.CLIENT;
@@ -188,6 +188,7 @@ public class MLHandler
     protected int iSendsMsg = PASSENGER;
 
     private int iMsgSrc = PASSENGER; /* endpoint that is source of message */
+    private boolean bCopyFrag = false;
 
     /* constructors */
     protected MLHandler()
@@ -583,14 +584,12 @@ public class MLHandler
              */
             if (zLine.capacity() == iPosition)
             {
-                /* this buffer does not end with EOL
-                 * so copy buffer (FRAGSZ bytes) and
-                 * append EOLINE at end of each fragment
-                 * (iCopySz excludes EOLINE byte that we appended
-                 *  - ReadDataCt includes data that we read and
-                 *    not any data that we added)
+                /* this buffer is too long and does not end with EOL
+                 * so copy buffer (FRAGSZ bytes)
+                 * (we will not append EOL to any fragment)
                  */
                 zEnv.incrementReadDataCt(copy(zCLine, COPYFRAG, zDatas));
+                bCopyFrag = true;
 
                 ///* line does not end with EOL
                 // * - although data can be fragmented,
@@ -607,11 +606,11 @@ public class MLHandler
         }
         else
         {
-            int iCopySz;
-
             /* we have not received EOD and
              * buffer contains at least one EOL
              */
+
+            int iCopySz;
 
             if (iEnd < zCLine.length())
             {
@@ -622,9 +621,26 @@ public class MLHandler
             }
             else
             {
-                /* this buffer ends with EOL so simply copy its contents */
-                iCopySz = copy(zCLine, COPYALL, zDatas);
+                if (true == bCopyFrag)
+                {
+                    /* this buffer is too long but now ends with EOL
+                     * so copy buffer (FRAGSZ bytes)
+                     * with EOL at end of last fragment
+                     */
+                    iCopySz = copy(zCLine, COPYFRAG, zDatas);
+                }
+                else
+                {
+                    /* this buffer ends with EOL
+                     * but is not too long
+                     * so simply copy its contents
+                     */
+                    iCopySz = copy(zCLine, COPYALL, zDatas);
+                }
             }
+
+            zEnv.incrementReadDataCt(iCopySz);
+            bCopyFrag = false;
 
             /* note that since we modified original read buffer,
              * we cannot use READ_MORE_NO_WRITE here
@@ -632,7 +648,6 @@ public class MLHandler
              * to read another buffer of data
              * but are not writing anything
              */
-            zEnv.incrementReadDataCt(iCopySz);
         }
 
         return false;
@@ -687,7 +702,7 @@ public class MLHandler
                 }
 
                 iSz += FRAGSZ;
-                zCopyLine = ByteBuffer.allocate(iTmpSz + Constants.EOLINEBA.length); /* allocate new buffer */
+                zCopyLine = ByteBuffer.allocate(iTmpSz); /* allocate new buffer */
 
                 /* copy bytes from start to FRAGSZ
                  * from this buffer to new buffer
@@ -697,10 +712,8 @@ public class MLHandler
                     zCopyLine.put(zLine.get()); /* we don't set limit since we allocated buffer to exact size */
                 }
 
-                zCopyLine.put(Constants.EOLINEBA);
-
                 zTmpCLine.renew(zCopyLine); /* swap original buffer with copy */
-                //zLog.debug("copy frag (no EOL): " + zTmpCLine + ", " + zCopyLine);
+                //zLog.debug("copy frag: " + zTmpCLine + ", " + zCopyLine);
 
                 if (null != zList)
                 {
@@ -732,7 +745,7 @@ public class MLHandler
             zLog.debug("org (compact)");
 
             zCLine.renew(zCopyLine); /* swap original buffer with copy */
-            //zLog.debug("copy frag (EOL): " + zCLine + ", " + zCopyLine);
+            //zLog.debug("copy (EOL): " + zCLine + ", " + zCopyLine);
 
             if (null != zList)
             {
