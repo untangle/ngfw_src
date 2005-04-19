@@ -378,7 +378,7 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
         this.updateGraph = updateGraph;    
     }
     
-    protected void killGraph(){
+    protected synchronized void killGraph(){
         killGraph = true;
     }
     
@@ -408,32 +408,36 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
         }
         
         
-        private void doUpdateGraph() {       
+        private synchronized void doUpdateGraph() throws Exception {       
             // update readouts
+            if(killGraph)
+                return;
+            
+            SwingUtilities.invokeAndWait( new Runnable(){ public void run(){ 
+                if( !MTransformDisplayJPanel.this.isAirgap && !MTransformDisplayJPanel.this.isReporting ){
+                    newestIndex = sessionDynamicTimeSeriesCollection.getNewestIndex();
+                    sessionDynamicTimeSeriesCollection.addValue(0, newestIndex, (float) sessionCountCurrent);
+                    sessionDynamicTimeSeriesCollection.addValue(1, newestIndex, (float) sessionRequestCurrent - sessionRequestLast);
+                    sessionDynamicTimeSeriesCollection.advanceTime();
+                    sessionRequestLast = sessionRequestCurrent;
+                }
 
-            if( !MTransformDisplayJPanel.this.isAirgap && !MTransformDisplayJPanel.this.isReporting ){
-		newestIndex = sessionDynamicTimeSeriesCollection.getNewestIndex();
-                sessionDynamicTimeSeriesCollection.addValue(0, newestIndex, (float) sessionCountCurrent);
-                sessionDynamicTimeSeriesCollection.addValue(1, newestIndex, (float) sessionRequestCurrent - sessionRequestLast);
-                sessionDynamicTimeSeriesCollection.advanceTime();
-                sessionRequestLast = sessionRequestCurrent;
-            }
+                if( !MTransformDisplayJPanel.this.isReporting ){
+                    throughputDynamicTimeSeriesCollection.addValue( 0, throughputDynamicTimeSeriesCollection.getNewestIndex(), ((float)byteCountCurrent - byteCountLast)/1000f);            
+                    throughputDynamicTimeSeriesCollection.advanceTime();
+                    byteCountLast = byteCountCurrent;
+                    generateCountLabel(byteCountCurrent, "B", throughputTotalJLabel);
+                }
 
-	    if( !MTransformDisplayJPanel.this.isReporting ){
-		throughputDynamicTimeSeriesCollection.addValue( 0, throughputDynamicTimeSeriesCollection.getNewestIndex(), ((float)byteCountCurrent - byteCountLast)/1000f);            
-		throughputDynamicTimeSeriesCollection.advanceTime();
-		byteCountLast = byteCountCurrent;
-		generateCountLabel(byteCountCurrent, "B", throughputTotalJLabel);
-	    }
-
-            if( !MTransformDisplayJPanel.this.isAirgap && !MTransformDisplayJPanel.this.isReporting ){
-                generateCountLabel(sessionCountTotal, " ACC", sessionTotalJLabel);
-                generateCountLabel(sessionRequestCurrent, " REQ", sessionRequestTotalJLabel);
-                dataset.setValue( activity0Count.decayValue(), activitySeriesString, activityString0);
-                dataset.setValue( activity1Count.decayValue(), activitySeriesString, activityString1);
-                dataset.setValue( activity2Count.decayValue(), activitySeriesString, activityString2);
-                dataset.setValue( activity3Count.decayValue(), activitySeriesString, activityString3);
-            }
+                if( !MTransformDisplayJPanel.this.isAirgap && !MTransformDisplayJPanel.this.isReporting ){
+                    generateCountLabel(sessionCountTotal, " ACC", sessionTotalJLabel);
+                    generateCountLabel(sessionRequestCurrent, " REQ", sessionRequestTotalJLabel);
+                    dataset.setValue( activity0Count.decayValue(), activitySeriesString, activityString0);
+                    dataset.setValue( activity1Count.decayValue(), activitySeriesString, activityString1);
+                    dataset.setValue( activity2Count.decayValue(), activitySeriesString, activityString2);
+                    dataset.setValue( activity3Count.decayValue(), activitySeriesString, activityString3);
+                }
+            }});
         }
         
         private void generateCountLabel(long count, String suffix, JLabel label){
