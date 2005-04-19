@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: netcap_session.c,v 1.8 2005/02/09 10:22:18 rbscott Exp $
+ * $Id$
  */
 #include "netcap_session.h"
 
@@ -193,7 +193,7 @@ int netcap_session_init(netcap_session_t* netcap_sess, netcap_endpoints_t *endpo
     netcap_endpoints_copy( &netcap_sess->cli, endpoints );
 
     if ( netcap_sess->session_id == 0 ) {
-        return errlog(ERR_CRITICAL,"netcap_session_next_id");
+        return errlog( ERR_CRITICAL, "netcap_session_next_id\n" );
     }
     
     // If needed, Create the two mail boxes

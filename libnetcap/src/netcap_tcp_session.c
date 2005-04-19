@@ -136,14 +136,28 @@ int netcap_tcp_session_destroy(int if_lock,netcap_session_t* netcap_sess)
 
     // Clear out the tcp mailbox
     while((msg = (tcp_msg_t*)mailbox_try_get(&netcap_sess->tcp_mb))) {
-        if ( msg->type == TCP_MSG_SYN ) {
-            if ( msg->pkt != NULL ) netcap_pkt_raze (msg->pkt);
+        switch ( msg->type ) {
+        case TCP_MSG_SYN:
+            if ( msg->pkt != NULL ) {
+                /* Release it from the queue */
+                if ( netcap_set_verdict( msg->pkt->packet_id, NF_DROP, NULL, 0 ) < 0 )
+                    errlog( ERR_CRITICAL, "netcap_set_verdict\n" );
+                
+                netcap_pkt_raze (msg->pkt);
+            }
+            break;
+
+        case TCP_MSG_ACCEPT:
             if ( msg->fd > 0 ) {
                 if ( close (msg->fd )  < 0 ) perrlog("close");
             }
-        }
+            break;
 
-        free(msg);
+        default:
+            errlog( ERR_WARNING, "Found invalid TCP message while cleaning mailbox %d\n", msg->type );
+        }
+        
+        free( msg );
     }
     
     if (mailbox_destroy(&netcap_sess->tcp_mb)<0) {

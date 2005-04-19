@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: netcap_tcp.c,v 1.9 2005/01/27 04:55:08 rbscott Exp $
+ * $Id$
  */
 #include "netcap_tcp.h"
 
@@ -318,39 +318,26 @@ static int  _netcap_tcp_callback_cli_complete ( netcap_session_t* netcap_sess, n
 {
     int fd;
     tcp_msg_t* msg;
-    tcp_msg_t* prev_msg;
     
     debug(6,"TCP: (%10u) CLI_COMPLETE %s\n",netcap_sess->session_id,netcap_session_cli_tuple_print(netcap_sess));
 
     if (netcap_sess->cli_state == CONN_STATE_COMPLETE)
         return errlog(ERR_CRITICAL,"Invalid state (%i), Can't perform action (%i).\n",netcap_sess->cli_state, action);
 
-    if ( mailbox_size( &netcap_sess->tcp_mb ) <= 0 )
-        return errlogcons(); /* SYN must be present */
-
-    /**
-     * "wait" for the SYN arrival.              
-     * The SYN should already be in the mailbox 
-     */
-    for ( prev_msg = NULL; mailbox_size(&netcap_sess->tcp_mb) > 0; prev_msg = msg ) {
-        if (!(msg = mailbox_timed_get(&netcap_sess->tcp_mb,1))) {
-            if ( errno == ETIMEDOUT ) 
-                return errlog(ERR_WARNING,"TCP: Missed SYN :: %s\n",netcap_session_tuple_print(netcap_sess));
-            else
-                return perrlog("mailbox_timed_get");
-        }
-        
-        if ( msg->type != TCP_MSG_SYN || !msg->pkt ) {
-            errlog(ERR_WARNING,"TCP: Invalid message: %i %i 0x%08x\n", msg->type, msg->fd, msg->pkt);
-            free(msg); 
-            return -1;
-        }
-        
-        /* Clear out every SYN except for the last one */
-        if ( prev_msg != NULL ) {
-            _netcap_packet_action_free(prev_msg->pkt,NF_DROP);
-            free(prev_msg);
-        }
+    /* Grab the first SYN out, (older SYNs are now disregarded) */
+    /* As of release-1.2.2, a TIMEOUT is very serious since at least one SYN should
+     * always be available */
+    if (( msg = mailbox_timed_get(&netcap_sess->tcp_mb,1)) == NULL ) {
+        if ( errno == ETIMEDOUT )
+            return errlog( ERR_CRITICAL,"TCP: Missed SYN :: %s\n",netcap_session_tuple_print(netcap_sess));
+        else
+            return perrlog("mailbox_timed_get");
+    }
+    
+    if ( msg->type != TCP_MSG_SYN || !msg->pkt ) {
+        errlog( ERR_CRITICAL, "TCP: Invalid message: %i %i 0x%08x\n", msg->type, msg->fd, msg->pkt );
+        free( msg );
+        return -1;
     }
 
     /**
@@ -358,11 +345,23 @@ static int  _netcap_tcp_callback_cli_complete ( netcap_session_t* netcap_sess, n
      */
     netcap_sess->cli_state = CONN_STATE_COMPLETING;
     _netcap_packet_action_free(msg->pkt,NF_ACCEPT);
-    free(msg);
+    free( msg );
 
     debug( 6, "TCP: (%10u) Released SYN :: %s\n",netcap_sess->session_id,
            netcap_session_cli_tuple_print(netcap_sess));
     
+    /* 
+     * To test the ACCEPT_MSG replacement, do the following:
+     * insert a sleep( 10 ) here, and turn up netcap debugging
+     * Run the command nc -p <port> <host on other side> 80
+     * Run the command nmap -sS -g <port> <host on other side> -p 80
+     * Inside of the logs the following message should appear:
+     *   TCP: (1128327673) Dropping new SYN, ACCEPT is already in mb.
+     * This means that ACCEPT message replacement has occured.
+     * In the nc window, type a string such as GET index.html, and the connection
+     * should complete.
+     */
+
     /**
      * wait on connection complete message
      * it is possible to get more syn/ack's during this time, ignore them
@@ -370,7 +369,7 @@ static int  _netcap_tcp_callback_cli_complete ( netcap_session_t* netcap_sess, n
     while (1) {
         if (!(msg = mailbox_timed_get(&netcap_sess->tcp_mb,5))) {
             if (errno == ETIMEDOUT) {
-                debug(6,"TCP: (%10u) Missed Final ACK\n",netcap_sess->session_id);
+                debug(6,"TCP: (%10u) Missed ACCEPT message\n",netcap_sess->session_id);
                 /**
                  * This is bad behavior, the host used up the resources, but 
                  * client did not respond (Typically a SYN flood)
@@ -495,19 +494,17 @@ static int  _netcap_tcp_callback_cli_reset ( netcap_session_t* netcap_sess, netc
         tcph->th_urp = 0;
         tcph->th_off = tcp_len/4;
 
-
         /**
          * compute checksum
          */
         tcph->th_sum = htons( unet_tcp_sum_calc( tcp_len, (u_int8_t*)&iph->saddr, (u_int8_t*)&iph->daddr, (u_int8_t*)tcph ) );
-
 
         /**
          * send the packet out a raw socket, drop the packet in ipq
          * and free all resources
          */
         netcap_sess->cli_state = CONN_STATE_INCOMPLETE;
-
+        
         if (netcap_raw_send(msg->pkt->data,msg->pkt->data_len-extra_len)<0)
             perrlog("netcap_raw_send");
 
@@ -670,11 +667,47 @@ static int  _session_put_syn      ( netcap_session_t* netcap_sess, netcap_pkt_t*
     
     if ( netcap_sess->cli_state == CONN_STATE_COMPLETE ) {
         debug(5,"TCP: (%10u) Dropping SYN\n", netcap_sess->session_id);
-        return _netcap_packet_action_free(syn,NF_DROP);
+        return _netcap_packet_action_free( syn, NF_DROP );
+    }
+
+    /* Try to remove the first message in the mailbox */
+    if (( msg = mailbox_try_get( &netcap_sess->tcp_mb )) != NULL ) {
+        /* There is a message in the mailbox */
+        switch( msg->type ) {
+        case TCP_MSG_SYN:
+            debug( 7, "TCP: (%10u) Dropping old SYN.\n", netcap_sess->session_id );
+            /* Drop the current SYN in the mailbox */
+            if ( _netcap_packet_action_free( msg->pkt, NF_DROP ) < 0 ) {
+                errlog ( ERR_CRITICAL, "_netcap_packet_action_free\n" );
+            }
+            free( msg );
+            break;
+
+        case TCP_MSG_ACCEPT:
+            debug( 7, "TCP: (%10u) Dropping new SYN, ACCEPT is already in mb.\n", netcap_sess->session_id );
+
+            /* Have an accept already, drop the current syn and then place the accept back
+             * into the mailbox */
+            if ( _netcap_packet_action_free( syn, NF_DROP ) < 0 ) {
+                errlog ( ERR_CRITICAL, "_netcap_packet_action_free\n" );
+            }
+            
+            /* Put the accept message back into the mailbox */
+            if ( mailbox_put( &netcap_sess->tcp_mb, msg ) < 0 ) {
+                return errlog( ERR_CRITICAL, "mailbox_put" );
+            }
+
+            return 0;
+
+        default:
+            errlog( ERR_CRITICAL, "Invalid TCP message type: %d\n", msg->type );
+            free( msg );
+            break;
+        }
     }
 
     debug(5,"TCP: (%10u) Putting SYN in mailbox\n", netcap_sess->session_id);
-
+    
     /* Send a session a SYN */
     if (( msg = malloc(sizeof(tcp_msg_t))) == NULL ) {
         errlogmalloc();
