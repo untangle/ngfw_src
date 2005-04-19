@@ -11,6 +11,7 @@ String pageName = request.getServletPath();
 boolean isIndex    = pageName.equals("/index.html");
 boolean isHelp     = pageName.equals("/help.html");
 boolean isDownload = pageName.equals("/download.html");
+boolean isSecure   = scheme.equals("https");
 
 /* If they request anything else, give them the index page */
 if (!( isIndex || isHelp || isDownload)) isIndex = true;
@@ -169,7 +170,12 @@ String helpClickHere = "Click <a href=\"help.html\">here</a> for more informatio
               <% } // else if ( isHelp )
               if ( !isDownload ) { %>
               <div style="text-align: center;">
-                <a href="gui.jnlp">Launch EdgeGuard Client</a>
+                <a href="gui.jnlp">Launch EdgeGuard Client</a><br>
+		<% if(isSecure){  %>
+			via https (secure)
+		<%} else {%>
+			via http (insecure)
+		<% } %>
               </div>
               <% } %>
             </td>
