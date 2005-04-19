@@ -18,7 +18,8 @@ import com.metavize.gui.transform.MTransformJPanel;
  */
 public class MRackJPanel extends JPanel {
 
-    private static final int MIN_RACK_HEIGHT = 6;
+    private static final int MIN_RACK_HEIGHT = 3;
+    private static final int RACK_BUFFER = 1;
 
     private GridBagConstraints transformConstraints;
     private GridBagConstraints transformPanelConstraints;
@@ -41,9 +42,9 @@ public class MRackJPanel extends JPanel {
         transformConstraints = new GridBagConstraints(0, GridBagConstraints.RELATIVE, 1, 1, 0d, 0d, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(1,0,0,0), 0, 0);
         glueConstraints = new GridBagConstraints(0, GridBagConstraints.REMAINDER, 1, 1, 0d, 1d, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0,0,0,0), 0, 0);
 
-        rackTopConstraints    = new GridBagConstraints(0, 0, 1, 1, 0d, 0d, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0,0,0 + 39,12), 0, 0);
+        rackTopConstraints    = new GridBagConstraints(0, 0, 1, 1, 0d, 0d, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0,0,101*RACK_BUFFER,12), 0, 0);
         rackMiddleConstraints = new GridBagConstraints(0, 1, 1, 1, 0d, 0d, GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(0,0,0,12), 0, 0);
-        rackBottomConstraints = new GridBagConstraints(0, 2, 1, 1, 0d, 0d, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(1 + 39,0,0,12), 0, 0);
+        rackBottomConstraints = new GridBagConstraints(0, 2, 1, 1, 0d, 1d, GridBagConstraints.CENTER, GridBagConstraints.VERTICAL, new Insets(1 + 101*RACK_BUFFER,0,0,12), 0, 0);
 
         // RackBottom = new ImageIcon( getClass().getResource("/com/metavize/gui/pipeline/BottomRack718x39.png") );
         // RackTop = new ImageIcon( getClass().getResource("/com/metavize/gui/pipeline/TopRack718x39.png") );
@@ -109,7 +110,7 @@ public class MRackJPanel extends JPanel {
     protected void paintComponent(Graphics g){
         super.paintComponent(g);
 
-        paintHeight = this.getHeight()-78;
+        paintHeight = this.getHeight();
         paintWidth  = this.getWidth();
 
         if (isOpaque()) { //paint background
@@ -123,15 +124,15 @@ public class MRackJPanel extends JPanel {
         if(paintIndex < MIN_RACK_HEIGHT)
             paintIndex = MIN_RACK_HEIGHT;
 
-        for(paintI=0; paintI < paintIndex; paintI++){
-            RackLeftShort.paintIcon(this, g2d, (paintWidth-718)/2 -6, 39 + paintI*100 + (paintI));
-            RackRightShort.paintIcon(this, g2d, (paintWidth-718)/2 + 659 -6,  39 + paintI*100 + (paintI));
+        for(paintI=0; paintI <= paintIndex; paintI++){
+            RackLeftShort.paintIcon(this, g2d, (paintWidth-718)/2 -6, paintI*100 + (paintI));
+            RackRightShort.paintIcon(this, g2d, (paintWidth-718)/2 + 659 -6,  paintI*100 + (paintI));
 
-        RackLeftFull.paintIcon(this, g2d, (paintWidth-718)/2 -6, 39 + paintI*100 + (paintI+1));
-            RackRightFull.paintIcon(this, g2d, (paintWidth-718)/2 + 659 -6,  39 + paintI*100 + (paintI+1));
+            RackLeftFull.paintIcon(this, g2d, (paintWidth-718)/2 -6, paintI*100 + (paintI+1));
+            RackRightFull.paintIcon(this, g2d, (paintWidth-718)/2 + 659 -6,  paintI*100 + (paintI+1));
     }
-    RackLeftShort.paintIcon(this, g2d, (paintWidth-718)/2 -6, 39 + paintI*100 + (paintIndex));
-        RackRightShort.paintIcon(this, g2d, (paintWidth-718)/2 + 659 -6,  39 + paintI*100 + (paintIndex));
+        RackLeftShort.paintIcon(this, g2d, (paintWidth-718)/2 -6, paintI*100 + (paintIndex));
+        RackRightShort.paintIcon(this, g2d, (paintWidth-718)/2 + 659 -6,  paintI*100 + (paintIndex));
 
         g2d.dispose();
     }

@@ -59,8 +59,6 @@ public class MMainJFrame extends javax.swing.JFrame {
         setBounds((screenSize.width-1024)/2, (screenSize.height-768)/2, 1024, 768);
 
 
-        Util.updateDependencies();
-
 
         // QUERY AND LOAD BUTTONS INTO TOOLBOX
         Util.getStatusJProgressBar().setString("populating Toolbox...");

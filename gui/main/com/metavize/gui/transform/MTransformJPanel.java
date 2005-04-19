@@ -109,7 +109,7 @@ public class MTransformJPanel extends javax.swing.JPanel {
 
 
         // SETUP STATE
-        mStateMachine = new MStateMachine(this, mTransformControlsJPanel, mTransformDisplayJPanel);
+        mStateMachine = new MStateMachine(this);
         powerJToggleButton.addActionListener(mStateMachine);
         mTransformControlsJPanel.saveJButton().addActionListener(mStateMachine);
         mTransformControlsJPanel.reloadJButton().addActionListener(mStateMachine);

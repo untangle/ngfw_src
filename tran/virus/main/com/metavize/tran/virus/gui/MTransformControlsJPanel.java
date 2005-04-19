@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: MTransformControlsJPanel.java,v 1.6 2005/03/19 02:16:52 inieves Exp $
+ * $Id$
  */
 package com.metavize.tran.virus.gui;
 
@@ -42,14 +42,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
         
         emailDetectionJPanel = new EmailDetectionJPanel();
         String transformName = mTransformJPanel.getTransformContext().getTransformDesc().getName();
-        if( transformName.equals("sophos-transform") )
-            Util.setEmailDetectionSophosJPanel( emailDetectionJPanel );
-        else if( transformName.equals("fprot-transform") )
-            Util.setEmailDetectionFprotJPanel( emailDetectionJPanel );
-        else if( transformName.equals("hauri-transform") )
-            Util.setEmailDetectionHauriJPanel( emailDetectionJPanel );
-
-        Util.updateDependencies();
+	Util.setEmailAndVirusJPanel( transformName, emailDetectionJPanel );
         
         this.mTabbedPane.insertTab("General Settings", null, new GeneralConfigJPanel(mTransformJPanel.getTransformContext()), null, 0);
         this.mTabbedPane.insertTab("eMail", null, emailDetectionJPanel, null, 0);

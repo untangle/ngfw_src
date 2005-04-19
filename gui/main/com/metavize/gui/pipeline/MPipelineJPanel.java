@@ -39,6 +39,8 @@ public class MPipelineJPanel extends javax.swing.JPanel {
         // INITIALIZE GUI
         initComponents();
         mPipelineJScrollPane.getVerticalScrollBar().setUnitIncrement(10);
+        mPipelineJScrollPane.getVerticalScrollBar().setBorder( new javax.swing.border.EmptyBorder(15, 0, 15, 0) );
+        mPipelineJScrollPane.getVerticalScrollBar().setOpaque(false);
 
         // ADD TRANSFORMS
         Util.getStatusJProgressBar().setString("adding Software Appliances...");
@@ -108,34 +110,38 @@ public class MPipelineJPanel extends javax.swing.JPanel {
 
 
     public synchronized void removeTransform(TransformContext transformContext) {
-        String name = null;
+        String removableName = null;
+        Tid removableTid = null;
+        MTransformJPanel removableMTransformJPanel = null;
         try{
-            name = transformContext.getTransformDesc().getName();
-            Util.getTransformManager().destroy( transformContext.getTid() );
+            removableName = transformContext.getTransformDesc().getName();
+            removableTid = transformContext.getTid();
+            removableMTransformJPanel = (MTransformJPanel) transformContextHashtable.get( removableTid );
+            Util.getTransformManager().destroy( removableTid );
         }
         catch(Exception e){
             try{
-                Util.handleExceptionWithRestart("Error removing transform: " + name,  e);
+                Util.handleExceptionWithRestart("Error removing transform: " + removableName,  e);
             }
             catch(Exception f){
-                Util.handleExceptionNoRestart("Error removing transform: " + name,  f);
+                Util.handleExceptionNoRestart("Error removing transform: " + removableName,  f);
             }
         }
 
-	try{
-	    Util.getMMainJFrame().getButton(name).setDeployableView();
-	    MTransformJPanel removableMTransformJPanel = (MTransformJPanel) transformContextHashtable.get( transformContext.getTid() );
-	    transformContextHashtable.remove( transformContext.getTid() );
-	    ((MRackJPanel)transformJPanel).removeTransform( removableMTransformJPanel );
+	try{            
+            transformContextHashtable.remove( removableTid );
+            ((MRackJPanel)transformJPanel).removeTransform( removableMTransformJPanel );
+            Util.setEmailAndVirusJPanel(removableName, null);
+	    Util.getMMainJFrame().getButton(removableName).setDeployableView();
 	    this.validate();
 	    this.repaint();
 	}
 	catch(Exception e){
             try{
-                Util.handleExceptionWithRestart("Error removing transform gui: " + name,  e);
+                Util.handleExceptionWithRestart("Error removing transform gui: " + removableName,  e);
             }
             catch(Exception f){
-                Util.handleExceptionNoRestart("Error removing transform gui: " + name,  f);
+                Util.handleExceptionNoRestart("Error removing transform gui: " + removableName,  f);
             }
         }
 
@@ -222,7 +228,6 @@ public class MPipelineJPanel extends javax.swing.JPanel {
         java.awt.GridBagConstraints gridBagConstraints;
 
         mPipelineJScrollPane = new javax.swing.JScrollPane();
-        contentJPanel = new javax.swing.JPanel();
         transformJPanel = new MRackJPanel();
         scrollbarBackground = new com.metavize.gui.widgets.MTiledIconLabel();
 
@@ -230,8 +235,8 @@ public class MPipelineJPanel extends javax.swing.JPanel {
 
         setBackground(new java.awt.Color(0, 51, 51));
         setMinimumSize(new java.awt.Dimension(800, 500));
-        setPreferredSize(new java.awt.Dimension(800, 500));
         setOpaque(false);
+        setPreferredSize(new java.awt.Dimension(800, 500));
         mPipelineJScrollPane.setBackground(new java.awt.Color(51, 51, 51));
         mPipelineJScrollPane.setBorder(null);
         mPipelineJScrollPane.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
@@ -240,20 +245,12 @@ public class MPipelineJPanel extends javax.swing.JPanel {
         mPipelineJScrollPane.setMinimumSize(new java.awt.Dimension(720, 21));
         mPipelineJScrollPane.setOpaque(false);
         mPipelineJScrollPane.getViewport().setOpaque(false);
-        contentJPanel.setLayout(new java.awt.GridBagLayout());
-
-        contentJPanel.setOpaque(false);
         transformJPanel.setBackground(new java.awt.Color(51, 255, 51));
         transformJPanel.setMaximumSize(null);
         transformJPanel.setMinimumSize(null);
-        transformJPanel.setPreferredSize(null);
         transformJPanel.setOpaque(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        contentJPanel.add(transformJPanel, gridBagConstraints);
-
-        mPipelineJScrollPane.setViewportView(contentJPanel);
+        transformJPanel.setPreferredSize(null);
+        mPipelineJScrollPane.setViewportView(transformJPanel);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -261,7 +258,7 @@ public class MPipelineJPanel extends javax.swing.JPanel {
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(10, 0, 10, 10);
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 10);
         add(mPipelineJScrollPane, gridBagConstraints);
 
         scrollbarBackground.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/pipeline/VerticalScrollBar42x100.png")));
@@ -279,7 +276,6 @@ public class MPipelineJPanel extends javax.swing.JPanel {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel contentJPanel;
     private javax.swing.JScrollPane mPipelineJScrollPane;
     private javax.swing.JLabel scrollbarBackground;
     private javax.swing.JPanel transformJPanel;

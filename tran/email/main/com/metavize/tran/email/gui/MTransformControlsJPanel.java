@@ -21,15 +21,14 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
         
 	virusConfigJPanel = new VirusConfigJPanel(mTransformJPanel.getTransformContext());
 
-	Util.setVirusMEditTableJPanel( virusConfigJPanel );
-
         this.mTabbedPane.insertTab("General Settings", null, new GeneralConfigJPanel(mTransformJPanel.getTransformContext()), null, 0);
         this.mTabbedPane.insertTab("Block List", null, new BlockConfigJPanel(mTransformJPanel.getTransformContext()), null, 0);
 	this.mTabbedPane.insertTab("AntiVirus", null, virusConfigJPanel, null, 0);
 	//this.mTabbedPane.insertTab("Anti-Virus", null, new VirusConfigJPanel(mTransformJPanel.getTransformContext()), null, 0);
 	this.mTabbedPane.insertTab("AntiSpam", null, new SPAMConfigJPanel(mTransformJPanel.getTransformContext()), null, 0);
 
-	Util.updateDependencies();
+	Util.setEmailAndVirusJPanel( "email-transform", virusConfigJPanel );
+	
         
         // this.eventTabbedPane.insertTab("Anti-SPAM", null, new SPAMEventJPanel(mTransformJPanel.getTransformContext()), null, 0);
         // this.eventTabbedPane.insertTab("Anti-Virus", null, new VirusEventJPanel(mTransformJPanel.getTransformContext()), null, 0);

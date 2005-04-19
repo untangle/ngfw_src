@@ -31,14 +31,11 @@ public class MStateMachine implements java.awt.event.ActionListener {
     private MTransformDisplayJPanel mTransformDisplayJPanel;
     private TransformContext transformContext;
     
-    public MStateMachine(MTransformJPanel mTransformJPanel,
-                         MTransformControlsJPanel mTransformControlsJPanel,
-                         MTransformDisplayJPanel mTransformDisplayJPanel) {
+    public MStateMachine( MTransformJPanel mTransformJPanel ) {
                              
          this.mTransformJPanel = mTransformJPanel;
-         this.mTransformControlsJPanel = mTransformControlsJPanel;
-         this.mTransformDisplayJPanel = mTransformDisplayJPanel;
-         
+         this.mTransformControlsJPanel = mTransformJPanel.mTransformControlsJPanel();
+         this.mTransformDisplayJPanel = mTransformJPanel.mTransformDisplayJPanel();
          this.powerJToggleButton = mTransformJPanel.powerJToggleButton();
          this.transformContext = mTransformJPanel.transformContext();
          this.stateJLabel = mTransformJPanel.stateJLabel();
@@ -67,7 +64,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
 			new RemoveThread(false);
 		    }
 		    else{
-			//new RemoveThread(true);  this is not totally safe at this point, removing for now
+			// new RemoveThread(true); not implemented properly now
 		    }
 		}
 		else{
@@ -144,23 +141,11 @@ public class MStateMachine implements java.awt.event.ActionListener {
 	}
 	public void run(){
 	    try{
-		mTransformDisplayJPanel.killGraph();
 		String transformName = transformContext.getTransformDesc().getName();
-		if( removeAll || transformName.equals("sophos-transform") )
-		    Util.setEmailDetectionSophosJPanel(null);
-		if( removeAll || transformName.equals("fprot-transform") )
-		    Util.setEmailDetectionFprotJPanel(null);
-		if( removeAll || transformName.equals("hauri-transform") )
-		    Util.setEmailDetectionHauriJPanel(null);
-		if( removeAll || transformName.equals("clam-transform") )
-		    Util.setEmailDetectionHauriJPanel(null);
-		if( removeAll || transformName.equals("email-transform"))
-		    Util.setVirusMEditTableJPanel(null);
-		Util.updateDependencies();
-		if( removeAll )
-		    Util.getMPipelineJPanel().removeAllTransforms();
-		else
-		    Util.getMPipelineJPanel().removeTransform(transformContext);
+
+		Util.getMPipelineJPanel().removeTransform(transformContext);
+		mTransformDisplayJPanel.killGraph();
+
 	    }
 	    catch(Exception e){
 		try{
