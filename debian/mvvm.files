@@ -1,8 +1,8 @@
 etc/cron.daily/mvvm-cron
-etc/default/bunnicula
+etc/default/mvvm
 etc/init.d/mvvm
 usr/bin/bunnicula
-usr/bin/bunnicula_wrapper.sh
+usr/bin/mvvm.sh
 usr/bin/index-reports
 usr/bin/init-schema
 usr/bin/mcli
