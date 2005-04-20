@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: PipelineFoundry.java,v 1.1 2005/01/30 09:20:31 amread Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.tapi;
@@ -27,7 +27,7 @@ public interface PipelineFoundry
     /**
      * Compiles a pipe from a NetcapSession.
      *
-     * @param netcapSession XXX
+     * @param sessionDesc XXX
      * @return a list of <code>ArgonAgents</code>.
      */
     List weld(IPSessionDesc sessionDesc);

@@ -24,143 +24,35 @@ import com.metavize.mvvm.argon.IPSessionDesc;
  * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
  */
-public class PipeSpec
+public abstract class PipeSpec
 {
-    public static final int STRENGTH_MAX = 32;
-    public static final int STRENGTH_MIN = 0;
-
     private final String name;
-    private final Fitting input;
-    private final Fitting output;
-    private final Affinity affinity;
-    private final int strength; // [ STRENGTH_MIN - STRENGTH_MAX ]
     private final Set subscriptions;
 
     // constructors -----------------------------------------------------------
 
-    /**
-     * Make a spec for a pipe that does not change the stream's type
-     * using a set of subscriptions.
-     *
-     * @param name name for debugging.
-     * @param type type of input and output.
-     * @param subscriptions multiple subscriptions.
-     * @param affinity where in pipeline.
-     */
-    public PipeSpec(String name, Fitting type, Set subscriptions,
-                    Affinity affinity)
+    protected PipeSpec(String name)
     {
         this.name = name;
-        this.input = this.output = type;
-        this.subscriptions = subscriptions;
-        this.affinity = affinity;
-        this.strength = 0;
+        this.subscriptions = new HashSet();
     }
 
-    /**
-     * Make a spec for a pipe that does not change the stream's type
-     * using a set of subscriptions.
-     *
-     * @param name name for debugging.
-     * @param type type of input and output.
-     * @param subscriptions multiple subscriptions.
-     * @param affinity where in pipeline.
-     */
-    public PipeSpec(String name, Fitting type, Set subscriptions,
-                    Affinity affinity, int strength)
+    protected PipeSpec(String name, Set subscriptions)
     {
         this.name = name;
-        this.input = this.output = type;
-        this.subscriptions = subscriptions;
-        this.affinity = affinity;
-        if (strength < STRENGTH_MIN) {
-            strength = STRENGTH_MIN;
+        this.subscriptions = null == subscriptions ? new HashSet()
+            :  subscriptions;
+    }
+
+    protected PipeSpec(String name, Subscription subscription)
+    {
+        this.name = name;
+
+        this.subscriptions = new HashSet();
+
+        if (null != subscription) {
+            subscriptions.add(subscription);
         }
-        
-        if (strength > STRENGTH_MAX) {
-            strength = STRENGTH_MAX;
-        }
-
-        this.strength = strength;
-    }
-
-
-    /**
-     * Make a spec for a pipe that does not change the stream's type
-     * using a single subscription.
-     *
-     * @param name name for debugging.
-     * @param type type of input and output.
-     * @param subscription a single subscription.
-     * @param affinity where in pipeline.
-     */
-    public PipeSpec(String name, Fitting type, Subscription subscription,
-                    Affinity affinity)
-    {
-        this.name = name;
-        this.input = this.output = type;
-        this.subscriptions = new HashSet();
-        this.subscriptions.add(subscription);
-        this.affinity = affinity;
-        this.strength = 0;
-    }
-
-    /**
-     * Make a spec for a pipe that changes the stream's type using a
-     * set of subscriptions.
-     *
-     * @param name name for debugging.
-     * @param input type of input.
-     * @param output type of output.
-     * @param subscriptions multiple subscriptions.
-     */
-    public PipeSpec(String name, Fitting input, Fitting output,
-                    Set subscriptions)
-    {
-        this.name = name;
-        this.input = input;
-        this.output = output;
-        this.subscriptions = subscriptions;
-        this.affinity = Affinity.CLIENT;
-        this.strength = 0;
-    }
-
-    /**
-     * Make a spec for a pipe that changes the stream's type using a
-     * single subscription.
-     *
-     * @param name name for debugging.
-     * @param input type of input.
-     * @param output type of output.
-     * @param subscription the subscription.
-     */
-    public PipeSpec(String name, Fitting input, Fitting output,
-                    Subscription subscription)
-    {
-        this.name = name;
-        this.input = input;
-        this.output = output;
-        this.subscriptions = new HashSet();
-        this.subscriptions.add(subscription);
-        this.affinity = Affinity.CLIENT;
-        this.strength = 0;
-    }
-
-    /**
-     * Make a spec for a pipe that changes the stream's type using a
-     * single subscription.
-     *
-     * @param name name for debugging.
-     * @param input type of input.
-     * @param output type of output.
-     */
-    public PipeSpec(String name, Fitting type, Affinity affinity)
-    {
-        this.name = name;
-        this.input = this.output = type;
-        this.affinity = affinity;
-        this.subscriptions = new HashSet();
-        this.strength = 0;
     }
 
     // business methods -------------------------------------------------------
@@ -189,32 +81,6 @@ public class PipeSpec
     }
 
     // accessors --------------------------------------------------------------
-
-    public Fitting getOutput()
-    {
-        return output;
-    }
-
-    public Fitting getInput()
-    {
-        return input;
-    }
-
-    public Affinity getAffinity()
-    {
-        return affinity;
-    }
-
-    /**
-     * Strength is between 0 and 32 where 32 is closer to its affinity
-     * and 0 is closer to the "middle".
-     *
-     * @return the strength.
-     */
-    public int getStrength()
-    {
-        return strength;
-    }
 
     public String getName()
     {

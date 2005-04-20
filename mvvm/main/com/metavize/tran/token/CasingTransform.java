@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: CasingTransform.java,v 1.15 2005/02/08 02:44:39 jdi Exp $
+ * $Id$
  */
 
 package com.metavize.tran.token;
@@ -43,6 +43,7 @@ public abstract class CasingTransform extends AbstractTransform
     // abstract methods -------------------------------------------------------
 
     protected abstract PipeSpec getInsidePipeSpec();
+
     protected abstract PipeSpec getOutsidePipeSpec();
 
     // public methods ---------------------------------------------------------
@@ -62,8 +63,9 @@ public abstract class CasingTransform extends AbstractTransform
         if (insideMPipe == null || outsideMPipe == null) {
             return new IPSessionDesc[0];
         }
-        // XXX Might want to merge these together to get one list. (merge since byte
-        // count incorrect on inside of casing)
+        // XXX Might want to merge these together to get one
+        // list. (merge since byte count incorrect on inside of
+        // casing)
         IPSessionDesc[] id = insideMPipe.liveSessionDescs();
         IPSessionDesc[] od = outsideMPipe.liveSessionDescs();
         IPSessionDesc[] retDescs = new IPSessionDesc[id.length + od.length];

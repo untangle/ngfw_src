@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: EmailTransformImpl.java,v 1.17 2005/03/26 00:20:19 jdi Exp $
+ * $Id$
  */
 package com.metavize.tran.email;
 
@@ -18,6 +18,7 @@ import com.metavize.mvvm.tapi.Fitting;
 import com.metavize.mvvm.tapi.Interface;
 import com.metavize.mvvm.tapi.PipeSpec;
 import com.metavize.mvvm.tapi.Protocol;
+import com.metavize.mvvm.tapi.SoloPipeSpec;
 import com.metavize.mvvm.tapi.SoloTransform;
 import com.metavize.mvvm.tapi.Subscription;
 import com.metavize.mvvm.tapi.TransformContextFactory;
@@ -57,7 +58,7 @@ public class EmailTransformImpl extends SoloTransform implements EmailTransform
         Subscription imap4Sub = new Subscription(Protocol.TCP, Interface.ANY, Interface.ANY,
                                                  IPMaddr.anyAddr, PortRange.ANY,
                                                  IPMaddr.anyAddr, new PortRange(143));
-        pipeSpec = new PipeSpec("email", Fitting.OCTET_STREAM, smtpSub, Affinity.CLIENT);
+        pipeSpec = new SoloPipeSpec("email", smtpSub, Fitting.OCTET_STREAM, Affinity.CLIENT, 0);
         pipeSpec.addSubscription(pop3Sub);
         pipeSpec.addSubscription(imap4Sub);
     }

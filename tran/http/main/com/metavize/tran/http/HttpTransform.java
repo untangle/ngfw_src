@@ -6,10 +6,14 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: HttpTransform.java,v 1.11 2005/01/30 09:20:30 amread Exp $
+ * $Id$
  */
 package com.metavize.tran.http;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import com.metavize.mvvm.tapi.CasingPipeSpec;
 import com.metavize.mvvm.tapi.Fitting;
 import com.metavize.mvvm.tapi.PipeSpec;
 import com.metavize.mvvm.tapi.Protocol;
@@ -32,12 +36,14 @@ public class HttpTransform extends CasingTransform
     {
         // inside PipeSpec
         Subscription s = new Subscription(Protocol.TCP);
-        insidePipeSpec = new PipeSpec("http-inside", Fitting.HTTP_STREAM,
-                                      Fitting.HTTP_TOKENS, s);
+        Set subs = new HashSet();
+        subs.add(s);
+        insidePipeSpec = new CasingPipeSpec("http-inside", subs,
+                                            Fitting.HTTP_STREAM,
+                                            Fitting.HTTP_TOKENS);
 
         // outside PipeSpec
-        outsidePipeSpec = new PipeSpec("http-outside", Fitting.HTTP_TOKENS,
-                                       Fitting.HTTP_STREAM, s);
+        outsidePipeSpec = insidePipeSpec;
     }
 
     // CasingTransform methods ------------------------------------------------

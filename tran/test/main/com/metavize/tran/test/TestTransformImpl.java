@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: TestTransformImpl.java,v 1.9 2005/03/16 03:43:13 rbscott Exp $
+ * $Id$
  */
 package com.metavize.tran.test;
 
@@ -21,6 +21,7 @@ import com.metavize.mvvm.tapi.LiveSubscription;
 import com.metavize.mvvm.tapi.MPipe;
 import com.metavize.mvvm.tapi.PipeSpec;
 import com.metavize.mvvm.tapi.Protocol;
+import com.metavize.mvvm.tapi.SoloPipeSpec;
 import com.metavize.mvvm.tapi.SoloTransform;
 import com.metavize.mvvm.tapi.Subscription;
 import com.metavize.mvvm.tapi.TransformContextFactory;
@@ -59,8 +60,8 @@ public class TestTransformImpl extends SoloTransform
         s.add(new Subscription(Protocol.TCP));
         s.add(new Subscription(Protocol.UDP));
 
-        pipeSpec = new PipeSpec("test", Fitting.OCTET_STREAM, s,
-                                Affinity.SERVER);
+        pipeSpec = new SoloPipeSpec("test", s, Fitting.OCTET_STREAM,
+                                    Affinity.SERVER, 0);
     }
 
     protected void initializeSettings()

@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: HttpBlockerImpl.java,v 1.20 2005/03/25 23:50:02 amread Exp $
+ * $Id$
  */
 
 package com.metavize.tran.httpblocker;
@@ -19,6 +19,7 @@ import com.metavize.mvvm.tapi.Fitting;
 import com.metavize.mvvm.tapi.Interface;
 import com.metavize.mvvm.tapi.PipeSpec;
 import com.metavize.mvvm.tapi.Protocol;
+import com.metavize.mvvm.tapi.SoloPipeSpec;
 import com.metavize.mvvm.tapi.SoloTransform;
 import com.metavize.mvvm.tapi.Subscription;
 import com.metavize.mvvm.tapi.TransformContextFactory;
@@ -53,8 +54,9 @@ public class HttpBlockerImpl extends SoloTransform implements HttpBlocker
                                           Interface.ANY, Interface.ANY,
                                           IPMaddr.anyAddr, PortRange.ANY,
                                           IPMaddr.anyAddr, PortRange.ANY);
-        pipeSpec = new PipeSpec("http-blocker", Fitting.HTTP_TOKENS,
-                                s, Affinity.CLIENT);
+
+        pipeSpec = new SoloPipeSpec("http-blocker", s, Fitting.HTTP_TOKENS,
+                                    Affinity.CLIENT, 0);
     }
 
     // HttpBlocker methods ----------------------------------------------------

@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: PipelineFoundryImpl.java,v 1.20 2005/03/15 02:11:53 amread Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.engine;
@@ -23,11 +23,12 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.metavize.mvvm.argon.IPSessionDesc;
 import com.metavize.mvvm.argon.IntfConverter;
+import com.metavize.mvvm.tapi.CasingPipeSpec;
 import com.metavize.mvvm.tapi.Fitting;
 import com.metavize.mvvm.tapi.MPipe;
-import com.metavize.mvvm.tapi.PipeSpec;
 import com.metavize.mvvm.tapi.Pipeline;
 import com.metavize.mvvm.tapi.PipelineFoundry;
+import com.metavize.mvvm.tapi.SoloPipeSpec;
 import com.metavize.mvvm.tran.PipelineEvent;
 import com.metavize.mvvm.tran.PipelineInfo;
 import org.apache.log4j.Logger;
@@ -72,7 +73,6 @@ class PipelineFoundryImpl implements PipelineFoundry
             start = Fitting.OCTET_STREAM;
             break;
         }
-
 
         Long t0 = System.currentTimeMillis();
         Map mPipes = sessionDesc.clientIntf() == IntfConverter.OUTSIDE
@@ -119,10 +119,7 @@ class PipelineFoundryImpl implements PipelineFoundry
 
     public void registerCasing(MPipe insideMPipe, MPipe outsideMPipe)
     {
-        PipeSpec psi = insideMPipe.getPipeSpec();
-        PipeSpec pso = outsideMPipe.getPipeSpec();
-        if (psi.getInput() != pso.getOutput()
-            || psi.getOutput() != pso.getInput()) {
+        if (insideMPipe.getPipeSpec() != outsideMPipe.getPipeSpec()) {
             throw new IllegalArgumentException("casing constraint violated");
         }
 
@@ -178,14 +175,15 @@ class PipelineFoundryImpl implements PipelineFoundry
         TRY_AGAIN:
         for (Iterator i = casings.keySet().iterator(); i.hasNext(); ) {
             MPipe insideMPipe = (MPipe)i.next();
-            PipeSpec ps = insideMPipe.getPipeSpec();
+            CasingPipeSpec ps = (CasingPipeSpec)insideMPipe.getPipeSpec();
             Fitting f = ps.getInput();
             if (start.instanceOf(f) && ps.matches(sd)) {
                 MPipe outsideMPipe = (MPipe)casings.get(insideMPipe);
                 i.remove();
                 p.add(insideMPipe.getArgonAgent());
-                weldMPipes(p, insideMPipe.getPipeSpec().getOutput(), sd,
-                           mPipes, casings);
+
+                CasingPipeSpec cps = (CasingPipeSpec)insideMPipe.getPipeSpec();
+                weldMPipes(p, cps.getOutput(), sd, mPipes, casings);
                 p.add(outsideMPipe.getArgonAgent());
                 break TRY_AGAIN;
             }
@@ -194,7 +192,8 @@ class PipelineFoundryImpl implements PipelineFoundry
 
     private void registerMPipe(Map mPipes, MPipe mPipe, Comparator c)
     {
-        Fitting f = mPipe.getPipeSpec().getInput();
+        SoloPipeSpec sps = (SoloPipeSpec)mPipe.getPipeSpec();
+        Fitting f = sps.getFitting();
 
         synchronized (this) {
             List l = (List)mPipes.get(f);
@@ -214,7 +213,8 @@ class PipelineFoundryImpl implements PipelineFoundry
 
     private void deregisterMPipe(Map mPipes, MPipe mPipe, Comparator c)
     {
-        Fitting f = mPipe.getPipeSpec().getInput();
+        SoloPipeSpec sps = (SoloPipeSpec)mPipe.getPipeSpec();
+        Fitting f = sps.getFitting();
 
         synchronized (this) {
             List l = new ArrayList((List)mPipes.get(f));

@@ -33,6 +33,7 @@ import com.metavize.mvvm.tapi.MPipe;
 import com.metavize.mvvm.tapi.MPipeManager;
 import com.metavize.mvvm.tapi.PipeSpec;
 import com.metavize.mvvm.tapi.Protocol;
+import com.metavize.mvvm.tapi.SoloPipeSpec;
 import com.metavize.mvvm.tapi.Subscription;
 import com.metavize.mvvm.tapi.TransformContextFactory;
 import com.metavize.mvvm.tapi.event.SessionEventListener;
@@ -68,10 +69,10 @@ public class SpywareImpl extends AbstractTransform implements Spyware
     private final SpywareEventHandler streamHandler = new SpywareEventHandler(this);
 
     private final PipeSpec[] pipeSpecs = new PipeSpec[]
-        { new PipeSpec("spyware-http", Fitting.HTTP_TOKENS,
-                       new Subscription(Protocol.TCP), Affinity.SERVER),
-          new PipeSpec("spyware-byte", Fitting.OCTET_STREAM,
-                       new Subscription(Protocol.TCP), Affinity.SERVER) };
+        { new SoloPipeSpec("spyware-http", new Subscription(Protocol.TCP),
+                             Fitting.HTTP_TOKENS, Affinity.SERVER, 0),
+          new SoloPipeSpec("spyware-byte", new Subscription(Protocol.TCP),
+                             Fitting.OCTET_STREAM, Affinity.SERVER, 0) };
     private final MPipe[] mPipes = new MPipe[2];
     private final SessionEventListener[] listeners = new SessionEventListener[]
         { tokenAdaptor, streamHandler };

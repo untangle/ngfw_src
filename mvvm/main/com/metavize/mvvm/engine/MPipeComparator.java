@@ -15,8 +15,14 @@ import java.util.Comparator;
 
 import com.metavize.mvvm.tapi.Affinity;
 import com.metavize.mvvm.tapi.MPipe;
-import com.metavize.mvvm.tapi.PipeSpec;
+import com.metavize.mvvm.tapi.SoloPipeSpec;
 
+/**
+ * Compares MPipes with SoloPipeSpecs.
+ *
+ * @author <a href="mailto:amread@nyx.net">Aaron Read</a>
+ * @version 1.0
+ */
 class MPipeComparator implements Comparator
 {
     private final boolean incoming;
@@ -31,8 +37,8 @@ class MPipeComparator implements Comparator
         MPipe mp1 = (MPipe)o1;
         MPipe mp2 = (MPipe)o2;
 
-        PipeSpec ps1 = null == mp1 ? null : mp1.getPipeSpec();
-        PipeSpec ps2 = null == mp2 ? null : mp2.getPipeSpec();
+        SoloPipeSpec ps1 = null == mp1 ? null : (SoloPipeSpec)mp1.getPipeSpec();
+        SoloPipeSpec ps2 = null == mp2 ? null : (SoloPipeSpec)mp2.getPipeSpec();
 
         Affinity ra1 = relativeAffinity(ps1);
         Affinity ra2 = relativeAffinity(ps2);
@@ -89,7 +95,7 @@ class MPipeComparator implements Comparator
         }
     }
 
-    private Affinity relativeAffinity(PipeSpec ps)
+    private Affinity relativeAffinity(SoloPipeSpec ps)
     {
         if (null == ps) {
             return null;

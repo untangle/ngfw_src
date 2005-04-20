@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: ProtoFilterImpl.java,v 1.12 2005/02/11 22:47:01 jdi Exp $
+ * $Id$
  */
 package com.metavize.tran.protofilter;
 
@@ -21,10 +21,12 @@ import com.metavize.mvvm.tapi.Affinity;
 import com.metavize.mvvm.tapi.Fitting;
 import com.metavize.mvvm.tapi.PipeSpec;
 import com.metavize.mvvm.tapi.Protocol;
+import com.metavize.mvvm.tapi.SoloPipeSpec;
 import com.metavize.mvvm.tapi.SoloTransform;
 import com.metavize.mvvm.tapi.Subscription;
 import com.metavize.mvvm.tapi.TransformContextFactory;
-import com.metavize.mvvm.tran.*;
+import com.metavize.mvvm.tran.TransformException;
+import com.metavize.mvvm.tran.TransformStartException;
 import net.sf.hibernate.HibernateException;
 import net.sf.hibernate.Query;
 import net.sf.hibernate.Session;
@@ -43,7 +45,7 @@ public class ProtoFilterImpl extends SoloTransform implements ProtoFilter
         Set set = new HashSet();
         set.add(new Subscription(Protocol.TCP));
         set.add(new Subscription(Protocol.UDP));
-        this.pipeSpec = new PipeSpec("protofilter", Fitting.OCTET_STREAM, set, Affinity.CLIENT);
+        this.pipeSpec = new SoloPipeSpec("protofilter", set, Fitting.OCTET_STREAM, Affinity.CLIENT, 0);
     }
 
     public ProtoFilterSettings getProtoFilterSettings()

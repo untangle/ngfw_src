@@ -27,6 +27,7 @@ import com.metavize.mvvm.tapi.MPipeManager;
 import com.metavize.mvvm.tapi.PipeSpec;
 import com.metavize.mvvm.tapi.PipelineFoundry;
 import com.metavize.mvvm.tapi.Protocol;
+import com.metavize.mvvm.tapi.SoloPipeSpec;
 import com.metavize.mvvm.tapi.Subscription;
 import com.metavize.mvvm.tapi.TransformContextFactory;
 import com.metavize.mvvm.tapi.event.SessionEventListener;
@@ -53,9 +54,9 @@ public class VirusTransformImpl extends AbstractTransform
     private final VirusScanner scanner;
 
     private final PipeSpec[] pipeSpecs = new PipeSpec[]
-        { new PipeSpec("virus-ftp", Fitting.FTP_STREAM, Affinity.SERVER),
-          new PipeSpec("virus-ftp-data", Fitting.OCTET_STREAM, Affinity.SERVER),
-          new PipeSpec("virus-http", Fitting.HTTP_TOKENS, Affinity.SERVER) };
+        { new SoloPipeSpec("virus-ftp", Fitting.FTP_STREAM, Affinity.SERVER, 0),
+          new SoloPipeSpec("virus-ftp-data", Fitting.OCTET_STREAM, Affinity.SERVER, 0),
+          new SoloPipeSpec("virus-http", Fitting.HTTP_TOKENS, Affinity.SERVER, 0) };
 
     private final MPipe[] mPipes = new MPipe[3];
     private final SessionEventListener[] listeners = new SessionEventListener[]
