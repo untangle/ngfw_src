@@ -15,7 +15,7 @@ Description: The Metavize FTP casing
 
 Package: http-casing
 Architecture: any
-Depends: mvvm, http-casing
+Depends: mvvm
 XB-Price: 1000
 XB-Display-Name: Web/HTTP Decoder
 Description: The Metavize Web/http Decoder
