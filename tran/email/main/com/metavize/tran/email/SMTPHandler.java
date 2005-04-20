@@ -69,17 +69,21 @@ public class SMTPHandler extends MLHandler
     private final static String SEND = "^(MAIL|SEND|SOML|SAML) FROM:";
     private final static String RCPT = "^RCPT TO:";
     private final static String DATA = "^DATA" + Constants.PEOLINE;
-    private final static String EODATA = "(^|" + Constants.PEOLINE + ")\\." + Constants.PEOLINE;
     private final static String NOOP = "^NOOP" + Constants.PEOLINE;
     private final static String RSET = "^RSET" + Constants.PEOLINE;
     private final static String QUIT = "^QUIT" + Constants.PEOLINE;
     private final static Pattern SENDP = Pattern.compile(SEND, Pattern.CASE_INSENSITIVE);
     private final static Pattern RCPTP = Pattern.compile(RCPT, Pattern.CASE_INSENSITIVE);
     private final static Pattern DATAP = Pattern.compile(DATA, Pattern.CASE_INSENSITIVE);
-    private final static Pattern EODATAP = Pattern.compile(EODATA);
     private final static Pattern NOOPP = Pattern.compile(NOOP, Pattern.CASE_INSENSITIVE);
     private final static Pattern RSETP = Pattern.compile(RSET, Pattern.CASE_INSENSITIVE);
     private final static Pattern QUITP = Pattern.compile(QUIT, Pattern.CASE_INSENSITIVE);
+
+    /* EODATA = send cmd ok; msg sent
+     * (may be embedded with other lines so enable MULTILINE pattern mode)
+     */
+    private final static String EODATA = "(^|" + Constants.PEOLINE + ")\\." + Constants.PEOLINE;
+    private final static Pattern EODATAP = Pattern.compile(EODATA, Pattern.MULTILINE);
 
     private final static byte DATABA[] = { 'D', 'A', 'T', 'A', 13, 10 };
 
@@ -250,6 +254,8 @@ public class SMTPHandler extends MLHandler
             }
             /* else data is complete and message doesn't exceed size limit */
 
+            setReadLine(zEvent.session());
+
             if (false == bRejectData)
             {
                 setEOData(zEnv);
@@ -296,6 +302,12 @@ public class SMTPHandler extends MLHandler
                 zLog.debug("data cmd?: " + zStatePair.getCmd());
                 if (true == isMatch(zCLine, DATAP))
                 {
+                    /* in read data mode,
+                     * we will not receive any more cmds from driver
+                     * until we have received and sent EODATA from driver
+                     */
+                    bReadData = true; /* use read data mode */
+                    setReadData(zEvent.session());
                     setData(zEnv);
                     return;
                 }
@@ -560,11 +572,6 @@ public class SMTPHandler extends MLHandler
         /* we're buffering message; passenger does not need DATA yet
          * - intercept DATA but don't save it (we'll restore it in unsetData)
          */
-
-        /* in read data mode, we will not receive any more cmds from driver
-         * until we have received and sent EODATA from driver
-         */
-        bReadData = true; /* use read data mode */
 
         zStateMachine.reset(DNC_INT, DNC_INT);
 

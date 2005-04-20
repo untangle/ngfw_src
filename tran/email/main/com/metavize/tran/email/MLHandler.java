@@ -142,6 +142,7 @@ public class MLHandler
      * For now, we'll apply these limits to RFC 1939 and 1730/2060 too.
      */
     public final static int READSZ = 1024; /* round up from 1000 */
+    public final static int READDATASZ = 8192; /* round up from 8000 */
     public final static int FRAGSZ = 1024; /* arbitrary size */
 
     /* endpoint types */
@@ -150,8 +151,6 @@ public class MLHandler
 
     private final static int MAX_LINE_SZ = 65536;
     private final static int EOS = -1; /* end of stream indicator */
-    private final static int COPYALL = -1;
-    private final static int COPYFRAG = -2;
 
     private final static int REJECT_BUFFER_CT = 10;
 
@@ -188,7 +187,6 @@ public class MLHandler
     protected int iSendsMsg = PASSENGER;
 
     private int iMsgSrc = PASSENGER; /* endpoint that is source of message */
-    private boolean bCopyFrag = false;
 
     /* constructors */
     protected MLHandler()
@@ -430,6 +428,30 @@ public class MLHandler
     }
 
     /* private methods */
+    protected void setReadLine(TCPSession zSession)
+    {
+        zSession.clientLineBuffering(true);
+        zSession.serverLineBuffering(true);
+        zSession.clientReadLimit(MLHandler.READSZ);
+        zSession.serverReadLimit(MLHandler.READSZ);
+        return;
+    }
+
+    protected void setReadData(TCPSession zSession)
+    {
+        zSession.clientLineBuffering(false);
+        zSession.serverLineBuffering(false);
+        zSession.clientReadLimit(MLHandler.READDATASZ);
+        zSession.serverReadLimit(MLHandler.READDATASZ);
+        return;
+    }
+
+    protected static boolean isMatch(CBufferWrapper zCLine, Pattern zPattern)
+    {
+        Matcher zMatcher = zPattern.matcher(zCLine);
+        return zMatcher.find();
+    }
+
     /* read command or reply line
      * - returns true if line is complete or
      *           false if line is incomplete
@@ -469,7 +491,7 @@ public class MLHandler
 
         if (true == isMatch(zCLine, zEOLPattern))
         {
-            copy(zCLine, COPYALL, null);
+            copyLine(zCLine);
 
             /* if we have complete line,
              * we'll let caller decide what result to return
@@ -543,7 +565,7 @@ public class MLHandler
                  *  before client can send additional commands and
                  *  server only sends replies after client issues commands)
                  */
-                zEnv.incrementReadDataCt(copy(zCLine, COPYALL, zDatas));
+                zEnv.incrementReadDataCt(copyData(zCLine, zDatas, zEOLPattern));
 
                 /* if we have complete data,
                  * we'll let caller decide what result to return
@@ -555,11 +577,11 @@ public class MLHandler
          * - data terminates after some # of bytes
          */
 
-        /* if this buffer doesn't end with EOL and
+        /* if this buffer doesn't contain EOL and
          * text requires more space than buffer capacity (should not occur),
          * then pass through everything that we have collected so far
          * or
-         * if this buffer doesn't end with EOL and
+         * if this buffer doesn't contain EOL and
          * last text line extends from this buffer into next buffer
          * (last text line spans two buffers),
          * then copy head of this buffer
@@ -571,7 +593,7 @@ public class MLHandler
          */
         int iEnd = 0;
         zMatcher = zEOLPattern.matcher(zCLine);
-        while (true == zMatcher.find())
+        if (true == zMatcher.find())
         {
             iEnd = zMatcher.end();
         }
@@ -584,14 +606,13 @@ public class MLHandler
              */
             if (zLine.capacity() == iPosition)
             {
-                /* this buffer is too long and does not end with EOL
+                /* this buffer is too long and does not contain EOL
                  * so copy buffer (FRAGSZ bytes)
                  * (we will not append EOL to any fragment)
                  */
-                zEnv.incrementReadDataCt(copy(zCLine, COPYFRAG, zDatas));
-                bCopyFrag = true;
+                zEnv.incrementReadDataCt(copyData(zCLine, zDatas, zEOLPattern));
 
-                ///* line does not end with EOL
+                ///* line does not contain EOL
                 // * - although data can be fragmented,
                 // *   each line must end with EOL
                 // */
@@ -606,43 +627,9 @@ public class MLHandler
         }
         else
         {
-            /* we have not received EOD and
-             * buffer contains at least one EOL
-             */
+            zEnv.incrementReadDataCt(copyData(zCLine, zDatas, zEOLPattern));
 
-            int iCopySz;
-
-            if (iEnd < zCLine.length())
-            {
-                /* this buffer does not end with EOL
-                 * so copy up to and including last EOL
-                 */
-                iCopySz = copy(zCLine, iEnd, zDatas);
-            }
-            else
-            {
-                if (true == bCopyFrag)
-                {
-                    /* this buffer is too long but now ends with EOL
-                     * so copy buffer (FRAGSZ bytes)
-                     * with EOL at end of last fragment
-                     */
-                    iCopySz = copy(zCLine, COPYFRAG, zDatas);
-                }
-                else
-                {
-                    /* this buffer ends with EOL
-                     * but is not too long
-                     * so simply copy its contents
-                     */
-                    iCopySz = copy(zCLine, COPYALL, zDatas);
-                }
-            }
-
-            zEnv.incrementReadDataCt(iCopySz);
-            bCopyFrag = false;
-
-            /* note that since we modified original read buffer,
+            /* note that since we may have modified original read buffer,
              * we cannot use READ_MORE_NO_WRITE here
              * even though we are reusing original read buffer
              * to read another buffer of data
@@ -656,104 +643,191 @@ public class MLHandler
     /* replace Smith buffer with private copy of buffer
      * (copy contents of current backing buffer to new buffer)
      */
-    private static int copy(CBufferWrapper zCLine, int iCopySz, ArrayList zList) throws ReadException
+    private static int copyLine(CBufferWrapper zCLine) throws ReadException
     {
         ByteBuffer zLine = zCLine.get(); /* get source buffer for copy op */
         zLine.rewind();
 
-        ByteBuffer zCopyLine;
-        int iSz;
+        int iSz = zLine.limit();
 
-        if (COPYALL == iCopySz)
+        ByteBuffer zCopyLine = ByteBuffer.allocate(iSz); /* allocate new buffer */
+
+        try
         {
-            iSz = zLine.limit();
-            zCopyLine = ByteBuffer.allocate(iSz); /* allocate new buffer */
-
-            try
-            {
-                zCopyLine.put(zLine); /* we don't set limit since we allocated buffer to exact size */
-                zLine.clear(); /* reset so that we can recycle this buffer */
-            }
-            catch (BufferOverflowException e)
-            {
-                zLine.clear(); /* reset so that we can recycle this buffer */
-                throw new ReadException("Unable to copy read buffer (it is larger than originally requested)");
-            }
-
-            zCLine.renew(zCopyLine); /* swap original buffer with copy */
-            //zLog.debug("copy all: " + zCLine + ", " + zCopyLine);
-
-            if (null != zList)
-            {
-                zList.add(zCLine);
-            }
+            zCopyLine.put(zLine); /* we don't set limit since we allocated buffer to exact size */
+            zLine.clear(); /* reset so that we can recycle this buffer */
         }
-        else if (COPYFRAG == iCopySz)
+        catch (BufferOverflowException e)
         {
-            CBufferWrapper zTmpCLine = zCLine;
-            int iTmpSz = FRAGSZ;
-            iSz = 0;
+            zLine.clear(); /* reset so that we can recycle this buffer */
+            throw new ReadException("Unable to copy line from read buffer (line is larger than originally requested): " + zLine + ". " + e);
+        }
 
-            while (FRAGSZ <= zLine.remaining())
+        zCLine.renew(zCopyLine); /* swap original buffer with copy */
+        //zLog.debug("copy line: " + zCLine + ", " + zCopyLine);
+
+        return iSz;
+    }
+
+    /* replace Smith buffer with private copy of buffer
+     * (copy each line in current backing buffer to new individual buffer)
+     */
+    private int copyData(CBufferWrapper zCLine, ArrayList zList, Pattern zEOLPattern) throws ReadException
+    {
+        ByteBuffer zLine = zCLine.get(); /* get source buffer for copy op */
+        int iLimit = zLine.limit();
+
+        Matcher zMatcher = zEOLPattern.matcher(zCLine);
+        ArrayList zEndList = new ArrayList();
+
+        int iEnd = 0;
+
+        /* locate (end of) all lines that end with EOL */
+        while (true == zMatcher.find())
+        {
+            iEnd = zMatcher.end();
+            zEndList.add(new Integer(iEnd));
+        }
+
+        /* if we haven't found any EOLs at end of any lines in buffer or
+         * if last chunk in buffer is very long (and doesn't end with EOL),
+         * then break these very long lines into fragments
+         */
+        if (true == zEndList.isEmpty() ||
+            FRAGSZ <= (iLimit - iEnd))
+        {
+            zEndList.add(new Integer(iLimit));
+        }
+
+        CBufferWrapper zTmpCLine = zCLine;
+        int iStart = 0;
+        int iSz = 0;
+
+        ByteBuffer zCopyLine;
+        int iCopySz;
+
+        zLine.rewind();
+        for (Iterator zIter = zEndList.iterator(); true == zIter.hasNext(); )
+        {
+            iEnd = ((Integer) zIter.next()).intValue();
+            zLine.limit(iEnd);
+
+            iCopySz = iEnd - iStart;
+            //zLog.debug("start: " + iStart + ", end: " + iEnd + ", length: " + iCopySz + ", " + zLine);
+            if (FRAGSZ <= iCopySz)
             {
                 if (null == zTmpCLine)
                 {
                     zTmpCLine = new CBufferWrapper(zLine);
                 }
+                else
+                {
+                    zTmpCLine.renew(zLine);
+                }
+                int iFragSz = copyFrag(zTmpCLine, zList);
+                zTmpCLine = null;
 
-                iSz += FRAGSZ;
-                zCopyLine = ByteBuffer.allocate(iTmpSz); /* allocate new buffer */
+                iSz += iFragSz;
 
+                iCopySz -= iFragSz;
+                if (0 == iCopySz)
+                {
+                    iStart = iEnd;
+                    continue;
+                }
+                /* else fall through and
+                 * copy rest of this very long line
+                 * (which may or may not end with EOL)
+                 */
+                zLine.position(iStart + iFragSz);
+                //zLog.debug("start: " + iStart + ", frag size: " + iFragSz + ", " + zLine);
+            }
+
+            zCopyLine = ByteBuffer.allocate(iCopySz); /* allocate new buffer */
+
+            try
+            {
+                /* copy bytes from start to this EOL
+                 * from this buffer to new buffer
+                 */
+                zCopyLine.put(zLine); /* we don't set limit since we allocated buffer to exact size */
+            }
+            catch (BufferOverflowException e)
+            {
+                throw new ReadException("Unable to copy lines from read buffer (this line is larger than originally requested): " + zLine + ", " + e);
+            }
+
+            if (null == zTmpCLine)
+            {
+                zTmpCLine = new CBufferWrapper(zCopyLine);
+            }
+            else
+            {
+                zTmpCLine.renew(zCopyLine);
+            }
+            //zLog.debug("copy multi: " + zTmpCLine + ", " + zCopyLine + ", " + zLine);
+
+            zList.add(zTmpCLine);
+            zTmpCLine = null;
+
+            iSz += iCopySz;
+            iStart = iEnd;
+        }
+
+        zLine.limit(iLimit); /* restore */
+        zLine.compact(); /* move remaining bytes to start of this buffer */
+        zLog.debug("org (compact): " + zLine);
+
+        return iSz;
+    }
+
+    /* break very long line (that does not end with EOL) into fragment(s) */
+    private int copyFrag(CBufferWrapper zTmpCLine, ArrayList zList) throws ReadException
+    {
+        ByteBuffer zLine = zTmpCLine.get();
+        int iPosition = zLine.position();
+        int iLimit = zLine.limit();
+        int iEnd = iPosition;
+
+        ByteBuffer zCopyLine;
+
+        /* do not rewind or flip; caller has already set zLine for us */
+        while (FRAGSZ <= zLine.remaining())
+        {
+            iEnd += FRAGSZ;
+            zLine.limit(iEnd);
+
+            zCopyLine = ByteBuffer.allocate(FRAGSZ); /* allocate new buffer */
+
+            try
+            {
                 /* copy bytes from start to FRAGSZ
                  * from this buffer to new buffer
                  */
-                for (int iIdx = 0; iTmpSz > iIdx; iIdx++)
-                {
-                    zCopyLine.put(zLine.get()); /* we don't set limit since we allocated buffer to exact size */
-                }
-
-                zTmpCLine.renew(zCopyLine); /* swap original buffer with copy */
-                //zLog.debug("copy frag: " + zTmpCLine + ", " + zCopyLine);
-
-                if (null != zList)
-                {
-                    zList.add(zTmpCLine);
-                }
-
-                zTmpCLine = null;
+                zCopyLine.put(zLine); /* we don't set limit since we allocated buffer to exact size */
             }
-
-            zLine.compact(); /* move remaining bytes to start of this buffer */
-            //zLog.debug("org (compact): " + zLine);
-            zLog.debug("org (compact)");
-        }
-        else
-        {
-            iSz = iCopySz;
-            zCopyLine = ByteBuffer.allocate(iSz); /* allocate new buffer */
-
-            /* copy bytes from start to and including last EOL
-             * from this buffer to new buffer
-             */
-            for (int iIdx = 0; iSz > iIdx; iIdx++)
+            catch (BufferOverflowException e)
             {
-                zCopyLine.put(zLine.get()); /* we don't set limit since we allocated buffer to exact size */
+                throw new ReadException("Unable to copy frag from read buffer (frag is larger than originally requested): " + zLine + ", " + e);
             }
 
-            zLine.compact(); /* move remaining bytes to start of this buffer */
-            //zLog.debug("org (compact): " + zLine);
-            zLog.debug("org (compact)");
-
-            zCLine.renew(zCopyLine); /* swap original buffer with copy */
-            //zLog.debug("copy (EOL): " + zCLine + ", " + zCopyLine);
-
-            if (null != zList)
+            if (null == zTmpCLine)
             {
-                zList.add(zCLine);
+                zTmpCLine = new CBufferWrapper(zCopyLine);
             }
+            else
+            {
+                zTmpCLine.renew(zCopyLine);
+            }
+            //zLog.debug("copy frag: " + zTmpCLine + ", " + zCopyLine + ", " + zLine);
+
+            zList.add(zTmpCLine);
+            zTmpCLine = null;
+
+            zLine.limit(iLimit); /* restore (to calculate remaining) */
         }
 
-        return iSz;
+        return (iEnd - iPosition); /* discount starting position */
     }
 
     /* write command or reply line or write data */
@@ -830,10 +904,91 @@ public class MLHandler
         return new TCPChunkResult(azToClient, azToServer, zLine);
     }
 
-    protected static boolean isMatch(CBufferWrapper zCLine, Pattern zPattern)
+    /* to maximize performance, we send lines as large chunks of data
+     * rather than send each line "separately"
+     */
+    private ByteBuffer[] concat(ArrayList zList)
     {
-        Matcher zMatcher = zPattern.matcher(zCLine);
-        return zMatcher.find();
+        ByteBuffer zLine;
+
+        if (1 == zList.size())
+        {
+            /* if list only contains single element,
+             * we have no lines to concat
+             */
+            ByteBuffer azDataSE[] = new ByteBuffer[1];
+            zLine = (ByteBuffer) zList.get(0);
+            //zLog.debug("write: one line: " + zCDummy.renew(zLine) + ", " + zLine);
+            zLine.rewind();
+            azDataSE[0] = zLine;
+            zList.clear(); /* set up for next write */
+            return azDataSE;
+        }
+
+        ListIterator zLIter;
+        int iDivisor = 0;
+
+        for (zLIter = zList.listIterator(); true == zLIter.hasNext(); )
+        {
+            zLine = (ByteBuffer) zLIter.next();
+            if (iDivisor < zLine.position())
+            {
+                /* choose line w/ most data as (rough) divisor */
+                iDivisor = zLine.position();
+            }
+        }
+
+        int iMaxLineSz;
+
+        if (iDivisor > MAX_LINE_SZ)
+        {
+            iMaxLineSz = iDivisor + MAX_LINE_SZ;
+            zLog.debug("increasing line size from " + MAX_LINE_SZ + " to " + iMaxLineSz + " bytes");
+        }
+        else
+        {
+            iMaxLineSz = MAX_LINE_SZ;
+        }
+
+        /* we estimate that we need this many new lines
+         * to hold concatenation of org lines
+         */
+        ArrayList zNewList = new ArrayList((zList.size() / iDivisor) + 1);
+        ByteBuffer zNewLine = ByteBuffer.allocate(iMaxLineSz);
+        zNewList.add(zNewLine);
+
+        for (zLIter = zList.listIterator(); true == zLIter.hasNext(); )
+        {
+            zLine = (ByteBuffer) zLIter.next();
+            zLIter.set(null); /* release reference; let GC process it */
+
+            if (zLine.position() > zNewLine.remaining())
+            {
+                /* new line is full, get another */
+                zNewLine = ByteBuffer.allocate(iMaxLineSz);
+                zNewList.add(zNewLine);
+            }
+
+            //zLog.debug("write: org line: " + zCDummy.renew(zLine) + ", " + zLine);
+            zLine.rewind();
+            zNewLine.put(zLine); /* concat org line into new line */
+        }
+        zList.clear(); /* set up for next write */
+
+        ByteBuffer azData[] = new ByteBuffer[zNewList.size()];
+        int iIdx = 0;
+
+        for (zLIter = zNewList.listIterator(); true == zLIter.hasNext(); )
+        {
+            zNewLine = (ByteBuffer) zLIter.next();
+            zLIter.set(null); /* release reference; let GC process it */
+            //zLog.debug("write: new line: " + zCDummy.renew(zNewLine) + ", " + zNewLine);
+            zNewLine.flip(); /* we use flip to set limit since we didn't allocate buffer to exact size */
+            azData[iIdx++] = zNewLine;
+        }
+        zNewList.clear();
+
+        return azData;
     }
 
     /* cache info from message header to build warning and
@@ -886,23 +1041,26 @@ public class MLHandler
         return;
     }
 
-    /* strip EOD sequence from message and return stripped EOD sequence */
+    /* strip EOD sequence from message and return stripped EOD sequence
+     * - message currently contains message plus EOD sequence
+     * - zMsg.getSize() only specifies message size (not EOD sequence size)
+     *   so we can locate EOD sequence by using message size
+     */
     protected ArrayList stripEOD()
     {
-        CBufferWrapper zCLine = null;
         int iMsgSz = zMsg.getSize();
         if (0 < iRejectedCt)
         {
-            /* discount # of bytes, of buffers that we've already discarded,
+            /* discount # of bytes, from buffers that we've discarded,
              * from message size
              */
             iMsgSz -= iRejectedCt;
         }
 
+        CBufferWrapper zCLine = null;
         int iCnt = zMsgDatas.size();
 
         int iIdx;
-
         for (iIdx = 0; iIdx < iCnt; iIdx++)
         {
             zCLine = (CBufferWrapper) zMsgDatas.get(iIdx);
@@ -1013,93 +1171,6 @@ public class MLHandler
 
         //zLog.debug("last line (new): " + zCLine + ", " + zLine);
         return zTEOData;
-    }
-
-    /* to maximize performance, we send lines as large chunks of data
-     * rather than send each line "separately"
-     */
-    private ByteBuffer[] concat(ArrayList zList)
-    {
-        ByteBuffer zLine;
-
-        if (1 == zList.size())
-        {
-            /* if list only contains single element,
-             * we have no lines to concat
-             */
-            ByteBuffer azDataSE[] = new ByteBuffer[1];
-            zLine = (ByteBuffer) zList.get(0);
-            //zLog.debug("write: one line: " + zCDummy.renew(zLine) + ", " + zLine);
-            zLine.rewind();
-            azDataSE[0] = zLine;
-            zList.clear(); /* set up for next write */
-            return azDataSE;
-        }
-
-        ListIterator zLIter;
-        int iDivisor = 0;
-
-        for (zLIter = zList.listIterator(); true == zLIter.hasNext(); )
-        {
-            zLine = (ByteBuffer) zLIter.next();
-            if (iDivisor < zLine.position())
-            {
-                /* choose line w/ most data as (rough) divisor */
-                iDivisor = zLine.position();
-            }
-        }
-
-        int iMaxLineSz;
-
-        if (iDivisor > MAX_LINE_SZ)
-        {
-            iMaxLineSz = iDivisor + MAX_LINE_SZ;
-            zLog.debug("increasing line size from " + MAX_LINE_SZ + " to " + iMaxLineSz + " bytes");
-        }
-        else
-        {
-            iMaxLineSz = MAX_LINE_SZ;
-        }
-
-        /* we estimate that we need this many new lines
-         * to hold concatenation of org lines
-         */
-        ArrayList zNewList = new ArrayList((zList.size() / iDivisor) + 1);
-        ByteBuffer zNewLine = ByteBuffer.allocate(iMaxLineSz);
-        zNewList.add(zNewLine);
-
-        for (zLIter = zList.listIterator(); true == zLIter.hasNext(); )
-        {
-            zLine = (ByteBuffer) zLIter.next();
-            zLIter.set(null); /* release reference; let GC process it */
-
-            if (zLine.position() > zNewLine.remaining())
-            {
-                /* new line is full, get another */
-                zNewLine = ByteBuffer.allocate(iMaxLineSz);
-                zNewList.add(zNewLine);
-            }
-
-            //zLog.debug("write: org line: " + zCDummy.renew(zLine) + ", " + zLine);
-            zLine.rewind();
-            zNewLine.put(zLine); /* concat org line into new line */
-        }
-        zList.clear(); /* set up for next write */
-
-        ByteBuffer azData[] = new ByteBuffer[zNewList.size()];
-        int iIdx = 0;
-
-        for (zLIter = zNewList.listIterator(); true == zLIter.hasNext(); )
-        {
-            zNewLine = (ByteBuffer) zLIter.next();
-            zLIter.set(null); /* release reference; let GC process it */
-            //zLog.debug("write: new line: " + zCDummy.renew(zNewLine) + ", " + zNewLine);
-            zNewLine.flip(); /* we use flip to set limit since we didn't allocate buffer to exact size */
-            azData[iIdx++] = zNewLine;
-        }
-        zNewList.clear();
-
-        return azData;
     }
 
     /* block message because it matches custom, spam, or virus rule */

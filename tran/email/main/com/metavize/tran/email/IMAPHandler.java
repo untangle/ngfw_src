@@ -129,13 +129,16 @@ public class IMAPHandler extends MLHandler
     private final static String CONTREQ = CONT_FLAG + ".*?" + Constants.PEOLINE;
     /* DATAOK = fetch ok; msg follows */
     private final static String DATAOK = MSEQ_NO + " " + FETCH_KEY + ".+?" + SZVAL + Constants.PEOLINE;
-    /* EODATA = fetch cmd ack; msg sent */
-    private final static String EODATA = TAG_ID + " OK( UID)??( " + FETCH_KEY + ")??.*?" + Constants.PEOLINE;
     protected final static Pattern SERVICEOPENP = Pattern.compile(SERVICEOPEN, Pattern.CASE_INSENSITIVE);
     private final static Pattern SERVICECLOSEP = Pattern.compile(SERVICECLOSE, Pattern.CASE_INSENSITIVE);
     private final static Pattern CONTREQP = Pattern.compile(CONTREQ);
     private final static Pattern DATAOKP = Pattern.compile(DATAOK, Pattern.CASE_INSENSITIVE);
-    private final static Pattern EODATAP = Pattern.compile(EODATA, Pattern.CASE_INSENSITIVE);
+
+    /* EODATA = fetch cmd ack; msg sent
+     * (may be embedded with other lines so enable MULTILINE pattern mode)
+     */
+    private final static String EODATA = TAG_ID + " OK( UID)??( " + FETCH_KEY + ")??.*?" + Constants.PEOLINE;
+    private final static Pattern EODATAP = Pattern.compile(EODATA, Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 
     private final static String OLWSPQUOTE = Constants.LWSP + "+?(\")??";
     private final static String CLWSPQUOTE = "(\")??" + Constants.LWSP + "+?";
@@ -284,6 +287,8 @@ public class IMAPHandler extends MLHandler
             }
             /* else data is complete and message doesn't exceed size limit */
 
+            setReadLine(zEvent.session());
+
             if (false == bRejectData)
             {
                 setAppendEOData(zEnv);
@@ -310,6 +315,12 @@ public class IMAPHandler extends MLHandler
                 zLog.debug("append cmd?: " + zStatePair.getCmd());
                 if (true == isMatch(zCLine, APPENDP))
                 {
+                    /* in read data mode,
+                     * we will not receive any more replies from passenger
+                     * until we have sent data to passenger
+                     */
+                    bReadAppendData = true; /* use read data mode */
+                    setReadData(zEvent.session());
                     setAppendData(zEnv, zCLine);
                     return;
                 }
@@ -420,6 +431,8 @@ public class IMAPHandler extends MLHandler
             }
             /* else data is complete and message doesn't exceed size limit */
 
+            setReadLine(zEvent.session());
+
             if (false == bRejectData)
             {
                 setFetchEOData(zEnv);
@@ -456,6 +469,12 @@ public class IMAPHandler extends MLHandler
                 zLog.debug("data ok reply?: " + zStatePair.getReply());
                 if (true == isMatch(zCLine, DATAOKP))
                 {
+                    /* in read data mode,
+                     * we will not receive any more cmds from driver
+                     * until we have received data and EODATA from passenger
+                     */
+                    bReadFetchData = true; /* use read data mode */
+                    setReadData(zEvent.session());
                     setFetchData(zEnv, zCLine);
                     return;
                 }
@@ -787,11 +806,6 @@ public class IMAPHandler extends MLHandler
         /* else recycle original MLMessage */
 
         bUseAppendCmd = true; /* use append cmd mode */
-        /* in read data mode,
-         * we will not receive any more replies from passenger
-         * until we have sent data to passenger
-         */
-        bReadAppendData = true; /* use read data mode */
 
         /* we are not passing APPEND through yet
          * (but copy its tag id because we may need to use tag id later)
@@ -856,12 +870,6 @@ public class IMAPHandler extends MLHandler
             zMsg = new MLMessage();
         }
         /* else recycle original MLMessage */
-
-        /* in read data mode,
-         * we will not receive any more cmds from driver
-         * until we have received data and EODATA from passenger
-         */
-        bReadFetchData = true; /* use read data mode */
 
         /* since we're buffering message, driver does not need reply yet
          * - intercept/save reply (we'll resend it later)

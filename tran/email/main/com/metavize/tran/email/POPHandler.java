@@ -56,12 +56,15 @@ public class POPHandler extends MLHandler
     private final static String SERVICECLOSE = OKREPLY;
     /* DATAOK = retrieve ok; msg follows */
     private final static String DATAOK = OKREPLY + SZVAL + "[^" + Constants.PEOLINE + "]*" + Constants.PEOLINE;
-    /* EODATA = retrieve cmd ack; msg sent */
-    private final static String EODATA = "(^|" + Constants.PEOLINE + ")\\." + Constants.PEOLINE;
     protected final static Pattern SERVICEOPENP = Pattern.compile(SERVICEOPEN, Pattern.CASE_INSENSITIVE);
     private final static Pattern SERVICECLOSEP = Pattern.compile(SERVICECLOSE, Pattern.CASE_INSENSITIVE);
     private final static Pattern DATAOKP = Pattern.compile(DATAOK, Pattern.CASE_INSENSITIVE);
-    private final static Pattern EODATAP = Pattern.compile(EODATA);
+
+    /* EODATA = retrieve cmd ack; msg sent
+     * (may be embedded with other lines so enable MULTILINE pattern mode)
+     */
+    private final static String EODATA = "(^|" + Constants.PEOLINE + ")\\." + Constants.PEOLINE;
+    private final static Pattern EODATAP = Pattern.compile(EODATA, Pattern.MULTILINE);
 
     /* +OK <msg sz> octets */
     private final static String OCTETS = " octets" + Constants.PCRLF;
@@ -270,6 +273,8 @@ public class POPHandler extends MLHandler
             }
             /* else data is complete and message doesn't exceed size limit */
 
+            setReadLine(zEvent.session());
+
             if (false == bRejectData)
             {
                 setEOData(zEnv);
@@ -296,6 +301,12 @@ public class POPHandler extends MLHandler
                 zLog.debug("data ok reply?: " + zStatePair.getReply());
                 if (true == isMatch(zCLine, DATAOKP))
                 {
+                    /* in read data mode,
+                     * we will not receive any more cmds from driver
+                     * until we have received data and EODATA from passenger
+                     */
+                    bReadData = true; /* use read data mode */
+                    setReadData(zEvent.session());
                     setData(zEnv, zCLine);
                     return;
                 }
@@ -667,11 +678,6 @@ ByteBuffer contains data */
             zMsg = new MLMessage();
         }
         /* else recycle original MLMessage */
-
-        /* in read data mode, we will not receive any more cmds from driver
-         * until we have received data and EODATA from passenger
-         */
-        bReadData = true; /* use read data mode */
 
         /* since we're buffering message, driver does not need reply yet
          * - intercept/save reply (we'll resend it later)

@@ -227,8 +227,6 @@ public class EventHandler extends AbstractEventHandler
           session.serverAddr() + ":" + session.serverPort());
 
         /* create read-write TCPSession and use it with this session */
-        session.clientLineBuffering(true);
-        session.serverLineBuffering(true);
 
         /* attach XMailScannerSession to TCPSession;
          * we need to access MLHandler (inside XMailScannerSession) later
@@ -237,6 +235,8 @@ public class EventHandler extends AbstractEventHandler
         XMailScannerSession zXMSession = new XMailScannerSession(zXMSCache);
         session.attach(zXMSession);
 
+        session.clientLineBuffering(true);
+        session.serverLineBuffering(true);
         session.clientReadLimit(MLHandler.READSZ);
         session.serverReadLimit(MLHandler.READSZ);
 
