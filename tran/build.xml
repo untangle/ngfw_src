@@ -22,7 +22,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <import file="../buildtools/buildmagic.xml"/>
 
   <property name="transforms"
-        value="nat,http,virus,airgap,reporting,protofilter,test,sophos,fprot,hauri,clam,spyware,httpblocker,email"/>
+        value="nat,firewall,http,ftp,virus,airgap,reporting,protofilter,test,sophos,fprot,hauri,clam,spyware,httpblocker,email"/>
 
 
   <!--              -->
@@ -88,6 +88,13 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
 
     <antcall target="compile.${tran.name}" inheritAll="true"/>
 
+    <if>
+      <or>
+        <equals arg1="${tran.name}" arg2="ftp"/>
+      </or>
+    <then/>
+    <else>
+
     <exec executable="${buildtool.base}/dependset.sh">
       <arg value="${build.root}/${tran.name}"/>
       <arg value="${build.depcache}/${tran.name}.patternset"/>
@@ -148,6 +155,9 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       <include name="com/metavize/tran/${tran.name}/**"/>
     </javac>
 
+    </else>
+    </if>
+
   </target>
 
   <!--              -->
@@ -165,22 +175,22 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       </or>
     <then>
       <jar destfile="${build.jar}/${tran.name}-casing.mar" index="yes">
-    <fileset dir="${build.root}/${tran.name}"/>
-    <fileset dir="${build.gensrc}/${tran.name}"/>
-    <fileset dir="${tran.name}/${src.main}/">
-      <include name="**/*png"/>
-    </fileset>
-    <fileset dir="${tran.name}/${src.resources}/${tran.name}"/>
+        <fileset dir="${build.root}/${tran.name}"/>
+        <fileset dir="${build.gensrc}/${tran.name}"/>
+        <fileset dir="${tran.name}/${src.main}/">
+          <include name="**/*png"/>
+        </fileset>
+        <fileset dir="${tran.name}/${src.resources}/${tran.name}"/>
       </jar>
     </then>
     <else>
       <jar destfile="${build.jar}/${tran.name}-transform.mar" index="yes">
-    <fileset dir="${build.root}/${tran.name}"/>
-    <fileset dir="${build.gensrc}/${tran.name}"/>
-    <fileset dir="${tran.name}/${src.main}/">
-      <include name="**/*png"/>
-    </fileset>
-    <fileset dir="${tran.name}/${src.resources}/${tran.name}"/>
+        <fileset dir="${build.root}/${tran.name}"/>
+        <fileset dir="${build.gensrc}/${tran.name}"/>
+        <fileset dir="${tran.name}/${src.main}/">
+          <include name="**/*png"/>
+        </fileset>
+        <fileset dir="${tran.name}/${src.resources}/${tran.name}"/>
       </jar>
     </else>
     </if>
