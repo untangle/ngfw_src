@@ -12,8 +12,8 @@ $Id: mvvm-transform.xml,v 1.4 2005/02/24 02:53:06 amread Exp $
 -->
 
 <mvvm-transform>
-  <transform-desc name="protofilter-transform"
+  <transform-desc name="firewall-transform"
                   display-name="Rogue Protocol Control"
-                  classname="com.metavize.tran.protofilter.ProtoFilterImpl"
-                  gui-classname="com.metavize.tran.protofilter.gui.MTransformJPanel"/>
+                  classname="com.metavize.tran.firewall.FirewallImpl"
+                  gui-classname="com.metavize.tran.firewall.gui.MTransformJPanel"/>
 </mvvm-transform>

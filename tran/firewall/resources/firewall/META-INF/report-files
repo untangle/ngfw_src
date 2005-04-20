@@ -1,0 +1,3 @@
+com/metavize/tran/firewall/FirewallMaster.jasper:summary:Summary
+com/metavize/tran/firewall/FirewallDetail.jasper:detail:Firewall Policy Violations
+com.metavize.tran.firewall.FirewallSummarizer:summarizer:Summarizer
