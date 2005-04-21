@@ -30,7 +30,6 @@ import com.metavize.mvvm.*;
 public class UpgradeJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener, MTableChangeListener {
 
     ProceedJDialog proceedJDialog;
-    private ToolboxManager toolboxManager;
     private static final Color TABLE_BACKGROUND_COLOR = new Color(213, 213, 226);
     private Period period;
     private UpgradeSettings upgradeSettings;
@@ -41,9 +40,8 @@ public class UpgradeJDialog extends javax.swing.JDialog implements java.awt.even
     private MMainJFrame mMainJFrame;
 
     /** Creates new form UpgradeJDialog */
-    public UpgradeJDialog(java.awt.Frame parent, ToolboxManager toolboxManager) {
+    public UpgradeJDialog(java.awt.Frame parent) {
         super(parent, true);
-        this.toolboxManager = toolboxManager;
         mMainJFrame = (MMainJFrame) parent;
 
 
@@ -55,7 +53,7 @@ public class UpgradeJDialog extends javax.swing.JDialog implements java.awt.even
         mEditTableJPanel.setTableTitle("Available Upgrades");
         mEditTableJPanel.setDetailsTitle("Upgrade Details");
         mEditTableJPanel.setAddRemoveEnabled(false);
-        upgradeTableModel = new UpgradeTableModel(toolboxManager);
+        upgradeTableModel = new UpgradeTableModel();
         upgradeTableModel.setMTableChangeListener(this);
         mEditTableJPanel.setTableModel( upgradeTableModel );
         mEditTableJPanel.getJTable().setRowHeight(49);
@@ -66,7 +64,7 @@ public class UpgradeJDialog extends javax.swing.JDialog implements java.awt.even
         this.addWindowListener(this);
 
         // attempt to download settings
-        upgradeSettings = toolboxManager.getUpgradeSettings();
+        upgradeSettings = Util.getToolboxManager().getUpgradeSettings();
 
 
         // BUILD SECOND TAB (SCHEDULED AUTOMATIC UPGRADE)
@@ -110,14 +108,19 @@ public class UpgradeJDialog extends javax.swing.JDialog implements java.awt.even
 
     }
 
+    public void setVisible(boolean isVisible){
+        if(isVisible){
+            update();
+            super.setVisible(true);
+        }
+        else
+            super.setVisible(false);
+    }
     public void update(){
         UpdateThread updateThread = new UpdateThread();
         updateThread.start();
     }
 
-    public void damageControl(Object reference){
-        // jTabbedPane.setEnabled(false);
-    }
     public void dataChangedInvalid(Object reference){}
     public void dataChangedValid(Object reference){}
     public void dataRefreshed(Object reference){}
@@ -180,10 +183,13 @@ public class UpgradeJDialog extends javax.swing.JDialog implements java.awt.even
         setModal(true);
         setResizable(false);
         closeJButton.setFont(new java.awt.Font("Default", 0, 12));
-        closeJButton.setText("Close \"Upgrade Controls\" Window");
+        closeJButton.setText("<html><b>Close</b> Window</html>");
         closeJButton.setDoubleBuffered(true);
         closeJButton.setFocusPainted(false);
         closeJButton.setFocusable(false);
+        closeJButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
+        closeJButton.setMinimumSize(new java.awt.Dimension(117, 25));
+        closeJButton.setPreferredSize(new java.awt.Dimension(117, 25));
         closeJButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 closeJButtonActionPerformed(evt);
@@ -514,7 +520,7 @@ public class UpgradeJDialog extends javax.swing.JDialog implements java.awt.even
         period.setSaturday( saturdayJCheckBox.isSelected() );
             upgradeSettings.setPeriod(period);
             upgradeSettings.setAutoUpgrade(yesAutoJRadioButton.isSelected());
-            toolboxManager.setUpgradeSettings(upgradeSettings);
+            Util.getToolboxManager().setUpgradeSettings(upgradeSettings);
         }
         catch(Exception e){
             try{
@@ -522,7 +528,6 @@ public class UpgradeJDialog extends javax.swing.JDialog implements java.awt.even
             }
             catch(Exception f){
                 Util.handleExceptionNoRestart("Error committing upgrade data", f);
-                damageControl(null);
             }
         }
     }//GEN-LAST:event_commitJButtonActionPerformed
@@ -550,7 +555,7 @@ public class UpgradeJDialog extends javax.swing.JDialog implements java.awt.even
 
             // UPGRADE
             try{
-                if(toolboxManager == null)
+                if(Util.getToolboxManager() == null)
                     return;
 
                 // prevent GUI from interacting
@@ -566,23 +571,21 @@ public class UpgradeJDialog extends javax.swing.JDialog implements java.awt.even
                 Thread.sleep(2000);
 
                 // start upgrade... should either throw a timeout exception or return
-                toolboxManager.upgrade();
+                Util.getToolboxManager().upgrade();
 
                 // to trigger an automatic restart if upgrade() actually returns
                 actionJProgressBar.setIndeterminate(true);
                 actionJProgressBar.setValue(100);
                 actionJProgressBar.setString("shutting down...");
-                (new RestartJDialog(Util.getMMainJFrame(), true)).setVisible(true);
+                RestartJDialog restartJDialog = new RestartJDialog(Util.getMMainJFrame(), true);
+                restartJDialog.setBounds( Util.generateCenteredBounds(UpgradeJDialog.this.getBounds(), restartJDialog.getWidth(), restartJDialog.getHeight()) );
+                restartJDialog.setVisible(true);
+
             }
             catch(Exception e){
-                (new RestartJDialog(Util.getMMainJFrame(), true)).setVisible(true);
-                try{
-                    Util.handleExceptionWithRestart("Upgrading...", e);
-                }
-                catch(Exception f){
-                    UpgradeJDialog.this.damageControl(null);
-                    (new RestartJDialog(Util.getMMainJFrame(), true)).setVisible(true);
-                }
+                RestartJDialog restartJDialog = new RestartJDialog(Util.getMMainJFrame(), true);
+                restartJDialog.setBounds( Util.generateCenteredBounds(UpgradeJDialog.this.getBounds(), restartJDialog.getWidth(), restartJDialog.getHeight()) );
+                restartJDialog.setVisible(true);                
             }
         }
     }
@@ -608,9 +611,9 @@ public class UpgradeJDialog extends javax.swing.JDialog implements java.awt.even
                 actionJProgressBar.setValue(0);
                 actionJProgressBar.setString("downloading upgrade list from server...");
                 actionJProgressBar.setIndeterminate(true);
-                if(toolboxManager != null){
-                    toolboxManager.update();
-                    upgradable = toolboxManager.upgradable();
+                if(Util.getToolboxManager() != null){
+                    Util.getToolboxManager().update();
+                    upgradable = Util.getToolboxManager().upgradable();
                 }
                 Thread.sleep(1000);
 
@@ -626,13 +629,16 @@ public class UpgradeJDialog extends javax.swing.JDialog implements java.awt.even
                 actionJProgressBar.setString("finished refreshing upgrade table.");
                 Thread.sleep(1000);
 
-                if( (upgradable == null) || (upgradable.length <= 0) ){
+                if( Util.isArrayEmpty(upgradable) ){
                     upgradeJButton.setEnabled(false);
                     mEditTableJPanel.setTableTitle("Available Upgrades (none found)");
+                    Util.getMMainJFrame().updateJButton(0);
+                    actionJProgressBar.setString("No upgrades found.");
                 }
                 else{
                     upgradeJButton.setEnabled(true);
                     mEditTableJPanel.setTableTitle("Available Upgrades (" + upgradable.length + " found)");
+                    Util.getMMainJFrame().updateJButton(upgradable.length);
                 }
 
 
@@ -683,7 +689,7 @@ public class UpgradeJDialog extends javax.swing.JDialog implements java.awt.even
           System.out.println(UIManager.getLookAndFeel().getDescription());
 
 
-        UpgradeJDialog upgradeJDialog = new UpgradeJDialog(new javax.swing.JFrame(), null);
+        UpgradeJDialog upgradeJDialog = new UpgradeJDialog(new javax.swing.JFrame());
         upgradeJDialog.setVisible(true);
         }
         catch (Exception e) {
@@ -754,9 +760,9 @@ class UpgradeTableModel extends MSortedTableModel {
 
     private ToolboxManager toolboxManager;
 
-    UpgradeTableModel(ToolboxManager toolboxManager){
+    UpgradeTableModel(){
         super(null);
-        this.toolboxManager = toolboxManager;
+        this.toolboxManager = Util.getToolboxManager();
         refresh();
     }
 
@@ -773,12 +779,12 @@ class UpgradeTableModel extends MSortedTableModel {
             super.fireTableDataChanged();
         }
         catch(Exception e){
-            //try{
-            //    Util.handleExceptionWithRestart("Error refreshing table", e);
-            //}
-            //catch(Exception f){
-                if(mTableChangeListener != null) mTableChangeListener.damageControl( this );
-            //}
+            try{
+                Util.handleExceptionWithRestart("Error refreshing table", e);
+            }
+            catch(Exception f){
+                Util.handleExceptionNoRestart("Error refreshing table", f);
+            }
         }
     }
 
