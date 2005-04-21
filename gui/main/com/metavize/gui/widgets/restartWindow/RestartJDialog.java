@@ -88,6 +88,7 @@ public class RestartJDialog extends javax.swing.JDialog implements java.awt.even
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
         getContentPane().add(backgroundJLabel, gridBagConstraints);
