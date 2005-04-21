@@ -1,2 +1,5 @@
-DELETE FROM tr_http_req_line WHERE request_id
-    IN (SELECT request_id FROM tr_httpblk_evt_blk WHERE time_stamp < :cutoff);
+CREATE INDEX tr_httpblk_ts_idx ON tr_httpblk_evt_blk (time_stamp);
+
+DELETE FROM tr_httpblk_evt_blk WHERE time_stamp < (:cutoff)::timestamp;
+
+DROP INDEX tr_httpblk_ts_idx;
