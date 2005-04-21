@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: VirusScannerResult.java,v 1.6 2005/02/25 02:45:28 amread Exp $
+ * $Id$
  */
 package com.metavize.tran.virus;
 
@@ -28,6 +28,8 @@ public class VirusScannerResult implements Serializable
         = new VirusScannerResult(false, "unknown", false);
     public static final VirusScannerResult CLEANED
         = new VirusScannerResult(true, "unknown", true);
+    public static final VirusScannerResult ERROR
+        = new VirusScannerResult(true, "unknown", false); // CLEAN
 
     private final boolean clean;
     private final String  virusName;

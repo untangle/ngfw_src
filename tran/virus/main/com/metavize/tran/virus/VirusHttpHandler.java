@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: VirusHttpHandler.java,v 1.23 2005/03/01 22:51:15 amread Exp $
+ * $Id$
  */
 
 package com.metavize.tran.virus;
@@ -97,7 +97,7 @@ class VirusHttpHandler extends HttpStateMachine
             logger.info("we dont accept ranges: " + range);
             // we dont accept ranges
             // XXX log this event
-            // XXX make a response instead of resetting
+            // XXX make a response instead of shutting down
             getSession().shutdownServer();
             getSession().shutdownClient();
             return new TokenResult();
@@ -181,13 +181,17 @@ class VirusHttpHandler extends HttpStateMachine
             transform.incrementCount( SCAN_COUNTER );
             result = transform.getScanner().scanFile(fileName);
         } catch (IOException e) {
-            logger.error("Virus scan failed", e); // XXX assume infected?
-            result = VirusScannerResult.INFECTED;
+            logger.error("Virus scan failed: "+ e); 
+            result = VirusScannerResult.ERROR;
         } catch (InterruptedException e) {
-            logger.warn("Virus scan failed", e); // XXX assume infected?
-            result = VirusScannerResult.INFECTED;
+            logger.error("Virus scan failed: "+ e); 
+            result = VirusScannerResult.ERROR;
         }
-
+        if (result == null) {
+            logger.error("Virus scan failed: null"); 
+            result = VirusScannerResult.ERROR;
+        }
+            
         eventLogger.info(new VirusHttpEvent(responseRequest, result));
         if (result.isClean()) {
             transform.incrementCount(PASS_COUNTER, 1);

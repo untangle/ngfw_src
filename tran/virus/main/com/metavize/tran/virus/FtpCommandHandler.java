@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: FtpCommandHandler.java,v 1.4 2005/02/08 02:45:03 rbscott Exp $
+ * $Id$
  */
 package com.metavize.tran.virus;
 
@@ -90,7 +90,7 @@ public class FtpCommandHandler extends AbstractEventHandler
         ByteBuffer buf  = event.chunk();
 
         if (buf.get(buf.limit()-1) != '\n') {
-            logger.debug("FTP: Incomplete line...");
+            logger.info("FTP: Incomplete line...");
             return TCPChunkResult.READ_MORE_NO_WRITE;
         }
 
@@ -106,7 +106,7 @@ public class FtpCommandHandler extends AbstractEventHandler
 
 
         if (buf.get(buf.limit()-1) != '\n') {
-            logger.debug("Incomplete line...");
+            logger.info("Incomplete line...");
             return TCPChunkResult.READ_MORE_NO_WRITE;
         }
 
@@ -151,7 +151,7 @@ public class FtpCommandHandler extends AbstractEventHandler
         FtpSessionState ftpss = (FtpSessionState)relatedSessions.get(srv);
 
         if (ftpss == null) {
-            logger.debug("Not FOUND: " + srv);
+            logger.info("Not FOUND: " + srv);
             return NOT_RELATED;
         }
 
@@ -182,7 +182,7 @@ public class FtpCommandHandler extends AbstractEventHandler
             }
         }
 
-        logger.debug("ERROR: Constraint failed: " +
+        logger.warn("Constraint failed: " +
                      ftpss.relatedPortPasv + " : " +
                      ftpss.relatedDirection);
         return NOT_RELATED;
@@ -231,7 +231,7 @@ public class FtpCommandHandler extends AbstractEventHandler
         logger.debug("FTP: C2S: " + cmd);
 
         if (!strtok.hasMoreTokens())  {
-            logger.debug("FTP: Bad Command, no tokens"); /* XXX */
+            logger.info("FTP: Bad Command, no tokens"); 
             return IPDataResult.PASS_THROUGH;
         }
 
@@ -239,7 +239,7 @@ public class FtpCommandHandler extends AbstractEventHandler
 
         if (clientCmd.equalsIgnoreCase("PORT")) {
             if (!strtok.hasMoreTokens())  {
-                logger.debug("FTP: Bad Command, no tokens"); /* XXX */
+                logger.info("FTP: Bad Command, no tokens"); /* XXX */
                 return IPDataResult.PASS_THROUGH;
             }
 
@@ -247,7 +247,7 @@ public class FtpCommandHandler extends AbstractEventHandler
             InetSocketAddress addr = parseIPPortTuple(token);
 
             if (addr == null) {
-                logger.debug("FTP: Invalid PORT tuple:" + token); /* XXX */
+                logger.info("FTP: Invalid PORT tuple:" + token); /* XXX */
                 return IPDataResult.PASS_THROUGH;
             }
 
@@ -287,14 +287,14 @@ public class FtpCommandHandler extends AbstractEventHandler
         logger.debug("FTP: S2C: " + cmd);
 
         if (!strtok.hasMoreTokens())  {
-            logger.debug("FTP: Bad Command, no tokens"); /* XXX */
+            logger.info("FTP: Bad Command, no tokens"); /* XXX */
             return IPDataResult.PASS_THROUGH;
         }
 
         try {
             replyCode = Integer.parseInt(strtok.nextToken());
         } catch (NumberFormatException e) {
-            logger.debug("FTP: Invalid reply Code."); /* XXX */
+            logger.info("FTP: Invalid reply Code."); /* XXX */
             return IPDataResult.PASS_THROUGH;
         }
 
@@ -315,7 +315,7 @@ public class FtpCommandHandler extends AbstractEventHandler
                 && strtok.hasMoreTokens()
                 && strtok.nextToken().equalsIgnoreCase("STREAM")) {
                 if (transform.getFtpDisableResume()) {
-                    logger.debug("FTP: Disabling Resume");
+                    logger.info("FTP: Disabling Resume");
                     return IPDataResult.DO_NOT_PASS;
                 }
             }
@@ -349,7 +349,7 @@ public class FtpCommandHandler extends AbstractEventHandler
                     InetSocketAddress addr = parseIPPortTuple(token);
 
                     if (addr == null) {
-                        logger.debug("FTP: Invalid 227 tuple:" + token); /* XXX */
+                        logger.info("FTP: Invalid 227 tuple:" + token); /* XXX */
                         return IPDataResult.PASS_THROUGH;
                     }
 
@@ -359,7 +359,7 @@ public class FtpCommandHandler extends AbstractEventHandler
                     return IPDataResult.PASS_THROUGH;
                 }
             }
-            logger.debug("FTP: Invalid 227 reply:" + cmd); /* XXX */
+            logger.info("FTP: Invalid 227 reply:" + cmd); /* XXX */
             break;
 
         default:
@@ -381,14 +381,14 @@ public class FtpCommandHandler extends AbstractEventHandler
         for(int i=0;i<4;i++) {
 
             if (!strtok.hasMoreTokens()) {
-                logger.debug("FTP: tuple too short");
+                logger.info("FTP: tuple too short");
                 return null;
             }
 
             try {
                 addr[i] = (byte)(Short.parseShort(strtok.nextToken()));
             } catch (NumberFormatException e) {
-                logger.debug("FTP: bad byte in addr tuple" + e);
+                logger.info("FTP: bad byte in addr tuple" + e);
                 return null;
             }
         }
@@ -396,13 +396,13 @@ public class FtpCommandHandler extends AbstractEventHandler
         try {
             iaddr = InetAddress.getByAddress(addr);
         } catch (UnknownHostException h) {
-            logger.debug("FTP: invalid inet address");
+            logger.info("FTP: invalid inet address");
             return null;
         }
 
         for (int i=0;i<2;i++) {
             if (!strtok.hasMoreTokens()) {
-                logger.debug("FTP: tuple too short");
+                logger.info("FTP: tuple too short");
                 return null;
             }
 
@@ -411,7 +411,7 @@ public class FtpCommandHandler extends AbstractEventHandler
                 short sbyte = (Short.parseShort(strtok.nextToken()));
 
                 if (sbyte < 0 || sbyte > 255) {
-                    logger.debug("FTP: malformed port tuple number:" + sbyte);
+                    logger.info("FTP: malformed port tuple number:" + sbyte);
                     return null;
                 }
 
@@ -421,7 +421,7 @@ public class FtpCommandHandler extends AbstractEventHandler
                     port += sbyte;
 
             } catch (NumberFormatException e) {
-                logger.debug("FTP: bad byte in port tuple" + e);
+                logger.info("FTP: bad byte in port tuple" + e);
                 return null;
             }
         }

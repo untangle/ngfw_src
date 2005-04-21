@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: FtpDataHandler.java,v 1.17 2005/03/15 02:11:52 amread Exp $
+ * $Id$
  */
 
 package com.metavize.tran.virus;
@@ -281,12 +281,14 @@ public class FtpDataHandler extends AbstractEventHandler
             result = transform.getScanner().scanFile(vss.fileName);
         } catch (IOException e) {
             logger.error("Virus scan failed: " + e);
-            /* XXX assume infected? */
-            result = VirusScannerResult.INFECTED;
+            result = VirusScannerResult.ERROR;
         } catch (InterruptedException e) {
             logger.error("Virus scan failed: " + e);
-            /* XXX assume infected? */
-            result = VirusScannerResult.INFECTED;
+            result = VirusScannerResult.ERROR;
+        }
+        if (result == null) {
+            logger.error("Virus scan failed: null"); 
+            result = VirusScannerResult.ERROR;
         }
 
         eventLogger.info(new VirusLogEvent(sess.id(), result));
