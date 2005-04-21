@@ -44,12 +44,25 @@ aptlog()
 
 instlist()
 {
-	cat $instlist
+    for t in $prefix/usr/share/metavize/toolbox/*.mar; do
+        echo "$(basename $t .mar) 10.0"
+    done
 }
 
 pkglist()
 {
-	cat $pkglist
+    for t in $prefix/usr/share/metavize/toolbox/*.mar; do
+        p="$(basename $t .mar)"
+        echo "Package: $p"
+        echo "Version: 10.0"
+        echo "Architecture: any"
+        echo "Depends: mvvm"
+        echo "Price: 1000"
+        echo "Display-Name: $p"
+        echo "Description: Fake description"
+        echo " Fake Long Descrption"
+        echo
+    done
 }
 
 
