@@ -174,7 +174,7 @@ String helpClickHere = "Click <a href=\"help.html\">here</a> for more informatio
 		<% if(isSecure){  %>
 			via https (secure)
 		<%} else {%>
-			via http (insecure)
+			via http (standard)
 		<% } %>
               </div>
               <% } %>

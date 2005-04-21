@@ -50,7 +50,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
 	if( Util.isSecureViaHttps() )
 	    protocolJTextField.setText( "https (secure)");
 	else
-	    protocolJTextField.setText( "http (insecure)");
+	    protocolJTextField.setText( "http (standard)");
 
 	MLoginJFrame.this.setVisible(true);
         resetLogin("Please enter your login and password.");
@@ -582,7 +582,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
                                     if( Util.isSecureViaHttps() )
                                         securedString = " [connected via secure https]";
                                     else
-                                        securedString = " [connected via insecure http]";
+                                        securedString = " [connected via standard http]";
                                     
 				    mMainJFrame.setTitle( "Metavize EdgeGuard v1.3 (logged in as: " + loginJTextField.getText() + "@" + Util.getServerCodeBase().getHost() + ")" + securedString );
 				    if(Util.getIsDemo())
