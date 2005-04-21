@@ -21,8 +21,12 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
 
   <import file="../buildtools/buildmagic.xml"/>
 
+  <property name="casings"
+        value="http,ftp"/>
+  <property name="bases"
+        value="virus"/>
   <property name="transforms"
-        value="nat,firewall,http,ftp,virus,airgap,reporting,protofilter,test,sophos,fprot,hauri,clam,spyware,httpblocker,email"/>
+        value="nat,firewall,airgap,reporting,protofilter,test,sophos,fprot,hauri,clam,spyware,httpblocker,email"/>
 
 
   <!--              -->
@@ -30,18 +34,46 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <!--              -->
 
   <target name="pkg.gensrc">
+    <var name="tran.type" value="casing"/>
+    <foreach target="xdoclet.tran" param="tran.name" inheritall="true"
+             parallel="false" list="${casings}"/>
+    <var name="tran.type" value="base"/>
+    <foreach target="xdoclet.tran" param="tran.name" inheritall="true"
+             parallel="false" list="${bases}"/>
+    <var name="tran.type" value="transform"/>
     <foreach target="xdoclet.tran" param="tran.name" inheritall="true"
              parallel="false" list="${transforms}"/>
   </target>
   <target name="pkg.compile">
+    <var name="tran.type" value="casing"/>
+    <foreach target="compile.tran" param="tran.name" inheritall="true"
+             parallel="false" list="${casings}"/>
+    <var name="tran.type" value="base"/>
+    <foreach target="compile.tran" param="tran.name" inheritall="true"
+             parallel="false" list="${bases}"/>
+    <var name="tran.type" value="transform"/>
     <foreach target="compile.tran" param="tran.name" inheritall="true"
              parallel="false" list="${transforms}"/>
   </target>
   <target name="pkg.jar">
+    <var name="tran.type" value="casing"/>
+    <foreach target="mar.tran" param="tran.name" inheritall="true"
+             parallel="false" list="${casings}"/>
+    <var name="tran.type" value="base"/>
+    <foreach target="mar.tran" param="tran.name" inheritall="true"
+             parallel="false" list="${bases}"/>
+    <var name="tran.type" value="transform"/>
     <foreach target="mar.tran" param="tran.name" inheritall="true"
              parallel="false" list="${transforms}"/>
   </target>
   <target name="pkg.install">
+    <var name="tran.type" value="casing"/>
+    <foreach target="install.tran" param="tran.name" inheritall="true"
+             parallel="false" list="${casings}"/>
+    <var name="tran.type" value="base"/>
+    <foreach target="install.tran" param="tran.name" inheritall="true"
+             parallel="false" list="${bases}"/>
+    <var name="tran.type" value="transform"/>
     <foreach target="install.tran" param="tran.name" inheritall="true"
              parallel="false" list="${transforms}"/>
   </target>
@@ -92,7 +124,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       <or>
         <equals arg1="${tran.name}" arg2="ftp"/>
       </or>
-    <then/>
+    <then/> <!-- XXX ftp doesnt work -->
     <else>
 
     <exec executable="${buildtool.base}/dependset.sh">
@@ -106,29 +138,18 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       <patternset includesfile="${build.depcache}/${tran.name}.patternset"/>
     </depend>
 
-    <if> <equals arg1="${tran.name}" arg2="virus"/> <then>
-        <property name="extra.classes" value="../tran/output/jar/http-casing.mar"/>
+    <!-- bases need casings -->
+    <if> <equals arg1="${tran.type}" arg2="base"/> <then>
+        <var name="extra.classes" value="../tran/output/jar/http-casing.mar"/>
     </then> </if>
-    <if> <equals arg1="${tran.name}" arg2="sophos"/> <then>
-        <property name="extra.classes" value="../tran/output/jar/virus-transform.mar:../tran/output/jar/http-casing.mar"/>
+    <!-- transforms need casings and bases -->
+    <if> <equals arg1="${tran.type}" arg2="transform"/> <then>
+        <var name="extra.classes" value="../tran/output/jar/virus-base.mar:../tran/output/jar/http-casing.mar"/>
     </then> </if>
-    <if> <equals arg1="${tran.name}" arg2="fprot"/> <then>
-        <property name="extra.classes" value="../tran/output/jar/virus-transform.mar:../tran/output/jar/http-casing.mar"/>
-    </then> </if>
-    <if> <equals arg1="${tran.name}" arg2="hauri"/> <then>
-        <property name="extra.classes" value="../tran/output/jar/virus-transform.mar:../tran/output/jar/http-casing.mar"/>
-    </then> </if>
-    <if> <equals arg1="${tran.name}" arg2="clam"/> <then>
-        <property name="extra.classes" value="../tran/output/jar/virus-transform.mar:../tran/output/jar/http-casing.mar"/>
-    </then> </if>
+  
+    <!-- FIXME email special case -->
     <if> <equals arg1="${tran.name}" arg2="email"/> <then>
-        <property name="extra.classes" value="../tran/output/jar/sophos-transform.mar:../tran/output/jar/fprot-transform.mar:../tran/output/jar/hauri-transform.mar:../tran/output/jar/clam-transform.mar"/>
-    </then> </if>
-    <if> <equals arg1="${tran.name}" arg2="spyware"/> <then>
-        <property name="extra.classes" value="../tran/output/jar/http-casing.mar"/>
-    </then> </if>
-    <if> <equals arg1="${tran.name}" arg2="httpblocker"/> <then>
-        <property name="extra.classes" value="../tran/output/jar/http-casing.mar"/>
+        <var name="extra.classes" value="../tran/output/jar/sophos-transform.mar:../tran/output/jar/fprot-transform.mar:../tran/output/jar/hauri-transform.mar:../tran/output/jar/clam-transform.mar"/>
     </then> </if>
 
     <javac destdir="${build.root}/${tran.name}"
@@ -155,7 +176,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       <include name="com/metavize/tran/${tran.name}/**"/>
     </javac>
 
-    </else>
+    </else> <!-- XXX ftp doesnt work -->
     </if>
 
   </target>
@@ -168,32 +189,14 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
 
     <mkdir dir="${build.root}/${tran.name}/META-INF"/>
 
-    <if>
-      <or>
-        <equals arg1="${tran.name}" arg2="http"/>
-        <equals arg1="${tran.name}" arg2="ftp"/>
-      </or>
-    <then>
-      <jar destfile="${build.jar}/${tran.name}-casing.mar" index="yes">
-        <fileset dir="${build.root}/${tran.name}"/>
-        <fileset dir="${build.gensrc}/${tran.name}"/>
-        <fileset dir="${tran.name}/${src.main}/">
-          <include name="**/*png"/>
-        </fileset>
-        <fileset dir="${tran.name}/${src.resources}/${tran.name}"/>
-      </jar>
-    </then>
-    <else>
-      <jar destfile="${build.jar}/${tran.name}-transform.mar" index="yes">
-        <fileset dir="${build.root}/${tran.name}"/>
-        <fileset dir="${build.gensrc}/${tran.name}"/>
-        <fileset dir="${tran.name}/${src.main}/">
-          <include name="**/*png"/>
-        </fileset>
-        <fileset dir="${tran.name}/${src.resources}/${tran.name}"/>
-      </jar>
-    </else>
-    </if>
+    <jar destfile="${build.jar}/${tran.name}-${tran.type}.mar" index="yes">
+      <fileset dir="${build.root}/${tran.name}"/>
+      <fileset dir="${build.gensrc}/${tran.name}"/>
+      <fileset dir="${tran.name}/${src.main}/">
+        <include name="**/*png"/>
+      </fileset>
+      <fileset dir="${tran.name}/${src.resources}/${tran.name}"/>
+    </jar>
 
     <antcall target="jar.${tran.name}" inheritAll="true"/>
 
@@ -205,24 +208,10 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
 
   <target name="install.tran" depends="mar.tran">
 
-    <if>
-      <or>
-        <equals arg1="${tran.name}" arg2="http"/>
-        <equals arg1="${tran.name}" arg2="ftp"/>
-      </or>
-    <then>
-      <copy file="${build.jar}/${tran.name}-casing.mar"
-        todir="${dist.mvvm.toolbox}"/>
-      <copy file="${build.jar}/${tran.name}-casing.mar"
-        todir="${dist.mvvm.webstart}"/>
-    </then>
-    <else>
-      <copy file="${build.jar}/${tran.name}-transform.mar"
-        todir="${dist.mvvm.toolbox}"/>
-      <copy file="${build.jar}/${tran.name}-transform.mar"
-        todir="${dist.mvvm.webstart}"/>
-    </else>
-    </if>
+    <copy file="${build.jar}/${tran.name}-${tran.type}.mar"
+      todir="${dist.mvvm.toolbox}"/>
+    <copy file="${build.jar}/${tran.name}-${tran.type}.mar"
+      todir="${dist.mvvm.webstart}"/>
 
     <copy todir="${build.dist}" failonerror="false">
       <fileset dir="${tran.name}/hier"/>
@@ -230,22 +219,9 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
 
     <antcall target="install.${tran.name}" inheritAll="true"/>
 
-    <if>
-      <or>
-        <equals arg1="${tran.name}" arg2="http"/>
-        <equals arg1="${tran.name}" arg2="ftp"/>
-      </or>
-    <then>
-    <signjar jar="${dist.mvvm.webstart}/${tran.name}-casing.mar"
+    <signjar jar="${dist.mvvm.webstart}/${tran.name}-${tran.type}.mar"
           keystore="../gui/keystore" alias="software key"
           storepass="WbDP5uz\N" />
-    </then>
-    <else>
-    <signjar jar="${dist.mvvm.webstart}/${tran.name}-transform.mar"
-          keystore="../gui/keystore" alias="software key"
-          storepass="WbDP5uz\N" />
-    </else>
-    </if>
 
   </target>
 
@@ -263,25 +239,25 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
 
   <target name="install.sophos">
     <copy todir="${dist.mvvm.schema}/sophos-transform">
-      <fileset dir="virus/hier/${suffix.mvvm.schema}/virus-transform"/>
+      <fileset dir="virus/hier/${suffix.mvvm.schema}/virus-base"/>
     </copy>
   </target>
 
   <target name="install.fprot">
     <copy todir="${dist.mvvm.schema}/fprot-transform">
-      <fileset dir="virus/hier/${suffix.mvvm.schema}/virus-transform"/>
+      <fileset dir="virus/hier/${suffix.mvvm.schema}/virus-base"/>
     </copy>
   </target>
 
   <target name="install.hauri">
     <copy todir="${dist.mvvm.schema}/hauri-transform">
-      <fileset dir="virus/hier/${suffix.mvvm.schema}/virus-transform"/>
+      <fileset dir="virus/hier/${suffix.mvvm.schema}/virus-base"/>
     </copy>
   </target>
 
   <target name="install.clam">
     <copy todir="${dist.mvvm.schema}/clam-transform">
-      <fileset dir="virus/hier/${suffix.mvvm.schema}/virus-transform"/>
+      <fileset dir="virus/hier/${suffix.mvvm.schema}/virus-base"/>
     </copy>
   </target>
 
@@ -308,7 +284,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <target name="jar.airgap"/>
   <target name="jar.reporting"/>
   <target name="jar.email"> <!-- include Sophos, Fprot, Clam, and Hauri Scanners -->
-    <jar destfile="${build.jar}/${tran.name}-transform.mar" index="yes"
+    <jar destfile="${build.jar}/${tran.name}-${tran.type}.mar" index="yes"
          update="true">
       <fileset dir="${build.root}/sophos"/>
       <fileset dir="sophos/${src.main}">
@@ -330,28 +306,28 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
     </jar>
   </target>
   <target name="jar.sophos"> <!-- include Virus Abstract transform -->
-    <jar destfile="${build.jar}/${tran.name}-transform.mar" index="yes"
+    <jar destfile="${build.jar}/${tran.name}-${tran.type}.mar" index="yes"
          update="true">
       <fileset dir="${build.root}/virus"/>
       <fileset dir="${build.gensrc}/virus"/>
     </jar>
   </target>
   <target name="jar.fprot"> <!-- include Virus Abstract transform -->
-    <jar destfile="${build.jar}/${tran.name}-transform.mar" index="yes"
+    <jar destfile="${build.jar}/${tran.name}-${tran.type}.mar" index="yes"
          update="true">
       <fileset dir="${build.root}/virus"/>
       <fileset dir="${build.gensrc}/virus"/>
     </jar>
   </target>
   <target name="jar.hauri"> <!-- include Virus Abstract transform -->
-    <jar destfile="${build.jar}/${tran.name}-transform.mar" index="yes"
+    <jar destfile="${build.jar}/${tran.name}-${tran.type}.mar" index="yes"
          update="true">
       <fileset dir="${build.root}/virus"/>
       <fileset dir="${build.gensrc}/virus"/>
     </jar>
   </target>
   <target name="jar.clam"> <!-- include Virus Abstract transform -->
-    <jar destfile="${build.jar}/${tran.name}-transform.mar" index="yes"
+    <jar destfile="${build.jar}/${tran.name}-${tran.type}.mar" index="yes"
          update="true">
       <fileset dir="${build.root}/virus"/>
       <fileset dir="${build.gensrc}/virus"/>
