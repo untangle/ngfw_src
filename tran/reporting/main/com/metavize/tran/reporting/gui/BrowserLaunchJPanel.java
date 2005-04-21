@@ -35,6 +35,8 @@ public class BrowserLaunchJPanel extends JPanel implements ActionListener {
 	    URL newURL = new URL( Util.getServerCodeBase(), "../reports");
 	    launchJLabel = new JLabel();
 	    launchJLabel.setFont(new java.awt.Font("Arial", 0, 11));
+	    launchJLabel.setHorizontalAlignment(SwingConstants.CENTER);
+	    launchJLabel.setHorizontalTextPosition(SwingConstants.CENTER);
 	    launchJLabel.setText("<html><center><br>To view reports from another browser, go to:<br>" + newURL.toString() + "</center></html>");
 	    this.add(launchJLabel, launchJLabelConstraints);
 	}
