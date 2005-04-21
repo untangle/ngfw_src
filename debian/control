@@ -125,10 +125,10 @@ Package: nat-transform
 Architecture: any
 Depends: mvvm
 XB-Price: 1000
-XB-Display-Name: Firewall / Internet Sharing
+XB-Display-Name: Network Sharing
 XB-Rack-Position: 9
-Description: The Metavize Firewall / Internet Sharing Software Appliance
- The Firewall / Internet Sharing Software Appliance allows a single public IP address to be
+Description: The Metavize Network Sharing Software Appliance
+ The Network Sharing Software Appliance allows a single public IP address to be
  shared by an entire network of computers.  Specifically, NAT, DHCP, and Redirect functionalities
  are provided.
 
@@ -136,10 +136,10 @@ Package: firewall-transform
 Architecture: any
 Depends: mvvm
 XB-Price: 1000
-XB-Display-Name: Firewall / IP Blocker
+XB-Display-Name: Firewall
 XB-Rack-Position: 10
-Description: The Metavize Firewall / IP Blocker Software Appliance
- The Firewall / IP Blocker Software Appliance allows network traffic to be blocked based on IP level
+Description: The Metavize Firewall Software Appliance
+ The Firewall Software Appliance allows network traffic to be blocked based on IP level
  information.  Blocking criteria includes direction, source, destination, protocol (TCP or UDP), port, etc.
 
 Package: reporting-transform
