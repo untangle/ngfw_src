@@ -57,7 +57,7 @@ public class MMainJFrame extends javax.swing.JFrame {
 	// OVERRIDE SCREENSIZE TO DEAL WITH LAUNCH BAR
 	java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
         setBounds((screenSize.width-1024)/2, (screenSize.height-768)/2, 1024, 768);
-
+	// System.err.println("Setting screen size to: " + screenSize);
 
 
         // QUERY AND LOAD BUTTONS INTO TOOLBOX
@@ -100,9 +100,8 @@ public class MMainJFrame extends javax.swing.JFrame {
 	Util.getStatusJProgressBar().setValue(96);
 
         // UPDATE/UPGRADE
-        (new UpdateCheckThread()).start();
+        new UpdateCheckThread();
     }
-
 
     public void updateJButton(final int count){
 	Runnable updateButtonInSwing = new Runnable(){
@@ -575,11 +574,10 @@ public class MMainJFrame extends javax.swing.JFrame {
     private void upgradeJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_upgradeJButtonActionPerformed
 	try{
 	    MackageDesc[] mackageDesc = null;
-	    UpgradeJDialog upgradeJDialog =  new UpgradeJDialog(MMainJFrame.this, Util.getToolboxManager());
+	    UpgradeJDialog upgradeJDialog =  new UpgradeJDialog(MMainJFrame.this);
 	    upgradeJDialog.setBounds( Util.generateCenteredBounds( MMainJFrame.this.getBounds(), 
 								   upgradeJDialog.getWidth(), 
 								   upgradeJDialog.getHeight()) );
-	    upgradeJDialog.update();
 	    upgradeJDialog.setVisible(true);
 	    mackageDesc = Util.getToolboxManager().upgradable();
 	    
@@ -746,17 +744,28 @@ public class MMainJFrame extends javax.swing.JFrame {
 
 
     private class UpdateCheckThread extends Thread {
-        public void UpdateCheckThread(){
+        public UpdateCheckThread(){
             this.setDaemon(true);
 	    this.setContextClassLoader(Util.getClassLoader());
+            start();
         }
         public void run() {
 	    MackageDesc[] mackageDescs;
+            
+            updateJButton(-2);
+            
+            try{
+                Util.getToolboxManager().update();
+            }
+            catch(Exception e){
+                Util.handleExceptionNoRestart("Error updating upgrades on server", e);
+            }
+            
 	    while(true){
 		try{
                     if(Util.getKillThreads())
                         return;
-                    updateJButton(-2);
+                    
 		    mackageDescs = Util.getToolboxManager().upgradable();
                     if( Util.isArrayEmpty(mackageDescs) )
                         updateJButton(0);
