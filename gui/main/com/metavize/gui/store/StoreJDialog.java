@@ -41,19 +41,33 @@ public class StoreJDialog extends ConfigJDialog {
         this.contentJTabbedPane.setTitleAt(0, "Procure a Software Appliance");
         this.contentJPanel.add(storeJPanel);
         this.setTitle("Procure a Software Appliance");
-
+        setResizable(false);
+        
         storeJPanel.mTransformJPanel.add(mTransformJButton, gridBagConstraints);
         storeJPanel.descriptionJTextArea.setText(mTransformJButton.getFullDescription());
             
         this.reloadJButton.setText("<html><b>Cancel</b></html>");
-        this.saveJButton.setText("<html><b>Purchase</b></html>");
+        this.saveJButton.setText("<html><b>Procure</b></html>");
         
         MIN_SIZE = new Dimension(640, 480);
         MAX_SIZE = new Dimension(640, 480);
 
     }
     
-
+    public void setVisible(boolean isVisible){
+        if(isVisible){
+            StoreCheckJDialog storeCheckJDialog = new StoreCheckJDialog( Util.getMMainJFrame(), true);
+            storeCheckJDialog.setBounds( Util.generateCenteredBounds(Util.getMMainJFrame().getBounds(), storeCheckJDialog.getWidth(), storeCheckJDialog.getHeight()) );
+            storeCheckJDialog.setVisible(true);
+            if( !storeCheckJDialog.upgradesAvailable() )
+                super.setVisible(true);
+            storeCheckJDialog.dispose();
+        }
+        else{
+            super.setVisible(false);
+        }
+    }
+    
     protected void doSaveJButtonActionPerformed(java.awt.event.ActionEvent evt) {
         save();
     }
