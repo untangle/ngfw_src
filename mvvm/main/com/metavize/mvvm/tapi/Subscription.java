@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: Subscription.java,v 1.1 2005/01/30 09:20:31 amread Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.tapi;
@@ -31,13 +31,13 @@ public class Subscription
 {
     private static final Logger logger = Logger.getLogger(Subscription.class);
 
-    private Protocol protocol;
-    private Interface clientInterface = Interface.ANY;
-    private Interface serverInterface = Interface.ANY;
-    private IPMaddr serverAddress = IPMaddr.anyAddr;
-    private IPMaddr clientAddress = IPMaddr.anyAddr;
-    private PortRange serverRange = PortRange.ANY;
-    private PortRange clientRange = PortRange.ANY;
+    private final Protocol protocol;
+    private final Interface clientInterface;
+    private final Interface serverInterface;
+    private final IPMaddr serverAddress;
+    private final IPMaddr clientAddress;
+    private final PortRange serverRange;
+    private final PortRange clientRange;
 
     // constructors -----------------------------------------------------------
 
@@ -58,6 +58,13 @@ public class Subscription
     public Subscription(Protocol protocol)
     {
         this.protocol = protocol;
+
+        this.clientInterface = Interface.ANY;
+        this.serverInterface = Interface.ANY;
+        this.serverAddress = IPMaddr.anyAddr;
+        this.clientAddress = IPMaddr.anyAddr;
+        this.serverRange = PortRange.ANY;
+        this.clientRange = PortRange.ANY;
     }
 
     public Subscription(Protocol protocol, Interface clientInterface,
@@ -66,6 +73,11 @@ public class Subscription
         this.protocol = protocol;
         this.clientInterface = clientInterface;
         this.serverInterface = serverInterface;
+
+        this.serverAddress = IPMaddr.anyAddr;
+        this.clientAddress = IPMaddr.anyAddr;
+        this.serverRange = PortRange.ANY;
+        this.clientRange = PortRange.ANY;
     }
 
     // business methods -------------------------------------------------------
@@ -115,11 +127,6 @@ public class Subscription
         return protocol;
     }
 
-    public void setProtocol(Protocol protocol)
-    {
-        this.protocol = protocol;
-    }
-
     /**
      * Interface of client.
      *
@@ -128,11 +135,6 @@ public class Subscription
     public Interface getClientInterface()
     {
         return clientInterface;
-    }
-
-    public void setClientInterface(Interface clientInterface)
-    {
-        this.clientInterface = clientInterface;
     }
 
     /**
@@ -145,11 +147,6 @@ public class Subscription
         return serverInterface;
     }
 
-    public void setServerInterface(Interface serverInterface)
-    {
-        this.serverInterface = serverInterface;
-    }
-
     /**
      * Server address.
      *
@@ -158,11 +155,6 @@ public class Subscription
     public IPMaddr getServerAddress()
     {
         return serverAddress;
-    }
-
-    public void setServerAddress(IPMaddr serverAddress)
-    {
-        this.serverAddress = serverAddress;
     }
 
     /**
@@ -175,11 +167,6 @@ public class Subscription
         return clientAddress;
     }
 
-    public void setClientAddress(IPMaddr clientAddress)
-    {
-        this.clientAddress = clientAddress;
-    }
-
     /**
      * Server range.
      *
@@ -188,11 +175,6 @@ public class Subscription
     public PortRange getServerRange()
     {
         return serverRange;
-    }
-
-    public void setServerRange(PortRange serverRange)
-    {
-        this.serverRange = serverRange;
     }
 
     /**
@@ -205,8 +187,31 @@ public class Subscription
         return clientRange;
     }
 
-    public void setClientRange(PortRange clientRange)
+    // objects ----------------------------------------------------------------
+
+    public boolean equals(Object o)
     {
-        this.clientRange = clientRange;
+        Subscription s = (Subscription)o;
+        return s.protocol == protocol
+            && s.clientInterface == clientInterface
+            && s.serverInterface == serverInterface
+            && s.clientAddress.equals(clientAddress)
+            && s.serverAddress.equals(serverAddress)
+            && s.clientRange.equals(clientRange)
+            && s.serverRange.equals(serverRange);
+    }
+
+    public int hashCode()
+    {
+        int result = 17;
+        result = 37 * result + protocol.hashCode();
+        result = 37 * result + clientInterface.hashCode();
+        result = 37 * result + serverInterface.hashCode();
+        result = 37 * result + clientAddress.hashCode();
+        result = 37 * result + serverAddress.hashCode();
+        result = 37 * result + clientRange.hashCode();
+        result = 37 * result + serverRange.hashCode();
+
+        return result;
     }
 }

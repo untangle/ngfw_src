@@ -15,8 +15,8 @@ import java.util.Set;
 
 public class ParallelPipeSpec extends PipeSpec
 {
-    private int parallelSid;
-    private MPipe parallelMPipe;
+    private final int parallelSid;
+    private final MPipe parallelMPipe;
 
     // constructors -----------------------------------------------------------
 

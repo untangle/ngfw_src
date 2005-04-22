@@ -40,5 +40,8 @@ public interface PipelineFoundry
     void registerCasing(MPipe insideMPipe, MPipe outsideMPipe);
     void deregisterCasing(MPipe insideMPipe);
 
+    void registerPort(int sid, Fitting fitting);
+    void deregisterPort(int sid);
+
     Pipeline getPipeline(int sessionId);
 }

@@ -26,7 +26,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <property name="bases"
         value="virus"/>
   <property name="transforms"
-        value="nat,firewall,airgap,reporting,protofilter,test,sophos,fprot,hauri,clam,spyware,httpblocker,email"/>
+        value="ftp,nat,firewall,airgap,reporting,protofilter,test,sophos,fprot,hauri,clam,spyware,httpblocker,email"/>
 
 
   <!--              -->
@@ -146,7 +146,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
     <if> <equals arg1="${tran.type}" arg2="transform"/> <then>
         <var name="extra.classes" value="../tran/output/jar/virus-base.mar:../tran/output/jar/http-casing.mar"/>
     </then> </if>
-  
+
     <!-- FIXME email special case -->
     <if> <equals arg1="${tran.name}" arg2="email"/> <then>
         <var name="extra.classes" value="../tran/output/jar/sophos-transform.mar:../tran/output/jar/fprot-transform.mar:../tran/output/jar/hauri-transform.mar:../tran/output/jar/clam-transform.mar"/>

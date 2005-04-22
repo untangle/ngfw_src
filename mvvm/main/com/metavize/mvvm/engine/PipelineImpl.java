@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: PipelineImpl.java,v 1.5 2005/03/15 02:11:53 amread Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.engine;
@@ -21,8 +21,9 @@ class PipelineImpl implements Pipeline
 {
     private final PipelineInfo info;
 
-    private int id = 0;
     private final Map objects = new ConcurrentHashMap();
+
+    private int id = 0;
 
     // constructors -----------------------------------------------------------
 

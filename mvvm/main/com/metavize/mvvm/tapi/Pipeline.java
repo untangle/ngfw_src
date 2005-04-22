@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: Pipeline.java,v 1.2 2005/03/15 02:11:53 amread Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.tapi;

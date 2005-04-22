@@ -46,6 +46,8 @@ class PipelineFoundryImpl implements PipelineFoundry
     private final Map incomingMPipes = new ConcurrentHashMap();
     private final Map outgoingMPipes = new ConcurrentHashMap();
     private final Map casings = new ConcurrentHashMap();
+    private final Map<Integer, Fitting> portFittings
+        = new ConcurrentHashMap<Integer, Fitting>();
     private final Map pipelines = new ConcurrentHashMap();
 
     private PipelineFoundryImpl() { }
@@ -60,18 +62,25 @@ class PipelineFoundryImpl implements PipelineFoundry
     {
         // XXX hack, determine initial type by port number
         Fitting start;
-        switch (sessionDesc.serverPort()) {
-        case 21:
-            start = Fitting.FTP_STREAM;
-            break;
 
-        case 80:
-            start = Fitting.HTTP_STREAM;
-            break;
+        int serverPort = sessionDesc.serverPort();
 
-        default:
-            start = Fitting.OCTET_STREAM;
-            break;
+        start = portFittings.get(serverPort);
+
+        if (null == start) {
+            switch (sessionDesc.serverPort()) {
+            case 21:
+                start = Fitting.FTP_STREAM;
+                break;
+
+            case 80:
+                start = Fitting.HTTP_STREAM;
+                break;
+
+            default:
+                start = Fitting.OCTET_STREAM;
+                break;
+            }
         }
 
         Long t0 = System.currentTimeMillis();
@@ -119,7 +128,7 @@ class PipelineFoundryImpl implements PipelineFoundry
 
     public void registerCasing(MPipe insideMPipe, MPipe outsideMPipe)
     {
-        if (insideMPipe.getPipeSpec() != outsideMPipe.getPipeSpec()) {
+       if (insideMPipe.getPipeSpec() != outsideMPipe.getPipeSpec()) {
             throw new IllegalArgumentException("casing constraint violated");
         }
 
@@ -131,9 +140,20 @@ class PipelineFoundryImpl implements PipelineFoundry
         casings.remove(insideMPipe);
     }
 
+
     public Pipeline getPipeline(int sessionId)
     {
         return (Pipeline)pipelines.get(sessionId);
+    }
+
+    public void registerPort(int port, Fitting fitting)
+    {
+        portFittings.put(port, fitting);
+    }
+
+    public void deregisterPort(int port)
+    {
+        portFittings.remove(port);
     }
 
     // private methods --------------------------------------------------------

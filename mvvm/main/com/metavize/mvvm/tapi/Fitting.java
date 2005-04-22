@@ -24,12 +24,20 @@ public class Fitting
         = new Fitting("http-stream", OCTET_STREAM);
     public static final Fitting FTP_STREAM
         = new Fitting("ftp-stream", OCTET_STREAM);
+    public static final Fitting FTP_CTL_STREAM
+        = new Fitting("ftp-ctl-stream", FTP_STREAM);
+    public static final Fitting FTP_DATA_STREAM
+        = new Fitting("ftp-data-stream", FTP_STREAM);
 
     public static final Fitting TOKEN_STREAM = new Fitting("token-stream");
     public static final Fitting HTTP_TOKENS
         = new Fitting("http-tokens", TOKEN_STREAM);
     public static final Fitting FTP_TOKENS
         = new Fitting("ftp-tokens", TOKEN_STREAM);
+    public static final Fitting FTP_CTL_TOKENS
+        = new Fitting("ftp-ctl-tokens", FTP_TOKENS);
+    public static final Fitting FTP_DATA_TOKENS
+        = new Fitting("ftp-data-tokens", FTP_TOKENS);
 
     private String type;
     private Fitting parent;

@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: PortRange.java,v 1.4 2005/02/25 02:45:29 amread Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.tran;
@@ -25,8 +25,8 @@ public class PortRange implements Serializable
 
     public static final PortRange ANY = new PortRange(0, 65535);
 
-    private int low;
-    private int high;
+    private final int low;
+    private final int high;
 
     // Constructors -----------------------------------------------------------
 
