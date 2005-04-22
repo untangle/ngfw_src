@@ -36,7 +36,6 @@ MackageDesc[] mds = mc.toolboxManager().installed();
     <icon href="images/LogoNoText64x64.gif" width="64" height="64"/>
     <icon href="images/LogoNoText16x16.gif" width="16" height="16"/>
     <icon href="images/LogoNoText128x128.gif" width="128" height="128"/>
-    <offline-allowed/>
   </information>
   <security>
     <all-permissions/>
