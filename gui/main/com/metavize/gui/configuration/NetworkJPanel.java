@@ -67,8 +67,8 @@ public class NetworkJPanel extends javax.swing.JPanel {
 
         setLayout(new java.awt.GridBagLayout());
 
-        setMinimumSize(new java.awt.Dimension(600, 730));
-        setPreferredSize(new java.awt.Dimension(600, 730));
+        setMinimumSize(null);
+        setPreferredSize(null);
         dhcpJPanel.setLayout(new java.awt.GridBagLayout());
 
         dhcpJPanel.setBorder(new javax.swing.border.TitledBorder(null, "IP Address Settings", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 0, 16)));
