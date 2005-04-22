@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: MvvmLoginImpl.java,v 1.8 2005/02/07 21:25:27 jdi Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.engine;
@@ -15,6 +15,7 @@ import javax.security.auth.login.FailedLoginException;
 
 import com.metavize.mvvm.MvvmContext;
 import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.security.LoginFailureReason;
 import com.metavize.mvvm.security.LoginSession;
 import com.metavize.mvvm.security.MvvmLogin;
 import com.metavize.mvvm.security.MvvmLoginException;
@@ -29,9 +30,13 @@ import org.apache.log4j.Logger;
 
 class MvvmLoginImpl implements MvvmLogin
 {
+    private static final long LOGIN_FAIL_SLEEP_TIME = 5000;
+
     private static final Object LOCK = new Object();
     private static final Logger logger = Logger
         .getLogger(MvvmLoginImpl.class.getName());
+
+    private Logger eventLogger;
 
     private static int loginId = 0; /* have LOCK */
 
@@ -41,6 +46,7 @@ class MvvmLoginImpl implements MvvmLogin
     {
         super();
         this.isLocal = isLocal;
+        this.eventLogger = MvvmContextFactory.context().eventLogger();
     }
 
     public MvvmContext login(String login, String password)
@@ -55,14 +61,17 @@ class MvvmLoginImpl implements MvvmLogin
             if (login.equals(localUser) &&
                 password.equals(localPasswd)) {
                 logger.debug("Local login succeeded");
+                eventLogger.info(new LoginEvent(localUser, true, true));
                 success = true;
             } else {
+                eventLogger.info(new LoginEvent(localUser, true, false));
                 logger.debug("Failed local, trying normal");
             }
         }
 
         if (!success) {
             Session s = MvvmContextFactory.context().openSession();
+            FailedLoginException x = null;
             try {
                 Transaction tx = s.beginTransaction();
 
@@ -75,16 +84,28 @@ class MvvmLoginImpl implements MvvmLogin
                     logger.debug("Attempting login of user: " + u.getLogin());
                     if (PasswordUtil.check(password, u.getPassword())) {
                         logger.debug("Password check succeeded");
+                        // Just use login, not id, so it can be congruent with "localadmin" from above.
+                        eventLogger.info(new LoginEvent(login, false, true));
                         success = true;
                     } else {
                         logger.debug("Password check failed");
-                        throw new FailedLoginException("Incorrect password");
+                        eventLogger.info(new LoginEvent(login, false, false, LoginFailureReason.BAD_PASSWORD));
+                        Thread.sleep(LOGIN_FAIL_SLEEP_TIME);
+                        x = new FailedLoginException("Incorrect password");
                     }
+                } else {
+                    logger.debug("No user found with login: " + login);
+                    eventLogger.info(new LoginEvent(login, false, false, LoginFailureReason.UNKNOWN_USER));
+                    Thread.sleep(LOGIN_FAIL_SLEEP_TIME);
+                    x = new FailedLoginException("No such user: " + login);
                 }
 
                 tx.commit();
             } catch (HibernateException exn) {
                 logger.warn("could not get User: " + login, exn);
+            } catch (InterruptedException exn) {
+                // Can't really happen.
+                logger.warn("interrupted in mvvmlogin backend");
             } finally {
                 try {
                     s.close();
@@ -94,8 +115,7 @@ class MvvmLoginImpl implements MvvmLogin
             }
 
             if (!success) {
-                logger.debug("No user found with login: " + login);
-                throw new FailedLoginException("No such user: " + login);
+                throw x;
             }
         }
 
