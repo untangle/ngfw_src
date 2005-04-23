@@ -335,6 +335,10 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
             if (cout != null)
                 cout.disable();
         }
+
+        if (logger.isDebugEnabled()) {
+            debug("entering streaming mode c: " + streamer[CLIENT] + ", s: " + streamer[SERVER]);
+        }
     }
 
     /**
@@ -460,6 +464,10 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
         String sideName = side == CLIENT ? "client" : "server";
         try {
             assert in != null;
+            if (!in.isEnabled()) {
+                warn("ignoring readEvent called for disabled side " + side);
+                return; 
+            }
             IncomingSocketQueue ourin, otherin;
             OutgoingSocketQueue ourout, otherout;
             OutgoingSocketQueue cout = ((com.metavize.mvvm.argon.Session)pSession).clientOutgoingSocketQueue();
