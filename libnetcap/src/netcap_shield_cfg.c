@@ -55,6 +55,7 @@ static int _parseLru             ( nc_shield_cfg_t* cfg, xmlDoc* doc, xmlNode* l
 static int _parseFences          ( nc_shield_cfg_t* cfg, xmlDoc* doc, xmlNode* fencesNode );
 static int _parseFence           ( nc_shield_fence_t* fence, xmlDoc* doc, xmlNode* fenceNode );
 static int _parseFencePost       ( nc_shield_post_t* fence, xmlDoc* doc, xmlNode* fenceNode );
+static int _parsePrint           ( nc_shield_cfg_t* cfg, xmlDoc* doc, xmlNode* printNode );
 
 /* This verifies that the double is positive */
 static int _parseAttributeDouble  ( double* val, xmlDoc* doc, xmlNode* node, char* name );
@@ -145,7 +146,8 @@ int nc_shield_cfg_def  ( nc_shield_cfg_t* cfg )
                 .limited { .prob 0.90, .post _SHIELD_REP_MAX * 0.05 },
                 .closed  { .prob 0.95, .post _SHIELD_REP_MAX * 0.20 }
             }
-        }
+        },
+        .print_rate   0.25
     };
     
     if ( cfg == NULL ) return errlogargs();
@@ -164,7 +166,7 @@ int nc_shield_cfg_load ( nc_shield_cfg_t* cfg, char* buf, int buf_len )
     char xmlstrbuf[buf_len+1];
     nc_shield_cfg_t new_cfg;
 
-    if ( cfg == NULL || buf == NULL || buf_len < 0 ) return errlogargs();    
+    if ( cfg == NULL || buf == NULL || buf_len < 0 ) return errlogargs();
 
     memcpy( &new_cfg, cfg, sizeof ( nc_shield_cfg_t ));
     memcpy( xmlstrbuf, buf, buf_len );
@@ -201,9 +203,6 @@ int nc_shield_cfg_load ( nc_shield_cfg_t* cfg, char* buf, int buf_len )
         errlog ( ERR_WARNING, "Shield: Unable to load configuration\n" );
     }
 
-    /* Hard coded at 0.5 printout per seconds for now */
-    cfg->print_rate = 0.5;
-
     return ret;
 }
 
@@ -235,10 +234,11 @@ int nc_shield_cfg_get ( nc_shield_cfg_t* cfg, char* buf, int buf_len )
     count = snprintf ( buf, buf_len, 
                        "<mult request-load='%lg' session-load='%lg' tcp-chk-load='%lg' udp-chk-load='%lg' "
                        "evil-load='%lg' active-sess='%lg'/>\n<lru  low-water='%d' high-water='%d'/>\n"
+                       "<print rate='%lg'/>\n"
                        "</shield-cfg>\n",
                        cfg->mult.request_load, cfg->mult.session_load, cfg->mult.tcp_chk_load, 
                        cfg->mult.udp_chk_load, cfg->mult.evil_load, cfg->mult.active_sess,
-                       cfg->lru.low_water, cfg->lru.high_water );
+                       cfg->lru.low_water, cfg->lru.high_water, cfg->print_rate );
 
     if ( count < 0 ) return perrlog ( "snprintf" );
 
@@ -315,6 +315,8 @@ static int _parseCfg             ( nc_shield_cfg_t* cfg, xmlDoc* doc, xmlNode* x
             if ( _parseLru ( cfg, doc, cur ) < 0 ) return -1;
         } else if (( !xmlStrcmp ( cur->name, (xmlChar*)"fence" ))) {
             if ( _parseFences ( cfg, doc, cur ) < 0 ) return -1;
+        } else if (( !xmlStrcmp ( cur->name, (xmlChar*)"print" ))) {
+            if ( _parsePrint ( cfg, doc, cur ) < 0 ) return -1;
         } else if (( !xmlStrcmp ( cur->name, (xmlChar*)"udp-multiplier" ))) {
             errlog ( ERR_WARNING, "Shield: UDP multiplier is no longer supported\n" );
         } else {
@@ -406,6 +408,14 @@ static int _parseFencePost       ( nc_shield_post_t* post, xmlDoc* doc, xmlNode*
    
     return 0;
 }
+
+static int _parsePrint           ( nc_shield_cfg_t* cfg, xmlDoc* doc, xmlNode* printNode )
+{
+    if ( _parseAttributeDouble ( &cfg->print_rate, doc, printNode, "rate" ) < 0 ) return -1;
+
+    return 0;
+}
+
 
 static int _parseAttributeDouble ( double* val, xmlDoc* doc, xmlNode* node, char* name )
 {
