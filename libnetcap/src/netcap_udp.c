@@ -154,6 +154,7 @@ int  netcap_udp_call_hooks (netcap_pkt_t* pkt, void* arg)
     netcap_session_t* session;
     mailbox_t* mb = NULL;
     char address[20];
+    netcap_shield_response_t* ans;
 
     SESSTABLE_WRLOCK();
 
@@ -170,24 +171,28 @@ int  netcap_udp_call_hooks (netcap_pkt_t* pkt, void* arg)
             errlog ( ERR_CRITICAL, "netcap_shield_rep_add_session\n" );
         }
         
-        switch ( netcap_shield_rep_check ( pkt->src.host.s_addr )  ) {
-        case NC_SHIELD_DROP:
-        case NC_SHIELD_RESET:
-            netcap_pkt_raze ( pkt );
-            SESSTABLE_UNLOCK();
-            strncpy ( address, unet_inet_ntoa ( pkt->src.host.s_addr ), sizeof ( address ) );
-            /* XXX Change the debug level */
-            errlog ( ERR_WARNING, "UDP: Shield rejected session: %s:%d -> %s:%d\n", 
-                     address, pkt->src.port, unet_inet_ntoa ( pkt->dst.host.s_addr ), pkt->dst.port );
-            return 0;
-        case NC_SHIELD_YES:
-        case NC_SHIELD_LIMITED:
-            break;
-
-        default:
+        if (( ans = netcap_shield_rep_check( pkt->src.host.s_addr )) == NULL ) {
             errlog ( ERR_CRITICAL, "netcap_shield_rep_check\n" );
+        } else {
+            switch ( ans->udp ) {
+            case NC_SHIELD_DROP:
+            case NC_SHIELD_RESET:
+                netcap_pkt_raze ( pkt );
+                SESSTABLE_UNLOCK();
+                strncpy ( address, unet_inet_ntoa ( pkt->src.host.s_addr ), sizeof ( address ) );
+                if ( ans->if_print ) {
+                    errlog ( ERR_WARNING, "UDP: Shield rejected session: %s:%d -> %s:%d\n", 
+                             address, pkt->src.port, unet_inet_ntoa ( pkt->dst.host.s_addr ), pkt->dst.port );
+                }
+                return 0;
+            case NC_SHIELD_YES:
+            case NC_SHIELD_LIMITED:
+                break;
+            default:
+                errlog ( ERR_CRITICAL, "netcap_shield_rep_check\n" );
+            }
         }
-
+            
         /* XXX Check if you should always end UDP sessions */
         if ( netcap_shield_rep_add_session ( pkt->src.host.s_addr ) < 0 ) {
             errlog ( ERR_CRITICAL, "netcap_shield_rep_add_session\n" );
@@ -269,24 +274,30 @@ int  netcap_udp_call_hooks (netcap_pkt_t* pkt, void* arg)
         /* Add this chunk against the client reputation */
         netcap_shield_rep_add_chunk ( session->cli.cli.host.s_addr, IPPROTO_UDP, pkt->data_len );
 
-        switch ( netcap_shield_rep_check( session->cli.cli.host.s_addr )) {
-        case NC_SHIELD_DROP:
-        case NC_SHIELD_RESET:
-        case NC_SHIELD_LIMITED:
-            netcap_pkt_raze ( pkt );
-            SESSTABLE_UNLOCK();
-            /* XXX Change the debug level */
-            strncpy ( address, unet_inet_ntoa ( session->cli.cli.host.s_addr ), sizeof ( address ) );
-            /* XXX Change the debug level */
-            errlog ( ERR_WARNING, "UDP: Shield rejected packet: %s:%d -> %s:%d\n", 
-                     address, session->cli.cli.port, unet_inet_ntoa ( session->cli.srv.host.s_addr ),
-                     session->cli.srv.port );
-            return 0;
-        case NC_SHIELD_YES:
-            break;
-
-        default:
-            errlog ( ERR_CRITICAL, "netcap_shield_rep_check\n" );
+        if (( ans = netcap_shield_rep_check( session->cli.cli.host.s_addr )) == NULL ) {
+            errlog( ERR_CRITICAL, "netcap_shield_rep_check\n" );
+        } else {
+            switch ( ans->udp ) {
+            case NC_SHIELD_DROP:
+            case NC_SHIELD_RESET:
+            case NC_SHIELD_LIMITED:
+                netcap_pkt_raze ( pkt );
+                SESSTABLE_UNLOCK();
+                /* XXX Change the debug level */
+                strncpy ( address, unet_inet_ntoa ( session->cli.cli.host.s_addr ), sizeof ( address ) );
+                /* XXX Change the debug level */
+                if ( ans->if_print ) {
+                    errlog ( ERR_WARNING, "UDP: Shield rejected packet: %s:%d -> %s:%d\n", 
+                             address, session->cli.cli.port, unet_inet_ntoa ( session->cli.srv.host.s_addr ),
+                             session->cli.srv.port );
+                }
+                return 0;
+            case NC_SHIELD_YES:
+                break;
+                
+            default:
+                errlog ( ERR_CRITICAL, "netcap_shield_rep_check\n" );
+            }
         }
         
         // Put the packet into the mailbox

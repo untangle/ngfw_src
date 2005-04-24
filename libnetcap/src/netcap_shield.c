@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: netcap_shield.c,v 1.1 2004/11/09 19:40:00 dmorris Exp $
+ * $Id$
  */
 
 #include <pthread.h>
@@ -45,6 +45,7 @@
 #define _LOAD_INTERVAL_SESS    (  5 * _LOAD_INTERVAL_SEC)
 #define _LOAD_INTERVAL_CHK     (  5 * _LOAD_INTERVAL_SEC)
 #define _LOAD_INTERVAL_BYTE    (  5 * _LOAD_INTERVAL_SEC)
+#define _LOAD_INTERVAL_PRINT   (  1 * _LOAD_INTERVAL_SEC )
 
 #define _SHIELD_FILL_TRASH_INTERVAL ( 5 * _LOAD_INTERVAL_SEC )
 
@@ -70,6 +71,7 @@ typedef struct reputation {
     netcap_load_t   udp_chk_load;  /* UDP chunk load */
     netcap_load_t   byte_load;     /* Byte load */
     netcap_load_t   ref_load;      /* Average references per second */
+    netcap_load_t   print_load;    /* Printing rate, limited to x per second */
     /* -RBS For now, just track on the number of chunks */
 } reputation_t;
     
@@ -98,6 +100,8 @@ static struct {
     .dbg_mutex PTHREAD_MUTEX_INITIALIZER,
 #endif
 };
+
+static __thread netcap_shield_response_t _shield_response;
 
 typedef struct _chk {
     u_short  size;               /* Size of the chunk in bytes */
@@ -152,14 +156,15 @@ int netcap_shield_init    ( void )
 
     flags = NC_TRIE_FREE | NC_TRIE_INHERIT | NC_TRIE_COPY | NC_TRIE_LRU;
     
-    netcap_load_init( &rep.evil_load,     _LOAD_INTERVAL_EVIL, NC_LOAD_INIT_TIME );
-    netcap_load_init( &rep.request_load,  _LOAD_INTERVAL_SESS, NC_LOAD_INIT_TIME );
-    netcap_load_init( &rep.session_load,  _LOAD_INTERVAL_SESS, NC_LOAD_INIT_TIME );
-    netcap_load_init( &rep.srv_conn_load, _LOAD_INTERVAL_SESS, NC_LOAD_INIT_TIME );
-    netcap_load_init( &rep.srv_fail_load, _LOAD_INTERVAL_SESS, NC_LOAD_INIT_TIME );
-    netcap_load_init( &rep.tcp_chk_load,  _LOAD_INTERVAL_CHK,  NC_LOAD_INIT_TIME );
-    netcap_load_init( &rep.udp_chk_load,  _LOAD_INTERVAL_CHK,  NC_LOAD_INIT_TIME );
-    netcap_load_init( &rep.byte_load,     _LOAD_INTERVAL_BYTE, NC_LOAD_INIT_TIME );
+    netcap_load_init( &rep.evil_load,     _LOAD_INTERVAL_EVIL,  NC_LOAD_INIT_TIME );
+    netcap_load_init( &rep.request_load,  _LOAD_INTERVAL_SESS,  NC_LOAD_INIT_TIME );
+    netcap_load_init( &rep.session_load,  _LOAD_INTERVAL_SESS,  NC_LOAD_INIT_TIME );
+    netcap_load_init( &rep.srv_conn_load, _LOAD_INTERVAL_SESS,  NC_LOAD_INIT_TIME );
+    netcap_load_init( &rep.srv_fail_load, _LOAD_INTERVAL_SESS,  NC_LOAD_INIT_TIME );
+    netcap_load_init( &rep.tcp_chk_load,  _LOAD_INTERVAL_CHK,   NC_LOAD_INIT_TIME );
+    netcap_load_init( &rep.udp_chk_load,  _LOAD_INTERVAL_CHK,   NC_LOAD_INIT_TIME );
+    netcap_load_init( &rep.byte_load,     _LOAD_INTERVAL_BYTE,  NC_LOAD_INIT_TIME );
+    netcap_load_init( &rep.print_load,    _LOAD_INTERVAL_PRINT, NC_LOAD_INIT_TIME );
 
     /* Initialize the number of active sessions */
     rep.active_sessions = 0;
@@ -203,7 +208,7 @@ int netcap_shield_cleanup ( void )
 }
 
 /* Indicate if an IP should allowed in */
-netcap_shield_ans_t  netcap_shield_rep_check        ( in_addr_t ip )
+netcap_shield_response_t* netcap_shield_rep_check        ( in_addr_t ip )
 { 
     netcap_trie_item_t* item;
     _apply_func_t func = { _reputation_update, NULL };
@@ -214,14 +219,19 @@ netcap_shield_ans_t  netcap_shield_rep_check        ( in_addr_t ip )
     nc_shield_fence_t* fence;
     
     /* If the shield is not enabled return true */
-    if ( !_shield.enabled ) return NC_SHIELD_YES;
+    if ( !_shield.enabled ) {
+        _shield_response.tcp  = NC_SHIELD_YES;
+        _shield_response.udp  = NC_SHIELD_YES;
+        _shield_response.icmp = NC_SHIELD_YES;
+        return &_shield_response;
+    }
 
     do {
         rep = _shield.root;
 
         /* Update the mode, and the current overall shield mode */
         if (( mode = _shield.mode = _mode_eval( )) < 0 ) {
-            return errlog ( ERR_CRITICAL, "_mode_eval\n" );
+            return errlog_null ( ERR_CRITICAL, "_mode_eval\n" );
         }
         
         /* If things are really bad, do not let anything in */
@@ -229,15 +239,15 @@ netcap_shield_ans_t  netcap_shield_rep_check        ( in_addr_t ip )
         
         /* Update the reputation */
         if (( item = netcap_trie_apply_close ( &_shield.trie, ip, _apply_func, &func )) == NULL ) {
-            return errlog(ERR_CRITICAL, "netcap_trie_apply\n");
+            return errlog_null( ERR_CRITICAL, "netcap_trie_apply\n");
         }
 
         if (( rep = netcap_trie_item_data ( item )) == NULL ) {
-            return errlog ( ERR_CRITICAL, "netcap_trie_item_data\n" );
+            return errlog_null( ERR_CRITICAL, "netcap_trie_item_data\n" );
         }
         
         if (( rep_val = _reputation_eval ( item )) < 0 ) {
-            return errlog(ERR_CRITICAL,"_reputation_eval\n");
+            return errlog_null( ERR_CRITICAL,"_reputation_eval\n");
         }
         
         /* IP has a terrible rep, user is done no matter what the status */
@@ -252,22 +262,39 @@ netcap_shield_ans_t  netcap_shield_rep_check        ( in_addr_t ip )
         case NC_SHIELD_MODE_CLOSED:  fence = &_shield.cfg.fence.closed; break;
         default:
             /* Something went wrong */
-            return errlog(ERR_CRITICAL,"Invalid mode: %d\n", mode);
+            return errlog_null( ERR_CRITICAL,"Invalid mode: %d\n", mode );
         }            
     } while ( 0 );
 
     ans = _put_in_fence ( fence, rep_val );
     
+    _shield_response.if_print = 0;
+
+    if ( ans != NC_SHIELD_YES ) {
+        /* If the count is low, update the print count */
+        if ( rep->print_load.load < _shield.cfg.print_rate ) {
+            if ( pthread_mutex_lock( &rep->mutex ) < 0 ) return perrlog_null( "pthread_mutex_lock" );
+            netcap_load_update( &rep->print_load, 1 );
+            if ( pthread_mutex_unlock(&rep->mutex) < 0 ) return perrlog_null( "pthread_mutex_unlock" );
+            _shield_response.if_print = 1;
+        }
+    }
+
     /* XXX Could add a mutex ??? for the ++, but the information is not critical, just for debugging */
     switch ( ans ) {
     case NC_SHIELD_LIMITED: rep->limited_sessions++; break;
     case NC_SHIELD_DROP:
-    case NC_SHIELD_RESET: rep->rejected_sessions++; break;
+    case NC_SHIELD_RESET:  rep->rejected_sessions++; break;
     default: break;
     }
+    
+    /* XXX For now set everything the same */
+    _shield_response.tcp = ans;
+    _shield_response.udp = ans;
+    _shield_response.icmp = ans;
 
     /* Passed all of the tests, let them in */
-    return ans;
+    return &_shield_response;
 }
  
 int                  netcap_shield_rep_blame        ( in_addr_t ip, int amount )
@@ -531,7 +558,8 @@ static int _reputation_update    ( reputation_t *rep, void* arg )
         ( netcap_load_update( &rep->srv_fail_load, 0) < 0) ||
         ( netcap_load_update( &rep->tcp_chk_load,  0) < 0) ||
         ( netcap_load_update( &rep->udp_chk_load,  0) < 0) ||
-        ( netcap_load_update( &rep->byte_load,     0) < 0)) {
+        ( netcap_load_update( &rep->byte_load,     0) < 0) ||
+        ( netcap_load_update( &rep->print_load,    0) < 0)) {
         return errlog(ERR_CRITICAL,"netcap_load_update\n");
     }
     
@@ -559,14 +587,15 @@ static int  _reputation_init     ( netcap_trie_item_t* item, in_addr_t ip )
 
     /* Initalize each of the loads */
     /* Right now these inherit the load and the last update time of the parent */
-    if (( netcap_load_init( &rep->evil_load,     _LOAD_INTERVAL_EVIL, !NC_LOAD_INIT_TIME ) < 0) ||
-        ( netcap_load_init( &rep->request_load,  _LOAD_INTERVAL_SESS, !NC_LOAD_INIT_TIME ) < 0) ||
-        ( netcap_load_init( &rep->session_load,  _LOAD_INTERVAL_SESS, !NC_LOAD_INIT_TIME ) < 0) ||
-        ( netcap_load_init( &rep->srv_conn_load, _LOAD_INTERVAL_SESS, !NC_LOAD_INIT_TIME ) < 0) ||
-        ( netcap_load_init( &rep->srv_fail_load, _LOAD_INTERVAL_SESS, !NC_LOAD_INIT_TIME ) < 0) ||
-        ( netcap_load_init( &rep->tcp_chk_load,  _LOAD_INTERVAL_CHK,  !NC_LOAD_INIT_TIME ) < 0) ||
-        ( netcap_load_init( &rep->udp_chk_load,  _LOAD_INTERVAL_CHK,  !NC_LOAD_INIT_TIME ) < 0) ||
-        ( netcap_load_init( &rep->byte_load,     _LOAD_INTERVAL_BYTE, !NC_LOAD_INIT_TIME ) < 0)) {
+    if (( netcap_load_init( &rep->evil_load,     _LOAD_INTERVAL_EVIL,  !NC_LOAD_INIT_TIME ) < 0) ||
+        ( netcap_load_init( &rep->request_load,  _LOAD_INTERVAL_SESS,  !NC_LOAD_INIT_TIME ) < 0) ||
+        ( netcap_load_init( &rep->session_load,  _LOAD_INTERVAL_SESS,  !NC_LOAD_INIT_TIME ) < 0) ||
+        ( netcap_load_init( &rep->srv_conn_load, _LOAD_INTERVAL_SESS,  !NC_LOAD_INIT_TIME ) < 0) ||
+        ( netcap_load_init( &rep->srv_fail_load, _LOAD_INTERVAL_SESS,  !NC_LOAD_INIT_TIME ) < 0) ||
+        ( netcap_load_init( &rep->tcp_chk_load,  _LOAD_INTERVAL_CHK,   !NC_LOAD_INIT_TIME ) < 0) ||
+        ( netcap_load_init( &rep->udp_chk_load,  _LOAD_INTERVAL_CHK,   !NC_LOAD_INIT_TIME ) < 0) ||
+        ( netcap_load_init( &rep->byte_load,     _LOAD_INTERVAL_BYTE,  !NC_LOAD_INIT_TIME ) < 0) ||
+        ( netcap_load_init( &rep->print_load,    _LOAD_INTERVAL_PRINT, !NC_LOAD_INIT_TIME ) < 0)) {
         ret = errlog(ERR_CRITICAL,"netap_load_init\n");
     }
     

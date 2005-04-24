@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: netcap_shield_cfg.h,v 1.1 2004/11/09 19:40:00 dmorris Exp $
+ * $Id$
  */
 
 #ifndef __NETCAP_SHIELD_CFG_H_
@@ -62,6 +62,8 @@ typedef struct {
         nc_shield_fence_t tight;
         nc_shield_fence_t closed;
     } fence;
+
+    double print_rate;
 } nc_shield_cfg_t;
 
 /* Load the default shield configuration */

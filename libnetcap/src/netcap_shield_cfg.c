@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: netcap_shield_cfg.c,v 1.2 2005/01/24 03:55:06 rbscott Exp $
+ * $Id$
  */
 
 #include <stdlib.h>
@@ -200,6 +200,9 @@ int nc_shield_cfg_load ( nc_shield_cfg_t* cfg, char* buf, int buf_len )
     } else {
         errlog ( ERR_WARNING, "Shield: Unable to load configuration\n" );
     }
+
+    /* Hard coded at 0.5 printout per seconds for now */
+    cfg->print_rate = 0.5;
 
     return ret;
 }

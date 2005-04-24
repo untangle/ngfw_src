@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: netcap_shield.h,v 1.1 2004/11/09 19:40:00 dmorris Exp $
+ * $Id$
  */
 
 #ifndef __NETCAP_SHIELD_H_
@@ -41,17 +41,24 @@ typedef enum {
     NC_SHIELD_YES       /* Let them in. */
 } netcap_shield_ans_t;
 
+typedef struct {
+    u_char if_print;
+    u_char tcp;
+    u_char udp;
+    u_char icmp;
+} netcap_shield_response_t;
+
 /* Indicate if an IP should allowed in */
-netcap_shield_ans_t  netcap_shield_rep_check        ( in_addr_t ip );
+netcap_shield_response_t* netcap_shield_rep_check        ( in_addr_t ip );
 
-int                  netcap_shield_rep_add_request  ( in_addr_t ip );
+int                       netcap_shield_rep_add_request  ( in_addr_t ip );
 
-int                  netcap_shield_rep_add_session  ( in_addr_t ip );
+int                       netcap_shield_rep_add_session  ( in_addr_t ip );
 
-int                  netcap_shield_rep_add_srv_conn ( in_addr_t ip );
+int                       netcap_shield_rep_add_srv_conn ( in_addr_t ip );
 
-int                  netcap_shield_rep_add_srv_fail ( in_addr_t ip );
+int                       netcap_shield_rep_add_srv_fail ( in_addr_t ip );
 
-int                  netcap_shield_rep_blame        ( in_addr_t ip, int amount );
+int                       netcap_shield_rep_blame        ( in_addr_t ip, int amount );
 
 #endif /* __NETCAP_SHIELD_H_ */

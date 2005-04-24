@@ -102,7 +102,7 @@ int  netcap_tcp_callback ( netcap_session_t* netcap_sess, netcap_callback_action
 
 int  netcap_tcp_syn_hook ( netcap_pkt_t* syn )
 {
-    netcap_shield_ans_t ans;
+    netcap_shield_response_t* ans;
     char address[20];
 
     if (!syn)
@@ -131,23 +131,27 @@ int  netcap_tcp_syn_hook ( netcap_pkt_t* syn )
      * Check the reputation
      */
     /* XXX Debugging output should be cleaned up */
-    if ( (ans = netcap_shield_rep_check ( syn->src.host.s_addr )) < 0 ) {
+    if ( (ans = netcap_shield_rep_check ( syn->src.host.s_addr )) == NULL ) {
         errlog(ERR_WARNING,"netcap_shield_rep_check\n");
         return _netcap_packet_action_free(syn,NF_ACCEPT);
     }
-    else if ( ans == NC_SHIELD_LIMITED ) {
+    else if ( ans->tcp == NC_SHIELD_LIMITED ) {
         strncpy ( address, inet_ntoa ( syn->src.host ), sizeof ( address ) );
-        errlog( ERR_WARNING, "TCP: Session in opaque mode: %s:%d -> %s:%d\n", address, syn->src.port,
-                inet_ntoa ( syn->dst.host ), syn->dst.port );
+        if ( ans->if_print ) {
+            errlog( ERR_WARNING, "TCP: Session in opaque mode: %s:%d -> %s:%d\n", address, syn->src.port,
+                    inet_ntoa ( syn->dst.host ), syn->dst.port );
+        }
         return _netcap_packet_action_free( syn, NF_ACCEPT );
     }
-    else if ( ans == NC_SHIELD_RESET || ans == NC_SHIELD_DROP ) {
+    else if ( ans->tcp == NC_SHIELD_RESET || ans->tcp == NC_SHIELD_DROP ) {
         strncpy ( address, inet_ntoa ( syn->src.host ), sizeof ( address ) );
-        errlog( ERR_WARNING, "TCP: Session rejected: %s:%d -> %s:%d\n", address, syn->src.port,
-                inet_ntoa ( syn->dst.host ), syn->dst.port );
+        if ( ans->if_print ) {
+            errlog( ERR_WARNING, "TCP: SYN packet dropped: %s:%d -> %s:%d\n", address, syn->src.port,
+                    inet_ntoa ( syn->dst.host ), syn->dst.port );
+        }
         return _netcap_packet_action_free( syn, NF_DROP );
     }
-    else if ( ans != NC_SHIELD_YES ) {
+    else if ( ans->tcp != NC_SHIELD_YES ) {
         errlog(ERR_WARNING,"netcap_shield_rep_check: invalid verdict: %d\n", ans);
         return _netcap_packet_action_free(syn,NF_ACCEPT);
     }
