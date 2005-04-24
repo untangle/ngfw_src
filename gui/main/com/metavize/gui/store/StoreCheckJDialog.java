@@ -52,7 +52,7 @@ public class StoreCheckJDialog extends javax.swing.JDialog implements java.awt.e
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-        setTitle("Confirm Restart...");
+        setTitle("Upgrade Availability Check");
         setModal(true);
         setResizable(false);
         labelJLabel.setFont(new java.awt.Font("Dialog", 1, 24));
