@@ -574,7 +574,7 @@ public class EventHandler extends AbstractEventHandler
 
             if (null == zScanResult)
             {
-                zUserLog.info(new SpamRuleEvent(zHandler.getMsgInfo(), Action.PASS, zMsg, false));
+                zUserLog.info(new SpamRuleEvent(zHandler.getMsgInfo(), Action.MARK, zMsg, false));
                 return false; /* have already handled exception */
             }
 
@@ -606,13 +606,13 @@ public class EventHandler extends AbstractEventHandler
                 }
                 else
                 {
-                    zUserLog.info(new SpamRuleEvent(zHandler.getMsgInfo(), Action.PASS, zMsg, true));
+                    zUserLog.info(new SpamRuleEvent(zHandler.getMsgInfo(), Action.MARK, zMsg, true));
                     /* fall through and continue with other rules */
                 }
             }
             else /* not spam */
             {
-                zUserLog.info(new SpamRuleEvent(zHandler.getMsgInfo(), Action.PASS, zMsg, false));
+                zUserLog.info(new SpamRuleEvent(zHandler.getMsgInfo(), Action.MARK, zMsg, false));
                 /* fall through and continue with other rules */
             }
         }
@@ -1058,14 +1058,28 @@ public class EventHandler extends AbstractEventHandler
         if (true == zList.isEmpty())
         {
             zLog.error("Sender or receiver recipients not specified; ignoring");
-            return Action.PASS;
+            if (SPAM == iType)
+            {
+                return Action.MARK;
+            }
+            else
+            {
+                return Action.PASS;
+            }
         }
 
         String azRecipients[] = buildRcpt(zList);
         if (null == azRecipients)
         {
             zLog.error("Unable to create recipient list for notification");
-            return Action.PASS;
+            if (SPAM == iType)
+            {
+                return Action.MARK;
+            }
+            else
+            {
+                return Action.PASS;
+            }
         }
 
         zList = zMsg.getData();

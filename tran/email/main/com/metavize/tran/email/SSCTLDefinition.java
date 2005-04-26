@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: SSCTLDefinition.java,v 1.16 2005/03/25 23:22:39 jdi Exp $
+ * $Id$
  */
 
 package com.metavize.tran.email;
@@ -51,7 +51,7 @@ public class SSCTLDefinition implements Serializable
 
     /* settings */
     private String scanStrength = DEF_STRENGTH;
-    private Action actionOnDetect = Action.PASS;
+    private Action actionOnDetect = Action.MARK;
     private boolean scan = true;
     private boolean copyOnBlock = false;
     private String notes = NO_NOTES;
@@ -141,7 +141,7 @@ public class SSCTLDefinition implements Serializable
     /**
      * - actionOnDetect: a string specifying a response to events if a message containing spam (defaults to forward and warn sender)
      * one of BLOCK_ACTION, BLOCK_AND_WARN_SENDER_ACTION, BLOCK_AND_WARN_RECEIVER_ACTION,
-     * BLOCK_AND_WARN_BOTH_ACTION, or PASS_ACTION
+     * BLOCK_AND_WARN_BOTH_ACTION, or MARK_ACTION
      *
      * @return the action to take if a message is judged to be spam.
      * @hibernate.property
@@ -265,7 +265,7 @@ public class SSCTLDefinition implements Serializable
       <eval name="FORWARDANDWARNSENDER">block, warn sender</eval>
       <eval name="FORWARDANDWARNRECEIVER">block, warn receiver</eval>
       <eval name="FORWARDANDWARNBOTH">block, warn sender &amp; receiver</eval>
-      <eval name="PASS">mark &amp; pass</eval>
+      <eval name="MARK">mark &amp; pass</eval>
       </enumeration>
       </attr>
 

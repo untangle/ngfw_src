@@ -58,7 +58,7 @@ import com.metavize.mvvm.util.*;
  * ****BODY follows
  * 003A OK APPEND completed^M
  *
- * RFC1730/2060 does not document command continuation request
+ * RFC1730/2060 does not document command continuation reply
  * ("+ Ready for argument") for APPEND cmd but
  * IMAP client/server implementations appear to expect it
  *
@@ -74,7 +74,7 @@ public class IMAPHandler extends MLHandler
 
     private final static String TAG_ID = "^(\\p{Alnum})++"; /* cmd tag id */
     private final static String MSEQ_NO = "^\\* (\\p{Digit})++"; /* msg seq no */
-    private final static String CONT_FLAG = "^\\+"; /* cmd continuation flag */
+    private final static String CONT_FLAG = "^\\+"; /* continuation flag */
     private final static Pattern TAG_IDP = Pattern.compile(TAG_ID, Pattern.CASE_INSENSITIVE);
 
     /* currently, we only handle complete (not partial) messages
@@ -149,8 +149,6 @@ public class IMAPHandler extends MLHandler
     private final static byte CMDCONTREQBA[] = { '+', ' ', 'R', 'e', 'a', 'd', 'y', 13, 10 };
     private final static byte APPENDDATAERRBA[] = { ' ', 'N', 'O', ' ', 'A', 'P', 'P', 'E', 'N', 'D', ' ', 'm', 'e', 's', 's', 'a', 'g', 'e', ' ', 'h', 'a', 's', ' ', 'b', 'e', 'e', 'n', ' ', 'b', 'l', 'o', 'c', 'k', 'e', 'd', 13, 10 };
     private final static byte FETCHDATAERRBA[] = { ' ', 'N', 'O', ' ', 'F', 'E', 'T', 'C', 'H', ' ', 'm', 'e', 's', 's', 'a', 'g', 'e', ' ', 'h', 'a', 's', ' ', 'b', 'e', 'e', 'n', ' ', 'b', 'l', 'o', 'c', 'k', 'e', 'd', 13, 10 };
-    private final static byte APPENDTOOLARGEERRBA[] = { ' ', 'N', 'O', ' ', 'A', 'P', 'P', 'E', 'N', 'D', ' ', 'm', 'e', 's', 's', 'a', 'g', 'e', ' ', 'e', 'x', 'c', 'e', 'e', 'd', 's', ' ', 'm', 'a', 'x', 'i', 'm', 'u', 'm', ' ', 's', 'i', 'z', 'e', ' ', 'l', 'i', 'm', 'i', 't', 13, 10 };
-    private final static byte FETCHTOOLARGEERRBA[] = { ' ', 'N', 'O', ' ', 'F', 'E', 'T', 'C', 'H', ' ', 'm', 'e', 's', 's', 'a', 'g', 'e', ' ', 'e', 'x', 'c', 'e', 'e', 'd', 's', ' ', 'm', 'a', 'x', 'i', 'm', 'u', 'm', ' ', 's', 'i', 'z', 'e', ' ', 'l', 'i', 'm', 'i', 't', 13, 10 };
 
     /* cmds */
     private final static int APPEND_VAL = 0;
@@ -175,21 +173,23 @@ public class IMAPHandler extends MLHandler
 
     private final static Integer DNC_INT = new Integer(DNC_VAL);
 
+    private final static int READLINE = 0;
+    private final static int READDATA = 1;
+    private final static int COUNTDATA = 2;
+
     /* class variables */
 
     /* instance variables */
     private ByteBuffer zCmdContReq;
     private ByteBuffer zAppendDataERR;
     private ByteBuffer zFetchDataERR;
-    private ByteBuffer zAppendTooLargeERR;
-    private ByteBuffer zFetchTooLargeERR;
 
     private CBufferWrapper zDataOK;
     private ArrayList zEODatas;
     private String zTagId;
+    private int iReadAppendMode;
+    private int iReadFetchMode;
     private boolean bUseAppendCmd; /* append = true, fetch = false (default) */
-    private boolean bReadAppendData;
-    private boolean bReadFetchData;
 
     /* constructors */
     public IMAPHandler()
@@ -199,8 +199,6 @@ public class IMAPHandler extends MLHandler
         zCmdContReq = ByteBuffer.wrap(CMDCONTREQBA, CMDCONTREQBA.length, 0);
         zAppendDataERR = ByteBuffer.wrap(APPENDDATAERRBA, APPENDDATAERRBA.length, 0);
         zFetchDataERR = ByteBuffer.wrap(FETCHDATAERRBA, FETCHDATAERRBA.length, 0);
-        zAppendTooLargeERR = ByteBuffer.wrap(APPENDTOOLARGEERRBA, APPENDTOOLARGEERRBA.length, 0);
-        zFetchTooLargeERR = ByteBuffer.wrap(FETCHTOOLARGEERRBA, FETCHTOOLARGEERRBA.length, 0);
 
         setup(true);
     }
@@ -209,7 +207,7 @@ public class IMAPHandler extends MLHandler
     public void setOptions(XMailScannerCache zXMSCache)
     {
         zPostmaster = zXMSCache.getIMAP4Postmaster();
-        iMsgSzLimit = zXMSCache.getMsgSzLimit();
+        iMsgSzRelay = zXMSCache.getMsgSzRelay();
         bReturnErr = zXMSCache.getReturnErrOnIMAP4Block();
         return;
     }
@@ -230,72 +228,86 @@ public class IMAPHandler extends MLHandler
     /* IMAP4 client */
     public void checkCmd(TCPChunkEvent zEvent, XMSEnv zEnv) throws ProtoException, ReadException, ParseException
     {
-        if (false == bReadAppendData)
+        switch(iReadAppendMode)
         {
+        default:
+        case READLINE:
             if (false == readLine(zEvent, zEnv, Constants.PEOLINEP))
             {
-                /* line is not complete - get rest of line */
-                zEnv.setFixedResult(Constants.READ_MORE_NO_WRITE);
-                return;
+                return; /* line is not complete - get rest of line */
             }
             /* else line is now complete */
-        }
-        else
-        {
+            break;
+
+        case READDATA:
             /* note that for append data,
              * we do not search for EOData to determine end of data;
              * instead, we monitor read data byte count
              */
-            if (false == readData(zEvent, zEnv, zMsgDatas, Constants.EOLINEFEEDP, null) &&
+            if (false == readData(zEvent, zEnv, Constants.EOLINEFEEDP, null) &&
                 (zEnv.getReadDataCt() < zReadDataSz.intValue()))
             {
-                if (Constants.NO_MSGSZ_LIMIT == iReadDataLimit ||
-                    zEnv.getReadDataCt() < iReadDataLimit)
+                if (Constants.NO_MSGSZ_LIMIT == iReadDataRelay ||
+                    zEnv.getReadDataCt() < iReadDataRelay)
                 {
-                    //zLog.debug("read more (cmd): " + zEnv.getReadDataCt() + ", " + iReadDataLimit);
-                    return; /* data is not complete - get rest of append data */
+                    //zLog.debug("read more (cmd): " + zEnv.getReadDataCt() + ", " + iReadDataRelay);
+                    return; /* data is not complete - get more append data */
                 }
 
                 /* after we've collected enough of message
-                 * (to build warning that we issue when we reject message),
-                 * we selectively buffer/discard parts of message
-                 * that we've already read
-                 * as well as parts that follow
+                 * (to build warning),
+                 * we relay what we have already read and
+                 * relay remaining data as we read data
                  */
-                if (false == bRejectData)
+                if (false == bRelayData)
                 {
-                    setupWarning(zEnv);
-                    bRejectData = true; /* reject message data */
+                    /* setup warning in order to generate SizeRelayLogEvent;
+                     * we will not issue warning
+                     */
+                    bRelayData = true; /* relay message data */
+                    setupWarningEvent(zEnv);
+                    relayAppendData(zEnv);
                 }
-                rejectData();
-                //zLog.debug("read more reject (cmd): " + zEnv.getReadDataCt() + ", " + iReadDataLimit);
-                return; /* data is not complete - get rest of append data */
+
+                //zLog.debug("read more relay (cmd): " + zEnv.getReadDataCt() + ", " + iReadDataRelay);
+                return; /* data is not complete - get more append data */
             }
             /* else data is now complete */
 
-            if (false == bRejectData &&
-                Constants.NO_MSGSZ_LIMIT != iReadDataLimit &&
-                zEnv.getReadDataCt() >= iReadDataLimit)
+            if (false == bRelayData &&
+                Constants.NO_MSGSZ_LIMIT != iReadDataRelay &&
+                zEnv.getReadDataCt() >= iReadDataRelay)
             {
                 /* message had been under size limit but
                  * now that data is complete,
                  * message exceeds size limit
+                 * - setup warning in order to generate SizeRelayLogEvent;
+                 *   we will not issue warning
                  */
-                setupWarning(zEnv);
-                bRejectData = true; /* reject message data */
-                rejectData();
+                bRelayData = true; /* relay message data */
+                setupWarningEvent(zEnv);
+                relayAppendData(zEnv);
+                return; /* data is complete - relay what we have */
             }
-            /* else data is complete and message doesn't exceed size limit */
+            /* else we may not be relaying data or
+             * message didn't exceed size limit
+             */
 
-            setReadLine(zEvent.session());
-
-            if (false == bRejectData)
+            if (false == bRelayData)
             {
-                setAppendEOData(zEnv);
+                setAppendEOData(zEvent, zEnv);
             }
-            else
+            /* else we still have data to relay
+             * (we relay after we receive necessary reply from server)
+             */
+            return;
+
+        case COUNTDATA:
+            countData(zEvent, zEnv);
+            if (zEnv.getReadDataCt() >= zReadDataSz.intValue())
             {
-                rejectAppendEOData(zEvent, zEnv); /* reject remaining data */
+                //zLog.debug("relay: read: " + zEnv.getReadDataCt() + ", size: " + zReadDataSz);
+                relayAppendEOData(zEvent, zEnv);
             }
             return;
         }
@@ -319,8 +331,8 @@ public class IMAPHandler extends MLHandler
                      * we will not receive any more replies from passenger
                      * until we have sent data to passenger
                      */
-                    bReadAppendData = true; /* use read data mode */
-                    setReadData(zEvent.session());
+                    iReadAppendMode = READDATA;
+                    unsetLineBuffer(zEvent.session());
                     setAppendData(zEnv, zCLine);
                     return;
                 }
@@ -379,67 +391,76 @@ public class IMAPHandler extends MLHandler
     /* IMAP4 server */
     public void checkReply(TCPChunkEvent zEvent, XMSEnv zEnv) throws ProtoException, ReadException, ParseException
     {
-        if (false == bReadFetchData)
+        switch(iReadFetchMode)
         {
+        default:
+        case READLINE:
             if (false == readLine(zEvent, zEnv, Constants.PEOLINEP))
             {
-                /* line is not complete - get rest of line */
-                zEnv.setFixedResult(Constants.READ_MORE_NO_WRITE);
-                return;
+                return; /* line is not complete - get rest of line */
             }
             /* else line is now complete */
-        }
-        else
-        {
-            if (false == readData(zEvent, zEnv, zMsgDatas, Constants.EOLINEFEEDP, EODATAP))
+            break;
+
+        case READDATA:
+            if (false == readData(zEvent, zEnv, Constants.EOLINEFEEDP, EODATAP))
             {
-                if (Constants.NO_MSGSZ_LIMIT == iReadDataLimit ||
-                    zEnv.getReadDataCt() < iReadDataLimit)
+                if (Constants.NO_MSGSZ_LIMIT == iReadDataRelay ||
+                    zEnv.getReadDataCt() < iReadDataRelay)
                 {
-                    //zLog.debug("read more (reply): " + zEnv.getReadDataCt() + ", " + iReadDataLimit);
-                    return; /* data is not complete - get rest of fetch data */
+                    //zLog.debug("read more (reply): " + zEnv.getReadDataCt() + ", " + iReadDataRelay);
+                    return; /* data is not complete - get more fetch data */
                 }
 
                 /* after we've collected enough of message
-                 * (to build warning that we issue when we reject message),
-                 * we selectively buffer/discard parts of message
-                 * that we've already read
-                 * as well as parts that follow
+                 * (to build warning),
+                 * we relay what we have already read and
+                 * relay remaining data as we read data
                  */
-                if (false == bRejectData)
+                if (false == bRelayData)
                 {
-                    setupWarning(zEnv);
-                    bRejectData = true; /* reject message data */
+                    /* setup warning in order to generate SizeRelayLogEvent;
+                     * we will not issue warning
+                     */
+                    bRelayData = true; /* relay message data */
+                    setupWarningEvent(zEnv);
+                    relayFetchData(zEnv);
                 }
-                rejectData();
-                //zLog.debug("read more reject (reply): " + zEnv.getReadDataCt() + ", " + iReadDataLimit);
-                return; /* data is not complete - get rest of fetch data */
+
+                //zLog.debug("read more relay (reply): " + zEnv.getReadDataCt() + ", " + iReadDataRelay);
+                return; /* data is not complete - get more fetch data */
             }
             /* else data is now complete */
 
-            if (false == bRejectData &&
-                Constants.NO_MSGSZ_LIMIT != iReadDataLimit &&
-                zEnv.getReadDataCt() >= iReadDataLimit)
+            if (false == bRelayData &&
+                Constants.NO_MSGSZ_LIMIT != iReadDataRelay &&
+                zEnv.getReadDataCt() >= iReadDataRelay)
             {
                 /* message had been under size limit but
                  * now that data is complete,
                  * message exceeds size limit
+                 * - setup warning in order to generate SizeRelayLogEvent;
+                 *   we will not issue warning
                  */
-                setupWarning(zEnv);
-                bRejectData = true; /* reject message data */
-                rejectData();
+                bRelayData = true; /* relay message data */
+                setupWarningEvent(zEnv);
+                relayFetchData(zEnv);
+                relayFetchEOData(zEvent, zEnv);
+                return;
             }
-            /* else data is complete and message doesn't exceed size limit */
+            /* else we are not relaying data or
+             * message didn't exceed size limit
+             */
 
-            setReadLine(zEvent.session());
+            setFetchEOData(zEvent, zEnv);
+            return;
 
-            if (false == bRejectData)
+        case COUNTDATA:
+            countData(zEvent, zEnv);
+            if (zEnv.getReadDataCt() >= zReadDataSz.intValue())
             {
-                setFetchEOData(zEnv);
-            }
-            else
-            {
-                rejectFetchEOData(zEvent, zEnv); /* reject remaining data */
+                //zLog.debug("relay: read: " + zEnv.getReadDataCt() + ", size: " + zReadDataSz);
+                relayFetchEOData(zEvent, zEnv);
             }
             return;
         }
@@ -456,10 +477,17 @@ public class IMAPHandler extends MLHandler
             switch(zStatePair.getReply().intValue())
             {
             case CONTREQ_VAL:
-                zLog.debug("cmd continuation request reply?: " + zStatePair.getReply());
+                zLog.debug("continuation request reply?: " + zStatePair.getReply());
                 if (true == isMatch(zCLine, CONTREQP))
                 {
-                    unsetAppendData(zEnv);
+                    if (READDATA != iReadAppendMode)
+                    {
+                        unsetAppendData(zEnv);
+                    }
+                    else
+                    {
+                        relayMoreAppendData(zEnv);
+                    }
                     return;
                 }
 
@@ -473,8 +501,8 @@ public class IMAPHandler extends MLHandler
                      * we will not receive any more cmds from driver
                      * until we have received data and EODATA from passenger
                      */
-                    bReadFetchData = true; /* use read data mode */
-                    setReadData(zEvent.session());
+                    iReadFetchMode = READDATA;
+                    unsetLineBuffer(zEvent.session());
                     setFetchData(zEnv, zCLine);
                     return;
                 }
@@ -592,7 +620,6 @@ public class IMAPHandler extends MLHandler
             zStateMachine.reset(DNC_INT, CONTREQ_INT);
 
             zEnv.sendToPassenger(zLine);
-            zEnv.resetReadCLine();
         }
         else
         {
@@ -609,12 +636,12 @@ public class IMAPHandler extends MLHandler
             zEnv.sendToDriver(zLine);
             zEnv.convertToDriver(zMsgDatas);
             zEnv.sendToDriver(zEODatas);
-            zEnv.resetReadCLine();
 
             flushMsg(zEnv);
             setup(false); /* since we're sending EODATA, we'll setup again */
         }
 
+        zEnv.resetReadCLine();
         return true;
     }
 
@@ -630,16 +657,15 @@ public class IMAPHandler extends MLHandler
         zMsgInfo = null;
         zMsgDatas = null;
         zReadDataSz = null;
-        iReadDataLimit = Constants.NO_MSGSZ_LIMIT;
-        iRejectedCt = 0;
-        bRejectData = false; /* accept message data */
+        iReadDataRelay = Constants.NO_MSGSZ_LIMIT;
+        bRelayData = false; /* accept message data */
 
         zDataOK = null;
         zEODatas = null;
         zTagId = null;
+        iReadAppendMode = READLINE;
+        iReadFetchMode = READLINE;
         bUseAppendCmd = false; /* use fetch cmd mode (default) */
-        bReadAppendData = false; /* use read line mode for append */
-        bReadFetchData = false; /* use read line mode for fetch */
 
         /* in order of most likely to least likely to occur
          * - we are either intercepting or passing these cmds through
@@ -828,16 +854,15 @@ public class IMAPHandler extends MLHandler
          * - intercept/save cmd (we'll resend it)
          */
         saveDataOK(zCLine);
-        if (zReadDataSz.intValue() > iMsgSzLimit)
+        if (zReadDataSz.intValue() > iMsgSzRelay)
         {
             /* if message exceeds size limit,
-             * we'll mark message for rejection later
+             * we'll mark message for relay later
              * after we've collected enough of message
              * to parse message header
              * to report log event
-             * (and if necessary, to build warning message)
              */
-            iReadDataLimit = Constants.MSGSZ_MIN;
+            iReadDataRelay = Constants.MSGSZ_MIN;
         }
 
         /* although it's not documented,
@@ -853,9 +878,9 @@ public class IMAPHandler extends MLHandler
         zMsgDatas = zMsg.getData();
 
         /* although it's not documented,
-         * passenger sends cmd continuation request immediately after append cmd
-         * (driver waits for cmd continuation request before it sends DATA)
-         * - we'll prompt for DATA by sending cmd continuation request
+         * passenger sends continuation reply immediately after append cmd
+         * (driver waits for continuation reply before it sends DATA)
+         * - we'll prompt for DATA by sending continuation reply
          */
         zEnv.sendToDriver(zCmdContReq); /* ack with pseudo-server reply (+) */
         zEnv.clearReadCLine();
@@ -875,16 +900,15 @@ public class IMAPHandler extends MLHandler
          * - intercept/save reply (we'll resend it later)
          */
         saveDataOK(zCLine);
-        if (zReadDataSz.intValue() > iMsgSzLimit)
+        if (zReadDataSz.intValue() > iMsgSzRelay)
         {
             /* if message exceeds size limit,
-             * we'll mark message for rejection later
+             * we'll mark message for relay later
              * after we've collected enough of message
              * to parse message header
              * to report log event
-             * (and if necessary, to build warning message)
              */
-            iReadDataLimit = Constants.MSGSZ_MIN;
+            iReadDataRelay = Constants.MSGSZ_MIN;
         }
 
         zStateMachine.reset(DNC_INT, DNC_INT);
@@ -935,12 +959,12 @@ public class IMAPHandler extends MLHandler
         return;
     }
 
-    private void setAppendEOData(XMSEnv zEnv) throws ParseException
+    private void setAppendEOData(TCPChunkEvent zEvent, XMSEnv zEnv) throws ParseException
     {
         zLog.debug("append end of data");
 
         /* we're buffering message; driver does not need data yet */
-        bReadAppendData = false; /* use read line mode */
+        iReadAppendMode = READLINE;
 
         if (true == zMsgDatas.isEmpty())
         {
@@ -963,6 +987,7 @@ public class IMAPHandler extends MLHandler
          *    are ready to resend this message to passenger)
          */
         zEnv.clearReadCLine();
+        setLineBuffer(zEvent.session());
 
         zMsg.parse(true);
         zMsgInfo = new MLMessageInfo(zHdlInfo, zEnv, zMsg);
@@ -971,11 +996,12 @@ public class IMAPHandler extends MLHandler
         return;
     }
 
-    private void setFetchEOData(XMSEnv zEnv) throws ParseException
+    private void setFetchEOData(TCPChunkEvent zEvent, XMSEnv zEnv) throws ParseException
     {
         zLog.debug("fetch end of data");
+
         /* we're buffering message; driver does not need data yet */
-        bReadFetchData = false; /* use read line mode */
+        iReadFetchMode = READLINE;
 
         if (true == zMsgDatas.isEmpty())
         {
@@ -1007,96 +1033,12 @@ public class IMAPHandler extends MLHandler
          *    are ready to resend this message to driver)
          */
         zEnv.clearReadCLine();
+        setLineBuffer(zEvent.session());
 
         zMsg.parse(true);
         zMsgInfo = new MLMessageInfo(zHdlInfo, zEnv, zMsg);
         //zLog.debug("message: " + zMsg);
         iSendsMsg = PASSENGER; /* client retrieves msg from server */
-        return;
-    }
-
-    private void rejectAppendEOData(TCPChunkEvent zEvent, XMSEnv zEnv)
-    {
-        bReadAppendData = false; /* use read line mode */
-        /* not necessary since we immediately resend message
-         * but for clarity, we identify endpoint that sends message
-         * - client copies msg to server
-         */
-        iSendsMsg = DRIVER;
-        rejectEOData(zEvent, zEnv);
-        return;
-    }
-
-    private void rejectFetchEOData(TCPChunkEvent zEvent, XMSEnv zEnv)
-    {
-        bReadFetchData = false; /* use read line mode */
-        /* not necessary since we immediately resend message
-         * but for clarity, we identify endpoint that sends message
-         * - client retrieves msg from server
-         */
-        iSendsMsg = PASSENGER;
-        rejectEOData(zEvent, zEnv);
-        return;
-    }
-
-    private void rejectEOData(TCPChunkEvent zEvent, XMSEnv zEnv)
-    {
-        zLog.debug("end of data (reject message)");
-        //zLog.debug("end of data (reject message): " + zEnv.getReadDataCt() + " bytes exceeds size limit, " + iMsgSzLimit + " bytes, " + zMsgDatas);
-
-        ByteBuffer zErrLine;
-
-        if (true == bReturnErr)
-        {
-            /* we will not ack EODATA with pseudo-server reply (OK)
-             * - instead, we'll reject message with pseudo-server reply (NO)
-             */
-            zErrLine = ByteBuffer.allocate(READSZ);
-            byte azTagId[] = zTagId.getBytes();
-            ByteBuffer zTmp = ByteBuffer.wrap(azTagId);
-            //zTmp.flip();
-            zErrLine.put(zTmp);
-
-            if (true == bUseAppendCmd)
-            {
-                zAppendTooLargeERR.rewind();
-                zErrLine.put(zAppendTooLargeERR);
-            }
-            else
-            {
-                zFetchTooLargeERR.rewind();
-                zErrLine.put(zFetchTooLargeERR);
-            }
-
-            /* we set limit since we didn't allocate buffer to exact size */
-            zErrLine.limit(zErrLine.position());
-        }
-        else
-        {
-            zErrLine = null;
-
-            /* we'll restore EODATA in resend
-             * (stripEOD determines position of EODATA from message size)
-             * - note that we get back everything that we need
-             *   including all EOLINEs and anything else at end-of-data
-             */
-            zEODatas = stripEOD();
-
-            /* we will not send cmd (containing message) yet
-             * - we'll send cmd to passenger later
-             *   (after we have scanned this message and
-             *    are ready to resend this message to passenger)
-             */
-            zEnv.clearReadCLine();
-        }
-
-        rejectEOData(zEvent, zEnv, zErrLine, Constants.REJECT);
-        /* we do not parse or process message
-         * because we've already parsed message header and
-         * we've already determined that we must reject message
-         * - therefore, we immediately resend message
-         */
-        resend(zEnv); /* we'll setup again during resend */
         return;
     }
 
@@ -1117,11 +1059,104 @@ public class IMAPHandler extends MLHandler
         /* resend message data */
         zEnv.convertToPassenger(zMsgDatas);
         zEnv.sendToPassenger(zEODatas);
-
         zEnv.resetReadCLine();
 
         flushMsg(zEnv);
         setup(false); /* since we're sending data, we'll setup again */
+        return;
+    }
+
+    private void relayAppendData(XMSEnv zEnv)
+    {
+        zLog.debug("relay append data... (set up)");
+        //zLog.debug("message: " + zMsgDatas);
+
+        /* - if we are relaying this message
+         *   (while we are in read append data mode),
+         *   we keep command as before
+         *   (see setAppendData - we continue to receive data)
+         *   but set reply to wait for continuation reply
+         *   (server replies with continuation reply
+         *    after it receives append cmd)
+         */
+        zStateMachine.reset(DNC_INT, CONTREQ_INT);
+
+        zEnv.sendToPassenger(zDataOK.get());
+        zEnv.resetReadCLine();
+
+        return;
+    }
+
+    private void relayMoreAppendData(XMSEnv zEnv)
+    {
+        zLog.debug("relay append data...");
+        //zLog.debug("message: " + zMsgDatas);
+
+        /* we will not collect any more data;
+         * we will pass through remaining data
+         * up to expected # of bytes
+         * (according to message size)
+         */
+        iReadAppendMode = COUNTDATA;
+
+        zStateMachine.reset(DNC_INT, DNC_INT);
+
+        /* resend message data (whatever we have collected so far) */
+        zEnv.convertToPassenger(zMsgDatas);
+
+        return;
+    }
+
+    private void relayFetchData(XMSEnv zEnv)
+    {
+        zLog.debug("relay fetch data...");
+        //zLog.debug("message: " + zMsgDatas);
+
+        /* we will not collect any more data;
+         * we will pass through remaining data
+         * up to expected # of bytes
+         * (according to message size)
+         */
+        iReadFetchMode = COUNTDATA;
+
+        /* resend message data (whatever we have collected so far) */
+        zEnv.sendToDriver(zDataOK.get());
+        zEnv.convertToDriver(zMsgDatas);
+
+        return;
+    }
+
+    private void relayAppendEOData(TCPChunkEvent zEvent, XMSEnv zEnv)
+    {
+        zLog.debug("end of append data (relay)");
+        //zLog.debug("end of append data (relay): " + zEnv.getReadDataCt() + " bytes exceeds size limit, " + iMsgSzRelay + " bytes, " + zMsgDatas);
+
+        iSendsMsg = DRIVER; /* client copies msg to server */
+
+        logRelayEvent(zEnv);
+
+        zEnv.resetReadCLine();
+        setLineBuffer(zEvent.session());
+
+        flushMsg(zEnv);
+        setup(false); /* since we've relayed data, we'll setup again */
+        return;
+    }
+
+    private void relayFetchEOData(TCPChunkEvent zEvent, XMSEnv zEnv)
+    {
+        zLog.debug("end of fetch data (relay)");
+        //zLog.debug("end of fetch data (relay): " + zEnv.getReadDataCt() + " bytes exceeds size limit, " + iMsgSzRelay + " bytes, " + zMsgDatas);
+
+        iSendsMsg = PASSENGER; /* client retrieves msg from server */
+
+        logRelayEvent(zEnv);
+
+        zEnv.resetReadCLine();
+        setLineBuffer(zEvent.session());
+
+        flushMsg(zEnv);
+        setup(false); /* since we've relayed data, we'll setup again */
         return;
     }
 }

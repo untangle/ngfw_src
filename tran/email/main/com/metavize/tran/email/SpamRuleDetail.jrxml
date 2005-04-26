@@ -202,11 +202,11 @@ null == $F{RCOL3A} ? $F{RCOL3B} : $F{RCOL3A}
                     <font fontName="SansSerif"/>
                 </textElement>
                 <textFieldExpression class="java.lang.String"><![CDATA[
-(true == $F{RCOL2}.equals("P") ? "pass message" :
+(true == $F{RCOL2}.equals("M") ? "mark message" :
 (true == $F{RCOL2}.equals("B") ? "block message" :
 (true == $F{RCOL2}.equals("S") ? "block/warn sndr" :
 (true == $F{RCOL2}.equals("R") ? "block/warn rcvr" :
-(true == $F{RCOL2}.equals("A") ? "block/warn both" : "pass message" )))))
+(true == $F{RCOL2}.equals("A") ? "block/warn both" : "mark message" )))))
                  ]]></textFieldExpression>
             </textField>
             <line>

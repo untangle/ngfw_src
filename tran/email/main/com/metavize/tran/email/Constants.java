@@ -37,7 +37,7 @@ public class Constants
     public final static int LAST_ACTION = 5;
 
     /* spam actions */
-    public final static String SSPASS = Action.PASS.toString();
+    public final static String SSMARK = Action.MARK.toString();
     public final static String SSBLOCK = Action.BLOCK.toString();
     public final static String SSFANDWSENDR = Action.BLOCK_AND_WARN_SENDER.toString();
     public final static String SSFANDWRECVR = Action.BLOCK_AND_WARN_RECEIVER.toString();
@@ -174,7 +174,7 @@ public class Constants
     public final static int CSBLOCK = 0; /* custom copy on block */
     public final static int ASBLOCK = 1; /* spam copy on block */
     public final static int AVBLOCK = 2; /* virus copy on block */
-    public final static int REJECT = 3; /* message size limit reject */
+    public final static int RELAY = 3; /* message relay size limit */
 
     public final static byte NULLBA[] = { '*', '*', '*' };
 
@@ -187,8 +187,8 @@ public class Constants
     public final static byte BLOCKASBODYBA[] = { 'A', 'n', ' ', 'e', '-', 'm', 'a', 'i', 'l', ' ', 'a', 'n', 't', 'i', '-', 's', 'p', 'a', 'm', ' ', 'r', 'u', 'l', 'e', ' ', 'h', 'a', 's', ' ', 'b', 'l', 'o', 'c', 'k', 'e', 'd', ' ', 't', 'h', 'e', ' ', 'd', 'e', 'l', 'i', 'v', 'e', 'r', 'y', ' ', 'o', 'f', ' ', 't', 'h', 'i', 's', ' ', 'm', 'e', 's', 's', 'a', 'g', 'e', '.', 13, 10 };
     /* anti-virus block body */
     public final static byte BLOCKAVBODYBA[] = { 'A', 'n', ' ', 'e', '-', 'm', 'a', 'i', 'l', ' ', 'a', 'n', 't', 'i', '-', 'v', 'i', 'r', 'u', 's', ' ', 'r', 'u', 'l', 'e', ' ', 'h', 'a', 's', ' ', 'b', 'l', 'o', 'c', 'k', 'e', 'd', ' ', 't', 'h', 'e', ' ', 'd', 'e', 'l', 'i', 'v', 'e', 'r', 'y', ' ', 'o', 'f', ' ', 't', 'h', 'i', 's', ' ', 'm', 'e', 's', 's', 'a', 'g', 'e', '.', 13, 10 };
-    /* message exceeds size limit reject body */
-    public final static byte REJECTBODYBA[] = { 'T', 'h', 'i', 's', ' ', 'm', 'e', 's', 's', 'a', 'g', 'e', ' ', 'e', 'x', 'c', 'e', 'e', 'd', 's', ' ', 't', 'h', 'e', ' ', 'm', 'a', 'x', 'i', 'm', 'u', 'm', ' ', 'm', 'e', 's', 's', 'a', 'g', 'e', ' ', 's', 'i', 'z', 'e', ' ', 'l', 'i', 'm', 'i', 't', ' ', 'a', 'n', 'd', ' ', 'h', 'a', 's', ' ', 'b', 'e', 'e', 'n', ' ', 'b', 'l', 'o', 'c', 'k', 'e', 'd', '.', 13, 10 };
+//    /* message exceeds size limit reject body */
+//    public final static byte REJECTBODYBA[] = { 'T', 'h', 'i', 's', ' ', 'm', 'e', 's', 's', 'a', 'g', 'e', ' ', 'e', 'x', 'c', 'e', 'e', 'd', 's', ' ', 't', 'h', 'e', ' ', 'm', 'a', 'x', 'i', 'm', 'u', 'm', ' ', 'm', 'e', 's', 's', 'a', 'g', 'e', ' ', 's', 'i', 'z', 'e', ' ', 'l', 'i', 'm', 'i', 't', ' ', 'a', 'n', 'd', ' ', 'h', 'a', 's', ' ', 'b', 'e', 'e', 'n', ' ', 'b', 'l', 'o', 'c', 'k', 'e', 'd', '.', 13, 10 };
     /* common body */
     public final static byte BLOCKBODYAUTOBA[] = { '[', 'P', 'l', 'e', 'a', 's', 'e', ' ', 'd', 'o', ' ', 'n', 'o', 't', ' ', 'r', 'e', 'p', 'l', 'y', ' ', 't', 'o', ' ', 't', 'h', 'i', 's', ' ', 'a', 'u', 't', 'o', 'm', 'a', 't', 'e', 'd', ' ', 'm', 'e', 's', 's', 'a', 'g', 'e', '.', ']', 13, 10 };
     /* common body - copy note */

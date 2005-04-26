@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: MLLine.java,v 1.5 2005/03/17 02:18:58 cng Exp $
+ * $Id$
  */
 package com.metavize.tran.email;
 
@@ -74,7 +74,6 @@ public class MLLine
 
         return;
     }
-
 
     /* copy src list of text lines into new list of buffers or text lines
      * - we do not release src list objects

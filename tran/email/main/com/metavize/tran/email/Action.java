@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: Action.java,v 1.10 2005/03/11 03:34:57 cng Exp $
+ * $Id$
  */
 
 package com.metavize.tran.email;
@@ -24,7 +24,9 @@ public class Action implements Serializable
 
     private static final Map INSTANCES = new HashMap();
 
+    /* pass and mark are equivalent */
     public static final Action PASS = new Action('P', "pass message");
+    public static final Action MARK = new Action('M', "mark message");
     public static final Action BLOCK = new Action('B', "block message");
     public static final Action REPLACE = new Action('C', "replace attachment");
     public static final Action EXCHANGE = new Action('E', "exchange value");
@@ -34,6 +36,7 @@ public class Action implements Serializable
 
     static {
         INSTANCES.put(PASS.getKey(), PASS);
+        INSTANCES.put(MARK.getKey(), MARK);
         INSTANCES.put(BLOCK.getKey(), BLOCK);
         INSTANCES.put(REPLACE.getKey(), REPLACE);
         INSTANCES.put(EXCHANGE.getKey(), EXCHANGE);
@@ -117,7 +120,7 @@ public class Action implements Serializable
     public static Action[] spamValues()
     {
         Action[] result = new Action[SPAM_ACTION_CT];
-        result[0] = PASS;
+        result[0] = MARK;
         result[1] = BLOCK;
         result[2] = BLOCK_AND_WARN_SENDER;
         result[3] = BLOCK_AND_WARN_RECEIVER;

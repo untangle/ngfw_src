@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: XMailScannerCache.java,v 1.9 2005/03/11 21:07:03 cng Exp $
+ * $Id$
  */
 package com.metavize.tran.email;
 
@@ -94,7 +94,7 @@ public class XMailScannerCache
     private ScannerOptions zVirusInboundOptions, zVirusOutboundOptions;
     private static int iSpamScanner;
     private static int iVirusScanner;
-    private int iMsgSzLimit;
+    private int iMsgSzRelay;
     private int iSpamMsgSzLimit;
     private int iVirusMsgSzLimit;
     private boolean bCopyOnException;
@@ -173,7 +173,7 @@ public class XMailScannerCache
 
         zXMCache.zVirusRemoved = ByteBuffer.wrap(Constants.VIRUSREMOVEDBA, Constants.VIRUSREMOVEDBA.length, 0);
 
-        zXMCache.iMsgSzLimit = zCtl.getMsgSzLimit();
+        zXMCache.iMsgSzRelay = zCtl.getMsgSzLimit();
         zXMCache.iSpamMsgSzLimit = zCtl.getSpamMsgSzLimit();
         zXMCache.iVirusMsgSzLimit = zCtl.getVirusMsgSzLimit();
 
@@ -305,9 +305,9 @@ public class XMailScannerCache
         return zVirusRemoved;
     }
 
-    public int getMsgSzLimit()
+    public int getMsgSzRelay()
     {
-        return iMsgSzLimit;
+        return iMsgSzRelay;
     }
 
     public int getSpamMsgSzLimit()
@@ -371,6 +371,7 @@ public class XMailScannerCache
     }
 
     /* private methods */
+    /* build custom rules */
     private static SubCache build(CharsetEncoder zEncoder, List zList)
     {
         Integer zPassAction = new Integer(Constants.PASS_ACTION);
@@ -597,7 +598,7 @@ public class XMailScannerCache
         zLog.debug("report POP3 error when blocking message: " + zXMCache.bReturnErrOnPOP3Block);
         zLog.debug("report IMAP4 error when blocking message: " + zXMCache.bReturnErrOnIMAP4Block);
 
-        zLog.debug("message size limit: " + zXMCache.iMsgSzLimit);
+        zLog.debug("message relay size: " + zXMCache.iMsgSzRelay);
 
         SScanner zSScanner = zCtl.getSpamScanner();
         zLog.debug("use anti-spam scanner: " + zSScanner + " (" + iSpamScanner + ")");

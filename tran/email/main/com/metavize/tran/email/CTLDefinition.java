@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: CTLDefinition.java,v 1.9 2005/03/16 04:00:03 cng Exp $
+ * $Id$
  */
 
 package com.metavize.tran.email;
@@ -31,6 +31,11 @@ public class CTLDefinition implements Serializable
     public static final int MSG_SZ_LIMIT_MIN = 2048;
 
     public static final String NO_DETAILS = "no description";
+    private static final String IMAP4PM_DETAILS = "e-mail address of IMAP4 postmaster account to use for automated messages";
+    private static final String POP3PM_DETAILS = "e-mail address of POP3 postmaster account to use for automated messages";
+    private static final String MSGSZRELAY_DETAILS = "do not process message larger than this size";
+    private static final String SPAMSZLIMIT_DETAILS = "if processing message, do not scan message larger than this size for spam";
+    private static final String VIRUSSZLIMIT_DETAILS = "if processing message, do not scan message larger than this size for virus";
 
     /* settings */
     private SScanner spamScanner = SScanner.SPAMAS;
@@ -38,14 +43,14 @@ public class CTLDefinition implements Serializable
     private String pop3Postmaster = "POP3 Postmaster <postmaster@localhost>";
     private String imap4Postmaster = "IMAP4 Postmaster <postmaster@localhost>";
     private boolean copyOnException = false;
-    private int msgSzLimit = 8388608;
+    private int msgSzRelay = 1048576;
     private int spamMsgSzLimit = 262144;
-    private int virusMsgSzLimit = MSG_SZ_LIMIT_MAX;
-    private String imap4PostmasterDetails = NO_DETAILS;
-    private String pop3PostmasterDetails = NO_DETAILS;
-    private String msgSzLimitDetails = NO_DETAILS;
-    private String spamSzLimitDetails = NO_DETAILS;
-    private String virusSzLimitDetails = NO_DETAILS;
+    private int virusMsgSzLimit = 1048576;
+    private String pop3PostmasterDetails = POP3PM_DETAILS;
+    private String imap4PostmasterDetails = IMAP4PM_DETAILS;
+    private String msgSzRelayDetails = MSGSZRELAY_DETAILS;
+    private String spamSzLimitDetails = SPAMSZLIMIT_DETAILS;
+    private String virusSzLimitDetails = VIRUSSZLIMIT_DETAILS;
     private String alertsDetails = NO_DETAILS;
     private String logDetails = NO_DETAILS;
     private boolean returnErrOnSMTPBlock = false;
@@ -212,25 +217,25 @@ public class CTLDefinition implements Serializable
     }
 
     /**
-     * - msgSzLimit: an int specifying the maximum size (in bytes) of a message to send/receive (message must be 2KB or greater but less than 10MB - we enforce minimum message size limit because we may need to access message header later and assume that header will always fit in 1st 2KB) (defaults to 8MB)
+     * - msgSzRelay: an int specifying the maximum size (in bytes) of a message to relay (message must be 2KB or greater - we enforce minimum message size limit because we may need to access message header later and assume that header will always fit in 1st 2KB) (defaults to 1MB)
      *
-     * @return how big a message to allow
+     * @return how big a message to ignore (relay)
      * @hibernate.property
      * column="MSG_SZ_LIMIT"
      */
     public int getMsgSzLimit()
     {
-        return msgSzLimit;
+        return msgSzRelay;
     }
 
-    public void setMsgSzLimit(int msgSzLimit)
+    public void setMsgSzLimit(int msgSzRelay)
     {
         // Guard XXX
-        this.msgSzLimit = msgSzLimit;
+        this.msgSzRelay = msgSzRelay;
     }
 
     /**
-     * - spamMsgSzLimit: an int specifying the maximum size (in bytes) of a message to scan for spam (if size is -1, then all messages (up to msgSzLimit in size) will be scanned) (defaults to 256Kb == 262,144b)
+     * - spamMsgSzLimit: an int specifying the maximum size (in bytes) of a message to scan for spam (if size is -1, then all messages (up to 10MB in size) will be scanned) (defaults to 256Kb == 262,144b)
      *
      * @return maximum size of messages to scan for spam
      * @hibernate.property
@@ -248,7 +253,7 @@ public class CTLDefinition implements Serializable
     }
 
     /**
-     * - virusMsgSzLimit: an int specifying the maximum size (in bytes) of a message to scan for viruses (if size is -1, then all messages (up to msgSzLimit in size) will be scanned) (defaults to -1)
+     * - virusMsgSzLimit: an int specifying the maximum size (in bytes) of a message to scan for viruses (if size is -1, then all messages (up to 10MB in size) will be scanned) (defaults to -1)
      *
      * @return maximum size of messages to scan for virus
      * @hibernate.property
@@ -317,7 +322,7 @@ public class CTLDefinition implements Serializable
     }
 
     /**
-     * - imap4PostmasterDetails: a string giving details of imap4Postmaster field, defaults to NO_DETAILS
+     * - imap4PostmasterDetails: a string giving details of imap4Postmaster field, defaults to IMAP4PM_DETAILS
      *
      * @return the imap4Postmaster details
      * @hibernate.property
@@ -334,7 +339,7 @@ public class CTLDefinition implements Serializable
     }
 
     /**
-     * - pop3PostmasterDetails: a string giving details of pop3Postmaster field, defaults to NO_DETAILS
+     * - pop3PostmasterDetails: a string giving details of pop3Postmaster field, defaults to POP3PM_DETAILS
      *
      * @return the pop3Postmaster details
      * @hibernate.property
@@ -351,24 +356,24 @@ public class CTLDefinition implements Serializable
     }
 
     /**
-     * - msgSzLimitDetails: a string giving details of msgSzLimit field, defaults to NO_DETAILS
+     * - msgSzRelayDetails: a string giving details of msgSzRelay field, defaults to MSGSZRELAY_DETAILS
      *
-     * @return the msgSzLimit details
+     * @return the msgSzRelay details
      * @hibernate.property
      * column="DETAILS_MSG_SZ_LIMIT"
      */
     public String getMsgSzLimitDetails()
     {
-        return msgSzLimitDetails;
+        return msgSzRelayDetails;
     }
 
-    public void setMsgSzLimitDetails(String msgSzLimitDetails)
+    public void setMsgSzLimitDetails(String msgSzRelayDetails)
     {
-        this.msgSzLimitDetails = msgSzLimitDetails;
+        this.msgSzRelayDetails = msgSzRelayDetails;
     }
 
     /**
-     * - spamSzLimitDetails: a string giving details of spamSzLimit field, defaults to NO_DETAILS
+     * - spamSzLimitDetails: a string giving details of spamSzLimit field, defaults to SPAMSZLIMIT_DETAILS
      *
      * @return the spamSzLimit details
      * @hibernate.property
@@ -385,7 +390,7 @@ public class CTLDefinition implements Serializable
     }
 
     /**
-     * - virusSzLimitDetails: a string giving details of virusSzLimit field, defaults to NO_DETAILS
+     * - virusSzLimitDetails: a string giving details of virusSzLimit field, defaults to VIRUSSZLIMIT_DETAILS
      *
      * @return the virusSzLimit details
      * @hibernate.property

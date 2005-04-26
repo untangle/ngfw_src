@@ -152,8 +152,6 @@ public class MLHandler
     private final static int MAX_LINE_SZ = 65536;
     private final static int EOS = -1; /* end of stream indicator */
 
-    private final static int REJECT_BUFFER_CT = 10;
-
     private final static byte NOUSERBA[] = { 'U', 'n', 'k', 'n', 'o', 'w', 'n', 'U', 's', 'e', 'r' };
 
     /* class variables */
@@ -163,6 +161,7 @@ public class MLHandler
 
     protected StateMachine zStateMachine;
     protected CBufferWrapper zCDummy; /* for temp use only */
+    //protected CBufferWrapper zCPass;
     protected CBufferWrapper zUserName;
     protected CBufferWrapper zNoUser;
 
@@ -172,12 +171,11 @@ public class MLHandler
     protected MLMessageInfo zMsgInfo;
     protected ArrayList zMsgDatas; /* reference copy of message data */
     protected Integer zReadDataSz; /* expected size of message */
-    protected int iReadDataLimit;
-    protected int iRejectedCt;
-    protected boolean bRejectData;
+    protected int iReadDataRelay;
+    protected boolean bRelayData;
 
     protected ByteBuffer zPostmaster = null;
-    protected int iMsgSzLimit = Constants.NO_MSGSZ_LIMIT;
+    protected int iMsgSzRelay = Constants.NO_MSGSZ_LIMIT;
     protected boolean bReturnErr = false;
 
     /* endpoint that sends message
@@ -193,6 +191,7 @@ public class MLHandler
     {
         zStateMachine = new StateMachine();
         zCDummy = new CBufferWrapper(null);
+        //zCPass = new CBufferWrapper(null);
 
         zUserName = zNoUser = new CBufferWrapper(ByteBuffer.wrap(NOUSERBA, NOUSERBA.length, 0));
     }
@@ -428,8 +427,9 @@ public class MLHandler
     }
 
     /* private methods */
-    protected void setReadLine(TCPSession zSession)
+    protected void setLineBuffer(TCPSession zSession)
     {
+        zLog.debug("set line buffer");
         zSession.clientLineBuffering(true);
         zSession.serverLineBuffering(true);
         zSession.clientReadLimit(MLHandler.READSZ);
@@ -437,8 +437,9 @@ public class MLHandler
         return;
     }
 
-    protected void setReadData(TCPSession zSession)
+    protected void unsetLineBuffer(TCPSession zSession)
     {
+        zLog.debug("unset line buffer");
         zSession.clientLineBuffering(false);
         zSession.serverLineBuffering(false);
         zSession.clientReadLimit(MLHandler.READDATASZ);
@@ -464,8 +465,8 @@ public class MLHandler
          * line limit indicates location of end of data
          */
         ByteBuffer zLine = zEvent.chunk();
-        int iPosition = zLine.limit();
-        if (0 == iPosition)
+        int iLimit = zLine.limit();
+        if (0 == iLimit)
         {
             /* buffer is empty - retry read operation */
             zLog.debug("readline (empty - read more)");
@@ -474,7 +475,7 @@ public class MLHandler
         }
 
         /* reset line position so that we can work with data */
-        zLine.position(iPosition);
+        zLine.position(iLimit);
 
         CBufferWrapper zCLine = zEnv.getReadCLine();
         if (null == zCLine)
@@ -491,7 +492,7 @@ public class MLHandler
 
         if (true == isMatch(zCLine, zEOLPattern))
         {
-            copyLine(zCLine);
+            readLine(zCLine);
 
             /* if we have complete line,
              * we'll let caller decide what result to return
@@ -499,7 +500,7 @@ public class MLHandler
             return true;
         }
 
-        if (zLine.capacity() == iPosition)
+        if (zLine.capacity() == iLimit)
         {
             /* line does not end with EOL
              * - although data can be fragmented,
@@ -530,7 +531,7 @@ public class MLHandler
      * - returns true if data block is complete or
      *           false if data block is incomplete
      */
-    protected boolean readData(TCPChunkEvent zEvent, XMSEnv zEnv, ArrayList zDatas, Pattern zEOLPattern, Pattern zEODPattern) throws ReadException
+    protected boolean readData(TCPChunkEvent zEvent, XMSEnv zEnv, Pattern zEOLPattern, Pattern zEODPattern) throws ReadException
     {
         /* by default,
          * when line is returned,
@@ -538,8 +539,8 @@ public class MLHandler
          * line limit indicates location of end of data
          */
         ByteBuffer zLine = zEvent.chunk();
-        int iPosition = zLine.limit();
-        if (0 == iPosition)
+        int iLimit = zLine.limit();
+        if (0 == iLimit)
         {
             /* buffer is empty - retry read operation */
             zLog.debug("readdata (empty - read more)");
@@ -548,7 +549,7 @@ public class MLHandler
         }
 
         /* reset line position so that we can work with data */
-        zLine.position(iPosition);
+        zLine.position(iLimit);
         CBufferWrapper zCLine = new CBufferWrapper(zLine);
         //zLog.debug("readdata: " + zCLine + ", " + zLine);
 
@@ -565,7 +566,7 @@ public class MLHandler
                  *  before client can send additional commands and
                  *  server only sends replies after client issues commands)
                  */
-                zEnv.incrementReadDataCt(copyData(zCLine, zDatas, zEOLPattern));
+                zEnv.incrementReadDataCt(readData(zCLine, zEOLPattern));
 
                 /* if we have complete data,
                  * we'll let caller decide what result to return
@@ -604,13 +605,13 @@ public class MLHandler
              * buffer does not contain any EOL
              * (e.g., buffer is very long)
              */
-            if (zLine.capacity() == iPosition)
+            if (zLine.capacity() == iLimit)
             {
                 /* this buffer is too long and does not contain EOL
                  * so copy buffer (FRAGSZ bytes)
                  * (we will not append EOL to any fragment)
                  */
-                zEnv.incrementReadDataCt(copyData(zCLine, zDatas, zEOLPattern));
+                zEnv.incrementReadDataCt(readData(zCLine, zEOLPattern));
 
                 ///* line does not contain EOL
                 // * - although data can be fragmented,
@@ -627,7 +628,7 @@ public class MLHandler
         }
         else
         {
-            zEnv.incrementReadDataCt(copyData(zCLine, zDatas, zEOLPattern));
+            zEnv.incrementReadDataCt(readData(zCLine, zEOLPattern));
 
             /* note that since we may have modified original read buffer,
              * we cannot use READ_MORE_NO_WRITE here
@@ -640,10 +641,46 @@ public class MLHandler
         return false;
     }
 
+    /* count data in read buffer
+     * (note that each buffer may contain multiple text lines)
+     */
+    protected void countData(TCPChunkEvent zEvent, XMSEnv zEnv) throws ReadException
+    {
+        /* by default,
+         * when line is returned,
+         * line position is set to 0 and
+         * line limit indicates location of end of data
+         */
+        ByteBuffer zLine = zEvent.chunk();
+        int iLimit = zLine.limit();
+        if (0 == iLimit)
+        {
+            /* buffer is empty - retry read operation */
+            zLog.debug("countdata (empty - read more)");
+            zEnv.setFixedResult(Constants.READ_MORE_NO_WRITE);
+            return;
+        }
+
+        zEnv.incrementReadDataCt(iLimit);
+
+        /* we only count data and will not copy it;
+         * pass it through
+         */
+        zEnv.setFixedResult(Constants.PASS_THROUGH);
+
+        //int iPosition = zLine.position();
+        //zLine.position(iLimit);
+        //zCPass.renew(zLine);
+        //zLog.debug("countdata: " + zCPass + ", " + zLine);
+        //zLine.position(iPosition);
+
+        return;
+    }
+
     /* replace Smith buffer with private copy of buffer
      * (copy contents of current backing buffer to new buffer)
      */
-    private static int copyLine(CBufferWrapper zCLine) throws ReadException
+    private static int readLine(CBufferWrapper zCLine) throws ReadException
     {
         ByteBuffer zLine = zCLine.get(); /* get source buffer for copy op */
         zLine.rewind();
@@ -672,7 +709,7 @@ public class MLHandler
     /* replace Smith buffer with private copy of buffer
      * (copy each line in current backing buffer to new individual buffer)
      */
-    private int copyData(CBufferWrapper zCLine, ArrayList zList, Pattern zEOLPattern) throws ReadException
+    private int readData(CBufferWrapper zCLine, Pattern zEOLPattern) throws ReadException
     {
         ByteBuffer zLine = zCLine.get(); /* get source buffer for copy op */
         int iLimit = zLine.limit();
@@ -724,7 +761,7 @@ public class MLHandler
                 {
                     zTmpCLine.renew(zLine);
                 }
-                int iFragSz = copyFrag(zTmpCLine, zList);
+                int iFragSz = readFrag(zTmpCLine);
                 zTmpCLine = null;
 
                 iSz += iFragSz;
@@ -767,7 +804,7 @@ public class MLHandler
             }
             //zLog.debug("copy multi: " + zTmpCLine + ", " + zCopyLine + ", " + zLine);
 
-            zList.add(zTmpCLine);
+            zMsgDatas.add(zTmpCLine);
             zTmpCLine = null;
 
             iSz += iCopySz;
@@ -782,7 +819,7 @@ public class MLHandler
     }
 
     /* break very long line (that does not end with EOL) into fragment(s) */
-    private int copyFrag(CBufferWrapper zTmpCLine, ArrayList zList) throws ReadException
+    private int readFrag(CBufferWrapper zTmpCLine) throws ReadException
     {
         ByteBuffer zLine = zTmpCLine.get();
         int iPosition = zLine.position();
@@ -821,7 +858,7 @@ public class MLHandler
             }
             //zLog.debug("copy frag: " + zTmpCLine + ", " + zCopyLine + ", " + zLine);
 
-            zList.add(zTmpCLine);
+            zMsgDatas.add(zTmpCLine);
             zTmpCLine = null;
 
             zLine.limit(iLimit); /* restore (to calculate remaining) */
@@ -836,7 +873,7 @@ public class MLHandler
         IPDataResult zResult = zEnv.getFixedResult();
         if (null != zResult)
         {
-            zLog.debug("write: from " + (Constants.CLIENT == iDriver ? "c" : "s") + ", return fixed: " + zResult);
+            zLog.debug("write: drvr: " + (Constants.CLIENT == iDriver ? "c" : "s") + ", return fixed: " + zResult);
             zEnv.setFixedResult(null); /* set up for next write */
             return zResult;
         }
@@ -844,8 +881,8 @@ public class MLHandler
         ArrayList zToDrivers = zEnv.getToDriver();
         ArrayList zToPassengers = zEnv.getToPassenger();
 
-        ByteBuffer azToClient[];
-        ByteBuffer azToServer[];
+        Object zToClnt;
+        Object zToSrvr;
         Iterator zIter;
         int iIdx;
 
@@ -856,21 +893,21 @@ public class MLHandler
             if (false == zToDrivers.isEmpty())
             {
                 zLog.debug("write: (c2c) mult lines: " + zToDrivers.size());
-                azToClient = concat(zToDrivers);
+                zToClnt = writeData(zToDrivers);
             }
             else
             {
-                azToClient = null;
+                zToClnt = null;
             }
 
             if (false == zToPassengers.isEmpty())
             {
                 zLog.debug("write: (c2s) mult lines: " + zToPassengers.size());
-                azToServer = concat(zToPassengers);
+                zToSrvr = writeData(zToPassengers);
             }
             else
             {
-                azToServer = null;
+                zToSrvr = null;
             }
 
             break;
@@ -879,51 +916,146 @@ public class MLHandler
             if (false == zToDrivers.isEmpty())
             {
                 zLog.debug("write: (s2s) mult lines: " + zToDrivers.size());
-                azToServer = concat(zToDrivers);
+                zToSrvr = writeData(zToDrivers);
             }
             else
             {
-                azToServer = null;
+                zToSrvr = null;
             }
 
             if (false == zToPassengers.isEmpty())
             {
                 zLog.debug("write: (s2c) mult lines: " + zToPassengers.size());
-                azToClient = concat(zToPassengers);
+                zToClnt = writeData(zToPassengers);
             }
             else
             {
-                azToClient = null;
+                zToClnt = null;
             }
 
             break;
         }
 
-        ByteBuffer zLine = zEvent.chunk(); /* recycle original read buffer */
-        zLog.debug("write: from " + (Constants.CLIENT == iDriver ? "c" : "s") + ", return 2c: " + azToClient + ", 2s: " + azToServer + ", read: " + zLine);
+        TCPSession zSession = zEvent.session();
+        ByteBuffer zLine = zEvent.chunk();
+
+        ArrayList zWriteDatas;
+
+        /* when we stream data (to client or server),
+         * we've read data in large buffers
+         * - we may stream
+         *   after we've read all data
+         *   (e.g., data is complete; read buffer is empty) or
+         *   after we've read some data
+         *   but determined that we cannot read all data
+         *   (e.g., too much data; read buffer may not be empty
+         *    - during last read, we may have left data remnant in read buffer)
+         *   - if latter case occurs,
+         *     we append data remnant to stream because
+         *     DO_NOT_PASS will clear/destroy data remnant
+         */
+
+        if (null != zToClnt &&
+            true == (zToClnt instanceof ArrayList))
+        {
+            zWriteDatas = (ArrayList) zToClnt;
+
+            /* we use position to check for data remnant because
+             * after we've read what we wanted from read buffer,
+             * we compacted read buffer
+             */
+            if (0 != zLine.position())
+            {
+                //zLog.debug("adding fragment in read buffer to stream: " + zCDummy.renew(zLine) + ", " + zLine);
+                zLog.debug("adding fragment in read buffer to stream: " + zLine);
+                zLine.flip();
+                zWriteDatas.add(zLine);
+            }
+
+            zLog.debug("write: drvr: " + (Constants.CLIENT == iDriver ? "c" : "s") + ", stream 2c: " + zWriteDatas.size() + " lines");
+            zSession.beginClientStream(new MLStreamer(zWriteDatas));
+
+            zLog.debug("write: drvr: " + (Constants.CLIENT == iDriver ? "c" : "s") + ", return fixed: " + Constants.DO_NOT_PASS);
+            return Constants.DO_NOT_PASS;
+        }
+
+        if (null != zToSrvr &&
+            true == (zToSrvr instanceof ArrayList))
+        {
+            zWriteDatas = (ArrayList) zToSrvr;
+
+            /* we use position to check for data remnant because
+             * after we've read what we wanted from read buffer,
+             * we compacted read buffer
+             */
+            if (0 != zLine.position())
+            {
+                //zLog.debug("adding fragment in read buffer to stream: " + zCDummy.renew(zLine) + ", " + zLine);
+                zLog.debug("adding fragment in read buffer to stream: " + zLine);
+                zLine.flip();
+                zWriteDatas.add(zLine);
+            }
+
+            zLog.debug("write: drvr: " + (Constants.CLIENT == iDriver ? "c" : "s") + ", stream 2s: " + zWriteDatas.size() + " lines");
+            zSession.beginServerStream(new MLStreamer(zWriteDatas));
+
+            zLog.debug("write: drvr: " + (Constants.CLIENT == iDriver ? "c" : "s") + ", return fixed: " + Constants.DO_NOT_PASS);
+            return Constants.DO_NOT_PASS;
+        }
+
+        ByteBuffer azToClient[];
+        ByteBuffer azToServer[];
+
+        if (null != zToClnt &&
+            true == (zToClnt instanceof ByteBuffer))
+        {
+            azToClient = new ByteBuffer[] { ((ByteBuffer) zToClnt) };
+        }
+        else
+        {
+            azToClient = null;
+        }
+
+        if (null != zToSrvr &&
+            true == (zToSrvr instanceof ByteBuffer))
+        {
+            azToServer = new ByteBuffer[] { ((ByteBuffer) zToSrvr) };
+        }
+        else
+        {
+            azToServer = null;
+        }
+
+        /* we'll recycle original read buffer */
+        zLog.debug("write: drvr: " + (Constants.CLIENT == iDriver ? "c" : "s") + ", return 2c: " + azToClient + ", 2s: " + azToServer + ", read: " + zLine);
         return new TCPChunkResult(azToClient, azToServer, zLine);
     }
 
-    /* to maximize performance, we send lines as large chunks of data
-     * rather than send each line "separately"
+    /* for each single line,
+     * we write each line "separately" as result
+     *
+     * for multiple lines,
+     * to maximize performance,
+     * we stream these lines as multiple chunks of data
+     * (rather than write these lines "separately" as results)
      */
-    private ByteBuffer[] concat(ArrayList zList)
+    private Object writeData(ArrayList zList)
     {
         ByteBuffer zLine;
 
+        /* if list only contains single element,
+         * we have no lines to concat
+         */
         if (1 == zList.size())
         {
-            /* if list only contains single element,
-             * we have no lines to concat
-             */
-            ByteBuffer azDataSE[] = new ByteBuffer[1];
             zLine = (ByteBuffer) zList.get(0);
             //zLog.debug("write: one line: " + zCDummy.renew(zLine) + ", " + zLine);
+            zList.clear(); /* recycle; set up for next write */
+
             zLine.rewind();
-            azDataSE[0] = zLine;
-            zList.clear(); /* set up for next write */
-            return azDataSE;
+            return zLine;
         }
+        /* else we have multiple lines to concat */
 
         ListIterator zLIter;
         int iDivisor = 0;
@@ -964,6 +1096,9 @@ public class MLHandler
 
             if (zLine.position() > zNewLine.remaining())
             {
+                //zLog.debug("write: new line: " + zCDummy.renew(zNewLine) + ", " + zNewLine);
+                zNewLine.flip(); /* we use flip to set limit since we didn't allocate buffer to exact size */
+
                 /* new line is full, get another */
                 zNewLine = ByteBuffer.allocate(iMaxLineSz);
                 zNewList.add(zNewLine);
@@ -973,30 +1108,18 @@ public class MLHandler
             zLine.rewind();
             zNewLine.put(zLine); /* concat org line into new line */
         }
-        zList.clear(); /* set up for next write */
 
-        ByteBuffer azData[] = new ByteBuffer[zNewList.size()];
-        int iIdx = 0;
+        /* handle last line */
+        //zLog.debug("write: new line: " + zCDummy.renew(zNewLine) + ", " + zNewLine);
+        zNewLine.flip(); /* we use flip to set limit since we didn't allocate buffer to exact size */
 
-        for (zLIter = zNewList.listIterator(); true == zLIter.hasNext(); )
-        {
-            zNewLine = (ByteBuffer) zLIter.next();
-            zLIter.set(null); /* release reference; let GC process it */
-            //zLog.debug("write: new line: " + zCDummy.renew(zNewLine) + ", " + zNewLine);
-            zNewLine.flip(); /* we use flip to set limit since we didn't allocate buffer to exact size */
-            azData[iIdx++] = zNewLine;
-        }
-        zNewList.clear();
+        zList.clear(); /* recycle (should be no-op); set up for next write */
 
-        return azData;
+        return zNewList;
     }
 
-    /* cache info from message header to build warning and
-     * buffer/discard parts of this message
-     * (we only keep last REJECT_BUFFER_CT buffers that we have read)
-     * so that we can search these buffers for EODATA sequence
-     */
-    protected void setupWarning(XMSEnv zEnv)
+    /* we use cached info from message header to build warning */
+    protected void setupWarningEvent(XMSEnv zEnv)
     {
         try
         {
@@ -1011,33 +1134,6 @@ public class MLHandler
         zWarningInfo = new WarningInfo(zMsg);
         zMsg.reset();
 
-        int iCnt = zMsgDatas.size() - REJECT_BUFFER_CT;
-        if (0 < iCnt)
-        {
-            CBufferWrapper zCLine;
-            int iIdx;
-
-            for (iIdx = 0; iIdx < iCnt; iIdx++)
-            {
-                zCLine = (CBufferWrapper) zMsgDatas.get(iIdx);
-                iRejectedCt += zCLine.length(); /* count discarded buffer */
-                /* WarningInfo selectively references parts of message header
-                 * so let GC figure out what it can process;
-                 * we do not explicitly release message header for GC
-                 */
-                //zCLine.renew(null);
-            }
-
-            /* we can't use removeRange because it is protected method;
-             * we'll indirectly remove elements in range that interests us
-             * by defining this range as sublist (of source list) and
-             * clearing sublist
-             * - sublist includes 0 but excludes iCnt
-             * - changes to sublist also change backing (source) list
-             */
-            zMsgDatas.subList(0, iCnt).clear();
-        }
-
         return;
     }
 
@@ -1049,14 +1145,6 @@ public class MLHandler
     protected ArrayList stripEOD()
     {
         int iMsgSz = zMsg.getSize();
-        if (0 < iRejectedCt)
-        {
-            /* discount # of bytes, from buffers that we've discarded,
-             * from message size
-             */
-            iMsgSz -= iRejectedCt;
-        }
-
         CBufferWrapper zCLine = null;
         int iCnt = zMsgDatas.size();
 
@@ -1235,86 +1323,15 @@ public class MLHandler
          * warn recipient that this message has been blocked
          */
 
-        setupWarning(zEnv);
+        setupWarningEvent(zEnv);
         buildWarning(zEnv, zTmpFile, iType);
         return;
     }
 
-    protected void rejectData()
-    {
-        if (REJECT_BUFFER_CT < zMsgDatas.size())
-        {
-            /* we only keep last REJECT_BUFFER_CT buffers that we have read
-             * - we need these buffers to search for EODATA sequence
-             */
-            CBufferWrapper zCLine = (CBufferWrapper) zMsgDatas.remove(0);
-            iRejectedCt += zCLine.length(); /* count discarded buffer */
-            /* WarningInfo does not reference these parts of message
-             * so we can explicitly release this data;
-             * let GC process it
-             */
-            zCLine.renew(null);
-        }
-
-        /* we don't clear/reset read data size;
-         * we continue to monitor # of data bytes read
-         */
-        return;
-    }
-
-    /* reject (block) message because it exceeds size limit */
-    protected void rejectEOData(TCPChunkEvent zEvent, XMSEnv zEnv, ByteBuffer zOKLine, ByteBuffer zErrLine)
+    protected void logRelayEvent(XMSEnv zEnv)
     {
         zMsgInfo.setSize(zEnv.getReadDataCt());
-        zUserLog.info(new SizeLimitEvent(zMsgInfo));
-
-        flushMsg(zEnv); /* flush any message remnants */
-        zReadDataSz = null; /* clear now even though we'll setup soon */
-
-        if (true == bReturnErr)
-        {
-            /* reject message and send err reply */
-            zLog.debug("reject msg and report msg err");
-
-            /* we will not ack EODATA with pseudo-server reply (OK)
-             * - instead, we'll reject message with pseudo-server reply (ERR)
-             */
-            zEnv.sendToDriver(zErrLine);
-            zEnv.clearReadCLine();
-            return;
-        }
-        /* else silently reject message */
-
-        /* we did not ack EODATA with pseudo-server reply (OK) yet
-         * - we'll send pseudo-server reply now
-         */
-        zEnv.sendToDriver(zOKLine);
-        zEnv.clearReadCLine();
-        return;
-    }
-
-    protected void rejectEOData(TCPChunkEvent zEvent, XMSEnv zEnv, ByteBuffer zErrLine, int iType)
-    {
-        zMsgInfo.setSize(zEnv.getReadDataCt());
-        zUserLog.info(new SizeLimitEvent(zMsgInfo));
-
-        if (true == bReturnErr)
-        {
-            /* reject message and send err reply */
-            zLog.debug("reject msg and report msg err");
-
-            flushMsg(zEnv); /* flush any message remnants */
-            zReadDataSz = null; /* clear now even though we'll setup soon */
-
-            zEnv.sendToDriver(zErrLine);
-            zEnv.clearReadCLine();
-            return;
-        }
-        /* else reject message and
-         * warn recipient that this message has been rejected
-         */
-
-        buildWarning(zEnv, null, iType);
+        zUserLog.info(new SizeRelayEvent(zMsgInfo));
         return;
     }
 
@@ -1488,10 +1505,6 @@ public class MLHandler
 
         case Constants.ASBLOCK:
             zBodyLine = ByteBuffer.wrap(Constants.BLOCKASBODYBA, Constants.BLOCKASBODYBA.length, 0);
-            break;
-
-        case Constants.REJECT:
-            zBodyLine = ByteBuffer.wrap(Constants.REJECTBODYBA, Constants.REJECTBODYBA.length, 0);
             break;
 
         default:

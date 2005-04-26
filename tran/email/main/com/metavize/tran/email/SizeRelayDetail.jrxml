@@ -2,7 +2,7 @@
 <!-- Created using an evaluation version of JasperAssistant (http://www.jasperassistant.com) -->
 <!DOCTYPE jasperReport PUBLIC "-//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
 
-<jasperReport name="VirusRuleDetail" whenNoDataType="AllSectionsNoDetail" pageWidth="612" pageHeight="791" columnWidth="572" leftMargin="20" rightMargin="20" topMargin="30" bottomMargin="30">
+<jasperReport name="SizeRelayDetail" whenNoDataType="AllSectionsNoDetail" pageWidth="612" pageHeight="791" columnWidth="572" leftMargin="20" rightMargin="20" topMargin="30" bottomMargin="30">
     <property name="com.jasperassistant.designer.GridWidth" value="12"/>
     <property name="com.jasperassistant.designer.GridHeight" value="12"/>
     <property name="com.jasperassistant.designer.HGuides" value="109,112,204,207,493,495"/>
@@ -15,8 +15,6 @@
     </parameter>
     <queryString><![CDATA[
 SELECT T1.time_stamp AS RCOL1,
-       T2.action AS RCOL2,
-       T2.vname AS RCOL5,
        T1.smtp_sender AS RCOL3A,
        T1.smtp_recipient AS RCOL6A,
        T1.rfc822_from as RCOL3B,
@@ -38,20 +36,14 @@ FROM
  WHERE time_stamp > $P{startTime} AND time_stamp < $P{endTime}
  ORDER BY msg_id) AS T1
 JOIN
-(SELECT msg_id,
-        action,
-        name as vname
- FROM tr_email_virus_evt
+(SELECT msg_id
+ FROM tr_email_szrelay_evt
  ORDER BY msg_id) AS T2
 USING (msg_id)
      ]]></queryString>
     <field name="RCOL1" class="java.sql.Timestamp">
     </field>
     <field name="RCOL7" class="java.lang.Integer">
-    </field>
-    <field name="RCOL5" class="java.lang.String">
-    </field>
-    <field name="RCOL2" class="java.lang.String">
     </field>
     <field name="RCOL3A" class="java.lang.String">
     </field>
@@ -81,7 +73,7 @@ USING (msg_id)
                 <textElement>
                     <font fontName="Bitstream Vera Sans" size="14" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
                 </textElement>
-                <text><![CDATA[Virus Rule Incidents]]></text>
+                <text><![CDATA[Messages not processed Incidents]]></text>
             </staticText>
             <textField pattern="">
                 <reportElement key="textField" mode="Opaque" x="0" y="50" width="305" height="15"/>
@@ -120,7 +112,7 @@ USING (msg_id)
                 <textElement>
                     <font size="9" isItalic="true"/>
                 </textElement>
-                <text><![CDATA[Virus Rule Incidents]]></text>
+                <text><![CDATA[Messages not processed Incidents]]></text>
             </staticText>
         </band>
     </pageHeader>
@@ -146,14 +138,14 @@ USING (msg_id)
                 <textElement>
                     <font isItalic="true"/>
                 </textElement>
-                <text><![CDATA[Action]]></text>
+                <text><![CDATA[]]></text>
             </staticText>
             <staticText>
                 <reportElement positionType="Float" x="112" y="14" width="92" height="12"/>
                 <textElement>
                     <font isItalic="true"/>
                 </textElement>
-                <text><![CDATA[Virus name]]></text>
+                <text><![CDATA[]]></text>
             </staticText>
             <staticText>
                 <reportElement positionType="Float" x="207" y="0" width="286" height="12"/>
@@ -201,14 +193,7 @@ null == $F{RCOL3A} ? $F{RCOL3B} : $F{RCOL3A}
                 <textElement>
                     <font fontName="SansSerif"/>
                 </textElement>
-                <textFieldExpression class="java.lang.String"><![CDATA[
-(true == $F{RCOL2}.equals("P") ? "pass message" :
-(true == $F{RCOL2}.equals("B") ? "block message" :
-(true == $F{RCOL2}.equals("C") ? "remove attachment" :
-(true == $F{RCOL2}.equals("S") ? "block/warn sndr" :
-(true == $F{RCOL2}.equals("R") ? "block/warn rcvr" :
-(true == $F{RCOL2}.equals("A") ? "block/warn both" : "pass message" ))))))
-                 ]]></textFieldExpression>
+                <textFieldExpression class="java.lang.String"><![CDATA[""]]></textFieldExpression>
             </textField>
             <line>
                 <reportElement positionType="Float" x="0" y="13" width="572" height="1" forecolor="#c0c0c0"/>
@@ -233,7 +218,7 @@ null == $F{RCOL6A} ? $F{RCOL6B}.concat("/").concat(null == $F{RCOL6C} ? "" : $F{
             <textField>
                 <reportElement positionType="Float" x="112" y="14" width="92" height="12"/>
                 <textElement/>
-                <textFieldExpression class="java.lang.String"><![CDATA[$F{RCOL5}]]></textFieldExpression>
+                <textFieldExpression class="java.lang.String"><![CDATA[""]]></textFieldExpression>
             </textField>
             <textField>
                 <reportElement positionType="Float" x="494" y="14" width="78" height="12"/>

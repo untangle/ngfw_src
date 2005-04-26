@@ -4,4 +4,4 @@ com/metavize/tran/email/EmailMaster2.jasper:summary-contd:Summary (continued)
 com/metavize/tran/email/SpamRuleDetail.jasper:spam:Spam Rule Incidents
 com/metavize/tran/email/VirusRuleDetail.jasper:virus:Virus Rule Incidents
 com/metavize/tran/email/CustomRuleDetail.jasper:custom:Custom Rule Incidents
-com/metavize/tran/email/SizeLimitDetail.jasper:szlimit:Message Size Limit Block Incidents
+com/metavize/tran/email/SizeRelayDetail.jasper:szlimit:Message not processed Incidents

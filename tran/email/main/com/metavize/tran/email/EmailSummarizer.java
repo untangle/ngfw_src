@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: EmailSummarizer.java,v 1.3 2005/03/15 04:33:05 cng Exp $
+ * $Id$
  */
 
 package com.metavize.tran.email;
@@ -31,10 +31,10 @@ public class EmailSummarizer extends BaseSummarizer {
         int blockCustomCnt = 0;
         //int exchangeCustomCnt = 0;
         int passCnt = 0;
-        int blockSzLimitCnt = 0;
+        int relaySzCnt = 0;
 
         try {
-            String sql = "select count(*) from tr_email_spam_evt where time_stamp >= ? and time_stamp < ? and (action != 'P')";
+            String sql = "SELECT COUNT(*) FROM tr_email_spam_evt WHERE time_stamp >= ? AND time_stamp < ? AND (action != 'P')";
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
@@ -44,7 +44,7 @@ public class EmailSummarizer extends BaseSummarizer {
             rs.close();
             ps.close();
 
-            sql = "select count(*) from tr_email_virus_evt where time_stamp >= ? and time_stamp < ? and (action != 'P' and action != 'C')";
+            sql = "SELECT COUNT(*) FROM tr_email_virus_evt WHERE time_stamp >= ? AND time_stamp < ? AND (action != 'P' AND action != 'C')";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
@@ -54,7 +54,7 @@ public class EmailSummarizer extends BaseSummarizer {
             rs.close();
             ps.close();
 
-            sql = "select count(*) from tr_email_virus_evt where time_stamp >= ? and time_stamp < ? and action = 'C'";
+            sql = "SELECT COUNT(*) FROM tr_email_virus_evt WHERE time_stamp >= ? AND time_stamp < ? AND action = 'C'";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
@@ -64,7 +64,7 @@ public class EmailSummarizer extends BaseSummarizer {
             rs.close();
             ps.close();
 
-            sql = "select count(*) from tr_email_custom_evt where time_stamp >= ? and time_stamp < ? and action = 'B'";
+            sql = "SELECT COUNT(*) FROM tr_email_custom_evt WHERE time_stamp >= ? AND time_stamp < ? AND action = 'B'";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
@@ -74,7 +74,7 @@ public class EmailSummarizer extends BaseSummarizer {
             rs.close();
             ps.close();
 
-            //sql = "select count(*) from tr_email_custom_evt where time_stamp >= ? and time_stamp < ? and action = 'E'";
+            //sql = "SELECT COUNT(*) FROM tr_email_custom_evt WHERE time_stamp >= ? AND time_stamp < ? AND action = 'E'";
             //ps = conn.prepareStatement(sql);
             //ps.setTimestamp(1, startDate);
             //ps.setTimestamp(2, endDate);
@@ -84,17 +84,17 @@ public class EmailSummarizer extends BaseSummarizer {
             //rs.close();
             //ps.close();
 
-            sql = "select count(*) from tr_email_szlimit_evt where time_stamp >= ? and time_stamp < ?";
+            sql = "SELECT COUNT(*) FROM tr_email_szrelay_evt WHERE time_stamp >= ? AND time_stamp < ?";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
             rs = ps.executeQuery();
             rs.first();
-            blockSzLimitCnt = rs.getInt(1);
+            relaySzCnt = rs.getInt(1);
             rs.close();
             ps.close();
 
-            sql = "select count(*) from tr_email_custom_evt where time_stamp >= ? and time_stamp < ? and action = 'P'";
+            sql = "SELECT COUNT(*) FROM tr_email_custom_evt WHERE time_stamp >= ? AND time_stamp < ? AND action = 'P'";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
@@ -114,9 +114,9 @@ public class EmailSummarizer extends BaseSummarizer {
         addEntry("Number of blocked Custom rule messages", blockCustomCnt);
         //addEntry("Number of modified Custom rule messages", exchangeCustomCnt);
         addEntry("Number of passed messages", passCnt);
-        addEntry("Number of blocked Size Limit messages", blockSzLimitCnt);
-        int totalCnt = blockSpamCnt + blockVirusCnt + replaceVirusCnt + blockCustomCnt + passCnt + blockSzLimitCnt;
+        int totalCnt = blockSpamCnt + blockVirusCnt + replaceVirusCnt + blockCustomCnt + passCnt;
         addEntry("Total number of scanned messages", totalCnt);
+        addEntry("Total number of messages not processed", relaySzCnt);
 
         // XXXX
         String tranName = "eMail SpamGuard";

@@ -83,7 +83,7 @@ CREATE TABLE tr_email_message_info (
     time_stamp timestamp,
     PRIMARY KEY (id));
 
-CREATE TABLE tr_email_szlimit_evt (
+CREATE TABLE tr_email_szrelay_evt (
     event_id int8 NOT NULL,
     msg_id int8,
     time_stamp timestamp,
@@ -118,6 +118,26 @@ CREATE TABLE tr_email_custom_evt (
     exch_value varchar(255),
     time_stamp timestamp,
     PRIMARY KEY (event_id));
+
+CREATE INDEX tr_em_hdl_info_id_idx
+  ON tr_email_handler_info (id);
+
+CREATE INDEX tr_em_msg_info_ts_idx
+  ON tr_email_message_info (time_stamp);
+CREATE INDEX tr_em_msg_info_hid_idx
+  ON tr_email_message_info (hdl_id);
+
+CREATE INDEX tr_em_szrelay_evt_mid_idx
+  ON tr_email_szrelay_evt (msg_id);
+
+CREATE INDEX tr_em_spam_evt_mid_idx
+  ON tr_email_spam_evt (msg_id);
+
+CREATE INDEX tr_em_virus_evt_mid_idx
+  ON tr_email_virus_evt (msg_id);
+
+CREATE INDEX tr_em_custom_evt_mid_idx
+  ON tr_email_custom_evt (msg_id);
 
 ALTER TABLE tr_email_settings
  ADD CONSTRAINT FK27C00D671446F
@@ -159,7 +179,7 @@ ALTER TABLE tr_email_message_info
  REFERENCES tr_email_handler_info
  ON DELETE CASCADE;
 
-ALTER TABLE tr_email_szlimit_evt
+ALTER TABLE tr_email_szrelay_evt
  ADD CONSTRAINT FK835BECD488187AB9
  FOREIGN KEY (msg_id)
  REFERENCES tr_email_message_info

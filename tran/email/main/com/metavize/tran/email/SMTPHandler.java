@@ -119,11 +119,6 @@ public class SMTPHandler extends MLHandler
      *   we add ": Message has been blocked" as fyi
      */
     private final static byte DATAERRBA[] = { '5', '5', '4', ' ', 'T', 'r', 'a', 'n', 's', 'a', 'c', 't', 'i', 'o', 'n', ' ', 'f', 'a', 'i', 'l', 'e', 'd', ':', ' ', 'M', 'e', 's', 's', 'a', 'g', 'e', ' ', 'h', 'a', 's', ' ', 'b', 'e', 'e', 'n', ' ', 'b', 'l', 'o', 'c', 'k', 'e', 'd', 13, 10 };
-    /* 554 Transaction failed: message size exceeds maximum limit
-     * - 554 code refers to "Transaction failed";
-     *   we add ": Message exceeds maximum size limit" as fyi
-     */
-    private final static byte TOOLARGEERRBA[] = { '5', '5', '4', ' ', 'T', 'r', 'a', 'n', 's', 'a', 'c', 't', 'i', 'o', 'n', ' ', 'f', 'a', 'i', 'l', 'e', 'd', ':', ' ', 'M', 'e', 's', 's', 'a', 'g', 'e', ' ', 'e', 'x', 'c', 'e', 'e', 'd', 's', ' ', 'm', 'a', 'x', 'i', 'm', 'u', 'm', ' ', 's', 'i', 'z', 'e', ' ', 'l', 'i', 'm', 'i', 't', 13, 10 };
 
     /* cmds */
     private final static int SEND_VAL = 0;
@@ -152,6 +147,10 @@ public class SMTPHandler extends MLHandler
     private final static int DNC_VAL = -1; /* do not care */
     private final static Integer DNC_INT = new Integer(DNC_VAL);
 
+    private final static int READLINE = 0;
+    private final static int READDATA = 1;
+    private final static int PASSDATA = 2;
+
     /* class variables */
 
     /* instance variables */
@@ -159,12 +158,11 @@ public class SMTPHandler extends MLHandler
     private ByteBuffer zCmdOK; /* reference copy of COMMANDOK reply */
     private ByteBuffer zDataOK; /* reference copy of DATAOK reply */
     private ByteBuffer zDataERR; /* reference copy of Transaction failed reply */
-    private ByteBuffer zTooLargeERR; /* reference copy of Transaction failed reply */
 
     private ByteBuffer zEOData;
     private ArrayList zToPassengers; /* list of resend-to-passenger lines */
+    private int iReadMode;
     private boolean bStartMsg;
-    private boolean bReadData;
 
     /* constructors */
     public SMTPHandler()
@@ -176,7 +174,6 @@ public class SMTPHandler extends MLHandler
         zCmdOK = ByteBuffer.wrap(CMDOKBA, CMDOKBA.length, 0);
         zDataOK = ByteBuffer.wrap(DATAOKBA, DATAOKBA.length, 0);
         zDataERR = ByteBuffer.wrap(DATAERRBA, DATAERRBA.length, 0);
-        zTooLargeERR = ByteBuffer.wrap(TOOLARGEERRBA, TOOLARGEERRBA.length, 0);
 
         zToPassengers = new ArrayList();
 
@@ -187,7 +184,7 @@ public class SMTPHandler extends MLHandler
     public void setOptions(XMailScannerCache zXMSCache)
     {
         zPostmaster = null;
-        iMsgSzLimit = zXMSCache.getMsgSzLimit();
+        iMsgSzRelay = zXMSCache.getMsgSzRelay();
         bReturnErr = zXMSCache.getReturnErrOnSMTPBlock();
         return;
     }
@@ -206,64 +203,79 @@ public class SMTPHandler extends MLHandler
     /* SMTP client */
     public void checkCmd(TCPChunkEvent zEvent, XMSEnv zEnv) throws ProtoException, ReadException, ParseException
     {
-        if (false == bReadData)
+        switch(iReadMode)
         {
+        default:
+        case READLINE:
             if (false == readLine(zEvent, zEnv, Constants.PEOLINEP))
             {
-                zEnv.setFixedResult(Constants.READ_MORE_NO_WRITE);
                 return; /* line is not complete - get rest of line */
             }
             /* else line is now complete */
-        }
-        else
-        {
-            if (false == readData(zEvent, zEnv, zMsgDatas, Constants.EOLINEFEEDP, EODATAP))
+            break;
+
+        case READDATA:
+            if (false == readData(zEvent, zEnv, Constants.EOLINEFEEDP, EODATAP))
             {
-                if (zEnv.getReadDataCt() < iMsgSzLimit)
+                if (zEnv.getReadDataCt() < iMsgSzRelay)
                 {
-                    //zLog.debug("read more (cmd): " + zEnv.getReadDataCt() + ", " + iReadDataLimit);
-                    return; /* data is not complete - get rest of data */
+                    //zLog.debug("read more (cmd): " + zEnv.getReadDataCt() + ", " + iReadDataRelay);
+                    return; /* data is not complete - get more data */
                 }
 
-                if (false == bRejectData)
+                /* after we've collected enough of message
+                 * (to build warning),
+                 * we relay what we have already read and
+                 * relay remaining data as we read data
+                 */
+                if (false == bRelayData)
                 {
-                    /* setup warning in order to generate SizeLimitLogEvent;
+                    /* setup warning in order to generate SizeRelayLogEvent;
                      * we will not issue warning
                      */
-                    setupWarning(zEnv);
-                    bRejectData = true; /* reject message data */
+                    bRelayData = true; /* relay message data */
+                    setupWarningEvent(zEnv);
+                    resend(zEnv);
                 }
-                rejectData();
-                //zLog.debug("read more reject (cmd): " + zEnv.getReadDataCt() + ", " + iReadDataLimit);
-                return; /* data is not complete - get rest of data */
+
+                //zLog.debug("read more relay (cmd): " + zEnv.getReadDataCt() + ", " + iReadDataRelay);
+                return; /* data is not complete - get more data */
             }
             /* else data is now complete */
 
-            if (false == bRejectData &&
-                zEnv.getReadDataCt() >= iMsgSzLimit)
+            if (false == bRelayData &&
+                zEnv.getReadDataCt() >= iMsgSzRelay)
             {
                 /* message had been under size limit but
                  * now that data is complete,
                  * message exceeds size limit
-                 * - setup warning in order to generate SizeLimitLogEvent;
+                 * - setup warning in order to generate SizeRelayLogEvent;
                  *   we will not issue warning
                  */
-                setupWarning(zEnv);
-                bRejectData = true; /* reject message data */
-                rejectData();
+                bRelayData = true; /* relay message data */
+                setupWarningEvent(zEnv);
+                resend(zEnv);
+                return; /* data is complete - relay what we have */
             }
-            /* else data is complete and message doesn't exceed size limit */
+            /* else we may not be relaying data or
+             * message didn't exceed size limit
+             */
 
-            setReadLine(zEvent.session());
+            if (false == bRelayData)
+            {
+                setEOData(zEvent, zEnv);
+            }
+            /* else we still have data to relay
+             * (we relay after we receive necessary replies from server)
+             */
+            return;
 
-            if (false == bRejectData)
-            {
-                setEOData(zEnv);
-            }
-            else
-            {
-                rejectEOData(zEvent, zEnv); /* reject remaining data */
-            }
+        case PASSDATA:
+            /* for SMTP,
+             * we simply pass data until
+             * we receive command OK reply (from server)
+             */
+            zEnv.setFixedResult(Constants.PASS_THROUGH);
             return;
         }
 
@@ -306,8 +318,8 @@ public class SMTPHandler extends MLHandler
                      * we will not receive any more cmds from driver
                      * until we have received and sent EODATA from driver
                      */
-                    bReadData = true; /* use read data mode */
-                    setReadData(zEvent.session());
+                    iReadMode = READDATA; /* use read data mode */
+                    unsetLineBuffer(zEvent.session());
                     setData(zEnv);
                     return;
                 }
@@ -369,9 +381,7 @@ public class SMTPHandler extends MLHandler
     {
         if (false == readLine(zEvent, zEnv, Constants.PEOLINEP))
         {
-            /* line is not complete - get rest of line */
-            zEnv.setFixedResult(Constants.READ_MORE_NO_WRITE);
-            return;
+            return; /* line is not complete - get rest of line */
         }
 
         CBufferWrapper zCLine = zEnv.getReadCLine();
@@ -389,7 +399,14 @@ public class SMTPHandler extends MLHandler
                 zLog.debug("command ok reply?: " + zStatePair.getReply());
                 if (true == isMatch(zCLine, COMMANDOKP))
                 {
-                    unsetRecipient(zEnv);
+                    if (PASSDATA != iReadMode)
+                    {
+                        unsetRecipient(zEnv);
+                    }
+                    else
+                    {
+                        relaySenderEOData(zEvent, zEnv);
+                    }
                     return;
                 }
 
@@ -399,7 +416,14 @@ public class SMTPHandler extends MLHandler
                 zLog.debug("data ok reply?: " + zStatePair.getReply());
                 if (true == isMatch(zCLine, DATAOKP))
                 {
-                    unsetEOData(zEnv);
+                    if (false == bRelayData)
+                    {
+                        unsetEOData(zEnv);
+                    }
+                    else
+                    {
+                        relayData(zEnv);
+                    }
                     return;
                 }
 
@@ -458,6 +482,7 @@ public class SMTPHandler extends MLHandler
 
         zLog.debug("resend...");
         //zLog.debug("message: " + zMsg);
+
         ArrayList zRcpts = zMsg.getRcpt();
 
         ByteBuffer zLine;
@@ -471,6 +496,16 @@ public class SMTPHandler extends MLHandler
             zToPassengers.add(zLine);
         }
 
+        /* - if we are not relaying this message,
+         *   we wait for command OK reply
+         * - if we are relaying this message
+         *   (while we are in read data mode),
+         *   we keep command as before
+         *   (see setData - we continue to receive data)
+         *   but set reply to wait for command OK reply
+         * - state machine is same as if we are not relaying this message
+         *   - we can use same state machine for relay and no relay
+         */
         zStateMachine.reset(DNC_INT, COMMANDOK_INT);
 
         zLine = zMsg.getSender().get();
@@ -483,13 +518,12 @@ public class SMTPHandler extends MLHandler
     {
         zMsgInfo = null;
         zMsgDatas = null;
-        iReadDataLimit = Constants.NO_MSGSZ_LIMIT;
-        iRejectedCt = 0;
-        bRejectData = false; /* accept message data */
+        iReadDataRelay = Constants.NO_MSGSZ_LIMIT;
+        bRelayData = false; /* accept message data */
 
         zEOData = null;
+        iReadMode = READLINE; /* use read line mode */
         bStartMsg = false; /* not ready to start new message transaction */
-        bReadData = false; /* use read line mode */
 
         /* in order of most likely to least likely to occur
          * - we are either intercepting or passing these cmds through
@@ -582,7 +616,7 @@ public class SMTPHandler extends MLHandler
         return;
     }
 
-    private void setEOData(XMSEnv zEnv) throws ParseException
+    private void setEOData(TCPChunkEvent zEvent, XMSEnv zEnv) throws ParseException
     {
         zLog.debug("end of data");
 
@@ -609,6 +643,7 @@ public class SMTPHandler extends MLHandler
          *    are ready to resend this message to passenger)
          */
         zEnv.clearReadCLine();
+        setLineBuffer(zEvent.session());
 
         zMsg.parse(true);
         zMsgInfo = new MLMessageInfo(zHdlInfo, zEnv, zMsg);
@@ -616,15 +651,50 @@ public class SMTPHandler extends MLHandler
         return;
     }
 
-    private void rejectEOData(TCPChunkEvent zEvent, XMSEnv zEnv)
+    private void relayData(XMSEnv zEnv)
     {
-        zLog.debug("end of data (reject message)");
-        //zLog.debug("end of data (reject message): " + zEnv.getReadDataCt() + " bytes exceeds size limit, " + iMsgSzLimit + " bytes, " + zMsgDatas);
-        rejectEOData(zEvent, zEnv, zCmdOK, zTooLargeERR);
-        /* we'll setup again
-         * since we've rejected message (and did not resend it)
+        zLog.debug("relay data...");
+        //zLog.debug("message: " + zMsgDatas);
+
+        /* we will not collect any more data;
+         * we keep passing through data
+         * until server sends command OK reply
          */
-        setup();
+        iReadMode = PASSDATA;
+
+        /* - if we are relaying this message
+         *   (while we are in read data mode),
+         *   we keep command as before
+         *   (see setData - we continue to receive data)
+         *   but set reply to wait for command OK reply
+         *   (server replies with command OK after it receives complete data)
+         */
+        zStateMachine.reset(DNC_INT, COMMANDOK_INT);
+
+        /* resend message data (whatever we have collected so far) */
+        zEnv.convertToPassenger(zMsgDatas);
+
+        return;
+    }
+
+    private void relaySenderEOData(TCPChunkEvent zEvent, XMSEnv zEnv)
+    {
+        zLog.debug("end of data (relay)");
+        //zLog.debug("end of data (relay): " + zEnv.getReadDataCt() + " bytes exceeds size limit, " + iMsgSzRelay + " bytes, " + zMsgDatas);
+
+        /* we did not ack message (250) yet
+         * - passenger just sent reply and we read it
+         *   so we'll pass reply through now
+         */
+        zEnv.setFixedResult(Constants.PASS_THROUGH);
+
+        logRelayEvent(zEnv);
+
+        zEnv.resetReadCLine();
+        setLineBuffer(zEvent.session());
+
+        flushMsg(zEnv);
+        setup(); /* since we've relayed data, we'll setup again */
         return;
     }
 
@@ -715,6 +785,12 @@ public class SMTPHandler extends MLHandler
             return;
         }
 
+        /* - if we are not relaying this message,
+         *   we can reuse state machine from previous stage (in setData)
+         * - if we are relaying this message,
+         *   we can reuse state machine from previous stage (in setData)
+         */
+
         zEnv.sendToPassenger(zLine); /* resend original RCPT cmd */
         zEnv.resetReadCLine();
         return;
@@ -726,6 +802,16 @@ public class SMTPHandler extends MLHandler
         //zLog.debug("(SODATA): " + zCDummy.renew(zData) + ", " + zData);
         //zLog.debug("(SODATA): " + zData);
 
+        /* - if we are not relaying this message,
+         *   we wait for data OK reply
+         * - if we are relaying this message
+         *   (while we are in read data mode),
+         *   we keep command as before
+         *   (see setData - we continue to receive data)
+         *   but set reply to wait for data OK reply
+         * - state machine is same as if we are not relaying this message
+         *   - we can use same state machine for relay and no relay
+         */
         zStateMachine.reset(DNC_INT, DATAOK_INT);
 
         zEnv.sendToPassenger(zData); /* resend original DATA cmd */

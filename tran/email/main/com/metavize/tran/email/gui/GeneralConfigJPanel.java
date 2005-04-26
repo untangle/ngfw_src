@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: GeneralConfigJPanel.java,v 1.11 2005/03/19 02:16:52 inieves Exp $
+ * $Id$
  */
 package com.metavize.tran.email.gui;
 
@@ -204,7 +204,7 @@ class GeneralTableModel extends MSortedTableModel{
         tempRowVector.add(super.ROW_SAVED);
         tempRowVector.add("max message size to scan for viruses (KB)");
         tempRowVector.add( new SpinnerNumberModel((int)control.getVirusMsgSzLimit()/1024, (int)CTLDefinition.MSG_SZ_LIMIT_MIN/1024, (int)CTLDefinition.MSG_SZ_LIMIT_MAX/1024, 128) );
-        tempRowVector.add( control.getMsgSzLimitDetails() );
+        tempRowVector.add( control.getVirusSzLimitDetails() );
         allRows.add( tempRowVector );
 	/*
         // copyOnBlock inbound Spam

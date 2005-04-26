@@ -102,7 +102,7 @@
                      <subreportParameterExpression><![CDATA[$P{endTime}]]></subreportParameterExpression>
                  </subreportParameter>
                  <connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-                 <subreportExpression class="java.lang.String"><![CDATA["com/metavize/tran/email/SizeLimitMsgCt.jasper"]]></subreportExpression>
+                 <subreportExpression class="java.lang.String"><![CDATA["com/metavize/tran/email/SizeRelayMsgCt.jasper"]]></subreportExpression>
              </subreport>
         </band>
     </title>

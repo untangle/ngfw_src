@@ -157,7 +157,7 @@ USING (msg_id)
                 <textElement>
                     <font isItalic="true"/>
                 </textElement>
-                <text><![CDATA[Matching rule]]></text>
+                <text><![CDATA[Matched rule]]></text>
             </staticText>
             <staticText>
                 <reportElement positionType="Float" x="207" y="0" width="286" height="12"/>
