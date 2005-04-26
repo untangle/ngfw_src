@@ -1,3 +1,14 @@
+/* email start */
+/* if old schema exists, run some upgrades */
+ALTER TABLE tr_email_szlimit_evt
+    RENAME To tr_email_szrelay_evt;
+
+UPDATE tr_email_spam_evt
+    SET action='M'
+    WHERE action='P';
+
+/* if schema does not exist (note that we don't check), create schema */
+/* create settings tables */
 CREATE TABLE tr_email_settings (
     settings_id int8 NOT NULL,
     tid int8 NOT NULL UNIQUE,
@@ -61,6 +72,7 @@ CREATE TABLE tr_email_ctl_definition (
     details_log varchar(255),
     PRIMARY KEY (def_id));
 
+/* create event tables */
 CREATE TABLE tr_email_handler_info (
     id int8 NOT NULL,
     s_id int4,
@@ -119,86 +131,91 @@ CREATE TABLE tr_email_custom_evt (
     time_stamp timestamp,
     PRIMARY KEY (event_id));
 
+/* create event indices (used for reports) */
 CREATE INDEX tr_em_hdl_info_id_idx
-  ON tr_email_handler_info (id);
+    ON tr_email_handler_info (id);
 
 CREATE INDEX tr_em_msg_info_ts_idx
-  ON tr_email_message_info (time_stamp);
+    ON tr_email_message_info (time_stamp);
 CREATE INDEX tr_em_msg_info_hid_idx
-  ON tr_email_message_info (hdl_id);
+    ON tr_email_message_info (hdl_id);
 
 CREATE INDEX tr_em_szrelay_evt_mid_idx
-  ON tr_email_szrelay_evt (msg_id);
+    ON tr_email_szrelay_evt (msg_id);
 
 CREATE INDEX tr_em_spam_evt_mid_idx
-  ON tr_email_spam_evt (msg_id);
+    ON tr_email_spam_evt (msg_id);
 
 CREATE INDEX tr_em_virus_evt_mid_idx
-  ON tr_email_virus_evt (msg_id);
+    ON tr_email_virus_evt (msg_id);
 
 CREATE INDEX tr_em_custom_evt_mid_idx
-  ON tr_email_custom_evt (msg_id);
+    ON tr_email_custom_evt (msg_id);
 
+/* create settings keys */
 ALTER TABLE tr_email_settings
- ADD CONSTRAINT FK27C00D671446F
- FOREIGN KEY (tid) REFERENCES tid;
+    ADD CONSTRAINT FK27C00D671446F
+    FOREIGN KEY (tid) REFERENCES tid;
 
 ALTER TABLE tr_email_ml_definition
- ADD CONSTRAINT FK245E4D2F79192AB7
- FOREIGN KEY (settings_id)
- REFERENCES tr_email_settings;
+    ADD CONSTRAINT FK245E4D2F79192AB7
+    FOREIGN KEY (settings_id)
+    REFERENCES tr_email_settings;
 
 ALTER TABLE tr_email_settings
- ADD CONSTRAINT FK27C00D67D0636463
- FOREIGN KEY (spam_inbound)
- REFERENCES tr_email_ssctl_definition;
+    ADD CONSTRAINT FK27C00D67D0636463
+    FOREIGN KEY (spam_inbound)
+    REFERENCES tr_email_ssctl_definition;
 
 ALTER TABLE tr_email_settings
- ADD CONSTRAINT FK27C00D673B993F26
- FOREIGN KEY (spam_outbound)
- REFERENCES tr_email_ssctl_definition;
+    ADD CONSTRAINT FK27C00D673B993F26
+    FOREIGN KEY (spam_outbound)
+    REFERENCES tr_email_ssctl_definition;
 
 ALTER TABLE tr_email_settings
- ADD CONSTRAINT FK27C00D675C97F3F7
- FOREIGN KEY (virus_inbound)
- REFERENCES tr_email_vsctl_definition;
+    ADD CONSTRAINT FK27C00D675C97F3F7
+    FOREIGN KEY (virus_inbound)
+    REFERENCES tr_email_vsctl_definition;
 
 ALTER TABLE tr_email_settings
- ADD CONSTRAINT FK27C00D6735F6A212
- FOREIGN KEY (virus_outbound)
- REFERENCES tr_email_vsctl_definition;
+    ADD CONSTRAINT FK27C00D6735F6A212
+    FOREIGN KEY (virus_outbound)
+    REFERENCES tr_email_vsctl_definition;
 
 ALTER TABLE tr_email_settings
- ADD CONSTRAINT FK27C00D676382F13D
- FOREIGN KEY (control)
- REFERENCES tr_email_ctl_definition;
+    ADD CONSTRAINT FK27C00D676382F13D
+    FOREIGN KEY (control)
+    REFERENCES tr_email_ctl_definition;
 
+/* create event keys (also used for rollup) */
 ALTER TABLE tr_email_message_info
- ADD CONSTRAINT FK99F2014A7EBF24EA
- FOREIGN KEY (hdl_id)
- REFERENCES tr_email_handler_info
- ON DELETE CASCADE;
+    ADD CONSTRAINT FK99F2014A7EBF24EA
+    FOREIGN KEY (hdl_id)
+    REFERENCES tr_email_handler_info
+    ON DELETE CASCADE;
 
 ALTER TABLE tr_email_szrelay_evt
- ADD CONSTRAINT FK835BECD488187AB9
- FOREIGN KEY (msg_id)
- REFERENCES tr_email_message_info
- ON DELETE CASCADE;
+    ADD CONSTRAINT FK835BECD488187AB9
+    FOREIGN KEY (msg_id)
+    REFERENCES tr_email_message_info
+    ON DELETE CASCADE;
 
 ALTER TABLE tr_email_spam_evt
- ADD CONSTRAINT FK4CDFC11188187AB9
- FOREIGN KEY (msg_id)
- REFERENCES tr_email_message_info
- ON DELETE CASCADE;
+    ADD CONSTRAINT FK4CDFC11188187AB9
+    FOREIGN KEY (msg_id)
+    REFERENCES tr_email_message_info
+    ON DELETE CASCADE;
 
 ALTER TABLE tr_email_virus_evt
- ADD CONSTRAINT FKC510A09D88187AB9
- FOREIGN KEY (msg_id)
- REFERENCES tr_email_message_info
- ON DELETE CASCADE;
+    ADD CONSTRAINT FKC510A09D88187AB9
+    FOREIGN KEY (msg_id)
+    REFERENCES tr_email_message_info
+    ON DELETE CASCADE;
 
 ALTER TABLE tr_email_custom_evt
- ADD CONSTRAINT FKD9FABC3988187AB9
- FOREIGN KEY (msg_id)
- REFERENCES tr_email_message_info
- ON DELETE CASCADE;
+    ADD CONSTRAINT FKD9FABC3988187AB9
+    FOREIGN KEY (msg_id)
+    REFERENCES tr_email_message_info
+    ON DELETE CASCADE;
+
+/* email done */
