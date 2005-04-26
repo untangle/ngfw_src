@@ -16,6 +16,10 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 
+import com.metavize.mvvm.tran.IPaddr;
+
+import java.io.Serializable;
+
 /**
  * The class <code>IPMatcher</code> represents an method for determining if an IP address
  * is a match.
@@ -23,13 +27,18 @@ import java.net.UnknownHostException;
  * @author <a href="mailto:rbscott@metavize.com">rbscott</a>
  * @version 1.0
  */
-public class IPMatcher
+public class IPMatcher implements Serializable
 {
     public static final String MARKER_SUBNET    = "/";
-    public static final String MARKER_RANGE     = "-";
-    public static final String MARKER_WILDCARD  = "*";
+
+    public static final String MARKER_RANGE     = MatcherStringConstants.RANGE;
+    public static final String MARKER_WILDCARD  = MatcherStringConstants.WILDCARD;
+    private static final String MARKER_NOTHING  = MatcherStringConstants.NOTHING;
+
     
     public static final IPMatcher MATCHER_ALL = new IPMatcher( 0, 0, false );
+    /* Use a range that goes backwards for the nil matcher */
+    public static final IPMatcher MATCHER_NIL = new IPMatcher( 1, 0, true );
 
     static final int INADDRSZ = 4;
 
@@ -61,7 +70,6 @@ public class IPMatcher
         if ( isRange ) {
             tmpSecond = toLong( second );
             
-
             /* If the range is reversed, swap the two */
             if (  tmpSecond < tmpBase ) {
                 long tmp  = tmpSecond;
@@ -78,10 +86,21 @@ public class IPMatcher
         this.second = tmpSecond;
     }
 
+    public IPMatcher( IPaddr base, IPaddr second, boolean isRange )
+    {
+        this((Inet4Address)base.getAddr(), (Inet4Address)second.getAddr(), isRange );
+    }
+
+
     public IPMatcher( Inet4Address base )
     {
-        this.second = this.base   = toLong( base );
+        this.second = this.base = toLong( base );
         isRange     = true;
+    }
+
+    public IPMatcher( IPaddr base )
+    {
+        this((Inet4Address)base.getAddr());
     }
     
     /* Internal for creating ip matchers */
@@ -116,6 +135,8 @@ public class IPMatcher
             isRange = true;            
         } else if ( str.equalsIgnoreCase( MARKER_WILDCARD )) {
             return MATCHER_ALL;
+        } else if ( str.equalsIgnoreCase( MARKER_NOTHING )) {
+            return MATCHER_NIL;
         } else {
             base = toLong( str );
             /* Just an address a range where the start and end are the same */
@@ -133,6 +154,10 @@ public class IPMatcher
         /* XXX May need to guarantee a valid mask? */
         second = toLong( strArray[1] );
         
+        if ( isRange && ( second < base )) {
+            throw new IllegalArgumentException( "Range with larger second argument than first" );
+        }
+        
         return new IPMatcher( base, second, isRange );
     }
 
@@ -148,6 +173,31 @@ public class IPMatcher
         }
         
         return false;
+    }
+
+    public String toString()
+    {
+        /* Check for the wildcard matcher */
+        if ( this == MATCHER_ALL || ( !isRange && base == 0 && second == 0 )) {
+            return MARKER_WILDCARD;
+        } else if ( this == MATCHER_NIL || ( isRange && base > second )) {
+            return MARKER_NOTHING;
+        }
+        
+        /* Otherwise, convert to one of the notations */
+        String marker = ( isRange ) ? MARKER_RANGE : MARKER_SUBNET;
+        
+        return baseToString() + marker + secondToString();
+    }
+    
+    private String baseToString()
+    {
+        return toString( base );
+    }
+    
+    private String secondToString()
+    {
+        return toString( second );
     }
     
     /** Convert a dot notation string to a long */    
@@ -176,7 +226,7 @@ public class IPMatcher
         }
 
         return val;
-    }
+    }    
 
     /** Convert and address to a long */
     static long toLong( Inet4Address address )
@@ -197,5 +247,18 @@ public class IPMatcher
         int num = val;
         if ( num < 0 ) num = num & 0x7F + 0x80;
         return num;
+    }
+
+    private static String toString( long addr )
+    {
+        String addrString = "";
+
+        for ( int c = 0 ; c < INADDRSZ ; c++ ) {
+            addrString += (int)((addr >> ( 8 * c)) & 0xFF);
+            if ( c < ( INADDRSZ -1 ))
+                addrString += ".";
+        }
+        
+        return addrString;
     }
 }

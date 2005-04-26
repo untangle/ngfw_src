@@ -1,4 +1,4 @@
-/* $Id: debug.h,v 1.3 2005/01/20 21:49:10 rbscott Exp $ */
+/* $Id$ */
 #ifndef __DEBUG_H
 #define __DEBUG_H
 

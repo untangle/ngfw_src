@@ -64,7 +64,10 @@ public class IPaddr implements Serializable
 
     public IPaddr and( IPaddr addr2 )
     {
-        return null;
+        long oper1 = toLong();
+        long oper2 = addr2.toLong();
+        
+        return makeIPaddr( oper1 & oper2 );
     }
     
     public boolean isEmpty()
@@ -88,6 +91,46 @@ public class IPaddr implements Serializable
             return "";
         
         return addr.getHostAddress();
+    }
+
+    /** Convert an IPaddr to a long */
+    private long toLong( )
+    {
+        long val = 0;
+        
+        byte valArray[] = addr.getAddress();
+        
+        for ( int c = 0 ; c < INADDRSZ ; c++ ) {
+            val += ((long)byteToInt(valArray[c])) << ( 8 * c );
+        }
+
+        return val;
+    }
+
+    private static IPaddr makeIPaddr( long addr )
+    {
+        byte valArray[] = new byte[INADDRSZ];
+        InetAddress address = null;
+                
+        for ( int c = 0 ; c < INADDRSZ ; c++ ) {
+            valArray[c] = (byte)((addr >> ( 8 * c)) & 0xFF);
+        }
+        
+        try {
+            address = Inet4Address.getByAddress( valArray );
+        } catch ( UnknownHostException e ) {
+            /* XXX THIS SHOULD NEVER HAPPEN */
+            return null;
+        }
+
+        return new IPaddr((Inet4Address)address );
+    }
+
+    static int byteToInt ( byte val ) 
+    {
+        int num = val;
+        if ( num < 0 ) num = num & 0x7F + 0x80;
+        return num;
     }
 }
 

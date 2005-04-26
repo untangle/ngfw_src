@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: jvector.h,v 1.4 2005/01/20 22:20:54 rbscott Exp $
+ * $Id$
  */
 
 #ifndef _JVECTOR_H_

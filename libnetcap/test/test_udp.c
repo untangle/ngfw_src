@@ -1,4 +1,4 @@
-/* $Id: test_udp.c,v 1.2 2004/12/31 01:30:44 rbscott Exp $ */
+/* $Id$ */
 #include <stdlib.h>
 #include <stdio.h>
 #include <libnetcap.h>

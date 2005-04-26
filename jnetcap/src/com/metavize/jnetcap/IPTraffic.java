@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: IPTraffic.java,v 1.8 2005/03/09 07:00:10 rbscott Exp $
+ *  $Id$
  */
 
 package com.metavize.jnetcap;
@@ -33,8 +33,9 @@ public class IPTraffic {
     private static final int FLAG_TOS       = 0x005;
     private static final int FLAG_MARK_EN   = 0x006 | LOCKABLE_MASK;
     private static final int FLAG_MARK      = 0x007 | LOCKABLE_MASK;
+    private static final int FLAG_PROTOCOL  = 0x008;    
     private static final int FLAG_MASK      = 0x0FF | LOCKABLE_MASK;
-    
+        
     private static final int FLAG_SRC       = 0x100;
     private static final int FLAG_SRC_MASK  = 0x100;
 
@@ -112,6 +113,10 @@ public class IPTraffic {
         return (byte)getIntValue( FLAG_TOS );
     }
 
+    public int protocol()
+    {
+        return getIntValue( FLAG_PROTOCOL );
+    }
 
     public boolean isMarkEnabled()
     {
@@ -159,45 +164,45 @@ public class IPTraffic {
         locked = true;
     }
 
-    private long   getLongValue         ( int req )
+    protected long   getLongValue         ( int req )
     { 
         /* How to handle error here ?? */
         return getLongValue( pointer.value(), req );
     }
 
-    private int    getIntValue          ( int req )
+    protected int    getIntValue          ( int req )
     {
         int temp = getIntValue( pointer.value(), req );
         if ( temp < 0 ) Netcap.error( "getIntValue: " + req );
         return temp;
     }
 
-    private String getStringValue       ( int req )
+    protected String getStringValue       ( int req )
     { 
         String temp = getStringValue( pointer.value(), req );
         if ( temp == null ) Netcap.error( "getStringValue: " + req );
         return temp;
     }
 
-    private void setLongValue ( int req, long value ) 
+    protected void setLongValue ( int req, long value ) 
     {
         checkLock( req );
         if ( setLongValue( pointer.value(), req, value ) < 0 ) Netcap.error( "setLongValue: " + req );
     }
 
-    private void setIntValue ( int req, int value ) 
+    protected void setIntValue ( int req, int value ) 
     {
         checkLock( req );
         if ( setIntValue( pointer.value(), req, value ) < 0 ) Netcap.error( "setIntValue: " + req );
     }
 
-    private void setStringValue ( int req, String value ) 
+    protected void setStringValue ( int req, String value ) 
     {
         checkLock( req );
         if ( setStringValue( pointer.value(), req, value ) < 0 ) Netcap.error( "setStringValue: " + req );
     }
 
-    private void checkLock( int req )
+    protected void checkLock( int req )
     {
         if ( locked && (( req & LOCKABLE_MASK ) == LOCKABLE_MASK )) {
             Netcap.error( "Attempt to modify a locked value" );
@@ -207,7 +212,7 @@ public class IPTraffic {
     static
     {
         Netcap.load();
-    }    
+    }
 
     /* XXX Consolidate all of the get/set functions into a group of package functions
      * inside of the Netcap class */

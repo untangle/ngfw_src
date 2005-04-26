@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: UDPSessionImpl.java,v 1.3 2005/02/07 08:40:26 rbscott Exp $
+ *  $Id$
  */
 
 package com.metavize.mvvm.argon;
@@ -20,9 +20,6 @@ import com.metavize.jvector.OutgoingSocketQueue;
 import com.metavize.jvector.Source;
 import com.metavize.jvector.Sink;
 import com.metavize.jvector.UDPSink;
-import com.metavize.jvector.Crumb;
-import com.metavize.jvector.UDPPacketCrumb;
-
 
 public class UDPSessionImpl extends IPSessionImpl implements UDPSession
 {
@@ -40,7 +37,7 @@ public class UDPSessionImpl extends IPSessionImpl implements UDPSession
         tos = request.tos();
         options = request.options();
     }
-
+    
     /**
      * Retrieve the TTL for a session, this only has an impact for the last session in the chain
      * when passing data crumbs (UDPPacketCrumbs have TTL value inside of them)
@@ -71,18 +68,9 @@ public class UDPSessionImpl extends IPSessionImpl implements UDPSession
     {
         public void event( IncomingSocketQueue in )
         {
-            Crumb crumb;
             UDPSink  sink;
             int ttl = -1;
-
-            crumb = in.peek();
-
-            /* XXX This whole sequence is somewhat of a hack to pass the TTL
-             * to the endpoint, If the UDP Packet Crumb should be vectored, it
-             * wouldn't be necessary */
-            if ( crumb.type() == Crumb.TYPE_UDP_PACKET )
-                ttl = ((UDPPacketCrumb)crumb).desc().ttl();
-            
+                        
             if ( in == serverIncomingSocketQueue ) {
                 if ( logger.isDebugEnabled()) {
                     logger.debug( "IncomingSocketQueueEvent: server - " + in +

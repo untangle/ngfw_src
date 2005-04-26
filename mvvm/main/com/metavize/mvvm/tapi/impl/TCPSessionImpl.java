@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: TCPSessionImpl.java,v 1.41 2005/02/09 06:59:52 jdi Exp $
+ *  $Id$
  */
 
 package com.metavize.mvvm.tapi.impl;
@@ -170,13 +170,13 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
     private void shutdownSide(int side, OutgoingSocketQueue out, boolean force)
     {
         if (out != null) {
-            if (bufs2write[side] != null && !force) {
+            if (crumbs2write[side] != null && !force) {
                 // Indicate the need to shutdown
-                addBuf(side, SHUTDOWN_COOKIE_BUF);
+                addCrumb(side, ShutdownCrumb.getInstance(force));
                 // we get handled later automatically by tryWrite()
                 return;
             }
-            Crumb crumb = ShutdownCrumb.getInstance();
+            Crumb crumb = ShutdownCrumb.getInstance(force);
             boolean success = out.write(crumb);
             assert success;
         }
@@ -279,9 +279,11 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
             else
                 debug("tryWrite to full outgoing queue");
         } else {
-            ByteBuffer buf2send = getNextBuf2Send(side);
-            assert buf2send != null;
-            int numWritten = sendBuf(buf2send, out);
+	    // We know it's a data crumb since there can be nothing else
+	    // enqueued for TCP.
+            DataCrumb crumb2send = (DataCrumb) getNextCrumb2Send(side);
+            assert crumb2send != null;
+            int numWritten = sendCrumb(crumb2send, out);
             if (RWSessionStats.DoDetailedTimes) {
                 long[] times = stats.times();
                 if (times[SessionStats.FIRST_BYTE_WROTE_TO_CLIENT + side] == 0)
@@ -291,7 +293,7 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
             stats.wroteData(side, numWritten);
             MutateTStats.wroteData(side, this, numWritten);
             if (logger.isDebugEnabled())
-                debug("wrote " + buf2send.remaining() + " to " + sideName);
+                debug("wrote " + numWritten + " to " + sideName);
         }
     }
 
@@ -309,42 +311,43 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
             return;
         }
 
-        // Ug. XXX
         addBuf(side, buf2send);
 
         if (logger.isDebugEnabled())
             debug("streamed " + buf2send.remaining() + " to " + sideName);
     }
 
-    private int sendBuf(ByteBuffer buf2send, OutgoingSocketQueue out)
+    private void addBufs(int side, ByteBuffer[] new2send)
     {
-        Crumb crumb;
-        if (buf2send == SHUTDOWN_COOKIE_BUF) {
-            crumb = ShutdownCrumb.getInstance();
-            boolean success = out.write(crumb);
-            assert success;
-            return 0;
-        } else {
-            byte[] array;
-            int size = buf2send.remaining();
-            int offset = buf2send.position();
-            if (buf2send.hasArray()) {
-                array = buf2send.array();
-            } else {
-                warn("had to copy");
-                array = new byte[buf2send.remaining()];
-                buf2send.get(array);
-                buf2send.position(offset);
-                offset = 0;
-            }
-            crumb = new DataCrumb(array, offset, size);
-            if (logger.isDebugEnabled()) {
-                debug("writing crumb to " + out + " offset: " + offset + ", size: " + size);
-            }
-            boolean success = out.write(crumb);
-            assert success;
-            return size;
+        if (new2send == null || new2send.length == 0)
+            return;
+        for (int i = 0; i < new2send.length; i++)
+            addBuf(side, new2send[i]);
+    }
+
+    private void addBuf(int side, ByteBuffer buf2send)
+    {
+        byte[] array;
+        int offset = buf2send.position();
+	int size = buf2send.remaining();
+        if (size <= 0) {
+            warn("ignoring empty send, pos: " + buf2send.position() + ", rem: " +
+                 buf2send.remaining() + ", ao: " + buf2send.arrayOffset());
+            return;
         }
+            
+        if (buf2send.hasArray()) {
+            array = buf2send.array();
+            offset += buf2send.arrayOffset();
+        } else {
+            warn("out-of-heap byte buffer, had to copy");
+            array = new byte[buf2send.remaining()];
+            buf2send.get(array);
+            buf2send.position(offset);
+            offset = 0;
+        }
+        DataCrumb crumb = new DataCrumb(array, offset, size);
+        addCrumb(side, crumb);
     }
 
     protected void sendWritableEvent(int side)
@@ -366,7 +369,23 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
     protected void sendFINEvent(int side)
         throws MPipeException
     {
+        // First give the transform a chance to do something...
         TCPSessionEvent wevent = new TCPSessionEvent(mPipe, this);
+        IPDataResult result;
+        if (side == CLIENT)
+            result = dispatcher.dispatchTCPClientDataEnd(wevent);
+        else
+            result = dispatcher.dispatchTCPServerDataEnd(wevent);
+
+        if (result != null) {
+            if (result.readBuffer() != null)
+                // Not allowed
+                warn("Ignoring readBuffer returned from FIN event");
+            addBufs(CLIENT, result.bufsToClient());
+            addBufs(SERVER, result.bufsToServer());
+        }
+
+        // Then run the FIN handler.  This will send the FIN along to the other side by default.
         if (side == CLIENT)
             dispatcher.dispatchTCPClientFIN(wevent);
         else
@@ -437,12 +456,12 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
                 in.read();
                 return numRead;
             case Crumb.TYPE_RESET:
+            default:
                 // Should never happen.
-                debug("read RST");
+                debug("read crumb " + crumb.type());
                 in.read();
                 assert false;
                 break;
-            default:
             case Crumb.TYPE_DATA:
                 break;
             }
@@ -456,6 +475,7 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
 
             if (dcoffset >= dclimit) {
                 warn("Zero length TCP crumb read");
+                in.read();  // Consume the crumb
                 return numRead;
             } else if (readBuf[side] == null &&
                        (dcoffset != 0 || dcsize > readLimit[side] || dccap < readLimit[side] || lineMode)) {

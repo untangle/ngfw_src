@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: Argon.java,v 1.33 2005/03/09 07:00:10 rbscott Exp $
+ *  $Id$
  */
 
 package com.metavize.mvvm.argon;
@@ -43,6 +43,9 @@ public class Argon
     /* True if there was an error on initialization, 
      * a real shutdown does not occur if this is false */
     protected static boolean isValid = true;
+
+    protected static int[] tcpLocalAntisubscribes = { 80, 443, 22 };
+    protected static int[] udpLocalAntisubscribes = {};
     
     /* Subscription manager */
     protected static final SubscriptionManager subManager = new SubscriptionManager();
@@ -65,6 +68,9 @@ public class Argon
     
     /* By default block outside web, webs and postgres( just in case )*/
     protected static String guardOutside = null;
+
+    /* By default block nothing on the UDP ports outside */
+    protected static String guardOutsideUDP = null;
 
     /* By default, no IP regulated guards, an IP regulated guard takes the form
      * <port>[,<port>]*:<addr>[/<subnet as ip>], this syntax allows for multiple
@@ -196,6 +202,11 @@ public class Argon
             parseRegulatedGuard( temp );
         }
 
+        if ((( temp = System.getProperty( "argon.guard.outside.udp" )) != null ) && 
+            !temp.trim().equals( "" )) {
+            guardOutsideUDP = temp.trim();
+        }
+
         if ((( temp = System.getProperty( "argon.guard.inside" )) != null ) &&
             !temp.trim().equals( "" )) {
             guardInside = temp.trim();
@@ -242,7 +253,8 @@ public class Argon
         /* Antisubscribe to traffic on local host */
         SubscriptionGenerator gen =
             new SubscriptionGenerator( SubscriptionGenerator.PROTOCOL_ALL, 
-                                       flags | SubscriptionGenerator.ANTI_SUBSCRIBE );
+                                       flags | SubscriptionGenerator.ANTI_SUBSCRIBE |
+                                       SubscriptionGenerator.NO_REVERSE );
 
         try {
             InetAddress localHost = InetAddress.getByAddress( new byte[] { 127, 0, 0, 0 } );
@@ -262,7 +274,6 @@ public class Argon
         gen = new SubscriptionGenerator( SubscriptionGenerator.PROTOCOL_ALL, 
                                          flags | SubscriptionGenerator.ANTI_SUBSCRIBE );
 
-
         try {
             InetAddress multicastHost = InetAddress.getByAddress( new byte[] { (byte)0xE0, 0, 0, 0 } );
             InetAddress multicastMask = InetAddress.getByAddress( new byte[] { (byte)0xF0, 0, 0, 0 } );
@@ -275,9 +286,13 @@ public class Argon
         }
         
         subManager.add( gen.subscribe());
-        
+
         if ( local ) flags |= SubscriptionGenerator.LOCAL_ANTI_SUBSCRIBE;
 
+        /* Subscribe to ICMP */
+        gen = new SubscriptionGenerator( Netcap.IPPROTO_ICMP, flags );
+        subManager.add( gen.subscribe());
+                
         gen = new SubscriptionGenerator( Netcap.IPPROTO_TCP, flags );
         
         /* Subscribe to everything on TCP */
@@ -287,28 +302,46 @@ public class Argon
         gen.protocol( Netcap.IPPROTO_UDP );
         subManager.add( gen.subscribe());
 
-        /* Do all of the host anti-subscribes */
+        /* Do all of the anti-subscribes */
         antisubscribes();
     }
 
     private static void antisubscribes()
     {
         int flags = SubscriptionGenerator.DEFAULT_FLAGS | SubscriptionGenerator.ANTI_SUBSCRIBE;
-                
+        SubscriptionGenerator gen;
+
         if ( tcpAntisubscribe ) {
-            SubscriptionGenerator gen = new SubscriptionGenerator( Netcap.IPPROTO_TCP, flags );
+            gen = new SubscriptionGenerator( Netcap.IPPROTO_TCP, flags | SubscriptionGenerator.NO_REVERSE );
             subManager.add( gen.subscribe());
         }
 
         if ( udpAntisubscribe ) {
-            SubscriptionGenerator gen = new SubscriptionGenerator( Netcap.IPPROTO_UDP, flags );
+            gen = new SubscriptionGenerator( Netcap.IPPROTO_UDP, flags | SubscriptionGenerator.NO_REVERSE );
+            subManager.add( gen.subscribe());
+        }
+
+        /* Setup the local host antisubscribes */
+        gen = new SubscriptionGenerator( Netcap.IPPROTO_TCP, flags | SubscriptionGenerator.IS_LOCAL | 
+                                         SubscriptionGenerator.NO_REVERSE );
+        
+        for ( int c = 0 ; c < tcpLocalAntisubscribes.length ; c++ ) {
+            gen.server().port( tcpLocalAntisubscribes[c] );
+            subManager.add( gen.subscribe());
+        }
+
+        /* Setup the local host antisubscribes */
+        gen = new SubscriptionGenerator( Netcap.IPPROTO_UDP, flags | SubscriptionGenerator.IS_LOCAL |
+                                         SubscriptionGenerator.NO_REVERSE );
+        
+        for ( int c = 0 ; c < udpLocalAntisubscribes.length ; c++ ) {
+            gen.server().port( udpLocalAntisubscribes[c] );
             subManager.add( gen.subscribe());
         }
 
         if ( hostAntisubscribes != null ) {
             String hosts[] = hostAntisubscribes.split( LIST_SEPARATOR );
-            SubscriptionGenerator gen = 
-                new SubscriptionGenerator( SubscriptionGenerator.PROTOCOL_ALL, flags );
+            gen = new SubscriptionGenerator( SubscriptionGenerator.PROTOCOL_ALL, flags );
         
             for ( int c = 0 ; c < hosts.length ; c++ ) {
                 try {
@@ -326,8 +359,7 @@ public class Argon
         
         if ( portAntisubscribes != null ) {
             String ports[] = portAntisubscribes.split( LIST_SEPARATOR );
-            SubscriptionGenerator gen =
-                new SubscriptionGenerator( SubscriptionGenerator.PROTOCOL_ALL, flags );
+            gen = new SubscriptionGenerator( SubscriptionGenerator.PROTOCOL_ALL, flags );
         
             for ( int c = 0 ; c < ports.length ; c++ ) {
                 int port = Integer.parseInt( ports[c] );
@@ -347,7 +379,7 @@ public class Argon
 
         if ( dhcpAntisubscribe ) {
             /* If necessary antisubscribe on DHCP */
-            SubscriptionGenerator gen =  new SubscriptionGenerator( Netcap.IPPROTO_UDP, flags );
+            gen =  new SubscriptionGenerator( Netcap.IPPROTO_UDP, flags );
             gen.server().port( new Range( 67, 68 ));
             subManager.add( gen.subscribe());
         }
@@ -449,14 +481,16 @@ public class Argon
             
             if ( guardOutside != null && !guardOutside.equals( "" ))
                 Netcap.stationTcpGuard( IntfConverter.toNetcap( IntfConverter.OUTSIDE ), guardOutside, null );
+            if ( guardOutsideUDP != null && !guardOutsideUDP.equals( "" ))
+                Netcap.stationUdpGuard( IntfConverter.toNetcap( IntfConverter.OUTSIDE ), guardOutsideUDP, null );
+
 
             for ( Iterator<String[]> iter = guardRegulatedOutside.iterator() ; iter.hasNext(); ) {
                 String[] guard = iter.next();
                 Netcap.stationTcpGuard( IntfConverter.toNetcap( IntfConverter.OUTSIDE ), guard[0], guard[1] );
             }
-
         } catch ( Exception e ) {
-            logger.error( "Unable to relieve the guard on outside or inside ports", e );
+            logger.error( "Unable to insert the guard on outside or inside ports", e );
         }
     }
 

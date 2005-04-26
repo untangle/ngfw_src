@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: netcap_subscriptions.h,v 1.2 2005/01/24 03:55:06 rbscott Exp $
+ * $Id$
  */
 #ifndef __NETCAP_SUBSCRIPTIONS_H_
 #define __NETCAP_SUBSCRIPTIONS_H_
@@ -60,7 +60,9 @@ typedef struct netcap_sub {
 
 /* typedef subscription_t netcap_sub_t; */
 
+int    netcap_redirect_tables_init (void);
 int    netcap_subscriptions_init (void);
+int    netcap_redirect_tables_cleanup (void);
 int    netcap_subscriptions_cleanup (void);
 
 netcap_sub_t* netcap_subscription_malloc (void);

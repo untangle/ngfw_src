@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: UDPSource.java,v 1.11 2005/01/31 03:17:31 rbscott Exp $
+ * $Id$
  */
 
 package com.metavize.jvector;
@@ -23,15 +23,15 @@ public class UDPSource extends Source
     
     protected static final int READ_TIMEOUT = 10;
 
-    protected final UDPMailbox mailbox;
+    protected final PacketMailbox mailbox;
 
-    public UDPSource( UDPMailbox mailbox )
+    public UDPSource( PacketMailbox mailbox )
     {
         this.mailbox = mailbox;
         pointer = create( mailbox.pointer() );
     }
 
-    public UDPSource( UDPMailbox mailbox, SourceEndpointListener listener )
+    public UDPSource( PacketMailbox mailbox, SourceEndpointListener listener )
     {
         this( mailbox );
         registerListener( listener );
@@ -44,10 +44,11 @@ public class UDPSource extends Source
     
     protected Crumb get_event()
     {
-        /* XXX How should we handle the byte array */
-        UDPPacket packet;
+        PacketCrumb crumb;
 
-        /* XXX How to handle ICMP, and other such fun stuff */
+        /* XXX How should we handle the byte array */
+        Packet packet;
+
         try {
             packet = mailbox.read( READ_TIMEOUT );
         } catch ( EmptyStackException e ) {
@@ -60,12 +61,17 @@ public class UDPSource extends Source
             return ShutdownCrumb.getInstance();
         }
         
-        UDPPacketCrumb crumb = new UDPPacketCrumb( new UDPPacketDesc( packet ), packet.data());
+        try {
+            crumb = PacketCrumb.makeCrumb( packet );
 
-        /* Notify listeners that data was received */
-        if ( listener != null ) listener.dataEvent( this, crumb.limit());
-        
-        packet.raze();
+            /* Notify listeners that data was received*/
+            if ( listener != null ) listener.dataEvent( this, crumb.limit());
+        } catch ( Exception e ) {
+            Vector.logError( "Error getting crumb, shutting down " + e );
+            return ShutdownCrumb.getInstance();
+        } finally {
+            packet.raze();
+        }
         
         return crumb;
     }

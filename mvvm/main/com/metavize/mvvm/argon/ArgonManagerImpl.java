@@ -13,6 +13,7 @@ package com.metavize.mvvm.argon;
 
 import java.net.InetAddress;
 
+import com.metavize.jnetcap.Netcap;
 import com.metavize.jnetcap.Shield;
 import com.metavize.mvvm.ArgonManager;
 
@@ -39,6 +40,31 @@ public class ArgonManagerImpl implements ArgonManager
         if ( Argon.shieldFile != null ) {
             shield.config( Argon.shieldFile );
         }
+    }
+
+    public void updateAddress()
+    {
+        Netcap.updateAddress();
+    }
+
+    public void disableLocalAntisubscribe()
+    {
+        Netcap.disableLocalAntisubscribe();
+    }
+
+    public void enableLocalAntisubscribe()
+    {
+        Netcap.enableLocalAntisubscribe();
+    }
+
+    public void disableDhcpForwarding()
+    {
+        Netcap.disableDhcpForwarding();
+    }
+
+    public void enableDhcpForwarding()
+    {
+        Netcap.enableDhcpForwarding();
     }
 
     public static final ArgonManager getInstance()

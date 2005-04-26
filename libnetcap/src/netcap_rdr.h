@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: netcap_rdr.h,v 1.2 2005/01/27 04:55:08 rbscott Exp $
+ * $Id$
  */
 #ifndef __NETCAP_RDR_H_
 #define __NETCAP_RDR_H_

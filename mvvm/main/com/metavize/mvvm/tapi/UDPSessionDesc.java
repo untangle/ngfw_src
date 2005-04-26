@@ -6,10 +6,21 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: UDPSessionDesc.java,v 1.2 2005/01/06 02:39:41 jdi Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.tapi;
 
 public interface UDPSessionDesc extends IPSessionDesc {
+    
+    /**
+     * <code>isPing</code> returns true if the given UDP Session is a ping session, false
+     * if it is a normal UDP session.
+     *
+     * Note that currently ping sessions are distinguished from normal UDP sessions by having
+     * both server and client ports of 0.
+     *
+     * @return a <code>boolean</code> true if the session is a ping session
+     */
+    boolean isPing();
 }

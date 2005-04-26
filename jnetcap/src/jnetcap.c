@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: jnetcap.c,v 1.27 2005/02/26 02:36:03 rbscott Exp $
+ *  $Id$
  */
 
 #include <jni.h>
@@ -94,6 +94,7 @@ static jnetcap_thread_t* jnetcap_thread_malloc();
 
 static void              _udp_hook( netcap_session_t* netcap_session, void* arg );
 static void              _tcp_hook( netcap_session_t* netcap_session, void* arg );
+static void              _icmp_hook( netcap_session_t* netcap_sess, netcap_pkt_t* pkt, void* arg);
 
 /* shared hook between the UDP and TCP hooks, these just get the program into java */
 static void              _hook( int protocol, netcap_session_t* netcap_session, void* arg );
@@ -632,6 +633,49 @@ JNIEXPORT jboolean JNICALL JF_Netcap( isBridgeAlive )
 
 /*
  * Class:     com_metavize_jnetcap_Netcap
+ * Method:    updateIcmpPacket
+ * Signature: ([BIII)V
+ */
+JNIEXPORT jint JNICALL JF_Netcap( updateIcmpPacket )
+( JNIEnv *env, jobject _this, jbyteArray _data, jint data_len, jint icmp_type, jint icmp_code, 
+  jlong _icmp_mb )
+{
+    mailbox_t* icmp_mb = (mailbox_t*)JLONG_TO_UINT( _icmp_mb );
+    jbyte* data;
+    int data_lim;
+    int ret = -1;
+    
+    if ( icmp_mb == NULL ) {
+        return jnetcap_error( JNETCAP_ERROR_ARGS, ERR_CRITICAL, "NULL icmp mailbox\n" );
+    }
+
+    /* Convert the byte array */
+    if (( data = (*env)->GetByteArrayElements( env, _data, NULL )) == NULL ) {
+        return jnetcap_error( JNETCAP_ERROR_STT, ERR_CRITICAL, "GetByteArrayElements\n" );
+    }
+    
+    do {
+        data_lim = (*env)->GetArrayLength( env, _data );
+        
+        if ( data_len > data_lim ) {
+            ret = jnetcap_error( JNETCAP_ERROR_ARGS, ERR_CRITICAL, "ICMP: size > byte array length\n" );
+            break;
+        }
+        
+        if (( ret = netcap_icmp_update_pkt( data, data_len, data_lim, icmp_type, icmp_code, icmp_mb )) < 0 ) {
+            ret = jnetcap_error( JNETCAP_ERROR_STT, ERR_CRITICAL, "netcap_icmp_fix_pkt\n" );
+            break;
+        }        
+    } while ( 0 );
+
+    (*env)->ReleaseByteArrayElements( env, _data, data, 0 );
+    
+    return ret;
+}
+
+
+/*
+ * Class:     com_metavize_jnetcap_Netcap
  * Method:    isMulticast
  * Signature: (J)Z
  */
@@ -646,10 +690,87 @@ JNIEXPORT jboolean JNICALL JF_Netcap( isMulticast )
     return JNI_FALSE;
 }
 
+/*
+ * Class:     com_metavize_jnetcap_Netcap
+ * Method:    updateAddress
+ * Signature: ()V;
+ */
+JNIEXPORT void JNICALL JF_Netcap( updateAddress )
+    ( JNIEnv* env, jclass _class )
+{
+    if ( netcap_update_address() < 0 ) {
+        jnetcap_error( JNETCAP_ERROR_STT, ERR_CRITICAL, "netcap_update_address\n" );
+    }
+}
+
+/*
+ * Class:     com_metavize_jnetcap_Netcap
+ * Method:    disableLocalAntisubscribe
+ * Signature: ()V;
+ */
+JNIEXPORT void JNICALL JF_Netcap( disableLocalAntisubscribe )
+    ( JNIEnv* env, jclass _class )
+{
+    if ( netcap_subscription_enable_local() < 0 ) {
+        jnetcap_error( JNETCAP_ERROR_STT, ERR_CRITICAL, "netcap_subscription_enable_local\n" );
+    }
+}
+
+/*
+ * Class:     com_metavize_jnetcap_Netcap
+ * Method:    enableLocalAntisubscribe
+ * Signature: ()V;
+ */
+JNIEXPORT void JNICALL JF_Netcap( enableLocalAntisubscribe )
+    ( JNIEnv* env, jclass _class )
+{
+    if ( netcap_subscription_disable_local() < 0 ) {
+        jnetcap_error( JNETCAP_ERROR_STT, ERR_CRITICAL, "netcap_subscription_disable_local\n" );
+    }
+}
+/*
+ * Class:     com_metavize_jnetcap_Netcap
+ * Method:    disableDhcpForwarding
+ * Signature: ()V;
+ */
+JNIEXPORT void JNICALL JF_Netcap( disableDhcpForwarding )
+    ( JNIEnv* env, jclass _class )
+{
+    if ( netcap_subscription_disable_dhcp_forwarding() < 0 ) {
+        jnetcap_error( JNETCAP_ERROR_STT, ERR_CRITICAL, "netcap_subscription_disable_dhcp_forwarding\n" );
+    }
+}
+
+/*
+ * Class:     com_metavize_jnetcap_Netcap
+ * Method:    enableDhcpForwarding
+ * Signature: ()V;
+ */
+JNIEXPORT void JNICALL JF_Netcap( enableDhcpForwarding )
+    ( JNIEnv* env, jclass _class )
+{
+    if ( netcap_subscription_enable_dhcp_forwarding() < 0 ) {
+        jnetcap_error( JNETCAP_ERROR_STT, ERR_CRITICAL, "netcap_subscription_enable_dhcp_forwarding\n" );
+    }
+}
+
 static void              _udp_hook( netcap_session_t* netcap_sess, void* arg )
 {
     _hook( IPPROTO_UDP, netcap_sess, arg );
 }
+
+static void              _icmp_hook( netcap_session_t* netcap_sess, netcap_pkt_t* pkt, void* arg)
+{
+    if ( pkt != NULL ) {
+        errlog( ERR_CRITICAL, "_icmp_hook: Unable to handle packet" );
+        netcap_pkt_raze( pkt );
+    }
+
+    if ( netcap_sess != NULL ) {
+        _hook( IPPROTO_UDP, netcap_sess, arg );
+    }
+}
+
 
 static void              _tcp_hook( netcap_session_t* netcap_sess, void* arg )
 {
@@ -671,8 +792,9 @@ static void              _hook( int protocol, netcap_session_t* netcap_sess, voi
     }
     
     switch( protocol ) {
-    case IPPROTO_UDP: global_hook = _jnetcap.java.udp_hook; break;
-    case IPPROTO_TCP: global_hook = _jnetcap.java.tcp_hook; break;
+    case IPPROTO_ICMP: global_hook = _jnetcap.java.udp_hook; break;
+    case IPPROTO_UDP:  global_hook = _jnetcap.java.udp_hook; break;
+    case IPPROTO_TCP:  global_hook = _jnetcap.java.tcp_hook; break;
     default: 
         errlog( ERR_CRITICAL, "_hook: invalid protocol(%d)\n", protocol );
     }
@@ -744,7 +866,14 @@ static int              _register_hook( JNIEnv* env, int protocol, jobject hook 
     }
     
     switch ( protocol ) {
-    case IPPROTO_UDP: ret = netcap_udp_hook_register( _udp_hook ); break;
+    case IPPROTO_UDP: 
+        ret = netcap_udp_hook_register( _udp_hook ); 
+        
+        if ( ret < 0 ) 
+            break;
+        
+        ret = netcap_icmp_hook_register( _icmp_hook );
+        break;
     case IPPROTO_TCP: ret = netcap_tcp_hook_register( _tcp_hook ); break;
     default: ret = -1; /* IMPOSSIBLE */
     }

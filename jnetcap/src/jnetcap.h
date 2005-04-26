@@ -71,6 +71,10 @@ int jnetcap_initialized( void );
 #define JH_Shield       "com_metavize_jnetcap_Shield.h"
 #define JN_Shield(VAL)  JN_BUILD_NAME( Shield, VAL )
 #define JF_Shield(FUNC) JF_BUILD_NAME( Shield, FUNC )
+
+#define JH_ICMPTraffic       "com_metavize_jnetcap_ICMPTraffic.h"
+#define JN_ICMPTraffic(VAL)  JN_BUILD_NAME( ICMPTraffic, VAL )
+#define JF_ICMPTraffic(FUNC) JF_BUILD_NAME( ICMPTraffic, FUNC )
  
 #endif  // __JNETCAP_H_
 

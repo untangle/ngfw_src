@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: lock.c,v 1.1 2004/11/09 19:39:56 dmorris Exp $
+ * $Id$
  */
 #include "lock.h"
 

@@ -6,37 +6,60 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: UDPSink.java,v 1.10 2005/02/07 08:25:09 rbscott Exp $
+ * $Id$
  */
 
 package com.metavize.jvector;
 
 import com.metavize.jnetcap.*;
 
+/* This should really be called a packet sink since it writes both ICMP
+ * and UDP packets */
 public class UDPSink extends Sink
 {
     protected SinkEndpointListener listener = null;
 
+    private final ICMPMailbox icmpMailbox;
+    
     protected final IPTraffic traffic;
 
     /* Flag for the write function to indicate when ttl or tos is unused */
     protected static final int DISABLED = -1;
 
-    public UDPSink( IPTraffic traffic )
+    /* The next two constructors are now obsolete since sessionPointer and traffic must be set */
+    private UDPSink( IPTraffic traffic )
     {
         /* Must lock the traffic structure so no one can modify where data is going */
         traffic.lock();
 
         this.traffic = traffic;
 
-        /* XXX After the conversion remove the (int) */
-        pointer        = create( (int)traffic.pointer());
+        /* XXX After the conversion remove the (int), (may need longs for 64-bit) */
+        pointer = create( (int)traffic.pointer());
+        
+        /* XXXXXXXXXXXXXXXXXXXXXXXXX */
+        this.icmpMailbox = null;
     }
 
-    public UDPSink( IPTraffic traffic, SinkEndpointListener listener )
+    private UDPSink( IPTraffic traffic, SinkEndpointListener listener )
     {
         this( traffic );
         registerListener( listener );
+    }
+
+    public UDPSink( IPTraffic traffic, SinkEndpointListener listener, ICMPMailbox icmpMailbox )
+    {
+        /* Must lock the traffic structure so no one can modify where data is going */
+        traffic.lock();
+
+        this.traffic = traffic;
+
+        /* XXX After the conversion remove the (int), (may need longs for 64-bit) */
+        pointer = create( (int)traffic.pointer());
+        
+        this.icmpMailbox = icmpMailbox;
+        
+        registerListener( listener );        
     }
 
     /**
@@ -57,6 +80,7 @@ public class UDPSink extends Sink
         switch ( o.type() ) {
         case Crumb.TYPE_DATA:
         case Crumb.TYPE_UDP_PACKET:
+        case Crumb.TYPE_ICMP_PACKET:
             return write( (DataCrumb)o );
             
         case Crumb.TYPE_RESET:
@@ -80,19 +104,39 @@ public class UDPSink extends Sink
         int ttl = DISABLED;
         int tos = DISABLED;
         byte[] options = null;
+        boolean isUdp = true;
 
         int size = crumb.limit() - crumb.offset();
 
-        if ( crumb.type() == Crumb.TYPE_UDP_PACKET ) {
-            UDPPacketDesc desc = ((UDPPacketCrumb)(crumb)).desc();
-            
-            ttl = desc.ttl();
-            tos = desc.tos();
-            options = desc.options();
+        switch ( crumb.type()) {
+        case Crumb.TYPE_ICMP_PACKET:
+            ICMPPacketCrumb icmpCrumb = (ICMPPacketCrumb)crumb;
+            if ( crumb.offset() == 0 ) {
+                /* This fixes the address and ports for an error packet */
+                try {
+                    /* Update to the new length */
+                    icmpCrumb.limit( updateIcmpPacket( icmpCrumb ));
+                } catch( Exception e ) {
+                    Vector.logError( "Unable to fix ICMP Crumb: " + e );
+                    return Vector.ACTION_DEQUEUE;
+                }
+            }
+            isUdp = false;
+            /* fallthrough */
+        case Crumb.TYPE_UDP_PACKET:
+            PacketCrumb packetCrumb = (PacketCrumb)crumb;
+            ttl = packetCrumb.ttl();
+            tos = packetCrumb.tos();
+
+            /* XXX need to implement options */
+            // options = packetCrumb.options();
+
+            /* Assume that it is a valid type */
+        default:
         }
 
-        /* XXX Change to int once the conversion is complete */
-        numWritten = write((int)traffic.pointer(), crumb.data(), crumb.offset(), size, ttl, tos, options );
+        numWritten = write((int)traffic.pointer(), crumb.data(), crumb.offset(), size, ttl, tos, 
+                           options, isUdp );
 
         if ( numWritten < 0 ) {
             Vector.logError( "UDP: Unable to write crumb" );
@@ -110,12 +154,13 @@ public class UDPSink extends Sink
 
         return Vector.ACTION_DEQUEUE;
     }
-
+    
     protected void sinkRaze()
     {
         super.sinkRaze();
         
-        /* XXX ??? Maybe */
+        /* Since the traffic structure is passed in, it is the callers responsibility to
+         * raze the traffic structure, this is presently done in UDPHook.java */
         // traffic.raze();
     }
 
@@ -127,10 +172,20 @@ public class UDPSink extends Sink
         return shutdown( pointer );
     }
 
+    /**
+     * Repair the TCP/UDP/IP Header inside of the data block of an ICMP error packet so that it 
+     * contains the correct information.  If this is not an error packet, this does nothing.
+     */
+    int updateIcmpPacket( ICMPPacketCrumb icmpCrumb )
+    {
+        return Netcap.updateIcmpPacket( icmpCrumb.data(), icmpCrumb.limit(), 
+                                        icmpCrumb.icmpType(), icmpCrumb.icmpCode(), icmpMailbox );
+    }
+
     protected native int create( int pointer );
 
     /**
-     * Send out a packet.</p>
+     * Send out a ICMP or UDP packet.</p>
      * @param pointer - Pointer to the traffic structure (netcap_pkt_t/IPTraffic.pointer)
      * @param data    - byte array of the data to send out
      * @param offset  - Offset within the byte array, this allows for multiple writes if one write
@@ -139,10 +194,11 @@ public class UDPSink extends Sink
      * @param ttl     - TTL for the outgoing packet, or -1 if unused.
      * @param tos     - TOS for outgoing packet or -1 if unused.
      * @param options - options for the outgoing packet or -1 if unused (currently not implemented)
+     * @param isUdp   - True if this is a UDP packet, false if it is ICMP.
      * @return Number of bytes written
      */
     // protected static native int write( int pointer, byte[] data, int offset, int size, int packet );
     protected static native int write( int pointer, byte[] data, int offset, int size, int ttl,
-                                       int tos, byte[] options );
+                                       int tos, byte[] options, boolean isUdp );
     protected static native int shutdown( int pointer );
 }

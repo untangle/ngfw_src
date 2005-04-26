@@ -148,6 +148,8 @@ public class RemoteClient
             shieldStatus( args[1], args[2] );
         } else if (args[0].equalsIgnoreCase("shieldReconfigure")) {
             shieldReconfigure();
+        } else if (args[0].equalsIgnoreCase("updateAddress")) {
+            updateAddress();
         } else {
             System.out.print("dont know: ");
             for (int i = 0; i < args.length; i++) {
@@ -530,7 +532,11 @@ public class RemoteClient
     {
         mc.argonManager().shieldReconfigure();
     }
-    
+
+    private static void updateAddress() throws Exception 
+    {
+        mc.argonManager().updateAddress();
+    }
 
     // helper functions -------------------------------------------------------
 

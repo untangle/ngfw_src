@@ -304,7 +304,19 @@ class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {
                 return null;
             case com.metavize.mvvm.argon.IPNewSessionRequest.RELEASED:
                 logger.debug("releasing");
-                return null;
+                /* XXX THIS IS A HACK TO get NAT working so the old ports can be reclaimed
+                 * when a session is razed */
+                com.metavize.mvvm.argon.TCPSessionImpl pSession = 
+                    new com.metavize.mvvm.argon.TCPSessionImpl( request );
+                TCPSessionImpl session = new TCPSessionImpl(this, pSession,
+                                                            td.getTcpClientReadBufferSize(),
+                                                            td.getTcpServerReadBufferSize());
+                session.attach( treq.attachment());
+                registerPipelineListener(pSession, session);
+                
+                /* Must return a request in order to pass changes to modify
+                 * the session without participating in the session */
+                return pSession;
             case com.metavize.mvvm.argon.IPNewSessionRequest.REQUESTED:
             case com.metavize.mvvm.argon.IPNewSessionRequest.ENDPOINTED:
             default:
@@ -400,7 +412,19 @@ class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {
                 return null;
             case com.metavize.mvvm.argon.IPNewSessionRequest.RELEASED:
                 logger.debug("releasing");
-                return null;
+                /* XXX THIS IS A HACK TO get NAT working so the old ports can be reclaimed
+                 * when a session is razed */
+                com.metavize.mvvm.argon.UDPSessionImpl pSession = 
+                    new com.metavize.mvvm.argon.UDPSessionImpl( request );
+                UDPSessionImpl session = new UDPSessionImpl(this, pSession,
+                                                            td.getTcpClientReadBufferSize(),
+                                                            td.getTcpServerReadBufferSize());
+                session.attach( ureq.attachment());
+                registerPipelineListener(pSession, session);
+
+                /* Must return a request in order to pass changes to modify
+                 * the session without participating in the session */
+                return pSession;
             case com.metavize.mvvm.argon.IPNewSessionRequest.REQUESTED:
             case com.metavize.mvvm.argon.IPNewSessionRequest.ENDPOINTED:
             default:
@@ -818,26 +842,59 @@ class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {
             return sessionEventListener.handleTCPServerWritable(event);
     }
 
-    IPDataResult dispatchUDPClientPacket(UDPPacketEvent event)
+    void dispatchUDPClientPacket(UDPPacketEvent event)
         throws MPipeException
     {
         IPSessionImpl session = (IPSessionImpl) event.session();
         elog(Level.DEBUG, "UDPClientPacket", session.id(), event.packet().remaining());
         if (sessionEventListener == null || session.released())
-            return releasedHandler.handleUDPClientPacket(event);
+            releasedHandler.handleUDPClientPacket(event);
         else
-            return sessionEventListener.handleUDPClientPacket(event);
+            sessionEventListener.handleUDPClientPacket(event);
     }
 
-    IPDataResult dispatchUDPServerPacket(UDPPacketEvent event)
+    void dispatchUDPServerPacket(UDPPacketEvent event)
         throws MPipeException
     {
         IPSessionImpl session = (IPSessionImpl) event.session();
         elog(Level.DEBUG, "UDPServerPacket", session.id(), event.packet().remaining());
         if (sessionEventListener == null || session.released())
-            return releasedHandler.handleUDPServerPacket(event);
+            releasedHandler.handleUDPServerPacket(event);
         else
-            return sessionEventListener.handleUDPServerPacket(event);
+            sessionEventListener.handleUDPServerPacket(event);
+    }
+
+    void dispatchUDPClientError(UDPErrorEvent event)
+        throws MPipeException
+    {
+        IPSessionImpl session = (IPSessionImpl) event.session();
+        elog(Level.DEBUG, "UDPClientError", session.id(), event.packet().remaining());
+        if (sessionEventListener == null || session.released())
+            releasedHandler.handleUDPClientError(event);
+        else
+            sessionEventListener.handleUDPClientError(event);
+    }
+
+    void dispatchUDPServerError(UDPErrorEvent event)
+        throws MPipeException
+    {
+        IPSessionImpl session = (IPSessionImpl) event.session();
+        elog(Level.DEBUG, "UDPServerError", session.id(), event.packet().remaining());
+        if (sessionEventListener == null || session.released())
+            releasedHandler.handleUDPServerError(event);
+        else
+            sessionEventListener.handleUDPServerError(event);
+    }
+
+    IPDataResult dispatchTCPClientDataEnd(TCPSessionEvent event)
+        throws MPipeException
+    {
+        IPSessionImpl session = (IPSessionImpl) event.session();
+        elog(Level.INFO, "TCPClientDataEnd", session.id());
+        if (sessionEventListener == null || session.released())
+            return releasedHandler.handleTCPClientDataEnd(event);
+        else
+            return sessionEventListener.handleTCPClientDataEnd(event);
     }
 
     void dispatchTCPClientFIN(TCPSessionEvent event)
@@ -849,6 +906,17 @@ class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {
             releasedHandler.handleTCPClientFIN(event);
         else
             sessionEventListener.handleTCPClientFIN(event);
+    }
+
+    IPDataResult dispatchTCPServerDataEnd(TCPSessionEvent event)
+        throws MPipeException
+    {
+        IPSessionImpl session = (IPSessionImpl) event.session();
+        elog(Level.INFO, "TCPServerDataEnd", session.id());
+        if (sessionEventListener == null || session.released())
+            return releasedHandler.handleTCPServerDataEnd(event);
+        else
+            return sessionEventListener.handleTCPServerDataEnd(event);
     }
 
     void dispatchTCPServerFIN(TCPSessionEvent event)
@@ -917,26 +985,26 @@ class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {
             sessionEventListener.handleUDPServerExpired(event);
     }
 
-    IPDataResult dispatchUDPClientWritable(UDPSessionEvent event)
+    void dispatchUDPClientWritable(UDPSessionEvent event)
         throws MPipeException
     {
         IPSessionImpl session = (IPSessionImpl) event.session();
         elog(Level.DEBUG, "UDPClientWritable", session.id());
         if (sessionEventListener == null || session.released())
-            return releasedHandler.handleUDPClientWritable(event);
+            releasedHandler.handleUDPClientWritable(event);
         else
-            return sessionEventListener.handleUDPClientWritable(event);
+            sessionEventListener.handleUDPClientWritable(event);
     }
 
-    IPDataResult dispatchUDPServerWritable(UDPSessionEvent event)
+    void dispatchUDPServerWritable(UDPSessionEvent event)
         throws MPipeException
     {
         IPSessionImpl session = (IPSessionImpl) event.session();
         elog(Level.DEBUG, "UDPServerWritable", session.id());
         if (sessionEventListener == null || session.released())
-            return releasedHandler.handleUDPServerWritable(event);
+            releasedHandler.handleUDPServerWritable(event);
         else
-            return sessionEventListener.handleUDPServerWritable(event);
+            sessionEventListener.handleUDPServerWritable(event);
     }
 
     void dispatchUDPFinalized(UDPSessionEvent event)

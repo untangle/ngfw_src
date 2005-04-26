@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: netcap_sched.c,v 1.4 2005/01/31 03:52:09 rbscott Exp $
+ * $Id$
  */
 
 #include <unistd.h>
@@ -230,7 +230,7 @@ void* netcap_sched_donate    ( void* arg )
         }
         
         /* Check the mailbox */
-        msg = mailbox_utimed_get ( &_sched.mailbox, &ts );
+        msg = mailbox_ntimed_get ( &_sched.mailbox, &ts );
 
         _sched_run_events ( ~_SCHED_EXIT );
         

@@ -1,4 +1,4 @@
-/* $Id: test2.c,v 1.3 2004/12/31 23:35:05 rbscott Exp $ */
+/* $Id$ */
 #include <stdlib.h>
 #include <stdio.h>
 #include <libnetcap.h>

@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: source.h,v 1.2 2004/11/10 20:56:44 dmorris Exp $
+ * $Id$
  */
 #ifndef __SOURCE_H
 #define __SOURCE_H

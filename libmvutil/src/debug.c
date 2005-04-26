@@ -1,4 +1,4 @@
-/* $Id: debug.c,v 1.4 2005/01/20 21:49:10 rbscott Exp $ */
+/* $Id$ */
 #include "debug.h"
 
 #include <stdio.h>
@@ -108,12 +108,14 @@ int  _debug_init()
         pkgs[i].date   = DATE_DEFAULT;
         pkgs[i].output = OUT_DEFAULT;
     }
-    
+
+/* -RBS: Changed to a mutex
     if (!output_lock) {
         if (sem_init(&_output_lock,0,1)<0)
             return -1;
         output_lock = &_output_lock;
     }
+*/
 
     return 0;
 }

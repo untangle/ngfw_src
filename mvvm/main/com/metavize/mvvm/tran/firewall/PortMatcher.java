@@ -25,10 +25,14 @@ import java.net.UnknownHostException;
  */
 public class PortMatcher implements Serializable
 {
-    public static final String MARKER_RANGE    = "-";
+
+    public static final String MARKER_RANGE     = MatcherStringConstants.RANGE;
+    public static final String MARKER_WILDCARD  = MatcherStringConstants.WILDCARD;
+    private static final String MARKER_NOTHING  = MatcherStringConstants.NOTHING;
+
     public static final int    PORT_MASK       = 0xFFFF;
-    public static final String MARKER_WILDCARD = "*";
     public static final PortMatcher MATCHER_ALL = new PortMatcher( 0, PORT_MASK );
+    public static final PortMatcher MATCHER_NIL = new PortMatcher();
 
     /* Base port of the range for the rule */
     private final int start;
@@ -40,6 +44,15 @@ public class PortMatcher implements Serializable
      * 3. <end>  : The top of the range if the matcher uses the range syntax.
      */
     private final int end;
+
+    /**
+     * Private constructor to create the nil matcher
+     */
+    private PortMatcher()
+    {
+        start = -1;
+        end   = -2;
+    }
 
     public PortMatcher( int start )
     {
@@ -63,6 +76,17 @@ public class PortMatcher implements Serializable
             return true;
         
         return false;
+    }
+
+    public String toString()
+    {
+        if ( this == MATCHER_ALL || (( start == 0 ) && ( end == PORT_MASK ))) {
+            return MARKER_WILDCARD;
+        } else if ( this == MATCHER_NIL || ( start > end )) {
+            return MARKER_NOTHING;
+        }
+        
+        return "" + start + MARKER_RANGE + end;
     }
     
     public static PortMatcher parse( String str ) throws IllegalArgumentException
@@ -97,6 +121,8 @@ public class PortMatcher implements Serializable
             return new PortMatcher( start, end );
         } else if ( str.equalsIgnoreCase( MARKER_WILDCARD )) {
             return MATCHER_ALL;
+        } else if ( str.equalsIgnoreCase( MARKER_NOTHING )) { 
+            return MATCHER_NIL;
         }
 
         start = Integer.parseInt( str );
@@ -108,5 +134,5 @@ public class PortMatcher implements Serializable
         
         /* Just an address a range where the start and end are the same */
         return new PortMatcher( start );
-    }    
+    }
 }

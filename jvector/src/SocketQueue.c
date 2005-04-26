@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: SocketQueue.c,v 1.9 2005/01/30 00:07:38 rbscott Exp $
+ * $Id$
  */
 
 #include <jni.h>

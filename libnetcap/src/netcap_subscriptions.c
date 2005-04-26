@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: netcap_subscriptions.c,v 1.10 2005/02/26 03:39:43 rbscott Exp $
+ * $Id$
  */
 #include <stdlib.h>
 #include <unistd.h>
@@ -34,19 +34,49 @@
 /* The number of sockets to listen on for TCP */
 #define RDR_TCP_LOCALS_SOCKS 128
 
+#define RULES_ADD 1
+#define RULES_DEL 0
+
 static ht_t _subscriptions;
 static int  _subscription_next_id;
 
+static struct 
+{
+    int             is_dhcp_forwarding_enabled;
+    int             is_local_enabled;
+    pthread_mutex_t mutex;
+} _subscription = 
+{
+    .is_dhcp_forwarding_enabled RULES_DEL,
+    .is_local_enabled           RULES_ADD,
+    .mutex PTHREAD_MUTEX_INITIALIZER
+};
+
 static pthread_mutex_t _id_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-static int _netcap_unsubscribe (netcap_sub_t* sub);
+static int _netcap_unsubscribe     ( netcap_sub_t* sub );
+static int _modify_dhcp_forwarding ( int if_add );
+static int _modify_local           ( int if_add );
 
-int netcap_subscriptions_init (void)
+int    netcap_redirect_tables_init (void)
 {
     int ret;
+    
+    
+    /* Have to go to Interface marking first, and then to antisubs */
+    /* Insert the interface marking chain */
+    ret = system( "/sbin/iptables -t mangle -N " INTERFACE_CHAIN );
 
-    if (ht_init(&_subscriptions, SUBSCRIPTION_TABLE_SIZE, int_hash_func, int_equ_func, HASH_FLAG_KEEP_LIST)<0)
-        return perrlog("ht_init");
+    ret = WEXITSTATUS( ret );
+
+    /* 0 means sucessful, 1 just means the chain already exists */
+    if ( ret != 0 && ret != 1 ) {
+        return errlog( ERR_CRITICAL, "Unable to add interface marking chain '" INTERFACE_CHAIN "'(%d)\n", ret );
+    }
+
+    if ( mvutil_system( "/sbin/iptables -t mangle -A PREROUTING -j " INTERFACE_CHAIN ) < 0 ) {
+        return errlog( ERR_CRITICAL, "Unable to insert jump to mark-interface chain\n" );
+    }    
 
     /* Insert the antisubscribe chain */
     ret = system( "/sbin/iptables -t mangle -N " ANTISUBSCRIBE_CHAIN );
@@ -57,29 +87,23 @@ int netcap_subscriptions_init (void)
     if ( ret != 0 && ret != 1 ) {
         return errlog( ERR_CRITICAL, "Unable to add ANTISUBSCRIBE chain '" ANTISUBSCRIBE_CHAIN "'(%d)\n", ret );
     }
-    
+
     if ( mvutil_system( "/sbin/iptables -t mangle -A PREROUTING -j " ANTISUBSCRIBE_CHAIN ) < 0 ) {
-        errlog( ERR_CRITICAL, "Unable to insert jump to anti-subscribe chain\n" );
+        return errlog( ERR_CRITICAL, "Unable to insert jump to anti-subscribe chain\n" );
     }
 
-    _subscription_next_id = 100;
-    
     return 0;
 }
 
-int netcap_subscriptions_cleanup (void)
+int    netcap_redirect_tables_cleanup (void)
 {
     int ret;
-
-    if (ht_destroy(&_subscriptions)>0)
-        errlog(ERR_WARNING,"Entries left in subscription table\n");
-
-    if ( pthread_mutex_destroy ( &_id_mutex ) < 0 ) perrlog ( "pthread_mutex_destroy" );
     
+    /* Remove the rule to jump to the antisub table */
     if ( mvutil_system( "/sbin/iptables -t mangle -D PREROUTING -j " ANTISUBSCRIBE_CHAIN ) < 0 ) {
         errlog( ERR_CRITICAL, "Unable to remove jump to anti-subscribe chain\n" );
     }
-    
+
     /* Remove the antisubscribe chain */
     ret = system( "/sbin/iptables -t mangle -X " ANTISUBSCRIBE_CHAIN );
 
@@ -87,9 +111,41 @@ int netcap_subscriptions_cleanup (void)
 
     /* 0 means sucessful, 1 just means the chain already exists */
     if ( ret != 0 && ret != 1 ) {
-        errlog( ERR_CRITICAL, "Unable to remove anti-subscribe chain: '" ANTISUBSCRIBE_CHAIN "'(%d)\n", ret );
+        errlog( ERR_CRITICAL, "Unable to remove ANTISUBSCRIBE chain '" ANTISUBSCRIBE_CHAIN "'(%d)\n", ret );
     }
 
+    if ( mvutil_system( "/sbin/iptables -t mangle -D PREROUTING -j " INTERFACE_CHAIN ) < 0 ) {
+        errlog( ERR_CRITICAL, "Unable to remove jump to mark-interface chain\n" );
+    }
+
+    ret = system( "/sbin/iptables -t mangle -X " INTERFACE_CHAIN );
+
+    ret = WEXITSTATUS( ret );
+
+    /* 0 means sucessful, 1 just means the chain already exists */
+    if ( ret != 0 && ret != 1 ) {
+        return errlog( ERR_CRITICAL, "Unable to add interface marking chain '" INTERFACE_CHAIN "'(%d)\n", ret );
+    }
+
+    return 0;
+}
+
+int netcap_subscriptions_init (void)
+{
+    if (ht_init(&_subscriptions, SUBSCRIPTION_TABLE_SIZE, int_hash_func, int_equ_func, HASH_FLAG_KEEP_LIST)<0)
+        return perrlog("ht_init");
+    
+    _subscription_next_id = 100;
+    
+    return 0;
+}
+
+int netcap_subscriptions_cleanup (void)
+{
+    if (ht_destroy(&_subscriptions)>0)
+        errlog(ERR_WARNING,"Entries left in subscription table\n");
+
+    if ( pthread_mutex_destroy ( &_id_mutex ) < 0 ) perrlog ( "pthread_mutex_destroy" );
     
     return 0;
 }
@@ -120,7 +176,9 @@ int netcap_subscribe (int flags, void* arg, int proto,
     int           socks[RDR_TCP_LOCALS_SOCKS];
     int           sock_count = -1;
 
-    TEST_INIT();
+    if ( netcap_is_initialized() != 1 ) {
+        return errlog( ERR_CRITICAL, "netcap_is_initialized\n" );
+    }
 
     bzero( socks, sizeof( socks ));
 
@@ -147,6 +205,7 @@ int netcap_subscribe (int flags, void* arg, int proto,
      * open a socket for this rdr for non-antisubscribes
       */
     if (( flags & NETCAP_FLAG_ANTI_SUBSCRIBE ) == 0 ) {
+        /* XXX Should be a switch statement */
         if (proto == IPPROTO_ICMP || proto == IPPROTO_ALL) {
             sock_count = -1;
             port = 0;
@@ -174,8 +233,10 @@ int netcap_subscribe (int flags, void* arg, int proto,
             sock_count = RDR_TCP_LOCALS_SOCKS;
         }
         else if (proto == IPPROTO_UDP) {
+            /* -RBS no longer needed since we are queuing packets */
+#if 0
             int one = 1;
-            
+
             if ( unet_startlisten_on_anyport_udp( &port, &socks[0] ) < 0 ) {
                 subscription_free(sub);
                 return perrlog("unet_startlisten_on_anyport_udp");
@@ -203,6 +264,8 @@ int netcap_subscribe (int flags, void* arg, int proto,
                 perrlog("setsockopt");
             if (setsockopt(socks[0], SOL_IP,     IP_RECVNFMARK,  &one, sizeof(one)) < 0) 
                 perrlog("setsockopt");
+#endif
+            /* -RBS no longer needed since we are queuing packets */
         }
         else {
             return errlog(ERR_CRITICAL,"Unknown protocol\n");
@@ -260,7 +323,9 @@ int netcap_unsubscribe (int sub_id)
     netcap_sub_t* sub = ht_lookup(&_subscriptions,(void*)sub_id);
     int ret;
 
-    TEST_INIT();
+    if ( netcap_is_initialized() != 1 ) {
+        return errlog( ERR_CRITICAL, "netcap_is_initialized\n" );
+    }
 
     if (!sub) {
         return errlog(ERR_CRITICAL,"Subscription not found\n");
@@ -283,7 +348,9 @@ int netcap_unsubscribe_all ()
     list_node_t* step;
     list_t* list = ht_get_content_list(&_subscriptions);
         
-    TEST_INIT();
+    if ( netcap_is_initialized() != 1 ) {
+        return errlog( ERR_CRITICAL, "netcap_is_initialized\n" );
+    }
 
     if (!list)
         return perrlog("ht_get_content_list");
@@ -441,5 +508,81 @@ static int _netcap_unsubscribe (netcap_sub_t* sub)
     return 0;
 }
 
+/** Allow DHCP traffic to pass through the box */
+int   netcap_subscription_disable_dhcp_forwarding( void )
+{
+    return _modify_dhcp_forwarding( RULES_ADD );
+}
+
+/** Disallow DHCP traffic to pass through the box */
+int   netcap_subscription_enable_dhcp_forwarding( void )
+{
+    return _modify_dhcp_forwarding( !RULES_ADD );
+}
+
+static int _modify_dhcp_forwarding( int if_add )
+{
+    char cmd[MAX_CMD_LEN];
+    char add_del = ( if_add == RULES_ADD ) ? 'A' : 'D';
+    int ret = 0;
+    
+    if ( pthread_mutex_lock( &_subscription.mutex ) < 0 ) return perrlog( "pthread_mutex_lock" );
+    
+    if ( _subscription.is_dhcp_forwarding_enabled != if_add ) {
+        snprintf( cmd, sizeof( cmd ), "/sbin/iptables -t filter -%c FORWARD -p udp -j DROP --sport 67:68",
+                  add_del );
+
+        if ( mvutil_system( cmd ) < 0 ) {
+            ret = perrlog( "mvutil_system" );
+        }
+    }
+    
+    if ( ret == 0 )
+        _subscription.is_dhcp_forwarding_enabled = if_add;
+    
+    if ( pthread_mutex_unlock( &_subscription.mutex ) < 0 ) return perrlog( "pthread_mutex_unlock" );
+    
+    return ret;
+
+}
+
+/** Subscribe to all local traffic */
+int   netcap_subscription_enable_local( void )
+{
+    return _modify_local( !RULES_ADD );
+}
+
+/** Unsubscribe to all local traffic */
+int   netcap_subscription_disable_local( void )
+{
+    return _modify_local( RULES_ADD );
+}
+
+static int _modify_local          ( int if_add )
+{
+    int ret = 0;
+
+    if ( pthread_mutex_lock( &_subscription.mutex ) < 0 ) return perrlog( "pthread_mutex_lock" );
+    
+    if ( _subscription.is_local_enabled != if_add ) {
+        if ( if_add == RULES_ADD ) {
+            if ( netcap_local_antisubscribe_add() < 0 ) {
+                ret = errlog( ERR_CRITICAL, "netcap_local_antisubscribe_add\n" );
+            }
+        } else {
+            if ( netcap_local_antisubscribe_remove() < 0 ) {
+                ret = errlog( ERR_CRITICAL, "netcap_local_antisubscribe_remove\n" );
+            }
+        }
+    }
+    
+    if ( pthread_mutex_unlock( &_subscription.mutex ) < 0 ) return perrlog( "pthread_mutex_unlock" );
+
+    if ( ret == 0 )
+        _subscription.is_local_enabled = if_add;
+
+    return ret;
+    
+}
 
 

@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: netcap_trie.h,v 1.2 2005/02/07 08:27:10 rbscott Exp $
+ * $Id$
  */
 
 #ifndef __NETCAP_TRIE_H_

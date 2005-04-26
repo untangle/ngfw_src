@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: TCPSink.c,v 1.7 2005/01/20 22:20:54 rbscott Exp $
+ * $Id$
  */
 
 #include <jni.h>

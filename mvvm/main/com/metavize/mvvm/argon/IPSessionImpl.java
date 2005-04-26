@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: IPSessionImpl.java,v 1.5 2005/01/31 01:15:12 rbscott Exp $
+ *  $Id$
  */
 
 package com.metavize.mvvm.argon;
@@ -25,7 +25,8 @@ public abstract class IPSessionImpl extends SessionImpl implements IPSession
 
     public IPSessionImpl( IPNewSessionRequest request )
     {
-        super( request );
+        super( request, request.state() == IPNewSessionRequest.REQUESTED );
+
         protocol      = request.protocol();
         clientAddr    = request.clientAddr();
         clientPort    = request.clientPort();

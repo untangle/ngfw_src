@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: netcap_server.c,v 1.10 2005/02/09 09:31:52 rbscott Exp $
+ * $Id$
  */
 #include "netcap_server.h"
 
@@ -33,6 +33,7 @@
 #include "netcap_rdr.h"
 #include "netcap_udp.h"
 #include "netcap_tcp.h"
+#include "netcap_icmp.h"
 #include "netcap_interface.h"
 
 #define EPOLL_INPUT_SET  EPOLLIN|EPOLLPRI|EPOLLERR|EPOLLHUP
@@ -98,7 +99,6 @@ static int  _handle_completion (epoll_info_t* info, int revents);
 static int  _handle_udp (epoll_info_t* info, int revents, int sock );
 static int  _handle_queue (epoll_info_t* info, int revents);
 
-static int  _call_icmp_hooks (netcap_pkt_t* pkt, void* arg);
 /* static int  _start_open_connection (struct in_addr* destaddr,u_short destport); */
 static int  _epoll_info_add (int fd, int events, int type, netcap_sub_t* sub, netcap_session_t* netcap_sess);
 static int  _epoll_info_del (epoll_info_t* info);
@@ -300,6 +300,8 @@ static int  _handle_message (epoll_info_t* info, int revents)
                     }
                 }
                 else if (sub->traf.protocol == IPPROTO_UDP) {
+                    /* -RBS No longer needed since we are queueing UDP packets */
+#if 0
                     int size = sub->rdr.port_max - sub->rdr.port_min + 1;
                     int fd;
                     
@@ -314,6 +316,7 @@ static int  _handle_message (epoll_info_t* info, int revents)
                             perrlog("_epoll_info_add");
                         }
                     }
+#endif
                 }
                 else if (sub->traf.protocol == IPPROTO_ICMP ||
                          sub->traf.protocol == IPPROTO_ALL) {
@@ -630,7 +633,7 @@ static int  _handle_queue (epoll_info_t* info, int revents)
         return -1;
     }
 
-    buf = malloc(QUEUE_MAX_MESG_SIZE);   
+    buf = malloc(QUEUE_MAX_MESG_SIZE);
     if (!buf) {
         _server_unlock();
         return errlogmalloc();
@@ -661,28 +664,20 @@ static int  _handle_queue (epoll_info_t* info, int revents)
      */
     _server_unlock();
 
-    if (pkt->proto == IPPROTO_ICMP)
-        return _call_icmp_hooks(pkt,NULL); /* XXX no arg because unknown sub */
-    else if (pkt->proto == IPPROTO_TCP)
+    if (pkt->proto == IPPROTO_ICMP) {
+        /* XXX no arg because unknown sub
+         * RBS: 04/13/05: args are never used, and probably could be eliminated */
+        return netcap_icmp_call_hook( pkt );
+    } else if (pkt->proto == IPPROTO_TCP) {
         return global_tcp_syn_hook( pkt );
+    } else if ( pkt->proto == IPPROTO_UDP ) {
+        /* XXX no arg because unknown sub
+         * RBS: 04/13/05: args are never used, and probably could be eliminated */
+        return netcap_udp_call_hooks( pkt, NULL );
+    }
     else
         return errlog(ERR_CRITICAL,"Unknown protocol from QUEUE\n");
 }
-
-
-static int  _call_icmp_hooks (netcap_pkt_t* pkt, void* arg) 
-{
-    debug(10,"Calling ICMP hook(s)\n");
-    
-    if ( global_icmp_hook == NULL ) {
-        return errlog(ERR_CRITICAL,"global_icmp_hook: NULL\n");
-    }
-    
-    global_icmp_hook(pkt,arg);
-
-    return 0;
-}
-
 
 static int  _epoll_info_add (int fd, int events, int type, netcap_sub_t* sub, netcap_session_t* netcap_sess)
 {

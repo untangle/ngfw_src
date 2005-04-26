@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: TransformBase.java,v 1.13 2005/03/22 03:48:36 amread Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.engine;

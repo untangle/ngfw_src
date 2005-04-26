@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: netcap_pkt.c,v 1.1 2004/11/09 19:39:59 dmorris Exp $
+ * $Id$
  */
 #include <netinet/in.h>
 #include <netinet/ip.h>

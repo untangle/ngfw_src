@@ -1,4 +1,4 @@
-/* $Id: errlog.c,v 1.2 2004/11/24 21:13:04 dmorris Exp $ */
+/* $Id$ */
 #include "errlog.h"
 
 #include <stdio.h>
@@ -15,13 +15,14 @@
 
 #define SECOND_PREFIX "%s: "
 
-sem_t _output_lock;
-sem_t* output_lock;
+pthread_mutex_t _output_mutex = PTHREAD_MUTEX_INITIALIZER;
+// sem_t* output_lock;
 
 static char* err_strs[4]={"FATAL","CRITICAL ERROR","WARNING","INFORMATION"};
 static FILE* errlog_output=NULL;
 static int    errlog_date = 1;
 static errlog_fatal_func_t fatal_func = (errlog_fatal_func_t)exit;
+
 
 int _errlog (char* fmt, char* file, int lineno, int level, char*lpszFmt, ...)
 {
@@ -81,12 +82,6 @@ int _errlog_noprefix (char* fmt, char* file, int lineno, int level, char*lpszFmt
     return -1;
 }
 
-void* _errlog_null (char* fmt, char* file, int lineno, int level, char*lpszFmt, ...)
-{
-    _errlog(fmt,file,lineno,level,lpszFmt);
-    return NULL;
-}
-
 void _errlog_set_output (FILE* out)
 {
     errlog_output=out;
@@ -101,11 +96,13 @@ int  _errlog_init (void)
 {
     errlog_output = stderr; 
 
+    /*
     if (!output_lock) {
         if (sem_init(&_output_lock,0,1)<0)
             return -1;
         output_lock = &_output_lock;
     }
+    */
 
     return 0;
 }
@@ -117,8 +114,11 @@ void _errlog_set_fatal_func (errlog_fatal_func_t func)
 
 void _errlog_cleanup()
 {
+    /*
     if ( output_lock ) {
         sem_destroy(output_lock);
         output_lock = NULL;
     }
+    */
 }
+

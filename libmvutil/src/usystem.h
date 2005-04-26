@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: usystem.h,v 1.1 2004/11/09 19:39:57 dmorris Exp $
+ * $Id$
  */
 #ifndef __USYSTEM_H
 #define __USYSTEM_H

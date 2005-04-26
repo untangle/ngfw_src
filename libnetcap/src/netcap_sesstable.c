@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: netcap_sesstable.c,v 1.5 2005/01/20 08:31:06 dmorris Exp $
+ * $Id$
  */
 #include <stdlib.h>
 #include <sys/socket.h>
@@ -289,7 +289,7 @@ int netcap_sesstable_merge_udp_tuple ( netcap_session_t* netcap_sess, int proto,
     session_tuple_t* st;
     netcap_pkt_t* pkt;
     
-    if ( netcap_sess == NULL || proto != IPPROTO_UDP ) {
+    if ( netcap_sess == NULL || ( proto != IPPROTO_UDP && proto != IPPROTO_ICMP )) {
        return errlogargs();
     }
 
@@ -550,7 +550,3 @@ static u_char _tuple_equ_func ( const void* input, const void* input2 )
 
     return 1;
 }
-
-
-
-

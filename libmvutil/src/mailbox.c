@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: mailbox.c,v 1.3 2005/01/01 00:10:29 rbscott Exp $
+ * $Id$
  */
 #include "mailbox.h"
 
@@ -96,9 +96,23 @@ void*        mailbox_timed_get (mailbox_t* mb, int sec)
     return _mailbox_timed_get ( mb, &ts );
 }
 
-void*        mailbox_utimed_get ( mailbox_t* mb, struct timespec* ts )
+void*        mailbox_utimed_get ( mailbox_t* mb, struct timeval* tv )
 {
-    if ( mb == NULL || ts == NULL ) return errlog_null (ERR_WARNING, "Invalid arguments\n");
+    struct timespec ts;
+    
+    if ( mb == NULL || tv == NULL )
+        return errlogargs_null();
+
+    ts.tv_sec  = tv->tv_sec;
+    ts.tv_nsec = USEC_TO_NSEC( tv->tv_usec );
+    
+    return _mailbox_timed_get( mb, &ts );
+}
+
+void*        mailbox_ntimed_get ( mailbox_t* mb, struct timespec* ts )
+{
+    if ( mb == NULL || ts == NULL )
+        return errlogargs_null();
     
     return _mailbox_timed_get ( mb, ts );
 }

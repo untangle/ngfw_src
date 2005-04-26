@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: jsession.h,v 1.5 2005/01/17 21:12:10 rbscott Exp $
+ *  $Id$
  */
 
 #ifndef _JSESSION_H_

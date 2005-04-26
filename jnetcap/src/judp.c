@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: judp.c,v 1.10 2005/03/09 07:00:10 rbscott Exp $
+ *  $Id$
  */
 
 #include <jni.h>
@@ -15,18 +15,21 @@
 #include <stdlib.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <netinet/ip.h>
+#include <netinet/ip_icmp.h>
 #include <arpa/inet.h>
-#include <linux/ip.h>
 
 #include <libnetcap.h>
 #include <mvutil/libmvutil.h>
 #include <mvutil/errlog.h>
 #include <mvutil/debug.h>
+#include <mvutil/utime.h>
 
 #include "jnetcap.h"
 #include "jerror.h"
 
 #include JH_IPTraffic
+#include JH_ICMPTraffic
 #include JH_UDPSession
 
 #define JLONG_TO_PACKET( packet, packet_ptr )   do { \
@@ -50,6 +53,15 @@ static netcap_endpoint_t* _get_endpoint( netcap_pkt_t* pkt, int req_id )
     
     return &pkt->dst;
 }
+
+
+#define ICMP_GET_INFO_TYPE 1
+#define ICMP_GET_INFO_CODE 0
+
+/**
+ * Retrieve the type or code from an ICMP packet 
+ */
+static int _icmp_get_info( netcap_pkt_t* pkt, int is_type );
 
 /*
  * Class:     com_metavize_jnetcap_IPTraffic
@@ -163,6 +175,9 @@ JNIEXPORT jint JNICALL JF_IPTraffic( getIntValue )
     case JN_IPTraffic( FLAG_MARK_EN ): return pkt->is_marked;
     case JN_IPTraffic( FLAG_MARK ): return pkt->nfmark;
     case JN_IPTraffic( FLAG_INTERFACE ): return endpoint->intf;
+    case JN_IPTraffic( FLAG_PROTOCOL ): return pkt->proto;
+    case JN_ICMPTraffic( FLAG_TYPE ): return _icmp_get_info( pkt, ICMP_GET_INFO_TYPE );
+    case JN_ICMPTraffic( FLAG_CODE ): return _icmp_get_info( pkt, ICMP_GET_INFO_CODE );
     }
 
     return errlogargs();
@@ -320,15 +335,20 @@ JNIEXPORT void JNICALL JF_IPTraffic( raze )
 JNIEXPORT jlong JNICALL JF_UDPSession( read )
   (JNIEnv* env, jclass _class, jlong session_ptr, jboolean if_client, jint timeout )
 {
+    struct timeval tv;
+
     mailbox_t*    mb = NULL;
     netcap_session_t* netcap_sess = (netcap_session_t*)JLONG_TO_UINT( session_ptr );
     if ( netcap_sess == NULL ) return UINT_TO_JLONG((uint)errlogargs_null());
 
     if ( if_client == JNI_TRUE ) mb = &netcap_sess->cli_mb; 
     else                         mb = &netcap_sess->srv_mb; 
+    
+    if ( utime_msec_add_now( &tv, timeout ) < 0 ) {
+        return UINT_TO_JLONG((u_int)errlog_null( ERR_CRITICAL, "utime_msec_add_now\n" ));
+    }
                                      
-    /* XXXXXX This is a cheat since it is 1:20 AM, actually, right now this is pure laziness */
-    return UINT_TO_JLONG((uint)mailbox_timed_get( mb, timeout/ 1000 ));
+    return UINT_TO_JLONG((uint)mailbox_utimed_get( mb, &tv ));
 }
 
 /*
@@ -412,7 +432,8 @@ JNIEXPORT jint JNICALL JF_UDPSession( send )
  * Signature: (JJJII)I
  */
 JNIEXPORT jint JNICALL JF_UDPSession( merge )
-  (JNIEnv *env, jclass _class, jlong pointer, jlong src_addr, jint src_port, jlong dst_addr, jint dst_port )
+  ( JNIEnv *env, jclass _class, jlong pointer, jlong src_addr, jint src_port, 
+    jlong dst_addr, jint dst_port )
 {
     int ret;
     in_addr_t src = (in_addr_t)JLONG_TO_UINT( src_addr );
@@ -453,4 +474,21 @@ JNIEXPORT jint JNICALL JF_UDPSession( mailboxPointer )
     return (jint)(( if_client == JNI_TRUE ) ? &session->cli_mb : &session->srv_mb);
 }
 
+/**
+ * Retrieve the type from an ICMP packet 
+ */
+static int _icmp_get_info( netcap_pkt_t* pkt, int is_type )
+{
+    struct icmp* icmp;
 
+    if ( pkt->proto != IPPROTO_ICMP ) {
+        return errlog( ERR_CRITICAL, "Attempt to retrieve ICMP type on non-icmp (%d) packet\n", pkt->proto );
+    }
+    
+    /* Type cast the data as an ICMP packet */
+    if (( icmp = (struct icmp*)pkt->data ) == NULL ) {
+        return errlog( ERR_CRITICAL, "Unable to get type, NULL data\n" );
+    }
+
+    return ( is_type == ICMP_GET_INFO_TYPE ) ? icmp->icmp_type : icmp->icmp_code;
+}

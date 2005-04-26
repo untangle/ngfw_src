@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: netcap_sesstable.h,v 1.1 2004/11/09 19:40:00 dmorris Exp $
+ * $Id$
  */
 #ifndef __NETCAP_SESSTABLE_H_
 #define __NETCAP_SESSTABLE_H_

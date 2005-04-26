@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: SessionImpl.java,v 1.20 2005/03/22 07:05:41 rbscott Exp $
+ *  $Id$
  */
 
 package com.metavize.mvvm.argon;
@@ -42,6 +42,8 @@ public abstract class SessionImpl implements Session, SocketQueueShutdownHook
     protected boolean isServerShutdown = false;
     protected boolean isClientShutdown = false;
 
+    protected final boolean isVectored;
+
     protected PipelineListener listener;
 
     /* NULL Pipeline listener used once an argon agent dies */
@@ -72,17 +74,37 @@ public abstract class SessionImpl implements Session, SocketQueueShutdownHook
     static void init()
     {
     }
+    
+    
+    /* Package method just used create released sessions,
+     * released session should set isVectored to false */
+    SessionImpl( NewSessionRequest request, boolean isVectored )
+    {
+        sessionGlobalState        = request.sessionGlobalState();
+        argonAgent                = request.argonAgent();
 
+        if ( isVectored ) {
+            this.isVectored           = true;
+            
+            clientIncomingSocketQueue = new IncomingSocketQueue();
+            clientOutgoingSocketQueue = new OutgoingSocketQueue();
+            
+            serverIncomingSocketQueue = new IncomingSocketQueue();
+            serverOutgoingSocketQueue = new OutgoingSocketQueue();
+        } else {
+            this.isVectored           = false;
+            clientIncomingSocketQueue = null;
+            clientOutgoingSocketQueue = null;
+            
+            serverIncomingSocketQueue = null;
+            serverOutgoingSocketQueue = null; 
+        }
+    }
+
+    /* XXX This may no longer be necessary */
     public SessionImpl( NewSessionRequest request )
     {
-        argonAgent                = request.argonAgent();
-        sessionGlobalState        = request.sessionGlobalState();
-
-        clientIncomingSocketQueue = new IncomingSocketQueue();
-        clientOutgoingSocketQueue = new OutgoingSocketQueue();
-
-        serverIncomingSocketQueue = new IncomingSocketQueue();
-        serverOutgoingSocketQueue = new OutgoingSocketQueue();
+        this( request, true );
     }
 
     public SessionGlobalState sessionGlobalState()
@@ -95,7 +117,7 @@ public abstract class SessionImpl implements Session, SocketQueueShutdownHook
     {
         return sessionGlobalState.id();
     }
-    
+        
     /* Session */
     public ArgonAgent argonAgent()
     {
@@ -105,6 +127,11 @@ public abstract class SessionImpl implements Session, SocketQueueShutdownHook
     public NetcapSession netcapSession()
     {
         return sessionGlobalState.netcapSession();
+    }
+
+    public boolean isVectored()
+    {
+        return isVectored;
     }
 
     /**
@@ -249,13 +276,15 @@ public abstract class SessionImpl implements Session, SocketQueueShutdownHook
     public void registerListener( PipelineListener listener )
     {
         this.listener = listener;
-
-        SocketQueueListener sqListener = new SessionSocketQueueListener();
         
-        clientIncomingSocketQueue.registerListener( sqListener );
-        clientOutgoingSocketQueue.registerListener( sqListener );
-        serverIncomingSocketQueue.registerListener( sqListener );
-        serverOutgoingSocketQueue.registerListener( sqListener );
+        if ( isVectored ) {
+            SocketQueueListener sqListener = new SessionSocketQueueListener();
+            
+            clientIncomingSocketQueue.registerListener( sqListener );
+            clientOutgoingSocketQueue.registerListener( sqListener );
+            serverIncomingSocketQueue.registerListener( sqListener );
+            serverOutgoingSocketQueue.registerListener( sqListener );
+        }
     }
 
     /**
@@ -266,10 +295,10 @@ public abstract class SessionImpl implements Session, SocketQueueShutdownHook
         listener.raze();
 
         /* Raze the incoming and outgoing socket queues */
-        clientIncomingSocketQueue.raze();
-        clientOutgoingSocketQueue.raze();
-        serverIncomingSocketQueue.raze();
-        serverOutgoingSocketQueue.raze();
+        if ( clientIncomingSocketQueue != null ) clientIncomingSocketQueue.raze();
+        if ( clientOutgoingSocketQueue != null ) clientOutgoingSocketQueue.raze();
+        if ( serverIncomingSocketQueue != null ) serverIncomingSocketQueue.raze();
+        if ( serverOutgoingSocketQueue != null ) serverOutgoingSocketQueue.raze();
     }
 
 
@@ -301,25 +330,25 @@ public abstract class SessionImpl implements Session, SocketQueueShutdownHook
 
     public IncomingSocketQueue clientIncomingSocketQueue()
     {
-        if ( clientIncomingSocketQueue.isClosed()) return null;
+        if ( clientIncomingSocketQueue == null || clientIncomingSocketQueue.isClosed()) return null;
         return clientIncomingSocketQueue;
     }
 
     public OutgoingSocketQueue clientOutgoingSocketQueue()
     {
-        if ( clientOutgoingSocketQueue.isClosed()) return null;
+        if ( clientOutgoingSocketQueue == null || clientOutgoingSocketQueue.isClosed()) return null;
         return clientOutgoingSocketQueue;
     }
 
     public IncomingSocketQueue serverIncomingSocketQueue()
     {
-        if ( serverIncomingSocketQueue.isClosed()) return null;
+        if ( serverIncomingSocketQueue == null || serverIncomingSocketQueue.isClosed()) return null;
         return serverIncomingSocketQueue;
     }
 
     public OutgoingSocketQueue serverOutgoingSocketQueue()
     {
-        if ( serverOutgoingSocketQueue.isClosed()) return null;        
+        if ( serverOutgoingSocketQueue == null || serverOutgoingSocketQueue.isClosed()) return null;        
         return serverOutgoingSocketQueue;
     }
     

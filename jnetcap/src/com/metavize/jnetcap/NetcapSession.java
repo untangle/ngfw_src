@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: NetcapSession.java,v 1.8 2005/01/31 01:15:12 rbscott Exp $
+ * $Id$
  */
 
 
@@ -20,6 +20,7 @@ public abstract class NetcapSession {
 
     private final static int FLAG_ID         = 1;
     private final static int FLAG_PROTOCOL   = 2;
+    private final static int FLAG_ICMP_MB    = 3;
 
     protected final static int FLAG_IF_CLIENT_MASK = 0x2000;
     protected final static int FLAG_IF_SRC_MASK    = 0x1000;
@@ -36,6 +37,9 @@ public abstract class NetcapSession {
 
     protected final Endpoints clientSide;
     protected final Endpoints serverSide;
+    
+    final ICMPMailbox icmpClientMailbox;
+    final ICMPMailbox icmpServerMailbox;
 
     /* This is for children that override the SessionEndpoints class */
     protected NetcapSession( int id, short protocol )
@@ -44,6 +48,10 @@ public abstract class NetcapSession {
 
         clientSide = makeEndpoints( true );
         serverSide = makeEndpoints( false );
+        
+        /* Create the server and client ICMP mailboxes */
+        icmpClientMailbox = new ICMPMailbox( new CPointer( icmpMailbox( true )));
+        icmpServerMailbox = new ICMPMailbox( new CPointer( icmpMailbox( false )));
     }
 
     /* Returns one of Netcap.IPPROTO_UDP, Netcap.IPPROTO_TCP, Netcap.IPPROTO_ICMP */
@@ -55,12 +63,28 @@ public abstract class NetcapSession {
         return getIntValue( FLAG_ID, pointer.value());
     }
 
+    private long icmpMailbox( boolean isClient )
+    {
+        int flag = FLAG_ICMP_MB | (( isClient ) ? FLAG_IF_CLIENT_MASK : 0 );
+        return getLongValue( flag, pointer.value());
+    }
+    
+    public ICMPMailbox icmpClientMailbox()
+    {
+        return icmpClientMailbox;
+    }
+
+    public ICMPMailbox icmpServerMailbox()
+    {
+        return icmpServerMailbox;
+    }
+
     public void raze() {
         raze( pointer.value());
 
         pointer.raze();
     }
-
+    
     protected abstract Endpoints makeEndpoints( boolean ifClient );
 
     public Endpoints clientSide() { return clientSide; }

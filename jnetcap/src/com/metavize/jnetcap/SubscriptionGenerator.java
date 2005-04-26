@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: SubscriptionGenerator.java,v 1.9 2005/01/22 00:22:24 rbscott Exp $
+ *  $Id$
  */
 
 
@@ -17,12 +17,14 @@ import java.net.Inet4Address;
 
 public class SubscriptionGenerator
 {
-    public static final int SERVER_UNFINISHED   = 1;
-    public static final int CLIENT_UNFINISHED   = 2;
-    public static final int ANTI_SUBSCRIBE      = 4;
-    public static final int BLOCK_CURRENT       = 8;
-    public static final int LOCAL_ANTI_SUBSCRIBE = 16;
-    public static final int IS_FAKE              = 32;
+    public static final int SERVER_UNFINISHED    = 0x001;
+    public static final int CLIENT_UNFINISHED    = 0x002;
+    public static final int ANTI_SUBSCRIBE       = 0x004;
+    public static final int BLOCK_CURRENT        = 0x008;
+    public static final int LOCAL_ANTI_SUBSCRIBE = 0x010;
+    public static final int IS_FAKE              = 0x020;
+    public static final int IS_LOCAL             = 0x040;
+    public static final int NO_REVERSE           = 0x080;
 
     public static final int DEFAULT_FLAGS        = SERVER_UNFINISHED | CLIENT_UNFINISHED | BLOCK_CURRENT;
 

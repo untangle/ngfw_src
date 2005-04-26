@@ -1,4 +1,4 @@
-/* $Id: netcap_udp.h,v 1.1 2004/11/09 19:40:00 dmorris Exp $ */
+/* $Id$ */
 #ifndef __NETCAP_PKT_H
 #define __NETCAP_PKT_H
 

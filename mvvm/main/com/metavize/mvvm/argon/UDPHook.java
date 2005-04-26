@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: UDPHook.java,v 1.27 2005/03/09 07:00:10 rbscott Exp $
+ *  $Id$
  */
 
 package com.metavize.mvvm.argon;
@@ -178,12 +178,12 @@ public class UDPHook implements NetcapHook
 
         protected Sink makeClientSink()
         {
-            return new UDPSink( clientTraffic, clientSideListener );
+            return new UDPSink( clientTraffic, clientSideListener, netcapUDPSession.icmpClientMailbox());
         }
 
         protected Sink makeServerSink()
         {
-            return new UDPSink( serverTraffic, serverSideListener );
+            return new UDPSink( serverTraffic, serverSideListener, netcapUDPSession.icmpServerMailbox());
         }
 
         protected Source makeClientSource()
@@ -212,7 +212,13 @@ public class UDPHook implements NetcapHook
 
             if ( iter.hasNext()) {
                 /* Only advance the previous session if the transform requested the session */
-                if ( request.state() == IPNewSessionRequest.REQUESTED ) prevSession = session;
+                if (( request.state() == IPNewSessionRequest.REQUESTED ) ||
+                    ( request.state() == IPNewSessionRequest.RELEASED && session != null )) {
+                    logger.debug( "Passing new session data client: " + session.clientAddr());
+                    prevSession = session;
+                } else {
+                    logger.debug( "Reusing session data" );
+                }
             } else {
                 prevSession = null;
             }
@@ -220,11 +226,27 @@ public class UDPHook implements NetcapHook
 
         protected void raze()
         {
-            netcapUDPSession.raze();
+            try {
+                netcapUDPSession.raze();
+            } catch ( Exception e ) {
+                logger.error( "Unable to raze UDP Session", e );
+            }
 
             /* No longer need these */
-            serverTraffic.raze();
-            clientTraffic.raze();
+            
+            try {
+                if ( serverTraffic != null )
+                    serverTraffic.raze();
+            } catch ( Exception e ) {
+                logger.error( "Unable to raze server traffic", e );
+            }
+        
+            try {
+                if ( clientTraffic != null )
+                    clientTraffic.raze();
+            } catch ( Exception e ) {
+                logger.error( "Unable to raze client traffic", e );
+            }
         }
 
         public void checkEndpoints()

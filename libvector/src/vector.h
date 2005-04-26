@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: vector.h,v 1.5 2005/01/20 22:20:54 rbscott Exp $
+ * $Id$
  */
 #ifndef __VECTOR_H
 #define __VECTOR_H

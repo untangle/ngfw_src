@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: hash.c,v 1.2 2004/11/12 21:34:30 dmorris Exp $
+ * $Id$
  */
 #include "hash.h"
 

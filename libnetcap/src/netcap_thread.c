@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: netcap_thread.c,v 1.2 2005/01/20 08:31:06 dmorris Exp $
+ * $Id$
  */
 #include <mvutil/debug.h>
 #include <mvutil/errlog.h>

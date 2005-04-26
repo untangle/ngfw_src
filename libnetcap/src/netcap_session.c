@@ -28,6 +28,8 @@
 #include "libnetcap.h"
 #include "netcap_globals.h"
 #include "netcap_tcp.h"
+#include "netcap_icmp.h"
+#include "netcap_icmp_msg.h"
 #include "netcap_sesstable.h"
 
 #define MAXTUP 64
@@ -81,8 +83,9 @@ char* netcap_session_tuple_print ( netcap_session_t* sess )
 {
     if (!sess) return errlogargs_null();
 
+    unet_reset_inet_ntoa();
     snprintf( _output_buf, sizeof( _output_buf ), "(%s:%-5i -> %s:%-5i)", 
-              unet_inet_ntoa( sess->cli.cli.host.s_addr ), sess->cli.cli.port,
+              unet_next_inet_ntoa( sess->cli.cli.host.s_addr ), sess->cli.cli.port,
               unet_next_inet_ntoa( sess->srv.srv.host.s_addr ), sess->srv.srv.port );
     
     return _output_buf;
@@ -111,9 +114,10 @@ char* netcap_session_cli_tuple_print ( netcap_session_t* sess )
 char* netcap_session_srv_endp_print ( netcap_session_t* sess )
 {
     if (!sess) return errlogargs_null();
-
+    
+    unet_reset_inet_ntoa();
     snprintf( _output_buf, sizeof( _output_buf ), "(%s:%-5i) -> (%s:%-5i)",
-              unet_inet_ntoa( sess->srv.cli.host.s_addr ), sess->srv.cli.port,
+              unet_next_inet_ntoa( sess->srv.cli.host.s_addr ), sess->srv.cli.port,
               unet_next_inet_ntoa( sess->srv.srv.host.s_addr ), sess->srv.srv.port );
     
     return _output_buf;
@@ -123,8 +127,9 @@ char* netcap_session_cli_endp_print ( netcap_session_t* sess )
 {
     if (!sess) return errlogargs_null();
 
+    unet_reset_inet_ntoa();
     snprintf( _output_buf, sizeof( _output_buf ), "(%s:%-5i) -> (%s:%-5i)",
-              unet_inet_ntoa( sess->cli.cli.host.s_addr ), sess->cli.cli.port,
+              unet_next_inet_ntoa( sess->cli.cli.host.s_addr ), sess->cli.cli.port,
               unet_next_inet_ntoa( sess->cli.srv.host.s_addr ), sess->cli.srv.port );
 
     return _output_buf;
@@ -211,6 +216,17 @@ int netcap_session_init(netcap_session_t* netcap_sess, netcap_endpoints_t *endpo
         }
     }
 
+
+    /* Need the ICMP mailboxes */
+    if ( mailbox_init( &netcap_sess->icmp_cli_mb ) < 0 ) {
+        return errlog( ERR_CRITICAL, "mailbox_init\n" );
+    }
+
+    if ( mailbox_init( &netcap_sess->icmp_srv_mb ) < 0 ) {
+        return errlog( ERR_CRITICAL, "mailbox_init\n" );
+    }
+
+
     return 0;
 }
 
@@ -256,17 +272,18 @@ int netcap_nc_session_destroy(int if_lock, netcap_session_t* netcap_sess)
     case IPPROTO_TCP:
         return netcap_tcp_session_destroy(if_lock,netcap_sess);
 
+    case IPPROTO_ICMP:
     case IPPROTO_UDP:
         return netcap_udp_session_destroy(if_lock,netcap_sess);
 
     default:
-        return perrlog("Unable to determine session protocol");
+        return errlog( ERR_CRITICAL, "Unable to determine session protocol %d\n", netcap_sess->protocol );
     }
 }
 
 int netcap_nc_session__destroy (netcap_session_t* netcap_sess, int if_mb) {
     netcap_pkt_t* pkt;
-
+    netcap_icmp_msg_t* msg;
 
     if ( !netcap_sess ) return errlogargs();
 
@@ -288,6 +305,29 @@ int netcap_nc_session__destroy (netcap_session_t* netcap_sess, int if_mb) {
             errlog(ERR_WARNING,"mailbox_destroy failed\n");
         }
     }
+
+    debug( 10, "Freeing %d ICMP Mailbox message in the client mailbox\n", 
+           mailbox_size( &netcap_sess->icmp_cli_mb ));
+
+    while(( msg = (netcap_icmp_msg_t*)mailbox_try_get( &netcap_sess->icmp_cli_mb ))) {
+        netcap_icmp_msg_raze( msg );
+    }
+
+    debug( 10, "Freeing %d ICMP Mailbox message in the server mailbox\n", 
+           mailbox_size( &netcap_sess->icmp_srv_mb ));
+
+    while(( msg = (netcap_icmp_msg_t*)mailbox_try_get( &netcap_sess->icmp_srv_mb ))) {
+        netcap_icmp_msg_raze( msg );
+    }
+
+    if (mailbox_destroy( &netcap_sess->icmp_cli_mb)<0) {
+        errlog(ERR_WARNING,"mailbox_destroy failed\n");
+    }
+        
+    if (mailbox_destroy( &netcap_sess->icmp_srv_mb)<0) {
+        errlog( ERR_WARNING, "mailbox_destroy failed\n" );
+    }
+
     
     return 0;
 }
@@ -308,9 +348,10 @@ int netcap_nc_session_raze(int if_lock, netcap_session_t* netcap_sess)
         return netcap_tcp_session_raze(if_lock,netcap_sess);
 
     case IPPROTO_UDP:
+    case IPPROTO_ICMP:
         return netcap_udp_session_raze(if_lock,netcap_sess);
 
     default:
-        return perrlog("Unable to determine session protocol");
+        return errlog( ERR_CRITICAL, "Unable to determine session protocol: %d\n", netcap_sess->protocol );
     }
 }

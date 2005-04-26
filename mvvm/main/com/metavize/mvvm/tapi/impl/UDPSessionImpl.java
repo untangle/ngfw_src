@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: UDPSessionImpl.java,v 1.25 2005/03/22 00:01:27 jdi Exp $
+ *  $Id$
  */
 
 package com.metavize.mvvm.tapi.impl;
@@ -22,7 +22,9 @@ import com.metavize.jvector.IncomingSocketQueue;
 import com.metavize.jvector.OutgoingSocketQueue;
 import com.metavize.jvector.Crumb;
 import com.metavize.jvector.UDPPacketCrumb;
+import com.metavize.jvector.ICMPPacketCrumb;
 import com.metavize.jvector.DataCrumb;
+import com.metavize.jvector.PacketCrumb;
 import com.metavize.jvector.ShutdownCrumb;
 import com.metavize.jvector.ResetCrumb;
 import com.metavize.jvector.SocketQueueListener;
@@ -71,6 +73,11 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
         maxPacketSize[CLIENT] = numBytes;
     }
 
+    public boolean isPing()
+    {
+        return (clientPort() == 0 && serverPort() == 0);
+    }
+
     public IPSessionDesc makeDesc()
     {
         return new UDPSessionDescImpl(id(), new SessionStats(stats), clientState(), serverState(),
@@ -104,7 +111,7 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
     {
         OutgoingSocketQueue out = ((com.metavize.mvvm.argon.Session)pSession).serverOutgoingSocketQueue();
         if (out != null) {
-            Crumb crumb = ShutdownCrumb.getInstance();
+            Crumb crumb = ShutdownCrumb.getInstance(true);
             boolean success = out.write(crumb);
             assert success;
         }
@@ -114,7 +121,7 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
     {
         OutgoingSocketQueue out = ((com.metavize.mvvm.argon.Session)pSession).clientOutgoingSocketQueue();
         if (out != null) {
-            Crumb crumb = ShutdownCrumb.getInstance();
+            Crumb crumb = ShutdownCrumb.getInstance(true);
             boolean success = out.write(crumb);
             assert success;
         }
@@ -130,6 +137,67 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
         return false;
     }
 
+    public void sendClientPacket(ByteBuffer packet, IPPacketHeader header)
+    {
+        sendPacket(CLIENT, packet, header);
+    }
+
+    public void sendServerPacket(ByteBuffer packet, IPPacketHeader header)
+    {
+        sendPacket(SERVER, packet, header);
+    }
+
+    private void sendPacket(int side, ByteBuffer packet, IPPacketHeader header)
+    {
+        byte[] array;
+        int offset = packet.position();
+	int size = packet.remaining();
+        if (packet.hasArray()) {
+            array = packet.array();
+            offset += packet.arrayOffset();
+        } else {
+            warn("out-of-help byte buffer, had to copy");
+            array = new byte[packet.remaining()];
+            packet.get(array);
+            packet.position(offset);
+            offset = 0;
+        }
+                
+        UDPPacketCrumb crumb = new UDPPacketCrumb(header.ttl(), header.tos(), header.options(),
+                                                  array, offset, size);
+        addCrumb(side, crumb);
+    }
+
+    public void sendClientError(byte icmpType, byte icmpCode, ByteBuffer icmpData, IPPacketHeader header)
+    {
+        sendError(CLIENT, icmpType, icmpCode, icmpData, header);
+    }
+
+    public void sendServerError(byte icmpType, byte icmpCode, ByteBuffer icmpData, IPPacketHeader header)
+    {
+        sendError(SERVER, icmpType, icmpCode, icmpData, header);
+    }
+
+    private void sendError(int side, byte icmpType, byte icmpCode, ByteBuffer icmpData, IPPacketHeader header)
+    {
+        byte[] array;
+        int offset = icmpData.position();
+	int size = icmpData.remaining();
+        if (icmpData.hasArray()) {
+            array = icmpData.array();
+            offset += icmpData.arrayOffset();
+        } else {
+            warn("out-of-help byte buffer, had to copy");
+            array = new byte[icmpData.remaining()];
+            icmpData.get(array);
+            icmpData.position(offset);
+            offset = 0;
+        }
+        ICMPPacketCrumb crumb = new ICMPPacketCrumb(header.ttl(), header.tos(), header.options(),
+                                                    icmpType, icmpCode, array, offset, size);
+        addCrumb(side, crumb);
+    }
+
     void tryWrite(int side, OutgoingSocketQueue out, boolean warnIfUnable)
         throws MPipeException
     {
@@ -141,9 +209,11 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
             else
                 debug("tryWrite to full outgoing queue");
         } else {
-            ByteBuffer packet2send = getNextBuf2Send(side);
+            // Note: This can be an ICMP or UDP packet.
+	    Crumb nc = getNextCrumb2Send(side);
+            PacketCrumb packet2send = (PacketCrumb) nc;
             assert packet2send != null;
-            int numWritten = sendPacket(packet2send, out);
+            int numWritten = sendCrumb(packet2send, out);
             if (RWSessionStats.DoDetailedTimes) {
                 long[] times = stats.times();
                 if (times[SessionStats.FIRST_BYTE_WROTE_TO_CLIENT + side] == 0)
@@ -153,13 +223,15 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
             stats.wroteData(side, numWritten);
             MutateTStats.wroteData(side, this, numWritten);
             if (logger.isDebugEnabled())
-                debug("wrote " + packet2send.remaining() + " to " + side);
+                debug("wrote " + numWritten + " to " + side);
         }
     }
 
     void addStreamBuf(int side, IPStreamer ipStreamer)
         throws MPipeException
     {
+
+	/* Not Yet supported
         UDPStreamer streamer = (UDPStreamer)ipStreamer;
 
         String sideName = (side == CLIENT ? "client" : "server");
@@ -176,44 +248,17 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
 
         if (logger.isDebugEnabled())
             debug("streamed " + packet2send.remaining() + " to " + sideName);
-    }
-
-    private int sendPacket(ByteBuffer packet2send, OutgoingSocketQueue out)
-    {
-        Crumb crumb;
-        byte[] array = null;
-        int size = packet2send.remaining();
-        int offset = packet2send.position();
-        if (packet2send.hasArray()) {
-            array = packet2send.array();
-            offset += packet2send.arrayOffset();
-        } else {
-            warn("had to copy");
-            array = new byte[packet2send.remaining()];
-            packet2send.get(array);
-            packet2send.position(offset);
-            offset = 0;
-        }
-        crumb = new DataCrumb(array, offset, size);
-        boolean success = out.write(crumb);
-        assert success;
-        return size;
+      */
     }
 
     protected void sendWritableEvent(int side)
         throws MPipeException
     {
         UDPSessionEvent wevent = new UDPSessionEvent(mPipe, this);
-        IPDataResult result = side == CLIENT ? dispatcher.dispatchUDPClientWritable(wevent)
-            : dispatcher.dispatchUDPServerWritable(wevent);
-        if (result == IPDataResult.SEND_NOTHING)
-            // Optimization
-            return;
-        if (result.readBuffer() != null)
-            // Not allowed
-            warn("Ignoring readBuffer returned from writable event");
-        addBufs(CLIENT, result.bufsToClient());
-        addBufs(SERVER, result.bufsToServer());
+        if (side == CLIENT)
+            dispatcher.dispatchUDPClientWritable(wevent);
+        else
+            dispatcher.dispatchUDPServerWritable(wevent);
     }
 
     protected void sendExpiredEvent(int side)
@@ -248,38 +293,30 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
             if (times[SessionStats.FIRST_BYTE_READ_FROM_CLIENT + side] == 0)
                 times[SessionStats.FIRST_BYTE_READ_FROM_CLIENT + side] = MetaEnv.currentTimeMillis();
         }
+
         switch (crumb.type()) {
         case Crumb.TYPE_SHUTDOWN:
-            // Should never happen.
-            debug("udp read Expire");
-            assert false;
-            return;
         case Crumb.TYPE_RESET:
-            // Should never happen.
-            debug("udp read RST");
+        case Crumb.TYPE_DATA:
+            // Should never happen (TCP).
+            debug("udp read crumb " + crumb.type());
             assert false;
             break;
         default:
-        case Crumb.TYPE_DATA:
-            break;
+            // Now we know either UDP or ICMP packet.
         }
-            
-        // Wrap a byte buffer around the data.
-        // XXX This may or may not be a UDP crumb depending on what gets passed.
-        // Right now just always do DataCrumbs, since a UDPPacketCrumb coming in just gets
-        // converted to a DataCrumb on the other side (hence, the next transform will fail)
-        DataCrumb pc = (DataCrumb)crumb;
+
+        PacketCrumb pc = (PacketCrumb)crumb;
+        IPPacketHeader pheader = new IPPacketHeader(pc.ttl(), pc.tos(), pc.options());
         byte[] pcdata = pc.data();
         int pclimit = pc.limit();
         int pccap = pcdata.length;
         int pcoffset = pc.offset();
         int pcsize = pclimit - pcoffset;
-
         if (pcoffset >= pclimit) {
             warn("Zero length UDP crumb read");
             return;
         }
-        
         ByteBuffer pbuf;
         if (pcoffset != 0) {
             // XXXX
@@ -290,8 +327,13 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
             numRead = pcsize;
         }
 
+        // Wrap a byte buffer around the data.
+        // XXX This may or may not be a UDP crumb depending on what gets passed.
+        // Right now just always do DataCrumbs, since a UDPPacketCrumb coming in just gets
+        // converted to a DataCrumb on the other side (hence, the next transform will fail)
+
         if (logger.isDebugEnabled())
-            debug("read " + numRead + " size packet from " + side);
+            debug("read " + numRead + " size " + crumb.type() + " packet from " + side);
         dispatcher.lastSessionNumRead(numRead);
 
         stats.readData(side, numRead);
@@ -299,31 +341,29 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
             
         // We have received bytes.  Give them to the user.
 
-        // We duplicate the buffer so that the event handler can mess up
-        // the position/mark/limit as desired.
-        ByteBuffer userPacket;
-        /*
-        if (readOnly())
-            userPacket = pbuf.asReadOnlyBuffer();
-        else
-        */
-        userPacket = pbuf.duplicate();
-        IPDataResult result;
-        UDPPacketEvent event = new UDPPacketEvent(mPipe, this, userPacket);
-        if (side == CLIENT)
-            result = dispatcher.dispatchUDPClientPacket(event);
-        else
-            result = dispatcher.dispatchUDPServerPacket(event);
-        if (/* readOnly() || */ result == IPDataResult.PASS_THROUGH) {
-            // Send it to the other side.
-            addBuf(1 - side, pbuf);
-        } else if (result == TCPChunkResult.READ_MORE_NO_WRITE) {
-            assert false;
+        // We no longer duplicate the buffer so that the event handler can mess up
+        // the position/mark/limit as desired.  This is since the transform now sends
+        // a buffer manually -- the position and limit must already be correct when sent, so
+        // there's no need for us to duplicate here.
+
+        if (crumb.type() == Crumb.TYPE_ICMP_PACKET) {
+            ICMPPacketCrumb icrumb = (ICMPPacketCrumb)crumb;
+            byte icmpType = (byte) icrumb.icmpType();
+            byte icmpCode = (byte) icrumb.icmpCode();
+            UDPErrorEvent event = new UDPErrorEvent(mPipe, this, pbuf, pheader, icmpType, icmpCode);
+            if (side == CLIENT)
+                dispatcher.dispatchUDPClientError(event);
+            else
+                dispatcher.dispatchUDPServerError(event);
         } else {
-            addBufs(CLIENT, result.bufsToClient());
-            addBufs(SERVER, result.bufsToServer());
-            assert result.readBuffer() == null;
-        }
+            UDPPacketEvent event = new UDPPacketEvent(mPipe, this, pbuf, pheader);
+            if (side == CLIENT)
+                dispatcher.dispatchUDPClientPacket(event);
+            else
+                dispatcher.dispatchUDPServerPacket(event);
+	}
+        // Nothing more to do, any packets to be sent were queued by called to sendClientPacket(), etc, 
+        // from transform's packet handler.
     }
 
     protected void closeFinal()

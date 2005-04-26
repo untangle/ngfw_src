@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: jinterface_set.c,v 1.2 2004/12/20 19:54:06 rbscott Exp $
+ *  $Id$
  */
 
 #include <jni.h>

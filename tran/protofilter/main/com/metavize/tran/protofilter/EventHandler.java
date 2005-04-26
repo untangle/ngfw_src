@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: EventHandler.java,v 1.7 2005/03/15 02:11:52 amread Exp $
+ * $Id$
  */
 
 package com.metavize.tran.protofilter;
@@ -86,16 +86,22 @@ public class EventHandler extends AbstractEventHandler
         return IPDataResult.PASS_THROUGH;
     }
 
-    public IPDataResult handleUDPClientPacket (UDPPacketEvent e)
+    public void handleUDPClientPacket (UDPPacketEvent e)
+	   throws MPipeException
     {
+        UDPSession sess = e.session();
+        ByteBuffer packet = e.packet().duplicate(); // Save position/limit for sending.
         _handleChunk(e, e.session(), false);
-        return IPDataResult.PASS_THROUGH;
+        sess.sendServerPacket(packet, e.header());
     }
 
-    public IPDataResult handleUDPServerPacket (UDPPacketEvent e)
+    public void handleUDPServerPacket (UDPPacketEvent e)
+	   throws MPipeException
     {
-        _handleChunk(e, e.session(), true);
-        return IPDataResult.PASS_THROUGH;
+        UDPSession sess = e.session();
+        ByteBuffer packet = e.packet().duplicate(); // Save position/limit for sending.
+        _handleChunk(e, e.session(), false);
+        sess.sendClientPacket(packet, e.header());
     }
 
     public void handleTCPFinalized(TCPChunkEvent event)

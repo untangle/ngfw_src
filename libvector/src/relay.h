@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: relay.h,v 1.3 2004/11/24 20:49:05 dmorris Exp $
+ * $Id$
  */
 #ifndef __RELAY_H
 #define __RELAY_H

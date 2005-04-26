@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: AbstractEventHandler.java,v 1.1 2005/01/30 09:20:31 amread Exp $
+ *  $Id$
  */
 
 package com.metavize.mvvm.tapi;
@@ -78,6 +78,12 @@ public abstract class AbstractEventHandler implements SessionEventListener {
         /* ignore */
     }
 
+    public IPDataResult handleTCPClientDataEnd(TCPSessionEvent event)
+    {
+        /* ignore */
+        return null;
+    }
+
     public void handleTCPClientFIN(TCPSessionEvent event)
         throws MPipeException
     {
@@ -85,6 +91,12 @@ public abstract class AbstractEventHandler implements SessionEventListener {
         // this method if it wants to keep the other side open.
         TCPSession sess = event.session();
         sess.shutdownServer();
+    }
+
+    public IPDataResult handleTCPServerDataEnd(TCPSessionEvent event)
+    {
+        /* ignore */
+        return null;
     }
 
     public void handleTCPServerFIN(TCPSessionEvent event)
@@ -186,18 +198,16 @@ public abstract class AbstractEventHandler implements SessionEventListener {
         sess.expireClient();
     }
 
-    public IPDataResult handleUDPServerWritable(UDPSessionEvent event)
+    public void handleUDPServerWritable(UDPSessionEvent event)
         throws MPipeException
     {
         // Default writes nothing more.
-        return IPDataResult.SEND_NOTHING;
     }
 
-    public IPDataResult handleUDPClientWritable(UDPSessionEvent event)
+    public void handleUDPClientWritable(UDPSessionEvent event)
         throws MPipeException
     {
         // Default writes nothing more.
-        return IPDataResult.SEND_NOTHING;
     }
 
     public void handleUDPFinalized(UDPSessionEvent event)
@@ -205,18 +215,36 @@ public abstract class AbstractEventHandler implements SessionEventListener {
     {
     }
 
-    public IPDataResult handleUDPClientPacket(UDPPacketEvent event)
+    public void handleUDPClientPacket(UDPPacketEvent event)
         throws MPipeException
     {
         // Default just sends the packet onwards.
-        return IPDataResult.PASS_THROUGH;
+        UDPSession sess = event.session();
+        sess.sendServerPacket(event.packet(), event.header());
     }
 
-    public IPDataResult handleUDPServerPacket(UDPPacketEvent event)
+    public void handleUDPServerPacket(UDPPacketEvent event)
         throws MPipeException
     {
         // Default just sends the packet onwards.
-        return IPDataResult.PASS_THROUGH;
+        UDPSession sess = event.session();
+        sess.sendClientPacket(event.packet(), event.header());
+    }
+
+    public void handleUDPClientError(UDPErrorEvent event)
+        throws MPipeException
+    {
+        // Default just sends the error onwards.
+        UDPSession sess = event.session();
+        sess.sendServerError(event.getErrorType(), event.getErrorCode(), event.packet(), event.header());
+    }
+
+    public void handleUDPServerError(UDPErrorEvent event)
+        throws MPipeException
+    {
+        // Default just sends the error onwards.
+        UDPSession sess = event.session();
+        sess.sendClientError(event.getErrorType(), event.getErrorCode(), event.packet(), event.header());
     }
 
 }

@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: fd_sink.c,v 1.5 2004/11/16 01:11:21 dmorris Exp $
+ * $Id$
  */
 #include "fd_sink.h"
 

@@ -1,0 +1,3 @@
+com/metavize/tran/nat/NatMaster.jasper:summary:Summary
+com/metavize/tran/nat/NatDetail.jasper:detail:Network Policy Violations
+com.metavize.tran.nat.NatSummarizer:summarizer:Summarizer

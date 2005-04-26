@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: UDPNewSessionRequestImpl.java,v 1.7 2005/01/31 03:18:39 rbscott Exp $
+ *  $Id$
  */
 
 package com.metavize.mvvm.argon;
@@ -33,7 +33,7 @@ class UDPNewSessionRequestImpl extends IPNewSessionRequestImpl implements UDPNew
 
     public UDPNewSessionRequestImpl( UDPSession session, ArgonAgent agent )
     {
-        super( session.sessionGlobalState(), agent );
+        super( session, agent );
 
         /* Grab the TTL and TOS from the last request */
         ttl = session.ttl();

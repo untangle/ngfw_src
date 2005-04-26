@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: list.h,v 1.2 2004/11/10 02:46:57 dmorris Exp $
+ * $Id$
  */
 #ifndef __UTIL_LIST_H
 #define __UTIL_LIST_H

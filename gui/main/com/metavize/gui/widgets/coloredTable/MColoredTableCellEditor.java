@@ -109,14 +109,18 @@ public class MColoredTableCellEditor extends DefaultCellEditor implements KeyLis
             jSlider.addChangeListener(this);
             
             jSpinner = new JSpinner();
-            jSpinner.setOpaque(true);
-            jSpinner.setBackground(new Color(0f, 0f, 0f, 0f));
+	    jSpinner.setFocusable(true);
+            jSpinner.setOpaque(false);
+	    //            jSpinner.setBackground(new Color(0f, 0f, 0f, 0f));
             jSpinner.setFont(new java.awt.Font("Default", 0, 10));
             jSpinner.setBorder(mLineBorder);
-            ((JSpinner.DefaultEditor)jSpinner.getEditor()).getTextField().setOpaque(true);
-            ((JSpinner.DefaultEditor)jSpinner.getEditor()).getTextField().setBackground(new Color(0f, 0f, 0f, 0f));
-            jSpinner.addChangeListener(this);
-            jSpinner.addKeyListener(this);
+	    jSpinner.getEditor().setOpaque(false);
+	    //            jSpinner.getEditor().setBackground(new Color(0f, 0f, 0f, 0f));
+	    // jSpinner.getTextField().setOpaque(false);
+            ((JSpinner.DefaultEditor)jSpinner.getEditor()).getTextField().setOpaque(false);
+	    //            ((JSpinner.DefaultEditor)jSpinner.getEditor()).getTextField().setBackground(new Color(0f, 0f, 0f, 0f));
+            // jSpinner.addChangeListener(this);
+            // jSpinner.addKeyListener(this);
         }
 
     
@@ -124,10 +128,11 @@ public class MColoredTableCellEditor extends DefaultCellEditor implements KeyLis
         public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int col){
             selectedRow = row;
             selectedCol = col;
+	    mSortedTableModel = ((MSortedTableModel)mColoredJTable.getModel());
 
-	    //	    System.err.println("GETTING EDITOR AT ROW: " + row);
+	    // System.err.println("GETTING EDITOR AT COL: " + col + " (" + mSortedTableModel.getColumnViewToModelIndex(col) + ")" );
 
-            selectedState = ((MSortedTableModel)mColoredJTable.getModel()).getRowState(row);
+            selectedState = mSortedTableModel.getRowState(row);
             if(value instanceof ComboBoxModel){
                 selectedValue  = ((ComboBoxModel)value).getSelectedItem();
                 editedComponent = jComboBox;
@@ -137,6 +142,7 @@ public class MColoredTableCellEditor extends DefaultCellEditor implements KeyLis
                 selectedValue  = new Integer( ((Integer)((SpinnerNumberModel)value).getValue()).intValue() );
                 editedComponent = jSpinner;
                 ((JSpinner)editedComponent).setModel((SpinnerNumberModel) value);
+		((JSpinner.NumberEditor)jSpinner.getEditor()).getTextField().selectAll();
             }
             else if(value instanceof Boolean){
                 selectedValue = new Boolean( ((Boolean) value).booleanValue() );
@@ -155,6 +161,13 @@ public class MColoredTableCellEditor extends DefaultCellEditor implements KeyLis
                 selectedValue = new String(password);
                 ((MPasswordField)editedComponent).setText( new String(password) );
             }
+	    else if( (value instanceof Integer) 
+		     && (mSortedTableModel.getColumnViewToModelIndex(col) == mSortedTableModel.getIndexIndex()) ){
+		selectedValue  = value;
+                editedComponent = jSpinner;
+                ((JSpinner)editedComponent).setModel( new SpinnerNumberModel( ((Integer)value).intValue(), 0, mSortedTableModel.getRowCount()+1, 1 ));
+		((JSpinner.DefaultEditor)jSpinner.getEditor()).getTextField().selectAll();
+	    }
             else{
                 selectedValue = value;
                 editedComponent = new JTextField();
@@ -177,8 +190,14 @@ public class MColoredTableCellEditor extends DefaultCellEditor implements KeyLis
                 newValue = returnValue;
             }
             else if(editedComponent instanceof JSpinner){
-                returnValue = ((JSpinner)editedComponent).getModel();
-                newValue = new Integer( ((Integer) ((SpinnerNumberModel)returnValue).getValue()).intValue() );
+		if( mSortedTableModel.getColumnViewToModelIndex(selectedCol) == mSortedTableModel.getIndexIndex() ){
+		    returnValue = (Integer) ((JSpinner)editedComponent).getModel().getValue();
+		    newValue = returnValue;
+		}
+		else{
+		    returnValue = ((JSpinner)editedComponent).getModel();
+		    newValue = new Integer( ((Integer) ((SpinnerNumberModel)returnValue).getValue()).intValue() );
+		}
             }
             else if(editedComponent instanceof MPasswordField){
                 returnValue = new MPasswordField();
@@ -222,7 +241,7 @@ public class MColoredTableCellEditor extends DefaultCellEditor implements KeyLis
             //mColoredJTable.changeSelection(selectedRow, selectedCol, false, false);
         }        
         
-        // for the sliders
+        // for the sliders, spinners
         public void stateChanged(javax.swing.event.ChangeEvent changeEvent) {
             //if(!jSpinner.get  jSlider.getValueIsAdjusting()){
                 getCellEditorValue();

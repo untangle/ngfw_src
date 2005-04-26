@@ -148,7 +148,8 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       <include name="com/metavize/mvvm/tapi/*Desc.java"/>
       <include name="com/metavize/mvvm/tapi/SessionStats.java"/>
       <include name="com/metavize/mvvm/tapi/client/*.java"/>
-      <include name="com/metavize/mvvm/tran/*.java"/>
+      <include name="com/metavize/mvvm/tapi/Protocol.java"/>
+      <include name="com/metavize/mvvm/tran/**/*.java"/>
       <exclude name="com/metavize/mvvm/tran/MutateTStats.java"/>
       <include name="com/metavize/mvvm/util/PortServiceNames.java"/>
       <include name="com/metavize/mvvm/util/SessionUtil.java"/>
@@ -171,7 +172,8 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
         <include name="com/metavize/mvvm/tapi/*Desc*.class"/>
         <include name="com/metavize/mvvm/tapi/SessionStats*.class"/>
         <include name="com/metavize/mvvm/tapi/client/*.class"/>
-        <include name="com/metavize/mvvm/tran/*.class"/>
+        <include name="com/metavize/mvvm/tapi/Protocol.class"/>
+        <include name="com/metavize/mvvm/tran/**/*.class"/>
         <exclude name="com/metavize/mvvm/tran/MutateTStats*.class"/>
         <include name="com/metavize/mvvm/util/PortServiceNames*.class"/>
         <include name="com/metavize/mvvm/util/SessionUtil*.class"/>
@@ -334,6 +336,9 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
         <include name="**/*png"/>
       </fileset>
       <fileset dir="../tran/nat/main">
+        <include name="**/*png"/>
+      </fileset>
+      <fileset dir="../tran/firewall/main">
         <include name="**/*png"/>
       </fileset>
         

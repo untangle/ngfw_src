@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: mvpoll.h,v 1.9 2005/01/27 04:52:18 rbscott Exp $
+ * $Id$
  */
 #ifndef __MVPOLL_H_
 #define __MVPOLL_H_

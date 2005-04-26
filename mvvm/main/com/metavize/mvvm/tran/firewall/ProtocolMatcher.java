@@ -11,6 +11,8 @@
 
 package com.metavize.mvvm.tran.firewall;
 
+import java.io.Serializable;
+
 import com.metavize.mvvm.tapi.Protocol;
 
 /**
@@ -20,9 +22,17 @@ import com.metavize.mvvm.tapi.Protocol;
  * @author <a href="mailto:rbscott@metavize.com">rbscott</a>
  * @version 1.0
  */
-public class ProtocolMatcher
+public class ProtocolMatcher implements Serializable
 {
-    private static final String WILDCARD_MARKER  = "*";
+    public static final String MARKER_TCP       = "TCP";
+    public static final String MARKER_UDP       = "UDP";
+    public static final String MARKER_WILDCARD  = MatcherStringConstants.WILDCARD;
+    public static final String MARKER_ALL       = "TCP & UDP";
+    public static final String MARKER_SEP       = MatcherStringConstants.SEPERATOR;
+    private static final String MARKER_NOTHING  = MatcherStringConstants.NOTHING;
+
+    private static final String[] ENUMERATION = { MARKER_ALL, MARKER_UDP, MARKER_TCP };
+
     public static final ProtocolMatcher MATCHER_ALL = new ProtocolMatcher( true, true );
     public static final ProtocolMatcher MATCHER_TCP = new ProtocolMatcher( true, false );
     public static final ProtocolMatcher MATCHER_UDP = new ProtocolMatcher( false, true );
@@ -45,5 +55,77 @@ public class ProtocolMatcher
             return true;
 
         return false;
+    }
+    
+    
+    public String toString()
+    {
+        if (( this == MATCHER_ALL ) || ( isTcpEnabled && isUdpEnabled )) {
+            return MARKER_ALL;
+        } else if (( this == MATCHER_NIL ) || ( !isTcpEnabled && !isUdpEnabled )) {
+            return MARKER_NOTHING;
+        }
+        
+        if ( isTcpEnabled ) {
+            return MARKER_TCP;
+        }
+        
+        /* That is every combination but UDP */
+        return MARKER_UDP;
+    }
+
+    /**
+     * An ProtocolMatcher can be specified in one of the following formats:
+     * 1. (I|O)[,(I|O)]* Inside or outside (one of each) eg "I,O" or "I" or "O"
+     * 2. * : Wildcard matches everything.
+     * 3. ! : Nothing matches nothing
+     */
+    public static ProtocolMatcher parse( String str ) throws IllegalArgumentException
+    {
+        str = str.trim();
+        boolean isTcpEnabled  = false;
+        boolean isUdpEnabled = false;
+        
+        if ( str.indexOf( MARKER_SEP ) > 0 ) {
+            String strArray[] = str.split( MARKER_SEP );
+            for ( int c = 0 ; c < strArray.length ; c++ ) {
+                if ( strArray[c].equalsIgnoreCase( MARKER_TCP )) {
+                    isTcpEnabled = true;
+                } else if ( strArray[c].equalsIgnoreCase( MARKER_UDP )) {
+                    isUdpEnabled = true;
+                } else {
+                    throw new IllegalArgumentException( "Invalid ProtocolMatcher at \"" + strArray[c] + "\"" );
+                }
+            }
+        } else if ( str.equalsIgnoreCase( MARKER_WILDCARD ) || str.equalsIgnoreCase( MARKER_ALL )) {
+            return  MATCHER_ALL;
+        } else if ( str.equalsIgnoreCase( MARKER_NOTHING )) {
+            return MATCHER_NIL;
+        } else if ( str.equalsIgnoreCase( MARKER_TCP ))  {
+            isTcpEnabled = true;
+        } else if ( str.equalsIgnoreCase( MARKER_UDP )) {
+            isUdpEnabled = true;
+        } else {
+            throw new IllegalArgumentException( "Invalid ProtocolMatcher at \"" + str + "\"" );
+        }
+
+        if ( isTcpEnabled && isUdpEnabled ) {
+            return MATCHER_ALL;
+        } else if ( isTcpEnabled && isUdpEnabled ) {
+            return MATCHER_NIL;
+        } else if ( isTcpEnabled ) {
+            return MATCHER_TCP;
+        }
+        return MATCHER_UDP;
+    }
+
+    public static String[] getProtocolEnumeration()
+    {
+        return ENUMERATION;
+    }
+
+    public static String getProtocolDefault()
+    {
+        return ENUMERATION[0];
     }
 }

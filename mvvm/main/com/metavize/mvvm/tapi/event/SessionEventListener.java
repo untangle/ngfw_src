@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: SessionEventListener.java,v 1.3 2005/01/07 01:23:55 jdi Exp $
+ *  $Id$
  */
 
 package com.metavize.mvvm.tapi.event;
@@ -84,28 +84,62 @@ public interface SessionEventListener extends java.util.EventListener {
     IPDataResult handleTCPClientWritable(TCPSessionEvent event) throws MPipeException;
 
     /**
+     * <code>handleTCPClientDataEnd</code> is called just as the first EOF (Shutdown) is read from
+     * the client.  This gives the transform a chance to send out any buffered data/etc.
+     * 
+     * The function may return null, which means to do nothing.
+     * 
+     * If the function returns an IPDataResult, the bufsToClient and bufsToServer are added to the
+     * respective outgoing queues.  The readBuffer is ignored.
+     *
+     * handleTCPClientFIN is called just after this.
+     */
+    IPDataResult handleTCPClientDataEnd(TCPSessionEvent event) throws MPipeException;
+
+    /**
      * <code>handleTCPClientFIN</code> is called when the first EOF (Shutdown) is read from
      * the client.  This will also happen if we ourselves have shutdown (sent a FIN to)
      * the client and we have waited the timeout number of seconds (usually ~30? XXX)
-     * for the FIN response from the client.  FIN/ACKs are ignored.
+     * for the FIN response from the client.  (FIN/ACKs are ignored.)
      * The default action, from <code>AbstractEventHandler</code>
      * is to call <code>shutdownServer</code>.
      *
-     * @param event a <code>TCPSessionEvent</code> giving the session
+     * This is called just after handleTcpClientDataEnd.
+     *
+     * @param event a <code>TCPSessionEvent</code> value
+     * @exception MPipeException if an error occurs
      */
     void handleTCPClientFIN(TCPSessionEvent event) throws MPipeException;
+
+    /**
+     * <code>handleTCPServerDataEnd</code> is called just as the first EOF (Shutdown) is read from
+     * the server.  This gives the transform a chance to send out any buffered data/etc.
+     * 
+     * The function may return null, which means to do nothing.
+     * 
+     * If the function returns an IPDataResult, the bufsToServer and bufsToServer are added to the
+     * respective outgoing queues.  The readBuffer is ignored.
+     *
+     * handleTCPServerFIN is called just after this.
+     */
+    IPDataResult handleTCPServerDataEnd(TCPSessionEvent event) throws MPipeException;
 
     /**
      * <code>handleTCPServerFIN</code> is called when the first EOF (Shutdown) is read from
      * the server.  This will also happen if we ourselves have shutdown (sent a FIN to)
      * the server and we have waited the timeout number of seconds (usually ~30? XXX)
-     * for the FIN response from the server.  FIN/ACKs are ignored.
+     * for the FIN response from the server.  (FIN/ACKs are ignored.)
      * The default action, from <code>AbstractEventHandler</code>
      * is to call <code>shutdownClient</code>.
      *
-     * @param event a <code>TCPSessionEvent</code> giving the session
+     * This is called just after handleTcpServerDataEnd.
+     *
+     * @param event a <code>TCPSessionEvent</code> value
+     * @exception MPipeException if an error occurs
      */
     void handleTCPServerFIN(TCPSessionEvent event) throws MPipeException;
+
+
 
     /**
      * <code>handleTCPClientRST</code> is called when the first RST (Reset) is read from
@@ -157,8 +191,10 @@ public interface SessionEventListener extends java.util.EventListener {
     // UDP
     //////////////////////////////////////////////////////////////////////
 
-    IPDataResult handleUDPClientPacket(UDPPacketEvent event) throws MPipeException;
-    IPDataResult handleUDPServerPacket(UDPPacketEvent event) throws MPipeException;
+    // Note that the Packet handlers are not, in general, free to mess with the event's packet
+    // position/limit, as these will be used by the default handler when sending out the packet. XX
+    void handleUDPClientPacket(UDPPacketEvent event) throws MPipeException;
+    void handleUDPServerPacket(UDPPacketEvent event) throws MPipeException;
 
     /**
      * Called after the session is established (after the new session request
@@ -183,6 +219,10 @@ public interface SessionEventListener extends java.util.EventListener {
 
     void handleUDPServerExpired(UDPSessionEvent event)  throws MPipeException;
 
+    void handleUDPClientError(UDPErrorEvent event)  throws MPipeException;
+
+    void handleUDPServerError(UDPErrorEvent event)  throws MPipeException;
+
     /**
      * <code>handleUDPServerWritable</code> is called when the write queue to the server has
      * first gone empty.  This is an edge-triggered event that gives the transform a chance
@@ -192,7 +232,7 @@ public interface SessionEventListener extends java.util.EventListener {
      * @return an <code>IPDataResult</code> value
      * @exception MPipeException if an error occurs
      */
-    IPDataResult handleUDPServerWritable(UDPSessionEvent event) throws MPipeException;
+    void handleUDPServerWritable(UDPSessionEvent event) throws MPipeException;
 
     /**
      * <code>handleUDPClientWritable</code> is called when the write queue to the client has
@@ -203,7 +243,7 @@ public interface SessionEventListener extends java.util.EventListener {
      * @return an <code>IPDataResult</code> value
      * @exception MPipeException if an error occurs
      */
-    IPDataResult handleUDPClientWritable(UDPSessionEvent event) throws MPipeException;
+    void handleUDPClientWritable(UDPSessionEvent event) throws MPipeException;
 
     /**
      * <code>handleUDPFinalized</code> is called once both the client and server have

@@ -6,12 +6,12 @@
 # Metavize Inc. ("Confidential Information").  You shall
 # not disclose such Confidential Information.
 
-# $Id: jnetcap_src.sh,v 1.5 2005/01/31 01:15:12 rbscott Exp $
+# $Id$
 
 ## first: element = c name or if no second, c and java name
 ## second: java name
 packages=( "Netcap" "Subscription" "SubscriptionGen SubscriptionGenerator" "Session NetcapSession"
-    "UDPSession NetcapUDPSession" "TCPSession NetcapTCPSession" "InterfaceSet" "IPTraffic" "Shield" )
+    "UDPSession NetcapUDPSession" "TCPSession NetcapTCPSession" "InterfaceSet" "IPTraffic" "Shield" "ICMPTraffic" )
 package=$1
 
 c_package=${package//./_}
@@ -26,7 +26,7 @@ header='
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: jnetcap_src.sh,v 1.5 2005/01/31 01:15:12 rbscott Exp $
+ *  $Id$
  */
 
 #ifndef __JNETCAP_H_

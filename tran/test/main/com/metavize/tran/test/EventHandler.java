@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: EventHandler.java,v 1.9 2005/03/16 03:43:13 rbscott Exp $
+ * $Id$
  */
 package com.metavize.tran.test;
 
@@ -285,28 +285,34 @@ public class EventHandler extends AbstractEventHandler
         // return new IPDataResult(new ByteBuffer[] { copy_of_chunk });
     }
 
-    public IPDataResult handleUDPClientPacket(UDPPacketEvent event)
+    public void handleUDPClientPacket(UDPPacketEvent event)
+	    throws MPipeException
     {
         UDPSession sess = event.session();
         ByteBuffer packet = event.packet();
         if (!settings.isQuiet())
             logger.debug("Passing packet size " + packet.remaining() + " bytes to server");
-        return IPDataResult.PASS_THROUGH;
         // if (sess.doubleBuffered()) {
         // copy it
         // return new IPDataResult(new ByteBuffer[] { copy_of_packet });
+
+	// Send it through;
+	super.handleUDPClientPacket(event);
     }
 
-    public IPDataResult handleUDPServerPacket(UDPPacketEvent event)
+    public void handleUDPServerPacket(UDPPacketEvent event)
+	    throws MPipeException
     {
         UDPSession sess = event.session();
         ByteBuffer packet = event.packet();
         if (!settings.isQuiet())
             logger.debug("Passing packet size " + packet.remaining() + " bytes to client");
-        return IPDataResult.PASS_THROUGH;
         // if (sess.doubleBuffered()) {
         // copy it
         // return new IPDataResult(new ByteBuffer[] { copy_of_packet });
+
+	// Send it through;
+	super.handleUDPServerPacket(event);
     }
 
     static class TestSessionState {

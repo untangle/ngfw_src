@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: netcap_antisubscribe.c,v 1.1 2004/11/09 19:39:58 dmorris Exp $
+ * $Id$
  */
 
 #include <mvutil/errlog.h>
@@ -55,10 +55,6 @@ int netcap_local_antisubscribe_cleanup ( void ) {
 
 int netcap_local_antisubscribe_add (void)
 {
-    int i;
-    in_addr_t* if_addrs = netcap_interface_addrs();
-    int if_count = netcap_interface_count();
-
     _netcap_local_sub_count--;
 
     /**
@@ -66,28 +62,23 @@ int netcap_local_antisubscribe_add (void)
      */
     if (_netcap_local_sub_count <= 0) {
         _netcap_local_sub_count = 0;
-
-        for (i=0;i<if_count;i++) {
-            in_addr_t mask = (in_addr_t)0xffffffff;
-            if (_netcap_local_sub_id[i] <= 0) {
-                _netcap_local_sub_id[i] = 
-                    netcap_subscribe(NETCAP_FLAG_ANTI_SUBSCRIBE, NULL,IPPROTO_ALL,
-                                     NC_INTF_UNK, NC_INTF_UNK,
-                                     NULL,NULL,0,0,&if_addrs[i], &mask,0,0);
-
-                if (_netcap_local_sub_id[i] < 0 ) perrlog("netcap_subscribe");
-
-                debug(7,"SUBMANAGER: Adding local antisubscribe for '%s' (%i)\n",
-                      unet_inet_ntoa(if_addrs[i]),_netcap_local_sub_id[i]);
-            }
-        }
+        
+        if ( _netcap_local_sub_id[0] <= 0 ) {
+            _netcap_local_sub_id[0] = 
+                netcap_subscribe(( NETCAP_FLAG_ANTI_SUBSCRIBE | NETCAP_FLAG_LOCAL ),
+                                 NULL,IPPROTO_ALL, NC_INTF_UNK, NC_INTF_UNK,
+                                 NULL,NULL, 0, 0, NULL, NULL, 0, 0 );
+            
+            if ( _netcap_local_sub_id[0] < 0 ) perrlog( "netcap_subscribe" );
+            
+            debug( 7, "SUBMANAGER: Added local antisubscribes\n" );
+        }        
     }
     return 0;
 }
 
 int netcap_local_antisubscribe_remove (void)
 {
-    int i;
     _netcap_local_sub_count++;
 
     /**
@@ -96,15 +87,13 @@ int netcap_local_antisubscribe_remove (void)
     if (_netcap_local_sub_count <= 1) {
         _netcap_local_sub_count = 1;
         
-        for ( i=0 ; i <netcap_interface_count();i++) {
-            if (_netcap_local_sub_id[i] > 0) {
-                debug(7,"SUBMANAGER: Removing local interface antisubscribe (%i)\n",
-                      _netcap_local_sub_id[i]);
-                _netcap_local_sub_id[i] = netcap_unsubscribe(_netcap_local_sub_id[i]);
-                if (_netcap_local_sub_id[i] < 0)
-                    perrlog("netcap_unsubscribe");
+        if (_netcap_local_sub_id[0] > 0) {
+            debug(7,"SUBMANAGER: Removing local interface antisubscribe (%i)\n",
+                  _netcap_local_sub_id[0]);
+            _netcap_local_sub_id[0] = netcap_unsubscribe(_netcap_local_sub_id[0]);
+            if (_netcap_local_sub_id[0] < 0)
+                perrlog("netcap_unsubscribe");
             }
-        }
     }
     return 0;
 }

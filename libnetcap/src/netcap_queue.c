@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: netcap_queue.c,v 1.5 2005/03/10 01:32:09 rbscott Exp $
+ * $Id$
  */
 #include "netcap_queue.h"
 
@@ -165,6 +165,12 @@ int  netcap_queue_read (char *buffer, int max, netcap_pkt_t* pkt)
     
     pkt->src.host.s_addr = iph->saddr;
     pkt->dst.host.s_addr = iph->daddr;
+    
+    /* Set the ttl, tos and option values */
+    pkt->ttl = iph->ttl;
+    pkt->tos = iph->tos;
+
+    /* XXX If nececssary, options should be copied out here */
 
     if (iph->protocol == IPPROTO_TCP) {
         if (msg->data_len < (sizeof(struct iphdr)+sizeof(struct tcphdr)))
@@ -197,17 +203,7 @@ int  netcap_queue_read (char *buffer, int max, netcap_pkt_t* pkt)
     pkt->nfmark  = (u_int)msg->mark;
 
     netcap_interface_mark_to_intf(msg->mark,&pkt->src.intf);
-    
-    if (iph->protocol == IPPROTO_ICMP) {
-        errlog(ERR_WARNING,"Caught ICMP\n");
-        status = ipq_set_verdict(ipq_h, msg->packet_id, NF_DROP, 0, NULL);
-        pkt->packet_id = 0;
-        if (status < 0) {
-            errlog(ERR_CRITICAL,"set_verdict\n");
-            ipq_perror("set_verdict");
-            return -1;
-        }
-    }
+    pkt->dst.intf = NC_INTF_UNK;
 
     return msg->data_len;
 }

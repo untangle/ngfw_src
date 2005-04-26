@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: jsubscription.c,v 1.7 2005/01/21 01:10:03 rbscott Exp $
+ *  $Id$
  */
 
 #include <jni.h>
@@ -124,7 +124,9 @@ static int _parse_flags( int _flags )
     if ( _flags & JN_SubscriptionGen( BLOCK_CURRENT        )) flags |= NETCAP_FLAG_BLOCK_CURRENT;
     if ( _flags & JN_SubscriptionGen( LOCAL_ANTI_SUBSCRIBE )) flags |= NETCAP_FLAG_LOCAL_ANTI_SUBSCRIBE;
     if ( _flags & JN_SubscriptionGen( IS_FAKE              )) flags |= NETCAP_FLAG_IS_FAKE;
-
+    if ( _flags & JN_SubscriptionGen( IS_LOCAL             )) flags |= NETCAP_FLAG_LOCAL;
+    if ( _flags & JN_SubscriptionGen( NO_REVERSE           )) flags |= NETCAP_FLAG_NO_REVERSE;
+    
     return flags;
 
 }

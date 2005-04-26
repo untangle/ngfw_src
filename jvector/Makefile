@@ -33,7 +33,7 @@ java_src=SocketQueue.java IncomingSocketQueue.java SocketQueueImpl.java \
 	 Vector.java TCPSink.java TCPSource.java \
          DataCrumb.java Crumb.java ShutdownCrumb.java ResetCrumb.java \
 	 SocketQueueListener.java Sink.java Source.java UDPSource.java UDPSink.java \
-	 UDPPacketCrumb.java UDPPacketDesc.java
+	 UDPPacketCrumb.java ICMPPacketCrumb.java PacketCrumb.java
 
 classes=$(java_src:.java=.class)
 

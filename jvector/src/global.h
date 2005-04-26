@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: global.h,v 1.3 2005/01/05 21:26:19 rbscott Exp $
+ * $Id$
  */
 
 #include <jni.h>

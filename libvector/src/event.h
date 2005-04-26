@@ -5,7 +5,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: event.h,v 1.4 2005/01/27 04:55:32 rbscott Exp $
+ * $Id$
  */
 #ifndef __EVENT_H
 #define __EVENT_H

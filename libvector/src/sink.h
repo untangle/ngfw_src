@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: sink.h,v 1.3 2004/12/14 04:11:46 rbscott Exp $
+ * $Id$
  */
 #ifndef __SINK_H
 #define __SINK_H

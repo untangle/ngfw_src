@@ -81,7 +81,7 @@ public class Util {
 
     // DefaultTableColumnModel constants /////////
     public static final int TABLE_TOTAL_WIDTH = 471; /* in pixels (contains extra pixel) */
-    public static final int LINENO_MIN_WIDTH = 30; /* # */
+    public static final int LINENO_MIN_WIDTH = 45; /* # */
     public static final int STATUS_MIN_WIDTH = 55; /* status */
     //////////////////////////////////////////////
 

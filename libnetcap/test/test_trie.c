@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: test_trie.c,v 1.1 2004/11/09 19:40:00 dmorris Exp $
+ * $Id$
  */
 
 #include <stdio.h>

@@ -1,4 +1,4 @@
-/* $Id: netcap_hook.c,v 1.2 2005/01/30 00:03:43 rbscott Exp $ */
+/* $Id$ */
 #include "netcap_hook.h"
 
 #include <errno.h>
@@ -10,12 +10,12 @@
 #include "netcap_traffic.h"
 #include "netcap_udp.h"
 #include "netcap_tcp.h"
-
+#include "netcap_icmp.h"
 
 netcap_tcp_hook_t     global_tcp_hook     = netcap_tcp_null_hook;
 netcap_tcp_syn_hook_t global_tcp_syn_hook = netcap_tcp_syn_null_hook;
 netcap_udp_hook_t     global_udp_hook     = netcap_udp_null_hook;
-netcap_icmp_hook_t    global_icmp_hook    = NULL;
+netcap_icmp_hook_t    global_icmp_hook    = netcap_icmp_null_hook;
 
 int  netcap_hooks_init()
 {
@@ -69,5 +69,6 @@ int  netcap_icmp_hook_register   (netcap_icmp_hook_t hook)
 int  netcap_icmp_hook_unregister ()
 {
     global_icmp_hook = NULL;
+    global_icmp_hook = netcap_icmp_null_hook;
     return 0;
 }

@@ -1,4 +1,4 @@
-/* $Id: netcap_traffic.c,v 1.3 2005/01/27 04:55:08 rbscott Exp $ */
+/* $Id$ */
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>

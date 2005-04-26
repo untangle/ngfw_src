@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: NetcapUDPSession.java,v 1.8 2005/01/06 20:55:52 rbscott Exp $
+ *  $Id$
  */
 
 package com.metavize.jnetcap;
@@ -20,11 +20,11 @@ public class NetcapUDPSession extends NetcapSession
     /** These cannot conflict with the flags inside of NetcapTCPSession and NetcapSession */
     private final static int FLAG_TTL         = 64;
     private final static int FLAG_TOS         = 65;
-
-
-    private final UDPMailbox clientMailbox;
-    private final UDPMailbox serverMailbox;
-
+    
+    
+    private final PacketMailbox clientMailbox;
+    private final PacketMailbox serverMailbox;
+    
     public NetcapUDPSession( int id ) 
     {
         super( id, Netcap.IPPROTO_UDP );           
@@ -32,18 +32,18 @@ public class NetcapUDPSession extends NetcapSession
         clientMailbox = new UDPSessionMailbox( true );
         serverMailbox = new UDPSessionMailbox( false );
     }
-
-    public UDPMailbox clientMailbox() { return clientMailbox; }    
-    public UDPMailbox serverMailbox() { return serverMailbox; }
-
+    
+    public PacketMailbox clientMailbox() { return clientMailbox; }    
+    public PacketMailbox serverMailbox() { return serverMailbox; }
+    
     public byte ttl() { return (byte) getIntValue( FLAG_TTL, pointer.value()); }
     public byte tos() { return (byte) getIntValue( FLAG_TOS, pointer.value()); }
-
+    
     protected Endpoints makeEndpoints( boolean ifClient ) 
     {
         return new SessionEndpoints( ifClient );
     }
-
+    
     /**
      * Merge this session with any other UDP sessions started at the same time.</p>
      * @param traffic - Description of the traffic going to the server (dst should refer
@@ -53,7 +53,7 @@ public class NetcapUDPSession extends NetcapSession
      */
     public boolean merge( IPTraffic traffic )
     {
-        int ret  = merge( pointer.value(), 
+        int ret  = merge( pointer.value(),
                           Inet4AddressConverter.toLong( traffic.dst().host()), traffic.dst().port(),
                           Inet4AddressConverter.toLong( traffic.src().host()), traffic.src().port());
         
@@ -71,7 +71,7 @@ public class NetcapUDPSession extends NetcapSession
     private static native long   read( long sessionPointer, boolean ifClient, int timeout );
     private static native byte[] data( long packetPointer );
     private static native int    getData( long packetPointer, byte[] buffer );
-
+    
     /**
      * Merge this session with any other UDP session that may have started in the reverse
      * direction.</p>
@@ -82,7 +82,7 @@ public class NetcapUDPSession extends NetcapSession
      * @param dstAddr - Destination address(server side, client address)
      * @param dstPort - Destination port(server side, client port)
      */
-    private static native int    merge( long sessionPointer, 
+    private static native int    merge( long sessionPointer,
                                         long srcAddr, int srcPort, long dstAddr, int dstPort );
 
     private static native int    mailboxPointer( long sessionPointer, boolean ifClient );
@@ -90,7 +90,7 @@ public class NetcapUDPSession extends NetcapSession
     /* This is for sending the data associated with a netcap_pkt_t structure */
     private static native int  send( long packetPointer );
     
-    class UDPSessionMailbox implements UDPMailbox
+    class UDPSessionMailbox implements PacketMailbox
     {
         private final boolean ifClient;
 
@@ -98,25 +98,47 @@ public class NetcapUDPSession extends NetcapSession
             this.ifClient = ifClient;
         }
 
-        public UDPPacket read( int timeout )
+        public Packet read( int timeout )
         {
-            return new UDPMailboxPacket( NetcapUDPSession.read( pointer.value(), ifClient, timeout ));
+            CPointer packetPointer = new CPointer( NetcapUDPSession.read( pointer.value(), ifClient, timeout ));
+            
+            IPTraffic ipTraffic = new IPTraffic( packetPointer );
+            
+            switch ( ipTraffic.protocol()) {
+            case Netcap.IPPROTO_UDP:
+                return new PacketMailboxUDPPacket( packetPointer );
+            case Netcap.IPPROTO_ICMP:
+                return new PacketMailboxICMPPacket( packetPointer );
+            default:
+                int tmp = ipTraffic.protocol();
+
+                /* Must free the packet */
+                ipTraffic.raze();
+                throw new IllegalStateException( "Packet is neither ICMP or UDP: " +  tmp );
+            }
         }
 
-        public UDPPacket read() 
+        public Packet read() 
         {
-            return new UDPMailboxPacket( NetcapUDPSession.read( pointer.value(), ifClient, 0 ));
+            return read( 0 );
         }
 
         public int pointer()
         {
             return NetcapUDPSession.mailboxPointer( pointer.value(), ifClient );
         }
-        
-        class UDPMailboxPacket implements UDPPacket {
+
+        abstract class PacketMailboxPacket implements Packet
+        {
             private final CPointer pointer;
-            private final UDPSessionTraffic traffic;
-                        
+            protected final IPTraffic traffic;
+            
+            PacketMailboxPacket( CPointer pointer ) 
+            {
+                this.pointer = pointer;
+                this.traffic = makeTraffic( pointer );
+            }
+            
             public IPTraffic traffic() 
             {
                 return traffic;
@@ -145,24 +167,51 @@ public class NetcapUDPSession extends NetcapSession
                 traffic.raze();
             }
             
-            UDPMailboxPacket( long pointer ) 
+            protected abstract IPTraffic makeTraffic( CPointer pointer );
+        }
+        
+        class PacketMailboxUDPPacket extends PacketMailboxPacket implements UDPPacket
+        {
+            PacketMailboxUDPPacket( CPointer pointer )
             {
-                this.pointer = new CPointer( pointer );
-                
-                traffic = new UDPSessionTraffic( this.pointer );
+                super( pointer );
             }
 
-            class UDPSessionTraffic extends IPTraffic 
+            protected IPTraffic makeTraffic( CPointer pointer )
             {
-                /* This is so that the traffic structure will automatically NULL its pointer 
-                 * if the parent is NULLed, also by implementing this as a subclass, this
-                 * disallows the possibility of creating arbitrary IPTraffic structures with
-                 * pointers from anywhere in java */
-                UDPSessionTraffic( CPointer pointer ) 
-                {
-                    super( pointer );
-                }
+                return new IPTraffic( pointer );
             }
         }
+        
+        class PacketMailboxICMPPacket extends PacketMailboxPacket implements ICMPPacket
+        {
+            final byte icmpType;
+            final byte icmpCode;
+            
+            PacketMailboxICMPPacket( CPointer pointer )
+            {
+                super( pointer );
+                
+                icmpType = ((ICMPTraffic)traffic).icmpType();
+                icmpCode = ((ICMPTraffic)traffic).icmpCode();
+            }
+            
+            public byte icmpType()
+            {
+                return icmpType;
+            }
+            
+            public byte icmpCode()
+            {
+                return icmpCode;
+            }
+            
+            protected IPTraffic makeTraffic( CPointer pointer )
+            {
+                return new ICMPTraffic( pointer );
+            }
+
+        }
+
     }
 }

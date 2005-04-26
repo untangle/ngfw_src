@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: netcap_interface.h,v 1.1 2004/11/09 19:39:59 dmorris Exp $
+ * $Id$
  */
 #ifndef __INTERFACE_H
 #define __INTERFACE_H
@@ -15,10 +15,11 @@
 
 int netcap_interface_init (void);
 int netcap_interface_cleanup (void);
-int netcap_interface_refresh (void);
 int netcap_interface_marking(int ifAdd);
 
 int netcap_interface_mark_to_intf(int nfmark, netcap_intf_t* intf);
+
+int netcap_interface_update_address( void );
 
 #define NC_INTF_SET_TO_RULE_IN  1
 

@@ -6,12 +6,11 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: SessionMatcherFactory.java,v 1.1 2005/02/10 00:44:54 rbscott Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.argon;
 
-/* Technically not an imple, but a factory */
 public class SessionMatcherFactory
 {
     private SessionMatcherFactory()

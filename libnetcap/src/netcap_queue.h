@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: netcap_queue.h,v 1.1 2004/11/09 19:39:59 dmorris Exp $
+ * $Id$
  */
 #ifndef __NETCAP_QUEUE_H
 #define __NETCAP_QUEUE_H

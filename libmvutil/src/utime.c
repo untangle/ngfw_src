@@ -6,13 +6,14 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: utime.c,v 1.1 2004/11/09 19:39:57 dmorris Exp $
+ * $Id$
  */
-#include "utime.h"
 
 #include <sys/types.h>
 #include <unistd.h>
 #include "errlog.h"
+
+#include "utime.h"
 
 unsigned long utime_usec_diff (struct timeval* earlier, struct timeval* later)
 {
@@ -30,26 +31,53 @@ unsigned long utime_usec_diff_now (struct timeval* earlier)
 {
     struct timeval tv;
 
-    if (gettimeofday(&tv,NULL)<0)
+    if ( gettimeofday( &tv, NULL ) < 0 )
         return 0;
     
     return utime_usec_diff(earlier,&tv);
 }
 
-unsigned long utime_usec_add (struct timeval* ti, long microsec)
+int utime_usec_add (struct timeval* tv, long microsec )
 {
-    u_long sec;
-    u_long usec;
-    
-    if (!ti) return -1;
-    
-    sec =  microsec/1000000;
-    usec = microsec%1000000;
+    if ( tv == NULL ) return -1;
 
-    ti->tv_sec += sec;
-    ti->tv_usec += usec;
+    /* Handle any overflow before adding */
+    if ( tv->tv_usec > U_SEC ) {
+        tv->tv_sec++;
+        tv->tv_usec -= U_SEC;
+    }
+
+    tv->tv_sec  += USEC_TO_SEC( microsec );
+    tv->tv_usec += microsec % U_SEC;
+
+    /* Handle any overflow from adding */
+    if ( tv->tv_usec > U_SEC ) {
+        tv->tv_sec++;
+        tv->tv_usec -= U_SEC;
+    }
     
     return 0;
+}
+
+int utime_usec_add_now( struct timeval* tv, long microsec )
+{
+    if ( tv == NULL )
+        return errlogargs();
+
+    if ( gettimeofday( tv, NULL ) < 0 )
+        return perrlog( "gettimeofday" );
+
+    return utime_usec_add( tv, microsec );
+}
+
+int utime_msec_add ( struct timeval* tv, long millisec )
+{
+    return utime_usec_add( tv, MSEC_TO_USEC( millisec ));
+}
+
+int utime_msec_add_now( struct timeval* tv, long millisec )
+{
+    return utime_usec_add_now( tv, MSEC_TO_USEC( millisec ));
 }
 
 void*         utime_timer_start_sem(void* utime_timer_struct)

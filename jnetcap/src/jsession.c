@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: jsession.c,v 1.12 2005/01/31 01:15:12 rbscott Exp $
+ *  $Id$
  */
 
 #include <stdio.h>
@@ -31,6 +31,11 @@
 #include JH_Session
 #include JH_TCPSession
 #include JH_UDPSession
+
+
+/**
+ * XXXX All of the get functions should throw errors
+ */
 
 /*
  * Class:     com_metavize_jnetcap_NetcapSession
@@ -83,6 +88,10 @@ JNIEXPORT jlong JNICALL JF_Session( getLongValue )
 
     switch( req_id & JN_Session( FLAG_MASK )) {
     case JN_Session( FLAG_HOST ): return UINT_TO_JLONG( endpoint->host.s_addr );
+    case JN_Session( FLAG_ICMP_MB ):
+        if ( req_id & JN_Session( FLAG_IF_CLIENT_MASK )) return UINT_TO_JLONG( &session->icmp_cli_mb );
+        return UINT_TO_JLONG( &session->icmp_srv_mb );
+
         /* Coded this way to put other items below if necessary */
     }
 

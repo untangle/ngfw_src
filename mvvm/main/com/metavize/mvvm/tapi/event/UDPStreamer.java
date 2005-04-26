@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: UDPStreamer.java,v 1.1 2005/01/21 19:35:23 jdi Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.tapi.event;
@@ -23,5 +23,6 @@ public interface UDPStreamer extends IPStreamer
      *
      * @return a <code>ByteBuffer</code> giving the bytes of the next chunk to send.  Null when done.
      */
-    ByteBuffer nextPacket();
+    // Not even needed yet:
+    // UDPPacketCrumb nextPacket();
 }

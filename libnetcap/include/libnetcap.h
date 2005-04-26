@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: libnetcap.h,v 1.12 2005/03/09 07:00:10 rbscott Exp $
+ * $Id$
  */
 #ifndef __NETCAP_H_
 #define __NETCAP_H_
@@ -62,14 +62,28 @@ typedef enum {
      */
     NETCAP_FLAG_SUDO = 16,
     /**
-     * Local antisubscribe
+     * Local antisubscribe: This subscription is interested in traffic destined to the local
+     * machine.
      */
     NETCAP_FLAG_LOCAL_ANTI_SUBSCRIBE = 32,
     /**
      * Fake subscription
      * Will subscribe to whatever, but is_subset always returns false
      */
-    NETCAP_FLAG_IS_FAKE = 64
+    NETCAP_FLAG_IS_FAKE = 64,
+    /**
+     * Local subscription.  (Presently only effective for antisubscribes)
+     */
+    NETCAP_FLAG_LOCAL = 128,
+    /**
+     * Do not create the reverse rule.  This is important for antisubscribing to traffic to the local
+     * host.  Since Antisubscribes use the local traffic mark, the reverse of a rule like antisubscribe
+     * traffic to port 23, would also antisubscribe traffic from port 23 that is destined to the local
+     * machine.  This outgoing packets are not a problem because traffic that is generated from other 
+     * ports go into the conntrack table, and anything in the conntrack table is antisubscribed anyway.
+     * (Presently only effective for antisubscribes)
+     */
+    NETCAP_FLAG_NO_REVERSE = 256
 } netcap_subscription_flags_t;
 
 typedef enum {
@@ -195,8 +209,7 @@ typedef struct netcap_pkt {
     /**
      * free to be used by the application
      */
-    void* app_data;     
-
+    void* app_data;
 } netcap_pkt_t;
 
 typedef struct netcap_traffic {
@@ -327,6 +340,21 @@ typedef struct netcap_session {
      */
     mailbox_t cli_mb;
 
+    /** 
+     * The icmp client packet mailbox.
+     * This typically has a maximum size of, and is only used for queuing the last
+     * packet in the case when an icmp error message must be returned.
+     */
+    mailbox_t icmp_cli_mb;
+
+    /** 
+     * The icmp server packet mailbox.
+     * This typically has a maximum size of, and is only used for queuing the last
+     * packet in the case when an icmp error message must be returned.
+     */
+    mailbox_t icmp_srv_mb;
+
+    
     /* the server side traffic description */
     netcap_endpoints_t srv; 
 
@@ -391,7 +419,11 @@ typedef struct netcap_session {
 
 typedef void (*netcap_tcp_hook_t)  (netcap_session_t* tcp_sess, void* arg);
 typedef void (*netcap_udp_hook_t)  (netcap_session_t* netcap_sess, void* arg);
-typedef void (*netcap_icmp_hook_t) (netcap_pkt_t* pkt, void* arg);
+/* If session is set, this is a new session, and the pkt is already in the mailbox.
+ * if pkt is set, this packet couldn't be associated with a session and should be handled
+ * individually 
+ */
+typedef void (*netcap_icmp_hook_t) (netcap_session_t* netcap_sess, netcap_pkt_t* pkt, void* arg);
 
 
 /**
@@ -401,6 +433,9 @@ int netcap_init( int shield_enable );
 int   netcap_cleanup (void);
 const char* netcap_version (void);
 void  netcap_debug_set_level   (int lev);
+
+/** Update everything that must change when the address of the box changes */
+int   netcap_update_address( void );
 
 /**
  * Thread management
@@ -429,11 +464,36 @@ int   netcap_unsubscribe     (int traffic_id);
 int   netcap_unsubscribe_all (void);
 int   netcap_subscription_is_subset ( int sub_id, netcap_traffic_t* traf );
 
+/** Allow DHCP traffic to pass through the box */
+int   netcap_subscription_disable_dhcp_forwarding( void );
+
+/** Disallow DHCP traffic to pass through the box */
+int   netcap_subscription_enable_dhcp_forwarding( void );
+
+/* XXXXXXXX These only work properly if none of the subscriptions subscribe to local traffic */
+/** Unsubscribe from all local traffic */
+int   netcap_subscription_enable_local( void );
+
+/** Subscribe to all local traffic */
+int   netcap_subscription_disable_local( void );
+
 /**
  * Packet Sending (XXX include pkt_create?)
  */
-int   netcap_udp_send (char* data, int data_len, netcap_pkt_t* pkt);
+int   netcap_udp_send  (char* data, int data_len, netcap_pkt_t* pkt);
 int   netcap_icmp_send (char *data, int data_len, netcap_pkt_t* pkt);
+
+/**
+ * Function to update an ICMP error packet so the host addresses and ports match the values inside of pkt.
+ * data      - Buffer to work with.
+ * data_len  - length of the current data inside of buffer
+ * data_lim  - Total size of data. (This should always be greater than or equal to data_len).
+ * icmp_type - Type of ICMP packet that is being sent.
+ * icmp_code - Code for the ICMP packet.
+ * icmp_mb   - Mailbox to retrieve the packet to respond to.
+ */
+int   netcap_icmp_update_pkt( char* data, int data_len, int data_lim,
+                              int icmp_type, int icmp_code, mailbox_t* icmp_mb );
 
 /**
  * Resource Freeing 
@@ -480,7 +540,16 @@ list_t*           netcap_sesstable_get_all_sessions ( void );
  */
 int               netcap_sesstable_kill_all_sessions ( void (*kill_all_function)(list_t *sessions) );
 /**
- * merge the following sessions - document me rbscott XXX
+ * merge two UDP sessions into one
+ * This function checks if there are two sessions in the session table for
+ * the same session.  This can happen if a packet comes from both directions with the
+ * exact opposite signature.
+ * packet A: source-10.0.0.1:6000,dest-10.0.0.2:7000
+ * packet B: source-10.0.0.2:7000,dest-10.0.0.1:6000
+ * If A and B come in at the same time, then a session could be created for each packet, even
+ * though the traffic should be tracked in the same session.
+ * At some point in one of the sessions, the user calls merge which flags the other session
+ * to die, and merges(packets/sessiontable) it into the calling session.
  */
 int               netcap_sesstable_merge_udp_tuple( netcap_session_t* netcap_sess,  int protocol, 
                                                     in_addr_t src, in_addr_t dst, 

@@ -1,4 +1,4 @@
-/* $Id: mailbox.h,v 1.1 2004/11/09 19:39:56 dmorris Exp $ */
+/* $Id$ */
 #ifndef __UTILMAILBOX_H
 #define __UTILMAILBOX_H
 
@@ -28,8 +28,12 @@ void*        mailbox_get (mailbox_t* mb);
 void*        mailbox_try_get (mailbox_t* mb);
 void*        mailbox_timed_get  ( mailbox_t* mb, int sec);
 
+/* nano-second get operation */
+void*        mailbox_ntimed_get ( mailbox_t* mb, struct timespec* ts ); 
+
 /* micro-second get operation */
-void*        mailbox_utimed_get ( mailbox_t* mb, struct timespec* ts ); 
+void*        mailbox_utimed_get ( mailbox_t* mb, struct timeval* tv );
+
 
 int          mailbox_put (mailbox_t* mb, void* mail);
 int          mailbox_size (mailbox_t* mb);

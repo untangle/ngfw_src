@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: Session.java,v 1.6 2005/01/31 03:18:39 rbscott Exp $
+ *  $Id$
  */
 
 package com.metavize.mvvm.argon;
@@ -34,6 +34,12 @@ public interface Session extends SessionDesc {
      * <code>sessionGlobalState</code> returns all of the state that is global per session.
      */
     SessionGlobalState sessionGlobalState();
+    
+    /**
+     * <code>isVectored</code> returns whether or not this session should be vectored.
+     * ACCEPTED sessions are vectored, released sessions are not.
+     */
+    boolean isVectored();
 
     // For sizes, it means 'buffer' for TCP, 'packet' for UDP
     int maxInputSize();

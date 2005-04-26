@@ -189,8 +189,6 @@ int  netcap_tcp_syn_null_hook ( netcap_pkt_t* syn )
     return 0;    
 }
 
-
-
 static int  _netcap_tcp_accept_hook ( int cli_sock, struct sockaddr_in client, netcap_sub_t* sub )
 {
     netcap_intf_t cli_intf_idx;
@@ -230,9 +228,10 @@ static int  _netcap_tcp_accept_hook ( int cli_sock, struct sockaddr_in client, n
     arg   = sub->arg;
     flags = sub->rdr.flags;
 
+    unet_reset_inet_ntoa();
     debug( 5, "TCP:         Connection Accepted :: (%s:%-5i) -> (%s:%-5i)\n",
-          unet_inet_ntoa( cli_addr ), cli_port,
-          unet_next_inet_ntoa( srv_addr ), srv_port );
+           unet_next_inet_ntoa( cli_addr ), cli_port,
+           unet_next_inet_ntoa( srv_addr ), srv_port );
 
     sess = _netcap_get_or_create_sess(&new_sess_flag,
                                       cli_addr,cli_port,cli_sock,
@@ -650,6 +649,10 @@ static int  _netcap_tcp_setsockopt_srv ( int sock )
     int one = 1;
     int thirty = 30;
     int threehundo  = 300;
+    struct ip_sendnfmark_opts nfmark = {
+        .on 1,
+        .mark MARK_NOTRACK
+    };
     
     if (setsockopt(sock,SOL_IP,IP_NONLOCAL,&one,sizeof(one))<0) 
         perrlog("setsockopt");
@@ -661,6 +664,8 @@ static int  _netcap_tcp_setsockopt_srv ( int sock )
         perrlog("setsockopt");
     if (setsockopt(sock,SOL_TCP,TCP_KEEPINTVL,&threehundo,sizeof(threehundo))<0) 
         perrlog("setsockopt");
+    if (setsockopt(sock,SOL_IP,IP_SENDNFMARK,&nfmark,sizeof(nfmark))<0)
+        return perrlog( "setsockopt" );
 
     return 0;
 }

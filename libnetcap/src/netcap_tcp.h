@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: netcap_tcp.h,v 1.1 2004/11/09 19:40:00 dmorris Exp $
+ * $Id$
  */
 #ifndef __NETCAP_TCP_H_
 #define __NETCAP_TCP_H_
@@ -46,6 +46,8 @@ int  netcap_tcp_callback ( netcap_session_t* tcp_sess, netcap_callback_action_t 
 
 void netcap_tcp_null_hook ( netcap_session_t* netcap_sess, void *arg );
 int  netcap_tcp_syn_null_hook ( netcap_pkt_t* pkt );
+
+int  netcap_packet_action_free ( netcap_pkt_t* pkt, int action);
 
 
 #endif

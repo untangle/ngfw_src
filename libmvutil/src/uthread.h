@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: uthread.h,v 1.2 2004/11/18 22:10:41 rbscott Exp $
+ * $Id$
  */
 #ifndef __UTHREAD_H
 #define __UTHREAD_H

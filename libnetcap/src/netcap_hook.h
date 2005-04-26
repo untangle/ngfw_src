@@ -1,4 +1,4 @@
-/* $Id: netcap_hook.h,v 1.1 2004/11/09 19:39:59 dmorris Exp $ */
+/* $Id$ */
 #ifndef __NETCAP_HOOK_H
 #define __NETCAP_HOOK_H
 

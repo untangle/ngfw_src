@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: TCPNewSessionRequestImpl.java,v 1.7 2005/01/31 03:18:39 rbscott Exp $
+ *  $Id$
  */
 
 package com.metavize.mvvm.argon;
@@ -17,7 +17,7 @@ import com.metavize.jvector.OutgoingSocketQueue;
 
 class TCPNewSessionRequestImpl extends IPNewSessionRequestImpl implements TCPNewSessionRequest
 {
-    boolean acked = false;
+    final boolean acked;
 
     public TCPNewSessionRequestImpl( SessionGlobalState sessionGlobalState, ArgonAgent agent )
     {
@@ -30,6 +30,9 @@ class TCPNewSessionRequestImpl extends IPNewSessionRequestImpl implements TCPNew
     public TCPNewSessionRequestImpl( TCPSession session, ArgonAgent agent )
     {
         super( session, agent);
+
+        /* Retrieve the value for acked */
+        acked = sessionGlobalState.netcapTCPSession().acked();
     }
 
     /**

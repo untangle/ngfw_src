@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: TCPHook.java,v 1.28 2005/03/25 02:58:25 rbscott Exp $
+ *  $Id$
  */
 
 package com.metavize.mvvm.argon;
@@ -242,8 +242,11 @@ public class TCPHook implements NetcapHook
             processSession( request, session );
             
             if ( iter.hasNext()) {
-                /* Only advance the previous session if the transform requested the session */
-                if ( request.state() == IPNewSessionRequest.REQUESTED ) prevSession = session;
+                /* Advance the previous session if the transform requested or released the session */
+                if (( request.state() == IPNewSessionRequest.REQUESTED ) ||
+                    ( request.state() == IPNewSessionRequest.RELEASED && session != null )) {
+                    prevSession = session;
+                } 
             } else {
                 prevSession = null;
             }

@@ -116,13 +116,13 @@ public class TokenAdaptor extends AbstractEventHandler
         throw new UnsupportedOperationException("UDP not supported");
     }
 
-    public IPDataResult handleUDPClientPacket(UDPPacketEvent e)
+    public void handleUDPClientPacket(UDPPacketEvent e)
         throws MPipeException
     {
         throw new UnsupportedOperationException("UDP not supported");
     }
 
-    public IPDataResult handleUDPServerPacket(UDPPacketEvent e)
+    public void handleUDPServerPacket(UDPPacketEvent e)
         throws MPipeException
     {
         throw new UnsupportedOperationException("UDP not supported");

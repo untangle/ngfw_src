@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: mvsem.c,v 1.5 2005/01/27 04:52:18 rbscott Exp $
+ * $Id$
  */
 #include "mvsem.h"
 

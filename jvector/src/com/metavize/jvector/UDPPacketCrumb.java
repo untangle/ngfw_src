@@ -6,49 +6,69 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: UDPPacketCrumb.java,v 1.6 2005/01/10 23:21:32 rbscott Exp $
+ * $Id$
  */
 
 package com.metavize.jvector;
 
 import com.metavize.jnetcap.*;
 
-public class UDPPacketCrumb extends DataCrumb
+public class UDPPacketCrumb extends PacketCrumb
 {
-    private final UDPPacketDesc desc;
+    /**
+     * Create a new UDP Packet Crumb.</p>
+     *
+     * @param ttl     - Time To Live for the packet.
+     * @param tos     - Type of service for the packet.
+     * @param options - Type of service for the packet.          
+     * @param data    - Byte array containing the data.
+     * @param offset  - Offset in the byte array.
+     * @param limit   - Limit of the data.
+     */
+    public UDPPacketCrumb( byte ttl, byte tos, byte options[], byte[] data, int offset, int limit )
+    {
+        super( ttl, tos, options, data, offset, limit );
+    }
 
     /**
      * Create a new UDP Packet Crumb.</p>
      *
-     * @param desc   - Structure describing the non-endpoint UDP related data.
-     * @param data   - Byte array containing the data.
-     * @param offset - Offset in the byte array.
-     * @param limit  - Limit of the data.
+     * @param packet  - Packet to base this crumb on.
+     * @param data    - Byte array containing the data.
+     * @param offset  - Offset in the byte array.
+     * @param limit   - Limit of the data.
      */
-    public UDPPacketCrumb( UDPPacketDesc desc, byte[] data, int offset, int limit )
+    public UDPPacketCrumb( UDPPacket packet, byte[] data, int offset, int limit )
     {
-        super( data, offset, limit );
-        this.desc = desc;        
+        super( packet, data, offset, limit );
     }
 
-    protected UDPPacketCrumb( UDPPacketDesc desc, byte[] data, int limit )
+    /**
+     * Create a new UDP Packet Crumb.</p>
+     *
+     * @param packet  - Packet to base this crumb on.
+     * @param data    - Byte array containing the data.
+     * @param limit   - Limit of the data.
+     */
+    protected UDPPacketCrumb( UDPPacket packet, byte[] data, int limit )
     {
-        this( desc, data, 0, limit );
+        super( packet, data, limit );
     }
 
-    protected UDPPacketCrumb( UDPPacketDesc desc, byte[] data )
+    /**
+     * Create a new UDP Packet Crumb.</p>
+     *
+     * @param packet  - Packet to base this crumb on.
+     * @param data    - Byte array containing the data.
+     */
+    protected UDPPacketCrumb( UDPPacket packet, byte[] data )
     {
-        this( desc, data, data.length );
+        super( packet, data );
     }
 
     public int type()
     {
         return TYPE_UDP_PACKET;
-    }
-
-    public UDPPacketDesc desc()
-    {
-        return desc;
     }
 
     public void raze()

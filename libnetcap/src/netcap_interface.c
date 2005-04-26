@@ -20,6 +20,8 @@
 #include <mvutil/errlog.h>
 #include <mvutil/debug.h>
 #include <mvutil/usystem.h>
+#include <mvutil/unet.h>
+
 #include "libnetcap.h"
 #include "netcap_globals.h"
 #include "netcap_subscriptions.h"
@@ -36,7 +38,7 @@
 #define RULES_ADD 1
 #define RULES_DEL 0
 
-#define PORT_GUARD_CMD "/sbin/iptables -t mangle -%c PREROUTING -p %s -d %s %s %s %s -j DROP"
+#define PORT_GUARD_CMD "/sbin/iptables -t mangle -%c PREROUTING -p %s -m mark --mark %d/%d %s %s -j DROP"
 
 typedef struct  {
     char cmd[MAX_CMD_LEN];    
@@ -65,6 +67,15 @@ static __inline__ int _validate_intf_str( char* intf_str )
     return 0;
 }
 
+static __inline__ int _check_intf( netcap_intf_t intf )
+{
+    if ( intf < NC_INTF_0 || intf > _if_count ) {
+        return errlog( ERR_CRITICAL, "Invalid interface: %d\n", intf );
+    }
+    
+    return 0;
+}
+
 static int _netcap_interface_marking               ( int if_add );
 
 static int _netcap_interface_disable_srv_conntrack ( int if_add );
@@ -72,8 +83,13 @@ static int _netcap_interface_disable_srv_conntrack ( int if_add );
 /* Limit connections on the inside and outside to just the current subnet */
 static int _limit_subnet  ( char* dev_inside, char* dev_outside, int if_add );
 
+static int _interface_update_addrs( void );
+
 /* Retrive the address and netmask of the interface named interface_name */
 static int _get_interface_address ( char* interface_name, in_addr_t* address, in_addr_t* netmask );
+
+/* Setup or reomve all of the locally destined packets */
+static int _modify_local_marks( char* intf_name, int intf_mark, int if_add );
 
 /* Setup or remove a guard on a port */
 int _command_port_guard( netcap_intf_t gate, int protocol, char* ports, char* guest, int if_add );
@@ -120,81 +136,23 @@ int netcap_interface_bridge_exists( void )
  */
 int netcap_interface_init ()
 {
-    struct ifreq interfaces[NETCAP_MAX_INTERFACES];
-    struct ifconf conf;
-    int sockfd,i,j;
+    int i, j;
     char if_name[NETCAP_MAX_IF_NAME_LEN];
-    int  bridge_en = 0;
-
+    
     /* Clear out all of the interface names */
-    bzero(_if_names,sizeof(_if_names));
+    bzero(_if_names,sizeof(_if_names));    
 
-    /* XXX Have to make sure to close this socket */
-    sockfd = socket(PF_INET,SOCK_DGRAM,0);
-
-    if (sockfd < 0) return perrlog("socket");
-
-    conf.ifc_len = sizeof(interfaces);
-    conf.ifc_req = interfaces;
-    if (ioctl(sockfd,SIOCGIFCONF,&conf)<0)
-        return perrlog("ioctl");
-
-    i =  conf.ifc_len / sizeof(struct ifreq);
-    _num_if = 0;
-    
-    for (; --i >= 0;) {
-        struct in_addr addr;
-        struct in_addr broadcast;
-        struct in_addr netmask;
-        struct ifreq ifr;
-        
-        memcpy(&addr,&(*(struct sockaddr_in*)&interfaces[i].ifr_addr).sin_addr,sizeof(struct in_addr));
-        
-        strncpy(ifr.ifr_name, interfaces[i].ifr_name, sizeof(interfaces[i].ifr_name));
-
-        if (ioctl(sockfd, SIOCGIFBRDADDR, &ifr) < 0) {
-            return perrlog("ioctl");
-        } else {
-            broadcast = (*(struct sockaddr_in*)&ifr.ifr_broadaddr).sin_addr; 
-        }
-        
-        if (ioctl(sockfd, SIOCGIFNETMASK, &ifr) < 0) 
-            return perrlog("ioctl");
-        else
-            netmask = (*(struct sockaddr_in*)&ifr.ifr_netmask).sin_addr;
-
-        if (addr.s_addr != inet_addr("127.0.0.1")) {
-            debug(10,"Interface : %i\n",_num_if);
-            debug(10,"IP        : %s\n",inet_ntoa(addr));
-            debug(10,"Netmask   : %s\n",inet_ntoa(netmask));
-            debug(10,"Broadcast : %s\n",inet_ntoa(broadcast));
-
-            _if_addrs[_num_if]    = addr.s_addr;
-            _broadcasts[_num_if]  = broadcast.s_addr;
-            _netmasks[_num_if]    = netmask.s_addr;
-            
-            _num_if++;
-            
-            /* Insert a rule to disable conntracking on the server side of
-             * connection completes  */
-            if ( strncmp( ifr.ifr_name, "br0", 3) == 0 ) bridge_en = 1;
-        }
+    if ( _interface_update_addrs() < 0 ) {
+        return errlog( ERR_CRITICAL, "netcap_interface_update_addrs\n" );
     }
     
-    if ( bridge_en == 1 ) {
-        if ( _netcap_interface_disable_srv_conntrack( RULES_ADD ) < 0) {
-            return errlog(ERR_CRITICAL,"_netcap_interface_disable_srv_conntrack\n");
-        }
-    } else {
-        return errlog(ERR_CRITICAL,"No bridge device, unable to disable conntracking\n");
+    if ( _netcap_interface_disable_srv_conntrack( RULES_ADD ) < 0 ) {
+        return errlog( ERR_CRITICAL, "_netcap_interface_disable_srv_conntrack\n" );
     }
-
-    if (close(sockfd)<0) return perrlog("close");
 
     /* The code above only gets the "active" interfaces, which means it only
      * retrieves the bridge */
     /* Retrieve all of the interface names */
-    
     if (ht_init(&_if_name_to_id,IF_TABLE_SIZE,string_hash_func,string_equ_func,0)<0){
         return errlog(ERR_CRITICAL,"ht_init");
     }
@@ -226,14 +184,14 @@ int netcap_interface_init ()
 /**
  *
  */
-int netcap_interface_cleanup ()
+int netcap_interface_cleanup( void )
 {
     // Remove all of the interface marking rules
-    _netcap_interface_marking(RULES_DEL);
+    _netcap_interface_marking( RULES_DEL );
     
     /* Insert a rule to disable conntracking on the server side of
      * connection completes  */
-    _netcap_interface_disable_srv_conntrack(RULES_DEL);
+    _netcap_interface_disable_srv_conntrack( RULES_DEL );
 
     /* Destroy the hash table */
     ht_destroy(&_if_name_to_id);
@@ -244,9 +202,26 @@ int netcap_interface_cleanup ()
     return 0;
 }
 
-int netcap_interface_refresh ()
+int netcap_interface_update_address()
 {
-    return netcap_interface_init();
+    /* XXX This creates a gap where none of the marking rules are in place, this could be
+     * problematic */
+    /*** XXX Look into creating a temporary rule for dropping all incoming packets on br0 */
+    
+    _netcap_interface_marking( RULES_DEL );
+
+    /* Update all of the addresses */
+    /* XXXXX this might be fatal */
+    if ( _interface_update_addrs() < 0 ) { 
+        errlog( ERR_CRITICAL, "Critical Error, unable to update the address table\n" );
+        return errlog( ERR_CRITICAL, "_interface_update_addrs\n" );
+    }
+
+    if ( _netcap_interface_marking( RULES_ADD ) < 0 ) {
+        return errlog( ERR_CRITICAL, "_netcap_interface_marking\n" );
+    }
+
+    return 0;
 }
 
 /* Returns 1 if it is a broadcast */
@@ -300,101 +275,57 @@ in_addr_t* netcap_interface_addrs (void)
 
 static int _netcap_interface_marking               ( int if_add )
 {
-  int c;
-  char add_del;
-  // String for holding the insert command for each interface
-  char insert_cmd[MAX_CMD_LEN];
-  int  if_err = 0;
-  int  ret;
-  
-  if ( if_add == RULES_ADD ) {
-      add_del = 'A';
-
-      /* Insert the antisubscribe chain */
-      ret = system( "/sbin/iptables -t mangle -N " INTERFACE_CHAIN );
-
-      if ( ret < 0 ) {
-          return perrlog( "system" ); 
-      }
-
-      ret = WEXITSTATUS( ret );
-      
-      /* 0 means sucessful, 1 just means the chain already exists */
-      if ( ret != 0 && ret != 1 ) {
-          return errlog( ERR_CRITICAL, "Unable to add mark-interface chain '" INTERFACE_CHAIN "(%d)'\n", 
-                         ret );
-      }
-      
-      if ( mvutil_system( "/sbin/iptables -t mangle -A PREROUTING -j " INTERFACE_CHAIN ) < 0 ) {
-          return errlog( ERR_CRITICAL, "Unable to insert jump to mark-interface chain\n" );
-      }
-  } else {
-      add_del = 'D';
-  }
-
-  /* Insert a mark for each eth interface from 0 to max */
+    int c;
+    char add_del;
+    // String for holding the insert command for each interface
+    char insert_cmd[MAX_CMD_LEN];
+    int  if_err = 0;
+    
+    add_del = ( if_add == RULES_ADD ) ? 'A' : 'D';
+    
+    /* Insert a mark for each eth interface from 0 to max */
 #define MARK_BASE "/sbin/iptables -t mangle -%c " INTERFACE_CHAIN " -m physdev " \
                   "--physdev-in %s -j MARK --set-mark %d"
-
-  /* Rules to block u-turns(going out on the same interface the packet came in) */
-  /* Use 0x1F as the mask, this guarantees that antisubcribed packets 
-   * matched.
-   * 04/13/05 - UPDATE: 0x1F is not necessary since antisubscribed packets are set
-   * to 0x10 by the antisubscribe rules, therefore the lower bits will always be zero once they get
-   * to this point.  0x1f also causes problems, if all outgoing UDP packets are antisubscribed,
-   * (This is necessary to enable local traffic), then broadcasts are not caught properly.
-   * EG: packet marked 0x13 would not be prevented from going out the incorrect interface
-   */
+    
+    /* Rules to block u-turns(going out on the same interface the packet came in) */
+    /* Use 0x1F as the mask, this guarantees that antisubcribed packets 
+     * matched.
+     * 04/13/05 - UPDATE: 0x1F is not necessary since antisubscribed packets are set
+     * to 0x10 by the antisubscribe rules, therefore the lower bits will always be zero once they get
+     * to this point.  0x1f also causes problems, if all outgoing UDP packets are antisubscribed,
+     * (This is necessary to enable local traffic), then broadcasts are not caught properly.
+     * EG: packet marked 0x13 would not be prevented from going out the incorrect interface
+     */
 #define UTURN_BASE "/sbin/iptables -t filter -%c OUTPUT -m mark -m physdev --physdev-out %s " \
                    "--mark %d/0x0F -j DROP"
-
-  for ( c = _if_count ; c-- > 0  ; ) {
-      /* Build the command for each interface, Mark interface eth0 with 1, eth1 with 2, etc*/
-      snprintf( insert_cmd, MAX_CMD_LEN, MARK_BASE, add_del, _if_names[c], c + 1 );
-      
-      if ( mvutil_system ( insert_cmd ) < 0 ) {
-          perrlog("mvutil_system");
-          if_err = -1;
-      } else {
-          debug(5,"NETCAP: Run Command: '%s' \n", insert_cmd);
-      }
-
-      /* Build the command for each interface, Mark interface eth0 with 1, eth1 with 2, etc*/
-      snprintf( insert_cmd, MAX_CMD_LEN, UTURN_BASE, add_del, _if_names[c], c+1 );
-      
-      if ( mvutil_system ( insert_cmd ) < 0 ) {
-          perrlog("mvutil_system");
-          if_err = -1;
-      } else {
-          debug(5,"NETCAP: Run Command: '%s' \n", insert_cmd);
-      }
-
-
+    
+    for ( c = _if_count ; c-- > 0  ; ) {
+        /* Build the command for each interface, Mark interface eth0 with 1, eth1 with 2, etc*/
+        snprintf( insert_cmd, MAX_CMD_LEN, MARK_BASE, add_del, _if_names[c], c + 1 );
+        
+        if ( mvutil_system ( insert_cmd ) < 0 ) {
+            perrlog("mvutil_system");
+            if_err = -1;
+        } else {
+            debug(5,"NETCAP: Run Command: '%s' \n", insert_cmd);
+        }
+        
+        /* Build the command for each interface, Mark interface eth0 with 1, eth1 with 2, etc*/
+        snprintf( insert_cmd, MAX_CMD_LEN, UTURN_BASE, add_del, _if_names[c], c+1 );
+        
+        if ( mvutil_system ( insert_cmd ) < 0 ) {
+            perrlog("mvutil_system");
+            if_err = -1;
+        } else {
+            debug(5,"NETCAP: Run Command: '%s' \n", insert_cmd);
+        }
+        
+        if ( _modify_local_marks( _if_names[c], c + 1, if_add ) < 0 ) {
+            errlog( ERR_CRITICAL, "_modify_local_marks\n" );
+        }
+        
 #undef MARK_BASE
   }
-
-  /* Must do this afterwards */
-  if ( if_add == RULES_DEL ) {
-      if ( mvutil_system( "/sbin/iptables -t mangle -D PREROUTING -j " INTERFACE_CHAIN ) < 0 ) {
-          errlog( ERR_CRITICAL, "Unable to remove jump to mark-interface chain\n" );
-      }
-
-      /* Remove the antisubscribe chain */
-      ret = system( "/sbin/iptables -t mangle -X " INTERFACE_CHAIN );
-
-      ret = WEXITSTATUS( ret );
-
-      if ( ret != 0 && ret != 1 ) {
-          return errlog( ERR_CRITICAL, "Unable to remove mark-interface chain '" INTERFACE_CHAIN "(%d)'\n", 
-                         ret );
-      }
-      
-      /* 0 means sucessful, 1 just means the chain already exists */
-      if ( ret != 0 && ret != 1 ) {
-          return errlog( ERR_CRITICAL, "Unable to remove mark-interface chain '" INTERFACE_CHAIN "'\n" );
-      }      
-  }
-
 
   return if_err;
 }
@@ -403,32 +334,35 @@ static int _netcap_interface_disable_srv_conntrack ( int if_add )
 {
     char add_del;
     char insert_cmd[MAX_CMD_LEN];
-    char buf[INET_ADDRSTRLEN];
-    in_addr_t address;
-    in_addr_t netmask;
     
     if ( if_add == RULES_ADD ) {
         add_del = 'A';
     } else {
         add_del = 'D';
     }
+    
+    /* Insert the rule to disable conntracking on all outgoing packets from this program */
+    snprintf( insert_cmd, sizeof( insert_cmd ), "/sbin/iptables -t raw -%c OUTPUT -m mark -j NOTRACK "
+              "--mark " MARK_S_MASK_NOTRACK, add_del );
 
-    if ( _get_interface_address( "br0", &address, &netmask ) < 0 ) {
-        return errlog( ERR_CRITICAL, "_get_interface_address\n" );
-    }
-        
-    if ( !inet_ntop( AF_INET, &address, buf, sizeof( buf ))) return perrlog("inet_ntop");
-    
-    /* Insert the rule to disable conntracking on server side connections */
-    snprintf(insert_cmd, MAX_CMD_LEN, "/sbin/iptables -t raw -%c OUTPUT ! --source %s -j NOTRACK", 
-             add_del, buf);
-    
     if ( mvutil_system ( insert_cmd ) < 0 ) {
         return perrlog("mvutil_system");
     } else {
-           debug(5,"NETCAP: Run Command: '%s' \n", insert_cmd); 
-    } 
-    
+        debug( 5, "NETCAP: Run Command: '%s' \n", insert_cmd );
+    }
+
+    /* Antisubscribe all packets that are related to sessions initiated at the box */
+    snprintf( insert_cmd, sizeof( insert_cmd ), 
+              "/sbin/iptables -t mangle -%c antisub -p ! tcp -m state -m mark -j MARK "
+              " ! --mark " MARK_S_MASK_ANTISUB " --state related,established  --set-mark " 
+              MARK_S_ANTISUB, add_del );
+
+    if ( mvutil_system ( insert_cmd ) < 0 ) {
+        return perrlog("mvutil_system");
+    } else {
+        debug( 5, "NETCAP: Run Command: '%s' \n", insert_cmd );
+    }
+
     return 0;
 }
 
@@ -535,11 +469,10 @@ int _command_port_guard( netcap_intf_t gate, int protocol, char* ports, char* gu
     iptables_cmd_t cmd;
     char* protocol_str;
     char  action;
-    char  gate_str[45];
+    int   mark      = MARK_LOCAL;
+    int   mark_mask = MARK_LOCAL;
     char  ports_str[100] = "";
-    char  host_str[INET_ADDRSTRLEN];
     char  guests_str[100] = "";
-    in_addr_t address, netmask;
 
     if ( protocol == IPPROTO_TCP ) {
         protocol_str = "tcp";
@@ -549,25 +482,17 @@ int _command_port_guard( netcap_intf_t gate, int protocol, char* ports, char* gu
         return errlog( ERR_CRITICAL, "Invalid protocol: %d\n", protocol );
     }
     
-    if ( gate == NC_INTF_UNK ) {
-        gate_str[0] = '\0';
-    } else {
-        char intf_name[NETCAP_MAX_IF_NAME_LEN];
-        if ( netcap_interface_intf_to_string( gate, intf_name, sizeof( intf_name )) < 0 ) {
-            return errlog( ERR_CRITICAL, "netcap_interface_intf_to_string\n" );
+    if ( gate != NC_INTF_UNK ) {
+        if ( _check_intf( gate ) < 0 ) {
+            return errlog( ERR_CRITICAL, "_check_intf\n" );
         }
-
-        snprintf( gate_str, sizeof( gate_str ), "-m physdev --physdev-in %s", intf_name );
+        
+        mark_mask |= NETCAP_MARK_INTF_MASK;
+        mark      |= gate;
     }
         
-
-    if ( _get_interface_address( "br0", &address, &netmask ) < 0 ) {
-        return errlog( ERR_CRITICAL, "_get_interface_address\n" );
-    }
-
-    if ( !inet_ntop( AF_INET, &address, host_str, sizeof( host_str ))) 
-        return perrlog("inet_ntop");
     
+    /* XXX Must be able to specify a particular address eg br0 or br0:0 */
     if ( ports != NULL ) {
         /* [ is a secret code for passing a range */
         if ( ports[0] == '[' ) {
@@ -580,15 +505,11 @@ int _command_port_guard( netcap_intf_t gate, int protocol, char* ports, char* gu
     if ( guests != NULL ) {
         snprintf( guests_str, sizeof( guests_str ), " -s ! %s ", guests );
     }
-
-    if ( if_add == RULES_ADD ) {
-        action = 'A';
-    } else {
-        action = 'D';
-    }
     
-    snprintf( cmd.cmd, sizeof( iptables_cmd_t ), PORT_GUARD_CMD, action, protocol_str, host_str,
-              guests_str, gate_str, ports_str );
+    action = ( if_add == RULES_ADD ) ? 'A' : 'D';
+    
+    snprintf( cmd.cmd, sizeof( iptables_cmd_t ), PORT_GUARD_CMD, action, protocol_str, mark, mark_mask,
+              guests_str, ports_str );
 
     debug( 3, "Inserting guard command: '%s'\n", cmd.cmd );
     
@@ -610,20 +531,11 @@ int  netcap_interface_mark_to_intf(int nfmark, netcap_intf_t* intf)
     
     if ( nfmark < 0 || nfmark > NETCAP_MARK_INTF_MAX ) {
         *intf = 0;
-        return perrlog("Invalid interface mark");
+        return errlog( ERR_CRITICAL, "Invalid interface mark\n");
     }
 
     /* Map the marking to the corresponding interface */
     *intf = nfmark;
-    
-    return 0;
-}
-
-static __inline__ int _check_intf( netcap_intf_t intf )
-{
-    if ( intf < NC_INTF_0 || intf > _if_count ) {
-        return errlog( ERR_CRITICAL, "Invalid interface: %d\n", intf );
-    }
     
     return 0;
 }
@@ -804,6 +716,74 @@ void netcap_interface_ht_init (void) {
     _if_count = j;
 }
 
+static int _interface_update_addrs( void )
+{
+    struct ifconf conf;
+    struct ifreq interfaces[NETCAP_MAX_INTERFACES];
+    int i, ret = 0;
+    int sockfd;
+    
+    debug( 1, "Updating interface addresses\n" );
+        
+    /* XXX Have to make sure to close this socket */
+    if (( sockfd = socket( PF_INET, SOCK_DGRAM, 0 )) < 0 ) return perrlog( "socket" );
+    
+    do {
+        conf.ifc_len = sizeof( interfaces );
+        conf.ifc_req = interfaces;
+        if ( ioctl( sockfd,SIOCGIFCONF,&conf ) < 0 ) {
+            ret = perrlog("ioctl");
+            break;
+        }
+        
+        i =  conf.ifc_len / sizeof(struct ifreq);
+        _num_if = 0;
+        
+        for ( ; ( --i >= 0 ) && ( ret == 0 ) ; ) {
+            struct in_addr addr;
+            struct in_addr broadcast;
+            struct in_addr netmask;
+            struct ifreq ifr;
+            
+            memcpy(&addr,&(*(struct sockaddr_in*)&interfaces[i].ifr_addr).sin_addr,sizeof(struct in_addr));
+            
+            strncpy(ifr.ifr_name, interfaces[i].ifr_name, sizeof(interfaces[i].ifr_name));
+            
+            if (ioctl(sockfd, SIOCGIFBRDADDR, &ifr) < 0) {
+                ret = perrlog("ioctl");
+                break;
+            } else {
+                broadcast = (*(struct sockaddr_in*)&ifr.ifr_broadaddr).sin_addr; 
+            }
+            
+            if (ioctl(sockfd, SIOCGIFNETMASK, &ifr) < 0) {
+                ret = perrlog("ioctl");
+                break;
+            } else {
+                netmask = (*(struct sockaddr_in*)&ifr.ifr_netmask).sin_addr;
+            }
+            
+            if ( addr.s_addr != inet_addr("127.0.0.1")) {
+                debug(4,"Interface : %i\n",_num_if);
+                debug(4,"IP        : %s\n",inet_ntoa(addr));
+                debug(4,"Netmask   : %s\n",inet_ntoa(netmask));
+                debug(4,"Broadcast : %s\n",inet_ntoa(broadcast));
+                
+                _if_addrs[_num_if]    = addr.s_addr;
+                _broadcasts[_num_if]  = broadcast.s_addr;
+                _netmasks[_num_if]    = netmask.s_addr;
+                
+                _num_if++;            
+            }
+        }
+    } while ( 0 );
+
+    if ( close( sockfd ) < 0 ) 
+        return perrlog( "close" );
+    
+    return ret;
+}
+
 static int _get_interface_address ( char* interface_name, in_addr_t* address, in_addr_t* netmask )
 {
     int sockfd, ret = 0;
@@ -826,6 +806,41 @@ static int _get_interface_address ( char* interface_name, in_addr_t* address, in
     if ( close ( sockfd )  < 0 ) return perrlog( "close" );
     
     return ret;
+}
+
+/* Setup or reomve all of the locally destined packets */
+static int _modify_local_marks( char* intf_name, int intf_mark, int if_add )
+{
+    int c;
+    char add_del;
+    char insert_cmd[MAX_CMD_LEN];
+    int mark;
+
+    add_del = ( if_add == RULES_ADD ) ? 'A' : 'D';
+
+/* XXXX This is somewhat of a hack since we cannot modify part of the mark, 
+ * if we could then you would just need one rule per address.
+ * Instead we have to create all combinations of addresses and interfaces
+ */
+#define LOCAL_MARK_BASE "/sbin/iptables -t mangle -%c " INTERFACE_CHAIN " -m physdev " \
+                  " --destination %s --physdev-in %s -j MARK --set-mark %d"
+    for ( c = 0 ; c < _num_if ; c++ ) {
+        mark = intf_mark | MARK_LOCAL | (( c + 1 ) << MARK_LOCAL_OFFSET);
+        /* Build the command for each interface, Mark interface eth0 with 1, eth1 with 2, etc*/
+        if ( snprintf( insert_cmd, sizeof( insert_cmd ), LOCAL_MARK_BASE, add_del, 
+                       unet_inet_ntoa( _if_addrs[c]), intf_name, mark ) < 0 ) {
+            return perrlog( "snprintf" );
+        }
+      
+      if ( mvutil_system ( insert_cmd ) < 0 ) {
+          return perrlog("mvutil_system");
+      } else {
+          debug(5,"NETCAP: Run Command: '%s' \n", insert_cmd);
+      }
+
+    }
+    
+    return 0;
 }
 
 

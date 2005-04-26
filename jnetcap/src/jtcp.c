@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: jtcp.c,v 1.11 2005/02/10 07:12:30 rbscott Exp $
+ *  $Id$
  */
 
 #include <jni.h>
@@ -16,7 +16,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include <linux/ip.h>
+#include <netinet/ip.h>
 #include <signal.h>
 
 #include <libnetcap.h>

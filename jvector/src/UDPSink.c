@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: UDPSink.c,v 1.4 2005/01/27 04:56:29 rbscott Exp $
+ * $Id$
  */
 
 #include <jni.h>
@@ -28,6 +28,8 @@
 
 #include "jni_header.h"
 #include "jvector.h"
+#include "jerror.h"
+
 
 #include JH_UDPSink
 
@@ -69,7 +71,7 @@ JNIEXPORT jint JNICALL JF_UDPSink( create )
 
 JNIEXPORT jint JNICALL JF_UDPSink( write )
     ( JNIEnv *env, jobject _this, jint pointer, jbyteArray _data, jint offset, jint size,
-      jint ttl, jint tos, jbyteArray options )
+      jint ttl, jint tos, jbyteArray options, jboolean is_udp )
 {
     jbyte* data;
     int number_bytes = 0;
@@ -92,17 +94,24 @@ JNIEXPORT jint JNICALL JF_UDPSink( write )
         /* XXX Should these errors return */
         errlog( ERR_WARNING, "Requested %d write with a buffer of size %d\n", size, data_len );
     } else if ( offset > size ) {
-        errlog( ERR_WARNING, "Requesetd %d offset with a buffer of size %d\n", offset, size );
+        errlog( ERR_WARNING, "Requested %d offset with a buffer of size %d\n", offset, size );
     }  else { 
         data_len = size - offset;
     }
 
     if ( ttl != JN_UDPSink( DISABLED )) pkt->ttl = ttl;
     if ( tos != JN_UDPSink( DISABLED )) pkt->tos = tos;
-
+    
     /* XXX options */
-
-    if (( number_bytes = netcap_udp_send( data, data_len, pkt )) < 0 ) perrlog( "netcap_udp_send" );
+    if  ( is_udp == JNI_TRUE ) {
+        if (( number_bytes = netcap_udp_send( data, data_len, pkt )) < 0 ) {
+            perrlog( "netcap_udp_send" );
+        }
+    } else { 
+        if (( number_bytes = netcap_icmp_send( data, data_len, pkt )) < 0 ) {
+            perrlog( "netcap_icmp_send" );
+        }
+    }
 
     (*env)->ReleaseByteArrayElements( env, _data, data, 0 );
 

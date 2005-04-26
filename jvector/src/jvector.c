@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: jvector.c,v 1.15 2005/01/31 01:15:12 rbscott Exp $
+ * $Id$
  */
 
 #include <jni.h>
@@ -598,6 +598,7 @@ static event_t*          _source_get_event    ( source_t* src )
     case JN_Crumb( TYPE_SHUTDOWN ): event_type = EVENT_BASE_SHUTDOWN; /*fallthrough*/
 
     case JN_Crumb( TYPE_UDP_PACKET ): /*fallthrough*/
+    case JN_Crumb( TYPE_ICMP_PACKET ): /*fallthrough*/        
     case JN_Crumb( TYPE_DATA ):
         if (( jv_event = jvector_event_create()) == NULL )
             return errlog_null( ERR_CRITICAL, "jvector_event_create\n" );

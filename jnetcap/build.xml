@@ -55,6 +55,7 @@ $Id: build.xml,v 1.7 2005/03/22 01:27:49 inieves Exp $
       <class name="com.metavize.jnetcap.InterfaceSet"/> 
       <class name="com.metavize.jnetcap.Netcap"/>
       <class name="com.metavize.jnetcap.IPTraffic"/>
+      <class name="com.metavize.jnetcap.ICMPTraffic"/>
       <class name="com.metavize.jnetcap.NetcapUDPSession"/>
       <class name="com.metavize.jnetcap.NetcapSession"/>
       <class name="com.metavize.jnetcap.SubscriptionGenerator"/>

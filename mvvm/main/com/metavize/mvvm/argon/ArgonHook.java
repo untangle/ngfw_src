@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: ArgonHook.java,v 1.40 2005/02/10 00:44:54 rbscott Exp $
+ *  $Id$
  */
 
 package com.metavize.mvvm.argon;
@@ -42,7 +42,7 @@ public abstract class ArgonHook implements Runnable
      */
     protected List pipeline;
     protected List<Session> sessionList = new ArrayList<Session>();
-    
+    protected List<Session> releasedSessionList = new ArrayList<Session>();
 
     protected Source clientSource;
     protected Sink   clientSink;
@@ -122,7 +122,7 @@ public abstract class ArgonHook implements Runnable
                 if ( logger.isDebugEnabled())
                     logger.debug( "Finished vectoring for session: " + sessionGlobalState );
             } else {
-                logger.error( "Dead session, skipping vectoring: " + sessionGlobalState );
+                logger.info( "Session rejected by transform, skipping vectoring: " + sessionGlobalState );
             }
 
             /* Must raze sessions all sessions in the session list */
@@ -213,7 +213,7 @@ public abstract class ArgonHook implements Runnable
             break;
 
         case IPNewSessionRequest.REJECTED_SILENT:
-            logger.warn( "Rejecting session silently" );
+            logger.debug( "Rejecting session silently" );
             clientRejectSilent();
             return;
 
@@ -224,6 +224,19 @@ public abstract class ArgonHook implements Runnable
 
     protected void buildPipeline() {
         LinkedList relayList = new LinkedList();
+
+        /* Remove all non-vectored sessions, it is non-efficient to iterate the session
+         * list twice, but the list is typically small and this logic may get very complex
+         * otherwise */
+        for ( Iterator<Session> iter = sessionList.iterator(); iter.hasNext() ; ) {
+            Session session = iter.next();
+            if ( !session.isVectored()) {
+                logger.debug( "Removing non-vectored session from the session list" + session );
+                iter.remove();
+                /* Append to the released session list */
+                releasedSessionList.add( session );
+            }
+        }
 
         if ( sessionList.isEmpty() ) {
             if ( state == IPNewSessionRequest.ENDPOINTED ) {
@@ -293,6 +306,23 @@ public abstract class ArgonHook implements Runnable
 
         switch ( request.state()) {
         case IPNewSessionRequest.RELEASED:
+            if ( session == null ) {
+                /* Released sessions don't need a session, but for those that redirects may
+                 * modify session parameters */
+                break;
+            }
+            
+            if ( session.isVectored()) {
+                throw new IllegalStateException( "Released session trying to vector: " + request.state());
+            }
+           
+            if ( logger.isDebugEnabled())
+                logger.debug( "Adding released session: " + session );
+
+            
+            /* Add to the session list, and then move it in buildPipeline,
+             * this way, any modifications to the session will occur in order */
+            sessionList.add( session );
             break;
 
         case IPNewSessionRequest.ENDPOINTED:
@@ -333,6 +363,12 @@ public abstract class ArgonHook implements Runnable
             session.raze();
         }
 
+        for ( Iterator iter = releasedSessionList.iterator() ; iter.hasNext() ; ) {
+            SessionImpl session = (SessionImpl)iter.next();
+            /* Raze all of the released sessions */
+            session.raze();
+        }
+
         if ( clientSource != null ) clientSource.raze();
         if ( clientSink   != null ) clientSink.raze();
         if ( serverSource != null ) serverSource.raze();
@@ -358,7 +394,12 @@ public abstract class ArgonHook implements Runnable
 
         for ( ListIterator<Session> iter = sessionList.listIterator( size ) ; iter.hasPrevious(); ) {
             SessionImpl session = (SessionImpl)iter.previous();
-
+            
+            if ( !session.isVectored ) {
+                logger.debug( "vectorReset: skipping non-vectored session" );
+                continue;
+            }
+            
             session.serverIncomingSocketQueue.add( reset );
 
             /* Make sure the guardian didn't leave a crumb in the queue */

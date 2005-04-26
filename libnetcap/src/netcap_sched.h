@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: netcap_sched.h,v 1.1 2004/11/09 19:40:00 dmorris Exp $
+ * $Id$
  */
 
 #ifndef _NETCAP_SCHED_H_

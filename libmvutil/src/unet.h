@@ -1,4 +1,4 @@
-/* $Id: unet.h,v 1.4 2005/01/27 04:52:18 rbscott Exp $ */
+/* $Id$ */
 #ifndef __UNET_H
 #define __UNET_H
 
@@ -109,16 +109,23 @@ int     unet_reset( int sock );
  */
 int     unet_reset_and_close (int sock);
 
-/**
- * Start an inet_ntoa loop.  Call this function the first time it is used in a debug
- * statement, and then on subsequent calls you call unet_next_inet_ntoa.  This way you can
- * call inet_ntoa up to NTOA_BUF_COUNT times in the same print or debug statement without
- * getting the same buffer.  
- * eg. printf( "%s -> %s", unet_inet_ntoa( cli_addr ), unet_next_inet_ntoa( srv_addr ))
- * will work properly.
- */
 #define NTOA_BUF_COUNT 16
 char*   unet_inet_ntoa (in_addr_t addr);
+
+/**
+ * Start an inet_ntoa loop.  Call unet_reset_inet_ntoa before calling unet_next_inet_ntoa.
+ * statement, and then call unet_next_inet_ntoa up to NTOA_BUF_COUNT times..  This way you can
+ * call inet_ntoa up to NTOA_BUF_COUNT times in the same print or debug statement without
+ * getting the same buffer.  Do not combine unet_inet_ntoa and unet_next_inet_ntoa, since C
+ * does not guarantee the order that arguments are evaluated.
+ * 
+ * eg. 
+ * unet_reset_inet_ntoa();
+ * printf( "%s -> %s", unet_next_inet_ntoa( cli_addr ), unet_next_inet_ntoa( srv_addr ));
+ * will work properly.
+ */
+void    unet_reset_inet_ntoa( void );
+
 
 char*   unet_next_inet_ntoa( in_addr_t addr );
 
@@ -131,6 +138,11 @@ u_int16_t unet_in_cksum (u_int16_t *addr, int len);
  * computes the TCP checksum
  */
 u_int16_t unet_tcp_sum_calc ( u_int16_t len_tcp, u_int8_t src_addr[], u_int8_t dest_addr[], u_int8_t buff[] );
+
+/**
+ * computes the UDP checksum
+ */
+u_int16_t unet_udp_sum_calc ( u_int16_t len_udp, u_int8_t src_addr[], u_int8_t dest_addr[], u_int8_t buff[] );
 
 /**
  * Disable blocking on a filedescriptor

@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: test1.c,v 1.8 2004/11/25 02:57:52 dmorris Exp $
+ * $Id$
  */
 #include <libvector.h>
 

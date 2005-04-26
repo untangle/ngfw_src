@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: netcap_rdr.c,v 1.8 2005/01/28 08:51:19 rbscott Exp $
+ * $Id$
  */
 #include "netcap_rdr.h"
 
@@ -371,35 +371,57 @@ static int _rdr_create_iptables (rdr_t* rdr, netcap_traffic_t* traf)
     _netcap_rdr_build_port_dst(dstport_str,"destination");
     
 #define BIN_BASE "%s /sbin/iptables %s"
-#define RULE_BASE " -m mark ! --mark 0x10/0x10 %s%s%s %s%s%s%s "
+#define RULE_BASE " -m mark ! --mark " MARK_S_MASK_ANTISUB " %s%s%s %s%s%s%s "
 #define RULE_BASE_NOMARK " %s%s%s %s%s%s%s "
+#define ANTISUB_RULE_BASE " -m mark --mark %d/%d %s%s%s %s%s%s%s "
     
     if (rdr->flags & NETCAP_FLAG_ANTI_SUBSCRIBE) {
+        /* Don't want to mark things that are already antisubscribed */
+        int mark = 0;
+        int mark_mask = MARK_ANTISUB;
+
+        if ( rdr->flags & NETCAP_FLAG_LOCAL ) {
+            mark |= MARK_LOCAL;
+            mark_mask |= MARK_LOCAL;
+            src_str[0] = '\0';
+            dst_str[0] = '\0';
+        }
+        
         snprintf(rule, MAX_CMD_LEN, 
-                 BIN_BASE" -t mangle -%%c " ANTISUBSCRIBE_CHAIN RULE_BASE " -j MARK --set-mark 0x10",
-                 prefix,"%s",
+                 BIN_BASE" -t mangle -%%c " ANTISUBSCRIBE_CHAIN ANTISUB_RULE_BASE " -j MARK --set-mark " \
+                 MARK_S_ANTISUB,
+                 prefix, "%s", mark, mark_mask,
                  protocol,"%s","",
                  src_str,srcport_str,dst_str,dstport_str);
 
         // Create the two insert and remove rules
         _rdr_create_rules(rule,rdr, IF_INTFSET_TRUE, &traf->cli_intfset);
-
-        /* ANTI subscribes need the reverse rule */
-        _netcap_rdr_build_host_src(src_str,"destination");
-        _netcap_rdr_build_host_dst(dst_str,"source");
         
-        _netcap_rdr_build_port_src(srcport_str,"destination");
-        _netcap_rdr_build_port_dst(dstport_str,"source");
-
-        snprintf(rule, MAX_CMD_LEN, 
-                 BIN_BASE" -t mangle -%%c " ANTISUBSCRIBE_CHAIN RULE_BASE " -j MARK --set-mark 0x10",
-                 prefix,"%s",
-                 protocol,"%s","",
-                 src_str,srcport_str,dst_str,dstport_str);
-
-        // Create the two insert and remove rules
-        _rdr_create_rules(rule,rdr, IF_INTFSET_TRUE, &traf->srv_intfset);
-
+        if (( rdr->flags & NETCAP_FLAG_NO_REVERSE ) == 0 ) {
+            /* ANTI subscribes need the reverse rule */
+            if ( rdr->flags & NETCAP_FLAG_LOCAL ) {
+                mark |= MARK_LOCAL;
+                mark_mask |= MARK_LOCAL;
+                src_str[0] = '\0';
+                dst_str[0] = '\0';
+            } else {
+                _netcap_rdr_build_host_src(src_str,"destination");
+                _netcap_rdr_build_host_dst(dst_str,"source");
+            } 
+            
+            _netcap_rdr_build_port_src(srcport_str,"destination");
+            _netcap_rdr_build_port_dst(dstport_str,"source");
+            
+            snprintf(rule, MAX_CMD_LEN, 
+                     BIN_BASE" -t mangle -%%c " ANTISUBSCRIBE_CHAIN ANTISUB_RULE_BASE " -j MARK --set-mark " \
+                     MARK_S_ANTISUB,
+                     prefix, "%s", mark, mark_mask, 
+                     protocol,"%s","",
+                     src_str,srcport_str,dst_str,dstport_str);
+            
+            // Create the two insert and remove rules
+            _rdr_create_rules(rule,rdr, IF_INTFSET_TRUE, &traf->srv_intfset);
+        }
     }
     else if (traf->protocol == IPPROTO_TCP) {
         /* ??? What should happen here */
@@ -438,11 +460,10 @@ static int _rdr_create_iptables (rdr_t* rdr, netcap_traffic_t* traf)
 
     } else if (traf->protocol == IPPROTO_UDP) {
         snprintf(rule,MAX_CMD_LEN,
-                 BIN_BASE" -t mangle -%%c PREROUTING "RULE_BASE" -j DIVERT --to-port %i",
+                 BIN_BASE" -t mangle -%%c PREROUTING "RULE_BASE" -j QUEUE",
                  prefix,"%s",
                  protocol,"%s","",
-                 src_str,srcport_str,dst_str,dstport_str,
-                 rdr->port_min );
+                 src_str,srcport_str,dst_str,dstport_str );
         
         _rdr_create_rules(rule, rdr, IF_INTFSET_TRUE, &traf->cli_intfset);
         
@@ -453,17 +474,16 @@ static int _rdr_create_iptables (rdr_t* rdr, netcap_traffic_t* traf)
         _netcap_rdr_build_port_dst(dstport_str,"source");
         
         snprintf(rule,MAX_CMD_LEN,
-                 BIN_BASE" -t mangle -%%c PREROUTING "RULE_BASE" -j DIVERT --to-port %i",
+                 BIN_BASE" -t mangle -%%c PREROUTING "RULE_BASE" -j QUEUE",
                  prefix,"%s",
                  protocol,"%s","",
-                 src_str,srcport_str,dst_str,dstport_str,
-                 rdr->port_min );
+                 src_str,srcport_str,dst_str,dstport_str );
         
         _rdr_create_rules(rule, rdr, IF_INTFSET_TRUE, &traf->srv_intfset);
         
     } else if (traf->protocol == IPPROTO_ICMP) {
         snprintf(rule,MAX_CMD_LEN,
-                 BIN_BASE" -t filter -%%c FORWARD "RULE_BASE" -j QUEUE",
+                 BIN_BASE" -t mangle -%%c PREROUTING "RULE_BASE" -j QUEUE",
                  prefix,"%s",
                  protocol,"%s","",
                  src_str,"",dst_str,"");

@@ -1,4 +1,4 @@
-/* $Id: unet.c,v 1.5 2005/01/27 04:52:18 rbscott Exp $ */
+/* $Id$ */
 #include "unet.h"
 
 #include <string.h>
@@ -33,6 +33,8 @@ static u_short next_port_udp = START_PORT;
 static void _close_socks( int count, int* fds );
 
 static int _unet_startlisten (struct sockaddr_in* addr);
+
+static u16 _unet_sum_calc ( u16 len, u8 src_addr[],u8 dest_addr[], u8 buff[], u8 proto );
 
 static __inline__ int _unet_blocking_modify( int fd, int if_blocking )
 {
@@ -386,6 +388,11 @@ static __thread struct {
     .current = 0
 };
 
+void    unet_reset_inet_ntoa( void )
+{
+    _ntoa.current = 0;
+}
+
 char*   unet_inet_ntoa (in_addr_t addr)
 {
     _ntoa.current = 0;
@@ -440,7 +447,17 @@ u16     unet_in_cksum ( u16* addr, int len)
 	return(answer);
 }
 
+u16     unet_udp_sum_calc ( u16 len_udp, u8 src_addr[],u8 dest_addr[], u8 buff[] )
+{
+    return _unet_sum_calc( len_udp, src_addr, dest_addr, buff, IPPROTO_UDP );
+}
+
 u16     unet_tcp_sum_calc ( u16 len_tcp, u8 src_addr[],u8 dest_addr[], u8 buff[] )
+{
+    return _unet_sum_calc( len_tcp, src_addr, dest_addr, buff, IPPROTO_TCP );
+}
+
+static u16 _unet_sum_calc ( u16 len, u8 src_addr[],u8 dest_addr[], u8 buff[], u8 proto )
 {
     u16 word16;
     u32 sum;	
@@ -448,10 +465,17 @@ u16     unet_tcp_sum_calc ( u16 len_tcp, u8 src_addr[],u8 dest_addr[], u8 buff[]
 	
 	sum=0;
 
-	for (i=0;i<len_tcp;i=i+2){
+    /* Handle the case where the length is odd */
+	for ( i = 0 ; i < ( len & (~1)) ; i += 2 ) {
 		word16 =((buff[i]<<8)&0xFF00)+(buff[i+1]&0xFF);
 		sum = sum + word16;
-	}	
+	}
+    
+    /* If it is an odd length, pad properly */
+    if ( len & 1 ) {
+        word16 = ( buff[i] << 8) & 0xFF00;
+        sum+= word16;
+    }
 
 	for (i=0;i<4;i=i+2){
 		word16 =((src_addr[i]<<8)&0xFF00)+(src_addr[i+1]&0xFF);
@@ -461,7 +485,7 @@ u16     unet_tcp_sum_calc ( u16 len_tcp, u8 src_addr[],u8 dest_addr[], u8 buff[]
 		word16 =((dest_addr[i]<<8)&0xFF00)+(dest_addr[i+1]&0xFF);
 		sum = sum + word16; 	
 	}
-	sum = sum + IPPROTO_TCP + len_tcp;
+	sum = sum + proto + len;
 
     while (sum>>16)
 		sum = (sum & 0xFFFF)+(sum >> 16);

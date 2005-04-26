@@ -6,10 +6,12 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: UDPSession.java,v 1.5 2005/01/07 01:23:55 jdi Exp $
+ *  $Id$
  */
 
 package com.metavize.mvvm.tapi;
+
+import java.nio.ByteBuffer;
 
 /**
 * A UDPSession is 
@@ -72,4 +74,10 @@ public interface UDPSession extends UDPSessionDesc, IPSession {
      * will be sent immediately, before any already-queued packets.
      */
     void expireServer();
+
+    void sendClientPacket(ByteBuffer packet, IPPacketHeader header);
+    void sendServerPacket(ByteBuffer packet, IPPacketHeader header);
+
+    void sendClientError(byte icmpType, byte icmpCode, ByteBuffer icmpData, IPPacketHeader header);
+    void sendServerError(byte icmpType, byte icmpCode, ByteBuffer icmpData, IPPacketHeader header);
 }

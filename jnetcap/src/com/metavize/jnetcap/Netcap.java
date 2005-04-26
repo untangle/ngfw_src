@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: Netcap.java,v 1.24 2005/02/26 02:36:03 rbscott Exp $
+ *  $Id$
  */
 
 package com.metavize.jnetcap;
@@ -257,6 +257,26 @@ public final class Netcap {
     public static native int unregisterTCPHook();
     
     /**
+     * Update an ICMP error packet to contain the data in a cached message.
+     * @return - New length of the ICMP packet.
+     */
+    public static int updateIcmpPacket( byte[] data, int len, int icmpType, int icmpCode, 
+                                        ICMPMailbox icmpMailbox )
+    {
+        return updateIcmpPacket( data, len, icmpType, icmpCode, icmpMailbox.pointer().value());
+    }
+    
+    /**
+     * Fix an ICMP packet
+     * @param len - Length of the current data inside of the buffer
+     * @param icmpType - Type of ICMP packet.
+     * @param icmpCode - Code for the ICMP packet.
+     * @param trafficPointer - Pointer to the traffic structure the packet will go out on
+     */
+    private static native int updateIcmpPacket( byte[] data, int len, int icmpType, int icmpCode, 
+                                                long icmpMailboxPointer );
+    
+    /**
      * Convert a string interface to unique identifer that netcap uses to represent interfaces.</p>
      * @param intf - String containing the interface to convert. (eg. eth0).
      * @return A unique identifier between 1 and MAX_INTERFACES(Inclusive).
@@ -314,4 +334,13 @@ public final class Netcap {
     {
         logger.fatal( o );
     }
+    
+    /* Specialty functions for NAT, DHCP and updating the address */
+    public static native void updateAddress();
+    
+    public static native void enableLocalAntisubscribe();
+    public static native void disableLocalAntisubscribe();
+    
+    public static native void enableDhcpForwarding();
+    public static native void disableDhcpForwarding();
 }

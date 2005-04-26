@@ -20,6 +20,8 @@ import com.metavize.jvector.IncomingSocketQueue;
 import com.metavize.jvector.OutgoingSocketQueue;
 import com.metavize.mvvm.argon.PipelineListener;
 import com.metavize.mvvm.engine.Main;
+import com.metavize.jvector.Crumb;
+import com.metavize.jvector.DataCrumb;
 
 import java.net.InetAddress;
 import org.apache.log4j.*;
@@ -37,7 +39,7 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
 
     protected Dispatcher dispatcher;
 
-    protected List<ByteBuffer>[] bufs2write = new ArrayList[] { null, null };
+    protected List<Crumb>[] crumbs2write = new ArrayList[] { null, null };
     
     protected IPStreamer[] streamer = null;
     
@@ -144,43 +146,63 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
             return OUTBOUND;
     }
 
-    protected ByteBuffer getNextBuf2Send(int side) {
-        List<ByteBuffer> bufs = bufs2write[side];
-        assert bufs != null;
-        ByteBuffer result = bufs.get(0);
+    protected Crumb getNextCrumb2Send(int side) {
+        List<Crumb> crumbs = crumbs2write[side];
+        assert crumbs != null;
+        Crumb result = crumbs.get(0);
         assert result != null;
-        assert result.remaining() > 0 : "Cannot send zero length buffer";
-        int len = bufs.size() - 1;
+        // The following no longer applies since data can be null for ICMP packets: (5/05  jdi) 
+        // assert result.remaining() > 0 : "Cannot send zero length buffer";
+        int len = crumbs.size() - 1;
         if (len == 0) {
             // Check if we sent em all, and if so remove the array.
-            bufs2write[side] = null;
+            crumbs2write[side] = null;
         } else {
-            bufs.remove(0);
+            crumbs.remove(0);
         }
         return result;
     }
 
-    protected void addBufs(int side, ByteBuffer[] new2send)
+    protected void addCrumb(int side, Crumb buf)
     {
-        if (new2send == null || new2send.length == 0)
-            return;
-        for (int i = 0; i < new2send.length; i++)
-            addBuf(side, new2send[i]);
-    }
-
-    protected void addBuf(int side, ByteBuffer buf)
-    {
-        if (buf == null || buf.remaining() == 0)
+        if (buf == null 
+            // The following no longer applies since data can be null for ICMP packets: (5/05  jdi) 
+            // assert result.remaining() > 0 : "Cannot send zero length buffer";
+            //  buf.remaining() == 0
+            )
             // Skip it.
             return;
-
-        List<ByteBuffer> bufs = bufs2write[side];
-
-        if (bufs == null) {
-            bufs = new ArrayList<ByteBuffer>();
-            bufs2write[side] = bufs;
+        OutgoingSocketQueue out;
+        if (side == CLIENT)
+            out = ((com.metavize.mvvm.argon.Session)pSession).clientOutgoingSocketQueue();
+        else
+            out = ((com.metavize.mvvm.argon.Session)pSession).serverOutgoingSocketQueue();
+        if (out == null || out.isClosed()) {
+            String sideName = side == CLIENT ? "client" : "server";
+            error("Ignoring crumb for dead " + sideName + " sink");
+            return;
         }
-        bufs.add(buf);
+
+        List<Crumb> crumbs = crumbs2write[side];
+
+        if (crumbs == null) {
+            crumbs = new ArrayList<Crumb>();
+            crumbs2write[side] = crumbs;
+        }
+        crumbs.add(buf);
+    }
+
+    protected int sendCrumb(Crumb crumb, OutgoingSocketQueue out)
+    {
+        int size = 0;
+        if (crumb instanceof DataCrumb)
+            size = ((DataCrumb)crumb).limit();
+        boolean success = out.write(crumb);
+        if (logger.isDebugEnabled()) {
+            debug("writing " + crumb.type() + " crumb to " + out + ", size: " + size);
+        }
+        assert success;
+        return size;
     }
 
     public void raze()
@@ -207,7 +229,7 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
                 OutgoingSocketQueue oursout = ((com.metavize.mvvm.argon.Session)pSession).serverOutgoingSocketQueue();
                 debug("raze ourcin: " + ourcin +
                       ", ourcout: " + ourcout + ", ourcsin: " + oursin + ", oursout: " + oursout +
-                      "  /  bufs[CLIENT]: " + bufs2write[CLIENT] + ", bufs[SERVER]: " + bufs2write[SERVER]);
+                      "  /  crumbs[CLIENT]: " + crumbs2write[CLIENT] + ", crumbs[SERVER]: " + crumbs2write[SERVER]);
             }
             closeFinal();
         } finally {
@@ -357,7 +379,7 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
         // state calls notifymvpoll() every time.
         if (sout != null && !sout.isEnabled())
             sout.enable();
-        if (sout == null || (sout.isEmpty() && bufs2write[SERVER] == null)) {
+        if (sout == null || (sout.isEmpty() && crumbs2write[SERVER] == null)) {
             if (cin != null && !cin.isEnabled())
                 cin.enable();
         } else {
@@ -366,7 +388,7 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
         }
         if (cout != null && !cout.isEnabled())
             cout.enable();
-        if (cout == null || (cout.isEmpty() && bufs2write[CLIENT] == null)) {
+        if (cout == null || (cout.isEmpty() && crumbs2write[CLIENT] == null)) {
             if (sin != null && !sin.isEnabled())
                 sin.enable();
         } else {
@@ -387,7 +409,7 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
     {
         boolean didSomething = false;
         if (out != null && out.isEmpty()) {
-            if (bufs2write[side] != null) {
+            if (crumbs2write[side] != null) {
                 // Do this first, before checking streamer, so we drain out any remaining buffer.
                 tryWrite(side, out, true);
                 didSomething = true;
@@ -396,7 +418,7 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
                 if (s != null) {
                     // It's the right one.
                     addStreamBuf(side, s);
-                    if (bufs2write[side] != null) {
+                    if (crumbs2write[side] != null) {
                         tryWrite(side, out, true);
                         didSomething = true;
                     }
@@ -432,7 +454,7 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
 
             if (logger.isDebugEnabled()) {
                 debug("write(" + sideName + ") out: " + out +
-                      "   /  bufs, write-queue  " +  bufs2write[side] + ", " + out.numEvents() +
+                      "   /  crumbs, write-queue  " +  crumbs2write[side] + ", " + out.numEvents() +
                       "(" + out.numBytes() + " bytes)" + "   opp-read-queue: " +
                       (ourin == null ? null : ourin.numEvents()));
             }
@@ -487,7 +509,7 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
 
             if (logger.isDebugEnabled()) {
                 debug("read(" + sideName + ") in: " + in +
-                      "   /  opp-write-bufs: " + bufs2write[1 - side] + ", opp-write-queue: " +
+                      "   /  opp-write-crumbs: " + crumbs2write[1 - side] + ", opp-write-queue: " +
                       (ourout == null ? null : ourout.numEvents()));
             }
 
@@ -498,7 +520,7 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
 
             assert streamer == null : "readEvent when streaming";;
 
-            if (ourout == null || (bufs2write[1 - side] == null && ourout.isEmpty())) {
+            if (ourout == null || (crumbs2write[1 - side] == null && ourout.isEmpty())) {
                 tryRead(side, in, true);
                 doWrite(side, otherout);
                 doWrite(1 - side, ourout);
@@ -509,7 +531,7 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
                 }
             } else {
                 error("Illegal State: read(" + sideName + ") in: " + in +
-                      "   /  opp-write-bufs: " + bufs2write[1 - side] + ", opp-write-queue: " +
+                      "   /  opp-write-crumbs: " + crumbs2write[1 - side] + ", opp-write-queue: " +
                       (ourout == null ? null : ourout.numEvents()));
             }
             setupForNormal();
