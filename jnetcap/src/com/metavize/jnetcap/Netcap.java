@@ -180,6 +180,23 @@ public final class Netcap {
         return addr;
     }
 
+    /* 
+     * Block that traffic that would go to the box in the port range that came in on
+     * interface intf
+     */
+    public static void blockIncomingTraffic( int protocol, int intf, Range ports )
+    {
+        blockIncomingTraffic( true, protocol, intf, ports.low(), ports.high());
+    }
+    
+    public static void unblockIncomingTraffic( int protocol, int intf, Range ports )
+    {
+        blockIncomingTraffic( false, protocol, intf, ports.low(), ports.high());
+    }
+
+    private static native void blockIncomingTraffic( boolean isAdd, int protocol, int intf, 
+                                                     int low, int high );
+
     /**
      * Limit traffic to the subnet of the bridge.</p>
      * @param inside - Name of the inside interface.

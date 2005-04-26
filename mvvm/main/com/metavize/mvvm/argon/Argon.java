@@ -37,6 +37,9 @@ public class Argon
     /* Separator inside of properties, cannot use space */
     protected static final String LIST_SEPARATOR = ",";
 
+    /* Range of the ports to use for DHCP traffic */
+    protected static final Range DHCP_PORT_RANGE = new Range( 67, 68 );
+
     /* Whether or not to subscribe to local traffic */
     protected static boolean ifLocal = false;
     
@@ -63,6 +66,7 @@ public class Argon
     protected static boolean udpAntisubscribe  = false;
     protected static boolean tcpAntisubscribe  = false;
     protected static boolean dhcpAntisubscribe = true;
+    protected static boolean dhcpBlockOutside  = true;
 
     protected static String guardInside = null;
     
@@ -379,9 +383,14 @@ public class Argon
 
         if ( dhcpAntisubscribe ) {
             /* If necessary antisubscribe on DHCP */
-            gen =  new SubscriptionGenerator( Netcap.IPPROTO_UDP, flags );
-            gen.server().port( new Range( 67, 68 ));
+            gen =  new SubscriptionGenerator( Netcap.IPPROTO_UDP, flags | SubscriptionGenerator.NO_REVERSE );
+            gen.server().port( DHCP_PORT_RANGE );
+            gen.client().port( DHCP_PORT_RANGE );
             subManager.add( gen.subscribe());
+        }
+    
+        if ( dhcpBlockOutside ) {
+            Netcap.blockIncomingTraffic( Netcap.IPPROTO_UDP, IntfConverter.outside(), new Range( 67, 67 ));
         }
     }
 
@@ -470,6 +479,10 @@ public class Argon
         /* Remove all of the guards */
         guardsRemove();
 
+        if ( dhcpBlockOutside ) {
+            Netcap.unblockIncomingTraffic( Netcap.IPPROTO_UDP, IntfConverter.outside(), new Range( 67, 67 ));
+        }
+
         Netcap.cleanup();
     }
 
@@ -477,17 +490,17 @@ public class Argon
     {
         try {
             if ( guardInside != null && !guardInside.equals( "" ))
-                Netcap.stationTcpGuard( IntfConverter.toNetcap( IntfConverter.INSIDE ), guardInside, null );
+                Netcap.stationTcpGuard( IntfConverter.inside(), guardInside, null );
             
             if ( guardOutside != null && !guardOutside.equals( "" ))
-                Netcap.stationTcpGuard( IntfConverter.toNetcap( IntfConverter.OUTSIDE ), guardOutside, null );
+                Netcap.stationTcpGuard( IntfConverter.outside(), guardOutside, null );
             if ( guardOutsideUDP != null && !guardOutsideUDP.equals( "" ))
-                Netcap.stationUdpGuard( IntfConverter.toNetcap( IntfConverter.OUTSIDE ), guardOutsideUDP, null );
+                Netcap.stationUdpGuard( IntfConverter.outside(), guardOutsideUDP, null );
 
 
             for ( Iterator<String[]> iter = guardRegulatedOutside.iterator() ; iter.hasNext(); ) {
                 String[] guard = iter.next();
-                Netcap.stationTcpGuard( IntfConverter.toNetcap( IntfConverter.OUTSIDE ), guard[0], guard[1] );
+                Netcap.stationTcpGuard( IntfConverter.outside(), guard[0], guard[1] );
             }
         } catch ( Exception e ) {
             logger.error( "Unable to insert the guard on outside or inside ports", e );
@@ -499,14 +512,14 @@ public class Argon
         /* Relieve the guard at port 80 on the outside */
         try {
             if ( guardInside != null )
-                Netcap.relieveTcpGuard( IntfConverter.toNetcap( IntfConverter.INSIDE ), guardInside, null );
+                Netcap.relieveTcpGuard( IntfConverter.inside(), guardInside, null );
             
             if ( guardOutside != null )
-                Netcap.relieveTcpGuard( IntfConverter.toNetcap( IntfConverter.OUTSIDE ), guardOutside, null );
+                Netcap.relieveTcpGuard( IntfConverter.outside(), guardOutside, null );
 
             for ( Iterator<String[]> iter = guardRegulatedOutside.iterator() ; iter.hasNext(); ) {
                 String[] guard = iter.next();
-                Netcap.relieveTcpGuard( IntfConverter.toNetcap( IntfConverter.OUTSIDE ), guard[0], guard[1] );
+                Netcap.relieveTcpGuard( IntfConverter.outside(), guard[0], guard[1] );
             }
         } catch ( Exception e ) {
             logger.error( "Unable to relieve the guard on outside or inside ports", e );

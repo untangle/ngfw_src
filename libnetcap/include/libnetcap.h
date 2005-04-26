@@ -477,6 +477,11 @@ int   netcap_subscription_enable_local( void );
 /** Subscribe to all local traffic */
 int   netcap_subscription_disable_local( void );
 
+/* Block or unblock traffic going to certain ports on the input chain.  These are packets that would
+ * go to a server on the local machine */
+int netcap_subscription_block_incoming( int if_add, int protocol, netcap_intf_t intf, 
+                                        int port_low, int port_high );
+
 /**
  * Packet Sending (XXX include pkt_create?)
  */

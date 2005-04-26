@@ -30,15 +30,22 @@ import java.io.Serializable;
 public class IPMatcher implements Serializable
 {
     public static final String MARKER_SUBNET    = "/";
-
+    public static final String MARKER_ANY       = "any";
+    public static final String MARKER_ALL       = "all";
     public static final String MARKER_RANGE     = MatcherStringConstants.RANGE;
     public static final String MARKER_WILDCARD  = MatcherStringConstants.WILDCARD;
+
     private static final String MARKER_NOTHING  = MatcherStringConstants.NOTHING;
 
     
-    public static final IPMatcher MATCHER_ALL = new IPMatcher( 0, 0, false );
+    /* A matcher for all traffic */
+    public static final IPMatcher MATCHER_ALL   = new IPMatcher( 0, 0, false );
+
     /* Use a range that goes backwards for the nil matcher */
-    public static final IPMatcher MATCHER_NIL = new IPMatcher( 1, 0, true );
+    public static final IPMatcher MATCHER_NIL   = new IPMatcher( 1, 0, true );
+
+    /* A range for matching local traffic */
+    public static final IPMatcher MATCHER_LOCAL = new IPMatcher( true );
 
     static final int INADDRSZ = 4;
 
@@ -58,6 +65,11 @@ public class IPMatcher implements Serializable
      * isRange: True if end is used, false if mask is used
      */
     private final boolean isRange;
+
+    /**
+     * isLocal: True if this is a matcher for local traffic 
+     */
+    private final boolean isLocal;
         
     public IPMatcher( Inet4Address base, Inet4Address second, boolean isRange ) 
     {
@@ -66,6 +78,8 @@ public class IPMatcher implements Serializable
 
         this.isRange = isRange;
         tmpBase = toLong( base );
+        
+        isLocal = false;
         
         if ( isRange ) {
             tmpSecond = toLong( second );
@@ -96,6 +110,7 @@ public class IPMatcher implements Serializable
     {
         this.second = this.base = toLong( base );
         isRange     = true;
+        isLocal     = false;
     }
 
     public IPMatcher( IPaddr base )
@@ -109,8 +124,18 @@ public class IPMatcher implements Serializable
         this.base    = base;
         this.second  = second;
         this.isRange = isRange;
+        this.isLocal = false;
     }
     
+    /* Internal for creating local ip matchers */
+    private IPMatcher( boolean isLocal )
+    {
+        this.base    = 0;
+        this.second  = 0;
+        this.isRange = true;
+        this.isLocal = true;
+    }
+
     /**
      * An IPMatcher can be specified in one of the following formats:
      * 1. Just an IP address: (x.y.w.z)
@@ -133,7 +158,8 @@ public class IPMatcher implements Serializable
         } else if ( str.indexOf( MARKER_RANGE ) > 0 ) {
             marker = MARKER_RANGE;
             isRange = true;            
-        } else if ( str.equalsIgnoreCase( MARKER_WILDCARD )) {
+        } else if ( str.equalsIgnoreCase( MARKER_WILDCARD ) || str.equalsIgnoreCase( MARKER_ANY ) ||
+                    str.equalsIgnoreCase( MARKER_ALL )) {
             return MATCHER_ALL;
         } else if ( str.equalsIgnoreCase( MARKER_NOTHING )) {
             return MATCHER_NIL;
@@ -149,13 +175,16 @@ public class IPMatcher implements Serializable
             throw new IllegalArgumentException( "Invalid IPMatcher, more than two components" + str );
         }
         
-        base   = toLong( strArray[0] );
+        base   = toLong( strArray[0].trim());
 
         /* XXX May need to guarantee a valid mask? */
-        second = toLong( strArray[1] );
+        second = toLong( strArray[1].trim());
         
+        /* Swap the values around */
         if ( isRange && ( second < base )) {
-            throw new IllegalArgumentException( "Range with larger second argument than first" );
+            long tmp = second;
+            second = base;
+            base = tmp;
         }
         
         return new IPMatcher( base, second, isRange );
@@ -179,15 +208,19 @@ public class IPMatcher implements Serializable
     {
         /* Check for the wildcard matcher */
         if ( this == MATCHER_ALL || ( !isRange && base == 0 && second == 0 )) {
-            return MARKER_WILDCARD;
+            return MARKER_ANY;
         } else if ( this == MATCHER_NIL || ( isRange && base > second )) {
             return MARKER_NOTHING;
+        }
+        
+        if ( base == second ) {
+            return baseToString();
         }
         
         /* Otherwise, convert to one of the notations */
         String marker = ( isRange ) ? MARKER_RANGE : MARKER_SUBNET;
         
-        return baseToString() + marker + secondToString();
+        return baseToString() + " " + marker + " " + secondToString();
     }
     
     private String baseToString()

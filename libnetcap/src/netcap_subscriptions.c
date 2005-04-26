@@ -124,8 +124,11 @@ int    netcap_redirect_tables_cleanup (void)
 
     /* 0 means sucessful, 1 just means the chain already exists */
     if ( ret != 0 && ret != 1 ) {
-        return errlog( ERR_CRITICAL, "Unable to add interface marking chain '" INTERFACE_CHAIN "'(%d)\n", ret );
+        errlog( ERR_CRITICAL, "Unable to add interface marking chain '" INTERFACE_CHAIN "'(%d)\n", ret );
     }
+    
+    /* DHCP Forwarding has to be reenabled on exit */
+    netcap_subscription_enable_dhcp_forwarding();
 
     return 0;
 }
@@ -374,6 +377,37 @@ int netcap_unsubscribe_all ()
     return 0;
 }
 
+int netcap_subscription_block_incoming( int if_add, int protocol, netcap_intf_t intf, 
+                                        int port_low, int port_high )
+{
+    char add_del = ( if_add == RULES_ADD ) ? 'A' : 'D';
+    char cmd[MAX_CMD_LEN];
+    char* protocol_str = NULL;
+    char intf_str[NETCAP_MAX_IF_NAME_LEN];
+
+    if ( protocol == IPPROTO_UDP ) {
+        protocol_str = "udp";
+    } else if ( protocol == IPPROTO_TCP ) {
+        protocol_str = "tcp";
+    } else {
+        return errlog( ERR_CRITICAL, "Invalid protocol: %d\n", protocol );
+    }
+    
+    if ( netcap_interface_intf_to_string( intf, intf_str, sizeof( intf_str )) < 0 ) {
+        return errlog( ERR_CRITICAL, "Invalid interface: %d\n", intf );
+    }
+    
+    snprintf( cmd, sizeof( cmd ), "/sbin/iptables -t filter -%c INPUT -p %s -j DROP --dport %d:%d "
+              "-m physdev --physdev-in %s", add_del, protocol_str, port_low, port_high, intf_str );
+    
+    if ( mvutil_system( cmd ) < 0 ) {
+        return perrlog( "mvutil_system" );
+    }
+    
+    return 0;
+}
+
+
 
 netcap_sub_t* netcap_subscription_malloc(void)
 {
@@ -529,8 +563,8 @@ static int _modify_dhcp_forwarding( int if_add )
     if ( pthread_mutex_lock( &_subscription.mutex ) < 0 ) return perrlog( "pthread_mutex_lock" );
     
     if ( _subscription.is_dhcp_forwarding_enabled != if_add ) {
-        snprintf( cmd, sizeof( cmd ), "/sbin/iptables -t filter -%c FORWARD -p udp -j DROP --sport 67:68",
-                  add_del );
+        snprintf( cmd, sizeof( cmd ), "/sbin/iptables -t filter -%c FORWARD -p udp -j DROP "
+                  "--dport 67:68 --sport 67:68", add_del );
 
         if ( mvutil_system( cmd ) < 0 ) {
             ret = perrlog( "mvutil_system" );

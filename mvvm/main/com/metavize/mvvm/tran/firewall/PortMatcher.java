@@ -28,6 +28,8 @@ public class PortMatcher implements Serializable
 
     public static final String MARKER_RANGE     = MatcherStringConstants.RANGE;
     public static final String MARKER_WILDCARD  = MatcherStringConstants.WILDCARD;
+    public static final String MARKER_ANY       = "any";
+    public static final String MARKER_ALL       = "all";
     private static final String MARKER_NOTHING  = MatcherStringConstants.NOTHING;
 
     public static final int    PORT_MASK       = 0xFFFF;
@@ -56,17 +58,20 @@ public class PortMatcher implements Serializable
 
     public PortMatcher( int start )
     {
-        this.start = this.end = start & PORT_MASK;
+        this( start, start );
     }
 
     public PortMatcher( int start, int end )
     {
+        start = fixPort( start );
+        end   = fixPort( end );
+        
         if ( start > end ) {
-            this.start = end   & PORT_MASK;
-            this.end   = start & PORT_MASK;
+            this.start = end;
+            this.end   = start;
         } else {
-            this.start = start & PORT_MASK;
-            this.end   = end   & PORT_MASK;
+            this.start = start;
+            this.end   = end;
         }
     }
 
@@ -81,12 +86,16 @@ public class PortMatcher implements Serializable
     public String toString()
     {
         if ( this == MATCHER_ALL || (( start == 0 ) && ( end == PORT_MASK ))) {
-            return MARKER_WILDCARD;
+            return MARKER_ANY;
         } else if ( this == MATCHER_NIL || ( start > end )) {
             return MARKER_NOTHING;
         }
         
-        return "" + start + MARKER_RANGE + end;
+        if ( start == end ) {
+            return "" + start;
+        }
+        
+        return "" + start + " " + MARKER_RANGE + " " + end;
     }
     
     public static PortMatcher parse( String str ) throws IllegalArgumentException
@@ -103,36 +112,32 @@ public class PortMatcher implements Serializable
                 throw new IllegalArgumentException( "Invalid PortMatcher, more than two components" + str );
             }
 
-            start = Integer.parseInt( strArray[0] );
-            
-            /* XXX May need to guarantee a valid mask? */
-            end = Integer.parseInt( strArray[1] );
-
-            if ( start < 0 || start > PORT_MASK ) {
-                throw new IllegalArgumentException( "Invalid PortMatcher, start ( " + start +
-                                                    " ) must be between 0 and " + PORT_MASK );
-            }
-
-            if ( end < 0 || end > PORT_MASK ) {
-                throw new IllegalArgumentException( "Invalid PortMatcher, end ( " + end +
-                                                    " ) must be between 0 and " + PORT_MASK );
-            }
+            start = fixPort( strArray[0] );            
+            end   = fixPort( strArray[1] );
 
             return new PortMatcher( start, end );
-        } else if ( str.equalsIgnoreCase( MARKER_WILDCARD )) {
+        } else if ( str.equalsIgnoreCase( MARKER_WILDCARD ) || str.equalsIgnoreCase( MARKER_ANY ) ||
+                    str.equalsIgnoreCase( MARKER_ALL )) {
             return MATCHER_ALL;
         } else if ( str.equalsIgnoreCase( MARKER_NOTHING )) { 
             return MATCHER_NIL;
         }
-
-        start = Integer.parseInt( str );
         
-        if ( start < 0 || start > PORT_MASK ) {
-            throw new IllegalArgumentException( "Invalid PortMatcher, start ( " + start +
-                                                " ) must be between 0 and " + PORT_MASK );
-        }
+        start = fixPort( str );
         
         /* Just an address a range where the start and end are the same */
         return new PortMatcher( start );
+    }
+
+    static final int fixPort( String port )
+    {        
+        return fixPort( Integer.parseInt( port.trim()));
+    }
+
+    static int fixPort( int port )
+    {
+        port = ( port < 0 ) ? 0 : port;
+        port = ( port > PORT_MASK ) ? PORT_MASK : port;
+        return port;
     }
 }

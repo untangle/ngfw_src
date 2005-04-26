@@ -824,6 +824,7 @@ static int _modify_local_marks( char* intf_name, int intf_mark, int if_add )
  */
 #define LOCAL_MARK_BASE "/sbin/iptables -t mangle -%c " INTERFACE_CHAIN " -m physdev " \
                   " --destination %s --physdev-in %s -j MARK --set-mark %d"
+
     for ( c = 0 ; c < _num_if ; c++ ) {
         mark = intf_mark | MARK_LOCAL | (( c + 1 ) << MARK_LOCAL_OFFSET);
         /* Build the command for each interface, Mark interface eth0 with 1, eth1 with 2, etc*/
@@ -831,14 +832,15 @@ static int _modify_local_marks( char* intf_name, int intf_mark, int if_add )
                        unet_inet_ntoa( _if_addrs[c]), intf_name, mark ) < 0 ) {
             return perrlog( "snprintf" );
         }
-      
-      if ( mvutil_system ( insert_cmd ) < 0 ) {
-          return perrlog("mvutil_system");
-      } else {
-          debug(5,"NETCAP: Run Command: '%s' \n", insert_cmd);
-      }
 
+        if ( mvutil_system ( insert_cmd ) < 0 ) {
+            return perrlog("mvutil_system");
+        } else {
+            debug(5,"NETCAP: Run Command: '%s' \n", insert_cmd);
+        }
     }
+    
+
     
     return 0;
 }
