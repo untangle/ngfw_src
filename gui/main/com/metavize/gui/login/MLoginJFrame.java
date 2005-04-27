@@ -149,7 +149,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
         backgroundJLabel = new com.metavize.gui.widgets.MTiledIconLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Metavize EdgeGuard v1.3 Login");
+        setTitle("Metavize EdgeGuard v" + Util.getVersion() + " Login");
         setIconImage((new javax.swing.ImageIcon( this.getClass().getResource("/com/metavize/gui/icons/LogoNoText16x16.gif"))).getImage());
         setName("loginJFrame");
         setResizable(false);
@@ -584,7 +584,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
                                     else
                                         securedString = " [connected via standard http]";
                                     
-				    mMainJFrame.setTitle( "Metavize EdgeGuard v1.3 (logged in as: " + loginJTextField.getText() + "@" + Util.getServerCodeBase().getHost() + ")" + securedString );
+				    mMainJFrame.setTitle( "Metavize EdgeGuard v" + Util.getVersion() + " (logged in as: " + loginJTextField.getText() + "@" + Util.getServerCodeBase().getHost() + ")" + securedString );
 				    if(Util.getIsDemo())
 					mMainJFrame.setTitle( mMainJFrame.getTitle() + "  [DEMO MODE]" );
 				    mMainJFrame.setExtendedState(Frame.MAXIMIZED_BOTH);

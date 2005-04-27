@@ -28,6 +28,11 @@ import com.metavize.mvvm.client.*;
  * @author  Ian Nieves
  */
 public class Util {
+
+    // VERSION INFO /////////////////
+    private static String version = "1.3";
+    public static String getVersion(){ return version; }
+    /////////////////////////////////
     
     // SERVER PROXIES ///////////////
     private static MvvmContext mvvmContext;
@@ -274,16 +279,23 @@ public class Util {
         GraphicsConfiguration graphicsConfiguration = getGraphicsConfiguration();
 	Insets screenInsets = Toolkit.getDefaultToolkit().getScreenInsets( graphicsConfiguration );
 	int screenHeight = graphicsConfiguration.getBounds().height - screenInsets.top - screenInsets.bottom;
+	//	System.err.println("Determined screen height to be: " + screenHeight);
 	if( screenHeight < attemptedMinHeight)
 	    return screenHeight;
 	else
 	    return attemptedMinHeight;
     }
     
-    public static void resizeCheck(Component resizableComponent, Dimension minSize, Dimension maxSize){
+    public static void resizeCheck(final Component resizableComponent, Dimension minSize, Dimension maxSize){
         
-        Dimension currentSize = new Dimension( resizableComponent.getSize() );
-        // System.err.println("Initial size: " + currentSize);
+        Dimension currentSize = resizableComponent.getSize();
+	/*
+	System.err.println("----------------------");
+        System.err.println("| Initial size: " + currentSize);
+        System.err.println("| Min size: " + minSize);
+        System.err.println("| Max size: " + maxSize);
+	System.err.println("----------------------");
+	*/
         boolean resetSize = false;
         if(currentSize.width < minSize.width){
             currentSize.width = minSize.width;
@@ -302,13 +314,18 @@ public class Util {
             resetSize = true;
         }
         if(resetSize){
-            resizableComponent.setSize(currentSize);
-            //System.err.println(" CHANGE");
+	    //Rectangle rectangle = resizableComponent.getBounds();
+            //resizableComponent.setBounds( rectangle.x, rectangle.y, currentSize.width, currentSize.height);
+	    final Dimension newSize = currentSize;
+	    SwingUtilities.invokeLater( new Runnable() { public void run(){
+		resizableComponent.setSize( newSize );
+		//System.err.println(" SCREEN CHANGE ---> New size: " + newSize);
+	    }});
         }
-        //else{
-        //    System.err.println(" no chg");
-        //}
-        //System.err.println("--->New size: " + currentSize);
+        else{
+            //System.err.println(" NO SCREEN CHANGE");
+        }
+        
     }
 
     public static void handleExceptionNoRestart(String output, Exception e){
