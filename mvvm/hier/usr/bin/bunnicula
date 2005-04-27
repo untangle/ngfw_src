@@ -12,6 +12,8 @@ echo 1  > /proc/sys/net/ipv4/ip_forward
 if [ $? != 0 ] ; then exit 1 ; fi
 echo 1  > /proc/sys/net/ipv4/ip_nonlocal_bind
 if [ $? != 0 ] ; then exit 1 ; fi
+echo "3000   9000" > /proc/sys/net/ipv4/ip_local_port_range
+if [ $? != 0 ] ; then exit 1 ; fi
 
 # Optional
 if [ -f /proc/sys/net/ipv4/tcp_synack_retries ] ; then

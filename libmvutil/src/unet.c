@@ -15,7 +15,7 @@
 #include "errlog.h"
 
 #define __QUEUE_LENGTH 2048
-#define START_PORT 20256
+#define START_PORT 9500
 
 #define PORT_RANGE_ATTEMPS 5
 

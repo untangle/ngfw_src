@@ -50,22 +50,12 @@ class NatEventHandler extends AbstractEventHandler
 
     /* Number of milliseconds to wait in between updating the address and updating the mvvm */
     private static final int SLEEP_TIME = 1000;
-
-    /* XXXXXX This should be 15000 */
-    //private static final int TCP_NAT_PORT_START = 55000;
-    //private static final int TCP_NAT_PORT_END   = 60000;
-
-    /* XXXXXX This should be 15000 */
-    //private static final int UDP_NAT_PORT_START = 55000;
-    //private static final int UDP_NAT_PORT_END   = 60000;
     
-    /* XXXXXXXXXXXXXX Small test range */
-    private static final int TCP_NAT_PORT_START = 55000;
-    private static final int TCP_NAT_PORT_END   = 55100;
+    private static final int TCP_NAT_PORT_START = 10000;
+    private static final int TCP_NAT_PORT_END   = 60000;
 
-    /* XXXXXX This should be 15000 */
-    private static final int UDP_NAT_PORT_START = 55000;
-    private static final int UDP_NAT_PORT_END   = 55100;
+    private static final int UDP_NAT_PORT_START = 10000;
+    private static final int UDP_NAT_PORT_END   = 60000;
 
     /* match to determine whether a session is natted */
     /* XXX Probably need to initialized this with a value */
