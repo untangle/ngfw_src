@@ -172,26 +172,40 @@ class BlockTableModel extends MSortedTableModel{
         List firewallRulesList = new ArrayList();
         FirewallRule firewallRule;
         Vector<Vector> allRows = this.getDataVector();
+        int rowIndex = 0;
         for( Vector rowVector : allRows ){
-            try{
-                if( ((String)rowVector.elementAt(0)).equals(this.ROW_REMOVE) )
-                    continue;
-                firewallRule = new FirewallRule();
-                firewallRule.setLive( (Boolean) rowVector.elementAt(2) );
-                firewallRule.setAction( ((ComboBoxModel) rowVector.elementAt(3)).getSelectedItem().toString() );
-                firewallRule.setProtocol( ProtocolMatcher.parse(((ComboBoxModel) rowVector.elementAt(4)).getSelectedItem().toString()) );
-                firewallRule.setDirection( ((ComboBoxModel) rowVector.elementAt(5)).getSelectedItem().toString() );
-                firewallRule.setSrcAddress( IPMatcher.parse((String) rowVector.elementAt(6)) );
-                firewallRule.setDstAddress( IPMatcher.parse((String) rowVector.elementAt(7)) );
-                firewallRule.setSrcPort( PortMatcher.parse((String) rowVector.elementAt(8)) );
-                firewallRule.setDstPort( PortMatcher.parse((String) rowVector.elementAt(9)) );
-                firewallRule.setCategory( (String) rowVector.elementAt(10) );
-                firewallRule.setDescription( (String) rowVector.elementAt(11) );
-                firewallRulesList.add(firewallRule);
-            }
-            catch(Exception e){
-                Util.handleExceptionNoRestart("Error parsing for save", e);
-            }
+            rowIndex++;
+
+            if( ((String)rowVector.elementAt(0)).equals(this.ROW_REMOVE) )
+                continue;
+            firewallRule = new FirewallRule();
+            firewallRule.setLive( (Boolean) rowVector.elementAt(2) );
+
+            try{ firewallRule.setAction( ((ComboBoxModel) rowVector.elementAt(3)).getSelectedItem().toString() ); }
+            catch(Exception e){ throw new Exception("Action in row: " + rowIndex); }
+
+            try{ firewallRule.setProtocol( ProtocolMatcher.parse(((ComboBoxModel) rowVector.elementAt(4)).getSelectedItem().toString()) ); }
+            catch(Exception e){ throw new Exception("Protocol in row: " + rowIndex); }
+
+            try{ firewallRule.setDirection( ((ComboBoxModel) rowVector.elementAt(5)).getSelectedItem().toString() ); }
+            catch(Exception e){ throw new Exception("Direction in row: " + rowIndex); }
+
+            try{ firewallRule.setSrcAddress( IPMatcher.parse((String) rowVector.elementAt(6)) ); }
+            catch(Exception e){ throw new Exception("Source Address in row: " + rowIndex); }
+
+            try{ firewallRule.setDstAddress( IPMatcher.parse((String) rowVector.elementAt(7)) ); }
+            catch(Exception e){ throw new Exception("Destination Address in row: " + rowIndex); }
+
+            try{ firewallRule.setSrcPort( PortMatcher.parse((String) rowVector.elementAt(8)) ); }
+            catch(Exception e){ throw new Exception("Source Port in row: " + rowIndex); }
+
+            try{ firewallRule.setDstPort( PortMatcher.parse((String) rowVector.elementAt(9)) ); }
+            catch(Exception e){ throw new Exception("Destination Port in row: " + rowIndex); }
+
+            firewallRule.setCategory( (String) rowVector.elementAt(10) );
+            firewallRule.setDescription( (String) rowVector.elementAt(11) );
+            firewallRulesList.add(firewallRule);
+
         }
         
         firewallSettings.setFirewallRuleList(firewallRulesList);

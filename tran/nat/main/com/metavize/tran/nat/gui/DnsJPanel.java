@@ -79,7 +79,6 @@ public class DnsJPanel extends javax.swing.JPanel {
             this.setBackground(BACKGROUND_COLOR);
         }
         
-        boolean isValid = true;
         
         NatSettings natSettings = (NatSettings) settings;
         boolean dnsEnabled;
@@ -93,16 +92,12 @@ public class DnsJPanel extends javax.swing.JPanel {
         else{
             dnsMasqEnabledJRadioButton.setBackground( INVALID_COLOR );
             dnsMasqDisabledJRadioButton.setBackground( INVALID_COLOR );
-            isValid = false;
+            throw new Exception("DNS Forwarding cannot be Enabled and Disabled at the same time.");
         }
 
                 
         // SAVE THE VALUES ////////////////////////////////////
-        if(isValid){
-            natSettings.setDnsEnabled( dnsEnabled );
-        }
-        else
-            throw new Exception();
+        natSettings.setDnsEnabled( dnsEnabled );
         
     }
     

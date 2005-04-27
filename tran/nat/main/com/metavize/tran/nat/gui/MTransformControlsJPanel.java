@@ -10,6 +10,7 @@ import com.metavize.gui.transform.*;
 import com.metavize.gui.pipeline.MPipelineJPanel;
 import com.metavize.gui.widgets.editTable.*;
 import com.metavize.gui.util.*;
+import com.metavize.gui.widgets.dialogs.*;
 
 import java.awt.*;
 import javax.swing.*;
@@ -142,80 +143,36 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
         }  
     }
     
-    public void saveAll() {
-        boolean isValid = true;
-        
+    public void saveAll() {        
         try {
             natJPanel.save( natSettings );
-        }
-        catch(Exception e){
-            isValid = false;
-            Util.handleExceptionNoRestart("Error saving NAT", e);
-        }
-        
-        try {
             dhcpJPanel.save( natSettings );
-        }
-        catch(Exception e){
-            isValid = false;
-            Util.handleExceptionNoRestart("Error saving DHCP Settings", e);
-        }
-        
-        try {
             addressJPanel.save( natSettings );
-        }
-        catch(Exception e){
-            isValid = false;
-            Util.handleExceptionNoRestart("Error saving DHCP Address Map", e);
-        }
-        
-        try {
             redirectJPanel.save( natSettings );
-        }
-        catch(Exception e){
-            isValid = false;
-            Util.handleExceptionNoRestart("Error saving Redirect", e);
-        }
-        
-        try {
             dmzJPanel.save( natSettings );
+            dnsJPanel.save( natSettings );
+            natSettings.validate();
         }
         catch(Exception e){
-            isValid = false;
-            Util.handleExceptionNoRestart("Error saving DMZ", e);
+            new ValidateFailureDialog( super.mTransformJPanel.getTransformContext().getTransformDesc().getDisplayName(), e.getMessage() );
+            return;
         }
+        
         
         try {
-            dnsJPanel.save( natSettings );
+            ((Nat)super.mTransformJPanel.getTransformContext().transform()).setNatSettings( natSettings );
         }
-        catch(Exception e){
-            isValid = false;
-            Util.handleExceptionNoRestart("Error saving DNS", e);
-        }
-
-        if(!isValid){
-            // do something more interesting than this
-        }
-        
-        // VALIDATE ACROSS DIFFERENT PANES /////////
-        ////////////////////////////////////////////
-        try{
-            
-        }
-        catch(Exception e){
-            isValid = false;
-        }
-       
-        if(isValid){
-            try {
-                ((Nat)super.mTransformJPanel.getTransformContext().transform()).setNatSettings( natSettings );
+        catch ( Exception e ) {
+            try{
+                Util.handleExceptionWithRestart("Error saving settings for nat", e);
             }
-            catch ( Exception e ) {
-                Util.handleExceptionNoRestart("Error saving settings for save", e);
+            catch(Exception f){
+                Util.handleExceptionNoRestart("Error saving settings for nat", f);
+                new SaveFailureDialog( super.mTransformJPanel.getTransformContext().getTransformDesc().getDisplayName() );
             }
         }
         
-        // refreshAll();
+        
     }
     
 }

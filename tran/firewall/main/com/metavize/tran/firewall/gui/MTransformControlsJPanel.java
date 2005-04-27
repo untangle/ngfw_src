@@ -10,6 +10,7 @@ import com.metavize.gui.transform.*;
 import com.metavize.gui.pipeline.MPipelineJPanel;
 import com.metavize.gui.widgets.editTable.*;
 import com.metavize.gui.util.*;
+import com.metavize.gui.widgets.dialogs.*;
 
 import java.awt.*;
 import javax.swing.*;
@@ -78,38 +79,33 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
         }  
     }
     
-    public void saveAll() {
-        boolean isValid = true;
-        
+    public void saveAll() {        
         try {
             blockJPanel.save( firewallSettings );
-        }
-        catch(Exception e){
-            isValid = false;
-            Util.handleExceptionNoRestart("Error saving Block", e);
-        }
-        
-        try {
             settingsJPanel.save( firewallSettings );
+            firewallSettings.validate();
         }
         catch(Exception e){
-            isValid = false;
-            Util.handleExceptionNoRestart("Error saving General Settings", e);
+            new ValidateFailureDialog( super.mTransformJPanel.getTransformContext().getTransformDesc().getDisplayName(), e.getMessage() );
+            return;
         }
         
-        if(!isValid){
-            // do something more interesting than this
-        } 
-        else{
-            try {
-                ((Firewall)super.mTransformJPanel.getTransformContext().transform()).setFirewallSettings( firewallSettings );
+
+        try {
+            ((Firewall)super.mTransformJPanel.getTransformContext().transform()).setFirewallSettings( firewallSettings );
+        }
+        catch ( Exception e ) {
+            try{
+                Util.handleExceptionWithRestart("Error saving settings for firewall", e);
             }
-            catch ( Exception e ) {
-                Util.handleExceptionNoRestart("Error saving settings for save", e);
+            catch(Exception f){
+                Util.handleExceptionNoRestart("Error saving settings for firewall", f);
+                new SaveFailureDialog( super.mTransformJPanel.getTransformContext().getTransformDesc().getDisplayName() );
             }
         }
+
         
-        // refreshAll();
+
     }
 
 }

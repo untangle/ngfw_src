@@ -81,7 +81,6 @@ public class SettingsJPanel extends javax.swing.JPanel {
             this.setBackground(BACKGROUND_COLOR);
         }
         
-        boolean isValid = true;
         
         FirewallSettings firewallSettings = (FirewallSettings) settings;
         boolean defaultAccept;
@@ -95,16 +94,13 @@ public class SettingsJPanel extends javax.swing.JPanel {
         else{
             defaultAcceptJRadioButton.setBackground( INVALID_COLOR );
             defaultBlockJRadioButton.setBackground( INVALID_COLOR );
-            isValid = false;
+            throw new Exception("The Default Action cannot be Pass and Block at the same time.");
         }
         
         
         // SAVE THE VALUES ////////////////////////////////////
-        if(isValid){
-            firewallSettings.setDefaultAccept( defaultAccept );
-        }
-        else
-            throw new Exception();
+        firewallSettings.setDefaultAccept( defaultAccept );
+        
         
     }
     

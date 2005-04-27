@@ -143,7 +143,6 @@ public class NatJPanel extends javax.swing.JPanel {
             this.setBackground(BACKGROUND_COLOR);
         }
         
-        boolean isValid = true;
         
         NatSettings natSettings = (NatSettings) settings;
         boolean natEnabled;
@@ -159,7 +158,7 @@ public class NatJPanel extends javax.swing.JPanel {
         else{
             natEnabledJRadioButton.setBackground( INVALID_COLOR );
             natDisabledJRadioButton.setBackground( INVALID_COLOR );
-            isValid = false;
+            throw new Exception("NAT cannot be Enabled and Disabled at the same time.");
         }
         
         // INTERNAL ADDRESS //////
@@ -170,7 +169,7 @@ public class NatJPanel extends javax.swing.JPanel {
             }
             catch(Exception e){
                 internalAddressIPaddrJTextField.setBackground( INVALID_COLOR );
-                isValid = false;
+                throw new Exception("The Internal IP address must be a valid IP address.");
             }
         }
         
@@ -182,18 +181,14 @@ public class NatJPanel extends javax.swing.JPanel {
             }
             catch(Exception e){
                 internalSubnetIPaddrJTextField.setBackground( INVALID_COLOR );
-                isValid = false;
+                throw new Exception("The Internal Subnet must be a valid IP address.");
             }
         }        
         
         // SAVE THE VALUES ////////////////////////////////////
-        if(isValid){
-            natSettings.setNatEnabled( natEnabled );
-            natSettings.setNatInternalAddress( natInternalAddress );
-            natSettings.setNatInternalSubnet( natInternalSubnet );
-        }
-        else
-            throw new Exception();
+        natSettings.setNatEnabled( natEnabled );
+        natSettings.setNatInternalAddress( natInternalAddress );
+        natSettings.setNatInternalSubnet( natInternalSubnet );
         
     }
     

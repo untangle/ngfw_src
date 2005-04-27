@@ -104,7 +104,6 @@ public class DhcpJPanel extends javax.swing.JPanel {
             this.setBackground(BACKGROUND_COLOR);
         }
         
-        boolean isValid = true;
         
         NatSettings natSettings = (NatSettings) settings;
         boolean dhcpIsEnabled;
@@ -120,7 +119,7 @@ public class DhcpJPanel extends javax.swing.JPanel {
         else{
             dhcpEnabledJRadioButton.setBackground( INVALID_COLOR );
             dhcpDisabledJRadioButton.setBackground( INVALID_COLOR );
-            isValid = false;
+            throw new Exception("DHCP cannot be Enabled and Disabled at the same time.");
         }
         
         // DYNAMIC RANGE START //////
@@ -131,7 +130,7 @@ public class DhcpJPanel extends javax.swing.JPanel {
             }
             catch(Exception e){
                 startAddressIPaddrJTextField.setBackground( INVALID_COLOR );
-                isValid = false;
+                throw new Exception("The DHCP Start Address must be a valid IP address.");
             }
         }
         
@@ -143,18 +142,16 @@ public class DhcpJPanel extends javax.swing.JPanel {
             }
             catch(Exception e){
                 endAddressIPaddrJTextField.setBackground( INVALID_COLOR );
-                isValid = false;
+                throw new Exception("The DHCP End Address must be a valid IP address.");
             }
         }        
         
         
         // SAVE THE VALUES ////////////////////////////////////
-        if(isValid){
-            natSettings.setDhcpEnabled( dhcpIsEnabled );
+        natSettings.setDhcpEnabled( dhcpIsEnabled );
+        if(dhcpIsEnabled){
             natSettings.setDhcpStartAndEndAddress(dhcpStartAddress, dhcpEndAddress);
         }
-        else
-            throw new Exception();
         
     }
     
