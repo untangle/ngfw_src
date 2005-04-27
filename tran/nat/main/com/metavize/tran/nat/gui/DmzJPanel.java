@@ -111,15 +111,16 @@ public class DmzJPanel extends javax.swing.JPanel {
         }
         
         // INTERNAL ADDRESS //////
-        try{
-            dmzTargetAddress = IPaddr.parse( targetAddressIPaddrJTextField.getText() );
-            targetAddressIPaddrJTextField.setBackground( Color.WHITE );
-        }
-        catch(Exception e){
-            targetAddressIPaddrJTextField.setBackground( INVALID_COLOR );
-            isValid = false;
-        }
-        
+        if(dmzEnabled){
+            try{
+                dmzTargetAddress = IPaddr.parse( targetAddressIPaddrJTextField.getText() );
+                targetAddressIPaddrJTextField.setBackground( Color.WHITE );
+            }
+            catch(Exception e){
+                targetAddressIPaddrJTextField.setBackground( INVALID_COLOR );
+                isValid = false;
+            }
+        }        
         
         // SAVE THE VALUES ////////////////////////////////////
         if(isValid){
@@ -252,7 +253,7 @@ public class DmzJPanel extends javax.swing.JPanel {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
-        gridBagConstraints.ipadx = 150;
+        gridBagConstraints.ipadx = 125;
         gridBagConstraints.insets = new java.awt.Insets(15, 0, 0, 0);
         externalRemoteJPanel.add(restrictIPJPanel, gridBagConstraints);
 

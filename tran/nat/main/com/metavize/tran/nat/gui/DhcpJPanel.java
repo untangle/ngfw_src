@@ -48,13 +48,6 @@ public class DhcpJPanel extends javax.swing.JPanel {
         boolean dhcpIsEnabled;
         String dhcpStartAddress;
         String dhcpEndAddress;
-        String dhcpGateway;
-        String dhcpSubnet;
-        String dhcpNetwork;
-        boolean dnsIsEnabled;
-        String dhcpNameserver1;
-        String dhcpNameserver2;
-
         
         // DHCP ENABLED ///////////
         try{
@@ -117,12 +110,7 @@ public class DhcpJPanel extends javax.swing.JPanel {
         boolean dhcpIsEnabled;
         IPaddr dhcpStartAddress = null;
         IPaddr dhcpEndAddress = null;
-        IPaddr dhcpGateway = null;
-        IPaddr dhcpSubnet = null;
-        boolean dnsIsEnabled;
-        IPaddr dhcpNameserver1 = null;
-        IPaddr dhcpNameserver2 = null;
-        
+
         // DHCP ENABLED ///////////
         dhcpIsEnabled = dhcpEnabledJRadioButton.isSelected();
         if( dhcpEnabledJRadioButton.isSelected() ^ dhcpDisabledJRadioButton.isSelected() ){
@@ -136,25 +124,28 @@ public class DhcpJPanel extends javax.swing.JPanel {
         }
         
         // DYNAMIC RANGE START //////
-        try{
-            dhcpStartAddress = IPaddr.parse( startAddressIPaddrJTextField.getText() );
-            startAddressIPaddrJTextField.setBackground( Color.WHITE );
-        }
-        catch(Exception e){
-            startAddressIPaddrJTextField.setBackground( INVALID_COLOR );
-            isValid = false;
+        if(dhcpIsEnabled){
+            try{
+                dhcpStartAddress = IPaddr.parse( startAddressIPaddrJTextField.getText() );
+                startAddressIPaddrJTextField.setBackground( Color.WHITE );
+            }
+            catch(Exception e){
+                startAddressIPaddrJTextField.setBackground( INVALID_COLOR );
+                isValid = false;
+            }
         }
         
         // DYNAMIC RANGE END //////
-        try{
-            dhcpEndAddress = IPaddr.parse( endAddressIPaddrJTextField.getText() );
-            endAddressIPaddrJTextField.setBackground( Color.WHITE );
-        }
-        catch(Exception e){
-            endAddressIPaddrJTextField.setBackground( INVALID_COLOR );
-            isValid = false;
-        }
-        
+        if(dhcpIsEnabled){
+            try{
+                dhcpEndAddress = IPaddr.parse( endAddressIPaddrJTextField.getText() );
+                endAddressIPaddrJTextField.setBackground( Color.WHITE );
+            }
+            catch(Exception e){
+                endAddressIPaddrJTextField.setBackground( INVALID_COLOR );
+                isValid = false;
+            }
+        }        
         
         
         // SAVE THE VALUES ////////////////////////////////////
@@ -320,7 +311,7 @@ public class DhcpJPanel extends javax.swing.JPanel {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
-        gridBagConstraints.ipadx = 150;
+        gridBagConstraints.ipadx = 125;
         gridBagConstraints.insets = new java.awt.Insets(15, 0, 0, 0);
         dynamicRangeJPanel.add(restrictIPJPanel, gridBagConstraints);
 

@@ -94,22 +94,22 @@ public class NatJPanel extends javax.swing.JPanel {
         // INTERNAL NETWORK ///////
         try{
             natInternalNetwork = IPaddr.and(natSettings.getNatInternalAddress(), natSettings.getNatInternalSubnet()).toString();
-            internalNetworkJTextField.setText( natInternalNetwork );
-            internalNetworkJTextField.setBackground( Color.WHITE );
+            internalNetworkJLabel.setText( natInternalNetwork );
+            internalNetworkJLabel.setBackground( BACKGROUND_COLOR );
         }
         catch(Exception e){
-            internalNetworkJTextField.setBackground( INVALID_COLOR );
+            internalNetworkJLabel.setBackground( INVALID_COLOR );
             isValid = false;
         }
         
         // EXTERNAL ADDRESS ///////
         try{
             natExternalAddress = Util.getMvvmContext().networkingManager().get().host().toString();
-            externalAddressJTextField.setText( natExternalAddress );
-            externalAddressJTextField.setBackground( Color.WHITE );
+            externalAddressJLabel.setText( natExternalAddress );
+            externalAddressJLabel.setBackground( BACKGROUND_COLOR );
         }
         catch(Exception e){
-            externalAddressJTextField.setBackground( INVALID_COLOR );
+            externalAddressJLabel.setBackground( INVALID_COLOR );
             isValid = false;
         }
         
@@ -117,13 +117,13 @@ public class NatJPanel extends javax.swing.JPanel {
         try{
             isDhcpEnabled = Util.getMvvmContext().networkingManager().get().isDhcpEnabled();
             if( isDhcpEnabled )
-                externalMethodJTextField.setText("Dynamic via DHCP");
+                externalMethodJLabel.setText("Dynamic via DHCP");
             else
-                externalMethodJTextField.setText("Manually specified");
-            externalMethodJTextField.setBackground( Color.WHITE );
+                externalMethodJLabel.setText("Manually specified");
+            externalMethodJLabel.setBackground( BACKGROUND_COLOR );
         }
         catch(Exception e){
-            externalMethodJTextField.setBackground( INVALID_COLOR );
+            externalMethodJLabel.setBackground( INVALID_COLOR );
             isValid = false;
         }
         
@@ -163,25 +163,28 @@ public class NatJPanel extends javax.swing.JPanel {
         }
         
         // INTERNAL ADDRESS //////
-        try{
-            natInternalAddress = IPaddr.parse( internalAddressIPaddrJTextField.getText() );
-            internalAddressIPaddrJTextField.setBackground( Color.WHITE );
-        }
-        catch(Exception e){
-            internalAddressIPaddrJTextField.setBackground( INVALID_COLOR );
-            isValid = false;
+        if(natEnabled){
+            try{
+                natInternalAddress = IPaddr.parse( internalAddressIPaddrJTextField.getText() );
+                internalAddressIPaddrJTextField.setBackground( Color.WHITE );
+            }
+            catch(Exception e){
+                internalAddressIPaddrJTextField.setBackground( INVALID_COLOR );
+                isValid = false;
+            }
         }
         
         // INTERNAL SUBNET ///////
-        try{
-            natInternalSubnet = IPaddr.parse( internalSubnetIPaddrJTextField.getText() );
-            internalSubnetIPaddrJTextField.setBackground( Color.WHITE );
-        }
-        catch(Exception e){
-            internalSubnetIPaddrJTextField.setBackground( INVALID_COLOR );
-            isValid = false;
-        }
-        
+        if(natEnabled){
+            try{
+                natInternalSubnet = IPaddr.parse( internalSubnetIPaddrJTextField.getText() );
+                internalSubnetIPaddrJTextField.setBackground( Color.WHITE );
+            }
+            catch(Exception e){
+                internalSubnetIPaddrJTextField.setBackground( INVALID_COLOR );
+                isValid = false;
+            }
+        }        
         
         // SAVE THE VALUES ////////////////////////////////////
         if(isValid){
@@ -216,14 +219,14 @@ public class NatJPanel extends javax.swing.JPanel {
         jLabel8 = new javax.swing.JLabel();
         internalSubnetIPaddrJTextField = new javax.swing.JTextField();
         jLabel9 = new javax.swing.JLabel();
-        internalNetworkJTextField = new javax.swing.JTextField();
+        internalNetworkJLabel = new javax.swing.JLabel();
         internalRemoteJPanel = new javax.swing.JPanel();
         jTextArea1 = new javax.swing.JTextArea();
         restrictIPJPanel1 = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
-        externalAddressJTextField = new javax.swing.JTextField();
+        externalAddressJLabel = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
-        externalMethodJTextField = new javax.swing.JTextField();
+        externalMethodJLabel = new javax.swing.JLabel();
 
         setLayout(new java.awt.GridBagLayout());
 
@@ -358,23 +361,24 @@ public class NatJPanel extends javax.swing.JPanel {
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        gridBagConstraints.insets = new java.awt.Insets(15, 0, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(15, 0, 2, 0);
         restrictIPJPanel.add(jLabel9, gridBagConstraints);
 
-        internalNetworkJTextField.setEditable(false);
-        internalNetworkJTextField.setEnabled(false);
+        internalNetworkJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+        internalNetworkJLabel.setText("012.345.678.999");
+        internalNetworkJLabel.setMinimumSize(null);
+        internalNetworkJLabel.setPreferredSize(null);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(15, 0, 2, 0);
-        restrictIPJPanel.add(internalNetworkJTextField, gridBagConstraints);
+        restrictIPJPanel.add(internalNetworkJLabel, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
-        gridBagConstraints.ipadx = 150;
+        gridBagConstraints.ipadx = 25;
         gridBagConstraints.insets = new java.awt.Insets(15, 0, 0, 0);
         externalRemoteJPanel.add(restrictIPJPanel, gridBagConstraints);
 
@@ -411,15 +415,15 @@ public class NatJPanel extends javax.swing.JPanel {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         restrictIPJPanel1.add(jLabel6, gridBagConstraints);
 
-        externalAddressJTextField.setEditable(false);
-        externalAddressJTextField.setEnabled(false);
+        externalAddressJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+        externalAddressJLabel.setText("012.345.678.999");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
-        restrictIPJPanel1.add(externalAddressJTextField, gridBagConstraints);
+        restrictIPJPanel1.add(externalAddressJLabel, gridBagConstraints);
 
         jLabel10.setFont(new java.awt.Font("Dialog", 0, 12));
         jLabel10.setText("Configuration Method: ");
@@ -429,20 +433,20 @@ public class NatJPanel extends javax.swing.JPanel {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         restrictIPJPanel1.add(jLabel10, gridBagConstraints);
 
-        externalMethodJTextField.setEditable(false);
-        externalMethodJTextField.setEnabled(false);
+        externalMethodJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+        externalMethodJLabel.setText("via XYZ");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
-        restrictIPJPanel1.add(externalMethodJTextField, gridBagConstraints);
+        restrictIPJPanel1.add(externalMethodJLabel, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
-        gridBagConstraints.ipadx = 150;
+        gridBagConstraints.ipadx = 25;
         gridBagConstraints.insets = new java.awt.Insets(15, 0, 0, 0);
         internalRemoteJPanel.add(restrictIPJPanel1, gridBagConstraints);
 
@@ -473,11 +477,11 @@ public class NatJPanel extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup enabledButtonGroup;
     private javax.swing.JPanel explanationJPanel;
-    public javax.swing.JTextField externalAddressJTextField;
-    public javax.swing.JTextField externalMethodJTextField;
+    private javax.swing.JLabel externalAddressJLabel;
+    private javax.swing.JLabel externalMethodJLabel;
     private javax.swing.JPanel externalRemoteJPanel;
     public javax.swing.JTextField internalAddressIPaddrJTextField;
-    public javax.swing.JTextField internalNetworkJTextField;
+    private javax.swing.JLabel internalNetworkJLabel;
     private javax.swing.JPanel internalRemoteJPanel;
     public javax.swing.JTextField internalSubnetIPaddrJTextField;
     private javax.swing.JLabel jLabel1;

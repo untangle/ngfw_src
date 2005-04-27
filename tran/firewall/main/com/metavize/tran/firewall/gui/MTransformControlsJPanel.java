@@ -109,7 +109,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
             }
         }
         
-        refreshAll();
+        // refreshAll();
     }
 
 }
