@@ -163,7 +163,7 @@ public class MTransformJButton extends JButton {
 
     public void setDeployableView(){ updateView(null, "Ready to be deployed to rack.", true); }
     public void setProcurableView(){ updateView(null, "Ready to be procured from store.", true); }
-    public void setDeployedView(){ updateView(null, "Deployed.", false); }
+    public void setDeployedView(){ updateView(null, "Deployed to rack.", false); }
 
     public void setDeployingView(){ updateView("deploying", "Deploying.", false); }
     public void setProcuringView(){ updateView("procuring", "Procuring.", false); }
@@ -178,7 +178,7 @@ public class MTransformJButton extends JButton {
 
     // VIEW UPDATE HELPERS //////////////////
     public void setTT(String status){
-	this.setToolTipText( "<html>" + "<b>Description:</b><br>" + toolTipString + "<br>" + "<b>Status:</b><br>" + status + "<br>" + "</html>");
+	this.setToolTipText( "<html>" + "<b>Description:</b><br>" + toolTipString + "<br><br>" + "<b>Status:</b><br>" + status + "</html>");
     }
 
     public void setMessage(String message){
