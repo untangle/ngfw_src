@@ -22,6 +22,8 @@ import java.net.UnknownHostException;
 public class IPNullAddr extends IPaddr
 {
     private static final long serialVersionUID = -741858749430271001L;
+
+    private static final IPNullAddr EMPTY_ADDR = new IPNullAddr( null );
     
     public IPNullAddr( Inet4Address addr )
     {
@@ -34,10 +36,15 @@ public class IPNullAddr extends IPaddr
         dotNotation = dotNotation.trim();
         
         if ( dotNotation.length() == 0 ) {
-            return new IPNullAddr( null );
+            return EMPTY_ADDR;
         } else {
             return new IPNullAddr((Inet4Address)IPaddr.parse( dotNotation ).getAddr());
         }        
-    }    
+    }
+
+    public static IPNullAddr getNullAddr()
+    {
+        return EMPTY_ADDR;
+    }
 }
 

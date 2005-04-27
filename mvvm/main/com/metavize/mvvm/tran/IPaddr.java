@@ -69,6 +69,28 @@ public class IPaddr implements Serializable
         
         return makeIPaddr( oper1 & oper2 );
     }
+
+    public boolean isGreaterThan( IPaddr addr2 ) 
+    {
+        long oper1 = toLong();
+        long oper2 = addr2.toLong();
+
+        return ( oper1 > oper2 );
+    }
+    
+    public boolean isInNetwork( IPaddr addr2, IPaddr netmaskAddress )
+    {
+        long netmask = netmaskAddress.toLong();
+
+        if ( netmask == 0 ) {
+            netmask = 0xFFFFFFFFL;
+        }
+        
+        long oper1   = toLong() & netmask;
+        long oper2   = addr2.toLong() & netmask;
+
+        return ( oper1 == oper2 );
+    }
     
     public boolean isEmpty()
     {

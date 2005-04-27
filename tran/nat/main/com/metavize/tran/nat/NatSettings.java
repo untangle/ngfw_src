@@ -50,11 +50,7 @@ public class NatSettings implements java.io.Serializable
     private boolean dhcpEnabled = false;
     private IPaddr  dhcpStartAddress;
     private IPaddr  dhcpEndAddress;
-    private IPaddr  dhcpGateway;
-    private IPaddr  dhcpSubnet;
     private int     dhcpLeaseTime    = 0;
-    private IPaddr  dhcpNameserver1;
-    private IPaddr  dhcpNameserver2;
     /* Dhcp leasess */
     private List    dhcpLeaseList = new LinkedList();
     
@@ -287,44 +283,16 @@ public class NatSettings implements java.io.Serializable
         this.dhcpEndAddress = address;
     }
 
-    /**
-     * Get the gateway address for the DHCP server, this is ignored, if NAT is enabled.
-     *
-     * @return DHCP gateway address.
-     * @hibernate.property
-     * type="com.metavize.mvvm.type.IPaddrUserType"
-     * @hibernate.column
-     * name="DHCP_GATEWAY_ADDRESS"
-     * sql-type="inet"
-     */
-    public IPaddr getDhcpGateway()
+    /** Set the starting and end address of the dns server */
+    public void setDhcpStartAndEndAddress( IPaddr start, IPaddr end )
     {
-        return dhcpGateway;
-    }
-
-    public void setDhcpGateway( IPaddr address )
-    {
-        this.dhcpGateway = address;
-    }
-
-    /**
-     * Get the subnet address for the DHCP server, this is ignored, if NAT is enabled.
-     *
-     * @return DHCP subnet address.
-     * @hibernate.property
-     * type="com.metavize.mvvm.type.IPaddrUserType"
-     * @hibernate.column
-     * name="DHCP_SUBNET_ADDRESS"
-     * sql-type="inet"
-     */
-    public IPaddr getDhcpSubnet()
-    {
-        return dhcpSubnet;
-    }
-
-    public void setDhcpSubnet( IPaddr address )
-    {
-        this.dhcpSubnet = address;
+        if ( start.isGreaterThan( end )) {
+            setDhcpStartAddress( end );
+            setDhcpEndAddress( start );
+        } else {
+            setDhcpStartAddress( start );
+            setDhcpEndAddress( end );
+        }
     }
     
     /**
@@ -344,46 +312,6 @@ public class NatSettings implements java.io.Serializable
         this.dhcpLeaseTime = time;
     }
     
-    /**
-     * Get the nameserver 1 address for the DHCP server, this is ignored, if NAT is enabled.
-     *
-     * @return DHCP nameserver 1 address.
-     * @hibernate.property
-     * type="com.metavize.mvvm.type.IPaddrUserType"
-     * @hibernate.column
-     * name="DHCP_NAMESERVER1_ADDRESS"
-     * sql-type="inet"
-     */
-    public IPaddr getDhcpNameserver1()
-    {
-        return dhcpNameserver1;
-    }
-
-    public void setDhcpNameserver1( IPaddr address )
-    {
-        this.dhcpNameserver1 = address;
-    }
-
-    /**
-     * Get the nameserver2 address for the DHCP server.
-     *
-     * @return DHCP nameserver 2 address.
-     * @hibernate.property
-     * type="com.metavize.mvvm.type.IPaddrUserType"
-     * @hibernate.column
-     * name="DHCP_NAMESERVER2_ADDRESS"
-     * sql-type="inet"
-     */
-    public IPaddr getDhcpNameserver2()
-    {
-        return dhcpNameserver2;
-    }
-
-    public void setDhcpNameserver2( IPaddr address )
-    {
-        this.dhcpNameserver2 = address;
-    }
-
     /**
      * List of the dhcp leases.
      *

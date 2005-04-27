@@ -31,11 +31,11 @@ import com.metavize.mvvm.tran.firewall.MACAddress;
 public class DhcpLeaseRule extends Rule
 {
     private MACAddress macAddress;
-    private String     hostname;
-    private IPNullAddr currentAddress;
-    private IPNullAddr staticAddress;
-    private Date       endOfLease;
-    private boolean    resolvedByMac = true;
+    private String     hostname        = "";
+    private IPNullAddr currentAddress  = IPNullAddr.getNullAddr();
+    private IPNullAddr staticAddress   = IPNullAddr.getNullAddr();
+    private Date       endOfLease      = null;
+    private boolean    resolvedByMac   = true;
 
     // Constructors 
     /**
@@ -85,6 +85,9 @@ public class DhcpLeaseRule extends Rule
      */
     public String getHostname()
     {
+        if ( hostname == null )
+            return "";
+
         return hostname;
     }
 
@@ -93,18 +96,10 @@ public class DhcpLeaseRule extends Rule
         this.hostname = hostname;
     }
 
-    /**
-     * Get currrent IP address for this MAC address
-     *
-     * @return current address.
-     * @hibernate.property
-     * type="com.metavize.mvvm.type.IPNullAddrUserType"
-     * @hibernate.column
-     * name="CURRENT_ADDRESS"
-     * sql-type="inet"
-     */
     public IPNullAddr getCurrentAddress()
     {
+        if ( this.currentAddress == null ) return ( this.currentAddress = IPNullAddr.getNullAddr());
+
         return this.currentAddress;
     }
     
@@ -125,6 +120,8 @@ public class DhcpLeaseRule extends Rule
      */
     public IPNullAddr getStaticAddress()
     {
+        if ( this.staticAddress == null ) return ( this.staticAddress = IPNullAddr.getNullAddr());
+
         return this.staticAddress;
     }
     
@@ -133,17 +130,13 @@ public class DhcpLeaseRule extends Rule
         this.staticAddress = staticAddress;
     }
     
-    /**
-     * End of lease time
-     *
-     * @return The current end of the lease for this object.
-     * @hibernate.property
-     * @hibernate.column
-     * name="END_OF_LEASE"
-     */
-    public Date getEndOfLease()
+    public String getEndOfLease()
     {
-        return endOfLease;
+        if ( endOfLease == null ) {
+            return "";
+        } else {
+            return endOfLease.toString();
+        }
     }
 
     public void setEndOfLease( Date endOfLease )

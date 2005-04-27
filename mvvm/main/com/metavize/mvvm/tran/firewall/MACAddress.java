@@ -38,7 +38,7 @@ public class MACAddress implements Serializable
         String tmp[] = mac.split( ":", MACADDRSZ + 1 );
 
         if ( tmp.length != MACADDRSZ ) {
-            throw new IllegalArgumentException( "Invalid MAC Address" + mac );
+            throw new IllegalArgumentException( "Invalid MAC Address " + mac );
         }
 
         /* Validation */

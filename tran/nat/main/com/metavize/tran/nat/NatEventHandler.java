@@ -17,7 +17,6 @@ import java.util.Iterator;
 
 import com.metavize.mvvm.tapi.Protocol;
 
-import com.metavize.mvvm.NetworkingManager;
 import com.metavize.mvvm.NetworkingConfiguration;
 
 import com.metavize.mvvm.MvvmContextFactory;
@@ -143,11 +142,8 @@ class NatEventHandler extends AbstractEventHandler
         releasePort( Protocol.UDP, event.ipsession());
     }
     
-    void configure( NatSettings settings )
-    {
-        /* Need this to lookup the local IP address */
-        NetworkingConfiguration netConfig = MvvmContextFactory.context().networkingManager().get();
-        
+    void configure( NatSettings settings, NetworkingConfiguration netConfig )
+    {        
         /* Keep the local address of the box */
         IPaddr local = netConfig.host();
 

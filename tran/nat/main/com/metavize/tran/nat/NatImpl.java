@@ -186,10 +186,13 @@ public class NatImpl extends SoloTransform implements Nat
         /* Settings will always be null right now */
         if ( settings == null ) {
             throw new TransformException( "Failed to get Nat settings: " + settings );
-        }            
+        }
+
+        /* NAT configuration needs information from the networking settings. */
+        NetworkingConfiguration netConfig = MvvmContextFactory.context().networkingManager().get();
         
-        handler.configure( settings );
-        DhcpManager.getInstance().configure( settings );
+        handler.configure( settings, netConfig );
+        DhcpManager.getInstance().configure( settings, netConfig );
     }
 
     private void updateToCurrent(NatSettings settings)
@@ -228,8 +231,7 @@ public class NatImpl extends SoloTransform implements Nat
         /* Need this to lookup the local IP address */
         NetworkingConfiguration netConfig = MvvmContextFactory.context().networkingManager().get();
 
-        try {
-            
+        try {            
             /* Nat settings */
             settings.setNatEnabled( true );
             settings.setNatInternalAddress( IPaddr.parse( "192.168.1.1" ));
@@ -264,8 +266,17 @@ public class NatImpl extends SoloTransform implements Nat
             /* Enable DNS and DHCP */
             settings.setDnsEnabled( true );
             settings.setDhcpEnabled( true );
-            settings.setDhcpStartAddress( IPaddr.parse( "192.168.1.150" ));
-            settings.setDhcpEndAddress( IPaddr.parse( "192.168.1.155" ));
+            
+            /* Quick sanity test, remove in a second */
+            IPaddr tmp  = IPaddr.parse( "192.168.1.1" );
+            IPaddr full = IPaddr.parse( "0.0.0.0" );
+            
+            if ( !tmp.isInNetwork( tmp, full ))
+                throw new IllegalStateException( "isInNetwork is totally busted" );
+            
+            /* Set in reverse to test if it works */
+            settings.setDhcpStartAndEndAddress( IPaddr.parse( "192.168.1.155" ), 
+                                                IPaddr.parse( "192.168.1.150" ));
             
         } catch (Exception e ) {
             logger.error( "This should never happen", e );

@@ -233,7 +233,7 @@ public abstract class TrafficRule extends Rule
             } else if ( srcIntf.isInsideEnabled ) {
                 return DIRECTION_OUT;
             } else if ( srcIntf.isOutsideEnabled ) {
-                return DIRECTION_OUT;
+                return DIRECTION_IN;
             }
         }
         /* Restore to default, something has gone wrong */

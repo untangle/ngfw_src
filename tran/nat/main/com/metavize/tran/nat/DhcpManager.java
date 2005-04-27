@@ -20,7 +20,6 @@ import java.io.BufferedWriter;
 
 import org.apache.log4j.Logger;
 
-import com.metavize.mvvm.NetworkingManager;
 import com.metavize.mvvm.NetworkingConfiguration;
 import com.metavize.mvvm.MvvmContextFactory;
 
@@ -41,7 +40,7 @@ class DhcpManager
     private static final String FLAG_DHCP_HOST        = "dhcp-host";
     private static final String FLAG_DHCP_OPTION      = "dhcp-option";
     private static final String FLAG_DHCP_GATEWAY     = "3";
-    private static final String FLAG_DHCP_SUBNET      = "1";
+    private static final String FLAG_DHCP_NETMASK     = "1";
     private static final String FLAG_DHCP_NAMESERVERS = "6";
     private static final String FLAG_DNS_LISTEN       = "listen-address";
 
@@ -56,16 +55,16 @@ class DhcpManager
     {
     }
 
-    void configure( NatSettings settings ) throws TransformStartException
+    void configure( NatSettings settings, NetworkingConfiguration netConfig ) throws TransformStartException
     {
         int code;
 
-        /* Have to stop then start dnsmasq */
         try { 
-            writeConfiguration( settings );
+            writeConfiguration( settings, netConfig );
             
             logger.debug( "Reloading DNS Masq server" );
-
+            
+            /* restart dnsmasq */
             Process p = Runtime.getRuntime().exec( DNS_MASQ_CMD_RESTART );
             code = p.waitFor();
         } catch ( Exception e ) {
@@ -121,12 +120,9 @@ class DhcpManager
     {
     }
 
-    private void writeConfiguration( NatSettings settings )
+    private void writeConfiguration( NatSettings settings, NetworkingConfiguration netConfig )
     {
         StringBuilder sb = new StringBuilder();
-
-        /* Need this to lookup the local IP address */
-        NetworkingConfiguration netConfig = MvvmContextFactory.context().networkingManager().get();
         
         IPaddr externalAddress = netConfig.host();
 
@@ -159,16 +155,16 @@ class DhcpManager
             }
             
             IPaddr gateway;
-            IPaddr subnet;
+            IPaddr netmask;
             
             /* If Nat is turned on, use the settings from nat, otherwise use
-             * the settings from DHCP */
+             * the settings from networking configuration */
             if ( settings.getNatEnabled()) {
                 gateway = settings.getNatInternalAddress();
-                subnet  = settings.getNatInternalSubnet();
+                netmask = settings.getNatInternalSubnet();
             } else {
-                gateway = settings.getDhcpGateway();
-                subnet  = settings.getDhcpSubnet();
+                gateway = netConfig.gateway();
+                netmask  = netConfig.netmask();
             }
             
             comment( sb, "Setting the gateway" );
@@ -176,11 +172,11 @@ class DhcpManager
             sb.append( "," + gateway.toString() + "\n\n" );
             
             comment( sb, "Setting the subnet" );
-            sb.append( FLAG_DHCP_OPTION + "=" + FLAG_DHCP_SUBNET );
-            sb.append( "," + subnet.toString() + "\n\n" );
+            sb.append( FLAG_DHCP_OPTION + "=" + FLAG_DHCP_NETMASK );
+            sb.append( "," + netmask.toString() + "\n\n" );
             
             
-            appendNameServers( sb, settings, externalAddress );
+            appendNameServers( sb, settings, netConfig );
         } else {
             comment( sb, "DHCP is disabled, not using a range or any host rules\n" );
         }
@@ -224,7 +220,7 @@ class DhcpManager
         }
     }
 
-    private void appendNameServers( StringBuilder sb, NatSettings settings, IPaddr externalAddress )
+    private void appendNameServers( StringBuilder sb, NatSettings settings, NetworkingConfiguration netConfig )
     {
         String nameservers = "";
         IPaddr tmp;
@@ -233,19 +229,19 @@ class DhcpManager
             if ( settings.getNatEnabled()) {
                 nameservers += settings.getNatInternalAddress().toString();
             } else {
-                nameservers += externalAddress.toString();
+                nameservers += netConfig.host().toString();
             }
         }
         
-        tmp = settings.getDhcpNameserver1();
+        tmp = netConfig.dns1();
 
         if ( tmp != null && !tmp.isEmpty()) {
             nameservers += ( nameservers.length() == 0 ) ? "" : ",";
             nameservers += tmp.toString();
         }
 
-        tmp = settings.getDhcpNameserver2();
-        
+        tmp = netConfig.dns2();
+
         if ( tmp != null && !tmp.isEmpty()) {
             nameservers += ( nameservers.length() == 0 ) ? "" : ",";
             nameservers += tmp.toString();
@@ -261,7 +257,8 @@ class DhcpManager
     }
 
     /* This guarantees the comment appears with a newline at the end */
-    private void comment( StringBuilder sb, String comment ) {
+    private void comment( StringBuilder sb, String comment )
+    {
         sb.append( COMMENT + " " + comment + "\n" );
     }
 
