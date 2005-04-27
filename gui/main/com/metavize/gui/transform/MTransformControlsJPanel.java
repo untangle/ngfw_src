@@ -385,8 +385,10 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
 	    expandJButton.setText("<html><b>Expand</b> Settings</html>");
             MTransformControlsJPanel.this.expandJDialog.getContentPane().remove(contentJPanel);
             MTransformControlsJPanel.this.socketJPanel.add(contentJPanel);
-            MTransformControlsJPanel.this.socketJPanel.validate();
-            MTransformControlsJPanel.this.socketJPanel.repaint();
+            //MTransformControlsJPanel.this.socketJPanel.validate();
+            //MTransformControlsJPanel.this.socketJPanel.repaint();
+            //contentJPanel.revalidate();
+            MTransformControlsJPanel.this.socketJPanel.revalidate();
         }
     }
 
