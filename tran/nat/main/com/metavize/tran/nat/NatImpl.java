@@ -49,6 +49,7 @@ import com.metavize.mvvm.tran.firewall.RedirectRule;
 
 import com.metavize.mvvm.tran.TransformStartException;
 import com.metavize.mvvm.tran.TransformException;
+import com.metavize.mvvm.tran.TransformState;
 
 import com.metavize.mvvm.argon.SessionMatcher;
 import com.metavize.mvvm.argon.SessionMatcherFactory;
@@ -93,12 +94,20 @@ public class NatImpl extends SoloTransform implements Nat
             try {
                 s.close();
             } catch (HibernateException exn) {
-                logger.warn( "Could not close hibernate sessino", exn );
+                logger.warn( "Could not close hibernate session", exn );
             }
         }
 
         try {
             reconfigure();
+
+            if ( getRunState() == TransformState.RUNNING ) {
+                /* NAT configuration needs information from the networking settings. */
+                NetworkingConfiguration netConfig = MvvmContextFactory.context().networkingManager().get();
+
+                this.handler.configure( settings, netConfig );
+                DhcpManager.getInstance().configure( settings, netConfig );
+            }
         } catch (TransformException exn) {
             logger.error( "Could not save Nat settings", exn );
         }
@@ -116,6 +125,11 @@ public class NatImpl extends SoloTransform implements Nat
         NatSettings settings = getTestSettings();
 
         setNatSettings(settings);
+
+        /* Disable everything */
+        /* deconfigure the event handle and the dhcp manager */
+        handler.deconfigure();
+        DhcpManager.getInstance().deconfigure();
     }
 
     protected void postInit(String[] args)
@@ -150,7 +164,13 @@ public class NatImpl extends SoloTransform implements Nat
             throw new TransformStartException(e);
         }        
 
-        getMPipe().setSessionEventListener( this.handler );        
+        getMPipe().setSessionEventListener( this.handler );
+        
+        /* NAT configuration needs information from the networking settings. */
+        NetworkingConfiguration netConfig = MvvmContextFactory.context().networkingManager().get();
+        
+        this.handler.configure( settings, netConfig );
+        DhcpManager.getInstance().configure( settings, netConfig );
     }
 
     protected void postStart()
@@ -187,12 +207,6 @@ public class NatImpl extends SoloTransform implements Nat
         if ( settings == null ) {
             throw new TransformException( "Failed to get Nat settings: " + settings );
         }
-
-        /* NAT configuration needs information from the networking settings. */
-        NetworkingConfiguration netConfig = MvvmContextFactory.context().networkingManager().get();
-        
-        handler.configure( settings, netConfig );
-        DhcpManager.getInstance().configure( settings, netConfig );
     }
 
     private void updateToCurrent(NatSettings settings)

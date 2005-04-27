@@ -72,11 +72,11 @@ class RedirectMatcher {
 
     // XXX For the future
     // TimeMatcher time;
-    public RedirectMatcher( boolean     isEnabled,  ProtocolMatcher protocol, 
-                            IntfMatcher srcIntf,    IntfMatcher     dstIntf, 
-                            IPMatcher   srcAddress, IPMatcher       dstAddress,
-                            PortMatcher srcPort,    PortMatcher     dstPort,
-                            boolean isDstRedirect,  InetAddress redirectAddress, int redirectPort )
+    RedirectMatcher( boolean     isEnabled,  ProtocolMatcher protocol, 
+                     IntfMatcher srcIntf,    IntfMatcher     dstIntf, 
+                     IPMatcher   srcAddress, IPMatcher       dstAddress,
+                     PortMatcher srcPort,    PortMatcher     dstPort,
+                     boolean isDstRedirect,  InetAddress redirectAddress, int redirectPort )
     {
         this.isEnabled  = isEnabled;
         this.protocol   = protocol;

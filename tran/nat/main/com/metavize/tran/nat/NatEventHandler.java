@@ -58,8 +58,8 @@ class NatEventHandler extends AbstractEventHandler
     /* XXXXXX This should be 15000 */
     //private static final int UDP_NAT_PORT_START = 55000;
     //private static final int UDP_NAT_PORT_END   = 60000;
-
-    /* XXXXXX This is a small range in order to test that the list is working */
+    
+    /* XXXXXXXXXXXXXX Small test range */
     private static final int TCP_NAT_PORT_START = 55000;
     private static final int TCP_NAT_PORT_END   = 55100;
 
@@ -143,11 +143,8 @@ class NatEventHandler extends AbstractEventHandler
     }
     
     void configure( NatSettings settings, NetworkingConfiguration netConfig )
-    {        
-        /* Keep the local address of the box */
-        IPaddr local = netConfig.host();
-
-        IPMatcher localHostMatcher = new IPMatcher( local );        
+    {
+        IPMatcher localHostMatcher = IPMatcher.MATCHER_LOCAL;
 
         if ( settings.getNatEnabled()) {
             internalAddress = settings.getNatInternalAddress();
@@ -156,11 +153,12 @@ class NatEventHandler extends AbstractEventHandler
             /* Create the nat redirect */
             IPMatcher tmp = new IPMatcher( internalAddress, internalSubnet, false );
 
+            /* XXX Update to use local host */
             nat = new RedirectMatcher( true, ProtocolMatcher.MATCHER_ALL,
                                        IntfMatcher.MATCHER_IN, IntfMatcher.MATCHER_ALL,
                                        tmp, IPMatcher.MATCHER_ALL, 
                                        PortMatcher.MATCHER_ALL, PortMatcher.MATCHER_ALL,
-                                       false, netConfig.host().getAddr(), -1 );
+                                       false, null, -1 );
             
             enableNat();
         } else {
@@ -228,8 +226,9 @@ class NatEventHandler extends AbstractEventHandler
         
         if ( nat.isMatch( request, protocol )) {
             /* Change the source in the request */
-            nat.redirect( request );
-
+            /* All redirecting occurs here */
+            request.clientAddr( IPMatcher.getLocalAddress());
+            
             /* Set the client port */
             /* XXX THIS IS A HACK, it really should check if the protocol is ICMP, but
              * for now there are only UDP sessions */

@@ -91,15 +91,17 @@ class DhcpManager
     {
         int code;
 
-        try { 
-            Process p = Runtime.getRuntime().exec( DNS_MASQ_CMD_STOP );
+        try {
+            writeDisabledConfiguration();
+            
+            Process p = Runtime.getRuntime().exec( DNS_MASQ_CMD_RESTART );
             code = p.waitFor();
             
             if ( code != 0 ) {
                 logger.error( "Error stopping DNS masq server, returned code: " + code );
             }
         } catch ( Exception e ) {
-            logger.error( "Error while stopping the DNS masq server", e );
+            logger.error( "Error while disabling the DNS masq server", e );
         }
 
         /* Re-enable DHCP forwarding */
@@ -186,7 +188,8 @@ class DhcpManager
             sb.append( FLAG_DNS_LISTEN + "=" + "127.0.0.1\n\n" );
         }
 
-        /* XXX localdomain */
+        /* XXX localdomain, no settings for local domain */
+
         writeFile( sb, DNS_MASQ_FILE );
     }
 
@@ -260,6 +263,17 @@ class DhcpManager
     private void comment( StringBuilder sb, String comment )
     {
         sb.append( COMMENT + " " + comment + "\n" );
+    }
+
+    private void writeDisabledConfiguration()
+    {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append( HEADER );
+        comment( sb, "DNS is disabled, binding DNS to local host" );
+        sb.append( FLAG_DNS_LISTEN + "=" + "127.0.0.1\n\n" );
+        
+        writeFile( sb, DNS_MASQ_FILE );
     }
 
 }

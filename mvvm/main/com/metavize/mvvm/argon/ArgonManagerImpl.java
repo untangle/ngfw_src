@@ -16,6 +16,7 @@ import java.net.InetAddress;
 import com.metavize.jnetcap.Netcap;
 import com.metavize.jnetcap.Shield;
 import com.metavize.mvvm.ArgonManager;
+import com.metavize.mvvm.tran.firewall.IPMatcher;
 
 public class ArgonManagerImpl implements ArgonManager
 {    
@@ -45,6 +46,8 @@ public class ArgonManagerImpl implements ArgonManager
     public void updateAddress()
     {
         Netcap.updateAddress();
+        
+        IPMatcher.setLocalAddress( Netcap.getHost());
     }
 
     public void disableLocalAntisubscribe()

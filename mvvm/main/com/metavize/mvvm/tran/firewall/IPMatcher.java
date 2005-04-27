@@ -32,6 +32,8 @@ public class IPMatcher implements Serializable
     public static final String MARKER_SUBNET    = "/";
     public static final String MARKER_ANY       = "any";
     public static final String MARKER_ALL       = "all";
+    public static final String MARKER_LOCAL     = "local";
+    public static final String MARKER_EG        = "edgeguard";
     public static final String MARKER_RANGE     = MatcherStringConstants.RANGE;
     public static final String MARKER_WILDCARD  = MatcherStringConstants.WILDCARD;
 
@@ -46,6 +48,9 @@ public class IPMatcher implements Serializable
 
     /* A range for matching local traffic */
     public static final IPMatcher MATCHER_LOCAL = new IPMatcher( true );
+
+    static InetAddress localAddress = null;
+    static long        localLong = -1L;
 
     static final int INADDRSZ = 4;
 
@@ -163,6 +168,8 @@ public class IPMatcher implements Serializable
             return MATCHER_ALL;
         } else if ( str.equalsIgnoreCase( MARKER_NOTHING )) {
             return MATCHER_NIL;
+        } else if ( str.equalsIgnoreCase( MARKER_EG ) || str.equalsIgnoreCase( MARKER_LOCAL )) {
+            return MATCHER_LOCAL;
         } else {
             base = toLong( str );
             /* Just an address a range where the start and end are the same */
@@ -194,7 +201,9 @@ public class IPMatcher implements Serializable
     {
         long tmp = toLong((Inet4Address)addr );
 
-        if ( isRange ) {
+        if ( isLocal ) {
+            return ( tmp == localLong );
+        } else if ( isRange ) {
             if (( base <= tmp ) && ( tmp <= second )) return true;
         } else {
             /* Mask off the bits from the subnet */
@@ -206,6 +215,10 @@ public class IPMatcher implements Serializable
 
     public String toString()
     {
+        if ( isLocal ) {
+            return MARKER_LOCAL;
+        }
+
         /* Check for the wildcard matcher */
         if ( this == MATCHER_ALL || ( !isRange && base == 0 && second == 0 )) {
             return MARKER_ANY;
@@ -259,7 +272,29 @@ public class IPMatcher implements Serializable
         }
 
         return val;
-    }    
+    }
+
+    public static void setLocalAddress( IPaddr address )
+    {
+        setLocalAddress( address.getAddr());
+    }
+
+    public static void setLocalAddress( InetAddress address )
+    {
+        localAddress = address;
+
+        /* If the input address is empty, do not match anything */
+        localLong = ( address == null ) ? -1L : toLong((Inet4Address)address );
+
+        if ( localLong == 0 ) {
+            localLong = -1L;
+        }
+    }
+
+    public static InetAddress getLocalAddress()
+    {
+        return localAddress;
+    }
 
     /** Convert and address to a long */
     static long toLong( Inet4Address address )
