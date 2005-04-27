@@ -405,7 +405,7 @@ public class MLMessageInfo
 
                 try
                 {
-                    zTmp = (zDecoder.decode(zLine).toString()).trim();
+                    zTmp = MLLine.toString(zDecoder, zLine).trim();
                 }
                 catch (CharacterCodingException e)
                 {

@@ -157,16 +157,12 @@ public class XMailScannerCache
         {
             try
             {
-                zEncoder.reset();
-                zXMCache.zPOP3Postmaster = zEncoder.encode(CharBuffer.wrap(zCtl.getPop3Postmaster()));
-                zXMCache.zPOP3Postmaster.position(zXMCache.zPOP3Postmaster.limit());
-                zEncoder.reset();
-                zXMCache.zIMAP4Postmaster = zEncoder.encode(CharBuffer.wrap(zCtl.getImap4Postmaster()));
-                zXMCache.zIMAP4Postmaster.position(zXMCache.zIMAP4Postmaster.limit());
+                zXMCache.zPOP3Postmaster = MLLine.toByteBuffer(zEncoder, zCtl.getPop3Postmaster());
+                zXMCache.zIMAP4Postmaster = MLLine.toByteBuffer(zEncoder, zCtl.getImap4Postmaster());
             }
             catch (CharacterCodingException e)
             {
-                zLog.error("Unable to encode default strings from preferences");
+                zLog.error("Unable to encode default strings from settings");
                 return null;
             }
         }
@@ -468,15 +464,13 @@ public class XMailScannerCache
                             ByteBuffer zLine;
                             try
                             {
-                                zEncoder.reset();
-                                zLine = zEncoder.encode(CharBuffer.wrap(zText));
+                                zLine = MLLine.toByteBuffer(zEncoder, zText);
                             }
                             catch (CharacterCodingException e)
                             {
                                 zLog.error("Unable to encode text: " + zText);
                                 continue;
                             }
-                            zLine.position(zLine.limit());
                             CBufferWrapper zCLine = new CBufferWrapper(zLine);
                             zData = new ArrayList();
                             zData.add(zCLine);
@@ -551,8 +545,9 @@ public class XMailScannerCache
 
         try
         {
+            ByteBuffer zLine = null;
+
             String zReadLine;
-            ByteBuffer zLine;
             CBufferWrapper zCLine;
 
             /* read file data as separate lines of Strings and
@@ -562,9 +557,14 @@ public class XMailScannerCache
             while (true == zBReader.ready())
             {
                 zReadLine = zBReader.readLine() + Constants.PCRLF;
-                zEncoder.reset();
-                zLine = zEncoder.encode(CharBuffer.wrap(zReadLine));
-                zLine.position(zLine.limit());
+                try
+                {
+                    zLine = MLLine.toByteBuffer(zEncoder, zReadLine);
+                }
+                catch (CharacterCodingException e)
+                {
+                    zLog.error("Unable to encode line: " + zReadLine + ", in file: " + zFileName);
+                }
                 zCLine = new CBufferWrapper(zLine);
                 zList.add(zCLine);
             }

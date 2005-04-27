@@ -14,7 +14,9 @@ import java.io.*;
 import java.lang.InterruptedException;
 import java.lang.NumberFormatException;
 import java.nio.*;
-import java.nio.charset.*;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CharsetEncoder;
 import java.util.*;
 import java.util.regex.*;
 import org.apache.log4j.Logger;
@@ -49,8 +51,6 @@ public class MLMessage
 {
     /* constants */
     private static final Logger zLog = Logger.getLogger(MLMessage.class.getName());
-
-    private final static byte EMPTYSTRBA[] = { ' ' };
 
     private final static String SQUOTESTR = "\\'";
     private final static String SQUOTELSTR = "\\\\'";
@@ -868,69 +868,6 @@ public class MLMessage
         return false;
     }
 
-    public String toFile(int iDir)
-    {
-        File zDir = Constants.getDir(iDir);
-        if (null == zDir)
-        {
-            zLog.error("Unable to create file (to save message) because destination directory (" + iDir + ") does not exist.");
-            return null;
-        }
-
-        File zFile;
-        FileWriter zFileW;
-
-        try
-        {
-            zFile = File.createTempFile(Constants.XMPREFIX, null, zDir);
-            zFileW = new FileWriter(zFile);
-            //zLog.debug("created file: " + zFile.getAbsolutePath() + ", " + zFileW); /* for debugging */
-        }
-        catch (IOException e)
-        {
-            zLog.error("Unable to create file: " + e);
-            return null;
-        }
-
-        CBufferWrapper zCLine;
-        CharBuffer zCBLine;
-
-        for (Iterator zIter = zDatas.iterator(); true == zIter.hasNext(); )
-        {
-            zCLine = (CBufferWrapper) zIter.next();
-
-            try
-            {
-                zFileW.write(toCharBuffer(zCLine.get()).array());
-                zFileW.flush();
-            }
-            catch (IOException e)
-            {
-                zLog.error("Unable to write: " + zCLine + " to file: " + e);
-                return zFile.getAbsolutePath();
-            }
-            catch (Exception e)
-            {
-                zLog.error("Unable to write: " + zCLine + " to file (dir id = " + iDir + "): " + e);
-                return zFile.getAbsolutePath();
-            }
-        }
-
-        try
-        {
-            zFileW.close();
-        }
-        catch (IOException e)
-        {
-            zLog.error("Unable to close file: " + e);
-            return zFile.getAbsolutePath();
-        }
-
-        zFile.setReadOnly();
-
-        return zFile.getAbsolutePath();
-    }
-
     public String toString()
     {
         return "sender: " + zSender + "\n" + "recipients: " + zRcpts + "\n" + "message: " + zDatas + ", " + zDatas.size();
@@ -940,35 +877,36 @@ public class MLMessage
     /* decode bytes to chars */
     private CharBuffer toCharBuffer(ByteBuffer zLine)
     {
+        CharBuffer zCBLine;
+
+        zLine.rewind();
         try
         {
-            zDecoder.reset();
-            zLine.rewind();
-            return zDecoder.decode(zLine);
+            zCBLine = MLLine.toCharBuffer(zDecoder, zLine);
         }
         catch (CharacterCodingException e)
         {
             zLog.warn("line contains non-ascii characters; stripping non-ascii characters from line: " + zLine + ", " + e);
-            zLine.rewind();
-            return CharBuffer.wrap(MVChar.stripNonASCII(zLine));
+            zCBLine = CharBuffer.wrap(MVChar.stripNonASCII(zLine));
         }
+
+        return zCBLine;
     }
 
-    /* encode chars to bytes */
-    private ByteBuffer toByteBuffer(CharBuffer zCBLine)
+    /* decode string to bytes */
+    private ByteBuffer toByteBuffer(String zStr) throws ModifyException
     {
+        ByteBuffer zLine;
         try
         {
-            zEncoder.reset();
-            ByteBuffer zLine = zEncoder.encode(zCBLine);
-            zLine.position(zLine.limit()); /* set position to indicate that ByteBuffer contains data */
-            return zLine;
+            zLine = MLLine.toByteBuffer(zEncoder, zStr);
         }
         catch (CharacterCodingException e)
         {
-            zLog.error("Unable to encode line: " + zCBLine + ": " + e);
-            return ByteBuffer.wrap(EMPTYSTRBA, EMPTYSTRBA.length, 0); /* replace unencodeable line with empty string */
+            throw new ModifyException("Unable to encode string: \"" + zStr + "\": " + e);
         }
+
+        return zLine;
     }
 
     /* search for and identify interesting fields
@@ -1357,10 +1295,6 @@ public class MLMessage
     {
         ByteBuffer zLine = zOrgCLine.getSrc();
         CharBuffer zCBLine = toCharBuffer(zLine);
-        if (null == zCBLine)
-        {
-            throw new ModifyException("Unable to decode source buffer containing replacement text: \"" + zOrgCLine + "\"");
-        }
 
         /* replace all matching text within char buffer and
          * get replacement result in form of string
@@ -1368,14 +1302,8 @@ public class MLMessage
         zMatcher.reset(zCBLine);
         String zNewStr = zMatcher.replaceAll(zReplacement);
 
-        /* convert replacement string result into new char buffer */
-        zCBLine = CharBuffer.wrap(zNewStr); /* new CB */
-
-        ByteBuffer zNewSrcLine = toByteBuffer(zCBLine);
-        if (null == zNewSrcLine)
-        {
-            throw new ModifyException("Unable to encode new source buffer with replacement text: \"" + zNewStr + "\"");
-        }
+        /* convert replacement string result into new buffer */
+        ByteBuffer zNewSrcLine = toByteBuffer(zNewStr);
 
         /* search message data for original source buffer and
          * swap it out with new one that we just built

@@ -13,7 +13,7 @@ package com.metavize.tran.email;
 import java.io.IOException;
 import java.lang.InterruptedException;
 import java.nio.*;
-import java.nio.charset.*;
+import java.nio.charset.CharacterCodingException;
 import java.util.*;
 import java.util.regex.*;
 
@@ -1267,7 +1267,7 @@ public class MLHandler
         if (true == bCopy)
         {
             /* copy this message to file */
-            String zTmpFile = zMsg.toFile(Constants.BLOCKDIR_VAL);
+            String zTmpFile = MLLine.toFile(zMsgDatas, Constants.BLOCKDIR_VAL);
             zLog.info("A copy of the blocked message has been saved: " + zTmpFile);
         }
 
@@ -1299,7 +1299,7 @@ public class MLHandler
         if (true == bCopy)
         {
             /* copy this message to file */
-            zTmpFile = zMsg.toFile(Constants.BLOCKDIR_VAL);
+            zTmpFile = MLLine.toFile(zMsgDatas, Constants.BLOCKDIR_VAL);
             zLog.info("A copy of the blocked message has been saved: " + zTmpFile);
         }
         else
@@ -1337,14 +1337,13 @@ public class MLHandler
 
     private CBufferWrapper getUserAddress(MLMessage zMsg)
     {
-        CharsetDecoder zDecoder = Constants.CHARSET.newDecoder();
         ByteBuffer zUNLine = zUserName.get();
 
         Pattern zUserNameP;
         try
         {
             zUNLine.rewind(); /* we will not use this ByteBuffer again */
-            zUserNameP = Pattern.compile(zDecoder.decode(zUNLine).toString());
+            zUserNameP = Pattern.compile(MLLine.toString(zUNLine));
         }
         catch (CharacterCodingException e)
         {
@@ -1531,18 +1530,16 @@ public class MLHandler
 
             try
             {
-                CharsetEncoder zEncoder = Constants.CHARSET.newEncoder();
-                ByteBuffer zFNLine = zEncoder.encode(CharBuffer.wrap(zFNStr));
-                zFNLine.position(zFNLine.limit()); /* set position to indicate that ByteBuffer contains data */
-
+                ByteBuffer zFNLine = MLLine.toByteBuffer(zFNStr);
                 zBodyCLine = new CBufferWrapper(zFNLine);
-                zMsgDatas.add(zBodyCLine);
             }
             catch (CharacterCodingException e)
             {
                 zLog.error("Unable to encode line: " + zFNStr + " : " + e);
                 /* fall through */
             }
+
+            zMsgDatas.add(zBodyCLine);
         }
 
         zWarningInfo = null; /* release; let GC process */

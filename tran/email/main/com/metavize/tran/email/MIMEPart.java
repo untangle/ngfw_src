@@ -10,21 +10,11 @@
  */
 package com.metavize.tran.email;
 
-import java.io.IOException;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.IOException;
 import java.lang.Exception;
-import java.lang.InterruptedException;
-import java.lang.Process;
 import java.nio.*;
-import java.nio.channels.FileChannel;
 import java.nio.charset.CharacterCodingException;
-import java.nio.charset.CharsetEncoder;
 import java.util.*;
 import java.util.regex.*;
 import org.apache.log4j.Logger;
@@ -55,9 +45,6 @@ public class MIMEPart
 
     private final static String QUOTE = "\"";
     private final static Pattern QUOTEP = Pattern.compile(QUOTE);
-
-    private final static int PRC_SUCCESS = 0;
-    private final static int PRC_FAILURE = 1;
 
     /* class variables */
 
@@ -631,7 +618,7 @@ public class MIMEPart
             File zFile;
             try
             {
-                zFile = decodeBufs(zStart, zRawBodys, zEnd, zFileName, iLineSz);
+                zFile = MLLine.decodeBufs(zStart, zRawBodys, zEnd, zFileName, iLineSz);
             }
             catch (IOException e)
             {
@@ -960,13 +947,11 @@ public class MIMEPart
 
     private CBufferWrapper getFileName(File zFile) throws ModifyException
     {
-        String zTmpFileName = zFile.getName();
         ByteBuffer zLine;
+
         try
         {
-            CharsetEncoder zEncoder = Constants.CHARSET.newEncoder();
-            zLine = zEncoder.encode(CharBuffer.wrap(zTmpFileName));
-            zLine.position(zLine.limit());
+            zLine = MLLine.toByteBuffer(zFile.getName());
         }
         catch (CharacterCodingException e)
         {
@@ -1017,136 +1002,5 @@ public class MIMEPart
         }
 
         return false;
-    }
-
-    private File decodeBufs(ByteBuffer zStart, ArrayList zList, ByteBuffer zEnd, String zFileName, int iLineSz) throws IOException, InterruptedException
-    {
-        /* copy encoded data to file */
-        File zTmpDir = new File(Constants.BASEPATH);
-        File zFileIn = File.createTempFile("ube", null, zTmpDir);
-        FileChannel zOutFile = (new FileOutputStream(zFileIn)).getChannel();
-
-        zStart.rewind();
-        zOutFile.write(zStart);
-
-        ByteBuffer zWriteLine = ByteBuffer.allocate(iLineSz + 1);
-        boolean bCopyMore = false;
-
-        ByteBuffer zLine;
-        int iPosition;
-        int iLimit;
-        int iIdx;
-        byte bChar;
-
-        for (Iterator zIter = zList.iterator(); true == zIter.hasNext(); )
-        {
-            zLine = (ByteBuffer) zIter.next();
-            iPosition = zLine.position();
-            iLimit = zLine.limit();
-
-            /* if CR or LF is present at end of any line,
-             * ignore CR or LF
-             * (we do not ignore CR or LF that are present within any line)
-             */
-            for (iIdx = iLimit - 1; 0 < iIdx; iIdx--)
-            {
-                bChar = zLine.get(iIdx);
-                if ((byte) '\r' == bChar || (byte) '\n' == bChar)
-                {
-                    continue;
-                }
-
-                iIdx++;
-                break;
-            }
-
-            zLine.rewind();
-            zLine.limit(iIdx); /* limit copy range */
-
-            while (true)
-            {
-                bCopyMore = copy(zLine, zWriteLine, iLineSz);
-                if (true == bCopyMore)
-                {
-                    /* done with this buffer; continue to next */
-                    break; /* while */
-                }
-
-                zWriteLine.rewind();
-                zOutFile.write(zWriteLine);
-
-                zWriteLine.clear(); /* reset and recycle */
-            }
-
-            /* restore */
-            zLine.limit(iLimit);
-            zLine.position(iPosition);
-        }
-
-        /* write out last line */
-        if (true == bCopyMore)
-        {
-            zWriteLine.put((byte) '\n');
-
-            /* use flip (instead of rewind)
-             * since flip sets limit to position
-             * before it rewinds position
-             * (zWriteLine may contain partial line so flip is necessary)
-             */
-            zWriteLine.flip();
-            zOutFile.write(zWriteLine);
-        }
-
-        zWriteLine = null; /* release; let GC process */
-
-        zEnd.rewind();
-        zOutFile.write(zEnd);
-        zOutFile.close();
-
-        /* create decoded version of encoded file */
-        File zFileOut = File.createTempFile("ubd", null, zTmpDir);
-        //zLog.debug("MIME part encoded file: " + zFileIn.getAbsolutePath());
-        Process zPrc = Runtime.getRuntime().exec("uudecode -o " + zFileOut.getAbsolutePath() + " " + zFileIn.getAbsolutePath());
-
-        zPrc.waitFor();
-        int iExitCode = zPrc.exitValue();
-
-        zFileIn.delete(); /* delete encoded file */
-        /* we will delete decoded file later */
-
-        switch(iExitCode)
-        {
-        case PRC_SUCCESS:
-            return zFileOut;
-
-        default:
-        case PRC_FAILURE:
-            zFileOut.delete(); /* delete decoded file */
-            throw new IOException("Unable to decode encoded data located in this MIME part: " + zFileName + ", uudecode exit code: " + iExitCode);
-        }
-    }
-
-    /* copy (at most) up to iCopySz */
-    private boolean copy(ByteBuffer zSrcLine, ByteBuffer zDstLine, int iCopySz)
-    {
-        int iAvail = zDstLine.remaining() - 1;
-        int iSz = (iAvail < iCopySz) ? iAvail : iCopySz;
-
-        int iIdx;
-
-        for (iIdx = 0; 0 < zSrcLine.remaining() && iIdx < iSz; iIdx++)
-        {
-            zDstLine.put(zSrcLine.get());
-        }
-
-        if (iIdx < iSz)
-        {
-            return true; /* copy more */
-        }
-        else
-        {
-            zDstLine.put((byte) '\n');
-            return false; /* copy no more */
-        }
     }
 }

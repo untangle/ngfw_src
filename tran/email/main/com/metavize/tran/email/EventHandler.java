@@ -15,7 +15,8 @@ import java.io.IOException;
 import java.lang.InterruptedException;
 import java.nio.*;
 import java.nio.channels.*;
-import java.nio.charset.*;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.CharsetDecoder;
 import java.util.*;
 import java.util.regex.*;
 
@@ -797,7 +798,7 @@ public class EventHandler extends AbstractEventHandler
         catch (IOException e)
         {
             /* let message pass through as is */
-            zLog.error("Unable to send/retrieve e-mail message to/from scanner (please check that this scanner has been installed and configured (e.g., with correct permissions)): " + e);
+            zLog.error("Unable to scan e-mail message (please check that this scanner has been installed and configured (e.g., with correct permissions)): " + e);
             handleException(zEnv, zHandler, zDatas, e);
             return null;
         }
@@ -864,7 +865,7 @@ public class EventHandler extends AbstractEventHandler
         catch (IOException e)
         {
             /* let message pass through as is */
-            zLog.error("Unable to send e-mail message to scanner (please check that uudecode or this scanner has been installed and configured (e.g., with correct permissions) or you have sufficient disk space in " + Constants.BASEPATH + "): " + e);
+            zLog.error("Unable to scan e-mail message (please check that uudecode or this scanner has been installed and configured (e.g., with correct permissions) or you have sufficient disk space in " + Constants.BASEPATH + "): " + e);
             handleException(zEnv, zHandler, e);
             return null;
         }
@@ -926,7 +927,7 @@ public class EventHandler extends AbstractEventHandler
         catch (IOException e)
         {
             /* let message pass through as is */
-            zLog.error("Unable to send/retrieve e-mail message to/from scanner (please check that this scanner has been installed and configured (e.g., with correct permissions): " + e);
+            zLog.error("Unable to scan e-mail message (please check that this scanner has been installed and configured (e.g., with correct permissions): " + e);
             handleException(zEnv, zHandler, zDatas, e);
             return null;
         }
@@ -1169,7 +1170,7 @@ public class EventHandler extends AbstractEventHandler
 
                 try
                 {
-                    azSLines[iIdx] = (zDecoder.decode(zLine).toString()).trim();
+                    azSLines[iIdx] = MLLine.toString(zDecoder, zLine).trim();
                 }
                 catch (CharacterCodingException e)
                 {
@@ -1272,7 +1273,8 @@ public class EventHandler extends AbstractEventHandler
 
         if (true == bCopyOnException)
         {
-            zMsg.toFile(iDir);
+            String zCopyFileName = MLLine.toFile(zMsg.getData(), iDir);
+            zLog.debug("handleException: saved copy: " + zCopyFileName);
         }
 
         if (true == bResend)

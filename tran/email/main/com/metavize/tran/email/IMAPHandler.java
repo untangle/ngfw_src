@@ -596,8 +596,7 @@ public class IMAPHandler extends MLHandler
             CharBuffer zCBLine = CharBuffer.wrap(zNewDataOK);
             try
             {
-                zLine = Constants.CHARSET.newEncoder().encode(zCBLine);
-                zLine.position(zLine.limit()); /* set position to indicate that ByteBuffer contains data */
+                zLine = MLLine.toByteBuffer(zCBLine);
             }
             catch (CharacterCodingException e)
             {
