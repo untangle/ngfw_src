@@ -160,8 +160,7 @@ public class DhcpJPanel extends javax.swing.JPanel {
         // SAVE THE VALUES ////////////////////////////////////
         if(isValid){
             natSettings.setDhcpEnabled( dhcpIsEnabled );
-            natSettings.setDhcpStartAddress( dhcpStartAddress );
-            natSettings.setDhcpEndAddress( dhcpEndAddress );
+            natSettings.setDhcpStartAndEndAddress(dhcpStartAddress, dhcpEndAddress);
         }
         else
             throw new Exception();
