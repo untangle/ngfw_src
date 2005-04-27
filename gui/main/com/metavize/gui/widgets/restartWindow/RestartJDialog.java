@@ -12,7 +12,7 @@ import com.metavize.mvvm.ToolboxManager;
  *
  * @author  inieves
  */
-public class RestartJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
+final public class RestartJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
     
     
     /** Creates new form ProceedJDialog */
@@ -20,7 +20,7 @@ public class RestartJDialog extends javax.swing.JDialog implements java.awt.even
         super(Util.getMMainJFrame(), true);
         initComponents();
         this.addWindowListener(this);
-        this.setBounds( Util.generateCenteredBounds(this.getBounds(), this.getWidth(), this.getHeight()) );
+        this.setBounds( Util.generateCenteredBounds(Util.getMMainJFrame().getBounds(), this.getWidth(), this.getHeight()) );
         this.setVisible(true);
         this.dispose();
     }

@@ -20,9 +20,8 @@ public class MOneButtonJDialog extends javax.swing.JDialog implements java.awt.e
         super(Util.getMMainJFrame(), true);
         initComponents();
         this.addWindowListener(this);
-        this.setBounds( Util.generateCenteredBounds(this.getBounds(), this.getWidth(), this.getHeight()) );
-        this.setVisible(true);
-        this.dispose();
+        this.setBounds( Util.generateCenteredBounds(Util.getMMainJFrame().getBounds(), this.getWidth(), this.getHeight()) );
+
     }
     
     private void initComponents() {//GEN-BEGIN:initComponents

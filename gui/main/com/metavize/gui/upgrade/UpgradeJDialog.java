@@ -544,9 +544,7 @@ public class UpgradeJDialog extends javax.swing.JDialog implements java.awt.even
         public void run() {
 
             // ASK THE USER IF HE REALLY WANTS TO UPGRADE
-            proceedJDialog = new ProceedJDialog(Util.getMMainJFrame(), true);
-            proceedJDialog.setBounds( Util.generateCenteredBounds(UpgradeJDialog.this.getBounds(), proceedJDialog.getWidth(), proceedJDialog.getHeight()) );
-            proceedJDialog.setVisible(true);
+            proceedJDialog = new ProceedJDialog();
             boolean isUpgrading = proceedJDialog.isUpgrading();
             proceedJDialog.dispose();
             proceedJDialog = null;
@@ -577,14 +575,12 @@ public class UpgradeJDialog extends javax.swing.JDialog implements java.awt.even
                 actionJProgressBar.setIndeterminate(true);
                 actionJProgressBar.setValue(100);
                 actionJProgressBar.setString("shutting down...");
-                RestartJDialog restartJDialog = new RestartJDialog();
+                new RestartJDialog();
                 
 
             }
             catch(Exception e){
-                RestartJDialog restartJDialog = new RestartJDialog();
-                restartJDialog.setBounds( Util.generateCenteredBounds(UpgradeJDialog.this.getBounds(), restartJDialog.getWidth(), restartJDialog.getHeight()) );
-                restartJDialog.setVisible(true);                
+                new RestartJDialog();
             }
         }
     }

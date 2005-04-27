@@ -14,7 +14,10 @@ package com.metavize.gui.widgets.dialogs;
 public class ValidateFailureDialog extends MOneButtonJDialog {
     
     public ValidateFailureDialog(String applianceName, String failureMessage) {
-        messageJLabel.setText("<html><center>" + applianceName + " was unable to save settings because:<br>" + failureMessage + "<br>Please correct any incorrect settings and then save again.</center></html>");
+        this.setTitle("Warning");
+        messageJLabel.setText("<html><center>" + applianceName + " was unable to save settings because of an invalid setting at:<br>" + failureMessage + "<br><br>Please correct any incorrect settings and then save again.</center></html>");
+        this.setVisible(true);
+        this.dispose();
     }
     
 }

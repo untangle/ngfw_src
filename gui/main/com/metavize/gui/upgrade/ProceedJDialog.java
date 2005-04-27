@@ -11,15 +11,17 @@ import com.metavize.mvvm.ToolboxManager;
  *
  * @author  inieves
  */
-public class ProceedJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
+final public class ProceedJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
     
     private boolean isUpgrading = false;
     
     /** Creates new form ProceedJDialog */
-    public ProceedJDialog(java.awt.Frame parent, boolean modal) {
-        super(parent, modal);
+    public ProceedJDialog() {
+        super(Util.getMMainJFrame(), true);
         initComponents();
         this.addWindowListener(this);
+        this.setBounds( Util.generateCenteredBounds(Util.getMMainJFrame().getBounds(), this.getWidth(), this.getHeight()) );
+        this.setVisible(true);
     }
     
     private void initComponents() {//GEN-BEGIN:initComponents

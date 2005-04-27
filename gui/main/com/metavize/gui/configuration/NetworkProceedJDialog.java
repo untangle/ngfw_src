@@ -11,7 +11,7 @@ import com.metavize.mvvm.ToolboxManager;
  *
  * @author  inieves
  */
-public class NetworkProceedJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
+final public class NetworkProceedJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
     
     private boolean isProceeding = false;
     
