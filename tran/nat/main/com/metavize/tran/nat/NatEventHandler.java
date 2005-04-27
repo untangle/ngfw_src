@@ -121,6 +121,9 @@ class NatEventHandler extends AbstractEventHandler
         /* If nat is on, and this session wasn't natted, redirected or dmzed, it
          * must be rejected */
         if ( nat.isEnabled()) {
+            /* Increment the block counter */
+            incrementCount( Transform.GENERIC_0_COUNTER ); // BLOCK COUNTER
+            
             /* XXX How should the session be rejected */
             request.rejectSilently();
             return;
@@ -241,6 +244,9 @@ class NatEventHandler extends AbstractEventHandler
                 logger.debug( "Redirecting session to port: " + port );
             }
 
+            /* Increment the NAT counter */
+            incrementCount( Transform.GENERIC_1_COUNTER ); // NAT COUNTER
+            
             /* XXX What about the case where you have NAT and redirect */
             /* XXX Possibly check for redirects here */
             return true;
@@ -260,6 +266,10 @@ class NatEventHandler extends AbstractEventHandler
             if ( matcher.isMatch( request, protocol )) {
                 /* Redirect the session */
                 matcher.redirect( request );
+
+                /* Increment the NAT counter */
+                incrementCount( Transform.GENERIC_2_COUNTER ); // REDIR COUNTER
+
                 return true;
             }
         }
@@ -273,6 +283,10 @@ class NatEventHandler extends AbstractEventHandler
     {
         if ( dmz.isMatch( request, protocol )) {
             dmz.redirect( request );
+            
+            /* Increment the DMZ counter */
+            incrementCount( Transform.GENERIC_3_COUNTER ); // DMZ COUNTER
+
             return true;
         }
         return false;

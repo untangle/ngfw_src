@@ -190,6 +190,8 @@ class RedirectTableModel extends MSortedTableModel{
                 redirectRule.setRedirectPort( Integer.parseInt((String) rowVector.elementAt(10)) );
                 redirectRule.setCategory( (String) rowVector.elementAt(11) );
                 redirectRule.setDescription( (String) rowVector.elementAt(12) );
+                /* For now, all redirects are destination redirects */
+                redirectRule.setDstRedirect( true );
                 redirectRulesList.add(redirectRule);
             }
             catch(Exception e){

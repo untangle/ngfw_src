@@ -101,9 +101,16 @@ class EventHandler extends AbstractEventHandler
                 /* XXX How to reject non-silently */
                 request.rejectSilently();
             }
+            
+            /* Increment the block counter */
+            incrementCount( Transform.GENERIC_0_COUNTER ); // BLOCK COUNTER
+
         } else {
             logger.debug( "Releasing session: " + request );
             request.release();
+
+            /* Increment the pass counter */
+            incrementCount( Transform.GENERIC_1_COUNTER ); // PASS COUNTER
         }                
     }
     
