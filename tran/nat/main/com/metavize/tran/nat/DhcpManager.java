@@ -56,7 +56,7 @@ class DhcpManager
     private static final int DHCP_LEASE_ENTRY_EOL     = 0;
     private static final int DHCP_LEASE_ENTRY_MAC     = 1;
     private static final int DHCP_LEASE_ENTRY_IP      = 2;
-    private static final int DHCP_LEASE_ENTRY_HOST    = 2;
+    private static final int DHCP_LEASE_ENTRY_HOST    = 3;
     
     private static final String DNS_MASQ_FILE         = "/etc/dnsmasq.conf";
     private static final String DNS_MASQ_CMD          = "/etc/init.d/dnsmasq ";

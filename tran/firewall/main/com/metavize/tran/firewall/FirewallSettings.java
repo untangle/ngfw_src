@@ -53,6 +53,12 @@ public class FirewallSettings implements Serializable
         this.firewallRuleList = new LinkedList();
     }
 
+    /* Validation method */
+    public void validate()
+    {
+        /* Nothing to validate, as long as all of the rules are valid */
+    }
+
     /**
      * @hibernate.id
      * column="SETTINGS_ID"

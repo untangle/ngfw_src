@@ -14,6 +14,10 @@ package com.metavize.tran.nat;
 import java.util.List;
 import java.util.LinkedList;
 
+import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.NetworkingManager;
+import com.metavize.mvvm.NetworkingConfiguration;
+
 import com.metavize.mvvm.security.Tid;
 
 import com.metavize.mvvm.tran.IPaddr;
@@ -72,13 +76,61 @@ public class NatSettings implements java.io.Serializable
     {
         this.tid = tid;
     }
-
-    /* Validation method */
+    
     public void validate()
     {
-        
+        validate( null );
     }
 
+    /* Validation method */
+    public void validate( NetworkingConfiguration netConfig )
+    {
+        boolean isStartAddressValid = true;
+        boolean isEndAddressValid   = true;
+        boolean isValid             = true;
+
+        if ( dmzEnabled && dmzAddress == null )
+            throw new IllegalArgumentException( "Enabling DMZ requires a target IP address" );
+        
+        if ( natEnabled && ( natInternalAddress == null || natInternalSubnet == null ))
+            throw new IllegalArgumentException( "Enablng NAT requires an Internal IP address and an Internal Subnet" );
+
+        if ( dhcpEnabled ) {
+            IPaddr host;
+            IPaddr netmask;
+
+            if ( natEnabled ) {
+                host    = natInternalAddress;
+                netmask = natInternalSubnet;
+            } else {
+                /* Need the network settings */
+                /* XXX This inefficient since it has to call to the server */
+                if ( netConfig == null ) {
+                    netConfig = MvvmContextFactory.context().networkingManager().get();
+                }
+                
+                host    = netConfig.host();
+                netmask = netConfig.netmask();
+            }
+            
+            if ( !dhcpStartAddress.isInNetwork( host, netmask )) {
+                isStartAddressValid = false;
+
+                throw new IllegalArgumentException( "IP Address Range Start must be in the network: " + host.toString() + "/" + netmask.toString());
+
+            }
+
+            if ( !dhcpEndAddress.isInNetwork( host, netmask )) {
+                isEndAddressValid = false;
+
+                throw new IllegalArgumentException( "IP Address Range End must be in the network: " + host.toString() + "/" + netmask.toString());
+            }
+        }
+        
+        /* Setup this way to allow reporting of multiple errors in one place */
+        isValid = isStartAddressValid & isEndAddressValid;        
+    }
+        
     /**
      * @hibernate.id
      * column="SETTINGS_ID"
@@ -292,12 +344,20 @@ public class NatSettings implements java.io.Serializable
     /** Set the starting and end address of the dns server */
     public void setDhcpStartAndEndAddress( IPaddr start, IPaddr end )
     {
-        if ( start.isGreaterThan( end )) {
+        if ( start == null ) {
             setDhcpStartAddress( end );
+            setDhcpEndAddress( end );
+        } else if ( end == null )  {
+            setDhcpStartAddress( start );
             setDhcpEndAddress( start );
         } else {
-            setDhcpStartAddress( start );
-            setDhcpEndAddress( end );
+            if ( start.isGreaterThan( end )) {
+                setDhcpStartAddress( end );
+                setDhcpEndAddress( start );
+            } else {
+                setDhcpStartAddress( start );
+                setDhcpEndAddress( end );
+            }
         }
     }
     

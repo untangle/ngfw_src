@@ -88,10 +88,14 @@ public class NatImpl extends SoloTransform implements Nat
 
     public void setNatSettings( NatSettings settings)
     {
-        Session s = TransformContextFactory.context().openSession();
-        
         /* Remove all of the non-static addresses before saving */
         DhcpManager.getInstance().fleeceLeases( settings );
+
+        /* Validate the settings */
+        settings.validate();
+
+        Session s = TransformContextFactory.context().openSession();
+        
         try {
             Transaction tx = s.beginTransaction();
             
