@@ -21,9 +21,8 @@ public class MTransformDisplayJPanel extends com.metavize.gui.transform.MTransfo
         super(mTransformJPanel);
         
         super.activity0JLabel.setText("NAT");
-        super.activity1JLabel.setText("DHCP");
-        super.activity2JLabel.setText("REDIR");
-        super.activity3JLabel.setText("DMZ");
+        super.activity1JLabel.setText("REDIR");
+        super.activity2JLabel.setText("DMZ");
         
     }
     
