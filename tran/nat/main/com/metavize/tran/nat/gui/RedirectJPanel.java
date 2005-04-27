@@ -185,28 +185,28 @@ class RedirectTableModel extends MSortedTableModel{
             redirectRule.setLive( (Boolean) rowVector.elementAt(2) );
 
             try{ redirectRule.setProtocol( ProtocolMatcher.parse(((ComboBoxModel) rowVector.elementAt(3)).getSelectedItem().toString()) ); }
-            catch(Exception e){ throw new Exception("Protocol in row: " + rowIndex); }
+            catch(Exception e){ throw new Exception("(Redirect) Protocol in row: " + rowIndex); }
 
             try{ redirectRule.setDirection( ((ComboBoxModel) rowVector.elementAt(4)).getSelectedItem().toString() ); }
-            catch(Exception e){ throw new Exception("Direction in row: " + rowIndex); }
+            catch(Exception e){ throw new Exception("(Redirect) Direction in row: " + rowIndex); }
 
             try{ redirectRule.setSrcAddress( IPMatcher.parse((String) rowVector.elementAt(5)) ); }
-            catch(Exception e){ throw new Exception("Source Address in row: " + rowIndex); }
+            catch(Exception e){ throw new Exception("(Redirect) Source Address in row: " + rowIndex); }
 
             try{ redirectRule.setDstAddress( IPMatcher.parse((String) rowVector.elementAt(6)) ); }
-            catch(Exception e){ throw new Exception("Destination Address in row: " + rowIndex); }
+            catch(Exception e){ throw new Exception("(Redirect) Destination Address in row: " + rowIndex); }
 
             try{ redirectRule.setSrcPort( PortMatcher.parse((String) rowVector.elementAt(7)) ); }
-            catch(Exception e){ throw new Exception("Source Port in row: " + rowIndex); }
+            catch(Exception e){ throw new Exception("(Redirect) Source Port in row: " + rowIndex); }
 
             try{ redirectRule.setDstPort( PortMatcher.parse((String) rowVector.elementAt(8)) ); }
-            catch(Exception e){ throw new Exception("Destination Port in row: " + rowIndex); }
+            catch(Exception e){ throw new Exception("(Redirect) Destination Port in row: " + rowIndex); }
 
             try{ redirectRule.setRedirectAddress( IPaddr.parse((String) rowVector.elementAt(9)) ); }
-            catch(Exception e){ throw new Exception("Redirect Address in row: " + rowIndex); }
+            catch(Exception e){ throw new Exception("(Redirect) Redirect Address in row: " + rowIndex); }
 
             try{ redirectRule.setRedirectPort( Integer.parseInt((String) rowVector.elementAt(10)) ); }
-            catch(Exception e){ throw new Exception("Redirect Port in row: " + rowIndex); }
+            catch(Exception e){ throw new Exception("(Redirect) Redirect Port in row: " + rowIndex); }
 
             redirectRule.setCategory( (String) rowVector.elementAt(11) );                
             redirectRule.setDescription( (String) rowVector.elementAt(12) );

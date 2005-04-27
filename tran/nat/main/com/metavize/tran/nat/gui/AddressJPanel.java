@@ -168,10 +168,10 @@ class AddressTableModel extends MSortedTableModel{
             leaseRule = new DhcpLeaseRule();
 
             try{ leaseRule.setMacAddress( MACAddress.parse( (String)rowVector.elementAt(2)) ); }
-            catch(Exception e){ throw new Exception("MAC Address in row: " + rowIndex); }
+            catch(Exception e){ throw new Exception("(DHCP Address Map) MAC Address in row: " + rowIndex); }
 
             try{ leaseRule.setStaticAddress( IPNullAddr.parse( (String)rowVector.elementAt(6)) ); }
-            catch(Exception e){ throw new Exception("Target Static IP Address in row: " + rowIndex); }
+            catch(Exception e){ throw new Exception("(DHCP Address Map) Target Static IP Address in row: " + rowIndex); }
 
             leaseRule.setCategory( (String) rowVector.elementAt(7) );
             leaseRule.setDescription( (String) rowVector.elementAt(8) );

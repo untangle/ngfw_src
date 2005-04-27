@@ -92,7 +92,7 @@ public class DnsJPanel extends javax.swing.JPanel {
         else{
             dnsMasqEnabledJRadioButton.setBackground( INVALID_COLOR );
             dnsMasqDisabledJRadioButton.setBackground( INVALID_COLOR );
-            throw new Exception("DNS Forwarding cannot be Enabled and Disabled at the same time.");
+            throw new Exception("(DNS Forwarding) DNS Forwarding cannot be Enabled and Disabled at the same time.");
         }
 
                 

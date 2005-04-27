@@ -106,7 +106,7 @@ public class DmzJPanel extends javax.swing.JPanel {
         else{
             dmzEnabledJRadioButton.setBackground( INVALID_COLOR );
             dmzDisabledJRadioButton.setBackground( INVALID_COLOR );
-            throw new Exception("The DMZ cannot be Enabled and Disabled at the same time.");
+            throw new Exception("(DMZ) The DMZ cannot be Enabled and Disabled at the same time.");
         }
         
         // INTERNAL ADDRESS //////
@@ -117,7 +117,7 @@ public class DmzJPanel extends javax.swing.JPanel {
             }
             catch(Exception e){
                 targetAddressIPaddrJTextField.setBackground( INVALID_COLOR );
-                throw new Exception("The Target IP Address must be a valid IP address.");
+                throw new Exception("(DMZ) The Target IP Address must be a valid IP address.");
             }
         }        
         

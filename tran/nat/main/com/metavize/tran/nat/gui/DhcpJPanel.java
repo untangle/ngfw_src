@@ -119,7 +119,7 @@ public class DhcpJPanel extends javax.swing.JPanel {
         else{
             dhcpEnabledJRadioButton.setBackground( INVALID_COLOR );
             dhcpDisabledJRadioButton.setBackground( INVALID_COLOR );
-            throw new Exception("DHCP cannot be Enabled and Disabled at the same time.");
+            throw new Exception("(DHCP Settings) DHCP cannot be Enabled and Disabled at the same time.");
         }
         
         // DYNAMIC RANGE START //////
@@ -130,7 +130,7 @@ public class DhcpJPanel extends javax.swing.JPanel {
             }
             catch(Exception e){
                 startAddressIPaddrJTextField.setBackground( INVALID_COLOR );
-                throw new Exception("The DHCP Start Address must be a valid IP address.");
+                throw new Exception("(DHCP Settings) The DHCP Start Address must be a valid IP address.");
             }
         }
         
@@ -142,7 +142,7 @@ public class DhcpJPanel extends javax.swing.JPanel {
             }
             catch(Exception e){
                 endAddressIPaddrJTextField.setBackground( INVALID_COLOR );
-                throw new Exception("The DHCP End Address must be a valid IP address.");
+                throw new Exception("(DHCP Settings) The DHCP End Address must be a valid IP address.");
             }
         }        
         

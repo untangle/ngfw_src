@@ -101,11 +101,12 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
             catch(Exception f){
                 Util.handleExceptionNoRestart("Error saving settings for firewall", f);
                 new SaveFailureDialog( super.mTransformJPanel.getTransformContext().getTransformDesc().getDisplayName() );
+                return;
             }
         }
 
         
-
+        refreshAll();
     }
 
 }

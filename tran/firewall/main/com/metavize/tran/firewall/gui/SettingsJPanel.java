@@ -94,7 +94,7 @@ public class SettingsJPanel extends javax.swing.JPanel {
         else{
             defaultAcceptJRadioButton.setBackground( INVALID_COLOR );
             defaultBlockJRadioButton.setBackground( INVALID_COLOR );
-            throw new Exception("The Default Action cannot be Pass and Block at the same time.");
+            throw new Exception("(General Settings) The Default Action cannot be Pass and Block at the same time.");
         }
         
         

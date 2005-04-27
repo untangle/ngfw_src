@@ -158,7 +158,7 @@ public class NatJPanel extends javax.swing.JPanel {
         else{
             natEnabledJRadioButton.setBackground( INVALID_COLOR );
             natDisabledJRadioButton.setBackground( INVALID_COLOR );
-            throw new Exception("NAT cannot be Enabled and Disabled at the same time.");
+            throw new Exception("(NAT) NAT cannot be Enabled and Disabled at the same time.");
         }
         
         // INTERNAL ADDRESS //////
@@ -169,7 +169,7 @@ public class NatJPanel extends javax.swing.JPanel {
             }
             catch(Exception e){
                 internalAddressIPaddrJTextField.setBackground( INVALID_COLOR );
-                throw new Exception("The Internal IP address must be a valid IP address.");
+                throw new Exception("(NAT) The Internal IP address must be a valid IP address.");
             }
         }
         
@@ -181,7 +181,7 @@ public class NatJPanel extends javax.swing.JPanel {
             }
             catch(Exception e){
                 internalSubnetIPaddrJTextField.setBackground( INVALID_COLOR );
-                throw new Exception("The Internal Subnet must be a valid IP address.");
+                throw new Exception("(NAT) The Internal Subnet must be a valid IP address.");
             }
         }        
         

@@ -182,25 +182,25 @@ class BlockTableModel extends MSortedTableModel{
             firewallRule.setLive( (Boolean) rowVector.elementAt(2) );
 
             try{ firewallRule.setAction( ((ComboBoxModel) rowVector.elementAt(3)).getSelectedItem().toString() ); }
-            catch(Exception e){ throw new Exception("Action in row: " + rowIndex); }
+            catch(Exception e){ throw new Exception("(Block/Pass List) Action in row: " + rowIndex); }
 
             try{ firewallRule.setProtocol( ProtocolMatcher.parse(((ComboBoxModel) rowVector.elementAt(4)).getSelectedItem().toString()) ); }
-            catch(Exception e){ throw new Exception("Protocol in row: " + rowIndex); }
+            catch(Exception e){ throw new Exception("(Block/Pass List) Protocol in row: " + rowIndex); }
 
             try{ firewallRule.setDirection( ((ComboBoxModel) rowVector.elementAt(5)).getSelectedItem().toString() ); }
-            catch(Exception e){ throw new Exception("Direction in row: " + rowIndex); }
+            catch(Exception e){ throw new Exception("(Block/Pass List) Direction in row: " + rowIndex); }
 
             try{ firewallRule.setSrcAddress( IPMatcher.parse((String) rowVector.elementAt(6)) ); }
-            catch(Exception e){ throw new Exception("Source Address in row: " + rowIndex); }
+            catch(Exception e){ throw new Exception("(Block/Pass List) Source Address in row: " + rowIndex); }
 
             try{ firewallRule.setDstAddress( IPMatcher.parse((String) rowVector.elementAt(7)) ); }
-            catch(Exception e){ throw new Exception("Destination Address in row: " + rowIndex); }
+            catch(Exception e){ throw new Exception("(Block/Pass List) Destination Address in row: " + rowIndex); }
 
             try{ firewallRule.setSrcPort( PortMatcher.parse((String) rowVector.elementAt(8)) ); }
-            catch(Exception e){ throw new Exception("Source Port in row: " + rowIndex); }
+            catch(Exception e){ throw new Exception("(Block/Pass List) Source Port in row: " + rowIndex); }
 
             try{ firewallRule.setDstPort( PortMatcher.parse((String) rowVector.elementAt(9)) ); }
-            catch(Exception e){ throw new Exception("Destination Port in row: " + rowIndex); }
+            catch(Exception e){ throw new Exception("(Block/Pass List) Destination Port in row: " + rowIndex); }
 
             firewallRule.setCategory( (String) rowVector.elementAt(10) );
             firewallRule.setDescription( (String) rowVector.elementAt(11) );
