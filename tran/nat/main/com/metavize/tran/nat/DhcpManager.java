@@ -11,7 +11,11 @@
 package com.metavize.tran.nat;
 
 import java.util.List;
+import java.util.LinkedList;
 import java.util.Iterator;
+import java.util.Date;
+import java.util.Map;
+import java.util.HashMap;
 
 import java.io.FileWriter;
 import java.io.FileReader;
@@ -24,6 +28,7 @@ import com.metavize.mvvm.NetworkingConfiguration;
 import com.metavize.mvvm.MvvmContextFactory;
 
 import com.metavize.mvvm.tran.IPaddr;
+import com.metavize.mvvm.tran.IPNullAddr;
 import com.metavize.mvvm.tran.firewall.MACAddress;
 
 import com.metavize.mvvm.tran.TransformStartException;
@@ -44,6 +49,15 @@ class DhcpManager
     private static final String FLAG_DHCP_NAMESERVERS = "6";
     private static final String FLAG_DNS_LISTEN       = "listen-address";
 
+    private static final int DHCP_LEASE_ENTRY_LENGTH  = 5;
+    private static final String DHCP_LEASE_DELIM      = " ";
+
+    private static final String DHCP_LEASES_FILE      = "/var/lib/misc/dnsmasq.leases";
+    private static final int DHCP_LEASE_ENTRY_EOL     = 0;
+    private static final int DHCP_LEASE_ENTRY_MAC     = 1;
+    private static final int DHCP_LEASE_ENTRY_IP      = 2;
+    private static final int DHCP_LEASE_ENTRY_HOST    = 2;
+    
     private static final String DNS_MASQ_FILE         = "/etc/dnsmasq.conf";
     private static final String DNS_MASQ_CMD          = "/etc/init.d/dnsmasq ";
     private static final String DNS_MASQ_CMD_RESTART  = DNS_MASQ_CMD + " restart";
@@ -115,11 +129,142 @@ class DhcpManager
 
     void loadLeases( NatSettings settings )
     {
+        BufferedReader in = null;
+
+        /* Insert the rules from the leases file, than layover the rules from the settings */
+        List<DhcpLeaseRule> leaseList  = new LinkedList<DhcpLeaseRule>();
+        Map<MACAddress,Integer> macMap = new HashMap<MACAddress,Integer>();
+
+        /* The time right now to determine if leases have been expired */
+        Date now = new Date();
         
+        
+        /* Open up the interfaces file */
+        try {
+            in = new BufferedReader(new FileReader( DHCP_LEASES_FILE ));
+            String str;
+            while (( str = in.readLine()) != null ) {
+                parseLease( str, leaseList, now, macMap );
+            }
+        } catch ( Exception ex ) {
+            logger.error( "Error reading file: " + DHCP_LEASES_FILE, ex );
+        }
+        
+        try {
+            if ( in != null )  in.close();
+        } catch ( Exception ex ) {
+            logger.error( "Unable to close file: " + DHCP_LEASES_FILE, ex );
+        }
+
+        /* Lay over the settings from NAT */
+        List <DhcpLeaseRule> staticList = settings.getDhcpLeaseList();
+        
+        overlayStaticLeases( staticList, leaseList, macMap );
+        
+        /* Set the list */
+        settings.setDhcpLeaseList( leaseList );
+    }
+    
+    void parseLease( String str, List<DhcpLeaseRule> leaseList, Date now, Map<MACAddress,Integer> macMap )
+    {
+        str = str.trim();
+        String strArray[] = str.split( DHCP_LEASE_DELIM );
+        String tmp, host;
+        Date eol;
+        MACAddress mac;
+        IPNullAddr ip;
+        
+        if ( strArray.length != DHCP_LEASE_ENTRY_LENGTH ) {
+            logger.error( "Invalid DHCP lease: " + str );
+            return;
+        }
+        
+        tmp  = strArray[DHCP_LEASE_ENTRY_EOL];
+        try {
+            eol = new Date( Long.parseLong( tmp ) * 1000 );
+        } catch ( Exception e ) {
+            logger.error( "Invalid DHCP date: " + tmp );
+            return;
+        }
+        
+        if ( eol.before( now )) {
+            logger.debug( "Lease already expired: " + str );
+            return;
+        }
+
+        tmp  = strArray[DHCP_LEASE_ENTRY_MAC];
+        try {
+            mac = MACAddress.parse( tmp );
+        } catch ( Exception e ) {
+            logger.error( "Invalid MAC address: " + tmp );
+            return;
+        }
+        
+        tmp  = strArray[DHCP_LEASE_ENTRY_IP];
+        try {
+            ip = IPNullAddr.parse( tmp );
+        } catch ( Exception e ) {
+            logger.error( "Invalid MAC address: " + tmp );
+            return;
+        }
+        
+        host  = strArray[DHCP_LEASE_ENTRY_HOST];
+    
+        /* Insert the lease */
+        DhcpLeaseRule rule  = new DhcpLeaseRule( mac, host, ip, IPNullAddr.getNullAddr(), eol, true );
+        
+        /* Determine if the rule already exists */
+        Integer index = macMap.get( mac );
+
+        if ( index == null ) {
+            leaseList.add( rule );
+            macMap.put( mac, leaseList.size() - 1 );
+        } else {
+            /* XXX Right now resolve by MAC is always true */
+            leaseList.set( index, rule );
+        }
     }
 
-    private void parseLeaseFile( NatSettings settings )
+    private void overlayStaticLeases( List<DhcpLeaseRule> staticList, List<DhcpLeaseRule> leaseList, 
+                                      Map<MACAddress,Integer> macMap )
     {
+        if ( staticList == null ) {
+            return;
+        }
+        
+        for ( Iterator<DhcpLeaseRule> iter = staticList.iterator() ; iter.hasNext() ; ) {
+            DhcpLeaseRule rule = iter.next();
+            
+            MACAddress mac = rule.getMacAddress();
+            Integer index = macMap.get( mac );
+            if ( index == null ) {
+                /* Insert a new rule */
+                leaseList.add( new DhcpLeaseRule( mac, "", IPNullAddr.getNullAddr(), 
+                                                  rule.getStaticAddress(), null, true ));
+                macMap.put( mac, leaseList.size() - 1 );
+            } else {
+                DhcpLeaseRule currentRule = leaseList.get( index );
+                currentRule.setStaticAddress( rule.getStaticAddress());
+                currentRule.setResolvedByMac( rule.getResolvedByMac());
+            }
+        }
+    }
+
+    /* This removes all of the non-static leases */
+    void fleeceLeases( NatSettings settings ) 
+    {
+        /* Lay over the settings from NAT */
+        List <DhcpLeaseRule> staticList = settings.getDhcpLeaseList();
+
+        for ( Iterator<DhcpLeaseRule> iter = staticList.iterator() ; iter.hasNext() ; ) {
+            DhcpLeaseRule rule = iter.next();
+            
+            IPNullAddr staticAddress = rule.getStaticAddress();
+            
+            if ( staticAddress == null || staticAddress.isEmpty()) {
+                iter.remove();
+            }
+        }
     }
 
     private void writeConfiguration( NatSettings settings, NetworkingConfiguration netConfig )

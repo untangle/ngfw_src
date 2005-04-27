@@ -89,6 +89,10 @@ public class RedirectRule extends TrafficRule
 
     public void setRedirectPort( int port )
     {
+        if ( port < 0 || port > 65535 ) {
+            throw new IllegalArgumentException( "Redirect port must be in the range 0 to 65535: " + port );
+        }
+
         this.redirectPort = port;
     }
 

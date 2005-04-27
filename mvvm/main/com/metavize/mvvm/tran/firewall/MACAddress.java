@@ -20,13 +20,13 @@ import java.net.UnknownHostException;
 public class MACAddress implements Serializable
 {
     static final int MACADDRSZ = 6;
-    static final String SAMPLE = "01:23:45:67:89:AB";
+    static final String SAMPLE = "01:23:45:67:89:ab";
     
     private final String mac;
 
     private MACAddress( String mac )
     {
-        this.mac = mac;
+        this.mac = mac.toLowerCase();
     }
     
     public static MACAddress parse( String mac ) throws IllegalArgumentException, UnknownHostException
@@ -54,12 +54,28 @@ public class MACAddress implements Serializable
 
     public String toString()
     {
-        /* Return a copy of the MAC address */
-        return new String( mac );
+        return mac ;
     }
 
     public static String sample()
     {
         return SAMPLE;
     }
+
+    /* The value here is just the MAC which is a string, so pass these down to the string */
+    public int hashCode()
+    {
+        /* String is always stored in lowercase so AA:00... would match aa:00 */
+        return mac.hashCode();
+    }
+
+    public boolean equals( Object o )
+    {
+        if ( o instanceof MACAddress ) {
+            return mac.equalsIgnoreCase(((MACAddress)o).toString());
+        }
+
+        return false;
+    }
+
 }

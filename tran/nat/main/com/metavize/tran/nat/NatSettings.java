@@ -73,6 +73,12 @@ public class NatSettings implements java.io.Serializable
         this.tid = tid;
     }
 
+    /* Validation method */
+    public void validate()
+    {
+        
+    }
+
     /**
      * @hibernate.id
      * column="SETTINGS_ID"

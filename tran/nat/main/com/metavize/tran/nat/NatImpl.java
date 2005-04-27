@@ -75,12 +75,23 @@ public class NatImpl extends SoloTransform implements Nat
 
     public NatSettings getNatSettings()
     {
+        if ( settings.getDhcpEnabled()) {
+            /* Insert all of the leases from DHCP */
+            DhcpManager.getInstance().loadLeases( settings );
+        } else {
+            /* remove any leftover leases from DHCP */
+            DhcpManager.getInstance().fleeceLeases( settings );
+        }
+        
         return this.settings;
     }
 
     public void setNatSettings( NatSettings settings)
     {
         Session s = TransformContextFactory.context().openSession();
+        
+        /* Remove all of the non-static addresses before saving */
+        DhcpManager.getInstance().fleeceLeases( settings );
         try {
             Transaction tx = s.beginTransaction();
             
