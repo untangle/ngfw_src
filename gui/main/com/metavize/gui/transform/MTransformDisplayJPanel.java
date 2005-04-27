@@ -37,8 +37,9 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
     protected MTransformJPanel mTransformJPanel;
     
     // GENERAL DISPLAY
-    private boolean isAirgap = false;
-    private boolean isReporting = false;
+    private boolean updateActivity = true;
+    private boolean updateSessions = true;
+    private boolean updateThroughput = true;
     protected UpdateGraphThread updateGraphThread;
     private volatile boolean updateGraph = false;
     private volatile boolean killGraph = false;
@@ -67,8 +68,6 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
         
 
         graphTransform = mTransformJPanel.transformContext().transform();
-        isAirgap = mTransformJPanel.transformContext().getTransformDesc().getName().equals("airgap-transform");
-	isReporting = mTransformJPanel.transformContext().getTransformDesc().getName().equals("reporting-transform");
         
         throughputDynamicTimeSeriesCollection = new AreaDynamicTimeSeriesCollection(1, 60, new Second());
         throughputDynamicTimeSeriesCollection.setTimeBase(new Second());
@@ -82,18 +81,35 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
 
         initComponents();
 
-
         
-        if( isAirgap || isReporting ){
-            this.remove(sessionChartJPanel);
+        if( mTransformJPanel.transformContext().getTransformDesc().getName().equals("airgap-transform") ){
+            updateActivity = false;
+            updateSessions = false;
+        }
+        else if( mTransformJPanel.transformContext().getTransformDesc().getName().equals("reporting-transform") ){
+            updateActivity = false;
+            updateSessions = false;
+            updateThroughput = false;
+        }
+        else if( mTransformJPanel.transformContext().getTransformDesc().getName().equals("nat-transform") ){
+            updateThroughput = false;
+        }
+        else if( mTransformJPanel.transformContext().getTransformDesc().getName().equals("firewall-transform") ){
+            updateThroughput = false;
+        }
+        if( !updateActivity){
             this.remove(activityJPanel);
-            this.remove(sessionsJLabel);
             this.remove(activityJLabel);
         }
-        if( isReporting ){
-	    this.remove(throughputChartJPanel);
+        if( !updateSessions ){
+            this.remove(sessionChartJPanel);
+            this.remove(sessionsJLabel);
+        }
+        if( !updateThroughput ){
+            this.remove(throughputChartJPanel);
 	    this.remove(throughputJLabel);
-	}
+        }
+        
 
         updateGraphThread = new UpdateGraphThread();
         updateGraphThread.start();
@@ -414,24 +430,24 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
                 return;
             
             SwingUtilities.invokeAndWait( new Runnable(){ public void run(){ 
-                if( !MTransformDisplayJPanel.this.isAirgap && !MTransformDisplayJPanel.this.isReporting ){
+                if( MTransformDisplayJPanel.this.updateSessions ){
                     newestIndex = sessionDynamicTimeSeriesCollection.getNewestIndex();
                     sessionDynamicTimeSeriesCollection.addValue(0, newestIndex, (float) sessionCountCurrent);
                     sessionDynamicTimeSeriesCollection.addValue(1, newestIndex, (float) sessionRequestCurrent - sessionRequestLast);
                     sessionDynamicTimeSeriesCollection.advanceTime();
                     sessionRequestLast = sessionRequestCurrent;
+                    generateCountLabel(sessionCountTotal, " ACC", sessionTotalJLabel);
+                    generateCountLabel(sessionRequestCurrent, " REQ", sessionRequestTotalJLabel);
                 }
 
-                if( !MTransformDisplayJPanel.this.isReporting ){
+                if( MTransformDisplayJPanel.this.updateThroughput ){
                     throughputDynamicTimeSeriesCollection.addValue( 0, throughputDynamicTimeSeriesCollection.getNewestIndex(), ((float)byteCountCurrent - byteCountLast)/1000f);            
                     throughputDynamicTimeSeriesCollection.advanceTime();
                     byteCountLast = byteCountCurrent;
                     generateCountLabel(byteCountCurrent, "B", throughputTotalJLabel);
                 }
 
-                if( !MTransformDisplayJPanel.this.isAirgap && !MTransformDisplayJPanel.this.isReporting ){
-                    generateCountLabel(sessionCountTotal, " ACC", sessionTotalJLabel);
-                    generateCountLabel(sessionRequestCurrent, " REQ", sessionRequestTotalJLabel);
+                if( MTransformDisplayJPanel.this.updateActivity ){
                     dataset.setValue( activity0Count.decayValue(), activitySeriesString, activityString0);
                     dataset.setValue( activity1Count.decayValue(), activitySeriesString, activityString1);
                     dataset.setValue( activity2Count.decayValue(), activitySeriesString, activityString2);
