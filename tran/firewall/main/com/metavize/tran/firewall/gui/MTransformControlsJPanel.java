@@ -34,7 +34,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 
         // SETUP FIREWALL
         blockJPanel = new BlockJPanel();
-        super.mTabbedPane.addTab("Block and Pass", null, blockJPanel );
+        super.mTabbedPane.addTab("Block/Pass List", null, blockJPanel );
         
         // SETUP GENERAL SETTINGS
         settingsJPanel = new SettingsJPanel();

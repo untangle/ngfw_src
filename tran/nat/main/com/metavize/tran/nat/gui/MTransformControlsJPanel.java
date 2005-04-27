@@ -31,6 +31,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
     private AddressJPanel addressJPanel;
     private RedirectJPanel redirectJPanel;
     private DmzJPanel dmzJPanel;
+    private DnsJPanel dnsJPanel;
     
     public MTransformControlsJPanel(MTransformJPanel mTransformJPanel) {
         super(mTransformJPanel);
@@ -55,7 +56,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
         dhcpJTabbedPane.addTab("Settings", null, dhcpJScrollPane );
         addressJPanel = new AddressJPanel();
         dhcpJTabbedPane.addTab("Address Map", null, addressJPanel );
-	super.mTabbedPane.addTab("DHCP & DNS", null, dhcpJTabbedPane );
+	super.mTabbedPane.addTab("DHCP", null, dhcpJTabbedPane );
         
         // SETUP REDIRECT
         redirectJPanel = new RedirectJPanel();
@@ -67,7 +68,14 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
         dmzJScrollPane.setHorizontalScrollBarPolicy( ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER );
         dmzJScrollPane.setVerticalScrollBarPolicy( ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS );
         super.mTabbedPane.addTab("DMZ", null, dmzJScrollPane );
-        
+
+        // SETUP DNS FORWARDING
+        dnsJPanel = new DnsJPanel();
+        JScrollPane dnsJScrollPane = new JScrollPane( dnsJPanel );
+        dnsJScrollPane.setHorizontalScrollBarPolicy( ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER );
+        dnsJScrollPane.setVerticalScrollBarPolicy( ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS );
+        super.mTabbedPane.addTab("DNS Forwarding", null, dnsJScrollPane );
+
         refreshAll();
     }
     
@@ -121,6 +129,14 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
             Util.handleExceptionNoRestart("Error refreshing DMZ", e);
         }
         
+        try {
+            dnsJPanel.refresh( natSettings );
+        }
+        catch(Exception e){
+            isValid = false;
+            Util.handleExceptionNoRestart("Error refreshing DNS", e);
+        }
+        
         if(!isValid){
             // do something more interesting than this
         }  
@@ -169,6 +185,14 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
             Util.handleExceptionNoRestart("Error saving DMZ", e);
         }
         
+        try {
+            dnsJPanel.save( natSettings );
+        }
+        catch(Exception e){
+            isValid = false;
+            Util.handleExceptionNoRestart("Error saving DNS", e);
+        }
+
         if(!isValid){
             // do something more interesting than this
         }
@@ -194,11 +218,6 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
         refreshAll();
     }
     
-    static void setNatEnabledConstraint(boolean natEnabled){
-        dhcpJPanel.internalAddressIPaddrJTextField.setEnabled(!natEnabled);
-        dhcpJPanel.internalSubnetIPaddrJTextField.setEnabled(!natEnabled);
-    }
-
 }
 
 

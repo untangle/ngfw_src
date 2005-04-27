@@ -95,77 +95,6 @@ public class DhcpJPanel extends javax.swing.JPanel {
             isValid = false;
         }
         
-        // INTERNAL ADDRESS //////
-        try{
-            dhcpGateway = natSettings.getDhcpGateway().toString();
-            internalAddressIPaddrJTextField.setText( dhcpGateway );
-            internalAddressIPaddrJTextField.setBackground( Color.WHITE );
-        }
-        catch(Exception e){
-            internalAddressIPaddrJTextField.setBackground( INVALID_COLOR );
-            isValid = false;
-        }
-        
-        // INTERNAL SUBNET ///////
-        try{
-            dhcpSubnet  = natSettings.getDhcpSubnet().toString();
-            internalSubnetIPaddrJTextField.setText( dhcpSubnet );
-            internalSubnetIPaddrJTextField.setBackground( Color.WHITE );
-        }
-        catch(Exception e){
-            internalSubnetIPaddrJTextField.setBackground( INVALID_COLOR );
-            isValid = false;
-        }
-        
-        // INTERNAL NETWORK ///////
-        try{
-            dhcpNetwork = IPaddr.and(natSettings.getDhcpGateway(), natSettings.getDhcpSubnet()).toString();
-            internalNetworkJTextField.setText( dhcpNetwork );
-            internalNetworkJTextField.setBackground( Color.WHITE );
-        }
-        catch(Exception e){
-            internalNetworkJTextField.setBackground( INVALID_COLOR );
-            isValid = false;
-        }
-        
-        // DNS MASQ ENABLED ///////////
-        try{
-            dnsIsEnabled = natSettings.getDnsEnabled();
-            if( dnsIsEnabled )
-                dnsMasqEnabledJRadioButton.setSelected(true);
-            else
-                dnsMasqDisabledJRadioButton.setSelected(true);
-            dnsMasqEnabledJRadioButton.setBackground( BACKGROUND_COLOR );
-            dnsMasqDisabledJRadioButton.setBackground( BACKGROUND_COLOR );
-        }
-        catch(Exception e){
-            dnsMasqEnabledJRadioButton.setBackground( INVALID_COLOR );
-            dnsMasqDisabledJRadioButton.setBackground( INVALID_COLOR );
-            isValid = false;
-        }
-        
-        // DNS PRIMARY //////
-        try{
-            dhcpNameserver1 = natSettings.getDhcpNameserver1().toString();
-            nameserver1AddressIPaddrJTextField.setText( dhcpNameserver1 );
-            nameserver1AddressIPaddrJTextField.setBackground( Color.WHITE );
-        }
-        catch(Exception e){
-            nameserver1AddressIPaddrJTextField.setBackground( INVALID_COLOR );
-            isValid = false;
-        }
-        
-        // DNS SECONDARY //////
-        try{
-            dhcpNameserver2 = natSettings.getDhcpNameserver2().toString();
-            nameserver2AddressIPaddrJTextField.setText( dhcpNameserver2 );
-            nameserver2AddressIPaddrJTextField.setBackground( Color.WHITE );
-        }
-        catch(Exception e){
-            nameserver2AddressIPaddrJTextField.setBackground( INVALID_COLOR );
-            isValid = false;
-        }
-        
         if(!isValid)
             throw new Exception();
         
@@ -226,57 +155,6 @@ public class DhcpJPanel extends javax.swing.JPanel {
             isValid = false;
         }
         
-        // INTERNAL ADDRESS //////
-        try{
-            dhcpGateway = IPaddr.parse( internalAddressIPaddrJTextField.getText() );
-            internalAddressIPaddrJTextField.setBackground( Color.WHITE );
-        }
-        catch(Exception e){
-            internalAddressIPaddrJTextField.setBackground( INVALID_COLOR );
-            isValid = false;
-        }
-        
-        // INTERNAL SUBNET ///////
-        try{
-            dhcpSubnet  = IPaddr.parse( internalSubnetIPaddrJTextField.getText() );
-            internalSubnetIPaddrJTextField.setBackground( Color.WHITE );
-        }
-        catch(Exception e){
-            internalSubnetIPaddrJTextField.setBackground( INVALID_COLOR );
-            isValid = false;
-        }
-        
-        // DNS MASQ ENABLED ///////////
-        dnsIsEnabled = dnsMasqEnabledJRadioButton.isSelected();
-        if( dnsMasqEnabledJRadioButton.isSelected() ^ dnsMasqDisabledJRadioButton.isSelected() ){
-            dnsMasqEnabledJRadioButton.setBackground( BACKGROUND_COLOR );
-            dnsMasqDisabledJRadioButton.setBackground( BACKGROUND_COLOR );
-        }
-        else{
-            dnsMasqEnabledJRadioButton.setBackground( INVALID_COLOR );
-            dnsMasqDisabledJRadioButton.setBackground( INVALID_COLOR );
-            isValid = false;
-        }
-        
-        // DNS PRIMARY //////
-        try{
-            dhcpNameserver1 = IPaddr.parse( nameserver1AddressIPaddrJTextField.getText() );
-            nameserver1AddressIPaddrJTextField.setBackground( Color.WHITE );
-        }
-        catch(Exception e){
-            nameserver1AddressIPaddrJTextField.setBackground( INVALID_COLOR );
-            isValid = false;
-        }
-        
-        // DNS SECONDARY //////
-        try{
-            dhcpNameserver2 = IPaddr.parse( nameserver2AddressIPaddrJTextField.getText() );
-            nameserver2AddressIPaddrJTextField.setBackground( Color.WHITE );
-        }
-        catch(Exception e){
-            nameserver2AddressIPaddrJTextField.setBackground( INVALID_COLOR );
-            isValid = false;
-        }
         
         
         // SAVE THE VALUES ////////////////////////////////////
@@ -284,11 +162,6 @@ public class DhcpJPanel extends javax.swing.JPanel {
             natSettings.setDhcpEnabled( dhcpIsEnabled );
             natSettings.setDhcpStartAddress( dhcpStartAddress );
             natSettings.setDhcpEndAddress( dhcpEndAddress );
-            natSettings.setDhcpGateway( dhcpGateway );
-            natSettings.setDhcpSubnet( dhcpSubnet );
-            natSettings.setDnsEnabled( dnsIsEnabled );
-            natSettings.setDhcpNameserver1( dhcpNameserver1 );
-            natSettings.setDhcpNameserver2( dhcpNameserver2 );
         }
         else
             throw new Exception();
@@ -317,27 +190,6 @@ public class DhcpJPanel extends javax.swing.JPanel {
         startAddressIPaddrJTextField = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
         endAddressIPaddrJTextField = new javax.swing.JTextField();
-        internalAddressJPanel = new javax.swing.JPanel();
-        jTextArea4 = new javax.swing.JTextArea();
-        jTextArea5 = new javax.swing.JTextArea();
-        restrictIPJPanel2 = new javax.swing.JPanel();
-        jLabel7 = new javax.swing.JLabel();
-        internalAddressIPaddrJTextField = new javax.swing.JTextField();
-        jLabel11 = new javax.swing.JLabel();
-        internalSubnetIPaddrJTextField = new javax.swing.JTextField();
-        jLabel12 = new javax.swing.JLabel();
-        internalNetworkJTextField = new javax.swing.JTextField();
-        nameserversJPanel = new javax.swing.JPanel();
-        jTextArea1 = new javax.swing.JTextArea();
-        jPanel2 = new javax.swing.JPanel();
-        dnsMasqEnabledJRadioButton = new javax.swing.JRadioButton();
-        dnsMasqDisabledJRadioButton = new javax.swing.JRadioButton();
-        jLabel3 = new javax.swing.JLabel();
-        restrictIPJPanel3 = new javax.swing.JPanel();
-        jLabel9 = new javax.swing.JLabel();
-        nameserver1AddressIPaddrJTextField = new javax.swing.JTextField();
-        jLabel13 = new javax.swing.JLabel();
-        nameserver2AddressIPaddrJTextField = new javax.swing.JTextField();
 
         setLayout(new java.awt.GridBagLayout());
 
@@ -476,212 +328,11 @@ public class DhcpJPanel extends javax.swing.JPanel {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 10);
-        add(dynamicRangeJPanel, gridBagConstraints);
-
-        internalAddressJPanel.setLayout(new java.awt.GridBagLayout());
-
-        internalAddressJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Internal Address (Gateway)", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
-        jTextArea4.setEditable(false);
-        jTextArea4.setFont(new java.awt.Font("Dialog", 1, 12));
-        jTextArea4.setLineWrap(true);
-        jTextArea4.setText("Note:  This is enabled only if NAT is disabled");
-        jTextArea4.setWrapStyleWord(true);
-        jTextArea4.setOpaque(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 15, 0, 15);
-        internalAddressJPanel.add(jTextArea4, gridBagConstraints);
-
-        jTextArea5.setEditable(false);
-        jTextArea5.setLineWrap(true);
-        jTextArea5.setText("DHCP requires that you assign an address on your internal network to EdgeGuard.  This internal address is the address that computers on the internal network will use to contact EdgeGuard, in an effort to access the Internet or some other external network.  This address will be supplied by NAT if NAT is enabled.");
-        jTextArea5.setWrapStyleWord(true);
-        jTextArea5.setOpaque(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 15, 0, 15);
-        internalAddressJPanel.add(jTextArea5, gridBagConstraints);
-
-        restrictIPJPanel2.setLayout(new java.awt.GridBagLayout());
-
-        jLabel7.setFont(new java.awt.Font("Dialog", 0, 12));
-        jLabel7.setText("Internal IP Address: ");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        restrictIPJPanel2.add(jLabel7, gridBagConstraints);
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
-        restrictIPJPanel2.add(internalAddressIPaddrJTextField, gridBagConstraints);
-
-        jLabel11.setFont(new java.awt.Font("Dialog", 0, 12));
-        jLabel11.setText("Internal Subnet: ");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        restrictIPJPanel2.add(jLabel11, gridBagConstraints);
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
-        restrictIPJPanel2.add(internalSubnetIPaddrJTextField, gridBagConstraints);
-
-        jLabel12.setFont(new java.awt.Font("Dialog", 0, 12));
-        jLabel12.setText("Network Address: ");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        gridBagConstraints.insets = new java.awt.Insets(15, 0, 0, 0);
-        restrictIPJPanel2.add(jLabel12, gridBagConstraints);
-
-        internalNetworkJTextField.setEditable(false);
-        internalNetworkJTextField.setEnabled(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(15, 0, 2, 0);
-        restrictIPJPanel2.add(internalNetworkJTextField, gridBagConstraints);
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.ipadx = 150;
-        gridBagConstraints.insets = new java.awt.Insets(15, 0, 0, 0);
-        internalAddressJPanel.add(restrictIPJPanel2, gridBagConstraints);
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 10);
-        add(internalAddressJPanel, gridBagConstraints);
-
-        nameserversJPanel.setLayout(new java.awt.GridBagLayout());
-
-        nameserversJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Nameservers (DNS)", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
-        jTextArea1.setEditable(false);
-        jTextArea1.setLineWrap(true);
-        jTextArea1.setText("DHCP can assign a DNS to computers dynamically.  You can enable DNS Masquerading which sets EdgeGuard as the main DNS and uses the primary and secondary DNS for failover.  Or you can disable DNS Masquerading which makes the primary and secondary DNS the only DNS sources.");
-        jTextArea1.setWrapStyleWord(true);
-        jTextArea1.setOpaque(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 15, 0, 15);
-        nameserversJPanel.add(jTextArea1, gridBagConstraints);
-
-        jPanel2.setLayout(new java.awt.GridBagLayout());
-
-        dnsButtonGroup.add(dnsMasqEnabledJRadioButton);
-        dnsMasqEnabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        dnsMasqEnabledJRadioButton.setText("Enabled");
-        dnsMasqEnabledJRadioButton.setFocusPainted(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        jPanel2.add(dnsMasqEnabledJRadioButton, gridBagConstraints);
-
-        dnsButtonGroup.add(dnsMasqDisabledJRadioButton);
-        dnsMasqDisabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        dnsMasqDisabledJRadioButton.setText("Disabled");
-        dnsMasqDisabledJRadioButton.setFocusPainted(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        jPanel2.add(dnsMasqDisabledJRadioButton, gridBagConstraints);
-
-        jLabel3.setFont(new java.awt.Font("Dialog", 0, 12));
-        jLabel3.setText("DNS Masquerading");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.gridheight = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        jPanel2.add(jLabel3, gridBagConstraints);
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.insets = new java.awt.Insets(15, 0, 0, 0);
-        nameserversJPanel.add(jPanel2, gridBagConstraints);
-
-        restrictIPJPanel3.setLayout(new java.awt.GridBagLayout());
-
-        jLabel9.setFont(new java.awt.Font("Dialog", 0, 12));
-        jLabel9.setText("Primary DNS IP Address: ");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        restrictIPJPanel3.add(jLabel9, gridBagConstraints);
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
-        restrictIPJPanel3.add(nameserver1AddressIPaddrJTextField, gridBagConstraints);
-
-        jLabel13.setFont(new java.awt.Font("Dialog", 0, 12));
-        jLabel13.setText("Secondary DNS IP Address: ");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        restrictIPJPanel3.add(jLabel13, gridBagConstraints);
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
-        restrictIPJPanel3.add(nameserver2AddressIPaddrJTextField, gridBagConstraints);
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.ipadx = 150;
-        gridBagConstraints.insets = new java.awt.Insets(15, 0, 0, 0);
-        nameserversJPanel.add(restrictIPJPanel3, gridBagConstraints);
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
-        add(nameserversJPanel, gridBagConstraints);
+        add(dynamicRangeJPanel, gridBagConstraints);
 
     }//GEN-END:initComponents
 
@@ -696,48 +347,23 @@ public class DhcpJPanel extends javax.swing.JPanel {
     private void setDhcpEnabledDependency(boolean enabled){
         startAddressIPaddrJTextField.setEnabled( enabled );
         endAddressIPaddrJTextField.setEnabled( enabled );
-        internalAddressIPaddrJTextField.setEnabled( enabled );
-        internalSubnetIPaddrJTextField.setEnabled( enabled );
-        nameserver1AddressIPaddrJTextField.setEnabled( enabled );
-        nameserver2AddressIPaddrJTextField.setEnabled( enabled );
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JRadioButton dhcpDisabledJRadioButton;
     public javax.swing.JRadioButton dhcpEnabledJRadioButton;
     private javax.swing.ButtonGroup dnsButtonGroup;
-    public javax.swing.JRadioButton dnsMasqDisabledJRadioButton;
-    public javax.swing.JRadioButton dnsMasqEnabledJRadioButton;
     private javax.swing.JPanel dynamicRangeJPanel;
     private javax.swing.ButtonGroup enabledButtonGroup;
     public javax.swing.JTextField endAddressIPaddrJTextField;
     private javax.swing.JPanel explanationJPanel;
-    public javax.swing.JTextField internalAddressIPaddrJTextField;
-    private javax.swing.JPanel internalAddressJPanel;
-    public javax.swing.JTextField internalNetworkJTextField;
-    public javax.swing.JTextField internalSubnetIPaddrJTextField;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel11;
-    private javax.swing.JLabel jLabel12;
-    private javax.swing.JLabel jLabel13;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JTextArea jTextArea1;
     private javax.swing.JTextArea jTextArea2;
     private javax.swing.JTextArea jTextArea3;
-    private javax.swing.JTextArea jTextArea4;
-    private javax.swing.JTextArea jTextArea5;
-    public javax.swing.JTextField nameserver1AddressIPaddrJTextField;
-    public javax.swing.JTextField nameserver2AddressIPaddrJTextField;
-    private javax.swing.JPanel nameserversJPanel;
     private javax.swing.JPanel restrictIPJPanel;
-    private javax.swing.JPanel restrictIPJPanel2;
-    private javax.swing.JPanel restrictIPJPanel3;
     public javax.swing.JTextField startAddressIPaddrJTextField;
     // End of variables declaration//GEN-END:variables
     

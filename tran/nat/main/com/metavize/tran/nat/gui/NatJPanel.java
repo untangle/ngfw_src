@@ -56,7 +56,6 @@ public class NatJPanel extends javax.swing.JPanel {
         try{
             natEnabled = natSettings.getNatEnabled();
             this.setNatEnabledDependency(natEnabled);
-            MTransformControlsJPanel.setNatEnabledConstraint(natEnabled);
             if( natEnabled )
                 natEnabledJRadioButton.setSelected(true);
             else
@@ -460,12 +459,10 @@ public class NatJPanel extends javax.swing.JPanel {
 
     private void natDisabledJRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_natDisabledJRadioButtonActionPerformed
         this.setNatEnabledDependency(false);
-        MTransformControlsJPanel.setNatEnabledConstraint(false);
     }//GEN-LAST:event_natDisabledJRadioButtonActionPerformed
 
     private void natEnabledJRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_natEnabledJRadioButtonActionPerformed
         this.setNatEnabledDependency(true);
-        MTransformControlsJPanel.setNatEnabledConstraint(true);
     }//GEN-LAST:event_natEnabledJRadioButtonActionPerformed
     
     private void setNatEnabledDependency(boolean enabled){
