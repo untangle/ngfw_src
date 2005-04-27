@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: MLFieldConstants.java,v 1.4 2005/02/24 03:46:39 cng Exp $
+ * $Id$
  */
 package com.metavize.tran.email;
 
@@ -82,10 +82,10 @@ public class MLFieldConstants
 
     public final static String MIMEHDRPLAIN = "Content-Type: text/plain; charset=\"iso-8859-1\"" + Constants.PCRLF + "Content-Transfer-Encoding: 7bit" + Constants.PCRLF + Constants.PCRLF;
 
-    public final static String MBMARKSTART = "--";
-    public final static String MBMARKEND = "[^(--)]";
+    public final static String MBMARKSTART = "^--";
+    public final static String MBMARKEND = "[^(--)]" + Constants.PEOLINEFEED;
     public final static String MBTERMSTART = MBMARKSTART;
-    public final static String MBTERMEND = "--";
+    public final static String MBTERMEND = "--" + Constants.PEOLINEFEED;
 
     /* class variables */
 
