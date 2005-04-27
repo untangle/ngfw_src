@@ -577,13 +577,12 @@ public class UpgradeJDialog extends javax.swing.JDialog implements java.awt.even
                 actionJProgressBar.setIndeterminate(true);
                 actionJProgressBar.setValue(100);
                 actionJProgressBar.setString("shutting down...");
-                RestartJDialog restartJDialog = new RestartJDialog(Util.getMMainJFrame(), true);
-                restartJDialog.setBounds( Util.generateCenteredBounds(UpgradeJDialog.this.getBounds(), restartJDialog.getWidth(), restartJDialog.getHeight()) );
-                restartJDialog.setVisible(true);
+                RestartJDialog restartJDialog = new RestartJDialog();
+                
 
             }
             catch(Exception e){
-                RestartJDialog restartJDialog = new RestartJDialog(Util.getMMainJFrame(), true);
+                RestartJDialog restartJDialog = new RestartJDialog();
                 restartJDialog.setBounds( Util.generateCenteredBounds(UpgradeJDialog.this.getBounds(), restartJDialog.getWidth(), restartJDialog.getHeight()) );
                 restartJDialog.setVisible(true);                
             }

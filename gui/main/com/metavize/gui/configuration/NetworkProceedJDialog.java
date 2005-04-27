@@ -16,10 +16,12 @@ public class NetworkProceedJDialog extends javax.swing.JDialog implements java.a
     private boolean isProceeding = false;
     
     /** Creates new form ProceedJDialog */
-    public NetworkProceedJDialog(java.awt.Frame parent, boolean modal) {
-        super(parent, modal);
+    public NetworkProceedJDialog() {
+        super(Util.getMMainJFrame(), true);
         initComponents();
         this.addWindowListener(this);
+        this.setBounds( Util.generateCenteredBounds( this.getBounds(), this.getWidth(), this.getHeight()) );
+        this.setVisible(true);
     }
     
     private void initComponents() {//GEN-BEGIN:initComponents
@@ -34,7 +36,7 @@ public class NetworkProceedJDialog extends javax.swing.JDialog implements java.a
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-        setTitle("Confirm Upgrade...");
+        setTitle("Save Settings Warning");
         setModal(true);
         setResizable(false);
         cancelJButton.setFont(new java.awt.Font("Default", 0, 12));

@@ -16,10 +16,13 @@ public class RestartJDialog extends javax.swing.JDialog implements java.awt.even
     
     
     /** Creates new form ProceedJDialog */
-    public RestartJDialog(java.awt.Frame parent, boolean modal) {
-        super(parent, modal);
+    public RestartJDialog() {
+        super(Util.getMMainJFrame(), true);
         initComponents();
         this.addWindowListener(this);
+        this.setBounds( Util.generateCenteredBounds(this.getBounds(), this.getWidth(), this.getHeight()) );
+        this.setVisible(true);
+        this.dispose();
     }
     
     private void initComponents() {//GEN-BEGIN:initComponents
@@ -58,12 +61,13 @@ public class RestartJDialog extends javax.swing.JDialog implements java.awt.even
         messageJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         messageJLabel.setText("<html><center>\nYou must now shut down the Metavize EdgeGuard Client.<br>\n<br>\nYou can log in again after shutting down, after a brief period.<br>\n</center></html>");
         messageJLabel.setDoubleBuffered(true);
+        messageJLabel.setPreferredSize(new java.awt.Dimension(400, 45));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
-        gridBagConstraints.insets = new java.awt.Insets(60, 30, 0, 30);
+        gridBagConstraints.insets = new java.awt.Insets(50, 30, 0, 30);
         getContentPane().add(messageJLabel, gridBagConstraints);
 
         labelJLabel.setFont(new java.awt.Font("Dialog", 1, 24));

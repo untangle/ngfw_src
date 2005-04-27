@@ -188,10 +188,9 @@ public class NetworkJDialog extends ConfigJDialog {
             return;
 
         // ASK THE USER IF HE REALLY WANTS TO SAVE SETTINGS
-        NetworkProceedJDialog networkProceedJDialog = new NetworkProceedJDialog(Util.getMMainJFrame(), true);
-        networkProceedJDialog.setBounds( Util.generateCenteredBounds(NetworkJDialog.this.getBounds(), networkProceedJDialog.getWidth(), networkProceedJDialog.getHeight()) );
-        networkProceedJDialog.setVisible(true);
+        NetworkProceedJDialog networkProceedJDialog = new NetworkProceedJDialog();
         boolean isProceeding = networkProceedJDialog.isProceeding();
+        networkProceedJDialog.dispose();
         if( !isProceeding ) 
             return;
 
@@ -218,7 +217,7 @@ public class NetworkJDialog extends ConfigJDialog {
         networkingConfiguration.isTcpWindowScalingEnabled( tcpWindowEnabled );
         Util.getMvvmContext().networkingManager().set(networkingConfiguration);
         
-        (new RestartJDialog(Util.getMMainJFrame(), true)).setVisible(true);
+        new RestartJDialog();
     }
 
     private void reload(){
