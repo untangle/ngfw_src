@@ -11,14 +11,21 @@
 
 package com.metavize.tran.ftp;
 
+import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.tapi.Fitting;
+import com.metavize.mvvm.tapi.Pipeline;
 import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.tran.token.AbstractTokenHandler;
+import com.metavize.tran.token.Chunk;
 import com.metavize.tran.token.Token;
+import com.metavize.tran.token.TokenException;
 import com.metavize.tran.token.TokenResult;
 
+// XXX hook the data and ctl into same state machine
 public abstract class FtpStateMachine extends AbstractTokenHandler
 {
-    private final FtpDataHandler dataHandler;
+    private final Fitting clientFitting;
+    private final Fitting serverFitting;
 
     // constructors -----------------------------------------------------------
 
@@ -26,49 +33,57 @@ public abstract class FtpStateMachine extends AbstractTokenHandler
     {
         super(session);
 
-        dataHandler = new FtpDataHandler();
-
-
+        Pipeline p = MvvmContextFactory.context().pipelineFoundry()
+            .getPipeline(session.id());
+        clientFitting = p.getClientFitting(session.mPipe());
+        serverFitting = p.getServerFitting(session.mPipe());
     }
 
     // protected abstract -----------------------------------------------------
 
+    protected abstract TokenResult doClientData(Chunk c) throws TokenException;
+    protected abstract void doClientDataEnd() throws TokenException;
+
+    protected abstract TokenResult doServerData(Chunk c) throws TokenException;
+    protected abstract void doServerDataEnd() throws TokenException;
+
     // AbstractTokenHandler methods -------------------------------------------
 
-    public TokenResult handleClientToken(Token token)
+    public TokenResult handleClientToken(Token token) throws TokenException
     {
-        return null; // XXX implement
-    }
-
-    public TokenResult handleServerToken(FtpCommand command)
-    {
-        switch (command.getFunction()) {
-        case PORT:
-            StringTokenizer tok = new StringTokenizer(command.getArgument());
-            String addr = tok.nextToken() + "." + tok.nextToken()
-                + "." + tok.nextToken() + "." + tok.nextToken();
-            String port = 256 * Integer.parseInt(tok.nextToken())
-                + Integer.parseInt(tok.nextToken());
-
-
-
+        if (Fitting.FTP_CTL_TOKENS == clientFitting) {
+            return new TokenResult(null, new Token[] { token });
+        } else if (Fitting.FTP_DATA_TOKENS == clientFitting) {
+            return doClientData((Chunk)token);
+        } else {
+            throw new IllegalStateException("bad fitting: " + clientFitting);
         }
     }
 
-    private int nextClientState(Object o)
+    public TokenResult handleServerToken(Token token) throws TokenException
     {
-        return -1; // XXX implement
+        if (Fitting.FTP_CTL_TOKENS == serverFitting) {
+            return new TokenResult(new Token[] { token }, null);
+        } else if (Fitting.FTP_DATA_TOKENS == serverFitting) {
+            return doServerData((Chunk)token);
+        } else {
+            throw new IllegalStateException("bad fitting: " + serverFitting);
+        }
     }
 
-    private int nextServerState(Object o)
+    @Override
+    public void handleClientFin() throws TokenException
     {
-        return -1; // XXX implement
+        if (Fitting.FTP_DATA_TOKENS == clientFitting) {
+            doClientDataEnd();
+        }
     }
 
-    private class FtpDataHandler extends AbstractEventHandler
+    @Override
+    public void handleServerFin() throws TokenException
     {
-        final MPipe mPipe = new MPipe("ftp-data", Fitting.OCTET_STREAM,
-                                      Affinity.SERVER);
-
+        if (Fitting.FTP_DATA_TOKENS == serverFitting) {
+            doServerDataEnd();
+        }
     }
 }

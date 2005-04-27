@@ -11,6 +11,7 @@
 
 package com.metavize.tran.token;
 
+
 import com.metavize.mvvm.tapi.TCPSession;
 
 public abstract class AbstractParser implements Parser

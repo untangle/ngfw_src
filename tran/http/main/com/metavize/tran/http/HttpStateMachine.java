@@ -111,6 +111,7 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
         }
     }
 
+    // private methods --------------------------------------------------------
 
     private int nextClientState(Object o)
     {

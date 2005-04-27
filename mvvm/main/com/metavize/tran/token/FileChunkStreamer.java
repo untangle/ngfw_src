@@ -6,11 +6,12 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: FileChunkStreamer.java,v 1.6 2005/03/18 20:09:03 jdi Exp $
+ * $Id$
  */
 
 package com.metavize.tran.token;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
@@ -28,6 +29,7 @@ public class FileChunkStreamer extends TokenStreamer
 {
     private final Logger logger = Logger.getLogger(FileChunkStreamer.class);
 
+    private final File file;
     private final FileChannel channel;
     private final boolean closeWhenDone;
     private final int chunkSize;
@@ -36,19 +38,21 @@ public class FileChunkStreamer extends TokenStreamer
 
     // constructors -----------------------------------------------------------
 
-    public FileChunkStreamer(Pipeline pipeline, FileChannel channel,
+    public FileChunkStreamer(Pipeline pipeline, File file, FileChannel channel,
                              boolean closeWhenDone, int chunkSize)
     {
         super(pipeline);
+        this.file = file;
         this.channel = channel;
         this.closeWhenDone = closeWhenDone;
         this.chunkSize = chunkSize;
     }
 
-    public FileChunkStreamer(Pipeline pipeline, FileChannel channel,
+    public FileChunkStreamer(Pipeline pipeline, File file, FileChannel channel,
                              boolean closeWhenDone)
     {
         super(pipeline);
+        this.file = file;
         this.channel = channel;
         this.closeWhenDone = closeWhenDone;
         this.chunkSize = 16384;
@@ -72,6 +76,8 @@ public class FileChunkStreamer extends TokenStreamer
             if (0 > channel.read(buf)) {
                 // Bug fix for #277 -- make sure to send the end marker
                 if (!sentEnd) {
+                    channel.close();
+                    file.delete();
                     sentEnd = true;
                     return EndMarker.MARKER;
                 } else {

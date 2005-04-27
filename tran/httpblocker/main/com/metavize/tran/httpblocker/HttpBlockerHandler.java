@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: HttpBlockerHandler.java,v 1.9 2005/03/25 03:51:16 amread Exp $
+ * $Id$
  */
 
 package com.metavize.tran.httpblocker;
@@ -68,6 +68,7 @@ public class HttpBlockerHandler extends HttpStateMachine
 
     protected TokenResult doRequestLine(RequestLine requestLine)
     {
+	System.out.println("CLASS LOADER: " + Thread.currentThread().getContextClassLoader());
         logger.debug("in doRequestLine: " + requestLine);
 
         this.requestLine = requestLine;

@@ -50,12 +50,14 @@ public class TokenAdaptor extends AbstractEventHandler
         this.handlerFactory = thf;
     }
 
+    @Override
     public void handleTCPNewSessionRequest(TCPNewSessionRequestEvent e)
         throws MPipeException
     {
         TCPNewSessionRequest sr = e.sessionRequest();
     }
 
+    @Override
     public void handleTCPNewSession(TCPSessionEvent e)
         throws MPipeException
     {
@@ -71,6 +73,7 @@ public class TokenAdaptor extends AbstractEventHandler
         s.serverLineBuffering(false);
     }
 
+    @Override
     public IPDataResult handleTCPServerChunk(TCPChunkEvent e)
         throws MPipeException
     {
@@ -78,6 +81,7 @@ public class TokenAdaptor extends AbstractEventHandler
         return handleToken(handlerDesc, e, true);
     }
 
+    @Override
     public IPDataResult handleTCPClientChunk(TCPChunkEvent e)
         throws MPipeException
     {
@@ -85,18 +89,39 @@ public class TokenAdaptor extends AbstractEventHandler
         return handleToken(handlerDesc, e, false);
     }
 
+    @Override
     public void handleTCPClientFIN(TCPSessionEvent e)
         throws MPipeException
     {
-        super.handleTCPClientFIN(e);
+        TCPSession session = (TCPSession)e.session();
+        HandlerDesc handlerDesc = getHandlerDesc(session);
+
+        try {
+            handlerDesc.handler.handleClientFin();
+        } catch (TokenException exn) {
+            logger.warn("resetting connection", exn);
+            session.resetClient();
+            session.resetServer();
+        }
     }
 
+    @Override
     public void handleTCPServerFIN(TCPSessionEvent e)
         throws MPipeException
     {
-        super.handleTCPServerFIN(e);
+        TCPSession session = (TCPSession)e.session();
+        HandlerDesc handlerDesc = getHandlerDesc(session);
+
+        try {
+            handlerDesc.handler.handleServerFin();
+        } catch (TokenException exn) {
+            logger.warn("resetting connection", exn);
+            session.resetClient();
+            session.resetServer();
+        }
     }
 
+    @Override
     public void handleTCPFinalized(TCPSessionEvent e) throws MPipeException
     {
         super.handleTCPFinalized(e);
@@ -105,48 +130,60 @@ public class TokenAdaptor extends AbstractEventHandler
 
     // UDP events -------------------------------------------------------------
 
+    @Override
     public void handleUDPNewSessionRequest(UDPNewSessionRequestEvent e)
         throws MPipeException
     {
         throw new UnsupportedOperationException("UDP not supported");
     }
 
+    @Override
     public void handleUDPNewSession(UDPSessionEvent e) throws MPipeException
     {
         throw new UnsupportedOperationException("UDP not supported");
     }
 
+    @Override
     public void handleUDPClientPacket(UDPPacketEvent e)
         throws MPipeException
     {
         throw new UnsupportedOperationException("UDP not supported");
     }
 
+    @Override
     public void handleUDPServerPacket(UDPPacketEvent e)
         throws MPipeException
     {
         throw new UnsupportedOperationException("UDP not supported");
     }
 
+    @Override
     public void handleUDPClientExpired(UDPSessionEvent e) throws MPipeException
     {
         throw new UnsupportedOperationException("UDP not supported");
     }
 
+    @Override
     public void handleUDPServerExpired(UDPSessionEvent e) throws MPipeException
     {
         throw new UnsupportedOperationException("UDP not supported");
     }
 
+    @Override
     public void handleUDPFinalized(UDPSessionEvent e) throws MPipeException
     {
         throw new UnsupportedOperationException("UDP not supported");
     }
 
+    @Override
     public void handleTimer(IPSessionEvent e)
     {
         TokenHandler th = getHandler(e.ipsession());
-        th.handleTimer();
+        try {
+            th.handleTimer();
+        } catch (TokenException exn) {
+            logger.warn("exception in timer, no action taken", exn);
+        }
     }
 
     // HandlerDesc utils ------------------------------------------------------
@@ -216,23 +253,30 @@ public class TokenAdaptor extends AbstractEventHandler
         Token token = (Token)pipeline.detach(key);
         logger.debug("RETRIEVED object " + token + " with key: " + key);
 
-        TokenResult tr;
-        if (s2c) {
-            tr = handler.handleServerToken(token);
-        } else {
-            tr = handler.handleClientToken(token);
-        }
+        TCPSession session = e.session();
 
-        TCPSession s = e.session();
+        TokenResult tr;
+        try {
+            if (s2c) {
+                tr = handler.handleServerToken(token);
+            } else {
+                tr = handler.handleClientToken(token);
+            }
+        } catch (TokenException exn) {
+            logger.warn("resetting connection", exn);
+            session.resetClient();
+            session.resetServer();
+            return IPDataResult.DO_NOT_PASS;
+        }
 
         // XXX ugly:
         if (tr.isStreamer()) {
             if (tr.s2cStreamer() != null) {
                 logger.debug("beginning client stream");
-                s.beginClientStream(tr.s2cStreamer());
+                session.beginClientStream(tr.s2cStreamer());
             } else {
                 logger.debug("beginning server stream");
-                s.beginServerStream(tr.c2sStreamer());
+                session.beginServerStream(tr.c2sStreamer());
             }
             // just means nothing extra to send before beginning stream.
             return IPDataResult.DO_NOT_PASS;

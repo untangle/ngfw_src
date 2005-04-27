@@ -11,9 +11,7 @@
 
 package com.metavize.mvvm.engine;
 
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 import com.metavize.mvvm.MvvmContextFactory;
@@ -49,9 +47,9 @@ public abstract class TransformBase implements Transform
 
     private final TransformContext transformContext;
     private final Tid tid;
-    private final Set children = Collections.synchronizedSet(new HashSet());
+    private final Set<TransformBase> parents = new HashSet<TransformBase>();
+    private final Set<Transform> children = new HashSet<Transform>();
 
-    private TransformBase parent;
     private TransformState runState;
     private TransformStats stats = new TransformStats();
 
@@ -240,12 +238,10 @@ public abstract class TransformBase implements Transform
         }
     }
 
-    void setParent(TransformBase parent)
+    void addParent(TransformBase parent)
     {
-        this.parent = parent;
-        if (null != parent) {
-            this.parent.addChild(this);
-        }
+        parents.add(parent);
+        parent.addChild(this);
     }
 
     // private methods --------------------------------------------------------
@@ -316,17 +312,22 @@ public abstract class TransformBase implements Transform
                                             + getRunState());
         }
 
-        if (syncState && null != parent) {
-            Thread ct = Thread.currentThread();
-            // Entering TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-            ClassLoader oldCl = ct.getContextClassLoader();
-            ct.setContextClassLoader(parent.getClass().getClassLoader());
+        if (syncState) {
+            for (TransformBase parent : parents) {
+                ClassLoader parentCl = parent.getTransformContext()
+                    .getClassLoader();
 
-            try {
-                parent.parentStart();
-            } finally {
-                ct.setContextClassLoader(oldCl);
-                // Left TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                Thread ct = Thread.currentThread();
+                ClassLoader oldCl = ct.getContextClassLoader();
+                // Entering TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                ct.setContextClassLoader(parentCl);
+
+                try {
+                    parent.parentStart();
+                } finally {
+                    ct.setContextClassLoader(oldCl);
+                    // Left TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                }
             }
         }
 
@@ -351,17 +352,22 @@ public abstract class TransformBase implements Transform
         disconnectMPipe();
         changeState(TransformState.INITIALIZED, syncState);
 
-        if (syncState && null != parent) {
-            Thread ct = Thread.currentThread();
-            // Entering TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-            ClassLoader oldCl = ct.getContextClassLoader();
-            ct.setContextClassLoader(parent.getClass().getClassLoader());
+        if (syncState) {
+            for (TransformBase parent : parents) {
+                ClassLoader parentCl = parent.getTransformContext()
+                    .getClassLoader();
 
-            try {
-                parent.parentStop();
-            } finally {
-                ct.setContextClassLoader(oldCl);
-                // Left TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                Thread ct = Thread.currentThread();
+                ClassLoader oldCl = ct.getContextClassLoader();
+                // Entering TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                ct.setContextClassLoader(parentCl);
+
+                try {
+                    parent.parentStop();
+                } finally {
+                    ct.setContextClassLoader(oldCl);
+                    // Left TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                }
             }
         }
 
@@ -416,8 +422,7 @@ public abstract class TransformBase implements Transform
         boolean childrenStopped = true;
 
         if (TransformState.RUNNING == getRunState()) {
-            for (Iterator i = children.iterator(); i.hasNext(); ) {
-                Transform tran = (Transform)i.next();
+            for (Transform tran : children) {
                 if (TransformState.RUNNING == tran.getRunState()) {
                     childrenStopped = false;
                     break;

@@ -10,7 +10,9 @@
  */
 package com.metavize.tran.ftp;
 
-import com.metavize.mvvm.tapi.Fitting;
+import java.util.HashSet;
+import java.util.Set;
+
 import com.metavize.mvvm.tapi.PipeSpec;
 import com.metavize.mvvm.tapi.Protocol;
 import com.metavize.mvvm.tapi.Subscription;
@@ -28,12 +30,12 @@ public class FtpTransform extends CasingTransform
     {
         // inside PipeSpec
         Subscription s = new Subscription(Protocol.TCP);
-        insidePipeSpec = new PipeSpec("ftp-inside", Fitting.FTP_STREAM,
-                                      Fitting.FTP_TOKENS, s);
+        Set subs = new HashSet();
+        subs.add(s);
+        insidePipeSpec = new FtpPipeSpec(subs);
 
         // outside PipeSpec
-        outsidePipeSpec = new PipeSpec("ftp-outside", Fitting.FTP_TOKENS,
-                                       Fitting.FTP_STREAM, s);
+        outsidePipeSpec = insidePipeSpec;
     }
 
     // CasingTransform methods ------------------------------------------------

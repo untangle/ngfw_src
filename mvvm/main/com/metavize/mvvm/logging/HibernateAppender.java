@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: HibernateAppender.java,v 1.28 2005/03/25 03:51:16 amread Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.logging;
@@ -75,6 +75,7 @@ public class HibernateAppender extends AppenderSkeleton
     protected void append(LoggingEvent event)
     {
         TransformContext tctx = TransformContextFactory.context();
+
         Tid tid = null == tctx ? new Tid(0L) : tctx.getTid();
 
         Object msg = event.getMessage();
@@ -175,7 +176,6 @@ public class HibernateAppender extends AppenderSkeleton
         }
 
         // private methods ----------------------------------------------------
-
 
         private void drainTo(BlockingQueue q, List l)
         {

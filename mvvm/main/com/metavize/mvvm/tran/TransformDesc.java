@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: TransformDesc.java,v 1.12 2005/02/25 02:45:29 amread Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.tran;
@@ -14,7 +14,9 @@ package com.metavize.mvvm.tran;
 import java.awt.Color;
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.metavize.mvvm.security.Tid;
 
@@ -28,7 +30,7 @@ import com.metavize.mvvm.security.Tid;
  */
 public class TransformDesc implements Serializable
 {
-    private static final long serialVersionUID = 5392845095643317874L;
+    private static final long serialVersionUID = 4292898282402196560L;
 
     private Long id;
     private Tid tid;
@@ -36,7 +38,8 @@ public class TransformDesc implements Serializable
     private String className;
     private byte[] publicKey;
 
-    private String parentTransform;
+    private boolean casing;
+    private Set parents = new HashSet();
     private boolean singleInstance;
     private TransformState targetState;
     private List args;
@@ -53,18 +56,14 @@ public class TransformDesc implements Serializable
 
     public TransformDesc() { }
 
-    public TransformDesc(Tid tid, byte[] publicKey, String name,
-                         String className, String[] args, String displayName,
-                         String guiClassName)
+    // business methods -------------------------------------------------------
+
+    public void addParent(String parent)
     {
-        this.tid = tid;
-        this.publicKey = publicKey;
-        this.name = name;
-        this.className = className;
-        this.args = Arrays.asList(args);
-        this.displayName = displayName;
-        this.guiClassName = guiClassName;
+        parents.add(parent);
     }
+
+    // accessors --------------------------------------------------------------
 
     /**
      * @hibernate.id
@@ -160,27 +159,54 @@ public class TransformDesc implements Serializable
     }
 
     /**
+     * Only a single instance may be initialized in the system.
+     *
+     * @return true if the transform is a casing.
+     * @hibernate.property
+     * column="CASING"
+     */
+    public boolean isCasing()
+    {
+        return casing;
+    }
+
+    public void setCasing(boolean casing)
+    {
+        this.casing = casing;
+    }
+
+    /**
      * The parent transform, usually a casing.
      *
      * @return the parent transform, null if transform has no parent.
-     * @hibernate.property
-     * column="PARENT_TRANSFORM"
+     * @hibernate.set
+     * table="TRANSFORM_DESC_PARENT"
+     * @hibernate.collection-key
+     * column="DESC_ID"
+     * @hibernate.collection-element
+     * column="PARENT"
+     * type="string"
+     * not-null="true"
      * length="64"
      */
-    public String getParentTransform()
+    public Set getParents()
     {
-        return parentTransform;
+        return parents;
     }
 
-    public void setParentTransform(String parentTransform)
+    public void setParents(Set parents)
     {
-        this.parentTransform = parentTransform;
+        if (null == parents) {
+            throw new IllegalArgumentException("null not allowed");
+        }
+
+        this.parents = parents;
     }
 
     /**
      * Only a single instance may be initialized in the system.
      *
-     * @return a <code>boolean</code> value
+     * @return true if only a single instance may be loaded.
      * @hibernate.property
      * column="SINGLE_INSTANCE"
      */

@@ -26,7 +26,7 @@
     <param name="Append" value="true"/>
     <param name="MaxFileSize" value="500KB"/>
     <param name="MaxBackupIndex" value="9"/>
-    <param name="Threshold" value="WARN"/>
+    <param name="Threshold" value="ALL"/>
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d{ABSOLUTE} %-5p [%c{1}] %m%n"/>
     </layout>
@@ -46,7 +46,11 @@
                                gc-reclaimed buffers are noted -->
 
   <category name="com.metavize.mvvm.engine">
-    <priority value="WARN"/>
+    <priority value="ALL"/>
+  </category>
+
+  <category name="com.metavize.mvvm.logging">
+    <priority value="ALL"/>
   </category>
 
   <category name="com.metavize.mvvm.argon">

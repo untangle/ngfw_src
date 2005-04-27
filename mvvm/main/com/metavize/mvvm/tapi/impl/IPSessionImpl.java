@@ -11,27 +11,25 @@
 
 package com.metavize.mvvm.tapi.impl;
 
+import java.net.InetAddress;
+import java.text.DateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import com.metavize.jvector.Crumb;
+import com.metavize.jvector.DataCrumb;
+import com.metavize.jvector.IncomingSocketQueue;
+import com.metavize.jvector.OutgoingSocketQueue;
+import com.metavize.mvvm.argon.PipelineListener;
+import com.metavize.mvvm.engine.Main;
 import com.metavize.mvvm.tapi.*;
 import com.metavize.mvvm.tapi.event.IPStreamer;
 import com.metavize.mvvm.tran.Transform;
 import com.metavize.mvvm.tran.TransformState;
 import com.metavize.mvvm.util.MetaEnv;
-import com.metavize.jvector.IncomingSocketQueue;
-import com.metavize.jvector.OutgoingSocketQueue;
-import com.metavize.mvvm.argon.PipelineListener;
-import com.metavize.mvvm.engine.Main;
-import com.metavize.jvector.Crumb;
-import com.metavize.jvector.DataCrumb;
-
-import java.net.InetAddress;
-import org.apache.log4j.*;
+import org.apache.log4j.Logger;
 import org.apache.log4j.helpers.AbsoluteTimeDateFormat;
-import java.nio.ByteBuffer;
-import java.nio.channels.SocketChannel;
-import java.util.Date;
-import java.util.List;
-import java.util.ArrayList;
-import java.text.DateFormat;
 
 abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineListener {
 
@@ -40,9 +38,9 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
     protected Dispatcher dispatcher;
 
     protected List<Crumb>[] crumbs2write = new ArrayList[] { null, null };
-    
+
     protected IPStreamer[] streamer = null;
-    
+
     protected Logger logger;
 
     protected RWSessionStats stats;
@@ -61,7 +59,7 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
     }
 
     public short protocol()
-    {   
+    {
         return ((com.metavize.mvvm.argon.IPSession)pSession).protocol();
     }
 
@@ -83,7 +81,7 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
     public int serverPort()
     {
         return ((com.metavize.mvvm.argon.IPSession)pSession).serverPort();
-    } 
+    }
 
     public SessionStats stats()
     {
@@ -151,7 +149,7 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
         assert crumbs != null;
         Crumb result = crumbs.get(0);
         assert result != null;
-        // The following no longer applies since data can be null for ICMP packets: (5/05  jdi) 
+        // The following no longer applies since data can be null for ICMP packets: (5/05  jdi)
         // assert result.remaining() > 0 : "Cannot send zero length buffer";
         int len = crumbs.size() - 1;
         if (len == 0) {
@@ -165,8 +163,8 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
 
     protected void addCrumb(int side, Crumb buf)
     {
-        if (buf == null 
-            // The following no longer applies since data can be null for ICMP packets: (5/05  jdi) 
+        if (buf == null
+            // The following no longer applies since data can be null for ICMP packets: (5/05  jdi)
             // assert result.remaining() > 0 : "Cannot send zero length buffer";
             //  buf.remaining() == 0
             )
@@ -215,7 +213,7 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
             // killSession(message);
             return;
         }
-        ClassLoader classLoader = xform.getClass().getClassLoader();
+        ClassLoader classLoader = xform.getTransformContext().getClassLoader();
         Thread ct = Thread.currentThread();
         ClassLoader oldCl = ct.getContextClassLoader();
 
@@ -247,7 +245,7 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
             killSession(message);
             return;
         }
-        ClassLoader classLoader = xform.getClass().getClassLoader();
+        ClassLoader classLoader = xform.getTransformContext().getClassLoader();
         Thread ct = Thread.currentThread();
         ClassLoader oldCl = ct.getContextClassLoader();
 
@@ -270,7 +268,7 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
             killSession(message);
             return;
         }
-        ClassLoader classLoader = xform.getClass().getClassLoader();
+        ClassLoader classLoader = xform.getTransformContext().getClassLoader();
         Thread ct = Thread.currentThread();
         ClassLoader oldCl = ct.getContextClassLoader();
 
@@ -293,7 +291,7 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
             killSession(message);
             return;
         }
-        ClassLoader classLoader = xform.getClass().getClassLoader();
+        ClassLoader classLoader = xform.getTransformContext().getClassLoader();
         Thread ct = Thread.currentThread();
         ClassLoader oldCl = ct.getContextClassLoader();
 
@@ -316,7 +314,7 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
             killSession(message);
             return;
         }
-        ClassLoader classLoader = xform.getClass().getClassLoader();
+        ClassLoader classLoader = xform.getTransformContext().getClassLoader();
         Thread ct = Thread.currentThread();
         ClassLoader oldCl = ct.getContextClassLoader();
 
@@ -341,7 +339,7 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
         OutgoingSocketQueue cout = ((com.metavize.mvvm.argon.Session)pSession).clientOutgoingSocketQueue();
         OutgoingSocketQueue sout = ((com.metavize.mvvm.argon.Session)pSession).serverOutgoingSocketQueue();
         assert (streamer != null);
-        
+
         if (cin != null)
             cin.disable();
         if (sin != null)
@@ -427,7 +425,7 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
         }
         return didSomething;
     }
-                
+
     // This is the main write hook called by the Vectoring machine
     public void writeEvent(int side, OutgoingSocketQueue out)
     {
@@ -488,7 +486,7 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
             assert in != null;
             if (!in.isEnabled()) {
                 warn("ignoring readEvent called for disabled side " + side);
-                return; 
+                return;
             }
             IncomingSocketQueue ourin, otherin;
             OutgoingSocketQueue ourout, otherout;
@@ -550,7 +548,7 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
 
     // Callback called on finalize
     protected void closeFinal()
-    {   
+    {
         cancelTimer();
         if (RWSessionStats.DoDetailedTimes) {
             long[] times = stats().times();
@@ -643,7 +641,7 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
         StringBuffer result = new StringBuffer("times for ");
         result.append(id());
         result.append("\n");
-        
+
         for (int i = SessionStats.MIN_TIME_INDEX; i < SessionStats.MAX_TIME_INDEX; i++) {
             if (times[i] == 0)
                 continue;

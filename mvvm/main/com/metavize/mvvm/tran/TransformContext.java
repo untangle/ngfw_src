@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: TransformContext.java,v 1.8 2005/03/25 02:08:09 jdi Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.tran;
@@ -53,6 +53,9 @@ public interface TransformContext
     MackageDesc getMackageDesc();
 
     Session openSession();
+
+    // XXX make private when/if we move all impls to engine
+    ClassLoader getClassLoader();
 
     // call-through methods ---------------------------------------------------
 

@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: TransformContextImpl.java,v 1.38 2005/03/25 02:08:09 jdi Exp $
+ *  $Id$
  */
 
 package com.metavize.mvvm.engine;
@@ -19,9 +19,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.metavize.mvvm.MackageDesc;
 import com.metavize.mvvm.MvvmContextFactory;
@@ -33,7 +34,6 @@ import com.metavize.mvvm.tran.Transform;
 import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.tran.TransformDesc;
 import com.metavize.mvvm.tran.TransformException;
-import com.metavize.mvvm.tran.TransformManager;
 import com.metavize.mvvm.tran.TransformState;
 import com.metavize.mvvm.tran.TransformStats;
 import com.metavize.mvvm.tran.UndeployException;
@@ -42,34 +42,35 @@ import net.sf.hibernate.Query;
 import net.sf.hibernate.Session;
 import net.sf.hibernate.SessionFactory;
 import net.sf.hibernate.Transaction;
+import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Logger;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
-import org.apache.commons.logging.LogFactory;
 
 class TransformContextImpl implements TransformContext
 {
     private static final String DESC_PATH = "META-INF/mvvm-transform.xml";
     private static final String BEAN_PATH = "META-INF/beans.xml";
 
-    private static final Map CLASS_LOADER_CONTEXTS =
-        Collections.synchronizedMap(new HashMap());
+    private static final Map<ClassLoader, TransformContextImpl> CONTEXTS
+        = new ConcurrentHashMap<ClassLoader, TransformContextImpl>();
 
     private static final Logger logger = Logger
         .getLogger(TransformContextImpl.class);
+
+    private static final URL[] URL_PROTO = new URL[0];
 
     private final Tid tid;
     private final TransformDesc transformDesc;
     private final MackageDesc mackageDesc;
     private final TransformBase transform;
-    private final TransformClassLoader classLoader;
+    private final ClassLoader classLoader;
     private final SessionFactory sessionFactory;
 
-    private final TransformManager transformManager = TransformManagerImpl
+    private final TransformManagerImpl transformManager = TransformManagerImpl
         .manager();
-
 
     TransformContextImpl(URL[] resources, Tid tid, String args[],
                          MackageDesc mackageDesc, boolean isNew)
@@ -83,24 +84,30 @@ class TransformContextImpl implements TransformContext
         logger.info("Creating transform context for: " + tid
                     + " (" + transformDesc.getName() + ")");
 
-        String parentTransform = transformDesc.getParentTransform();
+        CasingClassLoader parentCl = transformManager.getCasingClassLoader();
 
-        TransformContext parentCtx = startParent(parentTransform);
+        Set<TransformContext>parentCtxs = new HashSet<TransformContext>();
+
+        if (transformDesc.isCasing()) {
+            parentCl.addResources(resources);
+            resources = URL_PROTO;
+        } else {
+            Set<String> parents = transformDesc.getParents();
+            for (String parent : parents) {
+                parentCtxs.add(startParent(parent));
+            }
+        }
 
         SchemaUtil.initSchema(transformDesc.getName());
 
-        ClassLoader parentCl = null == parentCtx
-            ? getClass().getClassLoader() /* the MvvmClassLoader */
-            : parentCtx.transform().getClass().getClassLoader();
-
-        classLoader = new TransformClassLoader(tid, resources, parentCl);
-        CLASS_LOADER_CONTEXTS.put(classLoader, this);
+        classLoader = new URLClassLoader(resources, parentCl);
+        CONTEXTS.put(classLoader, this);
 
         Thread ct = Thread.currentThread();
 
         ClassLoader oldCl = ct.getContextClassLoader();
 
-        // entering TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // entering transform ClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         ct.setContextClassLoader(classLoader);
         try {
             sessionFactory = Util.makeSessionFactory(classLoader);
@@ -118,8 +125,8 @@ class TransformContextImpl implements TransformContext
             transform = (TransformBase)classLoader.loadClass(className)
                 .newInstance();
 
-            if (null != parentCtx) {
-                transform.setParent((TransformBase)parentCtx.transform());
+            for (TransformContext parentCtx : parentCtxs) {
+                transform.addParent((TransformBase)parentCtx.transform());
             }
 
             if (isNew) {
@@ -138,13 +145,13 @@ class TransformContextImpl implements TransformContext
             throw new DeployException(exn);
         } finally {
             ct.setContextClassLoader(oldCl);
-            // left TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            // left transform ClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         }
     }
 
     static TransformContext getTransformContext(ClassLoader cl)
     {
-        return (TransformContext)CLASS_LOADER_CONTEXTS.get(cl);
+        return CONTEXTS.get(cl);
     }
 
     // TransformContext -------------------------------------------------------
@@ -198,17 +205,18 @@ class TransformContextImpl implements TransformContext
         return transform.getStats();
     }
 
+    // XXX make private when/if we move all impls to engine
+    public ClassLoader getClassLoader()
+    {
+        return classLoader;
+    }
+
     // package private methods ------------------------------------------------
 
     static URLClassLoader[] getClassLoaders()
     {
-        return (URLClassLoader[])CLASS_LOADER_CONTEXTS.keySet()
-            .toArray(new URLClassLoader[CLASS_LOADER_CONTEXTS.size()]);
-    }
-
-    URLClassLoader getClassLoader()
-    {
-        return classLoader;
+        return CONTEXTS.keySet()
+            .toArray(new URLClassLoader[CONTEXTS.size()]);
     }
 
     void destroy() throws UndeployException
@@ -254,7 +262,7 @@ class TransformContextImpl implements TransformContext
             }
         }
 
-        CLASS_LOADER_CONTEXTS.remove(classLoader);
+        CONTEXTS.remove(classLoader);
     }
 
     void unload()
@@ -269,7 +277,8 @@ class TransformContextImpl implements TransformContext
             Thread.currentThread().setContextClassLoader(oldCl);
             // Left TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         }
-        CLASS_LOADER_CONTEXTS.remove(classLoader);
+
+        CONTEXTS.remove(classLoader);
     }
 
     // private methods --------------------------------------------------------
@@ -480,5 +489,13 @@ class TransformContextImpl implements TransformContext
         }
 
         return ctx;
+    }
+
+    // Object methods ---------------------------------------------------------
+
+    public String toString()
+    {
+        return "TransformContext tid: " + tid
+            + " (" + transformDesc.getName() + ")";
     }
 }

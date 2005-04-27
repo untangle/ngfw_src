@@ -11,10 +11,15 @@
 
 package com.metavize.tran.ftp;
 
+import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 
+import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.tapi.Fitting;
+import com.metavize.mvvm.tapi.Pipeline;
 import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.tran.token.AbstractParser;
+import com.metavize.tran.token.Chunk;
 import com.metavize.tran.token.ParseException;
 import com.metavize.tran.token.ParseResult;
 import com.metavize.tran.token.Token;
@@ -27,13 +32,34 @@ public class FtpServerParser extends AbstractParser
     private static final char CR = '\r';
     private static final char LF = '\n';
 
+    private final Fitting fitting;
+
     FtpServerParser(TCPSession session)
     {
         super(session, false);
         lineBuffering(true);
+
+        Pipeline p = MvvmContextFactory.context().pipelineFoundry()
+            .getPipeline(session.id());
+        fitting = p.getServerFitting(session.mPipe());
     }
 
     public ParseResult parse(ByteBuffer buf) throws ParseException
+    {
+        if (Fitting.FTP_CTL_STREAM == fitting) {
+            return parseServerCtl(buf);
+        } else if (Fitting.FTP_DATA_STREAM == fitting) {
+            return parseServerData(buf);
+        } else {
+            throw new IllegalStateException("bad input fitting: " + fitting);
+        }
+    }
+
+    public TokenStreamer endSession() { return null; }
+
+    // private methods --------------------------------------------------------
+
+    private ParseResult parseServerCtl(ByteBuffer buf) throws ParseException
     {
         ByteBuffer dup = buf.duplicate();
 
@@ -51,6 +77,13 @@ public class FtpServerParser extends AbstractParser
                 String message = new String(ba);
 
                 FtpReply reply = new FtpReply(replyCode, message);
+
+                if (227 == reply.getReplyCode()) {
+                    InetSocketAddress sa = reply.getSocketAddress();
+                    MvvmContextFactory.context().pipelineFoundry()
+                        .registerConnection(sa, Fitting.FTP_DATA_STREAM);
+                }
+
                 return new ParseResult(new Token[] { reply }, null);
             }
 
@@ -78,6 +111,7 @@ public class FtpServerParser extends AbstractParser
                 String message = new String(mb);
 
                 FtpReply reply = new FtpReply(replyCode, message);
+
                 return new ParseResult(new Token[] { reply }, null);
             }
 
@@ -90,9 +124,11 @@ public class FtpServerParser extends AbstractParser
         }
     }
 
-    public TokenStreamer endSession() { return null; }
-
-    // private methods --------------------------------------------------------
+    private ParseResult parseServerData(ByteBuffer buf) throws ParseException
+    {
+        Chunk c = new Chunk(buf.duplicate());
+        return new ParseResult(new Token[] { c }, null);
+    }
 
     private int replyCode(ByteBuffer buf)
     {

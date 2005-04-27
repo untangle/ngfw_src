@@ -11,6 +11,8 @@
 
 package com.metavize.mvvm.engine;
 
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -21,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.metavize.mvvm.argon.ArgonAgent;
 import com.metavize.mvvm.argon.IPSessionDesc;
 import com.metavize.mvvm.argon.IntfConverter;
 import com.metavize.mvvm.tapi.CasingPipeSpec;
@@ -46,8 +49,8 @@ class PipelineFoundryImpl implements PipelineFoundry
     private final Map incomingMPipes = new ConcurrentHashMap();
     private final Map outgoingMPipes = new ConcurrentHashMap();
     private final Map casings = new ConcurrentHashMap();
-    private final Map<Integer, Fitting> portFittings
-        = new ConcurrentHashMap<Integer, Fitting>();
+    private final Map<InetSocketAddress, Fitting> connectionFittings
+        = new ConcurrentHashMap<InetSocketAddress, Fitting>();
     private final Map pipelines = new ConcurrentHashMap();
 
     private PipelineFoundryImpl() { }
@@ -58,19 +61,21 @@ class PipelineFoundryImpl implements PipelineFoundry
     }
 
     // XXX probably return Pipeline instead
-    public List weld(IPSessionDesc sessionDesc)
+    public List<ArgonAgent> weld(IPSessionDesc sessionDesc)
     {
-        // XXX hack, determine initial type by port number
         Fitting start;
 
-        int serverPort = sessionDesc.serverPort();
+        InetAddress sAddr = sessionDesc.serverAddr();
+        int sPort = sessionDesc.serverPort();
 
-        start = portFittings.get(serverPort);
+        InetSocketAddress socketAddress = new InetSocketAddress(sAddr, sPort);
+
+        start = connectionFittings.remove(socketAddress);
 
         if (null == start) {
-            switch (sessionDesc.serverPort()) {
+            switch (sPort) {
             case 21:
-                start = Fitting.FTP_STREAM;
+                start = Fitting.FTP_CTL_STREAM;
                 break;
 
             case 80:
@@ -84,21 +89,37 @@ class PipelineFoundryImpl implements PipelineFoundry
         }
 
         Long t0 = System.currentTimeMillis();
-        Map mPipes = sessionDesc.clientIntf() == IntfConverter.OUTSIDE
+
+        Map<Fitting, List<MPipe>> mp
+            = sessionDesc.clientIntf() == IntfConverter.OUTSIDE
             ? incomingMPipes : outgoingMPipes;
-        List p = new LinkedList();
-        weld(p, start, sessionDesc, new HashMap(mPipes), new HashMap(casings));
+        Map<Fitting, List<MPipe>> availMPipes
+            = new HashMap<Fitting, List<MPipe>>(mp);
+
+        Map<MPipe, MPipe> availCasings = new HashMap(casings);
+
+        List<MPipe> mPipes = new LinkedList<MPipe>();
+        List<Fitting> fittings = new LinkedList<Fitting>();
+
+        weld(mPipes, fittings, start, sessionDesc, availMPipes, availCasings);
+
         Long t1 = System.currentTimeMillis();
 
-        Pipeline pipeline = new PipelineImpl(new PipelineInfo(sessionDesc));
+        PipelineInfo pipelineInfo = new PipelineInfo(sessionDesc);
+        Pipeline pipeline = new PipelineImpl(mPipes, fittings, pipelineInfo);
         pipelines.put(sessionDesc.id(), pipeline);
 
         if (logger.isDebugEnabled()) {
             logger.debug("sid: " + sessionDesc.id() + " pipe in " + (t1 - t0)
-                         + " millis: " + p);
+                         + " millis: " + fittings);
         }
 
-        return p;
+        List<ArgonAgent> l = new ArrayList<ArgonAgent>(mPipes.size());
+        for (MPipe mPipe : mPipes) {
+            l.add(mPipe.getArgonAgent());
+        }
+
+        return l;
     }
 
     public void destroy(IPSessionDesc start, IPSessionDesc end)
@@ -140,47 +161,48 @@ class PipelineFoundryImpl implements PipelineFoundry
         casings.remove(insideMPipe);
     }
 
+    public void registerConnection(InetSocketAddress socketAddress,
+                                   Fitting fitting)
+    {
+        connectionFittings.put(socketAddress, fitting);
+    }
 
     public Pipeline getPipeline(int sessionId)
     {
         return (Pipeline)pipelines.get(sessionId);
     }
 
-    public void registerPort(int port, Fitting fitting)
-    {
-        portFittings.put(port, fitting);
-    }
-
-    public void deregisterPort(int port)
-    {
-        portFittings.remove(port);
-    }
-
     // private methods --------------------------------------------------------
 
-    private void weld(List p, Fitting start, IPSessionDesc sd, Map mPipes,
-                      Map casings)
+    private void weld(List<MPipe> mPipes, List<Fitting> fittings,
+                      Fitting start, IPSessionDesc sd,
+                      Map<Fitting, List<MPipe>> availMPipes,
+                      Map<MPipe, MPipe> availCasings)
     {
-        weldMPipes(p, start, sd, mPipes, casings);
-        weldCasings(p, start, sd, mPipes, casings);
+        weldMPipes(mPipes, fittings, start, sd, availMPipes, availCasings);
+        weldCasings(mPipes, fittings, start, sd, availMPipes, availCasings);
     }
 
-    private void weldMPipes(List p, Fitting start, IPSessionDesc sd,
-                            Map mPipes, Map casings)
+    private void weldMPipes(List<MPipe> mPipes, List<Fitting> fittings,
+                            Fitting start, IPSessionDesc sd,
+                            Map<Fitting, List<MPipe>> availMPipes,
+                            Map<MPipe, MPipe> availCasings)
     {
         TRY_AGAIN:
-        for (Iterator i = mPipes.keySet().iterator(); i.hasNext(); ) {
-            Fitting f = (Fitting)i.next();
+        for (Iterator<Fitting> i = availMPipes.keySet().iterator(); i.hasNext(); ) {
+            Fitting f = i.next();
             if (start.instanceOf(f)) {
-                List l = (List)mPipes.get(f);
+                List l = availMPipes.get(f);
                 i.remove();
-                for (Iterator j = l.iterator(); j.hasNext(); ) {
-                    MPipe mPipe = (MPipe)j.next();
+                for (Iterator<MPipe> j = l.iterator(); j.hasNext(); ) {
+                    MPipe mPipe = j.next();
                     if (null == mPipe) {
-                        weldCasings(p, start, sd, mPipes, casings);
+                        weldCasings(mPipes, fittings, start, sd,
+                                    availMPipes, availCasings);
                     } else {
                         if (mPipe.getPipeSpec().matches(sd)) {
-                            p.add(mPipe.getArgonAgent());
+                            mPipes.add(mPipe);
+                            fittings.add(start);
                         }
                     }
                 }
@@ -189,22 +211,28 @@ class PipelineFoundryImpl implements PipelineFoundry
         }
     }
 
-    private void weldCasings(List p, Fitting start, IPSessionDesc sd,
-                             Map mPipes, Map casings)
+    private void weldCasings(List<MPipe> mPipes, List<Fitting> fittings,
+                             Fitting start, IPSessionDesc sd,
+                             Map<Fitting, List<MPipe>> availMPipes,
+                             Map<MPipe, MPipe> availCasings)
     {
         TRY_AGAIN:
-        for (Iterator i = casings.keySet().iterator(); i.hasNext(); ) {
-            MPipe insideMPipe = (MPipe)i.next();
+        for (Iterator<MPipe> i = availCasings.keySet().iterator(); i.hasNext(); ) {
+            MPipe insideMPipe = i.next();
             CasingPipeSpec ps = (CasingPipeSpec)insideMPipe.getPipeSpec();
             Fitting f = ps.getInput();
             if (start.instanceOf(f) && ps.matches(sd)) {
-                MPipe outsideMPipe = (MPipe)casings.get(insideMPipe);
+                MPipe outsideMPipe = availCasings.get(insideMPipe);
                 i.remove();
-                p.add(insideMPipe.getArgonAgent());
+                mPipes.add(insideMPipe);
+                fittings.add(start);
 
                 CasingPipeSpec cps = (CasingPipeSpec)insideMPipe.getPipeSpec();
-                weldMPipes(p, cps.getOutput(), sd, mPipes, casings);
-                p.add(outsideMPipe.getArgonAgent());
+                Fitting insideFitting = cps.getOutput(start);
+                weldMPipes(mPipes, fittings, insideFitting, sd,
+                           availMPipes, availCasings);
+                mPipes.add(outsideMPipe);
+                fittings.add(insideFitting);
                 break TRY_AGAIN;
             }
         }

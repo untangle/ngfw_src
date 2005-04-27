@@ -236,7 +236,7 @@ class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {
 
     public com.metavize.mvvm.argon.TCPSession newSession(com.metavize.mvvm.argon.TCPNewSessionRequest request)
     {
-        ClassLoader classLoader = mPipe().transform().getClass().getClassLoader();
+        ClassLoader classLoader = mPipe().transform().getTransformContext().getClassLoader();
         Thread ct = Thread.currentThread();
         ClassLoader oldCl = ct.getContextClassLoader();
 
@@ -252,7 +252,7 @@ class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {
 
     public com.metavize.mvvm.argon.UDPSession newSession(com.metavize.mvvm.argon.UDPNewSessionRequest request)
     {
-        ClassLoader classLoader = mPipe().transform().getClass().getClassLoader();
+        ClassLoader classLoader = mPipe().transform().getTransformContext().getClassLoader();
         Thread ct = Thread.currentThread();
         ClassLoader oldCl = ct.getContextClassLoader();
 

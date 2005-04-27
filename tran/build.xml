@@ -120,13 +120,6 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
 
     <antcall target="compile.${tran.name}" inheritAll="true"/>
 
-    <if>
-      <or>
-        <equals arg1="${tran.name}" arg2="ftp"/>
-      </or>
-    <then/> <!-- XXX ftp doesnt work -->
-    <else>
-
     <exec executable="${buildtool.base}/dependset.sh">
       <arg value="${build.root}/${tran.name}"/>
       <arg value="${build.depcache}/${tran.name}.patternset"/>
@@ -140,11 +133,11 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
 
     <!-- bases need casings -->
     <if> <equals arg1="${tran.type}" arg2="base"/> <then>
-        <var name="extra.classes" value="../tran/output/jar/http-casing.mar"/>
+        <var name="extra.classes" value="../tran/output/jar/http-casing.mar:../tran/output/jar/ftp-casing.mar"/>
     </then> </if>
     <!-- transforms need casings and bases -->
     <if> <equals arg1="${tran.type}" arg2="transform"/> <then>
-        <var name="extra.classes" value="../tran/output/jar/virus-base.mar:../tran/output/jar/http-casing.mar"/>
+        <var name="extra.classes" value="../tran/output/jar/virus-base.mar:../tran/output/jar/http-casing.mar:../tran/output/jar/ftp-casing.mar"/>
     </then> </if>
 
     <!-- FIXME email special case -->
@@ -175,9 +168,6 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
 
       <include name="com/metavize/tran/${tran.name}/**"/>
     </javac>
-
-    </else> <!-- XXX ftp doesnt work -->
-    </if>
 
   </target>
 

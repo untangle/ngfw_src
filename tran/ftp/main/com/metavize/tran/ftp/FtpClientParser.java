@@ -11,10 +11,15 @@
 
 package com.metavize.tran.ftp;
 
+import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 
+import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.tapi.Fitting;
+import com.metavize.mvvm.tapi.Pipeline;
 import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.tran.token.AbstractParser;
+import com.metavize.tran.token.Chunk;
 import com.metavize.tran.token.ParseException;
 import com.metavize.tran.token.ParseResult;
 import com.metavize.tran.token.Token;
@@ -26,13 +31,34 @@ public class FtpClientParser extends AbstractParser
     private static final char CR = '\r';
     private static final char LF = '\n';
 
+    private final Fitting fitting;
+
     FtpClientParser(TCPSession session)
     {
         super(session, true);
         lineBuffering(true);
+
+        Pipeline p = MvvmContextFactory.context().pipelineFoundry()
+            .getPipeline(session.id());
+        fitting = p.getClientFitting(session.mPipe());
     }
 
+    // Parser methods ---------------------------------------------------------
+
     public ParseResult parse(ByteBuffer buf) throws ParseException
+    {
+        if (Fitting.FTP_CTL_STREAM == fitting) {
+            return parseCtl(buf);
+        } else {
+            return new ParseResult(new Token[] { new Chunk(buf.duplicate()) }, null);
+        }
+    }
+
+    public TokenStreamer endSession() { return null; }
+
+    // private methods --------------------------------------------------------
+
+    private ParseResult parseCtl(ByteBuffer buf) throws ParseException
     {
         if (completeLine(buf)) {
             byte[] ba = new byte[buf.remaining()];
@@ -52,15 +78,18 @@ public class FtpClientParser extends AbstractParser
 
             FtpCommand cmd = new FtpCommand(fn, arg);
 
+            if (FtpFunction.PORT == fn) {
+                InetSocketAddress sa = cmd.getSocketAddress();
+
+                MvvmContextFactory.context().pipelineFoundry()
+                    .registerConnection(sa, Fitting.FTP_DATA_STREAM);
+            }
+
             return new ParseResult(new Token[] { cmd }, null);
         } else {
             return new ParseResult(null, buf);
         }
     }
-
-    public TokenStreamer endSession() { return null; }
-
-    // private methods --------------------------------------------------------
 
     /**
      * True the buffer contains a complete line <CRLF>. Obsolete line

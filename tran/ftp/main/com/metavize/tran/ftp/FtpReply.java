@@ -11,9 +11,11 @@
 
 package com.metavize.tran.ftp;
 
+import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.util.StringTokenizer;
 
+import com.metavize.tran.token.ParseException;
 import com.metavize.tran.token.Token;
 import com.metavize.tran.util.AsciiCharBuffer;
 
@@ -35,7 +37,21 @@ public class FtpReply implements Token
         this.message = message;
     }
 
-    // accessors -------------------------------------------------------------
+    // business methods ------------------------------------------------------
+
+    public InetSocketAddress getSocketAddress() throws ParseException
+    {
+        if (227 == replyCode) {
+            int b = message.indexOf('(');
+            int e = message.indexOf(')', b);
+            String addrStr = message.substring(b + 1, e);
+            return FtpUtil.parsePort(addrStr);
+        } else {
+            return null;
+        }
+    }
+
+    // bean methods -----------------------------------------------------------
 
     public int getReplyCode()
     {

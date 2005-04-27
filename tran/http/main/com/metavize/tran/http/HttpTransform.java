@@ -13,8 +13,6 @@ package com.metavize.tran.http;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.metavize.mvvm.tapi.CasingPipeSpec;
-import com.metavize.mvvm.tapi.Fitting;
 import com.metavize.mvvm.tapi.PipeSpec;
 import com.metavize.mvvm.tapi.Protocol;
 import com.metavize.mvvm.tapi.Subscription;
@@ -38,9 +36,7 @@ public class HttpTransform extends CasingTransform
         Subscription s = new Subscription(Protocol.TCP);
         Set subs = new HashSet();
         subs.add(s);
-        insidePipeSpec = new CasingPipeSpec("http-inside", subs,
-                                            Fitting.HTTP_STREAM,
-                                            Fitting.HTTP_TOKENS);
+        insidePipeSpec = new HttpPipeSpec(subs);
 
         // outside PipeSpec
         outsidePipeSpec = insidePipeSpec;

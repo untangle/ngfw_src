@@ -47,43 +47,45 @@ public class VirusTransformImpl extends AbstractTransform
     private static final PipelineFoundry FOUNDRY = MvvmContextFactory.context()
         .pipelineFoundry();
 
-    private static final int FTP_COMMAND = 0;
-    private static final int FTP_DATA = 1;
-    private static final int HTTP = 2;
+    private static final int FTP = 0;
+    private static final int HTTP = 1;
 
     private final VirusScanner scanner;
 
     private final PipeSpec[] pipeSpecs = new PipeSpec[]
-        { new SoloPipeSpec("virus-ftp", Fitting.FTP_STREAM, Affinity.SERVER, 0),
-          new SoloPipeSpec("virus-ftp-data", Fitting.OCTET_STREAM, Affinity.SERVER, 0),
+        { new SoloPipeSpec("virus-ftp", Fitting.FTP_TOKENS, Affinity.SERVER, 0),
           new SoloPipeSpec("virus-http", Fitting.HTTP_TOKENS, Affinity.SERVER, 0) };
 
-    private final MPipe[] mPipes = new MPipe[3];
+    private final MPipe[] mPipes = new MPipe[2];
     private final SessionEventListener[] listeners = new SessionEventListener[]
-        { new FtpCommandHandler(this), new FtpDataHandler(this),
+        { new TokenAdaptor(new VirusFtpFactory(this)),
           new TokenAdaptor(new VirusHttpFactory(this)) };
+
     private final Logger logger = Logger.getLogger(VirusTransformImpl.class);
 
     private VirusSettings settings;
 
     private SessionMatcher VIRUS_SESSION_MATCHER = new SessionMatcher() {
             /* Kill all sessions on ports 20, 21 and 80 */
-            public boolean isMatch( com.metavize.mvvm.argon.IPSessionDesc session )
+            public boolean isMatch(com.metavize.mvvm.argon.IPSessionDesc session)
             {
                 /* Don't kill any UDP Sessions */
-                if ( session.protocol() == com.metavize.mvvm.argon.IPSessionDesc.IPPROTO_UDP )
+                if (session.protocol() == com.metavize.mvvm.argon.IPSessionDesc.IPPROTO_UDP) {
                     return false;
+                }
 
                 int clientPort = session.clientPort();
                 int serverPort = session.serverPort();
 
                 /* FTP responds on port 20, server is on 21, HTTP server is on 80 */
-                if ( clientPort == 20 || serverPort == 21 || serverPort == 80 || serverPort == 20 )
+                if (clientPort == 20 || serverPort == 21 || serverPort == 80 || serverPort == 20) {
                     return true;
+                }
 
                 /* EMAIL SMTP/POP3/IMAP */
-                if ( serverPort == 25 || serverPort == 143 || serverPort == 109 )
+                if (serverPort == 25 || serverPort == 143 || serverPort == 109) {
                     return true;
+                }
 
                 return false;
             }
@@ -130,32 +132,35 @@ public class VirusTransformImpl extends AbstractTransform
 
     public void dumpSessions()
     {
-        for (int i = 0; i < mPipes.length; i++) {
-            MPipe pipe = mPipes[i];
-            if (pipe != null)
+        for (MPipe pipe : mPipes) {
+            if (pipe != null) {
                 pipe.dumpSessions();
+            }
         }
     }
 
     public IPSessionDesc[] liveSessionDescs()
     {
         IPSessionDesc[] s1 = null;
-        if (mPipes[0] != null)
+        if (mPipes[0] != null) {
             s1 = mPipes[0].liveSessionDescs();
-        else
+        } else {
             s1 = new IPSessionDesc[0];
+        }
 
         IPSessionDesc[] s2 = null;
-        if (mPipes[1] != null)
+        if (mPipes[1] != null) {
             s2 = mPipes[1].liveSessionDescs();
-        else
+        } else {
             s2 = new IPSessionDesc[0];
+        }
 
         IPSessionDesc[] s3 = null;
-        if (mPipes[2] != null)
+        if (mPipes[2] != null) {
             s3 = mPipes[2].liveSessionDescs();
-        else
+        } else {
             s3 = new IPSessionDesc[0];
+        }
 
         IPSessionDesc[] retDescs = new IPSessionDesc[s1.length + s2.length + s3.length];
         System.arraycopy(s1, 0, retDescs, 0, s1.length);
@@ -167,22 +172,28 @@ public class VirusTransformImpl extends AbstractTransform
     private void virusReconfigure()
     {
         // FTP
+        // XXX this shit broken:
+//         Set subscriptions = new HashSet();
+//         if (settings.getFtpInbound().getScan()) {
+//             Subscription subscription = new Subscription
+//                 (Protocol.TCP, Interface.INSIDE, Interface.OUTSIDE);
+//             subscriptions.add(subscription);
+//         }
+
+//         if (settings.getFtpOutbound().getScan()) {
+//             Subscription subscription = new Subscription
+//                 (Protocol.TCP, Interface.OUTSIDE, Interface.INSIDE);
+//             subscriptions.add(subscription);
+//         }
+
         Set subscriptions = new HashSet();
-        if (settings.getFtpInbound().getScan()) {
-            // XXX i get -2 on my home machine
+        {
             Subscription subscription = new Subscription
-                (Protocol.TCP, Interface.INSIDE, Interface.OUTSIDE);
+                (Protocol.TCP, Interface.ANY, Interface.ANY);
             subscriptions.add(subscription);
         }
 
-        if (settings.getFtpOutbound().getScan()) {
-            // XXX i get -2 on my home machine
-            Subscription subscription = new Subscription
-                (Protocol.TCP, Interface.OUTSIDE, Interface.INSIDE);
-            subscriptions.add(subscription);
-        }
-
-        pipeSpecs[FTP_COMMAND].setSubscriptions(subscriptions);
+        pipeSpecs[FTP].setSubscriptions(subscriptions);
 
         // HTTP
         subscriptions = new HashSet();
@@ -458,16 +469,6 @@ public class VirusTransformImpl extends AbstractTransform
     VirusScanner getScanner()
     {
         return scanner;
-    }
-
-    FtpCommandHandler getFtpCommandHandler()
-    {
-        return (FtpCommandHandler)listeners[FTP_COMMAND];
-    }
-
-    MPipe getFtpDataMPipe()
-    {
-        return mPipes[FTP_DATA];
     }
 
     int getTricklePercent()

@@ -4,12 +4,16 @@
   <interleave>
     <element name="transform-desc">
       <attribute name="name"/>
-      <attribute name="parent-transform"/>
       <attribute name="classname"/>
+      <attribute name="casing"/>
       <attribute name="single-instance"/>
       <attribute name="display-name"/>
       <attribute name="gui-classname"/>
     </element>
   </interleave>
+
+  <zeroOrMore>
+    <element name="parent"><text/></element>
+  </zeroOrMore>
 
 </element>

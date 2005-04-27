@@ -71,6 +71,7 @@ class VirusHttpHandler extends HttpStateMachine
 
     // HttpStateMachine methods -----------------------------------------------
 
+    @Override
     protected TokenResult doRequestLine(RequestLine requestLine)
     {
         requestQueue.add(requestLine);
@@ -85,6 +86,7 @@ class VirusHttpHandler extends HttpStateMachine
         return new TokenResult(null, new Token[] { requestLine });
     }
 
+    @Override
     protected TokenResult doRequestHeader(Header requestHeader)
     {
         logger.debug("got a request header");
@@ -104,16 +106,19 @@ class VirusHttpHandler extends HttpStateMachine
         }
     }
 
+    @Override
     protected TokenResult doRequestBody(Chunk chunk)
     {
         return new TokenResult(null, new Token[] { chunk });
     }
 
+    @Override
     protected TokenResult doRequestBodyEnd(EndMarker endMarker)
     {
         return new TokenResult(null, new Token[] { endMarker });
     }
 
+    @Override
     protected TokenResult doStatusLine(StatusLine statusLine)
     {
         responseRequest = 100 == statusLine.getStatusCode()
@@ -122,6 +127,7 @@ class VirusHttpHandler extends HttpStateMachine
         return new TokenResult(new Token[] { statusLine }, null);
     }
 
+    @Override
     protected TokenResult doResponseHeader(Header header)
     {
         logger.debug("doing response header");
@@ -152,6 +158,7 @@ class VirusHttpHandler extends HttpStateMachine
         return new TokenResult(new Token[] { header }, null);
     }
 
+    @Override
     protected TokenResult doResponseBody(Chunk chunk)
     {
         if (scan) {
@@ -162,6 +169,7 @@ class VirusHttpHandler extends HttpStateMachine
         }
     }
 
+    @Override
     protected TokenResult doResponseBodyEnd(EndMarker endMarker)
     {
         if (scan) {
@@ -181,17 +189,17 @@ class VirusHttpHandler extends HttpStateMachine
             transform.incrementCount( SCAN_COUNTER );
             result = transform.getScanner().scanFile(fileName);
         } catch (IOException e) {
-            logger.error("Virus scan failed: "+ e); 
+            logger.error("Virus scan failed: "+ e);
             result = VirusScannerResult.ERROR;
         } catch (InterruptedException e) {
-            logger.error("Virus scan failed: "+ e); 
+            logger.error("Virus scan failed: "+ e);
             result = VirusScannerResult.ERROR;
         }
         if (result == null) {
-            logger.error("Virus scan failed: null"); 
+            logger.error("Virus scan failed: null");
             result = VirusScannerResult.ERROR;
         }
-            
+
         eventLogger.info(new VirusHttpEvent(responseRequest, result));
         if (result.isClean()) {
             transform.incrementCount(PASS_COUNTER, 1);
@@ -203,7 +211,7 @@ class VirusHttpHandler extends HttpStateMachine
             }
 
             FileChunkStreamer streamer = new FileChunkStreamer
-                (getPipeline(), inFile, false);
+                (getPipeline(), file, inFile, false);
 
             return new TokenResult(streamer, null);
         } else {

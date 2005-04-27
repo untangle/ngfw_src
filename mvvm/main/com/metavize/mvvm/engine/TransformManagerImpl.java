@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: TransformManagerImpl.java,v 1.24 2005/02/24 02:53:06 amread Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.engine;
@@ -46,10 +46,13 @@ class TransformManagerImpl implements TransformManager
 
     private static TransformManagerImpl TRANSFORM_MANAGER;
 
-    /* Tid -> TransformContext */
-    private Map tids = new ConcurrentHashMap();
+    private final Map<Tid, TransformContextImpl> tids
+        = new ConcurrentHashMap<Tid, TransformContextImpl>();
 
-    // Use static factory
+    // XXX create new cl on reload all
+    private final CasingClassLoader casingClassLoader
+        = new CasingClassLoader(getClass().getClassLoader());
+
     private TransformManagerImpl() { }
 
     static TransformManagerImpl manager()
@@ -66,7 +69,7 @@ class TransformManagerImpl implements TransformManager
 
     public Tid[] transformInstances()
     {
-        Tid[] tidArray = (Tid[])tids.keySet().toArray(TID_PROTO);
+        Tid[] tidArray = tids.keySet().toArray(TID_PROTO);
 
         Arrays.sort(tidArray);
 
@@ -75,22 +78,22 @@ class TransformManagerImpl implements TransformManager
 
     public Tid[] transformInstances(String mackageName)
     {
-        List l = new LinkedList();
+        List<Tid> l = new LinkedList<Tid>();
 
         for (Iterator i = tids.keySet().iterator(); i.hasNext(); ) {
             Tid tid = (Tid)i.next();
-            TransformContext tc = (TransformContext)tids.get(tid);
+            TransformContext tc = tids.get(tid);
             if (tc.getTransformDesc().getName().equals(mackageName)) {
                 l.add(tid);
             }
         }
 
-        return (Tid[])l.toArray(TID_PROTO);
+        return l.toArray(TID_PROTO);
     }
 
     public TransformContext transformContext(Tid tid)
     {
-        return (TransformContext)tids.get(tid);
+        return tids.get(tid);
     }
 
     public Tid instantiate(String transformName, String[] args)
@@ -107,7 +110,7 @@ class TransformManagerImpl implements TransformManager
 
     public void destroy(Tid tid) throws UndeployException
     {
-        TransformContextImpl tc = (TransformContextImpl)tids.get(tid);
+        TransformContextImpl tc = tids.get(tid);
         tc.destroy();
         tids.remove(tid);
     }
@@ -140,9 +143,14 @@ class TransformManagerImpl implements TransformManager
 
     // package protected methods ----------------------------------------------
 
+    CasingClassLoader getCasingClassLoader()
+    {
+        return casingClassLoader;
+    }
+
     void unload(Tid tid)
     {
-        TransformContextImpl tc = (TransformContextImpl)tids.get(tid);
+        TransformContextImpl tc = tids.get(tid);
         logger.info("Unloading: " + tid
                     + " (" + tc.getTransformDesc().getName() + ")");
 
@@ -170,8 +178,17 @@ class TransformManagerImpl implements TransformManager
                 Tid tid = td.getTid();
                 logger.info("Restarting: " + tid + " (" + td.getName() + ")");
 
-                String parent = td.getParentTransform();
-                if (null == parent || 0 < transformInstances(parent).length) {
+                Set<String> parents = td.getParents();
+
+                boolean parentsLoaded = true;
+                for (String parent : parents) {
+                    if (0 == transformInstances(parent).length) {
+                        parentsLoaded = false;
+                        break;
+                    }
+                }
+
+                if (parentsLoaded) {
                     removed = true;
                     i.remove();
                     try {
@@ -185,7 +202,7 @@ class TransformManagerImpl implements TransformManager
         }
     }
 
-    // private methods ---------------------------------------------------------
+    // private methods --------------------------------------------------------
 
     private List getUnloaded()
     {

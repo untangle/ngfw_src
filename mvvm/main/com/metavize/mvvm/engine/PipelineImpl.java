@@ -11,14 +11,20 @@
 
 package com.metavize.mvvm.engine;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.metavize.mvvm.tapi.Fitting;
+import com.metavize.mvvm.tapi.MPipe;
 import com.metavize.mvvm.tapi.Pipeline;
 import com.metavize.mvvm.tran.PipelineInfo;
 
 class PipelineImpl implements Pipeline
 {
+    private final List<MPipe> mPipes;
+    private final List<Fitting> fittings;
     private final PipelineInfo info;
 
     private final Map objects = new ConcurrentHashMap();
@@ -27,8 +33,10 @@ class PipelineImpl implements Pipeline
 
     // constructors -----------------------------------------------------------
 
-    PipelineImpl(PipelineInfo info)
+    PipelineImpl(List<MPipe> mPipes, List<Fitting> fittings, PipelineInfo info)
     {
+        this.mPipes = new ArrayList<MPipe>(mPipes);
+        this.fittings = new ArrayList<Fitting>(fittings);
         this.info = info;
     }
 
@@ -71,6 +79,30 @@ class PipelineImpl implements Pipeline
     public Object detach(Long key)
     {
         return objects.remove(key);
+    }
+
+    public Fitting getClientFitting(MPipe mPipe)
+    {
+        int i = 0;
+        for (MPipe mp : mPipes) {
+            if (mp == mPipe) {
+                return fittings.get(i);
+            }
+            i++;
+        }
+        throw new IllegalArgumentException("mPipe not in pipeline: " + mPipe);
+    }
+
+    public Fitting getServerFitting(MPipe mPipe)
+    {
+        int i = 1;
+        for (MPipe mp : mPipes) {
+            if (mp == mPipe) {
+                return fittings.get(mPipes.size() == i ? 0 : i);
+            }
+            i++;
+        }
+        throw new IllegalArgumentException("mPipe not in pipeline: " + mPipe);
     }
 
     // accessors --------------------------------------------------------------

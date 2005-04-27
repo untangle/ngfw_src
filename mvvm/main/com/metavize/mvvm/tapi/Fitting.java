@@ -83,8 +83,9 @@ public class Fitting
 
     // Object methods ---------------------------------------------------------
 
+    @Override
     public String toString()
     {
-        return "Fitting: " + type + " parent: " + parent;
+        return "(fitting " + type + " " + parent + ")";
     }
 }

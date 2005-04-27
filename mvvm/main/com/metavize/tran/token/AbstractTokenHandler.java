@@ -32,11 +32,18 @@ public abstract class AbstractTokenHandler implements TokenHandler
             .getPipeline(session.id());
     }
 
-    // public methods ---------------------------------------------------------
+    // TokenHandler methods ---------------------------------------------------
 
-    public void handleTimer()
+    public void handleTimer() throws TokenException { }
+
+    public void handleClientFin() throws TokenException
     {
-        logger.info("timer not handled");
+        session.shutdownServer();
+    }
+
+    public void handleServerFin() throws TokenException
+    {
+        session.shutdownClient();
     }
 
     // protected methods ------------------------------------------------------

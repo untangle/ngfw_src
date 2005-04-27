@@ -11,10 +11,12 @@
 
 package com.metavize.tran.ftp;
 
+import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 
 import com.metavize.tran.token.Token;
 import com.metavize.tran.util.AsciiCharBuffer;
+import com.metavize.tran.token.ParseException;
 
 /**
  * FTP command.
@@ -34,6 +36,17 @@ public class FtpCommand implements Token
     {
         this.function = function;
         this.argument = argument;
+    }
+
+    // business methods -------------------------------------------------------
+
+    public InetSocketAddress getSocketAddress() throws ParseException
+    {
+        if (FtpFunction.PORT == function) {
+            return FtpUtil.parsePort(argument);
+        } else {
+            return null;
+        }
     }
 
     // bean methods -----------------------------------------------------------

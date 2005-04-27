@@ -11,10 +11,11 @@
 
 package com.metavize.mvvm.tapi;
 
-
 public interface Pipeline
 {
     Long attach(Object o);
     Object getAttachment(Long key);
     Object detach(Long key);
+    Fitting getClientFitting(MPipe mPipe);
+    Fitting getServerFitting(MPipe mPipe);
 }

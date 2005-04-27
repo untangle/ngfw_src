@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: TransformManager.java,v 1.4 2004/12/25 11:30:17 amread Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.tran;
@@ -28,6 +28,12 @@ public interface TransformManager
      */
     Tid[] transformInstances();
 
+    /**
+     * Transform instances by name.
+     *
+     * @param name name of the transform.
+     * @return tids of corresponding transforms.
+     */
     Tid[] transformInstances(String name);
 
     /**

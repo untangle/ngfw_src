@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.net.InetAddress;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.Properties;
 
 import org.apache.catalina.Connector;
@@ -53,7 +54,7 @@ public class Main
 
     private static final Logger logger = Logger.getLogger(Main.class);
 
-    private MvvmClassLoader mcl;
+    private URLClassLoader ucl;
     private Class mvvmPrivClass;
     private MvvmContextBase mvvmContext;
 
@@ -192,16 +193,16 @@ public class Main
         URL jVectorJar = new URL("file://" + bunniculaLib + "/jvector.jar");
         URL jNetcapJar = new URL("file://" + bunniculaLib + "/jnetcap.jar");
         URL[] urls = new URL[] { mvvmJar, jVectorJar, jNetcapJar };
-        mcl = new MvvmClassLoader(urls, getClass().getClassLoader());
+        ucl = new URLClassLoader(urls, getClass().getClassLoader());
 
         ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
         try {
-            // Entering MvvmClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-            Thread.currentThread().setContextClassLoader(mcl);
+            // Entering MVVM ClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            Thread.currentThread().setContextClassLoader(ucl);
 
             MvvmRepositorySelector.get().init("mvvm");
 
-            mvvmContext = (MvvmContextBase)mcl
+            mvvmContext = (MvvmContextBase)ucl
                 .loadClass(MVVM_LOCAL_CONTEXT_CLASSNAME)
                 .getMethod("localContext").invoke(null);
 
@@ -243,8 +244,8 @@ public class Main
     {
         ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
         try {
-            // Entering MvvmClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-            Thread.currentThread().setContextClassLoader(mcl);
+            // Entering MVVM ClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            Thread.currentThread().setContextClassLoader(ucl);
 
             mvvmContext.doPostInit();
 

@@ -13,10 +13,10 @@ package com.metavize.mvvm.engine;
 
 import java.io.IOException;
 
+import com.metavize.mvvm.ArgonManager;
 import com.metavize.mvvm.MailSender;
 import com.metavize.mvvm.MvvmContext;
 import com.metavize.mvvm.NetworkingManager;
-import com.metavize.mvvm.ArgonManager;
 import com.metavize.mvvm.ToolboxManager;
 import com.metavize.mvvm.logging.LoggingManager;
 import com.metavize.mvvm.security.AdminManager;
@@ -109,6 +109,7 @@ public abstract class MvvmContextImpl extends MvvmContextBase
     }
 
     // lifecycle --------------------------------------------------------------
+
     public void shutdown()
     {
         // XXX check access permission

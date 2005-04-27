@@ -13,30 +13,27 @@ package com.metavize.mvvm.tapi;
 
 import java.util.Set;
 
-public class CasingPipeSpec extends PipeSpec
+public abstract class CasingPipeSpec extends PipeSpec
 {
     private final Fitting input;
-    private final Fitting output;
 
     // constructors -----------------------------------------------------------
 
     public CasingPipeSpec(String name, Set subscriptions,
-                          Fitting input, Fitting output)
+                          Fitting input)
     {
         super(name, subscriptions);
         this.input = input;
-        this.output = output;
     }
+
+    // abstract methods -------------------------------------------------------
+
+    public abstract Fitting getOutput(Fitting input);
 
     // accessors --------------------------------------------------------------
 
     public Fitting getInput()
     {
         return input;
-    }
-
-    public Fitting getOutput()
-    {
-        return output;
     }
 }
