@@ -1,6 +1,6 @@
 
 /*
- * Copyright (c) 2004 Metavize Inc.
+ * Copyright (c) 2004, 2005 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -14,23 +14,21 @@ package com.metavize.gui.transform;
 
 
 
-import com.metavize.mvvm.tran.TransformState;
-import com.metavize.gui.pipeline.MPipelineJPanel;
-import com.metavize.gui.util.*;
-import com.metavize.gui.widgets.MMultilineToolTip;
-import com.metavize.mvvm.tran.TransformContext;
-
-
 import java.awt.*;
-import javax.swing.*;
-import java.util.*;
 import java.lang.reflect.Constructor;
+import java.util.*;
+import javax.swing.*;
+
+import com.metavize.gui.util.*;
+import com.metavize.gui.util.*;
+import com.metavize.mvvm.tran.TransformContext;
+import com.metavize.gui.util.*;
 
 
 public class MTransformJPanel extends javax.swing.JPanel {
 
 
-    
+
     private TransformContext transformContext;
     public TransformContext transformContext() { return transformContext; }
     public TransformContext getTransformContext(){ return transformContext; }
@@ -40,7 +38,7 @@ public class MTransformJPanel extends javax.swing.JPanel {
 
 
     protected MStateMachine mStateMachine;
-    
+
 
     // GUI assets
     private static Dimension maxDimension, minDimension;
@@ -50,12 +48,12 @@ public class MTransformJPanel extends javax.swing.JPanel {
 
         // INIT GUI
         initComponents();
-        
-        
+
+
         // DYNAMICALLY LOAD DISPLAY
         try{
             Class mTransformDisplayJPanelClass = Class.forName(this.getClass().getPackage().getName()  +  ".MTransformDisplayJPanel",
-							       true, Util.getClassLoader() );
+                                   true, Util.getClassLoader() );
             Constructor mTransformDisplayJPanelConstructor = mTransformDisplayJPanelClass.getConstructor(new Class[]{this.getClass()});
             mTransformDisplayJPanel = (MTransformDisplayJPanel) mTransformDisplayJPanelConstructor.newInstance(new Object[]{this});
         }
@@ -64,13 +62,13 @@ public class MTransformJPanel extends javax.swing.JPanel {
             Util.handleExceptionNoRestart("Error adding display panel", e);
         }
         this.add(mTransformDisplayJPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(104, 5, 498, 90), 0);
-        
+
         // DYNAMICALLY LOAD CONFIG
         try{
             Class mTransformControlsJPanelClass = Class.forName(this.getClass().getPackage().getName()  +  ".MTransformControlsJPanel",
-								 true, Util.getClassLoader() );
+                                 true, Util.getClassLoader() );
             Constructor mTransformControlsJPanelConstructor = mTransformControlsJPanelClass.getConstructor(new Class[]{this.getClass()});
-            mTransformControlsJPanel = (MTransformControlsJPanel) mTransformControlsJPanelConstructor.newInstance(new Object[]{this}); 
+            mTransformControlsJPanel = (MTransformControlsJPanel) mTransformControlsJPanelConstructor.newInstance(new Object[]{this});
         }
         catch(Exception e){
             mTransformControlsJPanel = new MTransformControlsJPanel(this);
@@ -78,19 +76,19 @@ public class MTransformJPanel extends javax.swing.JPanel {
         }
         mTransformControlsJPanel.postInit();
 
-	// DYNAMICALLY LOAD ICONS
-	String name = null;
-	try{
-	    
-	    name = transformContext.transform().getTransformDesc().getName();
-	    name = name.substring(0, name.indexOf('-'));
+    // DYNAMICALLY LOAD ICONS
+    String name = null;
+    try{
 
-	    descriptionIconJLabel.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/metavize/tran/" + name +  "/gui/IconDesc42x42.png")));
-	    organizationIconJLabel.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/metavize/tran/" + name + "/gui/IconOrg42x42.png")));
-	}
-	catch(Exception e){
-	    Util.handleExceptionNoRestart("Error adding icons: " + name , e);
-	}
+        name = transformContext.transform().getTransformDesc().getName();
+        name = name.substring(0, name.indexOf('-'));
+
+        descriptionIconJLabel.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/metavize/tran/" + name +  "/gui/IconDesc42x42.png")));
+        organizationIconJLabel.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/metavize/tran/" + name + "/gui/IconOrg42x42.png")));
+    }
+    catch(Exception e){
+        Util.handleExceptionNoRestart("Error adding icons: " + name , e);
+    }
 
 
         // SIZES
@@ -104,7 +102,7 @@ public class MTransformJPanel extends javax.swing.JPanel {
 
         // SETUP COLORS and name
         mTransformDisplayJPanel.setOpaque(false);
-        tintJPanel.setBackground( transformContext.getTransformDesc().getGuiBackgroundColor() );
+        tintJPanel.setBackground( transformContext.getTransformPreferences().getGuiBackgroundColor() );
         descriptionTextJLabel.setText( transformContext.getTransformDesc().getDisplayName() );
 
 
@@ -114,13 +112,13 @@ public class MTransformJPanel extends javax.swing.JPanel {
         mTransformControlsJPanel.saveJButton().addActionListener(mStateMachine);
         mTransformControlsJPanel.reloadJButton().addActionListener(mStateMachine);
         mTransformControlsJPanel.removeJButton().addActionListener(mStateMachine);
-         
-         
+
+
     }
 
     JToggleButton powerJToggleButton(){ return powerJToggleButton; }
     BlinkJLabel stateJLabel(){ return (BlinkJLabel) stateJLabel; }
-    
+
     private void initComponents() {//GEN-BEGIN:initComponents
         onOffbuttonGroup = new javax.swing.ButtonGroup();
         descriptionTextJLabel = new javax.swing.JLabel();
@@ -228,9 +226,9 @@ public class MTransformJPanel extends javax.swing.JPanel {
 
     private void handleControlsJButton(boolean showingBoolean){
         if(showingBoolean == true){
-	    add(mTransformControlsJPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(46, 100, 596, 380), 0);
-	    setPreferredSize(maxDimension);
-	    setMinimumSize(maxDimension);
+        add(mTransformControlsJPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(46, 100, 596, 380), 0);
+        setPreferredSize(maxDimension);
+        setMinimumSize(maxDimension);
             setMaximumSize(maxDimension);
             controlsJToggleButton.setText("Hide Settings");
         }

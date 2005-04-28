@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: VirusConfig.java,v 1.7 2005/02/25 02:45:29 amread Exp $
+ * $Id$
  */
 
 package com.metavize.tran.virus;
@@ -16,7 +16,7 @@ import java.io.Serializable;
 /**
  * Virus configuration for a traffic category.
  *
- * @author <a href="mailto:amread@nyx.net">Aaron Read</a>
+ * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
  * @hibernate.class
  * table="TR_VIRUS_CONFIG"

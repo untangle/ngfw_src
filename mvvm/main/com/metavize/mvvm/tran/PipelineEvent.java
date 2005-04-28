@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: PipelineEvent.java,v 1.2 2005/03/25 03:51:16 amread Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.tran;
@@ -18,7 +18,7 @@ import com.metavize.mvvm.logging.LogEvent;
  *
  * XXX should we ad for the event type (enum: CREATE, DESTORY)
  *
- * @author <a href="mailto:amread@nyx.net">Aaron Read</a>
+ * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
  * @hibernate.class
  * table="MVVM_EVT_PIPELINE"

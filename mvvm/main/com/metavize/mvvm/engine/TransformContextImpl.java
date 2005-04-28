@@ -34,6 +34,7 @@ import com.metavize.mvvm.tran.Transform;
 import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.tran.TransformDesc;
 import com.metavize.mvvm.tran.TransformException;
+import com.metavize.mvvm.tran.TransformPreferences;
 import com.metavize.mvvm.tran.TransformState;
 import com.metavize.mvvm.tran.TransformStats;
 import com.metavize.mvvm.tran.UndeployException;
@@ -64,6 +65,8 @@ class TransformContextImpl implements TransformContext
 
     private final Tid tid;
     private final TransformDesc transformDesc;
+    private final TransformPreferences transformPreferences;
+    private final TransformPersistentState persistentState;
     private final MackageDesc mackageDesc;
     private final TransformBase transform;
     private final ClassLoader classLoader;
@@ -78,8 +81,64 @@ class TransformContextImpl implements TransformContext
     {
         this.tid = tid;
         this.mackageDesc = mackageDesc;
-        this.transformDesc = isNew ? initTransformDesc(resources)
-            : initTransformDesc();
+        this.transformDesc = initTransformDesc(resources);
+
+        if (isNew) {
+            // XXX this isn't supposed to be meaningful:
+            byte[] pKey = new byte[]
+                { (byte)(tid.getId() & 0xFF),
+                  (byte)((tid.getId() >> 8) & 0xFF) };
+
+            persistentState = new TransformPersistentState
+                (tid, mackageDesc.getName(), pKey);
+
+            transformPreferences = new TransformPreferences(tid);
+
+            Session s = MvvmContextFactory.context().openSession();
+            try {
+                Transaction tx = s.beginTransaction();
+
+                s.save(persistentState);
+                s.save(transformPreferences);
+
+                tx.commit();
+            } catch (HibernateException exn) {
+                logger.warn(exn, exn);
+                throw new DeployException(exn);
+            } finally {
+                try {
+                    s.close();
+                } catch (HibernateException exn) {
+                    logger.warn("could not close Session", exn);
+                }
+            }
+        } else {
+            Session s = MvvmContextFactory.context().openSession();
+            try {
+                Transaction tx = s.beginTransaction();
+
+                Query q = s.createQuery
+                    ("from TransformPersistentState tps where td.tid = :tid");
+                q.setParameter("tid", tid);
+                persistentState = (TransformPersistentState)q.uniqueResult();
+
+                q = s.createQuery
+                    ("from TransformPreferences tp where td.tid = :tid");
+                q.setParameter("tid", tid);
+                transformPreferences = (TransformPreferences)q.uniqueResult();
+
+                tx.commit();
+            } catch (HibernateException exn) {
+                logger.warn(exn, exn);
+                throw new DeployException(exn);
+            } finally {
+                try {
+                    s.close();
+                } catch (HibernateException exn) {
+                    logger.warn("could not close Session", exn);
+                }
+            }
+        }
 
         logger.info("Creating transform context for: " + tid
                     + " (" + transformDesc.getName() + ")");
@@ -155,6 +214,7 @@ class TransformContextImpl implements TransformContext
     }
 
     // TransformContext -------------------------------------------------------
+
     public Tid getTid()
     {
         return tid;
@@ -163,6 +223,11 @@ class TransformContextImpl implements TransformContext
     public TransformDesc getTransformDesc()
     {
         return transformDesc;
+    }
+
+    public TransformPreferences getTransformPreferences()
+    {
+        return transformPreferences;
     }
 
     public MackageDesc getMackageDesc()
@@ -212,6 +277,11 @@ class TransformContextImpl implements TransformContext
     }
 
     // package private methods ------------------------------------------------
+
+    TransformPersistentState getPersistentState()
+    {
+        return persistentState;
+    }
 
     static URLClassLoader[] getClassLoaders()
     {
@@ -284,38 +354,6 @@ class TransformContextImpl implements TransformContext
     // private methods --------------------------------------------------------
 
     /**
-     * Initialize transform from the database.
-     */
-    private TransformDesc initTransformDesc() throws DeployException
-    {
-        TransformDesc transformDesc;
-
-        Session s = MvvmContextFactory.context().openSession();
-        try {
-            Transaction tx = s.beginTransaction();
-
-            Query q = s.createQuery
-                ("from TransformDesc td where td.tid = :tid");
-            q.setParameter("tid", tid);
-            transformDesc = (TransformDesc)q.uniqueResult();
-
-            tx.commit();
-        } catch (HibernateException exn) {
-            throw new DeployException("could not get TransformDesc", exn);
-        } finally {
-            try {
-                s.close();
-            } catch (HibernateException exn) {
-                logger.warn("could not close Session", exn);
-            }
-        }
-
-        checkInstanceCount(transformDesc);
-
-        return transformDesc;
-    }
-
-    /**
      * Initialize transform from 'META-INF/mvvm-transform.xml' in one
      * of the urls.
      *
@@ -344,33 +382,8 @@ class TransformContextImpl implements TransformContext
             throw new DeployException(exn);
         }
 
-        TransformDesc transformDesc = mth.transformDesc;
-
-        transformDesc.setTid(tid);
-        // XXX this isn't supposed to be meaningful:
-        transformDesc.setPublicKey(new byte[]
-            { (byte)(tid.getId() & 0xFF),
-              (byte)((tid.getId() >> 8) & 0xFF) });
-        transformDesc.setTargetState(TransformState.INITIALIZED);
-
+        TransformDesc transformDesc = mth.getTransformDesc(tid);;
         checkInstanceCount(transformDesc);
-
-        Session s = MvvmContextFactory.context().openSession();
-        try {
-            Transaction tx = s.beginTransaction();
-
-            s.save(transformDesc);
-
-            tx.commit();
-        } catch (HibernateException exn) {
-            logger.warn(exn, exn);
-        } finally {
-            try {
-                s.close();
-            } catch (HibernateException exn) {
-                logger.warn("could not close Session", exn);
-            }
-        }
 
         return transformDesc;
     }

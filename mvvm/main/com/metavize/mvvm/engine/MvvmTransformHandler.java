@@ -11,11 +11,16 @@
 
 package com.metavize.mvvm.engine;
 
+
+import java.util.HashSet;
+
+import com.metavize.mvvm.security.Tid;
 import com.metavize.mvvm.tran.TransformDesc;
 import org.apache.log4j.Logger;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
+import java.util.Set;
 
 /**
  * SAX handler for mvvm-transform.xml files.
@@ -28,9 +33,24 @@ public class MvvmTransformHandler extends DefaultHandler
     private static final Logger logger = Logger
         .getLogger(MvvmTransformHandler.class);
 
-    public TransformDesc transformDesc;
+    private final Set<String> parents = new HashSet();
+
+    private String name = null;
+    private String className = null;
+    private String guiClassName = null;
+    private boolean casing = false;
+    private boolean singleInstance = false;
+    private String displayName = null;
 
     private StringBuilder parentBuilder;
+
+    // public methods ---------------------------------------------------------
+
+    public TransformDesc getTransformDesc(Tid tid)
+    {
+        return new TransformDesc(tid, name, className, guiClassName, casing,
+                                 parents, singleInstance, displayName);
+    }
 
     // DefaultHandler methods -------------------------------------------------
 
@@ -53,7 +73,7 @@ public class MvvmTransformHandler extends DefaultHandler
     public void endElement(String uri, String localName, String qName)
     {
         if (qName.equals("parent")) {
-            transformDesc.addParent(parentBuilder.toString());
+            parents.add(parentBuilder.toString());
             parentBuilder = null;
         }
     }
@@ -70,23 +90,22 @@ public class MvvmTransformHandler extends DefaultHandler
 
     private void processTranDesc(Attributes attrs)
     {
-        transformDesc = new TransformDesc();
         for (int i = 0; i < attrs.getLength(); i++) {
             String n = attrs.getQName(i);
             String v = attrs.getValue(i);
 
             if (n.equals("name")) {
-                transformDesc.setName(v);
+                name = v;
             } else if (n.equals("casing")) {
-                transformDesc.setCasing(Boolean.parseBoolean(v));
+                casing = Boolean.parseBoolean(v);
             } else if (n.equals("single-instance")) {
-                transformDesc.setSingleInstance(Boolean.parseBoolean(v));
+                singleInstance = Boolean.parseBoolean(v);
             } else if (n.equals("classname")) {
-                transformDesc.setClassName(v);
+                className = v;
             } else if (n.equals("display-name")) {
-                transformDesc.setDisplayName(v);
+                displayName = v;
             } else if (n.equals("gui-classname")) {
-                transformDesc.setGuiClassName(v);
+                guiClassName = v;
             }
         }
     }

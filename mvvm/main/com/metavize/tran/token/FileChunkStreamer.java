@@ -22,7 +22,7 @@ import org.apache.log4j.Logger;
 /**
  * Streams a file out as chunks.
  *
- * @author <a href="mailto:amread@nyx.net">Aaron Read</a>
+ * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
  */
 public class FileChunkStreamer extends TokenStreamer

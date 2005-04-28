@@ -39,11 +39,18 @@ public interface TransformContext
     Transform transform();
 
     /**
-     * Get the {@link TransformDesc} for this instance.
+     * Returns desc from mvvm-transform.xml.
      *
      * @return the TransformDesc.
      */
     TransformDesc getTransformDesc();
+
+    /**
+     * Returns the transform preferences.
+     *
+     * @return the TransformPreferences.
+     */
+    TransformPreferences getTransformPreferences();
 
     /**
      * Get the {@link MackageDesc} corresponding to this instance.

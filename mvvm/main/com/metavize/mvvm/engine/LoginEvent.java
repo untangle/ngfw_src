@@ -11,13 +11,13 @@
 
 package com.metavize.mvvm.engine;
 
-import com.metavize.mvvm.security.LoginFailureReason;
 import com.metavize.mvvm.logging.LogEvent;
+import com.metavize.mvvm.security.LoginFailureReason;
 
 /**
  * Log event for a login/login-attempt.
  *
- * @author <a href="mailto:amread@nyx.net">Aaron Read</a>
+ * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
  * @hibernate.class
  * table="MVVM_LOGIN_EVT"

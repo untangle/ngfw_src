@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: VirusHttpEvent.java,v 1.2 2005/03/25 03:51:15 amread Exp $
+ * $Id$
  */
 
 package com.metavize.tran.virus;
@@ -17,7 +17,7 @@ import com.metavize.tran.http.RequestLine;
 /**
  * Log for Virus events.
  *
- * @author <a href="mailto:amread@nyx.net">Aaron Read</a>
+ * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
  * @hibernate.class
  * table="TR_VIRUS_EVT_HTTP"

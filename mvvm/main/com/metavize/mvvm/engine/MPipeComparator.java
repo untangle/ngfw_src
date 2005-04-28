@@ -20,7 +20,7 @@ import com.metavize.mvvm.tapi.SoloPipeSpec;
 /**
  * Compares MPipes with SoloPipeSpecs.
  *
- * @author <a href="mailto:amread@nyx.net">Aaron Read</a>
+ * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
  */
 class MPipeComparator implements Comparator

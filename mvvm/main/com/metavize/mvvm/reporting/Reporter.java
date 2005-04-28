@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: Reporter.java,v 1.8 2005/02/12 00:54:06 jdi Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.reporting;
@@ -23,16 +23,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import com.metavize.mvvm.reporting.summary.*;
 import com.metavize.mvvm.engine.MvvmTransformHandler;
+import com.metavize.mvvm.reporting.summary.*;
+import com.metavize.mvvm.security.Tid;
+import net.sf.jasperreports.engine.JRDefaultScriptlet;
+import net.sf.jasperreports.engine.JRScriptletException;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JRDefaultScriptlet;
-import net.sf.jasperreports.engine.JRScriptletException;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.ChartUtilities;
 import org.apache.log4j.Logger;
+import org.jfree.chart.ChartUtilities;
+import org.jfree.chart.JFreeChart;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
@@ -59,7 +60,7 @@ public class Reporter
         FakeScriptlet(Connection con, Map params) {
             ourParams = params;
         }
-            
+
         public Object getParameterValue(String paramName) throws JRScriptletException
         {
             Object found = null;
@@ -136,7 +137,7 @@ public class Reporter
             xr.parse(new InputSource(is));
             is.close();
 
-            String mktName = mth.transformDesc.getDisplayName();
+            String mktName = mth.getTransformDesc(new Tid()).getDisplayName();
             logger.debug("Writing transform name: " + mktName);
             FileOutputStream fos = new FileOutputStream(new File(tranDir, "name"));
             PrintWriter pw = new PrintWriter(fos);
@@ -288,7 +289,7 @@ public class Reporter
     // Used for both general and specific transforms.
     private String processSummarizer(ReportSummarizer s, Connection conn,
                                      Timestamp startTime, Timestamp endTime)
-        
+
     {
         String result = s.getSummaryHtml(conn, startTime, endTime);
         return result + "<p>\n";
@@ -296,7 +297,7 @@ public class Reporter
 
     private String processGraphs(Connection conn, String base, Timestamp startTime, Timestamp endTime)
         throws IOException, JRScriptletException, SQLException, ClassNotFoundException
-    {   
+    {
         StringBuilder result = new StringBuilder();
         Map<String,Object> params = new HashMap<String,Object>();
         params.put(ReportGraph.PARAM_REPORT_START_DATE, startTime);

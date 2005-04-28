@@ -30,7 +30,6 @@ import com.metavize.mvvm.tran.TransformState;
 import com.metavize.mvvm.tran.TransformStats;
 import com.metavize.mvvm.tran.TransformStopException;
 import net.sf.hibernate.HibernateException;
-import net.sf.hibernate.Query;
 import net.sf.hibernate.Session;
 import net.sf.hibernate.Transaction;
 import org.apache.log4j.Logger;
@@ -45,7 +44,7 @@ public abstract class TransformBase implements Transform
 {
     private Logger logger = Logger.getLogger(TransformBase.class);
 
-    private final TransformContext transformContext;
+    private final TransformContextImpl transformContext;
     private final Tid tid;
     private final Set<TransformBase> parents = new HashSet<TransformBase>();
     private final Set<Transform> children = new HashSet<Transform>();
@@ -55,7 +54,8 @@ public abstract class TransformBase implements Transform
 
     protected TransformBase()
     {
-        transformContext = TransformContextFactory.context();
+        transformContext = (TransformContextImpl)TransformContextFactory
+            .context();
         tid = transformContext.getTid();
 
         runState = TransformState.LOADED;
@@ -180,27 +180,8 @@ public abstract class TransformBase implements Transform
 
     void resumeState() throws TransformException
     {
-        Session s = MvvmContextFactory.context().openSession();
-        try {
-            Transaction tx = s.beginTransaction();
-
-            Query q = s.createQuery
-                ("from TransformDesc td where td.tid = :tid");
-            q.setParameter("tid", tid);
-            TransformDesc td = (TransformDesc)q.uniqueResult();
-
-            resumeState(td);
-
-            tx.commit();
-        } catch (HibernateException exn) {
-            logger.warn("could not get TransformDesc", exn);
-        } finally {
-            try {
-                s.close();
-            } catch (HibernateException exn) {
-                logger.warn("could not close session", exn);
-            }
-        }
+        TransformPersistentState tps = transformContext.getPersistentState();
+        resumeState(tps);
     }
 
     void init(String[] args)
@@ -261,20 +242,17 @@ public abstract class TransformBase implements Transform
     {
         runState = ts;
 
+
         if (syncState) {
+            TransformPersistentState tps = transformContext
+                .getPersistentState();
+            tps.setTargetState(ts);
+
             Session s = MvvmContextFactory.context().openSession();
             try {
                 Transaction tx = s.beginTransaction();
 
-                Query q = s.createQuery
-                    ("from TransformDesc td where td.tid = :tid");
-                q.setParameter("tid", tid);
-                TransformDesc td = (TransformDesc)q.uniqueResult();
-
-                td.setTargetState(ts);
-                if (null != args) {
-                    td.setArgs(args);
-                }
+                s.saveOrUpdateCopy(tps);
 
                 tx.commit();
             } catch (HibernateException exn) {
@@ -390,22 +368,23 @@ public abstract class TransformBase implements Transform
         postDestroy(); // XXX if exception, state == ?
     }
 
-    private void resumeState(TransformDesc td) throws TransformException
+    private void resumeState(TransformPersistentState tps)
+        throws TransformException
     {
-        if (TransformState.LOADED == td.getTargetState()) {
+        if (TransformState.LOADED == tps.getTargetState()) {
             logger.debug("leaving transform in LOADED state");
-        } else if (TransformState.INITIALIZED == td.getTargetState()) {
+        } else if (TransformState.INITIALIZED == tps.getTargetState()) {
             logger.debug("bringing into INITIALIZED state");
-            init(false, td.getArgArray());
-        } else if (TransformState.RUNNING == td.getTargetState()) {
+            init(false, tps.getArgArray());
+        } else if (TransformState.RUNNING == tps.getTargetState()) {
             logger.debug("bringing into RUNNING state: " + tid);
-            init(false, td.getArgArray());
+            init(false, tps.getArgArray());
             start(false);
-        } else if (TransformState.DESTROYED == td.getTargetState()) {
+        } else if (TransformState.DESTROYED == tps.getTargetState()) {
             logger.debug("bringing into DESTROYED state: " + tid);
             runState = TransformState.DESTROYED;
         } else {
-            logger.warn("unknown state: " + td.getTargetState());
+            logger.warn("unknown state: " + tps.getTargetState());
         }
     }
 

@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: Tid.java,v 1.10 2005/02/25 02:45:29 amread Exp $
+ *  $Id$
  */
 
 package com.metavize.mvvm.security;
@@ -17,7 +17,7 @@ import java.security.Principal;
 /**
  * Transform ID.
  *
- * @author <a href="mailto:amread@nyx.net">Aaron Read</a>
+ * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
  * @hibernate.class
  * table="TID"
