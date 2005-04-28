@@ -1,23 +1,3 @@
-CREATE TABLE redirect_rule (
-    rule_id int8 NOT NULL,
-    is_dst_redirect bool,
-    redirect_port int4,
-    redirect_addr inet,
-    protocol_matcher varchar(255),
-    src_ip_matcher varchar(255),
-    dst_ip_matcher varchar(255),
-    src_port_matcher varchar(255),
-    dst_port_matcher varchar(255),
-    src_intf_matcher varchar(255),
-    dst_intf_matcher varchar(255),
-    name varchar(255),
-    category varchar(255),
-    description varchar(255),
-    live bool,
-    alert bool,
-    log bool,
-    PRIMARY KEY (rule_id));
-
 CREATE TABLE admin_settings (
     admin_settings_id int8 NOT NULL,
     summary_period_id int8,
@@ -39,24 +19,6 @@ CREATE TABLE upgrade_settings (
     period int8 NOT NULL,
     PRIMARY KEY (upgrade_settings_id));
 
-CREATE TABLE firewall_rule (
-    rule_id int8 NOT NULL,
-    is_traffic_blocker bool,
-    protocol_matcher varchar(255),
-    src_ip_matcher varchar(255),
-    dst_ip_matcher varchar(255),
-    src_port_matcher varchar(255),
-    dst_port_matcher varchar(255),
-    src_intf_matcher varchar(255),
-    dst_intf_matcher varchar(255),
-    name varchar(255),
-    category varchar(255),
-    description varchar(255),
-    live bool,
-    alert bool,
-    log bool,
-    PRIMARY KEY (rule_id));
-
 CREATE TABLE mail_settings (
     mail_settings_id int8 NOT NULL,
     report_email varchar(255),
@@ -65,11 +27,10 @@ CREATE TABLE mail_settings (
     PRIMARY KEY (mail_settings_id));
 
 CREATE TABLE transform_args (
-    transform_desc_id int8 NOT NULL,
+    tps_id int8 NOT NULL,
     arg varchar(255) NOT NULL,
     position int4 NOT NULL,
-    PRIMARY KEY (transform_desc_id,
-    position));
+    PRIMARY KEY (tps_id, position));
 
 CREATE TABLE transform_manager_state (
     id int8 NOT NULL,

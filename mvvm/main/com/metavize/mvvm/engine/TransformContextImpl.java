@@ -118,12 +118,12 @@ class TransformContextImpl implements TransformContext
                 Transaction tx = s.beginTransaction();
 
                 Query q = s.createQuery
-                    ("from TransformPersistentState tps where td.tid = :tid");
+                    ("from TransformPersistentState tps where tps.tid = :tid");
                 q.setParameter("tid", tid);
                 persistentState = (TransformPersistentState)q.uniqueResult();
 
                 q = s.createQuery
-                    ("from TransformPreferences tp where td.tid = :tid");
+                    ("from TransformPreferences tp where tp.tid = :tid");
                 q.setParameter("tid", tid);
                 transformPreferences = (TransformPreferences)q.uniqueResult();
 
@@ -150,7 +150,7 @@ class TransformContextImpl implements TransformContext
         if (transformDesc.isCasing()) {
             parentCl.addResources(resources);
             resources = URL_PROTO;
-        } else {
+        } else if (isNew) {
             Set<String> parents = transformDesc.getParents();
             for (String parent : parents) {
                 parentCtxs.add(startParent(parent));

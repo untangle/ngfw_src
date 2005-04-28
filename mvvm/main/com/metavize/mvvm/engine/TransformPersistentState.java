@@ -67,6 +67,24 @@ class TransformPersistentState
     }
 
     /**
+     * Transform id.
+     *
+     * @return tid for this instance.
+     * @hibernate.many-to-one
+     * cascade="none"
+     * column="TID"
+     */
+    Tid getTid()
+    {
+        return tid;
+    }
+
+    void setTid(Tid tid)
+    {
+        this.tid = tid;
+    }
+
+    /**
      * Internal name of the transform.
      *
      * @return the transform's name.
@@ -83,24 +101,6 @@ class TransformPersistentState
     void setName(String name)
     {
         this.name = name;
-    }
-
-    /**
-     * Transform id.
-     *
-     * @return tid for this instance.
-     * @hibernate.many-to-one
-     * cascade="none"
-     * column="TID"
-     */
-    Tid getTid()
-    {
-        return tid;
-    }
-
-    void setTid(Tid tid)
-    {
-        this.tid = tid;
     }
 
     /**

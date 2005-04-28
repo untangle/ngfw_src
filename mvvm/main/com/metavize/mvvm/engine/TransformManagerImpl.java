@@ -162,63 +162,35 @@ class TransformManagerImpl implements TransformManager
     {
         logger.info("Restarting unloaded transforms...");
 
-        List unloaded = getUnloaded();
-
-        boolean removed = true;
-        while (!unloaded.isEmpty()) {
-            if (removed) {
-                removed = false;
-            } else {
-                logger.warn("Did not restart all transforms.");
-                break;
-            }
-
-            for (Iterator i = unloaded.iterator(); i.hasNext(); ) {
-                TransformDesc td = (TransformDesc)i.next();
-                Tid tid = td.getTid();
-                logger.info("Restarting: " + tid + " (" + td.getName() + ")");
-
-                Set<String> parents = td.getParents();
-
-                boolean parentsLoaded = true;
-                for (String parent : parents) {
-                    if (0 == transformInstances(parent).length) {
-                        parentsLoaded = false;
-                        break;
-                    }
-                }
-
-                if (parentsLoaded) {
-                    removed = true;
-                    i.remove();
-                    try {
-                        instantiate(td.getName(), tid, null, false);
-                        logger.info("Restarted: " + tid);
-                    } catch (Exception exn) {
-                        logger.warn("Could not restart: " + tid, exn);
-                    }
-                }
+        for (TransformPersistentState tps : getUnloaded()) {
+            Tid tid = tps.getTid();
+            logger.info("Restarting: " + tid + " (" + tps.getName() + ")");
+            try {
+                instantiate(tps.getName(), tid, null, false);
+                logger.info("Restarted: " + tid);
+            } catch (Exception exn) {
+                logger.warn("Could not restart: " + tid, exn);
             }
         }
     }
 
     // private methods --------------------------------------------------------
 
-    private List getUnloaded()
+    private List<TransformPersistentState> getUnloaded()
     {
-        List unloaded = new LinkedList();
+        List<TransformPersistentState> unloaded
+            = new LinkedList<TransformPersistentState>();
 
         Session s = MvvmContextFactory.context().openSession();
         try {
             Transaction tx = s.beginTransaction();
 
-            Query q = s.createQuery("from TransformDesc td");
-            List result = q.list();
+            Query q = s.createQuery("from TransformPersistentState tps");
+            List<TransformPersistentState> result = q.list();
 
-            for (Iterator i = result.iterator(); i.hasNext(); ) {
-                TransformDesc td = (TransformDesc)i.next();
-                if (!tids.containsKey(td.getTid())) {
-                    unloaded.add(td);
+            for (TransformPersistentState persistentState : result) {
+                if (!tids.containsKey(persistentState.getTid())) {
+                    unloaded.add(persistentState);
                 }
             }
 
