@@ -29,6 +29,7 @@ public class TransformDesc implements Serializable
     private static final long serialVersionUID = 4361064848435100972L;
 
     private final Tid tid;
+
     private final String name;
 
     private final String className;
@@ -43,7 +44,6 @@ public class TransformDesc implements Serializable
     private final int tcpClientReadBufferSize = 8192;
     private final int tcpServerReadBufferSize = 8192;
     private final int udpMaxPacketSize = 16384;
-
 
     public TransformDesc(Tid tid, String name, String className,
                          String guiClassName, boolean casing,

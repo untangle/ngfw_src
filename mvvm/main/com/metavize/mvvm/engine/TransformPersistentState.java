@@ -111,7 +111,7 @@ class TransformPersistentState
      * @hibernate.list
      * table="TRANSFORM_ARGS"
      * @hibernate.collection-key
-     * column="ID"
+     * column="TPS_ID"
      * @hibernate.collection-index
      * column="POSITION"
      * @hibernate.collection-element

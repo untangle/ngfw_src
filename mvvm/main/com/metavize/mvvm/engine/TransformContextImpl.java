@@ -12,7 +12,6 @@
 package com.metavize.mvvm.engine;
 
 import java.beans.XMLDecoder;
-import java.io.IOException;
 import java.io.InputStream;
 import java.lang.IllegalAccessException;
 import java.lang.reflect.InvocationTargetException;
@@ -45,14 +44,9 @@ import net.sf.hibernate.SessionFactory;
 import net.sf.hibernate.Transaction;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Logger;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 class TransformContextImpl implements TransformContext
 {
-    private static final String DESC_PATH = "META-INF/mvvm-transform.xml";
     private static final String BEAN_PATH = "META-INF/beans.xml";
 
     private static final Map<ClassLoader, TransformContextImpl> CONTEXTS
@@ -63,8 +57,8 @@ class TransformContextImpl implements TransformContext
 
     private static final URL[] URL_PROTO = new URL[0];
 
-    private final Tid tid;
     private final TransformDesc transformDesc;
+    private final Tid tid;
     private final TransformPreferences transformPreferences;
     private final TransformPersistentState persistentState;
     private final MackageDesc mackageDesc;
@@ -75,13 +69,15 @@ class TransformContextImpl implements TransformContext
     private final TransformManagerImpl transformManager = TransformManagerImpl
         .manager();
 
-    TransformContextImpl(URL[] resources, Tid tid, String args[],
-                         MackageDesc mackageDesc, boolean isNew)
+    TransformContextImpl(URL[] resources, TransformDesc transformDesc,
+                         String args[], MackageDesc mackageDesc, boolean isNew)
         throws DeployException
     {
-        this.tid = tid;
+        this.transformDesc = transformDesc;
+        this.tid = transformDesc.getTid();
         this.mackageDesc = mackageDesc;
-        this.transformDesc = initTransformDesc(resources);
+
+        checkInstanceCount(transformDesc);
 
         if (isNew) {
             // XXX this isn't supposed to be meaningful:
@@ -352,41 +348,6 @@ class TransformContextImpl implements TransformContext
     }
 
     // private methods --------------------------------------------------------
-
-    /**
-     * Initialize transform from 'META-INF/mvvm-transform.xml' in one
-     * of the urls.
-     *
-     * @param urls urls to find transform descriptor.
-     * @exception DeployException the descriptor does not parse or
-     * parent cannot be loaded.
-     */
-    private TransformDesc initTransformDesc(URL[] urls) throws DeployException
-    {
-        // XXX assumes no parent cl has this file.
-        InputStream is = new URLClassLoader(urls)
-            .getResourceAsStream(DESC_PATH);
-        if (null == is) {
-            throw new DeployException(DESC_PATH + " not found");
-        }
-
-        MvvmTransformHandler mth = new MvvmTransformHandler();
-
-        try {
-            XMLReader xr = XMLReaderFactory.createXMLReader();
-            xr.setContentHandler(mth);
-            xr.parse(new InputSource(is));
-        } catch (SAXException exn) {
-            throw new DeployException(exn);
-        } catch (IOException exn) {
-            throw new DeployException(exn);
-        }
-
-        TransformDesc transformDesc = mth.getTransformDesc(tid);;
-        checkInstanceCount(transformDesc);
-
-        return transformDesc;
-    }
 
     private void checkInstanceCount(TransformDesc transformDesc)
         throws TooManyInstancesException

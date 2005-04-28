@@ -11,8 +11,12 @@
 
 package com.metavize.mvvm.engine;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -34,9 +38,14 @@ import net.sf.hibernate.Query;
 import net.sf.hibernate.Session;
 import net.sf.hibernate.Transaction;
 import org.apache.log4j.Logger;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
 
 class TransformManagerImpl implements TransformManager
 {
+    private static final String DESC_PATH = "META-INF/mvvm-transform.xml";
     private static final Tid[] TID_PROTO = new Tid[0];
 
     private static final Object LOCK = new Object();
@@ -99,13 +108,13 @@ class TransformManagerImpl implements TransformManager
     public Tid instantiate(String transformName, String[] args)
         throws DeployException
     {
-        return instantiate(transformName, newTid(), args, true);
+        return instantiate(transformName, newTid(), args);
     }
 
     public Tid instantiate(String transformName)
         throws DeployException
     {
-        return instantiate(transformName, newTid(), new String[0], true);
+        return instantiate(transformName, newTid(), new String[0]);
     }
 
     public void destroy(Tid tid) throws UndeployException
@@ -162,14 +171,71 @@ class TransformManagerImpl implements TransformManager
     {
         logger.info("Restarting unloaded transforms...");
 
-        for (TransformPersistentState tps : getUnloaded()) {
+        ToolboxManagerImpl tbm = (ToolboxManagerImpl)MvvmContextFactory
+            .context().toolboxManager();
+
+        List<TransformPersistentState> unloaded = getUnloaded();
+        Map<Tid, TransformDesc> tDescs = new HashMap<Tid, TransformDesc>();
+
+        for (TransformPersistentState tps : unloaded) {
+            URL[] urls = tbm.resources(tps.getName());
             Tid tid = tps.getTid();
-            logger.info("Restarting: " + tid + " (" + tps.getName() + ")");
+
             try {
-                instantiate(tps.getName(), tid, null, false);
-                logger.info("Restarted: " + tid);
-            } catch (Exception exn) {
-                logger.warn("Could not restart: " + tid, exn);
+                TransformDesc tDesc = initTransformDesc(urls, tid);
+                tDescs.put(tid, tDesc);
+            } catch (DeployException exn) {
+                logger.warn("TransformDesc could not be parsed", exn);
+                unloaded.remove(tid);
+            }
+        }
+
+        boolean removed = true;
+        while (0 < unloaded.size()) {
+            if (removed) {
+                removed = false;
+            } else {
+                logger.warn("Did not start all transforms.");
+                break;
+            }
+
+            for (Iterator<TransformPersistentState> i = unloaded.iterator();
+                 i.hasNext(); ) {
+                TransformPersistentState tps = i.next();
+                Tid tid = tps.getTid();
+
+                String name = tps.getName();
+                URL[] urls = tbm.resources(name);
+
+                TransformDesc tDesc = tDescs.get(tid);
+
+                Set<String> parents = tDesc.getParents();
+                boolean parentsLoaded = true;
+                for (String parent : parents) {
+                    if (0 == transformInstances(parent).length) {
+                        parentsLoaded = false;
+                        break;
+                    }
+                }
+
+                if (parentsLoaded) {
+                    removed = true;
+                    i.remove();
+
+                    MackageDesc mackageDesc = tbm.mackageDesc(name);
+                    String[] args = tps.getArgArray();
+                    logger.info("Restarting: " + tid + " (" + name + ")");
+                    try {
+
+                        TransformContextImpl tc = new TransformContextImpl
+                            (urls, tDesc, args, mackageDesc, false);
+                        tids.put(tid, tc);
+
+                        logger.info("Restarted: " + tid);
+                    } catch (Exception exn) {
+                        logger.warn("Could not restart: " + tid, exn);
+                    }
+                }
             }
         }
     }
@@ -208,8 +274,7 @@ class TransformManagerImpl implements TransformManager
         return unloaded;
     }
 
-    private Tid instantiate(String transformName, Tid tid, String[] args,
-                            boolean isNew)
+    private Tid instantiate(String transformName, Tid tid, String[] args)
         throws DeployException
     {
         ToolboxManagerImpl tbm = (ToolboxManagerImpl)MvvmContextFactory
@@ -217,13 +282,49 @@ class TransformManagerImpl implements TransformManager
 
         URL[] urls = tbm.resources(transformName);
         MackageDesc mackageDesc = tbm.mackageDesc(transformName);
+        TransformDesc tDesc = initTransformDesc(urls, tid);
 
-        TransformContextImpl tc = new TransformContextImpl(urls, tid, args,
-                                                           mackageDesc, isNew);
+        TransformContextImpl tc = new TransformContextImpl(urls, tDesc, args,
+                                                           mackageDesc, true);
 
         tids.put(tid, tc);
 
         return tid;
+    }
+
+    /**
+     * Initialize transform from 'META-INF/mvvm-transform.xml' in one
+     * of the urls.
+     *
+     * @param urls urls to find transform descriptor.
+     * @exception DeployException the descriptor does not parse or
+     * parent cannot be loaded.
+     */
+    private TransformDesc initTransformDesc(URL[] urls, Tid tid)
+        throws DeployException
+    {
+        // XXX assumes no parent cl has this file.
+        InputStream is = new URLClassLoader(urls)
+            .getResourceAsStream(DESC_PATH);
+        if (null == is) {
+            throw new DeployException(DESC_PATH + " not found");
+        }
+
+        MvvmTransformHandler mth = new MvvmTransformHandler();
+
+        try {
+            XMLReader xr = XMLReaderFactory.createXMLReader();
+            xr.setContentHandler(mth);
+            xr.parse(new InputSource(is));
+        } catch (SAXException exn) {
+            throw new DeployException(exn);
+        } catch (IOException exn) {
+            throw new DeployException(exn);
+        }
+
+        TransformDesc transformDesc = mth.getTransformDesc(tid);;
+
+        return transformDesc;
     }
 
     private Object tidLock = new Object();

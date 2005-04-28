@@ -27,7 +27,3 @@ if [ "x$ver" != "x" ]; then
 else
     echo "not updating schema"
 fi
-
-
-
-
