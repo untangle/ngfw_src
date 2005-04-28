@@ -123,7 +123,7 @@ public class DnsJPanel extends javax.swing.JPanel {
         nameserversJPanel.setBorder(new javax.swing.border.TitledBorder(null, "DNS Forwarding", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
         jTextArea1.setEditable(false);
         jTextArea1.setLineWrap(true);
-        jTextArea1.setText("DNS Forwarding allows EdgeGuard to act as a DNS server for the internal network, by forwarding DNS requests to your external DNS server.  Your external DNS server is specified in the \"Network Settings\" Config Panel.");
+        jTextArea1.setText("DNS Forwarding allows EdgeGuard to act as a DNS server for the internal network, by forwarding DNS requests to your external DNS server.  Your external DNS server is specified in the \"Network Settings\" Config Panel.  (Note: If DHCP is enabled, this will also return hostnames served by DHCP.)");
         jTextArea1.setWrapStyleWord(true);
         jTextArea1.setOpaque(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -186,8 +186,8 @@ public class DnsJPanel extends javax.swing.JPanel {
     }//GEN-END:initComponents
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JRadioButton dnsMasqDisabledJRadioButton;
-    private javax.swing.JRadioButton dnsMasqEnabledJRadioButton;
+    public javax.swing.JRadioButton dnsMasqDisabledJRadioButton;
+    public javax.swing.JRadioButton dnsMasqEnabledJRadioButton;
     private javax.swing.ButtonGroup enabledButtonGroup;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel2;

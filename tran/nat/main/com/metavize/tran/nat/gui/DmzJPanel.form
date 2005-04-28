@@ -15,7 +15,7 @@
       <Properties>
         <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
           <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-            <TitledBorder title="DMZ Usage">
+            <TitledBorder title="DMZ">
               <Font PropertyName="font" name="Dialog" size="16" style="1"/>
             </TitledBorder>
           </Border>
@@ -33,7 +33,7 @@
           <Properties>
             <Property name="editable" type="boolean" value="false"/>
             <Property name="lineWrap" type="boolean" value="true"/>
-            <Property name="text" type="java.lang.String" value="DMZ allows you to direct all incoming traffic to a specific computer on your network.  This is typically used for webservers or other servers which must be accesible from outside your secured network.  If you disable DMZ, no incoming traffic will enter your network.  (Note:  If you use Redirect, you can allow certain incoming traffic to enter your network regardless of if a DMZ is being used.)"/>
+            <Property name="text" type="java.lang.String" value="DMZ allows you to direct all incoming traffic to a specific computer on your internal network.  This is typically used for web servers or other servers which must be accesible from outside your secured internal network.  (Note:  Redirect takes precedence over DMZ)"/>
             <Property name="wrapStyleWord" type="boolean" value="true"/>
             <Property name="opaque" type="boolean" value="false"/>
           </Properties>

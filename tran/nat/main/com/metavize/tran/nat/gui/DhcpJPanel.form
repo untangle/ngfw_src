@@ -17,7 +17,7 @@
       <Properties>
         <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
           <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-            <TitledBorder title="DHCP Usage">
+            <TitledBorder title="DHCP">
               <Font PropertyName="font" name="Dialog" size="16" style="1"/>
             </TitledBorder>
           </Border>
@@ -35,7 +35,7 @@
           <Properties>
             <Property name="editable" type="boolean" value="false"/>
             <Property name="lineWrap" type="boolean" value="true"/>
-            <Property name="text" type="java.lang.String" value="DHCP allows computers in a private network to be assigned an IP address (either dynamically or statically), based on their hardware MAC addresses.  The computers can then also register hostnames when they request an IP address via DHCP.  Through DNS Masquerading, computers on the internal network can then address each other by hostname (in addition to IP address)."/>
+            <Property name="text" type="java.lang.String" value="DHCP dynamically assigns IP addresses to computers in the internal network.  The Address Map can be used in addition to this to statically assign IP addresses to computers in the internal network, based on the computers&apos; MAC addresses."/>
             <Property name="wrapStyleWord" type="boolean" value="true"/>
             <Property name="opaque" type="boolean" value="false"/>
           </Properties>
@@ -139,7 +139,7 @@
           <Properties>
             <Property name="editable" type="boolean" value="false"/>
             <Property name="lineWrap" type="boolean" value="true"/>
-            <Property name="text" type="java.lang.String" value="DHCP can assign addresses to computers dynamically, from a pool of dynamic IP addresses.  The pool of dynamic IP addresses must be specified as a range of addresses, with a beginning (start) and an end.  You can use the Client Address Table to specify that a computer on the internal network should be assigned an IP address dynamically."/>
+            <Property name="text" type="java.lang.String" value="DHCP assigns dynamic addresses from a pool.  The pool of IP addresses must be specified as a range, with a beginning (start) and an end.  You can use the Address Map to specify that a computer on the internal network should be assigned a static address."/>
             <Property name="wrapStyleWord" type="boolean" value="true"/>
             <Property name="opaque" type="boolean" value="false"/>
           </Properties>

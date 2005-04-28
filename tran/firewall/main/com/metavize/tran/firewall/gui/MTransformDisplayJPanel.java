@@ -15,7 +15,8 @@ import com.metavize.gui.pipeline.MPipelineJPanel;
 import com.metavize.mvvm.tran.TransformContext;
 
 public class MTransformDisplayJPanel extends com.metavize.gui.transform.MTransformDisplayJPanel{
-    
+
+    private boolean updateThroughput = false;
     
     public MTransformDisplayJPanel(MTransformJPanel mTransformJPanel) {
         super(mTransformJPanel);

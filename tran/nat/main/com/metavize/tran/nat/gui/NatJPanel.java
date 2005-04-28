@@ -227,10 +227,10 @@ public class NatJPanel extends javax.swing.JPanel {
 
         explanationJPanel.setLayout(new java.awt.GridBagLayout());
 
-        explanationJPanel.setBorder(new javax.swing.border.TitledBorder(null, "NAT Usage", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
+        explanationJPanel.setBorder(new javax.swing.border.TitledBorder(null, "NAT (Network Address Translation)", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
         jTextArea2.setEditable(false);
         jTextArea2.setLineWrap(true);
-        jTextArea2.setText("NAT allows multiple computers in a private network to share internet access through a single shared public IP address.");
+        jTextArea2.setText("NAT allows multiple computers in the internal network to share internet access through a single shared public IP address.");
         jTextArea2.setWrapStyleWord(true);
         jTextArea2.setOpaque(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -305,7 +305,7 @@ public class NatJPanel extends javax.swing.JPanel {
         externalRemoteJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Internal Address (Gateway)", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
         jTextArea3.setEditable(false);
         jTextArea3.setLineWrap(true);
-        jTextArea3.setText("NAT requires that you assign an address on your internal network to EdgeGuard.  This internal address is the address that computers on the internal network will use to contact EdgeGuard, in an effort to access the Internet or some other external network.");
+        jTextArea3.setText("The internal address is EdgeGuard's address on the internal network, which computers will use as their gateway.  This address is also used to contact EdgeGuard for configuration.");
         jTextArea3.setWrapStyleWord(true);
         jTextArea3.setOpaque(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -389,7 +389,7 @@ public class NatJPanel extends javax.swing.JPanel {
         internalRemoteJPanel.setBorder(new javax.swing.border.TitledBorder(null, "External Address (Public Address)", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
         jTextArea1.setEditable(false);
         jTextArea1.setLineWrap(true);
-        jTextArea1.setText("The external address is the address of EdgeGuard when viewed from some external network.  This is specified through the \"Network Settings\" Config Panel, either manually or automatically.  The external address is visible here only for your convenience.");
+        jTextArea1.setText("The external address is EdgeGuard's address on the external network.  This is specified through the \"Network Settings\" Config Panel.");
         jTextArea1.setWrapStyleWord(true);
         jTextArea1.setOpaque(false);
         gridBagConstraints = new java.awt.GridBagConstraints();

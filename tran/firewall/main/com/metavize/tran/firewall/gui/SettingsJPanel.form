@@ -33,7 +33,7 @@
           <Properties>
             <Property name="editable" type="boolean" value="false"/>
             <Property name="lineWrap" type="boolean" value="true"/>
-            <Property name="text" type="java.lang.String" value="The default action specifies what will happen to incoming traffic if no block or pass rule applies."/>
+            <Property name="text" type="java.lang.String" value="The default action specifies what will happen to traffic if no block or pass rules apply."/>
             <Property name="wrapStyleWord" type="boolean" value="true"/>
             <Property name="opaque" type="boolean" value="false"/>
           </Properties>

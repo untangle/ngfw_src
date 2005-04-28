@@ -126,7 +126,7 @@ public class SettingsJPanel extends javax.swing.JPanel {
         explanationJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Default Action", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
         jTextArea2.setEditable(false);
         jTextArea2.setLineWrap(true);
-        jTextArea2.setText("The default action specifies what will happen to incoming traffic if no block or pass rule applies.");
+        jTextArea2.setText("The default action specifies what will happen to traffic if no block or pass rules apply.");
         jTextArea2.setWrapStyleWord(true);
         jTextArea2.setOpaque(false);
         gridBagConstraints = new java.awt.GridBagConstraints();

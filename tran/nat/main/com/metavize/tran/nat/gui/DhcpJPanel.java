@@ -182,10 +182,10 @@ public class DhcpJPanel extends javax.swing.JPanel {
 
         explanationJPanel.setLayout(new java.awt.GridBagLayout());
 
-        explanationJPanel.setBorder(new javax.swing.border.TitledBorder(null, "DHCP Usage", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
+        explanationJPanel.setBorder(new javax.swing.border.TitledBorder(null, "DHCP", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
         jTextArea2.setEditable(false);
         jTextArea2.setLineWrap(true);
-        jTextArea2.setText("DHCP allows computers in a private network to be assigned an IP address (either dynamically or statically), based on their hardware MAC addresses.  The computers can then also register hostnames when they request an IP address via DHCP.  Through DNS Masquerading, computers on the internal network can then address each other by hostname (in addition to IP address).");
+        jTextArea2.setText("DHCP dynamically assigns IP addresses to computers in the internal network.  The Address Map can be used in addition to this to statically assign IP addresses to computers in the internal network, based on the computers' MAC addresses.");
         jTextArea2.setWrapStyleWord(true);
         jTextArea2.setOpaque(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -260,7 +260,7 @@ public class DhcpJPanel extends javax.swing.JPanel {
         dynamicRangeJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Dynamic IP Address Range", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
         jTextArea3.setEditable(false);
         jTextArea3.setLineWrap(true);
-        jTextArea3.setText("DHCP can assign addresses to computers dynamically, from a pool of dynamic IP addresses.  The pool of dynamic IP addresses must be specified as a range of addresses, with a beginning (start) and an end.  You can use the Client Address Table to specify that a computer on the internal network should be assigned an IP address dynamically.");
+        jTextArea3.setText("DHCP assigns dynamic addresses from a pool.  The pool of IP addresses must be specified as a range, with a beginning (start) and an end.  You can use the Address Map to specify that a computer on the internal network should be assigned a static address.");
         jTextArea3.setWrapStyleWord(true);
         jTextArea3.setOpaque(false);
         gridBagConstraints = new java.awt.GridBagConstraints();

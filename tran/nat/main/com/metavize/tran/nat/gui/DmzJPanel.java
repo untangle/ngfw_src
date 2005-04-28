@@ -123,7 +123,9 @@ public class DmzJPanel extends javax.swing.JPanel {
         
         // SAVE THE VALUES ////////////////////////////////////
         natSettings.setDmzEnabled( dmzEnabled );
-        natSettings.setDmzAddress( dmzTargetAddress );
+        if(dmzEnabled){
+            natSettings.setDmzAddress( dmzTargetAddress );
+        }
         
     }
     
@@ -151,10 +153,10 @@ public class DmzJPanel extends javax.swing.JPanel {
 
         explanationJPanel.setLayout(new java.awt.GridBagLayout());
 
-        explanationJPanel.setBorder(new javax.swing.border.TitledBorder(null, "DMZ Usage", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
+        explanationJPanel.setBorder(new javax.swing.border.TitledBorder(null, "DMZ", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
         jTextArea2.setEditable(false);
         jTextArea2.setLineWrap(true);
-        jTextArea2.setText("DMZ allows you to direct all incoming traffic to a specific computer on your network.  This is typically used for webservers or other servers which must be accesible from outside your secured network.  If you disable DMZ, no incoming traffic will enter your network.  (Note:  If you use Redirect, you can allow certain incoming traffic to enter your network regardless of if a DMZ is being used.)");
+        jTextArea2.setText("DMZ allows you to direct all incoming traffic to a specific computer on your internal network.  This is typically used for web servers or other servers which must be accesible from outside your secured internal network.  (Note:  Redirect takes precedence over DMZ)");
         jTextArea2.setWrapStyleWord(true);
         jTextArea2.setOpaque(false);
         gridBagConstraints = new java.awt.GridBagConstraints();

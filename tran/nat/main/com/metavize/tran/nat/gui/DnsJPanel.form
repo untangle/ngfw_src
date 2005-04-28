@@ -33,7 +33,7 @@
           <Properties>
             <Property name="editable" type="boolean" value="false"/>
             <Property name="lineWrap" type="boolean" value="true"/>
-            <Property name="text" type="java.lang.String" value="DNS Forwarding allows EdgeGuard to act as a DNS server for the internal network, by forwarding DNS requests to your external DNS server.  Your external DNS server is specified in the &quot;Network Settings&quot; Config Panel."/>
+            <Property name="text" type="java.lang.String" value="DNS Forwarding allows EdgeGuard to act as a DNS server for the internal network, by forwarding DNS requests to your external DNS server.  Your external DNS server is specified in the &quot;Network Settings&quot; Config Panel.  (Note: If DHCP is enabled, this will also return hostnames served by DHCP.)"/>
             <Property name="wrapStyleWord" type="boolean" value="true"/>
             <Property name="opaque" type="boolean" value="false"/>
           </Properties>
