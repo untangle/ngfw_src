@@ -199,7 +199,7 @@ public class MPipelineJPanel extends javax.swing.JPanel {
             }
             finally{
                 synchronized(this){
-                    Util.getStatusJProgressBar().setValue(32 + (int) ((((float)installedCount)/(float)initialInstallCount)*32f) );
+                    Util.getStatusJProgressBar().setValue(16 + (int) ((((float)installedCount)/(float)initialInstallCount)*48f) );
                     installedCount++;
                 }
             }
