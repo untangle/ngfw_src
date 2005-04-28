@@ -110,7 +110,7 @@ public class FirewallImpl extends SoloTransform implements Firewall
         logger.info("Initializing Settings...");
 
         /* XXX Should be default settings */
-        FirewallSettings settings = getTestSettings();
+        FirewallSettings settings = getDefaultSettings();
 
         setFirewallSettings(settings);
     }
@@ -188,9 +188,9 @@ public class FirewallImpl extends SoloTransform implements Firewall
         logger.info( "Update Settings Complete" );
     }
 
-    FirewallSettings getTestSettings()
+    FirewallSettings getDefaultSettings()
     {
-        logger.info( "Using the test settings" );
+        logger.info( "Loading the default settings" );
         FirewallSettings settings = new FirewallSettings( this.getTid());
         
         /* Need this to lookup the local IP address */
@@ -200,33 +200,42 @@ public class FirewallImpl extends SoloTransform implements Firewall
             /* Redirect settings */
             settings.setQuickExit( true );
             settings.setRejectSilently( true );
-            settings.setDefaultAccept( false );
+            settings.setDefaultAccept( true );
 
-            List firewallList = new LinkedList();
+            List<FirewallRule> firewallList = new LinkedList<FirewallRule>();
 
             IPMatcher localHostMatcher = new IPMatcher( netConfig.host());
             
-            /* This rule blocks all traffic from 5900-6000 to 7000 */
-            firewallList.add( new FirewallRule( true, ProtocolMatcher.MATCHER_ALL,
-                                                IntfMatcher.MATCHER_IN, IntfMatcher.MATCHER_ALL,
-                                                IPMatcher.MATCHER_ALL, IPMatcher.MATCHER_ALL,
-                                                new PortMatcher( 5900,6000 ), new PortMatcher( 7000, 7001 ),
-                                                true ));
             
-            /* This rule is disabled, to verify the on off switch works */
-            firewallList.add( new FirewallRule( false, ProtocolMatcher.MATCHER_TCP,
-                                                IntfMatcher.MATCHER_ALL, IntfMatcher.MATCHER_ALL,
-                                                IPMatcher.MATCHER_ALL, 
-                                                new IPMatcher( IPaddr.parse( "10.0.0.44" )), 
-                                                PortMatcher.MATCHER_ALL, new PortMatcher( 5901 ),
-                                                true ));
             
-            /* Rule to catch all outgoing traffic */
-            firewallList.add( new FirewallRule( true, ProtocolMatcher.MATCHER_ALL,
-                                                IntfMatcher.MATCHER_IN, IntfMatcher.MATCHER_ALL,
-                                                IPMatcher.MATCHER_ALL, IPMatcher.MATCHER_ALL,
-                                                PortMatcher.MATCHER_ALL, PortMatcher.MATCHER_ALL,
-                                                false ));
+            FirewallRule tmp = new FirewallRule( false, ProtocolMatcher.MATCHER_ALL,
+                                                 IntfMatcher.MATCHER_OUT, IntfMatcher.MATCHER_ALL,
+                                                 IPMatcher.MATCHER_ALL, IPMatcher.MATCHER_ALL,
+                                                 PortMatcher.MATCHER_ALL, new PortMatcher( 21 ),
+                                                 true );
+            tmp.setDescription( "Block all incoming traffic destined to port 21 (FTP)" );
+            firewallList.add( tmp );
+            
+            /* Block all traffic TCP traffic from the network 1.2.3.4/255.255.255.0 */
+            tmp = new FirewallRule( false, ProtocolMatcher.MATCHER_TCP,
+                                    IntfMatcher.MATCHER_ALL, IntfMatcher.MATCHER_ALL,
+                                    IPMatcher.parse( "1.2.3.0/255.255.255.0" ), IPMatcher.MATCHER_ALL,
+                                    PortMatcher.MATCHER_ALL, PortMatcher.MATCHER_ALL,
+                                    true );
+            tmp.setDescription( "Block all TCP traffic from 1.2.3.0 netmask 255.255.255.0" );
+            firewallList.add( tmp );
+            
+            tmp = new FirewallRule( false, ProtocolMatcher.MATCHER_ALL,
+                                    IntfMatcher.MATCHER_ALL, IntfMatcher.MATCHER_ALL,
+                                    IPMatcher.MATCHER_ALL, IPMatcher.parse( "1.2.3.1-1.2.3.10" ),
+                                    new PortMatcher( 1000, 5000 ), PortMatcher.MATCHER_ALL,
+                                    false );
+            tmp.setDescription( "Accept all traffic to 1.2.3.1 to 1.2.3.10 from ports 1000-5000" );
+            firewallList.add( tmp );
+            
+            for ( Iterator<FirewallRule> iter = firewallList.iterator() ; iter.hasNext() ; ) {
+                iter.next().setCategory( "[Sample]" );
+            }
             
             settings.setFirewallRuleList( firewallList );
             
@@ -235,7 +244,6 @@ public class FirewallImpl extends SoloTransform implements Firewall
         }
                 
         return settings;
-
     }
 
     /* Kill all sessions when starting or stopping this transform */

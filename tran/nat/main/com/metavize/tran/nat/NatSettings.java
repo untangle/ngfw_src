@@ -87,13 +87,21 @@ public class NatSettings implements java.io.Serializable
     {
         boolean isStartAddressValid = true;
         boolean isEndAddressValid   = true;
-        boolean isValid             = true;
-
-        if ( dmzEnabled && dmzAddress == null )
-            throw new IllegalArgumentException( "Enabling DMZ requires a target IP address" );
+        boolean isValid             = true;            
         
         if ( natEnabled && ( natInternalAddress == null || natInternalSubnet == null ))
             throw new IllegalArgumentException( "Enablng NAT requires an Internal IP address and an Internal Subnet" );
+
+        if ( dmzEnabled ) {
+            if ( dmzAddress == null ) {
+                throw new IllegalArgumentException( "Enabling DMZ requires a target IP address" );
+            }
+            
+            if ( natEnabled && !dmzAddress.isInNetwork( natInternalAddress, natInternalSubnet )) {
+                throw new IllegalArgumentException( "When NAT is enabled, DMZ address must be in the internal network." );
+            }
+        }
+
 
         if ( dhcpEnabled ) {
             IPaddr host;

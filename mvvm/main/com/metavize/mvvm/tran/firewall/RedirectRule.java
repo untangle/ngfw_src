@@ -11,6 +11,8 @@
 
 package com.metavize.mvvm.tran.firewall;
 
+import java.net.UnknownHostException;
+
 import com.metavize.mvvm.tran.IPaddr;
 
 import com.metavize.mvvm.security.Tid;
@@ -28,7 +30,10 @@ public class RedirectRule extends TrafficRule
     /* XXX The varchar probably should just be chars */
 
     private static final long serialVersionUID =   7015498486016408054L;
-
+    
+    private static final String REDIRECT_PORT_UNCHANGED    = "unchanged";
+    private static final String REDIRECT_ADDRESS_UNCHANGED = "unchanged";
+    
     private boolean isDstRedirect;
 
     private int redirectPort;
@@ -96,6 +101,22 @@ public class RedirectRule extends TrafficRule
         this.redirectPort = port;
     }
 
+    public void setRedirectPort( String port )
+    {
+        if ( port.equalsIgnoreCase( REDIRECT_PORT_UNCHANGED )) {
+            setRedirectPort( 0 );
+        } else {
+            setRedirectPort( Integer.parseInt( port ));
+        }
+    }
+
+    public String getRedirectPortString()
+    {
+        if ( redirectPort == 0 ) return REDIRECT_PORT_UNCHANGED;
+        
+        return "" + redirectPort;
+    }
+
     /**
      * Redirect host. -1 to not modify
      *
@@ -115,5 +136,23 @@ public class RedirectRule extends TrafficRule
     public void setRedirectAddress( IPaddr host )
     {
         this.redirectAddress = host;
+    }
+    
+    public void setRedirectAddress( String host ) throws UnknownHostException
+    {
+        if ( host.equalsIgnoreCase( REDIRECT_ADDRESS_UNCHANGED )) {
+            this.redirectAddress = null;
+        } else {
+            setRedirectAddress( IPaddr.parse( host ));
+        }
+
+    }
+
+    public String getRedirectAddressString()
+    {
+        if ( redirectAddress == null || redirectAddress.isEmpty()) {
+            return REDIRECT_ADDRESS_UNCHANGED;
+        }
+        return redirectAddress.toString();
     }
 }

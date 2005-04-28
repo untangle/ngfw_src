@@ -77,5 +77,5 @@ alter table TR_NAT_SETTINGS add constraint FK2F819DC21446F foreign key (TID) ref
 
 alter table TR_NAT_REDIRECTS add constraint FKCBBF56381CAE658A foreign key (SETTING_ID) references TR_NAT_SETTINGS;
 alter table TR_NAT_REDIRECTS add constraint FKCBBF5638871AAD3E foreign key (RULE_ID) references REDIRECT_RULE;
-alter table TR_DHCP_LEASES add constraint FKA6469261CAE658A foreign key (SETTING_ID) references TR_NAT_SETTINGS
-alter table TR_DHCP_LEASES add constraint FKA646926871AAD3E foreign key (RULE_ID) references DHCP_LEASE_RULE
+alter table TR_DHCP_LEASES add constraint FKA6469261CAE658A foreign key (SETTING_ID) references TR_NAT_SETTINGS;
+alter table TR_DHCP_LEASES add constraint FKA646926871AAD3E foreign key (RULE_ID) references DHCP_LEASE_RULE;

@@ -102,7 +102,7 @@ class NatEventHandler extends AbstractEventHandler
     {
         /* Check for NAT, Redirects or DMZ */
         if ( isNat(  request, protocol ) ||
-             isRedirect(  request, protocol ) || 
+             isRedirect( request, protocol ) || 
              isDmz(  request,  protocol )) {
             request.release();
             return;
@@ -218,6 +218,9 @@ class NatEventHandler extends AbstractEventHandler
         request.attach( Boolean.FALSE );
         
         if ( nat.isMatch( request, protocol )) {
+            /* Check to see if this is redirect, check before changing the source address */
+            isRedirect(  request, protocol );
+
             /* Change the source in the request */
             /* All redirecting occurs here */
             request.clientAddr( IPMatcher.getLocalAddress());
@@ -237,8 +240,6 @@ class NatEventHandler extends AbstractEventHandler
             /* Increment the NAT counter */
             incrementCount( Transform.GENERIC_1_COUNTER ); // NAT COUNTER
             
-            /* XXX What about the case where you have NAT and redirect */
-            /* XXX Possibly check for redirects here */
             return true;
         }
 

@@ -75,8 +75,8 @@ class BlockTableModel extends MSortedTableModel{
     private static final int  C5_MW = 160; /* direction */
     private static final int  C6_MW = 120;  /* source address */
     private static final int  C7_MW = 120;  /* destination address */
-    private static final int  C8_MW = 90;  /* source port */
-    private static final int  C9_MW = 90;  /* destination port */
+    private static final int  C8_MW = 110;  /* source port */
+    private static final int  C9_MW = 110;  /* destination port */
     private static final int C10_MW = 120;  /* category */
     
     private final int C11_MW = Util.chooseMax(T_TW - (C0_MW + C1_MW + C2_MW + C3_MW + C4_MW + C5_MW + C6_MW + C7_MW + C8_MW + C9_MW), 120); /* description */

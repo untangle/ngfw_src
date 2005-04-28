@@ -74,10 +74,10 @@ class RedirectTableModel extends MSortedTableModel{
     private static final int  C4_MW = 160; /* direction */
     private static final int  C5_MW = 120;  /* source address */
     private static final int  C6_MW = 120;  /* destination address */
-    private static final int  C7_MW = 80;  /* source port */
-    private static final int  C8_MW = 80;  /* destination port */
+    private static final int  C7_MW = 110;  /* source port */
+    private static final int  C8_MW = 110;  /* destination port */
     private static final int  C9_MW = 120;  /* redirect address */
-    private static final int C10_MW = 65;  /* redirect port */
+    private static final int C10_MW = 70;  /* redirect port */
     private static final int C11_MW = 120;  /* category */
     
     private final int C12_MW = Util.chooseMax(T_TW - (C0_MW + C1_MW + C2_MW + C3_MW + C4_MW + C5_MW + C6_MW + C7_MW + C8_MW + C9_MW + C10_MW + C11_MW), 120); /* description */
@@ -143,8 +143,8 @@ class RedirectTableModel extends MSortedTableModel{
                 rowVector.add(redirectRule.getDstAddress().toString());
                 rowVector.add(redirectRule.getSrcPort().toString());
                 rowVector.add(redirectRule.getDstPort().toString());
-                rowVector.add(redirectRule.getRedirectAddress().toString());
-                rowVector.add(Integer.toString(redirectRule.getRedirectPort()) );      
+                rowVector.add(redirectRule.getRedirectAddressString().toString());
+                rowVector.add(redirectRule.getRedirectPortString());
                 rowVector.add(redirectRule.getCategory());
                 rowVector.add(redirectRule.getDescription());
                 allRowsVector.add(rowVector);
@@ -202,10 +202,10 @@ class RedirectTableModel extends MSortedTableModel{
             try{ redirectRule.setDstPort( PortMatcher.parse((String) rowVector.elementAt(8)) ); }
             catch(Exception e){ throw new Exception("(Redirect) Destination Port in row: " + rowIndex); }
 
-            try{ redirectRule.setRedirectAddress( IPaddr.parse((String) rowVector.elementAt(9)) ); }
+            try{ redirectRule.setRedirectAddress((String) rowVector.elementAt(9)); }
             catch(Exception e){ throw new Exception("(Redirect) Redirect Address in row: " + rowIndex); }
 
-            try{ redirectRule.setRedirectPort( Integer.parseInt((String) rowVector.elementAt(10)) ); }
+            try{ redirectRule.setRedirectPort((String) rowVector.elementAt(10)); }
             catch(Exception e){ throw new Exception("(Redirect) Redirect Port in row: " + rowIndex); }
 
             redirectRule.setCategory( (String) rowVector.elementAt(11) );                

@@ -31,6 +31,6 @@ create table TR_FIREWALL_SETTINGS (
         IS_DEFAULT_ACCEPT bool, 
         primary key (SETTINGS_ID));
 
-alter table TR_FIREWALL_RULES add constraint FK4BBFB8B9871AAD3E foreign key (RULE_ID) references FIREWALL_RULE
-alter table TR_FIREWALL_RULES add constraint FK4BBFB8B91CAE658A foreign key (SETTING_ID) references TR_FIREWALL_SETTINGS
-alter table TR_FIREWALL_SETTINGS add constraint FK23CDA1011446F foreign key (TID) references TID
+alter table TR_FIREWALL_RULES add constraint FK4BBFB8B9871AAD3E foreign key (RULE_ID) references FIREWALL_RULE;
+alter table TR_FIREWALL_RULES add constraint FK4BBFB8B91CAE658A foreign key (SETTING_ID) references TR_FIREWALL_SETTINGS;
+alter table TR_FIREWALL_SETTINGS add constraint FK23CDA1011446F foreign key (TID) references TID;

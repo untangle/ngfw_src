@@ -40,6 +40,7 @@ import com.metavize.mvvm.tapi.TransformContextFactory;
 import com.metavize.mvvm.MvvmContextFactory;
 
 import com.metavize.mvvm.tran.IPaddr;
+import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.firewall.ProtocolMatcher;
 import com.metavize.mvvm.tran.firewall.IPMatcher;
 import com.metavize.mvvm.tran.firewall.PortMatcher;
@@ -137,7 +138,7 @@ public class NatImpl extends SoloTransform implements Nat
     {
         logger.info("Initializing Settings...");
         
-        NatSettings settings = getTestSettings();
+        NatSettings settings = getDefaultSettings();
 
         setNatSettings(settings);
 
@@ -251,6 +252,70 @@ public class NatImpl extends SoloTransform implements Nat
         setNatSettings((NatSettings)settings);
     }
 
+    private NatSettings getDefaultSettings()
+    {
+        logger.info( "Using default settings" );
+        
+        NatSettings settings = new NatSettings( this.getTid());
+
+        List<RedirectRule> redirectList = new LinkedList<RedirectRule>();
+        
+        try {
+            settings.setNatEnabled( true );
+            settings.setNatInternalAddress( IPaddr.parse( "192.168.1.1" ));
+            settings.setNatInternalSubnet( IPaddr.parse( "255.255.255.0" ));
+            
+            /* DMZ Settings */
+            settings.setDmzEnabled( false );
+            /* A sample DMZ */
+            settings.setDmzAddress( IPaddr.parse( "192.168.1.2" ));
+                    
+            RedirectRule tmp = new RedirectRule( false, ProtocolMatcher.MATCHER_ALL,
+                                                 IntfMatcher.MATCHER_OUT, IntfMatcher.MATCHER_ALL,
+                                                 IPMatcher.MATCHER_ALL, IPMatcher.MATCHER_LOCAL,
+                                                 PortMatcher.MATCHER_ALL, new PortMatcher( 8080 ),
+                                                 true, IPaddr.parse( "192.168.1.16" ), 80 );
+            tmp.setDescription( "Redirect incoming traffic to EdgeGuard port 8080 to port 80 on 192.168.1.16" );
+            redirectList.add( tmp );
+            
+            tmp = new RedirectRule( false, ProtocolMatcher.MATCHER_ALL,
+                                    IntfMatcher.MATCHER_OUT, IntfMatcher.MATCHER_ALL,
+                                    IPMatcher.MATCHER_ALL, IPMatcher.MATCHER_ALL,
+                                    PortMatcher.MATCHER_ALL, new PortMatcher( 6000, 10000 ),
+                                    true, (IPaddr)null, 6000 );
+            tmp.setDescription( "Redirect incoming traffic from ports 6000-10000 to port 6000" );
+            redirectList.add( tmp );
+            
+            tmp = new RedirectRule( false, ProtocolMatcher.MATCHER_ALL,
+                                    IntfMatcher.MATCHER_IN, IntfMatcher.MATCHER_ALL,
+                                    IPMatcher.MATCHER_ALL, IPMatcher.parse( "1.2.3.4" ),
+                                    PortMatcher.MATCHER_ALL, PortMatcher.MATCHER_ALL,
+                                    true, IPaddr.parse( "4.3.2.1" ), 0 );
+            tmp.setDescription( "Redirect outgoing traffic going to 1.2.3.4 to 4.2.3.1, (port is unchanged)" );
+            redirectList.add( tmp );
+            
+            
+            for ( Iterator<RedirectRule> iter = redirectList.iterator() ; iter.hasNext() ; ) {
+                iter.next().setCategory( "[Sample]" );
+            }
+
+            /* Enable DNS and DHCP */
+            settings.setDnsEnabled( true );
+            settings.setDhcpEnabled( true );
+                        
+            settings.setDhcpStartAndEndAddress( IPaddr.parse( "192.168.1.100" ), 
+                                                IPaddr.parse( "192.168.1.200" ));
+            
+
+        } catch ( Exception e ) {
+            logger.error( "This should never happen", e );
+        }
+            
+        settings.setRedirectList( redirectList );
+        
+        return settings;
+    }
+
     private NatSettings getTestSettings()
     {
         logger.info( "Using the test settings" );
@@ -310,7 +375,6 @@ public class NatImpl extends SoloTransform implements Nat
         } catch (Exception e ) {
             logger.error( "This should never happen", e );
         }
-
                 
         return settings;
     }    
