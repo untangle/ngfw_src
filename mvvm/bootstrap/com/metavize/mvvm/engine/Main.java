@@ -95,9 +95,8 @@ public class Main
         logger.info("starting mvvm");
         try {
             startMvvm();
-        } catch (Exception exn) {
-            logger.warn("could not start mvvm", exn);
-            System.exit(1);
+        } catch (Throwable exn) {
+            fatalError("could not start mvvm", exn);
         }
         System.out.println("MVVM startup complete: \"Today vegetables...tomorrow the world!\"");
         logger.info("restarting transforms and socket invoker");
