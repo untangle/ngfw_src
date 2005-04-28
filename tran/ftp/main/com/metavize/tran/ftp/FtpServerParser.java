@@ -11,7 +11,6 @@
 
 package com.metavize.tran.ftp;
 
-import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 
 import com.metavize.mvvm.MvvmContextFactory;
@@ -77,12 +76,6 @@ public class FtpServerParser extends AbstractParser
                 String message = new String(ba);
 
                 FtpReply reply = new FtpReply(replyCode, message);
-
-                if (227 == reply.getReplyCode()) {
-                    InetSocketAddress sa = reply.getSocketAddress();
-                    MvvmContextFactory.context().pipelineFoundry()
-                        .registerConnection(sa, Fitting.FTP_DATA_STREAM);
-                }
 
                 return new ParseResult(new Token[] { reply }, null);
             }

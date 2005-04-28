@@ -11,7 +11,6 @@
 
 package com.metavize.tran.ftp;
 
-import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 
 import com.metavize.mvvm.MvvmContextFactory;
@@ -77,13 +76,6 @@ public class FtpClientParser extends AbstractParser
                 : new String(ba, i, ba.length - i - 2); // no CRLF
 
             FtpCommand cmd = new FtpCommand(fn, arg);
-
-            if (FtpFunction.PORT == fn) {
-                InetSocketAddress sa = cmd.getSocketAddress();
-
-                MvvmContextFactory.context().pipelineFoundry()
-                    .registerConnection(sa, Fitting.FTP_DATA_STREAM);
-            }
 
             return new ParseResult(new Token[] { cmd }, null);
         } else {

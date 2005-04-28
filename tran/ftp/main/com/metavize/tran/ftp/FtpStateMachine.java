@@ -39,20 +39,38 @@ public abstract class FtpStateMachine extends AbstractTokenHandler
         serverFitting = p.getServerFitting(session.mPipe());
     }
 
-    // protected abstract -----------------------------------------------------
+    // protected methods ------------------------------------------------------
 
-    protected abstract TokenResult doClientData(Chunk c) throws TokenException;
-    protected abstract void doClientDataEnd() throws TokenException;
+    protected TokenResult doCommand(FtpCommand command) throws TokenException
+    {
+        return new TokenResult(null, new Token[] { command });
+    }
 
-    protected abstract TokenResult doServerData(Chunk c) throws TokenException;
-    protected abstract void doServerDataEnd() throws TokenException;
+    protected TokenResult doReply(FtpReply reply) throws TokenException
+    {
+        return new TokenResult(new Token[] { reply }, null);
+    }
+
+    protected TokenResult doClientData(Chunk c) throws TokenException
+    {
+        return new TokenResult(null, new Token[] { c });
+    }
+
+    protected void doClientDataEnd() throws TokenException { }
+
+    protected TokenResult doServerData(Chunk c) throws TokenException
+    {
+        return new TokenResult(new Token[] { c }, null);
+    }
+
+    protected void doServerDataEnd() throws TokenException { }
 
     // AbstractTokenHandler methods -------------------------------------------
 
     public TokenResult handleClientToken(Token token) throws TokenException
     {
         if (Fitting.FTP_CTL_TOKENS == clientFitting) {
-            return new TokenResult(null, new Token[] { token });
+            return doCommand((FtpCommand)token);
         } else if (Fitting.FTP_DATA_TOKENS == clientFitting) {
             return doClientData((Chunk)token);
         } else {
@@ -63,7 +81,7 @@ public abstract class FtpStateMachine extends AbstractTokenHandler
     public TokenResult handleServerToken(Token token) throws TokenException
     {
         if (Fitting.FTP_CTL_TOKENS == serverFitting) {
-            return new TokenResult(new Token[] { token }, null);
+            return doReply((FtpReply)token);
         } else if (Fitting.FTP_DATA_TOKENS == serverFitting) {
             return doServerData((Chunk)token);
         } else {

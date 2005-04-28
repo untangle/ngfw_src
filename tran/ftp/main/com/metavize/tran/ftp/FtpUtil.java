@@ -41,4 +41,21 @@ class FtpUtil
 
         return new InetSocketAddress(addr, port);
     }
+
+    static String unparsePort(InetSocketAddress socketAddress)
+    {
+        StringBuffer sb = new StringBuffer();
+        byte[] addr = socketAddress.getAddress().getAddress();
+        for (byte a : addr) {
+            sb.append(a);
+            sb.append(',');
+        }
+
+        int port = socketAddress.getPort();
+        sb.append(port / 256);
+        sb.append(',');
+        sb.append(port % 256);
+
+        return sb.toString();
+    }
 }

@@ -37,6 +37,16 @@ public class FtpReply implements Token
         this.message = message;
     }
 
+    // static factories ------------------------------------------------------
+
+    public static FtpReply pasvReply(InetSocketAddress socketAddress)
+    {
+        String msg = "Entering Passive Mode ("
+            + FtpUtil.unparsePort(socketAddress) + ").";
+
+        return new FtpReply(227, msg);
+    }
+
     // business methods ------------------------------------------------------
 
     public InetSocketAddress getSocketAddress() throws ParseException
