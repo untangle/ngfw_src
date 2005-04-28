@@ -259,6 +259,22 @@ public class VirusTransformImpl extends AbstractTransform
          * audio/.*  false
          */
         List s = new ArrayList();
+        s.add(new MimeTypeRule(new MimeType("application/x-javascript"), "JavaScript", "executable", false));
+        s.add(new MimeTypeRule(new MimeType("application/x-shockwave-flash"), "Shockwave Flash", "executable", false));
+        s.add(new MimeTypeRule(new MimeType("application/x-director"), "Macromedia Shockwave", "multimedia", false));
+        s.add(new MimeTypeRule(new MimeType("application/futuresplash"), "Macromedia FutureSplash", "multimedia", false));
+        s.add(new MimeTypeRule(new MimeType("application/x-java-applet"), "Java Applet", "executable", false));
+        s.add(new MimeTypeRule(new MimeType("application/rtf"), "Rich Text Format", "document", false));
+        s.add(new MimeTypeRule(new MimeType("application/pdf"), "Adobe Acrobat", "document", false));
+        s.add(new MimeTypeRule(new MimeType("application/postscript"), "Postscript", "document", false));
+        s.add(new MimeTypeRule(new MimeType("application/*"), "applications", "misc", true));
+        s.add(new MimeTypeRule(new MimeType("image/*"), "images", "image", false));
+        s.add(new MimeTypeRule(new MimeType("video/*"), "video", "video", false));
+        s.add(new MimeTypeRule(new MimeType("text/*"), "text", "text", false));
+        s.add(new MimeTypeRule(new MimeType("audio/*"), "audio", "audio", false));
+        
+        /*
+         * For now we're going back to the short list.
         s.add(new MimeTypeRule(new MimeType("application/octet-stream"), "unspecified data", "byte stream", false));
 
         s.add(new MimeTypeRule(new MimeType("application/x-msdownload"), "Microsoft download", "executable", false));
@@ -398,17 +414,29 @@ public class VirusTransformImpl extends AbstractTransform
         s.add(new MimeTypeRule(new MimeType("application/rtf"), "Rich Text Format", "document", false));
         s.add(new MimeTypeRule(new MimeType("application/pdf"), "Adobe Acrobat", "document", false));
         s.add(new MimeTypeRule(new MimeType("application/postscript"), "Postscript", "document", false));
+*/
 
         vs.setHttpMimeTypes(s);
 
         s = new ArrayList();
         /* XXX Need a description here */
-        s.add(new StringRule("exe", "executable", "download" , false));
-        s.add(new StringRule("ocx", "executable", "ActiveX", false));
-        s.add(new StringRule("dll", "executable", "ActiveX", false));
-        s.add(new StringRule("cab", "executable", "ActiveX", false));
-        s.add(new StringRule("bin", "executable", "download", false));
-        s.add(new StringRule("com", "executable", "download", false));
+        s.add(new StringRule("exe", "executable", "download" , true));
+        s.add(new StringRule("com", "executable", "download", true));
+        s.add(new StringRule("ocx", "executable", "ActiveX", true));
+        s.add(new StringRule("dll", "executable", "ActiveX", true));
+        s.add(new StringRule("cab", "executable", "ActiveX", true));
+        s.add(new StringRule("bin", "executable", "download", true));
+        s.add(new StringRule("bat", "executable", "download", true));
+        s.add(new StringRule("pif", "executable", "download" , true));
+        s.add(new StringRule("scr", "executable", "download" , true));
+        s.add(new StringRule("cpl", "executable", "download" , true));
+        s.add(new StringRule("zip", "archive", "download" , true));
+        s.add(new StringRule("hqx", "archive", "download", true));
+        s.add(new StringRule("rar", "archive", "download" , true));
+        s.add(new StringRule("arj", "archive", "download" , true));
+        s.add(new StringRule("ace", "archive", "download" , true));
+        s.add(new StringRule("gz", "archive", "download" , true));
+        s.add(new StringRule("tar", "archive", "download" , true));
         s.add(new StringRule("jpg", "image", "download", false));
         s.add(new StringRule("png", "image", "download", false ));
         s.add(new StringRule("gif", "image", "download", false));
@@ -427,8 +455,6 @@ public class VirusTransformImpl extends AbstractTransform
         s.add(new StringRule("mov", "video", "stream", false));
         s.add(new StringRule("mpg", "video", "stream", false));
         s.add(new StringRule("avi", "video", "stream", false));
-        s.add(new StringRule("hqx", "archive", "download", false));
-        s.add(new StringRule("cpt", "compression", "download", false));
         vs.setExtensions(s);
 
         setVirusSettings(vs);
