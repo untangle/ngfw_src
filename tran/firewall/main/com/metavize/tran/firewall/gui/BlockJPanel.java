@@ -92,6 +92,7 @@ class BlockTableModel extends MSortedTableModel{
         super(null);
     }
     
+    protected boolean getSortable(){ return false; }
     
     public TableColumnModel getTableColumnModel(){
         

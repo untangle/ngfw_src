@@ -60,6 +60,8 @@ class ExtensionTableModel extends MSortedTableModel{
         refresh();
     }
 
+    protected boolean getSortable(){ return false; }
+
     public TableColumnModel getTableColumnModel(){
         DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
         //                                 #  min  rsz    edit   remv   desc   typ            def

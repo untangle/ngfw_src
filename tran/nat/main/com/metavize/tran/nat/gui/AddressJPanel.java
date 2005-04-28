@@ -70,8 +70,8 @@ class AddressTableModel extends MSortedTableModel{
     private static final int  C0_MW = Util.STATUS_MIN_WIDTH; /* status */
     private static final int  C1_MW = Util.LINENO_MIN_WIDTH; /* line number */
     private static final int  C2_MW = 130;  /* MAC address */
-    private static final int  C3_MW = 100;  /* current static target IP */
-    private static final int  C4_MW = 100;  /* current IP */
+    private static final int  C3_MW = 130;  /* current static target IP */
+    private static final int  C4_MW = 130;  /* current IP */
     private static final int  C5_MW = 100;  /* hostname */
     private static final int  C6_MW = 100;  /* current lease end */
     private static final int  C7_MW = 120;  /* category */

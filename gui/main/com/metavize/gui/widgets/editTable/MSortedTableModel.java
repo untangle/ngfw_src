@@ -89,6 +89,7 @@ public abstract class MSortedTableModel extends DefaultTableModel {
     public abstract Vector generateRows(Object transformSettings);
     public abstract Object generateSettings(Vector dataVector);
     private boolean dataChanged = false;
+    protected boolean getSortable(){ return true; }
     ////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////
 
@@ -733,7 +734,8 @@ public abstract class MSortedTableModel extends DefaultTableModel {
 	    if ( e.getClickCount() != 1 ){
 		return;
 	    }
-
+	    else if( !MSortedTableModel.this.getSortable() )
+		return;
 	    
 
             JTableHeader h = (JTableHeader) e.getSource();
