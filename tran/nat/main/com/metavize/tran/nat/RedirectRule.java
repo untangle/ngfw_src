@@ -9,11 +9,17 @@
  * $Id: MimeTypeRule.java 229 2005-04-07 22:25:00Z amread $
  */
 
-package com.metavize.mvvm.tran.firewall;
+package com.metavize.tran.nat;
 
 import java.net.UnknownHostException;
 
 import com.metavize.mvvm.tran.IPaddr;
+
+import com.metavize.mvvm.tran.firewall.IPMatcher;
+import com.metavize.mvvm.tran.firewall.PortMatcher;
+import com.metavize.mvvm.tran.firewall.IntfMatcher;
+import com.metavize.mvvm.tran.firewall.ProtocolMatcher;
+import com.metavize.mvvm.tran.firewall.TrafficRule;
 
 import com.metavize.mvvm.security.Tid;
 

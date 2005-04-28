@@ -45,7 +45,6 @@ import com.metavize.mvvm.tran.firewall.ProtocolMatcher;
 import com.metavize.mvvm.tran.firewall.IPMatcher;
 import com.metavize.mvvm.tran.firewall.PortMatcher;
 import com.metavize.mvvm.tran.firewall.IntfMatcher;
-import com.metavize.mvvm.tran.firewall.FirewallRule;
 
 class EventHandler extends AbstractEventHandler
 {

@@ -46,8 +46,6 @@ import com.metavize.mvvm.tran.firewall.IPMatcher;
 import com.metavize.mvvm.tran.firewall.PortMatcher;
 import com.metavize.mvvm.tran.firewall.IntfMatcher;
 
-import com.metavize.mvvm.tran.firewall.RedirectRule;
-
 import com.metavize.mvvm.tran.TransformStartException;
 import com.metavize.mvvm.tran.TransformException;
 import com.metavize.mvvm.tran.TransformState;

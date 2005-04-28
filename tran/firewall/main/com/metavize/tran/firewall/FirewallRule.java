@@ -9,7 +9,13 @@
  * $Id: MimeTypeRule.java 229 2005-04-07 22:25:00Z amread $
  */
 
-package com.metavize.mvvm.tran.firewall;
+package com.metavize.tran.firewall;
+
+import com.metavize.mvvm.tran.firewall.IPMatcher;
+import com.metavize.mvvm.tran.firewall.PortMatcher;
+import com.metavize.mvvm.tran.firewall.IntfMatcher;
+import com.metavize.mvvm.tran.firewall.ProtocolMatcher;
+import com.metavize.mvvm.tran.firewall.TrafficRule;
 
 /**
  * Rule for matching based on IP addresses and subnets.

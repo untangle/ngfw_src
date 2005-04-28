@@ -24,7 +24,6 @@ import com.metavize.mvvm.tran.firewall.ProtocolMatcher;
 import com.metavize.mvvm.tran.firewall.IntfMatcher;
 import com.metavize.mvvm.tran.firewall.IPMatcher;
 import com.metavize.mvvm.tran.firewall.TrafficMatcher;
-import com.metavize.mvvm.tran.firewall.FirewallRule;
 
 /**
  * A class for matching redirects

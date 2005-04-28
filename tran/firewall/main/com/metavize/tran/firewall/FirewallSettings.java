@@ -155,7 +155,7 @@ public class FirewallSettings implements Serializable
      * @hibernate.collection-index
      * column="POSITION"
      * @hibernate.collection-many-to-many
-     * class="com.metavize.mvvm.tran.firewall.FirewallRule"
+     * class="com.metavize.tran.firewall.FirewallRule"
      * column="RULE_ID"
      */
     public List getFirewallRuleList()

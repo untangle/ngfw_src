@@ -280,7 +280,7 @@ public class NatSettings implements java.io.Serializable
      * @hibernate.collection-index
      * column="POSITION"
      * @hibernate.collection-many-to-many
-     * class="com.metavize.mvvm.tran.firewall.RedirectRule"
+     * class="com.metavize.tran.nat.RedirectRule"
      * column="RULE_ID"
      */
     public List getRedirectList() 

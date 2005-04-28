@@ -24,8 +24,6 @@ import com.metavize.mvvm.tran.firewall.ProtocolMatcher;
 import com.metavize.mvvm.tran.firewall.IntfMatcher;
 import com.metavize.mvvm.tran.firewall.IPMatcher;
 
-import com.metavize.mvvm.tran.firewall.RedirectRule;
-
 /**
  * A class for matching redirects
  *   This is cannot be squashed into a RedirectRule because all of its elements are final. 
@@ -106,7 +104,12 @@ class RedirectMatcher {
 
         /* Attributes of the redirect */
         this.isDstRedirect   = rule.isDstRedirect();
-        this.redirectAddress = rule.getRedirectAddress().getAddr();
+        if ( rule.getRedirectAddress() == null ) {
+            this.redirectAddress = null;
+        } else {
+            this.redirectAddress = rule.getRedirectAddress().getAddr();
+        }
+        
         this.redirectPort    = rule.getRedirectPort();
     }
     
