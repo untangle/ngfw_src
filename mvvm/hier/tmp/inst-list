@@ -2,7 +2,8 @@ sigma-transform 200412071241
 nat-transform 200412071241
 loadbalancer-transform 200412071241
 blocker-transform 200412071241
-http-transform 200412071241
+http-casing 200412071241
+ftp-casing 200412071241
 httpblocker-transform 200412071241
 mimex-transform 200412071241
 monitor-transform 200412071241
