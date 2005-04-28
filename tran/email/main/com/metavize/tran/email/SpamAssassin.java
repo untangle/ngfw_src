@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: SpamAssassin.java,v 1.6 2005/03/19 02:41:48 cng Exp $
+ * $Id$
  */
 package com.metavize.tran.email;
 
@@ -239,7 +239,7 @@ public class SpamAssassin extends MVScanner
          * -x: Do not create a user configuration
          * -p: use cfgFile as the configuration file 
          */
-        String zCmd = "spamassassin" + (( null != zCfgFile ) ? " -x -p " + zCfgFile : "");
+        String zCmd = "nice -n 19 spamassassin" + (( null != zCfgFile ) ? " -x -p " + zCfgFile : "");
         zLog.debug("spamassassin cmd: " + zCmd);
         return zCmd;
     }
