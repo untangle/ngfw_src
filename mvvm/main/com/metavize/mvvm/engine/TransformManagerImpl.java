@@ -250,13 +250,14 @@ class TransformManagerImpl implements TransformManager
                     String[] args = tps.getArgArray();
                     logger.info("Restarting: " + tid + " (" + name + ")");
                     try {
-
                         TransformContextImpl tc = new TransformContextImpl
                             (urls, tDesc, args, mackageDesc, false);
                         tids.put(tid, tc);
 
                         logger.info("Restarted: " + tid);
                     } catch (Exception exn) {
+                        logger.warn("Could not restart: " + tid, exn);
+                    } catch (Error err) {
                         logger.warn("Could not restart: " + tid, exn);
                     }
                 }
