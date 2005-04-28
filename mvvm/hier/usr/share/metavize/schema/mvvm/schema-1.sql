@@ -144,6 +144,7 @@ CREATE TABLE ipmaddr_rule (
 
 CREATE TABLE mvvm_login_evt (
     event_id int8 NOT NULL,
+    client_addr inet,
     login varchar(255),
     local bool,
     succeeded bool,
