@@ -71,7 +71,7 @@ Description: The Metavize eMail SpamGuard
 
 Package: sophos-transform
 Architecture: any
-Depends: mvvm, sophos-mv, http-casing
+Depends: mvvm, sophos-mv, http-casing, ftp-casing
 XB-Price: 1000
 XB-Display-Name: Sophos AntiVirus Scanner
 XB-Rack-Position: 4
@@ -81,7 +81,7 @@ Description: The Sophos AntiVirus
 
 Package: fprot-transform
 Architecture: any
-Depends: mvvm, fprot-mv, http-casing
+Depends: mvvm, fprot-mv, http-casing, ftp-casing
 XB-Price: 1000
 XB-Display-Name: F-Prot AntiVirus Scanner
 XB-Rack-Position: 5
@@ -91,7 +91,7 @@ Description: The F-Prot AntiVirus
 
 Package: hauri-transform
 Architecture: any
-Depends: mvvm, hauri-mv, http-casing
+Depends: mvvm, hauri-mv, http-casing, ftp-casing
 XB-Price: 1000
 XB-Display-Name: Hauri AntiVirus
 XB-Rack-Position: 6
@@ -101,7 +101,7 @@ Description: The Hauri AntiVirus
 
 Package: clam-transform
 Architecture: any
-Depends: mvvm, clamav, clamav-daemon, http-casing
+Depends: mvvm, clamav, clamav-daemon, http-casing, ftp-casing
 XB-Price: 1000
 XB-Display-Name: Clam AntiVirus
 XB-Rack-Position: 7
