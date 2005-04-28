@@ -32,7 +32,8 @@ INSERT INTO addr_map
        FROM (SELECT c_client_addr AS addr FROM pipeline_info
              UNION SELECT c_server_addr AS addr FROM pipeline_info
              UNION SELECT s_client_addr AS addr FROM pipeline_info
-             UNION SELECT s_server_addr AS addr FROM pipeline_info) AS addrs
+             UNION SELECT s_server_addr AS addr FROM pipeline_info
+             UNION SELECT client_addr   AS addr FROM mvvm_login_evt) AS addrs
        LEFT OUTER JOIN ipmaddr_dir_entries entry JOIN ipmaddr_rule rule USING (rule_id)
        ON rule.ipmaddr >>= addr
        WHERE NOT addr ISNULL
