@@ -79,7 +79,7 @@ if [ -z $prefix ] ; then
             dpkg-query -W 'mvvm') 2>/dev/null \
                 | awk '{ if ($2) printf("%s %s\n",$1,$2) }'
     elif [ "$1" = "available" ] ; then
-        pkgs=$(apt-cache search '.-transform$|^-casing$|^mvvm$|^metavize-client$'\
+        pkgs=$(apt-cache search '.-transform$|.-casing$|^mvvm$|^metavize-client$'\
             | cut -d ' ' -f 1)
         for pkg in $pkgs; do
             apt-cache show --no-all-versions $pkg
