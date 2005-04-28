@@ -37,9 +37,9 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
     protected MTransformJPanel mTransformJPanel;
     
     // GENERAL DISPLAY
-    private boolean updateActivity = true;
-    private boolean updateSessions = true;
-    private boolean updateThroughput = true;
+    protected boolean updateActivity = true;
+    protected boolean updateSessions = true;
+    protected boolean updateThroughput = true;
     protected UpdateGraphThread updateGraphThread;
     private volatile boolean updateGraph = false;
     private volatile boolean killGraph = false;
@@ -81,7 +81,7 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
 
         initComponents();
 
-        
+        /*
         if( mTransformJPanel.transformContext().getTransformDesc().getName().equals("airgap-transform") ){
             updateActivity = false;
             updateSessions = false;
@@ -96,7 +96,7 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
         }
         else if( mTransformJPanel.transformContext().getTransformDesc().getName().equals("firewall-transform") ){
             updateThroughput = false;
-        }
+        }*/
         if( !updateActivity){
             this.remove(activityJPanel);
             this.remove(activityJLabel);

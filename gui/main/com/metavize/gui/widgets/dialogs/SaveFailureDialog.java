@@ -11,10 +11,10 @@ package com.metavize.gui.widgets.dialogs;
  *
  * @author inieves
  */
-public class SaveFailureDialog extends MOneButtonJDialog {
+final public class SaveFailureDialog extends MOneButtonJDialog {
     
     public SaveFailureDialog(String applianceName) {
-        setTitle("Warning");
+        this.setTitle(applianceName + " Warning");
         messageJLabel.setText("<html><center>" + applianceName + " was unable to save settings.<br>Please try again later.</center></html>");
         this.setVisible(true);
         this.dispose();

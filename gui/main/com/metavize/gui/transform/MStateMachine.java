@@ -8,11 +8,12 @@ package com.metavize.gui.transform;
 
 import javax.swing.*;
 
+import com.metavize.gui.widgets.dialogs.*;
 import com.metavize.gui.transform.BlinkJLabel;
 import com.metavize.gui.util.*;
 
-import com.metavize.mvvm.tran.TransformContext;
-import com.metavize.mvvm.tran.TransformState;
+import com.metavize.mvvm.tran.*;
+
 
 /**
  *
@@ -54,21 +55,54 @@ public class MStateMachine implements java.awt.event.ActionListener {
         if( Util.getIsDemo() && !source.equals(reloadJButton) )
             return;
         try{
-            if( source.equals(saveJButton) ){ new SaveThread(); }
+            String name = transformContext.getTransformDesc().getName();
+            String displayName = transformContext.getTransformDesc().getDisplayName();
+            
+            if( source.equals(saveJButton) ){
+                boolean isProceeding = true;
+                if( name.equals("nat-transform") || name.equals("firewall-transform") ){
+                    isProceeding = (new SaveProceedDialog( displayName )).isProceeding();
+                }
+                if(isProceeding)
+                    new SaveThread();
+            }
             else if( source.equals(reloadJButton) ){ new RefreshThread(); }
-            else if( source.equals(removeJButton) ){ new RemoveThread(false); }
+            else if( source.equals(removeJButton) ){
+                if( (new RemoveProceedDialog(displayName)).isProceeding() ){
+                    new RemoveThread(false);
+                }
+            }
             else if( source.equals(powerJToggleButton) ){ 
 		int modifiers = evt.getModifiers();
 		if( (modifiers & java.awt.event.ActionEvent.SHIFT_MASK) > 0 ){
 		    if( (modifiers & java.awt.event.ActionEvent.CTRL_MASK) == 0 ){
-			new RemoveThread(false);
+                        if( (new RemoveProceedDialog(displayName)).isProceeding() ){
+                            new RemoveThread(false);
+                        }
+                        else{
+                            boolean wasEnabled = powerJToggleButton.isEnabled();
+                            powerJToggleButton.setEnabled(false);
+                            powerJToggleButton.setSelected( !powerJToggleButton.isSelected() );
+                            powerJToggleButton.setEnabled(wasEnabled);
+                        }
 		    }
 		    else{
 			// new RemoveThread(true); not implemented properly now
 		    }
 		}
 		else{
-		    new PowerThread(); 
+                    boolean isProceeding = true;
+                    if( name.equals("nat-transform") || name.equals("firewall-transform")){
+                        isProceeding = (new PowerProceedDialog(displayName, powerJToggleButton.isSelected())).isProceeding();
+                    }
+                    if(isProceeding)
+                        new PowerThread();
+                    else{
+                            boolean wasEnabled = powerJToggleButton.isEnabled();
+                            powerJToggleButton.setEnabled(false);
+                            powerJToggleButton.setSelected( !powerJToggleButton.isSelected() );
+                            powerJToggleButton.setEnabled(wasEnabled);
+                    }
 		}
 	    }
             else{ Util.printMessage("error: unknown action source: " + source); }

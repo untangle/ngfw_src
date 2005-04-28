@@ -5,28 +5,28 @@
  */
 
 package com.metavize.gui.widgets.dialogs;
-
 import com.metavize.gui.util.Util;
 import com.metavize.mvvm.ToolboxManager;
 /**
  *
  * @author  inieves
  */
-public class MOneButtonJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
+public class MTwoButtonJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
     
+    private boolean isProceeding = false;
     
     /** Creates new form ProceedJDialog */
-    public MOneButtonJDialog() {
+    public MTwoButtonJDialog() {
         super(Util.getMMainJFrame(), true);
         initComponents();
         this.addWindowListener(this);
         this.setBounds( Util.generateCenteredBounds(Util.getMMainJFrame().getBounds(), this.getWidth(), this.getHeight()) );
-
     }
     
     private void initComponents() {//GEN-BEGIN:initComponents
         java.awt.GridBagConstraints gridBagConstraints;
 
+        cancelJButton = new javax.swing.JButton();
         proceedJButton = new javax.swing.JButton();
         messageJLabel = new javax.swing.JLabel();
         labelJLabel = new javax.swing.JLabel();
@@ -35,16 +35,37 @@ public class MOneButtonJDialog extends javax.swing.JDialog implements java.awt.e
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-        setTitle("Confirm Restart...");
+        setTitle("Confirm Upgrade...");
         setModal(true);
         setResizable(false);
+        cancelJButton.setFont(new java.awt.Font("Default", 0, 12));
+        cancelJButton.setText("<html><b>Cancel</b> Upgrade</html>");
+        cancelJButton.setDoubleBuffered(true);
+        cancelJButton.setFocusable(false);
+        cancelJButton.setMargin(new java.awt.Insets(2, 5, 2, 5));
+        cancelJButton.setMinimumSize(new java.awt.Dimension(175, 25));
+        cancelJButton.setPreferredSize(new java.awt.Dimension(130, 25));
+        cancelJButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cancelJButtonActionPerformed(evt);
+            }
+        });
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 13, 180);
+        getContentPane().add(cancelJButton, gridBagConstraints);
+
         proceedJButton.setFont(new java.awt.Font("Default", 0, 12));
-        proceedJButton.setText("<html><b>Close</b> Dialog</html>");
+        proceedJButton.setText("<html><b>Continue</b> Upgrading</html>");
         proceedJButton.setDoubleBuffered(true);
         proceedJButton.setFocusPainted(false);
         proceedJButton.setFocusable(false);
-        proceedJButton.setMinimumSize(new java.awt.Dimension(125, 25));
-        proceedJButton.setPreferredSize(new java.awt.Dimension(125, 25));
+        proceedJButton.setMargin(new java.awt.Insets(2, 5, 2, 5));
+        proceedJButton.setMinimumSize(new java.awt.Dimension(175, 25));
+        proceedJButton.setPreferredSize(new java.awt.Dimension(150, 25));
         proceedJButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 proceedJButtonActionPerformed(evt);
@@ -55,19 +76,19 @@ public class MOneButtonJDialog extends javax.swing.JDialog implements java.awt.e
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 13, 0);
+        gridBagConstraints.insets = new java.awt.Insets(0, 180, 13, 0);
         getContentPane().add(proceedJButton, gridBagConstraints);
 
         messageJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
         messageJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        messageJLabel.setText("<html><center>\nYou must now shut down the Metavize EdgeGuard Client.<br>\n<br>\nYou can log in again after shutting down, after a brief period.<br>\n</center></html>");
+        messageJLabel.setText("<html><center>\nThis upgrade requires that the Metavize EdgeGuard Client be<br>\nautomatically shut down.  The Metavize EdgeGuard may also be<br>\nautomatically restarted.  You may log in again after a restart.<br>\n<br>\nWould you like to continue with this upgrade?\n</center></html>");
         messageJLabel.setDoubleBuffered(true);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
-        gridBagConstraints.insets = new java.awt.Insets(60, 30, 0, 30);
+        gridBagConstraints.insets = new java.awt.Insets(40, 30, 0, 30);
         getContentPane().add(messageJLabel, gridBagConstraints);
 
         labelJLabel.setFont(new java.awt.Font("Dialog", 1, 24));
@@ -98,15 +119,21 @@ public class MOneButtonJDialog extends javax.swing.JDialog implements java.awt.e
         getContentPane().add(backgroundJLabel, gridBagConstraints);
 
         java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-        setBounds((screenSize.width-456)/2, (screenSize.height-247)/2, 456, 247);
+        setBounds((screenSize.width-466)/2, (screenSize.height-200)/2, 466, 200);
     }//GEN-END:initComponents
 
     private void proceedJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_proceedJButtonActionPerformed
+        isProceeding = true;
         setVisible(false);
     }//GEN-LAST:event_proceedJButtonActionPerformed
+
+    private void cancelJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelJButtonActionPerformed
+        windowClosing(null);
+    }//GEN-LAST:event_cancelJButtonActionPerformed
     
     
     public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+        isProceeding = false;
         this.setVisible(false);
     }    
     
@@ -118,12 +145,17 @@ public class MOneButtonJDialog extends javax.swing.JDialog implements java.awt.e
     public void windowIconified(java.awt.event.WindowEvent windowEvent) {}
     public void windowOpened(java.awt.event.WindowEvent windowEvent) {}
     
+    public boolean isProceeding(){
+        dispose();
+        return isProceeding;
+    }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel backgroundJLabel;
+    protected javax.swing.JButton cancelJButton;
     private javax.swing.JLabel labelJLabel;
     protected javax.swing.JLabel messageJLabel;
-    private javax.swing.JButton proceedJButton;
+    protected javax.swing.JButton proceedJButton;
     // End of variables declaration//GEN-END:variables
     
 }
