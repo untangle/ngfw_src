@@ -16,7 +16,6 @@ import com.metavize.mvvm.tran.TransformContext;
 
 public class MTransformDisplayJPanel extends com.metavize.gui.transform.MTransformDisplayJPanel{
     
-    private boolean updateThroughput = false;
     
     public MTransformDisplayJPanel(MTransformJPanel mTransformJPanel) {
         super(mTransformJPanel);
@@ -26,5 +25,6 @@ public class MTransformDisplayJPanel extends com.metavize.gui.transform.MTransfo
         super.activity2JLabel.setText("REDIR");
         super.activity3JLabel.setText("DMZ");
     }
-    
+
+    final protected boolean getUpdateThroughput(){ return false; }
 }

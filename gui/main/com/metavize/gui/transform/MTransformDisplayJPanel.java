@@ -37,9 +37,9 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
     protected MTransformJPanel mTransformJPanel;
     
     // GENERAL DISPLAY
-    protected boolean updateActivity = true;
-    protected boolean updateSessions = true;
-    protected boolean updateThroughput = true;
+    protected boolean getUpdateActivity(){ return true; }
+    protected boolean getUpdateSessions(){ return true; }
+    protected boolean getUpdateThroughput(){ return true; }
     protected UpdateGraphThread updateGraphThread;
     private volatile boolean updateGraph = false;
     private volatile boolean killGraph = false;
@@ -81,31 +81,16 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
 
         initComponents();
 
-        /*
-        if( mTransformJPanel.transformContext().getTransformDesc().getName().equals("airgap-transform") ){
-            updateActivity = false;
-            updateSessions = false;
-        }
-        else if( mTransformJPanel.transformContext().getTransformDesc().getName().equals("reporting-transform") ){
-            updateActivity = false;
-            updateSessions = false;
-            updateThroughput = false;
-        }
-        else if( mTransformJPanel.transformContext().getTransformDesc().getName().equals("nat-transform") ){
-            updateThroughput = false;
-        }
-        else if( mTransformJPanel.transformContext().getTransformDesc().getName().equals("firewall-transform") ){
-            updateThroughput = false;
-        }*/
-        if( !updateActivity){
+
+        if( !getUpdateActivity() ){
             this.remove(activityJPanel);
             this.remove(activityJLabel);
         }
-        if( !updateSessions ){
+        if( !getUpdateSessions() ){
             this.remove(sessionChartJPanel);
             this.remove(sessionsJLabel);
         }
-        if( !updateThroughput ){
+        if( !getUpdateThroughput() ){
             this.remove(throughputChartJPanel);
 	    this.remove(throughputJLabel);
         }
@@ -430,7 +415,7 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
                 return;
             
             SwingUtilities.invokeAndWait( new Runnable(){ public void run(){ 
-                if( MTransformDisplayJPanel.this.updateSessions ){
+                if( MTransformDisplayJPanel.this.getUpdateSessions() ){
                     newestIndex = sessionDynamicTimeSeriesCollection.getNewestIndex();
                     sessionDynamicTimeSeriesCollection.addValue(0, newestIndex, (float) sessionCountCurrent);
                     sessionDynamicTimeSeriesCollection.addValue(1, newestIndex, (float) sessionRequestCurrent - sessionRequestLast);
@@ -440,14 +425,14 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
                     generateCountLabel(sessionRequestCurrent, " REQ", sessionRequestTotalJLabel);
                 }
 
-                if( MTransformDisplayJPanel.this.updateThroughput ){
+                if( MTransformDisplayJPanel.this.getUpdateThroughput() ){
                     throughputDynamicTimeSeriesCollection.addValue( 0, throughputDynamicTimeSeriesCollection.getNewestIndex(), ((float)byteCountCurrent - byteCountLast)/1000f);            
                     throughputDynamicTimeSeriesCollection.advanceTime();
                     byteCountLast = byteCountCurrent;
                     generateCountLabel(byteCountCurrent, "B", throughputTotalJLabel);
                 }
 
-                if( MTransformDisplayJPanel.this.updateActivity ){
+                if( MTransformDisplayJPanel.this.getUpdateActivity() ){
                     dataset.setValue( activity0Count.decayValue(), activitySeriesString, activityString0);
                     dataset.setValue( activity1Count.decayValue(), activitySeriesString, activityString1);
                     dataset.setValue( activity2Count.decayValue(), activitySeriesString, activityString2);

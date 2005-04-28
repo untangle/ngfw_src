@@ -12,9 +12,6 @@ import com.metavize.mvvm.tran.TransformContext;
 
 public class MTransformDisplayJPanel extends com.metavize.gui.transform.MTransformDisplayJPanel{
 
-    private boolean updateActivity = false;
-    private boolean updateSessions = false;
-    
     public MTransformDisplayJPanel(MTransformJPanel mTransformJPanel){
         super(mTransformJPanel);
         
@@ -22,5 +19,8 @@ public class MTransformDisplayJPanel extends com.metavize.gui.transform.MTransfo
         super.activity1JLabel.setText("UDP OK");
         
     }
+    
+    final protected boolean getUpdateActivity(){ return false; }
+    final protected boolean getUpdateSessions(){ return false; }
     
 }
