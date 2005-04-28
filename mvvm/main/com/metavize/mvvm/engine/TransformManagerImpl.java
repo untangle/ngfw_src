@@ -197,7 +197,9 @@ class TransformManagerImpl implements TransformManager
         List<TransformPersistentState> unloaded = getUnloaded();
         Map<Tid, TransformDesc> tDescs = new HashMap<Tid, TransformDesc>();
 
-        for (TransformPersistentState tps : unloaded) {
+        for (Iterator<TransformPersistentState> i = unloaded.iterator();
+             i.hasNext(); ) {
+            TransformPersistentState tps = i.next();
             URL[] urls = tbm.resources(tps.getName());
             Tid tid = tps.getTid();
 
@@ -206,7 +208,7 @@ class TransformManagerImpl implements TransformManager
                 tDescs.put(tid, tDesc);
             } catch (DeployException exn) {
                 logger.warn("TransformDesc could not be parsed", exn);
-                unloaded.remove(tid);
+                i.remove();
             }
         }
 
@@ -232,10 +234,12 @@ class TransformManagerImpl implements TransformManager
                 Set<String> parents = tDesc.getParents();
                 boolean parentsLoaded = true;
                 for (String parent : parents) {
-                    if (0 == transformInstances(parent).length) {
-                        parentsLoaded = false;
-                        break;
+                    for (TransformPersistentState utps : unloaded) {
+                        if (parent.equals(utps.getName())) {
+                            parentsLoaded = false;
+                        }
                     }
+                    if (false == parentsLoaded) { break; }
                 }
 
                 if (parentsLoaded) {

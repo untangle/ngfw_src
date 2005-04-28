@@ -146,11 +146,11 @@ class TransformContextImpl implements TransformContext
         if (transformDesc.isCasing()) {
             parentCl.addResources(resources);
             resources = URL_PROTO;
-        } else if (isNew) {
-            Set<String> parents = transformDesc.getParents();
-            for (String parent : parents) {
-                parentCtxs.add(startParent(parent));
-            }
+        }
+
+        Set<String> parents = transformDesc.getParents();
+        for (String parent : parents) {
+            parentCtxs.add(startParent(parent));
         }
 
         SchemaUtil.initSchema(transformDesc.getName());

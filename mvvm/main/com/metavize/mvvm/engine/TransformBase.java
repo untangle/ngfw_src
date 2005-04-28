@@ -290,22 +290,20 @@ public abstract class TransformBase implements Transform
                                             + getRunState());
         }
 
-        if (syncState) {
-            for (TransformBase parent : parents) {
-                ClassLoader parentCl = parent.getTransformContext()
-                    .getClassLoader();
+        for (TransformBase parent : parents) {
+            ClassLoader parentCl = parent.getTransformContext()
+                .getClassLoader();
 
-                Thread ct = Thread.currentThread();
-                ClassLoader oldCl = ct.getContextClassLoader();
-                // Entering TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                ct.setContextClassLoader(parentCl);
+            Thread ct = Thread.currentThread();
+            ClassLoader oldCl = ct.getContextClassLoader();
+            // Entering TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            ct.setContextClassLoader(parentCl);
 
-                try {
-                    parent.parentStart();
-                } finally {
-                    ct.setContextClassLoader(oldCl);
-                    // Left TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                }
+            try {
+                parent.parentStart();
+            } finally {
+                ct.setContextClassLoader(oldCl);
+                // Left TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             }
         }
 
@@ -330,22 +328,20 @@ public abstract class TransformBase implements Transform
         disconnectMPipe();
         changeState(TransformState.INITIALIZED, syncState);
 
-        if (syncState) {
-            for (TransformBase parent : parents) {
-                ClassLoader parentCl = parent.getTransformContext()
-                    .getClassLoader();
+        for (TransformBase parent : parents) {
+            ClassLoader parentCl = parent.getTransformContext()
+                .getClassLoader();
 
-                Thread ct = Thread.currentThread();
-                ClassLoader oldCl = ct.getContextClassLoader();
-                // Entering TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                ct.setContextClassLoader(parentCl);
+            Thread ct = Thread.currentThread();
+            ClassLoader oldCl = ct.getContextClassLoader();
+            // Entering TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            ct.setContextClassLoader(parentCl);
 
-                try {
-                    parent.parentStop();
-                } finally {
-                    ct.setContextClassLoader(oldCl);
-                    // Left TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                }
+            try {
+                parent.parentStop();
+            } finally {
+                ct.setContextClassLoader(oldCl);
+                // Left TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             }
         }
 
