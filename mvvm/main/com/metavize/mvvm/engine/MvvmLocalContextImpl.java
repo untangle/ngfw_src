@@ -104,6 +104,11 @@ public class MvvmLocalContextImpl extends MvvmContextImpl
         return s;
     }
 
+    public void restartAllTransforms()
+    {
+        // NYI XXXXXXXXXXXXXXXXXXXXX
+    }
+
     // XXX this should be local only
     public Logger eventLogger()
     {

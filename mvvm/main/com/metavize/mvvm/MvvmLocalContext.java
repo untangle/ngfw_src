@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: MvvmLocalContext.java,v 1.13 2005/01/30 09:20:32 amread Exp $
+ *  $Id$
  */
 
 package com.metavize.mvvm;
@@ -42,7 +42,7 @@ public interface MvvmLocalContext extends MvvmContext
     PipelineFoundry pipelineFoundry();
 
     /**
-     * Describe <code>mvvmLogin</code> method here.
+     * Returns an <code>mvvmLogin</code> method here.
      *
      * @param isLocal a <code>boolean</code> true if the invoker is on
      * the local host.
@@ -60,6 +60,13 @@ public interface MvvmLocalContext extends MvvmContext
      * @return a new Hibernate <code>Session</code>.
      */
     Session openSession();
+
+    /**
+     * Hook used by network reconfiguration code -- stops all running transforms,
+     * then restarts them.
+     *
+     */
+    void restartAllTransforms();
 
     Logger eventLogger();
 }

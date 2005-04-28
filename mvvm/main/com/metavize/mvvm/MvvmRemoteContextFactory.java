@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: MvvmRemoteContextFactory.java,v 1.8 2005/02/23 22:20:12 amread Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm;
@@ -152,7 +152,9 @@ public class MvvmRemoteContextFactory
     private static MvvmLogin mvvmLogin(MvvmPrincipal mp, URL url, int timeout,
                                        ClassLoader classLoader)
     {
-        LoginSession ls = new LoginSession(mp, 0);
+        // Note -- this login session is completely ignored by the server
+        // (which it must be since it's made on the client).
+        LoginSession ls = new LoginSession(mp, 0, null);
         HTTP_INVOKER_STUB = new HttpInvokerStub(ls, url, null, timeout, classLoader);
 
         try {

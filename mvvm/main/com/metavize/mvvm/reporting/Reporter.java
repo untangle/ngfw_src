@@ -138,6 +138,9 @@ public class Reporter
             is.close();
 
             String mktName = mth.getTransformDesc(new Tid()).getDisplayName();
+            // HACK O RAMA XXXXXXXXX
+            if (mktName.startsWith("EdgeReport"))
+                mktName = "Appliance Control";
             logger.debug("Writing transform name: " + mktName);
             FileOutputStream fos = new FileOutputStream(new File(tranDir, "name"));
             PrintWriter pw = new PrintWriter(fos);
@@ -263,6 +266,7 @@ public class Reporter
             try {
                 URLClassLoader ucl = new URLClassLoader(new URL[] { f.toURL() });
                 ct.setContextClassLoader(ucl);
+                logger.debug("Running TranReporter for " + tranName);
                 new TranReporter(tranName, ucl).process(conn);
             } catch (Exception exn) {
                 logger.warn("bad mar: " + f);

@@ -63,7 +63,7 @@ USING (msg_id)
                 <reportElement key="staticText" positionType="Float" mode="Opaque" x="0" y="0" width="239" height="23"/>
                 <box topBorder="None" topBorderColor="#0" leftBorder="None" leftBorderColor="#0" bottomBorder="None" bottomBorderColor="#0" rightBorder="None" rightBorderColor="#ffffff"/>
                 <textElement>
-                    <font fontName="Bitstream Vera Sans" size="18" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+                    <font fontName="SansSerif" size="18" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
                 </textElement>
                 <text><![CDATA[Metavize EdgeGuard]]></text>
             </staticText>
@@ -71,7 +71,7 @@ USING (msg_id)
                 <reportElement key="staticText" positionType="Float" mode="Opaque" x="0" y="28" width="249" height="17"/>
                 <box topBorder="None" topBorderColor="#0" leftBorder="None" leftBorderColor="#0" bottomBorder="None" bottomBorderColor="#0" rightBorder="None" rightBorderColor="#ffffff"/>
                 <textElement>
-                    <font fontName="Bitstream Vera Sans" size="14" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+                    <font fontName="SansSerif" size="14" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
                 </textElement>
                 <text><![CDATA[Messages not processed Incidents]]></text>
             </staticText>
@@ -79,7 +79,7 @@ USING (msg_id)
                 <reportElement key="textField" mode="Opaque" x="0" y="50" width="305" height="15"/>
                 <box topBorder="None" topBorderColor="#0" leftBorder="None" leftBorderColor="#0" bottomBorder="None" bottomBorderColor="#0" rightBorder="None" rightBorderColor="#ffffff"/>
                 <textElement>
-                    <font fontName="Bitstream Vera Sans" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+                    <font fontName="SansSerif" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
                 </textElement>
                 <textFieldExpression class="java.lang.String"><![CDATA[String.format("%tB %<td, %<tY", new Object[] {new Long($P{startTime}.getTime())})
  + " to "

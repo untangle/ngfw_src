@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: HttpInvoker.java,v 1.11 2005/03/15 01:32:03 amread Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.engine;
@@ -22,6 +22,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.net.URL;
+import java.net.InetAddress;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -62,7 +63,7 @@ class HttpInvoker extends InvokerBase
     }
 
     protected void handleStream(InputStream is, OutputStream os,
-                                boolean isLocal)
+                                boolean isLocal, InetAddress remoteAddr)
     {
         ObjectOutputStream oos = null;
         ProxyInputStream pis = null;
@@ -79,7 +80,7 @@ class HttpInvoker extends InvokerBase
             URL url = hi.url;
 
             if (null == cacheId) {
-                oos.writeObject(mvvmLoginProxy(url, isLocal));
+                oos.writeObject(mvvmLoginProxy(url, isLocal, remoteAddr));
                 return;
             }
 
@@ -98,6 +99,7 @@ class HttpInvoker extends InvokerBase
             ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
             // Entering TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             Thread.currentThread().setContextClassLoader(targetCl);
+            loginSession.setActive();
 
             Object returnValue = null;
             try {
@@ -281,9 +283,10 @@ class HttpInvoker extends InvokerBase
         return l;
     }
 
-    private Object mvvmLoginProxy(URL url, boolean isLocal) throws Exception
+    private Object mvvmLoginProxy(URL url, boolean isLocal, InetAddress remoteAddr) throws Exception
     {
-        return makeProxy(new LoginSession(null, 0),
+        // We make a temporary login session here that gets replaced when we complete the login.
+        return makeProxy(new LoginSession(null, 0, remoteAddr),
                          MvvmContextFactory.context().mvvmLogin(isLocal),
                          url);
     }

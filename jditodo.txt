@@ -1,4 +1,22 @@
-dirk's laundry
+1.3
+---
+
+check 1.2
+
+restart all transforms
+
+  fix serial uids
+
+--    
+
+Need to add check code for tcp & udp send packet so that if you try to send data to a closed
+sink, it doesn't just build up but rather gives an error. done?
+
+rename closeWhenDone to avoid cho confusion
+
+fix up uses of proto_tcp now that we have constants.
+
+---
 
 returning readbuf isn't right wrt read limit
 

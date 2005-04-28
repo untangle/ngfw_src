@@ -13,6 +13,7 @@ package com.metavize.mvvm.engine;
 
 import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.mvvm.security.LoginFailureReason;
+import java.net.InetAddress;
 
 /**
  * Log event for a login/login-attempt.
@@ -25,6 +26,7 @@ import com.metavize.mvvm.security.LoginFailureReason;
  */
 public class LoginEvent extends LogEvent
 {
+    private InetAddress clientAddr;
     private String login;
     private boolean local;
     private boolean succeeded;
@@ -35,17 +37,15 @@ public class LoginEvent extends LogEvent
     public LoginEvent() { }
 
     // For successes
-    public LoginEvent(String login, boolean local, boolean succeeded)
+    public LoginEvent(InetAddress clientAddr, String login, boolean local, boolean succeeded)
     {
-        this.login = login;
-        this.local = local;
-        this.succeeded = succeeded;
-        this.reason = null;
+        this(clientAddr, login, local, succeeded, null);
     }
 
-    // For non-local failures
-    public LoginEvent(String login, boolean local, boolean succeeded, LoginFailureReason reason)
+    // For failures
+    public LoginEvent(InetAddress clientAddr, String login, boolean local, boolean succeeded, LoginFailureReason reason)
     {
+        this.clientAddr = clientAddr;
         this.login = login;
         this.local = local;
         this.succeeded = succeeded;
@@ -53,6 +53,26 @@ public class LoginEvent extends LogEvent
     }
 
     // accessors --------------------------------------------------------------
+
+    /**
+     * Client address
+     *
+     * @return the address of the client
+     * @hibernate.property
+     * type="com.metavize.mvvm.type.InetAddressUserType"
+     * @hibernate.column
+     * name="CLIENT_ADDR"
+     * sql-type="inet"
+     */
+    public InetAddress getClientAddr()
+    {
+        return clientAddr;
+    }
+
+    public void setClientAddr(InetAddress clientAddr)
+    {
+        this.clientAddr = clientAddr;
+    }
 
     /**
      * Login used to login.  May be  used to join to MVVM_USER.

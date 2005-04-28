@@ -6,24 +6,32 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: LoginSession.java,v 1.2 2005/02/25 02:45:29 amread Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.security;
 
 import java.io.Serializable;
+import java.net.InetAddress;
 
 public class LoginSession implements Serializable
 {
     private static final long serialVersionUID = 3121773301570017319L;
 
+    // We provide the login session as a thread local for now, until we can integrate this with
+    // Subject/Principal stuff that's builtin.
+    private static InheritableThreadLocal<LoginSession> activeSession =
+        new InheritableThreadLocal<LoginSession>();
+
     private MvvmPrincipal mvvmPrincipal;
     private int sessionId;
+    private InetAddress clientAddr;
 
-    public LoginSession(MvvmPrincipal mp, int sessionId)
+    public LoginSession(MvvmPrincipal mp, int sessionId, InetAddress clientAddr)
     {
         this.mvvmPrincipal =  mp;
         this.sessionId = sessionId;
+        this.clientAddr = clientAddr;
     }
 
     public MvvmPrincipal mvvmPrincipal()
@@ -34,6 +42,21 @@ public class LoginSession implements Serializable
     public int sessionId()
     {
         return sessionId;
+    }
+
+    public InetAddress clientAddr()
+    {
+        return clientAddr;
+    }
+
+    public void setActive()
+    {
+        activeSession.set(this);
+    }
+
+    public static LoginSession getActive()
+    {   
+        return activeSession.get();
     }
 
     public String toString()

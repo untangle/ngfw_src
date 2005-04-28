@@ -27,10 +27,12 @@ import net.sf.hibernate.Query;
 import net.sf.hibernate.Session;
 import net.sf.hibernate.Transaction;
 import org.apache.log4j.Logger;
+import java.net.InetAddress;
 
 class MvvmLoginImpl implements MvvmLogin
 {
-    private static final long LOGIN_FAIL_SLEEP_TIME = 5000;
+    // Add two seconds to each failed login attempt to blunt the force of scripted dictionary attacks.
+    private static final long LOGIN_FAIL_SLEEP_TIME = 2000;
 
     private static final Object LOCK = new Object();
     private static final Logger logger = Logger
@@ -52,6 +54,11 @@ class MvvmLoginImpl implements MvvmLogin
     public MvvmContext login(String login, String password)
         throws FailedLoginException
     {
+
+        // Get the client Addr from our partial initial login session
+        LoginSession activeSession = LoginSession.getActive();
+        InetAddress clientAddr = activeSession.clientAddr();
+
         boolean success = false;
         if (isLocal) {
             // Do something better here. XXX
@@ -61,10 +68,10 @@ class MvvmLoginImpl implements MvvmLogin
             if (login.equals(localUser) &&
                 password.equals(localPasswd)) {
                 logger.debug("Local login succeeded");
-                eventLogger.info(new LoginEvent(localUser, true, true));
+                eventLogger.info(new LoginEvent(clientAddr, localUser, true, true));
                 success = true;
             } else {
-                eventLogger.info(new LoginEvent(localUser, true, false));
+                eventLogger.info(new LoginEvent(clientAddr, localUser, true, false));
                 logger.debug("Failed local, trying normal");
             }
         }
@@ -85,17 +92,17 @@ class MvvmLoginImpl implements MvvmLogin
                     if (PasswordUtil.check(password, u.getPassword())) {
                         logger.debug("Password check succeeded");
                         // Just use login, not id, so it can be congruent with "localadmin" from above.
-                        eventLogger.info(new LoginEvent(login, false, true));
+                        eventLogger.info(new LoginEvent(clientAddr, login, false, true));
                         success = true;
                     } else {
                         logger.debug("Password check failed");
-                        eventLogger.info(new LoginEvent(login, false, false, LoginFailureReason.BAD_PASSWORD));
+                        eventLogger.info(new LoginEvent(clientAddr, login, false, false, LoginFailureReason.BAD_PASSWORD));
                         Thread.sleep(LOGIN_FAIL_SLEEP_TIME);
                         x = new FailedLoginException("Incorrect password");
                     }
                 } else {
                     logger.debug("No user found with login: " + login);
-                    eventLogger.info(new LoginEvent(login, false, false, LoginFailureReason.UNKNOWN_USER));
+                    eventLogger.info(new LoginEvent(clientAddr, login, false, false, LoginFailureReason.UNKNOWN_USER));
                     Thread.sleep(LOGIN_FAIL_SLEEP_TIME);
                     x = new FailedLoginException("No such user: " + login);
                 }
@@ -124,7 +131,7 @@ class MvvmLoginImpl implements MvvmLogin
         // XXX Throw MvvmLoginException on failure!
         try {
             return (MvvmContext)HttpInvoker.invoker()
-                .makeProxy(new LoginSession(mp, nextLoginId()),
+                .makeProxy(new LoginSession(mp, nextLoginId(), clientAddr),
                            MvvmContextFactory.context(), null);
         } catch (Exception exn) {
             throw new RuntimeException(exn); // XXX

@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: HttpInvokerServlet.java,v 1.1 2004/12/29 07:57:20 amread Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.servlet.invoker;
@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.net.InetAddress;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -31,7 +32,15 @@ public class HttpInvokerServlet extends HttpServlet
         OutputStream os = resp.getOutputStream();
         InvokerBase ib = (InvokerBase)getServletContext()
             .getAttribute("invoker");
-        ib.handle(is, os, req.getLocalAddr().equals("127.0.0.1"));
+
+        InetAddress clientAddr;
+        try {
+            clientAddr = InetAddress.getByName(req.getRemoteAddr());
+        } catch (Exception x) {
+            // Can't happen
+            throw new Error(x);
+        }
+        ib.handle(is, os, req.getLocalAddr().equals("127.0.0.1"), clientAddr);
     }
 
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
