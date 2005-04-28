@@ -13,6 +13,8 @@ package com.metavize.tran.email;
 import java.io.IOException;
 import java.lang.InterruptedException;
 import java.nio.*;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CharsetEncoder;
 import java.nio.charset.CharacterCodingException;
 import java.util.*;
 import java.util.regex.*;
@@ -159,6 +161,8 @@ public class MLHandler
     /* instance variables */
     protected MLHandlerInfo zHdlInfo;
 
+    protected CharsetDecoder zDecoder;
+    protected CharsetEncoder zEncoder;
     protected StateMachine zStateMachine;
     protected CBufferWrapper zCDummy; /* for temp use only */
     //protected CBufferWrapper zCPass;
@@ -189,6 +193,8 @@ public class MLHandler
     /* constructors */
     protected MLHandler()
     {
+        zDecoder = Constants.CHARSET.newDecoder();
+        zEncoder = Constants.CHARSET.newEncoder();
         zStateMachine = new StateMachine();
         zCDummy = new CBufferWrapper(null);
         //zCPass = new CBufferWrapper(null);
@@ -1343,7 +1349,7 @@ public class MLHandler
         try
         {
             zUNLine.rewind(); /* we will not use this ByteBuffer again */
-            zUserNameP = Pattern.compile(MLLine.toString(zUNLine));
+            zUserNameP = Pattern.compile(MLLine.toString(zDecoder, zUNLine));
         }
         catch (CharacterCodingException e)
         {
@@ -1530,7 +1536,7 @@ public class MLHandler
 
             try
             {
-                ByteBuffer zFNLine = MLLine.toByteBuffer(zFNStr);
+                ByteBuffer zFNLine = MLLine.toByteBuffer(zEncoder, zFNStr);
                 zBodyCLine = new CBufferWrapper(zFNLine);
             }
             catch (CharacterCodingException e)

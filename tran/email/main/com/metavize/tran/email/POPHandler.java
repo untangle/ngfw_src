@@ -382,10 +382,9 @@ public class POPHandler extends MLHandler
             Matcher zMatcher = zMsgSzP.matcher(zDataOK.toString());
 
             String zNewDataOK = zMatcher.replaceAll(String.valueOf(iNewMsgSz));
-            CharBuffer zCBLine = CharBuffer.wrap(zNewDataOK);
             try
             {
-                zLine = MLLine.toByteBuffer(zCBLine);
+                zLine = MLLine.toByteBuffer(zEncoder, zNewDataOK);
             }
             catch (CharacterCodingException e)
             {
