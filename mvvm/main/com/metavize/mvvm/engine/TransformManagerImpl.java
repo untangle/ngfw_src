@@ -122,6 +122,26 @@ class TransformManagerImpl implements TransformManager
         TransformContextImpl tc = tids.get(tid);
         tc.destroy();
         tids.remove(tid);
+
+        Session s = MvvmContextFactory.context().openSession();
+        try {
+            Transaction tx = s.beginTransaction();
+
+            synchronized (tidLock) {
+                s.delete(tc.getPersistentState());
+                s.delete(tc.getTransformPreferences());
+            }
+
+            tx.commit();
+        } catch (HibernateException exn) {
+            logger.warn("could not get TransformManagerState", exn);
+        } finally {
+            try {
+                s.close();
+            } catch (HibernateException exn) {
+                logger.warn("could not close Session", exn);
+            }
+        }
     }
 
     // Manager lifetime -------------------------------------------------------
