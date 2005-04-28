@@ -12,6 +12,7 @@ usr/bin/mvvmdb-backup
 usr/bin/purgeprefs
 usr/bin/rollup-logs
 usr/bin/update-reports
+usr/bin/update-schema
 usr/lib/mvvm/libalpine.so
 usr/share/java/*
 usr/share/java/mvvm/*

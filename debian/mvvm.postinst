@@ -60,6 +60,8 @@ fi
 /bin/chown -R $USER:$GROUP ${MVVM_LOGDIR} ${MVVM_CACHEDIR}
 /bin/chmod 775 ${MVVM_LOGDIR} ${MVVM_CACHEDIR}
 
+update-schema mvvm
+
 # start mvvm
 if [ -x "/etc/init.d/mvvm" ]; then
     update-rc.d mvvm defaults 50 > /dev/null
