@@ -1,6 +1,6 @@
-diff -urN linux-2.6.8.1-orig/include/linux/in.h linux-2.6.8.1-netcap/include/linux/in.h
+diff -urN --ignore-all-space linux-2.6.8.1-orig/include/linux/in.h linux-2.6.8.1-netcap/include/linux/in.h
 --- linux-2.6.8.1-orig/include/linux/in.h	2004-08-14 03:56:24.000000000 -0700
-+++ linux-2.6.8.1-netcap/include/linux/in.h	2005-03-16 19:37:36.000000000 -0800
++++ linux-2.6.8.1-netcap/include/linux/in.h	2005-04-29 09:40:39.612459859 -0700
 @@ -71,6 +71,13 @@
  #define IP_FREEBIND	15
  #define IP_IPSEC_POLICY	16
@@ -31,11 +31,11 @@ diff -urN linux-2.6.8.1-orig/include/linux/in.h linux-2.6.8.1-netcap/include/lin
  
  /*
   * Definitions of the bits in an Internet address integer.
-diff -urN linux-2.6.8.1-orig/include/linux/netfilter_ipv4/ipt_DIVERT.h linux-2.6.8.1-netcap/include/linux/netfilter_ipv4/ipt_DIVERT.h
+diff -urN --ignore-all-space linux-2.6.8.1-orig/include/linux/netfilter_ipv4/ipt_DIVERT.h linux-2.6.8.1-netcap/include/linux/netfilter_ipv4/ipt_DIVERT.h
 --- linux-2.6.8.1-orig/include/linux/netfilter_ipv4/ipt_DIVERT.h	1969-12-31 16:00:00.000000000 -0800
-+++ linux-2.6.8.1-netcap/include/linux/netfilter_ipv4/ipt_DIVERT.h	2005-03-16 19:37:36.000000000 -0800
++++ linux-2.6.8.1-netcap/include/linux/netfilter_ipv4/ipt_DIVERT.h	2005-04-29 09:40:39.612459859 -0700
 @@ -0,0 +1,9 @@
-+/* $Id: netcap.kernel-2.6.8.1.031605,v 1.1 2005/03/17 04:51:26 jmar Exp $ */
++/* $Id: netcap.kernel-2.6.8.1.031605.patch,v 1.1 2005/03/23 03:47:01 jmar Exp $ */
 +#ifndef _IPT_DIVERT_H_target
 +#define _IPT_DIVERT_H_target
 +
@@ -44,9 +44,9 @@ diff -urN linux-2.6.8.1-orig/include/linux/netfilter_ipv4/ipt_DIVERT.h linux-2.6
 +};
 +
 +#endif
-diff -urN linux-2.6.8.1-orig/include/linux/netfilter_ipv4/ipt_ROUTE.h linux-2.6.8.1-netcap/include/linux/netfilter_ipv4/ipt_ROUTE.h
+diff -urN --ignore-all-space linux-2.6.8.1-orig/include/linux/netfilter_ipv4/ipt_ROUTE.h linux-2.6.8.1-netcap/include/linux/netfilter_ipv4/ipt_ROUTE.h
 --- linux-2.6.8.1-orig/include/linux/netfilter_ipv4/ipt_ROUTE.h	1969-12-31 16:00:00.000000000 -0800
-+++ linux-2.6.8.1-netcap/include/linux/netfilter_ipv4/ipt_ROUTE.h	2005-03-16 19:37:36.000000000 -0800
++++ linux-2.6.8.1-netcap/include/linux/netfilter_ipv4/ipt_ROUTE.h	2005-04-29 09:40:39.613459781 -0700
 @@ -0,0 +1,22 @@
 +/* Header file for iptables ipt_ROUTE target
 + *
@@ -70,9 +70,9 @@ diff -urN linux-2.6.8.1-orig/include/linux/netfilter_ipv4/ipt_ROUTE.h linux-2.6.
 +#define IPT_ROUTE_CONTINUE        0x01
 +
 +#endif /*_IPT_ROUTE_H_target*/
-diff -urN linux-2.6.8.1-orig/include/linux/netfilter_ipv4/ipt_bitmark.h linux-2.6.8.1-netcap/include/linux/netfilter_ipv4/ipt_bitmark.h
+diff -urN --ignore-all-space linux-2.6.8.1-orig/include/linux/netfilter_ipv4/ipt_bitmark.h linux-2.6.8.1-netcap/include/linux/netfilter_ipv4/ipt_bitmark.h
 --- linux-2.6.8.1-orig/include/linux/netfilter_ipv4/ipt_bitmark.h	1969-12-31 16:00:00.000000000 -0800
-+++ linux-2.6.8.1-netcap/include/linux/netfilter_ipv4/ipt_bitmark.h	2005-03-16 19:37:36.000000000 -0800
++++ linux-2.6.8.1-netcap/include/linux/netfilter_ipv4/ipt_bitmark.h	2005-04-29 09:40:39.613459781 -0700
 @@ -0,0 +1,18 @@
 +/* IP tables module for matching the value of the TTL
 + * (C) 2004 by Jim Mar <jmar@metavize.com> */
@@ -92,9 +92,9 @@ diff -urN linux-2.6.8.1-orig/include/linux/netfilter_ipv4/ipt_bitmark.h linux-2.
 +};
 +
 +#endif
-diff -urN linux-2.6.8.1-orig/include/linux/netfilter_ipv4/ipt_physdev.h linux-2.6.8.1-netcap/include/linux/netfilter_ipv4/ipt_physdev.h
+diff -urN --ignore-all-space linux-2.6.8.1-orig/include/linux/netfilter_ipv4/ipt_physdev.h linux-2.6.8.1-netcap/include/linux/netfilter_ipv4/ipt_physdev.h
 --- linux-2.6.8.1-orig/include/linux/netfilter_ipv4/ipt_physdev.h	2004-08-14 03:55:48.000000000 -0700
-+++ linux-2.6.8.1-netcap/include/linux/netfilter_ipv4/ipt_physdev.h	2005-03-16 19:37:37.000000000 -0800
++++ linux-2.6.8.1-netcap/include/linux/netfilter_ipv4/ipt_physdev.h	2005-04-29 09:40:39.613459781 -0700
 @@ -13,12 +13,12 @@
  #define IPT_PHYSDEV_OP_MASK		(0x20 - 1)
  
@@ -110,9 +110,9 @@ diff -urN linux-2.6.8.1-orig/include/linux/netfilter_ipv4/ipt_physdev.h linux-2.
  };
  
  #endif /*_IPT_PHYSDEV_H*/
-diff -urN linux-2.6.8.1-orig/include/linux/netfilter_ipv4.h linux-2.6.8.1-netcap/include/linux/netfilter_ipv4.h
+diff -urN --ignore-all-space linux-2.6.8.1-orig/include/linux/netfilter_ipv4.h linux-2.6.8.1-netcap/include/linux/netfilter_ipv4.h
 --- linux-2.6.8.1-orig/include/linux/netfilter_ipv4.h	2004-08-14 03:56:00.000000000 -0700
-+++ linux-2.6.8.1-netcap/include/linux/netfilter_ipv4.h	2005-03-16 19:37:37.000000000 -0800
++++ linux-2.6.8.1-netcap/include/linux/netfilter_ipv4.h	2005-04-29 09:40:39.613459781 -0700
 @@ -54,6 +54,7 @@
  	NF_IP_PRI_CONNTRACK_DEFRAG = -400,
  	NF_IP_PRI_RAW = -300,
@@ -121,25 +121,30 @@ diff -urN linux-2.6.8.1-orig/include/linux/netfilter_ipv4.h linux-2.6.8.1-netcap
  	NF_IP_PRI_CONNTRACK = -200,
  	NF_IP_PRI_BRIDGE_SABOTAGE_FORWARD = -175,
  	NF_IP_PRI_MANGLE = -150,
-diff -urN linux-2.6.8.1-orig/include/linux/udp.h linux-2.6.8.1-netcap/include/linux/udp.h
+diff -urN --ignore-all-space linux-2.6.8.1-orig/include/linux/udp.h linux-2.6.8.1-netcap/include/linux/udp.h
 --- linux-2.6.8.1-orig/include/linux/udp.h	2004-08-14 03:54:51.000000000 -0700
-+++ linux-2.6.8.1-netcap/include/linux/udp.h	2005-03-16 19:37:37.000000000 -0800
-@@ -28,8 +28,12 @@
++++ linux-2.6.8.1-netcap/include/linux/udp.h	2005-04-29 10:00:15.925088596 -0700
+@@ -28,8 +28,17 @@
  
  /* UDP socket options */
  #define UDP_CORK	1	/* Never send partially complete segments */
-+#define UDP_RECVDPORT 2 /* the dest port in ancillary msg */
++#define UDP_RECVHDR 2   /* the original ip and udp hdr in ancillary msg */
  #define UDP_ENCAP	100	/* Set the socket to accept encapsulated packets */
  
++/* UDP cmsg options */
++#ifdef CONFIG_NETCAP
++#define UDP_CMSG_RECVHDR     32 /* see udp.c */
++#endif
++
 +/* UDP ancillary data types */
 +#define UDP_SPORT 1
 +
  /* UDP encapsulation types */
  #define UDP_ENCAP_ESPINUDP_NON_IKE	1 /* draft-ietf-ipsec-nat-t-ike-00/01 */
  #define UDP_ENCAP_ESPINUDP	2 /* draft-ietf-ipsec-udp-encaps-06 */
-diff -urN linux-2.6.8.1-orig/include/net/ip.h linux-2.6.8.1-netcap/include/net/ip.h
+diff -urN --ignore-all-space linux-2.6.8.1-orig/include/net/ip.h linux-2.6.8.1-netcap/include/net/ip.h
 --- linux-2.6.8.1-orig/include/net/ip.h	2004-08-14 03:55:47.000000000 -0700
-+++ linux-2.6.8.1-netcap/include/net/ip.h	2005-03-16 20:27:02.000000000 -0800
++++ linux-2.6.8.1-netcap/include/net/ip.h	2005-04-29 09:40:39.614459704 -0700
 @@ -41,9 +41,15 @@
  	struct ip_options	opt;		/* Compiled IP options		*/
  	unsigned char		flags;
@@ -177,9 +182,9 @@ diff -urN linux-2.6.8.1-orig/include/net/ip.h linux-2.6.8.1-netcap/include/net/i
  extern int		ip_mr_input(struct sk_buff *skb);
  extern int		ip_output(struct sk_buff **pskb);
  extern int		ip_mc_output(struct sk_buff **pskb);
-diff -urN linux-2.6.8.1-orig/include/net/route.h linux-2.6.8.1-netcap/include/net/route.h
+diff -urN --ignore-all-space linux-2.6.8.1-orig/include/net/route.h linux-2.6.8.1-netcap/include/net/route.h
 --- linux-2.6.8.1-orig/include/net/route.h	2004-08-14 03:54:46.000000000 -0700
-+++ linux-2.6.8.1-netcap/include/net/route.h	2005-03-16 19:37:37.000000000 -0800
++++ linux-2.6.8.1-netcap/include/net/route.h	2005-04-29 09:40:39.615459626 -0700
 @@ -39,12 +39,19 @@
  #endif
  
@@ -201,9 +206,9 @@ diff -urN linux-2.6.8.1-orig/include/net/route.h linux-2.6.8.1-netcap/include/ne
  
  struct inet_peer;
  struct rtable
-diff -urN linux-2.6.8.1-orig/include/net/sock.h linux-2.6.8.1-netcap/include/net/sock.h
+diff -urN --ignore-all-space linux-2.6.8.1-orig/include/net/sock.h linux-2.6.8.1-netcap/include/net/sock.h
 --- linux-2.6.8.1-orig/include/net/sock.h	2004-08-14 03:55:48.000000000 -0700
-+++ linux-2.6.8.1-netcap/include/net/sock.h	2005-03-16 19:37:37.000000000 -0800
++++ linux-2.6.8.1-netcap/include/net/sock.h	2005-04-29 09:40:39.615459626 -0700
 @@ -218,6 +218,13 @@
  	unsigned char		sk_no_largesend;
  	int			sk_route_caps;
@@ -218,9 +223,9 @@ diff -urN linux-2.6.8.1-orig/include/net/sock.h linux-2.6.8.1-netcap/include/net
  	int			sk_hashent;
  	struct sock		*sk_pair;
  	/*
-diff -urN linux-2.6.8.1-orig/include/net/tcp.h linux-2.6.8.1-netcap/include/net/tcp.h
+diff -urN --ignore-all-space linux-2.6.8.1-orig/include/net/tcp.h linux-2.6.8.1-netcap/include/net/tcp.h
 --- linux-2.6.8.1-orig/include/net/tcp.h	2004-08-14 03:54:50.000000000 -0700
-+++ linux-2.6.8.1-netcap/include/net/tcp.h	2005-03-16 19:37:37.000000000 -0800
++++ linux-2.6.8.1-netcap/include/net/tcp.h	2005-04-29 09:40:39.617459470 -0700
 @@ -781,6 +781,10 @@
  
  extern int			tcp_v4_rcv(struct sk_buff *skb);
@@ -232,9 +237,9 @@ diff -urN linux-2.6.8.1-orig/include/net/tcp.h linux-2.6.8.1-netcap/include/net/
  extern int			tcp_v4_remember_stamp(struct sock *sk);
  
  extern int		    	tcp_v4_tw_remember_stamp(struct tcp_tw_bucket *tw);
-diff -urN linux-2.6.8.1-orig/net/Kconfig linux-2.6.8.1-netcap/net/Kconfig
+diff -urN --ignore-all-space linux-2.6.8.1-orig/net/Kconfig linux-2.6.8.1-netcap/net/Kconfig
 --- linux-2.6.8.1-orig/net/Kconfig	2004-08-14 03:54:48.000000000 -0700
-+++ linux-2.6.8.1-netcap/net/Kconfig	2005-03-16 19:37:37.000000000 -0800
++++ linux-2.6.8.1-netcap/net/Kconfig	2005-04-29 09:40:39.617459470 -0700
 @@ -54,6 +54,15 @@
  	  the real netlink socket.
  	  This is a backward compatibility option, choose Y for now.
@@ -251,9 +256,9 @@ diff -urN linux-2.6.8.1-orig/net/Kconfig linux-2.6.8.1-netcap/net/Kconfig
  config UNIX
  	tristate "Unix domain sockets"
  	---help---
-diff -urN linux-2.6.8.1-orig/net/ipv4/ip_input.c linux-2.6.8.1-netcap/net/ipv4/ip_input.c
+diff -urN --ignore-all-space linux-2.6.8.1-orig/net/ipv4/ip_input.c linux-2.6.8.1-netcap/net/ipv4/ip_input.c
 --- linux-2.6.8.1-orig/net/ipv4/ip_input.c	2004-08-14 03:54:48.000000000 -0700
-+++ linux-2.6.8.1-netcap/net/ipv4/ip_input.c	2005-03-16 19:37:37.000000000 -0800
++++ linux-2.6.8.1-netcap/net/ipv4/ip_input.c	2005-04-29 09:40:39.618459392 -0700
 @@ -196,7 +196,7 @@
  	return 0;
  }
@@ -268,9 +273,9 @@ diff -urN linux-2.6.8.1-orig/net/ipv4/ip_input.c linux-2.6.8.1-netcap/net/ipv4/i
  EXPORT_SYMBOL(ip_rcv);
  EXPORT_SYMBOL(ip_statistics);
 +EXPORT_SYMBOL(ip_local_deliver_finish);
-diff -urN linux-2.6.8.1-orig/net/ipv4/ip_output.c linux-2.6.8.1-netcap/net/ipv4/ip_output.c
+diff -urN --ignore-all-space linux-2.6.8.1-orig/net/ipv4/ip_output.c linux-2.6.8.1-netcap/net/ipv4/ip_output.c
 --- linux-2.6.8.1-orig/net/ipv4/ip_output.c	2004-08-14 03:56:23.000000000 -0700
-+++ linux-2.6.8.1-netcap/net/ipv4/ip_output.c	2005-03-16 20:12:08.000000000 -0800
++++ linux-2.6.8.1-netcap/net/ipv4/ip_output.c	2005-04-29 09:40:39.619459314 -0700
 @@ -162,6 +162,10 @@
  	ip_send_check(iph);
  
@@ -323,24 +328,21 @@ diff -urN linux-2.6.8.1-orig/net/ipv4/ip_output.c linux-2.6.8.1-netcap/net/ipv4/
  	iph->protocol = sk->sk_protocol;
  	iph->saddr = rt->rt_src;
  	iph->daddr = rt->rt_dst;
-diff -urN linux-2.6.8.1-orig/net/ipv4/ip_sockglue.c linux-2.6.8.1-netcap/net/ipv4/ip_sockglue.c
+diff -urN --ignore-all-space linux-2.6.8.1-orig/net/ipv4/ip_sockglue.c linux-2.6.8.1-netcap/net/ipv4/ip_sockglue.c
 --- linux-2.6.8.1-orig/net/ipv4/ip_sockglue.c	2004-08-14 03:55:09.000000000 -0700
-+++ linux-2.6.8.1-netcap/net/ipv4/ip_sockglue.c	2005-03-16 20:21:59.000000000 -0800
-@@ -50,6 +50,13 @@
++++ linux-2.6.8.1-netcap/net/ipv4/ip_sockglue.c	2005-04-29 10:00:15.049156341 -0700
+@@ -50,6 +50,10 @@
  #define IP_CMSG_TOS		4
  #define IP_CMSG_RECVOPTS	8
  #define IP_CMSG_RETOPTS		16
 +#ifdef CONFIG_NETCAP
-+/*
-+ * See udp.c for use of UDP_CMSG_RECVDPORT
-+ */
-+#define UDP_CMSG_RECVDPORT     32
++/* 32 is udp_cmsg_recvhdr */
 +#define IP_CMSG_NFMARK		64 /* see comment on this define below */
 +#endif
  
  /*
   *	SOL_IP control messages.
-@@ -72,6 +79,14 @@
+@@ -72,6 +76,14 @@
  	put_cmsg(msg, SOL_IP, IP_PKTINFO, sizeof(info), &info);
  }
  
@@ -355,7 +357,7 @@ diff -urN linux-2.6.8.1-orig/net/ipv4/ip_sockglue.c linux-2.6.8.1-netcap/net/ipv
  static void ip_cmsg_recv_ttl(struct msghdr *msg, struct sk_buff *skb)
  {
  	int ttl = skb->nh.iph->ttl;
-@@ -138,6 +153,13 @@
+@@ -138,6 +150,13 @@
  
  	if (flags & 1)
  		ip_cmsg_recv_retopts(msg, skb);
@@ -369,7 +371,7 @@ diff -urN linux-2.6.8.1-orig/net/ipv4/ip_sockglue.c linux-2.6.8.1-netcap/net/ipv
  }
  
  int ip_cmsg_send(struct msghdr *msg, struct ipcm_cookie *ipc)
-@@ -170,7 +192,52 @@
+@@ -170,7 +189,52 @@
  			ipc->addr = info->ipi_spec_dst.s_addr;
  			break;
  		}
@@ -422,7 +424,7 @@ diff -urN linux-2.6.8.1-orig/net/ipv4/ip_sockglue.c linux-2.6.8.1-netcap/net/ipv
  			return -EINVAL;
  		}
  	}
-@@ -394,10 +461,13 @@
+@@ -394,10 +458,13 @@
  
  	if (((1<<optname) & ((1<<IP_PKTINFO) | (1<<IP_RECVTTL) | 
  			    (1<<IP_RECVOPTS) | (1<<IP_RECVTOS) | 
@@ -437,7 +439,7 @@ diff -urN linux-2.6.8.1-orig/net/ipv4/ip_sockglue.c linux-2.6.8.1-netcap/net/ipv
  				optname == IP_MULTICAST_TTL || 
  				optname == IP_MULTICAST_LOOP) { 
  		if (optlen >= sizeof(int)) {
-@@ -459,6 +529,34 @@
+@@ -459,6 +526,34 @@
  			else
  				inet->cmsg_flags &= ~IP_CMSG_PKTINFO;
  			break;
@@ -472,7 +474,7 @@ diff -urN linux-2.6.8.1-orig/net/ipv4/ip_sockglue.c linux-2.6.8.1-netcap/net/ipv
  		case IP_RECVTTL:
  			if (val)
  				inet->cmsg_flags |=  IP_CMSG_TTL;
-@@ -523,6 +621,16 @@
+@@ -523,6 +618,16 @@
  			if (!val)
  				skb_queue_purge(&sk->sk_error_queue);
  			break;
@@ -489,7 +491,7 @@ diff -urN linux-2.6.8.1-orig/net/ipv4/ip_sockglue.c linux-2.6.8.1-netcap/net/ipv
  		case IP_MULTICAST_TTL:
  			if (sk->sk_type == SOCK_STREAM)
  				goto e_inval;
-@@ -923,6 +1031,46 @@
+@@ -923,6 +1028,46 @@
  					return -EFAULT;
  				return 0;
  			}
@@ -536,9 +538,9 @@ diff -urN linux-2.6.8.1-orig/net/ipv4/ip_sockglue.c linux-2.6.8.1-netcap/net/ipv
  		case IP_PKTINFO:
  			val = (inet->cmsg_flags & IP_CMSG_PKTINFO) != 0;
  			break;
-diff -urN linux-2.6.8.1-orig/net/ipv4/netfilter/Kconfig linux-2.6.8.1-netcap/net/ipv4/netfilter/Kconfig
+diff -urN --ignore-all-space linux-2.6.8.1-orig/net/ipv4/netfilter/Kconfig linux-2.6.8.1-netcap/net/ipv4/netfilter/Kconfig
 --- linux-2.6.8.1-orig/net/ipv4/netfilter/Kconfig	2004-08-14 03:56:00.000000000 -0700
-+++ linux-2.6.8.1-netcap/net/ipv4/netfilter/Kconfig	2005-03-16 20:01:24.000000000 -0800
++++ linux-2.6.8.1-netcap/net/ipv4/netfilter/Kconfig	2005-04-29 09:40:39.620459236 -0700
 @@ -5,6 +5,15 @@
  menu "IP: Netfilter Configuration"
  	depends on INET && NETFILTER
@@ -573,9 +575,9 @@ diff -urN linux-2.6.8.1-orig/net/ipv4/netfilter/Kconfig linux-2.6.8.1-netcap/net
  config IP_NF_TARGET_LOG
  	tristate "LOG target support"
  	depends on IP_NF_IPTABLES
-diff -urN linux-2.6.8.1-orig/net/ipv4/netfilter/Makefile linux-2.6.8.1-netcap/net/ipv4/netfilter/Makefile
+diff -urN --ignore-all-space linux-2.6.8.1-orig/net/ipv4/netfilter/Makefile linux-2.6.8.1-netcap/net/ipv4/netfilter/Makefile
 --- linux-2.6.8.1-orig/net/ipv4/netfilter/Makefile	2004-08-14 03:54:51.000000000 -0700
-+++ linux-2.6.8.1-netcap/net/ipv4/netfilter/Makefile	2005-03-16 19:37:37.000000000 -0800
++++ linux-2.6.8.1-netcap/net/ipv4/netfilter/Makefile	2005-04-29 09:40:39.621459158 -0700
 @@ -19,6 +19,9 @@
  # connection tracking
  obj-$(CONFIG_IP_NF_CONNTRACK) += ip_conntrack.o
@@ -603,9 +605,9 @@ diff -urN linux-2.6.8.1-orig/net/ipv4/netfilter/Makefile linux-2.6.8.1-netcap/ne
  
  # generic ARP tables
  obj-$(CONFIG_IP_NF_ARPTABLES) += arp_tables.o
-diff -urN linux-2.6.8.1-orig/net/ipv4/netfilter/ip_nonlocal.c linux-2.6.8.1-netcap/net/ipv4/netfilter/ip_nonlocal.c
+diff -urN --ignore-all-space linux-2.6.8.1-orig/net/ipv4/netfilter/ip_nonlocal.c linux-2.6.8.1-netcap/net/ipv4/netfilter/ip_nonlocal.c
 --- linux-2.6.8.1-orig/net/ipv4/netfilter/ip_nonlocal.c	1969-12-31 16:00:00.000000000 -0800
-+++ linux-2.6.8.1-netcap/net/ipv4/netfilter/ip_nonlocal.c	2005-03-16 19:37:37.000000000 -0800
++++ linux-2.6.8.1-netcap/net/ipv4/netfilter/ip_nonlocal.c	2005-04-29 09:40:39.621459158 -0700
 @@ -0,0 +1,71 @@
 +#include <linux/config.h>
 +#include <linux/types.h>
@@ -678,9 +680,9 @@ diff -urN linux-2.6.8.1-orig/net/ipv4/netfilter/ip_nonlocal.c linux-2.6.8.1-netc
 +module_exit(fini);
 +
 +
-diff -urN linux-2.6.8.1-orig/net/ipv4/netfilter/ipt_DIVERT.c linux-2.6.8.1-netcap/net/ipv4/netfilter/ipt_DIVERT.c
+diff -urN --ignore-all-space linux-2.6.8.1-orig/net/ipv4/netfilter/ipt_DIVERT.c linux-2.6.8.1-netcap/net/ipv4/netfilter/ipt_DIVERT.c
 --- linux-2.6.8.1-orig/net/ipv4/netfilter/ipt_DIVERT.c	1969-12-31 16:00:00.000000000 -0800
-+++ linux-2.6.8.1-netcap/net/ipv4/netfilter/ipt_DIVERT.c	2005-03-16 19:37:37.000000000 -0800
++++ linux-2.6.8.1-netcap/net/ipv4/netfilter/ipt_DIVERT.c	2005-04-29 09:40:39.621459158 -0700
 @@ -0,0 +1,90 @@
 +/*
 + * This is a module which is used for diverting packets.
@@ -772,9 +774,9 @@ diff -urN linux-2.6.8.1-orig/net/ipv4/netfilter/ipt_DIVERT.c linux-2.6.8.1-netca
 +module_init(init);
 +module_exit(fini);
 +MODULE_LICENSE("GPL");
-diff -urN linux-2.6.8.1-orig/net/ipv4/netfilter/ipt_ROUTE.c linux-2.6.8.1-netcap/net/ipv4/netfilter/ipt_ROUTE.c
+diff -urN --ignore-all-space linux-2.6.8.1-orig/net/ipv4/netfilter/ipt_ROUTE.c linux-2.6.8.1-netcap/net/ipv4/netfilter/ipt_ROUTE.c
 --- linux-2.6.8.1-orig/net/ipv4/netfilter/ipt_ROUTE.c	1969-12-31 16:00:00.000000000 -0800
-+++ linux-2.6.8.1-netcap/net/ipv4/netfilter/ipt_ROUTE.c	2005-03-16 19:37:37.000000000 -0800
++++ linux-2.6.8.1-netcap/net/ipv4/netfilter/ipt_ROUTE.c	2005-04-29 09:40:39.622459080 -0700
 @@ -0,0 +1,393 @@
 +/*
 + * This implements the ROUTE target, which enables you to setup unusual
@@ -1169,9 +1171,9 @@ diff -urN linux-2.6.8.1-orig/net/ipv4/netfilter/ipt_ROUTE.c linux-2.6.8.1-netcap
 +
 +module_init(init);
 +module_exit(fini);
-diff -urN linux-2.6.8.1-orig/net/ipv4/netfilter/ipt_bitmark.c linux-2.6.8.1-netcap/net/ipv4/netfilter/ipt_bitmark.c
+diff -urN --ignore-all-space linux-2.6.8.1-orig/net/ipv4/netfilter/ipt_bitmark.c linux-2.6.8.1-netcap/net/ipv4/netfilter/ipt_bitmark.c
 --- linux-2.6.8.1-orig/net/ipv4/netfilter/ipt_bitmark.c	1969-12-31 16:00:00.000000000 -0800
-+++ linux-2.6.8.1-netcap/net/ipv4/netfilter/ipt_bitmark.c	2005-03-16 19:37:37.000000000 -0800
++++ linux-2.6.8.1-netcap/net/ipv4/netfilter/ipt_bitmark.c	2005-04-29 09:40:39.622459080 -0700
 @@ -0,0 +1,98 @@
 +/* IP tables module for bit matching the value of the nfmark 
 + *
@@ -1271,9 +1273,9 @@ diff -urN linux-2.6.8.1-orig/net/ipv4/netfilter/ipt_bitmark.c linux-2.6.8.1-netc
 +
 +module_init(init);
 +module_exit(fini);
-diff -urN linux-2.6.8.1-orig/net/ipv4/raw.c linux-2.6.8.1-netcap/net/ipv4/raw.c
+diff -urN --ignore-all-space linux-2.6.8.1-orig/net/ipv4/raw.c linux-2.6.8.1-netcap/net/ipv4/raw.c
 --- linux-2.6.8.1-orig/net/ipv4/raw.c	2004-08-14 03:55:33.000000000 -0700
-+++ linux-2.6.8.1-netcap/net/ipv4/raw.c	2005-03-16 19:37:37.000000000 -0800
++++ linux-2.6.8.1-netcap/net/ipv4/raw.c	2005-04-29 09:40:39.623459002 -0700
 @@ -392,6 +392,10 @@
  
  	saddr = ipc.addr;
@@ -1295,9 +1297,9 @@ diff -urN linux-2.6.8.1-orig/net/ipv4/raw.c linux-2.6.8.1-netcap/net/ipv4/raw.c
  
  	if (MULTICAST(daddr)) {
  		if (!ipc.oif)
-diff -urN linux-2.6.8.1-orig/net/ipv4/route.c linux-2.6.8.1-netcap/net/ipv4/route.c
+diff -urN --ignore-all-space linux-2.6.8.1-orig/net/ipv4/route.c linux-2.6.8.1-netcap/net/ipv4/route.c
 --- linux-2.6.8.1-orig/net/ipv4/route.c	2004-08-14 03:56:23.000000000 -0700
-+++ linux-2.6.8.1-netcap/net/ipv4/route.c	2005-03-16 19:37:37.000000000 -0800
++++ linux-2.6.8.1-netcap/net/ipv4/route.c	2005-04-29 09:40:39.625458846 -0700
 @@ -1963,8 +1963,19 @@
  
  		/* It is equivalent to inet_addr_type(saddr) == RTN_LOCAL */
@@ -1326,9 +1328,9 @@ diff -urN linux-2.6.8.1-orig/net/ipv4/route.c linux-2.6.8.1-netcap/net/ipv4/rout
  		    && (MULTICAST(oldflp->fl4_dst) || oldflp->fl4_dst == 0xFFFFFFFF)) {
  			/* Special hack: user can direct multicasts
  			   and limited broadcast via necessary interface
-diff -urN linux-2.6.8.1-orig/net/ipv4/tcp_input.c linux-2.6.8.1-netcap/net/ipv4/tcp_input.c
+diff -urN --ignore-all-space linux-2.6.8.1-orig/net/ipv4/tcp_input.c linux-2.6.8.1-netcap/net/ipv4/tcp_input.c
 --- linux-2.6.8.1-orig/net/ipv4/tcp_input.c	2004-08-14 03:55:48.000000000 -0700
-+++ linux-2.6.8.1-netcap/net/ipv4/tcp_input.c	2005-03-16 19:37:37.000000000 -0800
++++ linux-2.6.8.1-netcap/net/ipv4/tcp_input.c	2005-04-29 09:40:39.627458690 -0700
 @@ -4428,6 +4428,10 @@
  		 */
  		tp->rcv_nxt = TCP_SKB_CB(skb)->seq + 1;
@@ -1340,9 +1342,9 @@ diff -urN linux-2.6.8.1-orig/net/ipv4/tcp_input.c linux-2.6.8.1-netcap/net/ipv4/
  
  		/* RFC1323: The window in SYN & SYN/ACK segments is
  		 * never scaled.
-diff -urN linux-2.6.8.1-orig/net/ipv4/tcp_ipv4.c linux-2.6.8.1-netcap/net/ipv4/tcp_ipv4.c
+diff -urN --ignore-all-space linux-2.6.8.1-orig/net/ipv4/tcp_ipv4.c linux-2.6.8.1-netcap/net/ipv4/tcp_ipv4.c
 --- linux-2.6.8.1-orig/net/ipv4/tcp_ipv4.c	2004-08-14 03:55:10.000000000 -0700
-+++ linux-2.6.8.1-netcap/net/ipv4/tcp_ipv4.c	2005-03-16 19:37:37.000000000 -0800
++++ linux-2.6.8.1-netcap/net/ipv4/tcp_ipv4.c	2005-04-29 09:40:39.629458534 -0700
 @@ -1578,6 +1578,9 @@
  		goto exit;
  
@@ -1410,9 +1412,9 @@ diff -urN linux-2.6.8.1-orig/net/ipv4/tcp_ipv4.c linux-2.6.8.1-netcap/net/ipv4/t
  /* With per-bucket locks this operation is not-atomic, so that
   * this version is not worse.
   */
-diff -urN linux-2.6.8.1-orig/net/ipv4/tcp_minisocks.c linux-2.6.8.1-netcap/net/ipv4/tcp_minisocks.c
+diff -urN --ignore-all-space linux-2.6.8.1-orig/net/ipv4/tcp_minisocks.c linux-2.6.8.1-netcap/net/ipv4/tcp_minisocks.c
 --- linux-2.6.8.1-orig/net/ipv4/tcp_minisocks.c	2004-08-14 03:55:48.000000000 -0700
-+++ linux-2.6.8.1-netcap/net/ipv4/tcp_minisocks.c	2005-03-16 19:37:37.000000000 -0800
++++ linux-2.6.8.1-netcap/net/ipv4/tcp_minisocks.c	2005-04-29 09:40:39.630458456 -0700
 @@ -741,6 +741,10 @@
  		newtp->snd_nxt = req->snt_isn + 1;
  		newtp->snd_una = req->snt_isn + 1;
@@ -1424,9 +1426,9 @@ diff -urN linux-2.6.8.1-orig/net/ipv4/tcp_minisocks.c linux-2.6.8.1-netcap/net/i
  
  		tcp_prequeue_init(newtp);
  
-diff -urN linux-2.6.8.1-orig/net/ipv4/tcp_output.c linux-2.6.8.1-netcap/net/ipv4/tcp_output.c
+diff -urN --ignore-all-space linux-2.6.8.1-orig/net/ipv4/tcp_output.c linux-2.6.8.1-netcap/net/ipv4/tcp_output.c
 --- linux-2.6.8.1-orig/net/ipv4/tcp_output.c	2004-08-14 03:55:47.000000000 -0700
-+++ linux-2.6.8.1-netcap/net/ipv4/tcp_output.c	2005-03-16 19:37:37.000000000 -0800
++++ linux-2.6.8.1-netcap/net/ipv4/tcp_output.c	2005-04-29 09:40:39.631458378 -0700
 @@ -299,6 +299,11 @@
  		if (skb->len != tcp_header_size)
  			tcp_event_data_sent(tp, skb, sk);
@@ -1439,22 +1441,25 @@ diff -urN linux-2.6.8.1-orig/net/ipv4/tcp_output.c linux-2.6.8.1-netcap/net/ipv4
  		TCP_INC_STATS(TCP_MIB_OUTSEGS);
  
  		err = tp->af_specific->queue_xmit(skb, 0);
-diff -urN linux-2.6.8.1-orig/net/ipv4/udp.c linux-2.6.8.1-netcap/net/ipv4/udp.c
+diff -urN --ignore-all-space linux-2.6.8.1-orig/net/ipv4/udp.c linux-2.6.8.1-netcap/net/ipv4/udp.c
 --- linux-2.6.8.1-orig/net/ipv4/udp.c	2004-08-14 03:54:50.000000000 -0700
-+++ linux-2.6.8.1-netcap/net/ipv4/udp.c	2005-03-16 20:25:35.000000000 -0800
-@@ -108,6 +108,29 @@
++++ linux-2.6.8.1-netcap/net/ipv4/udp.c	2005-04-29 09:57:42.838931261 -0700
+@@ -108,6 +108,32 @@
  #include <net/checksum.h>
  #include <net/xfrm.h>
  
 +#ifdef CONFIG_NETCAP
-+/*
-+ * See ip_sockglue.c for potential conflicts with UDP_CMSG_RECVDPORT
-+ */
-+#define UDP_CMSG_RECVDPORT     32
 +
-+static void udp_cmsg_recv_dport(struct msghdr *msg, struct sk_buff *skb)
++static void udp_cmsg_recv_hdr(struct msghdr *msg, struct sk_buff *skb)
 +{
-+    put_cmsg(msg, SOL_UDP, UDP_RECVDPORT, sizeof(unsigned short), &skb->h.uh->dest);
++    int size = ((skb->nh.iph->ihl) * 4) + sizeof (struct udphdr);
++
++    if (skb->len < size) {
++        printk("(UDP CMSG) short packet\n");
++        return;
++    }
++
++    put_cmsg(msg, SOL_UDP, UDP_RECVHDR, size, &skb->nh.iph);
 +}
 +
 +void udp_cmsg_recv(struct msghdr *msg, struct sk_buff *skb)
@@ -1462,8 +1467,8 @@ diff -urN linux-2.6.8.1-orig/net/ipv4/udp.c linux-2.6.8.1-netcap/net/ipv4/udp.c
 +	struct inet_opt *inet = inet_sk(skb->sk);
 +	unsigned flags = inet->cmsg_flags;
 +    
-+    if (flags & UDP_CMSG_RECVDPORT)
-+        udp_cmsg_recv_dport(msg, skb);
++    if (flags & UDP_CMSG_RECVHDR)
++        udp_cmsg_recv_hdr(msg, skb);
 +
 +    ip_cmsg_recv(msg, skb);
 +}
@@ -1472,7 +1477,7 @@ diff -urN linux-2.6.8.1-orig/net/ipv4/udp.c linux-2.6.8.1-netcap/net/ipv4/udp.c
  /*
   *	Snmp MIB for the UDP layer
   */
-@@ -216,6 +239,34 @@
+@@ -216,6 +242,34 @@
  	write_unlock_bh(&udp_hash_lock);
  }
  
@@ -1507,7 +1512,7 @@ diff -urN linux-2.6.8.1-orig/net/ipv4/udp.c linux-2.6.8.1-netcap/net/ipv4/udp.c
  /* UDP is nearly always wildcards out the wazoo, it makes no sense to try
   * harder than this. -DaveM
   */
-@@ -488,7 +539,7 @@
+@@ -488,7 +542,7 @@
  	int free = 0;
  	int connected = 0;
  	u32 daddr, faddr, saddr;
@@ -1516,7 +1521,7 @@ diff -urN linux-2.6.8.1-orig/net/ipv4/udp.c linux-2.6.8.1-netcap/net/ipv4/udp.c
  	u8  tos;
  	int err;
  	int corkreq = up->corkflag || msg->msg_flags&MSG_MORE;
-@@ -550,9 +601,20 @@
+@@ -550,9 +604,20 @@
    	}
  	ipc.addr = inet->saddr;
  
@@ -1537,7 +1542,7 @@ diff -urN linux-2.6.8.1-orig/net/ipv4/udp.c linux-2.6.8.1-netcap/net/ipv4/udp.c
  		if (err)
  			return err;
  		if (ipc.opt)
-@@ -562,6 +624,11 @@
+@@ -562,6 +627,11 @@
  	if (!ipc.opt)
  		ipc.opt = inet->opt;
  
@@ -1549,7 +1554,7 @@ diff -urN linux-2.6.8.1-orig/net/ipv4/udp.c linux-2.6.8.1-netcap/net/ipv4/udp.c
  	saddr = ipc.addr;
  	ipc.addr = faddr = daddr;
  
-@@ -572,6 +639,10 @@
+@@ -572,6 +642,10 @@
  		connected = 0;
  	}
  	tos = RT_TOS(inet->tos);
@@ -1560,7 +1565,7 @@ diff -urN linux-2.6.8.1-orig/net/ipv4/udp.c linux-2.6.8.1-netcap/net/ipv4/udp.c
  	if (sk->sk_localroute || (msg->msg_flags & MSG_DONTROUTE) || 
  	    (ipc.opt && ipc.opt->is_strictroute)) {
  		tos |= RTO_ONLINK;
-@@ -597,7 +668,7 @@
+@@ -597,7 +671,7 @@
  						.tos = tos } },
  				    .proto = IPPROTO_UDP,
  				    .uli_u = { .ports =
@@ -1569,7 +1574,7 @@ diff -urN linux-2.6.8.1-orig/net/ipv4/udp.c linux-2.6.8.1-netcap/net/ipv4/udp.c
  						 .dport = dport } } };
  		err = ip_route_output_flow(&rt, &fl, sk, !(msg->msg_flags&MSG_DONTWAIT));
  		if (err)
-@@ -635,7 +706,7 @@
+@@ -635,7 +709,7 @@
  	inet->cork.fl.fl4_dst = daddr;
  	inet->cork.fl.fl_ip_dport = dport;
  	inet->cork.fl.fl4_src = saddr;
@@ -1578,7 +1583,7 @@ diff -urN linux-2.6.8.1-orig/net/ipv4/udp.c linux-2.6.8.1-netcap/net/ipv4/udp.c
  	up->pending = AF_INET;
  
  do_append_data:
-@@ -789,6 +860,7 @@
+@@ -789,6 +863,7 @@
  
  try_again:
  	skb = skb_recv_datagram(sk, flags, noblock, &err);
@@ -1586,7 +1591,7 @@ diff -urN linux-2.6.8.1-orig/net/ipv4/udp.c linux-2.6.8.1-netcap/net/ipv4/udp.c
  	if (!skb)
  		goto out;
    
-@@ -827,7 +899,11 @@
+@@ -827,7 +902,11 @@
  		memset(sin->sin_zero, 0, sizeof(sin->sin_zero));
    	}
  	if (inet->cmsg_flags)
@@ -1598,7 +1603,7 @@ diff -urN linux-2.6.8.1-orig/net/ipv4/udp.c linux-2.6.8.1-netcap/net/ipv4/udp.c
  
  	err = copied;
  	if (flags & MSG_TRUNC)
-@@ -1140,10 +1216,17 @@
+@@ -1140,10 +1219,17 @@
  	if (udp_checksum_init(skb, uh, ulen, saddr, daddr) < 0)
  		goto csum_error;
  
@@ -1617,28 +1622,28 @@ diff -urN linux-2.6.8.1-orig/net/ipv4/udp.c linux-2.6.8.1-netcap/net/ipv4/udp.c
  
  	if (sk != NULL) {
  		int ret = udp_queue_rcv_skb(sk, skb);
-@@ -1244,6 +1327,14 @@
+@@ -1244,6 +1330,14 @@
  			release_sock(sk);
  		}
  		break;
 +#ifdef CONFIG_NETCAP
-+    case UDP_RECVDPORT: 
++    case UDP_RECVHDR: 
 +        if (val)
-+            inet_sk(sk)->cmsg_flags |= UDP_CMSG_RECVDPORT;
++            inet_sk(sk)->cmsg_flags |= UDP_CMSG_RECVHDR;
 +        else
-+            inet_sk(sk)->cmsg_flags &= ~UDP_CMSG_RECVDPORT;
++            inet_sk(sk)->cmsg_flags &= ~UDP_CMSG_RECVHDR;
 +        break;
 +#endif
  		
  	case UDP_ENCAP:
  		switch (val) {
-@@ -1287,6 +1378,11 @@
+@@ -1287,6 +1381,11 @@
  	case UDP_CORK:
  		val = up->corkflag;
  		break;
 +#ifdef CONFIG_NETCAP
-+    case UDP_RECVDPORT:
-+        val = ((inet_sk(sk)->cmsg_flags & UDP_CMSG_RECVDPORT) != 0);
++    case UDP_RECVHDR:
++        val = ((inet_sk(sk)->cmsg_flags & UDP_CMSG_RECVHDR) != 0);
 +        break;
 +#endif
  
