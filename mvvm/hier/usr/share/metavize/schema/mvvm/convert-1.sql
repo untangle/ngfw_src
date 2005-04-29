@@ -30,6 +30,8 @@ INSERT INTO transform_preferences
 INSERT INTO transform_persistent_state
     (SELECT id, tid, name, public_key, target_state FROM transform_desc);
 
+UPDATE transform_preferences SET id = nextval('hibernate_sequence');
+
 ALTER TABLE transform_args DROP CONSTRAINT FK1C0835F0A8A3B796;
 ALTER TABLE transform_desc DROP CONSTRAINT FK1C0963A41446F;
 DROP TABLE transform_desc;
