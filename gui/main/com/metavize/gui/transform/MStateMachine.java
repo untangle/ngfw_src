@@ -171,6 +171,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
 	public RemoveThread(boolean removeAll){
 	    this.removeAll = removeAll;
 	    setRemovingView(false);
+            mTransformControlsJPanel.collapseControlPanel();   
 	    this.start();
 	}
 	public void run(){
