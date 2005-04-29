@@ -1459,7 +1459,7 @@ diff -urN --ignore-all-space linux-2.6.8.1-orig/net/ipv4/udp.c linux-2.6.8.1-net
 +        return;
 +    }
 +
-+    put_cmsg(msg, SOL_UDP, UDP_RECVHDR, size, &skb->nh.iph);
++    put_cmsg(msg, SOL_UDP, UDP_RECVHDR, size, skb->nh.iph);
 +}
 +
 +void udp_cmsg_recv(struct msghdr *msg, struct sk_buff *skb)
