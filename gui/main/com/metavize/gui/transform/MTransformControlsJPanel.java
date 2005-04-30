@@ -342,7 +342,25 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
 
     private void expandJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_expandJButtonActionPerformed
 	if( !MTransformControlsJPanel.this.expandJDialog.isVisible() ){
-	    new ExpandThread();
+	    // change layout
+            MTransformControlsJPanel.this.socketJPanel.remove(contentJPanel);
+            MTransformControlsJPanel.this.socketJPanel.revalidate();
+            //MTransformControlsJPanel.this.socketJPanel.repaint();
+            MTransformControlsJPanel.this.expandJDialog.getContentPane().add(contentJPanel, contentConstraints, 0);
+
+            // place new window in the center of parent window and show
+            MTransformControlsJPanel.this.expandJDialog.setBounds( Util.generateCenteredBounds(Util.getMMainJFrame().getBounds(), expandJDialog.getWidth(), expandJDialog.getHeight()) );
+	    expandJButton.setText("<html><b>Collapse</b> Settings</html>");
+            MTransformControlsJPanel.this.expandJDialog.setVisible(true);
+
+            // cleanup after new window is closed
+	    expandJButton.setText("<html><b>Expand</b> Settings</html>");
+            MTransformControlsJPanel.this.expandJDialog.getContentPane().remove(contentJPanel);
+            MTransformControlsJPanel.this.socketJPanel.add(contentJPanel);
+            //MTransformControlsJPanel.this.socketJPanel.validate();
+            //MTransformControlsJPanel.this.socketJPanel.repaint();
+            //contentJPanel.revalidate();
+            MTransformControlsJPanel.this.socketJPanel.revalidate();
 	}
 	else{
 	    MTransformControlsJPanel.this.expandJDialog.setVisible(false);
@@ -364,33 +382,7 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
     private javax.swing.JPanel tintJPanel;
     // End of variables declaration//GEN-END:variables
 
-    private class ExpandThread extends Thread {
-	public ExpandThread(){
-	    run();
-            //SwingUtilities.invokeLater( this );
-	}
-        public void run(){
-            // change layout
-            MTransformControlsJPanel.this.socketJPanel.remove(contentJPanel);
-            MTransformControlsJPanel.this.socketJPanel.validate();
-            MTransformControlsJPanel.this.socketJPanel.repaint();
-            MTransformControlsJPanel.this.expandJDialog.getContentPane().add(contentJPanel, contentConstraints, 0);
 
-            // place new window in the center of parent window and show
-            MTransformControlsJPanel.this.expandJDialog.setBounds( Util.generateCenteredBounds(Util.getMMainJFrame().getBounds(), expandJDialog.getWidth(), expandJDialog.getHeight()) );
-	    expandJButton.setText("<html><b>Collapse</b> Settings</html>");
-            MTransformControlsJPanel.this.expandJDialog.setVisible(true);
-
-            // cleanup after new window is closed
-	    expandJButton.setText("<html><b>Expand</b> Settings</html>");
-            MTransformControlsJPanel.this.expandJDialog.getContentPane().remove(contentJPanel);
-            MTransformControlsJPanel.this.socketJPanel.add(contentJPanel);
-            //MTransformControlsJPanel.this.socketJPanel.validate();
-            //MTransformControlsJPanel.this.socketJPanel.repaint();
-            //contentJPanel.revalidate();
-            MTransformControlsJPanel.this.socketJPanel.revalidate();
-        }
-    }
 
 }
 
