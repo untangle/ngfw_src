@@ -810,6 +810,8 @@ class UpgradeTableModel extends MSortedTableModel {
 
         Vector rowVector;
         for(int i=0; i<mackageDesc.length; i++){
+            if( mackageDesc[i].getType() == MackageDesc.CASING_TYPE )
+                continue;
         try{
             System.err.println("TRYING TO GENERATE: " + mackageDesc[i].getName() );
         rowVector = new Vector();
