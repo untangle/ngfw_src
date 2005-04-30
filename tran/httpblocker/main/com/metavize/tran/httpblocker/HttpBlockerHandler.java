@@ -68,7 +68,6 @@ public class HttpBlockerHandler extends HttpStateMachine
 
     protected TokenResult doRequestLine(RequestLine requestLine)
     {
-	System.out.println("CLASS LOADER: " + Thread.currentThread().getContextClassLoader());
         logger.debug("in doRequestLine: " + requestLine);
 
         this.requestLine = requestLine;
