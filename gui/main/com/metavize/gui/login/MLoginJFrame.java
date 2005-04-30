@@ -30,7 +30,7 @@ import com.metavize.mvvm.security.*;
  */
 public class MLoginJFrame extends javax.swing.JFrame {
 
-    private static final int RETRY_COUNT = 5;
+    private static final int RETRY_COUNT = 6;
 
     private MvvmContext mvvmContext;
     private String args[];
@@ -57,9 +57,8 @@ public class MLoginJFrame extends javax.swing.JFrame {
     }
 
 
-    private static String resetLoginMessage;
-    public void resetLogin(String message){
-	resetLoginMessage = message;
+
+    public void resetLogin(final String message){
 	SwingUtilities.invokeLater( new Runnable() {
 		public void run(){
                     //inputJPanel.setVisible(true);
@@ -69,7 +68,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
 		    passJPasswordField.setEnabled(true);
 		    serverJTextField.setEnabled(true);
                     protocolJTextField.setEnabled(true);
-		    statusJProgressBar.setString(resetLoginMessage);
+		    statusJProgressBar.setString(message);
 		    statusJProgressBar.setValue(0);
 		    statusJProgressBar.setIndeterminate(false);
 		} } );
@@ -486,7 +485,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
                 // ATTEMPT TO LOG IN
                 int retryLogin = 0;
                 while( retryLogin < RETRY_COUNT ){
-
+		    retryLogin++;
                     try{
                         mvvmContext = MvvmRemoteContextFactory.login( Util.getServerCodeBase().getHost(),
 								     loginJTextField.getText(),
@@ -528,27 +527,26 @@ public class MLoginJFrame extends javax.swing.JFrame {
 		    }
 		    catch(com.metavize.mvvm.client.InvocationTargetExpiredException e){
 			Util.handleExceptionNoRestart("Error:", e);
-			retryLogin++;
 		    }
 		    catch(com.metavize.mvvm.client.InvocationConnectionException e){
 			Util.handleExceptionNoRestart("Error:", e);
-			retryLogin++;
 		    }
 		    catch(MvvmConnectException e){
 			Util.handleExceptionNoRestart("Error:", e);
-			retryLogin++;
 		    }
 		    catch(Exception e){
 			Util.handleExceptionNoRestart("Error:", e);
-			retryLogin++;
 		    }
                     finally{
-			if( retryLogin == RETRY_COUNT ){
+			if( retryLogin >= RETRY_COUNT ){
 			    resetLogin("Error: Unable to connect to server.");
 			    return;
 			}
-                        else if( retryLogin > 0 ){
-			    statusJProgressBar.setString( statusJProgressBar.getString() + "(retrying: " + retryLogin + ")" );
+                        else if( retryLogin > 1 ){
+			    final int retry = retryLogin;
+			    SwingUtilities.invokeLater( new Runnable(){ public void run(){
+				statusJProgressBar.setString( statusJProgressBar.getString() + "(retrying: " + retry + ")" );
+			    }});
 			}
                     }
 		}
@@ -556,6 +554,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
                 // ATTEMPT TO LOAD CLIENT
                 int retryClient = 0;
                 while( retryClient < RETRY_COUNT ){
+		    retryClient++;
                     try{
 
                         // load GUI with proper context
@@ -596,24 +595,24 @@ public class MLoginJFrame extends javax.swing.JFrame {
                     
 		    catch(com.metavize.mvvm.client.InvocationTargetExpiredException e){
 			Util.handleExceptionNoRestart("Error:", e);
-			retryClient++;
 		    }
 		    catch(com.metavize.mvvm.client.InvocationConnectionException e){
 			Util.handleExceptionNoRestart("Error:", e);
-			retryClient++;
 		    }
 		    catch(Exception e){
 			Util.handleExceptionNoRestart("Error:", e);
-			retryClient++;
 		    }
                     finally{
-			if(retryClient == RETRY_COUNT){
+			if(retryClient >= RETRY_COUNT){
 			    resetLogin("Error: Unable to launch client.");
 			    reshowLogin();
 			    return;
 			}
-			else if( retryClient > 0 ){
-			    statusJProgressBar.setString( statusJProgressBar.getString() + "(retrying: " + retryClient + ")" );
+			else if( retryClient > 1 ){
+			    final int retry = retryClient;
+			    SwingUtilities.invokeLater( new Runnable(){ public void run(){
+				statusJProgressBar.setString( statusJProgressBar.getString() + "(retrying: " + retry + ")" );
+			    }});
 			}			
                     }
 		}
