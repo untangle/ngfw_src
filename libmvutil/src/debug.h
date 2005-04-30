@@ -10,11 +10,11 @@
 #ifdef DEBUG_ON
 #include <stdio.h>
 
+extern int  _debug_init(void);
+
 #ifndef DEBUG_PKG
 #error You need to define DEBUG_PKG (to an integer <255) to use debug
 #endif
-
-extern int  _debug_init(void);
 
 /**
  * usage: like printf except the first argument is the debug level 

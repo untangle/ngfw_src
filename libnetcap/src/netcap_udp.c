@@ -185,7 +185,7 @@ int  netcap_udp_recvfrom (int sock, void* buf, size_t len, int flags, netcap_pkt
     
     /* Set the source interface for the packet */
     /* XXXX Should never catch packets with a mark of 0 */
-    if ( pkt->mark == 0 ) {
+    if ( pkt->nfmark == 0 ) {
         debug( 4, "Packet with mark: %d\n", pkt->nfmark );
     }
     if ( netcap_interface_mark_to_intf(pkt->nfmark,&pkt->src.intf) < 0) {

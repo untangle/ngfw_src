@@ -321,12 +321,10 @@ static int   _ht_destroy(ht_t* table)
     if (pthread_rwlock_destroy(&table->lock)<0)
         errlog(ERR_CRITICAL,"Unable to destroy hash table lock\n");
 
-#ifdef DEBUG_ON
     table->buckets = NULL;
     table->hash_func = fake_hash_func;
     table->equal_func = fake_equ_func;
     table->num_entries = 0;
-#endif
     
     return ret;
 }
