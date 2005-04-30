@@ -9,18 +9,18 @@ Package: ftp-casing
 Architecture: any
 Depends: mvvm
 XB-Price: 1000
-XB-Display-Name: FTP Decoder Ring
+XB-Display-Name: FTP Casing
 Description: The Metavize FTP casing
- The FTP Decoder allows other software appliances
+ The FTP Casing allows other software appliances
  to parse and analyze FTP traffic and documents.
 
 Package: http-casing
 Architecture: any
 Depends: mvvm
 XB-Price: 1000
-XB-Display-Name: HTTP Decoder Ring
+XB-Display-Name: HTTP Casing
 Description: The Metavize Web/http Decoder
- The HTTP Decoder allows other software appliances
+ The HTTP Casing allows other software appliances
  to parse and analyze HTTP traffic and documents.
 
 Package: airgap-transform
@@ -31,7 +31,7 @@ XB-Display-Name: Packet Attack Shield
 XB-Rack-Position: 0
 Description: The Metavize Packet Attack Shield
  The Packet Attack Shield prevents packet based attacks on
- the our network.
+ your network.
 
 Package: spyware-transform
 Architecture: any
@@ -101,7 +101,7 @@ Description: The Hauri AntiVirus
 
 Package: clam-transform
 Architecture: any
-Depends: mvvm, clamav, clamav-daemon, http-casing, ftp-casing
+Depends: mvvm, clamav, clamav-daemon, clamav-freshclam, http-casing, ftp-casing
 XB-Price: 1000
 XB-Display-Name: Clam AntiVirus
 XB-Rack-Position: 7
@@ -125,7 +125,7 @@ Description: The Metavize Rogue Protocol Control
 
 Package: nat-transform
 Architecture: any
-Depends: mvvm
+Depends: mvvm, dnsmasq
 XB-Price: 1000
 XB-Display-Name: Network Sharing
 XB-Rack-Position: 9
@@ -175,7 +175,7 @@ Description: The Metavize Client
 
 Package: mvvm
 Architecture: any
-Depends: catchall-mv, sudo, iptables-mv, restore-mv, kiosk-mv, libxml2, kernel-mv (>=2.3.0-0)
+Depends: catchall-mv, sudo, iptables-mv, restore-mv, kiosk-mv, libxml2, kernel-mv
 Pre-Depends: postgresql-mv
 Conflicts: xenon, xenon-dbg, kernel-image-2.6.8.1
 XB-Price: 0
