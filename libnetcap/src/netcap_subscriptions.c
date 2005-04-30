@@ -236,8 +236,6 @@ int netcap_subscribe (int flags, void* arg, int proto,
             sock_count = RDR_TCP_LOCALS_SOCKS;
         }
         else if (proto == IPPROTO_UDP) {
-            /* -RBS no longer needed since we are queuing packets */
-#if 0
             int one = 1;
 
             if ( unet_startlisten_on_anyport_udp( &port, &socks[0] ) < 0 ) {
@@ -263,12 +261,10 @@ int netcap_subscribe (int flags, void* arg, int proto,
                 perrlog("setsockopt");
             if (setsockopt(socks[0], SOL_IP,     IP_RETOPTS,  &one, sizeof(one)) < 0) 
                 perrlog("setsockopt");
-            if (setsockopt(socks[0], SOL_UDP,    UDP_RECVDPORT, &one, sizeof(one)) < 0) 
+            if (setsockopt(socks[0], SOL_UDP,    UDP_RECVDHDR, &one, sizeof(one)) < 0) 
                 perrlog("setsockopt");
             if (setsockopt(socks[0], SOL_IP,     IP_RECVNFMARK,  &one, sizeof(one)) < 0) 
                 perrlog("setsockopt");
-#endif
-            /* -RBS no longer needed since we are queuing packets */
         }
         else {
             return errlog(ERR_CRITICAL,"Unknown protocol\n");

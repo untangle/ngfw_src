@@ -1,6 +1,6 @@
 /* $Id$ */
-#ifndef __NETCAP_PKT_H
-#define __NETCAP_PKT_H
+#ifndef __NETCAP_UDP_H
+#define __NETCAP_UDP_H
 
 #include "libnetcap.h"
 

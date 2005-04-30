@@ -28,6 +28,7 @@
 #include "netcap_shield.h"
 #include "netcap_icmp.h"
 #include "netcap_icmp_msg.h"
+#include "netcap_ip.h"
 
 /* Cleanup at most 2 UDP packets per iteration */
 #define _ICMP_CACHE_CLEANUP_MAX 2
@@ -37,11 +38,16 @@ static int _udpsend_fd;
 static int _netcap_udp_sendto(int sock, void* buf, size_t len, int flags, netcap_pkt_t* pkt);
 
 /**
- * Queue packets have the data pointer set to the start of the IP Header, 
+ * Packets have the data pointer set to the start of the IP Header, 
  * this function advances the data pointer and ajusts the data length
  * so the data pointer is in the correct place 
  */
 static int _process_queue_pkt( netcap_pkt_t* pkt, char** full_pkt, int* full_pkt_len );
+
+/**
+ * Parse an UDP/IP header and set the received port.
+ */
+static int _parse_udp_ip_header( netcap_pkt_t* pkt, char* header, int header_len, int buf_len );
 
 /**
  * Cache a packet inside of a ICMP mailbox, this is used to respond to ICMP error messages
@@ -95,6 +101,8 @@ int  netcap_udp_recvfrom (int sock, void* buf, size_t len, int flags, netcap_pkt
     char               control[MAX_CONTROL_MSG];
     struct sockaddr_in  cli;
     int numread;
+
+    char  ip_header_len = 0;
  
     if(!buf || !pkt) return -1;
 
@@ -113,12 +121,25 @@ int  netcap_udp_recvfrom (int sock, void* buf, size_t len, int flags, netcap_pkt
         fprintf(stderr,"recvmsg error: %s\n",strerror(errno));
         return -1;
     }
-        
+
+    pkt->data     = buf;
+    pkt->data_len = numread;
+
+    if ( msg.msg_flags & MSG_CTRUNC ) {
+        errlog( ERR_WARNING, "UDP: Message truncated\n" );
+    }
+
+    if ( msg.msg_flags & MSG_TRUNC ) {
+        errlog( ERR_WARNING, "UDP: Data truncated\n" );
+    }
+
     for (cmsg = CMSG_FIRSTHDR(&msg); cmsg != NULL;cmsg = CMSG_NXTHDR(&msg, cmsg)) {
+        
         int unknown;
         struct in_pktinfo* pkti;
 
         unknown = 0;
+        
         if ( cmsg->cmsg_level == SOL_IP ) {
             switch ( cmsg->cmsg_type ) {
             case IP_PKTINFO:
@@ -128,7 +149,7 @@ int  netcap_udp_recvfrom (int sock, void* buf, size_t len, int flags, netcap_pkt
 
             case IP_TTL: pkt->ttl = *(u_char*)CMSG_DATA(cmsg); break;
             case IP_TOS: pkt->tos = *(u_char*)CMSG_DATA(cmsg); break;
-            case IP_RECVNFMARK: pkt->nfmark = *(u_int*)CMSG_DATA(cmsg); break;
+            case IP_RECVNFMARK:  pkt->nfmark = *(u_int*)CMSG_DATA(cmsg); break;
             case IP_RETOPTS:
                 pkt->opts_len = cmsg->cmsg_len-CMSG_LEN(0);
                 pkt->opts = malloc(pkt->opts_len);
@@ -139,7 +160,13 @@ int  netcap_udp_recvfrom (int sock, void* buf, size_t len, int flags, netcap_pkt
             }
         } else if  ( cmsg->cmsg_level == SOL_UDP ) {
             switch ( cmsg->cmsg_type ) {
-            case UDP_RECVDPORT: pkt->dst.port = ntohs(*(u_short*)CMSG_DATA(cmsg)); break;
+            case UDP_RECVDHDR:
+                ip_header_len = cmsg->cmsg_len - CMSG_LEN(0);
+                debug( 10, "Received UDP header of size: %d\n", ip_header_len );
+                if ( _parse_udp_ip_header( pkt, (char*)(CMSG_DATA(cmsg)), ip_header_len, len ) < 0 ) {
+                    return errlog( ERR_CRITICAL, "_parse_udp_ip_haeder\n" );
+                }                
+                break;
             default: unknown = 1;
             }
         } else {
@@ -151,8 +178,16 @@ int  netcap_udp_recvfrom (int sock, void* buf, size_t len, int flags, netcap_pkt
                    cmsg->cmsg_level, cmsg->cmsg_type, cmsg->cmsg_len);
         }
     }
+
+    if ( ip_header_len == 0 ) {
+        return errlog( ERR_CRITICAL, "Header was not updated\n" );
+    }
     
     /* Set the source interface for the packet */
+    /* XXXX Should never catch packets with a mark of 0 */
+    if ( pkt->mark == 0 ) {
+        debug( 4, "Packet with mark: %d\n", pkt->nfmark );
+    }
     if ( netcap_interface_mark_to_intf(pkt->nfmark,&pkt->src.intf) < 0) {
         errlog(ERR_WARNING,"Unable to determine the source interface from mark\n");
     }
@@ -165,7 +200,7 @@ int  netcap_udp_recvfrom (int sock, void* buf, size_t len, int flags, netcap_pkt
     pkt->proto = IPPROTO_UDP;
     pkt->packet_id = 0;
     
-    return numread;
+    return pkt->data_len;
 }
 
 int  netcap_udp_call_hooks (netcap_pkt_t* pkt, void* arg)
@@ -191,8 +226,7 @@ int  netcap_udp_call_hooks (netcap_pkt_t* pkt, void* arg)
 
     // First check to see if the session already exists.
     session = netcap_nc_sesstable_get_tuple (!NC_SESSTABLE_LOCK, IPPROTO_UDP,
-                                             pkt->src.host.s_addr,
-                                             pkt->dst.host.s_addr,
+                                             pkt->src.host.s_addr, pkt->dst.host.s_addr,
                                              pkt->src.port,pkt->dst.port, 0);
     
     // If it doesn't, intialize the session.
@@ -242,8 +276,7 @@ int  netcap_udp_call_hooks (netcap_pkt_t* pkt, void* arg)
 
         // Add the session to the table
         if ( netcap_nc_sesstable_add_tuple ( !NC_SESSTABLE_LOCK, session, IPPROTO_UDP,
-                                             pkt->src.host.s_addr,
-                                             pkt->dst.host.s_addr,
+                                             pkt->src.host.s_addr, pkt->dst.host.s_addr,
                                              pkt->src.port,pkt->dst.port,0 ) ) {
             netcap_udp_session_raze(!NC_SESSTABLE_LOCK, session);
             netcap_pkt_raze(pkt);
@@ -534,20 +567,16 @@ static int _process_queue_pkt( netcap_pkt_t* pkt, char** full_pkt, int* full_pkt
     *full_pkt_len = 0;
 
     if (( packet_id = pkt->packet_id ) == 0 ) {
-        return 0;
+        debug( 10, "UDP packet was already dropped or had zero id\n" );
+    } else {
+        pkt->packet_id = 0;
+        
+        if ( netcap_set_verdict( packet_id, NF_DROP, NULL, 0 ) < 0 ) {
+            errlog( ERR_CRITICAL, "netcap_set_verdict\n" );
+            return -1;
+        }
     }
     
-    pkt->packet_id = 0;
-
-    if ( netcap_set_verdict( packet_id, NF_DROP, NULL, 0 ) < 0 ) {
-        errlog( ERR_CRITICAL, "netcap_set_verdict\n" );
-        return -1;
-    }
-    
-    if ( pkt->buffer == NULL ) {
-        return errlog( ERR_CRITICAL, "Invalid Queue packet, NULL buffer\n" );
-    }
-
     if (( iph = (struct iphdr*)pkt->data ) == NULL ) {
         return errlog( ERR_CRITICAL, "Queued UDP packet without IP header\n" );
     }
@@ -605,6 +634,44 @@ static int _cache_packet( char* full_pkt, int full_pkt_len, mailbox_t* icmp_mb )
     
     return 0;
 }
+
+
+/**
+ * Parse an UDP/IP header and return the received port.
+ */
+static int _parse_udp_ip_header( netcap_pkt_t* pkt, char* header, int header_len, int buf_len )
+{
+    struct iphdr* iphdr  = (struct iphdr*)header;
+    struct udphdr* udphdr;
+    
+    if ( buf_len < ( pkt->data_len + header_len )) {
+        return errlog( ERR_CRITICAL, "Data buffer is too small: %d < %d\n", 
+                       buf_len, pkt->data_len + header_len );
+    }
+    
+    if (( udphdr = netcap_ip_get_udp_header( iphdr, header_len )) == NULL ) {
+        return errlog( ERR_CRITICAL, "netcap_ip_get_udp_header\n" );
+    }
+
+    /* Get the destination of the packet */
+    pkt->dst.port = ntohs( udphdr->dest );
+
+    /* Save the buffer so you know where the packet started when the address is updated in
+     * process packet */
+    pkt->buffer = pkt->data;
+    
+    /* Move the data and then copy in the header */
+    memmove( &pkt->data[header_len], pkt->data, pkt->data_len );
+    
+    /* Copy the header in */
+    memcpy( pkt->data, header, header_len );
+    
+    /* Update the packet length */
+    pkt->data_len += header_len;
+    
+    return 0;
+}
+
 
 
 /* this gets rid of a libc bug */

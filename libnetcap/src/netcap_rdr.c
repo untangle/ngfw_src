@@ -460,10 +460,10 @@ static int _rdr_create_iptables (rdr_t* rdr, netcap_traffic_t* traf)
 
     } else if (traf->protocol == IPPROTO_UDP) {
         snprintf(rule,MAX_CMD_LEN,
-                 BIN_BASE" -t mangle -%%c PREROUTING "RULE_BASE" -j QUEUE",
+                 BIN_BASE" -t mangle -%%c PREROUTING "RULE_BASE" -j DIVERT --to-port %i",
                  prefix,"%s",
                  protocol,"%s","",
-                 src_str,srcport_str,dst_str,dstport_str );
+                 src_str,srcport_str,dst_str,dstport_str, rdr->port_min );
         
         _rdr_create_rules(rule, rdr, IF_INTFSET_TRUE, &traf->cli_intfset);
         
@@ -474,10 +474,10 @@ static int _rdr_create_iptables (rdr_t* rdr, netcap_traffic_t* traf)
         _netcap_rdr_build_port_dst(dstport_str,"source");
         
         snprintf(rule,MAX_CMD_LEN,
-                 BIN_BASE" -t mangle -%%c PREROUTING "RULE_BASE" -j QUEUE",
+                 BIN_BASE" -t mangle -%%c PREROUTING "RULE_BASE" -j DIVERT --to-port %i",
                  prefix,"%s",
                  protocol,"%s","",
-                 src_str,srcport_str,dst_str,dstport_str );
+                 src_str,srcport_str,dst_str,dstport_str, rdr->port_min);
         
         _rdr_create_rules(rule, rdr, IF_INTFSET_TRUE, &traf->srv_intfset);
         

@@ -300,15 +300,12 @@ static int  _handle_message (epoll_info_t* info, int revents)
                     }
                 }
                 else if (sub->traf.protocol == IPPROTO_UDP) {
-                    /* -RBS No longer needed since we are queueing UDP packets */
-#if 0
                     int size = sub->rdr.port_max - sub->rdr.port_min + 1;
                     int fd;
                     
                     if ( sub->rdr.socks == NULL || size < 1 || sub->rdr.socks[0] == -1 ) {
                         errlog( ERR_CRITICAL, "For UDP, there must be at least one local\n" );
                     } else {
-                        
                         fd = sub->rdr.socks[0];
                         
                         if ( _epoll_info_add( fd, EPOLL_INPUT_SET, POLL_UDP_INCOMING, sub, NULL ) < 0 ) {
@@ -316,7 +313,6 @@ static int  _handle_message (epoll_info_t* info, int revents)
                             perrlog("_epoll_info_add");
                         }
                     }
-#endif
                 }
                 else if (sub->traf.protocol == IPPROTO_ICMP ||
                          sub->traf.protocol == IPPROTO_ALL) {
@@ -586,7 +582,7 @@ static int  _handle_udp (epoll_info_t* info, int revents, int sock )
     len = netcap_udp_recvfrom( sock, buf, UDP_MAX_MESG_SIZE, 0, pkt );
 
     if (len <= 0) {
-        if (len<0) perrlog("netcap_udp_recvfrom");
+        if ( len < 0 ) errlog( ERR_CRITICAL, "netcap_udp_recvfrom\n" );
 
         free(buf);
         free(pkt);

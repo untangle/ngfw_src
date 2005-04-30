@@ -120,7 +120,7 @@ int  netcap_queue_read (char *buffer, int max, netcap_pkt_t* pkt)
     struct iphdr* iph;
     struct tcphdr* tcph;
     struct udphdr* udph;
-    
+        
     status = ipq_read(ipq_h, buffer, max, 0 );
 
     if ( status == 0 ) {
@@ -201,7 +201,7 @@ int  netcap_queue_read (char *buffer, int max, netcap_pkt_t* pkt)
     pkt->data_len = msg->data_len;
     pkt->proto = iph->protocol;
     pkt->nfmark  = (u_int)msg->mark;
-
+    
     netcap_interface_mark_to_intf(msg->mark,&pkt->src.intf);
     pkt->dst.intf = NC_INTF_UNK;
 

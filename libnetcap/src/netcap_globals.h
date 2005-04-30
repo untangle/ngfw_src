@@ -29,7 +29,7 @@
  * max control massge size
  * WARNING: fragile
  */
-#define MAX_CONTROL_MSG (64 + NETCAP_MAX_IF_NAME_LEN + 10)
+#define MAX_CONTROL_MSG (64 + NETCAP_MAX_IF_NAME_LEN + 200 + 10)
 
 /**
  * max length of an iptables command
@@ -106,6 +106,9 @@ struct ip_sendnfmark_opts {
 #endif
 #ifndef UDP_RECVDPORT
 #define UDP_RECVDPORT 2
+#endif
+#ifndef UDP_RECVDHDR
+#define UDP_RECVDHDR 2
 #endif
 #ifndef UDP_SPORT
 #define UDP_SPORT 1 
