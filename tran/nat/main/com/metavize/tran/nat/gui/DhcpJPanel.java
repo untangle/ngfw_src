@@ -180,6 +180,8 @@ public class DhcpJPanel extends javax.swing.JPanel {
 
         setLayout(new java.awt.GridBagLayout());
 
+        setMinimumSize(new java.awt.Dimension(515, 333));
+        setPreferredSize(new java.awt.Dimension(515, 333));
         explanationJPanel.setLayout(new java.awt.GridBagLayout());
 
         explanationJPanel.setBorder(new javax.swing.border.TitledBorder(null, "DHCP", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));

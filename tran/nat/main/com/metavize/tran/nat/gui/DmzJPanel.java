@@ -151,6 +151,8 @@ public class DmzJPanel extends javax.swing.JPanel {
 
         setLayout(new java.awt.GridBagLayout());
 
+        setMinimumSize(new java.awt.Dimension(530, 280));
+        setPreferredSize(new java.awt.Dimension(530, 280));
         explanationJPanel.setLayout(new java.awt.GridBagLayout());
 
         explanationJPanel.setBorder(new javax.swing.border.TitledBorder(null, "DMZ", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));

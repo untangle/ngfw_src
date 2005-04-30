@@ -118,6 +118,8 @@ public class DnsJPanel extends javax.swing.JPanel {
 
         setLayout(new java.awt.GridBagLayout());
 
+        setMinimumSize(new java.awt.Dimension(530, 175));
+        setPreferredSize(new java.awt.Dimension(530, 175));
         nameserversJPanel.setLayout(new java.awt.GridBagLayout());
 
         nameserversJPanel.setBorder(new javax.swing.border.TitledBorder(null, "DNS Forwarding", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
