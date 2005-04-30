@@ -11,8 +11,8 @@
 
 package com.metavize.mvvm.util;
 
-import java.util.List;
 import java.net.InetAddress;
+import java.util.List;
 
 import com.metavize.mvvm.MackageDesc;
 import com.metavize.mvvm.MvvmContext;
@@ -214,7 +214,8 @@ public class RemoteClient
         for (int i = 0; i < mkgs.length; i++) {
             System.out.println(pad(mkgs[i].getName())
                                + "installed: " + mkgs[i].getInstalledVersion()
-                               + "\tavailable: " + mkgs[i].getAvailableVersion());
+                               + "\tavailable: " + mkgs[i].getAvailableVersion()
+                               + "\ttype: " + mkgs[i].getType());
         }
     }
 
@@ -533,7 +534,7 @@ public class RemoteClient
         mc.argonManager().shieldReconfigure();
     }
 
-    private static void updateAddress() throws Exception 
+    private static void updateAddress() throws Exception
     {
         mc.argonManager().updateAddress();
     }
