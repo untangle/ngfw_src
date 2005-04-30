@@ -9,18 +9,19 @@ Package: ftp-casing
 Architecture: any
 Depends: mvvm
 XB-Price: 1000
-XB-Display-Name: FTP Decoder
+XB-Display-Name: FTP Decoder Ring
 Description: The Metavize FTP casing
- Casing for the FTP protocol.
+ The FTP Decoder allows other software appliances
+ to parse and analyze FTP traffic and documents.
 
 Package: http-casing
 Architecture: any
 Depends: mvvm
 XB-Price: 1000
-XB-Display-Name: Web/HTTP Decoder
+XB-Display-Name: HTTP Decoder Ring
 Description: The Metavize Web/http Decoder
- The Web/http Decoder allows other Devices to parse and analyze
- Web/http traffic and documents.
+ The HTTP Decoder allows other software appliances
+ to parse and analyze HTTP traffic and documents.
 
 Package: airgap-transform
 Architecture: any
@@ -29,9 +30,8 @@ XB-Price: 1000
 XB-Display-Name: Packet Attack Shield
 XB-Rack-Position: 0
 Description: The Metavize Packet Attack Shield
- The Packet Attack Shield is able to prevent packet based attacks on
- the internal network.  This is done primarily through the use of an
- air gap, although other techniques will be available.
+ The Packet Attack Shield prevents packet based attacks on
+ the our network.
 
 Package: spyware-transform
 Architecture: any
@@ -41,9 +41,8 @@ XB-Display-Name: Spyware Blocker
 XB-Rack-Position: 1
 Description: The Metavize Spyware Blocker
  The Spyware Blocker detects and prevents Spyware infections,
- going to client systems via ActiveX controls, and cookies.
- It is also able to prevent communication between a client
- system and a known Spyware website/host.
+ with ActiveX and Cookie blacklist. It also can detect and 
+ block clients that phone home.
 
 Package: httpblocker-transform
 Architecture: any
@@ -52,10 +51,9 @@ XB-Price: 1000
 XB-Display-Name: Web Content Control
 XB-Rack-Position: 2
 Description: The Metavize Web Content Filter
- The Web Content Control allows Web traffic to be filtered based on
- web address, MIME type, file extension, content category, etc.  You
- can also specify web addresses and specific clients that should not
- be blocked.
+ Web Content Control enforces your web browsing policy.
+ It can filter based on content type (category), web address, 
+ MIME type, file extension, etc.  
 
 Package: email-transform
 Architecture: any
@@ -65,9 +63,8 @@ XB-Price: 1000
 XB-Display-Name: eMail SpamGuard
 XB-Rack-Position: 3
 Description: The Metavize eMail SpamGuard
- The eMail SpamGuard is able to block incoming and outgoing SMTP,
- POP3, and IMAP emails based on the existence of a Virus, Spam, or
- keywords in various parts of the email.
+ The eMail SpamGuard, based on SpamAssassin, is able to
+ mark SPAM incoming and outgoing SMTP, POP3, and IMAP. 
 
 Package: sophos-transform
 Architecture: any
@@ -77,7 +74,8 @@ XB-Display-Name: Sophos AntiVirus Scanner
 XB-Rack-Position: 4
 Description: The Sophos AntiVirus
  The Sophos AntiVirus Scanner is able to scan and block inbound and
- outbound viruses, in both http traffic and ftp traffic.
+ outbound viruses, on HTTP, FTP, and email (with SpamGuard). Updates
+ are installed daily.
 
 Package: fprot-transform
 Architecture: any
@@ -87,7 +85,8 @@ XB-Display-Name: F-Prot AntiVirus Scanner
 XB-Rack-Position: 5
 Description: The F-Prot AntiVirus
  The F-Prot AntiVirus Scanner is able to scan and block inbound and
- outbound viruses, in both Web/http traffic and ftp traffic.
+ outbound viruses, on HTTP, FTP, and email (with SpamGuard). Updates
+ are installed daily.
 
 Package: hauri-transform
 Architecture: any
@@ -96,8 +95,9 @@ XB-Price: 1000
 XB-Display-Name: Hauri AntiVirus
 XB-Rack-Position: 6
 Description: The Hauri AntiVirus
- The Hauri AntiVirus Scanner is able to scan and block inbound and
- outbound viruses, in both Web/http traffic and ftp traffic.
+ The Hauri AntiVirus Scanner, based on Hauri's viRobot, is able to scan and block
+ inbound and outbound viruses, on HTTP, FTP, and email (with SpamGuard). 
+ Updates are automatically installed daily.
 
 Package: clam-transform
 Architecture: any
@@ -106,8 +106,9 @@ XB-Price: 1000
 XB-Display-Name: Clam AntiVirus
 XB-Rack-Position: 7
 Description: The Clam AntiVirus
- The Clam AntiVirus Scanner is able to scan and block inbound and
- outbound viruses, in both Web/http traffic and ftp traffic.
+ The Clam AntiVirus Scanner, based on ClamAV, is able to scan and block
+ inbound and outbound viruses, on HTTP, FTP, and email (with SpamGuard). 
+ Updates are automatically installed daily.
 
 Package: protofilter-transform
 Architecture: any
@@ -118,8 +119,9 @@ XB-Display-Name: Rogue Protocol Control
 XB-Rack-Position: 8
 Description: The Metavize Rogue Protocol Control
  The Rogue Protocol Control is able to identify and selectively block
- various Peer-to-Peer communication and download protocols, such as
- AIM, IM, IRC, GNUTELLA, etc.
+ various protocols running on any port. This enforces acceptable use
+ policy by blocking Rogue applications, such as Peer-to-Peer and 
+ Instant Messaging.
 
 Package: nat-transform
 Architecture: any
@@ -139,8 +141,8 @@ XB-Price: 1000
 XB-Display-Name: Firewall
 XB-Rack-Position: 10
 Description: The Metavize Firewall Software Appliance
- The Firewall Software Appliance allows network traffic to be blocked based on IP level
- information.  Blocking criteria includes direction, source, destination, protocol (TCP or UDP), port, etc.
+ The Firewall Software Appliance allows network traffic to be blocked 
+ based on simple rules.
 
 Package: reporting-transform
 Architecture: any
@@ -150,6 +152,8 @@ XB-Display-Name: EdgeReport (preview)
 XB-Rack-Position: 1000
 Description: The Metavize Report Generator
  EdgeReport generates document reports about activities on your network.
+ EdgeReport will report general network activity, and information supplied 
+ by other Software Appliances.
 
 Package: test-transform
 Architecture: any
@@ -158,8 +162,7 @@ XB-Price: 1000
 XB-Display-Name: Test
 XB-RackPosition: 1001
 Description: The Metavize Test Software Appliance
- The Tester serves as a simple testbench to evaluate various
- new and advanced functionalities of the Metavize Server.
+ The Test Software Appliance is for internal Metavize testing.
 
 Package: metavize-client
 Architecture: any
@@ -168,15 +171,14 @@ Conflicts: metavize-gui
 XB-Price: 0
 XB-Display-Name: Metavize Client
 Description: The Metavize Client
- The Metavize Client is the user interface for accessing and controlling the
- Metavize Server.
+ The Metavize Client is the User Interface for accessing and controlling EdgeGuard.
 
 Package: mvvm
 Architecture: any
-Depends: catchall-mv, sudo, iptables-mv, restore-mv, kiosk-mv, libxml2, kernel-mv
+Depends: catchall-mv, sudo, iptables-mv, restore-mv, kiosk-mv, libxml2, kernel-mv (>=2.3.0-0)
 Pre-Depends: postgresql-mv
 Conflicts: xenon, xenon-dbg, kernel-image-2.6.8.1
 XB-Price: 0
 XB-Display-Name: Metavize Server
 Description: The Metavize Virtual Machine (MVVM)
- The Metavize Virtual Machine (and Bunnicula)
+ The Metavize Virtual Machine for securing your network and enforcing network policy.
