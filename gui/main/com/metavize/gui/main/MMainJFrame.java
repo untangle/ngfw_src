@@ -90,6 +90,7 @@ public class MMainJFrame extends javax.swing.JFrame {
 	MTransformJButton storeMTransformJButton;
         for(int i=0; i<storeMackages.length; i++){
             if( storeMackages[i].getType() != MackageDesc.TRANSFORM_TYPE )
+                continue;
             Util.getStatusJProgressBar().setValue(80 + (int) ((((float)i)/(float)storeMackages.length)*16f) );
             if(!toolboxHashtable.containsKey( storeMackages[i].getName() )){
                 storeMTransformJButton = new MTransformJButton(storeMackages[i]);
