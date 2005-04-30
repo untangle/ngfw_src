@@ -48,12 +48,14 @@ public class MPipelineJPanel extends javax.swing.JPanel {
         TransformContext installedTransformContext;
         initialInstallCount = installedTransformID.length;
         for(int i=0; i<installedTransformID.length; i++){
+            /*
 	    System.err.println("-- start ------------------------");
 	    System.err.println("tid: " + installedTransformID[i] );
 	    System.err.println("transform context: " + Util.getTransformManager().transformContext(installedTransformID[i]) );
 	    System.err.println("mackage desc: " + Util.getTransformManager().transformContext(installedTransformID[i]).getMackageDesc() );
 	    System.err.println("mackage type: " + Util.getTransformManager().transformContext(installedTransformID[i]).getMackageDesc().getType() );
 	    System.err.println("-- end ------------------------");
+             */
 	    if( Util.getTransformManager().transformContext(installedTransformID[i]).getMackageDesc().getType() != MackageDesc.TRANSFORM_TYPE ){
 		installedCount++;
 		continue;
