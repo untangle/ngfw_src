@@ -51,7 +51,7 @@ $Id: common-properties.xml,v 1.25 2005/03/23 04:52:36 amread Exp $
       <property name="build.dist" value="${build.root}/dist"/>
     </then>
   </if>
-  <echo message="building to: ${build.dist}"/>
+<!--   <echo message="building to: ${build.dist}"/> -->
 
   <if>
     <not>
@@ -61,7 +61,7 @@ $Id: common-properties.xml,v 1.25 2005/03/23 04:52:36 amread Exp $
       <property name="build.prefix" value="${build.dist}"/>
     </then>
   </if>
-  <echo message="prefix   is: ${build.prefix}"/>
+<!--   <echo message="prefix   is: ${build.prefix}"/> -->
 
 
   <!-- standard dist suffixs -->

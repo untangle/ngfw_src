@@ -35,10 +35,10 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
   <target name="pkg.clean" depends="clean.nuke"/>
 
   <target name="gensrc.xdoclet" depends="prepare">
-    <!-- map all files to datestamp, if any are newer, run xdoclet -->
+    <!-- map all files to stamp file, if any are newer, run xdoclet -->
     <fileset id="xdoclet.fileset" dir="./" includes="**/*.java">
       <depend targetdir="${build.gensrc}">
-        <mapper type="merge" from="*pat$$" to="xdoclet-datestamp"/>
+        <mapper type="merge" from="*pat$$" to="stamp-xdoclet"/>
       </depend>
     </fileset>
 
@@ -56,7 +56,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
           </fileset>
           <hibernate version="2.0"/>
         </hibernatedoclet>
-        <touch file="${build.gensrc}/xdoclet-datestamp"/>
+        <touch file="${build.gensrc}/stamp-xdoclet"/>
       </then>
     </if>
   </target>

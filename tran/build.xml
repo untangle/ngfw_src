@@ -33,50 +33,81 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <!-- main targets -->
   <!--              -->
 
-  <target name="pkg.gensrc">
-    <var name="tran.type" value="casing"/>
-    <foreach target="xdoclet.tran" param="tran.name" inheritall="true"
-             parallel="false" list="${casings}"/>
-    <var name="tran.type" value="base"/>
-    <foreach target="xdoclet.tran" param="tran.name" inheritall="true"
-             parallel="false" list="${bases}"/>
-    <var name="tran.type" value="transform"/>
-    <foreach target="xdoclet.tran" param="tran.name" inheritall="true"
-             parallel="false" list="${transforms}"/>
-  </target>
-  <target name="pkg.compile">
-    <var name="tran.type" value="casing"/>
-    <foreach target="compile.tran" param="tran.name" inheritall="true"
-             parallel="false" list="${casings}"/>
-    <var name="tran.type" value="base"/>
-    <foreach target="compile.tran" param="tran.name" inheritall="true"
-             parallel="false" list="${bases}"/>
-    <var name="tran.type" value="transform"/>
-    <foreach target="compile.tran" param="tran.name" inheritall="true"
-             parallel="false" list="${transforms}"/>
-  </target>
-  <target name="pkg.jar">
-    <var name="tran.type" value="casing"/>
-    <foreach target="mar.tran" param="tran.name" inheritall="true"
-             parallel="false" list="${casings}"/>
-    <var name="tran.type" value="base"/>
-    <foreach target="mar.tran" param="tran.name" inheritall="true"
-             parallel="false" list="${bases}"/>
-    <var name="tran.type" value="transform"/>
-    <foreach target="mar.tran" param="tran.name" inheritall="true"
-             parallel="false" list="${transforms}"/>
-  </target>
+  <target name="pkg.gensrc"/>
+<!--     <var name="tran.type" value="casing"/> -->
+<!--     <foreach target="xdoclet.tran" param="tran.name" inheritall="true" -->
+<!--              parallel="false" list="${casings}"/> -->
+<!--     <var name="tran.type" value="base"/> -->
+<!--     <foreach target="xdoclet.tran" param="tran.name" inheritall="true" -->
+<!--              parallel="false" list="${bases}"/> -->
+<!--     <var name="tran.type" value="transform"/> -->
+<!--     <foreach target="xdoclet.tran" param="tran.name" inheritall="true" -->
+<!--              parallel="false" list="${transforms}"/> -->
+<!--   </target> -->
+  <target name="pkg.compile"/>
+<!--     <var name="tran.type" value="casing"/> -->
+<!--     <foreach target="compile.tran" param="tran.name" inheritall="true" -->
+<!--              parallel="false" list="${casings}"/> -->
+<!--     <var name="tran.type" value="base"/> -->
+<!--     <foreach target="compile.tran" param="tran.name" inheritall="true" -->
+<!--              parallel="false" list="${bases}"/> -->
+<!--     <var name="tran.type" value="transform"/> -->
+<!--     <foreach target="compile.tran" param="tran.name" inheritall="true" -->
+<!--              parallel="false" list="${transforms}"/> -->
+<!--   </target> -->
+  <target name="pkg.jar"/>
+<!--     <var name="tran.type" value="casing"/> -->
+<!--     <foreach target="mar.tran" param="tran.name" inheritall="true" -->
+<!--              parallel="false" list="${casings}"/> -->
+<!--     <var name="tran.type" value="base"/> -->
+<!--     <foreach target="mar.tran" param="tran.name" inheritall="true" -->
+<!--              parallel="false" list="${bases}"/> -->
+<!--     <var name="tran.type" value="transform"/> -->
+<!--     <foreach target="mar.tran" param="tran.name" inheritall="true" -->
+<!--              parallel="false" list="${transforms}"/> -->
+<!--   </target> -->
   <target name="pkg.install">
     <var name="tran.type" value="casing"/>
-    <foreach target="install.tran" param="tran.name" inheritall="true"
+    <foreach target="build.tran" param="tran.name" inheritall="true"
              parallel="false" list="${casings}"/>
     <var name="tran.type" value="base"/>
-    <foreach target="install.tran" param="tran.name" inheritall="true"
+    <foreach target="build.tran" param="tran.name" inheritall="true"
              parallel="false" list="${bases}"/>
     <var name="tran.type" value="transform"/>
-    <foreach target="install.tran" param="tran.name" inheritall="true"
+    <foreach target="build.tran" param="tran.name" inheritall="true"
              parallel="false" list="${transforms}"/>
   </target>
+
+  <target name="build.tran">
+    <!-- map all files to datestamp, if any are newer, build tran -->
+    <fileset id="touched" dir="./${tran.name}/" includes="**/*">
+      <depend targetdir="${build.dist}" granularity="10">
+        <mapper type="merge" to="stamp-${tran.type}-${tran.name}"/>
+      </depend>
+    </fileset>
+    <pathconvert pathsep=" " refid="touched" property="touchedTranList"/>
+    <if>
+      <not><equals arg1="${touchedTranList}" arg2="" /></not>
+      <then>
+        <!-- if changed a base or casing, rebuild all transforms -->
+        <if> <equals arg1="${tran.type}" arg2="casing"/> <then>
+          <delete><fileset dir="${build.dist}" includes="stamp-transform-*"/></delete>
+          <delete><fileset dir="${build.dist}" includes="stamp-base-*"/></delete>
+        </then> </if>
+        <if> <equals arg1="${tran.type}" arg2="base"/> <then>
+          <delete><fileset dir="${build.dist}" includes="stamp-transform-*"/></delete>
+        </then> </if>
+
+	<echo message="Building '${tran.name}'"/>
+        <antcall target="install.tran" inheritAll="true"/>
+        <touch file="${build.dist}/stamp-${tran.type}-${tran.name}"/>
+      </then> 
+      <else>
+        <echo message="Skipping '${tran.name}'"/>
+      </else>
+    </if>
+  </target>
+
 
   <target name="pkg.clean" depends="clean.nuke"/>
 
@@ -340,24 +371,26 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <target name="compile.airgap"/>
   <target name="compile.reporting"/>
   <target name="compile.email"/>
-  <target name="compile.protofilter">     <!-- build LoadPatterns.java -->
+  <target name="compile.protofilter"/>
+
+    <!-- build LoadPatterns.java -->
     <!-- map all files to LoadPatterns.java, if any are newer, run mkLoadPatterns.sh -->
-    <fileset id="pat.fileset" dir="./protofilter/pattern-build/"
-             includes="**/*.pat,**/*.java,mkLoadPatterns.sh">
-      <depend targetdir="protofilter/main/com/metavize/tran/protofilter/">
-        <mapper type="merge" to="LoadPatterns.java"/>
-      </depend>
-    </fileset>
-    <pathconvert pathsep=" " refid="pat.fileset" property="patList"/>
-    <if>
-      <not><equals arg1="${patList}" arg2="" /></not>
-      <then>
-        <exec executable="/bin/sh" failonerror="true">
-          <arg value="-c"/>
-          <arg value="./protofilter/pattern-build/mkLoadPatterns.sh"/>
-        </exec>
-      </then>
-    </if>
-  </target>
+    <!--     <fileset id="pat.fileset" dir="./protofilter/pattern-build/" -->
+    <!--              includes="**/*.pat,**/*.java,mkLoadPatterns.sh"> -->
+    <!--       <depend targetdir="protofilter/main/com/metavize/tran/protofilter/"> -->
+    <!--         <mapper type="merge" to="LoadPatterns.java"/> -->
+    <!--       </depend> -->
+    <!--     </fileset> -->
+    <!--     <pathconvert pathsep=" " refid="pat.fileset" property="patList"/> -->
+    <!--     <if> -->
+    <!--       <not><equals arg1="${patList}" arg2="" /></not> -->
+    <!--       <then> -->
+    <!--         <exec executable="/bin/sh" failonerror="true"> -->
+    <!--           <arg value="-c"/> -->
+    <!--           <arg value="./protofilter/pattern-build/mkLoadPatterns.sh"/> -->
+    <!--         </exec> -->
+    <!--       </then> -->
+    <!--     </if> -->
+    <!--   </target> -->
 
 </project>

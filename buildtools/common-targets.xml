@@ -20,7 +20,7 @@ $Id: common-targets.xml,v 1.11 2005/02/06 04:24:53 dmorris Exp $
   <target name="clean"     depends="pkg.clean"/>
 
   <target name="install">
-    <!-- map all files to datestamp, if any are newer, run xdoclet -->
+    <!-- map all files to stamp, if any are newer, run target -->
     <fileset id="touched" dir="./" includes="**/*">
       <depend targetdir="${build.dist}">
         <mapper type="merge" to="stamp-${ant.project.name}"/>
