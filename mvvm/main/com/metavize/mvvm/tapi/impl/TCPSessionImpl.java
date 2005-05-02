@@ -331,8 +331,10 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
         int offset = buf2send.position();
 	int size = buf2send.remaining();
         if (size <= 0) {
-            warn("ignoring empty send, pos: " + buf2send.position() + ", rem: " +
-                 buf2send.remaining() + ", ao: " + buf2send.arrayOffset());
+            if (logger.isInfoEnabled())
+                info("ignoring empty send to " + (side == CLIENT ? "client" : "server") + ", pos: " +
+                     buf2send.position() + ", rem: " + buf2send.remaining() + ", ao: " +
+                     buf2send.arrayOffset());
             return;
         }
             
