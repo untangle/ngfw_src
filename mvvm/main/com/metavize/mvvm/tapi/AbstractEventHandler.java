@@ -78,7 +78,7 @@ public abstract class AbstractEventHandler implements SessionEventListener {
         /* ignore */
     }
 
-    public IPDataResult handleTCPClientDataEnd(TCPSessionEvent event)
+    public IPDataResult handleTCPClientDataEnd(TCPChunkEvent event)
     {
         /* ignore */
         return null;
@@ -93,7 +93,7 @@ public abstract class AbstractEventHandler implements SessionEventListener {
         sess.shutdownServer();
     }
 
-    public IPDataResult handleTCPServerDataEnd(TCPSessionEvent event)
+    public IPDataResult handleTCPServerDataEnd(TCPChunkEvent event)
     {
         /* ignore */
         return null;

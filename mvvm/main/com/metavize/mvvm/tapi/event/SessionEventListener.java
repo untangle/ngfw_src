@@ -94,7 +94,7 @@ public interface SessionEventListener extends java.util.EventListener {
      *
      * handleTCPClientFIN is called just after this.
      */
-    IPDataResult handleTCPClientDataEnd(TCPSessionEvent event) throws MPipeException;
+    IPDataResult handleTCPClientDataEnd(TCPChunkEvent event) throws MPipeException;
 
     /**
      * <code>handleTCPClientFIN</code> is called when the first EOF (Shutdown) is read from
@@ -122,7 +122,7 @@ public interface SessionEventListener extends java.util.EventListener {
      *
      * handleTCPServerFIN is called just after this.
      */
-    IPDataResult handleTCPServerDataEnd(TCPSessionEvent event) throws MPipeException;
+    IPDataResult handleTCPServerDataEnd(TCPChunkEvent event) throws MPipeException;
 
     /**
      * <code>handleTCPServerFIN</code> is called when the first EOF (Shutdown) is read from

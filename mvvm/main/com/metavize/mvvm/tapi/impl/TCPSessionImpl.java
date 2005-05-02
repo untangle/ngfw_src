@@ -29,6 +29,8 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
 {
     protected static final ByteBuffer SHUTDOWN_COOKIE_BUF = ByteBuffer.allocate(1);
 
+    private static final ByteBuffer EMPTY_BUF = ByteBuffer.allocate(0);
+
     protected int[] readLimit;
     protected int[] readBufferSize;
     protected boolean[] lineBuffering = new boolean[] { false, false };
@@ -368,16 +370,17 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
         addBufs(SERVER, result.bufsToServer());
     }
 
-    protected void sendFINEvent(int side)
+    protected void sendFINEvent(int side, ByteBuffer existingReadBuf)
         throws MPipeException
     {
         // First give the transform a chance to do something...
-        TCPSessionEvent wevent = new TCPSessionEvent(mPipe, this);
         IPDataResult result;
+        ByteBuffer dataBuf = existingReadBuf != null ? existingReadBuf : EMPTY_BUF;
+        TCPChunkEvent cevent = new TCPChunkEvent(mPipe, this, dataBuf);
         if (side == CLIENT)
-            result = dispatcher.dispatchTCPClientDataEnd(wevent);
+            result = dispatcher.dispatchTCPClientDataEnd(cevent);
         else
-            result = dispatcher.dispatchTCPServerDataEnd(wevent);
+            result = dispatcher.dispatchTCPServerDataEnd(cevent);
 
         if (result != null) {
             if (result.readBuffer() != null)
@@ -388,6 +391,7 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
         }
 
         // Then run the FIN handler.  This will send the FIN along to the other side by default.
+        TCPSessionEvent wevent = new TCPSessionEvent(mPipe, this);
         if (side == CLIENT)
             dispatcher.dispatchTCPClientFIN(wevent);
         else
@@ -453,9 +457,9 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
             switch (crumb.type()) {
             case Crumb.TYPE_SHUTDOWN:
                 debug("read FIN");
-                readBuf[side] = null;
-                sendFINEvent(side);
+                sendFINEvent(side, readBuf[side]);
                 in.read();
+                readBuf[side] = null;
                 return numRead;
             case Crumb.TYPE_RESET:
             default:

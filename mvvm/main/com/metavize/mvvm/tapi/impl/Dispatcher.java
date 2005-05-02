@@ -886,7 +886,7 @@ class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {
             sessionEventListener.handleUDPServerError(event);
     }
 
-    IPDataResult dispatchTCPClientDataEnd(TCPSessionEvent event)
+    IPDataResult dispatchTCPClientDataEnd(TCPChunkEvent event)
         throws MPipeException
     {
         IPSessionImpl session = (IPSessionImpl) event.session();
@@ -908,7 +908,7 @@ class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {
             sessionEventListener.handleTCPClientFIN(event);
     }
 
-    IPDataResult dispatchTCPServerDataEnd(TCPSessionEvent event)
+    IPDataResult dispatchTCPServerDataEnd(TCPChunkEvent event)
         throws MPipeException
     {
         IPSessionImpl session = (IPSessionImpl) event.session();
