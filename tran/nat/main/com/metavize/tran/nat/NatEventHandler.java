@@ -14,6 +14,7 @@ package com.metavize.tran.nat;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Iterator;
+import java.net.InetAddress;
 
 import com.metavize.mvvm.tapi.Protocol;
 
@@ -221,7 +222,17 @@ class NatEventHandler extends AbstractEventHandler
 
             /* Change the source in the request */
             /* All redirecting occurs here */
-            request.clientAddr( IPMatcher.getLocalAddress());
+            InetAddress localAddr = IPMatcher.getLocalAddress();
+            // Unfortunately, as of 5/02/05, this can sometimes be null, probably due to
+            // initialization order, the sleeping involved, etc.  For now, just make sure
+            // not to ever change the client addr to null, which causes awful things to happen.  jdi XXX
+            if (localAddr == null) {
+                logger.warn("null localAddr in isNat");
+                // We return false, which will cause the session to be blocked later.
+                return false;
+            }
+
+            request.clientAddr(localAddr);
             
             /* Set the client port */
             /* XXX THIS IS A HACK, it really should check if the protocol is ICMP, but
