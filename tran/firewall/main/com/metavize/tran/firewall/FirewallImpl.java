@@ -62,7 +62,7 @@ public class FirewallImpl extends SoloTransform implements Firewall
         
         /* Have to figure out pipeline ordering, this should always next to towards the outside */
         this.pipeSpec = new SoloPipeSpec( "firewall", subscriptions, Fitting.OCTET_STREAM, 
-                                          Affinity.INSIDE, SoloPipeSpec.MAX_STRENGTH );
+                                          Affinity.OUTSIDE, SoloPipeSpec.MAX_STRENGTH - 2 );
     }
 
     public FirewallSettings getFirewallSettings()

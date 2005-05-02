@@ -68,7 +68,7 @@ public class NatImpl extends SoloTransform implements Nat
         
         /* Have to figure out pipeline ordering, this should always next to towards the outside */
         this.pipeSpec = new SoloPipeSpec( "nat", subscriptions, Fitting.OCTET_STREAM, 
-                                          Affinity.INSIDE, SoloPipeSpec.MAX_STRENGTH - 1 );
+                                          Affinity.OUTSIDE, SoloPipeSpec.MAX_STRENGTH - 1 );
                                           
     }
 
