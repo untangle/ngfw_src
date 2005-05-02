@@ -39,14 +39,20 @@ public class Util {
     private static ToolboxManager toolboxManager;
     private static TransformManager transformManager;
 
+    private static StatsCache statsCache;
+
     public static void setMvvmContext(MvvmContext mvvmContextX){
 	mvvmContext = mvvmContextX;
 	toolboxManager = mvvmContext.toolboxManager();
 	transformManager = mvvmContext.transformManager();
+
+        // Somewhere else this should go? XXX jdi
+        statsCache = new StatsCache();
     }
     public static MvvmContext getMvvmContext(){ return mvvmContext; }
     public static ToolboxManager getToolboxManager() { return toolboxManager; }
     public static TransformManager getTransformManager() { return transformManager; }
+    public static StatsCache getStatsCache() { return statsCache; }
     ///////////////////////////////////
 
     // CODEBASE /////////////////

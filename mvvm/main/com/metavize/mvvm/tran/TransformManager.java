@@ -12,6 +12,7 @@
 package com.metavize.mvvm.tran;
 
 import com.metavize.mvvm.security.Tid;
+import java.util.Map;
 
 /**
  * Manages transform instances in the pipeline.
@@ -68,4 +69,11 @@ public interface TransformManager
      * @return the instance's <code>TransformContext</code>.
      */
     TransformContext transformContext(Tid tid);
+
+    /**
+     * Get the statistics and counts for all transforms in one call.
+     *
+     * @return a <code>Map</code> from Tid to TransformStats for all transforms in RUNNING state.
+     */
+    Map<Tid, TransformStats> allTransformStats();
 }

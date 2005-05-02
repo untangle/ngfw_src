@@ -427,4 +427,14 @@ public abstract class TransformBase implements Transform
         /* By default use the session matcher that doesn't match anything */
         return SessionMatcherFactory.getNullInstance();
     }
+
+    public long incrementCount(int i)
+    {
+        return incrementCount(i, 1);
+    }
+
+    public long incrementCount(int i, long delta)
+    {
+        return stats.incrementCount(i, delta);
+    }
 }

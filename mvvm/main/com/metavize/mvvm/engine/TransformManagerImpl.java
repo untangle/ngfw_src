@@ -32,6 +32,8 @@ import com.metavize.mvvm.tran.DeployException;
 import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.tran.TransformDesc;
 import com.metavize.mvvm.tran.TransformManager;
+import com.metavize.mvvm.tran.TransformState;
+import com.metavize.mvvm.tran.TransformStats;
 import com.metavize.mvvm.tran.UndeployException;
 import net.sf.hibernate.HibernateException;
 import net.sf.hibernate.Query;
@@ -143,6 +145,18 @@ class TransformManagerImpl implements TransformManager
             }
         }
     }
+
+    public Map<Tid, TransformStats> allTransformStats()
+    {
+        HashMap<Tid, TransformStats> result = new HashMap<Tid, TransformStats>();
+        for (Iterator<Tid> iter = tids.keySet().iterator(); iter.hasNext();) {
+            Tid tid = iter.next();
+            TransformContextImpl tci = tids.get(tid);
+            if (tci.getRunState() == TransformState.RUNNING)
+                result.put(tid, tci.getStats());
+        }
+        return result;
+    }   
 
     // Manager lifetime -------------------------------------------------------
 

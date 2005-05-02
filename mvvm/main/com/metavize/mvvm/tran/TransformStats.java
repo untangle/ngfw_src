@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: TransformStats.java,v 1.5 2005/03/25 02:24:27 jdi Exp $
+ *  $Id$
  */
 
 package com.metavize.mvvm.tran;
@@ -49,6 +49,9 @@ public class TransformStats implements Serializable
     protected Date startDate;
     protected Date lastConfigureDate;
     protected Date lastActivityDate;
+
+    // XXX temporary hack, remove someday !!!
+    private long[] counters = new long[16];
 
     public TransformStats() {
         long now = MetaEnv.currentTimeMillis();
@@ -202,5 +205,25 @@ public class TransformStats implements Serializable
      */
     public Date lastActivityDate() {
         return lastActivityDate;
+    }
+
+
+    public long getCount(int i)
+    {
+        synchronized (counters) {
+            return counters[i];
+        }
+    }
+
+    public long incrementCount(int i)
+    {
+        return incrementCount(i, 1);
+    }
+
+    public long incrementCount(int i, long delta)
+    {
+        synchronized (counters) {
+            return counters[i] += delta;
+        }
     }
 }

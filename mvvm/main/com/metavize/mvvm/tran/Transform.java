@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: Transform.java,v 1.11 2005/02/24 02:53:06 amread Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.tran;
@@ -104,9 +104,6 @@ public interface Transform
      * <code>RUNNING</code> state
      */
     TransformStats getStats() throws IllegalStateException;
-
-    // XXX temporary hack
-    long getCount(int counter);
 
     // XXX future deprecated methods ------------------------------------------
 

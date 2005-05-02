@@ -8,6 +8,7 @@ package com.metavize.gui.transform;
 
 import com.metavize.gui.util.*;
 import com.metavize.gui.widgets.MMultilineToolTip;
+import com.metavize.mvvm.security.Tid;
 import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.tran.*;
 
@@ -44,6 +45,7 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
     private volatile boolean updateGraph = false;
     private volatile boolean killGraph = false;
     private Transform graphTransform;
+    private Tid graphTransformTid;
     
     // THROUGHPUT & SESSION COUNT DISPLAY
     private static long SLEEP_MILLIS = 1000l;
@@ -68,6 +70,7 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
         
 
         graphTransform = mTransformJPanel.transformContext().transform();
+        graphTransformTid = mTransformJPanel.transformContext().getTid();
         
         throughputDynamicTimeSeriesCollection = new AreaDynamicTimeSeriesCollection(1, 60, new Second());
         throughputDynamicTimeSeriesCollection.setTimeBase(new Second());
@@ -494,7 +497,12 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
                     Thread.sleep(SLEEP_MILLIS);     
 
                     // poll transform for data values and update values
-                    currentStats = MTransformDisplayJPanel.this.graphTransform.getStats(); 
+                    // The old slow busted way:
+                    // currentStats = MTransformDisplayJPanel.this.graphTransform.getStats(); 
+                    // The new hotness:
+                    Transform fakeTran = Util.getStatsCache().getFakeTransform(graphTransformTid);
+                    currentStats = fakeTran.getStats();
+
                     sessionCountCurrent = currentStats.tcpSessionCount()
                                         + currentStats.udpSessionCount();
                     sessionCountTotal = currentStats.tcpSessionTotal()
@@ -513,10 +521,10 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
                     if( (sessionRequestLast == 0) || (sessionRequestLast > sessionRequestCurrent) )
                         sessionRequestLast = sessionRequestCurrent;
 
-                    activity0Count.add( (double) MTransformDisplayJPanel.this.graphTransform.getCount(Transform.GENERIC_0_COUNTER) );                    
-                    activity1Count.add( (double) MTransformDisplayJPanel.this.graphTransform.getCount(Transform.GENERIC_1_COUNTER) );
-                    activity2Count.add( (double) MTransformDisplayJPanel.this.graphTransform.getCount(Transform.GENERIC_2_COUNTER) );
-                    activity3Count.add( (double) MTransformDisplayJPanel.this.graphTransform.getCount(Transform.GENERIC_3_COUNTER) );
+                    activity0Count.add( (double) currentStats.getCount(Transform.GENERIC_0_COUNTER) );                    
+                    activity1Count.add( (double) currentStats.getCount(Transform.GENERIC_1_COUNTER) );
+                    activity2Count.add( (double) currentStats.getCount(Transform.GENERIC_2_COUNTER) );
+                    activity3Count.add( (double) currentStats.getCount(Transform.GENERIC_3_COUNTER) );
 
                     // UPDATE GRAPHS
                     doUpdateGraph();
