@@ -283,7 +283,7 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
         } else {
 	    // We know it's a data crumb since there can be nothing else
 	    // enqueued for TCP.
-            DataCrumb crumb2send = (DataCrumb) getNextCrumb2Send(side);
+            Crumb crumb2send = getNextCrumb2Send(side);
             assert crumb2send != null;
             int numWritten = sendCrumb(crumb2send, out);
             if (RWSessionStats.DoDetailedTimes) {
