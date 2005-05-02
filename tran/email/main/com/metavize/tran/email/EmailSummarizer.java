@@ -34,7 +34,7 @@ public class EmailSummarizer extends BaseSummarizer {
         int relaySzCnt = 0;
 
         try {
-            String sql = "SELECT COUNT(*) FROM tr_email_spam_evt WHERE time_stamp >= ? AND time_stamp < ? AND (action != 'P')";
+            String sql = "SELECT COUNT(*) FROM tr_email_spam_evt WHERE time_stamp >= ? AND time_stamp < ? AND (action != 'M')";
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
