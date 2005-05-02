@@ -47,6 +47,9 @@ public class CasingAdaptor extends AbstractEventHandler
         this.clientSide = clientSide;
     }
 
+    // SessionEventListener methods -------------------------------------------
+
+    @Override
     public void handleTCPNewSession(TCPSessionEvent e)
     {
         logger.debug("new session");
@@ -67,6 +70,7 @@ public class CasingAdaptor extends AbstractEventHandler
         }
     }
 
+    @Override
     public IPDataResult handleTCPClientChunk(TCPChunkEvent e)
     {
         logger.debug("handling client chunk, session: " + e.session().id());
@@ -76,12 +80,13 @@ public class CasingAdaptor extends AbstractEventHandler
         logger.debug("client inbound: " + inbound);
 
         if (clientSide) {
-            return parse(e, false);
+            return parse(e, false, false);
         } else {
             return unparse(e, false);
         }
     }
 
+    @Override
     public IPDataResult handleTCPServerChunk(TCPChunkEvent e)
     {
         logger.debug("handling server chunk, session: " + e.session().id());
@@ -93,10 +98,45 @@ public class CasingAdaptor extends AbstractEventHandler
         if (clientSide) {
             return unparse(e, true);
         } else {
-            return parse(e, true);
+            return parse(e, true, false);
         }
     }
 
+    @Override
+    public IPDataResult handleTCPClientDataEnd(TCPChunkEvent e)
+    {
+        logger.debug("handling client chunk, session: " + e.session().id());
+        boolean inbound = e.session().direction() == IPSessionDesc.INBOUND;
+
+        logger.debug("client direction: " + e.session().direction());
+        logger.debug("client inbound: " + inbound);
+
+        if (clientSide) {
+            return parse(e, false, true);
+        } else {
+            logger.warn("should not happen: unparse TCPClientDataEnd");
+            return null;
+        }
+    }
+
+    @Override
+    public IPDataResult handleTCPServerDataEnd(TCPChunkEvent e)
+    {
+        logger.debug("handling server chunk, session: " + e.session().id());
+        boolean inbound = e.session().direction() == IPSessionDesc.INBOUND;
+
+        logger.debug("server direction: " + e.session().direction());
+        logger.debug("server inbound: " + inbound);
+
+        if (clientSide) {
+            logger.warn("should not happen: unparse TCPClientDataEnd");
+            return null;
+        } else {
+            return parse(e, true, true);
+        }
+    }
+
+    @Override
     public void handleTCPClientFIN(TCPSessionEvent e)
     {
         TokenStreamer ts = null;
@@ -117,6 +157,7 @@ public class CasingAdaptor extends AbstractEventHandler
         }
     }
 
+    @Override
     public void handleTCPServerFIN(TCPSessionEvent e)
     {
         TokenStreamer ts = null;
@@ -137,12 +178,14 @@ public class CasingAdaptor extends AbstractEventHandler
         }
     }
 
+    @Override
     public void handleTCPFinalized(TCPSessionEvent e) throws MPipeException
     {
         logger.debug("finalizing " + e.session().id());
         removeCasingDesc(e.session());
     }
 
+    @Override
     public void handleTimer(IPSessionEvent e)
     {
         TCPSession s = (TCPSession)e.ipsession();
@@ -260,7 +303,7 @@ public class CasingAdaptor extends AbstractEventHandler
         }
     }
 
-    private IPDataResult parse(TCPChunkEvent e, boolean s2c)
+    private IPDataResult parse(TCPChunkEvent e, boolean s2c, boolean last)
     {
         TCPSession s = e.session();
         CasingDesc casingDesc = getCasingDesc(s);
@@ -270,7 +313,11 @@ public class CasingAdaptor extends AbstractEventHandler
         ParseResult pr;
         try {
             Parser p = casing.parser();
-            pr = p.parse(e.chunk());
+            if (last) {
+                pr = p.parseEnd(e.chunk());
+            } else {
+                pr = p.parse(e.chunk());
+            }
         } catch (Exception exn) { /* not just the ParseException */
             logger.error("closing connection", exn);
             if (s2c) {

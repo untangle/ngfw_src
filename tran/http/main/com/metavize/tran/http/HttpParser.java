@@ -341,6 +341,17 @@ public class HttpParser extends AbstractParser
         return new ParseResult((Token[])l.toArray(new Token[l.size()]), b);
     }
 
+    public ParseResult parseEnd(ByteBuffer buf) throws ParseException
+    {
+        if (buf.hasRemaining()) {
+            logger.warn("data trapped in read buffer: " + buf.remaining());
+        }
+
+        // we should implement this to make sure end markers get sent always
+
+        return new ParseResult(null, null);
+    }
+
     public TokenStreamer endSession()
     {
         if (state != PRE_FIRST_LINE_STATE) {

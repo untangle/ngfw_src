@@ -19,10 +19,12 @@ import com.metavize.mvvm.tapi.Pipeline;
 import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.tran.token.AbstractParser;
 import com.metavize.tran.token.Chunk;
+import com.metavize.tran.token.EndMarker;
 import com.metavize.tran.token.ParseException;
 import com.metavize.tran.token.ParseResult;
 import com.metavize.tran.token.Token;
 import com.metavize.tran.token.TokenStreamer;
+import org.apache.log4j.Logger;
 
 public class FtpServerParser extends AbstractParser
 {
@@ -31,7 +33,11 @@ public class FtpServerParser extends AbstractParser
     private static final char CR = '\r';
     private static final char LF = '\n';
 
+    private static final String CRLF = "\r\n";
+
     private final Fitting fitting;
+
+    private final Logger logger = Logger.getLogger(FtpServerParser.class);
 
     FtpServerParser(TCPSession session)
     {
@@ -51,6 +57,18 @@ public class FtpServerParser extends AbstractParser
             return parseServerData(buf);
         } else {
             throw new IllegalStateException("bad input fitting: " + fitting);
+        }
+    }
+
+    public ParseResult parseEnd(ByteBuffer buf) throws ParseException
+    {
+        if (Fitting.FTP_DATA_STREAM == fitting) {
+            return new ParseResult(new Token[] { EndMarker.MARKER }, null);
+        } else {
+            if (buf.hasRemaining()) {
+                logger.warn("unread data in read buffer: " + buf.remaining());
+            }
+            return new ParseResult(null, null);
         }
     }
 
@@ -93,15 +111,39 @@ public class FtpServerParser extends AbstractParser
                 end.limit(end.limit() - 2);
                 int endCode = replyCode(end);
 
-                if (-1 == endCode || HYPHEN != end.get()) {
+                if (-1 == endCode || SP != end.get()) {
                     return new ParseResult(null, buf.compact());
                 }
 
-                byte[] mb = new byte[dup.remaining() + end.remaining()];
-                dup.get(mb, 0, dup.remaining());
+                StringBuffer sb = new StringBuffer(buf.remaining());
 
-                end.get(mb, dup.remaining(), end.remaining());
-                String message = new String(mb);
+                while (buf.hasRemaining()) {
+                    byte b;
+
+                    for (int j = 0; j < 3; j++) {
+                        if (!Character.isDigit(buf.get())) {
+                            throw new ParseException("digit expected");
+                        }
+                    }
+
+                    if (SP != (b = buf.get()) && HYPHEN != b) {
+                        throw new ParseException("space or hyphen expected");
+                    }
+
+                    while (CR != (b = buf.get())) {
+                        sb.append((char)b);
+                    }
+
+                    if (LF != (b = buf.get())) {
+                        throw new ParseException("LF expected");
+                    }
+
+                    if (buf.hasRemaining()) {
+                        sb.append(CRLF);
+                    }
+                }
+
+                String message = sb.toString();
 
                 FtpReply reply = new FtpReply(replyCode, message);
 
@@ -152,7 +194,7 @@ public class FtpServerParser extends AbstractParser
     }
 
     /**
-     * Checks if the buffer contains a complete reply.
+     * Checks if the buffer contains a complete line.
      *
      * @param buf to check.
      * @return true if a complete line.

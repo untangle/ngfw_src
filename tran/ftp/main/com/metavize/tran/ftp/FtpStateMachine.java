@@ -17,15 +17,22 @@ import com.metavize.mvvm.tapi.Pipeline;
 import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.tran.token.AbstractTokenHandler;
 import com.metavize.tran.token.Chunk;
+import com.metavize.tran.token.EndMarker;
 import com.metavize.tran.token.Token;
 import com.metavize.tran.token.TokenException;
 import com.metavize.tran.token.TokenResult;
+import org.apache.log4j.Logger;
 
 // XXX hook the data and ctl into same state machine
 public abstract class FtpStateMachine extends AbstractTokenHandler
 {
     private final Fitting clientFitting;
     private final Fitting serverFitting;
+
+    private final Logger logger = Logger.getLogger(FtpStateMachine.class);
+
+    private boolean clientOpen = false;
+    private boolean serverOpen = false;
 
     // constructors -----------------------------------------------------------
 
@@ -72,7 +79,16 @@ public abstract class FtpStateMachine extends AbstractTokenHandler
         if (Fitting.FTP_CTL_TOKENS == clientFitting) {
             return doCommand((FtpCommand)token);
         } else if (Fitting.FTP_DATA_TOKENS == clientFitting) {
-            return doClientData((Chunk)token);
+            if (token instanceof EndMarker) {
+                clientOpen = false;
+                doClientDataEnd();
+                return new TokenResult(null, new Token[] { EndMarker.MARKER });
+            } else if (token instanceof Chunk) {
+                clientOpen = true;
+                return doClientData((Chunk)token);
+            } else {
+                throw new TokenException("bad token: " + token);
+            }
         } else {
             throw new IllegalStateException("bad fitting: " + clientFitting);
         }
@@ -83,7 +99,16 @@ public abstract class FtpStateMachine extends AbstractTokenHandler
         if (Fitting.FTP_CTL_TOKENS == serverFitting) {
             return doReply((FtpReply)token);
         } else if (Fitting.FTP_DATA_TOKENS == serverFitting) {
-            return doServerData((Chunk)token);
+            if (token instanceof EndMarker) {
+                serverOpen = false;
+                doServerDataEnd();
+                return new TokenResult(new Token[] { EndMarker.MARKER }, null);
+            } else if (token instanceof Chunk) {
+                serverOpen = true;
+                return doServerData((Chunk)token);
+            } else {
+                throw new TokenException("bad token: " + token);
+            }
         } else {
             throw new IllegalStateException("bad fitting: " + serverFitting);
         }
@@ -92,7 +117,8 @@ public abstract class FtpStateMachine extends AbstractTokenHandler
     @Override
     public void handleClientFin() throws TokenException
     {
-        if (Fitting.FTP_DATA_TOKENS == clientFitting) {
+        if (Fitting.FTP_DATA_TOKENS == clientFitting && clientOpen) {
+            logger.warn("didn't see EndMarker from client");
             doClientDataEnd();
         }
     }
@@ -100,7 +126,8 @@ public abstract class FtpStateMachine extends AbstractTokenHandler
     @Override
     public void handleServerFin() throws TokenException
     {
-        if (Fitting.FTP_DATA_TOKENS == serverFitting) {
+        if (Fitting.FTP_DATA_TOKENS == serverFitting && serverOpen) {
+            logger.warn("didn't see EndMarker from server");
             doServerDataEnd();
         }
     }

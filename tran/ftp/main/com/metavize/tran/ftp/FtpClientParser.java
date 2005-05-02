@@ -19,10 +19,12 @@ import com.metavize.mvvm.tapi.Pipeline;
 import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.tran.token.AbstractParser;
 import com.metavize.tran.token.Chunk;
+import com.metavize.tran.token.EndMarker;
 import com.metavize.tran.token.ParseException;
 import com.metavize.tran.token.ParseResult;
 import com.metavize.tran.token.Token;
 import com.metavize.tran.token.TokenStreamer;
+import org.apache.log4j.Logger;
 
 public class FtpClientParser extends AbstractParser
 {
@@ -31,6 +33,8 @@ public class FtpClientParser extends AbstractParser
     private static final char LF = '\n';
 
     private final Fitting fitting;
+
+    private final Logger logger = Logger.getLogger(FtpClientParser.class);
 
     FtpClientParser(TCPSession session)
     {
@@ -50,6 +54,18 @@ public class FtpClientParser extends AbstractParser
             return parseCtl(buf);
         } else {
             return new ParseResult(new Token[] { new Chunk(buf.duplicate()) }, null);
+        }
+    }
+
+    public ParseResult parseEnd(ByteBuffer buf) throws ParseException
+    {
+        if (Fitting.FTP_DATA_STREAM == fitting) {
+            return new ParseResult(new Token[] { EndMarker.MARKER }, null);
+        } else {
+            if (buf.hasRemaining()) {
+                logger.warn("unread data in read buffer: " + buf.remaining());
+            }
+            return new ParseResult(null, null);
         }
     }
 

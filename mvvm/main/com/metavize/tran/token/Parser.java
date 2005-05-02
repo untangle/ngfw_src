@@ -17,5 +17,6 @@ public interface Parser
 {
     TokenStreamer endSession();
     ParseResult parse(ByteBuffer chunk) throws ParseException;
+    ParseResult parseEnd(ByteBuffer chunk) throws ParseException;
     void handleTimer();
 }

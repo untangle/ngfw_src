@@ -16,8 +16,8 @@ import java.nio.ByteBuffer;
 public class ParseResult
 {
     private static final Token[] TOKEN_PROTO = new Token[0];
-    private Token[] results;
-    private ByteBuffer readBuffer;
+    private final Token[] results;
+    private final ByteBuffer readBuffer;
 
     public ParseResult(Token[] results, ByteBuffer readBuffer)
     {
