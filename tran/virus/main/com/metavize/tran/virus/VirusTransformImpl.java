@@ -155,37 +155,15 @@ public class VirusTransformImpl extends AbstractTransform
             s2 = new IPSessionDesc[0];
         }
 
-        IPSessionDesc[] s3 = null;
-        if (mPipes[2] != null) {
-            s3 = mPipes[2].liveSessionDescs();
-        } else {
-            s3 = new IPSessionDesc[0];
-        }
-
-        IPSessionDesc[] retDescs = new IPSessionDesc[s1.length + s2.length + s3.length];
+        IPSessionDesc[] retDescs = new IPSessionDesc[s1.length + s2.length];
         System.arraycopy(s1, 0, retDescs, 0, s1.length);
         System.arraycopy(s2, 0, retDescs, s1.length, s2.length);
-        System.arraycopy(s3, 0, retDescs, s1.length + s2.length, s3.length);
         return retDescs;
     }
 
     private void virusReconfigure()
     {
         // FTP
-        // XXX this shit broken:
-//         Set subscriptions = new HashSet();
-//         if (settings.getFtpInbound().getScan()) {
-//             Subscription subscription = new Subscription
-//                 (Protocol.TCP, Interface.INSIDE, Interface.OUTSIDE);
-//             subscriptions.add(subscription);
-//         }
-
-//         if (settings.getFtpOutbound().getScan()) {
-//             Subscription subscription = new Subscription
-//                 (Protocol.TCP, Interface.OUTSIDE, Interface.INSIDE);
-//             subscriptions.add(subscription);
-//         }
-
         Set subscriptions = new HashSet();
         {
             Subscription subscription = new Subscription
@@ -272,7 +250,7 @@ public class VirusTransformImpl extends AbstractTransform
         s.add(new MimeTypeRule(new MimeType("video/*"), "video", "video", false));
         s.add(new MimeTypeRule(new MimeType("text/*"), "text", "text", false));
         s.add(new MimeTypeRule(new MimeType("audio/*"), "audio", "audio", false));
-        
+
         /*
          * For now we're going back to the short list.
         s.add(new MimeTypeRule(new MimeType("application/octet-stream"), "unspecified data", "byte stream", false));
