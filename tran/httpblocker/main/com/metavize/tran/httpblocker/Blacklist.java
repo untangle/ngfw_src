@@ -207,6 +207,9 @@ class Blacklist
         String host = uri.getHost();
         if (null == host) {
             host = header.getValue("host");
+            if (null == host) {
+                host = clientIp.getHostAddress();
+            }
         }
         host = host.toLowerCase();
         while ('.' == host.charAt(host.length() - 1)) {
