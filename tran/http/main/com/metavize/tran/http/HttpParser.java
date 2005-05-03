@@ -672,6 +672,7 @@ public class HttpParser extends AbstractParser
         for (int i = 0; i < uri.length(); i++) {
             char c = uri.charAt(i);
             switch (c) {
+                // unwise
             case '{': sb.append("%7B"); break;
             case '}': sb.append("%7D"); break;
             case '|': sb.append("%7C"); break;
@@ -680,6 +681,10 @@ public class HttpParser extends AbstractParser
             case '[': sb.append("%5B"); break;
             case ']': sb.append("%5D"); break;
             case '`': sb.append("%60"); break;
+                // delimiter (except #)
+            case '<': sb.append("%3C"); break;
+            case '>': sb.append("%3E"); break;
+            case '"': sb.append("%22"); break;
             case '%':
                 if (uri.length() - 1 < i + 2
                     || (!isHex((byte)uri.charAt(i + 1))
@@ -689,7 +694,18 @@ public class HttpParser extends AbstractParser
                     sb.append('%');
                 }
                 break;
-            default: sb.append(c); break;
+            default:
+                if (Character.isISOControl(c)) {
+                    sb.append('%');
+                    String hexStr = Integer.toHexString(c);
+                    if (2 > hexStr.length()) {
+                        hexStr = "0" + hexStr;
+                    }
+                    sb.append(hexStr);
+                } else {
+                    sb.append(c);
+                }
+                break;
             }
         }
 
