@@ -73,16 +73,13 @@ public class FileChunkStreamer extends TokenStreamer
         try {
             ByteBuffer buf = ByteBuffer.allocate(chunkSize);
 
-            if (0 > channel.read(buf)) {
-                // Bug fix for #277 -- make sure to send the end marker
-                if (!sentEnd) {
-                    channel.close();
-                    file.delete();
-                    sentEnd = true;
-                    return EndMarker.MARKER;
-                } else {
-                    return null; /* done */
-                }
+            if (sentEnd) {
+                return null; /* done */
+            } else if (0 > channel.read(buf)) {
+                channel.close();
+                file.delete();
+                sentEnd = true;
+                return EndMarker.MARKER;
             } else {
                 buf.flip();
                 return new Chunk(buf);

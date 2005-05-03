@@ -114,7 +114,9 @@ public class CasingAdaptor extends AbstractEventHandler
         if (clientSide) {
             return parse(e, false, true);
         } else {
-            logger.warn("should not happen: unparse TCPClientDataEnd");
+            if (e.chunk().hasRemaining()) {
+                logger.warn("should not happen: unparse TCPClientDataEnd");
+            }
             return null;
         }
     }
@@ -129,7 +131,9 @@ public class CasingAdaptor extends AbstractEventHandler
         logger.debug("server inbound: " + inbound);
 
         if (clientSide) {
-            logger.warn("should not happen: unparse TCPClientDataEnd");
+            if (e.chunk().hasRemaining()) {
+                logger.warn("should not happen: unparse TCPClientDataEnd");
+            }
             return null;
         } else {
             return parse(e, true, true);

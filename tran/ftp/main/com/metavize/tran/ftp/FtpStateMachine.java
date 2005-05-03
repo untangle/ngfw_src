@@ -31,9 +31,6 @@ public abstract class FtpStateMachine extends AbstractTokenHandler
 
     private final Logger logger = Logger.getLogger(FtpStateMachine.class);
 
-    private boolean clientOpen = false;
-    private boolean serverOpen = false;
-
     // constructors -----------------------------------------------------------
 
     protected FtpStateMachine(TCPSession session)
@@ -80,11 +77,8 @@ public abstract class FtpStateMachine extends AbstractTokenHandler
             return doCommand((FtpCommand)token);
         } else if (Fitting.FTP_DATA_TOKENS == clientFitting) {
             if (token instanceof EndMarker) {
-                clientOpen = false;
-                doClientDataEnd();
                 return new TokenResult(null, new Token[] { EndMarker.MARKER });
             } else if (token instanceof Chunk) {
-                clientOpen = true;
                 return doClientData((Chunk)token);
             } else {
                 throw new TokenException("bad token: " + token);
@@ -100,11 +94,8 @@ public abstract class FtpStateMachine extends AbstractTokenHandler
             return doReply((FtpReply)token);
         } else if (Fitting.FTP_DATA_TOKENS == serverFitting) {
             if (token instanceof EndMarker) {
-                serverOpen = false;
-                doServerDataEnd();
                 return new TokenResult(new Token[] { EndMarker.MARKER }, null);
             } else if (token instanceof Chunk) {
-                serverOpen = true;
                 return doServerData((Chunk)token);
             } else {
                 throw new TokenException("bad token: " + token);
@@ -117,18 +108,12 @@ public abstract class FtpStateMachine extends AbstractTokenHandler
     @Override
     public void handleClientFin() throws TokenException
     {
-        if (Fitting.FTP_DATA_TOKENS == clientFitting && clientOpen) {
-            logger.warn("didn't see EndMarker from client");
-            doClientDataEnd();
-        }
+        doClientDataEnd();
     }
 
     @Override
     public void handleServerFin() throws TokenException
     {
-        if (Fitting.FTP_DATA_TOKENS == serverFitting && serverOpen) {
-            logger.warn("didn't see EndMarker from server");
-            doServerDataEnd();
-        }
+        doServerDataEnd();
     }
 }

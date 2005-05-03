@@ -27,10 +27,13 @@ import com.metavize.tran.token.FileChunkStreamer;
 import com.metavize.tran.token.Token;
 import com.metavize.tran.token.TokenException;
 import com.metavize.tran.token.TokenResult;
+import org.apache.log4j.Logger;
 
 class VirusFtpHandler extends FtpStateMachine
 {
     private final VirusTransformImpl transform;
+
+    private final Logger logger = Logger.getLogger(FtpStateMachine.class);
 
     private File file;
     private FileChannel inChannel;
@@ -51,7 +54,10 @@ class VirusFtpHandler extends FtpStateMachine
     @Override
     protected TokenResult doClientData(Chunk c) throws TokenException
     {
+        logger.debug("doServerData()");
+
         if (null == file) {
+            logger.debug("creating file for client");
             createFile();
             c2s = true;
         }
@@ -64,7 +70,10 @@ class VirusFtpHandler extends FtpStateMachine
     @Override
     protected TokenResult doServerData(Chunk c) throws TokenException
     {
+        logger.debug("doServerData()");
+
         if (null == file) {
+            logger.debug("creating file for server");
             createFile();
             c2s = false;
         }
@@ -77,7 +86,10 @@ class VirusFtpHandler extends FtpStateMachine
     @Override
     protected void doClientDataEnd() throws TokenException
     {
-        if (c2s) {
+        logger.debug("doClientDataEnd()");
+
+        if (c2s && null != file) {
+            logger.debug("c2s file: " + file);
             TCPStreamer ts = scan();
             if (null != ts) {
                 getSession().beginServerStream(ts);
@@ -91,7 +103,10 @@ class VirusFtpHandler extends FtpStateMachine
     @Override
     protected void doServerDataEnd() throws TokenException
     {
-        if (!c2s) {
+        logger.debug("doServerDataEnd()");
+
+        if (!c2s && null != file) {
+            logger.debug("!c2s file: " + file);
             TCPStreamer ts = scan();
             if (null != ts) {
                 getSession().beginClientStream(ts);
