@@ -1,3 +1,9 @@
+metavize-java (0.2.0-535) stable; urgency=low
+
+  * auto build
+
+ -- John Irwin <jdi@metavize.com>  Mon,  2 May 2005 18:24:19 -0700
+
 metavize-java (0.2.0-534) stable; urgency=low
 
   * auto build
