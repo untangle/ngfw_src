@@ -18,9 +18,13 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
+import com.metavize.mvvm.argon.IntfConverter;
 import com.metavize.mvvm.tapi.Pipeline;
 import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.mvvm.tapi.event.TCPStreamer;
+import com.metavize.tran.ftp.FtpCommand;
+import com.metavize.tran.ftp.FtpFunction;
+import com.metavize.tran.ftp.FtpReply;
 import com.metavize.tran.ftp.FtpStateMachine;
 import com.metavize.tran.token.Chunk;
 import com.metavize.tran.token.FileChunkStreamer;
@@ -32,6 +36,8 @@ import org.apache.log4j.Logger;
 class VirusFtpHandler extends FtpStateMachine
 {
     private final VirusTransformImpl transform;
+    private final boolean scanClient;
+    private final boolean scanServer;
 
     private final Logger logger = Logger.getLogger(FtpStateMachine.class);
 
@@ -47,6 +53,16 @@ class VirusFtpHandler extends FtpStateMachine
         super(session);
 
         this.transform = transform;
+
+        VirusSettings vs = transform.getVirusSettings();
+
+        if (IntfConverter.INSIDE == session.clientIntf()) { // outgoing
+            scanClient = vs.getFtpOutbound().getScan();
+            scanServer = vs.getFtpInbound().getScan();
+        } else { // XXX might not be inbound w/ multiple interfaces
+            scanClient = vs.getFtpInbound().getScan();
+            scanServer = vs.getFtpOutbound().getScan();
+        }
     }
 
     // FtpStateMachine methods ------------------------------------------------
@@ -54,33 +70,41 @@ class VirusFtpHandler extends FtpStateMachine
     @Override
     protected TokenResult doClientData(Chunk c) throws TokenException
     {
-        logger.debug("doServerData()");
+        if (scanClient) {
+            logger.debug("doServerData()");
 
-        if (null == file) {
-            logger.debug("creating file for client");
-            createFile();
-            c2s = true;
+            if (null == file) {
+                logger.debug("creating file for client");
+                createFile();
+                c2s = true;
+            }
+
+            Chunk outChunk = trickle(c.getData());
+
+            return new TokenResult(null, new Token[] { outChunk });
+        } else {
+            return new TokenResult(null, new Token[] { c });
         }
-
-        Chunk outChunk = trickle(c.getData());
-
-        return new TokenResult(null, new Token[] { outChunk });
     }
 
     @Override
     protected TokenResult doServerData(Chunk c) throws TokenException
     {
-        logger.debug("doServerData()");
+        if (scanServer) {
+            logger.debug("doServerData()");
 
-        if (null == file) {
-            logger.debug("creating file for server");
-            createFile();
-            c2s = false;
+            if (null == file) {
+                logger.debug("creating file for server");
+                createFile();
+                c2s = false;
+            }
+
+            Chunk outChunk = trickle(c.getData());
+
+            return new TokenResult(new Token[] { outChunk }, null);
+        } else {
+            return new TokenResult(new Token[] { c }, null);
         }
-
-        Chunk outChunk = trickle(c.getData());
-
-        return new TokenResult(new Token[] { outChunk }, null);
     }
 
     @Override
@@ -88,7 +112,7 @@ class VirusFtpHandler extends FtpStateMachine
     {
         logger.debug("doClientDataEnd()");
 
-        if (c2s && null != file) {
+        if (scanClient && c2s && null != file) {
             logger.debug("c2s file: " + file);
             TCPStreamer ts = scan();
             if (null != ts) {
@@ -105,7 +129,7 @@ class VirusFtpHandler extends FtpStateMachine
     {
         logger.debug("doServerDataEnd()");
 
-        if (!c2s && null != file) {
+        if (scanServer && !c2s && null != file) {
             logger.debug("!c2s file: " + file);
             TCPStreamer ts = scan();
             if (null != ts) {
@@ -114,6 +138,18 @@ class VirusFtpHandler extends FtpStateMachine
             file = null;
         } else {
             getSession().shutdownClient();
+        }
+    }
+
+    @Override
+    protected TokenResult doCommand(FtpCommand command) throws TokenException
+    {
+        if (FtpFunction.REST == command.getFunction()
+            && transform.getFtpDisableResume()) {
+            FtpReply reply = new FtpReply(502, "Command not implemented.");
+            return new TokenResult(new Token[] { reply }, null);
+        } else {
+            return new TokenResult(null, new Token[] { command });
         }
     }
 
