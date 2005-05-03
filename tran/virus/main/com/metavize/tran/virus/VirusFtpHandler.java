@@ -146,7 +146,7 @@ class VirusFtpHandler extends FtpStateMachine
     {
         if (FtpFunction.REST == command.getFunction()
             && transform.getFtpDisableResume()) {
-            FtpReply reply = new FtpReply(502, "Command not implemented.");
+            FtpReply reply = FtpReply.makeReply(502, "Command not implemented.");
             return new TokenResult(new Token[] { reply }, null);
         } else {
             return new TokenResult(null, new Token[] { command });
