@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include <sys/ioctl.h>
 #include <net/if.h>
+#include <pthread.h>
 #include <unistd.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -25,6 +26,7 @@
 #include "libnetcap.h"
 #include "netcap_globals.h"
 #include "netcap_subscriptions.h"
+#include "netcap_init.h"
 
 #define IF_TABLE_SIZE 31
 
@@ -44,6 +46,7 @@ typedef struct  {
     char cmd[MAX_CMD_LEN];    
 } iptables_cmd_t;
 
+static char      _if_names_assigned[NETCAP_MAX_INTERFACES][NETCAP_MAX_IF_NAME_LEN];
 static in_addr_t _if_addrs[NETCAP_MAX_INTERFACES];
 static in_addr_t _netmasks[NETCAP_MAX_INTERFACES];
 static in_addr_t _broadcasts[NETCAP_MAX_INTERFACES];
@@ -51,6 +54,8 @@ static int       _num_if = 0;
 static char      _if_names[NETCAP_MAX_INTERFACES][NETCAP_MAX_IF_NAME_LEN];
 static int       _if_count = 0;
 static ht_t      _if_name_to_id;
+
+pthread_mutex_t  _update_address_mutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
 
 
 static __inline__ int _validate_intf_str( char* intf_str )
@@ -76,7 +81,13 @@ static __inline__ int _check_intf( netcap_intf_t intf )
     return 0;
 }
 
-static int _netcap_interface_marking               ( int if_add );
+/**
+ * Insert the marking rules
+ * If either inside or outside are not NC_INTF_UNK, then all traffic going to the address
+ * of br0:0 on the outside is dropped, and all traffic going to br0:0 on the inside is
+ * antisubscribed
+ */
+static int _netcap_interface_marking               ( int if_add, int inside, int outside );
 
 static int _netcap_interface_disable_srv_conntrack ( int if_add );
 
@@ -174,7 +185,7 @@ int netcap_interface_init ()
     _if_count = j;
     
     // Insert all of the interface marking rules
-    if ( _netcap_interface_marking(RULES_ADD) < 0 ) {
+    if ( _netcap_interface_marking( RULES_ADD, NC_INTF_UNK, NC_INTF_UNK ) < 0 ) {
         return errlog(ERR_CRITICAL,"_netcap_interface_marking\n");
     }
 
@@ -187,7 +198,7 @@ int netcap_interface_init ()
 int netcap_interface_cleanup( void )
 {
     // Remove all of the interface marking rules
-    _netcap_interface_marking( RULES_DEL );
+    _netcap_interface_marking( RULES_DEL, NC_INTF_UNK, NC_INTF_UNK );
     
     /* Insert a rule to disable conntracking on the server side of
      * connection completes  */
@@ -202,26 +213,44 @@ int netcap_interface_cleanup( void )
     return 0;
 }
 
-int netcap_interface_update_address()
+int netcap_interface_update_address( int inside, int outside )
 {
-    /* XXX This creates a gap where none of the marking rules are in place, this could be
-     * problematic */
-    /*** XXX Look into creating a temporary rule for dropping all incoming packets on br0 */
+    int ret = 0;
     
-    _netcap_interface_marking( RULES_DEL );
+    if ( pthread_mutex_lock( &_update_address_mutex ) < 0 ) {
+        return errlog ( ERR_CRITICAL, "pthread_mutex_lock" );
+    }
+    
+    do {
+        /* Nothing to do if netcap is not initialized */
+        if ( !netcap_is_initialized()) {
+            break;
+        }
 
-    /* Update all of the addresses */
-    /* XXXXX this might be fatal */
-    if ( _interface_update_addrs() < 0 ) { 
-        errlog( ERR_CRITICAL, "Critical Error, unable to update the address table\n" );
-        return errlog( ERR_CRITICAL, "_interface_update_addrs\n" );
+        /* XXX This creates a gap where none of the marking rules are in place, this could be
+         * problematic */
+        /*** XXX Look into creating a temporary rule for dropping all incoming packets on br0 */
+        _netcap_interface_marking( RULES_DEL, NC_INTF_UNK, NC_INTF_UNK );
+        
+        /* Update all of the addresses */
+        /* XXXXX this might be fatal */
+        if ( _interface_update_addrs() < 0 ) { 
+            errlog( ERR_CRITICAL, "Critical Error, unable to update the address table\n" );
+            ret = errlog( ERR_CRITICAL, "_interface_update_addrs\n" );
+            break;
+        }
+        
+        if ( _netcap_interface_marking( RULES_ADD, inside, outside ) < 0 ) {
+            ret = errlog( ERR_CRITICAL, "_netcap_interface_marking\n" );
+        }
+    } while ( 0 );
+    
+    if ( pthread_mutex_unlock( &_update_address_mutex ) < 0 ) {
+        return errlog ( ERR_CRITICAL, "pthread_mutex_lock" );
     }
 
-    if ( _netcap_interface_marking( RULES_ADD ) < 0 ) {
-        return errlog( ERR_CRITICAL, "_netcap_interface_marking\n" );
-    }
-
-    return 0;
+    
+    return ret;
 }
 
 /* Returns 1 if it is a broadcast */
@@ -273,7 +302,7 @@ in_addr_t* netcap_interface_addrs (void)
     return _if_addrs;
 }
 
-static int _netcap_interface_marking               ( int if_add )
+static int _netcap_interface_marking               ( int if_add, int inside, int outside )
 {
     int c;
     char add_del;
@@ -300,14 +329,17 @@ static int _netcap_interface_marking               ( int if_add )
                    "--mark %d/0x0F -j DROP"
     
     for ( c = _if_count ; c-- > 0  ; ) {
-        /* Build the command for each interface, Mark interface eth0 with 1, eth1 with 2, etc*/
-        snprintf( insert_cmd, MAX_CMD_LEN, MARK_BASE, add_del, _if_names[c], c + 1 );
-        
-        if ( mvutil_system ( insert_cmd ) < 0 ) {
-            perrlog("mvutil_system");
-            if_err = -1;
-        } else {
-            debug(5,"NETCAP: Run Command: '%s' \n", insert_cmd);
+        /* Deletes are now all removed by one command */
+        if ( if_add == RULES_ADD ) {
+            /* Build the command for each interface, Mark interface eth0 with 1, eth1 with 2, etc*/
+            snprintf( insert_cmd, MAX_CMD_LEN, MARK_BASE, add_del, _if_names[c], c + 1 );
+            
+            if ( mvutil_system ( insert_cmd ) < 0 ) {
+                perrlog("mvutil_system");
+                if_err = -1;
+            } else {
+                debug( 5, "NETCAP: Run Command: '%s'\n", insert_cmd );
+            }
         }
         
         /* Build the command for each interface, Mark interface eth0 with 1, eth1 with 2, etc*/
@@ -325,9 +357,71 @@ static int _netcap_interface_marking               ( int if_add )
         }
         
 #undef MARK_BASE
-  }
-
-  return if_err;
+    }
+    
+    /* Rather than deleting the individual rules, just flush the table */
+    if ( if_add == RULES_DEL ) {
+        if ( mvutil_system( "/sbin/iptables -t mangle -F " INTERFACE_CHAIN ));
+    } else {
+        /* Find the address of br0:0 */
+        int c;
+        int local_mark = -1;
+        
+        for  ( c = 0 ; c < _num_if ; c++ ) {
+            debug( 0, "Local mark: %d\n", local_mark );
+            if ( strncmp( _if_names_assigned[c], "br0:0", sizeof( "br0:0" )) == 0 ) {
+                local_mark = c + 1;
+                break;
+            }
+        }
+        
+        debug( 0, "Local mark: %d\n", local_mark );
+        
+        if ( local_mark > 0 ) {
+            /* These two have to go at the end */
+            if ( inside != NC_INTF_UNK ) {
+                if ( _check_intf( inside ) < 0 ) {
+                    errlog( ERR_CRITICAL, "Invalid inside interface: %d\n", inside );
+                } else {
+                    /* XXX Magic numbers */
+                    /* Antisubscribe to traffic on the inside */
+                    snprintf( insert_cmd, MAX_CMD_LEN, "/sbin/iptables -t mangle -A " INTERFACE_CHAIN 
+                              " -m mark --mark %#x/%#x -j MARK --set-mark " MARK_S_ANTISUB,
+                              inside | MARK_LOCAL | ( local_mark << MARK_LOCAL_OFFSET ) , 0x1FF );
+                    
+                    if ( mvutil_system ( insert_cmd ) < 0 ) {
+                        perrlog("mvutil_system");
+                    } else {
+                        debug( 5, "INTERFACES: Run Command: '%s'\n", insert_cmd );
+                    }
+                }
+            } else {
+                debug( 5, "INTERFACES: Not antisubscribing packets from inside to inside address\n" );
+            }
+            
+            if ( outside != NC_INTF_UNK ) {
+                if ( _check_intf( inside ) < 0 ) {
+                    errlog( ERR_CRITICAL, "Invalid outside interface: %d\n", inside );
+                } else {
+                    snprintf( insert_cmd, MAX_CMD_LEN, "/sbin/iptables -t mangle -A " INTERFACE_CHAIN 
+                              " -m mark --mark %#x/%#x -j DROP ",
+                              outside | MARK_LOCAL | ( local_mark << MARK_LOCAL_OFFSET ) , 0x1FF );
+                    
+                    if ( mvutil_system ( insert_cmd ) < 0 ) {
+                        perrlog("mvutil_system");
+                    } else {
+                        debug( 5, "NETCAP: Run Command: '%s'\n", insert_cmd );
+                    }
+                }
+            } else {
+                debug( 5, "INTERFACES: Not dropping packets from outside to inside address\n" );
+            }
+        } else {
+            debug( 5, "Not inserting inside address rules" );
+        }
+    }
+    
+    return if_err;
 }
 
 static int _netcap_interface_disable_srv_conntrack ( int if_add )
@@ -772,7 +866,8 @@ static int _interface_update_addrs( void )
                 _if_addrs[_num_if]    = addr.s_addr;
                 _broadcasts[_num_if]  = broadcast.s_addr;
                 _netmasks[_num_if]    = netmask.s_addr;
-                
+                strncpy( _if_names_assigned[_num_if], interfaces[i].ifr_name, NETCAP_MAX_IF_NAME_LEN);
+
                 _num_if++;            
             }
         }

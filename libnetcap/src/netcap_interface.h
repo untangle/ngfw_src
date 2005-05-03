@@ -19,7 +19,7 @@ int netcap_interface_marking(int ifAdd);
 
 int netcap_interface_mark_to_intf(int nfmark, netcap_intf_t* intf);
 
-int netcap_interface_update_address( void );
+int netcap_interface_update_address( int inside, int outside );
 
 #define NC_INTF_SET_TO_RULE_IN  1
 

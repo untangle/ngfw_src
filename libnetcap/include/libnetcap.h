@@ -435,7 +435,7 @@ const char* netcap_version (void);
 void  netcap_debug_set_level   (int lev);
 
 /** Update everything that must change when the address of the box changes */
-int   netcap_update_address( void );
+int   netcap_update_address( int inside, int outside );
 
 /**
  * Thread management

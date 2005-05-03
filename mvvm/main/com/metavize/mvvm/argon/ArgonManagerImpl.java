@@ -45,7 +45,7 @@ public class ArgonManagerImpl implements ArgonManager
 
     public void updateAddress()
     {
-        Netcap.updateAddress();
+        Netcap.updateAddress( IntfConverter.inside(), IntfConverter.outside());
         
         IPMatcher.setLocalAddress( Netcap.getHost());
     }

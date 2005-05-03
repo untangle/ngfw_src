@@ -104,8 +104,8 @@ public class NatSettings implements java.io.Serializable
 
 
         if ( dhcpEnabled ) {
-            IPaddr host;
-            IPaddr netmask;
+            IPaddr host = null;
+            IPaddr netmask = null;
 
             if ( natEnabled ) {
                 host    = natInternalAddress;
@@ -113,22 +113,25 @@ public class NatSettings implements java.io.Serializable
             } else {
                 /* Need the network settings */
                 /* XXX This inefficient since it has to call to the server */
+                /* XXX Currently a bug, getting around by ignoring */
                 if ( netConfig == null ) {
-                    netConfig = MvvmContextFactory.context().networkingManager().get();
-                }
+                    // netConfig = MvvmContextFactory.context().networkingManager().get();
+                } 
                 
-                host    = netConfig.host();
-                netmask = netConfig.netmask();
+                if ( netConfig != null ) {
+                    host    = netConfig.host();
+                    netmask = netConfig.netmask();
+                }
             }
             
-            if ( !dhcpStartAddress.isInNetwork( host, netmask )) {
+            if ( host != null && !dhcpStartAddress.isInNetwork( host, netmask )) {
                 isStartAddressValid = false;
 
                 throw new IllegalArgumentException( "IP Address Range Start must be in the network: " + host.toString() + "/" + netmask.toString());
 
             }
 
-            if ( !dhcpEndAddress.isInNetwork( host, netmask )) {
+            if ( host != null && !dhcpEndAddress.isInNetwork( host, netmask )) {
                 isEndAddressValid = false;
 
                 throw new IllegalArgumentException( "IP Address Range End must be in the network: " + host.toString() + "/" + netmask.toString());

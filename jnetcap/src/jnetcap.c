@@ -711,9 +711,9 @@ JNIEXPORT jboolean JNICALL JF_Netcap( isMulticast )
  * Signature: ()V;
  */
 JNIEXPORT void JNICALL JF_Netcap( updateAddress )
-    ( JNIEnv* env, jclass _class )
+    ( JNIEnv* env, jclass _class, jint inside, jint outside )
 {
-    if ( netcap_update_address() < 0 ) {
+    if ( netcap_update_address( inside, outside ) < 0 ) {
         jnetcap_error( JNETCAP_ERROR_STT, ERR_CRITICAL, "netcap_update_address\n" );
     }
 }

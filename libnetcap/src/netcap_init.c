@@ -46,7 +46,7 @@ static struct {
     pthread_mutex_t mutex;
 } _init = {
     .status STATUS_UNINITIALIZED,
-    .mutex PTHREAD_MUTEX_INITIALIZER
+    .mutex PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP
 };
 
 static int _netcap_init( int shield_enable );
@@ -200,10 +200,10 @@ int netcap_is_initialized()
     return ret;
 }
 
-int netcap_update_address( void )
+int netcap_update_address( int inside, int outside )
 {
     if ( _init.status == STATUS_INITIALIZED ) {
-        if ( netcap_interface_update_address() < 0 )
+        if ( netcap_interface_update_address( inside, outside ) < 0 )
             return errlog( ERR_CRITICAL, "netcap_interface_update_address\n" );
     } else {
         debug( 1, "NETCAP: Not updating address because netcap is not initialized\n" );

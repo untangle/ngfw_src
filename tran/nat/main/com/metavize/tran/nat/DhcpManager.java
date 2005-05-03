@@ -48,6 +48,7 @@ class DhcpManager
     private static final String FLAG_DHCP_NETMASK     = "1";
     private static final String FLAG_DHCP_NAMESERVERS = "6";
     private static final String FLAG_DNS_LISTEN       = "listen-address";
+    private static final String FLAG_DNS_LISTEN_PORT  = "port";
 
     private static final int DHCP_LEASE_ENTRY_LENGTH  = 5;
     private static final String DHCP_LEASE_DELIM      = " ";
@@ -239,13 +240,20 @@ class DhcpManager
             Integer index = macMap.get( mac );
             if ( index == null ) {
                 /* Insert a new rule */
-                leaseList.add( new DhcpLeaseRule( mac, "", IPNullAddr.getNullAddr(), 
-                                                  rule.getStaticAddress(), null, true ));
+                DhcpLeaseRule currentRule = new DhcpLeaseRule( mac, "", IPNullAddr.getNullAddr(), 
+                                                               rule.getStaticAddress(), null, true );
+                currentRule.setDescription( rule.getDescription());
+                currentRule.setCategory( rule.getCategory());
+                
+                leaseList.add( currentRule );
+                
                 macMap.put( mac, leaseList.size() - 1 );
             } else {
                 DhcpLeaseRule currentRule = leaseList.get( index );
                 currentRule.setStaticAddress( rule.getStaticAddress());
                 currentRule.setResolvedByMac( rule.getResolvedByMac());
+                currentRule.setDescription( rule.getDescription());
+                currentRule.setCategory( rule.getCategory());
             }
         }
     }
@@ -329,8 +337,8 @@ class DhcpManager
         }
         
         if ( !settings.getDnsEnabled()) {
-            comment( sb, "DNS is disabled, binding DNS to local host" );
-            sb.append( FLAG_DNS_LISTEN + "=" + "127.0.0.1\n\n" );
+            comment( sb, "DNS is disabled, binding to port 54" );
+            sb.append( FLAG_DNS_LISTEN_PORT + "= 54\n\n" );
         }
 
         /* XXX localdomain, no settings for local domain */
@@ -379,22 +387,23 @@ class DhcpManager
             } else {
                 nameservers += netConfig.host().toString();
             }
-        }
+        } else {
         
-        tmp = netConfig.dns1();
+            tmp = netConfig.dns1();
 
-        if ( tmp != null && !tmp.isEmpty()) {
-            nameservers += ( nameservers.length() == 0 ) ? "" : ",";
-            nameservers += tmp.toString();
+            if ( tmp != null && !tmp.isEmpty()) {
+                nameservers += ( nameservers.length() == 0 ) ? "" : ",";
+                nameservers += tmp.toString();
+            }
+            
+            tmp = netConfig.dns2();
+            
+            if ( tmp != null && !tmp.isEmpty()) {
+                nameservers += ( nameservers.length() == 0 ) ? "" : ",";
+                nameservers += tmp.toString();
+            }
         }
-
-        tmp = netConfig.dns2();
-
-        if ( tmp != null && !tmp.isEmpty()) {
-            nameservers += ( nameservers.length() == 0 ) ? "" : ",";
-            nameservers += tmp.toString();
-        }
-
+            
         if ( nameservers.length() == 0 ) {
             comment( sb, "No nameservers specified\n" );
         } else {

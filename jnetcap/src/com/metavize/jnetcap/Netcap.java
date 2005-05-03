@@ -352,8 +352,15 @@ public final class Netcap {
         logger.fatal( o );
     }
     
-    /* Specialty functions for NAT, DHCP and updating the address */
-    public static native void updateAddress();
+    /**
+     * Specialty functions for NAT, DHCP and updating the address 
+     * inside:   Netcap interface that is the inside, not used when disabling.
+     *           If there is an address for br0:0, then that address is blocked
+     *           on the outside and antisubscribed on the inside.
+     * outside:  Netcap interface that is the outside.
+     */
+    
+    public static native void updateAddress( int inside, int outside );
     
     public static native void enableLocalAntisubscribe();
     public static native void disableLocalAntisubscribe();
