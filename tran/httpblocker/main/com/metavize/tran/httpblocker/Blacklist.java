@@ -296,7 +296,6 @@ class Blacklist
     private String checkBlacklist(String host, RequestLine requestLine)
     {
         URI uri = requestLine.getRequestUri();
-        String url = host + uri.toString();
 
         StringBuilder sb = new StringBuilder(host);
         sb.reverse();
@@ -311,7 +310,11 @@ class Blacklist
             return settings.getBlockTemplate().render(host, uri, category);
         }
 
-        category = findCategory(url, urls, urlCats);
+        while (null == category && null != host) {
+            String url = host + uri.toString();
+            category = findCategory(url, urls, urlCats);
+            host = nextHost(host);
+        }
 
         if (null != category) {
             eventLogger.info(new HttpBlockerEvent(requestLine, Reason.URI,
@@ -348,5 +351,30 @@ class Blacklist
     private boolean passedUrl(String host, String path)
     {
         return settings.getPassedUrls().contains(host + path);
+    }
+
+    /**
+     * Gets the next domain stripping off the lowest level domain from
+     * host. Does not return the top level domain. Returns null when
+     * no more domains are left.
+     *
+     * <b>This method assumes trailing dots are stripped from host.</b>
+     *
+     * @param host a <code>String</code> value
+     * @return a <code>String</code> value
+     */
+    private String nextHost(String host)
+    {
+        int i = host.indexOf('.');
+        if (-1 == i) {
+            return null;
+        } else {
+            int j = host.indexOf('.', i + 1);
+            if (-1 == j) { // skip tld
+                return null;
+            }
+
+            return host.substring(i + 1);
+        }
     }
 }
