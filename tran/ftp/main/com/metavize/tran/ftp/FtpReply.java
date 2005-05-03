@@ -13,7 +13,6 @@ package com.metavize.tran.ftp;
 
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
-import java.util.regex.Pattern;
 
 import com.metavize.tran.token.ParseException;
 import com.metavize.tran.token.Token;
@@ -28,8 +27,6 @@ import com.metavize.tran.util.AsciiCharBuffer;
  */
 public class FtpReply implements Token
 {
-    private static final Pattern LINE_SPLITTER = Pattern.compile("\r\n");
-
     private final int replyCode;
     private final String message;
 
@@ -84,24 +81,7 @@ public class FtpReply implements Token
      */
     public ByteBuffer getBytes()
     {
-        StringBuilder sb = new StringBuilder(message.length() + 10);
-
-        String[] lines = LINE_SPLITTER.split(message);
-
-        for (int i = 0; i < lines.length; i++) {
-            sb.append(replyCode);
-            if (lines.length - 1 == i) {
-                sb.append(' ');
-            } else {
-                sb.append('-');
-            }
-            sb.append(lines[i]);
-            sb.append("\r\n");
-        }
-
-        String message = sb.toString();
-
-        return ByteBuffer.wrap(sb.toString().getBytes());
+        return ByteBuffer.wrap(message.getBytes());
     }
 
     // Object methods ---------------------------------------------------------

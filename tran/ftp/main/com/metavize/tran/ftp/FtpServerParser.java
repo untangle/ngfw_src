@@ -24,6 +24,7 @@ import com.metavize.tran.token.ParseException;
 import com.metavize.tran.token.ParseResult;
 import com.metavize.tran.token.Token;
 import com.metavize.tran.token.TokenStreamer;
+import com.metavize.tran.util.AsciiCharBuffer;
 import org.apache.log4j.Logger;
 
 public class FtpServerParser extends AbstractParser
@@ -89,9 +90,7 @@ public class FtpServerParser extends AbstractParser
 
             switch (dup.get()) {
             case SP: {
-                byte[] ba = new byte[dup.remaining()];
-                dup.get(ba);
-                String message = new String(ba);
+                String message = AsciiCharBuffer.wrap(buf).toString();
 
                 FtpReply reply = new FtpReply(replyCode, message);
 
@@ -115,35 +114,7 @@ public class FtpServerParser extends AbstractParser
                     return new ParseResult(null, buf.compact());
                 }
 
-                StringBuffer sb = new StringBuffer(buf.remaining());
-
-                while (buf.hasRemaining()) {
-                    byte b;
-
-                    for (int j = 0; j < 3; j++) {
-                        if (!Character.isDigit(buf.get())) {
-                            throw new ParseException("digit expected");
-                        }
-                    }
-
-                    if (SP != (b = buf.get()) && HYPHEN != b) {
-                        throw new ParseException("space or hyphen expected");
-                    }
-
-                    while (CR != (b = buf.get())) {
-                        sb.append((char)b);
-                    }
-
-                    if (LF != (b = buf.get())) {
-                        throw new ParseException("LF expected");
-                    }
-
-                    if (buf.hasRemaining()) {
-                        sb.append(CRLF);
-                    }
-                }
-
-                String message = sb.toString();
+                String message = AsciiCharBuffer.wrap(buf).toString();
 
                 FtpReply reply = new FtpReply(replyCode, message);
 
