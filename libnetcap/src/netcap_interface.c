@@ -368,15 +368,12 @@ static int _netcap_interface_marking               ( int if_add, int inside, int
         int local_mark = -1;
         
         for  ( c = 0 ; c < _num_if ; c++ ) {
-            debug( 0, "Local mark: %d\n", local_mark );
             if ( strncmp( _if_names_assigned[c], "br0:0", sizeof( "br0:0" )) == 0 ) {
                 local_mark = c + 1;
                 break;
             }
         }
-        
-        debug( 0, "Local mark: %d\n", local_mark );
-        
+                
         if ( local_mark > 0 ) {
             /* These two have to go at the end */
             if ( inside != NC_INTF_UNK ) {
