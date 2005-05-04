@@ -311,23 +311,6 @@ class TransformContextImpl implements TransformContext
             logger.warn("could not close Hibernate SessionFactory", exn);
         }
 
-        Session s = MvvmContextFactory.context().openSession();
-        try {
-            Transaction tx = s.beginTransaction();
-
-            s.delete(transformDesc);
-
-            tx.commit();
-        } catch (HibernateException exn) {
-            logger.warn(exn, exn);
-        } finally {
-            try {
-                s.close();
-            } catch (HibernateException exn) {
-                logger.warn("could not close Session", exn);
-            }
-        }
-
         CONTEXTS.remove(classLoader);
     }
 
