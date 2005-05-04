@@ -216,7 +216,7 @@ netcap_shield_response_t* netcap_shield_rep_check        ( in_addr_t ip )
     nc_shield_rep_t rep_val;
     netcap_shield_ans_t ans = NC_SHIELD_YES;
     reputation_t*  rep;
-    nc_shield_fence_t* fence;
+    nc_shield_fence_t* fence = NULL;
     
     /* If the shield is not enabled return true */
     if ( !_shield.enabled ) {
@@ -235,7 +235,11 @@ netcap_shield_response_t* netcap_shield_rep_check        ( in_addr_t ip )
         }
         
         /* If things are really bad, do not let anything in */
-        if ( mode == NC_SHIELD_MODE_CLOSED ) { ans = NC_SHIELD_DROP; break; }
+        if ( mode == NC_SHIELD_MODE_CLOSED ) { 
+            rep_val= _shield.cfg.fence.closed.limited.post;
+            fence = &_shield.cfg.fence.closed;
+            break;
+        }
         
         /* Update the reputation */
         if (( item = netcap_trie_apply_close ( &_shield.trie, ip, _apply_func, &func )) == NULL ) {
