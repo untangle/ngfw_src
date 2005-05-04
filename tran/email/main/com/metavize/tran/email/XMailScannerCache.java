@@ -382,7 +382,7 @@ public class XMailScannerCache
 
         try
         {
-            ArrayList zData;
+            ArrayList zTmpList;
             Pattern zPattern;
             Matcher zMatcher;
             String zExchValue;
@@ -430,8 +430,17 @@ public class XMailScannerCache
                     if (true == zMatcher.find())
                     {
                         zFileName = zExchValue.substring(zMatcher.end());
-                        zData = readFile(zEncoder, zFileName);
-                        if (null != zData)
+                        try
+                        {
+                            zTmpList = MLLine.readFile(zEncoder, zFileName);
+                        }
+                        catch (IOException e)
+                        {
+                            zTmpList = null;
+                            /* fall through */
+                        }
+
+                        if (null != zTmpList)
                         {
                             try
                             {
@@ -439,7 +448,7 @@ public class XMailScannerCache
                                  * then exchange key is exchange value and
                                  * exchange value is file data (ByteBuffer list)
                                  */
-                                zHashtable.put(zExchValue, zData);
+                                zHashtable.put(zExchValue, zTmpList);
                                 /* fall through */
                             }
                             catch (NullPointerException e)
@@ -472,8 +481,8 @@ public class XMailScannerCache
                                 continue;
                             }
                             CBufferWrapper zCLine = new CBufferWrapper(zLine);
-                            zData = new ArrayList();
-                            zData.add(zCLine);
+                            zTmpList = new ArrayList();
+                            zTmpList.add(zCLine);
 
                             try
                             {
@@ -481,7 +490,7 @@ public class XMailScannerCache
                                  * then exchange key is exchange value and
                                  * exchange value is text (ByteBuffer list)
                                  */
-                                zHashtable.put(zExchValue, zData);
+                                zHashtable.put(zExchValue, zTmpList);
                                 /* fall through */
                             }
                             catch (NullPointerException e)
@@ -517,66 +526,6 @@ public class XMailScannerCache
         }
 
         return new SubCache(zPatternMap, zHashtable);
-    }
-
-    /* opens filename,
-     * reads file data into ByteBuffers,
-     * adds ByteBuffers to list, and
-     * returns list
-     * - hopefully, file is small in size
-     */
-    private static ArrayList readFile(CharsetEncoder zEncoder, String zFileName)
-    {
-        FileReader zFReader = null;
-
-        try
-        {
-            zFReader = new FileReader(zFileName);
-        }
-        catch (FileNotFoundException e)
-        {
-            zLog.error("Unable to find file: " + e);
-            return null;
-        }
-
-        BufferedReader zBReader = new BufferedReader(zFReader);
-
-        ArrayList zList = new ArrayList();
-
-        try
-        {
-            ByteBuffer zLine = null;
-
-            String zReadLine;
-            CBufferWrapper zCLine;
-
-            /* read file data as separate lines of Strings and
-             * using default charset,
-             * encode each String into ByteBuffer
-             */
-            while (true == zBReader.ready())
-            {
-                zReadLine = zBReader.readLine() + Constants.PCRLF;
-                try
-                {
-                    zLine = MLLine.toByteBuffer(zEncoder, zReadLine);
-                }
-                catch (CharacterCodingException e)
-                {
-                    zLog.error("Unable to encode line: " + zReadLine + ", in file: " + zFileName);
-                }
-                zCLine = new CBufferWrapper(zLine);
-                zList.add(zCLine);
-            }
-            zBReader.close();
-        }
-        catch (IOException e)
-        {
-            zLog.error("Unable to process (read/close) file: " + e);
-            return null;
-        }
-
-        return zList;
     }
 
     private boolean getOption(ScannerOptions zOptions, int iType)

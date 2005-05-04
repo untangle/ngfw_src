@@ -968,6 +968,7 @@ public class IMAPHandler extends MLHandler
         {
             zLog.warn("retrieved empty append message");
             zEnv.resetReadCLine();
+            flushMsg(zEnv);
             setup(false);
             return;
         }
@@ -1005,6 +1006,7 @@ public class IMAPHandler extends MLHandler
         {
             zLog.warn("retrieved empty fetch message");
             zEnv.resetReadCLine();
+            flushMsg(zEnv);
             setup(false);
             return;
         }

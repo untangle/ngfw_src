@@ -526,7 +526,7 @@ public class SMTPHandler extends MLHandler
         bStartMsg = false; /* not ready to start new message transaction */
 
         /* in order of most likely to least likely to occur
-         * - we are either intercepting or passing these cmds through
+         * - we are either intercepting or passing through these cmds
          *   so we don't care about replies yet
          */
         zStateMachine.reset(SEND_INT, PIPELINING_INT);
@@ -626,6 +626,7 @@ public class SMTPHandler extends MLHandler
         {
             zLog.warn("retrieved empty message");
             zEnv.resetReadCLine();
+            flushMsg(zEnv);
             setup();
             return;
         }

@@ -32,7 +32,7 @@ public class POPHandler extends MLHandler
     private final static String DIGVAL = "(\\p{Digit})++";
     private final static String SZVAL = DIGVAL + " octets";
     private final static Pattern DIGVALP = Pattern.compile(DIGVAL);
-    private final static Pattern SZVALP = Pattern.compile(SZVAL);
+    private final static Pattern SZVALP = Pattern.compile(SZVAL, Pattern.CASE_INSENSITIVE);
 
     private final static String OK = "+OK ";
     private final static String OKREPLY = "^\\" + OK;
@@ -42,8 +42,8 @@ public class POPHandler extends MLHandler
     private final static String PASSWD = "^PASS ";
     private final static String APOP = "^APOP ";
     private final static String RETR = "^RETR ";
-    private final static String NOOP = "^NOOP" + Constants.PEOLINE;
-    private final static String QUIT = "^QUIT" + Constants.PEOLINE;
+    private final static String NOOP = "^NOOP(" + Constants.LWSP + ")?+" + Constants.PEOLINE;
+    private final static String QUIT = "^QUIT(" + Constants.LWSP + ")?+" + Constants.PEOLINE;
     private final static Pattern USERP = Pattern.compile(USER, Pattern.CASE_INSENSITIVE);
     private final static Pattern PASSWDP = Pattern.compile(PASSWD, Pattern.CASE_INSENSITIVE);
     private final static Pattern APOPP = Pattern.compile(APOP, Pattern.CASE_INSENSITIVE);
@@ -755,6 +755,7 @@ public class POPHandler extends MLHandler
         {
             zLog.warn("retrieved empty message");
             zEnv.resetReadCLine();
+            flushMsg(zEnv);
             setup(false);
             return;
         }

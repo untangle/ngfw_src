@@ -60,8 +60,9 @@ public class Constants
     public final static int ORIGINATOR_IDX = 4;
     public final static int SUBJECT_IDX = 5;
     public final static int CONTENTTYPE_IDX = 6;
-    public final static int MIMECONTENTTYPE_IDX = 7; /* plus MIME Content-Disposition */
-    public final static int MIMECONTENTENCODE_IDX = 8;
+    public final static int CONTENTENCODE_IDX = 7;
+    public final static int MIMECONTENTTYPE_IDX = 8; /* plus MIME Content-Disposition */
+    public final static int MIMECONTENTENCODE_IDX = 9;
 
     public final static int NAME_CNT = MIMECONTENTENCODE_IDX;
 
@@ -198,6 +199,20 @@ public class Constants
     public final static byte LOCALHOSTBA[] = { '@', 'l', 'o', 'c', 'a', 'l', 'h', 'o', 's', 't' };
     /* virus was removed */
     public final static byte VIRUSREMOVEDBA[] = { 'A', ' ', 'v', 'i', 'r', 'u', 's', ' ', 'w', 'a', 's', ' ', 'd', 'e', 't', 'e', 'c', 't', 'e', 'd', ' ', 'a', 'n', 'd', ' ', 'r', 'e', 'm', 'o', 'v', 'e', 'd', ' ', 'f', 'r', 'o', 'm', ' ', 't', 'h', 'i', 's', ' ', 'm', 'e', 's', 's', 'a', 'g', 'e', ':', 13, 10 };
+
+    public final static String TMP_FNAME = "MVeMSG";
+
+    public final static int NOENCODE_TYPE = 0;
+    public final static int BASE64_TYPE = 1;
+    public final static int UUENCODE_TYPE = 2;
+
+    public final static int BASE64_LINESZ = 76; /* excludes EOL */
+    public final static int UUENCODE_LINESZ = 61; /* excludes EOL */
+
+    private final static String BASE64 = "BASE64";
+    private final static String UUENCODE = "UUENCODE";
+    public final static Pattern BASE64P = Pattern.compile(BASE64, Pattern.CASE_INSENSITIVE);
+    public final static Pattern UUENCODEP = Pattern.compile(UUENCODE, Pattern.CASE_INSENSITIVE);
 
     /* we prefer to set file access as 600 but 
      * we may use scanners
@@ -482,14 +497,34 @@ public class Constants
         return zMIMEHdrPlainLine;
     }
 
+    public static ByteBuffer getBase64Start(ByteBuffer zFNameLine)
+    {
+        ByteBuffer zLine = ByteBuffer.allocate(BASE64STARTBA.length + zFNameLine.limit() + LINEFEEDBA.length);
+        zLine.put(BASE64STARTBA);
+        zLine.put(zFNameLine);
+        zLine.put(LINEFEEDBA);
+
+        return zLine;
+    }
+
     public static ByteBuffer getBase64End()
     {
-        return zBase64End;
+        return zBase64End.duplicate();
+    }
+
+    public static ByteBuffer getUuencodeStart(ByteBuffer zFNameLine)
+    {
+        ByteBuffer zLine = ByteBuffer.allocate(UUENCODESTARTBA.length + zFNameLine.limit() + LINEFEEDBA.length);
+        zLine.put(UUENCODESTARTBA);
+        zLine.put(zFNameLine);
+        zLine.put(LINEFEEDBA);
+
+        return zLine;
     }
 
     public static ByteBuffer getUuencodeEnd()
     {
-        return zUuencodeEnd;
+        return zUuencodeEnd.duplicate();
     }
 
     public static File getDir(int iDir)

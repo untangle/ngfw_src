@@ -31,14 +31,15 @@ public class MLFieldConstants
     private final static String ORIGINATOR = "^REPLY-TO:";
     private final static String SUBJECT = "^SUBJECT:";
     private final static String CONTENTTYPE = "^CONTENT-TYPE:";
+    private final static String CONTENTENCODE = "^CONTENT-TRANSFER-ENCODING:";
     private final static String XSPAMFLAG = "^X-SPAM-FLAG:";
     private final static String XSPAMSTATUS = "^X-SPAM-STATUS:";
     private final static String XVIRUSSTATUS = "^X-VIRUS-STATUS:";
     private final static String XVIRUSREPORT = "^X-VIRUS-REPORT:";
 
-    private final static String MIMECONTENTTYPE = "^CONTENT-TYPE:";
+    private final static String MIMECONTENTTYPE = CONTENTTYPE;
     private final static String MIMECONTENTDISPOSITION = "^CONTENT-DISPOSITION:";
-    private final static String MIMECONTENTENCODE = "^CONTENT-TRANSFER-ENCODING:";
+    private final static String MIMECONTENTENCODE = CONTENTENCODE;
     public final static Pattern RELAYP = Pattern.compile(RELAY, Pattern.CASE_INSENSITIVE);
     public final static Pattern FROMP = Pattern.compile(FROM, Pattern.CASE_INSENSITIVE);
     public final static Pattern HSENDERP = Pattern.compile(HSENDER, Pattern.CASE_INSENSITIVE);
@@ -49,6 +50,7 @@ public class MLFieldConstants
     public final static Pattern ORIGINATORP = Pattern.compile(ORIGINATOR, Pattern.CASE_INSENSITIVE);
     public final static Pattern SUBJECTP = Pattern.compile(SUBJECT, Pattern.CASE_INSENSITIVE);
     public final static Pattern CONTENTTYPEP = Pattern.compile(CONTENTTYPE, Pattern.CASE_INSENSITIVE);
+    public final static Pattern CONTENTENCODEP = Pattern.compile(CONTENTENCODE, Pattern.CASE_INSENSITIVE);
     public final static Pattern XSPAMFLAGP = Pattern.compile(XSPAMFLAG, Pattern.CASE_INSENSITIVE);
     public final static Pattern XSPAMSTATUSP = Pattern.compile(XSPAMSTATUS, Pattern.CASE_INSENSITIVE);
     public final static Pattern XVIRUSSTATUSP = Pattern.compile(XVIRUSSTATUS, Pattern.CASE_INSENSITIVE);
@@ -95,6 +97,30 @@ public class MLFieldConstants
     private MLFieldConstants() {}
 
     /* public methods */
+    /* does MIME Content-Transfer-Encoding specify this encoder? */
+    public static boolean isEncoding(Pattern zEncoderP, ArrayList zCEList)
+    {
+        if (null == zCEList)
+        {
+            return false;
+        }
+
+        CBufferWrapper zCLine;
+        Matcher zMatcher;
+
+        for (Iterator zIter = zCEList.iterator(); true == zIter.hasNext(); )
+        {
+            zCLine = (CBufferWrapper) zIter.next();
+
+            zMatcher = zEncoderP.matcher(zCLine);
+            if (true == zMatcher.find())
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     /* private methods */
 }

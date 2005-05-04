@@ -10,7 +10,8 @@
  */
 package com.metavize.tran.email;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.lang.InterruptedException;
 import java.lang.NumberFormatException;
 import java.nio.*;
@@ -52,18 +53,21 @@ public class MLMessage
     /* constants */
     private static final Logger zLog = Logger.getLogger(MLMessage.class.getName());
 
+    private final static byte BASE64_FNAMEBA[] = { 'M', 'S', 'G', 'b', '6', '4' };
+    private final static byte UUENCODE_FNAMEBA[] = { 'M', 'S', 'G', 'u', 'u', 'e' };
+
     private final static String SQUOTESTR = "\\'";
     private final static String SQUOTELSTR = "\\\\'";
     private final static String OPARENSTR = "\\(";
-    private final static String CPARENLSTR = "\\\\)";
     private final static String OPARENLSTR = "\\\\(";
     private final static String CPARENSTR = "\\)";
+    private final static String CPARENLSTR = "\\\\)";
     private final static String PLUSSTR = "\\+";
     private final static String PLUSLSTR = "\\\\+";
     private final static String COMMASTR = "\\,";
     private final static String COMMALSTR = "\\\\,";
-    private final static String MINUSSTR = "\\-";
-    private final static String MINUSLSTR = "\\\\-";
+    private final static String DASHSTR = "\\-";
+    private final static String DASHLSTR = "\\\\-";
     private final static String DOTSTR = "\\.";
     private final static String DOTLSTR = "\\\\.";
     private final static String COLONSTR = "\\:";
@@ -77,7 +81,7 @@ public class MLMessage
     private final static Pattern CPARENSTRP = Pattern.compile(CPARENSTR);
     private final static Pattern PLUSSTRP = Pattern.compile(PLUSSTR);
     private final static Pattern COMMASTRP = Pattern.compile(COMMASTR);
-    private final static Pattern MINUSSTRP = Pattern.compile(MINUSSTR);
+    private final static Pattern DASHSTRP = Pattern.compile(DASHSTR);
     private final static Pattern DOTSTRP = Pattern.compile(DOTSTR);
     private final static Pattern COLONSTRP = Pattern.compile(COLONSTR);
     private final static Pattern EQUALSTRP = Pattern.compile(EQUALSTR);
@@ -118,6 +122,7 @@ public class MLMessage
 
     private ArrayList zHdrs = null; /* header */
     private ArrayList zBodys = null; /* body and MIME body */
+    private int iEncodedType = Constants.NOENCODE_TYPE;
 
     private MLMessagePTO zPTO = null;
 
@@ -143,6 +148,7 @@ public class MLMessage
     private ArrayList zReplyTos = null;
     private ArrayList zSubjects = null; /* not usually folded */
     private ArrayList zContentTypes = null;
+    private ArrayList zContentEncodes = null;
     private ArrayList zXSpamFlags = null;
     private ArrayList zXSpamStatuss = null;
     private ArrayList zXVirusStatuss = null;
@@ -206,15 +212,15 @@ public class MLMessage
         return this.iSize = iSize;
     }
 
-    public int setSize(String zSize)
+    public int setSize(String zSzStr)
     {
         try
         {
-            this.iSize = Integer.valueOf(zSize).intValue();
+            this.iSize = Integer.valueOf(zSzStr).intValue();
         }
         catch (NumberFormatException e)
         {
-            zLog.error("Unable to convert message size string (" + zSize + ") to integer value: " + e);
+            zLog.error("Unable to convert message size string (" + zSzStr + ") to integer value: " + e);
             clearSize();
         }
 
@@ -316,6 +322,11 @@ public class MLMessage
         return zContentTypes;
     }
 
+    public ArrayList getContentEncodes()
+    {
+        return zContentEncodes;
+    }
+
     public ArrayList getXSpamStatus()
     {
         return zXSpamStatuss;
@@ -353,6 +364,8 @@ public class MLMessage
         {
             zBodys.clear();
         }
+
+        iEncodedType = Constants.NOENCODE_TYPE;
 
         if (null != zPTO)
         {
@@ -425,6 +438,12 @@ public class MLMessage
         {
             zContentTypes.clear();
             zContentTypes = null;
+        }
+
+        if (null != zContentEncodes)
+        {
+            zContentEncodes.clear();
+            zContentEncodes = null;
         }
 
         if (null != zXSpamFlags)
@@ -618,11 +637,11 @@ public class MLMessage
         boolean bIsFile;
 
         MatchAction zMatchAction = (MatchAction) zAction;
-        String zKey = zMatchAction.getPatternAction().getValue();
-        Matcher zKeyMatcher = Constants.FILEPREFIXP.matcher(zKey);
+        String zKeyStr = zMatchAction.getPatternAction().getValue();
+        Matcher zKeyMatcher = Constants.FILEPREFIXP.matcher(zKeyStr);
         if (false == zKeyMatcher.find())
         {
-            zKeyMatcher = Constants.TEXTPREFIXP.matcher(zKey);
+            zKeyMatcher = Constants.TEXTPREFIXP.matcher(zKeyStr);
             if (false == zKeyMatcher.find())
             {
                 bIsFile = false; /* replacement value is literal text */
@@ -640,7 +659,7 @@ public class MLMessage
         /* exchange value may be String (literal) or
          * ArrayList (file/file text data)
          */
-        Object zNewValue = zXMSCache.getExchValue(zKey);
+        Object zNewValue = zXMSCache.getExchValue(zKeyStr);
         Matcher zMatcher = zMatchAction.getMatcher();
         CBufferWrapper zCLine = (CBufferWrapper) zMatchAction.getMatchLine();
 
@@ -708,8 +727,8 @@ public class MLMessage
             return null;
         }
 
-        ByteBuffer zReplacement = zXMSCache.getVirusRemoved();
-        VirusScannerResult zScanResult = zMIMEBody.scan(zReplacement, zScanner, bReplace);
+        ByteBuffer zReplLine = zXMSCache.getVirusRemoved();
+        VirusScannerResult zScanResult = zMIMEBody.scan(zReplLine, zScanner, bReplace);
 
         if (true == bReplace &&
             (null != zScanResult && false == zScanResult.isClean()))
@@ -725,21 +744,21 @@ public class MLMessage
     }
 
     /* strip boundary parameter value from Content-Type field */
-    public static String getCTBoundary(ArrayList zCTypes) throws ParseException
+    public static String getCTBoundary(ArrayList zCTList) throws ParseException
     {
-        if (null == zCTypes ||
-            true == zCTypes.isEmpty())
+        if (null == zCTList ||
+            true == zCTList.isEmpty())
         {
             return null;
         }
+
+        String zStr = null;
 
         Matcher zMatcher;
         CBufferWrapper zCLine;
         CBufferWrapper zCTmp;
 
-        String zSLine = null;
-
-        for (Iterator zIter = zCTypes.iterator(); true == zIter.hasNext(); )
+        for (Iterator zIter = zCTList.iterator(); true == zIter.hasNext(); )
         {
             zCLine = (CBufferWrapper) zIter.next();
 
@@ -778,11 +797,11 @@ public class MLMessage
              * Matcher assumes that its input sequence is String and
              * we are using CBufferWrapper (CharSequence)
              */
-            zSLine = maskMeta((CBufferWrapper) zCTmp.subSequence(0, zMatcher.start()));
+            zStr = maskMeta((CBufferWrapper) zCTmp.subSequence(0, zMatcher.start()));
             break; /* for loop */
         }
 
-        return zSLine;
+        return zStr;
     }
 
     /* get list of source buffers (ByteBuffers) that backs this message */
@@ -1033,6 +1052,10 @@ public class MLMessage
             zContentTypes.add(zCLine);
             return Constants.CONTENTTYPE_IDX;
 
+        case Constants.CONTENTENCODE_IDX:
+            zContentEncodes.add(zCLine);
+            return Constants.CONTENTENCODE_IDX;
+
         case Constants.XSPAMFLAG_IDX:
             zXSpamFlags.add(zCLine);
             return Constants.XSPAMFLAG_IDX;
@@ -1182,6 +1205,19 @@ public class MLMessage
             return Constants.CONTENTTYPE_IDX;
         } /* else not CONTENTTYPE */
 
+        zMatcher = MLFieldConstants.CONTENTENCODEP.matcher(zCLine);
+        if (true == zMatcher.find())
+        {
+            if (null != zContentEncodes)
+            {
+                throw new ParseException("Unable to parse header of this message because the header contains a field that has been specified more than once: \"" + zCLine + "\"");
+            }
+
+            zContentEncodes = new ArrayList();
+            zContentEncodes.add(zCLine);
+            return Constants.CONTENTENCODE_IDX;
+        } /* else not CONTENTENCODE */
+
         zMatcher = MLFieldConstants.XSPAMFLAGP.matcher(zCLine);
         if (true == zMatcher.find())
         {
@@ -1240,15 +1276,17 @@ public class MLMessage
 
     private void parseBody() throws ParseException
     {
-        String zCTBoundary = getCTBoundary(zContentTypes);
-        if (null != zCTBoundary)
+        decodeBody();
+
+        String zCTBStr = getCTBoundary(zContentTypes);
+        if (null != zCTBStr)
         {
             /* process MIME body */
             if (null == zMIMEBody)
             {
                 zMIMEBody = new MIMEBody();
             }
-            zMIMEBody.parse(zCTBoundary, zBodys);
+            zMIMEBody.parse(zCTBStr, zBodys);
 
             return;
         }
@@ -1258,6 +1296,138 @@ public class MLMessage
          * we are not interested in its body and
          * will not parse body)
          */
+
+        return;
+    }
+
+    /* if message body is encoded, then decode it so that we can process it */
+    private void decodeBody()
+    {
+        ByteBuffer zName;
+        ByteBuffer zStart;
+        ByteBuffer zEnd;
+        int iLineSz;
+
+        if (true == MLFieldConstants.isEncoding(Constants.BASE64P, zContentEncodes))
+        {
+            iEncodedType = Constants.BASE64_TYPE;
+
+            zName = ByteBuffer.wrap(BASE64_FNAMEBA, BASE64_FNAMEBA.length, 0);
+            zName.rewind();
+
+            zStart = Constants.getBase64Start(zName);
+            zEnd = Constants.getBase64End();
+
+            iLineSz = Constants.BASE64_LINESZ;
+        }
+        else if (true == MLFieldConstants.isEncoding(Constants.UUENCODEP, zContentEncodes))
+        {
+            iEncodedType = Constants.UUENCODE_TYPE;
+
+            zName = ByteBuffer.wrap(UUENCODE_FNAMEBA, UUENCODE_FNAMEBA.length, 0);
+            zName.rewind();
+
+            zStart = Constants.getUuencodeStart(zName);
+            zEnd = Constants.getUuencodeEnd();
+
+            iLineSz = Constants.UUENCODE_LINESZ;
+        }
+        else
+        {
+            zLog.debug("This message body is not encoded in base64 or uuencode format");
+            return;
+        }
+
+        ArrayList zRawBodys = MLLine.toBuffer(zBodys, true);
+
+        File zDFile = null;
+        try
+        {
+            zDFile = MLLine.decodeBufs(zStart, zRawBodys, zEnd, Constants.TMP_FNAME, iLineSz);
+        }
+        catch (IOException e)
+        {
+            zLog.error("Unable to scan contents of this message: " + e);
+            /* fall through */
+        }
+        catch (InterruptedException e)
+        {
+            zLog.error("Unable to scan contents of this message: " + e);
+            /* fall through */
+        }
+
+        /* if we cannot decode this message, then ignore for now */
+        if (null == zDFile)
+        {
+            /* restore this message body */
+            MLLine.fromBuffer(zRawBodys, zBodys, true);
+            iEncodedType = Constants.NOENCODE_TYPE;
+
+            zLog.error(zContentEncodes);
+            zLog.error(zBodys);
+
+            zName = null; /* release, let GC process */
+            zStart = null; /* release, let GC process */
+            zEnd = null; /* release, let GC process */
+            zRawBodys.clear(); /* release, let GC process */
+            zRawBodys = null; /* release, let GC process */
+
+            return;
+        }
+
+        ArrayList zDecodedBodys = null;
+        try
+        {
+            zDecodedBodys = MLLine.readFile(zEncoder, zDFile.getAbsolutePath());
+        }
+        catch (IOException e)
+        {
+            zLog.error("Unable to read this message (after decoding it): " + e);
+            /* fall through */
+        }
+
+        zDFile.delete(); /* delete decoded file */
+        zDFile = null;
+
+        /* if we cannot read this message, then ignore for now */
+        if (null == zDecodedBodys)
+        {
+            /* restore this message body */
+            MLLine.fromBuffer(zRawBodys, zBodys, true);
+            iEncodedType = Constants.NOENCODE_TYPE;
+
+            zLog.error(zContentEncodes);
+            zLog.error(zBodys);
+
+            zName = null; /* release, let GC process */
+            zStart = null; /* release, let GC process */
+            zEnd = null; /* release, let GC process */
+            zRawBodys.clear(); /* release, let GC process */
+            zRawBodys = null; /* release, let GC process */
+
+            return;
+        }
+
+        /* we are not going to re-encode message after we are done
+         * so strip encoding info from message header and
+         * swap encoded message body with decoded message body
+         */
+        if (true == zHdrs.removeAll(zContentEncodes))
+        {
+            /* replace original message data */
+            zDatas.clear();
+            zDatas.addAll(zHdrs);
+            zDatas.addAll(zDecodedBodys);
+
+            zBodys.clear();
+            zBodys = zDecodedBodys;
+        }
+
+        zName = null; /* release, let GC process */
+        zStart = null; /* release, let GC process */
+        zEnd = null; /* release, let GC process */
+        zRawBodys.clear(); /* release, let GC process */
+        zRawBodys = null; /* release, let GC process */
 
         return;
     }
@@ -1291,7 +1461,7 @@ public class MLMessage
     }
 
     /* swap original value with replacement value in this text line */
-    private void replace(CBufferWrapper zOrgCLine, String zReplacement, Matcher zMatcher) throws ModifyException
+    private void replace(CBufferWrapper zOrgCLine, String zReplStr, Matcher zMatcher) throws ModifyException
     {
         ByteBuffer zLine = zOrgCLine.getSrc();
         CharBuffer zCBLine = toCharBuffer(zLine);
@@ -1300,7 +1470,7 @@ public class MLMessage
          * get replacement result in form of string
          */
         zMatcher.reset(zCBLine);
-        String zNewStr = zMatcher.replaceAll(zReplacement);
+        String zNewStr = zMatcher.replaceAll(zReplStr);
 
         /* convert replacement string result into new buffer */
         ByteBuffer zNewSrcLine = toByteBuffer(zNewStr);
@@ -1324,7 +1494,7 @@ public class MLMessage
     }
 
     /* replace text in message body */
-    private void replaceBody(ArrayList zReplacement, Matcher zMatcher) throws ModifyException
+    private void replaceBody(ArrayList zReplList, Matcher zMatcher) throws ModifyException
     {
         zLog.debug("replace body");
         if (null == zBodys ||
@@ -1335,7 +1505,7 @@ public class MLMessage
         else if (null != zMIMEBody)
         {
             /* message body is embedded in this MIME part */
-            zMsgBodyStartMP.replace(zReplacement);
+            zMsgBodyStartMP.replace(zReplList);
             return;
         }
         /* else message body has no MIME body */
@@ -1351,7 +1521,7 @@ public class MLMessage
          */
         CBufferWrapper zCLine;
 
-        for (Iterator zIter = zReplacement.iterator(); true == zIter.hasNext(); )
+        for (Iterator zIter = zReplList.iterator(); true == zIter.hasNext(); )
         {
             zCLine = (CBufferWrapper) zIter.next();
             zBodys.add(new CBufferWrapper(zCLine.get().duplicate()));
@@ -1371,28 +1541,32 @@ public class MLMessage
      */
     private static String maskMeta(CBufferWrapper zCLine)
     {
-        String zSLine = zCLine.toString();
+        String zStr = zCLine.toString();
 
-        zSLine = replaceAll(zSLine, SQUOTESTRP, SQUOTELSTR);
-        zSLine = replaceAll(zSLine, OPARENSTRP, OPARENLSTR);
-        zSLine = replaceAll(zSLine, CPARENSTRP, CPARENLSTR);
-        zSLine = replaceAll(zSLine, PLUSSTRP, PLUSLSTR);
-        zSLine = replaceAll(zSLine, COMMASTRP, COMMALSTR);
-        zSLine = replaceAll(zSLine, MINUSSTRP, MINUSLSTR);
-        zSLine = replaceAll(zSLine, DOTSTRP, DOTLSTR);
-        zSLine = replaceAll(zSLine, COLONSTRP, COLONLSTR);
-        zSLine = replaceAll(zSLine, EQUALSTRP, EQUALLSTR);
-        zSLine = replaceAll(zSLine, QUESTSTRP, QUESTLSTR);
+        zStr = replaceAll(zStr, SQUOTESTRP, SQUOTELSTR);
+        zStr = replaceAll(zStr, OPARENSTRP, OPARENLSTR);
+        zStr = replaceAll(zStr, CPARENSTRP, CPARENLSTR);
+        zStr = replaceAll(zStr, PLUSSTRP, PLUSLSTR);
+        zStr = replaceAll(zStr, COMMASTRP, COMMALSTR);
+        zStr = replaceAll(zStr, DOTSTRP, DOTLSTR);
+        zStr = replaceAll(zStr, COLONSTRP, COLONLSTR);
+        zStr = replaceAll(zStr, QUESTSTRP, QUESTLSTR);
 
-        return zSLine;
+        /* handle most common (and frequent) cases after least common cases
+         * (least common cases will involve search with fewer characters)
+         */
+        zStr = replaceAll(zStr, EQUALSTRP, EQUALLSTR);
+        zStr = replaceAll(zStr, DASHSTRP, DASHLSTR);
+
+        return zStr;
     }
 
-    private static String replaceAll(String zOrgStr, Pattern zPattern, String zReplacement)
+    private static String replaceAll(String zOrgStr, Pattern zPattern, String zReplStr)
     {
         Matcher zMatcher = zPattern.matcher(zOrgStr);
         if (true == zMatcher.find())
         {
-            return zMatcher.replaceAll(zReplacement);
+            return zMatcher.replaceAll(zReplStr);
         }
 
         return zOrgStr;

@@ -10,8 +10,11 @@
  */
 package com.metavize.tran.email;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.Exception;
@@ -192,7 +195,7 @@ public class MLLine
         }
         catch (IOException e)
         {
-            zLog.error("Unable to create file: " + e);
+            zLog.error("Unable to create temp file: " + e);
             return null;
         }
 
@@ -215,12 +218,12 @@ public class MLLine
             catch (IOException e)
             {
                 zLog.error("Unable to write: " + zCLine + " to file: " + e);
-                return zFile.getAbsolutePath();
+                break; /* fall through */
             }
             catch (Exception e)
             {
                 zLog.error("Unable to write: " + zCLine + " to file (dir id = " + iExcepDir + "): " + e);
-                return zFile.getAbsolutePath();
+                break; /* fall through */
             }
         }
 
@@ -230,8 +233,8 @@ public class MLLine
         }
         catch (IOException e)
         {
-            zLog.error("Unable to close file: " + e);
-            return zFile.getAbsolutePath();
+            zLog.error("Unable to close temp file: " + zFile.getAbsolutePath() + ", " + e);
+            /* fall through */
         }
 
         zFile.setReadOnly();
@@ -239,7 +242,7 @@ public class MLLine
         return zFile.getAbsolutePath();
     }
 
-    public static File decodeBufs(ByteBuffer zStart, ArrayList zList, ByteBuffer zEnd, String zFileName, int iLineSz) throws IOException, InterruptedException
+    public static File decodeBufs(ByteBuffer zStart, ArrayList zList, ByteBuffer zEnd, String zFNameStr, int iLineSz) throws IOException, InterruptedException
     {
         /* copy encoded data to file */
         File zTmpDir = new File(Constants.BASEPATH);
@@ -264,23 +267,28 @@ public class MLLine
             iPosition = zLine.position();
             iLimit = zLine.limit();
 
-            /* if CR or LF is present at end of any line,
+            zLine.rewind();
+            if (false == zLine.hasRemaining())
+            {
+                continue; /* for; line is empty */
+            }
+
+            /* if CR or LF is present _at end of_ any line,
              * ignore CR or LF
-             * (we do not ignore CR or LF that are present within any line)
+             * (we do not ignore CR or LF that are present _within_ line)
              */
             for (iIdx = iLimit - 1; 0 < iIdx; iIdx--)
             {
                 bChar = zLine.get(iIdx);
                 if ((byte) '\r' == bChar || (byte) '\n' == bChar)
                 {
-                    continue;
+                    continue; /* for */
                 }
 
                 iIdx++;
-                break;
+                break; /* for */
             }
 
-            zLine.rewind();
             zLine.limit(iIdx); /* limit copy range */
 
             while (true)
@@ -341,9 +349,77 @@ public class MLLine
 
         default:
         case PRC_FAILURE:
+            /* we cannot determine why uudecode failed */
             zFileOut.delete(); /* delete decoded file */
-            throw new IOException("Unable to decode encoded data located in this MIME part: " + zFileName + ", uudecode exit code: " + iExitCode);
+            zLog.error("Unable to decode encoded data located in this message: " + zFNameStr + ", uudecode exit code: " + iExitCode);
+            return null;
         }
+    }
+
+    /* opens filename,
+     * reads file data into ByteBuffers,
+     * adds ByteBuffers to list, and
+     * returns list
+     * - hopefully, file is small in size
+     */
+    public static ArrayList readFile(CharsetEncoder zEncoder, String zFileName) throws IOException
+    {
+        FileReader zFileR;
+
+        try
+        {
+            zFileR = new FileReader(zFileName);
+        }
+        catch (FileNotFoundException e)
+        {
+            zLog.error("Unable to find file to read: " + e);
+            return null;
+        }
+
+        BufferedReader zBufferedR = new BufferedReader(zFileR);
+        ArrayList zList = new ArrayList();
+
+        String zReadStr;
+        CBufferWrapper zCLine;
+        ByteBuffer zLine;
+
+        try
+        {
+            /* read file data as separate lines of Strings and
+             * using default charset,
+             * encode each String into ByteBuffer
+             */
+            while (true == zBufferedR.ready())
+            {
+                zReadStr = zBufferedR.readLine() + Constants.PCRLF;
+
+                try
+                {
+                    zLine = toByteBuffer(zEncoder, zReadStr);
+                }
+                catch (CharacterCodingException e)
+                {
+                    zLog.error("Unable to encode line: " + zReadStr + ", in file: " + zFileName);
+                    zList.clear(); /* release, let GC process */
+                    zList = null; /* release, let GC process */
+                    break; /* while; fall through */
+                }
+
+                zCLine = new CBufferWrapper(zLine);
+                zList.add(zCLine);
+            }
+        }
+        catch (IOException e)
+        {
+            zLog.error("Unable to read file: " + zFileName + ", " + e);
+            zList.clear(); /* release, let GC process */
+            zList = null; /* release, let GC process */
+            /* fall through */
+        }
+
+        zBufferedR.close();
+        zFileR.close();
+        return zList;
     }
 
     /* private methods */

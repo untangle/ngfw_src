@@ -30,14 +30,6 @@ public class MIMEPart
     /* constants */
     private static final Logger zLog = Logger.getLogger(MIMEPart.class.getName());
 
-    private final static int BASE64_LINESZ = 76; /* excludes EOL */
-    private final static int UUENCODE_LINESZ = 61; /* excludes EOL */
-
-    private final static String BASE64 = "BASE64";
-    private final static String UUENCODE = "UUENCODE";
-    private final static Pattern BASE64P = Pattern.compile(BASE64, Pattern.CASE_INSENSITIVE);
-    private final static Pattern UUENCODEP = Pattern.compile(UUENCODE, Pattern.CASE_INSENSITIVE);
-
     private final static String FILENAME = "FILENAME=";
     private final static String NAME = "NAME=";
     private final static Pattern FILENAMEP = Pattern.compile(FILENAME, Pattern.CASE_INSENSITIVE);
@@ -569,37 +561,29 @@ public class MIMEPart
             ByteBuffer zEnd;
             int iLineSz;
 
-            if (true == isEncoding(BASE64P))
+            if (true == MLFieldConstants.isEncoding(Constants.BASE64P, zContentEncodes))
             {
                 zTmpFile = getTmpFile();
                 zCName = getFileName(zTmpFile);
                 zName = zCName.get();
                 zName.rewind();
-                
-                zStart = ByteBuffer.allocate(Constants.BASE64STARTBA.length + zName.limit() + Constants.LINEFEEDBA.length);
-                zStart.put(Constants.BASE64STARTBA);
-                zStart.put(zName);
-                zStart.put(Constants.LINEFEEDBA);
 
-                zEnd = Constants.getBase64End().duplicate();
+                zStart = Constants.getBase64Start(zName);
+                zEnd = Constants.getBase64End();
 
-                iLineSz = BASE64_LINESZ;
+                iLineSz = Constants.BASE64_LINESZ;
             }
-            else if (true == isEncoding(UUENCODEP))
+            else if (true == MLFieldConstants.isEncoding(Constants.UUENCODEP, zContentEncodes))
             {
                 zTmpFile = getTmpFile();
                 zCName = getFileName(zTmpFile);
                 zName = zCName.get();
                 zName.rewind();
-                
-                zStart = ByteBuffer.allocate(Constants.UUENCODESTARTBA.length + zName.limit() + Constants.LINEFEEDBA.length);
-                zStart.put(Constants.UUENCODESTARTBA);
-                zStart.put(zName);
-                zStart.put(Constants.LINEFEEDBA);
 
-                zEnd = Constants.getUuencodeEnd().duplicate();
+                zStart = Constants.getUuencodeStart(zName);
+                zEnd = Constants.getUuencodeEnd();
 
-                iLineSz = UUENCODE_LINESZ;
+                iLineSz = Constants.UUENCODE_LINESZ;
             }
             else
             {
@@ -615,56 +599,52 @@ public class MIMEPart
             ArrayList zRawBodys = MLLine.toBuffer(zBodys, true);
             String zFileName = zTmpFile.getName();
 
-            File zFile;
+            File zDFile = null;
             try
             {
-                zFile = MLLine.decodeBufs(zStart, zRawBodys, zEnd, zFileName, iLineSz);
+                zDFile = MLLine.decodeBufs(zStart, zRawBodys, zEnd, zFileName, iLineSz);
             }
             catch (IOException e)
+            {
+                zLog.error("This MIME part contains encoded data that could not be decoded; bypassing this MIME part: " + e);
+                /* fall through */
+            }
+            catch (InterruptedException e)
+            {
+                zLog.error("This MIME part contains encoded data that was not be decoded; bypassing this MIME part: " + e);
+                /* fall through */
+            }
+
+            /* if we cannot decode file, then ignore for now */
+            if (null == zDFile)
             {
                 /* restore this MIME part */
                 MLLine.fromBuffer(zRawBodys, zBodys, true);
 
-                /* we cannot determine if uudecode failed because
-                 * data was not encoded or
-                 * of unknown cause
-                 */
-                zLog.error("This MIME part contains encoded data that could not be decoded; bypassing this MIME part: " + e);
                 zLog.error(zContentTDs);
                 zLog.error(zContentEncodes);
                 zLog.error(zBodys);
 
-                zRawBodys.clear(); /* release, let GC process */
+                zCName = null; /* release, let GC process */
                 zStart = null; /* release, let GC process */
                 zEnd = null; /* release, let GC process */
+                zRawBodys.clear(); /* release, let GC process */
+                zRawBodys = null; /* release, let GC process */
 
                 zTmpFile.delete(); /* delete tmp file */
+                zTmpFile = null; /* release, let GC process */
 
                 return null;
             }
-            catch (InterruptedException e)
-            {
-                /* restore this MIME part */
-                MLLine.fromBuffer(zRawBodys, zBodys, true);
 
-                zRawBodys.clear(); /* release, let GC process */
-                zStart = null; /* release, let GC process */
-                zEnd = null; /* release, let GC process */
+            //zLog.debug("MIME part decoded file: " + zDFile.getAbsolutePath());
+            VirusScannerResult zScanResult = zScanner.scanFile(zDFile.getAbsolutePath());
 
-                zTmpFile.delete(); /* delete tmp file */
-
-                /* we cannot determine if uudecode failed because
-                 * data was not encoded or
-                 * of some unknown cause
-                 */
-                zLog.error("This MIME part contains encoded data that could not be decoded; bypassing this MIME part: " + e);
-                return null;
-            }
-
-            //zLog.debug("MIME part decoded file: " + zFile.getAbsolutePath());
-            VirusScannerResult zScanResult = zScanner.scanFile(zFile.getAbsolutePath());
-            zFile.delete(); /* delete decoded file */
+            zDFile.delete(); /* delete decoded file */
+            zDFile = null; /* release, let GC process */
             zTmpFile.delete(); /* delete tmp file */
+            zTmpFile = null; /* release, let GC process */
+
             if (null == zScanResult)
             {
                 /* restore this MIME part */
@@ -697,9 +677,11 @@ public class MIMEPart
                 zTmp = null; /* release, let GC process */
             }
 
-            zRawBodys.clear(); /* release, let GC process */
+            zCName = null; /* release, let GC process */
             zStart = null; /* release, let GC process */
             zEnd = null; /* release, let GC process */
+            zRawBodys.clear(); /* release, let GC process */
+            zRawBodys = null; /* release, let GC process */
 
             //zLog.debug("scanner: " + zScanner + ", result: " + zScanResult);
             return zScanResult;
@@ -928,9 +910,9 @@ public class MIMEPart
                 /* this MIME part contains Content-Type and/or
                  * Content-Disposition header field
                  * but neither specifies name or filename type
-                 * so use random prefix
+                 * so use arbitrary prefix
                  */
-                zTmpFile = "MVeMSG";
+                zTmpFile = Constants.TMP_FNAME;
             }
             else
             {
