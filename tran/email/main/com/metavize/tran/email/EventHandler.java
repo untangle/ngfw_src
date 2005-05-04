@@ -238,8 +238,8 @@ public class EventHandler extends AbstractEventHandler
 
         session.clientLineBuffering(true);
         session.serverLineBuffering(true);
-        session.clientReadLimit(MLHandler.READSZ);
-        session.serverReadLimit(MLHandler.READSZ);
+        session.clientReadLimit(MLHandler.READLINESZ);
+        session.serverReadLimit(MLHandler.READLINESZ);
 
         return;
     }

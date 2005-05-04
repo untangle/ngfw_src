@@ -529,7 +529,7 @@ public class IMAPHandler extends MLHandler
 
         if (true == bReturnErr)
         {
-            zErrLine = ByteBuffer.allocate(READSZ);
+            zErrLine = ByteBuffer.allocate(DATASZ);
             byte azTagId[] = zTagId.getBytes();
             ByteBuffer zTmp = ByteBuffer.wrap(azTagId);
             //zTmp.flip();

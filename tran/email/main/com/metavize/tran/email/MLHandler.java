@@ -143,9 +143,10 @@ public class MLHandler
      *
      * For now, we'll apply these limits to RFC 1939 and 1730/2060 too.
      */
-    public final static int READSZ = 1024; /* round up from 1000 */
+    public final static int READLINESZ = 2048; /* round up from 2000 */
     public final static int READDATASZ = 8192; /* round up from 8000 */
-    public final static int FRAGSZ = 1024; /* arbitrary size */
+    public final static int DATASZ = 1024; /* round up from 1000 */
+    protected final static int FRAGSZ = 1024; /* arbitrary size */
 
     /* endpoint types */
     public final static int DRIVER = Constants.CLIENT;
@@ -438,8 +439,8 @@ public class MLHandler
         zLog.debug("set line buffer");
         zSession.clientLineBuffering(true);
         zSession.serverLineBuffering(true);
-        zSession.clientReadLimit(MLHandler.READSZ);
-        zSession.serverReadLimit(MLHandler.READSZ);
+        zSession.clientReadLimit(READLINESZ);
+        zSession.serverReadLimit(READLINESZ);
         return;
     }
 
@@ -448,8 +449,8 @@ public class MLHandler
         zLog.debug("unset line buffer");
         zSession.clientLineBuffering(false);
         zSession.serverLineBuffering(false);
-        zSession.clientReadLimit(MLHandler.READDATASZ);
-        zSession.serverReadLimit(MLHandler.READDATASZ);
+        zSession.clientReadLimit(READDATASZ);
+        zSession.serverReadLimit(READDATASZ);
         return;
     }
 
@@ -506,7 +507,7 @@ public class MLHandler
             return true;
         }
 
-        if (zLine.capacity() == iLimit)
+        if (READLINESZ == iLimit)
         {
             /* line does not end with EOL
              * - although data can be fragmented,
@@ -611,7 +612,7 @@ public class MLHandler
              * buffer does not contain any EOL
              * (e.g., buffer is very long)
              */
-            if (zLine.capacity() == iLimit)
+            if (READDATASZ == iLimit)
             {
                 /* this buffer is too long and does not contain EOL
                  * so copy buffer (FRAGSZ bytes)
@@ -1400,7 +1401,7 @@ public class MLHandler
         }
 
         /* no success, so build pseudo username address */
-        ByteBuffer zLine = ByteBuffer.allocate(READSZ);
+        ByteBuffer zLine = ByteBuffer.allocate(DATASZ);
         zUNLine.rewind();
         zLine.put(zUNLine);
 
@@ -1446,7 +1447,7 @@ public class MLHandler
     /* swap original message with warning message */
     private void buildWarning(XMSEnv zEnv, String zTmpFile, int iType)
     {
-        ByteBuffer zFromLine = ByteBuffer.allocate(READSZ);
+        ByteBuffer zFromLine = ByteBuffer.allocate(DATASZ);
         ByteBuffer zLine = ByteBuffer.wrap(Constants.BLOCKFROMBA, Constants.BLOCKFROMBA.length, 0);
         zLine.flip();
         zFromLine.put(zLine);
@@ -1458,7 +1459,7 @@ public class MLHandler
         zFromLine.put(zEOLine);
         zFromLine.limit(zFromLine.position()); /* we set limit since we didn't allocate buffer to exact size */
 
-        ByteBuffer zToLine = ByteBuffer.allocate(READSZ);
+        ByteBuffer zToLine = ByteBuffer.allocate(DATASZ);
         zLine = ByteBuffer.wrap(Constants.BLOCKTOBA, Constants.BLOCKTOBA.length, 0);
         zLine.flip();
         zToLine.put(zLine);
@@ -1501,7 +1502,7 @@ public class MLHandler
         }
         zMsgDatas.add(zEmptyCLine);
 
-        ByteBuffer zBodyLine = ByteBuffer.allocate(READSZ);
+        ByteBuffer zBodyLine = ByteBuffer.allocate(DATASZ);
         switch(iType)
         {
         case Constants.AVBLOCK:

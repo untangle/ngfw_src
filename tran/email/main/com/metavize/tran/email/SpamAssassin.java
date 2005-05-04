@@ -20,7 +20,7 @@ public class SpamAssassin extends MVScanner
 {
     private static final Logger zLog = Logger.getLogger(SpamAssassin.class);
 
-    private static final int READSZ = MLHandler.READSZ;
+    private static final int DATASZ = 1024;
     
     private final String zSpamCmd;
 
@@ -89,7 +89,7 @@ public class SpamAssassin extends MVScanner
         }
         sOS.close();
 
-        int icapacity = READSZ;
+        int icapacity = DATASZ;
         ByteBuffer bbread = ByteBuffer.allocate(icapacity);
         ArrayList al = new ArrayList(bufs.size());
 
@@ -208,7 +208,7 @@ public class SpamAssassin extends MVScanner
                 if (0 == istart)
                 {
                     /* read buffer is full but too small so increase its size */
-                    icapacity += READSZ;
+                    icapacity += DATASZ;
                     ByteBuffer bbtmp = ByteBuffer.allocate(icapacity);
                     bbtmp.put(bbread);
                     bbread = bbtmp;

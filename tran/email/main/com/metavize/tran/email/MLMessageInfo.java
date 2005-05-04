@@ -44,7 +44,7 @@ public class MLMessageInfo
     private final static String MAXSIZE = " SIZE=" + DIGVAL;
     private final static Pattern MAXSIZEP = Pattern.compile(MAXSIZE, Pattern.CASE_INSENSITIVE);
 
-    private final static int COL_SZ = MLHandler.READSZ;
+    private final static int COL_SZ = MLHandler.DATASZ;
 
     /* instance variables */
     private CharsetDecoder zDecoder;

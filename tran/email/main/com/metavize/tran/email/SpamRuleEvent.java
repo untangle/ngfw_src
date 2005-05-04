@@ -45,7 +45,7 @@ public class SpamRuleEvent extends LogEvent
     private final static Pattern REQUIREDP = Pattern.compile(REQUIRED, Pattern.CASE_INSENSITIVE);
     private final static Pattern TESTSP = Pattern.compile(TESTS, Pattern.CASE_INSENSITIVE);
 
-    private final static int COL_SZ = MLHandler.READSZ;
+    private final static int COL_SZ = MLHandler.DATASZ;
 
     /* class variables */
 

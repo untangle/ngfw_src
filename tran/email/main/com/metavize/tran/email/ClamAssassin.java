@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: ClamAssassin.java,v 1.3 2005/01/29 03:24:00 cng Exp $
+ * $Id$
  */
 package com.metavize.tran.email;
 
@@ -26,7 +26,7 @@ public class ClamAssassin extends MVScanner
 {
     private static final Logger zLog = Logger.getLogger(ClamAssassin.class.getName());
 
-    private static final int READSZ = 1024;
+    private static final int DATASZ = 1024;
 
     public ClamAssassin() {}
 
@@ -88,7 +88,7 @@ public class ClamAssassin extends MVScanner
         }
         os.close();
 
-        int icapacity = READSZ;
+        int icapacity = DATASZ;
         ByteBuffer bbread = ByteBuffer.allocate(icapacity);
         ArrayList al = new ArrayList(bufs.size());
 
@@ -183,7 +183,7 @@ public class ClamAssassin extends MVScanner
                 if (0 == istart)
                 {
                     /* read buffer is full but too small so increase its size */
-                    icapacity += READSZ;
+                    icapacity += DATASZ;
                     ByteBuffer bbtmp = ByteBuffer.allocate(icapacity);
                     bbtmp.put(bbread);
                     bbread = bbtmp;
