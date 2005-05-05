@@ -45,6 +45,7 @@ public class EventHandler extends AbstractEventHandler
         private XMSEnv zEnv;
 
         private MailSender zMailSender;
+        private SpamAssassin zSpamScanner;
         private int iDriver; /* driver is client or server */
         private int iSpamFlags; /* signed, 32-bit value */
         private int iVirusFlags; /* signed, 32-bit value */
@@ -64,6 +65,11 @@ public class EventHandler extends AbstractEventHandler
         {
             this.iDriver = iDriver;
             return;
+        }
+
+        public void setSpamScanner(SpamAssassin zSpamScanner)
+        {
+            this.zSpamScanner = zSpamScanner;
         }
 
         public void setSpamFlags(boolean bScan, boolean bBlock, boolean bCopyOnBlock, boolean bNotifySender, boolean bNotifyReceiver)
@@ -96,6 +102,11 @@ public class EventHandler extends AbstractEventHandler
         public int getDriver()
         {
             return iDriver;
+        }
+
+        public SpamAssassin getSpamScanner()
+        {
+            return zSpamScanner;
         }
 
         public int getSpamNotify()
@@ -189,8 +200,8 @@ public class EventHandler extends AbstractEventHandler
     public EventHandler(XMailScannerCache zXMSCache)
     {
         this.zXMSCache = zXMSCache;
-        zInboundSpam = new SpamAssassin( EmailTransformImpl.getSpamInboundConfigFile());
-        zOutboundSpam = new SpamAssassin( EmailTransformImpl.getSpamOutboundConfigFile());
+        zInboundSpam = new SpamAssassin(EmailTransformImpl.getSpamInboundConfigFile());
+        zOutboundSpam = new SpamAssassin(EmailTransformImpl.getSpamOutboundConfigFile());
         setVirusScanner(zXMSCache);
         bCopyOnException = zXMSCache.getCopyOnException();
     }
@@ -201,8 +212,8 @@ public class EventHandler extends AbstractEventHandler
          * but all new sessions will use this new cache
          */
         this.zXMSCache = zXMSCache;
-        zInboundSpam = new SpamAssassin( EmailTransformImpl.getSpamInboundConfigFile());
-        zOutboundSpam = new SpamAssassin( EmailTransformImpl.getSpamOutboundConfigFile());
+        zInboundSpam = new SpamAssassin(EmailTransformImpl.getSpamInboundConfigFile());
+        zOutboundSpam = new SpamAssassin(EmailTransformImpl.getSpamOutboundConfigFile());
         setVirusScanner(zXMSCache);
         bCopyOnException = zXMSCache.getCopyOnException();
         return;
@@ -472,6 +483,15 @@ public class EventHandler extends AbstractEventHandler
         boolean bMsgIsUploaded = zHandler.isMsgUploaded(bSessionIsInbound);
         zLog.debug("session is inbound: " + bSessionIsInbound + ", msg is uploaded: " + bMsgIsUploaded);
 
+        if (false == bMsgIsUploaded)
+        {
+            zXMSession.setSpamScanner(zInboundSpam);
+        }
+        else
+        {
+            zXMSession.setSpamScanner(zOutboundSpam);
+        }
+
         XMailScannerCache zCache = zXMSession.getCache();
         boolean bScan = getSpamOption(zCache, bMsgIsUploaded, Constants.SCAN_TYPE);
         boolean bBlock = getSpamOption(zCache, bMsgIsUploaded, Constants.BLOCK_TYPE);
@@ -565,11 +585,7 @@ public class EventHandler extends AbstractEventHandler
             {
             default:
             case Constants.SPAMAS_ID:
-                if ( zSession.direction() == IPSessionDesc.INBOUND ) {
-                    zScanResult = scan(zEnv, zHandler, zInboundSpam );
-                } else {
-                    zScanResult = scan(zEnv, zHandler, zOutboundSpam );
-                }
+                zScanResult = scan(zEnv, zHandler, zXMSession.getSpamScanner());
                 break;
             }
 
