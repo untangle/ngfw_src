@@ -507,7 +507,7 @@ public class MLHandler
             return true;
         }
 
-        if (READLINESZ == iLimit)
+        if (READLINESZ <= iLimit)
         {
             /* line does not end with EOL
              * - although data can be fragmented,
@@ -612,7 +612,7 @@ public class MLHandler
              * buffer does not contain any EOL
              * (e.g., buffer is very long)
              */
-            if (READDATASZ == iLimit)
+            if (READDATASZ <= iLimit)
             {
                 /* this buffer is too long and does not contain EOL
                  * so copy buffer (FRAGSZ bytes)
