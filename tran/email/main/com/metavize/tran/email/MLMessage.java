@@ -76,6 +76,32 @@ public class MLMessage
     private final static String EQUALLSTR = "\\\\=";
     private final static String QUESTSTR = "\\?";
     private final static String QUESTLSTR = "\\\\?";
+
+    private final static String BSLASHSTR = "\\\\";
+    private final static String BSLASHLSTR = "\\\\\\\\";
+    private final static String CARETSTR = "\\^";
+    private final static String CARETLSTR = "\\\\^";
+    private final static String AMPERSTR = "\\&";
+    private final static String AMPERLSTR = "\\\\&";
+    private final static String STARSTR = "\\*";
+    private final static String STARLSTR = "\\\\*";
+    private final static String BARSTR = "\\|";
+    private final static String BARLSTR = "\\\\|";
+    private final static String EXCLAMSTR = "\\!";
+    private final static String EXCLAMLSTR = "\\\\!";
+    private final static String LANGLESTR = "\\<";
+    private final static String LANGLELSTR = "\\\\<";
+    private final static String RANGLESTR = "\\>";
+    private final static String RANGLELSTR = "\\\\>";
+    private final static String OBRACESTR = "\\{";
+    private final static String OBRACELSTR = "\\\\{";
+    private final static String CBRACESTR = "\\}";
+    private final static String CBRACELSTR = "\\\\}";
+    private final static String OBRACKSTR = "\\[";
+    private final static String OBRACKLSTR = "\\\\[";
+    private final static String CBRACKSTR = "\\]";
+    private final static String CBRACKLSTR = "\\\\]";
+
     private final static Pattern SQUOTESTRP = Pattern.compile(SQUOTESTR);
     private final static Pattern OPARENSTRP = Pattern.compile(OPARENSTR);
     private final static Pattern CPARENSTRP = Pattern.compile(CPARENSTR);
@@ -86,6 +112,19 @@ public class MLMessage
     private final static Pattern COLONSTRP = Pattern.compile(COLONSTR);
     private final static Pattern EQUALSTRP = Pattern.compile(EQUALSTR);
     private final static Pattern QUESTSTRP = Pattern.compile(QUESTSTR);
+
+    private final static Pattern BSLASHSTRP = Pattern.compile(BSLASHSTR);
+    private final static Pattern CARETSTRP = Pattern.compile(CARETSTR);
+    private final static Pattern AMPERSTRP = Pattern.compile(AMPERSTR);
+    private final static Pattern STARSTRP = Pattern.compile(STARSTR);
+    private final static Pattern BARSTRP = Pattern.compile(BARSTR);
+    private final static Pattern EXCLAMSTRP = Pattern.compile(EXCLAMSTR);
+    private final static Pattern LANGLESTRP = Pattern.compile(LANGLESTR);
+    private final static Pattern RANGLESTRP = Pattern.compile(RANGLESTR);
+    private final static Pattern OBRACESTRP = Pattern.compile(OBRACESTR);
+    private final static Pattern CBRACESTRP = Pattern.compile(CBRACESTR);
+    private final static Pattern OBRACKSTRP = Pattern.compile(OBRACKSTR);
+    private final static Pattern CBRACKSTRP = Pattern.compile(CBRACKSTR);
 
     private final static int NOT_SET = -1;
 
@@ -1543,29 +1582,55 @@ public class MLMessage
     {
         String zStr = zCLine.toString();
 
-        zStr = replaceAll(zStr, SQUOTESTRP, SQUOTELSTR);
-        zStr = replaceAll(zStr, OPARENSTRP, OPARENLSTR);
-        zStr = replaceAll(zStr, CPARENSTRP, CPARENLSTR);
-        zStr = replaceAll(zStr, PLUSSTRP, PLUSLSTR);
-        zStr = replaceAll(zStr, COMMASTRP, COMMALSTR);
-        zStr = replaceAll(zStr, DOTSTRP, DOTLSTR);
-        zStr = replaceAll(zStr, COLONSTRP, COLONLSTR);
-        zStr = replaceAll(zStr, QUESTSTRP, QUESTLSTR);
+        /* if we find illegal "bcharnospace" chars in boundary delimiter,
+         * log warning and
+         * process boundary delimiter
+         */
+        /* always search for and escape illegal "back slash" chars
+         * before handling other chars
+         * since escaping other chars inserts legal "back slash" chars
+         */
+        zStr = replaceAll(zStr, BSLASHSTRP, BSLASHLSTR, true);
+        zStr = replaceAll(zStr, CARETSTRP, CARETLSTR, true);
+        zStr = replaceAll(zStr, AMPERSTRP, AMPERLSTR, true);
+        zStr = replaceAll(zStr, STARSTRP, STARLSTR, true);
+        zStr = replaceAll(zStr, BARSTRP, BARLSTR, true);
+        zStr = replaceAll(zStr, EXCLAMSTRP, EXCLAMLSTR, true);
+        zStr = replaceAll(zStr, RANGLESTRP, RANGLELSTR, true);
+        zStr = replaceAll(zStr, LANGLESTRP, LANGLELSTR, true);
+        zStr = replaceAll(zStr, OBRACESTRP, OBRACELSTR, true);
+        zStr = replaceAll(zStr, CBRACESTRP, CBRACELSTR, true);
+        zStr = replaceAll(zStr, OBRACKSTRP, OBRACKLSTR, true);
+        zStr = replaceAll(zStr, CBRACKSTRP, CBRACKLSTR, true);
+
+        zStr = replaceAll(zStr, SQUOTESTRP, SQUOTELSTR, false);
+        zStr = replaceAll(zStr, OPARENSTRP, OPARENLSTR, false);
+        zStr = replaceAll(zStr, CPARENSTRP, CPARENLSTR, false);
+        zStr = replaceAll(zStr, PLUSSTRP, PLUSLSTR, false);
+        zStr = replaceAll(zStr, COMMASTRP, COMMALSTR, false);
+        zStr = replaceAll(zStr, DOTSTRP, DOTLSTR, false);
+        zStr = replaceAll(zStr, COLONSTRP, COLONLSTR, false);
+        zStr = replaceAll(zStr, QUESTSTRP, QUESTLSTR, false);
 
         /* handle most common (and frequent) cases after least common cases
          * (least common cases will involve search with fewer characters)
          */
-        zStr = replaceAll(zStr, EQUALSTRP, EQUALLSTR);
-        zStr = replaceAll(zStr, DASHSTRP, DASHLSTR);
+        zStr = replaceAll(zStr, EQUALSTRP, EQUALLSTR, false);
+        zStr = replaceAll(zStr, DASHSTRP, DASHLSTR, false);
 
         return zStr;
     }
 
-    private static String replaceAll(String zOrgStr, Pattern zPattern, String zReplStr)
+    private static String replaceAll(String zOrgStr, Pattern zPattern, String zReplStr, boolean bNotValid)
     {
         Matcher zMatcher = zPattern.matcher(zOrgStr);
         if (true == zMatcher.find())
         {
+            if (false != bNotValid)
+            {
+                zLog.warn("Message contains MIME part with illegal character(s) in boundary delimiter: " + zOrgStr);
+            }
+
             return zMatcher.replaceAll(zReplStr);
         }
 
