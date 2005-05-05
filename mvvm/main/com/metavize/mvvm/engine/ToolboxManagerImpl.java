@@ -558,7 +558,6 @@ class ToolboxManagerImpl implements ToolboxManager
         private TimerTask task;
 
         private UpgradeSettings upgradeSettings;
-        private boolean autoUpgrade;
 
         public synchronized void reschedule(UpgradeSettings upgradeSettings)
         {
@@ -594,7 +593,7 @@ class ToolboxManagerImpl implements ToolboxManager
                             logger.warn("could not update", exn);
                         }
 
-                        if (autoUpgrade) {
+                        if (upgradeSettings.getAutoUpgrade()) {
                             logger.debug("doing automatic upgrade");
                             try {
                                 upgrade();
