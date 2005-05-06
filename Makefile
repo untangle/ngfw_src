@@ -67,12 +67,13 @@ lib_deps = $(patsubst %,$(build_lib_path)/lib%.a,$(alpine_libs))
 
 $(lib_file_name): LIBS = xml2
 $(lib_file_name): $(lib_deps)
+	@mkdir -p output
 	@echo "==> gcc ($(alpine_libs)) -> $@"
 	@$(CC) $(CFLAGS) $(LIBS_FLAGS) -Wl,--whole-archive  $(lib_deps) -lipq -Wl,--no-whole-archive \
-		-shared -o $@
+		-shared -o output/$@
 	@$(STRIPCMD) $@
-	@echo "==> cp $@ -> $(build_lib_path)/$@"
-	@cp $@ $(build_lib_path)/$@ # FIXME
+	@echo "==> cp output/$@ -> $(build_lib_path)/$@"
+	@cp output/$@ $(build_lib_path)/$@ # FIXME
 
 pkgs: chk
 	@echo "==> pkgs"

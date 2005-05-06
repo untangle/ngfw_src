@@ -6,25 +6,6 @@ MVVM_CACHEDIR="/var/lib/mvvm"
 USER=root
 GROUP=adm
 
-# setting up the user account we use to run the daemons
-#adduser --no-create-home \
-#        --disabled-login \
-#        --gecos "" \
-#        --firstuid 10000 \
-#        ${USER} 2>/dev/null
-#
-# giving that guy NOPASSWD sudo privileges for iptables
-#SUDOERS_FILE=/etc/sudoers
-#SUDO_LINE="${USER}   ALL=NOPASSWD: /usr/bin/mkg"
-#
-#chmod 640 ${SUDOERS_FILE}
-#if [ -z "`grep ${USER} ${SUDOERS_FILE}`" ] ; then
-#    echo ${SUDO_LINE} >> ${SUDOERS_FILE}
-#else
-#    sed -i -e "s|^${USER}.*|${SUDO_LINE}|g" ${SUDOERS_FILE}
-#fi
-#chmod 440 ${SUDOERS_FILE}
-
 # modify limit to support many file descriptors
 LIMITS_FILE=/etc/security/limits.conf
 LIMITS_LINE="${USER}    soft    nofile  128000"
