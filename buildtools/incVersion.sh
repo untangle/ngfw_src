@@ -33,7 +33,7 @@ for i in $packages ; do
     echo " -> " $i " (version: " "`cat $i.tmp`"  " )"
     rm -f $i
     mv $i.tmp $i
-    echo "`echo $i | sed -e 's/.version//' | sed -e 'sl./debian/ll'`" "`cat $i`" " released. " >> ./debian/release_list
+    echo "`echo $i | sed -e 's/.version//' | sed -e 'sl./debian/ll'`" "`cat ../VERSION && cat $i`" " released. " >> ./debian/release_list
 done
 echo > ./debian/release_list
 

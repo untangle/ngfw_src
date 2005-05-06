@@ -9,23 +9,23 @@ JAVA_HOME=${JAVA_HOME:-/opt/java}
 
 export JAVA_HOME
 
-mvvm_lib=./output/usr/share/metavize/lib
-third_lib=./output/usr/share/java/mvvm
-toolbox=./output/usr/share/metavize/toolbox
+mvvm_lib=../output/usr/share/metavize/lib
+third_lib=../output/usr/share/java/mvvm
+toolbox=../output/usr/share/metavize/toolbox
 
 for j in $mvvm_lib/*jar $third_lib/*jar $toolbox/*mar; do
     CLASSPATH="$j:$CLASSPATH"
 done
 
-mvvm_hbms=$(find ./mvvm/output/gensrc -name '*hbm.xml')
+mvvm_hbms=$(find ../mvvm/output/gensrc -name '*hbm.xml')
 
 for c in $@; do
     if [ $c != "mvvm" ]; then
-        tran_hbms="$tran_hbms $(find ./tran/output/gensrc/$c -name '*hbm.xml')"
+        tran_hbms="$tran_hbms $(find ../tran/output/gensrc/$c -name '*hbm.xml')"
     fi
 done
 
-hibernate_props=./output/usr/share/metavize/conf/hibernate.properties
+hibernate_props=../output/usr/share/metavize/conf/hibernate.properties
 
 $JAVA_HOME/bin/java -cp "$CLASSPATH" \
     net.sf.hibernate.tool.hbm2ddl.SchemaExport \
