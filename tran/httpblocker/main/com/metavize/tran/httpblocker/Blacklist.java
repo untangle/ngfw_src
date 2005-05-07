@@ -15,10 +15,13 @@ import java.net.InetAddress;
 import java.net.URI;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -42,14 +45,24 @@ class Blacklist
 {
     static final Blacklist BLACKLIST = new Blacklist();
 
+    private static final String DB_URL
+        = "jdbc:postgresql://localhost/blacklist?charSet=SQL_ASCII";
+    private static final String DB_USER = "metavize";
+    private static final String DB_PASSWD = "foo";
+
+    private static final String CUSTOM = "custom";
+
     private final Logger eventLogger = MvvmContextFactory.context()
         .eventLogger();
     private final Logger logger = Logger.getLogger(Blacklist.class);
 
     private volatile String[] urls = null;
-    private volatile String[] urlCats = null;
+    private volatile String urlClause = null;
     private volatile String[] domains = null;
-    private volatile String[] domainCats = null;
+    private volatile String domClause = null;
+
+    private volatile String[] blockedUrls = null;
+    private volatile String[] passedUrls = null;
 
     private volatile long tid;
     private volatile HttpBlockerSettings settings;
@@ -72,105 +85,68 @@ class Blacklist
     void destroy()
     {
         urls = null;
-        urlCats = null;
         domains = null;
-        domainCats = null;
     }
 
     void reconfigure()
     {
-
         tid = settings.getTid().getId();
 
         Connection c = null;
         try {
-            c = DriverManager
-                .getConnection("jdbc:postgresql://localhost/blacklist?charSet=SQL_ASCII",
-                               "metavize", "foo");
+            c = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWD);
 
-            List domCat = new LinkedList();
-            List urlCat = new LinkedList();
+            List<String> domCats = new LinkedList<String>();
+            List<String> urlCats = new LinkedList<String>();
 
-            for (Iterator i = settings.getBlacklistCategories().iterator();
-                 i.hasNext(); ) {
-
-                BlacklistCategory category = (BlacklistCategory)i.next();
-
-                if (category.getBlockDomains()) {
-                    domCat.add(category.getName());
+            for (BlacklistCategory cat : (List<BlacklistCategory>)settings.getBlacklistCategories()) {
+                if (cat.getBlockDomains()) {
+                    domCats.add(cat.getName());
                 }
 
-                if (category.getBlockUrls()) {
-                    urlCat.add(category.getName());
+                if (cat.getBlockUrls()) {
+                    urlCats.add(cat.getName());
                 }
             }
 
-            StringBuilder domClause = new StringBuilder("FROM domains ");
-            if (0 < domCat.size()) {
-                domClause.append("WHERE category IN (");
-                for (Iterator iter = domCat.iterator(); iter.hasNext(); ) {
-                    domClause.append("'");
-                    domClause.append(iter.next().toString());
-                    domClause.append("'");
-                    domClause.append(iter.hasNext() ? ", " : ")");
-                }
-            } else {
-                domClause.append("WHERE 1 != 1");
-            }
+            String clause = makeInClause("domains", domCats);
 
             Statement s = c.createStatement();
 
-            ResultSet rs = s.executeQuery("SELECT count(*) " + domClause);
+            ResultSet rs = s.executeQuery("SELECT count(*) " + clause);
             rs.next();
             int count = rs.getInt(1);
 
             domains = null;
             String[] l1 = new String[count];
-            String[] l2 = new String[count];
 
-            rs = s.executeQuery("SELECT domain, category " + domClause
+            rs = s.executeQuery("SELECT domain " + clause
                                 + " ORDER BY domain ASC");
             int i = 0;
             while(rs.next()) {
-                l1[i] = rs.getString(1);
-                l2[i++] = rs.getString(2).intern();;
+                l1[i++] = rs.getString(1);
             }
             domains = l1;
-            domainCats = l2;
+            domClause = clause + " AND domain = ?";
 
-            StringBuilder urlClause = new StringBuilder("FROM urls ");
-            if (0 < urlCat.size()) {
-                urlClause.append("WHERE category IN (");
-                for (Iterator iter = urlCat.iterator(); iter.hasNext(); ) {
-                    urlClause.append("'");
-                    urlClause.append(iter.next().toString());
-                    urlClause.append("'");
-                    urlClause.append(iter.hasNext() ? ", " : ")");
-                }
-            } else {
-                urlClause.append("WHERE 1 != 1");
-            }
+            clause = makeInClause("urls", urlCats);
 
-
-            rs = s.executeQuery("SELECT count(*) " + urlClause);
+            rs = s.executeQuery("SELECT count(*) " + clause);
             rs.next();
             count = rs.getInt(1);
 
             urls = null;
             l1 = new String[count];
-            l2 = new String[count];
 
-            rs = s.executeQuery("SELECT url, category " + urlClause
-                                + " ORDER BY url ASC");
+            rs = s.executeQuery("SELECT url " + clause + " ORDER BY url ASC");
             i = 0;
 
             while (rs.next()) {
-                l1[i] = rs.getString(1);
-                l2[i++] = rs.getString(2).intern();
+                l1[i++] = rs.getString(1);
             }
-            urls = l1;
-            urlCats = l2;
 
+            urls = l1;
+            urlClause = clause + " AND url = ?";
         } catch (SQLException exn) {
             logger.warn("could not query uris", exn);
         } finally {
@@ -182,6 +158,9 @@ class Blacklist
                 logger.warn("could not close connection", exn);
             }
         }
+
+        blockedUrls = makeCustomList((List<StringRule>)settings.getBlockedUrls());
+        passedUrls = makeCustomList((List<StringRule>)settings.getPassedUrls());
     }
 
     synchronized void configure(HttpBlockerSettings settings)
@@ -218,8 +197,14 @@ class Blacklist
 
         if (passClient(clientIp)) {
             return null;
-        } else if (passedUrl(host, path)) {
-            return null;
+        } else {
+            String dom = host;
+            while (null != dom) {
+                if (0 <= findMatch(passedUrls, dom + path)) {
+                    return null;
+                }
+                dom = nextHost(dom);
+            }
         }
 
         // check in HttpBlockerSettings
@@ -230,9 +215,7 @@ class Blacklist
         }
 
         // Check Extensions
-        for (Iterator i = settings.getBlockedExtensions().iterator();
-             i.hasNext(); ) {
-            StringRule rule = (StringRule)i.next();
+        for (StringRule rule : (List<StringRule>)settings.getBlockedExtensions()) {
             String exn = rule.getString().toLowerCase();
             if (rule.isLive() && path.endsWith(exn)) {
                 logger.debug("blocking extension " + exn);
@@ -255,9 +238,7 @@ class Blacklist
 
         String contentType = header.getValue("content-type");
 
-        for (Iterator i = settings.getBlockedMimeTypes().iterator();
-             i.hasNext(); ) {
-            MimeTypeRule rule = (MimeTypeRule)i.next();
+        for (MimeTypeRule rule : (List<MimeTypeRule>)settings.getBlockedMimeTypes()) {
             MimeType mt = rule.getMimeType();
             if (rule.isLive() && mt.matches( contentType )) {
                 eventLogger.info(new HttpBlockerEvent
@@ -282,9 +263,7 @@ class Blacklist
      */
     private boolean passClient(InetAddress clientIp)
     {
-        for (Iterator i = settings.getPassedClients().iterator();
-             i.hasNext(); ) {
-            IPMaddrRule rule = (IPMaddrRule)i.next();
+        for (IPMaddrRule rule : (List<IPMaddrRule>)settings.getPassedClients()) {
             if (rule.getIpMaddr().contains(clientIp)) {
                 return true;
             }
@@ -302,7 +281,7 @@ class Blacklist
         sb.append(".");
         String revHost = sb.toString();
 
-        String category = findCategory(revHost, domains, domainCats);
+        String category = findCategory(domains, revHost, domClause);
 
         if (null != category) {
             eventLogger.info(new HttpBlockerEvent(requestLine, Reason.DOMAIN,
@@ -310,10 +289,17 @@ class Blacklist
             return settings.getBlockTemplate().render(host, uri, category);
         }
 
-        while (null == category && null != host) {
-            String url = host + uri.toString();
-            category = findCategory(url, urls, urlCats);
-            host = nextHost(host);
+        String dom = host;
+        while (null == category && null != dom) {
+            String url = dom + uri.toString();
+            category = findCategory(urls, url, urlClause);
+            if (null == category) {
+                category = findCategory(blockedUrls, url,
+                                        settings.getBlockedUrls());
+            }
+            if (null == category) {
+                dom = nextHost(dom);
+            }
         }
 
         if (null != category) {
@@ -325,32 +311,81 @@ class Blacklist
         return null;
     }
 
-    private String findCategory(String val, String[] strs, String[] cats)
+    private String findCategory(String[] strs, String val,
+                                List<StringRule> rules)
     {
-        if (null == val || null == strs || null == cats) {
-            return null;
+        int i = findMatch(strs, val);
+        return 0 > i ? null : lookupCategory(strs[i], rules);
+    }
+
+    private String findCategory(String[] strs, String val, String clause)
+    {
+        int i = findMatch(strs, val);
+        return 0 > i ? null : lookupCategory(strs[i], clause);
+    }
+
+    private int findMatch(String[] strs, String val)
+    {
+        if (null == val || null == strs) {
+            return -1;
         }
 
         int i = Arrays.binarySearch(strs, val);
-
         if (0 <= i) {
-            assert strs[i].equals(val);
-
-            return cats[i];
+            return i;
         } else {
             int j = -i - 2;
-
             if (0 <= j && j < strs.length && val.startsWith(strs[j])) {
-                return cats[j];
+                return j;
+            }
+        }
+
+        return -1;
+    }
+
+    private String lookupCategory(String match, List<StringRule> rules)
+    {
+        for (StringRule rule : rules) {
+            String url = rule.getString().toLowerCase();
+            String uri = url.startsWith("http://")
+                ? url.substring("http://".length()) : url;
+
+            if (rule.isLive() && match.equals(uri)) {
+                return rule.getCategory();
             }
         }
 
         return null;
     }
 
-    private boolean passedUrl(String host, String path)
+    private String lookupCategory(String match, String clause)
     {
-        return settings.getPassedUrls().contains(host + path);
+        String category = null;
+
+        Connection c = null;
+        try {
+            c = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWD);
+
+            PreparedStatement ps = c.prepareStatement
+                ("SELECT category " + clause);
+            ps.setString(1, match);
+
+            ResultSet rs = ps.executeQuery();
+            rs.next();
+            category = rs.getString(1);
+        } catch (SQLException exn) {
+            logger.warn("could not query uris", exn);
+        } finally {
+            try {
+                if (null != c) {
+                    c.close();
+                }
+            } catch (SQLException exn) {
+                logger.warn("could not close connection", exn);
+            }
+        }
+
+        return category;
     }
 
     /**
@@ -376,5 +411,40 @@ class Blacklist
 
             return host.substring(i + 1);
         }
+    }
+
+    private String[] makeCustomList(List<StringRule> rules)
+    {
+        List<String> strings = new ArrayList<String>(rules.size());
+        for (StringRule rule : rules) {
+            if (rule.isLive()) {
+                String url = rule.getString().toLowerCase();
+                String uri = url.startsWith("http://")
+                    ? url.substring("http://".length()) : url;
+                strings.add(uri);
+            }
+        }
+        Collections.sort(strings);
+
+        return strings.toArray(new String[strings.size()]);
+    }
+
+    private String makeInClause(String table, List<String> cats)
+    {
+        StringBuilder clause = new StringBuilder("FROM ");
+        clause.append(table);
+        if (0 < cats.size()) {
+            clause.append(" WHERE category IN (");
+            for (Iterator<String> i = cats.iterator(); i.hasNext(); ) {
+                clause.append("'");
+                clause.append(i.next());
+                clause.append("'");
+                clause.append(i.hasNext() ? ", " : ")");
+            }
+        } else {
+            clause.append("WHERE 1 != 1");
+        }
+
+        return clause.toString();
     }
 }
