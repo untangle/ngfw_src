@@ -20,9 +20,7 @@ echo -e "Releasing:\n`ls ../*.deb | egrep \"$pkg\"`"
 sudo ../pkgs/scripts/deb-add.sh `ls ../*.deb | egrep "$pkg"`
 echo "------------------------"
 sudo ../pkgs/scripts/deb-scan.sh &> ../update.log
-if [ x$email = xfalse ] ; then
-    cat debian/release_list | mail -s release pkgs@metavize.com
-fi
+
 rm -f debian/release_list
 svn commit -m"release" debian/*.version debian/changelog
 echo "done."

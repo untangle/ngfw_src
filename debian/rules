@@ -93,7 +93,7 @@ binary-arch: build install
 #	dh_perl 
 #	dh_gencontrol
 	for i in `cat debian/control | grep Package | awk '{print $$2}'` ; do \
-	  dh_gencontrol -p$$i -u-is -u-v"`cat debian/$$i.version`" ; \
+	  dh_gencontrol -p$$i -u-is -u-v"`cat ../VERSION``cat debian/$$i.version`" ; \
 	done
 	dh_md5sums 
 	dh_builddeb --destdir=../ 2>&1 | egrep -v "(user-defined|ignoring)"
