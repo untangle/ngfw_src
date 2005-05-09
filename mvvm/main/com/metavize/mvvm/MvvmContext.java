@@ -91,4 +91,7 @@ public interface MvvmContext
 
     // lifecycle --------------------------------------------------------------
     void shutdown();
+
+    // debugging / performance management
+    void doFullGC();
 }

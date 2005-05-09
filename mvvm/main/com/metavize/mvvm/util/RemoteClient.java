@@ -150,6 +150,8 @@ public class RemoteClient
             shieldReconfigure();
         } else if (args[0].equalsIgnoreCase("updateAddress")) {
             updateAddress();
+        } else if (args[0].equalsIgnoreCase("gc")) {
+            doFullGC();
         } else {
             System.out.print("dont know: ");
             for (int i = 0; i < args.length; i++) {
@@ -516,6 +518,11 @@ public class RemoteClient
         mc.loggingManager().resetAllLogs();
     }
 
+    private static void doFullGC()
+    {
+        mc.doFullGC();
+    }
+
     /**
      * <code>shieldStatus</code> Sends out the current state of the shield
      * via UDP to the host and port specified in the command line
@@ -616,6 +623,7 @@ public class RemoteClient
         System.out.println("  mvvm commands:");
         System.out.println("    mcli shutdown");
         System.out.println("    mcli serverStats");
+        System.out.println("    mcli gc");
         System.out.println("  logging manager: ");
         System.out.println("    mcli userLogs tid");
         System.out.println("    mcli resetLogs");

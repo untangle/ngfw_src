@@ -281,8 +281,11 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
             else
                 debug("tryWrite to full outgoing queue");
         } else {
+            // Old busted comment:
 	    // We know it's a data crumb since there can be nothing else
-	    // enqueued for TCP.
+	    // enqueued for TCP.  
+            // New hotness comment:
+            // It can be a shutdown crumb as well as a data crumb.
             Crumb crumb2send = getNextCrumb2Send(side);
             assert crumb2send != null;
             int numWritten = sendCrumb(crumb2send, out);

@@ -126,4 +126,11 @@ public abstract class MvvmContextImpl extends MvvmContextBase
                 }
             }).start();
     }
+
+    public void doFullGC()
+    {
+        // XX check access permission
+
+        System.gc();
+    }
 }
