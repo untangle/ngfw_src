@@ -89,4 +89,4 @@ else
     JAVA_OPTS="$JAVA_OPTS_COMMON $JAVA_OPTS_SUN" #   SUN
 fi
 
-
+export JAVA_OPTS
