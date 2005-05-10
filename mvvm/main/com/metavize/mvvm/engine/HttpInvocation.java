@@ -17,12 +17,12 @@ import com.metavize.mvvm.security.LoginSession;
 
 class HttpInvocation implements Serializable
 {
-    private static final long serialVersionUID = -192623323581233139L;
+    private static final long serialVersionUID = 3529724701056849106L;
 
-    LoginSession loginSession;
-    Integer targetId;
-    String methodSignature;
-    String definingClass;
+    final LoginSession loginSession;
+    final Integer targetId;
+    final String methodSignature;
+    final String definingClass;
 
     HttpInvocation(LoginSession loginSession, Integer targetId,
                    String methodSignature, String definingClass)

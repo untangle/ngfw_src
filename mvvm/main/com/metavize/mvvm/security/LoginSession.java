@@ -16,7 +16,7 @@ import java.net.InetAddress;
 
 public class LoginSession implements Serializable
 {
-    private static final long serialVersionUID = 3121773301570017319L;
+    private static final long serialVersionUID = 8008547499175175006L;
 
     private final MvvmPrincipal mvvmPrincipal;
     private final int sessionId;

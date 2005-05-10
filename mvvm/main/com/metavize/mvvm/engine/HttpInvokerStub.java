@@ -23,7 +23,7 @@ import com.metavize.mvvm.security.LoginSession;
 
 public class HttpInvokerStub implements InvocationHandler, Serializable
 {
-    private static final long serialVersionUID = -7096144423864315443L;
+    private static final long serialVersionUID = 7987422171291937863L;
 
     private static ClassLoader classLoader;
 
