@@ -324,7 +324,7 @@ JNIEXPORT jbyte JNICALL JF_Netcap( convertStringToIntf )
 
     do {
         if ( netcap_interface_string_to_intf( (char*)str, &intf ) < 0 ) {
-            return jnetcap_error( JNETCAP_ERROR_ARGS, ERR_CRITICAL, "Invalid interface: '%s'\n", intf );
+            ret = jnetcap_error( JNETCAP_ERROR_ARGS, ERR_CRITICAL, "Invalid interface: '%s'\n", intf );
         }
     } while ( 0 );
 
