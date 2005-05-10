@@ -80,6 +80,7 @@ public class RemoteClient
 
         if (args[0].equalsIgnoreCase("serverStats")) {
             System.out.println("Running");
+            MvvmRemoteContextFactory.logout();
             System.exit(0);
         }
 
@@ -159,8 +160,11 @@ public class RemoteClient
             }
             System.out.println();
             printUsage();
+            MvvmRemoteContextFactory.logout();
             System.exit(-1);
         }
+
+        MvvmRemoteContextFactory.logout();
     }
 
     private static void install(String mackageName)
@@ -464,13 +468,13 @@ public class RemoteClient
     private static void who()
     {
         LoginSession l = MvvmRemoteContextFactory.loginSession();
-        String ln = null == l ? "nobody" : l.mvvmPrincipal().getName();
-        System.out.println("You are: " + ln + " " + l.sessionId());
+        String ln = null == l ? "nobody" : l.getMvvmPrincipal().getName();
+        System.out.println("You are: " + ln + " " + l.getSessionId());
         LoginSession[] ls = mc.adminManager().loggedInUsers();
         for (int i = 0; i < ls.length; i++) {
-            MvvmPrincipal mp = ls[i].mvvmPrincipal();
+            MvvmPrincipal mp = ls[i].getMvvmPrincipal();
             ln = null == mp ? "nobody" : mp.getName();
-            System.out.println(ls[i].sessionId() + "\t" + ln);
+            System.out.println(ls[i].getSessionId() + "\t" + ln);
         }
     }
 

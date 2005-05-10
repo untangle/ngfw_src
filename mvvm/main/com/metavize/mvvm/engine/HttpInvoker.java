@@ -16,55 +16,61 @@ import java.io.InputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
-import java.lang.ref.WeakReference;
-import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-import java.net.URL;
 import java.net.InetAddress;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Map;
-import java.util.Set;
-import java.util.WeakHashMap;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.ConcurrentHashMap;
 
-import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.MvvmContext;
 import com.metavize.mvvm.client.InvocationTargetExpiredException;
+import com.metavize.mvvm.security.LoginExpiredException;
 import com.metavize.mvvm.security.LoginSession;
 import org.apache.log4j.Logger;
 
 class HttpInvoker extends InvokerBase
 {
     private static final HttpInvoker INVOKER = new HttpInvoker();
+    private static final int LOGIN_TIMEOUT_MINUTES = 30;
+    private static final int LOGIN_REAPER_PERIOD = 60000;
+
     private static final Logger logger = Logger.getLogger(HttpInvoker.class);
 
-    // canoncial LoginSession:
-    private Map loginSessions = new WeakHashMap();
-    // keeps cacheIds weakly by loginSession:
-    private Map cacheIds = new WeakHashMap();
-    // keeps targets weakly by cacheId:
-    private Map targets = new HashMap();
-    private Map proxyCache = Collections.synchronizedMap(new WeakHashMap());
-    private Map classMethodsMap = new WeakHashMap();
-    private Map interfaceMap = new WeakHashMap();
+    private final Map<LoginSession, LoginDesc> logins;
+    private final ThreadLocal<LoginSession> activeLogin;
+    private final ThreadLocal<LoginSession> newLogin;
+    private final ThreadLocal<InetAddress> clientAddr;
+    private final Timer loginReaper = new Timer(true);
+    private final TargetReaper targetReaper = new TargetReaper();
 
-    private HttpInvoker() { }
+    // constructors -----------------------------------------------------------
+
+    private HttpInvoker()
+    {
+        logins = new ConcurrentHashMap<LoginSession, LoginDesc>();
+        activeLogin = new ThreadLocal<LoginSession>();
+        newLogin = new ThreadLocal<LoginSession>();
+        clientAddr = new ThreadLocal<InetAddress>();
+    }
+
+    // static factories -------------------------------------------------------
 
     static HttpInvoker invoker()
     {
         return INVOKER;
     }
 
-    public LoginSession[] getLoginSessions()
-    {
-        return new LoginSession[0]; // XXX implement!!!
-    }
+    // protected methods ------------------------------------------------------
 
     protected void handleStream(InputStream is, OutputStream os,
-                                boolean isLocal, InetAddress remoteAddr)
+                                boolean local, InetAddress remoteAddr)
     {
+        newLogin.remove();
+
         ObjectOutputStream oos = null;
         ProxyInputStream pis = null;
 
@@ -74,24 +80,45 @@ class HttpInvoker extends InvokerBase
             HttpInvocation hi = (HttpInvocation)pis.readObject();
 
             LoginSession loginSession = hi.loginSession;
-            Object cacheId = hi.cacheId;
+            Integer targetId = hi.targetId;
             String methodName = hi.methodSignature;
             String definingClass = hi.definingClass;
-            URL url = hi.url;
 
-            if (null == cacheId) {
-                oos.writeObject(mvvmLoginProxy(url, isLocal, remoteAddr));
-                return;
+            if (null == targetId) {
+                if (null == loginSession) {  /* login request */
+                    NullLoginDesc loginDesc = NullLoginDesc.getLoginDesc(local);
+                    TargetDesc targetDesc = loginDesc.getTargetDesc();
+                    Object proxy = targetDesc.getProxy();
+                    oos.writeObject(proxy);
+                    return;
+                } else {                     /* logout */
+                    logins.remove(loginSession);
+                    oos.writeObject(null);
+                    return;
+                }
             }
 
-            Object target = getTarget(cacheId);
+            LoginDesc loginDesc = null == loginSession
+                ? NullLoginDesc.getLoginDesc(local) /* access MvvmLogin only */
+                : logins.get(loginSession);         /* logged in */
+
+            if (null == loginDesc) {
+                oos.writeObject(new LoginExpiredException("login expired"));
+                return;
+            } else {
+                loginDesc.touch();
+            }
+
+            TargetDesc targetDesc = loginDesc.getTargetDesc(targetId);
+            Object target = null == targetDesc ? null : targetDesc.getTarget();
+
             if (null == target) {
                 oos.writeObject(new InvocationTargetExpiredException
                                 ("target expired: " + methodName));
                 return;
             }
 
-            Method method = methodByName(target, methodName);
+            Method method = targetDesc.getMethod(methodName);
 
             // XXX setting context-cl to current object's cl may not
             // always be correct, think about this
@@ -99,37 +126,43 @@ class HttpInvoker extends InvokerBase
             ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
             // Entering TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             Thread.currentThread().setContextClassLoader(targetCl);
-            loginSession.setActive();
 
-            Object returnValue = null;
+            Object retVal = null;
             try {
                 Object[] args = (Object[])pis.readObject(targetCl);
+                activeLogin.set(loginSession);
+                clientAddr.set(remoteAddr);
                 // XXX use Subject.doAs() :
-                returnValue = method.invoke(target, args);
+                retVal = method.invoke(target, args);
             } catch (InvocationTargetException exn) {
-                returnValue = exn.getTargetException();
+                retVal = exn.getTargetException();
             } catch (Exception exn) {
                 logger.warn("exception in RPC call", exn);
-                returnValue = exn;
+                retVal = exn;
             } finally {
+                activeLogin.remove();
+                clientAddr.remove();
                 Thread.currentThread().setContextClassLoader(oldCl);
                 // Left TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             }
 
-            if (null != returnValue
-                && Proxy.isProxyClass(returnValue.getClass())) {
-                InvocationHandler ih = Proxy.getInvocationHandler(returnValue);
-                if (ih instanceof HttpInvokerStub) {
-                    HttpInvokerStub his = (HttpInvokerStub)ih;
-                    his.setUrl(url);
-                    loginSession = his.getLoginSession();
+            if (retVal instanceof MvvmContext) {
+                LoginSession ls = newLogin.get();
+                newLogin.remove();
+
+                if (null != ls) {
+                    loginSession = ls;
+                    loginDesc = new LoginDesc(loginSession);
+                    logins.put(loginSession, loginDesc);
                 }
-            } else if (null != returnValue
-                       && !(returnValue instanceof Serializable)) {
-                returnValue = makeProxy(loginSession, returnValue, url);
             }
 
-            oos.writeObject(returnValue);
+            if (null != retVal && !(retVal instanceof Serializable)) {
+                targetDesc = loginDesc.getTargetDesc(retVal, targetReaper);
+                retVal = targetDesc.getProxy();
+            }
+
+            oos.writeObject(retVal);
         } catch (IOException exn) {
             logger.warn("IOException in HttpInvoker", exn);
         } catch (ClassNotFoundException exn) {
@@ -159,168 +192,45 @@ class HttpInvoker extends InvokerBase
 
     void init()
     {
-        // XXX implement
+        loginReaper.schedule(new TimerTask() {
+                public void run()
+                {
+                    Calendar cal = Calendar.getInstance();
+                    cal.add(Calendar.MINUTE, -LOGIN_TIMEOUT_MINUTES);
+                    Date cutoff = cal.getTime();
+
+                    for (LoginSession loginSession : logins.keySet()) {
+                        LoginDesc loginDesc = logins.get(loginSession);
+                        if (null != loginDesc) {
+                            Date lastAccess = loginDesc.getLastAccess();
+                            if (cutoff.after(lastAccess)) {
+                                logins.remove(loginSession);
+                            }
+                        }
+                    }
+                }
+            }, LOGIN_REAPER_PERIOD, LOGIN_REAPER_PERIOD);
+        targetReaper.init();
     }
 
     void destroy()
     {
-        // XXX implement
+        loginReaper.cancel();
+        targetReaper.destroy();
     }
 
-    Object makeProxy(LoginSession ls, Object target, URL url)
-        throws Exception
+    void login(LoginSession loginSession)
     {
-        Map tgtMap = (Map)proxyCache.get(ls);
-        if (null == tgtMap) {
-            tgtMap = Collections.synchronizedMap(new WeakHashMap());
-            proxyCache.put(ls, tgtMap);
-        }
-        WeakReference wr = (WeakReference)tgtMap.get(target);
-        Object pxy = null == wr ? null : wr.get();
-
-        if (null == pxy) {
-            ClassLoader cl = target.getClass().getClassLoader();
-
-            Class[] ifaces = (Class[])interfaces(target.getClass())
-                .toArray(new Class[0]);
-
-            Object cacheId = (Integer)addTarget(ls, target);
-            HttpInvokerStub his = new HttpInvokerStub(ls, url, cacheId, null);
-            pxy = Proxy.newProxyInstance(cl, ifaces, his);
-            tgtMap.put(target, new WeakReference(pxy));
-        }
-
-        return pxy;
+        newLogin.set(loginSession);
     }
 
-    // private methods --------------------------------------------------------
-
-    private Method methodByName(Object target, String name)
+    InetAddress getClientAddr()
     {
-        boolean newMethodMap = false;
-        WeakReference cmref;
-        Map cm;
-        synchronized (classMethodsMap) {
-            cmref = (WeakReference)classMethodsMap.get(target);
-            cm = (cmref == null) ? null : (Map) cmref.get();
-            if (null == cm) {
-                newMethodMap = true;
-                cm = new HashMap();
-                classMethodsMap.put(target, new WeakReference(cm));
-            }
-        }
-
-        Method m;
-        synchronized (cm) {
-            if (newMethodMap) {
-                populateMethodMap(cm, target);
-            }
-            m = (Method)cm.get(name);
-        }
-
-        return m;
+        return clientAddr.get();
     }
 
-    private void populateMethodMap(Map cm, Object t)
+    LoginSession[] getLoginSessions()
     {
-        populateMethodMap(cm, t.getClass());
-    }
-
-    private void populateMethodMap(Map cm, Class c)
-    {
-        if (null == c) { return; }
-
-        Method[] m = c.getMethods();
-        for (int i = 0; i < m.length; i++) {
-            String ms = m[i].toString();
-            cm.put(ms, m[i]);
-        }
-
-        populateMethodMap(cm, c.getSuperclass());
-
-        Class[] ifcs = c.getInterfaces();
-        for (int i = 0; i < ifcs.length; i++) {
-            populateMethodMap(cm, ifcs[i]);
-        }
-    }
-
-    private Set interfaces(Class c)
-    {
-        Set i;
-        synchronized (interfaceMap) {
-            i = (Set)interfaceMap.get(c);
-
-            if (null == i) {
-                i = interfaces(c, new HashSet());
-                interfaceMap.put(c, i);
-            }
-        }
-
-        return i;
-    }
-
-    private Set interfaces(Class[] c, Set l)
-    {
-        for (int i = 0; i < c.length; i++) {
-            interfaces(c[i], l);
-        }
-        return l;
-    }
-
-    private Set interfaces(Class c, Set l)
-    {
-        // XXX Is there are more structural way of accomplishing this
-        if (c.isInterface()
-            && !c.getName().endsWith("MvvmLocalContext")) {
-            l.add(c);
-        }
-        interfaces(c.getInterfaces(), l);
-
-        Class superclass = c.getSuperclass();
-        if (null != superclass) {
-            interfaces(superclass, l);
-        }
-        return l;
-    }
-
-    private Object mvvmLoginProxy(URL url, boolean isLocal, InetAddress remoteAddr) throws Exception
-    {
-        // We make a temporary login session here that gets replaced when we complete the login.
-        return makeProxy(new LoginSession(null, 0, remoteAddr),
-                         MvvmContextFactory.context().mvvmLogin(isLocal),
-                         url);
-    }
-
-    private Object getTarget(Object key)
-    {
-        WeakReference wr;
-        synchronized (targets) {
-            wr = (WeakReference)targets.get(key);
-        }
-
-        Object target = null == wr ? null : wr.get();
-
-        return target;
-    }
-
-    private Object addTarget(LoginSession ls, Object o)
-    {
-        Set s;
-        synchronized (cacheIds) {
-            s = (Set)cacheIds.get(ls);
-            if (null == s) {
-                s = Collections.synchronizedSet(new HashSet());
-                cacheIds.put(ls, s);
-            }
-        }
-
-        Object cacheId;
-        synchronized (targets) {
-            cacheId = new Integer(targets.size() + 1);
-            s.add(cacheId);
-            targets.put(cacheId, new WeakReference(o));
-        }
-
-        return cacheId;
+        return logins.keySet().toArray(new LoginSession[0]);
     }
 }

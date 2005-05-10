@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: HttpInvokerStub.java,v 1.12 2005/03/25 03:51:16 amread Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.engine;
@@ -15,6 +15,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -24,29 +25,42 @@ public class HttpInvokerStub implements InvocationHandler, Serializable
 {
     private static final long serialVersionUID = -7096144423864315443L;
 
-    private static int timeout;
     private static ClassLoader classLoader;
-    private URL url;
-    private Object cacheId;
-    private LoginSession loginSession;
 
-    public HttpInvokerStub(LoginSession ls, URL url, Object cacheId,
-                           int timeout, ClassLoader classLoader)
+    private final LoginSession loginSession;
+    private final Integer targetId;
+
+    // values passed to HttpInvokerStubs returned from MVVM:
+    private URL url;
+    private int timeout;
+
+    // constructors -----------------------------------------------------------
+
+    public HttpInvokerStub(LoginSession loginSession, Integer targetId)
     {
-        this.loginSession = ls;
+        this.loginSession = loginSession;
+        this.targetId = targetId;
+    }
+
+    public HttpInvokerStub(URL url, int timeout, ClassLoader classLoader)
+    {
+        this.loginSession = null;
+        this.targetId = null;
         this.url = url;
-        this.cacheId = cacheId;
         this.timeout = timeout;
         if (classLoader != null) {
             this.classLoader = classLoader;
         }
     }
 
-    public HttpInvokerStub(LoginSession ls, URL url, Object cacheId,
-                           ClassLoader classLoader)
+    // public methods ---------------------------------------------------------
+
+    public LoginSession getLoginSession()
     {
-        this(ls, url, cacheId, 0, classLoader);
+        return loginSession;
     }
+
+    // InvocationHandler methods ----------------------------------------------
 
     public Object invoke(Object proxy, Method method, Object[] args)
         throws Exception
@@ -60,8 +74,8 @@ public class HttpInvokerStub implements InvocationHandler, Serializable
 
         // XXX hack: null for login proxy
         HttpInvocation inv = (null == proxy)
-            ? new HttpInvocation(loginSession, url, null, null, null)
-            : new HttpInvocation(loginSession, url, cacheId, method.toString(),
+            ? new HttpInvocation(loginSession, null, null, null)
+            : new HttpInvocation(loginSession, targetId, method.toString(),
                                   method.getDeclaringClass().getName());
 
         ObjectOutputStream oos = new ObjectOutputStream(huc.getOutputStream());
@@ -87,25 +101,18 @@ public class HttpInvokerStub implements InvocationHandler, Serializable
 
         if (null == o) {
             return null;
+        } else if (Proxy.isProxyClass(o.getClass())) {
+            InvocationHandler ih = Proxy.getInvocationHandler(o);
+            if (ih instanceof HttpInvokerStub) {
+                HttpInvokerStub his = (HttpInvokerStub)ih;
+                his.url = url;
+                his.timeout = timeout;
+            }
+            return o;
         } else if (o instanceof Exception) {
             throw (Exception)o;
         } else {
             return o;
         }
-    }
-
-    public LoginSession getLoginSession()
-    {
-        return loginSession;
-    }
-
-    public void logout()
-    {
-        // XXX implement
-    }
-
-    void setUrl(URL url)
-    {
-        this.url = url;
     }
 }

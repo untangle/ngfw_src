@@ -11,6 +11,8 @@
 
 package com.metavize.mvvm;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Proxy;
 import java.net.MalformedURLException;
 import java.net.URL;
 import javax.security.auth.login.FailedLoginException;
@@ -19,7 +21,6 @@ import com.metavize.mvvm.engine.HttpInvokerStub;
 import com.metavize.mvvm.security.LoginSession;
 import com.metavize.mvvm.security.MvvmLogin;
 import com.metavize.mvvm.security.MvvmLoginException;
-import com.metavize.mvvm.security.MvvmPrincipal;
 
 /**
  * Factory to get the MvvmContext for an MVVM instance.
@@ -68,16 +69,18 @@ public class MvvmRemoteContextFactory
         URL url;
 
         try {
-            url = new URL(secure ? "https" : "http",
-                          host, "/http-invoker");
+            url = new URL(secure ? "https" : "http", host, "/http-invoker");
         } catch (MalformedURLException exn) { /* shouldn't happen */
             throw new MvvmConnectException(exn);
         }
 
         synchronized (LOCK) {
-            MvvmLogin ml = mvvmLogin(new MvvmPrincipal(username), url,
-                                     timeout, classLoader);
+            MvvmLogin ml = mvvmLogin(url, timeout, classLoader);
             MVVM_CONTEXT = ml.login(username, password);
+            if (null != MVVM_CONTEXT) {
+                InvocationHandler ih = Proxy.getInvocationHandler(MVVM_CONTEXT);
+                HTTP_INVOKER_STUB = (HttpInvokerStub)ih;
+            }
         }
 
         return MVVM_CONTEXT;
@@ -137,7 +140,11 @@ public class MvvmRemoteContextFactory
     public static void logout()
     {
         synchronized (LOCK) {
-            HTTP_INVOKER_STUB.logout();
+            try {
+                HTTP_INVOKER_STUB.invoke(null, null, null);
+            } catch (Exception exn) {
+                throw new RuntimeException(exn); // XXX
+            }
             HTTP_INVOKER_STUB = null;
         }
     }
@@ -149,17 +156,17 @@ public class MvvmRemoteContextFactory
         }
     }
 
-    private static MvvmLogin mvvmLogin(MvvmPrincipal mp, URL url, int timeout,
+    private static MvvmLogin mvvmLogin(URL url, int timeout,
                                        ClassLoader classLoader)
     {
         // Note -- this login session is completely ignored by the server
         // (which it must be since it's made on the client).
-        LoginSession ls = new LoginSession(mp, 0, null);
-        HTTP_INVOKER_STUB = new HttpInvokerStub(ls, url, null, timeout, classLoader);
+        HttpInvokerStub his = new HttpInvokerStub(url, timeout, classLoader);
 
+        MvvmLogin mvvmLogin;
         try {
             // XXX hack to get a login proxy
-            return (MvvmLogin)HTTP_INVOKER_STUB.invoke(null, null, null);
+            return (MvvmLogin)his.invoke(null, null, null);
         } catch (Exception exn) {
             throw new RuntimeException(exn); // XXX
         }

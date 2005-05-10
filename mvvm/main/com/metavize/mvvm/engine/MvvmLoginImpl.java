@@ -11,6 +11,7 @@
 
 package com.metavize.mvvm.engine;
 
+import java.net.InetAddress;
 import javax.security.auth.login.FailedLoginException;
 
 import com.metavize.mvvm.MvvmContext;
@@ -18,7 +19,6 @@ import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.security.LoginFailureReason;
 import com.metavize.mvvm.security.LoginSession;
 import com.metavize.mvvm.security.MvvmLogin;
-import com.metavize.mvvm.security.MvvmLoginException;
 import com.metavize.mvvm.security.MvvmPrincipal;
 import com.metavize.mvvm.security.PasswordUtil;
 import com.metavize.mvvm.security.User;
@@ -27,22 +27,22 @@ import net.sf.hibernate.Query;
 import net.sf.hibernate.Session;
 import net.sf.hibernate.Transaction;
 import org.apache.log4j.Logger;
-import java.net.InetAddress;
 
 class MvvmLoginImpl implements MvvmLogin
 {
-    // Add two seconds to each failed login attempt to blunt the force of scripted dictionary attacks.
+    // Add two seconds to each failed login attempt to blunt the force
+    // of scripted dictionary attacks.
     private static final long LOGIN_FAIL_SLEEP_TIME = 2000;
 
     private static final Object LOCK = new Object();
-    private static final Logger logger = Logger
-        .getLogger(MvvmLoginImpl.class.getName());
+    private static final Logger logger = Logger.getLogger(MvvmLoginImpl.class);
 
-    private Logger eventLogger;
+    private final boolean isLocal;
+    private final Logger eventLogger;
 
     private static int loginId = 0; /* have LOCK */
 
-    private boolean isLocal;
+    // Constructors -----------------------------------------------------------
 
     MvvmLoginImpl(boolean isLocal)
     {
@@ -51,13 +51,14 @@ class MvvmLoginImpl implements MvvmLogin
         this.eventLogger = MvvmContextFactory.context().eventLogger();
     }
 
+    // MvvmLogin methods ------------------------------------------------------
+
     public MvvmContext login(String login, String password)
         throws FailedLoginException
     {
-
         // Get the client Addr from our partial initial login session
-        LoginSession activeSession = LoginSession.getActive();
-        InetAddress clientAddr = activeSession.clientAddr();
+        HttpInvoker invoker = HttpInvoker.invoker();
+        InetAddress clientAddr = invoker.getClientAddr();
 
         boolean success = false;
         if (isLocal) {
@@ -91,7 +92,8 @@ class MvvmLoginImpl implements MvvmLogin
                     logger.debug("Attempting login of user: " + u.getLogin());
                     if (PasswordUtil.check(password, u.getPassword())) {
                         logger.debug("Password check succeeded");
-                        // Just use login, not id, so it can be congruent with "localadmin" from above.
+                        // Just use login, not id, so it can be
+                        // congruent with "localadmin" from above.
                         eventLogger.info(new LoginEvent(clientAddr, login, false, true));
                         success = true;
                     } else {
@@ -128,15 +130,15 @@ class MvvmLoginImpl implements MvvmLogin
 
         MvvmPrincipal mp = new MvvmPrincipal(login);
 
-        // XXX Throw MvvmLoginException on failure!
-        try {
-            return (MvvmContext)HttpInvoker.invoker()
-                .makeProxy(new LoginSession(mp, nextLoginId(), clientAddr),
-                           MvvmContextFactory.context(), null);
-        } catch (Exception exn) {
-            throw new RuntimeException(exn); // XXX
-        }
+        LoginSession loginSession = new LoginSession(mp, nextLoginId(),
+                                                     clientAddr);
+
+        invoker.login(loginSession);
+
+        return MvvmContextFactory.context();
     }
+
+    // private methods --------------------------------------------------------
 
     private int nextLoginId()
     {

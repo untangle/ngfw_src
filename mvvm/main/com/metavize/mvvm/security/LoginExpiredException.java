@@ -6,12 +6,10 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id$
+ * $Id: MvvmLoginException.java 194 2005-04-06 19:13:55Z rbscott $
  */
 
 package com.metavize.mvvm.security;
-
-import javax.security.auth.login.LoginException;
 
 /**
  * Exception for login failures.
@@ -19,14 +17,14 @@ import javax.security.auth.login.LoginException;
  * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
  */
-public class MvvmLoginException extends LoginException
+public class LoginExpiredException extends MvvmLoginException
 {
-    public MvvmLoginException()
+    public LoginExpiredException()
     {
         super();
     }
 
-    public MvvmLoginException(String message)
+    public LoginExpiredException(String message)
     {
         super(message);
     }
