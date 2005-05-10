@@ -5,21 +5,13 @@
     xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
     version="2.4">
 
+  @JSP_PRE_COMPILED_SERVLETS@
+
   <display-name>Metavize Webstart</display-name>
   <description>Metavize Webstart</description>
 
-  <servlet>
-    <servlet-name>MetavizeClient</servlet-name>
-    <jsp-file>/index.jsp</jsp-file>
-  </servlet>
-
   <servlet-mapping>
-    <servlet-name>jsp</servlet-name>
-    <url-pattern>/gui.jnlp</url-pattern>
-  </servlet-mapping>
-
-  <servlet-mapping>
-    <servlet-name>MetavizeClient</servlet-name>
+    <servlet-name>com.metavize.jsp.index_jsp</servlet-name>
     <url-pattern>*.html</url-pattern>
   </servlet-mapping>
 

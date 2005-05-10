@@ -16,13 +16,38 @@ $Id: build.xml,v 1.22 2005/03/25 04:00:30 jdi Exp $
   <import file="../buildtools/buildmagic.xml"/>
 
   <!-- main targets -->
-  <target name="pkg.gensrc"/>
+  <target name="pkg.gensrc"  depends="gensrc.servlets"/>
   <target name="pkg.compile" depends="compile.gui"/>
-  <target name="pkg.jar"     depends="jar.gui"/>
-  <target name="pkg.install" depends="install.hier, install.gui, install.webstart"/>
+  <target name="pkg.jar"     depends="jar.gui, jar.servlets"/>
+  <target name="pkg.install" depends="install.hier, install.gui, install.servlets, install.webstart"/>
   <target name="pkg.clean"   depends="clean.nuke"/>
 
   <property name="build.gui" value="${build.root}/gui"/>
+
+  <target name="gensrc.servlets">
+    <!-- Do the jsp's so we don't need a JDK at runtime -->
+    <echo message="uriroot is ${src.hier}/${suffix.mvvm.webstart}"/>
+    <!-- We need an explicit list of files since the JspC task only finds *.jsp -->
+    <!-- We need fork to avoid class duplication bug in ant -->
+    <java classname="org.apache.jasper.JspC"
+          fork="true"
+          failonerror="true">
+      <arg line="-d ${build.gensrc}"/>
+      <arg line="-p com.metavize.jsp"/>
+      <arg line="-webinc ${build.gensrc}/web-fragment.xml"/>
+      <arg line="-uriroot ${src.hier}/${suffix.mvvm.webstart}/"/>
+      <arg value="index.jsp"/>
+      <arg value="gui.jnlp"/>
+      <classpath refid="tomcat.classpath"/>
+    </java>
+    <echo message="Adding JSP servlet mappings to web.xml"/>
+    <loadfile property="generated-web.xml" srcFile="${build.gensrc}/web-fragment.xml"/>
+    <copy file="${src.hier}/${suffix.mvvm.webstart}/WEB-INF/web.xml" toFile="${dist.mvvm.webstart}/WEB-INF/web.xml" overwrite="true">
+      <filterset>
+        <filter token="JSP_PRE_COMPILED_SERVLETS" value="${generated-web.xml}"/>
+      </filterset>
+    </copy>
+  </target>
 
   <target name="compile.gui">
     <mkdir dir="${build.gui}"/>
@@ -51,14 +76,19 @@ $Id: build.xml,v 1.22 2005/03/25 04:00:30 jdi Exp $
       <classpath refid="netbeans.classpath"/>
       <classpath refid="kunststoff.classpath"/>
       <classpath refid="jnlp.classpath"/>
+      <classpath refid="tomcat.classpath"/>
 
+      <src path="${build.gensrc}"/>
       <src path="${src.main}"/>
     </javac>
+
   </target>
 
   <target name="jar.gui" depends="compile.gui">
     <jar destfile="${build.jar}/gui.jar" index="yes">
-      <fileset dir="${build.gui}"/>
+      <fileset dir="${build.gui}">
+        <exclude name="com/metavize/jsp/**"/>
+      </fileset>
       <fileset dir="${src.main}">
         <include name="**/*png"/>
         <include name="**/*gif"/>
@@ -70,8 +100,20 @@ $Id: build.xml,v 1.22 2005/03/25 04:00:30 jdi Exp $
     </jar>
   </target>
 
+  <target name="jar.servlets" depends="compile.gui">
+    <jar destfile="${build.jar}/servlets.jar" index="yes">
+      <fileset dir="${build.gui}">
+        <include name="com/metavize/jsp/**"/>
+      </fileset>
+    </jar>
+  </target>
+
   <target name="install.gui" depends="jar.gui">
     <copy file="${build.jar}/gui.jar" todir="${dist.mvvm.lib}"/>
+  </target>
+
+  <target name="install.servlets" depends="jar.servlets">
+    <copy file="${build.jar}/servlets.jar" todir="${dist.mvvm.webstart}/WEB-INF/lib"/>
   </target>
 
   <target name="install.hier">

@@ -65,13 +65,13 @@ LN            = ln
 STRIP         = strip
 
 JAVA_HOME      ?= /opt/java
-ANT_HOME        = $(alpine_root)/../downloads/apache-ant-1.6.2
+ANT_HOME        = $(alpine_root)/../downloads/apache-ant-1.6.3
 ANTCONTRIB_VERSION = 0.6
 ANTCONTRIB_HOME = $(alpine_root)/../downloads/ant-contrib-$(ANTCONTRIB_VERSION)
 JASPER_REPORTS_VERSION = 0.6.4
 JASPER_REPORTS_HOME = $(alpine_root)/../downloads/jasperreports-$(JASPER_REPORTS_VERSION)
 # ANT_CLASSPATH   = $(ANT_HOME)/lib/ant.jar:$(ANTCONTRIB_HOME)/lib/ant-contrib-$(ANTCONTRIB_VERSION).jar:$(JASPER_REPORTS_HOME)/dist/jasperreports-$(JASPER_REPORTS_VERSION).jar
-ANT_CLASSPATH   = $(ANT_HOME)/lib/ant.jar:$(ANTCONTRIB_HOME)/lib/ant-contrib-$(ANTCONTRIB_VERSION).jar
+ANT_CLASSPATH   = $(ANTCONTRIB_HOME)/lib/ant-contrib-$(ANTCONTRIB_VERSION).jar:${JAVA_HOME}/lib/tools.jar
 ANT             = CLASSPATH=$(ANT_CLASSPATH) JAVA_HOME=$(JAVA_HOME) $(ANT_HOME)/bin/ant -Dworld.root=$(build_dist) -Dbuild.prefix=$(build_prefix) -emacs
 
 ENSUREDIR   =   $(BINDIR)/ensure-dir.sh

@@ -20,19 +20,40 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
   <property name="mnp.xsd" value="../../xenon/xml/mnp.xsd"/>
 
   <!-- main targets -->
-  <target name="pkg.gensrc"/>
+  <target name="pkg.gensrc"  depends="gensrc.servlets"/>
   <target name="pkg.compile"
           depends="compile.bootstrap, compile.util, compile.mvvm-client,
-                   compile.mvvm, compile.http-invoker"/>
+                   compile.mvvm, compile.servlets"/>
   <target name="pkg.jar"
           depends="jar.bootstrap, jar.util, jar.mvvm-client, jar.mvvm,
-                   jar.http-invoker"/>
+                   jar.servlets"/>
   <target name="pkg.install"
           depends="install.hier, install.bootstrap, install.util,
-                   install.mvvm-client, install.mvvm, install.http-invoker,
-                   install.thirdparty, install.sessionDumper,
-                   install.servlet.reports"/>
+                   install.mvvm-client, install.mvvm, install.servlets,
+                   install.thirdparty, install.reports"/>
   <target name="pkg.clean" depends="clean.nuke"/>
+
+  <target name="gensrc.servlets">
+    <!-- Do the jsp's so we don't need a JDK at runtime -->
+    <echo message="uriroot is ${src.hier}/${suffix.mvvm.webstart}"/>
+    <!-- We need fork to avoid class duplication bug in ant -->
+    <java classname="org.apache.jasper.JspC"
+          fork="true"
+          failonerror="true">
+      <arg line="-d ${build.gensrc}"/>
+      <arg line="-p com.metavize.jsp"/>
+      <arg line="-webinc ${build.gensrc}/web-fragment.xml"/>
+      <arg line="-uriroot ${src.hier}/${suffix.mvvm.web}/session-dumper/"/>
+      <classpath refid="tomcat.classpath"/>
+    </java>
+    <echo message="Adding JSP servlet mappings to web.xml"/>
+    <loadfile property="generated-web.xml" srcFile="${build.gensrc}/web-fragment.xml"/>
+    <copy file="${src.hier}/${suffix.mvvm.web}/session-dumper/WEB-INF/web.xml" toFile="${dist.mvvm.web}/session-dumper/WEB-INF/web.xml" overwrite="true">
+      <filterset>
+        <filter token="JSP_PRE_COMPILED_SERVLETS" value="${generated-web.xml}"/>
+      </filterset>
+    </copy>
+  </target>
 
   <target name="gensrc.xdoclet" depends="prepare">
     <!-- map all files to stamp file, if any are newer, run xdoclet -->
@@ -177,6 +198,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
         <exclude name="com/metavize/mvvm/tran/MutateTStats*.class"/>
         <include name="com/metavize/mvvm/util/PortServiceNames*.class"/>
         <include name="com/metavize/mvvm/util/SessionUtil*.class"/>
+        <include name="com/metavize/jsp/**/*.class"/>
       </fileset>
     </jar>
   </target>
@@ -352,25 +374,25 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
 
   <property name="build.mvvm" value="${build.root}/mvvm"/>
 
-  <!-- http-invoker.war" -->
+  <!-- servlets.war" -->
 
-  <property name="build.http-invoker" value="${build.root}/http-invoker"/>
+  <property name="build.servlets" value="${build.root}/servlets"/>
 
-  <target name="compile.http-invoker" depends="jar.bootstrap">
-    <mkdir dir="${build.http-invoker}"/>
+  <target name="compile.servlets" depends="jar.bootstrap, jar.mvvm-client">
+    <mkdir dir="${build.servlets}"/>
 
     <exec executable="${buildtool.base}/dependset.sh">
-      <arg value="${build.http-invoker}"/>
-      <arg value="${build.depcache}/http-invoker.patternset"/>
+      <arg value="${build.servlets}"/>
+      <arg value="${build.depcache}/servlets.patternset"/>
     </exec>
 
     <depend srcdir="${src.main}"
-            destdir="${build.http-invoker}"
-            cache="${build.depcache}/http-invoker" closure="yes">
-      <patternset includesfile="${build.depcache}/http-invoker.patternset"/>
+            destdir="${build.servlets}"
+            cache="${build.depcache}/servlets" closure="yes">
+      <patternset includesfile="${build.depcache}/servlets.patternset"/>
     </depend>
 
-    <javac destdir="${build.http-invoker}"
+    <javac destdir="${build.servlets}"
            debug="on"
            optimize="false"
            deprecation="on"
@@ -380,25 +402,37 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
 
       <classpath refid="mvvm.thirdparty.classpath"/>
       <classpath path="${build.jar}/bootstrap.jar"/>
+      <classpath path="${build.jar}/mvvm-client.jar"/>
 
       <src path="${src.main}"/>
+      <src path="${build.gensrc}"/>
 
       <include name="com/metavize/mvvm/servlet/invoker/HttpInvokerServlet.java"/>
+      <include name="com/metavize/jsp/**/*.java"/>
     </javac>
   </target>
 
-  <target name="jar.http-invoker" depends="compile.http-invoker">
-    <jar destfile="${build.jar}/http-invoker.jar" index="yes">
-      <fileset dir="${build.http-invoker}"/>
+  <target name="jar.servlets" depends="compile.servlets">
+    <jar destfile="${build.jar}/servlets.jar" index="yes">
+      <fileset dir="${build.servlets}"/>
       <fileset dir="${build.gensrc}">
         <include name="**/*.hbm.xml"/>
       </fileset>
     </jar>
   </target>
 
-  <target name="install.http-invoker" depends="jar.http-invoker">
-    <copy file="${build.jar}/http-invoker.jar"
+  <target name="install.servlets" depends="jar.servlets">
+    <copy file="${build.jar}/servlets.jar"
           todir="${dist.mvvm.web}/http-invoker/WEB-INF/lib"/>
+    <copy todir="${dist.mvvm.web}/session-dumper/WEB-INF/lib">
+      <fileset dir="${build.jar}">
+        <include name="mvvm-client.jar"/>
+        <include name="servlets.jar"/>
+      </fileset>
+    </copy>
+    <copy todir="${dist.mvvm.web}/proxool/WEB-INF/lib" flatten="yes">
+      <fileset refid="proxool.jarset"/>
+    </copy>
   </target>
 
   <!-- thirdparty -->
@@ -433,29 +467,9 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       </fileset>
     </copy>
 
-    <!-- XXX Tomcat Manager, not for distribution -->
-    <mkdir dir="${dist.mvvm.web}/manager"/>
-    <copy todir="${dist.mvvm.web}/manager">
-      <fileset dir="${TOMCAT_EMBED_HOME}/webapps/manager"/>
-    </copy>
-
   </target>
 
-  <target name="install.sessionDumper" depends="install.hier">
-    <copy todir="${dist.mvvm.web}/session-dumper/WEB-INF/lib">
-      <fileset dir="${build.jar}">
-        <include name="mvvm-client.jar"/>
-      </fileset>
-    </copy>
-  </target>
-
-  <target name="install.servlet.proxool" depends="install.hier">
-    <copy todir="${dist.mvvm.web}/proxool/WEB-INF/lib">
-      <fileset refid="proxool.jarset"/>
-    </copy>
-  </target>
-
-  <target name="install.servlet.reports" depends="install.hier">
+  <target name="install.reports" depends="install.hier">
     <copy todir="${dist.mvvm.reports}"
           file="../gui/main/com/metavize/gui/icons/LogoNoText64x64.gif"/>
   </target>

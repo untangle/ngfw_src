@@ -34,6 +34,10 @@ import org.apache.log4j.Logger;
 
 public class EmailTransformImpl extends SoloTransform implements EmailTransform
 {
+    public static final int SMTP_PORT = 25;
+    public static final int POP3_PORT = 110;
+    public static final int IMAP4_PORT = 143;
+ 
     private static final Logger zLog = Logger.getLogger(EmailTransformImpl.class);
 
     public static final String SPAM_IN_CFG_FILE  = "spam.inbound.cf";
@@ -51,13 +55,13 @@ public class EmailTransformImpl extends SoloTransform implements EmailTransform
     {
         Subscription smtpSub = new Subscription(Protocol.TCP, Interface.ANY, Interface.ANY,
                                                 IPMaddr.anyAddr, PortRange.ANY,
-                                                IPMaddr.anyAddr, new PortRange(25));
+                                                IPMaddr.anyAddr, new PortRange(SMTP_PORT));
         Subscription pop3Sub = new Subscription(Protocol.TCP, Interface.ANY, Interface.ANY,
                                                 IPMaddr.anyAddr, PortRange.ANY,
-                                                IPMaddr.anyAddr, new PortRange(110));
+                                                IPMaddr.anyAddr, new PortRange(POP3_PORT));
         Subscription imap4Sub = new Subscription(Protocol.TCP, Interface.ANY, Interface.ANY,
                                                  IPMaddr.anyAddr, PortRange.ANY,
-                                                 IPMaddr.anyAddr, new PortRange(143));
+                                                 IPMaddr.anyAddr, new PortRange(IMAP4_PORT));
         pipeSpec = new SoloPipeSpec("email", smtpSub, Fitting.OCTET_STREAM, Affinity.CLIENT, 0);
         pipeSpec.addSubscription(pop3Sub);
         pipeSpec.addSubscription(imap4Sub);
