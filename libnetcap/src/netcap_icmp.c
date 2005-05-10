@@ -263,7 +263,7 @@ void netcap_icmp_null_hook( netcap_session_t* netcap_sess, netcap_pkt_t* pkt, vo
     errlog( ERR_CRITICAL, "ICMP: NULL HOOK, freeing packet(%#10x) and session(%#10x)\n", pkt, netcap_sess );
 
     if ( pkt != NULL ) {
-        netcap_pkt_free( pkt );
+        netcap_pkt_raze( pkt );
     }
 
     if ( netcap_sess != NULL ) {
@@ -313,7 +313,7 @@ int  netcap_icmp_call_hook( netcap_pkt_t* pkt )
 
         case _FIND_DROP:
             debug( 10, "ICMP: Dropping packet\n" );
-            netcap_pkt_free( pkt );
+            netcap_pkt_raze( pkt );
             pkt = NULL;
             ret = 0;
             
@@ -327,7 +327,7 @@ int  netcap_icmp_call_hook( netcap_pkt_t* pkt )
 
     if ( ret < 0 ) {
         if ( pkt != NULL ) {
-            netcap_pkt_free( pkt );
+            netcap_pkt_raze( pkt );
         }
     }
 
