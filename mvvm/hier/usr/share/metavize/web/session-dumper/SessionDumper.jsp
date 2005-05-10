@@ -70,7 +70,7 @@
       } catch (Exception x) {
       }
 %>
-<%      
+<%
       IPSessionDesc[] sdescs = tctx.liveSessionDescs();
       sdescs = SessionUtil.sortDescs(sdescs);
       if (sdescs == null)
@@ -128,6 +128,7 @@
       <P>
 <%
   }
+  MvvmRemoteContextFactory.logout();
 %>
 </BODY>
 </HTML>

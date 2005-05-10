@@ -73,3 +73,5 @@ MackageDesc[] mds = mc.toolboxManager().installed();
     <argument>server_3</argument>
   </application-desc>
 </jnlp>
+
+<% MvvmRemoteContextFactory.logout(); %>
