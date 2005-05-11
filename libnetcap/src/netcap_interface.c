@@ -40,7 +40,7 @@
 #define RULES_ADD 1
 #define RULES_DEL 0
 
-#define PORT_GUARD_CMD "/sbin/iptables -t mangle -%c PREROUTING -p %s -m mark --mark %d/%d %s %s -j DROP"
+#define PORT_GUARD_CMD "/sbin/iptables -t mangle -%c PREROUTING %s -p %s -m mark --mark %d/%d %s %s -j DROP"
 
 typedef struct  {
     char cmd[MAX_CMD_LEN];    
@@ -562,6 +562,7 @@ int _command_port_guard( netcap_intf_t gate, int protocol, char* ports, char* gu
     char  action;
     int   mark      = MARK_LOCAL;
     int   mark_mask = MARK_LOCAL;
+    char* rule_num  = "";
     char  ports_str[100] = "";
     char  guests_str[100] = "";
 
@@ -597,10 +598,16 @@ int _command_port_guard( netcap_intf_t gate, int protocol, char* ports, char* gu
         snprintf( guests_str, sizeof( guests_str ), " -s ! %s ", guests );
     }
     
-    action = ( if_add == RULES_ADD ) ? 'A' : 'D';
+    if ( if_add == RULES_ADD ) {
+        action = 'I';
+        rule_num = "2";
+    } else {
+        action = 'D';
+        rule_num = "";
+    }
     
-    snprintf( cmd.cmd, sizeof( iptables_cmd_t ), PORT_GUARD_CMD, action, protocol_str, mark, mark_mask,
-              guests_str, ports_str );
+    snprintf( cmd.cmd, sizeof( iptables_cmd_t ), PORT_GUARD_CMD, action, rule_num, protocol_str, 
+              mark, mark_mask, guests_str, ports_str );
 
     debug( 3, "Inserting guard command: '%s'\n", cmd.cmd );
     
