@@ -14,7 +14,6 @@ package com.metavize.mvvm.logging;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -40,18 +39,21 @@ import org.logicalcobwebs.proxool.ProxoolListenerIF;
 
 public class HibernateAppender extends AppenderSkeleton
 {
-    private static final int QUEUE_SIZE = 1000;
+    private static final int QUEUE_SIZE = 10000;
+    private static final int BATCH_SIZE = 1000;
     private static final int SLEEP_TIME = 60000;
 
     private static final Logger logger = Logger
         .getLogger(HibernateAppender.class);
 
-    private final Map loggers = new ConcurrentHashMap();
+    private final Map<Tid, LogWorker> loggers;
 
     // constructors -----------------------------------------------------------
 
     public HibernateAppender()
     {
+        loggers = new ConcurrentHashMap<Tid, LogWorker>();
+
         ProxoolFacade.addProxoolListener(new ProxoolListenerIF()
             {
                 public void onRegistration(ConnectionPoolDefinitionIF def,
@@ -87,7 +89,7 @@ public class HibernateAppender extends AppenderSkeleton
         LogEvent le = (LogEvent)msg;
         le.setTimeStamp(new Date(event.timeStamp));
 
-        LogWorker worker = (LogWorker)loggers.get(tid);
+        LogWorker worker = loggers.get(tid);
         if (null == worker) {
             worker = createLogger(tid);
         }
@@ -110,9 +112,10 @@ public class HibernateAppender extends AppenderSkeleton
     {
         private final Tid tid;
         private final MvvmLocalContext mctx = MvvmContextFactory.context();
-        private final WeakReference tctxRef;
+        private final WeakReference<TransformContext> tctxRef;
 
-        private volatile BlockingQueue queue = new ArrayBlockingQueue(QUEUE_SIZE);
+        private volatile BlockingQueue<LogEvent> queue
+            = new ArrayBlockingQueue<LogEvent>(QUEUE_SIZE);
 
         // constructor --------------------------------------------------------
 
@@ -133,15 +136,13 @@ public class HibernateAppender extends AppenderSkeleton
 
         public void append(LogEvent le)
         {
-            BlockingQueue q = queue;
+            BlockingQueue<LogEvent> q = queue;
 
             if (null == q) {
                 logger.warn("logger is shut down: " + tid);
             } else {
-                try {
-                    q.put(le);
-                } catch (InterruptedException exn) {
-                    logger.warn("interrupted", exn);
+                if (!q.offer(le)) {
+                    logger.warn("dropped log event: " + le);
                 }
             }
         }
@@ -155,10 +156,10 @@ public class HibernateAppender extends AppenderSkeleton
 
         public void run()
         {
-            List l = new ArrayList(QUEUE_SIZE);
+            List<LogEvent> l = new ArrayList<LogEvent>(BATCH_SIZE);
 
             while (null == tctxRef ? true : null != tctxRef.get()) {
-                BlockingQueue q = queue;
+                BlockingQueue<LogEvent> q = queue;
 
                 if (null == q) { break; }
 
@@ -177,11 +178,11 @@ public class HibernateAppender extends AppenderSkeleton
 
         // private methods ----------------------------------------------------
 
-        private void drainTo(BlockingQueue q, List l)
+        private void drainTo(BlockingQueue<LogEvent> q, List<LogEvent> l)
         {
             long maxTime = System.currentTimeMillis() + SLEEP_TIME;
 
-            while (l.size() < QUEUE_SIZE) {
+            while (l.size() < BATCH_SIZE) {
                 long time = System.currentTimeMillis();
 
                 if (maxTime <= time) { break; }
@@ -196,11 +197,11 @@ public class HibernateAppender extends AppenderSkeleton
                     }
                 } catch (InterruptedException exn) { continue; }
 
-                q.drainTo(l);
+                q.drainTo(l, BATCH_SIZE - l.size());
             }
         }
 
-        private void persist(List l)
+        private void persist(List<LogEvent> l)
         {
             logger.debug(tid + " persisting: " + l.size());
 
@@ -208,7 +209,7 @@ public class HibernateAppender extends AppenderSkeleton
             if (null == tctxRef) {
                 s = mctx.openSession();
             } else {
-                TransformContext tctx = (TransformContext)tctxRef.get();
+                TransformContext tctx = tctxRef.get();
                 if (null == tctx) {
                     logger.warn("transform context no longer exists");
                     return;
@@ -221,9 +222,8 @@ public class HibernateAppender extends AppenderSkeleton
             try {
                 Transaction tx = s.beginTransaction();
 
-                for (Iterator i = l.iterator(); i.hasNext(); ) {
-                    LogEvent le = (LogEvent)i.next();
-                    s.save(le);
+                for (LogEvent logEvent : l) {
+                    s.save(logEvent);
                 }
 
                 tx.commit();
@@ -241,7 +241,7 @@ public class HibernateAppender extends AppenderSkeleton
 
     private synchronized LogWorker createLogger(Tid tid)
     {
-        LogWorker worker = (LogWorker)loggers.get(tid);
+        LogWorker worker = loggers.get(tid);
 
         if (null == worker) {
             worker = new LogWorker(tid);
@@ -255,8 +255,7 @@ public class HibernateAppender extends AppenderSkeleton
 
     private void shutdownLoggers()
     {
-        for (Iterator i = loggers.values().iterator(); i.hasNext(); ) {
-            LogWorker worker = (LogWorker)i.next();
+        for (LogWorker worker : loggers.values()) {
             worker.stop();
         }
     }
