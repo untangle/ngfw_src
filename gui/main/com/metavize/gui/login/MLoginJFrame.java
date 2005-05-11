@@ -21,6 +21,7 @@ import javax.swing.*;
 import com.metavize.gui.main.MMainJFrame;
 import com.metavize.gui.util.*;
 import com.metavize.mvvm.*;
+import com.metavize.mvvm.client.*;
 import com.metavize.mvvm.security.*;
 
 

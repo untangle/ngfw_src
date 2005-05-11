@@ -1,4 +1,4 @@
-<%@ page language="java" import="com.metavize.mvvm.*" %>
+<%@ page language="java" import="com.metavize.mvvm.*, com.metavize.mvvm.client.*" %>
 
 <%
 response.addHeader("content-type", "application/x-java-jnlp-file");

@@ -28,7 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.metavize.mvvm.MvvmContext;
 import com.metavize.mvvm.client.InvocationTargetExpiredException;
-import com.metavize.mvvm.security.LoginExpiredException;
+import com.metavize.mvvm.client.LoginExpiredException;
 import com.metavize.mvvm.security.LoginSession;
 import org.apache.log4j.Logger;
 

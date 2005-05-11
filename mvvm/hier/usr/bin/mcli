@@ -18,4 +18,4 @@ CLASSPATH="@MVVM_LIB@/util.jar:@MVVM_LIB@/mvvm-client.jar:@THIRDPARTY_LIB@/log4j
 for m in @MVVM_TOOLBOX@/*.mar; do CLASSPATH="$CLASSPATH:$m"; done
 
 export CLASSPATH
-exec ${JAVA_HOME}/bin/java com.metavize.mvvm.util.RemoteClient $@
+exec ${JAVA_HOME}/bin/java com.metavize.mvvm.client.RemoteClient $@

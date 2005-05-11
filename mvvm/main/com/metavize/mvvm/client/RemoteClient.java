@@ -9,14 +9,13 @@
  * $Id$
  */
 
-package com.metavize.mvvm.util;
+package com.metavize.mvvm.client;
 
 import java.net.InetAddress;
 import java.util.List;
 
 import com.metavize.mvvm.MackageDesc;
 import com.metavize.mvvm.MvvmContext;
-import com.metavize.mvvm.MvvmRemoteContextFactory;
 import com.metavize.mvvm.ToolboxManager;
 import com.metavize.mvvm.security.LoginSession;
 import com.metavize.mvvm.security.MvvmPrincipal;
@@ -30,6 +29,7 @@ import com.metavize.mvvm.tran.Transform;
 import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.tran.TransformDesc;
 import com.metavize.mvvm.tran.TransformManager;
+import com.metavize.mvvm.util.SessionUtil;
 import org.apache.log4j.helpers.AbsoluteTimeDateFormat;
 
 public class RemoteClient

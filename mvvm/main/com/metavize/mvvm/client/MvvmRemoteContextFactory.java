@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.metavize.mvvm;
+package com.metavize.mvvm.client;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
@@ -17,6 +17,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import javax.security.auth.login.FailedLoginException;
 
+import com.metavize.mvvm.MvvmContext;
 import com.metavize.mvvm.engine.HttpInvokerStub;
 import com.metavize.mvvm.security.LoginSession;
 import com.metavize.mvvm.security.MvvmLogin;
