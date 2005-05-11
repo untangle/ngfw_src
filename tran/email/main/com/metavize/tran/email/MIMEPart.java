@@ -19,6 +19,7 @@ import java.util.*;
 import java.util.regex.*;
 import org.apache.log4j.Logger;
 
+import com.metavize.tran.util.CBufferWrapper;
 import com.metavize.tran.virus.VirusScanner;
 import com.metavize.tran.virus.VirusScannerResult;
 

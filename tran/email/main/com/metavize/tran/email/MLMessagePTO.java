@@ -6,13 +6,14 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: MLMessagePTO.java,v 1.2 2005/01/25 23:33:13 cng Exp $
+ * $Id$
  */
 package com.metavize.tran.email;
 
 import java.util.*;
 //import org.apache.log4j.Logger;
 
+import com.metavize.tran.util.CBufferWrapper;
 import com.metavize.tran.util.PatternTestObject;
 
 public class MLMessagePTO implements PatternTestObject

@@ -13,6 +13,8 @@ package com.metavize.tran.email;
 import java.nio.ByteBuffer;
 import org.apache.log4j.Logger;
 
+import com.metavize.tran.util.CBufferWrapper;
+
 public class MVChar
 {
     /* constants */

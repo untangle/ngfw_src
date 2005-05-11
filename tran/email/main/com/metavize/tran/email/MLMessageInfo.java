@@ -18,9 +18,9 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.log4j.Logger;
 
 import com.metavize.tran.util.*;
-import org.apache.log4j.Logger;
 
 /**
  * Log e-mail message info.

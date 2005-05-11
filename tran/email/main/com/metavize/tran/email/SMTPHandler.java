@@ -20,6 +20,7 @@ import com.metavize.mvvm.*;
 import com.metavize.mvvm.tapi.*;
 import com.metavize.mvvm.tapi.event.*;
 import com.metavize.mvvm.util.*;
+import com.metavize.tran.util.CBufferWrapper;
 
 /* RFC 821:
    4.5.2.  TRANSPARENCY

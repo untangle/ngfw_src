@@ -19,6 +19,7 @@ import org.apache.log4j.Logger;
 import com.metavize.mvvm.tapi.*;
 import com.metavize.mvvm.tapi.event.*;
 import com.metavize.mvvm.util.*;
+import com.metavize.tran.util.CBufferWrapper;
 
 /* IMAP - RFC1730,2060 */
 /* FETCH - client fetches message from mailbox on server

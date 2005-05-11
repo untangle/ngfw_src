@@ -32,6 +32,7 @@ import com.metavize.tran.hauri.HauriScanner;
 import com.metavize.tran.sophos.SophosScanner;
 import com.metavize.tran.virus.VirusScanner;
 import com.metavize.tran.virus.VirusScannerResult;
+import com.metavize.tran.util.CBufferWrapper;
 import com.metavize.tran.util.MatchAction;
 
 public class EventHandler extends AbstractEventHandler

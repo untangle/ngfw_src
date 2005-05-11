@@ -6,10 +6,11 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: MLHandlerInfo.java,v 1.8 2005/03/15 02:11:53 amread Exp $
+ * $Id$
  */
 package com.metavize.tran.email;
 
+import com.metavize.tran.util.CBufferWrapper;
 
 /**
  * Log e-mail handler info.

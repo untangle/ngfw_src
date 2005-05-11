@@ -18,15 +18,16 @@ import java.nio.charset.CharsetEncoder;
 import java.nio.charset.CharacterCodingException;
 import java.util.*;
 import java.util.regex.*;
+import org.apache.log4j.Logger;
 
 import com.metavize.mvvm.*;
 import com.metavize.mvvm.tapi.*;
 import com.metavize.mvvm.tapi.event.*;
 import com.metavize.mvvm.tran.*;
 import com.metavize.mvvm.util.*;
+import com.metavize.tran.util.CBufferWrapper;
 import com.metavize.tran.virus.VirusScanner;
 import com.metavize.tran.virus.VirusScannerResult;
-import org.apache.log4j.Logger;
 
 public class MLHandler
 {

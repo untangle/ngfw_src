@@ -14,6 +14,8 @@ import java.nio.*;
 import java.util.*;
 import java.util.regex.*;
 
+import com.metavize.tran.util.CBufferWrapper;
+
 /* ARPA Internet text message format - RFC 822
  * MIME Internet message body format - RFC 2045
  */

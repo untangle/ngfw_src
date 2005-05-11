@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: XMSEnv.java,v 1.2 2005/02/15 03:29:47 cng Exp $
+ * $Id$
  */
 package com.metavize.tran.email;
 
@@ -16,6 +16,7 @@ import java.util.*;
 import java.util.regex.*;
 
 import com.metavize.mvvm.tapi.event.*;
+import com.metavize.tran.util.CBufferWrapper;
 
 /* driver =  endpoint on this side of bookend drives protocol
  * (e.g., issues cmds and receives replies)

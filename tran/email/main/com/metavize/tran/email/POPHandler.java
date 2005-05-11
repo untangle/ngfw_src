@@ -19,6 +19,7 @@ import org.apache.log4j.Logger;
 import com.metavize.mvvm.tapi.*;
 import com.metavize.mvvm.tapi.event.*;
 import com.metavize.mvvm.util.*;
+import com.metavize.tran.util.CBufferWrapper;
 
 /* POP3 - RFC1939
  *
