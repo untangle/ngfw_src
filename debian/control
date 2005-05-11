@@ -177,7 +177,7 @@ Package: mvvm
 Architecture: any
 Depends: catchall-mv, sudo, iptables-mv, restore-mv, kiosk-mv, libxml2, kernel-mv, pump-mv
 Pre-Depends: postgresql-mv
-Conflicts: xenon, xenon-dbg, kernel-image-2.6.8.1
+Conflicts: xenon, xenon-dbg
 XB-Price: 0
 XB-Display-Name: Metavize Server
 Description: The Metavize Virtual Machine (MVVM)
