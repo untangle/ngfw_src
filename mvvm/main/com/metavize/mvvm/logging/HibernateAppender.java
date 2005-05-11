@@ -111,17 +111,18 @@ public class HibernateAppender extends AppenderSkeleton
     private class LogWorker implements Runnable
     {
         private final Tid tid;
+        private final BlockingQueue<LogEvent> queue;
         private final MvvmLocalContext mctx = MvvmContextFactory.context();
         private final WeakReference<TransformContext> tctxRef;
 
-        private volatile BlockingQueue<LogEvent> queue
-            = new ArrayBlockingQueue<LogEvent>(QUEUE_SIZE);
+        private volatile Thread thread;
 
         // constructor --------------------------------------------------------
 
         LogWorker(Tid tid)
         {
             this.tid = tid;
+            this.queue = new ArrayBlockingQueue<LogEvent>(QUEUE_SIZE);
 
             if (0 == tid.getId()) {
                 tctxRef = null;
@@ -136,12 +137,10 @@ public class HibernateAppender extends AppenderSkeleton
 
         public void append(LogEvent le)
         {
-            BlockingQueue<LogEvent> q = queue;
-
-            if (null == q) {
+            if (null == thread) {
                 logger.warn("logger is shut down: " + tid);
             } else {
-                if (!q.offer(le)) {
+                if (!queue.offer(le)) {
                     logger.warn("dropped log event: " + le);
                 }
             }
@@ -149,7 +148,9 @@ public class HibernateAppender extends AppenderSkeleton
 
         public void stop()
         {
-            queue = null;
+            Thread t = thread;
+            thread = null;
+            t.interrupt();
         }
 
         // Runnable methods ---------------------------------------------------
@@ -158,38 +159,37 @@ public class HibernateAppender extends AppenderSkeleton
         {
             List<LogEvent> l = new ArrayList<LogEvent>(BATCH_SIZE);
 
-            while (null == tctxRef ? true : null != tctxRef.get()) {
-                BlockingQueue<LogEvent> q = queue;
+            thread = Thread.currentThread();
 
-                if (null == q) { break; }
-
+            while (null != thread
+                   && null == tctxRef ? true : null != tctxRef.get()) {
                 try {
-                    drainTo(q, l);
-                    persist(l);
+                    drainTo(l);
+                    if (null != thread) {
+                        persist(l);
+                    }
                 } catch (Exception exn) {
                     logger.warn("danger, will robinson", exn); // never die
                 }
 
                 l.clear();
             }
-
-            queue = null;
         }
 
         // private methods ----------------------------------------------------
 
-        private void drainTo(BlockingQueue<LogEvent> q, List<LogEvent> l)
+        private void drainTo(List<LogEvent> l)
         {
             long maxTime = System.currentTimeMillis() + SLEEP_TIME;
 
-            while (l.size() < BATCH_SIZE) {
+            while (null != thread && l.size() < BATCH_SIZE) {
                 long time = System.currentTimeMillis();
 
                 if (maxTime <= time) { break; }
 
                 try {
-                    LogEvent le = (LogEvent)q.poll(maxTime - time,
-                                                   TimeUnit.MILLISECONDS);
+                    LogEvent le = (LogEvent)queue.poll(maxTime - time,
+                                                       TimeUnit.MILLISECONDS);
                     if (null == le) {
                         break;
                     } else {
@@ -197,7 +197,7 @@ public class HibernateAppender extends AppenderSkeleton
                     }
                 } catch (InterruptedException exn) { continue; }
 
-                q.drainTo(l, BATCH_SIZE - l.size());
+                queue.drainTo(l, BATCH_SIZE - l.size());
             }
         }
 
