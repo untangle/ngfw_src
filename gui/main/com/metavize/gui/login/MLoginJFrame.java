@@ -33,7 +33,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
 
     private static final int RETRY_COUNT = 6;
 
-    private MvvmContext mvvmContext;
+    private MvvmRemoteContext mvvmContext;
     private String args[];
     private MMainJFrame mMainJFrame;
 

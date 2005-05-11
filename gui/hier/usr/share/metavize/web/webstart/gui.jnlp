@@ -18,7 +18,7 @@ int colonIndex = host.indexOf(':');
 if( colonIndex >= 0 )
     host = host.substring(0, colonIndex);
 
-MvvmContext mc = MvvmRemoteContextFactory.localLogin();
+MvvmRemoteContext mc = MvvmRemoteContextFactory.localLogin();
 MackageDesc[] mds = mc.toolboxManager().installed();
 %>
 

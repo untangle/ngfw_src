@@ -82,7 +82,7 @@ class TargetDesc
     private Set<Class> interfaces(Class c, Set s)
     {
         // XXX Is there are more structural way of accomplishing this
-        if (c.isInterface() && !c.getName().endsWith("MvvmLocalContext")) {
+        if (c.isInterface()) {
             s.add(c);
         }
 

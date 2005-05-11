@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: MvvmContextBase.java,v 1.2 2005/01/27 09:53:36 amread Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.engine;
@@ -25,19 +25,19 @@ public abstract class MvvmContextBase
     protected abstract void postInit();
     protected abstract InvokerBase getInvoker();
 
-    void doInit(Main main)
+    void doInit()
     {
         init();
-    }
-
-    void doDestroy()
-    {
-        destroy();
     }
 
     void doPostInit()
     {
         postInit();
+    }
+
+    void doDestroy()
+    {
+        destroy();
     }
 
     InvokerBase getInvokerBase()

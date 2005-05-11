@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: AdminManagerImpl.java,v 1.10 2005/02/07 21:25:27 jdi Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.engine;
@@ -29,16 +29,15 @@ class AdminManagerImpl implements AdminManager
     private static final String INITIAL_USER_LOGIN = "admin";
     private static final String INITIAL_USER_PASSWORD = "passwd";
 
-    private static final Object LOCK = new Object();
-    private static AdminManagerImpl ADMIN_MANAGER;
+    private static AdminManagerImpl ADMIN_MANAGER = new AdminManagerImpl();
 
-    private MvvmLogin mvvmLoginRemote;
-    private MvvmLogin mvvmLoginLocal;
+    private final MvvmLogin mvvmLoginRemote;
+    private final MvvmLogin mvvmLoginLocal;
+
+    private final Logger logger = Logger.getLogger(AdminManagerImpl.class);
 
     private AdminSettings adminSettings;
 
-    private static Logger logger
-        = Logger.getLogger(AdminManager.class.getName());
 
     private AdminManagerImpl()
     {
@@ -76,12 +75,6 @@ class AdminManagerImpl implements AdminManager
 
     static AdminManagerImpl adminManager()
     {
-        synchronized (LOCK) {
-            if (null == ADMIN_MANAGER) {
-                ADMIN_MANAGER = new AdminManagerImpl();
-            }
-        }
-
         return ADMIN_MANAGER;
     }
 

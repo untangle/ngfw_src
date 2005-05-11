@@ -7,20 +7,18 @@
 package com.metavize.gui.util;
 
 import java.awt.*;
-import java.util.*;
-import javax.swing.*;
-import javax.jnlp.*;
-
 import java.net.*;
+import java.util.*;
+import javax.jnlp.*;
+import javax.swing.*;
 
 import com.metavize.gui.login.MLoginJFrame;
 import com.metavize.gui.main.MMainJFrame;
 import com.metavize.gui.pipeline.MPipelineJPanel;
 import com.metavize.gui.widgets.editTable.*;
-
 import com.metavize.mvvm.*;
-import com.metavize.mvvm.tran.*;
 import com.metavize.mvvm.client.*;
+import com.metavize.mvvm.tran.*;
 
 
 /**
@@ -33,23 +31,23 @@ public class Util {
     private static String version = "1.3";
     public static String getVersion(){ return version; }
     /////////////////////////////////
-    
+
     // SERVER PROXIES ///////////////
-    private static MvvmContext mvvmContext;
+    private static MvvmRemoteContext mvvmContext;
     private static ToolboxManager toolboxManager;
     private static TransformManager transformManager;
 
     private static StatsCache statsCache;
 
-    public static void setMvvmContext(MvvmContext mvvmContextX){
-	mvvmContext = mvvmContextX;
-	toolboxManager = mvvmContext.toolboxManager();
-	transformManager = mvvmContext.transformManager();
+    public static void setMvvmContext(MvvmRemoteContext mvvmContextX){
+    mvvmContext = mvvmContextX;
+    toolboxManager = mvvmContext.toolboxManager();
+    transformManager = mvvmContext.transformManager();
 
         // Somewhere else this should go? XXX jdi
         statsCache = new StatsCache();
     }
-    public static MvvmContext getMvvmContext(){ return mvvmContext; }
+    public static MvvmRemoteContext getMvvmContext(){ return mvvmContext; }
     public static ToolboxManager getToolboxManager() { return toolboxManager; }
     public static TransformManager getTransformManager() { return transformManager; }
     public static StatsCache getStatsCache() { return statsCache; }
@@ -59,33 +57,33 @@ public class Util {
     private static URL serverCodeBase;
 
     public static URL getServerCodeBase(){
-	if(serverCodeBase != null)
-	    return serverCodeBase;
-	else{
-	    try{
-		BasicService basicService = (BasicService) ServiceManager.lookup("javax.jnlp.BasicService");
-		serverCodeBase = basicService.getCodeBase();
-	    }
-	    catch(Exception e){
-		Util.handleExceptionNoRestart("Error:", e);
-	    }
-	    finally{
-		return serverCodeBase;
-	    }
-	}	    
+    if(serverCodeBase != null)
+        return serverCodeBase;
+    else{
+        try{
+        BasicService basicService = (BasicService) ServiceManager.lookup("javax.jnlp.BasicService");
+        serverCodeBase = basicService.getCodeBase();
+        }
+        catch(Exception e){
+        Util.handleExceptionNoRestart("Error:", e);
+        }
+        finally{
+        return serverCodeBase;
+        }
+    }
     }
 
     public static boolean isSecureViaHttps(){
-	try{
-	    String protocol = getServerCodeBase().getProtocol();
-	    if( protocol.equals("https") )
-		return true;
-	    else
-		return false;
-	}
-	catch(Exception e){
-	    return false;
-	}
+    try{
+        String protocol = getServerCodeBase().getProtocol();
+        if( protocol.equals("https") )
+        return true;
+        else
+        return false;
+    }
+    catch(Exception e){
+        return false;
+    }
     }
     /////////////////////////////////
 
@@ -104,7 +102,7 @@ public class Util {
     private static boolean isDemo = false;
     private static JProgressBar statusJProgressBar;
     private static MPipelineJPanel mPipelineJPanel;
-    
+
     private static MMainJFrame mMainJFrame;
     private static MLoginJFrame mLoginJFrame;
     private static String[] args;
@@ -134,69 +132,69 @@ public class Util {
     private static MEditTableJPanel virusMEditTableJPanel;
 
     public synchronized static void setEmailAndVirusJPanel(String transformName, JPanel jPanel){
-	if(transformName == null)
-	    return;
-	if( transformName.equals("sophos-transform") )
-	    emailDetectionSophosJPanel = (EmailDetectionJPanel) jPanel;
-	else if( transformName.equals("fprot-transform") )
-	    emailDetectionFprotJPanel = (EmailDetectionJPanel) jPanel;
-	else if( transformName.equals("hauri-transform") )
-	    emailDetectionHauriJPanel = (EmailDetectionJPanel) jPanel;
-	else if( transformName.equals("clam-transform") )
-	    emailDetectionClamJPanel = (EmailDetectionJPanel) jPanel;
-	else if( transformName.equals("email-transform") )
-	    virusMEditTableJPanel = (MEditTableJPanel) jPanel;
+    if(transformName == null)
+        return;
+    if( transformName.equals("sophos-transform") )
+        emailDetectionSophosJPanel = (EmailDetectionJPanel) jPanel;
+    else if( transformName.equals("fprot-transform") )
+        emailDetectionFprotJPanel = (EmailDetectionJPanel) jPanel;
+    else if( transformName.equals("hauri-transform") )
+        emailDetectionHauriJPanel = (EmailDetectionJPanel) jPanel;
+    else if( transformName.equals("clam-transform") )
+        emailDetectionClamJPanel = (EmailDetectionJPanel) jPanel;
+    else if( transformName.equals("email-transform") )
+        virusMEditTableJPanel = (MEditTableJPanel) jPanel;
 
-	SwingUtilities.invokeLater( new Runnable() { public void run() {
-	    updateDependencies();
-	}});
+    SwingUtilities.invokeLater( new Runnable() { public void run() {
+        updateDependencies();
+    }});
     }
 
     private static void updateDependencies(){
-	if( virusMEditTableJPanel != null){
-	    if(emailDetectionSophosJPanel != null)
-		emailDetectionSophosJPanel.setDetected(true);
-	    if(emailDetectionFprotJPanel != null)
-		emailDetectionFprotJPanel.setDetected(true);
+    if( virusMEditTableJPanel != null){
+        if(emailDetectionSophosJPanel != null)
+        emailDetectionSophosJPanel.setDetected(true);
+        if(emailDetectionFprotJPanel != null)
+        emailDetectionFprotJPanel.setDetected(true);
             if(emailDetectionHauriJPanel != null)
-		emailDetectionHauriJPanel.setDetected(true);
+        emailDetectionHauriJPanel.setDetected(true);
             if(emailDetectionClamJPanel != null)
-		emailDetectionClamJPanel.setDetected(true);
-	}
-	else{
-	    if(emailDetectionSophosJPanel != null)
-		emailDetectionSophosJPanel.setDetected(false);
-	    if(emailDetectionFprotJPanel != null)
-		emailDetectionFprotJPanel.setDetected(false);
+        emailDetectionClamJPanel.setDetected(true);
+    }
+    else{
+        if(emailDetectionSophosJPanel != null)
+        emailDetectionSophosJPanel.setDetected(false);
+        if(emailDetectionFprotJPanel != null)
+        emailDetectionFprotJPanel.setDetected(false);
             if(emailDetectionHauriJPanel != null)
-		emailDetectionHauriJPanel.setDetected(false);
+        emailDetectionHauriJPanel.setDetected(false);
             if(emailDetectionClamJPanel != null)
-		emailDetectionClamJPanel.setDetected(false);
-	}
+        emailDetectionClamJPanel.setDetected(false);
+    }
 
-	if(virusMEditTableJPanel != null){
-	    int index = ((JTabbedPane)virusMEditTableJPanel.getParent()).indexOfComponent(virusMEditTableJPanel);
-	    if( emailDetectionSophosJPanel != null ){
-		((JTabbedPane)virusMEditTableJPanel.getParent()).setTitleAt(index, "Sophos AntiVirus");
-		virusMEditTableJPanel.setMessage( null );
-	    }
+    if(virusMEditTableJPanel != null){
+        int index = ((JTabbedPane)virusMEditTableJPanel.getParent()).indexOfComponent(virusMEditTableJPanel);
+        if( emailDetectionSophosJPanel != null ){
+        ((JTabbedPane)virusMEditTableJPanel.getParent()).setTitleAt(index, "Sophos AntiVirus");
+        virusMEditTableJPanel.setMessage( null );
+        }
             else if( emailDetectionFprotJPanel != null ){
-		((JTabbedPane)virusMEditTableJPanel.getParent()).setTitleAt(index, "F-Prot AntiVirus");
-		virusMEditTableJPanel.setMessage( null );
-	    }
+        ((JTabbedPane)virusMEditTableJPanel.getParent()).setTitleAt(index, "F-Prot AntiVirus");
+        virusMEditTableJPanel.setMessage( null );
+        }
             else if( emailDetectionHauriJPanel != null ){
-		((JTabbedPane)virusMEditTableJPanel.getParent()).setTitleAt(index, "Hauri AntiVirus");
-		virusMEditTableJPanel.setMessage( null );
-	    }
-	    else if( emailDetectionClamJPanel != null ){
-		((JTabbedPane)virusMEditTableJPanel.getParent()).setTitleAt(index, "Clam AntiVirus");
-		virusMEditTableJPanel.setMessage( null );
-	    }
-	    else{
-		((JTabbedPane)virusMEditTableJPanel.getParent()).setTitleAt(index, "AntiVirus (uninstalled)");
-		virusMEditTableJPanel.setMessage( undetectedMessage );
-	    }
-	}
+        ((JTabbedPane)virusMEditTableJPanel.getParent()).setTitleAt(index, "Hauri AntiVirus");
+        virusMEditTableJPanel.setMessage( null );
+        }
+        else if( emailDetectionClamJPanel != null ){
+        ((JTabbedPane)virusMEditTableJPanel.getParent()).setTitleAt(index, "Clam AntiVirus");
+        virusMEditTableJPanel.setMessage( null );
+        }
+        else{
+        ((JTabbedPane)virusMEditTableJPanel.getParent()).setTitleAt(index, "AntiVirus (uninstalled)");
+        virusMEditTableJPanel.setMessage( undetectedMessage );
+        }
+    }
     }
     ////////////////////////////////////////////
 
@@ -229,10 +227,10 @@ public class Util {
 
 
     public static GraphicsConfiguration getGraphicsConfiguration(){
-	GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
+    GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
         GraphicsDevice graphicsDevice = graphicsEnvironment.getDefaultScreenDevice();
         GraphicsConfiguration graphicsConfiguration = graphicsDevice.getDefaultConfiguration();
-	return graphicsConfiguration;
+    return graphicsConfiguration;
     }
 
     public static Rectangle generateCenteredBounds(Rectangle parentBounds, int childWidth, int childHeight){
@@ -262,46 +260,46 @@ public class Util {
     }
 
     public static String wrapString(String originalString, int lineLength){
-	StringTokenizer stringTokenizer = new StringTokenizer(originalString);
-	StringBuffer stringBuffer = new StringBuffer();
-	String tempString;
-	int currentLineLength = 0;
-	while( stringTokenizer.hasMoreTokens() ){
-	    tempString = stringTokenizer.nextToken();
-	
-	    if( currentLineLength + tempString.length() >= lineLength ){
-		stringBuffer.append("<br>" + tempString + " ");
-		currentLineLength = tempString.length() + 1;
-	    }
-	    else{
-		stringBuffer.append(tempString + " ");
-		currentLineLength += (tempString.length() + 1);
-	    }
-	}
-	return stringBuffer.toString();
+    StringTokenizer stringTokenizer = new StringTokenizer(originalString);
+    StringBuffer stringBuffer = new StringBuffer();
+    String tempString;
+    int currentLineLength = 0;
+    while( stringTokenizer.hasMoreTokens() ){
+        tempString = stringTokenizer.nextToken();
+
+        if( currentLineLength + tempString.length() >= lineLength ){
+        stringBuffer.append("<br>" + tempString + " ");
+        currentLineLength = tempString.length() + 1;
+        }
+        else{
+        stringBuffer.append(tempString + " ");
+        currentLineLength += (tempString.length() + 1);
+        }
+    }
+    return stringBuffer.toString();
     }
 
     public static int determineMinHeight(int attemptedMinHeight){
         GraphicsConfiguration graphicsConfiguration = getGraphicsConfiguration();
-	Insets screenInsets = Toolkit.getDefaultToolkit().getScreenInsets( graphicsConfiguration );
-	int screenHeight = graphicsConfiguration.getBounds().height - screenInsets.top - screenInsets.bottom;
-	//	System.err.println("Determined screen height to be: " + screenHeight);
-	if( screenHeight < attemptedMinHeight)
-	    return screenHeight;
-	else
-	    return attemptedMinHeight;
+    Insets screenInsets = Toolkit.getDefaultToolkit().getScreenInsets( graphicsConfiguration );
+    int screenHeight = graphicsConfiguration.getBounds().height - screenInsets.top - screenInsets.bottom;
+    //  System.err.println("Determined screen height to be: " + screenHeight);
+    if( screenHeight < attemptedMinHeight)
+        return screenHeight;
+    else
+        return attemptedMinHeight;
     }
-    
+
     public static void resizeCheck(final Component resizableComponent, Dimension minSize, Dimension maxSize){
-        
+
         Dimension currentSize = resizableComponent.getSize();
-	/*
-	System.err.println("----------------------");
+    /*
+    System.err.println("----------------------");
         System.err.println("| Initial size: " + currentSize);
         System.err.println("| Min size: " + minSize);
         System.err.println("| Max size: " + maxSize);
-	System.err.println("----------------------");
-	*/
+    System.err.println("----------------------");
+    */
         boolean resetSize = false;
         if(currentSize.width < minSize.width){
             currentSize.width = minSize.width;
@@ -320,18 +318,18 @@ public class Util {
             resetSize = true;
         }
         if(resetSize){
-	    //Rectangle rectangle = resizableComponent.getBounds();
+        //Rectangle rectangle = resizableComponent.getBounds();
             //resizableComponent.setBounds( rectangle.x, rectangle.y, currentSize.width, currentSize.height);
-	    final Dimension newSize = currentSize;
-	    SwingUtilities.invokeLater( new Runnable() { public void run(){
-		resizableComponent.setSize( newSize );
-		//System.err.println(" SCREEN CHANGE ---> New size: " + newSize);
-	    }});
+        final Dimension newSize = currentSize;
+        SwingUtilities.invokeLater( new Runnable() { public void run(){
+        resizableComponent.setSize( newSize );
+        //System.err.println(" SCREEN CHANGE ---> New size: " + newSize);
+        }});
         }
         else{
             //System.err.println(" NO SCREEN CHANGE");
         }
-        
+
     }
 
     public static void handleExceptionNoRestart(String output, Exception e){
@@ -345,46 +343,46 @@ public class Util {
 
     public static void handleExceptionWithRestart(String output, Exception e) throws Exception {
         // DEAL WITH COMMUNICATIONS FAILURES
-	// System.err.println("catching exception: " + e.toString() );
-	Throwable throwableRef = e;
-	
-	while( throwableRef != null){
-	    if( throwableRef instanceof InvocationConnectionException ){
-		mLoginJFrame.resetLogin("Server communication failure.  Re-login.");
-		if(PRINT_MESSAGES)
-		    e.printStackTrace(System.err);
-		mLoginJFrame.reshowLogin();
-		return;
-	    }
-	    else if( throwableRef instanceof InvocationTargetExpiredException ){
-		mLoginJFrame.resetLogin("Server synchronization failure.  Re-login.");
-		if(PRINT_MESSAGES)
-		    e.printStackTrace(System.err);
-		mLoginJFrame.reshowLogin();
-		return;
-	    }
-	    else if( throwableRef instanceof LoginExpiredException ){
-		mLoginJFrame.resetLogin("Login expired.  Re-login.");
-		if(PRINT_MESSAGES)
-		    e.printStackTrace(System.err);
-		mLoginJFrame.reshowLogin();
-		return;
-	    }
-	    else if(    (throwableRef instanceof ConnectException)
-		     || (throwableRef instanceof SocketException)
-		     || (throwableRef instanceof SocketTimeoutException) ){
-		mLoginJFrame.resetLogin("Server connection failure.  Re-login.");
-		if(PRINT_MESSAGES)
-		    e.printStackTrace(System.err);
-		mLoginJFrame.reshowLogin();
-		return;
-	    }
-	    throwableRef = throwableRef.getCause();
-	}
-        
-	// System.err.println("THROWING");
-	throw e;
-        
+    // System.err.println("catching exception: " + e.toString() );
+    Throwable throwableRef = e;
+
+    while( throwableRef != null){
+        if( throwableRef instanceof InvocationConnectionException ){
+        mLoginJFrame.resetLogin("Server communication failure.  Re-login.");
+        if(PRINT_MESSAGES)
+            e.printStackTrace(System.err);
+        mLoginJFrame.reshowLogin();
+        return;
+        }
+        else if( throwableRef instanceof InvocationTargetExpiredException ){
+        mLoginJFrame.resetLogin("Server synchronization failure.  Re-login.");
+        if(PRINT_MESSAGES)
+            e.printStackTrace(System.err);
+        mLoginJFrame.reshowLogin();
+        return;
+        }
+        else if( throwableRef instanceof LoginExpiredException ){
+        mLoginJFrame.resetLogin("Login expired.  Re-login.");
+        if(PRINT_MESSAGES)
+            e.printStackTrace(System.err);
+        mLoginJFrame.reshowLogin();
+        return;
+        }
+        else if(    (throwableRef instanceof ConnectException)
+             || (throwableRef instanceof SocketException)
+             || (throwableRef instanceof SocketTimeoutException) ){
+        mLoginJFrame.resetLogin("Server connection failure.  Re-login.");
+        if(PRINT_MESSAGES)
+            e.printStackTrace(System.err);
+        mLoginJFrame.reshowLogin();
+        return;
+        }
+        throwableRef = throwableRef.getCause();
+    }
+
+    // System.err.println("THROWING");
+    throw e;
+
     }
 
     public static void printMessage(String message){
@@ -406,11 +404,11 @@ public class Util {
     }
 
     public static boolean isArrayEmpty(Object[] inArray){
-	if( inArray == null )
-	    return true;
-	else if( inArray.length <= 0 )
-	    return true;
-	else
-	    return false;
+    if( inArray == null )
+        return true;
+    else if( inArray.length <= 0 )
+        return true;
+    else
+        return false;
     }
 }

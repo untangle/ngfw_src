@@ -9,71 +9,67 @@
  *  $Id$
  */
 
-package com.metavize.mvvm;
+package com.metavize.mvvm.client;
 
 import java.io.IOException;
 
+import com.metavize.mvvm.ArgonManager;
+import com.metavize.mvvm.NetworkingManager;
+import com.metavize.mvvm.ToolboxManager;
 import com.metavize.mvvm.logging.LoggingManager;
 import com.metavize.mvvm.security.AdminManager;
 import com.metavize.mvvm.tran.TransformManager;
-import com.metavize.mvvm.ArgonManager;
 
 /**
- * Provides an interface to get major MVVM components from
- * an MVVM instance.  This interface is accessible both locally
- * and remotely.
+ * Provides an interface to get major MVVM components that are
+ * accessible a remote client.
  *
  * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
  */
-public interface MvvmContext
+public interface MvvmRemoteContext
 {
     /**
      * Get the <code>ToolboxManager</code> singleton.
      *
-     * @return a <code>ToolboxManager</code> value
+     * @return the ToolboxManager.
      */
     ToolboxManager toolboxManager();
 
     /**
      * Get the <code>TransformManager</code> singleton.
      *
-     * @return a <code>TransformManager</code> value
+     * @return the TransformManager.
      */
     TransformManager transformManager();
 
     /**
      * Get the <code>LoggingManager</code> singleton.
      *
-     * @return a <code>LoggingManager</code> value
+     * @return the LoggingManager.
      */
     LoggingManager loggingManager();
 
     /**
-     * Get the <code>MailSender</code> singleton.
-     *
-     * @return a <code>MailSender</code> value
-     */
-    MailSender mailSender();
-
-    /**
      * Get the <code>AdminManager</code> singleton.
      *
-     * @return a <code>AdminManager</code> value
+     * @return the AdminManager.
      */
     AdminManager adminManager();
 
     /**
-     * Get the <code>NetworkingManager</code> singleton.
+     * Get the <code>ArgonManager</code> singleton.
      *
-     * @return a <code>NetworkingManager</code> value
-     */
-    NetworkingManager networkingManager();
-
-    /**
-     * Retrieve the argon manager.
+     * @return the ArgonManager.
      */
     ArgonManager argonManager();
+
+    /**
+     * Get the <code>NetworkingManager</code> singleton.
+     *
+     * @return the NetworkingManager.
+     */
+    NetworkingManager networkingManager();
 
     /**
      * Save settings to local hard drive.
@@ -89,7 +85,6 @@ public interface MvvmContext
      */
     void usbBackup() throws IOException;
 
-    // lifecycle --------------------------------------------------------------
     void shutdown();
 
     // debugging / performance management

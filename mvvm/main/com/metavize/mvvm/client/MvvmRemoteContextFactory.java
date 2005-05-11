@@ -17,14 +17,12 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import javax.security.auth.login.FailedLoginException;
 
-import com.metavize.mvvm.MvvmContext;
 import com.metavize.mvvm.engine.HttpInvokerStub;
 import com.metavize.mvvm.security.LoginSession;
 import com.metavize.mvvm.security.MvvmLogin;
-import com.metavize.mvvm.security.MvvmLoginException;
 
 /**
- * Factory to get the MvvmContext for an MVVM instance.
+ * Factory to get the MvvmRemoteContext for an MVVM instance.
  *
  * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
@@ -33,18 +31,18 @@ public class MvvmRemoteContextFactory
 {
     private static final Object LOCK = new Object();
 
-    private static MvvmContext MVVM_CONTEXT;
+    private static MvvmRemoteContext REMOTE_CONTEXT;
     private static HttpInvokerStub HTTP_INVOKER_STUB;
 
     /**
-     * Get the <code>MvvmContext</code> from this classloader.
+     * Get the <code>MvvmRemoteContext</code> from this classloader.
      * used by the GUI to get the context remotely.
      *
      * @return the <code>MvvmContext</code>.
      */
-    public static MvvmContext mvvmContext()
+    public static MvvmRemoteContext mvvmContext()
     {
-        return MVVM_CONTEXT;
+        return REMOTE_CONTEXT;
     }
 
     /**
@@ -62,7 +60,7 @@ public class MvvmRemoteContextFactory
      *    be accessed at given <code>host</code> and <code>port</code>.
      * @exception FailedLoginException if an error occurs
      */
-    public static MvvmContext login(String host, String username,
+    public static MvvmRemoteContext login(String host, String username,
                                     String password, int timeout,
                                     ClassLoader classLoader, boolean secure)
         throws MvvmConnectException, FailedLoginException
@@ -77,14 +75,14 @@ public class MvvmRemoteContextFactory
 
         synchronized (LOCK) {
             MvvmLogin ml = mvvmLogin(url, timeout, classLoader);
-            MVVM_CONTEXT = ml.login(username, password);
-            if (null != MVVM_CONTEXT) {
-                InvocationHandler ih = Proxy.getInvocationHandler(MVVM_CONTEXT);
+            REMOTE_CONTEXT = ml.login(username, password);
+            if (null != REMOTE_CONTEXT) {
+                InvocationHandler ih = Proxy.getInvocationHandler(REMOTE_CONTEXT);
                 HTTP_INVOKER_STUB = (HttpInvokerStub)ih;
             }
         }
 
-        return MVVM_CONTEXT;
+        return REMOTE_CONTEXT;
     }
 
     /**
@@ -95,13 +93,13 @@ public class MvvmRemoteContextFactory
      * @param username the username.
      * @param password the password.
      * @param classLoader the class loader to be used for deserialization.
-     * @return the <code>MvvmContext</code> for this machine.
+     * @return the <code>MvvmRemoteContext</code> for this machine.
      * @exception MvvmConnectException when an MvvmLogin object cannot
      *    be accessed at given <code>host</code> and <code>port</code>.
      */
-    public static MvvmContext login(String host, String username,
-                                    String password, int timeout,
-                                    ClassLoader classLoader)
+    public static MvvmRemoteContext login(String host, String username,
+                                          String password, int timeout,
+                                          ClassLoader classLoader)
         throws MvvmConnectException, FailedLoginException
     {
         return login(host, username, password, timeout, classLoader, true);
@@ -112,10 +110,11 @@ public class MvvmRemoteContextFactory
      * by logging in (with our magic localhost passwd) from the login
      * service at http://localhost/http-invoker.
      *
-     * @return the remote MvvmContext.
-     * @exception MvvmLoginException on login failure.
+     * @return the remote MvvmRemoteContext.
+     * @exception FailedLoginException if an error occurs
+     * @exception MvvmConnectException if an error occurs
      */
-    public static MvvmContext localLogin()
+    public static MvvmRemoteContext localLogin()
         throws FailedLoginException, MvvmConnectException
     {
         return localLogin(0);
@@ -126,10 +125,12 @@ public class MvvmRemoteContextFactory
      * by logging in (with our magic localhost passwd) from the login
      * service at http://localhost/http-invoker.
      *
-     * @return the remote MvvmContext.
-     * @exception MvvmLoginException on login failure.
+     * @param timeout an <code>int</code> value
+     * @return the remote MvvmRemoteContext.
+     * @exception FailedLoginException if an error occurs
+     * @exception MvvmConnectException if an error occurs
      */
-    public static MvvmContext localLogin(int timeout)
+    public static MvvmRemoteContext localLogin(int timeout)
         throws FailedLoginException, MvvmConnectException
     {
         String localUser = "localadmin";

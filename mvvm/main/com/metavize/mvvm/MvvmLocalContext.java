@@ -11,22 +11,80 @@
 
 package com.metavize.mvvm;
 
+import java.io.IOException;
+
+import com.metavize.mvvm.logging.LoggingManager;
+import com.metavize.mvvm.security.AdminManager;
 import com.metavize.mvvm.security.MvvmLogin;
 import com.metavize.mvvm.tapi.MPipeManager;
 import com.metavize.mvvm.tapi.PipelineFoundry;
 import com.metavize.mvvm.tran.TransformContext;
+import com.metavize.mvvm.tran.TransformManager;
 import net.sf.hibernate.Session;
 import org.apache.log4j.Logger;
 
 /**
  * Provides an interface to get all local MVVM components from an MVVM
- * instance.  This interface is accessible ONLY locally.
+ * instance.  This interface is accessible locally.
  *
  * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
  */
-public interface MvvmLocalContext extends MvvmContext
+public interface MvvmLocalContext
 {
+    /**
+     * Get the <code>ToolboxManager</code> singleton.
+     *
+     * @return a <code>ToolboxManager</code> value
+     */
+    ToolboxManager toolboxManager();
+
+    /**
+     * Get the <code>TransformManager</code> singleton.
+     *
+     * @return a <code>TransformManager</code> value
+     */
+    TransformManager transformManager();
+
+    /**
+     * Get the <code>LoggingManager</code> singleton.
+     *
+     * @return a <code>LoggingManager</code> value
+     */
+    LoggingManager loggingManager();
+
+    /**
+     * Get the <code>AdminManager</code> singleton.
+     *
+     * @return a <code>AdminManager</code> value
+     */
+    AdminManager adminManager();
+
+    ArgonManager argonManager();
+
+    NetworkingManager networkingManager();
+
+    MailSender mailSender();
+
+    /**
+     * Save settings to local hard drive.
+     *
+     * @exception IOException if the save was unsuccessful.
+     */
+    void localBackup() throws IOException;
+
+    /**
+     * Save settings to USB key drive.
+     *
+     * @exception IOException if the save was unsuccessful.
+     */
+    void usbBackup() throws IOException;
+
+    void shutdown();
+
+    // debugging / performance management
+    void doFullGC();
+
     /**
      * Get the <code>MPipeManager</code> singleton.
      *
@@ -60,13 +118,6 @@ public interface MvvmLocalContext extends MvvmContext
      * @return a new Hibernate <code>Session</code>.
      */
     Session openSession();
-
-    /**
-     * Hook used by network reconfiguration code -- stops all running transforms,
-     * then restarts them.
-     *
-     */
-    void restartAllTransforms();
 
     Logger eventLogger();
 }

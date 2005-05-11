@@ -15,7 +15,6 @@ import java.net.InetAddress;
 import java.util.List;
 
 import com.metavize.mvvm.MackageDesc;
-import com.metavize.mvvm.MvvmContext;
 import com.metavize.mvvm.ToolboxManager;
 import com.metavize.mvvm.security.LoginSession;
 import com.metavize.mvvm.security.MvvmPrincipal;
@@ -41,7 +40,7 @@ public class RemoteClient
     private static boolean verbose = false;
     private static int timeout = 120000;
 
-    private static MvvmContext mc;
+    private static MvvmRemoteContext mc;
 
     private static ToolboxManager tool;
     private static TransformManager tm;

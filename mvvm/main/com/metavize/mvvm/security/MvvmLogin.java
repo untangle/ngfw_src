@@ -13,10 +13,10 @@ package com.metavize.mvvm.security;
 
 import javax.security.auth.login.FailedLoginException;
 
-import com.metavize.mvvm.MvvmContext;
+import com.metavize.mvvm.client.MvvmRemoteContext;
 
 public interface MvvmLogin
 {
-    public MvvmContext login(String username, String password)
+    public MvvmRemoteContext login(String username, String password)
         throws FailedLoginException;
 }

@@ -14,8 +14,8 @@ package com.metavize.mvvm.engine;
 import java.net.InetAddress;
 import javax.security.auth.login.FailedLoginException;
 
-import com.metavize.mvvm.MvvmContext;
 import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.client.MvvmRemoteContext;
 import com.metavize.mvvm.security.LoginFailureReason;
 import com.metavize.mvvm.security.LoginSession;
 import com.metavize.mvvm.security.MvvmLogin;
@@ -53,7 +53,7 @@ class MvvmLoginImpl implements MvvmLogin
 
     // MvvmLogin methods ------------------------------------------------------
 
-    public MvvmContext login(String login, String password)
+    public MvvmRemoteContext login(String login, String password)
         throws FailedLoginException
     {
         // Get the client Addr from our partial initial login session
@@ -135,7 +135,7 @@ class MvvmLoginImpl implements MvvmLogin
 
         invoker.login(loginSession);
 
-        return MvvmContextFactory.context();
+        return MvvmContextImpl.getInstance().remoteContext();
     }
 
     // private methods --------------------------------------------------------

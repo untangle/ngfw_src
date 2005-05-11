@@ -41,10 +41,10 @@ public class Main
     public static int HTTPS_PORT = 443;
 
     public static long TOMCAT_SLEEP_TIME = 20 * 1000; // 20 seconds
-    public static int NUM_TOMCAT_RETRIES = 15; //  5 minutes total
+    public static int NUM_TOMCAT_RETRIES = 15;        //  5 minutes total
 
     private static String MVVM_LOCAL_CONTEXT_CLASSNAME
-        = "com.metavize.mvvm.engine.MvvmLocalContextImpl";
+        = "com.metavize.mvvm.engine.MvvmContextImpl";
 
     static {
         MvvmRepositorySelector.get().init("");
@@ -68,7 +68,11 @@ public class Main
 
     private String jdbcUrl;
 
+    // constructor ------------------------------------------------------------
+
     private Main() { }
+
+    // public static methods --------------------------------------------------
 
     // XXX get rid of all these throws
     public static final void main(String[] args) throws Exception
@@ -77,6 +81,34 @@ public class Main
 
         new Main().init();
     }
+
+    /**
+     * <code>fatalError</code> can be called by any part of the mvvm
+     * (even by transforms for now, change later XXX) to indicate that
+     * a fatal error has occured and that the MVVM *must* restart (or
+     * otherwise recover) itself.  One example is an OutOfMemory
+     * error.
+     *
+     * @param x a <code>Throwable</code> giving the related/causing
+     * exception, if any, otherwise null
+     */
+    public static void fatalError(String throwingLocation, Throwable x)
+    {
+        try {
+            System.err.println("Fatal Error in MVVM in " + throwingLocation);
+            if (x != null) {
+                System.err.println("Throwable: " + x.getMessage());
+                x.printStackTrace(System.err);
+            }
+        } catch (Throwable y) {
+            // We want to always call System.exit(), so we do
+            // absolutely nothing here.
+        } finally {
+            System.exit(-1);
+        }
+    }
+
+    // private methods --------------------------------------------------------
 
     // XXX get rid of all these throws
     private void init() throws Exception
@@ -118,32 +150,6 @@ public class Main
 
         mvvmContext.doDestroy();
         System.out.println("MVVM shutdown complete.");
-    }
-
-    /**
-     * <code>fatalError</code> can be called by any part of the mvvm
-     * (even by transforms for now, change later XXX) to indicate that
-     * a fatal error has occured and that the MVVM *must* restart (or
-     * otherwise recover) itself.  One example is an OutOfMemory
-     * error.
-     *
-     * @param x a <code>Throwable</code> giving the related/causing
-     * exception, if any, otherwise null
-     */
-    public static void fatalError(String throwingLocation, Throwable x)
-    {
-        try {
-            System.err.println("Fatal Error in MVVM in " + throwingLocation);
-            if (x != null) {
-                System.err.println("Throwable: " + x.getMessage());
-                x.printStackTrace(System.err);
-            }
-        } catch (Throwable y) {
-            // We want to always call System.exit(), so we do
-            // absolutely nothing here.
-        } finally {
-            System.exit(-1);
-        }
     }
 
     private void setProperties() throws Exception
@@ -203,10 +209,9 @@ public class Main
 
             mvvmContext = (MvvmContextBase)ucl
                 .loadClass(MVVM_LOCAL_CONTEXT_CLASSNAME)
-                .getMethod("localContext").invoke(null);
+                .getMethod("context").invoke(null);
 
-            mvvmContext.doInit(this);
-
+            mvvmContext.doInit();
         } finally {
             Thread.currentThread().setContextClassLoader(oldCl);
             // restored classloader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

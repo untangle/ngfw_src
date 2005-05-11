@@ -42,7 +42,7 @@ class PipelineFoundryImpl implements PipelineFoundry
         = new PipelineFoundryImpl();
 
     private static final Logger eventLogger
-        = MvvmLocalContextImpl.context().eventLogger();
+        = MvvmContextImpl.context().eventLogger();
     private static final Logger logger
         = Logger.getLogger(PipelineFoundryImpl.class);
 

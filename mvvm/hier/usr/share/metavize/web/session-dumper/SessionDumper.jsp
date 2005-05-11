@@ -8,7 +8,7 @@
 <BODY>
 <%
   AbsoluteTimeDateFormat atdf = new AbsoluteTimeDateFormat();
-  MvvmContext mc = MvvmRemoteContextFactory.localLogin();
+  MvvmRemoteContext mc = MvvmRemoteContextFactory.localLogin();
   TransformManager tm = mc.transformManager();
   Tid[] tids = tm.transformInstances();
   StringBuffer buf;
