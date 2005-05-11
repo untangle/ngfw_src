@@ -688,7 +688,7 @@ public class HttpParser extends AbstractParser
             case '%':
                 if (uri.length() - 1 < i + 2
                     || (!isHex((byte)uri.charAt(i + 1))
-                        && !isHex((byte)uri.charAt(i + 2)))) {
+                        || !isHex((byte)uri.charAt(i + 2)))) {
                     sb.append("%25");
                 } else {
                     sb.append('%');
