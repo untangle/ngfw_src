@@ -100,7 +100,7 @@ public class EventHandler extends AbstractEventHandler
     {
         UDPSession sess = e.session();
         ByteBuffer packet = e.packet().duplicate(); // Save position/limit for sending.
-        _handleChunk(e, e.session(), false);
+        _handleChunk(e, e.session(), true);
         sess.sendClientPacket(packet, e.header());
     }
 
