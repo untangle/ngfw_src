@@ -103,7 +103,7 @@ class NatEventHandler extends AbstractEventHandler
         if ( isNat(  request, protocol ) ||
              isRedirect( request, protocol ) || 
              isDmz(  request,  protocol )) {
-            request.release();
+            request.release(true);
             return;
         }
         
@@ -118,8 +118,8 @@ class NatEventHandler extends AbstractEventHandler
             return;
         } 
         
-        /* Otherwise release the session */
-        request.release();
+        /* Otherwise release the session, and don't care about the finalization */
+        request.release(false);
     }
 
     public void handleTCPFinalized(TCPSessionEvent event)

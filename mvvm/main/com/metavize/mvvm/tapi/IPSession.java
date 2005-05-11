@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: IPSession.java,v 1.7 2005/01/06 02:39:41 jdi Exp $
+ *  $Id$
  */
 
 package com.metavize.mvvm.tapi;
@@ -57,9 +57,21 @@ public interface IPSession extends IPSessionDesc, Session  {
      * <code>release</code> releases all interest in further events for this session.
      *
      * This call is only valid while in NORMAL_MODE.
+     * Note: Just calls release(false);
      *
      */
     void release();
+
+    /**
+     * <code>release</code> notifies the TAPI that this session may continue,
+     * but no data events will be delivered for
+     * the session.  If needsFinalization is false, no further events will be delivered for the session
+     * at all.  IF needsFinalization is true, then the only event that will be delivered is a Finalization
+     * event when the resulting session ends.
+     *
+     * @param needsFinalization a <code>boolean</code> true if the transform needs a finalization event when the released session ends.
+     */
+    void release(boolean needsFinalization);
 
     /**
      * <code>scheduleTimer</code> sets the timer for this session to fire in

@@ -21,6 +21,9 @@ abstract class IPNewSessionRequestImpl implements IPNewSessionRequest {
 
     protected volatile Object attachment = null;
 
+    protected boolean needsFinalization = true;
+    protected boolean modified = false;
+
     /**
      * The pipeline request that corresponds to this (transform) request.
      *
@@ -71,26 +74,31 @@ abstract class IPNewSessionRequestImpl implements IPNewSessionRequest {
     public void clientAddr(InetAddress addr)
     {
         pRequest.clientAddr(addr);
-    }
+        modified = true; 
+   }
 
     public void serverAddr(InetAddress addr)
     {
         pRequest.serverAddr(addr);
+        modified = true; 
     }
 
     public void clientPort(int port)
     {
         pRequest.clientPort(port);
+        modified = true; 
     }
 
     public void serverPort(int port)
     {
         pRequest.serverPort(port);
+        modified = true; 
     }
 
     public void serverIntf(byte intf)
     {
         pRequest.serverIntf(intf);
+        modified = true; 
     }
 
     public void rejectSilently()
@@ -108,14 +116,16 @@ abstract class IPNewSessionRequestImpl implements IPNewSessionRequest {
         pRequest.rejectReturnUnreachable(code);
     }
 
-    public void release() {
+    public void release(boolean needsFinalization)
+    {
+        this.needsFinalization = needsFinalization;
         pRequest.release();
     }
 
-    byte state() {
-        return pRequest.state();
+    public void release() {
+        release(false);
     }
-        
+
     public Object attach(Object ob)
     {
         Object oldOb = attachment;
@@ -126,5 +136,19 @@ abstract class IPNewSessionRequestImpl implements IPNewSessionRequest {
     public Object attachment()
     {
         return attachment;
+    }
+
+    byte state() {
+        return pRequest.state();
+    }
+
+    boolean needsFinalization()
+    {
+        return needsFinalization;
+    }
+
+    boolean modified()
+    {
+        return modified;
     }
 }

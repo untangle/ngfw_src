@@ -86,6 +86,13 @@ class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {
 
     private Logger sessionEventLogger;
 
+
+    /**
+     * We need a single global <code>releasedHandler</code> for all sessions that have been release();
+     * ed after session request time.  We use the default abstract event handler implmentation to 
+     * become a transparent proxy.
+     *
+     */
     private SessionEventListener releasedHandler;
 
     // All sessions with active timers.  There aren't many of these, so we don't worry about
@@ -303,20 +310,22 @@ class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {
                 logger.debug("rejecting");
                 return null;
             case com.metavize.mvvm.argon.IPNewSessionRequest.RELEASED:
-                logger.debug("releasing");
-                /* XXX THIS IS A HACK TO get NAT working so the old ports can be reclaimed
-                 * when a session is razed */
-                com.metavize.mvvm.argon.TCPSessionImpl pSession = 
-                    new com.metavize.mvvm.argon.TCPSessionImpl( request );
-                TCPSessionImpl session = new TCPSessionImpl(this, pSession,
-                                                            td.getTcpClientReadBufferSize(),
-                                                            td.getTcpServerReadBufferSize());
-                session.attach( treq.attachment());
-                registerPipelineListener(pSession, session);
-                
-                /* Must return a request in order to pass changes to modify
-                 * the session without participating in the session */
-                return pSession;
+                boolean needsFinalization = treq.needsFinalization();
+                boolean modified = treq.modified();
+                if (needsFinalization)
+                    logger.debug("releasing (with finalization)");
+                else if (modified)
+                    logger.debug("releasing (with modification)");
+                else
+                    logger.debug("releasing");
+                if (!needsFinalization && !modified)
+                    // Then we don't need to create a session at all.
+                    return null;
+
+                /* XX Otherwise fall through and create a "fake" session that
+                 * exists just to modify the session or to get the raze() call
+                 * from Argon when the session is razed. */
+                break;
             case com.metavize.mvvm.argon.IPNewSessionRequest.REQUESTED:
             case com.metavize.mvvm.argon.IPNewSessionRequest.ENDPOINTED:
             default:
@@ -327,8 +336,8 @@ class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {
             com.metavize.mvvm.argon.TCPSession pSession =
                 new com.metavize.mvvm.argon.TCPSessionImpl(request);
             TCPSessionImpl session = new TCPSessionImpl(this, pSession,
-                                                    td.getTcpClientReadBufferSize(),
-                                                    td.getTcpServerReadBufferSize());
+                                                        td.getTcpClientReadBufferSize(),
+                                                        td.getTcpServerReadBufferSize());
             session.attach(treq.attachment());
             registerPipelineListener(pSession, session);
             if (RWSessionStats.DoDetailedTimes)
@@ -342,8 +351,12 @@ class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {
                             session.serverAddr().getHostAddress() + ":" + session.serverPort());
             if (RWSessionStats.DoDetailedTimes)
                 dispatchNewTime = MetaEnv.currentTimeMillis();
-            TCPSessionEvent tevent = new TCPSessionEvent(mPipe, session);
-            dispatchTCPNewSession(tevent);
+            if (treq.state() == com.metavize.mvvm.argon.IPNewSessionRequest.RELEASED) {
+                session.release(treq.needsFinalization());
+            } else {
+                TCPSessionEvent tevent = new TCPSessionEvent(mPipe, session);
+                dispatchTCPNewSession(tevent);
+            }
             if (RWSessionStats.DoDetailedTimes)
                 newHandledTime = MetaEnv.currentTimeMillis();
 
@@ -411,20 +424,22 @@ class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {
                 logger.debug("rejecting");
                 return null;
             case com.metavize.mvvm.argon.IPNewSessionRequest.RELEASED:
-                logger.debug("releasing");
-                /* XXX THIS IS A HACK TO get NAT working so the old ports can be reclaimed
-                 * when a session is razed */
-                com.metavize.mvvm.argon.UDPSessionImpl pSession = 
-                    new com.metavize.mvvm.argon.UDPSessionImpl( request );
-                UDPSessionImpl session = new UDPSessionImpl(this, pSession,
-                                                            td.getTcpClientReadBufferSize(),
-                                                            td.getTcpServerReadBufferSize());
-                session.attach( ureq.attachment());
-                registerPipelineListener(pSession, session);
+                boolean needsFinalization = ureq.needsFinalization();
+                boolean modified = ureq.modified();
+                if (needsFinalization)
+                    logger.debug("releasing (with finalization)");
+                else if (modified)
+                    logger.debug("releasing (with modification)");
+                else
+                    logger.debug("releasing");
+                if (!needsFinalization && !modified)
+                    // Then we don't need to create a session at all.
+                    return null;
 
-                /* Must return a request in order to pass changes to modify
-                 * the session without participating in the session */
-                return pSession;
+                /* XX Otherwise fall through and create a "fake" session that
+                 * exists just to modify the session or to get the raze() call
+                 * from Argon when the session is razed. */
+                break;
             case com.metavize.mvvm.argon.IPNewSessionRequest.REQUESTED:
             case com.metavize.mvvm.argon.IPNewSessionRequest.ENDPOINTED:
             default:
@@ -435,8 +450,8 @@ class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {
             com.metavize.mvvm.argon.UDPSession pSession =
                 new com.metavize.mvvm.argon.UDPSessionImpl(request);
             UDPSessionImpl session = new UDPSessionImpl(this, pSession,
-                                                    td.getUdpMaxPacketSize(),
-                                                    td.getUdpMaxPacketSize());
+                                                        td.getUdpMaxPacketSize(),
+                                                        td.getUdpMaxPacketSize());
             session.attach(ureq.attachment());
             registerPipelineListener(pSession, session);
             if (RWSessionStats.DoDetailedTimes)
@@ -450,8 +465,12 @@ class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {
                             session.serverAddr().getHostAddress() + ":" + session.serverPort());
             if (RWSessionStats.DoDetailedTimes)
                 dispatchNewTime = MetaEnv.currentTimeMillis();
-            UDPSessionEvent tevent = new UDPSessionEvent(mPipe, session);
-            dispatchUDPNewSession(tevent);
+            if (ureq.state() == com.metavize.mvvm.argon.IPNewSessionRequest.RELEASED) {
+                session.release(ureq.needsFinalization());
+            } else {
+                UDPSessionEvent tevent = new UDPSessionEvent(mPipe, session);
+                dispatchUDPNewSession(tevent);
+            }
             if (RWSessionStats.DoDetailedTimes)
                 newHandledTime = MetaEnv.currentTimeMillis();
 
@@ -957,7 +976,7 @@ class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {
     {
         IPSessionImpl session = (IPSessionImpl) event.session();
         elog(Level.INFO, "TCPFinalized", session.id());
-        if (sessionEventListener == null || session.released())
+        if (sessionEventListener == null || (session.released() && !session.needsFinalization()))
             releasedHandler.handleTCPFinalized(event);
         else
             sessionEventListener.handleTCPFinalized(event);
@@ -1012,7 +1031,7 @@ class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {
     {
         IPSessionImpl session = (IPSessionImpl) event.session();
         elog(Level.INFO, "UDPFinalized", session.id());
-        if (sessionEventListener == null || session.released())
+        if (sessionEventListener == null || (session.released() && !session.needsFinalization()))
             releasedHandler.handleUDPFinalized(event);
         else
             sessionEventListener.handleUDPFinalized(event);

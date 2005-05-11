@@ -34,6 +34,7 @@ public interface IPNewSessionRequest extends NewSessionRequest, SessionEndpoints
     /**
      * Sets the server port for this session.</p>
      */
+
     void serverPort( int port );
 
     /**
@@ -58,7 +59,22 @@ public interface IPNewSessionRequest extends NewSessionRequest, SessionEndpoints
     // May only be called before session is established (from UDPNewSessionRequestEvent handler)
     void rejectReturnUnreachable( byte code );
 
-    // May only be called before session is established (from TCPNewSessionRequestEvent handler)
+    /**
+     * <code>release</code> notifies the TAPI that this session may continue with the current settings
+     * (which may be modified, IE: NAT modifies the endpoint), but no data events will be delivered for
+     * the session.  If needsFinalization is false, no further events will be delivered for the session
+     * at all.  IF needsFinalization is true, then the only event that will be delivered is a Finalization
+     * event when the resulting session ends.
+     *
+     * @param needsFinalization a <code>boolean</code> true if the transform needs a finalization event when the released session ends.
+     */
+    void release(boolean needsFinalization);
+
+    /**
+     * This is just release(false);
+     *
+     */
     void release();
+
     void endpoint();
 }

@@ -33,7 +33,8 @@ import org.apache.log4j.helpers.AbsoluteTimeDateFormat;
 
 abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineListener {
 
-    protected boolean released;
+    protected boolean released = false;
+    protected boolean needsFinalization = true;
 
     protected Dispatcher dispatcher;
 
@@ -50,7 +51,6 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
     protected IPSessionImpl(Dispatcher disp, com.metavize.mvvm.argon.IPSession pSession)
     {
         super(disp.mPipe(), pSession);
-        this.released = false;
         this.dispatcher = disp;
         this.stats = new RWSessionStats();
         if (RWSessionStats.DoDetailedTimes)
@@ -87,9 +87,14 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
     {
         return stats;
     }
+    
+    public void release()
+    {
+        release(false);
+    }
 
     // This one is for releasing once the session has been alive.
-    public void release()
+    public void release(boolean needsFinalization)
     {
         cancelTimer();
 
@@ -105,6 +110,7 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
         }
         */
         released = true;
+        this.needsFinalization = needsFinalization;
         // Do more eventually (closing sockets.) XX
     }
 
@@ -220,14 +226,18 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
         // entering TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         ct.setContextClassLoader(classLoader);
         try {
-            if (logger.isDebugEnabled()) {
-                IncomingSocketQueue ourcin = ((com.metavize.mvvm.argon.Session)pSession).clientIncomingSocketQueue();
-                IncomingSocketQueue oursin = ((com.metavize.mvvm.argon.Session)pSession).serverIncomingSocketQueue();
-                OutgoingSocketQueue ourcout = ((com.metavize.mvvm.argon.Session)pSession).clientOutgoingSocketQueue();
-                OutgoingSocketQueue oursout = ((com.metavize.mvvm.argon.Session)pSession).serverOutgoingSocketQueue();
-                debug("raze ourcin: " + ourcin +
-                      ", ourcout: " + ourcout + ", ourcsin: " + oursin + ", oursout: " + oursout +
-                      "  /  crumbs[CLIENT]: " + crumbs2write[CLIENT] + ", crumbs[SERVER]: " + crumbs2write[SERVER]);
+            if (released) {
+                debug("raze released");
+            } else {
+                if (logger.isDebugEnabled()) {
+                    IncomingSocketQueue ourcin = ((com.metavize.mvvm.argon.Session)pSession).clientIncomingSocketQueue();
+                    IncomingSocketQueue oursin = ((com.metavize.mvvm.argon.Session)pSession).serverIncomingSocketQueue();
+                    OutgoingSocketQueue ourcout = ((com.metavize.mvvm.argon.Session)pSession).clientOutgoingSocketQueue();
+                    OutgoingSocketQueue oursout = ((com.metavize.mvvm.argon.Session)pSession).serverOutgoingSocketQueue();
+                    debug("raze ourcin: " + ourcin +
+                          ", ourcout: " + ourcout + ", ourcsin: " + oursin + ", oursout: " + oursout +
+                          "  /  crumbs[CLIENT]: " + crumbs2write[CLIENT] + ", crumbs[SERVER]: " + crumbs2write[SERVER]);
+                }
             }
             closeFinal();
         } finally {
@@ -558,6 +568,11 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
         }
 
         dispatcher.removeSession(this);
+    }
+
+    boolean needsFinalization()
+    {
+        return needsFinalization;
     }
 
     protected void error(String message)
