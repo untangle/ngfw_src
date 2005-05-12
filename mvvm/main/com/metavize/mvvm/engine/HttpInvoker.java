@@ -87,6 +87,7 @@ class HttpInvoker extends InvokerBase
                 LoginExpiredException exn = new LoginExpiredException
                     ("client address mismatch: " + remoteAddr);
                 oos.writeObject(exn);
+                return;
             }
 
             Integer targetId = hi.targetId;
