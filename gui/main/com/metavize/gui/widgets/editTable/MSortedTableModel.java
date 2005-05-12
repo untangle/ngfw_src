@@ -1,18 +1,21 @@
 package com.metavize.gui.widgets.editTable;
 
+
+import com.metavize.gui.transform.*;
+import com.metavize.gui.util.*;
+
+
+import com.metavize.mvvm.tran.*;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
 import java.util.List;
 import java.lang.reflect.*;
-
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.*;
-
-import com.metavize.mvvm.tran.*;
-import com.metavize.gui.util.*;
 
 /**
  * TableSorter is a decorator for TableModels; adding sorting
@@ -66,17 +69,20 @@ import com.metavize.gui.util.*;
  * @version 2.0 02/27/04
  */
 
-public abstract class MSortedTableModel extends DefaultTableModel {
+public abstract class MSortedTableModel extends DefaultTableModel implements Refreshable, Savable {
     
     // M TABLE MODEL ///////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////
-    
+
+    // STRING CONSTANTS /////////////
     public static final String ROW_SAVED   = "MV_saved_";
     public static final String ROW_ADD     = "MV_add_";
     public static final String ROW_CHANGED = "MV_changed_";
     public static final String ROW_REMOVE  = "MV_remove_";
-    
-    protected TransformContext transformContext;
+    public static final StringConstants sc = new StringConstants();
+    ////////////////////////////////
+
+
     protected MTableChangeListener mTableChangeListener;
     
     private int descriptionIndex = -1;
@@ -86,8 +92,8 @@ public abstract class MSortedTableModel extends DefaultTableModel {
     private Vector removableVector = new Vector();
 
     public abstract TableColumnModel getTableColumnModel();
-    public abstract Vector generateRows(Object transformSettings);
-    public abstract Object generateSettings(Vector dataVector);
+    public abstract Vector generateRows(Object settings);
+    public abstract void generateSettings(Object settings, boolean validateOnly) throws Exception;
     private boolean dataChanged = false;
     protected boolean getSortable(){ return true; }
     ////////////////////////////////////////////////////////////////////////////
@@ -191,15 +197,14 @@ public abstract class MSortedTableModel extends DefaultTableModel {
     private List sortingColumns = new ArrayList();
 
     
-    public MSortedTableModel(TransformContext transformContext) {
-        this.transformContext = transformContext;
+    public MSortedTableModel() {
         this.mouseListener = new MouseHandler();
         this.tableModelListener = new TableModelHandler();
         addTableModelListener(tableModelListener);
         //addTableModelListener(this);
     }
 
-    public boolean dataChanged(){ return dataChanged; }
+    //    public boolean dataChanged(){ return dataChanged; }
     
     private void clearSortingState() {
         viewToModel = null;
@@ -514,7 +519,7 @@ public abstract class MSortedTableModel extends DefaultTableModel {
         for(int i=index; i<this.getRowCount(); i++){
             this.setValueAt(new Integer(i+2), i, indexIndex);
 	}
-        this.getDataVector().insertElementAt(generateNewRow(index+1), index);
+        super.getDataVector().insertElementAt(generateNewRow(index+1), index);
         this.fireTableDataChanged();
         dataChanged = true;
     }
@@ -530,60 +535,41 @@ public abstract class MSortedTableModel extends DefaultTableModel {
         dataChanged = true;
     }
     
+    public Vector<Vector> getOriginalDataVector(){
+	return super.getDataVector();
+    }
+
+    public Vector<Vector> getDataVector(){
+	int stateIndex = getStateIndex();
+	Vector filteredData = new Vector();
+	for( Vector rowVector : (Vector<Vector>) super.getDataVector() ){
+	    if( !((String)rowVector.elementAt(stateIndex)).equals(ROW_REMOVE) )
+		filteredData.add(rowVector);
+	}
+	return filteredData;
+    }
     
     // tell the table to reload its data set from the server
-    public void refresh(){
+    public void doRefresh(Object settings){
 
-        try{
-            //this.getTableHeader().getTable().getCellEditor().stopCellEditing();
-            Vector dataVector = null;
-            if(transformContext != null){
-                dataVector = generateRows( transformContext.transform().getSettings() );
-	    }
-            else{
-                dataVector = generateRows( null );
-	    }
-            this.getDataVector().removeAllElements();
-            this.getDataVector().addAll(dataVector);
-            this.fireTableDataChanged();
-        }
-        catch(Exception e){
-            try{
-                Util.handleExceptionWithRestart("Error refreshing table", e);
-            }
-            catch(Exception f){
-                Util.handleExceptionNoRestart("Error refreshing table", f);
-                //if(mTableChangeListener != null) mTableChangeListener.damageControl( this );
-            }
-        }
-        dataChanged = false;
+	this.getTableHeader().getTable().getCellEditor().stopCellEditing();
+	this.getTableHeader().getTable().clearSelection();
+	
+	Vector dataVector = generateRows( settings );
+	super.getDataVector().removeAllElements();
+	super.getDataVector().addAll(dataVector);
+	this.fireTableDataChanged();
     }
     
     // save the data from the table, and tell the table to reflect that the data has been saved
-    public void commit() {
-        try{
+    public void doSave(Object settings, boolean validateOnly) throws Exception {
 
-            //this.getTableHeader().getTable().getCellEditor().stopCellEditing();
-	    int stateIndex = getStateIndex();
-            Vector commitableVector = new Vector();
-            for(int i=0; i<this.getDataVector().size(); i++){
-                if( !((String)((Vector)this.getDataVector().elementAt(i)).elementAt(stateIndex)).equals( this.ROW_REMOVE ) )
-                    commitableVector.add( this.getDataVector().elementAt(i) );
-            }
-            Object transformSettings = generateSettings(commitableVector);
-	    transformContext.transform().setSettings(transformSettings);
-            refresh();
-        }
-        catch(Exception e){
-            try{
-                Util.handleExceptionWithRestart("Error commiting table", e);
-            }
-            catch(Exception f){
-                Util.handleExceptionNoRestart("Error commiting table", f);
-                //if(mTableChangeListener != null) mTableChangeListener.damageControl( this );
-            }
-        }
-        dataChanged = false;
+	if(Util.getIsDemo())
+            return;
+
+	this.getTableHeader().getTable().getCellEditor().stopCellEditing();
+	this.getTableHeader().getTable().clearSelection();
+	generateSettings(settings, validateOnly);
     }
     
     public String getDescription(int rowIndex) {

@@ -29,7 +29,7 @@ import javax.swing.event.*;
 public class CookieConfigJPanel extends MEditTableJPanel{
     
     
-    public CookieConfigJPanel(TransformContext transformContext) {
+    public CookieConfigJPanel() {
         super(true, true);
         super.setInsets(new Insets(4, 4, 2, 2));
         super.setTableTitle("Cookies");
@@ -37,7 +37,7 @@ public class CookieConfigJPanel extends MEditTableJPanel{
         super.setAddRemoveEnabled(true);
         
         // create actual table model
-        CookieTableModel cookieTableModel = new CookieTableModel(transformContext);
+        CookieTableModel cookieTableModel = new CookieTableModel();
         this.setTableModel( cookieTableModel );
     }
 }
@@ -46,71 +46,59 @@ public class CookieConfigJPanel extends MEditTableJPanel{
 class CookieTableModel extends MSortedTableModel{ 
 
     private static final int T_TW = Util.TABLE_TOTAL_WIDTH;
-    private static final int C0_MW = Util.LINENO_MIN_WIDTH; /* # */
-    private static final int C1_MW = Util.STATUS_MIN_WIDTH; /* status */
+    private static final int C0_MW = Util.STATUS_MIN_WIDTH; /* status */
+    private static final int C1_MW = Util.LINENO_MIN_WIDTH; /* # */
     private static final int C2_MW = 120; /* identification */
     private static final int C3_MW = 55; /* block */
     private static final int C4_MW = Util.chooseMax(T_TW - (C0_MW + C1_MW + C2_MW + C3_MW), 120); /* description */
-    private static final StringConstants sc = StringConstants.getInstance();
 
-    CookieTableModel(TransformContext transformContext){
-        super(transformContext);
-        refresh();
-    }
+
     
     public TableColumnModel getTableColumnModel(){
         
         DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
         //                                 #  min  rsz    edit   remv   desc   typ            def
-        addTableColumn( tableColumnModel,  0, C0_MW, false, false, true,  false, Integer.class, null, sc.TITLE_INDEX);
-        addTableColumn( tableColumnModel,  1, C1_MW, false, false, false, false, String.class,  null, "status");
+        addTableColumn( tableColumnModel,  0, C0_MW, false, false, false, false, String.class,  null, sc.TITLE_STATUS);
+        addTableColumn( tableColumnModel,  1, C1_MW, false, false, false, false, Integer.class, null, sc.TITLE_INDEX);
         addTableColumn( tableColumnModel,  2, C2_MW, true,  true,  false, false, String.class,  sc.empty( "no identification" ), "identification");
-        addTableColumn( tableColumnModel,  3, C3_MW, false, true,  false, false, Boolean.class, "true", sc.bold( sc.TITLE_BLOCK));
-        // addTableColumn( tableColumnModel,  6,  55, false, true,  false, false, Boolean.class, "false", "alert");
-        // addTableColumn( tableColumnModel,  7,  55, false, true,  false, false, Boolean.class, "true", "log");
+        addTableColumn( tableColumnModel,  3, C3_MW, false, true,  false, false, Boolean.class, "true", sc.bold("block"));
         addTableColumn( tableColumnModel,  4, C4_MW, true, true, false, true, String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
         return tableColumnModel;
     }
     
-    public Object generateSettings(Vector dataVector){
-        Vector rowVector;
-        
-        SpywareSettings transformSettings = ((Spyware)transformContext.transform()).getSpywareSettings();
-        StringRule newElem;
+    public void generateSettings(Object settings, boolean validateOnly) throws Exception {
         List elemList = new ArrayList();
-        for(int i=0; i<dataVector.size(); i++){
-            rowVector = (Vector) dataVector.elementAt(i);
-            newElem = new StringRule();
-            // newElem.alerts( new Alerts());
+	for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
+
+            StringRule newElem = new StringRule();
             newElem.setString( (String) rowVector.elementAt(2) );
             newElem.setLive( ((Boolean) rowVector.elementAt(3)).booleanValue() );
-            // newElem.alerts().generateCriticalAlerts( ((Boolean) rowVector.elementAt(6)).booleanValue() );
-            // newElem.alerts().generateSummaryAlerts( ((Boolean) rowVector.elementAt(7)).booleanValue() );
             newElem.setDescription( (String) rowVector.elementAt(4) );
             elemList.add(newElem);
         }
-        (transformSettings).setCookieRules(elemList);
-        return transformSettings;
+
+	// SAVE SETTINGS //////////
+	if( !validateOnly ){
+	    SpywareSettings spywareSettings = (SpywareSettings) settings;
+	    spywareSettings.setCookieRules(elemList);
+	}
+
     }
     
-    public Vector generateRows(Object transformDesc){
+    public Vector generateRows(Object settings){
+	SpywareSettings spywareSettings = (SpywareSettings) settings;
         Vector allRows = new Vector();
-        Vector row;
-        StringRule newElem;
-        Vector elemVector = new Vector( ((SpywareSettings)transformDesc).getCookieRules() );
-        for(int i=0; i<elemVector.size(); i++){
-            row = new Vector();
-            newElem = (StringRule) elemVector.elementAt(i);
-            row.add(new Integer(i+1));
+	int count = 1;
+	for( StringRule newElem : (List<StringRule>) spywareSettings.getCookieRules() ){
+
+            Vector row = new Vector();
             row.add(super.ROW_SAVED);
+            row.add(new Integer(count));
             row.add(newElem.getString());
             row.add(Boolean.valueOf( newElem.isLive()));
-            //if(newElem.alerts() == null)
-            //	newElem.alerts( new Alerts());
-            //row.add(Boolean.valueOf(newElem.alerts().generateCriticalAlerts()));
-            //row.add(Boolean.valueOf(newElem.alerts().generateSummaryAlerts()));
             row.add(newElem.getDescription());
             allRows.add(row);
+	    count++;
         }
         return allRows;
     }  

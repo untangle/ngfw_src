@@ -6,19 +6,8 @@
 
 package com.metavize.gui.widgets.configWindow;
 
-import javax.swing.*;
-import javax.swing.text.*;
-
-import java.text.*;
-import java.util.*;
-
-
-import javax.swing.table.*;
-import java.awt.*;
-import javax.swing.event.*;
-
-import com.metavize.gui.util.*;
-import com.metavize.gui.main.MMainJFrame;
+import com.metavize.gui.transform.*;
+import com.metavize.gui.widgets.dialogs.*;
 import com.metavize.gui.widgets.coloredTable.*;
 import com.metavize.gui.widgets.editTable.*;
 import com.metavize.gui.util.*;
@@ -26,20 +15,32 @@ import com.metavize.gui.util.*;
 import com.metavize.mvvm.security.PasswordUtil;
 import com.metavize.mvvm.*;
 
+import javax.swing.*;
+import javax.swing.text.*;
+import java.text.*;
+import java.util.*;
+import javax.swing.table.*;
+import java.awt.*;
+import javax.swing.event.*;
+
 
 /**
  *
  * @author  inieves
  */
-public class ConfigJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener, MTableChangeListener {
+public abstract class ConfigJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
 
     protected Dimension MIN_SIZE = new Dimension(640, 480);
     protected Dimension MAX_SIZE = new Dimension(1600, 1200);
 
-    private MColoredJTable mColoredJTable;
-    
+    // SAVING/REFRESHING ///////////
+    protected Map<String, Refreshable> refreshableMap = new LinkedHashMap(5);
+    protected Map<String, Savable> savableMap = new LinkedHashMap(5);
+    protected Object settings;
+    ///////////////////////////////
 
-    /** Creates new form UpgradeJDialog */
+
+
     public ConfigJDialog(java.awt.Frame parent) {
         super(parent, true);
 
@@ -52,8 +53,67 @@ public class ConfigJDialog extends javax.swing.JDialog implements java.awt.event
 					  dialogResized();
 				      }
 				  } );
-	
+	generateGui();
+	refreshAll();
     }
+
+
+    // SAVING/REFRESHING ///////////////////////////////
+    protected abstract void sendSettings(Object settings) throws Exception;
+    protected abstract void refreshSettings();
+    protected abstract void generateGui();
+
+    protected void saveAll(){
+	// GENERATE AND VALIDATE ALL SETTINGS
+	String componentName = null;
+        try {
+	    for( Map.Entry<String, Savable> savableMapEntry : savableMap.entrySet() ){
+		componentName = savableMapEntry.getKey();
+		Savable savableComponent = savableMapEntry.getValue();
+		savableComponent.doSave(settings, false);
+	    }
+        }
+        catch(Exception e){
+            new ValidateFailureDialog( this.getTitle(), componentName, e.getMessage() );
+            return;
+        }
+        
+	// SEND SETTINGS TO SERVER
+        try {
+	    sendSettings(settings);
+        }
+        catch ( Exception e ) {
+            try{
+                Util.handleExceptionWithRestart("Error saving settings", e);
+            }
+            catch(Exception f){
+                Util.handleExceptionNoRestart("Error saving settings", f);
+                new SaveFailureDialog( this.getTitle() );
+                return;
+            }
+        }
+	finally{
+	    refreshAll();
+	}
+    }
+
+    protected void refreshAll(){
+	// REFRESH SETTINGS FROM SERVER
+	try{
+	    refreshSettings();
+	    for( Map.Entry<String, Refreshable> refreshableMapEntry : refreshableMap.entrySet() ){
+		String componentName = refreshableMapEntry.getKey();
+		Refreshable refreshableComponent = refreshableMapEntry.getValue();
+		refreshableComponent.doRefresh(settings);
+	    }
+	}
+	catch(Exception e){
+	    new RefreshFailureDialog( this.getTitle() );
+	}
+
+    }
+    ////////////////////////////////////////////
+
 
     private void dialogResized(){
         Util.resizeCheck(this, MIN_SIZE, MAX_SIZE);
@@ -64,16 +124,7 @@ public class ConfigJDialog extends javax.swing.JDialog implements java.awt.event
 	saveJButton.setVisible(false);
     }
 
-    public void setTable(MColoredJTable mColoredJTable){
-        this.mColoredJTable = mColoredJTable;
-    }
 
-    public void damageControl(Object reference){
-        contentJTabbedPane.setEnabled(false);
-    }
-    public void dataChangedInvalid(Object reference){}
-    public void dataChangedValid(Object reference){}
-    public void dataRefreshed(Object reference){}
     
     private void initComponents() {//GEN-BEGIN:initComponents
         java.awt.GridBagConstraints gridBagConstraints;
@@ -186,29 +237,16 @@ public class ConfigJDialog extends javax.swing.JDialog implements java.awt.event
     }//GEN-END:initComponents
 
     private void saveJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveJButtonActionPerformed
-        doSaveJButtonActionPerformed(evt);
+        saveAll();
     }//GEN-LAST:event_saveJButtonActionPerformed
 
-    protected void doSaveJButtonActionPerformed(java.awt.event.ActionEvent evt){
-	mColoredJTable.getCellEditor().stopCellEditing();
-        ((MSortedTableModel)mColoredJTable.getModel()).commit();
-    }
-
     private void reloadJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reloadJButtonActionPerformed
-        doReloadJButtonActionPerformed(evt);
+        refreshAll();
     }//GEN-LAST:event_reloadJButtonActionPerformed
-
-    protected void doReloadJButtonActionPerformed(java.awt.event.ActionEvent evt){
-	mColoredJTable.getCellEditor().stopCellEditing();
-        ((MSortedTableModel)mColoredJTable.getModel()).refresh();    
-    }
-
 
     private void closeJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeJButtonActionPerformed
         windowClosing(null);
     }//GEN-LAST:event_closeJButtonActionPerformed
-
-    
 
     public void windowClosing(java.awt.event.WindowEvent windowEvent) {
         //this.setVisible(false);
@@ -221,7 +259,6 @@ public class ConfigJDialog extends javax.swing.JDialog implements java.awt.event
     public void windowDeiconified(java.awt.event.WindowEvent windowEvent) {}
     public void windowIconified(java.awt.event.WindowEvent windowEvent) {}
     public void windowOpened(java.awt.event.WindowEvent windowEvent) {}
-
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

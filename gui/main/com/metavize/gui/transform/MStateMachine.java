@@ -92,7 +92,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
 		}
 		else{
                     boolean isProceeding = true;
-                    if( name.equals("nat-transform") || name.equals("firewall-transform")){
+                    if( name.equals("nat-transform") ){
                         isProceeding = (new PowerProceedDialog(displayName, powerJToggleButton.isSelected())).isProceeding();
                     }
                     if(isProceeding)

@@ -10,10 +10,9 @@
  */
 package com.metavize.tran.nat.gui;
 
-import com.metavize.mvvm.tran.Transform;
+
 import com.metavize.gui.transform.*;
 import com.metavize.gui.pipeline.MPipelineJPanel;
-import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.gui.widgets.editTable.*;
 import com.metavize.gui.util.*;
 
@@ -28,9 +27,8 @@ import javax.swing.*;
 import javax.swing.table.*;
 import javax.swing.event.*;
 
-public class RedirectJPanel extends MEditTableJPanel{
+public class RedirectJPanel extends MEditTableJPanel {
 
-    private RedirectTableModel redirectTableModel;
             
     public RedirectJPanel() {
         super(true, true);
@@ -41,30 +39,15 @@ public class RedirectJPanel extends MEditTableJPanel{
         super.setAddRemoveEnabled(true);
         
         // create actual table model
-        redirectTableModel = new RedirectTableModel();
+        RedirectTableModel redirectTableModel = new RedirectTableModel();
         this.setTableModel( redirectTableModel );
 
     }
     
-    public void refresh(Object settings) throws Exception {
-        this.getJTable().getCellEditor().stopCellEditing();
-        this.getJTable().clearSelection();
-        redirectTableModel.refresh(settings);
-    }
-    
-    public void save(Object settings) throws Exception {
-        this.getJTable().getCellEditor().stopCellEditing();
-        this.getJTable().clearSelection();
-        redirectTableModel.save(settings);
-    }
-    
-
 
 
 class RedirectTableModel extends MSortedTableModel{ 
 
-    private Color INVALID_COLOR = Color.PINK;
-    private Color BACKGROUND_COLOR = new Color(224, 224, 224);
     
     private static final int  T_TW = Util.TABLE_TOTAL_WIDTH;
     private static final int  C0_MW = Util.STATUS_MIN_WIDTH; /* status */
@@ -83,14 +66,10 @@ class RedirectTableModel extends MSortedTableModel{
     private final int C12_MW = Util.chooseMax(T_TW - (C0_MW + C1_MW + C2_MW + C3_MW + C4_MW + C5_MW + C6_MW + C7_MW + C8_MW + C9_MW + C10_MW + C11_MW), 120); /* description */
 
 
-    private final StringConstants sc = StringConstants.getInstance();
     
     private ComboBoxModel protocolModel = super.generateComboBoxModel( ProtocolMatcher.getProtocolEnumeration(), ProtocolMatcher.getProtocolDefault() );
     private ComboBoxModel directionModel = super.generateComboBoxModel( TrafficRule.getDirectionEnumeration(), TrafficRule.getDirectionDefault() );
     
-    RedirectTableModel(){
-        super(null);
-    }
 
     protected boolean getSortable(){ return false; }
     
@@ -114,113 +93,71 @@ class RedirectTableModel extends MSortedTableModel{
         return tableColumnModel;
     }
     
-    public Vector generateRows(Object transformSettings){ return null; }
-    public Object generateSettings(Vector dataVector){ return null; }
     
-    public void refresh(Object settings) throws Exception {
-        if(!(settings instanceof NatSettings)){
-            RedirectJPanel.this.setBackground(INVALID_COLOR);
-            return;
-        }
-        else{
-            RedirectJPanel.this.setBackground(BACKGROUND_COLOR);
-        }
-    
-        NatSettings natSettings = (NatSettings) settings;
-        
-        List<RedirectRule> redirectList = natSettings.getRedirectList();
-        Vector allRowsVector = new Vector();
-        Vector rowVector;
-        int index = 1;
-        for( RedirectRule redirectRule : redirectList ){
-            try{
-                rowVector = new Vector();
-                rowVector.add(super.ROW_SAVED);
-                rowVector.add(new Integer(index));
-                rowVector.add(redirectRule.isLive());
-                rowVector.add(super.generateComboBoxModel( ProtocolMatcher.getProtocolEnumeration(), redirectRule.getProtocol().toString() ));
-                rowVector.add(super.generateComboBoxModel( TrafficRule.getDirectionEnumeration(), redirectRule.getDirection().toString() ));
-                rowVector.add(redirectRule.getSrcAddress().toString());
-                rowVector.add(redirectRule.getDstAddress().toString());
-                rowVector.add(redirectRule.getSrcPort().toString());
-                rowVector.add(redirectRule.getDstPort().toString());
-                rowVector.add(redirectRule.getRedirectAddressString().toString());
-                rowVector.add(redirectRule.getRedirectPortString());
-                rowVector.add(redirectRule.getCategory());
-                rowVector.add(redirectRule.getDescription());
-                allRowsVector.add(rowVector);
-                index++;
-            }
-            catch(Exception e){
-                Util.handleExceptionNoRestart("Error parsing for refresh", e);
-            }
-        }
-        
-        this.getDataVector().removeAllElements();
-        this.getDataVector().addAll(allRowsVector);
-        this.fireTableDataChanged();
-    }
-    
-    public void save(Object settings) throws Exception {
-        if(!(settings instanceof NatSettings)){
-            RedirectJPanel.this.setBackground(INVALID_COLOR);
-            return;
-        }
-        else{
-            RedirectJPanel.this.setBackground(BACKGROUND_COLOR);
-        }
-        
-        NatSettings natSettings = (NatSettings) settings;
-        
+    public void generateSettings(Object settings, boolean validateOnly) throws Exception {                
         List redirectRulesList = new ArrayList();
-        RedirectRule redirectRule;
-        Vector<Vector> allRows = this.getDataVector();
-        int rowIndex = 0;
-        for( Vector rowVector : allRows ){
-            rowIndex++;
+        int rowIndex = 1;
+        for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
             
-            if( ((String)rowVector.elementAt(0)).equals(this.ROW_REMOVE) )
-                continue;
-
-            redirectRule = new RedirectRule();
+            RedirectRule redirectRule = new RedirectRule();
             redirectRule.setLive( (Boolean) rowVector.elementAt(2) );
-
-            try{ redirectRule.setProtocol( ProtocolMatcher.parse(((ComboBoxModel) rowVector.elementAt(3)).getSelectedItem().toString()) ); }
-            catch(Exception e){ throw new Exception("(Redirect) Protocol in row: " + rowIndex); }
-
-            try{ redirectRule.setDirection( ((ComboBoxModel) rowVector.elementAt(4)).getSelectedItem().toString() ); }
-            catch(Exception e){ throw new Exception("(Redirect) Direction in row: " + rowIndex); }
-
+            redirectRule.setProtocol( ProtocolMatcher.parse(((ComboBoxModel) rowVector.elementAt(3)).getSelectedItem().toString()) );
+            redirectRule.setDirection( ((ComboBoxModel) rowVector.elementAt(4)).getSelectedItem().toString() );
             try{ redirectRule.setSrcAddress( IPMatcher.parse((String) rowVector.elementAt(5)) ); }
-            catch(Exception e){ throw new Exception("(Redirect) Source Address in row: " + rowIndex); }
-
+            catch(Exception e){ throw new Exception("Invalid \"source address\" in row: " + rowIndex); }
             try{ redirectRule.setDstAddress( IPMatcher.parse((String) rowVector.elementAt(6)) ); }
-            catch(Exception e){ throw new Exception("(Redirect) Destination Address in row: " + rowIndex); }
-
+            catch(Exception e){ throw new Exception("Invalid \"destination address\" in row: " + rowIndex); }
             try{ redirectRule.setSrcPort( PortMatcher.parse((String) rowVector.elementAt(7)) ); }
-            catch(Exception e){ throw new Exception("(Redirect) Source Port in row: " + rowIndex); }
-
+            catch(Exception e){ throw new Exception("Invalid \"source port\" in row: " + rowIndex); }
             try{ redirectRule.setDstPort( PortMatcher.parse((String) rowVector.elementAt(8)) ); }
-            catch(Exception e){ throw new Exception("(Redirect) Destination Port in row: " + rowIndex); }
-
+            catch(Exception e){ throw new Exception("Invalid \"destination port\" in row: " + rowIndex); }
             try{ redirectRule.setRedirectAddress((String) rowVector.elementAt(9)); }
-            catch(Exception e){ throw new Exception("(Redirect) Redirect Address in row: " + rowIndex); }
-
+            catch(Exception e){ throw new Exception("Invalid \"redirect address\" in row: " + rowIndex); }
             try{ redirectRule.setRedirectPort((String) rowVector.elementAt(10)); }
-            catch(Exception e){ throw new Exception("(Redirect) Redirect Port in row: " + rowIndex); }
-
+            catch(Exception e){ throw new Exception("Invalid \"redirect port\" in row: " + rowIndex); }
             redirectRule.setCategory( (String) rowVector.elementAt(11) );                
             redirectRule.setDescription( (String) rowVector.elementAt(12) );
 
             /* For now, all redirects are destination redirects */
             redirectRule.setDstRedirect( true );
             redirectRulesList.add(redirectRule);
-            
+            rowIndex++;
         }
         
-        natSettings.setRedirectList(redirectRulesList);
+	// SAVE SETTINGS ////////////
+	if( !validateOnly ){
+	    NatSettings natSettings = (NatSettings) settings;
+	    natSettings.setRedirectList(redirectRulesList);
+	}
     }
     
+    
+    public Vector generateRows(Object settings) {
+        NatSettings natSettings = (NatSettings) settings;
+        Vector allRowsVector = new Vector();
+        int index = 1;
+        for( RedirectRule redirectRule : (List<RedirectRule>) natSettings.getRedirectList() ){
+
+	    Vector rowVector = new Vector();
+	    rowVector.add(super.ROW_SAVED);
+	    rowVector.add(new Integer(index));
+	    rowVector.add(redirectRule.isLive());
+	    rowVector.add(super.generateComboBoxModel( ProtocolMatcher.getProtocolEnumeration(), redirectRule.getProtocol().toString() ));
+	    rowVector.add(super.generateComboBoxModel( TrafficRule.getDirectionEnumeration(), redirectRule.getDirection().toString() ));
+	    rowVector.add(redirectRule.getSrcAddress().toString());
+	    rowVector.add(redirectRule.getDstAddress().toString());
+	    rowVector.add(redirectRule.getSrcPort().toString());
+	    rowVector.add(redirectRule.getDstPort().toString());
+	    rowVector.add(redirectRule.getRedirectAddressString().toString());
+	    rowVector.add(redirectRule.getRedirectPortString());
+	    rowVector.add(redirectRule.getCategory());
+	    rowVector.add(redirectRule.getDescription());
+	    allRowsVector.add(rowVector);
+	    index++;
+        }
+
+        return allRowsVector;
+    }
     
 }
 

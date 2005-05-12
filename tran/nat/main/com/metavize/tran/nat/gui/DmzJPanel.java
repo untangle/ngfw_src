@@ -11,125 +11,80 @@
 
 package com.metavize.tran.nat.gui;
 
-import java.awt.*;
 
-import com.metavize.tran.nat.*;
+import com.metavize.gui.transform.*;
 import com.metavize.gui.util.Util;
+
 import com.metavize.mvvm.tran.IPaddr;
+import com.metavize.tran.nat.*;
+
+import java.awt.*;
 
 /**
  *
  * @author  inieves
  */
-public class DmzJPanel extends javax.swing.JPanel {
-    
-    private Color INVALID_COLOR = Color.PINK;
-    private Color BACKGROUND_COLOR = new Color(224, 224, 224);
-    
+public class DmzJPanel extends javax.swing.JPanel implements Savable, Refreshable {
+
+    private static final String EXCEPTION_DMZ_TARGET = "The Target IP Address must be a valid IP address.";
 
     public DmzJPanel() {
         initComponents();
     }
     
-    
-    
-    public void refresh(Object settings) throws Exception {
-        if(!(settings instanceof NatSettings)){
-            this.setBackground(INVALID_COLOR);
-            return;
-        }
-        else{
-            this.setBackground(BACKGROUND_COLOR);
-        }
         
-        boolean isValid = true;
-        
-        NatSettings natSettings = (NatSettings) settings;
-        boolean dmzEnabled;
-        String dmzTargetAddress;
+    
+    public void doSave(Object settings, boolean validateOnly) throws Exception {
         
         // ENABLED ///////////
-        try{
-            dmzEnabled = natSettings.getDmzEnabled();
-            this.setDmzEnabledDependency(dmzEnabled);
-            if( dmzEnabled )
-                dmzEnabledJRadioButton.setSelected(true);
-            else
-                dmzDisabledJRadioButton.setSelected(true);
-            dmzEnabledJRadioButton.setBackground( BACKGROUND_COLOR );
-            dmzDisabledJRadioButton.setBackground( BACKGROUND_COLOR );
-        }
-        catch(Exception e){
-            dmzEnabledJRadioButton.setBackground( INVALID_COLOR );
-            dmzDisabledJRadioButton.setBackground( INVALID_COLOR );
-            isValid = false;
-        }
-        
-        // TARGET ADDRESS //////
-        try{
-            dmzTargetAddress = natSettings.getDmzAddress().toString();
-            targetAddressIPaddrJTextField.setText( dmzTargetAddress );
-            targetAddressIPaddrJTextField.setBackground( Color.WHITE );
-        }
-        catch(Exception e){
-            targetAddressIPaddrJTextField.setBackground( INVALID_COLOR );
-            isValid = false;
-        }
-        
-        if(!isValid)
-            throw new Exception();
-        
-    }
-
-    
-    
-    public void save(Object settings) throws Exception {
-        if(!(settings instanceof NatSettings)){
-            this.setBackground(INVALID_COLOR);
-            return;
-        }
-        else{
-            this.setBackground(BACKGROUND_COLOR);
-        }
-        
-        
-        NatSettings natSettings = (NatSettings) settings;
-        boolean dmzEnabled;
-        IPaddr dmzTargetAddress = null;
-        
-        // ENABLED ///////////
-        dmzEnabled = dmzEnabledJRadioButton.isSelected();
-        if( dmzEnabledJRadioButton.isSelected() ^ dmzDisabledJRadioButton.isSelected() ){
-            dmzEnabledJRadioButton.setBackground( BACKGROUND_COLOR );
-            dmzDisabledJRadioButton.setBackground( BACKGROUND_COLOR );
-        }
-        else{
-            dmzEnabledJRadioButton.setBackground( INVALID_COLOR );
-            dmzDisabledJRadioButton.setBackground( INVALID_COLOR );
-            throw new Exception("(DMZ) The DMZ cannot be Enabled and Disabled at the same time.");
-        }
+        boolean dmzEnabled = dmzEnabledJRadioButton.isSelected();
         
         // INTERNAL ADDRESS //////
+        IPaddr dmzTargetAddress = null;
         if(dmzEnabled){
             try{
                 dmzTargetAddress = IPaddr.parse( targetAddressIPaddrJTextField.getText() );
                 targetAddressIPaddrJTextField.setBackground( Color.WHITE );
             }
             catch(Exception e){
-                targetAddressIPaddrJTextField.setBackground( INVALID_COLOR );
-                throw new Exception("(DMZ) The Target IP Address must be a valid IP address.");
+                targetAddressIPaddrJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+                throw new Exception(EXCEPTION_DMZ_TARGET);
             }
         }        
         
         // SAVE THE VALUES ////////////////////////////////////
-        natSettings.setDmzEnabled( dmzEnabled );
-        if(dmzEnabled){
-            natSettings.setDmzAddress( dmzTargetAddress );
-        }
+	if( !validateOnly ){
+	    NatSettings natSettings = (NatSettings) settings;
+	    natSettings.setDmzEnabled( dmzEnabled );
+	    if(dmzEnabled){
+		natSettings.setDmzAddress( dmzTargetAddress );
+	    }
+	}
         
     }
     
     
+    
+    public void doRefresh(Object settings) {
+        
+        NatSettings natSettings = (NatSettings) settings;
+        
+        // ENABLED ///////////
+        boolean dmzEnabled;
+	dmzEnabled = natSettings.getDmzEnabled();
+	this.setDmzEnabledDependency(dmzEnabled);
+	if( dmzEnabled )
+	    dmzEnabledJRadioButton.setSelected(true);
+	else
+	    dmzDisabledJRadioButton.setSelected(true);
+        
+        // TARGET ADDRESS //////
+        String dmzTargetAddress;
+	dmzTargetAddress = natSettings.getDmzAddress().toString();
+	targetAddressIPaddrJTextField.setText( dmzTargetAddress );
+        targetAddressIPaddrJTextField.setBackground( Color.WHITE );
+    }
+
     
 
     

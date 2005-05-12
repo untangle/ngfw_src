@@ -91,21 +91,6 @@ public class UpgradeJDialog extends javax.swing.JDialog implements java.awt.even
         timeJSpinner.setValue(calendar.getTime());
 
 
-        // BUILD THIRD TAB (EVENT LOG)
-    /*
-        alerts = upgradeSettings.alerts();
-        if(alerts == null){
-            alerts = (Alerts)NodeType.type(Alerts.class).instantiate();
-            criticalAlertsJCheckBox.setSelected(alerts.generateCriticalAlertsDefault());
-            summaryAlertsJCheckBox.setSelected(alerts.generateSummaryAlertsDefault());
-        }
-        else{
-            criticalAlertsJCheckBox.setSelected(alerts.generateCriticalAlerts());
-            summaryAlertsJCheckBox.setSelected(alerts.generateSummaryAlerts());
-        }
-        */
-
-
     }
 
     public void setVisible(boolean isVisible){
@@ -619,7 +604,7 @@ public class UpgradeJDialog extends javax.swing.JDialog implements java.awt.even
                 Thread.sleep(1000);
 
                 // TELL USER ITS ALL OVER
-                upgradeTableModel.refresh();
+                upgradeTableModel.doRefresh(null);
                 actionJProgressBar.setValue(100);
                 actionJProgressBar.setString("finished refreshing upgrade table.");
                 Thread.sleep(1000);
@@ -753,35 +738,10 @@ public class UpgradeJDialog extends javax.swing.JDialog implements java.awt.even
 
 class UpgradeTableModel extends MSortedTableModel {
 
-    private ToolboxManager toolboxManager;
-
-    UpgradeTableModel(){
-        super(null);
-        this.toolboxManager = Util.getToolboxManager();
-        refresh();
+    public void doRefresh(Object settings){
+	super.doRefresh( Util.getToolboxManager() );
     }
 
-    public void refresh(){
-
-        try{
-            Vector dataVector;
-            if(toolboxManager != null)
-                dataVector = generateRows( toolboxManager.upgradable() );
-            else
-                dataVector = generateRows( null );
-            super.getDataVector().removeAllElements();
-            super.getDataVector().addAll(dataVector);
-            super.fireTableDataChanged();
-        }
-        catch(Exception e){
-            try{
-                Util.handleExceptionWithRestart("Error refreshing table", e);
-            }
-            catch(Exception f){
-                Util.handleExceptionNoRestart("Error refreshing table", f);
-            }
-        }
-    }
 
     public TableColumnModel getTableColumnModel(){
 
@@ -790,22 +750,20 @@ class UpgradeTableModel extends MSortedTableModel {
         addTableColumn( tableColumnModel,  0,  30, false, false, false, false, Integer.class, null, "#");
         addTableColumn( tableColumnModel,  1,  49, false, false, false, false, ImageIcon.class, null, "");
         addTableColumn( tableColumnModel,  2,  49, false, false, false, false, ImageIcon.class, null, "");
-        addTableColumn( tableColumnModel,  3, 125, true,  false, false, false, String.class, null, "name");
+        addTableColumn( tableColumnModel,  3, 150, true,  false, false, false, String.class, null, "name");
         addTableColumn( tableColumnModel,  4, 100, false, false, false, false, String.class, null, "new version");
-        addTableColumn( tableColumnModel,  5, 200, false, false, false, false, String.class, null, "type");
-    addTableColumn( tableColumnModel,  6, 100, false, false, false, false, String.class, null, "size");
+        addTableColumn( tableColumnModel,  5, 100, false, false, false, false, String.class, null, "type");
+	addTableColumn( tableColumnModel,  6,  60, false, false, false, false, String.class, null, "size");
         addTableColumn( tableColumnModel,  7, 125, false, false, true,  true,  String.class, null, "description");
 
         return tableColumnModel;
     }
 
-    public Set generateSettings(Vector dataVector){
-        return null;
-    }
+    public void generateSettings(Object settings, boolean validateOnly) throws Exception { }
 
-    public Vector generateRows(Object mackageDescArray){
-
-        MackageDesc[] mackageDesc = (MackageDesc[]) mackageDescArray;
+    public Vector generateRows(Object settings){
+	ToolboxManager toolboxManager = (ToolboxManager) settings;
+        MackageDesc[] mackageDesc = toolboxManager.upgradable();
         Vector dataVector = new Vector();
 
         Vector rowVector;

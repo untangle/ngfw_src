@@ -8,7 +8,6 @@ package com.metavize.gui.widgets.editTable;
 
 import com.metavize.gui.widgets.coloredTable.*;
 import com.metavize.gui.transform.*;
-
 import com.metavize.gui.util.*;
 
 import javax.swing.event.*;
@@ -21,7 +20,7 @@ import javax.swing.border.*;
  *
  * @author  inieves
  */
-public class MEditTableJPanel extends javax.swing.JPanel implements ListSelectionListener, TableModelListener {
+public class MEditTableJPanel extends javax.swing.JPanel implements ListSelectionListener, TableModelListener, Refreshable, Savable {
 
     private JLabel messageJLabel;
     
@@ -42,6 +41,10 @@ public class MEditTableJPanel extends javax.swing.JPanel implements ListSelectio
         ((GridBagLayout)this.getLayout()).setConstraints(contentJPanel, newConstraints);
 	lastInsets = newInsets;
     }
+
+    // SAVE/REFRESH ///////////
+    public void doRefresh(Object settings){ getTableModel().doRefresh(settings); }
+    public void doSave(Object settings, boolean validateOnly) throws Exception { getTableModel().doSave(settings, validateOnly); }
     
     public void setMTransformJPanel(MTransformJPanel mTransformJPanel){
         this.mTransformJPanel = mTransformJPanel;
@@ -417,8 +420,8 @@ public class MEditTableJPanel extends javax.swing.JPanel implements ListSelectio
     }//GEN-LAST:event_flushJButtonActionPerformed
 
     private void refreshLogJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refreshLogJButtonActionPerformed
-        this.getTableModel().refresh();
-        entryJTable.clearSelection();
+        // this.getTableModel().refresh();  we no longer even have logs
+        // entryJTable.clearSelection();
     }//GEN-LAST:event_refreshLogJButtonActionPerformed
 
 

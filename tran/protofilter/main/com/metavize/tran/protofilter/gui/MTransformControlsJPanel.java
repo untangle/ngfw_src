@@ -20,12 +20,18 @@ import javax.swing.event.*;
 
 public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransformControlsJPanel{
     
+    private static final String NAME_BLOCK_LIST = "Protocol Block List";
     
     public MTransformControlsJPanel(MTransformJPanel mTransformJPanel) {
         super(mTransformJPanel);
+    }
 
-        this.mTabbedPane.insertTab("Protocol Block List", null, new ProtoConfigJPanel(mTransformJPanel.getTransformContext()), null, 0);
-        //this.eventTabbedPane.insertTab("Protocol Block List", null, new ProtoEventJPanel(mTransformJPanel.getTransformContext()), null, 0);
+    protected void generateGui(){
+	// BLOCK LIST /////
+	ProtoConfigJPanel protoConfigJPanel = new ProtoConfigJPanel();
+        this.mTabbedPane.insertTab(NAME_BLOCK_LIST, null, protoConfigJPanel, null, 0);
+	super.savableMap.put(NAME_BLOCK_LIST, protoConfigJPanel);
+	super.refreshableMap.put(NAME_BLOCK_LIST, protoConfigJPanel);
     }
     
 }

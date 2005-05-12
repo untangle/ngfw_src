@@ -284,7 +284,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
 
         protocolJLabel.setFont(new java.awt.Font("Arial", 0, 12));
         protocolJLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        protocolJLabel.setText("Protocol: ");
+        protocolJLabel.setText("Connection: ");
         protocolJLabel.setDoubleBuffered(true);
         protocolJLabel.setFocusable(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -580,11 +580,11 @@ public class MLoginJFrame extends javax.swing.JFrame {
                     mMainJFrame.setBounds( Util.generateCenteredBounds(MLoginJFrame.this.getBounds(), mMainJFrame.getWidth(), mMainJFrame.getHeight()) );
                                     String securedString;
                                     if( Util.isSecureViaHttps() )
-                                        securedString = " [connected via secure https]";
+                                        securedString = "  |  Connection: https (secure)";
                                     else
-                                        securedString = " [connected via standard http]";
+                                        securedString = "  |  Connection: http (standard)";
 
-                    mMainJFrame.setTitle( "Metavize EdgeGuard v" + Util.getVersion() + " (logged in as: " + loginJTextField.getText() + "@" + Util.getServerCodeBase().getHost() + ")" + securedString );
+                    mMainJFrame.setTitle( "Metavize EdgeGuard v" + Util.getVersion() + "  |  Login: " + loginJTextField.getText() + "  |  Server: " + Util.getServerCodeBase().getHost() + securedString );
                     if(Util.getIsDemo())
                     mMainJFrame.setTitle( mMainJFrame.getTitle() + "  [DEMO MODE]" );
                     mMainJFrame.setExtendedState(Frame.MAXIMIZED_BOTH);

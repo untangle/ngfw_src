@@ -14,27 +14,44 @@ import com.metavize.mvvm.tran.TransformContext;
 
 public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransformControlsJPanel{
     
-    private VirusConfigJPanel virusConfigJPanel;
-
+    private static final String NAME_GENERAL_SETTINGS = "General Settings";
+    private static final String NAME_BLOCK_LIST = "Block List";
+    private static final String NAME_ANTI_VIRUS = "AntiVirus";
+    private static final String NAME_ANTI_SPAM = "AntiSpam";
+    
     public MTransformControlsJPanel(MTransformJPanel mTransformJPanel)  {
         super(mTransformJPanel);
-        
-	virusConfigJPanel = new VirusConfigJPanel(mTransformJPanel.getTransformContext());
+    }
 
-        this.mTabbedPane.insertTab("General Settings", null, new GeneralConfigJPanel(mTransformJPanel.getTransformContext()), null, 0);
-        this.mTabbedPane.insertTab("Block List", null, new BlockConfigJPanel(mTransformJPanel.getTransformContext()), null, 0);
-	this.mTabbedPane.insertTab("AntiVirus", null, virusConfigJPanel, null, 0);
-	//this.mTabbedPane.insertTab("Anti-Virus", null, new VirusConfigJPanel(mTransformJPanel.getTransformContext()), null, 0);
-	this.mTabbedPane.insertTab("AntiSpam", null, new SPAMConfigJPanel(mTransformJPanel.getTransformContext()), null, 0);
+    protected void generateGui(){
 
-	Util.setEmailAndVirusJPanel( "email-transform", virusConfigJPanel );
+	// GENERAL SETTINGS ///////
+	GeneralConfigJPanel generalConfigJPanel = new GeneralConfigJPanel();
+        this.mTabbedPane.insertTab(NAME_GENERAL_SETTINGS, null, generalConfigJPanel, null, 0);
+	super.savableMap.put(NAME_GENERAL_SETTINGS, generalConfigJPanel);
+	super.refreshableMap.put(NAME_GENERAL_SETTINGS, generalConfigJPanel);
 	
-        
-        // this.eventTabbedPane.insertTab("Anti-SPAM", null, new SPAMEventJPanel(mTransformJPanel.getTransformContext()), null, 0);
-        // this.eventTabbedPane.insertTab("Anti-Virus", null, new VirusEventJPanel(mTransformJPanel.getTransformContext()), null, 0);
-        // this.eventTabbedPane.insertTab("Rule Block List", null, new BlockEventJPanel(mTransformJPanel.getTransformContext()), null, 0);
-        // this.eventTabbedPane.insertTab("Size Block List", null, new BlockSizeEventJPanel(mTransformJPanel.getTransformContext()), null, 0);
-        
+	// BLOCK LIST ////////
+	BlockConfigJPanel blockConfigJPanel = new BlockConfigJPanel();
+        this.mTabbedPane.insertTab(NAME_BLOCK_LIST, null, blockConfigJPanel, null, 0);
+	super.savableMap.put(NAME_BLOCK_LIST, blockConfigJPanel);
+	super.refreshableMap.put(NAME_BLOCK_LIST, blockConfigJPanel);
+
+	// ANTIVIRUS ////////
+	VirusConfigJPanel virusConfigJPanel = new VirusConfigJPanel();
+	this.mTabbedPane.insertTab(NAME_ANTI_VIRUS, null, virusConfigJPanel, null, 0);
+	super.savableMap.put(NAME_ANTI_VIRUS, virusConfigJPanel);
+	super.refreshableMap.put(NAME_ANTI_VIRUS, virusConfigJPanel);
+
+	// ANTISPAM ////////
+	SPAMConfigJPanel spamConfigJPanel = new SPAMConfigJPanel();
+	this.mTabbedPane.insertTab(NAME_ANTI_SPAM, null, spamConfigJPanel, null, 0);
+	super.savableMap.put(NAME_ANTI_SPAM, spamConfigJPanel);
+	super.refreshableMap.put(NAME_ANTI_SPAM, spamConfigJPanel);
+
+	// VIRUS DETECTION /////////
+	Util.setEmailAndVirusJPanel( "email-transform", virusConfigJPanel );
+	        
     }
     
 }

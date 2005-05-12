@@ -18,6 +18,7 @@ import com.metavize.gui.pipeline.MPipelineJPanel;
 import com.metavize.gui.widgets.editTable.*;
 import com.metavize.mvvm.*;
 import com.metavize.mvvm.client.*;
+import com.metavize.mvvm.security.*;
 import com.metavize.mvvm.tran.*;
 
 
@@ -36,22 +37,31 @@ public class Util {
     private static MvvmRemoteContext mvvmContext;
     private static ToolboxManager toolboxManager;
     private static TransformManager transformManager;
-
+    private static AdminManager adminManager;
     private static StatsCache statsCache;
+    private static NetworkingManager networkingManager;
 
     public static void setMvvmContext(MvvmRemoteContext mvvmContextX){
     mvvmContext = mvvmContextX;
     toolboxManager = mvvmContext.toolboxManager();
     transformManager = mvvmContext.transformManager();
-
+	adminManager = mvvmContext.adminManager();
+	networkingManager = mvvmContext.networkingManager();
         // Somewhere else this should go? XXX jdi
         statsCache = new StatsCache();
     }
     public static MvvmRemoteContext getMvvmContext(){ return mvvmContext; }
-    public static ToolboxManager getToolboxManager() { return toolboxManager; }
-    public static TransformManager getTransformManager() { return transformManager; }
-    public static StatsCache getStatsCache() { return statsCache; }
+    public static ToolboxManager getToolboxManager(){ return toolboxManager; }
+    public static TransformManager getTransformManager(){ return transformManager; }
+    public static AdminManager getAdminManager(){ return adminManager; }
+    public static StatsCache getStatsCache(){ return statsCache; }
+    public static NetworkingManager getNetworkingManager(){ return networkingManager; }
     ///////////////////////////////////
+
+    // VALIDATION //////////////////
+    public static Color INVALID_BACKGROUND_COLOR = Color.PINK;
+    public static Color VALID_BACKGROUND_COLOR = new Color(224, 224, 224);
+    ///////////////////////////////
 
     // CODEBASE /////////////////
     private static URL serverCodeBase;
@@ -90,7 +100,7 @@ public class Util {
 
     // DefaultTableColumnModel constants /////////
     public static final int TABLE_TOTAL_WIDTH = 471; /* in pixels (contains extra pixel) */
-    public static final int LINENO_MIN_WIDTH = 45; /* # */
+    public static final int LINENO_MIN_WIDTH = 38; /* # */
     public static final int STATUS_MIN_WIDTH = 55; /* status */
     //////////////////////////////////////////////
 
@@ -343,47 +353,49 @@ public class Util {
 
     public static void handleExceptionWithRestart(String output, Exception e) throws Exception {
         // DEAL WITH COMMUNICATIONS FAILURES
-    // System.err.println("catching exception: " + e.toString() );
-    Throwable throwableRef = e;
 
-    while( throwableRef != null){
-        if( throwableRef instanceof InvocationConnectionException ){
-        mLoginJFrame.resetLogin("Server communication failure.  Re-login.");
-        if(PRINT_MESSAGES)
-            e.printStackTrace(System.err);
-        mLoginJFrame.reshowLogin();
-        return;
-        }
-        else if( throwableRef instanceof InvocationTargetExpiredException ){
-        mLoginJFrame.resetLogin("Server synchronization failure.  Re-login.");
-        if(PRINT_MESSAGES)
-            e.printStackTrace(System.err);
-        mLoginJFrame.reshowLogin();
-        return;
-        }
-        else if( throwableRef instanceof LoginExpiredException ){
-        mLoginJFrame.resetLogin("Login expired.  Re-login.");
-        if(PRINT_MESSAGES)
-            e.printStackTrace(System.err);
-        mLoginJFrame.reshowLogin();
-        return;
-        }
-        else if(    (throwableRef instanceof ConnectException)
-             || (throwableRef instanceof SocketException)
-             || (throwableRef instanceof SocketTimeoutException) ){
-        mLoginJFrame.resetLogin("Server connection failure.  Re-login.");
-        if(PRINT_MESSAGES)
-            e.printStackTrace(System.err);
-        mLoginJFrame.reshowLogin();
-        return;
-        }
-        throwableRef = throwableRef.getCause();
+	// System.err.println("catching exception: " + e.toString() );
+	Throwable throwableRef = e;
+	
+	while( throwableRef != null){
+	    if( throwableRef instanceof InvocationConnectionException ){
+		mLoginJFrame.resetLogin("Server communication failure.  Re-login.");
+		if(PRINT_MESSAGES)
+		    e.printStackTrace(System.err);
+		mLoginJFrame.reshowLogin();
+		return;
+	    }
+	    else if( throwableRef instanceof InvocationTargetExpiredException ){
+		mLoginJFrame.resetLogin("Server synchronization failure.  Re-login.");
+		if(PRINT_MESSAGES)
+		    e.printStackTrace(System.err);
+		mLoginJFrame.reshowLogin();
+		return;
+	    }
+	    else if( throwableRef instanceof com.metavize.mvvm.client.LoginExpiredException ){
+		mLoginJFrame.resetLogin("Login expired.  Re-login.");
+		if(PRINT_MESSAGES)
+		    e.printStackTrace(System.err);
+		mLoginJFrame.reshowLogin();
+		return;
+	    }
+	    else if(    (throwableRef instanceof ConnectException)
+		     || (throwableRef instanceof SocketException)
+		     || (throwableRef instanceof SocketTimeoutException) ){
+		mLoginJFrame.resetLogin("Server connection failure.  Re-login.");
+		if(PRINT_MESSAGES)
+		    e.printStackTrace(System.err);
+		mLoginJFrame.reshowLogin();
+		return;
+	    }
+	    throwableRef = throwableRef.getCause();
+	}
+        
+	// System.err.println("THROWING");
+	throw e;
+        
     }
 
-    // System.err.println("THROWING");
-    throw e;
-
-    }
 
     public static void printMessage(String message){
         if(PRINT_MESSAGES)

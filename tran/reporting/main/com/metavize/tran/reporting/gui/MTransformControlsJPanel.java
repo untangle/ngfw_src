@@ -15,11 +15,20 @@ import com.metavize.mvvm.tran.TransformContext;
 
 public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransformControlsJPanel{
     
-    
-    public MTransformControlsJPanel(MTransformJPanel mTransformJPanel) throws Exception {
-        super(mTransformJPanel);
+    private static final String NAME_DIRECTORY = "IP Address to User Map";
 
-	mTabbedPane.insertTab("IP Address to User Map", null, new DirectoryConfigJPanel(mTransformJPanel.getTransformContext()), null, 0);
+    public MTransformControlsJPanel(MTransformJPanel mTransformJPanel) {
+        super(mTransformJPanel);
+    }
+
+    protected void generateGui(){
+	// DIRECTORY ///////
+	DirectoryConfigJPanel directoryConfigJPanel = new DirectoryConfigJPanel();
+	mTabbedPane.insertTab(NAME_DIRECTORY, null, directoryConfigJPanel, null, 0);
+	super.savableMap.put(NAME_DIRECTORY, directoryConfigJPanel);
+	super.refreshableMap.put(NAME_DIRECTORY, directoryConfigJPanel);
+
+	// LAUNCH BUTTON /////
 	mTabbedPane.insertTab("Launch Web Browser to View Reports", null, new BrowserLaunchJPanel(), null, 0);
         
     }

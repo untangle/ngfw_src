@@ -31,7 +31,11 @@ public class LicenseJDialog extends ConfigJDialog {
     
     public LicenseJDialog( ) {
         super(Util.getMMainJFrame());
+        MIN_SIZE = new Dimension(640, 480);
+        MAX_SIZE = new Dimension(640, 1200);
+    }
 
+    protected void generateGui(){
         JScrollPane contentJScrollPane;
 	JEditorPane contentJEditorPane = null;
 
@@ -45,7 +49,7 @@ public class LicenseJDialog extends ConfigJDialog {
 	    e.printStackTrace();
 	}
 	contentJScrollPane = new JScrollPane( contentJEditorPane );
-	contentJScrollPane.setHorizontalScrollBarPolicy( ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED );
+	contentJScrollPane.setHorizontalScrollBarPolicy( ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER );
 	contentJScrollPane.setVerticalScrollBarPolicy( ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS );
 	contentJScrollPane.getVerticalScrollBar().setValue(0);
 
@@ -56,7 +60,8 @@ public class LicenseJDialog extends ConfigJDialog {
     }
 
 
-
+    protected void sendSettings(Object settings){}
+    protected void refreshSettings(){}
 
 
 }

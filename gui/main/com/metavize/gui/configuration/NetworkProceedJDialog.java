@@ -126,6 +126,7 @@ final public class NetworkProceedJDialog extends javax.swing.JDialog implements 
     private void proceedJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_proceedJButtonActionPerformed
         isProceeding = true;
         setVisible(false);
+	dispose();
     }//GEN-LAST:event_proceedJButtonActionPerformed
 
     private void cancelJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelJButtonActionPerformed
@@ -136,6 +137,7 @@ final public class NetworkProceedJDialog extends javax.swing.JDialog implements 
     public void windowClosing(java.awt.event.WindowEvent windowEvent) {
         isProceeding = false;
         this.setVisible(false);
+	dispose();
     }    
     
     

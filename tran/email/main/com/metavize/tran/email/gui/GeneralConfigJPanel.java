@@ -12,11 +12,12 @@ package com.metavize.tran.email.gui;
 
 import com.metavize.gui.transform.*;
 import com.metavize.gui.pipeline.MPipelineJPanel;
+import com.metavize.gui.widgets.editTable.*;
+import com.metavize.gui.util.*;
+
 import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.tran.TransformDesc;
 import com.metavize.tran.email.*;
-import com.metavize.gui.widgets.editTable.*;
-import com.metavize.gui.util.*;
 
 import java.awt.*;
 import javax.swing.*;
@@ -26,7 +27,7 @@ import javax.swing.event.*;
 
 public class GeneralConfigJPanel extends MEditTableJPanel {
     
-    public GeneralConfigJPanel(TransformContext transformContext) {
+    public GeneralConfigJPanel() {
         super(true, true);
         super.setInsets(new Insets(4, 4, 2, 2));
         super.setTableTitle("General Settings");
@@ -34,7 +35,7 @@ public class GeneralConfigJPanel extends MEditTableJPanel {
         super.setAddRemoveEnabled(false);
         
         // create actual table model
-        GeneralTableModel tableModel = new GeneralTableModel(transformContext);
+        GeneralTableModel tableModel = new GeneralTableModel();
         this.setTableModel( tableModel );
     }
 }
@@ -44,128 +45,89 @@ public class GeneralConfigJPanel extends MEditTableJPanel {
 class GeneralTableModel extends MSortedTableModel{ 
 
     private static final int T_TW = Util.TABLE_TOTAL_WIDTH;
-    private static final int C0_MW = Util.LINENO_MIN_WIDTH; /* # - invisible */
-    private static final int C1_MW = Util.STATUS_MIN_WIDTH; /* status */
+    private static final int C0_MW = Util.STATUS_MIN_WIDTH; /* status */
+    private static final int C1_MW = Util.LINENO_MIN_WIDTH; /* # - invisible */
     private static final int C2_MW = 200; /* setting name */
     private static final int C3_MW = 200; /* setting value */
     private static final int C4_MW = Util.chooseMax(T_TW - (C1_MW + C2_MW + C3_MW), 120); /* description */
-    private static final StringConstants sc = StringConstants.getInstance();
 
 
-    GeneralTableModel(TransformContext transformContext){
-        super(transformContext);        
-        refresh();
-    }
     
     public TableColumnModel getTableColumnModel(){
 
         DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
-        //                                 #  min  rsz    edit   remv   desc   typ            def
-        addTableColumn( tableColumnModel,  0, C0_MW, false, false, true,  false, Integer.class, null, sc.TITLE_INDEX);
-        addTableColumn( tableColumnModel,  1, C1_MW, false, false, false, false, String.class,  null, "status");
+        //                                 #  min    rsz    edit   remv   desc   typ            def
+        addTableColumn( tableColumnModel,  0, C0_MW, false, false, false, false, String.class,  null, sc.TITLE_STATUS);
+        addTableColumn( tableColumnModel,  1, C1_MW, false, false, true,  false, Integer.class, null, sc.TITLE_INDEX);
         addTableColumn( tableColumnModel,  2, C2_MW, true,  false, false, false, String.class,  null, "setting name");
-        addTableColumn( tableColumnModel,  3, C3_MW, true,  true,  false, false, Object.class,  null, "setting value");
+        addTableColumn( tableColumnModel,  3, C3_MW, true,  true,  false, false, Object.class,  null, sc.bold("setting value"));
         addTableColumn( tableColumnModel,  4, C4_MW, true,  true,  false, true,  String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
         return tableColumnModel;
     }
 
-    public EmailSettings generateSettings(Vector dataVector){
+    public void generateSettings(Object settings, boolean validateOnly) throws Exception {
         Vector tempRowVector;
-	Iterator dataVectorIterator = dataVector.iterator();
-        EmailTransform tran = (EmailTransform) transformContext.transform();
-        EmailSettings settings = tran.getEmailSettings();
-        CTLDefinition control = settings.getControl();
-	SSCTLDefinition spamInboundCTL = settings.getSpamInboundCtl();
-	SSCTLDefinition spamOutboundCTL = settings.getSpamOutboundCtl();
-	VSCTLDefinition virusInboundCTL = settings.getVirusInboundCtl();
-	VSCTLDefinition virusOutboundCTL = settings.getVirusOutboundCtl();
+	Iterator dataVectorIterator = this.getDataVector().iterator();
 
         // pop3Postmaster
         tempRowVector = (Vector) dataVectorIterator.next();
-        control.setPop3Postmaster( (String)tempRowVector.elementAt(3) );
-        control.setPop3PostmasterDetails( (String)tempRowVector.elementAt(4) );
+	String pop3Postmaster = (String) tempRowVector.elementAt(3);
+	String pop3PostmasterDetails = (String) tempRowVector.elementAt(4);
         
         // imap4Postmaster
         tempRowVector = (Vector) dataVectorIterator.next();
-        control.setImap4Postmaster( (String)tempRowVector.elementAt(3) );
-        control.setImap4PostmasterDetails( (String)tempRowVector.elementAt(4) );
+        String imap4Postmaster = (String) tempRowVector.elementAt(3);
+	String imap4PostmasterDetails = (String) tempRowVector.elementAt(4);
         
         // msgSzLimit
         tempRowVector = (Vector) dataVectorIterator.next();
-        control.setMsgSzLimit( ((Integer)((SpinnerNumberModel)tempRowVector.elementAt(3)).getValue()).intValue()*1024 );
-        control.setMsgSzLimitDetails( (String) tempRowVector.elementAt(4) );
+	int msgSzLimit = ((Integer)((SpinnerNumberModel)tempRowVector.elementAt(3)).getValue()).intValue()*1024;
+	String msgSzLimitDetails = (String) tempRowVector.elementAt(4);
         
 	// spamMsgSzLimit
         tempRowVector = (Vector) dataVectorIterator.next();
-        control.setSpamMsgSzLimit( ((Integer)((SpinnerNumberModel)tempRowVector.elementAt(3)).getValue()).intValue()*1024 );
-        control.setSpamSzLimitDetails( (String) tempRowVector.elementAt(4) );
+	int spamMsgSzLimit = ((Integer)((SpinnerNumberModel)tempRowVector.elementAt(3)).getValue()).intValue()*1024;
+	String spamMsgSzLimitDetails = (String) tempRowVector.elementAt(4);
         
 	// virusMsgSzLimit
         tempRowVector = (Vector) dataVectorIterator.next();
-        control.setVirusMsgSzLimit( ((Integer)((SpinnerNumberModel)tempRowVector.elementAt(3)).getValue()).intValue()*1024 );
-        control.setVirusSzLimitDetails( (String) tempRowVector.elementAt(4) );
-
-	/*        
-	// copyOnBlock inbound Spam
-	tempRowVector = (Vector) dataVectorIterator.next();
-	spamInboundCTL.setCopyOnBlock( (Boolean) tempRowVector.elementAt(3) );
-	spamInboundCTL.setCopyOnBlockDetails( (String) tempRowVector.elementAt(4) );
-
-	// copyOnBlock outbound Spam
-	tempRowVector = (Vector) dataVectorIterator.next();
-	spamOutboundCTL.setCopyOnBlock( (Boolean) tempRowVector.elementAt(3) );
-	spamOutboundCTL.setCopyOnBlockDetails( (String) tempRowVector.elementAt(4) );
-
-	// copyOnBlock inbound Virus
-	tempRowVector = (Vector) dataVectorIterator.next();
-	virusInboundCTL.setCopyOnBlock( (Boolean) tempRowVector.elementAt(3) );
-	virusInboundCTL.setCopyOnBlockDetails( (String) tempRowVector.elementAt(4) );
-
-	// copyOnBlock outbound Virus
-	tempRowVector = (Vector) dataVectorIterator.next();
-	virusOutboundCTL.setCopyOnBlock( (Boolean) tempRowVector.elementAt(3) );
-	virusOutboundCTL.setCopyOnBlockDetails( (String) tempRowVector.elementAt(4) );
-	*/
-
-        // generateCriticalAlerts
-        /*
-        tempRowVector = (Vector) dataVector.elementAt(3);
-        control.setAlertsOnParseException().generateCriticalAlerts( ((Boolean)tempRowVector.elementAt(3)).booleanValue() );
-        control.setAlertsDetails( (String)tempRowVector.elementAt(4) );
+	int virusMsgSzLimit = ((Integer)((SpinnerNumberModel)tempRowVector.elementAt(3)).getValue()).intValue()*1024;
+	String virusMsgSzLimitDetails = (String) tempRowVector.elementAt(4);
         
-        // generateSummaryAlerts
-        tempRowVector = (Vector) dataVector.elementAt(4);
-        control.setAlertsOnParseException().generateSummaryAlerts( ((Boolean)tempRowVector.elementAt(3)).booleanValue() );
-        control.setLogDetails( (String)tempRowVector.elementAt(4) );
-        */
-        
-        settings.setControl( control );
-        return settings;
+	// SAVE SETTINGS ////////
+	if( !validateOnly ){
+	    EmailSettings emailSettings = (EmailSettings) settings;
+	    CTLDefinition control = emailSettings.getControl();
+	    control.setPop3Postmaster( pop3Postmaster );
+	    control.setPop3PostmasterDetails( pop3PostmasterDetails );
+	    control.setImap4Postmaster( imap4Postmaster );
+	    control.setImap4PostmasterDetails( imap4PostmasterDetails );
+	    control.setMsgSzLimit( msgSzLimit );
+	    control.setMsgSzLimitDetails( msgSzLimitDetails );
+	    control.setSpamMsgSzLimit( spamMsgSzLimit );
+	    // control.setSpamMsgSzLimitDetails( spamMsgSzLimitDetails );
+	    control.setVirusMsgSzLimit( virusMsgSzLimit );
+	    // control.setVirusMsgSzLimitDetails( virusMsgSzLimitDetials );
+	}
+
     }
     
-    public Vector generateRows(Object settin){
-        EmailSettings settings = (EmailSettings) settin;
+    public Vector generateRows(Object settings){
+        EmailSettings emailSettings = (EmailSettings) settings;
         Vector allRows = new Vector(4);
         Vector tempRowVector;
         
-        CTLDefinition control = settings.getControl();
-	SSCTLDefinition spamInboundCTL = settings.getSpamInboundCtl();
-	SSCTLDefinition spamOutboundCTL = settings.getSpamOutboundCtl();
-	VSCTLDefinition virusInboundCTL = settings.getVirusInboundCtl();
-	VSCTLDefinition virusOutboundCTL = settings.getVirusOutboundCtl();
+        CTLDefinition control = emailSettings.getControl();
+	SSCTLDefinition spamInboundCTL = emailSettings.getSpamInboundCtl();
+	SSCTLDefinition spamOutboundCTL = emailSettings.getSpamOutboundCtl();
+	VSCTLDefinition virusInboundCTL = emailSettings.getVirusInboundCtl();
+	VSCTLDefinition virusOutboundCTL = emailSettings.getVirusOutboundCtl();
 
-        /*
-        Alerts alerts = control.getAlertsOnParseException();
-        if(alerts == null){
-            alerts = new Alerts();
-            control.setAlertsOnParseException(alerts);
-        }
-        */
         
         // pop3Postmaster
         tempRowVector = new Vector(4);
-        tempRowVector.add(new Integer(1));
         tempRowVector.add(super.ROW_SAVED);
+        tempRowVector.add(new Integer(1));
         tempRowVector.add("POP3 Postmaster");
         tempRowVector.add( control.getPop3Postmaster() );
         tempRowVector.add( control.getPop3PostmasterDetails() );
@@ -173,8 +135,8 @@ class GeneralTableModel extends MSortedTableModel{
         
         // imap4Postmaster
         tempRowVector = new Vector(4);
-        tempRowVector.add(new Integer(2));
         tempRowVector.add(super.ROW_SAVED);
+        tempRowVector.add(new Integer(2));
         tempRowVector.add("IMAP4 Postmaster");
         tempRowVector.add( control.getImap4Postmaster() );
         tempRowVector.add( control.getImap4PostmasterDetails() );
@@ -182,8 +144,8 @@ class GeneralTableModel extends MSortedTableModel{
         
         // msgSzLimit
         tempRowVector = new Vector(4);
-        tempRowVector.add(new Integer(3));
         tempRowVector.add(super.ROW_SAVED);
+        tempRowVector.add(new Integer(3));
         tempRowVector.add("max message size to scan (KB)");
         tempRowVector.add( new SpinnerNumberModel((int)control.getMsgSzLimit()/1024, (int)CTLDefinition.MSG_SZ_LIMIT_MIN/1024, (int)CTLDefinition.MSG_SZ_LIMIT_MAX/1024, 128) );
         tempRowVector.add( control.getMsgSzLimitDetails() );
@@ -191,8 +153,8 @@ class GeneralTableModel extends MSortedTableModel{
 
 	// spamMsgSzLimit
         tempRowVector = new Vector(4);
-        tempRowVector.add(new Integer(4));
         tempRowVector.add(super.ROW_SAVED);
+        tempRowVector.add(new Integer(4));
         tempRowVector.add("max message size to scan for spam (KB)");
         tempRowVector.add( new SpinnerNumberModel((int)control.getSpamMsgSzLimit()/1024, (int)CTLDefinition.MSG_SZ_LIMIT_MIN/1024, (int)CTLDefinition.MSG_SZ_LIMIT_MAX/1024, 128) );
         tempRowVector.add( control.getSpamSzLimitDetails() );
@@ -200,70 +162,13 @@ class GeneralTableModel extends MSortedTableModel{
 
 	// virusMsgSzLimit
         tempRowVector = new Vector(4);
-        tempRowVector.add(new Integer(5));
         tempRowVector.add(super.ROW_SAVED);
+        tempRowVector.add(new Integer(5));
         tempRowVector.add("max message size to scan for viruses (KB)");
         tempRowVector.add( new SpinnerNumberModel((int)control.getVirusMsgSzLimit()/1024, (int)CTLDefinition.MSG_SZ_LIMIT_MIN/1024, (int)CTLDefinition.MSG_SZ_LIMIT_MAX/1024, 128) );
         tempRowVector.add( control.getVirusSzLimitDetails() );
         allRows.add( tempRowVector );
-	/*
-        // copyOnBlock inbound Spam
-        tempRowVector = new Vector(4);
-        tempRowVector.add(new Integer(6));
-        tempRowVector.add(super.ROW_SAVED);
-        tempRowVector.add("copy blocked inbound Spam");
-        tempRowVector.add( spamInboundCTL.isCopyOnBlock() );
-        tempRowVector.add( spamInboundCTL.getCopyOnBlockDetails() );
-        allRows.add( tempRowVector );
 
-        // copyOnBlock outbound Spam
-        tempRowVector = new Vector(4);
-        tempRowVector.add(new Integer(7));
-        tempRowVector.add(super.ROW_SAVED);
-        tempRowVector.add("copy blocked outbound Spam");
-        tempRowVector.add( spamOutboundCTL.isCopyOnBlock() );
-        tempRowVector.add( spamOutboundCTL.getCopyOnBlockDetails() );
-        allRows.add( tempRowVector );
-
-        // copyOnBlock inbound Virus
-        tempRowVector = new Vector(4);
-        tempRowVector.add(new Integer(8));
-        tempRowVector.add(super.ROW_SAVED);
-        tempRowVector.add("copy blocked inbound Virus");
-        tempRowVector.add( virusInboundCTL.isCopyOnBlock() );
-        tempRowVector.add( virusInboundCTL.getCopyOnBlockDetails() );
-        allRows.add( tempRowVector );
-
-        // copyOnBlock outbound Virus
-        tempRowVector = new Vector(4);
-        tempRowVector.add(new Integer(9));
-        tempRowVector.add(super.ROW_SAVED);
-        tempRowVector.add("copy blocked inbound Virus");
-        tempRowVector.add( virusOutboundCTL.isCopyOnBlock() );
-        tempRowVector.add( virusOutboundCTL.getCopyOnBlockDetails() );
-        allRows.add( tempRowVector );
-	*/
-
-        /*
-        // generateCriticalAlerts
-        tempRowVector = new Vector(4);
-        tempRowVector.add(new Integer(4));
-        tempRowVector.add(super.ROW_SAVED);
-        tempRowVector.add("alert when damaged email arrives");
-        tempRowVector.add( new Boolean( control.alertsOnParseException().generateCriticalAlerts() ) );
-        tempRowVector.add( control.alertsDetails() );
-        allRows.add( tempRowVector );
-        
-        // generateSummaryAlerts
-        tempRowVector = new Vector(4);
-        tempRowVector.add(new Integer(5));
-        tempRowVector.add(super.ROW_SAVED);
-        tempRowVector.add("log when damaged email arrives");
-        tempRowVector.add( new Boolean( control.alertsOnParseException().generateSummaryAlerts() ) );
-        tempRowVector.add( control.logDetails() );
-        allRows.add( tempRowVector );
-
-        */
         
         return allRows;
     }

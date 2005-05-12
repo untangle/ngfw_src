@@ -34,7 +34,7 @@
         <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
           <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
             <TitledBorder title="IP Address Settings">
-              <Font PropertyName="font" name="Dialog" size="16" style="0"/>
+              <Font PropertyName="font" name="Dialog" size="16" style="1"/>
             </TitledBorder>
           </Border>
         </Property>
@@ -229,7 +229,7 @@
         <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
           <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
             <TitledBorder title="External Remote Administration Settings">
-              <Font PropertyName="font" name="Dialog" size="16" style="0"/>
+              <Font PropertyName="font" name="Dialog" size="16" style="1"/>
             </TitledBorder>
           </Border>
         </Property>
@@ -461,7 +461,7 @@
         <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
           <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
             <TitledBorder title="Internal Remote Administration Settings">
-              <Font PropertyName="font" name="Dialog" size="16" style="0"/>
+              <Font PropertyName="font" name="Dialog" size="16" style="1"/>
             </TitledBorder>
           </Border>
         </Property>
@@ -534,7 +534,7 @@
         <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
           <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
             <TitledBorder title="TCP Window Scaling Settings">
-              <Font PropertyName="font" name="Dialog" size="16" style="0"/>
+              <Font PropertyName="font" name="Dialog" size="16" style="1"/>
             </TitledBorder>
           </Border>
         </Property>

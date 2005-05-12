@@ -286,7 +286,7 @@ public class MMainJFrame extends javax.swing.JFrame {
         gridBagConstraints.weighty = 1.0;
         toolboxJPanel.add(toolboxJScrollPane, gridBagConstraints);
 
-        jLabel1.setFont(new java.awt.Font("Dialog", 0, 12));
+        jLabel1.setFont(new java.awt.Font("Dialog", 0, 10));
         jLabel1.setText("shift-click to remove...");
         jLabel1.setFocusable(false);
         gridBagConstraints = new java.awt.GridBagConstraints();

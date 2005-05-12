@@ -12,6 +12,16 @@
 
 package com.metavize.gui.transform;
 
+
+import com.metavize.gui.widgets.editTable.*;
+import com.metavize.gui.widgets.dialogs.*;
+import com.metavize.gui.util.*;
+
+import com.metavize.mvvm.*;
+import com.metavize.mvvm.tran.*;
+
+import org.netbeans.lib.awtextra.AbsoluteConstraints;
+import org.netbeans.lib.awtextra.AbsoluteLayout;
 import java.util.*;
 import javax.swing.*;
 import java.awt.*;
@@ -19,21 +29,16 @@ import javax.swing.border.*;
 import javax.swing.table.*;
 import java.util.*;
 
-
-import com.metavize.mvvm.tran.*;
-import com.metavize.gui.widgets.editTable.*;
-import com.metavize.gui.util.*;
-import com.metavize.mvvm.*;
-
-import org.netbeans.lib.awtextra.AbsoluteConstraints;
-import org.netbeans.lib.awtextra.AbsoluteLayout;
-
 /**
  *
  * @author  root
  */
 public class MTransformControlsJPanel extends javax.swing.JPanel {
- 
+
+    // SAVING/REFRESHING //////////
+    protected Map<String, Refreshable> refreshableMap = new LinkedHashMap(5);
+    protected Map<String, Savable> savableMap = new LinkedHashMap(5);
+    protected Object settings;
     
     // EXPANDING/CONTACTING
     protected Dimension MIN_SIZE = new Dimension(800, 600);
@@ -70,7 +75,10 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
             } );
         expandJDialog.getContentPane().setLayout(new GridBagLayout());
 	expandJDialog.getContentPane().add(new com.metavize.gui.widgets.MTiledIconLabel("",greyBackgroundImageIcon,JLabel.CENTER), greyBackgroundConstraints);
-        
+    
+
+	generateGui();
+	refreshAll();
     }
     
     private void dialogResized(){
@@ -105,74 +113,68 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
         }
     }
     
-    public void saveAll(){
-        int innerComponentCount, outerComponentCount;
-        Component innerComponent, outerComponent;
-        
-        outerComponentCount = mTabbedPane.getComponentCount();
-        Util.printMessage("Save Initiated==============");        
-        for(int i=0; i<outerComponentCount; i++){
-            outerComponent = mTabbedPane.getComponentAt(i);
-            if( outerComponent instanceof MEditTableJPanel){
-                ((MEditTableJPanel)outerComponent).getJTable().getCellEditor().stopCellEditing();
-                ((MEditTableJPanel)outerComponent).getJTable().clearSelection();
-                ((MEditTableJPanel)outerComponent).getTableModel().commit();
-                Util.printMessage("-> " + mTabbedPane.getTitleAt(i) );
-            }
-            else if( (outerComponent instanceof JTabbedPane) && (!mTabbedPane.getTitleAt(i).equals("Event Log")) ) {
-                innerComponentCount = ((JTabbedPane)outerComponent).getComponentCount();
-                Util.printMessage("----> " + mTabbedPane.getTitleAt(i) );
-                for(int j=0; j<innerComponentCount; j++){
-                    innerComponent = ((JTabbedPane)outerComponent).getComponentAt(j);
-                    if( innerComponent instanceof MEditTableJPanel){
-                        ((MEditTableJPanel)innerComponent).getJTable().getCellEditor().stopCellEditing();
-                        ((MEditTableJPanel)innerComponent).getJTable().clearSelection();
-                        ((MEditTableJPanel)innerComponent).getTableModel().commit();
-                        Util.printMessage("|--> " + ((JTabbedPane)outerComponent).getTitleAt(j) );
-                    }
-                }
-            }
+    protected void generateGui(){};
+
+    protected void saveAll(){
+
+        if(Util.getIsDemo())
+            return;
+
+	// GENERATE AND VALIDATE ALL SETTINGS
+	String componentName = null;
+        try {
+	    System.err.println("Saving: "+ mTransformJPanel.getTransformContext().getTransformDesc().getDisplayName() );
+	    for( Map.Entry<String, Savable> savableMapEntry : savableMap.entrySet() ){
+		componentName = savableMapEntry.getKey();
+		Savable savableComponent = savableMapEntry.getValue();
+		savableComponent.doSave(settings, false);
+		System.err.println("  " + componentName);
+	    }
+        }
+        catch(Exception e){
+            new ValidateFailureDialog( mTransformJPanel.getTransformContext().getTransformDesc().getDisplayName(),
+				       componentName,
+				       e.getMessage() );
+            return;
         }
         
-        if(mTransformJPanel.transformContext().transform().getRunState() == TransformState.RUNNING){
-            try{ mTransformJPanel.transformContext().transform().reconfigure(); }
-	    catch(Exception e){ Util.handleExceptionNoRestart("Error: failed reconfigure", e); }
+	// SEND SETTINGS TO SERVER AND RECONFIGURE
+        try {
+	    mTransformJPanel.getTransformContext().transform().setSettings( settings );
+            mTransformJPanel.getTransformContext().transform().reconfigure();
         }
+        catch ( Exception e ) {
+            try{
+                Util.handleExceptionWithRestart("Error saving settings", e);
+            }
+            catch(Exception f){
+                Util.handleExceptionNoRestart("Error saving settings", f);
+                new SaveFailureDialog( mTransformJPanel.getTransformContext().getTransformDesc().getDisplayName() );
+                return;
+            }
+        }
+	finally{
+	    refreshAll();
+	}
     }
+
      
-    public void refreshAll(){
-        int innerComponentCount, outerComponentCount;
-        Component innerComponent, outerComponent;
-        
-        outerComponentCount = mTabbedPane.getComponentCount();
-        Util.printMessage("Refresh Initiated==============");        
-        for(int i=0; i<outerComponentCount; i++){
-            outerComponent = mTabbedPane.getComponentAt(i);
-            if( outerComponent instanceof MEditTableJPanel){
-                ((MEditTableJPanel)outerComponent).getJTable().getCellEditor().stopCellEditing();
-                ((MEditTableJPanel)outerComponent).getJTable().clearSelection();
-                ((MEditTableJPanel)outerComponent).getTableModel().refresh();
-                Util.printMessage("-> " + mTabbedPane.getTitleAt(i) );
-            }
-            else if( (outerComponent instanceof JTabbedPane) && (!mTabbedPane.getTitleAt(i).equals("Event Log")) ) {
-                innerComponentCount = ((JTabbedPane)outerComponent).getComponentCount();
-                Util.printMessage("----> " + mTabbedPane.getTitleAt(i) );
-                for(int j=0; j<innerComponentCount; j++){
-                    innerComponent = ((JTabbedPane)outerComponent).getComponentAt(j);
-                    if( innerComponent instanceof MEditTableJPanel){
-                        ((MEditTableJPanel)innerComponent).getJTable().getCellEditor().stopCellEditing();
-                        ((MEditTableJPanel)innerComponent).getJTable().clearSelection();
-                        ((MEditTableJPanel)innerComponent).getTableModel().refresh();
-                        Util.printMessage("|--> " + ((JTabbedPane)outerComponent).getTitleAt(j) );
-                    }
-                }
-            }
-        }
-        
-        if(mTransformJPanel.transformContext().transform().getRunState() == TransformState.RUNNING){
-            try{ mTransformJPanel.transformContext().transform().reconfigure(); }
-	    catch(Exception e){ Util.handleExceptionNoRestart("Error: failed reconfigure", e); }
-        }
+    protected void refreshAll(){
+	
+	try{
+	    settings = mTransformJPanel.getTransformContext().transform().getSettings();
+	    System.err.println("Refreshing: "+ mTransformJPanel.getTransformContext().getTransformDesc().getDisplayName() );
+	    for( Map.Entry<String, Refreshable> refreshableMapEntry : refreshableMap.entrySet() ){
+		String componentName = refreshableMapEntry.getKey();
+		Refreshable refreshableComponent = refreshableMapEntry.getValue();
+		refreshableComponent.doRefresh(settings);
+		System.err.println("  " + componentName);
+	    }
+	}
+	catch(Exception e){
+	    new RefreshFailureDialog( mTransformJPanel.getTransformContext().getTransformDesc().getDisplayName() );
+	}
+	
     }
     
 

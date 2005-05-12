@@ -24,7 +24,9 @@ import com.metavize.mvvm.tran.*;
  *
  * @author  inieves
  */
-public class StoreJDialog extends ConfigJDialog {
+public class StoreJDialog extends ConfigJDialog implements Savable, Refreshable {
+
+    private static final String NAME_STORE = "Procure a Software Appliance";
 
     private StoreJPanel storeJPanel;
     private boolean purchasedTransform = false;
@@ -35,12 +37,15 @@ public class StoreJDialog extends ConfigJDialog {
     public StoreJDialog( MTransformJButton mTransformJButton ) {
         super(Util.getMMainJFrame());
         this.mTransformJButton = mTransformJButton;
-        
+
+        MIN_SIZE = new Dimension(640, 480);
+        MAX_SIZE = new Dimension(640, 480);
+
         // INIT GENERAL GUI
         storeJPanel = new StoreJPanel();
-        this.contentJTabbedPane.setTitleAt(0, "Procure a Software Appliance");
+        this.contentJTabbedPane.setTitleAt(0, NAME_STORE);
         this.contentJPanel.add(storeJPanel);
-        this.setTitle("Procure a Software Appliance");
+        this.setTitle(NAME_STORE);
         setResizable(false);
         
         storeJPanel.mTransformJPanel.add(mTransformJButton, gridBagConstraints);
@@ -48,10 +53,9 @@ public class StoreJDialog extends ConfigJDialog {
             
         this.reloadJButton.setText("<html><b>Cancel</b></html>");
         this.saveJButton.setText("<html><b>Procure</b></html>");
-        
-        MIN_SIZE = new Dimension(640, 480);
-        MAX_SIZE = new Dimension(640, 480);
 
+	super.savableMap.put(NAME_STORE, this);
+	super.refreshableMap.put(NAME_STORE, this);
     }
     
     public void setVisible(boolean isVisible){
@@ -67,16 +71,13 @@ public class StoreJDialog extends ConfigJDialog {
             super.setVisible(false);
         }
     }
+
+    public void generateGui(){}
+    public void refreshSettings(){}
+    public void sendSettings(Object settings) throws Exception {}
     
-    protected void doSaveJButtonActionPerformed(java.awt.event.ActionEvent evt) {
-        save();
-    }
 
-    protected void doReloadJButtonActionPerformed(java.awt.event.ActionEvent evt) {
-        reload();
-    }
-
-    private void save(){
+    public void doSave(Object settings, boolean validateOnly) throws Exception {
         this.purchasedTransform = true;
         
         if(Util.getIsDemo())
@@ -85,7 +86,7 @@ public class StoreJDialog extends ConfigJDialog {
         this.windowClosing(null);
     }
 
-    private void reload(){
+    public void doRefresh(Object settings){
         this.windowClosing(null);	
     }
 

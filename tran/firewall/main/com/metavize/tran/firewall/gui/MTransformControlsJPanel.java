@@ -21,92 +21,34 @@ import javax.swing.event.*;
 import com.metavize.tran.firewall.*;
 
 public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransformControlsJPanel{
+
+    private static final String NAME_BLOCK_LIST = "Block/Pass List";
+    private static final String NAME_GENERAL_SETTINGS = "General Settings";
+
     protected Dimension MIN_SIZE = new Dimension(640, 480);
     protected Dimension MAX_SIZE = new Dimension(640, 1200);
-    
-    private FirewallSettings firewallSettings;
-        
-    private BlockJPanel blockJPanel;
-    private SettingsJPanel settingsJPanel;
-
-    
+                
     public MTransformControlsJPanel(MTransformJPanel mTransformJPanel) {
-        super(mTransformJPanel);
+        super(mTransformJPanel);        
+    }
+    
+    protected void generateGui(){
 
         // SETUP FIREWALL
-        blockJPanel = new BlockJPanel();
-        super.mTabbedPane.addTab("Block/Pass List", null, blockJPanel );
+        BlockJPanel blockJPanel = new BlockJPanel();
+        super.mTabbedPane.addTab(NAME_BLOCK_LIST, null, blockJPanel );
+	savableMap.put(NAME_BLOCK_LIST, blockJPanel);
+	refreshableMap.put(NAME_BLOCK_LIST, blockJPanel);
         
         // SETUP GENERAL SETTINGS
-        settingsJPanel = new SettingsJPanel();
+        SettingsJPanel settingsJPanel = new SettingsJPanel();
         JScrollPane settingsJScrollPane = new JScrollPane( settingsJPanel );
         settingsJScrollPane.setHorizontalScrollBarPolicy( ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER );
         settingsJScrollPane.setVerticalScrollBarPolicy( ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS );
-        super.mTabbedPane.addTab("General Settings", null, settingsJScrollPane );
-        
-        
-        refreshAll();
-    }
-    
-    public void refreshAll()  {
-        boolean isValid = true;
-        try {
-            firewallSettings = ((Firewall)super.mTransformJPanel.getTransformContext().transform()).getFirewallSettings();
-        }
-        catch(Exception e){
-            isValid = false;
-            Util.handleExceptionNoRestart("Error getting settings for refresh", e);
-        }
-        
-        try {
-            blockJPanel.refresh( firewallSettings );
-        }
-        catch(Exception e){
-            isValid = false;
-            Util.handleExceptionNoRestart("Error refreshing Block", e);
-        }
-        
-        try {
-            settingsJPanel.refresh( firewallSettings );
-        }
-        catch(Exception e){
-            isValid = false;
-            Util.handleExceptionNoRestart("Error refreshing General Settings", e);
-        }
-        
-        if(!isValid){
-            // do something more interesting than this
-        }  
-    }
-    
-    public void saveAll() {        
-        try {
-            blockJPanel.save( firewallSettings );
-            settingsJPanel.save( firewallSettings );
-            firewallSettings.validate();
-        }
-        catch(Exception e){
-            new ValidateFailureDialog( super.mTransformJPanel.getTransformContext().getTransformDesc().getDisplayName(), e.getMessage() );
-            return;
-        }
-        
+        super.mTabbedPane.addTab(NAME_GENERAL_SETTINGS, null, settingsJScrollPane );
+        savableMap.put(NAME_GENERAL_SETTINGS, settingsJPanel);
+	refreshableMap.put(NAME_GENERAL_SETTINGS, settingsJPanel);
 
-        try {
-            ((Firewall)super.mTransformJPanel.getTransformContext().transform()).setFirewallSettings( firewallSettings );
-        }
-        catch ( Exception e ) {
-            try{
-                Util.handleExceptionWithRestart("Error saving settings for firewall", e);
-            }
-            catch(Exception f){
-                Util.handleExceptionNoRestart("Error saving settings for firewall", f);
-                new SaveFailureDialog( super.mTransformJPanel.getTransformContext().getTransformDesc().getDisplayName() );
-                return;
-            }
-        }
-
-        
-        refreshAll();
     }
 
 }

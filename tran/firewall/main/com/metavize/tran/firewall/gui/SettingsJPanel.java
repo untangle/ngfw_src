@@ -11,103 +11,54 @@
 
 package com.metavize.tran.firewall.gui;
 
-import java.awt.*;
 
-import com.metavize.tran.firewall.*;
 import com.metavize.gui.util.Util;
+import com.metavize.gui.transform.*;
+import com.metavize.tran.firewall.*;
 import com.metavize.mvvm.tran.IPaddr;
+
+import java.awt.*;
 
 /**
  *
  * @author  inieves
  */
-public class SettingsJPanel extends javax.swing.JPanel {
+public class SettingsJPanel extends javax.swing.JPanel implements Savable, Refreshable {
     
-    private Color INVALID_COLOR = Color.PINK;
-    private Color BACKGROUND_COLOR = new Color(224, 224, 224);
-    
-
     public SettingsJPanel() {
         initComponents();
     }
+        
     
-    
-    
-    public void refresh(Object settings) throws Exception {
-        if(!(settings instanceof FirewallSettings)){
-            this.setBackground(INVALID_COLOR);
-            return;
-        }
-        else{
-            this.setBackground(BACKGROUND_COLOR);
-        }
-        
-        boolean isValid = true;
-        
-        FirewallSettings firewallSettings = (FirewallSettings) settings;
-        boolean defaultAccept;
-        
-        
-        // ENABLED ///////////
-        try{
-            defaultAccept = firewallSettings.isDefaultAccept();
-            if( defaultAccept )
-                defaultAcceptJRadioButton.setSelected(true);
-            else
-                defaultBlockJRadioButton.setSelected(true);
-            defaultAcceptJRadioButton.setBackground( BACKGROUND_COLOR );
-            defaultBlockJRadioButton.setBackground( BACKGROUND_COLOR );
-        }
-        catch(Exception e){
-            defaultAcceptJRadioButton.setBackground( INVALID_COLOR );
-            defaultBlockJRadioButton.setBackground( INVALID_COLOR );
-            isValid = false;
-        }
-        
-        
-        if(!isValid)
-            throw new Exception();
-        
-    }
+    public void doSave(Object settings, boolean validateOnly) throws Exception {
 
-    
-    
-    public void save(Object settings) throws Exception {
-        if(!(settings instanceof FirewallSettings)){
-            this.setBackground(INVALID_COLOR);
-            return;
-        }
-        else{
-            this.setBackground(BACKGROUND_COLOR);
-        }
-        
-        
-        FirewallSettings firewallSettings = (FirewallSettings) settings;
-        boolean defaultAccept;
-        
         // ENABLED ///////////
-        defaultAccept = defaultAcceptJRadioButton.isSelected();
-        if( defaultAcceptJRadioButton.isSelected() ^ defaultBlockJRadioButton.isSelected() ){
-            defaultAcceptJRadioButton.setBackground( BACKGROUND_COLOR );
-            defaultBlockJRadioButton.setBackground( BACKGROUND_COLOR );
-        }
-        else{
-            defaultAcceptJRadioButton.setBackground( INVALID_COLOR );
-            defaultBlockJRadioButton.setBackground( INVALID_COLOR );
-            throw new Exception("(General Settings) The Default Action cannot be Pass and Block at the same time.");
-        }
-        
+	boolean isDefaultAccept = defaultAcceptJRadioButton.isSelected();
         
         // SAVE THE VALUES ////////////////////////////////////
-        firewallSettings.setDefaultAccept( defaultAccept );
-        
+	if(!validateOnly){
+	    FirewallSettings firewallSettings = (FirewallSettings) settings;
+	    firewallSettings.setDefaultAccept( isDefaultAccept );
+	}
         
     }
     
-    
-    
 
-    
+    public void doRefresh(Object settings) {
+	FirewallSettings firewallSettings = (FirewallSettings) settings;
+
+        // ENABLED ///////////
+	boolean isDefaultAccept;
+	isDefaultAccept = firewallSettings.isDefaultAccept();
+	if( isDefaultAccept )
+	    defaultAcceptJRadioButton.setSelected(true);
+	else
+	    defaultBlockJRadioButton.setSelected(true);               
+
+    }
+
+
+
     private void initComponents() {//GEN-BEGIN:initComponents
         java.awt.GridBagConstraints gridBagConstraints;
 

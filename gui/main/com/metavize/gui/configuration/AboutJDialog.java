@@ -35,7 +35,11 @@ public class AboutJDialog extends ConfigJDialog {
 
     public AboutJDialog( ) {
         super(Util.getMMainJFrame());
+        MIN_SIZE = new Dimension(640, 480);
+        MAX_SIZE = new Dimension(640, 1200);
+    }
 
+    protected void generateGui(){
         try{
             buildString = "<html><b>Build:</b> " + Util.getMvvmContext().toolboxManager().mackageDesc("mvvm").getInstalledVersion();
         }
@@ -54,8 +58,9 @@ public class AboutJDialog extends ConfigJDialog {
 	this.contentJPanel.add(contentJScrollPane);
         this.setTitle("About EdgeGuard");
 	this.removeActionButtons();
-        
     }
     
+    protected void sendSettings(Object settings){}
+    protected void refreshSettings(){}
 
 }

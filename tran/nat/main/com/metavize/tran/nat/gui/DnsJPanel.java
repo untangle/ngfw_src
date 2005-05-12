@@ -11,97 +11,53 @@
 
 package com.metavize.tran.nat.gui;
 
-import java.awt.*;
 
-import com.metavize.tran.nat.*;
+import com.metavize.gui.transform.*;
 import com.metavize.gui.util.Util;
+
 import com.metavize.mvvm.tran.IPaddr;
+import com.metavize.tran.nat.*;
+
+import java.awt.*;
 
 /**
  *
  * @author  inieves
  */
-public class DnsJPanel extends javax.swing.JPanel {
+public class DnsJPanel extends javax.swing.JPanel implements Savable, Refreshable {
     
-    private Color INVALID_COLOR = Color.PINK;
-    private Color BACKGROUND_COLOR = new Color(224, 224, 224);
-    
-
     public DnsJPanel() {
         initComponents();
     }
     
     
     
-    public void refresh(Object settings) throws Exception {
-        if(!(settings instanceof NatSettings)){
-            this.setBackground(INVALID_COLOR);
-            return;
-        }
-        else{
-            this.setBackground(BACKGROUND_COLOR);
-        }
-        
-        boolean isValid = true;
-        
-        NatSettings natSettings = (NatSettings) settings;
-        boolean dnsEnabled;
+    public void doSave(Object settings, boolean validateOnly) throws Exception {
         
         // ENABLED ///////////
-        try{
-            dnsEnabled = natSettings.getDnsEnabled();
-            if( dnsEnabled )
-                dnsMasqEnabledJRadioButton.setSelected(true);
-            else
-                dnsMasqDisabledJRadioButton.setSelected(true);
-            dnsMasqEnabledJRadioButton.setBackground( BACKGROUND_COLOR );
-            dnsMasqDisabledJRadioButton.setBackground( BACKGROUND_COLOR );
-        }
-        catch(Exception e){
-            dnsMasqEnabledJRadioButton.setBackground( INVALID_COLOR );
-            dnsMasqDisabledJRadioButton.setBackground( INVALID_COLOR );
-            isValid = false;
-        }
-        
-        if(!isValid)
-            throw new Exception();
-        
-    }
-
-    
-    
-    public void save(Object settings) throws Exception {
-        if(!(settings instanceof NatSettings)){
-            this.setBackground(INVALID_COLOR);
-            return;
-        }
-        else{
-            this.setBackground(BACKGROUND_COLOR);
-        }
-        
-        
-        NatSettings natSettings = (NatSettings) settings;
-        boolean dnsEnabled;
-        
-        // ENABLED ///////////
-        dnsEnabled = dnsMasqEnabledJRadioButton.isSelected();
-        if( dnsMasqEnabledJRadioButton.isSelected() ^ dnsMasqDisabledJRadioButton.isSelected() ){
-            dnsMasqEnabledJRadioButton.setBackground( BACKGROUND_COLOR );
-            dnsMasqDisabledJRadioButton.setBackground( BACKGROUND_COLOR );
-        }
-        else{
-            dnsMasqEnabledJRadioButton.setBackground( INVALID_COLOR );
-            dnsMasqDisabledJRadioButton.setBackground( INVALID_COLOR );
-            throw new Exception("(DNS Forwarding) DNS Forwarding cannot be Enabled and Disabled at the same time.");
-        }
-
+        boolean dnsEnabled = dnsMasqEnabledJRadioButton.isSelected();
                 
-        // SAVE THE VALUES ////////////////////////////////////
-        natSettings.setDnsEnabled( dnsEnabled );
+        // SAVE SETTINGS  ////////////////////////////////////
+	if( !validateOnly ){
+	    NatSettings natSettings = (NatSettings) settings;
+	    natSettings.setDnsEnabled( dnsEnabled );
+	}
         
     }
     
     
+    public void doRefresh(Object settings) {
+        NatSettings natSettings = (NatSettings) settings;
+
+        // ENABLED ///////////
+        boolean dnsEnabled;
+	dnsEnabled = natSettings.getDnsEnabled();
+	if( dnsEnabled )
+	    dnsMasqEnabledJRadioButton.setSelected(true);
+	else
+	    dnsMasqDisabledJRadioButton.setSelected(true);
+        
+    }
     
 
     

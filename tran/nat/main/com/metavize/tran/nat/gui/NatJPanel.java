@@ -11,188 +11,117 @@
 
 package com.metavize.tran.nat.gui;
 
-import java.awt.*;
-
-import com.metavize.tran.nat.*;
 import com.metavize.gui.util.Util;
+import com.metavize.gui.transform.*;
+
 import com.metavize.mvvm.tran.IPaddr;
+import com.metavize.tran.nat.*;
+
+import java.awt.*;
 
 /**
  *
  * @author  inieves
  */
-public class NatJPanel extends javax.swing.JPanel {
+public class NatJPanel extends javax.swing.JPanel implements Savable, Refreshable {
     
-    private Color INVALID_COLOR = Color.PINK;
-    private Color BACKGROUND_COLOR = new Color(224, 224, 224);
-    
+    private static final String EXCEPTION_INTERNAL_ADDRESS = "The Internal IP address must be a valid IP address.";
+    private static final String EXCEPTION_INTERNAL_SUBNET = "The Internal Subnet must be a valid IP address.";
 
     public NatJPanel() {
         initComponents();
     }
-    
-    
-    
-    public void refresh(Object settings) throws Exception {
-        if(!(settings instanceof NatSettings)){
-            this.setBackground(INVALID_COLOR);
-            return;
-        }
-        else{
-            this.setBackground(BACKGROUND_COLOR);
-        }
         
-        boolean isValid = true;
-        
-        NatSettings natSettings = (NatSettings) settings;
-        boolean natEnabled;
-        String natInternalAddress;
-        String natInternalSubnet;
-        String natInternalNetwork;
-        String natExternalAddress;
-        boolean isDhcpEnabled;
+    
+    public void doSave(Object settings, boolean validateOnly) throws Exception {
         
         // ENABLED ///////////
-        try{
-            natEnabled = natSettings.getNatEnabled();
-            this.setNatEnabledDependency(natEnabled);
-            if( natEnabled )
-                natEnabledJRadioButton.setSelected(true);
-            else
-                natDisabledJRadioButton.setSelected(true);
-            natEnabledJRadioButton.setBackground( BACKGROUND_COLOR );
-            natDisabledJRadioButton.setBackground( BACKGROUND_COLOR );
-        }
-        catch(Exception e){
-            natEnabledJRadioButton.setBackground( INVALID_COLOR );
-            natDisabledJRadioButton.setBackground( INVALID_COLOR );
-            isValid = false;
-        }
+        boolean natEnabled = natEnabledJRadioButton.isSelected();
         
         // INTERNAL ADDRESS //////
-        try{
-            natInternalAddress = natSettings.getNatInternalAddress().toString();
-            internalAddressIPaddrJTextField.setText( natInternalAddress );
-            internalAddressIPaddrJTextField.setBackground( Color.WHITE );
-        }
-        catch(Exception e){
-            internalAddressIPaddrJTextField.setBackground( INVALID_COLOR );
-            isValid = false;
-        }
-        
-        // INTERNAL SUBNET ///////
-        try{
-            natInternalSubnet  = natSettings.getNatInternalSubnet().toString();
-            internalSubnetIPaddrJTextField.setText( natInternalSubnet );
-            internalSubnetIPaddrJTextField.setBackground( Color.WHITE );
-        }
-        catch(Exception e){
-            internalSubnetIPaddrJTextField.setBackground( INVALID_COLOR );
-            isValid = false;
-        }
-        
-        // INTERNAL NETWORK ///////
-        try{
-            natInternalNetwork = IPaddr.and(natSettings.getNatInternalAddress(), natSettings.getNatInternalSubnet()).toString();
-            internalNetworkJLabel.setText( natInternalNetwork );
-            internalNetworkJLabel.setBackground( BACKGROUND_COLOR );
-        }
-        catch(Exception e){
-            internalNetworkJLabel.setBackground( INVALID_COLOR );
-            isValid = false;
-        }
-        
-        // EXTERNAL ADDRESS ///////
-        try{
-            natExternalAddress = Util.getMvvmContext().networkingManager().get().host().toString();
-            externalAddressJLabel.setText( natExternalAddress );
-            externalAddressJLabel.setBackground( BACKGROUND_COLOR );
-        }
-        catch(Exception e){
-            externalAddressJLabel.setBackground( INVALID_COLOR );
-            isValid = false;
-        }
-        
-        // DHCP ///////
-        try{
-            isDhcpEnabled = Util.getMvvmContext().networkingManager().get().isDhcpEnabled();
-            if( isDhcpEnabled )
-                externalMethodJLabel.setText("Dynamic via DHCP");
-            else
-                externalMethodJLabel.setText("Manually specified");
-            externalMethodJLabel.setBackground( BACKGROUND_COLOR );
-        }
-        catch(Exception e){
-            externalMethodJLabel.setBackground( INVALID_COLOR );
-            isValid = false;
-        }
-        
-        if(!isValid)
-            throw new Exception();
-        
-    }
-
-    
-    
-    public void save(Object settings) throws Exception {
-        if(!(settings instanceof NatSettings)){
-            this.setBackground(INVALID_COLOR);
-            return;
-        }
-        else{
-            this.setBackground(BACKGROUND_COLOR);
-        }
-        
-        
-        NatSettings natSettings = (NatSettings) settings;
-        boolean natEnabled;
         IPaddr natInternalAddress = null;
-        IPaddr natInternalSubnet = null;
-        
-        // ENABLED ///////////
-        natEnabled = natEnabledJRadioButton.isSelected();
-        if( natEnabledJRadioButton.isSelected() ^ natDisabledJRadioButton.isSelected() ){
-            natEnabledJRadioButton.setBackground( BACKGROUND_COLOR );
-            natDisabledJRadioButton.setBackground( BACKGROUND_COLOR );
-        }
-        else{
-            natEnabledJRadioButton.setBackground( INVALID_COLOR );
-            natDisabledJRadioButton.setBackground( INVALID_COLOR );
-            throw new Exception("(NAT) NAT cannot be Enabled and Disabled at the same time.");
-        }
-        
-        // INTERNAL ADDRESS //////
         if(natEnabled){
             try{
                 natInternalAddress = IPaddr.parse( internalAddressIPaddrJTextField.getText() );
                 internalAddressIPaddrJTextField.setBackground( Color.WHITE );
             }
             catch(Exception e){
-                internalAddressIPaddrJTextField.setBackground( INVALID_COLOR );
-                throw new Exception("(NAT) The Internal IP address must be a valid IP address.");
+                internalAddressIPaddrJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+                throw new Exception(EXCEPTION_INTERNAL_ADDRESS);
             }
         }
         
         // INTERNAL SUBNET ///////
+        IPaddr natInternalSubnet = null;
         if(natEnabled){
             try{
                 natInternalSubnet = IPaddr.parse( internalSubnetIPaddrJTextField.getText() );
                 internalSubnetIPaddrJTextField.setBackground( Color.WHITE );
             }
             catch(Exception e){
-                internalSubnetIPaddrJTextField.setBackground( INVALID_COLOR );
-                throw new Exception("(NAT) The Internal Subnet must be a valid IP address.");
+                internalSubnetIPaddrJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+                throw new Exception(EXCEPTION_INTERNAL_SUBNET);
             }
         }        
         
         // SAVE THE VALUES ////////////////////////////////////
-        natSettings.setNatEnabled( natEnabled );
-        natSettings.setNatInternalAddress( natInternalAddress );
-        natSettings.setNatInternalSubnet( natInternalSubnet );
+	if( !validateOnly ){
+	    NatSettings natSettings = (NatSettings) settings;
+	    natSettings.setNatEnabled( natEnabled );
+	    if( natEnabled ){
+		natSettings.setNatInternalAddress( natInternalAddress );
+		natSettings.setNatInternalSubnet( natInternalSubnet );
+	    }
+	}
         
     }
     
-    
+
+    public void doRefresh(Object settings) {
+        NatSettings natSettings = (NatSettings) settings;        
+        
+        // ENABLED ///////////
+        boolean natEnabled;
+	natEnabled = natSettings.getNatEnabled();
+	this.setNatEnabledDependency(natEnabled);
+	if( natEnabled )
+	    natEnabledJRadioButton.setSelected(true);
+	else
+	    natDisabledJRadioButton.setSelected(true);
+        
+        // INTERNAL ADDRESS //////
+        String natInternalAddress;
+	natInternalAddress = natSettings.getNatInternalAddress().toString();
+	internalAddressIPaddrJTextField.setText( natInternalAddress );
+	internalAddressIPaddrJTextField.setBackground( Color.WHITE );
+        
+        // INTERNAL SUBNET ///////
+        String natInternalSubnet;
+	natInternalSubnet  = natSettings.getNatInternalSubnet().toString();
+	internalSubnetIPaddrJTextField.setText( natInternalSubnet );
+	internalSubnetIPaddrJTextField.setBackground( Color.WHITE );
+        
+        // INTERNAL NETWORK ///////
+        String natInternalNetwork;
+	natInternalNetwork = IPaddr.and(natSettings.getNatInternalAddress(), natSettings.getNatInternalSubnet()).toString();
+	internalNetworkJLabel.setText( natInternalNetwork );
+        
+        // EXTERNAL ADDRESS ///////
+        String natExternalAddress;
+	natExternalAddress = Util.getMvvmContext().networkingManager().get().host().toString();
+	externalAddressJLabel.setText( natExternalAddress );
+        
+        // DHCP ///////
+        boolean isDhcpEnabled;
+	isDhcpEnabled = Util.getMvvmContext().networkingManager().get().isDhcpEnabled();
+	if( isDhcpEnabled )
+	    externalMethodJLabel.setText("Dynamic via DHCP");
+	else
+	    externalMethodJLabel.setText("Manually specified");
+        
+    }
+
+        
     
 
     

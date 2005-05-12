@@ -11,151 +11,96 @@
 
 package com.metavize.tran.nat.gui;
 
-import java.awt.*;
+import com.metavize.gui.transform.*;
+import com.metavize.gui.util.Util;
 
 import com.metavize.tran.nat.*;
-import com.metavize.gui.util.Util;
 import com.metavize.mvvm.tran.IPaddr;
+
+import java.awt.*;
 
 /**
  *
  * @author  inieves
  */
-public class DhcpJPanel extends javax.swing.JPanel {
-    
-    private Color INVALID_COLOR = Color.PINK;
-    private Color BACKGROUND_COLOR = new Color(224, 224, 224);
-    
+public class DhcpJPanel extends javax.swing.JPanel implements Savable, Refreshable {
+
+    private static final String EXCEPTION_DHCP_RANGE_START = "The DHCP Start Address must be a valid IP address.";
+    private static final String EXCEPTION_DHCP_RANGE_END = "The DHCP End Address must be a valid IP address.";
 
     public DhcpJPanel() {
         initComponents();
-    }
+    }    
     
     
-    
-    public void refresh(Object settings) throws Exception {
-        if(!(settings instanceof NatSettings)){
-            this.setBackground(INVALID_COLOR);
-            return;
-        }
-        else{
-            this.setBackground(BACKGROUND_COLOR);
-        }
-        
-        boolean isValid = true;
-        
-        NatSettings natSettings = (NatSettings) settings;
-        boolean dhcpIsEnabled;
-        String dhcpStartAddress;
-        String dhcpEndAddress;
-        
+    public void doSave(Object settings, boolean validateOnly) throws Exception {
+
         // DHCP ENABLED ///////////
-        try{
-            dhcpIsEnabled = natSettings.getDhcpEnabled();
-            this.setDhcpEnabledDependency(dhcpIsEnabled);
-            if( dhcpIsEnabled )
-                dhcpEnabledJRadioButton.setSelected(true);
-            else
-                dhcpDisabledJRadioButton.setSelected(true);
-            dhcpEnabledJRadioButton.setBackground( BACKGROUND_COLOR );
-            dhcpDisabledJRadioButton.setBackground( BACKGROUND_COLOR );
-        }
-        catch(Exception e){
-            dhcpEnabledJRadioButton.setBackground( INVALID_COLOR );
-            dhcpDisabledJRadioButton.setBackground( INVALID_COLOR );
-            isValid = false;
-        }
+        boolean dhcpIsEnabled = dhcpEnabledJRadioButton.isSelected();
         
         // DYNAMIC RANGE START //////
-        try{
-            dhcpStartAddress = natSettings.getDhcpStartAddress().toString();
-            startAddressIPaddrJTextField.setText( dhcpStartAddress );
-            startAddressIPaddrJTextField.setBackground( Color.WHITE );
-        }
-        catch(Exception e){
-            startAddressIPaddrJTextField.setBackground( INVALID_COLOR );
-            isValid = false;
-        }
-        
-        // DYNAMIC RANGE END //////
-        try{
-            dhcpEndAddress = natSettings.getDhcpEndAddress().toString();
-            endAddressIPaddrJTextField.setText( dhcpEndAddress );
-            endAddressIPaddrJTextField.setBackground( Color.WHITE );
-        }
-        catch(Exception e){
-            endAddressIPaddrJTextField.setBackground( INVALID_COLOR );
-            isValid = false;
-        }
-        
-        if(!isValid)
-            throw new Exception();
-        
-    }
-
-    
-    
-    public void save(Object settings) throws Exception {
-        if(!(settings instanceof NatSettings)){
-            this.setBackground(INVALID_COLOR);
-            return;
-        }
-        else{
-            this.setBackground(BACKGROUND_COLOR);
-        }
-        
-        
-        NatSettings natSettings = (NatSettings) settings;
-        boolean dhcpIsEnabled;
         IPaddr dhcpStartAddress = null;
-        IPaddr dhcpEndAddress = null;
-
-        // DHCP ENABLED ///////////
-        dhcpIsEnabled = dhcpEnabledJRadioButton.isSelected();
-        if( dhcpEnabledJRadioButton.isSelected() ^ dhcpDisabledJRadioButton.isSelected() ){
-            dhcpEnabledJRadioButton.setBackground( BACKGROUND_COLOR );
-            dhcpDisabledJRadioButton.setBackground( BACKGROUND_COLOR );
-        }
-        else{
-            dhcpEnabledJRadioButton.setBackground( INVALID_COLOR );
-            dhcpDisabledJRadioButton.setBackground( INVALID_COLOR );
-            throw new Exception("(DHCP Settings) DHCP cannot be Enabled and Disabled at the same time.");
-        }
-        
-        // DYNAMIC RANGE START //////
         if(dhcpIsEnabled){
             try{
                 dhcpStartAddress = IPaddr.parse( startAddressIPaddrJTextField.getText() );
                 startAddressIPaddrJTextField.setBackground( Color.WHITE );
             }
             catch(Exception e){
-                startAddressIPaddrJTextField.setBackground( INVALID_COLOR );
-                throw new Exception("(DHCP Settings) The DHCP Start Address must be a valid IP address.");
+                startAddressIPaddrJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+                throw new Exception(EXCEPTION_DHCP_RANGE_START);
             }
         }
         
         // DYNAMIC RANGE END //////
+        IPaddr dhcpEndAddress = null;
         if(dhcpIsEnabled){
             try{
                 dhcpEndAddress = IPaddr.parse( endAddressIPaddrJTextField.getText() );
                 endAddressIPaddrJTextField.setBackground( Color.WHITE );
             }
             catch(Exception e){
-                endAddressIPaddrJTextField.setBackground( INVALID_COLOR );
-                throw new Exception("(DHCP Settings) The DHCP End Address must be a valid IP address.");
+                endAddressIPaddrJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+                throw new Exception(EXCEPTION_DHCP_RANGE_END);
             }
         }        
         
         
-        // SAVE THE VALUES ////////////////////////////////////
-        natSettings.setDhcpEnabled( dhcpIsEnabled );
-        if(dhcpIsEnabled){
-            natSettings.setDhcpStartAndEndAddress(dhcpStartAddress, dhcpEndAddress);
-        }
+        // SAVE SETTINGS ////////////////////////////////////
+	if( !validateOnly ){
+	    NatSettings natSettings = (NatSettings) settings;
+	    natSettings.setDhcpEnabled( dhcpIsEnabled );
+	    if(dhcpIsEnabled){
+		natSettings.setDhcpStartAndEndAddress(dhcpStartAddress, dhcpEndAddress);
+	    }
+	}
         
     }
     
     
+    public void doRefresh(Object settings) {
+        NatSettings natSettings = (NatSettings) settings;        
+        
+        // DHCP ENABLED ///////////
+        boolean dhcpIsEnabled;
+	dhcpIsEnabled = natSettings.getDhcpEnabled();
+	this.setDhcpEnabledDependency(dhcpIsEnabled);
+	if( dhcpIsEnabled )
+	    dhcpEnabledJRadioButton.setSelected(true);
+	else
+	    dhcpDisabledJRadioButton.setSelected(true);
+        
+        // DYNAMIC RANGE START //////
+        String dhcpStartAddress;
+	dhcpStartAddress = natSettings.getDhcpStartAddress().toString();
+	startAddressIPaddrJTextField.setText( dhcpStartAddress );
+	startAddressIPaddrJTextField.setBackground( Color.WHITE );
+        
+        // DYNAMIC RANGE END //////
+        String dhcpEndAddress;
+	dhcpEndAddress = natSettings.getDhcpEndAddress().toString();
+	endAddressIPaddrJTextField.setText( dhcpEndAddress );
+        endAddressIPaddrJTextField.setBackground( Color.WHITE );
+    }
     
 
     

@@ -6,17 +6,276 @@
 
 package com.metavize.gui.configuration;
 
+import com.metavize.gui.transform.*;
+import com.metavize.gui.util.*;
+
+import com.metavize.mvvm.security.*;
+import com.metavize.mvvm.*;
+import com.metavize.mvvm.tran.*;
+
 import java.awt.*;
 
 /**
  *
  * @author  inieves
  */
-public class NetworkJPanel extends javax.swing.JPanel {
+public class NetworkJPanel extends javax.swing.JPanel implements Savable, Refreshable {
+
+    private static final String EXCEPTION_DHCP_IP_ADDRESS = "Invalid DHCP \"IP Address\" specified.";
+    private static final String EXCEPTION_DHCP_NETMASK = "Invalid DHCP \"Netmask\" specified.";
+    private static final String EXCEPTION_DHCP_GATEWAY = "Invalid DHCP \"Default Route\" specified.";
+    private static final String EXCEPTION_DHCP_DNS_1 = "Invalid DHCP \"Primary DNS\" specified.";
+    private static final String EXCEPTION_DHCP_DNS_2 = "Invalid DHCP \"Secondary DNS\" specified.";
+    private static final String EXCEPTION_OUTSIDE_ACCESS_NETWORK = "Invalid Remote Administration \"IP Address\" specified.";
+    private static final String EXCEPTION_OUTSIDE_ACCESS_NETMASK = "Invalid Remote Administration \"Netmask\" specified.";
+
     
-    /** Creates new form NetworkJPanel */
     public NetworkJPanel() {
         initComponents();
+    }
+
+    public void doSave(Object settings, boolean validateOnly) throws Exception {
+
+        // DHCP ENABLED //////////
+	boolean isDhcpEnabled = dhcpEnabledRadioButton.isSelected();
+
+	// DHCP HOST ////////////
+	IPaddr host = null;
+        if( !isDhcpEnabled ){
+            try{
+                host = IPaddr.parse( dhcpIPaddrJTextField.getText() );
+                if( host.isEmpty() )
+                    throw new Exception();
+                dhcpIPaddrJTextField.setBackground( Color.WHITE );
+            }
+            catch(Exception e){
+                dhcpIPaddrJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+		throw new Exception(EXCEPTION_DHCP_IP_ADDRESS);
+            }
+	}
+	else{
+	    dhcpIPaddrJTextField.setBackground( Color.WHITE );
+	}
+
+	// DHCP NETMASK /////////
+	IPaddr netmask = null;
+	if( !isDhcpEnabled ){
+            try{
+                netmask = IPaddr.parse( dhcpNetmaskJTextField.getText() );
+                if( netmask.isEmpty() )
+                    throw new Exception();
+                dhcpNetmaskJTextField.setBackground( Color.WHITE );
+            } 
+            catch(Exception e){
+                dhcpNetmaskJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+		throw new Exception(EXCEPTION_DHCP_NETMASK);
+            }
+	}
+	else{
+	    dhcpNetmaskJTextField.setBackground( Color.WHITE );
+	}
+
+	// DHCP GATEWAY /////////
+	IPaddr gateway = null;
+	if( !isDhcpEnabled ){
+            try{
+                gateway = IPaddr.parse( dhcpRouteJTextField.getText() );
+                if( gateway.isEmpty() )
+                    throw new Exception();
+                dhcpRouteJTextField.setBackground( Color.WHITE );
+            }
+            catch(Exception e){
+                dhcpRouteJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+		throw new Exception(EXCEPTION_DHCP_GATEWAY);
+            }
+	}
+	else{
+	    dhcpRouteJTextField.setBackground( Color.WHITE );
+	}
+
+	// DHCP DNS1 ///////////
+	IPaddr dns1 = null;
+	if( !isDhcpEnabled ){
+            try{
+                dns1 = IPaddr.parse( dnsPrimaryJTextField.getText() );
+                if( dns1.isEmpty() )
+                    throw new Exception();
+                dnsPrimaryJTextField.setBackground( Color.WHITE );
+            }
+            catch(Exception e){
+                dnsPrimaryJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+		throw new Exception(EXCEPTION_DHCP_DNS_1);
+            }
+	}
+	else{
+	    dnsPrimaryJTextField.setBackground( Color.WHITE );
+	}
+
+	// DHCP DNS2 ///////
+	IPaddr dns2 = null;
+	if( !isDhcpEnabled ){
+            try{
+                dns2 = IPaddr.parse( dnsSecondaryJTextField.getText() );
+                dnsSecondaryJTextField.setBackground( Color.WHITE );
+            }
+            catch(Exception e){
+                dnsSecondaryJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+		throw new Exception(EXCEPTION_DHCP_DNS_2);
+            }
+        }
+	else{
+	    dnsSecondaryJTextField.setBackground( Color.WHITE );
+	}
+
+	// OUTSIDE ACCESS ENABLED ////////
+	boolean isOutsideAccessEnabled = externalAdminEnabledRadioButton.isSelected();
+
+	// OUTSIDE ACCESS RESTRICTED ///////
+	boolean isOutsideAccessRestricted = externalAdminRestrictEnabledRadioButton.isSelected();
+
+	// OUTSIDE ACCESS RESTRICTION ADDRESS /////////
+	IPaddr outsideNetwork = null;
+	if( isOutsideAccessEnabled && isOutsideAccessRestricted ){
+	    try{
+		outsideNetwork = IPaddr.parse( restrictIPaddrJTextField.getText() );
+		if( outsideNetwork.isEmpty() )
+		    throw new Exception();
+	    }
+	    catch(Exception e){
+                restrictIPaddrJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+		throw new Exception(EXCEPTION_OUTSIDE_ACCESS_NETWORK);
+            }
+        }
+	else{
+	    restrictIPaddrJTextField.setBackground( Color.WHITE );
+	}
+
+	// OUTSIDE ACCESS RESTRICTION NETMASK /////////
+	IPaddr outsideNetmask = null;
+	if( isOutsideAccessEnabled && isOutsideAccessRestricted ){	    
+	    try{
+		outsideNetmask = IPaddr.parse( restrictNetmaskJTextField.getText() );
+	    }
+	    catch ( Exception e ) {
+		restrictNetmaskJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+		throw new Exception(EXCEPTION_OUTSIDE_ACCESS_NETMASK);
+            }
+	}
+	else{
+	    restrictNetmaskJTextField.setBackground( Color.WHITE );
+	}
+	
+        // SSH ENABLED ////////
+	boolean isSshEnabled = sshEnabledRadioButton.isSelected();
+
+	// INSIDE INSECURE ENABLED //////
+	boolean isInsideInsecureEnabled = internalAdminEnabledRadioButton.isSelected();
+
+	// TCP WINDOW SCALING ENABLED //////
+	boolean isTcpWindowScalingEnabled = tcpWindowEnabledRadioButton.isSelected();
+
+	// SAVE SETTINGS ////////////
+	if( !validateOnly ){
+	    NetworkingConfiguration networkingConfiguration = (NetworkingConfiguration) settings;
+	    networkingConfiguration.isDhcpEnabled( isDhcpEnabled );
+	    if( !isDhcpEnabled ){
+		networkingConfiguration.host( host );
+		networkingConfiguration.netmask( netmask );
+		networkingConfiguration.gateway( gateway );
+		networkingConfiguration.dns1( dns1 );
+		networkingConfiguration.dns2( dns2 );
+	    }
+	    networkingConfiguration.isOutsideAccessEnabled( isOutsideAccessEnabled );
+	    if( isOutsideAccessEnabled ){
+		networkingConfiguration.isOutsideAccessRestricted( isOutsideAccessRestricted );
+		if( isOutsideAccessRestricted ){
+		    networkingConfiguration.outsideNetwork( outsideNetwork );
+		    networkingConfiguration.outsideNetmask( outsideNetmask );
+		}
+	    }
+	    networkingConfiguration.isSshEnabled( isSshEnabled );
+	    networkingConfiguration.isInsideInsecureEnabled( isInsideInsecureEnabled );
+	    networkingConfiguration.isTcpWindowScalingEnabled( isTcpWindowScalingEnabled );
+        }
+
+    }
+
+    public void doRefresh(Object settings){
+        NetworkingConfiguration networkingConfiguration = (NetworkingConfiguration) settings;
+                
+	// DHCP ENABLED /////
+	boolean isDhcpEnabled = networkingConfiguration.isDhcpEnabled();
+	setDhcpEnabledDependency( isDhcpEnabled );
+	if( isDhcpEnabled )
+            dhcpEnabledRadioButton.setSelected(true);
+        else
+            dhcpDisabledRadioButton.setSelected(true);
+        
+	// DHCP HOST ////
+	dhcpIPaddrJTextField.setText( networkingConfiguration.host().toString() );
+	dhcpIPaddrJTextField.setBackground( Color.WHITE );
+	
+	// DHCP NETMASK /////
+        dhcpNetmaskJTextField.setText( networkingConfiguration.netmask().toString() );
+	dhcpNetmaskJTextField.setBackground( Color.WHITE );
+
+	// DHCP DEFAULT ROUTE ////////
+        dhcpRouteJTextField.setText( networkingConfiguration.gateway().toString() );
+	dhcpRouteJTextField.setBackground( Color.WHITE );
+
+	// DNS1 ///////////
+        dnsPrimaryJTextField.setText( networkingConfiguration.dns1().toString() );
+	dnsPrimaryJTextField.setBackground( Color.WHITE );
+
+	// DNS2 //////////
+        dnsSecondaryJTextField.setText( networkingConfiguration.dns2().toString() );
+	dnsSecondaryJTextField.setBackground( Color.WHITE );
+
+	// OUTSIDE ACCESS ENABLED //////
+	boolean isOutsideAccessEnabled = networkingConfiguration.isOutsideAccessEnabled();
+	setOutsideAccessEnabledDependency( isOutsideAccessEnabled );
+	if( isOutsideAccessEnabled )
+            externalAdminEnabledRadioButton.setSelected(true);
+        else
+            externalAdminDisabledRadioButton.setSelected(true);
+
+	// OUTSIDE ACCESS RESTRICTED /////
+	boolean isOutsideAccessRestricted = networkingConfiguration.isOutsideAccessRestricted();
+	setOutsideAccessRestrictedDependency( isOutsideAccessRestricted );
+	if( isOutsideAccessRestricted )
+            externalAdminRestrictEnabledRadioButton.setSelected(true);
+        else
+            externalAdminRestrictDisabledRadioButton.setSelected(true);
+        
+	// OUTSIDE ACCESS RESTRICTED NETWORK //////
+        restrictIPaddrJTextField.setText( networkingConfiguration.outsideNetwork().toString() );
+	restrictIPaddrJTextField.setBackground( Color.WHITE );
+
+	// OUTSIDE ACCESS RESTRICTED NETMASK /////
+        restrictIPaddrJTextField.setText( networkingConfiguration.outsideNetwork().toString() );
+	restrictIPaddrJTextField.setBackground( Color.white );
+
+        // SSH ENABLED ///////
+	boolean isSshEnabled = networkingConfiguration.isSshEnabled();
+	if( isSshEnabled )
+            sshEnabledRadioButton.setSelected(true);
+        else
+            sshDisabledRadioButton.setSelected(true);
+        
+	// INSIDE INSECURE ENABLED ///////
+	boolean isInsideInsecureEnabled = networkingConfiguration.isInsideInsecureEnabled();
+	if( isInsideInsecureEnabled )
+            internalAdminEnabledRadioButton.setSelected(true);
+        else
+            internalAdminDisabledRadioButton.setSelected(true);
+
+        // TCP WINDOW SCALING /////
+	boolean isTcpWindowScalingEnabled = networkingConfiguration.isTcpWindowScalingEnabled();
+	if( isTcpWindowScalingEnabled )
+            tcpWindowEnabledRadioButton.setSelected(true);
+        else
+            tcpWindowDisabledRadioButton.setSelected(true);
+        	
     }
     
     
@@ -71,7 +330,7 @@ public class NetworkJPanel extends javax.swing.JPanel {
         setPreferredSize(new java.awt.Dimension(563, 751));
         dhcpJPanel.setLayout(new java.awt.GridBagLayout());
 
-        dhcpJPanel.setBorder(new javax.swing.border.TitledBorder(null, "IP Address Settings", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 0, 16)));
+        dhcpJPanel.setBorder(new javax.swing.border.TitledBorder(null, "IP Address Settings", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
         dhcpButtonGroup.add(dhcpEnabledRadioButton);
         dhcpEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
         dhcpEnabledRadioButton.setText("<html><b>Enable</b> DHCP to automatically set EdgeGuard's IP address when powered on.</html>");
@@ -208,7 +467,7 @@ public class NetworkJPanel extends javax.swing.JPanel {
 
         externalRemoteJPanel.setLayout(new java.awt.GridBagLayout());
 
-        externalRemoteJPanel.setBorder(new javax.swing.border.TitledBorder(null, "External Remote Administration Settings", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 0, 16)));
+        externalRemoteJPanel.setBorder(new javax.swing.border.TitledBorder(null, "External Remote Administration Settings", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
         externalAdminButtonGroup.add(externalAdminEnabledRadioButton);
         externalAdminEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
         externalAdminEnabledRadioButton.setText("<html><b>Enable</b> Remote Administration by authorized users outside of the local network.</html>");
@@ -360,7 +619,7 @@ public class NetworkJPanel extends javax.swing.JPanel {
 
         internalRemoteJPanel.setLayout(new java.awt.GridBagLayout());
 
-        internalRemoteJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Internal Remote Administration Settings", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 0, 16)));
+        internalRemoteJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Internal Remote Administration Settings", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
         internalAdminButtonGroup.add(internalAdminEnabledRadioButton);
         internalAdminEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
         internalAdminEnabledRadioButton.setText("<html><b>Enable</b> insecure Remote Administration inside the local network via http.  This is the default setting.</html>");
@@ -398,7 +657,7 @@ public class NetworkJPanel extends javax.swing.JPanel {
 
         tcpWindowJPanel.setLayout(new java.awt.GridBagLayout());
 
-        tcpWindowJPanel.setBorder(new javax.swing.border.TitledBorder(null, "TCP Window Scaling Settings", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 0, 16)));
+        tcpWindowJPanel.setBorder(new javax.swing.border.TitledBorder(null, "TCP Window Scaling Settings", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
         tcpWindowButtonGroup.add(tcpWindowEnabledRadioButton);
         tcpWindowEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
         tcpWindowEnabledRadioButton.setText("<html><b>Enable</b> TCP Window Scaling to possibly increase network performance.  This may not be compatible with some networks.</html>");
@@ -433,37 +692,50 @@ public class NetworkJPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_dnsPrimaryJTextFieldActionPerformed
 
     private void externalAdminDisabledRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_externalAdminDisabledRadioButtonActionPerformed
-        setAllEnabled( enableRemoteJPanel, !externalAdminDisabledRadioButton.isSelected() );
-        setAllEnabled( restrictIPJPanel, false );
+        setOutsideAccessEnabledDependency( false );
+	setOutsideAccessRestrictedDependency( false );
     }//GEN-LAST:event_externalAdminDisabledRadioButtonActionPerformed
 
     private void externalAdminEnabledRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_externalAdminEnabledRadioButtonActionPerformed
-        setAllEnabled( enableRemoteJPanel, externalAdminEnabledRadioButton.isSelected() );
-        setAllEnabled( restrictIPJPanel, externalAdminRestrictEnabledRadioButton.isSelected() );
+        setOutsideAccessEnabledDependency( true );
+	setOutsideAccessRestrictedDependency( externalAdminRestrictEnabledRadioButton.isSelected() );
     }//GEN-LAST:event_externalAdminEnabledRadioButtonActionPerformed
 
     private void externalAdminRestrictEnabledRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_externalAdminRestrictEnabledRadioButtonActionPerformed
         if( externalAdminEnabledRadioButton.isSelected() )
-            setAllEnabled( restrictIPJPanel, externalAdminRestrictEnabledRadioButton.isSelected() );
+	    setOutsideAccessRestrictedDependency( true );
     }//GEN-LAST:event_externalAdminRestrictEnabledRadioButtonActionPerformed
 
     private void externalAdminRestrictDisabledRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_externalAdminRestrictDisabledRadioButtonActionPerformed
-        setAllEnabled( restrictIPJPanel, !externalAdminRestrictDisabledRadioButton.isSelected() );
+	setOutsideAccessRestrictedDependency( false );
     }//GEN-LAST:event_externalAdminRestrictDisabledRadioButtonActionPerformed
 
     private void dhcpDisabledRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dhcpDisabledRadioButtonActionPerformed
-        setAllEnabled( staticIPJPanel, dhcpDisabledRadioButton.isSelected() );
+        setDhcpEnabledDependency( false );
     }//GEN-LAST:event_dhcpDisabledRadioButtonActionPerformed
 
     private void dhcpEnabledRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dhcpEnabledRadioButtonActionPerformed
-        setAllEnabled( staticIPJPanel, !dhcpEnabledRadioButton.isSelected() );
+        setDhcpEnabledDependency( true );
     }//GEN-LAST:event_dhcpEnabledRadioButtonActionPerformed
     
-    private void setAllEnabled(Container container, boolean enabled){
-        Component[] components = container.getComponents();
-        for(int i=0; i < components.length; i++)
-                components[i].setEnabled(enabled);
+    private void setDhcpEnabledDependency(boolean enabled){
+        dhcpIPaddrJTextField.setEnabled( !enabled );
+        dhcpNetmaskJTextField.setEnabled( !enabled );
+        dhcpRouteJTextField.setEnabled( !enabled );
+        dnsPrimaryJTextField.setEnabled( !enabled );
+        dnsSecondaryJTextField.setEnabled( !enabled );
     }
+
+    private void setOutsideAccessEnabledDependency(boolean enabled){
+	externalAdminRestrictEnabledRadioButton.setEnabled( enabled );
+	externalAdminRestrictDisabledRadioButton.setEnabled( enabled );
+    }
+
+    private void setOutsideAccessRestrictedDependency(boolean enabled){
+	restrictIPaddrJTextField.setEnabled( enabled );
+	restrictNetmaskJTextField.setEnabled( enabled );
+    }
+
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup dhcpButtonGroup;
