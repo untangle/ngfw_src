@@ -232,7 +232,7 @@ public class MTransformJPanel extends javax.swing.JPanel {
             setMaximumSize(maxDimension);
             controlsJToggleButton.setText("Hide Settings");
         }
-        else{ // showingBoolean == false
+        else{
             remove(mTransformControlsJPanel);
             setPreferredSize(minDimension);
             setMinimumSize(minDimension);
@@ -241,7 +241,7 @@ public class MTransformJPanel extends javax.swing.JPanel {
         }
         invalidate();
         repaint();
-        focus();
+	//        focus();  people no longer want this shizzle
 
     }
 
