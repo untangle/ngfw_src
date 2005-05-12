@@ -395,6 +395,7 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
         long byteCountLast = 0;
         long byteCountCurrent = 0;
 
+
         double sessionFactor;
         double throughputFactor;
         DoubleFIFO activity0Count = new DoubleFIFO(60);
@@ -429,7 +430,7 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
                 }
 
                 if( MTransformDisplayJPanel.this.getUpdateThroughput() ){
-                    throughputDynamicTimeSeriesCollection.addValue( 0, throughputDynamicTimeSeriesCollection.getNewestIndex(), ((float)byteCountCurrent - byteCountLast)/1000f);            
+                    throughputDynamicTimeSeriesCollection.addValue( 0, throughputDynamicTimeSeriesCollection.getNewestIndex(), ((float)(byteCountCurrent - byteCountLast))/1000f);
                     throughputDynamicTimeSeriesCollection.advanceTime();
                     byteCountLast = byteCountCurrent;
                     generateCountLabel(byteCountCurrent, "B", throughputTotalJLabel);
@@ -496,10 +497,7 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
                     // PAUSE A NORMAL AMOUNT OF TIME
                     Thread.sleep(SLEEP_MILLIS);     
 
-                    // poll transform for data values and update values
-                    // The old slow busted way:
-                    // currentStats = MTransformDisplayJPanel.this.graphTransform.getStats(); 
-                    // The new hotness:
+                    // GET TRANSFORM STATS AND UPDATE COUNTS
                     Transform fakeTran = Util.getStatsCache().getFakeTransform(graphTransformTid);
                     currentStats = fakeTran.getStats();
 
@@ -513,14 +511,13 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
                     byteCountCurrent = currentStats.c2tBytes()
                                      + currentStats.s2tBytes();
 
-                    //if(isAirgap){
-                    //    byteCountCurrent /= 1000l;
-                    //}
+		    // RESET COUNTS IF NECESSARY
                     if( (byteCountLast == 0) || (byteCountLast > byteCountCurrent) )
                         byteCountLast = byteCountCurrent;
                     if( (sessionRequestLast == 0) || (sessionRequestLast > sessionRequestCurrent) )
                         sessionRequestLast = sessionRequestCurrent;
 
+		    // ADD TO COUNTS
                     activity0Count.add( (double) currentStats.getCount(Transform.GENERIC_0_COUNTER) );                    
                     activity1Count.add( (double) currentStats.getCount(Transform.GENERIC_1_COUNTER) );
                     activity2Count.add( (double) currentStats.getCount(Transform.GENERIC_2_COUNTER) );
@@ -530,21 +527,9 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
                     doUpdateGraph();
 
                 }
-                //catch(IllegalStateException e){
-                    //return;
-                //}
                 catch(Exception e){  // handle this exception much more gracefully
 		    try{ Thread.currentThread().sleep(10000); }
 		    catch(Exception f){}
-                    // Util.handleExceptionNoRestart("Error polling graphs",  e);
-                  //  try{
-                  //      Util.handleExceptionWithRestart("Error polling graphs",  e);
-                  //      return;
-                  //  }
-                  //  catch(Exception f){
-                  //      Util.handleExceptionNoRestart("Error polling graphs",  f);
-                  //      return;
-                  //  }
                 }
             }
         }
