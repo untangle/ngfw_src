@@ -79,8 +79,16 @@ class HttpInvoker extends InvokerBase
             oos = new ObjectOutputStream(os);
             HttpInvocation hi = (HttpInvocation)pis.readObject();
 
-            // XXX verify remoteAddr equals one in loginSession
             LoginSession loginSession = hi.loginSession;
+
+            if (!remoteAddr.equals(remoteAddr)) {
+                logger.warn("client address mismatch: " + remoteAddr);
+
+                LoginExpiredException exn = new LoginExpiredException
+                    ("client address mismatch: " + remoteAddr);
+                oos.writeObject(exn);
+            }
+
             Integer targetId = hi.targetId;
             String methodName = hi.methodSignature;
             String definingClass = hi.definingClass;
