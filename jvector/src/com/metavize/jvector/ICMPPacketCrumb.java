@@ -117,7 +117,19 @@ public class ICMPPacketCrumb extends PacketCrumb
         /* XXX Probably should do some validation */
         this.icmpCode = icmpCode;
     }
-
+    
+    /**
+     * Repair the TCP/UDP/IP Header inside of the data block of an ICMP error packet so that it 
+     * contains the correct information.  If this is not an error packet, this does nothing.
+     * This should only eb
+     */
+    int updatePacket(  int icmpId, ICMPMailbox icmpMailbox )
+    {
+        return Netcap.updateIcmpPacket( this.data, this.limit, this.icmpType, this.icmpCode, 
+                                        icmpId, icmpMailbox );
+                                        
+    }
+    
     public void raze()
     {
         /* XXX What should go in here, C structure is freed automatically */

@@ -353,7 +353,6 @@ typedef struct netcap_session {
      * packet in the case when an icmp error message must be returned.
      */
     mailbox_t icmp_srv_mb;
-
     
     /* the server side traffic description */
     netcap_endpoints_t srv; 
@@ -397,6 +396,15 @@ typedef struct netcap_session {
      * A number indicating the server interface or 0 if it is unknown.
      */
     netcap_intf_t srv_intf;
+
+    /**
+     * For ICMP echo session, this is the message id for the client side and server side.
+     * These values are in host byte order
+     */
+    struct {
+        u_short client_id;
+        u_short server_id;
+    } icmp;
 
     /**
      * the callback to change the state of client and server connections
@@ -495,10 +503,11 @@ int   netcap_icmp_send (char *data, int data_len, netcap_pkt_t* pkt);
  * data_lim  - Total size of data. (This should always be greater than or equal to data_len).
  * icmp_type - Type of ICMP packet that is being sent.
  * icmp_code - Code for the ICMP packet.
+ * icmp_pid  - identifier to use for packets wehre it can be modified (non-error packets) (-1 never modify)
  * icmp_mb   - Mailbox to retrieve the packet to respond to.
  */
 int   netcap_icmp_update_pkt( char* data, int data_len, int data_lim,
-                              int icmp_type, int icmp_code, mailbox_t* icmp_mb );
+                              int icmp_type, int icmp_code, int icmp_pid, mailbox_t* icmp_mb );
 
 /**
  * Resource Freeing 
@@ -545,7 +554,7 @@ list_t*           netcap_sesstable_get_all_sessions ( void );
  */
 int               netcap_sesstable_kill_all_sessions ( void (*kill_all_function)(list_t *sessions) );
 /**
- * merge two UDP sessions into one
+ * merge two UDP or ICMP sessions into one
  * This function checks if there are two sessions in the session table for
  * the same session.  This can happen if a packet comes from both directions with the
  * exact opposite signature.
@@ -556,10 +565,13 @@ int               netcap_sesstable_kill_all_sessions ( void (*kill_all_function)
  * At some point in one of the sessions, the user calls merge which flags the other session
  * to die, and merges(packets/sessiontable) it into the calling session.
  */
-int               netcap_sesstable_merge_udp_tuple( netcap_session_t* netcap_sess,  int protocol, 
-                                                    in_addr_t src, in_addr_t dst, 
-                                                    u_short sport, u_short dport );
 
+int               netcap_sesstable_merge_udp_tuple ( netcap_session_t* netcap_sess, 
+                                                     in_addr_t src, in_addr_t dst,
+                                                     u_short sport, u_short dport );
+
+int               netcap_sesstable_merge_icmp_tuple ( netcap_session_t* netcap_sess, 
+                                                      in_addr_t src, in_addr_t dst, int icmp_pid );
 
 /**
  * netcap_traffic  functions

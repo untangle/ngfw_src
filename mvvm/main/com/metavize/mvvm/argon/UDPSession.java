@@ -6,12 +6,10 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: UDPSession.java,v 1.2 2005/01/04 18:23:09 rbscott Exp $
+ *  $Id$
  */
 
 package com.metavize.mvvm.argon;
-
-import java.nio.ByteBuffer;
 
 public interface UDPSession extends IPSession, UDPSessionDesc 
 {

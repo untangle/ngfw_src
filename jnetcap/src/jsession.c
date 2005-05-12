@@ -130,6 +130,14 @@ JNIEXPORT jint JNICALL JF_Session( getIntValue )
     case JN_UDPSession( FLAG_TOS ): 
         if ( session->protocol != IPPROTO_UDP ) return errlog( ERR_CRITICAL, "Expecting UDP\n" );
         return session->ttl;
+
+    case JN_UDPSession( FLAG_ICMP_CLIENT_ID ):
+        if ( session->protocol != IPPROTO_UDP ) return errlog( ERR_CRITICAL, "Expecting UDP\n" );
+        return session->icmp.client_id;
+
+    case JN_UDPSession( FLAG_ICMP_SERVER_ID ): 
+        if ( session->protocol != IPPROTO_UDP ) return errlog( ERR_CRITICAL, "Expecting UDP\n" );
+        return session->icmp.server_id;
     }
     
     endpoint = _get_endpoint( session, req_id );

@@ -24,6 +24,7 @@ import com.metavize.mvvm.MvvmContextFactory;
 
 import com.metavize.mvvm.tapi.AbstractEventHandler;
 import com.metavize.mvvm.tapi.IPNewSessionRequest;
+import com.metavize.mvvm.tapi.UDPNewSessionRequest;
 import com.metavize.mvvm.tapi.MPipeException;
 
 import com.metavize.mvvm.tapi.event.TCPNewSessionRequestEvent;
@@ -32,6 +33,7 @@ import com.metavize.mvvm.tapi.event.UDPSessionEvent;
 import com.metavize.mvvm.tapi.event.TCPSessionEvent;
 
 import com.metavize.mvvm.tapi.IPSession;
+import com.metavize.mvvm.tapi.UDPSession;
 
 import com.metavize.mvvm.tran.Transform;
 import org.apache.log4j.Logger;
@@ -56,6 +58,9 @@ class NatEventHandler extends AbstractEventHandler
     private static final int UDP_NAT_PORT_START = 10000;
     private static final int UDP_NAT_PORT_END   = 60000;
 
+    private static final int ICMP_PID_START     = 1;
+    private static final int ICMP_PID_END       = 60000;
+
     /* match to determine whether a session is natted */
     /* XXX Probably need to initialized this with a value */
     private RedirectMatcher nat;
@@ -73,6 +78,9 @@ class NatEventHandler extends AbstractEventHandler
     
     /* Tracks the open UDP ports for NAT */
     private final PortList udpPortList;
+    
+    /* Tracks the open ICMP identifiers, Not exactly a port, but same kind of thing */
+    private final PortList icmpPidList;
 
     /* The internal address */
     private IPaddr internalAddress;
@@ -83,6 +91,7 @@ class NatEventHandler extends AbstractEventHandler
     {
         tcpPortList = PortList.makePortList( TCP_NAT_PORT_START, TCP_NAT_PORT_END );
         udpPortList = PortList.makePortList( UDP_NAT_PORT_START, UDP_NAT_PORT_END );
+        icmpPidList = PortList.makePortList( ICMP_PID_START, ICMP_PID_END );
     }
 
     public void handleTCPNewSessionRequest( TCPNewSessionRequestEvent event )
@@ -131,7 +140,27 @@ class NatEventHandler extends AbstractEventHandler
     public void handleUDPFinalized(UDPSessionEvent event)
         throws MPipeException
     {
-        releasePort( Protocol.UDP, event.ipsession());
+        /* XXX Special case ICMP */
+        UDPSession udpsession = (UDPSession)event.ipsession();
+        
+        if ( udpsession.isPing()) {
+            Boolean isNatPid = (Boolean)udpsession.attachment();
+            int pid = udpsession.icmpId();
+
+            if ( isNatPid == null ) {
+                logger.error( "null attachment on Natd session" );
+                return;
+            }
+            if ( isNatPid ) {
+                logger.debug( "ICMP: Releasing pid: " + pid );
+                
+                icmpPidList.releasePort( pid );
+            } else {
+                logger.debug( "Ignoring non-natted pid: " + pid );
+            }
+        } else {
+            releasePort( Protocol.UDP, udpsession );
+        }
     }
     
     void configure( NatSettings settings, NetworkingConfiguration netConfig )
@@ -237,7 +266,12 @@ class NatEventHandler extends AbstractEventHandler
             /* Set the client port */
             /* XXX THIS IS A HACK, it really should check if the protocol is ICMP, but
              * for now there are only UDP sessions */
-            if ( request.clientPort() != 0 ) {
+            if ( request.clientPort() == 0 && request.serverPort() == 0 ) {
+                port = icmpPidList.getNextPort();
+                ((UDPNewSessionRequest)request).icmpId( port );
+                request.attach( Boolean.TRUE );
+                logger.debug( "Redirect PING session to id: " + port );
+            } else {
                 port = getNextPort( protocol );
                 request.clientPort( port );
                 
@@ -298,9 +332,7 @@ class NatEventHandler extends AbstractEventHandler
      */
     private int getNextPort( Protocol protocol )
     {                
-        int port;
-        port = getPortList( protocol ).getNextPort();
-        return port;
+        return getPortList( protocol ).getNextPort();
     }
 
     /**
@@ -309,6 +341,7 @@ class NatEventHandler extends AbstractEventHandler
     private void releasePort( Protocol protocol, IPSession session )
     {
         int port = session.clientPort();
+        
         PortList pList = getPortList( protocol );
 
         Boolean isNatPort = (Boolean)session.attachment();

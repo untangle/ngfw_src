@@ -21,25 +21,28 @@ class UDPNewSessionRequestImpl extends IPNewSessionRequestImpl implements UDPNew
     protected byte ttl;
     protected byte tos;
     protected byte[] options;
+    protected int icmpId;
 
     public UDPNewSessionRequestImpl( SessionGlobalState sessionGlobalState, ArgonAgent agent )
     {
         super( sessionGlobalState, agent );
         
-        /* Grab the TTL and TOS from the udp session */
-        ttl = sessionGlobalState.netcapUDPSession().ttl();
-        tos = sessionGlobalState.netcapUDPSession().tos();
+        /* Grab the TTL, TOS and ICMP Identifier from the udp session */
+        this.ttl    = sessionGlobalState.netcapUDPSession().ttl();
+        this.tos    = sessionGlobalState.netcapUDPSession().tos();
+        this.icmpId = sessionGlobalState.netcapUDPSession().icmpClientId();
     }
-
+    
     public UDPNewSessionRequestImpl( UDPSession session, ArgonAgent agent )
     {
         super( session, agent );
 
         /* Grab the TTL and TOS from the last request */
-        ttl = session.ttl();
-        tos = session.tos();
+        this.ttl    = session.ttl();
+        this.tos    = session.tos();
+        this.icmpId = session.icmpId();
     }
-
+    
     /**
      * Retrieve the TTL for a session, this only has an impact for the last session in the chain
      * when passing data crumbs (UDPPacketCrumbs have TTL value inside of them)
@@ -64,6 +67,14 @@ class UDPNewSessionRequestImpl extends IPNewSessionRequestImpl implements UDPNew
     public byte[] options()
     {
         return options;
+    }
+    
+    /**
+     * Retrieve the ICMP associated with the session
+     */
+    public int icmpId()
+    {
+        return icmpId;
     }
 
     /**
@@ -91,5 +102,14 @@ class UDPNewSessionRequestImpl extends IPNewSessionRequestImpl implements UDPNew
     public void options( byte[] value )
     {
         options = value;
+    }
+    
+    /**
+     * Set the ICMP id for this session.</p>
+     * @param value - new icmp id value, -1 to not modify.
+     */
+    public void icmpId( int value )
+    {
+        this.icmpId = value;
     }
 }

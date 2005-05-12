@@ -17,6 +17,7 @@
 #include <mvutil/hash.h>
 #include <mvutil/errlog.h>
 #include <mvutil/debug.h>
+#include <mvutil/unet.h>
 
 #include "libnetcap.h"
 #include "netcap_sesstable.h"
@@ -45,6 +46,10 @@ static u_int  _tuple_hash_func (const void* input);
 static session_tuple_t* _tuple_create (u_short proto, 
                                        in_addr_t shost, in_addr_t dhost, 
                                        u_short sport, u_short dport, u_int seq);
+
+static int _netcap_sesstable_merge_tuple( netcap_session_t* netcap_sess, int proto, 
+                                          in_addr_t src, in_addr_t dst, u_short sport, u_short dport,
+                                          int seq );
 
 static int _netcap_sesstable_remove (netcap_session_t* netcap_sess);
 static int _netcap_sesstable_remove_tuple (u_short proto, 
@@ -247,14 +252,14 @@ int        netcap_nc_sesstable_add_tuple (int if_lock, netcap_session_t* sess, i
 
     st = _tuple_create(protocol,src,dst,sport,dport, seq);
     
-    if (!st) {
+    if ( !st ) {
         return perrlog("_tuple_create");
     }
     
 
     if ( if_lock) SESSTABLE_WRLOCK();
 
-    if (ht_add(&_sess_tuple_table,(void*)st,(void*)sess)<0) {
+    if ( ht_add( &_sess_tuple_table,(void*)st,(void*)sess)<0) {
         if  (if_lock) SESSTABLE_UNLOCK();
         free(st);
         return perrlog("hash_add");
@@ -269,95 +274,27 @@ int        netcap_nc_sesstable_add_tuple (int if_lock, netcap_session_t* sess, i
     return 0;
 }
 
-/* If necesary, merge two UDP sessions together
- * Process:
- *   1. Lock the session table.
- *   2. If this session is dead, then exit
- *   3. Get the tuple for the reverse traffic
- *   4. If this doesn't exist, add and continue
- *   5. If it does, replace with this one, move over all packets, and tell
- *      the other session to die.  (It won't be able to get the session table 
- *      lock to continue).
- *   6. Put all of the UDP packets in the current session client mailbox
- *      into this servers server mailbox.
- */
-
-int netcap_sesstable_merge_udp_tuple ( netcap_session_t* netcap_sess, int proto, 
-                                       in_addr_t src, in_addr_t dst, u_short sport, u_short dport )
+int        netcap_sesstable_merge_udp_tuple ( netcap_session_t* netcap_sess, in_addr_t src, in_addr_t dst,
+                                              u_short sport, u_short dport )
 {
-    netcap_session_t* current_sess;
-    session_tuple_t* st;
-    netcap_pkt_t* pkt;
-    
-    if ( netcap_sess == NULL || ( proto != IPPROTO_UDP && proto != IPPROTO_ICMP )) {
-       return errlogargs();
-    }
-
-    if (( st =_tuple_create( proto, src, dst, sport, dport, 0 )) == NULL ) {
-        return errlog( ERR_CRITICAL, "_tuple_create\n" );
-    }
-
-    SESSTABLE_WRLOCK();
-    
-    if ( !netcap_sess->alive ) {
-        netcap_sess->remove_tuples = 0;
-        SESSTABLE_UNLOCK();
-        debug(7,"SESSTAB: Tuple merge session: %d exit\n", netcap_sess->session_id);
-
-        /* Expire one session inside of the shield */
-        /* XXX Should a failure in the shield return an error condition */
-        if ( netcap_shield_rep_end_session( src ) < 0 ) {
-            errlog(ERR_CRITICAL,"netcap_shield_rep_end_session\n");
-        }
-
-        return 1;
-    }
-
-    /* Check if the current tuple exists */
-    current_sess = ht_lookup(&_sess_tuple_table,(void*)st);
-
-    if ( current_sess == NULL ) {
-        debug(4,"SESSTAB: %s :: (%i,%s:%i -> ","Adding tuple", proto,
-              inet_ntoa(*(struct in_addr*)&src),sport);
-        
-        debug_nodate(4,"%s:%i)\n",inet_ntoa(*(struct in_addr*)&dst), dport);
-        
-        if ( ht_add( &_sess_tuple_table, (void*)st, (void*)netcap_sess ) < 0 ) {
-            SESSTABLE_UNLOCK();
-            free(st);
-            return perrlog("ht_add");
-        }
-    } else {
-        debug(4,"SESSTAB: %s :: (%i,%s:%i -> ","Merging tuple", proto,
-              inet_ntoa(*(struct in_addr*)&src),sport);
-        
-        debug_nodate(4,"%s:%i)\n",inet_ntoa(*(struct in_addr*)&dst), dport);
-
-        if (ht_add_replace(&_sess_tuple_table,(void*)st,(void*)netcap_sess)<0) {
-            SESSTABLE_UNLOCK();
-            return perrlog("ht_add_replace");
-        }
-
-        /* XXX For cleanliness, clearing out the udp session should be a 
-         * function call */
-
-        /* Indicate that the current session is no longer with us */
-        current_sess->alive = 0;
-        
-        /* Move over packets */
-        while((pkt = (netcap_pkt_t*)mailbox_try_get(&current_sess->cli_mb))) {
-            if ( mailbox_put(&netcap_sess->srv_mb, pkt)) {
-                netcap_pkt_raze(pkt);
-                perrlog("mailbox_put");
-            }
-        }        
-    }
-   
-    SESSTABLE_UNLOCK();
-    
-    return 0;
+    return _netcap_sesstable_merge_tuple( netcap_sess, IPPROTO_UDP, src, dst, sport, dport, 0 );
 }
 
+int        netcap_sesstable_merge_icmp_tuple ( netcap_session_t* netcap_sess, in_addr_t src, in_addr_t dst, 
+                                               int icmp_pid )
+{
+    /* If unspecified, use the ID from the client side */
+    if ( icmp_pid < 0 ) {
+        icmp_pid = netcap_sess->icmp.client_id;
+    }
+    
+    if ( icmp_pid > 0xFFFF ) {
+        return errlog( ERR_CRITICAL, "Invalid icmp_pid %d\n", icmp_pid );
+    }
+    
+    /* XXX Using UDP right now for ICMP session */
+    return _netcap_sesstable_merge_tuple( netcap_sess, IPPROTO_UDP, src, dst, 0, 0, icmp_pid );    
+}
 
 int        netcap_sesstable_remove_tuple (int if_lock, int proto, 
                                           in_addr_t shost, in_addr_t dhost, 
@@ -410,7 +347,7 @@ int netcap_sesstable_remove_session (int if_lock, netcap_session_t* netcap_sess)
         return errlogargs();
     }
 
-    if  ( if_lock) SESSTABLE_WRLOCK();
+    if  ( if_lock ) SESSTABLE_WRLOCK();
 
     /* Try to remove the session id, ignore errors */
     _netcap_sesstable_remove(netcap_sess);
@@ -419,23 +356,38 @@ int netcap_sesstable_remove_session (int if_lock, netcap_session_t* netcap_sess)
         /* Remove the forward tuple */
         endpoints = &netcap_sess->cli;
         
-        _netcap_sesstable_remove_tuple( netcap_sess->protocol, endpoints->cli.host.s_addr, 
-                                        endpoints->srv.host.s_addr,
-                                        endpoints->cli.port, endpoints->srv.port, netcap_sess->seq );
+        /* XXX Special casing ICMP */
+        if ( endpoints->cli.port == 0 ) {
+            _netcap_sesstable_remove_tuple( netcap_sess->protocol, endpoints->cli.host.s_addr, 
+                                            endpoints->srv.host.s_addr,
+                                            endpoints->cli.port, endpoints->srv.port, 
+                                            netcap_sess->icmp.client_id );
+        } else {
+            _netcap_sesstable_remove_tuple( netcap_sess->protocol, endpoints->cli.host.s_addr, 
+                                            endpoints->srv.host.s_addr,
+                                            endpoints->cli.port, endpoints->srv.port, netcap_sess->seq );
+        }
         
         /* Only remove the reverse if this is a UDP Connection */
         if ( netcap_sess->protocol == IPPROTO_UDP ) {
             /* Remove the reverse endpoints */
             endpoints = &netcap_sess->srv;
             
-            _netcap_sesstable_remove_tuple( netcap_sess->protocol, endpoints->srv.host.s_addr, 
-                                            endpoints->cli.host.s_addr,
-                                            endpoints->srv.port, endpoints->cli.port, 0 );
+            /* XXX Special casing ICMP */
+            if ( endpoints->cli.port == 0 ) {
+                _netcap_sesstable_remove_tuple( netcap_sess->protocol, endpoints->srv.host.s_addr, 
+                                                endpoints->cli.host.s_addr,
+                                                endpoints->srv.port, endpoints->cli.port,
+                                                netcap_sess->icmp.server_id );
+            } else {
+                _netcap_sesstable_remove_tuple( netcap_sess->protocol, endpoints->srv.host.s_addr, 
+                                                endpoints->cli.host.s_addr,
+                                                endpoints->srv.port, endpoints->cli.port, 0 );
+            }
         }
-
     }
         
-    if  ( if_lock) SESSTABLE_UNLOCK();
+    if  ( if_lock ) SESSTABLE_UNLOCK();
         
     return 0;
 }
@@ -458,10 +410,102 @@ static int _netcap_sesstable_remove_tuple(u_short proto,
     session_tuple_t st = {proto,shost,dhost,sport,dport,seq};
 
     if (ht_remove(&_sess_tuple_table,(void*)&st)<0) {
-        return -1;
+        return errlog( ERR_WARNING, "ht_remove\n" );
     }
 
     return 0;
+}
+
+/* If necesary, merge two sessions together of any protocol
+ * Process:
+ *   1. Lock the session table.
+ *   2. If this session is dead, then exit
+ *   3. Get the tuple for the reverse traffic
+ *   4. If this doesn't exist, add and continue
+ *   5. If it does, replace with this one, move over all packets, and tell
+ *      the other session to die.  (It won't be able to get the session table 
+ *      lock to continue).
+ *   6. Put all of the UDP packets in the current session client mailbox
+ *      into this servers server mailbox. (XXX Only if UDP or ICMP)
+ */
+static int _netcap_sesstable_merge_tuple( netcap_session_t* netcap_sess, int proto, 
+                                          in_addr_t src, in_addr_t dst, u_short sport, u_short dport,
+                                          int seq )
+{
+    netcap_session_t* current_sess;
+    session_tuple_t* st = NULL;
+    netcap_pkt_t* pkt;
+    
+    if ( netcap_sess == NULL || ( proto != IPPROTO_UDP && proto != IPPROTO_ICMP )) {
+       return errlogargs();
+    }
+
+    SESSTABLE_WRLOCK();
+    
+    if ( !netcap_sess->alive ) {
+        netcap_sess->remove_tuples = 0;
+        SESSTABLE_UNLOCK();
+        debug(7,"SESSTAB: Tuple merge session: %d exit\n", netcap_sess->session_id);
+
+        /* Expire one session inside of the shield */
+        /* XXX Should a failure in the shield return an error condition */
+        if ( netcap_shield_rep_end_session( src ) < 0 ) {
+            errlog(ERR_CRITICAL,"netcap_shield_rep_end_session\n");
+        }
+
+        return 1;
+    }
+
+    if (( st = _tuple_create( proto, src, dst, sport, dport, seq )) == NULL ) {
+        return errlog( ERR_CRITICAL, "_tuple_create\n" );
+    }
+
+    /* Check if the current tuple exists */
+    current_sess = ht_lookup( &_sess_tuple_table, (void*)st );
+
+    if ( current_sess == NULL ) {
+        debug( 4,"SESSTAB: %s :: (%i,%s:%i -> %s:%i)\n","Adding tuple", proto,
+               unet_next_inet_ntoa( src ), sport, unet_next_inet_ntoa( dst ), dport );
+                
+        if ( ht_add( &_sess_tuple_table, (void*)st, (void*)netcap_sess ) < 0 ) {
+            SESSTABLE_UNLOCK();
+            free( st );
+            return perrlog("ht_add");
+        }
+    } else {
+        debug( 4, "SESSTAB: %s :: (%i,%s:%i -> %s:%i)\n","Merging tuple", proto,
+               unet_next_inet_ntoa( src ), sport, unet_next_inet_ntoa( dst ), dport );
+        
+        if ( ht_add_replace( &_sess_tuple_table, (void*)st, (void*)netcap_sess ) < 0 ) {
+            SESSTABLE_UNLOCK();
+            return perrlog( "ht_add_replace" );
+        }
+
+        /* XXX For cleanliness, clearing out the udp session should be a 
+         * function call */
+
+        /* Indicate that the current session is no longer with us */
+        current_sess->alive = 0;
+        
+        /* Move over packets */
+        while((pkt = (netcap_pkt_t*)mailbox_try_get(&current_sess->cli_mb))) {
+            if ( mailbox_put(&netcap_sess->srv_mb, pkt)) {
+                netcap_pkt_raze(pkt);
+                perrlog("mailbox_put");
+            }
+        }
+    }
+    
+    /* Modify the tuples so they can be removed properly */
+    netcap_sess->srv.srv.host.s_addr = src;
+    netcap_sess->srv.srv.port        = sport;
+    netcap_sess->srv.cli.host.s_addr = dst;
+    netcap_sess->srv.cli.port        = dport;
+    netcap_sess->icmp.server_id      = seq;
+   
+    SESSTABLE_UNLOCK();
+    
+    return 0;    
 }
 
 int netcap_sesstable_kill_all_sessions ( void (*kill_all_function)(list_t *sessions))

@@ -652,8 +652,8 @@ JNIEXPORT jboolean JNICALL JF_Netcap( isBridgeAlive )
  * Signature: ([BIII)V
  */
 JNIEXPORT jint JNICALL JF_Netcap( updateIcmpPacket )
-( JNIEnv *env, jobject _this, jbyteArray _data, jint data_len, jint icmp_type, jint icmp_code, 
-  jlong _icmp_mb )
+    ( JNIEnv *env, jobject _this, jbyteArray _data, jint data_len, jint icmp_type, jint icmp_code, 
+      jint icmp_pid, jlong _icmp_mb )
 {
     mailbox_t* icmp_mb = (mailbox_t*)JLONG_TO_UINT( _icmp_mb );
     jbyte* data;
@@ -677,10 +677,11 @@ JNIEXPORT jint JNICALL JF_Netcap( updateIcmpPacket )
             break;
         }
         
-        if (( ret = netcap_icmp_update_pkt( data, data_len, data_lim, icmp_type, icmp_code, icmp_mb )) < 0 ) {
-            ret = jnetcap_error( JNETCAP_ERROR_STT, ERR_CRITICAL, "netcap_icmp_fix_pkt\n" );
+        ret = netcap_icmp_update_pkt( data, data_len, data_lim, icmp_type, icmp_code, icmp_pid, icmp_mb );
+        if ( ret < 0 ) {
+            ret = jnetcap_error( JNETCAP_ERROR_STT, ERR_CRITICAL, "netcap_icmp_update_pkt\n" );
             break;
-        }        
+        }
     } while ( 0 );
 
     (*env)->ReleaseByteArrayElements( env, _data, data, 0 );

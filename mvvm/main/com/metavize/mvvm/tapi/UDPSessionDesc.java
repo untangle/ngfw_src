@@ -23,4 +23,9 @@ public interface UDPSessionDesc extends IPSessionDesc {
      * @return a <code>boolean</code> true if the session is a ping session
      */
     boolean isPing();
+
+    /**
+     * <code>icmpId</code> returns the id of the ICMP session.
+     * only valid if isPing is true */
+    int icmpId();
 }

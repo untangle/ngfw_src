@@ -31,4 +31,10 @@ public class UDPSessionDescImpl extends IPSessionDescImpl implements UDPSessionD
     {
         return (clientPort == 0 && serverPort == 0);
     }
+    
+    /* XXX Not sure what this is XXX This should be implemented for sure */
+    public int icmpId()
+    {
+        return 0;
+    }
 }

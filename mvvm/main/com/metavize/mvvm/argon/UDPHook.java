@@ -31,6 +31,8 @@ public class UDPHook implements NetcapHook
 {
     private static UDPHook INSTANCE;
     private static final Logger logger = Logger.getLogger( UDPHook.class );
+    
+    private int icmpServerId = -1;
 
     public static UDPHook getInstance() {
         if ( INSTANCE == null )
@@ -68,6 +70,8 @@ public class UDPHook implements NetcapHook
         protected final UDPSideListener clientSideListener = new UDPSideListener();
         protected final UDPSideListener serverSideListener = new UDPSideListener();
 
+        protected boolean isIcmpSession;
+
         protected IPTraffic serverTraffic = null;
         protected IPTraffic clientTraffic = null;
 
@@ -76,6 +80,7 @@ public class UDPHook implements NetcapHook
         protected UDPArgonHook( int id )
         {
             netcapUDPSession = new NetcapUDPSession( id );
+            isIcmpSession = netcapUDPSession.isIcmpSession();
         }
 
         protected int timeout()
@@ -109,6 +114,7 @@ public class UDPHook implements NetcapHook
             if ( sessionList.isEmpty()) {
                 /* No sessions, complete with the current session parameters */
                 serverTraffic = new IPTraffic( netcapUDPSession.serverSide());
+                
 
             } else {
                 /* Setup the UDP parameters to use the parameteres from the last session in the chain */
@@ -126,6 +132,9 @@ public class UDPHook implements NetcapHook
                 serverTraffic.ttl( session.ttl());
                 serverTraffic.tos( session.tos());
                 /** XXX Setup the options */
+                
+                /* Update the ICMP id */
+                icmpServerId = session.icmpId();
             }
 
             /* Setup the marking */
@@ -136,10 +145,19 @@ public class UDPHook implements NetcapHook
                         
             serverTraffic.lock();
 
-            if ( !netcapUDPSession.merge( serverTraffic )) {
-                /* Merged out and indicate that the session was rejected */
-                state = IPNewSessionRequest.REJECTED;
-                return false;
+            /* XXXX ICMP HACK */
+            if ( isIcmpSession ) {
+                if ( !netcapUDPSession.icmpMerge( serverTraffic, icmpServerId )) {
+                    /* Merged out and indicate that the session was rejected */
+                    state = IPNewSessionRequest.REJECTED;
+                    return false;
+                }
+            } else {
+                if ( !netcapUDPSession.merge( serverTraffic )) {
+                    /* Merged out and indicate that the session was rejected */
+                    state = IPNewSessionRequest.REJECTED;
+                    return false;
+                }
             }
 
             return true;
@@ -178,12 +196,14 @@ public class UDPHook implements NetcapHook
 
         protected Sink makeClientSink()
         {
-            return new UDPSink( clientTraffic, clientSideListener, netcapUDPSession.icmpClientMailbox());
+            return new UDPSink( clientTraffic, clientSideListener, netcapUDPSession.icmpClientMailbox(),
+                                netcapUDPSession.icmpClientId());
         }
 
         protected Sink makeServerSink()
         {
-            return new UDPSink( serverTraffic, serverSideListener, netcapUDPSession.icmpServerMailbox());
+            return new UDPSink( serverTraffic, serverSideListener, netcapUDPSession.icmpServerMailbox(),
+                                icmpServerId );
         }
 
         protected Source makeClientSource()

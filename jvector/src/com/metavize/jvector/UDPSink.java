@@ -23,31 +23,12 @@ public class UDPSink extends Sink
     
     protected final IPTraffic traffic;
 
+    private final int icmpId;
+
     /* Flag for the write function to indicate when ttl or tos is unused */
     protected static final int DISABLED = -1;
 
-    /* The next two constructors are now obsolete since sessionPointer and traffic must be set */
-    private UDPSink( IPTraffic traffic )
-    {
-        /* Must lock the traffic structure so no one can modify where data is going */
-        traffic.lock();
-
-        this.traffic = traffic;
-
-        /* XXX After the conversion remove the (int), (may need longs for 64-bit) */
-        pointer = create( (int)traffic.pointer());
-        
-        /* XXXXXXXXXXXXXXXXXXXXXXXXX */
-        this.icmpMailbox = null;
-    }
-
-    private UDPSink( IPTraffic traffic, SinkEndpointListener listener )
-    {
-        this( traffic );
-        registerListener( listener );
-    }
-
-    public UDPSink( IPTraffic traffic, SinkEndpointListener listener, ICMPMailbox icmpMailbox )
+    public UDPSink( IPTraffic traffic, SinkEndpointListener listener, ICMPMailbox icmpMailbox, int icmpId )
     {
         /* Must lock the traffic structure so no one can modify where data is going */
         traffic.lock();
@@ -58,6 +39,7 @@ public class UDPSink extends Sink
         pointer = create( (int)traffic.pointer());
         
         this.icmpMailbox = icmpMailbox;
+        this.icmpId      = icmpId;
         
         registerListener( listener );        
     }
@@ -115,7 +97,7 @@ public class UDPSink extends Sink
                 /* This fixes the address and ports for an error packet */
                 try {
                     /* Update to the new length */
-                    icmpCrumb.limit( updateIcmpPacket( icmpCrumb ));
+                    icmpCrumb.limit( icmpCrumb.updatePacket( icmpId, icmpMailbox ));
                 } catch( Exception e ) {
                     Vector.logError( "Unable to fix ICMP Crumb: " + e );
                     return Vector.ACTION_DEQUEUE;
@@ -170,16 +152,6 @@ public class UDPSink extends Sink
         if ( listener != null ) listener.shutdownEvent( this );
 
         return shutdown( pointer );
-    }
-
-    /**
-     * Repair the TCP/UDP/IP Header inside of the data block of an ICMP error packet so that it 
-     * contains the correct information.  If this is not an error packet, this does nothing.
-     */
-    int updateIcmpPacket( ICMPPacketCrumb icmpCrumb )
-    {
-        return Netcap.updateIcmpPacket( icmpCrumb.data(), icmpCrumb.limit(), 
-                                        icmpCrumb.icmpType(), icmpCrumb.icmpCode(), icmpMailbox );
     }
 
     protected native int create( int pointer );

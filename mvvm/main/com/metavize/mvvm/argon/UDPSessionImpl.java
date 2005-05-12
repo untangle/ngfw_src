@@ -26,6 +26,7 @@ public class UDPSessionImpl extends IPSessionImpl implements UDPSession
     protected final byte ttl;
     protected final byte tos;
     protected final byte options[];
+    protected final int  icmpId;
 
     private static final Logger logger = Logger.getLogger( UDPSessionImpl.class );
 
@@ -33,9 +34,10 @@ public class UDPSessionImpl extends IPSessionImpl implements UDPSession
     {
         super( request );
         
-        ttl = request.ttl();
-        tos = request.tos();
+        ttl     = request.ttl();
+        tos     = request.tos();
         options = request.options();
+        icmpId  = request.icmpId();
     }
     
     /**
@@ -62,6 +64,14 @@ public class UDPSessionImpl extends IPSessionImpl implements UDPSession
     public byte[] options()
     {
         return options;
+    }
+
+    /**
+     * Retrieve the ICMP associated with the session
+     */
+    public int icmpId()
+    {
+        return icmpId;
     }
 
     class UDPSessionSocketQueueListener extends SessionSocketQueueListener

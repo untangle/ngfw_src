@@ -216,6 +216,9 @@ int netcap_session_init(netcap_session_t* netcap_sess, netcap_endpoints_t *endpo
         }
     }
 
+    /* Clear out the ICMP identifiers */
+    netcap_sess->icmp.client_id = 0;
+    netcap_sess->icmp.server_id = 0;
 
     /* Need the ICMP mailboxes */
     if ( mailbox_init( &netcap_sess->icmp_cli_mb ) < 0 ) {

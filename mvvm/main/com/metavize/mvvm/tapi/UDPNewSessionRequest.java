@@ -6,10 +6,20 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: UDPNewSessionRequest.java,v 1.2 2005/01/06 23:15:42 jdi Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.tapi;
 
 public interface UDPNewSessionRequest extends IPNewSessionRequest {
+    /**
+     * Retrieve the ICMP associated with the session
+     */
+    int icmpId();
+
+    /**
+     * Set the ICMP id for the session.
+     * @param value - The value to set the icmp id to, set to -1 to not modify
+     */
+    void icmpId( int value );
 }

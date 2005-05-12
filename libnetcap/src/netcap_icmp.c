@@ -44,12 +44,14 @@ static int _restore_cached_msg( mailbox_t* mb, netcap_icmp_msg_t* msg );
  * Retrieve an ICMP session using the packet as the key 
  */
 static __inline__ netcap_session_t* _icmp_get_tuple( netcap_pkt_t* pkt )
-{
-    /* XXX Probably want to use the ID as the port, otherwise there could be a 
-     * huge number of sessions in the same bucket */
+{    
+    /* pkt->data has already been tested for size and validity */
+    int id = ntohs( ((struct icmphdr*)pkt->data)->un.echo.id );
+    
+    /* The ID is treated as the sequence number, this way each ICMP message is distinguishable */
     return netcap_nc_sesstable_get_tuple( !NC_SESSTABLE_LOCK, IPPROTO_UDP,
                                           pkt->src.host.s_addr, pkt->dst.host.s_addr,
-                                          0, 0, 0 );
+                                          0, 0, id );
 }
 
 /**
@@ -143,8 +145,11 @@ static __inline__ netcap_session_t* _icmp_get_error_session( netcap_pkt_t* pkt, 
 static __inline__ netcap_session_t* _icmp_create_session( netcap_pkt_t* pkt )
 {
     netcap_session_t* session;
+    u_short icmp_client_id = 0;
     
     unet_reset_inet_ntoa();
+
+    icmp_client_id = ntohs(((struct icmphdr*)pkt->data)->un.echo.id );
 
     debug( 10, "ICMP: Creating a new session for %s -> %s\n",
            unet_next_inet_ntoa( pkt->src.host.s_addr ), unet_next_inet_ntoa( pkt->dst.host.s_addr ));
@@ -153,10 +158,11 @@ static __inline__ netcap_session_t* _icmp_create_session( netcap_pkt_t* pkt )
     
     /* XXX is it safe to just use udp sessions */
     session = netcap_udp_session_create( pkt );
-    
+
+    /* pkt->data has already been tested for size and validity */    
     if ( netcap_nc_sesstable_add_tuple( !NC_SESSTABLE_LOCK, session, IPPROTO_UDP,
                                         pkt->src.host.s_addr, pkt->dst.host.s_addr,
-                                        0, 0, 0 ) < 0 ) {
+                                        0, 0, icmp_client_id ) < 0 ) {
         netcap_udp_session_raze( !NC_SESSTABLE_LOCK, session );
         return errlog_null( ERR_CRITICAL, "netcap_nc_sesstable_add_tuple\n" );
     }
@@ -166,6 +172,10 @@ static __inline__ netcap_session_t* _icmp_create_session( netcap_pkt_t* pkt )
         netcap_udp_session_raze( !NC_SESSTABLE_LOCK, session );
         return errlog_null( ERR_CRITICAL, "netcap_nc_sesstable_add\n" );
     }
+
+    /* Update the ICMP client session identifier */
+    session->icmp.client_id = icmp_client_id;
+    session->icmp.server_id = icmp_client_id;
 
     return session;
 }
@@ -239,7 +249,7 @@ static struct cmsghdr* my__cmsg_nxthdr(void *__ctl, size_t __size, struct cmsghd
 
 int  netcap_icmp_init()
 {
-    if (( _icmp.fd = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP )) < 0 )
+    if (( _icmp.fd = socket( AF_INET, SOCK_RAW, IPPROTO_ICMP )) < 0 )
         return perrlog("socket");
 
     return 0;
@@ -340,7 +350,7 @@ int  netcap_icmp_send( char *data, int data_len, netcap_pkt_t* pkt )
 }
 
 int   netcap_icmp_update_pkt( char* data, int data_len, int data_lim,
-                              int icmp_type, int icmp_code, mailbox_t* icmp_mb )
+                              int icmp_type, int icmp_code, int id, mailbox_t* icmp_mb )
 {
     /* Length of the data that is copied in */
     int len;
@@ -363,6 +373,33 @@ int   netcap_icmp_update_pkt( char* data, int data_len, int data_lim,
     new_len = data_len;
     
     switch ( icmp_type ) {
+    case ICMP_ECHO:
+        /* fallthrough */
+    case ICMP_ECHOREPLY:
+        if ( data_lim < ICMP_MINLEN ) {
+            return errlog( ERR_WARNING, "Not enough room, %d < %d\n", data_lim, ICMP_MINLEN );
+        }
+        
+        icmp_header = (struct icmp*)data;
+
+        if ( id > 0 ) {
+            /* id is a 16 bit field */
+            id = id & 0xFFFF;
+            /* Convert to a network short */
+            id = htons( id );
+            if ( icmp_header->icmp_id != id ) {
+                debug( 9, "ICMP: change id, %d to %d\n", ntohs( icmp_header->icmp_id ), ntohs( id ));
+                       
+                icmp_header->icmp_id = id;
+
+                /* Update the checksum */
+                icmp_header->icmp_cksum = 0;
+                icmp_header->icmp_cksum = unet_in_cksum( (u_int16_t*)data, new_len );
+            }
+        }
+        break;
+
+        /* XXX Doesn't change the code for packets that do not fit one of the error conditions */
     case ICMP_DEST_UNREACH:
         /* fallthrough */
     case ICMP_SOURCE_QUENCH:
@@ -373,27 +410,27 @@ int   netcap_icmp_update_pkt( char* data, int data_len, int data_lim,
         /* fallthrough */
     case ICMP_PARAMETERPROB:
         /* Fix the packet */
+        
+        /* XXX May need the ID of the last packet received */
+        if ( data_lim < ICMP_ADVLENMIN ) {
+            return errlog( ERR_WARNING, "Not enough room, %d < %d\n", data_lim, ICMP_ADVLENMIN );
+        }
+        
         if (( msg = mailbox_timed_get( icmp_mb, 1 )) == NULL ) {
             return errlog( ERR_CRITICAL, "mailbox_timed_get\n" );
         }
         
         reply_data = &msg->data;
         
-        /* XXX May need the ID of the last packet received */
-        if ( data_lim < ICMP_ADVLENMIN ) {
-            netcap_icmp_msg_raze( msg );
-            return errlog( ERR_WARNING, "Not enough room, %d < %d\n", data_len, ICMP_ADVLENMIN );
-        }
-        
         icmp_header = (struct icmp*)data;
 
         if ( icmp_header->icmp_type != icmp_type ) {
-            debug( 9, "ICMP: Modifying type on packet (%d->%d)\n", icmp_header->icmp_type, icmp_type );
+            debug( 4, "ICMP: Modifying type on packet (%d->%d)\n", icmp_header->icmp_type, icmp_type );
             icmp_header->icmp_type = icmp_type;
         }
 
         if ( icmp_header->icmp_code != icmp_code ) {
-            debug( 9, "ICMP: Modifying code on packet (%d->%d)\n", icmp_header->icmp_code, icmp_code );
+            debug( 4, "ICMP: Modifying code on packet (%d->%d)\n", icmp_header->icmp_code, icmp_code );
             icmp_header->icmp_code = icmp_code;
         }
 
@@ -405,7 +442,6 @@ int   netcap_icmp_update_pkt( char* data, int data_len, int data_lim,
         }
         
         /* Copy in the data packet */
-        /* XXX NEED TO UPDATE THE SIZE OF THE PACKET */
         debug( 10, "ICMP: Updating packet: copying in %d bytes\n", len );
 
         memcpy( &icmp_header->icmp_ip, reply_data, len );

@@ -18,9 +18,10 @@ public class NetcapUDPSession extends NetcapSession
     protected static final int MERGED_DEAD = 0xDEAD00D;
     
     /** These cannot conflict with the flags inside of NetcapTCPSession and NetcapSession */
-    private final static int FLAG_TTL         = 64;
-    private final static int FLAG_TOS         = 65;
-    
+    private final static int FLAG_TTL            = 64;
+    private final static int FLAG_TOS            = 65;
+    private final static int FLAG_ICMP_CLIENT_ID = 66;
+    private final static int FLAG_ICMP_SERVER_ID = 67;
     
     private final PacketMailbox clientMailbox;
     private final PacketMailbox serverMailbox;
@@ -36,8 +37,31 @@ public class NetcapUDPSession extends NetcapSession
     public PacketMailbox clientMailbox() { return clientMailbox; }    
     public PacketMailbox serverMailbox() { return serverMailbox; }
     
-    public byte ttl() { return (byte) getIntValue( FLAG_TTL, pointer.value()); }
-    public byte tos() { return (byte) getIntValue( FLAG_TOS, pointer.value()); }
+    public byte ttl()
+    { 
+        return (byte) getIntValue( FLAG_TTL, pointer.value()); 
+    }
+
+    public byte tos()
+    { 
+        return (byte) getIntValue( FLAG_TOS, pointer.value());
+    }
+
+    public boolean isIcmpSession()
+    {
+        /* Only ICMP sessions have non-zero ICMP client ids */
+        return ( clientSide.client().port() == 0 && clientSide.server().port() == 0 );
+    }
+
+    public int icmpClientId()
+    { 
+        return  getIntValue( FLAG_ICMP_CLIENT_ID, pointer.value());
+    }
+    
+    public int icmpServerId()
+    {
+        return  getIntValue( FLAG_ICMP_SERVER_ID, pointer.value());
+    }
     
     protected Endpoints makeEndpoints( boolean ifClient ) 
     {
@@ -67,6 +91,31 @@ public class NetcapUDPSession extends NetcapSession
         
         return false;
     }
+
+    /**
+     * Merge this session with any other ICMP (treated as UDP for now) sessions started at the same time.</p>
+     * @param traffic - Description of the traffic going to the server (dst should refer
+     *                  to the server endpoint).
+     * @return Returns whether or not the session was merged, or merged out.  True If this session
+     *         should continue, false if this session was merged out.
+     */
+    public boolean icmpMerge( IPTraffic traffic, int id )
+    {
+        int ret  = icmpMerge( pointer.value(), id,
+                              Inet4AddressConverter.toLong( traffic.dst().host()),
+                              Inet4AddressConverter.toLong( traffic.src().host()));
+        
+        if ( ret == MERGED_DEAD ) {
+            return false;
+        } else if ( ret == 0 ) {
+            return true;
+        } else {
+            Netcap.error( "Invalid merge" );
+        }
+        
+        return false;
+    }
+
     
     private static native long   read( long sessionPointer, boolean ifClient, int timeout );
     private static native byte[] data( long packetPointer );
@@ -84,6 +133,17 @@ public class NetcapUDPSession extends NetcapSession
      */
     private static native int    merge( long sessionPointer,
                                         long srcAddr, int srcPort, long dstAddr, int dstPort );
+
+    /**
+     * Merge this session with any other ICMP/UDP session that may have started in the reverse
+     * direction.</p>
+     *
+     * @param sessionPointer - Pointer to the udp session.
+     * @param id - Session identifier in the ICMP message.
+     * @param srcAddr - Source address(server side, server address)
+     * @param dstAddr - Destination address(server side, client address)
+     */
+    private static native int    icmpMerge( long sessionPointer, int id, long srcAddr, long dstAddr );
 
     private static native int    mailboxPointer( long sessionPointer, boolean ifClient );
     

@@ -78,6 +78,11 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
         return (clientPort() == 0 && serverPort() == 0);
     }
 
+    public int icmpId()
+    {
+        return ((com.metavize.mvvm.argon.UDPSession)pSession).icmpId();
+    }
+
     public IPSessionDesc makeDesc()
     {
         return new UDPSessionDescImpl(id(), new SessionStats(stats), clientState(), serverState(),

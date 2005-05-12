@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: UDPNewSessionRequest.java,v 1.5 2005/01/06 01:01:29 jdi Exp $
+ *  $Id$
  */
 
 package com.metavize.mvvm.argon;
@@ -33,6 +33,11 @@ public interface UDPNewSessionRequest extends IPNewSessionRequest, UDPSessionDes
     byte[] options();
 
     /**
+     * Retrieve the ICMP associated with the session
+     */
+    int icmpId();
+
+    /**
      * Set the TTL for a session.</p>
      * @param value - new TTL value.
      */
@@ -49,4 +54,10 @@ public interface UDPNewSessionRequest extends IPNewSessionRequest, UDPSessionDes
      * @param value - The new options.
      */
     void options( byte[] value );
+
+    /**
+     * Set the ICMP id for the session.
+     * @param value - The value to set the icmp id to, set to -1 to not modify
+     */
+    void icmpId( int value );
 }

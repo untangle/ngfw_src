@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: UDPSessionDesc.java,v 1.3 2005/01/05 20:05:24 rbscott Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.argon;
@@ -28,4 +28,9 @@ public interface UDPSessionDesc extends IPSessionDesc {
      * Retrieve the options associated with the first UDP packet in the session.
      */
     byte[] options();
+
+    /**
+     * Retrieve the ICMP associated with the session
+     */
+    int icmpId();
 }

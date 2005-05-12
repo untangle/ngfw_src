@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: UDPNewSessionRequestImpl.java,v 1.1 2005/01/06 23:15:42 jdi Exp $
+ *  $Id$
  */
 
 package com.metavize.mvvm.tapi.impl;
@@ -20,4 +20,22 @@ class UDPNewSessionRequestImpl extends IPNewSessionRequestImpl implements UDPNew
     protected UDPNewSessionRequestImpl(Dispatcher disp, com.metavize.mvvm.argon.UDPNewSessionRequest pRequest) {
         super(disp, pRequest);
     }
+
+        /**
+     * Retrieve the ICMP associated with the session
+     */
+    public int icmpId()
+    {
+        return ((com.metavize.mvvm.argon.UDPNewSessionRequest)pRequest).icmpId();
+    }
+
+    /**
+     * Set the ICMP id for this session.</p>
+     * @param value - new icmp id value, -1 to not modify.
+     */
+    public void icmpId(int value)
+    {
+        ((com.metavize.mvvm.argon.UDPNewSessionRequest)pRequest).icmpId(value);
+    }
+
 }

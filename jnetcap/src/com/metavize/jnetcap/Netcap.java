@@ -277,10 +277,10 @@ public final class Netcap {
      * Update an ICMP error packet to contain the data in a cached message.
      * @return - New length of the ICMP packet.
      */
-    public static int updateIcmpPacket( byte[] data, int len, int icmpType, int icmpCode, 
+    public static int updateIcmpPacket( byte[] data, int len, int icmpType, int icmpCode, int icmpId,
                                         ICMPMailbox icmpMailbox )
     {
-        return updateIcmpPacket( data, len, icmpType, icmpCode, icmpMailbox.pointer().value());
+        return updateIcmpPacket( data, len, icmpType, icmpCode, icmpId, icmpMailbox.pointer().value());
     }
     
     /**
@@ -290,7 +290,7 @@ public final class Netcap {
      * @param icmpCode - Code for the ICMP packet.
      * @param trafficPointer - Pointer to the traffic structure the packet will go out on
      */
-    private static native int updateIcmpPacket( byte[] data, int len, int icmpType, int icmpCode, 
+    private static native int updateIcmpPacket( byte[] data, int len, int icmpType, int icmpCode, int id,
                                                 long icmpMailboxPointer );
     
     /**

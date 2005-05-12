@@ -13,6 +13,7 @@
 #include <errno.h>
 #include <poll.h>
 #include "errlog.h"
+#include "debug.h"
 
 #define __QUEUE_LENGTH 2048
 #define START_PORT 9500
@@ -406,8 +407,8 @@ char*   unet_next_inet_ntoa( in_addr_t addr )
     i.s_addr = addr;
 
     if ( _ntoa.current >= NTOA_BUF_COUNT ) {
-        errlog( ERR_CRITICAL, "unet_next_ntoa: Exceeded calls before call unet_inet_ntoa(%d)\n", _ntoa.current );
-        return "unet ERR";
+        debug( 10, "UNET: Cycled buffer\n" );
+        _ntoa.current = 0;
     }
     
     strncpy( _ntoa.buf_array[_ntoa.current], inet_ntoa( i ), INET_ADDRSTRLEN );

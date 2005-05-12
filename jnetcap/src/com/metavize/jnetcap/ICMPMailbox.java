@@ -21,7 +21,7 @@ package com.metavize.jnetcap;
 public class ICMPMailbox
 {
     private final CPointer pointer;
-
+    
     /**
      * This class can only be created inside of jnetcap
      */
