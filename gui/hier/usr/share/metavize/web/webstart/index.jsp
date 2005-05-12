@@ -115,12 +115,19 @@ String helpClickHere = "Click <a href=\"help.html\">here</a> for more informatio
                   </a>
                 </object>
                 <% } else { // if ( isDownload ) %>
-                You are connecting to:
-                <br/>
+                Server: 
                 <span style="font-style: italic;">
                   <%=host %>
                 </span>
+		<br/>
+		Connection:
+		<span style="font-style: italic;">
+                  <% if(isSecure){  %>
+			https (secure)
+		<%} else {%>
+			http (standard)
                 <% } %>
+                </span>
               </div>
               <% if ( !isDownload ) { %>
               <br/>
@@ -170,11 +177,7 @@ String helpClickHere = "Click <a href=\"help.html\">here</a> for more informatio
               <% } // else if ( isHelp )
               if ( !isDownload ) { %>
               <div style="text-align: center;">
-                <a href="gui.jnlp">Launch EdgeGuard Client</a><br>
-		<% if(isSecure){  %>
-			via https (secure)
-		<%} else {%>
-			via http (standard)
+                <a href="gui.jnlp">Launch EdgeGuard Client</a><br>		
 		<% } %>
               </div>
               <% } %>
