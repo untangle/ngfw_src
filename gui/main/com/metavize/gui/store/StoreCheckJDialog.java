@@ -20,10 +20,12 @@ public class StoreCheckJDialog extends javax.swing.JDialog implements java.awt.e
     private boolean upgradesAvailable = true;
     
     /** Creates new form ProceedJDialog */
-    public StoreCheckJDialog(java.awt.Frame parent, boolean modal) {
-        super(parent, modal);
+    public StoreCheckJDialog() {
+        super(Util.getMMainJFrame(), true);
         initComponents();
         this.addWindowListener(this);
+
+	this.setBounds( Util.generateCenteredBounds(Util.getMMainJFrame().getBounds(), this.getWidth(), this.getHeight()) );
     }
     
     public boolean upgradesAvailable(){
@@ -35,9 +37,10 @@ public class StoreCheckJDialog extends javax.swing.JDialog implements java.awt.e
             new UpgradeCheckThread();
             super.setVisible(true);
         }
-        else
+        else{
             super.setVisible(false);
-
+	    dispose();
+	}
     }
     
     private void initComponents() {//GEN-BEGIN:initComponents
@@ -192,7 +195,7 @@ public class StoreCheckJDialog extends javax.swing.JDialog implements java.awt.e
                         StoreCheckJDialog.this.jProgressBar.setString("Upgrades found.  Please perform upgrades.");
                     }});
                 }
-                
+                Util.checkedUpgrades();
             }
             catch(Exception e){
                 Util.handleExceptionNoRestart("Error auto checking for upgrades on server", e);

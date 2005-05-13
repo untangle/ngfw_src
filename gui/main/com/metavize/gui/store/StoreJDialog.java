@@ -57,20 +57,6 @@ public class StoreJDialog extends ConfigJDialog implements Savable, Refreshable 
 	super.savableMap.put(NAME_STORE, this);
 	super.refreshableMap.put(NAME_STORE, this);
     }
-    
-    public void setVisible(boolean isVisible){
-        if(isVisible){
-            StoreCheckJDialog storeCheckJDialog = new StoreCheckJDialog( Util.getMMainJFrame(), true);
-            storeCheckJDialog.setBounds( Util.generateCenteredBounds(Util.getMMainJFrame().getBounds(), storeCheckJDialog.getWidth(), storeCheckJDialog.getHeight()) );
-            storeCheckJDialog.setVisible(true);
-            if( !storeCheckJDialog.upgradesAvailable() )
-                super.setVisible(true);
-            storeCheckJDialog.dispose();
-        }
-        else{
-            super.setVisible(false);
-        }
-    }
 
     public void generateGui(){}
     public void refreshSettings(){}

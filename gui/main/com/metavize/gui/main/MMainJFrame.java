@@ -29,7 +29,6 @@ public class MMainJFrame extends javax.swing.JFrame {
 
 
     // CONSTANTS
-    private static final int UPGRADE_THREAD_SLEEP_MILLIS = 60 * (60 * 1000); // X * (minutes)
     private static final Dimension MIN_SIZE = new Dimension(1024, Util.determineMinHeight(768));
     private static final Dimension MAX_SIZE = new Dimension(1600, 1200);
 
@@ -700,8 +699,18 @@ public class MMainJFrame extends javax.swing.JFrame {
         StoreJDialog storeJDialog = new StoreJDialog(targetMTransformJButton.duplicate());
 	storeJDialog.setBounds( Util.generateCenteredBounds(MMainJFrame.this.getBounds(), storeJDialog.getWidth(), storeJDialog.getHeight()) );
 	storeJDialog.setVisible(true);
-	if(storeJDialog.getPurchasedMTransformJButton() != null)
-	    targetMTransformJButton.purchase();
+	if( storeJDialog.getPurchasedMTransformJButton() != null){
+	    if( Util.mustCheckUpgrades() ){
+		StoreCheckJDialog storeCheckJDialog = new StoreCheckJDialog();
+		storeCheckJDialog.setVisible(true);
+		if( !storeCheckJDialog.upgradesAvailable() ){
+		    targetMTransformJButton.purchase();
+		}
+	    }
+	    else{
+		targetMTransformJButton.purchase();
+	    }
+        }
     }    
     
     private void toolboxActionPerformed(java.awt.event.ActionEvent evt){
@@ -772,12 +781,13 @@ public class MMainJFrame extends javax.swing.JFrame {
                         updateJButton(0);
                     else
                         updateJButton(mackageDescs.length);
-                    Thread.sleep(UPGRADE_THREAD_SLEEP_MILLIS);
+		    Util.checkedUpgrades();
+                    Thread.sleep(Util.UPGRADE_THREAD_SLEEP_MILLIS);
 		}
 		catch(Exception e){
 		    Util.handleExceptionNoRestart("Error auto checking for upgrades on server", e);
 		    updateJButton(-1);
-		    try{ Thread.sleep(UPGRADE_THREAD_SLEEP_MILLIS); }
+		    try{ Thread.sleep(Util.UPGRADE_THREAD_SLEEP_MILLIS); }
 		    catch(Exception f){ Util.handleExceptionNoRestart("Error waiting on upgrade thread", f); }
 		}
 	    }

@@ -69,12 +69,12 @@ public class UpgradeJDialog extends javax.swing.JDialog implements java.awt.even
 
         // BUILD SECOND TAB (SCHEDULED AUTOMATIC UPGRADE)
         int hour, minute;
-    yesAutoJRadioButton.setSelected(upgradeSettings.getAutoUpgrade());
-    period = upgradeSettings.getPeriod();
-
-    hour = period.getHour();
-    minute = period.getMinute();
-
+	yesAutoJRadioButton.setSelected(upgradeSettings.getAutoUpgrade());
+	period = upgradeSettings.getPeriod();
+	
+	hour = period.getHour();
+	minute = period.getMinute();
+	
         // set time
         Calendar calendar = new GregorianCalendar();
         calendar.set(Calendar.HOUR_OF_DAY, hour);
@@ -489,22 +489,22 @@ public class UpgradeJDialog extends javax.swing.JDialog implements java.awt.even
 
             int days = 0;
 
-        //alerts.generateCriticalAlerts(criticalAlertsJCheckBox.isSelected());
-        //alerts.generateSummaryAlerts(summaryAlertsJCheckBox.isSelected());
-        //upgradeSettings.alerts(alerts);
-
+	    //alerts.generateCriticalAlerts(criticalAlertsJCheckBox.isSelected());
+	    //alerts.generateSummaryAlerts(summaryAlertsJCheckBox.isSelected());
+	    //upgradeSettings.alerts(alerts);
+	    
             // commit
             period.setHour(hour);
             period.setMinute(minute);
             period.setSunday( sundayJCheckBox.isSelected() );
-        period.setMonday( mondayJCheckBox.isSelected() );
-        period.setTuesday( tuesdayJCheckBox.isSelected() );
-        period.setWednesday( wednesdayJCheckBox.isSelected() );
-        period.setThursday( thursdayJCheckBox.isSelected() );
-        period.setFriday( fridayJCheckBox.isSelected() );
-        period.setSaturday( saturdayJCheckBox.isSelected() );
-            upgradeSettings.setPeriod(period);
-            upgradeSettings.setAutoUpgrade(yesAutoJRadioButton.isSelected());
+	    period.setMonday( mondayJCheckBox.isSelected() );
+	    period.setTuesday( tuesdayJCheckBox.isSelected() );
+	    period.setWednesday( wednesdayJCheckBox.isSelected() );
+	    period.setThursday( thursdayJCheckBox.isSelected() );
+	    period.setFriday( fridayJCheckBox.isSelected() );
+	    period.setSaturday( saturdayJCheckBox.isSelected() );
+	    upgradeSettings.setPeriod(period);
+	    upgradeSettings.setAutoUpgrade(yesAutoJRadioButton.isSelected());
             Util.getToolboxManager().setUpgradeSettings(upgradeSettings);
         }
         catch(Exception e){
@@ -594,6 +594,7 @@ public class UpgradeJDialog extends javax.swing.JDialog implements java.awt.even
                 if(Util.getToolboxManager() != null){
                     Util.getToolboxManager().update();
                     upgradable = Util.getToolboxManager().upgradable();
+		    Util.checkedUpgrades();
                 }
                 Thread.sleep(1000);
 

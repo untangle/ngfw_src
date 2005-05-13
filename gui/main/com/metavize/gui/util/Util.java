@@ -29,7 +29,7 @@ import com.metavize.mvvm.tran.*;
 public class Util {
 
     // 2.4.0 INFO /////////////////
-    private static String version = "2.4.0";
+    private static String version = "";
     public static String getVersion(){ return version; }
     /////////////////////////////////
 
@@ -67,36 +67,49 @@ public class Util {
     private static URL serverCodeBase;
 
     public static URL getServerCodeBase(){
-    if(serverCodeBase != null)
-        return serverCodeBase;
-    else{
-        try{
-        BasicService basicService = (BasicService) ServiceManager.lookup("javax.jnlp.BasicService");
-        serverCodeBase = basicService.getCodeBase();
-        }
-        catch(Exception e){
-        Util.handleExceptionNoRestart("Error:", e);
-        }
-        finally{
-        return serverCodeBase;
-        }
+	if(serverCodeBase != null)
+	    return serverCodeBase;
+	else{
+	    try{
+		BasicService basicService = (BasicService) ServiceManager.lookup("javax.jnlp.BasicService");
+		serverCodeBase = basicService.getCodeBase();
+	    }
+	    catch(Exception e){
+		Util.handleExceptionNoRestart("Error:", e);
+	    }
+	    finally{
+		return serverCodeBase;
+	    }
+	}
     }
-    }
-
+    
     public static boolean isSecureViaHttps(){
-    try{
-        String protocol = getServerCodeBase().getProtocol();
-        if( protocol.equals("https") )
-        return true;
-        else
-        return false;
-    }
-    catch(Exception e){
-        return false;
-    }
+	try{
+	    String protocol = getServerCodeBase().getProtocol();
+	    if( protocol.equals("https") )
+		return true;
+	    else
+		return false;
+	}
+	catch(Exception e){
+	    return false;
+	}
     }
     /////////////////////////////////
 
+    // UPGRADE /////////////////////
+    public static final int UPGRADE_THREAD_SLEEP_MILLIS = 60 * (60 * 1000); // X * (minutes * 1000)
+    public static final long UPGRADE_STORE_CHECK_FRESH_MILLIS = 60l * (5l * 1000l); // X * (minutes * 1000)
+
+    private static long lastUpgradeCheck = 0l;
+    public static boolean mustCheckUpgrades(){
+	if( System.currentTimeMillis() - lastUpgradeCheck > UPGRADE_STORE_CHECK_FRESH_MILLIS )
+	    return true;
+	else
+	    return false;
+    }
+    public static void checkedUpgrades(){ lastUpgradeCheck = System.currentTimeMillis(); }
+    ///////////////////////////////
 
     // DefaultTableColumnModel constants /////////
     public static final int TABLE_TOTAL_WIDTH = 471; /* in pixels (contains extra pixel) */
@@ -270,36 +283,36 @@ public class Util {
     }
 
     public static String wrapString(String originalString, int lineLength){
-    StringTokenizer stringTokenizer = new StringTokenizer(originalString);
-    StringBuffer stringBuffer = new StringBuffer();
-    String tempString;
-    int currentLineLength = 0;
-    while( stringTokenizer.hasMoreTokens() ){
-        tempString = stringTokenizer.nextToken();
-
-        if( currentLineLength + tempString.length() >= lineLength ){
-        stringBuffer.append("<br>" + tempString + " ");
-        currentLineLength = tempString.length() + 1;
-        }
-        else{
-        stringBuffer.append(tempString + " ");
-        currentLineLength += (tempString.length() + 1);
-        }
+	StringTokenizer stringTokenizer = new StringTokenizer(originalString);
+	StringBuffer stringBuffer = new StringBuffer();
+	String tempString;
+	int currentLineLength = 0;
+	while( stringTokenizer.hasMoreTokens() ){
+	    tempString = stringTokenizer.nextToken();
+	    
+	    if( currentLineLength + tempString.length() >= lineLength ){
+		stringBuffer.append("<br>" + tempString + " ");
+		currentLineLength = tempString.length() + 1;
+	    }
+	    else{
+		stringBuffer.append(tempString + " ");
+		currentLineLength += (tempString.length() + 1);
+	    }
+	}
+	return stringBuffer.toString();
     }
-    return stringBuffer.toString();
-    }
-
+    
     public static int determineMinHeight(int attemptedMinHeight){
         GraphicsConfiguration graphicsConfiguration = getGraphicsConfiguration();
-    Insets screenInsets = Toolkit.getDefaultToolkit().getScreenInsets( graphicsConfiguration );
-    int screenHeight = graphicsConfiguration.getBounds().height - screenInsets.top - screenInsets.bottom;
-    //  System.err.println("Determined screen height to be: " + screenHeight);
-    if( screenHeight < attemptedMinHeight)
-        return screenHeight;
-    else
-        return attemptedMinHeight;
+	Insets screenInsets = Toolkit.getDefaultToolkit().getScreenInsets( graphicsConfiguration );
+	int screenHeight = graphicsConfiguration.getBounds().height - screenInsets.top - screenInsets.bottom;
+	//  System.err.println("Determined screen height to be: " + screenHeight);
+	if( screenHeight < attemptedMinHeight)
+	    return screenHeight;
+	else
+	    return attemptedMinHeight;
     }
-
+    
     public static void resizeCheck(final Component resizableComponent, Dimension minSize, Dimension maxSize){
 
         Dimension currentSize = resizableComponent.getSize();

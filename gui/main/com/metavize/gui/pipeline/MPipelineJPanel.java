@@ -118,38 +118,31 @@ public class MPipelineJPanel extends javax.swing.JPanel {
 
 
     public synchronized void removeTransform(TransformContext transformContext) {
-        String removableName = null;
-        Tid removableTid = null;
-        MTransformJPanel removableMTransformJPanel = null;
+	String removableName = null;
+	Tid removableTid = null;
         try{
+	    // REMOVE AT SERVER SIDE
             removableName = transformContext.getTransformDesc().getName();
             removableTid = transformContext.getTid();
-            removableMTransformJPanel = (MTransformJPanel) transformContextHashtable.get( removableTid );
+            final MTransformJPanel removableMTransformJPanel = (MTransformJPanel) transformContextHashtable.get( removableTid );
             Util.getTransformManager().destroy( removableTid );
-        }
-        catch(Exception e){
+
+	    // REMOVE AT CLIENT SIDE
+	    transformContextHashtable.remove( removableTid );
+	    SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+		((MRackJPanel)MPipelineJPanel.this.transformJPanel).removeTransform( removableMTransformJPanel );
+		MPipelineJPanel.this.revalidate();
+	    }});
+	    
+	    Util.setEmailAndVirusJPanel(removableName, null);
+	    Util.getMMainJFrame().getButton(removableName).setDeployableView();
+	}
+	catch(Exception e){
             try{
                 Util.handleExceptionWithRestart("Error removing transform: " + removableName,  e);
             }
             catch(Exception f){
                 Util.handleExceptionNoRestart("Error removing transform: " + removableName,  f);
-            }
-        }
-
-	try{            
-            transformContextHashtable.remove( removableTid );
-            ((MRackJPanel)transformJPanel).removeTransform( removableMTransformJPanel );
-            Util.setEmailAndVirusJPanel(removableName, null);
-	    Util.getMMainJFrame().getButton(removableName).setDeployableView();
-	    this.validate();
-	    this.repaint();
-	}
-	catch(Exception e){
-            try{
-                Util.handleExceptionWithRestart("Error removing transform gui: " + removableName,  e);
-            }
-            catch(Exception f){
-                Util.handleExceptionNoRestart("Error removing transform gui: " + removableName,  f);
             }
         }
 
