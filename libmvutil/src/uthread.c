@@ -13,7 +13,7 @@
 #include <pthread.h>
 #include "errlog.h"
 
-#define SMALL_STACK_SIZE 96*1024
+#define SMALL_STACK_SIZE 128*1024
 
 uthread_attr_t uthread_attr;
 

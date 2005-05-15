@@ -542,7 +542,7 @@ public class Argon
         
         if ( sleepingThreads < numThreads ) {            
             /* Create at most numThread threads */
-            int newThreads = Math.min( numThreads, MAX_THREADS - ( totalThreads + numThreads ) );
+            int newThreads = Math.min( numThreads, (MAX_THREADS - totalThreads) );
             
             if ( newThreads > 0 ) {
                 System.out.println( "Creating (" + sleepingThreads + "/" + totalThreads + ") " + newThreads + 
