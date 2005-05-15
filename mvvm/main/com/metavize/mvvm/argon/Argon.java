@@ -46,6 +46,12 @@ public class Argon
     /* True if there was an error on initialization, 
      * a real shutdown does not occur if this is false */
     protected static boolean isValid = true;
+    
+    private static int sleepingThreads;
+    private static int totalThreads;
+    private static int activeThreads;
+
+    private static int MAX_THREADS = 10000;
 
     protected static int[] tcpLocalAntisubscribes = { 80, 443, 22 };
     protected static int[] udpLocalAntisubscribes = {};
@@ -86,7 +92,7 @@ public class Argon
     protected static List<String[]> guardRegulatedOutside = new LinkedList<String[]>();
 
     /* Number of threads to donate to netcap */
-    protected static int numThreads        = 10;
+    protected static int numThreads        = 15;
 
     /* Debugging */
     private static final Logger logger = Logger.getLogger( Argon.class );
@@ -417,6 +423,9 @@ public class Argon
 
         /* Donate a few threads */
         Netcap.donateThreads( numThreads );
+        sleepingThreads = numThreads;
+        totalThreads    = numThreads;
+        activeThreads   = 0;
 
         /* Start the scheduler */
         Netcap.startScheduler();
@@ -524,5 +533,40 @@ public class Argon
         } catch ( Exception e ) {
             logger.error( "Unable to relieve the guard on outside or inside ports", e );
         }
+    }
+
+    static synchronized void registerSessionThread()
+    {
+        sleepingThreads--;
+        activeThreads++;
+        
+        if ( sleepingThreads < numThreads ) {            
+            /* Create at most numThread threads */
+            int newThreads = Math.min( numThreads, MAX_THREADS - ( totalThreads + numThreads ) );
+            
+            if ( newThreads > 0 ) {
+                System.out.println( "Creating (" + sleepingThreads + "/" + totalThreads + ") " + newThreads + 
+                                    " more threads" );
+
+                Netcap.donateThreads( newThreads );
+                sleepingThreads += newThreads;
+                totalThreads    += newThreads;
+            } else {
+                logger.error( "Thread limit reached: active: " + activeThreads + 
+                              " sleeping: " + sleepingThreads );
+            }
+
+        }
+
+        if ( true || totalThreads != ( sleepingThreads + activeThreads )) {
+            logger.error( "Thread total mismatch active: " + activeThreads + " sleeping: " + sleepingThreads 
+                          + " total: " + totalThreads );
+        }
+    }
+
+    static synchronized void deregisterSessionThread()
+    {
+        sleepingThreads++;
+        activeThreads--;
     }
 }

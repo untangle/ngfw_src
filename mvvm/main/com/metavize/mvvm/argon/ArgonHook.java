@@ -68,6 +68,8 @@ public abstract class ArgonHook implements Runnable
      */
     public void run()
     {
+        Argon.registerSessionThread();
+
         try {
             ClassLoader cl = getClass().getClassLoader();
             Thread.currentThread().setContextClassLoader(cl);
@@ -131,24 +133,30 @@ public abstract class ArgonHook implements Runnable
             logger.error( "Exception executing argon hook:", e);
         }
 
-        /* Let the pipeline foundy know */
-        pipelineFoundry.destroy( clientSide, serverSide );
-
-        /* Remove the vector from the vectron table */
-        /* You must remove the vector before razing, or else 
-         * the vector may receive a message(eg shutdown) from another thread */
-        activeVectrons.remove( vector );
-
-        /* Delete the vector */
-        if ( vector != null ) {
-            vector.raze();
+        try {
+            /* Let the pipeline foundy know */
+            pipelineFoundry.destroy( clientSide, serverSide );
+            
+            /* Remove the vector from the vectron table */
+            /* You must remove the vector before razing, or else 
+             * the vector may receive a message(eg shutdown) from another thread */
+            activeVectrons.remove( vector );
+            
+            /* Delete the vector */
+            if ( vector != null ) {
+                vector.raze();
+            }
+            
+            /* Delete everything else */
+            raze();
+            
+            if ( logger.isDebugEnabled())
+                logger.debug( "Exiting thread: " + sessionGlobalState );
+        } catch ( Exception e ) {
+            logger.error( "Exception exiting hook:", e );
         }
-
-        /* Delete everything else */
-        raze();
-
-        if ( logger.isDebugEnabled())
-            logger.debug( "Exiting thread: " + sessionGlobalState );
+        
+        Argon.deregisterSessionThread();
     }
 
     /**

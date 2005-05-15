@@ -532,7 +532,7 @@ JNIEXPORT jint JNICALL JF_Netcap( donateThreads )
             return jnetcap_error( JNETCAP_ERROR_STT, ERR_CRITICAL, "jnetcap_thread_create\n" );
         }
                 
-        if ( pthread_create( &id, &uthread_attr.other.medium, _run_thread, arg )) {
+        if ( pthread_create( &id, &uthread_attr.other.low, _run_thread, arg )) {
             perrlog( "pthread_create" );
             return jnetcap_error( JNETCAP_ERROR_STT, ERR_CRITICAL, "pthread_create\n" );
         }

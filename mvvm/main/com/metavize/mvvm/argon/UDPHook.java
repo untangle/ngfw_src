@@ -57,7 +57,8 @@ public class UDPHook implements NetcapHook
     public void event( int sessionID )
     {
         /* XXX Need to change the priority of the thread */
-        new Thread( new UDPArgonHook( sessionID )).start();
+        // new Thread( new UDPArgonHook( sessionID )).start();
+        new UDPArgonHook( sessionID ).run();
     }
 
     private class UDPArgonHook extends ArgonHook

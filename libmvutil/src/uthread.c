@@ -13,7 +13,7 @@
 #include <pthread.h>
 #include "errlog.h"
 
-#define SMALL_STACK_SIZE 512*1024
+#define SMALL_STACK_SIZE 96*1024
 
 uthread_attr_t uthread_attr;
 
@@ -53,7 +53,9 @@ int uthread_init (void)
     max = sched_get_priority_max(SCHED_OTHER);
     other_medium_priority.sched_priority = (min+max)/2;
     other_high_priority.sched_priority = other_medium_priority.sched_priority + 1;
+    
     other_low_priority.sched_priority  = other_medium_priority.sched_priority - 1;
+    other_low_priority.sched_priority  = 0;
 
     // We do this even though it apparently has no effect with NPTL -- be sure to
     // call pthread_setschedparam() manually after creating each new thread. XX

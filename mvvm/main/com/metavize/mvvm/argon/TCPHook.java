@@ -63,7 +63,8 @@ public class TCPHook implements NetcapHook
     public void event( int sessionID )
     {
         /* XXX Need to change the priority of the thread */
-        new Thread( new TCPArgonHook( sessionID )).start();
+        // new Thread( new TCPArgonHook( sessionID )).start();
+        new TCPArgonHook( sessionID ).run();
     }
         
     private class TCPArgonHook extends ArgonHook

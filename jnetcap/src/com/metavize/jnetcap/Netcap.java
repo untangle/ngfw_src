@@ -25,8 +25,8 @@ public final class Netcap {
     private static final int JNETCAP_DEBUG = 1;
     private static final int NETCAP_DEBUG  = 2;
 
-    /* The maximum number of netcap threads you can create */
-    public static final int MAX_THREADS   = 20;
+    /* The maximum number of netcap threads you can create at a time */
+    public static final int MAX_THREADS    = 50;
 
     /* The largest interface that netcap will return */
     public static final int MAX_INTERFACE = 32;
