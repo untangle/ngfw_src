@@ -25,6 +25,15 @@ extern int  _debug_init(void);
 extern int  _debug(int pkg,int level,char *lpszFmt, ...);
 
 /**
+ * usage: like printf except the first argument is the debug level 
+ * lower debug level should be more important 
+ * example: debug(3,"number: %i \n",n) 
+ * if level is less than __DEBUG_LEVEL then it will be printed 
+ * This prints a backtrace at the end
+ */
+extern int  _debug_backtrace(int pkg,int level,char *lpszFmt, ...);
+
+/**
  * same as debug but with no date prefix
  */
 extern int  _debug_nodate(int pkg,int level,char *lpszFmt, ...);
@@ -57,6 +66,7 @@ extern void _debug_date_toggle(int pkg,int onoff);
 #define debug_set_output(...)  _debug_set_output(__VA_ARGS__)
 #define debug_set_mylevel(a)   _debug_set_level(DEBUG_PKG,a)
 #define debug_get_mylevel()    _debug_get_level(DEBUG_PKG)
+#define debug_backtrace(...)   _debug_backtrace(DEBUG_PKG,__VA_ARGS__)
 
 #define debug_set_level(...)   _debug_set_level(__VA_ARGS__)
 #define debug_date_toggle(a)   _debug_date_toggle(DEBUG_PKG)
@@ -71,6 +81,8 @@ extern void _debug_date_toggle(int pkg,int onoff);
 #define debug_get_mylevel()    -1
 #define debug_set_level(...)   (void)0
 #define debug_date_toggle(a)   (void)0
+#define debug_backtrace(...)   (void)0
+
 
 #endif
 #endif

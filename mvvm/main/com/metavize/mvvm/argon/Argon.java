@@ -537,36 +537,36 @@ public class Argon
 
     static synchronized void registerSessionThread()
     {
-        sleepingThreads--;
-        activeThreads++;
+//         sleepingThreads--;
+//         activeThreads++;
         
-        if ( sleepingThreads < numThreads ) {            
-            /* Create at most numThread threads */
-            int newThreads = Math.min( numThreads, (MAX_THREADS - totalThreads) );
+//         if ( sleepingThreads < numThreads ) {            
+//             /* Create at most numThread threads */
+//             int newThreads = Math.min( numThreads, (MAX_THREADS - totalThreads) );
             
-            if ( newThreads > 0 ) {
-                System.out.println( "Creating (" + sleepingThreads + "/" + totalThreads + ") " + newThreads + 
-                                    " more threads" );
+//             if ( newThreads > 0 ) {
+//                 System.out.println( "Creating (" + sleepingThreads + "/" + totalThreads + ") " + newThreads + 
+//                                     " more threads" );
 
-                Netcap.donateThreads( newThreads );
-                sleepingThreads += newThreads;
-                totalThreads    += newThreads;
-            } else {
-                logger.error( "Thread limit reached: active: " + activeThreads + 
-                              " sleeping: " + sleepingThreads );
-            }
+//                 Netcap.donateThreads( newThreads );
+//                 sleepingThreads += newThreads;
+//                 totalThreads    += newThreads;
+//             } else {
+//                 logger.error( "Thread limit reached: active: " + activeThreads + 
+//                               " sleeping: " + sleepingThreads );
+//             }
 
-        }
+//         }
 
-        if ( true || totalThreads != ( sleepingThreads + activeThreads )) {
-            logger.error( "Thread total mismatch active: " + activeThreads + " sleeping: " + sleepingThreads 
-                          + " total: " + totalThreads );
-        }
+//         if ( true || totalThreads != ( sleepingThreads + activeThreads )) {
+//             logger.error( "Thread total mismatch active: " + activeThreads + " sleeping: " + sleepingThreads 
+//                           + " total: " + totalThreads );
+//         }
     }
 
     static synchronized void deregisterSessionThread()
     {
-        sleepingThreads++;
-        activeThreads--;
+//         sleepingThreads++;
+//         activeThreads--;
     }
 }

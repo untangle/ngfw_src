@@ -7,6 +7,7 @@
 #include <sys/time.h>
 #include <time.h>
 #include <stdlib.h>
+#include <execinfo.h>
 #include "errlog.h"
 
 #define DATE_DEFAULT  1
@@ -30,6 +31,8 @@ int  _debug(int pkg, int level, char *lpszFmt, ...)
 
         va_start(argptr, lpszFmt);
 
+        OUT_LOCK();
+
         if (pkgs[pkg].date) {
             struct timeval tv;
             struct tm tm;
@@ -40,8 +43,6 @@ int  _debug(int pkg, int level, char *lpszFmt, ...)
             
             fprintf (pkgs[pkg].output,"%02i-%02i %02i:%02i:%02i.%06li| ",tm.tm_mon+1,tm.tm_mday,tm.tm_hour,tm.tm_min,tm.tm_sec,(long)tv.tv_usec);
         }
-
-        OUT_LOCK();
           
         vfprintf(pkgs[pkg].output,lpszFmt, argptr);
 
@@ -54,6 +55,60 @@ int  _debug(int pkg, int level, char *lpszFmt, ...)
 
 	return 0;
 }
+
+int _debug_backtrace( int pkg, int level, char *lpszFmt, ... )
+{
+    if (pkgs[pkg].level >= level)
+    {
+        void* trace[16];
+        int trace_size;
+        char** messages = NULL;
+        int c;
+
+
+        va_list argptr;
+        if (!pkgs[pkg].output) return 0;
+        
+        va_start(argptr, lpszFmt);
+
+        OUT_LOCK();
+
+        if (pkgs[pkg].date) {
+            struct timeval tv;
+            struct tm tm;
+            
+            gettimeofday(&tv,NULL);
+            if (!localtime_r(&tv.tv_sec,&tm))
+                perrlog("gmtime_r");
+            
+            fprintf( pkgs[pkg].output,"%02i-%02i %02i:%02i:%02i.%06li| ",tm.tm_mon+1,tm.tm_mday,tm.tm_hour,tm.tm_min,tm.tm_sec,(long)tv.tv_usec);
+        }
+                
+        vfprintf( pkgs[pkg].output,lpszFmt, argptr);
+        
+        trace_size = backtrace( trace, 16 );
+        if (trace_size > 1 && (( messages = backtrace_symbols( trace, trace_size )) != NULL )) {
+            /* Skip one for the debug function */
+            fprintf( pkgs[pkg].output, "Stack trace: %d\n", trace_size - 1 );
+            for ( c = 1 ; c < trace_size ; c++ ) {
+                fprintf( pkgs[pkg].output, "bt[%d] %s\n", c - 1, messages[c] );
+            }
+            free( messages );
+        } else {
+            fprintf( pkgs[pkg].output, "ERROR: backtrace_symbols error\n" );
+        }
+
+        va_end(argptr);
+
+        fflush(pkgs[pkg].output);
+
+        OUT_UNLOCK();
+    }
+
+	return 0;
+
+}
+
 
 int  _debug_nodate(int pkg, int level, char *lpszFmt, ...)
 {

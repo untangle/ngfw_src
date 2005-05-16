@@ -21,6 +21,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/ioctl.h>
+#include <mcheck.h>
 
 
 #include <libnetcap.h>
@@ -158,13 +159,15 @@ JNIEXPORT jint JNICALL JF_Netcap( init )
     
     if ( pthread_mutex_lock ( &_jnetcap.mutex ) < 0 ) return perrlog ( "pthread_mutex_lock" );
 
+//  mtrace();
+
     do {
         if ( _jnetcap.jvm == NULL ) { 
             if ( (*env)->GetJavaVM( env, &_jnetcap.jvm ) < 0 ) {
                 ret = errlog( ERR_CRITICAL, "GetJavaVM\n" );
                 break;
             }
-        }
+        }        
 
         if ( _jnetcap.mvutil == _UNINITIALIZED ) {
             if ( libmvutil_init() < 0 ) {
@@ -304,6 +307,8 @@ JNIEXPORT void JNICALL JF_Netcap( cleanup )
     /* Dump out the memory logs */
     showMemStats();
 #endif
+    
+    // muntrace();
 }
 
 /*
@@ -522,17 +527,17 @@ JNIEXPORT jint JNICALL JF_Netcap( donateThreads )
 
     _verify_netcap_initialized ();
 
-    if (( num_threads < 0 ) || ( num_threads > JN_Netcap( MAX_THREADS ))) return errlogargs();
+    // if (( num_threads < 0 ) || ( num_threads > JN_Netcap( MAX_THREADS ))) return errlogargs();
 
     /* Donate a few threads */
     for ( ; num_threads > 0 ; num_threads-- ) {
         arg = jnetcap_thread_create( netcap_thread_donate, NULL, SCHED_OTHER, NULL );
-
+        
         if ( arg == NULL ) {
             return jnetcap_error( JNETCAP_ERROR_STT, ERR_CRITICAL, "jnetcap_thread_create\n" );
         }
                 
-        if ( pthread_create( &id, &uthread_attr.other.low, _run_thread, arg )) {
+        if ( pthread_create( &id, &uthread_attr.other.medium, _run_thread, arg )) {
             perrlog( "pthread_create" );
             return jnetcap_error( JNETCAP_ERROR_STT, ERR_CRITICAL, "pthread_create\n" );
         }
@@ -652,8 +657,7 @@ JNIEXPORT jboolean JNICALL JF_Netcap( isBridgeAlive )
  * Signature: ([BIII)V
  */
 JNIEXPORT jint JNICALL JF_Netcap( updateIcmpPacket )
-    ( JNIEnv *env, jobject _this, jbyteArray _data, jint data_len, jint icmp_type, jint icmp_code, 
-      jint icmp_pid, jlong _icmp_mb )
+( JNIEnv *env, jobject _this, jbyteArray _data, jint data_len, jint icmp_type, jint icmp_code, jint icmp_pid, jlong _icmp_mb )
 {
     mailbox_t* icmp_mb = (mailbox_t*)JLONG_TO_UINT( _icmp_mb );
     jbyte* data;
@@ -677,11 +681,10 @@ JNIEXPORT jint JNICALL JF_Netcap( updateIcmpPacket )
             break;
         }
         
-        ret = netcap_icmp_update_pkt( data, data_len, data_lim, icmp_type, icmp_code, icmp_pid, icmp_mb );
-        if ( ret < 0 ) {
-            ret = jnetcap_error( JNETCAP_ERROR_STT, ERR_CRITICAL, "netcap_icmp_update_pkt\n" );
+        if (( ret = netcap_icmp_update_pkt( data, data_len, data_lim, icmp_type, icmp_code, icmp_pid, icmp_mb )) < 0 ) {
+            ret = jnetcap_error( JNETCAP_ERROR_STT, ERR_CRITICAL, "netcap_icmp_fix_pkt\n" );
             break;
-        }
+        }        
     } while ( 0 );
 
     (*env)->ReleaseByteArrayElements( env, _data, data, 0 );
@@ -770,27 +773,110 @@ JNIEXPORT void JNICALL JF_Netcap( enableDhcpForwarding )
     }
 }
 
+
+static void*             _tcp_run_thread( void* arg )
+{
+    netcap_session_t* netcap_sess = arg;
+    
+    if ( netcap_sess == NULL ) {
+        return errlogargs_null();
+    }
+    
+    _hook( IPPROTO_TCP, netcap_sess, NULL );
+        
+    return NULL;
+}
+
+static void*             _udp_run_thread( void* arg )
+{
+    netcap_session_t* netcap_sess = arg;
+    
+    if ( netcap_sess == NULL ) {
+        return errlogargs_null();
+    }
+    
+    _hook( IPPROTO_UDP, netcap_sess, NULL );
+        
+    return NULL;
+}
+
+static void*             _icmp_run_thread( void* arg )
+{
+    netcap_session_t* netcap_sess = arg;
+    
+    if ( netcap_sess == NULL ) {
+        return errlogargs_null();
+    }
+    
+    _hook( IPPROTO_ICMP, netcap_sess, NULL );
+        
+    return NULL;
+}
+
 static void              _udp_hook( netcap_session_t* netcap_sess, void* arg )
 {
-    _hook( IPPROTO_UDP, netcap_sess, arg );
+    pthread_t id;
+    jnetcap_thread_t* thread_arg;
+    
+    if (( thread_arg = jnetcap_thread_create( _udp_run_thread, netcap_sess, SCHED_OTHER, NULL )) == NULL ) {
+        /* FIXME XXX Possible leak */
+        errlog( ERR_CRITICAL, "jnetcap_thread_create" );
+        return;
+    }
+    
+    if ( pthread_create( &id, &uthread_attr.other.medium, _run_thread, thread_arg )) {
+        perrlog( "pthread_create" );
+        return;
+        /* XXX FIXME Possible leak of the netcap session */
+    }
+
+    //_hook( IPPROTO_UDP, netcap_sess, arg );
 }
 
 static void              _icmp_hook( netcap_session_t* netcap_sess, netcap_pkt_t* pkt, void* arg)
 {
-    if ( pkt != NULL ) {
-        errlog( ERR_CRITICAL, "_icmp_hook: Unable to handle packet" );
-        netcap_pkt_raze( pkt );
+    pthread_t id;
+    jnetcap_thread_t* thread_arg;
+    
+    if (( thread_arg = jnetcap_thread_create( _icmp_run_thread, netcap_sess, SCHED_OTHER, NULL )) == NULL ) {
+        /* FIXME XXX Possible leak */
+        errlog( ERR_CRITICAL, "jnetcap_thread_create" );
+        return;
     }
+    
+    if ( pthread_create( &id, &uthread_attr.other.medium, _run_thread, thread_arg )) {
+        perrlog( "pthread_create" );
+        return;
+        /* XXX FIXME Possible leak of the netcap session */
+    }
+/*     if ( pkt != NULL ) { */
+/*         errlog( ERR_CRITICAL, "_icmp_hook: Unable to handle packet" ); */
+/*         netcap_pkt_raze( pkt ); */
+/*     } */
 
-    if ( netcap_sess != NULL ) {
-        _hook( IPPROTO_UDP, netcap_sess, arg );
-    }
+/*     if ( netcap_sess != NULL ) { */
+/*         _hook( IPPROTO_UDP, netcap_sess, arg ); */
+/*     } */
 }
-
 
 static void              _tcp_hook( netcap_session_t* netcap_sess, void* arg )
 {
-    _hook( IPPROTO_TCP, netcap_sess, arg );
+    pthread_t id;
+    jnetcap_thread_t* thread_arg;
+    
+    if (( thread_arg = jnetcap_thread_create( _tcp_run_thread, netcap_sess, SCHED_OTHER, NULL )) == NULL ) {
+        /* FIXME XXX Possible leak */
+        errlog( ERR_CRITICAL, "jnetcap_thread_create" );
+        return;
+    }
+    
+    if ( pthread_create( &id, &uthread_attr.other.medium, _run_thread, thread_arg )) {
+        perrlog( "pthread_create" );
+        return;
+        /* XXX FIXME Possible leak of the netcap session */
+    }
+    
+//    _hook( IPPROTO_TCP, netcap_sess, arg );
 }
 
 /* shared hook between the UDP and TCP hooks, these just get the program into java */

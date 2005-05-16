@@ -41,8 +41,13 @@
 
 #define EXIT 0xDEADD00D
 
-#define _server_lock()   while(sem_wait(&_server_sem)!=0) perrlog("sem_wait")
-#define _server_unlock() while(sem_post(&_server_sem)!=0) perrlog("sem_post")
+
+/* #define _server_lock()       do{ while(lock_wrlock(&_server_lock)!=0) perrlog("LOCK_WRLOCK");  _server_lock_val--; errlog(ERR_CRITICAL,"wrlock (0x%08x)\n",pthread_self()); if (_server_lock_val!=0) { errlog(ERR_CRITICAL,"Invalid Lock val after lock: %i\n",_server_lock_val); }} while (0) */
+/* #define _server_unlock()     do{ _active_threads--; _server_lock_val++; errlog(ERR_CRITICAL,"unlock (0x%08x)\n",pthread_self()); if (_server_lock_val!=1) { errlog(ERR_CRITICAL,"Invalid Lock val after unlock: %i\n",_server_lock_val); debug_backtrace(0,"UNLOCK:\n"); } while(lock_unlock(&_server_lock)!=0) perrlog("LOCK_UNLOCK") ; } while (0) */
+
+#define _server_lock()       do{ while(lock_wrlock(&_server_lock)!=0) perrlog("lock_wrlock");  _server_lock_val--; if (_server_lock_val!=0) { errlog(ERR_CRITICAL,"Invalid Lock val after lock: %i\n",_server_lock_val); }} while (0)
+#define _server_unlock()     do{ _active_threads--; _server_lock_val++; if (_server_lock_val!=1) { errlog(ERR_CRITICAL,"Invalid Lock val after unlock: %i\n",_server_lock_val); debug_backtrace(0,"UNLOCK:\n"); } while(lock_unlock(&_server_lock)!=0) perrlog("LOCK_UNLOCK") ; } while (0)
+
 #define _epoll_print_stat(revents) do{ errlog(ERR_WARNING,"Message Incoming revents = 0x%08x \n",(revents)); \
                                        errlog(ERR_WARNING,"EPOLLIN:%i EPOLLOUT:%i EPOLLHUP:%i EPOLLERR:%i EPOLLERR:%i \n", \
                                               (revents) & EPOLLIN,  (revents) & EPOLLOUT, (revents) & EPOLLHUP, \
@@ -105,15 +110,18 @@ static int  _epoll_info_del (epoll_info_t* info);
 static int  _epoll_info_del_fd (int fd);
 
 static int   _message_pipe[2]; 
-static sem_t _server_sem;
+static lock_t _server_lock;
 static int   _epoll_fd;
 static ht_t  _epoll_table;
-static volatile int   _server_threads = 0;
+static volatile int _server_lock_val = 1;
+static volatile int _server_threads = 0;
+static volatile int _active_threads = 0;
 
 int  netcap_server_init (void)
 {
-    if (sem_init(&_server_sem,0,1)<0) 
-        return perrlog("sem_init");
+    if (lock_init(&_server_lock,LOCK_FLAG_NOTRACK_READERS)<0)
+        return perrlog("lock_init");
+
     if (pipe(_message_pipe)<0) 
         return perrlog("pipe");
     if ((_epoll_fd = epoll_create(EPOLL_MAX_EVENT))<0)
@@ -151,7 +159,7 @@ int  netcap_server_shutdown (void)
 
     if (ht_destroy(&_epoll_table)>0)
         errlog(ERR_WARNING,"Entries left in epoll table\n");
-    if (sem_destroy(&_server_sem)<0) 
+    if (lock_destroy(&_server_lock)<0) 
         perrlog("sem_destroy");
 
     if (close(_message_pipe[0])<0)
@@ -172,7 +180,9 @@ int  netcap_server (void)
     _server_threads++;
  entry:
     _server_lock();
-
+    if (++_active_threads != 1) 
+        errlog(ERR_CRITICAL,"Constraint FAILED! Too many threads in server: %i\n", _active_threads);
+        
     while(1) {
 
         if ((num_events = epoll_wait(_epoll_fd,events,EPOLL_MAX_EVENT,-1)) < 0) {
@@ -196,8 +206,9 @@ int  netcap_server (void)
             switch(info->type) {
             case POLL_MESSAGE:
                 /* Thread exit point */
-                if ( _handle_message(info, events[i].events) == EXIT ) return 0;
-                    break;
+                if ( _handle_message(info, events[i].events) == EXIT )
+                    return 0;
+                break;
             case POLL_TCP_INCOMING:
                 _handle_tcp_incoming(info, events[i].events, events[i].data.fd );
                 break;
@@ -211,12 +222,16 @@ int  netcap_server (void)
                 _handle_queue(info, events[i].events);
                 break;
             }
+
+            break;
         }
 
         /**
          * wait on the sem's before restarting while(1) 
          */
         _server_lock();
+        if (++_active_threads != 1) 
+            errlog(ERR_CRITICAL,"Constraint FAILED! Too many threads in server: %i\n", _active_threads);
     }
     
     _server_unlock();

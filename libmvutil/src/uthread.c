@@ -53,9 +53,8 @@ int uthread_init (void)
     max = sched_get_priority_max(SCHED_OTHER);
     other_medium_priority.sched_priority = (min+max)/2;
     other_high_priority.sched_priority = other_medium_priority.sched_priority + 1;
-    
     other_low_priority.sched_priority  = other_medium_priority.sched_priority - 1;
-    other_low_priority.sched_priority  = 0;
+    //other_low_priority.sched_priority  = 0;
 
     // We do this even though it apparently has no effect with NPTL -- be sure to
     // call pthread_setschedparam() manually after creating each new thread. XX
