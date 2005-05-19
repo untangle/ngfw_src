@@ -24,9 +24,9 @@
 #include <mvutil/errlog.h>
 #include <mvutil/debug.h>
 #include <mvutil/utime.h>
+#include <jmvutil.h>
 
 #include "jnetcap.h"
-#include "jerror.h"
 
 #include JH_IPTraffic
 #include JH_ICMPTraffic
@@ -390,7 +390,7 @@ JNIEXPORT int JNICALL JF_UDPSession( getData )
 
     buffer_len = (*env)->GetArrayLength( env, buffer );
     if ( pkt->data_len > buffer_len )
-        return jnetcap_error( JNETCAP_ERROR_ARGS, ERR_CRITICAL,
+        return jmvutil_error( JMVUTIL_ERROR_ARGS, ERR_CRITICAL,
                               "UDP: Buffer is to small for packet: %d < %d", buffer_len, pkt->data_len );
 
 

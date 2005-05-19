@@ -15,11 +15,10 @@
 #include <mvutil/libmvutil.h>
 #include <mvutil/errlog.h>
 #include <mvutil/debug.h>
+#include <jmvutil.h>
 
 #include "jnetcap.h"
 #include JH_Shield
-
-#include "jerror.h"
 
 /*
  * Class:     com_metavize_jnetcap_Shield
@@ -32,7 +31,7 @@ JNIEXPORT void JNICALL JF_Shield( config )
     const char* file_str;
     
     if (( file_str = (*env)->GetStringUTFChars( env, file_name, NULL )) == NULL ) {
-        return jnetcap_error_void( JNETCAP_ERROR_STT, ERR_CRITICAL, "(*env)->GetStringUTFChars\n" );
+        return jmvutil_error_void( JMVUTIL_ERROR_STT, ERR_CRITICAL, "(*env)->GetStringUTFChars\n" );
     };
 
     debug( 5, "JNETCAP: Loading shield configuration file: %s\n", file_str );
@@ -41,7 +40,7 @@ JNIEXPORT void JNICALL JF_Shield( config )
         struct stat file_stat;
 
         if ( stat( file_str, &file_stat ) < 0 ) {
-            jnetcap_error( JNETCAP_ERROR_STT, ERR_CRITICAL, "stat: %s", errstr );
+            jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "stat: %s", errstr );
             break;
         }
 
@@ -52,12 +51,12 @@ JNIEXPORT void JNICALL JF_Shield( config )
 
             /* Open and read the configuration file */
             if (( fd = open( file_str, O_RDONLY )) < 0 ) {
-                jnetcap_error( JNETCAP_ERROR_STT, ERR_CRITICAL, "open: %s", errstr );
+                jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "open: %s", errstr );
                 break;
             }
             
             if (( msg_len = read( fd, buf, sizeof( buf ))) < 0 ) {
-                jnetcap_error( JNETCAP_ERROR_STT, ERR_CRITICAL, "read: %s", errstr );                
+                jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "read: %s", errstr );                
                 if ( close( fd ) < 0 )
                     perrlog( "close" );
                 break;
@@ -70,20 +69,20 @@ JNIEXPORT void JNICALL JF_Shield( config )
             fd = -1;
             
             if ( msg_len == sizeof ( buf )) {
-                jnetcap_error( JNETCAP_ERROR_STT, ERR_CRITICAL, "Invalid shield configuration(size>=%d)\n", 
+                jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "Invalid shield configuration(size>=%d)\n", 
                                sizeof ( buf ));
                 continue;
             }
                         
             /* Load the shield configuration */
             if ( msg_len != 0 && netcap_shield_cfg_load ( buf, msg_len ) < 0 ) {
-                jnetcap_error( JNETCAP_ERROR_STT, ERR_CRITICAL, "netcap_shield_load_configuration\n" );
+                jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "netcap_shield_load_configuration\n" );
                 break;
             }
             
             debug( 5, "JNETCAP: Successfully loaded shield configuration\n" );
         } else {
-            jnetcap_error( JNETCAP_ERROR_ARGS, ERR_CRITICAL, "Unable to access file: '%s'", file_str );
+            jmvutil_error( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "Unable to access file: '%s'", file_str );
         }
     } while ( 0 );
 
@@ -108,12 +107,12 @@ JNIEXPORT void JNICALL JF_Shield( status )
     if (( fd = socket( AF_INET, SOCK_DGRAM, IPPROTO_UDP )) < 0 ) 
     {
         perrlog( "socket" );
-        return jnetcap_error_void( JNETCAP_ERROR_STT, ERR_CRITICAL, "Unable to open a UDP socket\n" );
+        return jmvutil_error_void( JMVUTIL_ERROR_STT, ERR_CRITICAL, "Unable to open a UDP socket\n" );
     }
 
     do {
         if ( netcap_shield_status( fd, &dst ) < 0 ) {
-            jnetcap_error( JNETCAP_ERROR_STT, ERR_CRITICAL, "netcap_shield_status\n" );
+            jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "netcap_shield_status\n" );
             break;
         }
     } while ( 0 );

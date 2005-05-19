@@ -23,12 +23,13 @@
 #include <mvutil/mvpoll.h>
 #include <mvutil/errlog.h>
 #include <mvutil/debug.h>
+#include <jmvutil.h>
+
 #include <vector/event.h>
 #include <vector/source.h>
 
 #include "jni_header.h"
 #include "jvector.h"
-#include "jerror.h"
 
 
 #include JH_UDPSink

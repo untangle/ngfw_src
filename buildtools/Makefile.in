@@ -38,6 +38,7 @@ NETCAP_PKG    = 201
 VECTOR_PKG    = 202
 JNETCAP_PKG   = 210
 JVECTOR_PKG   = 211
+JMVUTIL_PKG   = 212
 
 ## This crazy command gets the relative path of the base directory.  (EG. if you are in
 ## libnetcap, this will resolve to ./../bin (which is just ../bin) and if you are in

@@ -21,12 +21,12 @@
 #include <mvutil/errlog.h>
 #include <mvutil/debug.h>
 #include <mvutil/uthread.h>
+#include <jmvutil.h>
 
 #include <jni.h>
 
 #include "jnetcap.h"
 #include "jsession.h"
-#include "jerror.h"
 
 #include JH_Session
 #include JH_TCPSession
@@ -49,12 +49,12 @@ JNIEXPORT jlong JNICALL JF_Session( getSession )
 
     if ( session_id == 0 ) {
         /* Throw an error */
-        jnetcap_error( JNETCAP_ERROR_ARGS, ERR_CRITICAL, "Invalid session id(0)\n" );
+        jmvutil_error( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "Invalid session id(0)\n" );
         return 0;
     }
 
     if (( session = netcap_sesstable_get( session_id )) == NULL ) {
-        jnetcap_error( JNETCAP_ERROR_ARGS, ERR_CRITICAL, "netcap_sesstable_get(%10u)\n", session_id );
+        jmvutil_error( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "netcap_sesstable_get(%10u)\n", session_id );
         return 0;
     }
     
@@ -63,7 +63,7 @@ JNIEXPORT jlong JNICALL JF_Session( getSession )
     /* XXX This is kind of a mess access wise, because only certain classes should 
      * be able to create sessions with unverified protocols */
     if ( protocol != 0 && session->protocol != protocol ) {
-        jnetcap_error( JNETCAP_ERROR_ARGS, ERR_CRITICAL, "Mismatched protocol: expected %d actual %d\n",
+        jmvutil_error( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "Mismatched protocol: expected %d actual %d\n",
                        protocol, session->protocol );
         return 0;
     }
@@ -197,7 +197,3 @@ JNIEXPORT void JNICALL JF_Session( raze )
         errlog( ERR_CRITICAL, "netcap_session_raze\n" );
     }
 }
-
-
-
-

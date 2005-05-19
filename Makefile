@@ -3,7 +3,7 @@ include buildtools/Makefile.in
 ## The following rules are only valid for the base makefile, make sure to define sub_name before
 ## including this makefile
 
-CLIBS=libmvutil libnetcap jnetcap libvector jvector
+CLIBS=libmvutil jmvutil libnetcap jnetcap libvector jvector
 RELEASE_DEST ?= "`whoami`"
 
 lib_name       = alpine
@@ -63,7 +63,7 @@ chk:
 	@echo "build_prefix = "$(build_prefix)
 	@echo
 
-alpine_libs=jnetcap netcap vector jvector mvutil
+alpine_libs=jnetcap netcap vector jvector mvutil jmvutil
 lib_deps = $(patsubst %,$(build_lib_path)/lib%.a,$(alpine_libs))
 
 $(lib_file_name): LIBS = xml2

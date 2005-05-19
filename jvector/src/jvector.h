@@ -52,8 +52,6 @@ typedef struct jvector_event {
     jobject obj;
 } jvector_event_t;
 
-JNIEnv* jvector_get_java_env( void );
-
 int               jvector_load                ( JNIEnv* env );
 
 jvector_sink_t*   jvector_sink_malloc         ( void );

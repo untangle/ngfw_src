@@ -24,7 +24,7 @@ javac_classpath=$(src_path)
 
 class_base=com.metavize.$(sub_name)
 
-c_src=jnetcap.c jinterface_set.c jsubscription.c jsession.c judp.c jtcp.c jerror.c Shield.c
+c_src=jnetcap.c jinterface_set.c jsubscription.c jsession.c judp.c jtcp.c Shield.c
 objects=$(c_src:.c=.o)
 
 java_src=Subscription.java Range.java InterfaceSet.java Inet4AddressConverter.java  \

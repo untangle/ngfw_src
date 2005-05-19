@@ -26,7 +26,7 @@ c_src=SocketQueue.c OutgoingSocketQueue.c IncomingSocketQueue.c \
       Relay.c Vector.c TCPSink.c TCPSource.c UDPSource.c UDPSink.c \
       Source.c Sink.c
 
-objects=$(c_src:.c=.o) jvector.o jerror.o
+objects=$(c_src:.c=.o) jvector.o
 
 java_src=SocketQueue.java IncomingSocketQueue.java SocketQueueImpl.java \
 	 OutgoingSocketQueue.java Relay.java \

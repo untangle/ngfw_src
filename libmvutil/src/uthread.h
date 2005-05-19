@@ -33,6 +33,10 @@ extern struct sched_param other_high_priority;
 extern struct sched_param other_medium_priority;
 extern struct sched_param other_low_priority;
 
-int uthread_init (void);
+int   uthread_init    ( void );
+
+void  uthread_tls_free( void* buf );
+
+void* uthread_tls_get ( pthread_key_t tls_key, size_t size, int(*init)( void *buf, size_t size ));
 
 #endif

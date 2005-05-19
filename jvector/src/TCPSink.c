@@ -21,13 +21,13 @@
 #include <mvutil/errlog.h>
 #include <mvutil/debug.h>
 #include <mvutil/unet.h>
+#include <jmvutil.h>
 
 #include <vector/event.h>
 #include <vector/source.h>
 #include <vector/fd_sink.h>
 
 #include "jni_header.h"
-#include "jerror.h"
 #include "jvector.h"
 
 
@@ -48,20 +48,20 @@ JNIEXPORT jint JNICALL JF_TCPSink( create )
     int fd;
     
     if (( fd = dup( _fd )) < 0 ) {
-        return (jint)jvector_error_null( JVECTOR_ERROR_STT, ERR_CRITICAL, "dup: %s\n", errstr );
+        return (jint)jmvutil_error_null( JMVUTIL_ERROR_STT, ERR_CRITICAL, "dup: %s\n", errstr );
     }
 
     /* Set to NON-blocking */
     if ( unet_blocking_disable( fd ) < 0 ) {
-        return (jint)jvector_error_null( JVECTOR_ERROR_STT, ERR_CRITICAL, "unet_blocking_disable\n" );
+        return (jint)jmvutil_error_null( JMVUTIL_ERROR_STT, ERR_CRITICAL, "unet_blocking_disable\n" );
     }
 
     if (( key = mvpoll_key_fd_create( fd )) == NULL ) {
-        return (jint)jvector_error_null( JVECTOR_ERROR_STT, ERR_CRITICAL, "mvpoll_key_fd_create\n" );
+        return (jint)jmvutil_error_null( JMVUTIL_ERROR_STT, ERR_CRITICAL, "mvpoll_key_fd_create\n" );
     }
     
     if (( snk = jvector_sink_create( _this, key )) == NULL ) {
-        return (jint)jvector_error_null( JVECTOR_ERROR_STT, ERR_CRITICAL, "jvector_sink_create\n" );
+        return (jint)jmvutil_error_null( JMVUTIL_ERROR_STT, ERR_CRITICAL, "jvector_sink_create\n" );
     }
     
     return (jint)snk;    
@@ -84,11 +84,11 @@ JNIEXPORT jint JNICALL JF_TCPSink( write )
     
     do {
         if (( offset + size ) > data_len ) {
-            jvector_error( JVECTOR_ERROR_ARGS, ERR_CRITICAL, 
+            jmvutil_error( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, 
                            "Requested %d write with a buffer of size %d\n", size, data_len );
             break;
         } else if ( offset > data_len ) {
-            jvector_error( JVECTOR_ERROR_ARGS, ERR_CRITICAL, 
+            jmvutil_error( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, 
                            "Requested %d offset with a buffer of size %d\n", offset, data_len );
             break;
         }
@@ -109,7 +109,7 @@ JNIEXPORT jint JNICALL JF_TCPSink( write )
                 break;
 
             default:
-                jvector_error( JVECTOR_ERROR_STT, ERR_CRITICAL, "TCPSink: write: %s\n", errstr );
+                jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "TCPSink: write: %s\n", errstr );
                 /* Doesn't matter, it will through an error */
                 number_bytes = -2;
             }
@@ -147,7 +147,7 @@ JNIEXPORT void JNICALL JF_TCPSink( reset )
 {
     int fd;
     if (( fd = _sink_get_fd( pointer )) < 0 ) {
-        return jvector_error_void( JVECTOR_ERROR_ARGS, ERR_CRITICAL, "_sink_get_fd" );
+        return jmvutil_error_void( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "_sink_get_fd" );
     }
     
     /**
@@ -155,7 +155,7 @@ JNIEXPORT void JNICALL JF_TCPSink( reset )
      * it appears this will only reset if data comes in on filedescriptor.
      */
     if ( unet_reset( fd ) < 0 ) {
-        return jvector_error_void( JVECTOR_ERROR_STT, ERR_CRITICAL, "unet_reset" );
+        return jmvutil_error_void( JMVUTIL_ERROR_STT, ERR_CRITICAL, "unet_reset" );
     }
 }
 
@@ -198,7 +198,7 @@ static int _sink_get_fd( jint pointer )
 {
     /* XXX This should be throwing errors left and right */
     if ( pointer == (jint)NULL || ((jvector_sink_t*)pointer)->key == NULL ) {
-        return jvector_error( JVECTOR_ERROR_ARGS, ERR_CRITICAL, "Invalid pointer\n" );
+        return jmvutil_error( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "Invalid pointer\n" );
     }
     
     return (int)((jvector_sink_t*)pointer)->key->data;

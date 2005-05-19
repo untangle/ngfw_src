@@ -24,18 +24,18 @@
 #include <mvutil/errlog.h>
 #include <mvutil/debug.h>
 #include <mvutil/unet.h>
+#include <jmvutil.h>
 
 #include "jnetcap.h"
 #include "jsession.h"
-#include "jerror.h"
 #include JH_TCPSession
 
 #define VERIFY_TCP_SESSION(session) if ( (session)->protocol != IPPROTO_TCP ) \
-   return jnetcap_error( JNETCAP_ERROR_ARGS, ERR_CRITICAL, \
+   return jmvutil_error( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, \
                          "TCP: Expecting a TCP session: %d\n", (session)->protocol )
 
 #define VERIFY_TCP_SESSION_VOID(session) if ( (session)->protocol != IPPROTO_TCP ) \
-   return jnetcap_error_void( JNETCAP_ERROR_ARGS, ERR_CRITICAL, \
+   return jmvutil_error_void( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, \
                               "TCP: Expecting a TCP Session: %d\n", (session)->protocol )
 
 static void _tcp_callback( jlong session_ptr, netcap_callback_action_t type, jint flags );
@@ -144,7 +144,7 @@ JNIEXPORT void JNICALL JF_TCPSession( close )
 
     /* XXX Check state here? */
     if ( sock > 0 && close( sock ) < 0 ) {
-        return jnetcap_error_void( JNETCAP_ERROR_STT, ERR_CRITICAL, "close: %s", errstr );
+        return jmvutil_error_void( JMVUTIL_ERROR_STT, ERR_CRITICAL, "close: %s", errstr );
     }        
 }
 
@@ -243,7 +243,7 @@ JNIEXPORT void JNICALL JF_TCPSession( blocking )
     else                    ret = unet_blocking_disable( sock );
     
     if ( ret < 0 ) {
-        return jnetcap_error_void( JNETCAP_ERROR_STT, ERR_CRITICAL, 
+        return jmvutil_error_void( JMVUTIL_ERROR_STT, ERR_CRITICAL, 
                                    "TCP: Unable to change blocking flags for fd: %d\n", sock );
     }
 }
@@ -257,7 +257,7 @@ static void _tcp_callback( jlong session_ptr, netcap_callback_action_t action, j
     VERIFY_TCP_SESSION_VOID( session );    
     
     if ( session->protocol != IPPROTO_TCP ) {
-        return jnetcap_error_void( JNETCAP_ERROR_ARGS, ERR_CRITICAL, 
+        return jmvutil_error_void( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, 
                                    "TCP: Expecting a TCP session: %d\n", session->protocol );
     }
 
@@ -267,7 +267,7 @@ static void _tcp_callback( jlong session_ptr, netcap_callback_action_t action, j
         debug( 2, "TCP: callback failed=%d\n", action );
 
         /* Throw an error, but print a debugging message */
-        jnetcap_error_throw( JNETCAP_ERROR_STT, "TCP: callback failed action=%d\n", action );
+        jmvutil_error_throw( JMVUTIL_ERROR_STT, "TCP: callback failed action=%d\n", action );
     }
 }
 

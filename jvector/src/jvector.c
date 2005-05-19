@@ -12,19 +12,19 @@
 #include <jni.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <libmvutil.h>
 #include <libvector.h>
 #include <mvutil/debug.h>
 #include <mvutil/mvpoll.h>
 #include <mvutil/errlog.h>
 #include <mvutil/debug.h>
+#include <jmvutil.h>
+
 #include <vector/event.h>
 #include <vector/source.h>
 #include <vector/sink.h>
 
 #include "jni_header.h"
 #include "jvector.h"
-#include "jerror.h"
 
 #include JH_Vector
 #include JH_Crumb
@@ -59,7 +59,6 @@ static struct
     jobject shutdown_crumb;
     jobject reset_crumb;
 } _jvector = {
-    .jvm  NULL,
     .shutdown_crumb = NULL,
     .reset_crumb = NULL
 };
@@ -93,6 +92,7 @@ static struct
 #define J_GET_INSTANCE_SIG    "()"
 
 
+/* XXX Probably want to move this to jmvutil */
 static jmethodID _get_global_java_mid( jclass class, const char* method_name, const char* method_sig );
 
 /* This returns a global reference */
@@ -115,7 +115,7 @@ static __inline__ int _init_java_call( void* input, JNIEnv** env, jmethodID mid,
 {
     if ( input == NULL ) return errlogargs();
 
-    if ( (*env = jvector_get_java_env()) == NULL ) return errlog( ERR_CRITICAL, "jvector_get_java_env\n" );
+    if ( (*env = jmvutil_get_java_env()) == NULL ) return errlog( ERR_CRITICAL, "jmvutil_get_java_env\n" );
 
     debug( 10,"JVECTOR: '%s'\n", msg );
 
@@ -132,8 +132,11 @@ int               jvector_load                ( JNIEnv* env )
     jclass class;
     jmethodID mid;
     jobject tmp;
+    JavaVM* jvm;
+
+    /* JMVUTIL is protected against being initialized multiple times and also initializes libmvutil */
+    if ( jmvutil_init() < 0 ) return errlog( ERR_CRITICAL, "jmvutil_init\n" );
     
-    libmvutil_init();
     debug_set_mylevel( 0 );
     debug_set_level( UTIL_DEBUG_PKG, 0 );
     debug_set_level( VECTOR_DEBUG_PKG, 0 );
@@ -142,11 +145,9 @@ int               jvector_load                ( JNIEnv* env )
 
     if ( env == NULL ) return errlogargs();
 
-    if ((*env)->GetJavaVM( env, &_jvector.jvm ) < 0 ) return errlog( ERR_CRITICAL, "GetJavaVM\n" );
-    if ( _jvector.jvm == NULL ) return errlog( ERR_CRITICAL, "GetJavaVM == NULL\n" );
+    if (( jvm = jmvutil_get_java_vm()) == NULL ) return errlog( ERR_CRITICAL, "jmvutil_get_java_vm\n" );
 
     /* Initialize the error routines */
-    if ( jvector_error_init() < 0 ) return errlog( ERR_CRITICAL, "jvector_error_init\n" );
     
     /* Initialize all of the class and method ids */
     if (( _jvector.src.class = _get_global_java_class( J_SRC )) == NULL ) return JNI_ERR;
@@ -245,16 +246,16 @@ jvector_sink_t*   jvector_sink_malloc         ( void )
 
 int               jvector_sink_init           ( jvector_sink_t* snk, jobject this, mvpoll_key_t* key )
 {
-    JNIEnv* env = jvector_get_java_env();
+    JNIEnv* env = jmvutil_get_java_env();
     jclass  class;
 
-    if ( env == NULL ) return errlog( ERR_CRITICAL, "jvector_get_java_env\n" );
+    if ( env == NULL ) return errlog( ERR_CRITICAL, "jmvutil_get_java_env\n" );
 
     if ( snk == NULL || key == NULL ) return errlogargs();
 
     /* Retrieve all of the method ids */
     if (( class = (*env)->GetObjectClass( env, this )) == NULL ) {
-        return jvector_error( JVECTOR_ERROR_STT, ERR_CRITICAL, "GetObjectClass\n" );
+        return jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "GetObjectClass\n" );
     }
 
     snk->mid.send_event = (*env)->GetMethodID( env, class, J_SNK_SEND_EVENT, J_SNK_SEND_EVENT_SIG );
@@ -262,7 +263,7 @@ int               jvector_sink_init           ( jvector_sink_t* snk, jobject thi
     snk->mid.raze = (*env)->GetMethodID( env, class, J_SNK_RAZE, J_SNK_RAZE_SIG );
     
     if (( snk->mid.send_event == NULL ) || ( snk->mid.shutdown == NULL ) || ( snk->mid.raze == NULL )) {
-        return jvector_error( JVECTOR_ERROR_STT, ERR_CRITICAL, "Unable to locate a method id\n" );
+        return jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "Unable to locate a method id\n" );
     }
     
     snk->snk.send_event    = _sink_send_event;
@@ -289,7 +290,7 @@ jvector_sink_t*   jvector_sink_create         ( jobject this, mvpoll_key_t* key 
     
     if ( jvector_sink_init( snk, this, key ) < 0 ) {
         free( snk );
-        return jvector_error_null( JVECTOR_ERROR_STT, ERR_CRITICAL, "jvector_sink_init\n" );
+        return jmvutil_error_null( JMVUTIL_ERROR_STT, ERR_CRITICAL, "jvector_sink_init\n" );
     }
     
     return snk;
@@ -300,23 +301,23 @@ jvector_source_t* jvector_source_malloc       ( void )
     jvector_source_t* src;
 
     if (( src = malloc( sizeof( jvector_source_t ))) == NULL ) {
-        return jvector_error_null( JVECTOR_ERROR_STT, ERR_FATAL, "malloc\n" );
+        return jmvutil_error_null( JMVUTIL_ERROR_STT, ERR_FATAL, "malloc\n" );
     }
     return src;
 }
 
 int               jvector_source_init         ( jvector_source_t* src, jobject this, mvpoll_key_t* key )
 {
-    JNIEnv* env = jvector_get_java_env();
+    JNIEnv* env = jmvutil_get_java_env();
     jclass  class;
 
-    if ( env == NULL ) return errlog( ERR_CRITICAL, "jvector_get_java_env\n" );
+    if ( env == NULL ) return errlog( ERR_CRITICAL, "jmvutil_get_java_env\n" );
 
     if ( src == NULL || key == NULL ) return errlogargs();
 
     /* Retrieve all of the method ids */
     if (( class = (*env)->GetObjectClass( env, this )) == NULL ) {
-        return jvector_error( JVECTOR_ERROR_STT, ERR_CRITICAL, "GetObjectClass\n" );
+        return jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "GetObjectClass\n" );
     }
 
     src->mid.get_event = (*env)->GetMethodID( env, class, J_SRC_GET_EVENT, J_SRC_GET_EVENT_SIG );
@@ -324,7 +325,7 @@ int               jvector_source_init         ( jvector_source_t* src, jobject t
     src->mid.raze = (*env)->GetMethodID( env, class, J_SRC_RAZE, J_SRC_RAZE_SIG );
     
     if (( src->mid.get_event == NULL ) || ( src->mid.shutdown == NULL ) || ( src->mid.raze == NULL )) {
-        return jvector_error( JVECTOR_ERROR_STT, ERR_CRITICAL, "Unable to locate a method id\n" );
+        return jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "Unable to locate a method id\n" );
     }
     
     src->src.get_event     = _source_get_event;
@@ -347,12 +348,12 @@ jvector_source_t* jvector_source_create       ( jobject this, mvpoll_key_t* key 
     jvector_source_t* src;
         
     if (( src = jvector_source_malloc()) == NULL ) {
-        return jvector_error_null( JVECTOR_ERROR_STT, ERR_CRITICAL, "jvector_source_malloc\n" );
+        return jmvutil_error_null( JMVUTIL_ERROR_STT, ERR_CRITICAL, "jvector_source_malloc\n" );
     }
     
     if ( jvector_source_init( src, this, key ) < 0 ) {
         free( src );
-        return jvector_error_null( JVECTOR_ERROR_STT, ERR_CRITICAL, "jvector_source_init\n" );
+        return jmvutil_error_null( JMVUTIL_ERROR_STT, ERR_CRITICAL, "jvector_source_init\n" );
     }
     
     return src;
@@ -380,12 +381,12 @@ jvector_event_t*  jvector_event_create       ( void )
     jvector_event_t* jv_event;
 
     if (( jv_event = jvector_event_malloc()) == NULL ) {
-        return jvector_error_null( JVECTOR_ERROR_STT, ERR_CRITICAL, "jvector_event_malloc\n" );
+        return jmvutil_error_null( JMVUTIL_ERROR_STT, ERR_CRITICAL, "jvector_event_malloc\n" );
     }
     
     if ( jvector_event_init( jv_event ) < 0 ) {
         free( jv_event );
-        return jvector_error_null( JVECTOR_ERROR_STT, ERR_CRITICAL, "jvector_event_init\n" );
+        return jmvutil_error_null( JMVUTIL_ERROR_STT, ERR_CRITICAL, "jvector_event_init\n" );
     }
     
     return jv_event;
@@ -414,7 +415,7 @@ static event_action_t    _sink_send_event     ( sink_t* snk, event_t* event )
     case JV_EVENT_TYPE:
         action = (*env)->CallIntMethod( env, jv_snk->this, mid, jv_event->obj );
 
-        if ( jvector_exception_clear() < 0 ) {
+        if ( jmvutil_error_exception_clear() < 0 ) {
             return (event_action_t)errlog( ERR_CRITICAL, "Exception occured while sending data crumb\n" );
         }
 
@@ -464,7 +465,7 @@ static int               _sink_shutdown       ( sink_t* snk )
     
     ret = (int)(*env)->CallIntMethod( env, jv_snk->this, mid );
 
-    if ( jvector_exception_clear() < 0 ) {
+    if ( jmvutil_error_exception_clear() < 0 ) {
         return errlog( ERR_CRITICAL, "Exception occured in sink.shutdown\n" );
     }
 
@@ -485,7 +486,7 @@ static void              _sink_raze           ( sink_t* snk )
 
     (*env)->CallVoidMethod( env, jv_snk->this, mid );
 
-    jvector_exception_clear();
+    jmvutil_error_exception_clear();
 
     /* Remove the global references */
     if ( jv_snk->this != NULL ) 
@@ -517,7 +518,7 @@ static void              _source_raze         ( source_t* src )
      * clearing the exception based on the user input */
     (*env)->CallVoidMethod( env, jv_src->this, mid );
 
-    jvector_exception_clear();
+    jmvutil_error_exception_clear();
 
     /* Remove the global references */
     if ( jv_src->this != NULL ) 
@@ -552,7 +553,7 @@ static int               _source_shutdown     ( source_t* src )
     if ( _init_java_call( jv_src, &env, mid, "source.shutdown" ) < 0 ) return EVENT_ACTION_ERROR;
     
     ret = (int)(*env)->CallIntMethod( env, jv_src->this, mid );
-    if ( jvector_exception_clear() < 0 ) {
+    if ( jmvutil_error_exception_clear() < 0 ) {
         return errlog( ERR_CRITICAL, "Exception occured in source.shutdonw" );
     }
 
@@ -578,7 +579,7 @@ static event_t*          _source_get_event    ( source_t* src )
     crumb = (*env)->CallObjectMethod( env, jv_src->this, mid );
 
     /* Check if there was an exception */
-    if ( jvector_exception_clear() < 0 ) {
+    if ( jmvutil_error_exception_clear() < 0 ) {
         return errlog_null( ERR_CRITICAL, "Exception occured while getting crumb\n" );
     }
     
@@ -587,7 +588,7 @@ static event_t*          _source_get_event    ( source_t* src )
     /* Get the type of the crumb */
     type = (*env)->CallIntMethod( env, crumb, mid );
 
-    if ( jvector_exception_clear() < 0 ) {
+    if ( jmvutil_error_exception_clear() < 0 ) {
         return errlog_null( ERR_CRITICAL, "Exception occured while geting crumb type\n" );
     }
 
@@ -638,7 +639,7 @@ static void              _event_raze          ( event_t* event )
     
     (*env)->CallVoidMethod( env, jv_event->obj, mid );
 
-    jvector_exception_clear();
+    jmvutil_error_exception_clear();
 
     /* Remove the global references */
     if ( jv_event->obj != NULL )
@@ -652,7 +653,7 @@ static jmethodID _get_global_java_mid( jclass class, const char* method_name, co
     JNIEnv* env;
     jmethodID mid;
 
-    if (( env = jvector_get_java_env()) == NULL ) return errlog_null( ERR_CRITICAL, "jvector_get_java_env\n" );
+    if (( env = jmvutil_get_java_env()) == NULL ) return errlog_null( ERR_CRITICAL, "jmvutil_get_java_env\n" );
 
     if (( mid = (*env)->GetMethodID( env, class, method_name, method_sig )) == NULL ) {
         return errlog_null( ERR_CRITICAL, "GetMethodID: %s.%s", method_name, method_sig );
@@ -666,7 +667,7 @@ static jclass _get_global_java_class( const char* name )
 {
     jclass tmp, global;
     JNIEnv* env;
-    if (( env = jvector_get_java_env()) == NULL ) return errlog_null( ERR_CRITICAL, "jvector_get_java_env\n" );
+    if (( env = jmvutil_get_java_env()) == NULL ) return errlog_null( ERR_CRITICAL, "jmvutil_get_java_env\n" );
     
     if ((tmp = (*env)->FindClass( env, name )) == NULL ) {
         return errlog_null( ERR_CRITICAL, "FindClass: %s\n", name );
@@ -679,33 +680,5 @@ static jclass _get_global_java_class( const char* name )
     (*env)->DeleteLocalRef( env, tmp );
     
     return global;
-}
-
-
-JNIEnv* jvector_get_java_env( void )
-{
-    static __thread JNIEnv* env = NULL;
-    int res  = 0;
-
-    /* This shouldn't happen because it is initialized in JNI_OnLoad */
-    if ( _jvector.jvm == NULL ) {
-        jsize num_jvms;
-        if ( JNI_GetCreatedJavaVMs( &_jvector.jvm, 1, &num_jvms ) < 0 ) {
-            return errlog_null( ERR_CRITICAL, "JNI_GetCreatedJavaVMs\n" );
-        }
-        if ( num_jvms > 1 ) return errlog_null( ERR_CRITICAL, "MULTIPLE JVMS\n" );
-    }
-
-    if ( env == NULL ) {
-#ifdef JNI_VERSION_1_2
-        res = (*_jvector.jvm)->AttachCurrentThread( _jvector.jvm, (void**)&env, NULL );
-#else
-        res = (*_jvector.jvm)->AttachCurrentThread( _jvector.jvm, &env, NULL );
-#endif // JNI_VERSION_1_2
-        
-        if ( res < 0 ) return errlog_null( ERR_CRITICAL, "AttachCurrentThread\n" );
-    }
-
-    return env;
 }
 

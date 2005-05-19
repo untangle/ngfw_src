@@ -10,6 +10,7 @@
 #include <mvutil/errlog.h>
 #include <mvutil/debug.h>
 #include <mvutil/unet.h>
+#include <jmvutil.h>
 
 #include <libvector.h>
 #include <vector/event.h>
@@ -18,7 +19,6 @@
 
 #include "jni_header.h"
 #include "jvector.h"
-#include "jerror.h"
 
 #include JH_TCPSource
 
@@ -37,15 +37,15 @@ JNIEXPORT jint JNICALL JF_TCPSource( create )
 
     /* Set to non-blocking */
     if ( unet_blocking_disable( fd ) < 0 ) {
-        return (jint)jvector_error_null( JVECTOR_ERROR_STT, ERR_CRITICAL, "unet_blocking_disable\n" );
+        return (jint)jmvutil_error_null( JMVUTIL_ERROR_STT, ERR_CRITICAL, "unet_blocking_disable\n" );
     }
 
     if (( key = mvpoll_key_fd_create( fd )) == NULL ) {
-        return (jint)jvector_error_null( JVECTOR_ERROR_STT, ERR_CRITICAL, "mvpoll_key_fd_create\n" );
+        return (jint)jmvutil_error_null( JMVUTIL_ERROR_STT, ERR_CRITICAL, "mvpoll_key_fd_create\n" );
     }
 
     if (( src = jvector_source_create( _this, key )) == NULL ) {
-        return (jint)jvector_error_null( JVECTOR_ERROR_STT, ERR_CRITICAL, "jvector_source_create\n" );
+        return (jint)jmvutil_error_null( JMVUTIL_ERROR_STT, ERR_CRITICAL, "jvector_source_create\n" );
     }
     
     return (jint)src;    
@@ -68,7 +68,7 @@ JNIEXPORT jint JNICALL JF_TCPSource( read )
 
     /* source_get_fd checks for NULL */
     if (( fd = _source_get_fd( pointer )) < 0 ) {
-        return jvector_error( JVECTOR_ERROR_ARGS, ERR_CRITICAL, "_source_get_fd\n" );
+        return jmvutil_error( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "_source_get_fd\n" );
     }
 
     /* Poll the key, if there is an error, get out of town */
@@ -90,7 +90,7 @@ JNIEXPORT jint JNICALL JF_TCPSource( read )
 
     /* Convert the byte array */
     if (( data = (*env)->GetByteArrayElements( env, _data, NULL )) == NULL ) {
-        return jvector_error( JVECTOR_ERROR_STT, ERR_FATAL, "(*env)->GetByteArrayElements\n" );
+        return jmvutil_error( JMVUTIL_ERROR_STT, ERR_FATAL, "(*env)->GetByteArrayElements\n" );
     }
     
     data_len = (*env)->GetArrayLength( env, _data );
@@ -113,7 +113,7 @@ JNIEXPORT jint JNICALL JF_TCPSource( read )
                 break;
 
             default:
-                jvector_error( JVECTOR_ERROR_STT, ERR_CRITICAL, "TCPSource: read: %s\n", errstr );
+                jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "TCPSource: read: %s\n", errstr );
                 ret = -2;
             }
         }

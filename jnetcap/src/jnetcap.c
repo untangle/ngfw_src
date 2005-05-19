@@ -23,17 +23,15 @@
 #include <sys/ioctl.h>
 #include <mcheck.h>
 
-
 #include <libnetcap.h>
 #include <mvutil/libmvutil.h>
 #include <mvutil/errlog.h>
 #include <mvutil/debug.h>
 #include <mvutil/uthread.h>
+#include <jmvutil.h>
 
 #include "jnetcap.h"
 #include JH_Netcap
-
-#include "jerror.h"
 
 #define _verify_mvutil_initialized()    if ( _jnetcap.mvutil != _INITIALIZED ) return -1
 #define _verify_netcap_initialized()    if ( _jnetcap.netcap != _INITIALIZED ) return -1
@@ -63,11 +61,9 @@ typedef struct {
 __thread JNIEnv* thread_env;
 
 static struct {
-    int mvutil;
     int scheduler;
     int netcap;
     pthread_mutex_t mutex;
-    JavaVM* jvm;
     struct {
         jclass    hook_class;     /* Class ID for the hook */
         jmethodID hook_method_id; /* Method identifier for the hook */
@@ -76,11 +72,9 @@ static struct {
     } java;
 } _jnetcap = 
 {
-    .mvutil    _UNINITIALIZED, 
     .scheduler _UNINITIALIZED, 
     .netcap    _UNINITIALIZED, 
     .mutex     PTHREAD_MUTEX_INITIALIZER,
-    .jvm       NULL,
     .java { 
         .hook_class     NULL,
         .hook_method_id NULL,
@@ -119,23 +113,6 @@ static void              _command_port_guard( JNIEnv* env, jint gate, jint proto
 
 static int _get_interface_address ( char* interface_name, in_addr_t* address, in_addr_t* netmask );
 
-static __inline__ int    _attach_thread( JavaVM* jvm, JNIEnv **env ) 
-{
-    jint res = -1;
-    
-    if ( jvm == NULL ) return errlogargs();
-
-#ifdef JNI_VERSION_1_2
-    res = (*jvm)->AttachCurrentThread( jvm, (void**)env, NULL );
-#else
-    res = (*jvm)->AttachCurrentThread( jvm, env, NULL );
-#endif // JNI_VERSION_1_2
-    
-    if ( res < 0 ) return errlog( ERR_CRITICAL, "AttachCurrentThread\n" );
-
-    return 0;
-}
-
 static __inline__ void     _detach_thread( JavaVM* jvm ) 
 {
     (*jvm)->DetachCurrentThread(jvm);
@@ -143,7 +120,7 @@ static __inline__ void     _detach_thread( JavaVM* jvm )
 
 int jnetcap_initialized( void )
 {
-    return _jnetcap.netcap & _jnetcap.mvutil;
+    return _jnetcap.netcap;
 }
 
 /*
@@ -160,32 +137,15 @@ JNIEXPORT jint JNICALL JF_Netcap( init )
     if ( pthread_mutex_lock ( &_jnetcap.mutex ) < 0 ) return perrlog ( "pthread_mutex_lock" );
 
 //  mtrace();
-
+    
     do {
-        if ( _jnetcap.jvm == NULL ) { 
-            if ( (*env)->GetJavaVM( env, &_jnetcap.jvm ) < 0 ) {
-                ret = errlog( ERR_CRITICAL, "GetJavaVM\n" );
-                break;
-            }
-        }        
-
-        if ( _jnetcap.mvutil == _UNINITIALIZED ) {
-            if ( libmvutil_init() < 0 ) {
-                ret = errlog ( ERR_CRITICAL, "libmvutil_init\n" );
-                break;
-            }
-            
-            /* Set the initialization flag */
-            _jnetcap.mvutil = _INITIALIZED;
+        /* JMVUTIL guarantees that it is only initialized once. */
+        if ( jmvutil_init() < 0 ) {
+            ret = errlog ( ERR_CRITICAL, "jvmutil_init\n" );
+            break;
         }
         
         if ( _jnetcap.netcap == _UNINITIALIZED ) {
-            /* Initialize the error handling library */
-            if ( jnetcap_error_init() < 0 ) {
-                ret = errlog( ERR_CRITICAL, "jnetcap_error_init\n" );
-                break;
-            }
-
             /* Set the netcap debugging level */
             netcap_debug_set_level ( netcap_debug_level );
 
@@ -261,13 +221,11 @@ JNIEXPORT jlong JNICALL JF_Netcap( getNetmaskLong )
      * that is not necessary */
     in_addr_t netmask;
     
-    
     if ( _get_interface_address( "br0", NULL, &netmask ) < 0 )
         netmask = 0;
     
     return (jlong)netmask;
 }
-
 
 /*
  * Class:     Netcap
@@ -277,38 +235,41 @@ JNIEXPORT jlong JNICALL JF_Netcap( getNetmaskLong )
 JNIEXPORT void JNICALL JF_Netcap( cleanup )
 ( JNIEnv *env, jclass _class )
 {
-    if ( _jnetcap.netcap == _INITIALIZED ) {
-        /* Unregister all of the hooks */
-        _unregister_hook( env, IPPROTO_UDP );
-        _unregister_hook( env, IPPROTO_TCP );
-        
-        netcap_cleanup();
+    if ( pthread_mutex_lock ( &_jnetcap.mutex ) < 0 ) perrlog ( "pthread_mutex_lock" );
+    
+    do {
+        if ( _jnetcap.netcap == _INITIALIZED ) {
+            /* Unregister all of the hooks */
+            _unregister_hook( env, IPPROTO_UDP );
+            _unregister_hook( env, IPPROTO_TCP );
+            
+            netcap_cleanup();
+        }
         _jnetcap.netcap = 0;
-    }
-
-    if ( _jnetcap.mvutil == _INITIALIZED ) {
-        libmvutil_cleanup();
-        _jnetcap.mvutil = 0;
-    }
-    
-    /* Exit the scheduler */
-    if ( _jnetcap.scheduler == _INITIALIZED ) {
-        /* The scheduler is exited by netcap_cleanup */
-    }
-
-    /* Delete any of the global references */
-    if ( _jnetcap.java.hook_class != NULL ) {
-        (*env)->DeleteGlobalRef( env, _jnetcap.java.hook_class );
-        _jnetcap.java.hook_class = NULL;
-    }
-
+        
+        if ( jmvutil_cleanup() < 0 ) errlog( ERR_WARNING, "jmvutil_cleanup\n" );
+        
+        /* Exit the scheduler */
+        if ( _jnetcap.scheduler == _INITIALIZED ) {
+            /* The scheduler is exited by netcap_cleanup */
+        }
+        
+        /* Delete any of the global references */
+        if ( _jnetcap.java.hook_class != NULL ) {
+            (*env)->DeleteGlobalRef( env, _jnetcap.java.hook_class );
+            _jnetcap.java.hook_class = NULL;
+        }
+        
 #ifdef _MCD_CHECK
-    /*XXX This is only valid for the MCD checker */
-    /* Dump out the memory logs */
-    showMemStats();
+        /*XXX This is only valid for the MCD checker */
+        /* Dump out the memory logs */
+        showMemStats();
 #endif
-    
+    } while( 0 );
+
     // muntrace();
+
+    if ( pthread_mutex_unlock ( &_jnetcap.mutex ) < 0 )  perrlog ( "pthread_mutex_unlock" );    
 }
 
 /*
@@ -324,12 +285,12 @@ JNIEXPORT jbyte JNICALL JF_Netcap( convertStringToIntf )
     int ret = 0;
 
     if (( str = (*env)->GetStringUTFChars( env, string_intf, NULL )) == NULL ) {
-        return jnetcap_error( JNETCAP_ERROR_STT, ERR_CRITICAL, "(*env)->GetStringUTFChars\n" );
+        return jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "(*env)->GetStringUTFChars\n" );
     };
 
     do {
         if ( netcap_interface_string_to_intf( (char*)str, &intf ) < 0 ) {
-            ret = jnetcap_error( JNETCAP_ERROR_ARGS, ERR_CRITICAL, "Invalid interface: '%s'\n", intf );
+            ret = jmvutil_error( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "Invalid interface: '%s'\n", intf );
         }
     } while ( 0 );
 
@@ -351,7 +312,7 @@ JNIEXPORT jstring JNICALL JF_Netcap( convertIntfToString )
     if ( intf == NC_INTF_UNK ) return (*env)->NewStringUTF( env, "" );
     
     if ( netcap_interface_intf_to_string( intf, buf, sizeof( buf )) < 0 ) {
-        return jnetcap_error_null( JNETCAP_ERROR_ARGS, ERR_CRITICAL, "Invalid interface: %d\n", intf );
+        return jmvutil_error_null( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "Invalid interface: %d\n", intf );
     }
 
     return (*env)->NewStringUTF( env, buf );    
@@ -368,7 +329,7 @@ JNIEXPORT void JNICALL Java_com_metavize_jnetcap_Netcap_blockIncomingTraffic
     if_add = ( if_add == JNI_TRUE ) ? 1 : 0;
 
     if ( netcap_subscription_block_incoming( if_add, protocol, intf, low, high ) < 0 ) {
-        jnetcap_error( JNETCAP_ERROR_STT, ERR_CRITICAL, "netcap_subscription_block_incoming\n" );
+        jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "netcap_subscription_block_incoming\n" );
     }
 }
 
@@ -384,17 +345,17 @@ JNIEXPORT void JNICALL JF_Netcap( limitSubnet )
     const char* outside_str = NULL;
 
     if (( inside_str = (*env)->GetStringUTFChars( env, inside, NULL )) == NULL ) {
-        return jnetcap_error_void( JNETCAP_ERROR_STT, ERR_CRITICAL, "(*env)->GetStringUTFChars\n" );
+        return jmvutil_error_void( JMVUTIL_ERROR_STT, ERR_CRITICAL, "(*env)->GetStringUTFChars\n" );
     };
 
     do {
         if (( outside_str = (*env)->GetStringUTFChars( env, outside, NULL )) == NULL ) {
-            jnetcap_error( JNETCAP_ERROR_STT, ERR_CRITICAL, "(*env)->GetStringUTFChars\n" );
+            jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "(*env)->GetStringUTFChars\n" );
             break;
         };
 
         if ( netcap_interface_limit_subnet( (char*)inside_str, (char*)outside_str ) < 0 ) {
-            jnetcap_error( JNETCAP_ERROR_ARGS, ERR_CRITICAL, "netcap_interface_limit_subnet\n" );
+            jmvutil_error( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "netcap_interface_limit_subnet\n" );
             break;
         }
         
@@ -456,17 +417,17 @@ static void _command_port_guard( JNIEnv* env, jint gate, jint protocol, jstring 
     int ret = 0;
 
     if ( ports == NULL ) {
-        return jnetcap_error_void( JNETCAP_ERROR_ARGS, ERR_CRITICAL, "NULL ports" );
+        return jmvutil_error_void( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "NULL ports" );
     } else {
         if (( ports_str = (*env)->GetStringUTFChars( env, ports, NULL )) == NULL ) {
-            return jnetcap_error_void( JNETCAP_ERROR_STT, ERR_CRITICAL, "(*env)->GetStringUTFChars\n" );
+            return jmvutil_error_void( JMVUTIL_ERROR_STT, ERR_CRITICAL, "(*env)->GetStringUTFChars\n" );
         };
     }
 
     do {
         if ( guests != NULL ) {
             if (( guests_str = (*env)->GetStringUTFChars( env, guests, NULL )) == NULL ) {
-                jnetcap_error_void( JNETCAP_ERROR_STT, ERR_CRITICAL, "(*env)->GetStringUTFChars\n" );
+                jmvutil_error_void( JMVUTIL_ERROR_STT, ERR_CRITICAL, "(*env)->GetStringUTFChars\n" );
                 break;
             }
         }
@@ -475,13 +436,13 @@ static void _command_port_guard( JNIEnv* env, jint gate, jint protocol, jstring 
             ret = netcap_interface_station_port_guard((netcap_intf_t)gate, protocol, (char*)ports_str, 
                                                      (char*)guests_str );
             if ( ret < 0 ) {
-                jnetcap_error( JNETCAP_ERROR_ARGS, ERR_CRITICAL, "Unable to station guard\n" );
+                jmvutil_error( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "Unable to station guard\n" );
             }
         } else { 
             ret = netcap_interface_relieve_port_guard((netcap_intf_t)gate, protocol, (char*)ports_str,
                                                       (char*)guests_str );
             if ( ret < 0 ) {
-                jnetcap_error( JNETCAP_ERROR_ARGS, ERR_CRITICAL, "Unable to relieve guard\n" );
+                jmvutil_error( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "Unable to relieve guard\n" );
             }
         }
     } while( 0 );
@@ -509,7 +470,7 @@ JNIEXPORT void JNICALL JF_Netcap( debugLevel )
         break;
         
     default:
-        jnetcap_error( JNETCAP_ERROR_ARGS, ERR_CRITICAL, "debugLevel: %d\n", debug_level );
+        jmvutil_error( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "debugLevel: %d\n", debug_level );
         errlog( ERR_WARNING, "Invalid debug type: %d\n", type );
     }    
 }
@@ -534,12 +495,12 @@ JNIEXPORT jint JNICALL JF_Netcap( donateThreads )
         arg = jnetcap_thread_create( netcap_thread_donate, NULL, SCHED_OTHER, NULL );
         
         if ( arg == NULL ) {
-            return jnetcap_error( JNETCAP_ERROR_STT, ERR_CRITICAL, "jnetcap_thread_create\n" );
+            return jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "jnetcap_thread_create\n" );
         }
                 
         if ( pthread_create( &id, &uthread_attr.other.medium, _run_thread, arg )) {
             perrlog( "pthread_create" );
-            return jnetcap_error( JNETCAP_ERROR_STT, ERR_CRITICAL, "pthread_create\n" );
+            return jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "pthread_create\n" );
         }
     }
     
@@ -665,24 +626,24 @@ JNIEXPORT jint JNICALL JF_Netcap( updateIcmpPacket )
     int ret = -1;
     
     if ( icmp_mb == NULL ) {
-        return jnetcap_error( JNETCAP_ERROR_ARGS, ERR_CRITICAL, "NULL icmp mailbox\n" );
+        return jmvutil_error( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "NULL icmp mailbox\n" );
     }
 
     /* Convert the byte array */
     if (( data = (*env)->GetByteArrayElements( env, _data, NULL )) == NULL ) {
-        return jnetcap_error( JNETCAP_ERROR_STT, ERR_CRITICAL, "GetByteArrayElements\n" );
+        return jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "GetByteArrayElements\n" );
     }
     
     do {
         data_lim = (*env)->GetArrayLength( env, _data );
         
         if ( data_len > data_lim ) {
-            ret = jnetcap_error( JNETCAP_ERROR_ARGS, ERR_CRITICAL, "ICMP: size > byte array length\n" );
+            ret = jmvutil_error( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "ICMP: size > byte array length\n" );
             break;
         }
         
         if (( ret = netcap_icmp_update_pkt( data, data_len, data_lim, icmp_type, icmp_code, icmp_pid, icmp_mb )) < 0 ) {
-            ret = jnetcap_error( JNETCAP_ERROR_STT, ERR_CRITICAL, "netcap_icmp_fix_pkt\n" );
+            ret = jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "netcap_icmp_fix_pkt\n" );
             break;
         }        
     } while ( 0 );
@@ -718,7 +679,7 @@ JNIEXPORT void JNICALL JF_Netcap( updateAddress )
     ( JNIEnv* env, jclass _class, jint inside, jint outside )
 {
     if ( netcap_update_address( inside, outside ) < 0 ) {
-        jnetcap_error( JNETCAP_ERROR_STT, ERR_CRITICAL, "netcap_update_address\n" );
+        jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "netcap_update_address\n" );
     }
 }
 
@@ -731,7 +692,7 @@ JNIEXPORT void JNICALL JF_Netcap( disableLocalAntisubscribe )
     ( JNIEnv* env, jclass _class )
 {
     if ( netcap_subscription_enable_local() < 0 ) {
-        jnetcap_error( JNETCAP_ERROR_STT, ERR_CRITICAL, "netcap_subscription_enable_local\n" );
+        jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "netcap_subscription_enable_local\n" );
     }
 }
 
@@ -744,7 +705,7 @@ JNIEXPORT void JNICALL JF_Netcap( enableLocalAntisubscribe )
     ( JNIEnv* env, jclass _class )
 {
     if ( netcap_subscription_disable_local() < 0 ) {
-        jnetcap_error( JNETCAP_ERROR_STT, ERR_CRITICAL, "netcap_subscription_disable_local\n" );
+        jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "netcap_subscription_disable_local\n" );
     }
 }
 /*
@@ -756,7 +717,7 @@ JNIEXPORT void JNICALL JF_Netcap( disableDhcpForwarding )
     ( JNIEnv* env, jclass _class )
 {
     if ( netcap_subscription_disable_dhcp_forwarding() < 0 ) {
-        jnetcap_error( JNETCAP_ERROR_STT, ERR_CRITICAL, "netcap_subscription_disable_dhcp_forwarding\n" );
+        jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "netcap_subscription_disable_dhcp_forwarding\n" );
     }
 }
 
@@ -769,7 +730,7 @@ JNIEXPORT void JNICALL JF_Netcap( enableDhcpForwarding )
     ( JNIEnv* env, jclass _class )
 {
     if ( netcap_subscription_enable_dhcp_forwarding() < 0 ) {
-        jnetcap_error( JNETCAP_ERROR_STT, ERR_CRITICAL, "netcap_subscription_enable_dhcp_forwarding\n" );
+        jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "netcap_subscription_enable_dhcp_forwarding\n" );
     }
 }
 
@@ -883,14 +844,21 @@ static void              _tcp_hook( netcap_session_t* netcap_sess, void* arg )
 static void              _hook( int protocol, netcap_session_t* netcap_sess, void* arg )
 {
     jobject global_hook = NULL;
-    JNIEnv* env = thread_env;
+    JNIEnv* env;
     u_int session_id;
     netcap_session_t* netcap_sess_cleanup;
-    
+
+    if (( env = jmvutil_get_java_env()) == NULL ) {
+        errlog( ERR_CRITICAL, "jmvutil_get_java_env\n" );
+        netcap_session_raze( netcap_sess );
+        return;
+    }
+
     if ( _jnetcap.netcap != _INITIALIZED || _jnetcap.java.hook_class == NULL || 
          _jnetcap.java.hook_method_id == NULL) { 
         errlog( ERR_CRITICAL, "_hook: unintialized\n" );
-        netcap_session_raze( netcap_sess);
+        netcap_session_raze( netcap_sess );
+        return;
     }
     
     switch( protocol ) {
@@ -922,7 +890,7 @@ static void              _hook( int protocol, netcap_session_t* netcap_sess, voi
      * thread was not spawned if there was an exception.  If there was
      * an exception, make sure that the session is taken out of the
      * sesion table */
-    if ( jnetcap_exception_clear() < 0 ) {
+    if ( jmvutil_error_exception_clear() < 0 ) {
         /* Get the session out from the session table !!! If this
          * happens, it is pretty bad, this really should NEVER happen
          */
@@ -1020,6 +988,7 @@ static void*             _run_thread( void* _arg )
     jnetcap_thread_t arg;
     pthread_t id;
     void* ret;
+    JavaVM* jvm;
 
     if ( _arg == NULL ) return errlogargs_null();
 
@@ -1029,9 +998,11 @@ static void*             _run_thread( void* _arg )
     
     jnetcap_thread_raze( _arg );
 
+    if (( jvm = jmvutil_get_java_vm()) == NULL ) return errlog_null( ERR_CRITICAL, "jmvutil_get_java_vm\n" );
+
     /* Attach the thread to the VM */
-    if ( _attach_thread( _jnetcap.jvm, &thread_env ) < 0 ) {
-        return errlog_null( ERR_CRITICAL, "_attach_thread\n" );
+    if ( jmvutil_get_java_env() == NULL ) {
+        return errlog_null( ERR_CRITICAL, "jmvutil_get_java_env\n" );
     }
     
     do {
@@ -1048,7 +1019,7 @@ static void*             _run_thread( void* _arg )
 
     } while ( 0 );
     
-    _detach_thread( _jnetcap.jvm );
+    _detach_thread( jvm );
 
     jnetcap_thread_destroy( &arg );
 
@@ -1114,34 +1085,6 @@ static void              jnetcap_thread_raze    ( jnetcap_thread_t* input )
     jnetcap_thread_destroy(input);
     jnetcap_thread_free(input);
 }
-
-JNIEnv* jnetcap_get_java_env( void )
-{
-    static __thread JNIEnv* env = NULL;
-    int res  = 0;
-
-    /* This shouldn't happen because it is initialized in JNI_OnLoad */
-    if ( _jnetcap.jvm == NULL ) {
-        jsize num_jvms;
-        if ( JNI_GetCreatedJavaVMs( &_jnetcap.jvm, 1, &num_jvms ) < 0 ) {
-            return errlog_null( ERR_CRITICAL, "JNI_GetCreatedJavaVMs\n" );
-        }
-        if ( num_jvms > 1 ) return errlog_null( ERR_CRITICAL, "MULTIPLE JVMS\n" );
-    }
-
-    if ( env == NULL ) {
-#ifdef JNI_VERSION_1_2
-        res = (*_jnetcap.jvm)->AttachCurrentThread( _jnetcap.jvm, (void**)&env, NULL );
-#else
-        res = (*_jnetcap.jvm)->AttachCurrentThread( _jnetcap.jvm, &env, NULL );
-#endif // JNI_VERSION_1_2
-        
-        if ( res < 0 ) return errlog_null( ERR_CRITICAL, "AttachCurrentThread\n" );
-    }
-
-    return env;
-}
-
 
 /* Retrieves the address of br0 */
 static int _get_interface_address ( char* interface_name, in_addr_t* address, in_addr_t* netmask )

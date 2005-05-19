@@ -18,13 +18,14 @@
 #include <mvutil/mvpoll.h>
 #include <mvutil/errlog.h>
 #include <mvutil/debug.h>
+#include <jmvutil.h>
+
 #include <vector/event.h>
 #include <vector/source.h>
 #include <vector/sink.h>
 
 #include "jni_header.h"
 #include "jvector.h"
-#include "jerror.h"
 
 #include JH_SocketQueue
 
@@ -78,18 +79,18 @@ JNIEXPORT jint JNICALL JF_SocketQueue( mvpoll_1key_1notify_1observers )
 static eventmask_t   _poll_wrapper (mvpoll_key_t* key)
 {
     sq_mvpoll_key_t* sq_key = (sq_mvpoll_key_t*)key;
-    JNIEnv* env   = jvector_get_java_env();
+    JNIEnv* env   = jmvutil_get_java_env();
     eventmask_t mask;
 
     if ( sq_key == NULL || sq_key->key.data == NULL ) return errlogargs();
 
-    if ( env == NULL ) return errlog( ERR_CRITICAL, "jvector_get_java_env" );
+    if ( env == NULL ) return errlog( ERR_CRITICAL, "jmvutil_get_java_env" );
 
     /* XXX Probably should go back to the main cached method idz methods */
     // mask = (eventmask_t)(*env)->CallIntMethod( env, key->data, _socket_queue.poll );
     mask = (eventmask_t)(*env)->CallIntMethod( env, sq_key->key.data, sq_key->mid.poll );
     
-    if ( jvector_exception_clear() < 0 ) return errlog( ERR_CRITICAL, "Exception calling poll\n" );
+    if ( jmvutil_error_exception_clear() < 0 ) return errlog( ERR_CRITICAL, "Exception calling poll\n" );
     
     return mask;
 }
@@ -107,9 +108,9 @@ int               socket_queue_key_init       ( mvpoll_key_t* key, jobject this 
     jclass class;
 
     if ( key == NULL ) return errlogargs();
-    JNIEnv* env   = jvector_get_java_env();
+    JNIEnv* env   = jmvutil_get_java_env();
     
-    if ( env == NULL ) return errlog( ERR_CRITICAL, "jvector_get_java_env" );
+    if ( env == NULL ) return errlog( ERR_CRITICAL, "jmvutil_get_java_env" );
 
     if (( class = (*env)->GetObjectClass( env, this )) == NULL ) {
         return errlog( ERR_CRITICAL, "GetObjectClass" );
@@ -159,7 +160,7 @@ static int _sq_key_destroy ( mvpoll_key_t* key )
     
     if ( key->type != JV_KEY_TYPE ) return errlog( ERR_CRITICAL, "Invalid key type: %d\n", key->type );
 
-    if (( env = jvector_get_java_env()) == NULL ) return errlog( ERR_CRITICAL, "jvector_get_java_env\n" );
+    if (( env = jmvutil_get_java_env()) == NULL ) return errlog( ERR_CRITICAL, "jmvutil_get_java_env\n" );
 
     if ( key->data != NULL ) (*env)->DeleteGlobalRef( env, key->data );
     

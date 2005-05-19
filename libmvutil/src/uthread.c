@@ -11,6 +11,8 @@
 #include "uthread.h"
 
 #include <pthread.h>
+#include <stdlib.h>
+
 #include "errlog.h"
 
 #define SMALL_STACK_SIZE 128*1024
@@ -85,4 +87,50 @@ int uthread_init (void)
     }
 
     return 0;
+}
+
+void  uthread_tls_free( void* buf )
+{
+    if ( buf != NULL ) free( buf );
+}
+
+
+void* uthread_tls_get( pthread_key_t tls_key, size_t size, int(*init)(void *buf, size_t size ))
+{
+    void* buf;
+    void* verify;
+    
+    if ( size < 0 )
+        return errlogargs_null();
+        
+    
+    if (( buf = pthread_getspecific( tls_key )) == NULL ) {
+        /* Buffer is not set yet, allocate a new buffer */
+        if (( buf = malloc( size )) == NULL ) {
+            return errlogmalloc_null();
+        }
+        
+        /* Set the data on the key */
+        if ( pthread_setspecific( tls_key, buf ) != 0 ) {
+            free( buf );
+            return perrlog_null( "pthread_setspecific" );
+        }
+        
+        /* Just a sanity check to make sure the correct value is returned */
+        if (( verify = pthread_getspecific( tls_key )) != buf ) {
+            free( buf );
+            return errlog_null( ERR_CRITICAL, "pthread_getspecific returned different key: %#10x->%#10x",
+                                buf, verify );
+        }
+        
+        /* If necessary, call the initializer function, call this last so if the initializer
+         * allocates more memory it doesn't have to be freed if one of the previous errors occured */
+        if (( init != NULL ) && ( init( buf, size ) < 0 )) {
+            free( buf );
+            return errlog_null( ERR_CRITICAL, "init: size %d", size );                   
+        }
+
+    }
+
+    return buf;
 }
