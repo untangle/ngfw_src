@@ -58,8 +58,6 @@ typedef struct {
     struct sched_param* param;
 } jnetcap_thread_t;
 
-__thread JNIEnv* thread_env;
-
 static struct {
     int scheduler;
     int netcap;

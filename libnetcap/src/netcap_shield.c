@@ -25,6 +25,7 @@
 #include <mvutil/list.h>
 
 #include "libnetcap.h"
+#include "netcap_init.h"
 #include "netcap_trie.h"
 #include "netcap_shield.h"
 #include "netcap_shield_cfg.h"
@@ -32,7 +33,7 @@
 #include "netcap_sched.h"
 
 #ifdef DEBUG_ON
-#define _TRIE_DEBUG_PRINT
+// #define _TRIE_DEBUG_PRINT
 #endif
 
 /* 1 second in u-seconds */
@@ -101,8 +102,6 @@ static struct {
 #endif
 };
 
-static __thread netcap_shield_response_t _shield_response;
-
 typedef struct _chk {
     u_short  size;               /* Size of the chunk in bytes */
     u_char   if_rx;              /* 1 for rx, 0 for tx */
@@ -137,6 +136,8 @@ static int   _status             ( int conn, struct sockaddr_in *dst_addr );
 #endif
 
 static netcap_shield_mode_t _mode_eval ( void );
+
+static netcap_shield_response_t* _tls_get( void );
 
 int netcap_shield_init    ( void )
 {
@@ -217,13 +218,17 @@ netcap_shield_response_t* netcap_shield_rep_check        ( in_addr_t ip )
     netcap_shield_ans_t ans = NC_SHIELD_YES;
     reputation_t*  rep;
     nc_shield_fence_t* fence = NULL;
+    netcap_shield_response_t* response = NULL;
+
+    if (( response = _tls_get()) == NULL ) return errlog_null( ERR_CRITICAL, "_tls_get\n" );
     
     /* If the shield is not enabled return true */
     if ( !_shield.enabled ) {
-        _shield_response.tcp  = NC_SHIELD_YES;
-        _shield_response.udp  = NC_SHIELD_YES;
-        _shield_response.icmp = NC_SHIELD_YES;
-        return &_shield_response;
+        response->tcp      = NC_SHIELD_YES;
+        response->udp      = NC_SHIELD_YES;
+        response->icmp     = NC_SHIELD_YES;
+        response->if_print = 1;
+        return response;
     }
 
     do {
@@ -272,7 +277,7 @@ netcap_shield_response_t* netcap_shield_rep_check        ( in_addr_t ip )
 
     ans = _put_in_fence ( fence, rep_val );
     
-    _shield_response.if_print = 0;
+    response->if_print = 0;
 
     if ( ans != NC_SHIELD_YES ) {
         /* If the count is low, update the print count */
@@ -280,7 +285,7 @@ netcap_shield_response_t* netcap_shield_rep_check        ( in_addr_t ip )
             if ( pthread_mutex_lock( &rep->mutex ) < 0 ) return perrlog_null( "pthread_mutex_lock" );
             netcap_load_update( &rep->print_load, 1 );
             if ( pthread_mutex_unlock(&rep->mutex) < 0 ) return perrlog_null( "pthread_mutex_unlock" );
-            _shield_response.if_print = 1;
+            response->if_print = 1;
         }
     }
 
@@ -293,12 +298,12 @@ netcap_shield_response_t* netcap_shield_rep_check        ( in_addr_t ip )
     }
     
     /* XXX For now set everything the same */
-    _shield_response.tcp = ans;
-    _shield_response.udp = ans;
-    _shield_response.icmp = ans;
+    response->tcp = ans;
+    response->udp = ans;
+    response->icmp = ans;
 
     /* Passed all of the tests, let them in */
-    return &_shield_response;
+    return response;
 }
  
 int                  netcap_shield_rep_blame        ( in_addr_t ip, int amount )
@@ -311,6 +316,14 @@ int                  netcap_shield_rep_blame        ( in_addr_t ip, int amount )
     if ( netcap_trie_apply ( &_shield.trie, ip, _apply_func, &func ) == NULL ) {
         return errlog(ERR_CRITICAL, "netcap_trie_apply\n");
     }
+    return 0;
+}
+
+int                  netcap_shield_tls_init         ( shield_tls_t* tls )
+{
+    if ( tls == NULL ) return errlogargs();
+
+    /* Nothing to do here, tls is just an output buffer */
     return 0;
 }
 
@@ -738,6 +751,14 @@ static netcap_shield_mode_t _mode_eval ( void )
     return NC_SHIELD_MODE_RELAXED;
 }
 
+static netcap_shield_response_t* _tls_get( void )
+{
+    netcap_tls_t* netcap_tls;
+    if (( netcap_tls = netcap_tls_get()) == NULL ) return errlog_null( ERR_CRITICAL, "netcap_tls_get\n" );
+    
+    return &netcap_tls->shield.ans;
+}
+
 #ifdef _TRIE_DEBUG_PRINT
 static int  _status             ( int conn, struct sockaddr_in *dst_addr )
 {
@@ -812,4 +833,6 @@ static int  _status             ( int conn, struct sockaddr_in *dst_addr )
 
 }
 #endif
+
+
 

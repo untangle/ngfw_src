@@ -18,6 +18,8 @@
 
 #include <mvutil/errlog.h>
 #include <mvutil/debug.h>
+#include <mvutil/uthread.h>
+
 #include "netcap_globals.h"
 #include "netcap_subscriptions.h"
 #include "netcap_server.h"
@@ -44,12 +46,14 @@ enum {
 static struct {
     int status;
     pthread_mutex_t mutex;
+    pthread_key_t   tls_key;
 } _init = {
     .status STATUS_UNINITIALIZED,
     .mutex PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP
 };
 
 static int _netcap_init( int shield_enable );
+static int _tls_init   ( void* buf, size_t size );
 
 
 int netcap_init( int shield_enable )
@@ -82,7 +86,10 @@ int netcap_init( int shield_enable )
  *  XXX how can this be done automatically? _init doesnt work
  */
 static int _netcap_init( int shield_enable )
-{    
+{
+    if ( pthread_key_create( &_init.tls_key, uthread_tls_free ) != 0 )
+        return perrlog( "pthread_key_create\n" );
+
     /* Due to structuring of the iptables rules, netcap_interface_init must go before
      * netcap_subscription_init, now netcap_redirect_tables_init is the only thing that
      * must go before netcap_subscription_init and netcap_interface_init. */
@@ -212,4 +219,30 @@ int netcap_update_address( int inside, int outside )
     return 0;
 }
 
+netcap_tls_t* netcap_tls_get( void )
+{
+    netcap_tls_t* tls = NULL;
 
+    if (( tls = uthread_tls_get( _init.tls_key, sizeof( netcap_tls_t ), _tls_init )) == NULL ) {
+        return errlog_null( ERR_CRITICAL, "uthread_get_tls\n" );
+    }
+    
+    return tls;
+}
+
+static int _tls_init( void* buf, size_t size )
+{
+    netcap_tls_t* tls = buf;
+
+    if (( size != sizeof( netcap_tls_t )) || ( tls == NULL )) return errlogargs();
+    
+    if (( netcap_shield_tls_init( &tls->shield )) < 0 ) {
+        return errlog( ERR_CRITICAL, "netcap_shield_tls_init\n" );
+    }
+    
+    if (( netcap_session_tls_init( &tls->session )) < 0 ) {
+        return errlog( ERR_CRITICAL, "netcap_session_tls_init\n" );
+    }
+
+    return 0;
+}

@@ -170,7 +170,7 @@ static int            _tls_init( void* buf, size_t size )
     int ret;
     jmvutil_global_tls_t* tls = buf;
 
-    if ( size != sizeof( jmvutil_global_tls_t )) return errlogargs();
+    if (( size != sizeof( jmvutil_global_tls_t )) || ( buf == NULL )) return errlogargs();
 
     if (( jvm = jmvutil_get_java_vm() ) == NULL ) {
         return errlog( ERR_CRITICAL, "jmvutil_get_java_vm\n" );

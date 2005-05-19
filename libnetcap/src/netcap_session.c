@@ -26,19 +26,19 @@
 #include <mvutil/unet.h>
 
 #include "libnetcap.h"
+#include "netcap_init.h"
 #include "netcap_globals.h"
 #include "netcap_tcp.h"
 #include "netcap_icmp.h"
 #include "netcap_icmp_msg.h"
 #include "netcap_sesstable.h"
 
-#define MAXTUP 64
-static __thread char _output_buf[MAXTUP];
-
 static u_int session_index = 1;
 static lock_t session_index_lock;
 
 static u_int netcap_session_next_id( void );
+
+static session_tls_t* _tls_get( void );
 
 int netcap_sessions_init ( void )
 {
@@ -79,69 +79,99 @@ int netcap_sessions_cleanup ( void )
     return 0;
 }
 
+int netcap_session_tls_init( session_tls_t* tls )
+{
+    if ( tls == NULL ) return errlogargs();
+
+    /* Nothing to do here, tls is just an output buffer */
+    return 0;
+}
+
 char* netcap_session_tuple_print ( netcap_session_t* sess )
 {
-    if (!sess) return errlogargs_null();
+    session_tls_t* tls;
+    
+    if ( sess == NULL ) return errlogargs_null();
+    
+    if (( tls = _tls_get()) == NULL ) return errlog_null( ERR_CRITICAL, "_tls_get\n" );
 
-    unet_reset_inet_ntoa();
-    snprintf( _output_buf, sizeof( _output_buf ), "(%s:%-5i -> %s:%-5i)", 
+    snprintf( tls->output_buf, sizeof( tls->output_buf ), "(%s:%-5i -> %s:%-5i)", 
               unet_next_inet_ntoa( sess->cli.cli.host.s_addr ), sess->cli.cli.port,
               unet_next_inet_ntoa( sess->srv.srv.host.s_addr ), sess->srv.srv.port );
     
-    return _output_buf;
+    return tls->output_buf;
 }
 
 char* netcap_session_srv_tuple_print ( netcap_session_t* sess )
 {
+    session_tls_t* tls;
+
     if (!sess) return errlogargs_null();
 
-    snprintf( _output_buf, sizeof( _output_buf ), "(%s:%-5i)",
+    if (( tls = _tls_get()) == NULL ) return errlog_null( ERR_CRITICAL, "_tls_get\n" );
+
+    snprintf( tls->output_buf, sizeof( tls->output_buf ), "(%s:%-5i)",
               unet_inet_ntoa( sess->srv.srv.host.s_addr ), sess->srv.srv.port );
 
-    return _output_buf;
+    return tls->output_buf;
 }
 
 char* netcap_session_cli_tuple_print ( netcap_session_t* sess )
 {
+    session_tls_t* tls;
+
     if (!sess) return errlogargs_null();
 
-    snprintf( _output_buf, sizeof( _output_buf ), "(%s:%-5i)",
+    if (( tls = _tls_get()) == NULL ) return errlog_null( ERR_CRITICAL, "_tls_get\n" );
+
+    snprintf( tls->output_buf, sizeof( tls->output_buf ), "(%s:%-5i)",
               unet_inet_ntoa( sess->cli.cli.host.s_addr ), sess->cli.cli.port );
     
-    return _output_buf;
+    return tls->output_buf;
 }
 
 char* netcap_session_srv_endp_print ( netcap_session_t* sess )
 {
+    session_tls_t* tls;
+
     if (!sess) return errlogargs_null();
-    
-    unet_reset_inet_ntoa();
-    snprintf( _output_buf, sizeof( _output_buf ), "(%s:%-5i) -> (%s:%-5i)",
+
+    if (( tls = _tls_get()) == NULL ) return errlog_null( ERR_CRITICAL, "_tls_get\n" );
+
+    snprintf( tls->output_buf, sizeof( tls->output_buf ), "(%s:%-5i) -> (%s:%-5i)",
               unet_next_inet_ntoa( sess->srv.cli.host.s_addr ), sess->srv.cli.port,
               unet_next_inet_ntoa( sess->srv.srv.host.s_addr ), sess->srv.srv.port );
     
-    return _output_buf;
+    return tls->output_buf;
 }
 
 char* netcap_session_cli_endp_print ( netcap_session_t* sess )
 {
+    session_tls_t* tls;
+
     if (!sess) return errlogargs_null();
 
-    unet_reset_inet_ntoa();
-    snprintf( _output_buf, sizeof( _output_buf ), "(%s:%-5i) -> (%s:%-5i)",
+    if (( tls = _tls_get()) == NULL ) return errlog_null( ERR_CRITICAL, "_tls_get\n" );
+
+    snprintf( tls->output_buf, sizeof( tls->output_buf ), "(%s:%-5i) -> (%s:%-5i)",
               unet_next_inet_ntoa( sess->cli.cli.host.s_addr ), sess->cli.cli.port,
               unet_next_inet_ntoa( sess->cli.srv.host.s_addr ), sess->cli.srv.port );
 
-    return _output_buf;
+    return tls->output_buf;
 }
     
 char* netcap_session_fd_tuple_print ( netcap_session_t* sess )
 {
+    session_tls_t* tls;
+
     if ( !sess ) return errlogargs_null();
 
-    snprintf( _output_buf, sizeof( _output_buf ), "(fd: %i,%i)", sess->client_sock,sess->server_sock );
+    if (( tls = _tls_get()) == NULL ) return errlog_null( ERR_CRITICAL, "_tls_get\n" );
 
-    return _output_buf;
+    snprintf( tls->output_buf, sizeof( tls->output_buf ), "(fd: %i,%i)", 
+              sess->client_sock, sess->server_sock );
+
+    return tls->output_buf;
 }
 
 u_int netcap_session_next_id ( void )
@@ -358,3 +388,14 @@ int netcap_nc_session_raze(int if_lock, netcap_session_t* netcap_sess)
         return errlog( ERR_CRITICAL, "Unable to determine session protocol: %d\n", netcap_sess->protocol );
     }
 }
+
+static session_tls_t* _tls_get( void )
+{
+    netcap_tls_t* netcap_tls;
+    if (( netcap_tls = netcap_tls_get()) == NULL ) return errlog_null( ERR_CRITICAL, "netcap_tls_get\n" );
+    
+    return &netcap_tls->session;
+}
+
+
+

@@ -19,7 +19,6 @@
 #include <mvutil/lock.h>
 #include "netcap_traffic.h"
 
-
 #define NC_SESSION_IF_MB 1
 
 typedef enum {
@@ -30,9 +29,13 @@ typedef enum {
     SESS_STATE_ERROR
 } session_state_t;
 
-int netcap_sessions_init  ( void );
-int netcap_sessions_cleanup  ( void );
+typedef struct {
+    char output_buf[64];
+} session_tls_t;
 
+int netcap_sessions_init   ( void );
+int netcap_sessions_cleanup( void );
+int netcap_session_tls_init( session_tls_t* tls );
 
 netcap_session_t* netcap_session_malloc ( void );
 int netcap_session_init                 ( netcap_session_t* netcap_sess, netcap_endpoints_t* endpoints, 

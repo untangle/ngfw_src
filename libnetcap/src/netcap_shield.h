@@ -48,6 +48,10 @@ typedef struct {
     u_char icmp;
 } netcap_shield_response_t;
 
+typedef struct {
+    netcap_shield_response_t ans;
+} shield_tls_t;
+
 /* Indicate if an IP should allowed in */
 netcap_shield_response_t* netcap_shield_rep_check        ( in_addr_t ip );
 
@@ -60,5 +64,7 @@ int                       netcap_shield_rep_add_srv_conn ( in_addr_t ip );
 int                       netcap_shield_rep_add_srv_fail ( in_addr_t ip );
 
 int                       netcap_shield_rep_blame        ( in_addr_t ip, int amount );
+
+int                       netcap_shield_tls_init         ( shield_tls_t* tls );
 
 #endif /* __NETCAP_SHIELD_H_ */
