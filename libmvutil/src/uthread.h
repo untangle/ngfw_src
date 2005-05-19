@@ -37,6 +37,14 @@ int   uthread_init    ( void );
 
 void  uthread_tls_free( void* buf );
 
+/**
+ * Get the TLS for a specific key.
+ * If necessary this will allocate memory and then call init (if non-null) to initialize the address.
+ * tls_key: Key to retrieve data for.
+ * size:    If necessary size of the memory to allocate, this is also passed into init for verification.
+ * init:    Function pointer to call to initialize newly allocated memory, this is only called if
+ *          a new value is being created.  This function should not call function that utilize TLS.
+ */
 void* uthread_tls_get ( pthread_key_t tls_key, size_t size, int(*init)( void *buf, size_t size ));
 
 #endif

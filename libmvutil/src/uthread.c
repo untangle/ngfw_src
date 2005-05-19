@@ -119,7 +119,7 @@ void* uthread_tls_get( pthread_key_t tls_key, size_t size, int(*init)(void *buf,
         /* Just a sanity check to make sure the correct value is returned */
         if (( verify = pthread_getspecific( tls_key )) != buf ) {
             free( buf );
-            return errlog_null( ERR_CRITICAL, "pthread_getspecific returned different key: %#10x->%#10x",
+            return errlog_null( ERR_CRITICAL, "pthread_getspecific returned different val: %#10x->%#10x",
                                 buf, verify );
         }
         
@@ -127,6 +127,7 @@ void* uthread_tls_get( pthread_key_t tls_key, size_t size, int(*init)(void *buf,
          * allocates more memory it doesn't have to be freed if one of the previous errors occured */
         if (( init != NULL ) && ( init( buf, size ) < 0 )) {
             free( buf );
+            pthread_setspecific( tls_key, NULL );
             return errlog_null( ERR_CRITICAL, "init: size %d", size );                   
         }
 

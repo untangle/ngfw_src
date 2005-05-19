@@ -13,6 +13,7 @@
 #include <errno.h>
 #include <poll.h>
 #include "errlog.h"
+#include "uthread.h"
 #include "debug.h"
 
 #define __QUEUE_LENGTH 2048
@@ -22,6 +23,17 @@
 
 #define ENABLE_BLOCKING 0xDABBA
 #define NON_BLOCKING_FLAGS   O_NDELAY | O_NONBLOCK
+
+static struct {
+    pthread_key_t tls_key;
+} _unet = {
+    .tls_key -1
+};
+
+typedef struct {
+    int current;
+    char buf_array[NTOA_BUF_COUNT][INET_ADDRSTRLEN];
+} unet_tls_t;
 
 typedef u_char  u8;
 typedef u_short u16;
@@ -50,6 +62,18 @@ static __inline__ int _unet_blocking_modify( int fd, int if_blocking )
 
     if ( fcntl( fd, F_SETFL, flags ) < 0 ) return perrlog( "fcntl" );
 
+    return 0;
+}
+
+static unet_tls_t* _tls_get ( void );
+static int         _tls_init( void* buf, size_t size );
+
+int     unet_init        ( void )
+{
+    if ( pthread_key_create( &_unet.tls_key, uthread_tls_free ) < 0 ) {
+        return perrlog( "pthread_key_create\n" );
+    }
+    
     return 0;
 }
 
@@ -381,40 +405,70 @@ int     unet_reset_and_close (int fd)
     return 0;
 }
 
-
-static __thread struct {
-    int current;
-    char buf_array[NTOA_BUF_COUNT][INET_ADDRSTRLEN];
-} _ntoa = {
-    .current = 0
-};
-
 void    unet_reset_inet_ntoa( void )
 {
-    _ntoa.current = 0;
+    unet_tls_t* tls;
+
+    if (( tls = _tls_get()) == NULL ) {
+        errlog( ERR_CRITICAL, "_tls_get\n" );
+        return;
+    }
+
+    tls->current = 0;
 }
 
 char*   unet_inet_ntoa (in_addr_t addr)
 {
-    _ntoa.current = 0;
+    unet_tls_t* tls;
+    
+    if (( tls = _tls_get()) == NULL ) return errlog_null( ERR_CRITICAL, "_tls_get\n" );
+    
+    tls->current = 0;
     return unet_next_inet_ntoa( addr );
 }
 
 
 char*   unet_next_inet_ntoa( in_addr_t addr )
 {
+    unet_tls_t* tls;
+    
+    if (( tls = _tls_get()) == NULL ) return errlog_null( ERR_CRITICAL, "_tls_get\n" );
+
     struct in_addr i;
     i.s_addr = addr;
 
-    if ( _ntoa.current >= NTOA_BUF_COUNT ) {
+    if ( tls->current >= NTOA_BUF_COUNT ) {
         debug( 10, "UNET: Cycled buffer\n" );
-        _ntoa.current = 0;
+        tls->current = 0;
     }
     
-    strncpy( _ntoa.buf_array[_ntoa.current], inet_ntoa( i ), INET_ADDRSTRLEN );
+    strncpy( tls->buf_array[tls->current], inet_ntoa( i ), INET_ADDRSTRLEN );
     
     /* Increment after using */
-    return _ntoa.buf_array[_ntoa.current++];
+    return tls->buf_array[tls->current++];
+}
+
+static unet_tls_t* _tls_get( void )
+{
+    unet_tls_t* tls = NULL;
+
+    if (( tls = uthread_tls_get( _unet.tls_key, sizeof( unet_tls_t ), _tls_init )) == NULL ) {
+        return errlog_null( ERR_CRITICAL, "uthread_get_tls\n" );
+    }
+    
+    return tls;
+}
+
+static int         _tls_init( void* buf, size_t size )
+{
+    unet_tls_t* tls = buf;
+
+    if (( size != sizeof( unet_tls_t )) || ( tls == NULL )) return errlogargs();
+    
+    /* Initialize to zero */
+    tls->current = 0;
+
+    return 0;
 }
 
 u16     unet_in_cksum ( u16* addr, int len)

@@ -18,6 +18,9 @@
 static pthread_mutex_t init_mutex = PTHREAD_MUTEX_INITIALIZER;
 static int             inited = 0;
 
+extern int     unet_init        ( void );
+
+
 int  libmvutil_init (void)
 {
     int ret = 0;
@@ -29,6 +32,7 @@ int  libmvutil_init (void)
         if ( _debug_init() < 0 ) ret--;
         if ( _errlog_init() < 0 ) ret--;
         if ( uthread_init() < 0 ) ret--;
+        if ( unet_init() < 0 ) ret--;
         if ( ret == 0 )
             inited = 1;
     }
