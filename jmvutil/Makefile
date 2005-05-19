@@ -26,23 +26,15 @@ DEFINES   +=
 
 DEBUG_PKG  = $(JMVUTIL_PKG)
 
-c_src=jerror.c jmvutil.c
+c_src=jmvutil_error.c jmvutil_base.c
 
 objects=$(c_src:.c=.o)
 
-install_includes=include/libnetcap.h
-
-## These are different since they must be installed into mvutil
-jmvutil_includes=$(patsubst %.c,$(src_path)/%.h,$(c_src))
-jmvutil_build_inc_dir=$(build_inc_path)/$(sub_name)
+install_includes=include/jmvutil.h
 
 all: $(lib_file_name)
 
-build: $(lib_file_name) $(jmvutil_build_inc_dir).$(dir_target) build.default
-	@for i in $(jmvutil_includes) ; do \
-		echo "==> $$i => $(jmvutil_build_inc_dir)" ; \
-		$(INSTALL_DATA) -m $(inc_mode) $$i $(jmvutil_build_inc_dir) ; \
-	done
+build: $(lib_file_name) build.default
 
 $(lib_file_name): $(src_path)/version.h $(objects)
 
