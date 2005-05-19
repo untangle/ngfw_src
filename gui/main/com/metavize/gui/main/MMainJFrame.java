@@ -158,6 +158,8 @@ public class MMainJFrame extends javax.swing.JFrame {
         jPanel8 = new javax.swing.JPanel();
         adminJButton = new javax.swing.JButton();
         networkJButton = new javax.swing.JButton();
+        remoteJButton = new javax.swing.JButton();
+        maintenanceJButton = new javax.swing.JButton();
         backupJButton = new javax.swing.JButton();
         licenseJButton = new javax.swing.JButton();
         aboutJButton = new javax.swing.JButton();
@@ -358,6 +360,52 @@ public class MMainJFrame extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(0, 1, 3, 3);
         jPanel8.add(networkJButton, gridBagConstraints);
 
+        remoteJButton.setFont(new java.awt.Font("Arial", 0, 12));
+        remoteJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText32x32.png")));
+        remoteJButton.setText("<html>Remote<br>Administration</html>");
+        remoteJButton.setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.EtchedBorder(), new javax.swing.border.EmptyBorder(new java.awt.Insets(2, 2, 2, 0))));
+        remoteJButton.setDoubleBuffered(true);
+        remoteJButton.setFocusPainted(false);
+        remoteJButton.setFocusable(false);
+        remoteJButton.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        remoteJButton.setMargin(new java.awt.Insets(1, 3, 4, 2));
+        remoteJButton.setMaximumSize(new java.awt.Dimension(810, 370));
+        remoteJButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                remoteJButtonActionPerformed(evt);
+            }
+        });
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 1, 3, 3);
+        jPanel8.add(remoteJButton, gridBagConstraints);
+
+        maintenanceJButton.setFont(new java.awt.Font("Arial", 0, 12));
+        maintenanceJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText32x32.png")));
+        maintenanceJButton.setText("<html>Secure Remote<br>Maintenance</html>");
+        maintenanceJButton.setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.EtchedBorder(), new javax.swing.border.EmptyBorder(new java.awt.Insets(2, 2, 2, 0))));
+        maintenanceJButton.setDoubleBuffered(true);
+        maintenanceJButton.setFocusPainted(false);
+        maintenanceJButton.setFocusable(false);
+        maintenanceJButton.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        maintenanceJButton.setMargin(new java.awt.Insets(1, 3, 4, 2));
+        maintenanceJButton.setMaximumSize(new java.awt.Dimension(810, 370));
+        maintenanceJButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                maintenanceJButtonActionPerformed(evt);
+            }
+        });
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 1, 3, 3);
+        jPanel8.add(maintenanceJButton, gridBagConstraints);
+
         backupJButton.setFont(new java.awt.Font("Arial", 0, 12));
         backupJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText32x32.png")));
         backupJButton.setText("<html>Backup and<br>Restore</html>");
@@ -511,6 +559,28 @@ public class MMainJFrame extends javax.swing.JFrame {
         setBounds((screenSize.width-1024)/2, (screenSize.height-768)/2, 1024, 768);
     }//GEN-END:initComponents
 
+    private void maintenanceJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_maintenanceJButtonActionPerformed
+        try{
+	    MaintenanceJDialog maintenanceJDialog = new MaintenanceJDialog();
+	    maintenanceJDialog.setVisible(true);
+	}
+	catch(Exception e){
+	    try{ Util.handleExceptionWithRestart("Error showing remote maintenance settings", e); }
+	    catch(Exception f){ Util.handleExceptionNoRestart("Error showing remote maintenance settings", f); }
+	}
+    }//GEN-LAST:event_maintenanceJButtonActionPerformed
+
+    private void remoteJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_remoteJButtonActionPerformed
+        try{
+	    RemoteJDialog remoteJDialog = new RemoteJDialog();
+	    remoteJDialog.setVisible(true);
+	}
+	catch(Exception e){
+	    try{ Util.handleExceptionWithRestart("Error showing remote administration settings", e); }
+	    catch(Exception f){ Util.handleExceptionNoRestart("Error showing remote administration settings", f); }
+	}
+    }//GEN-LAST:event_remoteJButtonActionPerformed
+
     private void backupJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backupJButtonActionPerformed
 	try{
 	    BackupRestoreJDialog backupRestoreJDialog = new BackupRestoreJDialog();
@@ -528,9 +598,6 @@ public class MMainJFrame extends javax.swing.JFrame {
     private void networkJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_networkJButtonActionPerformed
 	try{
 	    NetworkJDialog networkJDialog = new NetworkJDialog();
-	    networkJDialog.setBounds( Util.generateCenteredBounds( Util.getMMainJFrame().getBounds(), 
-								   networkJDialog.getWidth(), 
-								   networkJDialog.getHeight()) );
 	    networkJDialog.setVisible(true);
 	}
 	catch(Exception e){
@@ -542,9 +609,6 @@ public class MMainJFrame extends javax.swing.JFrame {
     private void licenseJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_licenseJButtonActionPerformed
 	try{
 	    LicenseJDialog licenseJDialog = new LicenseJDialog();
-	    licenseJDialog.setBounds( Util.generateCenteredBounds( Util.getMMainJFrame().getBounds(), 
-								   licenseJDialog.getWidth(), 
-								   licenseJDialog.getHeight()) );
 	    licenseJDialog.setVisible(true);
 	}
 	catch(Exception e){
@@ -556,9 +620,6 @@ public class MMainJFrame extends javax.swing.JFrame {
     private void aboutJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutJButtonActionPerformed
 	try{
 	    AboutJDialog aboutJDialog = new AboutJDialog();
-	    aboutJDialog.setBounds( Util.generateCenteredBounds( Util.getMMainJFrame().getBounds(), 
-								 aboutJDialog.getWidth(), 
-								 aboutJDialog.getHeight()) );
 	    aboutJDialog.setVisible(true);
 	}
 	catch(Exception e){
@@ -573,18 +634,7 @@ public class MMainJFrame extends javax.swing.JFrame {
 
     private void upgradeJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_upgradeJButtonActionPerformed
 	try{
-	    MackageDesc[] mackageDesc = null;
-	    UpgradeJDialog upgradeJDialog =  new UpgradeJDialog(MMainJFrame.this);
-	    upgradeJDialog.setBounds( Util.generateCenteredBounds( MMainJFrame.this.getBounds(), 
-								   upgradeJDialog.getWidth(), 
-								   upgradeJDialog.getHeight()) );
-	    upgradeJDialog.setVisible(true);
-	    mackageDesc = Util.getToolboxManager().upgradable();
-	    
-	    if( Util.isArrayEmpty(mackageDesc) )
-		updateJButton(0);
-	    else
-		updateJButton(mackageDesc.length);
+	    UpgradeJDialog upgradeJDialog =  new UpgradeJDialog();
 	}
 	catch(Exception e){
 	    try{ Util.handleExceptionWithRestart("Error checking for upgrades on server", e); }
@@ -599,9 +649,6 @@ public class MMainJFrame extends javax.swing.JFrame {
     private void adminJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_adminJButtonActionPerformed
 	try{
 	    AdminConfigJDialog adminConfigJDialog = new AdminConfigJDialog();
-	    adminConfigJDialog.setBounds( Util.generateCenteredBounds( Util.getMMainJFrame().getBounds(), 
-								       adminConfigJDialog.getWidth(), 
-								       adminConfigJDialog.getHeight()) );
 	    adminConfigJDialog.setVisible(true);
 	}
 	catch(Exception e){
@@ -738,8 +785,10 @@ public class MMainJFrame extends javax.swing.JFrame {
     private javax.swing.JButton licenseJButton;
     private javax.swing.JPanel mPipelineJPanel;
     private javax.swing.JTabbedPane mTabbedPane;
+    private javax.swing.JButton maintenanceJButton;
     private javax.swing.JButton metavizeJButton;
     private javax.swing.JButton networkJButton;
+    private javax.swing.JButton remoteJButton;
     private javax.swing.JPanel storeJPanel;
     private javax.swing.JScrollPane storeJScrollPane;
     private javax.swing.JPanel storeScrollJPanel;

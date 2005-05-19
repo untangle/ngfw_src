@@ -6,7 +6,7 @@
 
 package com.metavize.gui.store;
 
-import com.metavize.gui.widgets.configWindow.*;
+import com.metavize.gui.widgets.dialogs.*;
 import com.metavize.gui.util.*;
 import com.metavize.gui.transform.*;
 
@@ -24,7 +24,7 @@ import com.metavize.mvvm.tran.*;
  *
  * @author  inieves
  */
-public class StoreJDialog extends ConfigJDialog implements Savable, Refreshable {
+public class StoreJDialog extends MConfigJDialog implements Savable, Refreshable {
 
     private static final String NAME_STORE = "Procure a Software Appliance";
 
@@ -35,7 +35,6 @@ public class StoreJDialog extends ConfigJDialog implements Savable, Refreshable 
     
     
     public StoreJDialog( MTransformJButton mTransformJButton ) {
-        super(Util.getMMainJFrame());
         this.mTransformJButton = mTransformJButton;
 
         MIN_SIZE = new Dimension(640, 480);

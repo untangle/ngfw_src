@@ -124,7 +124,7 @@ public class MTwoButtonJDialog extends javax.swing.JDialog implements java.awt.e
 
     private void proceedJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_proceedJButtonActionPerformed
         isProceeding = true;
-        setVisible(false);
+        windowClosing(null);
     }//GEN-LAST:event_proceedJButtonActionPerformed
 
     private void cancelJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelJButtonActionPerformed
@@ -133,8 +133,8 @@ public class MTwoButtonJDialog extends javax.swing.JDialog implements java.awt.e
     
     
     public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-        isProceeding = false;
         this.setVisible(false);
+        dispose();
     }    
     
     
@@ -146,7 +146,6 @@ public class MTwoButtonJDialog extends javax.swing.JDialog implements java.awt.e
     public void windowOpened(java.awt.event.WindowEvent windowEvent) {}
     
     public boolean isProceeding(){
-        dispose();
         return isProceeding;
     }
     

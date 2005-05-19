@@ -7,7 +7,7 @@
 
 package com.metavize.gui.configuration;
 
-import com.metavize.gui.widgets.configWindow.*;
+import com.metavize.gui.widgets.dialogs.*;
 import com.metavize.gui.widgets.editTable.*;
 import com.metavize.gui.util.*;
 
@@ -27,10 +27,9 @@ import com.metavize.gui.util.StringConstants;
  *
  * @author  inieves
  */
-public class LicenseJDialog extends ConfigJDialog {
+public class LicenseJDialog extends MConfigJDialog {
     
     public LicenseJDialog( ) {
-        super(Util.getMMainJFrame());
         MIN_SIZE = new Dimension(640, 480);
         MAX_SIZE = new Dimension(640, 1200);
     }

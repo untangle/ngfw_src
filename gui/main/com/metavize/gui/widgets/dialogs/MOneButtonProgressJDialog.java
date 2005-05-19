@@ -4,7 +4,7 @@
  * Created on July 28, 2004, 7:48 PM
  */
 
-package com.metavize.gui.widgets.restartWindow;
+package com.metavize.gui.widgets.dialogs;
 
 import com.metavize.gui.util.Util;
 import com.metavize.mvvm.ToolboxManager;
@@ -12,25 +12,25 @@ import com.metavize.mvvm.ToolboxManager;
  *
  * @author  inieves
  */
-final public class RestartJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
+public class MOneButtonProgressJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
     
     
     /** Creates new form ProceedJDialog */
-    public RestartJDialog() {
+    public MOneButtonProgressJDialog() {
         super(Util.getMMainJFrame(), true);
         initComponents();
         this.addWindowListener(this);
         this.setBounds( Util.generateCenteredBounds(Util.getMMainJFrame().getBounds(), this.getWidth(), this.getHeight()) );
-        this.setVisible(true);
-        this.dispose();
+
     }
     
     private void initComponents() {//GEN-BEGIN:initComponents
         java.awt.GridBagConstraints gridBagConstraints;
 
-        proceedJButton = new javax.swing.JButton();
-        messageJLabel = new javax.swing.JLabel();
         labelJLabel = new javax.swing.JLabel();
+        messageJLabel = new javax.swing.JLabel();
+        proceedJButton = new javax.swing.JButton();
+        jProgressBar = new javax.swing.JProgressBar();
         backgroundJLabel = new com.metavize.gui.widgets.MTiledIconLabel();
 
         getContentPane().setLayout(new java.awt.GridBagLayout());
@@ -39,11 +39,37 @@ final public class RestartJDialog extends javax.swing.JDialog implements java.aw
         setTitle("Confirm Restart...");
         setModal(true);
         setResizable(false);
-        proceedJButton.setFont(new java.awt.Font("Default", 1, 12));
-        proceedJButton.setText("Shut Down");
+        labelJLabel.setFont(new java.awt.Font("Dialog", 1, 24));
+        labelJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        labelJLabel.setText("Warning:");
+        labelJLabel.setDoubleBuffered(true);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
+        gridBagConstraints.insets = new java.awt.Insets(10, 0, 0, 0);
+        getContentPane().add(labelJLabel, gridBagConstraints);
+
+        messageJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+        messageJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        messageJLabel.setText("<html><center>\nYou must now shut down the Metavize EdgeGuard Client.<br>\n<br>\nYou can log in again after shutting down, after a brief period.<br>\n</center></html>");
+        messageJLabel.setDoubleBuffered(true);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
+        gridBagConstraints.insets = new java.awt.Insets(60, 30, 0, 30);
+        getContentPane().add(messageJLabel, gridBagConstraints);
+
+        proceedJButton.setFont(new java.awt.Font("Default", 0, 12));
+        proceedJButton.setText("<html><b>Close</b> Dialog</html>");
         proceedJButton.setDoubleBuffered(true);
         proceedJButton.setFocusPainted(false);
         proceedJButton.setFocusable(false);
+        proceedJButton.setMinimumSize(new java.awt.Dimension(175, 25));
+        proceedJButton.setPreferredSize(new java.awt.Dimension(175, 25));
         proceedJButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 proceedJButtonActionPerformed(evt);
@@ -57,30 +83,19 @@ final public class RestartJDialog extends javax.swing.JDialog implements java.aw
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 13, 0);
         getContentPane().add(proceedJButton, gridBagConstraints);
 
-        messageJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-        messageJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        messageJLabel.setText("<html><center>\nYou must now shut down the Metavize EdgeGuard Client.<br>\n<br>\nYou can log in again after shutting down, after a brief period.<br>\n</center></html>");
-        messageJLabel.setDoubleBuffered(true);
-        messageJLabel.setPreferredSize(new java.awt.Dimension(400, 45));
+        jProgressBar.setFont(new java.awt.Font("Dialog", 0, 12));
+        jProgressBar.setForeground(new java.awt.Color(68, 91, 255));
+        jProgressBar.setMaximumSize(new java.awt.Dimension(32767, 15));
+        jProgressBar.setMinimumSize(new java.awt.Dimension(10, 15));
+        jProgressBar.setPreferredSize(new java.awt.Dimension(148, 15));
+        jProgressBar.setStringPainted(true);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
-        gridBagConstraints.insets = new java.awt.Insets(50, 30, 0, 30);
-        getContentPane().add(messageJLabel, gridBagConstraints);
-
-        labelJLabel.setFont(new java.awt.Font("Dialog", 1, 24));
-        labelJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        labelJLabel.setText("Attention:");
-        labelJLabel.setDoubleBuffered(true);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
-        gridBagConstraints.insets = new java.awt.Insets(10, 0, 0, 0);
-        getContentPane().add(labelJLabel, gridBagConstraints);
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
+        gridBagConstraints.insets = new java.awt.Insets(0, 15, 50, 15);
+        getContentPane().add(jProgressBar, gridBagConstraints);
 
         backgroundJLabel.setFont(new java.awt.Font("Default", 0, 12));
         backgroundJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -98,18 +113,17 @@ final public class RestartJDialog extends javax.swing.JDialog implements java.aw
         getContentPane().add(backgroundJLabel, gridBagConstraints);
 
         java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-        setBounds((screenSize.width-466)/2, (screenSize.height-200)/2, 466, 200);
+        setBounds((screenSize.width-456)/2, (screenSize.height-247)/2, 456, 247);
     }//GEN-END:initComponents
 
     private void proceedJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_proceedJButtonActionPerformed
-        setVisible(false);
-        Util.exit(0);
+        windowClosing(null);
     }//GEN-LAST:event_proceedJButtonActionPerformed
     
     
     public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-        this.setVisible(false);
-        Util.exit(0);
+        setVisible(false);
+        dispose();
     }    
     
     
@@ -123,9 +137,10 @@ final public class RestartJDialog extends javax.swing.JDialog implements java.aw
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel backgroundJLabel;
-    private javax.swing.JLabel labelJLabel;
-    private javax.swing.JLabel messageJLabel;
-    private javax.swing.JButton proceedJButton;
+    protected javax.swing.JProgressBar jProgressBar;
+    protected javax.swing.JLabel labelJLabel;
+    protected javax.swing.JLabel messageJLabel;
+    protected javax.swing.JButton proceedJButton;
     // End of variables declaration//GEN-END:variables
     
 }

@@ -125,7 +125,7 @@ final public class ProceedJDialog extends javax.swing.JDialog implements java.aw
 
     private void proceedJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_proceedJButtonActionPerformed
         isUpgrading = true;
-        setVisible(false);
+        windowClosing(null);
     }//GEN-LAST:event_proceedJButtonActionPerformed
 
     private void cancelJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelJButtonActionPerformed
@@ -134,8 +134,8 @@ final public class ProceedJDialog extends javax.swing.JDialog implements java.aw
     
     
     public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-        isUpgrading = false;
         this.setVisible(false);
+        dispose();
     }    
     
     

@@ -4,7 +4,7 @@
  * Created on July 16, 2004, 6:04 AM
  */
 
-package com.metavize.gui.widgets.configWindow;
+package com.metavize.gui.widgets.dialogs;
 
 import com.metavize.gui.transform.*;
 import com.metavize.gui.widgets.dialogs.*;
@@ -28,7 +28,7 @@ import javax.swing.event.*;
  *
  * @author  inieves
  */
-public abstract class ConfigJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
+public abstract class MConfigJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
 
     protected Dimension MIN_SIZE = new Dimension(640, 480);
     protected Dimension MAX_SIZE = new Dimension(1600, 1200);
@@ -41,10 +41,11 @@ public abstract class ConfigJDialog extends javax.swing.JDialog implements java.
 
 
 
-    public ConfigJDialog(java.awt.Frame parent) {
-        super(parent, true);
+    public MConfigJDialog() {
+        super(Util.getMMainJFrame(), true);
 
         this.initComponents();
+        this.setBounds( Util.generateCenteredBounds( Util.getMMainJFrame().getBounds(), this.getWidth(), this.getHeight()) );
         this.addWindowListener(this);   
 
         this.addComponentListener( 
@@ -74,6 +75,7 @@ public abstract class ConfigJDialog extends javax.swing.JDialog implements java.
 	    }
         }
         catch(Exception e){
+            Util.handleExceptionNoRestart("Error preparing settings for saving", e);
             new ValidateFailureDialog( this.getTitle(), componentName, e.getMessage() );
             return;
         }
@@ -108,6 +110,7 @@ public abstract class ConfigJDialog extends javax.swing.JDialog implements java.
 	    }
 	}
 	catch(Exception e){
+            Util.handleExceptionNoRestart("Error preparing settings for refreshing", e);
 	    new RefreshFailureDialog( this.getTitle() );
 	}
 
@@ -237,11 +240,11 @@ public abstract class ConfigJDialog extends javax.swing.JDialog implements java.
     }//GEN-END:initComponents
 
     private void saveJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveJButtonActionPerformed
-        saveAll();
+        new SaveAllThread();
     }//GEN-LAST:event_saveJButtonActionPerformed
 
     private void reloadJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reloadJButtonActionPerformed
-        refreshAll();
+        new RefreshAllThread();
     }//GEN-LAST:event_reloadJButtonActionPerformed
 
     private void closeJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeJButtonActionPerformed
@@ -249,7 +252,7 @@ public abstract class ConfigJDialog extends javax.swing.JDialog implements java.
     }//GEN-LAST:event_closeJButtonActionPerformed
 
     public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-        //this.setVisible(false);
+        this.setVisible(false);
         this.dispose();
     }
 
@@ -271,6 +274,52 @@ public abstract class ConfigJDialog extends javax.swing.JDialog implements java.
     protected javax.swing.JButton saveJButton;
     // End of variables declaration//GEN-END:variables
 
+    private class SaveAllThread extends Thread{
+        public SaveAllThread(){
+            saveJButton.setEnabled(false);
+            reloadJButton.setEnabled(false);
+            closeJButton.setEnabled(false);
+            this.start();
+        }
+        
+        public void run(){
+            try{
+                MConfigJDialog.this.saveAll();
+            }
+            catch(Exception e){
+                Util.handleExceptionNoRestart("Error saving settings", e);
+            }
+            finally{
+                saveJButton.setEnabled(true);
+                reloadJButton.setEnabled(true);
+                closeJButton.setEnabled(true);
+            }
+        }
+    }
+    
+    
+    private class RefreshAllThread extends Thread{
+        public RefreshAllThread(){
+            saveJButton.setEnabled(false);
+            reloadJButton.setEnabled(false);
+            closeJButton.setEnabled(false);
+            this.start();
+        }
+        
+        public void run(){
+            try{
+                MConfigJDialog.this.refreshAll();
+            }
+            catch(Exception e){
+                Util.handleExceptionNoRestart("Error saving settings", e);
+            }
+            finally{
+                saveJButton.setEnabled(true);
+                reloadJButton.setEnabled(true);
+                closeJButton.setEnabled(true);
+            }
+        }
+    }
 }
 
 

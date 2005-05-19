@@ -17,7 +17,6 @@ final public class RefreshFailureDialog extends MOneButtonJDialog {
         this.setTitle(applianceName + " Warning");
         messageJLabel.setText("<html><center>" + applianceName + " was unable to properly refresh all settings.<br>Please try again later.</center></html>");
         this.setVisible(true);
-        this.dispose();
     }
     
 }

@@ -31,7 +31,6 @@ import com.metavize.mvvm.security.*;
  */
 public class MLoginJFrame extends javax.swing.JFrame {
 
-    private static final int RETRY_COUNT = 6;
 
     private MvvmRemoteContext mvvmContext;
     private String args[];
@@ -471,11 +470,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
 
             // CHECK THE USER INPUT
                     Thread.sleep(1000);
-                    // hostName = serverJTextField.getText();
-                    // URL codeBase = Util.getServerCodeBase();
-                    // hostName = codeBase.getHost();
-                    // This might be unsafe: XX
-                    // secure = !codeBase.getProtocol().equals("http");
+                    
                 }
                 catch(Exception e){
                     resetLogin("No server at host:port");
@@ -485,7 +480,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
 
                 // ATTEMPT TO LOG IN
                 int retryLogin = 0;
-                while( retryLogin < RETRY_COUNT ){
+                while( true ){
             retryLogin++;
                     try{
                         mvvmContext = MvvmRemoteContextFactory.login( Util.getServerCodeBase().getHost(),
@@ -507,18 +502,19 @@ public class MLoginJFrame extends javax.swing.JFrame {
             // (UPDATE GUI) READOUT SUCCESS
             SwingUtilities.invokeAndWait( new Runnable() {
                 public void run() {
-                    statusJProgressBar.setValue(0);
+                    statusJProgressBar.setValue(16);
                     statusJProgressBar.setIndeterminate(false);
                     statusJProgressBar.setString("Successful authentication");
                     passJPasswordField.setText("");
                 } } );
                         Thread.sleep(2000);
-                        SwingUtilities.invokeAndWait( new Runnable() {
+/*                        SwingUtilities.invokeAndWait( new Runnable() {
                 public void run() {
                     statusJProgressBar.setValue(16);
                                     //inputJPanel.setVisible(false);
                                     //pack();
                 } } );
+ **/
             break;
                     }
             catch(FailedLoginException e){
@@ -539,22 +535,24 @@ public class MLoginJFrame extends javax.swing.JFrame {
             Util.handleExceptionNoRestart("Error:", e);
             }
                     finally{
-            if( retryLogin >= RETRY_COUNT ){
+            if( retryLogin >= Util.LOGIN_RETRY_COUNT ){
                 resetLogin("Error: Unable to connect to server.");
                 return;
             }
                         else if( retryLogin > 1 ){
                 final int retry = retryLogin;
                 SwingUtilities.invokeLater( new Runnable(){ public void run(){
-                statusJProgressBar.setString( statusJProgressBar.getString() + "(retrying: " + retry + ")" );
+                statusJProgressBar.setString( "Retrying login..." + " (" + retry + ")" );
                 }});
+                try{ Thread.currentThread().sleep( Util.LOGIN_RETRY_SLEEP ); }
+                catch(Exception e){}
             }
                     }
         }
 
                 // ATTEMPT TO LOAD CLIENT
                 int retryClient = 0;
-                while( retryClient < RETRY_COUNT ){
+                while( true ){
             retryClient++;
                     try{
 
@@ -604,7 +602,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
             Util.handleExceptionNoRestart("Error:", e);
             }
                     finally{
-            if(retryClient >= RETRY_COUNT){
+            if(retryClient >= Util.LOGIN_RETRY_COUNT){
                 resetLogin("Error: Unable to launch client.");
                 reshowLogin();
                 return;
@@ -612,8 +610,10 @@ public class MLoginJFrame extends javax.swing.JFrame {
             else if( retryClient > 1 ){
                 final int retry = retryClient;
                 SwingUtilities.invokeLater( new Runnable(){ public void run(){
-                statusJProgressBar.setString( statusJProgressBar.getString() + "(retrying: " + retry + ")" );
+                statusJProgressBar.setString( "Retrying launch..." + " (" + retry + ")" );
                 }});
+                try{ Thread.currentThread().sleep( Util.LOGIN_RETRY_SLEEP ); }
+                catch(Exception e){}
             }
                     }
         }

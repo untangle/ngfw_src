@@ -33,6 +33,11 @@ public class Util {
     public static String getVersion(){ return version; }
     /////////////////////////////////
 
+    // LOGIN //////////////////////
+    public static final int LOGIN_RETRY_COUNT = 6;
+    public static final long LOGIN_RETRY_SLEEP = 3000l;
+    ///////////////////////////////
+    
     // SERVER PROXIES ///////////////
     private static MvvmRemoteContext mvvmContext;
     private static ToolboxManager toolboxManager;

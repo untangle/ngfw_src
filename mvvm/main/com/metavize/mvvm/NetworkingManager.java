@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: NetworkingManager.java,v 1.1 2005/02/23 03:51:48 rbscott Exp $
+ *  $Id$
  */
 
 package com.metavize.mvvm;
@@ -22,4 +22,7 @@ public interface NetworkingManager  {
      * @param configuration - Configuration to save
      */
     void set( NetworkingConfiguration configuration );
+    
+    
+    public NetworkingConfiguration renewDhcpLease() throws Exception;
 }

@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: NetworkingConfiguration.java,v 1.11 2005/03/09 07:00:10 rbscott Exp $
+ *  $Id$
  */
 
 package com.metavize.mvvm;
@@ -28,6 +28,7 @@ public class NetworkingConfiguration implements Serializable
     public static final boolean DEF_IS_OUTSIDE_EN         = false;
     public static final boolean DEF_IS_OUTSIDE_RESTRICTED = false;
     public static final boolean DEF_IS_SSH_EN             = false;
+    public static final boolean DEF_IS_EXCEPTION_REPORTING_EN = false;
     public static final boolean DEF_IS_TCP_WIN_EN         = false;
 
     /**
@@ -62,6 +63,11 @@ public class NetworkingConfiguration implements Serializable
     private boolean isSshEnabled = DEF_IS_SSH_EN;
 
     /**
+     * True if exception emails are to be emailed
+     */
+    private boolean isExceptionReportingEnabled = DEF_IS_EXCEPTION_REPORTING_EN;
+    
+    /**
      * True if TCP Window Scaling is enabled.
      * disabled by default.
      * See: http://oss.sgi.com/archives/netdev/2004-07/msg00121.html or bug 163
@@ -79,7 +85,7 @@ public class NetworkingConfiguration implements Serializable
     public NetworkingConfiguration()
     {
     }
-
+    
     public void isDhcpEnabled( boolean isEnabled )
     {
         this.isDhcpEnabled = isEnabled;
@@ -185,6 +191,16 @@ public class NetworkingConfiguration implements Serializable
         this.isSshEnabled = isEnabled;
     }
 
+    public boolean isExceptionReportingEnabled()
+    {
+        return this.isExceptionReportingEnabled;
+    }
+    
+    public void isExceptionReportingEnabled( boolean isEnabled )
+    {
+        this.isExceptionReportingEnabled = isEnabled;
+    }
+    
     public void isTcpWindowScalingEnabled( boolean isEnabled )
     {
         this.isTcpWindowScalingEnabled = isEnabled;

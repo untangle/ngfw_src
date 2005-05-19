@@ -17,7 +17,6 @@ final public class ValidateFailureDialog extends MOneButtonJDialog {
         this.setTitle(applianceName + " Warning");
         messageJLabel.setText("<html><center>" + applianceName + " was unable to save settings<br>for the following reason:<br><br><b>" + failureMessage + "<br>in \"" + componentName  + "\"</b><br><br>Please correct this and then save again.</center></html>");
         this.setVisible(true);
-        this.dispose();
     }
     
 }

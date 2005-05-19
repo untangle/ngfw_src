@@ -6,7 +6,7 @@
 
 package com.metavize.gui.configuration;
 
-import com.metavize.gui.widgets.configWindow.*;
+import com.metavize.gui.widgets.dialogs.*;
 import com.metavize.gui.widgets.editTable.*;
 import com.metavize.gui.util.*;
 
@@ -25,12 +25,11 @@ import com.metavize.gui.util.StringConstants;
  *
  * @author  inieves
  */
-public class AdminConfigJDialog extends ConfigJDialog {
+public class AdminConfigJDialog extends MConfigJDialog {
     
     private static final String NAME_ADMIN_ACCOUNTS = "Administrator Accounts";
 
     public AdminConfigJDialog( ) {
-        super(Util.getMMainJFrame());
     }
 
     protected void generateGui(){
@@ -52,10 +51,10 @@ public class AdminConfigJDialog extends ConfigJDialog {
         this.setTitle(NAME_ADMIN_ACCOUNTS);
     }
     
-    protected void sendSettings(Object settings) throws Exception {
+    public void sendSettings(Object settings) throws Exception {
 	Util.getAdminManager().setAdminSettings( (AdminSettings) settings );
     }
-    protected void refreshSettings(){
+    public void refreshSettings(){
 	super.settings = Util.getAdminManager().getAdminSettings();
     }
 

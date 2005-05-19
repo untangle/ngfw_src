@@ -17,7 +17,6 @@ final public class SaveFailureDialog extends MOneButtonJDialog {
         this.setTitle(applianceName + " Warning");
         messageJLabel.setText("<html><center>" + applianceName + " was unable to save settings.<br>Please try again later.</center></html>");
         this.setVisible(true);
-        this.dispose();
     }
     
 }

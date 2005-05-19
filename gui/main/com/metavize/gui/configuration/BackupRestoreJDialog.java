@@ -18,7 +18,7 @@ import com.metavize.gui.main.MMainJFrame;
 import com.metavize.gui.util.*;
 import com.metavize.gui.widgets.coloredTable.*;
 import com.metavize.gui.widgets.editTable.*;
-import com.metavize.gui.widgets.restartWindow.*;
+import com.metavize.gui.widgets.dialogs.*;
 
 import com.metavize.mvvm.*;
 

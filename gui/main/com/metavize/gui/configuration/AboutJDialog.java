@@ -6,7 +6,7 @@
 
 package com.metavize.gui.configuration;
 
-import com.metavize.gui.widgets.configWindow.*;
+import com.metavize.gui.widgets.dialogs.*;
 import com.metavize.gui.widgets.editTable.*;
 import com.metavize.gui.util.*;
 
@@ -25,7 +25,7 @@ import com.metavize.gui.util.StringConstants;
  *
  * @author  inieves
  */
-public class AboutJDialog extends ConfigJDialog {
+public class AboutJDialog extends MConfigJDialog {
     
     private JScrollPane contentJScrollPane;
     private JEditorPane contentJEditorPane;
@@ -34,12 +34,11 @@ public class AboutJDialog extends ConfigJDialog {
     private static String aboutString = "<br><br><b>Readme:</b> http://www.metavize.com/egquickstart<br><br><b>Website: </b>http://www.metavize.com</html>";
 
     public AboutJDialog( ) {
-        super(Util.getMMainJFrame());
         MIN_SIZE = new Dimension(640, 480);
         MAX_SIZE = new Dimension(640, 1200);
     }
 
-    protected void generateGui(){
+    public void generateGui(){
         try{
             buildString = "<html><b>Build:</b> " + Util.getMvvmContext().toolboxManager().mackageDesc("mvvm").getInstalledVersion();
         }
@@ -60,7 +59,7 @@ public class AboutJDialog extends ConfigJDialog {
 	this.removeActionButtons();
     }
     
-    protected void sendSettings(Object settings){}
-    protected void refreshSettings(){}
+    public void sendSettings(Object settings){}
+    public void refreshSettings(){}
 
 }
