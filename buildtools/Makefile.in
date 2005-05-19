@@ -57,7 +57,7 @@ LDDIR         = ../lib $(build_lib_path)
 LDDIR_FLAGS   = $(patsubst %,-L%,$(LDDIR))
 LIBS	      =
 LIBS_FLAGS    = -pthread $(patsubst %,-l%,$(LIBS)) --warn-common
-FLAGS        += -g -ggdb -fpic
+FLAGS        += 
 CFLAGS        =  $(FLAGS) $(DEFINES) $(WARNINGS) $(OPTIMIZATIONS) $(INC_FLAGS) $(LDDIR_FLAGS)
 
 RANLIB        = ranlib
