@@ -55,8 +55,14 @@ class TCPNewSessionRequestImpl extends IPNewSessionRequestImpl implements TCPNew
      * Note that if <code>acked</code> is true, then a simple close is done instead.
      */
     public void rejectReturnRst()
-        /* XXX Need some implementation */
     {
+        if ( state != REQUESTED ) {
+            throw new IllegalStateException( "Unable to reject session that is not in the requested state" );
+        }
+        
+        this.state = REJECTED;
+        
+        this.code = TCP_REJECT_RESET;
     }
 
 }

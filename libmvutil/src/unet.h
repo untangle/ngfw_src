@@ -154,4 +154,12 @@ int unet_blocking_disable( int fd );
  */
 int unet_blocking_enable( int fd );
 
+/**
+ * Initialize a sock addr structure
+ * host: Address to configure in network byte order.
+ * port: Port to configure in host byte order.
+ */
+int unet_sockaddr_in_init( struct sockaddr_in* sockaddr, in_addr_t host, u_short port );
+
+
 #endif

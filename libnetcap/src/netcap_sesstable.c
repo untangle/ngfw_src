@@ -365,7 +365,7 @@ int netcap_sesstable_remove_session (int if_lock, netcap_session_t* netcap_sess)
         } else {
             _netcap_sesstable_remove_tuple( netcap_sess->protocol, endpoints->cli.host.s_addr, 
                                             endpoints->srv.host.s_addr,
-                                            endpoints->cli.port, endpoints->srv.port, netcap_sess->seq );
+                                            endpoints->cli.port, endpoints->srv.port, 0 );
         }
         
         /* Only remove the reverse if this is a UDP Connection */

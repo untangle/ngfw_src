@@ -17,6 +17,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <netinet/ip.h>
+#include <netinet/ip_icmp.h>
 #include <signal.h>
 
 #include <libnetcap.h>
@@ -65,7 +66,7 @@ JNIEXPORT jint JNICALL JF_TCPSession( setServerEndpoint )
     
     VERIFY_TCP_SESSION( session );
 
-    if ( session->srv_state == CONN_STATE_COMPLETING || session->srv_state == CONN_STATE_COMPLETE ) {
+    if ( session->srv_state == CONN_STATE_COMPLETE ) {
         return errlog( ERR_CRITICAL, "Cannot modify server endpoint after completing the connection\n" );
     }
 
@@ -76,17 +77,6 @@ JNIEXPORT jint JNICALL JF_TCPSession( setServerEndpoint )
     session->srv.srv.port        = (u_short)server_port;
 
     return 0;
-}
-
-/*
- * Class:     com_metavize_jnetcap_NetcapTCPSession
- * Method:    serverStart
- * Signature: (JI)I
- */
-JNIEXPORT void JNICALL JF_TCPSession( serverStart )
-    ( JNIEnv *env, jclass _class, jlong session_ptr, jint flags )
-{
-    return _tcp_callback( session_ptr, SRV_START_COMPLETE, flags );
 }
 
 /*
@@ -120,6 +110,64 @@ JNIEXPORT void JNICALL JF_TCPSession( clientReset )
     ( JNIEnv *env, jclass _class, jlong session_ptr, jint flags )
 {
     _tcp_callback( session_ptr, CLI_RESET, flags );
+}
+
+/*
+ * Class:     com_metavize_jnetcap_NetcapTCPSession
+ * Method:    clientDrop
+ * Signature: (JI)I
+ */
+JNIEXPORT void JNICALL JF_TCPSession( clientDrop )
+    ( JNIEnv *env, jclass _class, jlong session_ptr, jint flags )
+{
+    _tcp_callback( session_ptr, CLI_DROP, flags );
+}
+
+/*
+ * Class:     com_metavize_jnetcap_NetcapTCPSession
+ * Method:    clientForwardReject
+ * Signature: (JI)I
+ */
+JNIEXPORT void JNICALL JF_TCPSession( clientForwardReject )
+    ( JNIEnv *env, jclass _class, jlong session_ptr, jint flags )
+{
+    _tcp_callback( session_ptr, CLI_FORWARD_REJECT, flags );
+}
+
+
+/*
+ * Class:     com_metavize_jnetcap_NetcapTCPSession
+ * Method:    clientSendIcmp
+ * Signature: (JI)I
+ */
+JNIEXPORT void JNICALL JF_TCPSession( clientSendIcmp )
+    ( JNIEnv *env, jclass _class, jlong session_ptr, jint flags )
+{
+    _tcp_callback( session_ptr, CLI_ICMP, flags );
+}
+
+/*
+ * Class:     com_metavize_jnetcap_NetcapTCPSession
+ * Method:    clientSendIcmpDestUnreach
+ * Signature: (JI)I
+ */
+JNIEXPORT void JNICALL JF_TCPSession( clientSendIcmpDestUnreach )
+    ( JNIEnv *env, jclass _class, jlong session_ptr, jint flags, jbyte icmp_code )
+{
+    netcap_session_t* session;
+
+    JLONG_TO_SESSION_VOID( session, session_ptr );
+    VERIFY_TCP_SESSION_VOID( session );    
+        
+    if ( icmp_code < 0 || icmp_code > NR_ICMP_UNREACH ) {
+        return jmvutil_error_void( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "Invalid ICMP code: %d\n", icmp_code );
+    }
+
+    session->dead_tcp.exit_type = TCP_CLI_DEAD_ICMP;
+    session->dead_tcp.type      = ICMP_DEST_UNREACH;
+    session->dead_tcp.code      = icmp_code;
+    
+    _tcp_callback( session_ptr, CLI_ICMP, flags );
 }
 
 /*

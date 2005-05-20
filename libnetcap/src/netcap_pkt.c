@@ -15,6 +15,7 @@
 #include <mvutil/errlog.h>
 
 #include "netcap_pkt.h"
+#include "netcap_queue.h"
 
 netcap_pkt_t* netcap_pkt_malloc (void)
 {
@@ -91,6 +92,22 @@ void netcap_pkt_raze (netcap_pkt_t* pkt)
 
     netcap_pkt_free(pkt);
 }
+
+int  netcap_pkt_action_raze( netcap_pkt_t* pkt, int action )
+{
+    if (!pkt)
+        return errlogargs();
+       
+    if ( netcap_set_verdict( pkt->packet_id, action, NULL, 0 ) < 0 ) {
+        perrlog( "netcap_set_verdict" );
+        netcap_pkt_raze( pkt );
+        return -1;
+    }
+
+    netcap_pkt_raze( pkt );
+    return 0;
+}
+
 
 struct iphdr* netcap_pkt_get_ip_hdr ( netcap_pkt_t* pkt )
 {

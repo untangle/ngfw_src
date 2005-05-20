@@ -250,7 +250,14 @@ int netcap_session_init(netcap_session_t* netcap_sess, netcap_endpoints_t *endpo
     netcap_sess->icmp.client_id = 0;
     netcap_sess->icmp.server_id = 0;
 
+    /* Clear out the dead TCP session flags */
+    netcap_sess->dead_tcp.exit_type = TCP_CLI_DEAD_NULL;
+    netcap_sess->dead_tcp.type      = 255;
+    netcap_sess->dead_tcp.code      = 255;
+    netcap_sess->dead_tcp.redirect  = (in_addr_t)0;
+
     /* Need the ICMP mailboxes */
+    /* XXX Only need these for UDP */
     if ( mailbox_init( &netcap_sess->icmp_cli_mb ) < 0 ) {
         return errlog( ERR_CRITICAL, "mailbox_init\n" );
     }

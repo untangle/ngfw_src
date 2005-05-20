@@ -85,7 +85,7 @@ JNIEXPORT jint JNICALL JF_UDPSink( write )
 
     /* XXX options */
     
-
+    
     /* Convert the byte array */
     if (( data = (*env)->GetByteArrayElements( env, _data, NULL )) == NULL ) return errlogmalloc();
     

@@ -89,9 +89,11 @@ typedef enum {
 typedef enum {
     ACTION_NULL=0,
     CLI_COMPLETE,
-    SRV_START_COMPLETE,
     SRV_COMPLETE,
     CLI_RESET,
+    CLI_DROP,
+    CLI_ICMP,
+    CLI_FORWARD_REJECT  /* Forward whatever rejection the server sent to the client */
 } netcap_callback_action_t;
 
 typedef enum {
@@ -120,14 +122,17 @@ typedef enum {
 
 typedef enum {
     CONN_STATE_INCOMPLETE = 1,
-    CONN_STATE_COMPLETING,
     CONN_STATE_COMPLETE,
-/*     CONN_STATE_SYN_RCVD, */
-/*     CONN_STATE_SYN_SENT, */
-/*     CONN_STATE_SYNACK_RCVD, */
-/*     CONN_STATE_SYNACK_SENT, */
     CONN_STATE_NULL
 } netcap_tcp_conn_state_t;
+
+/* Different ways for the server to tell the client that the connection is dead */
+enum {
+    TCP_CLI_DEAD_DROP = 1,
+    TCP_CLI_DEAD_RESET,
+    TCP_CLI_DEAD_ICMP,
+    TCP_CLI_DEAD_NULL
+};
 
 typedef struct netcap_endpoint_t {
     netcap_intf_t  intf;
@@ -371,20 +376,37 @@ typedef struct netcap_session {
     u_char tos;
 
     /* TCP Session */
-    u_int seq;
+
+    /* How to handle TCP sessions that were never alive */
+    /* XXX Needs a pointer to the ICMP packet so that redirects can be handled properly */
+    struct {
+        /* 0: Drop incoming packets *
+         * 1: Reset incoming SYN packets *
+         * 2: Send an ICMP packet back with the type and code that are specified  below */
+        u_char exit_type;
+
+        /* If exit_type is ICMP this is the type and code that should be returned for
+         * subsequent packets */
+        u_char type;
+        u_char code;
+        
+        /* If the type of ICMP exit is redirect, this is the address to redirect to in
+         * network byte order */
+        in_addr_t redirect;
+    } dead_tcp;
+    
+    //    u_int seq;
 
     /* Client information */
-    // struct sockaddr_in client;
     int                client_sock;
 
     /* Server information */
-    // struct sockaddr_in server;
     int                server_sock;
 
     /**
      * flags of this connection
      */
-    int flags;
+    // int flags;
 
     /**
      * A number indicating the client interface or 0 if it is unknown.
@@ -411,9 +433,8 @@ typedef struct netcap_session {
      * in the case of SRV_UNFINI or CLI_UNFINI this can be used to complete the
      * connection
      */
-    int  (*callback) (struct netcap_session* netcap_sess,
-                      netcap_callback_action_t action,
-                      netcap_callback_flag_t flags );
+    int  (*callback) ( struct netcap_session* netcap_sess, netcap_callback_action_t action,
+                       netcap_callback_flag_t flags );
 
     /**
      * The state of this TCP session

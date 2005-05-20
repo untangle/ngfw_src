@@ -30,6 +30,8 @@
 #include "libnetcap.h"
 #include "netcap_globals.h"
 
+/* XXXXXXXXXXXXXXXX this is just repeated functionality from the bottom of netcap_pkt.c XXXXXXXXXXXXX */
+
 static void* _get_second_header( struct iphdr* iph, int len, int protocol );
 
 /* Parse out the UDP header */

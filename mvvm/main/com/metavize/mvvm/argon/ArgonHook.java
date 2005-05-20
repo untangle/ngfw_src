@@ -32,10 +32,13 @@ import org.apache.log4j.Logger;
 /**
  * Helper class for the IP session hooks.
  */
-public abstract class ArgonHook implements Runnable
+abstract class ArgonHook implements Runnable
 {
     private static final Logger logger = Logger.getLogger( ArgonHook.class );
     private static final VectronTable activeVectrons = VectronTable.getInstance();
+
+    /* Reject the client with whatever response the server returned */
+    protected static final int REJECT_CODE_SRV = -1;
 
     /**
      * List of all of the transforms( ArgonAgents )
@@ -61,7 +64,8 @@ public abstract class ArgonHook implements Runnable
     /**
      * State of the session
      */
-    protected int state = IPNewSessionRequest.REQUESTED;
+    protected int state      = IPNewSessionRequest.REQUESTED;
+    protected int rejectCode = REJECT_CODE_SRV;
 
     /**
      * Thread hook
@@ -185,10 +189,13 @@ public abstract class ArgonHook implements Runnable
             /* If the server doesn't complete, we have to "vector" the reset */
             if ( !serverComplete()) {
                 /* ??? May want to send different codes, or something ??? */
-                if ( vectorReset())
-                    state = IPNewSessionRequest.REJECTED;
-                else
+                if ( vectorReset()) {
+                    /* Forward the rejection type that was passed from the server */
+                    state        = IPNewSessionRequest.REJECTED;
+                    rejectCode = REJECT_CODE_SRV;
+                } else {
                     state = IPNewSessionRequest.ENDPOINTED;
+                }
             }
             break;
 
@@ -350,6 +357,9 @@ public abstract class ArgonHook implements Runnable
             break;
 
         case IPNewSessionRequest.REJECTED:
+            rejectCode  = request.rejectCode();
+
+            /* fallthrough */
         case IPNewSessionRequest.REJECTED_SILENT:
             state = request.state();
             break;

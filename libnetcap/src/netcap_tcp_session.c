@@ -75,9 +75,6 @@ int netcap_tcp_session_init( netcap_session_t* netcap_sess,
 
     /* Create it in SYN mode by default */
     netcap_sess->syn_mode = 1;
-
-    /* Set the sequence number */
-    netcap_sess->seq = seq;
     
     return 0;
 }
@@ -97,7 +94,7 @@ netcap_session_t* netcap_tcp_session_create(in_addr_t client_addr, u_short clien
 
     ret = netcap_tcp_session_init ( netcap_sess, client_addr, client_port,
                                     client_sock, server_addr, server_port,
-                                    server_sock, protocol, cli_intf, srv_intf, flags,seq);
+                                    server_sock, protocol, cli_intf, srv_intf, flags,seq );
 
     if ( ret < 0) {
         if ( netcap_tcp_session_free(netcap_sess)) {

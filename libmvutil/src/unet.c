@@ -585,4 +585,19 @@ int unet_blocking_enable( int fd )
     return _unet_blocking_modify( fd, ENABLE_BLOCKING );
 }
 
+/**
+ * Initialize a sockaddr structure
+ */
+int unet_sockaddr_in_init( struct sockaddr_in* sockaddr, in_addr_t host, u_short port )
+{
+    if ( sockaddr == NULL ) return errlogargs();
+        
+    sockaddr->sin_family = AF_INET;
+    sockaddr->sin_port   = htons( port );
+    memcpy( &sockaddr->sin_addr, &host, sizeof(in_addr_t));
+
+    return 0;
+}
+
+
 

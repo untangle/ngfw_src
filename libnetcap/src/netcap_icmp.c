@@ -124,10 +124,15 @@ static __inline__ netcap_session_t* _icmp_get_error_session( netcap_pkt_t* pkt, 
                                                  src_host, dst_host, src_port, dst_port, 0 );
 
     if ( netcap_sess != NULL ) {
-        // Figure out the correct mailbox
+        // Figure out the correct mailbox (TCP only has a server mailbox, no client mailbox)
         if ( src_host == netcap_sess->cli.cli.host.s_addr ) {
             debug( 10, "ICMP: Client mailbox\n" );
-            *mb =  &netcap_sess->cli_mb;
+            if ( ip_header->ip_p == IPPROTO_TCP ) {
+                debug( 4, "ICMP: Received ICMP message from client\n" );
+                netcap_sess = NULL;
+            } else {
+                *mb =  &netcap_sess->cli_mb;
+            }
         } else if ( src_host == netcap_sess->srv.srv.host.s_addr ) {
             debug( 10, "ICMP: Server mailbox\n" );
             *mb = &netcap_sess->srv_mb;
@@ -206,7 +211,7 @@ static __inline__ mailbox_t* _icmp_get_mailbox( netcap_pkt_t* pkt, netcap_sessio
 static __inline__ int _icmp_put_mailbox( mailbox_t* mb, netcap_pkt_t* pkt )
 {
     if ( mailbox_size( mb ) > MAX_MB_SIZE ) {
-        return errlog( ERR_WARNING, "ICMP: Mailbox Full- Dropping Packet (from %s)\n", 
+        return errlog( ERR_WARNING, "ICMP: Mailbox Full - Dropping Packet (from %s)\n", 
                        inet_ntoa( pkt->src.host ));
     } else if ( mailbox_put( mb, (void*)pkt ) < 0 ) {
         return perrlog("mailbox_put");
@@ -369,6 +374,11 @@ int   netcap_icmp_update_pkt( char* data, int data_len, int data_lim,
         return errlog( ERR_CRITICAL, "Data is larger than the buffer\n" );
     }
 
+    if ( netcap_icmp_verify_type_and_code( icmp_type, icmp_code ) < 0 ) {
+        return errlog( ERR_WARNING, "netcap_icmp_verify_type_and_code\n" );
+    }
+
+
     /* By default do not modify the length of the packet */
     new_len = data_len;
     
@@ -399,7 +409,11 @@ int   netcap_icmp_update_pkt( char* data, int data_len, int data_lim,
         }
         break;
 
+    case ICMP_PARAMETERPROB:
+        errlog( ERR_WARNING, "ICMP: parameter problem packet\n" );
+        /* fallthrough */
         /* XXX Doesn't change the code for packets that do not fit one of the error conditions */
+
     case ICMP_DEST_UNREACH:
         /* fallthrough */
     case ICMP_SOURCE_QUENCH:
@@ -408,9 +422,8 @@ int   netcap_icmp_update_pkt( char* data, int data_len, int data_lim,
         /* fallthrough */
     case ICMP_TIME_EXCEEDED:
         /* fallthrough */
-    case ICMP_PARAMETERPROB:
         /* Fix the packet */
-        
+
         /* XXX May need the ID of the last packet received */
         if ( data_lim < ICMP_ADVLENMIN ) {
             return errlog( ERR_WARNING, "Not enough room, %d < %d\n", data_lim, ICMP_ADVLENMIN );
@@ -463,6 +476,50 @@ int   netcap_icmp_update_pkt( char* data, int data_len, int data_lim,
     
     return new_len;
 }
+
+int  netcap_icmp_verify_type_and_code( u_int type, u_int code )
+{
+    if ( type > NR_ICMP_TYPES ) 
+        return -1;
+
+    switch ( type ) {
+    case ICMP_DEST_UNREACH:
+        if ( code > NR_ICMP_UNREACH ) return -1;
+        break;
+
+    case ICMP_REDIRECT:
+        if ( code > ICMP_REDIRECT_TOSHOST ) return -1;
+        break;
+    case ICMP_TIME_EXCEEDED:
+        if ( code > ICMP_TIMXCEED_REASS ) return -1;
+        break;
+    case ICMP_PARAMETERPROB:
+        if ( code > ICMP_PARAMPROB_OPTABSENT ) return -1;
+        break;
+    case ICMP_SOURCE_QUENCH:
+        /* fallthrough */
+    case ICMP_ECHO:
+        /* fallthrough */
+    case ICMP_ECHOREPLY:
+        /* fallthrough */
+    case ICMP_TIMESTAMP:
+        /* fallthrough */
+    case ICMP_TIMESTAMPREPLY:
+        /* fallthrough */
+    case ICMP_INFO_REQUEST:
+        /* fallthrough */
+    case ICMP_INFO_REPLY:
+        /* fallthrough */
+    case ICMP_ADDRESS:
+        /* fallthrough */
+    case ICMP_ADDRESSREPLY:
+        /* fallthrough */
+        if ( code != 0 ) return -1;
+    }
+    
+    return 0;
+}
+
 
 
 static int  _netcap_icmp_send( char *data, int data_len, netcap_pkt_t* pkt, int flags )
@@ -685,6 +742,8 @@ static _find_t _icmp_find_session( netcap_pkt_t* pkt, netcap_session_t** netcap_
             ret = ( *netcap_sess == NULL ) ? _FIND_EXIST : _FIND_NEW;
             break;
             
+        case ICMP_REDIRECT:
+        case ICMP_SOURCE_QUENCH:
         case ICMP_TIME_EXCEEDED:
         case ICMP_DEST_UNREACH:
             /* Lookup the session, if it doesn't exist, then drop it */
@@ -715,8 +774,6 @@ static _find_t _icmp_find_session( netcap_pkt_t* pkt, netcap_session_t** netcap_
             break;
 
             /* XXX Not sure how to handle these */
-        case ICMP_SOURCE_QUENCH:
-        case ICMP_REDIRECT:
         case ICMP_PARAMETERPROB:
         case ICMP_TIMESTAMP:
         case ICMP_TIMESTAMPREPLY:

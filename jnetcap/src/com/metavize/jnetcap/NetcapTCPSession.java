@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: NetcapTCPSession.java,v 1.10 2005/01/17 21:12:10 rbscott Exp $
+ *  $Id$
  */
 
 
@@ -21,10 +21,13 @@ public class NetcapTCPSession extends NetcapSession
 
     public  static final int NON_LOCAL_BIND             = 1;
     
-    private static final int DEFAULT_SERVER_START_FLAGS = 0;
+    private static final int DEFAULT_SERVER_START_FLAGS    = 0;
     private static final int DEFAULT_SERVER_COMPLETE_FLAGS = NON_LOCAL_BIND;
     private static final int DEFAULT_CLIENT_COMPLETE_FLAGS = 0;
-    private static final int DEFAULT_RESET_FLAGS        = 0;
+    private static final int DEFAULT_RESET_FLAGS           = 0;
+    private static final int DEFAULT_DROP_FLAGS            = 0;
+    private static final int DEFAULT_SEND_ICMP_FLAGS       = 0;
+    private static final int DEFAULT_FORWARD_REJECT_FLAGS  = 0;
     
     public NetcapTCPSession( int id )
     {
@@ -87,18 +90,42 @@ public class NetcapTCPSession extends NetcapSession
      */
     public void clientReset()
     {
-        clientReset( DEFAULT_RESET_FLAGS );
+        clientReset( pointer.value(), DEFAULT_RESET_FLAGS );
     }
 
-    /* Start completing the connection to the server */
-    public void serverStart( int flags )
+    /**
+     * Drop the next few incoming client SYNs
+     */
+    public void clientDrop()
     {
-        serverStart( pointer.value(), flags );
+        clientDrop( pointer.value(), DEFAULT_DROP_FLAGS );
     }
 
-    public void serverStart()
+    /**
+     * Send an ICMP message in response to incoming client SYNs
+     * This will send the same response that was received by the server.  If an
+     * icmp response was not received from the server, then a response is not sent
+     * and all incoming SYNs are dropped.
+     */
+    public void clientSendIcmp()
     {
-        serverStart( DEFAULT_SERVER_START_FLAGS );
+        clientSendIcmp( pointer.value(), DEFAULT_SEND_ICMP_FLAGS );
+    }
+
+    /**
+     * Send an ICMP Destination unreachable message with the specified code 
+     */
+    public void clientSendIcmpDestUnreach( byte code )
+    {
+        clientSendIcmpDestUnreach( pointer.value(), DEFAULT_SEND_ICMP_FLAGS, code );
+    }
+
+    /**
+     * Send whatever rejection type the server sent.
+     */
+    public void clientForwardReject()
+    {
+        clientForwardReject( pointer.value(), DEFAULT_FORWARD_REJECT_FLAGS );
     }
     
     /* Complete the connection, every other function should call this after setup */
@@ -126,7 +153,7 @@ public class NetcapTCPSession extends NetcapSession
             Netcap.error( "Unable to modify the server endpoint" + pointer.value());
         }
 
-        /* XX If the destination is local, then you have to remap the connection, this
+        /* XXX If the destination is local, then you have to remap the connection, this
          * will be dealt with at a later date */
         
         serverComplete( flags );
@@ -138,12 +165,17 @@ public class NetcapTCPSession extends NetcapSession
         serverComplete( clientAddress, clientPort, serverAddress, serverPort, DEFAULT_SERVER_COMPLETE_FLAGS );
     }
     
-    private static native int setServerEndpoint( long sessionPointer, long clientAddress, int clientPort,
+    private static native int setServerEndpoint ( long sessionPointer, long clientAddress, int clientPort,
                                                  long serverAddress, int serverPort );
-    private static native void clientComplete( long sessionPointer, int flags );
-    private static native void clientReset( long sessionPointer, int flags );
-    private static native void serverStart( long sessionPointer, int flags );
-    private static native void serverComplete( long sessionPointer, int flags );
+
+    private static native void clientComplete           ( long sessionPointer, int flags );
+    private static native void clientReset              ( long sessionPointer, int flags );
+    private static native void clientDrop               ( long sessionPointer, int flags );
+    private static native void clientSendIcmp           ( long sessionPointer, int flags );
+    private static native void clientForwardReject      ( long sessionPointer, int flags );
+    private static native void clientSendIcmpDestUnreach( long sessionPointer, int flags, byte code );    
+
+    private static native void serverComplete   ( long sessionPointer, int flags );
 
     private static native void close( long sessionPointer, boolean ifClient );
     

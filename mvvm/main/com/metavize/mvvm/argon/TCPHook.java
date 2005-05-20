@@ -185,20 +185,38 @@ public class TCPHook implements NetcapHook
         }
 
         protected void clientReject()
-        {
-            if ( logger.isDebugEnabled()) {
-                logger.debug( "TCP - Rejecting client" );
+        {            
+            if ( logger.isDebugEnabled()) logger.debug( "TCP - Rejecting client" );
+                        
+            switch( rejectCode ) {
+            case IPNewSessionRequest.TCP_REJECT_RESET:
+                netcapTCPSession.clientReset();
+                break;
+
+            case IPNewSessionRequest.NET_UNREACHABLE:
+            case IPNewSessionRequest.HOST_UNREACHABLE:
+            case IPNewSessionRequest.PROTOCOL_UNREACHABLE:
+            case IPNewSessionRequest.PORT_UNREACHABLE:
+            case IPNewSessionRequest.DEST_HOST_UNKNOWN:
+            case IPNewSessionRequest.PROHIBITED:
+                netcapTCPSession.clientSendIcmpDestUnreach((byte)rejectCode );
+                break;
+
+            case REJECT_CODE_SRV:
+                netcapTCPSession.clientForwardReject();
+                break;
+
+            default:
+                logger.error( "TCP - Unknown reject code: " + rejectCode + " resetting " );
+                netcapTCPSession.clientReset();
             }
-            /* XXX Must implement the ability to return an error code */
-            netcapTCPSession.clientReset();
         }
 
         protected void clientRejectSilent()
         {
-            /* XXX Not quite sure what to do here, for now we are rejecting
-             * all session */
-            logger.error( "Reseting client when silent reject requested." );
-            clientReject();
+            if ( logger.isDebugEnabled()) logger.debug( "TCP - Dropping client" );
+
+            netcapTCPSession.clientDrop();
         }
         
         protected Sink makeClientSink()

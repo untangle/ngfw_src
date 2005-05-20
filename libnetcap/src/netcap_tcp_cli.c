@@ -1,0 +1,465 @@
+/*
+ * Copyright (c) 2003 Metavize Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Metavize Inc. ("Confidential Information").  You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id$
+ */
+#include "netcap_tcp.h"
+
+#include <stdlib.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <string.h>
+#include <errno.h>
+#include <netinet/ip.h>
+#include <netinet/ip_icmp.h>
+#define __FAVOR_BSD
+#include <netinet/tcp.h>
+#include <mvutil/errlog.h>
+#include <mvutil/debug.h>
+#include <mvutil/list.h>
+#include <mvutil/unet.h>
+#include <mvutil/mailbox.h>
+#include <linux/netfilter_ipv4.h>
+
+#include "libnetcap.h"
+#include "netcap_session.h"
+#include "netcap_pkt.h"
+#include "netcap_globals.h"
+#include "netcap_shield.h"
+#include "netcap_icmp.h"
+#include "netcap_queue.h"
+
+/* Maximum size for an ICMP response, these are responses to SYNs so they shouldn't be that large */
+/* This goes on the stack, so any of the max packet sizes would probably exceed that size. */
+#define _ICMP_MAX_RESPONSE_SIZE 1024
+
+/**
+ * Number of SYNs to reset in response
+ */
+#define _SYN_REJECT_COUNT 1
+
+/**
+ * Timeout (in seconds) for waiting for a SYN from a reset or ICMP packet response
+ */
+#define _SYN_RESP_TIMEOUT 2
+
+int _netcap_tcp_cli_send_reset( netcap_pkt_t* pkt );
+
+/* Util functions */
+int _netcap_tcp_setsockopt_cli( int sock );
+
+static int  _retrieve_and_reject( netcap_session_t* netcap_sess, netcap_callback_action_t action );
+static int  _send_icmp_response ( netcap_session_t* netcap_sess, netcap_pkt_t* syn );
+
+static int  _forward_rejection  ( netcap_session_t* netcap_sess, netcap_pkt_t* syn );
+
+int _netcap_tcp_callback_cli_complete( netcap_session_t* netcap_sess, netcap_callback_action_t action, 
+                                       netcap_callback_flag_t flags )
+{
+    int fd;
+    tcp_msg_t* msg;
+
+    if ( netcap_sess == NULL ) return errlogargs();
+
+    if ( !netcap_sess->syn_mode ) {
+        debug( 5, "TCP: (%10u) CLI_COMPLETE %s opaque mode\n", netcap_sess->session_id,
+               netcap_session_cli_tuple_print( netcap_sess ));
+        return 0;
+    }
+    
+    debug( 6, "TCP: (%10u) CLI_COMPLETE %s\n", netcap_sess->session_id,
+           netcap_session_cli_tuple_print( netcap_sess ));
+
+    if ( netcap_sess->cli_state == CONN_STATE_COMPLETE )
+        return errlog(ERR_CRITICAL,"Invalid state (%i), Can't perform action (%i).\n",netcap_sess->cli_state, action);
+
+    /* Grab the first SYN out, (older SYNs are now disregarded) */
+    /* XXXXXX It "might" be possible to get an ACCEPT message if the session started out in normal mode
+     * and then went into opaque mode */
+    /* As of release-1.2.2, a TIMEOUT is very serious since at least one SYN should
+     * always be available */
+    if (( msg = mailbox_timed_get( &netcap_sess->tcp_mb, 1 )) == NULL ) {
+        if ( errno == ETIMEDOUT )
+            return errlog( ERR_CRITICAL,"TCP: Missed SYN :: %s\n",netcap_session_tuple_print(netcap_sess));
+        else
+            return perrlog("mailbox_timed_get");
+    }
+    
+    if ( msg->type != TCP_MSG_SYN || !msg->pkt ) {
+        errlog( ERR_CRITICAL, "TCP: Invalid message: %i %i 0x%08x\n", msg->type, msg->fd, msg->pkt );
+        free( msg );
+        msg = NULL;
+        return -1;
+    }
+
+    /**
+     * Release the SYN
+     */
+    netcap_pkt_action_raze( msg->pkt, NF_ACCEPT );
+    free( msg );
+    msg = NULL;
+
+    debug( 6, "TCP: (%10u) Released SYN :: %s\n", netcap_sess->session_id,
+           netcap_session_cli_tuple_print(netcap_sess));
+    
+    /* 
+     * To test the ACCEPT_MSG replacement, do the following:
+     * insert a sleep( 10 ) here, and turn up netcap debugging
+     * Run the command nc -p <port> <host on other side> 80
+     * Run the command nmap -sS -g <port> <host on other side> -p 80
+     * Inside of the logs the following message should appear:
+     *   TCP: (1128327673) Dropping new SYN, ACCEPT is already in mb.
+     * This means that ACCEPT message replacement has occured.
+     * In the nc window, type a string such as GET index.html, and the connection
+     * should complete.
+     */
+
+    /**
+     * wait on connection complete message
+     * it is possible to get more syn/ack's during this time, ignore them
+     */
+    while (1) {
+        if (!(msg = mailbox_timed_get(&netcap_sess->tcp_mb,5))) {
+            if (errno == ETIMEDOUT) {
+                debug(6,"TCP: (%10u) Missed ACCEPT message\n",netcap_sess->session_id);
+                /**
+                 * This is bad behavior, the host used up the resources, but 
+                 * client did not respond (Typically a SYN flood)
+                 * Although this happens if the client decides not to connect before the server connection completes
+                 * (e.g. the person presses the stop button in their browser before connected)
+                 */
+                netcap_shield_rep_blame( netcap_sess->cli.cli.host.s_addr, NC_SHIELD_ERR_3 );
+                return -1;
+            }
+            else
+                return perrlog("mailbox_timed_get");
+        }
+
+        if (msg->type != TCP_MSG_ACCEPT || !msg->fd) {
+            if (msg->type == TCP_MSG_SYN && msg->pkt) {
+                debug(8,"TCP: (%10u) DUP syn message, passing\n",netcap_sess->session_id);
+                netcap_pkt_action_raze( msg->pkt, NF_ACCEPT );
+            }
+            else
+                errlog(ERR_WARNING,"TCP: Invalid message: %i %i 0x%08x\n", msg->type, msg->fd, msg->pkt);
+            free(msg);
+            msg = NULL;
+            continue;
+        }
+
+        break;
+    }
+        
+    fd = msg->fd;
+    free(msg);
+    msg = NULL;
+
+    netcap_sess->cli_state = CONN_STATE_COMPLETE;
+    netcap_sess->client_sock = fd;
+
+    if (_netcap_tcp_setsockopt_cli(fd)<0)
+        perrlog("_netcap_tcp_setsockopt_cli");
+
+    return 0;
+}
+
+int  _netcap_tcp_callback_cli_reject( netcap_session_t* netcap_sess, netcap_callback_action_t action, 
+                                      netcap_callback_flag_t flags )
+{
+    debug( 6, "TCP: (%10u) Client Reject(%d) %s\n", netcap_sess->session_id, 
+           action, netcap_session_cli_tuple_print( netcap_sess ));
+
+    switch ( netcap_sess->cli_state ) {
+    case CONN_STATE_INCOMPLETE:
+        debug( 6, "TCP: (%10u) Rejecting Client  :: %s\n", netcap_sess->session_id, 
+               netcap_session_tuple_print( netcap_sess ));
+
+        if ( _retrieve_and_reject( netcap_sess, action ) < 0 ) { 
+            return errlog( ERR_CRITICAL, "_retrieve_and_reject\n" );
+        }
+        break;
+
+    case CONN_STATE_COMPLETE:
+        /**
+         * If already accepted, close then send reset anyway
+         */
+        debug( 6, "TCP: (%10u) Client completed, close and reseting  :: %s\n", netcap_sess->session_id, 
+               netcap_session_tuple_print( netcap_sess ));
+
+        if ( unet_reset_and_close( netcap_sess->client_sock ) < 0 )
+            perrlog( "unet_reset_and_close" );
+        netcap_sess->client_sock = -1;
+        break;
+
+    case CONN_STATE_NULL:
+        /* fallthrough */
+    default:
+        return errlog( ERR_CRITICAL, "Invalid state (%i), Can't perform action (%i).\n",
+                       netcap_sess->cli_state, action );        
+    }
+
+    return 0;
+}
+
+int  _netcap_tcp_setsockopt_cli( int sock )
+{
+    int one = 1;
+    int thirty = 30;
+    int threehundo  = 300;
+
+    if (setsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, &one, sizeof(one))<0)
+        perrlog("setsockopt");
+    if (setsockopt(sock,SOL_TCP,TCP_NODELAY,&one,sizeof(one))<0) 
+        perrlog("setsockopt");
+    if (setsockopt(sock,SOL_TCP,TCP_LINGER2,&thirty,sizeof(thirty))<0) 
+        perrlog("setsockopt");
+    if (setsockopt(sock,SOL_TCP,TCP_KEEPINTVL,&threehundo,sizeof(threehundo))<0) 
+        perrlog("setsockopt");
+
+    return 0;
+}
+
+int _netcap_tcp_cli_send_reset( netcap_pkt_t* pkt )
+{
+    struct iphdr*  iph;
+    struct tcphdr* tcph;
+    u_int16_t tmp16;
+    u_int32_t tmp32;
+    u_char extra_len = 0;
+    u_char tcp_len   = 0;
+
+    if ( pkt == NULL || pkt->data == NULL ) return errlogargs();
+
+    /* XXX Probably want to validate the data length */
+    tcph = netcap_pkt_get_tcp_hdr( pkt );
+    iph  = netcap_pkt_get_ip_hdr( pkt );
+
+    if ( iph->protocol != IPPROTO_TCP ) {
+        return errlog( ERR_CRITICAL, "Attempt to reset non-tcp packet %d\n", iph->protocol );
+    }
+    
+    extra_len = pkt->data_len - ( iph->ihl * 4 ) - sizeof(struct tcphdr);
+    tcp_len   = sizeof(struct tcphdr);
+    
+    /**
+     * swap src, dst, src.port, dst.port
+     */
+    tmp16 = ntohs( iph->tot_len );
+    tmp16 -= extra_len;
+    iph->tot_len = htons(tmp16);
+    
+    tmp16 = ntohs(iph->check);
+    tmp16 += extra_len;
+    iph->check = htons(tmp16);
+    
+    tmp32      = iph->saddr;
+    iph->saddr = iph->daddr;
+    iph->daddr = tmp32;
+    
+    tmp16          = tcph->th_sport;
+    tcph->th_sport = tcph->th_dport;
+    tcph->th_dport = tmp16;
+    
+    /**
+     * set flags, etc
+     */
+    tcph->th_ack   = htonl(ntohl(tcph->th_seq)+1);
+    tcph->th_flags = TH_RST|TH_ACK;
+    tcph->th_seq   = 0;
+    tcph->th_win   = 0;
+    tcph->th_sum   = 0;
+    tcph->th_urp   = 0;
+    tcph->th_off   = tcp_len/4;
+
+    /**
+     * compute checksum
+     */
+    tcph->th_sum = htons( unet_tcp_sum_calc( tcp_len, (u_int8_t*)&iph->saddr, (u_int8_t*)&iph->daddr, (u_int8_t*)tcph ) );
+    
+    /* send the packet out a raw socket */    
+    if ( netcap_raw_send( pkt->data, pkt->data_len-extra_len ) < 0 )
+        return perrlog( "netcap_raw_send" );
+    
+    return 0;
+}
+
+static int  _retrieve_and_reject( netcap_session_t* netcap_sess, netcap_callback_action_t action )
+{
+    tcp_msg_t* msg;
+    int ret = 0;
+    int c;
+
+    for ( c = 0 ; c < _SYN_REJECT_COUNT ; c++ ) {
+        /**
+         * read syn message
+         */
+        if (( msg = mailbox_timed_get( &netcap_sess->tcp_mb, _SYN_RESP_TIMEOUT )) == NULL ) {
+            if ( errno == ETIMEDOUT ) {
+                if ( c != 0 ) break;
+                
+                return errlog( ERR_CRITICAL, "TCP: (%10u) Missed SYN :: %s\n", 
+                               netcap_sess->session_id, netcap_session_tuple_print( netcap_sess ));
+            } else {
+                return errlog( ERR_CRITICAL, "mailbox_timed_get\n" );
+            }
+        }
+        
+        if (( msg->type != TCP_MSG_SYN ) || ( msg->pkt == NULL )) {
+            errlog( ERR_WARNING, "TCP: (%10u) Invalid message: %i %i 0x%08x\n",
+                    netcap_sess->session_id, msg->type, msg->fd, msg->pkt );
+            free( msg );
+            msg = NULL;
+            return -1;
+        }
+        
+        switch ( action ) {
+        case CLI_RESET:
+            debug( 8, "TCP: (%10u) Resetting Client  :: %s\n", netcap_sess->session_id, 
+                   netcap_session_tuple_print( netcap_sess ));
+            
+            if ( _netcap_tcp_cli_send_reset( msg->pkt ) < 0 ) {
+                ret = errlog( ERR_CRITICAL, "_netcap_tcp_cli_send_reset\n" );
+            }
+            break;
+            
+        case CLI_ICMP:
+            debug( 8, "TCP: (%10u) Sending ICMP response to client  :: %s\n", netcap_sess->session_id, 
+                   netcap_session_tuple_print( netcap_sess ));
+            
+            if ( _send_icmp_response( netcap_sess, msg->pkt ) < 0 ) {
+                ret = errlog( ERR_CRITICAL, "_send_icmp_response\n" );
+            }
+            break;
+
+        case CLI_FORWARD_REJECT:
+            debug( 8, "TCP: (%10u) Forwarding server rejection to client :: %s\n", netcap_sess->session_id,
+                   netcap_session_tuple_print( netcap_sess ));
+            if ( _forward_rejection( netcap_sess, msg->pkt ) < 0 ) {
+                ret = errlog( ERR_CRITICAL, "_forward_rejection\n" );
+            }
+            break;
+            
+        case CLI_DROP:
+            break;
+
+        default:
+            errlog( ERR_WARNING, "Invalid action(%d), dropping\n", action );
+            break;
+        }
+        
+        netcap_pkt_action_raze( msg->pkt, NF_DROP );
+        free( msg );
+        msg = NULL;
+    }
+
+    return ret;
+}
+
+static int  _send_icmp_response( netcap_session_t* netcap_sess, netcap_pkt_t* syn )
+{
+    u_char data[_ICMP_MAX_RESPONSE_SIZE];
+    struct icmp* icmp_pkt;
+    int len;
+    in_addr_t host;
+        
+    bzero( &data, sizeof( data ));
+
+    icmp_pkt = (struct icmp*)&data;
+
+    if ( netcap_icmp_verify_type_and_code( netcap_sess->dead_tcp.type, netcap_sess->dead_tcp.code ) < 0 ) {
+        return errlog( ERR_WARNING, "netcap_icmp_verify_type_and_code\n" );
+    }
+    
+    /* Build the ICMP message */
+    switch( netcap_sess->dead_tcp.type ) {
+    case ICMP_REDIRECT:
+        icmp_pkt->icmp_gwaddr.s_addr = netcap_sess->dead_tcp.redirect;
+        debug( 10, "TCP: ICMP redirect packet to %s\n", unet_next_inet_ntoa( icmp_pkt->icmp_gwaddr.s_addr ));
+
+        /* fallthrough */
+    case ICMP_DEST_UNREACH:
+        /* fallthrough */
+    case ICMP_SOURCE_QUENCH:
+        /* fallthrough */
+    case ICMP_TIME_EXCEEDED:
+        /* fallthrough */
+        icmp_pkt->icmp_type = netcap_sess->dead_tcp.type;
+        icmp_pkt->icmp_code = netcap_sess->dead_tcp.code;
+        /* Copy in the SYN packet */
+        len = syn->data_len;
+
+        if ( len + sizeof( struct icmphdr ) > sizeof( data )) {
+            len = sizeof( data ) - sizeof( struct icmphdr );
+            debug( 10, "TCP: Truncating SYN packet %d -> %d bytes\n", syn->data_len, len );
+        }
+
+        debug( 10, "TCP: Updating icmp packet(%d/%d): copying in %d bytes\n", 
+               icmp_pkt->icmp_type, icmp_pkt->icmp_code, len );
+        memcpy( &icmp_pkt->icmp_ip, syn->data, len );
+        
+        len += sizeof( struct icmphdr );
+        
+        /* Updating the checksum */
+        icmp_pkt->icmp_cksum = 0;
+        icmp_pkt->icmp_cksum = unet_in_cksum((u_int16_t*)icmp_pkt, len );
+        
+        /* Clear out any marks */
+        /* XXX Probably want a mark for the u-turns */
+        syn->is_marked = 0;
+        syn->nfmark = 0;
+
+        /* Swap the source and dest */
+        host = syn->src.host.s_addr;
+        syn->src.host.s_addr = syn->dst.host.s_addr;
+        syn->dst.host.s_addr = host;
+
+        /* Zero out the ports */
+        syn->dst.port = 0;
+        syn->src.port = 0;
+        
+        netcap_icmp_send((char*)icmp_pkt, len, syn );
+        
+        break;
+
+    default:
+        return errlog( ERR_CRITICAL, "Unable to handle ICMP type: %d\n", netcap_sess->dead_tcp.type );
+    }
+
+    return 0;
+}
+
+static int  _forward_rejection  ( netcap_session_t* netcap_sess, netcap_pkt_t* syn )
+{
+    switch ( netcap_sess->dead_tcp.exit_type ) {
+    case TCP_CLI_DEAD_DROP:
+        /* Do nothing */
+        break;
+
+    case TCP_CLI_DEAD_RESET:
+        if ( _netcap_tcp_cli_send_reset( syn ) < 0 ) {
+            return errlog( ERR_CRITICAL, "_netcap_tcp_cli_send_reset\n" );
+        }
+        break;
+
+    case TCP_CLI_DEAD_ICMP:
+        if ( _send_icmp_response( netcap_sess, syn ) < 0 ) {
+            return errlog( ERR_CRITICAL, "_netcap_tcp_cli_send_reset\n" );
+        }
+        break;
+
+    case TCP_CLI_DEAD_NULL:
+        /* fallthrough */
+    default:
+        return errlog( ERR_WARNING, "Invalid server rejection response: %d, dropping\n", 
+                       netcap_sess->dead_tcp.exit_type );
+    }
+    
+    return 0;
+}

@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: IPNewSessionRequest.java,v 1.7 2005/01/21 19:54:44 rbscott Exp $
+ *  $Id$
  */
 
 package com.metavize.mvvm.argon;
@@ -88,7 +88,7 @@ public interface IPNewSessionRequest extends NewSessionRequest, IPSessionDesc
     // May only be called before session is established (from UDPNewSessionRequestEvent handler) 
     void rejectSilently();
 
-    // Codes for rejectReturnUnreachable()
+    // Codes for rejectReturnUnreachable() and for reset
     static final byte NET_UNREACHABLE = 0;
     static final byte HOST_UNREACHABLE = 1;
     static final byte PROTOCOL_UNREACHABLE = 2;
@@ -98,6 +98,8 @@ public interface IPNewSessionRequest extends NewSessionRequest, IPSessionDesc
     // static final byte PROHIBITED_NETWORK = 9;    // By RFC1812, should use PROHIBITED instead
     // static final byte PROHIBITED_HOST = 10;      // By RFC1812, should use PROHIBITED instead
     static final byte PROHIBITED = 13;
+    // Only valid for TCP connections
+    static final byte TCP_REJECT_RESET = 64;
 
     // Retrieve the reject code.
     byte rejectCode();
