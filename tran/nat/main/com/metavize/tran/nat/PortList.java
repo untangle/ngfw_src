@@ -11,7 +11,10 @@
 package com.metavize.tran.nat;
 
 import java.util.List;
+import java.util.Collections;
 import java.util.LinkedList;
+
+import java.util.Random;
 
 class PortList {
     private final List<Integer> portList = new LinkedList<Integer>();
@@ -25,6 +28,9 @@ class PortList {
         for ( int c = start; c <= end ; c++ ) {
             portList.add( c );
         }
+
+        /* Randomize the port list */
+        Collections.shuffle( portList, new Random());        
     }
     
     static PortList makePortList( int start, int end )
