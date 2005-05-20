@@ -61,6 +61,8 @@ public class NatSettings implements java.io.Serializable
     /* DNS Masquerading settings */
     private boolean dnsEnabled = false;
     private String  dnsLocalDomain = "";
+    /* DNS Static Hosts */
+    private List    dnsStaticHostList = new LinkedList();
     
     /**
      * Hibernate constructor.
@@ -445,4 +447,31 @@ public class NatSettings implements java.io.Serializable
     {
         this.dnsLocalDomain = s;
     }
+
+
+    /**
+     * List of the DNS Static Host rules.
+     *
+     * @return the list of the DNS Static Host rules.
+     * @hibernate.list
+     * cascade="all-delete-orphan"
+     * table="TR_NAT_DNS_HOSTS"
+     * @hibernate.collection-key
+     * column="SETTING_ID"
+     * @hibernate.collection-index
+     * column="POSITION"
+     * @hibernate.collection-many-to-many
+     * class="com.metavize.tran.nat.DnsStaticHostRule"
+     * column="RULE_ID"
+     */
+    public List getDnsStaticHostList() 
+    {
+        return dnsStaticHostList;
+    }
+    
+    public void setDnsStaticHostList( List s ) 
+    { 
+        dnsStaticHostList = s;
+    }
+
 }

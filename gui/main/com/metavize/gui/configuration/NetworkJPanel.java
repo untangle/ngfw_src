@@ -225,8 +225,6 @@ public class NetworkJPanel extends javax.swing.JPanel implements Savable, Refres
         dhcpJPanel.setLayout(new java.awt.GridBagLayout());
 
         dhcpJPanel.setBorder(new javax.swing.border.TitledBorder(null, "External IP Settings", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
-        dhcpJPanel.setMinimumSize(null);
-        dhcpJPanel.setPreferredSize(null);
         dhcpButtonGroup.add(dhcpEnabledRadioButton);
         dhcpEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
         dhcpEnabledRadioButton.setText("<html><b>Use DHCP</b> to automatically set EdgeGuard's external IP settings from the network's DHCP server.  The settings are shown in the fields below.</html>");
@@ -380,15 +378,15 @@ public class NetworkJPanel extends javax.swing.JPanel implements Savable, Refres
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
         gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 10);
         add(dhcpJPanel, gridBagConstraints);
 
         tcpWindowJPanel.setLayout(new java.awt.GridBagLayout());
 
         tcpWindowJPanel.setBorder(new javax.swing.border.TitledBorder(null, "TCP Window Scaling", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
-        tcpWindowJPanel.setMinimumSize(null);
-        tcpWindowJPanel.setPreferredSize(null);
         tcpWindowButtonGroup.add(tcpWindowEnabledRadioButton);
         tcpWindowEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
         tcpWindowEnabledRadioButton.setText("<html><b>Enable</b> TCP Window Scaling to possibly increase network performance.  This may not be compatible with some networks.</html>");
@@ -414,7 +412,6 @@ public class NetworkJPanel extends javax.swing.JPanel implements Savable, Refres
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
         gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 10);
         add(tcpWindowJPanel, gridBagConstraints);
 

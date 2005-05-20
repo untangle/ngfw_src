@@ -29,7 +29,9 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
     private static final String NAME_DHCP_ADDRESS_MAP = "Address Map";
     private static final String NAME_REDIRECT = "Redirect";
     private static final String NAME_DMZ = "DMZ";
-    private static final String NAME_DNS_FORWARDING = "DNS Forwarding";
+    private static final String NAME_DNS = "DNS Forwarding";
+    private static final String NAME_DNS_FORWARDING = "Settings";
+    private static final String NAME_DNS_ADDRESS_MAP = "Address Map";
 
     protected Dimension MIN_SIZE = new Dimension(640, 480);
     protected Dimension MAX_SIZE = new Dimension(640, 1200);
@@ -55,6 +57,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
         dhcpJTabbedPane.setFocusable(false);
         dhcpJTabbedPane.setFont(new java.awt.Font("Arial", 0, 11));
         dhcpJTabbedPane.setRequestFocusEnabled(false);
+	super.mTabbedPane.addTab(NAME_DHCP, null, dhcpJTabbedPane );
 
 	// DHCP SETTINGS /////
         DhcpJPanel dhcpJPanel = new DhcpJPanel();
@@ -68,7 +71,6 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	// DHCP ADDRESSES /////
 	AddressJPanel addressJPanel = new AddressJPanel();
         dhcpJTabbedPane.addTab(NAME_DHCP_ADDRESS_MAP, null, addressJPanel );
-	super.mTabbedPane.addTab(NAME_DHCP, null, dhcpJTabbedPane );
         super.savableMap.put(NAME_DHCP + " " + NAME_DHCP_ADDRESS_MAP, addressJPanel);
         super.refreshableMap.put(NAME_DHCP + " " + NAME_DHCP_ADDRESS_MAP, addressJPanel);
 
@@ -87,14 +89,28 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	super.savableMap.put(NAME_DMZ, dmzJPanel);
 	super.refreshableMap.put(NAME_DMZ, dmzJPanel);
 
-        // SETUP DNS FORWARDING /////////////
+        // DNS /////////////
+        JTabbedPane dnsJTabbedPane = new JTabbedPane();
+        dnsJTabbedPane.setBorder(new EmptyBorder(7, 13, 13, 13));
+        dnsJTabbedPane.setFocusable(false);
+        dnsJTabbedPane.setFont(new java.awt.Font("Arial", 0, 11));
+        dnsJTabbedPane.setRequestFocusEnabled(false);
+	super.mTabbedPane.addTab(NAME_DNS, null, dnsJTabbedPane );
+
+        // DNS SETTINGS /////////////
         DnsJPanel dnsJPanel = new DnsJPanel();
         JScrollPane dnsJScrollPane = new JScrollPane( dnsJPanel );
         dnsJScrollPane.setHorizontalScrollBarPolicy( ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER );
         dnsJScrollPane.setVerticalScrollBarPolicy( ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS );
-        super.mTabbedPane.addTab(NAME_DNS_FORWARDING, null, dnsJScrollPane );
-	super.savableMap.put(NAME_DNS_FORWARDING, dnsJPanel);
-	super.refreshableMap.put(NAME_DNS_FORWARDING, dnsJPanel);
+        dnsJTabbedPane.addTab(NAME_DNS_FORWARDING, null, dnsJScrollPane );
+	super.savableMap.put(NAME_DNS + " " + NAME_DNS_FORWARDING, dnsJPanel);
+	super.refreshableMap.put(NAME_DNS + " " + NAME_DNS_FORWARDING, dnsJPanel);
+
+	// DNS HOSTS /////
+	DnsAddressJPanel dnsAddressJPanel = new DnsAddressJPanel();
+        dnsJTabbedPane.addTab(NAME_DNS_ADDRESS_MAP, null, dnsAddressJPanel );
+        super.savableMap.put(NAME_DNS + " " + NAME_DNS_ADDRESS_MAP, dnsAddressJPanel);
+        super.refreshableMap.put(NAME_DNS + " " + NAME_DNS_ADDRESS_MAP, dnsAddressJPanel);
 
     }
         

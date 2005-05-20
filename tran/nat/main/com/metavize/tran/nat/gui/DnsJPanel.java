@@ -15,7 +15,7 @@ package com.metavize.tran.nat.gui;
 import com.metavize.gui.transform.*;
 import com.metavize.gui.util.Util;
 
-import com.metavize.mvvm.tran.IPaddr;
+import com.metavize.mvvm.tran.*;
 import com.metavize.tran.nat.*;
 
 import java.awt.*;
@@ -26,10 +26,12 @@ import java.awt.*;
  */
 public class DnsJPanel extends javax.swing.JPanel implements Savable, Refreshable {
     
+    private static final String EXCEPTION_DNS_DOMAIN = "The Domain Name Suffix must be a valid domain name.";
+
+        
     public DnsJPanel() {
         initComponents();
     }
-    
     
     
     public void doSave(Object settings, boolean validateOnly) throws Exception {
@@ -37,10 +39,26 @@ public class DnsJPanel extends javax.swing.JPanel implements Savable, Refreshabl
         // ENABLED ///////////
         boolean dnsEnabled = dnsMasqEnabledJRadioButton.isSelected();
                 
+        // LOCAL DOMAIN //////////
+        String dnsLocalDomain = null;
+        if(dnsEnabled){
+            try{
+                dnsLocalDomain = DomainName.parse( suffixJTextField.getText() );
+                suffixJTextField.setBackground( Color.WHITE );
+            }
+            catch(Exception e){
+                suffixJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+                throw new Exception(EXCEPTION_DNS_DOMAIN);
+            }
+        }    
+        
         // SAVE SETTINGS  ////////////////////////////////////
 	if( !validateOnly ){
 	    NatSettings natSettings = (NatSettings) settings;
 	    natSettings.setDnsEnabled( dnsEnabled );
+            if( dnsEnabled ){
+                natSettings.setDnsLocalDomain( dnsLocalDomain );
+            }
 	}
         
     }
@@ -52,11 +70,14 @@ public class DnsJPanel extends javax.swing.JPanel implements Savable, Refreshabl
         // ENABLED ///////////
         boolean dnsEnabled;
 	dnsEnabled = natSettings.getDnsEnabled();
+        setDnsEnabledDependency( dnsEnabled );
 	if( dnsEnabled )
 	    dnsMasqEnabledJRadioButton.setSelected(true);
 	else
 	    dnsMasqDisabledJRadioButton.setSelected(true);
         
+        // LOCAL DOMAIN /////
+        suffixJTextField.setText( natSettings.getDnsLocalDomain() );
     }
     
 
@@ -71,11 +92,17 @@ public class DnsJPanel extends javax.swing.JPanel implements Savable, Refreshabl
         dnsMasqEnabledJRadioButton = new javax.swing.JRadioButton();
         dnsMasqDisabledJRadioButton = new javax.swing.JRadioButton();
         jLabel3 = new javax.swing.JLabel();
+        domainSuffixJPanel = new javax.swing.JPanel();
+        jTextArea3 = new javax.swing.JTextArea();
+        suffixJPanel = new javax.swing.JPanel();
+        jLabel5 = new javax.swing.JLabel();
+        suffixJTextField = new javax.swing.JTextField();
 
         setLayout(new java.awt.GridBagLayout());
 
-        setMinimumSize(new java.awt.Dimension(530, 175));
-        setPreferredSize(new java.awt.Dimension(530, 175));
+        setMaximumSize(new java.awt.Dimension(515, 340));
+        setMinimumSize(new java.awt.Dimension(515, 340));
+        setPreferredSize(new java.awt.Dimension(515, 340));
         nameserversJPanel.setLayout(new java.awt.GridBagLayout());
 
         nameserversJPanel.setBorder(new javax.swing.border.TitledBorder(null, "DNS Forwarding", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
@@ -98,6 +125,12 @@ public class DnsJPanel extends javax.swing.JPanel implements Savable, Refreshabl
         dnsMasqEnabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
         dnsMasqEnabledJRadioButton.setText("Enabled");
         dnsMasqEnabledJRadioButton.setFocusPainted(false);
+        dnsMasqEnabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                dnsMasqEnabledJRadioButtonActionPerformed(evt);
+            }
+        });
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
@@ -109,6 +142,12 @@ public class DnsJPanel extends javax.swing.JPanel implements Savable, Refreshabl
         dnsMasqDisabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
         dnsMasqDisabledJRadioButton.setText("Disabled");
         dnsMasqDisabledJRadioButton.setFocusPainted(false);
+        dnsMasqDisabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                dnsMasqDisabledJRadioButtonActionPerformed(evt);
+            }
+        });
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 2;
@@ -135,22 +174,87 @@ public class DnsJPanel extends javax.swing.JPanel implements Savable, Refreshabl
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 10);
+        add(nameserversJPanel, gridBagConstraints);
+
+        domainSuffixJPanel.setLayout(new java.awt.GridBagLayout());
+
+        domainSuffixJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Domain Name Suffix", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
+        jTextArea3.setEditable(false);
+        jTextArea3.setLineWrap(true);
+        jTextArea3.setText("For example, \"acme.com\".  The Domain Name Suffix allows hosts on the internal network to be accessible by hostname only, such as \"host1\", because the suffix is automatically appended to form the complete request \"host1.acme.com\".  This functionality is enabled only when DNS Forwarding is enabled.");
+        jTextArea3.setWrapStyleWord(true);
+        jTextArea3.setOpaque(false);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 15, 0, 15);
+        domainSuffixJPanel.add(jTextArea3, gridBagConstraints);
+
+        suffixJPanel.setLayout(new java.awt.GridBagLayout());
+
+        jLabel5.setFont(new java.awt.Font("Dialog", 0, 12));
+        jLabel5.setText("Suffix:  ");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        suffixJPanel.add(jLabel5, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
+        suffixJPanel.add(suffixJTextField, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.ipadx = 125;
+        gridBagConstraints.insets = new java.awt.Insets(15, 0, 0, 0);
+        domainSuffixJPanel.add(suffixJPanel, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
-        add(nameserversJPanel, gridBagConstraints);
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 10);
+        add(domainSuffixJPanel, gridBagConstraints);
 
     }//GEN-END:initComponents
+
+    private void dnsMasqDisabledJRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dnsMasqDisabledJRadioButtonActionPerformed
+        setDnsEnabledDependency(false);
+    }//GEN-LAST:event_dnsMasqDisabledJRadioButtonActionPerformed
+
+    private void dnsMasqEnabledJRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dnsMasqEnabledJRadioButtonActionPerformed
+        setDnsEnabledDependency(true);
+    }//GEN-LAST:event_dnsMasqEnabledJRadioButtonActionPerformed
+    
+    private void setDnsEnabledDependency(boolean dnsEnabled){
+        suffixJTextField.setEnabled( dnsEnabled );
+    }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JRadioButton dnsMasqDisabledJRadioButton;
     public javax.swing.JRadioButton dnsMasqEnabledJRadioButton;
+    private javax.swing.JPanel domainSuffixJPanel;
     private javax.swing.ButtonGroup enabledButtonGroup;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JTextArea jTextArea1;
+    private javax.swing.JTextArea jTextArea3;
     private javax.swing.JPanel nameserversJPanel;
+    private javax.swing.JPanel suffixJPanel;
+    public javax.swing.JTextField suffixJTextField;
     // End of variables declaration//GEN-END:variables
     
 }

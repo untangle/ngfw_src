@@ -63,7 +63,6 @@ class AddressTableModel extends MSortedTableModel{
     private final int C8_MW = Util.chooseMax(T_TW - (C0_MW + C1_MW + C2_MW + C3_MW + C4_MW + C5_MW + C6_MW + C7_MW), 120); /* description */
 
 
-    private final StringConstants sc = StringConstants.getInstance();
         
     
     public TableColumnModel getTableColumnModel(){
