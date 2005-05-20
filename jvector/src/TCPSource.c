@@ -112,6 +112,11 @@ JNIEXPORT jint JNICALL JF_TCPSource( read )
                 ret = 0;
                 break;
 
+            case ETIMEDOUT:
+                debug( 5, "JVECTOR: TCPSource: fd %d connection time out (keep alive unaswered)\n", fd );
+                ret = JN_TCPSource( READ_RESET );
+                break;
+
             default:
                 jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "TCPSource: read: %s\n", errstr );
                 ret = -2;

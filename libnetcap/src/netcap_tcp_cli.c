@@ -210,10 +210,11 @@ int  _netcap_tcp_callback_cli_reject( netcap_session_t* netcap_sess, netcap_call
 
 int  _netcap_tcp_setsockopt_cli( int sock )
 {
-    int one = 1;
-    int thirty = 30;
-    int threehundo  = 300;
-
+    int one        = 1;
+    int thirty     = 30;
+    int threehundo = 300;
+    int twohours   = 7200;
+    
     if (setsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, &one, sizeof(one))<0)
         perrlog("setsockopt");
     if (setsockopt(sock,SOL_TCP,TCP_NODELAY,&one,sizeof(one))<0) 
@@ -221,6 +222,8 @@ int  _netcap_tcp_setsockopt_cli( int sock )
     if (setsockopt(sock,SOL_TCP,TCP_LINGER2,&thirty,sizeof(thirty))<0) 
         perrlog("setsockopt");
     if (setsockopt(sock,SOL_TCP,TCP_KEEPINTVL,&threehundo,sizeof(threehundo))<0) 
+        perrlog("setsockopt");
+    if (setsockopt(sock,SOL_TCP,TCP_KEEPIDLE,&twohours,sizeof(twohours)) < 0 )
         perrlog("setsockopt");
 
     return 0;

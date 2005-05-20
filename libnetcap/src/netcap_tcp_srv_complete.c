@@ -101,9 +101,11 @@ int  _netcap_tcp_callback_srv_complete ( netcap_session_t* netcap_sess, netcap_c
 
 static int  _netcap_tcp_setsockopt_srv ( int sock )
 {
-    int one = 1;
-    int thirty = 30;
-    int threehundo  = 300;
+    int one        = 1;
+    int thirty     = 30;
+    int threehundo = 300;
+    int twohours   = 7200;
+    
     struct ip_sendnfmark_opts nfmark = {
         .on 1,
         .mark MARK_NOTRACK
@@ -115,10 +117,13 @@ static int  _netcap_tcp_setsockopt_srv ( int sock )
         perrlog("setsockopt");
     if (setsockopt(sock,SOL_TCP,TCP_LINGER2,&thirty,sizeof(thirty))<0) 
         perrlog("setsockopt");
-    if (setsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, &one, sizeof(one))<0)
+    if (setsockopt(sock,SOL_SOCKET,SO_KEEPALIVE,&one,sizeof(one))<0)
         perrlog("setsockopt");
     if (setsockopt(sock,SOL_TCP,TCP_KEEPINTVL,&threehundo,sizeof(threehundo))<0) 
         perrlog("setsockopt");
+    if (setsockopt(sock,SOL_TCP,TCP_KEEPIDLE,&twohours, sizeof(twohours)) < 0 )
+        perrlog("setsockopt");
+
     if (setsockopt(sock,SOL_IP,IP_SENDNFMARK,&nfmark,sizeof(nfmark))<0)
         return perrlog( "setsockopt" );
 
