@@ -155,7 +155,7 @@ public class TCPHook implements NetcapHook
                 netcapTCPSession.tcpServerSide().blocking( false );
                 ifServerComplete = true;
             } catch ( Exception e ) {
-                logger.info( "TCP - Unable to complete connection to the server", e );
+                logger.info( "TCP - Unable to complete connection to the server: " + e );
                 ifServerComplete = false;
             }
             
@@ -177,7 +177,7 @@ public class TCPHook implements NetcapHook
 
                 ifClientComplete = true;
             } catch ( Exception e ) {
-                logger.warn( "TCP - Unable to complete connection to the client", e );
+                logger.info( "TCP - Unable to complete connection to the client: " + e );
                 ifClientComplete = false;
             }
             

@@ -217,7 +217,7 @@ abstract class ArgonHook implements Runnable
         case IPNewSessionRequest.REQUESTED:
         case IPNewSessionRequest.ENDPOINTED:
             if ( !clientComplete()) {
-                logger.error( "Unable to complete connection to client" );
+                logger.warn( "Unable to complete connection to client" );
                 state = IPNewSessionRequest.REJECTED;
             }
             break;

@@ -57,11 +57,6 @@
     <priority value="WARN"/>
   </category>
 
-  <!-- temporary XXX -->
-  <category name="com.metavize.mvvm.argon.TCPHook">
-    <priority value="WARN"/>
-  </category>
-
   <category name="com.metavize.jnetcap">
     <priority value="WARN"/>
   </category>
