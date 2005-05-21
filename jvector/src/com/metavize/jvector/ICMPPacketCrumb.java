@@ -11,14 +11,15 @@
 
 package com.metavize.jvector;
 
-import com.metavize.jnetcap.*;
+import java.net.InetAddress;
 
+import com.metavize.jnetcap.*;
 
 /**
  * ICMPPacketCrumb:
  * A crumb representing ICMP data.
  * When using an ICMP crumb, the data almost never needs to be modified.  The addresses
- * and ports inside of the packet are automatically updated at the endpoints to contain
+ * and ports inside of the error packet are automatically updated at the endpoints to contain
  * the proper values.  This occurs when writing the crumb to the endpoint.
  */
 public class ICMPPacketCrumb extends PacketCrumb
@@ -30,6 +31,12 @@ public class ICMPPacketCrumb extends PacketCrumb
     protected byte icmpCode;
 
     /**
+     * The source address of the packet.  If null, this will be set to the source for the session.
+     * This is mainly used for traceroute which has different source addresses for each packet.
+     */
+    protected InetAddress source;
+
+    /**
      * Create a new UDP Packet Crumb.</p>
      *
      * @param ttl      - Time To Live for the packet.
@@ -37,15 +44,17 @@ public class ICMPPacketCrumb extends PacketCrumb
      * @param options  - Type of service for the packet.
      * @param icmpType - Type of the ICMP packet.
      * @param icmpCode - Code of the ICMP packet.
+     * @param source   - Source address of the packet.
      * @param data     - Byte array containing the data.
      * @param offset   - Offset in the byte array.
      * @param limit    - Limit of the data.
      */
     public ICMPPacketCrumb( byte ttl, byte tos, byte options[], byte icmpType, byte icmpCode, 
-                            byte[] data, int offset, int limit )
+                            InetAddress source, byte[] data, int offset, int limit )
     {
         super( ttl, tos, options, data, offset, limit );
         
+        this.source   = source;
         this.icmpType = icmpType;
         this.icmpCode = icmpCode;
     }
@@ -61,8 +70,9 @@ public class ICMPPacketCrumb extends PacketCrumb
     public ICMPPacketCrumb( ICMPPacket packet, byte[] data, int offset, int limit )
     {        
         /* XXX Fix the options */
-        this( packet.traffic().ttl(), packet.traffic().tos(), null, 
-              packet.icmpType(), packet.icmpCode(), data, offset, limit );              
+        this( packet.traffic().ttl(), packet.traffic().tos(), null,
+              packet.icmpType(), packet.icmpCode(), packet.traffic().src().host(),
+              data, offset, limit );              
     }
 
     /**
@@ -117,6 +127,17 @@ public class ICMPPacketCrumb extends PacketCrumb
         /* XXX Probably should do some validation */
         this.icmpCode = icmpCode;
     }
+
+    public InetAddress source()
+    {
+        return this.source;
+    }
+
+    public void source( InetAddress source )
+    {
+        this.source = source;
+    }
+    
     
     /**
      * Repair the TCP/UDP/IP Header inside of the data block of an ICMP error packet so that it 
@@ -127,7 +148,6 @@ public class ICMPPacketCrumb extends PacketCrumb
     {
         return Netcap.updateIcmpPacket( this.data, this.limit, this.icmpType, this.icmpCode, 
                                         icmpId, icmpMailbox );
-                                        
     }
     
     public void raze()

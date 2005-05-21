@@ -173,17 +173,17 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
         addCrumb(side, crumb);
     }
 
-    public void sendClientError(byte icmpType, byte icmpCode, ByteBuffer icmpData, IPPacketHeader header)
+    public void sendClientError(byte icmpType, byte icmpCode, ByteBuffer icmpData, InetAddress icmpSource, IPPacketHeader header)
     {
-        sendError(CLIENT, icmpType, icmpCode, icmpData, header);
+        sendError(CLIENT, icmpType, icmpCode, icmpData, icmpSource, header);
     }
 
-    public void sendServerError(byte icmpType, byte icmpCode, ByteBuffer icmpData, IPPacketHeader header)
+    public void sendServerError(byte icmpType, byte icmpCode, ByteBuffer icmpData, InetAddress icmpSource, IPPacketHeader header)
     {
-        sendError(SERVER, icmpType, icmpCode, icmpData, header);
+        sendError(SERVER, icmpType, icmpCode, icmpData, icmpSource, header);
     }
 
-    private void sendError(int side, byte icmpType, byte icmpCode, ByteBuffer icmpData, IPPacketHeader header)
+    private void sendError(int side, byte icmpType, byte icmpCode, ByteBuffer icmpData, InetAddress icmpSource, IPPacketHeader header)
     {
         byte[] array;
         int offset = icmpData.position();
@@ -199,7 +199,7 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
             offset = 0;
         }
         ICMPPacketCrumb crumb = new ICMPPacketCrumb(header.ttl(), header.tos(), header.options(),
-                                                    icmpType, icmpCode, array, offset, size);
+                                                    icmpType, icmpCode, icmpSource, array, offset, size);
         addCrumb(side, crumb);
     }
 
@@ -355,7 +355,8 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
             ICMPPacketCrumb icrumb = (ICMPPacketCrumb)crumb;
             byte icmpType = (byte) icrumb.icmpType();
             byte icmpCode = (byte) icrumb.icmpCode();
-            UDPErrorEvent event = new UDPErrorEvent(mPipe, this, pbuf, pheader, icmpType, icmpCode);
+            InetAddress source = icrumb.source();
+            UDPErrorEvent event = new UDPErrorEvent(mPipe, this, pbuf, pheader, icmpType, icmpCode, source);
             if (side == CLIENT)
                 dispatcher.dispatchUDPClientError(event);
             else

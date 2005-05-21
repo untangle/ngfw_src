@@ -11,6 +11,8 @@
 
 package com.metavize.jvector;
 
+import java.net.InetAddress;
+
 import com.metavize.jnetcap.*;
 
 /* This should really be called a packet sink since it writes both ICMP
@@ -63,7 +65,7 @@ public class UDPSink extends Sink
         case Crumb.TYPE_DATA:
         case Crumb.TYPE_UDP_PACKET:
         case Crumb.TYPE_ICMP_PACKET:
-            return write( (DataCrumb)o );
+            return write((DataCrumb)o );
             
         case Crumb.TYPE_RESET:
             /* XXX Do whatever is necessary for a reset */
@@ -87,12 +89,15 @@ public class UDPSink extends Sink
         int tos = DISABLED;
         byte[] options = null;
         boolean isUdp = true;
+        long sourceAddress = 0;
 
         int size = crumb.limit() - crumb.offset();
 
         switch ( crumb.type()) {
         case Crumb.TYPE_ICMP_PACKET:
             ICMPPacketCrumb icmpCrumb = (ICMPPacketCrumb)crumb;
+            InetAddress src;
+
             if ( crumb.offset() == 0 ) {
                 /* This fixes the address and ports for an error packet */
                 try {
@@ -102,6 +107,11 @@ public class UDPSink extends Sink
                     Vector.logError( "Unable to fix ICMP Crumb: " + e );
                     return Vector.ACTION_DEQUEUE;
                 }
+            }
+            
+            src = icmpCrumb.source();
+            if ( src != null ) {
+                sourceAddress = Inet4AddressConverter.toLong( src );
             }
             isUdp = false;
             /* fallthrough */
@@ -118,7 +128,7 @@ public class UDPSink extends Sink
         }
 
         numWritten = write((int)traffic.pointer(), crumb.data(), crumb.offset(), size, ttl, tos, 
-                           options, isUdp );
+                           options, isUdp, sourceAddress );
 
         if ( numWritten < 0 ) {
             Vector.logError( "UDP: Unable to write crumb" );
@@ -165,12 +175,13 @@ public class UDPSink extends Sink
      * @param size    - Total size of the byte array.
      * @param ttl     - TTL for the outgoing packet, or -1 if unused.
      * @param tos     - TOS for outgoing packet or -1 if unused.
-     * @param options - options for the outgoing packet or -1 if unused (currently not implemented)
+     * @param options - options for the outgoing packet or null if unused (currently not implemented)
      * @param isUdp   - True if this is a UDP packet, false if it is ICMP.
+     * @param src     - Source address, used only for an ICMP message. (unused if zero)
      * @return Number of bytes written
      */
     // protected static native int write( int pointer, byte[] data, int offset, int size, int packet );
     protected static native int write( int pointer, byte[] data, int offset, int size, int ttl,
-                                       int tos, byte[] options, boolean isUdp );
+                                       int tos, byte[] options, boolean isUdp, long srcAddress );
     protected static native int shutdown( int pointer );
 }

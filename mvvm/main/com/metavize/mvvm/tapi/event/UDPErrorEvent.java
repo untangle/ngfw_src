@@ -15,6 +15,7 @@ import com.metavize.mvvm.tapi.MPipe;
 import com.metavize.mvvm.tapi.IPPacketHeader;
 import com.metavize.mvvm.tapi.UDPSession;
 import java.nio.ByteBuffer;
+import java.net.InetAddress;
 
 /**
  * The class <code>UDPErrorEvent</code> is for events from incoming ICMP messages that are
@@ -27,12 +28,14 @@ public class UDPErrorEvent extends UDPPacketEvent {
     
     private byte icmpType;
     private byte icmpCode;
+    private InetAddress icmpSource;
     
-    public UDPErrorEvent(MPipe mPipe, UDPSession src, ByteBuffer icmpData, IPPacketHeader header, byte icmpType, byte icmpCode)
+    public UDPErrorEvent(MPipe mPipe, UDPSession src, ByteBuffer icmpData, IPPacketHeader header, byte icmpType, byte icmpCode, InetAddress icmpSource)
     {
         super(mPipe, src, icmpData, header);
         this.icmpType   = icmpType;
         this.icmpCode   = icmpCode;
+        this.icmpSource = icmpSource;
     }
 
     public byte getErrorType()
@@ -43,5 +46,10 @@ public class UDPErrorEvent extends UDPPacketEvent {
     public byte getErrorCode()
     {
         return icmpCode;
+    }
+    
+    public InetAddress getErrorSource()
+    {
+        return icmpSource;
     }
 }

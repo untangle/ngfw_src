@@ -12,6 +12,7 @@
 package com.metavize.mvvm.tapi;
 
 import java.nio.ByteBuffer;
+import java.net.InetAddress;
 
 /**
 * A UDPSession is 
@@ -78,6 +79,6 @@ public interface UDPSession extends UDPSessionDesc, IPSession {
     void sendClientPacket(ByteBuffer packet, IPPacketHeader header);
     void sendServerPacket(ByteBuffer packet, IPPacketHeader header);
 
-    void sendClientError(byte icmpType, byte icmpCode, ByteBuffer icmpData, IPPacketHeader header);
-    void sendServerError(byte icmpType, byte icmpCode, ByteBuffer icmpData, IPPacketHeader header);
+    void sendClientError(byte icmpType, byte icmpCode, ByteBuffer icmpData, InetAddress source, IPPacketHeader header);
+    void sendServerError(byte icmpType, byte icmpCode, ByteBuffer icmpData, InetAddress source, IPPacketHeader header);
 }

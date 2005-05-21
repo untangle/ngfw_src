@@ -72,7 +72,7 @@ JNIEXPORT jint JNICALL JF_UDPSink( create )
 
 JNIEXPORT jint JNICALL JF_UDPSink( write )
     ( JNIEnv *env, jobject _this, jint pointer, jbyteArray _data, jint offset, jint size,
-      jint ttl, jint tos, jbyteArray options, jboolean is_udp )
+      jint ttl, jint tos, jbyteArray options, jboolean is_udp, jlong src_address )
 {
     jbyte* data;
     int number_bytes = 0;
@@ -92,14 +92,14 @@ JNIEXPORT jint JNICALL JF_UDPSink( write )
     data_len = (*env)->GetArrayLength( env, _data );
     
     if ( size > data_len ) {
-        /* XXX Should these errors return */
-        errlog( ERR_WARNING, "Requested %d write with a buffer of size %d\n", size, data_len );
+        return errlog( ERR_WARNING, "Requested %d write with a buffer of size %d\n", size, data_len );
     } else if ( offset > size ) {
-        errlog( ERR_WARNING, "Requested %d offset with a buffer of size %d\n", offset, size );
+        return errlog( ERR_WARNING, "Requested %d offset with a buffer of size %d\n", offset, size );
     }  else { 
         data_len = size - offset;
     }
 
+    /* Once these values have changed make sure not to return before fixing them */
     if ( ttl != JN_UDPSink( DISABLED )) pkt->ttl = ttl;
     if ( tos != JN_UDPSink( DISABLED )) pkt->tos = tos;
     
@@ -108,10 +108,19 @@ JNIEXPORT jint JNICALL JF_UDPSink( write )
         if (( number_bytes = netcap_udp_send( data, data_len, pkt )) < 0 ) {
             perrlog( "netcap_udp_send" );
         }
-    } else { 
+    } else {
+        in_addr_t prev_addr = pkt->src.host.s_addr;
+        if ( src_address != 0 ) {
+            /* Some ICMP packets may come from a different source, eg timeout expired */
+            pkt->src.host.s_addr = (in_addr_t)( src_address & 0xFFFFFFFF );
+        }
+        
         if (( number_bytes = netcap_icmp_send( data, data_len, pkt )) < 0 ) {
             perrlog( "netcap_icmp_send" );
         }
+        
+        /* Return to the original address */
+        pkt->src.host.s_addr = prev_addr;
     }
 
     (*env)->ReleaseByteArrayElements( env, _data, data, 0 );
