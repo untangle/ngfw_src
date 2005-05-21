@@ -75,6 +75,8 @@ public class MTransformJPanel extends javax.swing.JPanel {
             Util.handleExceptionNoRestart("Error adding control panel", e);
         }
         mTransformControlsJPanel.postInit();
+        
+
 
     // DYNAMICALLY LOAD ICONS
     String name = null;
@@ -100,6 +102,14 @@ public class MTransformJPanel extends javax.swing.JPanel {
         setMinimumSize(minDimension);
         setMaximumSize(minDimension);
 
+        // ADD CONFIG PANEL
+        add(mTransformControlsJPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(46, 100, 596, 380), 0);
+        setMinimumSize(minDimension);
+        setMaximumSize(maxDimension);
+        mTransformControlsJPanel.setVisible(false);
+        setPreferredSize(minDimension);
+        
+        
         // SETUP COLORS and name
         mTransformDisplayJPanel.setOpaque(false);
         tintJPanel.setBackground( transformContext.getTransformPreferences().getGuiBackgroundColor() );
@@ -146,7 +156,6 @@ public class MTransformJPanel extends javax.swing.JPanel {
         descriptionTextJLabel.setIconTextGap(0);
         add(descriptionTextJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(106, 16, -1, 20));
 
-        stateJLabel.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/metavize/gui/transform/IconPowerOffState28x28.png" ) ));
         stateJLabel.setToolTipText("<HTML> The <B>Transform State Indicator</B> shows the user what the running state of a given transform is.<BR> GREEN indicates that the transform is \"on\" and operating normally.<BR> RED indicates that the transform is \"on\", but that an abnormal exception has occurred.<BR> CLEAR indicates that the transform is \"off\", and may be turned \"on\" by the user. </HTML>");
         add(stateJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(606, 20, 28, 28));
 
@@ -203,8 +212,8 @@ public class MTransformJPanel extends javax.swing.JPanel {
         tintJPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         tintJPanel.setMinimumSize(new java.awt.Dimension(688, 100));
-        tintJPanel.setPreferredSize(new java.awt.Dimension(688, 100));
         tintJPanel.setOpaque(false);
+        tintJPanel.setPreferredSize(new java.awt.Dimension(688, 100));
         add(tintJPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 688, 100));
 
         backgroundJLabel.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/metavize/gui/transform/TransformBackground688x100.png")));
@@ -224,23 +233,17 @@ public class MTransformJPanel extends javax.swing.JPanel {
     public void setControlsShowing(boolean showingBoolean){ handleControlsJButton(showingBoolean); }
     public boolean getControlsShowing(){ return controlsJToggleButton.isSelected(); }
 
-    private void handleControlsJButton(boolean showingBoolean){
-        if(showingBoolean == true){
-        add(mTransformControlsJPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(46, 100, 596, 380), 0);
-        setPreferredSize(maxDimension);
-        setMinimumSize(maxDimension);
-            setMaximumSize(maxDimension);
+    private void handleControlsJButton(boolean isShowing){
+        
+        if(isShowing){
+            setPreferredSize(maxDimension);
             controlsJToggleButton.setText("Hide Settings");
         }
         else{
-            remove(mTransformControlsJPanel);
             setPreferredSize(minDimension);
-            setMinimumSize(minDimension);
-            setMaximumSize(minDimension);
             controlsJToggleButton.setText("Show Settings");
         }
-        invalidate();
-        repaint();
+        mTransformControlsJPanel.setVisible(isShowing);
 	//        focus();  people no longer want this shizzle
 
     }

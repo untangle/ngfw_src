@@ -21,7 +21,7 @@ public class BlinkJLabel extends JLabel implements ActionListener {
     private static final int BLINK_DELAY_MILLIS = 750;
     
     private static ImageIcon iconOnState, iconOffState, iconStoppedState, iconPausedState;
-    private Icon lastIcon;
+    private Icon lastIcon, targetIcon;
     private volatile boolean blink = false;
     private Timer blinkTimer;
 
@@ -52,66 +52,62 @@ public class BlinkJLabel extends JLabel implements ActionListener {
 
     public void setViewState( int viewState ){
 	switch(viewState){
-	case PROBLEM_STATE : 
-	    lastIcon = iconStoppedState;
-	    this.setIcon(lastIcon);
-	    blink(true);
-	    break;
-	case PROCESSING_STATE :
-	    lastIcon = this.getIcon();
-	    this.setIcon(iconPausedState);
-	    blink(true);
-	    break;
-	case ON_STATE :
-	    this.setIcon(iconOnState);
-	    blink(false);
-	    break;
-	case OFF_STATE :
-	    this.setIcon(iconOffState);
-	    blink(false);
-	    break;
-	case STARTING_STATE :
-	    lastIcon = iconOnState;
-	    this.setIcon(lastIcon);
-	    blink(true);
-	    break;
-	case STOPPING_STATE :
-	case REMOVING_STATE :
-	    lastIcon = iconOffState;
-	    this.setIcon(lastIcon);
-	    blink(true);
-	    break;
-	}
+            case PROBLEM_STATE : 
+                lastIcon = iconStoppedState;
+                blink(true);
+                break;
+            case PROCESSING_STATE :
+                lastIcon = this.getIcon();
+                blink(true);
+                break;
+            case ON_STATE :
+                targetIcon = iconOnState;
+                blink(false);
+                break;
+            case OFF_STATE :
+                targetIcon = iconOffState;
+                blink(false);
+                break;
+            case STARTING_STATE :
+                lastIcon = iconOnState;
+                blink(true);
+                break;
+            case STOPPING_STATE :
+            case REMOVING_STATE :
+                lastIcon = iconOffState;
+                blink(true);
+                break;
+            }
     }
     /////////////////////////////////////////
 
 
     // BLINKING ////////////////////////////
-    public void blink(boolean blink){
-	if(this.blink == blink)
-	    return;
-	this.blink = blink;
-	synchronized(this){
-	    if(blink)
-		blinkTimer.start();
-	    else
-		blinkTimer.restart();
-	}
+    public synchronized void blink(boolean blink){
+
+        this.blink = blink;
+
+        if(blink)
+            blinkTimer.restart();
+        else{
+            if( !blinkTimer.isRunning() ){
+                this.setIcon(targetIcon);
+            }
+        }
     }
 
-    public void actionPerformed(ActionEvent evt){
-	synchronized(this){
-	    if(!blink){
-		blinkTimer.stop();
-		this.setIcon(lastIcon);
-		return;
-	    }
-	}
-
-	if( this.getIcon() != iconPausedState )
-	    this.setIcon(iconPausedState);
-	else
-	    this.setIcon(lastIcon);
+    public synchronized void actionPerformed(ActionEvent evt){
+        if( blink ){
+            if( this.getIcon() != iconPausedState )
+                this.setIcon(iconPausedState);
+            else
+                this.setIcon(lastIcon);
+        }
+        else{
+            this.setIcon(lastIcon);
+            blinkTimer.stop();
+        }
+        
     }
     //////////////////////////////////////
 
