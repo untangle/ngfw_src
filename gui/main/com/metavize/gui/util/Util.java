@@ -320,7 +320,10 @@ public class Util {
     
     public static void resizeCheck(final Component resizableComponent, Dimension minSize, Dimension maxSize){
 
-        Dimension currentSize = resizableComponent.getSize();
+        final int currentWidth = resizableComponent.getWidth();
+        final int currentHeight = resizableComponent.getHeight();
+        int newWidth = currentWidth;
+        int newHeight = currentHeight;
     /*
     System.err.println("----------------------");
         System.err.println("| Initial size: " + currentSize);
@@ -329,34 +332,34 @@ public class Util {
     System.err.println("----------------------");
     */
         boolean resetSize = false;
-        if(currentSize.width < minSize.width){
-            currentSize.width = minSize.width;
+        if(currentWidth < minSize.width){
+            newWidth = minSize.width;
             resetSize = true;
         }
-        else if(currentSize.width > maxSize.width){
-            currentSize.width = maxSize.width;
+        else if(currentWidth > maxSize.width){
+            newWidth = maxSize.width;
             resetSize = true;
         }
-        if(currentSize.height < minSize.height){
-            currentSize.height = minSize.height;
+        if(currentHeight < minSize.height){
+            newHeight = minSize.height;
             resetSize = true;
         }
-        else if(currentSize.height > maxSize.height){
-            currentSize.height = maxSize.height;
+        else if(currentHeight > maxSize.height){
+            newHeight = maxSize.height;
             resetSize = true;
         }
         if(resetSize){
         //Rectangle rectangle = resizableComponent.getBounds();
             //resizableComponent.setBounds( rectangle.x, rectangle.y, currentSize.width, currentSize.height);
-        final Dimension newSize = currentSize;
-        SwingUtilities.invokeLater( new Runnable() { public void run(){
-        resizableComponent.setSize( newSize );
+        //final Dimension newSize = currentSize;
+        //SwingUtilities.invokeLater( new Runnable() { public void run(){
+        resizableComponent.setSize( newWidth, newHeight );
         //System.err.println(" SCREEN CHANGE ---> New size: " + newSize);
-        }});
+        //}});
         }
-        else{
+        //else{
             //System.err.println(" NO SCREEN CHANGE");
-        }
+        //}
 
     }
 
