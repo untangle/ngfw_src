@@ -7,6 +7,6 @@ public class DomainName {
 
     public static String parse(String input) throws Exception { return null; }
 
-    public String toString(){}
+    public String toString(){ return ""; }
     
 }
