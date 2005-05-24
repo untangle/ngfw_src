@@ -39,6 +39,7 @@ public class RemoteJPanel extends javax.swing.JPanel implements Savable, Refresh
 
 	// OUTSIDE ACCESS RESTRICTION ADDRESS /////////
 	IPaddr outsideNetwork = null;
+        restrictIPaddrJTextField.setBackground( Color.WHITE );
 	if( isOutsideAccessEnabled && isOutsideAccessRestricted ){
 	    try{
 		outsideNetwork = IPaddr.parse( restrictIPaddrJTextField.getText() );
@@ -50,12 +51,10 @@ public class RemoteJPanel extends javax.swing.JPanel implements Savable, Refresh
 		throw new Exception(EXCEPTION_OUTSIDE_ACCESS_NETWORK);
             }
         }
-	else{
-	    restrictIPaddrJTextField.setBackground( Color.WHITE );
-	}
 
 	// OUTSIDE ACCESS RESTRICTION NETMASK /////////
 	IPaddr outsideNetmask = null;
+        restrictNetmaskJTextField.setBackground( Color.WHITE );
 	if( isOutsideAccessEnabled && isOutsideAccessRestricted ){	    
 	    try{
 		outsideNetmask = IPaddr.parse( restrictNetmaskJTextField.getText() );
@@ -64,9 +63,6 @@ public class RemoteJPanel extends javax.swing.JPanel implements Savable, Refresh
 		restrictNetmaskJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
 		throw new Exception(EXCEPTION_OUTSIDE_ACCESS_NETMASK);
             }
-	}
-	else{
-	    restrictNetmaskJTextField.setBackground( Color.WHITE );
 	}
 
 	// INSIDE INSECURE ENABLED //////

@@ -41,10 +41,10 @@ public class DmzJPanel extends javax.swing.JPanel implements Savable, Refreshabl
         
         // INTERNAL ADDRESS //////
         IPaddr dmzTargetAddress = null;
+        targetAddressIPaddrJTextField.setBackground( Color.WHITE );
         if(dmzEnabled){
             try{
                 dmzTargetAddress = IPaddr.parse( targetAddressIPaddrJTextField.getText() );
-                targetAddressIPaddrJTextField.setBackground( Color.WHITE );
             }
             catch(Exception e){
                 targetAddressIPaddrJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );

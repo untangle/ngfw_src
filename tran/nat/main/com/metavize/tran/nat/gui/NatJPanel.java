@@ -40,10 +40,10 @@ public class NatJPanel extends javax.swing.JPanel implements Savable, Refreshabl
         
         // INTERNAL ADDRESS //////
         IPaddr natInternalAddress = null;
+        internalAddressIPaddrJTextField.setBackground( Color.WHITE );
         if(natEnabled){
             try{
                 natInternalAddress = IPaddr.parse( internalAddressIPaddrJTextField.getText() );
-                internalAddressIPaddrJTextField.setBackground( Color.WHITE );
             }
             catch(Exception e){
                 internalAddressIPaddrJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
@@ -53,10 +53,10 @@ public class NatJPanel extends javax.swing.JPanel implements Savable, Refreshabl
         
         // INTERNAL SUBNET ///////
         IPaddr natInternalSubnet = null;
+        internalSubnetIPaddrJTextField.setBackground( Color.WHITE );
         if(natEnabled){
             try{
                 natInternalSubnet = IPaddr.parse( internalSubnetIPaddrJTextField.getText() );
-                internalSubnetIPaddrJTextField.setBackground( Color.WHITE );
             }
             catch(Exception e){
                 internalSubnetIPaddrJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );

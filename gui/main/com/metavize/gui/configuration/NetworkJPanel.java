@@ -40,91 +40,76 @@ public class NetworkJPanel extends javax.swing.JPanel implements Savable, Refres
 
 	// DHCP HOST ////////////
 	IPaddr host = null;
+        dhcpIPaddrJTextField.setBackground( Color.WHITE );
         if( !isDhcpEnabled ){
             try{
                 host = IPaddr.parse( dhcpIPaddrJTextField.getText() );
                 if( host.isEmpty() )
                     throw new Exception();
-                dhcpIPaddrJTextField.setBackground( Color.WHITE );
             }
             catch(Exception e){
                 dhcpIPaddrJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
 		throw new Exception(EXCEPTION_DHCP_IP_ADDRESS);
             }
 	}
-	else{
-	    dhcpIPaddrJTextField.setBackground( Color.WHITE );
-	}
 
 	// DHCP NETMASK /////////
 	IPaddr netmask = null;
+        dhcpNetmaskJTextField.setBackground( Color.WHITE );
 	if( !isDhcpEnabled ){
             try{
                 netmask = IPaddr.parse( dhcpNetmaskJTextField.getText() );
                 if( netmask.isEmpty() )
                     throw new Exception();
-                dhcpNetmaskJTextField.setBackground( Color.WHITE );
             } 
             catch(Exception e){
                 dhcpNetmaskJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
 		throw new Exception(EXCEPTION_DHCP_NETMASK);
             }
 	}
-	else{
-	    dhcpNetmaskJTextField.setBackground( Color.WHITE );
-	}
 
 	// DHCP GATEWAY /////////
 	IPaddr gateway = null;
+        dhcpRouteJTextField.setBackground( Color.WHITE );
 	if( !isDhcpEnabled ){
             try{
                 gateway = IPaddr.parse( dhcpRouteJTextField.getText() );
                 if( gateway.isEmpty() )
                     throw new Exception();
-                dhcpRouteJTextField.setBackground( Color.WHITE );
             }
             catch(Exception e){
                 dhcpRouteJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
 		throw new Exception(EXCEPTION_DHCP_GATEWAY);
             }
 	}
-	else{
-	    dhcpRouteJTextField.setBackground( Color.WHITE );
-	}
 
 	// DHCP DNS1 ///////////
 	IPaddr dns1 = null;
+        dnsPrimaryJTextField.setBackground( Color.WHITE );
 	if( !isDhcpEnabled ){
             try{
                 dns1 = IPaddr.parse( dnsPrimaryJTextField.getText() );
                 if( dns1.isEmpty() )
                     throw new Exception();
-                dnsPrimaryJTextField.setBackground( Color.WHITE );
             }
             catch(Exception e){
                 dnsPrimaryJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
 		throw new Exception(EXCEPTION_DHCP_DNS_1);
             }
 	}
-	else{
-	    dnsPrimaryJTextField.setBackground( Color.WHITE );
-	}
 
 	// DHCP DNS2 ///////
 	IPaddr dns2 = null;
+        dnsSecondaryJTextField.setBackground( Color.WHITE );
 	if( !isDhcpEnabled ){
             try{
                 dns2 = IPaddr.parse( dnsSecondaryJTextField.getText() );
-                dnsSecondaryJTextField.setBackground( Color.WHITE );
             }
             catch(Exception e){
                 dnsSecondaryJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
 		throw new Exception(EXCEPTION_DHCP_DNS_2);
             }
         }
-	else{
-	    dnsSecondaryJTextField.setBackground( Color.WHITE );
-	}
 
 	// TCP WINDOW SCALING ENABLED //////
 	// boolean isTcpWindowScalingEnabled = tcpWindowEnabledRadioButton.isSelected();

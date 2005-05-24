@@ -41,10 +41,10 @@ public class DnsJPanel extends javax.swing.JPanel implements Savable, Refreshabl
                 
         // LOCAL DOMAIN //////////
         String dnsLocalDomain = null;
+        suffixJTextField.setBackground( Color.WHITE );
         if(dnsEnabled){
             try{
                 dnsLocalDomain = DomainName.parse( suffixJTextField.getText() );
-                suffixJTextField.setBackground( Color.WHITE );
             }
             catch(Exception e){
                 suffixJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );

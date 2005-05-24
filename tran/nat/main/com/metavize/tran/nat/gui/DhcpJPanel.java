@@ -40,10 +40,10 @@ public class DhcpJPanel extends javax.swing.JPanel implements Savable, Refreshab
         
         // DYNAMIC RANGE START //////
         IPaddr dhcpStartAddress = null;
+        startAddressIPaddrJTextField.setBackground( Color.WHITE );
         if(dhcpIsEnabled){
             try{
                 dhcpStartAddress = IPaddr.parse( startAddressIPaddrJTextField.getText() );
-                startAddressIPaddrJTextField.setBackground( Color.WHITE );
             }
             catch(Exception e){
                 startAddressIPaddrJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
@@ -53,10 +53,10 @@ public class DhcpJPanel extends javax.swing.JPanel implements Savable, Refreshab
         
         // DYNAMIC RANGE END //////
         IPaddr dhcpEndAddress = null;
+        endAddressIPaddrJTextField.setBackground( Color.WHITE );
         if(dhcpIsEnabled){
             try{
                 dhcpEndAddress = IPaddr.parse( endAddressIPaddrJTextField.getText() );
-                endAddressIPaddrJTextField.setBackground( Color.WHITE );
             }
             catch(Exception e){
                 endAddressIPaddrJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
