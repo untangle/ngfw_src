@@ -156,10 +156,11 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
     {
         byte[] array;
         int offset = packet.position();
-	int size = packet.remaining();
+	int limit = packet.remaining();
         if (packet.hasArray()) {
             array = packet.array();
             offset += packet.arrayOffset();
+            limit += packet.arrayOffset();
         } else {
             warn("out-of-help byte buffer, had to copy");
             array = new byte[packet.remaining()];
@@ -169,7 +170,7 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
         }
                 
         UDPPacketCrumb crumb = new UDPPacketCrumb(header.ttl(), header.tos(), header.options(),
-                                                  array, offset, size);
+                                                  array, offset, limit);
         addCrumb(side, crumb);
     }
 
@@ -187,10 +188,11 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
     {
         byte[] array;
         int offset = icmpData.position();
-	int size = icmpData.remaining();
+	int limit = icmpData.remaining();
         if (icmpData.hasArray()) {
             array = icmpData.array();
             offset += icmpData.arrayOffset();
+            limit += icmpData.arrayOffset();
         } else {
             warn("out-of-help byte buffer, had to copy");
             array = new byte[icmpData.remaining()];
@@ -199,7 +201,7 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
             offset = 0;
         }
         ICMPPacketCrumb crumb = new ICMPPacketCrumb(header.ttl(), header.tos(), header.options(),
-                                                    icmpType, icmpCode, icmpSource, array, offset, size);
+                                                    icmpType, icmpCode, icmpSource, array, offset, limit);
         addCrumb(side, crumb);
     }
 

@@ -334,8 +334,8 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
     {
         byte[] array;
         int offset = buf2send.position();
-	int size = buf2send.remaining();
-        if (size <= 0) {
+	int limit = buf2send.remaining();
+        if (limit <= 0) {
             if (logger.isInfoEnabled())
                 info("ignoring empty send to " + (side == CLIENT ? "client" : "server") + ", pos: " +
                      buf2send.position() + ", rem: " + buf2send.remaining() + ", ao: " +
@@ -346,6 +346,7 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
         if (buf2send.hasArray()) {
             array = buf2send.array();
             offset += buf2send.arrayOffset();
+            limit += buf2send.arrayOffset();
         } else {
             warn("out-of-heap byte buffer, had to copy");
             array = new byte[buf2send.remaining()];
@@ -353,7 +354,7 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
             buf2send.position(offset);
             offset = 0;
         }
-        DataCrumb crumb = new DataCrumb(array, offset, size);
+        DataCrumb crumb = new DataCrumb(array, offset, limit);
         addCrumb(side, crumb);
     }
 
