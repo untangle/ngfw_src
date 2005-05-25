@@ -108,5 +108,5 @@ public interface Transform
     // XXX future deprecated methods ------------------------------------------
 
     Object getSettings();
-    void setSettings(Object settings);
+    void setSettings(Object settings) throws Exception;
 }
