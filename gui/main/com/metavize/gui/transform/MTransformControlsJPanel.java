@@ -130,6 +130,8 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
 		savableComponent.doSave(settings, false);
 		System.err.println("  " + componentName);
 	    }
+            if( settings instanceof Validatable )
+                ((Validatable)settings).validate();
         }
         catch(Exception e){
             new ValidateFailureDialog( mTransformJPanel.getTransformContext().getTransformDesc().getDisplayName(),
@@ -153,9 +155,10 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
                 return;
             }
         }
-	finally{
-	    refreshAll();
-	}
+        finally{
+            refreshAll();
+        }
+
     }
 
      
