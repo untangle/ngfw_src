@@ -21,6 +21,7 @@ import com.metavize.mvvm.NetworkingConfiguration;
 import com.metavize.mvvm.security.Tid;
 
 import com.metavize.mvvm.tran.IPaddr;
+import com.metavize.mvvm.tran.Validatable;
 
 /**
  * Settings for the Nat transform.
@@ -30,7 +31,7 @@ import com.metavize.mvvm.tran.IPaddr;
  * @hibernate.class
  * table="TR_NAT_SETTINGS"
  */
-public class NatSettings implements java.io.Serializable
+public class NatSettings implements java.io.Serializable, Validatable
 {
     private Long id;
     private Tid tid;
@@ -79,28 +80,28 @@ public class NatSettings implements java.io.Serializable
         this.tid = tid;
     }
     
-    public void validate()
+    public void validate() throws Exception
     {
         validate( null );
     }
 
     /* Validation method */
-    public void validate( NetworkingConfiguration netConfig )
+    public void validate( NetworkingConfiguration netConfig ) throws Exception
     {
         boolean isStartAddressValid = true;
         boolean isEndAddressValid   = true;
         boolean isValid             = true;            
         
         if ( natEnabled && ( natInternalAddress == null || natInternalSubnet == null ))
-            throw new IllegalArgumentException( "Enablng NAT requires an Internal IP address and an Internal Subnet" );
+            throw new Exception( "Enablng NAT requires an Internal IP address and an Internal Subnet" );
 
         if ( dmzEnabled ) {
             if ( dmzAddress == null ) {
-                throw new IllegalArgumentException( "Enabling DMZ requires a target IP address" );
+                throw new Exception( "Enabling DMZ requires a target IP address" );
             }
             
             if ( natEnabled && !dmzAddress.isInNetwork( natInternalAddress, natInternalSubnet )) {
-                throw new IllegalArgumentException( "When NAT is enabled, DMZ address must be in the internal network." );
+                throw new Exception( "When NAT is enabled, DMZ address must be in the internal network." );
             }
         }
 
@@ -117,7 +118,7 @@ public class NatSettings implements java.io.Serializable
                 /* XXX This inefficient since it has to call to the server */
                 /* XXX Currently a bug, getting around by ignoring */
                 if ( netConfig == null ) {
-                    // netConfig = MvvmContextFactory.context().networkingManager().get();
+                    //netConfig = MvvmContextFactory.context().networkingManager().get();
                 } 
                 
                 if ( netConfig != null ) {
@@ -129,14 +130,14 @@ public class NatSettings implements java.io.Serializable
             if ( host != null && !dhcpStartAddress.isInNetwork( host, netmask )) {
                 isStartAddressValid = false;
 
-                throw new IllegalArgumentException( "IP Address Range Start must be in the network: " + host.toString() + "/" + netmask.toString());
+                throw new Exception( "IP Address Range Start must be in the network: " + host.toString() + "/" + netmask.toString());
 
             }
 
             if ( host != null && !dhcpEndAddress.isInNetwork( host, netmask )) {
                 isEndAddressValid = false;
 
-                throw new IllegalArgumentException( "IP Address Range End must be in the network: " + host.toString() + "/" + netmask.toString());
+                throw new Exception( "IP Address Range End must be in the network: " + host.toString() + "/" + netmask.toString());
             }
         }
         

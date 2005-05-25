@@ -85,13 +85,19 @@ public class NatImpl extends SoloTransform implements Nat
         return this.settings;
     }
 
-    public void setNatSettings( NatSettings settings)
+    public void setNatSettings( NatSettings settings ) throws Exception
     {
         /* Remove all of the non-static addresses before saving */
         DhcpManager.getInstance().fleeceLeases( settings );
 
         /* Validate the settings */
-        settings.validate();
+	try{
+	    settings.validate();
+	}
+	catch(Exception e){
+	    logger.error( "Invalid NAT settings", e );
+	    throw e;
+	}
 
         Session s = TransformContextFactory.context().openSession();
         
@@ -138,7 +144,13 @@ public class NatImpl extends SoloTransform implements Nat
         
         NatSettings settings = getDefaultSettings();
 
-        setNatSettings(settings);
+	try{
+	    setNatSettings(settings);
+	}
+	catch(Exception e){
+	    logger.error( "Unable to set Nat Settings", e );
+	    return;
+	}
 
         /* Disable everything */
         /* deconfigure the event handle and the dhcp manager */
@@ -245,7 +257,7 @@ public class NatImpl extends SoloTransform implements Nat
         return getNatSettings();
     }
 
-    public void setSettings(Object settings)
+    public void setSettings(Object settings) throws Exception
     {
         setNatSettings((NatSettings)settings);
     }
