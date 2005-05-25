@@ -172,6 +172,7 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
 	    }
 	}
 	catch(Exception e){
+	    Util.handleExceptionNoRestart("Error refreshing settings", e);
 	    new RefreshFailureDialog( mTransformJPanel.getTransformContext().getTransformDesc().getDisplayName() );
 	}
 	
@@ -183,6 +184,7 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
 	    expandJDialog.setVisible(false);
     }
     
+
     public JButton saveJButton(){ return saveJButton; }
     public JButton reloadJButton(){ return reloadJButton; }
     public JButton removeJButton(){ return removeJButton; }
