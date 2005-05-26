@@ -114,8 +114,6 @@ static __inline__ netcap_session_t* _icmp_get_error_session( netcap_pkt_t* pkt, 
         return errlog_null( ERR_WARNING, "ICMP: Unable to lookup session for protocol %d\n", ip_header->ip_p );
     }
     
-    unet_reset_inet_ntoa();
-    
     debug( 10, "ICMP: Looking up packet %s:%d -> %s:%d\n", 
            unet_next_inet_ntoa( src_host ), src_port, unet_next_inet_ntoa( dst_host ), dst_port );
            
@@ -152,8 +150,6 @@ static __inline__ netcap_session_t* _icmp_create_session( netcap_pkt_t* pkt )
     netcap_session_t* session;
     u_short icmp_client_id = 0;
     
-    unet_reset_inet_ntoa();
-
     icmp_client_id = ntohs(((struct icmphdr*)pkt->data)->un.echo.id );
 
     debug( 10, "ICMP: Creating a new session for %s -> %s\n",
@@ -197,8 +193,6 @@ static __inline__ mailbox_t* _icmp_get_mailbox( netcap_pkt_t* pkt, netcap_sessio
         debug( 10, "ICMP: Server mailbox\n" );
         return &session->srv_mb;
     }
-
-    unet_reset_inet_ntoa();
 
     return errlog_null( ERR_CRITICAL, "Cannot determine correct mailbox: pkt %s, cli %s, srv %s\n",
                         unet_next_inet_ntoa( pkt->src.host.s_addr ), 
@@ -641,8 +635,6 @@ static int  _netcap_icmp_send( char *data, int data_len, netcap_pkt_t* pkt, int 
         CMSG_SPACE(sizeof(pkt->tos)) + CMSG_SPACE(sizeof(pkt->ttl)) + 
         CMSG_SPACE( sizeof( nfmark )) +
         (( dst_intf_len )   ? CMSG_SPACE( dst_intf_len ) : 0 );
-
-    unet_reset_inet_ntoa();
 
     debug( 10, "Sending ICMP packet from %s to %s, data length %d\n", 
            unet_next_inet_ntoa( pkt->src.host.s_addr ), unet_next_inet_ntoa( pkt->dst.host.s_addr ), 
