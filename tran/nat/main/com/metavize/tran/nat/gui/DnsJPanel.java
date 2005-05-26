@@ -40,11 +40,11 @@ public class DnsJPanel extends javax.swing.JPanel implements Savable, Refreshabl
         boolean dnsEnabled = dnsMasqEnabledJRadioButton.isSelected();
                 
         // LOCAL DOMAIN //////////
-        String dnsLocalDomain = null;
+        HostName dnsLocalDomain = null;
         suffixJTextField.setBackground( Color.WHITE );
         if(dnsEnabled){
             try{
-                dnsLocalDomain = DomainName.parse( suffixJTextField.getText() );
+                dnsLocalDomain = HostName.parse( suffixJTextField.getText() );
             }
             catch(Exception e){
                 suffixJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
@@ -77,7 +77,7 @@ public class DnsJPanel extends javax.swing.JPanel implements Savable, Refreshabl
 	    dnsMasqDisabledJRadioButton.setSelected(true);
         
         // LOCAL DOMAIN /////
-        suffixJTextField.setText( natSettings.getDnsLocalDomain() );
+        suffixJTextField.setText( natSettings.getDnsLocalDomain().toString());
     }
     
 

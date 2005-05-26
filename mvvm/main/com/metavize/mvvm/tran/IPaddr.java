@@ -129,6 +129,28 @@ public class IPaddr implements Serializable
         return val;
     }
 
+    /* The value here is just the addr, just pass it down */
+    public int hashCode()
+    {
+        if ( addr == null ) return 0;
+
+        return addr.hashCode();
+    }
+
+    public boolean equals( Object o )
+    {
+        if ( o instanceof IPaddr ) {
+            InetAddress addr2 = ((IPaddr)o).addr;
+            if ( addr == null ) {
+                return ( addr2 == null );
+            } else {
+                return addr.equals( addr2 );
+            }
+        }
+
+        return false;
+    }
+
     private static IPaddr makeIPaddr( long addr )
     {
         byte valArray[] = new byte[INADDRSZ];

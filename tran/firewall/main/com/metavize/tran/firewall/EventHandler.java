@@ -28,6 +28,7 @@ import com.metavize.mvvm.MvvmContextFactory;
 
 import com.metavize.mvvm.tapi.AbstractEventHandler;
 import com.metavize.mvvm.tapi.IPNewSessionRequest;
+import com.metavize.mvvm.tapi.TCPNewSessionRequest;
 import com.metavize.mvvm.tapi.MPipeException;
 
 import com.metavize.mvvm.tapi.event.TCPNewSessionRequestEvent;
@@ -97,8 +98,11 @@ class EventHandler extends AbstractEventHandler
             if ( rejectSilently ) {
                 request.rejectSilently();
             } else {
-                /* XXX How to reject non-silently */
-                request.rejectSilently();
+                if ( protocol == Protocol.UDP ) {
+                    request.rejectReturnUnreachable( IPNewSessionRequest.PORT_UNREACHABLE );
+                } else {
+                    ((TCPNewSessionRequest)request).rejectReturnRst();
+                }
             }
             
             /* Increment the block counter */
@@ -106,7 +110,7 @@ class EventHandler extends AbstractEventHandler
 
         } else {
             logger.debug( "Releasing session: " + request );
-            request.release();
+            request.release( false );
 
             /* Increment the pass counter */
             incrementCount( Transform.GENERIC_1_COUNTER ); // PASS COUNTER

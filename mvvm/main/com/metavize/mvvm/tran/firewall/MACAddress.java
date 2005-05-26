@@ -15,7 +15,6 @@ package com.metavize.mvvm.tran.firewall;
 import java.io.Serializable;
 import java.net.Inet4Address;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 public class MACAddress implements Serializable
 {
@@ -29,7 +28,7 @@ public class MACAddress implements Serializable
         this.mac = mac.toLowerCase();
     }
     
-    public static MACAddress parse( String mac ) throws IllegalArgumentException, UnknownHostException
+    public static MACAddress parse( String mac ) throws IllegalArgumentException
     {
         /* Trim any whitespace */
         mac = mac.trim();
@@ -77,5 +76,4 @@ public class MACAddress implements Serializable
 
         return false;
     }
-
 }

@@ -11,14 +11,10 @@
 
 package com.metavize.tran.nat;
 
-import java.util.Date;
-
 import com.metavize.mvvm.tran.Rule;
 
-import com.metavize.mvvm.tran.IPNullAddr;
 import com.metavize.mvvm.tran.IPaddr;
-import com.metavize.mvvm.tran.firewall.MACAddress;
-
+import com.metavize.mvvm.tran.HostNameList;
 
 /**
  * Rule for storing DNS static hosts.
@@ -30,9 +26,8 @@ import com.metavize.mvvm.tran.firewall.MACAddress;
  */
 public class DnsStaticHostRule extends Rule
 {
-
-    private String     hostname        = "";
-    private IPaddr     staticAddress   = null;//IPAddr.getNullAddr();
+    private HostNameList hostNameList  = HostNameList.getEmptyHostNameList();
+    private IPaddr       staticAddress = null;
 
     // Constructors 
     /**
@@ -42,34 +37,34 @@ public class DnsStaticHostRule extends Rule
     {
     }
 
-    public DnsStaticHostRule( String hostname, IPaddr staticAddress )
+    public DnsStaticHostRule( HostNameList hostNameList, IPaddr staticAddress )
     {
-        this.hostname       = hostname;
-        this.staticAddress  = staticAddress;
+        this.hostNameList  = hostNameList;
+        this.staticAddress = staticAddress;
     }
 
     
     /**
-     * Host name
+     * Host name list
      *
-     * @return the desired/assigned host name for this machine.
+     * @return the host name list.
      * @hibernate.property
+     * type="com.metavize.mvvm.type.HostNameListUserType"
      * @hibernate.column
-     * name="HOSTNAME"
+     * name="HOSTNAME_LIST"
      */
-    public String getHostname()
+    public HostNameList getHostNameList()
     {
-        if ( hostname == null )
-            return "";
+        if ( hostNameList == null )
+            hostNameList = HostNameList.getEmptyHostNameList();
 
-        return hostname;
+        return hostNameList;
     }
 
-    public void setHostname( String hostname )
+    public void setHostNameList( HostNameList hostNameList )
     {
-        this.hostname = hostname;
+        this.hostNameList = hostNameList;
     }
-
 
     /**
      * Get static IP address
@@ -83,8 +78,6 @@ public class DnsStaticHostRule extends Rule
      */
     public IPaddr getStaticAddress()
     {
-        if ( this.staticAddress == null ) return null;//( this.staticAddress = IPNullAddr.getNullAddr());
-
         return this.staticAddress;
     }
     
@@ -92,5 +85,4 @@ public class DnsStaticHostRule extends Rule
     {
         this.staticAddress = staticAddress;
     }
-    
 }

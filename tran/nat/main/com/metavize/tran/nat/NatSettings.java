@@ -21,6 +21,7 @@ import com.metavize.mvvm.NetworkingConfiguration;
 import com.metavize.mvvm.security.Tid;
 
 import com.metavize.mvvm.tran.IPaddr;
+import com.metavize.mvvm.tran.HostName;
 import com.metavize.mvvm.tran.Validatable;
 
 /**
@@ -60,8 +61,8 @@ public class NatSettings implements java.io.Serializable, Validatable
     private List    dhcpLeaseList = new LinkedList();
     
     /* DNS Masquerading settings */
-    private boolean dnsEnabled = false;
-    private String  dnsLocalDomain = "";
+    private boolean  dnsEnabled = false;
+    private HostName dnsLocalDomain = HostName.getEmptyHostName();
     /* DNS Static Hosts */
     private List    dnsStaticHostList = new LinkedList();
     
@@ -104,7 +105,6 @@ public class NatSettings implements java.io.Serializable, Validatable
                 throw new Exception( "When NAT is enabled, DMZ address must be in the internal network." );
             }
         }
-
 
         if ( dhcpEnabled ) {
             IPaddr host = null;
@@ -434,17 +434,20 @@ public class NatSettings implements java.io.Serializable, Validatable
     }
 
     /**
-     * @return A string for the local domain, this most likely has to be validated.
+     * Local Domain
      *
+     * @return the local domain
      * @hibernate.property
-     * column="DNS_LOCAL_DOMAIN"
+     * type="com.metavize.mvvm.type.HostNameUserType"
+     * @hibernate.column
+     * name="DNS_LOCAL_DOMAIN"
      */
-    public String getDnsLocalDomain()
+    public HostName getDnsLocalDomain()
     {
         return dnsLocalDomain;
     }
 
-    public void setDnsLocalDomain( String s ) 
+    public void setDnsLocalDomain( HostName s )
     {
         this.dnsLocalDomain = s;
     }
@@ -474,5 +477,4 @@ public class NatSettings implements java.io.Serializable, Validatable
     { 
         dnsStaticHostList = s;
     }
-
 }

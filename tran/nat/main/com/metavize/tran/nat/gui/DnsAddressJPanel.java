@@ -82,7 +82,7 @@ class DnsAddressTableModel extends MSortedTableModel{
 	    Vector rowVector = new Vector();
 	    rowVector.add(super.ROW_SAVED);
 	    rowVector.add(new Integer(count));
-	    rowVector.add(hostRule.getHostname().toString());
+	    rowVector.add(hostRule.getHostNameList().toString());
 	    rowVector.add(hostRule.getStaticAddress().toString());
 	    rowVector.add(hostRule.getCategory());
 	    rowVector.add(hostRule.getDescription());
@@ -99,7 +99,7 @@ class DnsAddressTableModel extends MSortedTableModel{
         for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
 
             DnsStaticHostRule hostRule = new DnsStaticHostRule();
-            try{ hostRule.setHostname( HostName.parse( (String)rowVector.elementAt(2)) ); }
+            try{ hostRule.setHostNameList( HostNameList.parse( (String)rowVector.elementAt(2)) ); }
             catch(Exception e){ throw new Exception("Invalid \"hostname\" in row: " + rowIndex); }
             try{ hostRule.setStaticAddress( IPaddr.parse( (String)rowVector.elementAt(3)) ); }
             catch(Exception e){ throw new Exception("Invalid \"IP address\" in row: " + rowIndex); }

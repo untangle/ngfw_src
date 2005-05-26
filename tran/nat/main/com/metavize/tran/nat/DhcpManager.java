@@ -29,6 +29,8 @@ import com.metavize.mvvm.MvvmContextFactory;
 
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.IPNullAddr;
+import com.metavize.mvvm.tran.HostName;
+import com.metavize.mvvm.tran.HostNameList;
 import com.metavize.mvvm.tran.firewall.MACAddress;
 
 import com.metavize.mvvm.tran.TransformStartException;
@@ -44,6 +46,8 @@ class DhcpManager
     private static final String FLAG_DHCP_RANGE       = "dhcp-range";
     private static final String FLAG_DHCP_HOST        = "dhcp-host";
     private static final String FLAG_DHCP_OPTION      = "dhcp-option";
+    private static final String FLAG_DNS_LOCAL_DOMAIN = "domain";
+    
     private static final String FLAG_DHCP_GATEWAY     = "3";
     private static final String FLAG_DHCP_NETMASK     = "1";
     private static final String FLAG_DHCP_NAMESERVERS = "6";
@@ -63,6 +67,25 @@ class DhcpManager
     private static final String DNS_MASQ_CMD          = "/etc/init.d/dnsmasq ";
     private static final String DNS_MASQ_CMD_RESTART  = DNS_MASQ_CMD + " restart";
     private static final String DNS_MASQ_CMD_STOP     = DNS_MASQ_CMD + " stop";
+    private static final HostName LOCAL_DOMAIN_DEFAULT;
+    
+    private static final String HOST_FILE             = "/etc/hosts";
+    private static final String[] HOST_FILE_START     = new String[] {
+        HEADER,
+        "127.0.0.1	mv-edgeguard localhost"
+    };
+    
+    private static final String[] HOST_FILE_END       = new String[] {
+        "# The following lines are desirable for IPv6 capable hosts",
+        "# (added automatically by netbase upgrade)",
+        "",
+        "::1     ip6-localhost ip6-loopback",
+        "fe00::0 ip6-localnet",
+        "ff00::0 ip6-mcastprefix",
+        "ff02::1 ip6-allnodes",
+        "ff02::2 ip6-allrouters",
+        "ff02::3 ip6-allhosts"
+    };
 
     private final Logger logger = Logger.getLogger( DhcpManager.class );
     
@@ -76,6 +99,7 @@ class DhcpManager
 
         try { 
             writeConfiguration( settings, netConfig );
+            writeHosts( settings );
             
             logger.debug( "Reloading DNS Masq server" );
             
@@ -98,7 +122,7 @@ class DhcpManager
                 MvvmContextFactory.context().argonManager().enableDhcpForwarding();
             }
         } catch ( Exception e ) {
-            throw new TransformStartException( "Error updating DHCP forwarding settings" + code );
+            throw new TransformStartException( "Error updating DHCP forwarding settings" );
         }
     }
     
@@ -284,7 +308,7 @@ class DhcpManager
         sb.append( HEADER );
 
         if ( settings.getDhcpEnabled()) {
-            /* XXX Presently always defaulting leases to a fixed value */
+            /* XXX Presently always defaulting lease times to a fixed value */
             comment( sb, "DHCP Range:" );
             sb.append( FLAG_DHCP_RANGE + "=" + settings.getDhcpStartAddress().toString());
             sb.append( "," + settings.getDhcpEndAddress().toString() + ",4h\n\n\n" );
@@ -337,18 +361,96 @@ class DhcpManager
         }
         
         if ( !settings.getDnsEnabled()) {
+            /* Cannot bind to localhost, because that will also disable DHCP */
             comment( sb, "DNS is disabled, binding to port 54" );
-            sb.append( FLAG_DNS_LISTEN_PORT + "= 54\n\n" );
+            sb.append( FLAG_DNS_LISTEN_PORT + "=54\n\n" );
+        } else {
+            HostName localDomain = settings.getDnsLocalDomain();
+            /* Write out the localdomain */
+            comment( sb, "Setting the Local domain name" );
+            
+            if ( localDomain.isEmpty()) {
+                comment( sb, "Local domain name is empty, using " + LOCAL_DOMAIN_DEFAULT.toString());
+                localDomain = LOCAL_DOMAIN_DEFAULT;
+            }
+            
+            sb.append( FLAG_DNS_LOCAL_DOMAIN + "=" + localDomain + "\n\n" );
         }
-
-        /* XXX localdomain, no settings for local domain */
 
         writeFile( sb, DNS_MASQ_FILE );
     }
 
-    static DhcpManager getInstance()
+    /**
+     * Save the file /etc/hosts
+     */
+    private void writeHosts( NatSettings settings )
     {
-        return INSTANCE;
+        StringBuilder sb = new StringBuilder();
+        
+        for ( int c = 0 ; c < HOST_FILE_START.length ; c ++ ) {
+            sb.append( HOST_FILE_START[c] + "\n" );
+        }
+
+        sb.append( "\n" );
+
+        if ( settings.getDnsEnabled()) {
+            List<DnsStaticHostRule> hostList = mergeHosts( settings );
+
+            for ( Iterator<DnsStaticHostRule> iter = hostList.iterator(); iter.hasNext() ; ) {
+                DnsStaticHostRule rule = iter.next();
+                HostNameList hostNameList = rule.getHostNameList();
+                if ( hostNameList.isEmpty()) {
+                    comment( sb, "Empty host name list for host " + rule.getStaticAddress().toString());
+                } else {
+                    sb.append( rule.getStaticAddress().toString() + "\t" + hostNameList.toString() + "\n" );
+                }
+            }
+        } else {
+            comment( sb, "DNS is disabled, skipping hosts" );
+        }
+
+        sb.append( "\n" );
+
+        for ( int c = 0 ; c < HOST_FILE_END.length ; c ++ ) {
+            sb.append( HOST_FILE_END[c] + "\n" );
+        }
+
+        writeFile( sb, HOST_FILE );
+    }
+    
+    /**
+     * Create a new list will all of entries for the same host in the same list 
+     */
+    private List<DnsStaticHostRule> mergeHosts( NatSettings settings )
+    {
+        List<DnsStaticHostRule> list = new LinkedList<DnsStaticHostRule>();
+        Map<IPaddr,DnsStaticHostRule> map = new HashMap<IPaddr,DnsStaticHostRule>();
+        
+        for ( Iterator iter = settings.getDnsStaticHostList().iterator(); iter.hasNext() ; ) {
+            DnsStaticHostRule rule = (DnsStaticHostRule)iter.next();
+            IPaddr addr  = rule.getStaticAddress();
+            DnsStaticHostRule current = map.get( addr );
+
+            if ( current == null ) {
+                /* Make a copy of the static route rule */
+                current = new DnsStaticHostRule( new HostNameList( rule.getHostNameList()), addr );
+                map.put( addr, current );
+                list.add( current );
+            } else {
+                current.getHostNameList().merge( rule.getHostNameList() );
+            }
+        }
+
+        HostName localDomain = settings.getDnsLocalDomain();
+        localDomain = ( localDomain.isEmpty()) ? LOCAL_DOMAIN_DEFAULT : localDomain;
+        
+        for ( Iterator<DnsStaticHostRule> iter = list.iterator() ; iter.hasNext() ; ) {
+            HostNameList hostNameList = iter.next().getHostNameList();
+            hostNameList.qualify( localDomain );
+            hostNameList.removeReserved();
+        }
+        
+        return list;
     }
 
     /* XXX This should go into a global util class */
@@ -430,4 +532,22 @@ class DhcpManager
         writeFile( sb, DNS_MASQ_FILE );
     }
 
+    static DhcpManager getInstance()
+    {
+        return INSTANCE;
+    }
+
+    static
+    {
+        HostName h;
+        
+        try {
+            h = HostName.parse( "local.domain" );
+        } catch ( IllegalArgumentException e ) {
+            /* This should never happen */
+            System.err.println( "Unable to initialize LOCAL_DOMAIN_DEFAULT: " + e );
+            h = null;
+        }
+        LOCAL_DOMAIN_DEFAULT = h;
+    }
 }
