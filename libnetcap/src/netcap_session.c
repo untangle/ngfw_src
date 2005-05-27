@@ -254,7 +254,9 @@ int netcap_session_init(netcap_session_t* netcap_sess, netcap_endpoints_t *endpo
     netcap_sess->dead_tcp.exit_type = TCP_CLI_DEAD_NULL;
     netcap_sess->dead_tcp.type      = 255;
     netcap_sess->dead_tcp.code      = 255;
+    netcap_sess->dead_tcp.use_src   = 0;
     netcap_sess->dead_tcp.redirect  = (in_addr_t)0;
+    netcap_sess->dead_tcp.src       = (in_addr_t)0;    
 
     /* Need the ICMP mailboxes */
     /* XXX Only need these for UDP */
@@ -346,14 +348,14 @@ int netcap_nc_session__destroy (netcap_session_t* netcap_sess, int if_mb) {
         }
     }
 
-    debug( 10, "Freeing %d ICMP Mailbox message in the client mailbox\n", 
+    debug( 10, "Freeing %d ICMP Mailbox messages in the client mailbox\n", 
            mailbox_size( &netcap_sess->icmp_cli_mb ));
 
     while(( msg = (netcap_icmp_msg_t*)mailbox_try_get( &netcap_sess->icmp_cli_mb ))) {
         netcap_icmp_msg_raze( msg );
     }
 
-    debug( 10, "Freeing %d ICMP Mailbox message in the server mailbox\n", 
+    debug( 10, "Freeing %d ICMP Mailbox messages in the server mailbox\n", 
            mailbox_size( &netcap_sess->icmp_srv_mb ));
 
     while(( msg = (netcap_icmp_msg_t*)mailbox_try_get( &netcap_sess->icmp_srv_mb ))) {

@@ -388,10 +388,20 @@ typedef struct netcap_session {
          * subsequent packets */
         u_char type;
         u_char code;
+
+        /**
+         * 0 src is not used.
+         * 1 src is used.
+         */
+        u_char use_src;
         
         /* If the type of ICMP exit is redirect, this is the address to redirect to in
          * network byte order */
         in_addr_t redirect;
+
+        /* If the source address of the packet is not the server, then this is the address
+         * where the error came from */
+        in_addr_t src;
     } dead_tcp;
     
     //    u_int seq;

@@ -421,6 +421,13 @@ static int  _send_icmp_response( netcap_session_t* netcap_sess, netcap_pkt_t* sy
         /* Swap the source and dest */
         host = syn->src.host.s_addr;
         syn->src.host.s_addr = syn->dst.host.s_addr;
+        
+        /* Use the source address from the ICMP packet on the outside if it
+         * is relevant */
+        if ( netcap_sess->dead_tcp.use_src && ( netcap_sess->dead_tcp.src != (in_addr_t)0 )) {
+            syn->src.host.s_addr = netcap_sess->dead_tcp.src;
+        }
+
         syn->dst.host.s_addr = host;
 
         /* Zero out the ports */

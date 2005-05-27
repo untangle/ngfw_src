@@ -232,6 +232,15 @@ static int _srv_complete_connection( netcap_session_t* netcap_sess, int flags )
                                icmp_hdr->icmp_type, icmp_hdr->icmp_code );
                     }
                 }
+
+                /* Check to see if this packet is from a different source address */
+                if ( icmp_hdr->icmp_ip.ip_dst.s_addr != pkt->src.host.s_addr ) {
+                    netcap_sess->dead_tcp.use_src = 1;
+                    netcap_sess->dead_tcp.src     = pkt->src.host.s_addr;
+                } else {
+                    netcap_sess->dead_tcp.use_src = 0;
+                    netcap_sess->dead_tcp.src     = (in_addr_t)0;
+                }
                 
                 netcap_sess->dead_tcp.exit_type = TCP_CLI_DEAD_ICMP;
                 netcap_sess->dead_tcp.type = icmp_hdr->icmp_type;
