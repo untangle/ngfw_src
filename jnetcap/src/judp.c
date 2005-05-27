@@ -481,7 +481,6 @@ JNIEXPORT jint JNICALL JF_UDPSession( icmpMerge )
     return 0;
 }
 
-
 /*
  * Class:     com_metavize_jnetcap_NetcapUDPSession
  * Method:    mailboxPointer
@@ -494,6 +493,56 @@ JNIEXPORT jint JNICALL JF_UDPSession( mailboxPointer )
     if ( session == NULL ) return errlogargs();
 
     return (jint)(( if_client == JNI_TRUE ) ? &session->cli_mb : &session->srv_mb);
+}
+
+/*
+ * Class:     com_metavize_jnetcap_ICMPTraffic
+ * Method:    icmpSource
+ * Signature: (J[BI)J
+ */
+JNIEXPORT jlong JNICALL JF_ICMPTraffic( icmpSource )
+   ( JNIEnv *env, jobject _this, jlong pointer, jbyteArray _data, jint limit )
+{
+    jbyte* data;
+    int data_len;
+    struct in_addr source;
+    int ret;
+    
+    netcap_pkt_t* pkt = (netcap_pkt_t*)JLONG_TO_UINT( pointer );
+    if ( pkt == NULL ) {
+        return (jlong)jmvutil_error( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "NULL pkt\n" );
+    }
+
+    if (( data_len = (*env)->GetArrayLength( env, _data )) < 0 ) {
+        errlog( ERR_WARNING, "ICMP: Negative data array length\n" );
+        return JN_ICMPTraffic( SAME_SOURCE );
+    }
+    
+    if ( data_len < limit ) {
+        errlog( ERR_WARNING, "Limit is larger than array, using array size %d < %d\n", data_len, limit );
+        limit = data_len;
+    }
+
+    if (( data = (*env)->GetByteArrayElements( env, _data, NULL )) == NULL ) {
+        return (jlong)jmvutil_error( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "GetByteArrayElements\n" );
+    }
+    
+    do {
+        if (( ret = netcap_icmp_get_source( data, limit, pkt, &source )) < 0 ) {
+            jmvutil_error( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "netcap_icmp_get_source\n" );
+            break;
+        }
+    } while ( 0 );
+
+    (*env)->ReleaseByteArrayElements( env, _data, data, 0 );
+
+    if ( ret < 0 ) {
+        return (jlong)ret;
+    } else if ( ret ) {
+        return UINT_TO_JLONG( source.s_addr );
+    }
+    
+    return JN_ICMPTraffic( SAME_SOURCE );
 }
 
 /**

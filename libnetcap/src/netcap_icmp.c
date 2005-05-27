@@ -471,6 +471,40 @@ int   netcap_icmp_update_pkt( char* data, int data_len, int data_lim,
     return new_len;
 }
 
+int   netcap_icmp_get_source( char* data, int data_len, netcap_pkt_t* pkt, struct in_addr* source )
+{
+    struct icmp* icmp_pkt;
+
+    if ( data == NULL || pkt == NULL || source == NULL ) return errlogargs();
+    
+    if ( data_len < ICMP_MINLEN ) {
+        errlog( ERR_WARNING, "ICMP Packet is too short" );
+        return 0;
+    }
+
+    icmp_pkt = (struct icmp*)data;
+
+    if ( netcap_icmp_verify_type_and_code( icmp_pkt->icmp_type, icmp_pkt->icmp_code ) < 0 ) {
+        errlog( ERR_WARNING, "netcap_icmp_verify_type_and_code\n" );
+    }
+    
+    if ( ICMP_INFOTYPE( icmp_pkt->icmp_type )) {
+        return 0;
+    }
+    
+    if ( data_len <  ICMP_ADVLENMIN ) {
+        errlog( ERR_WARNING, "ICMP Packet is too short" );
+        return 0;
+    }
+        
+    if ( icmp_pkt->icmp_ip.ip_dst.s_addr != pkt->src.host.s_addr ) {
+        memcpy( source, &pkt->src.host, sizeof( struct in_addr ));
+        return 1;
+    }
+    
+    return 0;
+}
+
 int  netcap_icmp_verify_type_and_code( u_int type, u_int code )
 {
     if ( type > NR_ICMP_TYPES ) 

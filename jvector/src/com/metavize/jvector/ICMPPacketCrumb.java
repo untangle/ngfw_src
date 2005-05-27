@@ -71,7 +71,7 @@ public class ICMPPacketCrumb extends PacketCrumb
     {        
         /* XXX Fix the options */
         this( packet.traffic().ttl(), packet.traffic().tos(), null,
-              packet.icmpType(), packet.icmpCode(), packet.traffic().src().host(),
+              packet.icmpType(), packet.icmpCode(), packet.icmpSource( data, limit ),
               data, offset, limit );              
     }
 

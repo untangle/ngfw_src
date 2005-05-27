@@ -11,6 +11,8 @@
 
 package com.metavize.jnetcap;
 
+import java.net.InetAddress;
+
 import java.util.EmptyStackException;
 
 public class NetcapUDPSession extends NetcapSession 
@@ -199,7 +201,7 @@ public class NetcapUDPSession extends NetcapSession
                 this.traffic = makeTraffic( pointer );
             }
             
-            public IPTraffic traffic() 
+            public IPTraffic traffic()
             {
                 return traffic;
             }
@@ -264,6 +266,11 @@ public class NetcapUDPSession extends NetcapSession
             public byte icmpCode()
             {
                 return icmpCode;
+            }
+
+            public InetAddress icmpSource( byte data[], int limit )
+            {
+                return ((ICMPTraffic)traffic).icmpSource( data, limit );
             }
             
             protected IPTraffic makeTraffic( CPointer pointer )

@@ -9,8 +9,9 @@
  *  $Id$
  */
 
-
 package com.metavize.jnetcap;
+
+import java.net.InetAddress;
 
 public interface ICMPPacket extends Packet
 {
@@ -23,4 +24,9 @@ public interface ICMPPacket extends Packet
      * ICMP code for the packet
      */
     byte icmpCode();
+
+    /**
+     * If Relevant, return the source of the ICMP packet, otherwise return null
+     */
+    InetAddress icmpSource( byte data[], int limit );
 }

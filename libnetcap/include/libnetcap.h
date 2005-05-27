@@ -378,7 +378,6 @@ typedef struct netcap_session {
     /* TCP Session */
 
     /* How to handle TCP sessions that were never alive */
-    /* XXX Needs a pointer to the ICMP packet so that redirects can be handled properly */
     struct {
         /* 0: Drop incoming packets *
          * 1: Reset incoming SYN packets *
@@ -531,6 +530,18 @@ int   netcap_icmp_update_pkt( char* data, int data_len, int data_lim,
                               int icmp_type, int icmp_code, int icmp_pid, mailbox_t* icmp_mb );
 
 /**
+ * Function to retrieve the source address of an unaltered data block from an ICMP packet.
+ *   This function checks if the source of a packet is relevant and returns 1 if so or zero if it is
+ *   not.
+ *
+ * Returns:
+ * -1 : error. source unmodified
+ *  0 : The source of the packet is irrelevant
+ *  1 : source has been updated to contain the source address of the packet.
+ */
+int   netcap_icmp_get_source( char* data, int data_len, netcap_pkt_t* pkt, struct in_addr* source );
+
+/**
  * Resource Freeing 
  */
 void          netcap_pkt_free    (netcap_pkt_t* pkt);
@@ -624,11 +635,12 @@ int netcap_intfset_add   ( netcap_intfset_t* intfset, netcap_intf_t intf);
  */
 int netcap_intfset_get   ( netcap_intfset_t* intfset, netcap_intf_t intf);
 /**
- * XXX
+ * Retrieve an interface set with all of the interfaces turned on.
  */
 int netcap_intfset_get_all ( netcap_intfset_t* intfset );
 /**
- * XXX
+ * Combine all of the interfaces that are set in the interface set into one string separated
+ * by spaces.
  */
 int netcap_intfset_to_string ( char* dst, int dst_len, netcap_intfset_t* intfset);
 
