@@ -29,7 +29,7 @@ public class IPaddr implements Serializable
         this.addr = addr;
     }
 
-    public static IPaddr parse( String dotNotation ) throws IllegalArgumentException, UnknownHostException
+    public static IPaddr parse( String dotNotation ) throws ParseException, UnknownHostException
     {
         /* Trim any whitespace */
         dotNotation = dotNotation.trim();
@@ -38,18 +38,18 @@ public class IPaddr implements Serializable
         String tmp[] = dotNotation.split( "\\.", INADDRSZ + 1 );
 
         if ( tmp.length != INADDRSZ ) {
-            throw new IllegalArgumentException( "Invalid IPV4 dot-notation address" + dotNotation );
+            throw new ParseException( "Invalid IPV4 dot-notation address" + dotNotation );
         }
 
         /* Validation */
         for ( int c = 0 ; c < tmp.length ; c++ ) {
             int val = Integer.parseInt( tmp[c] );
             if ( val < 0 || val > 255 ) {
-                throw new IllegalArgumentException( "Each component must be between 0 and 255 " + tmp);
+                throw new ParseException( "Each component must be between 0 and 255 " + tmp);
             }
         }
 
-        return new IPaddr( (Inet4Address)InetAddress.getByName( dotNotation ));
+        return new IPaddr((Inet4Address)InetAddress.getByName( dotNotation ));
     }
     
     public static IPaddr and( IPaddr addr1, IPaddr addr2 ) 

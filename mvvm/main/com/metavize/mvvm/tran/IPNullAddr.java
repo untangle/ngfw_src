@@ -30,7 +30,8 @@ public class IPNullAddr extends IPaddr
         super( addr );
     }
 
-    public static IPNullAddr parse( String dotNotation ) throws IllegalArgumentException, UnknownHostException
+    public static IPNullAddr parse( String dotNotation ) 
+        throws ParseException, UnknownHostException
     {
         /* Trim any whitespace */
         dotNotation = dotNotation.trim();

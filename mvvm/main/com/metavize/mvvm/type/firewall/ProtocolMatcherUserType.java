@@ -27,7 +27,7 @@ public class ProtocolMatcherUserType extends StringBasedUserType
         return ((ProtocolMatcher)v).toString();
     }
 
-    public Object createUserType( String val )
+    public Object createUserType( String val ) throws Exception
     {
         return ProtocolMatcher.parse( val );
     }

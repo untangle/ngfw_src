@@ -25,12 +25,8 @@ public class HostNameUserType extends StringBasedUserType
         return ((HostName)v).toString();
     }
 
-    public Object createUserType( String val )
+    public Object createUserType( String val ) throws Exception
     {
-        try {
-            return HostName.parse( val );
-        } catch ( Exception e ) {
-            throw new IllegalArgumentException( "Invalid HostName" + e );
-        }
+        return HostName.parse( val );
     }
 }

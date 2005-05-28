@@ -11,14 +11,15 @@
 
 package com.metavize.mvvm.tran.firewall;
 
+import java.io.Serializable;
+
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-
 import com.metavize.mvvm.tran.IPaddr;
+import com.metavize.mvvm.tran.ParseException;
 
-import java.io.Serializable;
 
 /**
  * The class <code>IPMatcher</code> represents an method for determining if an IP address
@@ -148,7 +149,7 @@ public class IPMatcher implements Serializable
      * 3. An IP address range (start to finish): (x.y.w.z - a.b.c.d)
      * 4. * : Wildcard matches everything.
      */
-    public static IPMatcher parse( String str ) throws IllegalArgumentException
+    public static IPMatcher parse( String str ) throws ParseException
     {                                                       
         String marker;
         boolean isRange;
@@ -179,7 +180,7 @@ public class IPMatcher implements Serializable
         String strArray[] = str.split( marker, 3 );
 
         if ( strArray.length != 2 ) {
-            throw new IllegalArgumentException( "Invalid IPMatcher, more than two components" + str );
+            throw new ParseException( "Invalid IPMatcher, more than two components" + str );
         }
         
         base   = toLong( strArray[0].trim());
@@ -247,7 +248,7 @@ public class IPMatcher implements Serializable
     }
     
     /** Convert a dot notation string to a long */    
-    static long toLong( String dotNotation )
+    static long toLong( String dotNotation ) throws ParseException
     {
         long val = 0;
         
@@ -258,14 +259,14 @@ public class IPMatcher implements Serializable
         String tmp[] = dotNotation.split( "\\.", INADDRSZ + 1 );
 
         if ( tmp.length != INADDRSZ ) {
-            throw new IllegalArgumentException( "Invalid IPV4 dot-notation address" + dotNotation );
+            throw new ParseException( "Invalid IPV4 dot-notation address" + dotNotation );
         }
 
         /* Validation */
         for ( int c = 0 ; c < tmp.length ; c++ ) {
             int part = Integer.parseInt( tmp[c] );
             if (( part < 0 ) || ( part > 255 )) {
-                throw new IllegalArgumentException( "Each component must be between 0 and 255 " + tmp);
+                throw new ParseException( "Each component must be between 0 and 255 " + tmp);
             }
             
             val += (long)(part << ( 8 * c ));

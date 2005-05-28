@@ -27,7 +27,7 @@ public class IPMatcherUserType extends StringBasedUserType
         return ((IPMatcher)v).toString();
     }
 
-    public Object createUserType( String val )
+    public Object createUserType( String val ) throws Exception
     {
         return IPMatcher.parse( val );
     }

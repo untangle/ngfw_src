@@ -15,6 +15,8 @@ import java.io.Serializable;
 
 import com.metavize.mvvm.tapi.Protocol;
 
+import com.metavize.mvvm.tran.ParseException;
+
 /**
  * The class <code>ProtocolMatcher</code> represents a class for filtering on the Protocol of a
  * session.
@@ -80,7 +82,7 @@ public class ProtocolMatcher implements Serializable
      * 2. * : Wildcard matches everything.
      * 3. ! : Nothing matches nothing
      */
-    public static ProtocolMatcher parse( String str ) throws IllegalArgumentException
+    public static ProtocolMatcher parse( String str ) throws ParseException
     {
         str = str.trim();
         boolean isTcpEnabled  = false;
@@ -94,7 +96,7 @@ public class ProtocolMatcher implements Serializable
                 } else if ( strArray[c].equalsIgnoreCase( MARKER_UDP )) {
                     isUdpEnabled = true;
                 } else {
-                    throw new IllegalArgumentException( "Invalid ProtocolMatcher at \"" + strArray[c] + "\"" );
+                    throw new ParseException( "Invalid ProtocolMatcher at \"" + strArray[c] + "\"" );
                 }
             }
         } else if ( str.equalsIgnoreCase( MARKER_WILDCARD ) || str.equalsIgnoreCase( MARKER_ALL )) {
@@ -106,7 +108,7 @@ public class ProtocolMatcher implements Serializable
         } else if ( str.equalsIgnoreCase( MARKER_UDP )) {
             isUdpEnabled = true;
         } else {
-            throw new IllegalArgumentException( "Invalid ProtocolMatcher at \"" + str + "\"" );
+            throw new ParseException( "Invalid ProtocolMatcher at \"" + str + "\"" );
         }
 
         if ( isTcpEnabled && isUdpEnabled ) {

@@ -11,10 +11,11 @@
 
 package com.metavize.mvvm.tran.firewall;
 
-import com.metavize.mvvm.argon.IntfConverter;
-
 import java.io.Serializable;
 
+import com.metavize.mvvm.argon.IntfConverter;
+
+import com.metavize.mvvm.tran.ParseException;
 
 /**
  * The class <code>IntfMatcher</code> represents a class for filtering on one of the interfaces
@@ -82,7 +83,7 @@ public class IntfMatcher  implements Serializable
      * 2. * : Wildcard matches everything.
      * 3. ! : Nothing matches nothing
      */
-    public static IntfMatcher parse( String str ) throws IllegalArgumentException
+    public static IntfMatcher parse( String str ) throws ParseException
     {
         str = str.trim();
         boolean isInsideEnabled  = false;
@@ -97,7 +98,7 @@ public class IntfMatcher  implements Serializable
                 } else if ( strArray[c].equalsIgnoreCase( MARKER_OUTSIDE )) {
                     isOutsideEnabled = true;
                 } else {
-                    throw new IllegalArgumentException( "Invalid IntfMatcher at \"" + strArray[c] + "\"" );
+                    throw new ParseException( "Invalid IntfMatcher at \"" + strArray[c] + "\"" );
                 }
             }
         } else if ( str.equalsIgnoreCase( MARKER_WILDCARD )) {
@@ -109,7 +110,7 @@ public class IntfMatcher  implements Serializable
         } else if ( str.equalsIgnoreCase( MARKER_INSIDE )) {
             isInsideEnabled = true;
         } else {
-            throw new IllegalArgumentException( "Invalid IntfMatcher at \"" + str + "\"" );
+            throw new ParseException( "Invalid IntfMatcher at \"" + str + "\"" );
         }
         
         if ( isOutsideEnabled && isInsideEnabled ) {

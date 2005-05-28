@@ -14,10 +14,8 @@ package com.metavize.mvvm.tran.firewall;
 import java.io.Serializable;
 
 import com.metavize.mvvm.tran.IPaddr;
-
 import com.metavize.mvvm.tran.Rule;
-
-import com.metavize.mvvm.security.Tid;
+import com.metavize.mvvm.tran.ParseException;
 
 /**
  * Rule for matching based on IP addresses and subnets.
@@ -204,7 +202,7 @@ public abstract class TrafficRule extends Rule
 
     /* ----- */
        
-    public void setDirection( String direction )
+    public void setDirection( String direction ) throws ParseException
     {
         if ( direction.equalsIgnoreCase( DIRECTION_BOTH )) {
             setSrcIntf( IntfMatcher.MATCHER_ALL );
@@ -216,7 +214,7 @@ public abstract class TrafficRule extends Rule
             setSrcIntf( IntfMatcher.MATCHER_IN );
             setDstIntf( IntfMatcher.MATCHER_ALL );
         } else {
-            throw new IllegalArgumentException( "Invalid direction: " + direction );
+            throw new ParseException( "Invalid direction: " + direction );
         }
     }
 

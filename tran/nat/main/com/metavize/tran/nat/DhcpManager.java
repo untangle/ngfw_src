@@ -31,6 +31,7 @@ import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.IPNullAddr;
 import com.metavize.mvvm.tran.HostName;
 import com.metavize.mvvm.tran.HostNameList;
+import com.metavize.mvvm.tran.ParseException;
 import com.metavize.mvvm.tran.firewall.MACAddress;
 
 import com.metavize.mvvm.tran.TransformStartException;
@@ -543,7 +544,7 @@ class DhcpManager
         
         try {
             h = HostName.parse( "local.domain" );
-        } catch ( IllegalArgumentException e ) {
+        } catch ( ParseException e ) {
             /* This should never happen */
             System.err.println( "Unable to initialize LOCAL_DOMAIN_DEFAULT: " + e );
             h = null;

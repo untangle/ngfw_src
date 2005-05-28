@@ -27,12 +27,8 @@ public class IPNullAddrUserType extends StringBasedUserType
         return ((IPNullAddr)v).toString();
     }
 
-    public Object createUserType( String val )
+    public Object createUserType( String val ) throws Exception
     {
-        try {
-            return IPNullAddr.parse( val );
-        } catch ( Exception e ) {
-            throw new IllegalArgumentException( "Invalid IPNullAddr" + e );
-        }
+        return IPNullAddr.parse( val );
     }
 }

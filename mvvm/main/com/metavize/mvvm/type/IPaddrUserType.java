@@ -27,12 +27,8 @@ public class IPaddrUserType extends StringBasedUserType
         return ((IPaddr)v).toString();
     }
 
-    public Object createUserType( String val )
+    public Object createUserType( String val ) throws Exception
     {
-        try {
-            return IPaddr.parse( val );
-        } catch ( Exception e ) {
-            throw new IllegalArgumentException( "Invalid IPaddr" + e );
-        }
+        return IPaddr.parse( val );
     }
 }

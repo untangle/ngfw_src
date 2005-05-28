@@ -27,7 +27,7 @@ public class PortMatcherUserType extends StringBasedUserType
         return ((PortMatcher)v).toString();
     }
 
-    public Object createUserType( String val )
+    public Object createUserType( String val ) throws Exception
     {
         return PortMatcher.parse( val );
     }

@@ -16,6 +16,9 @@ import java.io.Serializable;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 
+
+import com.metavize.mvvm.tran.ParseException;
+
 public class MACAddress implements Serializable
 {
     static final int MACADDRSZ = 6;
@@ -28,7 +31,7 @@ public class MACAddress implements Serializable
         this.mac = mac.toLowerCase();
     }
     
-    public static MACAddress parse( String mac ) throws IllegalArgumentException
+    public static MACAddress parse( String mac ) throws ParseException
     {
         /* Trim any whitespace */
         mac = mac.trim();
@@ -37,14 +40,14 @@ public class MACAddress implements Serializable
         String tmp[] = mac.split( ":", MACADDRSZ + 1 );
 
         if ( tmp.length != MACADDRSZ ) {
-            throw new IllegalArgumentException( "Invalid MAC Address " + mac );
+            throw new ParseException( "Invalid MAC Address " + mac );
         }
 
         /* Validation */
         for ( int c = 0 ; c < tmp.length ; c++ ) {
             int val = Integer.parseInt( tmp[c], 16 );
             if ( val < 0 || val > 255 ) {
-                throw new IllegalArgumentException( "Each component must be between 0 and 255 " + tmp[c] );
+                throw new ParseException( "Each component must be between 0 and 255 " + tmp[c] );
             }
         }
 

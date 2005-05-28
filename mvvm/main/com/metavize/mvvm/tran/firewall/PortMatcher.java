@@ -16,6 +16,8 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import com.metavize.mvvm.tran.ParseException;
+
 /**
  * The class <code>IPMatcher</code> represents an method for determining if an IP address
  * is a match.
@@ -98,7 +100,7 @@ public class PortMatcher implements Serializable
         return "" + start + " " + MARKER_RANGE + " " + end;
     }
     
-    public static PortMatcher parse( String str ) throws IllegalArgumentException
+    public static PortMatcher parse( String str ) throws ParseException
     {
         int start;
         int end;
@@ -109,7 +111,7 @@ public class PortMatcher implements Serializable
             String strArray[] = str.split( MARKER_RANGE, 3 );
             
             if ( strArray.length != 2 ) {
-                throw new IllegalArgumentException( "Invalid PortMatcher, more than two components" + str );
+                throw new ParseException( "Invalid PortMatcher, more than two components" + str );
             }
 
             start = fixPort( strArray[0] );            

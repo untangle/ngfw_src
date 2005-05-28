@@ -14,6 +14,7 @@ package com.metavize.tran.nat;
 import java.net.UnknownHostException;
 
 import com.metavize.mvvm.tran.IPaddr;
+import com.metavize.mvvm.tran.ParseException;
 
 import com.metavize.mvvm.tran.firewall.IPMatcher;
 import com.metavize.mvvm.tran.firewall.PortMatcher;
@@ -98,16 +99,16 @@ public class RedirectRule extends TrafficRule
         return redirectPort;
     }
 
-    public void setRedirectPort( int port )
+    public void setRedirectPort( int port ) throws ParseException
     {
         if ( port < 0 || port > 65535 ) {
-            throw new IllegalArgumentException( "Redirect port must be in the range 0 to 65535: " + port );
+            throw new ParseException( "Redirect port must be in the range 0 to 65535: " + port );
         }
 
         this.redirectPort = port;
     }
 
-    public void setRedirectPort( String port )
+    public void setRedirectPort( String port ) throws ParseException
     {
         if ( port.equalsIgnoreCase( REDIRECT_PORT_UNCHANGED )) {
             setRedirectPort( 0 );
@@ -144,7 +145,7 @@ public class RedirectRule extends TrafficRule
         this.redirectAddress = host;
     }
     
-    public void setRedirectAddress( String host ) throws UnknownHostException
+    public void setRedirectAddress( String host ) throws UnknownHostException, ParseException
     {
         if ( host.equalsIgnoreCase( REDIRECT_ADDRESS_UNCHANGED )) {
             this.redirectAddress = null;

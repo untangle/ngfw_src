@@ -73,16 +73,37 @@ public class HostName implements Serializable {
         return false;
     }
 
-    public static HostName parse( String input ) throws IllegalArgumentException
+    public static HostName parse( String input ) throws ParseException
     { 
-        IllegalArgumentException e;
         input = input.trim();
 
         if ( input.length() == 0 ) {
             return EMPTY_HOSTNAME;
         }
         
-        if (( e = validate( input )) != null ) throw e;
+        if ( input.length() > HOSTNAME_MAXLEN ) {
+            throw new ParseException( "A hostname label is limited to " + HOSTNAME_MAXLEN + " characters" );
+        }
+
+        if ( input.indexOf( ".." ) >= 0 ) {
+            throw new ParseException( "A hostname does not contain \"..\" " + input );
+        }
+        
+        String tmp[] = input.split( "\\." );
+        
+        if ( tmp.length == 0 ) {
+            throw new ParseException( "A hostname must contain characters besides ." );
+        }
+        
+        for ( int c = 0 ; c < tmp.length ; c++ ) {
+            if ( tmp[c].length() > HOSTLABEL_MAXLEN ) {
+                throw new ParseException( "A hostname label is limited to " + HOSTLABEL_MAXLEN + " characters" );
+            }
+            
+            if ( !HOSTLABEL_MATCHER.matcher( tmp[c] ).matches()) {
+                throw new ParseException( "A hostname label only contains numbers, letters and dashes: " + input );
+            }
+        }
         
         return new HostName( input );
     }
@@ -90,42 +111,6 @@ public class HostName implements Serializable {
     public static HostName addDomain( HostName hostName, HostName domain )
     {
         return new HostName( hostName.toString() + "." + domain.toString());
-    }
-
-    public static boolean isValid( String input )
-    {
-        if ( input == null ) return false;
-
-        return ( validate( input ) == null ) ? true : false;        
-    }
-    
-    private static IllegalArgumentException validate( String input )
-    {
-        if ( input.length() > HOSTNAME_MAXLEN ) {
-            return new IllegalArgumentException( "A hostname label is limited to " + HOSTNAME_MAXLEN + " characters" );
-        }
-
-        if ( input.indexOf( ".." ) >= 0 ) {
-            return new IllegalArgumentException( "A hostname does not contain \"..\" " + input );
-        }
-        
-        String tmp[] = input.split( "\\." );
-        
-        if ( tmp.length == 0 ) {
-            return new IllegalArgumentException( "A hostname must contain characters besides ." );
-        }
-        
-        for ( int c = 0 ; c < tmp.length ; c++ ) {
-            if ( tmp[c].length() > HOSTLABEL_MAXLEN ) {
-                return new IllegalArgumentException( "A hostname label is limited to " + HOSTLABEL_MAXLEN + " characters" );
-            }
-            
-            if ( !HOSTLABEL_MATCHER.matcher( tmp[c] ).matches()) {
-                return new IllegalArgumentException( "A hostname label only contains numbers, letters and dashes: " + input );
-            }
-        }
-        
-        return null;
     }
 
     public static HostName getEmptyHostName()

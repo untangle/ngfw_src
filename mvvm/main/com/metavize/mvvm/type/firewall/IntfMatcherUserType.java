@@ -27,7 +27,7 @@ public class IntfMatcherUserType extends StringBasedUserType
         return ((IntfMatcher)v).toString();
     }
 
-    public Object createUserType( String val )
+    public Object createUserType( String val ) throws Exception
     {
         return IntfMatcher.parse( val );
     }

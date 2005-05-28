@@ -62,7 +62,7 @@ public class HostNameList implements Serializable {
             hostNameList.add( hostName );
     }
     
-    public void add( String hostName ) throws IllegalArgumentException 
+    public void add( String hostName ) throws ParseException
     {
         add( HostName.parse( hostName ));
     }
@@ -102,9 +102,8 @@ public class HostNameList implements Serializable {
         }
     }
     
-    public static HostNameList parse( String input ) throws IllegalArgumentException
+    public static HostNameList parse( String input ) throws ParseException
     { 
-        IllegalArgumentException e;
         input = input.trim();
         List hostNameList = new LinkedList();
         
