@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: Range.java,v 1.4 2005/01/12 02:52:56 rbscott Exp $
+ *  $Id$
  */
 
 package com.metavize.jnetcap;
@@ -20,10 +20,10 @@ public class Range {
      * @param low - low value (inclusive).
      * @param high - high value (inclusive).
      */
-    public Range ( int low, int high )
+    public Range( int low, int high ) throws JNetcapException
     {
         if ( low > high ) {
-            throw new IllegalArgumentException( "Reversed port range: low=" + low + " high=" + high );
+            throw new JNetcapException( "Reversed port range: low=" + low + " high=" + high );
         }
         
         this.low  = low;

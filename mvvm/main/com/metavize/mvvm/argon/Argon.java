@@ -24,6 +24,8 @@ import com.metavize.jnetcap.Shield;
 import com.metavize.jnetcap.Range;
 import com.metavize.jnetcap.SubscriptionGenerator;
 import com.metavize.jnetcap.SubscriptionManager;
+import com.metavize.jnetcap.JNetcapException;
+
 import com.metavize.jvector.Vector;
 
 public class Argon
@@ -38,7 +40,8 @@ public class Argon
     protected static final String LIST_SEPARATOR = ",";
 
     /* Range of the ports to use for DHCP traffic */
-    protected static final Range DHCP_PORT_RANGE = new Range( 67, 68 );
+    protected static final Range DHCP_PORT_RANGE;
+    protected static final Range DHCP_SERVER_PORT_RANGE;
 
     /* Whether or not to subscribe to local traffic */
     protected static boolean ifLocal = false;
@@ -313,10 +316,14 @@ public class Argon
         subManager.add( gen.subscribe());
 
         /* Do all of the anti-subscribes */
-        antisubscribes();
+        try {
+            antisubscribes();
+        } catch ( JNetcapException e ) {
+            throw new IllegalStateException( "Unable to initialize antisubscribes", e );
+        }
     }
 
-    private static void antisubscribes()
+    private static void antisubscribes() throws JNetcapException
     {
         int flags = SubscriptionGenerator.DEFAULT_FLAGS | SubscriptionGenerator.ANTI_SUBSCRIBE;
         SubscriptionGenerator gen;
@@ -396,7 +403,7 @@ public class Argon
         }
     
         if ( dhcpBlockOutside ) {
-            Netcap.blockIncomingTraffic( Netcap.IPPROTO_UDP, IntfConverter.outside(), new Range( 67, 67 ));
+            Netcap.blockIncomingTraffic( Netcap.IPPROTO_UDP, IntfConverter.outside(), DHCP_SERVER_PORT_RANGE );
         }
     }
 
@@ -489,7 +496,7 @@ public class Argon
         guardsRemove();
 
         if ( dhcpBlockOutside ) {
-            Netcap.unblockIncomingTraffic( Netcap.IPPROTO_UDP, IntfConverter.outside(), new Range( 67, 67 ));
+            Netcap.unblockIncomingTraffic( Netcap.IPPROTO_UDP, IntfConverter.outside(), DHCP_SERVER_PORT_RANGE );
         }
 
         Netcap.cleanup();
@@ -568,5 +575,29 @@ public class Argon
     {
 //         sleepingThreads++;
 //         activeThreads--;
+    }
+
+    static 
+    {
+        Range portRange = null;
+        
+        try {
+            portRange = new Range( 67, 68 );
+        } catch ( JNetcapException e ) {
+            logger.error( "Unable to initialize the dhcp port range.\n", e );
+            portRange = null;
+        }
+
+        DHCP_PORT_RANGE = portRange;
+        
+        try {
+            portRange = new Range( 67, 67 );
+        } catch ( JNetcapException e ) {
+            logger.error( "Unable to initialize the server dhcp port range.\n", e );
+            portRange = null;
+        }
+
+        DHCP_SERVER_PORT_RANGE = portRange;
+
     }
 }

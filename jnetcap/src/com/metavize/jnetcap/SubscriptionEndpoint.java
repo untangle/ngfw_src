@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: SubscriptionEndpoint.java,v 1.5 2005/01/12 02:52:56 rbscott Exp $
+ *  $Id$
  */
 
 
@@ -107,20 +107,30 @@ public class SubscriptionEndpoint
      * Set the port for this endpoint to a specific value.</p>
      * @param port - Port between 1 and 65535
      */
-    public void port( int port ) 
+    public void port( int port ) throws JNetcapException
     {
         if ( port < 1 || port > 0xFFFF ) {
-            throw new IllegalArgumentException( "Invalid port value: " + port );
+            throw new JNetcapException( "Invalid port value: " + port );
         }
         this.port = new Range( port, port ); 
     }
 
     static 
     {
+        Range range = null;
+
+        try {
+            range = new Range( 1, 0xFFFF );
+        } catch ( JNetcapException e ) {
+            /* Logger may not exist, this should really never happen */
+            System.out.println( "ERROR: Subscription Endpoint unable to initialize default range." );
+            range = null;
+        }
+
         DEFAULT_INTERFACE_SET = new InterfaceSet();
         DEFAULT_ADDRESS       = Inet4AddressConverter.getByAddress( new int[] { 0, 0, 0, 0 } );
         DEFAULT_NETMASK       = DEFAULT_ADDRESS;
-        DEFAULT_PORT          = new Range( 1, 0xFFFF );
+        DEFAULT_PORT          = range;
     }
 }
 
