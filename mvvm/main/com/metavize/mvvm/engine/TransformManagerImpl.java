@@ -156,7 +156,7 @@ class TransformManagerImpl implements TransformManager
                 result.put(tid, tci.getStats());
         }
         return result;
-    }   
+    }
 
     // Manager lifetime -------------------------------------------------------
 
@@ -323,10 +323,12 @@ class TransformManagerImpl implements TransformManager
         MackageDesc mackageDesc = tbm.mackageDesc(transformName);
         TransformDesc tDesc = initTransformDesc(urls, tid);
 
-        TransformContextImpl tc = new TransformContextImpl(urls, tDesc, args,
-                                                           mackageDesc, true);
+        synchronized (this) {
+            TransformContextImpl tc = new TransformContextImpl
+                (urls, tDesc, args, mackageDesc, true);
 
-        tids.put(tid, tc);
+            tids.put(tid, tc);
+        }
 
         return tid;
     }
