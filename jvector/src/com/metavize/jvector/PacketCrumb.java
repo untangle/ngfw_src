@@ -53,7 +53,7 @@ public abstract class PacketCrumb extends DataCrumb
         this( packet, data, data.length );
     }
     
-    static PacketCrumb makeCrumb( Packet packet )
+    static PacketCrumb makeCrumb( Packet packet ) throws JVectorException
     {
         int protocol = packet.traffic().protocol();
 
@@ -63,7 +63,7 @@ public abstract class PacketCrumb extends DataCrumb
         case Netcap.IPPROTO_ICMP:
             return new ICMPPacketCrumb((ICMPPacket)packet, packet.data());
         default:
-            throw new IllegalArgumentException( "Unable to determine which crumb to create from protocol: " + protocol );
+            throw new JVectorException( "Unable to determine which crumb to create from protocol: " + protocol );
         }
     }
     

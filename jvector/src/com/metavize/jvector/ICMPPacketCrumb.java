@@ -108,10 +108,10 @@ public class ICMPPacketCrumb extends PacketCrumb
         return icmpType;
     }
 
-    public void icmpType( byte icmpType )
+    public void icmpType( byte icmpType ) throws JVectorException
     {
         if ( icmpType < ICMP_TYPE_MIN || icmpType > ICMP_TYPE_MAX ) {
-            throw new IllegalArgumentException( "Invalid ICMP type: " + icmpType );
+            throw new JVectorException( "Invalid ICMP type: " + icmpType );
         }
 
         this.icmpType = icmpType;

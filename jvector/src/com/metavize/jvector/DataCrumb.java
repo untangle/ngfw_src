@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: DataCrumb.java,v 1.6 2005/01/10 23:21:32 rbscott Exp $
+ * $Id$
  */
 
 package com.metavize.jvector;
