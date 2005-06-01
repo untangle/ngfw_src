@@ -3,87 +3,334 @@
 main_index=@MVVM_WEB@/reports/index.html
 
 
-
-update_transform ()
+generate_page ()
 {
-    ls $1/*-daily.html >/dev/null 2>&1 || return
+cat > $main_index <<EOF
 
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+  <!-- HEADING -->
+  <head>
+    <title>Metavize EdgeReport</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+    <link rel="stylesheet" type="text/css" href="styles.css"/>
+    <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon" />
+  </head>
+
+  <!--BRUSHED METAL PAGE BACKGROUND -->
+  <body>
+    <center>
+      <table border="0" cellpadding="0" cellspacing="0" width="904">
+
+        <!-- TOP THIRD -->
+        <tr> 
+          <td>
+            <img src="images/rounded_corner_main_top_left.gif" alt=" " /><br />
+          </td>
+          <td width="100%" id="table_main_top">
+            <img src="images/spacer.gif" alt=" " width="1" height="1" />
+          </td>
+          <td>
+            <img src="images/rounded_corner_main_top_right.gif" alt=" " /><br />
+          </td>
+        </tr>
+        <!-- END TOP THIRD -->
+
+        <!-- MIDDLE THIRD -->
+        <tr> 
+          <td id="table_main_left">
+            <img src="images/spacer.gif" alt=" " width="1" height="1" />
+          </td>
+          <td id="table_main_center">
+            <table >
+              <tr>
+              <td style="padding: 5px 0px 0px 10px">
+              <img src="images/logo.gif" alt="Metavize" width="96" height="96"/><br/>
+              </td>
+              <td style="padding: 0px 0px 0px 10px">
+              <!-- <img src="images/nametype.gif" alt="Metavize" /> -->
+              <span class="page_header_title">Metavize EdgeReport</span>
+              </td>
+              </tr>
+            </table>
+          </td>
+          <td id="table_main_right">
+            <img src="images/spacer.gif" alt=" " width="1" height="1" />
+          </td>
+        </tr>
+        <!-- END MIDDLE THIRD -->
+EOF
+
+generate_content_area
+
+cat >> $main_index <<EOF
+
+        <!-- BOTTOM THIRD -->
+        <tr>
+          <td>
+            <img src="images/rounded_corner_main_bottom_left.gif" alt=" " /><br/>
+          </td>
+          <td id="table_main_bottom">
+            <img src="images/spacer.gif" alt=" " width="1" height="1" />
+          </td>
+          <td>
+            <img src="images/rounded_corner_main_bottom_right.gif" alt=" " /><br/>
+          </td>
+        </tr>
+        <!-- END BOTTOM THIRD -->
+
+      </table>
+    </center>
+
+  </body>
+  <!-- END BRUSHED METAL PAGE BACKGROUND -->
+
+</html>
+
+EOF
+}
+
+generate_content_area ()
+{
+cat >> $main_index <<EOF
+        <!-- CONTENT AREA -->
+        <tr>
+          <td id="table_main_left"></td>
+
+          <!-- CENTER CELL -->
+          <td id="table_main_center" style="padding: 15px 0px 0px 0px">
+            <hr width="100%" size="1"/>
+            <table width="100%" style="padding: 15px 0px 0px 0px">
+              <tr>
+EOF
+
+    if [ -f summarization-daily.html ]; then
+	cat >> $main_index <<EOF
+              <td width="200px" valign="top">
+EOF
+
+        generate_menu
+
+        cat >> $main_index <<EOF
+              </td>
+              <td align="right" valign="top">
+EOF
+
+	generate_summaries
+
+	cat >> $main_index <<EOF
+              </td>
+EOF
+   else
+      cat >> $main_index <<EOF
+	<center>
+	<i>No reports are available, please check back tomorrow morning.</i><br/>
+	<i>Reports are generated every night automatically.</i>
+	</center>
+EOF
+   fi
+
+	cat >> $main_index <<EOF
+              </tr>
+            </table>
+          </td>
+          <!-- END CENTER CELL -->
+
+
+          <td id="table_main_right"></td>
+        </tr>
+        <!-- END CONTENT AREA -->
+EOF
+}
+
+generate_menu ()
+{
+
+cat >> $main_index <<EOF
+                <!-- AVAILABLE REPORTS -->
+                <table width="95%" border="1" bordercolor="bbbbbb" cellspacing="0" cellpadding="5">
+                  <tr><td bgcolor="cccccc">
+                    <h3><b>Available Reports:</b></h3>
+                  </td></tr>
+EOF
+
+cat >> $main_index <<EOF
+                  <tr><td>
+                    > <a href="index.html#EdgeGuard Appliance">EdgeGuard Appliance</a>
+                  </td></tr>
+EOF
+
+for f in $tran_list; do
+    if [ -d $f ]; then
+        generate_menu_entry $f
+    fi
+done
+
+cat >> $main_index <<EOF
+                </table>
+                <!-- END AVAILABLE REPORTS -->
+EOF
+
+}
+
+generate_menu_entry ()
+{
+ls $1/*-daily.html >/dev/null 2>&1 || return
+tran_dir=$1
+tran_name=$(cat $tran_dir/name)
+
+if [ "$tran_name" = "EdgeGuard Appliance" ]; then
+    return;
+fi
+
+cat >> $main_index <<EOF
+                  <tr><td>
+                    > <a href="index.html#$tran_name">$tran_name</a>
+                  </td></tr>
+EOF
+echo "generating menu entry: $tran_name"
+}
+
+generate_summaries ()
+{
+
+
+cat >> $main_index <<EOF
+              <!-- SUMMARY AREA -->
+EOF
+
+for f in $tran_list; do
+    if [ -d $f ]; then
+        generate_summary_entry $f false
+    fi
+done
+
+
+for f in $tran_list; do
+    if [ -d $f ]; then
+        generate_summary_entry $f true
+    fi
+done
+
+cat >> $main_index <<EOF
+              <!-- END SUMMARY AREA -->
+EOF
+}
+
+generate_summary_entry ()
+{
+
+
+# true allows you to print only non EdgeGuard Appliance appliances, false allows you to print only EdgeGuard Appliance
+tran_dir=$1
+
+if [ "$2" = false ]; then
+    tran_name=$(cat $tran_dir/name)
+    if [ "$tran_name" != "EdgeGuard Appliance" ]; then
+	return
+    fi
+else
+    ls $1/*-daily.html >/dev/null 2>&1 || return
+    tran_name=$(cat $tran_dir/name)
+    if [ "$tran_name" = "EdgeGuard Appliance" ]; then
+	return
+    fi
+fi
+
+
+    rel_dir=$(echo $1 | sed -e 's/^\(.*\/reports\)/./')
+
+cat >> $main_index <<EOF
+              <a name="$tran_name"/>
+              <table width="95%" border="1" bordercolor="bbbbbb" cellspacing="0" cellpadding="5">
+                <tr><td colspan="2" bgcolor="cccccc">
+                  <table>
+                  <tr>
+                  <td style="padding: 0px 4px 0px 3px"><img src="$rel_dir/images/IconOrg42x42.png" width="42" height="42"/></td>
+EOF
+
+if [ "$tran_name" != "EdgeGuard Appliance" ]; then
+    cat >> $main_index <<EOF
+                  <td style="padding: 0px 4px 0px 0px"><img src="$rel_dir/images/IconDesc42x42.png" width="42" height="42"/></td>
+EOF
+fi
+
+cat >> $main_index <<EOF
+                  <td><h3><b>$tran_name Report</b></h3></td>
+                  </tr>
+                  </table>
+                </td></tr>
+                <tr>
+                  <td>
+                    <b>Vital Statistics:</b>
+                  </td>
+                  <td>
+                    <b>Visual Summary:</b><br/>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="2">
+                    <b>Detailed Reports:</b><br/>
+EOF
+
+generate_summary_detailed_entries $1
+
+cat >> $main_index <<EOF
+                  </td>
+                </tr>
+              </table>
+              <br/>
+              <br/>
+
+EOF
+echo "generating summary index : $tran_name : $2"
+}
+
+generate_summary_detailed_entries ()
+{
     tran_dir=$1
     tran_name=$(cat $tran_dir/name)
     rel_dir=$(echo $1 | sed -e 's/^\(.*\/reports\)/./')
 
-    echo "processing report: $tran_name"
-
     cat >>$main_index <<EOF
-<tr><td colspan="2"><b>$tran_name</b></td></tr>
+<!-- DETAILED REPORTS -->
+<table width="100%" style="padding: 0px 0px 0px 15px" cellspacing="0">
 EOF
+
+alternate=0
 
 cat $tran_dir/report-files | while read line; do
     base_name=$(echo $line | cut -d: -f2)
     rep_name=$(echo $line | cut -d: -f3-)
     if [ xsummarizer != "x$base_name" ]; then
+        if (( alternate % 2 )); then
+            color="dddddd"
+	else
+            color="eeeeee"
+        fi
         cat >>$main_index <<EOF
-<tr>
-<td>$rep_name: </td>
-<td>daily (<a href="$rel_dir/$base_name-daily.html">HTML</a> | <a href="$rel_dir/$base_name-daily.pdf">PDF</a>) </td>
-<td>weekly (<a href="$rel_dir/$base_name-weekly.html">HTML</a> | <a href="$rel_dir/$base_name-weekly.pdf">PDF</a>) </td>
+<tr bgcolor=$color>
+<td width="*">$rep_name: </td>
+<td width="150px" align="right"><i>daily</i> (<a href="$rel_dir/$base_name-daily.html">HTML</a> | <a href="$rel_dir/$base_name-daily.pdf">PDF</a>) </td>
+<td width="150px" align="right"><i>weekly</i> (<a href="$rel_dir/$base_name-weekly.html">HTML</a> | <a href="$rel_dir/$base_name-weekly.pdf">PDF</a>) </td>
+<td width="150px" align="right"><i>monthly</i> (<a href="$rel_dir/$base_name-monthly.html">HTML</a> | <a href="$rel_dir/$base_name-monthly.pdf">PDF</a>) </td>
 </tr>
 EOF
+alternate=$((alternate+1))
     fi
 done
+
+    cat >>$main_index <<EOF
+</table>
+<!-- END DETAILED REPORTS -->
+EOF
 
 }
 
 mkdir -p @MVVM_WEB@/reports
 cd @MVVM_WEB@/reports
 
-cat >$main_index <<EOF
-<html>
-<head><title>Metavize EdgeReport (preview)</title></head>
-<body>
-<table><tr>
-<td><img src="LogoNoText64x64.gif"/></td>
-<td><b>Metavize EdgeReport</b></td>
-</tr></table>
-<p/>
-EOF
+tran_list=@MVVM_REPORTS@/*
 
-if [ ! -f summarization-daily.html ]; then
-    cat >>$main_index <<EOF
-<i>No reports are available, please check back tomorrow morning.</i>
-</body>
-</html>
-EOF
-    exit
-fi
-
-cat >>$main_index <<EOF
-<table cellspacing="5">
-EOF
-
-echo "processing general summary"
-cat >>$main_index <<EOF
-<tr><td colspan="2"><b>General Summary</b></td></tr>
-EOF
-
-cat >>$main_index <<EOF
-<tr>
-<td></td>
-<td>daily (<a href="summarization-daily.html">HTML</a>)</td>
-<td>weekly (<a href="summarization-weekly.html">HTML</a>)</td>
-</tr>
-<p>
-EOF
-
-for f in @MVVM_REPORTS@/*; do
-    if [ -d $f ]; then
-        update_transform $f
-    fi
-done
-
-cat >>$main_index <<EOF
-</table>
-</body>
-</html>
-EOF
+generate_page
 

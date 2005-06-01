@@ -140,7 +140,7 @@ public class Reporter
             String mktName = mth.getTransformDesc(new Tid()).getDisplayName();
             // HACK O RAMA XXXXXXXXX
             if (mktName.startsWith("EdgeReport"))
-                mktName = "Appliance Control";
+                mktName = "EdgeGuard Appliance";
             logger.debug("Writing transform name: " + mktName);
             FileOutputStream fos = new FileOutputStream(new File(tranDir, "name"));
             PrintWriter pw = new PrintWriter(fos);

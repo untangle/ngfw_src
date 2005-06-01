@@ -470,8 +470,10 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
   </target>
 
   <target name="install.reports" depends="install.hier">
-    <copy todir="${dist.mvvm.reports}"
-          file="../gui/main/com/metavize/gui/icons/LogoNoText64x64.gif"/>
+    <!-- XXX originally images were here, but they are now located in hier
+    <copy todir="${dist.mvvm.reports}">
+    </copy>
+    -->
   </target>
 
   <!-- hier targets -->
