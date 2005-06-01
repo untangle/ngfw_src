@@ -295,6 +295,12 @@ generate_summary_detailed_entries ()
     cat >>$main_index <<EOF
 <!-- DETAILED REPORTS -->
 <table width="100%" style="padding: 0px 0px 0px 15px" cellspacing="0">
+<tr>
+<td width="*"></td>
+<td width="125px" align="right"><i>daily</i></td>
+<td width="125px" align="right"><i>weekly</i></td>
+<td width="125px" align="right"><i>monthly</i></td>
+</tr>
 EOF
 
 alternate=0
@@ -311,9 +317,9 @@ cat $tran_dir/report-files | while read line; do
         cat >>$main_index <<EOF
 <tr bgcolor=$color>
 <td width="*">$rep_name: </td>
-<td width="150px" align="right"><i>daily</i> (<a href="$rel_dir/$base_name-daily.html">HTML</a> | <a href="$rel_dir/$base_name-daily.pdf">PDF</a>) </td>
-<td width="150px" align="right"><i>weekly</i> (<a href="$rel_dir/$base_name-weekly.html">HTML</a> | <a href="$rel_dir/$base_name-weekly.pdf">PDF</a>) </td>
-<td width="150px" align="right"><i>monthly</i> (<a href="$rel_dir/$base_name-monthly.html">HTML</a> | <a href="$rel_dir/$base_name-monthly.pdf">PDF</a>) </td>
+<td width="125px" align="right">(<a href="$rel_dir/$base_name-daily.html">HTML</a> | <a href="$rel_dir/$base_name-daily.pdf">PDF</a>) </td>
+<td width="125px" align="right">(<a href="$rel_dir/$base_name-weekly.html">HTML</a> | <a href="$rel_dir/$base_name-weekly.pdf">PDF</a>) </td>
+<td width="125px" align="right">(<a href="$rel_dir/$base_name-monthly.html">HTML</a> | <a href="$rel_dir/$base_name-monthly.pdf">PDF</a>) </td>
 </tr>
 EOF
 alternate=$((alternate+1))
