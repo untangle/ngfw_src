@@ -230,7 +230,7 @@ class DhcpManager
         try {
             ip = IPNullAddr.parse( tmp );
         } catch ( Exception e ) {
-            logger.error( "Invalid MAC address: " + tmp );
+            logger.error( "Invalid IP address: " + tmp );
             return;
         }
         
