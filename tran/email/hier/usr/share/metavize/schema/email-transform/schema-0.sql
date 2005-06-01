@@ -3,6 +3,10 @@
 ALTER TABLE tr_email_szlimit_evt
     RENAME To tr_email_szrelay_evt;
 
+UPDATE tr_email_ssctl_definition
+    SET action_on_detect='M'
+    WHERE action_on_detect='P';
+
 UPDATE tr_email_spam_evt
     SET action='M'
     WHERE action='P';
