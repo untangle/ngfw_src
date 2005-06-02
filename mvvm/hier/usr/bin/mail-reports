@@ -1,0 +1,18 @@
+#!/bin/sh
+
+set -e
+
+JAVA_HOME=${JAVA_HOME:-/opt/java}
+
+# We need the whole MVVM since we can't boot hibernate without it.
+CLASSPATH="@MVVM_HOME@/lib/mvvm.jar:@MVVM_HOME@/conf"
+for f in @THIRDPARTY_LIB@/*jar ; do
+    CLASSPATH="$CLASSPATH:$f"
+done
+export CLASSPATH
+
+$JAVA_HOME/bin/java \
+    -Dlog4j.configuration=file:@MVVM_HOME@/conf/log4j-reporter.xml \
+    -Dbunnicula.home=@MVVM_HOME@ \
+    com.metavize.mvvm.engine.MailSenderImpl @MVVM_HOME@/lib/mvvm.jar $*
+

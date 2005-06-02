@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: MailSenderImpl.java,v 1.7 2005/02/04 09:19:17 amread Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.engine;
@@ -14,8 +14,13 @@ package com.metavize.mvvm.engine;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.util.*;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import javax.mail.*;
 import javax.mail.internet.*;
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
+import javax.activation.FileDataSource;
 
 import com.metavize.mvvm.MailSender;
 import com.metavize.mvvm.MailSettings;
@@ -26,9 +31,13 @@ import net.sf.hibernate.HibernateException;
 import net.sf.hibernate.Query;
 import net.sf.hibernate.Transaction;
 import org.apache.log4j.Logger;
+import org.logicalcobwebs.proxool.ProxoolException;
+import org.logicalcobwebs.proxool.ProxoolFacade;
 
 public class MailSenderImpl implements MailSender
 {
+    public static final String DEFAULT_FROM_ADDRESS = "reports@local.domain";
+
     private static final Object LOCK = new Object();
 
     private static MailSenderImpl MAIL_SENDER;
@@ -48,11 +57,27 @@ public class MailSenderImpl implements MailSender
 
     private Logger logger;
 
+    // NOTE: Only used for stand-alone operation.
+    private net.sf.hibernate.SessionFactory sessionFactory;
+
     private MailSenderImpl() {
         logger = Logger.getLogger(MailSender.class.getName());
 
-        net.sf.hibernate.Session s = MvvmContextFactory.context()
-            .openSession();
+        sessionFactory = null;
+        init();
+    }
+
+    private MailSenderImpl(net.sf.hibernate.SessionFactory sessionFactory)
+    {
+        logger = Logger.getLogger(MailSender.class.getName());
+
+        this.sessionFactory = sessionFactory;
+        init();
+    }
+
+    private void init()
+    {
+        net.sf.hibernate.Session s = getSession();
         try {
             Transaction tx = s.beginTransaction();
 
@@ -62,6 +87,8 @@ public class MailSenderImpl implements MailSender
             if (null == ms) {
                 logger.info("Creating initial default mail settings");
                 ms = new MailSettings();
+                ms.setFromAddress(DEFAULT_FROM_ADDRESS);
+                s.save(ms);
             } else {
                 refreshSessions(ms);
             }
@@ -87,10 +114,26 @@ public class MailSenderImpl implements MailSender
         return MAIL_SENDER;
     }
 
+    private net.sf.hibernate.Session getSession()
+    {
+        if (sessionFactory == null) {
+            return MvvmContextFactory.context().openSession();
+        } else {
+            net.sf.hibernate.Session s = null;
+
+            try {
+                s = sessionFactory.openSession();
+            } catch (HibernateException exn) {
+                logger.warn("Could not create Hibernate Session", exn);
+            }
+
+            return s;
+        }
+    }
+        
     public void setMailSettings(MailSettings settings)
     {
-        net.sf.hibernate.Session s = MvvmContextFactory.context()
-            .openSession();
+        net.sf.hibernate.Session s = getSession();
         try {
             Transaction tx = s.beginTransaction();
 
@@ -114,8 +157,7 @@ public class MailSenderImpl implements MailSender
     {
         MailSettings ms = null;
 
-        net.sf.hibernate.Session s = MvvmContextFactory.context()
-            .openSession();
+        net.sf.hibernate.Session s = getSession();
         try {
             Transaction tx = s.beginTransaction();
 
@@ -190,10 +232,10 @@ public class MailSenderImpl implements MailSender
         if (recipients.length == 0) {
             logger.warn("Not sending alert email, no recipients");
         } else if (attachment == null) {
-            sendit(alertSession, recipients, subject, bodyText, null);
+            sendSimple(alertSession, recipients, subject, bodyText, null);
         } else {
             MimeBodyPart part = makeAttachmentFromList(attachment);
-            sendit(alertSession, recipients, subject, bodyText, part);
+            sendSimple(alertSession, recipients, subject, bodyText, part);
         }
     }
 
@@ -223,6 +265,7 @@ public class MailSenderImpl implements MailSender
         }
     }
 
+    // Not currently used
     public void sendReport(String subject, String bodyText) {
         String reportEmailAddr = getMailSettings().getReportEmail();
         if (reportEmailAddr == null) {
@@ -230,7 +273,48 @@ public class MailSenderImpl implements MailSender
         } else {
             String[] recipients = new String[1];
             recipients[0] = reportEmailAddr;
-            sendit(reportSession, recipients, subject, bodyText, null);
+            sendSimple(reportSession, recipients, subject, bodyText, null);
+        }
+    }
+
+    public void sendReports(String subject, String bodyHTML, List<String> extraLocations, List<File> extras) {
+        String reportEmailAddr = getMailSettings().getReportEmail();
+        if (reportEmailAddr == null) {
+            logger.info("Not sending report email, no address");
+        } else {
+            String[] recipients = new String[1];
+            recipients[0] = reportEmailAddr;
+
+            if (extraLocations == null && extras == null) {
+                // Do this simplest thing.  Shouldn't be used. XX
+                sendSimple(reportSession, recipients, subject, bodyHTML, null);
+                return;
+            } else if ((extraLocations == null && extras != null) ||
+                       (extraLocations != null && extras == null) ||
+                       (extraLocations.size() != extras.size())) {
+                throw new IllegalArgumentException("sendReports mismatch of locations and extras");
+            }
+
+            List<MimeBodyPart> parts = new ArrayList<MimeBodyPart>();
+
+            try {
+                for (int i = 0; i < extras.size(); i++) {
+                    String location = extraLocations.get(i);
+                    File extra = extras.get(i);
+                    DataSource ds = new FileDataSource(extra);
+                    DataHandler dh = new DataHandler(ds);
+                    MimeBodyPart part = new MimeBodyPart();
+                    part.setDataHandler(dh);
+                    part.setHeader("Content-Location", location);
+                    part.setFileName(extra.getName());
+                    parts.add(part);
+                }
+            } catch (MessagingException x) {
+                logger.error("Unable to parse extras", x);
+                return;
+            }
+
+            sendRelated(reportSession, recipients, subject, bodyHTML, parts);
         }
     }
 
@@ -244,21 +328,16 @@ public class MailSenderImpl implements MailSender
                                           String bodyText, List attachment)
     {
         if (attachment == null) {
-            sendit(alertSession, recipients, subject, bodyText, null);
+            sendSimple(alertSession, recipients, subject, bodyText, null);
         } else {
             MimeBodyPart part = makeAttachmentFromList(attachment);
-            sendit(alertSession, recipients, subject, bodyText, part);
+            sendSimple(alertSession, recipients, subject, bodyText, part);
         }
     }
 
 
-    void sendit(Session session, String[] to, String subject,
-                String bodyText, MimeBodyPart attachment)
+    private Message prepMessage(Session session, String[] to, String subject)
     {
-        if (SessionDebug)
-            session.setDebug(true);
-
-        // construct the message
         Message msg = new MimeMessage(session);
 
         // come up with all recipients
@@ -277,7 +356,7 @@ public class MailSenderImpl implements MailSender
                 addrCount += addrs[i].length;
         if (addrCount == 0) {
             logger.warn("No recipients for email, ignoring");
-            return;
+            return null;
         }
 
         Address[] recipients = new Address[addrCount];
@@ -294,6 +373,47 @@ public class MailSenderImpl implements MailSender
             // msg.setRecipients(Message.RecipientType.BCC, InternetAddress.parse(bcc, false));
             msg.setFrom();
             msg.setSubject(subject);
+            msg.setHeader("X-Mailer", Mailer);
+            msg.setSentDate(new Date());
+            return msg;
+        } catch (MessagingException x) {
+            logger.error("Unable to send message", x);
+            return null;
+        }
+    }
+
+    private void logIt(Message msg)
+        throws MessagingException
+    {
+        if (logger.isInfoEnabled()) {
+            StringBuffer sb = new StringBuffer("Successfully sent message '");
+            sb.append(msg.getSubject());
+            sb.append("' to ");
+            sb.append(msg.getRecipients(Message.RecipientType.TO).length);
+            sb.append(" recipients (");
+            for (int i = 0; i < msg.getRecipients(Message.RecipientType.TO).length; i++) {
+                if (i > 0)
+                    sb.append(", ");
+                sb.append(msg.getRecipients(Message.RecipientType.TO)[i]);
+            }
+            sb.append(")");
+            logger.info(sb.toString());
+        }
+    }
+
+    void sendSimple(Session session, String[] to, String subject,
+                    String bodyText, MimeBodyPart attachment)
+    {
+        if (SessionDebug)
+            session.setDebug(true);
+
+        // construct the message
+        Message msg = prepMessage(session, to, subject);
+        if (msg == null)
+            // Nevermind after all.
+            return;
+
+        try {
             if (attachment == null) {
                 msg.setText(bodyText);
             } else {
@@ -305,27 +425,138 @@ public class MailSenderImpl implements MailSender
                 mp.addBodyPart(attachment);
                 msg.setContent(mp);
             }
-            msg.setHeader("X-Mailer", Mailer);
-            msg.setSentDate(new Date());
 
             // send it
             Transport.send(msg);
-            if (logger.isInfoEnabled()) {
-                StringBuffer sb = new StringBuffer("Successfully sent message '");
-                sb.append(subject);
-                sb.append("' to ");
-                sb.append(recipients.length);
-                sb.append(" recipients (");
-                for (int i = 0; i < recipients.length; i++) {
-                    if (i > 0)
-                        sb.append(", ");
-                    sb.append(recipients[i]);
-                }
-                sb.append(")");
-                logger.info(sb.toString());
-            }
+            logIt(msg);
         } catch (MessagingException x) {
             logger.error("Unable to send message", x);
         }
+    }
+
+    void sendRelated(Session session, String[] to, String subject,
+                     String bodyHTML, List<MimeBodyPart> extras)
+    {
+        if (SessionDebug)
+            session.setDebug(true);
+
+        // construct the message
+        Message msg = prepMessage(session, to, subject);
+        if (msg == null)
+            // Nevermind after all.
+            return;
+
+        try {
+            Multipart mp = new MimeMultipart("related");
+            MimeBodyPart main = new MimeBodyPart();
+            main.setContent(bodyHTML, "text/html");
+            // main.setDisposition(Part.INLINE);
+            mp.addBodyPart(main);
+            for (MimeBodyPart part : extras)
+                mp.addBodyPart(part);
+            msg.setContent(mp);
+
+            // send it
+            Transport.send(msg);
+            logIt(msg);
+        } catch (MessagingException x) {
+            logger.error("Unable to send message", x);
+        }
+    }
+
+    private static void usage() {
+        System.err.println("usage: mail-reports [-s subject] bodyhtmlfile { extrafile }");
+        System.exit(1);
+    }
+
+
+    // This *so* does not belong here. XXXXXXXXXXXXXXXXXXXXXXXX
+    private static void initJdbcPool()
+    {
+        // logger.info("Initializing Proxool");
+        try {
+            Class.forName("org.logicalcobwebs.proxool.ProxoolDriver");
+        } catch (ClassNotFoundException exn) {
+            throw new RuntimeException("could not load Proxool", exn);
+        }
+        Properties info = new Properties();
+        info.setProperty("proxool.maximum-connection-count", "10");
+        info.setProperty("proxool.house-keeping-test-sql", "select CURRENT_DATE");
+        /* XXX not for production: */
+        info.setProperty("proxool.statistics", "1m,15m,1d");
+        info.setProperty("user", "metavize");
+        info.setProperty("password", "foo");
+        String alias = "mvvm";
+        String driverClass = "org.postgresql.Driver";
+        String driverUrl = "jdbc:postgresql://localhost/mvvm";
+        String jdbcUrl = "proxool." + alias + ":" + driverClass + ":" + driverUrl;
+        try {
+            ProxoolFacade.registerConnectionPool(jdbcUrl, info);
+        } catch (ProxoolException exn) {
+            // logger.debug("could not set up Proxool", exn);
+        }
+
+        String bunniculaHome = System.getProperty("bunnicula.home");
+
+        System.setProperty("derby.system.home", bunniculaHome + "/db");
+    }
+
+    public static void main(String[] args)
+    {
+        String subject = "Metavize EdgeGuard Reports"; // XXX Make default unsuck.
+        JarFile mvvmJarFile = null;
+        File bodyFile = null;
+        List<File> extraFiles = new ArrayList<File>();
+        List<String> extraLocations = new ArrayList<String>();
+
+        try {
+            for (int i = 0; i < args.length; i++) {
+                if (args[i].equals("-s")) {
+                    subject = args[++i];
+                } else if (mvvmJarFile == null) {
+                    System.out.println("Using " + args[i] + " for mvvm jar");
+                    mvvmJarFile = new JarFile(args[i]);
+                } else if (bodyFile == null) {
+                    bodyFile = new File(args[i]);
+                } else {
+                    // For now just use the name plus one parent directory as the content-location
+                    String extraLocation;
+                    File extraFile = new File(args[i]);
+                    File parentFile = extraFile.getParentFile();
+                    if (parentFile == null)
+                        extraLocation = extraFile.getName();
+                    else
+                        extraLocation = parentFile.getName() + File.separator + extraFile.getName();
+                    extraLocations.add(extraLocation);
+                    extraFiles.add(extraFile);
+                }
+            }
+            if (mvvmJarFile == null || bodyFile == null)
+                usage();
+
+            initJdbcPool();
+            List<JarFile> jfs = new ArrayList<JarFile>();
+            jfs.add(mvvmJarFile);
+            net.sf.hibernate.SessionFactory sessionFactory = Util.makeStandaloneSessionFactory(jfs);
+            MailSenderImpl us = new MailSenderImpl(sessionFactory);
+
+            // Read in the body file.
+            FileReader frmain = new FileReader(bodyFile);
+            StringBuilder sbmain = new StringBuilder();
+            char[] buf = new char[1024];
+            int rs;
+            while ((rs = frmain.read(buf)) > 0)
+                sbmain.append(buf, 0, rs);
+            frmain.close();
+            String bodyHTML = sbmain.toString();
+
+            us.sendReports(subject, bodyHTML, extraLocations, extraFiles);
+            ProxoolFacade.shutdown(0);
+        } catch (IOException x) {
+            System.err.println("Unable to send message" + x);   
+            x.printStackTrace();
+            System.exit(2);
+        }
+
     }
 }
