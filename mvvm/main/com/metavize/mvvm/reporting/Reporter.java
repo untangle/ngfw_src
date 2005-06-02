@@ -45,7 +45,7 @@ public class Reporter
 
     private static File outputDir;
 
-    private final Timestamp now;
+    private final Timestamp midnight;
     private final Timestamp yesterday;
     private final Timestamp lastweek;
     private final Timestamp lastmonth;
@@ -116,11 +116,11 @@ public class Reporter
                         Class sumClass = cl.loadClass(className);
                         ReportSummarizer s = (ReportSummarizer) sumClass.newInstance();
                         logger.debug("Found summarizer " + className);
-                        dailySums.append(processSummarizer(s, conn, yesterday, now));
+                        dailySums.append(processSummarizer(s, conn, yesterday, midnight));
                         s = (ReportSummarizer) sumClass.newInstance();
-                        weeklySums.append(processSummarizer(s, conn, lastweek, now));
+                        weeklySums.append(processSummarizer(s, conn, lastweek, midnight));
                         s = (ReportSummarizer) sumClass.newInstance();
-                        monthlySums.append(processSummarizer(s, conn, lastmonth, now));
+                        monthlySums.append(processSummarizer(s, conn, lastmonth, midnight));
                     } catch (Exception x) {
                         logger.warn("No such class: " + className);
                     }
@@ -128,9 +128,9 @@ public class Reporter
                     String resource = resourceOrClassname;
                     String outputName = type;
                     String outputFile = new File(tranDir, outputName).getCanonicalPath();
-                    processReport(resource, conn, outputFile + "-daily", yesterday, now);
-                    processReport(resource, conn, outputFile + "-weekly", lastweek, now);
-                    processReport(resource, conn, outputFile + "-monthly", lastmonth, now);
+                    processReport(resource, conn, outputFile + "-daily", yesterday, midnight);
+                    processReport(resource, conn, outputFile + "-weekly", lastweek, midnight);
+                    processReport(resource, conn, outputFile + "-monthly", lastmonth, midnight);
                 }
             }
             is.close();
@@ -203,14 +203,23 @@ public class Reporter
 
         this.outputDir = outputDir;
 
-        now = new Timestamp(System.currentTimeMillis());
         c = Calendar.getInstance();
+
+        // Go back to midnight
+        c.set(Calendar.HOUR_OF_DAY, 0);
+        c.set(Calendar.MINUTE, 0);
+        c.set(Calendar.SECOND, 0);
+        c.set(Calendar.MILLISECOND, 0);
+        midnight = new Timestamp(c.getTimeInMillis());
+
         c.add(Calendar.DAY_OF_YEAR, -1);
         yesterday = new Timestamp(c.getTimeInMillis());
-        c = Calendar.getInstance();
+
+        c.setTimeInMillis(midnight.getTime());
         c.add(Calendar.WEEK_OF_YEAR, -1);
         lastweek = new Timestamp(c.getTimeInMillis());
-        c = Calendar.getInstance();
+
+        c.setTimeInMillis(midnight.getTime());
         c.add(Calendar.MONTH, -1);
         lastmonth = new Timestamp(c.getTimeInMillis());
 
@@ -259,9 +268,9 @@ public class Reporter
     {
         // General summarization
         ReportSummarizer s = new GeneralSummarizer();
-        dailySums.append(processSummarizer(s, conn, yesterday, now));
-        weeklySums.append(processSummarizer(s, conn, lastweek, now));
-        monthlySums.append(processSummarizer(s, conn, lastmonth, now));
+        dailySums.append(processSummarizer(s, conn, yesterday, midnight));
+        weeklySums.append(processSummarizer(s, conn, lastweek, midnight));
+        monthlySums.append(processSummarizer(s, conn, lastmonth, midnight));
 
         Thread ct = Thread.currentThread();
         ClassLoader oldCl = ct.getContextClassLoader();
@@ -294,9 +303,9 @@ public class Reporter
 
         // Graphs.
         String graphsFile = new File(outputDir, "graphs").getCanonicalPath();
-        dailySums.append(processGraphs(conn, graphsFile + "-daily", yesterday, now));
-        weeklySums.append(processGraphs(conn, graphsFile + "-weekly", lastweek, now));
-        monthlySums.append(processGraphs(conn, graphsFile + "-monthly", lastmonth, now));
+        dailySums.append(processGraphs(conn, graphsFile + "-daily", yesterday, midnight));
+        weeklySums.append(processGraphs(conn, graphsFile + "-weekly", lastweek, midnight));
+        monthlySums.append(processGraphs(conn, graphsFile + "-monthly", lastmonth, midnight));
 
         String sumFile = new File(outputDir, "summarization").getCanonicalPath();
         emitSummarization(sumFile + "-daily.html", dailySums);
