@@ -15,7 +15,6 @@ import java.util.Date;
 
 import com.metavize.mvvm.tran.Rule;
 
-import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.HostName;
 import com.metavize.mvvm.tran.firewall.MACAddress;
@@ -26,16 +25,15 @@ import com.metavize.mvvm.tran.firewall.MACAddress;
  * @author <a href="mailto:rbscott@metavize.com">Robert Scott</a>
  * @version 1.0
  * @hibernate.class
- * table="TR_NAT_EVT_DHCP"
+ * table="DHCP_ABS_LEASE"
  * mutable="false"
  */
-public class DhcpLeaseEvent extends LogEvent
+public class DhcpAbsoluteLease 
 {
     static final int REGISTER = 0;
-    static final int RENEW    = 1;
-    static final int EXPIRE   = 2;
-    static final int RELEASE  = 3;
+    static final int EXPIRE   = 1;
 
+    private Long id;
     private MACAddress mac;
     private HostName   hostname;
     private IPaddr     ip;
@@ -46,19 +44,34 @@ public class DhcpLeaseEvent extends LogEvent
     /**
      * Hibernate constructor 
      */
-    public DhcpLeaseEvent()
+    public DhcpAbsoluteLease()
     {
     }
 
     /**
      * XXX Event type should be an enumeration or something */
-    public DhcpLeaseEvent( DhcpLease lease, int eventType  )
+    public DhcpAbsoluteLease( DhcpLease lease, Date now  )
     {
         this.endOfLease = lease.getEndOfLease();
         this.mac        = lease.getMac();
         this.ip         = lease.getIP();
         this.hostname   = lease.getHostname();
-        this.eventType  = eventType;
+        this.eventType  = now.after( endOfLease ) ? EXPIRE : REGISTER;
+    }
+
+    /**
+     * @hibernate.id
+     * column="EVENT_ID"
+     * generator-class="native"
+     */
+    protected Long getId()
+    {
+        return id;
+    }
+
+    protected void setId(Long id)
+    {
+        this.id = id;
     }
     
     /**

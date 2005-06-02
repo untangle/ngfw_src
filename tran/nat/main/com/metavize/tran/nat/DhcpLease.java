@@ -75,6 +75,15 @@ public class DhcpLease
     }
 
     /**
+     * Returns true if these new values represent a lease renewal
+     */
+    boolean isRenewal( MACAddress mac, HostName hostname )
+    {
+        /* renewal if the previous lease was active, and mac and hostname have not changed */
+        return isActive() && this.mac.equals( mac ) && this.hostname.equals( hostname );
+    }
+
+    /**
      * @return true if the lease was active when this object was created or last updated.
      */
     boolean isActive()
