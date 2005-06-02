@@ -16,6 +16,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -82,7 +83,25 @@ class TransformManagerImpl implements TransformManager
     {
         Tid[] tidArray = tids.keySet().toArray(TID_PROTO);
 
-        Arrays.sort(tidArray);
+        try {
+            // Sort the returned list by rack position.  This allows for nice fixed report ordering, etc.
+            Arrays.sort(tidArray, new Comparator<Tid>() {
+                public int compare(Tid t1, Tid t2) {
+                    TransformContextImpl tci1 = tids.get(t1);
+                    TransformContextImpl tci2 = tids.get(t2);
+                    int rpi1 = tci1.getMackageDesc().getRackPosition();
+                    int rpi2 = tci2.getMackageDesc().getRackPosition();
+                    if (rpi1 == rpi2)
+                        return 0;
+                    else if (rpi1 < rpi2)
+                        return -1;
+                    else
+                        return 1;
+                }
+            });
+        } catch (Exception x) {
+            logger.error("Unexpected expection: " + x);
+        }
 
         return tidArray;
     }
