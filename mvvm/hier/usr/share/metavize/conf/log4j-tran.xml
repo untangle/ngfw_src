@@ -71,6 +71,10 @@
     <priority value="WARN"/>
   </category>
 
+  <category name="com.metavize.tran.nat.DhcpMonitor">
+    <priority value="WARN"/>
+  </category>
+
   <category name="com.metavize.tran.virus">
     <priority value="WARN"/>
   </category>

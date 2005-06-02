@@ -25,7 +25,9 @@ import java.net.UnknownHostException;
 
 import org.apache.log4j.Logger;
 
+import com.metavize.mvvm.security.Tid;
 import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.tapi.TransformContextFactory;
 
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.HostName;
@@ -34,26 +36,32 @@ import com.metavize.mvvm.tran.firewall.MACAddress;
 
 class DhcpMonitor implements Runnable
 {    
+    private static DhcpMonitor  INSTANCE = null;
     private static final int    DHCP_LEASE_ENTRY_LENGTH = 5;
-    private static final String DHCP_LEASE_DELIM        = " ";
-
-    /* How often to poll the leases file */
-    private static final long   SLEEP_TIME              = 5000;
+    
+    /* How often to poll the leases file, in milliseconds */
+    // XXX USEME private static final long   SLEEP_TIME              = 5000;
+    private static final long   SLEEP_TIME              = 500; // XXX NOTME
     
     /* Generate a absolute record every so many iterations */
-    private static final int    ABSOLUTE_SKIP_COUNT     = 1440; // At 5 second intervals, this is 2 hours
+    // XXX USEME private static final int    ABSOLUTE_SKIP_COUNT     = 1440; // At 5 second intervals, this is 2 hours
+    private static final int    ABSOLUTE_SKIP_COUNT     = 20; // XXX NOTME For testing, every 10 seconds
 
     private static final String DHCP_LEASES_FILE        = "/var/lib/misc/dnsmasq.leases";
-    private static final int DHCP_LEASE_ENTRY_EOL       = 0;
-    private static final int DHCP_LEASE_ENTRY_MAC       = 1;
-    private static final int DHCP_LEASE_ENTRY_IP        = 2;
-    private static final int DHCP_LEASE_ENTRY_HOST      = 3;
+    private static final String DHCP_LEASE_DELIM        = " ";
+
+    private static final int    DHCP_LEASE_ENTRY_EOL    = 0;
+    private static final int    DHCP_LEASE_ENTRY_MAC    = 1;
+    private static final int    DHCP_LEASE_ENTRY_IP     = 2;
+    private static final int    DHCP_LEASE_ENTRY_HOST   = 3;
+
+    private static final Date   NEVER                   = new Date ( Long.MAX_VALUE );
         
     /* The thread the monitor is running on */
-    private final Thread thread;
+    private Thread thread = null;
     
     /* Status of the monitor */
-    private boolean isAlive = true;
+    private volatile boolean isAlive = true;
 
     /* File being monitored */
     private final File dhcpFile = new File( DHCP_LEASES_FILE );
@@ -63,7 +71,7 @@ class DhcpMonitor implements Runnable
     
     /* Next time that a lease is supposed to expire.  If there are no changes to a file
      * but a lease expires, then the leases must be reparsed */
-    private Date nextExpiration = new Date();
+    private Date nextExpiration = NEVER;
 
     /**
      * A map of all of the leases being tracked.
@@ -73,17 +81,23 @@ class DhcpMonitor implements Runnable
     private final Logger logger = Logger.getLogger( this.getClass());
     private final Logger eventLogger = MvvmContextFactory.context().eventLogger();
     
-    public DhcpMonitor( Thread thread )
+    private DhcpMonitor()
     {
-        this.thread = thread;
     }
     
-    public void run( )
+    public void run()
     {
         logger.debug( "Starting" );
         int c = 0;
 
-        while ( true ) {            
+        waitForTransformContext();
+
+        if ( !isAlive ) {
+            logger.error( "died before starting" );
+            return;
+        }
+
+        while ( true ) {   
             if ( c <= 0 ) {
                 logAbsolute();
                 c = ABSOLUTE_SKIP_COUNT;
@@ -92,14 +106,14 @@ class DhcpMonitor implements Runnable
             try { 
                 Thread.sleep( SLEEP_TIME );
             } catch ( InterruptedException e ) {
-                logger.info( "Interrupted: ", e );
+                logger.info( "Interrupted: " );
             }
                         
             /* Check if the transform is still running */
             if ( !isAlive ) {
                 break;
             }
-            
+
             c--;
             
             try {
@@ -119,11 +133,40 @@ class DhcpMonitor implements Runnable
         /* XXX Write an absolute lease map that is empty */
     }
 
-    void stop()  throws SecurityException
+    synchronized void start()
     {
-        isAlive = false;
-        thread.interrupt();
+        isAlive = true;
+
+        logger.debug( "Starting thread" );
+
+        /* If thread is not-null, there is a running thread that thinks it is alive */
+        if ( thread != null ) {
+            logger.debug( "Monitor is already running" );
+            return;
+        }
+
+        thread = new Thread( this );
+        thread.start();
     }
+
+    synchronized void stop()
+    {
+        if ( thread != null ) {
+            logger.debug( "Stopping thread" );
+            
+            isAlive = false;
+            try { 
+                thread.interrupt();
+                thread.join( SLEEP_TIME * 3 );
+            } catch ( SecurityException e ) {
+                logger.error( "security exception, impossible", e );
+            } catch ( InterruptedException e ) {
+                logger.error( "interrupted while stopping", e );
+            }
+            thread = null;
+        }
+    }
+
 
     private boolean hasDhcpChanged( Date now ) throws SecurityException
     {
@@ -145,6 +188,9 @@ class DhcpMonitor implements Runnable
         BufferedReader in = null;
 
         Set<IPaddr> deletedSet = new HashSet( currentLeaseMap.keySet());
+
+        /* If there are no leases, this should never expire */
+        nextExpiration = NEVER;
 
         try {
             in = new BufferedReader(new FileReader( DHCP_LEASES_FILE ));
@@ -168,14 +214,15 @@ class DhcpMonitor implements Runnable
             if ( lease == null ) {
                 logger.error( "Logic error item only in deleted set " + ip.toString());
             }
-
-            /* XXX Log the item was deleted */
+            
+            /* Log that an entry was deleted */
+            eventLogger.info( new DhcpLeaseEvent( lease, DhcpLeaseEvent.RELEASE ));
         }
         
         /* Update the last time the file was modified */
         lastUpdate = now.getTime();
     }
-        
+    
     private void logLease( String str, Date now, boolean isAbsolute, Set<IPaddr> deletedSet )
     {
         str = str.trim();
@@ -228,22 +275,68 @@ class DhcpMonitor implements Runnable
         
         /* Determine if this lease is already being tracked */
         DhcpLease lease = currentLeaseMap.get( ip );
+        
+        /* XXXXXX Handle absolutes */
 
         if ( lease == null ) {
             /* Add the lease to the map */
-            currentLeaseMap.put( ip, new DhcpLease( eol, mac, ip, host, now ));
-            
-            /* XXX Log the event */
+            lease = new DhcpLease( eol, mac, ip, host, now );
+            currentLeaseMap.put( ip, lease );
+
+            int eventType = lease.isActive() ? DhcpLeaseEvent.REGISTER : DhcpLeaseEvent.EXPIRE;
+            logger.debug( "Logging new lease: " + ip.toString());
+                    
+            eventLogger.info( new DhcpLeaseEvent( lease, eventType ));
         } else {
             if ( lease.hasChanged( eol, mac, ip, host, now )) {
                 lease.set( eol, mac, ip, host, now );
-                /* XXX Log the event */
+                int eventType;
+                if ( lease.isActive()) {
+                    /* Either a registration or a renewal */
+                    eventType = mac.equals( lease.getMac()) ? DhcpLeaseEvent.RENEW : DhcpLeaseEvent.REGISTER;
+                } else {
+                    eventType = DhcpLeaseEvent.EXPIRE;
+                }
+                logger.debug( "Logging updated lease: " + ip.toString());
+                eventLogger.info( new DhcpLeaseEvent( lease, eventType ));
+            } else {
+                logger.debug( "Lease hasn't changed: " + ip.toString());
             }
         }
+        
+        /* Move the next expiration back if this rule is before it */
+        if ( lease.isActive() && nextExpiration.after( eol )) nextExpiration = eol;
         
         /* Remove the item from the set of deleted items */
         if (( deletedSet.remove( ip ) == true ) && ( lease == null )) {
             logger.error( "Logic error, ip in delete set but not in lease map " + ip );
         }
-    }    
+    }
+
+    private void waitForTransformContext()
+    {
+        Tid tid  = TransformContextFactory.context().getTid();
+        
+        while ( true ) {
+            if ( MvvmContextFactory.context().transformManager().transformContext( tid ) != null ) {
+                break;
+            }
+            
+            try {
+                Thread.sleep( 1000 );
+            } catch ( InterruptedException e ) {
+                logger.info( "Interrupted" );
+            }
+            
+            if ( !isAlive ) return;          
+        }
+    }
+
+    static synchronized DhcpMonitor getInstance()
+    {
+        if ( INSTANCE == null ) 
+            INSTANCE = new DhcpMonitor();
+
+        return INSTANCE;
+    }
 }

@@ -13,16 +13,19 @@ package com.metavize.tran.nat;
 
 import java.util.Date;
 
-import com.metavize.mvvm.tran.Rule;
+import org.apache.log4j.Logger;
 
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.HostName;
 import com.metavize.mvvm.tran.firewall.MACAddress;
 
+/* XXX Probably should be an inner class for DhcpMonitor */
 public class DhcpLease 
 {
     private static final int EXPIRED = 0;
     private static final int ACTIVE  = 1;
+
+    private static final Logger logger = Logger.getLogger( DhcpLease.class );
 
     private MACAddress mac        = null;
     private HostName   hostname   = HostName.getEmptyHostName();
@@ -47,17 +50,36 @@ public class DhcpLease
         updateState( now );
     }
 
+    /**
+     * @return true if the passed in parameters are different from the current parameters
+     */
     boolean hasChanged( Date endOfLease, MACAddress mac, IPaddr ip, HostName hostname, Date now )
     {
         int state = this.state;
         updateState( now );
+
+        /** 
+         * A DhcpLease is suppose to track the lease on a specific IP
+         */
+        if ( !this.ip.equals( ip )) {
+            logger.warn( "hasChanged with different ip: " + this.ip.toString() + " ->" + ip.toString());
+            return true;
+        }
         
-        if ( this.state == state && this.endOfLease.equals( endOfLease ) && this.mac.equals( mac ) && 
-             this.ip.equals( ip ) && this.hostname.equals( hostname )) {
+        if ( this.state != state || !this.endOfLease.equals( endOfLease ) || !this.mac.equals( mac ) ||
+             !this.hostname.equals( hostname )) {
             return true;
         }
         
         return false;
+    }
+
+    /**
+     * @return true if the lease was active when this object was created or last updated.
+     */
+    boolean isActive()
+    {
+        return ( state == ACTIVE ) ? true : false;
     }
     
     void set( Date endOfLease, MACAddress mac, IPaddr ip, HostName hostname, Date now )

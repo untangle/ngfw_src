@@ -81,6 +81,16 @@ create table DNS_STATIC_HOST_RULE (
         LOG bool,
         primary key (RULE_ID));
 
+create table TR_NAT_EVT_DHCP (
+        EVENT_ID int8 not null,
+        MAC varchar(255),
+        HOSTNAME varchar(255),
+        IP inet,
+        END_OF_LEASE timestamp,
+        EVENT_TYPE int4,
+        TIME_STAMP timestamp,
+        primary key (EVENT_ID));
+
 alter table TR_NAT_SETTINGS add constraint FK2F819DC21446F foreign key (TID) references TID;
 
 alter table TR_NAT_REDIRECTS add constraint FKCBBF56381CAE658A foreign key (SETTING_ID) references TR_NAT_SETTINGS;

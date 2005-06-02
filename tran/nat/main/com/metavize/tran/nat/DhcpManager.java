@@ -118,12 +118,16 @@ class DhcpManager
         /* Enable/Disable DHCP forwarding  */
         try {
             if ( settings.getDhcpEnabled()) {
+                DhcpMonitor.getInstance().start();
+
                 MvvmContextFactory.context().argonManager().disableDhcpForwarding();
             } else {
+                DhcpMonitor.getInstance().stop();
+
                 MvvmContextFactory.context().argonManager().enableDhcpForwarding();
             }
         } catch ( Exception e ) {
-            throw new TransformStartException( "Error updating DHCP forwarding settings" );
+            throw new TransformStartException( "Error updating DHCP forwarding settings", e );
         }
     }
     
@@ -151,6 +155,9 @@ class DhcpManager
         } catch ( Exception e ) {
             logger.error( "Error enabling DHCP forwarding", e );
         }
+        
+        /* Stop the DHCP Monitor */
+        DhcpMonitor.getInstance().stop();
     }
 
     void loadLeases( NatSettings settings )
