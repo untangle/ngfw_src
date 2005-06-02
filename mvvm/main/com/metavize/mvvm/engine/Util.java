@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: Util.java,v 1.5 2005/02/06 02:15:21 amread Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.engine;
@@ -16,6 +16,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -27,7 +28,8 @@ import net.sf.hibernate.cfg.Configuration;
 import org.apache.log4j.Logger;
 
 /**
- * These are internal utility methods for internal use by the MVVM.
+ * These are internal utility methods for internal use by the MVVM or other top-level tools
+ * (reporting)
  *
  * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
@@ -62,6 +64,28 @@ class Util
         return sessionFactory;
     }
 
+    static SessionFactory makeStandaloneSessionFactory(List<JarFile> jfs)
+    {
+        SessionFactory sessionFactory = null;
+
+        try {
+            Configuration cfg = new Configuration();
+
+            Set seen = new HashSet();
+            for (JarFile jf : jfs)
+                addJar(jf, cfg, seen);
+
+            long t0 = System.currentTimeMillis();
+            sessionFactory = cfg.buildSessionFactory();
+            long t1 = System.currentTimeMillis();
+            logger.info("session factory in " + (t1 - t0) + " millis");
+        } catch (HibernateException exn) {
+            logger.warn("could not create SessionFactory", exn);
+        }
+
+        return sessionFactory;
+    }
+        
     private static void addClassLoader(URLClassLoader ucl, Configuration cfg,
                                        Set seen)
     {
@@ -110,4 +134,5 @@ class Util
             }
         }
     }
+
 }
