@@ -48,9 +48,11 @@ public class Reporter
     private final Timestamp now;
     private final Timestamp yesterday;
     private final Timestamp lastweek;
+    private final Timestamp lastmonth;
 
     private StringBuilder dailySums;
     private StringBuilder weeklySums;
+    private StringBuilder monthlySums;
 
 
     private class FakeScriptlet extends JRDefaultScriptlet
@@ -117,6 +119,8 @@ public class Reporter
                         dailySums.append(processSummarizer(s, conn, yesterday, now));
                         s = (ReportSummarizer) sumClass.newInstance();
                         weeklySums.append(processSummarizer(s, conn, lastweek, now));
+                        s = (ReportSummarizer) sumClass.newInstance();
+                        monthlySums.append(processSummarizer(s, conn, lastmonth, now));
                     } catch (Exception x) {
                         logger.warn("No such class: " + className);
                     }
@@ -126,6 +130,7 @@ public class Reporter
                     String outputFile = new File(tranDir, outputName).getCanonicalPath();
                     processReport(resource, conn, outputFile + "-daily", yesterday, now);
                     processReport(resource, conn, outputFile + "-weekly", lastweek, now);
+                    processReport(resource, conn, outputFile + "-monthly", lastmonth, now);
                 }
             }
             is.close();
@@ -205,9 +210,13 @@ public class Reporter
         c = Calendar.getInstance();
         c.add(Calendar.WEEK_OF_YEAR, -1);
         lastweek = new Timestamp(c.getTimeInMillis());
+        c = Calendar.getInstance();
+        c.add(Calendar.MONTH, -1);
+        lastmonth = new Timestamp(c.getTimeInMillis());
 
         dailySums = new StringBuilder();
         weeklySums = new StringBuilder();
+        monthlySums = new StringBuilder();
     }
 
     // main -------------------------------------------------------------------
@@ -252,6 +261,7 @@ public class Reporter
         ReportSummarizer s = new GeneralSummarizer();
         dailySums.append(processSummarizer(s, conn, yesterday, now));
         weeklySums.append(processSummarizer(s, conn, lastweek, now));
+        monthlySums.append(processSummarizer(s, conn, lastmonth, now));
 
         Thread ct = Thread.currentThread();
         ClassLoader oldCl = ct.getContextClassLoader();
@@ -276,18 +286,22 @@ public class Reporter
 
         dailySums.append("</table><p><br>\n");
         weeklySums.append("</table><p><br>\n");
+        monthlySums.append("</table><p><br>\n");
 
         dailySums.append("<b>Daily Summary Graphs</b><p>");
         weeklySums.append("<b>Weekly Summary Graphs</b><p>");
+        monthlySums.append("<b>Monthly Summary Graphs</b><p>");
 
         // Graphs.
         String graphsFile = new File(outputDir, "graphs").getCanonicalPath();
         dailySums.append(processGraphs(conn, graphsFile + "-daily", yesterday, now));
         weeklySums.append(processGraphs(conn, graphsFile + "-weekly", lastweek, now));
+        monthlySums.append(processGraphs(conn, graphsFile + "-monthly", lastmonth, now));
 
         String sumFile = new File(outputDir, "summarization").getCanonicalPath();
         emitSummarization(sumFile + "-daily.html", dailySums);
         emitSummarization(sumFile + "-weekly.html", weeklySums);
+        emitSummarization(sumFile + "-monthly.html", monthlySums);
     }
 
     // Used for both general and specific transforms.
