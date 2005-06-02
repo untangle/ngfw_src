@@ -66,7 +66,6 @@ public class Main
     private String bunniculaToolbox;
     private String bunniculaWeb;
 
-    private String jdbcUrl;
 
     // constructor ------------------------------------------------------------
 
@@ -218,7 +217,7 @@ public class Main
         }
     }
 
-    private void initJdbcPool()
+    void initJdbcPool()
     {
         logger.info("Initializing Proxool");
         try {
@@ -236,7 +235,7 @@ public class Main
         String alias = "mvvm";
         String driverClass = "org.postgresql.Driver";
         String driverUrl = "jdbc:postgresql://localhost/mvvm";
-        jdbcUrl = "proxool." + alias + ":" + driverClass + ":" + driverUrl;
+        String jdbcUrl = "proxool." + alias + ":" + driverClass + ":" + driverUrl;
         try {
             ProxoolFacade.registerConnectionPool(jdbcUrl, info);
         } catch (ProxoolException exn) {
