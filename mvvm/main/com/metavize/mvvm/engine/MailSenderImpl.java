@@ -519,14 +519,21 @@ public class MailSenderImpl implements MailSender
                 } else if (bodyFile == null) {
                     bodyFile = new File(args[i]);
                 } else {
-                    // For now just use the name plus one parent directory as the content-location
+                    // For now just use the name plus two parent directories as the content-location
                     String extraLocation;
                     File extraFile = new File(args[i]);
                     File parentFile = extraFile.getParentFile();
-                    if (parentFile == null)
+                    if (parentFile == null) {
                         extraLocation = extraFile.getName();
-                    else
-                        extraLocation = parentFile.getName() + File.separator + extraFile.getName();
+                    } else {
+                        File grandParentFile = parentFile.getParentFile();
+                        if (grandParentFile == null) {
+                            extraLocation = parentFile.getName() + File.separator + extraFile.getName();
+                        } else {
+                            extraLocation = grandParentFile.getName() + File.separator + parentFile.getName() + File.separator + extraFile.getName();
+                        }
+                    }
+                            
                     extraLocations.add(extraLocation);
                     extraFiles.add(extraFile);
                 }
