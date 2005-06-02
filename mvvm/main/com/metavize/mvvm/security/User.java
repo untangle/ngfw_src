@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: User.java,v 1.9 2005/02/25 02:45:29 amread Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.security;
@@ -30,7 +30,7 @@ public class User implements Serializable
     private byte[] password;
     private String name  = "[no name]";
     private String email = "[no email]";
-    private String notes = "[no desscription]";
+    private String notes = "[no description]";
     private boolean sendAlerts = false;
 
     public User() { }
