@@ -1,5 +1,5 @@
 /var/log/mvvm/console.log {
-rotate 9
+rotate 30
 daily
 compress
 copytruncate
