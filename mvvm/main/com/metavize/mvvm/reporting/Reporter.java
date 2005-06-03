@@ -41,19 +41,25 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 public class Reporter
 {
+    private static final String SYMLINK_CMD = "/bin/ln -s";
+
+    private static final String SUMMARY_FRAGMENT_DAILY = "sum-daily.html";
+    private static final String SUMMARY_FRAGMENT_WEEKLY = "sum-weekly.html";
+    private static final String SUMMARY_FRAGMENT_MONTHLY = "sum-monthly.html";
+
     private static final Logger logger = Logger.getLogger(Reporter.class);
 
+    // The base, containing one directory for each day's generated reports
+    private static File outputBaseDir;
+
+    // Today
     private static File outputDir;
 
+    private final Calendar reportNow;
     private final Timestamp midnight;
-    private final Timestamp yesterday;
+    private final Timestamp lastday;
     private final Timestamp lastweek;
     private final Timestamp lastmonth;
-
-    private StringBuilder dailySums;
-    private StringBuilder weeklySums;
-    private StringBuilder monthlySums;
-
 
     private class FakeScriptlet extends JRDefaultScriptlet
     {
@@ -116,11 +122,14 @@ public class Reporter
                         Class sumClass = cl.loadClass(className);
                         ReportSummarizer s = (ReportSummarizer) sumClass.newInstance();
                         logger.debug("Found summarizer " + className);
-                        dailySums.append(processSummarizer(s, conn, yesterday, midnight));
+                        String dailyFile = new File(tranDir, SUMMARY_FRAGMENT_DAILY).getCanonicalPath();
+                        processSummarizer(s, conn, dailyFile, lastday, midnight);
                         s = (ReportSummarizer) sumClass.newInstance();
-                        weeklySums.append(processSummarizer(s, conn, lastweek, midnight));
+                        String weeklyFile = new File(tranDir, SUMMARY_FRAGMENT_WEEKLY).getCanonicalPath();
+                        processSummarizer(s, conn, weeklyFile, lastweek, midnight);
                         s = (ReportSummarizer) sumClass.newInstance();
-                        monthlySums.append(processSummarizer(s, conn, lastmonth, midnight));
+                        String monthlyFile = new File(tranDir, SUMMARY_FRAGMENT_MONTHLY).getCanonicalPath();
+                        processSummarizer(s, conn, monthlyFile, lastmonth, midnight);
                     } catch (Exception x) {
                         logger.warn("No such class: " + className);
                     }
@@ -128,7 +137,7 @@ public class Reporter
                     String resource = resourceOrClassname;
                     String outputName = type;
                     String outputFile = new File(tranDir, outputName).getCanonicalPath();
-                    processReport(resource, conn, outputFile + "-daily", yesterday, midnight);
+                    processReport(resource, conn, outputFile + "-daily", lastday, midnight);
                     processReport(resource, conn, outputFile + "-weekly", lastweek, midnight);
                     processReport(resource, conn, outputFile + "-monthly", lastmonth, midnight);
                 }
@@ -197,43 +206,55 @@ public class Reporter
 
     // constructors ----------------------------------------------------------
 
-    private Reporter(File outputDir)
+    private Reporter(File outputBaseDir)
     {
-        Calendar c;
+        this.outputBaseDir = outputBaseDir;
 
-        this.outputDir = outputDir;
-
-        c = Calendar.getInstance();
+        Calendar c = Calendar.getInstance();
 
         // Go back to midnight
         c.set(Calendar.HOUR_OF_DAY, 0);
         c.set(Calendar.MINUTE, 0);
         c.set(Calendar.SECOND, 0);
         c.set(Calendar.MILLISECOND, 0);
+        reportNow = (Calendar) c.clone();
         midnight = new Timestamp(c.getTimeInMillis());
 
         c.add(Calendar.DAY_OF_YEAR, -1);
-        yesterday = new Timestamp(c.getTimeInMillis());
+        lastday = new Timestamp(c.getTimeInMillis());
 
-        c.setTimeInMillis(midnight.getTime());
+        c = (Calendar) reportNow.clone();
         c.add(Calendar.WEEK_OF_YEAR, -1);
         lastweek = new Timestamp(c.getTimeInMillis());
 
-        c.setTimeInMillis(midnight.getTime());
+        c = (Calendar) reportNow.clone();
         c.add(Calendar.MONTH, -1);
         lastmonth = new Timestamp(c.getTimeInMillis());
 
-        dailySums = new StringBuilder();
-        weeklySums = new StringBuilder();
-        monthlySums = new StringBuilder();
+        // Figure out the real output Dir. Note we use 'lastday' as that really
+        // means midnight of the day we are reporting on, thus 'todayName'.
+        c.setTimeInMillis(lastday.getTime());
+        String todayName = getDateDirName(c);
+        outputDir = new File(outputBaseDir, todayName);
+        outputDir.mkdirs();
+
+        try {
+            File current = new File(outputBaseDir, "current");
+            current.delete();
+            String command = SYMLINK_CMD + " " + outputDir.getPath() + " " + current.getPath();
+            Process p = Runtime.getRuntime().exec(command);
+
+        } catch (IOException exn) {
+            logger.error("Unable to create current link", exn);
+        }
     }
 
     // main -------------------------------------------------------------------
 
     public static void main(String[] args)
     {
-        if (1 > args.length) {
-            logger.warn("usage: reporter dir [mars]");
+        if (args.length < 2) {
+            logger.warn("usage: reporter base-dir days-to-save [mars]");
             System.exit(1);
         }
 
@@ -242,9 +263,22 @@ public class Reporter
             Class.forName("org.postgresql.Driver");
             conn = DriverManager.getConnection("jdbc:postgresql://localhost/mvvm",
                                                "metavize", "foo");
-            Reporter r = new Reporter(new File(args[0]));
+            File outputBaseDir = new File(args[0]);
+            int daysToKeep;
+            try {
+                daysToKeep = Integer.parseInt(args[1]);
+                if (daysToKeep < 1)
+                    daysToKeep = 1;
+            } catch (NumberFormatException x) {
+                logger.warn("usage: reporter base-dir days-to-save [mars]");
+                System.exit(1);
+                return;
+            }
+                
+            Reporter r = new Reporter(outputBaseDir);
 
             r.doIt(conn, args);
+            r.purgeOldReports(daysToKeep);
         } catch (ClassNotFoundException exn) {
             logger.warn("Could not load the Postgres JDBC driver");
             System.exit(1);
@@ -268,14 +302,17 @@ public class Reporter
     {
         // General summarization
         ReportSummarizer s = new GeneralSummarizer();
-        dailySums.append(processSummarizer(s, conn, yesterday, midnight));
-        weeklySums.append(processSummarizer(s, conn, lastweek, midnight));
-        monthlySums.append(processSummarizer(s, conn, lastmonth, midnight));
+        String dailyFile = new File(outputDir, SUMMARY_FRAGMENT_DAILY).getCanonicalPath();
+        processSummarizer(s, conn, dailyFile, lastday, midnight);
+        String weeklyFile = new File(outputDir, SUMMARY_FRAGMENT_WEEKLY).getCanonicalPath();
+        processSummarizer(s, conn, weeklyFile, lastweek, midnight);
+        String monthlyFile = new File(outputDir, SUMMARY_FRAGMENT_MONTHLY).getCanonicalPath();
+        processSummarizer(s, conn, monthlyFile, lastmonth, midnight);
 
         Thread ct = Thread.currentThread();
         ClassLoader oldCl = ct.getContextClassLoader();
 
-        for (int i = 1; i < args.length; i++) {
+        for (int i = 2; i < args.length; i++) {
             File f = new File(args[i]);
 
             // assume file is "tranname-transform.mar"
@@ -293,6 +330,7 @@ public class Reporter
             }
         }
 
+        /*
         dailySums.append("</table><p><br>\n");
         weeklySums.append("</table><p><br>\n");
         monthlySums.append("</table><p><br>\n");
@@ -300,26 +338,102 @@ public class Reporter
         dailySums.append("<b>Daily Summary Graphs</b><p>");
         weeklySums.append("<b>Weekly Summary Graphs</b><p>");
         monthlySums.append("<b>Monthly Summary Graphs</b><p>");
+        */
 
         // Graphs.
         String graphsFile = new File(outputDir, "graphs").getCanonicalPath();
-        dailySums.append(processGraphs(conn, graphsFile + "-daily", yesterday, midnight));
-        weeklySums.append(processGraphs(conn, graphsFile + "-weekly", lastweek, midnight));
-        monthlySums.append(processGraphs(conn, graphsFile + "-monthly", lastmonth, midnight));
-
-        String sumFile = new File(outputDir, "summarization").getCanonicalPath();
-        emitSummarization(sumFile + "-daily.html", dailySums);
-        emitSummarization(sumFile + "-weekly.html", weeklySums);
-        emitSummarization(sumFile + "-monthly.html", monthlySums);
+        processGraphs(conn, graphsFile + "-daily", lastday, midnight);
+        processGraphs(conn, graphsFile + "-weekly", lastweek, midnight);
+        processGraphs(conn, graphsFile + "-monthly", lastmonth, midnight);
+ 
     }
 
-    // Used for both general and specific transforms.
-    private String processSummarizer(ReportSummarizer s, Connection conn,
-                                     Timestamp startTime, Timestamp endTime)
+    private String getDateDirName(Calendar c)
+    {      
+        int year = c.get(Calendar.YEAR);
+        int month = c.get(Calendar.MONTH) + 1; // Java is stupid
+        int day = c.get(Calendar.DAY_OF_MONTH);
+        String name = String.format("%04d-%02d-%02d", year, month, day);
+        return name;
+    }
 
+    private void purgeOldReports(int daysToKeep)
+    {
+        // Since daysToKeep will always be at least 1, we'll always keep today's.
+        Calendar firstPurged = (Calendar) reportNow.clone();
+        firstPurged.add(Calendar.DAY_OF_YEAR, -1 - daysToKeep);
+        Calendar c = (Calendar) firstPurged.clone();
+        int missCount = 0;
+        while (true) {
+            String dirName = getDateDirName(c);
+            File dir = new File(outputBaseDir, dirName);
+            if (dir.exists())
+                deleteDir(dir);
+            else
+                missCount++;
+            if (missCount > 100)
+                // Allow for 100 missed days, in case they turned off the box for a couple months.
+                break;
+            c.add(Calendar.DAY_OF_YEAR, -1);
+        }
+    }
+
+    public static boolean deleteDir(File dir) {
+        // to see if this directory is actually a symbolic link to a directory,
+        // we want to get its canonical path - that is, we follow the link to
+        // the file it's actually linked to
+        File candir;
+        try {
+            candir = dir.getCanonicalFile();
+        } catch (IOException e) {
+            return false;
+        }
+  
+        // a symbolic link has a different canonical path than its actual path,
+        // unless it's a link to itself
+        if (!candir.equals(dir.getAbsoluteFile())) {
+            // this file is a symbolic link, and there's no reason for us to
+            // follow it, because then we might be deleting something outside of
+            // the directory we were told to delete
+            return false;
+        }
+  
+        // now we go through all of the files and subdirectories in the
+        // directory and delete them one by one
+        File[] files = candir.listFiles();
+        if (files != null) {
+            for (int i = 0; i < files.length; i++) {
+                File file = files[i];
+  
+                // in case this directory is actually a symbolic link, or it's
+                // empty, we want to try to delete the link before we try
+                // anything
+                boolean deleted = file.delete();
+                if (!deleted) {
+                    // deleting the file failed, so maybe it's a non-empty
+                    // directory
+                    if (file.isDirectory()) deleteDir(file);
+  
+                    // otherwise, there's nothing else we can do
+                }
+            }
+        }
+  
+        // now that we tried to clear the directory out, we can try to delete it
+        // again
+        return dir.delete();  
+    }   
+
+    // Used for both general and specific transforms.
+    private void processSummarizer(ReportSummarizer s, Connection conn, String fileName,
+                                   Timestamp startTime, Timestamp endTime)
+
+        throws IOException
     {
         String result = s.getSummaryHtml(conn, startTime, endTime);
-        return result + "<p>\n";
+        BufferedWriter bw = new BufferedWriter(new FileWriter(new File(fileName)));
+        bw.write(result);
+        bw.close();
     }
 
     private String processGraphs(Connection conn, String base, Timestamp startTime, Timestamp endTime)
@@ -383,13 +497,5 @@ public class Reporter
 
 
         return result.toString();
-    }
-
-    private void emitSummarization(String fileName, StringBuilder summary)
-        throws IOException
-    {
-        BufferedWriter bw = new BufferedWriter(new FileWriter(new File(fileName)));
-        bw.write(summary.toString());
-        bw.close();
     }
 }

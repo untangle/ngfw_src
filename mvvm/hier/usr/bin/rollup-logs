@@ -1,6 +1,6 @@
 #!/bin/sh
 
-cutoff="now() - interval '31 days'";
+cutoff="now() - interval '$1 days'";
 
 echo "$cutoff"
 

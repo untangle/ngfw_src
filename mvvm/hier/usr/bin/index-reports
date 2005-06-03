@@ -1,6 +1,6 @@
 #!/bin/sh
 
-main_index=@MVVM_WEB@/reports/index.html
+main_index=@MVVM_WEB@/reports/current/index.html
 
 
 generate_page ()
@@ -333,8 +333,7 @@ EOF
 
 }
 
-mkdir -p @MVVM_WEB@/reports
-cd @MVVM_WEB@/reports
+cd @MVVM_WEB@/reports/current
 
 tran_list=@MVVM_REPORTS@/*
 

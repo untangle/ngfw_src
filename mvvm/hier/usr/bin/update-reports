@@ -15,10 +15,9 @@ done
 export JAVA_HOME CLASSPATH
 
 REPORT_DIR=@MVVM_WEB@/reports
-mkdir -p $REPORT_DIR
 
-# roll up logs
-@USR_BIN@/rollup-logs
+# roll up logs, deleting any more than 31 days old (and thus unreportable  on)
+@USR_BIN@/rollup-logs 31
 
 # make user mapping
 psql -U metavize mvvm <<EOF
@@ -44,7 +43,7 @@ EOF
 
 $JAVA_HOME/bin/java \
     -Dlog4j.configuration=file:@MVVM_HOME@/conf/log4j-reporter.xml \
-    com.metavize.mvvm.reporting.Reporter $REPORT_DIR $mars
+    com.metavize.mvvm.reporting.Reporter $REPORT_DIR 32 $mars
 
 psql -U metavize mvvm <<EOF
 DROP TABLE addr_map;
