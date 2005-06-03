@@ -19,9 +19,12 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Calendar;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 import com.metavize.mvvm.engine.MvvmTransformHandler;
 import com.metavize.mvvm.reporting.summary.*;
@@ -46,6 +49,8 @@ public class Reporter
 {
     private static final String SYMLINK_CMD = "/bin/ln -s";
 
+    private static final String ICON_DESC = "IconDesc42x42.png";
+    private static final String ICON_ORG = "IconOrg42x42.png";
     private static final String SUMMARY_FRAGMENT_DAILY = "sum-daily.html";
     private static final String SUMMARY_FRAGMENT_WEEKLY = "sum-weekly.html";
     private static final String SUMMARY_FRAGMENT_MONTHLY = "sum-monthly.html";
@@ -89,11 +94,14 @@ public class Reporter
     private class TranReporter {
         private final String tranName;
         private final URLClassLoader ucl;
+        private final JarFile jf;
         private final File tranDir;
 
-        TranReporter(String tranName, URLClassLoader ucl)
+        TranReporter(String tranName, JarFile jf, URLClassLoader ucl)
         {
             this.tranName = tranName;
+            // These next two are the same, just different forms.
+            this.jf = jf;
             this.ucl = ucl;
 
             tranDir = new File(outputDir, tranName);
@@ -104,12 +112,14 @@ public class Reporter
         {
             tranDir.mkdir();
 
+            File imagesDir = new File(tranDir, "images");
+            MvvmTransformHandler mth = new MvvmTransformHandler();
+
             InputStream is = ucl.getResourceAsStream("META-INF/report-files");
             if (null == is) {
                 logger.warn("No reports for: " + ucl.getURLs()[0]);
                 return;
             }
-
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
             for (String line = br.readLine(); null != line; line = br.readLine()) {
@@ -140,7 +150,7 @@ public class Reporter
                     String resource = resourceOrClassname;
                     String outputName = type;
                     String outputFile = new File(tranDir, outputName).getCanonicalPath();
-                    String outputImages = new File(tranDir, "images").getCanonicalPath();
+                    String outputImages = imagesDir.getCanonicalPath();
                     processReport(resource, conn, outputFile + "-daily", outputImages, lastday, midnight);
                     processReport(resource, conn, outputFile + "-weekly", outputImages, lastweek, midnight);
                     processReport(resource, conn, outputFile + "-monthly", outputImages, lastmonth, midnight);
@@ -148,7 +158,38 @@ public class Reporter
             }
             is.close();
 
-            MvvmTransformHandler mth = new MvvmTransformHandler();
+            // System.out.println("Looking for icons for " + mth.getTransformDesc(new Tid()).getDisplayName());
+
+            // We can't use ucl.getResourceAsStream(ICON_ORG); since we don't know the path.
+            for (Enumeration e = jf.entries(); e.hasMoreElements(); ) {
+                JarEntry je = (JarEntry)e.nextElement();
+                String name = je.getName();
+                // System.out.println("Jar contains " + name);
+                if (name.endsWith(File.separator + ICON_ORG)) {
+                    is = jf.getInputStream(je);
+                    imagesDir.mkdir();
+                    FileOutputStream fos = new FileOutputStream(new File(imagesDir, ICON_ORG));
+                    byte[] buf = new byte[256];
+                    int count;
+                    while ((count = is.read(buf)) > 0) {
+                        fos.write(buf, 0, count);
+                    }
+                    fos.close();
+                    is.close();
+                } else if (name.endsWith(File.separator + ICON_DESC)) {
+                    is = jf.getInputStream(je);
+                    imagesDir.mkdir();
+                    FileOutputStream fos = new FileOutputStream(new File(imagesDir, ICON_DESC));
+                    byte[] buf = new byte[256];
+                    int count;
+                    while ((count = is.read(buf)) > 0) {
+                        fos.write(buf, 0, count);
+                    }
+                    fos.close();
+                    is.close();
+                }
+            }
+
             is = ucl.getResourceAsStream("META-INF/mvvm-transform.xml");
             XMLReader xr = XMLReaderFactory.createXMLReader();
             xr.setContentHandler(mth);
@@ -332,7 +373,7 @@ public class Reporter
                 URLClassLoader ucl = new URLClassLoader(new URL[] { f.toURL() });
                 ct.setContextClassLoader(ucl);
                 logger.debug("Running TranReporter for " + tranName);
-                new TranReporter(tranName, ucl).process(conn);
+                new TranReporter(tranName, new JarFile(f), ucl).process(conn);
             } catch (Exception exn) {
                 logger.warn("bad mar: " + f);
                 exn.printStackTrace();
