@@ -27,10 +27,13 @@ import com.metavize.mvvm.engine.MvvmTransformHandler;
 import com.metavize.mvvm.reporting.summary.*;
 import com.metavize.mvvm.security.Tid;
 import net.sf.jasperreports.engine.JRDefaultScriptlet;
+import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.JRScriptletException;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.export.JRHtmlExporter;
+import net.sf.jasperreports.engine.export.JRHtmlExporterParameter;
 import org.apache.log4j.Logger;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
@@ -137,9 +140,10 @@ public class Reporter
                     String resource = resourceOrClassname;
                     String outputName = type;
                     String outputFile = new File(tranDir, outputName).getCanonicalPath();
-                    processReport(resource, conn, outputFile + "-daily", lastday, midnight);
-                    processReport(resource, conn, outputFile + "-weekly", lastweek, midnight);
-                    processReport(resource, conn, outputFile + "-monthly", lastmonth, midnight);
+                    String outputImages = new File(tranDir, "images").getCanonicalPath();
+                    processReport(resource, conn, outputFile + "-daily", outputImages, lastday, midnight);
+                    processReport(resource, conn, outputFile + "-weekly", outputImages, lastweek, midnight);
+                    processReport(resource, conn, outputFile + "-monthly", outputImages, lastmonth, midnight);
                 }
             }
             is.close();
@@ -173,7 +177,7 @@ public class Reporter
             pw.close();
         }
 
-        private void processReport(String resource, Connection conn, String base,
+        private void processReport(String resource, Connection conn, String base, String imagesDir,
                                    Timestamp startTime, Timestamp endTime)
             throws Exception
         {
@@ -199,7 +203,12 @@ public class Reporter
             // HTML
             String htmlFile = base + ".html";
             logger.debug("Exporting report to: " + htmlFile);
-            JasperExportManager.exportReportToHtmlFile(print, htmlFile);
+            JRHtmlExporter exporter = new JRHtmlExporter();
+            exporter.setParameter(JRExporterParameter.JASPER_PRINT, print);
+            exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, htmlFile);
+            exporter.setParameter(JRHtmlExporterParameter.IMAGES_DIR_NAME, imagesDir);
+            exporter.exportReport();
+                // Was: JasperExportManager.exportReportToHtmlFile(print, htmlFile);
         }
     }
 
