@@ -49,7 +49,15 @@ psql -U metavize mvvm <<EOF
 DROP TABLE addr_map;
 EOF
 
-@PREFIX@/usr/bin/index-reports
+# generate the web viewable page
+@PREFIX@/usr/bin/index-reports index.html false
+
+# generate the emailable page
+@PREFIX@/usr/bin/index-reports index_email.html true
+
+# email the reports to all recipients
+cd @PREFIX@/usr/share/metavize/web/reports/current
+cat @PREFIX@/usr/bin/mail_reports_arguments.txt | xargs @PREFIX@/usr/bin/mail-reports
 
 cat > $REPORT_DIR/index.html <<EOF
 <html> <head> <title>Metavize EdgeReport</title>
@@ -65,3 +73,4 @@ here</a>.
 </body>
 </html>
 EOF
+

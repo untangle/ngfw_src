@@ -1,7 +1,18 @@
 #!/bin/sh
 
-main_index=@MVVM_WEB@/reports/current/index.html
+main_index=@MVVM_WEB@/reports/current/$1
+index=$1
+mail_reports_arguments=@PREFIX@/usr/bin/mail_reports_arguments.txt
+generate_email_index=$2
 
+# generate email argument list
+if [ "$generate_email_index" = true ]; then
+    rm -f $mail_reports_arguments
+    touch $mail_reports_arguments
+    echo "./$index" >> $mail_reports_arguments
+    echo "./styles.css" >> $mail_reports_arguments
+    echo "./images/*" >> $mail_reports_arguments
+fi
 
 generate_page ()
 {
@@ -13,8 +24,8 @@ cat > $main_index <<EOF
   <head>
     <title>Metavize EdgeReport</title>
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
-    <link rel="stylesheet" type="text/css" href="styles.css"/>
-    <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" type="text/css" href="./styles.css"/>
+    <link rel="shortcut icon" type="image/x-icon" href="./images/favicon.ico"/>
   </head>
 
   <!--BRUSHED METAL PAGE BACKGROUND -->
@@ -24,14 +35,14 @@ cat > $main_index <<EOF
 
         <!-- TOP THIRD -->
         <tr> 
-          <td>
-            <img src="images/rounded_corner_main_top_left.gif" alt=" " /><br />
+          <td id="table_main_top_left">
+            <img src="./images/spacer.gif" alt=" " width="23" height="23"/>
           </td>
           <td width="100%" id="table_main_top">
-            <img src="images/spacer.gif" alt=" " width="1" height="1" />
+            <img src="./images/spacer.gif" alt=" " width="1" height="1"/>
           </td>
-          <td>
-            <img src="images/rounded_corner_main_top_right.gif" alt=" " /><br />
+          <td id="table_main_top_right">
+            <img src="./images/spacer.gif" alt=" " width="23" height="23"/>
           </td>
         </tr>
         <!-- END TOP THIRD -->
@@ -39,23 +50,34 @@ cat > $main_index <<EOF
         <!-- MIDDLE THIRD -->
         <tr> 
           <td id="table_main_left">
-            <img src="images/spacer.gif" alt=" " width="1" height="1" />
+            <img src="./images/spacer.gif" alt=" " width="1" height="1"/>
           </td>
           <td id="table_main_center">
-            <table >
+            <table>
               <tr>
-              <td style="padding: 5px 0px 0px 10px">
-              <img src="images/logo.gif" alt="Metavize" width="96" height="96"/><br/>
+              <td valign="middle">
+                <img src="./images/logo_no_text_shiny_96x96.gif" alt="Metavize" width="96" height="96"/>
               </td>
-              <td style="padding: 0px 0px 0px 10px">
-              <!-- <img src="images/nametype.gif" alt="Metavize" /> -->
-              <span class="page_header_title">Metavize EdgeReport</span>
+              <td style="padding: 0px 0px 0px 10px" valign="middle">
+EOF
+
+if [ "$generate_email_index" = false ]; then
+cat >> $main_index <<EOF
+                <span class="page_header_title">Metavize EdgeReport</span>
+EOF
+else
+cat >> $main_index <<EOF
+                <span class="page_header_title">Metavize EdgeReport   (via email)</span>
+EOF
+fi
+
+cat >> $main_index <<EOF
               </td>
               </tr>
             </table>
           </td>
           <td id="table_main_right">
-            <img src="images/spacer.gif" alt=" " width="1" height="1" />
+            <img src="./images/spacer.gif" alt=" " width="1" height="1"/>
           </td>
         </tr>
         <!-- END MIDDLE THIRD -->
@@ -67,14 +89,14 @@ cat >> $main_index <<EOF
 
         <!-- BOTTOM THIRD -->
         <tr>
-          <td>
-            <img src="images/rounded_corner_main_bottom_left.gif" alt=" " /><br/>
+          <td id="table_main_bottom_left">
+            <img src="./images/spacer.gif" alt=" " width="23" height="23"/>
           </td>
           <td id="table_main_bottom">
-            <img src="images/spacer.gif" alt=" " width="1" height="1" />
+            <img src="./images/spacer.gif" alt=" " width="1" height="1"/>
           </td>
-          <td>
-            <img src="images/rounded_corner_main_bottom_right.gif" alt=" " /><br/>
+          <td id="table_main_bottom_right">
+            <img src="./images/spacer.gif" alt=" " width="23" height="23"/>
           </td>
         </tr>
         <!-- END BOTTOM THIRD -->
@@ -133,6 +155,7 @@ EOF
 	cat >> $main_index <<EOF
               </tr>
             </table>
+            <hr width="100%" size="1"/>
           </td>
           <!-- END CENTER CELL -->
 
@@ -156,7 +179,7 @@ EOF
 
 cat >> $main_index <<EOF
                   <tr><td>
-                    > <a href="index.html#EdgeGuard Appliance">EdgeGuard Appliance</a>
+                    > <a href="$index#EdgeGuard Appliance">EdgeGuard Appliance</a>
                   </td></tr>
 EOF
 
@@ -185,7 +208,7 @@ fi
 
 cat >> $main_index <<EOF
                   <tr><td>
-                    > <a href="index.html#$tran_name">$tran_name</a>
+                    > <a href="#$tran_name">$tran_name</a>
                   </td></tr>
 EOF
 echo "generating menu entry: $tran_name"
@@ -224,21 +247,29 @@ generate_summary_entry ()
 # true allows you to print only non EdgeGuard Appliance appliances, false allows you to print only EdgeGuard Appliance
 tran_dir=$1
 
+ls $1/*-daily.html >/dev/null 2>&1 || return
+tran_name=$(cat $tran_dir/name)
+
 if [ "$2" = false ]; then
-    tran_name=$(cat $tran_dir/name)
     if [ "$tran_name" != "EdgeGuard Appliance" ]; then
 	return
     fi
 else
-    ls $1/*-daily.html >/dev/null 2>&1 || return
-    tran_name=$(cat $tran_dir/name)
     if [ "$tran_name" = "EdgeGuard Appliance" ]; then
 	return
     fi
 fi
 
+rel_dir=$(echo $1 | sed -e 's/^\(.*\/reports\)/./')
 
-    rel_dir=$(echo $1 | sed -e 's/^\(.*\/reports\)/./')
+# generate email argument list
+if [ "$generate_email_index" = true ]; then
+    find $rel_dir/images/ -type f >> $mail_reports_arguments
+    find $rel_dir/ -type f -name "summary*html" >> $mail_reports_arguments
+    find $rel_dir/ -type d -name "summary*html_files" -exec find {} -type f \; >> $mail_reports_arguments
+fi
+
+
 
 cat >> $main_index <<EOF
               <a name="$tran_name"/>
@@ -279,9 +310,7 @@ cat >> $main_index <<EOF
                   </td>
                 </tr>
               </table>
-              <br/>
-              <br/>
-
+<br/><br/>
 EOF
 echo "generating summary index : $tran_name : $2"
 }
@@ -317,16 +346,37 @@ cat $tran_dir/report-files | while read line; do
         cat >>$main_index <<EOF
 <tr bgcolor=$color>
 <td width="*">$rep_name: </td>
-<td width="125px" align="right">(<a href="$rel_dir/$base_name-daily.html">HTML</a> | <a href="$rel_dir/$base_name-daily.pdf">PDF</a>) </td>
-<td width="125px" align="right">(<a href="$rel_dir/$base_name-weekly.html">HTML</a> | <a href="$rel_dir/$base_name-weekly.pdf">PDF</a>) </td>
-<td width="125px" align="right">(<a href="$rel_dir/$base_name-monthly.html">HTML</a> | <a href="$rel_dir/$base_name-monthly.pdf">PDF</a>) </td>
+EOF
+
+if [ "$generate_email_index" = false ]; then
+cat >> $main_index <<EOF
+<td width="125px" align="right">(<a href="$rel_dir/$base_name-daily.html">HTML</a> | <a href="$rel_dir/$base_name-daily.pdf">PDF</a>)</td>
+<td width="125px" align="right">(<a href="$rel_dir/$base_name-weekly.html">HTML</a> | <a href="$rel_dir/$base_name-weekly.pdf">PDF</a>)</td>
+<td width="125px" align="right">(<a href="$rel_dir/$base_name-monthly.html">HTML</a> | <a href="$rel_dir/$base_name-monthly.pdf">PDF</a>)</td>
+EOF
+else
+    if [ "`echo $rep_name | grep -i 'Summary' `x" != "x" ]; then
+cat >> $main_index <<EOF
+<td width="125px" align="right">(<a href="$rel_dir/$base_name-daily.html">HTML</a>)</td>
+<td width="125px" align="right">(<a href="$rel_dir/$base_name-weekly.html">HTML</a>)</td>
+<td width="125px" align="right">(<a href="$rel_dir/$base_name-monthly.html">HTML</a>)</td>
+EOF
+    else
+cat >> $main_index <<EOF
+<td width="375px" align="right" colspan="3"><i>Not attached to email.  Use EdgeReport online to view.</i></td>
+EOF
+    fi
+fi
+
+cat >>$main_index <<EOF
 </tr>
 EOF
+
 alternate=$((alternate+1))
     fi
 done
 
-    cat >>$main_index <<EOF
+cat >>$main_index <<EOF
 </table>
 <!-- END DETAILED REPORTS -->
 EOF
