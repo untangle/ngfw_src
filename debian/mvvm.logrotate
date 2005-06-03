@@ -1,20 +1,27 @@
-/var/log/xenon/console.log {
-rotate 6
+/var/log/mvvm/console.log {
+rotate 9
 daily
 compress
 copytruncate
 }
 
-/var/log/xenon/wrapper.log {
-rotate 6
-daily
+/var/log/mvvm/wrapper.log {
+rotate 9
+size 100k
 compress
 copytruncate
 }
 
-/var/log/xenon/apt.log {
-rotate 6
-daily
+/var/log/mvvm/apt.log {
+rotate 9
+size 500k
+compress
+copytruncate
+}
+
+/var/log/mvvm/schema.log {
+rotate 9
+size 500k
 compress
 copytruncate
 }
