@@ -527,8 +527,8 @@ public class MailSenderImpl implements MailSender
                         extraLocation = extraFile.getName();
                     } else {
                         File grandParentFile = parentFile.getParentFile();
-                        // XXX ugly
-                        if (parentFile.getName().equals("images") ||
+                        // XXX super ugly fixme XXX
+                        if ((parentFile.getName().equals("images") && !extraFile.getName().endsWith(".png")) ||
                             grandParentFile == null) {
                             extraLocation = parentFile.getName() + File.separator + extraFile.getName();
                         } else {
