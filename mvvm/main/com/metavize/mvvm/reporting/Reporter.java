@@ -49,8 +49,8 @@ public class Reporter
 {
     private static final String SYMLINK_CMD = "/bin/ln -s";
 
-    private static final String ICON_DESC = "IconDesc42x42.png";
-    private static final String ICON_ORG = "IconOrg42x42.png";
+    public static final String ICON_DESC = "IconDesc42x42.png";
+    public static final String ICON_ORG = "IconOrg42x42.png";
     private static final String SUMMARY_FRAGMENT_DAILY = "sum-daily.html";
     private static final String SUMMARY_FRAGMENT_WEEKLY = "sum-weekly.html";
     private static final String SUMMARY_FRAGMENT_MONTHLY = "sum-monthly.html";

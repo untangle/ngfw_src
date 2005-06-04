@@ -528,8 +528,9 @@ public class MailSenderImpl implements MailSender
                     } else {
                         File grandParentFile = parentFile.getParentFile();
                         // XXX super ugly fixme XXX
-                        if ((parentFile.getName().equals("images") && !extraFile.getName().endsWith(".png")) ||
-                            grandParentFile == null) {
+                        if ((parentFile.getName().equals("images") && !extraFile.getName().endsWith(".png"))) {
+                            extraLocation = ".." + File.separator + parentFile.getName() + File.separator + extraFile.getName();
+                        } else if (grandParentFile == null) {
                             extraLocation = parentFile.getName() + File.separator + extraFile.getName();
                         } else {
                             extraLocation = grandParentFile.getName() + File.separator + parentFile.getName() + File.separator + extraFile.getName();
