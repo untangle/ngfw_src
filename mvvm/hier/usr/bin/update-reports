@@ -55,11 +55,15 @@ cp -pr $REPORT_DIR/images $REPORT_DIR/*.css $REPORT_DIR/current
 @PREFIX@/usr/bin/index-reports index.html false
 
 # generate the emailable page
-@PREFIX@/usr/bin/index-reports index_email.html true
+#@PREFIX@/usr/bin/index-reports index_email_daily.html daily
+#@PREFIX@/usr/bin/index-reports index_email_weekly.html weekly
+#@PREFIX@/usr/bin/index-reports index_email_monthly.html monthly
 
 # email the reports to all recipients
-cd @PREFIX@/usr/share/metavize/web/reports/current
-cat @PREFIX@/usr/bin/mail_reports_arguments.txt | xargs @PREFIX@/usr/bin/mail-reports
+#cd @PREFIX@/usr/share/metavize/web/reports/current
+#cat @PREFIX@/usr/bin/mail_reports_arguments_daily.txt | xargs @PREFIX@/usr/bin/mail-reports
+#cat @PREFIX@/usr/bin/mail_reports_arguments_weekly.txt | xargs @PREFIX@/usr/bin/mail-reports
+#cat @PREFIX@/usr/bin/mail_reports_arguments_monthly.txt | xargs @PREFIX@/usr/bin/mail-reports
 
 cat > $REPORT_DIR/index.html <<EOF
 <html> <head> <title>Metavize EdgeReport</title>
