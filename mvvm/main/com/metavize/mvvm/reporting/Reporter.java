@@ -113,6 +113,7 @@ public class Reporter
             tranDir.mkdir();
 
             File imagesDir = new File(tranDir, "images");
+            File globalImagesDir = new File(tranDir, "../images");
             MvvmTransformHandler mth = new MvvmTransformHandler();
 
             InputStream is = ucl.getResourceAsStream("META-INF/report-files");
@@ -150,7 +151,7 @@ public class Reporter
                     String resource = resourceOrClassname;
                     String outputName = type;
                     String outputFile = new File(tranDir, outputName).getCanonicalPath();
-                    String outputImages = imagesDir.getCanonicalPath();
+                    String outputImages = globalImagesDir.getCanonicalPath();
                     processReport(resource, conn, outputFile + "-daily", outputImages, lastday, midnight);
                     processReport(resource, conn, outputFile + "-weekly", outputImages, lastweek, midnight);
                     processReport(resource, conn, outputFile + "-monthly", outputImages, lastmonth, midnight);
@@ -248,6 +249,7 @@ public class Reporter
             exporter.setParameter(JRExporterParameter.JASPER_PRINT, print);
             exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, htmlFile);
             exporter.setParameter(JRHtmlExporterParameter.IMAGES_DIR_NAME, imagesDir);
+            exporter.setParameter(JRHtmlExporterParameter.IMAGES_URI, "../images/");
             exporter.exportReport();
                 // Was: JasperExportManager.exportReportToHtmlFile(print, htmlFile);
         }
