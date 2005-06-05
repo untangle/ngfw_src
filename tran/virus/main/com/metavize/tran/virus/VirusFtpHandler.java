@@ -22,6 +22,7 @@ import com.metavize.mvvm.argon.IntfConverter;
 import com.metavize.mvvm.tapi.Pipeline;
 import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.mvvm.tapi.event.TCPStreamer;
+import com.metavize.mvvm.tran.Transform;
 import com.metavize.tran.ftp.FtpCommand;
 import com.metavize.tran.ftp.FtpFunction;
 import com.metavize.tran.ftp.FtpReply;
@@ -35,6 +36,12 @@ import org.apache.log4j.Logger;
 
 class VirusFtpHandler extends FtpStateMachine
 {
+    /* XXX Should be from the same place as the HTTP constants */
+    private static final int SCAN_COUNTER  = Transform.GENERIC_0_COUNTER;
+    private static final int BLOCK_COUNTER = Transform.GENERIC_1_COUNTER;
+    private static final int PASS_COUNTER  = Transform.GENERIC_2_COUNTER;
+
+
     private final VirusTransformImpl transform;
     private final boolean scanClient;
     private final boolean scanServer;
@@ -181,18 +188,24 @@ class VirusFtpHandler extends FtpStateMachine
     private TCPStreamer scan() throws TokenException
     {
         VirusScannerResult result;
+        
         try {
+            transform.incrementCount( SCAN_COUNTER );
             result = transform.getScanner().scanFile(file.getPath());
         } catch (IOException exn) {
             throw new TokenException("could not scan TokenException", exn);
         } catch (InterruptedException exn) { // XXX deal with this in scanner
             throw new TokenException("interrupted while scanning", exn);
         }
+        
+        /* XXX handle the case where result is null */
 
         if (result.isClean()) {
+            transform.incrementCount( PASS_COUNTER );
             Pipeline p = getPipeline();
             return new FileChunkStreamer(p, file, inChannel, true);
         } else {
+            transform.incrementCount( BLOCK_COUNTER );
             TCPSession s = getSession();
             s.shutdownClient();
             s.shutdownServer();
