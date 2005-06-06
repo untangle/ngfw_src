@@ -7,6 +7,11 @@ mail_reports_arguments_weekly=@PREFIX@/usr/bin/mail_reports_arguments_weekly.txt
 mail_reports_arguments_monthly=@PREFIX@/usr/bin/mail_reports_arguments_monthly.txt
 generate_email_index=$2
 
+if [ "$generate_email_index" != false ]; then
+web_base=http://metavize.com/mail_blast
+else
+web_base=.
+fi
 
 cd @MVVM_REPORTS@/current
 
@@ -32,9 +37,12 @@ if [ "$generate_email_index" != false ]; then
 fi
 
 if [ "$generate_email_index" != false ]; then
+    styles=styles_email.css
     echo "./$index" >> $mail_reports_arguments
-    echo "./styles.css" >> $mail_reports_arguments
+    echo "./$styles" >> $mail_reports_arguments
     find ./images/* -type f >> $mail_reports_arguments
+else
+    styles=styles.css
 fi
 
 generate_page ()
@@ -47,7 +55,7 @@ cat > $main_index <<EOF
   <head>
     <title>Metavize EdgeReport</title>
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
-    <link rel="stylesheet" type="text/css" href="./styles.css"/>
+    <link rel="stylesheet" type="text/css" href="./$styles"/>
     <link rel="shortcut icon" type="image/x-icon" href="./images/favicon.ico"/>
   </head>
 
@@ -59,13 +67,13 @@ cat > $main_index <<EOF
         <!-- TOP THIRD -->
         <tr> 
           <td id="table_main_top_left">
-            <img src="./images/spacer.gif" alt=" " width="23" height="23"/>
+            <img src="$web_base/images/spacer.gif" alt=" " width="23" height="23"/>
           </td>
           <td width="100%" id="table_main_top">
-            <img src="./images/spacer.gif" alt=" " width="1" height="1"/>
+            <img src="$web_base/images/spacer.gif" alt=" " width="1" height="1"/>
           </td>
           <td id="table_main_top_right">
-            <img src="./images/spacer.gif" alt=" " width="23" height="23"/>
+            <img src="$web_base/images/spacer.gif" alt=" " width="23" height="23"/>
           </td>
         </tr>
         <!-- END TOP THIRD -->
@@ -73,13 +81,13 @@ cat > $main_index <<EOF
         <!-- MIDDLE THIRD -->
         <tr> 
           <td id="table_main_left">
-            <img src="./images/spacer.gif" alt=" " width="1" height="1"/>
+            <img src="$web_base/images/spacer.gif" alt=" " width="1" height="1"/>
           </td>
           <td id="table_main_center">
             <table>
               <tr>
               <td valign="middle">
-                <img src="./images/logo_no_text_shiny_96x96.gif" alt="Metavize logo" width="96" height="96"/>
+                <img src="$web_base/images/logo_no_text_shiny_96x96.gif" alt="Metavize logo" width="96" height="96"/>
               </td>
               <td style="padding: 0px 0px 0px 10px" valign="middle">
 EOF
@@ -114,7 +122,7 @@ cat >> $main_index <<EOF
             </table>
           </td>
           <td id="table_main_right">
-            <img src="./images/spacer.gif" alt=" " width="1" height="1"/>
+            <img src="$web_base/images/spacer.gif" alt=" " width="1" height="1"/>
           </td>
         </tr>
         <!-- END MIDDLE THIRD -->
@@ -127,13 +135,13 @@ cat >> $main_index <<EOF
         <!-- BOTTOM THIRD -->
         <tr>
           <td id="table_main_bottom_left">
-            <img src="./images/spacer.gif" alt=" " width="23" height="23"/>
+            <img src="$web_base/images/spacer.gif" alt=" " width="23" height="23"/>
           </td>
           <td id="table_main_bottom">
-            <img src="./images/spacer.gif" alt=" " width="1" height="1"/>
+            <img src="$web_base/images/spacer.gif" alt=" " width="1" height="1"/>
           </td>
           <td id="table_main_bottom_right">
-            <img src="./images/spacer.gif" alt=" " width="23" height="23"/>
+            <img src="$web_base/images/spacer.gif" alt=" " width="23" height="23"/>
           </td>
         </tr>
         <!-- END BOTTOM THIRD -->
@@ -298,26 +306,30 @@ else
 fi
 
 
-rel_dir=$(echo $1 | sed -e 's/^\(.*\/current\)/./')
+rel_dir=$(echo $1 | sed -e 's/^\(.*\/current\/\)//')
+#rel_dir=$(echo $1 | sed -e 's/^\(.*\/current\)/./')
 
 
 # generate email argument list
 if [ "$generate_email_index" = daily ]; then
-    find $rel_dir/images/* -type f >> $mail_reports_arguments
-    find $rel_dir/ -type f -name "summary*daily.html" >> $mail_reports_arguments
-    find $rel_dir/ -type d -name "summary*daily.html_files" -exec find {} -type f \; >> $mail_reports_arguments
+    #find $rel_dir/images/* -type f >> $mail_reports_arguments
+    #find $rel_dir/ -type f -name "summary*daily.html" >> $mail_reports_arguments
+    #find $rel_dir/ -type d -name "summary*daily.html_files" -exec find {} -type f \; >> $mail_reports_arguments
+    find $rel_dir/*daily.pdf -type f >> $mail_reports_arguments
 fi
 
 if [ "$generate_email_index" = weekly ]; then
-    find $rel_dir/images/* -type f >> $mail_reports_arguments
-    find $rel_dir/ -type f -name "summary*weekly.html" >> $mail_reports_arguments
-    find $rel_dir/ -type d -name "summary*weekly.html_files" -exec find {} -type f \; >> $mail_reports_arguments
+    #find $rel_dir/images/* -type f >> $mail_reports_arguments
+    #find $rel_dir/ -type f -name "summary*weekly.html" >> $mail_reports_arguments
+    #find $rel_dir/ -type d -name "summary*weekly.html_files" -exec find {} -type f \; >> $mail_reports_arguments
+    find $rel_dir/*weekly.pdf -type f >> $mail_reports_arguments
 fi
 
 if [ "$generate_email_index" = monthly ]; then
-    find $rel_dir/images/* -type f >> $mail_reports_arguments
-    find $rel_dir/ -type f -name "summary*monthly.html" >> $mail_reports_arguments
-    find $rel_dir/ -type d -name "summary*monthly.html_files" -exec find {} -type f \; >> $mail_reports_arguments
+    #find $rel_dir/images/* -type f >> $mail_reports_arguments
+    #find $rel_dir/ -type f -name "summary*monthly.html" >> $mail_reports_arguments
+    #find $rel_dir/ -type d -name "summary*monthly.html_files" -exec find {} -type f \; >> $mail_reports_arguments
+    find $rel_dir/*monthly.pdf -type f >> $mail_reports_arguments
 fi
 
 
@@ -328,12 +340,12 @@ cat >> $main_index <<EOF
                 <tr><td colspan="2" bgcolor="cccccc">
                   <table>
                   <tr>
-                  <td style="padding: 0px 4px 0px 3px"><img src="$rel_dir/images/IconOrg42x42.png" width="42" height="42"/></td>
+                  <td style="padding: 0px 4px 0px 3px"><img src="$web_base/$rel_dir/images/IconOrg42x42.png" width="42" height="42"/></td>
 EOF
 
 if [ "$tran_name" != "EdgeGuard Appliance" ]; then
     cat >> $main_index <<EOF
-                  <td style="padding: 0px 4px 0px 0px"><img src="$rel_dir/images/IconDesc42x42.png" width="42" height="42"/></td>
+                  <td style="padding: 0px 4px 0px 0px"><img src="$web_base/$rel_dir/images/IconDesc42x42.png" width="42" height="42"/></td>
 EOF
 fi
 
@@ -344,10 +356,15 @@ cat >> $main_index <<EOF
                 </td></tr>
                 <tr>
                   <td>
-                    <b>Vital Statistics:</b>
+                    <b>Vital Statistics:</b><br/>
+EOF
+
+generate_vital_statistics $1
+
+cat >> $main_index <<EOF
                   </td>
                   <td>
-                    <b>Visual Summary:</b><br/>
+                  <!--  <b>Visual Summary:</b><br/> -->
                   </td>
                 </tr>
                 <tr>
@@ -366,12 +383,62 @@ EOF
 echo "generating summary index : $tran_name : $2"
 }
 
+generate_vital_statistics ()
+{
+    cat >>$main_index <<EOF
+<!-- VITAL STATISTICS -->
+<table width="100%" style="padding: 0px 0px 0px 15px" cellspacing="0">
+EOF
+
+    tran_dir=$1
+    tran_name=$(cat $tran_dir/name)
+    rel_dir=$(echo $1 | sed -e 's/^\(.*\/current\/\)//')
+
+if [ "$tran_name" = "EdgeGuard Appliance" ]; then
+    if [ "$generate_email_index" = false ]; then
+	cat $rel_dir/../sum-monthly.html | cat >> $main_index
+    fi
+    if [ "$generate_email_index" = daily ]; then
+	cat $rel_dir/../sum-daily.html | cat >> $main_index
+    fi
+    if [ "$generate_email_index" = weekly ]; then
+	cat $rel_dir/../sum-weekly.html | cat >> $main_index
+    fi
+    if [ "$generate_email_index" = monthly ]; then
+	cat $rel_dir/../sum-monthly.html | cat >> $main_index
+    fi
+fi
+
+
+if [ "$generate_email_index" = false ]; then
+    cat $rel_dir/sum-monthly.html | cat >> $main_index
+fi
+
+if [ "$generate_email_index" = daily ]; then
+    cat $rel_dir/sum-daily.html | cat >> $main_index
+fi
+
+if [ "$generate_email_index" = weekly ]; then
+    cat $rel_dir/sum-weekly.html | cat >> $main_index
+fi
+
+if [ "$generate_email_index" = monthly ]; then
+    cat $rel_dir/sum-monthly.html | cat >> $main_index
+fi
+
+
+cat >>$main_index <<EOF
+</table>
+<!-- END VITAL STATISTICS -->
+EOF
+
+}
+
 generate_summary_detailed_entries ()
 {
     tran_dir=$1
     tran_name=$(cat $tran_dir/name)
-
-    rel_dir=$(echo $1 | sed -e 's/^\(.*\/current\)/./')
+    rel_dir=$(echo $1 | sed -e 's/^\(.*\/current\/\)//')
 
     cat >>$main_index <<EOF
 <!-- DETAILED REPORTS -->
@@ -432,27 +499,27 @@ cat >> $main_index <<EOF
 <td width="125px" align="right">(<a href="$rel_dir/$base_name-monthly.html">HTML</a> | <a href="$rel_dir/$base_name-monthly.pdf">PDF</a>)</td>
 EOF
 else
-    if [ "`echo $rep_name | grep -i 'Summary' `x" != "x" ]; then
+#    if [ "`echo $rep_name | grep -i 'Summary' `x" != "x" ]; then
 if [ "$generate_email_index" = daily ]; then
 cat >> $main_index <<EOF
-<td width="375px" align="right" colspan="3">(<a href="$rel_dir/$base_name-daily.html">HTML</a>)</td>
+<td width="375px" align="right" colspan="3">(<a href="$rel_dir/$base_name-daily.pdf">PDF</a>)</td>
 EOF
 fi
 if [ "$generate_email_index" = weekly ]; then
 cat >> $main_index <<EOF
-<td width="375px" align="right" colspan="3">(<a href="$rel_dir/$base_name-weekly.html">HTML</a>)</td>
+<td width="375px" align="right" colspan="3">(<a href="$rel_dir/$base_name-weekly.pdf">PDF</a>)</td>
 EOF
 fi
 if [ "$generate_email_index" = monthly ]; then
 cat >> $main_index <<EOF
-<td width="375px" align="right" colspan="3">(<a href="$rel_dir/$base_name-monthly.html">HTML</a>)</td>
+<td width="375px" align="right" colspan="3">(<a href="$rel_dir/$base_name-monthly.pdf">PDF</a>)</td>
 EOF
 fi
-    else
-cat >> $main_index <<EOF
-<td width="375px" align="right" colspan="3"><i>Not attached to email.  Use EdgeReport online to view.</i></td>
-EOF
-    fi
+#    else
+#cat >> $main_index <<EOF
+#<td width="375px" align="right" colspan="3"><i>Not attached to email.  Use EdgeReport online to view.</i></td>
+#EOF
+#    fi
 fi
 
 cat >>$main_index <<EOF

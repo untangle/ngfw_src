@@ -1,0 +1,376 @@
+
+body {
+    margin: 15px;
+    background: #FFFFFF url(http://metavize.com/mail_blast/images/background_body.gif) repeat-x top left;
+    text-align: center;
+}
+
+img {
+    border: 0px;
+}
+
+.quickstart-img {
+    text-align: left;
+    padding: 10px 0px 20px 0px;
+}
+
+
+table {
+    font: normal normal normal 10pt/14pt Arial,Sans-Serif;
+    text-align: left;
+    color: #606060;
+}
+
+input {
+    font: normal normal normal 10pt/14pt Arial,Sans-Serif;
+    text-align: left;
+    color: #606060;
+}
+
+form {
+    margin: 0px;
+}
+
+a:link, a:visited {
+    font: normal normal normal 10pt/14pt Arial,Sans-Serif;
+    color: #1997FE;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #1997FE;
+    text-decoration: underline;
+}
+
+.link_blue_large:link, .link_blue_large:visited {
+    font: normal normal bold 12pt/16pt Arial,Sans-Serif;
+    color: #0044D7;
+    text-decoration: none;
+    padding: 0px 9px 0px 9px;
+}
+
+.link_blue_selected:link, .blue_link_selected:visited {
+    background: url(images/arrow_blue_link_selected.gif) no-repeat;
+    font: normal normal bold 12pt/16pt Arial,Sans-Serif;
+    color: #ff9c00;
+    text-decoration: none;
+    padding: 0px 9px 0px 9px;
+}
+
+.link_blue_link:hover, .blue_link_selected:hover {
+    color: #FFFFFF;
+}
+
+.link_grey_large:link, .link_grey_large:visited {
+    font: normal normal bold 12pt Arial,Sans-Serif;
+    text-decoration: none;
+    color: #606060;
+    letter-spacing: 1px;
+}
+
+.link_grey_large:hover {
+    color: #1997FE; 
+}
+
+.grey_link:link, .grey_link:visited {
+    padding: 0px 9px 0px 9px;
+    font: normal normal normal 10pt/14pt Arial,Sans-Serif;
+    text-decoration: none;
+    color: #606060;
+}
+
+.grey_link:hover {
+    color: #1997FE; 
+}
+
+h1 {
+    font: normal normal bold 11pt Arial,Sans-Serif;
+    color: #999999;
+    letter-spacing: 1px;
+    margin: 0px;
+    padding: 0px;
+}
+
+h2 {
+    font: normal normal bold 10pt Arial,Sans-Serif;
+    color: #999999;
+    letter-spacing: 1px;
+    margin: 0px;
+    padding: 0px;
+}
+
+h3 {
+    font: normal normal bold 11pt Arial,Sans-Serif;
+    color: #606060;
+    letter-spacing: 1px;
+    margin: 0px;
+    padding: 0px;
+}
+
+h4 {
+    font: normal normal bold 14pt Arial,Sans-Serif;
+    color: #0044D7;
+    letter-spacing: 1px;
+    margin: 0px;
+    padding: 0px;
+}
+
+/* the following pertain to the main content (i.e. the main 'metal-brushed') table */
+#table_main_center {
+    background: url(http://metavize.com/mail_blast/images/background_table_main_center.gif) repeat-y;
+}
+
+#table_main_top {
+    background: url(http://metavize.com/mail_blast/images/background_table_main_top.gif) repeat-x;
+}
+
+#table_main_top_left {
+    background: url(http://metavize.com/mail_blast/images/rounded_corner_main_top_left.gif) no-repeat;
+}
+
+#table_main_top_right {
+    background: url(http://metavize.com/mail_blast/images/rounded_corner_main_top_right.gif) no-repeat;
+}
+
+#table_main_right {
+    background: url(http://metavize.com/mail_blast/images/background_table_main_right.gif) repeat-y;
+}
+
+#table_main_bottom {
+    background: url(http://metavize.com/mail_blast/images/background_table_main_bottom.gif) repeat-x;
+}
+
+#table_main_bottom_left {
+    background: url(http://metavize.com/mail_blast/images/rounded_corner_main_bottom_left.gif) no-repeat;
+}
+
+#table_main_bottom_right {
+    background: url(http://metavize.com/mail_blast/images/rounded_corner_main_bottom_right.gif) no-repeat;
+}
+
+#table_main_left {
+    background: url(http://metavize.com/mail_blast/images/background_table_main_left.gif) repeat-y;
+}
+
+/* styles pertaining to the small rounded content areas */
+.table_grey_top {
+    background: url(images/background_table_grey_top.gif) repeat-x;
+}
+
+.table_grey_right {
+    background: url(images/background_table_grey_right.gif) repeat-y;
+}
+
+.table_grey_bottom {
+    background: url(images/background_table_grey_bottom.gif) repeat-x;
+}
+
+.table_grey_left {
+    background: url(images/background_table_grey_left.gif) repeat-y;
+}
+
+.table_grey_hr_left {
+    background: url(images/background_table_grey_hr_left.gif) repeat-x;
+}
+
+.table_grey_hr_center {
+    background: url(images/background_table_grey_hr_center.gif) repeat-x;
+}
+
+.table_grey_hr_right {
+    background: url(images/background_table_grey_hr_right.gif) repeat-x;
+}
+
+.text_content {
+    padding: 0px 4px 0px 4px;
+}
+
+.app_name {
+    font: normal normal bold 11pt Arial,Sans-Serif;
+    color: #999999;
+    letter-spacing: 1px;
+    margin: 0px;
+    padding: 0px;
+	text-align: right;
+}
+
+/* rounded gradient areas */
+.table_gradient_top {
+    background: url(images/background_table_gradient_top.gif) repeat-x;
+}
+
+.table_gradient_right {
+    background: url(images/background_table_gradient_right.gif) repeat-y;
+}
+
+.table_gradient_bottom {
+    background: url(images/background_table_gradient_bottom.gif) repeat-x;
+}
+
+.table_gradient_left {
+    background: url(images/background_table_gradient_left.gif) repeat-y;
+}
+
+.table_gradient {
+    background: #FFFFFF url(images/background_table_gradient.gif) repeat-x;
+}
+
+.table_grey_gradient_top {
+    background: url(images/background_table_gradient_small_top.gif) repeat-x;
+}
+
+.table_grey_gradient_right {
+    background: url(images/background_table_gradient_small_right.gif) repeat-y;
+}
+
+.table_grey_gradient_bottom {
+    background: url(images/background_table_gradient_small_bottom.gif) repeat-x;
+}
+
+.table_grey_gradient_left {
+    background: url(images/background_table_gradient_small_left.gif) repeat-y;
+}
+
+.table_grey_gradient {
+    background: #FEFEFE url(images/background_table_gradient_small.gif) repeat-x;
+}
+
+
+.table_gradient_small_text_content {
+    font: normal normal normal 10pt Arial,Sans-Serif;
+    color: #606060;
+}
+
+.table_grey_gradient_text_content {
+    font: normal normal normal 10pt/14pt Arial,Sans-Serif;
+    color: #606060;
+}
+
+.general_subheading {
+    font: normal normal normal 14pt/16pt Arial,Sans-Serif;
+    color: #606060;
+}
+
+.table_blue_gradient_top {
+    background: url(images/background_table_blue_gradient_top.gif) repeat-x;
+}
+
+.table_blue_gradient_right {
+    background: #83BFFF url(images/background_table_blue_gradient_right.gif) no-repeat;
+}
+
+.table_blue_gradient_bottom {
+    background: url(images/background_table_blue_gradient_bottom.gif) repeat-x;
+}
+
+.table_blue_gradient_left {
+    background: #83BFFF url(images/background_table_blue_gradient_left.gif) no-repeat;
+}
+
+.table_blue_gradient {
+    background: #83BFFF url(images/background_table_blue_gradient.gif) repeat-x;
+}
+
+.table_blue_gradient_text_content {
+    font: normal normal normal 10pt/14pt Arial,Sans-Serif;
+    color: #0044D7;
+}
+
+.text-sub-menu-title {
+    font: italic normal normal 12pt/16pt Arial,Sans-Serif;
+    color: #0044D7;
+    padding: 4px 9px 0px 20px;
+}
+
+a.sub-menu-item, a.sub-menu-item:link {
+    color: #0044D7;
+}
+
+a.sub-menu-item:hover {
+    color: #FFFFFF;
+    text-decoration: none;
+}
+
+div.sub-menu-item {
+    padding: 0px 9px 0px 9px;
+    font: normal normal bold 10pt/14pt Arial,Sans-Serif;
+    position: relative;
+    left: 20px;
+}
+
+div.sub-menu-item-selected {
+    background: url(images/arrow_blue_link_selected.gif) no-repeat;
+    padding: 0px 9px 0px 9px;
+    font: normal normal bold 10pt/14pt Arial,Sans-Serif;
+    color: #FFFFFF;
+    position: relative;
+    left: 20px;
+}
+
+.hr-sub-menu {
+    border: 0px;
+    height: 1px;
+    padding: 0px;
+    margin: 0px;
+    width: 85%;
+    position: relative;
+    left: 20px;
+    color: #0044D7;
+    background-color: #0044D7;
+}
+
+
+.table_blue_gradient_title_content {
+    font: normal normal bold 12pt Arial,Sans-Serif;
+    color: #0044D7;
+    letter-spacing: 1px;
+    margin: 0px;
+    padding: 0px;
+}
+
+td.padded-table-first-col {
+    padding: 0px;
+}
+
+td.padded-table {
+    padding: 15px;
+}
+
+/* front page specific */
+#email_address {
+    border: 1px solid #D6D6D6;
+    width: 140px;
+}
+
+/* second level content specific */
+.table_gradient_header {
+    font: normal normal normal 12pt Arial,Sans-Serif;
+    color: #999999;
+}
+
+.page_header_heavy {
+    font: normal normal normal 20pt "Arial Black",Arial,Sans-Serif;
+    color: #606060;
+}
+
+.page_header_light {
+    font: normal normal normal 20pt Arial,Sans-Serif;
+    color: #999999;
+}
+
+.page_header_title {
+    font: bold normal normal 25pt Arial,Sans-Serif;
+    color: #777777;
+}
+
+.page_header_hr {
+    background: url(images/background_page_header_hr.gif) repeat-x;
+}
+
+.grey {
+    background-color: #999999;
+}
+
+.blue {
+    background-color: #0044D7;
+}

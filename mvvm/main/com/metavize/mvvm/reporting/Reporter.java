@@ -134,7 +134,8 @@ public class Reporter
                     ClassLoader cl = Thread.currentThread().getContextClassLoader();
                     try {
                         Class sumClass = cl.loadClass(className);
-                        ReportSummarizer s = (ReportSummarizer) sumClass.newInstance();
+                        ReportSummarizer s;
+			s = (ReportSummarizer) sumClass.newInstance();
                         logger.debug("Found summarizer " + className);
                         String dailyFile = new File(tranDir, SUMMARY_FRAGMENT_DAILY).getCanonicalPath();
                         processSummarizer(s, conn, dailyFile, lastday, midnight);
@@ -353,11 +354,14 @@ public class Reporter
         throws IOException, JRScriptletException, SQLException, ClassNotFoundException
     {
         // General summarization
-        ReportSummarizer s = new GeneralSummarizer();
+        ReportSummarizer s;
+	s = new GeneralSummarizer();
         String dailyFile = new File(outputDir, SUMMARY_FRAGMENT_DAILY).getCanonicalPath();
         processSummarizer(s, conn, dailyFile, lastday, midnight);
+	s = new GeneralSummarizer();
         String weeklyFile = new File(outputDir, SUMMARY_FRAGMENT_WEEKLY).getCanonicalPath();
         processSummarizer(s, conn, weeklyFile, lastweek, midnight);
+	s = new GeneralSummarizer();
         String monthlyFile = new File(outputDir, SUMMARY_FRAGMENT_MONTHLY).getCanonicalPath();
         processSummarizer(s, conn, monthlyFile, lastmonth, midnight);
 

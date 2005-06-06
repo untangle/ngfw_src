@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: GeneralSummarizer.java,v 1.4 2005/02/12 00:54:02 jdi Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.reporting.summary;
@@ -16,7 +16,7 @@ import java.sql.*;
 import java.util.Date;
 import org.apache.log4j.Logger;
 
-public class GeneralSummarizer implements ReportSummarizer {
+public class GeneralSummarizer extends BaseSummarizer {
     
     private static final Logger logger = Logger.getLogger(GeneralSummarizer.class);
 
@@ -25,7 +25,7 @@ public class GeneralSummarizer implements ReportSummarizer {
     public String getSummaryHtml(Connection conn, Timestamp startDate, Timestamp endDate)
     {
         StringBuilder result = new StringBuilder();
-        emitHeader(result);
+
 
         long c2pOut = 0;
         long p2sOut = 0;
@@ -82,31 +82,19 @@ public class GeneralSummarizer implements ReportSummarizer {
         long numSecs = (endDate.getTime() - startDate.getTime()) / 1000;
         double numDays = ((double)numSecs) / (60d * 60d * 24d);
 
-        result.append("<tr><td></td><td>Total bytes transferred</td><td>").append(totalTotal).append("</td> </tr>\n");
-        result.append("<tr><td></td><td>Total bytes sent</td><td>").append(totalBytesOutgoing).append("</td> </tr>\n");
-        result.append("<tr><td></td><td>Total bytes received</td><td>").append(totalBytesIncoming).append("</td> </tr>\n");
-        result.append("<tr><td></td><td>Number of sessions</td><td>").append(numOut + numIn).append("</td> </tr>\n");
-        result.append("<tr><td></td><td>Number of outbound sessions</td><td>").append(numOut).append("</td> </tr>\n");
-        result.append("<tr><td></td><td>Total bytes for outbound sessions</td><td>").append(totalOutboundBytes).append("</td> </tr>\n");
-        result.append("<tr><td></td><td>Number of inbound sessions</td><td>").append(numIn).append("</td> </tr>\n");
-        result.append("<tr><td></td><td>Total bytes for inbound sessions</td><td>").append(totalInboundBytes).append("</td> </tr>\n");
-        result.append("<tr><td></td><td>Average transfer rate (kB/sec)</td><td>").append(((float)totalTotal) / numSecs / 1024f).append("</td> </tr>\n");
+        addEntry("Total bytes transferred", totalTotal);
+        addEntry("Total bytes sent", totalBytesOutgoing);
+        addEntry("Total bytes received", totalBytesIncoming);
+        addEntry("Number of sessions", numOut + numIn);
+        addEntry("Number of outbound sessions", numOut);
+        addEntry("Total bytes for outbound sessions", totalOutboundBytes);
+        addEntry("Number of inbound sessions", numIn);
+        addEntry("Total bytes for inbound sessions", totalInboundBytes);
+        addEntry("Average transfer rate (kB/sec)", (long) (((float)totalTotal) / numSecs / 1024f));
         double bpd = ((double)totalTotal) / numDays / 1024d;
-        result.append("<tr><td></td><td>Transferred per day (kB)</td><td>").append((int)bpd).append("</td> </tr>\n");
-        return result.toString();
+        addEntry("Transferred per day (kB)", (int)bpd);
+
+        return summarizeEntries("Traffic Flow Rates");
     }
 
-    private void emitHeader(StringBuilder result)
-    {
-        result.append("<html>\n");
-        result.append("<head><title>Metavize EdgeGuard Summary Report</title></head>\n");
-        result.append("<body>\n");
-        result.append("<table><tr>\n");
-        result.append("<td><img src=\"LogoNoText64x64.gif\"/></td>\n");
-        result.append("<td><b>Metavize EdgeGuard Summary Report</b></td>\n");
-        result.append("</tr></table>\n");
-        result.append(" <p/>\n");
-        result.append("<table cellspacing=\"5\">\n");
-        result.append("<tr><td colspan=\"2\"><b>General</b></td></tr>\n");
-    }
 }

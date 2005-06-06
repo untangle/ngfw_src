@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: BaseSummarizer.java,v 1.2 2005/02/12 00:44:09 jdi Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.reporting;
@@ -48,16 +48,20 @@ public abstract class BaseSummarizer implements ReportSummarizer {
 
     protected String summarizeEntries(String tranName) {
         StringBuilder s = new StringBuilder();
-        s.append("<tr><td><b>").append(tranName).append("</b></td>\n");
+        // s.append("<tr><td><b>").append(tranName).append("</b></td>\n");
         Iterator<Entry> iter = entries.iterator();
+	int colorCounter = 0;
         while (iter.hasNext()) {
             Entry entry = iter.next();
 
-            s.append("<tr><td></td><td>");
-            s.append(entry.name);
-            s.append("</td><td>");
-            s.append(entry.value);
-            s.append("</td></tr>\n");
+	    if( colorCounter%2 == 0 )
+		s.append("<tr bgcolor=\"eeeeee\">");
+	    else
+		s.append("<tr bgcolor=\"dddddd\">");
+            s.append("<td align=\"left\">" + entry.name + "</td>");
+            s.append("<td align=\"right\">" + entry.value + "</td>");
+            s.append("</tr>\n");
+	    colorCounter++;
         }
         return s.toString();
     }
