@@ -195,7 +195,7 @@ class RedirectMatcher {
                 request.serverAddr( redirectAddress );
             }
             
-            if ( redirectPort >= 0 ) {
+            if ( redirectPort > 0 ) {
                 request.serverPort( redirectPort );
             }
         } else {
@@ -204,7 +204,7 @@ class RedirectMatcher {
                 request.clientAddr( redirectAddress );
             }
             
-            if ( redirectPort >= 0 ) {
+            if ( redirectPort > 0 ) {
                 request.clientPort( redirectPort );
             }
         }

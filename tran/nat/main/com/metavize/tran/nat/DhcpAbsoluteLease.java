@@ -30,8 +30,8 @@ import com.metavize.mvvm.tran.firewall.MACAddress;
  */
 public class DhcpAbsoluteLease 
 {
-    static final int REGISTER = 0;
-    static final int EXPIRE   = 1;
+    static final int REGISTERED = 0;
+    static final int EXPIRED    = 1;
 
     private Long id;
     private MACAddress mac;
@@ -56,7 +56,7 @@ public class DhcpAbsoluteLease
         this.mac        = lease.getMac();
         this.ip         = lease.getIP();
         this.hostname   = lease.getHostname();
-        this.eventType  = now.after( endOfLease ) ? EXPIRE : REGISTER;
+        this.eventType  = now.after( endOfLease ) ? EXPIRED : REGISTERED;
     }
 
     /**

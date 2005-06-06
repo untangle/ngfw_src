@@ -47,6 +47,7 @@ class DhcpMonitor implements Runnable
 
     private static final String DHCP_LEASES_FILE        = "/var/lib/misc/dnsmasq.leases";
     private static final String DHCP_LEASE_DELIM        = " ";
+    private static final String DHCP_EMPTY_HOSTNAME     = "*";
 
     private static final int    DHCP_LEASE_ENTRY_EOL    = 0;
     private static final int    DHCP_LEASE_ENTRY_MAC    = 1;
@@ -272,7 +273,11 @@ class DhcpMonitor implements Runnable
         
         tmp = strArray[DHCP_LEASE_ENTRY_HOST];
         try {
-            host = HostName.parse( tmp );
+            if ( tmp.equals( DHCP_EMPTY_HOSTNAME )) {
+                host = HostName.getEmptyHostName();
+            } else {
+                host = HostName.parse( tmp );
+            }
         } catch ( ParseException e ) {
             logger.error( "Invalid hostname: " + tmp );
             return;

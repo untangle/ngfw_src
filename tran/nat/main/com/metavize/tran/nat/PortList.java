@@ -36,11 +36,11 @@ class PortList {
     static PortList makePortList( int start, int end )
     {
         if ( start < 0 || start > 65535 ) {
-            throw new IllegalArgumentException( "Invalid start port" + start );
+            throw new IllegalArgumentException( "Invalid start port: " + start );
         }
         
         if ( end < 0 || end > 65535 ) {
-            throw new IllegalArgumentException( "Invalid end port" + end );
+            throw new IllegalArgumentException( "Invalid end port: " + end );
         }
         
         if ( start > end ) {
@@ -67,7 +67,7 @@ class PortList {
     synchronized void releasePort( int port )
     {
         if ( start > port || port > end ) {
-            throw new IllegalArgumentException( "Invalid port" + port );
+            throw new IllegalArgumentException( "Invalid port: " + port );
         }
         
         portList.add( port );

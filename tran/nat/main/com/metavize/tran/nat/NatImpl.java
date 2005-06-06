@@ -10,14 +10,12 @@
  */
 package com.metavize.tran.nat;
 
+
+import java.util.Set;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.LinkedList;
-import java.util.Set;
-
-import java.net.InetAddress;
-import java.net.Inet4Address;
+import java.util.Iterator;
 
 import org.apache.log4j.Logger;
 
@@ -29,17 +27,23 @@ import net.sf.hibernate.Transaction;
 import com.metavize.mvvm.NetworkingManager;
 import com.metavize.mvvm.NetworkingConfiguration;
 
+import com.metavize.mvvm.tapi.IPSessionDesc;
+import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.Affinity;
 import com.metavize.mvvm.tapi.Fitting;
+import com.metavize.mvvm.tapi.MPipe;
+import com.metavize.mvvm.tapi.MPipeManager;
 import com.metavize.mvvm.tapi.PipeSpec;
 import com.metavize.mvvm.tapi.SoloPipeSpec;
 import com.metavize.mvvm.tapi.Protocol;
 import com.metavize.mvvm.tapi.SoloTransform;
 import com.metavize.mvvm.tapi.Subscription;
 import com.metavize.mvvm.tapi.TransformContextFactory;
+import com.metavize.mvvm.tapi.event.SessionEventListener;
+import com.metavize.mvvm.tapi.PipelineFoundry;
 import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.tran.token.TokenAdaptor;
 
-import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.firewall.ProtocolMatcher;
 import com.metavize.mvvm.tran.firewall.IPMatcher;
@@ -53,12 +57,19 @@ import com.metavize.mvvm.tran.TransformState;
 import com.metavize.mvvm.argon.SessionMatcher;
 import com.metavize.mvvm.argon.SessionMatcherFactory;
 
-public class NatImpl extends SoloTransform implements Nat
+public class NatImpl extends AbstractTransform implements Nat
 {
+    private static final PipelineFoundry FOUNDRY = MvvmContextFactory.context().pipelineFoundry();
+
     private final Logger logger = Logger.getLogger( NatImpl.class );
-    private final PipeSpec pipeSpec;
     private NatSettings settings = null;
-    private NatEventHandler handler = null;
+    final NatEventHandler handler;
+    private NatSessionManager sessionManager;
+
+    private final PipeSpec[] pipeSpecs = new PipeSpec[2];
+
+    final MPipe[] mPipes = new MPipe[2];
+    private final SessionEventListener[] listeners = new SessionEventListener[2];
 
     public NatImpl()
     {
@@ -67,9 +78,20 @@ public class NatImpl extends SoloTransform implements Nat
         subscriptions.add(new Subscription(Protocol.UDP));
         
         /* Have to figure out pipeline ordering, this should always next to towards the outside */
-        this.pipeSpec = new SoloPipeSpec( "nat", subscriptions, Fitting.OCTET_STREAM, 
+        pipeSpecs[0]  = new SoloPipeSpec( "nat", subscriptions, Fitting.OCTET_STREAM, 
                                           Affinity.OUTSIDE, SoloPipeSpec.MAX_STRENGTH - 1 );
-                                          
+        
+        subscriptions = new HashSet();
+        subscriptions.add(new Subscription(Protocol.TCP));
+        
+        /* This subscription has to evaluate after NAT */
+        pipeSpecs[1] = new SoloPipeSpec( "nat-ftp", subscriptions, Fitting.FTP_TOKENS, 
+                                         Affinity.SERVER, 0 );
+        
+        sessionManager = new NatSessionManager( this );
+
+        listeners[0] = handler = new NatEventHandler( this );
+        listeners[1] = new TokenAdaptor( new NatFtpFactory( this ));
     }
 
     public NatSettings getNatSettings()
@@ -133,9 +155,29 @@ public class NatImpl extends SoloTransform implements Nat
         }
     }
 
-    public PipeSpec getPipeSpec()
+    // AbstractTransform methods ----------------------------------------------
+    protected void connectMPipe()
     {
-        return this.pipeSpec;
+        for (int i = 0; i < pipeSpecs.length; i++) {
+            mPipes[i] = MPipeManager.manager().plumbLocal(this, pipeSpecs[i]);
+            mPipes[i].setSessionEventListener(listeners[i]);
+            FOUNDRY.registerMPipe(mPipes[i]);
+            logger.debug( "Connecting mPipe[" + i + "] as " + mPipes[i] + 
+                          " with listener: " + listeners[i] );
+        }
+    }
+
+    protected void disconnectMPipe()
+    {
+        for (int i = 0; i < mPipes.length; i++) {
+            logger.debug( "Disconnecting mPipe[" + i + "] as " + mPipes[i] );
+            if ( mPipes[i] != null ) {
+                FOUNDRY.deregisterMPipe(mPipes[i]);
+            } else {
+                logger.warn("Disconnecting null mPipe[" + i + "]");
+            }
+            mPipes[i] = null;
+        }
     }
 
     protected void initializeSettings()
@@ -189,8 +231,6 @@ public class NatImpl extends SoloTransform implements Nat
         } catch (Exception e) {
             throw new TransformStartException(e);
         }        
-
-        getMPipe().setSessionEventListener( this.handler );
         
         /* NAT configuration needs information from the networking settings. */
         NetworkingConfiguration netConfig = MvvmContextFactory.context().networkingManager().get();
@@ -211,11 +251,6 @@ public class NatImpl extends SoloTransform implements Nat
         shutdownMatchingSessions();
 
         /* deconfigure the event handle */
-        if ( handler == null ) {
-            logger.error( "null event handler in postStop, creating a new one" );
-            handler = new NatEventHandler();
-        }
-
         handler.deconfigure();
         DhcpManager.getInstance().deconfigure();
     }
@@ -226,9 +261,8 @@ public class NatImpl extends SoloTransform implements Nat
 
         logger.info( "Reconfigure()" );
 
-        /* Configure the handler */
-        if ( handler == null ) handler = new NatEventHandler();
-
+        /* XXXX, what goes here. Configure the handler */
+        
         /* Settings will always be null right now */
         if ( settings == null ) {
             throw new TransformException( "Failed to get Nat settings: " + settings );
@@ -243,6 +277,37 @@ public class NatImpl extends SoloTransform implements Nat
         }
         
         logger.info( "Update Settings Complete" );
+    }
+
+    public void dumpSessions()
+    {
+        for (MPipe pipe : mPipes) {
+            if (pipe != null) {
+                pipe.dumpSessions();
+            }
+        }
+    }
+
+    public IPSessionDesc[] liveSessionDescs()
+    {
+        IPSessionDesc[] s1 = null;
+        if (mPipes[0] != null) {
+            s1 = mPipes[0].liveSessionDescs();
+        } else {
+            s1 = new IPSessionDesc[0];
+        }
+
+        IPSessionDesc[] s2 = null;
+        if (mPipes[1] != null) {
+            s2 = mPipes[1].liveSessionDescs();
+        } else {
+            s2 = new IPSessionDesc[0];
+        }
+
+        IPSessionDesc[] retDescs = new IPSessionDesc[s1.length + s2.length];
+        System.arraycopy(s1, 0, retDescs, 0, s1.length);
+        System.arraycopy(s2, 0, retDescs, s1.length, s2.length);
+        return retDescs;
     }
 
     /* Kill all sessions when starting or stopping this transform */
@@ -387,5 +452,10 @@ public class NatImpl extends SoloTransform implements Nat
         }
                 
         return settings;
-    }    
+    }
+
+    NatSessionManager getSessionManager()
+    {
+        return sessionManager;
+    }
 }

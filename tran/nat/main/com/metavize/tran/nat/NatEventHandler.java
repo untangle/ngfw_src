@@ -44,6 +44,9 @@ import com.metavize.mvvm.tran.firewall.IPMatcher;
 import com.metavize.mvvm.tran.firewall.PortMatcher;
 import com.metavize.mvvm.tran.firewall.IntfMatcher;
 
+/* Import all of the constants from NatConstants (1.5 feature) */
+import static com.metavize.tran.nat.NatConstants.*;
+
 class NatEventHandler extends AbstractEventHandler
 {
     private final Logger logger = Logger.getLogger(NatEventHandler.class);
@@ -52,15 +55,6 @@ class NatEventHandler extends AbstractEventHandler
     /* Number of milliseconds to wait in between updating the address and updating the mvvm */
     private static final int SLEEP_TIME = 1000;
     
-    private static final int TCP_NAT_PORT_START = 10000;
-    private static final int TCP_NAT_PORT_END   = 60000;
-
-    private static final int UDP_NAT_PORT_START = 10000;
-    private static final int UDP_NAT_PORT_END   = 60000;
-
-    private static final int ICMP_PID_START     = 1;
-    private static final int ICMP_PID_END       = 60000;
-
     /* match to determine whether a session is natted */
     /* XXX Probably need to initialized this with a value */
     private RedirectMatcher nat;
@@ -86,12 +80,16 @@ class NatEventHandler extends AbstractEventHandler
     private IPaddr internalAddress;
     private IPaddr internalSubnet;
     
+    /* Nat Transform */
+    private final NatImpl transform;
+    
     /* Setup  */
-    NatEventHandler()
+    NatEventHandler( NatImpl transform )
     {
         tcpPortList = PortList.makePortList( TCP_NAT_PORT_START, TCP_NAT_PORT_END );
         udpPortList = PortList.makePortList( UDP_NAT_PORT_START, UDP_NAT_PORT_END );
         icmpPidList = PortList.makePortList( ICMP_PID_START, ICMP_PID_END );
+        this.transform = transform;
     }
 
     public void handleTCPNewSessionRequest( TCPNewSessionRequestEvent event )
@@ -107,12 +105,31 @@ class NatEventHandler extends AbstractEventHandler
     }
 
     private void handleNewSessionRequest( IPNewSessionRequest request, Protocol protocol )
+        throws MPipeException
     {
+        InetAddress clientAddr = request.clientAddr();
+        int         clientPort = request.clientPort();
+        InetAddress serverAddr = request.serverAddr();
+        int         serverPort = request.serverPort();
+        
+        NatAttachment attachment = new NatAttachment();
+
+        request.attach( attachment );
+        
         /* Check for NAT, Redirects or DMZ */
         if ( isNat(  request, protocol ) ||
              isRedirect( request, protocol ) || 
              isDmz(  request,  protocol )) {
-            request.release(true);
+            request.release( true );
+            
+            if ( isFtp( request, protocol )) {
+                transform.getSessionManager().registerSession( request, protocol,
+                                                               clientAddr, clientPort,
+                                                               serverAddr, serverPort );
+                                                               
+                
+                attachment.isManagedSession( true );
+            }
             return;
         }
         
@@ -120,7 +137,7 @@ class NatEventHandler extends AbstractEventHandler
          * must be rejected */
         if ( nat.isEnabled()) {
             /* Increment the block counter */
-            incrementCount( Transform.GENERIC_0_COUNTER ); // BLOCK COUNTER
+            transform.incrementCount( BLOCK_COUNTER ); // BLOCK COUNTER
             
             /* XXX How should the session be rejected */
             request.rejectSilently();
@@ -144,20 +161,31 @@ class NatEventHandler extends AbstractEventHandler
         UDPSession udpsession = (UDPSession)event.ipsession();
         
         if ( udpsession.isPing()) {
-            Boolean isNatPid = (Boolean)udpsession.attachment();
+            NatAttachment attachment = (NatAttachment)udpsession.attachment();
             int pid = udpsession.icmpId();
+            int releasePid;
 
-            if ( isNatPid == null ) {
+            if ( attachment == null ) {
                 logger.error( "null attachment on Natd session" );
                 return;
             }
-            if ( isNatPid ) {
-                logger.debug( "ICMP: Releasing pid: " + pid );
+            
+            releasePid = attachment.releasePort();
+            
+            if ( pid != releasePid ) {
+                logger.error( "Mismatch on the attached port and the session port " + 
+                              pid + "!=" + releasePid );
+                return;
+            }
+            
+            if ( releasePid != 0 ) {
+                logger.debug( "ICMP: Releasing pid: " + releasePid );
                 
-                icmpPidList.releasePort( pid );
+                icmpPidList.releasePort( releasePid );
             } else {
                 logger.debug( "Ignoring non-natted pid: " + pid );
             }
+
         } else {
             releasePort( Protocol.UDP, udpsession );
         }
@@ -239,12 +267,10 @@ class NatEventHandler extends AbstractEventHandler
     /**
      * Determine if a session is natted, and if necessary, rewrite its session information.
      */
-    private boolean isNat( IPNewSessionRequest request, Protocol protocol )
+    private boolean isNat( IPNewSessionRequest request, Protocol protocol ) throws MPipeException
     {
         int port;
-        
-        request.attach( Boolean.FALSE );
-        
+                
         if ( nat.isMatch( request, protocol )) {
             /* Check to see if this is redirect, check before changing the source address */
             isRedirect(  request, protocol );
@@ -269,19 +295,18 @@ class NatEventHandler extends AbstractEventHandler
             if ( request.clientPort() == 0 && request.serverPort() == 0 ) {
                 port = icmpPidList.getNextPort();
                 ((UDPNewSessionRequest)request).icmpId( port );
-                request.attach( Boolean.TRUE );
                 logger.debug( "Redirect PING session to id: " + port );
             } else {
                 port = getNextPort( protocol );
                 request.clientPort( port );
                 
-                /* Attach that the port is Natd */
-                request.attach( Boolean.TRUE );
                 logger.debug( "Redirecting session to port: " + port );
             }
+            
+            ((NatAttachment)request.attachment()).releasePort( port );
 
             /* Increment the NAT counter */
-            incrementCount( Transform.GENERIC_1_COUNTER ); // NAT COUNTER
+            transform.incrementCount( NAT_COUNTER ); // NAT COUNTER
             
             return true;
         }
@@ -292,8 +317,16 @@ class NatEventHandler extends AbstractEventHandler
     /**
      * Determine if a session is redirected, and if necessary, rewrite its session information.
      */
-    private boolean isRedirect( IPNewSessionRequest request, Protocol protocol )
+    private boolean isRedirect( IPNewSessionRequest request, Protocol protocol ) throws MPipeException
     {
+        /* Check if this is a session redirect (A redirect related to a session) */
+        if ( transform.getSessionManager().isSessionRedirect( request, protocol )) {
+            /* Increment the NAT counter */
+            transform.incrementCount( REDIR_COUNTER );
+            
+            return true;
+        }
+
         for ( Iterator<RedirectMatcher> iter = redirectList.iterator(); iter.hasNext(); ) {
             RedirectMatcher matcher = iter.next();
             
@@ -302,7 +335,7 @@ class NatEventHandler extends AbstractEventHandler
                 matcher.redirect( request );
 
                 /* Increment the NAT counter */
-                incrementCount( Transform.GENERIC_2_COUNTER ); // REDIR COUNTER
+                transform.incrementCount( REDIR_COUNTER );
 
                 return true;
             }
@@ -319,44 +352,64 @@ class NatEventHandler extends AbstractEventHandler
             dmz.redirect( request );
             
             /* Increment the DMZ counter */
-            incrementCount( Transform.GENERIC_3_COUNTER ); // DMZ COUNTER
+            transform.incrementCount( DMZ_COUNTER ); // DMZ COUNTER
 
             return true;
         }
         return false;
     }
 
-
     /**
      * Retrieve the next port from the port list
      */
-    private int getNextPort( Protocol protocol )
+    int getNextPort( Protocol protocol )
     {                
         return getPortList( protocol ).getNextPort();
+    }
+
+    /**
+     * Release a port 
+     * Utility function for NatSessionManager.
+     */
+    void releasePort( Protocol protocol, int port )
+    {
+        getPortList( protocol ).releasePort( port );
     }
 
     /**
      * Release a port and place and back onto the port list
      */
     private void releasePort( Protocol protocol, IPSession session )
-    {
-        int port = session.clientPort();
-        
+    {        
         PortList pList = getPortList( protocol );
 
-        Boolean isNatPort = (Boolean)session.attachment();
+        NatAttachment attachment = (NatAttachment)session.attachment();
         
-        if ( isNatPort == null ) {
+        if ( attachment == null ) {
             logger.error( "null attachment on Natd session" );
             return;
         }
 
-        if ( isNatPort ) {
-            logger.debug( "Releasing port: " + port );
+        int releasePort = attachment.releasePort();
+
+        if ( releasePort != 0 ) {
+            if ( releasePort != session.clientPort() && 
+                 releasePort != session.serverPort()) {
+                /* This happens for all NAT ftp PORT sessions */
+                logger.info( "Release port " + releasePort +" is neither client nor server port" );
+            }
+
+            logger.debug( "Releasing port: " + releasePort );
             
-            getPortList( protocol ).releasePort( port );
+            getPortList( protocol ).releasePort( releasePort );
         } else {
-            logger.debug( "Ignoring non-natted port: " + port );
+            logger.debug( "Ignoring non-natted port: " + session.clientPort() + "/" + session.serverPort());
+        }
+
+        if ( attachment.isManagedSession()) {
+            logger.debug( "Removing session from the managed list" );
+
+            transform.getSessionManager().releaseSession( session, protocol );
         }
     }
 
@@ -404,6 +457,15 @@ class NatEventHandler extends AbstractEventHandler
         MvvmContextFactory.context().argonManager().updateAddress();
         MvvmContextFactory.context().argonManager().disableLocalAntisubscribe();
     }
+
+    private boolean isFtp( IPNewSessionRequest request, Protocol protocol )
+    {
+        if (( protocol == Protocol.TCP ) && ( request.serverPort() == FTP_SERVER_PORT )) {
+            return true;
+        }
+        
+        return false;
+    }
    
     private void disableNat()
     {
@@ -439,5 +501,40 @@ class NatEventHandler extends AbstractEventHandler
 
         /* Don't catch traffic to the local host */
         MvvmContextFactory.context().argonManager().enableLocalAntisubscribe();
+    }
+}
+
+class NatAttachment
+{    
+    /* True if this session uses a port that must be released */
+    /* Port to release, 0, if a port should not be released */
+    private int releasePort = 0;
+    
+    /* True if this session has created a session that must be removed from the session
+     * manager.  (Presently the session manager only manages ftp sessions) */
+    private boolean isManagedSession = false;
+    
+    NatAttachment()
+    {
+    }
+
+    boolean isManagedSession()
+    {
+        return this.isManagedSession;
+    }
+
+    void isManagedSession( boolean isManagedSession )
+    {
+        this.isManagedSession = isManagedSession;
+    }
+        
+    int releasePort()
+    {
+        return this.releasePort;
+    }
+
+    void releasePort( int releasePort )
+    {
+        this.releasePort = releasePort;
     }
 }
