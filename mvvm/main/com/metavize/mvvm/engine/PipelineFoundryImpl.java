@@ -111,7 +111,7 @@ class PipelineFoundryImpl implements PipelineFoundry
 
         if (logger.isDebugEnabled()) {
             logger.debug("sid: " + sessionDesc.id() + " pipe in " + (t1 - t0)
-                         + " millis: " + fittings);
+                         + " millis: " + mPipes);
         }
 
         List<ArgonAgent> l = new ArrayList<ArgonAgent>(mPipes.size());

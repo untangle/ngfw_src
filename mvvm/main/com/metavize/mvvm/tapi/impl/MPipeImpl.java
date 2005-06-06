@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: MPipeImpl.java,v 1.24 2005/01/19 04:10:23 amread Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.tapi.impl;
@@ -367,5 +367,12 @@ class MPipeImpl implements MPipe {
         synchronized(subscriptionIdLock) {
             return subscriptionId++;
         }
+    }
+
+    // Object methods ---------------------------------------------------------
+
+    public String toString()
+    {
+        return listener.toString();
     }
 }

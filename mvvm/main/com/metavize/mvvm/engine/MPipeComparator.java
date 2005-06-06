@@ -68,7 +68,13 @@ class MPipeComparator implements Comparator
             int s2 = ps2.getStrength();
 
             if (s1 == s2) {
-                return 0;
+                if (mp1 == mp2) {
+                    return 0;
+                } else {
+                    int mp1Id = System.identityHashCode(mp1);
+                    int mp2Id = System.identityHashCode(mp2);
+                    return mp1Id < mp2Id ? -1 : 1;
+                }
             } else if (ra1 == Affinity.CLIENT) {
                 return s1 < s2 ? 1 : -1;
             } else if (ra1 == Affinity.SERVER) {
