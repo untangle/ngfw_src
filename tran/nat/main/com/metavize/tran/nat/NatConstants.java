@@ -22,7 +22,7 @@ class NatConstants
     
     /* TCP Port range for nat */
     static final int TCP_NAT_PORT_START = 10000;
-    static final int TCP_NAT_PORT_END   = 10010;
+    static final int TCP_NAT_PORT_END   = 60000;
     
     /* UDP Port range for nat */
     static final int UDP_NAT_PORT_START = 10000;
