@@ -285,12 +285,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
     </copy>
   </target>
 
-  <target name="install.spam">
-    <chmod perm="ugo+rx">
-      <fileset file="${build.dist}/usr/bin/spamreport"/>
-    </chmod>
-  </target>
-
+  <target name="install.spam"/>
   <target name="install.httpblocker"/>
   <target name="install.airgap"/>
   <target name="install.reporting"/>

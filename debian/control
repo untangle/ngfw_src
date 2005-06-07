@@ -66,7 +66,7 @@ Description: The Metavize Web Content Filter
 
 Package: email-transform
 Architecture: any
-Depends: mvvm, spamassassin, spamc, libnet-dns-perl
+Depends: mvvm, spamc-mv
 Conflicts: xmailscanner-transform
 XB-Price: 1000
 XB-Display-Name: eMail SpamGuard
@@ -166,7 +166,7 @@ Description: The Metavize Report Generator
 
 Package: spam-transform
 Architecture: any
-Depends: mvvm
+Depends: mvvm, spamc-mv
 XB-Price: 1000
 XB-Display-Name: SpamGuard
 XB-RackPosition: 1001

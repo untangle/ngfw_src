@@ -81,7 +81,7 @@ pkgs: chk
 	@rm -f ./*stamp
 	@fakeroot debian/rules binary
 
-release: 
+release: pkgs
 	@echo "Releasing to /var/www/$(RELEASE_DEST)"
 	@buildtools/incVersion.sh "$(packages)"
 	@( export DEBDEST="$(RELEASE_DEST)" && buildtools/release.sh    "$(packages)" )
