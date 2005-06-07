@@ -24,6 +24,7 @@ import org.apache.catalina.Engine;
 import org.apache.catalina.Host;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.core.StandardHost;
+import org.apache.catalina.core.StandardDefaultContext;
 import org.apache.catalina.logger.FileLogger;
 import org.apache.catalina.session.StandardManager;
 import org.apache.catalina.startup.Embedded;
@@ -284,6 +285,11 @@ public class Main
         // set Engine properties
         baseEngine.setName("tomcat");
         baseEngine.setDefaultHost(hostname);
+
+        // Set up the Default Context
+        StandardDefaultContext sdc = new StandardDefaultContext();
+        sdc.setAllowLinking(true);
+        baseEngine.addDefaultContext(sdc);
 
         // create Host
         StandardHost baseHost = (StandardHost)emb
