@@ -23,6 +23,15 @@ Description: The Metavize Web/http Decoder
  The HTTP Casing allows other software appliances
  to parse and analyze HTTP traffic and documents.
 
+Package: mail-casing
+Architecture: any
+Depends: mvvm
+XB-Price: 1000
+XB-Display-Name: HTTP Casing
+Description: The Metavize eMail Decoder
+ The Mail Casing allows other software appliances
+ to parse and analyze eMail (SMTP/IMAP/POP3) traffic and documents.
+
 Package: airgap-transform
 Architecture: any
 Depends: mvvm
@@ -154,6 +163,15 @@ Description: The Metavize Report Generator
  EdgeReport generates document reports about activities on your network.
  EdgeReport will report general network activity, and information supplied 
  by other Software Appliances.
+
+Package: spam-transform
+Architecture: any
+Depends: mvvm
+XB-Price: 1000
+XB-Display-Name: SpamGuard
+XB-RackPosition: 1001
+Description: The Metavize SpamGuard Software Appliance
+ The SpamGuard Software Appliance marks Spam email as Spam.
 
 Package: test-transform
 Architecture: any
