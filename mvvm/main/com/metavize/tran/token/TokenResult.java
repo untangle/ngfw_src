@@ -6,14 +6,21 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: TokenResult.java,v 1.7 2005/01/23 23:58:00 amread Exp $
+ * $Id$
  */
 
 package com.metavize.tran.token;
 
 public class TokenResult
 {
-    private static final Token[] TOKEN_PROTO = new Token[0];
+    public static final TokenResult NONE;
+
+    private static final Token[] TOKEN_PROTO;
+
+    static {
+        TOKEN_PROTO = new Token[0];
+        NONE = new TokenResult();
+    }
 
     // XXX probably better realized as subclasses
     private final boolean streamer;
@@ -29,7 +36,7 @@ public class TokenResult
 
     // XXX ugly!
 
-    public TokenResult()
+    private TokenResult()
     {
         this.s2c = TOKEN_PROTO;
         this.c2s = TOKEN_PROTO;

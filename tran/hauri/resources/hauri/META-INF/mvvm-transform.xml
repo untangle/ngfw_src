@@ -17,5 +17,6 @@ $Id: mvvm-transform.xml,v 1.2 2005/03/08 23:05:46 inieves Exp $
                   classname="com.metavize.tran.hauri.HauriTransform"
                   gui-classname="com.metavize.tran.hauri.gui.MTransformJPanel"/>
   <parent>http-casing</parent>
+  <parent>mail-casing</parent>
   <parent>ftp-casing</parent>
 </mvvm-transform>

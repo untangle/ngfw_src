@@ -27,9 +27,13 @@ public abstract class AbstractParser implements Parser
         this.clientSide = clientSide;;
     }
 
+    // Parser noops -----------------------------------------------------------
+
+    public TokenStreamer endSession() { return null; }
+
     // session manipulation ---------------------------------------------------
 
-    public void lineBuffering(boolean oneLine)
+    protected void lineBuffering(boolean oneLine)
     {
         if (clientSide) {
             session.clientLineBuffering(oneLine);
@@ -38,7 +42,7 @@ public abstract class AbstractParser implements Parser
         }
     }
 
-    public int readLimit()
+    protected int readLimit()
     {
         if (clientSide) {
             return session.clientReadLimit();
@@ -47,7 +51,7 @@ public abstract class AbstractParser implements Parser
         }
     }
 
-    public void readLimit(int limit)
+    protected void readLimit(int limit)
     {
         if (clientSide) {
             session.clientReadLimit(limit);
@@ -56,12 +60,12 @@ public abstract class AbstractParser implements Parser
         }
     }
 
-    public void scheduleTimer(long delay)
+    protected void scheduleTimer(long delay)
     {
         session.scheduleTimer(delay);
     }
 
-    public void cancelTimer()
+    protected void cancelTimer()
     {
         session.cancelTimer();
     }

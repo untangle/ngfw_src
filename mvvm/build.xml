@@ -483,6 +483,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
     <mkdir dir="${dist.log}"/>
     <mkdir dir="${dist.var.run}"/>
     <mkdir dir="${dist.mvvm.data}"/>
+    <mkdir dir="${dist.mvvm.tmp}"/>
     <mkdir dir="${dist.mvvm.conf}/etc"/>
     <mkdir dir="${dist.mvvm.conf}/etc/network"/>
 

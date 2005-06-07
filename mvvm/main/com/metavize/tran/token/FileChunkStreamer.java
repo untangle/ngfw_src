@@ -12,9 +12,13 @@
 package com.metavize.tran.token;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
 import com.metavize.mvvm.tapi.Pipeline;
 import org.apache.log4j.Logger;
@@ -27,35 +31,64 @@ import org.apache.log4j.Logger;
  */
 public class FileChunkStreamer extends TokenStreamer
 {
+    private static final int CHUNK_SIZE = 1024;
+
     private final Logger logger = Logger.getLogger(FileChunkStreamer.class);
+
+    private enum StreamState { BEGIN, FILE, END };
 
     private final File file;
     private final FileChannel channel;
     private final boolean closeWhenDone;
-    private final int chunkSize;
+    private final List<Token> beginTokens;
+    private final List<Token> endTokens;
 
+    private StreamState state;
+    private Iterator<Token> iterator = null;
     private boolean sentEnd = false;
 
     // constructors -----------------------------------------------------------
 
-    public FileChunkStreamer(Pipeline pipeline, File file, FileChannel channel,
-                             boolean closeWhenDone, int chunkSize)
+    private FileChunkStreamer(Pipeline pipeline,
+                              File file, FileChannel channel,
+                              List<Token> beginTokens, List<Token> endTokens,
+                              boolean closeWhenDone)
     {
         super(pipeline);
+
         this.file = file;
         this.channel = channel;
+        this.beginTokens = beginTokens;
+        this.endTokens = endTokens;
         this.closeWhenDone = closeWhenDone;
-        this.chunkSize = chunkSize;
+
+        if (null == beginTokens) {
+            state = StreamState.FILE;
+        } else {
+            iterator = beginTokens.iterator();
+            state = StreamState.BEGIN;
+        }
     }
 
-    public FileChunkStreamer(Pipeline pipeline, File file, FileChannel channel,
+    public FileChunkStreamer(Pipeline pipeline,
+                             File file, FileChannel channel,
+                             Token beginToken, Token endToken,
                              boolean closeWhenDone)
     {
-        super(pipeline);
-        this.file = file;
-        this.channel = channel;
-        this.closeWhenDone = closeWhenDone;
-        this.chunkSize = 16384;
+        this(pipeline, file, channel,
+             null == beginToken ? null : Arrays.asList(new Token[] { beginToken }),
+             null == endToken ? null : Arrays.asList(new Token[] { endToken }),
+             closeWhenDone);
+    }
+
+
+    public FileChunkStreamer(Pipeline pipeline, File file,
+                             Token beginToken, Token endToken,
+                             boolean closeWhenDone)
+        throws IOException
+    {
+        this(pipeline, file, new FileInputStream(file).getChannel(),
+             beginToken, endToken, closeWhenDone);
     }
 
     // TCPStreamer methods ----------------------------------------------------
@@ -69,24 +102,52 @@ public class FileChunkStreamer extends TokenStreamer
 
     protected Token nextToken()
     {
-        logger.debug("streaming token");
-        try {
-            ByteBuffer buf = ByteBuffer.allocate(chunkSize);
+        logger.debug("nextToken()");
 
-            if (sentEnd) {
-                return null; /* done */
-            } else if (0 > channel.read(buf)) {
-                channel.close();
-                file.delete();
-                sentEnd = true;
-                return EndMarker.MARKER;
+        switch (state) {
+        case BEGIN:
+            if (iterator.hasNext()) {
+                Token tok = iterator.next();
+                logger.debug("returning: " + tok);
+                return tok;
             } else {
-                buf.flip();
-                return new Chunk(buf);
+                iterator = null;
+                state = StreamState.FILE;
+                logger.debug("falling through to FILE");
             }
-        } catch (IOException exn) {
-            logger.debug("could not stream file", exn);
-            return null; // XXX i need to be able to rst or something
+
+        case FILE:
+            ByteBuffer buf = ByteBuffer.allocate(CHUNK_SIZE);
+            try {
+                if (0 <= channel.read(buf)) {
+                    buf.flip();
+                    logger.debug("read chunk: " + buf.remaining());
+                    return new Chunk(buf);
+                } else {
+                    channel.close();
+                    file.delete();
+                    iterator = null == endTokens ? null : endTokens.iterator();
+                    state = StreamState.END;
+                    logger.debug("falling through to END");
+                }
+            } catch (IOException exn) {
+                logger.warn("could not read data", exn);
+                return null;
+            }
+
+        case END:
+            if (null != iterator && iterator.hasNext()) {
+                logger.debug("returning iterator.next()");
+                Token tok = iterator.next();
+                logger.debug("returning token: " + tok);
+                return tok;
+            } else {
+                logger.debug("returning null");
+                return null;
+            }
+
+        default:
+            throw new IllegalStateException("bad state: " + state);
         }
     }
 }

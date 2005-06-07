@@ -65,6 +65,7 @@ public class Main
     private String bunniculaLog;
     private String bunniculaToolbox;
     private String bunniculaWeb;
+    private String bunniculaTmp;
 
 
     // constructor ------------------------------------------------------------
@@ -167,6 +168,8 @@ public class Main
         System.setProperty("bunnicula.web.dir", bunniculaWeb);
         bunniculaConf = bunniculaHome + "/conf";
         System.setProperty("bunnicula.conf.dir", bunniculaConf);
+        bunniculaTmp = bunniculaHome + "/tmp";
+        System.setProperty("bunnicula.tmp.dir", bunniculaTmp);
 
         System.setProperty("derby.system.home", bunniculaHome + "/db");
 
@@ -177,6 +180,7 @@ public class Main
         logger.info("bunnicula.data.dir    " + bunniculaData);
         logger.info("bunnicula.web.dir     " + bunniculaWeb);
         logger.info("bunnicula.conf.dir    " + bunniculaConf);
+        logger.info("bunnicula.tmp.dir    " + bunniculaTmp);
 
         File f = new File(bunniculaConf + "/mvvm.properties");
         if (f.exists()) {

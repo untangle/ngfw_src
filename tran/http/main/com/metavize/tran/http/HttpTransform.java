@@ -8,6 +8,7 @@
  *
  * $Id$
  */
+
 package com.metavize.tran.http;
 
 import java.util.HashSet;
@@ -19,7 +20,6 @@ import com.metavize.mvvm.tapi.Subscription;
 import com.metavize.tran.token.CasingAdaptor;
 import com.metavize.tran.token.CasingTransform;
 import org.apache.log4j.Logger;
-
 
 public class HttpTransform extends CasingTransform
 {

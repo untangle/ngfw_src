@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: TokenStreamer.java,v 1.6 2005/01/30 09:20:30 amread Exp $
+ * $Id$
  */
 
 package com.metavize.tran.token;
@@ -46,6 +46,7 @@ public abstract class TokenStreamer implements TCPStreamer
             // XXX factor out token writing
             ByteBuffer buf = ByteBuffer.allocate(8);
             Long key = pipeline.attach(tok);
+            logger.debug("streaming tok: " + tok + " with key: " + key);
             buf.putLong(key);
             buf.flip();
             return buf;

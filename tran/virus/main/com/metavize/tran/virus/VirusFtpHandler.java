@@ -28,6 +28,7 @@ import com.metavize.tran.ftp.FtpFunction;
 import com.metavize.tran.ftp.FtpReply;
 import com.metavize.tran.ftp.FtpStateMachine;
 import com.metavize.tran.token.Chunk;
+import com.metavize.tran.token.EndMarker;
 import com.metavize.tran.token.FileChunkStreamer;
 import com.metavize.tran.token.Token;
 import com.metavize.tran.token.TokenException;
@@ -203,7 +204,8 @@ class VirusFtpHandler extends FtpStateMachine
         if (result.isClean()) {
             transform.incrementCount( PASS_COUNTER );
             Pipeline p = getPipeline();
-            return new FileChunkStreamer(p, file, inChannel, true);
+            return new FileChunkStreamer(p, file, inChannel, null,
+                                         EndMarker.MARKER, true);
         } else {
             transform.incrementCount( BLOCK_COUNTER );
             TCPSession s = getSession();

@@ -78,6 +78,10 @@ class PipelineFoundryImpl implements PipelineFoundry
                 start = Fitting.FTP_CTL_STREAM;
                 break;
 
+            case 25:
+                start = Fitting.SMTP_STREAM;
+                break;
+
             case 80:
                 start = Fitting.HTTP_STREAM;
                 break;
@@ -125,6 +129,7 @@ class PipelineFoundryImpl implements PipelineFoundry
     public void destroy(IPSessionDesc start, IPSessionDesc end)
     {
         PipelineImpl pipeline = (PipelineImpl)pipelines.remove(start.id());
+
         if (logger.isDebugEnabled()) {
             logger.debug("removed: " + pipeline + " for: " + start.id());
         }
@@ -133,6 +138,8 @@ class PipelineFoundryImpl implements PipelineFoundry
         info.update(start, end);
 
         eventLogger.info(new PipelineEvent(info));
+
+        pipeline.destroy();
     }
 
     public void registerMPipe(MPipe mPipe)

@@ -11,6 +11,9 @@
 
 package com.metavize.mvvm.tapi;
 
+import java.io.File;
+import java.io.IOException;
+
 public interface Pipeline
 {
     Long attach(Object o);
@@ -18,4 +21,13 @@ public interface Pipeline
     Object detach(Long key);
     Fitting getClientFitting(MPipe mPipe);
     Fitting getServerFitting(MPipe mPipe);
+
+    /**
+     * Makes a temporary file that will be destroyed on Session
+     * finalization.
+     *
+     * @return the temp file.
+     * @exception IOException the temp file cannot be created.
+     */
+    File mktemp() throws IOException;
 }

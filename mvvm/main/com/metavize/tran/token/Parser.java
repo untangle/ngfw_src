@@ -15,8 +15,36 @@ import java.nio.ByteBuffer;
 
 public interface Parser
 {
-    TokenStreamer endSession();
+    /**
+     * Parse data from the stream.
+     *
+     * @param chunk the byte data from the stream.
+     * @return the ParseResult.
+     * @exception ParseException if a parse error occurs.
+     */
     ParseResult parse(ByteBuffer chunk) throws ParseException;
+
+    /**
+     * Called with last data from the read buffer on session close.
+     *
+     * @param chunk data from read buffer.
+     * @return the ParseResult.
+     * @exception ParseException if a parse error occurs.
+     */
     ParseResult parseEnd(ByteBuffer chunk) throws ParseException;
+
+    /**
+     * On FIN, allows the parser to stream out any final data.
+     *
+     * XXX this is pretty ugly, I should allow a ParseResult and
+     * stream it in the adapt or if necessary.
+     *
+     * @return a <code>TokenStreamer</code> value
+     */
+    TokenStreamer endSession();
+
+    /**
+     * Called on scheduled timer event.
+     */
     void handleTimer();
 }

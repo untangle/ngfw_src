@@ -22,11 +22,11 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <import file="../buildtools/buildmagic.xml"/>
 
   <property name="casings"
-        value="http,ftp"/>
+        value="http,ftp,mail"/>
   <property name="bases"
         value="virus"/>
   <property name="transforms"
-        value="nat,firewall,airgap,reporting,protofilter,test,sophos,fprot,hauri,clam,spyware,httpblocker,email"/>
+        value="nat,firewall,airgap,reporting,protofilter,test,sophos,fprot,hauri,clam,spyware,httpblocker,email,spam"/>
 
 
   <!--              -->
@@ -98,10 +98,10 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
           <delete><fileset dir="${build.dist}" includes="stamp-transform-*"/></delete>
         </then> </if>
 
-	<echo message="Building '${tran.name}'"/>
+    <echo message="Building '${tran.name}'"/>
         <antcall target="install.tran" inheritAll="true"/>
         <touch file="${build.dist}/stamp-${tran.type}-${tran.name}"/>
-      </then> 
+      </then>
       <else>
         <echo message="Skipping '${tran.name}'"/>
       </else>
@@ -165,11 +165,11 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
 
     <!-- bases need casings -->
     <if> <equals arg1="${tran.type}" arg2="base"/> <then>
-        <var name="extra.classes" value="../tran/output/jar/http-casing.mar:../tran/output/jar/ftp-casing.mar"/>
+        <var name="extra.classes" value="../tran/output/jar/http-casing.mar:../tran/output/jar/ftp-casing.mar:../tran/output/jar/mail-casing.mar"/>
     </then> </if>
     <!-- transforms need casings and bases -->
     <if> <equals arg1="${tran.type}" arg2="transform"/> <then>
-        <var name="extra.classes" value="../tran/output/jar/virus-base.mar:../tran/output/jar/http-casing.mar:../tran/output/jar/ftp-casing.mar"/>
+        <var name="extra.classes" value="../tran/output/jar/virus-base.mar:../tran/output/jar/http-casing.mar:../tran/output/jar/ftp-casing.mar:../tran/output/jar/mail-casing.mar:../tran/output/jar/ftp-casing.mar"/>
     </then> </if>
 
     <!-- FIXME email special case -->
@@ -187,16 +187,17 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       <src path="${tran.name}/${src.main}"/>
       <src path="${build.gensrc}/${tran.name}"/>
 
-      <classpath refid="netbeans.classpath"/>
+      <classpath path="${extra.classes}"/>
       <classpath refid="gui.classpath"/>
       <classpath refid="hibernate.classpath"/>
-      <classpath refid="log4j.classpath"/>
-      <classpath refid="jfreechart.classpath"/>
       <classpath refid="jasperreports.classpath"/>
+      <classpath refid="javamail.classpath"/>
+      <classpath refid="jfreechart.classpath"/>
+      <classpath refid="jnlp.classpath"/>
+      <classpath refid="log4j.classpath"/>
       <classpath refid="mvvm-client.classpath"/>
       <classpath refid="mvvm.classpath"/>
-      <classpath path="${extra.classes}"/>
-      <classpath refid="jnlp.classpath"/>
+      <classpath refid="netbeans.classpath"/>
 
       <include name="com/metavize/tran/${tran.name}/**"/>
     </javac>
@@ -256,6 +257,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <target name="install.firewall"/>
   <target name="install.spyware"/>
   <target name="install.http"/>
+  <target name="install.mail"/>
   <target name="install.ftp"/>
   <target name="install.virus"/>
 
@@ -283,6 +285,12 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
     </copy>
   </target>
 
+  <target name="install.spam">
+    <chmod perm="ugo+rx">
+      <fileset file="${build.dist}/usr/bin/spamreport"/>
+    </chmod>
+  </target>
+
   <target name="install.httpblocker"/>
   <target name="install.airgap"/>
   <target name="install.reporting"/>
@@ -299,9 +307,11 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <target name="jar.firewall"/>
   <target name="jar.spyware"/>
   <target name="jar.http"/>
+  <target name="jar.mail"/>
   <target name="jar.ftp"/>
   <target name="jar.virus"/>
   <target name="jar.httpblocker"/>
+  <target name="jar.spam"/>
   <target name="jar.protofilter"/>
   <target name="jar.airgap"/>
   <target name="jar.reporting"/>
@@ -362,12 +372,14 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <target name="compile.spyware"/>
   <target name="compile.http"/>
   <target name="compile.ftp"/>
+  <target name="compile.mail"/>
   <target name="compile.virus"/>
   <target name="compile.sophos"/>
   <target name="compile.fprot"/>
   <target name="compile.hauri"/>
   <target name="compile.clam"/>
   <target name="compile.httpblocker"/>
+  <target name="compile.spam"/>
   <target name="compile.airgap"/>
   <target name="compile.reporting"/>
   <target name="compile.email"/>

@@ -21,8 +21,7 @@ import com.metavize.mvvm.engine.MvvmContextImpl;
  */
 public class MvvmContextFactory
 {
-    private static MvvmLocalContext MVVM_CONTEXT
-        = MvvmContextImpl.context();
+    private static MvvmLocalContext MVVM_CONTEXT = MvvmContextImpl.context();
 
     /**
      * Get the <code>MvvmContext</code> from this classloader.

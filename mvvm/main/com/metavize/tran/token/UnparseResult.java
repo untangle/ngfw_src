@@ -17,12 +17,22 @@ public class UnparseResult
 {
     private static final ByteBuffer[] BYTE_BUFFER_PROTO = new ByteBuffer[0];
     // XXX make List<ByteBuffer> when no XDoclet
-    private ByteBuffer[] result;
+    private final ByteBuffer[] result;
 
     // XXX make List<ByteBuffer> when no XDoclet
     public UnparseResult(ByteBuffer[] result)
     {
         this.result = null == result ? BYTE_BUFFER_PROTO : result;
+    }
+
+    public UnparseResult(ByteBuffer result)
+    {
+        this.result = new ByteBuffer[] { result };
+    }
+
+    public UnparseResult()
+    {
+        this.result = BYTE_BUFFER_PROTO;
     }
 
     public ByteBuffer[] result()

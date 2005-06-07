@@ -102,7 +102,7 @@ class VirusHttpHandler extends HttpStateMachine
             // XXX make a response instead of shutting down
             getSession().shutdownServer();
             getSession().shutdownClient();
-            return new TokenResult();
+            return TokenResult.NONE;
         }
     }
 
@@ -211,7 +211,7 @@ class VirusHttpHandler extends HttpStateMachine
             }
 
             FileChunkStreamer streamer = new FileChunkStreamer
-                (getPipeline(), file, inFile, false);
+                (getPipeline(), file, inFile, null, EndMarker.MARKER, false);
 
             return new TokenResult(streamer, null);
         } else {
@@ -219,7 +219,8 @@ class VirusHttpHandler extends HttpStateMachine
             transform.incrementCount(BLOCK_COUNTER, 1);
             getSession().shutdownClient();
             getSession().shutdownServer();
-            return new TokenResult();
+
+            return TokenResult.NONE;
         }
     }
 
@@ -331,7 +332,7 @@ class VirusHttpHandler extends HttpStateMachine
             }
         } catch (IOException e) {
             logger.warn("Unable to write to buffer file: " + e);
-            return new TokenResult();
+            return TokenResult.NONE;
         }
 
         inbuf.limit(trickleLen);
@@ -342,7 +343,7 @@ class VirusHttpHandler extends HttpStateMachine
             }
         } catch (IOException e) {
             logger.warn("Unable to read from buffer file: " + e);
-            return new TokenResult();
+            return TokenResult.NONE;
         }
 
         inbuf.flip();

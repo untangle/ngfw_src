@@ -49,17 +49,22 @@ public class VirusTransformImpl extends AbstractTransform
 
     private static final int FTP = 0;
     private static final int HTTP = 1;
+    private static final int SMTP = 2;
 
     private final VirusScanner scanner;
 
     private final PipeSpec[] pipeSpecs = new PipeSpec[]
         { new SoloPipeSpec("virus-ftp", Fitting.FTP_TOKENS, Affinity.SERVER, 0),
-          new SoloPipeSpec("virus-http", Fitting.HTTP_TOKENS, Affinity.SERVER, 0) };
+          new SoloPipeSpec("virus-http", Fitting.HTTP_TOKENS, Affinity.SERVER, 0),
+          new SoloPipeSpec("virus-smtp", Fitting.SMTP_TOKENS, Affinity.SERVER, 0),
+        };
 
-    private final MPipe[] mPipes = new MPipe[2];
+    private final MPipe[] mPipes = new MPipe[3];
     private final SessionEventListener[] listeners = new SessionEventListener[]
         { new TokenAdaptor(new VirusFtpFactory(this)),
-          new TokenAdaptor(new VirusHttpFactory(this)) };
+          new TokenAdaptor(new VirusHttpFactory(this)),
+          new TokenAdaptor(new VirusSmtpFactory(this)),
+        };
 
     private final Logger logger = Logger.getLogger(VirusTransformImpl.class);
 
@@ -190,6 +195,17 @@ public class VirusTransformImpl extends AbstractTransform
         }
 
         pipeSpecs[HTTP].setSubscriptions(subscriptions);
+
+        // SMTP
+        subscriptions = new HashSet();
+        {
+            Subscription subscription = new Subscription
+                (Protocol.TCP, Interface.ANY, Interface.ANY);
+            subscriptions.add(subscription);
+        }
+
+        pipeSpecs[SMTP].setSubscriptions(subscriptions);
+
     }
 
     // AbstractTransform methods ----------------------------------------------

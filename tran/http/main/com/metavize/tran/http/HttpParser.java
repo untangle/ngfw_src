@@ -338,7 +338,8 @@ public class HttpParser extends AbstractParser
         logger.debug(sessStr + "returing readBuffer: " + b);
 
         scheduleTimer(TIMEOUT);
-        return new ParseResult((Token[])l.toArray(new Token[l.size()]), b);
+
+        return new ParseResult(l, b);
     }
 
     public ParseResult parseEnd(ByteBuffer buf) throws ParseException
@@ -349,7 +350,7 @@ public class HttpParser extends AbstractParser
 
         // we should implement this to make sure end markers get sent always
 
-        return new ParseResult(null, null);
+        return new ParseResult();
     }
 
     public TokenStreamer endSession()

@@ -11,7 +11,10 @@
 
 package com.metavize.mvvm.engine;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,11 +26,16 @@ import com.metavize.mvvm.tran.PipelineInfo;
 
 class PipelineImpl implements Pipeline
 {
+    private static final File BUNNICULA_TMP
+        = new File(System.getProperty("bunnicula.tmp.dir"));
+
     private final List<MPipe> mPipes;
     private final List<Fitting> fittings;
     private final PipelineInfo info;
+    private final String sessionPrefix;
 
     private final Map objects = new ConcurrentHashMap();
+    private final List<File> files = new LinkedList<File>();
 
     private int id = 0;
 
@@ -38,6 +46,7 @@ class PipelineImpl implements Pipeline
         this.mPipes = new ArrayList<MPipe>(mPipes);
         this.fittings = new ArrayList<Fitting>(fittings);
         this.info = info;
+        this.sessionPrefix = "sess-" + info.getSessionId() + "-";
     }
 
     // object registry methods ------------------------------------------------
@@ -105,10 +114,28 @@ class PipelineImpl implements Pipeline
         throw new IllegalArgumentException("mPipe not in pipeline: " + mPipe);
     }
 
+    public File mktemp() throws IOException
+    {
+        File f = File.createTempFile(sessionPrefix, null, BUNNICULA_TMP);
+        synchronized (files) {
+            files.add(f);
+        }
+        return f;
+    }
+
     // accessors --------------------------------------------------------------
 
     PipelineInfo getInfo()
     {
         return info;
+    }
+
+    // package protected methods ----------------------------------------------
+
+    void destroy()
+    {
+        for (File f : files) {
+            f.delete();
+        }
     }
 }

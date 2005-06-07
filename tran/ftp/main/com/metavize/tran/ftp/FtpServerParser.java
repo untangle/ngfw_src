@@ -12,6 +12,8 @@
 package com.metavize.tran.ftp;
 
 import java.nio.ByteBuffer;
+import java.util.Arrays;
+import java.util.List;
 
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.tapi.Fitting;
@@ -64,12 +66,13 @@ public class FtpServerParser extends AbstractParser
     public ParseResult parseEnd(ByteBuffer buf) throws ParseException
     {
         if (Fitting.FTP_DATA_STREAM == fitting) {
-            return new ParseResult(new Token[] { EndMarker.MARKER }, null);
+            List<Token> l = Arrays.asList(new Token[] { EndMarker.MARKER });
+            return new ParseResult(l, null);
         } else {
             if (buf.hasRemaining()) {
                 logger.warn("unread data in read buffer: " + buf.remaining());
             }
-            return new ParseResult(null, null);
+            return new ParseResult();
         }
     }
 
@@ -93,8 +96,8 @@ public class FtpServerParser extends AbstractParser
                 String message = AsciiCharBuffer.wrap(buf).toString();
 
                 FtpReply reply = new FtpReply(replyCode, message);
-
-                return new ParseResult(new Token[] { reply }, null);
+                List<Token> l = Arrays.asList(new Token[] { reply });
+                return new ParseResult(l, null);
             }
 
             case HYPHEN: {
@@ -102,7 +105,7 @@ public class FtpServerParser extends AbstractParser
                 while (3 < --i && LF != dup.get(i));
 
                 if (LF != dup.get(i++)) {
-                    return new ParseResult(null, buf.compact());
+                    return new ParseResult(buf.compact());
                 }
 
                 ByteBuffer end = dup.duplicate();
@@ -111,14 +114,14 @@ public class FtpServerParser extends AbstractParser
                 int endCode = replyCode(end);
 
                 if (-1 == endCode || SP != end.get()) {
-                    return new ParseResult(null, buf.compact());
+                    return new ParseResult(buf.compact());
                 }
 
                 String message = AsciiCharBuffer.wrap(buf).toString();
 
                 FtpReply reply = new FtpReply(replyCode, message);
-
-                return new ParseResult(new Token[] { reply }, null);
+                List<Token> l = Arrays.asList(new Token[] { reply });
+                return new ParseResult(l, null);
             }
 
             default:
@@ -126,14 +129,15 @@ public class FtpServerParser extends AbstractParser
             }
 
         } else {
-            return new ParseResult(null, buf.compact());
+            return new ParseResult(buf.compact());
         }
     }
 
     private ParseResult parseServerData(ByteBuffer buf) throws ParseException
     {
         Chunk c = new Chunk(buf.duplicate());
-        return new ParseResult(new Token[] { c }, null);
+        List<Token> l = Arrays.asList(new Token[] { c });
+        return new ParseResult(l, null);
     }
 
     private int replyCode(ByteBuffer buf)

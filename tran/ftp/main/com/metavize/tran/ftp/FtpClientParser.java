@@ -12,6 +12,8 @@
 package com.metavize.tran.ftp;
 
 import java.nio.ByteBuffer;
+import java.util.Arrays;
+import java.util.List;
 
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.tapi.Fitting;
@@ -36,6 +38,8 @@ public class FtpClientParser extends AbstractParser
 
     private final Logger logger = Logger.getLogger(FtpClientParser.class);
 
+    // constructors -----------------------------------------------------------
+
     FtpClientParser(TCPSession session)
     {
         super(session, true);
@@ -53,19 +57,22 @@ public class FtpClientParser extends AbstractParser
         if (Fitting.FTP_CTL_STREAM == fitting) {
             return parseCtl(buf);
         } else {
-            return new ParseResult(new Token[] { new Chunk(buf.duplicate()) }, null);
+            Chunk c = new Chunk(buf.duplicate());
+            List<Token> l = Arrays.asList(new Token[] { c });
+            return new ParseResult(l, null);
         }
     }
 
     public ParseResult parseEnd(ByteBuffer buf) throws ParseException
     {
         if (Fitting.FTP_DATA_STREAM == fitting) {
-            return new ParseResult(new Token[] { EndMarker.MARKER }, null);
+            List<Token> l = Arrays.asList(new Token[] { EndMarker.MARKER });
+            return new ParseResult(l, null);
         } else {
             if (buf.hasRemaining()) {
                 logger.warn("unread data in read buffer: " + buf.remaining());
             }
-            return new ParseResult(null, null);
+            return new ParseResult();
         }
     }
 
@@ -92,10 +99,10 @@ public class FtpClientParser extends AbstractParser
                 : new String(ba, i, ba.length - i - 2); // no CRLF
 
             FtpCommand cmd = new FtpCommand(fn, arg);
-
-            return new ParseResult(new Token[] { cmd }, null);
+            List<Token> l = Arrays.asList(new Token[] { cmd });
+            return new ParseResult(l, null);
         } else {
-            return new ParseResult(null, buf);
+            return new ParseResult(buf);
         }
     }
 

@@ -12,6 +12,7 @@
 package com.metavize.tran.token;
 
 import java.nio.ByteBuffer;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -337,15 +338,15 @@ public class CasingAdaptor extends AbstractEventHandler
             return IPDataResult.DO_NOT_PASS;
         }
 
-        Token[] results = pr.results();
+        List<Token> results = pr.getResults();
 
         // XXX add magic:
-        ByteBuffer bb = ByteBuffer.allocate(8 * results.length);
+        ByteBuffer bb = ByteBuffer.allocate(8 * results.size());
 
         // XXX add magic:
-        for (int i = 0; i < results.length; i++) {
-            Long key = pipeline.attach(results[i]);
-            logger.debug("SAVED object: " + results[i] + " with key: " + key
+        for (Token t : results) {
+            Long key = pipeline.attach(t);
+            logger.debug("SAVED object: " + t + " with key: " + key
                          + " on pipeline: " + pipeline);
             bb.putLong(key);
         }
@@ -355,12 +356,12 @@ public class CasingAdaptor extends AbstractEventHandler
 
         if (s2c) {
             logger.debug("parse result to server, read buffer: "
-                         + pr.readBuffer() + "  to client: " + r[0]);
-            return new TCPChunkResult(r, null, pr.readBuffer());
+                         + pr.getReadBuffer() + "  to client: " + r[0]);
+            return new TCPChunkResult(r, null, pr.getReadBuffer());
         } else {
             logger.debug("parse result to client, read buffer: "
-                         + pr.readBuffer() + "  to server: " + r[0]);
-            return new TCPChunkResult(null, r, pr.readBuffer());
+                         + pr.getReadBuffer() + "  to server: " + r[0]);
+            return new TCPChunkResult(null, r, pr.getReadBuffer());
         }
     }
 }

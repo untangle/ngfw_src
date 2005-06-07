@@ -17,20 +17,13 @@ import com.metavize.tran.token.CasingFactory;
 
 class HttpCasingFactory implements CasingFactory
 {
-    private static final Object LOCK = new Object();
-
-    private static HttpCasingFactory HTTP_CASING_FACTORY;
+    private static final HttpCasingFactory HTTP_CASING_FACTORY
+        = new HttpCasingFactory();
 
     private HttpCasingFactory() { }
 
     static HttpCasingFactory factory()
     {
-        synchronized (LOCK) {
-            if (null == HTTP_CASING_FACTORY) {
-                HTTP_CASING_FACTORY = new HttpCasingFactory();
-            }
-        }
-
         return HTTP_CASING_FACTORY;
     }
 

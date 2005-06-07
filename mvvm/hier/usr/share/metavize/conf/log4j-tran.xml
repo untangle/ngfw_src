@@ -34,11 +34,11 @@
   <!-- #      INFO            each new session -->
   <!-- #      WARN            exceptions -->
   <category name="com.metavize.mvvm.tapi.MPipe">
-    <priority value="WARN"/>
+    <priority value="DEBUG"/>
   </category>
 
   <category name="com.metavize.mvvm.tapi.Dispatcher">
-    <priority value="WARN"/>
+    <priority value="DEBUG"/>
   </category>
 
   <!-- # Session Event messages: all events delivered to transform, logged just before delivery -->
@@ -48,7 +48,7 @@
   <!-- #      WARN           New session, new session request events -->
   <category name="com.metavize.mvvm.tapi.SessionEvent">
     <!-- No logging by default -->
-    <priority value="ERROR"/>
+    <priority value="DEBUG"/>
   </category>
 
   <!-- # Internal Session messages, -->
@@ -56,23 +56,31 @@
   <!-- #      INFO            (currently same as WARN) -->
   <!-- #      WARN             exceptions or unusual conditions  -->
   <category name="com.metavize.mvvm.tapi.Session">
-    <priority value="WARN"/>
+    <priority value="DEBUG"/>
   </category>
 
   <category name="com.metavize.mvvm.tapi.TCPSession">
-    <priority value="WARN"/>
+    <priority value="DEBUG"/>
   </category>
 
   <category name="com.metavize.mvvm.tapi.UDPSession">
-    <priority value="WARN"/>
+    <priority value="DEBUG"/>
   </category>
 
   <category name="com.metavize.mvvm.tapi.SessionTimes">
-    <priority value="WARN"/>
+    <priority value="DEBUG"/>
+  </category>
+
+  <category name="com.metavize.tran.token">
+    <priority value="DEBUG"/>
   </category>
 
   <category name="com.metavize.tran.virus">
-    <priority value="WARN"/>
+    <priority value="DEBUG"/>
+  </category>
+
+  <category name="com.metavize.tran.spam">
+    <priority value="DEBUG"/>
   </category>
 
   <category name="com.metavize.tran.ftp">
@@ -97,6 +105,10 @@
 
   <category name="com.metavize.tran.email">
     <priority value="WARN"/>
+  </category>
+
+  <category name="com.metavize.tran.mail">
+    <priority value="DEBUG"/>
   </category>
 
   <category name="com.metavize.mvvm.tran">

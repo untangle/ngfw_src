@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003,2004 Metavize Inc.
+ * Copyright (c) 2003,2004, 2005 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -49,11 +49,11 @@ public class ICMPPacketCrumb extends PacketCrumb
      * @param offset   - Offset in the byte array.
      * @param limit    - Limit of the data.
      */
-    public ICMPPacketCrumb( byte ttl, byte tos, byte options[], byte icmpType, byte icmpCode, 
+    public ICMPPacketCrumb( byte ttl, byte tos, byte options[], byte icmpType, byte icmpCode,
                             InetAddress source, byte[] data, int offset, int limit )
     {
         super( ttl, tos, options, data, offset, limit );
-        
+
         this.source   = source;
         this.icmpType = icmpType;
         this.icmpCode = icmpCode;
@@ -68,11 +68,11 @@ public class ICMPPacketCrumb extends PacketCrumb
      * @param limit   - Limit of the data.
      */
     public ICMPPacketCrumb( ICMPPacket packet, byte[] data, int offset, int limit )
-    {        
+    {
         /* XXX Fix the options */
         this( packet.traffic().ttl(), packet.traffic().tos(), null,
               packet.icmpType(), packet.icmpCode(), packet.icmpSource( data, limit ),
-              data, offset, limit );              
+              data, offset, limit );
     }
 
     /**
@@ -121,7 +121,7 @@ public class ICMPPacketCrumb extends PacketCrumb
     {
         return icmpCode;
     }
-    
+
     public void icmpCode( byte icmpCode )
     {
         /* XXX Probably should do some validation */
@@ -137,19 +137,19 @@ public class ICMPPacketCrumb extends PacketCrumb
     {
         this.source = source;
     }
-    
-    
+
+
     /**
-     * Repair the TCP/UDP/IP Header inside of the data block of an ICMP error packet so that it 
+     * Repair the TCP/UDP/IP Header inside of the data block of an ICMP error packet so that it
      * contains the correct information.  If this is not an error packet, this does nothing.
      * This should only eb
      */
     int updatePacket(  int icmpId, ICMPMailbox icmpMailbox )
     {
-        return Netcap.updateIcmpPacket( this.data, this.limit, this.icmpType, this.icmpCode, 
+        return Netcap.updateIcmpPacket( this.data, this.limit, this.icmpType, this.icmpCode,
                                         icmpId, icmpMailbox );
     }
-    
+
     public void raze()
     {
         /* XXX What should go in here, C structure is freed automatically */

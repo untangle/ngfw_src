@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: Chunk.java,v 1.4 2005/01/27 09:53:35 amread Exp $
+ * $Id$
  */
 
 package com.metavize.tran.token;
@@ -22,21 +22,22 @@ import java.nio.ByteBuffer;
  */
 public class Chunk implements Token
 {
-    private ByteBuffer data;
+    public static final Chunk EMPTY = new Chunk(ByteBuffer.allocate(0));
+
+    private final ByteBuffer data;
+
+    // constructors -----------------------------------------------------------
 
     public Chunk(ByteBuffer data)
     {
         this.data = data;
     }
 
+    // accessors --------------------------------------------------------------
+
     public ByteBuffer getData()
     {
         return data;
-    }
-
-    public void setData(ByteBuffer data)
-    {
-        this.data = data;
     }
 
     // Token methods ----------------------------------------------------------

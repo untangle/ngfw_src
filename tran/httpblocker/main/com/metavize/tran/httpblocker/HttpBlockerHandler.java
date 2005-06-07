@@ -96,7 +96,7 @@ public class HttpBlockerHandler extends HttpStateMachine
         } else {
             transform.incrementCount(BLOCK, 1);
             requests.remove(requests.size() - 1); // dequeue request line
-            return new TokenResult();
+            return TokenResult.NONE;
         }
     }
 
@@ -107,7 +107,7 @@ public class HttpBlockerHandler extends HttpStateMachine
         if (null == c2sReplacement) {
             return new TokenResult(null, new Token[] { c });
         } else { /* blocking */
-            return new TokenResult();
+            return TokenResult.NONE;
         }
     }
 
@@ -125,7 +125,7 @@ public class HttpBlockerHandler extends HttpStateMachine
             } else {
                 responseQueue.add(generateResponse(c2sReplacement,
                                                    c2sPersistent));
-                return new TokenResult();
+                return TokenResult.NONE;
             }
         }
     }
@@ -140,7 +140,7 @@ public class HttpBlockerHandler extends HttpStateMachine
 
         this.statusLine = statusLine;
 
-        return new TokenResult();
+        return TokenResult.NONE;
     }
 
     protected TokenResult doResponseHeader(Header header)
@@ -164,7 +164,7 @@ public class HttpBlockerHandler extends HttpStateMachine
             s2cPersistent = isPersistent(responseHeader);
             transform.incrementCount(BLOCK, 1);
 
-            return new TokenResult();
+            return TokenResult.NONE;
         }
     }
 
@@ -175,7 +175,7 @@ public class HttpBlockerHandler extends HttpStateMachine
         if (null == s2cReplacement) {
             return new TokenResult(new Token[] { c }, null);
         } else { /* block */
-            return new TokenResult();
+            return TokenResult.NONE;
         }
     }
 
