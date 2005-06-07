@@ -64,3 +64,6 @@ cd @PREFIX@/usr/share/metavize/web/reports/current
 cat @PREFIX@/usr/bin/mail_reports_arguments_daily.txt | xargs @PREFIX@/usr/bin/mail-reports
 cat @PREFIX@/usr/bin/mail_reports_arguments_weekly.txt | xargs @PREFIX@/usr/bin/mail-reports
 cat @PREFIX@/usr/bin/mail_reports_arguments_monthly.txt | xargs @PREFIX@/usr/bin/mail-reports
+
+# Just in case left over (we use a jsp now)
+rm -f $REPORT_DIR/index.html
