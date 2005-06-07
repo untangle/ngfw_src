@@ -64,19 +64,3 @@ cd @PREFIX@/usr/share/metavize/web/reports/current
 cat @PREFIX@/usr/bin/mail_reports_arguments_daily.txt | xargs @PREFIX@/usr/bin/mail-reports
 cat @PREFIX@/usr/bin/mail_reports_arguments_weekly.txt | xargs @PREFIX@/usr/bin/mail-reports
 cat @PREFIX@/usr/bin/mail_reports_arguments_monthly.txt | xargs @PREFIX@/usr/bin/mail-reports
-
-cat > $REPORT_DIR/index.html <<EOF
-<html> <head> <title>Metavize EdgeReport</title>
-<META HTTP-EQUIV="Refresh"
-      CONTENT="5; URL=current/index.html">
-</head>
-<blockquote>
-This page has moved. If your browser doesn't automatically redirect to
-its new location, click
-<a href="current/index.html">
-here</a>.
-</blockquote>
-</body>
-</html>
-EOF
-
