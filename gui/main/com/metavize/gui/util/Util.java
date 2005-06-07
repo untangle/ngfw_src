@@ -29,7 +29,7 @@ import com.metavize.mvvm.tran.*;
 public class Util {
 
     // 2.4.0 INFO /////////////////
-    private static String version = "";
+    private static String version = "2.4.0";
     public static String getVersion(){ return version; }
     /////////////////////////////////
 
