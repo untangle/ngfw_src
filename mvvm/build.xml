@@ -34,8 +34,6 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
   <target name="pkg.clean" depends="clean.nuke"/>
 
   <target name="gensrc.servlets">
-    <!-- Do the jsp's so we don't need a JDK at runtime -->
-    <echo message="uriroot is ${src.hier}/${suffix.mvvm.webstart}"/>
     <!-- We need fork to avoid class duplication bug in ant -->
     <java classname="org.apache.jasper.JspC"
           fork="true"
@@ -47,10 +45,27 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       <classpath refid="tomcat.classpath"/>
     </java>
     <echo message="Adding JSP servlet mappings to web.xml"/>
-    <loadfile property="generated-web.xml" srcFile="${build.gensrc}/web-fragment.xml"/>
+    <loadfile property="sd-generated-web.xml" srcFile="${build.gensrc}/web-fragment.xml"/>
     <copy file="${src.hier}/${suffix.mvvm.web}/session-dumper/WEB-INF/web.xml" toFile="${dist.mvvm.web}/session-dumper/WEB-INF/web.xml" overwrite="true">
       <filterset>
-        <filter token="JSP_PRE_COMPILED_SERVLETS" value="${generated-web.xml}"/>
+        <filter token="JSP_PRE_COMPILED_SERVLETS" value="${sd-generated-web.xml}"/>
+      </filterset>
+    </copy>
+    <!-- We need fork to avoid class duplication bug in ant -->
+    <java classname="org.apache.jasper.JspC"
+          fork="true"
+          failonerror="true">
+      <arg line="-d ${build.gensrc}"/>
+      <arg line="-p com.metavize.jsp"/>
+      <arg line="-webinc ${build.gensrc}/web-fragment.xml"/>
+      <arg line="-uriroot ${src.hier}/${suffix.mvvm.web}/reports/"/>
+      <classpath refid="tomcat.classpath"/>
+    </java>
+    <echo message="Adding JSP servlet mappings to web.xml"/>
+    <loadfile property="rp-generated-web.xml" srcFile="${build.gensrc}/web-fragment.xml"/>
+    <copy file="${src.hier}/${suffix.mvvm.web}/reports/WEB-INF/web.xml" toFile="${dist.mvvm.web}/reports/WEB-INF/web.xml" overwrite="true">
+      <filterset>
+        <filter token="JSP_PRE_COMPILED_SERVLETS" value="${rp-generated-web.xml}"/>
       </filterset>
     </copy>
   </target>
@@ -100,7 +115,6 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
     </depend>
 
     <javac destdir="${build.bootstrap}"
-           debug="on"
            optimize="false"
            deprecation="on"
            source="1.5"
@@ -225,11 +239,11 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
     </depend>
 
     <javac destdir="${build.util}"
-           debug="on"
-           optimize="false"
+           debug="true"
+           debuglevel="lines,source"
            deprecation="on"
            source="1.5"
-       target="1.5"
+           target="1.5"
            includeAntRuntime="false">
 
       <src path="${src.main}"/>
@@ -428,6 +442,11 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
     <copy todir="${dist.mvvm.web}/session-dumper/WEB-INF/lib">
       <fileset dir="${build.jar}">
         <include name="mvvm-client.jar"/>
+        <include name="servlets.jar"/>
+      </fileset>
+    </copy>
+    <copy todir="${dist.mvvm.web}/reports/WEB-INF/lib">
+      <fileset dir="${build.jar}">
         <include name="servlets.jar"/>
       </fileset>
     </copy>
