@@ -5,6 +5,9 @@
     "http://java.sun.com/j2ee/dtds/web-app_2_2.dtd">
 
 <web-app>
+
+  @JSP_PRE_COMPILED_SERVLETS@
+
   <display-name>Reports</display-name>
 
   <security-constraint>
