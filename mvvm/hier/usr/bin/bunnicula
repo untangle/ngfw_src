@@ -49,9 +49,6 @@ if [ ! -e @MVVM_CONF@/keystore ]; then
         -dname "cn=$(hostname), ou=devices"
 fi
 
-# make empty reports dir, if none
-if [ ! -e @MVVM_REPORTS@/index.html ]; then @PREFIX@/usr/bin/index-reports; fi
-
 # add user and mvvm database just in case
 su postgres -c "createuser --createdb --no-adduser metavize" 2>/dev/null
 createdb -O metavize -U metavize mvvm 2>/dev/null
