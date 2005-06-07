@@ -94,8 +94,7 @@ int _netcap_tcp_callback_cli_complete( netcap_session_t* netcap_sess, netcap_cal
     
     if ( msg->type != TCP_MSG_SYN || !msg->pkt ) {
         errlog( ERR_CRITICAL, "TCP: Invalid message: %i %i 0x%08x\n", msg->type, msg->fd, msg->pkt );
-        free( msg );
-        msg = NULL;
+        netcap_tcp_msg_raze( msg );
         return -1;
     }
 
@@ -103,7 +102,8 @@ int _netcap_tcp_callback_cli_complete( netcap_session_t* netcap_sess, netcap_cal
      * Release the SYN
      */
     netcap_pkt_action_raze( msg->pkt, NF_ACCEPT );
-    free( msg );
+    msg->pkt = NULL;
+    netcap_tcp_msg_raze( msg );
     msg = NULL;
 
     debug( 6, "TCP: (%10u) Released SYN :: %s\n", netcap_sess->session_id,
@@ -146,10 +146,11 @@ int _netcap_tcp_callback_cli_complete( netcap_session_t* netcap_sess, netcap_cal
             if (msg->type == TCP_MSG_SYN && msg->pkt) {
                 debug(8,"TCP: (%10u) DUP syn message, passing\n",netcap_sess->session_id);
                 netcap_pkt_action_raze( msg->pkt, NF_ACCEPT );
-            }
-            else
+                msg->pkt = NULL;
+            } else {
                 errlog(ERR_WARNING,"TCP: Invalid message: %i %i 0x%08x\n", msg->type, msg->fd, msg->pkt);
-            free(msg);
+            }
+            netcap_tcp_msg_raze( msg );
             msg = NULL;
             continue;
         }
@@ -158,7 +159,8 @@ int _netcap_tcp_callback_cli_complete( netcap_session_t* netcap_sess, netcap_cal
     }
         
     fd = msg->fd;
-    free(msg);
+    msg->fd = -1; /* msg no longer owns the fd */
+    netcap_tcp_msg_raze( msg );
     msg = NULL;
 
     netcap_sess->cli_state = CONN_STATE_COMPLETE;
@@ -317,7 +319,7 @@ static int  _retrieve_and_reject( netcap_session_t* netcap_sess, netcap_callback
         if (( msg->type != TCP_MSG_SYN ) || ( msg->pkt == NULL )) {
             errlog( ERR_WARNING, "TCP: (%10u) Invalid message: %i %i 0x%08x\n",
                     netcap_sess->session_id, msg->type, msg->fd, msg->pkt );
-            free( msg );
+            netcap_tcp_msg_raze( msg );
             msg = NULL;
             return -1;
         }
@@ -358,7 +360,8 @@ static int  _retrieve_and_reject( netcap_session_t* netcap_sess, netcap_callback
         }
         
         netcap_pkt_action_raze( msg->pkt, NF_DROP );
-        free( msg );
+        msg->pkt = NULL;
+        netcap_tcp_msg_raze( msg );
         msg = NULL;
     }
 

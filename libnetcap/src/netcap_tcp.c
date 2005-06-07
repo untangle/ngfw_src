@@ -206,6 +206,61 @@ void netcap_tcp_null_hook ( netcap_session_t* netcap_sess, void *arg )
     netcap_tcp_session_raze(1, netcap_sess);
 }
 
+tcp_msg_t* netcap_tcp_msg_malloc  ( void )
+{
+    tcp_msg_t* msg;
+    if (( msg = malloc( sizeof(tcp_msg_t))) == NULL ) return errlogmalloc_null();
+    return msg;
+}
+
+int        netcap_tcp_msg_init    ( tcp_msg_t* msg, tcp_msg_type_t type, netcap_pkt_t* pkt, int fd )
+{
+    if ( msg == NULL ) return errlogargs();
+
+    msg->type = type;
+    msg->pkt  = pkt;
+    msg->fd   = fd;
+    
+    return 0;
+}
+
+tcp_msg_t* netcap_tcp_msg_create  ( tcp_msg_type_t type, int fd, netcap_pkt_t* pkt )
+{
+    tcp_msg_t* msg;
+    if (( msg = netcap_tcp_msg_malloc()) == NULL ) {
+        return errlog_null( ERR_CRITICAL, "netcap_tcp_msg_malloc\n" );
+    }
+
+    if ( netcap_tcp_msg_init( msg, type, pkt, fd ) < 0 ) {
+        netcap_tcp_msg_free( msg );
+        return errlog_null( ERR_CRITICAL, "netcap_tcp_msg_init\n" );
+    }
+    
+    return msg;
+}
+
+int        netcap_tcp_msg_free    ( tcp_msg_t* msg )
+{
+    if ( msg == NULL ) return errlogargs();
+    else free( msg );
+    return 0;
+}
+
+int        netcap_tcp_msg_destroy ( tcp_msg_t* msg )
+{
+    if ( msg == NULL ) return errlogargs();
+    if ( msg->pkt != NULL ) netcap_pkt_raze( msg->pkt );
+    if (( msg->fd > 0 ) && ( close( msg->fd  ) < 0 )) perrlog( "close" );
+    return 0;
+}
+
+int        netcap_tcp_msg_raze    ( tcp_msg_t* msg )
+{
+    if ( netcap_tcp_msg_destroy( msg ) < 0 ) errlog( ERR_CRITICAL, "netcap_tcp_msg_destroy\n" );
+    if ( netcap_tcp_msg_free( msg ) < 0 ) errlog( ERR_CRITICAL, "netcap_tcp_msg_free\n" );
+    return 0;
+}
+
 int  netcap_tcp_syn_null_hook ( netcap_pkt_t* syn )
 {
     errlog( ERR_CRITICAL, "netcap_tcp_syn_null_hook: No TCP SYN hook registered\n" );
@@ -364,7 +419,8 @@ static int  _session_put_syn      ( netcap_session_t* netcap_sess, netcap_pkt_t*
             if ( netcap_pkt_action_raze( msg->pkt, NF_DROP ) < 0 ) {
                 errlog ( ERR_CRITICAL, "netcap_pkt_action_raze\n" );
             }
-            free( msg );
+            msg->pkt = NULL;
+            netcap_tcp_msg_raze( msg );
             break;
 
         case TCP_MSG_ACCEPT:
@@ -393,14 +449,11 @@ static int  _session_put_syn      ( netcap_session_t* netcap_sess, netcap_pkt_t*
     debug(5,"TCP: (%10u) Putting SYN in mailbox\n", netcap_sess->session_id);
     
     /* Send a session a SYN */
-    if (( msg = malloc(sizeof(tcp_msg_t))) == NULL ) {
-        errlogmalloc();
+    if (( msg = netcap_tcp_msg_create( TCP_MSG_SYN, -1, syn )) == NULL ) {
+        errlog( ERR_CRITICAL, "netcap_tcp_msg_create\n" );
         return netcap_pkt_action_raze(syn,NF_DROP);
     }
         
-    msg->type = TCP_MSG_SYN;
-    msg->fd   = -1;
-    msg->pkt  = syn;
     if ( mailbox_put( &netcap_sess->tcp_mb, msg ) < 0 ) {
         perrlog( "mailbox_put" );
         return netcap_pkt_action_raze( syn, NF_DROP );
@@ -428,19 +481,17 @@ static int  _session_put_complete_fd ( netcap_session_t* netcap_sess, int client
         return errlog(ERR_CRITICAL,"Client connection opened twice\n");
     }
     
-    if (( msg = malloc(sizeof(tcp_msg_t))) == NULL ) {
+    if (( msg = netcap_tcp_msg_create( TCP_MSG_ACCEPT, client_fd, NULL )) == NULL ) {
         errlogmalloc();
-        if ( close( netcap_sess->client_sock ) ) perrlog("close");
+        if ( close( client_fd )) perrlog("close");
         return -1;
     }
     
-    msg->type = TCP_MSG_ACCEPT;
-    msg->fd   = client_fd;
-    msg->pkt  = NULL;
-
+    client_fd = -1; /* The MSG now "owns" the fd, and it will close it if there is an error */
+    
     if ( mailbox_put( &netcap_sess->tcp_mb, msg ) < 0 ) {
         perrlog("mailbox_put");
-        if ( close ( netcap_sess->client_sock ) < 0 ) perrlog("close");
+        netcap_tcp_msg_raze( msg );
         return -1;
     }
     

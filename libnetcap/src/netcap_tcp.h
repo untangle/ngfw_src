@@ -14,13 +14,6 @@
 #include "libnetcap.h"
 #include "netcap_subscriptions.h"
 
-typedef struct tcp_tuple {
-    in_addr_t shost;
-    in_addr_t dhost;
-    u_short   sport;
-    u_short   dport;
-} tcp_tuple_t;
-
 typedef netcap_tcp_conn_state_t conn_state_t;
 
 typedef enum {
@@ -33,7 +26,7 @@ typedef enum {
 typedef struct tcp_msg {
     tcp_msg_type_t type;
     netcap_pkt_t* pkt; /* for TCP_SYNACK */
-    int fd; /* for TCP_ACCEPT */
+    int fd;            /* for TCP_ACCEPT */
 } tcp_msg_t;
 
 int  netcap_tcp_init();
@@ -47,8 +40,14 @@ int  netcap_tcp_callback ( netcap_session_t* tcp_sess, netcap_callback_action_t 
 void netcap_tcp_null_hook ( netcap_session_t* netcap_sess, void *arg );
 int  netcap_tcp_syn_null_hook ( netcap_pkt_t* pkt );
 
-int  netcap_packet_action_free ( netcap_pkt_t* pkt, int action);
+/* Helper functions for TCP messages */
+tcp_msg_t* netcap_tcp_msg_malloc  ( void );
+int        netcap_tcp_msg_init    ( tcp_msg_t* msg, tcp_msg_type_t type, netcap_pkt_t* pkt, int fd );
+tcp_msg_t* netcap_tcp_msg_create  ( tcp_msg_type_t type, int fd, netcap_pkt_t* pkt );
 
+int        netcap_tcp_msg_free    ( tcp_msg_t* msg );
+int        netcap_tcp_msg_destroy ( tcp_msg_t* msg );
+int        netcap_tcp_msg_raze    ( tcp_msg_t* msg );
 
 #endif
 
