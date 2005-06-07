@@ -150,7 +150,12 @@ public class SpywareImpl extends AbstractTransform implements Spyware
     protected void disconnectMPipe()
     {
         for (int i = 0; i < mPipes.length; i++) {
-            MvvmContextFactory.context().pipelineFoundry().deregisterMPipe(mPipes[i]);
+            if ( mPipes[i] != null ) {
+                MvvmContextFactory.context().pipelineFoundry().deregisterMPipe(mPipes[i]);
+                mPipes[i].destroy();
+            } else {
+                logger.warn("Disconnecting null mPipe[" + i + "]");
+            }
             mPipes[i] = null;
         }
     }

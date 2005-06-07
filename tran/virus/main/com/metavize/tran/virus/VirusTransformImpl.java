@@ -226,6 +226,7 @@ public class VirusTransformImpl extends AbstractTransform
             logger.debug( "Disconnecting mPipe[" + i + "] as " + mPipes[i] );
             if ( mPipes[i] != null ) {
                 FOUNDRY.deregisterMPipe(mPipes[i]);
+                mPipes[i].destroy();
             } else {
                 logger.warn("Disconnecting null mPipe[" + i + "]");
             }
