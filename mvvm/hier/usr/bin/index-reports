@@ -67,13 +67,13 @@ cat > $main_index <<EOF
         <!-- TOP THIRD -->
         <tr> 
           <td id="table_main_top_left">
-            <img src="$web_base/images/spacer.gif" alt=" " width="23" height="23"/>
+            <img src="$web_base/images/spacer.gif" alt=" " width="23" height="23"/><br/>
           </td>
           <td width="100%" id="table_main_top">
-            <img src="$web_base/images/spacer.gif" alt=" " width="1" height="1"/>
+            <img src="$web_base/images/spacer.gif" alt=" " width="1" height="1"/><br/>
           </td>
           <td id="table_main_top_right">
-            <img src="$web_base/images/spacer.gif" alt=" " width="23" height="23"/>
+            <img src="$web_base/images/spacer.gif" alt=" " width="23" height="23"/><br/>
           </td>
         </tr>
         <!-- END TOP THIRD -->
@@ -135,13 +135,13 @@ cat >> $main_index <<EOF
         <!-- BOTTOM THIRD -->
         <tr>
           <td id="table_main_bottom_left">
-            <img src="$web_base/images/spacer.gif" alt=" " width="23" height="23"/>
+            <img src="$web_base/images/spacer.gif" alt=" " width="23" height="23"/><br/>
           </td>
           <td id="table_main_bottom">
-            <img src="$web_base/images/spacer.gif" alt=" " width="1" height="1"/>
+            <img src="$web_base/images/spacer.gif" alt=" " width="1" height="1"/><br/>
           </td>
           <td id="table_main_bottom_right">
-            <img src="$web_base/images/spacer.gif" alt=" " width="23" height="23"/>
+            <img src="$web_base/images/spacer.gif" alt=" " width="23" height="23"/><br/>
           </td>
         </tr>
         <!-- END BOTTOM THIRD -->

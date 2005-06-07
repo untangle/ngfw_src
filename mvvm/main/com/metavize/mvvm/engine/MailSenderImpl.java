@@ -21,6 +21,7 @@ import javax.mail.internet.*;
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
+import javax.activation.MimetypesFileTypeMap;
 
 import com.metavize.mvvm.MailSender;
 import com.metavize.mvvm.MailSettings;
@@ -45,6 +46,8 @@ public class MailSenderImpl implements MailSender
     public static boolean SessionDebug = false;
 
     public static final String Mailer = "MVVM MailSender";
+
+    private static final MimetypesFileTypeMap mimetypesFileTypeMap = new MimetypesFileTypeMap();
 
     // This is the session used to send alert mail inside the organization
     private Session alertSession;
@@ -77,6 +80,9 @@ public class MailSenderImpl implements MailSender
 
     private void init()
     {
+	mimetypesFileTypeMap.addMimeTypes("application/pdf pdf PDF");
+	mimetypesFileTypeMap.addMimeTypes("text/css css CSS");
+
         net.sf.hibernate.Session s = getSession();
         try {
             Transaction tx = s.beginTransaction();
@@ -302,6 +308,7 @@ public class MailSenderImpl implements MailSender
                     String location = extraLocations.get(i);
                     File extra = extras.get(i);
                     DataSource ds = new FileDataSource(extra);
+		    ((FileDataSource)ds).setFileTypeMap( mimetypesFileTypeMap );
                     DataHandler dh = new DataHandler(ds);
                     MimeBodyPart part = new MimeBodyPart();
                     part.setDataHandler(dh);

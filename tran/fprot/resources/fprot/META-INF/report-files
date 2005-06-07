@@ -1,3 +1,4 @@
+com.metavize.tran.virus.VirusSummarizer:summarizer:Summarizer
 com/metavize/tran/virus/VirusMaster.jasper:summary:Summary
 com/metavize/tran/virus/WebVirusDetail.jasper:webvirus:Web Incidents
 com/metavize/tran/virus/FtpVirusDetail.jasper:ftpvirus:FTP Incidents

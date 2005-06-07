@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: VirusSummarizer.java,v 1.1 2005/03/20 00:47:28 amread Exp $
+ * $Id$
  */
 
 package com.metavize.tran.virus;
@@ -35,7 +35,7 @@ public class VirusSummarizer extends BaseSummarizer {
         int ftpBlocked = 0;
 
         try {
-            String sql = "SELECT count(*) FROM tr_virus_evt_http WHERE time_stamp >= ? AND time_stamp < ?)";
+            String sql = "SELECT count(*) FROM tr_virus_evt_http WHERE time_stamp >= ? AND time_stamp < ?";
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
@@ -45,7 +45,7 @@ public class VirusSummarizer extends BaseSummarizer {
             rs.close();
             ps.close();
 
-            sql = "SELECT count(*) FROM tr_virus_evt_http WHERE time_stamp >= ? AND time_stamp < ? AND NOT clean)";
+            sql = "SELECT count(*) FROM tr_virus_evt_http WHERE time_stamp >= ? AND time_stamp < ? AND clean = false";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
@@ -56,7 +56,7 @@ public class VirusSummarizer extends BaseSummarizer {
             ps.close();
 
 
-            sql = "SELECT count(*) FROM tr_virus_evt WHERE time_stamp >= ? AND time_stamp < ?)";
+            sql = "SELECT count(*) FROM tr_virus_evt WHERE time_stamp >= ? AND time_stamp < ?";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
@@ -66,7 +66,7 @@ public class VirusSummarizer extends BaseSummarizer {
             rs.close();
             ps.close();
 
-            sql = "SELECT count(*) FROM tr_virus_evt WHERE time_stamp >= ? AND time_stamp < ? AND NOT clean)";
+            sql = "SELECT count(*) FROM tr_virus_evt WHERE time_stamp >= ? AND time_stamp < ? AND clean = false";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
