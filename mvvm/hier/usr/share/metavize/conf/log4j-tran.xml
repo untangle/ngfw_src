@@ -34,11 +34,11 @@
   <!-- #      INFO            each new session -->
   <!-- #      WARN            exceptions -->
   <category name="com.metavize.mvvm.tapi.MPipe">
-    <priority value="DEBUG"/>
+    <priority value="WARN"/>
   </category>
 
   <category name="com.metavize.mvvm.tapi.Dispatcher">
-    <priority value="DEBUG"/>
+    <priority value="WARN"/>
   </category>
 
   <!-- # Session Event messages: all events delivered to transform, logged just before delivery -->
@@ -48,7 +48,7 @@
   <!-- #      WARN           New session, new session request events -->
   <category name="com.metavize.mvvm.tapi.SessionEvent">
     <!-- No logging by default -->
-    <priority value="DEBUG"/>
+    <priority value="WARN"/>
   </category>
 
   <!-- # Internal Session messages, -->
@@ -56,15 +56,15 @@
   <!-- #      INFO            (currently same as WARN) -->
   <!-- #      WARN             exceptions or unusual conditions  -->
   <category name="com.metavize.mvvm.tapi.Session">
-    <priority value="DEBUG"/>
+    <priority value="WARN"/>
   </category>
 
   <category name="com.metavize.mvvm.tapi.TCPSession">
-    <priority value="DEBUG"/>
+    <priority value="WARN"/>
   </category>
 
   <category name="com.metavize.mvvm.tapi.UDPSession">
-    <priority value="DEBUG"/>
+    <priority value="WARN"/>
   </category>
 
   <category name="com.metavize.mvvm.tapi.SessionTimes">
