@@ -37,12 +37,9 @@ if [ "$generate_email_index" != false ]; then
 fi
 
 if [ "$generate_email_index" != false ]; then
-    styles=styles_email.css
+    echo "-s \"Metavize EdgeGuard Reports ($generate_email_index)\"" >> $mail_reports_arguments
     echo "./$index" >> $mail_reports_arguments
-    echo "./$styles" >> $mail_reports_arguments
     find ./images/* -type f >> $mail_reports_arguments
-else
-    styles=styles.css
 fi
 
 generate_page ()
@@ -55,8 +52,118 @@ cat > $main_index <<EOF
   <head>
     <title>Metavize EdgeReport</title>
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
-    <link rel="stylesheet" type="text/css" href="./$styles"/>
-    <link rel="shortcut icon" type="image/x-icon" href="./images/favicon.ico"/>
+
+
+    <style type="text/css">
+    <!--
+body {
+     margin: 15px;
+     background: #FFFFFF url(http://metavize.com/mail_blast/images/background_body.gif) repeat-x top left;
+     text-align: center;
+}  
+
+table {
+    font: normal normal normal 10pt/14pt Arial,Sans-Serif;
+    text-align: left;
+    color: #606060;
+}
+
+input {
+    font: normal normal normal 10pt/14pt Arial,Sans-Serif;
+    text-align: left;
+    color: #606060;
+}
+
+form {
+    margin: 0px;
+}
+
+a:link, a:visited {
+    font: normal normal normal 10pt/14pt Arial,Sans-Serif;
+    color: #1997FE;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #1997FE;
+    text-decoration: underline;
+}
+
+.page_header_title {
+    font: bold normal normal 25pt Arial,Sans-Serif;
+    color: #777777;
+}
+
+h1 {
+    font: normal normal bold 11pt Arial,Sans-Serif;
+    color: #999999;
+    letter-spacing: 1px;
+    margin: 0px;
+    padding: 0px;
+}
+
+h2 {
+    font: normal normal bold 10pt Arial,Sans-Serif;
+    color: #999999;
+    letter-spacing: 1px;
+    margin: 0px;
+    padding: 0px;
+}
+
+h3 {
+    font: normal normal bold 11pt Arial,Sans-Serif;
+    color: #606060;
+    letter-spacing: 1px;
+    margin: 0px;
+    padding: 0px;
+}
+
+h4 {
+    font: normal normal bold 14pt Arial,Sans-Serif;
+    color: #0044D7;
+    letter-spacing: 1px;
+    margin: 0px;
+    padding: 0px;
+}
+
+/* the following pertain to the main content (i.e. the main 'metal-brushed') table */
+#table_main_center {
+    background: url(http://metavize.com/mail_blast/images/background_table_main_center.gif) repeat-y;
+}
+
+#table_main_top {
+    background: url(http://metavize.com/mail_blast/images/background_table_main_top.gif) repeat-x;
+}
+
+#table_main_top_left {
+    background: url(http://metavize.com/mail_blast/images/rounded_corner_main_top_left.gif) no-repeat;
+}
+
+#table_main_top_right {
+    background: url(http://metavize.com/mail_blast/images/rounded_corner_main_top_right.gif) no-repeat;
+}
+
+#table_main_right {
+    background: url(http://metavize.com/mail_blast/images/background_table_main_right.gif) repeat-y;
+}
+
+#table_main_bottom {
+    background: url(http://metavize.com/mail_blast/images/background_table_main_bottom.gif) repeat-x;
+}
+
+#table_main_bottom_left {
+    background: url(http://metavize.com/mail_blast/images/rounded_corner_main_bottom_left.gif) no-repeat;
+}
+
+#table_main_bottom_right {
+    background: url(http://metavize.com/mail_blast/images/rounded_corner_main_bottom_right.gif) no-repeat;
+}
+
+#table_main_left {
+    background: url(http://metavize.com/mail_blast/images/background_table_main_left.gif) repeat-y;
+}
+    -->
+   </style>
   </head>
 
   <!--BRUSHED METAL PAGE BACKGROUND -->
