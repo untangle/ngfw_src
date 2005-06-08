@@ -49,7 +49,7 @@ psql -U metavize mvvm <<EOF
 DROP TABLE addr_map;
 EOF
 
-cp -pr $REPORT_DIR/images $REPORT_DIR/*.css $REPORT_DIR/current
+cp -pr $REPORT_DIR/images $REPORT_DIR/current
 
 # generate the web viewable page
 @PREFIX@/usr/bin/index-reports index.html false
