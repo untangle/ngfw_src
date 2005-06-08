@@ -2,9 +2,9 @@
 
 main_index=@MVVM_REPORTS@/current/$1
 index=$1
-mail_reports_arguments_daily=@PREFIX@/usr/bin/mail_reports_arguments_daily.txt
-mail_reports_arguments_weekly=@PREFIX@/usr/bin/mail_reports_arguments_weekly.txt
-mail_reports_arguments_monthly=@PREFIX@/usr/bin/mail_reports_arguments_monthly.txt
+mail_reports_arguments_daily=@PREFIX@/tmp/mail_reports_arguments_daily.txt
+mail_reports_arguments_weekly=@PREFIX@/tmp/mail_reports_arguments_weekly.txt
+mail_reports_arguments_monthly=@PREFIX@/tmp/mail_reports_arguments_monthly.txt
 generate_email_index=$2
 
 if [ "$generate_email_index" != false ]; then
