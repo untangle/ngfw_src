@@ -410,7 +410,8 @@ static int _netcap_sesstable_remove_tuple(u_short proto,
     session_tuple_t st = {proto,shost,dhost,sport,dport,seq};
 
     if (ht_remove(&_sess_tuple_table,(void*)&st)<0) {
-        return errlog( ERR_WARNING, "ht_remove\n" );
+        debug( 3, "ht_remove\n" );
+        return -1;        
     }
 
     return 0;
