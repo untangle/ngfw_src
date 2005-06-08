@@ -15,7 +15,7 @@
     <!--
 body {
      margin: 15px;
-     background: #FFFFFF url(http://metavize.com/mail_blast/images/background_body.gif) repeat-x top left;
+     background: #FFFFFF url(./images/background_body.gif) repeat-x top left;
      text-align: center;
 }  
 
@@ -85,39 +85,39 @@ h4 {
 
 /* the following pertain to the main content (i.e. the main 'metal-brushed') table */
 #table_main_center {
-    background: url(http://metavize.com/mail_blast/images/background_table_main_center.gif) repeat-y;
+    background: url(./images/background_table_main_center.gif) repeat-y;
 }
 
 #table_main_top {
-    background: url(http://metavize.com/mail_blast/images/background_table_main_top.gif) repeat-x;
+    background: url(./images/background_table_main_top.gif) repeat-x;
 }
 
 #table_main_top_left {
-    background: url(http://metavize.com/mail_blast/images/rounded_corner_main_top_left.gif) no-repeat;
+    background: url(./images/rounded_corner_main_top_left.gif) no-repeat;
 }
 
 #table_main_top_right {
-    background: url(http://metavize.com/mail_blast/images/rounded_corner_main_top_right.gif) no-repeat;
+    background: url(./images/rounded_corner_main_top_right.gif) no-repeat;
 }
 
 #table_main_right {
-    background: url(http://metavize.com/mail_blast/images/background_table_main_right.gif) repeat-y;
+    background: url(./images/background_table_main_right.gif) repeat-y;
 }
 
 #table_main_bottom {
-    background: url(http://metavize.com/mail_blast/images/background_table_main_bottom.gif) repeat-x;
+    background: url(./images/background_table_main_bottom.gif) repeat-x;
 }
 
 #table_main_bottom_left {
-    background: url(http://metavize.com/mail_blast/images/rounded_corner_main_bottom_left.gif) no-repeat;
+    background: url(./images/rounded_corner_main_bottom_left.gif) no-repeat;
 }
 
 #table_main_bottom_right {
-    background: url(http://metavize.com/mail_blast/images/rounded_corner_main_bottom_right.gif) no-repeat;
+    background: url(./images/rounded_corner_main_bottom_right.gif) no-repeat;
 }
 
 #table_main_left {
-    background: url(http://metavize.com/mail_blast/images/background_table_main_left.gif) repeat-y;
+    background: url(./images/background_table_main_left.gif) repeat-y;
 }
     -->
    </style>
