@@ -1,5 +1,9 @@
 <%@ page language="java"  %>
 
+<%
+        ServletContext sc = getServletContext();
+        if (sc.getResource("/current") == null) {
+%>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 
@@ -121,10 +125,6 @@ h4 {
 
 
 <BODY>
-<%
-        ServletContext sc = getServletContext();
-        if (sc.getResource("/current") == null){
-%>
 
 
     <center>
@@ -197,12 +197,33 @@ h4 {
       </table>
     </center>
 
-<%
-	}        
-        else{
-            response.sendRedirect("./current");
-	}
-%>
 </BODY>
 </HTML>
 
+<%
+	} else {
+            // We can redirect them. If it fails (shouldn't with any modern
+            // browser), serve them the following backup page.
+            response.sendRedirect("./current");
+%>
+
+<html><head><title>Metavize EdgeReport</title>
+<STYLE><!---
+H1{font-family : sans-serif,Arial,Tahoma;color : white;
+  background-color : #0086b2;}
+BODY{font-family : sans-serif,Arial,Tahoma;color : black;
+  background-color : white;}
+B{color : white;background-color : #0086b2;} HR{color : #0086b2;}
+--></STYLE> </head><body>
+<h1>Metavize EdgeReport - HTTP Status 302 - Moved Temporarily</h1>
+<HR size="1" noshade><p><b>type</b> Status report</p>
+<p><b>message</b> <u>Moved Temporarily</u></p>
+<p><b>description</b>
+<u>The requested resource (Moved Temporarily) has moved temporarily
+to a new location.</u></p>
+<HR size="1" noshade>
+</body></html>
+
+<%
+	}
+%>
