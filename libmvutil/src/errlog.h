@@ -20,8 +20,6 @@ extern void  _errlog_date_toggle (int onoff);
 extern void  _errlog_set_fatal_func (errlog_fatal_func_t func);
 extern int   _errlog_noprefix (char * fmt, char * file, int lineno, int level, char *lpszFmt, ...);
 extern void  _errlog_cleanup (void);
-extern int   _perrlog (char * str);
-extern void* _perrlog_null (char * str);
 
 #define STD_ERRLOG_PREFIX "ERROR:%s:%i:",__FILE__,__LINE__
 #define ERR_FATAL     STD_ERRLOG_PREFIX,ERROR_FATAL_LVL
