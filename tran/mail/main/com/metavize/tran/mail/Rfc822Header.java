@@ -15,12 +15,13 @@ import static com.metavize.tran.util.Ascii.*;
 import static com.metavize.tran.util.BufferUtil.*;
 
 import java.nio.ByteBuffer;
-import java.util.LinkedList;
-import java.util.List;
 import javax.mail.internet.ContentType;
 
-import com.metavize.tran.token.ParseException;
 import com.metavize.tran.token.Token;
+import com.metavize.tran.token.header.Field;
+import com.metavize.tran.token.header.FieldStore;
+import com.metavize.tran.token.header.Header;
+import com.metavize.tran.token.header.IllegalFieldException;
 import org.apache.log4j.Logger;
 
 /**
@@ -29,138 +30,166 @@ import org.apache.log4j.Logger;
  * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
  */
-public class Rfc822Header implements Token
+public class Rfc822Header implements Header
 {
-    private final List<Rfc822Field> fields = new LinkedList<Rfc822Field>();
+    public static final String MIME_VERSION = "Mime-Version";
+    public static final String CONTENT_TYPE = "Content-Type";
+    public static final String CONTENT_TRANSFER_ENCODING = "Content-Transfer-Encoding";
+    public static final String SUBJECT = "Subject";
+
+    public enum MessageType { RFC822, MULTIPART, BLOB };
+
+    private final FieldStore fields = new FieldStore();
     private final Logger logger = Logger.getLogger(Rfc822Header.class);
+
+    private String mimeVersion = null;
+    private ContentType contentType = null;
+    private String contentTransferEncoding = null;
+    private String subject = null;
 
     // constructors -----------------------------------------------------------
 
     public Rfc822Header() { }
 
-    // static factories -------------------------------------------------------
+    // field accessors --------------------------------------------------------
 
-    public static Rfc822Header parse(ByteBuffer buf) throws ParseException
+    public String getMimeVersion()
     {
-        Logger logger = Logger.getLogger(Rfc822Header.class);
-
-        logger.debug("parse HEADER: " + buf);
-
-        Rfc822Header header = new Rfc822Header();
-
-        while (buf.hasRemaining()) {
-            if (startsWith(buf, CRLF)) {
-                break;
-            } else {
-                Rfc822Field field = Rfc822Field.parse(buf);
-                logger.debug("added field: " + field);
-                header.addField(field);
-            }
-        }
-
-        logger.debug("HEADER done");
-
-        return header;
+        return mimeVersion;
     }
 
-    // public methods ---------------------------------------------------------
-
-    public List<Rfc822Field> getFields()
+    public ContentType getContentType()
     {
-        return fields;
+        return contentType;
     }
 
-    public void addField(Rfc822Field field)
+    public void setContentType(String contentType) throws IllegalFieldException
     {
-        fields.add(field);
-    }
-
-    public void addField(String key, String value)
-    {
-        Rfc822Field f = new Rfc822Field(key, value);
-        fields.add(f);
-    }
-
-    public void setField(String key, String value)
-    {
-        Rfc822Field f = getField(key);
-        if (null == f) {
-            f = new Rfc822Field(key, value);
-            fields.add(f);
-        } else {
-            f.setValue(value);
-        }
-    }
-
-    public Rfc822Field getField(String key)
-    {
-        for (Rfc822Field f : fields) {
-            if (key.equalsIgnoreCase(f.getKey())) {
-                return f;
-            }
-        }
-
-        return null;
-    }
-
-    public ContentType getContentType() throws ParseException
-    {
-        Rfc822Field f = getField("Content-Type");
-
-        ContentType ct = null;
-        if (null != f) {
-            try {
-                ct = new ContentType(f.getValue());
-            } catch (javax.mail.internet.ParseException exn) {
-                logger.warn("ignoring Content-Type: " + f.getValue());
-                return null;
-            }
-        }
-
-        return ct;
+        setField(CONTENT_TYPE, contentType);
     }
 
     public String getContentTransferEncoding()
     {
-        Rfc822Field f = getField("Content-Transfer-Encoding");
-
-        return null == f ? null : f.getValue();
+        return contentTransferEncoding;
     }
 
-    public String getMimeVersion()
+    public String getSubject()
     {
-        Rfc822Field f = getField("MIME-Version");
+        return subject;
+    }
 
-        return null == f ? null : f.getValue(); // XXX normalized value
+    public void setSubject(String subject)
+    {
+        try {
+            setField(SUBJECT, subject);
+        } catch (IllegalFieldException exn) {
+            throw new IllegalStateException("this should never happen");
+        }
+    }
+
+    // public methods ---------------------------------------------------------
+
+    public MessageType getMessageType()
+    {
+        if (null == getMimeVersion()) {
+            return MessageType.BLOB;
+        }
+
+        ContentType contentType = getContentType();
+        if (null == contentType) {
+            logger.warn("MIME-Version without Content-Type");
+            return MessageType.BLOB;
+        } else {
+            String pType = contentType.getPrimaryType();
+            String sType = contentType.getSubType();
+
+            if (pType.equals("multipart")) {
+                if (null == contentType.getParameter("boundary")) {
+                    logger.warn("multipart without boundary");
+                    return MessageType.BLOB;
+                } else {
+                    return MessageType.MULTIPART;
+                }
+            } else if (pType.equals("message") && sType.equals("rfc822")) {
+                return MessageType.RFC822;
+            } else {
+                return MessageType.BLOB;
+            }
+        }
+    }
+
+    // Header methods ---------------------------------------------------------
+
+    public void addField(String key, String value) throws IllegalFieldException
+    {
+        addField(new Field(key, value));
+    }
+
+    public void addField(Field field) throws IllegalFieldException
+    {
+        String key = field.getKey();
+        String value = field.getValue();
+
+        // XXX research which fields are case insensitive
+        if (key.equalsIgnoreCase(MIME_VERSION)) {
+            if (null == mimeVersion) {
+                mimeVersion = value;
+            } else {
+                throw new IllegalFieldException("duplicate " + MIME_VERSION);
+            }
+        } else if (key.equalsIgnoreCase(CONTENT_TYPE)) {
+            if (null == contentType) {
+                try {
+                    contentType = new ContentType(value);
+                } catch (javax.mail.internet.ParseException exn) {
+                    throw new IllegalFieldException("bad Content-Type: "
+                                                       + value, exn);
+                }
+            } else {
+                throw new IllegalFieldException("duplicate " + CONTENT_TYPE);
+            }
+        } else if (key.equalsIgnoreCase(CONTENT_TRANSFER_ENCODING)) {
+            if (null == contentTransferEncoding) {
+                contentTransferEncoding = value;
+            } else {
+                throw new IllegalFieldException("duplicate " + CONTENT_TRANSFER_ENCODING);
+            }
+        } else if (key.equalsIgnoreCase(SUBJECT)) {
+            if (null == subject) {
+                subject = value;
+            } else {
+                throw new IllegalFieldException("duplicate " + SUBJECT);
+            }
+        }
+
+        fields.add(field);
+    }
+
+    public void setField(String key, String value)
+        throws IllegalFieldException
+    {
+        // XXX research which fields are case insensitive
+        if (key.equalsIgnoreCase(MIME_VERSION)) {
+            mimeVersion = value;
+        } else if (key.equalsIgnoreCase(CONTENT_TYPE)) {
+            try {
+                contentType = new ContentType(value);
+            } catch (javax.mail.internet.ParseException exn) {
+                throw new IllegalFieldException("bad Content-Type: " + value, exn);
+            }
+        } else if (key.equalsIgnoreCase(CONTENT_TRANSFER_ENCODING)) {
+            contentTransferEncoding = value;
+        } else if (key.equalsIgnoreCase(SUBJECT)) {
+            subject = subject;
+        }
+
+        fields.setField(key, value);
     }
 
     // Token methods ----------------------------------------------------------
 
     public ByteBuffer getBytes()
     {
-        int l = 2; // final CRLF
-        for (Rfc822Field f : fields) {
-            l += f.getKey().length();
-            l += f.getValue().length();
-            l += 4; // COLON SP and CRLF
-        }
-
-        ByteBuffer buf = ByteBuffer.allocate(l);
-
-        for (Rfc822Field f : fields) {
-            buf.put(f.getKey().getBytes());
-            buf.put((byte)COLON);
-            buf.put((byte)SP);
-            buf.put(f.getValue().getBytes());
-            buf.put((byte)CR);
-            buf.put((byte)LF);
-        }
-
-        buf.put((byte)CR);
-        buf.put((byte)LF);
-
-        buf.flip();
-
-        return buf;
+        return fields.getBytes();
     }
 }

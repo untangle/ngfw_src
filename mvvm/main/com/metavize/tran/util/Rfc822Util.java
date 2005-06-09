@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.metavize.tran.mail;
+package com.metavize.tran.util;
 
 import java.nio.ByteBuffer;
 
@@ -17,7 +17,7 @@ import com.metavize.tran.token.ParseException;
 
 import static com.metavize.tran.util.Ascii.*;
 
-class Rfc822Util
+public class Rfc822Util
 {
     /**
      * Whitespace according to RFC 2822 2.2.2 (SP, HTAB).

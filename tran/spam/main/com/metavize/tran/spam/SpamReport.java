@@ -14,8 +14,8 @@ package com.metavize.tran.spam;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.metavize.tran.mail.Rfc822Field;
 import com.metavize.tran.mail.Rfc822Header;
+import com.metavize.tran.token.header.IllegalFieldException;
 import org.apache.log4j.Logger;
 
 public class SpamReport
@@ -45,18 +45,19 @@ public class SpamReport
     {
         if (isSpam()) {
             logger.debug("isSpam, rewriting header");
-            Rfc822Field f = h.getField("Subject");
-            if (null == f) {
-                f = new Rfc822Field("Subject", "[SPAM]");
-                h.addField(f);
-            } else {
-                f.setValue("[SPAM] " + f.getValue());
-            }
+            String subject = h.getSubject();
+            subject = "[SPAM] " + (null == subject ? "" : subject);
+            h.setSubject(subject);
         } else {
             logger.debug("not spam, not rewriting");
         }
 
-        h.setField("X-Spam-Flag", isSpam() ? "YES" : "NO");
+        try {
+            h.setField("X-Spam-Flag", isSpam() ? "YES" : "NO");
+        } catch (IllegalFieldException exn) {
+            throw new IllegalStateException("should never happen");
+        }
+
 
         return h;
     }

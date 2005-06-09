@@ -31,10 +31,10 @@ import com.metavize.tran.mail.SmtpStateMachine;
 import com.metavize.tran.token.Chunk;
 import com.metavize.tran.token.EndMarker;
 import com.metavize.tran.token.FileChunkStreamer;
-import com.metavize.tran.token.ParseException;
 import com.metavize.tran.token.Token;
 import com.metavize.tran.token.TokenException;
 import com.metavize.tran.token.TokenResult;
+import com.metavize.tran.token.header.IllegalFieldException;
 import org.apache.log4j.Logger;
 
 public class VirusSmtpHandler extends SmtpStateMachine
@@ -154,7 +154,7 @@ public class VirusSmtpHandler extends SmtpStateMachine
         }
     }
 
-    protected TokenResult doEpilog(Chunk chunk)
+    protected TokenResult doEpilogue(Chunk chunk)
     {
         return new TokenResult(null, new Token[] { chunk });
     }
@@ -179,22 +179,15 @@ public class VirusSmtpHandler extends SmtpStateMachine
         return new TokenResult(new Token[] { reply }, null);
     }
 
-
-
     // XXX make this check settings
     private boolean hasScannableBody(Rfc822Header header)
     {
-        try {
-            ContentType contentType = header.getContentType();
-            if (null != contentType) {
-                String pType = contentType.getPrimaryType();
-                // XXX check settings for applicable mime types
-                return pType.equals("application");
-            } else {
-                return false;
-            }
-        } catch (ParseException exn) {
-            logger.warn("bad content-type", exn);
+        ContentType contentType = header.getContentType();
+        if (null != contentType) {
+            String pType = contentType.getPrimaryType();
+            // XXX check settings for applicable mime types
+            return pType.equals("application");
+        } else {
             return false;
         }
     }
@@ -250,7 +243,11 @@ public class VirusSmtpHandler extends SmtpStateMachine
                 this.outputSize = 0;
 
                 Rfc822Header header = new Rfc822Header();
-                header.addField("Content-Type", "text/plain");
+                try {
+                    header.setContentType("text/plain");
+                } catch (IllegalFieldException exn) {
+                    throw new IllegalStateException("should never happen");
+                }
 
                 ByteBuffer buf = ByteBuffer.allocate(REJECT_MESSAGE.length());
                 buf.put(REJECT_MESSAGE.getBytes());

@@ -42,7 +42,7 @@ public class SmtpClientParser extends AbstractParser
     private final Logger logger = Logger.getLogger(SmtpClientParser.class);
 
     private State state = State.COMMAND;
-    private MessageParser messageParser = null;
+    private MimeParser mimeParser = null;
     private File msgFile;
     private FileChannel msgChannel;
 
@@ -89,7 +89,7 @@ public class SmtpClientParser extends AbstractParser
                             msgFile = null;
                             msgChannel = null;
                         }
-                        messageParser = new MessageParser();
+                        mimeParser = new MimeParser();
                     }
                 } else {
                     logger.debug("does not end with CRLF");
@@ -120,7 +120,7 @@ public class SmtpClientParser extends AbstractParser
 
                 if (dup.hasRemaining()) {
                     logger.debug("parsing message: " + dup);
-                    ParseResult pr = messageParser.parse(dup);
+                    ParseResult pr = mimeParser.parse(dup);
                     logger.debug("parsed message: " + dup);
                     dup = pr.getReadBuffer();
                     toks.addAll(pr.getResults());
@@ -130,6 +130,9 @@ public class SmtpClientParser extends AbstractParser
 
                 if (buf.hasRemaining() && startsWith(buf, ".\r\n")) {
                     if (null != dup && 0 != dup.position()) {
+                        dup.flip();
+                        logger.debug("message not fully consumed: '"
+                                     + AsciiCharBuffer.wrap(dup) + "'");
                         throw new ParseException("message not fully consumed");
                     }
 
@@ -198,7 +201,8 @@ public class SmtpClientParser extends AbstractParser
     public ParseResult parseEnd(ByteBuffer buf) throws ParseException
     {
         if (buf.hasRemaining()) {
-            logger.warn("data trapped in read buffer: " + AsciiCharBuffer.wrap(buf));
+            logger.warn("data trapped in read buffer: "
+                        + AsciiCharBuffer.wrap(buf));
         }
 
         // XXX do something?

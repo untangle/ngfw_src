@@ -14,7 +14,6 @@ package com.metavize.tran.mail;
 import javax.mail.internet.ContentType;
 
 import com.metavize.tran.token.Chunk;
-import com.metavize.tran.token.ParseException;
 import com.metavize.tran.token.Token;
 import com.metavize.tran.token.TokenException;
 import org.apache.log4j.Logger;
@@ -31,7 +30,7 @@ public class MimeStateMachine
         MULTIPART_HEADER,
         MULTIPART_BODY,
         END_BOUNDARY,
-        EPILOG
+        EPILOGUE
     };
 
     private final Logger logger = Logger.getLogger(MimeStateMachine.class);
@@ -42,6 +41,7 @@ public class MimeStateMachine
     private Rfc822Header msgHeader = null;
     private Rfc822Header multipartHeader = null;
     private String boundary = null;
+    private Object parseContext = null;
 
     // constructors -----------------------------------------------------------
 
@@ -69,25 +69,27 @@ public class MimeStateMachine
             return state;
 
         case MESSAGE_HEADER:
-            switch (headerState(msgHeader)) {
-            case MESSAGE_HEADER:
+            switch (msgHeader.getMessageType()) {
+            case RFC822:
                 mimeStateMachine = new MimeStateMachine();
                 state = State.BODY;
                 break;
 
-            case PREAMBLE:
-                boundary = mimeBoundary(msgHeader);
-                state = State.PREAMBLE;
+            case MULTIPART:
+                ContentType ct = msgHeader.getContentType();
+                boundary = null == ct ? null : ct.getParameter("boundary");
+                if (null == boundary) {
+                    logger.warn("multipart without boundary, ignored");
+                    state = State.BODY;
+                } else {
+                    state = State.PREAMBLE;
+                }
                 break;
 
-            case BODY:
+            case BLOB:
                 mimeStateMachine = null;
                 state = State.BODY;
                 break;
-
-            default:
-                throw new IllegalStateException("unexpected state: "
-                                                + headerState(msgHeader));
             }
 
             return null == mimeStateMachine ? state
@@ -111,7 +113,7 @@ public class MimeStateMachine
             } else if (token instanceof MimeBoundary) {
                 MimeBoundary boundary = (MimeBoundary)token;
                 if (boundary.isLast()) {
-                    throw new TokenException("end boundary after prolog");
+                    throw new TokenException("end boundary after preamble");
                 }
                 state = State.BOUNDARY;
             } else if (token instanceof Chunk) {
@@ -137,18 +139,28 @@ public class MimeStateMachine
                 logger.debug("EB STATE? " + state);
                 mimeStateMachine = null;
             } else {
-                State s = headerState(multipartHeader);
-                logger.debug("GOT STATE: " + s);
-                if (State.MESSAGE_HEADER == s) {
+                switch (multipartHeader.getMessageType()) {
+                case RFC822:
                     logger.debug("Mimestatemachine()");
                     mimeStateMachine = new MimeStateMachine();
-                } else if (State.PREAMBLE == s) {
+                    break;
+
+                case MULTIPART:
                     logger.debug("Mimestatemachine(b)");
-                    String b = mimeBoundary(multipartHeader);
-                    mimeStateMachine = new MimeStateMachine(b);
-                } else {
+                    ContentType ct = msgHeader.getContentType();
+                    String b = null == ct ? null : ct.getParameter("boundary");
+                    if (null == boundary) {
+                        logger.warn("multipart without boundary, ignored");
+                        mimeStateMachine = null;
+                    } else {
+                        mimeStateMachine = new MimeStateMachine(b);
+                    }
+                    break;
+
+                case BLOB:
                     logger.debug("Mimestatemachine = null");
                     mimeStateMachine = null;
+                    break;
                 }
 
                 state = State.MULTIPART_BODY;
@@ -170,16 +182,16 @@ public class MimeStateMachine
 
         case END_BOUNDARY:
             if (token instanceof Chunk) {
-                state = State.EPILOG;
+                state = State.EPILOGUE;
             } else {
                 throw stateException(token);
             }
 
             return state;
 
-        case EPILOG:
+        case EPILOGUE:
             if (token instanceof Chunk) {
-                state = State.EPILOG;
+                state = State.EPILOGUE;
             } else {
                 throw stateException(token);
             }
@@ -198,49 +210,6 @@ public class MimeStateMachine
     {
         return new TokenException("bad token: " + token.getClass()
                                   + " in state; " + state);
-    }
-
-    private State headerState(Rfc822Header header) throws TokenException
-    {
-        String mimeVersion = header.getMimeVersion();
-
-        ContentType contentType;
-        try {
-            contentType = header.getContentType();
-        } catch (ParseException exn) {
-            throw new TokenException(exn);
-        }
-
-        State state;
-
-        if (null == contentType) {
-            logger.warn("MIME-Version without Content-Type");
-            state = State.BODY;
-        } else {
-            String pType = contentType.getPrimaryType();
-            String sType = contentType.getSubType();
-
-            if (pType.equals("multipart")) {
-                state = State.PREAMBLE;
-            } else if (pType.equals("message") && sType.equals("rfc822")) {
-                state = State.MESSAGE_HEADER;
-            } else {
-                state = State.BODY;
-            }
-        }
-
-        return state;
-    }
-
-    private String mimeBoundary(Rfc822Header header) throws TokenException
-    {
-        ContentType contentType;
-        try {
-            contentType = header.getContentType();
-        } catch (ParseException exn) {
-            throw new TokenException(exn);
-        }
-        return contentType.getParameter("boundary");
     }
 
     private boolean isMatchingBoundary(Token token)

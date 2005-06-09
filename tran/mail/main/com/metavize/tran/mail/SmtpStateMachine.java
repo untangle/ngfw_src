@@ -64,7 +64,7 @@ public abstract class SmtpStateMachine extends AbstractTokenHandler
         throws TokenException;
     protected abstract TokenResult doMultipartBody(Chunk chunk)
         throws TokenException;
-    protected abstract TokenResult doEpilog(Chunk chunk)
+    protected abstract TokenResult doEpilogue(Chunk chunk)
         throws TokenException;
     protected abstract TokenResult doMessageFile(MessageFile messageFile)
         throws TokenException;
@@ -113,8 +113,8 @@ public abstract class SmtpStateMachine extends AbstractTokenHandler
             case END_BOUNDARY:
                 return doBoundary((MimeBoundary)token, true);
 
-            case EPILOG:
-                return doEpilog((Chunk)token);
+            case EPILOGUE:
+                return doEpilogue((Chunk)token);
 
             default:
                 throw new IllegalStateException("unexpected state: " + state);

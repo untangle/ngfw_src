@@ -11,7 +11,7 @@
 
 package com.metavize.tran.mail;
 
-import static com.metavize.tran.mail.Rfc822Util.*;
+import static com.metavize.tran.util.Rfc822Util.*;
 import static com.metavize.tran.util.Ascii.*;
 
 import java.nio.ByteBuffer;

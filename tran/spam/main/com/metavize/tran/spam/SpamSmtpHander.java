@@ -96,7 +96,7 @@ class SpamSmtpHandler extends SmtpStateMachine
         return queueOrPassThrough(chunk);
     }
 
-    protected TokenResult doEpilog(Chunk chunk)
+    protected TokenResult doEpilogue(Chunk chunk)
         throws TokenException
     {
         return queueOrPassThrough(chunk);
