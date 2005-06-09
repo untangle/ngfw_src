@@ -23,7 +23,7 @@
       <Properties>
         <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
           <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-            <TitledBorder title="DMZ">
+            <TitledBorder title="DMZ Host">
               <Font PropertyName="font" name="Dialog" size="16" style="1"/>
             </TitledBorder>
           </Border>
@@ -41,7 +41,7 @@
           <Properties>
             <Property name="editable" type="boolean" value="false"/>
             <Property name="lineWrap" type="boolean" value="true"/>
-            <Property name="text" type="java.lang.String" value="DMZ allows you to direct all incoming traffic to a specific computer on your internal network.  This is typically used for web servers or other servers which must be accesible from outside your secured internal network.  (Note:  Redirect takes precedence over DMZ)"/>
+            <Property name="text" type="java.lang.String" value="DMZ Host allows you to direct all incoming traffic to a specific computer on your internal network.  This is typically used for web servers or other servers which must be accessible from outside your secured internal network.  (Note:  Redirect takes precedence over DMZ Host)"/>
             <Property name="wrapStyleWord" type="boolean" value="true"/>
             <Property name="opaque" type="boolean" value="false"/>
           </Properties>
@@ -111,7 +111,7 @@
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Dialog" size="12" style="0"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="DMZ"/>
+                <Property name="text" type="java.lang.String" value="DMZ Host"/>
               </Properties>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
@@ -179,7 +179,7 @@
           <Properties>
             <Property name="editable" type="boolean" value="false"/>
             <Property name="lineWrap" type="boolean" value="true"/>
-            <Property name="text" type="java.lang.String" value="The target address is the address of the computer inside your network that will receive all incoming traffic when DMZ is enabled."/>
+            <Property name="text" type="java.lang.String" value="The target address is the address of the computer inside your network that will receive all incoming traffic when DMZ Host is enabled."/>
             <Property name="wrapStyleWord" type="boolean" value="true"/>
             <Property name="opaque" type="boolean" value="false"/>
           </Properties>

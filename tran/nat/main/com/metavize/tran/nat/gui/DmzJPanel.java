@@ -110,10 +110,10 @@ public class DmzJPanel extends javax.swing.JPanel implements Savable, Refreshabl
         setPreferredSize(new java.awt.Dimension(530, 280));
         explanationJPanel.setLayout(new java.awt.GridBagLayout());
 
-        explanationJPanel.setBorder(new javax.swing.border.TitledBorder(null, "DMZ", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
+        explanationJPanel.setBorder(new javax.swing.border.TitledBorder(null, "DMZ Host", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
         jTextArea2.setEditable(false);
         jTextArea2.setLineWrap(true);
-        jTextArea2.setText("DMZ allows you to direct all incoming traffic to a specific computer on your internal network.  This is typically used for web servers or other servers which must be accesible from outside your secured internal network.  (Note:  Redirect takes precedence over DMZ)");
+        jTextArea2.setText("DMZ Host allows you to direct all incoming traffic to a specific computer on your internal network.  This is typically used for web servers or other servers which must be accessible from outside your secured internal network.  (Note:  Redirect takes precedence over DMZ Host)");
         jTextArea2.setWrapStyleWord(true);
         jTextArea2.setOpaque(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -161,7 +161,7 @@ public class DmzJPanel extends javax.swing.JPanel implements Savable, Refreshabl
         jPanel1.add(dmzDisabledJRadioButton, gridBagConstraints);
 
         jLabel1.setFont(new java.awt.Font("Dialog", 0, 12));
-        jLabel1.setText("DMZ");
+        jLabel1.setText("DMZ Host");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
@@ -213,7 +213,7 @@ public class DmzJPanel extends javax.swing.JPanel implements Savable, Refreshabl
 
         jTextArea3.setEditable(false);
         jTextArea3.setLineWrap(true);
-        jTextArea3.setText("The target address is the address of the computer inside your network that will receive all incoming traffic when DMZ is enabled.");
+        jTextArea3.setText("The target address is the address of the computer inside your network that will receive all incoming traffic when DMZ Host is enabled.");
         jTextArea3.setWrapStyleWord(true);
         jTextArea3.setOpaque(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
