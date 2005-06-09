@@ -20,9 +20,9 @@
 <log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/"
                      debug="false">
 
-  <!---------------------------------------------------->
+  <!-- ============================================== -->
   <!-- Appenders                                      -->
-  <!---------------------------------------------------->
+  <!-- ============================================== -->
 
   <appender name="MVVMLog" class="org.apache.log4j.RollingFileAppender">
     <errorHandler class="org.apache.log4j.helpers.OnlyOnceErrorHandler"/>
@@ -38,18 +38,20 @@
 
   <!-- User Logger -->
 
-  <appender name="eventlog" class="com.metavize.mvvm.logging.HibernateAppender"/>
+  <appender name="eventlog"
+            class="com.metavize.mvvm.logging.HibernateAppender"/>
 
   <!-- Log Emailer -->
 
-  <appender name="EmailAppender" class="com.metavize.mvvm.logging.SMTPAppender">
+  <appender name="EmailAppender"
+            class="com.metavize.mvvm.logging.SMTPAppender">
     <!-- Want to restrict level here? -->
   </appender>
 
 
-  <!---------------------------------------------------->
+  <!-- ============================================== -->
   <!-- Categories                                     -->
-  <!---------------------------------------------------->
+  <!-- ============================================== -->
 
   <category name="eventlog">
     <priority value="ALL"/>
@@ -85,9 +87,9 @@
   </category>
 
 
-  <!---------------------------------------------------->
+  <!-- ============================================== -->
   <!-- The Root Category                              -->
-  <!---------------------------------------------------->
+  <!-- ============================================== -->
 
   <!-- All MVVM logs go to the MVVMLog file -->
   <root>
