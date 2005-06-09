@@ -102,6 +102,12 @@ static int _get_interface_address ( char* interface_name, in_addr_t* address, in
 /* Setup or reomve all of the locally destined packets */
 static int _modify_local_marks( char* intf_name, int intf_mark, int if_add );
 
+/* Antisubscribe from all ICMP that the kernel should handle */
+static int _antisubscribe_icmp( int if_add );
+
+/* Antisubcribe to one type of ICMP traffic */
+static int _antisubcribe_icmp_type( char add_del, char* icmp_type );
+
 /* Setup or remove a guard on a port */
 int _command_port_guard( netcap_intf_t gate, int protocol, char* ports, char* guest, int if_add );
 
@@ -161,6 +167,11 @@ int netcap_interface_init ()
         return errlog( ERR_CRITICAL, "_netcap_interface_disable_srv_conntrack\n" );
     }
 
+    /* Antisubscribe ICMP packets we can't use */
+    if ( _antisubscribe_icmp( RULES_ADD ) < 0 ) {
+        return errlog( ERR_CRITICAL, "_antisubscribe_icmp\n" );
+    }
+
     /* The code above only gets the "active" interfaces, which means it only
      * retrieves the bridge */
     /* Retrieve all of the interface names */
@@ -199,6 +210,9 @@ int netcap_interface_cleanup( void )
 {
     // Remove all of the interface marking rules
     _netcap_interface_marking( RULES_DEL, NC_INTF_UNK, NC_INTF_UNK );
+
+    /* Remove all of the ICMP antisubscribes */
+    _antisubscribe_icmp( RULES_DEL );
     
     /* Insert a rule to disable conntracking on the server side of
      * connection completes  */
@@ -943,5 +957,37 @@ static int _modify_local_marks( char* intf_name, int intf_mark, int if_add )
     
     return 0;
 }
+
+static int _antisubscribe_icmp( int if_add )
+{
+    char add_del = ( if_add == RULES_ADD ) ? 'A' : 'D';
+    
+    if (( _antisubcribe_icmp_type( add_del, "parameter-problem" ) < 0 ) ||
+        ( _antisubcribe_icmp_type( add_del, "source-quench" ) < 0 ) ||
+        ( _antisubcribe_icmp_type( add_del, "fragmentation-needed" ) < 0 )) {
+        return errlog( ERR_CRITICAL, "_antisubcribe_icmp_type\n" );
+    }
+
+    return 0;
+}
+
+static int _antisubcribe_icmp_type( char add_del, char* icmp_type )
+{
+    char insert_cmd[MAX_CMD_LEN];
+
+    snprintf( insert_cmd, sizeof( insert_cmd ), 
+              "/sbin/iptables -t mangle -%c antisub -p icmp -m mark -j MARK "
+              " ! --mark " MARK_S_MASK_ANTISUB " --icmp-type %s --set-mark " 
+              MARK_S_ANTISUB, add_del, icmp_type );
+    
+    if ( mvutil_system ( insert_cmd ) < 0 ) {
+        return perrlog("mvutil_system");
+    } else {
+        debug( 5, "NETCAP: Run Command: '%s' \n", insert_cmd );
+    }
+    
+    return 0;
+}
+
 
 
