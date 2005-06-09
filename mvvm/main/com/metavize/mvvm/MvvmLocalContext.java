@@ -12,6 +12,10 @@
 package com.metavize.mvvm;
 
 import java.io.IOException;
+import java.io.Serializable;
+import java.util.Map;
+import java.util.HashMap;
+
 
 import com.metavize.mvvm.logging.LoggingManager;
 import com.metavize.mvvm.security.AdminManager;
@@ -32,6 +36,71 @@ import org.apache.log4j.Logger;
  */
 public interface MvvmLocalContext
 {
+    public class MvvmState implements Serializable
+    {
+        private static final long serialVersionUID = -101624240450519097L;
+
+        /**
+         * Booted, but not initialized. This is a transient state, just
+         * after the world has been instantiated, but before
+         * MvvmLocalContext.init() has been called.
+         *
+         */
+        public static final MvvmState LOADED = new MvvmState("loaded");
+
+        /**
+         * Initialized, but not running. We've run init() but not yet started
+         * the transforms or Tomcat.
+         *
+         */
+        public static final MvvmState INITIALIZED = new MvvmState("initialized");
+
+        /**
+         * Running.
+         *
+         */
+        public static final MvvmState RUNNING = new MvvmState("running");
+
+        /**
+         * Destroyed, this instance should not be used.
+         *
+         */
+        public static final MvvmState DESTROYED = new MvvmState("destroyed");
+
+        private static final Map INSTANCES = new HashMap();
+
+        static {
+            INSTANCES.put(LOADED.toString(), LOADED);
+            INSTANCES.put(INITIALIZED.toString(), INITIALIZED);
+            INSTANCES.put(RUNNING.toString(), RUNNING);
+            INSTANCES.put(DESTROYED.toString(), DESTROYED);
+        }
+
+        private String state;
+
+        public static MvvmState getInstance(String state)
+        {
+            return (MvvmState)INSTANCES.get(state);
+        }
+
+        private MvvmState(String state) { this.state = state; }
+
+        public String toString() { return state; }
+
+        // Serialization ----------------------------------------------------------
+        Object readResolve()
+        {
+            return getInstance(state);
+        }
+    }
+
+    /**
+     * Gets the current state of the MVVM
+     *
+     * @return a <code>MvvmState</code> enumerated value
+     */
+    MvvmState state();
+
     /**
      * Get the <code>ToolboxManager</code> singleton.
      *

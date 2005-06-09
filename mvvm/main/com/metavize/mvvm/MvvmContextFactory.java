@@ -21,7 +21,21 @@ import com.metavize.mvvm.engine.MvvmContextImpl;
  */
 public class MvvmContextFactory
 {
-    private static MvvmLocalContext MVVM_CONTEXT = MvvmContextImpl.context();
+    private static MvvmLocalContext MVVM_CONTEXT = null;
+
+    /**
+     * Gets the current state of the MVVM.  This provides a way to get the state without creating
+     * the MvvmLocalContext in case we're calling this at a very early stage.
+     *
+     * @return a <code>MvvmState</code> enumerated value
+     */
+    public static MvvmLocalContext.MvvmState state()
+    {
+        if (MVVM_CONTEXT == null)
+            return MvvmLocalContext.MvvmState.LOADED;
+        else
+            return MVVM_CONTEXT.state();
+    }
 
     /**
      * Get the <code>MvvmContext</code> from this classloader.
@@ -31,6 +45,13 @@ public class MvvmContextFactory
      */
     public static MvvmLocalContext context()
     {
+        if (MVVM_CONTEXT == null) {
+            synchronized(MvvmContextFactory.class) {
+                if (MVVM_CONTEXT == null) {
+                    MVVM_CONTEXT = MvvmContextImpl.context();
+                }
+            }
+        }
         return MVVM_CONTEXT;
     }
 }

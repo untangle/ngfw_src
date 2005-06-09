@@ -48,6 +48,7 @@ public class MvvmContextImpl extends MvvmContextBase
     private final Logger logger = Logger.getLogger(MvvmContextImpl.class);
     private final Logger eventLogger = Logger.getLogger("eventlog");
 
+    private MvvmState state;
     private AdminManagerImpl adminManager;
     private ArgonManager argonManager;
     private HttpInvoker httpInvoker;
@@ -65,6 +66,7 @@ public class MvvmContextImpl extends MvvmContextBase
     private MvvmContextImpl()
     {
         sessionFactory = Util.makeSessionFactory(getClass().getClassLoader());
+        state = MvvmState.LOADED;
     }
 
     // static factory ---------------------------------------------------------
@@ -77,6 +79,11 @@ public class MvvmContextImpl extends MvvmContextBase
     static MvvmContextImpl getInstance()
     {
         return CONTEXT;
+    }
+
+    public MvvmState state()
+    {
+        return state;
     }
 
     // singletons -------------------------------------------------------------
@@ -222,6 +229,7 @@ public class MvvmContextImpl extends MvvmContextBase
         httpInvoker = HttpInvoker.invoker();
 
         remoteContext = new MvvmRemoteContextImpl(this);
+        state = MvvmState.INITIALIZED;
     }
 
     @Override
@@ -233,11 +241,14 @@ public class MvvmContextImpl extends MvvmContextBase
         logger.debug("starting HttpInvoker");
         httpInvoker.init();
         logger.debug("postInit complete");
+        state = MvvmState.RUNNING;
     }
 
     @Override
     protected void destroy()
     {
+        state = MvvmState.DESTROYED;
+
         // stop remote services:
         try {
             httpInvoker.destroy();

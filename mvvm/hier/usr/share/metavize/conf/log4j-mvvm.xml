@@ -41,16 +41,22 @@
     <appender-ref ref="eventlog"/>
   </category>
 
+  <!-- Log Emailer -->
+
+  <appender name="EmailAppender" class="com.metavize.mvvm.logging.SMTPAppender">
+    <!-- Want to restrict level here? -->
+  </appender>
+
   <!-- #       DEBUG           every allocation and release -->
   <!-- #       INFO            periodic buffer pool statistics and all
                                gc-reclaimed buffers are noted -->
 
   <category name="com.metavize.mvvm.engine">
-    <priority value="ALL"/>
+    <priority value="WARN"/>
   </category>
 
   <category name="com.metavize.mvvm.logging">
-    <priority value="ALL"/>
+    <priority value="WARN"/>
   </category>
 
   <category name="com.metavize.mvvm.argon">
@@ -77,5 +83,6 @@
   <root>
     <priority value="WARN"/>
     <appender-ref ref="MVVMLog"/>
+    <appender-ref ref="EmailAppender"/>
   </root>
 </log4j:configuration>

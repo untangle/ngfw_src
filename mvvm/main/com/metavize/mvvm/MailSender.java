@@ -13,6 +13,7 @@ package com.metavize.mvvm;
 
 import java.util.List;
 import java.io.File;
+import javax.mail.internet.MimeBodyPart;
 
 
 public interface MailSender
@@ -41,6 +42,17 @@ public interface MailSender
      * @param extras a <code>List<File></code> containing the additional extras (#S1, #S2, ...).  They will have a MIME filename that matches the File's name
      */
     void sendReports(String subject, String bodyHTML, List<String> extraLocations, List<File> extras);
+
+    /**
+     * <code>sendErrorLogs</code> sends an error log email to Metavize.  Each attachment contains
+     * the latest events for a particular transform.
+     * to the reportEmail address (from the mail settings).
+     *
+     * @param subject a <code>String</code> value
+     * @param bodyHTML a <code>String</code> containing the HTML for the "main page" that will become the first extra
+     * @param parts a <code>List<MimeBodyPart></code> containing the additional parts.
+     */
+    void sendErrorLogs(String subject, String bodyHTML, List<MimeBodyPart> parts);
 
     /**
      * <code>sendMessage</code> sends an email message to the given

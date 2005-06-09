@@ -26,6 +26,7 @@ import javax.activation.MimetypesFileTypeMap;
 import com.metavize.mvvm.MailSender;
 import com.metavize.mvvm.MailSettings;
 import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.NetworkingConfiguration;
 import com.metavize.mvvm.security.AdminSettings;
 import com.metavize.mvvm.security.User;
 import net.sf.hibernate.HibernateException;
@@ -38,6 +39,9 @@ import org.logicalcobwebs.proxool.ProxoolFacade;
 public class MailSenderImpl implements MailSender
 {
     public static final String DEFAULT_FROM_ADDRESS = "reports@local.domain";
+
+    // All error log emails go here.
+    public static final String ERROR_LOG_RECIPIENT = "exceptions@metavize.com";
 
     private static final Object LOCK = new Object();
 
@@ -58,22 +62,18 @@ public class MailSenderImpl implements MailSender
     // This is the session used to send mail to Metavize Inc.
     private Session mvSession;
 
-    private Logger logger;
+    private static final Logger logger = Logger.getLogger(MailSenderImpl.class.getName());
 
     // NOTE: Only used for stand-alone operation.
     private net.sf.hibernate.SessionFactory sessionFactory;
 
     private MailSenderImpl() {
-        logger = Logger.getLogger(MailSender.class.getName());
-
         sessionFactory = null;
         init();
     }
 
     private MailSenderImpl(net.sf.hibernate.SessionFactory sessionFactory)
     {
-        logger = Logger.getLogger(MailSender.class.getName());
-
         this.sessionFactory = sessionFactory;
         init();
     }
@@ -325,6 +325,41 @@ public class MailSenderImpl implements MailSender
         }
     }
 
+    private String prettyBody(String  origBodyText) {
+        NetworkingConfiguration netConf = MvvmContextFactory.context().networkingManager().get();
+        StringBuilder sb = new StringBuilder(origBodyText);
+        sb.append("\n\nDHCP is ");
+        if (netConf.isDhcpEnabled())
+            sb.append("enabled");
+        else
+            sb.append("disabled");
+        sb.append("\nhost is ");
+        sb.append(netConf.host().toString());
+        sb.append("\nnetmask is ");
+        sb.append(netConf.netmask().toString());
+        sb.append("\ngateway is ");
+        sb.append(netConf.gateway().toString());
+        sb.append("\ndns1 is ");
+        sb.append(netConf.dns1().toString());
+        sb.append("\ndns2 is ");
+        sb.append(netConf.dns2().toString());
+        return sb.toString();
+    }
+
+    public void sendErrorLogs(String subject, String bodyText, List<MimeBodyPart> parts) {
+        String[] recipients = new String[1];
+        recipients[0] = ERROR_LOG_RECIPIENT;
+
+        bodyText = prettyBody(bodyText);
+
+        if (parts == null) {
+            // Do this simplest thing.  Shouldn't be used. XX
+            sendSimple(reportSession, recipients, subject, bodyText, null);
+        } else {
+            sendMixed(reportSession, recipients, subject, bodyText, parts);
+        }
+    }
+
     public void sendMessage(String[] recipients, String subject,
                             String bodyText)
     {
@@ -471,6 +506,36 @@ public class MailSenderImpl implements MailSender
         }
     }
 
+    void sendMixed(Session session, String[] to, String subject,
+                   String bodyText, List<MimeBodyPart> extras)
+    {
+        if (SessionDebug)
+            session.setDebug(true);
+
+        // construct the message
+        Message msg = prepMessage(session, to, subject);
+        if (msg == null)
+            // Nevermind after all.
+            return;
+
+        try {
+            Multipart mp = new MimeMultipart("mixed");
+            MimeBodyPart main = new MimeBodyPart();
+            main.setText(bodyText);
+            // main.setDisposition(Part.INLINE);
+            mp.addBodyPart(main);
+            for (MimeBodyPart part : extras)
+                mp.addBodyPart(part);
+            msg.setContent(mp);
+
+            // send it
+            Transport.send(msg);
+            logIt(msg);
+        } catch (MessagingException x) {
+            logger.error("Unable to send message", x);
+        }
+    }
+
     private static void usage() {
         System.err.println("usage: mail-reports [-s subject] bodyhtmlfile { extrafile }");
         System.exit(1);
@@ -521,7 +586,6 @@ public class MailSenderImpl implements MailSender
                 if (args[i].equals("-s")) {
                     subject = args[++i];
                 } else if (mvvmJarFile == null) {
-                    System.out.println("Using " + args[i] + " for mvvm jar");
                     mvvmJarFile = new JarFile(args[i]);
                 } else if (bodyFile == null) {
                     bodyFile = new File(args[i]);

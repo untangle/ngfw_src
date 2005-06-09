@@ -30,6 +30,12 @@
     </layout>
   </appender>
 
+  <!-- Log Emailer -->
+
+  <appender name="EmailAppender" class="com.metavize.mvvm.logging.SMTPAppender">
+    <!-- Want to restrict level here? -->
+  </appender>
+
   <!-- #      DEBUG           new session debugging -->
   <!-- #      INFO            each new session -->
   <!-- #      WARN            exceptions -->
@@ -48,7 +54,7 @@
   <!-- #      WARN           New session, new session request events -->
   <category name="com.metavize.mvvm.tapi.SessionEvent">
     <!-- No logging by default -->
-    <priority value="WARN"/>
+    <priority value="ERROR"/>
   </category>
 
   <!-- # Internal Session messages, -->
@@ -68,23 +74,23 @@
   </category>
 
   <category name="com.metavize.mvvm.tapi.SessionTimes">
-    <priority value="DEBUG"/>
+    <priority value="WARN"/>
   </category>
 
   <category name="com.metavize.tran.token">
-    <priority value="DEBUG"/>
+    <priority value="WARN"/>
   </category>
 
   <category name="com.metavize.tran.virus">
-    <priority value="DEBUG"/>
+    <priority value="WARN"/>
   </category>
 
   <category name="com.metavize.tran.spam">
-    <priority value="DEBUG"/>
+    <priority value="WARN"/>
   </category>
 
   <category name="com.metavize.tran.ftp">
-    <priority value="DEBUG"/>
+    <priority value="WARN"/>
   </category>
 
   <category name="com.metavize.tran.http">
@@ -108,7 +114,7 @@
   </category>
 
   <category name="com.metavize.tran.mail">
-    <priority value="DEBUG"/>
+    <priority value="WARN"/>
   </category>
 
   <category name="com.metavize.mvvm.tran">
@@ -131,5 +137,6 @@
   <root>
     <priority value="WARN"/>
     <appender-ref ref="TranLog"/>
+    <appender-ref ref="EmailAppender"/>
   </root>
 </log4j:configuration>
