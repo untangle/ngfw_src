@@ -27,7 +27,7 @@ Package: mail-casing
 Architecture: any
 Depends: mvvm
 XB-Price: 1000
-XB-Display-Name: HTTP Casing
+XB-Display-Name: Mail Casing
 Description: The Metavize eMail Decoder
  The Mail Casing allows other software appliances
  to parse and analyze eMail (SMTP/IMAP/POP3) traffic and documents.
