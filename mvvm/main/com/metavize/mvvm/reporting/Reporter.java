@@ -153,9 +153,9 @@ public class Reporter
                     String outputName = type;
                     String outputFile = new File(tranDir, outputName).getCanonicalPath();
                     String outputImages = globalImagesDir.getCanonicalPath();
-                    processReport(resource, conn, outputFile + "-daily", outputImages, lastday, midnight);
-                    processReport(resource, conn, outputFile + "-weekly", outputImages, lastweek, midnight);
-                    processReport(resource, conn, outputFile + "-monthly", outputImages, lastmonth, midnight);
+                    processReport(resource, conn, outputFile + "--daily", outputImages, lastday, midnight);
+                    processReport(resource, conn, outputFile + "--weekly", outputImages, lastweek, midnight);
+                    processReport(resource, conn, outputFile + "--monthly", outputImages, lastmonth, midnight);
                 }
             }
             is.close();
@@ -398,9 +398,9 @@ public class Reporter
 
         // Graphs.
         String graphsFile = new File(outputDir, "graphs").getCanonicalPath();
-        processGraphs(conn, graphsFile + "-daily", lastday, midnight);
-        processGraphs(conn, graphsFile + "-weekly", lastweek, midnight);
-        processGraphs(conn, graphsFile + "-monthly", lastmonth, midnight);
+        processGraphs(conn, graphsFile + "--daily", lastday, midnight);
+        processGraphs(conn, graphsFile + "--weekly", lastweek, midnight);
+        processGraphs(conn, graphsFile + "--monthly", lastmonth, midnight);
  
     }
 

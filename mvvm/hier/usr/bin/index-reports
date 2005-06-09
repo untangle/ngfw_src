@@ -601,25 +601,25 @@ EOF
 
 if [ "$generate_email_index" = false ]; then
 cat >> $main_index <<EOF
-<td width="125px" align="right">(<a href="$rel_dir/$base_name-daily.html">HTML</a> | <a href="$rel_dir/$base_name-daily.pdf">PDF</a>)</td>
-<td width="125px" align="right">(<a href="$rel_dir/$base_name-weekly.html">HTML</a> | <a href="$rel_dir/$base_name-weekly.pdf">PDF</a>)</td>
-<td width="125px" align="right">(<a href="$rel_dir/$base_name-monthly.html">HTML</a> | <a href="$rel_dir/$base_name-monthly.pdf">PDF</a>)</td>
+<td width="125px" align="right">(<a href="$rel_dir/$base_name--daily.html">HTML</a> | <a href="$rel_dir/$base_name--daily.pdf">PDF</a>)</td>
+<td width="125px" align="right">(<a href="$rel_dir/$base_name--weekly.html">HTML</a> | <a href="$rel_dir/$base_name--weekly.pdf">PDF</a>)</td>
+<td width="125px" align="right">(<a href="$rel_dir/$base_name--monthly.html">HTML</a> | <a href="$rel_dir/$base_name--monthly.pdf">PDF</a>)</td>
 EOF
 else
 #    if [ "`echo $rep_name | grep -i 'Summary' `x" != "x" ]; then
 if [ "$generate_email_index" = daily ]; then
 cat >> $main_index <<EOF
-<td width="375px" align="right" colspan="3">(<a href="$rel_dir/$base_name-daily.pdf">PDF</a>)</td>
+<td width="375px" align="right" colspan="3">(<a href="$rel_dir/$base_name--daily.pdf">PDF</a>)</td>
 EOF
 fi
 if [ "$generate_email_index" = weekly ]; then
 cat >> $main_index <<EOF
-<td width="375px" align="right" colspan="3">(<a href="$rel_dir/$base_name-weekly.pdf">PDF</a>)</td>
+<td width="375px" align="right" colspan="3">(<a href="$rel_dir/$base_name--weekly.pdf">PDF</a>)</td>
 EOF
 fi
 if [ "$generate_email_index" = monthly ]; then
 cat >> $main_index <<EOF
-<td width="375px" align="right" colspan="3">(<a href="$rel_dir/$base_name-monthly.pdf">PDF</a>)</td>
+<td width="375px" align="right" colspan="3">(<a href="$rel_dir/$base_name--monthly.pdf">PDF</a>)</td>
 EOF
 fi
 #    else
