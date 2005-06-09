@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: IncomingSocketQueue.java,v 1.22 2005/03/22 07:07:08 rbscott Exp $
+ * $Id$
  */
 
 package com.metavize.jvector;
@@ -23,6 +23,12 @@ public class IncomingSocketQueue extends Sink implements SocketQueue
     protected SocketQueueShutdownHook shutdownHook = null;
 
     protected boolean isClosed = false;
+
+    // True once the session is killed
+    protected boolean isKilled = false;
+    
+    // True once the session has been reset
+    protected boolean isReset  = false;
         
     public IncomingSocketQueue()
     {
@@ -38,6 +44,11 @@ public class IncomingSocketQueue extends Sink implements SocketQueue
 
     public Crumb read()
     {
+        if ( isReset ) {
+            /* Return a reset crumb */
+            return ResetCrumb.getInstance();
+        }
+
         Crumb crumb = (Crumb)sq.removeFirst();
         
         if ( Vector.isDebugEnabled()) {
@@ -78,6 +89,7 @@ public class IncomingSocketQueue extends Sink implements SocketQueue
             Vector.logDebug( "reset(" + this + ")" );
 
         /* Clear everything in the event list */
+        isReset = true;
         sq.eventList.clear();
         sq.isShutdown = true;
         sq.notifyMvpoll();
@@ -168,6 +180,7 @@ public class IncomingSocketQueue extends Sink implements SocketQueue
     {
         isClosed = true;
         sq.isShutdown = true;
+        isKilled = true;
         
         /* Deregister all listeners */
         sq.listeners.clear();
@@ -243,6 +256,8 @@ public class IncomingSocketQueue extends Sink implements SocketQueue
                 for (ListIterator iter = this.listeners.listIterator() ; iter.hasNext() ;) {
                     SocketQueueListener ll = (SocketQueueListener) iter.next();
                     ll.event( IncomingSocketQueue.this );
+                    /* If an exception killed the thread, don't finish iterating the list */
+                    if ( isKilled ) break;
                 }
             }
         }
