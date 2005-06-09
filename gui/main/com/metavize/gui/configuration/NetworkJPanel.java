@@ -30,7 +30,6 @@ public class NetworkJPanel extends javax.swing.JPanel implements Savable, Refres
     
     public NetworkJPanel() {
         initComponents();
-        tcpWindowJPanel.setVisible(false);
     }
 
     public void doSave(Object settings, boolean validateOnly) throws Exception {
@@ -111,9 +110,6 @@ public class NetworkJPanel extends javax.swing.JPanel implements Savable, Refres
             }
         }
 
-	// TCP WINDOW SCALING ENABLED //////
-	// boolean isTcpWindowScalingEnabled = tcpWindowEnabledRadioButton.isSelected();
-
 	// SAVE SETTINGS ////////////
 	if( !validateOnly ){
 	    NetworkingConfiguration networkingConfiguration = (NetworkingConfiguration) settings;
@@ -125,7 +121,6 @@ public class NetworkJPanel extends javax.swing.JPanel implements Savable, Refres
 		networkingConfiguration.dns1( dns1 );
 		networkingConfiguration.dns2( dns2 );
 	    }
-	    //networkingConfiguration.isTcpWindowScalingEnabled( isTcpWindowScalingEnabled );
         }
 
     }
@@ -161,13 +156,6 @@ public class NetworkJPanel extends javax.swing.JPanel implements Savable, Refres
 	// DNS2 //////////
         dnsSecondaryJTextField.setText( networkingConfiguration.dns2().toString() );
 	dnsSecondaryJTextField.setBackground( Color.WHITE );
-
-        // TCP WINDOW SCALING /////
-	//boolean isTcpWindowScalingEnabled = networkingConfiguration.isTcpWindowScalingEnabled();
-	//if( isTcpWindowScalingEnabled )
-        //    tcpWindowEnabledRadioButton.setSelected(true);
-        //else
-        //    tcpWindowDisabledRadioButton.setSelected(true);
         	
     }
     
@@ -198,15 +186,12 @@ public class NetworkJPanel extends javax.swing.JPanel implements Savable, Refres
         jSeparator2 = new javax.swing.JSeparator();
         jLabel9 = new javax.swing.JLabel();
         renewDhcpLeaseJButton = new javax.swing.JButton();
-        tcpWindowJPanel = new javax.swing.JPanel();
-        tcpWindowEnabledRadioButton = new javax.swing.JRadioButton();
-        tcpWindowDisabledRadioButton = new javax.swing.JRadioButton();
 
         setLayout(new java.awt.GridBagLayout());
 
-        setMaximumSize(new java.awt.Dimension(563, 446));
-        setMinimumSize(new java.awt.Dimension(563, 446));
-        setPreferredSize(new java.awt.Dimension(563, 446));
+        setMaximumSize(new java.awt.Dimension(563, 330));
+        setMinimumSize(new java.awt.Dimension(563, 330));
+        setPreferredSize(new java.awt.Dimension(563, 330));
         dhcpJPanel.setLayout(new java.awt.GridBagLayout());
 
         dhcpJPanel.setBorder(new javax.swing.border.TitledBorder(null, "External IP Settings", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
@@ -369,37 +354,6 @@ public class NetworkJPanel extends javax.swing.JPanel implements Savable, Refres
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 10);
         add(dhcpJPanel, gridBagConstraints);
 
-        tcpWindowJPanel.setLayout(new java.awt.GridBagLayout());
-
-        tcpWindowJPanel.setBorder(new javax.swing.border.TitledBorder(null, "TCP Window Scaling", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
-        tcpWindowButtonGroup.add(tcpWindowEnabledRadioButton);
-        tcpWindowEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        tcpWindowEnabledRadioButton.setText("<html><b>Enable</b> TCP Window Scaling to possibly increase network performance.  This may not be compatible with some networks.</html>");
-        tcpWindowEnabledRadioButton.setFocusPainted(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        tcpWindowJPanel.add(tcpWindowEnabledRadioButton, gridBagConstraints);
-
-        tcpWindowButtonGroup.add(tcpWindowDisabledRadioButton);
-        tcpWindowDisabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        tcpWindowDisabledRadioButton.setText("<html><b>Disable</b> TCP Window Scaling to avoid any possible incompatibilities with networking equipment.  This is the default setting.</html>");
-        tcpWindowDisabledRadioButton.setFocusPainted(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        tcpWindowJPanel.add(tcpWindowDisabledRadioButton, gridBagConstraints);
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 10);
-        add(tcpWindowJPanel, gridBagConstraints);
-
     }//GEN-END:initComponents
 
     private void renewDhcpLeaseJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_renewDhcpLeaseJButtonActionPerformed
@@ -450,9 +404,6 @@ public class NetworkJPanel extends javax.swing.JPanel implements Savable, Refres
     private javax.swing.ButtonGroup sshButtonGroup;
     private javax.swing.JPanel staticIPJPanel;
     private javax.swing.ButtonGroup tcpWindowButtonGroup;
-    public javax.swing.JRadioButton tcpWindowDisabledRadioButton;
-    public javax.swing.JRadioButton tcpWindowEnabledRadioButton;
-    private javax.swing.JPanel tcpWindowJPanel;
     // End of variables declaration//GEN-END:variables
     
 

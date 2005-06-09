@@ -78,10 +78,10 @@ public class BackupRestoreJDialog extends javax.swing.JDialog implements java.aw
         setModal(true);
         setResizable(false);
         closeJButton.setFont(new java.awt.Font("Default", 0, 12));
+        closeJButton.setText("Close Window");
         closeJButton.setDoubleBuffered(true);
         closeJButton.setFocusPainted(false);
         closeJButton.setFocusable(false);
-        closeJButton.setText("Close Window");
         closeJButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 closeJButtonActionPerformed(evt);
@@ -92,7 +92,7 @@ public class BackupRestoreJDialog extends javax.swing.JDialog implements java.aw
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 10, 10, 0);
+        gridBagConstraints.insets = new java.awt.Insets(0, 15, 15, 0);
         getContentPane().add(closeJButton, gridBagConstraints);
 
         jTabbedPane.setDoubleBuffered(true);
@@ -270,7 +270,7 @@ public class BackupRestoreJDialog extends javax.swing.JDialog implements java.aw
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        gridBagConstraints.insets = new java.awt.Insets(15, 15, 15, 15);
         getContentPane().add(jTabbedPane, gridBagConstraints);
 
         backgroundJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/images/DarkGreyBackground1600x100.png")));
