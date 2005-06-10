@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: SophosScanner.java,v 1.5 2005/03/11 03:33:33 cng Exp $
+ * $Id$
  */
 package com.metavize.tran.sophos;
 
@@ -98,10 +98,10 @@ public class SophosScanner implements VirusScanner
         case 2:
         case 1:
             logger.error("sweep exit code error: " + i);
-            return null;
+            return VirusScannerResult.ERROR;
         default:
             logger.error("Unknown sweep exit code: " + i);
-            return null;
+            return VirusScannerResult.ERROR;
         }
     }
 

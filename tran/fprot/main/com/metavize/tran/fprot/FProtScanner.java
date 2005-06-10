@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: FProtScanner.java,v 1.5 2005/03/11 03:32:46 cng Exp $
+ * $Id$
  */
 package com.metavize.tran.fprot;
 
@@ -108,10 +108,10 @@ public class FProtScanner implements VirusScanner {
         case 5:
         case 7:
             logger.error("f-prot exit code error: " + i);
-            return null;
+            return VirusScannerResult.ERROR;
         default:
             logger.error("Unknown f-prot exit code: " + i);
-            return null;
+            return VirusScannerResult.ERROR;
         }
     }
 

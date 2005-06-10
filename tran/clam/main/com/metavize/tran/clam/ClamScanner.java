@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: ClamScanner.java,v 1.4 2005/03/11 03:33:48 cng Exp $
+ * $Id$
  */
 package com.metavize.tran.clam;
 
@@ -111,7 +111,7 @@ public class ClamScanner implements VirusScanner {
         default:
         case 2:
             logger.error("clamdscan exit code error: " + i);
-            return null;
+            return VirusScannerResult.ERROR;
         }
     }
 
