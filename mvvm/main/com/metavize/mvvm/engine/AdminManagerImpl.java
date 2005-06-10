@@ -11,6 +11,8 @@
 
 package com.metavize.mvvm.engine;
 
+import com.metavize.mvvm.MailSender;
+import com.metavize.mvvm.MailSettings;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.security.AdminManager;
 import com.metavize.mvvm.security.AdminSettings;
@@ -80,6 +82,18 @@ class AdminManagerImpl implements AdminManager
 
     MvvmLogin mvvmLogin(boolean isLocal) {
         return isLocal ? mvvmLoginLocal : mvvmLoginRemote;
+    }
+
+    public MailSettings getMailSettings()
+    {
+        MailSender ms = MvvmContextFactory.context().mailSender();
+        return ms.getMailSettings();
+    }
+
+    public void setMailSettings(MailSettings settings)
+    {
+        MailSender ms = MvvmContextFactory.context().mailSender();
+        ms.setMailSettings(settings);
     }
 
     public AdminSettings getAdminSettings()
