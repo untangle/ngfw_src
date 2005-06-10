@@ -16,6 +16,8 @@ import com.metavize.mvvm.tran.TransformContext;
 public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransformControlsJPanel{
     
     private static final String NAME_DIRECTORY = "IP Address to User Map";
+    private static final String NAME_EMAIL = "Reports via Email";
+    private static final String NAME_VIEW = "View Reports";
 
     public MTransformControlsJPanel(MTransformJPanel mTransformJPanel) {
         super(mTransformJPanel);
@@ -28,8 +30,14 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	super.savableMap.put(NAME_DIRECTORY, directoryConfigJPanel);
 	super.refreshableMap.put(NAME_DIRECTORY, directoryConfigJPanel);
 
+	// EMAIL LIST /////
+	EmailConfigJPanel emailConfigJPanel = new EmailConfigJPanel();
+	mTabbedPane.insertTab(NAME_EMAIL, null, emailConfigJPanel, null, 0);
+	super.savableMap.put(NAME_EMAIL, emailConfigJPanel);
+	super.refreshableMap.put(NAME_EMAIL, emailConfigJPanel);
+	
 	// LAUNCH BUTTON /////
-	mTabbedPane.insertTab("Launch Web Browser to View Reports", null, new BrowserLaunchJPanel(), null, 0);
+	mTabbedPane.insertTab(NAME_VIEW, null, new BrowserLaunchJPanel(), null, 0);
         
     }
     
