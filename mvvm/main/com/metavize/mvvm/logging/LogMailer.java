@@ -68,7 +68,7 @@ public class LogMailer implements Runnable
         thread.start();
     }
 
-    static LogMailer get()
+    public static LogMailer get()
     {
         if (null == LOGMAILER) {
             synchronized (LOCK) {
@@ -91,6 +91,13 @@ public class LogMailer implements Runnable
     {
         synchronized(loggers) {
             loggers.put(tid, appender);
+        }
+    }
+
+    public void unregister(Tid tid)
+    {
+        synchronized(loggers) {
+            loggers.remove(tid);
         }
     }
 
@@ -126,7 +133,7 @@ public class LogMailer implements Runnable
     }
 
     // Called from one of the SMTPAppenders to indicate the need to send.
-    public void sendBuffer(Tid tid)
+    void sendBuffer(Tid tid)
     {
         synchronized(sendMonitor) {
             // Might just update the value, but that's ok -- we'll still end up putting

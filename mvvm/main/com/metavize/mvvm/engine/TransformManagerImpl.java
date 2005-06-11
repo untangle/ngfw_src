@@ -28,6 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.metavize.mvvm.MackageDesc;
 import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.logging.LogMailer;
 import com.metavize.mvvm.security.Tid;
 import com.metavize.mvvm.tran.DeployException;
 import com.metavize.mvvm.tran.TransformContext;
@@ -163,6 +164,9 @@ class TransformManagerImpl implements TransformManager
                 logger.warn("could not close Session", exn);
             }
         }
+        // Free up our logger.  This kind of stuff should be in a hook. XXX
+        LogMailer lm = LogMailer.get();
+        lm.unregister(tid);
     }
 
     public Map<Tid, TransformStats> allTransformStats()
