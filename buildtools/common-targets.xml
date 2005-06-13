@@ -57,4 +57,39 @@ $Id: common-targets.xml,v 1.11 2005/02/06 04:24:53 dmorris Exp $
     <delete dir="${build.root}" failonerror="false"/>
   </target>
 
+  <!--
+    Target for creating JavaDoc.  To account for
+    variation in directory structures, callers need
+    to specify:
+      jdoc.src - The directory holding the 
+                 source to be build
+      jdoc.prjName - Logical name of the project being
+                     documented.
+  -->
+   <target name="func.jdoc">
+
+      <if>
+       <not>
+        <isset property="jdoc.prjName"/>
+       </not>
+       <then>
+        <property name="jdoc.prjName" value="${ant.project.name}"/>
+       </then>
+     </if>
+
+    <javadoc
+      destdir="${jdoc.root}/${jdoc.prjName}"
+      author="false"
+      version="true"
+      use="true"
+      windowtitle="${jdoc.prjName} API">
+
+      <packageset dir="${jdoc.src}" defaultexcludes="yes">
+      </packageset>
+      <doctitle><![CDATA[<h1>Test</h1>]]></doctitle>
+      <bottom><![CDATA[<i>Copyright &#169; 2005 Metavize Inc. All Rights Reserved.</i>]]></bottom>
+    </javadoc>    
+
+  </target>
+
 </project>

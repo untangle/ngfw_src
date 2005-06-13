@@ -21,6 +21,8 @@ $Id: build.xml,v 1.5 2005/03/22 01:27:49 inieves Exp $
   <target name="pkg.install" depends="install.jvector"/>
   <target name="pkg.clean" depends="clean.nuke"/>
 
+
+
   <!-- jvector.jar -->
 
   <property name="build.jvector" value="${build.root}/jvector"/>
@@ -51,6 +53,8 @@ $Id: build.xml,v 1.5 2005/03/22 01:27:49 inieves Exp $
     </javac>
   </target>
 
+
+
   <target name="jni.jvector">
     <mkdir dir="${jni.dst.jvector}"/>
     <javah destdir="${jni.dst.jvector}" classpath="${build.jvector}">
@@ -79,4 +83,27 @@ $Id: build.xml,v 1.5 2005/03/22 01:27:49 inieves Exp $
   <target name="install.jvector" depends="jar.jvector">
     <copy file="${build.jar}/jvector.jar" todir="${dist.mvvm.lib}"/>
   </target>
+
+
+  <!-- Javadoc target -->
+  <target name="jdoc" depends="pkg.jar">
+    <!-- "func.jdoc" defined in "common-targets.xml" -->  
+    <antcall target="func.jdoc">
+      <param name="jdoc.src" value="${src.jvector}"/>
+    </antcall>
+  </target>
+
+  <!-- 
+    Copy source files to ${jdoc.bigtree.src}
+    for inclusion in big JavaDoc generation
+  -->  
+  <target name="bigjdoc">
+    <copydir src="${src.jvector}"
+      dest="${jdoc.bigtree.src}"
+      includes="**/*.java"
+      excludes="**/Test.java"
+      forceoverwrite="true"/>
+  </target>
+
+
 </project>

@@ -22,6 +22,7 @@ $Id: build.xml,v 1.22 2005/03/25 04:00:30 jdi Exp $
   <target name="pkg.install" depends="install.hier, install.gui, install.servlets, install.webstart"/>
   <target name="pkg.clean"   depends="clean.nuke"/>
 
+
   <property name="build.gui" value="${build.root}/gui"/>
 
   <target name="gensrc.servlets">
@@ -170,5 +171,26 @@ $Id: build.xml,v 1.22 2005/03/25 04:00:30 jdi Exp $
     </signjar>
 
   </target> <!-- install.webstart -->
+
+
+  <!-- Javadoc target -->
+  <target name="jdoc" depends="pkg.jar">
+    <!-- "func.jdoc" defined in "common-targets.xml" -->
+    <antcall target="func.jdoc">
+      <param name="jdoc.src" value="${src.main}"/>
+    </antcall>
+  </target>
+
+  <!-- 
+    Copy source files to ${jdoc.bigtree.src}
+    for inclusion in big JavaDoc generation
+  -->
+  <target name="bigjdoc">
+    <copydir src="${src.main}"
+      dest="${jdoc.bigtree.src}"
+      includes="**/*.java"
+      excludes="**/Test.java"
+      forceoverwrite="true"/>
+  </target>
 
 </project>

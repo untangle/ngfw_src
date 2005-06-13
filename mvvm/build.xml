@@ -33,6 +33,8 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
                    install.thirdparty, install.reports"/>
   <target name="pkg.clean" depends="clean.nuke"/>
 
+
+
   <target name="gensrc.servlets">
     <!-- We need fork to avoid class duplication bug in ant -->
     <java classname="org.apache.jasper.JspC"
@@ -527,6 +529,37 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       <fileset file="${build.dist}/usr/share/metavize/ssh_enable.sh"/>
       <fileset file="${build.dist}/usr/share/metavize/ssh_disable.sh"/>
     </chmod>
+  </target>
+
+
+  <!-- Javadoc target -->
+  <target name="jdoc" depends="pkg.jar">
+    <!-- "func.jdoc" defined in "common-targets.xml" -->  
+    <antcall target="func.jdoc">
+      <param name="jdoc.src" value="main"/>
+    </antcall>
+    <antcall target="func.jdoc">
+      <param name="jdoc.src" value="bootstrap"/>
+      <param name="jdoc.prjName" value="${ant.project.name}_bootstrap"/>
+    </antcall>
+
+  </target>
+
+  <!-- 
+    Copy source files to ${jdoc.bigtree.src}
+    for inclusion in big JavaDoc generation
+  -->
+  <target name="bigjdoc">
+    <copydir src="main"
+      dest="${jdoc.bigtree.src}"
+      includes="**/*.java"
+      excludes="**/Test.java"
+      forceoverwrite="true"/>
+    <copydir src="bootstrap"
+      dest="${jdoc.bigtree.src}"
+      includes="**/*.java"
+      excludes="**/Test.java"
+      forceoverwrite="true"/>
   </target>
 
 </project>

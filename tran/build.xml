@@ -29,6 +29,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
         value="nat,firewall,airgap,reporting,protofilter,test,sophos,fprot,hauri,clam,spyware,httpblocker,email,spam"/>
 
 
+
   <!--              -->
   <!-- main targets -->
   <!--              -->
@@ -399,5 +400,48 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
     <!--       </then> -->
     <!--     </if> -->
     <!--   </target> -->
+
+
+  <!-- Javadoc target -->
+  <target name="jdoc" depends="pkg.jar">
+    <foreach target="invokeJDoc" param="jdoc.target.transform" inheritall="true"
+      parallel="false" list="${casings}"/>
+    <foreach target="invokeJDoc" param="jdoc.target.transform" inheritall="true"
+      parallel="false" list="${bases}"/>
+    <foreach target="invokeJDoc" param="jdoc.target.transform" inheritall="true"
+      parallel="false" list="${transforms}"/>
+  </target>
+
+  <!-- Helper for performing the jdoc target for each transform -->
+  <target name="invokeJDoc">
+    <antcall target="func.jdoc">
+      <param name="jdoc.src" value="${jdoc.target.transform}/${src.main}"/>
+      <param name="jdoc.prjName" value="tran_${jdoc.target.transform}"/>
+    </antcall>
+  </target>
+
+  <!-- For participating in the larger JavaDoc generation -->
+  <target name="bigjdoc">
+    <foreach target="copyForBigJDoc" param="jdoc.target.transform" inheritall="true"
+      parallel="false" list="${casings}"/>
+    <foreach target="copyForBigJDoc" param="jdoc.target.transform" inheritall="true"
+      parallel="false" list="${bases}"/>
+    <foreach target="copyForBigJDoc" param="jdoc.target.transform" inheritall="true"
+      parallel="false" list="${transforms}"/>
+  </target>
+
+  <!-- 
+    Helper for performing the bigjdoc target for each transform.  Copies
+    all source to ${jdoc.bigtree.src} for inclusion in the big JavaDoc
+    generation
+  -->
+  <target name="copyForBigJDoc">
+    <copydir src="${jdoc.target.transform}/${src.main}"
+      dest="${jdoc.bigtree.src}"
+      includes="**/*.java"
+      excludes="**/Test.java"
+      forceoverwrite="true"/>
+  </target>
+
 
 </project>

@@ -44,4 +44,43 @@ $Id: build.xml,v 1.20 2005/01/29 07:14:04 amread Exp $
     </subant>
   </target>
 
+  <!-- Per-project JavaDoc -->
+  <target name="jdoc">
+    <description>
+      Produces JavaDoc for each sub-project.  Maintains each
+      sub-project as its own directory.  For all JavaDoc
+      in a single hierarchy, use target bigjdoc.
+    </description>
+    <mkdir dir="${basedir}/jdoc"/>
+    <subant target="jdoc">
+      <property name="jdoc.root" value="${basedir}/jdoc"/>
+      <filelist refid="antfiles"/>
+    </subant>    
+  </target>
+
+  <!-- Unified JavaDoc -->
+  <target name="bigjdoc">
+    <description>
+      Produces JavaDoc for all projects in a single tree
+    </description>  
+    <mkdir dir="/tmp/jdoc/bigtree"/>
+    <subant target="bigjdoc">
+      <property name="jdoc.bigtree.src" value="/tmp/jdoc/bigtree"/>
+      <filelist refid="antfiles"/>
+    </subant>  
+
+    <javadoc
+      destdir="${basedir}/jdoc/all"
+      author="false"
+      version="true"
+      use="true">
+
+      <packageset dir="/tmp/jdoc/bigtree" defaultexcludes="yes">
+      </packageset>
+      <doctitle><![CDATA[<h1>Test</h1>]]></doctitle>
+      <bottom><![CDATA[<i>Copyright &#169; 2005 Metavize Inc. All Rights Reserved.</i>]]></bottom>
+    </javadoc>    
+    <delete dir="/tmp/jdoc/bigtree"/>
+  </target> 
+
 </project>

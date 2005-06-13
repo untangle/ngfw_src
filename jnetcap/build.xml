@@ -21,6 +21,8 @@ $Id: build.xml,v 1.7 2005/03/22 01:27:49 inieves Exp $
   <target name="pkg.install" depends="install.jnetcap"/>
   <target name="pkg.clean" depends="clean.nuke"/>
 
+
+
   <!-- jnetcap.jar -->
 
   <property name="build.jnetcap" value="${build.root}/jnetcap"/>
@@ -74,4 +76,27 @@ $Id: build.xml,v 1.7 2005/03/22 01:27:49 inieves Exp $
     <mkdir dir="${dist.mvvm.lib}"/>
     <copy file="${build.jar}/jnetcap.jar" todir="${dist.mvvm.lib}"/>
   </target>
+
+
+  <!-- Javadoc target -->
+  <target name="jdoc" depends="pkg.jar">
+    <!-- "func.jdoc" defined in "common-targets.xml" -->
+    <antcall target="func.jdoc">
+      <param name="jdoc.src" value="${src.jnetcap}"/>
+    </antcall>
+  </target>
+  
+  <!-- 
+    Copy source files to ${jdoc.bigtree.src}
+    for inclusion in big JavaDoc generation
+  -->
+  <target name="bigjdoc">
+    <copydir src="${src.jnetcap}"
+      dest="${jdoc.bigtree.src}"
+      includes="**/*.java"
+      excludes="**/Test.java"
+      forceoverwrite="true"/>
+  </target>
+
+
 </project>
