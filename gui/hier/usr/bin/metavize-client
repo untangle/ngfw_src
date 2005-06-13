@@ -22,10 +22,10 @@ else
 fi
 
 echo "Initializing Webstart configuration: ${HOME}/.java/.deployment/deployment.properties"
-${JAVA_HOME}/javaws/javaws -updateVersions
+${JAVA_HOME}/bin/javaws -updateVersions
 
 #echo "Attempting to clear Webstart cache"
-#${JAVA_HOME}/javaws/javaws -Xclearcache
+#${JAVA_HOME}/bin/javaws -Xclearcache
 
 echo "Webstarting Metavize Client.  Connecting to: http://$HOST/webstart/gui.jnlp"
-exec ${JAVA_HOME}/javaws/javaws -Xnosplash http://$HOST/webstart/gui.jnlp
+exec ${JAVA_HOME}/bin/javaws -Xnosplash http://$HOST/webstart/gui.jnlp
