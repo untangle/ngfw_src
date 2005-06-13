@@ -41,7 +41,7 @@ INSERT INTO addr_map
  ON min_idx = position);
 EOF
 
-$JAVA_HOME/bin/java \
+$JAVA_HOME/bin/java -Xmx512m \
     -Dlog4j.configuration=file:@MVVM_HOME@/conf/log4j-reporter.xml \
     com.metavize.mvvm.reporting.Reporter $REPORT_DIR 32 $mars
 
