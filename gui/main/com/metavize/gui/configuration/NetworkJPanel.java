@@ -131,7 +131,7 @@ public class NetworkJPanel extends javax.swing.JPanel implements Savable, Refres
 	// DHCP ENABLED /////
 	boolean isDhcpEnabled = networkingConfiguration.isDhcpEnabled();
 	setDhcpEnabledDependency( isDhcpEnabled );
-        renewDhcpLeaseJButton.setEnabled( isDhcpEnabled );
+        renewDhcpLeaseJButton.setEnabled( false );  // Dirk wanted this... isDhcpEnabled );
 	if( isDhcpEnabled )
             dhcpEnabledRadioButton.setSelected(true);
         else
