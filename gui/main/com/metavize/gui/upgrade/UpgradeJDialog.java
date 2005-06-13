@@ -745,9 +745,9 @@ class UpgradeTableModel extends MSortedTableModel {
         addTableColumn( tableColumnModel,  1,  49, false, false, false, false, ImageIcon.class, null, "");
         addTableColumn( tableColumnModel,  2,  49, false, false, false, false, ImageIcon.class, null, "");
         addTableColumn( tableColumnModel,  3, 150, true,  false, false, false, String.class, null, "name");
-        addTableColumn( tableColumnModel,  4, 100, false, false, false, false, String.class, null, "new version");
-        addTableColumn( tableColumnModel,  5, 100, false, false, false, false, String.class, null, "type");
-	addTableColumn( tableColumnModel,  6,  60, false, false, false, false, String.class, null, "size");
+        addTableColumn( tableColumnModel,  4,  75, false, false, false, false, String.class, null, sc.html("new<br>version"));
+        addTableColumn( tableColumnModel,  5, 125, false, false, false, false, String.class, null, "type");
+	addTableColumn( tableColumnModel,  6,  70, true,  false, false, false, String.class, null, "size");
         addTableColumn( tableColumnModel,  7, 125, false, false, true,  true,  String.class, null, "description");
 
         return tableColumnModel;
