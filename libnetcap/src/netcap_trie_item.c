@@ -29,7 +29,7 @@ netcap_trie_item_t*  netcap_trie_item_malloc   ( netcap_trie_t* trie )
 {
     netcap_trie_item_t* item;
 
-    if ( (item = calloc(1,sizeof(netcap_trie_item_t))) == NULL ) return errlogmalloc_null();
+    if (( item = malloc( sizeof(netcap_trie_item_t))) == NULL ) return errlogmalloc_null();
 
     return item;
 }
@@ -39,7 +39,7 @@ int                  netcap_trie_item_init     ( netcap_trie_t* trie, netcap_tri
 {
     if ( item == NULL || trie == NULL ) return errlogargs();
     
-    bzero( item, sizeof(netcap_trie_item_t) );
+    bzero( item, sizeof(netcap_trie_item_t));
     
     /* Initialize the base */
     if ( netcap_trie_base_init( trie, item, parent, NC_TRIE_BASE_ITEM, pos, depth ) < 0 ) {

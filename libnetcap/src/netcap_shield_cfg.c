@@ -127,7 +127,9 @@ int nc_shield_cfg_def  ( nc_shield_cfg_t* cfg )
         },
         .lru {
             .low_water    512,
-            .high_water   1024
+            .high_water   1024,
+            .sieve_size   8,
+            .ip_rate      .016, /* 1/60  */
         },
         .fence {
             .relaxed {
@@ -351,7 +353,9 @@ static int _parseLru             ( nc_shield_cfg_t* cfg, xmlDoc* doc, xmlNode* l
 {
     if ( _parseAttributeInt ( &cfg->lru.low_water, doc, lruNode, "low-water" ) < 0 ) return -1;
     if ( _parseAttributeInt ( &cfg->lru.high_water, doc, lruNode, "high-water" ) < 0 ) return -1;
-
+    if ( _parseAttributeInt ( &cfg->lru.sieve_size, doc, lruNode, "sieve-size" ) < 0 ) return -1;
+    if ( _parseAttributeDouble ( &cfg->lru.ip_rate, doc, lruNode, "ip-rate" ) < 0 ) return -1;
+    
     return 0;
 }
 
@@ -384,6 +388,8 @@ static int _parseFence           ( nc_shield_fence_t* fence, xmlDoc* doc, xmlNod
 {
     xmlNode* cur = NULL;
     
+    if ( _parseAttributeDouble ( &fence->inheritance, doc, fenceNode, "inheritance" ) < 0 ) return -1;
+    
     for ( cur = fenceNode->xmlChildrenNode ; cur != NULL ; cur = cur->next ) {
         if ((!xmlStrcmp(cur->name, (xmlChar*)"text"))) {
             continue;
@@ -393,6 +399,8 @@ static int _parseFence           ( nc_shield_fence_t* fence, xmlDoc* doc, xmlNod
             if ( _parseFencePost ( &fence->limited, doc, cur ) < 0 ) return -1;
         } else if (( !xmlStrcmp ( cur->name, (xmlChar*)"closed" ))) {
             if ( _parseFencePost ( &fence->closed, doc, cur ) < 0 ) return -1;
+        } else if (( !xmlStrcmp ( cur->name, (xmlChar*)"error" ))) {
+            if ( _parseFencePost ( &fence->error, doc, cur ) < 0 ) return -1;
         } else {
             errlog ( ERR_WARNING, "Shield: Unknown fence post type: '%s'\n", cur->name );
         }

@@ -27,13 +27,14 @@
 #include "libnetcap.h"
 #include "netcap_init.h"
 #include "netcap_trie.h"
+#include "netcap_trie_support.h"
 #include "netcap_shield.h"
 #include "netcap_shield_cfg.h"
 #include "netcap_load.h"
 #include "netcap_sched.h"
 
 #ifdef DEBUG_ON
-// #define _TRIE_DEBUG_PRINT
+#define _TRIE_DEBUG_PRINT
 #endif
 
 /* 1 second in u-seconds */
@@ -47,6 +48,7 @@
 #define _LOAD_INTERVAL_CHK     (  5 * _LOAD_INTERVAL_SEC)
 #define _LOAD_INTERVAL_BYTE    (  5 * _LOAD_INTERVAL_SEC)
 #define _LOAD_INTERVAL_PRINT   (  5 * _LOAD_INTERVAL_SEC )
+#define _LOAD_INTERVAL_LRU     (  5 * _LOAD_INTERVAL_SEC )
 
 #define _SHIELD_FILL_TRASH_INTERVAL ( 5 * _LOAD_INTERVAL_SEC )
 
@@ -62,7 +64,7 @@ typedef struct reputation {
     int             limited_sessions;    /* Total number of sessions given limited access */
     int             rejected_sessions;   /* Total number of sessions that are rejected */
     
-    nc_shield_rep_t rep;           /* An integer representation for the ip */
+    nc_shield_rep_t rep;           /* The current reputation for the IP */
     netcap_load_t   evil_load;     /* Evil events per second */
     netcap_load_t   request_load;  /* Number of request this IP makes */
     netcap_load_t   session_load;  /* Active number of sessions used */
@@ -71,9 +73,8 @@ typedef struct reputation {
     netcap_load_t   tcp_chk_load;  /* TCP chunk load */
     netcap_load_t   udp_chk_load;  /* UDP chunk load */
     netcap_load_t   byte_load;     /* Byte load */
-    netcap_load_t   ref_load;      /* Average references per second */
     netcap_load_t   print_load;    /* Printing rate, limited to x per second */
-    /* -RBS For now, just track on the number of chunks */
+    netcap_load_t   lru_load;      /* LRU rate, limited to x per second */
 } reputation_t;
     
 static struct {
@@ -104,28 +105,32 @@ static struct {
 
 typedef struct _chk {
     u_short  size;               /* Size of the chunk in bytes */
-    u_char   if_rx;              /* 1 for rx, 0 for tx */
+    u_char   if_rx;              /* 1 for rx, 0 for tx XXX Presently unused */
     u_char   protocol;
 } _chk_t;
 
 typedef struct _apply_func {
-    int (*func) ( reputation_t* rep, void* arg);
+    int (*func) ( reputation_t* rep, int count, void* arg);
     void *arg;
 } _apply_func_t;
 
 static void  _trash_fill         ( void* arg );
 
-static int   _apply_func         ( netcap_trie_item_t* reputation, void* arg, in_addr_t ip );
+static int   _apply_func         ( netcap_trie_item_t* item, void* arg, in_addr_t ip );
 
-static int  _add_evil            ( reputation_t* rep, void* arg );
-static int  _add_request         ( reputation_t* rep, void* arg );
-static int  _add_session         ( reputation_t* rep, void* arg );
-static int  _end_session         ( reputation_t* rep, void* arg );
-static int  _add_chk             ( reputation_t* rep, void* arg );
-static int  _add_srv_conn        ( reputation_t* rep, void* arg );
-static int  _add_srv_fail        ( reputation_t* rep, void* arg );
+/** Check if a node is deletable from the LRU */
+static int  _lru_check           ( netcap_trie_item_t* item );
 
-static int             _reputation_update   ( reputation_t* rep, void* arg );
+/** These are all helper functions that are called by _apply_func */
+static int  _add_evil            ( reputation_t* rep, int count, void* arg );
+static int  _add_request         ( reputation_t* rep, int count, void* arg );
+static int  _add_session         ( reputation_t* rep, int count, void* arg );
+static int  _end_session         ( reputation_t* rep, int count, void* arg );
+static int  _add_chk             ( reputation_t* rep, int count, void* arg );
+static int  _add_srv_conn        ( reputation_t* rep, int count, void* arg );
+static int  _add_srv_fail        ( reputation_t* rep, int count, void* arg );
+
+static int             _reputation_update   ( reputation_t* rep, int count, void* arg );
 static nc_shield_rep_t _reputation_eval     ( netcap_trie_item_t* item );
 static int             _reputation_init     ( netcap_trie_item_t* item, in_addr_t ip );
 static void            _reputation_destroy  ( netcap_trie_item_t* item );
@@ -166,6 +171,7 @@ int netcap_shield_init    ( void )
     netcap_load_init( &rep.udp_chk_load,  _LOAD_INTERVAL_CHK,   NC_LOAD_INIT_TIME );
     netcap_load_init( &rep.byte_load,     _LOAD_INTERVAL_BYTE,  NC_LOAD_INIT_TIME );
     netcap_load_init( &rep.print_load,    _LOAD_INTERVAL_PRINT, NC_LOAD_INIT_TIME );
+    netcap_load_init( &rep.lru_load,      _LOAD_INTERVAL_LRU,   NC_LOAD_INIT_TIME );
 
     /* Initialize the number of active sessions */
     rep.active_sessions = 0;
@@ -180,6 +186,9 @@ int netcap_shield_init    ( void )
                            NULL, _shield.cfg.lru.high_water, _shield.cfg.lru.low_water ) < 0 ) {
         return errlog(ERR_CRITICAL,"netcap_trie_root_init\n");
     }
+
+    /* Set the check function */
+    _shield.trie.check = _lru_check;
 
     if (( _shield.root = netcap_trie_data ( &_shield.trie )) == NULL ) {
         return errlog(ERR_CRITICAL,"Shield is unitialized\n");
@@ -283,8 +292,8 @@ netcap_shield_response_t* netcap_shield_rep_check        ( in_addr_t ip )
         /* If the count is low, update the print count */
         if ( rep->print_load.load < _shield.cfg.print_rate ) {
             if ( pthread_mutex_lock( &rep->mutex ) < 0 ) return perrlog_null( "pthread_mutex_lock" );
-            netcap_load_update( &rep->print_load, 1 );
-            if ( pthread_mutex_unlock(&rep->mutex) < 0 ) return perrlog_null( "pthread_mutex_unlock" );
+            netcap_load_update( &rep->print_load, 1, 1 );
+            if ( pthread_mutex_unlock( &rep->mutex ) < 0 ) return perrlog_null( "pthread_mutex_unlock" );
             response->if_print = 1;
         }
     }
@@ -302,7 +311,6 @@ netcap_shield_response_t* netcap_shield_rep_check        ( in_addr_t ip )
     response->udp = ans;
     response->icmp = ans;
 
-    /* Passed all of the tests, let them in */
     return response;
 }
  
@@ -419,7 +427,7 @@ int                  netcap_shield_rep_add_chunk ( in_addr_t ip, int protocol, u
 
 int                  netcap_shield_cfg_load      ( char *buf, int buf_len )
 {
-    int lw, hw;
+    int lw, hw, ss;
 
     if ( buf == NULL || buf_len < 0 ) return errlogargs();
 
@@ -429,9 +437,10 @@ int                  netcap_shield_cfg_load      ( char *buf, int buf_len )
 
     lw = _shield.cfg.lru.low_water;
     hw = _shield.cfg.lru.high_water;
+    ss = _shield.cfg.lru.sieve_size;
 
     /* Configure the LRU */
-    if ( netcap_trie_lru_config ( &_shield.trie, hw, lw ) < 0 ) {
+    if ( netcap_trie_lru_config ( &_shield.trie, hw, lw, ss ) < 0 ) {
         return errlog ( ERR_CRITICAL, "netcap_trie_lru_config\n" );
     }
 
@@ -484,43 +493,90 @@ static int  _apply_func          ( netcap_trie_item_t* item, void* arg, in_addr_
     _apply_func_t* func;
     reputation_t* rep;
     int ret = 0;
+    int children;
+    netcap_load_val_t lru_load;
 
-    if ( item == NULL || (rep = netcap_trie_item_data(item)) == NULL ) return errlogargs();
+    if ( item == NULL || ( rep = netcap_trie_item_data( item )) == NULL ) return errlogargs();
     if ( arg == NULL || ((_apply_func_t*)arg)->func == NULL ) return errlogargs();
     
     func = (_apply_func_t*)arg;
-
-    rep = (reputation_t*)item->data;
     
     if ( pthread_mutex_lock( &rep->mutex ) < 0 ) {
-        return perrlog("pthread_mutex_lock");
-    }
-        
-    /* Apply the function to the argument */
-    if ( (ret == 0 ) && ( func->func( rep, func->arg ) < 0 ) ) {
-        ret = errlog(ERR_CRITICAL, "apply_function\n");
+        return perrlog( "pthread_mutex_lock" );
     }
 
-    if ( pthread_mutex_unlock ( &rep->mutex ) < 0 ) {
+    do {
+        if (( children = netcap_trie_element_children((netcap_trie_element_t)item )) < 0 ) {
+            ret = errlog( ERR_CRITICAL, "netcap_trie_element_children\n" );
+            break;
+        }
+        
+        /* Count is zero if a node doesn't have any children */
+        children = ( children == 0 ) ? 1 : children;
+        
+        /* Apply the function to the argument */
+        if (( ret == 0 ) && ( func->func( rep, children, func->arg ) < 0 )) {
+            ret = errlog( ERR_CRITICAL, "apply_function\n" );
+            break;
+        }
+        
+        if (( lru_load = netcap_load_get( &rep->lru_load )) < 0 ) {
+            ret = errlog( ERR_CRITICAL, "netcap_load_get\n" );
+            break;
+        }
+
+        /* Move the node to front of the LRU */
+        if ( lru_load < _shield.cfg.lru.ip_rate ) {
+            if ( netcap_trie_lru_front( &_shield.trie, (netcap_trie_element_t)item ) < 0 ) {
+                ret = errlog( ERR_CRITICAL, "netcap_trie_lru_front\n" );
+                break;
+            }
+            if ( netcap_load_update( &rep->lru_load, 1, 1 ) < 0 ) {
+                ret = errlog( ERR_CRITICAL, "netcap_load_update\n" );
+                break;
+            }
+        }
+        ret = 0;
+    } while( 0 );
+    
+    if ( pthread_mutex_unlock( &rep->mutex ) < 0 ) {
         ret = perrlog("pthread_mutex_unlock");
     }
     
     return ret;
 }
 
-static int  _add_request         ( reputation_t *rep, void* arg )
+static int  _lru_check           ( netcap_trie_item_t* item )
 {
-    return netcap_load_update( &rep->request_load, 1);
+    reputation_t* rep;
+    netcap_load_val_t lru_load;
+    
+    if ( item == NULL || ( rep = netcap_trie_item_data( item )) == NULL ) return errlogargs();
+
+    if (( lru_load = netcap_load_get( &rep->lru_load )) < 0 ) {
+        return errlog( ERR_CRITICAL, "netcap_load_get\n" );
+    }
+
+    if ( lru_load < .000001 ) {
+        return NC_TRIE_IS_DELETABLE;
+    }
+    
+    return !NC_TRIE_IS_DELETABLE;
 }
 
-static int  _add_session         ( reputation_t *rep, void* arg )
+static int  _add_request         ( reputation_t *rep, int count, void* arg )
+{
+    return netcap_load_update( &rep->request_load, 1, 1/count );
+}
+
+static int  _add_session         ( reputation_t *rep, int count, void* arg )
 {
     /* Increment the number of sessions */
     rep->active_sessions++;
-    return netcap_load_update( &rep->session_load, 1);
+    return netcap_load_update( &rep->session_load, 1, 1/count );
 }
 
-static int  _end_session         ( reputation_t *rep, void* arg )
+static int  _end_session         ( reputation_t *rep, int count, void* arg )
 {
     /* Decrement the number of sessions */
     if ( rep->active_sessions < 1 ) rep->active_sessions = 0;
@@ -528,22 +584,23 @@ static int  _end_session         ( reputation_t *rep, void* arg )
     return 0;
 }
 
-static int  _add_srv_conn        ( reputation_t *rep, void* arg )
+static int  _add_srv_conn        ( reputation_t *rep, int count, void* arg )
 {
-    return netcap_load_update( &rep->srv_conn_load, 1);
+    return netcap_load_update( &rep->srv_conn_load, 1, 1/count );
 }
 
-static int  _add_srv_fail        ( reputation_t *rep, void* arg )
+static int  _add_srv_fail        ( reputation_t *rep, int count, void* arg )
 {
-    return netcap_load_update( &rep->srv_fail_load, 1);
+    return netcap_load_update( &rep->srv_fail_load, 1, 1/count );
 }
 
-static int  _add_evil            ( reputation_t *rep, void* arg )
+static int  _add_evil            ( reputation_t *rep, int count, void* arg )
 {
-    return netcap_load_update( &rep->evil_load, (int)arg);
+    int evil = (int)arg;
+    return netcap_load_update( &rep->evil_load, evil, evil/count );
 }
 
-static int _add_chk              ( reputation_t *rep, void* arg )
+static int _add_chk              ( reputation_t *rep, int count, void* arg )
 {
     _chk_t* chk;
     netcap_load_t* load = NULL;
@@ -557,8 +614,8 @@ static int _add_chk              ( reputation_t *rep, void* arg )
     }
     
     if ( chk->if_rx == 1 ) {
-        netcap_load_update ( load, 1 );
-        netcap_load_update ( &rep->byte_load, chk->size);
+        netcap_load_update ( load, 1, 1/count );
+        netcap_load_update ( &rep->byte_load, chk->size, chk->size/count );
     } else {
         return errlog( ERR_CRITICAL, "Invalid chunk Description\n" );
     }
@@ -566,17 +623,17 @@ static int _add_chk              ( reputation_t *rep, void* arg )
     return 0;
 }
 
-static int _reputation_update    ( reputation_t *rep, void* arg )
+static int _reputation_update    ( reputation_t *rep, int count, void* arg )
 {
-    if (( netcap_load_update( &rep->evil_load,     0) < 0) ||
-        ( netcap_load_update( &rep->request_load,  0) < 0) ||
-        ( netcap_load_update( &rep->session_load,  0) < 0) ||
-        ( netcap_load_update( &rep->srv_conn_load, 0) < 0) ||
-        ( netcap_load_update( &rep->srv_fail_load, 0) < 0) ||
-        ( netcap_load_update( &rep->tcp_chk_load,  0) < 0) ||
-        ( netcap_load_update( &rep->udp_chk_load,  0) < 0) ||
-        ( netcap_load_update( &rep->byte_load,     0) < 0) ||
-        ( netcap_load_update( &rep->print_load,    0) < 0)) {
+    if (( netcap_load_update( &rep->evil_load,     0, 0 ) < 0) ||
+        ( netcap_load_update( &rep->request_load,  0, 0 ) < 0) ||
+        ( netcap_load_update( &rep->session_load,  0, 0 ) < 0) ||
+        ( netcap_load_update( &rep->srv_conn_load, 0, 0 ) < 0) ||
+        ( netcap_load_update( &rep->srv_fail_load, 0, 0 ) < 0) ||
+        ( netcap_load_update( &rep->tcp_chk_load,  0, 0 ) < 0) ||
+        ( netcap_load_update( &rep->udp_chk_load,  0, 0 ) < 0) ||
+        ( netcap_load_update( &rep->byte_load,     0, 0 ) < 0) ||
+        ( netcap_load_update( &rep->print_load,    0, 0 ) < 0)) {
         return errlog(ERR_CRITICAL,"netcap_load_update\n");
     }
     
@@ -612,8 +669,9 @@ static int  _reputation_init     ( netcap_trie_item_t* item, in_addr_t ip )
         ( netcap_load_init( &rep->tcp_chk_load,  _LOAD_INTERVAL_CHK,   !NC_LOAD_INIT_TIME ) < 0) ||
         ( netcap_load_init( &rep->udp_chk_load,  _LOAD_INTERVAL_CHK,   !NC_LOAD_INIT_TIME ) < 0) ||
         ( netcap_load_init( &rep->byte_load,     _LOAD_INTERVAL_BYTE,  !NC_LOAD_INIT_TIME ) < 0) ||
-        ( netcap_load_init( &rep->print_load,    _LOAD_INTERVAL_PRINT, !NC_LOAD_INIT_TIME ) < 0)) {
-        ret = errlog(ERR_CRITICAL,"netap_load_init\n");
+        ( netcap_load_init( &rep->print_load,    _LOAD_INTERVAL_PRINT, !NC_LOAD_INIT_TIME ) < 0) ||
+        ( netcap_load_init( &rep->lru_load,      _LOAD_INTERVAL_LRU,   !NC_LOAD_INIT_TIME ) < 0)) {
+        ret = errlog( ERR_CRITICAL, "netap_load_init\n" );
     }
     
     /* Parent is unititialized, set the rep to zero */
@@ -706,6 +764,7 @@ static netcap_shield_mode_t _mode_eval ( void )
     reputation_t* root_rep;
     int num_sessions;
     root_rep = _shield.root;
+    int children;
 
     /* XXX Right now, checking the load on each call, for performance,
      * possibly consider doing this periodically */
@@ -716,7 +775,12 @@ static netcap_shield_mode_t _mode_eval ( void )
     if ( getloadavg ( &load, 1 ) < 0 ) return perrlog ( "sysinfo" );
     
     /* Update the root reputation */
-    if ( _reputation_update ( root_rep, NULL) < 0 ) {
+    if (( children = netcap_trie_element_children(( netcap_trie_element_t)&_shield.trie.root )) < 0 ) {
+        return errlog( ERR_CRITICAL, "netcap_trie_element_children\n" );
+    }
+    children = ( children == 0 ) ? 1 : children;
+
+    if ( _reputation_update ( root_rep, children, NULL) < 0 ) {
         return errlog(ERR_CRITICAL,"_reputation_update\n");
     }
 
@@ -770,6 +834,7 @@ static int  _status             ( int conn, struct sockaddr_in *dst_addr )
     char buf[1000];
     int msg_len;
     time_t now;
+    int children;
     
     length = list_length( &_shield.ip_list );
     
@@ -791,10 +856,17 @@ static int  _status             ( int conn, struct sockaddr_in *dst_addr )
             continue;
         }
         
-        if ((rep  = (reputation_t*)netcap_trie_item_data ( item )) == NULL ) continue;
+        if (( rep  = (reputation_t*)netcap_trie_item_data ( item )) == NULL ) continue;
+
+        if (( children = netcap_trie_element_children((netcap_trie_element_t)item )) < 0 ) {
+            errlog( ERR_CRITICAL, "netcap_trie_element_children\n" );
+            continue;
+        }
         
+        children = ( children == 0 ) ? 1 : children;
+
         /* Update the reputation */
-        _reputation_update ( rep, NULL );
+        _reputation_update ( rep, children, NULL );
         _reputation_eval( item );
         
         msg_len =  snprintf( buf, sizeof(buf), "<rep ip='%#08x' depth='%d' active='%d' val='%lg' "

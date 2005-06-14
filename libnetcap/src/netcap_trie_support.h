@@ -85,6 +85,14 @@ void                 netcap_trie_element_destroy ( netcap_trie_t* trie, netcap_t
 
 void                 netcap_trie_element_raze    ( netcap_trie_t* trie, netcap_trie_element_t element );
 
+/**
+ * Returns the number of children that an item has (1 for terminal nodes),      *
+ * this doesn't use the mutex and the value may not be "correct", but it should *
+ * be within one of the value.                                                  *
+ **/
+int                  netcap_trie_element_children( netcap_trie_element_t element );
+
+
 /* LRU */
 int netcap_trie_lru_add   ( netcap_trie_t* trie, netcap_trie_element_t element );
 

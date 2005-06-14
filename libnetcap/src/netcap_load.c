@@ -26,18 +26,18 @@
 
 typedef struct timeval timeval_t;
 
-static int _load_update ( netcap_load_t* load, int count, timeval_t* current_time );
+static int _load_update ( netcap_load_t* load, int count, netcap_load_val_t val, timeval_t* current_time );
 
-int               netcap_load_update  ( netcap_load_t* load, int count )
+int               netcap_load_update  ( netcap_load_t* load, int count, netcap_load_val_t val )
 {
     timeval_t time;
     
     if ( load == NULL ) return errlogargs();
 
-    if ( gettimeofday(&time,NULL) < 0 ) return perrlog("gettimeofday");
+    if ( gettimeofday( &time, NULL ) < 0 ) return perrlog("gettimeofday");
 
-    if ( _load_update(load, count, &time)< 0 ) {
-        return errlog(ERR_CRITICAL, "_load_update\n");
+    if ( _load_update( load, count, val, &time ) < 0 ) {
+        return errlog( ERR_CRITICAL, "_load_update\n" );
     }
 
     return 0;
@@ -49,9 +49,9 @@ netcap_load_val_t netcap_load_get     ( netcap_load_t* load )
 
     if ( load == NULL ) return errlogargs();
     
-    if ( gettimeofday(&time,NULL) < 0 ) return (float)perrlog("gettimeofday");
+    if ( gettimeofday( &time, NULL ) < 0 ) return (netcap_load_val_t)perrlog( "gettimeofday" );
 
-    if ( _load_update(load,0,&time) <0) {
+    if ( _load_update( load, 0, 0, &time ) < 0 ) {
         return errlog(ERR_CRITICAL, "_load_update\n");
     }
    
@@ -136,7 +136,7 @@ void              netcap_load_raze    ( netcap_load_t* load )
     netcap_load_free( load);
 }
 
-static int _load_update ( netcap_load_t* load, int count, timeval_t* current_time )
+static int _load_update ( netcap_load_t* load, int count, netcap_load_val_t val, timeval_t* current_time )
 {
     netcap_load_val_t duration, last_update, current, x;
     double e;
@@ -167,7 +167,7 @@ static int _load_update ( netcap_load_t* load, int count, timeval_t* current_tim
         load->load = (e*load->load);
     } else {
         /* Calculate the number of events per second */
-        x = ((double)count) * (1000000) / ( duration );
+        x = val * ((netcap_load_val_t)1000000) / ( duration );
         load->load = (e*load->load + (1-e)*x);
     }
 

@@ -24,6 +24,8 @@
 #include "netcap_trie_support.h"
 #include "netcap_sched.h"
 
+#define _LRU_MIN_LENGTH 4
+
 #define _LRU_TRASH_EMPTY_DELAY 2
 #define SEC_TO_USEC(sec)   ((sec)  * 1000000)
 
@@ -72,7 +74,7 @@ int netcap_trie_lru_add ( netcap_trie_t* trie, netcap_trie_element_t element )
     return ret;
 }
 
-int netcap_trie_lru_config ( netcap_trie_t* trie, int high_water, int low_water )
+int netcap_trie_lru_config ( netcap_trie_t* trie, int high_water, int low_water, int sieve_size )
 {
     if ( trie == NULL ) return errlogargs();
     
@@ -83,19 +85,23 @@ int netcap_trie_lru_config ( netcap_trie_t* trie, int high_water, int low_water 
     
     trie->lru_low_water  = low_water;
     trie->lru_high_water = high_water;
+    trie->lru_sieve_size = sieve_size;
 
     if ( pthread_mutex_unlock ( &trie->lru_mutex ) < 0 ) return perrlog ( "pthread_mutex_unlock" );
 
     return 0;
 }
 
-/* Have to obtain the lock outside of the function */
+/**
+ * Remove an item from the LRU
+ * Have to obtain the lock outside of the function
+ */
 int netcap_trie_lru_del ( netcap_trie_t* trie, netcap_trie_element_t element )
 {
     if ( trie == NULL || element.base == NULL ) return errlogargs();
 
     if ( element.base->lru_node == NULL ) {
-        return errlog ( ERR_CRITICAL, "TRIE: Attempt to remove a node that is not\n" );
+        return errlog ( ERR_CRITICAL, "TRIE: Attempt to remove a node that is not on the LRU\n" );
     }
 
     if ( list_remove ( &trie->lru_list, element.base->lru_node ) < 0 ) {
@@ -111,30 +117,32 @@ int netcap_trie_lru_del ( netcap_trie_t* trie, netcap_trie_element_t element )
 /* Move the node to the front of the trie */
 int netcap_trie_lru_front ( netcap_trie_t* trie, netcap_trie_element_t element )
 {
+    int ret = 0;
     if ( trie == NULL || element.base == NULL ) return errlogargs();
 
     _verify_lru_is_set( trie );
 
     if ( pthread_mutex_lock ( &element.base->mutex ) < 0 ) {
-        return perrlog("pthread_mutex_lock");
+        return perrlog( "pthread_mutex_lock" );
     }
 
-    /* Only update if the node is non-null */
-    if ( element.base->lru_node != NULL ) {
-        if ( list_move_head ( &trie->lru_list, &element.base->lru_node, element.base ) < 0 ) {
-            perrlog("list_move_head");
-            if ( pthread_mutex_unlock ( &element.base->mutex ) < 0 ) {
-                perrlog("pthread_mutex_unlock");
+    do {
+        /* Only update if the node is non-null */
+        if ( element.base->lru_node != NULL ) {
+            if ( list_move_head ( &trie->lru_list, &element.base->lru_node, element.base ) < 0 ) {
+                ret = perrlog( "list_move_head" );
+                break;
             }
-            return -1;
         }
-    }
-
+        
+        ret = 0;
+    } while( 0 );
+    
     if ( pthread_mutex_unlock ( &element.base->mutex ) < 0 ) {
         return perrlog("pthread_mutex_unlock\n");
     }
     
-    return 0;
+    return ret;
 }
 
 int netcap_trie_lru_trash ( netcap_trie_t* trie, netcap_trie_element_t trash )
@@ -205,7 +213,7 @@ int netcap_trie_lru_trash ( netcap_trie_t* trie, netcap_trie_element_t trash )
 
                 if ( trie->check != NULL ) {
                     /* Check to see if the parent is deletable */
-                    if ( (check = trie->check ( (netcap_trie_item_t*)parent )) < 0 ) {
+                    if ( (check = trie->check(( netcap_trie_item_t*)parent )) < 0 ) {
                         errlog( ERR_CRITICAL, "TRIE: trie->check\n" );
                         break;
                     } else if ( check != NC_TRIE_IS_DELETABLE ) {
@@ -298,18 +306,26 @@ int netcap_trie_lru_clean ( netcap_trie_t* trie )
     return 0;
 }
 
+/**
+ * netcap_trie_lru_update:
+ * If the LRU is above the high water mark, delete items until it reaches the low water
+ * mark
+ **/
 int netcap_trie_lru_update ( netcap_trie_t* trie )
 {
     int c;
     int length;
     netcap_trie_element_t element;
     int ret = 0;
+    int check;
 
     if ( trie == NULL ) return errlogargs();
 
     _verify_lru_is_set( trie );
 
-    if ( ( trie->lru_high_water < 0 ) || ( trie->lru_low_water < 0 ) ) return errlogcons();
+    if (( trie->lru_high_water < 0 ) || ( trie->lru_low_water < 0 )) return errlogcons();
+
+    if ( trie->lru_sieve_size < 0 ) return errlogcons();
 
     if ( pthread_mutex_lock ( &trie->lru_mutex ) < 0 ) return perrlog("pthread_mutex_lock");
 
@@ -318,21 +334,58 @@ int netcap_trie_lru_update ( netcap_trie_t* trie )
             ret = errlog(ERR_CRITICAL,"list_length\n");
             break;
         }
-        
-        if ( length < trie->lru_high_water ) break;
 
-        c = length - trie->lru_low_water;
-        debug ( NC_TRIE_DEBUG_LOW, "TRIE: LRU Update - cutting %d items\n", c );
+        /* Make sure the LRU doesn't get too short */
+        if ( length < _LRU_MIN_LENGTH ) {
+            ret = 0;
+            break;
+        }
         
-        for (  ; ret == 0 && c-- > 0 ; ) {
-            if ( ( element.base = list_tail_val ( &trie->lru_list )) == NULL ) {
-                ret = errlog(ERR_CRITICAL,"list_tail\n"); 
-                break;
-            }
+        if ( length < trie->lru_high_water ) {
+            /* No check function, no way to sift nodes */
+            if ( trie->check == NULL ) break;
             
-            if ( netcap_trie_lru_trash ( trie, element ) < 0 ) {
-                ret = errlog(ERR_CRITICAL,"netcap_trie_lru_trash\n");
-                break;
+            /* Leave at most _LRU_MIN_LENGTH nodes on the LRU */
+            c = length - _LRU_MIN_LENGTH;
+            c = ( c < trie->lru_sieve_size ) ? c : trie->lru_sieve_size;
+            debug ( NC_TRIE_DEBUG_LOW, "TRIE: LRU Update - sifting %d items\n", c );
+
+            for ( ; ret == 0 && c-- > 0 ; ) {
+                if (( element.base = list_tail_val( &trie->lru_list )) == NULL ) {
+                    ret = errlog( ERR_CRITICAL, "list_tail\n" );
+                    break;
+                }
+                
+                if (( check = trie->check( element.item )) < 0 ) {
+                    errlog( ERR_CRITICAL, "trie->check\n" );
+                    break;
+                }
+                
+                if ( check == NC_TRIE_IS_DELETABLE ) {
+                    if ( netcap_trie_lru_trash( trie, element ) < 0 ) {
+                        ret = errlog(ERR_CRITICAL,"netcap_trie_lru_trash\n");
+                        break;
+                    }
+                } else {
+                    /* First non-deletable node is an indication that none of the remaining nodes
+                     * are not deletable.  (LRU is sorted by last used) */
+                    break;
+                }
+            }
+        } else {
+            c = length - trie->lru_low_water;
+            debug ( NC_TRIE_DEBUG_LOW, "TRIE: LRU Update - cutting %d items\n", c );
+            
+            for (  ; ret == 0 && c-- > 0 ; ) {
+                if ( ( element.base = list_tail_val ( &trie->lru_list )) == NULL ) {
+                    ret = errlog(ERR_CRITICAL,"list_tail\n"); 
+                    break;
+                }
+                
+                if ( netcap_trie_lru_trash ( trie, element ) < 0 ) {
+                    ret = errlog(ERR_CRITICAL,"netcap_trie_lru_trash\n");
+                    break;
+                }
             }
         }
     } while (0);

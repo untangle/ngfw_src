@@ -54,7 +54,7 @@ typedef struct {
     /* An item at each level */
     void* data;
 
-    /* !!! The position inside of the LRU */
+    /* !!! The position inside of the LRU or NULL if not on the LRU */
     list_node_t* lru_node;
 
     /* A mutex for inserting nodes and removing a node from the LRU */
@@ -108,6 +108,7 @@ typedef struct {
     /* Destroy function, called on the item, before being destroyed */
     netcap_trie_destroy_t* destroy;
 
+    /* Check function that indicates whether or not a node can be deleted */
     netcap_trie_check_t* check;
 
     /* LRU */
@@ -119,6 +120,9 @@ typedef struct {
 
     /* The size at which to stop deleting items */
     int    lru_low_water;
+
+    /* Number of items on the LRU to search for items to delete */
+    int    lru_sieve_size;
 
     list_t lru_list;
 
@@ -182,6 +186,6 @@ int netcap_trie_lru_front  ( netcap_trie_t* trie, netcap_trie_element_t element 
 
 int netcap_trie_lru_update ( netcap_trie_t* trie );
 
-int netcap_trie_lru_config ( netcap_trie_t* trie, int high_water, int low_water );
+int netcap_trie_lru_config ( netcap_trie_t* trie, int high_water, int low_water, int sieve_size );
 
 #endif /* __NETCAP_TRIE_H_ */

@@ -780,7 +780,7 @@ static void* thread_set             ( void* arg )
         }
         
         /* Attempt to move the ip to the front of the LRU  (50% probability) */
-        if (  rand_r ( &seed ) < rand_r( &seed ) ) {
+        if ( rand_r( &seed ) < rand_r( &seed )) {
             if ( netcap_trie_lru_front ( &_lru.trie, (netcap_trie_element_t)item) < 0 ) {
                 errlog( ERR_CRITICAL, "netcap_trie_lru_front\n");
             }

@@ -27,8 +27,14 @@ typedef struct {
 } nc_shield_post_t;
 
 typedef struct {
+    /* Percent to inhert at each node */
+    double           inheritance;
+    /* IP access should be limited */
     nc_shield_post_t limited;
+    /* IP should not be given access */
     nc_shield_post_t closed;
+    /* IP is using an excessive amount of resources and may be notified */
+    nc_shield_post_t error;
 } nc_shield_fence_t;
 
 typedef struct {
@@ -54,6 +60,13 @@ typedef struct {
     struct {
         int low_water;
         int high_water;
+
+        /** Parameters to control the removal of "dead" nodes */
+        /** Number of items to look through at the end of the LRU for inactive nodes */
+        int sieve_size;
+    
+        /** Rate at which active nodes should be moved to the front of the LRU */
+        double ip_rate;
     } lru;
         
     struct {
@@ -63,6 +76,7 @@ typedef struct {
         nc_shield_fence_t closed;
     } fence;
 
+    /** Parameters that control how often rejection debugging messages should printed */
     double print_rate;
 } nc_shield_cfg_t;
 

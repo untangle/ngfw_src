@@ -55,20 +55,45 @@ void netcap_trie_base_destroy ( netcap_trie_t* trie, netcap_trie_base_t* base )
     if ( pthread_mutex_destroy ( &base->mutex ) < 0 ) perrlog("pthread_mutex_destroy");
 }
 
+/* Returns the number of children that an item has (1 for terminal nodes) */
+int  netcap_trie_element_children( netcap_trie_element_t element )
+{
+    if ( element.base == NULL ) {
+        return errlogargs();
+    }
+
+    switch ( element.base->type ) {
+    case NC_TRIE_BASE_LEVEL:
+        return element.level->count;
+
+    case NC_TRIE_BASE_ITEM:
+        return 1;
+
+    default:
+        break;
+    }
+
+    return errlog( ERR_CRITICAL, "Invalid base item(type: %d)\n", element.base->type );    
+}
+
 void netcap_trie_element_destroy ( netcap_trie_t* trie, netcap_trie_element_t element ) {
     if ( trie == NULL || element.base == NULL ) {
         errlogargs();
         return;
     }
 
-    if ( element.level->base.type == NC_TRIE_BASE_LEVEL ) {
+    switch ( element.base->type ) {
+    case NC_TRIE_BASE_LEVEL:
         netcap_trie_level_destroy ( trie, element.level );
-    } else if ( element.level->base.type == NC_TRIE_BASE_ITEM ) {
-        netcap_trie_item_destroy ( trie, element.item );
-    } else {
-        errlog(ERR_CRITICAL, "TRIE: Trying to raze an unknown structure: %d\n", element.base->type );
-    }
+        break;
 
+    case NC_TRIE_BASE_ITEM:
+        netcap_trie_item_destroy ( trie, element.item );
+        break;
+
+    default:
+        errlog(ERR_CRITICAL, "TRIE: Trying to destroy an unknown structure: %d\n", element.base->type );
+    }
 }
 
 void netcap_trie_element_raze    ( netcap_trie_t* trie, netcap_trie_element_t element ) {
@@ -77,11 +102,16 @@ void netcap_trie_element_raze    ( netcap_trie_t* trie, netcap_trie_element_t el
         return;
     }
 
-    if ( element.base->type == NC_TRIE_BASE_LEVEL ) {
+    switch ( element.base->type ) {
+    case NC_TRIE_BASE_LEVEL:
         netcap_trie_level_raze ( trie, element.level );
-    } else if ( element.base->type == NC_TRIE_BASE_ITEM ) {
+        break;
+
+    case NC_TRIE_BASE_ITEM:
         netcap_trie_item_raze ( trie, element.item );
-    } else {
+        break;
+
+    default:
         errlog(ERR_CRITICAL, "TRIE: Trying to raze an unknown structure: %d\n", element.base->type );
     }
 }

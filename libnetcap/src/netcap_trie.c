@@ -207,7 +207,8 @@ static netcap_trie_item_t* _set ( netcap_trie_t* trie, in_addr_t _ip, void *data
         if ( parent.base->type == NC_TRIE_BASE_LEVEL ) {
             mutex = &parent.base->mutex;
 
-            /* XXX Change to a do while ( 0 ) */
+            /* XXX Change to a do while ( 0 ) 
+             * XXX way to many levels of nesting */
             if ( if_lock && pthread_mutex_lock ( mutex ) < 0 ) {
                 return perrlog_null("pthread_mutex_lock");
             }
@@ -231,7 +232,7 @@ static netcap_trie_item_t* _set ( netcap_trie_t* trie, in_addr_t _ip, void *data
                     /* If so, remove it */
                     if ( netcap_trie_lru_del ( trie, parent ) < 0 ) {
                         if ( if_lock ) pthread_mutex_unlock ( mutex );
-                        return errlog_null ( ERR_CRITICAL, "netcap_trie_lru_remove\n" );
+                        return errlog_null ( ERR_CRITICAL, "netcap_trie_lru_del\n" );
                     }
                 }
                 
