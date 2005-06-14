@@ -39,6 +39,7 @@ $Id: build.xml,v 1.22 2005/03/25 04:00:30 jdi Exp $
       <arg line="-uriroot ${src.hier}/${suffix.mvvm.webstart}/"/>
       <arg value="index.jsp"/>
       <arg value="gui.jnlp"/>
+      <classpath refid="mvvm.thirdparty.classpath"/>
       <classpath refid="tomcat.classpath"/>
     </java>
     <echo message="Adding JSP servlet mappings to web.xml"/>

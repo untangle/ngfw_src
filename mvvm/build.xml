@@ -44,6 +44,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       <arg line="-p com.metavize.jsp"/>
       <arg line="-webinc ${build.gensrc}/web-fragment.xml"/>
       <arg line="-uriroot ${src.hier}/${suffix.mvvm.web}/session-dumper/"/>
+      <classpath refid="mvvm.thirdparty.classpath"/>
       <classpath refid="tomcat.classpath"/>
     </java>
     <echo message="Adding JSP servlet mappings to web.xml"/>
@@ -61,6 +62,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       <arg line="-p com.metavize.jsp"/>
       <arg line="-webinc ${build.gensrc}/web-fragment.xml"/>
       <arg line="-uriroot ${src.hier}/${suffix.mvvm.web}/reports/"/>
+      <classpath refid="mvvm.thirdparty.classpath"/>
       <classpath refid="tomcat.classpath"/>
     </java>
     <echo message="Adding JSP servlet mappings to web.xml"/>
@@ -469,7 +471,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       <fileset refid="hibernate.jarset"/>
       <fileset refid="itext.jarset"/>
       <fileset refid="jasperreports.jarset"/>
-      <fileset refid="jasperreports.lib.jarset"/>
+      <!--       <fileset refid="jasperreports.lib.jarset"/> -->
       <fileset refid="javamail.jarset"/>
       <fileset refid="jfreechart.jarset"/>
       <fileset refid="junit.jarset"/>

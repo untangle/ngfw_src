@@ -56,16 +56,18 @@ $Id: common-classpaths.xml,v 1.32 2005/02/10 23:25:44 jdi Exp $
   </path>
 
   <!-- Thirdparty classpath -->
-  <fileset id="tomcat.jarset" dir="${TOMCAT_EMBED_HOME}">
-    <include name="lib/*jar"/>
+  <fileset id="tomcat.jarset" dir="${TOMCAT_EMBED_HOME}/lib">
+    <include name="*.jar"/>
+    <exclude name="commons-collections-3.1.jar"/>
+    <exclude name="commons-logging.jar"/>
   </fileset>
 
   <path id="tomcat.classpath">
     <fileset refid="tomcat.jarset"/>
   </path>
 
-  <fileset id="trove.jarset" dir="${TROVE_HOME}">
-    <include name="lib/trove.jar"/>
+  <fileset id="trove.jarset" dir="${TROVE_HOME}/lib">
+    <include name="trove.jar"/>
   </fileset>
 
   <path id="trove.classpath">
@@ -75,13 +77,17 @@ $Id: common-classpaths.xml,v 1.32 2005/02/10 23:25:44 jdi Exp $
   <fileset id="hibernate.jarset" dir="${HIBERNATE_HOME}">
     <include name="hibernate2.jar"/>
     <include name="lib/*.jar"/>
+    <exclude name="lib/concurrent-1.3.3.jar"/>
   </fileset>
 
   <fileset id="hibernate.gui.jarset" dir="${HIBERNATE_HOME}">
     <include name="hibernate2.jar"/>
-    <include name="lib/odmg*jar"/>
-    <include name="lib/commons-logging*jar"/>
-    <include name="cglib*jar"/>
+    <include name="lib/odmg*.jar"/>
+    <include name="lib/commons-logging*.jar"/>
+    <include name="cglib*.jar"/>
+    <exclude name="lib/concurrent-1.3.3.jar"/>
+    <exclude name="lib/ant-1.5.3.jar"/>
+    <exclude name="lib/log4j-1.2.8.jar"/>
   </fileset>
 
   <path id="hibernate.classpath">
@@ -96,8 +102,8 @@ $Id: common-classpaths.xml,v 1.32 2005/02/10 23:25:44 jdi Exp $
     <fileset refid="proxool.jarset"/>
   </path>
 
-  <fileset id="concurrent.jarset" dir="${CONCURRENT_HOME}">
-    <include name="lib/concurrent.jar"/>
+  <fileset id="concurrent.jarset" dir="${CONCURRENT_HOME}/lib">
+    <include name="concurrent.jar"/>
   </fileset>
 
   <path id="concurrent.classpath">
@@ -178,24 +184,11 @@ $Id: common-classpaths.xml,v 1.32 2005/02/10 23:25:44 jdi Exp $
   </path>
 
   <fileset id="jasperreports.jarset" dir="${JASPER_REPORTS_HOME}/dist">
-    <include name="jasperreports-0.6.4.jar"/>
-  </fileset>
-
-  <fileset id="jasperreports.lib.jarset" dir="${JASPER_REPORTS_HOME}/lib">
-    <include name="*.jar"/>
-    <exclude name="servlet.jar"/>
-    <exclude name="commons-digester*"/>
-    <exclude name="commons-logging*"/>
-  </fileset>
-
-  <fileset id="jasperreports.build.jarset" dir="${JASPER_REPORTS_HOME}/lib">
-    <include name="*.jar"/>
-    <exclude name="servlet.jar"/>
+    <include name="jasperreports-0.6.8.jar"/>
   </fileset>
 
   <path id="jasperreports.classpath">
     <fileset refid="jasperreports.jarset"/>
-    <fileset refid="jasperreports.build.jarset"/>
   </path>
 
   <fileset id="hibernatedoclet.jarset" dir="${XDOCLET_HOME}">

@@ -31,6 +31,7 @@ import com.metavize.mvvm.reporting.summary.*;
 import com.metavize.mvvm.security.Tid;
 import net.sf.jasperreports.engine.JRDefaultScriptlet;
 import net.sf.jasperreports.engine.JRExporterParameter;
+import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JRScriptletException;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -47,6 +48,9 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 public class Reporter
 {
+    // 500 rows gives us about 25 pages.
+    public static final int MAX_ROWS_PER_REPORT = 500;
+
     private static final String SYMLINK_CMD = "/bin/ln -s";
 
     public static final String ICON_DESC = "IconDesc42x42.png";
@@ -235,6 +239,7 @@ public class Reporter
             Map params = new HashMap();
             params.put("startTime", startTime);
             params.put("endTime", endTime);
+            params.put(JRParameter.REPORT_MAX_COUNT, MAX_ROWS_PER_REPORT);
             logger.debug("Filling report");
             JasperPrint print = JasperFillManager.fillReport(jasperIs, params, conn);
 

@@ -134,9 +134,11 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
     </hibernatedoclet>
 
     <mkdir dir="${build.root}/${tran.name}"/>
-
+    
     <jrc srcdir="${tran.name}/${src.main}" destdir="${build.root}/${tran.name}" tempdir="/tmp"
          keepjava="true" xmlvalidation="true">
+      <classpath refid="mvvm.thirdparty.classpath"/>
+      <classpath refid="jasperreports.classpath"/>
       <classpath refid="mvvm-client.classpath"/>
       <include name="**/*jrxml"/>
     </jrc>

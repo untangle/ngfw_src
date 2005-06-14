@@ -117,9 +117,7 @@ public class LogMailer implements Runnable
                 if (now - MIN_MESSAGE_PERIOD < lastSendTime)
                     Thread.sleep(MIN_MESSAGE_PERIOD  - (now - lastSendTime));
                 if (MvvmContextFactory.state() == MvvmLocalContext.MvvmState.RUNNING &&
-                    // Broken at the moment... MvvmContextFactory.context().networkingManager().get().isExceptionReportingEnabled()
-                    true
-                    )
+                    MvvmContextFactory.context().networkingManager().get().isExceptionReportingEnabled())
                     sendMessage(triggerer);
                 lastSendTime = System.currentTimeMillis(); 
             } catch (InterruptedException x) {
