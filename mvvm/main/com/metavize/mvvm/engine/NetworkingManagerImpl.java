@@ -52,6 +52,7 @@ public class NetworkingManagerImpl implements NetworkingManager
     private static final String FLAG_HTTPS_RES = "MVVM_ALLOW_OUT_RES";
     private static final String FLAG_OUT_NET   = "MVVM_ALLOW_OUT_NET";
     private static final String FLAG_OUT_MASK  = "MVVM_ALLOW_OUT_MASK";
+    private static final String FLAG_EXCEPTION = "MVVM_IS_EXCEPTION_REPORTING_EN";
     
     private static final Logger logger = Logger.getLogger( NetworkingManagerImpl.class );
     
@@ -193,7 +194,9 @@ public class NetworkingManagerImpl implements NetworkingManager
                         host = str.substring( FLAG_OUT_NET.length() + 1 );
                     } else if ( str.startsWith( FLAG_OUT_MASK )) {
                         mask = str.substring( FLAG_OUT_MASK.length() + 1 );
-                    } 
+                    } else if ( str.startsWith( FLAG_EXCEPTION )) {
+                        configuration.isExceptionReportingEnabled( parseBooleanFlag( str, FLAG_EXCEPTION ));
+                    }
                 } catch ( Exception ex ) {
                     logger.warn( "Error while retrieving flags", ex );
                 }
@@ -304,6 +307,10 @@ public class NetworkingManagerImpl implements NetworkingManager
         sb.append( "## Restrict outside HTTPS access\n" );
         sb.append( "## True if restricted, undefined or false if unrestricted\n" );
         sb.append( FLAG_HTTPS_RES + "=" + configuration.isOutsideAccessRestricted() + "\n\n" );
+        sb.append( "## Report exceptions\n" );
+        sb.append( "## True to send out exception logs, undefined or false for not\n" );
+        sb.append( FLAG_EXCEPTION + "=" + configuration.isExceptionReportingEnabled() + "\n\n" );
+
         
         if ( !configuration.outsideNetwork().isEmpty()) {
             IPaddr network = configuration.outsideNetwork();
