@@ -220,6 +220,7 @@ class VirusFtpHandler extends FtpStateMachine
                                          EndMarker.MARKER, true);
         } else {
             transform.incrementCount( BLOCK_COUNTER );
+            // Todo: Quarantine (for now, don't delete the file) XXX
             TCPSession s = getSession();
             s.shutdownClient();
             s.shutdownServer();
@@ -231,7 +232,6 @@ class VirusFtpHandler extends FtpStateMachine
     {
         try {
             file = File.createTempFile("ftp-virus", null);
-            file.deleteOnExit();
 
             FileInputStream fis = new FileInputStream(file);
             inChannel = fis.getChannel();

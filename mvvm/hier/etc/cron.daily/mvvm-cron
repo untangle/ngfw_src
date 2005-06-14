@@ -1,3 +1,6 @@
 #!/bin/sh
 
 /usr/bin/update-reports &> /dev/null
+
+/usr/bin/find /tmp -mtime +31 -name "*.tmp" | /usr/bin/xargs /bin/rm
+

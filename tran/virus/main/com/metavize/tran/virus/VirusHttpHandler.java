@@ -221,6 +221,7 @@ class VirusHttpHandler extends HttpStateMachine
             return new TokenResult(streamer, null);
         } else {
             logger.info("Virus found, killing session");
+            // Todo: Quarantine (for now, don't delete the file) XXX
             transform.incrementCount(BLOCK_COUNTER, 1);
             getSession().shutdownClient();
             getSession().shutdownServer();
@@ -300,8 +301,6 @@ class VirusHttpHandler extends HttpStateMachine
         try {
             localFileName= makeFileName(getSession());
             File fileBuf = File.createTempFile(localFileName,null);
-
-            fileBuf.deleteOnExit(); /* just in case */
 
             this.fileName = fileBuf.getAbsolutePath();
 
