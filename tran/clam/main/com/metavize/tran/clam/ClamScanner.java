@@ -31,6 +31,26 @@ public class ClamScanner implements VirusScanner {
 
     private static final Logger logger = Logger.getLogger(ClamScanner.class.getName());
 
+    /**
+     * These are "FOUND" viruses by clamdscan, but are not really viruses
+     * copied from the clam source
+     */
+    private static final String[] invalidVirusNames = { "Encrypted.RAR",
+                                                        "Oversized.RAR",
+                                                        "RAR.ExceededFileSize",
+                                                        "RAR.ExceededFilesLimit",
+                                                        "Suspect.Zip",
+                                                        "Exploit.Zip.ModifiedHeaders",
+                                                        "Oversized.Zip",
+                                                        "Encrypted.Zip",
+                                                        "Zip.ExceededFileSize",
+                                                        "Zip.ExceededFilesLimit",
+                                                        "GZip.ExceededFileSize",
+                                                        "BZip.ExceededFileSize",
+                                                        "MSCAB.ExceededFileSize",
+                                                        "Archive.ExceededRecursionLimit" };
+                                           
+    
     public ClamScanner() {}
 
     public VirusScannerResult scanFile (String pathName)
@@ -102,9 +122,15 @@ public class ClamScanner implements VirusScanner {
             return VirusScannerResult.CLEAN;
         case 1:
             if (virusName == null) {
-                logger.info("clamdscan: infected (unknown)");
-                return VirusScannerResult.INFECTED;
+                logger.warn("clamdscan: missing \"FOUND\" string (exit code 1)");
+                return VirusScannerResult.ERROR;
             } else {
+                for (i=0 ; i<invalidVirusNames.length ; i++) {
+                    if (virusName == invalidVirusNames[i]) {
+                        logger.warn("clamdscan: " + i);
+                        return VirusScannerResult.ERROR;
+                    }
+                }
                 logger.info("clamdscan: infected (" + virusName + ")");
                 return new VirusScannerResult(false,virusName,false);
             }
