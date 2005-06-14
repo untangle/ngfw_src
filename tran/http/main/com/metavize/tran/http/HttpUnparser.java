@@ -122,8 +122,11 @@ class HttpUnparser extends AbstractUnparser
         }
 
         queueOutput(h.getBytes());
-
-        return new UnparseResult(BYTE_BUFFER_PROTO);
+        if (isClientSide()) {
+            return dequeueOutput();
+        } else {
+            return new UnparseResult(BYTE_BUFFER_PROTO);
+        }
     }
 
     private UnparseResult chunk(Chunk c)

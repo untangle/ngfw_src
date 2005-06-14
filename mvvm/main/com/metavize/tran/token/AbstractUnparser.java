@@ -23,4 +23,16 @@ public abstract class AbstractUnparser implements Unparser
         this.session = session;
         this.clientSide = clientSide;
     }
+
+    // protected methods ------------------------------------------------------
+
+    protected boolean isClientSide()
+    {
+        return clientSide;
+    }
+
+    protected TCPSession getSession()
+    {
+        return session;
+    }
 }
