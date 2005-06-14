@@ -121,6 +121,12 @@ class VirusFtpHandler extends FtpStateMachine
         logger.debug("doClientDataEnd()");
 
         if (scanClient && c2s && null != file) {
+            try {
+                outChannel.close();
+            } catch (IOException exn) {
+                logger.warn("could not close out channel");
+            }
+
             logger.debug("c2s file: " + file);
             TCPStreamer ts = scan();
             if (null != ts) {
@@ -138,6 +144,12 @@ class VirusFtpHandler extends FtpStateMachine
         logger.debug("doServerDataEnd()");
 
         if (scanServer && !c2s && null != file) {
+            try {
+                outChannel.close();
+            } catch (IOException exn) {
+                logger.warn("could not close out channel", exn);
+            }
+
             logger.debug("!c2s file: " + file);
             TCPStreamer ts = scan();
             if (null != ts) {
@@ -189,7 +201,7 @@ class VirusFtpHandler extends FtpStateMachine
     private TCPStreamer scan() throws TokenException
     {
         VirusScannerResult result;
-        
+
         try {
             transform.incrementCount( SCAN_COUNTER );
             result = transform.getScanner().scanFile(file.getPath());
@@ -198,7 +210,7 @@ class VirusFtpHandler extends FtpStateMachine
         } catch (InterruptedException exn) { // XXX deal with this in scanner
             throw new TokenException("interrupted while scanning", exn);
         }
-        
+
         /* XXX handle the case where result is null */
 
         if (result.isClean()) {

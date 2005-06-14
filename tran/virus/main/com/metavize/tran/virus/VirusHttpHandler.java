@@ -173,6 +173,11 @@ class VirusHttpHandler extends HttpStateMachine
     protected TokenResult doResponseBodyEnd(EndMarker endMarker)
     {
         if (scan) {
+            try {
+                outFile.close();
+            } catch (IOException exn) {
+                logger.warn("could not close channel", exn);
+            }
             return scanFile();
         } else {
             return new TokenResult(new Token[] { endMarker }, null);
