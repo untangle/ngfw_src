@@ -71,9 +71,11 @@ class DhcpManager
     private static final HostName LOCAL_DOMAIN_DEFAULT;
     
     private static final String HOST_FILE             = "/etc/hosts";
+    private static final String HOST_NAME_FILE        = "/etc/hostname";
+    private static final String DEFAULT_HOSTNAME      = "mv-edgeguard";
     private static final String[] HOST_FILE_START     = new String[] {
         HEADER,
-        "127.0.0.1	mv-edgeguard localhost"
+        "127.0.0.1	localhost"
     };
     
     private static final String[] HOST_FILE_END       = new String[] {
@@ -394,11 +396,13 @@ class DhcpManager
     private void writeHosts( NatSettings settings )
     {
         StringBuilder sb = new StringBuilder();
-        
+
         for ( int c = 0 ; c < HOST_FILE_START.length ; c ++ ) {
             sb.append( HOST_FILE_START[c] + "\n" );
         }
-
+        
+        String hostname = getHostName();
+        sb.append( "127.0.0.1\t" + hostname );
         sb.append( "\n" );
 
         if ( settings.getDnsEnabled()) {
@@ -424,6 +428,35 @@ class DhcpManager
         }
 
         writeFile( sb, HOST_FILE );
+    }
+
+    /* Get the hostname of the box */
+    private String getHostName()
+    {
+        String hostname = DEFAULT_HOSTNAME;
+
+        BufferedReader in = null;
+
+        /* Open up the interfaces file */
+        try {
+            in = new BufferedReader(new FileReader( HOST_NAME_FILE ));
+            String str;
+            str = in.readLine().trim();
+            /* Try to parse the hostname, throws an exception if it fails */
+            HostName.parse( str );
+            hostname = str;
+        } catch ( Exception ex ) {
+            /* Go to the default */
+            hostname = DEFAULT_HOSTNAME;
+        } 
+        
+        try {
+            if ( in != null ) in.close();
+        } catch ( Exception e ) {
+            logger.error( "Error closing file: " + e );
+        }
+
+        return hostname;
     }
     
     /**

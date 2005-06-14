@@ -102,7 +102,7 @@ String helpClickHere = "Click <a href=\"help.html\">here</a> for more informatio
                 <br/>
                 <br/>
                 <% if ( isDownload ) { %>
-                <object codebase="http://java.sun.com/update/1.5.0/jinstall-1_5_0-windows-i586.cab"
+                <object codebase="http://java.sun.com/update/1.5.0/jinstall-1_5_0_03-windows-i586.cab"
                         classid="clsid:5852F5ED-8BF4-11D4-A245-0080C6F74284"
                         height="0"
                         width="0">
