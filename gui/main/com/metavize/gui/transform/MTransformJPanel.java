@@ -156,13 +156,13 @@ public class MTransformJPanel extends javax.swing.JPanel {
         descriptionTextJLabel.setIconTextGap(0);
         add(descriptionTextJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(106, 16, -1, 20));
 
-        stateJLabel.setToolTipText("<HTML> The <B>Transform State Indicator</B> shows the user what the running state of a given transform is.<BR> GREEN indicates that the transform is \"on\" and operating normally.<BR> RED indicates that the transform is \"on\", but that an abnormal exception has occurred.<BR> CLEAR indicates that the transform is \"off\", and may be turned \"on\" by the user. </HTML>");
+        stateJLabel.setToolTipText("<HTML> The <B>Status Indicator</B> shows the current operating condition of a particular software appliance.<BR>\n<font color=\"00FF00\"><b>Green</b></font> indicates that the appliance is \"on\" and operating normally.<BR>\n<font color=\"FF0000\"><b>Red</b></font> indicates that the appliance is \"on\", but that an abnormal condition has occurred.<BR>\n<font color=\"FFFF00\"><b>Yellow</b></font> indicates that the appliance is saving or refreshing settings.<BR>\n<b>Clear</b> indicates that the appliance is \"off\", and may be turned \"on\" by the user.\n</HTML>");
         add(stateJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(606, 20, 28, 28));
 
         controlsJToggleButton.setFont(new java.awt.Font("Default", 0, 12));
         controlsJToggleButton.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/metavize/gui/transform/IconControlsClosed28x28.png")));
         controlsJToggleButton.setText("Show Settings");
-        controlsJToggleButton.setToolTipText("<HTML>\nThe <B>Settings Button</B> allows you to show and hide the configuration, management,<BR>\nand visualization settings of a given transform.  Press the Settings Button once to show the<BR>\nsettings, and press the button again to hide the settings.\n</HTML>");
+        controlsJToggleButton.setToolTipText("<HTML>\nThe <B>Settings Button</B> allows you to show and hide configuration for<BR>\na particular software appliance.  Press the Settings Button once to show the<BR>\nsettings, and press the button again to hide the settings.\n</HTML>");
         controlsJToggleButton.setAlignmentX(0.5F);
         controlsJToggleButton.setDoubleBuffered(true);
         controlsJToggleButton.setFocusPainted(false);
@@ -194,7 +194,7 @@ public class MTransformJPanel extends javax.swing.JPanel {
 
         powerJToggleButton.setFont(new java.awt.Font("Default", 0, 12));
         powerJToggleButton.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/metavize/gui/transform/IconPowerOffState28x28.png")));
-        powerJToggleButton.setToolTipText("<HTML> The <B>Power Button</B> allows you to turn a Device<BR>\n\"on\" and \"off\".</HTML>");
+        powerJToggleButton.setToolTipText("<HTML>\nThe <B>Power Button</B> allows you to turn a particular Software Appliance \"on\" and \"off\".<br>\n\n</HTML>");
         powerJToggleButton.setAlignmentX(0.5F);
         powerJToggleButton.setBorderPainted(false);
         powerJToggleButton.setContentAreaFilled(false);

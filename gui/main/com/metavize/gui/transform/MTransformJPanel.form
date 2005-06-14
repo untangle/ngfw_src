@@ -51,7 +51,7 @@
     </Component>
     <Component class="javax.swing.JLabel" name="stateJLabel">
       <Properties>
-        <Property name="toolTipText" type="java.lang.String" value="&lt;HTML&gt; The &lt;B&gt;Transform State Indicator&lt;/B&gt; shows the user what the running state of a given transform is.&lt;BR&gt; GREEN indicates that the transform is &quot;on&quot; and operating normally.&lt;BR&gt; RED indicates that the transform is &quot;on&quot;, but that an abnormal exception has occurred.&lt;BR&gt; CLEAR indicates that the transform is &quot;off&quot;, and may be turned &quot;on&quot; by the user. &lt;/HTML&gt;"/>
+        <Property name="toolTipText" type="java.lang.String" value="&lt;HTML&gt; The &lt;B&gt;Status Indicator&lt;/B&gt; shows the current operating condition of a particular software appliance.&lt;BR&gt;&#xa;&lt;font color=&quot;00FF00&quot;&gt;&lt;b&gt;Green&lt;/b&gt;&lt;/font&gt; indicates that the appliance is &quot;on&quot; and operating normally.&lt;BR&gt;&#xa;&lt;font color=&quot;FF0000&quot;&gt;&lt;b&gt;Red&lt;/b&gt;&lt;/font&gt; indicates that the appliance is &quot;on&quot;, but that an abnormal condition has occurred.&lt;BR&gt;&#xa;&lt;font color=&quot;FFFF00&quot;&gt;&lt;b&gt;Yellow&lt;/b&gt;&lt;/font&gt; indicates that the appliance is saving or refreshing settings.&lt;BR&gt;&#xa;&lt;b&gt;Clear&lt;/b&gt; indicates that the appliance is &quot;off&quot;, and may be turned &quot;on&quot; by the user.&#xa;&lt;/HTML&gt;"/>
       </Properties>
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="(JLabel) new com.metavize.gui.transform.BlinkJLabel();"/>
@@ -71,7 +71,7 @@
           <Connection code="new javax.swing.ImageIcon( Util.getClassLoader().getResource(&quot;com/metavize/gui/transform/IconControlsClosed28x28.png&quot;))" type="code"/>
         </Property>
         <Property name="text" type="java.lang.String" value="Show Settings"/>
-        <Property name="toolTipText" type="java.lang.String" value="&lt;HTML&gt;&#xa;The &lt;B&gt;Settings Button&lt;/B&gt; allows you to show and hide the configuration, management,&lt;BR&gt;&#xa;and visualization settings of a given transform.  Press the Settings Button once to show the&lt;BR&gt;&#xa;settings, and press the button again to hide the settings.&#xa;&lt;/HTML&gt;"/>
+        <Property name="toolTipText" type="java.lang.String" value="&lt;HTML&gt;&#xa;The &lt;B&gt;Settings Button&lt;/B&gt; allows you to show and hide configuration for&lt;BR&gt;&#xa;a particular software appliance.  Press the Settings Button once to show the&lt;BR&gt;&#xa;settings, and press the button again to hide the settings.&#xa;&lt;/HTML&gt;"/>
         <Property name="alignmentX" type="float" value="0.5"/>
         <Property name="doubleBuffered" type="boolean" value="true"/>
         <Property name="focusPainted" type="boolean" value="false"/>
@@ -142,7 +142,7 @@
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
           <Connection code="new javax.swing.ImageIcon( Util.getClassLoader().getResource(&quot;com/metavize/gui/transform/IconPowerOffState28x28.png&quot;))" type="code"/>
         </Property>
-        <Property name="toolTipText" type="java.lang.String" value="&lt;HTML&gt; The &lt;B&gt;Power Button&lt;/B&gt; allows you to turn a Device&lt;BR&gt;&#xa;&quot;on&quot; and &quot;off&quot;.&lt;/HTML&gt;"/>
+        <Property name="toolTipText" type="java.lang.String" value="&lt;HTML&gt;&#xa;The &lt;B&gt;Power Button&lt;/B&gt; allows you to turn a particular Software Appliance &quot;on&quot; and &quot;off&quot;.&lt;br&gt;&#xa;&#xa;&lt;/HTML&gt;"/>
         <Property name="alignmentX" type="float" value="0.5"/>
         <Property name="borderPainted" type="boolean" value="false"/>
         <Property name="contentAreaFilled" type="boolean" value="false"/>
