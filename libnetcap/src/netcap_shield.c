@@ -136,6 +136,17 @@ static int             _reputation_init     ( netcap_trie_item_t* item, in_addr_
 static void            _reputation_destroy  ( netcap_trie_item_t* item );
 static netcap_shield_ans_t _put_in_fence    ( nc_shield_fence_t* fence, nc_shield_rep_t rep_val );
 
+static __inline__ nc_shield_fence_t* _get_fence( int mode )
+{
+    switch ( mode ) {
+    case NC_SHIELD_MODE_RELAXED: return &_shield.cfg.fence.relaxed; break;
+    case NC_SHIELD_MODE_LAX:     return &_shield.cfg.fence.lax; break;
+    case NC_SHIELD_MODE_TIGHT:   return &_shield.cfg.fence.tight; break;
+    case NC_SHIELD_MODE_CLOSED:  return &_shield.cfg.fence.closed; break;
+    }
+    return errlog_null( ERR_CRITICAL, "Invalid mode: %d\n", mode );
+}
+
 #ifdef _TRIE_DEBUG_PRINT
 static int   _status             ( int conn, struct sockaddr_in *dst_addr );
 #endif
@@ -220,7 +231,7 @@ int netcap_shield_cleanup ( void )
 /* Indicate if an IP should allowed in */
 netcap_shield_response_t* netcap_shield_rep_check        ( in_addr_t ip )
 { 
-    netcap_trie_item_t* item;
+    netcap_trie_item_t* item = NULL;
     _apply_func_t func = { _reputation_update, NULL };
     netcap_shield_mode_t mode;    
     nc_shield_rep_t rep_val;
@@ -244,7 +255,7 @@ netcap_shield_response_t* netcap_shield_rep_check        ( in_addr_t ip )
         rep = _shield.root;
 
         /* Update the mode, and the current overall shield mode */
-        if (( mode = _shield.mode = _mode_eval( )) < 0 ) {
+        if (( mode = _shield.mode = _mode_eval()) < 0 ) {
             return errlog_null ( ERR_CRITICAL, "_mode_eval\n" );
         }
         
@@ -252,6 +263,7 @@ netcap_shield_response_t* netcap_shield_rep_check        ( in_addr_t ip )
         if ( mode == NC_SHIELD_MODE_CLOSED ) { 
             rep_val= _shield.cfg.fence.closed.limited.post;
             fence = &_shield.cfg.fence.closed;
+            item = NULL;
             break;
         }
         
@@ -260,11 +272,11 @@ netcap_shield_response_t* netcap_shield_rep_check        ( in_addr_t ip )
             return errlog_null( ERR_CRITICAL, "netcap_trie_apply\n");
         }
 
-        if (( rep = netcap_trie_item_data ( item )) == NULL ) {
+        if (( rep = netcap_trie_item_data( item )) == NULL ) {
             return errlog_null( ERR_CRITICAL, "netcap_trie_item_data\n" );
         }
         
-        if (( rep_val = _reputation_eval ( item )) < 0 ) {
+        if (( rep_val = _reputation_eval( item )) < 0 ) {
             return errlog_null( ERR_CRITICAL,"_reputation_eval\n");
         }
         
@@ -273,17 +285,15 @@ netcap_shield_response_t* netcap_shield_rep_check        ( in_addr_t ip )
         /* if ( rep_val > _SHIELD_REP_MAX ) { ans = NC_SHIELD_DROP; break; } */
                     
         /* Determine whether they get in based on the state of the shield */
-        switch ( mode ) {
-        case NC_SHIELD_MODE_RELAXED: fence = &_shield.cfg.fence.relaxed; break;
-        case NC_SHIELD_MODE_LAX:     fence = &_shield.cfg.fence.lax; break;
-        case NC_SHIELD_MODE_TIGHT:   fence = &_shield.cfg.fence.tight; break;
-        case NC_SHIELD_MODE_CLOSED:  fence = &_shield.cfg.fence.closed; break;
-        default:
-            /* Something went wrong */
-            return errlog_null( ERR_CRITICAL,"Invalid mode: %d\n", mode );
-        }            
+        if (( fence = _get_fence( mode )) == NULL )
+            return errlog_null( ERR_CRITICAL, "_get_fence" );
     } while ( 0 );
-
+    
+    /* Only inherit a piece of the reputation if this is not a terminal node */
+    if ( item != NULL && item->type == NC_TRIE_BASE_LEVEL ) { 
+        rep_val = rep_val *  fence->inheritance;
+    }
+    
     ans = _put_in_fence ( fence, rep_val );
     
     response->if_print = 0;
@@ -566,14 +576,14 @@ static int  _lru_check           ( netcap_trie_item_t* item )
 
 static int  _add_request         ( reputation_t *rep, int count, void* arg )
 {
-    return netcap_load_update( &rep->request_load, 1, 1/count );
+    return netcap_load_update( &rep->request_load, 1, ((netcap_load_val_t)1.0));
 }
 
 static int  _add_session         ( reputation_t *rep, int count, void* arg )
 {
     /* Increment the number of sessions */
     rep->active_sessions++;
-    return netcap_load_update( &rep->session_load, 1, 1/count );
+    return netcap_load_update( &rep->session_load, 1, ((netcap_load_val_t)1.0));
 }
 
 static int  _end_session         ( reputation_t *rep, int count, void* arg )
@@ -586,18 +596,18 @@ static int  _end_session         ( reputation_t *rep, int count, void* arg )
 
 static int  _add_srv_conn        ( reputation_t *rep, int count, void* arg )
 {
-    return netcap_load_update( &rep->srv_conn_load, 1, 1/count );
+    return netcap_load_update( &rep->srv_conn_load, 1, ((netcap_load_val_t)1.0));
 }
 
 static int  _add_srv_fail        ( reputation_t *rep, int count, void* arg )
 {
-    return netcap_load_update( &rep->srv_fail_load, 1, 1/count );
+    return netcap_load_update( &rep->srv_fail_load, 1, ((netcap_load_val_t)1.0));
 }
 
 static int  _add_evil            ( reputation_t *rep, int count, void* arg )
 {
     int evil = (int)arg;
-    return netcap_load_update( &rep->evil_load, evil, evil/count );
+    return netcap_load_update( &rep->evil_load, evil, ((netcap_load_val_t)evil));
 }
 
 static int _add_chk              ( reputation_t *rep, int count, void* arg )
@@ -614,8 +624,8 @@ static int _add_chk              ( reputation_t *rep, int count, void* arg )
     }
     
     if ( chk->if_rx == 1 ) {
-        netcap_load_update ( load, 1, 1/count );
-        netcap_load_update ( &rep->byte_load, chk->size, chk->size/count );
+        netcap_load_update ( load, 1, ((netcap_load_val_t)1.0));
+        netcap_load_update ( &rep->byte_load, chk->size, ((netcap_load_val_t)chk->size));
     } else {
         return errlog( ERR_CRITICAL, "Invalid chunk Description\n" );
     }
@@ -644,6 +654,7 @@ static int  _reputation_init     ( netcap_trie_item_t* item, in_addr_t ip )
 {
     int ret = 0;
     reputation_t* rep;
+    nc_shield_fence_t* fence = NULL;
 
     if ( item == NULL || (rep = netcap_trie_item_data(item)) == NULL ) return errlogargs();
 
@@ -658,7 +669,7 @@ static int  _reputation_init     ( netcap_trie_item_t* item, in_addr_t ip )
     if ( pthread_mutex_lock( &rep->mutex ) < 0 ) {
         return perrlog("pthread_mutex_lock");
     }
-
+    
     /* Initalize each of the loads */
     /* Right now these inherit the load and the last update time of the parent */
     if (( netcap_load_init( &rep->evil_load,     _LOAD_INTERVAL_EVIL,  !NC_LOAD_INIT_TIME ) < 0) ||
@@ -681,6 +692,21 @@ static int  _reputation_init     ( netcap_trie_item_t* item, in_addr_t ip )
     rep->rejected_sessions = 0;
     rep->limited_sessions   = 0;
 
+    if (( fence = _get_fence( _shield.mode )) == NULL ) {
+        ret = errlog( ERR_CRITICAL, "_get_fence\n" );
+    } else {
+        /* Apply inheritance to the reputation */
+        rep->evil_load.load     = ( fence->inheritance ) * rep->evil_load.load;
+        rep->request_load.load  = ( fence->inheritance ) * rep->request_load.load;
+        rep->session_load.load  = ( fence->inheritance ) * rep->session_load.load;
+        rep->srv_conn_load.load = ( fence->inheritance ) * rep->srv_conn_load.load;
+        rep->srv_fail_load.load = ( fence->inheritance ) * rep->srv_fail_load.load;
+        rep->tcp_chk_load.load  = ( fence->inheritance ) * rep->tcp_chk_load.load;
+        rep->udp_chk_load.load  = ( fence->inheritance ) * rep->udp_chk_load.load;
+        rep->byte_load.load     = ( fence->inheritance ) * rep->byte_load.load;
+    }
+
+
     pthread_mutex_unlock(&rep->mutex);
 
 #ifdef _TRIE_DEBUG_PRINT
@@ -700,7 +726,7 @@ static nc_shield_rep_t  _reputation_eval     ( netcap_trie_item_t* item )
     
     if ( item == NULL ) return (nc_shield_rep_t)errlogargs();
 
-    if (( rep = netcap_trie_item_data ( item )) == NULL ) {
+    if (( rep = netcap_trie_item_data( item )) == NULL ) {
         return (nc_shield_rep_t)errlog ( ERR_CRITICAL, "netcap_trie_item_data\n" );
     }
 
@@ -763,13 +789,20 @@ static netcap_shield_mode_t _mode_eval ( void )
 {
     reputation_t* root_rep;
     int num_sessions;
+    int num_clients;
     root_rep = _shield.root;
     int children;
 
     /* XXX Right now, checking the load on each call, for performance,
      * possibly consider doing this periodically */
     double load;
-
+    
+    netcap_load_val_t request_load;
+    netcap_load_val_t session_load;
+    netcap_load_val_t tcp_chk_load;
+    netcap_load_val_t udp_chk_load;
+    netcap_load_val_t evil_load;
+    
     if ( root_rep == NULL ) return errlog(ERR_CRITICAL,"Shield is uninitialized\n");
 
     if ( getloadavg ( &load, 1 ) < 0 ) return perrlog ( "sysinfo" );
@@ -785,32 +818,42 @@ static netcap_shield_mode_t _mode_eval ( void )
     }
 
     num_sessions = root_rep->active_sessions;
+
+    // Need to determine a way to calculate better averages, right now using the sum
+    // num_clients = _shield.trie.lru_length;
+    num_clients = 1;
     
-    if ( load > _shield.cfg.limit.cpu_load.closed ) return NC_SHIELD_MODE_CLOSED;
-    if ( num_sessions > _shield.cfg.limit.sessions.closed ) return NC_SHIELD_MODE_CLOSED;
-    if ( root_rep->request_load.load > _shield.cfg.limit.request_load.closed ) return NC_SHIELD_MODE_CLOSED;
-    if ( root_rep->session_load.load > _shield.cfg.limit.session_load.closed ) return NC_SHIELD_MODE_CLOSED;
-    if ( root_rep->tcp_chk_load.load > _shield.cfg.limit.tcp_chk_load.closed ) return NC_SHIELD_MODE_CLOSED;
-    if ( root_rep->udp_chk_load.load > _shield.cfg.limit.udp_chk_load.closed ) return NC_SHIELD_MODE_CLOSED;
-    if ( root_rep->evil_load.load > _shield.cfg.limit.evil_load.closed ) return NC_SHIELD_MODE_CLOSED;
+    request_load = root_rep->request_load.load * num_clients;
+    session_load = root_rep->session_load.load * num_clients;
+    tcp_chk_load = root_rep->tcp_chk_load.load * num_clients;
+    udp_chk_load = root_rep->udp_chk_load.load * num_clients;
+    evil_load    = root_rep->evil_load.load    * num_clients;
+    
+    if (( load         > _shield.cfg.limit.cpu_load.closed )     || 
+        ( num_sessions > _shield.cfg.limit.sessions.closed )     ||
+        ( request_load > _shield.cfg.limit.request_load.closed ) || 
+        ( session_load > _shield.cfg.limit.session_load.closed ) ||
+        ( tcp_chk_load > _shield.cfg.limit.tcp_chk_load.closed ) ||
+        ( udp_chk_load > _shield.cfg.limit.udp_chk_load.closed ) ||
+        ( evil_load    > _shield.cfg.limit.evil_load.closed )) return NC_SHIELD_MODE_CLOSED;
 
 
-    if ( load > _shield.cfg.limit.cpu_load.tight ) return NC_SHIELD_MODE_TIGHT;
-    if ( num_sessions > _shield.cfg.limit.sessions.tight ) return NC_SHIELD_MODE_TIGHT;
-    if ( root_rep->request_load.load > _shield.cfg.limit.request_load.tight ) return NC_SHIELD_MODE_TIGHT;
-    if ( root_rep->session_load.load > _shield.cfg.limit.session_load.tight ) return NC_SHIELD_MODE_TIGHT;
-    if ( root_rep->tcp_chk_load.load > _shield.cfg.limit.tcp_chk_load.tight ) return NC_SHIELD_MODE_TIGHT;
-    if ( root_rep->udp_chk_load.load > _shield.cfg.limit.udp_chk_load.tight ) return NC_SHIELD_MODE_TIGHT;
-    if ( root_rep->evil_load.load > _shield.cfg.limit.evil_load.tight ) return NC_SHIELD_MODE_TIGHT;
+    if (( load         > _shield.cfg.limit.cpu_load.tight )     ||
+        ( num_sessions > _shield.cfg.limit.sessions.tight )     ||
+        ( request_load > _shield.cfg.limit.request_load.tight ) ||
+        ( session_load > _shield.cfg.limit.session_load.tight ) ||
+        ( tcp_chk_load > _shield.cfg.limit.tcp_chk_load.tight ) ||
+        ( udp_chk_load > _shield.cfg.limit.udp_chk_load.tight ) ||
+        ( evil_load    > _shield.cfg.limit.evil_load.tight )) return NC_SHIELD_MODE_TIGHT;
 
 
-    if ( load > _shield.cfg.limit.cpu_load.lax ) return NC_SHIELD_MODE_LAX;
-    if ( num_sessions > _shield.cfg.limit.sessions.lax ) return NC_SHIELD_MODE_LAX;
-    if ( root_rep->request_load.load > _shield.cfg.limit.request_load.lax ) return NC_SHIELD_MODE_LAX;
-    if ( root_rep->session_load.load > _shield.cfg.limit.session_load.lax ) return NC_SHIELD_MODE_LAX;
-    if ( root_rep->tcp_chk_load.load > _shield.cfg.limit.tcp_chk_load.lax ) return NC_SHIELD_MODE_LAX;
-    if ( root_rep->udp_chk_load.load > _shield.cfg.limit.udp_chk_load.lax ) return NC_SHIELD_MODE_LAX;
-    if ( root_rep->evil_load.load > _shield.cfg.limit.evil_load.lax ) return NC_SHIELD_MODE_LAX;
+    if (( load         > _shield.cfg.limit.cpu_load.lax )     ||
+        ( num_sessions > _shield.cfg.limit.sessions.lax )     ||
+        ( request_load > _shield.cfg.limit.request_load.lax ) ||
+        ( session_load > _shield.cfg.limit.session_load.lax ) ||
+        ( tcp_chk_load > _shield.cfg.limit.tcp_chk_load.lax ) ||
+        ( udp_chk_load > _shield.cfg.limit.udp_chk_load.lax ) ||
+        ( evil_load    > _shield.cfg.limit.evil_load.lax )) return NC_SHIELD_MODE_LAX;
 
     return NC_SHIELD_MODE_RELAXED;
 }

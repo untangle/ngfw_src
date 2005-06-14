@@ -60,6 +60,11 @@ int netcap_trie_lru_add ( netcap_trie_t* trie, netcap_trie_element_t element )
     /* Only add the node if it is not on the LRU and the ready flag is set */
     if ( element.base->lru_node == NULL && element.base->lru_rdy ) {  
         element.base->lru_node = list_add_head ( &trie->lru_list, (void*)element.base );
+
+        if (( trie->lru_length = list_length( &trie->lru_list )) < 0 ) {
+            trie->lru_length = 1;
+            return errlog( ERR_CRITICAL, "list_length\n" );
+        }
         
         if ( element.base->lru_node == NULL ) ret = perrlog("list_add_head");
         
@@ -107,9 +112,14 @@ int netcap_trie_lru_del ( netcap_trie_t* trie, netcap_trie_element_t element )
     if ( list_remove ( &trie->lru_list, element.base->lru_node ) < 0 ) {
         return errlog ( ERR_CRITICAL, "list_remove\n" );
     }
-    
+
     element.base->lru_node = NULL;
     element.base->lru_rdy  = 1;
+    
+    if (( trie->lru_length = list_length( &trie->lru_list )) < 0 ) {
+        trie->lru_length = 1;
+        return errlog( ERR_CRITICAL, "list_length\n" );
+    }
     
     return 0;
 }
@@ -281,6 +291,7 @@ int netcap_trie_lru_clean ( netcap_trie_t* trie )
     trie->lru_low_water  = 0;
     trie->lru_high_water = 0;
     trie->check          = NULL;
+    trie->lru_length     = 0;
 
     if ( netcap_trie_lru_update ( trie )  < 0 ) {
         errlog ( ERR_CRITICAL, "netcap_trie_lru_update\n");
@@ -330,7 +341,7 @@ int netcap_trie_lru_update ( netcap_trie_t* trie )
     if ( pthread_mutex_lock ( &trie->lru_mutex ) < 0 ) return perrlog("pthread_mutex_lock");
 
     do {
-        if ( ( length = list_length ( &trie->lru_list )) < 0 ) { 
+        if (( length = list_length ( &trie->lru_list )) < 0 ) { 
             ret = errlog(ERR_CRITICAL,"list_length\n");
             break;
         }
@@ -389,6 +400,11 @@ int netcap_trie_lru_update ( netcap_trie_t* trie )
             }
         }
     } while (0);
+
+    if (( trie->lru_length = list_length( &trie->lru_list )) < 0 ) {
+        trie->lru_length = 1;
+        ret = errlog( ERR_CRITICAL, "list_length\n" );
+    }
     
     if ( pthread_mutex_unlock ( &trie->lru_mutex ) < 0 ) perrlog("pthread_mutex_unlock");
 

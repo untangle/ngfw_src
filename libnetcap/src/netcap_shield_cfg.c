@@ -133,20 +133,28 @@ int nc_shield_cfg_def  ( nc_shield_cfg_t* cfg )
         },
         .fence {
             .relaxed {
+                .inheritance .1,
                 .limited { .prob 0.70, .post _SHIELD_REP_MAX * 0.65 },
-                .closed  { .prob 0.85, .post _SHIELD_REP_MAX * 1 }
+                .closed  { .prob 0.85, .post _SHIELD_REP_MAX * 0.90 },
+                .error   { .prob 0.95, .post _SHIELD_REP_MAX * 1.00 }
             },
             .lax {
+                .inheritance .4,
                 .limited { .prob 0.75, .post _SHIELD_REP_MAX * 0.50 },
-                .closed  { .prob 0.80, .post _SHIELD_REP_MAX * 0.80 }
+                .closed  { .prob 0.80, .post _SHIELD_REP_MAX * 0.80 },
+                .error   { .prob 0.95, .post _SHIELD_REP_MAX * 1.00 }
             },
             .tight {
+                .inheritance .6,
                 .limited { .prob 0.70, .post _SHIELD_REP_MAX * 0.15 },
-                .closed  { .prob 0.90, .post _SHIELD_REP_MAX * 0.60 }
+                .closed  { .prob 0.90, .post _SHIELD_REP_MAX * 0.60 },
+                .error   { .prob 0.95, .post _SHIELD_REP_MAX * 0.70 }
             }, 
             .closed {
+                .inheritance .9,
                 .limited { .prob 0.90, .post _SHIELD_REP_MAX * 0.05 },
-                .closed  { .prob 0.95, .post _SHIELD_REP_MAX * 0.20 }
+                .closed  { .prob 0.95, .post _SHIELD_REP_MAX * 0.20 },
+                .error   { .prob 0.95, .post _SHIELD_REP_MAX * 0.40 }
             }
         },
         .print_rate   0.25

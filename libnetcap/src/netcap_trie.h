@@ -96,6 +96,7 @@ typedef struct {
     int   mem;        /* Total amount of memory used by this trie */
     int   flags;
     int   item_count; /* Total number of items in the trie */
+    int   lru_length; /* This may not be accurate at the time, but it is updated fairly regularly */
 
     netcap_trie_level_t root;
 
