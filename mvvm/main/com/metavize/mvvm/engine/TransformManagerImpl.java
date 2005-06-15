@@ -85,7 +85,8 @@ class TransformManagerImpl implements TransformManager
         Tid[] tidArray = tids.keySet().toArray(TID_PROTO);
 
         try {
-            // Sort the returned list by rack position.  This allows for nice fixed report ordering, etc.
+            // Sort the returned list by rack position.  This allows
+            // for nice fixed report ordering, etc.
             Arrays.sort(tidArray, new Comparator<Tid>() {
                 public int compare(Tid t1, Tid t2) {
                     TransformContextImpl tci1 = tids.get(t1);
@@ -268,7 +269,7 @@ class TransformManagerImpl implements TransformManager
 
                 TransformDesc tDesc = tDescs.get(tid);
 
-                Set<String> parents = tDesc.getParents();
+                List<String> parents = tDesc.getParents();
                 boolean parentsLoaded = true;
                 for (String parent : parents) {
                     for (TransformPersistentState utps : unloaded) {

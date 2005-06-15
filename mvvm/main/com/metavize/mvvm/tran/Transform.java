@@ -60,8 +60,15 @@ public interface Transform
      * @exception IllegalStateException if not called in the {@link
      * TransformState#INITIALIZED} state.
      */
-    void start()
-        throws TransformStartException, IllegalStateException;
+    void start() throws TransformStartException, IllegalStateException;
+
+    /**
+     * Disables the transform.
+     *
+     * @exception TransformStopException if an error occurs
+     * @exception IllegalStateException if an error occurs
+     */
+    void disable() throws TransformStopException, IllegalStateException;
 
     /**
      * Stops transform and disconnects from the MetaPipe. A call to

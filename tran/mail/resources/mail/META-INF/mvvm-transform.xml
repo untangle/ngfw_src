@@ -16,6 +16,6 @@ $Id: mvvm-transform.xml,v 1.3 2005/02/07 22:15:39 amread Exp $
                   display-name="Mail"
                   classname="com.metavize.tran.mail.MailTransform"
                   gui-classname="com.metavize.tran.mail.gui.MTransformJPanel"
-                  casing="true"
                   single-instance="true"/>
+  <export>mail-export.jar</export>
 </mvvm-transform>

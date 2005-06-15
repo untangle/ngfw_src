@@ -13,8 +13,8 @@ package com.metavize.mvvm.tran;
 
 import java.io.Serializable;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.LinkedList;
+import java.util.List;
 
 import com.metavize.mvvm.security.Tid;
 
@@ -35,8 +35,8 @@ public class TransformDesc implements Serializable
     private final String className;
     private final String guiClassName;
 
-    private final boolean casing;
-    private final Set<String> parents;
+    private final List<String> exports;
+    private final List<String> parents;
     private final boolean singleInstance;
 
     private final String displayName;
@@ -46,16 +46,18 @@ public class TransformDesc implements Serializable
     private final int udpMaxPacketSize = 16384;
 
     public TransformDesc(Tid tid, String name, String className,
-                         String guiClassName, boolean casing,
-                         Set parents, boolean singleInstance,
+                         String guiClassName, List<String> exports,
+                         List<String> parents, boolean singleInstance,
                          String displayName)
     {
         this.tid = tid;
         this.name = name;
         this.className = className;
         this.guiClassName = guiClassName;
-        this.casing = casing;
-        this.parents = Collections.unmodifiableSet(new HashSet(parents));
+        List<String> l = null == exports ? new LinkedList<String>() : exports;
+        this.exports = Collections.unmodifiableList(l);
+        l = null == parents ? new LinkedList<String>() : parents;
+        this.parents = Collections.unmodifiableList(l);
         this.singleInstance = singleInstance;
         this.displayName = displayName;
     }
@@ -93,13 +95,13 @@ public class TransformDesc implements Serializable
     }
 
     /**
-     * Only a single instance may be initialized in the system.
+     * Names of shared jars.
      *
-     * @return true if the transform is a casing.
+     * @return names of shared jars.
      */
-    public boolean isCasing()
+    public List<String> getExports()
     {
-        return casing;
+        return exports;
     }
 
     /**
@@ -107,7 +109,7 @@ public class TransformDesc implements Serializable
      *
      * @return the parent transform, null if transform has no parent.
      */
-    public Set<String> getParents()
+    public List<String> getParents()
     {
         return parents;
     }

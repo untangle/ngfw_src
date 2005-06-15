@@ -34,7 +34,7 @@ public class SmtpCommand implements Token
 
     // static factories -------------------------------------------------------
 
-    static SmtpCommand parse(ByteBuffer buf) throws ParseException
+    public static SmtpCommand parse(ByteBuffer buf) throws ParseException
     {
         String cmd = consumeToken(buf);
         eatSpace(buf);

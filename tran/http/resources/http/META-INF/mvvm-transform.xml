@@ -16,6 +16,6 @@ $Id: mvvm-transform.xml,v 1.3 2005/02/07 22:15:39 amread Exp $
                   display-name="Http"
                   classname="com.metavize.tran.http.HttpTransform"
                   gui-classname="com.metavize.tran.test.gui.MTransformJPanel"
-                  casing="true"
                   single-instance="true"/>
+  <export>http-export.jar</export>
 </mvvm-transform>

@@ -12,7 +12,7 @@
 package com.metavize.mvvm.engine;
 
 
-import java.util.HashSet;
+import java.util.LinkedList;
 
 import com.metavize.mvvm.security.Tid;
 import com.metavize.mvvm.tran.TransformDesc;
@@ -20,7 +20,7 @@ import org.apache.log4j.Logger;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
-import java.util.Set;
+import java.util.List;
 
 /**
  * SAX handler for mvvm-transform.xml files.
@@ -33,23 +33,24 @@ public class MvvmTransformHandler extends DefaultHandler
     private static final Logger logger = Logger
         .getLogger(MvvmTransformHandler.class);
 
-    private final Set<String> parents = new HashSet();
+    private final List<String> parents = new LinkedList<String>();
+    private final List<String> exports = new LinkedList<String>();
 
     private String name = null;
     private String className = null;
     private String guiClassName = null;
-    private boolean casing = false;
     private boolean singleInstance = false;
     private String displayName = null;
 
     private StringBuilder parentBuilder;
+    private StringBuilder exportBuilder;
 
     // public methods ---------------------------------------------------------
-
     public TransformDesc getTransformDesc(Tid tid)
     {
-        return new TransformDesc(tid, name, className, guiClassName, casing,
-                                 parents, singleInstance, displayName);
+        return new TransformDesc(tid, name, className, guiClassName,
+                                 exports, parents, singleInstance,
+                                 displayName);
     }
 
     // DefaultHandler methods -------------------------------------------------
@@ -63,6 +64,8 @@ public class MvvmTransformHandler extends DefaultHandler
             processTranDesc(attrs);
         } else if (qName.equals("parent")) {
             parentBuilder = new StringBuilder();
+        } else if (qName.equals("export")) {
+            exportBuilder = new StringBuilder();
         } else if (qName.equals("mvvm-transform")) {
         } else {
             logger.warn("ignoring unknown element: " + qName);
@@ -75,6 +78,9 @@ public class MvvmTransformHandler extends DefaultHandler
         if (qName.equals("parent")) {
             parents.add(parentBuilder.toString());
             parentBuilder = null;
+        } else if (qName.equals("export")) {
+            exports.add(exportBuilder.toString());
+            exportBuilder = null;
         }
     }
 
@@ -83,12 +89,15 @@ public class MvvmTransformHandler extends DefaultHandler
     {
         if (null != parentBuilder) {
             parentBuilder.append(ch, start, length);
+        } else if (null != exportBuilder) {
+            exportBuilder.append(ch, start, length);
         }
     }
 
     // private methods --------------------------------------------------------
 
     private void processTranDesc(Attributes attrs)
+        throws SAXException
     {
         for (int i = 0; i < attrs.getLength(); i++) {
             String n = attrs.getQName(i);
@@ -96,8 +105,6 @@ public class MvvmTransformHandler extends DefaultHandler
 
             if (n.equals("name")) {
                 name = v;
-            } else if (n.equals("casing")) {
-                casing = Boolean.parseBoolean(v);
             } else if (n.equals("single-instance")) {
                 singleInstance = Boolean.parseBoolean(v);
             } else if (n.equals("classname")) {

@@ -45,6 +45,8 @@ import org.apache.log4j.Logger;
 
 class ToolboxManagerImpl implements ToolboxManager
 {
+    static final URL TOOLBOX_URL;
+
     private static final String MKG_CMD
         = System.getProperty("bunnicula.home") + "/../../bin/mkg ";
 
@@ -56,6 +58,16 @@ class ToolboxManagerImpl implements ToolboxManager
         .getLogger(ToolboxManagerImpl.class);
 
     private static ToolboxManagerImpl TOOLBOX_MANAGER;
+
+    static {
+        try {
+            String s = "file://" + System.getProperty("bunnicula.toolbox.dir")
+                + "/";
+            TOOLBOX_URL = new URL(s);
+        } catch (MalformedURLException exn) { /* should never happen */
+            throw new RuntimeException("bad toolbox URL", exn);
+        }
+    }
 
     private final UpdateDaemon updateDaemon = new UpdateDaemon();
 
@@ -260,9 +272,7 @@ class ToolboxManagerImpl implements ToolboxManager
     {
         try {
             return new URL[]
-                { new URL("file://"
-                          + System.getProperty("bunnicula.toolbox.dir")
-                          + "/" + tranName + ".mar") };
+                { new URL(TOOLBOX_URL, tranName + ".mar") };
         } catch (MalformedURLException exn) {
             logger.warn(exn); /* should never happen */
             return null;

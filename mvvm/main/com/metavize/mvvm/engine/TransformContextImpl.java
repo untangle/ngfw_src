@@ -11,14 +11,14 @@
 
 package com.metavize.mvvm.engine;
 
-import java.beans.XMLDecoder;
-import java.io.InputStream;
 import java.lang.IllegalAccessException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -47,8 +47,6 @@ import org.apache.log4j.Logger;
 
 class TransformContextImpl implements TransformContext
 {
-    private static final String BEAN_PATH = "META-INF/beans.xml";
-
     private static final Map<ClassLoader, TransformContextImpl> CONTEXTS
         = new ConcurrentHashMap<ClassLoader, TransformContextImpl>();
 
@@ -69,6 +67,7 @@ class TransformContextImpl implements TransformContext
     private final TransformManagerImpl transformManager = TransformManagerImpl
         .manager();
 
+    // XXX break out init();
     TransformContextImpl(URL[] resources, TransformDesc transformDesc,
                          String args[], MackageDesc mackageDesc, boolean isNew)
         throws DeployException
@@ -143,12 +142,20 @@ class TransformContextImpl implements TransformContext
 
         Set<TransformContext>parentCtxs = new HashSet<TransformContext>();
 
-        if (transformDesc.isCasing()) {
-            parentCl.addResources(resources);
-            resources = URL_PROTO;
+        List<String> exports = transformDesc.getExports();
+        URL[] urls = new URL[exports.size()];
+        int i = 0;
+        for (String export : exports) {
+            try {
+                URL url = new URL(ToolboxManagerImpl.TOOLBOX_URL, export);
+                urls[i++] = url;
+            } catch (MalformedURLException exn) {
+                throw new DeployException("bad export: " + export, exn);
+            }
         }
+        parentCl.addResources(urls);
 
-        Set<String> parents = transformDesc.getParents();
+        List<String> parents = transformDesc.getParents();
         for (String parent : parents) {
             parentCtxs.add(startParent(parent));
         }
@@ -166,10 +173,6 @@ class TransformContextImpl implements TransformContext
         ct.setContextClassLoader(classLoader);
         try {
             sessionFactory = Util.makeSessionFactory(classLoader);
-
-            if (isNew) {
-                initBeans();
-            }
 
             String tidName = tid.getName();
             logger.debug("setting tran " + tidName + " log4j repository");
@@ -351,42 +354,6 @@ class TransformContextImpl implements TransformContext
         }
     }
 
-    private void initBeans() throws DeployException
-    {
-        Session s = openSession();
-        try {
-            Transaction tx = s.beginTransaction();
-
-            // XXX assumes no parent cl has this file
-            InputStream is = Thread.currentThread().getContextClassLoader()
-                .getResourceAsStream(BEAN_PATH);
-
-            if (null != is) {
-                XMLDecoder xd = new XMLDecoder(is);
-                try {
-                    while (true) {
-                        Object o = xd.readObject();
-                        addTid(o);
-                        s.save(o);
-                    }
-                } catch (ArrayIndexOutOfBoundsException exn) {
-                    /* they throw this when no more Objects are left */
-                }
-                xd.close();
-            }
-
-            tx.commit();
-        } catch (HibernateException exn) {
-            logger.warn(exn, exn);
-        } finally {
-            try {
-                s.close();
-            } catch (HibernateException exn) {
-                logger.warn("could not close Session", exn);
-            }
-        }
-    }
-
     private void addTid(Object o)
     {
         try {
@@ -413,8 +380,7 @@ class TransformContextImpl implements TransformContext
             return null;
         }
 
-        logger.debug("Starting parent: " + parentTransform
-                     + " for: " + tid);
+        logger.debug("Starting parent: " + parentTransform + " for: " + tid);
 
         TransformContext ctx = null;
 
@@ -427,11 +393,9 @@ class TransformContextImpl implements TransformContext
             } catch (TooManyInstancesException exn) {
                 tids = transformManager.transformInstances(parentTransform);
                 if (1 != tids.length) {
-                    logger.warn("Too many instances name: "
-                                + parentTransform
+                    logger.warn("Too many instances name: " + parentTransform
                                 + " instances: " + tids.length);
-                    throw new TooManyInstancesException
-                        ("could not create 1 instance");
+                    throw new TooManyInstancesException("could not create");
                 }
                 ctx = transformManager.transformContext(tids[0]);
             }
@@ -439,8 +403,7 @@ class TransformContextImpl implements TransformContext
             logger.debug("Parent exists, using parent context");
             ctx = transformManager.transformContext(tids[0]);
         } else if (1 < tids.length) {
-            logger.warn(parentTransform
-                        + " has multiple instances, cannot be a parent");
+            logger.warn(parentTransform + " has multiple instances");
             throw new TooManyInstancesException
                 ("too many instances: " + parentTransform);
         }

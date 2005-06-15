@@ -116,6 +116,8 @@ public class RemoteClient
             reloadt(args[1]);
         } else if (args[0].equalsIgnoreCase("unloadt")) {
             unloadt(args[1]);
+        } else if (args[0].equalsIgnoreCase("disable")) {
+            disable(args[1]);
         } else if (args[0].equalsIgnoreCase("start")) {
             start(args[1]);
         } else if (args[0].equalsIgnoreCase("stop")) {
@@ -298,6 +300,13 @@ public class RemoteClient
                 tm.destroy(tids[i]);
             }
         }
+    }
+
+    private static void disable(String tidStr)
+        throws Exception
+    {
+        Tid tid = new Tid(Long.parseLong(tidStr));
+        tm.transformContext(tid).transform().disable();
     }
 
     private static void start(String tidStr)
@@ -612,6 +621,7 @@ public class RemoteClient
         System.out.println("    mcli uptodate");
         System.out.println("  transform manager commands:");
         System.out.println("    mcli instantiate mackage-name [ args ]");
+        System.out.println("    mcli disable TID");
         System.out.println("    mcli start TID");
         System.out.println("    mcli stop TID");
         System.out.println("    mcli destroy TID");

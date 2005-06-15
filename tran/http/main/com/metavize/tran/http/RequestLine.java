@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: RequestLine.java,v 1.9 2005/03/15 02:11:53 amread Exp $
+ * $Id$
  */
 
 package com.metavize.tran.http;
@@ -135,6 +135,7 @@ public class RequestLine implements Token
 
     public String toString()
     {
-        return "RequestLine id: " + id + " length: " + requestUri.toString().length();
+        return "RequestLine id: " + id + " length: "
+            + requestUri.toString().length();
     }
 }

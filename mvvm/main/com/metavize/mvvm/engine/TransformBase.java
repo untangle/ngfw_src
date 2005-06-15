@@ -73,6 +73,12 @@ public abstract class TransformBase implements Transform
         return runState;
     }
 
+    public final void disable()
+        throws TransformStopException, IllegalStateException
+    {
+        disable(true);
+    }
+
     public final void start()
         throws TransformStartException, IllegalStateException
     {
@@ -273,14 +279,27 @@ public abstract class TransformBase implements Transform
         throws TransformException, IllegalStateException
     {
         if (TransformState.LOADED != runState) {
-            throw new IllegalStateException("Init called in state: "
-                                            + runState);
+            throw new IllegalStateException("Init called in state: " + runState);
         }
 
         preInit(args);
         changeState(TransformState.INITIALIZED, syncState, args);
 
         postInit(args); // XXX if exception, state == ?
+    }
+
+    private void disable(boolean syncState)
+        throws TransformStopException, IllegalStateException
+    {
+        if (TransformState.RUNNING == runState) {
+            stop();
+        }
+
+        if (TransformState.INITIALIZED == runState) {
+            changeState(TransformState.DISABLED, syncState);
+        } else {
+            throw new IllegalStateException("disable called in: " + runState);
+        }
     }
 
     private void start(boolean syncState) throws TransformStartException
@@ -291,24 +310,25 @@ public abstract class TransformBase implements Transform
         }
 
         for (TransformBase parent : parents) {
-            ClassLoader parentCl = parent.getTransformContext()
-                .getClassLoader();
+            if (TransformState.INITIALIZED == parent.getRunState()) {
+                ClassLoader parentCl = parent.getTransformContext()
+                    .getClassLoader();
 
-            Thread ct = Thread.currentThread();
-            ClassLoader oldCl = ct.getContextClassLoader();
-            // Entering TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-            ct.setContextClassLoader(parentCl);
+                Thread ct = Thread.currentThread();
+                ClassLoader oldCl = ct.getContextClassLoader();
+                // Entering TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                ct.setContextClassLoader(parentCl);
 
-            try {
-                parent.parentStart();
-            } finally {
-                ct.setContextClassLoader(oldCl);
-                // Left TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                try {
+                    parent.parentStart();
+                } finally {
+                    ct.setContextClassLoader(oldCl);
+                    // Left TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                }
             }
         }
 
         connectMPipe();
-
         preStart();
 
         changeState(TransformState.RUNNING, syncState);
@@ -329,19 +349,21 @@ public abstract class TransformBase implements Transform
         changeState(TransformState.INITIALIZED, syncState);
 
         for (TransformBase parent : parents) {
-            ClassLoader parentCl = parent.getTransformContext()
-                .getClassLoader();
+            if (TransformState.RUNNING == parent.getRunState()) {
+                ClassLoader parentCl = parent.getTransformContext()
+                    .getClassLoader();
 
-            Thread ct = Thread.currentThread();
-            ClassLoader oldCl = ct.getContextClassLoader();
-            // Entering TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-            ct.setContextClassLoader(parentCl);
+                Thread ct = Thread.currentThread();
+                ClassLoader oldCl = ct.getContextClassLoader();
+                // Entering TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                ct.setContextClassLoader(parentCl);
 
-            try {
-                parent.parentStop();
-            } finally {
-                ct.setContextClassLoader(oldCl);
-                // Left TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                try {
+                    parent.parentStop();
+                } finally {
+                    ct.setContextClassLoader(oldCl);
+                    // Left TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                }
             }
         }
 
@@ -376,6 +398,10 @@ public abstract class TransformBase implements Transform
             logger.debug("bringing into RUNNING state: " + tid);
             init(false, tps.getArgArray());
             start(false);
+        } else if (TransformState.DISABLED == tps.getTargetState()) {
+            logger.debug("bringing into DISABLED state: " + tid);
+            init(false, tps.getArgArray());
+            runState = TransformState.DISABLED;
         } else if (TransformState.DESTROYED == tps.getTargetState()) {
             logger.debug("bringing into DESTROYED state: " + tid);
             runState = TransformState.DESTROYED;

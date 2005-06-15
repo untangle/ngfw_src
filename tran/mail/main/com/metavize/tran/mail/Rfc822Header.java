@@ -32,7 +32,7 @@ import org.apache.log4j.Logger;
  */
 public class Rfc822Header implements Header
 {
-    public static final String MIME_VERSION = "Mime-Version";
+    public static final String MIME_VERSION  = "Mime-Version";
     public static final String CONTENT_TYPE = "Content-Type";
     public static final String CONTENT_TRANSFER_ENCODING = "Content-Transfer-Encoding";
     public static final String SUBJECT = "Subject";

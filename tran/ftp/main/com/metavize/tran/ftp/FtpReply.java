@@ -33,7 +33,7 @@ public class FtpReply implements Token
     private final int replyCode;
     private final String message;
 
-    FtpReply(int replyCode, String message)
+    public FtpReply(int replyCode, String message)
     {
         this.replyCode = replyCode;
         this.message = message;

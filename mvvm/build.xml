@@ -536,7 +536,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
 
   <!-- Javadoc target -->
   <target name="jdoc" depends="pkg.jar">
-    <!-- "func.jdoc" defined in "common-targets.xml" -->  
+    <!-- "func.jdoc" defined in "common-targets.xml" -->
     <antcall target="func.jdoc">
       <param name="jdoc.src" value="main"/>
     </antcall>
@@ -547,7 +547,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
 
   </target>
 
-  <!-- 
+  <!--
     Copy source files to ${jdoc.bigtree.src}
     for inclusion in big JavaDoc generation
   -->
