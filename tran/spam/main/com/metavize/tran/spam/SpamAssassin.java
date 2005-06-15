@@ -25,8 +25,7 @@ class SpamAssassin
 {
     public static final SpamAssassin ASSASSIN = new SpamAssassin();
 
-    private static final String REPORT_CMD
-        = System.getProperty("bunnicula.home") + "/usr/bin/spamc-mv";
+    private static final String REPORT_CMD = "/usr/bin/spamc-mv";
 
     private final Logger logger = Logger.getLogger(SpamAssassin.class);
 

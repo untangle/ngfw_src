@@ -56,7 +56,7 @@ $Id: build.xml,v 1.22 2005/03/25 04:00:30 jdi Exp $
 
     <exec executable="/bin/sh" failonerror="true">
       <arg value="-c"/>
-      <arg value="/bin/sed s/\&quot;[0-9]\.[0-9]\.*\&quot;/\&quot;`cat ../../VERSION`\&quot;/g -i ./main/com/metavize/gui/util/Util.java"/>
+      <arg value="/bin/sed s/\&quot;[0-9]\.[0-9]\.*\&quot;/\&quot;`cat ../../PUBVERSION`\&quot;/g -i ./main/com/metavize/gui/util/Util.java"/>
     </exec>
 
     <exec executable="${buildtool.base}/dependset.sh">
