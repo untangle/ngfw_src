@@ -43,17 +43,17 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
         emailJTabbedPane.setRequestFocusEnabled(false);
         this.mTabbedPane.insertTab(NAME_EMAIL, null, emailJTabbedPane, null, 0);        
 
-	// REPORTS EMAILING GENERAL SETTINGS /////
-	EmailGeneralConfigJPanel emailGeneralConfigJPanel = new EmailGeneralConfigJPanel();
-	emailJTabbedPane.insertTab(NAME_EMAIL_GENERAL_SETTINGS, null, emailGeneralConfigJPanel, null, 0);
-	super.savableMap.put(NAME_EMAIL + " " + NAME_EMAIL_GENERAL_SETTINGS, emailGeneralConfigJPanel);
-	super.refreshableMap.put(NAME_EMAIL + " " + NAME_EMAIL_GENERAL_SETTINGS, emailGeneralConfigJPanel);
-
 	// REPORTS EMAILING RECIPIENTS LIST /////
 	EmailConfigJPanel emailConfigJPanel = new EmailConfigJPanel();
 	emailJTabbedPane.insertTab(NAME_EMAIL_RECIPIENTS, null, emailConfigJPanel, null, 0);
 	super.savableMap.put(NAME_EMAIL + " " + NAME_EMAIL_RECIPIENTS, emailConfigJPanel);
 	super.refreshableMap.put(NAME_EMAIL + " " + NAME_EMAIL_RECIPIENTS, emailConfigJPanel);
+
+	// REPORTS EMAILING GENERAL SETTINGS /////
+	EmailGeneralConfigJPanel emailGeneralConfigJPanel = new EmailGeneralConfigJPanel();
+	emailJTabbedPane.insertTab(NAME_EMAIL_GENERAL_SETTINGS, null, emailGeneralConfigJPanel, null, 0);
+	super.savableMap.put(NAME_EMAIL + " " + NAME_EMAIL_GENERAL_SETTINGS, emailGeneralConfigJPanel);
+	super.refreshableMap.put(NAME_EMAIL + " " + NAME_EMAIL_GENERAL_SETTINGS, emailGeneralConfigJPanel);
 	
 	// LAUNCH BUTTON /////
 	mTabbedPane.insertTab(NAME_VIEW, null, new BrowserLaunchJPanel(), null, 0);
