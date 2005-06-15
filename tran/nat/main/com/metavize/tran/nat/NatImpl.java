@@ -155,15 +155,21 @@ public class NatImpl extends AbstractTransform implements Nat
         }
     }
 
+    private void registerEventListeners()
+    {
+        for (int i = 0; i < pipeSpecs.length; i++) {
+            mPipes[i].setSessionEventListener(listeners[i]);
+            logger.debug( "Connecting mPipe[" + i + "] as " + mPipes[i] + 
+                          " with listener: " + listeners[i] );            
+        }
+    }
+
     // AbstractTransform methods ----------------------------------------------
     protected void connectMPipe()
     {
         for (int i = 0; i < pipeSpecs.length; i++) {
             mPipes[i] = MPipeManager.manager().plumbLocal(this, pipeSpecs[i]);
-            mPipes[i].setSessionEventListener(listeners[i]);
             FOUNDRY.registerMPipe(mPipes[i]);
-            logger.debug( "Connecting mPipe[" + i + "] as " + mPipes[i] + 
-                          " with listener: " + listeners[i] );
         }
     }
 
@@ -241,6 +247,8 @@ public class NatImpl extends AbstractTransform implements Nat
 
     protected void postStart()
     {
+        registerEventListeners();
+
         /* Kill all active sessions */
         shutdownMatchingSessions();
     }
