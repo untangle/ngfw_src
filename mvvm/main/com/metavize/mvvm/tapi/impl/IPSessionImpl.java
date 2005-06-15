@@ -477,11 +477,11 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
                 setupForNormal();
         } catch (MPipeException x) {
             String message = "MPipeException while writing to " + sideName;
-            warn(message, x);
+            error(message, x);
             killSession(message);
         } catch (Exception x) {
             String message = "" + x.getClass().getName() + " while writing to " + sideName;
-            warn(message, x);
+            error(message, x);
             killSession(message);
         } catch (OutOfMemoryError x) {
             Main.fatalError("SessionHandler", x);
@@ -545,11 +545,11 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
             setupForNormal();
         } catch (MPipeException x) {
             String message = "MPipeException while reading from " + sideName;
-            warn(message, x);
+            error(message, x);
             killSession(message);
         } catch (Exception x) {
             String message = "" + x.getClass().getName() + " while reading from " + sideName;
-            warn(message, x);
+            error(message, x);
             killSession(message);
         } catch (OutOfMemoryError x) {
             Main.fatalError("SessionHandler", x);

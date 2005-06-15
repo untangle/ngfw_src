@@ -378,12 +378,12 @@ class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {
             return pSession;
         } catch (MPipeException x) {
             String message = "MPipeException building TCP session  " + sessionId;
-            logger.warn(message,  x);
+            logger.error(message,  x);
             // This "kills" the session:
             return null;
         } catch (Exception x) {
             String message = "" + x.getClass().getName() + " building TCP session " + sessionId;
-            logger.warn(message, x);
+            logger.error(message, x);
             // This "kills" the session:
             return null;
         }
@@ -492,12 +492,12 @@ class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {
             return pSession;
         } catch (MPipeException x) {
             String message = "MPipeException building UDP session  " + sessionId;
-            logger.warn(message, x);
+            logger.error(message, x);
             // This "kills" the session:
             return null;
         } catch (Exception x) {
             String message = "" + x.getClass().getName() + " building UDP session " + sessionId;
-            logger.warn(message, x);
+            logger.error(message, x);
             // This "kills" the session:
             return null;
         }
