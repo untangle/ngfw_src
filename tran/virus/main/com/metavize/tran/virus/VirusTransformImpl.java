@@ -214,7 +214,6 @@ public class VirusTransformImpl extends AbstractTransform
     {
         for (int i = 0; i < pipeSpecs.length; i++) {
             mPipes[i] = MPipeManager.manager().plumbLocal(this, pipeSpecs[i]);
-            mPipes[i].setSessionEventListener(listeners[i]);
             FOUNDRY.registerMPipe(mPipes[i]);
             logger.debug( "Connecting mPipe[" + i + "] as " + mPipes[i] );
         }
@@ -481,6 +480,9 @@ public class VirusTransformImpl extends AbstractTransform
     protected void postStart()
     {
         virusReconfigure();
+
+        for (int i = 0; i < pipeSpecs.length; i++)
+            mPipes[i].setSessionEventListener(listeners[i]);
 
         shutdownMatchingSessions();
     }

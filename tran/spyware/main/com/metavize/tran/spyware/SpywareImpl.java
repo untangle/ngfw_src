@@ -142,7 +142,6 @@ public class SpywareImpl extends AbstractTransform implements Spyware
     {
         for (int i = 0; i < pipeSpecs.length; i++) {
             mPipes[i] = MPipeManager.manager().plumbLocal(this, pipeSpecs[i]);
-            mPipes[i].setSessionEventListener(listeners[i]);
             MvvmContextFactory.context().pipelineFoundry().registerMPipe(mPipes[i]);
         }
     }
@@ -200,6 +199,12 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         }
 
         reconfigure();
+    }
+
+    protected void postStart()
+    {
+        for (int i = 0; i < pipeSpecs.length; i++)
+            mPipes[i].setSessionEventListener(listeners[i]);
     }
 
     private void updateActiveX(SpywareSettings settings)
