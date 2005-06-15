@@ -644,10 +644,6 @@ public class HttpParser extends AbstractParser
         for (int i = 0; b.hasRemaining(); i++) {
             buf[i] = b.get();
 
-            if (0 == i && '/' != buf[0]) {
-                throw new ParseException("URI not absolute");
-            }
-
             if (SP == buf[i] || HT == buf[i]) {
                 b.position(b.position() - 1);
                 uri = new String(buf, 0, i);
