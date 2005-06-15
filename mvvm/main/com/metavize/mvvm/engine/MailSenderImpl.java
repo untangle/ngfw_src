@@ -354,9 +354,9 @@ public class MailSenderImpl implements MailSender
 
         if (parts == null) {
             // Do this simplest thing.  Shouldn't be used. XX
-            sendSimple(reportSession, recipients, subject, bodyText, null);
+            sendSimple(mvSession, recipients, subject, bodyText, null);
         } else {
-            sendMixed(reportSession, recipients, subject, bodyText, parts);
+            sendMixed(mvSession, recipients, subject, bodyText, parts);
         }
     }
 
