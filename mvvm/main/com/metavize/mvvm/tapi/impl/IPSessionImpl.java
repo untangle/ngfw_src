@@ -582,6 +582,13 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
         logger.error(msg.toString());
     }
 
+    protected void error(String message, Exception x)
+    {
+        StringBuffer msg = logPrefix();
+        msg.append(message);
+        logger.error(msg.toString(), x);
+    }
+
     protected void warn(String message)
     {
         StringBuffer msg = logPrefix();
