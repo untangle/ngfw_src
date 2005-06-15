@@ -79,7 +79,6 @@ class EmailTableModel extends MSortedTableModel{
 
 	// SAVE SETTINGS /////
 	if( !validateOnly ){
-	    System.err.println("Saving: " + elemList.toString());
 	    MailSettings mailSettings = Util.getAdminManager().getMailSettings();
 	    mailSettings.setReportEmail(elemList.toString()); 
 	    Util.getAdminManager().setMailSettings( (MailSettings) mailSettings );
@@ -88,14 +87,11 @@ class EmailTableModel extends MSortedTableModel{
     
     public Vector generateRows(Object settings){
 	MailSettings mailSettings = Util.getAdminManager().getMailSettings();
-
 	String recipients = mailSettings.getReportEmail();
 	StringTokenizer recipientsTokenizer = new StringTokenizer(recipients, ",");
         Vector allRows = new Vector();
         int count = 1;
-	    System.err.println("Refreshing:");
 	while( recipientsTokenizer.hasMoreTokens() ){
-	    System.err.println("   refreshed");
 	    Vector row = new Vector();
             row.add(super.ROW_SAVED);
             row.add(new Integer(count));
