@@ -150,7 +150,9 @@ public class HibernateAppender extends AppenderSkeleton
         {
             Thread t = thread;
             thread = null;
-            t.interrupt();
+            if (null != t) {
+                t.interrupt();
+            }
         }
 
         // Runnable methods ---------------------------------------------------
@@ -162,7 +164,7 @@ public class HibernateAppender extends AppenderSkeleton
             thread = Thread.currentThread();
 
             while (null != thread
-                   && null == tctxRef ? true : null != tctxRef.get()) {
+                   && (null == tctxRef ? true : null != tctxRef.get())) {
                 try {
                     drainTo(l);
                     if (null != thread) {
@@ -176,7 +178,7 @@ public class HibernateAppender extends AppenderSkeleton
             }
         }
 
-        // private methods ----------------------------------------------------
+        // Private methods ----------------------------------------------------
 
         private void drainTo(List<LogEvent> l)
         {

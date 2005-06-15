@@ -22,10 +22,9 @@ import java.nio.channels.FileChannel;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import org.apache.log4j.Logger;
-
 import com.metavize.tran.virus.VirusScanner;
 import com.metavize.tran.virus.VirusScannerResult;
+import org.apache.log4j.Logger;
 
 public class ClamScanner implements VirusScanner {
 
@@ -49,8 +48,8 @@ public class ClamScanner implements VirusScanner {
                                                         "BZip.ExceededFileSize",
                                                         "MSCAB.ExceededFileSize",
                                                         "Archive.ExceededRecursionLimit" };
-                                           
-    
+
+
     public ClamScanner() {}
 
     public VirusScannerResult scanFile (String pathName)
@@ -94,7 +93,7 @@ public class ClamScanner implements VirusScanner {
             if (true == s.endsWith(" FOUND")) {
                 StringTokenizer st = new StringTokenizer(s);
                 String str = null;
-                
+
                 for (i = 0 ; true == st.hasMoreTokens() ; i++) {
                     str = st.nextToken();
                     if (1 == i) {

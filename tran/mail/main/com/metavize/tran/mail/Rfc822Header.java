@@ -55,6 +55,7 @@ public class Rfc822Header implements Header
 
     public String getMimeVersion()
     {
+        // XXX strip out comment?
         return mimeVersion;
     }
 
