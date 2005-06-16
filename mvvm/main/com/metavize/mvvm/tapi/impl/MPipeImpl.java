@@ -373,6 +373,6 @@ class MPipeImpl implements MPipe {
 
     public String toString()
     {
-        return null == listener ? null : listener.toString();
+        return null == listener ? "no listener" : listener.toString();
     }
 }
