@@ -355,27 +355,50 @@ public class HttpParser extends AbstractParser
 
     public TokenStreamer endSession()
     {
-        if (state != PRE_FIRST_LINE_STATE) {
-            Pipeline pipeline = MvvmContextFactory.context().pipelineFoundry()
-                .getPipeline(session.id());
+        switch (state) {
+        case PRE_FIRST_LINE_STATE:
+            return null;
 
-            return new TokenStreamer(pipeline)
-                {
-                    private boolean sent = false;
+        case ACCUMULATE_HEADER_STATE:
+            logger.warn("endSession in ACCUMULATE_HEADER_STATE");
+            return null;
 
-                    public boolean closeWhenDone() { return true; }
+        case HEADER_STATE:
+            logger.warn("endSession in HEADER_STATE");
+            return null;
 
-                    protected Token nextToken()
-                    {
-                        if (sent) {
-                            return null;
-                        } else {
-                            sent = true;
-                            return EndMarker.MARKER;
-                        }
-                    }
-                };
-        } else {
+        case CONTENT_LENGTH_BODY_STATE:
+            logger.warn("endSession in CONTENT_LENGTH_BODY_STATE, length: "
+                        + contentLength);
+            return endMarkerStreamer();
+
+        case CHUNK_LENGTH_STATE:
+            logger.warn("endSession in CHUNK_LENGTH_STATE");
+            return endMarkerStreamer();
+
+        case CHUNK_BODY_STATE:
+            logger.warn("endSession in CHUNK_BODY_STATE, length: "
+                        + contentLength);
+            return endMarkerStreamer();
+
+        case CHUNK_END_STATE:
+            logger.warn("endSession in CHUNK_END_STATE");
+            return endMarkerStreamer();
+
+        case LAST_CHUNK_STATE:
+            logger.warn("endSession in LAST_CHUNK_STATE");
+            return endMarkerStreamer();
+
+        case END_MARKER_STATE:
+            logger.warn("endSession in END_MARKER_STATE");
+            return endMarkerStreamer();
+
+        case CLOSED_BODY_STATE:
+            /* this case is legit */
+            return endMarkerStreamer();
+
+        default:
+            logger.warn("endSession unhandled state: " + state);
             return null;
         }
     }
@@ -933,5 +956,28 @@ public class HttpParser extends AbstractParser
     private boolean isAlpha(byte b)
     {
         return isUpAlpha(b) || isLoAlpha(b);
+    }
+
+    private TokenStreamer endMarkerStreamer()
+    {
+        Pipeline pipeline = MvvmContextFactory.context().pipelineFoundry()
+            .getPipeline(session.id());
+
+        return new TokenStreamer(pipeline)
+            {
+                private boolean sent = false;
+
+                public boolean closeWhenDone() { return true; }
+
+                protected Token nextToken()
+                {
+                    if (sent) {
+                        return null;
+                    } else {
+                        sent = true;
+                        return EndMarker.MARKER;
+                    }
+                }
+            };
     }
 }
