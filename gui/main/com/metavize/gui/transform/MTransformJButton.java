@@ -6,20 +6,21 @@
 
 package com.metavize.gui.transform;
 
+import com.metavize.gui.main.*;
+import com.metavize.gui.pipeline.*;
+import com.metavize.gui.util.*;
+import com.metavize.gui.widgets.dialogs.*;
+import com.metavize.gui.widgets.MMultilineToolTip;
+
+import com.metavize.mvvm.*;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.font.*;
 import java.text.*;
-import java.util.Hashtable;
+import java.util.*;
 import javax.swing.*;
 import javax.swing.border.*;
-
-import com.metavize.gui.main.*;
-import com.metavize.gui.pipeline.*;
-import com.metavize.gui.util.*;
-import com.metavize.gui.widgets.MMultilineToolTip;
-import com.metavize.mvvm.MackageDesc;
-import com.metavize.mvvm.ToolboxManager;
 
 /**
  *
@@ -161,18 +162,18 @@ public class MTransformJButton extends JButton {
 	} } );
     }
 
-    public void setDeployableView(){ updateView(null, "Ready to be deployed to rack.", true); }
+    public void setDeployableView(){ updateView(null, "Ready to be installed into rack.", true); }
     public void setProcurableView(){ updateView(null, "Ready to be procured from store.", true); }
-    public void setDeployedView(){ updateView(null, "Deployed to rack.", false); }
+    public void setDeployedView(){ updateView(null, "Installed into rack.", false); }
 
-    public void setDeployingView(){ updateView("deploying", "Deploying.", false); }
+    public void setDeployingView(){ updateView("installing", "Installing.", false); }
     public void setProcuringView(){ updateView("procuring", "Procuring.", false); }
     public void setRemovingFromToolboxView(){ updateView("removing", "Removing from Toolbox.", false); }
     public void setRemovingFromRackView(){ updateView("removing", "Removing from Rack.", false); }
 
-    public void setFailedProcureView(){ updateView(null, "Failed Procurement.", false); }
-    public void setFailedDeployView(){ updateView(null, "Failed Deployment.", false); }
-    public void setFailedRemoveView(){ updateView(null, "Failed Removal from Rack.", false); }
+    public void setFailedProcureView(){ updateView(null, "Failed Procurement.", true); }
+    public void setFailedDeployView(){ updateView(null, "Failed Installation.", true); }
+    public void setFailedRemoveFromToolboxView(){ updateView(null, "Failed Removal from Toolbox.", true); }
     /////////////////////////////
 
 
@@ -227,7 +228,7 @@ public class MTransformJButton extends JButton {
         public InstallThread(){
 	    this.setContextClassLoader( Util.getClassLoader() );
 	    MTransformJButton.this.setEnabled(false);
-	    (new Thread(this)).start();
+	    this.start();
         }
 	
         public void run(){
@@ -237,6 +238,8 @@ public class MTransformJButton extends JButton {
 	    // START TO INSTALL THE TRANSFORM
 	    try{
 		mTransformJPanel = Util.getMPipelineJPanel().addTransform(MTransformJButton.this.getName());
+		// LET THE USER KNOW WERE DONE
+		MTransformJButton.this.setDeployedView();
 	    }
 	    catch(Exception e){
 		try{
@@ -245,11 +248,9 @@ public class MTransformJButton extends JButton {
 		catch(Exception f){
                         Util.handleExceptionNoRestart("Error installing transform",  f);
 			MTransformJButton.this.setFailedDeployView();
+			new MOneButtonJDialog(MTransformJButton.this.getDisplayName(), "A problem occurred while installing:<br>" + MTransformJButton.this.getDisplayName() + "<br>Please try again later.");
 		}
-		return;
 	    }
-	    // LET THE USER KNOW WERE DONE
-	    MTransformJButton.this.setDeployedView();
         }
     }
     
@@ -259,17 +260,19 @@ public class MTransformJButton extends JButton {
         public PurchaseThread(){
 	    this.setContextClassLoader( Util.getClassLoader() );
 	    MTransformJButton.this.setEnabled(false);
-	    (new Thread(this)).start();
+	    this.start();
 	}    
 
 	public void run() {	    
 	    // SHOW THE USER WHATS GOING ON
 	    MTransformJButton.this.setProcuringView();
-	    // START TO DOWNLOAD THE TRANSFORM
-	    try{
+
+	    try{  // START TO DOWNLOAD THE TRANSFORM
 		int dashIndex = MTransformJButton.this.getName().indexOf('-');
 		Util.getToolboxManager().install(MTransformJButton.this.getName().substring(0, dashIndex));
 		Util.getMMainJFrame().addMTransformJButtonToToolbox(MTransformJButton.this);
+		// LET THE USER KNOW WERE DONE
+		MTransformJButton.this.setDeployableView();
 	    }
 	    catch(Exception e){
 		try{
@@ -278,11 +281,9 @@ public class MTransformJButton extends JButton {
 		catch(Exception f){
 		    Util.handleExceptionNoRestart("Error purchasing transform:", f);
 		    MTransformJButton.this.setFailedProcureView();
+		    new MOneButtonJDialog(MTransformJButton.this.getDisplayName(), "A problem occurred while procuring:<br>" + MTransformJButton.this.getDisplayName() + "<br>Please try again later.");
 		}
-		return;
 	    }	    
-	    // LET THE USER KNOW WERE DONE
-	    MTransformJButton.this.setDeployableView();
 	}
     }
     
@@ -292,7 +293,7 @@ public class MTransformJButton extends JButton {
         public UninstallThread(){
 	    this.setContextClassLoader( Util.getClassLoader() );
 	    MTransformJButton.this.setEnabled(false);
-	    (new Thread(this)).start();
+	    this.start();
 	}
 
         public void run() {
@@ -304,6 +305,8 @@ public class MTransformJButton extends JButton {
 		int dashIndex = MTransformJButton.this.getName().indexOf('-');
 		Util.getToolboxManager().uninstall(MTransformJButton.this.getName().substring(0, dashIndex));
 		Util.getMMainJFrame().addMTransformJButtonToStore(MTransformJButton.this);
+		// LET THE USER KNOW WE ARE DONE
+		MTransformJButton.this.setProcurableView();
 	    }
 	    catch(Exception e){
 		try{
@@ -311,12 +314,11 @@ public class MTransformJButton extends JButton {
 		}
 		catch(Exception f){
 		    Util.handleExceptionNoRestart("Error removing transform:", f);
-		    MTransformJButton.this.setFailedRemoveView();
+		    MTransformJButton.this.setFailedRemoveFromToolboxView();
+		    new MOneButtonJDialog(MTransformJButton.this.getDisplayName(), "A problem occurred while removing:<br>" + MTransformJButton.this.getDisplayName() + "<br>Please try again later.");
 		}
-		return;
 	    }
-	    // LET THE USER KNOW WE ARE DONE
-	    MTransformJButton.this.setProcurableView();
+
         }
     }
     ///////////////////////////////////////

@@ -17,13 +17,25 @@ public class MOneButtonJDialog extends javax.swing.JDialog implements java.awt.e
     
     /** Creates new form ProceedJDialog */
     public MOneButtonJDialog() {
-        super(Util.getMMainJFrame(), true);
+	super(Util.getMMainJFrame(), true);
+	init();
+    }
+    
+    public MOneButtonJDialog(String applianceName, String warning) {
+	super(Util.getMMainJFrame(), true);
+	init();
+        this.setTitle(applianceName + " Warning");
+        messageJLabel.setText("<html><center>" + warning + "</center></html>");
+        proceedJButton.setText("<html><b>Close</b> Warning</html>");
+        this.setVisible(true);
+    }
+
+    private void init(){
         initComponents();
         this.addWindowListener(this);
         this.setBounds( Util.generateCenteredBounds(Util.getMMainJFrame().getBounds(), this.getWidth(), this.getHeight()) );
-
     }
-    
+
     private void initComponents() {//GEN-BEGIN:initComponents
         java.awt.GridBagConstraints gridBagConstraints;
 
