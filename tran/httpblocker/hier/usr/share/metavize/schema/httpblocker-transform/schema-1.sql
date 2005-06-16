@@ -1,3 +1,5 @@
+-- schema for release-1.4
+
 CREATE TABLE tr_httpblk_template (
     message_id int8 NOT NULL,
     HEADER varchar(255),
