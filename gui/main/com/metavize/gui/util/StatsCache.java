@@ -11,11 +11,11 @@
 
 package com.metavize.gui.util;
 
-import com.metavize.mvvm.tran.TransformContext;
+import java.util.*;
+
 import com.metavize.mvvm.security.Tid;
 import com.metavize.mvvm.tapi.IPSessionDesc;
 import com.metavize.mvvm.tran.*;
-import java.util.*;
 
 public class StatsCache
 {
@@ -41,7 +41,7 @@ public class StatsCache
     protected void killUpdate(){
         killUpdate = true;
     }
-    
+
     protected class UpdateThread extends Thread {
         protected UpdateThread() {
             this.setDaemon(true);
@@ -75,7 +75,7 @@ public class StatsCache
                 } catch (Exception x) {
                     // Server is probably down.
                     // This is ugly: XXXXXXXXXXXXXXX
-		    try { Thread.currentThread().sleep(10000); } catch(Exception f) {}
+            try { Thread.currentThread().sleep(10000); } catch(Exception f) {}
                 }
             }
         }
@@ -91,6 +91,7 @@ public class StatsCache
         public Tid getTid() { throw new Error("Unsupported"); }
         public TransformState getRunState() { throw new Error("Unsupported"); }
         public void start() { throw new Error("Unsupported"); }
+        public void disable() { throw new Error("Unsupported"); }
         public void stop() { throw new Error("Unsupported"); }
         public void reconfigure() { throw new Error("Unsupported"); }
         public TransformContext getTransformContext() { throw new Error("Unsupported"); }
