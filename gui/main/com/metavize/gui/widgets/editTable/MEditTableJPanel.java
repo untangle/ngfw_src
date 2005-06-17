@@ -148,8 +148,12 @@ public class MEditTableJPanel extends javax.swing.JPanel implements ListSelectio
         
     public void valueChanged(ListSelectionEvent e) {
 	int firstIndex = mColoredJTable.getSelectedRow();
-        if( firstIndex>=0 )
+        if( firstIndex>=0 ){
             detailJTextArea.setText(((MSortedTableModel) mColoredJTable.getModel()).getDescription( firstIndex ));
+            SwingUtilities.invokeLater( new Runnable(){ public void run(){ 
+                MEditTableJPanel.this.detailJScrollPane.getVerticalScrollBar().setValue(0);
+            }});
+        }
         else
             detailJTextArea.setText("no selection...");        
     }
