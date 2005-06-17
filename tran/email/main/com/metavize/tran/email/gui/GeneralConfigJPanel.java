@@ -61,7 +61,7 @@ class GeneralTableModel extends MSortedTableModel{
         addTableColumn( tableColumnModel,  1, C1_MW, false, false, true,  false, Integer.class, null, sc.TITLE_INDEX);
         addTableColumn( tableColumnModel,  2, C2_MW, true,  false, false, false, String.class,  null, "setting name");
         addTableColumn( tableColumnModel,  3, C3_MW, true,  true,  false, false, Object.class,  null, sc.bold("setting value"));
-        addTableColumn( tableColumnModel,  4, C4_MW, true,  true,  false, true,  String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
+        addTableColumn( tableColumnModel,  4, C4_MW, true,  false, true, true,  String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
         return tableColumnModel;
     }
 
@@ -146,7 +146,7 @@ class GeneralTableModel extends MSortedTableModel{
         tempRowVector = new Vector(4);
         tempRowVector.add(super.ROW_SAVED);
         tempRowVector.add(new Integer(3));
-        tempRowVector.add("max message size to scan (KB)");
+        tempRowVector.add("max scan size (KB)");
         tempRowVector.add( new SpinnerNumberModel((int)control.getMsgSzLimit()/1024, (int)CTLDefinition.MSG_SZ_LIMIT_MIN/1024, (int)CTLDefinition.MSG_SZ_LIMIT_MAX/1024, 128) );
         tempRowVector.add( control.getMsgSzLimitDetails() );
         allRows.add( tempRowVector );
@@ -155,7 +155,7 @@ class GeneralTableModel extends MSortedTableModel{
         tempRowVector = new Vector(4);
         tempRowVector.add(super.ROW_SAVED);
         tempRowVector.add(new Integer(4));
-        tempRowVector.add("max message size to scan for spam (KB)");
+        tempRowVector.add("max spam scan size (KB)");
         tempRowVector.add( new SpinnerNumberModel((int)control.getSpamMsgSzLimit()/1024, (int)CTLDefinition.MSG_SZ_LIMIT_MIN/1024, (int)CTLDefinition.MSG_SZ_LIMIT_MAX/1024, 128) );
         tempRowVector.add( control.getSpamSzLimitDetails() );
         allRows.add( tempRowVector );
@@ -164,7 +164,7 @@ class GeneralTableModel extends MSortedTableModel{
         tempRowVector = new Vector(4);
         tempRowVector.add(super.ROW_SAVED);
         tempRowVector.add(new Integer(5));
-        tempRowVector.add("max message size to scan for viruses (KB)");
+        tempRowVector.add("max virus scan size (KB)");
         tempRowVector.add( new SpinnerNumberModel((int)control.getVirusMsgSzLimit()/1024, (int)CTLDefinition.MSG_SZ_LIMIT_MIN/1024, (int)CTLDefinition.MSG_SZ_LIMIT_MAX/1024, 128) );
         tempRowVector.add( control.getVirusSzLimitDetails() );
         allRows.add( tempRowVector );

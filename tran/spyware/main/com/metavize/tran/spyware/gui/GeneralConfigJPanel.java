@@ -59,7 +59,7 @@ class GeneralTableModel extends MSortedTableModel{
         addTableColumn( tableColumnModel,  1, C1_MW, false, false, true,  false, Integer.class, null, sc.TITLE_INDEX);
         addTableColumn( tableColumnModel,  2, C2_MW, true,  false, false, false, String.class,  null, "setting name");
         addTableColumn( tableColumnModel,  3, C3_MW, true,  true,  false, false, Object.class,  null, sc.bold("setting value"));
-        addTableColumn( tableColumnModel,  4, C4_MW, true,  true,  false, true, String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
+        addTableColumn( tableColumnModel,  4, C4_MW, true,  false, true,  true, String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
         return tableColumnModel;
     }
     
@@ -90,9 +90,9 @@ class GeneralTableModel extends MSortedTableModel{
         tempRowVector = new Vector(5);
         tempRowVector.add(super.ROW_SAVED);
         tempRowVector.add(new Integer(1));
-        tempRowVector.add("block all ActiveX (known & unknown)");
+        tempRowVector.add("block all ActiveX");
         tempRowVector.add( Boolean.valueOf( spywareSettings.getBlockAllActiveX()));
-        tempRowVector.add( spywareSettings.getBlockAllActiveXDetails());
+        tempRowVector.add( "This settings allows you to block ActiveX from being transferred, regardless of if the ActiveX is known to the ActiveX Block List or not." );//spywareSettings.getBlockAllActiveXDetails());
         allRows.add( tempRowVector );
         
         return allRows;

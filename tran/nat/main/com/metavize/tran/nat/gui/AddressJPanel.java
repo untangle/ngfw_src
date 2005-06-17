@@ -70,7 +70,7 @@ class AddressTableModel extends MSortedTableModel{
         DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
         //                                 #   min    rsz    edit   remv   desc   typ            def
         addTableColumn( tableColumnModel,  0,  C0_MW, false, false, false, false, String.class,  null, sc.TITLE_STATUS );
-        addTableColumn( tableColumnModel,  1,  C1_MW, false, false, false, false, Integer.class, null, sc.TITLE_INDEX );
+        addTableColumn( tableColumnModel,  1,  C1_MW, false, false, true,  false, Integer.class, null, sc.TITLE_INDEX );
         addTableColumn( tableColumnModel,  2,  C2_MW, true,  true,  false, false, String.class, "00:01:23:45:67:89", sc.html("MAC<br>address") );
         addTableColumn( tableColumnModel,  3,  C3_MW, true,  true,  false, false, String.class, "1.2.3.4", sc.html("target static<br>IP address") );
         addTableColumn( tableColumnModel,  4,  C4_MW, true,  false, false, false, String.class, "", sc.html("current<br>IP address") );
