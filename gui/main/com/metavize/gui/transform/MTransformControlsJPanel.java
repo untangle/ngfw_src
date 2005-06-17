@@ -121,23 +121,23 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
             return;
 
 	// GENERATE AND VALIDATE ALL SETTINGS
-	String componentName = null;
+	StringBuilder message = new StringBuilder();
+	String componentName = "";
         try {
-	    System.err.println("Saving: "+ mTransformJPanel.getTransformContext().getTransformDesc().getDisplayName() );
+	    message.append("Saving: "+ mTransformJPanel.getTransformContext().getTransformDesc().getDisplayName() );
 	    for( Map.Entry<String, Savable> savableMapEntry : savableMap.entrySet() ){
 		componentName = savableMapEntry.getKey();
 		Savable savableComponent = savableMapEntry.getValue();
 		savableComponent.doSave(settings, false);
-		System.err.println("  " + componentName);
+		message.append("\n  " + componentName);
 	    }
             if( settings instanceof Validatable )
                 ((Validatable)settings).validate();
         }
         catch(Exception e){
             new ValidateFailureDialog( mTransformJPanel.getTransformContext().getTransformDesc().getDisplayName(),
-				       componentName,
-				       e.getMessage() );
-            return;
+				       componentName, e.getMessage() );
+	    return;
         }
         
 	// SEND SETTINGS TO SERVER AND RECONFIGURE
@@ -152,10 +152,10 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
             catch(Exception f){
                 Util.handleExceptionNoRestart("Error saving settings", f);
                 new SaveFailureDialog( mTransformJPanel.getTransformContext().getTransformDesc().getDisplayName() );
-                return;
             }
         }
         finally{
+	    Util.printMessage(message.toString());
             refreshAll();
         }
 
@@ -163,20 +163,23 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
 
      
     protected void refreshAll(){
-	
+	StringBuilder message = new StringBuilder();
 	try{
 	    settings = mTransformJPanel.getTransformContext().transform().getSettings();
-	    System.err.println("Refreshing: "+ mTransformJPanel.getTransformContext().getTransformDesc().getDisplayName() );
+	    message.append("Refreshing: "+ mTransformJPanel.getTransformContext().getTransformDesc().getDisplayName() );
 	    for( Map.Entry<String, Refreshable> refreshableMapEntry : refreshableMap.entrySet() ){
 		String componentName = refreshableMapEntry.getKey();
 		Refreshable refreshableComponent = refreshableMapEntry.getValue();
 		refreshableComponent.doRefresh(settings);
-		System.err.println("  " + componentName);
+		message.append("\n  " + componentName);
 	    }
 	}
 	catch(Exception e){
 	    Util.handleExceptionNoRestart("Error refreshing settings", e);
 	    new RefreshFailureDialog( mTransformJPanel.getTransformContext().getTransformDesc().getDisplayName() );
+	}
+	finally{
+	    Util.printMessage(message.toString());
 	}
 	
     }
@@ -352,7 +355,6 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
 	    // change layout
             MTransformControlsJPanel.this.socketJPanel.remove(contentJPanel);
             MTransformControlsJPanel.this.socketJPanel.revalidate();
-            //MTransformControlsJPanel.this.socketJPanel.repaint();
             MTransformControlsJPanel.this.expandJDialog.getContentPane().add(contentJPanel, contentConstraints, 0);
 
             // place new window in the center of parent window and show
@@ -364,9 +366,6 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
 	    expandJButton.setText("<html><b>Expand</b> Settings</html>");
             MTransformControlsJPanel.this.expandJDialog.getContentPane().remove(contentJPanel);
             MTransformControlsJPanel.this.socketJPanel.add(contentJPanel);
-            //MTransformControlsJPanel.this.socketJPanel.validate();
-            //MTransformControlsJPanel.this.socketJPanel.repaint();
-            //contentJPanel.revalidate();
             MTransformControlsJPanel.this.socketJPanel.revalidate();
 	}
 	else{
