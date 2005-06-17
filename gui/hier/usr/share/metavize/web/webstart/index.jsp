@@ -177,7 +177,10 @@ String helpClickHere = "Click <a href=\"help.html\">here</a> for more informatio
               <% } // else if ( isHelp )
               if ( !isDownload ) { %>
               <div style="text-align: center;">
-                <a href="gui.jnlp">Launch EdgeGuard Client</a><br>		
+                <a href="gui.jnlp">Launch EdgeGuard Client</a><br>
+
+		<br><a href="<%=scheme%>://<%=host%>/reports">View EdgeReport Reports</a>
+
 		<% } %>
               </div>
               <% } %>

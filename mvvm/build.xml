@@ -451,6 +451,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
     </copy>
     <copy todir="${dist.mvvm.web}/reports/WEB-INF/lib">
       <fileset dir="${build.jar}">
+        <include name="mvvm-client.jar"/>
         <include name="servlets.jar"/>
       </fileset>
     </copy>

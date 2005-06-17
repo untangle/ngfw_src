@@ -1,8 +1,19 @@
-<%@ page language="java"  %>
+<%@ page language="java" import="com.metavize.mvvm.*, com.metavize.mvvm.client.*, com.metavize.mvvm.security.Tid, com.metavize.mvvm.tran.*, com.metavize.mvvm.tapi.*, com.metavize.mvvm.util.SessionUtil, org.apache.log4j.helpers.AbsoluteTimeDateFormat, java.util.Properties, java.net.URL, java.io.PrintWriter, javax.naming.*" %>
 
 <%
-        ServletContext sc = getServletContext();
-        if (sc.getResource("/current") == null) {
+  ServletContext sc = getServletContext();
+  if (sc.getResource("/current") == null) {
+
+  MvvmRemoteContext mvvmRemoteContext = MvvmRemoteContextFactory.localLogin();
+  TransformManager transformManager = mvvmRemoteContext.transformManager();
+  Tid[] tids = transformManager.transformInstances("reporting-transform");
+  boolean reportingInstalled;
+  if(tids == null)
+	reportingInstalled = false;
+  else if(tids.length == 0)
+	reportingInstalled = false;
+  else
+	reportingInstalled = true;
 %>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -172,8 +183,17 @@ h4 {
 	<td id="table_main_center">
 	    <center>
 	    <b><i>
-		No reports are available, please check back tomorrow morning.<br/>
-		Reports are generated every night automatically.
+		No reports are available.<br/>
+		<br/>
+
+		<% if(!reportingInstalled){ %>
+			EdgeReport is not installed into your rack.<br/>
+			You must first install it to generate reports.
+		<% } else{ %>
+			Reports are generated every night automatically.<br/>
+			Please check back tomorrow evening.
+		<% } %>
+
 	    </i></b>
 	    </center>
 	</td>
