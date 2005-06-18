@@ -59,6 +59,7 @@ class TransformManagerImpl implements TransformManager
 
     private static TransformManagerImpl TRANSFORM_MANAGER;
 
+    private final TransformManagerState transformManagerState;
     private final Map<Tid, TransformContextImpl> tids
         = new ConcurrentHashMap<Tid, TransformContextImpl>();
 
@@ -66,7 +67,32 @@ class TransformManagerImpl implements TransformManager
     private final CasingClassLoader casingClassLoader
         = new CasingClassLoader(getClass().getClassLoader());
 
-    private TransformManagerImpl() { }
+    private TransformManagerImpl()
+    {
+                Session s = MvvmContextFactory.context().openSession();
+        try {
+            Transaction tx = s.beginTransaction();
+
+            Query q = s.createQuery("from TransformManagerState tms");
+            TransformManagerState tms = (TransformManagerState)q
+                .uniqueResult();
+            if (null == tms) {
+                tms = new TransformManagerState();
+                s.save(tms);
+            }
+            transformManagerState = tms;
+
+            tx.commit();
+        } catch (HibernateException exn) {
+            throw new RuntimeException("couldn't start TransformManager", exn);
+        } finally {
+            try {
+                s.close();
+            } catch (HibernateException exn) {
+                logger.warn("could not close Session", exn);
+            }
+        }
+    }
 
     static TransformManagerImpl manager()
     {
@@ -150,10 +176,8 @@ class TransformManagerImpl implements TransformManager
         try {
             Transaction tx = s.beginTransaction();
 
-            synchronized (tidLock) {
-                s.delete(tc.getPersistentState());
-                s.delete(tc.getTransformPreferences());
-            }
+            s.delete(tc.getPersistentState());
+            s.delete(tc.getTransformPreferences());
 
             tx.commit();
         } catch (HibernateException exn) {
@@ -392,28 +416,18 @@ class TransformManagerImpl implements TransformManager
         return transformDesc;
     }
 
-    private Object tidLock = new Object();
-
     private Tid newTid()
     {
-        Tid tid = null;
+        Tid tid;
+        synchronized (transformManagerState) {
+            tid = transformManagerState.nextTid();
+        }
 
         Session s = MvvmContextFactory.context().openSession();
         try {
             Transaction tx = s.beginTransaction();
 
-            synchronized (tidLock) {
-                Query q = s.createQuery("from TransformManagerState tms");
-                TransformManagerState tms = (TransformManagerState)q
-                    .uniqueResult();
-                if (null == tms) {
-                    tms = new TransformManagerState();
-                    s.save(tms);
-                }
-
-                tid = tms.nextTid();
-            }
-
+            s.saveOrUpdateCopy(transformManagerState);
             s.save(tid);
 
             tx.commit();

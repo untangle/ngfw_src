@@ -6,15 +6,18 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: HttpBlocker.java,v 1.2 2005/01/30 05:53:40 dmorris Exp $
+ * $Id$
  */
 
 package com.metavize.tran.httpblocker;
 
 import com.metavize.mvvm.tran.Transform;
+import java.util.List;
 
 public interface HttpBlocker extends Transform
 {
     HttpBlockerSettings getHttpBlockerSettings();
     void setHttpBlockerSettings(HttpBlockerSettings settings);
+
+    List<RequestLog> getAllEvents();
 }

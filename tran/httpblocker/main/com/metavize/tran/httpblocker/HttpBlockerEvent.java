@@ -33,7 +33,8 @@ public class HttpBlockerEvent extends LogEvent
 
     public HttpBlockerEvent() { }
 
-    public HttpBlockerEvent(RequestLine requestLine, Reason reason, String category)
+    public HttpBlockerEvent(RequestLine requestLine, Reason reason,
+                            String category)
     {
         this.requestLine = requestLine;
         this.reason = reason;
@@ -99,6 +100,7 @@ public class HttpBlockerEvent extends LogEvent
 
     public String toString()
     {
-        return "HttpBlockerEvent id: " + getId() + " RequestLine: " + requestLine;
+        return "HttpBlockerEvent id: " + getId() + " RequestLine: "
+            + requestLine;
     }
 }

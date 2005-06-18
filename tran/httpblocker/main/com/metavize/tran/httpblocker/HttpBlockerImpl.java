@@ -12,6 +12,7 @@
 package com.metavize.tran.httpblocker;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import com.metavize.mvvm.tapi.Affinity;
@@ -26,8 +27,11 @@ import com.metavize.mvvm.tapi.TransformContextFactory;
 import com.metavize.mvvm.tran.IPMaddr;
 import com.metavize.mvvm.tran.MimeType;
 import com.metavize.mvvm.tran.MimeTypeRule;
+import com.metavize.mvvm.tran.PipelineInfo;
 import com.metavize.mvvm.tran.PortRange;
 import com.metavize.mvvm.tran.StringRule;
+import com.metavize.tran.http.HttpRequestEvent;
+import com.metavize.tran.http.HttpResponseEvent;
 import com.metavize.tran.token.TokenAdaptor;
 import net.sf.hibernate.HibernateException;
 import net.sf.hibernate.Query;
@@ -82,11 +86,46 @@ public class HttpBlockerImpl extends SoloTransform implements HttpBlocker
             try {
                 s.close();
             } catch (HibernateException exn) {
-                logger.warn("could not close hibernate sessino", exn);
+                logger.warn("could not close hibernate session", exn);
             }
         }
 
         Blacklist.BLACKLIST.configure(settings);
+    }
+
+    public List<RequestLog> getAllEvents()
+    {
+        List<RequestLog> l = new ArrayList<RequestLog>(100);
+
+        Session s = TransformContextFactory.context().openSession();
+        try {
+            Query q = s.createQuery
+                ("FROM HttpRequestEvent req, HttpResponseEvent resp, "
+                 +    "PipelineInfo pio "
+                 + "WHERE req.requestLine = resp.requestLine "
+                 +       "AND req.sessionId = pio.sessionId "
+                 + "ORDER BY timeStamp DESC");
+
+            int c = 0;
+            for (Iterator i = q.iterate(); i.hasNext() && 100 > c++; ) {
+                Object[] o = (Object[])i.next();
+                HttpRequestEvent req = (HttpRequestEvent)o[0];
+                HttpResponseEvent resp = (HttpResponseEvent)o[1];
+                PipelineInfo pio = (PipelineInfo)o[2];
+                RequestLog requestLog = new RequestLog(req, resp, pio);
+                l.add(requestLog);
+            }
+        } catch (HibernateException exn) {
+            logger.warn("query failed for getAllEvents", exn);
+        } finally {
+            try {
+                s.close();
+            } catch (HibernateException exn) {
+                logger.warn("could not close Hibernate session", exn);
+            }
+        }
+
+        return l;
     }
 
     // SoloTransform methods --------------------------------------------------
