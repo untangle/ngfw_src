@@ -169,6 +169,10 @@ class TransformManagerImpl implements TransformManager
     public void destroy(Tid tid) throws UndeployException
     {
         TransformContextImpl tc = tids.get(tid);
+        if (null == tc) {
+            logger.error("Destroy Failed: Transform " + tid + " not found");
+            throw new UndeployException("Transform " + tid + " not found");
+        }
         tc.destroy();
         tids.remove(tid);
 
