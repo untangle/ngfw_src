@@ -77,24 +77,6 @@ install: libmvutil
 		echo "Done." ;\
 	fi
 
-#### ???? 
-
-pkg: clean
-	fakeroot debian/rules binary
-
-version:
-#	cat ./VERSION | perl -pe 's/(\d+)(\D*)$/($1+1).$2/e' > ./VERSION
-	dch -i "auto build" ; \
-	cat ./debian/changelog | head -1 | awk '{print $$2}' | sed -e 's/[\)\(]*//g' > ./VERSION
-
-release: version pkg 
-	@if [ "`hostname`" = "bebe" ] ; then \
-		echo "libmvutil " `cat VERSION` " released." | mail -s release pkgs@metavize.com ; \
-		cd ../pkgs/ ; sudo ./deb-add.sh /var/www/`whoami`/ ../libmvutil*deb &> /dev/null ; sudo ./deb-scan.sh /var/www/`whoami`/ &> /dev/null ; \
-	else echo "Must be run on bebe"; \
-	fi
-
-#### END OF ??? 
 
 
 
