@@ -93,14 +93,59 @@ public class HttpBlockerImpl extends SoloTransform implements HttpBlocker
         Blacklist.BLACKLIST.configure(settings);
     }
 
-    public List<RequestLog> getBlockedEvents(RequestLog lastRequest, int limit)
+    // XXX check over indices
+    public List<RequestLog> getEvents(RequestLog lastRequest, int limit)
     {
-        long lastId = null == lastRequest ? 0
-            : lastRequest.getHttpBlockerEvent().getId();
+        long lastId = null == lastRequest ? 0 : lastRequest.getRequestEventId();
 
         List<RequestLog> l = new LinkedList<RequestLog>();
 
-        // XXX i need to CREATE INDEX foo on pipeline_info (session_id);
+        Session s = TransformContextFactory.context().openSession();
+        try {
+            String sql = "SELECT {blk.*}, {req.*}, {resp.*}, {pio.*} "
+                + "FROM tr_http_evt_req req "
+                + "LEFT OUTER JOIN tr_httpblk_evt_blk blk USING (request_id) "
+                + "LEFT OUTER JOIN tr_http_evt_resp resp USING (request_id) "
+                + "JOIN pipeline_info pio USING (session_id) "
+                + "WHERE :id < req.event_id "
+                + "ORDER BY req.time_stamp DESC LIMIT :limit";
+
+            Query q = s.createSQLQuery
+                (sql,
+                 new String[] { "blk", "req", "resp", "pio" },
+                 new Class[] { HttpBlockerEvent.class,
+                               HttpRequestEvent.class,
+                               HttpResponseEvent.class,
+                               PipelineInfo.class });
+            q.setLong("id", lastId);
+            q.setInteger("limit", limit);
+            List<Object[]> results = (List<Object[]>)q.list();
+
+            for (Object[] o : results) {
+                l.add(0, new RequestLog((HttpBlockerEvent)o[0],
+                                        (HttpRequestEvent)o[1],
+                                        (HttpResponseEvent)o[2],
+                                        (PipelineInfo)o[3]));
+            }
+        } catch (HibernateException exn) {
+            logger.warn("query failed for getAllEvents", exn);
+        } finally {
+            try {
+                s.close();
+            } catch (HibernateException exn) {
+                logger.warn("could not close Hibernate session", exn);
+            }
+        }
+
+        return l;
+    }
+
+    // XXX check over indices
+    public List<RequestLog> getBlockedEvents(RequestLog lastRequest, int limit)
+    {
+        long lastId = null == lastRequest ? 0 : lastRequest.getBlockEventId();
+
+        List<RequestLog> l = new LinkedList<RequestLog>();
 
         Session s = TransformContextFactory.context().openSession();
         try {
@@ -361,6 +406,9 @@ public class HttpBlockerImpl extends SoloTransform implements HttpBlocker
 
     protected void postInit(String[] args)
     {
+        List l = getEvents(null, 100);
+        System.out.println("GOT L: " + l);
+
         Session s = TransformContextFactory.context().openSession();
         try {
             Transaction tx = s.beginTransaction();

@@ -11,10 +11,9 @@
 
 package com.metavize.tran.nat;
 
-import java.util.List;
-import java.util.LinkedList;
-
 import java.io.Serializable;
+import java.util.LinkedList;
+import java.util.List;
 
 import com.metavize.mvvm.logging.LogEvent;
 
@@ -29,11 +28,10 @@ import com.metavize.mvvm.logging.LogEvent;
  */
 public class DhcpAbsoluteEvent extends LogEvent implements Serializable
 {
-    private Long id;
     private List absoluteLeaseList = null;
 
     /**
-     * Hibernate constructor 
+     * Hibernate constructor
      */
     public DhcpAbsoluteEvent()
     {
@@ -42,21 +40,6 @@ public class DhcpAbsoluteEvent extends LogEvent implements Serializable
     public DhcpAbsoluteEvent( List s )
     {
         absoluteLeaseList = s;
-    }
-
-    /**
-     * @hibernate.id
-     * column="EVENT_ID"
-     * generator-class="native"
-     */
-    protected Long getId()
-    {
-        return id;
-    }
-
-    protected void setId(Long id)
-    {
-        this.id = id;
     }
 
     /**
@@ -78,9 +61,9 @@ public class DhcpAbsoluteEvent extends LogEvent implements Serializable
     {
         return absoluteLeaseList;
     }
-    
-    public void setAbsoluteLeaseList( List s ) 
-    { 
+
+    public void setAbsoluteLeaseList( List s )
+    {
         absoluteLeaseList = s;
     }
 
@@ -89,7 +72,7 @@ public class DhcpAbsoluteEvent extends LogEvent implements Serializable
         if ( absoluteLeaseList == null ) {
             absoluteLeaseList = new LinkedList();
         }
-        
+
         absoluteLeaseList.add( lease );
     }
 }

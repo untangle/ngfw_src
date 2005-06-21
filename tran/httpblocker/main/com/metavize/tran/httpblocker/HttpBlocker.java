@@ -20,5 +20,6 @@ public interface HttpBlocker extends Transform
     HttpBlockerSettings getHttpBlockerSettings();
     void setHttpBlockerSettings(HttpBlockerSettings settings);
 
+    List<RequestLog> getEvents(RequestLog lastLog, int limit);
     List<RequestLog> getBlockedEvents(RequestLog lastLog, int limit);
 }

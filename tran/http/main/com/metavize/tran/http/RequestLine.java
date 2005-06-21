@@ -15,6 +15,7 @@ import java.net.URI;
 import java.nio.ByteBuffer;
 
 import com.metavize.tran.token.Token;
+import java.io.Serializable;
 
 /**
  * Holds a RFC 2616 request-line.
@@ -25,7 +26,7 @@ import com.metavize.tran.token.Token;
  * table="TR_HTTP_REQ_LINE"
  * mutable="false"
  */
-public class RequestLine implements Token
+public class RequestLine implements Token, Serializable
 {
     private Long id;
     private HttpMethod method;

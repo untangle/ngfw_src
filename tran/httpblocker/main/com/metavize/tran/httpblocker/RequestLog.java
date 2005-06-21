@@ -12,10 +12,15 @@
 package com.metavize.tran.httpblocker;
 
 import java.io.Serializable;
+import java.net.InetAddress;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Date;
 
 import com.metavize.mvvm.tran.PipelineInfo;
 import com.metavize.tran.http.HttpRequestEvent;
 import com.metavize.tran.http.HttpResponseEvent;
+import org.apache.log4j.Logger;
 
 public class RequestLog implements Serializable
 {
@@ -35,23 +40,77 @@ public class RequestLog implements Serializable
         this.pipelineInfo = pipelineInfo;
     }
 
-    public HttpRequestEvent getHttpRequestEvent()
+    // accessors --------------------------------------------------------------
+
+    public Date timeStamp()
     {
-        return httpRequestEvent;
+        return httpRequestEvent.getTimeStamp();
     }
 
-    public HttpResponseEvent getHttpResponseEvent()
+    public String getUrl()
     {
-        return httpResponseEvent;
+        String h = httpRequestEvent.getHost();
+        URI u = httpRequestEvent.getRequestLine().getRequestUri();
+
+        try {
+            URI host = new URI("http://" + h);
+            return host.relativize(u).toString();
+        } catch (URISyntaxException exn) {
+            Logger l = Logger.getLogger(RequestLog.class);
+            l.warn("could not create host URI: " + u);
+            return "http://" + h + "/" + u;
+        }
     }
 
-    public PipelineInfo getPipelineInfo()
+    public Reason getReason()
     {
-        return pipelineInfo;
+        return null == httpBlockerEvent ? null : httpBlockerEvent.getReason();
     }
 
-    public HttpBlockerEvent getHttpBlockerEvent()
+    public String getCategory()
     {
-        return httpBlockerEvent;
+        return null == httpBlockerEvent ? null : httpBlockerEvent.getCategory();
+    }
+
+    public String getContentType()
+    {
+        return null == httpResponseEvent ? null : httpResponseEvent.getContentType();
+    }
+
+    public int getContentLength()
+    {
+        return null == httpResponseEvent ? null : httpResponseEvent.getContentLength();
+    }
+
+    public InetAddress getClientAddr()
+    {
+        return pipelineInfo.getCClientAddr();
+    }
+
+    public int getCClientPort()
+    {
+        return pipelineInfo.getCClientPort();
+    }
+
+    public InetAddress getServerAddr()
+    {
+        return pipelineInfo.getSServerAddr();
+    }
+
+    public int getSServerPort()
+    {
+        return pipelineInfo.getSServerPort();
+    }
+
+    // package protected ------------------------------------------------------
+
+    long getRequestEventId()
+    {
+        return httpRequestEvent.getId();
+    }
+
+    long getBlockEventId()
+    {
+        return httpBlockerEvent.getId();
     }
 }
