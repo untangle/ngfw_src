@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: HttpRequestEvent.java,v 1.6 2005/03/15 02:11:53 amread Exp $
+ * $Id$
  */
 
 package com.metavize.tran.http;

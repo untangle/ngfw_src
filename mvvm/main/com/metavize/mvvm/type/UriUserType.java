@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: UriUserType.java,v 1.2 2005/01/27 04:55:10 amread Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.type;
@@ -35,10 +35,21 @@ public class UriUserType implements UserType
         throws HibernateException, SQLException
     {
         String name = rs.getString(names[0]);
-        try {
-            return rs.wasNull() ? null : new URI(name);
-        } catch (URISyntaxException exn) {
-            throw new HibernateException(exn);
+
+        if (rs.wasNull()) {
+            return null;
+        } else {
+            // could have been truncated in middle of escape
+            if ('%' == name.charAt(name.length() - 1)) {
+                name = name.substring(0, name.length() - 1);
+            } else if ('%' == name.charAt(name.length() - 2)) {
+                name = name.substring(0, name.length() - 2);
+            }
+            try {
+                return new URI(name);
+            } catch (URISyntaxException exn) {
+                throw new HibernateException(exn);
+            }
         }
     }
 
@@ -51,6 +62,7 @@ public class UriUserType implements UserType
             // XXX we don't know the column length,
             // XXX should we break uri's into multiple columns? just path?
             String s = v.toString();
+
             ps.setString(i, s.length() < 255 ? s : s.substring(0, 255));
         }
     }

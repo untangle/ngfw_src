@@ -12,7 +12,7 @@
 package com.metavize.tran.httpblocker;
 
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import com.metavize.mvvm.tapi.Affinity;
@@ -95,29 +95,33 @@ public class HttpBlockerImpl extends SoloTransform implements HttpBlocker
 
     public List<RequestLog> getBlockedEvents()
     {
-        List<RequestLog> l = new ArrayList<RequestLog>(100);
+        List<RequestLog> l = new LinkedList<RequestLog>();
+
+        // XXX i need to CREATE INDEX foo on pipeline_info (session_id);
 
         Session s = TransformContextFactory.context().openSession();
         try {
-            long t0 = System.currentTimeMillis();
-            Query q = s.createQuery
-                ("from HttpBlockerEvent blk, HttpRequestEvent req, "
-                 +    "HttpResponseEvent resp, PipelineInfo pio "
-                 + "where blk.requestLine = req.requestLine "
-                 +       "and req.requestLine = resp.requestLine "
-                 +       "and req.sessionId = pio.sessionId "
-                 + "order by req.timeStamp");
-            int c = 0;
-            for (Iterator i = q.iterate(); i.hasNext() && 100 > c++; ) {
-                Object[] o = (Object[])i.next();
-                HttpRequestEvent req = (HttpRequestEvent)o[0];
-                HttpResponseEvent resp = (HttpResponseEvent)o[1];
-                PipelineInfo pio = (PipelineInfo)o[2];
-                RequestLog requestLog = new RequestLog(req, resp, pio);
-                l.add(requestLog);
+            String sql = "SELECT {blk.*}, {req.*}, {resp.*}, {pio.*} "
+                + "FROM tr_httpblk_evt_blk blk "
+                + "JOIN tr_http_evt_req req USING (request_id) "
+                + "LEFT OUTER JOIN tr_http_evt_resp resp USING (request_id) "
+                + "JOIN pipeline_info pio USING (session_id) "
+                + "ORDER BY blk.time_stamp DESC LIMIT 100";
+
+            List<Object[]> results = (List<Object[]>)s.createSQLQuery
+                (sql,
+                 new String[] { "blk", "req", "resp", "pio" },
+                 new Class[] { HttpBlockerEvent.class,
+                               HttpRequestEvent.class,
+                               HttpResponseEvent.class,
+                               PipelineInfo.class}).list();
+
+            for (Object[] o : results) {
+                l.add(0, new RequestLog((HttpBlockerEvent)o[0],
+                                     (HttpRequestEvent)o[1],
+                                     (HttpResponseEvent)o[2],
+                                     (PipelineInfo)o[3]));
             }
-            long t1 = System.currentTimeMillis();
-            System.out.println("QUERY IN: " + (t1 - t0));
         } catch (HibernateException exn) {
             logger.warn("query failed for getAllEvents", exn);
         } finally {

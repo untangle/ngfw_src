@@ -19,16 +19,17 @@ import com.metavize.tran.http.HttpResponseEvent;
 
 public class RequestLog implements Serializable
 {
-    // XXX serial uid
-
+    private final HttpBlockerEvent httpBlockerEvent;
     private final HttpRequestEvent httpRequestEvent;
     private final HttpResponseEvent httpResponseEvent;
     private final PipelineInfo pipelineInfo;
 
-    public RequestLog(HttpRequestEvent httpRequestEvent,
+    public RequestLog(HttpBlockerEvent httpBlockerEvent,
+                      HttpRequestEvent httpRequestEvent,
                       HttpResponseEvent httpResponseEvent,
                       PipelineInfo pipelineInfo)
     {
+        this.httpBlockerEvent = httpBlockerEvent;
         this.httpRequestEvent = httpRequestEvent;
         this.httpResponseEvent = httpResponseEvent;
         this.pipelineInfo = pipelineInfo;
@@ -49,8 +50,8 @@ public class RequestLog implements Serializable
         return pipelineInfo;
     }
 
-//     public HttpBlockerEvent getHttpBlockerEvent()
-//     {
-//         return httpBlockerEvent;
-//     }
+    public HttpBlockerEvent getHttpBlockerEvent()
+    {
+        return httpBlockerEvent;
+    }
 }
