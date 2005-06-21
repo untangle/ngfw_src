@@ -28,8 +28,8 @@ import net.sf.hibernate.cfg.Configuration;
 import org.apache.log4j.Logger;
 
 /**
- * These are internal utility methods for internal use by the MVVM or other top-level tools
- * (reporting)
+ * These are internal utility methods for internal use by the MVVM or
+ * other top-level tools (reporting).
  *
  * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
@@ -72,8 +72,9 @@ class Util
             Configuration cfg = new Configuration();
 
             Set seen = new HashSet();
-            for (JarFile jf : jfs)
+            for (JarFile jf : jfs) {
                 addJar(jf, cfg, seen);
+            }
 
             long t0 = System.currentTimeMillis();
             sessionFactory = cfg.buildSessionFactory();
@@ -85,7 +86,7 @@ class Util
 
         return sessionFactory;
     }
-        
+
     private static void addClassLoader(URLClassLoader ucl, Configuration cfg,
                                        Set seen)
     {

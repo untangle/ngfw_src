@@ -320,11 +320,15 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       <fileset dir="${build.root}/http">
         <include name="com/metavize/tran/http/HttpMethod.class"/>
         <include name="com/metavize/tran/http/HttpMethodUserType.class"/>
+        <include name="com/metavize/tran/http/HttpRequestEvent.class"/>
+        <include name="com/metavize/tran/http/HttpResponseEvent.class"/>
         <include name="com/metavize/tran/http/HttpStateMachine.class"/>
         <include name="com/metavize/tran/http/RequestLine.class"/>
         <include name="com/metavize/tran/http/StatusLine.class"/>
       </fileset>
       <fileset dir="${build.gensrc}/http">
+        <include name="com/metavize/tran/http/HttpRequestEvent.hbm.xml"/>
+        <include name="com/metavize/tran/http/HttpResponseEvent.hbm.xml"/>
         <include name="com/metavize/tran/http/RequestLine.hbm.xml"/>
         <include name="com/metavize/tran/http/StatusLine.hbm.xml"/>
       </fileset>

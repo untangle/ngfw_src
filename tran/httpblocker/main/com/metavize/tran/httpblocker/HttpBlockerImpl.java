@@ -93,19 +93,20 @@ public class HttpBlockerImpl extends SoloTransform implements HttpBlocker
         Blacklist.BLACKLIST.configure(settings);
     }
 
-    public List<RequestLog> getAllEvents()
+    public List<RequestLog> getBlockedEvents()
     {
         List<RequestLog> l = new ArrayList<RequestLog>(100);
 
         Session s = TransformContextFactory.context().openSession();
         try {
+            long t0 = System.currentTimeMillis();
             Query q = s.createQuery
-                ("FROM HttpRequestEvent req, HttpResponseEvent resp, "
-                 +    "PipelineInfo pio "
-                 + "WHERE req.requestLine = resp.requestLine "
-                 +       "AND req.sessionId = pio.sessionId "
-                 + "ORDER BY timeStamp DESC");
-
+                ("from HttpBlockerEvent blk, HttpRequestEvent req, "
+                 +    "HttpResponseEvent resp, PipelineInfo pio "
+                 + "where blk.requestLine = req.requestLine "
+                 +       "and req.requestLine = resp.requestLine "
+                 +       "and req.sessionId = pio.sessionId "
+                 + "order by req.timeStamp");
             int c = 0;
             for (Iterator i = q.iterate(); i.hasNext() && 100 > c++; ) {
                 Object[] o = (Object[])i.next();
@@ -115,6 +116,8 @@ public class HttpBlockerImpl extends SoloTransform implements HttpBlocker
                 RequestLog requestLog = new RequestLog(req, resp, pio);
                 l.add(requestLog);
             }
+            long t1 = System.currentTimeMillis();
+            System.out.println("QUERY IN: " + (t1 - t0));
         } catch (HibernateException exn) {
             logger.warn("query failed for getAllEvents", exn);
         } finally {

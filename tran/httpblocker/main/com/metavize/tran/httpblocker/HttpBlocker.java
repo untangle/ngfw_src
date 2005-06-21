@@ -11,13 +11,14 @@
 
 package com.metavize.tran.httpblocker;
 
-import com.metavize.mvvm.tran.Transform;
 import java.util.List;
+
+import com.metavize.mvvm.tran.Transform;
 
 public interface HttpBlocker extends Transform
 {
     HttpBlockerSettings getHttpBlockerSettings();
     void setHttpBlockerSettings(HttpBlockerSettings settings);
 
-    List<RequestLog> getAllEvents();
+    List<RequestLog> getBlockedEvents();
 }
