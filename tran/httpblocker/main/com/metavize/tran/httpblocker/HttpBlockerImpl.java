@@ -93,8 +93,11 @@ public class HttpBlockerImpl extends SoloTransform implements HttpBlocker
         Blacklist.BLACKLIST.configure(settings);
     }
 
-    public List<RequestLog> getBlockedEvents()
+    public List<RequestLog> getBlockedEvents(RequestLog lastRequest, int limit)
     {
+        long lastId = null == lastRequest ? 0
+            : lastRequest.getHttpBlockerEvent().getId();
+
         List<RequestLog> l = new LinkedList<RequestLog>();
 
         // XXX i need to CREATE INDEX foo on pipeline_info (session_id);
@@ -106,21 +109,25 @@ public class HttpBlockerImpl extends SoloTransform implements HttpBlocker
                 + "JOIN tr_http_evt_req req USING (request_id) "
                 + "LEFT OUTER JOIN tr_http_evt_resp resp USING (request_id) "
                 + "JOIN pipeline_info pio USING (session_id) "
-                + "ORDER BY blk.time_stamp DESC LIMIT 100";
+                + "WHERE :id < blk.event_id "
+                + "ORDER BY blk.time_stamp DESC LIMIT :limit";
 
-            List<Object[]> results = (List<Object[]>)s.createSQLQuery
+            Query q = s.createSQLQuery
                 (sql,
                  new String[] { "blk", "req", "resp", "pio" },
                  new Class[] { HttpBlockerEvent.class,
                                HttpRequestEvent.class,
                                HttpResponseEvent.class,
-                               PipelineInfo.class}).list();
+                               PipelineInfo.class});
+            q.setLong("id", lastId);
+            q.setInteger("limit", limit);
+            List<Object[]> results = (List<Object[]>)q.list();
 
             for (Object[] o : results) {
                 l.add(0, new RequestLog((HttpBlockerEvent)o[0],
-                                     (HttpRequestEvent)o[1],
-                                     (HttpResponseEvent)o[2],
-                                     (PipelineInfo)o[3]));
+                                        (HttpRequestEvent)o[1],
+                                        (HttpResponseEvent)o[2],
+                                        (PipelineInfo)o[3]));
             }
         } catch (HibernateException exn) {
             logger.warn("query failed for getAllEvents", exn);

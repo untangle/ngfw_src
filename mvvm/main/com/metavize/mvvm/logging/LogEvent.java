@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: LogEvent.java,v 1.11 2005/02/25 02:45:29 amread Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.logging;
@@ -38,7 +38,7 @@ public abstract class LogEvent implements Serializable
      * column="EVENT_ID"
      * generator-class="native"
      */
-    protected Long getId()
+    public Long getId()
     {
         return id;
     }
