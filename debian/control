@@ -75,28 +75,6 @@ Description: The Metavize eMail SpamGuard
  The eMail SpamGuard, based on SpamAssassin, is able to
  mark SPAM incoming and outgoing SMTP, POP3, and IMAP. 
 
-Package: sophos-transform
-Architecture: any
-Depends: mvvm, sophos-mv, http-casing, ftp-casing
-XB-Price: 1000
-XB-Display-Name: Sophos AntiVirus Scanner
-XB-Rack-Position: 4
-Description: The Sophos AntiVirus Scanner
- The Sophos AntiVirus Scanner is able to scan and block inbound and
- outbound viruses, on HTTP, FTP, and email (with SpamGuard). Updates
- are installed daily.
-
-Package: fprot-transform
-Architecture: any
-Depends: mvvm, fprot-mv, http-casing, ftp-casing
-XB-Price: 1000
-XB-Display-Name: F-Prot AntiVirus Scanner
-XB-Rack-Position: 5
-Description: The F-Prot AntiVirus Scanner
- The F-Prot AntiVirus Scanner is able to scan and block inbound and
- outbound viruses, on HTTP, FTP, and email (with SpamGuard). Updates
- are installed daily.
-
 Package: hauri-transform
 Architecture: any
 Depends: mvvm, hauri-mv, http-casing, ftp-casing

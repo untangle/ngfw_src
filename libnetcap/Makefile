@@ -79,22 +79,3 @@ install: libnetcap
 		echo "Done." ;\
 	fi
 
-## ???
-binary:
-	fakeroot debian/rules binary
-
-pkg: clean
-	fakeroot debian/rules binary
-
-version:
-	dch -i "auto build" ; \
-	cat ./debian/changelog | head -1 | awk '{print $$2}' | sed -e 's/[\)\(]*//g' > ./VERSION
-
-release: version pkg 
-	@if [ "`hostname`" = "bebe" ] ; then \
-		echo "libnetcap " `cat VERSION` " released." | mail -s release pkgs@metavize.com ; \
-		cd ../pkgs/ ; sudo ./deb-add.sh ../libnetcap*deb &> /dev/null ; sudo ./deb-scan.sh &> /dev/null ; \
-	else echo "Must be run on bebe"; \
-	fi
-
-## end of ???

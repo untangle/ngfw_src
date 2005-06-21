@@ -17,9 +17,9 @@ echo "Releasing: \"$1\""
 
 echo "------------------------"
 echo -e "Releasing:\n`ls ../*.deb | egrep \"$pkg\"`"
-sudo ../pkgs/scripts/deb-add.sh `ls ../*.deb | egrep "$pkg"`
+sudo ../pkgs/scripts/deb-add.sh /var/www/`whoami`/ `ls ../*.deb | egrep "$pkg"`
 echo "------------------------"
-sudo ../pkgs/scripts/deb-scan.sh &> ../update.log
+sudo ../pkgs/scripts/deb-scan.sh /var/www/`whoami`/ &> ../update.log
 
 rm -f debian/release_list
 svn commit -m"release" debian/*.version debian/changelog

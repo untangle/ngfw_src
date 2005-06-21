@@ -90,7 +90,7 @@ version:
 release: version pkg 
 	@if [ "`hostname`" = "bebe" ] ; then \
 		echo "libmvutil " `cat VERSION` " released." | mail -s release pkgs@metavize.com ; \
-		cd ../pkgs/ ; sudo ./deb-add.sh ../libmvutil*deb &> /dev/null ; sudo ./deb-scan.sh &> /dev/null ; \
+		cd ../pkgs/ ; sudo ./deb-add.sh /var/www/`whoami`/ ../libmvutil*deb &> /dev/null ; sudo ./deb-scan.sh /var/www/`whoami`/ &> /dev/null ; \
 	else echo "Must be run on bebe"; \
 	fi
 

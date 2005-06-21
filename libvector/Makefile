@@ -56,27 +56,3 @@ distclean: distclean.default
 
 tags: tags.default
 
-################################################ END OF NEW MAKEFILE
-
-PREFIX      = /usr/
-BIN_PREFIX  = ${PREFIX}bin/
-INC_PREFIX  = ${PREFIX}include/
-INCS_PREFIX = ${PREFIX}include/vector/
-LIB_PREFIX  = ${PREFIX}lib/
-
-binary:
-	fakeroot debian/rules binary
-
-pkg: clean
-	fakeroot debian/rules binary
-
-version:
-	dch -i "auto build" ; \
-	cat ./debian/changelog | head -1 | awk '{print $$2}' | sed -e 's/[\)\(]*//g' > ./VERSION
-
-release: version pkg 
-	@if [ "`hostname`" = "bebe" ] ; then \
-		echo "libvector " `cat VERSION` " released." | mail -s release pkgs@metavize.com ; \
-		cd ../pkgs/ ; sudo ./deb-add.sh ../libvector*deb &> /dev/null ; sudo ./deb-scan.sh &> /dev/null ; \
-	else echo "Must be run on bebe"; \
-	fi

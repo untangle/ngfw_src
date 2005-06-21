@@ -4,7 +4,6 @@ include buildtools/Makefile.in
 ## including this makefile
 
 CLIBS=libmvutil jmvutil libnetcap jnetcap libvector jvector
-RELEASE_DEST ?= "`whoami`"
 
 lib_name       = alpine
 lib_file_name  = lib$(lib_name).so
@@ -82,9 +81,8 @@ pkgs: chk
 	@fakeroot debian/rules binary
 
 release: pkgs
-	@echo "Releasing to /var/www/$(RELEASE_DEST)"
 	@buildtools/incVersion.sh "$(packages)"
-	@( export DEBDEST="$(RELEASE_DEST)" && buildtools/release.sh    "$(packages)" )
+	@buildtools/release.sh    "$(packages)"
 
 src: clean
 	@echo "==> src"
