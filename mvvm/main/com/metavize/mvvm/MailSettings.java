@@ -53,8 +53,8 @@ public class MailSettings implements Serializable
      */
     public String getReportEmail()
     {
-	if( reportEmail == null )
-	    reportEmail = new String();
+    if( reportEmail == null )
+        reportEmail = new String();
         return reportEmail;
     }
 
@@ -75,8 +75,8 @@ public class MailSettings implements Serializable
      */
     public String getSmtpHost()
     {
-	if( smtpHost == null )
-	    smtpHost = new String();
+    if( smtpHost == null )
+        smtpHost = new String();
         return smtpHost;
     }
 
