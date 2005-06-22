@@ -430,9 +430,6 @@ abstract class ArgonHook implements Runnable
             /* Indicate that the server is shutdown */
             session.isServerShutdown = true;
 
-            /* simulate a writeable event on the client side */
-            session.listener.clientEvent( session.clientOutgoingSocketQueue );
-
             /* Check if they passed the reset */
             if ( session.clientOutgoingSocketQueue.isEmpty()) {
                 logger.debug( "vectorReset: ENDPOINTED by " + session );

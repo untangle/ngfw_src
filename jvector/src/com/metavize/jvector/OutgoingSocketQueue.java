@@ -88,8 +88,11 @@ public class OutgoingSocketQueue extends Source implements SocketQueue
                 Vector.logDebug( "Write crumb(" + this + "): " + crumb );
             }
         }
-        
-        if ( crumb.isShutdown()) isListenersSideClosed = true;
+        if ( crumb.isShutdown()) {
+            isListenersSideClosed = true;
+        } else if ( sq.isFull()) {
+            Vector.logError( "Adding non-shutdown crumb to full socket" );
+        }
 
         return sq.add( crumb );
     }
