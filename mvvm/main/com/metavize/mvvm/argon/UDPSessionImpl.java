@@ -73,40 +73,4 @@ public class UDPSessionImpl extends IPSessionImpl implements UDPSession
     {
         return icmpId;
     }
-
-    class UDPSessionSocketQueueListener extends SessionSocketQueueListener
-    {
-        public void event( IncomingSocketQueue in )
-        {
-            UDPSink  sink;
-            int ttl = -1;
-                        
-            if ( in == serverIncomingSocketQueue ) {
-                if ( logger.isDebugEnabled()) {
-                    logger.debug( "IncomingSocketQueueEvent: server - " + in +
-                                  " " + sessionGlobalState );
-                }
-
-                listener.serverEvent( in );
-                sink = (UDPSink)sessionGlobalState.argonHook().clientSink;
-
-            } else if ( in == clientIncomingSocketQueue ) {
-                if ( logger.isDebugEnabled()) {                    
-                    logger.debug( "IncomingSocketQueueEvent: client - " + in +
-                                  " " + sessionGlobalState );
-                }
-                
-                listener.clientEvent( in );
-                sink = (UDPSink)sessionGlobalState.argonHook().serverSink;
-
-            } else {
-                /* This should never happen */
-                throw new IllegalStateException( "Invalid socket queue: " + in );
-            }
-
-            if ( ttl > 0 )
-                sink.ttl( (byte)ttl );
-        }
-    }
-
 }
