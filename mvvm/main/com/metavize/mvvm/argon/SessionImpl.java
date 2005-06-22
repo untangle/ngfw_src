@@ -387,6 +387,19 @@ public abstract class SessionImpl implements Session, SocketQueueShutdownHook
         
         public void event( OutgoingSocketQueue out )
         {
+            /**
+             * This is called every time a crumb is removed from the
+             * outgoing socket queue (what it considers 'writable',
+             * but the TAPI defines writable as empty) So, we drop all
+             * these writable events unless it is empty. That converts
+             * the socketqueue's definition of writable to the TAPI's
+             * You are at no risk of spinning because this is only
+             * called when something is actually removed from the
+             * SocketQueue
+             **/
+            if (!out.isEmpty())
+                return;
+
             if ( out == serverOutgoingSocketQueue ) {
                 if ( logger.isDebugEnabled()) {
                     logger.debug( "OutgoingSocketQueueEvent: server - " + out +

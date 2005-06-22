@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: OutgoingSocketQueue.java,v 1.15 2005/03/22 07:07:08 rbscott Exp $
+ * $Id$
  */
 
 package com.metavize.jvector;
@@ -142,7 +142,6 @@ public class OutgoingSocketQueue extends Source implements SocketQueue
         sq.eventList.clear();
 
         /* Send a reset crumb down the line */
-        /* XXX ??? */
         if ( !isRelaySideClosed ) {
             sq.add( ResetCrumb.getInstance());
         }
@@ -168,7 +167,6 @@ public class OutgoingSocketQueue extends Source implements SocketQueue
             ll.shutdownEvent( OutgoingSocketQueue.this );
         }
 
-        /* XXX Need some hook to let the user know this thing is closed */
         return 0;
     }
     
@@ -243,7 +241,7 @@ public class OutgoingSocketQueue extends Source implements SocketQueue
             return 0;
         }
         
-        protected void callListenersAdd( Crumb crumb )
+        protected void callListenersAdd( Crumb crumb ) /* call Listeners Non Empty (readable) Event */
         {
             /* Relay side was closed, but the transform is not aware yet */
             if ( isRelaySideClosed ) {
@@ -254,10 +252,18 @@ public class OutgoingSocketQueue extends Source implements SocketQueue
             }
         }
 
-        protected void callListenersRemove()
+        protected void callListenersRemove() /* call Listeners Non Full (writable) Event */
         {
-            notifyMvpoll();
+            /**
+             * if it is still full after removing, neither mvpoll nor
+             * the listeners need to know because the state hasnt
+             * changed (its still not writable)
+             **/
+            if (isFull()) 
+                return;
             
+            notifyMvpoll();
+
             /** Only call the listeners if there side is open */
             if ( !isListenersSideClosed ) {
                 for (ListIterator iter = this.listeners.listIterator() ; iter.hasNext() ;) {

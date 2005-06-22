@@ -443,7 +443,7 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
         try {
             assert out != null;
             if (!out.isEmpty()) {
-                warn("writeEvent to full outgoing queue on: " + sideName);
+                warn("writeEvent to non empty outgoing queue on: " + sideName);
                 return;
             }
 
