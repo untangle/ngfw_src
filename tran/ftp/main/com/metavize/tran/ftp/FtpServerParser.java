@@ -97,6 +97,7 @@ public class FtpServerParser extends AbstractParser
 
                 FtpReply reply = new FtpReply(replyCode, message);
                 List<Token> l = Arrays.asList(new Token[] { reply });
+
                 return new ParseResult(l, null);
             }
 
@@ -105,7 +106,7 @@ public class FtpServerParser extends AbstractParser
                 while (3 < --i && LF != dup.get(i));
 
                 if (LF != dup.get(i++)) {
-                    return new ParseResult(buf.compact());
+                    break;
                 }
 
                 ByteBuffer end = dup.duplicate();
@@ -114,7 +115,7 @@ public class FtpServerParser extends AbstractParser
                 int endCode = replyCode(end);
 
                 if (-1 == endCode || SP != end.get()) {
-                    return new ParseResult(buf.compact());
+                    break;
                 }
 
                 String message = AsciiCharBuffer.wrap(buf).toString();
@@ -131,6 +132,16 @@ public class FtpServerParser extends AbstractParser
         } else {
             return new ParseResult(buf.compact());
         }
+
+        // incomplete input
+        if (buf.limit() + 80 > buf.capacity()) {
+            ByteBuffer b = ByteBuffer.allocate(2 * buf.capacity());
+            b.put(buf);
+            buf = b;
+        } else {
+            buf.compact();
+        }
+        return new ParseResult(buf);
     }
 
     private ParseResult parseServerData(ByteBuffer buf) throws ParseException
