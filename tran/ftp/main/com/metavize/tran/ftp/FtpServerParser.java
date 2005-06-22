@@ -128,9 +128,6 @@ public class FtpServerParser extends AbstractParser
             default:
                 throw new ParseException("expected a space");
             }
-
-        } else {
-            return new ParseResult(buf.compact());
         }
 
         // incomplete input
