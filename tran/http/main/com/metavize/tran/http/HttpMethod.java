@@ -11,9 +11,9 @@
 
 package com.metavize.tran.http;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
-import java.io.Serializable;
 
 /**
  * HTTP method, RFC 2616 section 5.1.1.
@@ -31,6 +31,7 @@ public class HttpMethod implements Serializable
     public static final HttpMethod DELETE = new HttpMethod('D', "DELETE");
     public static final HttpMethod TRACE = new HttpMethod('T', "TRACE");
     public static final HttpMethod CONNECT = new HttpMethod('C', "CONNECT");
+    public static final HttpMethod NON_STANDARD = new HttpMethod('X', "NON-STANDARD");
 
     private static final Map INSTANCES = new HashMap();
     private static final Map BY_NAME = new HashMap();
@@ -43,7 +44,8 @@ public class HttpMethod implements Serializable
         INSTANCES.put(PUT.getKey(), PUT);
         INSTANCES.put(DELETE.getKey(), DELETE);
         INSTANCES.put(TRACE.getKey(), TRACE);
-        INSTANCES.put(CONNECT.getKey(), TRACE);
+        INSTANCES.put(CONNECT.getKey(), CONNECT);
+        INSTANCES.put(NON_STANDARD.getKey(), NON_STANDARD);
 
         BY_NAME.put(OPTIONS.toString(), OPTIONS);
         BY_NAME.put(GET.toString(), GET);
@@ -52,11 +54,14 @@ public class HttpMethod implements Serializable
         BY_NAME.put(PUT.toString(), PUT);
         BY_NAME.put(DELETE.toString(), DELETE);
         BY_NAME.put(TRACE.toString(), TRACE);
-        BY_NAME.put(CONNECT.toString(), TRACE);
+        BY_NAME.put(CONNECT.toString(), CONNECT);
+        BY_NAME.put(NON_STANDARD.toString(), NON_STANDARD);
     }
 
     private final char key;
     private final String method;
+
+    // constructors -----------------------------------------------------------
 
     private HttpMethod(char key, String method)
     {
@@ -64,14 +69,21 @@ public class HttpMethod implements Serializable
         this.method = method;
     }
 
+    // static factories -------------------------------------------------------
+
     public static HttpMethod getInstance(char key)
     {
         return (HttpMethod)INSTANCES.get(key);
     }
 
-    public static HttpMethod getInstance(String method)
+    public static HttpMethod getInstance(String methStr)
     {
-        return (HttpMethod)BY_NAME.get(method.toUpperCase());
+        HttpMethod method = (HttpMethod)BY_NAME.get(methStr.toUpperCase());
+        if (null == method) { /* XXX setting about accepting unknown methods */
+            method = new HttpMethod('X', methStr);
+        }
+
+        return method;
     }
 
     public char getKey()
