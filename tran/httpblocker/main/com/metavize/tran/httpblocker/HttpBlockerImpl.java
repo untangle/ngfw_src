@@ -11,6 +11,11 @@
 
 package com.metavize.tran.httpblocker;
 
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -27,11 +32,8 @@ import com.metavize.mvvm.tapi.TransformContextFactory;
 import com.metavize.mvvm.tran.IPMaddr;
 import com.metavize.mvvm.tran.MimeType;
 import com.metavize.mvvm.tran.MimeTypeRule;
-import com.metavize.mvvm.tran.PipelineInfo;
 import com.metavize.mvvm.tran.PortRange;
 import com.metavize.mvvm.tran.StringRule;
-import com.metavize.tran.http.HttpRequestEvent;
-import com.metavize.tran.http.HttpResponseEvent;
 import com.metavize.tran.token.TokenAdaptor;
 import net.sf.hibernate.HibernateException;
 import net.sf.hibernate.Query;
@@ -93,42 +95,61 @@ public class HttpBlockerImpl extends SoloTransform implements HttpBlocker
         Blacklist.BLACKLIST.configure(settings);
     }
 
-    // XXX check over indices
+    private static final String ALL_EVENTS_QUERY
+        = "SELECT req.event_id, blk.event_id, req.time_stamp, host, uri, "
+        +         "reason, category, content_type, resp.content_length, "
+        +         "c_client_addr, c_client_port, s_server_addr, s_server_port "
+        + "FROM tr_http_evt_req req "
+        + "JOIN pipeline_info pio USING (session_id) "
+        + "JOIN tr_http_req_line rl USING (request_id) "
+        + "LEFT OUTER JOIN tr_http_evt_resp resp USING (request_id)"
+        + "LEFT OUTER JOIN tr_httpblk_evt_blk blk USING (request_id)"
+        + "WHERE ? < req.event_id "
+        + "ORDER BY req.time_stamp DESC LIMIT ?";
+
     public List<RequestLog> getEvents(RequestLog lastRequest, int limit)
     {
         long lastId = null == lastRequest ? 0 : lastRequest.getRequestEventId();
-
         List<RequestLog> l = new LinkedList<RequestLog>();
 
         Session s = TransformContextFactory.context().openSession();
         try {
-            String sql = "SELECT {blk.*}, {req.*}, {resp.*}, {pio.*} "
-                + "FROM tr_http_evt_req req "
-                + "LEFT OUTER JOIN tr_httpblk_evt_blk blk USING (request_id) "
-                + "LEFT OUTER JOIN tr_http_evt_resp resp USING (request_id) "
-                + "JOIN pipeline_info pio USING (session_id) "
-                + "WHERE :id < req.event_id "
-                + "ORDER BY req.time_stamp DESC LIMIT :limit";
+            Connection c = s.connection();
+            PreparedStatement ps = c.prepareStatement(ALL_EVENTS_QUERY);
+            ps.setLong(1, lastId);
+            ps.setInt(2, limit);
+            long l0 = System.currentTimeMillis();
+            System.out.println("DOING IT");
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                long requestEventId = rs.getLong(1);
+                long blockEventId = rs.getLong(2);
+                Date timeStamp = rs.getDate("time_stamp");
+                String host = rs.getString("host");
+                String uri = rs.getString("uri");
+                String reasonStr = rs.getString("reason");
+                String category = rs.getString("category");
+                String contentType = rs.getString("content_type");
+                int contentLength = rs.getInt("content_length");
+                String clientAddr = rs.getString("c_client_addr");
+                int clientPort = rs.getInt("c_client_port");
+                String serverAddr = rs.getString("s_server_addr");
+                int serverPort = rs.getInt("s_server_port");
 
-            Query q = s.createSQLQuery
-                (sql,
-                 new String[] { "blk", "req", "resp", "pio" },
-                 new Class[] { HttpBlockerEvent.class,
-                               HttpRequestEvent.class,
-                               HttpResponseEvent.class,
-                               PipelineInfo.class });
-            q.setLong("id", lastId);
-            q.setInteger("limit", limit);
-            List<Object[]> results = (List<Object[]>)q.list();
+                RequestLog rl = new RequestLog
+                    (requestEventId, blockEventId, timeStamp, host, uri,
+                     reasonStr, category, contentType, contentLength,
+                     clientAddr, clientPort, serverAddr, serverPort);
 
-            for (Object[] o : results) {
-                l.add(0, new RequestLog((HttpBlockerEvent)o[0],
-                                        (HttpRequestEvent)o[1],
-                                        (HttpResponseEvent)o[2],
-                                        (PipelineInfo)o[3]));
+                l.add(0, rl);
             }
+            long l1 = System.currentTimeMillis();
+
+            System.out.println("DONE:" + (l1 - l0));
+        } catch (SQLException exn) {
+            logger.warn("could not get events", exn);
         } catch (HibernateException exn) {
-            logger.warn("query failed for getAllEvents", exn);
+            logger.warn("could not get events", exn);
         } finally {
             try {
                 s.close();
@@ -140,51 +161,10 @@ public class HttpBlockerImpl extends SoloTransform implements HttpBlocker
         return l;
     }
 
-    // XXX check over indices
+    // XXX temporary
     public List<RequestLog> getBlockedEvents(RequestLog lastRequest, int limit)
     {
-        long lastId = null == lastRequest ? 0 : lastRequest.getBlockEventId();
-
-        List<RequestLog> l = new LinkedList<RequestLog>();
-
-        Session s = TransformContextFactory.context().openSession();
-        try {
-            String sql = "SELECT {blk.*}, {req.*}, {resp.*}, {pio.*} "
-                + "FROM tr_httpblk_evt_blk blk "
-                + "JOIN tr_http_evt_req req USING (request_id) "
-                + "LEFT OUTER JOIN tr_http_evt_resp resp USING (request_id) "
-                + "JOIN pipeline_info pio USING (session_id) "
-                + "WHERE :id < blk.event_id "
-                + "ORDER BY blk.time_stamp DESC LIMIT :limit";
-
-            Query q = s.createSQLQuery
-                (sql,
-                 new String[] { "blk", "req", "resp", "pio" },
-                 new Class[] { HttpBlockerEvent.class,
-                               HttpRequestEvent.class,
-                               HttpResponseEvent.class,
-                               PipelineInfo.class});
-            q.setLong("id", lastId);
-            q.setInteger("limit", limit);
-            List<Object[]> results = (List<Object[]>)q.list();
-
-            for (Object[] o : results) {
-                l.add(0, new RequestLog((HttpBlockerEvent)o[0],
-                                        (HttpRequestEvent)o[1],
-                                        (HttpResponseEvent)o[2],
-                                        (PipelineInfo)o[3]));
-            }
-        } catch (HibernateException exn) {
-            logger.warn("query failed for getAllEvents", exn);
-        } finally {
-            try {
-                s.close();
-            } catch (HibernateException exn) {
-                logger.warn("could not close Hibernate session", exn);
-            }
-        }
-
-        return l;
+        return getBlockedEvents(lastRequest, limit);
     }
 
     // SoloTransform methods --------------------------------------------------

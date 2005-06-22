@@ -40,9 +40,9 @@ public class UriUserType implements UserType
             return null;
         } else {
             // could have been truncated in middle of escape
-            if ('%' == name.charAt(name.length() - 1)) {
+            if (1 <= name.length() && '%' == name.charAt(name.length() - 1)) {
                 name = name.substring(0, name.length() - 1);
-            } else if ('%' == name.charAt(name.length() - 2)) {
+            } else if (2 <= name.length() && '%' == name.charAt(name.length() - 2)) {
                 name = name.substring(0, name.length() - 2);
             }
             try {

@@ -12,105 +12,105 @@
 package com.metavize.tran.httpblocker;
 
 import java.io.Serializable;
-import java.net.InetAddress;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Date;
-
-import com.metavize.mvvm.tran.PipelineInfo;
-import com.metavize.tran.http.HttpRequestEvent;
-import com.metavize.tran.http.HttpResponseEvent;
-import org.apache.log4j.Logger;
+import java.sql.Date;
 
 public class RequestLog implements Serializable
 {
-    private final HttpBlockerEvent httpBlockerEvent;
-    private final HttpRequestEvent httpRequestEvent;
-    private final HttpResponseEvent httpResponseEvent;
-    private final PipelineInfo pipelineInfo;
+    private final Long requestEventId;
+    private final Long blockEventId;
+    private final Date timeStamp;
+    private final String url;
+    private final Reason reason;
+    private final String category;
+    private final String contentType;
+    private final int contentLength;
+    private final String clientAddr;
+    private final int clientPort;
+    private final String serverAddr;
+    private final int serverPort;
 
-    public RequestLog(HttpBlockerEvent httpBlockerEvent,
-                      HttpRequestEvent httpRequestEvent,
-                      HttpResponseEvent httpResponseEvent,
-                      PipelineInfo pipelineInfo)
+    public RequestLog(long requestEventId, long blockEventId, Date timeStamp,
+                      String host, String uri, String reasonStr,
+                      String category, String contentType, int contentLength,
+                      String clientAddr, int clientPort,
+                      String serverAddr, int serverPort)
     {
-        this.httpBlockerEvent = httpBlockerEvent;
-        this.httpRequestEvent = httpRequestEvent;
-        this.httpResponseEvent = httpResponseEvent;
-        this.pipelineInfo = pipelineInfo;
+        this.requestEventId = requestEventId;
+        this.blockEventId = blockEventId;
+        this.timeStamp = timeStamp;
+        this.url = host + ":/" + uri;
+        this.reason = null == reasonStr ? null
+            : Reason.getInstance(reasonStr.charAt(0));
+        this.category = category;
+        this.contentType = contentType;
+        this.contentLength = contentLength;
+        this.clientAddr = clientAddr;
+        this.clientPort = clientPort;
+        this.serverAddr = serverAddr;
+        this.serverPort = serverPort;
     }
 
     // accessors --------------------------------------------------------------
 
     public Date timeStamp()
     {
-        return httpRequestEvent.getTimeStamp();
+        return timeStamp;
     }
 
     public String getUrl()
     {
-        String h = httpRequestEvent.getHost();
-        URI u = httpRequestEvent.getRequestLine().getRequestUri();
-
-        try {
-            URI host = new URI("http://" + h);
-            return host.relativize(u).toString();
-        } catch (URISyntaxException exn) {
-            Logger l = Logger.getLogger(RequestLog.class);
-            l.warn("could not create host URI: " + u);
-            return "http://" + h + "/" + u;
-        }
+        return url;
     }
 
     public Reason getReason()
     {
-        return null == httpBlockerEvent ? null : httpBlockerEvent.getReason();
+        return reason;
     }
 
     public String getCategory()
     {
-        return null == httpBlockerEvent ? null : httpBlockerEvent.getCategory();
+        return category;
     }
 
     public String getContentType()
     {
-        return null == httpResponseEvent ? null : httpResponseEvent.getContentType();
+        return contentType;
     }
 
     public int getContentLength()
     {
-        return null == httpResponseEvent ? null : httpResponseEvent.getContentLength();
+        return contentLength;
     }
 
-    public InetAddress getClientAddr()
+    public String getClientAddr()
     {
-        return pipelineInfo.getCClientAddr();
+        return clientAddr;
     }
 
     public int getCClientPort()
     {
-        return pipelineInfo.getCClientPort();
+        return clientPort;
     }
 
-    public InetAddress getServerAddr()
+    public String getServerAddr()
     {
-        return pipelineInfo.getSServerAddr();
+        return serverAddr;
     }
 
     public int getSServerPort()
     {
-        return pipelineInfo.getSServerPort();
+        return serverPort;
     }
 
     // package protected ------------------------------------------------------
 
     long getRequestEventId()
     {
-        return httpRequestEvent.getId();
+        return requestEventId;
     }
 
     long getBlockEventId()
     {
-        return httpBlockerEvent.getId();
+        return blockEventId;
     }
 }
