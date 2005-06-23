@@ -280,8 +280,13 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       </fileset>
       <fileset dir="${build.mvvm}"/>
 
-      <!-- XXX dirty hack for store icons -->
+      <!-- XXX dirty hack for reporting icons -->
+      <fileset dir="../gui/main">
+        <include name="com/metavize/gui/icons/LogoNoText96x96.gif"/>
+        <include name="com/metavize/gui/icons/LogoNoText64x64.gif"/>
+      </fileset>
 
+      <!-- XXXX really dirty hack for store icons -->
       <fileset dir="../gui/main">
         <include name="**/IconOrg*png"/>
         <include name="**/IconDesc*png"/>
