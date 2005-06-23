@@ -1,34 +1,22 @@
-CREATE INDEX tr_http_evtreq_ts_idx ON tr_http_evt_req (time_stamp);
-CREATE INDEX tr_http_evtreq_rid_idx ON tr_http_evt_req (request_id);
-CREATE INDEX tr_http_evtresp_ts_idx ON tr_http_evt_resp (time_stamp);
-CREATE INDEX tr_http_evtresp_rid_idx ON tr_http_evt_resp (request_id);
+CREATE INDEX tr_nat_evt_dhcp_idx     ON tr_nat_evt_dhcp     ( time_stamp );
+CREATE INDEX tr_nat_evt_dhcp_abs_idx ON tr_nat_evt_dhcp_abs ( time_stamp );
 
--- XXX other transform's tables
-CREATE INDEX tr_httpblk_evt_rid_idx ON tr_httpblk_evt_blk (request_id);
-CREATE INDEX tr_spyware_ac_rid_idx ON tr_spyware_evt_access (request_id);
-CREATE INDEX tr_spyware_ax_rid_idx ON tr_spyware_evt_activex (request_id);
-CREATE INDEX tr_spyware_c_rid_idx ON tr_spyware_evt_cookie (request_id);
-CREATE INDEX tr_virus_http_rid_idx ON tr_virus_evt_http (request_line);
+-- Use 3 days to make sure there are no lease events that other logs may need
+DELETE FROM tr_nat_evt_dhcp_abs WHERE time_stamp < ((:cutoff)::timestamp - interval '3 days' );
+DELETE FROM tr_nat_evt_dhcp     WHERE time_stamp < ((:cutoff)::timestamp - interval '3 days' );
 
-DELETE FROM tr_http_evt_req WHERE time_stamp < (:cutoff)::timestamp;
-DELETE FROM tr_http_evt_resp WHERE time_stamp < (:cutoff)::timestamp;
+ANALYZE tr_nat_evt_dhcp;
+ANALYZE tr_nat_evt_dhcp_abs;
 
-ANALYZE;
-
-DELETE FROM tr_http_req_line
+DELETE FROM tr_nat_evt_dhcp_abs_leases
     WHERE NOT EXISTS
-        (SELECT 1 FROM tr_http_evt_req
-            WHERE tr_http_req_line.request_id = request_id)
-    OR NOT EXISTS
-        (SELECT 1 FROM tr_http_evt_resp
-            WHERE tr_http_req_line.request_id = request_id);
+        (SELECT 1 FROM tr_nat_evt_dhcp_abs
+            WHERE tr_nat_evt_dhcp_abs_leases.event_id = event_id);
 
-DROP INDEX tr_http_evtreq_ts_idx;
-DROP INDEX tr_http_evtreq_rid_idx;
-DROP INDEX tr_http_evtresp_ts_idx;
-DROP INDEX tr_http_evtresp_rid_idx;
-DROP INDEX tr_httpblk_evt_rid_idx;
-DROP INDEX tr_spyware_ac_rid_idx;
-DROP INDEX tr_spyware_ax_rid_idx;
-DROP INDEX tr_spyware_c_rid_idx;
-DROP INDEX tr_virus_http_rid_idx;
+DELETE FROM dhcp_abs_lease
+    WHERE NOT EXISTS
+        (SELECT 1 FROM tr_nat_evt_dhcp_abs_leases
+            WHERE dhcp_abs_lease.event_id = lease_id);
+
+DROP INDEX tr_nat_evt_dhcp_idx;
+DROP INDEX tr_nat_evt_dhcp_abs_idx;
