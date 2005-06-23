@@ -331,7 +331,7 @@ EOF
 
 cat >> $main_index <<EOF
                   <tr><td>
-                    > <a href="$index#EdgeGuard Appliance">EdgeGuard Appliance</a>
+                    > <a href="#EdgeGuard Appliance">EdgeGuard Appliance</a>
                   </td></tr>
 EOF
 
