@@ -13,7 +13,7 @@ set -e
 
 JAVA_HOME=${JAVA_HOME:-@DEFAULT_JAVA_HOME@}
 
-CLASSPATH="@MVVM_LIB@/util.jar:@MVVM_LIB@/mvvm-client.jar:@THIRDPARTY_LIB@/log4j-1.2.8.jar:@THIRDPARTY_LIB@/hibernate2.jar:@THIRDPARTY_LIB@/odmg-3.0.jar:$CLASSPATH"
+CLASSPATH="@MVVM_LIB@/mvvm-client.jar:@THIRDPARTY_LIB@/log4j-1.2.8.jar:@THIRDPARTY_LIB@/hibernate2.jar:@THIRDPARTY_LIB@/odmg-3.0.jar:$CLASSPATH"
 
 for m in @MVVM_TOOLBOX@/*.mar; do CLASSPATH="$CLASSPATH:$m"; done
 

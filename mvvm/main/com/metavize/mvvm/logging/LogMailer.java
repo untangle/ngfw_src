@@ -21,6 +21,7 @@ import javax.mail.MessagingException;
 import com.metavize.mvvm.MailSender;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.MvvmLocalContext;
+import com.metavize.mvvm.NetworkingConfiguration;
 import com.metavize.mvvm.security.Tid;
 import com.metavize.mvvm.tapi.TransformContextFactory;
 import com.metavize.mvvm.tran.TransformContext;
@@ -37,6 +38,9 @@ import org.logicalcobwebs.proxool.ProxoolListenerIF;
 
 public class LogMailer implements Runnable
 {
+    public static final String SUBJECT_BASE = "EdgeGuard Logs";
+    public static final String BODY_BASE = "Error Logs";
+
     // Generate no more than one email per this long (5 minutes).
     public static final long MIN_MESSAGE_PERIOD = 300000;
 
@@ -176,13 +180,44 @@ public class LogMailer implements Runnable
                 parts.add(part);
 
             // Send it!
-            MailSender ms = MvvmContextFactory.context().mailSender();
-            String header = "Error Logs";
-            ms.sendErrorLogs("EdgeGuard Logs", header, parts);
+            doSend(SUBJECT_BASE, BODY_BASE, parts);
         } catch(Exception e) {
             logger.warn("Error occured while sending e-mail notification.", e);
         }
     }
+
+    private void doSend(String subjectBase, String bodyBase, List<MimeBodyPart> parts) {
+        NetworkingConfiguration netConf = MvvmContextFactory.context().networkingManager().get();
+        StringBuilder sb = new StringBuilder(bodyBase);
+        sb.append("\n\nDHCP is ");
+        if (netConf.isDhcpEnabled())
+            sb.append("enabled");
+        else
+            sb.append("disabled");
+        sb.append("\nhost is ");
+        String host = netConf.host().toString();
+        sb.append(host);
+        sb.append("\nnetmask is ");
+        sb.append(netConf.netmask().toString());
+        sb.append("\ngateway is ");
+        sb.append(netConf.gateway().toString());
+        sb.append("\ndns1 is ");
+        sb.append(netConf.dns1().toString());
+        sb.append("\ndns2 is ");
+        sb.append(netConf.dns2().toString());
+
+        String bodyText = sb.toString();
+
+        sb = new StringBuilder(subjectBase);
+        sb.append(" (");
+        sb.append(host);
+        sb.append(")");
+        String subjectText = sb.toString();
+
+        MailSender ms = MvvmContextFactory.context().mailSender();
+        ms.sendErrorLogs(subjectText, bodyText, parts);
+    }
+
 
     private static final int CONSOLE_BUF_SIZE = 1024;
 

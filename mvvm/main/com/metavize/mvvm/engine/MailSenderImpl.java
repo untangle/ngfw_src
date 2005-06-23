@@ -36,6 +36,14 @@ import org.apache.log4j.Logger;
 import org.logicalcobwebs.proxool.ProxoolException;
 import org.logicalcobwebs.proxool.ProxoolFacade;
 
+/**
+ * Note that this class is designed to be used <b>BOTH</b> inside the MVVM and
+ * as a stand-alone application. The stand-alone mode is used for mailing out
+ * EdgeReports.
+ *
+ * @author <a href="mailto:jdi@metavize.com">John Irwin</a>
+ * @version 1.0
+ */
 public class MailSenderImpl implements MailSender
 {
     public static final String DEFAULT_FROM_ADDRESS = "reports@local.domain";
@@ -43,13 +51,19 @@ public class MailSenderImpl implements MailSender
     // All error log emails go here.
     public static final String ERROR_LOG_RECIPIENT = "exceptions@metavize.com";
 
+    public static final String METAVIZE_SMTP_RELAY = "mail.metavize.com";
+
+    public static final String Mailer = "MVVM MailSender";
+
+    // --
+
+    private static final String MAIL_HOST_PROP = "mail.host";
+    private static final String MAIL_FROM_PROP = "mail.from";
     private static final Object LOCK = new Object();
 
     private static MailSenderImpl MAIL_SENDER;
 
     public static boolean SessionDebug = false;
-
-    public static final String Mailer = "MVVM MailSender";
 
     private static final MimetypesFileTypeMap mimetypesFileTypeMap = new MimetypesFileTypeMap();
 
@@ -187,22 +201,27 @@ public class MailSenderImpl implements MailSender
     // Called when settings updated.
     private void refreshSessions(MailSettings settings) {
         Properties mvProps = new Properties();
-        mvProps.put("mail.host", "mail.metavize.com");
+        // If they have set a SMTP host, trust it (since we might not be able to route
+        // mail out at all directly), otherwise use us directly.
+        if (settings.getSmtpHost() != null)
+            mvProps.put(MAIL_HOST_PROP, settings.getSmtpHost());
+        else
+            mvProps.put(MAIL_HOST_PROP, METAVIZE_SMTP_RELAY);
         // What we really want here is something that will uniquely identify the customer,
         // including the serial # stamped on the CD. XXXX
-        mvProps.put("mail.from", settings.getFromAddress());
+        mvProps.put(MAIL_FROM_PROP, settings.getFromAddress());
         mvSession = Session.getInstance(mvProps);
 
         Properties alertProps = new Properties();
         if (settings.getSmtpHost() != null)
-            alertProps.put("mail.host", settings.getSmtpHost());
-        alertProps.put("mail.from", settings.getFromAddress());
+            alertProps.put(MAIL_HOST_PROP, settings.getSmtpHost());
+        alertProps.put(MAIL_FROM_PROP, settings.getFromAddress());
         alertSession = Session.getInstance(alertProps);
 
         Properties reportProps = new Properties();
         if (settings.getSmtpHost() != null)
-            reportProps.put("mail.host", settings.getSmtpHost());
-        reportProps.put("mail.from", settings.getFromAddress());
+            reportProps.put(MAIL_HOST_PROP, settings.getSmtpHost());
+        reportProps.put(MAIL_FROM_PROP, settings.getFromAddress());
         reportSession = Session.getInstance(reportProps);
     }
 
@@ -325,32 +344,9 @@ public class MailSenderImpl implements MailSender
         }
     }
 
-    private String prettyBody(String  origBodyText) {
-        NetworkingConfiguration netConf = MvvmContextFactory.context().networkingManager().get();
-        StringBuilder sb = new StringBuilder(origBodyText);
-        sb.append("\n\nDHCP is ");
-        if (netConf.isDhcpEnabled())
-            sb.append("enabled");
-        else
-            sb.append("disabled");
-        sb.append("\nhost is ");
-        sb.append(netConf.host().toString());
-        sb.append("\nnetmask is ");
-        sb.append(netConf.netmask().toString());
-        sb.append("\ngateway is ");
-        sb.append(netConf.gateway().toString());
-        sb.append("\ndns1 is ");
-        sb.append(netConf.dns1().toString());
-        sb.append("\ndns2 is ");
-        sb.append(netConf.dns2().toString());
-        return sb.toString();
-    }
-
     public void sendErrorLogs(String subject, String bodyText, List<MimeBodyPart> parts) {
         String[] recipients = new String[1];
         recipients[0] = ERROR_LOG_RECIPIENT;
-
-        bodyText = prettyBody(bodyText);
 
         if (parts == null) {
             // Do this simplest thing.  Shouldn't be used. XX

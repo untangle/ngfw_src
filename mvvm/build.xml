@@ -22,13 +22,13 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
   <!-- main targets -->
   <target name="pkg.gensrc"  depends="gensrc.servlets"/>
   <target name="pkg.compile"
-          depends="compile.bootstrap, compile.util, compile.mvvm-client,
+          depends="compile.bootstrap, compile.mvvm-client,
                    compile.mvvm, compile.servlets"/>
   <target name="pkg.jar"
-          depends="jar.bootstrap, jar.util, jar.mvvm-client, jar.mvvm,
+          depends="jar.bootstrap, jar.mvvm-client, jar.mvvm,
                    jar.servlets"/>
   <target name="pkg.install"
-          depends="install.hier, install.bootstrap, install.util,
+          depends="install.hier, install.bootstrap,
                    install.mvvm-client, install.mvvm, install.servlets,
                    install.thirdparty, install.reports"/>
   <target name="pkg.clean" depends="clean.nuke"/>
@@ -146,7 +146,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
   <!-- mvvm-client.jar -->
   <property name="build.mvvm-client" value="${build.root}/mvvm-client"/>
 
-  <target name="compile.mvvm-client">
+  <target name="compile.mvvm-client" depends="jar.bootstrap">
     <mkdir dir="${build.mvvm-client}"/>
 
     <exec executable="${buildtool.base}/dependset.sh">
@@ -175,6 +175,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       <src path="${src.main}"/>
 
       <include name="com/metavize/mvvm/*.java"/>
+      <exclude name="com/metavize/mvvm/MvvmContextFactory.java"/>
       <include name="com/metavize/mvvm/argon/SessionEndpoints.java"/>
       <include name="com/metavize/mvvm/client/*.java"/>
       <include name="com/metavize/mvvm/engine/HttpInvocation.java"/>
@@ -211,72 +212,17 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
         <include name="com/metavize/mvvm/tapi/*Desc*.class"/>
         <include name="com/metavize/mvvm/tapi/SessionStats*.class"/>
         <include name="com/metavize/mvvm/tapi/client/*.class"/>
-        <include name="com/metavize/mvvm/tapi/Protocol.class"/>
+        <include name="com/metavize/mvvm/tapi/Protocol*.class"/>
         <include name="com/metavize/mvvm/tran/**/*.class"/>
         <exclude name="com/metavize/mvvm/tran/MutateTStats*.class"/>
         <include name="com/metavize/mvvm/util/PortServiceNames*.class"/>
         <include name="com/metavize/mvvm/util/SessionUtil*.class"/>
-        <include name="com/metavize/jsp/**/*.class"/>
       </fileset>
     </jar>
   </target>
 
   <target name="install.mvvm-client" depends="jar.mvvm-client">
     <copy file="${build.jar}/mvvm-client.jar" todir="${dist.mvvm.lib}"/>
-  </target>
-
-  <!-- util.jar -->
-
-  <property name="build.util" value="${build.root}/util"/>
-
-  <target name="compile.util" depends="jar.bootstrap, jar.mvvm">
-    <mkdir dir="${build.util}"/>
-
-    <exec executable="${buildtool.base}/dependset.sh">
-      <arg value="${build.util}"/>
-      <arg value="${build.depcache}/util.patternset"/>
-    </exec>
-
-    <depend srcdir="${src.main}" destdir="${build.util}"
-            cache="${build.depcache}/util" closure="yes">
-      <patternset includesfile="${build.depcache}/util.patternset"/>
-    </depend>
-
-    <javac destdir="${build.util}"
-           debug="true"
-           debuglevel="lines,source"
-           deprecation="on"
-           source="1.5"
-           target="1.5"
-           includeAntRuntime="false">
-
-      <src path="${src.main}"/>
-
-      <classpath refid="jnetcap.classpath"/>
-      <classpath refid="jvector.classpath"/>
-      <classpath refid="jfreechart.classpath"/>
-      <classpath refid="mvvm.thirdparty.classpath"/>
-      <classpath path="${build.jar}/bootstrap.jar"/>
-      <classpath path="${build.jar}/mvvm.jar"/>
-
-      <include name="com/metavize/mvvm/reporting/**/*.java"/>
-      <include name="com/metavize/mvvm/client/RemoteClient.java"/>
-      <include name="com/metavize/mvvm/engine/MvvmTransformHandler.java"/>
-    </javac>
-  </target>
-
-  <target name="jar.util" depends="compile.util">
-    <jar destfile="${build.jar}/util.jar" index="yes">
-      <fileset dir="${build.util}"/>
-      <fileset dir="../gui/main">
-        <include name="com/metavize/gui/icons/LogoNoText96x96.gif"/>
-        <include name="com/metavize/gui/icons/LogoNoText64x64.gif"/>
-      </fileset>
-    </jar>
-  </target>
-
-  <target name="install.util" depends="jar.util">
-    <copy file="${build.jar}/util.jar" todir="${dist.mvvm.lib}"/>
   </target>
 
   <!-- mvvm.jar -->
@@ -302,11 +248,12 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
            optimize="false"
            deprecation="on"
            source="1.5"
-       target="1.5"
+           target="1.5"
            includeAntRuntime="false">
 
       <classpath refid="jnetcap.classpath"/>
       <classpath refid="jvector.classpath"/>
+      <classpath refid="jfreechart.classpath"/>
       <classpath refid="mvvm.thirdparty.classpath"/>
       <classpath path="${build.jar}/bootstrap.jar"/>
 
@@ -322,7 +269,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       <include name="com/metavize/mvvm/type/**"/>
       <include name="com/metavize/tran/token/**"/>
       <include name="com/metavize/tran/util/**"/>
-      <include name="com/metavize/mvvm/reporting/BaseSummarizer.java"/>
+      <include name="com/metavize/mvvm/reporting/**"/>
     </javac>
   </target>
 

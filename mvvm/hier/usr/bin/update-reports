@@ -4,7 +4,7 @@ set -e
 
 JAVA_HOME=${JAVA_HOME:-/opt/java}
 
-CLASSPATH="@MVVM_HOME@/lib/util.jar:@MVVM_HOME@/lib/mvvm-client.jar"
+CLASSPATH="@MVVM_HOME@/lib/mvvm.jar"
 
 mars=$(@USR_BIN@/mcli instances | grep running | awk '{print $2}' | sed 's|^\(.*\)$|@MVVM_TOOLBOX@/\1.mar|')
 

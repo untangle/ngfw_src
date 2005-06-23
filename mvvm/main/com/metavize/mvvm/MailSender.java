@@ -48,11 +48,11 @@ public interface MailSender
      * the latest events for a particular transform.
      * to the reportEmail address (from the mail settings).
      *
-     * @param subject a <code>String</code> value
-     * @param bodyHTML a <code>String</code> containing the HTML for the "main page" that will become the first extra
+     * @param subject a <code>String</code> giving the subject.
+     * @param bodyText a <code>String</code> containing the plain text for the "main page" that will become the first extra
      * @param parts a <code>List<MimeBodyPart></code> containing the additional parts.
      */
-    void sendErrorLogs(String subject, String bodyHTML, List<MimeBodyPart> parts);
+    void sendErrorLogs(String subject, String bodyText, List<MimeBodyPart> parts);
 
     /**
      * <code>sendMessage</code> sends an email message to the given
