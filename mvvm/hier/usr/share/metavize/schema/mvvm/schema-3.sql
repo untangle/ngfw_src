@@ -1,4 +1,4 @@
--- schema for release 1.4a
+-- schema for release-1.5
 
 CREATE TABLE admin_settings (
     admin_settings_id int8 NOT NULL,
@@ -192,10 +192,14 @@ ALTER TABLE transform_preferences ADD CONSTRAINT FKE8B6BA651446F FOREIGN KEY (ti
 
 CREATE INDEX idx_string_rule ON string_rule (string);
 
+ALTER TABLE mvvm_evt_pipeline ADD CONSTRAINT FK9CF995D62F5A0D7 FOREIGN KEY (pipeline_info) REFERENCES pipeline_info ON DELETE CASCADE;
+
 ALTER TABLE transform_persistent_state ADD CONSTRAINT FKA67B855C1446F FOREIGN KEY (tid) REFERENCES tid;
 
 ALTER TABLE ipmaddr_dir_entries ADD CONSTRAINT FKC67DE356B5257E75 FOREIGN KEY (ipmaddr_dir_id) REFERENCES ipmaddr_dir;
 
 ALTER TABLE ipmaddr_dir_entries ADD CONSTRAINT FKC67DE356871AAD3E FOREIGN KEY (rule_id) REFERENCES ipmaddr_rule;
+
+CREATE INDEX pipeline_info_sid on pipeline_info (session_id);
 
 CREATE SEQUENCE hibernate_sequence;

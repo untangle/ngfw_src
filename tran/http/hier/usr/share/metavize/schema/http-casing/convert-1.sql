@@ -1,6 +1,6 @@
--- convert script for release 1.5
+-- convert script for release 1.4a
 
--- indexes for reporting
+-- drop foreign key constraints for logging
 
-CREATE INDEX tr_http_evt_req_tstmp ON tr_http_evt_req (time_stamp);
-CREATE INDEX tr_http_evt_resp_reqid ON tr_http_evt_resp (request_id);
+ALTER TABLE tr_http_evt_resp DROP CONSTRAINT FKC9BB12A21F20A4EB;
+ALTER TABLE tr_http_evt_req DROP CONSTRAINT FK40505B6C1F20A4EB;

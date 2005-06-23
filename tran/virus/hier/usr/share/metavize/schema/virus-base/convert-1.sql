@@ -2,4 +2,4 @@
 
 -- drop foreign key constraints for logging
 
-ALTER TABLE mvvm_evt_pipeline DROP CONSTRAINT FK9CF995D62F5A0D7;
+ALTER TABLE tr_virus_evt_http DROP CONSTRAINT FK6E88EC87D98C8FC4;
