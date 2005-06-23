@@ -110,7 +110,7 @@ public class MaintenanceJPanel extends javax.swing.JPanel implements Savable, Re
         maintainRemoteJPanel.add(jSeparator2, gridBagConstraints);
 
         reportJCheckBox.setFont(new java.awt.Font("Dialog", 0, 12));
-        reportJCheckBox.setText("<html><b>Report</b> any unexpected problems to Metavize.  An email will be sent to Metavize if an unexpected condition occurs.  No information about your network traffic will be transmitted.  (This is enabled by default)</html>");
+        reportJCheckBox.setText("<html><b>Report</b> any unexpected problems to Metavize.  An email will be sent to Metavize if an unexpected condition occurs.  No information about your network traffic will be transmitted.  (This is disabled by default)</html>");
         reportJCheckBox.setFocusPainted(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
