@@ -12,11 +12,11 @@
 package com.metavize.tran.httpblocker;
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -54,18 +54,6 @@ public class HttpBlockerImpl extends SoloTransform implements HttpBlocker
         + "LEFT OUTER JOIN tr_httpblk_evt_blk blk USING (request_id)"
         + "WHERE ? < req.event_id "
         + "ORDER BY req.time_stamp DESC LIMIT ?";
-
-    private static final String BLOCKED_EVENTS_QUERY
-        = "SELECT req.event_id, blk.event_id, req.time_stamp, host, uri, "
-        +         "reason, category, content_type, resp.content_length, "
-        +         "c_client_addr, c_client_port, s_server_addr, s_server_port "
-        + "FROM tr_httpblk_evt_blk blk"
-        + "JOIN tr_http_evt_req req USING (request_id)"
-        + "JOIN tr_http_req_line rl USING (request_id)"
-        + "JOIN pipeline_info pi USING (session_id)"
-        + "LEFT OUTER JOIN tr_http_evt_resp resp USING (request_id)"
-        + "WHERE ? < blk.event_id"
-        + "ORDER BY blk.time_stamp DESC LIMIT ?";
 
     private static final Logger logger = Logger.getLogger(HttpBlockerImpl.class);
 
@@ -120,14 +108,55 @@ public class HttpBlockerImpl extends SoloTransform implements HttpBlocker
     public List<RequestLog> getEvents(RequestLog lastRequest, int limit)
     {
         long lastId = null == lastRequest ? 0 : lastRequest.getRequestEventId();
-        return doQuery(ALL_EVENTS_QUERY, lastId, limit);
-    }
+        List<RequestLog> l = new LinkedList<RequestLog>();
 
-    // XXX temporary
-    public List<RequestLog> getBlockedEvents(RequestLog lastRequest, int limit)
-    {
-        long lastId = null == lastRequest ? 0 : lastRequest.getBlockEventId();
-        return doQuery(BLOCKED_EVENTS_QUERY, lastId, limit);
+        Session s = TransformContextFactory.context().openSession();
+        try {
+            Connection c = s.connection();
+            PreparedStatement ps = c.prepareStatement(ALL_EVENTS_QUERY);
+            ps.setLong(1, lastId);
+            ps.setInt(2, limit);
+            long l0 = System.currentTimeMillis();
+            System.out.println("DOING IT");
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                long requestEventId = rs.getLong(1);
+                long blockEventId = rs.getLong(2);
+                Date timeStamp = new Date(rs.getDate("time_stamp").getTime());
+                String host = rs.getString("host");
+                String uri = rs.getString("uri");
+                String reasonStr = rs.getString("reason");
+                String category = rs.getString("category");
+                String contentType = rs.getString("content_type");
+                int contentLength = rs.getInt("content_length");
+                String clientAddr = rs.getString("c_client_addr");
+                int clientPort = rs.getInt("c_client_port");
+                String serverAddr = rs.getString("s_server_addr");
+                int serverPort = rs.getInt("s_server_port");
+
+                RequestLog rl = new RequestLog
+                    (requestEventId, blockEventId, timeStamp, host, uri,
+                     reasonStr, category, contentType, contentLength,
+                     clientAddr, clientPort, serverAddr, serverPort);
+
+                l.add(0, rl);
+            }
+            long l1 = System.currentTimeMillis();
+
+            System.out.println("DONE:" + (l1 - l0));
+        } catch (SQLException exn) {
+            logger.warn("could not get events", exn);
+        } catch (HibernateException exn) {
+            logger.warn("could not get events", exn);
+        } finally {
+            try {
+                s.close();
+            } catch (HibernateException exn) {
+                logger.warn("could not close Hibernate session", exn);
+            }
+        }
+
+        return l;
     }
 
     // SoloTransform methods --------------------------------------------------
@@ -349,9 +378,6 @@ public class HttpBlockerImpl extends SoloTransform implements HttpBlocker
 
     protected void postInit(String[] args)
     {
-        List l = getBlockedEvents(null, 100);
-        System.out.println("GOT L: " + l);
-
         Session s = TransformContextFactory.context().openSession();
         try {
             Transaction tx = s.beginTransaction();
@@ -397,60 +423,5 @@ public class HttpBlockerImpl extends SoloTransform implements HttpBlocker
     public void setSettings(Object settings)
     {
         setHttpBlockerSettings((HttpBlockerSettings)settings);
-    }
-
-    // private methods --------------------------------------------------------
-
-    private List<RequestLog> doQuery(String sql, long lastId, int limit)
-    {
-        List<RequestLog> l = new LinkedList<RequestLog>();
-
-        Session s = TransformContextFactory.context().openSession();
-        try {
-            Connection c = s.connection();
-            PreparedStatement ps = c.prepareStatement(sql);
-            ps.setLong(1, lastId);
-            ps.setInt(2, limit);
-            long l0 = System.currentTimeMillis();
-            System.out.println("DOING IT");
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                long requestEventId = rs.getLong(1);
-                long blockEventId = rs.getLong(2);
-                Date timeStamp = rs.getDate("time_stamp");
-                String host = rs.getString("host");
-                String uri = rs.getString("uri");
-                String reasonStr = rs.getString("reason");
-                String category = rs.getString("category");
-                String contentType = rs.getString("content_type");
-                int contentLength = rs.getInt("content_length");
-                String clientAddr = rs.getString("c_client_addr");
-                int clientPort = rs.getInt("c_client_port");
-                String serverAddr = rs.getString("s_server_addr");
-                int serverPort = rs.getInt("s_server_port");
-
-                RequestLog rl = new RequestLog
-                    (requestEventId, blockEventId, timeStamp, host, uri,
-                     reasonStr, category, contentType, contentLength,
-                     clientAddr, clientPort, serverAddr, serverPort);
-
-                l.add(0, rl);
-            }
-            long l1 = System.currentTimeMillis();
-
-            System.out.println("DONE:" + (l1 - l0));
-        } catch (SQLException exn) {
-            logger.warn("could not get events", exn);
-        } catch (HibernateException exn) {
-            logger.warn("could not get events", exn);
-        } finally {
-            try {
-                s.close();
-            } catch (HibernateException exn) {
-                logger.warn("could not close Hibernate session", exn);
-            }
-        }
-
-        return l;
     }
 }
