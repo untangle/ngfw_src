@@ -82,8 +82,6 @@ public class MEditTableJPanel extends javax.swing.JPanel implements ListSelectio
                 
         if(!showDetailJPanel)
             tableJPanel.remove(detailJScrollPane);
-        if(showButtonJPanel || showDetailJPanel)
-            contentJPanel.remove(eventJPanel);
     }
 
     public void setFillJButtonEnabled(boolean enabled){
@@ -167,8 +165,6 @@ public class MEditTableJPanel extends javax.swing.JPanel implements ListSelectio
     
     public void setAllEnabled(boolean enabled){
         mColoredJTable.setEnabled(enabled);
-        flushJButton.setEnabled(enabled);
-        refreshLogJButton.setEnabled(enabled);
         addJButton.setVisible(enabled);
         removeJButton.setVisible(enabled);
         fillJButton.setVisible(enabled);
@@ -186,9 +182,6 @@ public class MEditTableJPanel extends javax.swing.JPanel implements ListSelectio
         fillJButton = new javax.swing.JButton();
         detailJScrollPane = new javax.swing.JScrollPane();
         detailJTextArea = new javax.swing.JTextArea();
-        eventJPanel = new javax.swing.JPanel();
-        flushJButton = new javax.swing.JButton();
-        refreshLogJButton = new javax.swing.JButton();
 
         setLayout(new java.awt.GridBagLayout());
 
@@ -325,59 +318,6 @@ public class MEditTableJPanel extends javax.swing.JPanel implements ListSelectio
         gridBagConstraints.weighty = 1.0;
         contentJPanel.add(tableJPanel, gridBagConstraints);
 
-        eventJPanel.setLayout(new java.awt.GridBagLayout());
-
-        eventJPanel.setFocusCycleRoot(true);
-        eventJPanel.setFocusable(false);
-        eventJPanel.setOpaque(false);
-        flushJButton.setFont(new java.awt.Font("Default", 0, 12));
-        flushJButton.setText("<html><b>Flush</b> Log</html>");
-        flushJButton.setDoubleBuffered(true);
-        flushJButton.setFocusPainted(false);
-        flushJButton.setFocusable(false);
-        flushJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        flushJButton.setMargin(new java.awt.Insets(3, 5, 3, 5));
-        flushJButton.setMaximumSize(new java.awt.Dimension(90, 27));
-        flushJButton.setMinimumSize(new java.awt.Dimension(90, 27));
-        flushJButton.setPreferredSize(new java.awt.Dimension(90, 27));
-        flushJButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                flushJButtonActionPerformed(evt);
-            }
-        });
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        eventJPanel.add(flushJButton, gridBagConstraints);
-
-        refreshLogJButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        refreshLogJButton.setText("<html><b>Refresh</b> Log</html>");
-        refreshLogJButton.setDoubleBuffered(true);
-        refreshLogJButton.setFocusPainted(false);
-        refreshLogJButton.setFocusable(false);
-        refreshLogJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        refreshLogJButton.setMargin(new java.awt.Insets(3, 5, 3, 5));
-        refreshLogJButton.setMaximumSize(new java.awt.Dimension(90, 27));
-        refreshLogJButton.setMinimumSize(new java.awt.Dimension(90, 27));
-        refreshLogJButton.setPreferredSize(new java.awt.Dimension(90, 27));
-        refreshLogJButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                refreshLogJButtonActionPerformed(evt);
-            }
-        });
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 4;
-        gridBagConstraints.gridy = 0;
-        eventJPanel.add(refreshLogJButton, gridBagConstraints);
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.insets = new java.awt.Insets(15, 0, 0, 4);
-        contentJPanel.add(eventJPanel, gridBagConstraints);
-
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -408,25 +348,6 @@ public class MEditTableJPanel extends javax.swing.JPanel implements ListSelectio
 	    e.printStackTrace();
 	}
     }//GEN-LAST:event_fillJButtonActionPerformed
-
-    private void flushJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_flushJButtonActionPerformed
-        if( Util.getIsDemo() )
-            return;
-        
-        try{
-            this.getTableModel().flushLog();
-        }
-        catch(Exception e){
-            //if(mTransformJPanel != null)
-            //    mTransformJPanel.damageControl();
-        }
-        entryJTable.clearSelection();
-    }//GEN-LAST:event_flushJButtonActionPerformed
-
-    private void refreshLogJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refreshLogJButtonActionPerformed
-        // this.getTableModel().refresh();  we no longer even have logs
-        // entryJTable.clearSelection();
-    }//GEN-LAST:event_refreshLogJButtonActionPerformed
 
 
     private void addJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addJButtonActionPerformed
@@ -496,10 +417,7 @@ public class MEditTableJPanel extends javax.swing.JPanel implements ListSelectio
     protected javax.swing.JTextArea detailJTextArea;
     protected javax.swing.JScrollPane entryJScrollPane;
     protected javax.swing.JTable entryJTable;
-    private javax.swing.JPanel eventJPanel;
     private javax.swing.JButton fillJButton;
-    private javax.swing.JButton flushJButton;
-    private javax.swing.JButton refreshLogJButton;
     private javax.swing.JButton removeJButton;
     private javax.swing.JPanel tableJPanel;
     // End of variables declaration//GEN-END:variables

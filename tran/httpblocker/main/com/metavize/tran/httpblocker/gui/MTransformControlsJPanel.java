@@ -27,6 +27,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
     private static final String NAME_BLOCK_MIME_TYPES = "MIME Types";
     private static final String NAME_BLOCK_URLS = "URLs";
     private static final String NAME_BLOCK_CATEGORIES = "Categories";
+    private static final String NAME_LOG = "Event Log";
 
 
     public MTransformControlsJPanel(MTransformJPanel mTransformJPanel){
@@ -34,6 +35,10 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
     }
 
     protected void generateGui(){
+
+	// EVENT LOG ///////
+	LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransformContext().transform());
+        this.mTabbedPane.insertTab(NAME_LOG, null, logJPanel, null, 0);
 
 	// PASS LISTS /////
         JTabbedPane passJTabbedPane = new JTabbedPane();
