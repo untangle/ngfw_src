@@ -22,12 +22,6 @@ public class LogJPanel extends MLogTableJPanel {
 	Vector allEvents = new Vector();
 
 	Vector test = new Vector();
-	test.add( ((Integer)depthJSlider.getValue()).toString() );
-	test.add( ((Integer)requestLogList.size()).toString() );
-	test.add("");
-	test.add("");
-	allEvents.add(test);
-
 	Vector event;
 
 	for( RequestLog requestLog : requestLogList ){
@@ -46,8 +40,10 @@ public class LogJPanel extends MLogTableJPanel {
 		event.add( requestLog.getUrl() );
 		event.add( reason.toString() );
 	    }
-
-	    allEvents.add(event);
+	    event.add( "unknown" );
+	    event.add( requestLog.getServerAddr() + ":" + ((Integer)requestLog.getSServerPort()).toString() );
+	    event.add( requestLog.getClientAddr() + ":" + ((Integer)requestLog.getCClientPort()).toString() );
+	    allEvents.insertElementAt(event,0);
 	}
 
 	return allEvents;
