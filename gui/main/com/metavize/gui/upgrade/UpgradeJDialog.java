@@ -229,7 +229,8 @@ public class UpgradeJDialog extends javax.swing.JDialog implements Savable, Refr
 
         actionJPanel.setLayout(new java.awt.GridBagLayout());
 
-        upgradeJButton.setText("Upgrade System Now");
+        upgradeJButton.setFont(new java.awt.Font("Dialog", 0, 12));
+        upgradeJButton.setText("<html><b>Upgrade</b> EdgeGuard</html>");
         upgradeJButton.setDoubleBuffered(true);
         upgradeJButton.setFocusPainted(false);
         upgradeJButton.setFocusable(false);
