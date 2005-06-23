@@ -79,12 +79,12 @@ class AdminConfigTableModel extends MSortedTableModel {
 	addTableColumn( tableColumnModel,  1,  Util.LINENO_MIN_WIDTH, false, false, false, false, Integer.class,    null, sc.TITLE_INDEX );
         addTableColumn( tableColumnModel,  2,  85, true,  true,  false, false, String.class,     sc.EMPTY_NAME,  sc.TITLE_NAME );
         addTableColumn( tableColumnModel,  3,  85, true,  true,  false, false, String.class,     "[no login]", "login");
-        addTableColumn( tableColumnModel,  4,  85, true,  false, true,  false, MPasswordField.class,     PasswordUtil.encrypt("12345678"),     "<html><center>original<br>password</center></html>");
-        addTableColumn( tableColumnModel,  5, 260, true,  true,  false, false, MPasswordField.class, "",     "<html><center>set new password<br>(for new accounts or to change password)</center></html>");
-        addTableColumn( tableColumnModel,  6, 260, true,  true,  false, false, MPasswordField.class, "",     "<html><center>confirm new password<br>(for new accounts or to change password)</center></html>");
-        addTableColumn( tableColumnModel,  7, 250, true,  true,  false, false, MPasswordField.class, "12345678",     "<html><center><b>original user's password</b><br>(required to change or remove account)</center></html>");
-        addTableColumn( tableColumnModel,  8,  85, true,  true,  false, false, String.class,     "[no email]", "<html><center>email<br>address</center></html>");
-        addTableColumn( tableColumnModel,  9,  85, true,  true,  false, false, Boolean.class,    "false",    "<html><center>send critical<br>alerts</center></html>");
+        addTableColumn( tableColumnModel,  4,  85, true,  false, true,  false, MPasswordField.class, PasswordUtil.encrypt("12345678"), sc.html("original<br>password"));
+        addTableColumn( tableColumnModel,  5, 260, true,  true,  false, false, MPasswordField.class, "",     sc.html("set new password<br>(for new accounts or to change password)"));
+        addTableColumn( tableColumnModel,  6, 260, true,  true,  false, false, MPasswordField.class, "",     sc.html("confirm new password<br>(for new accounts or to change password)"));
+        addTableColumn( tableColumnModel,  7, 250, true,  true,  false, false, MPasswordField.class, "12345678",     sc.html("<b>original user's password</b><br>(required to change or remove account)"));
+        addTableColumn( tableColumnModel,  8,  85, true,  true,  false, false, String.class,     "[no email]", sc.html("email<br>address"));
+        addTableColumn( tableColumnModel,  9,  85, true,  true,  false, false, Boolean.class,    "false",    sc.html("send critical<br>alerts"));
         return tableColumnModel;
     }
 
@@ -143,7 +143,7 @@ class AdminConfigTableModel extends MSortedTableModel {
 
     }
     
-    public void generateSettings(Object settings, boolean validateOnly) throws Exception {        
+    public void generateSettings(Object settings, boolean validateOnly) throws Exception {
 
 	prevalidate();
 	Set allRows = new LinkedHashSet();
