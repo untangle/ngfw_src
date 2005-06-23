@@ -39,7 +39,9 @@
   <!-- User Logger -->
 
   <appender name="eventlog"
-            class="com.metavize.mvvm.logging.HibernateAppender"/>
+            class="com.metavize.mvvm.logging.HibernateAppender">
+    <!-- Need to turn off additivity so we do not log these events to the normal logs -->
+  </appender>
 
   <!-- Log Emailer -->
 
@@ -53,7 +55,8 @@
   <!-- Categories                                     -->
   <!-- ============================================== -->
 
-  <category name="eventlog">
+  <category name="eventlog"
+            additivity="false">
     <priority value="ALL"/>
     <appender-ref ref="eventlog"/>
   </category>
