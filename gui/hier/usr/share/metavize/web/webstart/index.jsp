@@ -77,7 +77,7 @@ String helpClickHere = "Click <a href=\"help.html\">here</a> for more informatio
       EdgeGuard Client
     </title>
   </head>
-  <body style="background-image: url(images/DarkBackground1600x100.jpg);">
+  <body LINK="#0000EE" VLINK="#0000EE" style="background-image: url(images/DarkBackground1600x100.jpg);">
     <br/>
     <br/>
     <br/>
