@@ -52,7 +52,7 @@ class SpamAssassin
 
             proc.waitFor();
         } catch (IOException exn) {
-            logger.warn("could not run spamc", exn);
+            logger.error("could not run spamc", exn);
         } catch (InterruptedException exn) {
             logger.warn("could not run spamc", exn);
         }
