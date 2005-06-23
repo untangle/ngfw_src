@@ -175,8 +175,13 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
 	    }
 	}
 	catch(Exception e){
-	    Util.handleExceptionNoRestart("Error refreshing settings", e);
-	    new RefreshFailureDialog( mTransformJPanel.getTransformContext().getTransformDesc().getDisplayName() );
+	    try{
+		Util.handleExceptionWithRestart("Error refreshing settings", e);
+	    }
+	    catch(Exception f){
+		Util.handleExceptionNoRestart("Error refreshing settings", f);
+		new RefreshFailureDialog( mTransformJPanel.getTransformContext().getTransformDesc().getDisplayName() );
+	    }
 	}
 	finally{
 	    Util.printMessage(message.toString());
@@ -234,7 +239,7 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
         contentJPanel.add(mTabbedPane, gridBagConstraints);
 
         removeJButton.setFont(new java.awt.Font("Arial", 0, 12));
-        removeJButton.setText("<html><b>Remove</b> Appliance</html>");
+        removeJButton.setText("<html><center><b>Remove</b> Appliance</center></html>");
         removeJButton.setDoubleBuffered(true);
         removeJButton.setFocusPainted(false);
         removeJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -250,7 +255,7 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
         contentJPanel.add(removeJButton, gridBagConstraints);
 
         expandJButton.setFont(new java.awt.Font("Arial", 0, 12));
-        expandJButton.setText("<html><b>Expand</b> Settings</html>");
+        expandJButton.setText("<html><center><b>Expand</b> Settings</center></html>");
         expandJButton.setDoubleBuffered(true);
         expandJButton.setFocusPainted(false);
         expandJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -273,15 +278,15 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
         contentJPanel.add(expandJButton, gridBagConstraints);
 
         reloadJButton.setFont(new java.awt.Font("Arial", 0, 12));
-        reloadJButton.setText("<html><b>Reload</b> Settings</html>");
+        reloadJButton.setText("<html><center><b>Reload</b> Settings</center></html>");
         reloadJButton.setDoubleBuffered(true);
         reloadJButton.setFocusPainted(false);
         reloadJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         reloadJButton.setIconTextGap(0);
         reloadJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
-        reloadJButton.setMaximumSize(new java.awt.Dimension(110, 25));
-        reloadJButton.setMinimumSize(new java.awt.Dimension(110, 25));
-        reloadJButton.setPreferredSize(new java.awt.Dimension(110, 25));
+        reloadJButton.setMaximumSize(new java.awt.Dimension(115, 25));
+        reloadJButton.setMinimumSize(new java.awt.Dimension(115, 25));
+        reloadJButton.setPreferredSize(new java.awt.Dimension(115, 25));
         reloadJButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 reloadJButtonActionPerformed(evt);
@@ -292,19 +297,19 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 114);
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 119);
         contentJPanel.add(reloadJButton, gridBagConstraints);
 
         saveJButton.setFont(new java.awt.Font("Arial", 0, 12));
-        saveJButton.setText("<html><b>Save</b> Settings</html>");
+        saveJButton.setText("<html><center><b>Save</b> Settings</center></html>");
         saveJButton.setDoubleBuffered(true);
         saveJButton.setFocusPainted(false);
         saveJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         saveJButton.setIconTextGap(0);
         saveJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
-        saveJButton.setMaximumSize(new java.awt.Dimension(110, 25));
-        saveJButton.setMinimumSize(new java.awt.Dimension(110, 25));
-        saveJButton.setPreferredSize(new java.awt.Dimension(110, 25));
+        saveJButton.setMaximumSize(new java.awt.Dimension(115, 25));
+        saveJButton.setMinimumSize(new java.awt.Dimension(115, 25));
+        saveJButton.setPreferredSize(new java.awt.Dimension(115, 25));
         saveJButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 saveJButtonActionPerformed(evt);
