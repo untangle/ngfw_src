@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: SpywareSummarizer.java,v 1.2 2005/03/19 23:04:20 amread Exp $
+ * $Id$
  */
 
 package com.metavize.tran.spyware;
@@ -14,6 +14,7 @@ package com.metavize.tran.spyware;
 import java.sql.*;
 
 import com.metavize.mvvm.reporting.BaseSummarizer;
+import com.metavize.mvvm.reporting.Util;
 import org.apache.log4j.Logger;
 
 public class SpywareSummarizer extends BaseSummarizer {
@@ -74,10 +75,10 @@ public class SpywareSummarizer extends BaseSummarizer {
             logger.warn("could not summarize", exn);
         }
 
-        addEntry("Number of potential spyware accesses detected", accessCount);
-        addEntry("Number of potential spyware accesses blocked", blockCount);
-        addEntry("Number of spyware cookies blocked", cookieCount);
-        addEntry("Number of spyware ActiveX controls blocked", axCount);
+        addEntry("Total potential spyware accesses detected", Util.trimNumber("",accessCount));
+        addEntry("&nbsp;&nbsp;&nbsp;Blocked potential spyware accesses", Util.trimNumber("",blockCount));
+        addEntry("&nbsp;&nbsp;&nbsp;Blocked spyware cookies", Util.trimNumber("",cookieCount));
+        addEntry("&nbsp;&nbsp;&nbsp;Blocked spyware ActiveX", Util.trimNumber("",axCount));
 
         // XXXX
         String tranName = "Spyware Blocker";

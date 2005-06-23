@@ -14,6 +14,8 @@ package com.metavize.tran.reporting;
 import java.sql.*;
 
 import com.metavize.mvvm.reporting.BaseSummarizer;
+import com.metavize.mvvm.reporting.Util;
+
 import org.apache.log4j.Logger;
 
 public class LoginSummarizer extends BaseSummarizer {
@@ -51,8 +53,8 @@ public class LoginSummarizer extends BaseSummarizer {
             logger.warn("could not summarize", exn);
         }
 
-        addEntry("Number of successful administrative logins", succeededCount);
-        addEntry("Number of failed administrative logins", failedCount);
+        addEntry("Successful administrative logins", Util.trimNumber("",(long)succeededCount));
+        addEntry("Failed administrative logins", Util.trimNumber("",(long)failedCount) );
 
         // XXXX
         String hdrName = "Administrative Access";

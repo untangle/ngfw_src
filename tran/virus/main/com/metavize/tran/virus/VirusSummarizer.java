@@ -18,6 +18,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 
 import com.metavize.mvvm.reporting.BaseSummarizer;
+import com.metavize.mvvm.reporting.Util;
 import org.apache.log4j.Logger;
 
 public class VirusSummarizer extends BaseSummarizer {
@@ -84,10 +85,12 @@ public class VirusSummarizer extends BaseSummarizer {
             logger.warn("could not summarize", exn);
         }
 
-        addEntry("Number of scanned HTTP downloads", httpScanned);
-        addEntry("Number of infected/blocked HTTP downloads", httpBlocked);
-        addEntry("Number of scanned FTP downloads", ftpScanned);
-        addEntry("Number of infected/blocked HTTP downloads", ftpBlocked);
+        addEntry("Scanned HTTP downloads", Util.trimNumber("",httpScanned));
+        addEntry("&nbsp;&nbsp;&nbsp;Infected/Blocked HTTP downloads", Util.trimNumber("",httpBlocked));
+        addEntry("&nbsp;&nbsp;&nbsp;Passed HTTP downloads", Util.trimNumber("",httpScanned - httpBlocked));
+        addEntry("Scanned FTP downloads", Util.trimNumber("",ftpScanned));
+        addEntry("&nbsp;&nbsp;&nbsp;Infected/Blocked HTTP downloads", Util.trimNumber("",ftpBlocked));
+        addEntry("&nbsp;&nbsp;&nbsp;Passed HTTP downloads", Util.trimNumber("",ftpScanned - ftpBlocked));
 
         // XXXX
         String tranName = "Virus";

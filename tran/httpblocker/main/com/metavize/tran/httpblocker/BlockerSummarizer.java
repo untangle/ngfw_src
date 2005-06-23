@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: BlockerSummarizer.java,v 1.3 2005/03/15 04:18:54 amread Exp $
+ * $Id$
  */
 
 package com.metavize.tran.httpblocker;
@@ -14,6 +14,7 @@ package com.metavize.tran.httpblocker;
 import java.sql.*;
 
 import com.metavize.mvvm.reporting.BaseSummarizer;
+import com.metavize.mvvm.reporting.Util;
 import org.apache.log4j.Logger;
 
 public class BlockerSummarizer extends BaseSummarizer {
@@ -67,9 +68,9 @@ public class BlockerSummarizer extends BaseSummarizer {
             logger.warn("could not summarize", exn);
         }
 
-        addEntry("Number of web hits", hitCount);
-        addEntry("Number of blocked web pages", blockCount);
-        addEntry("Total bytes of web traffic", totalTraffic);
+        addEntry("Total web hits", Util.trimNumber("",hitCount));
+        addEntry("Total blocked web pages", Util.trimNumber("",blockCount));
+        addEntry("Total web traffic", Util.trimNumber("Bytes",totalTraffic));
 
         // XXXX
         String tranName = "Web Content Control";

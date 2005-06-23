@@ -16,6 +16,7 @@ import org.apache.log4j.Logger;
 
 import com.metavize.mvvm.reporting.BaseSummarizer;
 import com.metavize.mvvm.reporting.ReportSummarizer;
+import com.metavize.mvvm.reporting.Util;
 
 public class EmailSummarizer extends BaseSummarizer {
     
@@ -108,15 +109,15 @@ public class EmailSummarizer extends BaseSummarizer {
             logger.warn("could not summarize", exn);
         }
 
-        addEntry("Number of blocked Spam messages", blockSpamCnt);
-        addEntry("Number of blocked Virus messages", blockVirusCnt);
-        addEntry("Number of modified Virus messages", replaceVirusCnt);
-        addEntry("Number of blocked Custom rule messages", blockCustomCnt);
-        //addEntry("Number of modified Custom rule messages", exchangeCustomCnt);
-        addEntry("Number of passed messages", passCnt);
         int totalCnt = blockSpamCnt + blockVirusCnt + replaceVirusCnt + blockCustomCnt + passCnt;
-        addEntry("Total number of scanned messages", totalCnt);
-        addEntry("Total number of messages not processed", relaySzCnt);
+        addEntry("Total scanned messages", Util.trimNumber("",totalCnt));
+        addEntry("&nbsp;&nbsp;&nbsp;Blocked spam messages", Util.trimNumber("",blockSpamCnt));
+        addEntry("&nbsp;&nbsp;&nbsp;Blocked virus messages", Util.trimNumber("",blockVirusCnt));
+        addEntry("&nbsp;&nbsp;&nbsp;Modified virus messages", Util.trimNumber("",replaceVirusCnt));
+        addEntry("&nbsp;&nbsp;&nbsp;Blocked custom rule messages", Util.trimNumber("",blockCustomCnt));
+        //addEntry("Number of modified Custom rule messages", exchangeCustomCnt);
+        addEntry("&nbsp;&nbsp;&nbsp;Passed messages", Util.trimNumber("",passCnt));
+        addEntry("Total messages not processed", Util.trimNumber("",relaySzCnt));
 
         // XXXX
         String tranName = "eMail SpamGuard";

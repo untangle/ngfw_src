@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: ProtoFilterSummarizer.java,v 1.4 2005/03/19 23:04:20 amread Exp $
+ * $Id$
  */
 
 package com.metavize.tran.protofilter;
@@ -14,6 +14,8 @@ package com.metavize.tran.protofilter;
 import java.sql.*;
 
 import com.metavize.mvvm.reporting.BaseSummarizer;
+import com.metavize.mvvm.reporting.Util;
+
 import org.apache.log4j.Logger;
 
 public class ProtoFilterSummarizer extends BaseSummarizer {
@@ -51,8 +53,9 @@ public class ProtoFilterSummarizer extends BaseSummarizer {
             logger.warn("could not summarize", exn);
         }
 
-        addEntry("Number of rogue protocol sessions detected", logCount);
-        addEntry("Number of rogue protocol sessions blocked", blockCount);
+        addEntry("Detected rogue protocol sessions", Util.trimNumber("",logCount));
+        addEntry("&nbsp;&nbsp;&nbsp;Blocked sessions", Util.trimNumber("",blockCount));
+        addEntry("&nbsp;&nbsp;&nbsp;Passed sessions", Util.trimNumber("",logCount - blockCount));
 
         // XXXX
         String tranName = "Rogue Protocol Control";

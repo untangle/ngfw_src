@@ -82,17 +82,16 @@ public class GeneralSummarizer extends BaseSummarizer {
         long numSecs = (endDate.getTime() - startDate.getTime()) / 1000;
         double numDays = ((double)numSecs) / (60d * 60d * 24d);
 
-        addEntry("Total bytes transferred", totalTotal);
-        addEntry("Total bytes sent", totalBytesOutgoing);
-        addEntry("Total bytes received", totalBytesIncoming);
-        addEntry("Number of sessions", numOut + numIn);
-        addEntry("Number of outbound sessions", numOut);
-        addEntry("Total bytes for outbound sessions", totalOutboundBytes);
-        addEntry("Number of inbound sessions", numIn);
-        addEntry("Total bytes for inbound sessions", totalInboundBytes);
-        addEntry("Average transfer rate (kB/sec)", (long) (((float)totalTotal) / numSecs / 1024f));
-        double bpd = ((double)totalTotal) / numDays / 1024d;
-        addEntry("Transferred per day (kB)", (int)bpd);
+        addEntry("Total data transferred", Util.trimNumber("Bytes",totalTotal));
+        addEntry("&nbsp;&nbsp;&nbsp;Data sent", Util.trimNumber("Bytes",totalBytesOutgoing));
+        addEntry("&nbsp;&nbsp;&nbsp;Data received", Util.trimNumber("Bytes",totalBytesIncoming));
+        addEntry("Total sessions created", Util.trimNumber("",numOut + numIn));
+        addEntry("&nbsp;&nbsp;&nbsp;Outbound sessions created", Util.trimNumber("",numOut));
+        addEntry("&nbsp;&nbsp;&nbsp;Inbound sessions created", Util.trimNumber("",numIn));
+        addEntry("Data sent during outbound sessions", Util.trimNumber("Bytes",totalOutboundBytes));
+        addEntry("Data sent during inbound sessions", Util.trimNumber("Bytes",totalInboundBytes));
+        addEntry("Average data transfer rate", Util.trimNumber("Bytes/sec",(long) (((float)totalTotal) / numSecs)));
+        addEntry("Daily data transfer rate", Util.trimNumber( "Bytes/day",(long) (((double)totalTotal) / numDays)));
 
         return summarizeEntries("Traffic Flow Rates");
     }
