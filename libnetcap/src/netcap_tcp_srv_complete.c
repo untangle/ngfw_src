@@ -142,9 +142,15 @@ static int _srv_complete_connection( netcap_session_t* netcap_sess, int flags )
     int ret = 0;
     int ep_fd;
 
+    netcap_sess->dead_tcp.exit_type = TCP_CLI_DEAD_NULL;
     if ( _srv_start_connection( netcap_sess, &dst_addr, flags ) < 0 ) {
-        netcap_sess->dead_tcp.exit_type = TCP_CLI_DEAD_RESET;
-        return errlog( ERR_CRITICAL, "_srv_start_connection\n" );
+        /* Some codes like net unreachable may be returned immediately */
+        if ( netcap_sess->dead_tcp.exit_type == TCP_CLI_DEAD_NULL ) {
+            netcap_sess->dead_tcp.exit_type = TCP_CLI_DEAD_RESET;
+            errlog( ERR_CRITICAL, "_srv_start_connection\n" );
+        }
+
+        return -1;
     }
     
     if (( ep_fd = epoll_create( 2 )) < 0 ) {
@@ -363,9 +369,20 @@ static int _srv_start_connection( netcap_session_t* netcap_sess, struct sockaddr
                unet_inet_ntoa( dst_addr->sin_addr.s_addr ), ntohs( dst_addr->sin_port ));
     
         if ( connect( newsocket, (struct sockaddr*)dst_addr, sizeof(struct sockaddr_in)) < 0 ) {
-            if ( errno != EINPROGRESS ) {
+            if ( errno == EHOSTUNREACH ) {
+                ret = -1;
+                netcap_sess->dead_tcp.exit_type = TCP_CLI_DEAD_ICMP;
+                netcap_sess->dead_tcp.type      = ICMP_DEST_UNREACH;
+                netcap_sess->dead_tcp.code      = ICMP_HOST_UNREACH;
+            } else if ( errno == ENETUNREACH ) {
+                ret = -1;
+                netcap_sess->dead_tcp.exit_type = TCP_CLI_DEAD_ICMP;
+                netcap_sess->dead_tcp.type      = ICMP_DEST_UNREACH;
+                netcap_sess->dead_tcp.code      = ICMP_NET_UNREACH;
+            } else if ( errno == EINPROGRESS ) {
+                /* nothing to do here */
+            } else {
                 ret = perrlog( "connect" );
-                break;
             }
         }
     } while ( 0 );
