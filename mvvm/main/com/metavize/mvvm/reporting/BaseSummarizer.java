@@ -36,6 +36,10 @@ public abstract class BaseSummarizer implements ReportSummarizer {
             this.name = name;
             this.value = new Long(value);
         }
+        Entry(String name, String value) {
+            this.name = name;
+            this.value = value;
+        }
     }
 
     protected void addEntry(String name, int value) {
@@ -43,6 +47,10 @@ public abstract class BaseSummarizer implements ReportSummarizer {
     }
 
     protected void addEntry(String name, long value) {
+        entries.add(new Entry(name, value));
+    }
+
+    protected void addEntry(String name, String value) {
         entries.add(new Entry(name, value));
     }
 
