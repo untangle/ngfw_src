@@ -52,16 +52,17 @@ class BlockTableModel extends MSortedTableModel{
     private static final int  C0_MW = Util.STATUS_MIN_WIDTH; /* status */
     private static final int  C1_MW = Util.LINENO_MIN_WIDTH; /* # */
     private static final int  C2_MW = 65;  /* use rule */
-    private static final int  C3_MW = 75;  /* action */
-    private static final int  C4_MW = 100; /* protocol */
-    private static final int  C5_MW = 160; /* direction */
-    private static final int  C6_MW = 120;  /* source address */
-    private static final int  C7_MW = 120;  /* destination address */
-    private static final int  C8_MW = 110;  /* source port */
-    private static final int  C9_MW = 110;  /* destination port */
-    private static final int C10_MW = 120;  /* category */
+    private static final int  C3_MW = 55;  /* log */
+    private static final int  C4_MW = 75;  /* action */
+    private static final int  C5_MW = 100; /* protocol */
+    private static final int  C6_MW = 160; /* direction */
+    private static final int  C7_MW = 120;  /* source address */
+    private static final int  C8_MW = 120;  /* destination address */
+    private static final int  C9_MW = 110;  /* source port */
+    private static final int C10_MW = 110;  /* destination port */
+    private static final int C11_MW = 120;  /* category */
     
-    private final int C11_MW = Util.chooseMax(T_TW - (C0_MW + C1_MW + C2_MW + C3_MW + C4_MW + C5_MW + C6_MW + C7_MW + C8_MW + C9_MW), 120); /* description */
+    private final int C12_MW = Util.chooseMax(T_TW - (C0_MW + C1_MW + C2_MW + C3_MW + C4_MW + C5_MW + C6_MW + C7_MW + C8_MW + C9_MW + C10_MW + C11_MW), 120); /* description */
 
     
     private ComboBoxModel protocolModel = super.generateComboBoxModel( ProtocolMatcher.getProtocolEnumeration(), ProtocolMatcher.getProtocolDefault() );
@@ -78,15 +79,16 @@ class BlockTableModel extends MSortedTableModel{
         addTableColumn( tableColumnModel,  0,  C0_MW, false, false, false, false, String.class,  null, sc.TITLE_STATUS );
         addTableColumn( tableColumnModel,  1,  C1_MW, false, false, false, false, Integer.class, null, sc.TITLE_INDEX );
         addTableColumn( tableColumnModel,  2,  C2_MW, false, true,  false, false, Boolean.class, "false", sc.bold("enable<br>action") );
-        addTableColumn( tableColumnModel,  3,  C3_MW, false, true,  false, false, ComboBoxModel.class, actionModel, "action" );
-        addTableColumn( tableColumnModel,  4,  C4_MW, false, true,  false, false, ComboBoxModel.class, protocolModel, "protocol" );
-        addTableColumn( tableColumnModel,  5,  C5_MW, false, true,  false, false, ComboBoxModel.class, directionModel, "direction" );
-        addTableColumn( tableColumnModel,  6,  C6_MW, true,  true,  false, false, String.class, "1.2.3.4", sc.html("source<br>address") );
-        addTableColumn( tableColumnModel,  7,  C7_MW, true,  true,  false, false, String.class, "1.2.3.4", sc.html("destination<br>address") );
-        addTableColumn( tableColumnModel,  8,  C8_MW, true,  true,  false, false, String.class, "2-5", sc.html("source<br>port") );
-        addTableColumn( tableColumnModel,  9,  C9_MW, true,  true,  false, false, String.class, "2-5", sc.html("destination<br>port") );
-        addTableColumn( tableColumnModel, 10, C10_MW, true,  true,  false, false, String.class, sc.EMPTY_CATEGORY, sc.TITLE_CATEGORY);
-        addTableColumn( tableColumnModel, 11, C11_MW, true,  true,  false, true,  String.class, sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
+        addTableColumn( tableColumnModel,  3,  C3_MW, false, true,  false, false, Boolean.class, "false",  sc.bold("log"));
+        addTableColumn( tableColumnModel,  4,  C4_MW, false, true,  false, false, ComboBoxModel.class, actionModel, "action" );
+        addTableColumn( tableColumnModel,  5,  C5_MW, false, true,  false, false, ComboBoxModel.class, protocolModel, "protocol" );
+        addTableColumn( tableColumnModel,  6,  C6_MW, false, true,  false, false, ComboBoxModel.class, directionModel, "direction" );
+        addTableColumn( tableColumnModel,  7,  C7_MW, true,  true,  false, false, String.class, "1.2.3.4", sc.html("source<br>address") );
+        addTableColumn( tableColumnModel,  8,  C8_MW, true,  true,  false, false, String.class, "1.2.3.4", sc.html("destination<br>address") );
+        addTableColumn( tableColumnModel,  9,  C9_MW, true,  true,  false, false, String.class, "2-5", sc.html("source<br>port") );
+        addTableColumn( tableColumnModel, 10, C10_MW, true,  true,  false, false, String.class, "2-5", sc.html("destination<br>port") );
+        addTableColumn( tableColumnModel, 11, C11_MW, true,  true,  false, false, String.class, sc.EMPTY_CATEGORY, sc.TITLE_CATEGORY);
+        addTableColumn( tableColumnModel, 12, C12_MW, true,  true,  false, true,  String.class, sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
         return tableColumnModel;
     }
     
@@ -99,18 +101,19 @@ class BlockTableModel extends MSortedTableModel{
             FirewallRule firewallRule = new FirewallRule();
             firewallRule.setLive( (Boolean) rowVector.elementAt(2) );
             firewallRule.setAction( ((ComboBoxModel) rowVector.elementAt(3)).getSelectedItem().toString() );
-	    firewallRule.setProtocol( ProtocolMatcher.parse(((ComboBoxModel) rowVector.elementAt(4)).getSelectedItem().toString()) );
-            firewallRule.setDirection( ((ComboBoxModel) rowVector.elementAt(5)).getSelectedItem().toString() );
-            try{ firewallRule.setSrcAddress( IPMatcher.parse((String) rowVector.elementAt(6)) ); }
+            firewallRule.setLog( (Boolean) rowVector.elementAt(4) );
+	    firewallRule.setProtocol( ProtocolMatcher.parse(((ComboBoxModel) rowVector.elementAt(5)).getSelectedItem().toString()) );
+            firewallRule.setDirection( ((ComboBoxModel) rowVector.elementAt(6)).getSelectedItem().toString() );
+            try{ firewallRule.setSrcAddress( IPMatcher.parse((String) rowVector.elementAt(7)) ); }
             catch(Exception e){ throw new Exception("Invalid \"source address\" in row: " + rowIndex); }
-            try{ firewallRule.setDstAddress( IPMatcher.parse((String) rowVector.elementAt(7)) ); }
+            try{ firewallRule.setDstAddress( IPMatcher.parse((String) rowVector.elementAt(8)) ); }
             catch(Exception e){ throw new Exception("Invalid \"destination address\" in row: " + rowIndex); }
-            try{ firewallRule.setSrcPort( PortMatcher.parse((String) rowVector.elementAt(8)) ); }
+            try{ firewallRule.setSrcPort( PortMatcher.parse((String) rowVector.elementAt(9)) ); }
             catch(Exception e){ throw new Exception("Invalid \"source port\" in row: " + rowIndex); }
-            try{ firewallRule.setDstPort( PortMatcher.parse((String) rowVector.elementAt(9)) ); }
+            try{ firewallRule.setDstPort( PortMatcher.parse((String) rowVector.elementAt(10)) ); }
             catch(Exception e){ throw new Exception("Invalid \"destination port\" in row: " + rowIndex); }
-            firewallRule.setCategory( (String) rowVector.elementAt(10) );
-            firewallRule.setDescription( (String) rowVector.elementAt(11) );
+            firewallRule.setCategory( (String) rowVector.elementAt(11) );
+            firewallRule.setDescription( (String) rowVector.elementAt(12) );
 
             firewallRulesList.add(firewallRule);
             rowIndex++;
@@ -135,6 +138,7 @@ class BlockTableModel extends MSortedTableModel{
 	    rowVector.add(super.ROW_SAVED);
 	    rowVector.add(new Integer(index));
 	    rowVector.add(firewallRule.isLive());
+	    rowVector.add(firewallRule.getLog());
 	    rowVector.add( super.generateComboBoxModel( FirewallRule.getActionEnumeration(), firewallRule.getAction().toString() ));
 	    rowVector.add( super.generateComboBoxModel( ProtocolMatcher.getProtocolEnumeration(), firewallRule.getProtocol().toString() ));
 	    rowVector.add( super.generateComboBoxModel( TrafficRule.getDirectionEnumeration(), firewallRule.getDirection().toString() ));
