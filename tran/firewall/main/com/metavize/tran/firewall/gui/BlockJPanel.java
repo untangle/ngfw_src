@@ -54,7 +54,7 @@ class BlockTableModel extends MSortedTableModel{
     private static final int  C2_MW = 65;  /* use rule */
     private static final int  C3_MW = 55;  /* log */
     private static final int  C4_MW = 75;  /* action */
-    private static final int  C5_MW = 100; /* protocol */
+    private static final int  C5_MW = 100; /* traffic type */
     private static final int  C6_MW = 160; /* direction */
     private static final int  C7_MW = 120;  /* source address */
     private static final int  C8_MW = 120;  /* destination address */
@@ -81,7 +81,7 @@ class BlockTableModel extends MSortedTableModel{
         addTableColumn( tableColumnModel,  2,  C2_MW, false, true,  false, false, Boolean.class, "false", sc.bold("enable<br>action") );
         addTableColumn( tableColumnModel,  3,  C3_MW, false, true,  false, false, Boolean.class, "false",  sc.bold("log"));
         addTableColumn( tableColumnModel,  4,  C4_MW, false, true,  false, false, ComboBoxModel.class, actionModel, "action" );
-        addTableColumn( tableColumnModel,  5,  C5_MW, false, true,  false, false, ComboBoxModel.class, protocolModel, "protocol" );
+        addTableColumn( tableColumnModel,  5,  C5_MW, false, true,  false, false, ComboBoxModel.class, protocolModel, sc.html("traffic<br>type") );
         addTableColumn( tableColumnModel,  6,  C6_MW, false, true,  false, false, ComboBoxModel.class, directionModel, "direction" );
         addTableColumn( tableColumnModel,  7,  C7_MW, true,  true,  false, false, String.class, "1.2.3.4", sc.html("source<br>address") );
         addTableColumn( tableColumnModel,  8,  C8_MW, true,  true,  false, false, String.class, "1.2.3.4", sc.html("destination<br>address") );
@@ -100,8 +100,8 @@ class BlockTableModel extends MSortedTableModel{
 
             FirewallRule firewallRule = new FirewallRule();
             firewallRule.setLive( (Boolean) rowVector.elementAt(2) );
-            firewallRule.setAction( ((ComboBoxModel) rowVector.elementAt(3)).getSelectedItem().toString() );
-            firewallRule.setLog( (Boolean) rowVector.elementAt(4) );
+            firewallRule.setLog( (Boolean) rowVector.elementAt(3) );
+            firewallRule.setAction( ((ComboBoxModel) rowVector.elementAt(4)).getSelectedItem().toString() );
 	    firewallRule.setProtocol( ProtocolMatcher.parse(((ComboBoxModel) rowVector.elementAt(5)).getSelectedItem().toString()) );
             firewallRule.setDirection( ((ComboBoxModel) rowVector.elementAt(6)).getSelectedItem().toString() );
             try{ firewallRule.setSrcAddress( IPMatcher.parse((String) rowVector.elementAt(7)) ); }
