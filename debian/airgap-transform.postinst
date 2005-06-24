@@ -1,3 +1,6 @@
 #! /bin/sh
 
 mcli -t 30 register airgap-transform 2>/dev/null || true
+
+update-schema airgap-transform
+

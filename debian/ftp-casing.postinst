@@ -1,3 +1,5 @@
 #! /bin/sh
 
 mcli -t 30 register ftp-casing 2>/dev/null || true
+
+update-schema ftp-casing
