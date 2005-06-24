@@ -39,6 +39,7 @@ public class ClamScanner implements VirusScanner {
                                                         "RAR.ExceededFileSize",
                                                         "RAR.ExceededFilesLimit",
                                                         "Suspect.Zip",
+                                                        "Broken.Executable",
                                                         "Exploit.Zip.ModifiedHeaders",
                                                         "Oversized.Zip",
                                                         "Encrypted.Zip",
