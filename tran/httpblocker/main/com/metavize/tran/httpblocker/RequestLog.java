@@ -113,11 +113,4 @@ public class RequestLog implements Serializable
     {
         return blockEventId;
     }
-
-    // Object methods ---------------------------------------------------------
-
-    public String toString()
-    {
-
-    }
 }
