@@ -3,5 +3,4 @@
 
 -- drop foreign key constraints for logging
 
-ALTER TABLE tr_http_evt_resp DROP CONSTRAINT FKC9BB12A21F20A4EB;
-ALTER TABLE tr_http_evt_req DROP CONSTRAINT FK40505B6C1F20A4EB;
+ALTER TABLE tr_httpblk_evt_blk DROP CONSTRAINT FKD760FA7E1F20A4EB;

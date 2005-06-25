@@ -8,6 +8,9 @@ if [ $# = 0 ]; then
 fi
 
 component=$1
+
+@PREFIX@/usr/bin/update-schema $component
+
 schema_dir=@MVVM_SCHEMA@/$component
 
 latest_ver=$(ls $schema_dir/schema-*.sql | sed 's/^.*schema-\([0-9]\+\).sql/\1/' | sort -n -r | head -n1)

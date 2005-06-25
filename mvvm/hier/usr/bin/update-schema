@@ -8,6 +8,7 @@ if [ $# = 0 ]; then
 fi
 
 component=$1
+
 schema_dir=@MVVM_SCHEMA@/$component
 
 ver=$(echo "SELECT version FROM schema_ver WHERE component = '$1'" | $PSQL)
@@ -15,14 +16,14 @@ echo "Current schema version: $ver"
 
 if [ "x$ver" != "x" ]; then
     latest_ver=$(ls $schema_dir/schema-*.sql | sed 's/^.*schema-\([0-9]\+\).sql/\1/' | sort -n -r | head -n1)
-    if [ "$ver" != "$latest_ver" ]; then
+    if [ "$ver" -ne "$latest_ver" ]; then
         echo "Updating Schema..."
         let "v = v + 1"
         for v in $(seq $ver $latest_ver); do
             echo "Updating to $v"
             psql -e -f $schema_dir/convert-$v.sql -U metavize mvvm >> @MVVM_LOG@/schema.log 2>&1
         done
-        echo "INSERT INTO schema_ver VALUES ('$component', $latest_ver);" | $PSQL
+        echo "UPDATE schema_ver SET version = '$latest_ver' WHERE component = '$component';" | $PSQL
     fi
 else
     echo "Schema not updated"
