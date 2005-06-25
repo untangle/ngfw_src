@@ -685,6 +685,21 @@ int netcap_interface_intf_to_string (netcap_intf_t intf, char *intf_str,int str_
  */
 int  netcap_tcp_syn_mode (int toggle);
 
+/** Hook that can be called whenever a shield rejection/opaque/block event occurs */
+typedef void (*netcap_shield_event_hook_t) ( in_addr_t ip, double reputation, 
+                                             int limited, int rejected, int dropped );
+
+/**
+ * Register a shield hook
+ */
+int   netcap_shield_register_hook     ( netcap_shield_event_hook_t hook );
+
+/**
+ * Unregister the shield hook
+ */
+void  netcap_shield_unregister_hook   ( void );
+
+
 /**
  * netcap_shield_rep_add_chunk: Add a chunk to the reputation of ip.
  *  ip: The IP to add the chunk against.

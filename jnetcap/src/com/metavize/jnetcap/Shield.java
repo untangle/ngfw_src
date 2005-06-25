@@ -61,6 +61,9 @@ public final class Shield
     }
     
     private native void status( long ip, int port );
+    public native void registerEventHook();
+    public native void unregisterEventHook();
+    
 
     /* Singleton enforcement */    
     public static Shield getInstance()

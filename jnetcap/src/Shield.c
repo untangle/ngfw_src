@@ -20,6 +20,9 @@
 #include "jnetcap.h"
 #include JH_Shield
 
+
+static void _event_hook ( in_addr_t ip, double reputation, int limited, int rejected, int dropped );
+
 /*
  * Class:     com_metavize_jnetcap_Shield
  * Method:    config
@@ -133,4 +136,36 @@ JNIEXPORT void JNICALL JF_Shield( addChunk )
     /* Could throw an error, but shield errors are currently ignored. */
     if ( netcap_shield_rep_add_chunk((in_addr_t)ip, protocol, (u_short)num_bytes ) < 0 )
         errlog( ERR_WARNING, "netcap_shield_rep_add_chunk\n" );  
+}
+
+/*
+ * Class:     com_metavize_jnetcap_Shield
+ * Method:    registerEventHook
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL JF_Shield( registerEventHook )
+  (JNIEnv *env, jobject _this )
+{
+    if ( netcap_shield_register_hook( _event_hook ) < 0 ) {
+        return jmvutil_error_void( JMVUTIL_ERROR_STT, ERR_CRITICAL, "netcap_shield_register_hook\n" );
+    }
+    
+    return;
+}
+
+/*
+ * Class:     com_metavize_jnetcap_Shield
+ * Method:    unregisterEventHook
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL JF_Shield( unregisterEventHook )
+  (JNIEnv *env, jobject _this )
+{
+    netcap_shield_unregister_hook();
+}
+
+static void _event_hook ( in_addr_t ip, double reputation, int limited, int rejected, int dropped )
+{
+    debug( 5, "shield event: ip: %#010x rep: %lg limited: %d rejected: %d dropped: %d\n",
+           ip, reputation, limited, rejected, dropped );
 }

@@ -61,8 +61,17 @@ typedef struct reputation {
     list_node_t*    self;
 #endif
     int             active_sessions;
-    int             limited_sessions;    /* Total number of sessions given limited access */
-    int             rejected_sessions;   /* Total number of sessions that are rejected */
+    
+    
+    uint             limited_sessions;      /* Total number of sessions given limited access */
+    uint             rejected_sessions;     /* Total number of sessions that are rejected */
+    uint             dropped_sessions;      /* Total number of dropped sessions */
+
+    struct {
+        uint limited_sessions;  /* Number of limited session the last log time */
+        uint rejected_sessions; /* Number of rejected session the last log time */
+        uint dropped_sessions;  /* Total number of dropped sessions */
+    } last_log;
     
     nc_shield_rep_t rep;           /* The current reputation for the IP */
     netcap_load_t   evil_load;     /* Evil events per second */
@@ -94,12 +103,14 @@ static struct {
     pthread_mutex_t dbg_mutex;
 #endif
 
+    netcap_shield_event_hook_t event_hook;
 } _shield = {
-    .root NULL,
-    .mode NC_SHIELD_MODE_RELAXED,
-    .enabled 0,
+    .root       NULL,
+    .mode       NC_SHIELD_MODE_RELAXED,
+    .enabled    0,
+    .event_hook NULL,
 #ifdef _TRIE_DEBUG_PRINT
-    .dbg_mutex PTHREAD_MUTEX_INITIALIZER,
+    .dbg_mutex PTHREAD_MUTEX_INITIALIZER
 #endif
 };
 
@@ -146,6 +157,54 @@ static __inline__ nc_shield_fence_t* _get_fence( int mode )
     }
     return errlog_null( ERR_CRITICAL, "Invalid mode: %d\n", mode );
 }
+
+static __inline__ int _check_if_print( in_addr_t ip, reputation_t* rep, netcap_shield_response_t* response )
+{
+    int ret = 0;
+    int limited;
+    int rejected;
+    int dropped;
+
+    if ( rep->print_load.load > _shield.cfg.print_rate ) {
+        response->if_print = 0;
+        return 0;
+    }
+    
+    if ( pthread_mutex_lock( &rep->mutex ) < 0 ) return perrlog( "pthread_mutex_lock" );
+    
+    do {
+        /* Check again after the lock to make sure that another thread didn't update the
+         * value */
+        if ((volatile double)(rep->print_load.load) <  _shield.cfg.print_rate ) {
+            limited  = rep->limited_sessions - rep->last_log.limited_sessions;
+            limited  = ( limited > 0 ) ? limited : 0;
+
+            rejected = rep->rejected_sessions - rep->last_log.rejected_sessions;
+            rejected = ( rejected > 0 ) ? rejected : 0;
+
+            dropped  = rep->dropped_sessions - rep->last_log.dropped_sessions;
+            dropped  = ( dropped > 0 ) ? dropped : 0;
+
+            if ( _shield.event_hook != NULL ) {
+                _shield.event_hook( ip, rep->rep, limited, rejected, dropped );
+            }
+
+            rep->last_log.limited_sessions  = rep->limited_sessions;
+            rep->last_log.rejected_sessions = rep->rejected_sessions;
+            rep->last_log.dropped_sessions  = rep->dropped_sessions;
+
+            netcap_load_update( &rep->print_load, 1, 1 );
+            response->if_print = 1;
+        } else {
+            response->if_print = 0;
+        }
+    } while ( 0 );
+
+    if ( pthread_mutex_unlock( &rep->mutex ) < 0 ) return perrlog( "pthread_mutex_unlock" );
+        
+    return ret;
+}
+
 
 #ifdef _TRIE_DEBUG_PRINT
 static int   _status             ( int conn, struct sockaddr_in *dst_addr );
@@ -218,6 +277,9 @@ int netcap_shield_cleanup ( void )
     if ( !_shield.enabled ) return 0;
 
     _shield.enabled = 0;
+
+    /* Null out the event hook */
+    netcap_shield_unregister_hook();
 
     netcap_trie_destroy( &_shield.trie );
 
@@ -296,24 +358,18 @@ netcap_shield_response_t* netcap_shield_rep_check        ( in_addr_t ip )
     
     ans = _put_in_fence ( fence, rep_val );
     
-    response->if_print = 0;
-
-    if ( ans != NC_SHIELD_YES ) {
-        /* If the count is low, update the print count */
-        if ( rep->print_load.load < _shield.cfg.print_rate ) {
-            if ( pthread_mutex_lock( &rep->mutex ) < 0 ) return perrlog_null( "pthread_mutex_lock" );
-            netcap_load_update( &rep->print_load, 1, 1 );
-            if ( pthread_mutex_unlock( &rep->mutex ) < 0 ) return perrlog_null( "pthread_mutex_unlock" );
-            response->if_print = 1;
-        }
-    }
-
     /* XXX Could add a mutex ??? for the ++, but the information is not critical, just for debugging */
     switch ( ans ) {
     case NC_SHIELD_LIMITED: rep->limited_sessions++; break;
     case NC_SHIELD_DROP:
     case NC_SHIELD_RESET:  rep->rejected_sessions++; break;
     default: break;
+    }
+
+    response->if_print = 0;
+    
+    if ( ans != NC_SHIELD_YES ) {
+        _check_if_print( ip, rep, response );
     }
     
     /* XXX For now set everything the same */
@@ -323,7 +379,20 @@ netcap_shield_response_t* netcap_shield_rep_check        ( in_addr_t ip )
 
     return response;
 }
- 
+
+int                  netcap_shield_register_hook    ( netcap_shield_event_hook_t hook )
+{
+    if ( hook == NULL ) return errlogargs();
+    
+    _shield.event_hook = hook;
+    return 0;
+}
+
+void                 netcap_shield_unregister_hook  ( void )
+{    
+    _shield.event_hook = NULL;
+}
+
 int                  netcap_shield_rep_blame        ( in_addr_t ip, int amount )
 {
     _apply_func_t func = { _add_evil, (void*)amount };
@@ -332,7 +401,7 @@ int                  netcap_shield_rep_blame        ( in_addr_t ip, int amount )
     if ( !_shield.enabled ) return 0;
         
     if ( netcap_trie_apply ( &_shield.trie, ip, _apply_func, &func ) == NULL ) {
-        return errlog(ERR_CRITICAL, "netcap_trie_apply\n");
+        return errlog( ERR_CRITICAL, "netcap_trie_apply\n" );
     }
     return 0;
 }
@@ -689,8 +758,14 @@ static int  _reputation_init     ( netcap_trie_item_t* item, in_addr_t ip )
     if ( rep->rep < 0 ) rep->rep = 0;
 
     rep->active_sessions   = 0;
+    rep->limited_sessions  = 0;
     rep->rejected_sessions = 0;
-    rep->limited_sessions   = 0;
+    rep->dropped_sessions  = 0;
+
+    rep->last_log.limited_sessions  = 0;
+    rep->last_log.rejected_sessions = 0;
+    rep->last_log.dropped_sessions  = 0;
+
 
     if (( fence = _get_fence( _shield.mode )) == NULL ) {
         ret = errlog( ERR_CRITICAL, "_get_fence\n" );
