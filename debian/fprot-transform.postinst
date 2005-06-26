@@ -2,5 +2,4 @@
 
 mcli -t 30 register fprot-transform 2>/dev/null || true
 
-update-schema fprot-transform
 
