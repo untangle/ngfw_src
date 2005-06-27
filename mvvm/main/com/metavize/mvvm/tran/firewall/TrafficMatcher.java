@@ -65,8 +65,15 @@ public class TrafficMatcher {
         this.dstIntf    = rule.getDstIntf();
         this.srcAddress = rule.getSrcAddress();
         this.dstAddress = rule.getDstAddress();
-        this.srcPort    = rule.getSrcPort();
-        this.dstPort    = rule.getDstPort();
+
+        /* Ports are ignored for PING sessions */
+        if ( this.protocol.equals( ProtocolMatcher.MATCHER_PING )) {
+            this.srcPort = PortMatcher.MATCHER_PING;
+            this.dstPort = PortMatcher.MATCHER_PING;
+        } else {
+            this.srcPort = rule.getSrcPort();
+            this.dstPort = rule.getDstPort();
+        }
     }
     
     public boolean isEnabled()

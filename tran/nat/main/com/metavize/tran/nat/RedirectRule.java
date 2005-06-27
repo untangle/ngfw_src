@@ -40,6 +40,11 @@ public class RedirectRule extends TrafficRule
     
     private static final String REDIRECT_PORT_UNCHANGED    = "unchanged";
     private static final String REDIRECT_ADDRESS_UNCHANGED = "unchanged";
+
+    private static final String ACTION_REDIRECT     = "Block";
+    private static final String ACTION_REDIRECT_LOG = "Block & Log";
+    
+    private static final String[] ACTION_ENUMERATION = { ACTION_REDIRECT, ACTION_REDIRECT_LOG };
     
     private boolean isDstRedirect;
 
@@ -152,7 +157,6 @@ public class RedirectRule extends TrafficRule
         } else {
             setRedirectAddress( IPaddr.parse( host ));
         }
-
     }
 
     public String getRedirectAddressString()
@@ -161,5 +165,31 @@ public class RedirectRule extends TrafficRule
             return REDIRECT_ADDRESS_UNCHANGED;
         }
         return redirectAddress.toString();
+    }
+
+    public  String getAction()
+    {
+        return ( getLog()) ? ACTION_REDIRECT_LOG : ACTION_REDIRECT;
+    }
+    
+    public  void setAction( String action ) throws ParseException
+    {
+        if ( action.equalsIgnoreCase( ACTION_REDIRECT )) {
+            setLog( false );
+        } else if ( action.equalsIgnoreCase( ACTION_REDIRECT_LOG )) {
+            setLog( true );
+        } else {
+            throw new ParseException( "Invalid action: " + action );
+        }
+    }
+
+    public static String[] getActionEnumeration()
+    {
+        return ACTION_ENUMERATION;
+    }
+
+    public static String getActionDefault()
+    {
+        return ACTION_ENUMERATION[0];
     }
 }

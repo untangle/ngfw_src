@@ -15,6 +15,11 @@ import java.util.List;
 import java.util.LinkedList;
 import java.io.Serializable;
 
+import java.util.Iterator;
+
+import com.metavize.mvvm.tran.Validatable;
+import com.metavize.mvvm.tran.ParseException;
+
 import com.metavize.mvvm.security.Tid;
 
 /**
@@ -25,7 +30,7 @@ import com.metavize.mvvm.security.Tid;
  * @hibernate.class
  * table="TR_FIREWALL_SETTINGS"
  */
-public class FirewallSettings implements Serializable
+public class FirewallSettings implements Serializable, Validatable
 {
     private Long id;
     private Tid tid;
@@ -54,9 +59,11 @@ public class FirewallSettings implements Serializable
     }
 
     /* Validation method */
-    public void validate()
+    public void validate() throws ParseException
     {
-        /* Nothing to validate, as long as all of the rules are valid */
+        for ( Iterator iter = this.firewallRuleList.iterator(); iter.hasNext() ; ) {
+            ((FirewallRule)iter.next()).fixPing();
+        }
     }
 
     /**

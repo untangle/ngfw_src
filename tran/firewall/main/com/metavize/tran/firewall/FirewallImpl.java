@@ -108,7 +108,6 @@ public class FirewallImpl extends SoloTransform implements Firewall
     {
         logger.info("Initializing Settings...");
 
-        /* XXX Should be default settings */
         FirewallSettings settings = getDefaultSettings();
 
         setFirewallSettings(settings);
@@ -229,8 +228,17 @@ public class FirewallImpl extends SoloTransform implements Firewall
                                     IPMatcher.MATCHER_ALL, IPMatcher.parse( "1.2.3.1-1.2.3.10" ),
                                     new PortMatcher( 1000, 5000 ), PortMatcher.MATCHER_ALL,
                                     false );
-            tmp.setDescription( "Accept all traffic to 1.2.3.1 to 1.2.3.10 from ports 1000-5000" );
+            tmp.setDescription( "Accept all traffic to the range 1.2.3.1 - 1.2.3.10 from ports 1000-5000" );
             firewallList.add( tmp );
+
+            tmp = new FirewallRule( false, ProtocolMatcher.MATCHER_PING,
+                                    IntfMatcher.MATCHER_ALL, IntfMatcher.MATCHER_ALL,
+                                    IPMatcher.MATCHER_ALL, IPMatcher.parse( "1.2.3.1" ),
+                                    PortMatcher.MATCHER_PING, PortMatcher.MATCHER_PING,
+                                    true );
+            tmp.setDescription( "Block PINGs to 1.2.3.1, the source and destination ports are ignored." );
+            firewallList.add( tmp );
+
             
             for ( Iterator<FirewallRule> iter = firewallList.iterator() ; iter.hasNext() ; ) {
                 iter.next().setCategory( "[Sample]" );

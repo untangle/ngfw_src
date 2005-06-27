@@ -11,8 +11,11 @@
 
 package com.metavize.tran.nat;
 
+import java.io.Serializable;
+
 import java.util.List;
 import java.util.LinkedList;
+import java.util.Iterator;
 
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.NetworkingManager;
@@ -32,7 +35,7 @@ import com.metavize.mvvm.tran.Validatable;
  * @hibernate.class
  * table="TR_NAT_SETTINGS"
  */
-public class NatSettings implements java.io.Serializable, Validatable
+public class NatSettings implements Serializable, Validatable
 {
     private Long id;
     private Tid tid;
@@ -91,7 +94,11 @@ public class NatSettings implements java.io.Serializable, Validatable
     {
         boolean isStartAddressValid = true;
         boolean isEndAddressValid   = true;
-        boolean isValid             = true;            
+        boolean isValid             = true;
+
+        for ( Iterator iter = this.redirectList.iterator(); iter.hasNext() ; ) {
+            ((RedirectRule)iter.next()).fixPing();
+        }
         
         if ( natEnabled && ( natInternalAddress == null || natInternalSubnet == null ))
             throw new Exception( "Enablng NAT requires an Internal IP address and an Internal Subnet" );

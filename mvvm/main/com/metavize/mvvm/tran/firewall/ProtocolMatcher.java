@@ -30,23 +30,34 @@ public class ProtocolMatcher implements Serializable
     public static final String MARKER_UDP       = "UDP";
     public static final String MARKER_WILDCARD  = MatcherStringConstants.WILDCARD;
     public static final String MARKER_ALL       = "TCP & UDP";
+    public static final String MARKER_PING      = "PING";
     public static final String MARKER_SEP       = MatcherStringConstants.SEPERATOR;
     private static final String MARKER_NOTHING  = MatcherStringConstants.NOTHING;
 
-    private static final String[] ENUMERATION = { MARKER_ALL, MARKER_UDP, MARKER_TCP };
+    private static final String[] ENUMERATION = { MARKER_ALL, MARKER_UDP, MARKER_TCP, MARKER_PING };
 
-    public static final ProtocolMatcher MATCHER_ALL = new ProtocolMatcher( true, true );
-    public static final ProtocolMatcher MATCHER_TCP = new ProtocolMatcher( true, false );
-    public static final ProtocolMatcher MATCHER_UDP = new ProtocolMatcher( false, true );
-    public static final ProtocolMatcher MATCHER_NIL = new ProtocolMatcher( false, false );
+    public static final ProtocolMatcher MATCHER_ALL  = new ProtocolMatcher( true, true );
+    public static final ProtocolMatcher MATCHER_TCP  = new ProtocolMatcher( true, false );
+    public static final ProtocolMatcher MATCHER_UDP  = new ProtocolMatcher( false, true );
+    public static final ProtocolMatcher MATCHER_PING = new ProtocolMatcher();
+    public static final ProtocolMatcher MATCHER_NIL  = new ProtocolMatcher( false, false );
 
     public final boolean isTcpEnabled;
     public final boolean isUdpEnabled;
-    /* XXX ICMP */
+    public final boolean isPingEnabled;
 
     private ProtocolMatcher( boolean tcp, boolean udp ) {
-        isTcpEnabled = tcp;
-        isUdpEnabled = udp;
+        isTcpEnabled  = tcp;
+        isUdpEnabled  = udp;
+        isPingEnabled = false;
+    }
+
+    /* This is just for PING matching */
+    private ProtocolMatcher()
+    {
+        isTcpEnabled  = false;
+        isUdpEnabled  = false;
+        isPingEnabled = true;
     }
     
     public boolean isMatch( Protocol protocol ) {
@@ -56,15 +67,21 @@ public class ProtocolMatcher implements Serializable
         if (( protocol == Protocol.UDP )  && isUdpEnabled )
             return true;
 
+        /* Right now Ping is a UDP session */
+        if (( protocol == Protocol.UDP ) && isPingEnabled )
+            return true;
+
         return false;
     }
     
     
     public String toString()
     {
-        if (( this == MATCHER_ALL ) || ( isTcpEnabled && isUdpEnabled )) {
+        if (( this.equals( MATCHER_ALL )) || ( isTcpEnabled && isUdpEnabled )) {
             return MARKER_ALL;
-        } else if (( this == MATCHER_NIL ) || ( !isTcpEnabled && !isUdpEnabled )) {
+        } else if (( this.equals( MATCHER_PING )) || ( isPingEnabled )) {
+            return MARKER_PING;
+        } else if (( this.equals( MATCHER_NIL )) || ( !isTcpEnabled && !isUdpEnabled )) {
             return MARKER_NOTHING;
         }
         
@@ -86,7 +103,8 @@ public class ProtocolMatcher implements Serializable
     {
         str = str.trim();
         boolean isTcpEnabled  = false;
-        boolean isUdpEnabled = false;
+        boolean isUdpEnabled  = false;
+        boolean isPingEnabled = false;
         
         if ( str.indexOf( MARKER_SEP ) > 0 ) {
             String strArray[] = str.split( MARKER_SEP );
@@ -107,13 +125,17 @@ public class ProtocolMatcher implements Serializable
             isTcpEnabled = true;
         } else if ( str.equalsIgnoreCase( MARKER_UDP )) {
             isUdpEnabled = true;
+        } else if ( str.equalsIgnoreCase( MARKER_PING )) { 
+            isPingEnabled = true;
         } else {
             throw new ParseException( "Invalid ProtocolMatcher at \"" + str + "\"" );
         }
-
-        if ( isTcpEnabled && isUdpEnabled ) {
-            return MATCHER_ALL;
+        
+        if ( isPingEnabled ) {
+            return MATCHER_PING;
         } else if ( isTcpEnabled && isUdpEnabled ) {
+            return MATCHER_ALL;
+        } else if ( !isTcpEnabled && !isUdpEnabled ) {
             return MATCHER_NIL;
         } else if ( isTcpEnabled ) {
             return MATCHER_TCP;

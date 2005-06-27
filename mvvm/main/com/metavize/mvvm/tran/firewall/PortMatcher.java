@@ -27,25 +27,24 @@ import com.metavize.mvvm.tran.ParseException;
  */
 public class PortMatcher implements Serializable
 {
+    public static  final String MARKER_RANGE     = MatcherStringConstants.RANGE;
+    public static  final String MARKER_WILDCARD  = MatcherStringConstants.WILDCARD;
+    public static  final String MARKER_ANY       = "any";
+    public static  final String MARKER_ALL       = "all";
+    public static  final String MARKER_PING      = "n/a";
+    private static final String MARKER_NOTHING   = MatcherStringConstants.NOTHING;
 
-    public static final String MARKER_RANGE     = MatcherStringConstants.RANGE;
-    public static final String MARKER_WILDCARD  = MatcherStringConstants.WILDCARD;
-    public static final String MARKER_ANY       = "any";
-    public static final String MARKER_ALL       = "all";
-    private static final String MARKER_NOTHING  = MatcherStringConstants.NOTHING;
-
-    public static final int    PORT_MASK       = 0xFFFF;
-    public static final PortMatcher MATCHER_ALL = new PortMatcher( 0, PORT_MASK );
-    public static final PortMatcher MATCHER_NIL = new PortMatcher();
+    public static final int    PORT_MASK         = 0xFFFF;
+    public static final PortMatcher MATCHER_ALL  = new PortMatcher( 0, PORT_MASK );
+    public static final PortMatcher MATCHER_NIL  = new PortMatcher();
+    public static final PortMatcher MATCHER_PING = new PortMatcher( 0 );
 
     /* Base port of the range for the rule */
     private final int start;
 
     /**
      * end of the range: 
-     * Multipurpose second argument.
-     * 1. base   : The matcher is just for one ip.
-     * 3. <end>  : The top of the range if the matcher uses the range syntax.
+     * <end>  : The top of the range for the matcher.
      */
     private final int end;
 
@@ -87,10 +86,12 @@ public class PortMatcher implements Serializable
 
     public String toString()
     {
-        if ( this == MATCHER_ALL || (( start == 0 ) && ( end == PORT_MASK ))) {
+        if ( this.equals( MATCHER_ALL ) || (( start == 0 ) && ( end == PORT_MASK ))) {
             return MARKER_ANY;
-        } else if ( this == MATCHER_NIL || ( start > end )) {
+        } else if ( this.equals( MATCHER_NIL ) || ( start > end )) {
             return MARKER_NOTHING;
+        } else if ( this.equals( MATCHER_PING ) || (( start == 0 ) && ( end == 0 ))) {
+            return MARKER_PING;
         }
         
         if ( start == end ) {
@@ -116,6 +117,12 @@ public class PortMatcher implements Serializable
 
             start = fixPort( strArray[0] );            
             end   = fixPort( strArray[1] );
+            
+            if (( start == MATCHER_ALL.start ) && ( end == MATCHER_ALL.end )) {
+                return MATCHER_ALL;
+            } else if (( start == MATCHER_PING.start ) && ( end == MATCHER_PING.end )) {
+                return MATCHER_PING;
+            }
 
             return new PortMatcher( start, end );
         } else if ( str.equalsIgnoreCase( MARKER_WILDCARD ) || str.equalsIgnoreCase( MARKER_ANY ) ||
@@ -123,6 +130,8 @@ public class PortMatcher implements Serializable
             return MATCHER_ALL;
         } else if ( str.equalsIgnoreCase( MARKER_NOTHING )) { 
             return MATCHER_NIL;
+        } else if ( str.equalsIgnoreCase( MARKER_PING )) { 
+            return MATCHER_PING;
         }
         
         start = fixPort( str );
