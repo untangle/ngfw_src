@@ -38,7 +38,7 @@ public class RequestLog implements Serializable
         this.requestEventId = requestEventId;
         this.blockEventId = blockEventId;
         this.timeStamp = timeStamp;
-        this.url = host + ":/" + uri;
+        this.url = "http://" + host + "/" + uri;
         this.reason = null == reasonStr ? null
             : Reason.getInstance(reasonStr.charAt(0));
         this.category = category;
@@ -112,5 +112,13 @@ public class RequestLog implements Serializable
     long getBlockEventId()
     {
         return blockEventId;
+    }
+
+    // Object methods ---------------------------------------------------------
+
+    public String toString()
+    {
+        return "time: " + timeStamp + " url: " + url + " reason: "
+            + reason + " category: " + category;
     }
 }

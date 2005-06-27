@@ -122,7 +122,8 @@ public class HttpBlockerImpl extends SoloTransform implements HttpBlocker
             while (rs.next()) {
                 long requestEventId = rs.getLong(1);
                 long blockEventId = rs.getLong(2);
-                Date timeStamp = new Date(rs.getDate("time_stamp").getTime());
+                long ts = rs.getTimestamp("time_stamp").getTime();
+                Date timeStamp = new Date(ts);
                 String host = rs.getString("host");
                 String uri = rs.getString("uri");
                 String reasonStr = rs.getString("reason");
@@ -154,6 +155,10 @@ public class HttpBlockerImpl extends SoloTransform implements HttpBlocker
             } catch (HibernateException exn) {
                 logger.warn("could not close Hibernate session", exn);
             }
+        }
+
+        for (RequestLog rl : l) {
+            System.out.println(rl);
         }
 
         return l;
