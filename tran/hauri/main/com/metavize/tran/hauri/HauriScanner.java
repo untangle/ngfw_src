@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: HauriScanner.java,v 1.4 2005/03/11 03:33:48 cng Exp $
+ * $Id$
  */
 package com.metavize.tran.hauri;
 
@@ -98,10 +98,10 @@ public class HauriScanner implements VirusScanner {
             }
         case 255:
             logger.error("virobot exit code error: " + i);
-            return null;
+            return VirusScannerResult.ERROR;
         default:
             logger.error("Unknown virobot exit code: " + i);
-            return null;
+            return VirusScannerResult.ERROR;
         }
     }
 
