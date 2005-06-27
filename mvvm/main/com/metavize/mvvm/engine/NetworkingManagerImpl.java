@@ -14,8 +14,10 @@ package com.metavize.mvvm.engine;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.FileReader;
+import java.io.FileNotFoundException;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+
 import java.net.InetAddress;
 import java.net.Inet4Address;
 
@@ -202,9 +204,13 @@ public class NetworkingManagerImpl implements NetworkingManager
                 }
             }
             in.close();
+        } catch ( FileNotFoundException ex ) {
+            logger.warn( "Could not read '" + BUNNICULA_CONF + FLAGS_CFG_FILE + 
+                         "' because it doesn't exist" );
         } catch ( Exception ex ) {
             logger.warn( "Error reading file: ", ex );
         }
+
 
         try {
             if ( host != null ) {

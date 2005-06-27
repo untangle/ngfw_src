@@ -495,7 +495,7 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
         try {
             assert in != null;
             if (!in.isEnabled()) {
-                warn("ignoring readEvent called for disabled side " + side);
+                warn("ignoring readEvent called for disabled side " + side, new Exception("read" ));
                 return;
             }
             IncomingSocketQueue ourin, otherin;

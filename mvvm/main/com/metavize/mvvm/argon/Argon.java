@@ -21,6 +21,7 @@ import org.apache.log4j.Logger;
 
 import com.metavize.jnetcap.Netcap;
 import com.metavize.jnetcap.Shield;
+import com.metavize.jnetcap.ShieldEventListener;
 import com.metavize.jnetcap.Range;
 import com.metavize.jnetcap.SubscriptionGenerator;
 import com.metavize.jnetcap.SubscriptionManager;
@@ -129,6 +130,16 @@ public class Argon
 
         registerHooks();
 
+        shield.registerEventListener( new ShieldEventListener() {
+                public void event( InetAddress ip, double reputation, int mode, int limited, 
+                                   int rejected, int dropped )
+                {
+                    logger.error( "Shield event: " + ip + " rep: " + reputation + " mode: " + mode +
+                                  " limited: " + limited + " rejected: " + rejected + " dropped: " + dropped );
+                }
+                
+            } );
+        
         subscribe( ifLocal );
 
         /* Wait for shutdown */
@@ -466,10 +477,15 @@ public class Argon
             return;
         }
 
+
+        /* Remove the event listener for the shield */
+        shield.unregisterEventListener();
         
         /* Remove both of the hooks to guarantee that no new sessions are created */
         Netcap.unregisterTCPHook();
         Netcap.unregisterUDPHook();
+        
+
 
         VectronTable activeVectrons = VectronTable.getInstance();
 
