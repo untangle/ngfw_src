@@ -348,6 +348,8 @@ public class NatImpl extends AbstractTransform implements Nat
             settings.setNatInternalAddress( IPaddr.parse( "192.168.1.1" ));
             settings.setNatInternalSubnet( IPaddr.parse( "255.255.255.0" ));
             
+            settings.setDmzLoggingEnabled( false );
+            
             /* DMZ Settings */
             settings.setDmzEnabled( false );
             /* A sample DMZ */

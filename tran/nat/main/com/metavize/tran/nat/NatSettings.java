@@ -51,7 +51,7 @@ public class NatSettings implements Serializable, Validatable
     /* DMZ settings */
     private boolean dmzEnabled;
     private IPaddr  dmzAddress;
-    private boolean dmzLoggingEnabled;
+    private boolean dmzLoggingEnabled = false;
 
     /* Redirect rules */
     private List    redirectList = new LinkedList();
@@ -272,12 +272,12 @@ public class NatSettings implements Serializable, Validatable
      */
     public boolean getDmzLoggingEnabled()
     {
-	return dmzLoggingEnabled;
+	return this.dmzLoggingEnabled;
     }
 
     public void setDmzLoggingEnabled( boolean enabled )
     {
-	dmzLoggingEnabled = enabled;
+	this.dmzLoggingEnabled = enabled;
     }
 
 
