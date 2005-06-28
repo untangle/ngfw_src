@@ -85,6 +85,10 @@ typedef struct reputation {
     netcap_load_t   print_load;    /* Printing rate, limited to x per second */
     netcap_load_t   lru_load;      /* LRU rate, limited to x per second */
 } reputation_t;
+
+static void            _null_event_hook     ( in_addr_t ip, double reputation, netcap_shield_mode_t mode, 
+                                              int limited, int rejected, int dropped );
+                                              
     
 static struct {
     reputation_t*        root;
@@ -108,7 +112,7 @@ static struct {
     .root       NULL,
     .mode       NC_SHIELD_MODE_RELAXED,
     .enabled    0,
-    .event_hook NULL,
+    .event_hook _null_event_hook,
 #ifdef _TRIE_DEBUG_PRINT
     .dbg_mutex PTHREAD_MUTEX_INITIALIZER
 #endif
@@ -146,6 +150,7 @@ static nc_shield_rep_t _reputation_eval     ( netcap_trie_item_t* item );
 static int             _reputation_init     ( netcap_trie_item_t* item, in_addr_t ip );
 static void            _reputation_destroy  ( netcap_trie_item_t* item );
 static netcap_shield_ans_t _put_in_fence    ( nc_shield_fence_t* fence, nc_shield_rep_t rep_val );
+
 
 static __inline__ nc_shield_fence_t* _get_fence( int mode )
 {
@@ -185,9 +190,7 @@ static __inline__ int _check_if_print( in_addr_t ip, reputation_t* rep, netcap_s
             dropped  = rep->dropped_sessions - rep->last_log.dropped_sessions;
             dropped  = ( dropped > 0 ) ? dropped : 0;
 
-            if ( _shield.event_hook != NULL ) {
-                _shield.event_hook( ip, rep->rep, limited, rejected, dropped );
-            }
+            _shield.event_hook( ip, rep->rep, _shield.mode, limited, rejected, dropped );
 
             rep->last_log.limited_sessions  = rep->limited_sessions;
             rep->last_log.rejected_sessions = rep->rejected_sessions;
@@ -390,7 +393,7 @@ int                  netcap_shield_register_hook    ( netcap_shield_event_hook_t
 
 void                 netcap_shield_unregister_hook  ( void )
 {    
-    _shield.event_hook = NULL;
+    _shield.event_hook = _null_event_hook;
 }
 
 int                  netcap_shield_rep_blame        ( in_addr_t ip, int amount )
@@ -940,6 +943,13 @@ static netcap_shield_response_t* _tls_get( void )
     
     return &netcap_tls->shield.ans;
 }
+
+static void            _null_event_hook     ( in_addr_t ip, double reputation, netcap_shield_mode_t mode, 
+                                              int limited, int rejected, int dropped )
+{
+    /* Null hook */
+}
+
 
 #ifdef _TRIE_DEBUG_PRINT
 static int  _status             ( int conn, struct sockaddr_in *dst_addr )

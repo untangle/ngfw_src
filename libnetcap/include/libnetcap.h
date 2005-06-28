@@ -685,8 +685,17 @@ int netcap_interface_intf_to_string (netcap_intf_t intf, char *intf_str,int str_
  */
 int  netcap_tcp_syn_mode (int toggle);
 
+typedef enum  {
+    NC_SHIELD_MODE_RELAXED,
+    NC_SHIELD_MODE_LAX,
+    NC_SHIELD_MODE_TIGHT,
+    NC_SHIELD_MODE_CLOSED
+} netcap_shield_mode_t;
+
+#define NC_SHIELD_MODE_MAX NC_SHIELD_MODE_CLOSED
+
 /** Hook that can be called whenever a shield rejection/opaque/block event occurs */
-typedef void (*netcap_shield_event_hook_t) ( in_addr_t ip, double reputation, 
+typedef void (*netcap_shield_event_hook_t) ( in_addr_t ip, double reputation, netcap_shield_mode_t mode,
                                              int limited, int rejected, int dropped );
 
 /**

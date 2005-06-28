@@ -13,15 +13,7 @@
 #define __NETCAP_SHIELD_H_
 
 #include <netinet/in.h>
-
-typedef enum  {
-    NC_SHIELD_MODE_RELAXED,
-    NC_SHIELD_MODE_LAX,
-    NC_SHIELD_MODE_TIGHT,
-    NC_SHIELD_MODE_CLOSED
-} netcap_shield_mode_t;
-
-#define NC_SHIELD_MODE_MAX NC_SHIELD_MODE_CLOSED
+#include "libnetcap.h"
 
 enum {
     NC_SHIELD_ERR_1 = 5,

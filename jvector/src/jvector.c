@@ -200,7 +200,9 @@ int               jvector_load                ( JNIEnv* env )
         return JNI_ERR;
     }
 
-    if (( tmp = (*env)->CallStaticObjectMethod( env, class, mid )) == NULL ) {
+    tmp = (*env)->CallStaticObjectMethod( env, class, mid ) == NULL;
+
+    if (( jmvutil_error_exception_clear() < 0 ) || ( tmp == NULL )) {
         errlog( ERR_CRITICAL, "CallStaticObjectMethod\n" );
         return JNI_ERR;
     }
@@ -221,7 +223,9 @@ int               jvector_load                ( JNIEnv* env )
         return JNI_ERR;
     }
 
-    if (( tmp = (*env)->CallStaticObjectMethod( env, class, mid )) == NULL ) {
+    tmp = (*env)->CallStaticObjectMethod( env, class, mid );
+
+    if (( jmvutil_error_exception_clear() < 0 ) || ( tmp == NULL )) {
         errlog( ERR_CRITICAL, "CallStaticObjectMethod\n" );
         return JNI_ERR;
     }
@@ -425,10 +429,20 @@ static event_action_t    _sink_send_event     ( sink_t* snk, event_t* event )
         if (( jv_event->ev.type & EVENT_SHUTDOWN_ERROR_MASK ) == EVENT_SHUTDOWN_ERROR_MASK ) {
             /* Send a reset crumb */
             (*env)->CallIntMethod( env, jv_snk->this, mid, _jvector.reset_crumb );
+            
+            if ( jmvutil_error_exception_clear() < 0 ) {
+                errlog( ERR_CRITICAL, "Exception occured while sending reset crumb\n" );
+            }
+            
             action = EVENT_ACTION_SHUTDOWN;
         } else if ( jv_event->ev.type & EVENT_SHUTDOWN_MASK ) {
             /* Send a shutdown crumb */
             (*env)->CallIntMethod( env, jv_snk->this, mid, _jvector.shutdown_crumb );
+
+            if ( jmvutil_error_exception_clear() < 0 ) {
+                errlog( ERR_CRITICAL, "Exception occured while sending shutdown crumb\n" );
+            }
+
             action = EVENT_ACTION_SHUTDOWN;
         } else {
             errlog( ERR_CRITICAL, "Invalid event type: %d\n", jv_event->ev.type );

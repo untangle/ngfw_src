@@ -193,6 +193,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       <exclude name="com/metavize/mvvm/tran/MutateTStats.java"/>
       <include name="com/metavize/mvvm/util/PortServiceNames.java"/>
       <include name="com/metavize/mvvm/util/SessionUtil.java"/>
+      <include name="com/metavize/mvvm/shield/ShieldEvent.java"/>
     </javac>
   </target>
 
@@ -217,6 +218,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
         <exclude name="com/metavize/mvvm/tran/MutateTStats*.class"/>
         <include name="com/metavize/mvvm/util/PortServiceNames*.class"/>
         <include name="com/metavize/mvvm/util/SessionUtil*.class"/>
+        <include name="com/metavize/mvvm/shield/ShieldEvent.class"/>
       </fileset>
     </jar>
   </target>
@@ -261,6 +263,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
 
       <include name="com/metavize/mvvm/MvvmContext.java"/>
       <include name="com/metavize/mvvm/argon/*"/>
+      <include name="com/metavize/mvvm/shield/*"/>
       <include name="com/metavize/mvvm/engine/*"/>
       <include name="com/metavize/mvvm/logging/**"/>
       <include name="com/metavize/mvvm/security/**"/>

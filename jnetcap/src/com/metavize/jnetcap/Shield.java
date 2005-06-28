@@ -17,6 +17,17 @@ public final class Shield
 {
     private static final Shield INSTANCE = new Shield();
 
+    private static final ShieldEventListener NULL_EVENT_LISTENER = new ShieldEventListener()
+        {
+            public void event( InetAddress ip, double reputation, int mode, 
+                               int limited, int rejected, int dropped )
+            {
+                /* Null event listener nothing to do */
+            }
+        };
+
+    private ShieldEventListener listener = NULL_EVENT_LISTENER;
+
     private Shield()
     {
     }
@@ -59,11 +70,32 @@ public final class Shield
     {
         status( Inet4AddressConverter.toLong( ip ), port );
     }
+
+    public void registerEventListener( ShieldEventListener listener )
+    {
+        this.listener = listener;
+
+        /* This just tells the netcap to call into java */
+        registerEventListener();
+    }
+
+    public void unregisterEventListener()
+    {
+        this.listener = NULL_EVENT_LISTENER;
+    }
+
+    /* This function is called from C to get into java */
+    private void callEventListener( long ip, double reputation, int mode, 
+                                    int limited, int rejected, int dropped )
+    {
+        this.listener.event( Inet4AddressConverter.toAddress( ip ), reputation, mode, 
+                             limited, rejected, dropped );
+    }
     
     private native void status( long ip, int port );
-    public native void registerEventHook();
-    public native void unregisterEventHook();
-    
+    private native void registerEventListener();
+    private native void removeEventListener();                                      
+
 
     /* Singleton enforcement */    
     public static Shield getInstance()

@@ -28,6 +28,8 @@ import com.metavize.jnetcap.JNetcapException;
 
 import com.metavize.jvector.Vector;
 
+import com.metavize.mvvm.shield.ShieldMonitor;
+
 public class Argon
 {
     /* Number of times to try and shutdown all vectoring machines cleanly before giving up */
@@ -423,6 +425,10 @@ public class Argon
     private static void init ()
     {
         Netcap.init( isShieldEnabled, netcapDebugLevel, jnetcapDebugLevel );
+
+        if ( isShieldEnabled ) { 
+            shield.registerEventListener( ShieldMonitor.getInstance());
+        }
         
         Vector.mvutilDebugLevel( mvutilDebugLevel );
         Vector.vectorDebugLevel( vectorDebugLevel );
@@ -465,7 +471,8 @@ public class Argon
             logger.error( "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" );
             return;
         }
-
+        
+        shield.unregisterEventListener();
         
         /* Remove both of the hooks to guarantee that no new sessions are created */
         Netcap.unregisterTCPHook();

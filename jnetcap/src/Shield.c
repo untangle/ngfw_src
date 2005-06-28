@@ -20,8 +20,26 @@
 #include "jnetcap.h"
 #include JH_Shield
 
+#define _SHIELD_OBJ_STR      JP_BUILD_NAME( Shield )
+#define _SHIELD_METHOD_NAME  "callEventListener"
+#define _SHIELD_METHOD_DESC  "(JDIIII)V"
 
-static void _event_hook ( in_addr_t ip, double reputation, int limited, int rejected, int dropped );
+static struct
+{
+    int       call_hook;
+    jclass    class;
+    jmethodID call_listener_mid;
+    jobject   object;
+} _shield = {
+    .call_hook 0,
+    .class     NULL,
+    .call_listener_mid NULL,
+    .object NULL
+};
+
+static void _event_hook ( in_addr_t ip, double reputation, netcap_shield_mode_t mode, 
+                          int limited, int rejected, int dropped );
+
 
 /*
  * Class:     com_metavize_jnetcap_Shield
@@ -140,32 +158,86 @@ JNIEXPORT void JNICALL JF_Shield( addChunk )
 
 /*
  * Class:     com_metavize_jnetcap_Shield
- * Method:    registerEventHook
+ * Method:    registerEventListener
  * Signature: ()V
  */
-JNIEXPORT void JNICALL JF_Shield( registerEventHook )
+JNIEXPORT void JNICALL JF_Shield( registerEventListener )
   (JNIEnv *env, jobject _this )
 {
+    jclass local_ref;
+
+    /* Indicate not to call the hook until the initialization is complete */
+    _shield.call_hook = 0;
+
+    /* Get the method from the object */
+    if (( local_ref = (*env)->FindClass( env, _SHIELD_OBJ_STR )) == NULL ) {
+        return jmvutil_error_void( JMVUTIL_ERROR_STT, ERR_CRITICAL, "(*env)->FindClass\n" );
+    }
+    
+    _shield.class = (*env)->NewGlobalRef( env, local_ref );
+    
+    (*env)->DeleteLocalRef( env, local_ref );
+    
+    if ( _shield.class == NULL ) {
+        return jmvutil_error_void( JMVUTIL_ERROR_STT, ERR_CRITICAL, "(*env)->NewGlobalRef\n" );
+    }
+    
+    _shield.call_listener_mid = (*env)->GetMethodID( env, _shield.class, _SHIELD_METHOD_NAME, 
+                                                     _SHIELD_METHOD_DESC );
+    if ( _shield.call_listener_mid == NULL ) {
+        return jmvutil_error_void( JMVUTIL_ERROR_STT, ERR_CRITICAL, "(*env)->GetMethodID\n" );
+    }
+    
+    if (( _shield.object = (*env)->NewGlobalRef( env, _this )) == NULL ) {
+        return jmvutil_error_void( JMVUTIL_ERROR_STT, ERR_CRITICAL, "(*env)->NewGlobalRef\n" );
+    }    
+    
     if ( netcap_shield_register_hook( _event_hook ) < 0 ) {
         return jmvutil_error_void( JMVUTIL_ERROR_STT, ERR_CRITICAL, "netcap_shield_register_hook\n" );
     }
-    
-    return;
+
+    /* Indicate to call the hook now that the system is registered */
+    _shield.call_hook = 1;
 }
 
 /*
  * Class:     com_metavize_jnetcap_Shield
- * Method:    unregisterEventHook
+ * Method:    removeEventListener
  * Signature: ()V
  */
-JNIEXPORT void JNICALL JF_Shield( unregisterEventHook )
+JNIEXPORT void JNICALL JF_Shield( removeEventListener )
   (JNIEnv *env, jobject _this )
 {
     netcap_shield_unregister_hook();
+
+    /* Don't call the hook anymore */
+    _shield.call_hook = 0;
+
+    /* To avoid synchronization issues, the global references are never removed
+     * (the shield is a singleton anyway) */
 }
 
-static void _event_hook ( in_addr_t ip, double reputation, int limited, int rejected, int dropped )
+static void _event_hook ( in_addr_t ip, double reputation, netcap_shield_mode_t mode,
+                          int limited, int rejected, int dropped )
 {
-    debug( 5, "shield event: ip: %#010x rep: %lg limited: %d rejected: %d dropped: %d\n",
-           ip, reputation, limited, rejected, dropped );
+    JNIEnv* env = NULL;
+
+    if ( _shield.call_hook != 1 ) return;
+
+    if (( env = jmvutil_get_java_env()) == NULL ) {
+        errlog( ERR_CRITICAL, "jmvutil_get_java_env\n" );
+        return;
+    }
+    
+    if ( _shield.object == NULL || _shield.call_listener_mid == NULL ) {
+        errlog( ERR_WARNING, "Shield hook never registered." );
+        return;
+    }
+
+    /* Actually call the method */
+    (*env)->CallVoidMethod( env, _shield.object, _shield.call_listener_mid, (jlong)ip, (jdouble)reputation, 
+                            mode, limited, rejected, dropped );
+
+    /* Clear out any exceptions */
+    jmvutil_error_exception_clear();
 }

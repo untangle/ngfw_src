@@ -180,6 +180,17 @@ CREATE TABLE pipeline_info (
     s_server_port int4,
     PRIMARY KEY (id));
 
+create table shield_evt (
+        event_id int8 not null,
+        ip inet,
+        reputation float8,
+        mode int4,
+        limited int4,
+        rejected int4,
+        dropped int4,
+        time_stamp timestamp,
+        PRIMARY KEY (event_id));
+
 ALTER TABLE admin_settings ADD CONSTRAINT FK71B1F7333C031EE0 FOREIGN KEY (summary_period_id) REFERENCES period;
 
 ALTER TABLE mvvm_user ADD CONSTRAINT FKCC5A228ACD112C9A FOREIGN KEY (admin_setting_id) REFERENCES admin_settings;
