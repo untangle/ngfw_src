@@ -135,7 +135,7 @@ Package: reporting-transform
 Architecture: any
 Depends: mvvm
 XB-Price: 1000
-XB-Display-Name: EdgeReport (preview)
+XB-Display-Name: EdgeReport
 XB-Rack-Position: 1000
 Description: The Metavize Report Generator
  EdgeReport generates document reports about activities on your network.
