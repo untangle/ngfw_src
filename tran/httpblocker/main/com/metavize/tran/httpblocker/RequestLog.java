@@ -64,6 +64,16 @@ public class RequestLog implements Serializable
         return url;
     }
 
+    public Action getAction()
+    {
+        return action;
+    }
+
+    public void setAction(Action action)
+    {
+        this.action = action;
+    }
+
     public Reason getReason()
     {
         return reason;
