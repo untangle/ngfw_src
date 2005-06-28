@@ -26,6 +26,7 @@ import com.metavize.tran.http.RequestLine;
 public class HttpBlockerEvent extends LogEvent
 {
     private RequestLine requestLine;
+    private Action action;
     private Reason reason;
     private String category;
 
@@ -33,10 +34,11 @@ public class HttpBlockerEvent extends LogEvent
 
     public HttpBlockerEvent() { }
 
-    public HttpBlockerEvent(RequestLine requestLine, Reason reason,
-                            String category)
+    public HttpBlockerEvent(RequestLine requestLine, Action action,
+                            Reason reason, String category)
     {
         this.requestLine = requestLine;
+        this.action = action;
         this.reason = reason;
         this.category = category;
     }
@@ -59,6 +61,24 @@ public class HttpBlockerEvent extends LogEvent
     public void setRequestLine(RequestLine requestLine)
     {
         this.requestLine = requestLine;
+    }
+
+    /**
+     * The action taken.
+     *
+     * @return the action.
+     * @hibernate.property
+     * column="ACTION"
+     * type="com.metavize.tran.httpblocker.ActionUserType"
+     */
+    public Action getAction()
+    {
+        return action;
+    }
+
+    public void setAction(Action action)
+    {
+        this.action = action;
     }
 
     /**

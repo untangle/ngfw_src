@@ -16,6 +16,8 @@ import java.util.Date;
 
 public class RequestLog implements Serializable
 {
+    private static final long serialVersionUID = -4671603809489005943L;
+
     private final Long requestEventId;
     private final Long blockEventId;
     private final Date timeStamp;

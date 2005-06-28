@@ -78,7 +78,7 @@ public class HttpBlockerImpl extends SoloTransform implements HttpBlocker
     // HttpBlocker methods ----------------------------------------------------
 
     public HttpBlockerSettings getHttpBlockerSettings()
-   {
+    {
         return settings;
     }
 

@@ -195,12 +195,24 @@ class Blacklist
             host = host.substring(0, host.length() - 1);
         }
 
-        if (passClient(clientIp)) {
+        String passCategory = passClient(clientIp);
+
+        if (null != passCategory) {
+            HttpBlockerEvent hbe = new HttpBlockerEvent
+                (requestLine, Action.PASS, Reason.CLIENT_ADDR, passCategory);
+            logger.info(hbe);
             return null;
         } else {
             String dom = host;
             while (null != dom) {
-                if (0 <= findMatch(passedUrls, dom + path)) {
+                String category = findCategory(passedUrls, dom + path,
+                                               settings.getPassedUrls());
+
+                if (null != category) {
+                    HttpBlockerEvent hbe = new HttpBlockerEvent
+                        (requestLine, Action.PASS, Reason.URI, category);
+                    eventLogger.info(hbe);
+
                     return null;
                 }
                 dom = nextHost(dom);
@@ -219,8 +231,9 @@ class Blacklist
             String exn = rule.getString().toLowerCase();
             if (rule.isLive() && path.endsWith(exn)) {
                 logger.debug("blocking extension " + exn);
-                eventLogger.info(new HttpBlockerEvent(requestLine,
-                                                      Reason.EXTENSION, exn));
+                HttpBlockerEvent hbe = new HttpBlockerEvent
+                    (requestLine, Action.BLOCK, Reason.EXTENSION, exn);
+                eventLogger.info(hbe);
 
                 return settings.getBlockTemplate().render(host, uri, "extension");
             }
@@ -232,7 +245,7 @@ class Blacklist
     String checkResponse(InetAddress clientIp, RequestLine requestLine,
                          Header header)
     {
-        if (passClient(clientIp)) {
+        if (null != passClient(clientIp)) { // we only log on the request
             return null;
         }
 
@@ -241,8 +254,9 @@ class Blacklist
         for (MimeTypeRule rule : (List<MimeTypeRule>)settings.getBlockedMimeTypes()) {
             MimeType mt = rule.getMimeType();
             if (rule.isLive() && mt.matches( contentType )) {
-                eventLogger.info(new HttpBlockerEvent
-                                 (requestLine, Reason.MIME_TYPE, contentType));
+                HttpBlockerEvent hbe = new HttpBlockerEvent
+                    (requestLine, Action.BLOCK, Reason.MIME_TYPE, contentType);
+                eventLogger.info(hbe);
                 String host = header.getValue("host");
                 URI uri = requestLine.getRequestUri();
 
@@ -261,15 +275,15 @@ class Blacklist
      * @param clientIp address of the client machine.
      * @return true if the client is whitelisted.
      */
-    private boolean passClient(InetAddress clientIp)
+    private String passClient(InetAddress clientIp)
     {
         for (IPMaddrRule rule : (List<IPMaddrRule>)settings.getPassedClients()) {
             if (rule.getIpMaddr().contains(clientIp)) {
-                return true;
+                return rule.getCategory();
             }
         }
 
-        return false;
+        return null;
     }
 
     private String checkBlacklist(String host, RequestLine requestLine)
@@ -284,8 +298,9 @@ class Blacklist
         String category = findCategory(domains, revHost, domClause);
 
         if (null != category) {
-            eventLogger.info(new HttpBlockerEvent(requestLine, Reason.DOMAIN,
-                                                  category));
+            HttpBlockerEvent hbe = new HttpBlockerEvent
+                (requestLine, Action.BLOCK, Reason.DOMAIN, category);
+            eventLogger.info(hbe);
             return settings.getBlockTemplate().render(host, uri, category);
         }
 
@@ -303,8 +318,9 @@ class Blacklist
         }
 
         if (null != category) {
-            eventLogger.info(new HttpBlockerEvent(requestLine, Reason.URI,
-                                                  category));
+            HttpBlockerEvent hbe = new HttpBlockerEvent
+                (requestLine, Action.BLOCK, Reason.URI, category);
+                eventLogger.info(hbe);
             return settings.getBlockTemplate().render(host, uri, category);
         }
 
