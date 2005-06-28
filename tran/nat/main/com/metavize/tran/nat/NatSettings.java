@@ -51,6 +51,7 @@ public class NatSettings implements Serializable, Validatable
     /* DMZ settings */
     private boolean dmzEnabled;
     private IPaddr  dmzAddress;
+    private boolean dmzLoggingEnabled;
 
     /* Redirect rules */
     private List    redirectList = new LinkedList();
@@ -59,13 +60,15 @@ public class NatSettings implements Serializable, Validatable
     private boolean dhcpEnabled = false;
     private IPaddr  dhcpStartAddress;
     private IPaddr  dhcpEndAddress;
-    private int     dhcpLeaseTime    = 0;
+    private int     dhcpLeaseTime = 0;
+
     /* Dhcp leasess */
     private List    dhcpLeaseList = new LinkedList();
     
     /* DNS Masquerading settings */
     private boolean  dnsEnabled = false;
     private HostName dnsLocalDomain = HostName.getEmptyHostName();
+
     /* DNS Static Hosts */
     private List    dnsStaticHostList = new LinkedList();
     
@@ -258,6 +261,23 @@ public class NatSettings implements Serializable, Validatable
     public void setDmzEnabled( boolean enabled )
     {
 	dmzEnabled = enabled;
+    }
+
+    /**
+     * Get whether or not DMZ is being used.
+     *
+     * @return is NAT is being used.
+     * @hibernate.property
+     * column="DMZ_LOGGING_ENABLED"
+     */
+    public boolean getDmzLoggingEnabled()
+    {
+	return dmzLoggingEnabled;
+    }
+
+    public void setDmzLoggingEnabled( boolean enabled )
+    {
+	dmzLoggingEnabled = enabled;
     }
 
 
