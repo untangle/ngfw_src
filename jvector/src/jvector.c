@@ -200,7 +200,7 @@ int               jvector_load                ( JNIEnv* env )
         return JNI_ERR;
     }
 
-    tmp = (*env)->CallStaticObjectMethod( env, class, mid ) == NULL;
+    tmp = (*env)->CallStaticObjectMethod( env, class, mid );
 
     if (( jmvutil_error_exception_clear() < 0 ) || ( tmp == NULL )) {
         errlog( ERR_CRITICAL, "CallStaticObjectMethod\n" );
