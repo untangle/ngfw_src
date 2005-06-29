@@ -557,7 +557,6 @@ public class MLoginJFrame extends javax.swing.JFrame {
                     try{
 
                         // load GUI with proper context
-                        Util.setArgs(args);
                         mMainJFrame = new MMainJFrame();
                         Util.setMMainJFrame(mMainJFrame);
 
