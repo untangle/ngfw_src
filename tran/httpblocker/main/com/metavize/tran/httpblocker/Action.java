@@ -50,13 +50,15 @@ public class Action implements Serializable
         return action;
     }
 
-    private Object readResolve()
-    {
-        return INSTANCES.get(action);
-    }
-
     public static Action getInstance(char key)
     {
         return (Action)INSTANCES.get(key);
+    }
+
+    // serialization methods --------------------------------------------------
+
+    private Object readResolve()
+    {
+        return INSTANCES.get(key);
     }
 }

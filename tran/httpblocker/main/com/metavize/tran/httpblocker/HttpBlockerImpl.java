@@ -118,7 +118,6 @@ public class HttpBlockerImpl extends SoloTransform implements HttpBlocker
             ps.setLong(1, lastId);
             ps.setInt(2, limit);
             long l0 = System.currentTimeMillis();
-            System.out.println("DOING IT");
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 long requestEventId = rs.getLong(1);
@@ -146,8 +145,6 @@ public class HttpBlockerImpl extends SoloTransform implements HttpBlocker
                 l.add(0, rl);
             }
             long l1 = System.currentTimeMillis();
-
-            System.out.println("DONE:" + (l1 - l0));
         } catch (SQLException exn) {
             logger.warn("could not get events", exn);
         } catch (HibernateException exn) {
@@ -158,10 +155,6 @@ public class HttpBlockerImpl extends SoloTransform implements HttpBlocker
             } catch (HibernateException exn) {
                 logger.warn("could not close Hibernate session", exn);
             }
-        }
-
-        for (RequestLog rl : l) {
-            System.out.println(rl);
         }
 
         return l;

@@ -25,7 +25,7 @@ public class Reason implements Serializable
     public static final Reason URI = new Reason('U', "URI");
     public static final Reason EXTENSION = new Reason('E', "extension");
     public static final Reason MIME_TYPE = new Reason('M', "mime-type");
-    public static final Reason CLIENT_ADDR = new Reason('c', "client-addr");
+    public static final Reason CLIENT_ADDR = new Reason('C', "client-addr");
 
     private static final Map INSTANCES = new HashMap();
 
@@ -46,6 +46,11 @@ public class Reason implements Serializable
         this.reason = reason;
     }
 
+    public static Reason getInstance(char key)
+    {
+        return (Reason)INSTANCES.get(key);
+    }
+
     public char getKey()
     {
         return key;
@@ -56,20 +61,10 @@ public class Reason implements Serializable
         return reason;
     }
 
-    private Object readResolve()
-    {
-        return INSTANCES.get(reason);
-    }
-
-    public static Reason getInstance(char key)
-    {
-        return (Reason)INSTANCES.get(key);
-    }
-
     // Serializable methods ---------------------------------------------------
 
-    Object reasResolve()
+    private Object reasResolve()
     {
-        return getInstance(key);
+        return INSTANCES.get(key);
     }
 }
