@@ -24,7 +24,7 @@ import javax.swing.*;
  */
 public class MaintenanceJDialog extends MConfigJDialog {
 
-    private static final String NAME_REMOTE_SETTINGS = "Secure Remote Maintenance";
+    private static final String NAME_REMOTE_SETTINGS = "Support and Maintenance";
 
     public MaintenanceJDialog( ) {
         MIN_SIZE = new Dimension(640, 480);

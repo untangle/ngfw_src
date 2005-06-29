@@ -81,10 +81,10 @@ public class MaintenanceJPanel extends javax.swing.JPanel implements Savable, Re
         setPreferredSize(new java.awt.Dimension(563, 161));
         maintainRemoteJPanel.setLayout(new java.awt.GridBagLayout());
 
-        maintainRemoteJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Secure Remote Maintenance", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
+        maintainRemoteJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Support", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
         sshButtonGroup.add(sshEnabledRadioButton);
         sshEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        sshEnabledRadioButton.setText("<html><b>Allow</b> secure remote maintenance for Metavize's troubleshooting purposes.</html>");
+        sshEnabledRadioButton.setText("<html><b>Allow</b> secure remote support of EdgeGuard, by Metavize, for troubleshooting and assistance purposes.</html>");
         sshEnabledRadioButton.setFocusPainted(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -94,7 +94,7 @@ public class MaintenanceJPanel extends javax.swing.JPanel implements Savable, Re
 
         sshButtonGroup.add(sshDisabledRadioButton);
         sshDisabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        sshDisabledRadioButton.setText("<html><b>Disallow</b> secure remote maintenance.  (This is the default setting.)</html>");
+        sshDisabledRadioButton.setText("<html><b>Disallow</b> secure remote support.  (This is the default setting.)</html>");
         sshDisabledRadioButton.setFocusPainted(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
