@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: MackageDesc.java,v 1.5 2005/02/25 02:45:29 amread Exp $
+ * $Id$
  */
 package com.metavize.mvvm;
 
@@ -65,7 +65,7 @@ public class MackageDesc implements Serializable
 
         // rack position
         v = (String)m.get("rack-position");
-        rackPosition = null == v ? 0 : Integer.parseInt(v);
+        rackPosition = null == v ? -1 : Integer.parseInt(v);
 
         // size
         v = (String)m.get("size");
