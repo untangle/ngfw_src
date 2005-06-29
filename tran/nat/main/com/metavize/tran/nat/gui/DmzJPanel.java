@@ -51,6 +51,9 @@ public class DmzJPanel extends javax.swing.JPanel implements Savable, Refreshabl
                 throw new Exception(EXCEPTION_DMZ_TARGET);
             }
         }        
+
+        // LOGGING /////////
+        boolean dmzLoggingEnabled = dmzLogEnabledJRadioButton.isSelected();
         
         // SAVE THE VALUES ////////////////////////////////////
 	if( !validateOnly ){
@@ -58,6 +61,7 @@ public class DmzJPanel extends javax.swing.JPanel implements Savable, Refreshabl
 	    natSettings.setDmzEnabled( dmzEnabled );
 	    if(dmzEnabled){
 		natSettings.setDmzAddress( dmzTargetAddress );
+                natSettings.setDmzLoggingEnabled( dmzLoggingEnabled );
 	    }
 	}
         
@@ -83,6 +87,14 @@ public class DmzJPanel extends javax.swing.JPanel implements Savable, Refreshabl
 	dmzTargetAddress = natSettings.getDmzAddress().toString();
 	targetAddressIPaddrJTextField.setText( dmzTargetAddress );
         targetAddressIPaddrJTextField.setBackground( Color.WHITE );
+        
+        // LOGGING ///////////
+        boolean dmzLoggingEnabled;
+        dmzLoggingEnabled = natSettings.getDmzLoggingEnabled();
+        if( dmzLoggingEnabled )
+            dmzLogEnabledJRadioButton.setSelected(true);
+        else
+            dmzLogDisabledJRadioButton.setSelected(true);
     }
 
     
@@ -92,6 +104,7 @@ public class DmzJPanel extends javax.swing.JPanel implements Savable, Refreshabl
         java.awt.GridBagConstraints gridBagConstraints;
 
         enabledButtonGroup = new javax.swing.ButtonGroup();
+        logButtonGroup = new javax.swing.ButtonGroup();
         explanationJPanel = new javax.swing.JPanel();
         jTextArea2 = new javax.swing.JTextArea();
         jPanel1 = new javax.swing.JPanel();
@@ -103,11 +116,17 @@ public class DmzJPanel extends javax.swing.JPanel implements Savable, Refreshabl
         jLabel5 = new javax.swing.JLabel();
         targetAddressIPaddrJTextField = new javax.swing.JTextField();
         jTextArea3 = new javax.swing.JTextArea();
+        logRemoteJPanel = new javax.swing.JPanel();
+        jTextArea4 = new javax.swing.JTextArea();
+        jPanel2 = new javax.swing.JPanel();
+        dmzLogEnabledJRadioButton = new javax.swing.JRadioButton();
+        dmzLogDisabledJRadioButton = new javax.swing.JRadioButton();
+        jLabel2 = new javax.swing.JLabel();
 
         setLayout(new java.awt.GridBagLayout());
 
-        setMinimumSize(new java.awt.Dimension(530, 280));
-        setPreferredSize(new java.awt.Dimension(530, 280));
+        setMinimumSize(new java.awt.Dimension(530, 430));
+        setPreferredSize(new java.awt.Dimension(530, 430));
         explanationJPanel.setLayout(new java.awt.GridBagLayout());
 
         explanationJPanel.setBorder(new javax.swing.border.TitledBorder(null, "DMZ Host", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
@@ -230,8 +249,73 @@ public class DmzJPanel extends javax.swing.JPanel implements Savable, Refreshabl
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 10);
         add(externalRemoteJPanel, gridBagConstraints);
+
+        logRemoteJPanel.setLayout(new java.awt.GridBagLayout());
+
+        logRemoteJPanel.setBorder(new javax.swing.border.TitledBorder(null, "DMZ Logging", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
+        jTextArea4.setEditable(false);
+        jTextArea4.setLineWrap(true);
+        jTextArea4.setText("If DMZ Logging is enabled, then all traffic inbound to the DMZ will be logged.  This information will then appear in the Event Log as well as in EdgeReport reports.");
+        jTextArea4.setWrapStyleWord(true);
+        jTextArea4.setOpaque(false);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 15, 0, 15);
+        logRemoteJPanel.add(jTextArea4, gridBagConstraints);
+
+        jPanel2.setLayout(new java.awt.GridBagLayout());
+
+        logButtonGroup.add(dmzLogEnabledJRadioButton);
+        dmzLogEnabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
+        dmzLogEnabledJRadioButton.setText("Enabled");
+        dmzLogEnabledJRadioButton.setFocusPainted(false);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        jPanel2.add(dmzLogEnabledJRadioButton, gridBagConstraints);
+
+        logButtonGroup.add(dmzLogDisabledJRadioButton);
+        dmzLogDisabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
+        dmzLogDisabledJRadioButton.setText("Disabled");
+        dmzLogDisabledJRadioButton.setFocusPainted(false);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        jPanel2.add(dmzLogDisabledJRadioButton, gridBagConstraints);
+
+        jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
+        jLabel2.setText("DMZ Logging");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridheight = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        jPanel2.add(jLabel2, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.insets = new java.awt.Insets(15, 0, 0, 0);
+        logRemoteJPanel.add(jPanel2, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        add(logRemoteJPanel, gridBagConstraints);
 
     }//GEN-END:initComponents
 
@@ -245,19 +329,28 @@ public class DmzJPanel extends javax.swing.JPanel implements Savable, Refreshabl
     
     private void setDmzEnabledDependency(boolean enabled){
         targetAddressIPaddrJTextField.setEnabled(enabled);
+        dmzLogEnabledJRadioButton.setEnabled(enabled);
+        dmzLogDisabledJRadioButton.setEnabled(enabled);
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JRadioButton dmzDisabledJRadioButton;
     public javax.swing.JRadioButton dmzEnabledJRadioButton;
+    private javax.swing.JRadioButton dmzLogDisabledJRadioButton;
+    private javax.swing.JRadioButton dmzLogEnabledJRadioButton;
     private javax.swing.ButtonGroup enabledButtonGroup;
     private javax.swing.JPanel explanationJPanel;
     private javax.swing.JPanel externalRemoteJPanel;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JTextArea jTextArea2;
     private javax.swing.JTextArea jTextArea3;
+    private javax.swing.JTextArea jTextArea4;
+    private javax.swing.ButtonGroup logButtonGroup;
+    private javax.swing.JPanel logRemoteJPanel;
     private javax.swing.JPanel restrictIPJPanel;
     public javax.swing.JTextField targetAddressIPaddrJTextField;
     // End of variables declaration//GEN-END:variables
