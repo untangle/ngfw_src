@@ -22,6 +22,7 @@ public class RequestLog implements Serializable
     private final Long blockEventId;
     private final Date timeStamp;
     private final String url;
+    private final Action action;
     private final Reason reason;
     private final String category;
     private final String contentType;
@@ -32,15 +33,17 @@ public class RequestLog implements Serializable
     private final int serverPort;
 
     public RequestLog(long requestEventId, long blockEventId, Date timeStamp,
-                      String host, String uri, String reasonStr,
-                      String category, String contentType, int contentLength,
-                      String clientAddr, int clientPort,
+                      String host, String uri, String actionStr,
+                      String reasonStr, String category, String contentType,
+                      int contentLength, String clientAddr, int clientPort,
                       String serverAddr, int serverPort)
     {
         this.requestEventId = requestEventId;
         this.blockEventId = blockEventId;
         this.timeStamp = timeStamp;
         this.url = "http://" + host + "/" + uri;
+        this.action = null == actionStr ? null
+            : Action.getInstance(actionStr.charAt(0));
         this.reason = null == reasonStr ? null
             : Reason.getInstance(reasonStr.charAt(0));
         this.category = category;
@@ -67,11 +70,6 @@ public class RequestLog implements Serializable
     public Action getAction()
     {
         return action;
-    }
-
-    public void setAction(Action action)
-    {
-        this.action = action;
     }
 
     public Reason getReason()
@@ -130,7 +128,8 @@ public class RequestLog implements Serializable
 
     public String toString()
     {
-        return "time: " + timeStamp + " url: " + url + " reason: "
-            + reason + " category: " + category;
+        return "time: " + timeStamp + " url: " + url +
+            " action: " + action + " reason: " + reason
+            + " category: " + category;
     }
 }

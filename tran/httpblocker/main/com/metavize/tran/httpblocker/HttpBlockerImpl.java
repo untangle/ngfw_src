@@ -45,8 +45,9 @@ public class HttpBlockerImpl extends SoloTransform implements HttpBlocker
 {
     private static final String ALL_EVENTS_QUERY
         = "SELECT req.event_id, blk.event_id, req.time_stamp, host, uri, "
-        +         "reason, category, content_type, resp.content_length, "
-        +         "c_client_addr, c_client_port, s_server_addr, s_server_port "
+        +         "action, reason, category, content_type, "
+        +         "resp.content_length, c_client_addr, c_client_port, "
+        +         "s_server_addr, s_server_port "
         + "FROM tr_http_evt_req req "
         + "JOIN pipeline_info pio USING (session_id) "
         + "JOIN tr_http_req_line rl USING (request_id) "
@@ -126,6 +127,7 @@ public class HttpBlockerImpl extends SoloTransform implements HttpBlocker
                 Date timeStamp = new Date(ts);
                 String host = rs.getString("host");
                 String uri = rs.getString("uri");
+                String actionStr = rs.getString("action");
                 String reasonStr = rs.getString("reason");
                 String category = rs.getString("category");
                 String contentType = rs.getString("content_type");
@@ -137,8 +139,9 @@ public class HttpBlockerImpl extends SoloTransform implements HttpBlocker
 
                 RequestLog rl = new RequestLog
                     (requestEventId, blockEventId, timeStamp, host, uri,
-                     reasonStr, category, contentType, contentLength,
-                     clientAddr, clientPort, serverAddr, serverPort);
+                     actionStr, reasonStr, category, contentType,
+                     contentLength, clientAddr, clientPort, serverAddr,
+                     serverPort);
 
                 l.add(0, rl);
             }
