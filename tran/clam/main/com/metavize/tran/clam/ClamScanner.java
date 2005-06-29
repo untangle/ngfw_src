@@ -126,7 +126,7 @@ public class ClamScanner implements VirusScanner {
                 return VirusScannerResult.ERROR;
             } else {
                 for (i=0 ; i<invalidVirusNames.length ; i++) {
-                    if (virusName == invalidVirusNames[i]) {
+                    if (virusName.equalsIgnoreCase(invalidVirusNames[i])) {
                         logger.warn("clamdscan: " + i);
                         return VirusScannerResult.ERROR;
                     }
