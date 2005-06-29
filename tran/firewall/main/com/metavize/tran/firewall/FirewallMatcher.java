@@ -40,7 +40,10 @@ class FirewallMatcher extends TrafficMatcher {
                              PortMatcher.MATCHER_NIL, PortMatcher.MATCHER_NIL,
                              false );
 
-    
+    /* Used for logging */
+    private final FirewallRule rule;
+    private final int ruleIndex;
+
     private final boolean isTrafficBlocker;
 
 
@@ -56,11 +59,19 @@ class FirewallMatcher extends TrafficMatcher {
 
         /* Attributes of the firewall rule */
         this.isTrafficBlocker = isTrafficBlocker;
+        
+        /* XXX probably want to set this to a more creative value, or just get rid of this constructor
+         * it is never used */
+        this.rule      = null;
+        this.ruleIndex = 0;
     }
 
-    FirewallMatcher( FirewallRule rule )
+    FirewallMatcher( FirewallRule rule, int ruleIndex )
     {
         super( rule );
+        
+        this.rule      = rule;
+        this.ruleIndex = ruleIndex;
 
         /* Attributes of the redirect */
         isTrafficBlocker = rule.isTrafficBlocker();
@@ -69,5 +80,15 @@ class FirewallMatcher extends TrafficMatcher {
     public boolean isTrafficBlocker()
     {
         return this.isTrafficBlocker;
+    }
+
+    public FirewallRule rule()
+    {
+        return this.rule;
+    }
+
+    public int ruleIndex()
+    {
+        return this.ruleIndex;
     }
 }

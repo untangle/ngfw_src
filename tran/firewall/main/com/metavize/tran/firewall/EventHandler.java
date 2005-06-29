@@ -79,7 +79,9 @@ class EventHandler extends AbstractEventHandler
     private void handleNewSessionRequest( IPNewSessionRequest request, Protocol protocol )
     {
         /* By default, do whatever the first rule is */
-        boolean reject = !isDefaultAccept;
+        boolean reject    = !isDefaultAccept;
+        FirewallRule rule = null;
+        int ruleIndex     = 0;
 
         for ( Iterator<FirewallMatcher> iter = firewallRuleList.iterator() ; iter.hasNext() ; ) {
             FirewallMatcher matcher = iter.next();
@@ -87,8 +89,11 @@ class EventHandler extends AbstractEventHandler
             if ( matcher.isMatch( request, protocol )) {
                 reject = matcher.isTrafficBlocker();
                 
-                if ( isQuickExit )
+                if ( isQuickExit ) {
+                    rule      = matcher.rule();
+                    ruleIndex = matcher.ruleIndex();
                     break;
+                }
             }
         }
 
@@ -114,7 +119,12 @@ class EventHandler extends AbstractEventHandler
 
             /* Increment the pass counter */
             incrementCount( Transform.GENERIC_1_COUNTER ); // PASS COUNTER
-        }                
+        }
+
+        /* If necessary log the event */
+        if ( rule != null && rule.getLog()) {
+            eventLogger.info( new FirewallEvent( request.id(), rule, ruleIndex ));
+        }
     }
     
     void configure( FirewallSettings settings )
@@ -125,16 +135,18 @@ class EventHandler extends AbstractEventHandler
 
         /* Empty out the list */
         firewallRuleList.clear();
-        
+
         List<FirewallRule> list = (List<FirewallRule>)settings.getFirewallRuleList();
 
         if ( list == null ) {
             logger.error( "Settings contain null firewall list" );
         } else {
+            int index = 1;
+
             /* Update all of the rules */
-            for ( Iterator<FirewallRule> iter = list.iterator() ; iter.hasNext() ; ) {
+            for ( Iterator<FirewallRule> iter = list.iterator() ; iter.hasNext() ; index++ ) {
                 logger.debug( "Inserting rule" );
-                firewallRuleList.add( new FirewallMatcher( iter.next()));
+                firewallRuleList.add( new FirewallMatcher( iter.next(), index ));
             }
         }
     }

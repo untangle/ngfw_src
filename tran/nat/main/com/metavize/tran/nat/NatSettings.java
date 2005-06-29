@@ -306,7 +306,7 @@ public class NatSettings implements Serializable, Validatable
      *
      * @return the list of the redirect rules.
      * @hibernate.list
-     * cascade="all-delete-orphan"
+     * cascade="save-update"
      * table="TR_NAT_REDIRECTS"
      * @hibernate.collection-key
      * column="SETTING_ID"

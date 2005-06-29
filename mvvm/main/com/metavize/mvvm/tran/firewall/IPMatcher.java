@@ -127,9 +127,16 @@ public class IPMatcher implements Serializable
     /* Internal for creating ip matchers */
     IPMatcher( long base, long second, boolean isRange )
     {
-        this.base    = base;
         this.second  = second;
         this.isRange = isRange;
+        
+        if ( isRange ) {
+            this.base    = base;
+        } else {
+            /* Must mask off the unused bits for the subnet */
+            this.base    = base & second;
+        }
+
         this.isLocal = false;
     }
     

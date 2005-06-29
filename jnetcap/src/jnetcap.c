@@ -321,7 +321,7 @@ JNIEXPORT jstring JNICALL JF_Netcap( convertIntfToString )
  * Method:    blockIncomingTraffic
  * Signature: (ZIIII)V
  */
-JNIEXPORT void JNICALL Java_com_metavize_jnetcap_Netcap_blockIncomingTraffic
+JNIEXPORT void JNICALL JF_Netcap( blockIncomingTraffic )
   (JNIEnv *env, jclass _class, jboolean if_add, jint protocol, jint intf, jint low, jint high )
 {
     if_add = ( if_add == JNI_TRUE ) ? 1 : 0;

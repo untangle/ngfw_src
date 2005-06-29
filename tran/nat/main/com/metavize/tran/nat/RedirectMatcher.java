@@ -23,13 +23,14 @@ import com.metavize.mvvm.tran.firewall.PortMatcher;
 import com.metavize.mvvm.tran.firewall.ProtocolMatcher;
 import com.metavize.mvvm.tran.firewall.IntfMatcher;
 import com.metavize.mvvm.tran.firewall.IPMatcher;
+import com.metavize.mvvm.tran.firewall.TrafficMatcher;
 
 /**
  * A class for matching redirects
  *   This is cannot be squashed into a RedirectRule because all of its elements are final. 
  *   This is a property which is not possible in hibernate objects.
  */
-class RedirectMatcher {
+class RedirectMatcher extends TrafficMatcher {
     private static final Logger logger = Logger.getLogger( RedirectMatcher.class );
     
     public static final RedirectMatcher MATCHER_DISABLED = 
@@ -38,52 +39,30 @@ class RedirectMatcher {
                              IPMatcher.MATCHER_NIL,   IPMatcher.MATCHER_ALL, 
                              PortMatcher.MATCHER_NIL, PortMatcher.MATCHER_NIL,
                              false, null, -1 );
-
-    private final boolean isEnabled;
     
     /* True if this redirect applies to the source. 
      * false if this redirect applies to the destination.*/
     private final boolean isDstRedirect;
     
-    private final ProtocolMatcher protocol;
-
-    private final IntfMatcher srcIntf;
-    private final IntfMatcher dstIntf;
-
-    private final IPMatcher   srcAddress;
-    private final IPMatcher   dstAddress;
-
-    private final PortMatcher srcPort;
-    private final PortMatcher dstPort;
-
     /**
-     * Address for the redirect.
+     * Address for the redirect. (null to not redirect)
      * XXX Will redirect rules allow for both the source and destination to be redirected
      * If so, there should be a 2 addresses and 2 ports.
      */
     private final InetAddress redirectAddress;
 
     /**
-     * Port for the redirect.
+     * Port for the redirect. (0 to not redirect)
      */
     private final int redirectPort;
 
-    // XXX For the future
-    // TimeMatcher time;
     RedirectMatcher( boolean     isEnabled,  ProtocolMatcher protocol, 
                      IntfMatcher srcIntf,    IntfMatcher     dstIntf, 
                      IPMatcher   srcAddress, IPMatcher       dstAddress,
                      PortMatcher srcPort,    PortMatcher     dstPort,
                      boolean isDstRedirect,  InetAddress redirectAddress, int redirectPort )
     {
-        this.isEnabled  = isEnabled;
-        this.protocol   = protocol;
-        this.srcIntf    = srcIntf;
-        this.dstIntf    = dstIntf;
-        this.srcAddress = srcAddress;
-        this.dstAddress = dstAddress;
-        this.srcPort    = srcPort;
-        this.dstPort    = dstPort;
+        super( isEnabled, protocol, srcIntf, dstIntf, srcAddress, dstAddress, srcPort, dstPort );
 
         /* Attributes of the redirect */
         this.isDstRedirect   = isDstRedirect;
@@ -93,14 +72,7 @@ class RedirectMatcher {
 
     RedirectMatcher( RedirectRule rule )
     {
-        this.isEnabled  = rule.isLive();
-        this.protocol   = rule.getProtocol();
-        this.srcIntf    = rule.getSrcIntf();
-        this.dstIntf    = rule.getDstIntf();
-        this.srcAddress = rule.getSrcAddress();
-        this.dstAddress = rule.getDstAddress();
-        this.srcPort    = rule.getSrcPort();
-        this.dstPort    = rule.getDstPort();
+        super( rule );
 
         /* Attributes of the redirect */
         this.isDstRedirect   = rule.isDstRedirect();
@@ -112,12 +84,7 @@ class RedirectMatcher {
         
         this.redirectPort    = rule.getRedirectPort();
     }
-    
-    public boolean isEnabled()
-    {
-        return isEnabled;
-    }
-    
+        
     InetAddress getRedirectAddress()
     {
         return redirectAddress;
@@ -127,59 +94,6 @@ class RedirectMatcher {
     int getRedirectPort()
     {
         return redirectPort;
-    }
-
-    boolean isMatch( IPNewSessionRequest request, Protocol protocol )
-    {
-        boolean isMatch = 
-            isEnabled && 
-            isMatchProtocol( protocol ) &&
-            isMatchIntf( request.clientIntf(), request.serverIntf()) &&
-            isMatchAddress( request.clientAddr(), request.serverAddr()) &&
-            isMatchPort( request.clientPort(), request.serverPort()) &&
-            isTimeMatch();
-
-        if ( isMatch )
-            logger.debug( "Matched: " + request + " the session " );
-
-        return isMatch;
-    
-    }
-
-    boolean isMatch( IPSessionDesc session, Protocol protocol )
-    {
-        return ( isEnabled && 
-                 isMatchProtocol( protocol ) &&
-                 isMatchIntf( session.clientIntf(), session.serverIntf()) &&
-                 isMatchAddress( session.clientAddr(), session.serverAddr()) &&
-                 isMatchPort( session.clientPort(), session.serverPort()) &&
-                 isTimeMatch());
-    }
-
-    boolean isMatchProtocol( Protocol protocol ) 
-    {
-        return this.protocol.isMatch( protocol );
-    }
-    
-    boolean isMatchIntf( byte src, byte dst )
-    {
-        return ( this.srcIntf.isMatch( src ) && this.dstIntf.isMatch( dst ));
-    }
-    
-    boolean isMatchAddress( InetAddress src, InetAddress dst ) 
-    {
-        return ( this.srcAddress.isMatch( src ) && this.dstAddress.isMatch( dst ));
-    }
-    
-    boolean isMatchPort( int src, int dst )
-    {
-        return ( this.srcPort.isMatch( src ) && this.dstPort.isMatch( dst ));
-    }
-    
-    /* Unused for now */
-    boolean isTimeMatch()
-    {
-        return true;
     }
 
     /** Redirect an IP Session request */
