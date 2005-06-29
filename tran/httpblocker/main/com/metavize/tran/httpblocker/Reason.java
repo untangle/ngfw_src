@@ -65,4 +65,11 @@ public class Reason implements Serializable
     {
         return (Reason)INSTANCES.get(key);
     }
+
+    // Serializable methods ---------------------------------------------------
+
+    Object reasResolve()
+    {
+        return getInstance(key);
+    }
 }

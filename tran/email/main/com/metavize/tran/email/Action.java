@@ -139,4 +139,11 @@ public class Action implements Serializable
         result[5] = BLOCK_AND_WARN_BOTH;
         return result;
     }
+
+    // Serializable methods ---------------------------------------------------
+
+    Object reasResolve()
+    {
+        return getInstance(key);
+    }
 }
