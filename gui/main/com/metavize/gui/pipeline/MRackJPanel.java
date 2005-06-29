@@ -6,11 +6,15 @@
 
 package com.metavize.gui.pipeline;
 
+import com.metavize.gui.transform.ButtonKey;
+import com.metavize.gui.transform.MTransformJPanel;
+import com.metavize.gui.util.Util;
+
+import java.util.*;
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.*;
 
-import com.metavize.gui.transform.MTransformJPanel;
 
 /**
  *
@@ -18,6 +22,9 @@ import com.metavize.gui.transform.MTransformJPanel;
  */
 public class MRackJPanel extends JPanel {
 
+    private Map<ButtonKey,MTransformJPanel> rackMap;
+    public Map<ButtonKey,MTransformJPanel> getRackMap(){ return rackMap; }
+    
     private static final int MIN_RACK_HEIGHT = 3;
     private static final int RACK_BUFFER = 1;
 
@@ -82,24 +89,26 @@ public class MRackJPanel extends JPanel {
         this.add(Box.createRigidArea(new Dimension(718, 101*MIN_RACK_HEIGHT)), rackMiddleConstraints);
         this.add(rackBottomJLabel, rackBottomConstraints);
 
+        rackMap = new TreeMap<ButtonKey,MTransformJPanel>();
+	Util.setMRackJPanel(this);
     }
 
-    synchronized public void addTransform(JPanel inputJPanel, int position){
-    MTransformJPanel tempMTransformJPanel;
-    int tempPosition;
-    for(int i=0; i<transformJPanel.getComponentCount(); i++){
-        tempMTransformJPanel = (MTransformJPanel) transformJPanel.getComponent(i);
-        tempPosition = tempMTransformJPanel.transformContext().getMackageDesc().getRackPosition();
-        if(position <= tempPosition){
-        transformJPanel.add(inputJPanel, transformConstraints, i);
-        return;
-        }
-    }
-        transformJPanel.add(inputJPanel, transformConstraints, -1);
+    public synchronized void addTransform(MTransformJPanel mTransformJPanel){
+        ButtonKey buttonKey = new ButtonKey(mTransformJPanel);
+        if( rackMap.containsKey(buttonKey) )
+            return;
+        
+        rackMap.put(buttonKey, mTransformJPanel);
+        int position = ((TreeMap)rackMap).headMap(buttonKey).size();
+        transformJPanel.add(mTransformJPanel, transformConstraints, position);
+        this.revalidate();
     }
 
-    public void removeTransform(JPanel inputJPanel){
-        transformJPanel.remove(inputJPanel);
+    public synchronized void removeTransform(MTransformJPanel mTransformJPanel){
+        ButtonKey buttonKey = new ButtonKey(mTransformJPanel);
+        rackMap.remove(buttonKey);
+        transformJPanel.remove(mTransformJPanel);
+        this.revalidate();
     }
 
     private int paintIndex;

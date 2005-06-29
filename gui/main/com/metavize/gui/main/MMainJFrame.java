@@ -27,99 +27,106 @@ import com.metavize.mvvm.tran.*;
 public class MMainJFrame extends javax.swing.JFrame {
 
 
-
     // CONSTANTS
     private static final Dimension MIN_SIZE = new Dimension(1024, Util.determineMinHeight(768));
     private static final Dimension MAX_SIZE = new Dimension(1600, 1200);
 
-    // STORE AND TOOLBOX IMPLEMENTATION
-    private Hashtable storeHashtable;
-    private Hashtable toolboxHashtable;
+    // STORE AND TOOLBOX IMPLEMENTATION /////////////////
+    private Map<ButtonKey,MTransformJButton> storeMap;
+    private Map<ButtonKey,MTransformJButton> toolboxMap;
+    public  Map<ButtonKey,MTransformJButton> getToolboxMap(){ return toolboxMap; }
     private GridBagConstraints gridBagConstraints;
-
+    /////////////////////////////////////////////////////
 
 
     public MMainJFrame() {
         Util.setMMainJFrame(this);
-        storeHashtable = new Hashtable();
-        toolboxHashtable = new Hashtable();
+        storeMap = new TreeMap<ButtonKey,MTransformJButton>();
+        toolboxMap = new TreeMap<ButtonKey,MTransformJButton>();
         gridBagConstraints = new GridBagConstraints(0, GridBagConstraints.RELATIVE, 1, 1, 1d, 0d,
 						    GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
 						    new Insets(0,1,3,3), 0, 0);
-
+        
         // INIT GUI
         initComponents();
         storeJScrollPane.getVerticalScrollBar().setUnitIncrement(5);
         toolboxJScrollPane.getVerticalScrollBar().setUnitIncrement(5);
         configurationJScrollPane.getVerticalScrollBar().setUnitIncrement(5);
 
-	// OVERRIDE SCREENSIZE TO DEAL WITH LAUNCH BAR
+	// SCREEN SIZE AND RESIZE
 	java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
         setBounds((screenSize.width-1024)/2, (screenSize.height-768)/2, 1024, 768);
 	// System.err.println("Setting screen size to: " + screenSize);
 
-
+        
         // QUERY AND LOAD BUTTONS INTO TOOLBOX
         Util.getStatusJProgressBar().setString("populating Toolbox...");
         MackageDesc[] installedMackages = Util.getToolboxManager().installed();
-        Tid[] transformInstances;
-	MTransformJButton toolboxMTransformJButton;
-
         for(int i=0; i<installedMackages.length; i++){
             if( installedMackages[i].getType() != MackageDesc.TRANSFORM_TYPE )
                 continue;
-            Util.getStatusJProgressBar().setValue(64 + (int) ((((float)i)/(float)installedMackages.length)*16f) );
-            toolboxMTransformJButton = new MTransformJButton(installedMackages[i]);
-            transformInstances = Util.getTransformManager().transformInstances( toolboxMTransformJButton.getName() );
+            ButtonKey buttonKey = new ButtonKey(installedMackages[i].getName(),installedMackages[i].getRackPosition());
+            MTransformJButton button = new MTransformJButton(installedMackages[i]);
+            Tid[] transformInstances = Util.getTransformManager().transformInstances( button.getName() );
             if(  Util.isArrayEmpty(transformInstances) ){
-		toolboxMTransformJButton.setDeployableView();
+		button.setDeployableView();
             }
+	    else if( !Util.getMRackJPanel().getRackMap().containsKey(buttonKey) ){
+		button.setFailedInitView();
+	    }
             else{
-		toolboxMTransformJButton.setDeployedView();
+		button.setDeployedView();
             }
-            this.addMTransformJButtonToToolbox( toolboxMTransformJButton );
+            this.addMTransformJButtonToToolbox( button );
+            Util.getStatusJProgressBar().setValue(64 + (int) ((((float)i)/(float)installedMackages.length)*16f) );
         }
-	Util.getStatusJProgressBar().setValue(80);
-
-
-
+        Util.getStatusJProgressBar().setValue(80);
+        
+        
         // QUERY AND LOAD BUTTONS INTO STORE
         Util.getStatusJProgressBar().setString("populating Store...");
         MackageDesc[] storeMackages = Util.getToolboxManager().uninstalled();
-	MTransformJButton storeMTransformJButton;
         for(int i=0; i<storeMackages.length; i++){
             if( storeMackages[i].getType() != MackageDesc.TRANSFORM_TYPE )
                 continue;
-            Util.getStatusJProgressBar().setValue(80 + (int) ((((float)i)/(float)storeMackages.length)*16f) );
-            if(!toolboxHashtable.containsKey( storeMackages[i].getName() )){
-                storeMTransformJButton = new MTransformJButton(storeMackages[i]);
-		storeMTransformJButton.setProcurableView();
-                addMTransformJButtonToStore(storeMTransformJButton);
+            ButtonKey buttonKey = new ButtonKey(storeMackages[i].getName(), storeMackages[i].getRackPosition());
+            if(!toolboxMap.containsKey( buttonKey )){
+                MTransformJButton button = new MTransformJButton(storeMackages[i]);
+		button.setProcurableView();
+                this.addMTransformJButtonToStore(button);
             }
+            Util.getStatusJProgressBar().setValue(80 + (int) ((((float)i)/(float)storeMackages.length)*16f) );
         }
 	Util.getStatusJProgressBar().setValue(96);
+
+
+	if( storeMap.size() == 0 )
+	    MMainJFrame.this.mTabbedPane.setSelectedIndex(1);
+	else
+	    MMainJFrame.this.mTabbedPane.setSelectedIndex(0);
 
         // UPDATE/UPGRADE
         new UpdateCheckThread();
     }
+
 
     public void updateJButton(final int count){
 	Runnable updateButtonInSwing = new Runnable(){
 		public void run() {
 		    if( count == 0 ){
 			upgradeJButton.setText("<html><center>Upgrade<br>(no upgrades)</center></html>");
-			upgradeJButton.setEnabled(true);
 			upgradeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/upgrade/IconUnavailable32x32.png")));
+                        upgradeJButton.setEnabled(true);
 		    }
 		    else if( count == 1 ){
 			upgradeJButton.setText("<html><center><b>Upgrade<br>(1 upgrade)</b></center></html>");
-			upgradeJButton.setEnabled(true);
 			upgradeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/upgrade/IconAvailable32x32.png")));
+                        upgradeJButton.setEnabled(true);
 		    }
 		    else if( count > 1){
 			upgradeJButton.setText("<html><center><b>Upgrade<br>(" + count + " upgrades)</b></center></html>");
-			upgradeJButton.setEnabled(true);
 			upgradeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/upgrade/IconAvailable32x32.png")));
+                        upgradeJButton.setEnabled(true);
 		    }
 		    else if( count == -1){
 			upgradeJButton.setText("<html><center>Upgrade<br>(unavailable)</center></html>");
@@ -385,7 +392,7 @@ public class MMainJFrame extends javax.swing.JFrame {
 
         maintenanceJButton.setFont(new java.awt.Font("Arial", 0, 12));
         maintenanceJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText32x32.png")));
-        maintenanceJButton.setText("<html>Secure Remote<br>Maintenance</html>");
+        maintenanceJButton.setText("<html>Support and<br>Maintenance</html>");
         maintenanceJButton.setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.EtchedBorder(), new javax.swing.border.EmptyBorder(new java.awt.Insets(2, 2, 2, 0))));
         maintenanceJButton.setDoubleBuffered(true);
         maintenanceJButton.setFocusPainted(false);
@@ -662,14 +669,19 @@ public class MMainJFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_exitForm
 
 
-    public MTransformJButton getButton(String name){
-	if( toolboxHashtable.containsKey(name) )
-	    return (MTransformJButton) toolboxHashtable.get(name);
-	else
-	    return (MTransformJButton) storeHashtable.get(name);
+    public void focusInToolbox(final MTransformJButton mTransformJButton){
+        SwingUtilities.invokeLater( new Runnable() { public void run() {
+	    MMainJFrame.this.toolboxJScrollPane.validate();
+	    MMainJFrame.this.mTabbedPane.setSelectedIndex(1);
+	    Rectangle scrollRect = SwingUtilities.convertRectangle(mTransformJButton, 
+								   mTransformJButton.getBounds(), 
+								   MMainJFrame.this.toolboxJScrollPane.getViewport());
+	    MMainJFrame.this.toolboxJScrollPane.getViewport().scrollRectToVisible(scrollRect);
+	    mTransformJButton.highlight();
+	} } );
     }
 
-    public void addMTransformJButtonToStore(final MTransformJButton mTransformJButton){
+    public synchronized void addMTransformJButtonToStore(final MTransformJButton mTransformJButton){
 
 	// SETUP BUTTON ACTION
 	ActionListener[] actionListeners = mTransformJButton.getActionListeners();
@@ -681,30 +693,29 @@ public class MMainJFrame extends javax.swing.JFrame {
                 }
             });
 
+        ButtonKey buttonKey = new ButtonKey(mTransformJButton);
+            
 	// REMOVE FROM TOOLBOX IF IT ALREADY EXISTS
-	if( toolboxHashtable.remove(mTransformJButton.getName()) != null ){
+	if( toolboxMap.remove(buttonKey) != null ){
 	    SwingUtilities.invokeLater( new Runnable() { public void run() {
 		MMainJFrame.this.toolboxScrollJPanel.remove(mTransformJButton);
 		MMainJFrame.this.toolboxScrollJPanel.revalidate();
-		MMainJFrame.this.toolboxScrollJPanel.repaint();
 	    } } );
 	}
 
 	// PUT INTO STORE
-	if( !storeHashtable.contains(mTransformJButton.getName()) ){
-	    MMainJFrame.this.storeHashtable.put(mTransformJButton.getName(), mTransformJButton);
+	if( !storeMap.containsKey(buttonKey) ){
+	    this.storeMap.put(buttonKey, mTransformJButton);
+            final int position = ((TreeMap)storeMap).headMap(buttonKey).size();
 	    SwingUtilities.invokeLater( new Runnable() { public void run() {
-		MMainJFrame.this.storeScrollJPanel.add(mTransformJButton, gridBagConstraints, 0);
-		MMainJFrame.this.storeJScrollPane.getVerticalScrollBar().setValue(0);
+		MMainJFrame.this.storeScrollJPanel.add(mTransformJButton, gridBagConstraints, position);
 		MMainJFrame.this.storeScrollJPanel.revalidate();
-		MMainJFrame.this.storeScrollJPanel.repaint();
-		MMainJFrame.this.mTabbedPane.setSelectedIndex(0);
 	    } } );
 	}
 
     }
 
-    public void addMTransformJButtonToToolbox(final MTransformJButton mTransformJButton){
+    public synchronized void addMTransformJButtonToToolbox(final MTransformJButton mTransformJButton){
 
 	// SETUP BUTTON ACTION
 	ActionListener[] actionListeners = mTransformJButton.getActionListeners();
@@ -716,24 +727,23 @@ public class MMainJFrame extends javax.swing.JFrame {
                 }
             });
 
+        ButtonKey buttonKey = new ButtonKey(mTransformJButton);
+            
 	// REMOVE FROM STORE IF IT ALREADY EXISTS
-	if( storeHashtable.remove(mTransformJButton.getName()) != null ){
+	if( storeMap.remove(buttonKey) != null ){
 	    SwingUtilities.invokeLater( new Runnable() { public void run() {
 		MMainJFrame.this.storeScrollJPanel.remove(mTransformJButton);
 		MMainJFrame.this.storeScrollJPanel.revalidate();
-		MMainJFrame.this.storeScrollJPanel.repaint();
 	    } } );
 	}
 
 	// PUT INTO TOOLBOX
-	if( !toolboxHashtable.contains(mTransformJButton.getName()) ){
-	    MMainJFrame.this.toolboxHashtable.put(mTransformJButton.getName(), mTransformJButton);
+	if( !toolboxMap.containsKey(buttonKey) ){
+	    this.toolboxMap.put(buttonKey, mTransformJButton);
+            final int position = ((TreeMap)toolboxMap).headMap(buttonKey).size();
 	    SwingUtilities.invokeLater( new Runnable() { public void run() {
-		MMainJFrame.this.toolboxScrollJPanel.add(mTransformJButton, gridBagConstraints, 0);
-		MMainJFrame.this.toolboxJScrollPane.getVerticalScrollBar().setValue(0);
+		MMainJFrame.this.toolboxScrollJPanel.add(mTransformJButton, gridBagConstraints, position);
 		MMainJFrame.this.toolboxScrollJPanel.revalidate();
-		MMainJFrame.this.toolboxScrollJPanel.repaint();
-		MMainJFrame.this.mTabbedPane.setSelectedIndex(1);
 	    } } );
 	}
 

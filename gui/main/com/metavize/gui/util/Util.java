@@ -15,6 +15,7 @@ import javax.swing.*;
 import com.metavize.gui.login.MLoginJFrame;
 import com.metavize.gui.main.MMainJFrame;
 import com.metavize.gui.pipeline.MPipelineJPanel;
+import com.metavize.gui.pipeline.MRackJPanel;
 import com.metavize.gui.widgets.editTable.*;
 import com.metavize.mvvm.*;
 import com.metavize.mvvm.client.*;
@@ -55,6 +56,7 @@ public class Util {
         // Somewhere else this should go? XXX jdi
         statsCache = new StatsCache();
     }
+
     public static MvvmRemoteContext getMvvmContext(){ return mvvmContext; }
     public static ToolboxManager getToolboxManager(){ return toolboxManager; }
     public static TransformManager getTransformManager(){ return transformManager; }
@@ -120,22 +122,40 @@ public class Util {
     public static final int TABLE_TOTAL_WIDTH = 471; /* in pixels (contains extra pixel) */
     public static final int LINENO_MIN_WIDTH = 38; /* # */
     public static final int STATUS_MIN_WIDTH = 55; /* status */
+    public static final int TIMESTAMP_MIN_WIDTH = 55; /* time stamp */
     //////////////////////////////////////////////
 
-
+    // GUI COMPONENTS AND FUNCTIONALITY //////////
     private static ClassLoader initClassLoader = null;
     private static MURLClassLoader mURLClassLoader = null;
+    private static JProgressBar statusJProgressBar;
+    private static boolean isDemo = false;
+    private static MPipelineJPanel mPipelineJPanel;
+    private static MRackJPanel mRackJPanel;
+    private static MLoginJFrame mLoginJFrame;
+    private static MMainJFrame mMainJFrame;
+
+    public static ClassLoader getInitClassLoader(){ return initClassLoader; }
+    public static void setInitClassLoader(ClassLoader initClassLoaderX){ initClassLoader = initClassLoaderX;}
+    public static MURLClassLoader getClassLoader(){ return mURLClassLoader; }
+    public static void setClassLoader(MURLClassLoader mURLClassLoaderX){ mURLClassLoader = mURLClassLoaderX;}
+    public static JProgressBar getStatusJProgressBar(){ return statusJProgressBar; }
+    public static void setStatusJProgressBar(JProgressBar statusJProgressBarX){ statusJProgressBar = statusJProgressBarX; }
+    public static boolean getIsDemo(){ return isDemo; }
+    public static void setIsDemo(boolean isDemoX){ isDemo = isDemoX; }
+    public static MPipelineJPanel getMPipelineJPanel(){ return mPipelineJPanel; }
+    public static void setMPipelineJPanel(MPipelineJPanel mPipelineJPanelX){ mPipelineJPanel = mPipelineJPanelX; }
+    public static MRackJPanel getMRackJPanel(){ return mRackJPanel; }
+    public static void setMRackJPanel(MRackJPanel mRackJPanelX){ mRackJPanel = mRackJPanelX; }
+    public static void setMLoginJFrame(MLoginJFrame mLoginJFrameX){ mLoginJFrame = mLoginJFrameX; }
+    public static JFrame getMLoginJFrame(){ return mLoginJFrame; }
+    public static void setMMainJFrame(MMainJFrame mMainJFrameX){ mMainJFrame = mMainJFrameX; }
+    public static MMainJFrame getMMainJFrame(){ return mMainJFrame; }
+    ////////////////////////////////////////////
+
+
     private static boolean killThreads = false;
     private static final boolean PRINT_MESSAGES = true;
-    private static boolean isDemo = false;
-    private static JProgressBar statusJProgressBar;
-    private static MPipelineJPanel mPipelineJPanel;
-
-    private static MMainJFrame mMainJFrame;
-    private static MLoginJFrame mLoginJFrame;
-    private static String[] args;
-
-    private static JFrame jFrame;
 
     private static Vector log;
 
@@ -203,71 +223,44 @@ public class Util {
     if(virusMEditTableJPanel != null){
         int index = ((JTabbedPane)virusMEditTableJPanel.getParent()).indexOfComponent(virusMEditTableJPanel);
         if( emailDetectionSophosJPanel != null ){
-        ((JTabbedPane)virusMEditTableJPanel.getParent()).setTitleAt(index, "Sophos AntiVirus");
-        virusMEditTableJPanel.setMessage( null );
+	    ((JTabbedPane)virusMEditTableJPanel.getParent()).setTitleAt(index, "Sophos AntiVirus");
+	    virusMEditTableJPanel.setMessage( null );
         }
-            else if( emailDetectionFprotJPanel != null ){
-        ((JTabbedPane)virusMEditTableJPanel.getParent()).setTitleAt(index, "F-Prot AntiVirus");
-        virusMEditTableJPanel.setMessage( null );
+	else if( emailDetectionFprotJPanel != null ){
+	    ((JTabbedPane)virusMEditTableJPanel.getParent()).setTitleAt(index, "F-Prot AntiVirus");
+	    virusMEditTableJPanel.setMessage( null );
         }
-            else if( emailDetectionHauriJPanel != null ){
-        ((JTabbedPane)virusMEditTableJPanel.getParent()).setTitleAt(index, "Hauri AntiVirus");
-        virusMEditTableJPanel.setMessage( null );
+	else if( emailDetectionHauriJPanel != null ){
+	    ((JTabbedPane)virusMEditTableJPanel.getParent()).setTitleAt(index, "Hauri AntiVirus");
+	    virusMEditTableJPanel.setMessage( null );
         }
         else if( emailDetectionClamJPanel != null ){
-        ((JTabbedPane)virusMEditTableJPanel.getParent()).setTitleAt(index, "Clam AntiVirus");
-        virusMEditTableJPanel.setMessage( null );
+	    ((JTabbedPane)virusMEditTableJPanel.getParent()).setTitleAt(index, "Clam AntiVirus");
+	    virusMEditTableJPanel.setMessage( null );
         }
         else{
-        ((JTabbedPane)virusMEditTableJPanel.getParent()).setTitleAt(index, "AntiVirus (uninstalled)");
-        virusMEditTableJPanel.setMessage( undetectedMessage );
+	    ((JTabbedPane)virusMEditTableJPanel.getParent()).setTitleAt(index, "AntiVirus (uninstalled)");
+	    virusMEditTableJPanel.setMessage( undetectedMessage );
         }
     }
     }
     ////////////////////////////////////////////
-
-
-    public static ClassLoader getInitClassLoader(){ return initClassLoader; }
-    public static void setInitClassLoader(ClassLoader initClassLoaderX){ initClassLoader = initClassLoaderX;}
-
-    public static MURLClassLoader getClassLoader(){ return mURLClassLoader; }
-    public static void setClassLoader(MURLClassLoader mURLClassLoaderX){ mURLClassLoader = mURLClassLoaderX;}
-
-    public static JProgressBar getStatusJProgressBar(){ return statusJProgressBar; }
-    public static void setStatusJProgressBar(JProgressBar statusJProgressBarX){ statusJProgressBar = statusJProgressBarX; }
-
-    public static boolean getIsDemo(){ return isDemo; }
-    public static void setIsDemo(boolean isDemoX){ isDemo = isDemoX; }
-
-    public static MPipelineJPanel getMPipelineJPanel(){ return mPipelineJPanel; }
-    public static void setMPipelineJPanel(MPipelineJPanel mPipelineJPanelX){ mPipelineJPanel = mPipelineJPanelX; }
-
-    public static void setMLoginJFrame(MLoginJFrame mLoginJFrameX){ mLoginJFrame = mLoginJFrameX; }
-    public static JFrame getMLoginJFrame(){ return mLoginJFrame; }
-
-    public static void setMMainJFrame(MMainJFrame mMainJFrameX){ mMainJFrame = mMainJFrameX; }
-    public static MMainJFrame getMMainJFrame(){ return mMainJFrame; }
-
-
-    public static void setArgs( String argsX[] ){
-        args = argsX;
-    }
-
-
+    
+    
     public static GraphicsConfiguration getGraphicsConfiguration(){
-    GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
+	GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
         GraphicsDevice graphicsDevice = graphicsEnvironment.getDefaultScreenDevice();
         GraphicsConfiguration graphicsConfiguration = graphicsDevice.getDefaultConfiguration();
-    return graphicsConfiguration;
+	return graphicsConfiguration;
     }
-
+    
     public static Rectangle generateCenteredBounds(Rectangle parentBounds, int childWidth, int childHeight){
         Rectangle childBounds;
         Rectangle defaultScreenBounds;
 
         GraphicsConfiguration graphicsConfiguration = getGraphicsConfiguration();
         defaultScreenBounds = graphicsConfiguration.getBounds();
-
+	
         if(parentBounds == null){
             parentBounds = defaultScreenBounds;
         }
@@ -311,6 +304,12 @@ public class Util {
         GraphicsConfiguration graphicsConfiguration = getGraphicsConfiguration();
 	Insets screenInsets = Toolkit.getDefaultToolkit().getScreenInsets( graphicsConfiguration );
 	int screenHeight = graphicsConfiguration.getBounds().height - screenInsets.top - screenInsets.bottom;
+	//System.err.println("Screen height: " + graphicsConfiguration.getBounds().height);
+	//System.err.println("Screen width: " + graphicsConfiguration.getBounds().width);
+	//System.err.println("Top insets: " + screenInsets.top);
+	//System.err.println("Bottom insets: " + screenInsets.bottom);
+	//System.err.println("Right insets: " + screenInsets.right);
+	//System.err.println("Left insets: " + screenInsets.left);
 	//  System.err.println("Determined screen height to be: " + screenHeight);
 	if( screenHeight < attemptedMinHeight)
 	    return screenHeight;

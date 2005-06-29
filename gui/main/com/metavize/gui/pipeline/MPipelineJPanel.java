@@ -11,8 +11,8 @@ import java.lang.reflect.Constructor;
 import java.util.*;
 import javax.swing.*;
 
-import com.metavize.gui.main.MMainJFrame;
-import com.metavize.gui.transform.MTransformJPanel;
+import com.metavize.gui.main.*;
+import com.metavize.gui.transform.*;
 import com.metavize.gui.util.*;
 import com.metavize.mvvm.*;
 import com.metavize.mvvm.security.*;
@@ -24,8 +24,6 @@ import com.metavize.mvvm.tran.*;
  */
 public class MPipelineJPanel extends javax.swing.JPanel {
 
-    private static Hashtable transformContextHashtable;
-
     // FOR PROGRESS BAR DURING STARTUP
     private int initialInstallCount;
     private int installedCount = 0;
@@ -34,7 +32,6 @@ public class MPipelineJPanel extends javax.swing.JPanel {
     /** Creates new form MPipeline */
     public MPipelineJPanel() {
         Util.setMPipelineJPanel(this);
-	transformContextHashtable = new Hashtable();
 
         // INITIALIZE GUI
         initComponents();
@@ -77,65 +74,26 @@ public class MPipelineJPanel extends javax.swing.JPanel {
     }
 
 
-    private synchronized MTransformJPanel getMTransformJPanel(String transformName){
-	Tid[] transformInstances = Util.getTransformManager().transformInstances();
-	if(transformInstances == null) return null;  if(transformInstances.length == 0) return null;
-	return (MTransformJPanel) transformContextHashtable.get( transformInstances[0] );
-    }
 
-    private synchronized void addToRack(TransformContext transformContext, MTransformJPanel mTransformJPanel) {
-        transformContextHashtable.put(transformContext.getTid(), mTransformJPanel);
-
-        int rackPosition = transformContext.getMackageDesc().getRackPosition();
-        if(rackPosition < 0)
-            rackPosition = 0;
-            ((MRackJPanel)transformJPanel).addTransform(mTransformJPanel, rackPosition);
-            this.validate();
-            this.repaint();
-    }
-
-    public synchronized boolean inRack(TransformContext transformContext){
-        return transformContextHashtable.containsKey(transformContext.getTid());
-    }
-
-    public synchronized Vector getAllMTransformJPanels(){
-        return new Vector( transformContextHashtable.values() );
-    }
-
-
-    public synchronized void removeAllTransforms(){
-	Tid[] allTransforms = Util.getTransformManager().transformInstances();
-	Tid tempTid;
-	TransformContext tempTransformContext;
-	for(int i = 0; i < allTransforms.length; i++){
-	    tempTid = allTransforms[i];
-	    tempTransformContext = Util.getTransformManager().transformContext(tempTid);
-	    if( tempTransformContext.getMackageDesc().getType() != MackageDesc.TRANSFORM_TYPE )
-		continue;
-	    removeTransform(tempTransformContext);
-	}
-    }
-
-
-    public synchronized void removeTransform(TransformContext transformContext) {
+    public synchronized void removeTransform(final MTransformJPanel mTransformJPanel) {
 	String removableName = null;
+	int removablePosition;
+        ButtonKey buttonKey = null;
 	Tid removableTid = null;
         try{
 	    // REMOVE AT SERVER SIDE
-            removableName = transformContext.getTransformDesc().getName();
-            removableTid = transformContext.getTid();
-            final MTransformJPanel removableMTransformJPanel = (MTransformJPanel) transformContextHashtable.get( removableTid );
+            removableName = mTransformJPanel.getTransformContext().getTransformDesc().getDisplayName();
+            buttonKey = new ButtonKey(mTransformJPanel);
+            removableTid = mTransformJPanel.getTransformContext().getTid();
             Util.getTransformManager().destroy( removableTid );
 
 	    // REMOVE AT CLIENT SIDE
-	    transformContextHashtable.remove( removableTid );
 	    SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
-		((MRackJPanel)MPipelineJPanel.this.transformJPanel).removeTransform( removableMTransformJPanel );
-		MPipelineJPanel.this.revalidate();
+		((MRackJPanel)MPipelineJPanel.this.transformJPanel).removeTransform( mTransformJPanel );
 	    }});
 	    
 	    Util.setEmailAndVirusJPanel(removableName, null);
-	    Util.getMMainJFrame().getButton(removableName).setDeployableView();
+            Util.getMMainJFrame().getToolboxMap().get(buttonKey).setDeployableView();
 	}
 	catch(Exception e){
             try{
@@ -143,6 +101,7 @@ public class MPipelineJPanel extends javax.swing.JPanel {
             }
             catch(Exception f){
                 Util.handleExceptionNoRestart("Error removing transform: " + removableName,  f);
+		Util.getMMainJFrame().getToolboxMap().get(buttonKey).setFailedRemoveFromRackView();
             }
         }
 
@@ -150,53 +109,36 @@ public class MPipelineJPanel extends javax.swing.JPanel {
 
 
 
-    public MTransformJPanel addTransform(Object reference){
+    public MTransformJPanel addTransform(Object reference) throws Exception {
 
         MTransformJPanel mTransformJPanel = null;
 
-        if(reference instanceof String){ // ADD DURING LIVE OPERATION
+        if(reference instanceof String){ // ADD FROM BUTTON CLICK
             Tid tID = null;
             Class transformGUIClass;
             TransformContext transformContext = null;
             Constructor transformConstructor = null;
             try{
-
 		tID = Util.getTransformManager().instantiate((String)reference);
 		transformContext = Util.getTransformManager().transformContext(tID);
-		// System.out.println(" gui classname: " + transformManager.transformContext(tID).getTransformDesc().getGuiClassName());
 		transformGUIClass = Util.getClassLoader().loadClass( Util.getTransformManager().transformContext(tID).getTransformDesc().getGuiClassName(), transformContext.getTransformDesc().getName());
-		// System.out.println(" gui classname: " + transformGUIClass);
 		transformConstructor = transformGUIClass.getConstructor(new Class[]{TransformContext.class});
 		mTransformJPanel = (MTransformJPanel) transformConstructor.newInstance(new Object[]{transformContext});
-		addToRack( transformContext, mTransformJPanel);
-		
+                ((MRackJPanel)transformJPanel).addTransform(mTransformJPanel);
             }
             catch(Exception e){
-                try{
-                    Util.handleExceptionWithRestart("Error adding transform from string " + (String) reference, e);
-                }
-                catch(Exception f){
-                    Util.handleExceptionNoRestart("Error adding transform from string " + (String) reference, f);
-                    return null;
-                }
+                Util.handleExceptionWithRestart("Error adding transform from string " + (String) reference, e);
             }
         }
-        else if(reference instanceof TransformContext){  // ADD DURING CONNECTED INITIALIZATION ONLY
+        else if(reference instanceof TransformContext){  // ADD DURING CLIENT INIT
             try{
 		Class transformGUIClass = Util.getClassLoader().loadClass( ((TransformContext)reference).getTransformDesc().getGuiClassName(), ((TransformContext)reference).getTransformDesc().getName() );
 		Constructor transformGUIConstructor = transformGUIClass.getConstructor(new Class[]{TransformContext.class});
 		mTransformJPanel = (MTransformJPanel) transformGUIConstructor.newInstance(new Object[]{((TransformContext)reference)});
-		addToRack( ((TransformContext)reference), mTransformJPanel);
-                
+                ((MRackJPanel)transformJPanel).addTransform(mTransformJPanel);
             }
             catch(Exception e){
-                try{
-                    Util.handleExceptionWithRestart("Error adding transform from transform context: " + ((TransformContext)reference).getTransformDesc().getName(), e);
-                }
-                catch(Exception f){
-                    Util.handleExceptionNoRestart("Error adding transform from transform context: " + ((TransformContext)reference).getTransformDesc().getName(), f);
-                    return null;
-                }
+                Util.handleExceptionWithRestart("Error adding transform from transform context: " + ((TransformContext)reference).getTransformDesc().getName(), e);
             }
             finally{
                 synchronized(this){
@@ -288,7 +230,14 @@ public class MPipelineJPanel extends javax.swing.JPanel {
             this.transformContext = transformContext;
         }
         public void run(){
-            addTransform(transformContext);
+            try{
+                addTransform(transformContext);
+            }
+            catch(Exception e){
+                ButtonKey buttonKey = new ButtonKey(transformContext);
+                Util.handleExceptionNoRestart("Error adding appliance during startup: " + transformContext.getTransformDesc().getName(), e);
+
+            }
         }
     }
 

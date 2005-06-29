@@ -32,7 +32,6 @@ public class MTransformJPanel extends javax.swing.JPanel {
     private TransformContext transformContext;
     public TransformContext transformContext() { return transformContext; }
     public TransformContext getTransformContext(){ return transformContext; }
-
     private MTransformControlsJPanel mTransformControlsJPanel; protected MTransformControlsJPanel mTransformControlsJPanel(){ return mTransformControlsJPanel; }
     private MTransformDisplayJPanel mTransformDisplayJPanel;  protected MTransformDisplayJPanel mTransformDisplayJPanel() { return mTransformDisplayJPanel; }
 

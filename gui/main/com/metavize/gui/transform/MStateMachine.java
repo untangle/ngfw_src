@@ -179,7 +179,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
 		String transformName = transformContext.getTransformDesc().getName();
 
 		mTransformDisplayJPanel.killGraph();
-		Util.getMPipelineJPanel().removeTransform(transformContext);
+		Util.getMPipelineJPanel().removeTransform(mTransformJPanel);
 
 	    }
 	    catch(Exception e){

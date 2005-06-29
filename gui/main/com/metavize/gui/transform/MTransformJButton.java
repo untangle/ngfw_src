@@ -28,8 +28,15 @@ import javax.swing.border.*;
  */
 public class MTransformJButton extends JButton {
 
-    private MackageDesc mackageDesc;
+    // FADED BACKGROUND /////////////
+    private static final int FADE_DELAY_MILLIS = 150;
+    private static final float FADE_DECREMENT = .1f;
+    private static Color BACKGROUND_COLOR = null;
+    private int fadeIteration = -1;
+    /////////////////////////////////
 
+
+    private MackageDesc mackageDesc;
     private GridBagConstraints gridBagConstraints;
     private JProgressBar statusJProgressBar;
     private JLabel statusJLabel;
@@ -138,6 +145,9 @@ public class MTransformJButton extends JButton {
         this.setFocusPainted(false);
         this.setContentAreaFilled(true);
         this.setOpaque(true);
+
+	if(BACKGROUND_COLOR == null)
+	    BACKGROUND_COLOR = this.getBackground();
     }
 
     public MTransformJButton duplicate(){
@@ -150,8 +160,14 @@ public class MTransformJButton extends JButton {
     public String getShortDescription(){ return new String( mackageDesc.getShortDescription() ); }
     public String getName(){ return mackageDesc.getName(); }
     public String getDisplayName(){ return mackageDesc.getDisplayName(); }
+    public int    getRackPosition(){ return mackageDesc.getRackPosition(); }
     public double getPrice(){ return mackageDesc.getPrice(); }
     ////////////////////////////////////////////
+
+    public void highlight(){
+	new FadeTask();
+    }
+
 
     // VIEW UPDATING ///////////
     private void updateView(final String message, final String toolTip, final boolean isEnabled){
@@ -162,8 +178,8 @@ public class MTransformJButton extends JButton {
 	} } );
     }
 
-    public void setDeployableView(){ updateView(null, "Ready to be installed into rack.", true); }
-    public void setProcurableView(){ updateView(null, "Ready to be procured from store.", true); }
+    public void setDeployableView(){ updateView(null, "Ready to be Installed into Rack.", true); }
+    public void setProcurableView(){ updateView(null, "Ready to be Procured from Store.", true); }
     public void setDeployedView(){ updateView(null, "Installed into rack.", false); }
 
     public void setDeployingView(){ updateView("installing", "Installing.", false); }
@@ -171,9 +187,11 @@ public class MTransformJButton extends JButton {
     public void setRemovingFromToolboxView(){ updateView("removing", "Removing from Toolbox.", false); }
     public void setRemovingFromRackView(){ updateView("removing", "Removing from Rack.", false); }
 
+    public void setFailedInitView(){ updateView(null, "Failed Graphical Initialization.", false); }
     public void setFailedProcureView(){ updateView(null, "Failed Procurement.", true); }
     public void setFailedDeployView(){ updateView(null, "Failed Installation.", true); }
     public void setFailedRemoveFromToolboxView(){ updateView(null, "Failed Removal from Toolbox.", true); }
+    public void setFailedRemoveFromRackView(){ updateView(null, "Failed Removal from Rack.", false); }
     /////////////////////////////
 
 
@@ -227,17 +245,13 @@ public class MTransformJButton extends JButton {
 
         public InstallThread(){
 	    this.setContextClassLoader( Util.getClassLoader() );
-	    MTransformJButton.this.setEnabled(false);
+	    MTransformJButton.this.setDeployingView();
 	    this.start();
         }
 	
         public void run(){
-	    MTransformJPanel mTransformJPanel;
-	    // SHOW THE USER WHATS GOING ON
-	    MTransformJButton.this.setDeployingView();
-	    // START TO INSTALL THE TRANSFORM
 	    try{
-		mTransformJPanel = Util.getMPipelineJPanel().addTransform(MTransformJButton.this.getName());
+		Util.getMPipelineJPanel().addTransform(MTransformJButton.this.getName());
 		// LET THE USER KNOW WERE DONE
 		MTransformJButton.this.setDeployedView();
 	    }
@@ -259,20 +273,18 @@ public class MTransformJButton extends JButton {
 
         public PurchaseThread(){
 	    this.setContextClassLoader( Util.getClassLoader() );
-	    MTransformJButton.this.setEnabled(false);
+	    MTransformJButton.this.setProcuringView();
 	    this.start();
 	}    
 
 	public void run() {	    
-	    // SHOW THE USER WHATS GOING ON
-	    MTransformJButton.this.setProcuringView();
-
 	    try{  // START TO DOWNLOAD THE TRANSFORM
 		int dashIndex = MTransformJButton.this.getName().indexOf('-');
 		Util.getToolboxManager().install(MTransformJButton.this.getName().substring(0, dashIndex));
 		Util.getMMainJFrame().addMTransformJButtonToToolbox(MTransformJButton.this);
 		// LET THE USER KNOW WERE DONE
 		MTransformJButton.this.setDeployableView();
+		Util.getMMainJFrame().focusInToolbox(MTransformJButton.this);
 	    }
 	    catch(Exception e){
 		try{
@@ -292,15 +304,11 @@ public class MTransformJButton extends JButton {
 
         public UninstallThread(){
 	    this.setContextClassLoader( Util.getClassLoader() );
-	    MTransformJButton.this.setEnabled(false);
+	    MTransformJButton.this.setRemovingFromToolboxView();
 	    this.start();
 	}
 
         public void run() {
-
-	    // SHOW THE USER WHATS GOING ON
-	    MTransformJButton.this.setRemovingFromToolboxView();
-	    // REMOVE THE TRANSFORM
 	    try{
 		int dashIndex = MTransformJButton.this.getName().indexOf('-');
 		Util.getToolboxManager().uninstall(MTransformJButton.this.getName().substring(0, dashIndex));
@@ -322,4 +330,37 @@ public class MTransformJButton extends JButton {
         }
     }
     ///////////////////////////////////////
+
+    private class FadeTask implements ActionListener{
+	private float fadeLeft = 1f;
+	private javax.swing.Timer fadeTimer;
+	private int redInit;
+	private int greenInit;
+	private int blueInit;
+	public FadeTask(){
+	    fadeTimer = new javax.swing.Timer(FADE_DELAY_MILLIS, this);
+	    redInit = BACKGROUND_COLOR.getRed();
+	    greenInit = BACKGROUND_COLOR.getGreen();
+	    blueInit = BACKGROUND_COLOR.getBlue();
+	    fadeTimer.start();
+	}
+	public void actionPerformed(ActionEvent evt){
+	    if( fadeLeft == 1f ){
+		MTransformJButton.this.setBackground(new Color(0, 0, 255));
+	    }
+	    else if ( fadeLeft > 0f ) {
+		MTransformJButton.this.setBackground(new Color( (int)(((float)redInit)*(1f-fadeLeft)), 
+								(int)(((float)greenInit)*(1f-fadeLeft)), 
+								blueInit + (int)((255f-(float)blueInit)*fadeLeft) ));
+	    }
+	    else{
+		MTransformJButton.this.setBackground(BACKGROUND_COLOR);
+		fadeTimer.stop();
+	    }
+	    fadeLeft -= FADE_DECREMENT;
+	    if(fadeLeft<0f)
+		fadeLeft = 0f;
+	}
+    }
+
 }
