@@ -7,6 +7,7 @@ import com.metavize.mvvm.tran.Transform;
 import com.metavize.tran.httpblocker.HttpBlocker;
 import com.metavize.tran.httpblocker.RequestLog;
 import com.metavize.tran.httpblocker.Reason;
+import com.metavize.tran.httpblocker.Action;
 
 import java.util.*;
 
@@ -29,16 +30,22 @@ public class LogJPanel extends MLogTableJPanel {
 	    event = new Vector();
 	    event.add( requestLog.timeStamp().toString() );
 
+	    Action action = requestLog.getAction();
 	    Reason reason = requestLog.getReason();
-	    if( reason == null ){
+	    if( action == Action.PASS ){
 		event.add( "pass" );
 		event.add( requestLog.getUrl() );
-		event.add( "unknown" );
+		event.add( reason.toString() );
 	    }
-	    else{
+	    else if( action == Action.BLOCK ){
 		event.add( "block" );
 		event.add( requestLog.getUrl() );
 		event.add( reason.toString() );
+	    }
+	    else if( action == null ){
+		event.add( "untouched" );
+		event.add( requestLog.getUrl() );
+		event.add( "no rule applied" );
 	    }
 	    event.add( "unknown" );
 	    event.add( requestLog.getServerAddr() + ":" + ((Integer)requestLog.getSServerPort()).toString() );
