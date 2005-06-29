@@ -25,7 +25,7 @@ import com.metavize.mvvm.tran.ParseException;
  * @author <a href="mailto:rbscott@metavize.com">rbscott</a>
  * @version 1.0
  */
-public class PortMatcher implements Serializable
+public final class PortMatcher implements Serializable
 {
     public static  final String MARKER_RANGE     = MatcherStringConstants.RANGE;
     public static  final String MARKER_WILDCARD  = MatcherStringConstants.WILDCARD;
@@ -138,6 +138,14 @@ public class PortMatcher implements Serializable
         
         /* Just an address a range where the start and end are the same */
         return new PortMatcher( start );
+    }
+
+    public boolean equals( Object o )
+    {
+        if (!( o instanceof PortMatcher )) return false;
+        
+        PortMatcher p = (PortMatcher)o;
+        return (( p.start == this.start ) && ( p.end == this.end ));
     }
 
     static final int fixPort( String port )

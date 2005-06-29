@@ -24,7 +24,7 @@ import com.metavize.mvvm.tran.ParseException;
  * @author <a href="mailto:rbscott@metavize.com">rbscott</a>
  * @version 1.0
  */
-public class ProtocolMatcher implements Serializable
+public final class ProtocolMatcher implements Serializable
 {
     public static final String MARKER_TCP       = "TCP";
     public static final String MARKER_UDP       = "UDP";
@@ -41,7 +41,7 @@ public class ProtocolMatcher implements Serializable
     public static final ProtocolMatcher MATCHER_UDP  = new ProtocolMatcher( false, true );
     public static final ProtocolMatcher MATCHER_PING = new ProtocolMatcher();
     public static final ProtocolMatcher MATCHER_NIL  = new ProtocolMatcher( false, false );
-
+    
     public final boolean isTcpEnabled;
     public final boolean isUdpEnabled;
     public final boolean isPingEnabled;
@@ -91,6 +91,15 @@ public class ProtocolMatcher implements Serializable
         
         /* That is every combination but UDP */
         return MARKER_UDP;
+    }
+
+    public boolean equals( Object o )
+    {
+        if (!( o instanceof ProtocolMatcher )) return false;
+        
+        ProtocolMatcher p = (ProtocolMatcher)o;
+        return (( p.isTcpEnabled == this.isTcpEnabled ) && ( p.isUdpEnabled == this.isUdpEnabled ) &&
+                ( p.isPingEnabled == this.isPingEnabled ));
     }
 
     /**

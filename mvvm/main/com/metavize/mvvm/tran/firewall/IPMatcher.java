@@ -28,7 +28,7 @@ import com.metavize.mvvm.tran.ParseException;
  * @author <a href="mailto:rbscott@metavize.com">rbscott</a>
  * @version 1.0
  */
-public class IPMatcher implements Serializable
+public final class IPMatcher implements Serializable
 {
     public static final String MARKER_SUBNET    = "/";
     public static final String MARKER_ANY       = "any";
@@ -39,7 +39,6 @@ public class IPMatcher implements Serializable
     public static final String MARKER_WILDCARD  = MatcherStringConstants.WILDCARD;
 
     private static final String MARKER_NOTHING  = MatcherStringConstants.NOTHING;
-
     
     /* A matcher for all traffic */
     public static final IPMatcher MATCHER_ALL   = new IPMatcher( 0, 0, false );
@@ -228,9 +227,9 @@ public class IPMatcher implements Serializable
         }
 
         /* Check for the wildcard matcher */
-        if ( this == MATCHER_ALL || ( !isRange && base == 0 && second == 0 )) {
+        if ( this.equals( MATCHER_ALL ) || ( !isRange && ( base == 0 ) && ( second == 0 ))) {
             return MARKER_ANY;
-        } else if ( this == MATCHER_NIL || ( isRange && base > second )) {
+        } else if ( this.equals( MATCHER_NIL ) || ( isRange && ( base > second ))) {
             return MARKER_NOTHING;
         }
         
@@ -242,6 +241,15 @@ public class IPMatcher implements Serializable
         String marker = ( isRange ) ? MARKER_RANGE : MARKER_SUBNET;
         
         return baseToString() + " " + marker + " " + secondToString();
+    }
+    
+    public boolean equals( Object o )
+    {
+        if (!( o instanceof IPMatcher )) return false;
+        
+        IPMatcher i = (IPMatcher)o;
+        return (( i.base == this.base ) && ( i.second == this.second ) &&
+                ( i.isRange == this.isRange ) && ( i.isLocal == this.isLocal ));
     }
     
     private String baseToString()

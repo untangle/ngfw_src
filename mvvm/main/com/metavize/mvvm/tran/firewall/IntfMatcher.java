@@ -24,7 +24,7 @@ import com.metavize.mvvm.tran.ParseException;
  * @author <a href="mailto:rbscott@metavize.com">rbscott</a>
  * @version 1.0
  */
-public class IntfMatcher  implements Serializable
+public final class IntfMatcher  implements Serializable
 {
     public static final String MARKER_INSIDE    = "I";
     public static final String MARKER_OUTSIDE   = "O";
@@ -75,6 +75,15 @@ public class IntfMatcher  implements Serializable
         }
         
         return intf;        
+    }
+
+    public boolean equals( Object o )
+    {
+        if (!( o instanceof IntfMatcher )) return false;
+        
+        IntfMatcher i = (IntfMatcher)o;
+        return (( i.isInsideEnabled == this.isInsideEnabled ) && 
+                ( i.isOutsideEnabled == this.isOutsideEnabled ));
     }
 
     /**
