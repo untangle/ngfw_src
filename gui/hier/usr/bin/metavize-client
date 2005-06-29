@@ -28,4 +28,4 @@ ${JAVA_HOME}/bin/javaws -updateVersions
 #${JAVA_HOME}/bin/javaws -Xclearcache
 
 echo "Webstarting Metavize Client.  Connecting to: http://$HOST/webstart/gui.jnlp"
-exec ${JAVA_HOME}/bin/javaws -Xnosplash http://$HOST/webstart/gui.jnlp
+exec ${JAVA_HOME}/bin/javaws -Xnosplash -userConfig metavize.location local http://$HOST/webstart/gui-local.jnlp
