@@ -35,7 +35,6 @@ public class LogJPanel extends MLogTableJPanel {
         Vector event;
 
         for( RequestLog requestLog : requestLogList ){
-
             event = new Vector();
             event.add( requestLog.timeStamp().toString() );
 
