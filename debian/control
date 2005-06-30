@@ -88,7 +88,7 @@ Description: The Hauri AntiVirus Scanner
 
 Package: clam-transform
 Architecture: any
-Depends: mvvm, clamav, clamav-daemon, clamav-freshclam, http-casing, ftp-casing
+Depends: mvvm, clamav-mv, http-casing, ftp-casing
 XB-Price: 1000
 XB-Display-Name: Clam AntiVirus Scanner
 XB-Rack-Position: 7
