@@ -56,6 +56,12 @@ class RedirectMatcher extends TrafficMatcher {
      */
     private final int redirectPort;
 
+    /**
+     * Index of the rule this matched
+     */
+    private final RedirectRule rule;
+    private final int ruleIndex;
+
     RedirectMatcher( boolean     isEnabled,  ProtocolMatcher protocol, 
                      IntfMatcher srcIntf,    IntfMatcher     dstIntf, 
                      IPMatcher   srcAddress, IPMatcher       dstAddress,
@@ -68,9 +74,12 @@ class RedirectMatcher extends TrafficMatcher {
         this.isDstRedirect   = isDstRedirect;
         this.redirectAddress = redirectAddress;
         this.redirectPort    = redirectPort;
+        
+        this.rule      = null;
+        this.ruleIndex = 0;
     }
 
-    RedirectMatcher( RedirectRule rule )
+    RedirectMatcher( RedirectRule rule, int ruleIndex )
     {
         super( rule );
 
@@ -82,7 +91,9 @@ class RedirectMatcher extends TrafficMatcher {
             this.redirectAddress = rule.getRedirectAddress().getAddr();
         }
         
-        this.redirectPort    = rule.getRedirectPort();
+        this.redirectPort = rule.getRedirectPort();
+        this.rule         = rule;
+        this.ruleIndex    = ruleIndex;
     }
         
     InetAddress getRedirectAddress()
@@ -123,4 +134,16 @@ class RedirectMatcher extends TrafficMatcher {
             }
         }
     }
+
+    public RedirectRule rule()
+    {
+        return this.rule;
+    }
+
+    public int ruleIndex()
+    {
+        return this.ruleIndex;
+    }
+
+
 }

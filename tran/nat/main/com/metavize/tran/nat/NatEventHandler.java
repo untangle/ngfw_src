@@ -61,8 +61,11 @@ class NatEventHandler extends AbstractEventHandler
 
     /* match to determine  whether a session is directed for the dmz */
     /* XXX Probably need to initialized this with a value */
-    private RedirectMatcher dmz;
-
+    private RedirectMatcher dmz = RedirectMatcher.MATCHER_DISABLED;
+    
+    /* True if logging DMZ redirects */
+    private boolean isDmzLoggingEnabled = false;
+    
     /* All of the other rules */
     /* Use an empty list rather than null */
     private List<RedirectMatcher> redirectList = new LinkedList<RedirectMatcher>();
@@ -222,8 +225,10 @@ class NatEventHandler extends AbstractEventHandler
                                        IPMatcher.MATCHER_ALL, localHostMatcher,
                                        PortMatcher.MATCHER_ALL, PortMatcher.MATCHER_ALL,
                                        true, settings.getDmzAddress().getAddr(), -1 );
+            isDmzLoggingEnabled = settings.getDmzLoggingEnabled();
         } else {
             dmz = RedirectMatcher.MATCHER_DISABLED;
+            isDmzLoggingEnabled = false;
         }
         
         /* Empty out the list */
@@ -234,9 +239,10 @@ class NatEventHandler extends AbstractEventHandler
         if ( list == null ) {
             logger.error( "Settings contain null redirect list" );
         } else {
+            int index =1;
             /* Update all of the rules */
-            for ( Iterator<RedirectRule> iter = list.iterator() ; iter.hasNext() ; ) {
-                redirectList.add( new RedirectMatcher( iter.next()));
+            for ( Iterator<RedirectRule> iter = list.iterator() ; iter.hasNext() ; index++ ) {
+                redirectList.add( new RedirectMatcher( iter.next(), index ));
             }
         }        
     }
@@ -337,6 +343,13 @@ class NatEventHandler extends AbstractEventHandler
                 /* Increment the NAT counter */
                 transform.incrementCount( REDIR_COUNTER );
 
+                /* log the event if necessary */
+                if ( matcher.rule() == null ) {
+                    logger.warn( "Null rule for a redirect matcher" );
+                } else if ( matcher.rule().getLog()) {
+                    eventLogger.info( new RedirectEvent( request.id(), matcher.rule(), matcher.ruleIndex()));
+                }
+
                 return true;
             }
         }
@@ -353,6 +366,11 @@ class NatEventHandler extends AbstractEventHandler
             
             /* Increment the DMZ counter */
             transform.incrementCount( DMZ_COUNTER ); // DMZ COUNTER
+
+            if ( isDmzLoggingEnabled ) {
+                /* Log the event if necessary */
+                eventLogger.info( new RedirectEvent( request.id()));
+            }
 
             return true;
         }

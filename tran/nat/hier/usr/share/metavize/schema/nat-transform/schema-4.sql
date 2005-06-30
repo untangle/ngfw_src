@@ -113,6 +113,15 @@ create table TR_NAT_EVT_DHCP_ABS_LEASES (
         POSITION int4 not null,
         primary key (EVENT_ID, POSITION));
 
+create table REDIRECT_EVT (
+        EVENT_ID int8 not null,
+        SESSION_ID int4,
+        RULE_ID int8,
+        RULE_INDEX int4,
+        IS_DMZ bool,
+        TIME_STAMP timestamp,
+        primary key (EVENT_ID));
+
 alter table TR_NAT_SETTINGS add constraint FK2F819DC21446F foreign key (TID) references TID;
 
 alter table TR_NAT_REDIRECTS add constraint FKCBBF56381CAE658A foreign key (SETTING_ID) references TR_NAT_SETTINGS;

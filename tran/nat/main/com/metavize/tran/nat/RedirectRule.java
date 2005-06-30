@@ -41,8 +41,8 @@ public class RedirectRule extends TrafficRule
     private static final String REDIRECT_PORT_UNCHANGED    = "unchanged";
     private static final String REDIRECT_ADDRESS_UNCHANGED = "unchanged";
 
-    private static final String ACTION_REDIRECT     = "Block";
-    private static final String ACTION_REDIRECT_LOG = "Block & Log";
+    private static final String ACTION_REDIRECT     = "Redirect";
+    private static final String ACTION_REDIRECT_LOG = "Redirect & Log";
     
     private static final String[] ACTION_ENUMERATION = { ACTION_REDIRECT, ACTION_REDIRECT_LOG };
     
