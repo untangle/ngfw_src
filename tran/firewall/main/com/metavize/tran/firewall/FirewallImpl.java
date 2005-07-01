@@ -236,7 +236,7 @@ public class FirewallImpl extends SoloTransform implements Firewall
                                     IPMatcher.MATCHER_ALL, IPMatcher.parse( "1.2.3.1" ),
                                     PortMatcher.MATCHER_PING, PortMatcher.MATCHER_PING,
                                     true );
-            tmp.setDescription( "Block PINGs to 1.2.3.1, the source and destination ports are ignored." );
+            tmp.setDescription( "Block PINGs to 1.2.3.1.  Note: the source and destination ports are ignored." );
             firewallList.add( tmp );
 
             
