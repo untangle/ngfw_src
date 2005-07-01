@@ -19,7 +19,7 @@ FROM (SELECT count(*) AS total_violations FROM tr_httpblk_evt_blk blk
 tr_httpblk_evt_blk blk
 JOIN tr_http_req_line USING (request_id)
 JOIN tr_http_evt_req USING (request_id)
-JOIN pipeline_info USING (session_id)
+JOIN pl_endp USING (session_id)
 JOIN addr_map ON c_client_addr = addr
 WHERE blk.time_stamp > $P{startTime} AND blk.time_stamp < $P{endTime}
 AND NOT c_client_addr ISNULL

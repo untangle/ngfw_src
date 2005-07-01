@@ -15,7 +15,7 @@
     </parameter>
     <queryString><![CDATA[SELECT evt.time_stamp, name, c_client_addr, c_server_addr, c_server_port, ident, to_server
 FROM tr_spyware_evt_cookie evt
-JOIN pipeline_info USING (session_id)
+JOIN pl_endp USING (session_id)
 JOIN tr_http_evt_req req USING (request_id)
 JOIN addr_map ON addr = c_client_addr
 WHERE evt.time_stamp > $P{startTime} AND evt.time_stamp < $P{endTime}

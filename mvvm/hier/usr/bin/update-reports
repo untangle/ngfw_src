@@ -28,10 +28,10 @@ CREATE TABLE addr_map (addr inet PRIMARY KEY, name varchar(64));
 INSERT INTO addr_map
 (SELECT addr, COALESCE(name, host(addr)) AS name
  FROM (SELECT addr, min(position) AS min_idx
-       FROM (SELECT c_client_addr AS addr FROM pipeline_info
-             UNION SELECT c_server_addr AS addr FROM pipeline_info
-             UNION SELECT s_client_addr AS addr FROM pipeline_info
-             UNION SELECT s_server_addr AS addr FROM pipeline_info
+       FROM (SELECT c_client_addr AS addr FROM pl_endp
+             UNION SELECT c_server_addr AS addr FROM pl_endp
+             UNION SELECT s_client_addr AS addr FROM pl_endp
+             UNION SELECT s_server_addr AS addr FROM pl_endp
              UNION SELECT client_addr   AS addr FROM mvvm_login_evt) AS addrs
        LEFT OUTER JOIN ipmaddr_dir_entries entry JOIN ipmaddr_rule rule USING (rule_id)
        ON rule.ipmaddr >>= addr

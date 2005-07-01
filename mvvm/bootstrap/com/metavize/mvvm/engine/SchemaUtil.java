@@ -24,8 +24,8 @@ import org.apache.log4j.Logger;
  */
 public class SchemaUtil
 {
-    private static final String INIT_SCHEMA_CMD
-        = System.getProperty("bunnicula.home") + "/../../bin/init-schema ";
+    private static final String UPDATE_SCHEMA_CMD
+        = System.getProperty("bunnicula.home") + "/../../bin/update-schema ";
 
     private static final Logger logger = Logger.getLogger(SchemaUtil.class);
 
@@ -39,12 +39,12 @@ public class SchemaUtil
     public static void initSchema(String component)
     {
         try {
-            Process p = Runtime.getRuntime().exec(INIT_SCHEMA_CMD + component);
+            Process p = Runtime.getRuntime().exec(UPDATE_SCHEMA_CMD + component);
             InputStream is = p.getInputStream();
             // XXX we log in the script, maybe move up to here
             for (byte[] b = new byte[1024]; 0 <= is.read(b); );
         } catch (IOException exn) {
-            logger.warn("error in init-schema", exn);
+            logger.warn("error in update-schema", exn);
         }
     }
 }

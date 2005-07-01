@@ -49,7 +49,7 @@ public class HttpBlockerImpl extends SoloTransform implements HttpBlocker
         +         "resp.content_length, c_client_addr, c_client_port, "
         +         "s_server_addr, s_server_port "
         + "FROM tr_http_evt_req req "
-        + "JOIN pipeline_info pio USING (session_id) "
+        + "JOIN pl_endp USING (session_id) "
         + "JOIN tr_http_req_line rl USING (request_id) "
         + "LEFT OUTER JOIN tr_http_evt_resp resp USING (request_id)"
         + "LEFT OUTER JOIN tr_httpblk_evt_blk blk USING (request_id)"

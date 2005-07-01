@@ -33,8 +33,8 @@ import com.metavize.mvvm.tapi.MPipe;
 import com.metavize.mvvm.tapi.Pipeline;
 import com.metavize.mvvm.tapi.PipelineFoundry;
 import com.metavize.mvvm.tapi.SoloPipeSpec;
-import com.metavize.mvvm.tran.PipelineEvent;
-import com.metavize.mvvm.tran.PipelineInfo;
+import com.metavize.mvvm.tran.PipelineEndpoints;
+import com.metavize.mvvm.tran.PipelineStats;
 import org.apache.log4j.Logger;
 
 class PipelineFoundryImpl implements PipelineFoundry
@@ -52,7 +52,8 @@ class PipelineFoundryImpl implements PipelineFoundry
     private final Map casings = new ConcurrentHashMap();
     private final Map<InetSocketAddress, Fitting> connectionFittings
         = new ConcurrentHashMap<InetSocketAddress, Fitting>();
-    private final Map pipelines = new ConcurrentHashMap();
+    private final Map<Integer, PipelineImpl> pipelines
+        = new ConcurrentHashMap<Integer, PipelineImpl>();
 
     private PipelineFoundryImpl() { }
 
@@ -114,8 +115,8 @@ class PipelineFoundryImpl implements PipelineFoundry
 
         Long t1 = System.currentTimeMillis();
 
-        PipelineInfo pipelineInfo = new PipelineInfo(sessionDesc);
-        Pipeline pipeline = new PipelineImpl(mPipes, fittings, pipelineInfo);
+        PipelineImpl pipeline = new PipelineImpl(sessionDesc.id(), mPipes,
+                                                 fittings);
         pipelines.put(sessionDesc.id(), pipeline);
 
         if (logger.isDebugEnabled()) {
@@ -131,18 +132,20 @@ class PipelineFoundryImpl implements PipelineFoundry
         return l;
     }
 
+    public void registerEndpoints(IPSessionDesc start, IPSessionDesc end)
+    {
+        eventLogger.info(new PipelineEndpoints(start, end));
+    }
+
     public void destroy(IPSessionDesc start, IPSessionDesc end)
     {
-        PipelineImpl pipeline = (PipelineImpl)pipelines.remove(start.id());
+        PipelineImpl pipeline = pipelines.remove(start.id());
 
         if (logger.isDebugEnabled()) {
             logger.debug("removed: " + pipeline + " for: " + start.id());
         }
 
-        PipelineInfo info = pipeline.getInfo();
-        info.update(start, end);
-
-        eventLogger.info(new PipelineEvent(info));
+        eventLogger.info(new PipelineStats(start, end));
 
         pipeline.destroy();
     }

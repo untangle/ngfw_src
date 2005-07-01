@@ -16,7 +16,7 @@
     <queryString><![CDATA[SELECT evt.time_stamp, c_client_addr, c_server_addr, c_server_port, name, host, virus_name
 FROM tr_virus_evt_http evt
 JOIN tr_http_evt_req ON request_line = request_id
-JOIN pipeline_info USING (session_id)
+JOIN pl_endp USING (session_id)
 JOIN addr_map ON c_client_addr = addr
 WHERE evt.time_stamp > $P{startTime} AND evt.time_stamp < $P{endTime} AND NOT clean
 ORDER BY time_stamp]]></queryString>

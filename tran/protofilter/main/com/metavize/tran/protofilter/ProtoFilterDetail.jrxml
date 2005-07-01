@@ -15,7 +15,8 @@
     </parameter>
     <queryString><![CDATA[SELECT evt.time_stamp, name, c_client_addr, c_server_addr, c_server_port, protocol, blocked, p2c_bytes
 FROM tr_protofilter_evt evt
-JOIN pipeline_info USING (session_id)
+JOIN pl_stats USING (session_id)
+JOIN pl_endp USING (session_id)
 JOIN addr_map ON addr = c_client_addr
 WHERE evt.time_stamp > $P{startTime} AND evt.time_stamp < $P{endTime}
 ORDER BY time_stamp]]></queryString>

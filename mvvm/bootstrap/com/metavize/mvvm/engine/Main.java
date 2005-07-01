@@ -23,8 +23,8 @@ import org.apache.catalina.Context;
 import org.apache.catalina.Engine;
 import org.apache.catalina.Host;
 import org.apache.catalina.LifecycleException;
-import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.core.StandardDefaultContext;
+import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.logger.FileLogger;
 import org.apache.catalina.session.StandardManager;
 import org.apache.catalina.startup.Embedded;
@@ -35,9 +35,6 @@ import org.logicalcobwebs.proxool.ProxoolFacade;
 
 public class Main
 {
-    private static final String INIT_SCHEMA_CMD
-        = System.getProperty("bunnicula.home") + "/../../bin/init-schema ";
-
     public static int HTTP_PORT = 80;
     public static int HTTPS_PORT = 443;
 

@@ -83,12 +83,6 @@ CREATE TABLE string_rule (
     log bool,
     PRIMARY KEY (rule_id));
 
-CREATE TABLE mvvm_evt_pipeline (
-    event_id int8 NOT NULL,
-    pipeline_info int8,
-    time_stamp timestamp,
-    PRIMARY KEY (event_id));
-
 CREATE TABLE tid (
     id int8 NOT NULL,
     PRIMARY KEY (id));
@@ -154,20 +148,12 @@ CREATE TABLE mvvm_login_evt (
     time_stamp timestamp,
     PRIMARY KEY (event_id));
 
-CREATE TABLE pipeline_info (
-    id int8 NOT NULL,
+CREATE TABLE pl_endp (
+    event_id int8 NOT NULL,
+    time_stamp timestamp,
     session_id int4,
     proto int2,
     create_date timestamp,
-    raze_date timestamp,
-    c2p_bytes int8,
-    s2p_bytes int8,
-    p2c_bytes int8,
-    p2s_bytes int8,
-    c2p_chunks int8,
-    s2p_chunks int8,
-    p2c_chunks int8,
-    p2s_chunks int8,
     client_intf int2,
     server_intf int2,
     c_client_addr inet,
@@ -178,18 +164,33 @@ CREATE TABLE pipeline_info (
     s_client_port int4,
     c_server_port int4,
     s_server_port int4,
-    PRIMARY KEY (id));
+    PRIMARY KEY (event_id));
 
-create table shield_evt (
-        event_id int8 not null,
-        ip inet,
-        reputation float8,
-        mode int4,
-        limited int4,
-        rejected int4,
-        dropped int4,
-        time_stamp timestamp,
-        PRIMARY KEY (event_id));
+CREATE TABLE pl_stats (
+    event_id int8 NOT NULL,
+    time_stamp timestamp,
+    session_id int4,
+    raze_date timestamp,
+    c2p_bytes int8,
+    s2p_bytes int8,
+    p2c_bytes int8,
+    p2s_bytes int8,
+    c2p_chunks int8,
+    s2p_chunks int8,
+    p2c_chunks int8,
+    p2s_chunks int8,
+    PRIMARY KEY (event_id));
+
+CREATE TABLE shield_evt (
+    event_id int8 NOT NULL,
+    ip inet,
+    reputation float8,
+    mode int4,
+    limited int4,
+    rejected int4,
+    dropped int4,
+    time_stamp timestamp,
+    PRIMARY KEY (event_id));
 
 ALTER TABLE admin_settings ADD CONSTRAINT FK71B1F7333C031EE0 FOREIGN KEY (summary_period_id) REFERENCES period;
 
@@ -202,8 +203,6 @@ ALTER TABLE transform_args ADD CONSTRAINT FK1C0835F0A8A3B796 FOREIGN KEY (transf
 ALTER TABLE transform_preferences ADD CONSTRAINT FKE8B6BA651446F FOREIGN KEY (tid) REFERENCES tid;
 
 CREATE INDEX idx_string_rule ON string_rule (string);
-
-ALTER TABLE mvvm_evt_pipeline ADD CONSTRAINT FK9CF995D62F5A0D7 FOREIGN KEY (pipeline_info) REFERENCES pipeline_info ON DELETE CASCADE;
 
 ALTER TABLE transform_persistent_state ADD CONSTRAINT FKA67B855C1446F FOREIGN KEY (tid) REFERENCES tid;
 

@@ -14,7 +14,7 @@
 SELECT name, count(*) AS hits, total_hits
   FROM (SELECT count(*) AS total_hits FROM tr_spyware_evt_activex) as total_count,
   tr_spyware_evt_activex evt
-  JOIN pipeline_info info USING (session_id)
+  JOIN pl_endp endp USING (session_id)
   JOIN addr_map ON addr = c_client_addr
   WHERE evt.time_stamp > $P{startTime} AND evt.time_stamp < $P{endTime}
   AND NOT c_client_addr ISNULL

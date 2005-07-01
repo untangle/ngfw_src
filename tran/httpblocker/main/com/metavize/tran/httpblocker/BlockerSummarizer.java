@@ -30,7 +30,7 @@ public class BlockerSummarizer extends BaseSummarizer {
         long totalTraffic = 0;
 
         try {
-            String sql = "select count(*) from tr_http_evt_req where time_stamp >= ? and time_stamp < ?";
+            String sql = "SELECT count(*) FROM tr_http_evt_req WHERE time_stamp >= ? AND time_stamp < ?";
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
@@ -40,7 +40,7 @@ public class BlockerSummarizer extends BaseSummarizer {
             rs.close();
             ps.close();
 
-            sql = "select count(*) from tr_httpblk_evt_blk where time_stamp >= ? and time_stamp < ?";
+            sql = "SELECT count(*) FROM tr_httpblk_evt_blk WHERE time_stamp >= ? AND time_stamp < ?";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
@@ -50,7 +50,7 @@ public class BlockerSummarizer extends BaseSummarizer {
             rs.close();
             ps.close();
 
-            sql = "select sum(c2p_bytes), sum(s2p_bytes), sum(p2c_bytes), sum(p2s_bytes) from tr_http_evt_req as h, pipeline_info as p where h.time_stamp >= ? and h.time_stamp < ? and h.session_id = p.session_id";
+            sql = "SELECT sum(c2p_bytes), sum(s2p_bytes), sum(p2c_bytes), sum(p2s_bytes) FROM tr_http_evt_req AS h, pl_stats AS p WHERE h.time_stamp >= ? AND h.time_stamp < ? AND h.session_id = p.session_id";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);

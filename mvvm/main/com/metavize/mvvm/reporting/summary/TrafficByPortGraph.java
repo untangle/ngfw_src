@@ -6,36 +6,24 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: TrafficByPortGraph.java,v 1.1 2005/02/11 22:45:33 jdi Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.reporting.summary;
 
-import org.jfree.chart.ChartFactory;
+import java.awt.Insets;
+import java.sql.*;
+import java.util.*;
+
+import com.metavize.mvvm.reporting.*;
+import com.metavize.mvvm.util.PortServiceNames;
+import net.sf.jasperreports.engine.JRDefaultScriptlet;
+import net.sf.jasperreports.engine.JRScriptletException;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.labels.StandardPieItemLabelGenerator;
 import org.jfree.chart.plot.PiePlot3D;
 import org.jfree.data.general.DefaultPieDataset;
-import org.jfree.data.time.Hour;
-import org.jfree.data.time.Minute;
-import org.jfree.data.time.TimeSeries;
-import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.util.Rotation;
-import org.jfree.ui.Drawable;
-
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.Insets;
-import java.awt.geom.Rectangle2D;
-import java.sql.*;
-import java.util.*;
-
-import net.sf.jasperreports.engine.JRAbstractSvgRenderer;
-import net.sf.jasperreports.engine.JRDefaultScriptlet;
-import net.sf.jasperreports.engine.JRScriptletException;
-
-import com.metavize.mvvm.util.PortServiceNames;
-import com.metavize.mvvm.reporting.*;
 
 
 public class TrafficByPortGraph extends TopTenPieGraph
@@ -57,7 +45,7 @@ public class TrafficByPortGraph extends TopTenPieGraph
 
     public TrafficByPortGraph(JRDefaultScriptlet ourScriptlet, String resultVarName,
                               String chartTitle, boolean byPercentage,
-                              boolean doOutgoingSessions, boolean doIncomingSessions, 
+                              boolean doOutgoingSessions, boolean doIncomingSessions,
                               boolean countOutgoingBytes, boolean countIncomingBytes)
     {
         super(ourScriptlet, resultVarName);
@@ -76,10 +64,10 @@ public class TrafficByPortGraph extends TopTenPieGraph
         System.out.println("Start Date: " + startDate + ", End Date: " + endDate);
 
         // Load up the datasets
-        String sql = "select proto, s_server_port, client_intf, count(*), SUM(c2p_bytes), SUM(p2s_bytes), SUM(s2p_bytes), SUM(p2c_bytes) from pipeline_info where ";
+        String sql = "SELECT proto, s_server_port, client_intf, count(*), sum(c2p_bytes), sum(p2s_bytes), sum(s2p_bytes), sum(p2c_bytes) FROM pl_endp JOIN pl_stats USING (session_id) WHERE ";
         if (!doIncomingSessions || !doOutgoingSessions)
-            sql += "client_intf = ? and ";
-        sql += "create_date <= ? and raze_date >= ? group by client_intf, proto, s_server_port";
+            sql += "client_intf = ? AND ";
+        sql += "create_date <= ? and raze_date >= ? GROUP BY client_intf, proto, s_server_port";
         int sidx = 1;
         PreparedStatement stmt = con.prepareStatement(sql);
         if (doIncomingSessions && !doOutgoingSessions) {
@@ -117,7 +105,7 @@ public class TrafficByPortGraph extends TopTenPieGraph
                 else
                     byteCount += p2sBytes;
             }
-                
+
             String portName = null;
             switch (proto) {
             case PROTO_TCP:
@@ -162,7 +150,7 @@ public class TrafficByPortGraph extends TopTenPieGraph
             GEntry ge = iter.next();
             dataset.setValue(ge.name, ge.value);
         }
-            
+
         PiePlot3D plot = new PiePlot3D(dataset);
         plot.setMaximumLabelWidth(.3);
         plot.setLabelFont(LABEL_FONT);
@@ -174,7 +162,7 @@ public class TrafficByPortGraph extends TopTenPieGraph
         plot.setInsets(new Insets(0, 5, 5, 5));
         plot.setToolTipGenerator(new StandardPieItemLabelGenerator());
         plot.setLabelGenerator(new StandardPieItemLabelGenerator("{0} ({2})"));
-        JFreeChart chart = 
+        JFreeChart chart =
             new JFreeChart(chartTitle, TITLE_FONT, plot, true);
         return chart;
     }
@@ -190,7 +178,7 @@ public class TrafficByPortGraph extends TopTenPieGraph
             this.name = name;
             this.value = byteCount;
         }
-            
+
         // NOTE: REVERSED!
         public int compareTo(Object o) {
             if (o instanceof GEntry) {

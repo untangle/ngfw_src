@@ -41,7 +41,7 @@ public class HibernateAppender extends AppenderSkeleton
 {
     private static final int QUEUE_SIZE = 10000;
     private static final int BATCH_SIZE = 1000;
-    private static final int SLEEP_TIME = 60000;
+    private static final int SLEEP_TIME = 15000;
 
     private static final Logger logger = Logger
         .getLogger(HibernateAppender.class);

@@ -22,16 +22,15 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.metavize.mvvm.tapi.Fitting;
 import com.metavize.mvvm.tapi.MPipe;
 import com.metavize.mvvm.tapi.Pipeline;
-import com.metavize.mvvm.tran.PipelineInfo;
 
 class PipelineImpl implements Pipeline
 {
     private static final File BUNNICULA_TMP
         = new File(System.getProperty("bunnicula.tmp.dir"));
 
+    private final int sessionId;
     private final List<MPipe> mPipes;
     private final List<Fitting> fittings;
-    private final PipelineInfo info;
     private final String sessionPrefix;
 
     private final Map objects = new ConcurrentHashMap();
@@ -41,12 +40,12 @@ class PipelineImpl implements Pipeline
 
     // constructors -----------------------------------------------------------
 
-    PipelineImpl(List<MPipe> mPipes, List<Fitting> fittings, PipelineInfo info)
+    PipelineImpl(int sessionId, List<MPipe> mPipes, List<Fitting> fittings)
     {
+        this.sessionId = sessionId;
         this.mPipes = new ArrayList<MPipe>(mPipes);
         this.fittings = new ArrayList<Fitting>(fittings);
-        this.info = info;
-        this.sessionPrefix = "sess-" + info.getSessionId() + "-";
+        this.sessionPrefix = "sess-" + sessionId + "-";
     }
 
     // object registry methods ------------------------------------------------
@@ -121,13 +120,6 @@ class PipelineImpl implements Pipeline
             files.add(f);
         }
         return f;
-    }
-
-    // accessors --------------------------------------------------------------
-
-    PipelineInfo getInfo()
-    {
-        return info;
     }
 
     // package protected methods ----------------------------------------------

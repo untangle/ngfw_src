@@ -34,6 +34,7 @@ public interface PipelineFoundry
      */
     List<ArgonAgent> weld(IPSessionDesc sessionDesc);
 
+    void registerEndpoints(IPSessionDesc start, IPSessionDesc end);
     void destroy(IPSessionDesc start, IPSessionDesc end);
 
     void registerMPipe(MPipe mPipe);

@@ -6,33 +6,22 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: TrafficDayByMinuteGraph.java,v 1.2 2005/02/12 00:44:09 jdi Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.reporting.summary;
 
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.PiePlot3D;
-import org.jfree.data.general.DefaultPieDataset;
-import org.jfree.data.time.Hour;
-import org.jfree.data.time.Minute;
-import org.jfree.data.time.TimeSeries;
-import org.jfree.data.time.TimeSeriesCollection;
-import org.jfree.util.Rotation;
-import org.jfree.ui.Drawable;
-
-import java.awt.Graphics2D;
-import java.awt.geom.Rectangle2D;
 import java.sql.*;
 import java.util.*;
 
-import net.sf.jasperreports.engine.JRAbstractSvgRenderer;
+import com.metavize.mvvm.reporting.*;
 import net.sf.jasperreports.engine.JRDefaultScriptlet;
 import net.sf.jasperreports.engine.JRScriptletException;
-
-import com.metavize.mvvm.util.PortServiceNames;
-import com.metavize.mvvm.reporting.*;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.JFreeChart;
+import org.jfree.data.time.Minute;
+import org.jfree.data.time.TimeSeries;
+import org.jfree.data.time.TimeSeriesCollection;
 
 
 public class TrafficDayByMinuteGraph extends DayByMinuteTimeSeriesGraph
@@ -52,7 +41,7 @@ public class TrafficDayByMinuteGraph extends DayByMinuteTimeSeriesGraph
 
     // Produces a single line graph of one series
     public TrafficDayByMinuteGraph(JRDefaultScriptlet ourScriptlet, String resultVarName,
-                                   String chartTitle, boolean doOutgoingSessions, boolean doIncomingSessions, 
+                                   String chartTitle, boolean doOutgoingSessions, boolean doIncomingSessions,
                                    boolean countOutgoingBytes, boolean countIncomingBytes,
                                    String seriesTitle)
     {
@@ -69,7 +58,7 @@ public class TrafficDayByMinuteGraph extends DayByMinuteTimeSeriesGraph
     // Produces a three series line graph of incoming, outgoing, total.
     public TrafficDayByMinuteGraph(JRDefaultScriptlet ourScriptlet, String resultVarName,
                                    String charTitle,
-                                   boolean doOutgoingSessions, boolean doIncomingSessions, 
+                                   boolean doOutgoingSessions, boolean doIncomingSessions,
                                    String outgoingSeriesTitle, String incomingSeriesTitle,
                                    String overallSeriesTitle)
     {
@@ -86,7 +75,7 @@ public class TrafficDayByMinuteGraph extends DayByMinuteTimeSeriesGraph
         this.outgoingSeriesTitle = outgoingSeriesTitle;
         this.incomingSeriesTitle = incomingSeriesTitle;
     }
-        
+
     protected JFreeChart doChart(Connection con) throws JRScriptletException, SQLException
     {
         TimeSeries dataset = new TimeSeries(seriesTitle, Minute.class);
@@ -99,10 +88,10 @@ public class TrafficDayByMinuteGraph extends DayByMinuteTimeSeriesGraph
         System.out.println("ACK2!");
 
         // Load up the datasets
-        String sql = "select client_intf, create_date, raze_date, c2p_bytes, p2s_bytes, s2p_bytes, p2c_bytes from pipeline_info where ";
+        String sql = "SELECT client_intf, create_date, raze_date, c2p_bytes, p2s_bytes, s2p_bytes, p2c_bytes FROM pl_endp JOIN pl_stats USING (session_id) where ";
         if (!doIncomingSessions || !doOutgoingSessions)
-            sql += "client_intf = ? and ";
-        sql += "create_date <= ? and raze_date >= ? order by create_date";
+            sql += "client_intf = ? AND ";
+        sql += "create_date <= ? AND raze_date >= ? ORDER BY create_date";
         int sidx = 1;
         PreparedStatement stmt = con.prepareStatement(sql);
         if (doIncomingSessions && !doOutgoingSessions) {
@@ -135,7 +124,7 @@ public class TrafficDayByMinuteGraph extends DayByMinuteTimeSeriesGraph
         if (doThreeSeries) {
             incomingCounts = new double[ourMins];
             outgoingCounts = new double[ourMins];
-        } 
+        }
 
         // Process each row.
         while (rs.next()) {

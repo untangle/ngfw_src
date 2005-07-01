@@ -22,7 +22,7 @@
     <queryString><![CDATA[SELECT name, count(*) AS hits, sum(resp.content_length), total_size
   FROM (SELECT sum(resp.content_length) AS total_size FROM tr_http_evt_resp AS resp
   WHERE resp.time_stamp > $P{startTime} AND resp.time_stamp < $P{endTime}) AS size,
-  tr_http_evt_req req JOIN pipeline_info info USING (session_id)
+  tr_http_evt_req req JOIN pl_endp endp USING (session_id)
   JOIN tr_http_evt_resp resp USING (request_id)
   JOIN addr_map ON addr = c_client_addr
   WHERE resp.time_stamp > $P{startTime} AND resp.time_stamp < $P{endTime}
