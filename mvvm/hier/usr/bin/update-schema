@@ -39,6 +39,7 @@ cat <<EOF | $PSQL
 UPDATE schema_ver SET version = '$latest_ver' WHERE component = '$component';
 EOF
     else
-        echo "Current schema up to date"
+        echo "Current schema up to date, reinitalizing just in case"
+        psql -e -f $schema_dir/schema-$latest_ver.sql -U metavize mvvm >> $LOG
     fi
 fi
