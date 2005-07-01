@@ -26,6 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.metavize.mvvm.argon.ArgonAgent;
 import com.metavize.mvvm.argon.IPSessionDesc;
 import com.metavize.mvvm.argon.IntfConverter;
+import com.metavize.mvvm.argon.SessionEndpoints;
 import com.metavize.mvvm.tapi.CasingPipeSpec;
 import com.metavize.mvvm.tapi.Fitting;
 import com.metavize.mvvm.tapi.MPipe;
@@ -72,24 +73,28 @@ class PipelineFoundryImpl implements PipelineFoundry
 
         start = connectionFittings.remove(socketAddress);
 
-        if (null == start) {
-            switch (sPort) {
-            case 21:
-                start = Fitting.FTP_CTL_STREAM;
-                break;
+        if (SessionEndpoints.PROTO_TCP == sessionDesc.protocol()) {
+            if (null == start) {
+                switch (sPort) {
+                case 21:
+                    start = Fitting.FTP_CTL_STREAM;
+                    break;
 
-            case 25:
-                start = Fitting.SMTP_STREAM;
-                break;
+                case 25:
+                    start = Fitting.SMTP_STREAM;
+                    break;
 
-            case 80:
-                start = Fitting.HTTP_STREAM;
-                break;
+                case 80:
+                    start = Fitting.HTTP_STREAM;
+                    break;
 
-            default:
-                start = Fitting.OCTET_STREAM;
-                break;
+                default:
+                    start = Fitting.OCTET_STREAM;
+                    break;
+                }
             }
+        } else {
+            start = Fitting.OCTET_STREAM; // XXX we should have UDP hier.
         }
 
         Long t0 = System.currentTimeMillis();

@@ -90,7 +90,7 @@ public class Subscription
             break;
 
         case Netcap.IPPROTO_UDP:
-            if (Protocol.UDP == protocol) { return false; }
+            if (Protocol.UDP != protocol) { return false; }
             break;
 
         default:
@@ -213,5 +213,10 @@ public class Subscription
         result = 37 * result + serverRange.hashCode();
 
         return result;
+    }
+
+    public String toString()
+    {
+        return protocol.toString();
     }
 }

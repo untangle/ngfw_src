@@ -25,7 +25,7 @@ public class SoloPipeSpec extends PipeSpec
     // constructors -----------------------------------------------------------
 
     public SoloPipeSpec(String name, Set subscriptions, Fitting fitting,
-                          Affinity affinity, int strength)
+                        Affinity affinity, int strength)
     {
         super(name, subscriptions);
 
@@ -39,7 +39,7 @@ public class SoloPipeSpec extends PipeSpec
     }
 
     public SoloPipeSpec(String name, Subscription subscription,
-                          Fitting fitting, Affinity affinity, int strength)
+                        Fitting fitting, Affinity affinity, int strength)
     {
         super(name, subscription);
 
@@ -53,7 +53,7 @@ public class SoloPipeSpec extends PipeSpec
     }
 
     public SoloPipeSpec(String name, Fitting fitting, Affinity affinity,
-                          int strength)
+                        int strength)
     {
         super(name);
 
