@@ -96,6 +96,8 @@ abstract class ArgonHook implements Runnable
              * modified the endpoints */
             serverSide = new NetcapIPSessionDescImpl( sessionGlobalState, false );
 
+            pipelineFoundry.registerEndpoints( clientSide, serverSide );
+
             /* Connect to the server */
             connectServer();
 
