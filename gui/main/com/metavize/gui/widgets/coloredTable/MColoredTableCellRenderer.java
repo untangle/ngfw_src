@@ -172,6 +172,10 @@ public class MColoredTableCellRenderer extends DefaultTableCellRenderer {
                         renderJLabel.setText(value.toString());
                     }
                 }
+		else if( (col == 1) && (value instanceof Integer) ){
+		    renderJLabel.setHorizontalAlignment(JTextField.CENTER);
+                    renderJLabel.setIcon(null);
+		}
                 else{
                     renderJLabel.setHorizontalAlignment(JTextField.LEFT);
                     renderJLabel.setIcon(null);
