@@ -1,5 +1,8 @@
 -- convert script for release 1.5
 
+DROP TABLE pl_endp;
+DROP TABLE pl_stats;
+
 CREATE TABLE pl_endp (
     event_id,
     time_stamp,
