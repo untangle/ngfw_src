@@ -1,5 +1,5 @@
 -- Create the table for firewall events.
-create table FIREWALL_EVT (
+create table TR_FIREWALL_EVT (
         EVENT_ID int8 not null,
         SESSION_ID int4,
         RULE_ID int8,

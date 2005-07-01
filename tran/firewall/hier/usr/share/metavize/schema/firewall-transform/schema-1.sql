@@ -30,7 +30,7 @@ create table TR_FIREWALL_SETTINGS (
         IS_DEFAULT_ACCEPT bool, 
         primary key (SETTINGS_ID));
 
-create table FIREWALL_EVT (
+create table TR_FIREWALL_EVT (
         EVENT_ID int8 not null,
         SESSION_ID int4,
         RULE_ID int8,

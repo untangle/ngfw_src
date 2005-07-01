@@ -22,7 +22,7 @@ import com.metavize.mvvm.logging.LogEvent;
  * @author <a href="mailto:rbscott@metavize.com">Robert Scott</a>
  * @version 1.0
  * @hibernate.class
- * table="FIREWALL_EVT"
+ * table="TR_FIREWALL_EVT"
  * mutable="false"
  */
 
