@@ -124,7 +124,7 @@ char* jmvutil_error_throw( jmvutil_err_t type, const char* format, ... )
     va_start( argptr, format );
 
     if ( vsnprintf( _exception->buffer[_exception->current], THROW_MSG_MAX_LEN, format, argptr ) < 0 ) {
-        (*env)->ThrowNew( env, exception, "Netcap error!!!" );
+        (*env)->ThrowNew( env, exception, "mvutil error!!!" );
     } else {
         (*env)->ThrowNew( env, exception, (const char*)_exception->buffer[_exception->current] );
     }

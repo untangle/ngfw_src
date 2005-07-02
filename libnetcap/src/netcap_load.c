@@ -171,7 +171,7 @@ static int _load_update ( netcap_load_t* load, int count, netcap_load_val_t val,
         load->load = (e*load->load + (1-e)*x);
     }
 
-    if ( abs(load->load) < _LOAD_MIN ) load->load = 0;
+    if ( abs( load->load ) < _LOAD_MIN ) load->load = 0;
 
     memcpy( &load->last_update, current_time, sizeof( timeval_t ));
 
