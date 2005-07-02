@@ -1,5 +1,5 @@
 #!/bin/sh
-exec 2>&1
+exec >@MVVM_LOG@/schema.log 2>&1
 
 PSQL="psql -U metavize --tuples-only mvvm"
 
