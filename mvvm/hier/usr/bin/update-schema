@@ -1,7 +1,7 @@
 #!/bin/sh
+exec 2>&1
 
 PSQL="psql -U metavize --tuples-only mvvm"
-LOG=@MVVM_LOG@/schema.log
 
 if [ $# = 0 ]; then
     echo "usage: $0 [ mvvm | transform ]"
@@ -19,7 +19,7 @@ echo "Latest schema version: $latest_ver"
 
 if [ "x$ver" == "x" ]; then
     echo "Initializing schema"
-    psql -e -f $schema_dir/schema-$latest_ver.sql -U metavize mvvm >> $LOG
+    psql -e -f $schema_dir/schema-$latest_ver.sql -U metavize mvvm
 
 cat <<EOF | $PSQL
 CREATE TABLE schema_ver (component varchar(64), version int4);
@@ -33,13 +33,13 @@ else
         let "v = v + 1"
         for v in $(seq $ver $latest_ver); do
             echo "Updating to $v"
-            psql -e -f $schema_dir/convert-$v.sql -U metavize mvvm >> $LOG
+            psql -e -f $schema_dir/convert-$v.sql -U metavize mvvm
         done
 cat <<EOF | $PSQL
 UPDATE schema_ver SET version = '$latest_ver' WHERE component = '$component';
 EOF
     else
         echo "Current schema up to date, reinitalizing just in case"
-        psql -e -f $schema_dir/schema-$latest_ver.sql -U metavize mvvm >> $LOG
+        psql -e -f $schema_dir/schema-$latest_ver.sql -U metavize mvvm </dev/null
     fi
 fi
