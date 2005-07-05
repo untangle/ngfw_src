@@ -60,7 +60,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
             
             if( source.equals(saveJButton) ){
                 boolean isProceeding = true;
-                if( name.equals("nat-transform") || name.equals("firewall-transform") ){
+                if( name.equals("nat-transform") ){
                     isProceeding = (new SaveProceedDialog( displayName )).isProceeding();
                 }
                 if(isProceeding)
