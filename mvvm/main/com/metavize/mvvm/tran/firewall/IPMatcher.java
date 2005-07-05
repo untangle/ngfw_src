@@ -207,6 +207,9 @@ public final class IPMatcher implements Serializable
     public boolean isMatch( InetAddress addr)
     {
         long tmp = toLong((Inet4Address)addr );
+        
+        // Just for testing
+        // System.out.println( "matcher[ base: " + base + " second: " + second + " tmp: " + tmp + " isRange: " + isRange + "]" );
 
         if ( isLocal ) {
             return ( tmp == localLong );
@@ -284,8 +287,10 @@ public final class IPMatcher implements Serializable
                 throw new ParseException( "Each component must be between 0 and 255 " + tmp);
             }
             
-            val += (long)(part << ( 8 * c ));
+            val += (((long)part) << ( 8 * ( INADDRSZ - c - 1 )));
         }
+        
+        if ( val < 0 ) val += 0x100000000L;
 
         return val;
     }
@@ -320,7 +325,7 @@ public final class IPMatcher implements Serializable
         byte valArray[] = address.getAddress();
         
         for ( int c = 0 ; c < INADDRSZ ; c++ ) {
-            val += ((long)byteToInt(valArray[c])) << ( 8 * c );
+            val += ((long)byteToInt(valArray[c])) << ( 8 * ( INADDRSZ - c - 1 ));
         }
 
         return val;
@@ -337,9 +342,9 @@ public final class IPMatcher implements Serializable
     {
         String addrString = "";
 
-        for ( int c = 0 ; c < INADDRSZ ; c++ ) {
-            addrString += (int)((addr >> ( 8 * c)) & 0xFF);
-            if ( c < ( INADDRSZ -1 ))
+        for ( int c = INADDRSZ ; --c >= 0  ; ) {
+            addrString += (int)((addr >> ( 8 * c )) & 0xFF);
+            if ( c > 0 )
                 addrString += ".";
         }
         
