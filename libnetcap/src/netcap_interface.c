@@ -428,7 +428,7 @@ static int _netcap_interface_marking               ( int if_add, int inside, int
                 debug( 5, "INTERFACES: Not dropping packets from outside to inside address\n" );
             }
         } else {
-            debug( 5, "Not inserting inside address rules" );
+            debug( 5, "INTERFACES: Not inserting inside address rules" );
         }
     }
     
@@ -623,7 +623,7 @@ int _command_port_guard( netcap_intf_t gate, int protocol, char* ports, char* gu
     snprintf( cmd.cmd, sizeof( iptables_cmd_t ), PORT_GUARD_CMD, action, rule_num, protocol_str, 
               mark, mark_mask, guests_str, ports_str );
 
-    debug( 3, "Inserting guard command: '%s'\n", cmd.cmd );
+    debug( 3, "NETCAP: Inserting guard command: '%s'\n", cmd.cmd );
     
     if ( mvutil_system( cmd.cmd ) < 0 )
         return perrlog( "mvutil_system" );
@@ -835,7 +835,7 @@ static int _interface_update_addrs( void )
     int i, ret = 0;
     int sockfd;
     
-    debug( 1, "Updating interface addresses\n" );
+    debug(2, "NETCAP: Updating interface addresses\n" );
         
     /* XXX Have to make sure to close this socket */
     if (( sockfd = socket( PF_INET, SOCK_DGRAM, 0 )) < 0 ) return perrlog( "socket" );

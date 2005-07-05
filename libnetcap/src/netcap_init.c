@@ -120,7 +120,7 @@ static int _netcap_init( int shield_enable )
     if ( shield_enable == NETCAP_SHIELD_ENABLE && ( netcap_shield_init() < 0 ))
         return perrlog("netcap_shield_init");
 
-    debug(1,"Netcap %s Initialized\n",netcap_version());
+    debug(1,"NETCAP %s Initialized\n",netcap_version());
 
     return 0;
 }

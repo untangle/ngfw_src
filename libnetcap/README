@@ -8,8 +8,6 @@
 	src/        - the source
 	test/       - testing / sample applications
 	patches/    - kernel patches to support libnetcap
-	iptables-1.2.9    - modified iptables to support bitmark match
-	                    extensions required for libnetcap
 
 2) Overview
 	
@@ -34,8 +32,7 @@
 
 4) Currently supported architectures
 	
-	Linux 2.4+ with iptables
-	hopefully BSD will be coming soon
+	Linux 2.6+ with patched iptables 
 
 5) needed packages to build
 	fakeroot
