@@ -11,8 +11,8 @@
 
 package com.metavize.mvvm.engine;
 
-
 import java.util.LinkedList;
+import java.util.List;
 
 import com.metavize.mvvm.security.Tid;
 import com.metavize.mvvm.tran.TransformDesc;
@@ -20,7 +20,6 @@ import org.apache.log4j.Logger;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
-import java.util.List;
 
 /**
  * SAX handler for mvvm-transform.xml files.

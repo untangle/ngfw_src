@@ -21,16 +21,16 @@ import com.metavize.tran.token.CasingAdaptor;
 import com.metavize.tran.token.CasingTransform;
 import org.apache.log4j.Logger;
 
-public class HttpTransform extends CasingTransform
+public class HttpTransformImpl extends CasingTransform
 {
-    private final Logger logger = Logger.getLogger(HttpTransform.class);
+    private final Logger logger = Logger.getLogger(HttpTransformImpl.class);
 
     private final PipeSpec insidePipeSpec;
     private final PipeSpec outsidePipeSpec;
 
     // constructors -----------------------------------------------------------
 
-    public HttpTransform()
+    public HttpTransformImpl()
     {
         // inside PipeSpec
         Subscription s = new Subscription(Protocol.TCP);

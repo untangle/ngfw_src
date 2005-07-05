@@ -17,7 +17,6 @@ import java.util.Set;
 
 import com.metavize.mvvm.argon.IPSessionDesc;
 
-
 /**
  * Describes the fittings for this pipe.
  *
