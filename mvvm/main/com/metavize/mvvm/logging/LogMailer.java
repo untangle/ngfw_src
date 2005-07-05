@@ -44,8 +44,8 @@ public class LogMailer implements Runnable
     // Generate no more than one email per this long (5 minutes).
     public static final long MIN_MESSAGE_PERIOD = 300000;
 
-    // This many lines from the end of console.log for each message
-    public static final int CONSOLE_LOG_LINES = 50;
+    // This many lines from the end of non-log4j logs (console, gc) for each message
+    public static final int OTHER_LOG_LINES = 50;
 
     private static final Logger logger = Logger
         .getLogger(LogMailer.class);
@@ -152,7 +152,6 @@ public class LogMailer implements Runnable
         try {
             TransformManager tm = MvvmContextFactory.context().transformManager();
             ArrayList<MimeBodyPart> parts = new ArrayList<MimeBodyPart>();
-            // Here add some console.log
             for (Tid tid : loggers.keySet()) {
                 SMTPAppender sapp = loggers.get(tid);
                 String partName;
@@ -172,12 +171,21 @@ public class LogMailer implements Runnable
                         parts.add(part);
                 }
             }
-            // Finally, get some of console.log
-            MimeBodyPart part = getConsoleLogPart();
-            part.setFileName("console.log");
-            part.setDisposition(Part.INLINE);
-            if (part != null)
+            // Finally, get some of non-log4j logs: console.log and gc.log
+
+            MimeBodyPart part = getOtherLogPart("console.log");
+            if (part != null) {
+                part.setFileName("console.log");
+                part.setDisposition(Part.INLINE);
                 parts.add(part);
+            }
+
+            part = getOtherLogPart("gc.log");
+            if (part != null) {
+                part.setFileName("gc.log");
+                part.setDisposition(Part.INLINE);
+                parts.add(part);
+            }
 
             // Send it!
             doSend(SUBJECT_BASE, BODY_BASE, parts);
@@ -219,25 +227,25 @@ public class LogMailer implements Runnable
     }
 
 
-    private static final int CONSOLE_BUF_SIZE = 1024;
+    private static final int OTHER_BUF_SIZE = 4096;
 
     // Because we use RandomAccessFile in here, we're using 8-bit chars (not Locale I18N friendly).  XXX
-    private MimeBodyPart getConsoleLogPart()
+    private MimeBodyPart getOtherLogPart(String logFileName)
         throws MessagingException
     {
         String bunniculaLog = System.getProperty("bunnicula.log.dir");
-        String consoleLog = bunniculaLog + File.separator + "console.log";
-        ArrayList<String> lastLines = new ArrayList<String>(CONSOLE_LOG_LINES);
+        String otherLog = bunniculaLog + File.separator + logFileName;
+        ArrayList<String> lastLines = new ArrayList<String>(OTHER_LOG_LINES);
         try {
-            RandomAccessFile clfile =  new RandomAccessFile(consoleLog, "r");
+            RandomAccessFile olfile =  new RandomAccessFile(otherLog, "r");
             
-            byte[] buf = new byte[CONSOLE_BUF_SIZE];
-            long consoleLogLen = clfile.length();
-            long pos = consoleLogLen - CONSOLE_BUF_SIZE;
+            byte[] buf = new byte[OTHER_BUF_SIZE];
+            long otherLogLen = olfile.length();
+            long pos = otherLogLen - OTHER_BUF_SIZE;
             StringBuilder curline = null;
             while (pos >= 0) {
-                clfile.seek(pos);
-                int numread = clfile.read(buf);
+                olfile.seek(pos);
+                int numread = olfile.read(buf);
                 if (numread <= 0)
                     // Unexpected EOF, file was truncated.
                     break;
@@ -245,7 +253,7 @@ public class LogMailer implements Runnable
                     byte c = buf[i];
                     if (c == '\n') {
                         // Found a new line.
-                        if (lastLines.size() == CONSOLE_LOG_LINES)
+                        if (lastLines.size() == OTHER_LOG_LINES)
                             // We're done!
                             break;
                         if (curline != null)
@@ -255,11 +263,11 @@ public class LogMailer implements Runnable
                     if (curline != null)
                         curline.append((char)c);
                 }
-                pos -= CONSOLE_BUF_SIZE;
+                pos -= OTHER_BUF_SIZE;
             }
-            clfile.close();
+            olfile.close();
         } catch (Exception e) {
-            logger.warn("Error occured while reading console.log.", e);
+            logger.warn("Error occured while reading other.log.", e);
             return null;
         }
 
