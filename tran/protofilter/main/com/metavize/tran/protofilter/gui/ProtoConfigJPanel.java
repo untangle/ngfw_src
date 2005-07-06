@@ -52,7 +52,7 @@ class ProtoTableModel extends MSortedTableModel{
     private static final int C2_MW = 80;  /* category */
     private static final int C3_MW = 100; /* protocol */
     private static final int C4_MW = 55;  /* block */
-    private static final int C5_MW = 85;  /* log */
+    private static final int C5_MW = 95;  /* log */
     private static final int C6_MW = 100; /* description */
     private static final int C7_MW = Util.chooseMax(T_TW - (C0_MW + C1_MW + C2_MW + C3_MW + C4_MW + C5_MW + C6_MW), 120); /* signature */
 
