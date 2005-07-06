@@ -1,6 +1,6 @@
-diff -urN --ignore-all-space linux-2.6.12.2-orig/include/linux/netfilter_ipv4/ipt_DIVERT.h linux-2.6.12.2-divert/include/linux/netfilter_ipv4/ipt_DIVERT.h
+diff -urN --ignore-all-space linux-2.6.12.2-orig/include/linux/netfilter_ipv4/ipt_DIVERT.h linux-2.6.12.2-bar/include/linux/netfilter_ipv4/ipt_DIVERT.h
 --- linux-2.6.12.2-orig/include/linux/netfilter_ipv4/ipt_DIVERT.h	1969-12-31 16:00:00.000000000 -0800
-+++ linux-2.6.12.2-divert/include/linux/netfilter_ipv4/ipt_DIVERT.h	2005-07-05 17:02:14.566802385 -0700
++++ linux-2.6.12.2-bar/include/linux/netfilter_ipv4/ipt_DIVERT.h	2005-07-05 19:58:30.432061373 -0700
 @@ -0,0 +1,9 @@
 +/* $Id: ipt_DIVERT.h,v 1.1 2005/03/23 03:47:01 dmorris Exp $ */
 +#ifndef _IPT_DIVERT_H_target
@@ -11,25 +11,22 @@ diff -urN --ignore-all-space linux-2.6.12.2-orig/include/linux/netfilter_ipv4/ip
 +};
 +
 +#endif
-diff -urN --ignore-all-space linux-2.6.12.2-orig/include/net/ip.h linux-2.6.12.2-divert/include/net/ip.h
+diff -urN --ignore-all-space linux-2.6.12.2-orig/include/net/ip.h linux-2.6.12.2-bar/include/net/ip.h
 --- linux-2.6.12.2-orig/include/net/ip.h	2005-06-29 16:00:53.000000000 -0700
-+++ linux-2.6.12.2-divert/include/net/ip.h	2005-07-05 17:12:00.754164788 -0700
-@@ -41,10 +41,14 @@
- 	struct ip_options	opt;		/* Compiled IP options		*/
- 	unsigned char		flags;
- 
-+#ifdef CONFIG_IP_NF_TARGET_DIVERT
-+    	unsigned short   divert_port;
-+#endif
- #define IPSKB_MASQUERADED	1
++++ linux-2.6.12.2-bar/include/net/ip.h	2005-07-05 19:59:08.234192960 -0700
+@@ -45,6 +45,11 @@
  #define IPSKB_TRANSLATED	2
  #define IPSKB_FORWARDED		4
  #define IPSKB_XFRM_TUNNEL_SIZE	8
 +#define IPSKB_DIVERTED		16
++
++#ifdef CONFIG_IP_NF_TARGET_DIVERT
++   	unsigned short   divert_port;
++#endif
  };
  
  struct ipcm_cookie
-@@ -88,6 +92,7 @@
+@@ -88,6 +93,7 @@
  extern int		ip_rcv(struct sk_buff *skb, struct net_device *dev,
  			       struct packet_type *pt);
  extern int		ip_local_deliver(struct sk_buff *skb);
@@ -37,9 +34,9 @@ diff -urN --ignore-all-space linux-2.6.12.2-orig/include/net/ip.h linux-2.6.12.2
  extern int		ip_mr_input(struct sk_buff *skb);
  extern int		ip_output(struct sk_buff *skb);
  extern int		ip_mc_output(struct sk_buff *skb);
-diff -urN --ignore-all-space linux-2.6.12.2-orig/net/ipv4/ip_input.c linux-2.6.12.2-divert/net/ipv4/ip_input.c
+diff -urN --ignore-all-space linux-2.6.12.2-orig/net/ipv4/ip_input.c linux-2.6.12.2-bar/net/ipv4/ip_input.c
 --- linux-2.6.12.2-orig/net/ipv4/ip_input.c	2005-06-29 16:00:53.000000000 -0700
-+++ linux-2.6.12.2-divert/net/ipv4/ip_input.c	2005-07-05 17:02:14.567802309 -0700
++++ linux-2.6.12.2-bar/net/ipv4/ip_input.c	2005-07-05 19:58:30.433061297 -0700
 @@ -196,7 +196,7 @@
  	return 0;
  }
@@ -54,9 +51,9 @@ diff -urN --ignore-all-space linux-2.6.12.2-orig/net/ipv4/ip_input.c linux-2.6.1
  EXPORT_SYMBOL(ip_rcv);
  EXPORT_SYMBOL(ip_statistics);
 +EXPORT_SYMBOL(ip_local_deliver_finish);
-diff -urN --ignore-all-space linux-2.6.12.2-orig/net/ipv4/netfilter/Kconfig linux-2.6.12.2-divert/net/ipv4/netfilter/Kconfig
+diff -urN --ignore-all-space linux-2.6.12.2-orig/net/ipv4/netfilter/Kconfig linux-2.6.12.2-bar/net/ipv4/netfilter/Kconfig
 --- linux-2.6.12.2-orig/net/ipv4/netfilter/Kconfig	2005-06-29 16:00:53.000000000 -0700
-+++ linux-2.6.12.2-divert/net/ipv4/netfilter/Kconfig	2005-07-05 17:03:29.076134464 -0700
++++ linux-2.6.12.2-bar/net/ipv4/netfilter/Kconfig	2005-07-05 19:58:30.433061297 -0700
 @@ -556,6 +556,16 @@
  
  	  To compile it as a module, choose M here.  If unsure, say N.
@@ -74,9 +71,9 @@ diff -urN --ignore-all-space linux-2.6.12.2-orig/net/ipv4/netfilter/Kconfig linu
  config IP_NF_TARGET_TOS
  	tristate "TOS target support"
  	depends on IP_NF_MANGLE
-diff -urN --ignore-all-space linux-2.6.12.2-orig/net/ipv4/netfilter/Makefile linux-2.6.12.2-divert/net/ipv4/netfilter/Makefile
+diff -urN --ignore-all-space linux-2.6.12.2-orig/net/ipv4/netfilter/Makefile linux-2.6.12.2-bar/net/ipv4/netfilter/Makefile
 --- linux-2.6.12.2-orig/net/ipv4/netfilter/Makefile	2005-06-29 16:00:53.000000000 -0700
-+++ linux-2.6.12.2-divert/net/ipv4/netfilter/Makefile	2005-07-05 17:02:14.568802233 -0700
++++ linux-2.6.12.2-bar/net/ipv4/netfilter/Makefile	2005-07-05 19:58:30.434061221 -0700
 @@ -78,6 +78,7 @@
  obj-$(CONFIG_IP_NF_TARGET_TCPMSS) += ipt_TCPMSS.o
  obj-$(CONFIG_IP_NF_TARGET_NOTRACK) += ipt_NOTRACK.o
@@ -85,9 +82,9 @@ diff -urN --ignore-all-space linux-2.6.12.2-orig/net/ipv4/netfilter/Makefile lin
  
  # generic ARP tables
  obj-$(CONFIG_IP_NF_ARPTABLES) += arp_tables.o
-diff -urN --ignore-all-space linux-2.6.12.2-orig/net/ipv4/netfilter/ipt_DIVERT.c linux-2.6.12.2-divert/net/ipv4/netfilter/ipt_DIVERT.c
+diff -urN --ignore-all-space linux-2.6.12.2-orig/net/ipv4/netfilter/ipt_DIVERT.c linux-2.6.12.2-bar/net/ipv4/netfilter/ipt_DIVERT.c
 --- linux-2.6.12.2-orig/net/ipv4/netfilter/ipt_DIVERT.c	1969-12-31 16:00:00.000000000 -0800
-+++ linux-2.6.12.2-divert/net/ipv4/netfilter/ipt_DIVERT.c	2005-07-05 17:02:14.569802157 -0700
++++ linux-2.6.12.2-bar/net/ipv4/netfilter/ipt_DIVERT.c	2005-07-05 19:58:30.434061221 -0700
 @@ -0,0 +1,90 @@
 +/*
 + * This is a module which is used for diverting packets.
@@ -179,9 +176,9 @@ diff -urN --ignore-all-space linux-2.6.12.2-orig/net/ipv4/netfilter/ipt_DIVERT.c
 +module_init(init);
 +module_exit(fini);
 +MODULE_LICENSE("GPL");
-diff -urN --ignore-all-space linux-2.6.12.2-orig/net/ipv4/udp.c linux-2.6.12.2-divert/net/ipv4/udp.c
+diff -urN --ignore-all-space linux-2.6.12.2-orig/net/ipv4/udp.c linux-2.6.12.2-bar/net/ipv4/udp.c
 --- linux-2.6.12.2-orig/net/ipv4/udp.c	2005-06-29 16:00:53.000000000 -0700
-+++ linux-2.6.12.2-divert/net/ipv4/udp.c	2005-07-05 17:02:14.570802081 -0700
++++ linux-2.6.12.2-bar/net/ipv4/udp.c	2005-07-05 19:58:30.435061145 -0700
 @@ -1146,10 +1146,17 @@
  	if (udp_checksum_init(skb, uh, ulen, saddr, daddr) < 0)
  		goto csum_error;
