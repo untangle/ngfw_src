@@ -23,19 +23,35 @@ public class ShieldMonitor implements ShieldEventListener
 {
     private static ShieldMonitor INSTANCE = null;
 
-    private Logger eventLogger = MvvmContextFactory.context().eventLogger();
+    private final Logger eventLogger = MvvmContextFactory.context().eventLogger();
+    private final Logger logger = Logger.getLogger( this.getClass());
 
     private ShieldMonitor()
     {        
     }
 
-    public void event( InetAddress ip, double reputation, int mode, int limited, int rejected, int dropped )
+    public void rejectionEvent( InetAddress ip, double reputation, int mode, int limited, int dropped,
+                                int rejected )
     {
         if ( Thread.currentThread().getContextClassLoader() == null ) {
             Thread.currentThread().setContextClassLoader( getClass().getClassLoader());
         }
 
-        eventLogger.info( new ShieldEvent( ip, reputation, mode, limited, rejected, dropped ));
+        logger.warn( "Shield limited session(s) from " + ip + " with reputation " + reputation +
+                     " limited: " + limited + " dropped: " + dropped + " rejected: " + rejected  );
+
+        eventLogger.info( new ShieldRejectionEvent( ip, reputation, mode, limited, dropped, rejected ));
+    }
+    
+    public void statisticEvent( int accepted, int limited, int dropped, int rejected, int relaxed,
+                                int lax, int tight, int closed )
+    {
+        if ( Thread.currentThread().getContextClassLoader() == null ) {
+            Thread.currentThread().setContextClassLoader( getClass().getClassLoader());
+        }
+
+        eventLogger.info( new ShieldStatisticEvent( accepted, limited, dropped, rejected, relaxed,
+                                                    lax, tight, closed ));
     }
 
     public synchronized static ShieldMonitor getInstance()

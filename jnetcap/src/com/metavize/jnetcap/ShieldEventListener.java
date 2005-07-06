@@ -23,5 +23,20 @@ public interface ShieldEventListener
      * rejected:   Number of rejected responses since the last event.
      * dropped:    Number of dropped sessions since the last event.
      */
-    void event( InetAddress ip, double reputation, int mode, int limited, int rejected, int dropped );
+    void rejectionEvent( InetAddress ip, double reputation, int mode, int limited, int dropped, 
+                         int rejected  );
+
+    /**
+     * Event triggered to log statistics
+     * accepted:  Number of accepted sessions since the last event.
+     * limited:   Number of limited sessions since the last event.
+     * dropped:   Number of dropped sessions since the last event.
+     * rejected:  Number of rejected sessions since the last event.
+     * relaxed:   Number of ticks spent in relaxed mode.
+     * lax:       Number of ticks spent in lax mode.
+     * tight:     Number of ticks spent in tight mode.
+     * closed:    Number of ticks spent in closed mode.
+     */
+    void statisticEvent( int accepted, int limited, int dropped, int rejected, int relaxed,
+                         int lax, int tight, int closed );
 }

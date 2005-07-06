@@ -31,8 +31,8 @@ c_src=netcap_version.c netcap_traffic.c netcap_subscriptions.c netcap_rdr.c netc
       netcap_udp.c netcap_tcp.c netcap_tcp_srv_complete.c netcap_tcp_cli.c \
       netcap_icmp.c netcap_sesstable.c netcap_interface.c netcap_udp_session.c netcap_tcp_session.c \
       netcap_antisubscribe.c netcap_trie.c netcap_trie_item.c netcap_trie_level.c netcap_trie_root.c \
-      netcap_trie_lru.c netcap_trie_base.c netcap_shield.c netcap_shield_cfg.c netcap_sched.c \
-      netcap_load.c netcap_tuple.c netcap_icmp_msg.c netcap_ip.c 
+      netcap_trie_lru.c netcap_trie_base.c netcap_shield.c netcap_shield_cfg.c netcap_shield_mode.c \
+      netcap_sched.c netcap_load.c netcap_tuple.c netcap_icmp_msg.c netcap_ip.c 
 
 objects=$(c_src:.c=.o)
 

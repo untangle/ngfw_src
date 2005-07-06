@@ -20,26 +20,29 @@
 #include "jnetcap.h"
 #include JH_Shield
 
-#define _SHIELD_OBJ_STR      JP_BUILD_NAME( Shield )
-#define _SHIELD_METHOD_NAME  "callEventListener"
-#define _SHIELD_METHOD_DESC  "(JDIIII)V"
+#define _SHIELD_OBJ_STR          JP_BUILD_NAME( Shield )
+#define _SHIELD_METHOD_REJ_NAME  "callRejectionEventListener"
+#define _SHIELD_METHOD_REJ_DESC  "(JDIIII)V"
+
+#define _SHIELD_METHOD_STAT_NAME "callStatisticEventListener"
+#define _SHIELD_METHOD_STAT_DESC "(IIIIIIII)V"
 
 static struct
 {
     int       call_hook;
     jclass    class;
-    jmethodID call_listener_mid;
+    jmethodID call_listener_rejection_mid;
+    jmethodID call_listener_statistic_mid;
     jobject   object;
 } _shield = {
     .call_hook 0,
     .class     NULL,
-    .call_listener_mid NULL,
+    .call_listener_rejection_mid NULL,
+    .call_listener_statistic_mid NULL,
     .object NULL
 };
 
-static void _event_hook ( in_addr_t ip, double reputation, netcap_shield_mode_t mode, 
-                          int limited, int rejected, int dropped );
-
+static void _event_hook ( netcap_shield_event_data_t* data );
 
 /*
  * Class:     com_metavize_jnetcap_Shield
@@ -182,11 +185,20 @@ JNIEXPORT void JNICALL JF_Shield( registerEventListener )
         return jmvutil_error_void( JMVUTIL_ERROR_STT, ERR_CRITICAL, "(*env)->NewGlobalRef\n" );
     }
     
-    _shield.call_listener_mid = (*env)->GetMethodID( env, _shield.class, _SHIELD_METHOD_NAME, 
-                                                     _SHIELD_METHOD_DESC );
-    if ( _shield.call_listener_mid == NULL ) {
+    _shield.call_listener_rejection_mid = (*env)->GetMethodID( env, _shield.class, _SHIELD_METHOD_REJ_NAME, 
+                                                               _SHIELD_METHOD_REJ_DESC );
+
+    if ( _shield.call_listener_rejection_mid == NULL ) {
         return jmvutil_error_void( JMVUTIL_ERROR_STT, ERR_CRITICAL, "(*env)->GetMethodID\n" );
     }
+
+    _shield.call_listener_statistic_mid = (*env)->GetMethodID( env, _shield.class, _SHIELD_METHOD_STAT_NAME, 
+                                                               _SHIELD_METHOD_STAT_DESC );
+
+    if ( _shield.call_listener_statistic_mid == NULL ) {
+        return jmvutil_error_void( JMVUTIL_ERROR_STT, ERR_CRITICAL, "(*env)->GetMethodID\n" );
+    }
+
     
     if (( _shield.object = (*env)->NewGlobalRef( env, _this )) == NULL ) {
         return jmvutil_error_void( JMVUTIL_ERROR_STT, ERR_CRITICAL, "(*env)->NewGlobalRef\n" );
@@ -217,10 +229,14 @@ JNIEXPORT void JNICALL JF_Shield( removeEventListener )
      * (the shield is a singleton anyway) */
 }
 
-static void _event_hook ( in_addr_t ip, double reputation, netcap_shield_mode_t mode,
-                          int limited, int rejected, int dropped )
+static void _event_hook ( netcap_shield_event_data_t* event )
 {
     JNIEnv* env = NULL;
+
+    if ( event == NULL ) {
+        errlogargs();
+        return;
+    }
 
     if ( _shield.call_hook != 1 ) return;
 
@@ -229,14 +245,35 @@ static void _event_hook ( in_addr_t ip, double reputation, netcap_shield_mode_t 
         return;
     }
     
-    if ( _shield.object == NULL || _shield.call_listener_mid == NULL ) {
+    if ( _shield.object == NULL || _shield.call_listener_rejection_mid == NULL ||
+         _shield.call_listener_statistic_mid == NULL) {
         errlog( ERR_WARNING, "Shield hook never registered." );
         return;
     }
 
-    /* Actually call the method */
-    (*env)->CallVoidMethod( env, _shield.object, _shield.call_listener_mid, (jlong)ip, (jdouble)reputation, 
-                            mode, limited, rejected, dropped );
+    switch ( event->type ) {
+    case NC_SHIELD_EVENT_REJECTION:
+        (*env)->CallVoidMethod( env, _shield.object, _shield.call_listener_rejection_mid, 
+                                (jlong)event->data.rejection.ip,
+                                (jdouble)event->data.rejection.reputation,
+                                event->data.rejection.mode, event->data.rejection.limited, 
+                                event->data.rejection.dropped, event->data.rejection.rejected );
+        
+        break;
+    case NC_SHIELD_EVENT_STATISTIC:
+        (*env)->CallVoidMethod( env, _shield.object, _shield.call_listener_statistic_mid, 
+                                event->data.statistic.accepted,
+                                event->data.statistic.limited,
+                                event->data.statistic.dropped,
+                                event->data.statistic.rejected,
+                                event->data.statistic.relaxed,
+                                event->data.statistic.lax,
+                                event->data.statistic.tight,
+                                event->data.statistic.closed );
+        break;
+    default:
+        errlog( ERR_CRITICAL, "Invalid shield event type: %d\n", event->type );
+    }
 
     /* Clear out any exceptions */
     jmvutil_error_exception_clear();

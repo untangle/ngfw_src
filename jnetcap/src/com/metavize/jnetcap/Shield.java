@@ -19,10 +19,16 @@ public final class Shield
 
     private static final ShieldEventListener NULL_EVENT_LISTENER = new ShieldEventListener()
         {
-            public void event( InetAddress ip, double reputation, int mode, 
-                               int limited, int rejected, int dropped )
+            public void rejectionEvent( InetAddress ip, double reputation, int mode, 
+                                        int limited, int dropped, int rejected )
             {
                 /* Null event listener nothing to do */
+            }
+
+            public void statisticEvent( int accepted, int limited, int dropped, int rejected, int relaxed,
+                                        int lax, int tight, int closed )
+            {
+                /* Null event listener, nothing to do */
             }
         };
 
@@ -85,11 +91,18 @@ public final class Shield
     }
 
     /* This function is called from C to get into java */
-    private void callEventListener( long ip, double reputation, int mode, 
-                                    int limited, int rejected, int dropped )
+    private void callRejectionEventListener( long ip, double reputation, int mode, 
+                                             int limited, int dropped, int rejected )
     {
-        this.listener.event( Inet4AddressConverter.toAddress( ip ), reputation, mode, 
-                             limited, rejected, dropped );
+        this.listener.rejectionEvent( Inet4AddressConverter.toAddress( ip ), reputation, mode, 
+                                      limited, dropped, rejected );
+    }
+
+    /* This function is called from C to get into java */
+    private void callStatisticEventListener( int accepted, int limited, int dropped, int rejected, 
+                                             int relaxed, int lax, int tight, int closed )
+    {
+        this.listener.statisticEvent( accepted, limited, dropped, rejected, relaxed, lax, tight, closed );
     }
     
     private native void status( long ip, int port );

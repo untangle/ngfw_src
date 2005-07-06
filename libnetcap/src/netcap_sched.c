@@ -28,6 +28,9 @@
 #define SEC_TO_NSEC(sec)   ((sec)  * 1000000000)
 #define USEC_TO_NSEC(usec) ((usec) * 1000)
 
+/* Number of seconds to wait before just exiting the scheduler */
+#define _EXIT_TIMEOUT_SEC 2
+
 /* Return 1 when ts1 is before ts2 (both arguments should be pointers)*/
 static __inline int _ts_before ( struct timespec* ts1, struct timespec* ts2 ) 
 {
@@ -473,11 +476,11 @@ static int           _wait_exit         ( void )
     
     if ( gettimeofday ( &tv, NULL ) < 0 ) return perrlog ( "gettimeofday" );
 
-    /* Wait a second for cleanup to occur */
-    ts.tv_sec  = tv.tv_sec + 1;
+    /* Wait a few seconds for cleanup to occur */
+    ts.tv_sec  = tv.tv_sec + _EXIT_TIMEOUT_SEC;
     ts.tv_nsec = 0;
 
-    /* Wait until there is a timeout or all of the trash was emptied */
+    /* Wait until there is a timeout or all of the events are completed */
     if ( sem_timedwait( &_sched.sem_exit, &ts ) != 0 ) {
         if ( errno == ETIMEDOUT ) return errlog( ERR_CRITICAL, "Scheduler exit timeout\n" );
         else  return perrlog("sem_timedwait");

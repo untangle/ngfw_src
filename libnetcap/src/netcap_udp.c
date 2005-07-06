@@ -246,9 +246,9 @@ int  netcap_udp_call_hooks (netcap_pkt_t* pkt, void* arg)
                 SESSTABLE_UNLOCK();
                 if ( ans->if_print ) {
                     unet_reset_inet_ntoa();
-                    errlog ( ERR_WARNING, "UDP: Shield rejected session: %s:%d -> %s:%d\n", 
-                             unet_next_inet_ntoa ( pkt->src.host.s_addr ), pkt->src.port, 
-                             unet_next_inet_ntoa ( pkt->dst.host.s_addr ), pkt->dst.port );
+                    debug( 4, "UDP: Shield rejected session: %s:%d -> %s:%d\n", 
+                           unet_next_inet_ntoa ( pkt->src.host.s_addr ), pkt->src.port, 
+                           unet_next_inet_ntoa ( pkt->dst.host.s_addr ), pkt->dst.port );
                 }
                 return 0;
             case NC_SHIELD_YES:
@@ -354,9 +354,9 @@ int  netcap_udp_call_hooks (netcap_pkt_t* pkt, void* arg)
                 SESSTABLE_UNLOCK();
                 if ( ans->if_print ) {
                     unet_reset_inet_ntoa();
-                    errlog ( ERR_WARNING, "UDP: Shield rejected packet: %s:%d -> %s:%d\n", 
-                             unet_next_inet_ntoa( session->cli.cli.host.s_addr ), session->cli.cli.port, 
-                             unet_next_inet_ntoa ( session->cli.srv.host.s_addr ), session->cli.srv.port );
+                    debug( 4, "UDP: Shield rejected packet: %s:%d -> %s:%d\n", 
+                           unet_next_inet_ntoa( session->cli.cli.host.s_addr ), session->cli.cli.port, 
+                           unet_next_inet_ntoa ( session->cli.srv.host.s_addr ), session->cli.srv.port );
                              
                 }
                 return 0;

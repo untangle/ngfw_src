@@ -157,9 +157,9 @@ int  netcap_tcp_syn_hook ( netcap_pkt_t* syn )
 
     case NC_SHIELD_LIMITED:
         if ( ans->if_print ) {
-            errlog( ERR_WARNING, "TCP: Session in opaque mode: %s:%d -> %s:%d\n", 
-                    unet_next_inet_ntoa ( syn->src.host.s_addr ), syn->src.port,
-                    unet_next_inet_ntoa ( syn->dst.host.s_addr ), syn->dst.port );
+            debug( 4, "TCP: Session in opaque mode: %s:%d -> %s:%d\n", 
+                   unet_next_inet_ntoa ( syn->src.host.s_addr ), syn->src.port,
+                   unet_next_inet_ntoa ( syn->dst.host.s_addr ), syn->dst.port );
         }
         return netcap_pkt_action_raze( syn, NF_ACCEPT );
         
@@ -170,10 +170,10 @@ int  netcap_tcp_syn_hook ( netcap_pkt_t* syn )
         /* fallthrough */
     case NC_SHIELD_DROP:
         if ( ans->if_print ) {
-            errlog( ERR_WARNING, "TCP: SYN packet %s: %s:%d -> %s:%d\n",
-                    ( ans->tcp == NC_SHIELD_RESET ) ? "reset" : "dropped",
-                    unet_next_inet_ntoa( syn->src.host.s_addr ), syn->src.port,
-                    unet_next_inet_ntoa( syn->dst.host.s_addr ), syn->dst.port );
+            debug( 4, "TCP: SYN packet %s: %s:%d -> %s:%d\n",
+                   ( ans->tcp == NC_SHIELD_RESET ) ? "reset" : "dropped",
+                   unet_next_inet_ntoa( syn->src.host.s_addr ), syn->src.port,
+                   unet_next_inet_ntoa( syn->dst.host.s_addr ), syn->dst.port );
         }
         return netcap_pkt_action_raze( syn, NF_DROP );
         

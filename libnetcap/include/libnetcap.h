@@ -694,9 +694,45 @@ typedef enum  {
 
 #define NC_SHIELD_MODE_MAX NC_SHIELD_MODE_CLOSED
 
-/** Hook that can be called whenever a shield rejection/opaque/block event occurs */
-typedef void (*netcap_shield_event_hook_t) ( in_addr_t ip, double reputation, netcap_shield_mode_t mode,
-                                             int limited, int rejected, int dropped );
+typedef enum {
+    NC_SHIELD_EVENT_REJECTION,
+    NC_SHIELD_EVENT_STATISTIC
+} netcap_shield_event_type_t;
+
+typedef struct
+{
+    netcap_shield_event_type_t type;
+    
+    union {
+        /* Bad behavior stats for one ip */
+        struct {
+            in_addr_t ip;
+            double reputation;
+            netcap_shield_mode_t mode;
+            int limited;
+            int dropped;
+            int rejected;
+        } rejection;
+        
+         /* These are statistics for the whole shield */
+        struct {
+            int accepted;     // Number of accepted packets/sessions
+            int limited;      // Number of limited packets/sessions
+            int dropped;      // Number of dropped packets/sessions
+            int rejected;     // Number of rejected packets/sessions
+
+            int relaxed;      // Number of ticks in the relaxed mode
+            int lax;          // Number of ticks in the lax mode
+            int tight;        // Number of ticks in the tight mode
+            int closed;       // Number of ticks in the closed mode
+        } statistic;
+    } data;
+} netcap_shield_event_data_t;
+
+/** Hook that can be called whenever a shield rejection/opaque/block event occurs, 
+ * or gather statistics about the shield 
+ */
+typedef void (*netcap_shield_event_hook_t) ( netcap_shield_event_data_t* data );
 
 /**
  * Register a shield hook

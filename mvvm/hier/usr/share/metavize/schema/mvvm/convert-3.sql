@@ -53,7 +53,7 @@ DROP TABLE pipeline_info;
 DROP TABLE mvvm_evt_pipeline;
 
 -- Table for shield events
-CREATE TABLE shield_evt (
+CREATE TABLE shield_rejection_evt (
         event_id int8 NOT NULL,
         ip inet,
         reputation float8,
@@ -63,5 +63,19 @@ CREATE TABLE shield_evt (
         dropped int4,
         time_stamp timestamp,
         PRIMARY KEY (event_id));
+
+-- Table for shield statistics
+CREATE TABLE shield_statistic_evt (
+    event_id int8 NOT NULL,
+    accepted int4,
+    limited  int4,
+    dropped  int4,
+    rejected int4,
+    relaxed  int4,
+    lax      int4,
+    tight    int4,
+    closed   int4,
+    time_stamp timestamp,
+    PRIMARY KEY (event_id));
 
 VACUUM ANALYZE;

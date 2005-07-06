@@ -17,17 +17,15 @@ import java.net.InetAddress;
 import com.metavize.mvvm.logging.LogEvent;
 
 /**
- * Log event for the shield.
+ * Log event for the shield rejection.
  *
  * @author <a href="mailto:rbscott@metavize.com">Robert Scott</a>
  * @version 1.0
  * @hibernate.class
- * table="SHIELD_EVT"
+ * table="SHIELD_REJECTION_EVT"
  * mutable="false"
  */
-
-
-public class ShieldEvent extends LogEvent implements Serializable
+public class ShieldRejectionEvent extends LogEvent implements Serializable
 {
     private InetAddress ip;
     private double      reputation;
@@ -40,11 +38,12 @@ public class ShieldEvent extends LogEvent implements Serializable
     /**
      * Hibernate constructor 
      */
-    public ShieldEvent()
+    public ShieldRejectionEvent()
     {
     }
 
-    public ShieldEvent( InetAddress ip, double reputation, int mode, int limited, int rejected, int dropped )
+    public ShieldRejectionEvent( InetAddress ip, double reputation, int mode, int limited, 
+                                 int rejected, int dropped )
     {
         this.ip         = ip;
         this.reputation = reputation;
