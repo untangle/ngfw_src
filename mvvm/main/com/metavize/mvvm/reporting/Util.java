@@ -11,6 +11,8 @@
 
 package com.metavize.mvvm.reporting;
 
+import java.text.DecimalFormat;
+
 public class Util {
     
     static final int KILO =  0;
@@ -41,6 +43,17 @@ public class Util {
 
 	
 	return returnString;
+    }
+
+
+    public static String percentNumber(long number, long total){
+	if( total < 1 )
+	    return "0%";
+	DecimalFormat decimalFormat = new DecimalFormat("#0.00%");
+	decimalFormat.setMultiplier(100);
+
+	double percentage = (double) number / (double) total;
+	return decimalFormat.format( percentage );
     }
 
 }
