@@ -31,13 +31,13 @@ public class GeneralSummarizer extends BaseSummarizer {
         long p2sOut = 0;
         long s2pOut = 0;
         long p2cOut = 0;
-    int numOut = 0;
+	int numOut = 0;
 
         long c2pIn = 0;
         long p2sIn = 0;
         long s2pIn = 0;
         long p2cIn = 0;
-    int numIn = 0;
+	int numIn = 0;
 
         try {
             String sql = "SELECT sum(c2p_bytes), sum(p2s_bytes), sum(s2p_bytes), sum(p2c_bytes), count(*) FROM pl_endp JOIN pl_stats USING (session_id) WHERE client_intf = 1 AND raze_date >= ? AND create_date < ?";
@@ -76,18 +76,24 @@ public class GeneralSummarizer extends BaseSummarizer {
         long totalBytesIncoming = s2pOut + c2pIn;
         long totalTotal = totalBytesOutgoing + totalBytesIncoming;
 
-        long totalOutboundBytes = p2sOut + s2pOut;
-        long totalInboundBytes = c2pIn + p2cIn;
+        long totalOutboundBytes = p2sOut + p2cOut;
+        long totalInboundBytes = c2pIn + s2pIn;
 
         long numSecs = (endDate.getTime() - startDate.getTime()) / 1000;
         double numDays = ((double)numSecs) / (60d * 60d * 24d);
 
         addEntry("Total data transferred", Util.trimNumber("Bytes",totalTotal));
-        addEntry("&nbsp;&nbsp;&nbsp;Data sent", Util.trimNumber("Bytes",totalBytesOutgoing));
-        addEntry("&nbsp;&nbsp;&nbsp;Data received", Util.trimNumber("Bytes",totalBytesIncoming));
+        addEntry("&nbsp;&nbsp;&nbsp;Sent", Util.trimNumber("Bytes",totalBytesOutgoing) + " (" + Util.percentNumber(totalBytesOutgoing,totalTotal) + ")");
+        addEntry("&nbsp;&nbsp;&nbsp;Received", Util.trimNumber("Bytes",totalBytesIncoming) + " (" + Util.percentNumber(totalBytesIncoming,totalTotal) + ")");
+
+        addEntry("&nbsp;", "&nbsp;");
+
         addEntry("Total sessions created", Util.trimNumber("",numOut + numIn));
-        addEntry("&nbsp;&nbsp;&nbsp;Outbound sessions created", Util.trimNumber("",numOut));
-        addEntry("&nbsp;&nbsp;&nbsp;Inbound sessions created", Util.trimNumber("",numIn));
+        addEntry("&nbsp;&nbsp;&nbsp;Outbound sessions created", Util.trimNumber("",numOut) + " (" + Util.percentNumber(numOut,numIn+numOut) + ")");
+        addEntry("&nbsp;&nbsp;&nbsp;Inbound sessions created", Util.trimNumber("",numIn) + " (" + Util.percentNumber(numIn,numIn+numOut) + ")");
+
+        addEntry("&nbsp;", "&nbsp;");
+
         addEntry("Data sent during outbound sessions", Util.trimNumber("Bytes",totalOutboundBytes));
         addEntry("Data sent during inbound sessions", Util.trimNumber("Bytes",totalInboundBytes));
         addEntry("Average data transfer rate", Util.trimNumber("Bytes/sec",(long) (((float)totalTotal) / numSecs)));
