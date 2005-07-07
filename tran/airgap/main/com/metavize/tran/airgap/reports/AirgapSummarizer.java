@@ -26,52 +26,58 @@ public class AirgapSummarizer extends BaseSummarizer {
 
     public String getSummaryHtml(Connection conn, Timestamp startDate, Timestamp endDate)
     {
-	int sessionsRequested = 0;
-	int sessionsAccepted = 0;
-	int sessionsLimited = 0;
-	int sessionsRejected = 0;
-	int sessionsDropped = 0;
+	long sessionsAccepted = 0;
+	long sessionsLimited = 0;
+	long sessionsRejected = 0;
+	long sessionsDropped = 0;
 	
-	float loadNormal = 0f;
-	float loadMedium = 0f;
-	float loadHigh = 0f;
-	float loadOver = 0f;
-	/*
+	long loadRelaxed = 0l;
+	long loadLax = 0l;
+	long loadTight = 0l;
+	long loadClosed = 0l;
+	
         try {
-	    String sql = "select count(*) from tr_protofilter_evt where time_stamp >= ? and time_stamp < ?";
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setTimestamp(1, startDate);
-            ps.setTimestamp(2, endDate);
-            ResultSet rs = ps.executeQuery();
-            rs.first();
-            logCount = rs.getInt(1);
-            rs.close();
-            ps.close();
+	    String sql;
+	    PreparedStatement ps;
+	    ResultSet rs;
 
-            sql = "select count(*) from tr_protofilter_evt where time_stamp >= ? and time_stamp < ? and blocked = 't'";
+	    sql = "select sum(accepted), sum(limited), sum(rejected), sum(dropped), sum(relaxed), sum(lax), sum(tight), sum(closed) from shield_statistic_evt where time_stamp >= ? and time_stamp < ?";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
             rs = ps.executeQuery();
             rs.first();
-            blockCount = rs.getInt(1);
+            sessionsAccepted = rs.getLong(1);
+	    sessionsLimited = rs.getLong(2);
+	    sessionsRejected = rs.getLong(3);
+	    sessionsDropped = rs.getLong(4);
+	    loadRelaxed = rs.getLong(5);
+	    loadLax = rs.getLong(6);
+	    loadTight = rs.getLong(7);
+	    loadClosed = rs.getLong(8);
             rs.close();
             ps.close();
+
+
         } catch (SQLException exn) {
             logger.warn("could not summarize", exn);
         }
-*/
 
-        addEntry("Total sessions requested", Util.trimNumber("XXXX",sessionsRequested));
-        addEntry("&nbsp;&nbsp;&nbsp;Accepted", Util.trimNumber("XXXX",sessionsAccepted));
-        addEntry("&nbsp;&nbsp;&nbsp;Limited", Util.trimNumber("XXXX",sessionsLimited));
-        addEntry("&nbsp;&nbsp;&nbsp;Rejected", Util.trimNumber("XXXX",sessionsRejected));
-        addEntry("&nbsp;&nbsp;&nbsp;Dropped", Util.trimNumber("XXXX",sessionsDropped));
+	long sessionsRequested = sessionsAccepted + sessionsLimited + sessionsRejected + sessionsDropped;
+        addEntry("Total sessions requested", Util.trimNumber("",sessionsRequested));
+        addEntry("&nbsp;&nbsp;&nbsp;Accepted", Util.trimNumber("",sessionsAccepted) + " (" + Util.percentNumber(sessionsAccepted,sessionsRequested)  + ")");
+        addEntry("&nbsp;&nbsp;&nbsp;Limited", Util.trimNumber("",sessionsLimited) + " (" + Util.percentNumber(sessionsLimited,sessionsRequested)  + ")");
+        addEntry("&nbsp;&nbsp;&nbsp;Rejected", Util.trimNumber("",sessionsRejected) + " (" + Util.percentNumber(sessionsRejected,sessionsRequested)  + ")");
+        addEntry("&nbsp;&nbsp;&nbsp;Dropped", Util.trimNumber("",sessionsDropped) + " (" + Util.percentNumber(sessionsDropped,sessionsRequested)  + ")");
+
+        addEntry("&nbsp;", "&nbsp;");
+
+	long loadTotal = loadRelaxed + loadLax + loadTight + loadClosed;
         addEntry("Load level indicators", "");
-        addEntry("&nbsp;&nbsp;&nbsp;Normal operation", loadNormal + "% XXXX");
-        addEntry("&nbsp;&nbsp;&nbsp;Medium load", loadMedium + "% XXXX");
-        addEntry("&nbsp;&nbsp;&nbsp;High load", loadHigh + "% XXXX");
-        addEntry("&nbsp;&nbsp;&nbsp;Overload", loadOver + "% XXXX");
+        addEntry("&nbsp;&nbsp;&nbsp;Normal operation", Util.percentNumber(loadRelaxed, loadTotal));
+        addEntry("&nbsp;&nbsp;&nbsp;Medium load", Util.percentNumber(loadLax, loadTotal));
+        addEntry("&nbsp;&nbsp;&nbsp;High load", Util.percentNumber(loadTight, loadTotal));
+        addEntry("&nbsp;&nbsp;&nbsp;Overload", Util.percentNumber(loadClosed, loadTotal));
 
 
         // XXXX

@@ -72,7 +72,7 @@ ORDER BY T1.time_stamp]]></queryString>
 						mode="Opaque"
 						x="0"
 						y="28"
-						width="249"
+						width="400"
 						height="17"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -87,7 +87,7 @@ ORDER BY T1.time_stamp]]></queryString>
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
 						<font fontName="SansSerif" pdfFontName="Helvetica" size="14" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<text><![CDATA[Resource Violations]]></text>
+				<text><![CDATA[Packet Attack Shield - Resource Violations]]></text>
 				</staticText>
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
@@ -182,7 +182,7 @@ ORDER BY T1.time_stamp]]></queryString>
 						mode="Opaque"
 						x="0"
 						y="0"
-						width="141"
+						width="400"
 						height="12"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -197,30 +197,12 @@ ORDER BY T1.time_stamp]]></queryString>
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
 						<font fontName="Arial" pdfFontName="Helvetica" size="9" isBold="false" isItalic="true" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<text><![CDATA[Resource Violations]]></text>
+				<text><![CDATA[Packet Attack Shield - Resource Violations]]></text>
 				</staticText>
 			</band>
 		</pageHeader>
 		<columnHeader>
 			<band height="16"  isSplitAllowed="true" >
-				<line direction="TopDown">
-					<reportElement
-						mode="Opaque"
-						x="0"
-						y="13"
-						width="572"
-						height="1"
-						forecolor="#C0C0C0"
-						backcolor="#FFFFFF"
-						key="line"
-						stretchType="NoStretch"
-						positionType="Float"
-						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
-						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="false"/>
-					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
-				</line>
 				<line direction="TopDown">
 					<reportElement
 						mode="Opaque"
@@ -419,24 +401,6 @@ ORDER BY T1.time_stamp]]></queryString>
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$F{HOST}]]></textFieldExpression>
 				</textField>
-				<line direction="TopDown">
-					<reportElement
-						mode="Opaque"
-						x="0"
-						y="13"
-						width="572"
-						height="1"
-						forecolor="#C0C0C0"
-						backcolor="#FFFFFF"
-						key="line"
-						stretchType="NoStretch"
-						positionType="Float"
-						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
-						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="false"/>
-					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
-				</line>
 				<line direction="TopDown">
 					<reportElement
 						mode="Opaque"

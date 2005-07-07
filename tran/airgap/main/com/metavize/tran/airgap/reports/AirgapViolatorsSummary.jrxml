@@ -32,20 +32,20 @@
 	<import value="net.sf.jasperreports.engine.data.*" />
 	<parameter name="startTime" isForPrompting="true" class="java.sql.Timestamp"/>
 	<parameter name="endTime" isForPrompting="true" class="java.sql.Timestamp"/>
-	<queryString><![CDATA[SELECT T1.ip as HOST, sum(T1.dropped) as DROPPED, sum(T1.rejected) as REJECTED, sum(T1.limited) as LIMITED,
-       (sum(T1.dropped) + sum(T1.rejected) + sum(T1.limited)) as TOTAL
-FROM shield_evt T1
-WHERE T1.time_stamp >= $P{startTime} and T1.time_stamp <= $P{endTime}
+	<queryString><![CDATA[SELECT evt.ip as HOST, sum(evt.dropped) as DROPPED, sum(evt.rejected) as REJECTED, sum(evt.limited) as LIMITED,
+       (sum(evt.dropped) + sum(evt.rejected) + sum(evt.limited)) as TOTAL_ACTIONS
+FROM shield_evt evt
+WHERE evt.time_stamp >= $P{startTime} and evt.time_stamp <= $P{endTime}
 GROUP BY HOST
-ORDER BY TOTAL, HOST]]></queryString>
+ORDER BY TOTAL_ACTIONS DESC, HOST ASC]]></queryString>
 	<field name="HOST" class="java.lang.String"/>
 	<field name="DROPPED" class="java.lang.Long"/>
 	<field name="REJECTED" class="java.lang.Long"/>
 	<field name="LIMITED" class="java.lang.Long"/>
-	<field name="TOTAL" class="java.lang.Long"/>
-    <variable name="RANK" class="java.lang.Integer" calculation="Count">
-        <variableExpression><![CDATA[$F{HOST}]]></variableExpression>
-    </variable>
+	<field name="TOTAL_ACTIONS" class="java.lang.Long"/>
+	<variable name="RANK" class="java.lang.Integer" resetType="Report" calculation="Count">
+		<variableExpression><![CDATA[$F{HOST}]]></variableExpression>
+	</variable>
 		<background>
 			<band height="0"  isSplitAllowed="true" >
 			</band>
@@ -218,7 +218,7 @@ ORDER BY TOTAL, HOST]]></queryString>
 		</columnHeader>
 		<detail>
 			<band height="13"  isSplitAllowed="true" >
-				<printWhenExpression><![CDATA[new Boolean($V{RANK}.intValue() < 10)]]></printWhenExpression>
+				<printWhenExpression><![CDATA[new Boolean($V{RANK}.intValue() <= 10)]]></printWhenExpression>
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
 						mode="Opaque"
@@ -261,7 +261,7 @@ ORDER BY TOTAL, HOST]]></queryString>
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
 						<font fontName="SansSerif" pdfFontName="Helvetica" size="9" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<textFieldExpression   class="java.lang.Long"><![CDATA[$F{DROPPED}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{HOST}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
@@ -283,7 +283,7 @@ ORDER BY TOTAL, HOST]]></queryString>
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
 						<font fontName="SansSerif" pdfFontName="Helvetica" size="9" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<textFieldExpression   class="java.lang.Integer"><![CDATA[$V{RANK}.intValue() + 1]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.Integer"><![CDATA[$V{RANK}.intValue() ]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
@@ -349,7 +349,7 @@ ORDER BY TOTAL, HOST]]></queryString>
 					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
 						<font fontName="Monospaced" pdfFontName="Helvetica" size="9" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<textFieldExpression   class="java.lang.Long"><![CDATA[$F{TOTAL}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.Long"><![CDATA[$F{TOTAL_ACTIONS}]]></textFieldExpression>
 				</textField>
 			</band>
 		</detail>
