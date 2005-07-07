@@ -329,7 +329,7 @@ public abstract class TransformBase implements Transform
         }
 
         connectMPipe();
-        preStart();
+        preStart(); // XXX why is prestart after connectMPipe??
 
         changeState(TransformState.RUNNING, syncState);
         postStart(); // XXX if exception, state == ?
@@ -445,7 +445,7 @@ public abstract class TransformBase implements Transform
      */
     protected void shutdownMatchingSessions()
     {
-        VectronTable.getInstance().shutdownMatches( sessionMatcher());
+        VectronTable.getInstance().shutdownMatches(sessionMatcher());
     }
 
     protected SessionMatcher sessionMatcher()

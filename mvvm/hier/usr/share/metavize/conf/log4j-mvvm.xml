@@ -66,7 +66,7 @@
                                gc-reclaimed buffers are noted -->
 
   <category name="com.metavize.mvvm.engine">
-    <priority value="WARN"/>
+    <priority value="DEBUG"/>
   </category>
 
   <category name="com.metavize.mvvm.logging">

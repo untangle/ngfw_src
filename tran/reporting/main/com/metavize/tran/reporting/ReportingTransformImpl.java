@@ -6,14 +6,13 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: ReportingTransformImpl.java,v 1.7 2005/02/07 22:55:02 amread Exp $
+ * $Id$
  */
 package com.metavize.tran.reporting;
 
-
-
-import com.metavize.mvvm.tapi.*;
-import com.metavize.mvvm.tran.*;
+import com.metavize.mvvm.tapi.AbstractTransform;
+import com.metavize.mvvm.tapi.PipeSpec;
+import com.metavize.mvvm.tapi.TransformContextFactory;
 import net.sf.hibernate.HibernateException;
 import net.sf.hibernate.Query;
 import net.sf.hibernate.Session;
@@ -55,6 +54,12 @@ public class ReportingTransformImpl extends AbstractTransform implements Reporti
         return settings;
     }
 
+    @Override
+    protected PipeSpec[] getPipeSpecs()
+    {
+        return new PipeSpec[0];
+    }
+
     protected void postInit(String[] args)
     {
         Session s = TransformContextFactory.context().openSession();
@@ -78,10 +83,6 @@ public class ReportingTransformImpl extends AbstractTransform implements Reporti
         }
     }
 
-    public void dumpSessions() {}
-
-    public IPSessionDesc[] liveSessionDescs() {return null;}
-
     protected void preStart()
     {
         if (this.settings == null) {
@@ -89,16 +90,6 @@ public class ReportingTransformImpl extends AbstractTransform implements Reporti
             postInit(args);
         }
     }
-
-    protected void connectMPipe()
-    {
-    }
-
-    protected void disconnectMPipe()
-    {
-    }
-
-    protected PipeSpec getPipeSpec() {return null;}
 
     protected void initializeSettings()
     {

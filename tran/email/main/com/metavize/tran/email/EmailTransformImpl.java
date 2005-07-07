@@ -13,13 +13,13 @@ package com.metavize.tran.email;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 
+import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.Affinity;
 import com.metavize.mvvm.tapi.Fitting;
 import com.metavize.mvvm.tapi.Interface;
 import com.metavize.mvvm.tapi.PipeSpec;
 import com.metavize.mvvm.tapi.Protocol;
 import com.metavize.mvvm.tapi.SoloPipeSpec;
-import com.metavize.mvvm.tapi.SoloTransform;
 import com.metavize.mvvm.tapi.Subscription;
 import com.metavize.mvvm.tapi.TransformContextFactory;
 import com.metavize.mvvm.tran.IPMaddr;
@@ -32,12 +32,12 @@ import net.sf.hibernate.Session;
 import net.sf.hibernate.Transaction;
 import org.apache.log4j.Logger;
 
-public class EmailTransformImpl extends SoloTransform implements EmailTransform
+public class EmailTransformImpl extends AbstractTransform implements EmailTransform
 {
     public static final int SMTP_PORT = 25;
     public static final int POP3_PORT = 110;
     public static final int IMAP4_PORT = 143;
- 
+
     private static final Logger zLog = Logger.getLogger(EmailTransformImpl.class);
 
     public static final String SPAM_IN_CFG_FILE  = "spam.inbound.cf";
@@ -45,27 +45,14 @@ public class EmailTransformImpl extends SoloTransform implements EmailTransform
 
     private EventHandler handler;
 
-    private final PipeSpec pipeSpec;
+    private PipeSpec pipeSpec;
+    private PipeSpec[] pipeSpecs;
 
     private volatile EmailSettings settings;
 
     // constructors -----------------------------------------------------------
 
-    public EmailTransformImpl()
-    {
-        Subscription smtpSub = new Subscription(Protocol.TCP, Interface.ANY, Interface.ANY,
-                                                IPMaddr.anyAddr, PortRange.ANY,
-                                                IPMaddr.anyAddr, new PortRange(SMTP_PORT));
-        Subscription pop3Sub = new Subscription(Protocol.TCP, Interface.ANY, Interface.ANY,
-                                                IPMaddr.anyAddr, PortRange.ANY,
-                                                IPMaddr.anyAddr, new PortRange(POP3_PORT));
-        Subscription imap4Sub = new Subscription(Protocol.TCP, Interface.ANY, Interface.ANY,
-                                                 IPMaddr.anyAddr, PortRange.ANY,
-                                                 IPMaddr.anyAddr, new PortRange(IMAP4_PORT));
-        pipeSpec = new SoloPipeSpec("email", smtpSub, Fitting.OCTET_STREAM, Affinity.CLIENT, 0);
-        pipeSpec.addSubscription(pop3Sub);
-        pipeSpec.addSubscription(imap4Sub);
-    }
+    public EmailTransformImpl() { }
 
     // EmailTransform methods ----------------------------------------------------
 
@@ -121,7 +108,14 @@ public class EmailTransformImpl extends SoloTransform implements EmailTransform
         return;
     }
 
-    // SoloTransform methods --------------------------------------------------
+
+    // AbstractTransform methods ----------------------------------------------
+
+    @Override
+    protected PipeSpec[] getPipeSpecs()
+    {
+        return pipeSpecs;
+    }
 
     protected void initializeSettings()
     {
@@ -149,11 +143,6 @@ public class EmailTransformImpl extends SoloTransform implements EmailTransform
                                                    virusInboundCtl, virusOutboundCtl);
         setEmailSettings(settings);
         return;
-    }
-
-    protected PipeSpec getPipeSpec()
-    {
-        return pipeSpec;
     }
 
     protected void postInit(String[] args)
@@ -203,11 +192,25 @@ public class EmailTransformImpl extends SoloTransform implements EmailTransform
         }
 
         handler = new EventHandler(zXMSCache);
+        Subscription smtpSub = new Subscription(Protocol.TCP, Interface.ANY, Interface.ANY,
+                                                IPMaddr.anyAddr, PortRange.ANY,
+                                                IPMaddr.anyAddr, new PortRange(SMTP_PORT));
+        Subscription pop3Sub = new Subscription(Protocol.TCP, Interface.ANY, Interface.ANY,
+                                                IPMaddr.anyAddr, PortRange.ANY,
+                                                IPMaddr.anyAddr, new PortRange(POP3_PORT));
+        Subscription imap4Sub = new Subscription(Protocol.TCP, Interface.ANY, Interface.ANY,
+                                                 IPMaddr.anyAddr, PortRange.ANY,
+                                                 IPMaddr.anyAddr, new PortRange(IMAP4_PORT));
+        pipeSpec = new SoloPipeSpec("email", this, handler, Fitting.OCTET_STREAM, Affinity.CLIENT, 0);
+        pipeSpec.addSubscription(smtpSub);
+        pipeSpec.addSubscription(pop3Sub);
+        pipeSpec.addSubscription(imap4Sub);
+
+        pipeSpecs = new PipeSpec[] { pipeSpec };
 
         /* Write out the spamassassin settings */
         writeSpamAssassinConfiguration();
 
-        getMPipe().setSessionEventListener(handler);
         return;
     }
 

@@ -20,19 +20,14 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.Affinity;
 import com.metavize.mvvm.tapi.Fitting;
-import com.metavize.mvvm.tapi.Interface;
 import com.metavize.mvvm.tapi.PipeSpec;
-import com.metavize.mvvm.tapi.Protocol;
 import com.metavize.mvvm.tapi.SoloPipeSpec;
-import com.metavize.mvvm.tapi.SoloTransform;
-import com.metavize.mvvm.tapi.Subscription;
 import com.metavize.mvvm.tapi.TransformContextFactory;
-import com.metavize.mvvm.tran.IPMaddr;
 import com.metavize.mvvm.tran.MimeType;
 import com.metavize.mvvm.tran.MimeTypeRule;
-import com.metavize.mvvm.tran.PortRange;
 import com.metavize.mvvm.tran.StringRule;
 import com.metavize.tran.token.TokenAdaptor;
 import net.sf.hibernate.HibernateException;
@@ -41,7 +36,7 @@ import net.sf.hibernate.Session;
 import net.sf.hibernate.Transaction;
 import org.apache.log4j.Logger;
 
-public class HttpBlockerImpl extends SoloTransform implements HttpBlocker
+public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
 {
     private static final String ALL_EVENTS_QUERY
         = "SELECT req.event_id, blk.event_id, req.time_stamp, host, uri, "
@@ -59,22 +54,17 @@ public class HttpBlockerImpl extends SoloTransform implements HttpBlocker
     private static final Logger logger = Logger.getLogger(HttpBlockerImpl.class);
 
     private final HttpBlockerFactory factory = new HttpBlockerFactory(this);
-    private final PipeSpec pipeSpec;
+
+    private final PipeSpec pipeSpec = new SoloPipeSpec
+        ("http-blocker", this, new TokenAdaptor(factory), Fitting.HTTP_TOKENS,
+         Affinity.CLIENT, 0);
+    private final PipeSpec[] pipeSpecs = new PipeSpec[] { pipeSpec };
 
     private volatile HttpBlockerSettings settings;
 
     // constructors -----------------------------------------------------------
 
-    public HttpBlockerImpl()
-    {
-        Subscription s = new Subscription(Protocol.TCP,
-                                          Interface.ANY, Interface.ANY,
-                                          IPMaddr.anyAddr, PortRange.ANY,
-                                          IPMaddr.anyAddr, PortRange.ANY);
-
-        pipeSpec = new SoloPipeSpec("http-blocker", s, Fitting.HTTP_TOKENS,
-                                    Affinity.CLIENT, 0);
-    }
+    public HttpBlockerImpl() { }
 
     // HttpBlocker methods ----------------------------------------------------
 
@@ -160,7 +150,7 @@ public class HttpBlockerImpl extends SoloTransform implements HttpBlocker
         return l;
     }
 
-    // SoloTransform methods --------------------------------------------------
+    // Transform methods ------------------------------------------------------
 
     /**
      * Causes the blacklist to populate its arrays.
@@ -168,6 +158,14 @@ public class HttpBlockerImpl extends SoloTransform implements HttpBlocker
     public void reconfigure()
     {
         Blacklist.BLACKLIST.reconfigure();
+    }
+
+    // AbstractTransform methods ----------------------------------------------
+
+    @Override
+    protected PipeSpec[] getPipeSpecs()
+    {
+        return pipeSpecs;
     }
 
     protected void initializeSettings()
@@ -372,11 +370,6 @@ public class HttpBlockerImpl extends SoloTransform implements HttpBlocker
         setHttpBlockerSettings(settings);
     }
 
-    protected PipeSpec getPipeSpec()
-    {
-        return pipeSpec;
-    }
-
     protected void postInit(String[] args)
     {
         Session s = TransformContextFactory.context().openSession();
@@ -402,11 +395,6 @@ public class HttpBlockerImpl extends SoloTransform implements HttpBlocker
         logger.debug("IN POSTINIT SET BLACKLIST " + settings);
         Blacklist.BLACKLIST.configure(settings);
         Blacklist.BLACKLIST.reconfigure();
-    }
-
-    protected void preStart()
-    {
-        getMPipe().setSessionEventListener(new TokenAdaptor(factory));
     }
 
     protected void postDestroy()

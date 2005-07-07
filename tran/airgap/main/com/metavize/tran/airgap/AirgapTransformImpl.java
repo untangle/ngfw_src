@@ -6,26 +6,27 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: AirgapTransformImpl.java,v 1.6 2005/02/10 20:55:22 jdi Exp $
+ * $Id$
  */
 package com.metavize.tran.airgap;
 
-
-
-import com.metavize.mvvm.tapi.*;
-import com.metavize.mvvm.tran.*;
+import com.metavize.mvvm.tapi.AbstractTransform;
+import com.metavize.mvvm.tapi.PipeSpec;
+import com.metavize.mvvm.tapi.TransformContextFactory;
+import com.metavize.mvvm.tran.TransformStats;
 import net.sf.hibernate.HibernateException;
 import net.sf.hibernate.Query;
 import net.sf.hibernate.Session;
 import net.sf.hibernate.Transaction;
 import org.apache.log4j.Logger;
 
-public class AirgapTransformImpl extends AbstractTransform implements AirgapTransform
+public class AirgapTransformImpl extends AbstractTransform
+    implements AirgapTransform
 {
-    private static final Logger logger = Logger.getLogger(AirgapTransformImpl.class);
+    private final Logger logger = Logger.getLogger(AirgapTransformImpl.class);
 
     private AirgapSettings settings;
-    
+
     // We keep a stats around so we don't have to create one each time.
     private FakeTransformStats fakeStats;
 
@@ -57,6 +58,12 @@ public class AirgapTransformImpl extends AbstractTransform implements AirgapTran
         return settings;
     }
 
+    @Override
+    protected PipeSpec[] getPipeSpecs()
+    {
+        return new PipeSpec[0];
+    }
+
     protected void postInit(String[] args)
     {
         Session s = TransformContextFactory.context().openSession();
@@ -82,12 +89,6 @@ public class AirgapTransformImpl extends AbstractTransform implements AirgapTran
         }
     }
 
-    public void dumpSessions() {}
-
-    public IPSessionDesc[] liveSessionDescs() {
-        return new IPSessionDesc[0];
-    }
-
     public TransformStats getStats() throws IllegalStateException
     {
         fakeStats.update();
@@ -102,16 +103,6 @@ public class AirgapTransformImpl extends AbstractTransform implements AirgapTran
         }
         fakeStats = new FakeTransformStats();
     }
-
-    protected void connectMPipe()
-    {
-    }
-
-    protected void disconnectMPipe()
-    {
-    }
-
-    protected PipeSpec getPipeSpec() {return null;}
 
     // XXX soon to be deprecated ----------------------------------------------
 

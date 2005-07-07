@@ -11,63 +11,88 @@
 
 package com.metavize.tran.http;
 
-import java.util.HashSet;
-import java.util.Set;
 
+import com.metavize.mvvm.tapi.AbstractTransform;
+import com.metavize.mvvm.tapi.CasingPipeSpec;
+import com.metavize.mvvm.tapi.Fitting;
 import com.metavize.mvvm.tapi.PipeSpec;
-import com.metavize.mvvm.tapi.Protocol;
-import com.metavize.mvvm.tapi.Subscription;
-import com.metavize.tran.token.CasingAdaptor;
-import com.metavize.tran.token.CasingTransform;
+import com.metavize.mvvm.tapi.TransformContextFactory;
+import net.sf.hibernate.HibernateException;
+import net.sf.hibernate.Query;
+import net.sf.hibernate.Session;
+import net.sf.hibernate.Transaction;
 import org.apache.log4j.Logger;
 
-public class HttpTransformImpl extends CasingTransform
+public class HttpTransformImpl extends AbstractTransform implements HttpTransform
 {
     private final Logger logger = Logger.getLogger(HttpTransformImpl.class);
 
-    private final PipeSpec insidePipeSpec;
-    private final PipeSpec outsidePipeSpec;
+    private final PipeSpec[] pipeSpecs = new PipeSpec[] {
+        new CasingPipeSpec("http", this, HttpCasingFactory.factory(),
+                           Fitting.HTTP_STREAM, Fitting.HTTP_TOKENS)
+    };
+
+    //    private HttpSettingsPriv settingsPriv;
 
     // constructors -----------------------------------------------------------
 
-    public HttpTransformImpl()
+    public HttpTransformImpl() { }
+
+    // HttpTransform methods --------------------------------------------------
+
+//     public void enable()
+//     {
+// //         settingsPriv.setEnabled(true);
+// //         syncSettingsPriv(settingsPriv);
+
+// //         TransformState ts = getTransformState();
+// //         if (ts == TransformState.RUNNING) {
+// //             connectMPipe();
+// //         }
+//     }
+
+//     public void disable()
+//     {
+// //         settingsPriv.setEnabled(false);
+// //         syncSettingsPriv(settingsPriv);
+
+// //         TransformState ts = getTransformState();
+// //         if (ts == TransformState.RUNNING) {
+// //             diconnectMPipe();
+// //         }
+//     }
+
+    // MultiTransform methods -------------------------------------------------
+
+    @Override
+    protected PipeSpec[] getPipeSpecs()
     {
-        // inside PipeSpec
-        Subscription s = new Subscription(Protocol.TCP);
-        Set subs = new HashSet();
-        subs.add(s);
-        insidePipeSpec = new HttpPipeSpec(subs);
-
-        // outside PipeSpec
-        outsidePipeSpec = insidePipeSpec;
-    }
-
-    // CasingTransform methods ------------------------------------------------
-
-    protected PipeSpec getInsidePipeSpec()
-    {
-        return insidePipeSpec;
-    }
-
-    protected PipeSpec getOutsidePipeSpec()
-    {
-        return outsidePipeSpec;
+        return pipeSpecs;
     }
 
     // lifecycle methods ------------------------------------------------------
 
-    protected void preStart()
+    protected void postInit(String[] args)
     {
-        // inside
-        CasingAdaptor ih = new CasingAdaptor(HttpCasingFactory.factory(),
-                                             true);
-        getInsideMPipe().setSessionEventListener(ih);
+//         Session s = TransformContextFactory.context().openSession();
+//         try {
+//             Transaction tx = s.beginTransaction();
 
-        // outside
-        CasingAdaptor oh = new CasingAdaptor(HttpCasingFactory.factory(),
-                                             false);
-        getOutsideMPipe().setSessionEventListener(oh);
+//             Query q = s.createQuery
+//                 ("from HttpSettingsPriv hsp where hsp.tid = :tid");
+//             q.setParameter("tid", getTid());
+//             settingsPriv = (HttpSettingsPriv)q.uniqueResult();
 
+//             tx.commit();
+//         } catch (HibernateException exn) {
+//             logger.warn("Could not get HttpBlockerSettings", exn);
+//         } finally {
+//             try {
+//                 s.close();
+//             } catch (HibernateException exn) {
+//                 logger.warn("could not close Hibernate session", exn);
+//             }
+//         }
     }
 
     // XXX soon to be deprecated ----------------------------------------------
@@ -81,4 +106,26 @@ public class HttpTransformImpl extends CasingTransform
     {
         throw new UnsupportedOperationException("bad move");
     }
+
+    // private methods --------------------------------------------------------
+
+//     private void syncSettingsPriv()
+//     {
+//         Session s = TransformContextFactory.context().openSession();
+//         try {
+//             Transaction tx = s.beginTransaction();
+
+//             s.saveOrUpdate(settingsPriv);
+
+//             tx.commit();
+//         } catch (HibernateException exn) {
+//             logger.warn("could not get HttpBlockerSettings", exn);
+//         } finally {
+//             try {
+//                 s.close();
+//             } catch (HibernateException exn) {
+//                 logger.warn("could not close hibernate session", exn);
+//             }
+//         }
+//     }
 }

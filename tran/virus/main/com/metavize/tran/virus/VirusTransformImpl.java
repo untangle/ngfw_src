@@ -22,15 +22,12 @@ import com.metavize.mvvm.tapi.Affinity;
 import com.metavize.mvvm.tapi.Fitting;
 import com.metavize.mvvm.tapi.IPSessionDesc;
 import com.metavize.mvvm.tapi.Interface;
-import com.metavize.mvvm.tapi.MPipe;
-import com.metavize.mvvm.tapi.MPipeManager;
 import com.metavize.mvvm.tapi.PipeSpec;
 import com.metavize.mvvm.tapi.PipelineFoundry;
 import com.metavize.mvvm.tapi.Protocol;
 import com.metavize.mvvm.tapi.SoloPipeSpec;
 import com.metavize.mvvm.tapi.Subscription;
 import com.metavize.mvvm.tapi.TransformContextFactory;
-import com.metavize.mvvm.tapi.event.SessionEventListener;
 import com.metavize.mvvm.tran.MimeType;
 import com.metavize.mvvm.tran.MimeTypeRule;
 import com.metavize.mvvm.tran.StringRule;
@@ -54,23 +51,22 @@ public class VirusTransformImpl extends AbstractTransform
     private final VirusScanner scanner;
 
     private final PipeSpec[] pipeSpecs = new PipeSpec[]
-        { new SoloPipeSpec("virus-ftp", Fitting.FTP_TOKENS, Affinity.SERVER, 0),
-          new SoloPipeSpec("virus-http", Fitting.HTTP_TOKENS, Affinity.SERVER, 0),
-          new SoloPipeSpec("virus-smtp", Fitting.SMTP_TOKENS, Affinity.SERVER, 0),
-        };
-
-    private final MPipe[] mPipes = new MPipe[3];
-    private final SessionEventListener[] listeners = new SessionEventListener[]
-        { new TokenAdaptor(new VirusFtpFactory(this)),
-          new TokenAdaptor(new VirusHttpFactory(this)),
-          new TokenAdaptor(new VirusSmtpFactory(this)),
+        { new SoloPipeSpec("virus-ftp", this,
+                           new TokenAdaptor(new VirusFtpFactory(this)),
+                           Fitting.FTP_TOKENS, Affinity.SERVER, 0),
+          new SoloPipeSpec("virus-http", this,
+                           new TokenAdaptor(new VirusHttpFactory(this)),
+                           Fitting.HTTP_TOKENS, Affinity.SERVER, 0),
+          new SoloPipeSpec("virus-smtp", this,
+                           new TokenAdaptor(new VirusSmtpFactory(this)),
+                           Fitting.SMTP_TOKENS, Affinity.SERVER, 0),
         };
 
     private final Logger logger = Logger.getLogger(VirusTransformImpl.class);
 
     private VirusSettings settings;
 
-    private SessionMatcher VIRUS_SESSION_MATCHER = new SessionMatcher() {
+    private static final SessionMatcher VIRUS_SESSION_MATCHER = new SessionMatcher() {
             /* Kill all sessions on ports 20, 21 and 80 */
             public boolean isMatch(com.metavize.mvvm.argon.IPSessionDesc session)
             {
@@ -87,7 +83,7 @@ public class VirusTransformImpl extends AbstractTransform
                     return true;
                 }
 
-                /* EMAIL SMTP/POP3/IMAP */
+                /* email SMTP/POP3/IMAP */
                 if (serverPort == 25 || serverPort == 143 || serverPort == 109) {
                     return true;
                 }
@@ -135,37 +131,6 @@ public class VirusTransformImpl extends AbstractTransform
 
     // Transform methods ------------------------------------------------------
 
-    public void dumpSessions()
-    {
-        for (MPipe pipe : mPipes) {
-            if (pipe != null) {
-                pipe.dumpSessions();
-            }
-        }
-    }
-
-    public IPSessionDesc[] liveSessionDescs()
-    {
-        IPSessionDesc[] s1 = null;
-        if (mPipes[0] != null) {
-            s1 = mPipes[0].liveSessionDescs();
-        } else {
-            s1 = new IPSessionDesc[0];
-        }
-
-        IPSessionDesc[] s2 = null;
-        if (mPipes[1] != null) {
-            s2 = mPipes[1].liveSessionDescs();
-        } else {
-            s2 = new IPSessionDesc[0];
-        }
-
-        IPSessionDesc[] retDescs = new IPSessionDesc[s1.length + s2.length];
-        System.arraycopy(s1, 0, retDescs, 0, s1.length);
-        System.arraycopy(s2, 0, retDescs, s1.length, s2.length);
-        return retDescs;
-    }
-
     private void virusReconfigure()
     {
         // FTP
@@ -210,27 +175,10 @@ public class VirusTransformImpl extends AbstractTransform
 
     // AbstractTransform methods ----------------------------------------------
 
-    protected void connectMPipe()
+    @Override
+    protected PipeSpec[] getPipeSpecs()
     {
-        for (int i = 0; i < pipeSpecs.length; i++) {
-            mPipes[i] = MPipeManager.manager().plumbLocal(this, pipeSpecs[i]);
-            FOUNDRY.registerMPipe(mPipes[i]);
-            logger.debug( "Connecting mPipe[" + i + "] as " + mPipes[i] );
-        }
-    }
-
-    protected void disconnectMPipe()
-    {
-        for (int i = 0; i < mPipes.length; i++) {
-            logger.debug( "Disconnecting mPipe[" + i + "] as " + mPipes[i] );
-            if ( mPipes[i] != null ) {
-                FOUNDRY.deregisterMPipe(mPipes[i]);
-                mPipes[i].destroy();
-            } else {
-                logger.warn("Disconnecting null mPipe[" + i + "]");
-            }
-            mPipes[i] = null;
-        }
+        return pipeSpecs;
     }
 
     protected void initializeSettings()
@@ -477,13 +425,13 @@ public class VirusTransformImpl extends AbstractTransform
         }
     }
 
-    protected void postStart()
+    protected void preStart()
     {
         virusReconfigure();
+    }
 
-        for (int i = 0; i < pipeSpecs.length; i++)
-            mPipes[i].setSessionEventListener(listeners[i]);
-
+    protected void postStart()
+    {
         shutdownMatchingSessions();
     }
 

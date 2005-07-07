@@ -10,19 +10,13 @@
  */
 package com.metavize.tran.test;
 
-
-import java.util.HashSet;
-import java.util.Set;
-
+import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.Affinity;
 import com.metavize.mvvm.tapi.Fitting;
 import com.metavize.mvvm.tapi.Interface;
-import com.metavize.mvvm.tapi.LiveSubscription;
-import com.metavize.mvvm.tapi.MPipe;
 import com.metavize.mvvm.tapi.PipeSpec;
 import com.metavize.mvvm.tapi.Protocol;
 import com.metavize.mvvm.tapi.SoloPipeSpec;
-import com.metavize.mvvm.tapi.SoloTransform;
 import com.metavize.mvvm.tapi.Subscription;
 import com.metavize.mvvm.tapi.TransformContextFactory;
 import com.metavize.mvvm.tran.IPMaddr;
@@ -33,36 +27,29 @@ import net.sf.hibernate.Session;
 import net.sf.hibernate.Transaction;
 import org.apache.log4j.Logger;
 
-public class TestTransformImpl extends SoloTransform
+public class TestTransformImpl extends AbstractTransform
     implements TestTransform
 {
-    private static final Logger logger
-        = Logger.getLogger(TestTransformImpl.class);
+    private final Logger logger = Logger.getLogger(TestTransformImpl.class);
 
     private EventHandler handler;
+    private SoloPipeSpec pipeSpec;
+    private SoloPipeSpec[] pipeSpecs;
+
+    private Subscription tcpSub;
+    private Subscription udpSub;
+
     private boolean noTCP = false;
     private boolean noUDP = false;
+
     private int minPort = 1;
     private int maxPort = 65535;
-
-    private final PipeSpec pipeSpec;
-
-    private LiveSubscription udpSub = null;
-    private LiveSubscription tcpSub = null;
 
     private TestSettings settings;
 
     // constructor ------------------------------------------------------------
 
-    public TestTransformImpl()
-    {
-        Set s = new HashSet();
-        s.add(new Subscription(Protocol.TCP));
-        s.add(new Subscription(Protocol.UDP));
-
-        pipeSpec = new SoloPipeSpec("test", s, Fitting.OCTET_STREAM,
-                                    Affinity.SERVER, 0);
-    }
+    public TestTransformImpl() { }
 
     protected void initializeSettings()
     {
@@ -102,6 +89,14 @@ public class TestTransformImpl extends SoloTransform
         return settings;
     }
 
+    // AbstractTransform methods ----------------------------------------------
+
+    @Override
+    protected PipeSpec[] getPipeSpecs()
+    {
+        return pipeSpecs;
+    }
+
     // lifecycle --------------------------------------------------------------
 
     protected void postInit(String[] args)
@@ -113,6 +108,8 @@ public class TestTransformImpl extends SoloTransform
             Query q = s.createQuery
                 ("from TestSettings ts where ts.tid = :tid");
             q.setParameter("tid", getTid());
+
+
             settings = (TestSettings)q.uniqueResult();
             parseArgs(args);
 
@@ -132,6 +129,10 @@ public class TestTransformImpl extends SoloTransform
 
     protected void preStart()
     {
+        pipeSpec = new SoloPipeSpec
+            ("test", this, handler, Fitting.OCTET_STREAM, Affinity.SERVER, 0);
+        pipeSpecs = new SoloPipeSpec[] { pipeSpec };
+
         reconfigure();
 
         if (this.settings == null) {
@@ -139,53 +140,42 @@ public class TestTransformImpl extends SoloTransform
             postInit(args);
         }
 
-        handler = new EventHandler(this.settings);
-        getMPipe().setSessionEventListener(handler);
+        this.handler = new EventHandler(settings);
     }
 
     public void reconfigure()
     {
-    MPipe mPipe = getMPipe();
+        if (null == pipeSpec) { return; }
 
         if (noTCP && (tcpSub != null)) {
             logger.debug("Removing TCP Sub");
-        if ( mPipe != null )
-        mPipe.removeSubscription(this.tcpSub);
-
+            pipeSpec.removeSubscription(tcpSub);
             tcpSub = null;
         }
+
         if (noUDP && (udpSub != null)) {
             logger.debug("Removing UDP Sub");
-        if ( mPipe != null )
-        mPipe.removeSubscription(udpSub);
+            pipeSpec.removeSubscription(udpSub);
             udpSub = null;
         }
 
         if (!this.noTCP && (this.tcpSub == null)) {
             logger.debug("Adding TCP Sub");
-            Subscription sub = new Subscription
+            tcpSub = new Subscription
                 (Protocol.TCP, Interface.ANY, Interface.ANY,
                  IPMaddr.anyAddr, PortRange.ANY, IPMaddr.anyAddr,
                  new PortRange(minPort, maxPort));
-        if ( mPipe != null )
-        this.tcpSub = mPipe.addSubscription(sub);
+            pipeSpec.addSubscription(tcpSub);
         }
+
         if (!noUDP && (udpSub == null)) {
             logger.debug("Adding UDP Sub");
-            Subscription sub = new Subscription
+            udpSub = new Subscription
                 (Protocol.UDP, Interface.ANY, Interface.ANY,
                  IPMaddr.anyAddr, PortRange.ANY, IPMaddr.anyAddr,
                  new PortRange(minPort,maxPort));
-        if ( mPipe != null )
-        this.udpSub = mPipe.addSubscription(sub);
+            pipeSpec.addSubscription(udpSub);
         }
-    }
-
-    // SoloTransform methods --------------------------------------------------
-
-    protected PipeSpec getPipeSpec()
-    {
-        return pipeSpec;
     }
 
     // private methods -------------------------------------------------------
@@ -204,9 +194,9 @@ public class TestTransformImpl extends SoloTransform
                     settings.setNormal(true);
                 }
                 /* else if ("--double-endpoint".equals(args[i])) {
-                     if (!cleared) { clearModes(settings); cleared = true; }
-                     settings.setDoubleEnded(true);
-                     } */
+                   if (!cleared) { clearModes(settings); cleared = true; }
+                   settings.setDoubleEnded(true);
+                   } */
                 else if ("--buffered".equals(args[i])) {
                     if (!cleared) { clearModes(settings); cleared = true; }
                     settings.setBuffered(true);

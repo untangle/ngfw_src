@@ -243,7 +243,7 @@ class PipelineFoundryImpl implements PipelineFoundry
                 fittings.add(start);
 
                 CasingPipeSpec cps = (CasingPipeSpec)insideMPipe.getPipeSpec();
-                Fitting insideFitting = cps.getOutput(start);
+                Fitting insideFitting = cps.getOutput();
                 weldMPipes(mPipes, fittings, insideFitting, sd,
                            availMPipes, availCasings);
                 mPipes.add(outsideMPipe);

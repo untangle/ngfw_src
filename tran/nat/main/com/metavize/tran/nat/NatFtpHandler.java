@@ -52,8 +52,8 @@ class NatFtpHandler extends FtpStateMachine
         this.transform = transform;
         this.sessionManager = transform.getSessionManager();
 
-        /* Lazily set session data since the other event handler can run before or after
-         * this event handler */
+        /* Lazily set session data since the other event handler can
+         * run before or after this event handler */
         this.sessionData = null;
     }
 
@@ -175,7 +175,7 @@ class NatFtpHandler extends FtpStateMachine
         portCommandKey             = null;
 
         if ( sessionData.isClientRedirect()) {
-            int port = transform.handler.getNextPort( Protocol.TCP );
+            int port = transform.getHandler().getNextPort( Protocol.TCP );
             /* 1. Tell the event handler to redirect the session from the server. *
              * 2. Mangle the command.                                             */
             portCommandKey = new SessionRedirectKey( Protocol.TCP,

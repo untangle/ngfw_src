@@ -30,11 +30,16 @@ public class EventHandler extends AbstractEventHandler
 
     public EventHandler(TestSettings settings)
     {
-        this.settings = settings;
-
         if (settings == null) {
-            throw new Error("No settings");
+            throw new IllegalArgumentException("No settings");
         }
+
+        this.settings = settings;
+    }
+
+    void setSettings(TestSettings settings)
+    {
+        this.settings = settings;
     }
 
     private int testBufferSize(TCPSession sess)
@@ -286,7 +291,7 @@ public class EventHandler extends AbstractEventHandler
     }
 
     public void handleUDPClientPacket(UDPPacketEvent event)
-	    throws MPipeException
+        throws MPipeException
     {
         UDPSession sess = event.session();
         ByteBuffer packet = event.packet();
@@ -296,12 +301,12 @@ public class EventHandler extends AbstractEventHandler
         // copy it
         // return new IPDataResult(new ByteBuffer[] { copy_of_packet });
 
-	// Send it through;
-	super.handleUDPClientPacket(event);
+    // Send it through;
+    super.handleUDPClientPacket(event);
     }
 
     public void handleUDPServerPacket(UDPPacketEvent event)
-	    throws MPipeException
+        throws MPipeException
     {
         UDPSession sess = event.session();
         ByteBuffer packet = event.packet();
@@ -311,8 +316,8 @@ public class EventHandler extends AbstractEventHandler
         // copy it
         // return new IPDataResult(new ByteBuffer[] { copy_of_packet });
 
-	// Send it through;
-	super.handleUDPServerPacket(event);
+    // Send it through;
+    super.handleUDPServerPacket(event);
     }
 
     static class TestSessionState {

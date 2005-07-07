@@ -6,13 +6,12 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: MPipe.java,v 1.16 2005/03/22 03:48:36 amread Exp $
+ *  $Id$
  */
 
 package com.metavize.mvvm.tapi;
 
 import com.metavize.mvvm.argon.ArgonAgent;
-import com.metavize.mvvm.tapi.event.SessionEventListener;
 import com.metavize.mvvm.tran.Transform;
 
 
@@ -44,8 +43,6 @@ public interface MPipe {
 
     PipeSpec getPipeSpec();
 
-    void setSessionEventListener(SessionEventListener listener);
-
     int[] liveSessionIds();
 
     IPSessionDesc[] liveSessionDescs();
@@ -55,16 +52,6 @@ public interface MPipe {
     Transform transform();
 
     ArgonAgent getArgonAgent();
-
-    LiveSubscription addSubscription(Subscription desc);
-
-    void removeSubscription(LiveSubscription toRemove);
-
-    // Returns an array of length 0 if no subscriptions active.
-    LiveSubscription[] subscriptions();
-
-    // Removes all subscription
-    void clearSubscriptions();
 
     // disconnect?
     // void closeClientChannel(TCPSession session);

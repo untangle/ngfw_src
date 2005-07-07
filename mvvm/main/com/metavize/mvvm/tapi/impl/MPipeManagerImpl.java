@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: MPipeManagerImpl.java,v 1.7 2005/01/30 09:20:31 amread Exp $
+ *  $Id$
  */
 
 package com.metavize.mvvm.tapi.impl;
@@ -15,7 +15,7 @@ import java.net.*;
 import java.util.*;
 
 import com.metavize.mvvm.tapi.*;
-import com.metavize.mvvm.tran.Transform;
+import com.metavize.mvvm.tapi.event.SessionEventListener;
 
 /**
  * Service-provider & manager class for MPipes.
@@ -48,11 +48,11 @@ class MPipeManagerImpl extends MPipeManager {
      * on the local machine.  No remote MPIPE may be contacted in this way.
      *
      */
-    public MPipe plumbLocal(Transform tran, PipeSpec pipeSpec)
+    public MPipe plumbLocal(PipeSpec pipeSpec, SessionEventListener listener)
     {
         // Class is configurable by changing MPipeManagers, so we can
         // hard code it here.
-        MPipeImpl mPipe = new MPipeImpl(this, tran, pipeSpec);
+        MPipeImpl mPipe = new MPipeImpl(this, pipeSpec, listener);
 
         synchronized(allMPipes) {
             allMPipes.add(mPipe);

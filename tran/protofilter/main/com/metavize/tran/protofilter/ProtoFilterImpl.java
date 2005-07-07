@@ -12,18 +12,14 @@ package com.metavize.tran.protofilter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
+import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.Affinity;
 import com.metavize.mvvm.tapi.Fitting;
 import com.metavize.mvvm.tapi.PipeSpec;
-import com.metavize.mvvm.tapi.Protocol;
 import com.metavize.mvvm.tapi.SoloPipeSpec;
-import com.metavize.mvvm.tapi.SoloTransform;
-import com.metavize.mvvm.tapi.Subscription;
 import com.metavize.mvvm.tapi.TransformContextFactory;
 import com.metavize.mvvm.tran.TransformException;
 import com.metavize.mvvm.tran.TransformStartException;
@@ -33,20 +29,17 @@ import net.sf.hibernate.Session;
 import net.sf.hibernate.Transaction;
 import org.apache.log4j.Logger;
 
-public class ProtoFilterImpl extends SoloTransform implements ProtoFilter
+public class ProtoFilterImpl extends AbstractTransform implements ProtoFilter
 {
-    private static final Logger logger = Logger.getLogger(ProtoFilterImpl.class);
-    private final PipeSpec pipeSpec;
-    private ProtoFilterSettings settings = null;
-    private EventHandler handler = null;
+    private final EventHandler handler = new EventHandler();
+    private final SoloPipeSpec pipeSpec = new SoloPipeSpec
+        ("protofilter", this, handler, Fitting.OCTET_STREAM,
+         Affinity.CLIENT, 0);
+    private final PipeSpec[] pipeSpecs = new PipeSpec[] { pipeSpec };
 
-    public ProtoFilterImpl()
-    {
-        Set set = new HashSet();
-        set.add(new Subscription(Protocol.TCP));
-        set.add(new Subscription(Protocol.UDP));
-        this.pipeSpec = new SoloPipeSpec("protofilter", set, Fitting.OCTET_STREAM, Affinity.CLIENT, 0);
-    }
+    private final Logger logger = Logger.getLogger(ProtoFilterImpl.class);
+
+    private ProtoFilterSettings settings = null;
 
     public ProtoFilterSettings getProtoFilterSettings()
     {
@@ -81,11 +74,11 @@ public class ProtoFilterImpl extends SoloTransform implements ProtoFilter
         }
     }
 
-    public PipeSpec getPipeSpec()
+    @Override
+    protected PipeSpec[] getPipeSpecs()
     {
-        return this.pipeSpec;
+        return pipeSpecs;
     }
-
 
     protected void initializeSettings()
     {
@@ -128,8 +121,6 @@ public class ProtoFilterImpl extends SoloTransform implements ProtoFilter
         } catch (Exception e) {
             throw new TransformStartException(e);
         }
-
-        getMPipe().setSessionEventListener(this.handler);
     }
 
     public    void reconfigure() throws TransformException
@@ -157,7 +148,6 @@ public class ProtoFilterImpl extends SoloTransform implements ProtoFilter
             }
         }
 
-        if (this.handler == null) this.handler = new EventHandler();
         handler.patternList(enabledPatternsList);
         handler.byteLimit(settings.getByteLimit());
         handler.chunkLimit(settings.getChunkLimit());

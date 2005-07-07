@@ -10,60 +10,29 @@
  */
 package com.metavize.tran.ftp;
 
-import java.util.HashSet;
-import java.util.Set;
 
+import com.metavize.mvvm.tapi.AbstractTransform;
+import com.metavize.mvvm.tapi.CasingPipeSpec;
+import com.metavize.mvvm.tapi.Fitting;
 import com.metavize.mvvm.tapi.PipeSpec;
-import com.metavize.mvvm.tapi.Protocol;
-import com.metavize.mvvm.tapi.Subscription;
-import com.metavize.tran.token.CasingAdaptor;
-import com.metavize.tran.token.CasingTransform;
 
-public class FtpTransform extends CasingTransform
+public class FtpTransform extends AbstractTransform
 {
-    private final PipeSpec insidePipeSpec;
-    private final PipeSpec outsidePipeSpec;
+    private final PipeSpec[] pipeSpecs = new PipeSpec[] {
+        new CasingPipeSpec("ftp", this, FtpCasingFactory.factory(),
+                           Fitting.FTP_STREAM, Fitting.FTP_TOKENS)
+    };
 
     // constructors -----------------------------------------------------------
 
-    public FtpTransform()
+    public FtpTransform() { }
+
+    // AbstractTransform methods ----------------------------------------------
+
+    @Override
+    protected PipeSpec[] getPipeSpecs()
     {
-        // inside PipeSpec
-        Subscription s = new Subscription(Protocol.TCP);
-        Set subs = new HashSet();
-        subs.add(s);
-        insidePipeSpec = new FtpPipeSpec(subs);
-
-        // outside PipeSpec
-        outsidePipeSpec = insidePipeSpec;
-    }
-
-    // CasingTransform methods ------------------------------------------------
-
-    protected PipeSpec getInsidePipeSpec()
-    {
-        return insidePipeSpec;
-    }
-
-    protected PipeSpec getOutsidePipeSpec()
-    {
-        return outsidePipeSpec;
-    }
-
-    // lifecycle methods ------------------------------------------------------
-
-    protected void preStart()
-    {
-        // inside
-        CasingAdaptor ih = new CasingAdaptor(FtpCasingFactory.factory(),
-                                             true);
-        getInsideMPipe().setSessionEventListener(ih);
-
-        // outside
-        CasingAdaptor oh = new CasingAdaptor(FtpCasingFactory.factory(),
-                                             false);
-        getOutsideMPipe().setSessionEventListener(oh);
-
+        return pipeSpecs;
     }
 
     // XXX soon to be deprecated ----------------------------------------------

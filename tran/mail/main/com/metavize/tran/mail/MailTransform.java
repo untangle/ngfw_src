@@ -11,63 +11,31 @@
 
 package com.metavize.tran.mail;
 
-import java.util.HashSet;
-import java.util.Set;
-
+import com.metavize.mvvm.tapi.AbstractTransform;
+import com.metavize.mvvm.tapi.CasingPipeSpec;
+import com.metavize.mvvm.tapi.Fitting;
 import com.metavize.mvvm.tapi.PipeSpec;
-import com.metavize.mvvm.tapi.Protocol;
-import com.metavize.mvvm.tapi.Subscription;
-import com.metavize.tran.token.CasingAdaptor;
-import com.metavize.tran.token.CasingTransform;
 import org.apache.log4j.Logger;
 
-public class MailTransform extends CasingTransform
+public class MailTransform extends AbstractTransform
 {
     private final Logger logger = Logger.getLogger(MailTransform.class);
 
-    private final PipeSpec insidePipeSpec;
-    private final PipeSpec outsidePipeSpec;
+    private final PipeSpec[] pipeSpecs = new PipeSpec[] {
+        new CasingPipeSpec("smtp", this, SmtpCasingFactory.factory(),
+                           Fitting.SMTP_STREAM, Fitting.SMTP_TOKENS)
+    };
 
     // constructors -----------------------------------------------------------
 
-    public MailTransform()
+    public MailTransform() { }
+
+    // AbstractTransform methods ----------------------------------------------
+
+    @Override
+    protected PipeSpec[] getPipeSpecs()
     {
-        // inside PipeSpec
-        Subscription s = new Subscription(Protocol.TCP);
-        Set subs = new HashSet();
-        subs.add(s);
-        insidePipeSpec = new SmtpPipeSpec(subs);
-
-        // outside PipeSpec
-        outsidePipeSpec = insidePipeSpec;
-    }
-
-    // CasingTransform methods ------------------------------------------------
-
-    protected PipeSpec getInsidePipeSpec()
-    {
-        return insidePipeSpec;
-    }
-
-    protected PipeSpec getOutsidePipeSpec()
-    {
-        return outsidePipeSpec;
-    }
-
-    // lifecycle methods ------------------------------------------------------
-
-    protected void preStart()
-    {
-        // inside
-        CasingAdaptor ih = new CasingAdaptor(SmtpCasingFactory.factory(),
-                                             true);
-        getInsideMPipe().setSessionEventListener(ih);
-
-        // outside
-        CasingAdaptor oh = new CasingAdaptor(SmtpCasingFactory.factory(),
-                                             false);
-        getOutsideMPipe().setSessionEventListener(oh);
-
+        return pipeSpecs;
     }
 
     // XXX soon to be deprecated ----------------------------------------------

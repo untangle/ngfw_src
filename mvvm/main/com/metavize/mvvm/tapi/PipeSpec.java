@@ -11,11 +11,11 @@
 
 package com.metavize.mvvm.tapi;
 
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
-import com.metavize.mvvm.argon.IPSessionDesc;
+import com.metavize.mvvm.tran.Transform;
 
 /**
  * Describes the fittings for this pipe.
@@ -26,50 +26,85 @@ import com.metavize.mvvm.argon.IPSessionDesc;
 public abstract class PipeSpec
 {
     private final String name;
-    private final Set subscriptions;
+    private final Transform transform;
+
+    private transient Set<Subscription> subscriptions;
 
     // constructors -----------------------------------------------------------
 
-    protected PipeSpec(String name)
+    /**
+     * Creates a new PipeSpec, with a subscription for all traffic.
+     *
+     * @param name display name for this MPipe.
+     */
+    protected PipeSpec(String name, Transform transform)
     {
         this.name = name;
-        this.subscriptions = new HashSet();
+        this.transform = transform;
+
+        this.subscriptions = new CopyOnWriteArraySet<Subscription>();
+        this.subscriptions.add(new Subscription(Protocol.TCP));
+        this.subscriptions.add(new Subscription(Protocol.UDP));
     }
 
-    protected PipeSpec(String name, Set subscriptions)
+    /**
+     * Creates a new PipeSpec.
+     *
+     * @param name display name of the PipeSpec.
+     * @param subscriptions set of Subscriptions.
+     */
+    protected PipeSpec(String name, Transform transform, Set subscriptions)
     {
         this.name = name;
-        this.subscriptions = null == subscriptions ? new HashSet()
-            :  subscriptions;
+        this.transform = transform;
+
+        this.subscriptions = null == subscriptions
+            ? new CopyOnWriteArraySet<Subscription>()
+            : new CopyOnWriteArraySet<Subscription>(subscriptions);
     }
 
-    protected PipeSpec(String name, Subscription subscription)
+    /**
+     * Creates a new PipeSpec.
+     *
+     * @param name display name of the PipeSpec.
+     * @param subscription the Subscription.
+     */
+    protected PipeSpec(String name, Transform transform,
+                       Subscription subscription)
     {
         this.name = name;
+        this.transform = transform;
 
-        this.subscriptions = new HashSet();
-
+        this.subscriptions = new CopyOnWriteArraySet<Subscription>();
         if (null != subscription) {
-            subscriptions.add(subscription);
+            this.subscriptions.add(subscription);
         }
     }
 
-    // business methods -------------------------------------------------------
+    // public abstract methods ------------------------------------------------
 
-    public void setSubscriptions(Set subscriptions)
+    public abstract void connectMPipe();
+    public abstract void disconnectMPipe();
+    public abstract void dumpSessions();
+    public abstract IPSessionDesc[] liveSessionDescs();
+
+    // public methods ---------------------------------------------------------
+
+    public String getName()
     {
-        this.subscriptions.clear();
-        this.subscriptions.addAll(subscriptions);
+        return name;
     }
 
-    public boolean addSubscription(Subscription sub)
+    public Transform getTransform()
     {
-        return subscriptions.add(sub);
+        return transform;
     }
 
-    public boolean matches(IPSessionDesc sessionDesc)
+    public boolean matches(com.metavize.mvvm.argon.IPSessionDesc sessionDesc)
     {
-        for (Iterator i = subscriptions.iterator(); i.hasNext(); ) {
+        Set s = subscriptions;
+
+        for (Iterator i = s.iterator(); i.hasNext(); ) {
             Subscription subscription = (Subscription)i.next();
             if (subscription.matches(sessionDesc)) {
                 return true;
@@ -79,10 +114,18 @@ public abstract class PipeSpec
         return false;
     }
 
-    // accessors --------------------------------------------------------------
-
-    public String getName()
+    public void setSubscriptions(Set<Subscription> subscriptions)
     {
-        return name;
+        this.subscriptions = new CopyOnWriteArraySet<Subscription>(subscriptions);
+    }
+
+    public void addSubscription(Subscription subscription)
+    {
+        subscriptions.add(subscription);
+    }
+
+    public void removeSubscription(Subscription subscription)
+    {
+        subscriptions.remove(subscription);
     }
 }

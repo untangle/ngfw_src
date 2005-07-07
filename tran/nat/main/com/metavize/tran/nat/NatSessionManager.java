@@ -11,26 +11,24 @@
 package com.metavize.tran.nat;
 
 import java.net.InetAddress;
-
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.Iterator;
 
-import org.apache.log4j.Logger;
-
-import com.metavize.mvvm.tapi.Protocol;
 import com.metavize.mvvm.tapi.IPNewSessionRequest;
-import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.mvvm.tapi.IPSession;
 import com.metavize.mvvm.tapi.MPipeException;
+import com.metavize.mvvm.tapi.Protocol;
+import com.metavize.mvvm.tapi.TCPSession;
+import org.apache.log4j.Logger;
 
 class NatSessionManager
 {
     Map<Integer,NatSessionData> map = new ConcurrentHashMap<Integer,NatSessionData>();
-    
-    Map<SessionRedirectKey,SessionRedirect> redirectMap = 
+
+    Map<SessionRedirectKey,SessionRedirect> redirectMap =
         new ConcurrentHashMap<SessionRedirectKey,SessionRedirect>();
-    
+
     private final Logger logger = Logger.getLogger( this.getClass());
     NatImpl transform;
 
@@ -38,19 +36,19 @@ class NatSessionManager
     {
         this.transform = transform;
     }
-    
+
     void registerSession( IPNewSessionRequest request, Protocol protocol,
                           InetAddress clientAddr, int clientPort,
                           InetAddress serverAddr, int serverPort )
     {
-        NatSessionData data = 
+        NatSessionData data =
             new NatSessionData( clientAddr, clientPort,
                                 request.clientAddr(), request.clientPort(),
                                 serverAddr, serverPort,
                                 request.serverAddr(), request.serverPort());
 
         logger.debug( "Registering session: " + request.id());
-        
+
         /* Insert the data into the map */
         NatSessionData tmp;
         if (( tmp = map.put( request.id(), data )) != null ) {
@@ -66,7 +64,7 @@ class NatSessionManager
             logger.error( "Released an unmanaged session: " + session );
             return;
         }
-        
+
         /* Have to release all of the SessionRedirect */
         for ( Iterator<SessionRedirect> iter = sessionData.redirectList().iterator() ; iter.hasNext() ; ) {
             SessionRedirect sessionRedirect = iter.next();
@@ -80,12 +78,12 @@ class NatSessionManager
             if ( currentRedirect != null && currentRedirect != sessionRedirect  ) {
                 logger.error( "Redirect map mismatch" );
             }
-            
+
             /* Cleanup the redirect */
             sessionRedirect.cleanup( transform );
         }
     }
-    
+
     NatSessionData getSessionData( TCPSession session )
     {
         return map.get( session.id());
@@ -100,13 +98,13 @@ class NatSessionManager
         data.addRedirect( redirect );
 
         // logger.debug( "Registering[" + key + "],[" + redirect + "]" );
-        
+
         /* Add the redict to the map of redirects */
         redirectMap.put( key, redirect );
     }
 
     /**
-     * Check to see if this session should be redirected because of one of the 
+     * Check to see if this session should be redirected because of one of the
      * it is in the session redirect map
      */
     boolean isSessionRedirect( IPNewSessionRequest request, Protocol protocol ) throws MPipeException
@@ -115,13 +113,13 @@ class NatSessionManager
         SessionRedirect redirect;
 
         // logger.debug( "Looking up session: " + key );
-        
+
         if (( redirect = redirectMap.remove( key )) == null ) {
             return false;
         }
-        
+
         // logger.debug( "Session redirect match: " + redirect );
-        
+
         /* Apply the redirect to the request */
         redirect.redirect( request, transform );
 
@@ -138,7 +136,7 @@ class SessionRedirectKey
     final InetAddress serverAddr;
     final int         serverPort;
     final int         hashCode;
-        
+
     SessionRedirectKey( Protocol    protocol, InetAddress clientAddr,
                         InetAddress serverAddr, int serverPort )
     {
@@ -148,7 +146,7 @@ class SessionRedirectKey
         this.serverPort = serverPort;
         hashCode = calculateHashCode();
     }
-        
+
     SessionRedirectKey( IPNewSessionRequest request, Protocol protocol )
     {
         this( protocol, request.clientAddr(),
@@ -157,10 +155,10 @@ class SessionRedirectKey
 
     SessionRedirectKey( TCPSession session )
     {
-        this( Protocol.TCP, session.clientAddr(), 
+        this( Protocol.TCP, session.clientAddr(),
               session.serverAddr(), session.serverPort());
     }
-        
+
     SessionRedirectKey( IPSession session, Protocol protocol )
     {
         this( protocol, session.clientAddr(),
@@ -171,14 +169,14 @@ class SessionRedirectKey
     {
         return hashCode;
     }
-        
+
     public boolean equals( Object o )
     {
         if (!( o instanceof SessionRedirectKey )) return false;
-            
+
         SessionRedirectKey key = (SessionRedirectKey)o;
-            
-        if ( this.protocol != key.protocol || !this.clientAddr.equals( key.clientAddr ) ||                  
+
+        if ( this.protocol != key.protocol || !this.clientAddr.equals( key.clientAddr ) ||
              !this.serverAddr.equals( key.serverAddr ) || this.serverPort != key.serverPort ) {
             return false;
         }
@@ -209,44 +207,44 @@ class SessionRedirect
     /* For each item, the item is null or zero if it is unused */
     final InetAddress clientAddr;
     final int         clientPort;
-    
+
     final InetAddress serverAddr;
     final int         serverPort;
 
     // True once this redirect has been used.
     boolean           isExpired = false;
-    
+
     // Set to a non-zero value to reserve a port
     int               reservedPort;
 
     final SessionRedirectKey key;
-    
-    SessionRedirect( InetAddress clientAddr, int clientPort, 
+
+    SessionRedirect( InetAddress clientAddr, int clientPort,
                      InetAddress serverAddr, int serverPort,
                      int reservedPort, SessionRedirectKey key )
     {
         this.clientAddr   = clientAddr;
         this.clientPort   = clientPort;
-        
+
         this.serverAddr   = serverAddr;
         this.serverPort   = serverPort;
-        
+
         this.reservedPort = reservedPort;
 
         this.key          = key;
     }
-        
+
     synchronized void redirect( IPNewSessionRequest request, NatImpl transform ) throws MPipeException
     {
         NatAttachment attachment = (NatAttachment)request.attachment();
 
-        if ( isExpired ) throw new MPipeException( transform.mPipes[0], "Expired redirect" );
+        if ( isExpired ) throw new MPipeException( transform.getNatMPipe(), "Expired redirect" );
 
         /* Have to take this off the list, if it is reserved */
         if ( reservedPort > 0 ) {
             if ( attachment.releasePort() != 0 ) {
                 /* This will be cleaned up when the session is cleaned up */
-                throw new MPipeException( transform.mPipes[0], "Session is already using a NAT port" );
+                throw new MPipeException( transform.getNatMPipe(), "Session is already using a NAT port" );
             }
         }
 
@@ -254,20 +252,20 @@ class SessionRedirect
         if ( this.clientAddr != null ) {
             request.clientAddr( clientAddr );
         }
-        
+
         if ( this.clientPort != 0 ) {
             request.clientPort( clientPort );
         }
-        
+
         /* Modify the server */
         if ( this.serverAddr != null ) {
             request.serverAddr( serverAddr );
         }
-        
+
         if ( this.serverPort != 0 ) {
             request.serverPort( serverPort );
         }
-            
+
         if ( this.reservedPort > 0 ) {
             attachment.releasePort( reservedPort );
             this.reservedPort = 0;
@@ -281,13 +279,13 @@ class SessionRedirect
     {
         return "SessionRedirect| " + clientAddr + ":" + clientPort + "/" + serverAddr + ":" + serverPort;
     }
-        
+
     synchronized void cleanup( NatImpl transform )
     {
         if ( reservedPort > 0 ) {
-            transform.handler.releasePort( key.protocol, serverPort );
+            transform.getHandler().releasePort( key.protocol, serverPort );
         }
-        
+
         reservedPort = 0;
     }
 }

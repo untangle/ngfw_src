@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: MPipeManager.java,v 1.10 2005/01/30 09:20:31 amread Exp $
+ *  $Id$
  */
 
 package com.metavize.mvvm.tapi;
@@ -15,7 +15,8 @@ import java.net.*;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
-import com.metavize.mvvm.tran.Transform;
+import com.metavize.mvvm.tapi.event.SessionEventListener;
+
 
 /**
  * Service-provider & manager class for MetaPipes.
@@ -93,14 +94,14 @@ public abstract class MPipeManager {
 
 
     /**
-     * The <code>plumbLocal</code> activates a new section of MetaPipe for the
-     * given transform.  No attempt is made to limit tranforms to only one active
-     * MPipe at this level (e.g. casings have two).
+     * The <code>plumbLocal</code> activates a new section of MetaPipe
+     * for the given transform.  No attempt is made to limit tranforms
+     * to only one active MPipe at this level (e.g. casings have two).
      *
      * Remote doesn't exist yet. XX
      */
-    public abstract MPipe plumbLocal(Transform transform,
-                                     PipeSpec pipeSpec);
+    public abstract MPipe plumbLocal(PipeSpec pipeSpec,
+                                     SessionEventListener listener);
 
     /**
      * The <code>connectLocal</code> method connects the MetaSmith to a XENON

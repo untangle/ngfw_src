@@ -11,63 +11,56 @@
 package com.metavize.tran.firewall;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.LinkedList;
-import java.util.Set;
+import java.util.List;
 
 import com.metavize.mvvm.MvvmContextFactory;
-import com.metavize.mvvm.NetworkingManager;
 import com.metavize.mvvm.NetworkingConfiguration;
-
+import com.metavize.mvvm.argon.SessionMatcher;
+import com.metavize.mvvm.argon.SessionMatcherFactory;
+import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.Affinity;
 import com.metavize.mvvm.tapi.Fitting;
 import com.metavize.mvvm.tapi.PipeSpec;
 import com.metavize.mvvm.tapi.SoloPipeSpec;
-import com.metavize.mvvm.tapi.Protocol;
-import com.metavize.mvvm.tapi.SoloTransform;
-import com.metavize.mvvm.tapi.Subscription;
 import com.metavize.mvvm.tapi.TransformContextFactory;
+import com.metavize.mvvm.tran.TransformException;
+import com.metavize.mvvm.tran.TransformStartException;
+import com.metavize.mvvm.tran.firewall.IPMatcher;
+import com.metavize.mvvm.tran.firewall.IntfMatcher;
+import com.metavize.mvvm.tran.firewall.PortMatcher;
+import com.metavize.mvvm.tran.firewall.ProtocolMatcher;
 import net.sf.hibernate.HibernateException;
 import net.sf.hibernate.Query;
 import net.sf.hibernate.Session;
 import net.sf.hibernate.Transaction;
 import org.apache.log4j.Logger;
 
-import com.metavize.mvvm.tran.IPaddr;
-import com.metavize.mvvm.tran.firewall.ProtocolMatcher;
-import com.metavize.mvvm.tran.firewall.IPMatcher;
-import com.metavize.mvvm.tran.firewall.PortMatcher;
-import com.metavize.mvvm.tran.firewall.IntfMatcher;
-
-import com.metavize.mvvm.argon.SessionMatcher;
-import com.metavize.mvvm.argon.SessionMatcherFactory;
-
-import com.metavize.mvvm.tran.TransformStartException;
-import com.metavize.mvvm.tran.TransformException;
-
-public class FirewallImpl extends SoloTransform implements Firewall
+public class FirewallImpl extends AbstractTransform implements Firewall
 {
-    private static final Logger logger = Logger.getLogger(FirewallImpl.class);
-    private final PipeSpec pipeSpec;
+    private final EventHandler handler;
+    private final SoloPipeSpec pipeSpec;
+    private final SoloPipeSpec[] pipeSpecs;
+    private final Logger logger = Logger.getLogger(FirewallImpl.class);
+
     private FirewallSettings settings = null;
-    private EventHandler handler = null;
 
     public FirewallImpl()
     {
-        Set subscriptions = new HashSet();
-        subscriptions.add(new Subscription(Protocol.TCP));
-        subscriptions.add(new Subscription(Protocol.UDP));
-        
-        /* Have to figure out pipeline ordering, this should always next to towards the outside */
-        this.pipeSpec = new SoloPipeSpec( "firewall", subscriptions, Fitting.OCTET_STREAM, 
-                                          Affinity.OUTSIDE, SoloPipeSpec.MAX_STRENGTH - 2 );
+        this.handler = new EventHandler();
+
+        /* Have to figure out pipeline ordering, this should always
+         * next to towards the outside */
+        this.pipeSpec = new SoloPipeSpec
+            ("firewall", this, handler, Fitting.OCTET_STREAM, Affinity.OUTSIDE,
+             SoloPipeSpec.MAX_STRENGTH - 2);
+        this.pipeSpecs = new SoloPipeSpec[] { pipeSpec };
     }
 
     public FirewallSettings getFirewallSettings()
     {
-        return this.settings;
+        return settings;
     }
 
     public void setFirewallSettings(FirewallSettings settings)
@@ -98,12 +91,6 @@ public class FirewallImpl extends SoloTransform implements Firewall
         }
     }
 
-    public PipeSpec getPipeSpec()
-    {
-        return this.pipeSpec;
-    }
-
-
     protected void initializeSettings()
     {
         logger.info("Initializing Settings...");
@@ -111,6 +98,12 @@ public class FirewallImpl extends SoloTransform implements Firewall
         FirewallSettings settings = getDefaultSettings();
 
         setFirewallSettings(settings);
+    }
+
+    @Override
+    protected PipeSpec[] getPipeSpecs()
+    {
+        return pipeSpecs;
     }
 
     protected void postInit(String[] args)
@@ -144,8 +137,6 @@ public class FirewallImpl extends SoloTransform implements Firewall
         } catch (Exception e) {
             throw new TransformStartException(e);
         }
-
-        getMPipe().setSessionEventListener(this.handler);
     }
 
     protected void postStart()
@@ -171,8 +162,6 @@ public class FirewallImpl extends SoloTransform implements Firewall
             throw new TransformException("Failed to get Firewall settings: " + settings);
         }
 
-        if ( handler == null ) handler = new EventHandler();
-        
         handler.configure( settings );
     }
 
@@ -190,10 +179,10 @@ public class FirewallImpl extends SoloTransform implements Firewall
     {
         logger.info( "Loading the default settings" );
         FirewallSettings settings = new FirewallSettings( this.getTid());
-        
+
         /* Need this to lookup the local IP address */
         NetworkingConfiguration netConfig = MvvmContextFactory.context().networkingManager().get();
-        
+
         try {
             /* Redirect settings */
             settings.setQuickExit( true );
@@ -203,9 +192,9 @@ public class FirewallImpl extends SoloTransform implements Firewall
             List<FirewallRule> firewallList = new LinkedList<FirewallRule>();
 
             IPMatcher localHostMatcher = new IPMatcher( netConfig.host());
-            
-            
-            
+
+
+
             FirewallRule tmp = new FirewallRule( false, ProtocolMatcher.MATCHER_ALL,
                                                  IntfMatcher.MATCHER_OUT, IntfMatcher.MATCHER_ALL,
                                                  IPMatcher.MATCHER_ALL, IPMatcher.MATCHER_ALL,
@@ -213,7 +202,7 @@ public class FirewallImpl extends SoloTransform implements Firewall
                                                  true );
             tmp.setDescription( "Block all incoming traffic destined to port 21 (FTP)" );
             firewallList.add( tmp );
-            
+
             /* Block all traffic TCP traffic from the network 1.2.3.4/255.255.255.0 */
             tmp = new FirewallRule( false, ProtocolMatcher.MATCHER_TCP,
                                     IntfMatcher.MATCHER_ALL, IntfMatcher.MATCHER_ALL,
@@ -222,7 +211,7 @@ public class FirewallImpl extends SoloTransform implements Firewall
                                     true );
             tmp.setDescription( "Block all TCP traffic from 1.2.3.0 netmask 255.255.255.0" );
             firewallList.add( tmp );
-            
+
             tmp = new FirewallRule( false, ProtocolMatcher.MATCHER_ALL,
                                     IntfMatcher.MATCHER_ALL, IntfMatcher.MATCHER_ALL,
                                     IPMatcher.MATCHER_ALL, IPMatcher.parse( "1.2.3.1-1.2.3.10" ),
@@ -239,17 +228,17 @@ public class FirewallImpl extends SoloTransform implements Firewall
             tmp.setDescription( "Block PINGs to 1.2.3.1.  Note: the source and destination ports are ignored." );
             firewallList.add( tmp );
 
-            
+
             for ( Iterator<FirewallRule> iter = firewallList.iterator() ; iter.hasNext() ; ) {
                 iter.next().setCategory( "[Sample]" );
             }
-            
+
             settings.setFirewallRuleList( firewallList );
-            
+
         } catch (Exception e ) {
             logger.error( "This should never happen", e );
         }
-                
+
         return settings;
     }
 

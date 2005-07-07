@@ -24,19 +24,12 @@ import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.Affinity;
 import com.metavize.mvvm.tapi.Fitting;
-import com.metavize.mvvm.tapi.IPSessionDesc;
-import com.metavize.mvvm.tapi.MPipe;
-import com.metavize.mvvm.tapi.MPipeManager;
 import com.metavize.mvvm.tapi.PipeSpec;
-import com.metavize.mvvm.tapi.Protocol;
 import com.metavize.mvvm.tapi.SoloPipeSpec;
-import com.metavize.mvvm.tapi.Subscription;
 import com.metavize.mvvm.tapi.TransformContextFactory;
-import com.metavize.mvvm.tapi.event.SessionEventListener;
 import com.metavize.mvvm.tran.IPMaddr;
 import com.metavize.mvvm.tran.IPMaddrRule;
 import com.metavize.mvvm.tran.StringRule;
@@ -69,13 +62,10 @@ public class SpywareImpl extends AbstractTransform implements Spyware
     private final SpywareEventHandler streamHandler = new SpywareEventHandler(this);
 
     private final PipeSpec[] pipeSpecs = new PipeSpec[]
-        { new SoloPipeSpec("spyware-http", new Subscription(Protocol.TCP),
+        { new SoloPipeSpec("spyware-http", this, tokenAdaptor,
                              Fitting.HTTP_TOKENS, Affinity.SERVER, 0),
-          new SoloPipeSpec("spyware-byte", new Subscription(Protocol.TCP),
+          new SoloPipeSpec("spyware-byte", this, streamHandler,
                              Fitting.OCTET_STREAM, Affinity.SERVER, 0) };
-    private final MPipe[] mPipes = new MPipe[2];
-    private final SessionEventListener[] listeners = new SessionEventListener[]
-        { tokenAdaptor, streamHandler };
 
     private SpywareSettings spySettings;
 
@@ -125,38 +115,12 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         }
     }
 
-    public void dumpSessions()
-    {
-        // XXX implement
-    }
-
-    public IPSessionDesc[] liveSessionDescs()
-    {
-        // XXX implement
-        return null;
-    }
-
     // AbstractTransform methods ----------------------------------------------
 
-    protected void connectMPipe()
+    @Override
+    protected PipeSpec[] getPipeSpecs()
     {
-        for (int i = 0; i < pipeSpecs.length; i++) {
-            mPipes[i] = MPipeManager.manager().plumbLocal(this, pipeSpecs[i]);
-            MvvmContextFactory.context().pipelineFoundry().registerMPipe(mPipes[i]);
-        }
-    }
-
-    protected void disconnectMPipe()
-    {
-        for (int i = 0; i < mPipes.length; i++) {
-            if ( mPipes[i] != null ) {
-                MvvmContextFactory.context().pipelineFoundry().deregisterMPipe(mPipes[i]);
-                mPipes[i].destroy();
-            } else {
-                logger.warn("Disconnecting null mPipe[" + i + "]");
-            }
-            mPipes[i] = null;
-        }
+        return pipeSpecs;
     }
 
     protected void initializeSettings()
@@ -199,12 +163,6 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         }
 
         reconfigure();
-    }
-
-    protected void postStart()
-    {
-        for (int i = 0; i < pipeSpecs.length; i++)
-            mPipes[i].setSessionEventListener(listeners[i]);
     }
 
     private void updateActiveX(SpywareSettings settings)
