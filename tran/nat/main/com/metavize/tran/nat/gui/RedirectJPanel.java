@@ -52,7 +52,7 @@ class RedirectTableModel extends MSortedTableModel{
     private static final int  C0_MW = Util.STATUS_MIN_WIDTH; /* status */
     private static final int  C1_MW = Util.LINENO_MIN_WIDTH; /* # */
     private static final int  C2_MW = 65;  /* enable action */
-    private static final int  C3_MW = 100; /* action */
+    private static final int  C3_MW = 120; /* action */
     private static final int  C4_MW = 100; /* traffic type */
     private static final int  C5_MW = 160; /* direction */
     private static final int  C6_MW = 130;  /* source address */
