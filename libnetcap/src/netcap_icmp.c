@@ -624,26 +624,7 @@ static int  _netcap_icmp_send( char *data, int data_len, netcap_pkt_t* pkt, int 
     dst_intf = pkt->dst.intf;
     
     if ( dst_intf != NC_INTF_UNK ) {
-        if ( netcap_interface_intf_to_string( dst_intf, dst_intf_str, sizeof( dst_intf_str )) < 0 ) {
-            errlog( ERR_CRITICAL, "netcap_interface_intf_to_string\n" );
-            goto err_out;
-        }
-
-        cmsg =  my__cmsg_nxthdr(msg.msg_control, msg.msg_controllen, cmsg);
-        if(!cmsg) {
-            errlog(ERR_CRITICAL,"No more CMSG Room\n");
-            goto err_out;
-        }
-
-        dst_intf_len = strnlen ( dst_intf_str, sizeof ( dst_intf_str )) + 1;
-
-        /* XXX This is what should be here cmsg->cmsg_len = CMSG_LEN( dst_intf_len ); */
-        cmsg->cmsg_len   = 13;  /* CMSG_LEN(dst_intf_len); (have to fix bug in kernel first) */
-        cmsg->cmsg_level = SOL_IP;
-        cmsg->cmsg_type  = IP_DEVICE;
-        memcpy(CMSG_DATA(cmsg), dst_intf_str, dst_intf_len );
-
-        debug ( 10, "ICMP: Sending to interface to '%s'\n", dst_intf_str );
+        errlog(ERR_CRITICAL,"NC_INTF_UNK Unsupported (IP_DEVICE)\n");
     }
 
     if ( pkt->is_marked ) {
