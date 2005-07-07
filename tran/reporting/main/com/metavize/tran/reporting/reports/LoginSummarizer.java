@@ -9,7 +9,7 @@
  * $Id: ProtoFilterSummarizer.java 194 2005-04-06 19:13:55Z rbscott $
  */
 
-package com.metavize.tran.reporting;
+package com.metavize.tran.reporting.reports;
 
 import java.sql.*;
 

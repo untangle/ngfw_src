@@ -69,7 +69,7 @@
                     <subreportParameterExpression><![CDATA[$P{endTime}]]></subreportParameterExpression>
                 </subreportParameter>
                 <connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-                <subreportExpression class="java.lang.String"><![CDATA["com/metavize/tran/reporting/LoginLogged.jasper"]]></subreportExpression>
+                <subreportExpression class="java.lang.String"><![CDATA["com/metavize/tran/reporting/reports/LoginLogged.jasper"]]></subreportExpression>
             </subreport>
             <subreport>
                 <reportElement key="subreport-1" positionType="Float" mode="Opaque" x="297" y="74" width="276" height="45"/>
@@ -80,7 +80,7 @@
                     <subreportParameterExpression><![CDATA[$P{endTime}]]></subreportParameterExpression>
                 </subreportParameter>
                 <connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-                <subreportExpression class="java.lang.String"><![CDATA["com/metavize/tran/reporting/LoginDenied.jasper"]]></subreportExpression>
+                <subreportExpression class="java.lang.String"><![CDATA["com/metavize/tran/reporting/reports/LoginDenied.jasper"]]></subreportExpression>
             </subreport>
 <!--             <subreport> -->
 <!--                 <reportElement key="subreport-2" positionType="Float" mode="Opaque" x="0" y="130" width="276" height="44"/> -->
