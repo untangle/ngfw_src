@@ -115,7 +115,9 @@ public class HibernateAppender extends AppenderSkeleton
         private final MvvmLocalContext mctx = MvvmContextFactory.context();
         private final WeakReference<TransformContext> tctxRef;
 
-        private volatile Thread thread;
+        private Thread thread;
+
+        private volatile boolean shutdown = false;
 
         // constructor --------------------------------------------------------
 
@@ -137,7 +139,7 @@ public class HibernateAppender extends AppenderSkeleton
 
         public void append(LogEvent le)
         {
-            if (null == thread) {
+            if (shutdown) {
                 logger.warn("logger is shut down: " + tid);
             } else {
                 if (!queue.offer(le)) {
@@ -148,26 +150,26 @@ public class HibernateAppender extends AppenderSkeleton
 
         public void stop()
         {
+            shutdown = true;
             Thread t = thread;
-            thread = null;
             if (null != t) {
                 t.interrupt();
             }
+            thread = null;
         }
 
         // Runnable methods ---------------------------------------------------
 
         public void run()
         {
-            List<LogEvent> l = new ArrayList<LogEvent>(BATCH_SIZE);
-
             thread = Thread.currentThread();
 
-            while (null != thread
-                   && (null == tctxRef ? true : null != tctxRef.get())) {
+            List<LogEvent> l = new ArrayList<LogEvent>(BATCH_SIZE);
+
+            while (!shutdown && (null == tctxRef ? true : null != tctxRef.get())) {
                 try {
                     drainTo(l);
-                    if (null != thread) {
+                    if (!shutdown) {
                         persist(l);
                     }
                 } catch (Exception exn) {
