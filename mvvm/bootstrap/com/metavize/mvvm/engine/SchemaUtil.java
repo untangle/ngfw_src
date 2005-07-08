@@ -43,6 +43,15 @@ public class SchemaUtil
             InputStream is = p.getInputStream();
             // XXX we log in the script, maybe move up to here
             for (byte[] b = new byte[1024]; 0 <= is.read(b); );
+
+            TRY_AGAIN:
+            try {
+                p.waitFor();
+            } catch (InterruptedException exn) {
+                logger.debug("waiting for update-schema");
+                break TRY_AGAIN;
+            }
+
         } catch (IOException exn) {
             logger.warn("error in update-schema", exn);
         }
