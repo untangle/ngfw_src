@@ -16,6 +16,7 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import com.metavize.mvvm.tran.Transform;
+import org.apache.log4j.Logger;
 
 /**
  * Describes the fittings for this pipe.
@@ -25,10 +26,13 @@ import com.metavize.mvvm.tran.Transform;
  */
 public abstract class PipeSpec
 {
+    private final Logger logger = Logger.getLogger(getClass());
+
     private final String name;
     private final Transform transform;
 
     private transient Set<Subscription> subscriptions;
+    private transient boolean enabled = true;
 
     // constructors -----------------------------------------------------------
 
@@ -88,7 +92,7 @@ public abstract class PipeSpec
     public abstract void dumpSessions();
     public abstract IPSessionDesc[] liveSessionDescs();
 
-    // public methods ---------------------------------------------------------
+    // accessors --------------------------------------------------------------
 
     public String getName()
     {
@@ -100,14 +104,29 @@ public abstract class PipeSpec
         return transform;
     }
 
+    public boolean isEnabled()
+    {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled)
+    {
+        this.enabled = enabled;
+    }
+
+    // public methods ---------------------------------------------------------
+
+
     public boolean matches(com.metavize.mvvm.argon.IPSessionDesc sessionDesc)
     {
-        Set s = subscriptions;
+        if (enabled) {
+            Set s = subscriptions;
 
-        for (Iterator i = s.iterator(); i.hasNext(); ) {
-            Subscription subscription = (Subscription)i.next();
-            if (subscription.matches(sessionDesc)) {
-                return true;
+            for (Iterator i = s.iterator(); i.hasNext(); ) {
+                Subscription subscription = (Subscription)i.next();
+                if (subscription.matches(sessionDesc)) {
+                    return true;
+                }
             }
         }
 
@@ -116,16 +135,22 @@ public abstract class PipeSpec
 
     public void setSubscriptions(Set<Subscription> subscriptions)
     {
-        this.subscriptions = new CopyOnWriteArraySet<Subscription>(subscriptions);
+        synchronized (this) {
+            this.subscriptions = new CopyOnWriteArraySet<Subscription>(subscriptions);
+        }
     }
 
     public void addSubscription(Subscription subscription)
     {
-        subscriptions.add(subscription);
+        synchronized (this) {
+            subscriptions.add(subscription);
+        }
     }
 
     public void removeSubscription(Subscription subscription)
     {
-        subscriptions.remove(subscription);
+        synchronized (this) {
+            subscriptions.remove(subscription);
+        }
     }
 }

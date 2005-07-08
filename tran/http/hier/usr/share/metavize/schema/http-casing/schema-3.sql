@@ -1,5 +1,11 @@
 -- schema for release-1.5
 
+CREATE TABLE tr_http_settings (
+    settings_id int8 NOT NULL,
+    tid int8 NOT NULL UNIQUE,
+    enabled bool NOT NULL,
+    PRIMARY KEY (settings_id));
+
 CREATE TABLE tr_http_evt_resp (
     event_id int8 NOT NULL,
     request_id int8,
@@ -23,6 +29,8 @@ CREATE TABLE tr_http_req_line (
     uri varchar(255),
     http_version varchar(10),
     PRIMARY KEY (request_id));
+
+ALTER TABLE tr_http_settings ADD CONSTRAINT fkf4229df91446f FOREIGN KEY (tid) REFERENCES tid;
 
 ALTER TABLE tr_http_evt_resp ADD CONSTRAINT FKC9BB12A21F20A4EB FOREIGN KEY (request_id) REFERENCES tr_http_req_line ON DELETE CASCADE;
 

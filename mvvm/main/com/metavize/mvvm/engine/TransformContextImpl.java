@@ -72,6 +72,8 @@ class TransformContextImpl implements TransformContext
                          String args[], MackageDesc mackageDesc, boolean isNew)
         throws DeployException
     {
+        SchemaUtil.initSchema(transformDesc.getName());
+
         this.transformDesc = transformDesc;
         this.tid = transformDesc.getTid();
         this.mackageDesc = mackageDesc;
@@ -159,8 +161,6 @@ class TransformContextImpl implements TransformContext
         for (String parent : parents) {
             parentCtxs.add(startParent(parent));
         }
-
-        SchemaUtil.initSchema(transformDesc.getName());
 
         classLoader = new URLClassLoader(resources, parentCl);
         CONTEXTS.put(classLoader, this);

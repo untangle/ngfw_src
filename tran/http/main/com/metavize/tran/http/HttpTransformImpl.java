@@ -11,7 +11,6 @@
 
 package com.metavize.tran.http;
 
-
 import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.CasingPipeSpec;
 import com.metavize.mvvm.tapi.Fitting;
@@ -23,16 +22,18 @@ import net.sf.hibernate.Session;
 import net.sf.hibernate.Transaction;
 import org.apache.log4j.Logger;
 
-public class HttpTransformImpl extends AbstractTransform implements HttpTransform
+public class HttpTransformImpl extends AbstractTransform
+    implements HttpTransform
 {
     private final Logger logger = Logger.getLogger(HttpTransformImpl.class);
 
-    private final PipeSpec[] pipeSpecs = new PipeSpec[] {
-        new CasingPipeSpec("http", this, HttpCasingFactory.factory(),
-                           Fitting.HTTP_STREAM, Fitting.HTTP_TOKENS)
-    };
+    private final PipeSpec pipeSpec = new CasingPipeSpec
+        ("http", this, HttpCasingFactory.factory(),
+         Fitting.HTTP_STREAM, Fitting.HTTP_TOKENS);
 
-    //    private HttpSettingsPriv settingsPriv;
+    private final PipeSpec[] pipeSpecs = new PipeSpec[] { pipeSpec };
+
+    private HttpSettings settings;
 
     // constructors -----------------------------------------------------------
 
@@ -40,29 +41,76 @@ public class HttpTransformImpl extends AbstractTransform implements HttpTransfor
 
     // HttpTransform methods --------------------------------------------------
 
-//     public void enable()
-//     {
-// //         settingsPriv.setEnabled(true);
-// //         syncSettingsPriv(settingsPriv);
+    public HttpSettings getHttpSettings()
+    {
+        return settings;
+    }
 
-// //         TransformState ts = getTransformState();
-// //         if (ts == TransformState.RUNNING) {
-// //             connectMPipe();
-// //         }
-//     }
+    public void setHttpSettings(HttpSettings settings)
+    {
+        Session s = TransformContextFactory.context().openSession();
+        try {
+            Transaction tx = s.beginTransaction();
 
-//     public void disable()
-//     {
-// //         settingsPriv.setEnabled(false);
-// //         syncSettingsPriv(settingsPriv);
+            s.saveOrUpdateCopy(settings);
+            this.settings = settings;
 
-// //         TransformState ts = getTransformState();
-// //         if (ts == TransformState.RUNNING) {
-// //             diconnectMPipe();
-// //         }
-//     }
+            tx.commit();
+        } catch (HibernateException exn) {
+            logger.warn("could not get HttpSettings", exn);
+        } finally {
+            try {
+                s.close();
+            } catch (HibernateException exn) {
+                logger.warn("could not close hibernate session", exn);
+            }
+        }
 
-    // MultiTransform methods -------------------------------------------------
+        reconfigure();
+    }
+
+    // Transform methods ------------------------------------------------------
+
+    public void reconfigure()
+    {
+        if (null != settings) {
+            pipeSpec.setEnabled(settings.isEnabled());
+        }
+    }
+
+    protected void initializeSettings()
+    {
+        settings = new HttpSettings();
+        settings.setTid(getTid());
+        setHttpSettings(settings);
+    }
+
+    protected void postInit(String[] args)
+    {
+        Session s = TransformContextFactory.context().openSession();
+        try {
+            Transaction tx = s.beginTransaction();
+
+            Query q = s.createQuery
+                ("from HttpSettings hbs where hbs.tid = :tid");
+            q.setParameter("tid", getTid());
+            settings = (HttpSettings)q.uniqueResult();
+
+            tx.commit();
+        } catch (HibernateException exn) {
+            logger.warn("Could not get HttpSettings", exn);
+        } finally {
+            try {
+                s.close();
+            } catch (HibernateException exn) {
+                logger.warn("could not close Hibernate session", exn);
+            }
+        }
+
+        reconfigure();
+    }
+
+    // AbstractTransform methods ----------------------------------------------
 
     @Override
     protected PipeSpec[] getPipeSpecs()
@@ -70,62 +118,15 @@ public class HttpTransformImpl extends AbstractTransform implements HttpTransfor
         return pipeSpecs;
     }
 
-    // lifecycle methods ------------------------------------------------------
-
-    protected void postInit(String[] args)
-    {
-//         Session s = TransformContextFactory.context().openSession();
-//         try {
-//             Transaction tx = s.beginTransaction();
-
-//             Query q = s.createQuery
-//                 ("from HttpSettingsPriv hsp where hsp.tid = :tid");
-//             q.setParameter("tid", getTid());
-//             settingsPriv = (HttpSettingsPriv)q.uniqueResult();
-
-//             tx.commit();
-//         } catch (HibernateException exn) {
-//             logger.warn("Could not get HttpBlockerSettings", exn);
-//         } finally {
-//             try {
-//                 s.close();
-//             } catch (HibernateException exn) {
-//                 logger.warn("could not close Hibernate session", exn);
-//             }
-//         }
-    }
-
     // XXX soon to be deprecated ----------------------------------------------
 
     public Object getSettings()
     {
-        throw new UnsupportedOperationException("bad move");
+        return getHttpSettings();
     }
 
     public void setSettings(Object settings)
     {
-        throw new UnsupportedOperationException("bad move");
+        setHttpSettings((HttpSettings)settings);
     }
-
-    // private methods --------------------------------------------------------
-
-//     private void syncSettingsPriv()
-//     {
-//         Session s = TransformContextFactory.context().openSession();
-//         try {
-//             Transaction tx = s.beginTransaction();
-
-//             s.saveOrUpdate(settingsPriv);
-
-//             tx.commit();
-//         } catch (HibernateException exn) {
-//             logger.warn("could not get HttpBlockerSettings", exn);
-//         } finally {
-//             try {
-//                 s.close();
-//             } catch (HibernateException exn) {
-//                 logger.warn("could not close hibernate session", exn);
-//             }
-//         }
-//     }
 }
