@@ -135,6 +135,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         updateActiveX(settings);
         updateCookie(settings);
         updateSubnet(settings);
+
         setSpywareSettings(settings);
     }
 
@@ -165,6 +166,40 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         }
 
         reconfigure();
+    }
+
+    /**
+     * FIXME unused
+     */
+    private HashSet buildURLList()
+    {
+        InputStream is = getClass().getClassLoader().getResourceAsStream(URL_LIST);
+        HashSet urls = new HashSet();
+        
+        if (null == is) {
+            logger.error("Could not find: " + URL_LIST);
+            return null;
+        }
+
+        try {
+            InputStreamReader isr = new InputStreamReader(is);
+            BufferedReader br = new BufferedReader(isr);
+
+            for (String line = br.readLine(); null != line; line = br.readLine()) {
+                logger.debug("ADDING URL: " + line);
+                urls.add(line);
+            }
+        } catch (IOException exn) {
+            logger.error("Could not read file: " + ACTIVEX_LIST, exn);
+        } finally {
+            try {
+                is.close();
+            } catch (IOException exn) {
+                logger.warn("Could not close file: " + ACTIVEX_LIST, exn);
+            }
+        }
+
+        return urls;
     }
 
     private void updateActiveX(SpywareSettings settings)
