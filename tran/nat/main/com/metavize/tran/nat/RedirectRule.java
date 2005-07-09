@@ -38,6 +38,7 @@ public class RedirectRule extends TrafficRule
 
     private static final long serialVersionUID =   7015498486016408054L;
     
+    private static final String REDIRECT_PORT_PING         = "n/a";
     private static final String REDIRECT_PORT_UNCHANGED    = "unchanged";
     private static final String REDIRECT_ADDRESS_UNCHANGED = "unchanged";
 
@@ -75,6 +76,22 @@ public class RedirectRule extends TrafficRule
 
     // accessors --------------------------------------------------------------
 
+    /* Hack that sets the ports to zero for Ping sessions */
+    public final void fixPing() throws ParseException
+    {
+        super.fixPing();
+        
+        if ( getProtocol().equals( ProtocolMatcher.MATCHER_PING )) {
+            /* Indicate to use the redirect port for ping */
+            this.redirectPort = -1;
+        } else {
+            /* The redirect port can't be -1 */
+            if ( this.redirectPort == - 1 ) {
+                throw new ParseException( "The Redirect port must be set for non-ping sessions" );
+            }
+        }
+    }
+
     /**
      * Is this a destination redirect or a source redirect
      *
@@ -106,7 +123,7 @@ public class RedirectRule extends TrafficRule
 
     public void setRedirectPort( int port ) throws ParseException
     {
-        if ( port < 0 || port > 65535 ) {
+        if ( port < -1 || port > 65535 ) {
             throw new ParseException( "Redirect port must be in the range 0 to 65535: " + port );
         }
 
@@ -117,6 +134,8 @@ public class RedirectRule extends TrafficRule
     {
         if ( port.equalsIgnoreCase( REDIRECT_PORT_UNCHANGED )) {
             setRedirectPort( 0 );
+        } else if ( port.equalsIgnoreCase( REDIRECT_PORT_PING )) {
+            setRedirectPort( -1 );
         } else {
             setRedirectPort( Integer.parseInt( port ));
         }
@@ -125,6 +144,7 @@ public class RedirectRule extends TrafficRule
     public String getRedirectPortString()
     {
         if ( redirectPort == 0 ) return REDIRECT_PORT_UNCHANGED;
+        else if ( redirectPort == -1 ) return REDIRECT_PORT_PING;
         
         return "" + redirectPort;
     }

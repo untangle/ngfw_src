@@ -68,7 +68,7 @@ public abstract class TrafficRule extends Rule
     // accessors --------------------------------------------------------------
 
     /* Hack that sets the ports to zero for Ping sessions */
-    public final void fixPing() throws ParseException
+    public void fixPing() throws ParseException
     {
         if ( this.protocol.equals( ProtocolMatcher.MATCHER_PING )) {
             this.srcPort = PortMatcher.MATCHER_PING;

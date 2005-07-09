@@ -20,3 +20,7 @@ DELETE FROM dhcp_abs_lease
 
 DROP INDEX tr_nat_evt_dhcp_idx;
 DROP INDEX tr_nat_evt_dhcp_abs_idx;
+
+-- Delete all of the old events from statistics
+DELETE FROM tr_nat_statistic_evt WHERE time_stamp < (:cutoff)::timestamp
+

@@ -40,6 +40,8 @@ public class TrafficMatcher {
     private final PortMatcher srcPort;
     private final PortMatcher dstPort;
 
+    protected final boolean isPingMatcher;
+
     // XXX For the future
     // TimeMatcher time;
     public TrafficMatcher( boolean     isEnabled,  ProtocolMatcher protocol, 
@@ -53,27 +55,23 @@ public class TrafficMatcher {
         this.dstIntf    = dstIntf;
         this.srcAddress = srcAddress;
         this.dstAddress = dstAddress;
-        this.srcPort    = srcPort;
-        this.dstPort    = dstPort;
+
+        /* Ports are ignored for PING sessions */
+        if ( this.protocol.equals( ProtocolMatcher.MATCHER_PING )) {
+            this.srcPort       = PortMatcher.MATCHER_PING;
+            this.dstPort       = PortMatcher.MATCHER_PING;
+            this.isPingMatcher = true;
+        } else {
+            this.srcPort       = srcPort;
+            this.dstPort       = dstPort;
+            this.isPingMatcher = false;
+        }
     }
 
     protected TrafficMatcher( TrafficRule rule )
     {
-        this.isEnabled  = rule.isLive();
-        this.protocol   = rule.getProtocol();
-        this.srcIntf    = rule.getSrcIntf();
-        this.dstIntf    = rule.getDstIntf();
-        this.srcAddress = rule.getSrcAddress();
-        this.dstAddress = rule.getDstAddress();
-
-        /* Ports are ignored for PING sessions */
-        if ( this.protocol.equals( ProtocolMatcher.MATCHER_PING )) {
-            this.srcPort = PortMatcher.MATCHER_PING;
-            this.dstPort = PortMatcher.MATCHER_PING;
-        } else {
-            this.srcPort = rule.getSrcPort();
-            this.dstPort = rule.getDstPort();
-        }
+        this( rule.isLive(), rule.getProtocol(), rule.getSrcIntf(), rule.getDstIntf(),
+              rule.getSrcAddress(), rule.getDstAddress(), rule.getSrcPort(), rule.getDstPort());
     }
     
     public boolean isEnabled()

@@ -61,6 +61,31 @@ class RedirectMatcher extends TrafficMatcher {
      */
     private final RedirectRule rule;
     private final int ruleIndex;
+    
+    private RedirectMatcher( boolean     isEnabled,  ProtocolMatcher protocol, 
+                             IntfMatcher srcIntf,    IntfMatcher     dstIntf, 
+                             IPMatcher   srcAddress, IPMatcher       dstAddress,
+                             PortMatcher srcPort,    PortMatcher     dstPort,
+                             boolean isDstRedirect,  InetAddress     redirectAddress, int redirectPort,
+                             RedirectRule rule,      int             ruleIndex )
+    {
+        super( isEnabled, protocol, srcIntf, dstIntf, srcAddress, dstAddress, srcPort, dstPort );
+        
+        /* Attributes of the redirect */
+        this.isDstRedirect   = isDstRedirect;
+        this.redirectAddress = redirectAddress;
+
+        if ( this.isPingMatcher ) {
+            this.redirectPort = -1;
+        } else {
+            this.redirectPort = redirectPort;
+        }
+        
+        this.rule      = rule;
+        this.ruleIndex = ruleIndex;
+
+        
+    }
 
     RedirectMatcher( boolean     isEnabled,  ProtocolMatcher protocol, 
                      IntfMatcher srcIntf,    IntfMatcher     dstIntf, 
@@ -68,32 +93,19 @@ class RedirectMatcher extends TrafficMatcher {
                      PortMatcher srcPort,    PortMatcher     dstPort,
                      boolean isDstRedirect,  InetAddress redirectAddress, int redirectPort )
     {
-        super( isEnabled, protocol, srcIntf, dstIntf, srcAddress, dstAddress, srcPort, dstPort );
-
-        /* Attributes of the redirect */
-        this.isDstRedirect   = isDstRedirect;
-        this.redirectAddress = redirectAddress;
-        this.redirectPort    = redirectPort;
-        
-        this.rule      = null;
-        this.ruleIndex = 0;
+        this( isEnabled, protocol, srcIntf, dstIntf, srcAddress, dstAddress, srcPort, dstPort,
+              isDstRedirect, redirectAddress, redirectPort, null, 0 );
     }
 
     RedirectMatcher( RedirectRule rule, int ruleIndex )
     {
-        super( rule );
-
-        /* Attributes of the redirect */
-        this.isDstRedirect   = rule.isDstRedirect();
-        if ( rule.getRedirectAddress() == null ) {
-            this.redirectAddress = null;
-        } else {
-            this.redirectAddress = rule.getRedirectAddress().getAddr();
-        }
-        
-        this.redirectPort = rule.getRedirectPort();
-        this.rule         = rule;
-        this.ruleIndex    = ruleIndex;
+        this( rule.isLive(), rule.getProtocol(), 
+              rule.getSrcIntf(),    rule.getDstIntf(), 
+              rule.getSrcAddress(), rule.getDstAddress(), 
+              rule.getSrcPort(),    rule.getDstPort(),
+              rule.isDstRedirect(), 
+              ( rule.getRedirectAddress() == null ) ? null : rule.getRedirectAddress().getAddr(), 
+              rule.getRedirectPort(), rule, ruleIndex );
     }
         
     InetAddress getRedirectAddress()

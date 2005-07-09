@@ -122,6 +122,19 @@ create table TR_REDIRECT_EVT (
         TIME_STAMP timestamp,
         primary key (EVENT_ID));
 
+create table TR_NAT_STATISTIC_EVT (
+        EVENT_ID      int8 not null,
+        NAT_SESSIONS  int4,
+        DMZ_SESSIONS  int4,
+        TCP_INCOMING  int4,
+        TCP_OUTGOING  int4,
+        UDP_INCOMING  int4,
+        UDP_OUTGOING  int4,
+        ICMP_INCOMING int4,
+        ICMP_OUTGOING int4,
+        TIME_STAMP    timestamp,
+        primary key (EVENT_ID));
+
 alter table TR_NAT_SETTINGS add constraint FK2F819DC21446F foreign key (TID) references TID;
 
 alter table TR_NAT_REDIRECTS add constraint FKCBBF56381CAE658A foreign key (SETTING_ID) references TR_NAT_SETTINGS;

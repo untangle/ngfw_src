@@ -185,6 +185,8 @@ public class NatImpl extends AbstractTransform implements Nat
         /* deconfigure the event handle and the dhcp manager */
         handler.deconfigure();
         DhcpManager.getInstance().deconfigure();
+        /* Stop the statistics manager */
+        NatStatisticManager.getInstance().stop();
     }
 
     protected void postInit(String[] args)
@@ -225,6 +227,7 @@ public class NatImpl extends AbstractTransform implements Nat
 
         handler.configure( settings, netConfig );
         DhcpManager.getInstance().configure( settings, netConfig );
+        NatStatisticManager.getInstance().start();
     }
 
     protected void postStart()
@@ -241,6 +244,7 @@ public class NatImpl extends AbstractTransform implements Nat
         /* deconfigure the event handle */
         handler.deconfigure();
         DhcpManager.getInstance().deconfigure();
+        NatStatisticManager.getInstance().stop();
     }
 
     public void reconfigure() throws TransformException
