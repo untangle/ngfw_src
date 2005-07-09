@@ -172,7 +172,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
     </then> </if>
     <!-- transforms need casings and bases -->
     <if> <equals arg1="${tran.type}" arg2="transform"/> <then>
-        <var name="extra.classes" value="../tran/output/jar/virus-base.mar:../tran/output/jar/http-casing.mar:../tran/output/jar/ftp-casing.mar:../tran/output/jar/mail-casing.mar:../tran/output/jar/ftp-casing.mar"/>
+        <var name="extra.classes" value="../tran/output/jar/virus-base.mar:../tran/output/jar/http-casing.mar:../tran/output/jar/ftp-casing.mar:../tran/output/jar/mail-casing.mar"/>
     </then> </if>
 
     <!-- FIXME email special case -->
@@ -278,27 +278,50 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
     <copy todir="${dist.mvvm.schema}/sophos-transform">
       <fileset dir="virus/hier/${suffix.mvvm.schema}/virus-base"/>
     </copy>
+    <!-- XXX hack attack, need real gui jars -->
+    <jar update="true" destfile="${dist.mvvm.webstart}/sophos-transform.mar">
+      <fileset dir="${build.root}/mail"/>
+    </jar>
   </target>
 
   <target name="install.fprot">
     <copy todir="${dist.mvvm.schema}/fprot-transform">
       <fileset dir="virus/hier/${suffix.mvvm.schema}/virus-base"/>
     </copy>
+    <!-- XXX hack attack, need real gui jars -->
+    <jar update="true" destfile="${dist.mvvm.webstart}/fprot-transform.mar">
+      <fileset dir="${build.root}/mail"/>
+    </jar>
   </target>
 
   <target name="install.hauri">
     <copy todir="${dist.mvvm.schema}/hauri-transform">
       <fileset dir="virus/hier/${suffix.mvvm.schema}/virus-base"/>
     </copy>
+    <!-- XXX hack attack, need real gui jars -->
+    <jar update="true" destfile="${dist.mvvm.webstart}/hauri-transform.mar">
+      <fileset dir="${build.root}/mail"/>
+    </jar>
   </target>
 
   <target name="install.clam">
     <copy todir="${dist.mvvm.schema}/clam-transform">
       <fileset dir="virus/hier/${suffix.mvvm.schema}/virus-base"/>
     </copy>
+    <!-- XXX hack attack, need real gui jars -->
+    <jar update="true" destfile="${dist.mvvm.webstart}/clam-transform.mar">
+      <fileset dir="${build.root}/mail"/>
+    </jar>
   </target>
 
-  <target name="install.spam"/>
+  <target name="install.spam">
+    <!-- XXX hack attack, need real gui jars -->
+    <jar update="true" destfile="${dist.mvvm.webstart}/spam-transform.mar">
+      <fileset dir="${build.root}/mail"/>
+    </jar>
+  </target>
+
+
   <target name="install.httpblocker"/>
   <target name="install.airgap"/>
   <target name="install.reporting"/>
@@ -342,9 +365,19 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
         <include name="com/metavize/tran/mail/MimeBoundary.class"/>
         <include name="com/metavize/tran/mail/MimeStateMachine*.class"/>
         <include name="com/metavize/tran/mail/Rfc822Header*.class"/>
-        <include name="com/metavize/tran/mail/SmtpCommand.class"/>
-        <include name="com/metavize/tran/mail/SmtpReply.class"/>
+        <include name="com/metavize/tran/mail/MessageAction*.class"/>
+        <include name="com/metavize/tran/mail/MessageActionUserType*.class"/>
+        <include name="com/metavize/tran/mail/NotifyAction*.class"/>
+        <include name="com/metavize/tran/mail/NotifyActionUserType*.class"/>
+        <include name="com/metavize/tran/mail/SmtpCommand*.class"/>
+        <include name="com/metavize/tran/mail/SmtpReply*.class"/>
         <include name="com/metavize/tran/mail/SmtpStateMachine*.class"/>
+        <include name="com/metavize/tran/mail/PopCommand*.class"/>
+        <include name="com/metavize/tran/mail/PopReply*.class"/>
+        <include name="com/metavize/tran/mail/PopStateMachine*.class"/>
+        <include name="com/metavize/tran/mail/ImapCommand*.class"/>
+        <include name="com/metavize/tran/mail/ImapReply*.class"/>
+        <include name="com/metavize/tran/mail/ImapStateMachine*.class"/>
       </fileset>
       <fileset dir="${build.gensrc}/mail">
         <!-- insert exported hibernate mappings here -->

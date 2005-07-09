@@ -16,6 +16,8 @@ import com.metavize.mvvm.tapi.TCPSession;
 
 public abstract class AbstractParser implements Parser
 {
+    private final String idStr;
+
     protected final TCPSession session;
     protected final boolean clientSide;
 
@@ -24,7 +26,12 @@ public abstract class AbstractParser implements Parser
     protected AbstractParser(TCPSession session, boolean clientSide)
     {
         this.session = session;
-        this.clientSide = clientSide;;
+        this.clientSide = clientSide;
+
+        String name = getClass().getName();
+
+        this.idStr = name + "<" + (clientSide ? "CS" : "SS") + ":"
+            + session.id() + ">";
     }
 
     // Parser noops -----------------------------------------------------------
@@ -73,4 +80,11 @@ public abstract class AbstractParser implements Parser
     // no-ops methods ---------------------------------------------------------
 
     public void handleTimer() { }
+
+    // Object methods ---------------------------------------------------------
+
+    public String toString()
+    {
+        return idStr;
+    }
 }

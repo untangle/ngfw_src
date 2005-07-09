@@ -39,7 +39,6 @@ public class CasingPipeSpec extends PipeSpec
 
     private MPipe outsideMPipe;
 
-
     // constructors -----------------------------------------------------------
 
     public CasingPipeSpec(String name, Transform transform, Set subscriptions,

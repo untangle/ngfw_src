@@ -32,4 +32,3 @@ class SmtpCasingFactory implements CasingFactory
         return new SmtpCasing(session, clientSide);
     }
 }
-

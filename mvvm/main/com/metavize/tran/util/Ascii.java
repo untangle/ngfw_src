@@ -21,6 +21,12 @@ public class Ascii
     public static final char DASH = '-';
     public static final char SP = ' ';
     public static final char HTAB = '\t';
+    public static final char EQ = '=';
+    public static final char COMMA = ',';
 
     public static final String CRLF = "\r\n";
+    
+    public static final char[] CRLF_CA = new char[] {CR, LF};
+    
+    public static final byte[] CRLF_BA = new byte[] {(byte) CR, (byte) LF};
 }

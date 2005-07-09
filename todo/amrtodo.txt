@@ -1,24 +1,13 @@
 $Id: amrtodo.txt,v 1.11 2005/02/25 00:31:39 amread Exp $
 
-SMTP
--------------------------------------------------------------------------------
-
-- header folding
-- decode header fields
-- on parse failure send server response (need reply queue).
-
 MVVM
 -------------------------------------------------------------------------------
 
-- schema conversion infrastructure
 - keep track of login sessions
-- client side libraries for efficient communication?
 
 HTTP
 -------------------------------------------------------------------------------
 
-- make update-blacklist faster (index after)
 - factor out request passing in HttpStateMachine
-
 
 - ADD port SMTP to IMAP, POP to foundry.

@@ -66,6 +66,29 @@ public class BufferUtil
 
         return true;
     }
+    
+    /**
+     * Test if this ByteBuffer ends with the given String
+     *
+     * @param buf the buffer to test
+     * @param s the String to match
+     *
+     * @return true if the buffer ends with the String
+     */
+    public static boolean endsWith(ByteBuffer buf, String s) {
+      if(buf.remaining() < s.length()) {
+        return false;
+      }
+      final int len = s.length();      
+      final int bufOffset = buf.limit() - len;
+
+      for(int i = 0; i<len; i++) {
+        if(((char) buf.get(i+bufOffset)) != s.charAt(i)) {
+          return false;
+        }
+      }
+      return true;
+    }
 
     /**
      * Find a string in a buffer.

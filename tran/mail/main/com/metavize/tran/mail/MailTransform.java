@@ -23,12 +23,19 @@ public class MailTransform extends AbstractTransform
 
     private final PipeSpec[] pipeSpecs = new PipeSpec[] {
         new CasingPipeSpec("smtp", this, SmtpCasingFactory.factory(),
-                           Fitting.SMTP_STREAM, Fitting.SMTP_TOKENS)
+                           Fitting.SMTP_STREAM, Fitting.SMTP_TOKENS),
+        new CasingPipeSpec("pop", this, PopCasingFactory.factory(),
+                           Fitting.POP_STREAM, Fitting.POP_TOKENS),
+        new CasingPipeSpec("imap", this, ImapCasingFactory.factory(),
+                           Fitting.IMAP_STREAM, Fitting.IMAP_TOKENS)
     };
 
     // constructors -----------------------------------------------------------
 
-    public MailTransform() { }
+    public MailTransform()
+    {
+        logger.debug("MailTransform");
+    }
 
     // AbstractTransform methods ----------------------------------------------
 

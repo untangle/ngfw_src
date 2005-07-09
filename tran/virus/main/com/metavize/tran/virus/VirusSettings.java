@@ -40,6 +40,14 @@ public class VirusSettings implements Serializable
     private VirusConfig httpOutbound;
     private VirusConfig ftpInbound;
     private VirusConfig ftpOutbound;
+
+    private VirusSMTPConfig SMTPInbound;
+    private VirusSMTPConfig SMTPOutbound;
+    private VirusPOPConfig POPInbound;
+    private VirusPOPConfig POPOutbound;
+    private VirusIMAPConfig IMAPInbound;
+    private VirusIMAPConfig IMAPOutbound;
+
     private List httpMimeTypes;
     private List extensions;
 
@@ -273,6 +281,126 @@ public class VirusSettings implements Serializable
     public void setFtpOutbound(VirusConfig ftpOutbound)
     {
         this.ftpOutbound = ftpOutbound;
+    }
+
+    /**
+     * Inbound SMTP virus settings.
+     *
+     * @return inbound SMTP settings.
+     * @hibernate.many-to-one
+     * column="SMTP_INBOUND"
+     * cascade="all"
+     * not-null="true"
+     */
+    public VirusSMTPConfig getSMTPInbound()
+    {
+        return SMTPInbound;
+    }
+
+    public void setSMTPInbound(VirusSMTPConfig SMTPInbound)
+    {
+        this.SMTPInbound = SMTPInbound;
+        return;
+    }
+
+    /**
+     * Outbound SMTP virus settings.
+     *
+     * @return outbound SMTP settings.
+     * @hibernate.many-to-one
+     * column="SMTP_OUTBOUND"
+     * cascade="all"
+     * not-null="true"
+     */
+    public VirusSMTPConfig getSMTPOutbound()
+    {
+        return SMTPOutbound;
+    }
+
+    public void setSMTPOutbound(VirusSMTPConfig SMTPOutbound)
+    {
+        this.SMTPOutbound = SMTPOutbound;
+        return;
+    }
+
+    /**
+     * Inbound POP virus settings.
+     *
+     * @return inbound POP settings.
+     * @hibernate.many-to-one
+     * column="POP_INBOUND"
+     * cascade="all"
+     * not-null="true"
+     */
+    public VirusPOPConfig getPOPInbound()
+    {
+        return POPInbound;
+    }
+
+    public void setPOPInbound(VirusPOPConfig POPInbound)
+    {
+        this.POPInbound = POPInbound;
+        return;
+    }
+
+    /**
+     * Outbound POP virus settings.
+     *
+     * @return outbound POP settings.
+     * @hibernate.many-to-one
+     * column="POP_OUTBOUND"
+     * cascade="all"
+     * not-null="true"
+     */
+    public VirusPOPConfig getPOPOutbound()
+    {
+        return POPOutbound;
+    }
+
+    public void setPOPOutbound(VirusPOPConfig POPOutbound)
+    {
+        this.POPOutbound = POPOutbound;
+        return;
+    }
+
+    /**
+     * Inbound IMAP virus settings.
+     *
+     * @return inbound IMAP settings.
+     * @hibernate.many-to-one
+     * column="IMAP_INBOUND"
+     * cascade="all"
+     * not-null="true"
+     */
+    public VirusIMAPConfig getIMAPInbound()
+    {
+        return IMAPInbound;
+    }
+
+    public void setIMAPInbound(VirusIMAPConfig IMAPInbound)
+    {
+        this.IMAPInbound = IMAPInbound;
+        return;
+    }
+
+    /**
+     * Outbound IMAP virus settings.
+     *
+     * @return outbound IMAP settings.
+     * @hibernate.many-to-one
+     * column="IMAP_OUTBOUND"
+     * cascade="all"
+     * not-null="true"
+     */
+    public VirusIMAPConfig getIMAPOutbound()
+    {
+        return IMAPOutbound;
+    }
+
+    public void setIMAPOutbound(VirusIMAPConfig IMAPOutbound)
+    {
+        this.IMAPOutbound = IMAPOutbound;
+        return;
     }
 
     /**

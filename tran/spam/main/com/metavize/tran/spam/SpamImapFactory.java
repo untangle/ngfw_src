@@ -16,18 +16,20 @@ import com.metavize.tran.token.TokenHandler;
 import com.metavize.tran.token.TokenHandlerFactory;
 import org.apache.log4j.Logger;
 
-public class SpamFactory implements TokenHandlerFactory
+public class SpamImapFactory implements TokenHandlerFactory
 {
-    private static final Logger logger = Logger.getLogger(SpamFactory.class);
+    public static final SpamImapFactory FACTORY = new SpamImapFactory();
+
+    private static final Logger logger = Logger.getLogger(SpamImapFactory.class);
 
     // constructors -----------------------------------------------------------
 
-    SpamFactory() { }
+    private SpamImapFactory() { }
 
     // TokenHandlerFactory methods --------------------------------------------
 
     public TokenHandler tokenHandler(TCPSession session)
     {
-        return new SpamSmtpHandler(session);
+        return new SpamImapHandler(session);
     }
 }

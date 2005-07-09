@@ -38,7 +38,7 @@ class SpamSmtpHandler extends SmtpStateMachine
     private final List<Token> msgQueue = new LinkedList<Token>();
 
     private int size = 0;
-    boolean passthrough = false;
+    private boolean passthrough = false;
 
     private Rfc822Header header;
 

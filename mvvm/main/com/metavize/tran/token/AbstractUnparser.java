@@ -15,6 +15,8 @@ import com.metavize.mvvm.tapi.TCPSession;
 
 public abstract class AbstractUnparser implements Unparser
 {
+    private final String idStr;
+
     protected final TCPSession session;
     protected final boolean clientSide;
 
@@ -22,6 +24,11 @@ public abstract class AbstractUnparser implements Unparser
     {
         this.session = session;
         this.clientSide = clientSide;
+
+        String name = getClass().getName();
+
+        this.idStr = name + "<" + (clientSide ? "CS" : "SS") + ":"
+            + session.id() + ">";
     }
 
     // protected methods ------------------------------------------------------
@@ -34,5 +41,12 @@ public abstract class AbstractUnparser implements Unparser
     protected TCPSession getSession()
     {
         return session;
+    }
+
+    // Object methods ---------------------------------------------------------
+
+    public String toString()
+    {
+        return idStr;
     }
 }
