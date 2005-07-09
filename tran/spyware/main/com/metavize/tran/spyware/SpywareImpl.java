@@ -48,6 +48,8 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         = "com/metavize/tran/spyware/cookie.txt";
     private static final String SUBNET_LIST
         = "com/metavize/tran/spyware/subnet.txt";
+    private static final String URL_LIST
+        = "com/metavize/tran/spyware/urlblacklist.txt";
 
     private static final Pattern ACTIVEX_PATTERN = Pattern
         .compile(".*\\{([a-fA-F0-9\\-]+)\\}.*");
@@ -96,7 +98,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
             try {
                 s.close();
             } catch (HibernateException exn) {
-                logger.warn("could not close hibernate sessino", exn);
+                logger.warn("could not close hibernate session", exn);
             }
         }
 
