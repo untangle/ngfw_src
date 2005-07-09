@@ -25,7 +25,7 @@ import com.metavize.mvvm.security.Tid;
  */
 public class HttpSettings implements Serializable
 {
-    // serial uid
+    private static final long serialVersionUID = -8901463578794639216L;
 
     private Long id;
     private Tid tid;
