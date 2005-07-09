@@ -12,13 +12,11 @@ diff -urN --ignore-all-space linux-2.6.12.2-orig/include/linux/in.h linux-2.6.12
 diff -urN --ignore-all-space linux-2.6.12.2-orig/include/net/ip.h linux-2.6.12.2-nonlocal/include/net/ip.h
 --- linux-2.6.12.2-orig/include/net/ip.h	2005-06-29 16:00:53.000000000 -0700
 +++ linux-2.6.12.2-nonlocal/include/net/ip.h	2005-07-05 18:48:40.808393006 -0700
-@@ -295,6 +295,9 @@
+@@ -295,6 +295,7 @@
  	IP_DEFRAG_CONNTRACK_IN,
  	IP_DEFRAG_CONNTRACK_OUT,
  	IP_DEFRAG_NAT_OUT,
-+#ifdef CONFIG_IP_NF_NONLOCAL
-+    IP_DEFRAG_NONLOCAL,
-+#endif
++	IP_DEFRAG_NONLOCAL,
  	IP_DEFRAG_VS_IN,
  	IP_DEFRAG_VS_OUT,
  	IP_DEFRAG_VS_FWD
@@ -49,13 +47,11 @@ diff -urN --ignore-all-space linux-2.6.12.2-orig/include/net/route.h linux-2.6.1
 diff -urN --ignore-all-space linux-2.6.12.2-orig/include/net/tcp.h linux-2.6.12.2-nonlocal/include/net/tcp.h
 --- linux-2.6.12.2-orig/include/net/tcp.h	2005-06-29 16:00:53.000000000 -0700
 +++ linux-2.6.12.2-nonlocal/include/net/tcp.h	2005-07-05 18:48:40.809392930 -0700
-@@ -776,6 +776,10 @@
+@@ -776,6 +776,8 @@
  
  extern int			tcp_v4_rcv(struct sk_buff *skb);
  
-+#ifdef CONFIG_IP_NF_NONLOCAL
 +extern struct sk_buff *tcp_v4_nonlocal_deliver(struct sk_buff *skb);
-+#endif
 +    
  extern int			tcp_v4_remember_stamp(struct sock *sk);
  
@@ -243,12 +239,10 @@ diff -urN --ignore-all-space linux-2.6.12.2-orig/net/ipv4/route.c linux-2.6.12.2
 diff -urN --ignore-all-space linux-2.6.12.2-orig/net/ipv4/tcp_ipv4.c linux-2.6.12.2-nonlocal/net/ipv4/tcp_ipv4.c
 --- linux-2.6.12.2-orig/net/ipv4/tcp_ipv4.c	2005-06-29 16:00:53.000000000 -0700
 +++ linux-2.6.12.2-nonlocal/net/ipv4/tcp_ipv4.c	2005-07-05 18:48:40.814392547 -0700
-@@ -1846,6 +1846,55 @@
+@@ -1846,6 +1846,52 @@
  	goto discard_it;
  }
  
-+#ifdef CONFIG_IP_NF_NONLOCAL
-+
 +struct sk_buff *tcp_v4_nonlocal_deliver(struct sk_buff *skb)
 +{
 +    struct sock *sk;
@@ -294,7 +288,6 @@ diff -urN --ignore-all-space linux-2.6.12.2-orig/net/ipv4/tcp_ipv4.c linux-2.6.1
 + out:
 +    return skb;
 +}
-+#endif
 +
  /* With per-bucket locks this operation is not-atomic, so that
   * this version is not worse.

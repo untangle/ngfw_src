@@ -14,15 +14,13 @@ diff -urN --ignore-all-space linux-2.6.12.2-orig/include/linux/netfilter_ipv4/ip
 diff -urN --ignore-all-space linux-2.6.12.2-orig/include/net/ip.h linux-2.6.12.2-bar/include/net/ip.h
 --- linux-2.6.12.2-orig/include/net/ip.h	2005-06-29 16:00:53.000000000 -0700
 +++ linux-2.6.12.2-bar/include/net/ip.h	2005-07-05 19:59:08.234192960 -0700
-@@ -45,6 +45,11 @@
+@@ -45,6 +45,9 @@
  #define IPSKB_TRANSLATED	2
  #define IPSKB_FORWARDED		4
  #define IPSKB_XFRM_TUNNEL_SIZE	8
 +#define IPSKB_DIVERTED		16
 +
-+#ifdef CONFIG_IP_NF_TARGET_DIVERT
 +   	unsigned short   divert_port;
-+#endif
  };
  
  struct ipcm_cookie
