@@ -4,7 +4,7 @@
 ALTER TABLE tr_nat_settings ADD COLUMN dmz_logging_enabled bool;
 
 -- Insert the events for redirects
-create table TR_REDIRECT_EVT (
+create table TR_NAT_REDIRECT_EVT (
         EVENT_ID int8 not null,
         SESSION_ID int4,
         RULE_ID int8,

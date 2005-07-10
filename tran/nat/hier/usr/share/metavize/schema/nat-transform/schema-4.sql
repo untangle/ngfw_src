@@ -113,7 +113,7 @@ create table TR_NAT_EVT_DHCP_ABS_LEASES (
         POSITION int4 not null,
         primary key (EVENT_ID, POSITION));
 
-create table TR_REDIRECT_EVT (
+create table TR_NAT_REDIRECT_EVT (
         EVENT_ID int8 not null,
         SESSION_ID int4,
         RULE_ID int8,
