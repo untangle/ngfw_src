@@ -11,7 +11,7 @@
 
 package com.metavize.tran.nat;
 
-import com.metavize.mvvm.logging.LogEvent;
+import com.metavize.mvvm.logging.StatisticEvent;
 
 /**
  * Log event for a Nat statistics.
@@ -22,7 +22,7 @@ import com.metavize.mvvm.logging.LogEvent;
  * table="TR_NAT_STATISTIC_EVT"
  * mutable="false"
  */
-public class NatStatisticEvent extends LogEvent
+public class NatStatisticEvent extends StatisticEvent
 {
     /* Number of outbound nat sessions */
     private int natSessions           = 0;
