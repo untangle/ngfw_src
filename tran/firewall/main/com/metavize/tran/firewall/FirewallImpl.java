@@ -48,7 +48,7 @@ public class FirewallImpl extends AbstractTransform implements Firewall
 
     public FirewallImpl()
     {
-        this.handler = new EventHandler();
+        this.handler = new EventHandler( this );
 
         /* Have to figure out pipeline ordering, this should always
          * next to towards the outside */
@@ -98,6 +98,8 @@ public class FirewallImpl extends AbstractTransform implements Firewall
         FirewallSettings settings = getDefaultSettings();
 
         setFirewallSettings(settings);
+
+        FirewallStatisticManager.getInstance().stop();
     }
 
     @Override
@@ -137,6 +139,8 @@ public class FirewallImpl extends AbstractTransform implements Firewall
         } catch (Exception e) {
             throw new TransformStartException(e);
         }
+
+        FirewallStatisticManager.getInstance().start();
     }
 
     protected void postStart()
@@ -149,6 +153,8 @@ public class FirewallImpl extends AbstractTransform implements Firewall
     {
         /* Kill all active sessions */
         shutdownMatchingSessions();
+
+        FirewallStatisticManager.getInstance().stop();
     }
 
     public    void reconfigure() throws TransformException

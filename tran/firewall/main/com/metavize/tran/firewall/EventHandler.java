@@ -49,8 +49,13 @@ import com.metavize.mvvm.tran.firewall.IntfMatcher;
 
 class EventHandler extends AbstractEventHandler
 {
+    private static final int BLOCK_COUNTER = Transform.GENERIC_0_COUNTER;
+    private static final int PASS_COUNTER  = Transform.GENERIC_1_COUNTER;
+
     private final Logger logger = Logger.getLogger( EventHandler.class );
     private final Logger eventLogger = MvvmContextFactory.context().eventLogger();
+
+    private final FirewallStatisticManager statisticManager = FirewallStatisticManager.getInstance();
 
     private List <FirewallMatcher> firewallRuleList = new LinkedList<FirewallMatcher>();
 
@@ -59,9 +64,13 @@ class EventHandler extends AbstractEventHandler
 
     /* True to accept by default, false to block by default */
     private boolean isDefaultAccept = true;
+
+    /* Firewall Transform */
+    private final FirewallImpl transform;
     
-    EventHandler() 
+    EventHandler( FirewallImpl transform ) 
     {
+        this.transform = transform;
     }
 
     public void handleTCPNewSessionRequest( TCPNewSessionRequestEvent event )
@@ -82,7 +91,7 @@ class EventHandler extends AbstractEventHandler
         boolean reject    = !isDefaultAccept;
         FirewallRule rule = null;
         int ruleIndex     = 0;
-
+        
         for ( Iterator<FirewallMatcher> iter = firewallRuleList.iterator() ; iter.hasNext() ; ) {
             FirewallMatcher matcher = iter.next();
 
@@ -111,20 +120,23 @@ class EventHandler extends AbstractEventHandler
             }
             
             /* Increment the block counter */
-            incrementCount( Transform.GENERIC_0_COUNTER ); // BLOCK COUNTER
+            transform.incrementCount( BLOCK_COUNTER ); // BLOCK COUNTER
 
         } else {
             logger.debug( "Releasing session: " + request );
             request.release( false );
 
             /* Increment the pass counter */
-            incrementCount( Transform.GENERIC_1_COUNTER ); // PASS COUNTER
+            transform.incrementCount( PASS_COUNTER ); // PASS COUNTER
         }
 
         /* If necessary log the event */
         if ( rule != null && rule.getLog()) {
             eventLogger.info( new FirewallEvent( request.id(), rule, ruleIndex ));
         }
+
+        /* Track the statistics */
+        statisticManager.incrRequest( protocol, request, reject, rule == null );
     }
     
     void configure( FirewallSettings settings )

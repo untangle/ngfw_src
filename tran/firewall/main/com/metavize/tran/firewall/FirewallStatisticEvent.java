@@ -53,6 +53,22 @@ public class FirewallStatisticEvent extends StatisticEvent
      */
     public FirewallStatisticEvent()
     {
+        this.sessions = 0;
+
+        this.tcpBlockedDefault = 0;
+        this.tcpBlockedRule = 0;
+        this.tcpPassedDefault = 0;
+        this.tcpPassedRule = 0;
+        
+        this.udpBlockedDefault = 0;
+        this.udpBlockedRule = 0;
+        this.udpPassedDefault = 0;
+        this.udpPassedRule = 0;
+        
+        this.icmpBlockedDefault = 0;
+        this.icmpBlockedRule = 0;
+        this.icmpPassedDefault = 0;
+        this.icmpPassedRule = 0;
     }
 
     public FirewallStatisticEvent( int sessions, 
@@ -152,7 +168,7 @@ public class FirewallStatisticEvent extends StatisticEvent
      *
      * @return Number of tcp sessions passed by the default.
      * @hibernate.property
-     * column="TCP_BLOCK_DEFAULT"
+     * column="TCP_PASS_DEFAULT"
      */
     public int getTcpPassedDefault()
     {
@@ -164,7 +180,7 @@ public class FirewallStatisticEvent extends StatisticEvent
         this.tcpPassedDefault = tcpPassedDefault;
     }
 
-    public void incrTcpBlcockedDefault()
+    public void incrTcpPassedDefault()
     {
         this.tcpPassedDefault++;
     }
@@ -174,7 +190,7 @@ public class FirewallStatisticEvent extends StatisticEvent
      *
      * @return Number of tcp sessions passed by a rule.
      * @hibernate.property
-     * column="TCP_BLOCK_RULE"
+     * column="TCP_PASS_RULE"
      */
     public int getTcpPassedRule()
     {
@@ -241,7 +257,7 @@ public class FirewallStatisticEvent extends StatisticEvent
      *
      * @return Number of udp sessions passed by the default.
      * @hibernate.property
-     * column="UDP_BLOCK_DEFAULT"
+     * column="UDP_PASS_DEFAULT"
      */
     public int getUdpPassedDefault()
     {
@@ -253,7 +269,7 @@ public class FirewallStatisticEvent extends StatisticEvent
         this.udpPassedDefault = udpPassedDefault;
     }
 
-    public void incrUdpBlcockedDefault()
+    public void incrUdpPassedDefault()
     {
         this.udpPassedDefault++;
     }
@@ -263,7 +279,7 @@ public class FirewallStatisticEvent extends StatisticEvent
      *
      * @return Number of udp sessions passed by a rule.
      * @hibernate.property
-     * column="UDP_BLOCK_RULE"
+     * column="UDP_PASS_RULE"
      */
     public int getUdpPassedRule()
     {
@@ -329,7 +345,7 @@ public class FirewallStatisticEvent extends StatisticEvent
      *
      * @return Number of icmp sessions passed by the default.
      * @hibernate.property
-     * column="ICMP_BLOCK_DEFAULT"
+     * column="ICMP_PASS_DEFAULT"
      */
     public int getIcmpPassedDefault()
     {
@@ -341,7 +357,7 @@ public class FirewallStatisticEvent extends StatisticEvent
         this.icmpPassedDefault = icmpPassedDefault;
     }
 
-    public void incrIcmpBlcockedDefault()
+    public void incrIcmpPassedDefault()
     {
         this.icmpPassedDefault++;
     }
@@ -351,7 +367,7 @@ public class FirewallStatisticEvent extends StatisticEvent
      *
      * @return Number of icmp sessions passed by a rule.
      * @hibernate.property
-     * column="ICMP_BLOCK_RULE"
+     * column="ICMP_PASS_RULE"
      */
     public int getIcmpPassedRule()
     {

@@ -38,6 +38,24 @@ create table TR_FIREWALL_EVT (
         TIME_STAMP timestamp,
         primary key (EVENT_ID));
 
+create table TR_FIREWALL_STATISTIC_EVT (
+        EVENT_ID int8 not null,
+        SESSIONS int4,
+        TCP_BLOCK_DEFAULT int4,
+        TCP_BLOCK_RULE int4,
+        TCP_PASS_DEFAULT int4,
+        TCP_PASS_RULE int4,
+        UDP_BLOCK_DEFAULT int4,
+        UDP_BLOCK_RULE int4,
+        UDP_PASS_DEFAULT int4,
+        UDP_PASS_RULE int4,
+        ICMP_BLOCK_DEFAULT int4,
+        ICMP_BLOCK_RULE int4,
+        ICMP_PASS_DEFAULT int4,
+        ICMP_PASS_RULE int4,
+        TIME_STAMP timestamp,
+        primary key (EVENT_ID));
+
 alter table TR_FIREWALL_RULES add constraint FK4BBFB8B9871AAD3E foreign key (RULE_ID) references FIREWALL_RULE;
 alter table TR_FIREWALL_RULES add constraint FK4BBFB8B91CAE658A foreign key (SETTING_ID) references TR_FIREWALL_SETTINGS;
 alter table TR_FIREWALL_SETTINGS add constraint FK23CDA1011446F foreign key (TID) references TID;
