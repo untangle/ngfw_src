@@ -25,9 +25,6 @@ import com.metavize.mvvm.logging.StatisticEvent;
 public class FirewallStatisticEvent extends StatisticEvent
 {
     /* Number of outbound firewall sessions */
-    /* The total number of sessions examined */
-    private int sessions = 0;
-
     /**
      * Number of TCP Sessions blocked by the default action, 
      * by a rule, passsed by the default, and
@@ -53,8 +50,6 @@ public class FirewallStatisticEvent extends StatisticEvent
      */
     public FirewallStatisticEvent()
     {
-        this.sessions = 0;
-
         this.tcpBlockedDefault = 0;
         this.tcpBlockedRule = 0;
         this.tcpPassedDefault = 0;
@@ -71,16 +66,13 @@ public class FirewallStatisticEvent extends StatisticEvent
         this.icmpPassedRule = 0;
     }
 
-    public FirewallStatisticEvent( int sessions, 
-                                   int tcpBlockedDefault, int tcpBlockedRule,
-                                   int tcpPasssedDefault, int tcpPassedRule,
-                                   int udpBlockedDefault, int udpBlockedRule,
-                                   int udpPasssedDefault, int udpPassedRule,
+    public FirewallStatisticEvent( int tcpBlockedDefault,  int tcpBlockedRule,
+                                   int tcpPasssedDefault,  int tcpPassedRule,
+                                   int udpBlockedDefault,  int udpBlockedRule,
+                                   int udpPasssedDefault,  int udpPassedRule,
                                    int icmpBlockedDefault, int icmpBlockedRule,
                                    int icmpPasssedDefault, int icmpPassedRule )
-    {
-        this.sessions           = sessions;
-        
+    {        
         this.tcpBlockedDefault  = tcpBlockedDefault;
         this.tcpBlockedRule     = tcpBlockedRule;
         this.tcpPassedDefault   = tcpPassedDefault;
@@ -97,28 +89,6 @@ public class FirewallStatisticEvent extends StatisticEvent
         this.icmpPassedRule     = icmpPassedRule;
     }
     
-    /**
-     * Number of connections the firewall has examined
-     *
-     * @return Number of connections the firewall has examined
-     * @hibernate.property
-     * column="SESSIONS"
-     */
-    public int getSessions()
-    {
-        return this.sessions;
-    }
-
-    public void setSessions( int sessions )
-    {
-        this.sessions = sessions;
-    }
-    
-    public void incrSessions()
-    {
-        this.sessions++;
-    }
-
     /**
      * Number of tcp sessions blocked by the default rule.
      *
@@ -390,8 +360,7 @@ public class FirewallStatisticEvent extends StatisticEvent
      */
     public boolean hasStatistics()
     {
-        return (( sessions +
-                  tcpBlockedDefault  + tcpBlockedRule  + tcpPassedDefault  + tcpPassedRule +
+        return (( tcpBlockedDefault  + tcpBlockedRule  + tcpPassedDefault  + tcpPassedRule +
                   udpBlockedDefault  + udpBlockedRule  + udpPassedDefault  + udpPassedRule +
                   icmpBlockedDefault + icmpBlockedRule + icmpPassedDefault + icmpPassedRule ) > 0 );
     }

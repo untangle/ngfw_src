@@ -21,11 +21,16 @@ import com.metavize.mvvm.tapi.IPNewSessionRequest;
 class FirewallStatisticManager extends StatisticManager
 {    
     private static FirewallStatisticManager INSTANCE = null;
-            
+    
     private FirewallStatisticEvent statisticEvent = new FirewallStatisticEvent();
     
     private FirewallStatisticManager()
     {
+    }
+
+    protected StatisticEvent getInitialStatisticEvent()
+    {
+        return this.statisticEvent;
     }
 
     protected StatisticEvent getNewStatisticEvent()
@@ -38,9 +43,6 @@ class FirewallStatisticManager extends StatisticManager
      */
     void incrRequest( Protocol protocol, IPNewSessionRequest request, boolean isBlock, boolean isDefault )
     {
-        /* Increment the number of sessions for every request */
-        this.statisticEvent.incrSessions();
-
         if ( protocol == Protocol.TCP ) {
             incrTcpSession( isBlock, isDefault );
         } else {

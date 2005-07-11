@@ -10,7 +10,6 @@ create table TR_FIREWALL_EVT (
 -- Create the table for tracking firewall statistics
 create table TR_FIREWALL_STATISTIC_EVT (
         EVENT_ID int8 not null,
-        SESSIONS int4,
         TCP_BLOCK_DEFAULT int4,
         TCP_BLOCK_RULE int4,
         TCP_PASS_DEFAULT int4,

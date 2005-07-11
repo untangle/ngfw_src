@@ -34,6 +34,11 @@ class NatStatisticManager extends StatisticManager
     {
     }
 
+    protected StatisticEvent getInitialStatisticEvent()
+    {
+        return this.statisticEvent;
+    }
+
     protected StatisticEvent getNewStatisticEvent()
     {
         return ( this.statisticEvent = new NatStatisticEvent());

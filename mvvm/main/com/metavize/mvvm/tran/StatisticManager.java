@@ -54,10 +54,10 @@ public abstract class StatisticManager implements Runnable
             logger.error( "died before starting" );
             return;
         }
+        
+        StatisticEvent statisticEvent = getInitialStatisticEvent();
 
         while ( true ) {
-            StatisticEvent statisticEvent = getNewStatisticEvent();
-            
             try { 
                 Thread.sleep( SLEEP_TIME_MSEC );
             } catch ( InterruptedException e ) {
@@ -66,8 +66,10 @@ public abstract class StatisticManager implements Runnable
             
             /* Only log the stats if there is something to log */
             if ( statisticEvent.hasStatistics()) {
-                eventLogger.info( statisticEvent );
+                /* Pre-cache the statistics to insure that no stats are lost */
+                StatisticEvent currentStatistics = statisticEvent;
                 statisticEvent = getNewStatisticEvent();
+                eventLogger.info( currentStatistics );
             } else {
                 logger.debug( "No statistics available" );
             }
@@ -132,5 +134,7 @@ public abstract class StatisticManager implements Runnable
         }
     }
 
+    protected abstract StatisticEvent getInitialStatisticEvent();
+    
     protected abstract StatisticEvent getNewStatisticEvent();
 }
