@@ -39,7 +39,7 @@ public class ProtoConfigJPanel extends MEditTableJPanel{
         // create actual table model
         ProtoTableModel protoTableModel = new ProtoTableModel();
         this.setTableModel( protoTableModel );
-
+	protoTableModel.setSortingStatus(2, ProtoTableModel.ASCENDING);
     }
 }
 
@@ -56,9 +56,6 @@ class ProtoTableModel extends MSortedTableModel{
     private static final int C6_MW = 100; /* description */
     private static final int C7_MW = Util.chooseMax(T_TW - (C0_MW + C1_MW + C2_MW + C3_MW + C4_MW + C5_MW + C6_MW), 120); /* signature */
 
-    public ProtoTableModel(){
-	setSortingStatus(1, this.ASCENDING);
-    }
     
     public TableColumnModel getTableColumnModel(){
         
