@@ -210,7 +210,7 @@ class Blacklist
 
                 if (null != category) {
                     HttpBlockerEvent hbe = new HttpBlockerEvent
-                        (requestLine, Action.PASS, Reason.URI, category);
+                        (requestLine, Action.PASS, Reason.USER_URI, category);
                     eventLogger.info(hbe);
 
                     return null;
@@ -296,22 +296,23 @@ class Blacklist
         String revHost = sb.toString();
 
         String category = findCategory(domains, revHost, domClause);
-
-        if (null != category) {
-            HttpBlockerEvent hbe = new HttpBlockerEvent
-                (requestLine, Action.BLOCK, Reason.DOMAIN, category);
-            eventLogger.info(hbe);
-            return settings.getBlockTemplate().render(host, uri, category);
-        }
+        Reason reason = null == category ? null : Reason.BLACKLIST_DOMAIN;
 
         String dom = host;
         while (null == category && null != dom) {
             String url = dom + uri.toString();
             category = findCategory(urls, url, urlClause);
-            if (null == category) {
+
+            if (null != category) {
+                reason = Reason.BLACKLIST_URI;
+            } else {
                 category = findCategory(blockedUrls, url,
                                         settings.getBlockedUrls());
+                if (null != category) {
+                    reason = Reason.USER_URI;
+                }
             }
+
             if (null == category) {
                 dom = nextHost(dom);
             }
@@ -319,8 +320,9 @@ class Blacklist
 
         if (null != category) {
             HttpBlockerEvent hbe = new HttpBlockerEvent
-                (requestLine, Action.BLOCK, Reason.URI, category);
-                eventLogger.info(hbe);
+                (requestLine, Action.BLOCK, reason, category);
+            eventLogger.info(hbe);
+
             return settings.getBlockTemplate().render(host, uri, category);
         }
 

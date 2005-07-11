@@ -14,6 +14,7 @@ package com.metavize.mvvm.tapi;
 import com.metavize.jnetcap.Netcap;
 import com.metavize.mvvm.argon.IPSessionDesc;
 import com.metavize.mvvm.tran.IPMaddr;
+import com.metavize.mvvm.tran.Interface;
 import com.metavize.mvvm.tran.PortRange;
 import org.apache.log4j.Logger;
 

@@ -21,8 +21,9 @@ public class Reason implements Serializable
 {
     private static final long serialVersionUID = -1388743204136725990L;
 
-    public static final Reason DOMAIN = new Reason('D', "domain");
-    public static final Reason URI = new Reason('U', "URI");
+    public static final Reason BLACKLIST_DOMAIN = new Reason('D', "domain");
+    public static final Reason BLACKLIST_URI = new Reason('U', "URI");
+    public static final Reason USER_URI = new Reason('I', "URI");
     public static final Reason EXTENSION = new Reason('E', "extension");
     public static final Reason MIME_TYPE = new Reason('M', "mime-type");
     public static final Reason CLIENT_ADDR = new Reason('C', "client-addr");
@@ -30,8 +31,9 @@ public class Reason implements Serializable
     private static final Map INSTANCES = new HashMap();
 
     static {
-        INSTANCES.put('D', DOMAIN);
-        INSTANCES.put('U', URI);
+        INSTANCES.put('D', BLACKLIST_DOMAIN);
+        INSTANCES.put('U', BLACKLIST_URI);
+        INSTANCES.put('I', USER_URI);
         INSTANCES.put('E', EXTENSION);
         INSTANCES.put('M', MIME_TYPE);
         INSTANCES.put('C', CLIENT_ADDR);

@@ -14,7 +14,9 @@ package com.metavize.tran.httpblocker;
 import java.io.Serializable;
 import java.util.Date;
 
-public class RequestLog implements Serializable
+import com.metavize.mvvm.tran.Direction;
+
+public class HttpRequestLog implements Serializable
 {
     private static final long serialVersionUID = -4671603809489005943L;
 
@@ -31,12 +33,14 @@ public class RequestLog implements Serializable
     private final int clientPort;
     private final String serverAddr;
     private final int serverPort;
+    private final Direction direction;
 
-    public RequestLog(long requestEventId, long blockEventId, Date timeStamp,
-                      String host, String uri, String actionStr,
-                      String reasonStr, String category, String contentType,
-                      int contentLength, String clientAddr, int clientPort,
-                      String serverAddr, int serverPort)
+    public HttpRequestLog(long requestEventId, long blockEventId,
+                          Date timeStamp, String host, String uri,
+                          String actionStr, String reasonStr, String category,
+                          String contentType, int contentLength,
+                          String clientAddr, int clientPort, String serverAddr,
+                          int serverPort, Direction direction)
     {
         this.requestEventId = requestEventId;
         this.blockEventId = blockEventId;
@@ -53,6 +57,7 @@ public class RequestLog implements Serializable
         this.clientPort = clientPort;
         this.serverAddr = serverAddr;
         this.serverPort = serverPort;
+        this.direction = direction;
     }
 
     // accessors --------------------------------------------------------------
@@ -110,6 +115,11 @@ public class RequestLog implements Serializable
     public int getSServerPort()
     {
         return serverPort;
+    }
+
+    public Direction getDirection()
+    {
+        return direction;
     }
 
     // package protected ------------------------------------------------------

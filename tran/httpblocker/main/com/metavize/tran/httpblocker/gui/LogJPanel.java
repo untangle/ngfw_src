@@ -17,8 +17,8 @@ import com.metavize.gui.widgets.editTable.MLogTableJPanel;
 import com.metavize.mvvm.tran.Transform;
 import com.metavize.tran.httpblocker.Action;
 import com.metavize.tran.httpblocker.HttpBlocker;
+import com.metavize.tran.httpblocker.HttpRequestLog;
 import com.metavize.tran.httpblocker.Reason;
-import com.metavize.tran.httpblocker.RequestLog;
 
 public class LogJPanel extends MLogTableJPanel {
 
@@ -28,13 +28,13 @@ public class LogJPanel extends MLogTableJPanel {
 
     public Vector generateRows(Object settings){
 
-        List<RequestLog> requestLogList = (List<RequestLog>) ((HttpBlocker)super.logTransform).getEvents(null, depthJSlider.getValue());
+        List<HttpRequestLog> requestLogList = (List<HttpRequestLog>) ((HttpBlocker)super.logTransform).getEvents(null, depthJSlider.getValue());
         Vector allEvents = new Vector();
 
         Vector test = new Vector();
         Vector event;
 
-        for( RequestLog requestLog : requestLogList ){
+        for( HttpRequestLog requestLog : requestLogList ){
             event = new Vector();
             event.add( requestLog.timeStamp().toString() );
 

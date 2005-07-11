@@ -6,34 +6,39 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: Interface.java,v 1.2 2005/02/25 02:45:29 amread Exp $
+ * $Id$
  */
 
-package com.metavize.mvvm.tapi;
+package com.metavize.mvvm.tran;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
 import com.metavize.mvvm.argon.IntfConverter;
 
-public class Interface
+public class Interface implements Serializable
 {
+    private static final long serialVersionUID = -2938902418634358424L;
+
     public static Interface ANY = new Interface(null);
     public static Interface INSIDE = new Interface(IntfConverter.INSIDE);
     public static Interface OUTSIDE = new Interface(IntfConverter.OUTSIDE);
 
-    private static final Map INSTANCES = new HashMap();
+    private static final Map<Byte, Interface> INSTANCES
+        = new HashMap<Byte, Interface>();
 
     static {
+        INSTANCES.put(ANY.getIface(), ANY);
         INSTANCES.put(INSIDE.getIface(), INSIDE);
         INSTANCES.put(OUTSIDE.getIface(), OUTSIDE);
     }
 
-    private Byte iface;
+    private final Byte iface;
 
     // constructors -----------------------------------------------------------
 
-    public Interface(Byte iface)
+    private Interface(Byte iface)
     {
         this.iface = iface;
     }
@@ -42,7 +47,7 @@ public class Interface
 
     public static Interface getInstance(Byte iface)
     {
-        return (Interface)INSTANCES.get(iface);
+        return INSTANCES.get(iface);
     }
 
     // business methods -------------------------------------------------------
@@ -57,6 +62,26 @@ public class Interface
     public Byte getIface()
     {
         return iface;
+    }
+
+    // Object methods ---------------------------------------------------------
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (!(o instanceof Interface)) {
+            return false;
+        }
+
+        Interface i = (Interface)o;
+
+        return iface == i.iface;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return 17 * 37 + iface;
     }
 
     // serialization support --------------------------------------------------

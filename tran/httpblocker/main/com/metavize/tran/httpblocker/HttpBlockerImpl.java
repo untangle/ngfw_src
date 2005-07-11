@@ -26,6 +26,7 @@ import com.metavize.mvvm.tapi.Fitting;
 import com.metavize.mvvm.tapi.PipeSpec;
 import com.metavize.mvvm.tapi.SoloPipeSpec;
 import com.metavize.mvvm.tapi.TransformContextFactory;
+import com.metavize.mvvm.tran.Direction;
 import com.metavize.mvvm.tran.MimeType;
 import com.metavize.mvvm.tran.MimeTypeRule;
 import com.metavize.mvvm.tran.StringRule;
@@ -42,7 +43,7 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
         = "SELECT req.event_id, blk.event_id, req.time_stamp, host, uri, "
         +         "action, reason, category, content_type, "
         +         "resp.content_length, c_client_addr, c_client_port, "
-        +         "s_server_addr, s_server_port "
+        +         "s_server_addr, s_server_port, client_intf, server_intf "
         + "FROM tr_http_evt_req req "
         + "JOIN pl_endp USING (session_id) "
         + "JOIN tr_http_req_line rl USING (request_id) "
@@ -96,10 +97,11 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
         Blacklist.BLACKLIST.configure(settings);
     }
 
-    public List<RequestLog> getEvents(RequestLog lastRequest, int limit)
+    public List<HttpRequestLog> getEvents(HttpRequestLog lastRequest,
+                                          int limit)
     {
         long lastId = null == lastRequest ? 0 : lastRequest.getRequestEventId();
-        List<RequestLog> l = new LinkedList<RequestLog>();
+        List<HttpRequestLog> l = new LinkedList<HttpRequestLog>();
 
         Session s = TransformContextFactory.context().openSession();
         try {
@@ -125,12 +127,16 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
                 int clientPort = rs.getInt("c_client_port");
                 String serverAddr = rs.getString("s_server_addr");
                 int serverPort = rs.getInt("s_server_port");
+                byte clientIntf = rs.getByte("client_intf");
+                byte serverIntf = rs.getByte("server_intf");
 
-                RequestLog rl = new RequestLog
+                Direction d = Direction.getDirection(clientIntf, serverIntf);
+
+                HttpRequestLog rl = new HttpRequestLog
                     (requestEventId, blockEventId, timeStamp, host, uri,
                      actionStr, reasonStr, category, contentType,
                      contentLength, clientAddr, clientPort, serverAddr,
-                     serverPort);
+                     serverPort, d);
 
                 l.add(0, rl);
             }
