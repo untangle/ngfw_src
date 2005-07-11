@@ -26,85 +26,60 @@ public class FirewallSummarizer extends BaseSummarizer {
 
     public String getSummaryHtml(Connection conn, Timestamp startDate, Timestamp endDate)
     {
-	long totalSessionsExamined = 0l;
-	long totalSessionsBlocked = 0l;
-	long totalSessionsBlockedByRule = 0l;
-	long totalSessionsBlockedByDefault = 0l;
-	long totalSessionsPassed = 0l;
-	long totalSessionsPassedByRule = 0l;
-	long totalSessionsPassedByDefault = 0l;
-	long tcpSessionsBlocked = 0l;
-	long tcpSessionsPassed = 0l;
-	long udpSessionsBlocked = 0l;
-	long udpSessionsPassed = 0l;
-	long pingSessionsBlocked = 0l;
-	long pingSessionsPassed = 0l;
 
+	long totalSessionsBlocked = 0l;
+	long totalSessionsBlockedRule = 0l;
+	long totalSessionsBlockedDefault = 0l;
+	long totalSessionsPassed = 0l;
+	long totalSessionsPassedRule = 0l;
+	long totalSessionsPassedDefault = 0l;
+
+	long totalSessionsExamined = 0l;
+	long tcpSessionsBlockedDefault = 0l;
+	long tcpSessionsBlockedRule = 0l;
+	long tcpSessionsPassedDefault = 0l;
+	long tcpSessionsPassedRule = 0l;
+	long udpSessionsBlockedDefault = 0l;
+	long udpSessionsBlockedRule = 0l;
+	long udpSessionsPassedDefault = 0l;
+	long udpSessionsPassedRule = 0l;
+	long pingSessionsBlockedDefault = 0l;
+	long pingSessionsBlockedRule = 0l;
+	long pingSessionsPassedDefault = 0l;
+	long pingSessionsPassedRule = 0l;
 		
         try {
             String sql;
 	    PreparedStatement ps;
 	    ResultSet rs;
 
-	    sql = "select count(*) from tr_firewall_evt evt join firewall_rule using (rule_id) join pl_endp using (session_id) where evt.time_stamp >= ? and evt.time_stamp < ? and is_traffic_blocker = 't' and proto = 6";
+
+	    sql = " SELECT sum(SESSIONS)," +
+                  " sum(TCP_BLOCK_DEFAULT),  sum(TCP_BLOCK_RULE)," +
+                  " sum(TCP_PASS_DEFAULT),   sum(TCP_PASS_RULE)," +
+                  " sum(UDP_BLOCK_DEFAULT),  sum(UDP_BLOCK_RULE)," +
+                  " sum(UDP_PASS_DEFAULT),   sum(UDP_PASS_RULE)," +
+                  " sum(ICMP_BLOCK_DEFAULT), sum(ICMP_BLOCK_RULE)," +
+                  " sum(ICMP_PASS_DEFAULT),  sum(ICMP_PASS_RULE)" +
+                  " FROM tr_firewall_statistic_evt evt where evt.time_stamp >= ? and evt.time_stamp < ?";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
             rs = ps.executeQuery();
             rs.first();
-            tcpSessionsBlocked = rs.getLong(1);
-            rs.close();
-            ps.close();
-
-	    sql = "select count(*) from tr_firewall_evt evt join firewall_rule using (rule_id) join pl_endp using (session_id) where evt.time_stamp >= ? and evt.time_stamp < ? and is_traffic_blocker = 'f' and proto = 6";
-            ps = conn.prepareStatement(sql);
-            ps.setTimestamp(1, startDate);
-            ps.setTimestamp(2, endDate);
-            rs = ps.executeQuery();
-            rs.first();
-            tcpSessionsPassed = rs.getLong(1);
-            rs.close();
-            ps.close();
-
-
-	    sql = "select count(*) from tr_firewall_evt evt join firewall_rule using (rule_id) join pl_endp using (session_id) where evt.time_stamp >= ? and evt.time_stamp < ? and is_traffic_blocker = 't' and proto = 17";
-            ps = conn.prepareStatement(sql);
-            ps.setTimestamp(1, startDate);
-            ps.setTimestamp(2, endDate);
-            rs = ps.executeQuery();
-            rs.first();
-            udpSessionsBlocked = rs.getLong(1);
-            rs.close();
-            ps.close();
-
-	    sql = "select count(*) from tr_firewall_evt evt join firewall_rule using (rule_id) join pl_endp using (session_id) where evt.time_stamp >= ? and evt.time_stamp < ? and is_traffic_blocker = 'f' and proto = 17";
-            ps = conn.prepareStatement(sql);
-            ps.setTimestamp(1, startDate);
-            ps.setTimestamp(2, endDate);
-            rs = ps.executeQuery();
-            rs.first();
-            udpSessionsPassed = rs.getLong(1);
-            rs.close();
-            ps.close();
-
-
-	    sql = "select count(*) from tr_firewall_evt evt join firewall_rule using (rule_id) join pl_endp using (session_id) where evt.time_stamp >= ? and evt.time_stamp < ? and is_traffic_blocker = 't' and proto = 1";
-            ps = conn.prepareStatement(sql);
-            ps.setTimestamp(1, startDate);
-            ps.setTimestamp(2, endDate);
-            rs = ps.executeQuery();
-            rs.first();
-            pingSessionsBlocked = rs.getLong(1);
-            rs.close();
-            ps.close();
-
-	    sql = "select count(*) from tr_firewall_evt evt join firewall_rule using (rule_id) join pl_endp using (session_id) where evt.time_stamp >= ? and evt.time_stamp < ? and is_traffic_blocker = 'f' and proto = 1";
-            ps = conn.prepareStatement(sql);
-            ps.setTimestamp(1, startDate);
-            ps.setTimestamp(2, endDate);
-            rs = ps.executeQuery();
-            rs.first();
-            pingSessionsPassed = rs.getLong(1);
+	    totalSessionsExamined = rs.getLong(1);
+            tcpSessionsBlockedDefault = rs.getLong(2);
+            tcpSessionsBlockedRule = rs.getLong(3);
+            tcpSessionsPassedDefault = rs.getLong(4);
+            tcpSessionsPassedRule = rs.getLong(5);
+            udpSessionsBlockedDefault = rs.getLong(6);
+            udpSessionsBlockedRule = rs.getLong(7);
+            udpSessionsPassedDefault = rs.getLong(8);
+            udpSessionsPassedRule = rs.getLong(9);
+            pingSessionsBlockedDefault = rs.getLong(10);
+            pingSessionsBlockedRule = rs.getLong(11);
+            pingSessionsPassedDefault = rs.getLong(12);
+            pingSessionsPassedRule = rs.getLong(13);
             rs.close();
             ps.close();
 
@@ -112,29 +87,41 @@ public class FirewallSummarizer extends BaseSummarizer {
         } catch (SQLException exn) {
             logger.warn("could not summarize", exn);
         }
+
+
+ 	totalSessionsPassedDefault = tcpSessionsPassedDefault + udpSessionsPassedDefault + pingSessionsPassedDefault;
+	totalSessionsPassedRule = tcpSessionsPassedRule + udpSessionsPassedRule + pingSessionsPassedRule;
+	totalSessionsPassed = totalSessionsPassedDefault + totalSessionsPassedRule;
+ 	totalSessionsBlockedDefault = tcpSessionsBlockedDefault + udpSessionsBlockedDefault + pingSessionsBlockedDefault;
+	totalSessionsBlockedRule = tcpSessionsBlockedRule + udpSessionsBlockedRule + pingSessionsBlockedRule;
+	totalSessionsBlocked = totalSessionsBlockedDefault + totalSessionsBlockedRule;
 	
-        addEntry("Total sessions examined", Util.trimNumber(" XXXX",totalSessionsExamined));
-        addEntry("&nbsp;&nbsp;&nbsp;Total blocked", Util.trimNumber(" XXXX",totalSessionsBlocked));
-        addEntry("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Blocked by rule", Util.trimNumber(" XXXX",totalSessionsBlockedByRule));
-        addEntry("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Blocked by default", Util.trimNumber(" XXXX",totalSessionsBlockedByDefault));
-        addEntry("&nbsp;&nbsp;&nbsp;Total passed", Util.trimNumber(" XXXX",totalSessionsPassed));
-        addEntry("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Passed by rule", Util.trimNumber(" XXXX",totalSessionsPassedByRule));
-        addEntry("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Passed by default", Util.trimNumber(" XXXX",totalSessionsPassedByDefault));
+        addEntry("Total sessions examined", Util.trimNumber("",totalSessionsExamined));
+        addEntry("&nbsp;&nbsp;&nbsp;Total blocked", Util.trimNumber("",totalSessionsBlocked));
+        addEntry("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Blocked by rule", Util.trimNumber("",totalSessionsBlockedRule));
+        addEntry("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Blocked by default", Util.trimNumber("",totalSessionsBlockedDefault));
+        addEntry("&nbsp;&nbsp;&nbsp;Total passed", Util.trimNumber("",totalSessionsPassed));
+        addEntry("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Passed by rule", Util.trimNumber("",totalSessionsPassedRule));
+        addEntry("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Passed by default", Util.trimNumber("",totalSessionsPassedDefault));
 
 
-	long trafficSessionsTotal = tcpSessionsBlocked + tcpSessionsPassed
-	    + udpSessionsBlocked + udpSessionsPassed
-	    + pingSessionsBlocked + pingSessionsPassed;
+        addEntry("&nbsp;", "&nbsp;");
 
         addEntry("TCP", "");
-        addEntry("&nbsp;&nbsp;&nbsp;Blocked", Long.toString(tcpSessionsBlocked) + " (" + Util.percentNumber(tcpSessionsBlocked, trafficSessionsTotal) + ")");
-        addEntry("&nbsp;&nbsp;&nbsp;Passed", Long.toString(tcpSessionsPassed) + " (" + Util.percentNumber(tcpSessionsPassed, trafficSessionsTotal) + ")");
+        addEntry("&nbsp;&nbsp;&nbsp;Blocked", Long.toString(tcpSessionsBlockedRule+tcpSessionsBlockedDefault) 
+		 + " (" + Util.percentNumber(tcpSessionsBlockedRule+tcpSessionsBlockedDefault, totalSessionsExamined) + ")");
+        addEntry("&nbsp;&nbsp;&nbsp;Passed", Long.toString(tcpSessionsPassedRule+tcpSessionsPassedDefault)
+		 + " (" + Util.percentNumber(tcpSessionsPassedRule+tcpSessionsPassedDefault, totalSessionsExamined) + ")");
         addEntry("UDP", "");
-        addEntry("&nbsp;&nbsp;&nbsp;Blocked", Long.toString(udpSessionsBlocked) + " (" + Util.percentNumber(udpSessionsBlocked, trafficSessionsTotal) + ")");
-        addEntry("&nbsp;&nbsp;&nbsp;Passed", Long.toString(udpSessionsPassed) + " (" + Util.percentNumber(udpSessionsPassed, trafficSessionsTotal) + ")");
+        addEntry("&nbsp;&nbsp;&nbsp;Blocked", Long.toString(udpSessionsBlockedRule+udpSessionsBlockedDefault)
+		 + " (" + Util.percentNumber(udpSessionsBlockedRule+udpSessionsBlockedDefault, totalSessionsExamined) + ")");
+        addEntry("&nbsp;&nbsp;&nbsp;Passed", Long.toString(udpSessionsPassedRule+udpSessionsPassedDefault)
+		 + " (" + Util.percentNumber(udpSessionsPassedRule+udpSessionsPassedDefault, totalSessionsExamined) + ")");
         addEntry("PING", "");
-        addEntry("&nbsp;&nbsp;&nbsp;Blocked", Long.toString(pingSessionsBlocked) + " (" + Util.percentNumber(pingSessionsBlocked, trafficSessionsTotal) + ")");
-        addEntry("&nbsp;&nbsp;&nbsp;Passed", Long.toString(pingSessionsPassed) + " (" + Util.percentNumber(pingSessionsPassed, trafficSessionsTotal) + ")");
+        addEntry("&nbsp;&nbsp;&nbsp;Blocked", Long.toString(pingSessionsBlockedRule+pingSessionsBlockedDefault)
+		 + " (" + Util.percentNumber(pingSessionsBlockedRule+pingSessionsBlockedDefault, totalSessionsExamined) + ")");
+        addEntry("&nbsp;&nbsp;&nbsp;Passed", Long.toString(pingSessionsPassedRule+pingSessionsPassedDefault)
+		 + " (" + Util.percentNumber(pingSessionsPassedRule+pingSessionsPassedDefault, totalSessionsExamined) + ")");
 
 
 
