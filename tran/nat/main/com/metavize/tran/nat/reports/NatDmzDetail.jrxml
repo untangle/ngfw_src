@@ -39,7 +39,7 @@
 				     c_server_addr as DST_IP,
 				     c_server_port as DST_PORT
 				     
-FROM tr_redirect_evt evt
+FROM tr_nat_redirect_evt evt
 JOIN pl_endp USING (session_id)
 WHERE evt.time_stamp > $P{startTime} AND evt.time_stamp < $P{endTime} AND IS_DMZ
 ORDER BY evt.time_stamp DESC]]></queryString>

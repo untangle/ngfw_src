@@ -42,7 +42,7 @@
 				     s_server_addr as RDR_IP,
 				     s_server_port as RDR_PORT
 				     
-FROM tr_redirect_evt evt
+FROM tr_nat_redirect_evt evt
 JOIN pl_endp USING (session_id)
 WHERE evt.time_stamp > $P{startTime} AND evt.time_stamp < $P{endTime} AND NOT IS_DMZ
 ORDER BY evt.time_stamp DESC]]></queryString>

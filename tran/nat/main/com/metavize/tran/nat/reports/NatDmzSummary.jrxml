@@ -34,7 +34,7 @@
 	<parameter name="endTime" isForPrompting="true" class="java.sql.Timestamp"/>
 	<queryString><![CDATA[SELECT c_client_addr as HOST,
 				     sum(p2c_bytes) + sum(c2p_bytes) as DATA_TRANSFERRED
-FROM tr_redirect_evt evt
+FROM tr_nat_redirect_evt evt
 JOIN pl_endp USING (session_id)
 JOIN pl_stats USING (session_id)
 WHERE evt.time_stamp > $P{startTime} AND evt.time_stamp < $P{endTime} AND IS_DMZ

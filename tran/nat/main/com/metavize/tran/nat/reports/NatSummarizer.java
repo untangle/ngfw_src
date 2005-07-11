@@ -28,9 +28,6 @@ public class NatSummarizer extends BaseSummarizer {
     {
 
 	long totalOutboundSessionsCreated = 0l;
-	long totalAddressAssignments = 0l;
-	long dhcpAddressAssignments = 0l;
-	long staticAddressAssignments = 0l;
 	long totalRedirections = 0l;
 	long tcpRedirections = 0l;
 	long tcpInboundRedirections = 0l;
@@ -42,58 +39,66 @@ public class NatSummarizer extends BaseSummarizer {
 	long pingInboundRedirections = 0l;
 	long pingOutboundRedirections = 0l;
 	long dmzRedirections = 0l;
-	long dnsForwards = 0l;
 
-	/*
+
+
         try {
             String sql;
 	    PreparedStatement ps;
 	    ResultSet rs;
 	    
-	    sql = "select count(*) from tr_protofilter_evt where time_stamp >= ? and time_stamp < ?";
+	    sql = " SELECT sum(nat_sessions), sum(dmz_sessions)," +
+		" sum(tcp_incoming), sum(tcp_outgoing)," +
+		" sum(udp_incoming), sum(udp_outgoing)," +
+		" sum(icmp_incoming), sum(icmp_outgoing)" +
+		" from tr_nat_statistic_evt evt where time_stamp >= ? and time_stamp < ?";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
             rs = ps.executeQuery();
             rs.first();
-            logCount = rs.getInt(1);
+            totalOutboundSessionsCreated = rs.getLong(1);
+	    dmzRedirections = rs.getLong(2);
+	    tcpInboundRedirections = rs.getLong(3);
+	    tcpOutboundRedirections = rs.getLong(4);
+	    udpInboundRedirections = rs.getLong(5);
+	    udpOutboundRedirections = rs.getLong(6);
+	    pingInboundRedirections = rs.getLong(7);
+	    pingOutboundRedirections = rs.getLong(8);
             rs.close();
             ps.close();
-
-            sql = "select count(*) from tr_protofilter_evt where time_stamp >= ? and time_stamp < ? and blocked = 't'";
-            ps = conn.prepareStatement(sql);
-            ps.setTimestamp(1, startDate);
-            ps.setTimestamp(2, endDate);
-            rs = ps.executeQuery();
-            rs.first();
-            blockCount = rs.getInt(1);
-            rs.close();
-            ps.close();
-	    
 
         } catch (SQLException exn) {
             logger.warn("could not summarize", exn);
         }
 
-	*/
+	tcpRedirections = tcpInboundRedirections + tcpOutboundRedirections;
+	udpRedirections = udpInboundRedirections + udpOutboundRedirections;
+	pingRedirections = pingInboundRedirections + pingOutboundRedirections;
+	totalRedirections = tcpRedirections + udpRedirections + pingRedirections;
 
+        addEntry("Total redirections", Util.trimNumber("",totalRedirections) );
+        addEntry("&nbsp;&nbsp;&nbsp;TCP", Util.trimNumber("",tcpRedirections) );
+        addEntry("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Inbound", Util.trimNumber("",tcpInboundRedirections) 
+		 + "(" + Util.percentNumber(tcpInboundRedirections, totalRedirections) + ")");
+        addEntry("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Outbound", Util.trimNumber("",tcpOutboundRedirections) 
+		 + "(" + Util.percentNumber(tcpOutboundRedirections, totalRedirections) + ")");
+        addEntry("&nbsp;&nbsp;&nbsp;UDP", Util.trimNumber("",udpRedirections) );
+        addEntry("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Inbound", Util.trimNumber("",udpInboundRedirections) 
+		 + "(" + Util.percentNumber(udpInboundRedirections, totalRedirections) + ")");
+        addEntry("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Outbound", Util.trimNumber("",udpOutboundRedirections) 
+		 + "(" + Util.percentNumber(udpOutboundRedirections, totalRedirections) + ")");
+        addEntry("&nbsp;&nbsp;&nbsp;PING", Util.trimNumber("",pingRedirections) );
+        addEntry("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Inbound", Util.trimNumber("",pingInboundRedirections)  
+		 + "(" + Util.percentNumber(pingInboundRedirections, totalRedirections) + ")");
+        addEntry("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Outbound", Util.trimNumber("",pingOutboundRedirections)  
+		 + "(" + Util.percentNumber(pingOutboundRedirections, totalRedirections) + ")");
+	
+	addEntry("&nbsp;","&nbsp;");
 
-        addEntry("Total outbound NAT sessions created", Util.trimNumber(" XXXX",totalOutboundSessionsCreated));
-        addEntry("Total IP address assignments", Util.trimNumber(" XXXX",totalAddressAssignments));
-        addEntry("&nbsp;&nbsp;&nbsp;Dynamically via DHCP", Util.trimNumber(" XXXX",dhcpAddressAssignments));
-        addEntry("&nbsp;&nbsp;&nbsp;Statically", Util.trimNumber(" XXXX",staticAddressAssignments));
-        addEntry("Total redirections", Util.trimNumber(" XXXX",totalRedirections) );
-        addEntry("&nbsp;&nbsp;&nbsp;TCP", Util.trimNumber(" XXXX",tcpRedirections) );
-        addEntry("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Inbound", Util.trimNumber(" XXXX",tcpInboundRedirections) );
-        addEntry("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Outbound", Util.trimNumber(" XXXX",tcpOutboundRedirections) );
-        addEntry("&nbsp;&nbsp;&nbsp;UDP", Util.trimNumber(" XXXX",udpRedirections) );
-        addEntry("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Inbound", Util.trimNumber(" XXXX",udpInboundRedirections) );
-        addEntry("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Outbound", Util.trimNumber(" XXXX",udpOutboundRedirections) );
-        addEntry("&nbsp;&nbsp;&nbsp;PING", Util.trimNumber(" XXXX",pingRedirections) );
-        addEntry("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Inbound", Util.trimNumber(" XXXX",pingInboundRedirections) );
-        addEntry("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Outbound", Util.trimNumber(" XXXX",pingOutboundRedirections) );
-        addEntry("DMZ inbound redirections", Util.trimNumber(" XXXX",dmzRedirections) );
-        addEntry("Total DNS forwards", Util.trimNumber(" XXXX",dnsForwards) );
+        addEntry("Total outbound NAT sessions created", Util.trimNumber("",totalOutboundSessionsCreated));
+        addEntry("DMZ inbound redirections", Util.trimNumber("",dmzRedirections) );
+
 
 
 
