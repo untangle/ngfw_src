@@ -1,0 +1,115 @@
+/*
+ * Copyright (c) 2005 Metavize Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Metavize Inc. ("Confidential Information").  You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id$
+ */
+package com.metavize.tran.mail;
+
+import java.io.Serializable;
+
+/**
+ * Log e-mail message info.
+ *
+ * @author <a href="mailto:cng@metavize.com">C Ng</a>
+ * @version 1.0
+ * @hibernate.class
+ * table="EMAIL_MESSAGE_INFO_ADDR"
+ * mutable="false"
+ */
+public class MessageInfoAddr implements Serializable
+{
+    /* constants */
+    //    private static final Logger logger = Logger.getLogger(MessageInfo.class.getName());
+
+    /* columns */
+    private Long id; /* msg_id */
+    // private MLHandlerInfo handlerInfo; /* hdl_id */
+
+    private AddressKind kind;
+    private String addr;
+    private String personal;
+
+    /* constructors */
+    public MessageInfoAddr() {}
+
+    public MessageInfoAddr(AddressKind kind, String addr, String personal) {
+        this.kind = kind;
+        this.addr = addr;
+        this.personal = personal;
+    }
+
+    // accessors --------------------------------------------------------------
+
+    /**
+     * @hibernate.id
+     * column="ID"
+     * generator-class="native"
+     */
+    protected Long getId()
+    {
+        return id;
+    }
+
+    protected void setId(Long id)
+    {
+        this.id = id;
+    }
+
+    /**
+     * The email address, in RFC822 format
+     *
+     * @return email address.
+     * @hibernate.property
+     * column="ADDR"
+     * not-null="true"
+     */
+    public String getAddr()
+    {
+        return addr;
+    }
+
+    public void setAddr(String addr)
+    {
+        this.addr = addr;
+    }
+
+    /**
+     * Get a personal for display purposes.
+     *
+     * @return personal.
+     * @hibernate.property
+     * column="PERSONAL"
+     */
+    public String getPersonal()
+    {
+        return personal;
+    }
+
+    public void setPersonal(String personal)
+    {
+        this.personal = personal;
+    }
+
+    /**
+     * The kind of address (To, CC, etc).
+     *
+     * @return addressKind.
+     * @hibernate.property
+     * type="com.metavize.tran.mail.AddressKindUserType"
+     * column="KIND"
+     */
+    public AddressKind getKind()
+    {
+        return kind;
+    }
+
+    public void setKind(AddressKind king)
+    {
+        this.kind = kind;
+    }
+}
