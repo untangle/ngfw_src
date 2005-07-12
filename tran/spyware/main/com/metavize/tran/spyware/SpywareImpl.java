@@ -312,7 +312,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
             BufferedReader br = new BufferedReader(isr);
 
             for (String line = br.readLine(); null != line; line = br.readLine()) {
-                StringTokenizer tok = new StringTokenizer(line, ":");
+                StringTokenizer tok = new StringTokenizer(line, ":,");
 
                 String addr = tok.nextToken();
                 String description = tok.nextToken();

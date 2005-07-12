@@ -14,8 +14,8 @@ REGEDIT4
 ;;  
 ;; For more information, visit : http://www.spywareguide.com/blockfile.php 
 ;; File stats: 
-;;     Generated on    : 2005-7-08 16:47:10
-;;     CLSIDs included : 774
+;;     Generated on    : 2005-7-11 12:42:49
+;;     CLSIDs included : 777
 ;;  
 ;; ----------------------------------------------------------------------------
 
@@ -1466,6 +1466,9 @@ REGEDIT4
 [HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{886dde35-e955-11d0-a707-000000521958}]
 "Compatibility Flags"=dword:00000400
 
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{88c51e90-8e9c-4c96-8a45-574d88b63faf}]
+"Compatibility Flags"=dword:00000400
+
 [HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{8952a998-1e7e-4716-b23d-3dbe03910972}]
 "Compatibility Flags"=dword:00000400
 
@@ -2340,5 +2343,11 @@ REGEDIT4
 "Compatibility Flags"=dword:00000400
 
 [HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{ffd2825e-0785-40c5-9a41-518f53a8261f}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{ffff0003-0001-101a-a3c9-08002b23e0cc}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{ffff0003-0001-101a-a3c9-08002b23e0cd}]
 "Compatibility Flags"=dword:00000400
 
