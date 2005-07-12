@@ -36,10 +36,11 @@ else
             psql -e -f $schema_dir/convert-$v.sql -U metavize mvvm
         done
 
-echo "running schema-$latest_ver just in case"
-psql -e -f $schema_dir/schema-$latest_ver.sql -U metavize mvvm </dev/null
-
-cat <<EOF | $PSQL
+        cat <<EOF | $PSQL
 UPDATE schema_ver SET version = '$latest_ver' WHERE component = '$component';
 EOF
+    fi
+
+    echo "running schema-$latest_ver just in case"
+    psql -e -f $schema_dir/schema-$latest_ver.sql -U metavize mvvm </dev/null
 fi
