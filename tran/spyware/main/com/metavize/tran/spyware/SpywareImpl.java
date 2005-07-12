@@ -314,13 +314,26 @@ public class SpywareImpl extends AbstractTransform implements Spyware
             for (String line = br.readLine(); null != line; line = br.readLine()) {
                 StringTokenizer tok = new StringTokenizer(line, ":,");
 
-                String addr = tok.nextToken();
-                String description = tok.nextToken();
-                String name = tok.nextToken();
+                String addr = null;
+                String description = null;
+                String name = null;
+                IPMaddr maddr = null;
+                
+                try {
+                    addr = tok.nextToken();
+                    description = tok.nextToken();
+                    name = tok.nextToken();
+                    maddr = IPMaddr.parse(addr);
+                    int i = maddr.maskNumBits(); /* if bad subnet throws exception */
+                }
+                catch (Exception e) {
+                    logger.warn("Invalid Subnet in " + SUBNET_LIST + ": " + line + " - " + e);
+                    maddr = null;
+                }
 
-                if (!ruleHash.contains(IPMaddr.parse(addr))) {
+                if (maddr != null && !ruleHash.contains(maddr)) {
                     logger.debug("ADDING subnet Rule: " + addr);
-                    rules.add(new IPMaddrRule(IPMaddr.parse(addr), name, "[no category]", description));
+                    rules.add(new IPMaddrRule(maddr, name, "[no category]", description));
                 }
             }
         } catch (IOException exn) {
