@@ -28,6 +28,12 @@ public class Reason implements Serializable
     public static final Reason MIME_TYPE = new Reason('M', "mime-type");
     public static final Reason CLIENT_ADDR = new Reason('C', "client-addr");
 
+    /**
+     * None is to help the GUI deal with the concept of none, if you
+     * try to log this to the database, I will kill you.
+     */
+    public static final Reason NONE = new Reason('N', "none");
+
     private static final Map INSTANCES = new HashMap();
 
     static {
@@ -37,6 +43,7 @@ public class Reason implements Serializable
         INSTANCES.put('E', EXTENSION);
         INSTANCES.put('M', MIME_TYPE);
         INSTANCES.put('C', CLIENT_ADDR);
+        INSTANCES.put('N', NONE);
     }
 
     private char key;

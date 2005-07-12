@@ -27,13 +27,19 @@ public class MailTransformSettings implements Serializable
 {
     private static final long serialVersionUID = -6466793822226799781L;
 
-
     private Long id;
     private Tid tid;
 
     private boolean smtpEnabled = true;
     private boolean popEnabled = true;
     private boolean imapEnabled = true;
+
+    private long smtpInboundTimeout;
+    private long smtpOutboundTimeout;
+    private long popInboundTimeout;
+    private long popOutboundTimeout;
+    private long imapInboundTimeout;
+    private long imapOutboundTimeout;
 
     // constructors -----------------------------------------------------------
 
@@ -127,5 +133,107 @@ public class MailTransformSettings implements Serializable
     public void setImapEnabled(boolean imapEnabled)
     {
         this.imapEnabled = imapEnabled;
+    }
+
+    /**
+     * Timeout for SMTP inbound traffic.
+     *
+     * @return timeout for SMTP in millis.
+     * @hibernate.property
+     * column="SMTP_INBOUND_TIMEOUT"
+     */
+    public long getSmtpInboundTimeout()
+    {
+        return smtpInboundTimeout;
+    }
+
+    public void setSmtpInboundTimeout(long smtpInboundTimeout)
+    {
+        this.smtpInboundTimeout = smtpInboundTimeout;
+    }
+
+    /**
+     * Timeout for SMTP outbound traffic.
+     *
+     * @return timeout for SMTP in millis.
+     * @hibernate.property
+     * column="SMTP_OUTBOUND_TIMEOUT"
+     */
+    public long getSmtpOutboundTimeout()
+    {
+        return smtpOutboundTimeout;
+    }
+
+    public void setSmtpOutboundTimeout(long smtpOutboundTimeout)
+    {
+        this.smtpOutboundTimeout = smtpOutboundTimeout;
+    }
+
+    /**
+     * Timeout for POP inbound traffic.
+     *
+     * @return timeout for POP in millis.
+     * @hibernate.property
+     * column="POP_INBOUND_TIMEOUT"
+     */
+    public long getPopInboundTimeout()
+    {
+        return popInboundTimeout;
+    }
+
+    public void setPopInboundTimeout(long popInboundTimeout)
+    {
+        this.popInboundTimeout = popInboundTimeout;
+    }
+
+    /**
+     * Timeout for POP outbound traffic.
+     *
+     * @return timeout for POP in millis.
+     * @hibernate.property
+     * column="POP_OUTBOUND_TIMEOUT"
+     */
+    public long getPopOutboundTimeout()
+    {
+        return popOutboundTimeout;
+    }
+
+    public void setPopOutboundTimeout(long popOutboundTimeout)
+    {
+        this.popOutboundTimeout = popOutboundTimeout;
+    }
+
+    /**
+     * Timeout for IMAP inbound traffic.
+     *
+     * @return timeout for IMAP in millis.
+     * @hibernate.property
+     * column="IMAP_INBOUND_TIMEOUT"
+     */
+    public long getImapInboundTimeout()
+    {
+        return imapInboundTimeout;
+    }
+
+    public void setImapInboundTimeout(long imapInboundTimeout)
+    {
+        this.imapInboundTimeout = imapInboundTimeout;
+    }
+
+    /**
+     * Timeout for IMAP outbound traffic.
+     *
+     * @return timeout for IMAP in millis.
+     * @hibernate.property
+     * column="IMAP_OUTBOUND_TIMEOUT"
+     */
+    public long getImapOutboundTimeout()
+    {
+        return imapOutboundTimeout;
+    }
+
+    public void setImapOutboundTimeout(long imapOutboundTimeout)
+    {
+        this.imapOutboundTimeout = imapOutboundTimeout;
     }
 }

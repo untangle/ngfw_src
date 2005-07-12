@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: ReasonUserType.java,v 1.2 2005/02/07 08:22:26 amread Exp $
+ * $Id$
  */
 
 package com.metavize.tran.httpblocker;
@@ -48,6 +48,9 @@ public class ReasonUserType implements UserType
             ps.setString(i, "0");
         } else {
             Reason r = (Reason)v;
+            if (Reason.NONE == r) {
+                throw new IllegalStateException("i told you");
+            }
             ps.setString(i, Character.toString(r.getKey()));
         }
     }

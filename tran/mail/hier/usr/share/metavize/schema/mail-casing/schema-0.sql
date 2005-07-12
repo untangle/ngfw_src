@@ -8,6 +8,12 @@ CREATE TABLE tr_mail_settings (
     smtp_enabled bool NOT NULL,
     pop_enabled bool NOT NULL,
     imap_enabled bool NOT NULL,
+    smtp_inbound_timeout int8 NOT NULL,
+    smtp_outbound_timeout int8 NOT NULL,
+    pop_inbound_timeout int8 NOT NULL,
+    pop_outbound_timeout int8 NOT NULL,
+    imap_inbound_timeout int8 NOT NULL,
+    imap_outbound_timeout int8 NOT NULL,
     PRIMARY KEY (settings_id));
 
 CREATE TABLE tr_mail_message_info (
