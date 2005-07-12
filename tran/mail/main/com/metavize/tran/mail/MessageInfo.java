@@ -126,7 +126,7 @@ public class MessageInfo implements Serializable
      * Session id.
      *
      * @return the session id.
-     * @hibernate.property
+     * @hibernate.many-to-one
      * column="SESSION_ID"
      */
     public int getSessionId()

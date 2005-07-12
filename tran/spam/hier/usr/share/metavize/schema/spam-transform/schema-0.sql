@@ -36,6 +36,25 @@ CREATE TABLE tr_spam_settings (
     imap_outbound int8 NOT NULL,
     PRIMARY KEY (settings_id));
 
+
+CREATE TABLE tr_spam_evt_smtp (
+    event_id int8 NOT NULL,
+    msg_id int8,
+    score float4,
+    is_spam bool,
+    action char(1),
+    time_stamp timestamp,
+    PRIMARY KEY (event_id));
+
+CREATE TABLE tr_spam_evt (
+    event_id int8 NOT NULL,
+    msg_id int8,
+    score float4,
+    is_spam bool,
+    action char(1),
+    time_stamp timestamp,
+    PRIMARY KEY (event_id));
+
 ALTER TABLE tr_spam_settings
     ADD CONSTRAINT FK_IN_SS_SMTP_CFG
     FOREIGN KEY (smtp_inbound)

@@ -33,7 +33,7 @@ CREATE TABLE tr_mail_message_info_addr (
 CREATE TABLE tr_mail_message_stats (
     id int8 NOT NULL,
     msg_id int8 NOT NULL,
-    msg_bytes long,
+    msg_bytes int8,
     int msg_attachments,
     PRIMARY KEY (id));
 

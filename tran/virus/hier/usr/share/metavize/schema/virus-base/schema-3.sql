@@ -84,6 +84,27 @@ CREATE TABLE tr_virus_evt_http (
     time_stamp timestamp,
     PRIMARY KEY (event_id));
 
+CREATE TABLE tr_virus_evt_smtp (
+    event_id int8 NOT NULL,
+    msg_id int8,
+    clean bool,
+    virus_name varchar(255),
+    virus_cleaned bool,
+    msg_action char(1),
+    notify_action char(1),
+    time_stamp timestamp,
+    PRIMARY KEY (event_id));
+
+CREATE TABLE tr_virus_evt_mail (
+    event_id int8 NOT NULL,
+    msg_id int8,
+    clean bool,
+    virus_name varchar(255),
+    virus_cleaned bool,
+    msg_action char(1),
+    time_stamp timestamp,
+    PRIMARY KEY (event_id));
+
 ALTER TABLE tr_virus_vs_ext ADD CONSTRAINT FKC3BCA54279192AB7 FOREIGN KEY (settings_id) REFERENCES tr_virus_settings;
 
 ALTER TABLE tr_virus_vs_mt ADD CONSTRAINT FKD4C4064679192AB7 FOREIGN KEY (settings_id) REFERENCES tr_virus_settings;

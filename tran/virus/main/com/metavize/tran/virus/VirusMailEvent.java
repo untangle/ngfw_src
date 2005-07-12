@@ -6,57 +6,62 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id$
+ * $Id: VirusLogEvent.java 502 2005-04-28 03:31:42Z amread $
  */
 
 package com.metavize.tran.virus;
 
 import com.metavize.mvvm.logging.LogEvent;
+import com.metavize.tran.mail.VirusMessageAction;
+import com.metavize.tran.mail.VirusMessageActionUserType;
+import com.metavize.tran.mail.MessageInfo;
 
 /**
- * Log for non-mail, non-HTTP Virus events.  Currently just FTP.
+ * Log for POP3/IMAP Virus events.
  *
  * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
  * @hibernate.class
- * table="TR_VIRUS_EVT"
+ * table="TR_VIRUS_EVT_MAIL"
  * mutable="false"
  */
-public class VirusLogEvent extends LogEvent
+public class VirusMailEvent extends LogEvent
 {
-    private int sessionId;
+    private MessageInfo messageInfo;
     private VirusScannerResult result;
+    private VirusMessageAction action;
 
     // constructors -----------------------------------------------------------
 
     /**
      * Hibernate constructor.
      */
-    public VirusLogEvent() { }
+    public VirusMailEvent() { }
 
-    public VirusLogEvent(int sessionId, VirusScannerResult result)
+    public VirusMailEvent(MessageInfo messageInfo, VirusScannerResult result, VirusMessageAction action)
     {
-        this.sessionId = sessionId;
+        this.messageInfo = messageInfo;
         this.result = result;
+        this.action = action;
     }
 
     // accessors --------------------------------------------------------------
 
     /**
-     * Session id.
+     * Associate e-mail message info with event.
      *
-     * @return the session id.
-     * @hibernate.property
-     * column="SESSION_ID"
+     * @return e-mail message info.
+     * @hibernate.many-to-one
+     * column="MSG_ID"
      */
-    public int getSessionId()
+    public MessageInfo getMessageInfo()
     {
-        return sessionId;
+        return messageInfo;
     }
 
-    public void setSessionId(int sessionId)
+    public void setMessageInfo(MessageInfo messageInfo)
     {
-        this.sessionId = sessionId;
+        this.messageInfo = messageInfo;
     }
 
     /**
@@ -81,5 +86,23 @@ public class VirusLogEvent extends LogEvent
     public void setResult(VirusScannerResult result)
     {
         this.result = result;
+    }
+
+    /**
+     * The action taken
+     *
+     * @return action.
+     * @hibernate.property
+     * type="com.metavize.tran.mail.VirusMessageActionUserType"
+     * column="ACTION"
+     */
+    public VirusMessageAction getAction()
+    {
+        return action;
+    }
+
+    public void setAction(VirusMessageAction action)
+    {
+        this.action = action;
     }
 }
