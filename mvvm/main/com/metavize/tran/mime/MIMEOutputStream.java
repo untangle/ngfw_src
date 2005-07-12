@@ -84,7 +84,7 @@ public class MIMEOutputStream
   public long pipe(final InputStream in,
     final long maxTransfer) 
     throws IOException {
-    System.out.println("***DEBUG*** BEGIN Pipe: " + maxTransfer);
+    
     long total = 0;
     int reqAmt = 0;
     int read = 0;
@@ -92,23 +92,11 @@ public class MIMEOutputStream
     ensureTransferBuf();    
         
     while(total < maxTransfer) {
-/*    
-      int reqAmt = m_transferBuf.length;
-      
-      if((maxTransfer - total) > m_transferBuf.length) {
-        //Ok.  We'll ask for a whole buffer
-        reqAmt = m_transferBuf.length;
-      }
-      else if( ((int) (maxTransfer - total)) < m_transferBuf.length  ){
-        reqAmt = ((int) (maxTransfer - total)); 
-      }
-*/    
+    
       //Figure out how much to ask for in our read.  
       reqAmt = (maxTransfer - total) > m_transferBuf.length?
         m_transferBuf.length:
         (int) (maxTransfer - total);
-      
-      System.out.println("***DEBUG*** Request: " + reqAmt + ", total: " + total);
       
       //Perform the read
       read = in.read(m_transferBuf, 0, reqAmt);
@@ -119,7 +107,6 @@ public class MIMEOutputStream
       write(m_transferBuf, 0, read);
       total+=read;
     }
-    System.out.println("***DEBUG*** ENDOF Pipe: " + maxTransfer);
     return total;
   }
    

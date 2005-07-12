@@ -191,6 +191,17 @@ public class EmailAddress {
     return false;
   }
   
+  /**
+   * For debugging.  Callers should be aware of their preference
+   * for {@link #toSMTPString SMTP} and {@link #toMIMEString MIME}
+   * versions of this address.
+   * <br>
+   * For now, this happens to print the MIME version.
+   */
+  public String toString() {
+    return toMIMEString();
+  }
+  
   @Override
   public int hashCode() {
     return isNullAddress()?

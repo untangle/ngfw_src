@@ -21,6 +21,8 @@ import static com.metavize.tran.util.Ascii.*;
 import static com.metavize.tran.util.ASCIIUtil.*;
 import com.metavize.tran.util.ByteBufferBuilder;
 
+import org.apache.log4j.Logger;
+
 
 /**
  * Specialized Stream with methods useful for 
@@ -40,9 +42,73 @@ import com.metavize.tran.util.ByteBufferBuilder;
  */
 public class MIMEParsingInputStream extends InputStream {
 
+  private final Logger m_logger = Logger.getLogger(MIMEPart.class);  
+
   private static final int LINE_SZ = 1024;
 
-  private final DynPushbackInputStream m_wrapped;
+  //Constants used when scanning for an EOL
+  private static final int EOF_EOL = -1;
+  private static final int NOT_EOL = 0;
+  private static final int CRLF_EOL = 1;
+  private static final int CR_EOL = 2;
+  private static final int LF_EOL = 3;
+  
+ 
+  /**
+   * Class used as the return of the
+   * {@link #skipToBoundary skipToBoundary method}.
+   */
+  public static class BoundaryResult {
+    
+    /**
+     * Was the boundary found.
+     */
+    public final boolean boundaryFound;
+    /**
+     * If {@link #boundaryFound the boundary was found}, was it
+     * a final boundary (ending in "--").
+     */
+    public final boolean boundaryWasLast;
+    /**
+     * Includes leading CRLF (i.e. is before them).  If they
+     * were not found (i.e. the method assumes it is started
+     * at a new line and may not have scanned them) then
+     * this is the position at-which the scanning
+     * method was first invoked.
+     */
+    public final long boundaryStartPos;
+    /**
+     * Number of bytes from {@link #boundaryStartPos start}
+     * which made-up the boundary.  Includes leading "--" or
+     * "EOL--" and trailing "EOL", "--", or "--EOL"
+     */
+    public final long boundaryLen;
+    
+    private BoundaryResult() {
+      this.boundaryFound = false;
+      this.boundaryWasLast = false;
+      this.boundaryStartPos = -1;
+      this.boundaryLen = -1;
+    }
+    private BoundaryResult(long start,
+      long end,
+      boolean wasLast) {
+      this.boundaryFound = true;
+      this.boundaryWasLast = wasLast;
+      this.boundaryStartPos = start;
+      this.boundaryLen = end-start;
+    }    
+  }  
+  
+  /**
+   * Member indicating that the final boundary was not found.  Used when
+   * parsing pre-MIME or non-conformant MIME messages.
+   */
+  public static final BoundaryResult BOUNDARY_NOT_FOUND = new BoundaryResult();
+  
+    
+
+  private final DynPushbackInputStream m_wrapped;  
   
   //A bit optimistic on the system to read more than
   //2 gigs, but since the Java APIs let you skip
@@ -240,63 +306,38 @@ public class MIMEParsingInputStream extends InputStream {
     unread(buf.array(), buf.arrayOffset() + buf.position(), buf.remaining());
   }
   
+
   /**
-   * Returns null boundary was not found and 
-   * <code>isEOFTerminator</code> is false.
-   */
-  public List<Line> readLinesTillBoundary(String boundaryStr,
-    boolean leaveBoundary,
-    boolean isEOFTerminator,
-    int maxLineLen) 
-    throws IOException, LineTooLongException {
-    
-    String dashDashBoundary = "--" + boundaryStr;
-    
-    List<Line> lines = new ArrayList<Line>();
-    
-    Line aLine = readLine(maxLineLen);
-    while(aLine != null) {
-      if(aLine.bufferStartsWith(dashDashBoundary)) {
-        if(lines.size() > 0) {
-          lines.add(lines.size()-1, lines.get(lines.size()-1).removeTerminator());
-        }      
-        if(leaveBoundary) {
-          unreadLine(aLine);
-        }
-        return lines;
-      }
-      lines.add(aLine);
-    }
-    
-    return isEOFTerminator?
-      lines:
-      null;
-  }
-  
-  
-  /**
-   * Helper method for MIME parsing.
-   * Advance the position of this stream to a boundary.  After this
-   * method is called, the stream will be positioned either at the start
-   * or end of the boundary (depending on the value passed for
-   * <code>leaveBoundary</code>).  When "at the start of the boundary",
-   * this means after the CRLF which begun the boundary line.
-   * <p>
-   * Returns false if EOF is encountered before end of pattern, and 
-   * <code>isEOLTerminator</code> is false.  
-   * 
-   * <p>
-   * PRE: Stream is advanced to a new line.
-   * 
-   * @param boundary <b>without</b> leading "--" or trailing "--"
-   * @param leaveBoundary should the boundary be left in the stream
-   * @param isEOFTerminator should EOF be considered a terminator
+   * Advance the Stream to a boundary.  The flag <code>leaveBoundary</code>
+   * controls if the boundary will be left in the stream.
+   * <br>
+   * Normally, a boundary is in the following format:
+   * <br>
+   * EOL--<i>boundaryValue</i>[--]EOL
+   * <br>
+   * Where the leading "--" is required, and the trailing "--" indicates
+   * that this was the last boundary in a multipart-set.  The leading
+   * EOL is a subtle point.  To allow for parts which do <b>not</b>
+   * end in an EOL, the EOL preceeding the boundary is treated
+   * as part of the boundary.  So, in normal use this method
+   * will consume "EOL--<i>boundaryValue</i>[--]EOL".  There
+   * is one exception.  This method does not know if the stream
+   * is already positioned past an EOL.  As such, scanning starts
+   * assuming the preceeding sequence was an EOL.  This can effect
+   * the {@link com.metavize.tran.mime.MIMEParsingInputStream.BoundaryResult#boundaryStartPos start position}
+   * of the boundary.
+   * <br>
+   * EOF is considered a valid terminator for a boundary.
    *
-   * @exception IOException from the backing stream
-   */         
-  public boolean advanceToBoundary(String boundaryStr,
-    boolean leaveBoundary,
-    boolean isEOFTerminator) 
+   * @param boundaryStr the boundary string <b>as it was defined in the
+   *        headers (i.e. don't get smart and prepend "--")</b>
+   * @param leaveBoundary if true, the boundary (including any leading/trailing
+   *        EOL) will be left in the stream (unread).
+   *
+   * @return the BoundaryResult.
+   */
+  public BoundaryResult skipToBoundary(String boundaryStr,
+    final boolean leaveBoundary) 
     throws IOException {  
     
     final byte[] matchPattern = new StringBuilder().
@@ -309,50 +350,145 @@ public class MIMEParsingInputStream extends InputStream {
 
     int read = read();
     
+    //Members which are used while scanning for a
+    //candidate boundary
     int candidatePos = 0;//In case someone positioned us after a EOL,
                          //start at "0" instead of "-1"
-                     
+
+    long boundaryStart = position();   
+    long boundaryEnd = 0;
+    int boundaryStartEOL = 0;//TODO Make this a symbol                                                  
+    int isEOL;             
     
     while(read >= 0) {
       if(candidatePos == -1) {
-        //-1 means "not starting search yet"
-        if((char) read == CR) {
-          int read2 = read();
-          if(read2 < 0) {
-            return isEOFTerminator;
-          }
-          if((char) read2 != LF) {
-            //We'll permit a bare CR
-            unread(read2);
-          }
-          candidatePos = 0;
+        //candidatePos == -1 means "not starting search yet"
+        
+        //The "eatEOL" method is defined below
+        isEOL = eatEOL(read);
+        switch(isEOL) {
+          case EOF_EOL:
+            return new BoundaryResult();
+          case NOT_EOL:
+            break;
+          case CRLF_EOL:
+            candidatePos = 0;
+            boundaryStartEOL = isEOL;
+            boundaryStart = position();
+            boundaryStart-=2;
+            break;
+          case CR_EOL:
+          case LF_EOL:
+            candidatePos = 0;
+            boundaryStartEOL = isEOL;
+            boundaryStart = position();
+            boundaryStart-=1;
         }
-        else if((char) read == LF) {
-          candidatePos = 0;
-        }
+       
         read = read();
         continue;
       }
       //If we're here, then we're scanning a candidate
       if(matchPattern[candidatePos++] == (byte) read) {
-        if(candidatePos+1 == matchPatternLen) {
-          if(leaveBoundary) {
-            unread(matchPattern);    
+        if(candidatePos == matchPatternLen) {
+          //We've found the whole boundary.  Figure out
+          //if it is the last
+          read = read();
+          if(read == -1) {
+            //Boundary ended the stream
+            boundaryEnd = position();
+            if(leaveBoundary) {
+              uneatEOL(boundaryStartEOL);
+              unread(matchPattern);
+            }
+            m_logger.debug("-1 ended (implicitly last) boundary");
+            return new BoundaryResult(boundaryStart,
+              boundaryEnd,
+              false);
           }
-          return true;
+          else if((char) read == DASH) {
+            //So far, have read "boundary-".  Check for "boundary--".
+            read = read();
+            if(read == -1) {
+              //Boundary"-" ended the stream.  Do not count
+              //the trailing dash as part of a terminating boundary
+              unread(DASH);
+              boundaryEnd = position();
+              if(leaveBoundary) {
+                uneatEOL(boundaryStartEOL);
+                unread(matchPattern);
+              }              
+              m_logger.debug("\"-\"(-1) ended (implicitly last) boundary");
+              return new BoundaryResult(boundaryStart,
+                boundaryEnd,
+                false);              
+            }
+            else if(read == DASH) {
+              //Boundary ended in "--".  Check for the terminator
+              //as well
+              m_logger.debug("\"--\" ended (last) boundary");
+              int boundaryEndEOL = eatEOL();
+              boundaryEnd = position();
+              if(leaveBoundary) {
+                uneatEOL(boundaryStartEOL);
+                unread(matchPattern);
+                uneatEOL(boundaryEndEOL);
+              }              
+              return new BoundaryResult(boundaryStart,
+                boundaryEnd,
+                true);               
+            }
+            else {
+              //Boundary ended in "boundary-X" where "X" was not
+              //a dash.  
+              m_logger.debug("\"-\"" + read + " ended non-last boundary");
+              unread(DASH);
+              unread(read);
+              boundaryEnd = position();
+              if(leaveBoundary) {
+                uneatEOL(boundaryStartEOL);
+                unread(matchPattern);
+              }               
+              return new BoundaryResult(boundaryStart,
+                position(),
+                false);             
+            }
+          }
+          else {
+            //Character after boundary was not "-".  It may have been
+            //an EOL.  If so, eat it.
+            int boundaryEndEOL = eatEOL(read);
+            if(boundaryEndEOL == EOF_EOL || boundaryEndEOL == NOT_EOL) {
+              unread(read);
+              m_logger.debug("\"" + read + "\" ended non-last boundary");
+            }
+            else {
+              m_logger.debug("New line ended non-last boundary");
+            }
+            
+            boundaryEnd = position();
+            if(leaveBoundary) {
+              uneatEOL(boundaryStartEOL);
+              unread(matchPattern);
+              uneatEOL(boundaryEndEOL);
+            }   
+            return new BoundaryResult(boundaryStart,
+              boundaryEnd,
+              false);                       
+          }
         }
         read = read();
       }
       else {
         //Fell out of the candidate.  Let the byte be re-evaluated (it may be a CR/LF)
         candidatePos = -1;
+        boundaryStartEOL = 0;
+        boundaryStart = -1;
       }
     }
-    return  isEOFTerminator;
-  }
-  
+    return new BoundaryResult();
+  }  
 
-  
   /**
    * Advances past the next EOL sequence (CRLF 
    * CR, or LF), or EOF
@@ -364,12 +500,7 @@ public class MIMEParsingInputStream extends InputStream {
     int b = read();
     while(b >= 0) {
       if(isEOL((byte) b)) {
-        if(b == CR) {
-          b = read();
-          if(b >=0 && b != LF) {
-            unread(b);
-          }
-        }
+        eatEOL(b);
         return;
       }
       b = read();
@@ -444,4 +575,70 @@ public class MIMEParsingInputStream extends InputStream {
   public boolean markSupported() {
     return false;
   }
+  
+  
+  
+  private void uneatEOL(int val) 
+    throws IOException {
+    switch(val) {
+      case CRLF_EOL:
+        unread(CRLF_BA);
+        break;
+      case CR_EOL:
+        unread(CR);
+        break;
+      case LF_EOL:
+        unread(LF);
+        break;
+    }
+  }
+  
+  /**
+   * Eat the next EOL, if one is found
+   * 
+   * @return constants defined as "XXX_EOL"
+   *         on this class.
+   */  
+  private int eatEOL() 
+    throws IOException {
+    int read = read();
+    int ret = eatEOL(read);
+    if(ret == 0) {
+      unread(read);
+    }    
+    return ret;
+  }  
+  /**
+   * Eat the EOL, if the character starts
+   * an EOL sequence.  If it does not,
+   * it is <b>not</b> unread implicitly.
+   * 
+   * @return constants defined as "XXX_EOL"
+   *         on this class.
+   */
+  private int eatEOL(int read) 
+    throws IOException {
+    if(read == -1) {
+      return EOF_EOL;
+    }
+    if((char) read == CR) {
+      int read2 = read();
+      if(read2 == -1) {
+        return CR_EOL;
+      }
+      if((char) read2 == LF) {
+        return CRLF_EOL;
+      }
+      else {
+        unread(read2);
+        return CR_EOL;
+      }
+    }
+    if((char) read == LF) {
+      return LF_EOL;
+    }
+    return NOT_EOL;
+  }  
+  
+     
 }

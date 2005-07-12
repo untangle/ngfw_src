@@ -120,11 +120,30 @@ public class Line {
   }
   
 
-
+  /**
+   * If <code>unfoldLines</code> is true, then
+   * this assumes the lines are RFC822 formatted
+   * header lines.
+   */
   public static String linesToString(Line[] lines,
     int startingAt,
     boolean unfoldLines) {
-    return linesToString(lines, startingAt, Integer.MAX_VALUE, unfoldLines);
+    
+    LineIterator li = new LineIterator(lines, unfoldLines);
+    if(startingAt > 0) {
+      li.skip(startingAt);
+    }
+    StringBuilder sb = new StringBuilder();
+    int b = li.next();
+    while(b != -1) {
+      sb.append((char) b);
+      b = li.next();
+    }
+//    String ret = sb.toString();
+//    System.out.println("***DEBUG*** [linesToString] returning \"" + ret + "\"");
+    return sb.toString();
+    
+//    return linesToString(lines, startingAt, Integer.MAX_VALUE, unfoldLines);
   }
   /**
    * Helper method (since I didn't think there was enough of a reason
@@ -136,10 +155,16 @@ public class Line {
    * <code>len</code> includes any folding for InternetHeader lines.
    * However, they are not returned in the returned String
    */    
-  public static String linesToString(Line[] lines,
+  private static String linesToString(Line[] lines,
     int startingAt,
     int len,
     boolean unfoldLines) {
+    
+    //==============================================
+    // TODO bscott This (goofy) implementation
+    //      not only looks bad, but also adds
+    //      an extra space to the end of headers
+    //==============================================
     
     StringBuilder sb = new StringBuilder();
     int xFered = 0;
@@ -149,7 +174,6 @@ public class Line {
     
     for(int i = 0; i<lines.length; i++) {
       bb = lines[i].getBuffer(true);
-//      bb.mark();
       if(i == 0) {
         bb.position(bb.position() + startingAt);
       }
@@ -162,14 +186,12 @@ public class Line {
           //a SP, and let the append below pick it up
           c = SP;
           if(xFered >= len) {
- //           bb.reset();
             sb.append(SP);
             return sb.toString();
           }            
         }
         sb.append(c);
       }
-//      bb.reset();
       if(xFered >= len) {
         return sb.toString();
       }
@@ -195,5 +217,139 @@ public class Line {
       count++;
     }  
     return count;
+  }
+  
+  public static void main(String[] args) 
+    throws Exception {
+    
+    String s1 = "foo: goo\r\n";
+    String s2 = "\tdoo\r\n";
+    
+    Line l1 = new Line(ByteBuffer.wrap(s1.getBytes()), 2);
+    Line l2 = new Line(ByteBuffer.wrap(s2.getBytes()), 2);
+    
+    System.out.println(linesToString(new Line[] {l1, l2},
+      5,
+      true));
+    
+  }
+  
+  /**
+   * I'm feeling too lazy to write the
+   * unfold method without this helper.  It
+   * is a bit of a beating on the CPU relative
+   * to its value.
+   */
+  private static class LineIterator {
+    private final boolean m_unfoldLines;
+    private final ByteBuffer[] m_buffers;
+    private final int m_numBuffers;
+    private int m_currentBuffer;
+    
+    LineIterator(Line[] lines,
+      boolean unfold) {
+      m_buffers = new ByteBuffer[lines.length];
+      int i = 0;
+      for(Line line : lines) {
+        m_buffers[i++] = line.getBuffer(true);
+      }
+      m_numBuffers = m_buffers.length;
+      m_unfoldLines = unfold;
+      m_currentBuffer = 0;
+    }
+    void skip(int num) {
+      while(num > 0 && m_currentBuffer < m_numBuffers) {
+        int toSkip = m_buffers[m_currentBuffer].remaining();
+        if(toSkip <= 0) {
+          //Nothing left in this buffer.  Go to the next
+          m_currentBuffer++;
+          continue;
+        }
+        if(toSkip > num) {
+          //We're skipping less than the current buffer's remaining
+          toSkip = num;
+        }
+        m_buffers[m_currentBuffer].position(m_buffers[m_currentBuffer].position() + toSkip);
+        num-=toSkip;
+      }
+    }
+    
+    int next() {
+      while(m_currentBuffer < m_numBuffers) {
+        if(!m_buffers[m_currentBuffer].hasRemaining()) {
+          m_currentBuffer++;
+          continue;
+        }
+        byte ret = m_buffers[m_currentBuffer].get();
+        if(!m_unfoldLines) {
+          return ret;
+        }
+        //We're unfolding
+        if(isEOL(ret)) {
+          //see if next is another new line char
+          ByteBuffer currentBuf = getBuffer();
+          if(currentBuf != null) {
+            ret = currentBuf.get();
+            if(isEOL(ret)) {
+              if(eatWhitespace()) {
+                return SP;
+              }
+              else {
+                return getBuffer() == null?
+                  -1:
+                  getBuffer().get();
+              }
+            }
+            else {
+              //Odd.  CRX where "X" is not
+              //whatespace.  Just return it.
+              return ret;
+            }
+          }
+          else {
+            //Ended with a CR.  Odd, but we'll declare
+            //that the end
+            return -1;
+          }
+        }
+        return ret;
+      }
+      return -1;
+    }
+    
+    private boolean eatWhitespace() {
+      ByteBuffer buf = getBuffer();
+      if(buf == null) {
+        return false;
+      }
+      boolean ret = false;
+      while(buf != null && buf.hasRemaining()) {
+        byte b = buf.get();
+        if(!isLWS(b)) {
+          buf.position(buf.position() - 1);
+          return ret;
+        }
+        ret = true;
+        buf = getBuffer();
+      }
+      return ret;
+    }
+    
+    /**
+     * Returns the current buffer.  If the current
+     * buffer is empty, advances to the next buffer.  If
+     * there is no "next" buffer, null is returned.
+     */
+    private ByteBuffer getBuffer() {
+      while(m_currentBuffer < m_numBuffers) {
+        if(!m_buffers[m_currentBuffer].hasRemaining()) {
+          m_currentBuffer++;
+          continue;
+        }
+        return m_buffers[m_currentBuffer];
+      }
+      return null;
+    }
+
   }
 }

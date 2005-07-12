@@ -41,6 +41,12 @@ public class Headers {
   private HeadersObserver m_observer;
   private MyHeaderFieldObserver m_hfCallbackHandler = 
     new MyHeaderFieldObserver();
+    
+  public Headers(HeaderFieldFactory factory) {
+    m_factory = factory;
+    m_headersInOrder = new ArrayList<HeaderField>();
+    m_headersByName = new HashMap<LCString, List<HeaderField>>();
+  }
   
   /**
    * The source <b>must</b> contain the CRLFCRLF (blank line)
@@ -131,22 +137,28 @@ public class Headers {
     return removed > 0;
   } 
   
-  public void addHeaderField(String headerName,
+  public HeaderField addHeaderField(String headerName,
     String valueString)
     throws HeaderParseException {
     
     HeaderField newField = m_factory.createHeaderField(headerName);
     newField.assignFromString(valueString, false);
     
-    addHeaderField(newField);
-    
+    addHeaderFieldImpl(newField);
+    return newField;
+  }
+  
+  protected HeaderField addHeaderField(String headerName) {
+    HeaderField newField = m_factory.createHeaderField(headerName);
+    addHeaderFieldImpl(newField);
+    return newField;    
   }
   
   
   /**
    * Add the HeaderField to the Headers.
    */
-  private void addHeaderField(HeaderField newHeader) {
+  private void addHeaderFieldImpl(HeaderField newHeader) {
     List<HeaderField> existingList = m_headersByName.get(newHeader);
     if(existingList == null) {
       existingList = new ArrayList<HeaderField>();
@@ -168,7 +180,8 @@ public class Headers {
   }
   
   /**
-   * Terminates with a blank line
+   * Terminates with a blank line, even if the headers
+   * are blank.
    */
   public final void writeTo(MIMEOutputStream out)
     throws IOException {

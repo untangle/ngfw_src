@@ -19,6 +19,10 @@ import java.util.*;
 public class MIMEPartHeaders 
   extends Headers {
 
+  public MIMEPartHeaders(MIMEPartHeaderFieldFactory factory) {
+    super(factory);
+  }
+  
   public MIMEPartHeaders(MIMEPartHeaderFieldFactory factory,
     MIMESource source,
     int sourceStart,

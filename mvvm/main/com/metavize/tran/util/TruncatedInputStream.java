@@ -27,7 +27,6 @@ public class TruncatedInputStream
     long maxRead) {
     super(wrap);
     m_maxRead = maxRead;
-    System.out.println("***DEBUG*** [TruncatedInputStream] maxRead: " + maxRead);
   }
   
   
@@ -57,13 +56,11 @@ public class TruncatedInputStream
     throws IOException {
     
     int max = (int) max(len);
-    System.out.println("***DEBUG*** [TruncatedInputStream][read()] Max: " + max);
     if(max == 0) {
       return -1;
     }
     int ret = in.read(b, off, max);
     m_read+=ret;
-    System.out.println("***DEBUG*** [TruncatedInputStream][read()] Returning: " + ret);
     return ret;
   }    
   

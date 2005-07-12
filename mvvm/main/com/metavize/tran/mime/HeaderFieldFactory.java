@@ -24,114 +24,40 @@ import java.nio.*;
 public class HeaderFieldFactory {
 
 
-  /**
-   * Create and parse a HeaderField object from the given 
-   * data.  The default implementation only returns base
-   * {@link HeaderField HeaderField} instances.
-   *
-   * @param mixedCaseName the name as found in original
-   *        data (may be mixed case).
-   *
-   * @param lines lines comprising the value of the header field
-   *        <b>including</b> the name and colon.
-   *
-   * @param valueStartOffset  The offset (within the first Line)
-   *        where the value starts.   
-   */
-/*   
-  public HeaderField createAndParse(String mixedCaseName,
-    Line[] lines,
-    int valueStartOffset) 
-    throws HeaderParseException {
-    
-    HeaderField field = create(mixedCaseName, lines, valueStartOffset);
-    field.parse();
-    return field;
-  }
-*/  
-  
-  /**
-   * Create and parse a HeaderField object from the given 
-   * data.  The default implementation only returns base
-   * {@link HeaderField HeaderField} instances.
-   *
-   * @param mixedCaseName the name as found in original
-   *        data (may be mixed case).
-   *
-   * @param valueLine lines comprising the value of the header field
-   *
-   */
-/*   
-  public HeaderField createAndParse(String mixedCaseName,
-    String valueLine) 
-    throws HeaderParseException {
-    
-    HeaderField field = create(mixedCaseName, valueLine);
-    field.parseAndAssignFromString(valueLine);
-    return field;
-  }  
-*/  
-
-  /**
-   * Create a HeaderField object from the given 
-   * data.  The default implementation returns base
-   * {@link HeaderField HeaderField} instances.
-   *
-   * @param mixedCaseName the name as found in original
-   *        data (may be mixed case).
-   *
-   * @param lines lines comprising the value of the header field
-   *        <b>including</b> the name and colon.
-   *
-   * @param valueStartOffset  The offset (within the first Line)
-   *        where the value starts.   
-   */  
-/*   
-  protected HeaderField create(String mixedCaseName,
-    Line[] lines,
-    int valueStartOffset) {
-
-    
-    return new HeaderField(mixedCaseName,
-      new LCString(mixedCaseName),
-      lines,
-      valueStartOffset);   
-  }
-*/  
-  
-  /**
-   * Create and parse a HeaderField object from the given 
-   * data.  The default implementation only returns base
-   * {@link HeaderField HeaderField} instances.
-   *
-   * @param mixedCaseName the name as found in original
-   *        data (may be mixed case).
-   *
-   * @param valueLine lines comprising the value of the header field
-   *
-   */
-/*   
-  protected HeaderField create(String mixedCaseName,
-    String valueLine) {
-
-    
-    return new HeaderField(mixedCaseName,
-      new LCString(mixedCaseName),
-      valueLine);   
-  } 
-*/  
   
   
   /**
-   * TODO: bscott Doc me
+   * Create a new HeaderField based on the name.  SUbclasses
+   * should override to provide more typed implementations.
    *
+   * @param mixedCaseName the name of the header
+   * 
+   * @return a new HeaderField with the given name
    */
   protected HeaderField createHeaderField(String mixedCaseName) {  
     return new HeaderField(mixedCaseName,
       new LCString(mixedCaseName)); 
   }
    
-  
+
+  /**
+   * Create a new Headers, with the given contents
+   * and source.  Subclasses may wish to override to
+   * provide more typed implementation.
+   *
+   * @param source the MIMESource from-which the headers
+   *        were read (assumed to be shared).
+   * @param sourceStart the start of the headers
+   *        within the source
+   * @param sourceLen the length within source
+   *        of the Header bytes
+   * @param headersInOrder the HeaderFields as
+   *        found (order preserved).
+   * @param headersByName a map of HeaderFields
+   *        by name
+   *
+   * @return a new Headers (or subclass).
+   */  
   protected Headers createHeaders(MIMESource source,
     int sourceStart,
     int sourceLen,
@@ -162,8 +88,7 @@ public class HeaderFieldFactory {
     String headerFieldName = readString(buf,
       (byte) COLON,
       false);
-//    System.out.println("[HeaderFieldFactory] readHeaderFieldName: " + 
-//    headerFieldName);
+
     if(headerFieldName == null) {
       buf.reset();
       return null;
