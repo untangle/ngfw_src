@@ -23,10 +23,9 @@ import net.sf.hibernate.Transaction;
 import org.apache.log4j.Logger;
 
 public class MailTransformImpl extends AbstractTransform
-    implements MailTransform
+    implements MailTransform, MailExport
 {
     private final Logger logger = Logger.getLogger(getClass());
-
 
     PipeSpec SMTP_PIPE_SPEC = new CasingPipeSpec
         ("smtp", this, SmtpCasingFactory.factory(),
@@ -48,6 +47,8 @@ public class MailTransformImpl extends AbstractTransform
     public MailTransformImpl()
     {
         logger.debug("MailTransformImpl");
+
+        MailExportFactory.init(this);
     }
 
     // MailTransform methods --------------------------------------------------
@@ -78,6 +79,13 @@ public class MailTransformImpl extends AbstractTransform
         }
 
         reconfigure();
+    }
+
+    // MailExport methods -----------------------------------------------------
+
+    public MailTransformSettings getExportSettings()
+    {
+        return getMailTransformSettings();
     }
 
     // Transform methods ------------------------------------------------------

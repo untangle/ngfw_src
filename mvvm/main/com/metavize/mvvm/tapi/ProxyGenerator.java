@@ -18,23 +18,11 @@ import java.lang.reflect.Proxy;
 
 public class ProxyGenerator
 {
-    private final ClassLoader proxyCl;
-
-    public ProxyGenerator(ClassLoader proxyCl)
+    public static Object generateProxy(Class iface, Object impl)
     {
-        this.proxyCl = proxyCl;
-    }
-
-    public Object generateProxy(Class iface, Object impl, ClassLoader cl)
-    {
-        Handler h = new Handler(impl, cl);
-        return Proxy.newProxyInstance(proxyCl, new Class[] { iface }, h);
-    }
-
-    public Object generateProxy(Class iface, Object impl)
-    {
-        ClassLoader cl = Thread.currentThread().getContextClassLoader();
-        return generateProxy(iface, impl, cl);
+        Handler h = new Handler(impl);
+        ClassLoader cl = impl.getClass().getClassLoader();
+        return Proxy.newProxyInstance(cl, new Class[] { iface }, h);
     }
 
     // private classes -------------------------------------------------------
@@ -44,10 +32,10 @@ public class ProxyGenerator
         private final Object impl;
         private final ClassLoader implCl;
 
-        Handler(Object impl, ClassLoader implCl)
+        Handler(Object impl)
         {
             this.impl = impl;
-            this.implCl = implCl;
+            this.implCl = impl.getClass().getClassLoader();
         }
 
         public Object invoke(Object proxy, Method method, Object[] args)
