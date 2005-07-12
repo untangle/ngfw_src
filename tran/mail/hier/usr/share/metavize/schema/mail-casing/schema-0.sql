@@ -1,6 +1,14 @@
--- schema for release-1.5
+-- schema for release-2.5
 
 -- INITIAL VERSION -- NOT READY FOR PRIME TIME XXXXXXX
+
+CREATE TABLE tr_mail_settings (
+    settings_id int8 NOT NULL,
+    tid int8 NOT NULL UNIQUE,
+    smtp_enabled bool NOT NULL,
+    pop_enabled bool NOT NULL,
+    imap_enabled bool NOT NULL,
+    PRIMARY KEY (settings_id));
 
 CREATE TABLE email_message_info (
     id int8 NOT NULL,
@@ -20,3 +28,5 @@ CREATE TABLE email_message_stats (
     long msg_bytes,
     int msg_attachments,
     PRIMARY KEY (id));
+
+ALTER TABLE tr_mail_settings ADD CONSTRAINT fkd38905aa1446f FOREIGN KEY (tid) REFERENCES tid;

@@ -11,49 +11,8 @@
 
 package com.metavize.tran.mail;
 
-import com.metavize.mvvm.tapi.AbstractTransform;
-import com.metavize.mvvm.tapi.CasingPipeSpec;
-import com.metavize.mvvm.tapi.Fitting;
-import com.metavize.mvvm.tapi.PipeSpec;
-import org.apache.log4j.Logger;
-
-public class MailTransform extends AbstractTransform
+public interface MailTransform
 {
-    private final Logger logger = Logger.getLogger(MailTransform.class);
-
-    private final PipeSpec[] pipeSpecs = new PipeSpec[] {
-        new CasingPipeSpec("smtp", this, SmtpCasingFactory.factory(),
-                           Fitting.SMTP_STREAM, Fitting.SMTP_TOKENS),
-        new CasingPipeSpec("pop", this, PopCasingFactory.factory(),
-                           Fitting.POP_STREAM, Fitting.POP_TOKENS),
-        new CasingPipeSpec("imap", this, ImapCasingFactory.factory(),
-                           Fitting.IMAP_STREAM, Fitting.IMAP_TOKENS)
-    };
-
-    // constructors -----------------------------------------------------------
-
-    public MailTransform()
-    {
-        logger.debug("MailTransform");
-    }
-
-    // AbstractTransform methods ----------------------------------------------
-
-    @Override
-    protected PipeSpec[] getPipeSpecs()
-    {
-        return pipeSpecs;
-    }
-
-    // XXX soon to be deprecated ----------------------------------------------
-
-    public Object getSettings()
-    {
-        throw new UnsupportedOperationException("bad move");
-    }
-
-    public void setSettings(Object settings)
-    {
-        throw new UnsupportedOperationException("bad move");
-    }
+    MailTransformSettings getMailTransformSettings();
+    void setMailTransformSettings(MailTransformSettings settings);
 }

@@ -73,7 +73,7 @@ public class HttpSettings implements Serializable
     }
 
     /**
-     * Toggles casing on or off.
+     * Enabled status for casing.
      *
      * @return true when casing is enabled, false otherwise.
      * @hibernate.property
