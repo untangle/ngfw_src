@@ -14,7 +14,9 @@ import java.io.*;
 import com.metavize.tran.util.*;
 
 /**
- * TODO: bscott work in progress
+ * TODO: bscott work in progress  This needs to be improved
+ *       so it tracks open files, and (possibly) reuses
+ *       the last closed stream.
  */
 public class FileMIMESource 
   implements MIMESource {

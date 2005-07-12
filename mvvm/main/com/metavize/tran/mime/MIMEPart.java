@@ -141,7 +141,10 @@ public class MIMEPart {
     if(m_observer != null) {
       m_observer.mIMEPartChanged(this);
     }
-  }  
+  } 
+  public boolean isChanged() {
+    return m_changed;
+  } 
   
   
   
