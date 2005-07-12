@@ -46,9 +46,9 @@ public class HttpRequestLog implements Serializable
         this.blockEventId = blockEventId;
         this.timeStamp = timeStamp;
         this.url = "http://" + host + "/" + uri;
-        this.action = null == actionStr ? null
+        this.action = null == actionStr ? Action.PASS
             : Action.getInstance(actionStr.charAt(0));
-        this.reason = null == reasonStr ? null
+        this.reason = null == reasonStr ? Reason.NONE
             : Reason.getInstance(reasonStr.charAt(0));
         this.category = category;
         this.contentType = contentType;
