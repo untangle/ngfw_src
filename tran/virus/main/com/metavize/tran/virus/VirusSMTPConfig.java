@@ -13,8 +13,8 @@ package com.metavize.tran.virus;
 
 import java.io.Serializable;
 
-import com.metavize.tran.mail.MessageAction;
-import com.metavize.tran.mail.NotifyAction;
+import com.metavize.tran.mail.SMTPVirusMessageAction;
+import com.metavize.tran.mail.SMTPNotifyAction;
 
 /**
  * Virus control: Definition of virus control settings (either direction)
@@ -33,8 +33,8 @@ public class VirusSMTPConfig implements Serializable
     private Long id;
 
     /* settings */
-    private MessageAction zMsgAction = MessageAction.BLOCK;
-    private NotifyAction zNotifyAction = NotifyAction.NEITHER;
+    private SMTPVirusMessageAction zMsgAction = SMTPVirusMessageAction.CLEAN;
+    private SMTPNotifyAction zNotifyAction = SMTPNotifyAction.NEITHER;
     private boolean bScan = false;
     private boolean bCopyOnBlock = false;
     private String zNotes = NO_NOTES;
@@ -46,7 +46,7 @@ public class VirusSMTPConfig implements Serializable
      */
     public VirusSMTPConfig() {}
 
-    public VirusSMTPConfig(boolean bScan, MessageAction zMsgAction, NotifyAction zNotifyAction, boolean bCopyOnBlock, String zNotes)
+    public VirusSMTPConfig(boolean bScan, SMTPVirusMessageAction zMsgAction, SMTPNotifyAction zNotifyAction, boolean bCopyOnBlock, String zNotes)
     {
         this.bScan = bScan;   
         this.zMsgAction = zMsgAction;   
@@ -108,21 +108,21 @@ public class VirusSMTPConfig implements Serializable
     }
 
     /**
-     * messageAction: a string specifying a response to events if a message containing virus (defaults to BLOCK)
-     * one of BLOCK, MARK, or PASS
+     * messageAction: a string specifying a response if a message contains virus (defaults to CLEAN)
+     * one of CLEAN, BLOCK, or PASS
      *
      * @return the action to take if a message is judged to be virus.
      * @hibernate.property
      * column="MSG_ACTION"
-     * type="com.metavize.tran.mail.MessageActionUserType"
+     * type="com.metavize.tran.mail.SMTPVirusMessageActionUserType"
      * not-null="true"
      */
-    public MessageAction getMsgAction()
+    public SMTPVirusMessageAction getMsgAction()
     {
         return zMsgAction;
     }
 
-    public void setMsgAction(MessageAction zMsgAction)
+    public void setMsgAction(SMTPVirusMessageAction zMsgAction)
     {
         // Guard XXX
         this.zMsgAction = zMsgAction;
@@ -132,7 +132,7 @@ public class VirusSMTPConfig implements Serializable
     /* for GUI */
     public String[] getMsgActionEnumeration()
     {
-        MessageAction[] azMsgAction = MessageAction.getSMTPValues();
+        SMTPVirusMessageAction[] azMsgAction = SMTPVirusMessageAction.getValues();
         String[] azStr = new String[azMsgAction.length];
 
         for (int i = 0; i < azMsgAction.length; i++)
@@ -148,15 +148,15 @@ public class VirusSMTPConfig implements Serializable
      * @return the action to take if a message is judged to be virus.
      * @hibernate.property
      * column="NOTIFY_ACTION"
-     * type="com.metavize.tran.mail.NotifyActionUserType"
+     * type="com.metavize.tran.mail.SMTPNotifyActionUserType"
      * not-null="true"
      */
-    public NotifyAction getNotifyAction()
+    public SMTPNotifyAction getNotifyAction()
     {
         return zNotifyAction;
     }
 
-    public void setNotifyAction(NotifyAction zNotifyAction)
+    public void setNotifyAction(SMTPNotifyAction zNotifyAction)
     {
         // Guard XXX
         this.zNotifyAction = zNotifyAction;
@@ -166,7 +166,7 @@ public class VirusSMTPConfig implements Serializable
     /* for GUI */
     public String[] getNotifyActionEnumeration()
     {
-        NotifyAction[] azNotifyAction = NotifyAction.getValues();
+        SMTPNotifyAction[] azNotifyAction = SMTPNotifyAction.getValues();
         String[] azStr = new String[azNotifyAction.length];
 
         for (int i = 0; i < azNotifyAction.length; i++)

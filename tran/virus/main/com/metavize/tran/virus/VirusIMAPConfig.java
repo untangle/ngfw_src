@@ -13,8 +13,7 @@ package com.metavize.tran.virus;
 
 import java.io.Serializable;
 
-import com.metavize.tran.mail.MessageAction;
-import com.metavize.tran.mail.NotifyAction;
+import com.metavize.tran.mail.VirusMessageAction;
 
 /**
  * Virus control: Definition of virus control settings (either direction)
@@ -33,8 +32,7 @@ public class VirusIMAPConfig implements Serializable
     private Long id;
 
     /* settings */
-    private MessageAction zMsgAction = MessageAction.BLOCK;
-    private NotifyAction zNotifyAction = NotifyAction.NEITHER;
+    private VirusMessageAction zMsgAction = VirusMessageAction.CLEAN;
     private boolean bScan = false;
     private boolean bCopyOnBlock = false;
     private String zNotes = NO_NOTES;
@@ -46,11 +44,10 @@ public class VirusIMAPConfig implements Serializable
      */
     public VirusIMAPConfig() {}
 
-    public VirusIMAPConfig(boolean bScan, MessageAction zMsgAction, NotifyAction zNotifyAction, boolean bCopyOnBlock, String zNotes)
+    public VirusIMAPConfig(boolean bScan, VirusMessageAction zMsgAction, boolean bCopyOnBlock, String zNotes)
     {
         this.bScan = bScan;   
         this.zMsgAction = zMsgAction;   
-        this.zNotifyAction = zNotifyAction;   
         this.bCopyOnBlock = bCopyOnBlock;   
         this.zNotes = zNotes;   
     }
@@ -108,21 +105,21 @@ public class VirusIMAPConfig implements Serializable
     }
 
     /**
-     * messageAction: a string specifying a response to events if a message containing virus (defaults to BLOCK)
-     * one of BLOCK, MARK, or PASS
+     * messageAction: a string specifying a response if a message contains virus (defaults to CLEAN)
+     * one of CLEAN or PASS
      *
      * @return the action to take if a message is judged to be virus.
      * @hibernate.property
      * column="MSG_ACTION"
-     * type="com.metavize.tran.mail.MessageActionUserType"
+     * type="com.metavize.tran.mail.VirusMessageActionUserType"
      * not-null="true"
      */
-    public MessageAction getMsgAction()
+    public VirusMessageAction getMsgAction()
     {
         return zMsgAction;
     }
 
-    public void setMsgAction(MessageAction zMsgAction)
+    public void setMsgAction(VirusMessageAction zMsgAction)
     {
         // Guard XXX
         this.zMsgAction = zMsgAction;
@@ -132,45 +129,11 @@ public class VirusIMAPConfig implements Serializable
     /* for GUI */
     public String[] getMsgActionEnumeration()
     {
-        MessageAction[] azMsgAction = MessageAction.getIMAPValues();
+        VirusMessageAction[] azMsgAction = VirusMessageAction.getValues();
         String[] azStr = new String[azMsgAction.length];
 
         for (int i = 0; i < azMsgAction.length; i++)
             azStr[i] = azMsgAction[i].toString();
-
-        return azStr;
-    }
-
-    /**
-     * notifyAction: a string specifying a response to events if a message containing virus (defaults to NEITHER)
-     * one of SENDER, RECEIVER, BOTH, or NEITHER
-     *
-     * @return the action to take if a message is judged to be virus.
-     * @hibernate.property
-     * column="NOTIFY_ACTION"
-     * type="com.metavize.tran.mail.NotifyActionUserType"
-     * not-null="true"
-     */
-    public NotifyAction getNotifyAction()
-    {
-        return zNotifyAction;
-    }
-
-    public void setNotifyAction(NotifyAction zNotifyAction)
-    {
-        // Guard XXX
-        this.zNotifyAction = zNotifyAction;
-        return;
-    }
-
-    /* for GUI */
-    public String[] getNotifyActionEnumeration()
-    {
-        NotifyAction[] azNotifyAction = NotifyAction.getValues();
-        String[] azStr = new String[azNotifyAction.length];
-
-        for (int i = 0; i < azNotifyAction.length; i++)
-            azStr[i] = azNotifyAction[i].toString();
 
         return azStr;
     }

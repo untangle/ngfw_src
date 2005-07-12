@@ -19,12 +19,12 @@ import java.sql.Types;
 import net.sf.hibernate.HibernateException;
 import net.sf.hibernate.UserType;
 
-public class MessageActionUserType implements UserType
+public class SMTPVirusMessageActionUserType implements UserType
 {
     private static final int[] SQL_TYPES = { Types.CHAR };
 
     public int[] sqlTypes() { return SQL_TYPES; }
-    public Class returnedClass() { return MessageAction.class; }
+    public Class returnedClass() { return SMTPVirusMessageAction.class; }
     public boolean equals(Object x, Object y) { return x == y; }
     public Object deepCopy(Object value) { return value; }
     public boolean isMutable() { return false; }
@@ -36,7 +36,7 @@ public class MessageActionUserType implements UserType
         if (true == rs.wasNull() || 1 != s.length()) {
             return null;
         } else {
-            return MessageAction.getInstance(s.charAt(0));
+            return SMTPVirusMessageAction.getInstance(s.charAt(0));
         }
     }
 
@@ -47,7 +47,7 @@ public class MessageActionUserType implements UserType
             // 0 means no value/null
             ps.setString(i, "0");
         } else {
-            MessageAction a = (MessageAction)v;
+            SMTPVirusMessageAction a = (SMTPVirusMessageAction)v;
             ps.setString(i, Character.toString(a.getKey()));
         }
 

@@ -18,45 +18,42 @@ import java.util.Map;
 
 // XXX convert to enum when we dump XDoclet
 
-public class MessageAction implements Serializable
+public class SpamMessageAction implements Serializable
 {
     private static final long serialVersionUID = -6364692037092527263L;
 
     private static final Map INSTANCES = new HashMap();
 
-    /* pass and mark are equivalent */
-    public static final MessageAction PASS = new MessageAction('P', "pass message");
-    public static final MessageAction MARK = new MessageAction('M', "mark message");
-    public static final MessageAction BLOCK = new MessageAction('B', "block message");
+    public static final SpamMessageAction PASS = new SpamMessageAction('P', "pass message");
+    public static final SpamMessageAction MARK = new SpamMessageAction('M', "mark message");
 
     static {
         INSTANCES.put(PASS.getKey(), PASS);
         INSTANCES.put(MARK.getKey(), MARK);
-        INSTANCES.put(BLOCK.getKey(), BLOCK);
     }
 
     private String name;
     private char key;
 
-    private MessageAction(char key, String name)
+    private SpamMessageAction(char key, String name)
     {
         this.key = key;
         this.name = name;
     }
 
-    public static MessageAction getInstance(char key)
+    public static SpamMessageAction getInstance(char key)
     {
-        return (MessageAction)INSTANCES.get(key);
+        return (SpamMessageAction)INSTANCES.get(key);
     }
 
-    public static MessageAction getInstance(String name)
+    public static SpamMessageAction getInstance(String name)
     {
-        MessageAction a;
+        SpamMessageAction zMsgAction;
         for (Iterator i = INSTANCES.keySet().iterator(); true == i.hasNext(); )
         {
-            a = (MessageAction)INSTANCES.get(i.next());
-            if (name.equals(a.getName())) {
-                return a;
+            zMsgAction = (SpamMessageAction)INSTANCES.get(i.next());
+            if (name.equals(zMsgAction.getName())) {
+                return zMsgAction;
             }
         }
         return null;
@@ -82,33 +79,15 @@ public class MessageAction implements Serializable
         return getInstance(key);
     }
 
-    private static MessageAction[] getValues()
+    public static SpamMessageAction[] getValues()
     {
-        MessageAction[] azMsgAction = new MessageAction[INSTANCES.size()];
+        SpamMessageAction[] azMsgAction = new SpamMessageAction[INSTANCES.size()];
         Iterator iter = INSTANCES.keySet().iterator();
-        MessageAction zMsgAction;
+        SpamMessageAction zMsgAction;
         for (int i = 0; true == iter.hasNext(); i++) {
-            zMsgAction = (MessageAction)INSTANCES.get(iter.next());
+            zMsgAction = (SpamMessageAction)INSTANCES.get(iter.next());
             azMsgAction[i] = zMsgAction;
         }
         return azMsgAction;
-    }
-
-    public static MessageAction[] getSMTPValues()
-    {
-        return getValues();
-    }
-
-    public static MessageAction[] getPOPValues()
-    {
-        MessageAction[] azMsgAction = new MessageAction[1 + 1];
-        azMsgAction[0] = PASS;
-        azMsgAction[1] = MARK;
-        return azMsgAction;
-    }
-
-    public static MessageAction[] getIMAPValues()
-    {
-        return getPOPValues();
     }
 }

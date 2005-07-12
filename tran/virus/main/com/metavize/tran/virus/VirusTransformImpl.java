@@ -31,8 +31,9 @@ import com.metavize.mvvm.tran.Interface;
 import com.metavize.mvvm.tran.MimeType;
 import com.metavize.mvvm.tran.MimeTypeRule;
 import com.metavize.mvvm.tran.StringRule;
-import com.metavize.tran.mail.MessageAction;
-import com.metavize.tran.mail.NotifyAction;
+import com.metavize.tran.mail.SMTPNotifyAction;
+import com.metavize.tran.mail.SMTPVirusMessageAction;
+import com.metavize.tran.mail.VirusMessageAction;
 import com.metavize.tran.token.TokenAdaptor;
 import net.sf.hibernate.HibernateException;
 import net.sf.hibernate.Query;
@@ -191,14 +192,14 @@ public class VirusTransformImpl extends AbstractTransform
         vs.setFtpInbound(new VirusConfig(true, true, "Scan incoming files" ));
         vs.setFtpOutbound(new VirusConfig(false, true, "Scan outgoing files" ));
 
-        vs.setSMTPInbound(new VirusSMTPConfig(true, MessageAction.BLOCK, NotifyAction.NEITHER, false, "Scan incoming SMTP e-mail" ));
-        vs.setSMTPOutbound(new VirusSMTPConfig(false, MessageAction.PASS, NotifyAction.NEITHER, false, "Scan outgoing SMTP e-mail" ));
+        vs.setSMTPInbound(new VirusSMTPConfig(true, SMTPVirusMessageAction.CLEAN, SMTPNotifyAction.NEITHER, false, "Scan incoming SMTP e-mail" ));
+        vs.setSMTPOutbound(new VirusSMTPConfig(false, SMTPVirusMessageAction.PASS, SMTPNotifyAction.NEITHER, false, "Scan outgoing SMTP e-mail" ));
 
-        vs.setPOPInbound(new VirusPOPConfig(true, MessageAction.BLOCK, NotifyAction.NEITHER, false, "Scan incoming POP e-mail" ));
-        vs.setPOPOutbound(new VirusPOPConfig(false, MessageAction.PASS, NotifyAction.NEITHER, false, "Scan outgoing POP e-mail" ));
+        vs.setPOPInbound(new VirusPOPConfig(true, VirusMessageAction.CLEAN, false, "Scan incoming POP e-mail" ));
+        vs.setPOPOutbound(new VirusPOPConfig(false, VirusMessageAction.PASS, false, "Scan outgoing POP e-mail" ));
 
-        vs.setIMAPInbound(new VirusIMAPConfig(true, MessageAction.BLOCK, NotifyAction.NEITHER, false, "Scan incoming IMAP e-mail" ));
-        vs.setIMAPOutbound(new VirusIMAPConfig(false, MessageAction.PASS, NotifyAction.NEITHER, false, "Scan outgoing IMAP e-mail" ));
+        vs.setIMAPInbound(new VirusIMAPConfig(true, VirusMessageAction.CLEAN, false, "Scan incoming IMAP e-mail" ));
+        vs.setIMAPOutbound(new VirusIMAPConfig(false, VirusMessageAction.PASS, false, "Scan outgoing IMAP e-mail" ));
 
         /**
          * FIXME, need list with booleans

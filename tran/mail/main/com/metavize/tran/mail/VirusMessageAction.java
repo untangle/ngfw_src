@@ -18,46 +18,42 @@ import java.util.Map;
 
 // XXX convert to enum when we dump XDoclet
 
-public class NotifyAction implements Serializable
+public class VirusMessageAction implements Serializable
 {
     private static final long serialVersionUID = -6364692037092527263L;
 
     private static final Map INSTANCES = new HashMap();
 
-    public static final NotifyAction SENDER = new NotifyAction('S', "notify sender");
-    public static final NotifyAction RECEIVER = new NotifyAction('R', "notify receiver");
-    public static final NotifyAction BOTH = new NotifyAction('B', "notify sender and receiver");
-    public static final NotifyAction NEITHER = new NotifyAction('N', "do not notify");
+    public static final VirusMessageAction PASS = new VirusMessageAction('P', "pass message");
+    public static final VirusMessageAction CLEAN = new VirusMessageAction('C', "clean message");
 
     static {
-        INSTANCES.put(SENDER.getKey(), SENDER);
-        INSTANCES.put(RECEIVER.getKey(), RECEIVER);
-        INSTANCES.put(BOTH.getKey(), BOTH);
-        INSTANCES.put(NEITHER.getKey(), NEITHER);
+        INSTANCES.put(PASS.getKey(), PASS);
+        INSTANCES.put(CLEAN.getKey(), CLEAN);
     }
 
     private String name;
     private char key;
 
-    private NotifyAction(char key, String name)
+    private VirusMessageAction(char key, String name)
     {
         this.key = key;
         this.name = name;
     }
 
-    public static NotifyAction getInstance(char key)
+    public static VirusMessageAction getInstance(char key)
     {
-        return (NotifyAction)INSTANCES.get(key);
+        return (VirusMessageAction)INSTANCES.get(key);
     }
 
-    public static NotifyAction getInstance(String name)
+    public static VirusMessageAction getInstance(String name)
     {
-        NotifyAction a;
+        VirusMessageAction zMsgAction;
         for (Iterator i = INSTANCES.keySet().iterator(); true == i.hasNext(); )
         {
-            a = (NotifyAction)INSTANCES.get(i.next());
-            if (name.equals(a.getName())) {
-                return a;
+            zMsgAction = (VirusMessageAction)INSTANCES.get(i.next());
+            if (name.equals(zMsgAction.getName())) {
+                return zMsgAction;
             }
         }
         return null;
@@ -83,13 +79,13 @@ public class NotifyAction implements Serializable
         return getInstance(key);
     }
 
-    public static NotifyAction[] getValues()
+    public static VirusMessageAction[] getValues()
     {
-        NotifyAction[] azMsgAction = new NotifyAction[INSTANCES.size()];
+        VirusMessageAction[] azMsgAction = new VirusMessageAction[INSTANCES.size()];
         Iterator iter = INSTANCES.keySet().iterator();
-        NotifyAction zMsgAction;
+        VirusMessageAction zMsgAction;
         for (int i = 0; true == iter.hasNext(); i++) {
-            zMsgAction = (NotifyAction)INSTANCES.get(iter.next());
+            zMsgAction = (VirusMessageAction)INSTANCES.get(iter.next());
             azMsgAction[i] = zMsgAction;
         }
         return azMsgAction;

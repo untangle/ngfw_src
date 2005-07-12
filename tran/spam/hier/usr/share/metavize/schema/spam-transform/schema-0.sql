@@ -13,7 +13,6 @@ CREATE TABLE tr_spam_pop_config (
     config_id int8 NOT NULL,
     scan bool NOT NULL,
     msg_action char(1) NOT NULL,
-    notify_action char(1) NOT NULL,
     copy_on_block bool NOT NULL,
     notes varchar(255),
     PRIMARY KEY (config_id));
@@ -22,7 +21,6 @@ CREATE TABLE tr_spam_imap_config (
     config_id int8 NOT NULL,
     scan bool NOT NULL,
     msg_action char(1) NOT NULL,
-    notify_action char(1) NOT NULL,
     copy_on_block bool NOT NULL,
     notes varchar(255),
     PRIMARY KEY (config_id));

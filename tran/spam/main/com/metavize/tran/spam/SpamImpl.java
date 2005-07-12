@@ -17,8 +17,9 @@ import com.metavize.mvvm.tapi.Fitting;
 import com.metavize.mvvm.tapi.PipeSpec;
 import com.metavize.mvvm.tapi.SoloPipeSpec;
 import com.metavize.mvvm.tapi.TransformContextFactory;
-import com.metavize.tran.mail.MessageAction;
-import com.metavize.tran.mail.NotifyAction;
+import com.metavize.tran.mail.SMTPNotifyAction;
+import com.metavize.tran.mail.SMTPSpamMessageAction;
+import com.metavize.tran.mail.SpamMessageAction;
 import com.metavize.tran.token.TokenAdaptor;
 import net.sf.hibernate.HibernateException;
 import net.sf.hibernate.Query;
@@ -79,14 +80,14 @@ public class SpamImpl extends AbstractTransform implements Spam
     {
         SpamSettings zTmpSpamSettings = new SpamSettings(getTid());
 
-        zTmpSpamSettings.setSMTPInbound(new SpamSMTPConfig(true, MessageAction.MARK, NotifyAction.NEITHER, false, "Scan incoming SMTP e-mail" ));
-        zTmpSpamSettings.setSMTPOutbound(new SpamSMTPConfig(false, MessageAction.PASS, NotifyAction.NEITHER, false, "Scan outgoing SMTP e-mail" ));
+        zTmpSpamSettings.setSMTPInbound(new SpamSMTPConfig(true, SMTPSpamMessageAction.MARK, SMTPNotifyAction.NEITHER, false, "Scan incoming SMTP e-mail" ));
+        zTmpSpamSettings.setSMTPOutbound(new SpamSMTPConfig(false, SMTPSpamMessageAction.PASS, SMTPNotifyAction.NEITHER, false, "Scan outgoing SMTP e-mail" ));
 
-        zTmpSpamSettings.setPOPInbound(new SpamPOPConfig(true, MessageAction.MARK, NotifyAction.NEITHER, false, "Scan incoming POP e-mail" ));
-        zTmpSpamSettings.setPOPOutbound(new SpamPOPConfig(false, MessageAction.PASS, NotifyAction.NEITHER, false, "Scan outgoing POP e-mail" ));
+        zTmpSpamSettings.setPOPInbound(new SpamPOPConfig(true, SpamMessageAction.MARK, false, "Scan incoming POP e-mail" ));
+        zTmpSpamSettings.setPOPOutbound(new SpamPOPConfig(false, SpamMessageAction.PASS, false, "Scan outgoing POP e-mail" ));
 
-        zTmpSpamSettings.setIMAPInbound(new SpamIMAPConfig(true, MessageAction.MARK, NotifyAction.NEITHER, false, "Scan incoming IMAP e-mail" ));
-        zTmpSpamSettings.setIMAPOutbound(new SpamIMAPConfig(false, MessageAction.PASS, NotifyAction.NEITHER, false, "Scan outgoing IMAP e-mail" ));
+        zTmpSpamSettings.setIMAPInbound(new SpamIMAPConfig(true, SpamMessageAction.MARK, false, "Scan incoming IMAP e-mail" ));
+        zTmpSpamSettings.setIMAPOutbound(new SpamIMAPConfig(false, SpamMessageAction.PASS, false, "Scan outgoing IMAP e-mail" ));
 
         setSpamSettings(zTmpSpamSettings);
         return;
