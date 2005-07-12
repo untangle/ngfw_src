@@ -81,7 +81,7 @@ public class Interface implements Serializable
     @Override
     public int hashCode()
     {
-        return 17 * 37 + iface;
+        return 17 * 37 + (null == iface ? 0 : iface);
     }
 
     // serialization support --------------------------------------------------

@@ -8,6 +8,7 @@
  *
  * $Id$
  */
+
 package com.metavize.tran.virus;
 
 import java.util.ArrayList;
@@ -53,16 +54,16 @@ public class VirusTransformImpl extends AbstractTransform
 
     private final VirusScanner scanner;
 
-    private final PipeSpec[] pipeSpecs = new PipeSpec[]
-        { new SoloPipeSpec("virus-ftp", this,
-                           new TokenAdaptor(new VirusFtpFactory(this)),
-                           Fitting.FTP_TOKENS, Affinity.SERVER, 0),
-          new SoloPipeSpec("virus-http", this,
-                           new TokenAdaptor(new VirusHttpFactory(this)),
-                           Fitting.HTTP_TOKENS, Affinity.SERVER, 0),
-          new SoloPipeSpec("virus-smtp", this,
-                           new TokenAdaptor(new VirusSmtpFactory(this)),
-                           Fitting.SMTP_TOKENS, Affinity.SERVER, 0),
+    private final PipeSpec[] pipeSpecs = new PipeSpec[] {
+        new SoloPipeSpec("virus-ftp", this,
+                         new TokenAdaptor(new VirusFtpFactory(this)),
+                         Fitting.FTP_TOKENS, Affinity.SERVER, 0),
+        new SoloPipeSpec("virus-http", this,
+                         new TokenAdaptor(new VirusHttpFactory(this)),
+                         Fitting.HTTP_TOKENS, Affinity.SERVER, 0),
+        new SoloPipeSpec("virus-smtp", this,
+                         new TokenAdaptor(new VirusSmtpFactory(this)),
+                         Fitting.SMTP_TOKENS, Affinity.SERVER, 0)
         };
 
     private final Logger logger = Logger.getLogger(VirusTransformImpl.class);

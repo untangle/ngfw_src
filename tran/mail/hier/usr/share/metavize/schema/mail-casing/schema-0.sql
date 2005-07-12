@@ -29,4 +29,4 @@ CREATE TABLE email_message_stats (
     int msg_attachments,
     PRIMARY KEY (id));
 
-ALTER TABLE tr_mail_settings ADD CONSTRAINT fkd38905aa1446f FOREIGN KEY (tid) REFERENCES tid;
+ALTER TABLE tr_mail_settings ADD CONSTRAINT tr_mail_settings_tid_fk FOREIGN KEY (tid) REFERENCES tid;
