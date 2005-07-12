@@ -22,7 +22,7 @@ import java.util.ArrayList;
  * @author <a href="mailto:cng@metavize.com">C Ng</a>
  * @version 1.0
  * @hibernate.class
- * table="EMAIL_MESSAGE_STATS"
+ * table="TR_MAIL_MESSAGE_STATS"
  * mutable="false"
  */
 public class MessageStats implements Serializable

@@ -10,6 +10,7 @@
  */
 package com.metavize.tran.mail;
 
+import com.metavize.mvvm.tapi.IPSession;
 import org.apache.log4j.Logger;
 
 import java.io.Serializable;
@@ -22,19 +23,27 @@ import java.util.ArrayList;
  * @author <a href="mailto:cng@metavize.com">C Ng</a>
  * @version 1.0
  * @hibernate.class
- * table="EMAIL_MESSAGE_INFO"
+ * table="TR_MAIL_MESSAGE_INFO"
  * mutable="false"
  */
 public class MessageInfo implements Serializable
 {
     /* constants */
+    public static final int SMTP_PORT = 25;
+    public static final int POP3_PORT = 110;
+    public static final int IMAP4_PORT = 143;
+
     // private static final Logger zLog = Logger.getLogger(MessageInfo.class.getName());
 
     /* columns */
     private Long id; /* msg_id */
+
+    private int sessionId; /* s_id */
     // private MLHandlerInfo handlerInfo; /* hdl_id */
 
     private String subject;
+
+    private char serverType;
 
     /* Senders/Receivers */
     private List addressList = new ArrayList();
@@ -42,9 +51,27 @@ public class MessageInfo implements Serializable
     /* constructors */
     public MessageInfo() {}
 
-    public MessageInfo(String subject)
+    public MessageInfo(IPSession session, String subject)
     {
         this.subject = subject;
+        this.sessionId = session.id();
+        
+        // Hack for figuring out protocol.  Works fine until we move to dynamic pipelines. XXX
+        int serverPort = session.serverPort();
+        switch (serverPort) {
+        case SMTP_PORT:
+            serverType = 'S';
+            break;
+        case POP3_PORT:
+            serverType = 'P';
+            break;
+        case IMAP4_PORT:
+            serverType = 'I';
+            break;
+        default:
+            serverType = 'U';
+            break;
+        }
     }
 
     /* Business methods */
@@ -96,6 +123,23 @@ public class MessageInfo implements Serializable
     }
 
     /**
+     * Session id.
+     *
+     * @return the session id.
+     * @hibernate.property
+     * column="SESSION_ID"
+     */
+    public int getSessionId()
+    {
+        return sessionId;
+    }
+
+    public void setSessionId(int sessionId)
+    {
+        this.sessionId = sessionId;
+    }
+
+    /**
      * Identify RFC822 Subject.
      *
      * @return RFC822 Subject.
@@ -110,5 +154,25 @@ public class MessageInfo implements Serializable
     public void setSubject(String subject)
     {
         this.subject = subject;
+    }
+
+    /**
+     * Identify server type (SMTP, POP3, or IMAP4).
+     *
+     * @return server type.
+     * @hibernate.property
+     * column="SERVER_TYPE"
+     * type="char"
+     * length="1"
+     * not-null="true"
+     */
+    public char getServerType()
+    {
+        return serverType;
+    }
+
+    public void setServerType(char serverType)
+    {
+        this.serverType = serverType;
     }
 }

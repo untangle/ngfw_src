@@ -18,7 +18,7 @@ import java.io.Serializable;
  * @author <a href="mailto:cng@metavize.com">C Ng</a>
  * @version 1.0
  * @hibernate.class
- * table="EMAIL_MESSAGE_INFO_ADDR"
+ * table="TR_MAIL_MESSAGE_INFO_ADDR"
  * mutable="false"
  */
 public class MessageInfoAddr implements Serializable
