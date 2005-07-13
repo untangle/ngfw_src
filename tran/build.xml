@@ -26,7 +26,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <property name="bases"
         value="virus"/>
   <property name="transforms"
-        value="nat,firewall,airgap,reporting,protofilter,test,hauri,clam,spyware,httpblocker,spam"/>
+        value="nat,firewall,airgap,reporting,protofilter,test,sigma,hauri,clam,spyware,httpblocker,spam"/>
 
 
 
@@ -35,38 +35,8 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <!--              -->
 
   <target name="pkg.gensrc"/>
-<!--     <var name="tran.type" value="casing"/> -->
-<!--     <foreach target="xdoclet.tran" param="tran.name" inheritall="true" -->
-<!--              parallel="false" list="${casings}"/> -->
-<!--     <var name="tran.type" value="base"/> -->
-<!--     <foreach target="xdoclet.tran" param="tran.name" inheritall="true" -->
-<!--              parallel="false" list="${bases}"/> -->
-<!--     <var name="tran.type" value="transform"/> -->
-<!--     <foreach target="xdoclet.tran" param="tran.name" inheritall="true" -->
-<!--              parallel="false" list="${transforms}"/> -->
-<!--   </target> -->
   <target name="pkg.compile"/>
-<!--     <var name="tran.type" value="casing"/> -->
-<!--     <foreach target="compile.tran" param="tran.name" inheritall="true" -->
-<!--              parallel="false" list="${casings}"/> -->
-<!--     <var name="tran.type" value="base"/> -->
-<!--     <foreach target="compile.tran" param="tran.name" inheritall="true" -->
-<!--              parallel="false" list="${bases}"/> -->
-<!--     <var name="tran.type" value="transform"/> -->
-<!--     <foreach target="compile.tran" param="tran.name" inheritall="true" -->
-<!--              parallel="false" list="${transforms}"/> -->
-<!--   </target> -->
   <target name="pkg.jar"/>
-<!--     <var name="tran.type" value="casing"/> -->
-<!--     <foreach target="mar.tran" param="tran.name" inheritall="true" -->
-<!--              parallel="false" list="${casings}"/> -->
-<!--     <var name="tran.type" value="base"/> -->
-<!--     <foreach target="mar.tran" param="tran.name" inheritall="true" -->
-<!--              parallel="false" list="${bases}"/> -->
-<!--     <var name="tran.type" value="transform"/> -->
-<!--     <foreach target="mar.tran" param="tran.name" inheritall="true" -->
-<!--              parallel="false" list="${transforms}"/> -->
-<!--   </target> -->
   <target name="pkg.install">
     <var name="tran.type" value="casing"/>
     <foreach target="build.tran" param="tran.name" inheritall="true"
@@ -327,6 +297,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <target name="install.reporting"/>
   <target name="install.email"/>
   <target name="install.protofilter"/>
+  <target name="install.sigma"/>
 
 
   <!--              -->
@@ -413,6 +384,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <target name="jar.httpblocker"/>
   <target name="jar.spam"/>
   <target name="jar.protofilter"/>
+  <target name="jar.sigma"/>
   <target name="jar.airgap"/>
   <target name="jar.reporting"/>
   <target name="jar.email"> <!-- include Sophos, Fprot, Clam, and Hauri Scanners -->
@@ -484,27 +456,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <target name="compile.reporting"/>
   <target name="compile.email"/>
   <target name="compile.protofilter"/>
-
-    <!-- build LoadPatterns.java -->
-    <!-- map all files to LoadPatterns.java, if any are newer, run mkLoadPatterns.sh -->
-    <!--     <fileset id="pat.fileset" dir="./protofilter/pattern-build/" -->
-    <!--              includes="**/*.pat,**/*.java,mkLoadPatterns.sh"> -->
-    <!--       <depend targetdir="protofilter/main/com/metavize/tran/protofilter/"> -->
-    <!--         <mapper type="merge" to="LoadPatterns.java"/> -->
-    <!--       </depend> -->
-    <!--     </fileset> -->
-    <!--     <pathconvert pathsep=" " refid="pat.fileset" property="patList"/> -->
-    <!--     <if> -->
-    <!--       <not><equals arg1="${patList}" arg2="" /></not> -->
-    <!--       <then> -->
-    <!--         <exec executable="/bin/sh" failonerror="true"> -->
-    <!--           <arg value="-c"/> -->
-    <!--           <arg value="./protofilter/pattern-build/mkLoadPatterns.sh"/> -->
-    <!--         </exec> -->
-    <!--       </then> -->
-    <!--     </if> -->
-    <!--   </target> -->
-
+  <target name="compile.sigma"/>
 
   <!-- Javadoc target -->
   <target name="jdoc" depends="pkg.jar">

@@ -1,0 +1,3 @@
+com/metavize/tran/sigma/SigmaMaster.jasper:Rogue_Protocol_Control--Summary:Summary
+com/metavize/tran/sigma/SigmaDetail.jasper:Rogue_Protocol_Control--Policy_Violations:Protocol Policy Violations
+com.metavize.tran.sigma.SigmaSummarizer:summarizer:Summarizer
