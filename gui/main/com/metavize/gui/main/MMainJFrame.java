@@ -166,8 +166,9 @@ public class MMainJFrame extends javax.swing.JFrame {
         adminJButton = new javax.swing.JButton();
         networkJButton = new javax.swing.JButton();
         remoteJButton = new javax.swing.JButton();
-        maintenanceJButton = new javax.swing.JButton();
         backupJButton = new javax.swing.JButton();
+        protocolJButton = new javax.swing.JButton();
+        maintenanceJButton = new javax.swing.JButton();
         licenseJButton = new javax.swing.JButton();
         aboutJButton = new javax.swing.JButton();
         configurationSpacerJPanel1 = new javax.swing.JPanel();
@@ -390,6 +391,52 @@ public class MMainJFrame extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(0, 1, 3, 3);
         jPanel8.add(remoteJButton, gridBagConstraints);
 
+        backupJButton.setFont(new java.awt.Font("Arial", 0, 12));
+        backupJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText32x32.png")));
+        backupJButton.setText("<html>Backup and<br>Restore</html>");
+        backupJButton.setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.EtchedBorder(), new javax.swing.border.EmptyBorder(new java.awt.Insets(2, 2, 2, 0))));
+        backupJButton.setDoubleBuffered(true);
+        backupJButton.setFocusPainted(false);
+        backupJButton.setFocusable(false);
+        backupJButton.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        backupJButton.setMargin(new java.awt.Insets(1, 3, 4, 2));
+        backupJButton.setMaximumSize(new java.awt.Dimension(810, 370));
+        backupJButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                backupJButtonActionPerformed(evt);
+            }
+        });
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(10, 1, 3, 3);
+        jPanel8.add(backupJButton, gridBagConstraints);
+
+        protocolJButton.setFont(new java.awt.Font("Arial", 0, 12));
+        protocolJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText32x32.png")));
+        protocolJButton.setText("<html>Traffic Protocol<br>Settings</html>");
+        protocolJButton.setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.EtchedBorder(), new javax.swing.border.EmptyBorder(new java.awt.Insets(2, 2, 2, 0))));
+        protocolJButton.setDoubleBuffered(true);
+        protocolJButton.setFocusPainted(false);
+        protocolJButton.setFocusable(false);
+        protocolJButton.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        protocolJButton.setMargin(new java.awt.Insets(1, 3, 4, 2));
+        protocolJButton.setMaximumSize(new java.awt.Dimension(810, 370));
+        protocolJButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                protocolJButtonActionPerformed(evt);
+            }
+        });
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 1, 3, 3);
+        jPanel8.add(protocolJButton, gridBagConstraints);
+
         maintenanceJButton.setFont(new java.awt.Font("Arial", 0, 12));
         maintenanceJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText32x32.png")));
         maintenanceJButton.setText("<html>Support and<br>Maintenance</html>");
@@ -413,29 +460,6 @@ public class MMainJFrame extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(0, 1, 3, 3);
         jPanel8.add(maintenanceJButton, gridBagConstraints);
 
-        backupJButton.setFont(new java.awt.Font("Arial", 0, 12));
-        backupJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText32x32.png")));
-        backupJButton.setText("<html>Backup and<br>Restore</html>");
-        backupJButton.setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.EtchedBorder(), new javax.swing.border.EmptyBorder(new java.awt.Insets(2, 2, 2, 0))));
-        backupJButton.setDoubleBuffered(true);
-        backupJButton.setFocusPainted(false);
-        backupJButton.setFocusable(false);
-        backupJButton.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        backupJButton.setMargin(new java.awt.Insets(1, 3, 4, 2));
-        backupJButton.setMaximumSize(new java.awt.Dimension(810, 370));
-        backupJButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                backupJButtonActionPerformed(evt);
-            }
-        });
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 1, 3, 3);
-        jPanel8.add(backupJButton, gridBagConstraints);
-
         licenseJButton.setFont(new java.awt.Font("Arial", 0, 12));
         licenseJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText32x32.png")));
         licenseJButton.setText("<html>License<br>Agreement</html>");
@@ -456,7 +480,7 @@ public class MMainJFrame extends javax.swing.JFrame {
         gridBagConstraints.gridx = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 1, 3, 3);
+        gridBagConstraints.insets = new java.awt.Insets(10, 1, 3, 3);
         jPanel8.add(licenseJButton, gridBagConstraints);
 
         aboutJButton.setFont(new java.awt.Font("Arial", 0, 12));
@@ -565,6 +589,17 @@ public class MMainJFrame extends javax.swing.JFrame {
         java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
         setBounds((screenSize.width-1024)/2, (screenSize.height-768)/2, 1024, 768);
     }//GEN-END:initComponents
+
+    private void protocolJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_protocolJButtonActionPerformed
+        try{
+	    ProtocolJDialog protocolJDialog = new ProtocolJDialog();
+	    protocolJDialog.setVisible(true);
+	}
+	catch(Exception e){
+	    try{ Util.handleExceptionWithRestart("Error showing protocol settings", e); }
+	    catch(Exception f){ Util.handleExceptionNoRestart("Error showing protocol settings", f); }
+	}
+    }//GEN-LAST:event_protocolJButtonActionPerformed
 
     private void maintenanceJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_maintenanceJButtonActionPerformed
         try{
@@ -798,6 +833,7 @@ public class MMainJFrame extends javax.swing.JFrame {
     private javax.swing.JButton maintenanceJButton;
     private javax.swing.JButton metavizeJButton;
     private javax.swing.JButton networkJButton;
+    private javax.swing.JButton protocolJButton;
     private javax.swing.JButton remoteJButton;
     private javax.swing.JPanel storeJPanel;
     private javax.swing.JScrollPane storeJScrollPane;

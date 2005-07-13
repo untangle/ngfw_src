@@ -9,7 +9,7 @@ Package: ftp-casing
 Architecture: any
 Depends: mvvm
 XB-Price: 1000
-XB-Display-Name: FTP Casing
+XB-Display-Name: FTP
 Description: The Metavize FTP Decoder
  The FTP Casing allows other software appliances
  to parse and analyze FTP traffic and documents.
@@ -18,7 +18,7 @@ Package: http-casing
 Architecture: any
 Depends: mvvm
 XB-Price: 1000
-XB-Display-Name: HTTP Casing
+XB-Display-Name: Web
 Description: The Metavize Web/http Decoder
  The HTTP Casing allows other software appliances
  to parse and analyze HTTP traffic and documents.
@@ -27,7 +27,7 @@ Package: mail-casing
 Architecture: any
 Depends: mvvm
 XB-Price: 1000
-XB-Display-Name: Mail Casing
+XB-Display-Name: Email
 Description: The Metavize eMail Decoder
  The Mail Casing allows other software appliances
  to parse and analyze eMail (SMTP/IMAP/POP3) traffic and documents.

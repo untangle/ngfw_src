@@ -251,7 +251,8 @@ public class MTransformJButton extends JButton {
 	
         public void run(){
 	    try{
-		Util.getMPipelineJPanel().addTransform(MTransformJButton.this.getName());
+		Util.getMPipelineJPanel().addTransform(MTransformJButton.this.getName());  // add to the rack
+                Util.getMPipelineJPanel().loadAllCasings(false); // to load casings, but not their GUIs
 		// LET THE USER KNOW WERE DONE
 		MTransformJButton.this.setDeployedView();
 	    }

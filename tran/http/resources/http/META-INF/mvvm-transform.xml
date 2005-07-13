@@ -13,9 +13,9 @@ $Id: mvvm-transform.xml,v 1.3 2005/02/07 22:15:39 amread Exp $
 
 <mvvm-transform>
   <transform-desc name="http-casing"
-                  display-name="Http"
+                  display-name="Web"
                   classname="com.metavize.tran.http.HttpTransformImpl"
-                  gui-classname="com.metavize.tran.test.gui.MTransformJPanel"
+                  gui-classname="com.metavize.tran.http.gui.MCasingJPanel"
                   single-instance="true"/>
   <export>http-export.jar</export>
 </mvvm-transform>

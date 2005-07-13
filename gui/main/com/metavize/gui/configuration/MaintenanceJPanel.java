@@ -12,7 +12,9 @@ import com.metavize.gui.util.*;
 import com.metavize.mvvm.security.*;
 import com.metavize.mvvm.*;
 import com.metavize.mvvm.tran.*;
-
+//import com.metavize.tran.http.HttpSettings;
+//import com.metavize.tran.ftp.FtpSettings;
+//import com.metavize.tran.mail.MailTransformSettings;
 import java.awt.*;
 
 /**
@@ -34,13 +36,13 @@ public class MaintenanceJPanel extends javax.swing.JPanel implements Savable, Re
         // REPORTING ENABLED //////
         boolean isExceptionReportingEnabled = reportJCheckBox.isSelected();
         
+        
 	// SAVE SETTINGS ////////////
 	if( !validateOnly ){
-	    NetworkingConfiguration networkingConfiguration = (NetworkingConfiguration) settings;
+	    NetworkingConfiguration networkingConfiguration = Util.getNetworkingManager().get();
             networkingConfiguration.isSshEnabled( isSshEnabled );
-            networkingConfiguration.isExceptionReportingEnabled( isExceptionReportingEnabled );
+            networkingConfiguration.isExceptionReportingEnabled( isExceptionReportingEnabled );            
         }
-
     }
 
     public void doRefresh(Object settings){
@@ -62,11 +64,6 @@ public class MaintenanceJPanel extends javax.swing.JPanel implements Savable, Re
     private void initComponents() {//GEN-BEGIN:initComponents
         java.awt.GridBagConstraints gridBagConstraints;
 
-        dhcpButtonGroup = new javax.swing.ButtonGroup();
-        tcpWindowButtonGroup = new javax.swing.ButtonGroup();
-        externalAdminButtonGroup = new javax.swing.ButtonGroup();
-        internalAdminButtonGroup = new javax.swing.ButtonGroup();
-        restrictAdminButtonGroup = new javax.swing.ButtonGroup();
         sshButtonGroup = new javax.swing.ButtonGroup();
         maintainRemoteJPanel = new javax.swing.JPanel();
         sshEnabledRadioButton = new javax.swing.JRadioButton();
@@ -76,9 +73,9 @@ public class MaintenanceJPanel extends javax.swing.JPanel implements Savable, Re
 
         setLayout(new java.awt.GridBagLayout());
 
-        setMaximumSize(new java.awt.Dimension(563, 161));
-        setMinimumSize(new java.awt.Dimension(563, 161));
-        setPreferredSize(new java.awt.Dimension(563, 161));
+        setMaximumSize(new java.awt.Dimension(563, 180));
+        setMinimumSize(new java.awt.Dimension(563, 180));
+        setPreferredSize(new java.awt.Dimension(563, 180));
         maintainRemoteJPanel.setLayout(new java.awt.GridBagLayout());
 
         maintainRemoteJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Support", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
@@ -132,17 +129,12 @@ public class MaintenanceJPanel extends javax.swing.JPanel implements Savable, Re
 
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.ButtonGroup dhcpButtonGroup;
-    private javax.swing.ButtonGroup externalAdminButtonGroup;
-    private javax.swing.ButtonGroup internalAdminButtonGroup;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JPanel maintainRemoteJPanel;
     private javax.swing.JCheckBox reportJCheckBox;
-    private javax.swing.ButtonGroup restrictAdminButtonGroup;
     private javax.swing.ButtonGroup sshButtonGroup;
     public javax.swing.JRadioButton sshDisabledRadioButton;
     public javax.swing.JRadioButton sshEnabledRadioButton;
-    private javax.swing.ButtonGroup tcpWindowButtonGroup;
     // End of variables declaration//GEN-END:variables
     
 

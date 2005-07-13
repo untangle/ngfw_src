@@ -45,14 +45,6 @@ public class MPipelineJPanel extends javax.swing.JPanel {
         TransformContext installedTransformContext;
         initialInstallCount = installedTransformID.length;
         for(int i=0; i<installedTransformID.length; i++){
-            /*
-	    System.err.println("-- start ------------------------");
-	    System.err.println("tid: " + installedTransformID[i] );
-	    System.err.println("transform context: " + Util.getTransformManager().transformContext(installedTransformID[i]) );
-	    System.err.println("mackage desc: " + Util.getTransformManager().transformContext(installedTransformID[i]).getMackageDesc() );
-	    System.err.println("mackage type: " + Util.getTransformManager().transformContext(installedTransformID[i]).getMackageDesc().getType() );
-	    System.err.println("-- end ------------------------");
-             */
 	    if( Util.getTransformManager().transformContext(installedTransformID[i]).getMackageDesc().getType() != MackageDesc.TRANSFORM_TYPE ){
 		installedCount++;
 		continue;
@@ -73,7 +65,40 @@ public class MPipelineJPanel extends javax.swing.JPanel {
         }
     }
 
-
+    // USED FOR LOADING/PRELOADING OF CASINGS
+    public MCasingJPanel[] loadAllCasings(boolean generateGuis){
+	Vector<MCasingJPanel> mCasingJPanels = new Vector<MCasingJPanel>();
+	Tid allTransformInstances[] = Util.getTransformManager().transformInstances();
+	TransformContext transformContext = null;
+	String casingName = null;
+	String casingGuiClassName = null;
+	Class casingGuiClass = null;
+	Constructor casingGuiConstructor = null;
+	MCasingJPanel mCasingJPanel = null;
+        for(Tid tid : allTransformInstances){
+	    transformContext = Util.getTransformManager().transformContext(tid);
+	    casingName = transformContext.getTransformDesc().getName();
+	    casingGuiClassName = transformContext.getTransformDesc().getGuiClassName();
+	    if( transformContext.getMackageDesc().getType() == MackageDesc.CASING_TYPE ){
+		if( casingName.equals("mail-casing")
+		    || casingName.equals("http-casing")
+		    || casingName.equals("ftp-casing") ){
+		    try{
+			casingGuiClass = Util.getClassLoader().loadClass( casingGuiClassName, casingName );
+			if(generateGuis){
+			    casingGuiConstructor = casingGuiClass.getConstructor(new Class[]{TransformContext.class});
+			    mCasingJPanel = (MCasingJPanel) casingGuiConstructor.newInstance(new Object[]{transformContext});
+			    mCasingJPanels.add(mCasingJPanel);
+			}
+		    }
+		    catch(Exception e){
+			Util.handleExceptionNoRestart("Error building gui from casing context: " + casingName, e);
+		    }
+		}
+	    }
+	}
+	return mCasingJPanels.toArray( new MCasingJPanel[0] );
+    }
 
     public synchronized void removeTransform(final MTransformJPanel mTransformJPanel) {
 	String removableName = null;
@@ -111,46 +136,46 @@ public class MPipelineJPanel extends javax.swing.JPanel {
 
     public MTransformJPanel addTransform(Object reference) throws Exception {
 
+	TransformContext transformContext = null;
+	Class transformGUIClass = null;
+	Constructor transformGUIConstructor = null;
         MTransformJPanel mTransformJPanel = null;
 
+	// GET A TRANSFORM CONTEXT, OR BAIL
         if(reference instanceof String){ // ADD FROM BUTTON CLICK
-            Tid tID = null;
-            Class transformGUIClass;
-            TransformContext transformContext = null;
-            Constructor transformConstructor = null;
             try{
-		tID = Util.getTransformManager().instantiate((String)reference);
+		Tid tID = Util.getTransformManager().instantiate((String)reference);
 		transformContext = Util.getTransformManager().transformContext(tID);
-		transformGUIClass = Util.getClassLoader().loadClass( Util.getTransformManager().transformContext(tID).getTransformDesc().getGuiClassName(), transformContext.getTransformDesc().getName());
-		transformConstructor = transformGUIClass.getConstructor(new Class[]{TransformContext.class});
-		mTransformJPanel = (MTransformJPanel) transformConstructor.newInstance(new Object[]{transformContext});
-                ((MRackJPanel)transformJPanel).addTransform(mTransformJPanel);
             }
             catch(Exception e){
-                Util.handleExceptionWithRestart("Error adding transform from string " + (String) reference, e);
+                Util.handleExceptionWithRestart("Error building transform context from string " + (String) reference, e);
             }
         }
         else if(reference instanceof TransformContext){  // ADD DURING CLIENT INIT
-            try{
-		Class transformGUIClass = Util.getClassLoader().loadClass( ((TransformContext)reference).getTransformDesc().getGuiClassName(), ((TransformContext)reference).getTransformDesc().getName() );
-		Constructor transformGUIConstructor = transformGUIClass.getConstructor(new Class[]{TransformContext.class});
-		mTransformJPanel = (MTransformJPanel) transformGUIConstructor.newInstance(new Object[]{((TransformContext)reference)});
-                ((MRackJPanel)transformJPanel).addTransform(mTransformJPanel);
-            }
-            catch(Exception e){
-                Util.handleExceptionWithRestart("Error adding transform from transform context: " + ((TransformContext)reference).getTransformDesc().getName(), e);
-            }
-            finally{
-                synchronized(this){
-                    Util.getStatusJProgressBar().setValue(16 + (int) ((((float)installedCount)/(float)initialInstallCount)*48f) );
-                    installedCount++;
-                }
-            }
-        }
-        else{
+	    transformContext = (TransformContext) reference;
+	}
+	else{
             Util.printMessage("unknown reference type: " + reference);
             return null;
         }
+	
+	// CONSTRUCT A GUI FROM THE TRANSFORM CONTEXT
+	try{
+	    transformGUIClass = Util.getClassLoader().loadClass( transformContext.getTransformDesc().getGuiClassName(),
+								 transformContext.getTransformDesc().getName() );
+	    transformGUIConstructor = transformGUIClass.getConstructor(new Class[]{TransformContext.class});
+	    mTransformJPanel = (MTransformJPanel) transformGUIConstructor.newInstance(new Object[]{transformContext});
+	    ((MRackJPanel)transformJPanel).addTransform(mTransformJPanel);
+	}
+	catch(Exception e){
+	    Util.handleExceptionWithRestart("Error building appliance from transform context: " + transformContext.getTransformDesc().getName(), e);
+	}
+	finally{
+	    synchronized(this){
+		Util.getStatusJProgressBar().setValue(16 + (int) ((((float)installedCount)/(float)initialInstallCount)*48f) );
+		installedCount++;
+	    }
+	}
 	return mTransformJPanel;
     }
 
