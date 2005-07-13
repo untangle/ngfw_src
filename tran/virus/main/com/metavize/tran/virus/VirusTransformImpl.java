@@ -193,14 +193,14 @@ public class VirusTransformImpl extends AbstractTransform
         vs.setFtpInbound(new VirusConfig(true, true, "Scan incoming files" ));
         vs.setFtpOutbound(new VirusConfig(false, true, "Scan outgoing files" ));
 
-        vs.setSMTPInbound(new VirusSMTPConfig(true, SMTPVirusMessageAction.CLEAN, SMTPNotifyAction.NEITHER, false, "Scan incoming SMTP e-mail" ));
-        vs.setSMTPOutbound(new VirusSMTPConfig(false, SMTPVirusMessageAction.PASS, SMTPNotifyAction.NEITHER, false, "Scan outgoing SMTP e-mail" ));
+        vs.setSMTPInbound(new VirusSMTPConfig(true, SMTPVirusMessageAction.CLEAN, SMTPNotifyAction.NEITHER, "Scan incoming SMTP e-mail" ));
+        vs.setSMTPOutbound(new VirusSMTPConfig(false, SMTPVirusMessageAction.PASS, SMTPNotifyAction.NEITHER, "Scan outgoing SMTP e-mail" ));
 
-        vs.setPOPInbound(new VirusPOPConfig(true, VirusMessageAction.CLEAN, false, "Scan incoming POP e-mail" ));
-        vs.setPOPOutbound(new VirusPOPConfig(false, VirusMessageAction.PASS, false, "Scan outgoing POP e-mail" ));
+        vs.setPOPInbound(new VirusPOPConfig(true, VirusMessageAction.CLEAN, "Scan incoming POP e-mail" ));
+        vs.setPOPOutbound(new VirusPOPConfig(false, VirusMessageAction.PASS, "Scan outgoing POP e-mail" ));
 
-        vs.setIMAPInbound(new VirusIMAPConfig(true, VirusMessageAction.CLEAN, false, "Scan incoming IMAP e-mail" ));
-        vs.setIMAPOutbound(new VirusIMAPConfig(false, VirusMessageAction.PASS, false, "Scan outgoing IMAP e-mail" ));
+        vs.setIMAPInbound(new VirusIMAPConfig(true, VirusMessageAction.CLEAN, "Scan incoming IMAP e-mail" ));
+        vs.setIMAPOutbound(new VirusIMAPConfig(false, VirusMessageAction.PASS, "Scan outgoing IMAP e-mail" ));
 
         /**
          * FIXME, need list with booleans
