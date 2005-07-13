@@ -21,29 +21,29 @@ public class Reason implements Serializable
 {
     private static final long serialVersionUID = -1388743204136725990L;
 
-    public static final Reason BLACKLIST_DOMAIN = new Reason('D', "domain");
-    public static final Reason BLACKLIST_URI = new Reason('U', "URI");
-    public static final Reason USER_URI = new Reason('I', "URI");
-    public static final Reason EXTENSION = new Reason('E', "extension");
-    public static final Reason MIME_TYPE = new Reason('M', "mime-type");
-    public static final Reason CLIENT_ADDR = new Reason('C', "client-addr");
+    public static final Reason BLOCK_CATEGORY = new Reason('D', "in Categories list");
+    public static final Reason BLOCK_URL = new Reason('U', "in URLs list");
+    public static final Reason BLOCK_EXTENSION = new Reason('E', "in File Extensions list");
+    public static final Reason BLOCK_MIME = new Reason('M', "in MIME Types list");
+    public static final Reason PASS_URL = new Reason('I', "in URLs list");
+    public static final Reason PASS_CLIENT = new Reason('C', "in Clients list");
 
     /**
      * None is to help the GUI deal with the concept of none, if you
      * try to log this to the database, I will kill you.
      */
-    public static final Reason NONE = new Reason('N', "none");
+    public static final Reason DEFAULT = new Reason('N', "no rule applied");
 
     private static final Map INSTANCES = new HashMap();
 
     static {
-        INSTANCES.put('D', BLACKLIST_DOMAIN);
-        INSTANCES.put('U', BLACKLIST_URI);
-        INSTANCES.put('I', USER_URI);
-        INSTANCES.put('E', EXTENSION);
-        INSTANCES.put('M', MIME_TYPE);
-        INSTANCES.put('C', CLIENT_ADDR);
-        INSTANCES.put('N', NONE);
+        INSTANCES.put('D', BLOCK_CATEGORY);
+        INSTANCES.put('U', BLOCK_URL);
+        INSTANCES.put('E', BLOCK_EXTENSION);
+        INSTANCES.put('M', BLOCK_MIME);
+        INSTANCES.put('I', PASS_URL);
+        INSTANCES.put('C', PASS_CLIENT);
+        INSTANCES.put('N', DEFAULT);
     }
 
     private char key;

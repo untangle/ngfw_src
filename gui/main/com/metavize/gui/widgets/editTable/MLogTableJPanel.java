@@ -28,13 +28,12 @@ public class MLogTableJPanel extends javax.swing.JPanel {
     
     protected Transform logTransform;
 
-    private static final long STREAM_SLEEP_MILLIS = 7500l;
+    private static final long STREAM_SLEEP_MILLIS = 15000l;
     
     private static final Color TABLE_BACKGROUND_COLOR = new Color(213, 213, 226);
     
     public MLogTableJPanel(Transform logTransform) {
         this.logTransform = logTransform;
-
         // INIT GUI & CUSTOM INIT
         initComponents();
         entryJScrollPane.getViewport().setOpaque(true);
@@ -50,8 +49,6 @@ public class MLogTableJPanel extends javax.swing.JPanel {
         }
         depthJSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
         
-        // BUILD TABLE MODEL
-        setTableModel(new LogTableModel());
 
     }
 
@@ -244,55 +241,30 @@ public class MLogTableJPanel extends javax.swing.JPanel {
     // End of variables declaration//GEN-END:variables
     
 
-class StreamThread extends Thread {
-    public StreamThread(){
-        this.start();
+    class StreamThread extends Thread {
+	public StreamThread(){
+	    this.start();
+	}
+	
+	public void run(){
+	    try{
+		while(true){
+		    getTableModel().doRefresh(null);
+		    this.sleep(STREAM_SLEEP_MILLIS);
+		}
+	    }
+	    catch(InterruptedException e){
+		// this is normal, means the thread was stopped by a button press
+	    }
+	    catch(Exception f){
+		try{
+		    Util.handleExceptionWithRestart("Error streaming event log", f);
+		}
+		catch(Exception g){
+		    Util.handleExceptionNoRestart("Error streaming event log", g);
+		}
+	    }
+	}
     }
     
-    public void run(){
-        try{
-            while(true){
-                getTableModel().doRefresh(null);
-                this.sleep(STREAM_SLEEP_MILLIS);
-            }
-        }
-        catch(InterruptedException e){
-            // this is normal, means the thread was stopped by a button press
-        }
-        catch(Exception f){
-            try{
-                Util.handleExceptionWithRestart("Error streaming event log", f);
-            }
-            catch(Exception g){
-                Util.handleExceptionNoRestart("Error streaming event log", g);
-            }
-        }
-    }
-}
-    
-    
-class LogTableModel extends MSortedTableModel{
-    
-    public TableColumnModel getTableColumnModel(){
-
-        DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
-        //                                 #   min  rsz    edit   remv   desc   typ               def
-	addTableColumn( tableColumnModel,  0,  125, true,  false, false, false, String.class, null, "timestamp" );
-        addTableColumn( tableColumnModel,  1,  55,  true,  false, false, false, String.class, null, "action" );
-        addTableColumn( tableColumnModel,  2,  100, true,  false, false, false, String.class, null, "traffic" );
-        addTableColumn( tableColumnModel,  3,  100, true,  false, false, false, String.class, null, "reason" );
-        addTableColumn( tableColumnModel,  4,  100, true,  false, false, false, String.class, null, "direction" );
-        addTableColumn( tableColumnModel,  5,  155, true,  false, false, false, String.class, null, "server" );
-        addTableColumn( tableColumnModel,  6,  155, true,  false, false, false, String.class, null, "client" );
-        return tableColumnModel;
-    }
-    
-    public void generateSettings(Object settings, boolean validateOnly) throws Exception {
-    }
-        
-    public Vector generateRows(Object settings) {
-        return MLogTableJPanel.this.generateRows(null);
-    }
-
-}
 }

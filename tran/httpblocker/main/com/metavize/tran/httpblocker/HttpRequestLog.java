@@ -43,7 +43,7 @@ public class HttpRequestLog implements Serializable
         this.url = "http://" + host + uri;
         this.action = null == actionStr ? Action.PASS
             : Action.getInstance(actionStr.charAt(0));
-        this.reason = null == reasonStr ? Reason.NONE
+        this.reason = null == reasonStr ? Reason.DEFAULT
             : Reason.getInstance(reasonStr.charAt(0));
         this.category = category;
         this.contentType = contentType;

@@ -48,7 +48,7 @@ public class ReasonUserType implements UserType
             ps.setString(i, "0");
         } else {
             Reason r = (Reason)v;
-            if (Reason.NONE == r) {
+            if (Reason.DEFAULT == r) {
                 throw new IllegalStateException("i told you");
             }
             ps.setString(i, Character.toString(r.getKey()));

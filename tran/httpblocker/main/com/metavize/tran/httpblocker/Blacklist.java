@@ -199,7 +199,7 @@ class Blacklist
 
         if (null != passCategory) {
             HttpBlockerEvent hbe = new HttpBlockerEvent
-                (requestLine, Action.PASS, Reason.CLIENT_ADDR, passCategory);
+                (requestLine, Action.PASS, Reason.PASS_CLIENT, passCategory);
             logger.info(hbe);
             return null;
         } else {
@@ -210,7 +210,7 @@ class Blacklist
 
                 if (null != category) {
                     HttpBlockerEvent hbe = new HttpBlockerEvent
-                        (requestLine, Action.PASS, Reason.USER_URI, category);
+                        (requestLine, Action.PASS, Reason.PASS_URL, category);
                     eventLogger.info(hbe);
 
                     return null;
@@ -232,7 +232,7 @@ class Blacklist
             if (rule.isLive() && path.endsWith(exn)) {
                 logger.debug("blocking extension " + exn);
                 HttpBlockerEvent hbe = new HttpBlockerEvent
-                    (requestLine, Action.BLOCK, Reason.EXTENSION, exn);
+                    (requestLine, Action.BLOCK, Reason.BLOCK_EXTENSION, exn);
                 eventLogger.info(hbe);
 
                 return settings.getBlockTemplate().render(host, uri, "extension");
@@ -255,7 +255,7 @@ class Blacklist
             MimeType mt = rule.getMimeType();
             if (rule.isLive() && mt.matches( contentType )) {
                 HttpBlockerEvent hbe = new HttpBlockerEvent
-                    (requestLine, Action.BLOCK, Reason.MIME_TYPE, contentType);
+                    (requestLine, Action.BLOCK, Reason.BLOCK_MIME, contentType);
                 eventLogger.info(hbe);
                 String host = header.getValue("host");
                 URI uri = requestLine.getRequestUri();
@@ -296,7 +296,7 @@ class Blacklist
         String revHost = sb.toString();
 
         String category = findCategory(domains, revHost, domClause);
-        Reason reason = null == category ? null : Reason.BLACKLIST_DOMAIN;
+        Reason reason = null == category ? null : Reason.BLOCK_CATEGORY;
 
         String dom = host;
         while (null == category && null != dom) {
@@ -304,12 +304,12 @@ class Blacklist
             category = findCategory(urls, url, urlClause);
 
             if (null != category) {
-                reason = Reason.BLACKLIST_URI;
+                reason = Reason.BLOCK_URL;
             } else {
                 category = findCategory(blockedUrls, url,
                                         settings.getBlockedUrls());
                 if (null != category) {
-                    reason = Reason.USER_URI;
+                    reason = Reason.PASS_URL;
                 }
             }
 
