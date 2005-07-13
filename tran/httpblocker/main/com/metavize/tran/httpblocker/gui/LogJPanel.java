@@ -28,7 +28,7 @@ public class LogJPanel extends MLogTableJPanel {
 
     public Vector generateRows(Object settings){
 
-        List<HttpRequestLog> requestLogList = (List<HttpRequestLog>) ((HttpBlocker)super.logTransform).getEvents(null, depthJSlider.getValue());
+        List<HttpRequestLog> requestLogList = (List<HttpRequestLog>) ((HttpBlocker)super.logTransform).getEvents(depthJSlider.getValue());
         Vector allEvents = new Vector();
 
         Vector test = new Vector();

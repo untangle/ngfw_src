@@ -49,7 +49,6 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
         + "JOIN tr_http_req_line rl USING (request_id) "
         + "LEFT OUTER JOIN tr_http_evt_resp resp USING (request_id)"
         + "LEFT OUTER JOIN tr_httpblk_evt_blk blk USING (request_id)"
-        + "WHERE ? < req.event_id "
         + "ORDER BY req.time_stamp DESC LIMIT ?";
 
     private static final Logger logger = Logger.getLogger(HttpBlockerImpl.class);
@@ -97,23 +96,18 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
         Blacklist.BLACKLIST.configure(settings);
     }
 
-    public List<HttpRequestLog> getEvents(HttpRequestLog lastRequest,
-                                          int limit)
+    public List<HttpRequestLog> getEvents(int limit)
     {
-        long lastId = null == lastRequest ? 0 : lastRequest.getRequestEventId();
         List<HttpRequestLog> l = new LinkedList<HttpRequestLog>();
 
         Session s = TransformContextFactory.context().openSession();
         try {
             Connection c = s.connection();
             PreparedStatement ps = c.prepareStatement(ALL_EVENTS_QUERY);
-            ps.setLong(1, lastId);
-            ps.setInt(2, limit);
+            ps.setInt(1, limit);
             long l0 = System.currentTimeMillis();
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                long requestEventId = rs.getLong(1);
-                long blockEventId = rs.getLong(2);
                 long ts = rs.getTimestamp("time_stamp").getTime();
                 Date timeStamp = new Date(ts);
                 String host = rs.getString("host");
@@ -133,10 +127,9 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
                 Direction d = Direction.getDirection(clientIntf, serverIntf);
 
                 HttpRequestLog rl = new HttpRequestLog
-                    (requestEventId, blockEventId, timeStamp, host, uri,
-                     actionStr, reasonStr, category, contentType,
-                     contentLength, clientAddr, clientPort, serverAddr,
-                     serverPort, d);
+                    (timeStamp, host, uri, actionStr, reasonStr, category,
+                     contentType, contentLength, clientAddr, clientPort,
+                     serverAddr, serverPort, d);
 
                 l.add(0, rl);
             }

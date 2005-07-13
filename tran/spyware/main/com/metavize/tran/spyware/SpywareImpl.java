@@ -15,9 +15,15 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
@@ -29,6 +35,7 @@ import com.metavize.mvvm.tapi.Fitting;
 import com.metavize.mvvm.tapi.PipeSpec;
 import com.metavize.mvvm.tapi.SoloPipeSpec;
 import com.metavize.mvvm.tapi.TransformContextFactory;
+import com.metavize.mvvm.tran.Direction;
 import com.metavize.mvvm.tran.IPMaddr;
 import com.metavize.mvvm.tran.IPMaddrRule;
 import com.metavize.mvvm.tran.StringRule;
@@ -41,6 +48,34 @@ import org.apache.log4j.Logger;
 
 public class SpywareImpl extends AbstractTransform implements Spyware
 {
+    private static final String COOKIE_QUERY
+        = "SELECT req.time_stamp, host, uri, ident, to_server, "
+        + "c_client_addr, c_client_port, s_server_addr, s_server_port, "
+        + "client_intf, server_intf "
+        + "FROM tr_http_evt_req req "
+        + "JOIN pl_endp USING (session_id) "
+        + "JOIN tr_http_req_line rl USING (request_id) "
+        + "LEFT OUTER JOIN tr_spyware_evt_cookie cookie USING (request_id) "
+        + "ORDER BY req.time_stamp DESC LIMIT ?";
+
+    private static final String ACTIVEX_QUERY
+        = "SELECT req.time_stamp, host, uri, ident, "
+        + "c_client_addr, c_client_port, s_server_addr, s_server_port, "
+        + "client_intf, server_intf "
+        + "FROM tr_http_evt_req req "
+        + "JOIN pl_endp USING (session_id) "
+        + "JOIN tr_http_req_line rl USING (request_id) "
+        + "LEFT OUTER JOIN tr_spyware_evt_activex USING (request_id) "
+        + "ORDER BY req.time_stamp DESC LIMIT ?";
+
+    private static final String ACCESS_QUERY
+        = "SELECT create_date, ipmaddr, ident, "
+        + "c_client_addr, c_client_port, s_server_addr, s_server_port, "
+        + "client_intf, server_intf "
+        + "FROM pl_endp endp "
+        + "LEFT OUTER JOIN tr_spyware_evt_access acc USING (session_id) "
+        + "ORDER BY create_date DESC LIMIT ?";
+
     private static final String ACTIVEX_LIST
         = "com/metavize/tran/spyware/blocklist.reg";
     private static final String COOKIE_LIST
@@ -102,6 +137,54 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         }
 
         reconfigure();
+    }
+
+    public List<SpywareActiveXLog> getActiveXLogs(int limit)
+    {
+        List<SpywareActiveXLog> l = new LinkedList<SpywareActiveXLog>();
+
+        Session s = TransformContextFactory.context().openSession();
+        try {
+            Connection c = s.connection();
+            PreparedStatement ps = c.prepareStatement(ACTIVEX_QUERY);
+            ps.setInt(1, limit);
+            long l0 = System.currentTimeMillis();
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                long ts = rs.getTimestamp("time_stamp").getTime();
+                Date timeStamp = new Date(ts);
+                String host = rs.getString("host");
+                String uri = rs.getString("uri");
+                String ident = rs.getString("ident");
+                String clientAddr = rs.getString("c_client_addr");
+                int clientPort = rs.getInt("c_client_port");
+                String serverAddr = rs.getString("s_server_addr");
+                int serverPort = rs.getInt("s_server_port");
+                byte clientIntf = rs.getByte("client_intf");
+                byte serverIntf = rs.getByte("server_intf");
+
+                Direction d = Direction.getDirection(clientIntf, serverIntf);
+
+                SpywareActiveXLog rl = new SpywareActiveXLog
+                    (timeStamp, host, uri, ident, clientAddr, clientPort,
+                     serverAddr, serverPort, d);
+
+                l.add(0, rl);
+            }
+            long l1 = System.currentTimeMillis();
+        } catch (SQLException exn) {
+            logger.warn("could not get events", exn);
+        } catch (HibernateException exn) {
+            logger.warn("could not get events", exn);
+        } finally {
+            try {
+                s.close();
+            } catch (HibernateException exn) {
+                logger.warn("could not close Hibernate session", exn);
+            }
+        }
+
+        return l;
     }
 
     // Transform methods ------------------------------------------------------

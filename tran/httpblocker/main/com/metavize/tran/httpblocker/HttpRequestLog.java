@@ -20,8 +20,6 @@ public class HttpRequestLog implements Serializable
 {
     private static final long serialVersionUID = -4671603809489005943L;
 
-    private final Long requestEventId;
-    private final Long blockEventId;
     private final Date timeStamp;
     private final String url;
     private final Action action;
@@ -35,17 +33,14 @@ public class HttpRequestLog implements Serializable
     private final int serverPort;
     private final Direction direction;
 
-    public HttpRequestLog(long requestEventId, long blockEventId,
-                          Date timeStamp, String host, String uri,
+    public HttpRequestLog(Date timeStamp, String host, String uri,
                           String actionStr, String reasonStr, String category,
                           String contentType, int contentLength,
                           String clientAddr, int clientPort, String serverAddr,
                           int serverPort, Direction direction)
     {
-        this.requestEventId = requestEventId;
-        this.blockEventId = blockEventId;
         this.timeStamp = timeStamp;
-        this.url = "http://" + host + "/" + uri;
+        this.url = "http://" + host + uri;
         this.action = null == actionStr ? Action.PASS
             : Action.getInstance(actionStr.charAt(0));
         this.reason = null == reasonStr ? Reason.NONE
@@ -120,18 +115,6 @@ public class HttpRequestLog implements Serializable
     public Direction getDirection()
     {
         return direction;
-    }
-
-    // package protected ------------------------------------------------------
-
-    long getRequestEventId()
-    {
-        return requestEventId;
-    }
-
-    long getBlockEventId()
-    {
-        return blockEventId;
     }
 
     // Object methods ---------------------------------------------------------

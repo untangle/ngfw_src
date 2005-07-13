@@ -11,8 +11,4 @@
 
 package com.metavize.tran.http;
 
-public interface HttpTransform
-{
-//     public void enable();
-//     public void disable();
-}
+public interface HttpTransform { }

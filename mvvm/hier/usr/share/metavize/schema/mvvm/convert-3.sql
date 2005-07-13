@@ -49,6 +49,9 @@ AS SELECT nextval('hibernate_sequence'), now(), session_id, raze_date,
 ALTER TABLE pl_stats ADD CONSTRAINT pl_stats_pkey PRIMARY KEY (event_id);
 ALTER TABLE pl_stats ALTER COLUMN event_id SET NOT NULL;
 
+CREATE INDEX pl_endp_sid on pl_endp (session_id);
+CREATE INDEX pl_endp_cdate_idx ON pl_endp (create_date);
+
 DROP TABLE pipeline_info;
 DROP TABLE mvvm_evt_pipeline;
 
