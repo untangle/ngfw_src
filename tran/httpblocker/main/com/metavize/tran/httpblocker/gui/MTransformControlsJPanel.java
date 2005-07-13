@@ -36,9 +36,37 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 
     protected void generateGui(){
 
-	// EVENT LOG ///////
-	LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransformContext().transform());
-        this.mTabbedPane.insertTab(NAME_LOG, null, logJPanel, null, 0);
+	// BLOCK LISTS ///////////
+        JTabbedPane blockJTabbedPane = new JTabbedPane();
+        blockJTabbedPane.setBorder(new EmptyBorder(7, 13, 13, 13));
+        blockJTabbedPane.setFocusable(false);
+        blockJTabbedPane.setFont(new java.awt.Font("Arial", 0, 11));
+        blockJTabbedPane.setRequestFocusEnabled(false);
+        this.mTabbedPane.addTab(NAME_BLOCK, null, blockJTabbedPane);
+
+	// BLOCKED CATEGORIES /////////
+	BlockedCategoriesConfigJPanel blockedCategoriesConfigJPanel = new BlockedCategoriesConfigJPanel();
+	blockJTabbedPane.addTab(NAME_BLOCK_CATEGORIES, null, blockedCategoriesConfigJPanel);
+	super.savableMap.put(NAME_BLOCK + " " + NAME_BLOCK_CATEGORIES, blockedCategoriesConfigJPanel);
+	super.refreshableMap.put(NAME_BLOCK + " " + NAME_BLOCK_CATEGORIES, blockedCategoriesConfigJPanel);
+
+	// BLOCKED URLS ///////////////
+	BlockedURLsConfigJPanel blockedURLsConfigJPanel = new BlockedURLsConfigJPanel();
+        blockJTabbedPane.addTab(NAME_BLOCK_URLS, null, blockedURLsConfigJPanel);
+	super.savableMap.put(NAME_BLOCK + " " + NAME_BLOCK_URLS, blockedURLsConfigJPanel);
+	super.refreshableMap.put(NAME_BLOCK + " " + NAME_BLOCK_URLS, blockedURLsConfigJPanel);
+
+	// BLOCKED MIME TYPES ///////////
+	BlockedMIMETypesConfigJPanel blockedMIMETypesConfigJPanel = new BlockedMIMETypesConfigJPanel();
+        blockJTabbedPane.addTab(NAME_BLOCK_MIME_TYPES, null, blockedMIMETypesConfigJPanel);
+	super.savableMap.put(NAME_BLOCK + " " + NAME_BLOCK_MIME_TYPES, blockedMIMETypesConfigJPanel);
+	super.refreshableMap.put(NAME_BLOCK + " " + NAME_BLOCK_MIME_TYPES, blockedMIMETypesConfigJPanel);
+
+	// BLOCKED FILE EXTENSIONS ///////
+	BlockedExtensionsConfigJPanel blockedExtensionsConfigJPanel = new BlockedExtensionsConfigJPanel();
+        blockJTabbedPane.addTab(NAME_BLOCK_FILE_EXTENSIONS, null, blockedExtensionsConfigJPanel);
+	super.savableMap.put(NAME_BLOCK + " " + NAME_BLOCK_FILE_EXTENSIONS, blockedExtensionsConfigJPanel);
+	super.refreshableMap.put(NAME_BLOCK + " " + NAME_BLOCK_FILE_EXTENSIONS, blockedExtensionsConfigJPanel);
 
 	// PASS LISTS /////
         JTabbedPane passJTabbedPane = new JTabbedPane();
@@ -46,51 +74,23 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
         passJTabbedPane.setFocusable(false);
         passJTabbedPane.setFont(new java.awt.Font("Arial", 0, 11));
         passJTabbedPane.setRequestFocusEnabled(false);
-        this.mTabbedPane.insertTab(NAME_PASS, null, passJTabbedPane, null, 0);
-
-	// PASSED CLIENTS ///////
-	PassedClientsConfigJPanel passedClientsConfigJPanel = new PassedClientsConfigJPanel();
-        passJTabbedPane.insertTab(NAME_PASS_CLIENTS, null, passedClientsConfigJPanel, null, 0);
-	super.savableMap.put(NAME_PASS + " " + NAME_PASS_CLIENTS, passedClientsConfigJPanel);
-	super.refreshableMap.put(NAME_PASS + " " + NAME_PASS_CLIENTS, passedClientsConfigJPanel);
+        this.mTabbedPane.addTab(NAME_PASS, null, passJTabbedPane);
 
 	// PASSED URLS /////////
 	PassedURLsConfigJPanel passedURLsConfigJPanel = new PassedURLsConfigJPanel();
-        passJTabbedPane.insertTab(NAME_PASS_URLS, null, passedURLsConfigJPanel, null, 0);
-	super.savableMap.put(NAME_PASS + " " + NAME_PASS_URLS, passedURLsConfigJPanel);  // a is added to make this key unique from the other URLs key
+        passJTabbedPane.addTab(NAME_PASS_URLS, null, passedURLsConfigJPanel);
+	super.savableMap.put(NAME_PASS + " " + NAME_PASS_URLS, passedURLsConfigJPanel);
 	super.refreshableMap.put(NAME_PASS + " " + NAME_PASS_URLS, passedURLsConfigJPanel);
 
-	// BLOCK LISTS ///////////
-        JTabbedPane blockJTabbedPane = new JTabbedPane();
-        blockJTabbedPane.setBorder(new EmptyBorder(7, 13, 13, 13));
-        blockJTabbedPane.setFocusable(false);
-        blockJTabbedPane.setFont(new java.awt.Font("Arial", 0, 11));
-        blockJTabbedPane.setRequestFocusEnabled(false);
-        this.mTabbedPane.insertTab(NAME_BLOCK, null, blockJTabbedPane, null, 0);        
-        
-	// BLOCKED FILE EXTENSIONS ///////
-	BlockedExtensionsConfigJPanel blockedExtensionsConfigJPanel = new BlockedExtensionsConfigJPanel();
-        blockJTabbedPane.insertTab(NAME_BLOCK_FILE_EXTENSIONS, null, blockedExtensionsConfigJPanel, null, 0);
-	super.savableMap.put(NAME_BLOCK + " " + NAME_BLOCK_FILE_EXTENSIONS, blockedExtensionsConfigJPanel);
-	super.refreshableMap.put(NAME_BLOCK + " " + NAME_BLOCK_FILE_EXTENSIONS, blockedExtensionsConfigJPanel);
+	// PASSED CLIENTS ///////
+	PassedClientsConfigJPanel passedClientsConfigJPanel = new PassedClientsConfigJPanel();
+        passJTabbedPane.addTab(NAME_PASS_CLIENTS, null, passedClientsConfigJPanel);
+	super.savableMap.put(NAME_PASS + " " + NAME_PASS_CLIENTS, passedClientsConfigJPanel);
+	super.refreshableMap.put(NAME_PASS + " " + NAME_PASS_CLIENTS, passedClientsConfigJPanel);
 
-	// BLOCKED MIME TYPES ///////////
-	BlockedMIMETypesConfigJPanel blockedMIMETypesConfigJPanel = new BlockedMIMETypesConfigJPanel();
-        blockJTabbedPane.insertTab(NAME_BLOCK_MIME_TYPES, null, blockedMIMETypesConfigJPanel, null, 0);
-	super.savableMap.put(NAME_BLOCK + " " + NAME_BLOCK_MIME_TYPES, blockedMIMETypesConfigJPanel);
-	super.refreshableMap.put(NAME_BLOCK + " " + NAME_BLOCK_MIME_TYPES, blockedMIMETypesConfigJPanel);
-
-	// BLOCKED URLS ///////////////
-	BlockedURLsConfigJPanel blockedURLsConfigJPanel = new BlockedURLsConfigJPanel();
-        blockJTabbedPane.insertTab(NAME_BLOCK_URLS, null, blockedURLsConfigJPanel, null, 0);
-	super.savableMap.put(NAME_BLOCK + " " + NAME_BLOCK_URLS, blockedURLsConfigJPanel);
-	super.refreshableMap.put(NAME_BLOCK + " " + NAME_BLOCK_URLS, blockedURLsConfigJPanel);
-
-	// BLOCKED CATEGORIES /////////
-	BlockedCategoriesConfigJPanel blockedCategoriesConfigJPanel = new BlockedCategoriesConfigJPanel();
-	blockJTabbedPane.insertTab(NAME_BLOCK_CATEGORIES, null, blockedCategoriesConfigJPanel, null, 0);
-	super.savableMap.put(NAME_BLOCK + " " + NAME_BLOCK_CATEGORIES, blockedCategoriesConfigJPanel);
-	super.refreshableMap.put(NAME_BLOCK + " " + NAME_BLOCK_CATEGORIES, blockedCategoriesConfigJPanel);
+	// EVENT LOG ///////
+	LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransformContext().transform());
+        this.mTabbedPane.addTab(NAME_LOG, null, logJPanel);
 
 	// SET TAB SELECTIONS /////////
         passJTabbedPane.setSelectedIndex(0);

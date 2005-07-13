@@ -42,9 +42,23 @@ public class ProtoFilterLog implements Serializable
         this.direction = direction;
     }
 
+    // util -------------------------------------------------------------------
+    public String getAction(){
+	if(blocked)
+	    return "block";
+	else
+	    return "pass";
+    }
+    
+    public String getReason(){
+	if(blocked)
+	    return "blocked in block list";
+	else
+	    return "not blocked in block list";
+    }
     // accessors --------------------------------------------------------------
 
-    public Date createDate()
+    public Date getCreateDate()
     {
         return createDate;
     }
