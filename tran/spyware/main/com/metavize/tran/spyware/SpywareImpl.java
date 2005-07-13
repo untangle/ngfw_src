@@ -48,33 +48,29 @@ import org.apache.log4j.Logger;
 
 public class SpywareImpl extends AbstractTransform implements Spyware
 {
-    private static final String COOKIE_QUERY
-        = "SELECT req.time_stamp, host, uri, ident, to_server, "
-        + "c_client_addr, c_client_port, s_server_addr, s_server_port, "
-        + "client_intf, server_intf "
+    private static final String EVENT_QUERY
+        = "SELECT create_date, "
+        +        "CASE WHEN ck.event_id IS NULL THEN 'COOKIE' "
+        +             "WHEN ax.event_id IS NULL THEN 'ACTIVEX' "
+        +             "WHEN acc.event_id IS NULL THEN 'ACCESS' "
+        +        "END AS type, "
+        +        "CASE WHEN ck.event_id IS NULL "
+        +               "OR ax.event_id IS NULL THEN 'http://' || host || uri "
+        +             "WHEN acc.event_id IS NULL THEN text(acc.ipmaddr) "
+        +        "END AS location, "
+        +        "CASE WHEN ck.event_id IS NULL THEN ck.ident "
+        +             "WHEN ax.event_id IS NULL THEN ax.ident "
+        +             "WHEN acc.event_id IS NULL THEN acc.ident "
+        +        "END AS ident, "
+        +        "c_client_addr, c_client_port, s_server_addr, s_server_port, "
+        +        "client_intf, server_intf "
         + "FROM tr_http_evt_req req "
         + "JOIN pl_endp USING (session_id) "
-        + "JOIN tr_http_req_line rl USING (request_id) "
-        + "LEFT OUTER JOIN tr_spyware_evt_cookie cookie USING (request_id) "
+        + "LEFT OUTER JOIN tr_spyware_evt_cookie ck ON ck.request_id = req.request_id "
+        + "LEFT OUTER JOIN tr_spyware_evt_activex ax ON ax.request_id = req.request_id "
+        + "LEFT OUTER JOIN tr_spyware_evt_access acc ON acc.request_id = req.request_id "
+        + "JOIN tr_http_req_line rl ON rl.request_id = req.request_id "
         + "ORDER BY req.time_stamp DESC LIMIT ?";
-
-    private static final String ACTIVEX_QUERY
-        = "SELECT req.time_stamp, host, uri, ident, "
-        + "c_client_addr, c_client_port, s_server_addr, s_server_port, "
-        + "client_intf, server_intf "
-        + "FROM tr_http_evt_req req "
-        + "JOIN pl_endp USING (session_id) "
-        + "JOIN tr_http_req_line rl USING (request_id) "
-        + "LEFT OUTER JOIN tr_spyware_evt_activex USING (request_id) "
-        + "ORDER BY req.time_stamp DESC LIMIT ?";
-
-    private static final String ACCESS_QUERY
-        = "SELECT create_date, ipmaddr, ident, "
-        + "c_client_addr, c_client_port, s_server_addr, s_server_port, "
-        + "client_intf, server_intf "
-        + "FROM pl_endp endp "
-        + "LEFT OUTER JOIN tr_spyware_evt_access acc USING (session_id) "
-        + "ORDER BY create_date DESC LIMIT ?";
 
     private static final String ACTIVEX_LIST
         = "com/metavize/tran/spyware/blocklist.reg";
@@ -139,23 +135,24 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         reconfigure();
     }
 
-    public List<SpywareActiveXLog> getActiveXLogs(int limit)
+    public List<SpywareLog> getEventLogs(int limit)
     {
-        List<SpywareActiveXLog> l = new LinkedList<SpywareActiveXLog>();
+        List<SpywareLog> l = new LinkedList<SpywareLog>();
 
         Session s = TransformContextFactory.context().openSession();
         try {
             Connection c = s.connection();
-            PreparedStatement ps = c.prepareStatement(ACTIVEX_QUERY);
+            PreparedStatement ps = c.prepareStatement(EVENT_QUERY);
             ps.setInt(1, limit);
             long l0 = System.currentTimeMillis();
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                long ts = rs.getTimestamp("time_stamp").getTime();
-                Date timeStamp = new Date(ts);
-                String host = rs.getString("host");
-                String uri = rs.getString("uri");
+                long ts = rs.getTimestamp("create_date").getTime();
+                Date createDate = new Date(ts);
+                String type = rs.getString("type");
+                String location = rs.getString("location");
                 String ident = rs.getString("ident");
+                boolean blocked = rs.getBoolean("blocked");
                 String clientAddr = rs.getString("c_client_addr");
                 int clientPort = rs.getInt("c_client_port");
                 String serverAddr = rs.getString("s_server_addr");
@@ -165,113 +162,14 @@ public class SpywareImpl extends AbstractTransform implements Spyware
 
                 Direction d = Direction.getDirection(clientIntf, serverIntf);
 
-                SpywareActiveXLog rl = new SpywareActiveXLog
-                    (timeStamp, host, uri, ident, clientAddr, clientPort,
-                     serverAddr, serverPort, d);
-
-                l.add(0, rl);
-            }
-            long l1 = System.currentTimeMillis();
-            logger.debug("getActiveXLogs() in: " + (l1 - l0));
-        } catch (SQLException exn) {
-            logger.warn("could not get events", exn);
-        } catch (HibernateException exn) {
-            logger.warn("could not get events", exn);
-        } finally {
-            try {
-                s.close();
-            } catch (HibernateException exn) {
-                logger.warn("could not close Hibernate session", exn);
-            }
-        }
-
-        return l;
-    }
-
-    public List<SpywareCookieLog> getCookieLogs(int limit)
-    {
-        List<SpywareCookieLog> l = new LinkedList<SpywareCookieLog>();
-
-        Session s = TransformContextFactory.context().openSession();
-        try {
-            Connection c = s.connection();
-            PreparedStatement ps = c.prepareStatement(COOKIE_QUERY);
-            ps.setInt(1, limit);
-            long l0 = System.currentTimeMillis();
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                long ts = rs.getTimestamp("time_stamp").getTime();
-                Date timeStamp = new Date(ts);
-                String host = rs.getString("host");
-                String uri = rs.getString("uri");
-                String ident = rs.getString("ident");
-                boolean toServer = rs.getBoolean("to_server");
-                String clientAddr = rs.getString("c_client_addr");
-                int clientPort = rs.getInt("c_client_port");
-                String serverAddr = rs.getString("s_server_addr");
-                int serverPort = rs.getInt("s_server_port");
-                byte clientIntf = rs.getByte("client_intf");
-                byte serverIntf = rs.getByte("server_intf");
-
-                Direction d = Direction.getDirection(clientIntf, serverIntf);
-
-                SpywareCookieLog rl = new SpywareCookieLog
-                    (timeStamp, host, uri, ident, toServer, clientAddr,
+                SpywareLog rl = new SpywareLog
+                    (createDate, type, location, ident, blocked, clientAddr,
                      clientPort, serverAddr, serverPort, d);
 
                 l.add(0, rl);
             }
             long l1 = System.currentTimeMillis();
-            logger.debug("getCookieLogs() in: " + (l1 - l0));
-        } catch (SQLException exn) {
-            logger.warn("could not get events", exn);
-        } catch (HibernateException exn) {
-            logger.warn("could not get events", exn);
-        } finally {
-            try {
-                s.close();
-            } catch (HibernateException exn) {
-                logger.warn("could not close Hibernate session", exn);
-            }
-        }
-
-        return l;
-    }
-
-    public List<SpywareAccessLog> getAccessLogs(int limit)
-    {
-        List<SpywareAccessLog> l = new LinkedList<SpywareAccessLog>();
-
-        Session s = TransformContextFactory.context().openSession();
-        try {
-            Connection c = s.connection();
-            PreparedStatement ps = c.prepareStatement(ACCESS_QUERY);
-            ps.setInt(1, limit);
-            long l0 = System.currentTimeMillis();
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                long cd = rs.getTimestamp("create_date").getTime();
-                Date createDate = new Date(cd);
-                String mAddrStr = rs.getString("ipmaddr");
-                IPMaddr ipMAddr = IPMaddr.parse(mAddrStr);
-                String ident = rs.getString("ident");
-                String clientAddr = rs.getString("c_client_addr");
-                int clientPort = rs.getInt("c_client_port");
-                String serverAddr = rs.getString("s_server_addr");
-                int serverPort = rs.getInt("s_server_port");
-                byte clientIntf = rs.getByte("client_intf");
-                byte serverIntf = rs.getByte("server_intf");
-
-                Direction d = Direction.getDirection(clientIntf, serverIntf);
-
-                SpywareAccessLog rl = new SpywareAccessLog
-                    (createDate, ipMAddr, ident, clientAddr, clientPort,
-                     serverAddr, serverPort, d);
-
-                l.add(0, rl);
-            }
-            long l1 = System.currentTimeMillis();
-            logger.debug("getAccessLogs() in: " + (l1 - l0));
+            logger.debug("getActiveXLogs() in: " + (l1 - l0));
         } catch (SQLException exn) {
             logger.warn("could not get events", exn);
         } catch (HibernateException exn) {

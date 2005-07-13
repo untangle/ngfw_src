@@ -15,27 +15,33 @@ import java.io.Serializable;
 import java.util.Date;
 
 import com.metavize.mvvm.tran.Direction;
-import com.metavize.mvvm.tran.IPMaddr;
 
-public class SpywareAccessLog implements Serializable
+public class SpywareLog implements Serializable
 {
+    // XXX serial uid
+    public enum Type { COOKIE, ACTIVEX, ACCESS };
+
     private final Date createDate;
-    private final IPMaddr ipMAddr;
+    private final Type type;
+    private final String location;
     private final String ident;
+    private final boolean blocked;
     private final String clientAddr;
     private final int clientPort;
     private final String serverAddr;
     private final int serverPort;
     private final Direction direction;
 
-    public SpywareAccessLog(Date createDate, IPMaddr ipMAddr, String ident,
-                            String clientAddr, int clientPort,
-                            String serverAddr, int serverPort,
-                            Direction direction)
+    public SpywareLog(Date createDate, String type, String location,
+                      String ident, boolean blocked, String clientAddr,
+                      int clientPort, String serverAddr, int serverPort,
+                      Direction direction)
     {
         this.createDate = createDate;
-        this.ipMAddr = ipMAddr;
+        this.type = Type.valueOf(type);
+        this.location = location;
         this.ident = ident;
+        this.blocked = blocked;
         this.clientAddr = clientAddr;
         this.clientPort = clientPort;
         this.serverAddr = serverAddr;
@@ -45,14 +51,19 @@ public class SpywareAccessLog implements Serializable
 
     // accessors --------------------------------------------------------------
 
-    public Date createDate()
+    public Date getCreateDate()
     {
         return createDate;
     }
 
-    public IPMaddr getIpMAddr()
+    public Type getType()
     {
-        return ipMAddr;
+        return type;
+    }
+
+    public String getLocation()
+    {
+        return location;
     }
 
     public String getIdent()
@@ -60,12 +71,17 @@ public class SpywareAccessLog implements Serializable
         return ident;
     }
 
+    public boolean isBlocked()
+    {
+        return blocked;
+    }
+
     public String getClientAddr()
     {
         return clientAddr;
     }
 
-    public int getCClientPort()
+    public int getClientPort()
     {
         return clientPort;
     }
