@@ -273,12 +273,12 @@ cat >> $main_index <<EOF
 
           <!-- CENTER CELL -->
           <td id="table_main_center" style="padding: 15px 0px 0px 0px">
-            <hr width="100%" size="1"/>
+            <hr width="100%" size="1" color="#969696"/>
             <table width="100%" style="padding: 15px 0px 0px 0px">
               <tr>
 EOF
 
-    if [ -f sum-daily.html ]; then
+    if [ -f reporting-transform/sum-daily.html ]; then
 	cat >> $main_index <<EOF
               <td width="200px" valign="top">
 EOF
@@ -307,7 +307,7 @@ EOF
 	cat >> $main_index <<EOF
               </tr>
             </table>
-            <hr width="100%" size="1"/>
+            <hr width="100%" size="1" color="969696"/>
           </td>
           <!-- END CENTER CELL -->
 
@@ -461,6 +461,28 @@ cat >> $main_index <<EOF
                   </tr>
                   </table>
                 </td></tr>
+EOF
+
+
+
+if [ -f $1/*Summary_Graph--daily.jpg ]; then
+cat >> $main_index <<EOF
+                <tr>
+                  <td>
+                     <b>Visual Summary:</b><br/>
+EOF
+
+generate_visual_summary $1
+
+cat >> $main_index <<EOF
+                  </td>
+                </tr>
+EOF
+fi
+
+
+
+cat >> $main_index <<EOF
                 <tr>
                   <td>
                     <b>Vital Statistics:</b><br/>
@@ -470,16 +492,13 @@ generate_vital_statistics $1
 
 cat >> $main_index <<EOF
                   </td>
-                  <td>
-                  <!--  <b>Visual Summary:</b><br/> -->
-                  </td>
                 </tr>
                 <tr>
                   <td colspan="2">
                     <b>Detailed Reports:</b><br/>
 EOF
 
-generate_summary_detailed_entries $1
+generate_detailed_reports $1
 
 cat >> $main_index <<EOF
                   </td>
@@ -500,21 +519,6 @@ EOF
     tran_dir=$1
     tran_name=$(cat $tran_dir/name)
     rel_dir=$(echo $1 | sed -e 's/^\(.*\/current\/\)//')
-
-if [ "$tran_name" = "EdgeGuard Appliance" ]; then
-    if [ "$generate_email_index" = false ]; then
-	cat $rel_dir/../sum-monthly.html | cat >> $main_index
-    fi
-    if [ "$generate_email_index" = daily ]; then
-	cat $rel_dir/../sum-daily.html | cat >> $main_index
-    fi
-    if [ "$generate_email_index" = weekly ]; then
-	cat $rel_dir/../sum-weekly.html | cat >> $main_index
-    fi
-    if [ "$generate_email_index" = monthly ]; then
-	cat $rel_dir/../sum-monthly.html | cat >> $main_index
-    fi
-fi
 
 
 if [ "$generate_email_index" = false ]; then
@@ -541,7 +545,29 @@ EOF
 
 }
 
-generate_summary_detailed_entries ()
+
+generate_visual_summary ()
+{
+    rel_dir=$(echo $1 | sed -e 's/^\(.*\/current\/\)//')
+cat $tran_dir/report-files | while read line; do
+    base_name=$(echo $line | cut -d: -f2)
+    graph_name=$(echo $line | cut -d: -f3-)
+    if [ xsummaryGraph = "x$base_name" ] ; then
+
+    cat >>$main_index <<EOF
+<!-- VISUAL SUMMARY -->
+<center>
+<img src="$rel_dir/$graph_name--daily.jpg">
+</center>
+<!-- END VISUAL SUMMARY -->
+EOF
+    
+fi
+done
+}
+
+
+generate_detailed_reports ()
 {
     tran_dir=$1
     tran_name=$(cat $tran_dir/name)
@@ -567,7 +593,6 @@ cat >>$main_index <<EOF
 <td width="*" align="right" colspan="4"><i>daily</i></td>
 EOF
 fi
-
 if [ "$generate_email_index" = weekly ]; then
 cat >>$main_index <<EOF
 <td width="*" align="right" colspan="4"><i>weekly</i></td>
@@ -588,7 +613,7 @@ alternate=0
 cat $tran_dir/report-files | while read line; do
     base_name=$(echo $line | cut -d: -f2)
     rep_name=$(echo $line | cut -d: -f3-)
-    if [ xsummarizer != "x$base_name" ]; then
+    if [ xsummarizer != "x$base_name" ] && [ xsummaryGraph != "x$base_name" ] ; then
         if (( alternate % 2 )); then
             color="dddddd"
 	else
@@ -629,9 +654,7 @@ fi
 #    fi
 fi
 
-cat >>$main_index <<EOF
-</tr>
-EOF
+
 
 alternate=$((alternate+1))
     fi
