@@ -15,20 +15,20 @@ import com.metavize.mvvm.tapi.ProxyGenerator;
 
 public class MailExportFactory
 {
-    private static MailExport transform = null;
+    private static MailExport export = null;
 
-    public static void init(MailExport transform)
+    public static void init(MailExport export)
     {
-        if (null != MailExportFactory.transform) {
+        if (null != MailExportFactory.export) {
             throw new IllegalStateException("already initialized");
         }
 
-        MailExportFactory.transform = (MailExport)ProxyGenerator
-            .generateProxy(MailExport.class, transform);
+        MailExportFactory.export = (MailExport)ProxyGenerator
+            .generateProxy(MailExport.class, export);
     }
 
     public static MailExport getExport()
     {
-        return transform;
+        return export;
     }
 }
