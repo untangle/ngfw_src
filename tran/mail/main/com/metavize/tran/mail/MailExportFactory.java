@@ -27,7 +27,7 @@ public class MailExportFactory
             .generateProxy(MailExport.class, transform);
     }
 
-    public static MailExport getTransform()
+    public static MailExport getExport()
     {
         return transform;
     }
