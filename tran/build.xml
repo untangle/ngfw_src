@@ -332,13 +332,18 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <target name="jar.mail">
     <jar destfile="${build.jar}/mail-export.jar">
       <fileset dir="${build.root}/mail">
+        <include name="com/metavize/tran/mail/AddressKind.class"/>
+        <include name="com/metavize/tran/mail/AddressKindUserType.class"/>
         <include name="com/metavize/tran/mail/ImapCommand*.class"/>
         <include name="com/metavize/tran/mail/ImapReply*.class"/>
         <include name="com/metavize/tran/mail/ImapStateMachine*.class"/>
-        <include name="com/metavize/tran/mail/MailExportFactory.class"/>
         <include name="com/metavize/tran/mail/MailExport.class"/>
+        <include name="com/metavize/tran/mail/MailExportFactory.class"/>
         <include name="com/metavize/tran/mail/MailTransformSettings.class"/>
         <include name="com/metavize/tran/mail/MessageFile.class"/>
+        <include name="com/metavize/tran/mail/MessageInfo.class"/>
+        <include name="com/metavize/tran/mail/MessageInfoAddr.class"/>
+        <include name="com/metavize/tran/mail/MessageStats.class"/>
         <include name="com/metavize/tran/mail/MimeBoundary.class"/>
         <include name="com/metavize/tran/mail/MimeStateMachine*.class"/>
         <include name="com/metavize/tran/mail/PopCommand*.class"/>
@@ -352,6 +357,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
         <include name="com/metavize/tran/mail/SMTPVirusMessageAction*.class"/>
         <include name="com/metavize/tran/mail/SMTPVirusMessageActionUserType*.class"/>
         <include name="com/metavize/tran/mail/SmtpCommand*.class"/>
+        <include name="com/metavize/tran/mail/SmtpNotify.class"/>
         <include name="com/metavize/tran/mail/SmtpReply*.class"/>
         <include name="com/metavize/tran/mail/SmtpStateMachine*.class"/>
         <include name="com/metavize/tran/mail/SpamMessageAction*.class"/>
@@ -360,7 +366,10 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
         <include name="com/metavize/tran/mail/VirusMessageActionUserType*.class"/>
       </fileset>
       <fileset dir="${build.gensrc}/mail">
-        <!-- insert exported hibernate mappings here -->
+        <include name="com/metavize/tran/mail/AddressKind.hbm.xml"/>
+        <include name="com/metavize/tran/mail/MessageInfo.hbm.xml"/>
+        <include name="com/metavize/tran/mail/MessageInfoAddr.hbm.xml"/>
+        <include name="com/metavize/tran/mail/MessageStats.hbm.xml"/>
       </fileset>
     </jar>
   </target>

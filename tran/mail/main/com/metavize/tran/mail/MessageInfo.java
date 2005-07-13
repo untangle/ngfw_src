@@ -10,12 +10,12 @@
  */
 package com.metavize.tran.mail;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.metavize.mvvm.tapi.IPSession;
 import org.apache.log4j.Logger;
-
-import java.io.Serializable;
-import java.util.List;
-import java.util.ArrayList;
 
 /**
  * Log e-mail message info.
@@ -55,7 +55,7 @@ public class MessageInfo implements Serializable
     {
         this.subject = subject;
         this.sessionId = session.id();
-        
+
         // Hack for figuring out protocol.  Works fine until we move to dynamic pipelines. XXX
         int serverPort = session.serverPort();
         switch (serverPort) {
@@ -80,11 +80,11 @@ public class MessageInfo implements Serializable
         MessageInfoAddr newAddr = new MessageInfoAddr(kind, address, personal);
         addressList.add(newAddr);
     }
-        
+
     /* public methods */
 
     /**
-     * 
+     *
      * @hibernate.id
      * column="ID"
      * generator-class="native"
@@ -112,13 +112,13 @@ public class MessageInfo implements Serializable
      * @hibernate.collection-one-to-many
      * class="com.metavize.tran.mail.MessageInfoAddr"
      */
-    public List getAddresses() 
-    { 
+    public List getAddresses()
+    {
         return addressList;
     }
-    
-    public void setAddresses( List s ) 
-    { 
+
+    public void setAddresses( List s )
+    {
         addressList = s;
     }
 
@@ -126,7 +126,7 @@ public class MessageInfo implements Serializable
      * Session id.
      *
      * @return the session id.
-     * @hibernate.many-to-one
+     * @hibernate.property
      * column="SESSION_ID"
      */
     public int getSessionId()
