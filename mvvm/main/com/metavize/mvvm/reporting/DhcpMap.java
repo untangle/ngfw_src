@@ -30,6 +30,22 @@ import java.sql.ResultSet;
 import org.apache.log4j.Logger;
 import org.apache.log4j.BasicConfigurator;
 
+// To verify that there are no overlapping IPs in the final table run this query.
+// select
+//     t1.address,t2.address,
+//     t1.start_time,t2.start_time,
+//     t1.end_time,t2.end_time,
+//     t1.name,t2.name 
+// from 
+//     dhcp_address_map as t1, dhcp_address_map as t2 
+// where 
+// t1.address = t2.address and t1.id != t2.id and 
+//     (( t1.start_time = t2.start_time and t1.end_time = t2.start_time ) or 
+//      ( t1.start_time = t2.end_time and t1.end_time = t2.end_time));
+//
+// To determine which hostname maps to an address at a specific time run
+// select name from dhcp_address_map where address=? and start_time <= ? and end_time >= ?
+
 public class DhcpMap
 {
     private static final Logger logger = Logger.getLogger( DhcpMap.class );
