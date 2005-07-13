@@ -34,6 +34,8 @@ public class VirusSummarizer extends BaseSummarizer {
         int httpBlocked = 0;
         int ftpScanned = 0;
         int ftpBlocked = 0;
+	int emailScanned = 0;
+	int emailBlocked = 0;
 
         try {
             String sql = "SELECT count(*) FROM tr_virus_evt_http WHERE time_stamp >= ? AND time_stamp < ?";
@@ -77,6 +79,10 @@ public class VirusSummarizer extends BaseSummarizer {
             rs.close();
             ps.close();
 
+	    /////// INSERT SCANNED QUERY HERE
+
+	    /////// INSERT BLOCKED QUERY HERE
+
 
             rs.close();
             ps.close();
@@ -85,12 +91,15 @@ public class VirusSummarizer extends BaseSummarizer {
             logger.warn("could not summarize", exn);
         }
 
-        addEntry("Scanned HTTP downloads", Util.trimNumber("",httpScanned));
-        addEntry("&nbsp;&nbsp;&nbsp;Infected/Blocked HTTP downloads", Util.trimNumber("",httpBlocked));
-        addEntry("&nbsp;&nbsp;&nbsp;Passed HTTP downloads", Util.trimNumber("",httpScanned - httpBlocked));
+        addEntry("Scanned Web downloads", Util.trimNumber("",httpScanned));
+        addEntry("&nbsp;&nbsp;&nbsp;Blocked (infected)", Util.trimNumber("",httpBlocked));
+        addEntry("&nbsp;&nbsp;&nbsp;Passed", Util.trimNumber("",httpScanned - httpBlocked));
         addEntry("Scanned FTP downloads", Util.trimNumber("",ftpScanned));
-        addEntry("&nbsp;&nbsp;&nbsp;Infected/Blocked HTTP downloads", Util.trimNumber("",ftpBlocked));
-        addEntry("&nbsp;&nbsp;&nbsp;Passed HTTP downloads", Util.trimNumber("",ftpScanned - ftpBlocked));
+        addEntry("&nbsp;&nbsp;&nbsp;Blocked (infected)", Util.trimNumber("",ftpBlocked));
+        addEntry("&nbsp;&nbsp;&nbsp;Passed", Util.trimNumber("",ftpScanned - ftpBlocked));
+        addEntry("Scanned Email downloads", Util.trimNumber("XXXX",ftpScanned));
+        addEntry("&nbsp;&nbsp;&nbsp;Blocked (infected)", Util.trimNumber("XXXX",emailBlocked));
+        addEntry("&nbsp;&nbsp;&nbsp;Passed", Util.trimNumber("XXXX",emailScanned - emailBlocked));
 
         // XXXX
         String tranName = "Virus";
