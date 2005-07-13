@@ -11,6 +11,7 @@
 package com.metavize.tran.mime;
 import static com.metavize.tran.mime.HeaderNames.*;
 import java.util.*;
+import java.io.*;
 
 
 /**
@@ -58,7 +59,35 @@ public class MIMEPartHeaders
     return (ContentXFerEncodingHeaderField) ((headers == null || headers.size() == 0)?
       null:
       headers.get(0));  
+  }
+
+  /**
+   * Helper method.  Parses the headers from source
+   * in one call.
+   */
+  public MIMEPartHeaders parseMPHeaders(MIMEParsingInputStream stream,
+    MIMESource streamSource)
+    throws IOException, 
+      InvalidHeaderDataException, 
+      HeaderParseException {
+    return parseMPHeaders(stream, streamSource, new MIMEPolicy());
   }  
+
+  /**
+   * Helper method.  Parses the headers from source
+   * in one call.
+   */
+  public MIMEPartHeaders parseMPHeaders(MIMEParsingInputStream stream,
+    MIMESource streamSource,
+    MIMEPolicy policy)
+    throws IOException, 
+      InvalidHeaderDataException, 
+      HeaderParseException {
+    return (MIMEPartHeaders) parseHeaders(stream,
+      streamSource,
+      new MIMEPartHeaderFieldFactory(),
+      policy);
+  }
   
 
 }
