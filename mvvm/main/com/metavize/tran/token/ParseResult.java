@@ -20,6 +20,7 @@ public class ParseResult
 {
     private final List<Token> results;
     private final ByteBuffer readBuffer;
+    private final TokenStreamer tokenStreamer;
 
     // constructors -----------------------------------------------------------
 
@@ -30,6 +31,7 @@ public class ParseResult
         } else {
             this.results = results;
         }
+        this.tokenStreamer = null;
         this.readBuffer = readBuffer;
     }
 
@@ -40,12 +42,14 @@ public class ParseResult
         } else {
             this.results = Arrays.asList(result);
         }
+        this.tokenStreamer = null;
         this.readBuffer = readBuffer;
     }
 
     public ParseResult(ByteBuffer readBuffer)
     {
         this.results = new LinkedList<Token>();
+        this.tokenStreamer = null;
         this.readBuffer = readBuffer;
     }
 
@@ -56,18 +60,28 @@ public class ParseResult
         } else {
             this.results = Arrays.asList(result);
         }
+        this.tokenStreamer = null;
         this.readBuffer = null;
     }
 
     public ParseResult(List<Token> tokens)
     {
         this.results = null == tokens ? new LinkedList<Token>() : tokens;
+        this.tokenStreamer = null;
         this.readBuffer = null;
+    }
+
+    public ParseResult(TokenStreamer tokenStreamer, ByteBuffer readBuffer)
+    {
+        results = null;
+        this.tokenStreamer = tokenStreamer;
+        this.readBuffer = readBuffer;
     }
 
     public ParseResult()
     {
         this.results = new LinkedList<Token>();
+        this.tokenStreamer = null;
         this.readBuffer = null;
     }
 
@@ -81,5 +95,15 @@ public class ParseResult
     public ByteBuffer getReadBuffer()
     {
         return readBuffer;
+    }
+
+    public TokenStreamer getTokenStreamer()
+    {
+        return tokenStreamer;
+    }
+
+    public boolean isStreamer()
+    {
+        return null != tokenStreamer;
     }
 }

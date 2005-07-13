@@ -29,6 +29,7 @@ import com.metavize.mvvm.tapi.event.IPSessionEvent;
 import com.metavize.mvvm.tapi.event.TCPChunkEvent;
 import com.metavize.mvvm.tapi.event.TCPChunkResult;
 import com.metavize.mvvm.tapi.event.TCPSessionEvent;
+import com.metavize.mvvm.tapi.event.TCPStreamer;
 import org.apache.log4j.Logger;
 
 public class CasingAdaptor extends AbstractEventHandler
@@ -291,20 +292,30 @@ public class CasingAdaptor extends AbstractEventHandler
             return IPDataResult.DO_NOT_PASS;
         }
 
-        if (s2c) {
-            logger.debug("unparse result to client");
-            ByteBuffer[] r = ur.result();
-            for (int i = 0; null != null && i < r.length; i++) {
-                logger.debug("  to client: " + r[i]);
+        if (ur.isStreamer()) {
+            TCPStreamer ts = ur.getTcpStreamer();
+            if (s2c) {
+                s.beginClientStream(ts);
+            } else {
+                s.beginServerStream(ts);
             }
-            return new TCPChunkResult(r, null, null);
+            return new TCPChunkResult(null, null, null);
         } else {
-            logger.debug("unparse result to server");
-            ByteBuffer[] r = ur.result();
-            for (int i = 0; null != r && i < r.length; i++) {
-                logger.debug("  to server: " + r[i]);
+            if (s2c) {
+                logger.debug("unparse result to client");
+                ByteBuffer[] r = ur.result();
+                for (int i = 0; null != null && i < r.length; i++) {
+                    logger.debug("  to client: " + r[i]);
+                }
+                return new TCPChunkResult(r, null, null);
+            } else {
+                logger.debug("unparse result to server");
+                ByteBuffer[] r = ur.result();
+                for (int i = 0; null != r && i < r.length; i++) {
+                    logger.debug("  to server: " + r[i]);
+                }
+                return new TCPChunkResult(null, r, null);
             }
-            return new TCPChunkResult(null, r, null);
         }
     }
 
@@ -338,30 +349,40 @@ public class CasingAdaptor extends AbstractEventHandler
             return IPDataResult.DO_NOT_PASS;
         }
 
-        List<Token> results = pr.getResults();
-
-        // XXX add magic:
-        ByteBuffer bb = ByteBuffer.allocate(8 * results.size());
-
-        // XXX add magic:
-        for (Token t : results) {
-            Long key = pipeline.attach(t);
-            logger.debug("SAVED object: " + t + " with key: " + key
-                         + " on pipeline: " + pipeline);
-            bb.putLong(key);
-        }
-        bb.flip();
-
-        ByteBuffer[] r = new ByteBuffer[] { bb };
-
-        if (s2c) {
-            logger.debug("parse result to server, read buffer: "
-                         + pr.getReadBuffer() + "  to client: " + r[0]);
-            return new TCPChunkResult(r, null, pr.getReadBuffer());
+        if (pr.isStreamer()) {
+            TokenStreamer ts = pr.getTokenStreamer();
+            if (s2c) {
+                s.beginClientStream(ts);
+            } else {
+                s.beginServerStream(ts);
+            }
+            return new TCPChunkResult(null, null, pr.getReadBuffer());
         } else {
-            logger.debug("parse result to client, read buffer: "
-                         + pr.getReadBuffer() + "  to server: " + r[0]);
-            return new TCPChunkResult(null, r, pr.getReadBuffer());
+            List<Token> results = pr.getResults();
+
+            // XXX add magic:
+            ByteBuffer bb = ByteBuffer.allocate(8 * results.size());
+
+            // XXX add magic:
+            for (Token t : results) {
+                Long key = pipeline.attach(t);
+                logger.debug("SAVED object: " + t + " with key: " + key
+                             + " on pipeline: " + pipeline);
+                bb.putLong(key);
+            }
+            bb.flip();
+
+            ByteBuffer[] r = new ByteBuffer[] { bb };
+
+            if (s2c) {
+                logger.debug("parse result to server, read buffer: "
+                             + pr.getReadBuffer() + "  to client: " + r[0]);
+                return new TCPChunkResult(r, null, pr.getReadBuffer());
+            } else {
+                logger.debug("parse result to client, read buffer: "
+                             + pr.getReadBuffer() + "  to server: " + r[0]);
+                return new TCPChunkResult(null, r, pr.getReadBuffer());
+            }
         }
     }
 }
