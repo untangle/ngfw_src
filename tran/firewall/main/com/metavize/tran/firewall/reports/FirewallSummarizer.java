@@ -54,8 +54,7 @@ public class FirewallSummarizer extends BaseSummarizer {
 	    ResultSet rs;
 
 
-	    sql = " SELECT sum(SESSIONS)," +
-                  " sum(TCP_BLOCK_DEFAULT),  sum(TCP_BLOCK_RULE)," +
+	    sql = " SELECT sum(TCP_BLOCK_DEFAULT),  sum(TCP_BLOCK_RULE)," +
                   " sum(TCP_PASS_DEFAULT),   sum(TCP_PASS_RULE)," +
                   " sum(UDP_BLOCK_DEFAULT),  sum(UDP_BLOCK_RULE)," +
                   " sum(UDP_PASS_DEFAULT),   sum(UDP_PASS_RULE)," +
@@ -67,19 +66,18 @@ public class FirewallSummarizer extends BaseSummarizer {
             ps.setTimestamp(2, endDate);
             rs = ps.executeQuery();
             rs.first();
-	    totalSessionsExamined = rs.getLong(1);
-            tcpSessionsBlockedDefault = rs.getLong(2);
-            tcpSessionsBlockedRule = rs.getLong(3);
-            tcpSessionsPassedDefault = rs.getLong(4);
-            tcpSessionsPassedRule = rs.getLong(5);
-            udpSessionsBlockedDefault = rs.getLong(6);
-            udpSessionsBlockedRule = rs.getLong(7);
-            udpSessionsPassedDefault = rs.getLong(8);
-            udpSessionsPassedRule = rs.getLong(9);
-            pingSessionsBlockedDefault = rs.getLong(10);
-            pingSessionsBlockedRule = rs.getLong(11);
-            pingSessionsPassedDefault = rs.getLong(12);
-            pingSessionsPassedRule = rs.getLong(13);
+            tcpSessionsBlockedDefault = rs.getLong(1);
+            tcpSessionsBlockedRule = rs.getLong(2);
+            tcpSessionsPassedDefault = rs.getLong(3);
+            tcpSessionsPassedRule = rs.getLong(4);
+            udpSessionsBlockedDefault = rs.getLong(5);
+            udpSessionsBlockedRule = rs.getLong(6);
+            udpSessionsPassedDefault = rs.getLong(7);
+            udpSessionsPassedRule = rs.getLong(8);
+            pingSessionsBlockedDefault = rs.getLong(9);
+            pingSessionsBlockedRule = rs.getLong(10);
+            pingSessionsPassedDefault = rs.getLong(11);
+            pingSessionsPassedRule = rs.getLong(12);
             rs.close();
             ps.close();
 
@@ -95,29 +93,40 @@ public class FirewallSummarizer extends BaseSummarizer {
  	totalSessionsBlockedDefault = tcpSessionsBlockedDefault + udpSessionsBlockedDefault + pingSessionsBlockedDefault;
 	totalSessionsBlockedRule = tcpSessionsBlockedRule + udpSessionsBlockedRule + pingSessionsBlockedRule;
 	totalSessionsBlocked = totalSessionsBlockedDefault + totalSessionsBlockedRule;
-	
-        addEntry("Total sessions examined", Util.trimNumber("",totalSessionsExamined));
-        addEntry("&nbsp;&nbsp;&nbsp;Total blocked", Util.trimNumber("",totalSessionsBlocked));
-        addEntry("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Blocked by rule", Util.trimNumber("",totalSessionsBlockedRule));
-        addEntry("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Blocked by default", Util.trimNumber("",totalSessionsBlockedDefault));
-        addEntry("&nbsp;&nbsp;&nbsp;Total passed", Util.trimNumber("",totalSessionsPassed));
-        addEntry("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Passed by rule", Util.trimNumber("",totalSessionsPassedRule));
-        addEntry("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Passed by default", Util.trimNumber("",totalSessionsPassedDefault));
+	totalSessionsExamined = totalSessionsBlocked + totalSessionsPassed;
 
+        addEntry("Total sessions examined", Util.trimNumber("",totalSessionsExamined));
+
+	addEntry("&nbsp;","&nbsp;");
+
+        addEntry("Total sessions blocked", Util.trimNumber("",totalSessionsBlocked) 
+		 + " (" + Util.percentNumber(totalSessionsBlocked, totalSessionsExamined) + ")");
+        addEntry("&nbsp;&nbsp;&nbsp;Blocked by rule", Util.trimNumber("",totalSessionsBlockedRule) 
+		 + " (" + Util.percentNumber(totalSessionsBlockedRule, totalSessionsExamined) + ")");
+        addEntry("&nbsp;&nbsp;&nbsp;Blocked by default", Util.trimNumber("",totalSessionsBlockedDefault) 
+		 + " (" + Util.percentNumber(totalSessionsBlockedDefault, totalSessionsExamined) + ")");
+        addEntry("Total sessions passed", Util.trimNumber("",totalSessionsPassed) 
+		 + " (" + Util.percentNumber(totalSessionsPassed, totalSessionsExamined) + ")");
+        addEntry("&nbsp;&nbsp;&nbsp;Passed by rule", Util.trimNumber("",totalSessionsPassedRule) 
+		 + " (" + Util.percentNumber(totalSessionsPassedRule, totalSessionsExamined) + ")");
+        addEntry("&nbsp;&nbsp;&nbsp;Passed by default", Util.trimNumber("",totalSessionsPassedDefault) 
+		 + " (" + Util.percentNumber(totalSessionsPassedDefault, totalSessionsExamined) + ")");
 
         addEntry("&nbsp;", "&nbsp;");
-
-        addEntry("TCP", "");
+	
+        addEntry("TCP sessions",  Long.toString(tcpSessionsBlockedRule+tcpSessionsBlockedDefault+tcpSessionsPassedRule+tcpSessionsPassedDefault) 
+		 + " (" + Util.percentNumber(tcpSessionsBlockedRule+tcpSessionsBlockedDefault+tcpSessionsPassedRule+tcpSessionsPassedDefault, totalSessionsExamined) + ")");
         addEntry("&nbsp;&nbsp;&nbsp;Blocked", Long.toString(tcpSessionsBlockedRule+tcpSessionsBlockedDefault) 
 		 + " (" + Util.percentNumber(tcpSessionsBlockedRule+tcpSessionsBlockedDefault, totalSessionsExamined) + ")");
         addEntry("&nbsp;&nbsp;&nbsp;Passed", Long.toString(tcpSessionsPassedRule+tcpSessionsPassedDefault)
 		 + " (" + Util.percentNumber(tcpSessionsPassedRule+tcpSessionsPassedDefault, totalSessionsExamined) + ")");
-        addEntry("UDP", "");
+	addEntry("UDP sessions",  Long.toString(udpSessionsBlockedRule+udpSessionsBlockedDefault+udpSessionsPassedRule+udpSessionsPassedDefault) 
+		 + " (" + Util.percentNumber(udpSessionsBlockedRule+udpSessionsBlockedDefault+udpSessionsPassedRule+udpSessionsPassedDefault, totalSessionsExamined) + ")");
         addEntry("&nbsp;&nbsp;&nbsp;Blocked", Long.toString(udpSessionsBlockedRule+udpSessionsBlockedDefault)
 		 + " (" + Util.percentNumber(udpSessionsBlockedRule+udpSessionsBlockedDefault, totalSessionsExamined) + ")");
         addEntry("&nbsp;&nbsp;&nbsp;Passed", Long.toString(udpSessionsPassedRule+udpSessionsPassedDefault)
 		 + " (" + Util.percentNumber(udpSessionsPassedRule+udpSessionsPassedDefault, totalSessionsExamined) + ")");
-        addEntry("PING", "");
+	addEntry("PING sessions",  Long.toString(pingSessionsBlockedRule+pingSessionsBlockedDefault+pingSessionsPassedRule+pingSessionsPassedDefault)  + " (" + Util.percentNumber(pingSessionsBlockedRule+pingSessionsBlockedDefault+pingSessionsPassedRule+pingSessionsPassedDefault, totalSessionsExamined) + ")");
         addEntry("&nbsp;&nbsp;&nbsp;Blocked", Long.toString(pingSessionsBlockedRule+pingSessionsBlockedDefault)
 		 + " (" + Util.percentNumber(pingSessionsBlockedRule+pingSessionsBlockedDefault, totalSessionsExamined) + ")");
         addEntry("&nbsp;&nbsp;&nbsp;Passed", Long.toString(pingSessionsPassedRule+pingSessionsPassedDefault)

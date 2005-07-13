@@ -34,7 +34,7 @@
 	<parameter name="endTime" isForPrompting="true" class="java.sql.Timestamp"/>
 	<queryString><![CDATA[SELECT evt.ip as HOST, sum(evt.dropped) as DROPPED, sum(evt.rejected) as REJECTED, sum(evt.limited) as LIMITED,
        (sum(evt.dropped) + sum(evt.rejected) + sum(evt.limited)) as TOTAL_ACTIONS
-FROM shield_evt evt
+FROM shield_rejection_evt evt
 WHERE evt.time_stamp >= $P{startTime} and evt.time_stamp <= $P{endTime}
 GROUP BY HOST
 ORDER BY TOTAL_ACTIONS DESC, HOST ASC]]></queryString>

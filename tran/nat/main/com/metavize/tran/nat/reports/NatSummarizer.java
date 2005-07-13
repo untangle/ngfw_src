@@ -78,17 +78,20 @@ public class NatSummarizer extends BaseSummarizer {
 	totalRedirections = tcpRedirections + udpRedirections + pingRedirections;
 
         addEntry("Total redirections", Util.trimNumber("",totalRedirections) );
-        addEntry("&nbsp;&nbsp;&nbsp;TCP", Util.trimNumber("",tcpRedirections) );
+        addEntry("&nbsp;&nbsp;&nbsp;TCP", Util.trimNumber("",tcpRedirections) 
+		 + "(" + Util.percentNumber(tcpInboundRedirections+tcpOutboundRedirections, totalRedirections) + ")");
         addEntry("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Inbound", Util.trimNumber("",tcpInboundRedirections) 
 		 + "(" + Util.percentNumber(tcpInboundRedirections, totalRedirections) + ")");
         addEntry("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Outbound", Util.trimNumber("",tcpOutboundRedirections) 
 		 + "(" + Util.percentNumber(tcpOutboundRedirections, totalRedirections) + ")");
-        addEntry("&nbsp;&nbsp;&nbsp;UDP", Util.trimNumber("",udpRedirections) );
+        addEntry("&nbsp;&nbsp;&nbsp;UDP", Util.trimNumber("",udpRedirections) 
+		 + "(" + Util.percentNumber(udpInboundRedirections+udpOutboundRedirections, totalRedirections) + ")");
         addEntry("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Inbound", Util.trimNumber("",udpInboundRedirections) 
 		 + "(" + Util.percentNumber(udpInboundRedirections, totalRedirections) + ")");
         addEntry("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Outbound", Util.trimNumber("",udpOutboundRedirections) 
 		 + "(" + Util.percentNumber(udpOutboundRedirections, totalRedirections) + ")");
-        addEntry("&nbsp;&nbsp;&nbsp;PING", Util.trimNumber("",pingRedirections) );
+        addEntry("&nbsp;&nbsp;&nbsp;PING", Util.trimNumber("",pingRedirections) 
+		 + "(" + Util.percentNumber(pingInboundRedirections+pingOutboundRedirections, totalRedirections) + ")");
         addEntry("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Inbound", Util.trimNumber("",pingInboundRedirections)  
 		 + "(" + Util.percentNumber(pingInboundRedirections, totalRedirections) + ")");
         addEntry("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Outbound", Util.trimNumber("",pingOutboundRedirections)  
@@ -96,7 +99,7 @@ public class NatSummarizer extends BaseSummarizer {
 	
 	addEntry("&nbsp;","&nbsp;");
 
-        addEntry("Total outbound NAT sessions created", Util.trimNumber("",totalOutboundSessionsCreated));
+        addEntry("NAT outbound sessions created", Util.trimNumber("",totalOutboundSessionsCreated));
         addEntry("DMZ inbound redirections", Util.trimNumber("",dmzRedirections) );
 
 
