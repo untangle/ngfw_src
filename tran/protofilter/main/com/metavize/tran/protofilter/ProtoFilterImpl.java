@@ -10,9 +10,15 @@
  */
 package com.metavize.tran.protofilter;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import com.metavize.mvvm.tapi.AbstractTransform;
@@ -21,6 +27,7 @@ import com.metavize.mvvm.tapi.Fitting;
 import com.metavize.mvvm.tapi.PipeSpec;
 import com.metavize.mvvm.tapi.SoloPipeSpec;
 import com.metavize.mvvm.tapi.TransformContextFactory;
+import com.metavize.mvvm.tran.Direction;
 import com.metavize.mvvm.tran.TransformException;
 import com.metavize.mvvm.tran.TransformStartException;
 import net.sf.hibernate.HibernateException;
@@ -31,6 +38,15 @@ import org.apache.log4j.Logger;
 
 public class ProtoFilterImpl extends AbstractTransform implements ProtoFilter
 {
+    private static final String EVENT_QUERY
+        = "SELECT create_date, protocol, blocked, "
+        + "c_client_addr, c_client_port, "
+        + "s_server_addr, s_server_port, "
+        + "client_intf, server_intf "
+        + "FROM pl_endp endp "
+        + "LEFT OUTER JOIN tr_protofilter_evt USING (session_id) "
+        + "ORDER BY create_date DESC LIMIT 100";
+
     private final EventHandler handler = new EventHandler();
     private final SoloPipeSpec pipeSpec = new SoloPipeSpec
         ("protofilter", this, handler, Fitting.OCTET_STREAM,
@@ -40,6 +56,12 @@ public class ProtoFilterImpl extends AbstractTransform implements ProtoFilter
     private final Logger logger = Logger.getLogger(ProtoFilterImpl.class);
 
     private ProtoFilterSettings settings = null;
+
+    // constructors -----------------------------------------------------------
+
+    public ProtoFilterImpl() { }
+
+    // ProtoFilter methods ----------------------------------------------------
 
     public ProtoFilterSettings getProtoFilterSettings()
     {
@@ -74,11 +96,63 @@ public class ProtoFilterImpl extends AbstractTransform implements ProtoFilter
         }
     }
 
+    public List<ProtoFilterLog> getLogs(int limit)
+    {
+        List<ProtoFilterLog> l = new LinkedList<ProtoFilterLog>();
+
+        Session s = TransformContextFactory.context().openSession();
+        try {
+            Connection c = s.connection();
+            PreparedStatement ps = c.prepareStatement(EVENT_QUERY);
+            ps.setInt(1, limit);
+            long l0 = System.currentTimeMillis();
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                long cd = rs.getTimestamp("create_date").getTime();
+                Date createDate = new Date(cd);
+                String protocol = rs.getString("protocol");
+                boolean blocked = rs.getBoolean("blocked");
+                String clientAddr = rs.getString("c_client_addr");
+                int clientPort = rs.getInt("c_client_port");
+                String serverAddr = rs.getString("s_server_addr");
+                int serverPort = rs.getInt("s_server_port");
+                byte clientIntf = rs.getByte("client_intf");
+                byte serverIntf = rs.getByte("server_intf");
+
+                Direction d = Direction.getDirection(clientIntf, serverIntf);
+
+                ProtoFilterLog rl = new ProtoFilterLog
+                    (createDate, protocol, blocked, clientAddr, clientPort,
+                     serverAddr, serverPort, d);
+
+                l.add(0, rl);
+            }
+            long l1 = System.currentTimeMillis();
+            logger.debug("getAccessLogs() in: " + (l1 - l0));
+        } catch (SQLException exn) {
+            logger.warn("could not get events", exn);
+        } catch (HibernateException exn) {
+            logger.warn("could not get events", exn);
+        } finally {
+            try {
+                s.close();
+            } catch (HibernateException exn) {
+                logger.warn("could not close Hibernate session", exn);
+            }
+        }
+
+        return l;
+    }
+
+    // AbstractTransform methods ----------------------------------------------
+
     @Override
     protected PipeSpec[] getPipeSpecs()
     {
         return pipeSpecs;
     }
+
+    // Transform methods ------------------------------------------------------
 
     protected void initializeSettings()
     {
@@ -167,7 +241,7 @@ public class ProtoFilterImpl extends AbstractTransform implements ProtoFilter
         List       curPatterns = settings.getPatterns(); /* Current list of Patterns */
 
         if (curPatterns == null) {
-            /**
+            /*
              * First time initialization
              */
             logger.info("UPDATE: Importing patterns...");
@@ -175,7 +249,7 @@ public class ProtoFilterImpl extends AbstractTransform implements ProtoFilter
             curPatterns = settings.getPatterns();
         }
         else {
-            /**
+            /*
              * Look for updates
              */
             for (Iterator i=curPatterns.iterator() ; i.hasNext() ; ) {
@@ -184,7 +258,7 @@ public class ProtoFilterImpl extends AbstractTransform implements ProtoFilter
                 String def  = pat.getDefinition();
 
                 if (allPatterns.containsKey(name)) {
-                    /**
+                    /*
                      * Key is present in current config
                      * Update definition and description if needed
                      */
@@ -203,16 +277,16 @@ public class ProtoFilterImpl extends AbstractTransform implements ProtoFilter
                         pat.setDefinition(newpat.getDefinition());
                     }
 
-                    /**
+                    /*
                      * Remove it, its been accounted for
                      */
                     allPatterns.remove(name);
                 }
             }
 
-            /**
-             * Add all the necessary new patterns
-             * Whatever is left in allPatterns at this point, is not in the curPatterns
+            /*
+             * Add all the necessary new patterns.  Whatever is left
+             * in allPatterns at this point, is not in the curPatterns
              */
             for (Iterator i=allPatterns.values().iterator() ; i.hasNext() ; ) {
                 ProtoFilterPattern pat = (ProtoFilterPattern) i.next();
