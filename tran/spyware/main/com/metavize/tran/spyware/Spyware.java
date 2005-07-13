@@ -27,4 +27,5 @@ public interface Spyware extends Transform
 
     List<SpywareActiveXLog> getActiveXLogs(int limit);
     List<SpywareCookieLog> getCookieLogs(int limit);
+    List<SpywareAccessLog> getAccessLogs(int limit);
 }

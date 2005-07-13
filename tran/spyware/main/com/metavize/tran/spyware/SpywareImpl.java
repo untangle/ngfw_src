@@ -172,6 +172,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
                 l.add(0, rl);
             }
             long l1 = System.currentTimeMillis();
+            logger.debug("getActiveXLogs() in: " + (l1 - l0));
         } catch (SQLException exn) {
             logger.warn("could not get events", exn);
         } catch (HibernateException exn) {
@@ -221,6 +222,56 @@ public class SpywareImpl extends AbstractTransform implements Spyware
                 l.add(0, rl);
             }
             long l1 = System.currentTimeMillis();
+            logger.debug("getCookieLogs() in: " + (l1 - l0));
+        } catch (SQLException exn) {
+            logger.warn("could not get events", exn);
+        } catch (HibernateException exn) {
+            logger.warn("could not get events", exn);
+        } finally {
+            try {
+                s.close();
+            } catch (HibernateException exn) {
+                logger.warn("could not close Hibernate session", exn);
+            }
+        }
+
+        return l;
+    }
+
+    public List<SpywareAccessLog> getAccessLogs(int limit)
+    {
+        List<SpywareAccessLog> l = new LinkedList<SpywareAccessLog>();
+
+        Session s = TransformContextFactory.context().openSession();
+        try {
+            Connection c = s.connection();
+            PreparedStatement ps = c.prepareStatement(ACCESS_QUERY);
+            ps.setInt(1, limit);
+            long l0 = System.currentTimeMillis();
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                long cd = rs.getTimestamp("create_date").getTime();
+                Date createDate = new Date(cd);
+                String mAddrStr = rs.getString("ipmaddr");
+                IPMaddr ipMAddr = IPMaddr.parse(mAddrStr);
+                String ident = rs.getString("ident");
+                String clientAddr = rs.getString("c_client_addr");
+                int clientPort = rs.getInt("c_client_port");
+                String serverAddr = rs.getString("s_server_addr");
+                int serverPort = rs.getInt("s_server_port");
+                byte clientIntf = rs.getByte("client_intf");
+                byte serverIntf = rs.getByte("server_intf");
+
+                Direction d = Direction.getDirection(clientIntf, serverIntf);
+
+                SpywareAccessLog rl = new SpywareAccessLog
+                    (createDate, ipMAddr, ident, clientAddr, clientPort,
+                     serverAddr, serverPort, d);
+
+                l.add(0, rl);
+            }
+            long l1 = System.currentTimeMillis();
+            logger.debug("getAccessLogs() in: " + (l1 - l0));
         } catch (SQLException exn) {
             logger.warn("could not get events", exn);
         } catch (HibernateException exn) {

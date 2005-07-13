@@ -134,6 +134,7 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
                 l.add(0, rl);
             }
             long l1 = System.currentTimeMillis();
+            logger.debug("getEvents() in: " + (l1 - l0));
         } catch (SQLException exn) {
             logger.warn("could not get events", exn);
         } catch (HibernateException exn) {
