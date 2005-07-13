@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: TimeSeriesGraph.java,v 1.1 2005/02/11 22:45:33 jdi Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.reporting;
@@ -48,9 +48,9 @@ public abstract class TimeSeriesGraph extends ReportGraph
     protected String timeAxisLabel;
     protected String valueAxisLabel;
 
-    protected TimeSeriesGraph(JRDefaultScriptlet ourScriptlet, String resultVarName)
+    protected TimeSeriesGraph()
     {
-        super(ourScriptlet, resultVarName);
+
     }
 
     // Get the parameters

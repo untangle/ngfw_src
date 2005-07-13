@@ -40,12 +40,10 @@ public class TrafficDayByMinuteGraph extends DayByMinuteTimeSeriesGraph
     private String outgoingSeriesTitle;
 
     // Produces a single line graph of one series
-    public TrafficDayByMinuteGraph(JRDefaultScriptlet ourScriptlet, String resultVarName,
-                                   String chartTitle, boolean doOutgoingSessions, boolean doIncomingSessions,
+    public TrafficDayByMinuteGraph(String chartTitle, boolean doOutgoingSessions, boolean doIncomingSessions,
                                    boolean countOutgoingBytes, boolean countIncomingBytes,
                                    String seriesTitle)
     {
-        super(ourScriptlet, resultVarName);
         this.chartTitle = chartTitle;
         this.doOutgoingSessions = doOutgoingSessions;
         this.doIncomingSessions = doIncomingSessions;
@@ -56,13 +54,11 @@ public class TrafficDayByMinuteGraph extends DayByMinuteTimeSeriesGraph
     }
 
     // Produces a three series line graph of incoming, outgoing, total.
-    public TrafficDayByMinuteGraph(JRDefaultScriptlet ourScriptlet, String resultVarName,
-                                   String charTitle,
+    public TrafficDayByMinuteGraph(String charTitle,
                                    boolean doOutgoingSessions, boolean doIncomingSessions,
                                    String outgoingSeriesTitle, String incomingSeriesTitle,
                                    String overallSeriesTitle)
     {
-        super(ourScriptlet, resultVarName);
         this.chartTitle = chartTitle;
         this.doOutgoingSessions = doOutgoingSessions;
         this.doIncomingSessions = doIncomingSessions;

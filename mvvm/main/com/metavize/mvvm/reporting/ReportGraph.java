@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: ReportGraph.java,v 1.1 2005/02/11 22:45:33 jdi Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.reporting;
@@ -56,20 +56,19 @@ public abstract class ReportGraph
 
     private String resultVarName;
 
-    protected ReportGraph(JRDefaultScriptlet ourScriptlet, String resultVarName)
+    protected ReportGraph()
     {
-        this.ourScriptlet = ourScriptlet;
-        this.resultVarName = resultVarName;
+
     }
 
-    public void doIt() throws JRScriptletException
+    public void doIt(JRDefaultScriptlet ourScriptlet, String resultVarName) throws JRScriptletException
     {
         Connection con = null;
         try {
             Class.forName("org.postgresql.Driver");
             con = DriverManager.getConnection("jdbc:postgresql://localhost/mvvm",
                                                          "metavize", "foo");
-            JFreeChart chart = doInternal(con);
+            JFreeChart chart = doInternal(con, ourScriptlet, resultVarName);
             ourScriptlet.setVariableValue(resultVarName, new JCommonDrawableRenderer(chart));
         } catch (SQLException x) {
             x.printStackTrace();
@@ -82,10 +81,12 @@ public abstract class ReportGraph
         }
     }
 
-    public JFreeChart doInternal(Connection con) throws JRScriptletException, SQLException,
+    public JFreeChart doInternal(Connection con, JRDefaultScriptlet ourScriptlet, String resultVarName) throws JRScriptletException, SQLException,
                                                         ClassNotFoundException
     {
-        initParams();
+	this.ourScriptlet = ourScriptlet;
+        this.resultVarName = resultVarName;
+	initParams();
         return doChart(con);
     }
 
@@ -120,7 +121,7 @@ public abstract class ReportGraph
      * used to allow JFreeChart objects to be included in the output report in vector form.
      *
      * @author Teodor Danciu (teodord@users.sourceforge.net)
-     * @version $Id: ReportGraph.java,v 1.1 2005/02/11 22:45:33 jdi Exp $
+     * @version $Id$
      */
     static class JCommonDrawableRenderer extends JRAbstractSvgRenderer
     {

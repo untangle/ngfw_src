@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: TopTenPieGraph.java,v 1.1 2005/02/11 22:45:33 jdi Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.reporting;
@@ -43,9 +43,8 @@ public abstract class TopTenPieGraph extends ReportGraph
     // Pie graph specific
     protected int maxPieSlices;
 
-    protected TopTenPieGraph(JRDefaultScriptlet ourScriptlet, String resultVarName)
+    protected TopTenPieGraph()
     {
-        super(ourScriptlet, resultVarName);
     }
 
     // Get the parameters

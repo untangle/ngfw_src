@@ -30,9 +30,9 @@ public abstract class TopTenBarChart extends ReportGraph
     // Bar chart specific
     protected int maxBars;
 
-    protected TopTenBarChart(JRDefaultScriptlet ourScriptlet, String resultVarName)
+    protected TopTenBarChart()
     {
-        super(ourScriptlet, resultVarName);
+
     }
 
     // Get the parameters

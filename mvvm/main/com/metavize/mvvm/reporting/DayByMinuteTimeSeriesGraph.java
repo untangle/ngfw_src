@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: DayByMinuteTimeSeriesGraph.java,v 1.1 2005/02/11 22:45:33 jdi Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.reporting;
@@ -37,8 +37,7 @@ import com.metavize.mvvm.util.PortServiceNames;
 
 public abstract class DayByMinuteTimeSeriesGraph extends TimeSeriesGraph
 {
-    protected DayByMinuteTimeSeriesGraph(JRDefaultScriptlet ourScriptlet, String resultVarName)
+    protected DayByMinuteTimeSeriesGraph()
     {
-        super(ourScriptlet, resultVarName);
     }
 }

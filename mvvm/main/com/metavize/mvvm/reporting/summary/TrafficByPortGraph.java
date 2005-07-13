@@ -43,12 +43,10 @@ public class TrafficByPortGraph extends TopTenPieGraph
 
     private String seriesTitle;
 
-    public TrafficByPortGraph(JRDefaultScriptlet ourScriptlet, String resultVarName,
-                              String chartTitle, boolean byPercentage,
+    public TrafficByPortGraph(String chartTitle, boolean byPercentage,
                               boolean doOutgoingSessions, boolean doIncomingSessions,
                               boolean countOutgoingBytes, boolean countIncomingBytes)
     {
-        super(ourScriptlet, resultVarName);
         this.chartTitle = chartTitle;
         this.byPercentage = byPercentage;
         this.doOutgoingSessions = doOutgoingSessions;
