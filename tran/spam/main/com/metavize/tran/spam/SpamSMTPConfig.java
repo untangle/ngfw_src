@@ -36,7 +36,6 @@ public class SpamSMTPConfig implements Serializable
     private SMTPSpamMessageAction zMsgAction = SMTPSpamMessageAction.MARK;
     private SMTPNotifyAction zNotifyAction = SMTPNotifyAction.NEITHER;
     private boolean bScan = false;
-    private boolean bCopyOnBlock = false;
     private String zNotes = NO_NOTES;
 
     // constructor ------------------------------------------------------------
@@ -46,12 +45,11 @@ public class SpamSMTPConfig implements Serializable
      */
     public SpamSMTPConfig() {}
 
-    public SpamSMTPConfig(boolean bScan, SMTPSpamMessageAction zMsgAction, SMTPNotifyAction zNotifyAction, boolean bCopyOnBlock, String zNotes)
+    public SpamSMTPConfig(boolean bScan, SMTPSpamMessageAction zMsgAction, SMTPNotifyAction zNotifyAction, String zNotes)
     {
         this.bScan = bScan;   
         this.zMsgAction = zMsgAction;   
         this.zNotifyAction = zNotifyAction;   
-        this.bCopyOnBlock = bCopyOnBlock;   
         this.zNotes = zNotes;   
     }
 
@@ -173,25 +171,6 @@ public class SpamSMTPConfig implements Serializable
             azStr[i] = azNotifyAction[i].toString();
 
         return azStr;
-    }
-
-    /**
-     * copyOnBlock: a boolean specifying whether or not to save a copy of message (e.g., quarantine message) when a filter definition blocks the message (defaults to false)
-     *
-     * @return whether or not to save a original copy of blocked message
-     * @hibernate.property
-     * column="COPY_ON_BLOCK"
-     * not-null="true"
-     */
-    public boolean getCopyOnBlock()
-    {
-        return bCopyOnBlock;
-    }
-
-    public void setCopyOnBlock(boolean bCopyOnBlock)
-    {
-        this.bCopyOnBlock = bCopyOnBlock;
-        return;
     }
 
     /**
