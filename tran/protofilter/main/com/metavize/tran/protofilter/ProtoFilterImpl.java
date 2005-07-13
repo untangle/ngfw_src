@@ -44,7 +44,7 @@ public class ProtoFilterImpl extends AbstractTransform implements ProtoFilter
         + "s_server_addr, s_server_port, "
         + "client_intf, server_intf "
         + "FROM pl_endp endp "
-        + "LEFT OUTER JOIN tr_protofilter_evt USING (session_id) "
+        + "JOIN tr_protofilter_evt USING (session_id) "
         + "ORDER BY create_date DESC LIMIT 100";
 
     private final EventHandler handler = new EventHandler();
