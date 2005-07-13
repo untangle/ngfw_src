@@ -327,7 +327,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
                     int i = maddr.maskNumBits(); /* if bad subnet throws exception */
                 }
                 catch (Exception e) {
-                    logger.warn("Invalid Subnet in " + SUBNET_LIST + ": " + line + " - " + e);
+                    logger.warn("Invalid Subnet in " + SUBNET_LIST + ": " + line + ": " + e);
                     maddr = null;
                 }
 
