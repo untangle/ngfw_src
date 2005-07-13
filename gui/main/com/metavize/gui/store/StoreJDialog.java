@@ -42,8 +42,7 @@ public class StoreJDialog extends MConfigJDialog implements Savable, Refreshable
 
         // INIT GENERAL GUI
         storeJPanel = new StoreJPanel();
-        this.contentJTabbedPane.setTitleAt(0, NAME_STORE);
-        this.contentJPanel.add(storeJPanel);
+        this.contentJTabbedPane.addTab(NAME_STORE, null, storeJPanel);
         this.setTitle(NAME_STORE);
         setResizable(false);
         

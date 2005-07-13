@@ -33,6 +33,8 @@ public class AdminConfigJDialog extends MConfigJDialog {
     }
 
     protected void generateGui(){
+        this.setTitle(NAME_ADMIN_ACCOUNTS);
+        
         // create graphical context
         MEditTableJPanel mEditTableJPanel = new MEditTableJPanel(true, false);
         mEditTableJPanel.setInsets(new Insets(4, 4, 2, 2));
@@ -46,9 +48,7 @@ public class AdminConfigJDialog extends MConfigJDialog {
 	super.refreshableMap.put(NAME_ADMIN_ACCOUNTS, configTableModel);
 
         mEditTableJPanel.setTableModel( configTableModel );
-        this.contentJPanel.add(mEditTableJPanel);
-        this.contentJTabbedPane.setTitleAt(0, NAME_ADMIN_ACCOUNTS);
-        this.setTitle(NAME_ADMIN_ACCOUNTS);
+        this.contentJTabbedPane.addTab(NAME_ADMIN_ACCOUNTS, null, mEditTableJPanel);
     }
     
     public void sendSettings(Object settings) throws Exception {

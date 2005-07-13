@@ -32,14 +32,14 @@ public class NetworkJDialog extends MConfigJDialog {
     }
 
     protected void generateGui(){
+        this.setTitle(NAME_NETWORK_SETTINGS);
+        
         // GENERAL SETTINGS //////
         NetworkJPanel networkJPanel = new NetworkJPanel();
         JScrollPane contentJScrollPane = new JScrollPane( networkJPanel );
         contentJScrollPane.setHorizontalScrollBarPolicy( ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER );
         contentJScrollPane.setVerticalScrollBarPolicy( ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS );
-        this.contentJTabbedPane.setTitleAt(0, NAME_NETWORK_SETTINGS);
-        this.contentJPanel.add(contentJScrollPane);
-        this.setTitle(NAME_NETWORK_SETTINGS);
+        this.contentJTabbedPane.addTab(NAME_NETWORK_SETTINGS, null, contentJScrollPane);
 	super.savableMap.put(NAME_NETWORK_SETTINGS, networkJPanel);
 	super.refreshableMap.put(NAME_NETWORK_SETTINGS, networkJPanel);
     }

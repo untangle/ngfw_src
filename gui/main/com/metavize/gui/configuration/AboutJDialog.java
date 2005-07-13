@@ -39,6 +39,9 @@ public class AboutJDialog extends MConfigJDialog {
     }
 
     public void generateGui(){
+        this.setTitle("About EdgeGuard");
+        this.removeActionButtons();
+        
         try{
             buildString = "<html><b>Build:</b> " + Util.getMvvmContext().toolboxManager().mackageDesc("mvvm").getInstalledVersion();
         }
@@ -53,10 +56,8 @@ public class AboutJDialog extends MConfigJDialog {
 	contentJScrollPane.setHorizontalScrollBarPolicy( ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER );
 	contentJScrollPane.setVerticalScrollBarPolicy( ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS );
 
-	this.contentJTabbedPane.setTitleAt(0, "About EdgeGuard");
-	this.contentJPanel.add(contentJScrollPane);
-        this.setTitle("About EdgeGuard");
-	this.removeActionButtons();
+	this.contentJTabbedPane.addTab("About EdgeGuard", null, contentJScrollPane);
+      
     }
     
     public void sendSettings(Object settings){}

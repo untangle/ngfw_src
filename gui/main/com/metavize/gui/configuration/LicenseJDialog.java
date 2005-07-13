@@ -38,6 +38,9 @@ public class LicenseJDialog extends MConfigJDialog {
         JScrollPane contentJScrollPane;
 	JEditorPane contentJEditorPane = null;
 
+        this.setTitle("License Agreement");
+        this.removeActionButtons();
+        
 	try{
 	    URL licenseURL = Util.getClassLoader().getResource("EvalLicense.txt");
 	    contentJEditorPane = new JEditorPane();
@@ -52,10 +55,7 @@ public class LicenseJDialog extends MConfigJDialog {
 	contentJScrollPane.setVerticalScrollBarPolicy( ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS );
 	contentJScrollPane.getVerticalScrollBar().setValue(0);
 
-	this.contentJTabbedPane.setTitleAt(0, "License Agreement");
-	this.contentJPanel.add(contentJScrollPane);
-        this.setTitle("License Agreement");
-        this.removeActionButtons();
+	this.contentJTabbedPane.addTab("License Agreement", null, contentJScrollPane);
     }
 
 

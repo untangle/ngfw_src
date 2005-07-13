@@ -64,6 +64,7 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
     protected abstract void refreshSettings();
     protected abstract void generateGui();
 
+    
     protected void saveAll(){
 	// GENERATE AND VALIDATE ALL SETTINGS
 	String componentName = null;
@@ -134,7 +135,6 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
 
         buttonGroup1 = new javax.swing.ButtonGroup();
         contentJTabbedPane = new javax.swing.JTabbedPane();
-        contentJPanel = new javax.swing.JPanel();
         closeJButton = new javax.swing.JButton();
         reloadJButton = new javax.swing.JButton();
         saveJButton = new javax.swing.JButton();
@@ -148,11 +148,6 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
         contentJTabbedPane.setDoubleBuffered(true);
         contentJTabbedPane.setFocusable(false);
         contentJTabbedPane.setFont(new java.awt.Font("Default", 0, 12));
-        contentJPanel.setLayout(new java.awt.BorderLayout());
-
-        contentJPanel.setFocusable(false);
-        contentJTabbedPane.addTab("Control Panel", contentJPanel);
-
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -268,7 +263,6 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
     private javax.swing.JLabel backgroundJLabel;
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JButton closeJButton;
-    protected javax.swing.JPanel contentJPanel;
     protected javax.swing.JTabbedPane contentJTabbedPane;
     protected javax.swing.JButton reloadJButton;
     protected javax.swing.JButton saveJButton;

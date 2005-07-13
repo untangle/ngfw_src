@@ -32,24 +32,20 @@ public class MaintenanceJDialog extends MConfigJDialog {
     }
 
     protected void generateGui(){
+        this.setTitle(NAME_REMOTE_SETTINGS);
+        
         // GENERAL SETTINGS //////
         MaintenanceJPanel maintenanceJPanel = new MaintenanceJPanel();
         JScrollPane contentJScrollPane = new JScrollPane( maintenanceJPanel );
         contentJScrollPane.setHorizontalScrollBarPolicy( ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER );
         contentJScrollPane.setVerticalScrollBarPolicy( ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS );
-        this.contentJTabbedPane.setTitleAt(0, NAME_REMOTE_SETTINGS);
-        this.contentJPanel.add(contentJScrollPane);
-        this.setTitle(NAME_REMOTE_SETTINGS);
+        this.contentJTabbedPane.addTab(NAME_REMOTE_SETTINGS, null, contentJScrollPane);
 	super.savableMap.put(NAME_REMOTE_SETTINGS, maintenanceJPanel);
 	super.refreshableMap.put(NAME_REMOTE_SETTINGS, maintenanceJPanel);
     }
     
-    protected void sendSettings(Object settings) throws Exception {
-	Util.getNetworkingManager().set( (NetworkingConfiguration) settings);
-    }
-    protected void refreshSettings(){
-	settings = Util.getNetworkingManager().get();
-    }
+    protected void sendSettings(Object settings) throws Exception {}
+    protected void refreshSettings(){}
 
     protected void saveAll(){
 	// ASK THE USER IF HE REALLY WANTS TO SAVE SETTINGS ////////

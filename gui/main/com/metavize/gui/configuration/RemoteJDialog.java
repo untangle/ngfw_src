@@ -32,14 +32,14 @@ public class RemoteJDialog extends MConfigJDialog {
     }
 
     protected void generateGui(){
+        this.setTitle(NAME_REMOTE_SETTINGS);
+        
         // GENERAL SETTINGS //////
         RemoteJPanel remoteJPanel = new RemoteJPanel();
         JScrollPane contentJScrollPane = new JScrollPane( remoteJPanel );
         contentJScrollPane.setHorizontalScrollBarPolicy( ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER );
         contentJScrollPane.setVerticalScrollBarPolicy( ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS );
-        this.contentJTabbedPane.setTitleAt(0, NAME_REMOTE_SETTINGS);
-        this.contentJPanel.add(contentJScrollPane);
-        this.setTitle(NAME_REMOTE_SETTINGS);
+        this.contentJTabbedPane.addTab(NAME_REMOTE_SETTINGS, null, contentJScrollPane);
 	super.savableMap.put(NAME_REMOTE_SETTINGS, remoteJPanel);
 	super.refreshableMap.put(NAME_REMOTE_SETTINGS, remoteJPanel);
     }
