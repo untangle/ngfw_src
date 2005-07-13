@@ -9,6 +9,8 @@
  * $Id$
  */
 
+package com.metavize.mvvm.reporting;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
