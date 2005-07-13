@@ -11,6 +11,7 @@
 package com.metavize.tran.mime;
 import static com.metavize.tran.mime.HeaderNames.*;
 import java.util.*;
+import java.io.*;
 
 
 /**
@@ -19,6 +20,14 @@ import java.util.*;
 public class MIMEMessageHeaders 
   extends MIMEPartHeaders {
 
+  public MIMEMessageHeaders(MailMessageHeaderFieldFactory factory) {
+    super(factory);
+  }
+  
+  public MIMEMessageHeaders() {
+    super(new MailMessageHeaderFieldFactory());
+  }  
+  
   public MIMEMessageHeaders(MailMessageHeaderFieldFactory factory,
     MIMESource source,
     int sourceStart,
@@ -133,6 +142,34 @@ public class MIMEMessageHeaders
     }
     return ret;
   }
+
+  /**
+   * Helper method.  Parses the headers from source
+   * in one call.
+   */
+  public MIMEMessageHeaders parseMMHeaders(MIMEParsingInputStream stream,
+    MIMESource streamSource)
+    throws IOException, 
+      InvalidHeaderDataException, 
+      HeaderParseException {
+    return parseMMHeaders(stream, streamSource, new MIMEPolicy());
+  }  
+
+  /**
+   * Helper method.  Parses the headers from source
+   * in one call.
+   */
+  public MIMEMessageHeaders parseMMHeaders(MIMEParsingInputStream stream,
+    MIMESource streamSource,
+    MIMEPolicy policy)
+    throws IOException, 
+      InvalidHeaderDataException, 
+      HeaderParseException {
+    return (MIMEMessageHeaders) parseHeaders(stream,
+      streamSource,
+      new MailMessageHeaderFieldFactory(),
+      policy);
+  }  
   
   private void compressAddrField(RcptType type) {
     LCString typeAsString = rcptTypeToHeaderName(type);

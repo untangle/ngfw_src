@@ -51,7 +51,21 @@ public class MIMEMessage
       source,
       policy,
       outerBoundary);
-  }  
+  }
+
+  /**
+   * Construct a MIMEMessage using the already-parsed headers.
+   */
+  public MIMEMessage(MIMEParsingInputStream stream,
+    MIMESource source,
+    MIMEPolicy policy,
+    String outerBoundary,
+    MIMEMessageHeaders headers) throws IOException,
+      InvalidHeaderDataException, 
+      HeaderParseException,
+      MIMEPartParseException {    
+    super(stream, source, policy, outerBoundary, headers);
+  }
   
   /**
    * Get the MIMEMessageHeaders for this MIMEMessage.  Changes

@@ -67,6 +67,26 @@ public class MIMEPart {
       policy,
       outerBoundary);
   }
+  /**
+   * Construct a MIME part using the already-parsed headers.
+   */
+  public MIMEPart(MIMEParsingInputStream stream,
+    MIMESource source,
+    MIMEPolicy policy,
+    String outerBoundary,
+    MIMEPartHeaders headers) throws IOException,
+      InvalidHeaderDataException, 
+      HeaderParseException,
+      MIMEPartParseException {    
+
+    m_headers = headers;
+    m_headers.setObserver(m_headersObserver);
+      
+    parseAfterHeaders(stream,
+      source,
+      policy,
+      outerBoundary);
+  }  
 
   
   

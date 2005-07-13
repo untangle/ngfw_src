@@ -23,6 +23,10 @@ public class MIMEPartHeaders
     super(factory);
   }
   
+  public MIMEPartHeaders() {
+    super(new MIMEPartHeaderFieldFactory());
+  }  
+  
   public MIMEPartHeaders(MIMEPartHeaderFieldFactory factory,
     MIMESource source,
     int sourceStart,

@@ -210,6 +210,34 @@ public class Headers {
     
     return sb.toString();
   }
+
+  /**
+   * Helper method 
+   */
+  public Headers parseHeaders(MIMEParsingInputStream stream,
+    MIMESource streamSource,
+    HeaderFieldFactory fieldFactory)
+    throws IOException, 
+      InvalidHeaderDataException, 
+      HeaderParseException {
+
+    return parseHeaders(stream, streamSource, fieldFactory, new MIMEPolicy());
+  }
+  
+  
+  /**
+   * Helper method 
+   */
+  public Headers parseHeaders(MIMEParsingInputStream stream,
+    MIMESource streamSource,
+    HeaderFieldFactory fieldFactory,
+    MIMEPolicy policy)
+    throws IOException, 
+      InvalidHeaderDataException, 
+      HeaderParseException {
+      HeadersParser hp = new HeadersParser();
+      return hp.parseHeaders(stream, streamSource, fieldFactory, policy);
+   }
   
   private class MyHeaderFieldObserver
     implements HeaderFieldObserver {
