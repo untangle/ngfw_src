@@ -33,6 +33,10 @@ public class HauriScanner implements VirusScanner {
 
     public HauriScanner() {}
 
+    public String getVendorName() {
+        return "Hauri";
+    }
+
     public VirusScannerResult scanFile (String pathName)
         throws IOException, InterruptedException
     {

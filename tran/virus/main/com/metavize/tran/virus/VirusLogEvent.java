@@ -26,6 +26,7 @@ public class VirusLogEvent extends LogEvent
 {
     private int sessionId;
     private VirusScannerResult result;
+    private String vendorName;
 
     // constructors -----------------------------------------------------------
 
@@ -34,10 +35,11 @@ public class VirusLogEvent extends LogEvent
      */
     public VirusLogEvent() { }
 
-    public VirusLogEvent(int sessionId, VirusScannerResult result)
+    public VirusLogEvent(int sessionId, VirusScannerResult result, String vendorName)
     {
         this.sessionId = sessionId;
         this.result = result;
+        this.vendorName = vendorName;
     }
 
     // accessors --------------------------------------------------------------
@@ -81,5 +83,22 @@ public class VirusLogEvent extends LogEvent
     public void setResult(VirusScannerResult result)
     {
         this.result = result;
+    }
+
+    /**
+     * Spam scanner vendor.
+     *
+     * @return the vendor
+     * @hibernate.property
+     * column="VENDOR_NAME"
+     */
+    public String getVendorName()
+    {
+        return vendorName;
+    }
+
+    public void setVendorName(String vendorName)
+    {
+        this.vendorName = vendorName;
     }
 }

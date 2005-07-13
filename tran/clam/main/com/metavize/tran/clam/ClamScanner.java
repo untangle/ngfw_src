@@ -53,6 +53,10 @@ public class ClamScanner implements VirusScanner {
 
     public ClamScanner() {}
 
+    public String getVendorName() {
+        return "Clam";
+    }
+
     public VirusScannerResult scanFile (String pathName)
         throws IOException, InterruptedException
     {

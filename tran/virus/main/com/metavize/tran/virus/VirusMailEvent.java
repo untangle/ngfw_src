@@ -30,6 +30,7 @@ public class VirusMailEvent extends LogEvent
     private MessageInfo messageInfo;
     private VirusScannerResult result;
     private VirusMessageAction action;
+    private String vendorName;
 
     // constructors -----------------------------------------------------------
 
@@ -38,11 +39,13 @@ public class VirusMailEvent extends LogEvent
      */
     public VirusMailEvent() { }
 
-    public VirusMailEvent(MessageInfo messageInfo, VirusScannerResult result, VirusMessageAction action)
+    public VirusMailEvent(MessageInfo messageInfo, VirusScannerResult result, VirusMessageAction action,
+                          String vendorName)
     {
         this.messageInfo = messageInfo;
         this.result = result;
         this.action = action;
+        this.vendorName = vendorName;
     }
 
     // accessors --------------------------------------------------------------
@@ -53,6 +56,7 @@ public class VirusMailEvent extends LogEvent
      * @return e-mail message info.
      * @hibernate.many-to-one
      * column="MSG_ID"
+     * cascade="save-update"
      */
     public MessageInfo getMessageInfo()
     {
@@ -104,5 +108,22 @@ public class VirusMailEvent extends LogEvent
     public void setAction(VirusMessageAction action)
     {
         this.action = action;
+    }
+
+    /**
+     * Spam scanner vendor.
+     *
+     * @return the vendor
+     * @hibernate.property
+     * column="VENDOR_NAME"
+     */
+    public String getVendorName()
+    {
+        return vendorName;
+    }
+
+    public void setVendorName(String vendorName)
+    {
+        this.vendorName = vendorName;
     }
 }

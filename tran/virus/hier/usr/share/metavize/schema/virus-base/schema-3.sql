@@ -72,6 +72,7 @@ CREATE TABLE tr_virus_evt (
     clean bool,
     virus_name varchar(255),
     virus_cleaned bool,
+    vendor_name varchar(255),
     time_stamp timestamp,
     PRIMARY KEY (event_id));
 
@@ -81,6 +82,7 @@ CREATE TABLE tr_virus_evt_http (
     clean bool,
     virus_name varchar(255),
     virus_cleaned bool,
+    vendor_name varchar(255),
     time_stamp timestamp,
     PRIMARY KEY (event_id));
 
@@ -92,6 +94,7 @@ CREATE TABLE tr_virus_evt_smtp (
     virus_cleaned bool,
     msg_action char(1),
     notify_action char(1),
+    vendor_name varchar(255),
     time_stamp timestamp,
     PRIMARY KEY (event_id));
 
@@ -102,6 +105,7 @@ CREATE TABLE tr_virus_evt_mail (
     virus_name varchar(255),
     virus_cleaned bool,
     msg_action char(1),
+    vendor_name varchar(255),
     time_stamp timestamp,
     PRIMARY KEY (event_id));
 

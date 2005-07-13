@@ -31,6 +31,7 @@ public class SpamLogEvent extends LogEvent
     private float score;
     private boolean isSpam;
     private SpamMessageAction action;
+    private String vendorName;
 
     // constructors -----------------------------------------------------------
 
@@ -40,12 +41,13 @@ public class SpamLogEvent extends LogEvent
     public SpamLogEvent() { }
 
     public SpamLogEvent(MessageInfo messageInfo, float score, boolean isSpam,
-                        SpamMessageAction action)
+                        SpamMessageAction action, String vendorName)
     {
         this.messageInfo = messageInfo;
         this.score = score;
         this.isSpam = isSpam;
         this.action = action;
+        this.vendorName = vendorName;
     }
 
     // accessors --------------------------------------------------------------
@@ -56,6 +58,7 @@ public class SpamLogEvent extends LogEvent
      * @return e-mail message info.
      * @hibernate.many-to-one
      * column="MSG_ID"
+     * cascade="save-update"
      */
     public MessageInfo getMessageInfo()
     {
@@ -119,4 +122,20 @@ public class SpamLogEvent extends LogEvent
         this.action = action;
     }
 
+    /**
+     * Spam scanner vendor.
+     *
+     * @return the vendor
+     * @hibernate.property
+     * column="VENDOR_NAME"
+     */
+    public String getVendorName()
+    {
+        return vendorName;
+    }
+
+    public void setVendorName(String vendorName)
+    {
+        this.vendorName = vendorName;
+    }
 }

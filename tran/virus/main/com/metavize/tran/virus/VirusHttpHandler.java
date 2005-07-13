@@ -205,7 +205,8 @@ class VirusHttpHandler extends HttpStateMachine
             result = VirusScannerResult.ERROR;
         }
 
-        eventLogger.info(new VirusHttpEvent(responseRequest, result));
+        eventLogger.info(new VirusHttpEvent(responseRequest, result, transform.getScanner().getVendorName()));
+
         if (result.isClean()) {
             transform.incrementCount(PASS_COUNTER, 1);
 

@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
+import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.argon.IntfConverter;
 import com.metavize.mvvm.tapi.Pipeline;
 import com.metavize.mvvm.tapi.TCPSession;
@@ -48,6 +49,8 @@ class VirusFtpHandler extends FtpStateMachine
     private final boolean scanServer;
 
     private final Logger logger = Logger.getLogger(FtpStateMachine.class);
+    private static final Logger eventLogger = MvvmContextFactory
+        .context().eventLogger();
 
     private File file;
     private FileChannel inChannel;
@@ -212,6 +215,8 @@ class VirusFtpHandler extends FtpStateMachine
         }
 
         /* XXX handle the case where result is null */
+
+        eventLogger.info(new VirusLogEvent(getSession().id(), result, transform.getScanner().getVendorName()));
 
         if (result.isClean()) {
             transform.incrementCount( PASS_COUNTER );

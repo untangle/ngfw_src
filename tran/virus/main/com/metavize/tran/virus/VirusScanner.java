@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: VirusScanner.java,v 1.2 2005/01/18 05:44:04 amread Exp $
+ * $Id$
  */
 package com.metavize.tran.virus;
 
@@ -15,6 +15,14 @@ import java.util.List;
 
 public interface VirusScanner
 {
+
+    /**
+     * Gets the name of the vendor of this transform's virus scanner, used for logging.
+     *
+     * @return a <code>String</code> giving the name of the vendor of this scanner
+     */
+    String getVendorName();
+
     VirusScannerResult scanFile (String fileName)
         throws IOException, InterruptedException;
     VirusScannerResult scanBufs (List bufs)

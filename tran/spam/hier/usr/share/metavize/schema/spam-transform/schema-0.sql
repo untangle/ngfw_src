@@ -43,6 +43,7 @@ CREATE TABLE tr_spam_evt_smtp (
     score float4,
     is_spam bool,
     action char(1),
+    vendor_name varchar(255),
     time_stamp timestamp,
     PRIMARY KEY (event_id));
 
@@ -52,6 +53,7 @@ CREATE TABLE tr_spam_evt (
     score float4,
     is_spam bool,
     action char(1),
+    vendor_name varchar(255),
     time_stamp timestamp,
     PRIMARY KEY (event_id));
 
