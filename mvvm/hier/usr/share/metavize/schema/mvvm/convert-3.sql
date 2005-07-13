@@ -1,4 +1,4 @@
--- convert script for release 1.5
+-- convert script for release 2.5
 
 DROP TABLE pl_endp;
 DROP TABLE pl_stats;

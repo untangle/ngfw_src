@@ -11,7 +11,6 @@
 
 package com.metavize.tran.spyware;
 
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -175,7 +174,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
     {
         InputStream is = getClass().getClassLoader().getResourceAsStream(URL_LIST);
         HashSet urls = new HashSet();
-        
+
         if (null == is) {
             logger.error("Could not find: " + URL_LIST);
             return null;
@@ -318,7 +317,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
                 String description = null;
                 String name = null;
                 IPMaddr maddr = null;
-                
+
                 try {
                     addr = tok.nextToken();
                     description = tok.nextToken();

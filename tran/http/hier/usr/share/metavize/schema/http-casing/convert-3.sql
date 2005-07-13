@@ -16,5 +16,5 @@ ALTER TABLE tr_http_settings ADD CONSTRAINT fkf4229df91446f FOREIGN KEY (tid) RE
 
 -- indexes for reporting
 
-CREATE INDEX tr_http_evt_req_tstmp ON tr_http_evt_req (time_stamp);
-CREATE INDEX tr_http_evt_resp_reqid ON tr_http_evt_resp (request_id);
+CREATE INDEX tr_http_evt_req_ts ON tr_http_evt_req (time_stamp);
+CREATE INDEX tr_http_evt_resp_rid ON tr_http_evt_resp (request_id);

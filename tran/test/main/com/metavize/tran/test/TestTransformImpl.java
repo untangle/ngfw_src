@@ -32,9 +32,9 @@ public class TestTransformImpl extends AbstractTransform
 {
     private final Logger logger = Logger.getLogger(TestTransformImpl.class);
 
-    private EventHandler handler;
-    private SoloPipeSpec pipeSpec;
-    private SoloPipeSpec[] pipeSpecs;
+    private final EventHandler handler;
+    private final SoloPipeSpec pipeSpec;
+    private final SoloPipeSpec[] pipeSpecs;
 
     private Subscription tcpSub;
     private Subscription udpSub;
@@ -49,7 +49,14 @@ public class TestTransformImpl extends AbstractTransform
 
     // constructor ------------------------------------------------------------
 
-    public TestTransformImpl() { }
+    public TestTransformImpl()
+    {
+        this.handler = new EventHandler(new TestSettings());
+        pipeSpec = new SoloPipeSpec
+            ("test", this, handler, Fitting.OCTET_STREAM,
+             Affinity.SERVER, 0);
+        pipeSpecs = new SoloPipeSpec[] { pipeSpec };
+    }
 
     protected void initializeSettings()
     {
@@ -125,26 +132,23 @@ public class TestTransformImpl extends AbstractTransform
                 logger.warn(exn);
             }
         }
+
+        reconfigure();
     }
 
     protected void preStart()
     {
-        pipeSpec = new SoloPipeSpec
-            ("test", this, handler, Fitting.OCTET_STREAM, Affinity.SERVER, 0);
-        pipeSpecs = new SoloPipeSpec[] { pipeSpec };
-
-        reconfigure();
-
         if (this.settings == null) {
             String[] args = {""};
             postInit(args);
         }
-
-        this.handler = new EventHandler(settings);
+        reconfigure();
     }
 
     public void reconfigure()
     {
+        handler.setSettings(settings);
+
         if (null == pipeSpec) { return; }
 
         if (noTCP && (tcpSub != null)) {
