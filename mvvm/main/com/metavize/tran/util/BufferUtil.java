@@ -15,6 +15,8 @@ import static com.metavize.tran.util.Ascii.*;
 
 import java.nio.ByteBuffer;
 
+import java.io.*;
+
 public class BufferUtil
 {
     public static boolean endsWithCrLf(ByteBuffer buf)
@@ -89,6 +91,21 @@ public class BufferUtil
       }
       return true;
     }
+    
+    /**
+     * Find the start of the given pattern within the buffer.
+     * Returns the index of the start of the pattern (i.e.
+     * the index of pattern[offset] within buf).
+     */
+    public static int findPattern(final ByteBuffer buf, 
+      final byte[] pattern,
+      final int offset,
+      final int len) {
+        
+      //TODO bscott implement this correctly
+      return findString(buf, new String(pattern, offset, len));
+    }
+
 
     /**
      * Find a string in a buffer.
@@ -124,5 +141,24 @@ public class BufferUtil
         }
 
         return -1;
+    }
+    
+    /**
+     * Transfers the contents of the buffer to the given
+     * OutputStream
+     *
+     * @param buf the source buffer
+     * @param out the output stream
+     */
+    public static void writeBufferToStream(final ByteBuffer buf, final OutputStream out)
+      throws IOException {
+      if(buf.hasArray()) {
+        out.write(buf.array(), buf.arrayOffset() + buf.position(), buf.remaining());
+      }
+      else {
+        while(buf.hasRemaining()) {
+          out.write(buf.get());
+        }
+      }
     }
 }

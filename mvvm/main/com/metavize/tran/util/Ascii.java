@@ -23,6 +23,7 @@ public class Ascii
     public static final char HTAB = '\t';
     public static final char EQ = '=';
     public static final char COMMA = ',';
+    public static final char DOT = PERIOD;
 
     public static final String CRLF = "\r\n";
     
