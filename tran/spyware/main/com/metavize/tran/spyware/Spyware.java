@@ -26,4 +26,5 @@ public interface Spyware extends Transform
     void setSpywareSettings(SpywareSettings settings);
 
     List<SpywareActiveXLog> getActiveXLogs(int limit);
+    List<SpywareCookieLog> getCookieLogs(int limit);
 }

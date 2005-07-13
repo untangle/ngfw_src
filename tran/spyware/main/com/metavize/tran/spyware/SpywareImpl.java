@@ -187,6 +187,55 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         return l;
     }
 
+    public List<SpywareCookieLog> getCookieLogs(int limit)
+    {
+        List<SpywareCookieLog> l = new LinkedList<SpywareCookieLog>();
+
+        Session s = TransformContextFactory.context().openSession();
+        try {
+            Connection c = s.connection();
+            PreparedStatement ps = c.prepareStatement(COOKIE_QUERY);
+            ps.setInt(1, limit);
+            long l0 = System.currentTimeMillis();
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                long ts = rs.getTimestamp("time_stamp").getTime();
+                Date timeStamp = new Date(ts);
+                String host = rs.getString("host");
+                String uri = rs.getString("uri");
+                String ident = rs.getString("ident");
+                boolean toServer = rs.getBoolean("to_server");
+                String clientAddr = rs.getString("c_client_addr");
+                int clientPort = rs.getInt("c_client_port");
+                String serverAddr = rs.getString("s_server_addr");
+                int serverPort = rs.getInt("s_server_port");
+                byte clientIntf = rs.getByte("client_intf");
+                byte serverIntf = rs.getByte("server_intf");
+
+                Direction d = Direction.getDirection(clientIntf, serverIntf);
+
+                SpywareCookieLog rl = new SpywareCookieLog
+                    (timeStamp, host, uri, ident, toServer, clientAddr,
+                     clientPort, serverAddr, serverPort, d);
+
+                l.add(0, rl);
+            }
+            long l1 = System.currentTimeMillis();
+        } catch (SQLException exn) {
+            logger.warn("could not get events", exn);
+        } catch (HibernateException exn) {
+            logger.warn("could not get events", exn);
+        } finally {
+            try {
+                s.close();
+            } catch (HibernateException exn) {
+                logger.warn("could not close Hibernate session", exn);
+            }
+        }
+
+        return l;
+    }
+
     // Transform methods ------------------------------------------------------
 
     // XXX aviod
