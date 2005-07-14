@@ -1,0 +1,20 @@
+#!/bin/sh
+
+if [ $# -eq 0 ]; then
+    echo "usage: $0 [ -v ] reporttemplate.rpd"
+    exit 1
+fi
+
+JAVA_HOME=${JAVA_HOME:-/opt/java}
+
+export JAVA_HOME
+
+third_lib=../output/usr/share/java/mvvm
+template_dir=../mvvm/resources/reports
+
+for j in $third_lib/*jar; do
+    CLASSPATH="$j:$CLASSPATH"
+done
+CLASSPATH="$CLASSPATH:."
+
+exec $JAVA_HOME/bin/java -cp "$CLASSPATH" ReportGenerator -t "$template_dir" $@

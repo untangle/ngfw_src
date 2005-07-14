@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+
+<!--
+Copyright (c) 2004 Metavize Inc.
+All rights reserved.
+
+This software is the confidential and proprietary information of
+Metavize Inc. ("Confidential Information").  You shall
+not disclose such Confidential Information.
+
+$Id$
+-->
+
+<project name="util" basedir="." default="all">
+  <import file="../buildtools/buildmagic.xml"/>
+
+  <!-- main targets -->
+  <target name="pkg.gensrc" depends=""/>
+  <target name="pkg.compile" depends="compile.util"/>
+  <target name="pkg.jar" depends="compile.util"/>
+  <target name="pkg.install" depends="install.util"/>
+  <target name="pkg.clean" depends="clean.nuke"/>
+
+  <!-- util.jar -->
+
+  <property name="build.util" value="${build.root}/util"/>
+  <property name="src.util" value="."/>
+
+  <target name="compile.util" depends="prepare">
+    <mkdir dir="${build.util}"/>
+    <depend srcdir="${src.util}" destdir="${build.util}"
+            cache="${build.depcache}/util" closure="yes">
+    </depend>
+
+    <javac destdir="${build.util}"
+           debug="on"
+           optimize="false"
+           deprecation="on"
+           source="1.5"
+	   target="1.5"
+           includeAntRuntime="false">
+
+      <src path="${src.util}"/>
+      <classpath refid="mvvm.thirdparty.classpath"/>
+      <include name="*.java"/>
+    </javac>
+  </target>
+
+  <target name="install.util">
+  </target>
+
+
+  <!-- Javadoc target -->
+  <target name="jdoc" depends="pkg.jar">
+    <!-- "func.jdoc" defined in "common-targets.xml" -->
+    <antcall target="func.jdoc">
+      <param name="jdoc.src" value="${src.util}"/>
+    </antcall>
+  </target>
+  
+  <!-- 
+    Copy source files to ${jdoc.bigtree.src}
+    for inclusion in big JavaDoc generation
+  -->
+  <target name="bigjdoc">
+    <copydir src="${src.util}"
+      dest="${jdoc.bigtree.src}"
+      includes="**/*.java"
+      excludes="**/Test.java"
+      forceoverwrite="true"/>
+  </target>
+
+
+</project>
+
