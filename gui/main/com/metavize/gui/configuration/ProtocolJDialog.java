@@ -38,7 +38,9 @@ public class ProtocolJDialog extends MConfigJDialog {
         MCasingJPanel[] mCasingJPanels = Util.getMPipelineJPanel().loadAllCasings(true);
         JScrollPane contentJScrollPane = null;
         String casingDisplayName = null;
+        boolean addedSomething = false;
         for(MCasingJPanel mCasingJPanel : mCasingJPanels){
+            addedSomething = true;
             contentJScrollPane = new JScrollPane( mCasingJPanel );
             contentJScrollPane.setHorizontalScrollBarPolicy( ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER );
             contentJScrollPane.setVerticalScrollBarPolicy( ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS );
@@ -48,6 +50,15 @@ public class ProtocolJDialog extends MConfigJDialog {
             super.refreshableMap.put(casingDisplayName, mCasingJPanel);
         }
 
+        if(!addedSomething){
+            JPanel messageJPanel = new JPanel();
+            messageJPanel.setLayout(new BorderLayout());
+            JLabel messageJLabel = new JLabel("There are currently no protocols being used by the rack.");
+            messageJLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            messageJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+            messageJPanel.add(messageJLabel);
+            this.contentJTabbedPane.addTab("Message", null, messageJPanel);
+        }
     }
     
     protected void sendSettings(Object settings) throws Exception {}

@@ -15,16 +15,26 @@ import com.metavize.mvvm.tran.*;
 import com.metavize.tran.mail.MailTransformSettings;
 
 import java.awt.*;
-
+import javax.swing.*;
 /**
  *
  * @author  inieves
  */
 public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
 
+    private static final int TIMEOUT_MAX = 86400;
+    private static final int TIMEOUT_MIN = 0;
+    
     public MCasingJPanel(TransformContext transformContext) {
         super(transformContext);
         initComponents();
+        
+        smtpInboundJSpinner.setModel( new SpinnerNumberModel(1, TIMEOUT_MIN, TIMEOUT_MAX, 1) );
+        smtpOutboundJSpinner.setModel( new SpinnerNumberModel(1, TIMEOUT_MIN, TIMEOUT_MAX, 1) );
+        popInboundJSpinner.setModel( new SpinnerNumberModel(1, TIMEOUT_MIN, TIMEOUT_MAX, 1) );
+        popOutboundJSpinner.setModel( new SpinnerNumberModel(1, TIMEOUT_MIN, TIMEOUT_MAX, 1) );
+        imapInboundJSpinner.setModel( new SpinnerNumberModel(1, TIMEOUT_MIN, TIMEOUT_MAX, 1) );
+        imapOutboundJSpinner.setModel( new SpinnerNumberModel(1, TIMEOUT_MIN, TIMEOUT_MAX, 1) );
     }
 
     public void doSave(Object settings, boolean validateOnly) throws Exception {
@@ -131,9 +141,9 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
 
         setLayout(new java.awt.GridBagLayout());
 
-        setMaximumSize(new java.awt.Dimension(563, 228));
-        setMinimumSize(new java.awt.Dimension(563, 228));
-        setPreferredSize(new java.awt.Dimension(563, 228));
+        setMaximumSize(new java.awt.Dimension(563, 488));
+        setMinimumSize(new java.awt.Dimension(563, 488));
+        setPreferredSize(new java.awt.Dimension(563, 488));
         overrideJPanel.setLayout(new java.awt.GridBagLayout());
 
         overrideJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Email Overrides", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
