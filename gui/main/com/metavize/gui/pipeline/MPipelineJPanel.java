@@ -117,7 +117,6 @@ public class MPipelineJPanel extends javax.swing.JPanel {
 		((MRackJPanel)MPipelineJPanel.this.transformJPanel).removeTransform( mTransformJPanel );
 	    }});
 	    
-	    Util.setEmailAndVirusJPanel(removableName, null);
             Util.getMMainJFrame().getToolboxMap().get(buttonKey).setDeployableView();
 	}
 	catch(Exception e){

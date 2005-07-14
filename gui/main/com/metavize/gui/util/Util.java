@@ -70,6 +70,13 @@ public class Util {
     public static Color VALID_BACKGROUND_COLOR = new Color(224, 224, 224);
     ///////////////////////////////
 
+    // LOCAL //////////////////////
+    private static boolean isLocal = false;
+
+    public static void setLocal(boolean isLocalX){ isLocal = isLocalX; }
+    public static boolean isLocal(){ return isLocal; }
+    //////////////////////////////    
+
     // CODEBASE /////////////////
     private static URL serverCodeBase;
 
@@ -171,79 +178,7 @@ public class Util {
         System.exit(i);
     }
 
-    // EMAIL AND VIRUS AUTO-DISCOVERY ///////////////////
-    private static String undetectedMessage  = "<html>To access this functionality, you must install an AntiVirus Scanner Softwawre Appliance.</html>";
-    private static EmailDetectionJPanel emailDetectionSophosJPanel;
-    private static EmailDetectionJPanel emailDetectionFprotJPanel;
-    private static EmailDetectionJPanel emailDetectionHauriJPanel;
-    private static EmailDetectionJPanel emailDetectionClamJPanel;
-    private static MEditTableJPanel virusMEditTableJPanel;
 
-    public synchronized static void setEmailAndVirusJPanel(String transformName, JPanel jPanel){
-    if(transformName == null)
-        return;
-    if( transformName.equals("sophos-transform") )
-        emailDetectionSophosJPanel = (EmailDetectionJPanel) jPanel;
-    else if( transformName.equals("fprot-transform") )
-        emailDetectionFprotJPanel = (EmailDetectionJPanel) jPanel;
-    else if( transformName.equals("hauri-transform") )
-        emailDetectionHauriJPanel = (EmailDetectionJPanel) jPanel;
-    else if( transformName.equals("clam-transform") )
-        emailDetectionClamJPanel = (EmailDetectionJPanel) jPanel;
-    else if( transformName.equals("email-transform") )
-        virusMEditTableJPanel = (MEditTableJPanel) jPanel;
-
-    SwingUtilities.invokeLater( new Runnable() { public void run() {
-        updateDependencies();
-    }});
-    }
-
-    private static void updateDependencies(){
-    if( virusMEditTableJPanel != null){
-        if(emailDetectionSophosJPanel != null)
-        emailDetectionSophosJPanel.setDetected(true);
-        if(emailDetectionFprotJPanel != null)
-        emailDetectionFprotJPanel.setDetected(true);
-            if(emailDetectionHauriJPanel != null)
-        emailDetectionHauriJPanel.setDetected(true);
-            if(emailDetectionClamJPanel != null)
-        emailDetectionClamJPanel.setDetected(true);
-    }
-    else{
-        if(emailDetectionSophosJPanel != null)
-        emailDetectionSophosJPanel.setDetected(false);
-        if(emailDetectionFprotJPanel != null)
-        emailDetectionFprotJPanel.setDetected(false);
-            if(emailDetectionHauriJPanel != null)
-        emailDetectionHauriJPanel.setDetected(false);
-            if(emailDetectionClamJPanel != null)
-        emailDetectionClamJPanel.setDetected(false);
-    }
-
-    if(virusMEditTableJPanel != null){
-        int index = ((JTabbedPane)virusMEditTableJPanel.getParent()).indexOfComponent(virusMEditTableJPanel);
-        if( emailDetectionSophosJPanel != null ){
-	    ((JTabbedPane)virusMEditTableJPanel.getParent()).setTitleAt(index, "Sophos AntiVirus");
-	    virusMEditTableJPanel.setMessage( null );
-        }
-	else if( emailDetectionFprotJPanel != null ){
-	    ((JTabbedPane)virusMEditTableJPanel.getParent()).setTitleAt(index, "F-Prot AntiVirus");
-	    virusMEditTableJPanel.setMessage( null );
-        }
-	else if( emailDetectionHauriJPanel != null ){
-	    ((JTabbedPane)virusMEditTableJPanel.getParent()).setTitleAt(index, "Hauri AntiVirus");
-	    virusMEditTableJPanel.setMessage( null );
-        }
-        else if( emailDetectionClamJPanel != null ){
-	    ((JTabbedPane)virusMEditTableJPanel.getParent()).setTitleAt(index, "Clam AntiVirus");
-	    virusMEditTableJPanel.setMessage( null );
-        }
-        else{
-	    ((JTabbedPane)virusMEditTableJPanel.getParent()).setTitleAt(index, "AntiVirus (uninstalled)");
-	    virusMEditTableJPanel.setMessage( undetectedMessage );
-        }
-    }
-    }
     ////////////////////////////////////////////
     
     

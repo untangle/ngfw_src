@@ -39,58 +39,71 @@ public class MLoginJFrame extends javax.swing.JFrame {
 
 
     public MLoginJFrame(final String[] args) {
-    this.args = args;
+	this.args = args;
+
+	// PARSE ARGS
+	if( !Util.isArrayEmpty(args) ){
+	    if( args.length <= 2){  // local
+		if(args[0].equals("local"))
+		    Util.setLocal(true);
+	    }
+	}
+	
+	if( Util.isLocal() )
+	    Util.printMessage("[Running on localhost]");
+	else
+	    Util.printMessage("[Running remotely]");
 
         Util.setMLoginJFrame(this);
-    initComponents();
-    Util.setStatusJProgressBar(statusJProgressBar);
-    MLoginJFrame.this.setBounds( Util.generateCenteredBounds(null, MLoginJFrame.this.getWidth(), MLoginJFrame.this.getHeight()) );
+	initComponents();
+	Util.setStatusJProgressBar(statusJProgressBar);
+	MLoginJFrame.this.setBounds( Util.generateCenteredBounds(null, MLoginJFrame.this.getWidth(), MLoginJFrame.this.getHeight()) );
         serverJTextField.setText( Util.getServerCodeBase().getHost() );
-
-    if( Util.isSecureViaHttps() )
-        protocolJTextField.setText( "https (secure)");
-    else
-        protocolJTextField.setText( "http (standard)");
-
-    MLoginJFrame.this.setVisible(true);
+	
+	if( Util.isSecureViaHttps() )
+	    protocolJTextField.setText( "https (secure)");
+	else
+	    protocolJTextField.setText( "http (standard)");
+	
+	MLoginJFrame.this.setVisible(true);
         resetLogin("Please enter your login and password.");
     }
+    
 
-
-
+    
     public void resetLogin(final String message){
-    SwingUtilities.invokeLater( new Runnable() {
-        public void run(){
+	SwingUtilities.invokeLater( new Runnable() {
+		public void run(){
                     //inputJPanel.setVisible(true);
                     //validate();
-            acceptJButton.setEnabled(true);
-            loginJTextField.setEnabled(true);
-            passJPasswordField.setEnabled(true);
-            serverJTextField.setEnabled(true);
+		    acceptJButton.setEnabled(true);
+		    loginJTextField.setEnabled(true);
+		    passJPasswordField.setEnabled(true);
+		    serverJTextField.setEnabled(true);
                     protocolJTextField.setEnabled(true);
-            statusJProgressBar.setString(message);
-            statusJProgressBar.setValue(0);
-            statusJProgressBar.setIndeterminate(false);
-        } } );
+		    statusJProgressBar.setString(message);
+		    statusJProgressBar.setValue(0);
+		    statusJProgressBar.setIndeterminate(false);
+		} } );
     }
 
     public void reshowLogin(){
-    SwingUtilities.invokeLater( new Runnable() {
-        public void run() {
-            synchronized(this){
-            if(mMainJFrame != null){
-                mMainJFrame.setVisible(false);
-                mMainJFrame.dispose();
-                mMainJFrame = null;
-            }
+	SwingUtilities.invokeLater( new Runnable() {
+		public void run() {
+		    synchronized(this){
+			if(mMainJFrame != null){
+			    mMainJFrame.setVisible(false);
+			    mMainJFrame.dispose();
+			    mMainJFrame = null;
+			}
                         //inputJPanel.setVisible(true);
                         //validate();
             if(!MLoginJFrame.this.isVisible())
                 MLoginJFrame.this.setVisible(true);
-            }
-        } } );
+		    }
+		} } );
     }
-
+    
 
     private boolean alreadyLoggedIn() {
         LoginSession loginSession = MvvmRemoteContextFactory.loginSession();
