@@ -1,4 +1,4 @@
-com/metavize/tran/virus/VirusMaster.jasper:Hauri_AntiVirus--Summary:Summary
+reports/VirusMaster.jasper:Hauri_AntiVirus--Summary:Summary
 com/metavize/tran/virus/WebVirusDetail.jasper:Hauri_AntiVirus--Web_Incidents:Web Incidents
 com/metavize/tran/virus/FtpVirusDetail.jasper:Hauri_AntiVirus--FTP_Incidents:FTP Incidents
 com/metavize/tran/virus/EmailVirusDetail.jasper:Hauri_AntiVirus--Email_Incidents:Email Incidents
