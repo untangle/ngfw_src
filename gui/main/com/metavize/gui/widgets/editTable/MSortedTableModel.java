@@ -602,14 +602,14 @@ public abstract class MSortedTableModel extends DefaultTableModel implements Ref
         return newComboBoxModel;
     }
     
-    public ComboBoxModel generateComboBoxModel(String[] options, String setting){
+    public ComboBoxModel generateComboBoxModel(Object[] options, Object setting){
         DefaultComboBoxModel returnComboBoxModel = new DefaultComboBoxModel();
         // Don't need to sort any more because the enumerations should be sorted from the server.
         // Arrays.sort(options);
         for(int i=0; i < options.length; i++){
-            returnComboBoxModel.insertElementAt(options[i], i);
+            returnComboBoxModel.insertElementAt(options[i].toString(), i);
         }
-        returnComboBoxModel.setSelectedItem(setting);
+        returnComboBoxModel.setSelectedItem(setting.toString());
         
         return returnComboBoxModel;
     }

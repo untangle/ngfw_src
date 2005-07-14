@@ -339,6 +339,9 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       <fileset dir="../tran/firewall/main">
         <include name="**/*png"/>
       </fileset>
+      <fileset dir="../tran/spam/main">
+        <include name="**/*png"/>
+      </fileset>
 
 
     </jar>
