@@ -100,6 +100,13 @@ String helpClickHere = "Click <a href=\"help.html\">here</a> for more informatio
                 </span>
                 <br/>
                 <br/>
+                <% if ( host.equalsIgnoreCase( "egdemo.metavize.com" )) { %>
+        	<b>Login: egdemo</b>
+		<br/>
+		<b>Password: egdemo</b>
+                <br/>
+                <br/>
+                <% } %>
                 <br/>
                 <% if ( isDownload ) { %>
                 <object codebase="http://java.sun.com/update/1.5.0/jinstall-1_5_0_03-windows-i586.cab"
