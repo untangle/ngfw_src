@@ -1,0 +1,27 @@
+TEMPLATE=Sub3
+REPORT_NAME=HttpDomains
+REPORT_TITLE=Visited Domains
+FIELD_1.name=host
+FIELD_1.type=String
+FIELD_2.name=hits
+FIELD_2.type=Long
+FIELD_3.name=total_hosts
+FIELD_3.type=Long
+QUERY=SELECT host, count(host) AS hits, total_hosts \
+FROM (SELECT count(host) AS total_hosts FROM tr_http_evt_req AS req \
+      WHERE req.time_stamp > $P{startTime} AND req.time_stamp < $P{endTime}) AS total_size, \
+     tr_http_evt_req req \
+WHERE req.time_stamp > $P{startTime} \
+AND req.time_stamp < $P{endTime} \
+GROUP BY host, total_hosts \
+ORDER BY hits DESC
+LEFT.label=Domain
+MIDDLE.label=Hits
+RIGHT.label=%Hits
+LEFT.expr=$F{host}
+MIDDLE.expr=$F{hits}
+RIGHT.expr=Math.round($F{hits}.doubleValue() / $F{total_hosts}.doubleValue() * 100) + "%"
+MIDDLE.total=$F{total_hosts}
+LEFT.total=Totals:
+RIGHT.total=100%
+UNIQUE_COUNT.expr=$F{host}

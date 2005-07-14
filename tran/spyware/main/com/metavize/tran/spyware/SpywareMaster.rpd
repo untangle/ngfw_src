@@ -1,0 +1,7 @@
+TEMPLATE=MasterOfFourChildren
+REPORT_NAME=SpywareMaster
+REPORT_TITLE=Spyware Blocker
+SUBREPORT_1=com/metavize/tran/spyware/SpywareCookies.jasper
+SUBREPORT_2=com/metavize/tran/spyware/SpywareClients.jasper
+SUBREPORT_3=com/metavize/tran/spyware/SpywareSources.jasper
+SUBREPORT_4=com/metavize/tran/spyware/SpywareActiveX.jasper

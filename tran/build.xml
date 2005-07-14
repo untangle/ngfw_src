@@ -87,9 +87,29 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <!-- build tran   -->
   <!--              -->
 
-  <target name="xdoclet.tran" depends="prepare">
-
+  <target name="gensrc.tran" depends="prepare">
     <mkdir dir="${build.gensrc}/${tran.name}"/>
+    <mkdir dir="${build.root}/${tran.name}"/>
+    <foreach target="rpdtojrxml" param="rpd" inheritall="true" parallel="false">
+      <fileset dir="${tran.name}/${src.main}">
+        <include name="**/*.rpd"/>
+      </fileset>
+    </foreach>
+  </target>
+
+  <target name="rpdtojrxml">
+    <java classname="ReportGenerator"
+          fork="false"
+          failonerror="true">
+      <arg line="-t mvvm/resources/reports"/>
+      <arg line="-o ${build.gensrc}/${tran.name}/reports"/>
+      <arg line="${rpd}"/>
+      <classpath refid="mvvm.thirdparty.classpath"/>
+      <classpath path="../util/output/util"/>
+    </java>
+  </target>
+
+  <target name="xdoclet.tran" depends="gensrc.tran">
 
     <hibernatedoclet destdir="${build.gensrc}/${tran.name}"
                      excludedtags="@version,@author,@todo">
@@ -103,17 +123,15 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       <hibernate version="2.0"/>
     </hibernatedoclet>
 
-    <mkdir dir="${build.root}/${tran.name}"/>
-
-    <jrc srcdir="${tran.name}/${src.main}" destdir="${build.root}/${tran.name}" tempdir="${dist.mvvm.tmp}"
+    <jrc srcdir="${build.gensrc}/${tran.name}" destdir="${build.root}/${tran.name}" tempdir="${dist.mvvm.tmp}"
          keepjava="true" xmlvalidation="true">
       <classpath refid="mvvm.thirdparty.classpath"/>
       <classpath refid="jasperreports.classpath"/>
       <classpath refid="mvvm-client.classpath"/>
       <include name="**/*jrxml"/>
     </jrc>
-
   </target>
+
 
   <!--              -->
   <!-- compile tran -->
@@ -187,7 +205,9 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
 
     <jar destfile="${build.jar}/${tran.name}-${tran.type}.mar" index="yes">
       <fileset dir="${build.root}/${tran.name}"/>
-      <fileset dir="${build.gensrc}/${tran.name}"/>
+      <fileset dir="${build.gensrc}/${tran.name}">
+        <exclude name="**/*jrxml"/>
+      </fileset>
       <fileset dir="${tran.name}/${src.main}/">
         <include name="**/*png"/>
       </fileset>

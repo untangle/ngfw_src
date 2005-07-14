@@ -1,4 +1,4 @@
-com/metavize/tran/spyware/SpywareMaster.jasper:Spyware_Blocker--Summary:Summary
+reports/SpywareMaster.jasper:Spyware_Blocker--Summary:Summary
 com/metavize/tran/spyware/SpywareActiveXDetail.jasper:Spyware_Blocker--ActiveX_Incidents:ActiveX Incidents
 com/metavize/tran/spyware/SpywareAccessDetail.jasper:Spyware_Blocker--Access_Incidents:Access Incidents
 com/metavize/tran/spyware/SpywareCookieDetail.jasper:Spyware_Blocker--Cookie_Incidents:Cookie Incidents

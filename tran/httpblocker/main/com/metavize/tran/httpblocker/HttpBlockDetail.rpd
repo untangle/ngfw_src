@@ -1,0 +1,42 @@
+TEMPLATE=Detail
+REPORT_NAME=BlockDetail
+REPORT_TITLE=Web Control Policy Violations
+FIELD_1.name=c_server_port
+FIELD_1.type=Integer
+FIELD_2.name=client_addr
+FIELD_2.type=String
+FIELD_3.name=host
+FIELD_3.type=String
+FIELD_4.name=name
+FIELD_4.type=String
+FIELD_5.name=server_addr
+FIELD_5.type=String
+FIELD_6.name=time_stamp
+FIELD_6.type=Timestamp
+FIELD_7.name=uri
+FIELD_7.type=String
+QUERY=SELECT blk.time_stamp, uri, host, name, host(c_client_addr) AS client_addr, host(c_server_addr) AS server_addr, c_server_port \
+FROM (SELECT count(*) AS total_violations FROM tr_httpblk_evt_blk blk \
+      WHERE blk.time_stamp > $P{startTime} AND blk.time_stamp < $P{endTime}) AS violations, \
+tr_httpblk_evt_blk blk \
+JOIN tr_http_req_line USING (request_id) \
+JOIN tr_http_evt_req USING (request_id) \
+JOIN pipeline_info USING (session_id) \
+JOIN addr_map ON c_client_addr = addr \
+WHERE blk.time_stamp > $P{startTime} AND blk.time_stamp < $P{endTime} \
+AND NOT c_client_addr ISNULL \
+ORDER BY blk.time_stamp DESC
+TOPLEFT.label=Timestamp
+TOPLMID.label=User
+BOTLMID.label=Client
+TOPRMID.label=Host
+BOTRMID.label=URI
+TOPRIGHT.label=Server
+BOTRIGHT.label=Port
+TOPRMID.expr=$F{host}
+TOPLMID.expr=$F{name}.equals($F{client_addr}) ? "" : $F{name}
+TOPLEFT.expr=$F{time_stamp}
+BOTRMID.expr=$F{uri}
+BOTLMID.expr=$F{client_addr}
+BOTRIGHT.expr=$F{c_server_port}
+TOPRIGHT.expr=$F{server_addr}
