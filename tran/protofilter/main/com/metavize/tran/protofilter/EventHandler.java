@@ -26,12 +26,18 @@ public class EventHandler extends AbstractEventHandler
     private final Logger logger = Logger.getLogger(EventHandler.class);
     private final Logger eventLogger = MvvmContextFactory.context().eventLogger();
 
+    static final int SCAN_COUNTER   = Transform.GENERIC_0_COUNTER;    
+    static final int DETECT_COUNTER = Transform.GENERIC_1_COUNTER;
+    static final int BLOCK_COUNTER  = Transform.GENERIC_2_COUNTER;
+
+
     private ArrayList  _patternList = null;
     private int        _bufferSize = 4096;
     private int        _byteLimit  = 2048;
     private int        _chunkLimit = 8;
     private String     _unknownString  = "unknown";
     private boolean    _stripZeros = false;
+    private ProtoFilterImpl transform;
 
     private class SessionInfo {
 
@@ -50,7 +56,10 @@ public class EventHandler extends AbstractEventHandler
         private Pipeline pipeline;
     }
 
-    public EventHandler() {}
+    EventHandler( ProtoFilterImpl transform )
+    {
+        this.transform = transform;
+    }
 
     public void handleTCPNewSession (TCPSessionEvent event)
     {
@@ -198,7 +207,7 @@ public class EventHandler extends AbstractEventHandler
         }
 
         ProtoFilterPattern elem = _findMatch(sessInfo, sess, server);
-        incrementCount(Transform.GENERIC_0_COUNTER); // SCAN COUNTER
+        transform.incrementCount( SCAN_COUNTER );
         if (elem != null) {
             sessInfo.protocol = elem.getProtocol();
             sessInfo.identified = true;
@@ -215,14 +224,15 @@ public class EventHandler extends AbstractEventHandler
                 logger.debug(" ----------------LOG: "+ sessInfo.protocol + " traffic----------------");
             }
 
-            incrementCount(Transform.GENERIC_1_COUNTER); // DETECT COUNTER
+            
+            transform.incrementCount( DETECT_COUNTER );
 
             if(elem.getAlert()) {
                 /* XXX Do alert here */
             }
 
             if (elem.isBlocked() == true) {
-                incrementCount(Transform.GENERIC_2_COUNTER); // BLOCK COUNTER
+                transform.incrementCount( BLOCK_COUNTER );
 
                 if (logger.isDebugEnabled()) {
                     logger.debug(" ----------------BLOCKED: " + sessInfo.protocol + " traffic----------------");

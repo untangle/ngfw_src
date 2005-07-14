@@ -38,6 +38,7 @@ import org.apache.log4j.Logger;
 
 public class ProtoFilterImpl extends AbstractTransform implements ProtoFilter
 {
+    private final EventHandler handler = new EventHandler( this );
     private static final String EVENT_QUERY
         = "SELECT create_date, protocol, blocked, "
         + "c_client_addr, c_client_port, "
