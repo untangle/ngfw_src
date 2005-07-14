@@ -17,6 +17,7 @@ import com.metavize.mvvm.ArgonManager;
 import com.metavize.mvvm.MailSender;
 import com.metavize.mvvm.MvvmLocalContext;
 import com.metavize.mvvm.NetworkingManager;
+import com.metavize.mvvm.ConnectivityTester;
 import com.metavize.mvvm.ToolboxManager;
 import com.metavize.mvvm.argon.Argon;
 import com.metavize.mvvm.argon.ArgonManagerImpl;
@@ -56,6 +57,7 @@ public class MvvmContextImpl extends MvvmContextBase
     private MPipeManager mPipeManager;
     private MailSenderImpl mailSender;
     private NetworkingManager networkingManager;
+    private ConnectivityTester connectivityTester;
     private PipelineFoundryImpl pipelineFoundry;
     private ToolboxManagerImpl toolboxManager;
     private TransformManagerImpl transformManager;
@@ -116,6 +118,11 @@ public class MvvmContextImpl extends MvvmContextBase
     public NetworkingManager networkingManager()
     {
         return networkingManager;
+    }
+
+    public ConnectivityTester connectivityTester()
+    {
+        return connectivityTester;
     }
 
     public ArgonManager argonManager()
@@ -215,6 +222,9 @@ public class MvvmContextImpl extends MvvmContextBase
         // Retrieve the networking configuration manager
         networkingManager = NetworkingManagerImpl.getInstance();
 
+        // Retrieve the connectivity tester
+        connectivityTester = ConnectivityTesterImpl.getInstance();
+
         // Retrieve the argon manager
         argonManager = ArgonManagerImpl.getInstance();
 
@@ -278,6 +288,7 @@ public class MvvmContextImpl extends MvvmContextBase
         // XXX destroy methods for:
         // - pipelineFoundry
         // - networkingManager
+        // - connectivityTester (Doesn't really need one)
         // - argonManager
 
         try {

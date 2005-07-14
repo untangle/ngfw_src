@@ -15,6 +15,7 @@ import java.io.IOException;
 
 import com.metavize.mvvm.ArgonManager;
 import com.metavize.mvvm.NetworkingManager;
+import com.metavize.mvvm.ConnectivityTester;
 import com.metavize.mvvm.ToolboxManager;
 import com.metavize.mvvm.logging.LoggingManager;
 import com.metavize.mvvm.security.AdminManager;
@@ -70,6 +71,13 @@ public interface MvvmRemoteContext
      * @return the NetworkingManager.
      */
     NetworkingManager networkingManager();
+
+    /**
+     * Get the <code>ConnectivityTester</code> singleton.
+     *
+     * @return the ConnectivityTester
+     */
+    ConnectivityTester connectivityTester();
 
     /**
      * Save settings to local hard drive.

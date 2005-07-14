@@ -133,6 +133,8 @@ public interface MvvmLocalContext
 
     NetworkingManager networkingManager();
 
+    ConnectivityTester connectivityTester();
+
     MailSender mailSender();
 
     /**
