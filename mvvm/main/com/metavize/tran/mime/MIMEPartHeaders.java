@@ -65,7 +65,7 @@ public class MIMEPartHeaders
    * Helper method.  Parses the headers from source
    * in one call.
    */
-  public MIMEPartHeaders parseMPHeaders(MIMEParsingInputStream stream,
+  public static MIMEPartHeaders parseMPHeaders(MIMEParsingInputStream stream,
     MIMESource streamSource)
     throws IOException, 
       InvalidHeaderDataException, 
@@ -77,7 +77,7 @@ public class MIMEPartHeaders
    * Helper method.  Parses the headers from source
    * in one call.
    */
-  public MIMEPartHeaders parseMPHeaders(MIMEParsingInputStream stream,
+  public static MIMEPartHeaders parseMPHeaders(MIMEParsingInputStream stream,
     MIMESource streamSource,
     MIMEPolicy policy)
     throws IOException, 

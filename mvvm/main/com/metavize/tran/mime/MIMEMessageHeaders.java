@@ -147,7 +147,7 @@ public class MIMEMessageHeaders
    * Helper method.  Parses the headers from source
    * in one call.
    */
-  public MIMEMessageHeaders parseMMHeaders(MIMEParsingInputStream stream,
+  public static MIMEMessageHeaders parseMMHeaders(MIMEParsingInputStream stream,
     MIMESource streamSource)
     throws IOException, 
       InvalidHeaderDataException, 
@@ -159,7 +159,7 @@ public class MIMEMessageHeaders
    * Helper method.  Parses the headers from source
    * in one call.
    */
-  public MIMEMessageHeaders parseMMHeaders(MIMEParsingInputStream stream,
+  public static MIMEMessageHeaders parseMMHeaders(MIMEParsingInputStream stream,
     MIMESource streamSource,
     MIMEPolicy policy)
     throws IOException, 

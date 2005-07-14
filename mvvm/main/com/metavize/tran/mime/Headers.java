@@ -214,7 +214,7 @@ public class Headers {
   /**
    * Helper method 
    */
-  public Headers parseHeaders(MIMEParsingInputStream stream,
+  public static Headers parseHeaders(MIMEParsingInputStream stream,
     MIMESource streamSource,
     HeaderFieldFactory fieldFactory)
     throws IOException, 
@@ -228,7 +228,7 @@ public class Headers {
   /**
    * Helper method 
    */
-  public Headers parseHeaders(MIMEParsingInputStream stream,
+  public static Headers parseHeaders(MIMEParsingInputStream stream,
     MIMESource streamSource,
     HeaderFieldFactory fieldFactory,
     MIMEPolicy policy)
