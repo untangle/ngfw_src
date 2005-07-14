@@ -610,10 +610,11 @@ int               netcap_sesstable_kill_all_sessions ( void (*kill_all_function)
 
 int               netcap_sesstable_merge_udp_tuple ( netcap_session_t* netcap_sess, 
                                                      in_addr_t src, in_addr_t dst,
-                                                     u_short sport, u_short dport );
+                                                     u_short sport, u_short dport, netcap_intf_t intf );
 
 int               netcap_sesstable_merge_icmp_tuple ( netcap_session_t* netcap_sess, 
-                                                      in_addr_t src, in_addr_t dst, int icmp_pid );
+                                                      in_addr_t src, in_addr_t dst, netcap_intf_t intf,
+                                                      int icmp_pid );
 
 /**
  * netcap_traffic  functions

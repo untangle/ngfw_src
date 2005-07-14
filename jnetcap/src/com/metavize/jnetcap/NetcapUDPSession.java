@@ -77,11 +77,12 @@ public class NetcapUDPSession extends NetcapSession
      * @return Returns whether or not the session was merged, or merged out.  True If this session
      *         should continue, false if this session was merged out.
      */
-    public boolean merge( IPTraffic traffic )
+    public boolean merge( IPTraffic traffic, byte intf )
     {
         int ret  = merge( pointer.value(),
                           Inet4AddressConverter.toLong( traffic.dst().host()), traffic.dst().port(),
-                          Inet4AddressConverter.toLong( traffic.src().host()), traffic.src().port());
+                          Inet4AddressConverter.toLong( traffic.src().host()), traffic.src().port(),
+                          intf );
         
         if ( ret == MERGED_DEAD ) {
             return false;
@@ -101,11 +102,12 @@ public class NetcapUDPSession extends NetcapSession
      * @return Returns whether or not the session was merged, or merged out.  True If this session
      *         should continue, false if this session was merged out.
      */
-    public boolean icmpMerge( IPTraffic traffic, int id )
+    public boolean icmpMerge( IPTraffic traffic, int id, byte intf )
     {
         int ret  = icmpMerge( pointer.value(), id,
                               Inet4AddressConverter.toLong( traffic.dst().host()),
-                              Inet4AddressConverter.toLong( traffic.src().host()));
+                              Inet4AddressConverter.toLong( traffic.src().host()),
+                              intf );
         
         if ( ret == MERGED_DEAD ) {
             return false;
@@ -134,7 +136,7 @@ public class NetcapUDPSession extends NetcapSession
      * @param dstPort - Destination port(server side, client port)
      */
     private static native int    merge( long sessionPointer,
-                                        long srcAddr, int srcPort, long dstAddr, int dstPort );
+                                        long srcAddr, int srcPort, long dstAddr, int dstPort, byte intf );
 
     /**
      * Merge this session with any other ICMP/UDP session that may have started in the reverse
@@ -145,7 +147,8 @@ public class NetcapUDPSession extends NetcapSession
      * @param srcAddr - Source address(server side, server address)
      * @param dstAddr - Destination address(server side, client address)
      */
-    private static native int    icmpMerge( long sessionPointer, int id, long srcAddr, long dstAddr );
+    private static native int    icmpMerge( long sessionPointer, int id, long srcAddr, long dstAddr, 
+                                            byte intf );
 
     private static native int    mailboxPointer( long sessionPointer, boolean ifClient );
     

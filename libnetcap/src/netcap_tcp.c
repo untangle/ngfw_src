@@ -409,6 +409,11 @@ static int  _session_put_syn      ( netcap_session_t* netcap_sess, netcap_pkt_t*
         return netcap_pkt_action_raze( syn, NF_DROP );
     }
 
+    if ( syn->src.intf != netcap_sess->cli.cli.intf ) {
+        debug( 5, "TCP: (%10u) SYN from the incorrect side\n", netcap_sess->session_id );
+        return netcap_pkt_action_raze( syn, NF_DROP );
+    }
+
     /* Try to remove the first message in the mailbox */
     if (( msg = mailbox_try_get( &netcap_sess->tcp_mb )) != NULL ) {
         /* There is a message in the mailbox */

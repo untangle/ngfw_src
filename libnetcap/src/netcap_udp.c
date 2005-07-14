@@ -307,7 +307,7 @@ int  netcap_udp_call_hooks (netcap_pkt_t* pkt, void* arg)
         }
         
         // Put a copy of the full packet into the mailbox
-        if ( _cache_packet( full_pkt, full_pkt_len, &session->icmp_cli_mb ) < 0 ) {
+        if ( full_pkt != NULL && ( _cache_packet( full_pkt, full_pkt_len, &session->icmp_cli_mb ) < 0 )) {
             errlog( ERR_CRITICAL, "_cache_packet\n" );
         }
 
@@ -323,25 +323,38 @@ int  netcap_udp_call_hooks (netcap_pkt_t* pkt, void* arg)
         debug(10,"Calling UDP hook(s)\n");
         global_udp_hook(session,arg);
     } else {
+        netcap_intf_t intf;
+
+        /* Add this chunk against the client reputation */
+        netcap_shield_rep_add_chunk ( session->cli.cli.host.s_addr, IPPROTO_UDP, pkt->data_len );
+
         // Figure out the correct mailbox
         if ( pkt->src.host.s_addr == session->cli.cli.host.s_addr ) {
             mb      = &session->cli_mb;
             icmp_mb = &session->icmp_cli_mb;
+            intf    = session->cli_intf;
         } else if ( pkt->src.host.s_addr == session->srv.srv.host.s_addr ) {
             mb      = &session->srv_mb;
             icmp_mb = &session->icmp_srv_mb;
+            intf    = session->srv_intf;
         } else {
             netcap_pkt_raze( pkt );
             SESSTABLE_UNLOCK();
-            unet_reset_inet_ntoa();
             return errlog( ERR_CRITICAL, "Cannot determine correct mailbox: pkt %s, cli %s, srv %s\n",
                            unet_next_inet_ntoa( pkt->src.host.s_addr ), 
                            unet_next_inet_ntoa( session->cli.cli.host.s_addr ), 
                            unet_next_inet_ntoa( session->srv.srv.host.s_addr ));
         }
 
-        /* Add this chunk against the client reputation */
-        netcap_shield_rep_add_chunk ( session->cli.cli.host.s_addr, IPPROTO_UDP, pkt->data_len );
+        /* Verify the packet is from the same interface */
+        if ( intf != pkt->src.intf ) {
+            debug( 5, "UDP: Packet from the incorrect interface expected %d actual %d\n", 
+                   intf, pkt->src.intf );
+            
+            netcap_pkt_raze( pkt );
+            SESSTABLE_UNLOCK();
+            return 0;
+        }
 
         if (( ans = netcap_shield_rep_check( session->cli.cli.host.s_addr )) == NULL ) {
             errlog( ERR_CRITICAL, "netcap_shield_rep_check\n" );
@@ -381,7 +394,7 @@ int  netcap_udp_call_hooks (netcap_pkt_t* pkt, void* arg)
         }
         
         /* Cache the packet for ICMP */
-        if ( _cache_packet( full_pkt, full_pkt_len, icmp_mb ) < 0 ) {
+        if (( full_pkt != NULL ) && _cache_packet( full_pkt, full_pkt_len, icmp_mb ) < 0 ) {
             errlog( ERR_CRITICAL, "_cache_packet\n" );
         }
         
@@ -514,8 +527,6 @@ static int _netcap_udp_sendto (int sock, void* data, size_t data_len, int flags,
         CMSG_SPACE(sizeof(pkt->tos)) + CMSG_SPACE(sizeof(pkt->ttl)) + 
         CMSG_SPACE(sizeof(nfmark)) +
         (( dst_intf_len ) ? CMSG_SPACE( dst_intf_len ) : 0 );
-        
-
 
     debug( 10, "sending udp %s:%i -> ", inet_ntoa(pkt->src.host), pkt->src.port );
     debug_nodate( 10, "%s:%i data_len:%i ttl:%i tos:%i\n",inet_ntoa(pkt->dst.host),pkt->dst.port,
@@ -583,6 +594,10 @@ static int _process_queue_pkt( netcap_pkt_t* pkt, char** full_pkt, int* full_pkt
     }
 
     /* Don't use memmove, since the ICMP message may need the whole packet including the header */
+    if ( pkt->buffer == NULL ) {
+        return errlog( ERR_CRITICAL, "pkt->buffer is null\n" );
+    }
+
     pkt->data = &pkt->data[offset];
 
     return 0;

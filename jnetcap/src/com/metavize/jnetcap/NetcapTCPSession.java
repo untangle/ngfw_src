@@ -128,20 +128,22 @@ public class NetcapTCPSession extends NetcapSession
         clientForwardReject( pointer.value(), DEFAULT_FORWARD_REJECT_FLAGS );
     }
     
+    /* Deprecated (intf must be specified before completion) (made non-public) */
     /* Complete the connection, every other function should call this after setup */
-    public void   serverComplete( int flags )
+    private void   serverComplete( int flags )
     {
         serverComplete( pointer.value(), flags );
     }
 
-    public void   serverComplete()
+    /* Deprecated (intf must be specified before completion) (made non-public) */
+    private void   serverComplete()
     {
         serverComplete( DEFAULT_SERVER_COMPLETE_FLAGS );
     }
 
     /* Connect to the server with new settings on the traffic side */
     public void   serverComplete( InetAddress clientAddress, int clientPort,
-                                  InetAddress serverAddress, int serverPort, int flags )
+                                  InetAddress serverAddress, int serverPort, byte intf, int flags )
     {
         if ( clientAddress == null ) clientAddress = serverSide.client().host();
         if ( clientPort    == 0    ) clientPort    = serverSide.client().port();
@@ -149,7 +151,7 @@ public class NetcapTCPSession extends NetcapSession
         if ( serverPort    == 0    ) serverPort    = serverSide.server().port();
         
         if ( setServerEndpoint( pointer.value(), Inet4AddressConverter.toLong( clientAddress ), clientPort,
-                                Inet4AddressConverter.toLong( serverAddress ), serverPort ) < 0 ) {
+                                Inet4AddressConverter.toLong( serverAddress ), serverPort, intf ) < 0 ) {
             Netcap.error( "Unable to modify the server endpoint" + pointer.value());
         }
 
@@ -160,13 +162,13 @@ public class NetcapTCPSession extends NetcapSession
     }
     
     public void   serverComplete( InetAddress clientAddress, int clientPort,
-                                  InetAddress serverAddress, int serverPort ) 
+                                  InetAddress serverAddress, int serverPort, byte intf ) 
     {
-        serverComplete( clientAddress, clientPort, serverAddress, serverPort, DEFAULT_SERVER_COMPLETE_FLAGS );
+        serverComplete( clientAddress, clientPort, serverAddress, serverPort, intf, DEFAULT_SERVER_COMPLETE_FLAGS );
     }
     
     private static native int setServerEndpoint ( long sessionPointer, long clientAddress, int clientPort,
-                                                 long serverAddress, int serverPort );
+                                                  long serverAddress, int serverPort, byte intf );
 
     private static native void clientComplete           ( long sessionPointer, int flags );
     private static native void clientReset              ( long sessionPointer, int flags );

@@ -58,7 +58,7 @@ static __inline__ int _get_sock( netcap_session_t* session, int if_client )
  */
 JNIEXPORT jint JNICALL JF_TCPSession( setServerEndpoint )
   (JNIEnv *env, jclass _class, jlong session_ptr, jlong client_addr, jint client_port, 
-   jlong server_addr,  jint server_port )
+   jlong server_addr,  jint server_port, jbyte intf )
 {
     netcap_session_t* session;
 
@@ -75,6 +75,14 @@ JNIEXPORT jint JNICALL JF_TCPSession( setServerEndpoint )
     session->srv.cli.port        = (u_short)client_port;
     session->srv.srv.host.s_addr = JLONG_TO_UINT( server_addr );
     session->srv.srv.port        = (u_short)server_port;
+
+    if ( netcap_interface_intf_verify( intf ) < 0 ) {
+        /* XXXX Consider making this a warning */
+        debug( 5, "Invalid interface: %d\n", intf );
+    } else {
+        session->srv_intf     = intf;
+        session->srv.srv.intf = intf;
+    }
 
     return 0;
 }

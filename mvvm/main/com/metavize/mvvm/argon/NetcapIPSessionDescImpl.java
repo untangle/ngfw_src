@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: NetcapIPSessionDescImpl.java,v 1.8 2005/02/06 19:52:03 jdi Exp $
+ *  $Id$
  */
 
 package com.metavize.mvvm.argon;

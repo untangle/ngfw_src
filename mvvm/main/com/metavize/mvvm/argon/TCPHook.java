@@ -151,7 +151,9 @@ public class TCPHook implements NetcapHook
             }
 
             try {
-                netcapTCPSession.serverComplete( clientAddr, clientPort, serverAddr, serverPort, flags );
+                byte intf = IntfConverter.toNetcap( clientSide.serverIntf());
+                netcapTCPSession.serverComplete( clientAddr, clientPort, serverAddr, serverPort, intf, 
+                                                 flags );
                 netcapTCPSession.tcpServerSide().blocking( false );
                 ifServerComplete = true;
             } catch ( Exception e ) {

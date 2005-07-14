@@ -49,7 +49,7 @@ static session_tuple_t* _tuple_create (u_short proto,
 
 static int _netcap_sesstable_merge_tuple( netcap_session_t* netcap_sess, int proto, 
                                           in_addr_t src, in_addr_t dst, u_short sport, u_short dport,
-                                          int seq );
+                                          netcap_intf_t intf, int icmp_pid );
 
 static int _netcap_sesstable_remove (netcap_session_t* netcap_sess);
 static int _netcap_sesstable_remove_tuple (u_short proto, 
@@ -275,13 +275,14 @@ int        netcap_nc_sesstable_add_tuple (int if_lock, netcap_session_t* sess, i
 }
 
 int        netcap_sesstable_merge_udp_tuple ( netcap_session_t* netcap_sess, in_addr_t src, in_addr_t dst,
-                                              u_short sport, u_short dport )
+                                              u_short sport, u_short dport, netcap_intf_t intf )
 {
-    return _netcap_sesstable_merge_tuple( netcap_sess, IPPROTO_UDP, src, dst, sport, dport, 0 );
+    return _netcap_sesstable_merge_tuple( netcap_sess, IPPROTO_UDP, src, dst, sport, dport, intf, 0 );
 }
 
 int        netcap_sesstable_merge_icmp_tuple ( netcap_session_t* netcap_sess, in_addr_t src, in_addr_t dst, 
-                                               int icmp_pid )
+                                               netcap_intf_t intf, int icmp_pid )
+                                               
 {
     /* If unspecified, use the ID from the client side */
     if ( icmp_pid < 0 ) {
@@ -291,9 +292,9 @@ int        netcap_sesstable_merge_icmp_tuple ( netcap_session_t* netcap_sess, in
     if ( icmp_pid > 0xFFFF ) {
         return errlog( ERR_CRITICAL, "Invalid icmp_pid %d\n", icmp_pid );
     }
-    
+        
     /* XXX Using UDP right now for ICMP session */
-    return _netcap_sesstable_merge_tuple( netcap_sess, IPPROTO_UDP, src, dst, 0, 0, icmp_pid );    
+    return _netcap_sesstable_merge_tuple( netcap_sess, IPPROTO_UDP, src, dst, 0, 0, intf, icmp_pid ); 
 }
 
 int        netcap_sesstable_remove_tuple (int if_lock, int proto, 
@@ -431,7 +432,7 @@ static int _netcap_sesstable_remove_tuple(u_short proto,
  */
 static int _netcap_sesstable_merge_tuple( netcap_session_t* netcap_sess, int proto, 
                                           in_addr_t src, in_addr_t dst, u_short sport, u_short dport,
-                                          int seq )
+                                          netcap_intf_t intf, int icmp_pid )
 {
     netcap_session_t* current_sess;
     session_tuple_t* st = NULL;
@@ -457,7 +458,7 @@ static int _netcap_sesstable_merge_tuple( netcap_session_t* netcap_sess, int pro
         return 1;
     }
 
-    if (( st = _tuple_create( proto, src, dst, sport, dport, seq )) == NULL ) {
+    if (( st = _tuple_create( proto, src, dst, sport, dport, icmp_pid )) == NULL ) {
         return errlog( ERR_CRITICAL, "_tuple_create\n" );
     }
 
@@ -498,11 +499,22 @@ static int _netcap_sesstable_merge_tuple( netcap_session_t* netcap_sess, int pro
     }
     
     /* Modify the tuples so they can be removed properly */
+    if ( intf == 0 || intf == -1 ) {
+        errlog( ERR_WARNING, "Invalid interface intf: %d for %s\n", intf, unet_next_inet_ntoa( src ));
+    }
+
+    if ( intf == netcap_sess->cli_intf ) {
+        errlog( ERR_WARNING, "Matching client and server interface %d for %s\n", intf,
+                unet_next_inet_ntoa( src ));
+    }
+
+    netcap_sess->srv_intf            = intf;
+    netcap_sess->srv.srv.intf        = intf;
     netcap_sess->srv.srv.host.s_addr = src;
     netcap_sess->srv.srv.port        = sport;
     netcap_sess->srv.cli.host.s_addr = dst;
     netcap_sess->srv.cli.port        = dport;
-    netcap_sess->icmp.server_id      = seq;
+    netcap_sess->icmp.server_id      = icmp_pid;
    
     SESSTABLE_UNLOCK();
     
@@ -576,7 +588,7 @@ static u_int  _tuple_hash_func ( const void* input )
     hash ^= (u_int)(st->dhost << 8 | ((st->dhost>>24) & 0xFF));
     hash ^= (u_int)(st->sport << 2 ) * ( st->proto << 4);
     hash ^= (u_int)(st->dport << 12 ) * ( st->proto << 8 );
-    // hash ^= (u_int)(st->seq << 8 | ((st->seq>>24)&0xFF));
+    // hash ^= (u_int)(st->seq << 8 | ((st->seq>>24)&0xFF)); /* XXXXXXX all ping sessions match to the same bucket */
     
     return hash;
 }

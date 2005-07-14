@@ -143,18 +143,20 @@ public class UDPHook implements NetcapHook
             
             /* Packets cannot go back out on the client interface */
             serverTraffic.mark( IntfConverter.toNetcap( clientSide.clientIntf()));
-                        
+            
             serverTraffic.lock();
+
+            byte intf = IntfConverter.toNetcap( clientSide.serverIntf());
 
             /* XXXX ICMP HACK */
             if ( isIcmpSession ) {
-                if ( !netcapUDPSession.icmpMerge( serverTraffic, icmpServerId )) {
+                if ( !netcapUDPSession.icmpMerge( serverTraffic, icmpServerId, intf )) {
                     /* Merged out and indicate that the session was rejected */
                     state = IPNewSessionRequest.REJECTED;
                     return false;
                 }
             } else {
-                if ( !netcapUDPSession.merge( serverTraffic )) {
+                if ( !netcapUDPSession.merge( serverTraffic, intf )) {
                     /* Merged out and indicate that the session was rejected */
                     state = IPNewSessionRequest.REJECTED;
                     return false;

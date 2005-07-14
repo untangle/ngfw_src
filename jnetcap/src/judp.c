@@ -433,7 +433,7 @@ JNIEXPORT jint JNICALL JF_UDPSession( send )
  */
 JNIEXPORT jint JNICALL JF_UDPSession( merge )
   ( JNIEnv *env, jclass _class, jlong pointer, jlong src_addr, jint src_port, 
-    jlong dst_addr, jint dst_port )
+    jlong dst_addr, jint dst_port, jbyte intf )
 {
     int ret;
     in_addr_t src = (in_addr_t)JLONG_TO_UINT( src_addr );
@@ -443,7 +443,7 @@ JNIEXPORT jint JNICALL JF_UDPSession( merge )
 
     if ( session == NULL ) return errlogargs();
 
-    ret = netcap_sesstable_merge_udp_tuple( session, src, dst, src_port, dst_port );    
+    ret = netcap_sesstable_merge_udp_tuple( session, src, dst, src_port, dst_port, intf );
 
     if ( ret < 0 ) {
         return errlog( ERR_CRITICAL, "netcap_sesstable_merge_udp\n" );
@@ -460,7 +460,7 @@ JNIEXPORT jint JNICALL JF_UDPSession( merge )
  * Signature: (JJJII)I
  */
 JNIEXPORT jint JNICALL JF_UDPSession( icmpMerge )
-( JNIEnv *env, jclass _class, jlong pointer, jint icmp_pid, jlong src_addr, jlong dst_addr )
+( JNIEnv *env, jclass _class, jlong pointer, jint icmp_pid, jlong src_addr, jlong dst_addr, jbyte intf )
 {
     int ret;
     in_addr_t src = (in_addr_t)JLONG_TO_UINT( src_addr );
@@ -470,7 +470,7 @@ JNIEXPORT jint JNICALL JF_UDPSession( icmpMerge )
 
     if ( session == NULL ) return errlogargs();
     
-    ret = netcap_sesstable_merge_icmp_tuple( session, src, dst, icmp_pid );    
+    ret = netcap_sesstable_merge_icmp_tuple( session, src, dst, intf, icmp_pid );
 
     if ( ret < 0 ) {
         return errlog( ERR_CRITICAL, "netcap_sesstable_merge_icmp_tuple\n" );
