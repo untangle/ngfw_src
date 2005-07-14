@@ -24,16 +24,16 @@ import javax.swing.border.EmptyBorder;
 public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransformControlsJPanel{
     
     private static final String NAME_GENERAL_SETTINGS = "General Settings";
-    private static final String NAME_FTP = "FTP";
-    private static final String NAME_FTP_SOURCES = "Sources";
+    private static final String NAME_FTP = "File Transfer";
+    private static final String NAME_FTP_SOURCES = "FTP";
     private static final String NAME_WEB = "Web";
-    private static final String NAME_WEB_SOURCES = "Sources";
-    private static final String NAME_WEB_EXTENSIONS = "File Extension List (from Sources)";
-    private static final String NAME_WEB_MIME = "MIME Type List (from Sources)";
+    private static final String NAME_WEB_SOURCES = "HTTP";
+    private static final String NAME_WEB_EXTENSIONS = "File Extension List";
+    private static final String NAME_WEB_MIME = "MIME Type List";
     private static final String NAME_EMAIL = "Email";
-    private static final String NAME_EMAIL_SMTP = "Sources (SMTP)";
-    private static final String NAME_EMAIL_POP = "Sources (POP)";
-    private static final String NAME_EMAIL_IMAP = "Sources (IMAP)";
+    private static final String NAME_EMAIL_SMTP = "SMTP";
+    private static final String NAME_EMAIL_POP = "POP";
+    private static final String NAME_EMAIL_IMAP = "IMAP";
 
     public MTransformControlsJPanel(MTransformJPanel mTransformJPanel) {
         super(mTransformJPanel);
