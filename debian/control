@@ -9,7 +9,7 @@ Package: ftp-casing
 Architecture: any
 Depends: mvvm
 XB-Website: http://www.metavize.com/foo
-XB-Price: 1000
+XB-Price: 0
 XB-Display-Name: FTP
 Description: The Metavize FTP Decoder
  The FTP Casing allows other software appliances
@@ -19,7 +19,7 @@ Package: http-casing
 Architecture: any
 Depends: mvvm
 XB-Website: http://www.metavize.com/foo
-XB-Price: 1000
+XB-Price: 0
 XB-Display-Name: Web
 Description: The Metavize Web/http Decoder
  The HTTP Casing allows other software appliances
@@ -29,7 +29,7 @@ Package: mail-casing
 Architecture: any
 Depends: mvvm
 XB-Website: http://www.metavize.com/foo
-XB-Price: 1000
+XB-Price: 0
 XB-Display-Name: Email
 Description: The Metavize eMail Decoder
  The Mail Casing allows other software appliances
@@ -39,7 +39,7 @@ Package: airgap-transform
 Architecture: any
 Depends: mvvm
 XB-Website: http://www.metavize.com/foo
-XB-Price: 1000
+XB-Price: 0
 XB-Display-Name: Packet Attack Shield
 XB-Rack-Position: 0
 Description: The Metavize Packet Attack Shield
@@ -50,7 +50,7 @@ Package: spyware-transform
 Architecture: any
 Depends: mvvm, http-casing
 XB-Website: http://www.metavize.com/foo
-XB-Price: 1000
+XB-Price: 0
 XB-Display-Name: Spyware Blocker
 XB-Rack-Position: 1
 Description: The Metavize Spyware Blocker
@@ -62,7 +62,7 @@ Package: httpblocker-transform
 Architecture: any
 Depends: mvvm, http-casing, urlblacklist.com-mv
 XB-Website: http://www.metavize.com/foo
-XB-Price: 1000
+XB-Price: 0
 XB-Display-Name: Web Content Control
 XB-Rack-Position: 2
 Description: The Metavize Web Content Filter
@@ -70,11 +70,23 @@ Description: The Metavize Web Content Filter
  It can filter based on content type (category), web address,
  MIME type, file extension, etc.
 
+Package: email-transform  	 
+Architecture: any 	 
+Depends: mvvm, spamc-mv, spam-transform 	 
+Conflicts: xmailscanner-transform 	 
+XB-Website: http://www.metavize.com/foo
+XB-Price: 0
+XB-Display-Name: eMail SpamGuard 	 
+XB-Rack-Position: 3 	 
+Description: The Metavize eMail SpamGuard 	 
+ The eMail SpamGuard, based on SpamAssassin, is able to 	 
+ mark SPAM incoming and outgoing SMTP, POP3, and IMAP.
+
 Package: hauri-transform
 Architecture: any
 Depends: mvvm, hauri-mv, http-casing, ftp-casing
 XB-Website: http://www.metavize.com/foo
-XB-Price: 1000
+XB-Price: 400
 XB-Display-Name: Hauri AntiVirus Scanner
 XB-Rack-Position: 6
 Description: The Hauri AntiVirus Scanner
@@ -86,7 +98,7 @@ Package: clam-transform
 Architecture: any
 Depends: mvvm, clamav-mv, http-casing, ftp-casing
 XB-Website: http://www.metavize.com/foo
-XB-Price: 1000
+XB-Price: 0
 XB-Display-Name: Clam AntiVirus Scanner
 XB-Rack-Position: 7
 Description: The Clam AntiVirus Scanner
@@ -99,7 +111,7 @@ Architecture: any
 Depends: mvvm
 XB-Website: http://www.metavize.com/foo
 Conflicts: protoanalyzer-transform
-XB-Price: 1000
+XB-Price: 0
 XB-Display-Name: Rogue Protocol Control
 XB-Rack-Position: 8
 Description: The Metavize Rogue Protocol Control
@@ -112,7 +124,7 @@ Package: nat-transform
 Architecture: any
 Depends: mvvm, dnsmasq
 XB-Website: http://www.metavize.com/foo
-XB-Price: 1000
+XB-Price: 0
 XB-Display-Name: Network Sharing
 XB-Rack-Position: 9
 Description: The Metavize Network Sharing Software Appliance
@@ -124,7 +136,7 @@ Package: firewall-transform
 Architecture: any
 Depends: mvvm
 XB-Website: http://www.metavize.com/foo
-XB-Price: 1000
+XB-Price: 0
 XB-Display-Name: Firewall
 XB-Rack-Position: 10
 Description: The Metavize Firewall Software Appliance
@@ -135,9 +147,9 @@ Package: reporting-transform
 Architecture: any
 Depends: mvvm
 XB-Website: http://www.metavize.com/foo
-XB-Price: 1000
+XB-Price: 0
 XB-Display-Name: EdgeReport
-XB-Rack-Position: 1000
+XB-Rack-Position: 0
 Description: The Metavize Report Generator
  EdgeReport generates document reports about activities on your network.
  EdgeReport will report general network activity, and information supplied
@@ -147,7 +159,7 @@ Package: spam-transform
 Architecture: any
 Depends: mvvm, spamc-mv
 XB-Website: http://www.metavize.com/foo
-XB-Price: 1000
+XB-Price: 0
 XB-Display-Name: SpamGuard
 XB-RackPosition: 1001
 Description: The Metavize SpamGuard Software Appliance
@@ -157,7 +169,7 @@ Package: test-transform
 Architecture: any
 Depends: mvvm
 XB-Website: http://www.metavize.com/foo
-XB-Price: 1000
+XB-Price: 0
 XB-Display-Name: Test
 XB-RackPosition: 1001
 Description: The Metavize Test Software Appliance
