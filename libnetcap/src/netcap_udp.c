@@ -425,12 +425,9 @@ static int _netcap_udp_sendto (int sock, void* data, size_t data_len, int flags,
     int                ret;
     int                dst_intf_len = 0;
     netcap_intf_t      dst_intf;
-    char               dst_intf_str[NETCAP_MAX_IF_NAME_LEN];
 
     /* Antisubscribe all outgoing UDP packets */
     u_int              nfmark = ( MARK_ANTISUB | MARK_NOTRACK );
-
-    dst_intf_str[0] = '\0';
 
 #ifdef DEBUG_ON
     bzero(control,MAX_CONTROL_MSG);

@@ -631,7 +631,6 @@ static int  _netcap_icmp_send( char *data, int data_len, netcap_pkt_t* pkt, int 
     int                ret;
     int                dst_intf_len = 0;
     netcap_intf_t      dst_intf;
-    char               dst_intf_str[NETCAP_MAX_IF_NAME_LEN];
     u_int              nfmark = ( MARK_ANTISUB | MARK_NOTRACK );
 
 
