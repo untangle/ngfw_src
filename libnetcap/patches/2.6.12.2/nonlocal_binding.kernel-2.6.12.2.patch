@@ -1,6 +1,6 @@
 diff -urN --ignore-all-space linux-2.6.12.2-orig/include/linux/in.h linux-2.6.12.2-nonlocal/include/linux/in.h
 --- linux-2.6.12.2-orig/include/linux/in.h	2005-06-29 16:00:53.000000000 -0700
-+++ linux-2.6.12.2-nonlocal/include/linux/in.h	2005-07-05 18:48:40.807393083 -0700
++++ linux-2.6.12.2-nonlocal/include/linux/in.h	2005-07-13 14:45:59.772596828 -0700
 @@ -71,6 +71,7 @@
  #define IP_FREEBIND	15
  #define IP_IPSEC_POLICY	16
@@ -11,7 +11,7 @@ diff -urN --ignore-all-space linux-2.6.12.2-orig/include/linux/in.h linux-2.6.12
  #define IP_RECVRETOPTS	IP_RETOPTS
 diff -urN --ignore-all-space linux-2.6.12.2-orig/include/net/ip.h linux-2.6.12.2-nonlocal/include/net/ip.h
 --- linux-2.6.12.2-orig/include/net/ip.h	2005-06-29 16:00:53.000000000 -0700
-+++ linux-2.6.12.2-nonlocal/include/net/ip.h	2005-07-05 18:48:40.808393006 -0700
++++ linux-2.6.12.2-nonlocal/include/net/ip.h	2005-07-13 14:45:59.773596753 -0700
 @@ -295,6 +295,7 @@
  	IP_DEFRAG_CONNTRACK_IN,
  	IP_DEFRAG_CONNTRACK_OUT,
@@ -22,7 +22,7 @@ diff -urN --ignore-all-space linux-2.6.12.2-orig/include/net/ip.h linux-2.6.12.2
  	IP_DEFRAG_VS_FWD
 diff -urN --ignore-all-space linux-2.6.12.2-orig/include/net/route.h linux-2.6.12.2-nonlocal/include/net/route.h
 --- linux-2.6.12.2-orig/include/net/route.h	2005-06-29 16:00:53.000000000 -0700
-+++ linux-2.6.12.2-nonlocal/include/net/route.h	2005-07-05 18:48:40.808393006 -0700
++++ linux-2.6.12.2-nonlocal/include/net/route.h	2005-07-13 14:45:59.773596753 -0700
 @@ -39,12 +39,19 @@
  #endif
  
@@ -46,7 +46,7 @@ diff -urN --ignore-all-space linux-2.6.12.2-orig/include/net/route.h linux-2.6.1
  struct inet_peer;
 diff -urN --ignore-all-space linux-2.6.12.2-orig/include/net/tcp.h linux-2.6.12.2-nonlocal/include/net/tcp.h
 --- linux-2.6.12.2-orig/include/net/tcp.h	2005-06-29 16:00:53.000000000 -0700
-+++ linux-2.6.12.2-nonlocal/include/net/tcp.h	2005-07-05 18:48:40.809392930 -0700
++++ linux-2.6.12.2-nonlocal/include/net/tcp.h	2005-07-13 14:45:59.774596677 -0700
 @@ -776,6 +776,8 @@
  
  extern int			tcp_v4_rcv(struct sk_buff *skb);
@@ -58,7 +58,7 @@ diff -urN --ignore-all-space linux-2.6.12.2-orig/include/net/tcp.h linux-2.6.12.
  extern int		    	tcp_v4_tw_remember_stamp(struct tcp_tw_bucket *tw);
 diff -urN --ignore-all-space linux-2.6.12.2-orig/net/ipv4/ip_sockglue.c linux-2.6.12.2-nonlocal/net/ipv4/ip_sockglue.c
 --- linux-2.6.12.2-orig/net/ipv4/ip_sockglue.c	2005-06-29 16:00:53.000000000 -0700
-+++ linux-2.6.12.2-nonlocal/net/ipv4/ip_sockglue.c	2005-07-05 18:49:40.556822126 -0700
++++ linux-2.6.12.2-nonlocal/net/ipv4/ip_sockglue.c	2005-07-13 14:45:59.775596602 -0700
 @@ -394,7 +394,7 @@
  			    (1<<IP_RETOPTS) | (1<<IP_TOS) | 
  			    (1<<IP_TTL) | (1<<IP_HDRINCL) | 
@@ -87,7 +87,7 @@ diff -urN --ignore-all-space linux-2.6.12.2-orig/net/ipv4/ip_sockglue.c linux-2.
  				goto e_inval;
 diff -urN --ignore-all-space linux-2.6.12.2-orig/net/ipv4/netfilter/Kconfig linux-2.6.12.2-nonlocal/net/ipv4/netfilter/Kconfig
 --- linux-2.6.12.2-orig/net/ipv4/netfilter/Kconfig	2005-06-29 16:00:53.000000000 -0700
-+++ linux-2.6.12.2-nonlocal/net/ipv4/netfilter/Kconfig	2005-07-05 18:48:40.810392853 -0700
++++ linux-2.6.12.2-nonlocal/net/ipv4/netfilter/Kconfig	2005-07-13 14:45:59.776596527 -0700
 @@ -5,7 +5,13 @@
  menu "IP: Netfilter Configuration"
  	depends on INET && NETFILTER
@@ -105,7 +105,7 @@ diff -urN --ignore-all-space linux-2.6.12.2-orig/net/ipv4/netfilter/Kconfig linu
  	---help---
 diff -urN --ignore-all-space linux-2.6.12.2-orig/net/ipv4/netfilter/Makefile linux-2.6.12.2-nonlocal/net/ipv4/netfilter/Makefile
 --- linux-2.6.12.2-orig/net/ipv4/netfilter/Makefile	2005-06-29 16:00:53.000000000 -0700
-+++ linux-2.6.12.2-nonlocal/net/ipv4/netfilter/Makefile	2005-07-05 18:48:40.810392853 -0700
++++ linux-2.6.12.2-nonlocal/net/ipv4/netfilter/Makefile	2005-07-13 14:45:59.776596527 -0700
 @@ -12,6 +12,9 @@
  # SCTP protocol connection tracking
  obj-$(CONFIG_IP_NF_CT_PROTO_SCTP) += ip_conntrack_proto_sctp.o
@@ -118,7 +118,7 @@ diff -urN --ignore-all-space linux-2.6.12.2-orig/net/ipv4/netfilter/Makefile lin
  obj-$(CONFIG_IP_NF_TFTP) += ip_conntrack_tftp.o
 diff -urN --ignore-all-space linux-2.6.12.2-orig/net/ipv4/netfilter/ip_nonlocal.c linux-2.6.12.2-nonlocal/net/ipv4/netfilter/ip_nonlocal.c
 --- linux-2.6.12.2-orig/net/ipv4/netfilter/ip_nonlocal.c	1969-12-31 16:00:00.000000000 -0800
-+++ linux-2.6.12.2-nonlocal/net/ipv4/netfilter/ip_nonlocal.c	2005-07-05 18:48:40.811392777 -0700
++++ linux-2.6.12.2-nonlocal/net/ipv4/netfilter/ip_nonlocal.c	2005-07-13 18:09:01.192318612 -0700
 @@ -0,0 +1,72 @@
 +#include <linux/config.h>
 +#include <linux/types.h>
@@ -143,7 +143,7 @@ diff -urN --ignore-all-space linux-2.6.12.2-orig/net/ipv4/netfilter/ip_nonlocal.
 +                                    int (*okfn)(struct sk_buff *))
 +{
 +    struct sk_buff* skb = *pskb;
-+    if (skb->nh.iph->protocol == IPPROTO_TCP) {           
++    if (skb->nh.iph->protocol == IPPROTO_TCP || skb->nh.iph->protocol == IPPROTO_ICMP) {           
 +        if ((skb = tcp_v4_nonlocal_deliver(skb)) == NULL) 
 +            return NF_STOLEN;                        
 +    }                                                     
@@ -153,7 +153,7 @@ diff -urN --ignore-all-space linux-2.6.12.2-orig/net/ipv4/netfilter/ip_nonlocal.
 +
 +static struct nf_hook_ops ip_nonlocal_forward_ops = {
 +	.hook		= ip_nonlocal_in,
-+	.pf		= PF_INET,
++	.pf  		= PF_INET,
 +	.hooknum	= NF_IP_PRE_ROUTING,
 +	.priority	= NF_IP_PRI_FIRST+1,
 +};
@@ -194,8 +194,8 @@ diff -urN --ignore-all-space linux-2.6.12.2-orig/net/ipv4/netfilter/ip_nonlocal.
 +
 diff -urN --ignore-all-space linux-2.6.12.2-orig/net/ipv4/raw.c linux-2.6.12.2-nonlocal/net/ipv4/raw.c
 --- linux-2.6.12.2-orig/net/ipv4/raw.c	2005-06-29 16:00:53.000000000 -0700
-+++ linux-2.6.12.2-nonlocal/net/ipv4/raw.c	2005-07-05 18:48:40.811392777 -0700
-@@ -460,6 +464,9 @@
++++ linux-2.6.12.2-nonlocal/net/ipv4/raw.c	2005-07-13 14:45:59.777596452 -0700
+@@ -460,6 +460,9 @@
  	tos = RT_CONN_FLAGS(sk);
  	if (msg->msg_flags & MSG_DONTROUTE)
  		tos |= RTO_ONLINK;
@@ -207,7 +207,7 @@ diff -urN --ignore-all-space linux-2.6.12.2-orig/net/ipv4/raw.c linux-2.6.12.2-n
  		if (!ipc.oif)
 diff -urN --ignore-all-space linux-2.6.12.2-orig/net/ipv4/route.c linux-2.6.12.2-nonlocal/net/ipv4/route.c
 --- linux-2.6.12.2-orig/net/ipv4/route.c	2005-06-29 16:00:53.000000000 -0700
-+++ linux-2.6.12.2-nonlocal/net/ipv4/route.c	2005-07-05 18:48:40.813392624 -0700
++++ linux-2.6.12.2-nonlocal/net/ipv4/route.c	2005-07-13 14:45:59.779596301 -0700
 @@ -2357,8 +2357,19 @@
  
  		/* It is equivalent to inet_addr_type(saddr) == RTN_LOCAL */
@@ -238,15 +238,14 @@ diff -urN --ignore-all-space linux-2.6.12.2-orig/net/ipv4/route.c linux-2.6.12.2
  			   and limited broadcast via necessary interface
 diff -urN --ignore-all-space linux-2.6.12.2-orig/net/ipv4/tcp_ipv4.c linux-2.6.12.2-nonlocal/net/ipv4/tcp_ipv4.c
 --- linux-2.6.12.2-orig/net/ipv4/tcp_ipv4.c	2005-06-29 16:00:53.000000000 -0700
-+++ linux-2.6.12.2-nonlocal/net/ipv4/tcp_ipv4.c	2005-07-05 18:48:40.814392547 -0700
-@@ -1846,6 +1846,52 @@
++++ linux-2.6.12.2-nonlocal/net/ipv4/tcp_ipv4.c	2005-07-13 20:19:19.172809068 -0700
+@@ -1846,6 +1846,80 @@
  	goto discard_it;
  }
  
 +struct sk_buff *tcp_v4_nonlocal_deliver(struct sk_buff *skb)
 +{
-+    struct sock *sk;
-+    struct tcphdr *th;
++    struct sock *sk = NULL;
 +    int ihl;
 +
 +    if (skb->nh.iph->frag_off & htons(IP_MF|IP_OFFSET)) {
@@ -260,13 +259,42 @@ diff -urN --ignore-all-space linux-2.6.12.2-orig/net/ipv4/tcp_ipv4.c linux-2.6.1
 +    if (!pskb_may_pull(skb, ihl+8))
 +        goto out;
 +
-+    th = (struct tcphdr*)(skb->nh.raw + ihl);
++    if (skb->nh.iph->protocol == IPPROTO_TCP) {           
++        struct tcphdr *th = (struct tcphdr*)(skb->nh.raw + ihl);
 +    
-+    sk = __tcp_v4_lookup(skb->nh.iph->saddr, th->source,
-+                         skb->nh.iph->daddr, ntohs(th->dest),
-+                         skb->dev->ifindex); 
++        sk = __tcp_v4_lookup(skb->nh.iph->saddr, th->source,
++                             skb->nh.iph->daddr, ntohs(th->dest),
++                             skb->dev->ifindex);
++    }
++    if (skb->nh.iph->protocol == IPPROTO_ICMP) {
++#define ICMP_HDR_SIZE 8 /* 4 plus 4 unused */
++        /*size of icmp payload */
++		__u32 len = ntohs(skb->nh.iph->tot_len) - ihl - ICMP_HDR_SIZE; 
++        struct icmphdr *icmph = (struct icmphdr*)(skb->nh.raw + ihl);
 +
-+    if (sk && sk->sk_reuse == 2) { /*exist and nonlocal bound*/
++        if ((icmph->type == 3 && icmph->code == 4 ) || /* fragmentation needed */
++            (icmph->type == 4 && icmph->code == 0 ) || /* source quench */
++            (icmph->type == 12                    ))   /* parameter problem */
++        {
++        
++            if (len > sizeof(struct iphdr)) {
++                struct iphdr* innerh = (struct iphdr*)(skb->nh.raw + ihl + ICMP_HDR_SIZE);
++                int innerhl = innerh->ihl*4;
++
++                /* is tcp and has tcp hdr */
++                if (innerh->protocol == IPPROTO_TCP && len > (innerhl + sizeof(struct tcphdr))) {
++
++                    struct tcphdr *th = (struct tcphdr*)(skb->nh.raw + ihl + ICMP_HDR_SIZE + innerhl);
++
++                    sk = __tcp_v4_lookup(innerh->daddr, th->dest,
++                                         innerh->saddr, ntohs(th->source),
++                                         skb->dev->ifindex);
++                }
++            }
++        }
++    }
++
++    if (sk && sk->sk_reuse == 2) { /* exist and nonlocal bound */
 +        struct iphdr  *iph;
 +        iph = skb->nh.iph;
 +
