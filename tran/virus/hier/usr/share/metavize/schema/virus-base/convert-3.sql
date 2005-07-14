@@ -28,7 +28,7 @@ CREATE TABLE tr_virus_imap_config (
 ALTER TABLE tr_virus_settings ADD COLUMN smtp_inbound int8;
 UPDATE tr_virus_settings SET smtp_inbound = nextval('hibernate_sequence');
 INSERT INTO tr_virus_smtp_config (
-    SELECT smtp_inbound, false, 'C', 'N', 'no description'
+    SELECT smtp_inbound, true, 'C', 'N', 'Scan incoming SMTP e-mail'
     FROM tr_virus_settings
 );
 ALTER TABLE tr_virus_settings ALTER COLUMN smtp_inbound SET NOT NULL;
@@ -37,7 +37,7 @@ ALTER TABLE tr_virus_settings ALTER COLUMN smtp_inbound SET NOT NULL;
 ALTER TABLE tr_virus_settings ADD COLUMN smtp_outbound int8;
 UPDATE tr_virus_settings SET smtp_outbound = nextval('hibernate_sequence');
 INSERT INTO tr_virus_smtp_config (
-    SELECT smtp_outbound, false, 'C', 'N', 'no description'
+    SELECT smtp_outbound, false, 'P', 'N', 'Scan outgoing SMTP e-mail'
     FROM tr_virus_settings
 );
 ALTER TABLE tr_virus_settings ALTER COLUMN smtp_outbound SET NOT NULL;
@@ -46,7 +46,8 @@ ALTER TABLE tr_virus_settings ALTER COLUMN smtp_outbound SET NOT NULL;
 ALTER TABLE tr_virus_settings ADD COLUMN pop_inbound int8;
 UPDATE tr_virus_settings SET pop_inbound = nextval('hibernate_sequence');
 INSERT INTO tr_virus_pop_config (
-    SELECT pop_inbound, false, 'C', 'no description' FROM tr_virus_settings
+    SELECT pop_inbound, true, 'C', 'Scan incoming POP e-mail'
+    FROM tr_virus_settings
 );
 ALTER TABLE tr_virus_settings ALTER COLUMN pop_inbound SET NOT NULL;
 
@@ -54,7 +55,8 @@ ALTER TABLE tr_virus_settings ALTER COLUMN pop_inbound SET NOT NULL;
 ALTER TABLE tr_virus_settings ADD COLUMN pop_outbound int8;
 UPDATE tr_virus_settings SET pop_outbound = nextval('hibernate_sequence');
 INSERT INTO tr_virus_pop_config (
-    SELECT pop_outbound, false, 'C', 'no description' FROM tr_virus_settings
+    SELECT pop_outbound, false, 'P', 'Scan outgoing POP e-mail'
+    FROM tr_virus_settings
 );
 ALTER TABLE tr_virus_settings ALTER COLUMN pop_outbound SET NOT NULL;
 
@@ -62,7 +64,8 @@ ALTER TABLE tr_virus_settings ALTER COLUMN pop_outbound SET NOT NULL;
 ALTER TABLE tr_virus_settings ADD COLUMN imap_inbound int8;
 UPDATE tr_virus_settings SET imap_inbound = nextval('hibernate_sequence');
 INSERT INTO tr_virus_imap_config (
-    SELECT imap_inbound, false, 'C', 'no description' FROM tr_virus_settings
+    SELECT imap_inbound, true, 'C', 'Scan incoming IMAP e-mail'
+    FROM tr_virus_settings
 );
 ALTER TABLE tr_virus_settings ALTER COLUMN imap_inbound SET NOT NULL;
 
@@ -70,7 +73,8 @@ ALTER TABLE tr_virus_settings ALTER COLUMN imap_inbound SET NOT NULL;
 ALTER TABLE tr_virus_settings ADD COLUMN imap_outbound int8;
 UPDATE tr_virus_settings SET imap_outbound = nextval('hibernate_sequence');
 INSERT INTO tr_virus_imap_config (
-    SELECT imap_outbound, false, 'C', 'no description' FROM tr_virus_settings
+    SELECT imap_outbound, false, 'P', 'Scan outgoing IMAP e-mail'
+    FROM tr_virus_settings
 );
 ALTER TABLE tr_virus_settings ALTER COLUMN imap_outbound SET NOT NULL;
 
