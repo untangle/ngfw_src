@@ -48,7 +48,6 @@ public class ProtoFilterImpl extends AbstractTransform implements ProtoFilter
         + "JOIN tr_protofilter_evt USING (session_id) "
         + "ORDER BY create_date DESC LIMIT 100";
 
-    private final EventHandler handler = new EventHandler();
     private final SoloPipeSpec pipeSpec = new SoloPipeSpec
         ("protofilter", this, handler, Fitting.OCTET_STREAM,
          Affinity.CLIENT, 0);
