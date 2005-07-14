@@ -14,9 +14,9 @@ import com.metavize.mvvm.tran.TransformContext;
 
 public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransformControlsJPanel{
     
-    private static final String NAME_SPAM_SMTP = "Sources (SMTP)";
-    private static final String NAME_SPAM_POP = "Sources (POP)";
-    private static final String NAME_SPAM_IMAP = "Sources (IMAP)";
+    private static final String NAME_SPAM_SMTP = "SMTP";
+    private static final String NAME_SPAM_POP = "POP";
+    private static final String NAME_SPAM_IMAP = "IMAP";
     
     public MTransformControlsJPanel(MTransformJPanel mTransformJPanel)  {
         super(mTransformJPanel);
