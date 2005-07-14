@@ -51,6 +51,11 @@ clean.post_base:
 	@sudo rm -rf $(build_dist)/usr/share/metavize
 	@fakeroot debian/rules clean
 
+distclean.post_base:
+	@rm -f $(lib_file_name)
+	@sudo rm -rf $(build_dist)/usr/share/metavize
+	@fakeroot debian/rules distclean
+
 
 ## This is the catch all for all of the rules that do not execute anything after calling the
 ## sub rule
@@ -60,6 +65,7 @@ chk:
 	@echo "alpine_root  = "$(alpine_root)
 	@echo "build_dist   = "$(build_dist)
 	@echo "build_prefix = "$(build_prefix)
+	@mkdir -p output
 	@echo
 
 alpine_libs=jnetcap netcap vector jvector mvutil jmvutil
@@ -67,7 +73,6 @@ lib_deps = $(patsubst %,$(build_lib_path)/lib%.a,$(alpine_libs))
 
 $(lib_file_name): LIBS = xml2
 $(lib_file_name): $(lib_deps)
-	@mkdir -p output
 	@echo "==> gcc ($(alpine_libs)) -> $@"
 	@$(CC) $(CFLAGS) $(LIBS_FLAGS) -Wl,--whole-archive  $(lib_deps) -lipq -Wl,--no-whole-archive \
 		-shared -o output/$@
