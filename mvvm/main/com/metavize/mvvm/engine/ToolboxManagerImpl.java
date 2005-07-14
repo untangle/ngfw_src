@@ -549,7 +549,7 @@ class ToolboxManagerImpl implements ToolboxManager
             TRY_AGAIN:
             try {
                 proc.waitFor();
-            } catch (InterruptedException exn) {
+            } catch (InterruptedException e) {
                 break TRY_AGAIN;
             }
             logger.debug("apt done.");
