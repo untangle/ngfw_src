@@ -50,6 +50,27 @@ public class SpywareLog implements Serializable
         this.direction = direction;
     }
 
+    // util -------------------------------------------------------------------
+
+    public String getAction(){
+	if(blocked)
+	    return "block";
+	else
+	    return "pass";
+    }
+
+    public String getReason(){
+	if(type == Type.COOKIE)
+	    return "in Cookie Block List";
+	else if(type == Type.ACTIVEX)
+	    return "in ActiveX Block List";
+	else if(type == Type.ACCESS)
+	    return "in Spyware Block List";
+	else if(type == Type.BLACKLIST)
+	    return "in URL Block List";
+	else return null;
+    }
+
     // accessors --------------------------------------------------------------
 
     public Date getCreateDate()
@@ -92,7 +113,7 @@ public class SpywareLog implements Serializable
         return serverAddr;
     }
 
-    public int getSServerPort()
+    public int getServerPort()
     {
         return serverPort;
     }

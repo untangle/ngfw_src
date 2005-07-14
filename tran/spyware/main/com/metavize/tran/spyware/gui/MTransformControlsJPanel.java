@@ -21,13 +21,17 @@ import javax.swing.*;
 import javax.swing.table.*;
 import java.util.Vector;
 import javax.swing.event.*;
+import javax.swing.border.EmptyBorder;
 
 public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransformControlsJPanel{
-    
+
+    private static final String NAME_BLOCK = "Block Lists";
+    private static final String NAME_BLOCK_ACTIVEX = "ActiveX Block List";
+    private static final String NAME_BLOCK_SPYWARE = "Spyware Block List";
+    private static final String NAME_BLOCK_COOKIE = "Cookie Block List";
+    private static final String NAME_BLOCK_URL = "URL Block List";
     private static final String NAME_SETTINGS = "General Settings";
-    private static final String NAME_ACTIVEX = "ActiveX Block List";
-    private static final String NAME_SPYWARE = "Spyware Block List";
-    private static final String NAME_COOKIE = "Cookie Block List";
+    private static final String NAME_LOG = "Event Log";
     
     public MTransformControlsJPanel(MTransformJPanel mTransformJPanel) {
         super(mTransformJPanel);
@@ -35,29 +39,47 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 
     protected void generateGui(){
 
-        // GENERAL SETTINGS ////////
-	GeneralConfigJPanel generalConfigJPanel = new GeneralConfigJPanel();
-        this.mTabbedPane.insertTab(NAME_SETTINGS, null, generalConfigJPanel, null, 0);
-	super.savableMap.put(NAME_SETTINGS, generalConfigJPanel);
-	super.refreshableMap.put(NAME_SETTINGS, generalConfigJPanel);
-
-	// ACTIVEX ///////////////
-	ActiveXConfigJPanel activeXConfigJPanel = new ActiveXConfigJPanel();
-        this.mTabbedPane.insertTab(NAME_ACTIVEX, null, activeXConfigJPanel, null, 0);
-	super.savableMap.put(NAME_ACTIVEX, activeXConfigJPanel);
-	super.refreshableMap.put(NAME_ACTIVEX, activeXConfigJPanel);
-
-	// SPYWARE ///////////////
-	SpywareConfigJPanel spywareConfigJPanel = new SpywareConfigJPanel();
-        this.mTabbedPane.insertTab(NAME_SPYWARE, null, spywareConfigJPanel, null, 0);
-	super.savableMap.put(NAME_SPYWARE, spywareConfigJPanel);
-	super.refreshableMap.put(NAME_SPYWARE, spywareConfigJPanel);
+	// BLOCK LISTS ///////////
+        JTabbedPane blockJTabbedPane = new JTabbedPane();
+        blockJTabbedPane.setBorder(new EmptyBorder(7, 13, 13, 13));
+        blockJTabbedPane.setFocusable(false);
+        blockJTabbedPane.setFont(new java.awt.Font("Arial", 0, 11));
+        blockJTabbedPane.setRequestFocusEnabled(false);
+        this.mTabbedPane.addTab(NAME_BLOCK, null, blockJTabbedPane);
 
 	// COOKIES //////////////
 	CookieConfigJPanel cookieConfigJPanel = new CookieConfigJPanel();
-        this.mTabbedPane.insertTab(NAME_COOKIE, null, cookieConfigJPanel, null, 0);
-	super.savableMap.put(NAME_COOKIE, cookieConfigJPanel);
-	super.refreshableMap.put(NAME_COOKIE, cookieConfigJPanel);
+        blockJTabbedPane.addTab(NAME_BLOCK_COOKIE, null, cookieConfigJPanel);
+	super.savableMap.put(NAME_BLOCK + NAME_BLOCK_COOKIE, cookieConfigJPanel);
+	super.refreshableMap.put(NAME_BLOCK + NAME_BLOCK_COOKIE, cookieConfigJPanel);
+
+	// SPYWARE ///////////////
+	SpywareConfigJPanel spywareConfigJPanel = new SpywareConfigJPanel();
+        blockJTabbedPane.addTab(NAME_BLOCK_SPYWARE, null, spywareConfigJPanel);
+	super.savableMap.put(NAME_BLOCK + NAME_BLOCK_SPYWARE, spywareConfigJPanel);
+	super.refreshableMap.put(NAME_BLOCK + NAME_BLOCK_SPYWARE, spywareConfigJPanel);
+
+	// ACTIVEX ///////////////
+	ActiveXConfigJPanel activeXConfigJPanel = new ActiveXConfigJPanel();
+        blockJTabbedPane.addTab(NAME_BLOCK_ACTIVEX, null, activeXConfigJPanel);
+	super.savableMap.put(NAME_BLOCK + NAME_BLOCK_ACTIVEX, activeXConfigJPanel);
+	super.refreshableMap.put(NAME_BLOCK + NAME_BLOCK_ACTIVEX, activeXConfigJPanel);
+        
+        // URL ///////////////
+	UrlConfigJPanel urlConfigJPanel = new UrlConfigJPanel();
+        blockJTabbedPane.addTab(NAME_BLOCK_URL, null, urlConfigJPanel);
+	super.savableMap.put(NAME_BLOCK + NAME_BLOCK_URL, urlConfigJPanel);
+	super.refreshableMap.put(NAME_BLOCK + NAME_BLOCK_URL, urlConfigJPanel);
+
+        // GENERAL SETTINGS ////////
+	GeneralConfigJPanel generalConfigJPanel = new GeneralConfigJPanel();
+        this.mTabbedPane.addTab(NAME_SETTINGS, null, generalConfigJPanel);
+	super.savableMap.put(NAME_SETTINGS, generalConfigJPanel);
+	super.refreshableMap.put(NAME_SETTINGS, generalConfigJPanel);
+
+ 	// EVENT LOG ///////
+	LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransformContext().transform());
+        this.mTabbedPane.addTab(NAME_LOG, null, logJPanel);
         
     }
 }
