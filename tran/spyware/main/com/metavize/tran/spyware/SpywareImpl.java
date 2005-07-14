@@ -21,10 +21,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -50,26 +53,33 @@ public class SpywareImpl extends AbstractTransform implements Spyware
 {
     private static final String EVENT_QUERY
         = "SELECT create_date, "
-        +        "CASE WHEN ck.event_id IS NULL THEN 'COOKIE' "
-        +             "WHEN ax.event_id IS NULL THEN 'ACTIVEX' "
-        +             "WHEN acc.event_id IS NULL THEN 'ACCESS' "
-        +        "END AS type, "
-        +        "CASE WHEN ck.event_id IS NULL "
-        +               "OR ax.event_id IS NULL THEN 'http://' || host || uri "
-        +             "WHEN acc.event_id IS NULL THEN text(acc.ipmaddr) "
-        +        "END AS location, "
-        +        "CASE WHEN ck.event_id IS NULL THEN ck.ident "
-        +             "WHEN ax.event_id IS NULL THEN ax.ident "
-        +             "WHEN acc.event_id IS NULL THEN acc.ident "
-        +        "END AS ident, "
-        +        "c_client_addr, c_client_port, s_server_addr, s_server_port, "
-        +        "client_intf, server_intf "
+        + "CASE WHEN NOT ck.event_id IS NULL THEN 'COOKIE' "
+        +      "WHEN NOT ax.event_id IS NULL THEN 'ACTIVEX' "
+        +      "WHEN NOT acc.event_id IS NULL THEN 'ACCESS' "
+        +      "WHEN NOT bl.event_id IS NULL THEN 'BLACKLIST' "
+        + "END AS type, "
+        + "CASE WHEN NOT ck.event_id IS NULL "
+        +           "OR NOT ax.event_id IS NULL "
+        +           "OR NOT bl.event_id IS NULL "
+        +       "THEN 'http://' || host || uri "
+        +       "WHEN acc.event_id IS NULL THEN text(acc.ipmaddr) "
+        + "END AS loc, "
+        + "CASE WHEN NOT ck.event_id IS NULL THEN ck.ident "
+        +      "WHEN NOT ax.event_id IS NULL THEN ax.ident "
+        +      "WHEN NOT acc.event_id IS NULL THEN acc.ident "
+        +      "WHEN NOT bl.event_id IS NULL THEN host "
+        + "END AS ident, "
+        + "c_client_addr, c_client_port, s_server_addr, s_server_port, "
+        + "client_intf, server_intf "
         + "FROM tr_http_evt_req req "
         + "JOIN pl_endp USING (session_id) "
         + "LEFT OUTER JOIN tr_spyware_evt_cookie ck ON ck.request_id = req.request_id "
         + "LEFT OUTER JOIN tr_spyware_evt_activex ax ON ax.request_id = req.request_id "
         + "LEFT OUTER JOIN tr_spyware_evt_access acc ON acc.request_id = req.request_id "
+        + "LEFT OUTER JOIN tr_spyware_evt_blacklist bl ON bl.request_id = req.request_id "
         + "JOIN tr_http_req_line rl ON rl.request_id = req.request_id "
+        + "WHERE NOT ck.event_id IS NULL OR NOT ax.event_id IS NULL "
+        +       "OR NOT acc.event_id IS NULL OR NOT bl.event_id IS NULL "
         + "ORDER BY req.time_stamp DESC LIMIT ?";
 
     private static final String ACTIVEX_LIST
@@ -84,7 +94,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
     private static final Pattern ACTIVEX_PATTERN = Pattern
         .compile(".*\\{([a-fA-F0-9\\-]+)\\}.*");
 
-    private static final Logger logger = Logger.getLogger(SpywareImpl.class);
+    private final Logger logger = Logger.getLogger(getClass());
 
     private static final int HTTP = 0;
     private static final int BYTE = 1;
@@ -93,23 +103,30 @@ public class SpywareImpl extends AbstractTransform implements Spyware
     private final TokenAdaptor tokenAdaptor = new TokenAdaptor(factory);
     private final SpywareEventHandler streamHandler = new SpywareEventHandler(this);
 
+    private final Set urlBlacklist;
+
     private final PipeSpec[] pipeSpecs = new PipeSpec[]
         { new SoloPipeSpec("spyware-http", this, tokenAdaptor,
                              Fitting.HTTP_TOKENS, Affinity.SERVER, 0),
           new SoloPipeSpec("spyware-byte", this, streamHandler,
                              Fitting.OCTET_STREAM, Affinity.SERVER, 0) };
 
-    private SpywareSettings spySettings;
+    private volatile SpywareSettings settings;
+    private volatile Map<String, StringRule> activeXRules;
+    private volatile Map<String, StringRule> cookieRules;
 
     // constructors -----------------------------------------------------------
 
-    public SpywareImpl() { }
+    public SpywareImpl()
+    {
+        urlBlacklist = buildUrlList();
+    }
 
     // SpywareTransform methods -----------------------------------------------
 
     public SpywareSettings getSpywareSettings()
     {
-        return this.spySettings;
+        return settings;
     }
 
     public void setSpywareSettings(SpywareSettings settings)
@@ -119,7 +136,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
             Transaction tx = s.beginTransaction();
 
             s.saveOrUpdateCopy(settings);
-            this.spySettings = settings;
+            this.settings = settings;
 
             tx.commit();
         } catch (HibernateException exn) {
@@ -192,8 +209,30 @@ public class SpywareImpl extends AbstractTransform implements Spyware
     public void reconfigure()
     {
         logger.info("Reconfigure.");
-        if (this.spySettings.getSpywareEnabled()) {
-            streamHandler.subnetList(this.spySettings.getSubnetRules());
+        if (this.settings.getSpywareEnabled()) {
+            streamHandler.subnetList(this.settings.getSubnetRules());
+        }
+
+        List<StringRule> l = (List<StringRule>)settings.getActiveXRules();
+        if (null != l) {
+            Map<String, StringRule> s = new HashMap<String, StringRule>();
+            for (StringRule sr : l) {
+                s.put(sr.getString(), sr);
+            }
+            activeXRules = s;
+        } else {
+            activeXRules = null;
+        }
+
+        l = (List<StringRule>)settings.getCookieRules();
+        if (null != l) {
+            Map<String, StringRule> s = new HashMap<String, StringRule>();
+            for (StringRule sr : l) {
+                s.put(sr.getString(), sr);
+            }
+            cookieRules = s;
+        } else {
+            cookieRules = null;
         }
     }
 
@@ -228,11 +267,11 @@ public class SpywareImpl extends AbstractTransform implements Spyware
             Query q = s.createQuery
                 ("from SpywareSettings ss where ss.tid = :tid");
             q.setParameter("tid", getTid());
-            this.spySettings = (SpywareSettings)q.uniqueResult();
+            this.settings = (SpywareSettings)q.uniqueResult();
 
-            updateActiveX(this.spySettings);
-            updateCookie(this.spySettings);
-            updateSubnet(this.spySettings);
+            updateActiveX(this.settings);
+            updateCookie(this.settings);
+            updateSubnet(this.settings);
 
             tx.commit();
         } catch (HibernateException exn) {
@@ -248,10 +287,47 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         reconfigure();
     }
 
-    /**
-     * FIXME unused
-     */
-    private HashSet buildURLList()
+    // package private methods ------------------------------------------------
+
+    boolean isBlacklistDomain(String domain)
+    {
+        if (!settings.getUrlBlacklistEnabled()) {
+            return false;
+        }
+
+        boolean match = false;
+
+        for (String d = domain; !match && null != d; d = nextHost(d)) {
+            match = urlBlacklist.contains(domain);
+        }
+
+        return match;
+    }
+
+    boolean isBlockedCookie(String domain)
+    {
+        if (null == cookieRules && !settings.getCookieBlockerEnabled()) {
+            return false;
+        }
+
+        boolean match = false;
+
+        for (String d = domain; !match && null != d; d = nextHost(d)) {
+            StringRule sr = cookieRules.get(domain);
+            match = null != sr && sr.isLive();
+        }
+
+        return match;
+    }
+
+    StringRule getBlockedActiveX(String clsId)
+    {
+        return null == activeXRules ? null : activeXRules.get(clsId);
+    }
+
+    // private methods --------------------------------------------------------
+
+    private Set buildUrlList()
     {
         InputStream is = getClass().getClassLoader().getResourceAsStream(URL_LIST);
         HashSet urls = new HashSet();
@@ -427,6 +503,16 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         }
 
         return;
+    }
+
+    private String nextHost(String host)
+    {
+        int i = host.indexOf('.');
+        if (0 > i || i == host.lastIndexOf('.')) {
+            return null;  /* skip TLD */
+        }
+
+        return host.substring(i + 1);
     }
 
     // XXX soon to be deprecated ----------------------------------------------

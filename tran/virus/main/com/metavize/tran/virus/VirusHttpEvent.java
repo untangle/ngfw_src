@@ -36,7 +36,8 @@ public class VirusHttpEvent extends LogEvent
      */
     public VirusHttpEvent() { }
 
-    public VirusHttpEvent(RequestLine requestLine, VirusScannerResult result, String vendorName)
+    public VirusHttpEvent(RequestLine requestLine, VirusScannerResult result,
+                          String vendorName)
     {
         this.requestLine = requestLine;
         this.result = result;

@@ -22,7 +22,6 @@ import java.util.regex.Pattern;
 
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.tapi.TCPSession;
-import com.metavize.mvvm.tapi.TransformContextFactory;
 import com.metavize.mvvm.tran.StringRule;
 import com.metavize.tran.http.HttpStateMachine;
 import com.metavize.tran.http.RequestLine;
@@ -33,10 +32,6 @@ import com.metavize.tran.token.Header;
 import com.metavize.tran.token.Token;
 import com.metavize.tran.token.TokenResult;
 import com.metavize.tran.util.AsciiCharBuffer;
-import net.sf.hibernate.HibernateException;
-import net.sf.hibernate.Query;
-import net.sf.hibernate.Session;
-import net.sf.hibernate.Transaction;
 import org.apache.log4j.Logger;
 
 public class SpywareHttpHandler extends HttpStateMachine
@@ -46,20 +41,21 @@ public class SpywareHttpHandler extends HttpStateMachine
     private static final Pattern CLSID_PATTERN
         = Pattern.compile("clsid:([0-9\\-]*)");
 
-    private static final Logger logger = Logger
-        .getLogger(SpywareHttpHandler.class);
+    private final TCPSession session;
 
     private final List cookieQueue = new LinkedList();
     private final Queue reqQueue = new LinkedList();
     private final List reqHostQueue = new LinkedList();
 
+    private final Logger logger = Logger.getLogger(getClass());
     private final Logger eventLogger = MvvmContextFactory.context()
         .eventLogger();
 
-    private SpywareImpl transform;
+    private final SpywareImpl transform;
 
     private String extension = "";
     private String mimeType = "";
+    private RequestLine requestRequest;
     private RequestLine responseRequest;
     private StatusLine statusLine;
 
@@ -68,12 +64,14 @@ public class SpywareHttpHandler extends HttpStateMachine
         super(session);
 
         this.transform = transform;
+        this.session = session;
     }
 
     protected TokenResult doRequestLine(RequestLine requestLine)
     {
         logger.debug("got request line");
 
+        this.requestRequest = requestLine;
         reqQueue.offer(requestLine);
 
         String path = requestLine.getRequestUri().getPath();
@@ -87,6 +85,19 @@ public class SpywareHttpHandler extends HttpStateMachine
     protected TokenResult doRequestHeader(Header requestHeader)
     {
         logger.debug("got request header");
+
+        // XXX we could check the request-uri for an absolute address too...
+        String host = requestHeader.getValue("host");
+        if (transform.isBlacklistDomain(host)) {
+            SpywareBlacklistEvent evt = new SpywareBlacklistEvent
+                (getSession().id(), requestRequest);
+            eventLogger.info(evt);
+            // XXX we could send a page back instead, this isn't really right
+            session.shutdownServer();
+            session.shutdownClient();
+            return TokenResult.NONE;
+        }
+
         Header h = clientCookie(requestHeader);
         return new TokenResult(null, new Token[] { h });
     }
@@ -175,7 +186,7 @@ public class SpywareHttpHandler extends HttpStateMachine
             }
 
             long t0 = System.currentTimeMillis();
-            boolean badDomain = inDomainsSet(domain);
+            boolean badDomain = transform.isBlockedCookie(domain);
             long t1 = System.currentTimeMillis();
             if (logger.isDebugEnabled())
                 logger.debug("looked up domain in: " + (t1 - t0) + " ms");
@@ -220,7 +231,7 @@ public class SpywareHttpHandler extends HttpStateMachine
             }
 
 
-            boolean badDomain = inDomainsSet(domain);
+            boolean badDomain = transform.isBlockedCookie(domain);
 
             if (badDomain) {
                 logger.debug("cookie deleted: " + domain);
@@ -324,7 +335,7 @@ public class SpywareHttpHandler extends HttpStateMachine
             if (!block) {
                 String clsid = m.group(1);
                 long t0 = System.currentTimeMillis();
-                StringRule rule = matchActiveX(clsid);
+                StringRule rule = transform.getBlockedActiveX(clsid);
                 long t1 = System.currentTimeMillis();
                 logger.debug("looked up activeX in: " + (t1 - t0) + " ms");
 
@@ -410,82 +421,5 @@ public class SpywareHttpHandler extends HttpStateMachine
         }
 
         return -1;
-    }
-
-    private boolean inDomainsSet(String domain)
-    {
-        boolean found = false;
-
-        Session s = TransformContextFactory.context().openSession();
-        try {
-            Transaction tx = s.beginTransaction();
-
-            for (String h = domain; null != h; h = nextHost(h)) {
-                Query q = s.createQuery
-                    ("from SpywareSettings ss join ss.cookieRules cookieRules "
-                     + "where ss.tid = :tid and cookieRules.string = :domain and cookieRules.live = true");
-                q.setParameter("tid", transform.getTid());
-                q.setParameter("domain", h);
-                Iterator i = q.list().iterator();
-                if (i.hasNext()) {
-                    found = true;
-                    break;
-                }
-            }
-
-            tx.commit();
-        } catch (HibernateException exn) {
-            logger.warn("Could not get SpywareSettings", exn);
-        } finally {
-            try {
-                s.close();
-            } catch (HibernateException exn) {
-                logger.warn("could not close Hibernate session", exn);
-            }
-        }
-
-        return found;
-    }
-
-    private StringRule matchActiveX(String clsId)
-    {
-        StringRule rule = null;
-
-        Session s = TransformContextFactory.context().openSession();
-        try {
-            Transaction tx = s.beginTransaction();
-            Query q = s.createQuery
-                ("from SpywareSettings ss join ss.activeXRules rules "
-                 + "where ss.tid = :tid and rules.string = :clsid and rules.live = true");
-            q.setParameter("tid", transform.getTid());
-            q.setParameter("clsid", clsId);
-            Iterator i = q.list().iterator();
-            if (i.hasNext()) {
-                Object[] o = (Object[])i.next();
-                rule = (StringRule)o[1];
-            }
-
-            tx.commit();
-        } catch (HibernateException exn) {
-            logger.warn("Could not get SpywareSettings", exn);
-        } finally {
-            try {
-                s.close();
-            } catch (HibernateException exn) {
-                logger.warn("could not close Hibernate session", exn);
-            }
-        }
-
-        return rule;
-    }
-
-    private String nextHost(String host)
-    {
-        int i = host.indexOf('.');
-        if (0 > i || i == host.lastIndexOf('.')) {
-            return null;  /* skip TLD */
-        }
-
-        return host.substring(i + 1);
     }
 }

@@ -34,10 +34,12 @@ public class SpywareSettings implements Serializable
     private boolean cookieBlockerEnabled = true;
     private boolean spywareEnabled = true;
     private boolean blockAllActiveX = false;
+    private boolean urlBlacklistEnabled = true;
     private String activeXDetails ="no description";
     private String cookieBlockerDetails = "no description";
     private String spywareDetails = "no description";
     private String blockAllActiveXDetails = "no description";
+    private String urlBlacklistDetails = "no description";
     private List activeXRules;
     private List cookieRules;
     private List subnetRules;
@@ -159,6 +161,23 @@ public class SpywareSettings implements Serializable
     }
 
     /**
+     * Enables the URL blacklist.
+     *
+     * @return true if blacklist enabled, false otherwise.
+     * @hibernate.property
+     * column="URL_BLACKLIST_ENABLED"
+     */
+    public boolean getUrlBlacklistEnabled()
+    {
+        return urlBlacklistEnabled;
+    }
+
+    public void setUrlBlacklistEnabled(boolean urlBlacklistEnabled)
+    {
+        this.urlBlacklistEnabled = urlBlacklistEnabled;
+    }
+
+    /**
      * XXX what does this do
      *
      * @return XXX
@@ -224,6 +243,23 @@ public class SpywareSettings implements Serializable
     public void setBlockAllActiveXDetails(String blockAllActiveXDetails)
     {
         this.blockAllActiveXDetails = blockAllActiveXDetails;
+    }
+
+    /**
+     * XXX what does this do?
+     *
+     * @return XXX
+     * @hibernate.property
+     * column="URL_BLACKLIST_DETAILS"
+     */
+    public String getUrlBlacklistDetails()
+    {
+        return urlBlacklistDetails;
+    }
+
+    public void setUrlBlacklistDetails(String urlBlacklistDetails)
+    {
+        this.urlBlacklistDetails = urlBlacklistDetails;
     }
 
     /**

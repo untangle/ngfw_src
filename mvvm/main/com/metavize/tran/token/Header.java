@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: Header.java,v 1.13 2005/02/08 01:59:17 rbscott Exp $
+ * $Id$
  */
 
 package com.metavize.tran.token;
@@ -51,24 +51,24 @@ public class Header implements Token
     public void replaceField(String key, String value)
     {
         key = key.toUpperCase();
-        Field f = (Field)header.get( key );
+        Field f = (Field)header.get(key);
 
         /* Item is not in the current header, add a new field */
-        if ( null == f ) {
-            f = new Field( key );
-            header.put( key, f );
+        if (null == f) {
+            f = new Field(key);
+            header.put(key, f);
         } else {
             /* Remove all of the items */
             f.values.clear();
         }
-        
+
         f.addValue( value );
     }
 
     public String getValue(String key)
     {
         Field f = (Field)header.get(key.toUpperCase());
-        return ( null == f || f.values.size() == 0 ) ? null : (String)f.values.get(0);
+        return (null == f || f.values.size() == 0) ? null : (String)f.values.get(0);
     }
 
     public List getValues(String key)

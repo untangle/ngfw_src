@@ -20,32 +20,25 @@ import com.metavize.tran.http.RequestLine;
  * @author
  * @version 1.0
  * @hibernate.class
- * table="TR_SPYWARE_EVT_COOKIE"
+ * table="TR_SPYWARE_EVT_BLACKLIST"
  * mutable="false"
  */
-public class SpywareCookieEvent extends LogEvent
+public class SpywareBlacklistEvent extends LogEvent
 {
     private int sessionId;
-    private String identification;
     private RequestLine requestLine;
-    private boolean toServer;
 
     // constructors -----------------------------------------------------------
 
     /**
      * Hibernate constructor.
      */
-    public SpywareCookieEvent() { }
+    public SpywareBlacklistEvent() { }
 
-    public SpywareCookieEvent(int sessionId,
-                              RequestLine requestLine,
-                              String identification,
-                              boolean toServer)
+    public SpywareBlacklistEvent(int sessionId, RequestLine requestLine)
     {
         this.sessionId = sessionId;
-        this.identification = identification;
         this.requestLine = requestLine;
-        this.toServer = toServer;
     }
 
     // accessors --------------------------------------------------------------
@@ -83,40 +76,5 @@ public class SpywareCookieEvent extends LogEvent
     public void setRequestLine(RequestLine requestLine)
     {
         this.requestLine = requestLine;
-    }
-
-    /**
-     * The identification (name of IP address range matched)
-     *
-     * @return the protocl name.
-     * @hibernate.property
-     * column="IDENT"
-     */
-    public String getIdentification()
-    {
-        return identification;
-    }
-
-    public void setIdentification(String identification)
-    {
-        this.identification = identification;
-    }
-
-    /**
-     * Whether or not the cookie is to the server (otherwise to the client)
-     *
-     * @return if true the cookie was zeroed going to the server,
-     * otherwise it was removed going to the client
-     * @hibernate.property
-     * column="TO_SERVER"
-     */
-    public boolean isToServer()
-    {
-        return toServer;
-    }
-
-    public void setToServer(boolean toServer)
-    {
-        this.toServer = toServer;
     }
 }

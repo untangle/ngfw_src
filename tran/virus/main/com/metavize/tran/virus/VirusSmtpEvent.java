@@ -12,11 +12,11 @@
 package com.metavize.tran.virus;
 
 import com.metavize.mvvm.logging.LogEvent;
+import com.metavize.tran.mail.MessageInfo;
 import com.metavize.tran.mail.SMTPNotifyAction;
 import com.metavize.tran.mail.SMTPNotifyActionUserType;
 import com.metavize.tran.mail.SMTPVirusMessageAction;
 import com.metavize.tran.mail.SMTPVirusMessageActionUserType;
-import com.metavize.tran.mail.MessageInfo;
 
 /**
  * Log for SMTP Virus events.
@@ -42,7 +42,8 @@ public class VirusSmtpEvent extends LogEvent
      */
     public VirusSmtpEvent() { }
 
-    public VirusSmtpEvent(MessageInfo messageInfo, VirusScannerResult result, SMTPVirusMessageAction action,
+    public VirusSmtpEvent(MessageInfo messageInfo, VirusScannerResult result,
+                          SMTPVirusMessageAction action,
                           SMTPNotifyAction notifyAction, String vendorName)
     {
         this.messageInfo = messageInfo;

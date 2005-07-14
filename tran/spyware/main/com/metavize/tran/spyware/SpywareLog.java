@@ -18,8 +18,9 @@ import com.metavize.mvvm.tran.Direction;
 
 public class SpywareLog implements Serializable
 {
-    // XXX serial uid
-    public enum Type { COOKIE, ACTIVEX, ACCESS };
+    private static final long serialVersionUID = -394881366677267209L;
+
+    public enum Type { COOKIE, ACTIVEX, ACCESS, BLACKLIST };
 
     private final Date createDate;
     private final Type type;
