@@ -546,15 +546,18 @@ class ToolboxManagerImpl implements ToolboxManager
                 System.out.write(outBuf, 0, i);
             }
             is.close();
-            proc.waitFor();
+            TRY_AGAIN:
+            try {
+                proc.waitFor();
+            } catch (InterruptedException exn) {
+                break TRY_AGAIN;
+            }
             logger.debug("apt done.");
             int e = proc.exitValue();
             if (0 != e) {
                 throw new MackageException("apt exited with: " + e);
             }
         } catch (IOException e) {
-            exn = new MackageException(e);
-        } catch (InterruptedException e) {
             exn = new MackageException(e);
         }
 
