@@ -58,7 +58,15 @@ clean:
 	@dh_testroot
 	@rm -f build-arch-stamp build-indep-stamp configure-stamp
 	@rm -f ./debian/*.init
-	@dh_clean
+	@dh_clean -d
+
+# distclean is too agressive to run in developer trees, so only run for 'make release'
+distclean:
+	@dh_testdir
+	@dh_testroot
+	@rm -f build-arch-stamp build-indep-stamp configure-stamp
+	@rm -f ./debian/*.init
+	dh_clean
 
 install: DH_OPTIONS=
 install: build
@@ -104,4 +112,4 @@ binary-indep: build install
 
 
 binary: binary-indep binary-arch
-.PHONY: build clean binary-indep binary install configure
+.PHONY: build clean distclean binary-indep binary install configure
