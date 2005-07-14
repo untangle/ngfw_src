@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Collections;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -60,6 +61,10 @@ public class DhcpMap
     static final int COL_INET_ADDRESS = 3;
     static final int COL_HOSTNAME     = 4;
     static final int COL_EVENT_TYPE   = 5;
+
+    /* Column numbers for the static table */
+    static final int COL_STATIC_HOST         = 1;
+    static final int COL_STATIC_INET_ADDRESS = 2;
     
     static final int EVT_TYPE_REGISTER = 0;
     static final int EVT_TYPE_RENEW    = 1;
@@ -78,6 +83,11 @@ public class DhcpMap
         "SELECT evt.time_stamp, evt.end_of_lease, evt.ip, evt.hostname, evt.event_type " +
         "FROM tr_nat_evt_dhcp AS evt WHERE ( ? <= evt.time_stamp and evt.time_stamp <= ? ) OR " +
         " ( ? <= evt.end_of_lease AND evt.end_of_lease <= ? ) order by evt.time_stamp";
+
+    private static final String STATIC_HOST_QUERY =
+        "SELECT hostname_list, static_address " + 
+        " FROM dns_static_host_rule as rule,tr_nat_dns_hosts as list,tr_nat_settings as settings " + 
+        " where ( rule.rule_id=list.rule_id ) and ( settings.settings_id=list.setting_id )";
 
     private static final String CREATE_TEMPORARY_TABLE = 
         "CREATE TABLE " + TABLE_NAME + "( " +
@@ -125,6 +135,14 @@ public class DhcpMap
 
     public void generateAddressMap( Connection conn, Timestamp start, Timestamp end )
     {
+        /* */
+        if ( start.after( end )) {
+            logger.error( "Start(" + start + ")is after end(" + end +"), swapping????" );
+            Timestamp temp = end;
+            end = start;
+            start = temp;
+        }
+
         /* Always try to delete the table first */
         deleteAddressMap( conn );
 
@@ -136,6 +154,7 @@ public class DhcpMap
             stmt.executeUpdate( CREATE_TEMPORARY_TABLE );
             generateAbsoluteLeases( conn, start, end, map );
             generateRelativeLeases( conn, start, end, map );
+            generateStaticLeases( conn, start, end, map );
             writeLeases( conn, map );
         } catch ( SQLException e ) {
             logger.warn( "Unable to generate address map", e );
@@ -171,6 +190,43 @@ public class DhcpMap
 
         generateLeases( RELATIVE_QUERY, conn, start, end, map );
     }
+    
+    private void generateStaticLeases( Connection conn, Timestamp start, Timestamp end,
+                                       Map<InetAddress,List<Lease>> map )
+        throws SQLException
+    {
+        logger.debug( "Generating static leases." );
+        ResultSet rs = null;
+
+        try {
+            Statement stmt = conn.createStatement();
+            rs = stmt.executeQuery( STATIC_HOST_QUERY );
+            while( rs.next()) {
+                try {
+                    String hostname = rs.getString( COL_STATIC_HOST );
+                    
+                    hostname = hostname.split( " ", 1 )[0];             
+
+                    InetAddress ip  = InetAddress.getByName( rs.getString( COL_STATIC_INET_ADDRESS ));
+                    Lease lease = new Lease( start, end, hostname );
+                    
+                    List<Lease> leaseList = map.put( ip, Collections.nCopies( 1, lease ));
+                    
+                    /* If the size is one, this is probably just a second static entry */
+                    if (  leaseList != null && leaseList.size() != 1 ) {
+                        logger.warn( "Static DNS entry for " + ip.getHostAddress() + 
+                                     " is overriding a DNS assigned address" );
+                    }
+                } catch ( UnknownHostException e ) {
+                    logger.warn( "Error parsing an ip address", e );
+                } catch ( ArrayIndexOutOfBoundsException e ) {
+                    logger.warn( "Error parsing an hostname", e );
+                }
+            }
+        } finally {
+            if ( rs != null ) rs.close();
+        }
+    }
 
     private void generateLeases( String query, Connection conn, Timestamp start, Timestamp end,
                                  Map<InetAddress,List<Lease>> map )
@@ -192,10 +248,9 @@ public class DhcpMap
                 } catch ( ParseException e ) {
                     logger.warn( "A lease was invalid", e );
                 }
-            }
-            
+            }            
         } finally {
-            if ( rs == null ) rs.close();
+            if ( rs != null ) rs.close();
         }        
     }
 
@@ -378,7 +433,7 @@ class LeaseEvent
     LeaseEvent()
     {
     }
-
+    
     /* Convenient way to reuse a lease event */
     void nextLeaseEvent( ResultSet rs )
         throws UnknownHostException, SQLException, ParseException
