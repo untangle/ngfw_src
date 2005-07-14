@@ -88,7 +88,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	super.savableMap.put(NAME_PASS + " " + NAME_PASS_CLIENTS, passedClientsConfigJPanel);
 	super.refreshableMap.put(NAME_PASS + " " + NAME_PASS_CLIENTS, passedClientsConfigJPanel);
 
-	// EVENT LOG ///////
+ 	// EVENT LOG ///////
 	LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransformContext().transform());
         this.mTabbedPane.addTab(NAME_LOG, null, logJPanel);
 
