@@ -199,7 +199,8 @@ public class RemoteClient
             System.out.println(pad(mkgs[i].getName())
                                + "installed: " + mkgs[i].getInstalledVersion()
                                + "\tavailable: "
-                               + mkgs[i].getAvailableVersion());
+                               + mkgs[i].getAvailableVersion()
+                               + "\twebpage: " + mkgs[i].getWebsite());
         }
     }
 

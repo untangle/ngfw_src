@@ -61,6 +61,7 @@ pkglist()
         echo "Depends: mvvm"
         echo "Price: 1000"
         echo "Display-Name: $p"
+        echo "Website: http://www.metavize.com/fake"
         echo "Description: Fake description"
         echo " Fake Long Descrption"
         echo

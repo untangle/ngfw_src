@@ -29,6 +29,7 @@ public class MackageDesc implements Serializable
     private final String availableVersion;
     private final String shortDescription;
     private final String longDescription;
+    private final String website;
     private final int size;
     private final int installedSize;
     private final double price;
@@ -36,16 +37,16 @@ public class MackageDesc implements Serializable
     private final byte[] descIcon;
     private final int rackPosition;
 
-    public MackageDesc(Map m, String installedVersion, byte[] orgIcon,
-                       byte[] descIcon)
+    public MackageDesc(Map<String, String> m, String installedVersion,
+                       byte[] orgIcon, byte[] descIcon)
     {
         // XXX hack, use Mackage field instead.
-        name = (String)m.get("package");
+        name = m.get("package");
         // XXX hack
         boolean isTransform = name.endsWith("-transform");
         boolean isCasing = name.endsWith("-casing");
 
-        displayName = (String)m.get("display-name");
+        displayName = m.get("display-name");
 
         // XXX type
         if (isTransform) {
@@ -57,24 +58,24 @@ public class MackageDesc implements Serializable
         }
 
         // versions
-        availableVersion = (String)m.get("version");
+        availableVersion = m.get("version");
 
         // price
-        String v = (String)m.get("price");
+        String v = m.get("price");
         price = null == v ? 0 : Double.parseDouble(v);
 
         // rack position
-        v = (String)m.get("rack-position");
+        v = m.get("rack-position");
         rackPosition = null == v ? -1 : Integer.parseInt(v);
 
         // size
-        v = (String)m.get("size");
+        v = m.get("size");
         size = null == v ? 0 : Integer.parseInt(v);
-        v = (String)m.get("installed-size");
+        v = m.get("installed-size");
         installedSize = null == v ? 0 : Integer.parseInt(v);
 
         // description
-        v = (String)m.get("description");
+        v = m.get("description");
         int i = v.indexOf('\n');
         if (0 <= i) {
             shortDescription = v.substring(0, i);
@@ -83,6 +84,9 @@ public class MackageDesc implements Serializable
             shortDescription = v;
             longDescription = "";
         }
+
+        // website
+        website = m.get("website");
 
         this.installedVersion = installedVersion;
 
@@ -135,6 +139,11 @@ public class MackageDesc implements Serializable
     public String getLongDescription()
     {
         return longDescription;
+    }
+
+    public String getWebsite()
+    {
+        return website;
     }
 
     public int getSize()
