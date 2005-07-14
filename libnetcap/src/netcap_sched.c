@@ -18,15 +18,9 @@
 #include <mvutil/errlog.h>
 #include <mvutil/list.h>
 #include <mvutil/mailbox.h>
+#include <mvutil/utime.h>
 
 #include "netcap_sched.h"
-
-/* XXX Consider moving from a global variable to function arguments */
-
-#define USEC_TO_SEC(usec)  ((usec) / 1000000)
-#define SEC_TO_USEC(sec)   ((sec)  * 1000000)
-#define SEC_TO_NSEC(sec)   ((sec)  * 1000000000)
-#define USEC_TO_NSEC(usec) ((usec) * 1000)
 
 /* Number of seconds to wait before just exiting the scheduler */
 #define _EXIT_TIMEOUT_SEC 2
@@ -45,21 +39,19 @@ static __inline int _ts_before ( struct timespec* ts1, struct timespec* ts2 )
 static __inline int _ts_future ( struct timespec* ts, int usec ) 
 {
     struct timeval tv;
-    long temp;
 
-    if ( gettimeofday ( &tv, NULL) < 0 ) return perrlog ( "gettimeofday");
+    if ( gettimeofday ( &tv, NULL ) < 0 ) return perrlog ( "gettimeofday");
     
-    ts->tv_sec = tv.tv_sec + USEC_TO_SEC ( usec );
-    
-    temp = USEC_TO_NSEC ( tv.tv_usec + ( usec % SEC_TO_USEC(1)));
-    if ( temp > SEC_TO_NSEC ( 1 ) ) {
-        /* consider a different technique to avoid the modulo and division */
-        /* There should never be an overflow, here */
-        ts->tv_sec += 1;
-        temp = temp - SEC_TO_NSEC ( 1 );
+    ts->tv_sec  = tv.tv_sec + USEC_TO_SEC( usec );
+    ts->tv_nsec = USEC_TO_NSEC( tv.tv_usec + ( usec % U_SEC ));
+
+    if ( ts->tv_nsec > N_SEC ) {
+        ts->tv_sec += NSEC_TO_SEC( ts->tv_nsec );
+        ts->tv_nsec = ts->tv_nsec % N_SEC;
+    } else if ( ts->tv_nsec < 0 ) {
+        /* Just in case? */
+        ts->tv_nsec = 0;
     }
-
-    ts->tv_nsec = temp;
 
     return 0;
 }

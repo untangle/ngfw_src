@@ -41,19 +41,16 @@ int utime_usec_add (struct timeval* tv, long microsec )
 {
     if ( tv == NULL ) return -1;
 
-    /* Handle any overflow before adding */
-    if ( tv->tv_usec > U_SEC ) {
-        tv->tv_sec++;
-        tv->tv_usec -= U_SEC;
-    }
-
     tv->tv_sec  += USEC_TO_SEC( microsec );
     tv->tv_usec += microsec % U_SEC;
 
-    /* Handle any overflow from adding */
+    /* Handle overflow from adding */
     if ( tv->tv_usec > U_SEC ) {
-        tv->tv_sec++;
-        tv->tv_usec -= U_SEC;
+        tv->tv_sec  += USEC_TO_SEC( tv->tv_usec );
+        tv->tv_usec  = tv->tv_usec % U_SEC;
+    } else if ( tv->tv_usec < 0 ) {
+        /* just in case?*/
+        tv->tv_usec = 0;
     }
     
     return 0;

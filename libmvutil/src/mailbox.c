@@ -20,11 +20,7 @@
 #include "debug.h"
 #include "list.h"
 #include "unet.h"
-
-#define USEC_TO_SEC(usec)  ((usec) / 1000000)
-#define SEC_TO_USEC(sec)   ((sec)  * 1000000)
-#define SEC_TO_NSEC(sec)   ((sec)  * 1000000000)
-#define USEC_TO_NSEC(usec) ((usec) * 1000)
+#include "utime.h"
 
 #define MB_LOCK(mb)       if (lock_wrlock(&(mb)->lock)<0) \
                                     return errlog(ERR_CRITICAL,"Unable to lock mailbox\n")
@@ -91,7 +87,7 @@ void*        mailbox_timed_get (mailbox_t* mb, int sec)
     if ( gettimeofday ( &tv, NULL ) < 0 ) return perrlog_null ( "gettimeofday" );
 
     ts.tv_sec  = tv.tv_sec + sec;
-    ts.tv_nsec = USEC_TO_NSEC ( tv.tv_usec );
+    ts.tv_nsec = USEC_TO_NSEC( tv.tv_usec );
     
     return _mailbox_timed_get ( mb, &ts );
 }
@@ -105,6 +101,14 @@ void*        mailbox_utimed_get ( mailbox_t* mb, struct timeval* tv )
 
     ts.tv_sec  = tv->tv_sec;
     ts.tv_nsec = USEC_TO_NSEC( tv->tv_usec );
+    
+    if ( ts.tv_nsec > N_SEC ) {
+        ts.tv_sec  += NSEC_TO_SEC( ts.tv_nsec );
+        ts.tv_nsec  = ts.tv_nsec % N_SEC;
+    } else if ( ts.tv_nsec < 0 ) {
+        /* Just in case */
+        ts.tv_nsec = 0;
+    }
     
     return _mailbox_timed_get( mb, &ts );
 }
@@ -227,8 +231,10 @@ static void*   _mailbox_timed_get ( mailbox_t* mb, struct timespec* ts )
     char buf[2];
     
     if ( sem_timedwait( &mb->list_size_sem, ts ) != 0 ) {
-        if (errno != ETIMEDOUT) 
+        if (errno != ETIMEDOUT) {
+            debug_backtrace( 0,  "sem_timedwait\n" );
             perrlog("sem_timedwait");
+        }
         return NULL;
     }
 
