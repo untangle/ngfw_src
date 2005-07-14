@@ -30,7 +30,6 @@ public class LogJPanel extends MLogTableJPanel {
         List<ProtoFilterLog> logList = (List<ProtoFilterLog>) ((ProtoFilter)super.logTransform).getLogs(depthJSlider.getValue());
         Vector allEvents = new Vector();
 
-        Vector test = new Vector();
         Vector event;
 
         for( ProtoFilterLog log : logList ){
@@ -54,16 +53,16 @@ public class LogJPanel extends MLogTableJPanel {
 	
 	public TableColumnModel getTableColumnModel(){                                                                                   
 	    DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();                                                    
-	    //                                 #   min  rsz    edit   remv   desc   typ               def                                
-	    addTableColumn( tableColumnModel,  0,  125, true,  false, false, false, String.class, null, "timestamp" );                   
-	    addTableColumn( tableColumnModel,  1,  55,  true,  false, false, false, String.class, null, "action" );                      
-	    addTableColumn( tableColumnModel,  2,  100, true,  false, false, false, String.class, null, "request" );                     
+	    //                                 #   min  rsz    edit   remv   desc   typ               def
+	    addTableColumn( tableColumnModel,  0,  125, true,  false, false, false, String.class, null, "timestamp" );
+	    addTableColumn( tableColumnModel,  1,  55,  true,  false, false, false, String.class, null, "action" );
+	    addTableColumn( tableColumnModel,  2,  100, true,  false, false, false, String.class, null, "request" );
 	    addTableColumn( tableColumnModel,  3,  100, true,  false, false, false, String.class, null, sc.html("reason for<br>action") );
-	    addTableColumn( tableColumnModel,  4,  100, true,  false, false, false, String.class, null, sc.html("request<br>direction") );                   
-	    addTableColumn( tableColumnModel,  5,  155, true,  false, false, false, String.class, null, "server" );                      
+	    addTableColumn( tableColumnModel,  4,  100, true,  false, false, false, String.class, null, sc.html("request<br>direction") );
+	    addTableColumn( tableColumnModel,  5,  155, true,  false, false, false, String.class, null, "server" );
 	    addTableColumn( tableColumnModel,  6,  155, true,  false, false, false, String.class, null, sc.html("client<br>(requestor)") );
 	    return tableColumnModel;                                                                                                     
-	}                                                                                                                                
+	}
 	
 	public void generateSettings(Object settings, boolean validateOnly) throws Exception {}                                          
 	
