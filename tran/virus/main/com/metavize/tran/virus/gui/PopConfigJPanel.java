@@ -4,12 +4,12 @@
  * Created on March 25, 2004, 6:11 PM
  */
 
-package com.metavize.tran.spam.gui;
+package com.metavize.tran.virus.gui;
 
 import com.metavize.gui.transform.*;
 import com.metavize.gui.util.*;
 import com.metavize.gui.widgets.editTable.*;
-import com.metavize.tran.spam.*;
+import com.metavize.tran.virus.*;
 import com.metavize.tran.mail.*;
 import com.metavize.mvvm.tran.TransformContext;
 
@@ -61,66 +61,66 @@ class PopTableModel extends MSortedTableModel{
         return tableColumnModel;
     }
 
-    private static final String SPAM_INBOUND = "inbound SMTP";
-    private static final String SPAM_OUTBOUND = "outbound SMTP";
+    private static final String VIRUS_INBOUND = "inbound SMTP";
+    private static final String VIRUS_OUTBOUND = "outbound SMTP";
 
     public void generateSettings(Object settings, boolean validateOnly) throws Exception {
-	SpamPOPConfig spamPOPConfigInbound = null;
-	SpamPOPConfig spamPOPConfigOutbound = null;
+	VirusPOPConfig virusPOPConfigInbound = null;
+	VirusPOPConfig virusPOPConfigOutbound = null;
 
 	for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
 
-            SpamPOPConfig spamPOPConfig = new SpamPOPConfig();
-            spamPOPConfig.setScan( (Boolean) rowVector.elementAt(3) );
+            VirusPOPConfig virusPOPConfig = new VirusPOPConfig();
+            virusPOPConfig.setScan( (Boolean) rowVector.elementAt(3) );
 	    String actionString = (String) ((ComboBoxModel)rowVector.elementAt(4)).getSelectedItem();
-	    SpamMessageAction messageAction = SpamMessageAction.getInstance( actionString );
-            spamPOPConfig.setMsgAction( messageAction );
-            spamPOPConfig.setNotes( (String) rowVector.elementAt(5) );
+	    VirusMessageAction messageAction = VirusMessageAction.getInstance( actionString );
+            virusPOPConfig.setMsgAction( messageAction );
+            virusPOPConfig.setNotes( (String) rowVector.elementAt(5) );
 	    
-	    if( ((String)rowVector.elementAt(2)).equals(SPAM_INBOUND) ){
-		spamPOPConfigInbound = spamPOPConfig;
+	    if( ((String)rowVector.elementAt(2)).equals(VIRUS_INBOUND) ){
+		virusPOPConfigInbound = virusPOPConfig;
 	    }
-	    else if( ((String)rowVector.elementAt(2)).equals(SPAM_OUTBOUND) ){
-		spamPOPConfigInbound = spamPOPConfig;
+	    else if( ((String)rowVector.elementAt(2)).equals(VIRUS_OUTBOUND) ){
+		virusPOPConfigInbound = virusPOPConfig;
 	    }  
         }
 	
 	// SAVE SETTINGS ////////
 	if( !validateOnly ){
-	    SpamSettings spamSettings = (SpamSettings) settings;
-	    spamSettings.setPOPInbound( spamPOPConfigInbound );
-	    spamSettings.setPOPOutbound( spamPOPConfigOutbound );
+	    VirusSettings virusSettings = (VirusSettings) settings;
+	    virusSettings.setPOPInbound( virusPOPConfigInbound );
+	    virusSettings.setPOPOutbound( virusPOPConfigOutbound );
 	}
 
 
     }
 
     public Vector generateRows(Object settings) {
-        SpamSettings spamSettings = (SpamSettings) settings;
+        VirusSettings virusSettings = (VirusSettings) settings;
         Vector allRows = new Vector();
 
 	// INBOUND
 	Vector inboundRow = new Vector();
-        SpamPOPConfig spamPOPConfigInbound = spamSettings.getPOPInbound();
+        VirusPOPConfig virusPOPConfigInbound = virusSettings.getPOPInbound();
         inboundRow.add( super.ROW_SAVED );
         inboundRow.add( new Integer(1) );
-        inboundRow.add( SPAM_INBOUND );
-        inboundRow.add( spamPOPConfigInbound.getScan() );
-        ComboBoxModel inboundActionComboBoxModel =  super.generateComboBoxModel( SpamMessageAction.getValues(), spamPOPConfigInbound.getMsgAction() );
+        inboundRow.add( VIRUS_INBOUND );
+        inboundRow.add( virusPOPConfigInbound.getScan() );
+        ComboBoxModel inboundActionComboBoxModel =  super.generateComboBoxModel( VirusMessageAction.getValues(), virusPOPConfigInbound.getMsgAction() );
         inboundRow.add( inboundActionComboBoxModel );
-        inboundRow.add( spamPOPConfigInbound.getNotes() );
+        inboundRow.add( virusPOPConfigInbound.getNotes() );
 	allRows.add(inboundRow);
 
 	// OUTBOUND
 	Vector outboundRow = new Vector();
-        SpamPOPConfig spamPOPConfigOutbound = spamSettings.getPOPOutbound();
+        VirusPOPConfig virusPOPConfigOutbound = virusSettings.getPOPOutbound();
         outboundRow.add( super.ROW_SAVED );
         outboundRow.add( new Integer(1) );
-        outboundRow.add( SPAM_OUTBOUND );
-        outboundRow.add( spamPOPConfigOutbound.getScan() );
-        ComboBoxModel outboundActionComboBoxModel =  super.generateComboBoxModel( SpamMessageAction.getValues(), spamPOPConfigOutbound.getMsgAction() );
+        outboundRow.add( VIRUS_OUTBOUND );
+        outboundRow.add( virusPOPConfigOutbound.getScan() );
+        ComboBoxModel outboundActionComboBoxModel =  super.generateComboBoxModel( VirusMessageAction.getValues(), virusPOPConfigOutbound.getMsgAction() );
         outboundRow.add( outboundActionComboBoxModel );
-        outboundRow.add( spamPOPConfigOutbound.getNotes() );
+        outboundRow.add( virusPOPConfigOutbound.getNotes() );
 	allRows.add(outboundRow);
 
         return allRows;
