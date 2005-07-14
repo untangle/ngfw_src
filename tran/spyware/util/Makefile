@@ -26,7 +26,7 @@ cookie:
 	@echo -e "\n\n\nCreating Cookie List... "
 	@( cd ./files ; wget http://www.geocities.com/spywarekilla/autoinstaller.zip  && unzip autoinstaller.zip)
 	cat ./files/Spyware\ blacklist\ auto-installer.reg | tr -d '\377' | tr -d '\376' | tr -d '\000' >| ./files/cookies
-	cat ./files/cookies | grep HKEY | sed 's/^.*History\\\(.*\)\]/\1/' > cookie.txt
+	cat ./files/cookies | grep HKEY | sed 's/^.*History\\\(.*\)\]/\1/' | grep -v HKEY > cookie.txt
 	@echo -e "\n\ndone (cookie.txt) \n\n"
 
 subnet:

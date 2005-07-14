@@ -489,7 +489,10 @@ public class SpywareImpl extends AbstractTransform implements Spyware
 
                 if (maddr != null && !ruleHash.contains(maddr)) {
                     logger.debug("ADDING subnet Rule: " + addr);
-                    rules.add(new IPMaddrRule(maddr, name, "[no category]", description));
+                    IPMaddrRule rule = new IPMaddrRule(maddr, name, "[no category]", description);
+                    rule.setLog(true);
+                    rule.setLive(false);
+                    rules.add(rule);
                 }
             }
         } catch (IOException exn) {
