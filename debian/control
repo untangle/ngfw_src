@@ -10,7 +10,7 @@ Architecture: any
 Depends: mvvm
 XB-Price: 0
 XB-Display-Name: FTP
-XB-Website: http://www.metavize.com/foo
+XB-Website: http://www.metavize.com
 Description: The Metavize FTP Decoder
  The FTP Casing allows other software appliances to parse and analyze
  FTP traffic and documents.
@@ -20,7 +20,7 @@ Architecture: any
 Depends: mvvm
 XB-Price: 0
 XB-Display-Name: Web
-XB-Website: http://www.metavize.com/foo
+XB-Website: http://www.metavize.com
 Description: The Metavize Web/HTTP Decoder
  The HTTP Casing allows other software appliances to parse and analyze
  HTTP traffic and documents.
@@ -30,7 +30,7 @@ Architecture: any
 Depends: mvvm
 XB-Price: 0
 XB-Display-Name: Email
-XB-Website: http://www.metavize.com/foo
+XB-Website: http://www.metavize.com
 Description: The Metavize eMail Decoder
  The Mail Casing allows other software appliances
  to parse and analyze eMail (SMTP/IMAP/POP3) traffic and documents.
@@ -40,7 +40,7 @@ Architecture: any
 Depends: mvvm
 XB-Price: 0
 XB-Display-Name: Packet Attack Shield
-XB-Website: http://www.metavize.com/foo
+XB-Website: http://www.metavize.com/packetshield.html
 XB-Rack-Position: 0
 Description: The Metavize Packet Attack Shield
  The Packet Attack Shield prevents packet based attacks on your
@@ -51,7 +51,7 @@ Architecture: any
 Depends: mvvm, http-casing
 XB-Price: 0
 XB-Display-Name: Spyware Blocker
-XB-Website: http://www.metavize.com/foo
+XB-Website: http://www.metavize.com/spyware.html
 XB-Rack-Position: 1
 Description: The Metavize Spyware Blocker
  The Spyware Blocker detects and prevents Spyware infections, with
@@ -63,7 +63,7 @@ Architecture: any
 Depends: mvvm, http-casing, urlblacklist.com-mv
 XB-Price: 0
 XB-Display-Name: Web Content Control
-XB-Website: http://www.metavize.com/foo
+XB-Website: http://www.metavize.com/webcontrol.html
 XB-Rack-Position: 2
 Description: The Metavize Web Content Filter
  Web Content Control enforces your web browsing policy.  It can filter
@@ -76,7 +76,7 @@ Depends: mvvm, spamc-mv, spamassassin-transform
 Conflicts: xmailscanner-transform
 XB-Price: 0
 XB-Display-Name: eMail SpamGuard
-XB-Website: http://www.metavize.com/foo
+XB-Website: http://www.metavize.com
 XB-Rack-Position: 3
 Description: The Metavize eMail SpamGuard
  The eMail SpamGuard, based on SpamAssassin, is able to
@@ -87,7 +87,7 @@ Architecture: any
 Depends: mvvm, hauri-mv, http-casing, ftp-casing
 XB-Price: 400
 XB-Display-Name: Hauri AntiVirus Scanner
-XB-Website: http://www.metavize.com/foo
+XB-Website: http://www.metavize.com/hauri-antivirus.html
 XB-Rack-Position: 6
 Description: The Hauri AntiVirus Scanner
  The Hauri AntiVirus Scanner, based on Hauri's viRobot, is able to
@@ -99,7 +99,7 @@ Architecture: any
 Depends: mvvm, clamav-mv, http-casing, ftp-casing
 XB-Price: 0
 XB-Display-Name: Clam AntiVirus Scanner
-XB-Website: http://www.metavize.com/foo
+XB-Website: http://www.metavize.com/clam-antivirus.html
 XB-Rack-Position: 7
 Description: The Clam AntiVirus Scanner
  The Clam AntiVirus Scanner, based on ClamAV, is able to scan and
@@ -112,7 +112,7 @@ Depends: mvvm
 Conflicts: protoanalyzer-transform
 XB-Price: 0
 XB-Display-Name: Rogue Protocol Control
-XB-Website: http://www.metavize.com/foo
+XB-Website: http://www.metavize.com/protocolcontrol.html
 XB-Rack-Position: 8
 Description: The Metavize Rogue Protocol Control
  The Rogue Protocol Control is able to identify and selectively block
@@ -125,7 +125,7 @@ Architecture: any
 Depends: mvvm, dnsmasq
 XB-Price: 0
 XB-Display-Name: Network Sharing
-XB-Website: http://www.metavize.com/foo
+XB-Website: http://www.metavize.com/networksharing.html
 XB-Rack-Position: 9
 Description: The Metavize Network Sharing Software Appliance
  The Network Sharing Software Appliance allows a single public IP
@@ -137,7 +137,7 @@ Architecture: any
 Depends: mvvm
 XB-Price: 0
 XB-Display-Name: Firewall
-XB-Website: http://www.metavize.com/foo
+XB-Website: http://www.metavize.com/firewall.html
 XB-Rack-Position: 10
 Description: The Metavize Firewall Software Appliance
  The Firewall Software Appliance allows network traffic to be blocked
@@ -148,7 +148,7 @@ Architecture: any
 Depends: mvvm
 XB-Price: 0
 XB-Display-Name: EdgeReport
-XB-Website: http://www.metavize.com/foo
+XB-Website: http://www.metavize.com/reports.html
 XB-Rack-Position: 0
 Description: The Metavize Report Generator
  EdgeReport generates document reports about activities on your network.
@@ -160,7 +160,7 @@ Architecture: any
 Depends: mvvm, spamc-mv
 XB-Price: 0
 XB-Display-Name: SpamGuard
-XB-Website: http://www.metavize.com/foo
+XB-Website: http://www.metavize.com/spam.html
 XB-RackPosition: 1001
 Description: The Metavize SpamGuard Software Appliance
  The SpamGuard Software Appliance marks Spam email as Spam.
@@ -170,7 +170,7 @@ Architecture: any
 Depends: mvvm
 XB-Price: 0
 XB-Display-Name: Test
-XB-Website: http://www.metavize.com/foo
+XB-Website: http://www.metavize.com
 XB-RackPosition: 1001
 Description: The Metavize Test Software Appliance
  The Test Software Appliance is for internal Metavize testing.
@@ -181,7 +181,7 @@ Depends: mvvm
 Conflicts: metavize-gui
 XB-Price: 0
 XB-Display-Name: Metavize Client
-XB-Website: http://www.metavize.com/foo
+XB-Website: http://www.metavize.com
 Description: The Metavize Client
  The Metavize Client is the User Interface for accessing and
  controlling EdgeGuard.
@@ -193,7 +193,7 @@ Pre-Depends: postgresql-mv
 Conflicts: xenon, xenon-dbg
 XB-Price: 0
 XB-Display-Name: Metavize Server
-XB-Website: http://www.metavize.com/foo
+XB-Website: http://www.metavize.com
 Description: The Metavize Virtual Machine (MVVM)
  The Metavize Virtual Machine for securing your network and enforcing
  network policy.
