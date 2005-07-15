@@ -42,6 +42,18 @@ public class FirewallLog implements Serializable
         this.direction = direction;
     }
 
+    // util -------------------------------------------------------------------
+    public String getReason(){
+	return reason;
+    }
+    
+    public String getAction(){
+	if(blocked)
+	    return "block";
+	else
+	    return "pass";
+    }
+
     // accessors --------------------------------------------------------------
 
     public Date getCreateDate()
@@ -69,7 +81,7 @@ public class FirewallLog implements Serializable
         return serverAddr;
     }
 
-    public int getSServerPort()
+    public int getServerPort()
     {
         return serverPort;
     }

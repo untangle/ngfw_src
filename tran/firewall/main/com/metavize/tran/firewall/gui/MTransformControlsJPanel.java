@@ -24,6 +24,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 
     private static final String NAME_BLOCK_LIST = "Block/Pass List";
     private static final String NAME_GENERAL_SETTINGS = "General Settings";
+    private static final String NAME_LOG = "Event Log";
 
     protected Dimension MIN_SIZE = new Dimension(640, 480);
     protected Dimension MAX_SIZE = new Dimension(640, 1200);
@@ -49,6 +50,9 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
         savableMap.put(NAME_GENERAL_SETTINGS, settingsJPanel);
 	refreshableMap.put(NAME_GENERAL_SETTINGS, settingsJPanel);
 
+	// EVENT LOG
+	LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransformContext().transform());
+	super.mTabbedPane.addTab(NAME_LOG, null, logJPanel);
     }
 
 }
