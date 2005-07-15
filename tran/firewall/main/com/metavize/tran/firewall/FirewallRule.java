@@ -12,10 +12,9 @@
 package com.metavize.tran.firewall;
 
 import com.metavize.mvvm.tran.ParseException;
-
 import com.metavize.mvvm.tran.firewall.IPMatcher;
-import com.metavize.mvvm.tran.firewall.PortMatcher;
 import com.metavize.mvvm.tran.firewall.IntfMatcher;
+import com.metavize.mvvm.tran.firewall.PortMatcher;
 import com.metavize.mvvm.tran.firewall.ProtocolMatcher;
 import com.metavize.mvvm.tran.firewall.TrafficRule;
 
@@ -32,17 +31,17 @@ public class FirewallRule extends TrafficRule
     /* XXX The varchar probably should just be chars */
 
     private static final long serialVersionUID = 1886689190345445284L;
-    
+
     private static final String ACTION_BLOCK     = "Block";
     private static final String ACTION_BLOCK_LOG = "Block & Log";
     private static final String ACTION_PASS      = "Pass";
     private static final String ACTION_PASS_LOG  = "Pass & Log";
-    
+
     private static final String[] ACTION_ENUMERATION = { ACTION_BLOCK, ACTION_BLOCK_LOG,
                                                          ACTION_PASS,  ACTION_PASS_LOG };
-    
+
     private boolean isTrafficBlocker;
-    
+
     // constructors -----------------------------------------------------------
 
     /**
@@ -50,14 +49,14 @@ public class FirewallRule extends TrafficRule
      */
     public FirewallRule() { }
 
-    public FirewallRule( boolean     isLive,     ProtocolMatcher protocol, 
-                         IntfMatcher srcIntf,    IntfMatcher     dstIntf, 
+    public FirewallRule( boolean     isLive,     ProtocolMatcher protocol,
+                         IntfMatcher srcIntf,    IntfMatcher     dstIntf,
                          IPMatcher   srcAddress, IPMatcher       dstAddress,
                          PortMatcher srcPort,    PortMatcher     dstPort,
                          boolean isTrafficBlocker )
     {
         super( isLive, protocol, srcIntf, dstIntf, srcAddress, dstAddress, srcPort, dstPort );
-        
+
         /* Attributes of the firewall */
         this.isTrafficBlocker = isTrafficBlocker;
     }
@@ -90,7 +89,7 @@ public class FirewallRule extends TrafficRule
 
         return ( getLog()) ? ACTION_PASS_LOG : ACTION_PASS;
     }
-    
+
     public  void setAction( String action ) throws ParseException
     {
         if ( action.equalsIgnoreCase( ACTION_BLOCK )) {

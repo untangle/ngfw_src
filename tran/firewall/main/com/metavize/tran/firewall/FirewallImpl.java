@@ -10,7 +10,12 @@
  */
 package com.metavize.tran.firewall;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -25,6 +30,7 @@ import com.metavize.mvvm.tapi.Fitting;
 import com.metavize.mvvm.tapi.PipeSpec;
 import com.metavize.mvvm.tapi.SoloPipeSpec;
 import com.metavize.mvvm.tapi.TransformContextFactory;
+import com.metavize.mvvm.tran.Direction;
 import com.metavize.mvvm.tran.TransformException;
 import com.metavize.mvvm.tran.TransformStartException;
 import com.metavize.mvvm.tran.firewall.IPMatcher;
@@ -39,9 +45,19 @@ import org.apache.log4j.Logger;
 
 public class FirewallImpl extends AbstractTransform implements Firewall
 {
+    private static final String EVENT_QUERY
+        = "SELECT create_date, is_traffic_blocker, "
+        + "c_client_addr, c_client_port, s_server_addr, s_server_port, "
+        + "client_intf, server_intf "
+        + "FROM pl_endp endp "
+        + "JOIN tr_firewall_evt evt ON endp.session_id = evt.session_id "
+        + "JOIN firewall_rule rule ON evt.rule_id = rule.rule_id "
+        + "ORDER BY create_date DESC LIMIT ?";
+
     private final EventHandler handler;
     private final SoloPipeSpec pipeSpec;
     private final SoloPipeSpec[] pipeSpecs;
+
     private final Logger logger = Logger.getLogger(FirewallImpl.class);
 
     private FirewallSettings settings = null;
@@ -57,6 +73,8 @@ public class FirewallImpl extends AbstractTransform implements Firewall
              SoloPipeSpec.MAX_STRENGTH - 2);
         this.pipeSpecs = new SoloPipeSpec[] { pipeSpec };
     }
+
+    // Firewall methods -------------------------------------------------------
 
     public FirewallSettings getFirewallSettings()
     {
@@ -91,6 +109,61 @@ public class FirewallImpl extends AbstractTransform implements Firewall
         }
     }
 
+    public List<FirewallLog> getEventLogs(int limit)
+    {
+        List<FirewallLog> l = new LinkedList<FirewallLog>();
+
+        Session s = TransformContextFactory.context().openSession();
+        try {
+            Connection c = s.connection();
+            PreparedStatement ps = c.prepareStatement(EVENT_QUERY);
+            ps.setInt(1, limit);
+            long l0 = System.currentTimeMillis();
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                long ts = rs.getTimestamp("create_date").getTime();
+                Date createDate = new Date(ts);
+                boolean trafficBlocker = rs.getBoolean("is_traffic_blocker");
+                String clientAddr = rs.getString("c_client_addr");
+                int clientPort = rs.getInt("c_client_port");
+                String serverAddr = rs.getString("s_server_addr");
+                int serverPort = rs.getInt("s_server_port");
+                byte clientIntf = rs.getByte("client_intf");
+                byte serverIntf = rs.getByte("server_intf");
+
+                Direction d = Direction.getDirection(clientIntf, serverIntf);
+
+                FirewallLog rl = new FirewallLog
+                    (createDate, trafficBlocker, clientAddr, clientPort,
+                     serverAddr, serverPort, d);
+
+                l.add(0, rl);
+            }
+            long l1 = System.currentTimeMillis();
+            logger.debug("getActiveXLogs() in: " + (l1 - l0));
+        } catch (SQLException exn) {
+            logger.warn("could not get events", exn);
+        } catch (HibernateException exn) {
+            logger.warn("could not get events", exn);
+        } finally {
+            try {
+                s.close();
+            } catch (HibernateException exn) {
+                logger.warn("could not close Hibernate session", exn);
+            }
+        }
+
+        return l;
+    }
+
+    // AbstractTransform methods ----------------------------------------------
+
+    @Override
+    protected PipeSpec[] getPipeSpecs()
+    {
+        return pipeSpecs;
+    }
+
     protected void initializeSettings()
     {
         logger.info("Initializing Settings...");
@@ -100,12 +173,6 @@ public class FirewallImpl extends AbstractTransform implements Firewall
         setFirewallSettings(settings);
 
         FirewallStatisticManager.getInstance().stop();
-    }
-
-    @Override
-    protected PipeSpec[] getPipeSpecs()
-    {
-        return pipeSpecs;
     }
 
     protected void postInit(String[] args)

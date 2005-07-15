@@ -1,3 +1,5 @@
+-- schema for release 2.5
+
 create table FIREWALL_RULE (
         RULE_ID int8 not null,
         IS_TRAFFIC_BLOCKER bool,
@@ -18,16 +20,16 @@ create table FIREWALL_RULE (
 
 create table TR_FIREWALL_RULES (
         SETTING_ID int8 not null,
-        RULE_ID int8 not null, 
+        RULE_ID int8 not null,
         POSITION int4 not null,
         primary key (SETTING_ID, POSITION));
 
 create table TR_FIREWALL_SETTINGS (
-        SETTINGS_ID int8 not null, 
-        TID int8 not null unique, 
+        SETTINGS_ID int8 not null,
+        TID int8 not null unique,
         IS_QUICKEXIT bool,
-        IS_REJECT_SILENT bool, 
-        IS_DEFAULT_ACCEPT bool, 
+        IS_REJECT_SILENT bool,
+        IS_DEFAULT_ACCEPT bool,
         primary key (SETTINGS_ID));
 
 create table TR_FIREWALL_EVT (
@@ -54,6 +56,8 @@ create table TR_FIREWALL_STATISTIC_EVT (
         ICMP_PASS_RULE int4,
         TIME_STAMP timestamp,
         primary key (EVENT_ID));
+
+CREATE INDEX tr_firewall_evt_sid_idx ON tr_firewall_evt (session_id);
 
 alter table TR_FIREWALL_RULES add constraint FK4BBFB8B9871AAD3E foreign key (RULE_ID) references FIREWALL_RULE;
 alter table TR_FIREWALL_RULES add constraint FK4BBFB8B91CAE658A foreign key (SETTING_ID) references TR_FIREWALL_SETTINGS;

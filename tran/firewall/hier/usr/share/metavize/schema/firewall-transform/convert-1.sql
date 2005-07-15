@@ -1,3 +1,5 @@
+-- convert script for release 2.5
+
 -- Create the table for firewall events.
 create table TR_FIREWALL_EVT (
         EVENT_ID int8 not null,
@@ -24,6 +26,10 @@ create table TR_FIREWALL_STATISTIC_EVT (
         ICMP_PASS_RULE int4,
         TIME_STAMP timestamp,
         primary key (EVENT_ID));
+
+-- create index for log reports
+
+CREATE INDEX tr_firewall_evt_sid_idx ON tr_firewall_evt (session_id);
 
 -- Remove a column that is never used
 alter table FIREWALL_RULE drop column is_dst_redirect;
