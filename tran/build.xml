@@ -130,6 +130,13 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       <classpath refid="mvvm-client.classpath"/>
       <include name="**/*jrxml"/>
     </jrc>
+    <jrc srcdir="${tran.name}/${src.main}" destdir="${build.root}/${tran.name}" tempdir="${dist.mvvm.tmp}"
+         keepjava="true" xmlvalidation="true">
+      <classpath refid="mvvm.thirdparty.classpath"/>
+      <classpath refid="jasperreports.classpath"/>
+      <classpath refid="mvvm-client.classpath"/>
+      <include name="**/*jrxml"/>
+    </jrc>
   </target>
 
 
@@ -378,18 +385,10 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
         <include name="com/metavize/tran/mail/Rfc822Header*.class"/>
         <include name="com/metavize/tran/mail/SMTPNotifyAction*.class"/>
         <include name="com/metavize/tran/mail/SMTPNotifyActionUserType*.class"/>
-        <include name="com/metavize/tran/mail/SMTPSpamMessageAction*.class"/>
-        <include name="com/metavize/tran/mail/SMTPSpamMessageActionUserType*.class"/>
-        <include name="com/metavize/tran/mail/SMTPVirusMessageAction*.class"/>
-        <include name="com/metavize/tran/mail/SMTPVirusMessageActionUserType*.class"/>
         <include name="com/metavize/tran/mail/SmtpCommand*.class"/>
         <include name="com/metavize/tran/mail/SmtpNotify.class"/>
         <include name="com/metavize/tran/mail/SmtpReply*.class"/>
         <include name="com/metavize/tran/mail/SmtpStateMachine*.class"/>
-        <include name="com/metavize/tran/mail/SpamMessageAction*.class"/>
-        <include name="com/metavize/tran/mail/SpamMessageActionUserType*.class"/>
-        <include name="com/metavize/tran/mail/VirusMessageAction*.class"/>
-        <include name="com/metavize/tran/mail/VirusMessageActionUserType*.class"/>
       </fileset>
       <fileset dir="${build.gensrc}/mail">
         <include name="com/metavize/tran/mail/AddressKind.hbm.xml"/>
