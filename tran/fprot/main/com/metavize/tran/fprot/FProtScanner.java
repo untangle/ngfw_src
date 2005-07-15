@@ -33,6 +33,10 @@ public class FProtScanner implements VirusScanner {
 
     public FProtScanner() {}
 
+    public String getVendorName() {
+        return "F-Prot";
+    }
+
     public VirusScannerResult scanFile (String fileName)
         throws IOException, InterruptedException
     {

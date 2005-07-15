@@ -33,6 +33,10 @@ public class SophosScanner implements VirusScanner
 
     public SophosScanner() {}
 
+    public String getVendorName() {
+        return "Sophos";
+    }
+
     public VirusScannerResult scanFile (String fileName)
         throws IOException, InterruptedException
     {
