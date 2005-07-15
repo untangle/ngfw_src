@@ -66,7 +66,7 @@ public class MackageDesc implements Serializable
 
         // rack position
         v = m.get("rack-position");
-        rackPosition = null == v ? -1 : Integer.parseInt(v);
+        rackPosition = null == v ? 0 : Integer.parseInt(v);
 
         // size
         v = m.get("size");
