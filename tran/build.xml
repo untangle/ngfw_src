@@ -211,7 +211,9 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       <fileset dir="${tran.name}/${src.main}/">
         <include name="**/*png"/>
       </fileset>
-      <fileset dir="${tran.name}/${src.resources}/${tran.name}"/>
+      <fileset dir="${tran.name}">
+        <include name="${src.resources}/${tran.name}"/>
+      </fileset>
     </jar>
 
     <antcall target="jar.${tran.name}" inheritAll="true"/>
