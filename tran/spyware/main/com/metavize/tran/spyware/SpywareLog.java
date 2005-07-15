@@ -39,7 +39,7 @@ public class SpywareLog implements Comparable<SpywareLog>, Serializable
                       Direction direction)
     {
         this.createDate = createDate;
-        this.type = Type.valueOf(type.toUpperCase());
+        this.type = Type.valueOf(type);
         this.location = location;
         this.ident = ident;
         this.blocked = blocked;
@@ -132,6 +132,6 @@ public class SpywareLog implements Comparable<SpywareLog>, Serializable
 
     public int compareTo(SpywareLog sl)
     {
-        return -createDate.compareTo(sl.createDate);
+        return createDate.compareTo(sl.createDate);
     }
 }

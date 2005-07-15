@@ -54,7 +54,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
 
     private static final String COOKIE_QUERY
         = "SELECT req.time_stamp, "
-        +        "'cookie' AS type, "
+        +        "'COOKIE' AS type, "
         +        "'http://' || host || uri AS location, "
         +        "ident, "
         +        "true AS blocked, "
@@ -68,7 +68,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
 
     private static final String ACTIVEX_QUERY
         = "SELECT req.time_stamp, "
-        +        "'activex' AS type, "
+        +        "'ACTIVEX' AS type, "
         +        "'http://' || host || uri AS location, "
         +        "ident, "
         +        "true AS blocked, "
@@ -82,7 +82,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
 
     private static final String ACCESS_QUERY
         = "SELECT create_date AS time_stamp, "
-        +        "'access' AS type, "
+        +        "'ACCESS' AS type, "
         +        "text(ipmaddr) AS location, "
         +        "ident, "
         +        "blocked, "
@@ -94,7 +94,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
 
     private static final String BLACKLIST_QUERY
         = "SELECT req.time_stamp, "
-        +        "'activex' AS type, "
+        +        "'BLACKLIST' AS type, "
         +        "'http://' || host || uri AS location, "
         +        "host AS ident, "
         +        "true AS blocked, "
@@ -189,7 +189,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
 
         Collections.sort(l);
 
-        return l.subList(0, limit);
+        return l.subList(0, Math.min(limit, l.size()));
     }
 
     // Transform methods ------------------------------------------------------

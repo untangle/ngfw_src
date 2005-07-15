@@ -53,16 +53,17 @@ public class VirusTransformImpl extends AbstractTransform
     implements VirusTransform
 {
     private static final String FTP_QUERY
-        = "SELECT create_date, 'ftp' AS type, 'file' AS location, clean, "
+        = "SELECT create_date, 'FTP' AS type, 'file' AS location, clean, "
         + "       c_client_addr, c_client_port, s_server_addr, s_server_port, "
         + "       client_intf, server_intf "
         + "FROM tr_virus_evt evt "
         + "JOIN pl_endp USING (session_id) "
+        + "WHERE vendor_name = ? "
         + "ORDER BY create_date DESC LIMIT ?";
 
     private static final String HTTP_QUERY
         = "SELECT create_date, "
-        + "       'http' AS type, "
+        + "       'HTTP' AS type, "
         + "       'http://' || host || uri AS location, "
         + "       NOT virus_cleaned AS clean, "
         + "       c_client_addr, c_client_port, s_server_addr, s_server_port, "
@@ -71,11 +72,12 @@ public class VirusTransformImpl extends AbstractTransform
         + "JOIN tr_http_evt_req req ON evt.request_line = req.request_id "
         + "JOIN pl_endp endp ON req.session_id = endp.session_id "
         + "JOIN tr_http_req_line rl ON rl.request_id = req.request_id "
+        + "WHERE vendor_name = ? "
         + "ORDER BY req.time_stamp DESC LIMIT ?";
 
     private static final String MAIL_QUERY
         = "SELECT create_date, "
-        + "       'mail' AS type, "
+        + "       'MAIL' AS type, "
         + "       subject AS location, "
         + "       NOT virus_cleaned AS clean, "
         + "       c_client_addr, c_client_port, s_server_addr, s_server_port, "
@@ -83,11 +85,12 @@ public class VirusTransformImpl extends AbstractTransform
         + "FROM tr_virus_evt_mail evt "
         + "JOIN tr_mail_message_info info ON evt.msg_id = info.id "
         + "JOIN pl_endp endp ON info.session_id = endp.session_id "
+        + "WHERE vendor_name = ? "
         + "ORDER BY create_date DESC LIMIT ?";
 
     private static final String SMTP_QUERY
         = "SELECT create_date, "
-        + "       'mail' AS type, "
+        + "       'MAIL' AS type, "
         + "       subject AS location, "
         + "       NOT virus_cleaned AS clean, "
         + "       c_client_addr, c_client_port, s_server_addr, s_server_port, "
@@ -95,6 +98,7 @@ public class VirusTransformImpl extends AbstractTransform
         + "FROM tr_virus_evt_smtp evt "
         + "JOIN tr_mail_message_info info ON evt.msg_id = info.id "
         + "JOIN pl_endp endp ON info.session_id = endp.session_id "
+        + "WHERE vendor_name = ? "
         + "ORDER BY create_date DESC LIMIT ?";
 
     private static final String[] QUERIES
@@ -198,7 +202,7 @@ public class VirusTransformImpl extends AbstractTransform
 
         Collections.sort(l);
 
-        return l.subList(0, limit);
+        return l.subList(0, Math.min(limit, l.size()));
     }
 
     // Transform methods ------------------------------------------------------
@@ -575,7 +579,8 @@ public class VirusTransformImpl extends AbstractTransform
         try {
             Connection c = s.connection();
             PreparedStatement ps = c.prepareStatement(q);
-            ps.setInt(1, limit);
+            ps.setString(1, scanner.getVendorName());
+            ps.setInt(2, limit);
             long l0 = System.currentTimeMillis();
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {

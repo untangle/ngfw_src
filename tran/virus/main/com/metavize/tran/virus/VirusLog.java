@@ -18,9 +18,9 @@ import com.metavize.mvvm.tran.Direction;
 
 public class VirusLog implements Comparable<VirusLog>, Serializable
 {
-    // XXX serial uid
+    private static final long serialVersionUID = 5822180413983083372L;
 
-    public enum Type { HTTP, FTP, SMTP, POP, IMAP };
+    public enum Type { HTTP, FTP, MAIL };
 
     private final Date createDate;
     private final Type type;
@@ -38,7 +38,7 @@ public class VirusLog implements Comparable<VirusLog>, Serializable
                     Direction direction)
     {
         this.createDate = createDate;
-        this.type = Type.valueOf(type.toUpperCase());
+        this.type = Type.valueOf(type);
         this.location = location;
         this.clean = clean;
         this.clientAddr = clientAddr;
@@ -99,6 +99,6 @@ public class VirusLog implements Comparable<VirusLog>, Serializable
 
     public int compareTo(VirusLog vl)
     {
-        return -createDate.compareTo(vl.createDate);
+        return createDate.compareTo(vl.createDate);
     }
 }
