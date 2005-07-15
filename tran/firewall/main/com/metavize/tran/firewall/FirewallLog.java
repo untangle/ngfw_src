@@ -18,7 +18,7 @@ import com.metavize.mvvm.tran.Direction;
 
 public class FirewallLog implements Serializable
 {
-    // XXX serial uid
+    private static final long serialVersionUID = 8643460289284345065L;
 
     private final Date createDate;
     private final String reason = "in list";
