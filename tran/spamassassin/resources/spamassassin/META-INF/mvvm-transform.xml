@@ -13,7 +13,7 @@ $Id$
 
 <mvvm-transform>
   <transform-desc name="spamassassin-transform"
-                  display-name="SpamAssassin AntiVirus Scanner"
+                  display-name="SpamGuard"
                   classname="com.metavize.tran.spamassassin.SpamAssassinTransform"
                   gui-classname="com.metavize.tran.spamassassin.gui.MTransformJPanel"/>
   <parent>mail-casing</parent>
