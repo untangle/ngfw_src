@@ -26,7 +26,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <property name="bases"
         value="virus,spam"/>
   <property name="transforms"
-        value="nat,firewall,airgap,reporting,protofilter,test,sigma,hauri,clam,spyware,httpblocker,spamassassin"/>
+        value="nat,firewall,airgap,reporting,protofilter,test,sigma,hauri,clam,spyware,httpblocker,spamassassin,fprot,sophos,email"/>
 
 
 

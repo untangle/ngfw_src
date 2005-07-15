@@ -50,7 +50,8 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	super.refreshableMap.put(NAME_ANTI_SPAM, spamConfigJPanel);
 
 	// VIRUS DETECTION /////////
-	Util.setEmailAndVirusJPanel( "email-transform", virusConfigJPanel );
+    // FIXME removed so this will build
+    //	Util.setEmailAndVirusJPanel( "email-transform", virusConfigJPanel );
 	        
     }
     
