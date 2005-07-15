@@ -165,7 +165,7 @@ public class MLogTableJPanel extends javax.swing.JPanel {
         eventJPanel.add(refreshLogJButton, gridBagConstraints);
 
         streamingJToggleButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        streamingJToggleButton.setText("<html> <b>Start</b> Streaming </html>");
+        streamingJToggleButton.setText("<html> <b>Start</b> Auto-refresh </html>");
         streamingJToggleButton.setFocusPainted(false);
         streamingJToggleButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
         streamingJToggleButton.setMinimumSize(new java.awt.Dimension(125, 27));
@@ -204,12 +204,12 @@ public class MLogTableJPanel extends javax.swing.JPanel {
        if(streamingJToggleButton.isSelected()){
            refreshLogJButton.setEnabled(false); 
            streamThread = new StreamThread();
-           streamingJToggleButton.setText("<html><center><b>Stop</b> Streaming</center></html>");
+           streamingJToggleButton.setText("<html><center><b>Stop</b> Auto-refresh</center></html>");
        }
        else{
            refreshLogJButton.setEnabled(true);
            streamThread.interrupt();
-           streamingJToggleButton.setText("<html><center><b>Start</b> Streaming</center></html>");
+           streamingJToggleButton.setText("<html><center><b>Start</b> Auto-refresh</center></html>");
        }
     }//GEN-LAST:event_streamingJToggleButtonActionPerformed
 
