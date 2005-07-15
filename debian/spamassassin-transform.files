@@ -1,3 +1,3 @@
-usr/share/metavize/toolbox/spam-transform.mar
-usr/share/metavize/web/webstart/spam-transform.mar
-usr/share/metavize/schema/spam-transform/*
+usr/share/metavize/toolbox/spamassassin-transform.mar
+usr/share/metavize/web/webstart/spamassassin-transform.mar
+usr/share/metavize/schema/spamassassin-transform/*

@@ -1,5 +1,5 @@
 #! /bin/sh
 
-mcli -t 30 register spam-transform 2>/dev/null || true
+mcli -t 30 register spamassassin-transform 2>/dev/null || true
 
 
