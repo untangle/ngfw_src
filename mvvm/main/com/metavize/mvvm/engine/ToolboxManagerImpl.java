@@ -451,6 +451,8 @@ class ToolboxManagerImpl implements ToolboxManager
                     value.delete(0, value.length());
                 }
 
+                if (!m.containsKey("package")) { continue; }
+
                 // end of package
                 byte[] orgIcon, descIcon;
 

@@ -44,31 +44,6 @@ aptlog()
         echo -e "----------\n" >> $APT_LOG
 }
 
-instlist()
-{
-    for t in $prefix/usr/share/metavize/toolbox/*.mar; do
-        echo "$(basename $t .mar) 10.0"
-    done
-}
-
-pkglist()
-{
-    for t in $prefix/usr/share/metavize/toolbox/*.mar; do
-        p="$(basename $t .mar)"
-        echo "Package: $p"
-        echo "Version: 10.0"
-        echo "Architecture: any"
-        echo "Depends: mvvm"
-        echo "Price: 1000"
-        echo "Display-Name: $p"
-        echo "Website: http://www.metavize.com/fake"
-        echo "Description: Fake description"
-        echo " Fake Long Descrption"
-        echo
-    done
-}
-
-
 if [ $# -lt 1 ] ; then
     printusage
 fi
@@ -116,9 +91,9 @@ if [ -z $prefix ] ; then
 else
     # invoked in development environment
     if [ "$1" = "installed" ] ; then
-        instlist
+        cat $pkglist | awk ' /^Package: / { print $2 " 10.0" } '
     elif [ "$1" = "install" ] ; then
-        instlist
+        cat $pkglist | awk ' /^Package: / { print $2 " 10.0" } '
     elif [ "$1" = "update" ] ; then
         : # XXX
     elif [ "$1" = "upgrade" ] ; then
@@ -126,6 +101,7 @@ else
     elif [ "$1" = "remove" ] ; then
         echo "remove not supported in build environment"
     elif [ "$1" = "available" ] ; then
-        pkglist
+        cat $pkglist | sed -e 's/^XB-//' \
+            | awk '{ print $0 }; /^Package: / { print "Version: 10.0" }'
     fi
 fi
