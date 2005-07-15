@@ -66,9 +66,9 @@ class MvvmRemoteContextImpl implements MvvmRemoteContext
         return context.networkingManager();
     }
 
-    public ConnectivityTester connectivityTester()
+    public ConnectivityTester getConnectivityTester()
     {
-        return context.connectivityTester();
+        return context.getConnectivityTester();
     }
 
     public void localBackup() throws IOException

@@ -120,7 +120,7 @@ public class MvvmContextImpl extends MvvmContextBase
         return networkingManager;
     }
 
-    public ConnectivityTester connectivityTester()
+    public ConnectivityTester getConnectivityTester()
     {
         return connectivityTester;
     }

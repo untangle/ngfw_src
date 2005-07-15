@@ -77,7 +77,7 @@ public interface MvvmRemoteContext
      *
      * @return the ConnectivityTester
      */
-    ConnectivityTester connectivityTester();
+    ConnectivityTester getConnectivityTester();
 
     /**
      * Save settings to local hard drive.

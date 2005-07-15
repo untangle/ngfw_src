@@ -168,6 +168,7 @@ public class MMainJFrame extends javax.swing.JFrame {
         remoteJButton = new javax.swing.JButton();
         backupJButton = new javax.swing.JButton();
         protocolJButton = new javax.swing.JButton();
+        connectivityJButton = new javax.swing.JButton();
         maintenanceJButton = new javax.swing.JButton();
         licenseJButton = new javax.swing.JButton();
         aboutJButton = new javax.swing.JButton();
@@ -437,6 +438,29 @@ public class MMainJFrame extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(0, 1, 3, 3);
         jPanel8.add(protocolJButton, gridBagConstraints);
 
+        connectivityJButton.setFont(new java.awt.Font("Arial", 0, 12));
+        connectivityJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText32x32.png")));
+        connectivityJButton.setText("<html>Connectivity<br>Tester</html>");
+        connectivityJButton.setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.EtchedBorder(), new javax.swing.border.EmptyBorder(new java.awt.Insets(2, 2, 2, 0))));
+        connectivityJButton.setDoubleBuffered(true);
+        connectivityJButton.setFocusPainted(false);
+        connectivityJButton.setFocusable(false);
+        connectivityJButton.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        connectivityJButton.setMargin(new java.awt.Insets(1, 3, 4, 2));
+        connectivityJButton.setMaximumSize(new java.awt.Dimension(810, 370));
+        connectivityJButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                connectivityJButtonActionPerformed(evt);
+            }
+        });
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 1, 3, 3);
+        jPanel8.add(connectivityJButton, gridBagConstraints);
+
         maintenanceJButton.setFont(new java.awt.Font("Arial", 0, 12));
         maintenanceJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText32x32.png")));
         maintenanceJButton.setText("<html>Support and<br>Maintenance</html>");
@@ -589,6 +613,17 @@ public class MMainJFrame extends javax.swing.JFrame {
         java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
         setBounds((screenSize.width-1024)/2, (screenSize.height-768)/2, 1024, 768);
     }//GEN-END:initComponents
+
+    private void connectivityJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectivityJButtonActionPerformed
+        try{
+	    ConnectivityJDialog connectivityJDialog = new ConnectivityJDialog();
+	    connectivityJDialog.setVisible(true);
+	}
+	catch(Exception e){
+	    try{ Util.handleExceptionWithRestart("Error showing connectivity tester", e); }
+	    catch(Exception f){ Util.handleExceptionNoRestart("Error showing connectivity tester", f); }
+	}
+    }//GEN-LAST:event_connectivityJButtonActionPerformed
 
     private void protocolJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_protocolJButtonActionPerformed
         try{
@@ -793,7 +828,7 @@ public class MMainJFrame extends javax.swing.JFrame {
 	storeJDialog.setVisible(true);
 	if( storeJDialog.getPurchasedMTransformJButton() != null){
 	    if( Util.mustCheckUpgrades() ){
-		StoreCheckJDialog storeCheckJDialog = new StoreCheckJDialog();
+		ConnectivityJDialog storeCheckJDialog = new ConnectivityJDialog();
 		storeCheckJDialog.setVisible(true);
 		if( !storeCheckJDialog.upgradesAvailable() ){
 		    targetMTransformJButton.purchase();
@@ -824,6 +859,7 @@ public class MMainJFrame extends javax.swing.JFrame {
     private javax.swing.JPanel configurationJPanel;
     private javax.swing.JScrollPane configurationJScrollPane;
     private javax.swing.JPanel configurationSpacerJPanel1;
+    private javax.swing.JButton connectivityJButton;
     private javax.swing.JPanel controlsJPanel;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel8;
