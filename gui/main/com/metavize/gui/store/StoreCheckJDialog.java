@@ -60,7 +60,7 @@ public class StoreCheckJDialog extends javax.swing.JDialog implements java.awt.e
         setResizable(false);
         labelJLabel.setFont(new java.awt.Font("Dialog", 1, 24));
         labelJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        labelJLabel.setText("Checking:");
+        labelJLabel.setText("Checking Upgrades:");
         labelJLabel.setDoubleBuffered(true);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;

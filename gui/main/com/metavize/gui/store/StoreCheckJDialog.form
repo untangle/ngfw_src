@@ -25,7 +25,7 @@
           <Font name="Dialog" size="24" style="1"/>
         </Property>
         <Property name="horizontalAlignment" type="int" value="0"/>
-        <Property name="text" type="java.lang.String" value="Checking:"/>
+        <Property name="text" type="java.lang.String" value="Checking Upgrades:"/>
         <Property name="doubleBuffered" type="boolean" value="true"/>
       </Properties>
       <Constraints>
