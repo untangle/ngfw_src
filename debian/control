@@ -72,7 +72,7 @@ Description: The Metavize Web Content Filter
 
 Package: email-transform
 Architecture: any
-Depends: mvvm, spamc-mv, spam-transform
+Depends: mvvm, spamc-mv, spamassassin-transform
 Conflicts: xmailscanner-transform
 XB-Price: 0
 XB-Display-Name: eMail SpamGuard
@@ -155,7 +155,7 @@ Description: The Metavize Report Generator
  EdgeReport will report general network activity, and information supplied
  by other Software Appliances.
 
-Package: spam-transform
+Package: spamassassin-transform
 Architecture: any
 Depends: mvvm, spamc-mv
 XB-Price: 0
