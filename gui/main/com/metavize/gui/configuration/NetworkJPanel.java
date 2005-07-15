@@ -186,12 +186,15 @@ public class NetworkJPanel extends javax.swing.JPanel implements Savable, Refres
         jSeparator2 = new javax.swing.JSeparator();
         jLabel9 = new javax.swing.JLabel();
         renewDhcpLeaseJButton = new javax.swing.JButton();
+        jSeparator3 = new javax.swing.JSeparator();
+        jLabel10 = new javax.swing.JLabel();
+        renewDhcpLeaseJButton1 = new javax.swing.JButton();
 
         setLayout(new java.awt.GridBagLayout());
 
-        setMaximumSize(new java.awt.Dimension(563, 330));
-        setMinimumSize(new java.awt.Dimension(563, 330));
-        setPreferredSize(new java.awt.Dimension(563, 330));
+        setMaximumSize(new java.awt.Dimension(563, 413));
+        setMinimumSize(new java.awt.Dimension(563, 413));
+        setPreferredSize(new java.awt.Dimension(563, 413));
         dhcpJPanel.setLayout(new java.awt.GridBagLayout());
 
         dhcpJPanel.setBorder(new javax.swing.border.TitledBorder(null, "External IP Settings", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
@@ -345,6 +348,35 @@ public class NetworkJPanel extends javax.swing.JPanel implements Savable, Refres
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
         dhcpJPanel.add(renewDhcpLeaseJButton, gridBagConstraints);
 
+        jSeparator3.setForeground(new java.awt.Color(200, 200, 200));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        dhcpJPanel.add(jSeparator3, gridBagConstraints);
+
+        jLabel10.setFont(new java.awt.Font("Dialog", 0, 12));
+        jLabel10.setText("<html><b>Connectivity Test</b> tells you if EdgeGuard can contact DNS and the internet with the settings you have just saved.</html>");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 0);
+        dhcpJPanel.add(jLabel10, gridBagConstraints);
+
+        renewDhcpLeaseJButton1.setFont(new java.awt.Font("Dialog", 0, 12));
+        renewDhcpLeaseJButton1.setText("Run Connectivity Test");
+        renewDhcpLeaseJButton1.setFocusPainted(false);
+        renewDhcpLeaseJButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                renewDhcpLeaseJButton1ActionPerformed(evt);
+            }
+        });
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
+        dhcpJPanel.add(renewDhcpLeaseJButton1, gridBagConstraints);
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -355,6 +387,17 @@ public class NetworkJPanel extends javax.swing.JPanel implements Savable, Refres
         add(dhcpJPanel, gridBagConstraints);
 
     }//GEN-END:initComponents
+
+    private void renewDhcpLeaseJButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_renewDhcpLeaseJButton1ActionPerformed
+        try{
+	    ConnectivityJDialog connectivityJDialog = new ConnectivityJDialog();
+	    connectivityJDialog.setVisible(true);
+	}
+	catch(Exception e){
+	    try{ Util.handleExceptionWithRestart("Error showing connectivity tester", e); }
+	    catch(Exception f){ Util.handleExceptionNoRestart("Error showing connectivity tester", f); }
+	}
+    }//GEN-LAST:event_renewDhcpLeaseJButton1ActionPerformed
 
     private void renewDhcpLeaseJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_renewDhcpLeaseJButtonActionPerformed
         DhcpLeaseRenewDialog dhcpLeaseRenewDialog = new DhcpLeaseRenewDialog();
@@ -393,13 +436,16 @@ public class NetworkJPanel extends javax.swing.JPanel implements Savable, Refres
     private javax.swing.ButtonGroup externalAdminButtonGroup;
     private javax.swing.ButtonGroup internalAdminButtonGroup;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JSeparator jSeparator2;
+    private javax.swing.JSeparator jSeparator3;
     private javax.swing.JButton renewDhcpLeaseJButton;
+    private javax.swing.JButton renewDhcpLeaseJButton1;
     private javax.swing.ButtonGroup restrictAdminButtonGroup;
     private javax.swing.ButtonGroup sshButtonGroup;
     private javax.swing.JPanel staticIPJPanel;

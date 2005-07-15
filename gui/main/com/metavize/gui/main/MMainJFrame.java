@@ -168,9 +168,7 @@ public class MMainJFrame extends javax.swing.JFrame {
         remoteJButton = new javax.swing.JButton();
         backupJButton = new javax.swing.JButton();
         protocolJButton = new javax.swing.JButton();
-        connectivityJButton = new javax.swing.JButton();
         maintenanceJButton = new javax.swing.JButton();
-        licenseJButton = new javax.swing.JButton();
         aboutJButton = new javax.swing.JButton();
         configurationSpacerJPanel1 = new javax.swing.JPanel();
         upgradeJButton = new javax.swing.JButton();
@@ -438,29 +436,6 @@ public class MMainJFrame extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(0, 1, 3, 3);
         jPanel8.add(protocolJButton, gridBagConstraints);
 
-        connectivityJButton.setFont(new java.awt.Font("Arial", 0, 12));
-        connectivityJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText32x32.png")));
-        connectivityJButton.setText("<html>Connectivity<br>Tester</html>");
-        connectivityJButton.setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.EtchedBorder(), new javax.swing.border.EmptyBorder(new java.awt.Insets(2, 2, 2, 0))));
-        connectivityJButton.setDoubleBuffered(true);
-        connectivityJButton.setFocusPainted(false);
-        connectivityJButton.setFocusable(false);
-        connectivityJButton.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        connectivityJButton.setMargin(new java.awt.Insets(1, 3, 4, 2));
-        connectivityJButton.setMaximumSize(new java.awt.Dimension(810, 370));
-        connectivityJButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                connectivityJButtonActionPerformed(evt);
-            }
-        });
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 1, 3, 3);
-        jPanel8.add(connectivityJButton, gridBagConstraints);
-
         maintenanceJButton.setFont(new java.awt.Font("Arial", 0, 12));
         maintenanceJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText32x32.png")));
         maintenanceJButton.setText("<html>Support and<br>Maintenance</html>");
@@ -484,29 +459,6 @@ public class MMainJFrame extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(0, 1, 3, 3);
         jPanel8.add(maintenanceJButton, gridBagConstraints);
 
-        licenseJButton.setFont(new java.awt.Font("Arial", 0, 12));
-        licenseJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText32x32.png")));
-        licenseJButton.setText("<html>License<br>Agreement</html>");
-        licenseJButton.setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.EtchedBorder(), new javax.swing.border.EmptyBorder(new java.awt.Insets(2, 2, 2, 0))));
-        licenseJButton.setDoubleBuffered(true);
-        licenseJButton.setFocusPainted(false);
-        licenseJButton.setFocusable(false);
-        licenseJButton.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        licenseJButton.setMargin(new java.awt.Insets(1, 3, 4, 2));
-        licenseJButton.setMaximumSize(new java.awt.Dimension(810, 370));
-        licenseJButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                licenseJButtonActionPerformed(evt);
-            }
-        });
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(10, 1, 3, 3);
-        jPanel8.add(licenseJButton, gridBagConstraints);
-
         aboutJButton.setFont(new java.awt.Font("Arial", 0, 12));
         aboutJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText32x32.png")));
         aboutJButton.setText("<html>About<br>EdgeGuard</html>");
@@ -527,7 +479,7 @@ public class MMainJFrame extends javax.swing.JFrame {
         gridBagConstraints.gridx = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 1, 3, 3);
+        gridBagConstraints.insets = new java.awt.Insets(10, 1, 3, 3);
         jPanel8.add(aboutJButton, gridBagConstraints);
 
         configurationSpacerJPanel1.setFocusable(false);
@@ -614,17 +566,6 @@ public class MMainJFrame extends javax.swing.JFrame {
         setBounds((screenSize.width-1024)/2, (screenSize.height-768)/2, 1024, 768);
     }//GEN-END:initComponents
 
-    private void connectivityJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectivityJButtonActionPerformed
-        try{
-	    ConnectivityJDialog connectivityJDialog = new ConnectivityJDialog();
-	    connectivityJDialog.setVisible(true);
-	}
-	catch(Exception e){
-	    try{ Util.handleExceptionWithRestart("Error showing connectivity tester", e); }
-	    catch(Exception f){ Util.handleExceptionNoRestart("Error showing connectivity tester", f); }
-	}
-    }//GEN-LAST:event_connectivityJButtonActionPerformed
-
     private void protocolJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_protocolJButtonActionPerformed
         try{
 	    ProtocolJDialog protocolJDialog = new ProtocolJDialog();
@@ -682,17 +623,6 @@ public class MMainJFrame extends javax.swing.JFrame {
 	    catch(Exception f){ Util.handleExceptionNoRestart("Error showing network settings", f); }
 	}
     }//GEN-LAST:event_networkJButtonActionPerformed
-
-    private void licenseJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_licenseJButtonActionPerformed
-	try{
-	    LicenseJDialog licenseJDialog = new LicenseJDialog();
-	    licenseJDialog.setVisible(true);
-	}
-	catch(Exception e){
-	    try{ Util.handleExceptionWithRestart("Error showing license", e); }
-	    catch(Exception f){ Util.handleExceptionNoRestart("Error showing license", f); }
-	}
-    }//GEN-LAST:event_licenseJButtonActionPerformed
 
     private void aboutJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutJButtonActionPerformed
 	try{
@@ -859,11 +789,9 @@ public class MMainJFrame extends javax.swing.JFrame {
     private javax.swing.JPanel configurationJPanel;
     private javax.swing.JScrollPane configurationJScrollPane;
     private javax.swing.JPanel configurationSpacerJPanel1;
-    private javax.swing.JButton connectivityJButton;
     private javax.swing.JPanel controlsJPanel;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel8;
-    private javax.swing.JButton licenseJButton;
     private javax.swing.JPanel mPipelineJPanel;
     private javax.swing.JTabbedPane mTabbedPane;
     private javax.swing.JButton maintenanceJButton;
