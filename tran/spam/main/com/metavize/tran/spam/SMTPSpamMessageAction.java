@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.metavize.tran.mail;
+package com.metavize.tran.spam;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -18,42 +18,42 @@ import java.util.Map;
 
 // XXX convert to enum when we dump XDoclet
 
-public class SMTPVirusMessageAction implements Serializable
+public class SMTPSpamMessageAction implements Serializable
 {
     private static final long serialVersionUID = -6364692037092527263L;
 
     private static final Map INSTANCES = new HashMap();
 
-    public static final SMTPVirusMessageAction PASS = new SMTPVirusMessageAction('P', "pass message");
-    public static final SMTPVirusMessageAction CLEAN = new SMTPVirusMessageAction('C', "clean message");
-    public static final SMTPVirusMessageAction BLOCK = new SMTPVirusMessageAction('B', "block message");
+    public static final SMTPSpamMessageAction PASS = new SMTPSpamMessageAction('P', "pass message");
+    public static final SMTPSpamMessageAction MARK = new SMTPSpamMessageAction('M', "mark message");
+    public static final SMTPSpamMessageAction BLOCK = new SMTPSpamMessageAction('B', "block message");
 
     static {
         INSTANCES.put(PASS.getKey(), PASS);
-        INSTANCES.put(CLEAN.getKey(), CLEAN);
+        INSTANCES.put(MARK.getKey(), MARK);
         INSTANCES.put(BLOCK.getKey(), BLOCK);
     }
 
     private String name;
     private char key;
 
-    private SMTPVirusMessageAction(char key, String name)
+    private SMTPSpamMessageAction(char key, String name)
     {
         this.key = key;
         this.name = name;
     }
 
-    public static SMTPVirusMessageAction getInstance(char key)
+    public static SMTPSpamMessageAction getInstance(char key)
     {
-        return (SMTPVirusMessageAction)INSTANCES.get(key);
+        return (SMTPSpamMessageAction)INSTANCES.get(key);
     }
 
-    public static SMTPVirusMessageAction getInstance(String name)
+    public static SMTPSpamMessageAction getInstance(String name)
     {
-        SMTPVirusMessageAction zMsgAction;
+        SMTPSpamMessageAction zMsgAction;
         for (Iterator i = INSTANCES.keySet().iterator(); true == i.hasNext(); )
         {
-            zMsgAction = (SMTPVirusMessageAction)INSTANCES.get(i.next());
+            zMsgAction = (SMTPSpamMessageAction)INSTANCES.get(i.next());
             if (name.equals(zMsgAction.getName())) {
                 return zMsgAction;
             }
@@ -81,13 +81,13 @@ public class SMTPVirusMessageAction implements Serializable
         return getInstance(key);
     }
 
-    public static SMTPVirusMessageAction[] getValues()
+    public static SMTPSpamMessageAction[] getValues()
     {
-        SMTPVirusMessageAction[] azMsgAction = new SMTPVirusMessageAction[INSTANCES.size()];
+        SMTPSpamMessageAction[] azMsgAction = new SMTPSpamMessageAction[INSTANCES.size()];
         Iterator iter = INSTANCES.keySet().iterator();
-        SMTPVirusMessageAction zMsgAction;
+        SMTPSpamMessageAction zMsgAction;
         for (int i = 0; true == iter.hasNext(); i++) {
-            zMsgAction = (SMTPVirusMessageAction)INSTANCES.get(iter.next());
+            zMsgAction = (SMTPSpamMessageAction)INSTANCES.get(iter.next());
             azMsgAction[i] = zMsgAction;
         }
         return azMsgAction;

@@ -15,8 +15,6 @@ import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.tran.mail.MessageInfo;
 import com.metavize.tran.mail.SMTPNotifyAction;
 import com.metavize.tran.mail.SMTPNotifyActionUserType;
-import com.metavize.tran.mail.SMTPVirusMessageAction;
-import com.metavize.tran.mail.SMTPVirusMessageActionUserType;
 
 /**
  * Log for SMTP Virus events.

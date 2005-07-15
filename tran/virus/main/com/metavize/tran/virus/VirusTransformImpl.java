@@ -40,8 +40,6 @@ import com.metavize.mvvm.tran.MimeType;
 import com.metavize.mvvm.tran.MimeTypeRule;
 import com.metavize.mvvm.tran.StringRule;
 import com.metavize.tran.mail.SMTPNotifyAction;
-import com.metavize.tran.mail.SMTPVirusMessageAction;
-import com.metavize.tran.mail.VirusMessageAction;
 import com.metavize.tran.token.TokenAdaptor;
 import net.sf.hibernate.HibernateException;
 import net.sf.hibernate.Query;
@@ -285,13 +283,13 @@ public class VirusTransformImpl extends AbstractTransform
         vs.setFtpInbound(new VirusConfig(true, true, "Scan incoming FTP files" ));
         vs.setFtpOutbound(new VirusConfig(false, true, "Scan outgoing FTP files" ));
 
-        vs.setSMTPInbound(new VirusSMTPConfig(true, SMTPVirusMessageAction.CLEAN, SMTPNotifyAction.NEITHER, "Scan incoming SMTP e-mail" ));
+        vs.setSMTPInbound(new VirusSMTPConfig(true, SMTPVirusMessageAction.REMOVE, SMTPNotifyAction.NEITHER, "Scan incoming SMTP e-mail" ));
         vs.setSMTPOutbound(new VirusSMTPConfig(false, SMTPVirusMessageAction.PASS, SMTPNotifyAction.NEITHER, "Scan outgoing SMTP e-mail" ));
 
-        vs.setPOPInbound(new VirusPOPConfig(true, VirusMessageAction.CLEAN, "Scan incoming POP e-mail" ));
+        vs.setPOPInbound(new VirusPOPConfig(true, VirusMessageAction.REMOVE, "Scan incoming POP e-mail" ));
         vs.setPOPOutbound(new VirusPOPConfig(false, VirusMessageAction.PASS, "Scan outgoing POP e-mail" ));
 
-        vs.setIMAPInbound(new VirusIMAPConfig(true, VirusMessageAction.CLEAN, "Scan incoming IMAP e-mail" ));
+        vs.setIMAPInbound(new VirusIMAPConfig(true, VirusMessageAction.REMOVE, "Scan incoming IMAP e-mail" ));
         vs.setIMAPOutbound(new VirusIMAPConfig(false, VirusMessageAction.PASS, "Scan outgoing IMAP e-mail" ));
 
         /**

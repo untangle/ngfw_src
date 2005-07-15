@@ -13,7 +13,6 @@ package com.metavize.tran.virus;
 
 import java.io.Serializable;
 
-import com.metavize.tran.mail.SMTPVirusMessageAction;
 import com.metavize.tran.mail.SMTPNotifyAction;
 
 /**
@@ -33,7 +32,7 @@ public class VirusSMTPConfig implements Serializable
     private Long id;
 
     /* settings */
-    private SMTPVirusMessageAction zMsgAction = SMTPVirusMessageAction.CLEAN;
+    private SMTPVirusMessageAction zMsgAction = SMTPVirusMessageAction.REMOVE;
     private SMTPNotifyAction zNotifyAction = SMTPNotifyAction.NEITHER;
     private boolean bScan = false;
     private String zNotes = NO_NOTES;

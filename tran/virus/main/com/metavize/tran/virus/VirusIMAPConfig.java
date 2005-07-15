@@ -13,8 +13,6 @@ package com.metavize.tran.virus;
 
 import java.io.Serializable;
 
-import com.metavize.tran.mail.VirusMessageAction;
-
 /**
  * Virus control: Definition of virus control settings (either direction)
  *
@@ -32,7 +30,7 @@ public class VirusIMAPConfig implements Serializable
     private Long id;
 
     /* settings */
-    private VirusMessageAction zMsgAction = VirusMessageAction.CLEAN;
+    private VirusMessageAction zMsgAction = VirusMessageAction.REMOVE;
     private boolean bScan = false;
     private String zNotes = NO_NOTES;
 

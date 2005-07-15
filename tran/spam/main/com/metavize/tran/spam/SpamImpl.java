@@ -18,8 +18,6 @@ import com.metavize.mvvm.tapi.PipeSpec;
 import com.metavize.mvvm.tapi.SoloPipeSpec;
 import com.metavize.mvvm.tapi.TransformContextFactory;
 import com.metavize.tran.mail.SMTPNotifyAction;
-import com.metavize.tran.mail.SMTPSpamMessageAction;
-import com.metavize.tran.mail.SpamMessageAction;
 import com.metavize.tran.token.TokenAdaptor;
 import net.sf.hibernate.HibernateException;
 import net.sf.hibernate.Query;

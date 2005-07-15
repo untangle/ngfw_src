@@ -13,7 +13,6 @@ package com.metavize.tran.spam;
 
 import java.io.Serializable;
 
-import com.metavize.tran.mail.SpamMessageAction;
 
 /**
  * Spam control: Definition of spam control settings (either direction)

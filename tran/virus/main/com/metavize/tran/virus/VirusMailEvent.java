@@ -12,8 +12,6 @@
 package com.metavize.tran.virus;
 
 import com.metavize.mvvm.logging.LogEvent;
-import com.metavize.tran.mail.VirusMessageAction;
-import com.metavize.tran.mail.VirusMessageActionUserType;
 import com.metavize.tran.mail.MessageInfo;
 
 /**

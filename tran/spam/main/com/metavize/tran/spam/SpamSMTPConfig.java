@@ -13,7 +13,6 @@ package com.metavize.tran.spam;
 
 import java.io.Serializable;
 
-import com.metavize.tran.mail.SMTPSpamMessageAction;
 import com.metavize.tran.mail.SMTPNotifyAction;
 
 /**

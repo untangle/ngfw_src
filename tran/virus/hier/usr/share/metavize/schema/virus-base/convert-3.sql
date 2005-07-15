@@ -28,7 +28,7 @@ CREATE TABLE tr_virus_imap_config (
 ALTER TABLE tr_virus_settings ADD COLUMN smtp_inbound int8;
 UPDATE tr_virus_settings SET smtp_inbound = nextval('hibernate_sequence');
 INSERT INTO tr_virus_smtp_config (
-    SELECT smtp_inbound, true, 'C', 'N', 'Scan incoming SMTP e-mail'
+    SELECT smtp_inbound, true, 'R', 'N', 'Scan incoming SMTP e-mail'
     FROM tr_virus_settings
 );
 ALTER TABLE tr_virus_settings ALTER COLUMN smtp_inbound SET NOT NULL;
@@ -46,7 +46,7 @@ ALTER TABLE tr_virus_settings ALTER COLUMN smtp_outbound SET NOT NULL;
 ALTER TABLE tr_virus_settings ADD COLUMN pop_inbound int8;
 UPDATE tr_virus_settings SET pop_inbound = nextval('hibernate_sequence');
 INSERT INTO tr_virus_pop_config (
-    SELECT pop_inbound, true, 'C', 'Scan incoming POP e-mail'
+    SELECT pop_inbound, true, 'R', 'Scan incoming POP e-mail'
     FROM tr_virus_settings
 );
 ALTER TABLE tr_virus_settings ALTER COLUMN pop_inbound SET NOT NULL;
@@ -64,7 +64,7 @@ ALTER TABLE tr_virus_settings ALTER COLUMN pop_outbound SET NOT NULL;
 ALTER TABLE tr_virus_settings ADD COLUMN imap_inbound int8;
 UPDATE tr_virus_settings SET imap_inbound = nextval('hibernate_sequence');
 INSERT INTO tr_virus_imap_config (
-    SELECT imap_inbound, true, 'C', 'Scan incoming IMAP e-mail'
+    SELECT imap_inbound, true, 'R', 'Scan incoming IMAP e-mail'
     FROM tr_virus_settings
 );
 ALTER TABLE tr_virus_settings ALTER COLUMN imap_inbound SET NOT NULL;

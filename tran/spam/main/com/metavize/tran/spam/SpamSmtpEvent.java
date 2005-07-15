@@ -12,8 +12,6 @@
 package com.metavize.tran.spam;
 
 import com.metavize.mvvm.logging.LogEvent;
-import com.metavize.tran.mail.SMTPSpamMessageAction;
-import com.metavize.tran.mail.SMTPSpamMessageActionUserType;
 import com.metavize.tran.mail.MessageInfo;
 
 /**

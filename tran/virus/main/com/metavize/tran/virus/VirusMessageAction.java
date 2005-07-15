@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.metavize.tran.mail;
+package com.metavize.tran.virus;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -18,40 +18,40 @@ import java.util.Map;
 
 // XXX convert to enum when we dump XDoclet
 
-public class SpamMessageAction implements Serializable
+public class VirusMessageAction implements Serializable
 {
     private static final long serialVersionUID = -6364692037092527263L;
 
     private static final Map INSTANCES = new HashMap();
 
-    public static final SpamMessageAction PASS = new SpamMessageAction('P', "pass message");
-    public static final SpamMessageAction MARK = new SpamMessageAction('M', "mark message");
+    public static final VirusMessageAction PASS = new VirusMessageAction('P', "pass message");
+    public static final VirusMessageAction REMOVE = new VirusMessageAction('R', "remove infection");
 
     static {
         INSTANCES.put(PASS.getKey(), PASS);
-        INSTANCES.put(MARK.getKey(), MARK);
+        INSTANCES.put(REMOVE.getKey(), REMOVE);
     }
 
     private String name;
     private char key;
 
-    private SpamMessageAction(char key, String name)
+    private VirusMessageAction(char key, String name)
     {
         this.key = key;
         this.name = name;
     }
 
-    public static SpamMessageAction getInstance(char key)
+    public static VirusMessageAction getInstance(char key)
     {
-        return (SpamMessageAction)INSTANCES.get(key);
+        return (VirusMessageAction)INSTANCES.get(key);
     }
 
-    public static SpamMessageAction getInstance(String name)
+    public static VirusMessageAction getInstance(String name)
     {
-        SpamMessageAction zMsgAction;
+        VirusMessageAction zMsgAction;
         for (Iterator i = INSTANCES.keySet().iterator(); true == i.hasNext(); )
         {
-            zMsgAction = (SpamMessageAction)INSTANCES.get(i.next());
+            zMsgAction = (VirusMessageAction)INSTANCES.get(i.next());
             if (name.equals(zMsgAction.getName())) {
                 return zMsgAction;
             }
@@ -79,13 +79,13 @@ public class SpamMessageAction implements Serializable
         return getInstance(key);
     }
 
-    public static SpamMessageAction[] getValues()
+    public static VirusMessageAction[] getValues()
     {
-        SpamMessageAction[] azMsgAction = new SpamMessageAction[INSTANCES.size()];
+        VirusMessageAction[] azMsgAction = new VirusMessageAction[INSTANCES.size()];
         Iterator iter = INSTANCES.keySet().iterator();
-        SpamMessageAction zMsgAction;
+        VirusMessageAction zMsgAction;
         for (int i = 0; true == iter.hasNext(); i++) {
-            zMsgAction = (SpamMessageAction)INSTANCES.get(iter.next());
+            zMsgAction = (VirusMessageAction)INSTANCES.get(iter.next());
             azMsgAction[i] = zMsgAction;
         }
         return azMsgAction;

@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.metavize.tran.mail;
+package com.metavize.tran.virus;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
