@@ -12,9 +12,12 @@
 package com.metavize.tran.virus;
 
 import com.metavize.mvvm.tran.Transform;
+import java.util.List;
 
 public interface VirusTransform extends Transform
 {
     void setVirusSettings(VirusSettings virusSettings);
     VirusSettings getVirusSettings();
+
+    List<VirusLog> getEventLogs(int limit);
 }

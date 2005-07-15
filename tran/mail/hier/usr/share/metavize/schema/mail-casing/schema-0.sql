@@ -37,4 +37,6 @@ CREATE TABLE tr_mail_message_stats (
     int msg_attachments,
     PRIMARY KEY (id));
 
+CREATE INDEX tr_mail_mio_sid_idx ON tr_mail_message_info (session_id);
+
 ALTER TABLE tr_mail_settings ADD CONSTRAINT tr_mail_settings_tid_fk FOREIGN KEY (tid) REFERENCES tid;

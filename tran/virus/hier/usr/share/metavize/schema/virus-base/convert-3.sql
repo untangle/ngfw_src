@@ -39,7 +39,7 @@ UPDATE tr_virus_settings SET smtp_outbound = nextval('hibernate_sequence');
 INSERT INTO tr_virus_smtp_config (
     SELECT smtp_outbound, false, 'P', 'N', 'Scan outgoing SMTP e-mail'
     FROM tr_virus_settings
-);
+
 ALTER TABLE tr_virus_settings ALTER COLUMN smtp_outbound SET NOT NULL;
 
 -- pop inbound settings
@@ -109,6 +109,13 @@ UPDATE tr_virus_evt SET vendor_name = 'Clam';
 
 ALTER TABLE tr_virus_evt_http ADD COLUMN vendor_name varchar(255);
 UPDATE tr_virus_evt_http SET vendor_name = 'Clam';
+
+-- indexes
+
+CREATE INDEX tr_virus_evt_sid_idx ON tr_virus_evt (session_id);
+CREATE INDEX tr_virus_evt_http_rid_idx ON tr_virus_evt_http (request_line);
+CREATE INDEX tr_virus_evt_mail_mid_idx ON tr_virus_evt_mail (msg_id);
+CREATE INDEX tr_virus_evt_smtp_mid_idx ON tr_virus_evt_smtp (msg_id);
 
 -- foreign key constraints
 

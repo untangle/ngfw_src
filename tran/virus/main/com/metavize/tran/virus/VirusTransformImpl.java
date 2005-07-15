@@ -11,7 +11,13 @@
 
 package com.metavize.tran.virus;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -28,6 +34,7 @@ import com.metavize.mvvm.tapi.Protocol;
 import com.metavize.mvvm.tapi.SoloPipeSpec;
 import com.metavize.mvvm.tapi.Subscription;
 import com.metavize.mvvm.tapi.TransformContextFactory;
+import com.metavize.mvvm.tran.Direction;
 import com.metavize.mvvm.tran.Interface;
 import com.metavize.mvvm.tran.MimeType;
 import com.metavize.mvvm.tran.MimeTypeRule;
@@ -45,6 +52,54 @@ import org.apache.log4j.Logger;
 public class VirusTransformImpl extends AbstractTransform
     implements VirusTransform
 {
+    private static final String FTP_QUERY
+        = "SELECT create_date, 'ftp' AS type, 'file' AS location, clean, "
+        + "       c_client_addr, c_client_port, s_server_addr, s_server_port, "
+        + "       client_intf, server_intf "
+        + "FROM tr_virus_evt evt "
+        + "JOIN pl_endp USING (session_id) "
+        + "ORDER BY create_date DESC LIMIT ?";
+
+    private static final String HTTP_QUERY
+        = "SELECT create_date, "
+        + "       'http' AS type, "
+        + "       'http://' || host || uri AS location, "
+        + "       NOT virus_cleaned AS clean, "
+        + "       c_client_addr, c_client_port, s_server_addr, s_server_port, "
+        + "       client_intf, server_intf "
+        + "FROM tr_virus_evt_http evt "
+        + "JOIN tr_http_evt_req req ON evt.request_line = req.request_id "
+        + "JOIN pl_endp endp ON req.session_id = endp.session_id "
+        + "JOIN tr_http_req_line rl ON rl.request_id = req.request_id "
+        + "ORDER BY req.time_stamp DESC LIMIT ?";
+
+    private static final String MAIL_QUERY
+        = "SELECT create_date, "
+        + "       'mail' AS type, "
+        + "       subject AS location, "
+        + "       NOT virus_cleaned AS clean, "
+        + "       c_client_addr, c_client_port, s_server_addr, s_server_port, "
+        + "       client_intf, server_intf "
+        + "FROM tr_virus_evt_mail evt "
+        + "JOIN tr_mail_message_info info ON evt.msg_id = info.id "
+        + "JOIN pl_endp endp ON info.session_id = endp.session_id "
+        + "ORDER BY create_date DESC LIMIT ?";
+
+    private static final String SMTP_QUERY
+        = "SELECT create_date, "
+        + "       'mail' AS type, "
+        + "       subject AS location, "
+        + "       NOT virus_cleaned AS clean, "
+        + "       c_client_addr, c_client_port, s_server_addr, s_server_port, "
+        + "       client_intf, server_intf "
+        + "FROM tr_virus_evt_smtp evt "
+        + "JOIN tr_mail_message_info info ON evt.msg_id = info.id "
+        + "JOIN pl_endp endp ON info.session_id = endp.session_id "
+        + "ORDER BY create_date DESC LIMIT ?";
+
+    private static final String[] QUERIES
+        = { FTP_QUERY, HTTP_QUERY, MAIL_QUERY, SMTP_QUERY };
+
     private static final PipelineFoundry FOUNDRY = MvvmContextFactory.context()
         .pipelineFoundry();
 
@@ -131,6 +186,19 @@ public class VirusTransformImpl extends AbstractTransform
     public VirusSettings getVirusSettings()
     {
         return settings;
+    }
+
+    public List<VirusLog> getEventLogs(int limit)
+    {
+        List<VirusLog> l = new ArrayList<VirusLog>(4 * limit);
+
+        for (String q : QUERIES) {
+            getEventLogs(q, l, limit);
+        }
+
+        Collections.sort(l);
+
+        return l.subList(0, limit);
     }
 
     // Transform methods ------------------------------------------------------
@@ -495,5 +563,56 @@ public class VirusTransformImpl extends AbstractTransform
     protected SessionMatcher sessionMatcher()
     {
         return VIRUS_SESSION_MATCHER;
+    }
+
+    // private methods --------------------------------------------------------
+
+    private List<VirusLog> getEventLogs(String q, List<VirusLog> l,
+                                          int limit)
+    {
+
+        Session s = TransformContextFactory.context().openSession();
+        try {
+            Connection c = s.connection();
+            PreparedStatement ps = c.prepareStatement(q);
+            ps.setInt(1, limit);
+            long l0 = System.currentTimeMillis();
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                long ts = rs.getTimestamp("create_date").getTime();
+                Date createDate = new Date(ts);
+                String type = rs.getString("type");
+                String location = rs.getString("location");
+                boolean clean = rs.getBoolean("clean");
+                String clientAddr = rs.getString("c_client_addr");
+                int clientPort = rs.getInt("c_client_port");
+                String serverAddr = rs.getString("s_server_addr");
+                int serverPort = rs.getInt("s_server_port");
+                byte clientIntf = rs.getByte("client_intf");
+                byte serverIntf = rs.getByte("server_intf");
+
+                Direction d = Direction.getDirection(clientIntf, serverIntf);
+
+                VirusLog rl = new VirusLog
+                    (createDate, type, location, clean, clientAddr,
+                     clientPort, serverAddr, serverPort, d);
+
+                l.add(0, rl);
+            }
+            long l1 = System.currentTimeMillis();
+            logger.debug("getActiveXLogs() in: " + (l1 - l0));
+        } catch (SQLException exn) {
+            logger.warn("could not get events", exn);
+        } catch (HibernateException exn) {
+            logger.warn("could not get events", exn);
+        } finally {
+            try {
+                s.close();
+            } catch (HibernateException exn) {
+                logger.warn("could not close Hibernate session", exn);
+            }
+        }
+
+        return l;
     }
 }

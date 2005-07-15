@@ -106,6 +106,11 @@ CREATE TABLE tr_virus_evt_mail (
     time_stamp timestamp,
     PRIMARY KEY (event_id));
 
+CREATE INDEX tr_virus_evt_sid_idx ON tr_virus_evt (session_id);
+CREATE INDEX tr_virus_evt_http_rid_idx ON tr_virus_evt_http (request_line);
+CREATE INDEX tr_virus_evt_mail_mid_idx ON tr_virus_evt_mail (msg_id);
+CREATE INDEX tr_virus_evt_smtp_mid_idx ON tr_virus_evt_smtp (msg_id);
+
 ALTER TABLE tr_virus_vs_ext ADD CONSTRAINT FKC3BCA54279192AB7 FOREIGN KEY (settings_id) REFERENCES tr_virus_settings;
 
 ALTER TABLE tr_virus_vs_mt ADD CONSTRAINT FKD4C4064679192AB7 FOREIGN KEY (settings_id) REFERENCES tr_virus_settings;
