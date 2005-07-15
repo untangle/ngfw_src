@@ -17,10 +17,10 @@ packages      ?= "all"
 all: chk build
 
 ## This limits the rules that are caught by the wildcard above
-distclean.pre_base clean.pre_base test.pre_base:
+distclean.pre_base clean.pre_base:
 	@echo $(build_dist)
 	@echo "==> ant $(@:.pre_base=)"
-	@$(ANT) $(@:.pre_base=)
+	@$(ANT) clean
 	@for i in $(CLIBS) ; do \
 		make ANT_INVOKED=TRUE -C ./$$i $(@:.pre_base=); \
 		if [ "$$?" != "0" ] ; then exit ; fi \

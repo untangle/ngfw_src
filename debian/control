@@ -77,7 +77,7 @@ Conflicts: xmailscanner-transform
 XB-Price: 0
 XB-Display-Name: eMail SpamGuard
 XB-Website: http://www.metavize.com
-XB-Rack-Position: 3
+XB-Rack-Position: -3
 Description: The Metavize eMail SpamGuard
  The eMail SpamGuard, based on SpamAssassin, is able to
  mark SPAM incoming and outgoing SMTP, POP3, and IMAP.
