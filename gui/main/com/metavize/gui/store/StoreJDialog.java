@@ -41,13 +41,14 @@ public class StoreJDialog extends MConfigJDialog implements Savable, Refreshable
         MAX_SIZE = new Dimension(640, 480);
 
         // INIT GENERAL GUI
-        storeJPanel = new StoreJPanel();
+        storeJPanel = new StoreJPanel(mTransformJButton.getWebpage());
         this.contentJTabbedPane.addTab(NAME_STORE, null, storeJPanel);
         this.setTitle(NAME_STORE);
         setResizable(false);
         
         storeJPanel.mTransformJPanel.add(mTransformJButton, gridBagConstraints);
         storeJPanel.descriptionJTextArea.setText(mTransformJButton.getFullDescription());
+        
             
         this.reloadJButton.setText("<html><b>Cancel</b></html>");
         this.saveJButton.setText("<html><b>Procure</b></html>");

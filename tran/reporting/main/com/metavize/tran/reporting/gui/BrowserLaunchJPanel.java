@@ -65,12 +65,11 @@ public class BrowserLaunchJPanel extends JPanel implements ActionListener {
     public void actionPerformed(ActionEvent e){
 	 
 	try{
-	    URL newURL = new URL( Util.getServerCodeBase(), "../reports");
-	    System.err.println("Showing: " + newURL.toString() );
+	    URL newURL = new URL( Util.getServerCodeBase(), "../reports");;
 	    ((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);
 	}
 	catch(Exception f){
-	    f.printStackTrace();
+            Util.handleExceptionNoRestart("error launching browser for EdgeReport", f);
 	}
 	
     }

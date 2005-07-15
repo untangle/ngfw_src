@@ -6,15 +6,33 @@
 
 package com.metavize.gui.store;
 
+import com.metavize.gui.util.Util;
+
+import javax.jnlp.ServiceManager;
+import javax.jnlp.BasicService;
+import java.net.URL;
+
 /**
  *
  * @author  inieves
  */
 public class StoreJPanel extends javax.swing.JPanel {
     
+    private String url;
+    
     /** Creates new form StoreJPanel */
-    public StoreJPanel() {
+    public StoreJPanel(String url) {
+        this.url = url;
+        
         initComponents();
+        
+        if( Util.isLocal() ){
+            moreJButton.setEnabled(false);
+        }
+        else{
+            localJLabel.setVisible(false);
+        }
+        
     }
     
     /** This method is called from within the constructor to
@@ -27,10 +45,11 @@ public class StoreJPanel extends javax.swing.JPanel {
         mTransformJPanel = new javax.swing.JPanel();
         storeJScrollPane = new javax.swing.JScrollPane();
         descriptionJTextArea = new javax.swing.JTextArea();
-        noteJLabel = new javax.swing.JLabel();
         mTransformJPanel1 = new javax.swing.JPanel();
         accountJLabel1 = new javax.swing.JLabel();
         priceJLabel = new javax.swing.JLabel();
+        moreJButton = new javax.swing.JButton();
+        localJLabel = new javax.swing.JLabel();
 
         setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -58,11 +77,6 @@ public class StoreJPanel extends javax.swing.JPanel {
 
         purchaseJPanel.add(storeJScrollPane, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 30, 300, 150));
 
-        noteJLabel.setFont(new java.awt.Font("Arial", 0, 12));
-        noteJLabel.setText("<html><B>Note:</B>  This Software Appliance will become a part of your <u>Toolbox</u> if you choose to procure it.  Once in your <u>Toolbox</u>, you can click to deploy it to the <u>Rack</u>.</html>");
-        noteJLabel.setDoubleBuffered(true);
-        purchaseJPanel.add(noteJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(273, 210, 300, -1));
-
         mTransformJPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         mTransformJPanel1.setBorder(new javax.swing.border.TitledBorder(null, "Procurement Information", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 0, 11)));
@@ -79,17 +93,44 @@ public class StoreJPanel extends javax.swing.JPanel {
 
         purchaseJPanel.add(mTransformJPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 200, 210, 90));
 
+        moreJButton.setFont(new java.awt.Font("Dialog", 0, 12));
+        moreJButton.setText("Read more online...");
+        moreJButton.setFocusPainted(false);
+        moreJButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                moreJButtonActionPerformed(evt);
+            }
+        });
+
+        purchaseJPanel.add(moreJButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 210, -1, -1));
+
+        localJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+        localJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        localJLabel.setText("<html><center>(Disabled because there is no browser present.)<br>\nPlease go to http://www.metavize.com to<br>\nlearn about this Software Appliance.\n</center></html>");
+        purchaseJPanel.add(localJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 240, -1, -1));
+
         add(purchaseJPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
 
     }//GEN-END:initComponents
+
+    private void moreJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_moreJButtonActionPerformed
+        try{
+	    URL newURL = new URL( url );
+	    ((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);
+	}
+	catch(Exception f){
+            Util.handleExceptionNoRestart("error launching browser for EdgeReport", f);
+	}
+    }//GEN-LAST:event_moreJButtonActionPerformed
     
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel accountJLabel1;
     protected javax.swing.JTextArea descriptionJTextArea;
+    private javax.swing.JLabel localJLabel;
     protected javax.swing.JPanel mTransformJPanel;
     private javax.swing.JPanel mTransformJPanel1;
-    private javax.swing.JLabel noteJLabel;
+    private javax.swing.JButton moreJButton;
     private javax.swing.JLabel priceJLabel;
     private javax.swing.JPanel purchaseJPanel;
     private javax.swing.JScrollPane storeJScrollPane;
