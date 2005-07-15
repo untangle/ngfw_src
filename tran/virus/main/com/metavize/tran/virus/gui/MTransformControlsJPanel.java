@@ -34,6 +34,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
     private static final String NAME_EMAIL_SMTP = "SMTP";
     private static final String NAME_EMAIL_POP = "POP";
     private static final String NAME_EMAIL_IMAP = "IMAP";
+    private static final String NAME_LOG = "Event Log";
 
     public MTransformControlsJPanel(MTransformJPanel mTransformJPanel) {
         super(mTransformJPanel);
@@ -113,8 +114,14 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	this.savableMap.put(NAME_GENERAL_SETTINGS, generalConfigJPanel);
 	this.refreshableMap.put(NAME_GENERAL_SETTINGS, generalConfigJPanel);
 
+	// EVENT LOG ///////////////
+	LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransformContext().transform());
+	super.mTabbedPane.addTab(NAME_LOG, null, logJPanel);
+
 	// SET SELECTED TABS ///////
-        httpJTabbedPane.setSelectedIndex(0);
+	//        httpJTabbedPane.setSelectedIndex(0);
+	//	emailJTabbedPane.setSelectedIndex(0);
+	//	ftpJTabbedPane.setSelectedIndex(0);
     }
     
 }

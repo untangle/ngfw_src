@@ -48,6 +48,19 @@ public class VirusLog implements Comparable<VirusLog>, Serializable
         this.direction = direction;
     }
 
+    // util -------------------------------------------------------------------
+    public String getAction(){
+	return "";
+    }
+
+    public String getReason(){
+	return "";
+    }
+
+    public String getTraffic(){
+	return type.toString() + "  " + location;
+    }
+
     // accessors --------------------------------------------------------------
 
     public Date getCreateDate()
@@ -85,7 +98,7 @@ public class VirusLog implements Comparable<VirusLog>, Serializable
         return serverAddr;
     }
 
-    public int getSServerPort()
+    public int getServerPort()
     {
         return serverPort;
     }
