@@ -45,6 +45,7 @@ typedef struct {
         nc_shield_limit_t session_load;
         nc_shield_limit_t tcp_chk_load;
         nc_shield_limit_t udp_chk_load;
+        nc_shield_limit_t icmp_chk_load;
         nc_shield_limit_t evil_load;
     } limit;
     
@@ -54,6 +55,7 @@ typedef struct {
         double evil_load;
         double tcp_chk_load;
         double udp_chk_load;
+        double icmp_chk_load;
         double active_sess;
     } mult;
 

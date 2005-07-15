@@ -81,6 +81,7 @@ typedef struct reputation {
     netcap_load_t   srv_fail_load; /* Load of failed connection attempts */
     netcap_load_t   tcp_chk_load;  /* TCP chunk load */
     netcap_load_t   udp_chk_load;  /* UDP chunk load */
+    netcap_load_t   icmp_chk_load; /* ICMP chunk load */
     netcap_load_t   byte_load;     /* Byte load */
     netcap_load_t   print_load;    /* Printing rate, limited to x per second */
     netcap_load_t   lru_load;      /* LRU rate, limited to x per second */

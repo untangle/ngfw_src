@@ -34,6 +34,7 @@
 #define _SESSION_LOAD_LIMITS    50, 60, 75
 #define _TCP_CHK_LOAD_LIMITS    5000, 10000, 14000
 #define _UDP_CHK_LOAD_LIMITS    3000, 6000, 10000
+#define _ICMP_CHK_LOAD_LIMITS   3000, 6000, 10000
 #define _EVIL_LOAD_LIMITS       800, 1600, 2000
 
 /* Use a scale from 0 to 100 */
@@ -45,6 +46,9 @@
 #define _UDP_CHK_LOAD_MULT     (((_SHIELD_REP_MAX+0.0)/100) * (.4))
 #define _EVIL_LOAD_MULT        (((_SHIELD_REP_MAX+0.0)/75)  * (.1))
 #define _ACT_SESSION_MULT      (((_SHIELD_REP_MAX+0.0)/100) * (.1))
+
+/* This is not actually a multiplier, it is just a rate limit in seconds per IP */
+#define _ICMP_CHK_LOAD_MULT    40.0
 
 static int _verifyCfg            ( nc_shield_cfg_t* cfg );
 static int _verifyFence          ( nc_shield_fence_t* fence );
@@ -109,21 +113,23 @@ int nc_shield_cfg_def  ( nc_shield_cfg_t* cfg )
 {
     static nc_shield_cfg_t default_cfg = { /* Shield default configuration */
         .limit {
-            .cpu_load     { _CPU_LOAD_LIMITS }, 
-            .sessions     { _ACTIVE_SESSION_LIMITS }, 
-            .request_load { _REQUEST_LOAD_LIMITS }, 
-            .session_load { _SESSION_LOAD_LIMITS }, 
-            .tcp_chk_load { _TCP_CHK_LOAD_LIMITS }, 
-            .udp_chk_load { _UDP_CHK_LOAD_LIMITS }, 
-            .evil_load    { _EVIL_LOAD_LIMITS }
+            .cpu_load      { _CPU_LOAD_LIMITS }, 
+            .sessions      { _ACTIVE_SESSION_LIMITS }, 
+            .request_load  { _REQUEST_LOAD_LIMITS }, 
+            .session_load  { _SESSION_LOAD_LIMITS }, 
+            .tcp_chk_load  { _TCP_CHK_LOAD_LIMITS }, 
+            .udp_chk_load  { _UDP_CHK_LOAD_LIMITS }, 
+            .icmp_chk_load { _ICMP_CHK_LOAD_LIMITS }, 
+            .evil_load     { _EVIL_LOAD_LIMITS }
         },
         .mult {
-            .request_load _REQUEST_LOAD_MULT,
-            .session_load _SESSION_LOAD_MULT,
-            .tcp_chk_load _TCP_CHK_LOAD_MULT,
-            .udp_chk_load _UDP_CHK_LOAD_MULT,
-            .evil_load    _EVIL_LOAD_MULT,
-            .active_sess  _ACT_SESSION_MULT
+            .request_load  _REQUEST_LOAD_MULT,
+            .session_load  _SESSION_LOAD_MULT,
+            .tcp_chk_load  _TCP_CHK_LOAD_MULT,
+            .udp_chk_load  _UDP_CHK_LOAD_MULT,
+            .icmp_chk_load _ICMP_CHK_LOAD_MULT,
+            .evil_load     _EVIL_LOAD_MULT,
+            .active_sess   _ACT_SESSION_MULT
         },
         .lru {
             .low_water    512,
@@ -224,13 +230,14 @@ int nc_shield_cfg_get ( nc_shield_cfg_t* cfg, char* buf, int buf_len )
     if ( buf == NULL || buf_len < 0 ) return errlogargs();
     
     if (( _str_append ( "<shield-cfg>\n", &buf, &buf_rem ) < 0 ) ||
-        ( _limit_get ( "cpu-limit",    &cfg->limit.cpu_load,      &buf, &buf_rem ) < 0 ) ||
-        ( _limit_get ( "sess-limit",   &cfg->limit.sessions,      &buf, &buf_rem ) < 0 ) ||
-        ( _limit_get ( "request-load", &cfg->limit.request_load,  &buf, &buf_rem ) < 0 ) ||
-        ( _limit_get ( "session-load", &cfg->limit.session_load,  &buf, &buf_rem ) < 0 ) ||
-        ( _limit_get ( "tcp-chk-load", &cfg->limit.tcp_chk_load,  &buf, &buf_rem ) < 0 ) ||
-        ( _limit_get ( "udp-chk-load", &cfg->limit.udp_chk_load,  &buf, &buf_rem ) < 0 ) ||
-        ( _limit_get ( "evil-load",    &cfg->limit.evil_load,     &buf, &buf_rem ) < 0 ) ||
+        ( _limit_get ( "cpu-limit",     &cfg->limit.cpu_load,      &buf, &buf_rem ) < 0 ) ||
+        ( _limit_get ( "sess-limit",    &cfg->limit.sessions,      &buf, &buf_rem ) < 0 ) ||
+        ( _limit_get ( "request-load",  &cfg->limit.request_load,  &buf, &buf_rem ) < 0 ) ||
+        ( _limit_get ( "session-load",  &cfg->limit.session_load,  &buf, &buf_rem ) < 0 ) ||
+        ( _limit_get ( "tcp-chk-load",  &cfg->limit.tcp_chk_load,  &buf, &buf_rem ) < 0 ) ||
+        ( _limit_get ( "udp-chk-load",  &cfg->limit.udp_chk_load,  &buf, &buf_rem ) < 0 ) ||
+        ( _limit_get ( "icmp-chk-load", &cfg->limit.icmp_chk_load, &buf, &buf_rem ) < 0 ) ||
+        ( _limit_get ( "evil-load",     &cfg->limit.evil_load,     &buf, &buf_rem ) < 0 ) ||
         ( _str_append ( "<fence>\n", &buf, &buf_rem ) < 0 ) ||
         ( _fence_get ( "relaxed", &cfg->fence.relaxed, &buf, &buf_rem ) < 0 ) ||
         ( _fence_get ( "lax",     &cfg->fence.lax,     &buf, &buf_rem ) < 0 ) ||
@@ -243,12 +250,14 @@ int nc_shield_cfg_get ( nc_shield_cfg_t* cfg, char* buf, int buf_len )
 
     count = snprintf ( buf, buf_len, 
                        "<mult request-load='%lg' session-load='%lg' tcp-chk-load='%lg' udp-chk-load='%lg' "
-                       "evil-load='%lg' active-sess='%lg'/>\n<lru  low-water='%d' high-water='%d'/>\n"
+                       " icmp-chk-load='%lg' evil-load='%lg' active-sess='%lg'/>\n<lru  low-water='%d' "
+                       " high-water='%d'/>\n"
                        "<print rate='%lg'/>\n"
                        "</shield-cfg>\n",
                        cfg->mult.request_load, cfg->mult.session_load, cfg->mult.tcp_chk_load, 
-                       cfg->mult.udp_chk_load, cfg->mult.evil_load, cfg->mult.active_sess,
-                       cfg->lru.low_water, cfg->lru.high_water, cfg->print_rate );
+                       cfg->mult.udp_chk_load, cfg->mult.icmp_chk_load, cfg->mult.evil_load, 
+                       cfg->mult.active_sess, cfg->lru.low_water, cfg->lru.high_water, cfg->print_rate );
+                       
 
     if ( count < 0 ) return perrlog ( "snprintf" );
 
@@ -317,6 +326,8 @@ static int _parseCfg             ( nc_shield_cfg_t* cfg, xmlDoc* doc, xmlNode* x
             if ( _parseLimit ( &cfg->limit.tcp_chk_load, doc, cur ) < 0 ) return -1;
         } else if (( !xmlStrcmp ( cur->name, (xmlChar*)"udp-chk-load" ))) {
             if ( _parseLimit ( &cfg->limit.udp_chk_load, doc, cur ) < 0 ) return -1;
+        } else if (( !xmlStrcmp ( cur->name, (xmlChar*)"icmp-chk-load" ))) {
+            if ( _parseLimit ( &cfg->limit.icmp_chk_load, doc, cur ) < 0 ) return -1;
         } else if (( !xmlStrcmp ( cur->name, (xmlChar*)"evil-load" ))) {
             if ( _parseLimit ( &cfg->limit.evil_load, doc, cur ) < 0 ) return -1;
         } else if (( !xmlStrcmp ( cur->name, (xmlChar*)"mult" ))) {
@@ -347,12 +358,13 @@ static int _parseLimit           ( nc_shield_limit_t* limit, xmlDoc* doc, xmlNod
 
 static int _parseMult            ( nc_shield_cfg_t* cfg, xmlDoc* doc, xmlNode* multNode )
 {
-    if ( _parseAttributeDouble ( &cfg->mult.request_load, doc, multNode, "request-load" ) < 0 ) return -1;
-    if ( _parseAttributeDouble ( &cfg->mult.session_load, doc, multNode, "session-load" ) < 0 ) return -1;
-    if ( _parseAttributeDouble ( &cfg->mult.tcp_chk_load, doc, multNode, "tcp-chk-load" ) < 0 ) return -1;
-    if ( _parseAttributeDouble ( &cfg->mult.udp_chk_load, doc, multNode, "udp-chk-load" ) < 0 ) return -1;
-    if ( _parseAttributeDouble ( &cfg->mult.evil_load,    doc, multNode, "evil-load" ) < 0 ) return -1;
-    if ( _parseAttributeDouble ( &cfg->mult.active_sess,  doc, multNode, "active-sess" ) < 0 ) return -1;
+    if ( _parseAttributeDouble ( &cfg->mult.request_load,  doc, multNode, "request-load" ) < 0 ) return -1;
+    if ( _parseAttributeDouble ( &cfg->mult.session_load,  doc, multNode, "session-load" ) < 0 ) return -1;
+    if ( _parseAttributeDouble ( &cfg->mult.tcp_chk_load,  doc, multNode, "tcp-chk-load" ) < 0 ) return -1;
+    if ( _parseAttributeDouble ( &cfg->mult.udp_chk_load,  doc, multNode, "udp-chk-load" ) < 0 ) return -1;
+    if ( _parseAttributeDouble ( &cfg->mult.icmp_chk_load, doc, multNode, "icmp-chk-load" ) < 0 ) return -1;
+    if ( _parseAttributeDouble ( &cfg->mult.evil_load,     doc, multNode, "evil-load" ) < 0 ) return -1;
+    if ( _parseAttributeDouble ( &cfg->mult.active_sess,   doc, multNode, "active-sess" ) < 0 ) return -1;
 
     return 0;
 }

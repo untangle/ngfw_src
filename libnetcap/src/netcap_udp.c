@@ -231,7 +231,6 @@ int  netcap_udp_call_hooks (netcap_pkt_t* pkt, void* arg)
     
     // If it doesn't, intialize the session.
     if ( !session ) {
-        /* XXX Are shield errors considered catastrophic */
         if ( netcap_shield_rep_add_request  ( pkt->src.host.s_addr ) < 0 ) {
             errlog ( ERR_CRITICAL, "netcap_shield_rep_add_session\n" );
         }

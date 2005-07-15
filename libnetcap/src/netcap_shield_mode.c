@@ -36,13 +36,14 @@
 /*  USE JUST FOR TESTING */
 // #define _NC_SHIELD_EVT_TICKS 200
 
-#define _EXCEED_MODE( MODE ) (( cpu_load     > cfg->limit.cpu_load. MODE )    || \
-                              ( num_sessions > cfg->limit.sessions.  MODE )     || \
-                              ( request_load > cfg->limit.request_load.  MODE ) || \
-                              ( session_load > cfg->limit.session_load.  MODE ) || \
-                              ( tcp_chk_load > cfg->limit.tcp_chk_load.  MODE ) || \
-                              ( udp_chk_load > cfg->limit.udp_chk_load.  MODE ) || \
-                              ( evil_load    > cfg->limit.evil_load.  MODE ))
+#define _EXCEED_MODE( MODE ) (( cpu_load      > cfg->limit.cpu_load. MODE )    || \
+                              ( num_sessions  > cfg->limit.sessions.  MODE )     || \
+                              ( request_load  > cfg->limit.request_load.  MODE ) || \
+                              ( session_load  > cfg->limit.session_load.  MODE ) || \
+                              ( tcp_chk_load  > cfg->limit.tcp_chk_load.  MODE ) || \
+                              ( udp_chk_load  > cfg->limit.udp_chk_load.  MODE ) || \
+                              ( icmp_chk_load > cfg->limit.icmp_chk_load. MODE ) || \
+                              ( evil_load     > cfg->limit.evil_load.     MODE ))
 
 static struct
 {
@@ -163,6 +164,7 @@ static int _update( nc_shield_cfg_t* cfg, nc_shield_reputation_t* root_rep,
     netcap_load_val_t session_load;
     netcap_load_val_t tcp_chk_load;
     netcap_load_val_t udp_chk_load;
+    netcap_load_val_t icmp_chk_load;
     netcap_load_val_t evil_load;
     
     if ( cfg == NULL || root_rep == NULL || mode == NULL || fence == NULL ) return errlogargs();
@@ -185,11 +187,12 @@ static int _update( nc_shield_cfg_t* cfg, nc_shield_reputation_t* root_rep,
     // Could turn the number of clients into a load that gets calculated over time
     num_clients = 1.0;
     
-    request_load = root_rep->request_load.load * num_clients;
-    session_load = root_rep->session_load.load * num_clients;
-    tcp_chk_load = root_rep->tcp_chk_load.load * num_clients;
-    udp_chk_load = root_rep->udp_chk_load.load * num_clients;
-    evil_load    = root_rep->evil_load.load    * num_clients;
+    request_load  = root_rep->request_load.load  * num_clients;
+    session_load  = root_rep->session_load.load  * num_clients;
+    tcp_chk_load  = root_rep->tcp_chk_load.load  * num_clients;
+    udp_chk_load  = root_rep->udp_chk_load.load  * num_clients;
+    icmp_chk_load = root_rep->icmp_chk_load.load * num_clients;
+    evil_load     = root_rep->evil_load.load     * num_clients;
 
     if ( _EXCEED_MODE( closed )) {
         *mode = NC_SHIELD_MODE_CLOSED;

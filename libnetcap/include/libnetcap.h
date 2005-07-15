@@ -749,7 +749,7 @@ void  netcap_shield_unregister_hook   ( void );
 /**
  * netcap_shield_rep_add_chunk: Add a chunk to the reputation of ip.
  *  ip: The IP to add the chunk against.
- *  protocol: Either IPPROTO_UDP or IPPROTO_TCP.
+ *  protocol: Either IPPROTO_UDP, IPPROTO_ICMP or IPPROTO_TCP.
  *  size: Size of the chunk in bytes.
  */
 int   netcap_shield_rep_add_chunk      ( in_addr_t ip, int protocol, u_short size );

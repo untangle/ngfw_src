@@ -109,7 +109,7 @@ static int  _add_evil            ( nc_shield_reputation_t* rep, int count, void*
 static int  _add_request         ( nc_shield_reputation_t* rep, int count, void* arg, int update_load );
 static int  _add_session         ( nc_shield_reputation_t* rep, int count, void* arg, int update_load );
 static int  _end_session         ( nc_shield_reputation_t* rep, int count, void* arg, int update_load );
-static int  _add_chk             ( nc_shield_reputation_t* rep, int count, void* arg, int update_load );
+static int  _add_chunk           ( nc_shield_reputation_t* rep, int count, void* arg, int update_load );
 static int  _add_srv_conn        ( nc_shield_reputation_t* rep, int count, void* arg, int update_load );
 static int  _add_srv_fail        ( nc_shield_reputation_t* rep, int count, void* arg, int update_load );
 
@@ -218,6 +218,7 @@ int netcap_shield_init    ( void )
     netcap_load_init( &rep.srv_fail_load, _LOAD_INTERVAL_SESS,  NC_LOAD_INIT_TIME );
     netcap_load_init( &rep.tcp_chk_load,  _LOAD_INTERVAL_CHK,   NC_LOAD_INIT_TIME );
     netcap_load_init( &rep.udp_chk_load,  _LOAD_INTERVAL_CHK,   NC_LOAD_INIT_TIME );
+    netcap_load_init( &rep.icmp_chk_load, _LOAD_INTERVAL_CHK,   NC_LOAD_INIT_TIME );
     netcap_load_init( &rep.byte_load,     _LOAD_INTERVAL_BYTE,  NC_LOAD_INIT_TIME );
     netcap_load_init( &rep.print_load,    _LOAD_INTERVAL_PRINT, NC_LOAD_INIT_TIME );
     netcap_load_init( &rep.lru_load,      _LOAD_INTERVAL_LRU,   NC_LOAD_INIT_TIME );
@@ -350,17 +351,36 @@ netcap_shield_response_t* netcap_shield_rep_check        ( in_addr_t ip )
     case NC_SHIELD_RESET:   rep->rejected_sessions++; break;
     default: break;
     }
+    
+    nc_shield_rep_t prob;
+
+    if ( ans == NC_SHIELD_YES ) {
+        if ( rep->icmp_chk_load.load > _shield.cfg.mult.icmp_chk_load ) {
+            prob = ( rand() + 0.0 ) / RAND_MAX;
+            if ( prob < ( _shield.cfg.mult.icmp_chk_load / rep->icmp_chk_load.load )) {
+                response->icmp = NC_SHIELD_YES;
+            } else {
+                rep->dropped_sessions++;
+                response->icmp = NC_SHIELD_DROP;
+            }
+        } else {
+            response->icmp = NC_SHIELD_YES;
+        }
+    } else {
+        response->icmp = ans;
+    }
+
 
     response->if_print = 0;
-    
-    if ( ans != NC_SHIELD_YES ) {
+        
+    if ( ans != NC_SHIELD_YES || response->icmp != NC_SHIELD_YES ) {
         _check_if_print( ip, rep, response );
+        
     }
     
-    /* XXX For now set everything the same */
+    /* XXX For now set TCP and UDP the same. */
     response->tcp = ans;
     response->udp = ans;
-    response->icmp = ans;
     
     if ( nc_shield_stats_add_session( ans ) < 0 ) errlog( ERR_CRITICAL, "nc_shield_stats_add_session\n" );
 
@@ -479,7 +499,7 @@ int                  netcap_shield_rep_add_srv_fail ( in_addr_t ip )
 int                  netcap_shield_rep_add_chunk ( in_addr_t ip, int protocol, u_short size )
 {
     _chk_t chk = { .size size, .if_rx 1, .protocol protocol };
-    _apply_func_t func = { .func _add_chk, .arg (void*)&chk };
+    _apply_func_t func = { .func _add_chunk, .arg (void*)&chk };
 
     /* Do nothing if the shield is not enabled */
     if ( !_shield.enabled ) return 0;
@@ -712,7 +732,7 @@ static int  _add_evil            ( nc_shield_reputation_t *rep, int count, void*
     return 0;
 }
 
-static int _add_chk              ( nc_shield_reputation_t *rep, int count, void* arg, int update_load )
+static int _add_chunk           ( nc_shield_reputation_t *rep, int count, void* arg, int update_load )
 {
     _chk_t* chk;
     netcap_load_t* load = NULL;
@@ -720,8 +740,9 @@ static int _add_chk              ( nc_shield_reputation_t *rep, int count, void*
     if ( (chk = (_chk_t*)arg) == NULL ) return errlogargs();
 
     switch ( chk->protocol ) {
-    case IPPROTO_TCP: load = &rep->tcp_chk_load; break;
-    case IPPROTO_UDP: load = &rep->udp_chk_load; break;
+    case IPPROTO_TCP:  load = &rep->tcp_chk_load;  break;
+    case IPPROTO_UDP:  load = &rep->udp_chk_load;  break;
+    case IPPROTO_ICMP: load = &rep->icmp_chk_load; break;
     default: return errlogargs();
     }
     
@@ -749,6 +770,7 @@ static int _reputation_update    ( nc_shield_reputation_t *rep, int count, void*
         ( netcap_load_update( &rep->srv_fail_load, 0, 0 ) < 0) ||
         ( netcap_load_update( &rep->tcp_chk_load,  0, 0 ) < 0) ||
         ( netcap_load_update( &rep->udp_chk_load,  0, 0 ) < 0) ||
+        ( netcap_load_update( &rep->icmp_chk_load, 0, 0 ) < 0) ||
         ( netcap_load_update( &rep->byte_load,     0, 0 ) < 0) ||
         ( netcap_load_update( &rep->print_load,    0, 0 ) < 0)) {
         return errlog(ERR_CRITICAL,"netcap_load_update\n");
@@ -786,6 +808,7 @@ static int  _reputation_init     ( netcap_trie_item_t* item, in_addr_t ip )
         ( netcap_load_init( &rep->srv_fail_load, _LOAD_INTERVAL_SESS,  !NC_LOAD_INIT_TIME ) < 0) ||
         ( netcap_load_init( &rep->tcp_chk_load,  _LOAD_INTERVAL_CHK,   !NC_LOAD_INIT_TIME ) < 0) ||
         ( netcap_load_init( &rep->udp_chk_load,  _LOAD_INTERVAL_CHK,   !NC_LOAD_INIT_TIME ) < 0) ||
+        ( netcap_load_init( &rep->icmp_chk_load, _LOAD_INTERVAL_CHK,   !NC_LOAD_INIT_TIME ) < 0) ||
         ( netcap_load_init( &rep->byte_load,     _LOAD_INTERVAL_BYTE,  !NC_LOAD_INIT_TIME ) < 0) ||
         ( netcap_load_init( &rep->print_load,    _LOAD_INTERVAL_PRINT, !NC_LOAD_INIT_TIME ) < 0) ||
         ( netcap_load_init( &rep->lru_load,      _LOAD_INTERVAL_LRU,   !NC_LOAD_INIT_TIME ) < 0)) {
@@ -815,6 +838,7 @@ static int  _reputation_init     ( netcap_trie_item_t* item, in_addr_t ip )
         rep->srv_fail_load.load = ( fence->inheritance ) * rep->srv_fail_load.load;
         rep->tcp_chk_load.load  = ( fence->inheritance ) * rep->tcp_chk_load.load;
         rep->udp_chk_load.load  = ( fence->inheritance ) * rep->udp_chk_load.load;
+        rep->icmp_chk_load.load = ( fence->inheritance ) * rep->icmp_chk_load.load;
         rep->byte_load.load     = ( fence->inheritance ) * rep->byte_load.load;
     }
 
@@ -846,6 +870,8 @@ static nc_shield_rep_t  _reputation_eval     ( netcap_trie_item_t* item )
     rep_val += rep->tcp_chk_load.load * _shield.cfg.mult.tcp_chk_load;
     rep_val += rep->udp_chk_load.load * _shield.cfg.mult.udp_chk_load;
     rep_val += rep->evil_load.load    * _shield.cfg.mult.evil_load;
+
+    /* ICMP is not included in the reputation of the user, it is special cased in the response */
 
     /* Use the number of active sessions * multiplier * (depth/total_depth)^2, this way single child
      * nodes cannot refuse connections to new nodes */
@@ -959,7 +985,8 @@ static int  _status             ( int conn, struct sockaddr_in *dst_addr )
                              "session-load='%g' session-total='%d' srv-conn-load='%g' srv-conn-total='%d' "
                              "srv-fail-load='%g' srv-fail-total='%d' "
                              "tcp-chk-load='%g' tcp-chk-total='%d' udp-chk-load='%g' udp-chk-total='%d' "
-                             "byte-load='%g' byte-total='%d' rejected='%d' limited='%d'/>\n",
+                             "icmp-chk-load='%g' icmp-chk-total='%d' byte-load='%g' byte-total='%d' "
+                             "rejected='%d' limited='%d'/>\n",
                              ntohl(rep->ip), item->depth, rep->active_sessions, rep->rep,
                              rep->evil_load.load, rep->evil_load.total,
                              rep->request_load.load, rep->request_load.total,
@@ -968,6 +995,7 @@ static int  _status             ( int conn, struct sockaddr_in *dst_addr )
                              rep->srv_fail_load.load, rep->srv_fail_load.total,
                              rep->tcp_chk_load.load, rep->tcp_chk_load.total,
                              rep->udp_chk_load.load, rep->udp_chk_load.total,
+                             rep->icmp_chk_load.load, rep->icmp_chk_load.total,
                              rep->byte_load.load, rep->byte_load.total,
                             rep->rejected_sessions, rep->limited_sessions );
         if ( sendto( conn, buf, msg_len, 0, dst_addr, sizeof( struct sockaddr_in )) < 0 ) {
