@@ -20,11 +20,14 @@ class SpamPopHandler extends PopStateMachine
 {
     private final Logger logger = Logger.getLogger(SpamPopHandler.class);
 
+    private final SpamImpl transform;
+
     // constructors -----------------------------------------------------------
 
-    SpamPopHandler(TCPSession session)
+    SpamPopHandler(TCPSession session, SpamImpl transform)
     {
         super(session);
+        this.transform = transform;
     }
 
     // PopStateMachine methods -----------------------------------------------

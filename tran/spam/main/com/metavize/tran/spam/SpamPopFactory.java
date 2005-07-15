@@ -18,18 +18,20 @@ import org.apache.log4j.Logger;
 
 public class SpamPopFactory implements TokenHandlerFactory
 {
-    public static final SpamPopFactory FACTORY = new SpamPopFactory();
-
     private static final Logger logger = Logger.getLogger(SpamPopFactory.class);
+
+    private final SpamImpl transform;
 
     // constructors -----------------------------------------------------------
 
-    private SpamPopFactory() { }
+    SpamPopFactory(SpamImpl transform) {
+        this.transform = transform;
+    }
 
     // TokenHandlerFactory methods --------------------------------------------
 
     public TokenHandler tokenHandler(TCPSession session)
     {
-        return new SpamPopHandler(session);
+        return new SpamPopHandler(session, transform);
     }
 }

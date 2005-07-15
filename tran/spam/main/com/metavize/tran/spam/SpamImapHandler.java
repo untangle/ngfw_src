@@ -20,11 +20,14 @@ class SpamImapHandler extends ImapStateMachine
 {
     private final Logger logger = Logger.getLogger(SpamImapHandler.class);
 
+    private final SpamImpl transform;
+
     // constructors -----------------------------------------------------------
 
-    SpamImapHandler(TCPSession session)
+    SpamImapHandler(TCPSession session, SpamImpl transform)
     {
         super(session);
+        this.transform = transform;
     }
 
     // ImapStateMachine methods -----------------------------------------------

@@ -27,21 +27,26 @@ import net.sf.hibernate.Session;
 import net.sf.hibernate.Transaction;
 import org.apache.log4j.Logger;
 
-public class SpamImpl extends AbstractTransform implements Spam
+public class SpamImpl extends AbstractTransform implements SpamTransform
 {
     private static final Logger logger = Logger.getLogger(SpamImpl.class);
 
     private final PipeSpec[] pipeSpecs = new PipeSpec[] {
-        new SoloPipeSpec("spam-smtp", this, new TokenAdaptor(SpamSmtpFactory.FACTORY), Fitting.SMTP_TOKENS, Affinity.SERVER, 0),
-        new SoloPipeSpec("pop-smtp", this, new TokenAdaptor(SpamPopFactory.FACTORY), Fitting.POP_TOKENS, Affinity.SERVER, 0),
-        new SoloPipeSpec("imap-smtp", this, new TokenAdaptor(SpamImapFactory.FACTORY), Fitting.IMAP_TOKENS, Affinity.SERVER, 0)
+        new SoloPipeSpec("spam-smtp", this, new TokenAdaptor(new SpamSmtpFactory(this)), Fitting.SMTP_TOKENS, Affinity.SERVER, 0),
+        new SoloPipeSpec("pop-smtp", this, new TokenAdaptor(new SpamPopFactory(this)), Fitting.POP_TOKENS, Affinity.SERVER, 0),
+        new SoloPipeSpec("imap-smtp", this, new TokenAdaptor(new SpamImapFactory(this)), Fitting.IMAP_TOKENS, Affinity.SERVER, 0)
     };
+
+    private final SpamScanner scanner;
 
     private SpamSettings zSpamSettings;
 
     // constructors -----------------------------------------------------------
 
-    public SpamImpl() { }
+    public SpamImpl(SpamScanner scanner)
+    {
+        this.scanner = scanner;
+    }
 
     // Transform methods ------------------------------------------------------
 
@@ -124,6 +129,11 @@ public class SpamImpl extends AbstractTransform implements Spam
         }
 
         return;
+    }
+
+    SpamScanner getScanner()
+    {
+        return scanner;
     }
 
     // XXX soon to be deprecated ----------------------------------------------

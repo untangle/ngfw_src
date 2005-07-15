@@ -9,7 +9,11 @@
  * $Id$
  */
 
-package com.metavize.tran.spam;
+package com.metavize.tran.spamassassin;
+
+import com.metavize.tran.spam.SpamScanner;
+import com.metavize.tran.spam.SpamReport;
+import com.metavize.tran.spam.ReportItem;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -21,17 +25,20 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-class SpamAssassin
+class SpamAssassinScanner implements SpamScanner
 {
-    public static final SpamAssassin ASSASSIN = new SpamAssassin();
-
     private static final String REPORT_CMD = "/usr/bin/spamc-mv";
 
-    private final Logger logger = Logger.getLogger(SpamAssassin.class);
+    private final Logger logger = Logger.getLogger(SpamAssassinScanner.class.getName());
 
-    private SpamAssassin() { }
+    SpamAssassinScanner() { }
 
-    public SpamReport scan(File f, float threshold)
+    public String getVendorName()
+    {
+        return "SpamAssassin";
+    }
+
+    public SpamReport scanFile(File f, float threshold)
     {
         List<ReportItem> items = new LinkedList<ReportItem>();
         try {

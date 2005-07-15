@@ -24,9 +24,9 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <property name="casings"
         value="http,ftp,mail"/>
   <property name="bases"
-        value="virus"/>
+        value="virus,spam"/>
   <property name="transforms"
-        value="nat,firewall,airgap,reporting,protofilter,test,sigma,hauri,clam,spyware,httpblocker,spam"/>
+        value="nat,firewall,airgap,reporting,protofilter,test,sigma,hauri,clam,spyware,httpblocker,spamassassin"/>
 
 
 
@@ -160,7 +160,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
     </then> </if>
     <!-- transforms need casings and bases -->
     <if> <equals arg1="${tran.type}" arg2="transform"/> <then>
-        <var name="extra.classes" value="../tran/output/jar/virus-base.mar:../tran/output/jar/http-casing.mar:../tran/output/jar/ftp-casing.mar:../tran/output/jar/mail-casing.mar"/>
+        <var name="extra.classes" value="../tran/output/jar/spam-base.mar:../tran/output/jar/virus-base.mar:../tran/output/jar/http-casing.mar:../tran/output/jar/ftp-casing.mar:../tran/output/jar/mail-casing.mar"/>
     </then> </if>
 
     <!-- FIXME email special case -->
@@ -263,6 +263,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   </target>
 
   <target name="install.virus"/>
+  <target name="install.spam"/>
 
   <target name="install.sophos">
     <copy todir="${dist.mvvm.schema}/sophos-transform">
@@ -304,9 +305,12 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
     </jar>
   </target>
 
-  <target name="install.spam">
+  <target name="install.spamassassin">
+    <copy todir="${dist.mvvm.schema}/spamassassin-transform">
+      <fileset dir="spam/hier/${suffix.mvvm.schema}/spam-base"/>
+    </copy>
     <!-- XXX hack attack, need real gui jars -->
-    <jar update="true" destfile="${dist.mvvm.webstart}/spam-transform.mar">
+    <jar update="true" destfile="${dist.mvvm.webstart}/spamassassin-transform.mar">
       <fileset dir="${build.root}/mail"/>
     </jar>
   </target>
@@ -466,6 +470,13 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       <fileset dir="${build.gensrc}/virus"/>
     </jar>
   </target>
+  <target name="jar.spamassassin"> <!-- include Spam Abstract transform -->
+    <jar destfile="${build.jar}/${tran.name}-${tran.type}.mar" index="yes"
+         update="true">
+      <fileset dir="${build.root}/spam"/>
+      <fileset dir="${build.gensrc}/spam"/>
+    </jar>
+  </target>
 
   <target name="compile.test"/>
   <target name="compile.nat"/>
@@ -475,12 +486,13 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <target name="compile.ftp"/>
   <target name="compile.mail"/>
   <target name="compile.virus"/>
+  <target name="compile.spam"/>
   <target name="compile.sophos"/>
   <target name="compile.fprot"/>
   <target name="compile.hauri"/>
   <target name="compile.clam"/>
+  <target name="compile.spamassassin"/>
   <target name="compile.httpblocker"/>
-  <target name="compile.spam"/>
   <target name="compile.airgap"/>
   <target name="compile.reporting"/>
   <target name="compile.email"/>

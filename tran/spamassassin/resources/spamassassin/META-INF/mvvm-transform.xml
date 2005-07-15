@@ -8,13 +8,13 @@ This software is the confidential and proprietary information of
 Metavize Inc. ("Confidential Information").  You shall
 not disclose such Confidential Information.
 
-$Id: mvvm-transform.xml,v 1.6 2005/02/24 02:53:06 amread Exp $
+$Id$
 -->
 
 <mvvm-transform>
-  <transform-desc name="spam-transform"
-                  display-name="SpamGuard"
-                  classname="com.metavize.tran.spam.SpamImpl"
-                  gui-classname="com.metavize.tran.spam.gui.MTransformJPanel"/>
+  <transform-desc name="spamassassin-transform"
+                  display-name="SpamAssassin AntiVirus Scanner"
+                  classname="com.metavize.tran.spamassassin.SpamAssassinTransform"
+                  gui-classname="com.metavize.tran.spamassassin.gui.MTransformJPanel"/>
   <parent>mail-casing</parent>
 </mvvm-transform>

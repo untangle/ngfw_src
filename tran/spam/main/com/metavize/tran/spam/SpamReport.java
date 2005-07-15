@@ -20,6 +20,11 @@ import org.apache.log4j.Logger;
 
 public class SpamReport
 {
+    public static final float MAX_THRESHOLD = 1000;
+
+    public static final SpamReport ERROR =
+        new SpamReport(new LinkedList<ReportItem>(), MAX_THRESHOLD);
+
     private final float threshold;
     private final List<ReportItem> items;
     private final float score;
@@ -76,7 +81,7 @@ public class SpamReport
 
     public List<ReportItem> getItems()
     {
-        return new LinkedList<ReportItem>(items);
+        return items;
     }
 
     // Object methods ---------------------------------------------------------

@@ -13,7 +13,8 @@ package com.metavize.tran.spam;
 
 import com.metavize.mvvm.tran.Transform;
 
-public interface Spam extends Transform
+public interface SpamTransform extends Transform
 {
-    // XXX settings etc...
+    void setSpamSettings(SpamSettings spamSettings);
+    SpamSettings getSpamSettings();
 }

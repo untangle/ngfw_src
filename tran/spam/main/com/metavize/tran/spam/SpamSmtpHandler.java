@@ -13,6 +13,7 @@ package com.metavize.tran.spam;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.io.IOException;
 
 import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.tran.mail.MessageFile;
@@ -35,6 +36,7 @@ class SpamSmtpHandler extends SmtpStateMachine
     private static final int CUTOFF = 1 << 20;
     private static final float SPAM_SCORE = 5;
 
+    private final SpamImpl transform;
     private final List<Token> msgQueue = new LinkedList<Token>();
 
     private int size = 0;
@@ -44,9 +46,10 @@ class SpamSmtpHandler extends SmtpStateMachine
 
     // constructors -----------------------------------------------------------
 
-    SpamSmtpHandler(TCPSession session)
+    SpamSmtpHandler(TCPSession session, SpamImpl transform)
     {
         super(session);
+        this.transform = transform;
     }
 
     // SmtpStateMachine methods -----------------------------------------------
@@ -115,8 +118,20 @@ class SpamSmtpHandler extends SmtpStateMachine
             return new TokenResult(null, new Token[] { messageFile });
         } else {
             logger.debug("scanning message");
-            SpamReport sr = SpamAssassin.ASSASSIN.scan(messageFile.getFile(),
-                                                       SPAM_SCORE);
+            SpamReport sr = null;
+            try {
+                sr = transform.getScanner().scanFile(messageFile.getFile(), SPAM_SCORE);
+            } catch (IOException e) {
+                logger.error("Spam scan failed: "+ e);
+                sr = SpamReport.ERROR;
+            } catch (InterruptedException e) {
+                logger.error("Spam scan failed: "+ e);
+                sr = SpamReport.ERROR;
+            }
+            if (sr == null) {
+                logger.error("Spam scan failed: null");
+                sr = SpamReport.ERROR;
+            } 
 
             msgQueue.add(messageFile);
 
