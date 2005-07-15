@@ -67,14 +67,15 @@ public class UrlConfigJPanel extends javax.swing.JPanel implements Savable, Refr
         setPreferredSize(new java.awt.Dimension(563, 120));
         contentJPanel.setLayout(new java.awt.GridBagLayout());
 
+        contentJPanel.setBorder(new javax.swing.border.EtchedBorder());
         ftpButtonGroup.add(urlEnabledRadioButton);
         urlEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
         urlEnabledRadioButton.setText("<html><b>Enable</b> spyware URL blocking</html>");
         urlEnabledRadioButton.setFocusPainted(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 10);
         contentJPanel.add(urlEnabledRadioButton, gridBagConstraints);
 
         ftpButtonGroup.add(urlDisabledRadioButton);
@@ -83,7 +84,6 @@ public class UrlConfigJPanel extends javax.swing.JPanel implements Savable, Refr
         urlDisabledRadioButton.setFocusPainted(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
         contentJPanel.add(urlDisabledRadioButton, gridBagConstraints);
