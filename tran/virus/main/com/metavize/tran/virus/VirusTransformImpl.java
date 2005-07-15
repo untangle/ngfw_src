@@ -53,9 +53,16 @@ public class VirusTransformImpl extends AbstractTransform
     implements VirusTransform
 {
     private static final String FTP_QUERY
-        = "SELECT create_date, 'FTP' AS type, 'file' AS location, clean, "
-        + "       c_client_addr, c_client_port, s_server_addr, s_server_port, "
-        + "       client_intf, server_intf "
+        = "SELECT create_date, "
+        +        "'FTP' AS type, "
+        +        "'file' AS location, "
+        +        "NOT clean AS infected, "
+        +        "CASE WHEN clean 'PASSED' "
+        +             "WHEN virus_cleaned THEN 'CLEANED' "
+        +             "ELSE 'BLOCKED' "
+        +        "END AS action, "
+        +        "c_client_addr, c_client_port, s_server_addr, s_server_port, "
+        +        "client_intf, server_intf "
         + "FROM tr_virus_evt evt "
         + "JOIN pl_endp USING (session_id) "
         + "WHERE vendor_name = ? "
@@ -63,11 +70,15 @@ public class VirusTransformImpl extends AbstractTransform
 
     private static final String HTTP_QUERY
         = "SELECT create_date, "
-        + "       'HTTP' AS type, "
-        + "       'http://' || host || uri AS location, "
-        + "       NOT virus_cleaned AS clean, "
-        + "       c_client_addr, c_client_port, s_server_addr, s_server_port, "
-        + "       client_intf, server_intf "
+        +        "'HTTP' AS type, "
+        +        "'http://' || host || uri AS location, "
+        +        "NOT clean AS infected, "
+        +        "CASE WHEN clean THEN 'PASSED' "
+        +             "WHEN virus_cleaned THEN 'CLEANED' "
+        +             "ELSE 'BLOCKED' "
+        +        "END AS action, "
+        +        "c_client_addr, c_client_port, s_server_addr, s_server_port, "
+        +        "client_intf, server_intf "
         + "FROM tr_virus_evt_http evt "
         + "JOIN tr_http_evt_req req ON evt.request_line = req.request_id "
         + "JOIN pl_endp endp ON req.session_id = endp.session_id "
@@ -77,11 +88,14 @@ public class VirusTransformImpl extends AbstractTransform
 
     private static final String MAIL_QUERY
         = "SELECT create_date, "
-        + "       'MAIL' AS type, "
-        + "       subject AS location, "
-        + "       NOT virus_cleaned AS clean, "
-        + "       c_client_addr, c_client_port, s_server_addr, s_server_port, "
-        + "       client_intf, server_intf "
+        +        "'MAIL' AS type, "
+        +        "subject AS location, "
+        +        "NOT clean AS infected, "
+        +        "CASE WHEN msg_action = 'P' THEN 'PASSED' "
+        +             "WHEN msg_action = 'C' THEN 'CLEANED' "
+        +        "END AS action, "
+        +        "c_client_addr, c_client_port, s_server_addr, s_server_port, "
+        +        "client_intf, server_intf "
         + "FROM tr_virus_evt_mail evt "
         + "JOIN tr_mail_message_info info ON evt.msg_id = info.id "
         + "JOIN pl_endp endp ON info.session_id = endp.session_id "
@@ -90,11 +104,15 @@ public class VirusTransformImpl extends AbstractTransform
 
     private static final String SMTP_QUERY
         = "SELECT create_date, "
-        + "       'MAIL' AS type, "
-        + "       subject AS location, "
-        + "       NOT virus_cleaned AS clean, "
-        + "       c_client_addr, c_client_port, s_server_addr, s_server_port, "
-        + "       client_intf, server_intf "
+        +        "'MAIL' AS type, "
+        +        "subject AS location, "
+        +        "NOT clean AS infected, "
+        +        "c_client_addr, c_client_port, s_server_addr, s_server_port, "
+        +        "client_intf, server_intf "
+        +        "CASE WHEN msg_action = 'P' THEN 'PASSED' "
+        +             "WHEN msg_action = 'C' THEN 'CLEANED' "
+        +             "WHEN msg_action = 'B' THEN 'BLOCKED' "
+        +        "END AS action, "
         + "FROM tr_virus_evt_smtp evt "
         + "JOIN tr_mail_message_info info ON evt.msg_id = info.id "
         + "JOIN pl_endp endp ON info.session_id = endp.session_id "
@@ -588,7 +606,8 @@ public class VirusTransformImpl extends AbstractTransform
                 Date createDate = new Date(ts);
                 String type = rs.getString("type");
                 String location = rs.getString("location");
-                boolean clean = rs.getBoolean("clean");
+                boolean infected = rs.getBoolean("infected");
+                String action = rs.getString("action");
                 String clientAddr = rs.getString("c_client_addr");
                 int clientPort = rs.getInt("c_client_port");
                 String serverAddr = rs.getString("s_server_addr");
@@ -599,7 +618,7 @@ public class VirusTransformImpl extends AbstractTransform
                 Direction d = Direction.getDirection(clientIntf, serverIntf);
 
                 VirusLog rl = new VirusLog
-                    (createDate, type, location, clean, clientAddr,
+                    (createDate, type, location, infected, action, clientAddr,
                      clientPort, serverAddr, serverPort, d);
 
                 l.add(0, rl);

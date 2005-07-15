@@ -21,11 +21,13 @@ public class VirusLog implements Comparable<VirusLog>, Serializable
     private static final long serialVersionUID = 5822180413983083372L;
 
     public enum Type { HTTP, FTP, MAIL };
+    public enum Action { BLOCKED, PASSED, CLEANED };
 
     private final Date createDate;
     private final Type type;
     private final String location;
-    private final boolean clean;
+    private final boolean infected;
+    private final Action action;
     private final String clientAddr;
     private final int clientPort;
     private final String serverAddr;
@@ -33,14 +35,15 @@ public class VirusLog implements Comparable<VirusLog>, Serializable
     private final Direction direction;
 
     public VirusLog(Date createDate, String type, String location,
-                    boolean clean, String clientAddr,
-                    int clientPort, String serverAddr, int serverPort,
-                    Direction direction)
+                    boolean infected, String action,
+                    String clientAddr, int clientPort, String serverAddr,
+                    int serverPort, Direction direction)
     {
         this.createDate = createDate;
         this.type = Type.valueOf(type);
         this.location = location;
-        this.clean = clean;
+        this.infected = infected;
+        this.action = Action.valueOf(action);
         this.clientAddr = clientAddr;
         this.clientPort = clientPort;
         this.serverAddr = serverAddr;
@@ -78,9 +81,9 @@ public class VirusLog implements Comparable<VirusLog>, Serializable
         return location;
     }
 
-    public boolean isClean()
+    public boolean isInfected()
     {
-        return clean;
+        return infected;
     }
 
     public String getClientAddr()
