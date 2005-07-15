@@ -21,7 +21,7 @@ public class VirusLog implements Comparable<VirusLog>, Serializable
     private static final long serialVersionUID = 5822180413983083372L;
 
     public enum Type { HTTP, FTP, MAIL };
-    public enum Action { BLOCKED, PASSED, CLEANED };
+    public enum Action { BLOCKED, PASSED, CLEANED, REMOVED };
 
     private final Date createDate;
     private final Type type;
@@ -53,15 +53,15 @@ public class VirusLog implements Comparable<VirusLog>, Serializable
 
     // util -------------------------------------------------------------------
     public String getAction(){
-	return "";
+    return "";
     }
 
     public String getReason(){
-	return "";
+    return "";
     }
 
     public String getTraffic(){
-	return type.toString() + "  " + location;
+    return type.toString() + "  " + location;
     }
 
     // accessors --------------------------------------------------------------
