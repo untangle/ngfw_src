@@ -45,18 +45,24 @@ public class MPipelineJPanel extends javax.swing.JPanel {
         TransformContext installedTransformContext;
         initialInstallCount = installedTransformID.length;
         for(int i=0; i<installedTransformID.length; i++){
-	    if( Util.getTransformManager().transformContext(installedTransformID[i]).getMackageDesc().getType() != MackageDesc.TRANSFORM_TYPE ){
+            installedTransformContext = Util.getTransformManager().transformContext(installedTransformID[i]);	    
+	    if( installedTransformContext.getMackageDesc().getType() != MackageDesc.TRANSFORM_TYPE ){
 		installedCount++;
 		continue;
 	    }
-            installedTransformContext = Util.getTransformManager().transformContext(installedTransformID[i]);
-            AddTransformThread addTransformThread = new AddTransformThread(installedTransformContext);
-            addTransformThread.setContextClassLoader(Util.getClassLoader());
-            addTransformThread.start();
+	    else if( installedTransformContext.getMackageDesc().getRackPosition() < 0 ){
+		installedCount++;
+		continue;
+	    }
+	    else{
+		AddTransformThread addTransformThread = new AddTransformThread(installedTransformContext);
+		addTransformThread.setContextClassLoader(Util.getClassLoader());
+		addTransformThread.start();
+	    }
         }
-    if( installedTransformID.length == 0 )
-        Util.getStatusJProgressBar().setValue(64);
-
+	if( installedTransformID.length == 0 )
+	    Util.getStatusJProgressBar().setValue(64);
+	
         while(installedCount < initialInstallCount){
             try{
                 Thread.sleep(1000l);
@@ -64,7 +70,7 @@ public class MPipelineJPanel extends javax.swing.JPanel {
             catch(Exception e){}
         }
     }
-
+    
     // USED FOR LOADING/PRELOADING OF CASINGS
     public MCasingJPanel[] loadAllCasings(boolean generateGuis){
 	Vector<MCasingJPanel> mCasingJPanels = new Vector<MCasingJPanel>();

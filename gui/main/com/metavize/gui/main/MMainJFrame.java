@@ -65,6 +65,8 @@ public class MMainJFrame extends javax.swing.JFrame {
         for(int i=0; i<installedMackages.length; i++){
             if( installedMackages[i].getType() != MackageDesc.TRANSFORM_TYPE )
                 continue;
+	    else if( installedMackages[i].getRackPosition() < 0 )
+		continue;
             ButtonKey buttonKey = new ButtonKey(installedMackages[i].getName(),installedMackages[i].getRackPosition());
             MTransformJButton button = new MTransformJButton(installedMackages[i]);
             Tid[] transformInstances = Util.getTransformManager().transformInstances( button.getName() );
@@ -89,6 +91,8 @@ public class MMainJFrame extends javax.swing.JFrame {
         for(int i=0; i<storeMackages.length; i++){
             if( storeMackages[i].getType() != MackageDesc.TRANSFORM_TYPE )
                 continue;
+	    else if( storeMackages[i].getRackPosition() < 0 )
+		continue;
             ButtonKey buttonKey = new ButtonKey(storeMackages[i].getName(), storeMackages[i].getRackPosition());
             if(!toolboxMap.containsKey( buttonKey )){
                 MTransformJButton button = new MTransformJButton(storeMackages[i]);
