@@ -71,6 +71,8 @@ public class TranReporter {
 	BufferedReader br = new BufferedReader(new InputStreamReader(is));
 	
 	for (String line = br.readLine(); null != line; line = br.readLine()) {
+            if (line.startsWith("#"))
+                continue;
 	    StringTokenizer tok = new StringTokenizer(line, ":");
 	    if (!tok.hasMoreTokens()) { continue; }
 	    String resourceOrClassname = tok.nextToken();
