@@ -107,7 +107,7 @@ public class VirusPOPConfig implements Serializable
      * @return the action to take if a message is judged to be virus.
      * @hibernate.property
      * column="MSG_ACTION"
-     * type="com.metavize.tran.mail.VirusMessageActionUserType"
+     * type="com.metavize.tran.virus.VirusMessageActionUserType"
      * not-null="true"
      */
     public VirusMessageAction getMsgAction()

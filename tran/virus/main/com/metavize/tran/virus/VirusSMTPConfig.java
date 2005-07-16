@@ -111,7 +111,7 @@ public class VirusSMTPConfig implements Serializable
      * @return the action to take if a message is judged to be virus.
      * @hibernate.property
      * column="MSG_ACTION"
-     * type="com.metavize.tran.mail.SMTPVirusMessageActionUserType"
+     * type="com.metavize.tran.virus.SMTPVirusMessageActionUserType"
      * not-null="true"
      */
     public SMTPVirusMessageAction getMsgAction()

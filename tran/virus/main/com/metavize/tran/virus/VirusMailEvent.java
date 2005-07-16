@@ -95,7 +95,7 @@ public class VirusMailEvent extends LogEvent
      *
      * @return action.
      * @hibernate.property
-     * type="com.metavize.tran.mail.VirusMessageActionUserType"
+     * type="com.metavize.tran.virus.VirusMessageActionUserType"
      * column="ACTION"
      */
     public VirusMessageAction getAction()
