@@ -19,35 +19,9 @@ REPORT_DIR=@MVVM_WEB@/reports
 # roll up logs, deleting any more than 31 days old (and thus unreportable  on)
 @USR_BIN@/rollup-logs 31
 
-# make user mapping
-psql -U metavize mvvm <<EOF
-DROP TABLE addr_map;
-
-CREATE TABLE addr_map (addr inet PRIMARY KEY, name varchar(64));
-
-INSERT INTO addr_map
-(SELECT addr, COALESCE(name, host(addr)) AS name
- FROM (SELECT addr, min(position) AS min_idx
-       FROM (SELECT c_client_addr AS addr FROM pl_endp
-             UNION SELECT c_server_addr AS addr FROM pl_endp
-             UNION SELECT s_client_addr AS addr FROM pl_endp
-             UNION SELECT s_server_addr AS addr FROM pl_endp
-             UNION SELECT client_addr   AS addr FROM mvvm_login_evt) AS addrs
-       LEFT OUTER JOIN ipmaddr_dir_entries entry JOIN ipmaddr_rule rule USING (rule_id)
-       ON rule.ipmaddr >>= addr
-       WHERE NOT addr ISNULL
-       GROUP BY addr) AS pos_idxs
- LEFT OUTER JOIN ipmaddr_dir_entries entry JOIN ipmaddr_rule rule USING (rule_id)
- ON min_idx = position);
-EOF
-
 $JAVA_HOME/bin/java -Xmx512m \
     -Dlog4j.configuration=file:@MVVM_HOME@/conf/log4j-reporter.xml \
     com.metavize.mvvm.reporting.Reporter $REPORT_DIR 32 $mars
-
-psql -U metavize mvvm <<EOF
-DROP TABLE addr_map;
-EOF
 
 cp -pr $REPORT_DIR/images $REPORT_DIR/current
 
