@@ -225,7 +225,7 @@ ALTER TABLE ipmaddr_dir_entries ADD CONSTRAINT FKC67DE356B5257E75 FOREIGN KEY (i
 
 ALTER TABLE ipmaddr_dir_entries ADD CONSTRAINT FKC67DE356871AAD3E FOREIGN KEY (rule_id) REFERENCES ipmaddr_rule;
 
-CREATE INDEX pl_endp_sid on pl_endp (session_id);
+CREATE INDEX pl_endp_sid_idx on pl_endp (session_id);
 CREATE INDEX pl_endp_cdate_idx ON pl_endp (create_date);
 
 CREATE SEQUENCE hibernate_sequence;

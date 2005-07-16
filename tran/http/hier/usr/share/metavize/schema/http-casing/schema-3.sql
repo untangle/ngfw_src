@@ -30,11 +30,7 @@ CREATE TABLE tr_http_req_line (
     http_version varchar(10),
     PRIMARY KEY (request_id));
 
-CREATE INDEX tr_http_evt_req_ts ON tr_http_evt_req (time_stamp);
-CREATE INDEX tr_http_evt_resp_rid ON tr_http_evt_resp (request_id);
+CREATE INDEX tr_http_evt_req_ts_idx ON tr_http_evt_req (time_stamp);
+CREATE INDEX tr_http_evt_resp_rid_idx ON tr_http_evt_resp (request_id);
 
 ALTER TABLE tr_http_settings ADD CONSTRAINT fkf4229df91446f FOREIGN KEY (tid) REFERENCES tid;
-
-ALTER TABLE tr_http_evt_resp ADD CONSTRAINT FKC9BB12A21F20A4EB FOREIGN KEY (request_id) REFERENCES tr_http_req_line ON DELETE CASCADE;
-
-ALTER TABLE tr_http_evt_req ADD CONSTRAINT FK40505B6C1F20A4EB FOREIGN KEY (request_id) REFERENCES tr_http_req_line ON DELETE CASCADE;

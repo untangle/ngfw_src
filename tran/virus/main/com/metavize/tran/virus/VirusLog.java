@@ -28,6 +28,7 @@ public class VirusLog implements Comparable<VirusLog>, Serializable
     private final String location;
     private final boolean infected;
     private final Action action;
+    private final String virusName;
     private final String clientAddr;
     private final int clientPort;
     private final String serverAddr;
@@ -35,7 +36,7 @@ public class VirusLog implements Comparable<VirusLog>, Serializable
     private final Direction direction;
 
     public VirusLog(Date createDate, String type, String location,
-                    boolean infected, String action,
+                    boolean infected, String action, String virusName,
                     String clientAddr, int clientPort, String serverAddr,
                     int serverPort, Direction direction)
     {
@@ -44,6 +45,7 @@ public class VirusLog implements Comparable<VirusLog>, Serializable
         this.location = location;
         this.infected = infected;
         this.action = Action.valueOf(action);
+        this.virusName = virusName;
         this.clientAddr = clientAddr;
         this.clientPort = clientPort;
         this.serverAddr = serverAddr;
@@ -96,6 +98,11 @@ public class VirusLog implements Comparable<VirusLog>, Serializable
     public boolean isInfected()
     {
         return infected;
+    }
+
+    public String getVirusName()
+    {
+        return virusName;
     }
 
     public String getClientAddr()

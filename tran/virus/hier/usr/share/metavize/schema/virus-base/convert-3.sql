@@ -1,4 +1,4 @@
--- convert script for release 2.5 (aka 1.5)
+-- convert script for release 2.5
 
 -- add mail settings
 

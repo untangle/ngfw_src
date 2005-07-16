@@ -55,10 +55,11 @@ public class VirusTransformImpl extends AbstractTransform
         +        "'FTP' AS type, "
         +        "'file' AS location, "
         +        "NOT clean AS infected, "
-        +        "CASE WHEN clean 'PASSED' "
+        +        "CASE WHEN clean THEN 'PASSED' "
         +             "WHEN virus_cleaned THEN 'CLEANED' "
         +             "ELSE 'BLOCKED' "
         +        "END AS action, "
+        +        "virus_name, "
         +        "c_client_addr, c_client_port, s_server_addr, s_server_port, "
         +        "client_intf, server_intf "
         + "FROM tr_virus_evt evt "
@@ -75,6 +76,7 @@ public class VirusTransformImpl extends AbstractTransform
         +             "WHEN virus_cleaned THEN 'CLEANED' "
         +             "ELSE 'BLOCKED' "
         +        "END AS action, "
+        +        "virus_name, "
         +        "c_client_addr, c_client_port, s_server_addr, s_server_port, "
         +        "client_intf, server_intf "
         + "FROM tr_virus_evt_http evt "
@@ -93,6 +95,7 @@ public class VirusTransformImpl extends AbstractTransform
         +             "WHEN msg_action = 'R' THEN 'REMOVED' "
         +             "WHEN msg_action = 'C' THEN 'CLEANED' "
         +        "END AS action, "
+        +        "virus_name, "
         +        "c_client_addr, c_client_port, s_server_addr, s_server_port, "
         +        "client_intf, server_intf "
         + "FROM tr_virus_evt_mail evt "
@@ -106,13 +109,14 @@ public class VirusTransformImpl extends AbstractTransform
         +        "'MAIL' AS type, "
         +        "subject AS location, "
         +        "NOT clean AS infected, "
-        +        "c_client_addr, c_client_port, s_server_addr, s_server_port, "
-        +        "client_intf, server_intf "
         +        "CASE WHEN msg_action = 'P' THEN 'PASSED' "
         +             "WHEN msg_action = 'R' THEN 'REMOVED' "
         +             "WHEN msg_action = 'C' THEN 'CLEANED' "
         +             "WHEN msg_action = 'B' THEN 'BLOCKED' "
         +        "END AS action, "
+        +        "virus_name, "
+        +        "c_client_addr, c_client_port, s_server_addr, s_server_port, "
+        +        "client_intf, server_intf "
         + "FROM tr_virus_evt_smtp evt "
         + "JOIN tr_mail_message_info info ON evt.msg_id = info.id "
         + "JOIN pl_endp endp ON info.session_id = endp.session_id "
@@ -608,6 +612,7 @@ public class VirusTransformImpl extends AbstractTransform
                 String location = rs.getString("location");
                 boolean infected = rs.getBoolean("infected");
                 String action = rs.getString("action");
+                String virusName = rs.getString("virus_name");
                 String clientAddr = rs.getString("c_client_addr");
                 int clientPort = rs.getInt("c_client_port");
                 String serverAddr = rs.getString("s_server_addr");
@@ -618,8 +623,9 @@ public class VirusTransformImpl extends AbstractTransform
                 Direction d = Direction.getDirection(clientIntf, serverIntf);
 
                 VirusLog rl = new VirusLog
-                    (createDate, type, location, infected, action, clientAddr,
-                     clientPort, serverAddr, serverPort, d);
+                    (createDate, type, location, infected, action,
+                     virusName, clientAddr, clientPort, serverAddr,
+                     serverPort, d);
 
                 l.add(0, rl);
             }
