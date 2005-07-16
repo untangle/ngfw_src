@@ -143,25 +143,13 @@ Description: The Metavize Firewall Software Appliance
  The Firewall Software Appliance allows network traffic to be blocked
  based on simple rules.
 
-Package: reporting-transform
-Architecture: any
-Depends: mvvm
-XB-Price: 0
-XB-Display-Name: EdgeReport
-XB-Website: http://www.metavize.com/reports.html
-XB-Rack-Position: 0
-Description: The Metavize Report Generator
- EdgeReport generates document reports about activities on your network.
- EdgeReport will report general network activity, and information supplied
- by other Software Appliances.
-
 Package: spamassassin-transform
 Architecture: any
 Depends: mvvm, spamc-mv
 XB-Price: 0
 XB-Display-Name: SpamGuard
 XB-Website: http://www.metavize.com/spam.html
-XB-RackPosition: 1001
+XB-Rack-Position: 1001
 Description: The Metavize SpamGuard Software Appliance
  The SpamGuard Software Appliance marks Spam email as Spam.
 
@@ -171,9 +159,21 @@ Depends: mvvm
 XB-Price: 0
 XB-Display-Name: Test
 XB-Website: http://www.metavize.com
-XB-RackPosition: 1001
+XB-Rack-Position: 2002
 Description: The Metavize Test Software Appliance
  The Test Software Appliance is for internal Metavize testing.
+
+Package: reporting-transform
+Architecture: any
+Depends: mvvm
+XB-Price: 0
+XB-Display-Name: EdgeReport
+XB-Website: http://www.metavize.com/reports.html
+XB-Rack-Position: 10000
+Description: The Metavize Report Generator
+ EdgeReport generates document reports about activities on your network.
+ EdgeReport will report general network activity, and information supplied
+ by other Software Appliances.
 
 Package: metavize-client
 Architecture: any
