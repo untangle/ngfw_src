@@ -1,7 +1,12 @@
 /*
- * JPanel.java
+ * Copyright (c) 2004, 2005 Metavize Inc.
+ * All rights reserved.
  *
- * Created on June 10, 2004, 11:28 AM
+ * This software is the confidential and proprietary information of
+ * Metavize Inc. ("Confidential Information").  You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id: MLogTableJPanel.java 194 2005-04-06 19:13:55Z inieves $
  */
 
 package com.metavize.gui.widgets.editTable;

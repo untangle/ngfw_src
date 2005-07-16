@@ -1,7 +1,12 @@
 /*
- * StoreJPanel.java
+ * Copyright (c) 2004, 2005 Metavize Inc.
+ * All rights reserved.
  *
- * Created on April 4, 2005, 7:18 PM
+ * This software is the confidential and proprietary information of
+ * Metavize Inc. ("Confidential Information").  You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id: StoreJPanel.java 194 2005-04-06 19:13:55Z inieves $
  */
 
 package com.metavize.gui.store;

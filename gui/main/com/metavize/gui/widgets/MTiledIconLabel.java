@@ -9,12 +9,6 @@
  *  $Id$
  */
 
-/*
- * MPasswordField.java
- *
- * Created on December 14, 2004, 7:00 PM
- */
-
 package com.metavize.gui.widgets;
 
 import java.awt.*;

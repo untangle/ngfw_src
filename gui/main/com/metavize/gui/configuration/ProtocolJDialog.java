@@ -1,7 +1,12 @@
 /*
- * NetworkJDialog.java
+ * Copyright (c) 2004, 2005 Metavize Inc.
+ * All rights reserved.
  *
- * Created on December 12, 2004, 1:06 AM
+ * This software is the confidential and proprietary information of
+ * Metavize Inc. ("Confidential Information").  You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id$
  */
 
 package com.metavize.gui.configuration;

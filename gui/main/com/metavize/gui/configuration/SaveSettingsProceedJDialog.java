@@ -1,10 +1,16 @@
 /*
- * ProceedJDialog.java
+ * Copyright (c) 2004, 2005 Metavize Inc.
+ * All rights reserved.
  *
- * Created on July 28, 2004, 7:48 PM
+ * This software is the confidential and proprietary information of
+ * Metavize Inc. ("Confidential Information").  You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id: SaveSettingsProceedJDialog.java 194 2005-04-06 19:13:55Z inieves $
  */
 
 package com.metavize.gui.configuration;
+
 import com.metavize.gui.util.Util;
 import com.metavize.mvvm.ToolboxManager;
 /**

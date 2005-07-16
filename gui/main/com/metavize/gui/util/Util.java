@@ -1,7 +1,12 @@
 /*
- * util.java
+ * Copyright (c) 2004, 2005 Metavize Inc.
+ * All rights reserved.
  *
- * Created on March 28, 2004, 5:52 PM
+ * This software is the confidential and proprietary information of
+ * Metavize Inc. ("Confidential Information").  You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id$
  */
 
 package com.metavize.gui.util;

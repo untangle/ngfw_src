@@ -1,7 +1,12 @@
 /*
- * asdf.java
+ * Copyright (c) 2004, 2005 Metavize Inc.
+ * All rights reserved.
  *
- * Created on March 12, 2004, 1:46 AM
+ * This software is the confidential and proprietary information of
+ * Metavize Inc. ("Confidential Information").  You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id$
  */
 
 package com.metavize.gui.main;

@@ -1,7 +1,12 @@
 /*
- * UpgradeJDialog.java
+ * Copyright (c) 2004, 2005 Metavize Inc.
+ * All rights reserved.
  *
- * Created on July 16, 2004, 6:04 AM
+ * This software is the confidential and proprietary information of
+ * Metavize Inc. ("Confidential Information").  You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id$
  */
 
 package com.metavize.gui.upgrade;

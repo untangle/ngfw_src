@@ -1,9 +1,18 @@
-package com.metavize.gui.widgets.editTable;
+/*
+ * Copyright (c) 2004, 2005 Metavize Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Metavize Inc. ("Confidential Information").  You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id$
+ */
 
+package com.metavize.gui.widgets.editTable;
 
 import com.metavize.gui.transform.*;
 import com.metavize.gui.util.*;
-
 
 import com.metavize.mvvm.tran.*;
 
@@ -82,8 +91,6 @@ public abstract class MSortedTableModel extends DefaultTableModel implements Ref
     public static final StringConstants sc = new StringConstants();
     ////////////////////////////////
 
-
-    protected MTableChangeListener mTableChangeListener;
     
     private int descriptionIndex = -1;
     private Vector editableVector = new Vector();
@@ -467,10 +474,6 @@ public abstract class MSortedTableModel extends DefaultTableModel implements Ref
     }
     //// TableModel interface methods //////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////    
-
-    public void setMTableChangeListener(MTableChangeListener mTableChangeListener){
-        this.mTableChangeListener = mTableChangeListener;
-    }
     
     public void flushLog(){
         

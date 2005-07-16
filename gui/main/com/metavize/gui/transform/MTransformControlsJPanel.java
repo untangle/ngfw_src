@@ -1,13 +1,12 @@
-
 /*
- * Copyright (c) 2004 Metavize Inc.
+ * Copyright (c) 2004, 2005 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * TransformMinJPanel.java by inieves on March 1, 2004, 12:40 PM
+ * $Id$
  */
 
 package com.metavize.gui.transform;
