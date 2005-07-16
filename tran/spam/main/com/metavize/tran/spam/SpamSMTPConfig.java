@@ -111,7 +111,7 @@ public class SpamSMTPConfig implements Serializable
      * @return the action to take if a message is judged to be spam.
      * @hibernate.property
      * column="MSG_ACTION"
-     * type="com.metavize.tran.mail.SMTPSpamMessageActionUserType"
+     * type="com.metavize.tran.spam.SMTPSpamMessageActionUserType"
      * not-null="true"
      */
     public SMTPSpamMessageAction getMsgAction()

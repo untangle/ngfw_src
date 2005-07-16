@@ -107,7 +107,7 @@ public class SpamLogEvent extends LogEvent
      *
      * @return action.
      * @hibernate.property
-     * type="com.metavize.tran.mail.SpamMessageActionUserType"
+     * type="com.metavize.tran.spam.SpamMessageActionUserType"
      * column="ACTION"
      */
     public SpamMessageAction getAction()

@@ -108,7 +108,7 @@ public class SpamPOPConfig implements Serializable
      * @return the action to take if a message is judged to be spam.
      * @hibernate.property
      * column="MSG_ACTION"
-     * type="com.metavize.tran.mail.SpamMessageActionUserType"
+     * type="com.metavize.tran.spam.SpamMessageActionUserType"
      * not-null="true"
      */
     public SpamMessageAction getMsgAction()
