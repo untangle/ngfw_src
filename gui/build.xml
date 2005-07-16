@@ -16,7 +16,7 @@ $Id: build.xml,v 1.22 2005/03/25 04:00:30 jdi Exp $
   <import file="../buildtools/buildmagic.xml"/>
 
   <!-- main targets -->
-  <target name="pkg.gensrc"  depends="gensrc.servlets"/>
+  <target name="pkg.gensrc"  depends="gensrc.servlets, gensrc.version"/>
   <target name="pkg.compile" depends="compile.gui"/>
   <target name="pkg.jar"     depends="jar.gui, jar.servlets"/>
   <target name="pkg.install" depends="install.hier, install.gui, install.servlets, install.webstart"/>
@@ -24,6 +24,15 @@ $Id: build.xml,v 1.22 2005/03/25 04:00:30 jdi Exp $
 
 
   <property name="build.gui" value="${build.root}/gui"/>
+
+  <target name="gensrc.version">
+    <mkdir dir="${build.gensrc}/com/metavize/gui/util"/>
+    <copy file="resources/Version.java" toFile="${build.gensrc}/com/metavize/gui/util/Version.java" overwrite="true"/>
+    <exec executable="/bin/sh" failonerror="true">
+      <arg value="-c"/>
+      <arg value="/bin/sed s/\&quot;VERSION\&quot;/\&quot;`cat ../../PUBVERSION`\&quot;/g -i ./output/gensrc/com/metavize/gui/util/Version.java"/>
+    </exec>
+  </target>
 
   <target name="gensrc.servlets">
     <!-- Do the jsp's so we don't need a JDK at runtime -->
@@ -54,11 +63,6 @@ $Id: build.xml,v 1.22 2005/03/25 04:00:30 jdi Exp $
 
   <target name="compile.gui">
     <mkdir dir="${build.gui}"/>
-
-    <exec executable="/bin/sh" failonerror="true">
-      <arg value="-c"/>
-      <arg value="/bin/sed s/\&quot;[0-9]\.[0-9]\.*\&quot;/\&quot;`cat ../../PUBVERSION`\&quot;/g -i ./main/com/metavize/gui/util/Util.java"/>
-    </exec>
 
     <exec executable="${buildtool.base}/dependset.sh">
       <arg value="${build.gui}"/>
