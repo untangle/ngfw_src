@@ -37,6 +37,7 @@ public class ReportGenerator
         typeAliases.put("Float", "java.lang.Float");
         typeAliases.put("Double", "java.lang.Double"); 
         typeAliases.put("Long", "java.lang.Long");
+        typeAliases.put("Boolean", "java.lang.Boolean");
         typeAliases.put("Timestamp", "java.sql.Timestamp");
     }
         
@@ -115,7 +116,7 @@ public class ReportGenerator
         FilterSet fset = new FilterSet();
         fset.setFiltersfile(rpdFile);
         String fieldsProp = getFields(props);
-        System.out.println("FIELDS: " + fieldsProp);
+        // System.out.println("FIELDS: " + fieldsProp);
         fset.addFilter(FIELDS_PROPERTY, fieldsProp);
 
         FilterSetCollection fsets = new FilterSetCollection();
@@ -128,7 +129,7 @@ public class ReportGenerator
         StringBuilder sb = new StringBuilder();
         for (int i = 0;; i++) {
             String name = props.getProperty(FIELD_PROPERTY_PREFIX + i + ".name");
-            System.out.println("Looking for " + FIELD_PROPERTY_PREFIX + i + ".name" + ", got " + name);
+            // System.out.println("Looking for " + FIELD_PROPERTY_PREFIX + i + ".name" + ", got " + name);
             if (name == null) {
                 if (i > 0)
                     break;
