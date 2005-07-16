@@ -16,7 +16,7 @@ FROM (SELECT count(*) AS total_count FROM tr_spyware_evt_access AS evt
       WHERE evt.time_stamp > $P{startTime} AND evt.time_stamp < $P{endTime}) AS foo,
      tr_spyware_evt_access evt
 JOIN pl_endp endp USING (session_id)
-JOIN addr_map ON addr = c_client_addr
+JOIN merged_address_map mam ON addr = c_client_addr AND evt.time_stamp >= mam.start_time AND evt.time_stamp < mam.end_time
 WHERE evt.time_stamp > $P{startTime}
 AND evt.time_stamp < $P{endTime}
 GROUP BY name, total_count

@@ -1,0 +1,38 @@
+TEMPLATE=Detail
+REPORT_NAME=ProtoFilterDetail
+REPORT_TITLE=Protocol Policy Violations
+FIELD_1.name=time_stamp
+FIELD_1.type=Timestamp
+FIELD_2.name=c_client_addr
+FIELD_2.type=String
+FIELD_3.name=c_server_addr
+FIELD_3.type=String
+FIELD_4.name=c_server_port
+FIELD_4.type=Integer
+FIELD_5.name=protocol
+FIELD_5.type=String
+FIELD_6.name=blocked
+FIELD_6.type=Boolean
+FIELD_7.name=name
+FIELD_7.type=String
+QUERY=SELECT evt.time_stamp, name, c_client_addr, c_server_addr, c_server_port, protocol, blocked, p2c_bytes \
+ FROM tr_protofilter_evt evt \
+ JOIN pl_stats USING (session_id) \
+ JOIN pl_endp USING (session_id) \
+ JOIN merged_address_map mam ON c_client_addr = addr AND evt.time_stamp >= mam.start_time AND evt.time_stamp < mam.end_time \
+ WHERE evt.time_stamp > $P{startTime} AND evt.time_stamp < $P{endTime} \
+ ORDER BY time_stamp
+TOPLEFT.label=Timestamp
+TOPLMID.label=User
+BOTLMID.label=Client
+TOPRMID.label=Protocol
+BOTRMID.label=Action
+TOPRIGHT.label=Server
+BOTRIGHT.label=Port
+TOPRMID.expr=$F{protocol}
+TOPLMID.expr=$F{name}
+TOPLEFT.expr=$F{time_stamp}
+BOTRMID.expr=$F{blocked}.booleanValue() ? "blocked" : "passed"
+BOTLMID.expr=$F{c_client_addr}
+BOTRIGHT.expr=$F{c_server_port}
+TOPRIGHT.expr=$F{c_server_addr}

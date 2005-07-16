@@ -24,7 +24,7 @@
   WHERE resp.time_stamp > $P{startTime} AND resp.time_stamp < $P{endTime}) AS size,
   tr_http_evt_req req JOIN pl_endp endp USING (session_id)
   JOIN tr_http_evt_resp resp USING (request_id)
-  JOIN addr_map ON addr = c_client_addr
+  JOIN merged_address_map mam ON addr = c_client_addr AND resp.time_stamp >= mam.start_time AND resp.time_stamp < mam.end_time
   WHERE resp.time_stamp > $P{startTime} AND resp.time_stamp < $P{endTime}
   AND NOT c_client_addr ISNULL
   GROUP BY name, total_size

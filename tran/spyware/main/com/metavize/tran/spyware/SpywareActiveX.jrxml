@@ -15,7 +15,7 @@ SELECT name, count(*) AS hits, total_hits
   FROM (SELECT count(*) AS total_hits FROM tr_spyware_evt_activex) as total_count,
   tr_spyware_evt_activex evt
   JOIN pl_endp endp USING (session_id)
-  JOIN addr_map ON addr = c_client_addr
+  JOIN merged_address_map mam ON addr = c_client_addr AND evt.time_stamp >= mam.start_time AND evt.time_stamp < mam.end_time
   WHERE evt.time_stamp > $P{startTime} AND evt.time_stamp < $P{endTime}
   AND NOT c_client_addr ISNULL
   GROUP BY name, total_hits

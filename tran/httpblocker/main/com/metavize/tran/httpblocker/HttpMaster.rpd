@@ -1,7 +1,7 @@
 TEMPLATE=MasterOfFourChildren
 REPORT_NAME=HttpMaster
 REPORT_TITLE=Web Content Control
-SUBREPORT_1=com/metavize/tran/httpblocker/HttpDomains.jasper
+SUBREPORT_1=reports/HttpDomains.jasper
 SUBREPORT_2=com/metavize/tran/httpblocker/HttpMimeTypes.jasper
 SUBREPORT_3=com/metavize/tran/httpblocker/HttpUsers.jasper
 SUBREPORT_4=com/metavize/tran/httpblocker/HttpViolators.jasper
