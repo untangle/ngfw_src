@@ -224,7 +224,7 @@ public class VirusTransformImpl extends AbstractTransform
 
         Collections.sort(l);
 
-        return l.subList(0, Math.min(limit, l.size()));
+        return new ArrayList(l.subList(0, Math.min(limit, l.size())));
     }
 
     // Transform methods ------------------------------------------------------
@@ -246,7 +246,7 @@ public class VirusTransformImpl extends AbstractTransform
         if (settings.getHttpInbound().getScan()) {
             // XXX i get -2 on my home machine
             Subscription subscription = new Subscription
-                (Protocol.TCP, Interface.INSIDE, Interface.OUTSIDE );
+                (Protocol.TCP, Interface.INSIDE, Interface.OUTSIDE);
             subscriptions.add(subscription);
         }
 

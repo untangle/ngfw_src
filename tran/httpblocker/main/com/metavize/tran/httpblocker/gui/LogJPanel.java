@@ -11,6 +11,9 @@
 
 package com.metavize.tran.httpblocker.gui;
 
+import java.util.*;
+import javax.swing.table.*;
+
 import com.metavize.gui.widgets.editTable.*;
 import com.metavize.mvvm.tran.Transform;
 import com.metavize.tran.httpblocker.Action;
@@ -18,14 +21,11 @@ import com.metavize.tran.httpblocker.HttpBlocker;
 import com.metavize.tran.httpblocker.HttpRequestLog;
 import com.metavize.tran.httpblocker.Reason;
 
-import javax.swing.table.*;
-import java.util.*;
-
 public class LogJPanel extends MLogTableJPanel {
 
     public LogJPanel(Transform transform){
         super(transform);
-	setTableModel(new LogTableModel());
+    setTableModel(new LogTableModel());
     }
 
     public Vector generateRows(Object settings){
@@ -43,41 +43,41 @@ public class LogJPanel extends MLogTableJPanel {
             Action action = requestLog.getAction();
             Reason reason = requestLog.getReason();
 
-	    event.add( action.toString() );
-	    event.add( requestLog.getUrl().toString() );
-	    event.add( reason.toString() );
+        event.add( action.toString() );
+        event.add( requestLog.getUrl().toString() );
+        event.add( reason.toString() );
             event.add( requestLog.getDirection().getDirectionName() );
             event.add( requestLog.getServerAddr() + ":" + ((Integer)requestLog.getSServerPort()).toString() );
             event.add( requestLog.getClientAddr() + ":" + ((Integer)requestLog.getCClientPort()).toString() );
             allEvents.insertElementAt(event,0);
         }
-	
+
         return allEvents;
     }
-    
 
-    
-    class LogTableModel extends MSortedTableModel{                                                                                       
-	
-	public TableColumnModel getTableColumnModel(){                                                                                   
-	    DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();                                                    
-	    //                                 #   min  rsz    edit   remv   desc   typ               def                                
-	    addTableColumn( tableColumnModel,  0,  125, true,  false, false, false, String.class, null, "timestamp" );                   
-	    addTableColumn( tableColumnModel,  1,  55,  true,  false, false, false, String.class, null, "action" );                      
-	    addTableColumn( tableColumnModel,  2,  100, true,  false, false, false, String.class, null, "request" );                     
-	    addTableColumn( tableColumnModel,  3,  100, true,  false, false, false, String.class, null, sc.html("reason for<br>action") );
-	    addTableColumn( tableColumnModel,  4,  100, true,  false, false, false, String.class, null, sc.html("request<br>direction") );                   
-	    addTableColumn( tableColumnModel,  5,  155, true,  false, false, false, String.class, null, "server" );                      
-	    addTableColumn( tableColumnModel,  6,  155, true,  false, false, false, String.class, null, sc.html("client<br>(requestor)") );
-	    return tableColumnModel;                                                                                                     
-	}                                                                                                                                
-	
-	public void generateSettings(Object settings, boolean validateOnly) throws Exception {}                                          
-	
-	public Vector generateRows(Object settings) {                                                                                    
-	    return LogJPanel.this.generateRows(null);                                                                              
-	}                                                                                                                                
-	
-    }       
+
+
+    class LogTableModel extends MSortedTableModel{
+
+    public TableColumnModel getTableColumnModel(){
+        DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
+        //                                 #   min  rsz    edit   remv   desc   typ               def
+        addTableColumn( tableColumnModel,  0,  125, true,  false, false, false, String.class, null, "timestamp" );
+        addTableColumn( tableColumnModel,  1,  55,  true,  false, false, false, String.class, null, "action" );
+        addTableColumn( tableColumnModel,  2,  100, true,  false, false, false, String.class, null, "request" );
+        addTableColumn( tableColumnModel,  3,  100, true,  false, false, false, String.class, null, sc.html("reason for<br>action") );
+        addTableColumn( tableColumnModel,  4,  100, true,  false, false, false, String.class, null, sc.html("request<br>direction") );
+        addTableColumn( tableColumnModel,  5,  155, true,  false, false, false, String.class, null, "server" );
+        addTableColumn( tableColumnModel,  6,  155, true,  false, false, false, String.class, null, sc.html("client<br>(requestor)") );
+        return tableColumnModel;
+    }
+
+    public void generateSettings(Object settings, boolean validateOnly) throws Exception {}
+
+    public Vector generateRows(Object settings) {
+        return LogJPanel.this.generateRows(null);
+    }
+
+    }
 
 }

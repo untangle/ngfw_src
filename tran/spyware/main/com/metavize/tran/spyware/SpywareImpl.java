@@ -189,7 +189,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
 
         Collections.sort(l);
 
-        return l.subList(0, Math.min(limit, l.size()));
+        return new ArrayList(l.subList(0, Math.min(limit, l.size())));
     }
 
     // Transform methods ------------------------------------------------------

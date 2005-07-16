@@ -11,18 +11,18 @@
 
 package com.metavize.tran.virus.gui;
 
+import java.util.*;
+import javax.swing.table.*;
+
 import com.metavize.gui.widgets.editTable.*;
 import com.metavize.mvvm.tran.Transform;
 import com.metavize.tran.virus.*;
-
-import javax.swing.table.*;
-import java.util.*;
 
 public class LogJPanel extends MLogTableJPanel {
 
     public LogJPanel(Transform transform){
         super(transform);
-	setTableModel(new LogTableModel());
+    setTableModel(new LogTableModel());
     }
 
     public Vector generateRows(Object settings){
@@ -35,41 +35,41 @@ public class LogJPanel extends MLogTableJPanel {
         for( VirusLog log : logList ){
             event = new Vector();
             event.add( log.getCreateDate().toString() );
-	    event.add( log.getAction() );
-	    event.add( log.getTraffic() );
-	    event.add( log.getReason() );
+        event.add( log.getAction() );
+        event.add( log.getTraffic() );
+        event.add( log.getReason() );
             event.add( log.getDirection().getDirectionName() );
             event.add( log.getServerAddr() + ":" + ((Integer)log.getServerPort()).toString() );
             event.add( log.getClientAddr() + ":" + ((Integer)log.getClientPort()).toString() );
             allEvents.insertElementAt(event,0);
         }
-	
+
         return allEvents;
     }
-    
 
-    
-    class LogTableModel extends MSortedTableModel{                                                                                       
-	
-	public TableColumnModel getTableColumnModel(){                                                                                   
-	    DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();                                                    
-	    //                                 #   min  rsz    edit   remv   desc   typ               def
-	    addTableColumn( tableColumnModel,  0,  125, true,  false, false, false, String.class, null, "timestamp" );
-	    addTableColumn( tableColumnModel,  1,  55,  true,  false, false, false, String.class, null, "action" );
-	    addTableColumn( tableColumnModel,  2,  100, true,  false, false, false, String.class, null, "traffic" );
-	    addTableColumn( tableColumnModel,  3,  100, true,  false, false, false, String.class, null, sc.html("reason for<br>action") );
-	    addTableColumn( tableColumnModel,  4,  100, true,  false, false, false, String.class, null, sc.html("request<br>direction") );
-	    addTableColumn( tableColumnModel,  5,  155, true,  false, false, false, String.class, null, "server" );
-	    addTableColumn( tableColumnModel,  6,  155, true,  false, false, false, String.class, null, sc.html("client<br>(requestor)") );
-	    return tableColumnModel;                                                                                                     
-	}
-	
-	public void generateSettings(Object settings, boolean validateOnly) throws Exception {}                                          
-	
-	public Vector generateRows(Object settings) {                                                                                    
-	    return LogJPanel.this.generateRows(null);                                                                              
-	}                                                                                                                                
-	
-    }       
+
+
+    class LogTableModel extends MSortedTableModel{
+
+    public TableColumnModel getTableColumnModel(){
+        DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
+        //                                 #   min  rsz    edit   remv   desc   typ               def
+        addTableColumn( tableColumnModel,  0,  125, true,  false, false, false, String.class, null, "timestamp" );
+        addTableColumn( tableColumnModel,  1,  55,  true,  false, false, false, String.class, null, "action" );
+        addTableColumn( tableColumnModel,  2,  100, true,  false, false, false, String.class, null, "traffic" );
+        addTableColumn( tableColumnModel,  3,  100, true,  false, false, false, String.class, null, sc.html("reason for<br>action") );
+        addTableColumn( tableColumnModel,  4,  100, true,  false, false, false, String.class, null, sc.html("request<br>direction") );
+        addTableColumn( tableColumnModel,  5,  155, true,  false, false, false, String.class, null, "server" );
+        addTableColumn( tableColumnModel,  6,  155, true,  false, false, false, String.class, null, sc.html("client<br>(requestor)") );
+        return tableColumnModel;
+    }
+
+    public void generateSettings(Object settings, boolean validateOnly) throws Exception {}
+
+    public Vector generateRows(Object settings) {
+        return LogJPanel.this.generateRows(null);
+    }
+
+    }
 
 }

@@ -54,28 +54,33 @@ public class VirusLog implements Comparable<VirusLog>, Serializable
     }
 
     // util -------------------------------------------------------------------
-    public String getAction(){
-	if( Action.BLOCKED.equals(action) )
-	    return "block";
-	else if( Action.PASSED.equals(action) )
-	    return "pass";
-	else if( Action.CLEANED.equals(action) )
-	    return "clean virus";
-	else if( Action.REMOVED.equals(action) )
-	    return "removed virus";
-	else
-	    return null;
+
+    public String getAction()
+    {
+        if (Action.BLOCKED.equals(action)) {
+            return "block";
+        } else if (Action.PASSED.equals(action)) {
+            return "pass";
+        } else if (Action.CLEANED.equals(action)) {
+            return "clean virus";
+        } else if (Action.REMOVED.equals(action)) {
+            return "removed virus";
+        } else {
+            return null;
+        }
     }
 
-    public String getReason(){
-	if(infected)
-	    return "virus found";
-	else
-	    return "no virus found";
+    public String getReason()
+    {
+        if (infected) {
+            return "virus found";
+        } else {
+            return "no virus found";
+        }
     }
 
     public String getTraffic(){
-	return "(" + type.toString() + ")  " + location;
+        return "(" + type.toString() + ")  " + location;
     }
 
     // accessors --------------------------------------------------------------

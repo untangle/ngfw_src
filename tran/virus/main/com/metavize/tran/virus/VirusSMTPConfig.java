@@ -46,10 +46,10 @@ public class VirusSMTPConfig implements Serializable
 
     public VirusSMTPConfig(boolean bScan, SMTPVirusMessageAction zMsgAction, SMTPNotifyAction zNotifyAction, String zNotes)
     {
-        this.bScan = bScan;   
-        this.zMsgAction = zMsgAction;   
-        this.zNotifyAction = zNotifyAction;   
-        this.zNotes = zNotes;   
+        this.bScan = bScan;
+        this.zMsgAction = zMsgAction;
+        this.zNotifyAction = zNotifyAction;
+        this.zNotes = zNotes;
     }
 
     // business methods ------------------------------------------------------
@@ -86,7 +86,8 @@ public class VirusSMTPConfig implements Serializable
     }
 
     /**
-     * scan: a boolean specifying whether or not to scan a message for virus (defaults to true)
+     * scan: a boolean specifying whether or not to scan a message for
+     * virus (defaults to true)
      *
      * @return whether or not to scan message for virus
      * @hibernate.property
@@ -105,8 +106,8 @@ public class VirusSMTPConfig implements Serializable
     }
 
     /**
-     * messageAction: a string specifying a response if a message contains virus (defaults to CLEAN)
-     * one of CLEAN, BLOCK, or PASS
+     * messageAction: a string specifying a response if a message
+     * contains virus (defaults to CLEAN) one of CLEAN, BLOCK, or PASS
      *
      * @return the action to take if a message is judged to be virus.
      * @hibernate.property
@@ -139,8 +140,9 @@ public class VirusSMTPConfig implements Serializable
     }
 
     /**
-     * notifyAction: a string specifying a response to events if a message containing virus (defaults to NEITHER)
-     * one of SENDER, RECEIVER, BOTH, or NEITHER
+     * notifyAction: a string specifying a response to events if a
+     * message containing virus (defaults to NEITHER) one of SENDER,
+     * RECEIVER, BOTH, or NEITHER
      *
      * @return the action to take if a message is judged to be virus.
      * @hibernate.property

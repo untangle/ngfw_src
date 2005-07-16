@@ -111,13 +111,12 @@ public class HttpInvokerStub implements InvocationHandler, Serializable
             return o;
         } else if (o instanceof Exception) {
             Exception e = (Exception)o;
-            // XXX something like this would be awesome
-//             StackTraceElement[] l = Thread.currentThread().getStackTrace();
-//             StackTraceElement[] r = e.getStackTrace();
-//             StackTraceElement[] t = new StackTraceElement[r.length + l.length];
-//             System.arraycopy(l, 0, t, 0, l.length);
-//             System.arraycopy(r, 0, t, l.length, r.length);
-//             e.setStackTrace(t);
+            StackTraceElement[] r = e.getStackTrace();
+            StackTraceElement[] l = Thread.currentThread().getStackTrace();
+            StackTraceElement[] t = new StackTraceElement[r.length + l.length];
+            System.arraycopy(r, 0, t, 0, r.length);
+            System.arraycopy(l, 0, t, r.length, l.length);
+            e.setStackTrace(t);
             throw e;
         } else {
             return o;
