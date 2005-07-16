@@ -94,25 +94,33 @@ public class Reporter
             }
                 
             Reporter reporter = new Reporter(outputBaseDir);
+            reporter.prepare(conn);
             reporter.generateNewReports(conn, args);
-            reporter.purgeOldReports(daysToKeep);
+            reporter.purgeOldReports(conn, daysToKeep);
 
         } catch (ClassNotFoundException exn) {
-            logger.warn("Could not load the Postgres JDBC driver");
+            logger.error("Could not load the Postgres JDBC driver");
             System.exit(1);
         } catch (IOException exn) {
-            logger.warn("IOException writing reports");
+            logger.error("IOException writing reports");
             exn.printStackTrace();
             System.exit(1);
         } catch (SQLException exn) {
-            logger.warn("Could not get JDBC connection");
+            logger.error("Could not get JDBC connection");
             exn.printStackTrace();
             System.exit(1);
         } catch (JRScriptletException exn) {
-            logger.warn("Unexpected Jasper exception");
+            logger.error("Unexpected Jasper exception");
             exn.printStackTrace();
             System.exit(1);
         }
+    }
+
+
+    private void prepare(Connection conn)
+        throws SQLException
+    {
+        DhcpMap.get().generateAddressMap(conn, Util.lastmonth, Util.midnight);
     }
 
 
@@ -144,8 +152,10 @@ public class Reporter
  
     }
 
-    private void purgeOldReports(int daysToKeep)
+    private void purgeOldReports(Connection conn, int daysToKeep)
     {
+        DhcpMap.get().deleteAddressMap(conn);
+
         // Since daysToKeep will always be at least 1, we'll always keep today's.
         Calendar firstPurged = (Calendar) Util.reportNow.clone();
         firstPurged.add(Calendar.DAY_OF_YEAR, -1 - daysToKeep);

@@ -54,7 +54,7 @@ public class DhcpMap
     private static final Logger logger = Logger.getLogger( DhcpMap.class );
     private static final DhcpMap INSTANCE = new DhcpMap();
     
-    private static final String TABLE_NAME = "dhcp_address_map";
+    private static final String TABLE_NAME = "merged_address_map";
 
     static final int COL_TIMESTAMP    = 1;
     static final int COL_END_OF_LEASE = 2;
@@ -65,6 +65,10 @@ public class DhcpMap
     /* Column numbers for the static table */
     static final int COL_STATIC_HOST         = 1;
     static final int COL_STATIC_INET_ADDRESS = 2;
+
+    /* Column numbers for the manual map query */
+    static final int COL_MANUAL_MAP_INET_ADDRESS = 1;
+    static final int COL_MANUAL_MAP_HOST = 2;
     
     static final int EVT_TYPE_REGISTER = 0;
     static final int EVT_TYPE_RENEW    = 1;
@@ -89,10 +93,27 @@ public class DhcpMap
         " FROM dns_static_host_rule as rule,tr_nat_dns_hosts as list,tr_nat_settings as settings " + 
         " where ( rule.rule_id=list.rule_id ) and ( settings.settings_id=list.setting_id )";
 
+    private static final String MANUAL_MAP_QUERY =
+        "SELECT addr, name " + 
+        " FROM (SELECT addr, min(position) AS min_idx " + 
+        "        FROM (SELECT c_client_addr AS addr FROM pl_endp " +
+        "              UNION SELECT c_server_addr AS addr FROM pl_endp " + 
+        "              UNION SELECT s_client_addr AS addr FROM pl_endp " +
+        "              UNION SELECT s_server_addr AS addr FROM pl_endp " +
+        "              UNION SELECT client_addr   AS addr FROM mvvm_login_evt " +
+        "              UNION SELECT ip            AS addr FROM shield_rejection_evt " +
+        "             ) AS addrs " + 
+        "        LEFT OUTER JOIN ipmaddr_dir_entries entry JOIN ipmaddr_rule rule USING (rule_id) " +
+        "        ON rule.ipmaddr >>= addr " +
+        "        WHERE NOT addr ISNULL " +
+        "        GROUP BY addr) AS pos_idxs " +
+        " LEFT OUTER JOIN ipmaddr_dir_entries entry JOIN ipmaddr_rule rule USING (rule_id) " +
+        " ON min_idx = position";
+
     private static final String CREATE_TEMPORARY_TABLE = 
         "CREATE TABLE " + TABLE_NAME + "( " +
         " id         SERIAL8 NOT NULL," +
-        " address    INET NOT NULL," +
+        " addr       INET NOT NULL," +
         " name       VARCHAR(255)," +
         " start_time TIMESTAMP NOT NULL," +
         " end_time   TIMESTAMP," +
@@ -102,11 +123,16 @@ public class DhcpMap
         "DROP TABLE " + TABLE_NAME;
 
     private static final String INSERT_LEASE = 
-        "INSERT INTO " + TABLE_NAME + " ( address, name, start_time, end_time ) "+ 
+        "INSERT INTO " + TABLE_NAME + " ( addr, name, start_time, end_time ) "+ 
         "values ( ?, ?, ?, ? )";
     
     private DhcpMap()
     {
+    }
+
+    public static DhcpMap get()
+    {
+        return INSTANCE;
     }
 
     public static void main( String[] args )
@@ -155,6 +181,7 @@ public class DhcpMap
             generateAbsoluteLeases( conn, start, end, map );
             generateRelativeLeases( conn, start, end, map );
             generateStaticLeases( conn, start, end, map );
+            generateManualMap( conn, start, end, map );
             writeLeases( conn, map );
         } catch ( SQLException e ) {
             logger.warn( "Unable to generate address map", e );
@@ -228,6 +255,7 @@ public class DhcpMap
         }
     }
 
+
     private void generateLeases( String query, Connection conn, Timestamp start, Timestamp end,
                                  Map<InetAddress,List<Lease>> map )
         throws SQLException
@@ -254,6 +282,40 @@ public class DhcpMap
         }        
     }
 
+    private void generateManualMap( Connection conn, Timestamp start, Timestamp end,
+                                    Map<InetAddress,List<Lease>> map )
+        throws SQLException
+    {
+        logger.debug( "Generating static leases." );
+        ResultSet rs = null;
+
+        try {
+            Statement stmt = conn.createStatement();
+            rs = stmt.executeQuery( MANUAL_MAP_QUERY );
+            while( rs.next()) {
+                try {
+                    String hostname = rs.getString( COL_MANUAL_MAP_HOST );
+                    
+                    InetAddress ip  = InetAddress.getByName( rs.getString( COL_MANUAL_MAP_INET_ADDRESS ));
+                    Lease lease = new Lease( start, end, hostname );
+                    
+                    List<Lease> leaseList = map.put( ip, Collections.nCopies( 1, lease ));
+                    
+                    /* If the size is one, this is probably just a second static entry */
+                    if (  leaseList != null && leaseList.size() != 1 ) {
+                        logger.info( "Manual directory entry for " + ip.getHostAddress() + 
+                                     " is overriding a DHCP/DNS assigned address" );
+                    }
+                } catch ( UnknownHostException e ) {
+                    logger.warn( "Error parsing an ip address", e );
+                } catch ( ArrayIndexOutOfBoundsException e ) {
+                    logger.warn( "Error parsing an hostname", e );
+                }
+            }
+        } finally {
+            if ( rs != null ) rs.close();
+        }
+    }
 
     private void writeLeases( Connection conn, Map<InetAddress,List<Lease>> map ) 
         throws SQLException
