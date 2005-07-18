@@ -175,32 +175,28 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
 
         List s = new ArrayList();
 
-        s.add(new StringRule("exe", "executable", "download" , false));
-        s.add(new StringRule("ocx", "executable", "ActiveX", false));
-        s.add(new StringRule("dll", "executable", "ActiveX", false));
-        s.add(new StringRule("cab", "executable", "ActiveX", false));
-        s.add(new StringRule("bin", "executable", "download", false));
-        s.add(new StringRule("com", "executable", "download", false));
-        s.add(new StringRule("jpg", "image", "download", false));
-        s.add(new StringRule("png", "image", "download", false ));
-        s.add(new StringRule("gif", "image", "download", false));
-        s.add(new StringRule("jar", "java", "download", false));
-        s.add(new StringRule("class", "java", "download", false));
-        s.add(new StringRule("mp3", "audio", "download", false));
-        s.add(new StringRule("wav", "audio", "download", false));
-        s.add(new StringRule("wmf", "audio", "download", false));
-        s.add(new StringRule("mov", "video", "download", false));
-        s.add(new StringRule("mpg", "video", "download", false));
-        s.add(new StringRule("avi", "video", "download", false));
-        s.add(new StringRule("swf", "flash", "download", false));
-        s.add(new StringRule("mp3", "audio", "stream", false));
-        s.add(new StringRule("wav", "audio", "stream", false));
-        s.add(new StringRule("wmf", "audio", "stream", false));
-        s.add(new StringRule("mov", "video", "stream", false));
-        s.add(new StringRule("mpg", "video", "stream", false));
-        s.add(new StringRule("avi", "video", "stream", false));
-        s.add(new StringRule("hqx", "archive", "download", false));
-        s.add(new StringRule("cpt", "compression", "download", false));
+	// this third column is more of a description than a category, the way the client is using it
+	// the second column is being used as the "category"
+        s.add(new StringRule("exe", "executable", "an executable file format" , false));
+        s.add(new StringRule("ocx", "executable", "an executable file format", false));
+        s.add(new StringRule("dll", "executable", "an executable file format", false));
+        s.add(new StringRule("cab", "executable", "an ActiveX executable file format", false));
+        s.add(new StringRule("bin", "executable", "an executable file format", false));
+        s.add(new StringRule("com", "executable", "an executable file format", false));
+        s.add(new StringRule("jpg", "image", "an image file format", false));
+        s.add(new StringRule("png", "image", "an image file format", false ));
+        s.add(new StringRule("gif", "image", "an image file format", false));
+        s.add(new StringRule("jar", "java", "a Java file format", false));
+        s.add(new StringRule("class", "java", "a Java file format", false));
+        s.add(new StringRule("swf", "flash", "the flash file format", false));
+        s.add(new StringRule("mp3", "audio", "an audio file format", false));
+        s.add(new StringRule("wav", "audio", "an audio file format", false));
+        s.add(new StringRule("wmf", "audio", "an audio file format", false));
+        s.add(new StringRule("mpg", "video", "a video file format", false));
+        s.add(new StringRule("mov", "video", "a video file format", false));
+        s.add(new StringRule("avi", "video", "a video file format", false));
+        s.add(new StringRule("hqx", "archive", "an archived file format", false));
+        s.add(new StringRule("cpt", "compression", "a compressed file format", false));
 
         settings.setBlockedExtensions(s);
 
