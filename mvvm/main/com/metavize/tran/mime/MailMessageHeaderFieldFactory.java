@@ -32,7 +32,9 @@ public class MailMessageHeaderFieldFactory
 
     LCString lcString = new LCString(mixedCaseName);
      
-    if(lcString.equals(TO_LC) || lcString.equals(CC_LC)) {
+    if(lcString.equals(TO_LC) || 
+      lcString.equals(CC_LC) || 
+      lcString.equals(FROM_LC)) {
       return new EmailAddressHeaderField(mixedCaseName,
         lcString);
     }

@@ -34,14 +34,22 @@ public class Chunk implements Token
     }
 
     // accessors --------------------------------------------------------------
-
+    /**
+     * This method directly returns the internal ByteBuffer,
+     * so changes to the returned ByteBuffer <b>will</b>
+     * be seen by any downstream token handlers.
+     */
     public ByteBuffer getData()
     {
         return data;
     }
 
     // Token methods ----------------------------------------------------------
-
+    /**
+     * Returns a duplicate of the internal ByteBuffer, allowing
+     * the caller to modify the returned ByteBuffer without concern
+     * for any downstream token handlers.
+     */
     public ByteBuffer getBytes()
     {
         return data.duplicate();

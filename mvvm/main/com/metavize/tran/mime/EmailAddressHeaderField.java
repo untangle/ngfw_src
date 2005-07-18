@@ -86,6 +86,16 @@ public class EmailAddressHeaderField
   }
   
   /**
+   * Removes all EmailAddresses from this header field.
+   */
+  public void removeAll() {
+    if(m_addresses != null && m_addresses.size() > 0) {
+      m_addresses.clear();
+      changed();
+    }
+  }
+  
+  /**
    * Test if this Header contains any EmailAddresses which
    * Match the argument.
    */
@@ -205,8 +215,8 @@ public class EmailAddressHeaderField
     //we'll have to do this on our own - wrs.
     try {
       InternetAddress[] addresses = InternetAddress.parseHeader(line, false);
-      System.out.println("[EmailAddressHeaderField] Parsed \"" + 
-        line + "\" into: " + addresses.length + " addresses");
+//      System.out.println("[EmailAddressHeaderField] Parsed \"" + 
+//        line + "\" into: " + addresses.length + " addresses");
       List<EmailAddress> ret = new ArrayList<EmailAddress>();
       if(addresses != null) {
         for(int i = 0; i<addresses.length; i++) {

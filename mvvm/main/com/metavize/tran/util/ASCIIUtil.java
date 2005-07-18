@@ -61,6 +61,17 @@ public final class ASCIIUtil {
     buf.reset();
     return sb.toString();
   }
+
+  /**
+   * Advances the position to endIndexExclusive
+   */
+  public static String readString(ByteBuffer buf,
+    int endIndexExclusive) {
+    ByteBuffer dup = buf.duplicate();
+    dup.limit(endIndexExclusive);
+    buf.position(endIndexExclusive);
+    return bbToString(dup);
+  }
     
   /**
    * Read an ASCII String from the buffer.  All

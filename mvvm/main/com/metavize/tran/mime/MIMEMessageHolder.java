@@ -9,7 +9,8 @@
   * $Id:$
   */
 package com.metavize.tran.mime;
-import java.io.IOException;
+import java.io.*;
+import com.metavize.tran.util.FileFactory;
 
 
 /**
@@ -24,6 +25,7 @@ public class MIMEMessageHolder {
   private MIMEMessage m_message;
   private MIMESource m_source;
   private boolean m_changed = false;
+  private File m_file;
   
 
   public MIMEMessageHolder(MIMEMessage message,
@@ -56,12 +58,56 @@ public class MIMEMessageHolder {
   }
 
   /**
+   * Ask that the contents of the internal MIMEMessage
+   * be written to file.  Note that this may or
+   * may not create a new file, depending on if
+   * the Message has changed (or if the Source never
+   * had a backing file.
+   * <br>
+   * <b>For now, this should only be called once.</b>
+   */
+  public File toFile(FileFactory factory)
+    throws IOException {
+    if(m_changed) {
+      if(m_file == null) {
+        FileOutputStream fOut = null;
+        try {
+          m_file = factory.createFile();
+          fOut = new FileOutputStream(m_file);
+          BufferedOutputStream bufOut = new BufferedOutputStream(fOut);
+          MIMEOutputStream mimeOut = new MIMEOutputStream(bufOut);
+          m_message.writeTo(mimeOut);
+          mimeOut.flush();
+          bufOut.flush();
+          fOut.flush();
+          fOut.close();
+        }
+        catch(IOException ex) {
+          try {fOut.close();}catch(Exception ignore){}
+          try {m_file.delete();}catch(Exception ignore){}
+          m_file = null;
+          IOException ex2 = new IOException();
+          ex2.initCause(ex);
+          throw ex2;
+        }
+      }
+      return m_file;
+    }
+    else {
+      return m_source.toFile(factory);
+    }
+  }
+
+  /**
    * Close this holder.  Also closes the 
    * source and MIMEMessage
    */
   public void close() {
     m_message.dispose();
     m_source.close();
+    if(m_file != null) {
+      m_file.delete();
+    }
     m_source = null;
     m_message = null;
   }

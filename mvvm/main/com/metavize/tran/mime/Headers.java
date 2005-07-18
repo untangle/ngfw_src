@@ -194,7 +194,21 @@ public class Headers {
       }
       out.writeLine();
     }
-  }  
+  }
+
+  /**
+   * Get the contents of this Headers in a ByeBuffer.
+   * Returned buffer ready to read.
+   */
+  public final ByteBuffer toByteBuffer()
+    throws IOException {
+    //TODO bscott Should we be more inteligent about the size of the buffer?
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    MIMEOutputStream mimeOut = new MIMEOutputStream(baos);
+    writeTo(mimeOut);
+    mimeOut.flush();
+    return ByteBuffer.wrap(baos.toByteArray());
+  }
   
   /**
    * Really only for debugging, not to produce output suitable

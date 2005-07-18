@@ -141,7 +141,8 @@ public class EmailAddress {
   
   /**
    * Convert to a String suitable for SMTP transport.  This removes
-   * any of the "personal" stuff.
+   * any of the "personal" stuff, and makes sure it
+   * has leading and trailing "<>".
    *
    * XXXXXX bscott Figure out if you really cannot put the encoded personal stuff on SMTP?
    */
@@ -153,7 +154,7 @@ public class EmailAddress {
       String oldPersonal = m_jmAddress.getPersonal();
       if(oldPersonal != null) {
         m_jmAddress.setPersonal(null);
-        String ret = m_jmAddress.toString();
+        String ret = ensureBrackets(m_jmAddress.toString());
         m_jmAddress.setPersonal(oldPersonal);
         return ret;
       }
@@ -161,7 +162,17 @@ public class EmailAddress {
     catch(UnsupportedEncodingException shouldNotHappen) {
       Logger.getLogger(EmailAddress.class).error(shouldNotHappen);
     }
-    return m_jmAddress.toString();  
+    return ensureBrackets(m_jmAddress.toString());
+  }
+
+  private String ensureBrackets(String str) {
+    if(0 != str.indexOf('<')) {
+      str = "<" + str;
+    }
+    if(str.length()-1 != str.indexOf('>')) {
+      str = str + ">";
+    }
+    return str;
   }
   
   /**
@@ -220,6 +231,35 @@ public class EmailAddress {
    */
   public static EmailAddress fromJavaMail(InternetAddress addr) {
     return new EmailAddress(addr);
-  }  
+  }
+
+  /**
+   * Helper method to parse a single address, which may or may not
+   * contains a personal.  Should contain only one address.  If there
+   * are no addresses, the {@link #NULL_ADDRESS NULL_ADDRESS} is returned.
+   * <br>
+   * Passing null returns the NULL_ADDRESS
+   */
+  public static EmailAddress parse(String str)
+    throws BadEmailAddressFormatException {
+    if(str == null || "".equals(str.trim())) {
+      return NULL_ADDRESS;
+    }
+    try {
+      InternetAddress[] addresses = InternetAddress.parseHeader(str, false);
+      if(addresses == null || addresses.length == 0) {
+        return NULL_ADDRESS;
+      }
+      if(addresses.length > 1) {
+        throw new BadEmailAddressFormatException("Line contained more than one address \"" +
+          str + "\"");
+      }
+      return fromJavaMail(addresses[0]);
+    }
+    catch(AddressException ex) {
+      throw new BadEmailAddressFormatException(ex);
+    }
+    
+  }
 
 }
