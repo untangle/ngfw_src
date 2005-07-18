@@ -188,7 +188,7 @@ h4 {
 
 		<% if(!reportingInstalled){ %>
 			EdgeReport is not installed into your rack.<br/>
-			You must first install it to generate reports.
+			Reports are only generated when EdgeReport is running.
 		<% } else{ %>
 			Reports are generated every night automatically.<br/>
 			Please check back tomorrow evening.

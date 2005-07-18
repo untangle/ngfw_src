@@ -6,6 +6,7 @@ JAVA_HOME=${JAVA_HOME:-/opt/java}
 
 CLASSPATH="@MVVM_HOME@/lib/mvvm.jar"
 
+reporting_tid=$(@USR_BIN@/mcli instances | grep running | grep reporting-transform | awk '{print $1}')
 mars=$(@USR_BIN@/mcli instances | grep running | awk '{print $2}' | sed 's|^\(.*\)$|@MVVM_TOOLBOX@/\1.mar|')
 
 for f in @THIRDPARTY_LIB@/*jar ; do
@@ -19,25 +20,29 @@ REPORT_DIR=@MVVM_WEB@/reports
 # roll up logs, deleting any more than 31 days old (and thus unreportable  on)
 @USR_BIN@/rollup-logs 31
 
-$JAVA_HOME/bin/java -Xmx512m \
-    -Dlog4j.configuration=file:@MVVM_HOME@/conf/log4j-reporter.xml \
-    com.metavize.mvvm.reporting.Reporter $REPORT_DIR 32 $mars
-
-cp -pr $REPORT_DIR/images $REPORT_DIR/current
-
-# generate the web viewable page
-@PREFIX@/usr/bin/index-reports index.html false
-
-# generate the emailable page
-@PREFIX@/usr/bin/index-reports index_email_daily.html daily
-@PREFIX@/usr/bin/index-reports index_email_weekly.html weekly
-@PREFIX@/usr/bin/index-reports index_email_monthly.html monthly
-
-# email the reports to all recipients
-cd @PREFIX@/usr/share/metavize/web/reports/current
-cat @PREFIX@/tmp/mail_reports_arguments_daily.txt | xargs @PREFIX@/usr/bin/mail-reports
-cat @PREFIX@/tmp/mail_reports_arguments_weekly.txt | xargs @PREFIX@/usr/bin/mail-reports
-cat @PREFIX@/tmp/mail_reports_arguments_monthly.txt | xargs @PREFIX@/usr/bin/mail-reports
-
+rm -f $REPORT_DIR/current
 # Just in case left over (we use a jsp now)
 rm -f $REPORT_DIR/index.html
+
+# Only generate today's reports if the reporting transform is running
+if [ ! -z $reporting_tid ]; then
+    $JAVA_HOME/bin/java -Xmx512m \
+        -Dlog4j.configuration=file:@MVVM_HOME@/conf/log4j-reporter.xml \
+        com.metavize.mvvm.reporting.Reporter $REPORT_DIR 32 $mars
+
+    cp -pr $REPORT_DIR/images $REPORT_DIR/current
+
+# generate the web viewable page
+    @USR_BIN@/index-reports index.html false
+
+# generate the emailable page
+    @USR_BIN@/index-reports index_email_daily.html daily
+    @USR_BIN@/index-reports index_email_weekly.html weekly
+    @USR_BIN@/index-reports index_email_monthly.html monthly
+
+# email the reports to all recipients
+    cd $REPORT_DIR/current
+    cat @PREFIX@/tmp/mail_reports_arguments_daily.txt | xargs @USR_BIN@/mail-reports
+    cat @PREFIX@/tmp/mail_reports_arguments_weekly.txt | xargs @USR_BIN@/mail-reports
+    cat @PREFIX@/tmp/mail_reports_arguments_monthly.txt | xargs @USR_BIN@/mail-reports
+fi
