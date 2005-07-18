@@ -39,6 +39,7 @@ UPDATE tr_virus_settings SET smtp_outbound = nextval('hibernate_sequence');
 INSERT INTO tr_virus_smtp_config (
     SELECT smtp_outbound, false, 'P', 'N', 'Scan outgoing SMTP e-mail'
     FROM tr_virus_settings
+);
 
 ALTER TABLE tr_virus_settings ALTER COLUMN smtp_outbound SET NOT NULL;
 
