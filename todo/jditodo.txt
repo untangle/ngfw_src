@@ -1,3 +1,74 @@
+For 2.5
+-------
+change 'clean' to 'remove'
+
+converters -- vendorName
+
+
+What should be semantics when a shutdown arrives for a disabled queue.
+
+
+---
+
+check closed/closed state (for released before new session time)
+
+make sure old reports (like index.html) don't bust anything
+
+what else is in db dir?
+
+try system when nameserver is slow (when are we doing reverse lookups? known: spam)
+
+Need to use dist-upgrade instead of upgrade?
+
+Use new atomic stuff instead of volatile or synchronized where appropriate
+
+reports
+    -- use dhcp names when available
+
+----------
+
+  -- find pdf output option
+  -- requirement issues:
+    -- customizability -- allow co-branding with VAR?
+    -- allow for 'standard' footer on each emailed report (mv branding/ad)?
+    -- is dhcp name source a requirement for 1.4?
+  -- reports should be archived, not thrown away for 30 days
+  -- limit max size of reports (to like 20 pages?)
+  -- issue: right now we always generate reports, even if no reporting transform purchased/loaded/started.
+    -- could separate reporting from rollup, only run the rollup if no transform, or could leave as is.
+  -- issue: allow for running not at 6:25, but at some other user-specified time
+  -- reports to add
+    -- which IP sending spam? (in each direction?)
+    -- which email recip is receiving the most spam
+    -- log parse errors (http incident report)
+    -- dhcp/dns reports
+    -- add sessions per host
+    -- too long reports -- custom
+  -- report performance must be analayzed, indices added where appropriate
+    -- if we add UI log viewing, we'll need some permanent indices.
+
+
+
+
+email
+-----
+  -- add per-protocol controls for in/out
+  -- figure out if our hand-written base64 encoding/decoding is sufficient
+
+
+RFEs from one meeting
+---------------------
+  -- remote management from specific outside place
+  -- check out Postini anti-spam
+
+gui
+---
+  -- check out: do we need to be admin user on windows?  (if so must inform in quick start guide)
+
+1.4
+---
+turn off debug, on optimize when compiling
+
 1.3
 ---
 
@@ -32,8 +103,6 @@ script list for dirk
     adding of settability of:
         TCP windowing
         what other parameters?
-
-add reset handling to transforms, remove close handling
 
 remove console.log
 
