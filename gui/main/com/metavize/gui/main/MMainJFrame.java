@@ -33,7 +33,7 @@ public class MMainJFrame extends javax.swing.JFrame {
 
 
     // CONSTANTS
-    private static final Dimension MIN_SIZE = new Dimension(1024, Util.determineMinHeight(768));
+    private static final Dimension MIN_SIZE = new Dimension(640, Util.determineMinHeight(480));
     private static final Dimension MAX_SIZE = new Dimension(1600, 1200);
 
     // STORE AND TOOLBOX IMPLEMENTATION /////////////////
