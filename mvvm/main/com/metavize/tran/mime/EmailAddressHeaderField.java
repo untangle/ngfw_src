@@ -50,7 +50,30 @@ public class EmailAddressHeaderField
     
     super(name, lCName, sourceLines, valueStartOffset);
   } 
-*/  
+*/
+  /**
+   * Get the Address at the given index.
+   * 
+   */
+  public EmailAddress getAddress(int index)
+    throws IndexOutOfBoundsException {
+    if(m_addresses == null ||
+      m_addresses.size() <= index) {
+      throw new IndexOutOfBoundsException("" + index);
+    }
+    return m_addresses.get(index);
+  }
+
+  /**
+   * Returns the number of addresses repesented
+   * by this header
+   */
+  public int size() {
+    return m_addresses == null?
+      0:
+      m_addresses.size();
+  }
+  
   /**
    * Iterate over the addressed contained within
    *

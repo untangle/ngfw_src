@@ -15,7 +15,9 @@ import java.io.*;
 
 
 /**
- * <b>Work in progress</b>
+ * Class representing the Headers of a MIME message.
+ * Adds convienence methods for dealing with the common
+ * headers (TO, FROM, CC, SUBJECT).
  */
 public class MIMEMessageHeaders 
   extends MIMEPartHeaders {
@@ -38,15 +40,29 @@ public class MIMEMessageHeaders
     super(factory, source, sourceStart, sourceLen, headersInOrder, headersByName);
     
   }
-  
+
+  /**
+   * Get the Subject, or null if none was defined
+   * on this instance.
+   */
   public String getSubject() {
     List<HeaderField> headers = getHeaderFields(SUBJECT_LC);
     return (headers == null || headers.size() == 0)?
       null:
       headers.get(0).getValueAsString();    
   }
+
+  /**
+   * Set the subject.  Passing null implicitly causes
+   * the SUBJECT heder field to be removed.
+   */
   public void setSubject(String subject) 
     throws HeaderParseException {
+
+    if(subject == null) {
+      removeHeaderFields(SUBJECT_LC);
+      return;
+    }
     
     HeaderField subjectField = null;
     List<HeaderField> headers = getHeaderFields(SUBJECT_LC);
@@ -58,17 +74,67 @@ public class MIMEMessageHeaders
     }
     subjectField.assignFromString(subject, false);
   }
-  
+
+
+  /**
+   * Get the EmailAddress defining the from for this
+   * Header, or null if not found.
+   */
+  public EmailAddress getFrom() {
+    List<HeaderField> headers = getHeaderFields(FROM_LC);
+    if(headers == null || headers.size() == 0) {
+      return null;
+    }
+    EmailAddressHeaderField fromField = (EmailAddressHeaderField) headers.get(0);
+    return fromField.size() == 0?
+      null:
+      fromField.getAddress(0);
+  }
+  /**
+   * Passing null implicitly removes the
+   * FROM header
+   */
+  public void setFrom(EmailAddress from)
+    throws HeaderParseException {
+
+    if(from == null) {
+      removeHeaderFields(FROM_LC);
+      return;
+    }
+    
+    EmailAddressHeaderField fromField = null;
+    List<HeaderField> headers = getHeaderFields(FROM_LC);
+    if(headers == null || headers.size() == 0) {
+      fromField = (EmailAddressHeaderField) addHeaderField(FROM);
+    }
+    else {
+      fromField = (EmailAddressHeaderField) headers.get(0);
+    }
+    fromField.removeAll();
+    fromField.add(from);
+  }
+
+  /**
+   * Clear all recipients from this Headers
+   */
   public void removeAllReciepients() {
     removeHeaderFields(TO_LC);
     removeHeaderFields(CC_LC);
   }
-  
+
+  /**
+   * Test if this headers contains the given address
+   * in the TO or CC HeaderFields.
+   */
   public boolean containsRecipient(EmailAddress addr) {
     return containsRecipient(new EmailAddressWithRcptType(addr, RcptType.TO)) ||
       containsRecipient(new EmailAddressWithRcptType(addr, RcptType.CC));
   }
-  
+
+  /**
+   * Test if the given recipient is contained within this
+   * Headers
+   */
   public boolean containsRecipient(EmailAddressWithRcptType rcpt) {
     List<HeaderField> allHeadersOfType = getHeaderFields(rcptTypeToHeaderName(rcpt.type));
     if(allHeadersOfType == null) {
@@ -97,7 +163,11 @@ public class MIMEMessageHeaders
       field.add(newMember.address);
     }
   }
-  
+
+  /**
+   * Removes the given address.  If the address is found more than
+   * once (perhaps spanning "TO" and "CC") all occurances are removed.
+   */
   public void removeRecipient(EmailAddress addr) {
     removeRecipient(new EmailAddressWithRcptType(addr, RcptType.TO));
     removeRecipient(new EmailAddressWithRcptType(addr, RcptType.CC));
