@@ -91,4 +91,8 @@ class MvvmRemoteContextImpl implements MvvmRemoteContext
         context.doFullGC();
     }
 
+    public String version()
+    {
+	return context.version();
+    }
 }

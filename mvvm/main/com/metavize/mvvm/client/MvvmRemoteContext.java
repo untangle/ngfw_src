@@ -97,4 +97,7 @@ public interface MvvmRemoteContext
 
     // debugging / performance management
     void doFullGC();
+
+    // making sure the client and mvvm versions are the same
+    String version();
 }

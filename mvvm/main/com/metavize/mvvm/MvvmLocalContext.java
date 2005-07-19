@@ -156,6 +156,9 @@ public interface MvvmLocalContext
     // debugging / performance management
     void doFullGC();
 
+    // making sure the client and mvvm versions are the same
+    String version();
+
     /**
      * Get the <code>MPipeManager</code> singleton.
      *
