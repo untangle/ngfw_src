@@ -183,7 +183,7 @@ public class MvvmContextImpl extends MvvmContextBase
 
     public String version()
     {
-        return com.metavize.mvvm.util.Version.getVersion();
+        return com.metavize.mvvm.engine.Version.getVersion();
     }
 
     public void localBackup() throws IOException

@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.metavize.mvvm.util;
+package com.metavize.mvvm.engine;
 
 /**
  *
