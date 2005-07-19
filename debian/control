@@ -87,7 +87,7 @@ Architecture: any
 Depends: mvvm, hauri-mv, http-casing, ftp-casing
 XB-Price: 400
 XB-Display-Name: Hauri AntiVirus Scanner
-XB-Website: http://www.metavize.com/hauri-antivirus.html
+XB-Website: http://www.metavize.com/hauri_antivirus.html
 XB-Rack-Position: 6
 Description: The Hauri AntiVirus Scanner
  The Hauri AntiVirus Scanner, based on Hauri's viRobot, is able to
@@ -99,7 +99,7 @@ Architecture: any
 Depends: mvvm, clamav-mv, http-casing, ftp-casing
 XB-Price: 0
 XB-Display-Name: Clam AntiVirus Scanner
-XB-Website: http://www.metavize.com/clam-antivirus.html
+XB-Website: http://www.metavize.com/clam_antivirus.html
 XB-Rack-Position: 7
 Description: The Clam AntiVirus Scanner
  The Clam AntiVirus Scanner, based on ClamAV, is able to scan and
