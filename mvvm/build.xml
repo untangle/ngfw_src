@@ -20,7 +20,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
   <property name="mnp.xsd" value="../../xenon/xml/mnp.xsd"/>
 
   <!-- main targets -->
-  <target name="pkg.gensrc"  depends="gensrc.servlets"/>
+  <target name="pkg.gensrc"  depends="gensrc.servlets, gensrc.version"/>
   <target name="pkg.compile"
           depends="compile.bootstrap, compile.mvvm-client,
                    compile.mvvm, compile.servlets"/>
@@ -72,6 +72,15 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
         <filter token="JSP_PRE_COMPILED_SERVLETS" value="${rp-generated-web.xml}"/>
       </filterset>
     </copy>
+  </target>
+
+  <target name="gensrc.version">
+    <mkdir dir="${build.gensrc}/com/metavize/mvvm/util"/>
+    <copy file="resources/Version.java" toFile="${build.gensrc}/com/metavize/mvvm/util/Version.java" overwrite="true"/>
+    <exec executable="/bin/sh" failonerror="true">
+      <arg value="-c"/>
+      <arg value="/bin/sed s/\&quot;VERSION\&quot;/\&quot;`cat ../../PUBVERSION`\&quot;/g -i ./output/gensrc/com/metavize/mvvm/util/Version.java"/>
+    </exec>
   </target>
 
   <target name="gensrc.xdoclet" depends="prepare">
