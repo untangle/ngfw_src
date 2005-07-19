@@ -37,11 +37,11 @@ public class LogJPanel extends MLogTableJPanel {
             event = new Vector();
             event.add( requestLog.getCreateDate().toString() );
 	    event.add( requestLog.getAction() );
+            event.add( requestLog.getClientAddr() + ":" + ((Integer)requestLog.getClientPort()).toString() );
 	    event.add( requestLog.getLocation() + " : " + requestLog.getIdent() );
 	    event.add( requestLog.getReason() );
             event.add( requestLog.getDirection().getDirectionName() );
             event.add( requestLog.getServerAddr() + ":" + ((Integer)requestLog.getServerPort()).toString() );
-            event.add( requestLog.getClientAddr() + ":" + ((Integer)requestLog.getClientPort()).toString() );
             allEvents.insertElementAt(event,0);
         }
 	
@@ -50,26 +50,26 @@ public class LogJPanel extends MLogTableJPanel {
     
 
     
-    class LogTableModel extends MSortedTableModel{                                                                                       
+    class LogTableModel extends MSortedTableModel{
 	
-	public TableColumnModel getTableColumnModel(){                                                                                   
-	    DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();                                                    
-	    //                                 #   min  rsz    edit   remv   desc   typ               def                                
-	    addTableColumn( tableColumnModel,  0,  125, true,  false, false, false, String.class, null, "timestamp" );                   
-	    addTableColumn( tableColumnModel,  1,  55,  true,  false, false, false, String.class, null, "action" );                      
-	    addTableColumn( tableColumnModel,  2,  100, true,  false, false, false, String.class, null, "request" );                     
-	    addTableColumn( tableColumnModel,  3,  100, true,  false, false, false, String.class, null, sc.html("reason for<br>action") );
-	    addTableColumn( tableColumnModel,  4,  100, true,  false, false, false, String.class, null, sc.html("request<br>direction") );
-	    addTableColumn( tableColumnModel,  5,  155, true,  false, false, false, String.class, null, "server" );                      
-	    addTableColumn( tableColumnModel,  6,  155, true,  false, false, false, String.class, null, sc.html("client<br>(requestor)") );
-	    return tableColumnModel;                                                                                                     
-	}                                                                                                                                
+	public TableColumnModel getTableColumnModel(){
+	    DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
+	    //                                 #   min  rsz    edit   remv   desc   typ           def
+	    addTableColumn( tableColumnModel,  0,  125, true,  false, false, false, String.class, null, "timestamp" );
+	    addTableColumn( tableColumnModel,  1,  55,  true,  false, false, false, String.class, null, "action" );
+	    addTableColumn( tableColumnModel,  2,  155, true,  false, false, false, String.class, null, sc.html("client<br>(requestor)") );
+	    addTableColumn( tableColumnModel,  3,  100, true,  false, false, false, String.class, null, "request" );
+	    addTableColumn( tableColumnModel,  4,  100, true,  false, false, false, String.class, null, sc.html("reason for<br>action") );
+	    addTableColumn( tableColumnModel,  5,  100, true,  false, false, false, String.class, null, sc.html("request<br>direction") );
+	    addTableColumn( tableColumnModel,  6,  155, true,  false, false, false, String.class, null, "server" );
+	    return tableColumnModel;
+	}
+
+	public void generateSettings(Object settings, boolean validateOnly) throws Exception {}
 	
-	public void generateSettings(Object settings, boolean validateOnly) throws Exception {}                                          
-	
-	public Vector generateRows(Object settings) {                                                                                    
+	public Vector generateRows(Object settings) {
 	    return LogJPanel.this.generateRows(null);                                                                              
-	}                                                                                                                                
+	}
 	
     }       
 
