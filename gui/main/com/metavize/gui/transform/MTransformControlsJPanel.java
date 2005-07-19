@@ -238,7 +238,7 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
         contentJPanel.add(mTabbedPane, gridBagConstraints);
 
         removeJButton.setFont(new java.awt.Font("Arial", 0, 12));
-        removeJButton.setText("<html><center><b>Remove</b> Appliance</center></html>");
+        removeJButton.setText("<html><b>Remove</b> Appliance</html>");
         removeJButton.setDoubleBuffered(true);
         removeJButton.setFocusPainted(false);
         removeJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -254,7 +254,7 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
         contentJPanel.add(removeJButton, gridBagConstraints);
 
         expandJButton.setFont(new java.awt.Font("Arial", 0, 12));
-        expandJButton.setText("<html><center><b>Expand</b> Settings</center></html>");
+        expandJButton.setText("<html><b>Expand</b> Settings</html>");
         expandJButton.setDoubleBuffered(true);
         expandJButton.setFocusPainted(false);
         expandJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -277,7 +277,7 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
         contentJPanel.add(expandJButton, gridBagConstraints);
 
         reloadJButton.setFont(new java.awt.Font("Arial", 0, 12));
-        reloadJButton.setText("<html><center><b>Reload</b> Settings</center></html>");
+        reloadJButton.setText("<html><b>Reload</b> Settings</html>");
         reloadJButton.setDoubleBuffered(true);
         reloadJButton.setFocusPainted(false);
         reloadJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -300,7 +300,7 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
         contentJPanel.add(reloadJButton, gridBagConstraints);
 
         saveJButton.setFont(new java.awt.Font("Arial", 0, 12));
-        saveJButton.setText("<html><center><b>Save</b> Settings</center></html>");
+        saveJButton.setText("<html><b>Save</b> Settings</html>");
         saveJButton.setDoubleBuffered(true);
         saveJButton.setFocusPainted(false);
         saveJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
