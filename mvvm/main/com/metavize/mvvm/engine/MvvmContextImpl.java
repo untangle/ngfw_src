@@ -183,7 +183,7 @@ public class MvvmContextImpl extends MvvmContextBase
 
     public String version()
     {
-	return "-1";  // "-1" is used to tell the client not to check versions... use it wisely
+        return com.metavize.mvvm.util.Version.getVersion();
     }
 
     public void localBackup() throws IOException

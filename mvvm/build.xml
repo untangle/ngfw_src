@@ -182,6 +182,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       <classpath path="${build.jar}/bootstrap.jar"/>
 
       <src path="${src.main}"/>
+      <src path="${build.gensrc}"/>
 
       <include name="com/metavize/mvvm/*.java"/>
       <exclude name="com/metavize/mvvm/MvvmContextFactory.java"/>
@@ -202,6 +203,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       <exclude name="com/metavize/mvvm/tran/MutateTStats.java"/>
       <include name="com/metavize/mvvm/util/PortServiceNames.java"/>
       <include name="com/metavize/mvvm/util/SessionUtil.java"/>
+      <include name="com/metavize/mvvm/util/Version.java"/>
       <include name="com/metavize/mvvm/shield/ShieldEvent.java"/>
     </javac>
   </target>
@@ -269,6 +271,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       <classpath path="${build.jar}/bootstrap.jar"/>
 
       <src path="${src.main}"/>
+      <src path="${build.gensrc}"/>
 
       <include name="com/metavize/mvvm/MvvmContext.java"/>
       <include name="com/metavize/mvvm/argon/*"/>
