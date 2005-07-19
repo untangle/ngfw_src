@@ -1,11 +1,23 @@
 -- schema for release-2.5
 
-CREATE TABLE admin_settings (
+CREATE SCHEMA settings;
+CREATE SCHEMA events;
+SET search_path TO settings,events,public;
+
+-------------
+-- settings |
+-------------
+
+CREATE SEQUENCE settings.hibernate_sequence;
+
+-- com.metavize.mvvm.security.AdminSettings
+CREATE TABLE settings.admin_settings (
     admin_settings_id int8 NOT NULL,
     summary_period_id int8,
     PRIMARY KEY (admin_settings_id));
 
-CREATE TABLE mvvm_user (
+-- com.metavize.mvvm.security.User
+CREATE TABLE settings.mvvm_user (
     id int8 NOT NULL,
     login varchar(24) NOT NULL,
     password bytea NOT NULL,
@@ -15,31 +27,36 @@ CREATE TABLE mvvm_user (
     admin_setting_id int8,
     PRIMARY KEY (id));
 
-CREATE TABLE upgrade_settings (
+-- com.metavize.mvvm.UpgradeSettings
+CREATE TABLE settings.upgrade_settings (
     upgrade_settings_id int8 NOT NULL,
     auto_upgrade bool NOT NULL,
     period int8 NOT NULL,
     PRIMARY KEY (upgrade_settings_id));
 
-CREATE TABLE mail_settings (
+-- com.metavize.mvvm.MailSettings
+CREATE TABLE settings.mail_settings (
     mail_settings_id int8 NOT NULL,
     report_email varchar(255),
     smtp_host varchar(255),
     from_address varchar(255),
     PRIMARY KEY (mail_settings_id));
 
-CREATE TABLE transform_args (
+-- com.metavize.mvvm.engine.TransformPersistentState.args
+CREATE TABLE settings.transform_args (
     tps_id int8 NOT NULL,
     arg varchar(255) NOT NULL,
     position int4 NOT NULL,
     PRIMARY KEY (tps_id, position));
 
-CREATE TABLE transform_manager_state (
+-- com.metavize.mvvm.engine.TransformManagerState
+CREATE TABLE settings.transform_manager_state (
     id int8 NOT NULL,
     last_tid int8,
     PRIMARY KEY (id));
 
-CREATE TABLE uri_rule (
+-- com.metavize.mvvm.tran.UriRule
+CREATE TABLE settings.uri_rule (
     rule_id int8 NOT NULL,
     uri varchar(255),
     name varchar(255),
@@ -50,7 +67,8 @@ CREATE TABLE uri_rule (
     log bool,
     PRIMARY KEY (rule_id));
 
-CREATE TABLE period (
+-- com.metavize.mvvm.Period
+CREATE TABLE settings.period (
     period_id int8 NOT NULL,
     hour int4 NOT NULL,
     minute int4 NOT NULL,
@@ -63,7 +81,8 @@ CREATE TABLE period (
     saturday bool,
     PRIMARY KEY (period_id));
 
-CREATE TABLE transform_preferences (
+-- com.metavize.mvvm.tran.TransformPreferences
+CREATE TABLE settings.transform_preferences (
     id int8 NOT NULL,
     tid int8,
     red int4,
@@ -72,7 +91,8 @@ CREATE TABLE transform_preferences (
     alpha int4,
     PRIMARY KEY (id));
 
-CREATE TABLE string_rule (
+-- com.metavize.mvvm.tran.StringRule
+CREATE TABLE settings.string_rule (
     rule_id int8 NOT NULL,
     string varchar(255),
     name varchar(255),
@@ -83,11 +103,13 @@ CREATE TABLE string_rule (
     log bool,
     PRIMARY KEY (rule_id));
 
-CREATE TABLE tid (
+-- com.metavize.mvvm.security.Tid
+CREATE TABLE settings.tid (
     id int8 NOT NULL,
     PRIMARY KEY (id));
 
-CREATE TABLE rule (
+-- com.metavize.mvvm.tran.Rule
+CREATE TABLE settings.rule (
     rule_id int8 NOT NULL,
     name varchar(255),
     category varchar(255),
@@ -97,7 +119,8 @@ CREATE TABLE rule (
     log bool,
     PRIMARY KEY (rule_id));
 
-CREATE TABLE transform_persistent_state (
+-- com.metavize.mvvm.engine.TransformPersistentState
+CREATE TABLE settings.transform_persistent_state (
     id int8 NOT NULL,
     name varchar(64) NOT NULL,
     tid int8,
@@ -105,12 +128,14 @@ CREATE TABLE transform_persistent_state (
     target_state varchar(255) NOT NULL,
     PRIMARY KEY (id));
 
-CREATE TABLE ipmaddr_dir (
+-- com.metavize.mvvm.tran.IPMaddrDirectory
+CREATE TABLE settings.ipmaddr_dir (
     id int8 NOT NULL,
     notes varchar(255),
     PRIMARY KEY (id));
 
-CREATE TABLE mimetype_rule (
+-- com.metavize.mvvm.tran.StringRule
+CREATE TABLE settings.mimetype_rule (
     rule_id int8 NOT NULL,
     mime_type varchar(255),
     name varchar(255),
@@ -121,13 +146,15 @@ CREATE TABLE mimetype_rule (
     log bool,
     PRIMARY KEY (rule_id));
 
-CREATE TABLE ipmaddr_dir_entries (
+-- com.metavize.mvvm.tran.IPMaddrDirectory.entries
+CREATE TABLE settings.ipmaddr_dir_entries (
     ipmaddr_dir_id int8 NOT NULL,
     rule_id int8 NOT NULL,
     position int4 NOT NULL,
     PRIMARY KEY (ipmaddr_dir_id, position));
 
-CREATE TABLE ipmaddr_rule (
+-- com.metavize.mvvm.tran.IPMaddrRule
+CREATE TABLE settings.ipmaddr_rule (
     rule_id int8 NOT NULL,
     ipmaddr inet,
     name varchar(255),
@@ -138,7 +165,8 @@ CREATE TABLE ipmaddr_rule (
     log bool,
     PRIMARY KEY (rule_id));
 
-CREATE TABLE mvvm_login_evt (
+-- com.metavize.mvvm.engine.LoginEvent
+CREATE TABLE events.mvvm_login_evt (
     event_id int8 NOT NULL,
     client_addr inet,
     login varchar(255),
@@ -148,7 +176,8 @@ CREATE TABLE mvvm_login_evt (
     time_stamp timestamp,
     PRIMARY KEY (event_id));
 
-CREATE TABLE pl_endp (
+-- com.metavize.mvvm.tran.PipelineEndpoints
+CREATE TABLE events.pl_endp (
     event_id int8 NOT NULL,
     time_stamp timestamp,
     session_id int4,
@@ -166,7 +195,8 @@ CREATE TABLE pl_endp (
     s_server_port int4,
     PRIMARY KEY (event_id));
 
-CREATE TABLE pl_stats (
+-- com.metavize.mvvm.tran.PipelineStats
+CREATE TABLE events.pl_stats (
     event_id int8 NOT NULL,
     time_stamp timestamp,
     session_id int4,
@@ -181,8 +211,8 @@ CREATE TABLE pl_stats (
     p2s_chunks int8,
     PRIMARY KEY (event_id));
 
--- Table for shield rejection events
-CREATE TABLE shield_rejection_evt (
+-- com.metavize.mvvm.shield.ShieldRejectionEvent
+CREATE TABLE events.shield_rejection_evt (
     event_id int8 NOT NULL,
     ip inet,
     reputation float8,
@@ -193,8 +223,8 @@ CREATE TABLE shield_rejection_evt (
     time_stamp timestamp,
     PRIMARY KEY (event_id));
 
--- Table for shield statistics
-CREATE TABLE shield_statistic_evt (
+-- com.metavize.mvvm.shield.ShieldStatisticEvent
+CREATE TABLE events.shield_statistic_evt (
     event_id int8 NOT NULL,
     accepted int4,
     limited  int4,
@@ -207,25 +237,41 @@ CREATE TABLE shield_statistic_evt (
     time_stamp timestamp,
     PRIMARY KEY (event_id));
 
-ALTER TABLE admin_settings ADD CONSTRAINT FK71B1F7333C031EE0 FOREIGN KEY (summary_period_id) REFERENCES period;
+-- indeces for reporting
 
-ALTER TABLE mvvm_user ADD CONSTRAINT FKCC5A228ACD112C9A FOREIGN KEY (admin_setting_id) REFERENCES admin_settings;
+CREATE INDEX pl_endp_sid_idx ON events.pl_endp (session_id);
+CREATE INDEX pl_endp_cdate_idx ON events.pl_endp (create_date);
 
-ALTER TABLE upgrade_settings ADD CONSTRAINT FK4DC4F2E68C7669C1 FOREIGN KEY (period) REFERENCES period;
+-- list indeces
 
-ALTER TABLE transform_args ADD CONSTRAINT FK1C0835F0A8A3B796 FOREIGN KEY (transform_desc_id) REFERENCES transform_persistent_state;
+CREATE INDEX idx_string_rule ON settings.string_rule (string);
 
-ALTER TABLE transform_preferences ADD CONSTRAINT FKE8B6BA651446F FOREIGN KEY (tid) REFERENCES tid;
+-- foreign key constraints
 
-CREATE INDEX idx_string_rule ON string_rule (string);
+ALTER TABLE settings.admin_settings
+    ADD CONSTRAINT fk_admin_settings
+    FOREIGN KEY (summary_period_id) REFERENCES settings.period;
 
-ALTER TABLE transform_persistent_state ADD CONSTRAINT FKA67B855C1446F FOREIGN KEY (tid) REFERENCES tid;
+ALTER TABLE settings.mvvm_user
+    ADD CONSTRAINT fk_mvvm_user
+    FOREIGN KEY (admin_setting_id) REFERENCES settings.admin_settings;
 
-ALTER TABLE ipmaddr_dir_entries ADD CONSTRAINT FKC67DE356B5257E75 FOREIGN KEY (ipmaddr_dir_id) REFERENCES ipmaddr_dir;
+ALTER TABLE settings.upgrade_settings
+    ADD CONSTRAINT fk_upgrade_settings
+    FOREIGN KEY (period) REFERENCES settings.period;
 
-ALTER TABLE ipmaddr_dir_entries ADD CONSTRAINT FKC67DE356871AAD3E FOREIGN KEY (rule_id) REFERENCES ipmaddr_rule;
+ALTER TABLE settings.transform_args
+    ADD CONSTRAINT fk_transform_args
+    FOREIGN KEY (tps_id) REFERENCES settings.transform_persistent_state;
 
-CREATE INDEX pl_endp_sid_idx on pl_endp (session_id);
-CREATE INDEX pl_endp_cdate_idx ON pl_endp (create_date);
+ALTER TABLE settings.transform_preferences
+    ADD CONSTRAINT fk_transform_preferences
+    FOREIGN KEY (tid) REFERENCES settings.tid;
 
-CREATE SEQUENCE hibernate_sequence;
+ALTER TABLE settings.transform_persistent_state
+    ADD CONSTRAINT fk_transform_persistent_state
+    FOREIGN KEY (tid) REFERENCES settings.tid;
+
+ALTER TABLE settings.ipmaddr_dir_entries
+    ADD CONSTRAINT fk_ipmaddr_dir_entries
+    FOREIGN KEY (ipmaddr_dir_id) REFERENCES settings.ipmaddr_dir;

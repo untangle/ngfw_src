@@ -14,9 +14,9 @@ package com.metavize.mvvm.engine;
 import java.io.IOException;
 
 import com.metavize.mvvm.ArgonManager;
+import com.metavize.mvvm.ConnectivityTester;
 import com.metavize.mvvm.MvvmLocalContext;
 import com.metavize.mvvm.NetworkingManager;
-import com.metavize.mvvm.ConnectivityTester;
 import com.metavize.mvvm.ToolboxManager;
 import com.metavize.mvvm.client.MvvmRemoteContext;
 import com.metavize.mvvm.logging.LoggingManager;
@@ -93,6 +93,6 @@ class MvvmRemoteContextImpl implements MvvmRemoteContext
 
     public String version()
     {
-	return context.version();
+        return context.version();
     }
 }

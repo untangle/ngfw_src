@@ -51,7 +51,6 @@ import org.apache.log4j.Logger;
 
 public class SpywareImpl extends AbstractTransform implements Spyware
 {
-
     private static final String COOKIE_QUERY
         = "SELECT req.time_stamp, "
         +        "'COOKIE' AS type, "
@@ -134,9 +133,9 @@ public class SpywareImpl extends AbstractTransform implements Spyware
 
     private final PipeSpec[] pipeSpecs = new PipeSpec[]
         { new SoloPipeSpec("spyware-http", this, tokenAdaptor,
-                             Fitting.HTTP_TOKENS, Affinity.SERVER, 0),
+                           Fitting.HTTP_TOKENS, Affinity.SERVER, 0),
           new SoloPipeSpec("spyware-byte", this, streamHandler,
-                             Fitting.OCTET_STREAM, Affinity.SERVER, 0) };
+                           Fitting.OCTET_STREAM, Affinity.SERVER, 0) };
 
     private volatile SpywareSettings settings;
     private volatile Map<String, StringRule> activeXRules;
@@ -370,8 +369,8 @@ public class SpywareImpl extends AbstractTransform implements Spyware
             InputStreamReader isr = new InputStreamReader(is);
             BufferedReader br = new BufferedReader(isr);
 
-            for (String line = br.readLine(); null != line; line = br.readLine()) {
-                Matcher matcher = ACTIVEX_PATTERN.matcher(line);
+            for (String l = br.readLine(); null != l; l = br.readLine()) {
+                Matcher matcher = ACTIVEX_PATTERN.matcher(l);
                 if (matcher.matches()) {
                     String clsid = matcher.group(1);
 
@@ -416,10 +415,10 @@ public class SpywareImpl extends AbstractTransform implements Spyware
             InputStreamReader isr = new InputStreamReader(is);
             BufferedReader br = new BufferedReader(isr);
 
-            for (String line = br.readLine(); null != line; line = br.readLine()) {
-                if (!ruleHash.contains(line)) {
-                    logger.debug("ADDING cookie Rule: " + line);
-                    rules.add(new StringRule(line));
+            for (String l = br.readLine(); null != l; l = br.readLine()) {
+                if (!ruleHash.contains(l)) {
+                    logger.debug("ADDING cookie Rule: " + l);
+                    rules.add(new StringRule(l));
                 }
             }
         } catch (IOException exn) {
