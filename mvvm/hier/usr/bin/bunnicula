@@ -1,7 +1,5 @@
 #!/bin/sh
 
-NAME=bunnicula
-DESC="Metavize Bunnicula MVVM server"
 PATH=/sbin:/bin:/usr/sbin:/usr/bin
 JAVA_HOME=${JAVA_HOME:-/opt/java}
 
@@ -13,6 +11,7 @@ procset() {
         if [ $? != 0 ] ; then 
             echo "WARNING: Failed to set proc setting \"$1\""  >&2
             if [ "$3" != "" ] ; then
+                echo "ERROR: Failed to set required proc setting \"$1\""  >&2
                 exit 1
             fi
         fi
@@ -59,11 +58,6 @@ createdb -O metavize -U metavize mvvm 2>/dev/null
 MVVM_PARAMS_FILE=@PREFIX@/usr/share/metavize/conf/networking.sh
 if [ -f "$MVVM_PARAMS_FILE"  -a ! -d "$MVVM_PARAMS_FILE" ]; then
     . $MVVM_PARAMS_FILE
-fi
-
-# read configuration options
-if [ -f "@PREFIX@/etc/default/$NAME" -a ! -d "@PREFIX@/etc/default/$NAME" ] ; then
-        . @PREFIX@/etc/default/$NAME
 fi
 
 # This parameter comes from the MVVM_PARAMS_FILE
