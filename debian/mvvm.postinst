@@ -49,3 +49,6 @@ if [ -x "/etc/init.d/mvvm" ]; then
     update-rc.d mvvm defaults 50 > /dev/null
     /etc/init.d/mvvm start
 fi
+
+# delete old files
+rm -f /etc/default/bunnicula
