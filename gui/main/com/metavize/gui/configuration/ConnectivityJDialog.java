@@ -59,7 +59,7 @@ public class ConnectivityJDialog extends javax.swing.JDialog implements java.awt
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-        setTitle("Upgrade Availability Check");
+        setTitle("Connectivity Check");
         setModal(true);
         setResizable(false);
         labelJLabel.setFont(new java.awt.Font("Dialog", 1, 24));

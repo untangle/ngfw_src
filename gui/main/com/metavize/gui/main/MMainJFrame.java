@@ -689,9 +689,9 @@ public class MMainJFrame extends javax.swing.JFrame {
 	    mTransformJButton.highlight();
 	} } );
     }
-
+    
     public synchronized void addMTransformJButtonToStore(final MTransformJButton mTransformJButton){
-
+	
 	// SETUP BUTTON ACTION
 	ActionListener[] actionListeners = mTransformJButton.getActionListeners();
 	for(int i=0; i<actionListeners.length; i++)
@@ -767,7 +767,7 @@ public class MMainJFrame extends javax.swing.JFrame {
 	storeJDialog.setVisible(true);
 	if( storeJDialog.getPurchasedMTransformJButton() != null){
 	    if( Util.mustCheckUpgrades() ){
-		ConnectivityJDialog storeCheckJDialog = new ConnectivityJDialog();
+		StoreCheckJDialog storeCheckJDialog = new StoreCheckJDialog();
 		storeCheckJDialog.setVisible(true);
 		if( !storeCheckJDialog.upgradesAvailable() ){
 		    targetMTransformJButton.purchase();
