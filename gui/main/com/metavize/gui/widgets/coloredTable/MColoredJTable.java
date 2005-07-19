@@ -29,7 +29,6 @@ public class MColoredJTable extends JTable {
     private MColoredTableCellEditor tableCellEditor;
     private MColoredTableCellRenderer tableCellRenderer;
     
-    private MSortedTableModel mTableModel;
     private static final Color TABLE_BACKGROUND_COLOR = new Color(213, 213, 226);
     
     public MColoredJTable() {
@@ -47,10 +46,8 @@ public class MColoredJTable extends JTable {
         JLabel headerRendererJLabel = (JLabel) this.getTableHeader().getDefaultRenderer();
         headerRendererJLabel.setHorizontalAlignment( SwingConstants.CENTER );
         
-        
         tableCellEditor = new MColoredTableCellEditor(this);
-        tableCellRenderer = new MColoredTableCellRenderer();
-        
+        tableCellRenderer = new MColoredTableCellRenderer();    
     }
 
     

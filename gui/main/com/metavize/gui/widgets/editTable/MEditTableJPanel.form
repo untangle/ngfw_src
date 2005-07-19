@@ -48,6 +48,9 @@
               <SubComponents>
                 <Component class="javax.swing.JTable" name="entryJTable">
                   <Properties>
+                    <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                      <Color blue="e2" green="d5" red="d5" type="rgb"/>
+                    </Property>
                     <Property name="autoResizeMode" type="int" value="0"/>
                     <Property name="doubleBuffered" type="boolean" value="true"/>
                   </Properties>

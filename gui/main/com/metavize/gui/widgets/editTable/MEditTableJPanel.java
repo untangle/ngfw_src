@@ -197,6 +197,7 @@ public class MEditTableJPanel extends javax.swing.JPanel implements ListSelectio
         tableJPanel.setMinimumSize(new java.awt.Dimension(40, 40));
         entryJScrollPane.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         entryJScrollPane.setDoubleBuffered(true);
+        entryJTable.setBackground(new java.awt.Color(213, 213, 226));
         entryJTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
         entryJTable.setDoubleBuffered(true);
         entryJScrollPane.setViewportView(entryJTable);
