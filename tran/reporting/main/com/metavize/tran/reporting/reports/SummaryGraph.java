@@ -179,12 +179,12 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
         for (int i = 0; i < ourMins; i++) {
             java.util.Date date = new java.util.Date(ourStart + i * MINUTE_INTERVAL);
             double byteCountPerMin = counts[i];
-            double kBPerSec = byteCountPerMin * (60.0d / 1024.0d);
+            double kBPerSec = byteCountPerMin / 60.0d / 1024.0d;
             // System.out.println("at " + date + ":\t" + kBPerSec);
             dataset.add(new Minute(date), kBPerSec);
             if (doThreeSeries) {
-                incomingDataset.add(new Minute(date), incomingCounts[i] * (60.0d / 1024.0d));
-                outgoingDataset.add(new Minute(date), outgoingCounts[i] * (60.0d / 1024.0d));
+                incomingDataset.add(new Minute(date), incomingCounts[i] / 60.0d / 1024.0d);
+                outgoingDataset.add(new Minute(date), outgoingCounts[i] / 60.0d / 1024.0d);
             }
         }
         try { stmt.close(); } catch (SQLException x) { }
