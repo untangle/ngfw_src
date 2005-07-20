@@ -17,8 +17,10 @@ import java.util.List;
 import java.util.LinkedList;
 import java.util.Iterator;
 
-import com.metavize.mvvm.MvvmContextFactory;
-import com.metavize.mvvm.NetworkingManager;
+// XXX jdi -- Hibernate classes must not import or use MVVM stuff -- put that
+//  stuff in a static helper class, etc.
+//import com.metavize.mvvm.MvvmContextFactory;
+//import com.metavize.mvvm.NetworkingManager;
 import com.metavize.mvvm.NetworkingConfiguration;
 
 import com.metavize.mvvm.security.Tid;
