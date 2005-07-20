@@ -1,7 +1,6 @@
-diff -urN --ignore-all-space linux-2.6.12.2-orig/extensions.kernel-2.6.12.2.patch linux-2.6.12.2-bar/extensions.kernel-2.6.12.2.patch
-diff -urN --ignore-all-space linux-2.6.12.2-orig/include/linux/in.h linux-2.6.12.2-bar/include/linux/in.h
+diff -urN --ignore-all-space linux-2.6.12.2-orig/include/linux/in.h linux-2.6.12.2-patch/include/linux/in.h
 --- linux-2.6.12.2-orig/include/linux/in.h	2005-06-29 16:00:53.000000000 -0700
-+++ linux-2.6.12.2-bar/include/linux/in.h	2005-07-05 19:53:54.571978802 -0700
++++ linux-2.6.12.2-patch/include/linux/in.h	2005-07-19 22:26:07.064817597 -0700
 @@ -75,6 +75,13 @@
  /* BSD compatibility */
  #define IP_RECVRETOPTS	IP_RETOPTS
@@ -32,9 +31,9 @@ diff -urN --ignore-all-space linux-2.6.12.2-orig/include/linux/in.h linux-2.6.12
  
  /*
   * Definitions of the bits in an Internet address integer.
-diff -urN --ignore-all-space linux-2.6.12.2-orig/include/linux/udp.h linux-2.6.12.2-bar/include/linux/udp.h
+diff -urN --ignore-all-space linux-2.6.12.2-orig/include/linux/udp.h linux-2.6.12.2-patch/include/linux/udp.h
 --- linux-2.6.12.2-orig/include/linux/udp.h	2005-06-29 16:00:53.000000000 -0700
-+++ linux-2.6.12.2-bar/include/linux/udp.h	2005-07-05 19:53:54.572978726 -0700
++++ linux-2.6.12.2-patch/include/linux/udp.h	2005-07-19 22:26:07.064817597 -0700
 @@ -30,6 +30,15 @@
  #define UDP_CORK	1	/* Never send partially complete segments */
  #define UDP_ENCAP	100	/* Set the socket to accept encapsulated packets */
@@ -51,10 +50,10 @@ diff -urN --ignore-all-space linux-2.6.12.2-orig/include/linux/udp.h linux-2.6.1
  /* UDP encapsulation types */
  #define UDP_ENCAP_ESPINUDP_NON_IKE	1 /* draft-ietf-ipsec-nat-t-ike-00/01 */
  #define UDP_ENCAP_ESPINUDP	2 /* draft-ietf-ipsec-udp-encaps-06 */
-diff -urN --ignore-all-space linux-2.6.12.2-orig/include/net/ip.h linux-2.6.12.2-bar/include/net/ip.h
+diff -urN --ignore-all-space linux-2.6.12.2-orig/include/net/ip.h linux-2.6.12.2-patch/include/net/ip.h
 --- linux-2.6.12.2-orig/include/net/ip.h	2005-06-29 16:00:53.000000000 -0700
-+++ linux-2.6.12.2-bar/include/net/ip.h	2005-07-05 19:54:27.631473427 -0700
-@@ -41,5 +41,9 @@
++++ linux-2.6.12.2-patch/include/net/ip.h	2005-07-19 22:26:07.065817503 -0700
+@@ -41,6 +41,10 @@
  	struct ip_options	opt;		/* Compiled IP options		*/
  	unsigned char		flags;
  
@@ -64,7 +63,8 @@ diff -urN --ignore-all-space linux-2.6.12.2-orig/include/net/ip.h linux-2.6.12.2
 +
  #define IPSKB_MASQUERADED	1
  #define IPSKB_TRANSLATED	2
-@@ -52,6 +57,12 @@
+ #define IPSKB_FORWARDED		4
+@@ -52,6 +56,12 @@
  	u32			addr;
  	int			oif;
  	struct ip_options	*opt;
@@ -77,9 +77,9 @@ diff -urN --ignore-all-space linux-2.6.12.2-orig/include/net/ip.h linux-2.6.12.2
  };
  
  #define IPCB(skb) ((struct inet_skb_parm*)((skb)->cb))
-diff -urN --ignore-all-space linux-2.6.12.2-orig/include/net/sock.h linux-2.6.12.2-bar/include/net/sock.h
+diff -urN --ignore-all-space linux-2.6.12.2-orig/include/net/sock.h linux-2.6.12.2-patch/include/net/sock.h
 --- linux-2.6.12.2-orig/include/net/sock.h	2005-06-29 16:00:53.000000000 -0700
-+++ linux-2.6.12.2-bar/include/net/sock.h	2005-07-05 19:53:54.573978650 -0700
++++ linux-2.6.12.2-patch/include/net/sock.h	2005-07-19 22:26:07.066817410 -0700
 @@ -208,6 +208,14 @@
  	int			sk_hashent;
  	unsigned long 		sk_flags;
@@ -95,9 +95,9 @@ diff -urN --ignore-all-space linux-2.6.12.2-orig/include/net/sock.h linux-2.6.12
  	/*
  	 * The backlog queue is special, it is always used with
  	 * the per-socket spinlock held and requires low latency
-diff -urN --ignore-all-space linux-2.6.12.2-orig/net/ipv4/ip_output.c linux-2.6.12.2-bar/net/ipv4/ip_output.c
+diff -urN --ignore-all-space linux-2.6.12.2-orig/net/ipv4/ip_output.c linux-2.6.12.2-patch/net/ipv4/ip_output.c
 --- linux-2.6.12.2-orig/net/ipv4/ip_output.c	2005-06-29 16:00:53.000000000 -0700
-+++ linux-2.6.12.2-bar/net/ipv4/ip_output.c	2005-07-05 19:53:54.574978574 -0700
++++ linux-2.6.12.2-patch/net/ipv4/ip_output.c	2005-07-19 22:26:07.067817316 -0700
 @@ -165,6 +165,9 @@
  
  	skb->priority = sk->sk_priority;
@@ -148,9 +148,9 @@ diff -urN --ignore-all-space linux-2.6.12.2-orig/net/ipv4/ip_output.c linux-2.6.
  	iph->protocol = sk->sk_protocol;
  	iph->saddr = rt->rt_src;
  	iph->daddr = rt->rt_dst;
-diff -urN --ignore-all-space linux-2.6.12.2-orig/net/ipv4/ip_sockglue.c linux-2.6.12.2-bar/net/ipv4/ip_sockglue.c
+diff -urN --ignore-all-space linux-2.6.12.2-orig/net/ipv4/ip_sockglue.c linux-2.6.12.2-patch/net/ipv4/ip_sockglue.c
 --- linux-2.6.12.2-orig/net/ipv4/ip_sockglue.c	2005-06-29 16:00:53.000000000 -0700
-+++ linux-2.6.12.2-bar/net/ipv4/ip_sockglue.c	2005-07-05 19:53:54.575978498 -0700
++++ linux-2.6.12.2-patch/net/ipv4/ip_sockglue.c	2005-07-19 22:26:07.068817223 -0700
 @@ -50,6 +50,8 @@
  #define IP_CMSG_TOS		4
  #define IP_CMSG_RECVOPTS	8
@@ -316,9 +316,9 @@ diff -urN --ignore-all-space linux-2.6.12.2-orig/net/ipv4/ip_sockglue.c linux-2.
  		case IP_PKTINFO:
  			val = (inet->cmsg_flags & IP_CMSG_PKTINFO) != 0;
  			break;
-diff -urN --ignore-all-space linux-2.6.12.2-orig/net/ipv4/tcp_input.c linux-2.6.12.2-bar/net/ipv4/tcp_input.c
+diff -urN --ignore-all-space linux-2.6.12.2-orig/net/ipv4/tcp_input.c linux-2.6.12.2-patch/net/ipv4/tcp_input.c
 --- linux-2.6.12.2-orig/net/ipv4/tcp_input.c	2005-06-29 16:00:53.000000000 -0700
-+++ linux-2.6.12.2-bar/net/ipv4/tcp_input.c	2005-07-05 19:53:54.577978347 -0700
++++ linux-2.6.12.2-patch/net/ipv4/tcp_input.c	2005-07-19 22:26:07.071816942 -0700
 @@ -4512,6 +4512,8 @@
  		 */
  		tp->rcv_nxt = TCP_SKB_CB(skb)->seq + 1;
@@ -328,9 +328,9 @@ diff -urN --ignore-all-space linux-2.6.12.2-orig/net/ipv4/tcp_input.c linux-2.6.
  
  		/* RFC1323: The window in SYN & SYN/ACK segments is
  		 * never scaled.
-diff -urN --ignore-all-space linux-2.6.12.2-orig/net/ipv4/tcp_ipv4.c linux-2.6.12.2-bar/net/ipv4/tcp_ipv4.c
+diff -urN --ignore-all-space linux-2.6.12.2-orig/net/ipv4/tcp_ipv4.c linux-2.6.12.2-patch/net/ipv4/tcp_ipv4.c
 --- linux-2.6.12.2-orig/net/ipv4/tcp_ipv4.c	2005-06-29 16:00:53.000000000 -0700
-+++ linux-2.6.12.2-bar/net/ipv4/tcp_ipv4.c	2005-07-05 19:53:54.579978195 -0700
++++ linux-2.6.12.2-patch/net/ipv4/tcp_ipv4.c	2005-07-19 22:26:07.072816848 -0700
 @@ -1566,6 +1566,8 @@
  		goto exit;
  
@@ -340,9 +340,9 @@ diff -urN --ignore-all-space linux-2.6.12.2-orig/net/ipv4/tcp_ipv4.c linux-2.6.1
  	tcp_v4_setup_caps(newsk, dst);
  
  	newtp		      = tcp_sk(newsk);
-diff -urN --ignore-all-space linux-2.6.12.2-orig/net/ipv4/tcp_minisocks.c linux-2.6.12.2-bar/net/ipv4/tcp_minisocks.c
+diff -urN --ignore-all-space linux-2.6.12.2-orig/net/ipv4/tcp_minisocks.c linux-2.6.12.2-patch/net/ipv4/tcp_minisocks.c
 --- linux-2.6.12.2-orig/net/ipv4/tcp_minisocks.c	2005-06-29 16:00:53.000000000 -0700
-+++ linux-2.6.12.2-bar/net/ipv4/tcp_minisocks.c	2005-07-05 19:53:54.580978120 -0700
++++ linux-2.6.12.2-patch/net/ipv4/tcp_minisocks.c	2005-07-19 22:26:07.073816755 -0700
 @@ -743,6 +743,8 @@
  		newtp->snd_nxt = req->snt_isn + 1;
  		newtp->snd_una = req->snt_isn + 1;
@@ -352,9 +352,9 @@ diff -urN --ignore-all-space linux-2.6.12.2-orig/net/ipv4/tcp_minisocks.c linux-
  
  		tcp_prequeue_init(newtp);
  
-diff -urN --ignore-all-space linux-2.6.12.2-orig/net/ipv4/tcp_output.c linux-2.6.12.2-bar/net/ipv4/tcp_output.c
+diff -urN --ignore-all-space linux-2.6.12.2-orig/net/ipv4/tcp_output.c linux-2.6.12.2-patch/net/ipv4/tcp_output.c
 --- linux-2.6.12.2-orig/net/ipv4/tcp_output.c	2005-06-29 16:00:53.000000000 -0700
-+++ linux-2.6.12.2-bar/net/ipv4/tcp_output.c	2005-07-05 19:53:54.581978044 -0700
++++ linux-2.6.12.2-patch/net/ipv4/tcp_output.c	2005-07-19 22:26:07.074816661 -0700
 @@ -366,6 +366,9 @@
  		if (skb->len != tcp_header_size)
  			tcp_event_data_sent(tp, skb, sk);
@@ -365,9 +365,9 @@ diff -urN --ignore-all-space linux-2.6.12.2-orig/net/ipv4/tcp_output.c linux-2.6
  		TCP_INC_STATS(TCP_MIB_OUTSEGS);
  
  		err = tp->af_specific->queue_xmit(skb, 0);
-diff -urN --ignore-all-space linux-2.6.12.2-orig/net/ipv4/udp.c linux-2.6.12.2-bar/net/ipv4/udp.c
+diff -urN --ignore-all-space linux-2.6.12.2-orig/net/ipv4/udp.c linux-2.6.12.2-patch/net/ipv4/udp.c
 --- linux-2.6.12.2-orig/net/ipv4/udp.c	2005-06-29 16:00:53.000000000 -0700
-+++ linux-2.6.12.2-bar/net/ipv4/udp.c	2005-07-05 19:53:54.582977968 -0700
++++ linux-2.6.12.2-patch/net/ipv4/udp.c	2005-07-19 22:26:25.743070173 -0700
 @@ -108,6 +108,26 @@
  #include <net/checksum.h>
  #include <net/xfrm.h>
@@ -466,15 +466,18 @@ diff -urN --ignore-all-space linux-2.6.12.2-orig/net/ipv4/udp.c linux-2.6.12.2-b
  	saddr = ipc.addr;
  	ipc.addr = faddr = daddr;
  
-@@ -574,6 +631,7 @@
+@@ -574,6 +631,10 @@
  		connected = 0;
  	}
  	tos = RT_TOS(inet->tos);
 +
++    if (ipc.pkt_udp_sport || ipc.addr)
++        tos |= RTO_TPROXY;
++
  	if (sock_flag(sk, SOCK_LOCALROUTE) ||
  	    (msg->msg_flags & MSG_DONTROUTE) || 
  	    (ipc.opt && ipc.opt->is_strictroute)) {
-@@ -600,7 +658,7 @@
+@@ -600,7 +661,7 @@
  						.tos = tos } },
  				    .proto = IPPROTO_UDP,
  				    .uli_u = { .ports =
@@ -483,7 +486,7 @@ diff -urN --ignore-all-space linux-2.6.12.2-orig/net/ipv4/udp.c linux-2.6.12.2-b
  						 .dport = dport } } };
  		err = ip_route_output_flow(&rt, &fl, sk, !(msg->msg_flags&MSG_DONTWAIT));
  		if (err)
-@@ -638,7 +696,7 @@
+@@ -638,7 +699,7 @@
  	inet->cork.fl.fl4_dst = daddr;
  	inet->cork.fl.fl_ip_dport = dport;
  	inet->cork.fl.fl4_src = saddr;
@@ -492,7 +495,7 @@ diff -urN --ignore-all-space linux-2.6.12.2-orig/net/ipv4/udp.c linux-2.6.12.2-b
  	up->pending = AF_INET;
  
  do_append_data:
-@@ -793,6 +851,7 @@
+@@ -793,6 +854,7 @@
  
  try_again:
  	skb = skb_recv_datagram(sk, flags, noblock, &err);
@@ -500,7 +503,7 @@ diff -urN --ignore-all-space linux-2.6.12.2-orig/net/ipv4/udp.c linux-2.6.12.2-b
  	if (!skb)
  		goto out;
    
-@@ -830,8 +889,9 @@
+@@ -830,8 +892,9 @@
  		sin->sin_addr.s_addr = skb->nh.iph->saddr;
  		memset(sin->sin_zero, 0, sizeof(sin->sin_zero));
    	}
@@ -512,7 +515,7 @@ diff -urN --ignore-all-space linux-2.6.12.2-orig/net/ipv4/udp.c linux-2.6.12.2-b
  
  	err = copied;
  	if (flags & MSG_TRUNC)
-@@ -1251,6 +1311,13 @@
+@@ -1251,6 +1314,13 @@
  		}
  		break;
  		
@@ -526,7 +529,7 @@ diff -urN --ignore-all-space linux-2.6.12.2-orig/net/ipv4/udp.c linux-2.6.12.2-b
  	case UDP_ENCAP:
  		switch (val) {
  		case 0:
-@@ -1294,6 +1361,10 @@
+@@ -1294,6 +1364,10 @@
  		val = up->corkflag;
  		break;
  
