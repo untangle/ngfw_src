@@ -29,7 +29,7 @@
  * max control massge size
  * WARNING: fragile
  */
-#define MAX_CONTROL_MSG (64 + NETCAP_MAX_IF_NAME_LEN + 200 + 10)
+#define MAX_CONTROL_MSG 200
 
 /**
  * max length of an iptables command

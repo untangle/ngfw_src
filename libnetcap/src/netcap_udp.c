@@ -11,7 +11,6 @@
 #include <arpa/inet.h>
 #include <string.h>
 #include <errno.h>
-
 #include <mvutil/errlog.h>
 #include <mvutil/debug.h>
 #include <mvutil/list.h>
@@ -54,7 +53,7 @@ static int _parse_udp_ip_header( netcap_pkt_t* pkt, char* header, int header_len
  */
 static int _cache_packet( char* full_pkt, int full_pkt_len, mailbox_t* icmp_mb );
 
-static struct cmsghdr * my__cmsg_nxthdr(void *__ctl, size_t __size, struct cmsghdr *__cmsg);
+static struct cmsghdr * my__cmsg_nxthdr(struct msghdr *msg, struct cmsghdr *cmsg, int size);
 
 int  netcap_udp_init ()
 {
@@ -418,28 +417,23 @@ static int _netcap_udp_sendto (int sock, void* data, size_t data_len, int flags,
     struct cmsghdr*    cmsg;
     struct iovec       iov[1];
     struct sockaddr_in dst;
-    int                dstlen = sizeof(dst);
     char               control[MAX_CONTROL_MSG];
     u_short            sport;
     int                ret;
-    int                dst_intf_len = 0;
-    netcap_intf_t      dst_intf;
+    u_int              nfmark = ( MARK_ANTISUB | MARK_NOTRACK | (pkt->is_marked ? pkt->nfmark : 0 )); 
+    /* mark is  antisub + notrack + whatever packet marks are specified */
 
-    /* Antisubscribe all outgoing UDP packets */
-    u_int              nfmark = ( MARK_ANTISUB | MARK_NOTRACK );
+    if ( pkt->dst.intf != NC_INTF_UNK ) {
+        errlog(ERR_CRITICAL,"NC_INTF_UNK Unsupported (IP_DEVICE)\n");
+    }
 
-#ifdef DEBUG_ON
-    bzero(control,MAX_CONTROL_MSG);
-    bzero(&dst,sizeof(struct sockaddr_in));
-    bzero(&msg,sizeof(struct msghdr));
-#endif
-
-    memcpy(&dst.sin_addr,&pkt->dst.host,sizeof(struct in_addr));
-    dst.sin_port = htons(pkt->dst.port);
+    /* Setup the destination */
+    memcpy( &dst.sin_addr, &pkt->dst.host , sizeof(struct in_addr) );
+    dst.sin_port = htons( pkt->dst.port );
     dst.sin_family = AF_INET;
 
     msg.msg_name       = &dst;
-    msg.msg_namelen    = dstlen;
+    msg.msg_namelen    = sizeof( dst );
     msg.msg_iov        = iov;
     iov[0].iov_base    = data;
     iov[0].iov_len     = data_len;
@@ -448,42 +442,31 @@ static int _netcap_udp_sendto (int sock, void* data, size_t data_len, int flags,
     msg.msg_control    = control;
     msg.msg_controllen = MAX_CONTROL_MSG;
     
-    /* ttl ancillary */
-    cmsg = CMSG_FIRSTHDR(&msg);
-    if(!cmsg) {
-        errlog(ERR_CRITICAL,"No more CMSG Room\n");
-        goto err_out;
-    }
-    cmsg->cmsg_len = CMSG_LEN(sizeof(pkt->ttl));
-    cmsg->cmsg_level = SOL_IP;
-    cmsg->cmsg_type  = IP_TTL;
-    memcpy(CMSG_DATA(cmsg),&pkt->ttl,sizeof(pkt->ttl));
-    
     /* tos ancillary */
-	 cmsg =  my__cmsg_nxthdr(msg.msg_control, msg.msg_controllen, cmsg);
-    if(!cmsg) {
+    cmsg = CMSG_FIRSTHDR( &msg );
+    if( !cmsg ) {
         errlog(ERR_CRITICAL,"No more CMSG Room\n");
         goto err_out;
     }
-    cmsg->cmsg_len = CMSG_LEN(sizeof(pkt->tos));
+    cmsg->cmsg_len   = CMSG_LEN(sizeof(pkt->tos));
     cmsg->cmsg_level = SOL_IP;
     cmsg->cmsg_type  = IP_TOS;
-    memcpy(CMSG_DATA(cmsg),&pkt->tos,sizeof(pkt->tos));
+    memcpy( CMSG_DATA(cmsg), &pkt->tos, sizeof(pkt->tos) );
 
-    /* src ip ancillary */
-	 cmsg =  my__cmsg_nxthdr(msg.msg_control, msg.msg_controllen, cmsg);
-    if(!cmsg) {
+    /* ttl ancillary */
+    cmsg = my__cmsg_nxthdr(&msg, cmsg, sizeof(pkt->ttl));
+    if( !cmsg ) {
         errlog(ERR_CRITICAL,"No more CMSG Room\n");
         goto err_out;
     }
-    cmsg->cmsg_len = CMSG_LEN(sizeof(pkt->src.host));
+    cmsg->cmsg_len   = CMSG_LEN(sizeof(pkt->ttl));
     cmsg->cmsg_level = SOL_IP;
-    cmsg->cmsg_type  = IP_SADDR;
-    memcpy(CMSG_DATA(cmsg),&pkt->src.host,sizeof(pkt->src.host));
+    cmsg->cmsg_type  = IP_TTL;
+    memcpy( CMSG_DATA(cmsg), &pkt->ttl, sizeof(pkt->ttl) );
 
     /* src port ancillary */
-	 cmsg =  my__cmsg_nxthdr(msg.msg_control, msg.msg_controllen, cmsg);
-    if(!cmsg) {
+    cmsg =  my__cmsg_nxthdr(&msg, cmsg, sizeof(pkt->src.port));
+    if( !cmsg ) {
         errlog(ERR_CRITICAL,"No more CMSG Room\n");
         goto err_out;
     }
@@ -491,51 +474,57 @@ static int _netcap_udp_sendto (int sock, void* data, size_t data_len, int flags,
     cmsg->cmsg_level = SOL_UDP;
     cmsg->cmsg_type  = UDP_SPORT;
     sport = htons(pkt->src.port);
-    memcpy(CMSG_DATA(cmsg),&sport,sizeof(pkt->src.port));
+    memcpy( CMSG_DATA(cmsg),&sport,sizeof(pkt->src.port) );
 
-    /* destination interface ancillary */
-    dst_intf = pkt->dst.intf;
-    
-    if ( dst_intf != NC_INTF_UNK ) {
-        errlog(ERR_CRITICAL,"NC_INTF_UNK Unsupported (IP_DEVICE)\n");
-    }
-
-    /* The bit for antisubscribe is reserved, and is always set on outgoing packets */
-    if ( pkt->is_marked ) {
-        nfmark |= pkt->nfmark;
-    }
-
-    cmsg = my__cmsg_nxthdr( msg.msg_control, msg.msg_controllen, cmsg );
-    if ( cmsg == NULL ) { 
+    /* nfmark */                                  
+    cmsg =  my__cmsg_nxthdr(&msg, cmsg, sizeof(nfmark));
+    if ( cmsg == NULL ) {
         errlog( ERR_CRITICAL, "No more CMSG Room\n" );
         goto err_out;
     }
-    
     cmsg->cmsg_len = CMSG_LEN(sizeof(nfmark));
     cmsg->cmsg_level = SOL_IP;
     cmsg->cmsg_type  = IP_SENDNFMARK;
-    memcpy( CMSG_DATA( cmsg ), &nfmark, sizeof(nfmark));
-    
-    debug( 10, "UDP: Sending packet with mark: %#10x\n", nfmark );
+    memcpy( CMSG_DATA( cmsg ), &nfmark, sizeof(nfmark) );
 
-    /* XXX add options support ( XXX is_marked ) */
-    msg.msg_controllen = CMSG_SPACE(sizeof(pkt->src.host)) + CMSG_SPACE(sizeof(pkt->src.port)) + 
-        CMSG_SPACE(sizeof(pkt->tos)) + CMSG_SPACE(sizeof(pkt->ttl)) + 
+    /* src ip */
+    cmsg =  my__cmsg_nxthdr(&msg, cmsg, sizeof(pkt->src.host));
+    if(!cmsg) {
+        errlog(ERR_CRITICAL,"No more CMSG Room\n");
+        goto err_out;
+    }
+    cmsg->cmsg_len = CMSG_LEN(sizeof(pkt->src.host));
+    cmsg->cmsg_level = SOL_IP;
+    cmsg->cmsg_type  = IP_SADDR;
+    memcpy( CMSG_DATA(cmsg),&pkt->src.host,sizeof(pkt->src.host) );
+
+    /* sanity check */
+    cmsg =  my__cmsg_nxthdr(&msg, cmsg, 0);
+    if ( ((char*)cmsg) > control + MAX_CONTROL_MSG)
+        errlog(ERR_CRITICAL,"CMSG overrun");
+
+    msg.msg_controllen =
+        CMSG_SPACE(sizeof(pkt->tos)) +
+        CMSG_SPACE(sizeof(pkt->ttl)) +
+        CMSG_SPACE(sizeof(pkt->src.port)) +
         CMSG_SPACE(sizeof(nfmark)) +
-        (( dst_intf_len ) ? CMSG_SPACE( dst_intf_len ) : 0 );
+        CMSG_SPACE(sizeof(pkt->src.host));
 
-    debug( 10, "sending udp %s:%i -> ", inet_ntoa(pkt->src.host), pkt->src.port );
-    debug_nodate( 10, "%s:%i data_len:%i ttl:%i tos:%i\n",inet_ntoa(pkt->dst.host),pkt->dst.port,
-                  data_len, pkt->ttl, pkt->tos);
+    /* Send Packet */
+    debug( 10, "sending UDP %s:%i -> %s:%i data_len:%i ttl:%i tos:%i nfmark:%i\n",
+           unet_next_inet_ntoa(pkt->src.host.s_addr), pkt->src.port,
+           unet_next_inet_ntoa(pkt->dst.host.s_addr),pkt->dst.port,
+           data_len, pkt->ttl, pkt->tos, nfmark);
+
     
     if (( ret = sendmsg( sock, &msg, flags )) < 0 ) {
         if ( errno == EPERM ) {
-            debug( 10, "UDP: EPERM sending a UDP packet\n" );
+            errlog(ERR_WARNING, "UDP: EPERM sending a UDP packet\n" );
         } else {
             errlog(ERR_CRITICAL,"sendmsg: %s | ",errstr);
             errlog_noprefix(ERR_CRITICAL, "(%s:%i -> ", inet_ntoa(pkt->src.host), pkt->src.port );
-            errlog_noprefix(ERR_CRITICAL, "%s:%i) data_len:%i ttl:%i tos:%i\n",
-                            inet_ntoa(pkt->dst.host),pkt->dst.port,data_len, pkt->ttl, pkt->tos);
+            errlog_noprefix(ERR_CRITICAL, "%s:%i) data_len:%i ttl:%i tos:%i nfmark:%i\n",
+                            inet_ntoa(pkt->dst.host),pkt->dst.port,data_len, pkt->ttl, pkt->tos, nfmark);
         }
     }
     
@@ -631,7 +620,6 @@ static int _cache_packet( char* full_pkt, int full_pkt_len, mailbox_t* icmp_mb )
     return 0;
 }
 
-
 /**
  * Parse an UDP/IP header and return the received port.
  */
@@ -668,18 +656,18 @@ static int _parse_udp_ip_header( netcap_pkt_t* pkt, char* header, int header_len
     return 0;
 }
 
-
-
-/* this gets rid of a libc bug */
-static struct cmsghdr * my__cmsg_nxthdr(void *__ctl, size_t __size, struct cmsghdr *__cmsg)
+/* this gets rid of the mess in libc (in bits/socket.h) */
+static struct cmsghdr * my__cmsg_nxthdr(struct msghdr *msg, struct cmsghdr *cmsg, int size)
 {
-	struct cmsghdr * __ptr;
+	struct cmsghdr * ptr;
 
-	__ptr = (struct cmsghdr*)(((unsigned char *) __cmsg) +  CMSG_ALIGN(__cmsg->cmsg_len));
-	if ((unsigned long)((char*)(__ptr+1) - (char *) __ctl) > __size)
+	ptr = (struct cmsghdr*)(((unsigned char *) cmsg) +  CMSG_ALIGN(cmsg->cmsg_len));
+
+    if ((((char*)ptr) + CMSG_LEN(size)) > ((char*)msg->msg_control + msg->msg_controllen)) {
 		return (struct cmsghdr *)0;
+    }
 
-	return __ptr;
+	return ptr;
 }
 
 

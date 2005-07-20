@@ -315,7 +315,7 @@ static int  _icmp_fix_packet( netcap_pkt_t* pkt, char** full_pkt, int* full_pkt_
 static _find_t _icmp_find_session( netcap_pkt_t* pkt, netcap_session_t** netcap_sess, 
                                    char* full_pkt, int full_pkt_len );
 
-static struct cmsghdr* my__cmsg_nxthdr(void *__ctl, size_t __size, struct cmsghdr *__cmsg);
+static struct cmsghdr * my__cmsg_nxthdr(struct msghdr *msg, struct cmsghdr *cmsg, int size);
 
 int  netcap_icmp_init()
 {
@@ -422,7 +422,7 @@ int  netcap_icmp_send( char *data, int data_len, netcap_pkt_t* pkt )
     return _netcap_icmp_send( data, data_len, pkt, 0 );
 }
 
-int   netcap_icmp_update_pkt( char* data, int data_len, int data_lim,
+int  netcap_icmp_update_pkt( char* data, int data_len, int data_lim,
                               int icmp_type, int icmp_code, int id, mailbox_t* icmp_mb )
 {
     /* Length of the data that is copied in */
@@ -545,7 +545,7 @@ int   netcap_icmp_update_pkt( char* data, int data_len, int data_lim,
     return new_len;
 }
 
-int   netcap_icmp_get_source( char* data, int data_len, netcap_pkt_t* pkt, struct in_addr* source )
+int  netcap_icmp_get_source( char* data, int data_len, netcap_pkt_t* pkt, struct in_addr* source )
 {
     struct icmp* icmp_pkt;
 
@@ -630,24 +630,19 @@ static int  _netcap_icmp_send( char *data, int data_len, netcap_pkt_t* pkt, int 
     struct cmsghdr*    cmsg;
     struct iovec       iov[1];
     struct sockaddr_in dst;
-    char               control[MAX_CONTROL_MSG];
+    char               control[4096];
     int                ret;
-    int                dst_intf_len = 0;
-    netcap_intf_t      dst_intf;
-    u_int              nfmark = ( MARK_ANTISUB | MARK_NOTRACK );
+    u_int              nfmark = ( MARK_ANTISUB | MARK_NOTRACK | (pkt->is_marked ? pkt->nfmark : 0 )); 
+    /* mark is  antisub + notrack + whatever packet marks are specified */
 
+    if ( pkt->dst.intf != NC_INTF_UNK ) {
+        errlog(ERR_CRITICAL,"NC_INTF_UNK Unsupported (IP_DEVICE)\n");
+    }
 
-#if 0
-    bzero(control,MAX_CONTROL_MSG);
-    bzero(&dst,sizeof(struct sockaddr_in));
-    bzero(&msg,sizeof(struct msghdr));
-#endif
-    
     /* Setup the destination */
-    dst.sin_family = AF_INET;
     memcpy( &dst.sin_addr, &pkt->dst.host, sizeof(struct in_addr));
-    /* ICMP does not use ports */
-    dst.sin_port = 0;
+    dst.sin_port = 0; /* ICMP does not use ports */
+    dst.sin_family = AF_INET;
 
     msg.msg_name       = &dst;
     msg.msg_namelen    = sizeof( dst );
@@ -657,82 +652,78 @@ static int  _netcap_icmp_send( char *data, int data_len, netcap_pkt_t* pkt, int 
     msg.msg_iovlen     = 1;
     msg.msg_flags      = 0;
     msg.msg_control    = control;
-    msg.msg_controllen = MAX_CONTROL_MSG;
+    msg.msg_controllen = 4096;
 
-    /* ttl ancillary */
+    /* tos ancillary */
     cmsg = CMSG_FIRSTHDR( &msg );
     if( !cmsg ) {
         errlog(ERR_CRITICAL,"No more CMSG Room\n");
         goto err_out;
     }
-
-    cmsg->cmsg_len   = CMSG_LEN(sizeof(pkt->ttl));
-    cmsg->cmsg_level = SOL_IP;
-    cmsg->cmsg_type  = IP_TTL;
-    memcpy( CMSG_DATA(cmsg), &pkt->ttl, sizeof(pkt->ttl));
-    
-    /* tos ancillary */
-    if (( cmsg =  my__cmsg_nxthdr( msg.msg_control, msg.msg_controllen, cmsg )) == NULL ) {
-        errlog(ERR_CRITICAL,"No more CMSG Room\n");
-        goto err_out;
-    }
-
     cmsg->cmsg_len = CMSG_LEN(sizeof(pkt->tos));
     cmsg->cmsg_level = SOL_IP;
     cmsg->cmsg_type  = IP_TOS;
-    memcpy(CMSG_DATA(cmsg),&pkt->tos,sizeof(pkt->tos));
+    memcpy( CMSG_DATA(cmsg), &pkt->tos, sizeof(pkt->tos) );
 
+    /* ttl ancillary */
+    cmsg = my__cmsg_nxthdr( &msg, cmsg, sizeof(pkt->ttl) );
+    if( !cmsg ) {
+        errlog(ERR_CRITICAL,"No more CMSG Room\n");
+        goto err_out;
+    }
+    cmsg->cmsg_len   = CMSG_LEN(sizeof(pkt->ttl));
+    cmsg->cmsg_level = SOL_IP;
+    cmsg->cmsg_type  = IP_TTL;
+    memcpy( CMSG_DATA(cmsg), &pkt->ttl, sizeof(pkt->ttl) );
+    
     /* Source IP ancillary data */
-    if (( cmsg =  my__cmsg_nxthdr( msg.msg_control, msg.msg_controllen, cmsg )) == NULL ) {
+    cmsg = my__cmsg_nxthdr( &msg, cmsg, sizeof(pkt->ttl) );
+    if( !cmsg ) {
         errlog( ERR_CRITICAL, "No more CMSG Room\n" );
         goto err_out;
     }
-        
     cmsg->cmsg_len   = CMSG_LEN(sizeof( struct in_addr ));
     cmsg->cmsg_level = SOL_IP;
     cmsg->cmsg_type  = IP_SADDR;
     memcpy( CMSG_DATA(cmsg), &pkt->src.host, sizeof( struct in_addr ));
 
-    /* destination interface ancillary */
-    dst_intf = pkt->dst.intf;
-    
-    if ( dst_intf != NC_INTF_UNK ) {
-        errlog(ERR_CRITICAL,"NC_INTF_UNK Unsupported (IP_DEVICE)\n");
-    }
-
-    if ( pkt->is_marked ) {
-        nfmark |= pkt->nfmark;
-    }
-    
-    cmsg = my__cmsg_nxthdr( msg.msg_control, msg.msg_controllen, cmsg );
-    if ( cmsg == NULL ) { 
+    /* nfmark */
+    cmsg = my__cmsg_nxthdr( &msg, cmsg, sizeof(pkt->ttl) );
+    if( !cmsg ) {
         errlog( ERR_CRITICAL, "No more CMSG Room\n" );
         goto err_out;
     }
-    
     cmsg->cmsg_len = CMSG_LEN(sizeof(nfmark));
     cmsg->cmsg_level = SOL_IP;
     cmsg->cmsg_type  = IP_SENDNFMARK;
     memcpy( CMSG_DATA( cmsg ), &nfmark, sizeof(nfmark));
-    
-    debug( 10, "ICMP: Sending packet with mark: %#10x\n", nfmark );
 
-    /* XXX add options support */
+    /* sanity check */
+    cmsg =  my__cmsg_nxthdr(&msg, cmsg, 0);
+    if ( ((char*)cmsg) > control + MAX_CONTROL_MSG)
+        errlog(ERR_CRITICAL,"CMSG overrun");
 
-    msg.msg_controllen = CMSG_SPACE(sizeof(pkt->src.host)) +
-        CMSG_SPACE(sizeof(pkt->tos)) + CMSG_SPACE(sizeof(pkt->ttl)) + 
-        CMSG_SPACE( sizeof( nfmark )) +
-        (( dst_intf_len )   ? CMSG_SPACE( dst_intf_len ) : 0 );
+    msg.msg_controllen =
+        CMSG_SPACE(sizeof(pkt->src.host)) +
+        CMSG_SPACE(sizeof(pkt->tos)) +
+        CMSG_SPACE(sizeof(pkt->ttl)) + 
+        CMSG_SPACE(sizeof(nfmark));
 
-    debug( 10, "Sending ICMP packet from %s to %s, data length %d\n", 
-           unet_next_inet_ntoa( pkt->src.host.s_addr ), unet_next_inet_ntoa( pkt->dst.host.s_addr ), 
-           data_len );
+    /* Send Packet */
+    debug( 10, "sending ICMP %s -> %s  data_len:%i ttl:%i tos:%i nfmark:%i\n",
+           unet_next_inet_ntoa(pkt->src.host.s_addr), 
+           unet_next_inet_ntoa(pkt->dst.host.s_addr),
+           data_len, pkt->ttl, pkt->tos, nfmark);
+
     
     if (( ret = sendmsg( _icmp.fd, &msg, flags )) < 0 ) {
         if ( errno == EPERM ) {
             errlog( ERR_CRITICAL, "UDP: EPERM sending a UDP packet\n" );
         } else {
-            perrlog( "sendmsg" );
+            errlog(ERR_CRITICAL,"sendmsg: %s | ",errstr);
+            errlog_noprefix(ERR_CRITICAL, "(%s -> ", inet_ntoa(pkt->src.host));
+            errlog_noprefix(ERR_CRITICAL, "%s) data_len:%i ttl:%i tos:%i nfmark:%i\n",
+                            inet_ntoa(pkt->dst.host),data_len, pkt->ttl, pkt->tos, nfmark);
         }
     }
     
@@ -1013,14 +1004,16 @@ static int _shield_check_reputation( netcap_pkt_t* pkt, in_addr_t ip )
     return 0;
 }
 
-/* this gets rid of a libc bug */
-static struct cmsghdr * my__cmsg_nxthdr(void *__ctl, size_t __size, struct cmsghdr *__cmsg)
+/* this gets rid of the mess in libc (in bits/socket.h) */
+static struct cmsghdr * my__cmsg_nxthdr(struct msghdr *msg, struct cmsghdr *cmsg, int size)
 {
-	struct cmsghdr * __ptr;
+	struct cmsghdr * ptr;
 
-	__ptr = (struct cmsghdr*)(((unsigned char *) __cmsg) +  CMSG_ALIGN(__cmsg->cmsg_len));
-	if ((unsigned long)((char*)(__ptr+1) - (char *) __ctl) > __size)
+	ptr = (struct cmsghdr*)(((unsigned char *) cmsg) +  CMSG_ALIGN(cmsg->cmsg_len));
+
+    if ((((char*)ptr) + CMSG_LEN(size)) > ((char*)msg->msg_control + msg->msg_controllen)) {
 		return (struct cmsghdr *)0;
+    }
 
-	return __ptr;
+	return ptr;
 }
