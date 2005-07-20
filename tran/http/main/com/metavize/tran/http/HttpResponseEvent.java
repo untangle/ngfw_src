@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: HttpResponseEvent.java,v 1.2 2005/03/15 02:11:53 amread Exp $
+ * $Id$
  */
 
 package com.metavize.tran.http;
@@ -39,6 +39,7 @@ public class HttpResponseEvent extends LogEvent
                              int contentLength)
     {
         this.requestLine = requestLine;
+        if (contentType.length() > DEFAULT_STRING_SIZE) contentType = contentType.substring(0, DEFAULT_STRING_SIZE);
         this.contentType = contentType;
         this.contentLength = contentLength;
     }
@@ -78,6 +79,7 @@ public class HttpResponseEvent extends LogEvent
 
     public void setContentType(String contentType)
     {
+        if (contentType.length() > DEFAULT_STRING_SIZE) contentType = contentType.substring(0, DEFAULT_STRING_SIZE);
         this.contentType = contentType;
     }
 

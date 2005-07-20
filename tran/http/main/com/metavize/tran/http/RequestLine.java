@@ -19,6 +19,8 @@ import com.metavize.tran.token.Token;
 /**
  * Holds a RFC 2616 request-line.
  *
+ * Note: requestURI automatically trimmed to length 255 by its custom UserType
+ *
  * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
  * @hibernate.class
@@ -27,6 +29,9 @@ import com.metavize.tran.token.Token;
  */
 public class RequestLine implements Token
 {
+    // How big a varchar() do we get for default String fields.  This should be elsewhere. XXX
+    public static final int DEFAULT_STRING_SIZE = 255;
+
     private Long id;
     private HttpMethod method;
     private URI requestUri;
@@ -43,6 +48,7 @@ public class RequestLine implements Token
     {
         this.method = method;
         this.requestUri = requestUri;
+        if (httpVersion.length() > DEFAULT_STRING_SIZE) httpVersion = httpVersion.substring(0, DEFAULT_STRING_SIZE);
         this.httpVersion = httpVersion;
     }
 
@@ -116,6 +122,7 @@ public class RequestLine implements Token
 
     public void setHttpVersion(String httpVersion)
     {
+        if (httpVersion.length() > 10) httpVersion = httpVersion.substring(0, 10);
         this.httpVersion = httpVersion;
     }
 

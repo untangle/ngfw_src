@@ -45,6 +45,7 @@ public class LoginEvent extends LogEvent
     // For failures
     public LoginEvent(InetAddress clientAddr, String login, boolean local, boolean succeeded, LoginFailureReason reason)
     {
+        if (login.length() > DEFAULT_STRING_SIZE) login = login.substring(0, DEFAULT_STRING_SIZE);
         this.clientAddr = clientAddr;
         this.login = login;
         this.local = local;
@@ -88,6 +89,7 @@ public class LoginEvent extends LogEvent
 
     public void setLogin(String login)
     {
+        if (login.length() > DEFAULT_STRING_SIZE) login = login.substring(0, DEFAULT_STRING_SIZE);
         this.login = login;
     }
 

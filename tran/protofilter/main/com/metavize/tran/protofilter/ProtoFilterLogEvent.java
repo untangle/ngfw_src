@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: ProtoFilterLogEvent.java,v 1.6 2005/03/18 02:34:49 amread Exp $
+ * $Id$
  */
 
 package com.metavize.tran.protofilter;
@@ -38,6 +38,7 @@ public class ProtoFilterLogEvent extends LogEvent
     public ProtoFilterLogEvent(int sessionId, String protocol, boolean blocked)
     {
         this.sessionId = sessionId;
+        if (protocol.length() > DEFAULT_STRING_SIZE) protocol = protocol.substring(0, DEFAULT_STRING_SIZE);
         this.protocol = protocol;
         this.blocked = blocked;
     }
@@ -75,6 +76,7 @@ public class ProtoFilterLogEvent extends LogEvent
 
     public void setProtocol(String protocol)
     {
+        if (protocol.length() > DEFAULT_STRING_SIZE) protocol = protocol.substring(0, DEFAULT_STRING_SIZE);
         this.protocol = protocol;
     }
 

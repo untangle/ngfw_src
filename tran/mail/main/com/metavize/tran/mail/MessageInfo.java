@@ -14,7 +14,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.metavize.mvvm.tapi.IPSession;
 import org.apache.log4j.Logger;
 
 /**
@@ -32,6 +31,9 @@ public class MessageInfo implements Serializable
     public static final int SMTP_PORT = 25;
     public static final int POP3_PORT = 110;
     public static final int IMAP4_PORT = 143;
+
+    // How big a varchar() do we get for default String fields.  This should be elsewhere. XXX
+    public static final int DEFAULT_STRING_SIZE = 255;
 
     // private static final Logger zLog = Logger.getLogger(MessageInfo.class.getName());
 
@@ -51,13 +53,12 @@ public class MessageInfo implements Serializable
     /* constructors */
     public MessageInfo() {}
 
-    public MessageInfo(IPSession session, String subject)
+    public MessageInfo(int sessionId, int serverPort, String subject)
     {
+        if (subject.length() > DEFAULT_STRING_SIZE) subject = subject.substring(0, DEFAULT_STRING_SIZE);
         this.subject = subject;
-        this.sessionId = session.id();
+        this.sessionId = sessionId;
 
-        // Hack for figuring out protocol.  Works fine until we move to dynamic pipelines. XXX
-        int serverPort = session.serverPort();
         switch (serverPort) {
         case SMTP_PORT:
             serverType = 'S';
@@ -153,6 +154,7 @@ public class MessageInfo implements Serializable
 
     public void setSubject(String subject)
     {
+        if (subject.length() > DEFAULT_STRING_SIZE) subject = subject.substring(0, DEFAULT_STRING_SIZE);
         this.subject = subject;
     }
 

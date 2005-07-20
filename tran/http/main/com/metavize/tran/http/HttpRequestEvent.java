@@ -41,6 +41,7 @@ public class HttpRequestEvent extends LogEvent
     {
         this.sessionId = sessionId;
         this.requestLine = requestLine;
+        if (host.length() > DEFAULT_STRING_SIZE) host = host.substring(0, DEFAULT_STRING_SIZE);
         this.host = host;
         this.contentLength = contentLength;
     }
@@ -96,6 +97,7 @@ public class HttpRequestEvent extends LogEvent
 
     public void setHost(String host)
     {
+        if (host.length() > DEFAULT_STRING_SIZE) host = host.substring(0, DEFAULT_STRING_SIZE);
         this.host = host;
     }
 

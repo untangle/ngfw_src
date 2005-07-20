@@ -23,6 +23,9 @@ import net.sf.hibernate.UserType;
 
 public class UriUserType implements UserType
 {
+    // How big a varchar() do we get for default String fields.  This should be elsewhere. XXX
+    public static final int DEFAULT_STRING_SIZE = 255;
+
     private static final int[] SQL_TYPES = { Types.VARCHAR };
 
     public int[] sqlTypes() { return SQL_TYPES; }
@@ -59,11 +62,11 @@ public class UriUserType implements UserType
         if (null == v) {
             ps.setNull(i, Types.VARCHAR);
         } else {
-            // XXX we don't know the column length,
+            // XXX we don't know the column length (it might not be default)
             // XXX should we break uri's into multiple columns? just path?
             String s = v.toString();
-
-            ps.setString(i, s.length() < 255 ? s : s.substring(0, 255));
+            if (s.length() > DEFAULT_STRING_SIZE) s = s.substring(0, DEFAULT_STRING_SIZE);
+            ps.setString(i, s);
         }
     }
 }

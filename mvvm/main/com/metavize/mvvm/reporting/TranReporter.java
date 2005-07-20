@@ -67,7 +67,9 @@ public class TranReporter {
 	if (null == is) {
 	    logger.warn("No reports for: " + ucl.getURLs()[0]);
 	    return;
-	}
+	} else {
+            logger.info("Beginning generation for: " + tranName);
+        }
 	BufferedReader br = new BufferedReader(new InputStreamReader(is));
 	
 	for (String line = br.readLine(); null != line; line = br.readLine()) {
