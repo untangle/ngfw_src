@@ -110,27 +110,25 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   </target>
 
   <target name="xdoclet.tran" depends="gensrc.tran">
-
     <hibernatedoclet destdir="${build.gensrc}/${tran.name}"
-                     excludedtags="@version,@author,@todo">
-      <fileset dir="${tran.name}/${src.main}">
-        <include name="com/metavize/tran/${tran.name}/**"/>
+                     excludedtags="@version,@author,@todo" verbose="true">
+      <fileset dir="${tran.name}/${src.main}" includes="**/*.java">
+        <contains text="@hibernate"/>
       </fileset>
-      <!-- XXX XDoclet needs to see mapping for superclass, blah -->
       <fileset dir="../mvvm/main">
         <include name="com/metavize/mvvm/logging/LogEvent.java"/>
       </fileset>
       <hibernate version="2.0"/>
     </hibernatedoclet>
 
-    <jrc srcdir="${build.gensrc}/${tran.name}" destdir="${build.root}/${tran.name}" tempdir="${dist.mvvm.tmp}"
+    <jrc srcdir="${build.gensrc}/${tran.name}" destdir="${build.root}/${tran.name}" tempdir="${build.tmp}"
          keepjava="true" xmlvalidation="true">
       <classpath refid="mvvm.thirdparty.classpath"/>
       <classpath refid="jasperreports.classpath"/>
       <classpath refid="mvvm-client.classpath"/>
       <include name="**/*jrxml"/>
     </jrc>
-    <jrc srcdir="${tran.name}/${src.main}" destdir="${build.root}/${tran.name}" tempdir="${dist.mvvm.tmp}"
+    <jrc srcdir="${tran.name}/${src.main}" destdir="${build.root}/${tran.name}" tempdir="${build.tmp}"
          keepjava="true" xmlvalidation="true">
       <classpath refid="mvvm.thirdparty.classpath"/>
       <classpath refid="jasperreports.classpath"/>

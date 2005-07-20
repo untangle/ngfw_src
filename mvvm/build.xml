@@ -85,7 +85,8 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
 
   <target name="gensrc.xdoclet" depends="prepare">
     <!-- map all files to stamp file, if any are newer, run xdoclet -->
-    <fileset id="xdoclet.fileset" dir="./" includes="**/*.java">
+    <fileset id="xdoclet.fileset" dir="main" includes="**/*.java">
+      <contains text="@hibernate"/>
       <depend targetdir="${build.gensrc}">
         <mapper type="merge" from="*pat$$" to="stamp-xdoclet"/>
       </depend>
@@ -96,13 +97,8 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       <not><equals arg1="${xdocletList}" arg2="" /></not>
       <then>
         <hibernatedoclet destdir="${build.gensrc}"
-                         excludedtags="@version,@author,@todo" verbose="true">
-          <fileset dir="${src.main}">
-            <include name="**/*.java"/>
-            <exclude name="com/metavize/mvvm/util/**"/>
-            <exclude name="com/metavize/mvvm/argon/**"/>
-            <exclude name="com/metavize/mvvm/tapi/**"/>
-          </fileset>
+                         excludedtags="@version,@author,@todo">
+          <fileset refid="xdoclet.fileset"/>
           <hibernate version="2.0"/>
         </hibernatedoclet>
         <touch file="${build.gensrc}/stamp-xdoclet"/>
