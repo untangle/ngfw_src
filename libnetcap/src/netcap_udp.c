@@ -532,7 +532,10 @@ static int _netcap_udp_sendto (int sock, void* data, size_t data_len, int flags,
         if ( errno == EPERM ) {
             debug( 10, "UDP: EPERM sending a UDP packet\n" );
         } else {
-            errlog(ERR_CRITICAL,"sendmsg (%s:%i): %s\n",inet_ntoa(pkt->dst.host),pkt->dst.port,errstr);
+            errlog(ERR_CRITICAL,"sendmsg: %s | ",errstr);
+            errlog_noprefix(ERR_CRITICAL, "(%s:%i -> ", inet_ntoa(pkt->src.host), pkt->src.port );
+            errlog_noprefix(ERR_CRITICAL, "%s:%i) data_len:%i ttl:%i tos:%i\n",
+                            inet_ntoa(pkt->dst.host),pkt->dst.port,data_len, pkt->ttl, pkt->tos);
         }
     }
     
