@@ -64,24 +64,37 @@ $Id: build.xml,v 1.20 2005/01/29 07:14:04 amread Exp $
     <description>
       Produces JavaDoc for all projects in a single tree
     </description>
+
     <mkdir dir="/tmp/jdoc/bigtree"/>
     <subant target="bigjdoc">
       <property name="jdoc.bigtree.src" value="/tmp/jdoc/bigtree"/>
       <filelist refid="antfiles"/>
     </subant>
 
+    <!--
+        There seems to be a JavaDoc bug WRT .java files
+        without packages.  It breaks, so nuke anything
+        found at the root level.  Likely not interesting
+        class(es) anyway. - wrs
+    -->
+    <delete>
+      <fileset dir="/tmp/jdoc/bigtree" includes="*.java"/>
+    </delete>
+
     <javadoc
       destdir="${basedir}/jdoc/all"
       author="false"
       version="true"
-      use="true">
+      use="true"
+      verbose="false">
 
       <packageset dir="/tmp/jdoc/bigtree" defaultexcludes="yes">
       </packageset>
       <doctitle><![CDATA[<h1>Test</h1>]]></doctitle>
       <bottom><![CDATA[<i>Copyright &#169; 2005 Metavize Inc. All Rights Reserved.</i>]]></bottom>
     </javadoc>
-    <delete dir="/tmp/jdoc/bigtree"/>
+
+    <delete dir="/tmp/jdoc/bigtree"/> 
   </target>
 
 </project>

@@ -22,6 +22,8 @@ import com.metavize.tran.token.ParseException;
 import com.metavize.tran.token.Token;
 
 /**
+ * Class representing the "RCPT TO:&lt;X>" Command.
+ * <br>
  * Understands a null address as a recipient, although
  * this is semantically nonsense as-per SMTP.
  * <br>

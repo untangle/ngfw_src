@@ -11,13 +11,28 @@
 
 package com.metavize.tran.mail.papi.smtp;
 
-import com.metavize.mvvm.tapi.*;
+
 import com.metavize.tran.token.*;
+import com.metavize.mvvm.tapi.TCPSession;
 import org.apache.log4j.Logger;
 import com.metavize.mvvm.tapi.Pipeline;
 import com.metavize.mvvm.MvvmContextFactory;
 
-public final class SmtpTokenStream
+
+
+/**
+ * Class representing a stream of Smtp-centric tokens.
+ * In other casings, this is sometimes called
+ * the "StateMachine".
+ * <br>
+ * Unlike the StateMachine pattern, users do not subclass this
+ * Object.  Instead, Transforms can monitor/manipulate
+ * the Smtp stream by implementing
+ * {@link com.metavize.tran.mail.papi.smtp.SmtpTokenStreamHandler SmtpTokenStreamHandler}
+ * and passing such an instance to the constructor or
+ * {@link #setHandler setHandler}.
+ */
+public class SmtpTokenStream
   extends AbstractTokenHandler {
 
   private final Logger m_logger = Logger.getLogger(SmtpTokenStream.class);
@@ -36,16 +51,24 @@ public final class SmtpTokenStream
     m_pipeline = MvvmContextFactory.context().pipelineFoundry().getPipeline(session.id());
   }  
 
-  public SmtpTokenStreamHandler getHandler() {
+  /**
+   * Get the Handler associated with this Stream
+   */
+  public final SmtpTokenStreamHandler getHandler() {
     return m_handler;
   }
-  public void setHandler(SmtpTokenStreamHandler handler) {
+
+  /**
+   * Set the Handler associated with this Stream
+   */  
+  public final void setHandler(SmtpTokenStreamHandler handler) {
     m_handler = handler==null?
       NOOP_HANDLER:
       handler;
   }
+  
   //FROM Client
-  public TokenResult handleClientToken(Token token) 
+  public final TokenResult handleClientToken(Token token)
     throws TokenException { 
     m_logger.debug("[handleClientToken] Called with token type \"" +
       token.getClass().getName() + "\"");
@@ -86,6 +109,10 @@ public final class SmtpTokenStream
       m_handler.handleContinuedMIME(trb, (ContinuedMIMEToken) token);
       return trb.getTokenResult();      
     }
+    else if(token instanceof CompleteMIMEToken) {
+      m_handler.handleCompleteMIME(trb, (CompleteMIMEToken) token);
+      return trb.getTokenResult();      
+    }    
     else if(token instanceof Chunk) {
       m_handler.handleChunkForServer(trb, (Chunk) token);
       return trb.getTokenResult();      
@@ -94,9 +121,10 @@ public final class SmtpTokenStream
       token.getClass().getName() + "\".  Pass it along");
     return new TokenResult(new Token[] {token}, null);
   }
-   
+
+  
   //FROM Server
-  public TokenResult handleServerToken(Token token) 
+  public final TokenResult handleServerToken(Token token)
     throws TokenException {
     m_logger.debug("[handleServerToken] Called with token type \"" +
       token.getClass().getName() + "\"");
@@ -129,6 +157,9 @@ public final class SmtpTokenStream
     return new TokenResult(null, new Token[] {token});
   }
 
+
+  //============== Inner Class ======================
+  
   /**
    * As its name implies, does nothing except pass stuff through
    */
@@ -176,6 +207,10 @@ public final class SmtpTokenStream
     public void handleChunkForServer(TokenResultBuilder resultBuilder,
       Chunk chunk) {
       resultBuilder.addTokenForServer(chunk);
+    }
+    public void handleCompleteMIME(TokenResultBuilder resultBuilder,
+      CompleteMIMEToken token) {
+      resultBuilder.addTokenForServer(token);
     }
   }      
   

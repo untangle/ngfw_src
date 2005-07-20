@@ -22,14 +22,26 @@ import com.metavize.tran.token.ParseException;
 import com.metavize.tran.token.Token;
 
 /**
- * If we are to understand the ESMTP commands which modify
- * the MAIL line, this class must be modified.
+ * Class representing the "MAIL FROM:&lt;X>" Command.
+ * <br>
+ * <b>If we are to understand the ESMTP commands which modify
+ * the MAIL line, this class must be modified.</b>
  */
 public class MAILCommand 
   extends CommandWithEmailAddress {
 
   private static final String NULL_FROM_STR = "FROM:<>";
 
+  /**
+   * Construct a MAIL command from the given
+   * arguments.
+   *
+   * @param cmdStr the string ("MAIL" or some
+   *        with mixed case equivilant)
+   * @param argStr.  The argument String.  Should
+   *        be in the form "FROM:&lt;X>" where "X"
+   *        must be a parsable address or blank.
+   */
   public MAILCommand(String cmdStr,
     String argStr) throws ParseException {
     

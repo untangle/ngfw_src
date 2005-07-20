@@ -11,7 +11,7 @@
 
 package com.metavize.tran.mail.papi.smtp;
 
-import static com.metavize.tran.util.Rfc822Util.*;
+//import static com.metavize.tran.util.Rfc822Util.*;
 import static com.metavize.tran.util.Ascii.*;
 
 import java.nio.ByteBuffer;
@@ -19,6 +19,11 @@ import java.nio.ByteBuffer;
 import com.metavize.tran.token.ParseException;
 import com.metavize.tran.token.Token;
 
+
+/**
+ * Class reprsenting an SMTP Command issued
+ * by a client.
+ */
 public class Command
   implements Token {
 
@@ -57,6 +62,9 @@ public class Command
     m_argStr = argStr;
   }
 
+  /**
+   * Get the string of the command (i.e. "HELO", "RCPT").
+   */
   public String getCmdString() {
     return m_cmdStr;
   }
@@ -65,14 +73,28 @@ public class Command
     m_cmdStr = cmdStr;
   }
 
+
+  /**
+   * Get the argument to a command.  For example,
+   * in "MAIL FROM:<>" "FROM:<>" is the argument. This may
+   * be null.
+   */
   public String getArgString() {
     return m_argStr;
   }
-  
+
+  /**
+   * Get the type of the command.  Be warned -
+   * the type may be "UNKNOWN"
+   */
   public CommandType getType() {
     return m_type;
   }
 
+  /**
+   * Convert the command back to a valid line (with
+   * terminator).
+   */
   public ByteBuffer getBytes() {
     //Do a bit of fixup on the string
     String cmdStr = m_type.toString();

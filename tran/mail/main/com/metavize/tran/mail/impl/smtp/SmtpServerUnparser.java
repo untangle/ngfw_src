@@ -36,6 +36,7 @@ public class SmtpServerUnparser
   extends AbstractUnparser {
 
   private final Logger m_logger = Logger.getLogger(SmtpServerUnparser.class);
+  private final Pipeline m_pipeline;
 
   private final SmtpCasing m_parentCasing;
 
@@ -46,6 +47,8 @@ public class SmtpServerUnparser
     super(session, false);
     m_logger.debug("Created");
     m_parentCasing = parent;
+    m_pipeline = MvvmContextFactory.context().
+      pipelineFoundry().getPipeline(session.id());    
   }
 
 
@@ -83,6 +86,11 @@ public class SmtpServerUnparser
       m_byteStuffer.advancePastHeaders();
       return new UnparseResult(buf);      
     }
+    if(token instanceof CompleteMIMEToken) {
+      m_logger.debug("Received CompleteMIMEToken to pass");
+      //TODO bscott What about my nifty trace stuff?
+      return new UnparseResult(((CompleteMIMEToken) token).toTokenStreamer(m_pipeline));      
+    }    
     if(token instanceof ContinuedMIMEToken) {
       boolean last = ((ContinuedMIMEToken) token).isLast();
       ByteBuffer buf = token.getBytes();

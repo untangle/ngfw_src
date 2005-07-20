@@ -21,6 +21,11 @@ import com.metavize.tran.mime.*;
 import com.metavize.tran.token.ParseException;
 import com.metavize.tran.token.Token;
 
+
+/**
+ * Base class of a Command which holds a parsed
+ * EmailAddress (parsed from the arguments).
+ */
 public abstract class CommandWithEmailAddress
   extends Command {
 

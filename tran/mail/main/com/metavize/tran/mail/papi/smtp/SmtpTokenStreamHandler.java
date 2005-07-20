@@ -11,12 +11,21 @@
 
 package com.metavize.tran.mail.papi.smtp;
 
-import com.metavize.mvvm.tapi.*;
-import com.metavize.tran.token.*;
+
+import com.metavize.tran.token.TokenResultBuilder;
+import com.metavize.tran.token.Chunk;
 import org.apache.log4j.Logger;
 
 
+
 /**
+ * Interface for Object wishing to listen-on
+ * a raw Smtp Token Stream.  Instances become
+ * registered on a Stream by associating
+ * itself either in the constructor
+ * or the "setHandler" method
+ * of a {@link com.metavize.tran.mail.papi.smtp.SmtpTokenStream SmtpTokenStream}.
+ * <br>
  * Note if the handler pukes in a horrible
  * way that you want all other
  * transforms to ignore this session, make sure to
@@ -37,33 +46,108 @@ public interface SmtpTokenStreamHandler {
    * client/server data.  This will be the last
    * time the Handler is called for any token-handling
    * methods.
+   *
+   * @param resultBuilder the builder, to pass along
+   *        tokens/streams to the client/server
    */
   public void passthru(TokenResultBuilder resultBuilder);
 
+  /**
+   * Handle a Command token
+   * 
+   * @param resultBuilder the builder, to pass along
+   *        tokens/streams to the client/server
+   *
+   * @param cmd the command
+   */
   public void handleCommand(TokenResultBuilder resultBuilder,
     Command cmd);
 
+  /**
+   * Handle a MAILCommand token
+   * 
+   * @param resultBuilder the builder, to pass along
+   *        tokens/streams to the client/server
+   *
+   * @param cmd the command
+   */
   public void handleMAILCommand(TokenResultBuilder resultBuilder,
     MAILCommand cmd);
 
+  /**
+   * Handle a RCPTCommand token
+   * 
+   * @param resultBuilder the builder, to pass along
+   *        tokens/streams to the client/server
+   *
+   * @param cmd the command
+   */
   public void handleRCPTCommand(TokenResultBuilder resultBuilder,
     RCPTCommand cmd);
 
+  /**
+   * Handle a BeginMIMEToken token
+   * 
+   * @param resultBuilder the builder, to pass along
+   *        tokens/streams to the client/server
+   *
+   * @param token the token
+   */
   public void handleBeginMIME(TokenResultBuilder resultBuilder,
     BeginMIMEToken token);
-    
+
+  /**
+   * Handle a ContinuedMIMEToken token
+   * 
+   * @param resultBuilder the builder, to pass along
+   *        tokens/streams to the client/server
+   *
+   * @param token the token
+   */    
   public void handleContinuedMIME(TokenResultBuilder resultBuilder,
     ContinuedMIMEToken token);
-    
+
+  /**
+   * Handle a Response token
+   * 
+   * @param resultBuilder the builder, to pass along
+   *        tokens/streams to the client/server
+   *
+   * @param resp the resp
+   */    
   public void handleResponse(TokenResultBuilder resultBuilder,
     Response resp);
-    
+
+  /**
+   * Handle a Chunk token from server to client
+   * 
+   * @param resultBuilder the builder, to pass along
+   *        tokens/streams to the client/server
+   *
+   * @param chunk the chunk
+   */    
   public void handleChunkForClient(TokenResultBuilder resultBuilder,
     Chunk chunk);
 
+  /**
+   * Handle a Chunk token from client to server
+   * 
+   * @param resultBuilder the builder, to pass along
+   *        tokens/streams to the client/server
+   *
+   * @param chunk the chunk
+   */
   public void handleChunkForServer(TokenResultBuilder resultBuilder,
-    Chunk chunk);    
-    
+    Chunk chunk);
 
-
+  /**
+   * Handle a CompleteMIME token
+   * 
+   * @param resultBuilder the builder, to pass along
+   *        tokens/streams to the client/server
+   *
+   * @param token the token
+   */
+  public void handleCompleteMIME(TokenResultBuilder resultBuilder,
+    CompleteMIMEToken token);
 }

@@ -11,24 +11,21 @@
 
 package com.metavize.tran.mail.papi.smtp;
 
-import static com.metavize.tran.util.Ascii.*;
-import static com.metavize.tran.util.BufferUtil.*;
-
-import java.io.*;
 import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
-import java.util.LinkedList;
-import java.util.List;
-
-import com.metavize.mvvm.*;
-import com.metavize.mvvm.tapi.*;
-import com.metavize.tran.token.*;
-import com.metavize.tran.util.*;
 import org.apache.log4j.Logger;
 import com.metavize.tran.mime.*;
+//If these lines are uncommented, some code generator
+//based on doclet barfs. - wrs
+//import com.metavize.tran.mime.MIMEMessageHeaders;
+//import com.metavize.tran.mime.FileMIMESource;
+import java.io.IOException;
+import com.metavize.tran.token.Token;
 
 
 /**
+ * Token reprsenting the Begining
+ * of a MIME message.
+ * <br>
  * Warning - This is not a "Metadata" token.  It will
  * write-out.  Make sure not to duplicate headers
  * by passing this token along by accident.
@@ -50,14 +47,26 @@ public class BeginMIMEToken
     m_headers = headers;
     m_mimeSource = mimeSource;
   }
-
+  
+  /**
+   * Get the Headers of the MIME message
+   */
   public MIMEMessageHeaders getHeaders() {
     return m_headers;
   }
+
+  /**
+   * Get the FileMIMESource, which holds
+   * the Headers as well as any accumulated
+   * portions of the body.
+   */
   public FileMIMESource getMIMESource() {
     return m_mimeSource;
   }
-  
+
+  /**
+   * Method returns the bytes of the header.
+   */
   public ByteBuffer getBytes() {
     try {
       return m_headers == null?

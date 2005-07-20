@@ -23,7 +23,9 @@ import com.metavize.tran.token.Token;
 
 
 /**
- * Class to encapsulate an SMTP response
+ * Class to encapsulate an SMTP response.
+ * The {@link #getArgs arguments} are any Strings
+ * after the "NNN" on each response line.
  */
 public class Response 
   implements Token {
