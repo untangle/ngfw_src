@@ -2,4 +2,4 @@ reports/VirusMaster.jasper:Sophos_AntiVirus--Summary:Summary
 reports/WebVirusDetail.jasper:Sophos_AntiVirus--Web_Incidents:Web Incidents
 reports/FtpVirusDetail.jasper:Sophos_AntiVirus--FTP_Incidents:FTP Incidents
 com/metavize/tran/virus/EmailVirusDetail.jasper:Sophos_AntiVirus--Email_Incidents:Email Incidents
-com.metavize.tran.virus.VirusSummarizer:summarizer:Summarizer
+com.metavize.tran.virus.reports.VirusSummarizer:summarizer:Summarizer
