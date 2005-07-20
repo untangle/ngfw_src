@@ -361,7 +361,7 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
         throughputJLabel.setFont(new java.awt.Font("Dialog", 0, 9));
         throughputJLabel.setForeground(new java.awt.Color(150, 150, 150));
         throughputJLabel.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
-        throughputJLabel.setText("throughput (kB)");
+        throughputJLabel.setText("data rate (KBps)");
         throughputJLabel.setDoubleBuffered(true);
         add(throughputJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(411, 0, 82, -1));
 
@@ -454,17 +454,17 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
             if(count < 1000l)
                 label.setText( Long.toString( count ) + suffix);
             else if(count < 1000000l)
-                label.setText( Long.toString( count/1000l ) + "." + Long.toString( count%1000l ) + " K" + suffix);
+                label.setText( Long.toString( count/1000l ) + "." + Util.padZero( count%1000l ) + " K" + suffix);
             else if(count < 1000000000l)
-                label.setText( Long.toString( count/1000000l ) + "." + Long.toString( (count%1000000l)/1000l ) + " M" + suffix);
+                label.setText( Long.toString( count/1000000l ) + "." + Util.padZero( (count%1000000l)/1000l ) + " M" + suffix);
             else if(count < 1000000000000l)
-                label.setText( Long.toString( count/1000000000l ) + "." + Long.toString( (count%1000000000l)/1000000l ) + " G" + suffix);
+                label.setText( Long.toString( count/1000000000l ) + "." + Util.padZero( (count%1000000000l)/1000000l ) + " G" + suffix);
 	    else if(count < 1000000000000000l)
-                label.setText( Long.toString( count/1000000000000l ) + "." + Long.toString( (count%1000000000000l)/1000000000l ) + " T" + suffix);
+                label.setText( Long.toString( count/1000000000000l ) + "." + Util.padZero( (count%1000000000000l)/1000000000l ) + " T" + suffix);
 	    else if(count < 1000000000000000000l)
-                label.setText( Long.toString( count/1000000000000000l ) + "." + Long.toString( (count%1000000000000000l)/1000000000000l ) + " P" + suffix);
+                label.setText( Long.toString( count/1000000000000000l ) + "." + Util.padZero( (count%1000000000000000l)/1000000000000l ) + " P" + suffix);
 	    else
-                label.setText( Long.toString( count/1000000000000000000l ) + "." + Long.toString( (count%1000000000000000000l)/1000000000000000l ) + " E" + suffix);
+                label.setText( Long.toString( count/1000000000000000000l ) + "." + Util.padZero( (count%1000000000000000000l)/1000000000000000l ) + " E" + suffix);
         }
     
         private void resetCounters(){

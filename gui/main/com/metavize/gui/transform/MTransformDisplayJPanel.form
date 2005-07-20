@@ -258,7 +258,7 @@
           <Color blue="96" green="96" red="96" type="rgb"/>
         </Property>
         <Property name="horizontalAlignment" type="int" value="11"/>
-        <Property name="text" type="java.lang.String" value="throughput (kB)"/>
+        <Property name="text" type="java.lang.String" value="data rate (KBps)"/>
         <Property name="doubleBuffered" type="boolean" value="true"/>
       </Properties>
       <Constraints>

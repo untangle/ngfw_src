@@ -376,11 +376,20 @@ public class Util {
     }
 
     public static boolean isArrayEmpty(Object[] inArray){
-    if( inArray == null )
-        return true;
-    else if( inArray.length <= 0 )
-        return true;
-    else
-        return false;
+	if( inArray == null )
+	    return true;
+	else if( inArray.length <= 0 )
+	    return true;
+	else
+	    return false;
+    }
+
+    public static String padZero(long number){
+	if( number >= 100 )  // uses all 3 digits
+	    return Long.toString(number);
+	else if( number >= 10 ) // uses only 2 digits
+	    return "0" + Long.toString(number);
+	else // uses only 1 digit
+	    return "00" + Long.toString(number);
     }
 }
