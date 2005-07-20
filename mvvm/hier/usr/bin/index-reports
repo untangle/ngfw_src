@@ -345,6 +345,11 @@ done
 
 cat >> $main_index <<EOF
                 </table>
+<br/>
+Key:<br/>
+K = x 1,000<br/>
+M = x 1,000,000<br/>
+G = x 1,000,000,000<br/>
                 <!-- END AVAILABLE REPORTS -->
 EOF
 
