@@ -21,7 +21,7 @@ public class Util {
     static {
 	// INITIALIZE TIME CONSTANTS
         Calendar c = Calendar.getInstance();
-        c.set(Calendar.HOUR_OF_DAY, 0);
+        c.set(Calendar.HOUR_OF_DAY, 0); // should be 0, but 20 for testing purposes
         c.set(Calendar.MINUTE, 0);
         c.set(Calendar.SECOND, 0);
         c.set(Calendar.MILLISECOND, 0);
@@ -49,22 +49,26 @@ public class Util {
 
     public static String trimNumber(String suffix, long number){
 
-	String returnString = null;
+	String returnString;
 
 	if(number < 1000l)
 	    returnString = new String(  Long.toString(number) + " " + suffix );
-	else if(number < 1000000l)
-	    returnString = new String(  Long.toString(number/1000l) + "." + Long.toString(number%1000l) + " K" + suffix );
+	else if(number < 1000000l){
+	    if( suffix.length() == 0 )
+		returnString = Long.toString(number/1000l) + "," + String.format("%1$03d", number%1000l);
+	    else
+		returnString = new String(  Long.toString(number/1000l) + "." + String.format("%1$03d", number%1000l) + " K" + suffix );
+	}
 	else if(number < 1000000000l)
-	    returnString = new String(  Long.toString(number/1000000l) + "." + Long.toString((number%1000000l)/1000l) + " M" + suffix );
+	    returnString = new String(  Long.toString(number/1000000l) + "." + String.format("%1$03d", (number%1000000l)/1000l) + " M" + suffix );
 	else if(number < 1000000000000l)
-	    returnString = new String(  Long.toString(number/1000000000l) + "." + Long.toString((number%1000000000l)/1000000l) + " G" + suffix );
+	    returnString = new String(  Long.toString(number/1000000000l) + "." + String.format("%1$03d", (number%1000000000l)/1000000l) + " G" + suffix );
 	else if(number < 1000000000000000l)
-	    returnString = new String(  Long.toString(number/1000000000000l) + "." + Long.toString((number%1000000000000l)/1000000000l) + " T" + suffix );
+	    returnString = new String(  Long.toString(number/1000000000000l) + "." + String.format("%1$03d", (number%1000000000000l)/1000000000l) + " T" + suffix );
 	else if(number < 1000000000000000000l)
-	    returnString = new String(  Long.toString(number/1000000000000000l) + "." + Long.toString((number%1000000000000000l)/1000000000000l) + " P" + suffix );
+	    returnString = new String(  Long.toString(number/1000000000000000l) + "." + String.format("%1$03d", (number%1000000000000000l)/1000000000000l) + " P" + suffix );
 	else
-	    returnString = new String(  Long.toString(number/1000000000000000000l) + "." + Long.toString((number%1000000000000000000l)/1000000000000000l) + " P" + suffix );
+	    returnString = new String(  Long.toString(number/1000000000000000000l) + "." + String.format("%1$03d", (number%1000000000000000000l)/1000000000000000l) + " P" + suffix );
 
 	
 	return returnString;
