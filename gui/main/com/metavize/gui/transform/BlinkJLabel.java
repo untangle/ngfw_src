@@ -57,21 +57,15 @@ public class BlinkJLabel extends JLabel implements ActionListener {
 
     public void setViewState( int viewState ){
 	switch(viewState){
-            case PROBLEM_STATE : 
+	    // dynamic states
+            case PROBLEM_STATE :
                 lastIcon = iconStoppedState;
                 blink(true);
                 break;
             case PROCESSING_STATE :
-                lastIcon = this.getIcon();
+		if(this.getIcon() != iconPausedState)
+		    lastIcon = this.getIcon();
                 blink(true);
-                break;
-            case ON_STATE :
-                targetIcon = iconOnState;
-                blink(false);
-                break;
-            case OFF_STATE :
-                targetIcon = iconOffState;
-                blink(false);
                 break;
             case STARTING_STATE :
                 lastIcon = iconOnState;
@@ -81,6 +75,15 @@ public class BlinkJLabel extends JLabel implements ActionListener {
             case REMOVING_STATE :
                 lastIcon = iconOffState;
                 blink(true);
+                break;
+		// static states
+            case ON_STATE :
+                targetIcon = iconOnState;
+                blink(false);
+                break;
+            case OFF_STATE :
+                targetIcon = iconOffState;
+                blink(false);
                 break;
             }
     }
