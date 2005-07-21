@@ -23,7 +23,8 @@ esac
 
 datestamp=$(date '+%Y%m%d%H%M')
 
-pg_dump -U postgres -Ft mvvm | gzip > $outdir/mvvmdb-$datestamp.tar.gz
+(pg_dump -U postgres -n settings mvvm; pg_dump -U postgres -n events -s mvvm) \
+    | gzip > $outdir/mvvmdb-$datestamp.gz
 
 tar zcf $outdir/files-$datestamp.tar.gz --ignore-failed-read -C @PREFIX@/ \
     etc/network/interfaces \
