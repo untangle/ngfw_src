@@ -58,6 +58,7 @@ class NatEventHandler extends AbstractEventHandler
     /* match to determine whether a session is natted */
     /* XXX Probably need to initialized this with a value */
     private RedirectMatcher nat;
+    private IPMatcher natLocalNetwork;
 
     /* match to determine  whether a session is directed for the dmz */
     /* XXX Probably need to initialized this with a value */
@@ -206,14 +207,16 @@ class NatEventHandler extends AbstractEventHandler
             internalSubnet = settings.getNatInternalSubnet();
 
             /* Create the nat redirect */
-            IPMatcher tmp = new IPMatcher( internalAddress, internalSubnet, false );
+            natLocalNetwork = new IPMatcher( internalAddress, internalSubnet, false );
 
             /* XXX Update to use local host */
             nat = new RedirectMatcher( true, ProtocolMatcher.MATCHER_ALL,
                                        IntfMatcher.MATCHER_IN, IntfMatcher.MATCHER_ALL,
-                                       tmp, IPMatcher.MATCHER_ALL, 
+                                       natLocalNetwork, IPMatcher.MATCHER_ALL, 
                                        PortMatcher.MATCHER_ALL, PortMatcher.MATCHER_ALL,
                                        false, null, -1 );
+            
+            
             
             enableNat();
         } else {
@@ -281,6 +284,11 @@ class NatEventHandler extends AbstractEventHandler
         int port;
                 
         if ( nat.isMatch( request, protocol )) {
+            /* Check to see if this is destined to the NATd network, if it is drop it */
+            if ( natLocalNetwork.isMatch( request.serverAddr())) {
+                return false;
+            }
+            
             /* Check to see if this is redirect, check before changing the source address */
             isRedirect(  request, protocol );
 
@@ -556,7 +564,7 @@ class NatAttachment
     {
         this.isManagedSession = isManagedSession;
     }
-        
+
     int releasePort()
     {
         return this.releasePort;
