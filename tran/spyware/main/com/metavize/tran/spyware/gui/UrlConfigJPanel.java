@@ -75,7 +75,7 @@ public class UrlConfigJPanel extends javax.swing.JPanel implements Savable, Refr
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 10);
+        gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 6);
         contentJPanel.add(urlEnabledRadioButton, gridBagConstraints);
 
         ftpButtonGroup.add(urlDisabledRadioButton);
