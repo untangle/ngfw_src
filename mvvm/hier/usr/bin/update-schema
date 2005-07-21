@@ -8,6 +8,18 @@ if [ $# = 0 ]; then
     exit 1
 fi
 
+cat <<EOF | $PSQL
+CREATE SCHEMA settings;
+
+-- before version 2.5, schema_ver was in public, these two commands may
+-- safely be deleted when no such installations exist.
+CREATE TABLE settings.schema_ver (component, version)
+    AS SELECT * FROM public.schema_ver;
+DROP TABLE public.schema_ver;
+
+CREATE TABLE settings.schema_ver (component varchar(64), version int4);
+EOF
+
 component=$1
 
 schema_dir=@MVVM_SCHEMA@/$component
@@ -22,7 +34,6 @@ if [ "x$ver" == "x" ]; then
     psql -e -f $schema_dir/schema-$latest_ver.sql -U metavize mvvm
 
 cat <<EOF | $PSQL
-CREATE TABLE schema_ver (component varchar(64), version int4);
 DELETE FROM schema_ver WHERE component = '$component';
 INSERT INTO schema_ver VALUES ('$component', $latest_ver);
 EOF
