@@ -165,6 +165,10 @@ CREATE TABLE settings.ipmaddr_rule (
     log bool,
     PRIMARY KEY (rule_id));
 
+-----------
+-- events |
+-----------
+
 -- com.metavize.mvvm.engine.LoginEvent
 CREATE TABLE events.mvvm_login_evt (
     event_id int8 NOT NULL,
@@ -236,6 +240,10 @@ CREATE TABLE events.shield_statistic_evt (
     closed   int4,
     time_stamp timestamp,
     PRIMARY KEY (event_id));
+
+----------------
+-- constraints |
+----------------
 
 -- indeces for reporting
 

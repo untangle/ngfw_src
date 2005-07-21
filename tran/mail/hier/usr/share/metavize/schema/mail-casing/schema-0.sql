@@ -2,7 +2,11 @@
 
 -- INITIAL VERSION -- NOT READY FOR PRIME TIME XXXXXXX
 
-CREATE TABLE tr_mail_settings (
+-------------
+-- settings |
+-------------
+
+CREATE TABLE settings.tr_mail_settings (
     settings_id int8 NOT NULL,
     tid int8 NOT NULL UNIQUE,
     smtp_enabled bool NOT NULL,
@@ -16,27 +20,40 @@ CREATE TABLE tr_mail_settings (
     imap_outbound_timeout int8 NOT NULL,
     PRIMARY KEY (settings_id));
 
-CREATE TABLE tr_mail_message_info (
+-----------
+-- events |
+-----------
+
+CREATE TABLE events.tr_mail_message_info (
     id int8 NOT NULL,
     session_id int4,
     server_type char NOT NULL,
     subject varchar(255) NOT NULL,
     PRIMARY KEY (id));
 
-CREATE TABLE tr_mail_message_info_addr (
+CREATE TABLE events.tr_mail_message_info_addr (
     id int8 NOT NULL,
     addr varchar(255) NOT NULL,
     personal varchar(255),
     kind char,
     PRIMARY KEY (id));
 
-CREATE TABLE tr_mail_message_stats (
+CREATE TABLE events.tr_mail_message_stats (
     id int8 NOT NULL,
     msg_id int8 NOT NULL,
     msg_bytes int8,
-    int msg_attachments,
+    msg_attachments int4,
     PRIMARY KEY (id));
 
-CREATE INDEX tr_mail_mio_sid_idx ON tr_mail_message_info (session_id);
+----------------
+-- constraints |
+----------------
 
-ALTER TABLE tr_mail_settings ADD CONSTRAINT tr_mail_settings_tid_fk FOREIGN KEY (tid) REFERENCES tid;
+-- indeces for reporting
+
+CREATE INDEX tr_mail_mio_sid_idx ON events.tr_mail_message_info (session_id);
+
+-- foreign key constraints
+
+ALTER TABLE settings.tr_mail_settings
+    ADD CONSTRAINT fk_tr_mail_settings_tid FOREIGN KEY (tid) REFERENCES tid;

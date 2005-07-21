@@ -12,35 +12,22 @@ SET search_path TO public,settings,events;
 -- move old tables to new schemas |
 -----------------------------------
 
+-- hibernate sequence
+
 CREATE SEQUENCE settings.hibernate_sequence;
 SELECT setval('settings.hibernate_sequence', nextval('public.hibernate_sequence'));
 DROP SEQUENCE public.hibernate_sequence;
 
--- admin_settings
-
-CREATE TABLE settings.admin_settings (
-    admin_settings_id,
-    summary_period_id)
-AS SELECT admin_settings_id, summary_period_id FROM public.admin_settings;
+-- com.metavize.mvvm.security.AdminSettings
+CREATE TABLE settings.admin_settings AS SELECT * FROM public.admin_settings;
 
 ALTER TABLE settings.admin_settings
     ADD CONSTRAINT admin_settings_pkey PRIMARY KEY (admin_settings_id);
 ALTER TABLE settings.admin_settings
-    ALTER COLUMN admin_settings_id
-    SET NOT NULL;
+    ALTER COLUMN admin_settings_id SET NOT NULL;
 
--- mvvm_user
-
-CREATE TABLE settings.mvvm_user (
-    id,
-    login,
-    password,
-    name,
-    notes,
-    send_alerts,
-    admin_setting_id)
-AS SELECT id, login, password, name, notes, send_alerts, admin_setting_id
-   FROM public.mvvm_user;
+-- com.metavize.mvvm.security.User
+CREATE TABLE settings.mvvm_user AS SELECT * FROM public.mvvm_user;
 
 ALTER TABLE settings.mvvm_user
     ADD CONSTRAINT mvvm_user_pkey PRIMARY KEY (id);
@@ -53,14 +40,8 @@ ALTER TABLE settings.mvvm_user
 ALTER TABLE settings.mvvm_user
     ALTER COLUMN name SET NOT NULL;
 
--- upgrade_settings
-
-CREATE TABLE settings.upgrade_settings (
-    upgrade_settings_id,
-    auto_upgrade,
-    period)
-AS SELECT upgrade_settings_id, auto_upgrade, period
-   FROM public.upgrade_settings;
+-- com.metavize.mvvm.UpgradeSettings
+CREATE TABLE settings.upgrade_settings AS SELECT * public.upgrade_settings;
 
 ALTER TABLE settings.upgrade_settings
     ADD CONSTRAINT upgrade_settings_pkey PRIMARY KEY (upgrade_settings_id);
@@ -71,28 +52,16 @@ ALTER TABLE settings.upgrade_settings
 ALTER TABLE settings.upgrade_settings
     ALTER COLUMN period SET NOT NULL;
 
--- mail_settings
-
-CREATE TABLE settings.mail_settings (
-    mail_settings_id,
-    report_email,
-    smtp_host,
-    from_address)
-AS SELECT mail_settings_id, report_email, smtp_host, from_address
-   FROM public.mail_settings;
+-- com.metavize.mvvm.MailSettings
+CREATE TABLE settings.mail_settings AS SELECT * FROM public.mail_settings;
 
 ALTER TABLE settings.mail_settings
     ADD CONSTRAINT mail_settings_pkey PRIMARY KEY (mail_settings_id);
 ALTER TABLE settings.mail_settings
     ALTER COLUMN mail_settings_id SET NOT NULL;
 
--- transform_args
-
-CREATE TABLE settings.transform_args (
-    tps_id,
-    arg,
-    position)
-AS SELECT tps_id, arg, position FROM public.transform_args;
+-- com.metavize.mvvm.engine.TransformPersistentState.args
+CREATE TABLE settings.transform_args AS SELECT * FROM public.transform_args;
 
 ALTER TABLE settings.transform_args
     ADD CONSTRAINT transform_args_pkey PRIMARY KEY (tps_id);
@@ -103,53 +72,25 @@ ALTER TABLE settings.transform_args
 ALTER TABLE settings.transform_args
     ALTER COLUMN position SET NOT NULL;
 
--- transform_manager_state
-
-CREATE TABLE settings.transform_manager_state (
-    id,
-    last_tid)
-AS SELECT id, last_tid FROM public.transform_manager_state;
+-- com.metavize.mvvm.engine.TransformManagerState
+CREATE TABLE settings.transform_manager_state
+    AS SELECT * FROM public.transform_manager_state;
 
 ALTER TABLE settings.transform_manager_state
     ADD CONSTRAINT transform_manager_state_pkey PRIMARY KEY (id);
 ALTER TABLE settings.transform_manager_state
     ALTER COLUMN id SET NOT NULL;
 
--- uri_rule
-
-CREATE TABLE settings.uri_rule (
-    rule_id,
-    uri,
-    name,
-    category,
-    description,
-    live,
-    alert,
-    log)
-AS SELECT rule_id, uri, name, category, description, live, alert, log
-   FROM public.uri_rule;
+-- com.metavize.mvvm.tran.UriRule
+CREATE TABLE settings.uri_rule AS SELECT * FROM public.uri_rule;
 
 ALTER TABLE settings.uri_rule
     ADD CONSTRAINT uri_rule_pkey PRIMARY KEY (rule_id);
 ALTER TABLE settings.uri_rule
     ALTER COLUMN rule_id SET NOT NULL;
 
--- period
-
-CREATE TABLE settings.period (
-    period_id,
-    hour,
-    minute,
-    sunday,
-    monday,
-    tuesday,
-    wednesday,
-    thursday,
-    friday,
-    saturday)
-AS SELECT period_id, hour, minute, sunday, monday, tuesday, wednesday,
-          thursday, friday, saturday
-   FROM public.period;
+-- com.metavize.mvvm.Period
+CREATE TABLE settings.period AS SELECT * FROM public.period;
 
 ALTER TABLE settings.period
     ADD CONSTRAINT period_pkey PRIMARY KEY (period_id);
@@ -160,81 +101,42 @@ ALTER TABLE settings.period
 ALTER TABLE settings.period
     ALTER COLUMN minute SET NOT NULL;
 
--- transform_preferences
-
-CREATE TABLE settings.transform_preferences (
-    id,
-    tid,
-    red,
-    green,
-    blue,
-    alpha)
-AS SELECT id, tid, red, green, blue, alpha
-   FROM public.transform_preferences;
+-- com.metavize.mvvm.tran.TransformPreferences
+CREATE TABLE settings.transform_preferences
+    AS SELECT * FROM public.transform_preferences;
 
 ALTER TABLE settings.transform_preferences
     ADD CONSTRAINT transform_preferences_pkey PRIMARY KEY (id);
 ALTER TABLE settings.transform_preferences
     ALTER COLUMN id SET NOT NULL;
 
--- string_rule
-
-CREATE TABLE settings.string_rule (
-    rule_id,
-    string,
-    name,
-    category,
-    description,
-    live,
-    alert,
-    log)
-AS SELECT rule_id, string, name, category, description, live, alert, log
-   FROM public.string_rule;
+-- com.metavize.mvvm.tran.StringRule
+CREATE TABLE settings.string_rule AS SELECT * FROM public.string_rule;
 
 ALTER TABLE settings.string_rule
     ADD CONSTRAINT string_rule_pkey PRIMARY KEY (rule_id);
 ALTER TABLE settings.string_rule
     ALTER COLUMN rule_id SET NOT NULL;
 
--- tid
-
-CREATE TABLE settings.tid (
-    id)
-AS SELECT id FROM public.tid;
+-- com.metavize.mvvm.security.Tid
+CREATE TABLE settings.tid AS SELECT * FROM public.tid;
 
 ALTER TABLE settings.tid
     ADD CONSTRAINT tid_pkey PRIMARY KEY (id);
 ALTER TABLE settings.tid
     ALTER COLUMN id SET NOT NULL;
 
--- rule
-
-CREATE TABLE settings.rule (
-    rule_id,
-    name,
-    category,
-    description,
-    live,
-    alert,
-    log)
-AS SELECT rule_id, name, category, description, live, alert, log
-   FROM public.rule;
+-- com.metavize.mvvm.tran.Rule
+CREATE TABLE settings.rule AS SELECT * FROM public.rule;
 
 ALTER TABLE settings.rule
     ADD CONSTRAINT rule_pkey PRIMARY KEY (rule_id);
 ALTER TABLE settings.rule
     ALTER COLUMN rule_id SET NOT NULL;
 
--- transform_persistent_state
-
-CREATE TABLE settings.transform_persistent_state (
-    id,
-    name,
-    tid,
-    public_key,
-    target_state)
-AS SELECT id, name, tid, public_key, target_state
-   FROM public.transform_persistent_state;
+-- com.metavize.mvvm.engine.TransformPersistentState
+CREATE TABLE settings.transform_persistent_state
+    AS SELECT * FROM public.transform_persistent_state;
 
 ALTER TABLE settings.transform_persistent_state
     ADD CONSTRAINT transform_persistent_state_pkey PRIMARY KEY (id);
@@ -247,45 +149,25 @@ ALTER TABLE settings.transform_persistent_state
 ALTER TABLE settings.transform_persistent_state
     ALTER COLUMN target_state SET NOT NULL;
 
--- ipmaddr_dir
-
-CREATE TABLE settings.ipmaddr_dir (
-    id,
-    notes)
-AS SELECT id, notes FROM public.ipmaddr_dir;
+-- com.metavize.mvvm.tran.IPMaddrDirectory
+CREATE TABLE settings.ipmaddr_dir AS SELECT * FROM public.ipmaddr_dir;
 
 ALTER TABLE settings.ipmaddr_dir
     ADD CONSTRAINT ipmaddr_dir_pkey PRIMARY KEY (id);
 ALTER TABLE settings.ipmaddr_dir
     ALTER COLUMN id SET NOT NULL;
 
--- mimetype_rule
-
-CREATE TABLE settings.mimetype_rule (
-    rule_id,
-    mime_type,
-    name,
-    category,
-    description,
-    live,
-    alert,
-    log)
-AS SELECT rule_id, mime_type, name, category, description, live, alert, log
-   FROM public.mimetype_rule;
+-- com.metavize.mvvm.tran.StringRule
+CREATE TABLE settings.mimetype_rule AS SELECT * FROM public.mimetype_rule;
 
 ALTER TABLE settings.mimetype_rule
     ADD CONSTRAINT mimetype_rule_pkey PRIMARY KEY (rule_id);
 ALTER TABLE settings.mimetype_rule
     ALTER COLUMN rule_id SET NOT NULL;
 
--- ipmaddr_dir_entries
-
-CREATE TABLE settings.ipmaddr_dir_entries (
-    ipmaddr_dir_id,
-    rule_id,
-    position)
-AS SELECT ipmaddr_dir_id, rule_id, position
-   FROM public.ipmaddr_dir_entries;
+-- com.metavize.mvvm.tran.IPMaddrDirectory.entries
+CREATE TABLE settings.ipmaddr_dir_entries
+    AS SELECT * FROM public.ipmaddr_dir_entries;
 
 ALTER TABLE settings.ipmaddr_dir_entries
     ADD CONSTRAINT ipmaddr_dir_entries_pkey PRIMARY KEY (ipmaddr_dir_id, position);
@@ -296,37 +178,16 @@ ALTER TABLE settings.ipmaddr_dir_entries
 ALTER TABLE settings.ipmaddr_dir_entries
     ALTER COLUMN position SET NOT NULL;
 
--- ipmaddr_rule
-
-CREATE TABLE settings.ipmaddr_rule (
-    rule_id,
-    ipmaddr,
-    name,
-    category,
-    description,
-    live,
-    alert,
-    log)
-AS SELECT rule_id, ipmaddr, name, category, description, live, alert, log
-   FROM public.ipmaddr_rule;
+-- com.metavize.mvvm.tran.IPMaddrRule
+CREATE TABLE settings.ipmaddr_rule AS SELECT * FROM public.ipmaddr_rule;
 
 ALTER TABLE settings.ipmaddr_rule
     ADD CONSTRAINT ipmaddr_rule_pkey PRIMARY KEY (rule_id);
 ALTER TABLE settings.ipmaddr_rule
     ALTER COLUMN rule_id SET NOT NULL;
 
--- mvvm_login_evt
-
-CREATE TABLE events.mvvm_login_evt (
-    event_id,
-    client_addr,
-    login,
-    local,
-    succeeded,
-    reason,
-    time_stamp)
-AS SELECT event_id, client_addr, login, local, succeeded, reason, time_stamp
-   FROM public.mvvm_login_evt;
+-- com.metavize.mvvm.engine.LoginEvent
+CREATE TABLE events.mvvm_login_evt AS SELECT * FROM public.mvvm_login_evt;
 
 ALTER TABLE events.mvvm_login_evt
     ADD CONSTRAINT mvvm_login_evt_pkey PRIMARY KEY (event_id);
@@ -480,13 +341,13 @@ CREATE TABLE events.shield_rejection_evt (
 CREATE TABLE events.shield_statistic_evt (
     event_id int8 NOT NULL,
     accepted int4,
-    limited  int4,
-    dropped  int4,
+    limited int4,
+    dropped int4,
     rejected int4,
-    relaxed  int4,
-    lax      int4,
-    tight    int4,
-    closed   int4,
+    relaxed int4,
+    lax int4,
+    tight int4,
+    closed int4,
     time_stamp timestamp,
     PRIMARY KEY (event_id));
 
@@ -522,6 +383,8 @@ ALTER TABLE pl_endp
 ALTER TABLE pl_endp
     ALTER COLUMN event_id SET NOT NULL;
 
+ANALYZE settings.pl_endp;
+
 CREATE TABLE events.pl_stats (
     event_id,
     time_stamp,
@@ -550,32 +413,17 @@ CREATE INDEX pl_endp_cdate_idx ON events.pl_endp (create_date);
 DROP TABLE public.pipeline_info;
 DROP TABLE public.mvvm_evt_pipeline;
 
+ANALYZE settings.pl_stats;
+
 -- Table for shield events
 
 CREATE TABLE events.shield_rejection_evt (
-        event_id int8 NOT NULL,
-        ip inet,
-        reputation float8,
-        mode int4,
-        limited int4,
-        rejected int4,
-        dropped int4,
-        time_stamp timestamp,
-        PRIMARY KEY (event_id));
-
--- Table for shield statistics
-
-CREATE TABLE events.shield_statistic_evt (
     event_id int8 NOT NULL,
-    accepted int4,
-    limited  int4,
-    dropped  int4,
+    ip inet,
+    reputation float8,
+    mode int4,
+    limited int4,
     rejected int4,
-    relaxed  int4,
-    lax      int4,
-    tight    int4,
-    closed   int4,
+    dropped int4,
     time_stamp timestamp,
     PRIMARY KEY (event_id));
-
-VACUUM ANALYZE;

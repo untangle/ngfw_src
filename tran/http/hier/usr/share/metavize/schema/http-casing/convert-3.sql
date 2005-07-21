@@ -1,20 +1,70 @@
--- convert script for release 1.5
+-- convert script for release 2.5
 
--- create HttpSettings.
+-----------------------------------
+-- move old tables to new schemas |
+-----------------------------------
 
-CREATE TABLE tr_http_settings (
-    settings_id int8 NOT NULL,
-    tid int8 NOT NULL UNIQUE,
-    enabled bool NOT NULL,
-    PRIMARY KEY (settings_id));
+-- com.metavize.tran.http.HttpResponseEvent
+CREATE TABLE events.tr_http_evt_resp AS SELECT * FROM public.tr_http_evt_resp;
 
-INSERT INTO tr_http_settings
-    (SELECT nextval('hibernate_sequence'), tid, TRUE
-     FROM transform_persistent_state WHERE name = 'http-casing');
+ALTER TABLE events.tr_http_evt_resp
+    ADD CONSTRAINT tr_http_evt_resp_pkey PRIMARY KEY (event_id);
+ALTER TABLE events.tr_http_evt_resp
+    ALTER COLUMN event_id SET NOT NULL;
 
-ALTER TABLE tr_http_settings ADD CONSTRAINT fkf4229df91446f FOREIGN KEY (tid) REFERENCES tid;
 
--- indexes for reporting
+-- com.metavize.tran.http.HttpRequestEvent
+CREATE TABLE events.tr_http_evt_req AS SELECT * FROM public.tr_http_evt_req;
+
+ALTER TABLE events.tr_http_evt_req
+    ADD CONSTRAINT tr_http_evt_req_pkey PRIMARY KEY (event_id);
+ALTER TABLE events.tr_http_evt_req
+    ALTER COLUMN event_id SET NOT NULL;
+
+-- com.metavize.tran.http.RequestLine
+CREATE TABLE events.tr_http_req_line AS SELECT * FROM public.tr_http_req_line;
+
+ALTER TABLE events.tr_http_req_line
+    ADD CONSTRAINT tr_http_req_line_pkey PRIMARY KEY (request_id);
+ALTER TABLE events.tr_http_req_line
+    ALTER COLUMN request_id SET NOT NULL;
+
+--------------------
+-- drop old tables |
+--------------------
+
+DROP TABLE public.tr_http_evt_resp;
+DROP TABLE public.tr_http_evt_req;
+DROP TABLE public.tr_http_req_line;
+
+---------------
+-- new tables |
+---------------
+
+-- com.metavize.tran.http.HttpSettings
+CREATE TABLE settings.tr_http_settings (
+    settings_id,
+    tid,
+    enabled)
+AS SELECT nextval('hibernate_sequence'), tid, TRUE
+   FROM transform_persistent_state WHERE name = 'http-casing';
+
+ALTER TABLE settings.tr_http_settings
+    ADD CONSTRAINT tr_http_settings_pkey PRIMARY KEY (settings_id);
+ALTER TABLE settings.tr_http_settings
+    ADD CONSTRAINT tr_http_settings_uk UNIQUE (tid);
+ALTER TABLE settings.tr_http_settings
+    ALTER COLUMN tid SET NOT NULL;
+ALTER TABLE settings.tr_http_settings
+    ALTER COLUMN enabled SET NOT NULL;
+
+-- foreign key constraints
+
+ALTER TABLE tr_http_settings
+    ADD CONSTRAINT fk_tr_http_settings
+    FOREIGN KEY (tid) REFERENCES tid;
+
+-- indeces for reporting
 
 CREATE INDEX tr_http_evt_req_ts_idx ON tr_http_evt_req (time_stamp);
 CREATE INDEX tr_http_evt_resp_rid_idx ON tr_http_evt_resp (request_id);

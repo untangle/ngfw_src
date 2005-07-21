@@ -1,64 +1,91 @@
 -- schema for release 2.5
 
-create table FIREWALL_RULE (
-        RULE_ID int8 not null,
-        IS_TRAFFIC_BLOCKER bool,
-        PROTOCOL_MATCHER varchar(255),
-        SRC_IP_MATCHER varchar(255),
-        DST_IP_MATCHER varchar(255),
-        SRC_PORT_MATCHER varchar(255),
-        DST_PORT_MATCHER varchar(255),
-        SRC_INTF_MATCHER varchar(255),
-        DST_INTF_MATCHER varchar(255),
-        NAME varchar(255),
-        CATEGORY varchar(255),
-        DESCRIPTION varchar(255),
-        LIVE bool,
-        ALERT bool,
-        LOG bool,
-        primary key (RULE_ID));
+-------------
+-- settings |
+-------------
 
-create table TR_FIREWALL_RULES (
-        SETTING_ID int8 not null,
-        RULE_ID int8 not null,
-        POSITION int4 not null,
-        primary key (SETTING_ID, POSITION));
+-- com.metavize.tran.firewall.FirewallRule
+CREATE TABLE settings.firewall_rule (
+    rule_id int8 NOT NULL,
+    is_traffic_blocker bool,
+    protocol_matcher varchar(255),
+    src_ip_matcher varchar(255),
+    dst_ip_matcher varchar(255),
+    src_port_matcher varchar(255),
+    dst_port_matcher varchar(255),
+    src_intf_matcher varchar(255),
+    dst_intf_matcher varchar(255),
+    name varchar(255),
+    category varchar(255),
+    description varchar(255),
+    live bool,
+    alert bool,
+    log bool,
+    PRIMARY KEY (rule_id));
 
-create table TR_FIREWALL_SETTINGS (
-        SETTINGS_ID int8 not null,
-        TID int8 not null unique,
-        IS_QUICKEXIT bool,
-        IS_REJECT_SILENT bool,
-        IS_DEFAULT_ACCEPT bool,
-        primary key (SETTINGS_ID));
+-- com.metavize.tran.firewall.FirewallSettings.firewallRuleList
+CREATE TABLE settings.tr_firewall_rules (
+    setting_id int8 NOT NULL,
+    rule_id int8 NOT NULL,
+    position int4 NOT NULL,
+    PRIMARY KEY (setting_id, position));
 
-create table TR_FIREWALL_EVT (
-        EVENT_ID int8 not null,
-        SESSION_ID int4,
-        RULE_ID int8,
-        RULE_INDEX int4,
-        TIME_STAMP timestamp,
-        primary key (EVENT_ID));
+-- com.metavize.tran.firewall.FirewallSettings
+CREATE TABLE settings.tr_firewall_settings (
+    settings_id int8 NOT NULL,
+    tid int8 NOT NULL UNIQUE,
+    is_quickexit bool,
+    is_reject_silent bool,
+    is_default_accept bool,
+    PRIMARY KEY (settings_id));
 
-create table TR_FIREWALL_STATISTIC_EVT (
-        EVENT_ID int8 not null,
-        TCP_BLOCK_DEFAULT int4,
-        TCP_BLOCK_RULE int4,
-        TCP_PASS_DEFAULT int4,
-        TCP_PASS_RULE int4,
-        UDP_BLOCK_DEFAULT int4,
-        UDP_BLOCK_RULE int4,
-        UDP_PASS_DEFAULT int4,
-        UDP_PASS_RULE int4,
-        ICMP_BLOCK_DEFAULT int4,
-        ICMP_BLOCK_RULE int4,
-        ICMP_PASS_DEFAULT int4,
-        ICMP_PASS_RULE int4,
-        TIME_STAMP timestamp,
-        primary key (EVENT_ID));
+-----------
+-- events |
+-----------
 
-CREATE INDEX tr_firewall_evt_sid_idx ON tr_firewall_evt (session_id);
+-- com.metavize.tran.firewall.FirewallEvent
+CREATE TABLE events.tr_firewall_evt (
+    event_id int8 NOT NULL,
+    session_id int4,
+    rule_id int8,
+    rule_index int4,
+    time_stamp timestamp,
+    PRIMARY KEY (event_id));
 
-alter table TR_FIREWALL_RULES add constraint FK4BBFB8B9871AAD3E foreign key (RULE_ID) references FIREWALL_RULE;
-alter table TR_FIREWALL_RULES add constraint FK4BBFB8B91CAE658A foreign key (SETTING_ID) references TR_FIREWALL_SETTINGS;
-alter table TR_FIREWALL_SETTINGS add constraint FK23CDA1011446F foreign key (TID) references TID;
+-- com.metavize.tran.firewall.FirewallStatisticEvent
+CREATE TABLE events.tr_firewall_statistic_evt (
+    event_id int8 NOT NULL,
+    tcp_block_default int4,
+    tcp_block_rule int4,
+    tcp_pass_default int4,
+    tcp_pass_rule int4,
+    udp_block_default int4,
+    udp_block_rule int4,
+    udp_pass_default int4,
+    udp_pass_rule int4,
+    icmp_block_default int4,
+    icmp_block_rule int4,
+    icmp_pass_default int4,
+    icmp_pass_rule int4,
+    time_stamp timestamp,
+    PRIMARY KEY (event_id));
+
+----------------
+-- constraints |
+----------------
+
+-- indeces for reporting
+
+CREATE INDEX tr_firewall_evt_sid_idx ON events.tr_firewall_evt (session_id);
+
+-- foreign key constraints
+
+ALTER TABLE settings.tr_firewall_rules
+    ADD CONSTRAINT fk_tr_firewall_rules
+        FOREIGN KEY (rule_id) REFERENCES settings.firewall_rule;
+ALTER TABLE settings.tr_firewall_rules
+    ADD CONSTRAINT fk_tr_firewall_rules_settings
+        FOREIGN KEY (setting_id) REFERENCES settings.tr_firewall_settings;
+ALTER TABLE settings.tr_firewall_settings
+    ADD CONSTRAINT fk_tr_firewall_settings
+        FOREIGN KEY (tid) REFERENCES settings.tid;

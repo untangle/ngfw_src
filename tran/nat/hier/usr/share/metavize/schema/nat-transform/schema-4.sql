@@ -1,145 +1,182 @@
--- schema for release 1.5
+-- schema for release 2.5
 
-create table DHCP_LEASE_RULE (
-        RULE_ID int8 not null,
-        MAC_ADDRESS varchar(255),
-        HOSTNAME varchar(255),
-        STATIC_ADDRESS inet,
-        IS_RESOLVE_MAC bool,
-        NAME varchar(255),
-        CATEGORY varchar(255),
-        DESCRIPTION varchar(255),
-        LIVE bool,
-        ALERT bool,
-        LOG bool,
-        primary key (RULE_ID));
+-------------
+-- settings |
+-------------
 
-create table TR_DHCP_LEASES (
-        SETTING_ID int8 not null,
-        RULE_ID int8 not null,
-        POSITION int4 not null,
-        primary key (SETTING_ID, POSITION));
+-- com.metavize.tran.nat.DhcpLeaseRule
+CREATE TABLE settings.dhcp_lease_rule (
+    rule_id int8 NOT NULL,
+    mac_address varchar(255),
+    hostname varchar(255),
+    static_address inet,
+    is_resolve_mac bool,
+    name varchar(255),
+    category varchar(255),
+    description varchar(255),
+    live bool,
+    alert bool,
+    log bool,
+    PRIMARY KEY (rule_id));
 
+-- com.metavize.tran.nat.NatSettings.dhcpLeaseList
+CREATE TABLE settings.tr_dhcp_leases (
+    setting_id int8 NOT NULL,
+    rule_id int8 NOT NULL,
+    position int4 NOT NULL,
+    PRIMARY KEY (setting_id, position));
 
-create table REDIRECT_RULE (
-        RULE_ID int8 not null,
-        IS_DST_REDIRECT bool,
-        REDIRECT_PORT int4,
-        REDIRECT_ADDR inet,
-        PROTOCOL_MATCHER varchar(255),
-        SRC_IP_MATCHER varchar(255),
-        DST_IP_MATCHER varchar(255),
-        SRC_PORT_MATCHER varchar(255),
-        DST_PORT_MATCHER varchar(255),
-        SRC_INTF_MATCHER varchar(255),
-        DST_INTF_MATCHER varchar(255),
-        NAME varchar(255),
-        CATEGORY varchar(255),
-        DESCRIPTION varchar(255),
-        LIVE bool,
-        ALERT bool,
-        LOG bool,
-        primary key (RULE_ID));
+-- com.metavize.tran.nat.RedirectRule
+CREATE TABLE settings.redirect_rule (
+    rule_id int8 NOT NULL,
+    is_dst_redirect bool,
+    redirect_port int4,
+    redirect_addr inet,
+    protocol_matcher varchar(255),
+    src_ip_matcher varchar(255),
+    dst_ip_matcher varchar(255),
+    src_port_matcher varchar(255),
+    dst_port_matcher varchar(255),
+    src_intf_matcher varchar(255),
+    dst_intf_matcher varchar(255),
+    name varchar(255),
+    category varchar(255),
+    description varchar(255),
+    live bool,
+    alert bool,
+    log bool,
+    PRIMARY KEY (rule_id));
 
+-- com.metavize.tran.nat.NatSettings
+CREATE TABLE settings.tr_nat_settings (
+    settings_id int8 NOT NULL,
+    tid int8 NOT NULL UNIQUE,
+    nat_enabled bool,
+    nat_internal_addr inet,
+    nat_internal_subnet inet,
+    dmz_enabled bool,
+    dmz_address inet,
+    dhcp_enabled bool,
+    dhcp_s_address inet,
+    dhcp_e_address inet,
+    dhcp_lease_time int4,
+    dns_enabled bool,
+    dns_local_domain varchar(255),
+    dmz_logging_enabled bool,
+    PRIMARY KEY (settings_id));
 
-create table TR_NAT_SETTINGS (
-        SETTINGS_ID int8 not null,
-        TID int8 not null unique,
-        NAT_ENABLED bool,
-        NAT_INTERNAL_ADDR inet,
-        NAT_INTERNAL_SUBNET inet,
-        DMZ_ENABLED bool,
-        DMZ_ADDRESS inet,
-        DHCP_ENABLED bool,
-        DHCP_S_ADDRESS inet,
-        DHCP_E_ADDRESS inet,
-        DHCP_LEASE_TIME int4,
-        DNS_ENABLED bool,
-        DNS_LOCAL_DOMAIN varchar(255),
-        DMZ_LOGGING_ENABLED bool,
-        primary key (SETTINGS_ID));
+-- com.metavize.tran.nat.NatSettings.redirectList
+CREATE TABLE settings.tr_nat_redirects (
+    setting_id int8 NOT NULL,
+    rule_id int8 NOT NULL,
+    position int4 NOT NULL,
+    PRIMARY KEY (setting_id, position));
 
-create table TR_NAT_REDIRECTS (
-        SETTING_ID int8 not null,
-        RULE_ID int8 not null,
-        POSITION int4 not null,
-        primary key (SETTING_ID, POSITION));
+-- com.metavize.tran.nat.NatSettings.dnsStaticHostList
+CREATE TABLE settings.tr_nat_dns_hosts (
+    setting_id int8 NOT NULL,
+    rule_id int8 NOT NULL,
+    position int4 NOT NULL,
+    PRIMARY KEY (setting_id, position));
 
-create table TR_NAT_DNS_HOSTS (
-        SETTING_ID int8 not null,
-        RULE_ID int8 not null,
-        POSITION int4 not null,
-        primary key (SETTING_ID, POSITION));
+-- com.metavize.tran.nat.DnsStaticHostRule
+CREATE TABLE settings.dns_static_host_rule (
+    rule_id int8 NOT NULL,
+    hostname_list varchar(255),
+    static_address inet,
+    name varchar(255),
+    category varchar(255),
+    description varchar(255),
+    live bool,
+    alert bool,
+    log bool,
+    PRIMARY KEY (rule_id));
 
+-----------
+-- events |
+-----------
 
-create table DNS_STATIC_HOST_RULE (
-        RULE_ID int8 not null,
-        HOSTNAME_LIST varchar(255),
-        STATIC_ADDRESS inet,
-        NAME varchar(255),
-        CATEGORY varchar(255),
-        DESCRIPTION varchar(255),
-        LIVE bool,
-        ALERT bool,
-        LOG bool,
-        primary key (RULE_ID));
+-- com.metavize.tran.nat.DhcpLeaseEvent
+CREATE TABLE events.tr_nat_evt_dhcp (
+    event_id int8 NOT NULL,
+    mac varchar(255),
+    hostname varchar(255),
+    ip inet,
+    end_of_lease timestamp,
+    event_type int4,
+    time_stamp timestamp,
+    PRIMARY KEY (event_id));
 
-create table TR_NAT_EVT_DHCP (
-        EVENT_ID int8 not null,
-        MAC varchar(255),
-        HOSTNAME varchar(255),
-        IP inet,
-        END_OF_LEASE timestamp,
-        EVENT_TYPE int4,
-        TIME_STAMP timestamp,
-        primary key (EVENT_ID));
+-- com.metavize.tran.nat.DhcpAbsoluteLease
+CREATE TABLE events.dhcp_abs_lease (
+    event_id int8 NOT NULL,
+    mac varchar(255),
+    hostname varchar(255),
+    ip inet, end_of_lease timestamp,
+    event_type int4,
+    PRIMARY KEY (event_id));
 
-create table DHCP_ABS_LEASE (
-        EVENT_ID int8 not null,
-        MAC varchar(255),
-        HOSTNAME varchar(255),
-        IP inet, END_OF_LEASE timestamp,
-        EVENT_TYPE int4,
-        primary key (EVENT_ID));
+-- com.metavize.tran.nat.DhcpAbsoluteEvent
+CREATE TABLE events.tr_nat_evt_dhcp_abs (
+    event_id int8 NOT NULL,
+    time_stamp timestamp,
+    PRIMARY KEY (event_id));
 
-create table TR_NAT_EVT_DHCP_ABS (
-        EVENT_ID int8 not null,
-        TIME_STAMP timestamp,
-        primary key (EVENT_ID));
+-- com.metavize.tran.nat.DhcpAbsoluteEvent.absoluteLeaseList
+CREATE TABLE events.tr_nat_evt_dhcp_abs_leases (
+    event_id int8 NOT NULL,
+    lease_id int8 NOT NULL,
+    position int4 NOT NULL,
+    PRIMARY KEY (event_id, position));
 
-create table TR_NAT_EVT_DHCP_ABS_LEASES (
-        EVENT_ID int8 not null,
-        LEASE_ID int8 not null,
-        POSITION int4 not null,
-        primary key (EVENT_ID, POSITION));
+-- com.metavize.tran.nat.RedirectEvent
+CREATE TABLE events.tr_nat_redirect_evt (
+    event_id int8 NOT NULL,
+    session_id int4,
+    rule_id int8,
+    rule_index int4,
+    is_dmz bool,
+    time_stamp timestamp,
+    PRIMARY KEY (event_id));
 
-create table TR_NAT_REDIRECT_EVT (
-        EVENT_ID int8 not null,
-        SESSION_ID int4,
-        RULE_ID int8,
-        RULE_INDEX int4,
-        IS_DMZ bool,
-        TIME_STAMP timestamp,
-        primary key (EVENT_ID));
+-- com.metavize.tran.nat.NatStatisticEvent
+CREATE TABLE events.tr_nat_statistic_evt (
+    event_id int8 NOT NULL,
+    nat_sessions int4,
+    dmz_sessions int4,
+    tcp_incoming int4,
+    tcp_outgoing int4,
+    udp_incoming int4,
+    udp_outgoing int4,
+    icmp_incoming int4,
+    icmp_outgoing int4,
+    time_stamp timestamp,
+    PRIMARY KEY (event_id));
 
-create table TR_NAT_STATISTIC_EVT (
-        EVENT_ID      int8 not null,
-        NAT_SESSIONS  int4,
-        DMZ_SESSIONS  int4,
-        TCP_INCOMING  int4,
-        TCP_OUTGOING  int4,
-        UDP_INCOMING  int4,
-        UDP_OUTGOING  int4,
-        ICMP_INCOMING int4,
-        ICMP_OUTGOING int4,
-        TIME_STAMP    timestamp,
-        primary key (EVENT_ID));
+----------------
+-- constraints |
+----------------
 
-alter table TR_NAT_SETTINGS add constraint FK2F819DC21446F foreign key (TID) references TID;
+-- foreign key constraints
 
-alter table TR_NAT_REDIRECTS add constraint FKCBBF56381CAE658A foreign key (SETTING_ID) references TR_NAT_SETTINGS;
-alter table TR_NAT_REDIRECTS add constraint FKCBBF5638871AAD3E foreign key (RULE_ID) references REDIRECT_RULE;
-alter table TR_DHCP_LEASES add constraint FKA6469261CAE658A foreign key (SETTING_ID) references TR_NAT_SETTINGS;
-alter table TR_DHCP_LEASES add constraint FKA646926871AAD3E foreign key (RULE_ID) references DHCP_LEASE_RULE;
-alter table TR_NAT_DNS_HOSTS add constraint FK956BCB361CAE658A foreign key (SETTING_ID) references TR_NAT_SETTINGS;
-alter table TR_NAT_DNS_HOSTS add constraint FK956BCB36871AAD3E foreign key (RULE_ID) references DNS_STATIC_HOST_RULE;
+ALTER TABLE settings.tr_nat_settings
+    ADD CONSTRAINT fk_tr_nat_settings
+        FOREIGN KEY (tid) REFERENCES settings.tid;
+ALTER TABLE settings.tr_nat_redirects
+    ADD CONSTRAINT fk_tr_nat_redirects
+        FOREIGN KEY (setting_id) REFERENCES settings.tr_nat_settings;
+ALTER TABLE settings.tr_nat_redirects
+    ADD CONSTRAINT fk_tr_nat_redirects_rule
+        FOREIGN KEY (rule_id) REFERENCES settings.redirect_rule;
+ALTER TABLE settings.tr_dhcp_leases
+    ADD CONSTRAINT fk_tr_dhcp_leases
+        FOREIGN KEY (setting_id) REFERENCES settings.tr_nat_settings;
+ALTER TABLE settings.tr_dhcp_leases
+    ADD CONSTRAINT fk_tr_dhcp_leases_rule
+        FOREIGN KEY (rule_id) REFERENCES settings.dhcp_lease_rule;
+ALTER TABLE settings.tr_nat_dns_hosts
+    ADD CONSTRAINT fk_tr_nat_dns_hosts
+        FOREIGN KEY (setting_id) REFERENCES settings.tr_nat_settings;
+ALTER TABLE settings.tr_nat_dns_hosts
+    ADD CONSTRAINT fk_tr_nat_dns_hosts_rule
+        FOREIGN KEY (rule_id) REFERENCES settings.dns_static_host_rule;

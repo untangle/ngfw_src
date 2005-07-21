@@ -1,6 +1,10 @@
--- schema for release 2.5 (aka 1.5)
+-- schema for release 2.5
 
-CREATE TABLE tr_spam_smtp_config (
+-------------
+-- settings |
+-------------
+
+CREATE TABLE settings.tr_spam_smtp_config (
     config_id int8 NOT NULL,
     scan bool NOT NULL,
     msg_action char(1) NOT NULL,
@@ -8,21 +12,21 @@ CREATE TABLE tr_spam_smtp_config (
     notes varchar(255),
     PRIMARY KEY (config_id));
 
-CREATE TABLE tr_spam_pop_config (
+CREATE TABLE settings.tr_spam_pop_config (
     config_id int8 NOT NULL,
     scan bool NOT NULL,
     msg_action char(1) NOT NULL,
     notes varchar(255),
     PRIMARY KEY (config_id));
 
-CREATE TABLE tr_spam_imap_config (
+CREATE TABLE settings.tr_spam_imap_config (
     config_id int8 NOT NULL,
     scan bool NOT NULL,
     msg_action char(1) NOT NULL,
     notes varchar(255),
     PRIMARY KEY (config_id));
 
-CREATE TABLE tr_spam_settings (
+CREATE TABLE settings.tr_spam_settings (
     settings_id int8 NOT NULL,
     tid int8 NOT NULL UNIQUE,
     smtp_inbound int8 NOT NULL,
@@ -33,8 +37,11 @@ CREATE TABLE tr_spam_settings (
     imap_outbound int8 NOT NULL,
     PRIMARY KEY (settings_id));
 
+-----------
+-- events |
+-----------
 
-CREATE TABLE tr_spam_evt_smtp (
+CREATE TABLE events.tr_spam_evt_smtp (
     event_id int8 NOT NULL,
     msg_id int8,
     score float4,
@@ -44,7 +51,7 @@ CREATE TABLE tr_spam_evt_smtp (
     time_stamp timestamp,
     PRIMARY KEY (event_id));
 
-CREATE TABLE tr_spam_evt (
+CREATE TABLE events.tr_spam_evt (
     event_id int8 NOT NULL,
     msg_id int8,
     score float4,
@@ -54,32 +61,38 @@ CREATE TABLE tr_spam_evt (
     time_stamp timestamp,
     PRIMARY KEY (event_id));
 
-ALTER TABLE tr_spam_settings
-    ADD CONSTRAINT FK_IN_SS_SMTP_CFG
+----------------
+-- constraints |
+----------------
+
+-- foreign key constraints
+
+ALTER TABLE settings.tr_spam_settings
+    ADD CONSTRAINT fk_in_ss_smtp_cfg
     FOREIGN KEY (smtp_inbound)
-    REFERENCES tr_spam_smtp_config;
+    REFERENCES settings.tr_spam_smtp_config;
 
-ALTER TABLE tr_spam_settings
-    ADD CONSTRAINT FK_OUT_SS_SMTP_CFG
+ALTER TABLE settings.tr_spam_settings
+    ADD CONSTRAINT fk_out_ss_smtp_cfg
     FOREIGN KEY (smtp_outbound)
-    REFERENCES tr_spam_smtp_config;
+    REFERENCES settings.tr_spam_smtp_config;
 
-ALTER TABLE tr_spam_settings
-    ADD CONSTRAINT FK_IN_SS_POP_CFG
+ALTER TABLE settings.tr_spam_settings
+    ADD CONSTRAINT fk_in_ss_pop_cfg
     FOREIGN KEY (pop_inbound)
-    REFERENCES tr_spam_pop_config;
+    REFERENCES settings.tr_spam_pop_config;
 
-ALTER TABLE tr_spam_settings
-    ADD CONSTRAINT FK_OUT_SS_POP_CFG
+ALTER TABLE settings.tr_spam_settings
+    ADD CONSTRAINT fk_out_ss_pop_cfg
     FOREIGN KEY (pop_outbound)
-    REFERENCES tr_spam_pop_config;
+    REFERENCES settings.tr_spam_pop_config;
 
-ALTER TABLE tr_spam_settings
-    ADD CONSTRAINT FK_IN_SS_IMAP_CFG
+ALTER TABLE settings.tr_spam_settings
+    ADD CONSTRAINT fk_in_ss_imap_cfg
     FOREIGN KEY (imap_inbound)
-    REFERENCES tr_spam_imap_config;
+    REFERENCES settings.tr_spam_imap_config;
 
-ALTER TABLE tr_spam_settings
-    ADD CONSTRAINT FK_OUT_SS_IMAP_CFG
+ALTER TABLE settings.tr_spam_settings
+    ADD CONSTRAINT fk_out_ss_imap_cfg
     FOREIGN KEY (imap_outbound)
-    REFERENCES tr_spam_imap_config;
+    REFERENCES settings.tr_spam_imap_config;

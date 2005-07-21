@@ -1,4 +1,11 @@
-CREATE TABLE tr_protofilter_settings (
+-- schema for release 2.5
+
+-------------
+-- settings |
+-------------
+
+-- com.metavize.tran.protofilter.ProtoFilterSettings
+CREATE TABLE settings.tr_protofilter_settings (
     settings_id int8 NOT NULL,
     tid int8 NOT NULL UNIQUE,
     buffersize int4,
@@ -8,7 +15,8 @@ CREATE TABLE tr_protofilter_settings (
     stripzeros bool,
     PRIMARY KEY (settings_id));
 
-CREATE TABLE tr_protofilter_pattern (
+-- com.metavize.tran.protofilter.ProtoFilterPattern
+CREATE TABLE settings.tr_protofilter_pattern (
     rule_id int8 NOT NULL,
     protocol varchar(255),
     description varchar(255),
@@ -22,7 +30,12 @@ CREATE TABLE tr_protofilter_pattern (
     position int4,
     PRIMARY KEY (rule_id));
 
-CREATE TABLE tr_protofilter_evt (
+-----------
+-- events |
+-----------
+
+-- com.metavize.tran.protofilter.ProtoFilterLogEvent
+CREATE TABLE events.tr_protofilter_evt (
     event_id int8 NOT NULL,
     session_id int4,
     protocol varchar(255),
@@ -30,8 +43,21 @@ CREATE TABLE tr_protofilter_evt (
     time_stamp timestamp,
     PRIMARY KEY (event_id));
 
-ALTER TABLE tr_protofilter_settings ADD CONSTRAINT FK55F095631446F FOREIGN KEY (tid) REFERENCES tid;
+----------------
+-- constraints |
+----------------
 
-ALTER TABLE tr_protofilter_pattern ADD CONSTRAINT FKE929349B79192AB7 FOREIGN KEY (settings_id) REFERENCES tr_protofilter_settings;
+-- indeces for reporting
 
 CREATE INDEX tr_protofilter_sid_idx ON tr_protofilter_evt (session_id);
+
+-- foreign key constraints
+
+ALTER TABLE settings.tr_protofilter_settings
+    ADD CONSTRAINT fk_tr_protofilter_settings
+        FOREIGN KEY (tid) REFERENCES settings.tid;
+
+ALTER TABLE settings.tr_protofilter_pattern
+    ADD CONSTRAINT fk_tr_protofilter_pattern
+        FOREIGN KEY (settings_id) REFERENCES settings.tr_protofilter_settings;
+
