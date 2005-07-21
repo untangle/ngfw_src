@@ -80,6 +80,9 @@ public class MLauncher {
 
     
     static private class ShutdownHookThread extends Thread {
+	public ShutdownHookThread(){
+	    super("MVCLIENT-ShutdownHookThread");
+	}
         public void run(){
             
         }

@@ -135,7 +135,6 @@ public class UpgradeJDialog extends javax.swing.JDialog implements Savable, Refr
     }
     public void update(){
         updateThread = new UpdateThread();
-        updateThread.start();
     }
 
 
@@ -529,12 +528,15 @@ public class UpgradeJDialog extends javax.swing.JDialog implements Savable, Refr
     private void upgradeJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_upgradeJButtonActionPerformed
         if( Util.getIsDemo() )
             return;
-        (new UpgradeThread()).start();
+        new UpgradeThread();
     }//GEN-LAST:event_upgradeJButtonActionPerformed
 
 
     private class UpgradeThread extends Thread {
-
+	public UpgradeThread(){
+	    super("MVCLIENT-UpgradeThread");
+	    this.start();
+	}
         public void run() {
 
             // ASK THE USER IF HE REALLY WANTS TO UPGRADE
@@ -582,6 +584,10 @@ public class UpgradeJDialog extends javax.swing.JDialog implements Savable, Refr
 
 
     private class UpdateThread extends Thread {
+	public UpdateThread(){
+	    super("MVCLIENT-UpdateThread");
+	    this.start();
+	}
         public void run() {
             try{
                 

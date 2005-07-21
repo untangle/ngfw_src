@@ -60,9 +60,7 @@ public class MPipelineJPanel extends javax.swing.JPanel {
 		continue;
 	    }
 	    else{
-		AddTransformThread addTransformThread = new AddTransformThread(installedTransformContext);
-		addTransformThread.setContextClassLoader(Util.getClassLoader());
-		addTransformThread.start();
+		new AddTransformThread(installedTransformContext);
 	    }
         }
 	if( installedTransformID.length == 0 )
@@ -260,9 +258,14 @@ public class MPipelineJPanel extends javax.swing.JPanel {
     // End of variables declaration//GEN-END:variables
 
     class AddTransformThread extends Thread {
-        private TransformContext transformContext;
-        AddTransformThread(TransformContext transformContext){
+        
+	private TransformContext transformContext;
+        
+	AddTransformThread(TransformContext transformContext){
+	    super("MVCLIENT-AddTransformThread: " + transformContext.getMackageDesc().getDisplayName());
             this.transformContext = transformContext;
+	    this.setContextClassLoader( Util.getClassLoader() );
+	    this.start();
         }
         public void run(){
             try{

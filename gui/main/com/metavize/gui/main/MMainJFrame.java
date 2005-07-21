@@ -823,9 +823,10 @@ public class MMainJFrame extends javax.swing.JFrame {
 
     private class UpdateCheckThread extends Thread {
         public UpdateCheckThread(){
+	    super("MVCLIENT-UpdateCheckThread");
             this.setDaemon(true);
 	    this.setContextClassLoader(Util.getClassLoader());
-            start();
+            this.start();
         }
         public void run() {
 	    MackageDesc[] mackageDescs;

@@ -44,6 +44,7 @@ public class StatsCache
 
     protected class UpdateThread extends Thread {
         protected UpdateThread() {
+	    super("MVCLIENT-StatsCache.UpdateThread");
             this.setDaemon(true);
         }
 

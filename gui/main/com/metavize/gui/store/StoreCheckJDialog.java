@@ -167,9 +167,10 @@ public class StoreCheckJDialog extends javax.swing.JDialog implements java.awt.e
     
     private class UpgradeCheckThread extends Thread {
         public UpgradeCheckThread(){
+	    super("MVCLIENT-UpgradeCheckThread");
             this.setDaemon(true);
 	    this.setContextClassLoader(Util.getClassLoader());
-            start();
+            this.start();
         }
         public void run() {
             try{

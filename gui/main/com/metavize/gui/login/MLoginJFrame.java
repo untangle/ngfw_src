@@ -463,9 +463,10 @@ public class MLoginJFrame extends javax.swing.JFrame {
     private class ConnectThread extends Thread {
 	
         public ConnectThread(){
+	    super("MVCLIENT-ConnectThread");
 	    this.setContextClassLoader( Util.getClassLoader() );
 	    acceptJButton.setEnabled(false);
-	    (new Thread(this)).start();
+	    this.start();
         }
 	public void run() {
 	    

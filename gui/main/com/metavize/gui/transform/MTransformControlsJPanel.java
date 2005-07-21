@@ -146,10 +146,10 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
         }
         catch ( Exception e ) {
             try{
-                Util.handleExceptionWithRestart("Error saving settings", e);
+                Util.handleExceptionWithRestart("ERROR SAVING: " + mTransformJPanel.getTransformContext().getMackageDesc().getDisplayName(), e);
             }
             catch(Exception f){
-                Util.handleExceptionNoRestart("Error saving settings", f);
+                Util.handleExceptionNoRestart("ERROR SAVING: " + mTransformJPanel.getTransformContext().getMackageDesc().getDisplayName(), f);
                 new SaveFailureDialog( mTransformJPanel.getTransformContext().getTransformDesc().getDisplayName() );
             }
         }
@@ -175,10 +175,10 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
 	}
 	catch(Exception e){
 	    try{
-		Util.handleExceptionWithRestart("Error refreshing settings", e);
+		Util.handleExceptionWithRestart("ERROR REFRESHING: " + mTransformJPanel.getTransformContext().getMackageDesc().getDisplayName(), e);
 	    }
 	    catch(Exception f){
-		Util.handleExceptionNoRestart("Error refreshing settings", f);
+		Util.handleExceptionNoRestart("ERROR REFRESHING: " + mTransformJPanel.getTransformContext().getMackageDesc().getDisplayName(), f);
 		new RefreshFailureDialog( mTransformJPanel.getTransformContext().getTransformDesc().getDisplayName() );
 	    }
 	}

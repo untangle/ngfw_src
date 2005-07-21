@@ -105,7 +105,6 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
         
 
         updateGraphThread = new UpdateGraphThread();
-        updateGraphThread.start();
     }
     
     
@@ -413,8 +412,10 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
 
         
         public UpdateGraphThread(){
+	    super("MVCLIENT-UpdateGraphThread: " + MTransformDisplayJPanel.this.mTransformJPanel.getTransformContext().getMackageDesc().getDisplayName());
             this.setDaemon(true);
             resetCounters();
+	    this.start();
         }
         
         

@@ -128,6 +128,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
     // ACTION THREADS //////////////////////////
     class SaveThread extends Thread{
 	public SaveThread(){
+	    super("MVCLIENT-SaveThread: " + transformContext.getMackageDesc().getDisplayName());
 	    setProcessingView(false);
 	    this.start();
 	}
@@ -151,6 +152,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
 
     class RefreshThread extends Thread{
 	public RefreshThread(){
+	    super("MVCLIENT-RefreshThread: " + transformContext.getMackageDesc().getDisplayName());
 	    setProcessingView(false);
 	    this.start();
 	}
@@ -174,6 +176,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
     class RemoveThread extends Thread{
 	private boolean removeAll;
 	public RemoveThread(boolean removeAll){
+	    super("MVCLIENT-RemoveThread: " + transformContext.getMackageDesc().getDisplayName());
 	    this.removeAll = removeAll;
 	    setRemovingView(false);
             mTransformControlsJPanel.collapseControlPanel();   
@@ -202,6 +205,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
     class PowerThread extends Thread{
 	private final boolean powerOn;
 	public PowerThread(){
+	    super("MVCLIENT-PowerThread: " + transformContext.getMackageDesc().getDisplayName());
 	    powerOn = powerJToggleButton.isSelected();
 	    if( powerOn )
 		setStartingView(false);
@@ -293,6 +297,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
      
     class RefreshStateThread extends Thread{
 	public RefreshStateThread(){
+	    super("MVCLIENT-RefreshStateThread: " + transformContext.getMackageDesc().getDisplayName());
 	    this.start();
 	}
 	public void run(){
