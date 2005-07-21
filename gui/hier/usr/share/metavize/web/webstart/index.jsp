@@ -122,19 +122,22 @@ String helpClickHere = "Click <a href=\"help.html\">here</a> for more informatio
                   </a>
                 </object>
                 <% } else { // if ( isDownload ) %>
-                Server: 
-                <span style="font-style: italic;">
-                  <%=host %>
-                </span>
-		<br/>
-		Connection:
-		<span style="font-style: italic;">
+		<center>
+		<table border="0">
+	        <tr><td align="right">Server:</td>
+                <td><i>
+                  &nbsp;<%=host %>
+                </i></td></tr>
+		<tr><td align="right">Connection:</td>
+		<td><i>
                   <% if(isSecure){  %>
-			https (secure)
+			&nbsp;https (secure)
 		<%} else {%>
-			http (standard)
+			&nbsp;http (standard)
                 <% } %>
-                </span>
+                </i></td></tr>
+		</table>
+		</center>
               </div>
               <% if ( !isDownload ) { %>
               <br/>
