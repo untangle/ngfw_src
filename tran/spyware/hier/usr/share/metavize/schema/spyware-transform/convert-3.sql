@@ -169,7 +169,7 @@ DROP TABLE public.tr_spyware_evt_cookie;
 ---------------
 
 -- com.metavize.tran.spyware.SpywareBlacklistEvent
-CREATE TABLE tr_spyware_evt_blacklist (
+CREATE TABLE events.tr_spyware_evt_blacklist (
     event_id int8 NOT NULL,
     session_id int4,
     request_id int8,
