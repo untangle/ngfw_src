@@ -11,8 +11,6 @@
 package com.metavize.tran.mail;
 
 import java.io.Serializable;
-import static com.metavize.tran.mail.MessageInfo.DEFAULT_STRING_SIZE;
-
 
 /**
  * Log e-mail message info.
@@ -41,9 +39,9 @@ public class MessageInfoAddr implements Serializable
 
     public MessageInfoAddr(AddressKind kind, String addr, String personal) {
         this.kind = kind;
-        if (addr.length() > DEFAULT_STRING_SIZE) addr = addr.substring(0, DEFAULT_STRING_SIZE);
+        if (addr.length() > MessageInfo.DEFAULT_STRING_SIZE) addr = addr.substring(0, MessageInfo.DEFAULT_STRING_SIZE);
         this.addr = addr;
-        if (personal.length() > DEFAULT_STRING_SIZE) personal = personal.substring(0, DEFAULT_STRING_SIZE);
+        if (personal.length() > MessageInfo.DEFAULT_STRING_SIZE) personal = personal.substring(0, MessageInfo.DEFAULT_STRING_SIZE);
         this.personal = personal;
     }
 
@@ -79,7 +77,7 @@ public class MessageInfoAddr implements Serializable
 
     public void setAddr(String addr)
     {
-        if (addr.length() > DEFAULT_STRING_SIZE) addr = addr.substring(0, DEFAULT_STRING_SIZE);
+        if (addr.length() > MessageInfo.DEFAULT_STRING_SIZE) addr = addr.substring(0, MessageInfo.DEFAULT_STRING_SIZE);
         this.addr = addr;
     }
 
@@ -97,7 +95,7 @@ public class MessageInfoAddr implements Serializable
 
     public void setPersonal(String personal)
     {
-        if (personal.length() > DEFAULT_STRING_SIZE) personal = personal.substring(0, DEFAULT_STRING_SIZE);
+        if (personal.length() > MessageInfo.DEFAULT_STRING_SIZE) personal = personal.substring(0,MessageInfo.DEFAULT_STRING_SIZE);
         this.personal = personal;
     }
 
