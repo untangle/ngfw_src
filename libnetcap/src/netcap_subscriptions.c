@@ -214,19 +214,10 @@ int netcap_subscribe (int flags, void* arg, int proto,
             port = 0;
         }
         else if (proto == IPPROTO_TCP) {
-            struct ip_sendnfmark_opts opts = {1,NETCAP_SYNACK_MARK};
-            int c;
-            
             if ( unet_startlisten_on_portrange( RDR_TCP_LOCALS_SOCKS, &port, socks ) < 0 ) {
                 subscription_free( sub );
                 return errlog( ERR_CRITICAL, "unet_startlisten_on_portrange\n" );
-            }
-            
-            /* Change the socket options on all of the sockets */
-            for ( c = 0 ; c < RDR_TCP_LOCALS_SOCKS ; c++ ) {
-                if (setsockopt( socks[c], SOL_IP, IP_SENDNFMARK,  &opts, sizeof( opts )) < 0) 
-                    perrlog("setsockopt");
-            }
+            }            
             
             /* Install a port guard on that port for all interfaces */
             /* Somewhat of a hack to work around */

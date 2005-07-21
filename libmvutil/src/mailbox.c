@@ -102,7 +102,7 @@ void*        mailbox_utimed_get ( mailbox_t* mb, struct timeval* tv )
     ts.tv_sec  = tv->tv_sec;
     ts.tv_nsec = USEC_TO_NSEC( tv->tv_usec );
     
-    if ( ts.tv_nsec > N_SEC ) {
+    if ( ts.tv_nsec >= N_SEC ) {
         ts.tv_sec  += NSEC_TO_SEC( ts.tv_nsec );
         ts.tv_nsec  = ts.tv_nsec % N_SEC;
     } else if ( ts.tv_nsec < 0 ) {
@@ -233,6 +233,8 @@ static void*   _mailbox_timed_get ( mailbox_t* mb, struct timespec* ts )
     if ( sem_timedwait( &mb->list_size_sem, ts ) != 0 ) {
         if (errno != ETIMEDOUT) {
             debug_backtrace( 0,  "sem_timedwait\n" );
+            errlog( ERR_CRITICAL, "sem_timedwait parameters: %d %ld %#010x\n", ts->tv_sec, 
+                    ts->tv_nsec, mb->list_size_sem );
             perrlog("sem_timedwait");
         }
         return NULL;

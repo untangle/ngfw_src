@@ -45,7 +45,14 @@ static __inline int _ts_future ( struct timespec* ts, int usec )
     ts->tv_sec  = tv.tv_sec + USEC_TO_SEC( usec );
     ts->tv_nsec = USEC_TO_NSEC( tv.tv_usec + ( usec % U_SEC ));
 
-    if ( ts->tv_nsec > N_SEC ) {
+    /* XXX The following is just a test to see if this is the error that was causing the *
+     * the sem_timedwait, this condition is actually not needed as it will be caught by  *
+     * the code in the next else if condition */
+    if ( ts->tv_nsec == N_SEC ) {
+        errlog( ERR_WARNING, "The impossible has happened, 1 billion nano-seconds, fixing\n" );
+        ts->tv_sec += 1;
+        ts->tv_nsec = 0;
+    } else if ( ts->tv_nsec >= N_SEC ) {
         ts->tv_sec += NSEC_TO_SEC( ts->tv_nsec );
         ts->tv_nsec = ts->tv_nsec % N_SEC;
     } else if ( ts->tv_nsec < 0 ) {
@@ -262,7 +269,7 @@ static int           _sched_mailbox_put ( _msg_type_t type, int usec, _sched_fun
     initialized = _sched.initialized;
     if ( pthread_mutex_unlock ( &_sched.mutex ) < 0 ) return perrlog ( "pthread_mutex_unlock" );
 
-    if ( !initialized ) return errlog ( ERR_CRITICAL, "Shield: Unitialized\n" );
+    if ( !initialized ) return errlog ( ERR_CRITICAL, "Scheduler is not initialized\n" );
     
     if ( ( msg = _sched_msg_create ( type, usec, func, arg )) == NULL ) {
         return errlog ( ERR_CRITICAL, "_sched_msg_create\n" );
