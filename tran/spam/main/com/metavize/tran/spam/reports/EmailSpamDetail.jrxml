@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created using an evaluation version of JasperAssistant (http://www.jasperassistant.com) -->
+<!DOCTYPE jasperReport PUBLIC "-//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+
+<jasperReport name="SpamRuleDetail" whenNoDataType="AllSectionsNoDetail" pageWidth="612" pageHeight="791" columnWidth="572" leftMargin="20" rightMargin="20" topMargin="30" bottomMargin="30">
+    <property name="com.jasperassistant.designer.GridWidth" value="12"/>
+    <property name="com.jasperassistant.designer.GridHeight" value="12"/>
+    <property name="com.jasperassistant.designer.HGuides" value="109,112,204,207,493,495"/>
+    <property name="com.jasperassistant.designer.DataSource" value="mvvm"/>
+    <property name="com.jasperassistant.designer.SnapToGrid" value="false"/>
+    <property name="com.jasperassistant.designer.Grid" value="false"/>
+    <parameter name="startTime" class="java.sql.Timestamp">
+    </parameter>
+    <parameter name="endTime" class="java.sql.Timestamp">
+    </parameter>
+    <queryString><![CDATA[
+SELECT T1.time_stamp AS RCOL1,
+       T2.action AS RCOL2,
+       T2.score AS RCOL5,
+       T1.smtp_sender AS RCOL3A,
+       T1.smtp_recipient AS RCOL6A,
+       T1.rfc822_from as RCOL3B,
+       T1.rfc822_to_list AS RCOL6B,
+       T1.rfc822_cc_list AS RCOL6C,
+       T1.rfc822_bcc_list AS RCOL6D,
+       T1.size as RCOL7
+FROM
+(SELECT id as msg_id,
+        time_stamp,
+        smtp_sender,
+        smtp_recipient,
+        rfc822_from,
+        rfc822_to_list,
+        rfc822_cc_list,
+        rfc822_bcc_list,
+        size
+ FROM tr_email_message_info
+ WHERE time_stamp > $P{startTime} AND time_stamp < $P{endTime}
+ ORDER BY msg_id) AS T1
+JOIN
+(SELECT msg_id,
+        action,
+        score
+ FROM tr_email_spam_evt
+ ORDER BY msg_id) AS T2
+USING (msg_id)
+     ]]></queryString>
+    <field name="RCOL1" class="java.sql.Timestamp">
+    </field>
+    <field name="RCOL7" class="java.lang.Integer">
+    </field>
+    <field name="RCOL5" class="java.lang.String">
+    </field>
+    <field name="RCOL2" class="java.lang.String">
+    </field>
+    <field name="RCOL3A" class="java.lang.String">
+    </field>
+    <field name="RCOL3B" class="java.lang.String">
+    </field>
+    <field name="RCOL6A" class="java.lang.String">
+    </field>
+    <field name="RCOL6B" class="java.lang.String">
+    </field>
+    <field name="RCOL6C" class="java.lang.String">
+    </field>
+    <field name="RCOL6D" class="java.lang.String">
+    </field>
+    <title>
+        <band height="90">
+            <staticText>
+                <reportElement key="staticText" positionType="Float" mode="Opaque" x="0" y="0" width="239" height="23"/>
+                <box topBorder="None" topBorderColor="#0" leftBorder="None" leftBorderColor="#0" bottomBorder="None" bottomBorderColor="#0" rightBorder="None" rightBorderColor="#ffffff"/>
+                <textElement>
+                    <font fontName="SansSerif" size="18" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+                </textElement>
+                <text><![CDATA[Metavize EdgeGuard]]></text>
+            </staticText>
+            <staticText>
+                <reportElement key="staticText" positionType="Float" mode="Opaque" x="0" y="28" width="249" height="17"/>
+                <box topBorder="None" topBorderColor="#0" leftBorder="None" leftBorderColor="#0" bottomBorder="None" bottomBorderColor="#0" rightBorder="None" rightBorderColor="#ffffff"/>
+                <textElement>
+                    <font fontName="SansSerif" size="14" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+                </textElement>
+                <text><![CDATA[Spam Rule Incidents]]></text>
+            </staticText>
+            <textField pattern="">
+                <reportElement key="textField" mode="Opaque" x="0" y="50" width="305" height="15"/>
+                <box topBorder="None" topBorderColor="#0" leftBorder="None" leftBorderColor="#0" bottomBorder="None" bottomBorderColor="#0" rightBorder="None" rightBorderColor="#ffffff"/>
+                <textElement>
+                    <font fontName="SansSerif" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+                </textElement>
+                <textFieldExpression class="java.lang.String"><![CDATA[String.format("%tB %<td, %<tY", new Object[] {new Long($P{startTime}.getTime())})
+ + " to "
+ + String.format("%tB %<td, %<tY", new Object[] {new Long($P{endTime}.getTime())})]]></textFieldExpression>
+            </textField>
+            <image>
+                <reportElement key="image" positionType="Float" mode="Opaque" x="508" y="0" width="64" height="64"/>
+                <box topBorder="None" topBorderColor="#0" leftBorder="None" leftBorderColor="#0" bottomBorder="None" bottomBorderColor="#0" rightBorder="None" rightBorderColor="#ffffff"/>
+                <graphicElement/>
+                <imageExpression class="java.lang.String"><![CDATA["com/metavize/gui/icons/LogoNoText64x64.gif"]]></imageExpression>
+            </image>
+        </band>
+    </title>
+    <pageHeader>
+        <band height="14">
+            <printWhenExpression><![CDATA[1 < $V{PAGE_NUMBER}.intValue() ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+            <line>
+                <reportElement positionType="Float" x="0" y="13" width="572" height="1"/>
+                <graphicElement pen="2Point"/>
+            </line>
+            <textField>
+                <reportElement positionType="Float" x="494" y="0" width="78" height="12"/>
+                <textElement textAlignment="Right">
+                    <font size="9" isItalic="true"/>
+                </textElement>
+                <textFieldExpression class="java.lang.String"><![CDATA[$V{PAGE_NUMBER}.toString()]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement positionType="Float" x="0" y="0" width="141" height="12"/>
+                <textElement>
+                    <font size="9" isItalic="true"/>
+                </textElement>
+                <text><![CDATA[Spam Rule Incidents]]></text>
+            </staticText>
+        </band>
+    </pageHeader>
+    <columnHeader>
+        <band height="27">
+            <line>
+                <reportElement positionType="Float" x="0" y="13" width="572" height="1" forecolor="#c0c0c0"/>
+                <graphicElement pen="Thin"/>
+            </line>
+            <line>
+                <reportElement positionType="Float" x="0" y="26" width="572" height="1"/>
+                <graphicElement pen="2Point"/>
+            </line>
+            <staticText>
+                <reportElement positionType="Float" x="0" y="0" width="110" height="12"/>
+                <textElement>
+                    <font isItalic="true"/>
+                </textElement>
+                <text><![CDATA[Timestamp]]></text>
+            </staticText>
+            <staticText>
+                <reportElement positionType="Float" x="112" y="0" width="92" height="12"/>
+                <textElement>
+                    <font isItalic="true"/>
+                </textElement>
+                <text><![CDATA[Action]]></text>
+            </staticText>
+            <staticText>
+                <reportElement positionType="Float" x="112" y="14" width="92" height="12"/>
+                <textElement>
+                    <font isItalic="true"/>
+                </textElement>
+                <text><![CDATA[Score]]></text>
+            </staticText>
+            <staticText>
+                <reportElement positionType="Float" x="207" y="0" width="286" height="12"/>
+                <textElement>
+                    <font isItalic="true"/>
+                </textElement>
+                <text><![CDATA[Msg sender]]></text>
+            </staticText>
+            <staticText>
+                <reportElement positionType="Float" x="206" y="14" width="287" height="12"/>
+                <textElement>
+                    <font isItalic="true"/>
+                </textElement>
+                <text><![CDATA[Msg recipients]]></text>
+            </staticText>
+            <staticText>
+                <reportElement positionType="Float" x="494" y="0" width="78" height="12"/>
+                <textElement>
+                    <font isItalic="true"/>
+                </textElement>
+                <text><![CDATA[Msg size]]></text>
+            </staticText>
+            <staticText>
+                <reportElement positionType="Float" x="494" y="14" width="78" height="12"/>
+                <textElement>
+                    <font isItalic="true"/>
+                </textElement>
+                <text><![CDATA[]]></text>
+            </staticText>
+        </band>
+    </columnHeader>
+    <detail>
+        <band height="27">
+            <textField>
+                <reportElement positionType="Float" x="206" y="0" width="287" height="12"/>
+                <textElement>
+                    <font fontName="SansSerif"/>
+                </textElement>
+                <textFieldExpression class="java.lang.String"><![CDATA[
+null == $F{RCOL3A} ? $F{RCOL3B} : $F{RCOL3A}
+                ]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement positionType="Float" x="112" y="0" width="92" height="12"/>
+                <textElement>
+                    <font fontName="SansSerif"/>
+                </textElement>
+                <textFieldExpression class="java.lang.String"><![CDATA[
+(true == $F{RCOL2}.equals("M") ? "mark message" :
+(true == $F{RCOL2}.equals("B") ? "block message" :
+(true == $F{RCOL2}.equals("S") ? "block/warn sndr" :
+(true == $F{RCOL2}.equals("R") ? "block/warn rcvr" :
+(true == $F{RCOL2}.equals("A") ? "block/warn both" : "mark message" )))))
+                 ]]></textFieldExpression>
+            </textField>
+            <line>
+                <reportElement positionType="Float" x="0" y="13" width="572" height="1" forecolor="#c0c0c0"/>
+                <graphicElement pen="Thin"/>
+            </line>
+            <line>
+                <reportElement positionType="Float" x="0" y="26" width="572" height="1"/>
+                <graphicElement pen="Thin"/>
+            </line>
+            <textField>
+                <reportElement positionType="Float" x="0" y="0" width="110" height="12"/>
+                <textElement/>
+                <textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{RCOL1}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement positionType="Float" x="206" y="14" width="287" height="12"/>
+                <textElement/>
+                <textFieldExpression class="java.lang.String"><![CDATA[
+null == $F{RCOL6A} ? $F{RCOL6B}.concat("/").concat(null == $F{RCOL6C} ? "" : $F{RCOL6C}).concat("/").concat(null == $F{RCOL6D} ? "" : $F{RCOL6D}) : $F{RCOL6A}
+                 ]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement positionType="Float" x="112" y="14" width="92" height="12"/>
+                <textElement/>
+                <textFieldExpression class="java.lang.String"><![CDATA[$F{RCOL5}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement positionType="Float" x="494" y="14" width="78" height="12"/>
+                <textElement/>
+                <textFieldExpression class="java.lang.String"><![CDATA[""]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement positionType="Float" x="494" y="0" width="78" height="12"/>
+                <textElement/>
+                <textFieldExpression class="java.lang.Integer"><![CDATA[$F{RCOL7}]]></textFieldExpression>
+            </textField>
+        </band>
+    </detail>
+    <summary>
+        <band height="4">
+            <line>
+                <reportElement positionType="Float" x="0" y="0" width="572" height="1"/>
+                <graphicElement pen="2Point"/>
+            </line>
+        </band>
+    </summary>
+</jasperReport>

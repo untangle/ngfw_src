@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.metavize.tran.protofilter;
+package com.metavize.tran.protofilter.reports;
 
 import java.sql.*;
 
@@ -30,11 +30,15 @@ public class ProtoFilterSummarizer extends BaseSummarizer {
         int blockCount = 0;
 
         try {
-            String sql = "select count(*) from tr_protofilter_evt where time_stamp >= ? and time_stamp < ?";
-            PreparedStatement ps = conn.prepareStatement(sql);
+	    String sql;
+	    PreparedStatement ps;
+	    ResultSet rs;
+
+            sql = "select count(*) from tr_protofilter_evt where time_stamp >= ? and time_stamp < ?";
+            ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
-            ResultSet rs = ps.executeQuery();
+            rs = ps.executeQuery();
             rs.first();
             logCount = rs.getInt(1);
             rs.close();
@@ -53,9 +57,9 @@ public class ProtoFilterSummarizer extends BaseSummarizer {
             logger.warn("could not summarize", exn);
         }
 
-        addEntry("Detected rogue protocol sessions", Util.trimNumber("",logCount));
-        addEntry("&nbsp;&nbsp;&nbsp;Blocked sessions", Util.trimNumber("",blockCount));
-        addEntry("&nbsp;&nbsp;&nbsp;Passed sessions", Util.trimNumber("",logCount - blockCount));
+        addEntry("Detected protocol sessions", Util.trimNumber("",logCount));
+        addEntry("&nbsp;&nbsp;&nbsp;Blocked sessions", Util.trimNumber("",blockCount) + " (" + Util.percentNumber(blockCount,logCount) + ")");
+        addEntry("&nbsp;&nbsp;&nbsp;Passed sessions", Util.trimNumber("",logCount - blockCount) + " (" + Util.percentNumber(logCount-blockCount,logCount) + ")");
 
         // XXXX
         String tranName = "Rogue Protocol Control";

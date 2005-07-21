@@ -16,11 +16,11 @@ import java.sql.*;
 import com.metavize.mvvm.reporting.*;
 import org.apache.log4j.Logger;
 
-public class GeneralSummarizer extends BaseSummarizer {
+public class ReportingSummarizer extends BaseSummarizer {
 
     private static final Logger logger = Logger.getLogger(GeneralSummarizer.class);
 
-    public GeneralSummarizer() { }
+    public ReportingSummarizer() { }
 
     public String getSummaryHtml(Connection conn, Timestamp startDate, Timestamp endDate)
     {

@@ -1,0 +1,7 @@
+TEMPLATE=MasterOfFourChildren
+REPORT_NAME=HttpMaster
+REPORT_TITLE=Web Content Control
+SUBREPORT_1=reports/HttpDomains.jasper
+SUBREPORT_2=reports/HttpMimeTypes.jasper
+SUBREPORT_3=reports/HttpUsers.jasper
+SUBREPORT_4=reports/HttpViolators.jasper

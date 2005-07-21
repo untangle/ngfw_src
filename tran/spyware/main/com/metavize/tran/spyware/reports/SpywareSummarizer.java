@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.metavize.tran.spyware;
+package com.metavize.tran.spyware.reports;
 
 import java.sql.*;
 
@@ -31,11 +31,15 @@ public class SpywareSummarizer extends BaseSummarizer {
         int axCount = 0;
 
         try {
-            String sql = "select count(*) from tr_spyware_evt_access where time_stamp >= ? and time_stamp < ?";
-            PreparedStatement ps = conn.prepareStatement(sql);
+	    String sql;
+	    PreparedStatement ps;
+	    ResultSet rs;
+
+            sql = "select count(*) from tr_spyware_evt_access where time_stamp >= ? and time_stamp < ?";
+            ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
-            ResultSet rs = ps.executeQuery();
+            rs = ps.executeQuery();
             rs.first();
             accessCount = rs.getInt(1);
             rs.close();
@@ -76,9 +80,9 @@ public class SpywareSummarizer extends BaseSummarizer {
         }
 
         addEntry("Total potential spyware accesses detected", Util.trimNumber("",accessCount));
-        addEntry("&nbsp;&nbsp;&nbsp;Blocked potential spyware accesses", Util.trimNumber("",blockCount));
-        addEntry("&nbsp;&nbsp;&nbsp;Blocked spyware cookies", Util.trimNumber("",cookieCount));
-        addEntry("&nbsp;&nbsp;&nbsp;Blocked spyware ActiveX", Util.trimNumber("",axCount));
+        addEntry("&nbsp;&nbsp;&nbsp;Blocked potential spyware accesses", Util.trimNumber("",blockCount) + " (" + Util.percentNumber(blockCount,accessCount)  + ")");
+        addEntry("&nbsp;&nbsp;&nbsp;Blocked spyware cookies", Util.trimNumber("",cookieCount) + " (" + Util.percentNumber(cookieCount,accessCount)  + ")");
+        addEntry("&nbsp;&nbsp;&nbsp;Blocked spyware ActiveX", Util.trimNumber("",axCount) + " (" + Util.percentNumber(axCount,accessCount)  + ")");
 
         // XXXX
         String tranName = "Spyware Blocker";

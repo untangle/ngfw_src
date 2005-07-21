@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.metavize.tran.httpblocker;
+package com.metavize.tran.httpblocker.reports;
 
 import java.sql.*;
 
@@ -17,26 +17,30 @@ import com.metavize.mvvm.reporting.BaseSummarizer;
 import com.metavize.mvvm.reporting.Util;
 import org.apache.log4j.Logger;
 
-public class BlockerSummarizer extends BaseSummarizer {
+public class HttpBlockerSummarizer extends BaseSummarizer {
 
-    private static final Logger logger = Logger.getLogger(BlockerSummarizer.class);
+    private static final Logger logger = Logger.getLogger(HttpBlockerSummarizer.class);
 
-    public BlockerSummarizer() { }
+    public HttpBlockerSummarizer() { }
 
     public String getSummaryHtml(Connection conn, Timestamp startDate, Timestamp endDate)
     {
-        int hitCount = 0;
-        int blockCount = 0;
-        long totalTraffic = 0;
+        long hitCount = 0l;
+        long blockCount = 0l;
+        long totalTraffic = 0l;
 
         try {
-            String sql = "SELECT count(*) FROM tr_http_evt_req WHERE time_stamp >= ? AND time_stamp < ?";
-            PreparedStatement ps = conn.prepareStatement(sql);
+	    String sql;
+	    PreparedStatement ps;
+	    ResultSet rs;
+
+            sql = "SELECT count(*) FROM tr_http_evt_req WHERE time_stamp >= ? AND time_stamp < ?";
+            ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
-            ResultSet rs = ps.executeQuery();
+            rs = ps.executeQuery();
             rs.first();
-            hitCount = rs.getInt(1);
+            hitCount = rs.getLong(1);
             rs.close();
             ps.close();
 
@@ -46,7 +50,7 @@ public class BlockerSummarizer extends BaseSummarizer {
             ps.setTimestamp(2, endDate);
             rs = ps.executeQuery();
             rs.first();
-            blockCount = rs.getInt(1);
+            blockCount = rs.getLong(1);
             rs.close();
             ps.close();
 
@@ -69,7 +73,11 @@ public class BlockerSummarizer extends BaseSummarizer {
         }
 
         addEntry("Total web hits", Util.trimNumber("",hitCount));
-        addEntry("Total blocked web pages", Util.trimNumber("",blockCount));
+        addEntry("&nbsp;&nbsp;&nbsp;Blocked hits", Util.trimNumber("",blockCount) + " (" + Util.percentNumber(blockCount,hitCount) + ")");
+        addEntry("&nbsp;&nbsp;&nbsp;Passed hits", Util.trimNumber("",hitCount-blockCount) + " (" + Util.percentNumber(hitCount-blockCount,hitCount) + ")");
+
+        addEntry("&nbsp;", "&nbsp;");
+
         addEntry("Total web traffic", Util.trimNumber("Bytes",totalTraffic));
 
         // XXXX

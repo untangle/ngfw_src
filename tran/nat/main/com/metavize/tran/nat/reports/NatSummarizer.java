@@ -78,23 +78,23 @@ public class NatSummarizer extends BaseSummarizer {
 	totalRedirections = tcpRedirections + udpRedirections + pingRedirections;
 
         addEntry("Total redirections", Util.trimNumber("",totalRedirections) );
-        addEntry("&nbsp;&nbsp;&nbsp;TCP", Util.trimNumber("",tcpRedirections) 
-		 + "(" + Util.percentNumber(tcpInboundRedirections+tcpOutboundRedirections, totalRedirections) + ")");
-        addEntry("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Inbound", Util.trimNumber("",tcpInboundRedirections) 
+
+        addEntry("&nbsp;","&nbsp;");
+
+        addEntry("TCP redirections", Util.trimNumber("",tcpRedirections));
+        addEntry("&nbsp;&nbsp;&nbsp;Inbound", Util.trimNumber("",tcpInboundRedirections) 
 		 + "(" + Util.percentNumber(tcpInboundRedirections, totalRedirections) + ")");
-        addEntry("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Outbound", Util.trimNumber("",tcpOutboundRedirections) 
+        addEntry("&nbsp;&nbsp;&nbsp;Outbound", Util.trimNumber("",tcpOutboundRedirections) 
 		 + "(" + Util.percentNumber(tcpOutboundRedirections, totalRedirections) + ")");
-        addEntry("&nbsp;&nbsp;&nbsp;UDP", Util.trimNumber("",udpRedirections) 
-		 + "(" + Util.percentNumber(udpInboundRedirections+udpOutboundRedirections, totalRedirections) + ")");
-        addEntry("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Inbound", Util.trimNumber("",udpInboundRedirections) 
+        addEntry("UDP redirections", Util.trimNumber("",udpRedirections));
+        addEntry("&nbsp;&nbsp;&nbsp;Inbound", Util.trimNumber("",udpInboundRedirections) 
 		 + "(" + Util.percentNumber(udpInboundRedirections, totalRedirections) + ")");
-        addEntry("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Outbound", Util.trimNumber("",udpOutboundRedirections) 
+        addEntry("&nbsp;&nbsp;&nbsp;Outbound", Util.trimNumber("",udpOutboundRedirections) 
 		 + "(" + Util.percentNumber(udpOutboundRedirections, totalRedirections) + ")");
-        addEntry("&nbsp;&nbsp;&nbsp;PING", Util.trimNumber("",pingRedirections) 
-		 + "(" + Util.percentNumber(pingInboundRedirections+pingOutboundRedirections, totalRedirections) + ")");
-        addEntry("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Inbound", Util.trimNumber("",pingInboundRedirections)  
+        addEntry("PING redirections", Util.trimNumber("",pingRedirections));
+        addEntry("&nbsp;&nbsp;&nbsp;Inbound", Util.trimNumber("",pingInboundRedirections)  
 		 + "(" + Util.percentNumber(pingInboundRedirections, totalRedirections) + ")");
-        addEntry("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Outbound", Util.trimNumber("",pingOutboundRedirections)  
+        addEntry("&nbsp;&nbsp;&nbsp;Outbound", Util.trimNumber("",pingOutboundRedirections)  
 		 + "(" + Util.percentNumber(pingOutboundRedirections, totalRedirections) + ")");
 	
 	addEntry("&nbsp;","&nbsp;");

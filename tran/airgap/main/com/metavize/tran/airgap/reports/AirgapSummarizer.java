@@ -74,7 +74,7 @@ public class AirgapSummarizer extends BaseSummarizer {
 
 	long loadTotal = loadRelaxed + loadLax + loadTight + loadClosed;
         addEntry("Load level indicators", "");
-        addEntry("&nbsp;&nbsp;&nbsp;Normal operation", Util.percentNumber(loadRelaxed, loadTotal));
+        addEntry("&nbsp;&nbsp;&nbsp;Normal load", Util.percentNumber(loadRelaxed, loadTotal));
         addEntry("&nbsp;&nbsp;&nbsp;Medium load", Util.percentNumber(loadLax, loadTotal));
         addEntry("&nbsp;&nbsp;&nbsp;High load", Util.percentNumber(loadTight, loadTotal));
         addEntry("&nbsp;&nbsp;&nbsp;Overload", Util.percentNumber(loadClosed, loadTotal));
