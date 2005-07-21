@@ -18,7 +18,7 @@ import org.apache.log4j.Logger;
 
 public class ReportingSummarizer extends BaseSummarizer {
 
-    private static final Logger logger = Logger.getLogger(GeneralSummarizer.class);
+    private static final Logger logger = Logger.getLogger(ReportingSummarizer.class);
 
     public ReportingSummarizer() { }
 
@@ -32,13 +32,13 @@ public class ReportingSummarizer extends BaseSummarizer {
         long p2sOut = 0;
         long s2pOut = 0;
         long p2cOut = 0;
-	int numOut = 0;
+    int numOut = 0;
 
         long c2pIn = 0;
         long p2sIn = 0;
         long s2pIn = 0;
         long p2cIn = 0;
-	int numIn = 0;
+    int numIn = 0;
 
         try {
             String sql = "SELECT sum(c2p_bytes), sum(p2s_bytes), sum(s2p_bytes), sum(p2c_bytes), count(*) FROM pl_endp JOIN pl_stats USING (session_id) WHERE client_intf = 1 AND raze_date >= ? AND create_date < ?";
