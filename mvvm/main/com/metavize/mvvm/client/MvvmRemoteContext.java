@@ -15,6 +15,7 @@ import java.io.IOException;
 
 import com.metavize.mvvm.ArgonManager;
 import com.metavize.mvvm.NetworkingManager;
+import com.metavize.mvvm.ReportingManager;
 import com.metavize.mvvm.ConnectivityTester;
 import com.metavize.mvvm.ToolboxManager;
 import com.metavize.mvvm.logging.LoggingManager;
@@ -71,6 +72,13 @@ public interface MvvmRemoteContext
      * @return the NetworkingManager.
      */
     NetworkingManager networkingManager();
+
+    /**
+     * Get the <code>ReportingManager</code> singleton.
+     *
+     * @return the ReportingManager.
+     */
+    ReportingManager reportingManager();
 
     /**
      * Get the <code>ConnectivityTester</code> singleton.

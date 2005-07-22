@@ -142,6 +142,10 @@ public class RemoteClient
             unregister(args[1]);
         } else if (args[0].equalsIgnoreCase("shutdown")) {
             shutdown();
+        } else if (args[0].equalsIgnoreCase("isReportingEnabled")) {
+            isReportingEnabled();
+        } else if (args[0].equalsIgnoreCase("areReportsAvailable")) {
+            areReportsAvailable();
         } else if (args[0].equalsIgnoreCase("userLogs")) {
             userLogs(args[1]);
         } else if (args[0].equalsIgnoreCase("resetLogs")) {
@@ -506,6 +510,16 @@ public class RemoteClient
         mc.shutdown();
     }
 
+    private static void isReportingEnabled()
+    {
+        System.out.println(mc.reportingManager().isReportingEnabled());
+    }
+
+    private static void areReportsAvailable()
+    {
+        System.out.println(mc.reportingManager().isReportsAvailable());
+    }
+
     private static void userLogs(String tidStr)
     {
         Tid tid = new Tid(Long.parseLong(tidStr));
@@ -638,6 +652,9 @@ public class RemoteClient
         System.out.println("    mcli shutdown");
         System.out.println("    mcli serverStats");
         System.out.println("    mcli gc");
+        System.out.println("  reporting manager: ");
+        System.out.println("    mcli isReportingEnabled");
+        System.out.println("    mcli areReportsAvailable");
         System.out.println("  logging manager: ");
         System.out.println("    mcli userLogs tid");
         System.out.println("    mcli resetLogs");
