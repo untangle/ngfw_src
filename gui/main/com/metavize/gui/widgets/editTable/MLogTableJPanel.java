@@ -249,7 +249,7 @@ public class MLogTableJPanel extends javax.swing.JPanel {
 	    this.isAutoRefresh = isAutoRefresh;
 	    if(!isAutoRefresh){
 		MLogTableJPanel.this.refreshLogJButton.setEnabled(false);
-		MLogTableJPanel.this.refreshLogJButton.setText("(refreshing)");
+		MLogTableJPanel.this.refreshLogJButton.setText("<html>(refreshing)</html>");
 	    }
 	    this.start();
 	}

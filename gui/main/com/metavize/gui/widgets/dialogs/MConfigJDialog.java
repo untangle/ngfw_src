@@ -186,8 +186,10 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
         reloadJButton.setText("<html><b>Reload</b> Settings</html>");
         reloadJButton.setDoubleBuffered(true);
         reloadJButton.setFocusPainted(false);
-        reloadJButton.setMaximumSize(new java.awt.Dimension(2147483647, 900));
-        reloadJButton.setPreferredSize(null);
+        reloadJButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
+        reloadJButton.setMaximumSize(new java.awt.Dimension(120, 25));
+        reloadJButton.setMinimumSize(new java.awt.Dimension(120, 25));
+        reloadJButton.setPreferredSize(new java.awt.Dimension(120, 25));
         reloadJButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 reloadJButtonActionPerformed(evt);
@@ -197,7 +199,6 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
-        gridBagConstraints.ipadx = 50;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTHEAST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 15, 15);
@@ -207,8 +208,10 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
         saveJButton.setText("<html><b>Save</b> Settings</html>");
         saveJButton.setDoubleBuffered(true);
         saveJButton.setFocusPainted(false);
-        saveJButton.setMaximumSize(new java.awt.Dimension(2147483647, 900));
-        saveJButton.setPreferredSize(null);
+        saveJButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
+        saveJButton.setMaximumSize(new java.awt.Dimension(78, 25));
+        saveJButton.setMinimumSize(new java.awt.Dimension(78, 25));
+        saveJButton.setPreferredSize(new java.awt.Dimension(78, 25));
         saveJButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 saveJButtonActionPerformed(evt);
@@ -275,9 +278,11 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
 
     private class SaveAllThread extends Thread{
         public SaveAllThread(){
+	    super("MVCLIENT-MConfigJDialog.SaveAllThread");
             saveJButton.setEnabled(false);
             reloadJButton.setEnabled(false);
             closeJButton.setEnabled(false);
+	    saveJButton.setText("<html>(saving)</html>");
             this.start();
         }
         
@@ -292,6 +297,7 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
                 saveJButton.setEnabled(true);
                 reloadJButton.setEnabled(true);
                 closeJButton.setEnabled(true);
+		saveJButton.setText("<html><b>Save</b> Settings</html>");
             }
         }
     }
@@ -299,9 +305,11 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
     
     private class RefreshAllThread extends Thread{
         public RefreshAllThread(){
+	    super("MVCLIENT-MConfigJDialog.RefreshAllThread");
             saveJButton.setEnabled(false);
             reloadJButton.setEnabled(false);
             closeJButton.setEnabled(false);
+	    reloadJButton.setText("<html>(reloading)</html>");
             this.start();
         }
         
@@ -316,6 +324,7 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
                 saveJButton.setEnabled(true);
                 reloadJButton.setEnabled(true);
                 closeJButton.setEnabled(true);
+		reloadJButton.setText("<html><b>Reload</b> Settings</html>");
             }
         }
     }
