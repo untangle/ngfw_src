@@ -45,8 +45,10 @@ DROP TABLE public.tr_http_req_line;
 CREATE TABLE settings.tr_http_settings (
     settings_id,
     tid,
-    enabled)
-AS SELECT nextval('hibernate_sequence'), tid, TRUE
+    enabled,
+    non_http_blocked,
+    max_header_length)
+AS SELECT nextval('hibernate_sequence'), tid, true, false, 4096::int4
    FROM transform_persistent_state WHERE name = 'http-casing';
 
 ALTER TABLE settings.tr_http_settings
@@ -57,6 +59,10 @@ ALTER TABLE settings.tr_http_settings
     ALTER COLUMN tid SET NOT NULL;
 ALTER TABLE settings.tr_http_settings
     ALTER COLUMN enabled SET NOT NULL;
+ALTER TABLE settings.tr_http_settings
+    ALTER COLUMN non_http_blocked SET NOT NULL;
+ALTER TABLE settings.tr_http_settings
+    ALTER COLUMN max_header_length SET NOT NULL;
 
 -- foreign key constraints
 

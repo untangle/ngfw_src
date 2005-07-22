@@ -28,7 +28,7 @@ public class HttpTransformImpl extends AbstractTransform
     private final Logger logger = Logger.getLogger(HttpTransformImpl.class);
 
     private final PipeSpec pipeSpec = new CasingPipeSpec
-        ("http", this, HttpCasingFactory.factory(),
+        ("http", this, new HttpCasingFactory(this),
          Fitting.HTTP_STREAM, Fitting.HTTP_TOKENS);
 
     private final PipeSpec[] pipeSpecs = new PipeSpec[] { pipeSpec };

@@ -18,6 +18,7 @@ import com.metavize.tran.token.Unparser;
 
 class HttpCasing extends AbstractCasing
 {
+    private final HttpTransformImpl transform;
     private final HttpParser parser;
     private final HttpUnparser unparser;
 
@@ -25,8 +26,10 @@ class HttpCasing extends AbstractCasing
 
     // constructors -----------------------------------------------------------
 
-    HttpCasing(TCPSession session, boolean clientSide)
+    HttpCasing(TCPSession session, boolean clientSide,
+               HttpTransformImpl transform)
     {
+        this.transform = transform;
         parser = new HttpParser(session, clientSide, this);
         unparser = new HttpUnparser(session, clientSide, this);
     }
@@ -44,6 +47,11 @@ class HttpCasing extends AbstractCasing
     }
 
     // package private methods ------------------------------------------------
+
+    HttpTransformImpl getTransform()
+    {
+        return transform;
+    }
 
     void queueRequest(RequestLine request)
     {

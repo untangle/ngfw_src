@@ -9,6 +9,8 @@ CREATE TABLE settings.tr_http_settings (
     settings_id int8 NOT NULL,
     tid int8 NOT NULL UNIQUE,
     enabled bool NOT NULL,
+    non_http_blocked bool NOT NULL,
+    max_header_length int4 NOT NULL,
     PRIMARY KEY (settings_id));
 
 -----------

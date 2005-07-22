@@ -17,18 +17,16 @@ import com.metavize.tran.token.CasingFactory;
 
 class HttpCasingFactory implements CasingFactory
 {
-    private static final HttpCasingFactory HTTP_CASING_FACTORY
-        = new HttpCasingFactory();
+    private final HttpTransformImpl transform;
 
-    private HttpCasingFactory() { }
 
-    static HttpCasingFactory factory()
+    public HttpCasingFactory(HttpTransformImpl transform)
     {
-        return HTTP_CASING_FACTORY;
+        this.transform = transform;
     }
 
     public Casing casing(TCPSession session, boolean clientSide)
     {
-        return new HttpCasing(session, clientSide);
+        return new HttpCasing(session, clientSide, transform);
     }
 }

@@ -30,6 +30,7 @@ import com.metavize.tran.token.ParseException;
 import com.metavize.tran.token.ParseResult;
 import com.metavize.tran.token.Token;
 import com.metavize.tran.token.TokenStreamer;
+import com.metavize.tran.util.AsciiCharBuffer;
 import org.apache.log4j.Logger;
 
 public class HttpParser extends AbstractParser
@@ -62,6 +63,7 @@ public class HttpParser extends AbstractParser
 
     private final HttpCasing casing;
     private final byte[] buf = new byte[BUFFER_SIZE];
+    private final int maxHeader;
     private final String sessStr;
 
     private final Logger logger = Logger.getLogger(HttpParser.class);
@@ -82,9 +84,11 @@ public class HttpParser extends AbstractParser
     HttpParser(TCPSession session, boolean clientSide, HttpCasing casing)
     {
         super(session, clientSide);
+        this.maxHeader = casing.getTransform().getHttpSettings()
+            .getMaxHeaderLength();
         this.casing = casing;
         this.sessStr = "HttpParser sid: " + session.id()
-            + (clientSide ? " client-side" : " server-side");
+            + (clientSide ? " client-side " : " server-side ");
 
         lineBuffering(true);
     }
@@ -129,6 +133,7 @@ public class HttpParser extends AbstractParser
                     logger.debug(sessStr + "in FIRST_LINE_STATE");
                     if (completeLine(b)) {
                         l.add(firstLine(b));
+
                         state = ACCUMULATE_HEADER_STATE;
                     } else {
                         b.compact();
@@ -140,6 +145,12 @@ public class HttpParser extends AbstractParser
                 {
                     logger.debug(sessStr + "in ACCUMULATE_HEADER_STATE");
                     if (!completeHeader(b)) {
+                        if (b.capacity() < maxHeader) {
+                            ByteBuffer nb = ByteBuffer.allocate(maxHeader + 2);
+                            nb.put(b);
+                            b = nb;
+                        }
+
                         b.compact();
                         if (!b.hasRemaining()) {
                             logger.error(sessStr
@@ -351,6 +362,8 @@ public class HttpParser extends AbstractParser
     {
         ByteBuffer d = b.duplicate();
 
+        int s = d.position();
+
         if (d.remaining() >= 4) {
             d.position(d.limit() - 4);
         }
@@ -362,6 +375,14 @@ public class HttpParser extends AbstractParser
             } else {
                 return false;
             }
+        }
+
+        if (maxHeader < (d.position() - s)) {
+            // XXX send error page instead
+            logger.error("header exceeded maxHeaderLength: "
+                         + AsciiCharBuffer.wrap(b));
+            session.shutdownClient();
+            session.shutdownServer();
         }
 
         if (LF == c || CR == c && d.hasRemaining() && LF == d.get()) {
@@ -442,7 +463,7 @@ public class HttpParser extends AbstractParser
         byte cs = session.clientState();
         byte ss = session.serverState();
 
-        logger.debug(sessStr + " handling timer cs=" + cs + " ss=" + ss);
+        logger.debug(sessStr + "handling timer cs=" + cs + " ss=" + ss);
 
         if (cs == TCPSessionDesc.HALF_OPEN_OUTPUT
             && ss == TCPSessionDesc.HALF_OPEN_INPUT) {

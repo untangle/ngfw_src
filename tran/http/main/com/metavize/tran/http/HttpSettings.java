@@ -25,12 +25,17 @@ import com.metavize.mvvm.security.Tid;
  */
 public class HttpSettings implements Serializable
 {
+    public static final int MIN_HEADER_LENGTH = 1024;
+    public static final int MAX_HEADER_LENGTH = 4096;
+
     private static final long serialVersionUID = -8901463578794639216L;
 
     private Long id;
     private Tid tid;
 
     private boolean enabled = true;
+    private boolean nonHttpBlocked = false;
+    private int maxHeaderLength = MAX_HEADER_LENGTH;
 
     // constructors -----------------------------------------------------------
 
@@ -88,5 +93,46 @@ public class HttpSettings implements Serializable
     public void setEnabled(boolean enabled)
     {
         this.enabled = enabled;
+    }
+
+    /**
+     * Enables non-http traffic on port 80.
+     *
+     * @return a <code>boolean</code> value
+     * @hibernate.property
+     * column="NON_HTTP_BLOCKED"
+     * not-null="true"
+     */
+    public boolean isNonHttpBlocked()
+    {
+        return nonHttpBlocked;
+    }
+
+    public void setNonHttpBlocked(boolean nonHttpBlocked)
+    {
+        this.nonHttpBlocked = nonHttpBlocked;
+    }
+
+    /**
+     * Maximum allowable header length.
+     *
+     * @return maximum characters allowed in a HTTP header.
+     * @hibernate.property
+     * column="MAX_HEADER_LENGTH"
+     * not-null="true"
+     */
+    public int getMaxHeaderLength()
+    {
+        return maxHeaderLength;
+    }
+
+    public void setMaxHeaderLength(int maxHeaderLength)
+    {
+        if (MIN_HEADER_LENGTH > maxHeaderLength
+            || MAX_HEADER_LENGTH < maxHeaderLength) {
+            throw new IllegalArgumentException("out of bounds: "
+                                               + maxHeaderLength);
+        }
+        this.maxHeaderLength = maxHeaderLength;
     }
 }
