@@ -23,7 +23,8 @@ build_prefix   ?= $(build_dist)
 build_lib_path  = ${build_dist}/usr/lib/mvvm
 build_inc_path  = ${build_dist}/usr/include
 
-java_include_base=/opt/java/include
+JAVA_HOME      ?= /opt/java
+java_include_base=$(JAVA_HOME)/include
 
 local_lib_path=lib
 
@@ -66,7 +67,6 @@ LD            = ld
 LN            = ln
 STRIP         = strip
 
-JAVA_HOME      ?= /opt/java
 ANT_HOME        = $(alpine_root)/../downloads/apache-ant-1.6.3
 ANTCONTRIB_VERSION = 0.6
 ANTCONTRIB_HOME = $(alpine_root)/../downloads/ant-contrib-$(ANTCONTRIB_VERSION)
