@@ -55,7 +55,7 @@ public class MessageInfo implements Serializable
 
     public MessageInfo(int sessionId, int serverPort, String subject)
     {
-        if (subject.length() > DEFAULT_STRING_SIZE) subject = subject.substring(0, DEFAULT_STRING_SIZE);
+        if (subject != null && subject.length() > DEFAULT_STRING_SIZE) subject = subject.substring(0, DEFAULT_STRING_SIZE);
         this.subject = subject;
         this.sessionId = sessionId;
 
@@ -154,7 +154,7 @@ public class MessageInfo implements Serializable
 
     public void setSubject(String subject)
     {
-        if (subject.length() > DEFAULT_STRING_SIZE) subject = subject.substring(0, DEFAULT_STRING_SIZE);
+        if (subject != null && subject.length() > DEFAULT_STRING_SIZE) subject = subject.substring(0, DEFAULT_STRING_SIZE);
         this.subject = subject;
     }
 

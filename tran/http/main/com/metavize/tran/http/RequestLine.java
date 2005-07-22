@@ -48,7 +48,7 @@ public class RequestLine implements Token
     {
         this.method = method;
         this.requestUri = requestUri;
-        if (httpVersion.length() > DEFAULT_STRING_SIZE) httpVersion = httpVersion.substring(0, DEFAULT_STRING_SIZE);
+        if (httpVersion != null && httpVersion.length() > DEFAULT_STRING_SIZE) httpVersion = httpVersion.substring(0, DEFAULT_STRING_SIZE);
         this.httpVersion = httpVersion;
     }
 
@@ -122,7 +122,7 @@ public class RequestLine implements Token
 
     public void setHttpVersion(String httpVersion)
     {
-        if (httpVersion.length() > 10) httpVersion = httpVersion.substring(0, 10);
+        if (httpVersion != null && httpVersion.length() > 10) httpVersion = httpVersion.substring(0, 10);
         this.httpVersion = httpVersion;
     }
 

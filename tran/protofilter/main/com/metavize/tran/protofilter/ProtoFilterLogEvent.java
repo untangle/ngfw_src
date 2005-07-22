@@ -38,7 +38,7 @@ public class ProtoFilterLogEvent extends LogEvent
     public ProtoFilterLogEvent(int sessionId, String protocol, boolean blocked)
     {
         this.sessionId = sessionId;
-        if (protocol.length() > DEFAULT_STRING_SIZE) protocol = protocol.substring(0, DEFAULT_STRING_SIZE);
+        if (protocol != null && protocol.length() > DEFAULT_STRING_SIZE) protocol = protocol.substring(0, DEFAULT_STRING_SIZE);
         this.protocol = protocol;
         this.blocked = blocked;
     }
@@ -76,7 +76,7 @@ public class ProtoFilterLogEvent extends LogEvent
 
     public void setProtocol(String protocol)
     {
-        if (protocol.length() > DEFAULT_STRING_SIZE) protocol = protocol.substring(0, DEFAULT_STRING_SIZE);
+        if (protocol != null && protocol.length() > DEFAULT_STRING_SIZE) protocol = protocol.substring(0, DEFAULT_STRING_SIZE);
         this.protocol = protocol;
     }
 

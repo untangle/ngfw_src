@@ -41,7 +41,7 @@ public class MessageInfoAddr implements Serializable
         this.kind = kind;
         if (addr.length() > MessageInfo.DEFAULT_STRING_SIZE) addr = addr.substring(0, MessageInfo.DEFAULT_STRING_SIZE);
         this.addr = addr;
-        if (personal.length() > MessageInfo.DEFAULT_STRING_SIZE) personal = personal.substring(0, MessageInfo.DEFAULT_STRING_SIZE);
+        if (personal != null && personal.length() > MessageInfo.DEFAULT_STRING_SIZE) personal = personal.substring(0, MessageInfo.DEFAULT_STRING_SIZE);
         this.personal = personal;
     }
 
@@ -95,7 +95,7 @@ public class MessageInfoAddr implements Serializable
 
     public void setPersonal(String personal)
     {
-        if (personal.length() > MessageInfo.DEFAULT_STRING_SIZE) personal = personal.substring(0,MessageInfo.DEFAULT_STRING_SIZE);
+        if (personal != null && personal.length() > MessageInfo.DEFAULT_STRING_SIZE) personal = personal.substring(0,MessageInfo.DEFAULT_STRING_SIZE);
         this.personal = personal;
     }
 
