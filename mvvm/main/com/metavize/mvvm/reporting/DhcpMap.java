@@ -125,7 +125,10 @@ public class DhcpMap
     private static final String INSERT_LEASE = 
         "INSERT INTO " + TABLE_NAME + " ( addr, name, start_time, end_time ) "+ 
         "values ( ?, ?, ?, ? )";
-    
+
+    private static final String TEST_INSTALLED =
+        " SELECT 1 FROM tr_nat_evt_dhcp_abs_leases";
+
     private DhcpMap()
     {
     }
@@ -161,6 +164,18 @@ public class DhcpMap
 
     public void generateAddressMap( Connection conn, Timestamp start, Timestamp end )
     {
+        boolean natTransformInstalled = true;
+        // Really all we have to know is, do the tables exist at all?  If they do, everything
+        // works fine, otherwise the queries give Errors.  So we just try a simple query here
+        // to know for sure.
+        try {
+            Statement stmt = conn.createStatement();
+            stmt.executeUpdate( TEST_INSTALLED );
+        } catch ( SQLException e ) {
+            System.out.println("no NAT transform install");
+            natTransformInstalled = false;
+        }
+
         /* */
         if ( start.after( end )) {
             logger.error( "Start(" + start + ")is after end(" + end +"), swapping????" );
@@ -178,9 +193,11 @@ public class DhcpMap
 
             Statement stmt = conn.createStatement();
             stmt.executeUpdate( CREATE_TEMPORARY_TABLE );
-            generateAbsoluteLeases( conn, start, end, map );
-            generateRelativeLeases( conn, start, end, map );
-            generateStaticLeases( conn, start, end, map );
+            if (natTransformInstalled) {
+                generateAbsoluteLeases( conn, start, end, map );
+                generateRelativeLeases( conn, start, end, map );
+                generateStaticLeases( conn, start, end, map );
+            }
             generateManualMap( conn, start, end, map );
             writeLeases( conn, map );
         } catch ( SQLException e ) {
