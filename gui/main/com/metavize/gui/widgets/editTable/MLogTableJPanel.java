@@ -30,6 +30,8 @@ import java.awt.*;
  * @author  inieves
  */
 public class MLogTableJPanel extends javax.swing.JPanel {
+
+    protected static MLogTableJPanel lastMLogTableJPanel;
     
     protected Transform logTransform;
 
@@ -203,34 +205,28 @@ public class MLogTableJPanel extends javax.swing.JPanel {
 
     }//GEN-END:initComponents
 
-    private StreamThread streamThread;
+    private RefreshThread refreshThread;
     
     private void streamingJToggleButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_streamingJToggleButtonActionPerformed
        if(streamingJToggleButton.isSelected()){
+	   if( (lastMLogTableJPanel != null) && (lastMLogTableJPanel != this) && (lastMLogTableJPanel.streamingJToggleButton.isSelected()) )
+	       lastMLogTableJPanel.streamingJToggleButton.doClick();
            refreshLogJButton.setEnabled(false); 
-           streamThread = new StreamThread();
+           refreshThread = new RefreshThread(true);
            streamingJToggleButton.setText("<html><center><b>Stop</b> Auto-refresh</center></html>");
+	   lastMLogTableJPanel = this;
        }
        else{
            refreshLogJButton.setEnabled(true);
-           streamThread.interrupt();
+           refreshThread.interrupt();
            streamingJToggleButton.setText("<html><center><b>Start</b> Auto-refresh</center></html>");
        }
     }//GEN-LAST:event_streamingJToggleButtonActionPerformed
 
     private void refreshLogJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refreshLogJButtonActionPerformed
-	try{
-	    getTableModel().doRefresh(null);
-	}
-	catch(Exception e){
-	    try{
-		Util.handleExceptionWithRestart("Error refreshing log", e);
-	    }
-	    catch(Exception f){
-		Util.handleExceptionNoRestart("Error refreshing log", f);
-		new RefreshLogFailureDialog( logTransform.getTransformDesc().getDisplayName() );
-	    }
-	}
+	if( (lastMLogTableJPanel != null) && (lastMLogTableJPanel != this) && (lastMLogTableJPanel.streamingJToggleButton.isSelected()) )
+	    lastMLogTableJPanel.streamingJToggleButton.doClick();
+	new RefreshThread(false);
     }//GEN-LAST:event_refreshLogJButtonActionPerformed
 
     
@@ -246,27 +242,43 @@ public class MLogTableJPanel extends javax.swing.JPanel {
     // End of variables declaration//GEN-END:variables
     
 
-    class StreamThread extends Thread {
-	public StreamThread(){
+    class RefreshThread extends Thread {
+	private boolean isAutoRefresh;
+	public RefreshThread(boolean isAutoRefresh){
+	    super("MVCLIENT-MLogTableJPanel.RefreshThread: " + logTransform.getTransformDesc().getDisplayName());
+	    this.isAutoRefresh = isAutoRefresh;
+	    if(!isAutoRefresh){
+		MLogTableJPanel.this.refreshLogJButton.setEnabled(false);
+		MLogTableJPanel.this.refreshLogJButton.setText("(refreshing)");
+	    }
 	    this.start();
 	}
 	
 	public void run(){
 	    try{
-		while(true){
+		do{
 		    getTableModel().doRefresh(null);
-		    this.sleep(STREAM_SLEEP_MILLIS);
+		    if(isAutoRefresh)
+			this.sleep(STREAM_SLEEP_MILLIS);
 		}
+		while(isAutoRefresh);
 	    }
 	    catch(InterruptedException e){
 		// this is normal, means the thread was stopped by a button press
 	    }
 	    catch(Exception f){
 		try{
-		    Util.handleExceptionWithRestart("Error streaming event log", f);
+		    Util.handleExceptionWithRestart("Error refreshing event log", f);
 		}
 		catch(Exception g){
-		    Util.handleExceptionNoRestart("Error streaming event log", g);
+		    Util.handleExceptionNoRestart("Error refreshing event log", g);
+		    new RefreshLogFailureDialog( logTransform.getTransformDesc().getDisplayName() );
+		}
+	    }
+	    finally{
+		if(!isAutoRefresh){
+		    MLogTableJPanel.this.refreshLogJButton.setEnabled(true);
+		    MLogTableJPanel.this.refreshLogJButton.setText("<html><b>Refresh</b> Log</html>");
 		}
 	    }
 	}
