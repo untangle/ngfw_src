@@ -124,6 +124,17 @@ public class TokenAdaptor extends AbstractEventHandler
     @Override
     public void handleTCPFinalized(TCPSessionEvent e) throws MPipeException
     {
+        TCPSession session = (TCPSession)e.session();
+        HandlerDesc handlerDesc = getHandlerDesc(session);
+
+        try {
+            handlerDesc.handler.handleFinalized();
+        } catch (TokenException exn) {
+            logger.warn("resetting connection", exn);
+            session.resetClient();
+            session.resetServer();
+        }
+
         super.handleTCPFinalized(e);
         removeHandler(e.session());
     }

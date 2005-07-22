@@ -19,6 +19,7 @@ public interface TokenHandler
     void handleClientFin() throws TokenException;
     void handleServerFin() throws TokenException;
     void handleTimer() throws TokenException;
+    void handleFinalized() throws TokenException;
 
     TokenResult releaseFlush();
 }

@@ -51,6 +51,8 @@ public abstract class AbstractTokenHandler implements TokenHandler
         return TokenResult.NONE;
     }
 
+    public void handleFinalized() throws TokenException { }
+
     // protected methods ------------------------------------------------------
 
     protected TCPSession getSession()
