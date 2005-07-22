@@ -280,6 +280,7 @@ cat >> $main_index <<EOF
               <tr>
 EOF
 
+# XXX This should always be true:
     if [ -f reporting-transform/sum-daily.html ]; then
 	cat >> $main_index <<EOF
               <td width="200px" valign="top">

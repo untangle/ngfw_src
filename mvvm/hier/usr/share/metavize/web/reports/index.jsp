@@ -1,19 +1,17 @@
 <%@ page language="java" import="com.metavize.mvvm.*, com.metavize.mvvm.client.*, com.metavize.mvvm.security.Tid, com.metavize.mvvm.tran.*, com.metavize.mvvm.tapi.*, com.metavize.mvvm.util.SessionUtil, org.apache.log4j.helpers.AbsoluteTimeDateFormat, java.util.Properties, java.net.URL, java.io.PrintWriter, javax.naming.*" %>
 
-<%
-  ServletContext sc = getServletContext();
-  if (sc.getResource("/current") == null) {
-
-  MvvmRemoteContext mvvmRemoteContext = MvvmRemoteContextFactory.localLogin();
-  TransformManager transformManager = mvvmRemoteContext.transformManager();
-  Tid[] tids = transformManager.transformInstances("reporting-transform");
-  boolean reportingInstalled;
-  if(tids == null)
-	reportingInstalled = false;
-  else if(tids.length == 0)
-	reportingInstalled = false;
-  else
-	reportingInstalled = true;
+<% 
+ServletContext sc = getServletContext();
+MvvmRemoteContext mvvm = (MvvmRemoteContext) sc.getAttribute("mvvm");
+if (mvvm == null) {
+    mvvm = MvvmRemoteContextFactory.localLogin();
+    sc.setAttribute("mvvm", mvvm);
+}
+  ReportingManager reportingManager = mvvm.reportingManager();
+ 
+  boolean reportingInstalled = reportingManager.isReportingEnabled();
+  boolean reportsAvailable = reportingManager.isReportsAvailable();
+  if (!reportsAvailable) {
 %>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -190,8 +188,8 @@ h4 {
 			EdgeReport is not installed into your rack.<br/>
 			Reports are only generated when EdgeReport is running.
 		<% } else{ %>
-			Reports are generated every night automatically.<br/>
-			Please check back tomorrow evening.
+                	<i>No reports are available, please check back tomorrow morning.</i><br/>
+                	<i>Reports are generated every night automatically.</i>
 		<% } %>
 
 	    </i></b>
