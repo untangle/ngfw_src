@@ -46,6 +46,11 @@ public abstract class AbstractTokenHandler implements TokenHandler
         session.shutdownClient();
     }
 
+    public TokenResult releaseFlush()
+    {
+        return TokenResult.NONE;
+    }
+
     // protected methods ------------------------------------------------------
 
     protected TCPSession getSession()

@@ -25,6 +25,7 @@ public class TokenResult
     // XXX probably better realized as subclasses
     private final boolean streamer;
 
+    // XXX convert to list?
     // XXX this is fugly,
     private final Token[] s2c;
     private final Token[] c2s;

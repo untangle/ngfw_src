@@ -257,11 +257,7 @@ public class TokenAdaptor extends AbstractEventHandler
 
         TokenResult tr;
         try {
-            if (s2c) {
-                tr = handler.handleServerToken(token);
-            } else {
-                tr = handler.handleClientToken(token);
-            }
+            tr = doToken(session, s2c, pipeline, handler, token);
         } catch (TokenException exn) {
             logger.warn("resetting connection", exn);
             session.resetClient();
@@ -294,6 +290,61 @@ public class TokenAdaptor extends AbstractEventHandler
                 logger.debug("  to server: " + sr[i]);
             }
             return new TCPChunkResult(cr, sr, b);
+        }
+    }
+
+    public TokenResult doToken(TCPSession session, boolean s2c,
+                               Pipeline pipeline, TokenHandler handler,
+                               Token token)
+        throws TokenException
+    {
+        if (token instanceof Release) {
+            Release release = (Release)token;
+
+            TokenResult utr = handler.releaseFlush();
+
+            session.release();
+
+            if (utr.isStreamer()) {
+                if (s2c) {
+                    TokenStreamer cStm = utr.c2sStreamer();
+
+                    TokenStreamer sStm = new ReleaseTokenStreamer
+                        (pipeline, utr.s2cStreamer(), release);
+
+                    return new TokenResult(sStm, cStm);
+                } else {
+                    TokenStreamer cStm = new ReleaseTokenStreamer
+                        (pipeline, utr.c2sStreamer(), release);
+                    TokenStreamer sStm = utr.s2cStreamer();
+
+                    return new TokenResult(sStm, cStm);
+                }
+            } else {
+                if (s2c) {
+                    Token[] cTok = utr.c2sTokens();
+
+                    Token[] sTokOrig = utr.s2cTokens();
+                    Token[] sTok = new Token[sTokOrig.length + 1];
+                    System.arraycopy(sTokOrig, 0, sTok, 0, sTokOrig.length);
+                    sTok[sTok.length - 1] = release;
+
+                    return new TokenResult(sTok, cTok);
+                } else {
+                    Token[] cTokOrig = utr.c2sTokens();
+                    Token[] cTok = new Token[cTokOrig.length + 1];
+                    System.arraycopy(cTokOrig, 0, cTok, 0, cTokOrig.length);
+                    cTok[cTok.length - 1] = release;
+                    Token[] sTok = utr.s2cTokens();
+                    return new TokenResult(sTok, cTok);
+                }
+            }
+        } else {
+            if (s2c) {
+                return handler.handleServerToken(token);
+            } else {
+                return handler.handleClientToken(token);
+            }
         }
     }
 

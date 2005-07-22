@@ -275,8 +275,7 @@ public class CasingAdaptor extends AbstractEventHandler
 
         UnparseResult ur;
         try {
-            Unparser u = casing.unparser();
-            ur = u.unparse(tok);
+            ur = unparseToken(s, casing, tok);
         } catch (Exception exn) { /* not just UnparseException */
             logger.error("internal error, closing connection", exn);
             if (s2c) {
@@ -319,6 +318,32 @@ public class CasingAdaptor extends AbstractEventHandler
         }
     }
 
+    private UnparseResult unparseToken(TCPSession s, Casing c, Token token)
+        throws UnparseException
+    {
+        Unparser u = c.unparser();
+
+        if (token instanceof Release) {
+            Release release = (Release)token;
+
+            s.release();
+            UnparseResult ur = u.releaseFlush();
+            if (ur.isStreamer()) {
+                TCPStreamer ts = new ReleaseTcpStreamer
+                    (ur.getTcpStreamer(), release);
+                    return new UnparseResult(ts);
+            } else {
+                ByteBuffer[] orig = ur.result();
+                ByteBuffer[] r = new ByteBuffer[orig.length + 1];
+                System.arraycopy(orig, 0, r, 0, orig.length);
+                r[r.length - 1] = release.getBytes();
+                return new UnparseResult(r);
+            }
+        } else {
+            return u.unparse(token);
+        }
+    }
+
     private IPDataResult parse(TCPChunkEvent e, boolean s2c, boolean last)
     {
         TCPSession s = e.session();
@@ -327,26 +352,20 @@ public class CasingAdaptor extends AbstractEventHandler
         Pipeline pipeline = casingDesc.pipeline;
 
         ParseResult pr;
+        ByteBuffer buf = e.chunk();
+        ByteBuffer dup = buf.duplicate();
+        Parser p = casing.parser();
         try {
-            Parser p = casing.parser();
             if (last) {
-                pr = p.parseEnd(e.chunk());
+                pr = p.parseEnd(buf);
             } else {
-                pr = p.parse(e.chunk());
+                pr = p.parse(buf);
             }
-        } catch (Exception exn) { /* not just the ParseException */
-            logger.error("closing connection", exn);
-            if (s2c) {
-                // XXX We don't have a good handle on this
-                s.resetClient();
-                s.resetServer();
-            } else {
-                // XXX We don't have a good handle on this
-                s.shutdownServer();
-                s.resetClient();
-            }
-            logger.debug("unparse returning DO_NOT_PASS");
-            return IPDataResult.DO_NOT_PASS;
+        } catch (Exception exn) {
+            // XXX make configurable
+            logger.warn("parse exception, releasing session", exn);
+            s.release();
+            pr = new ParseResult(new Release(dup));
         }
 
         if (pr.isStreamer()) {

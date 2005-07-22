@@ -31,6 +31,13 @@ public abstract class AbstractUnparser implements Unparser
             + session.id() + ">";
     }
 
+    // Unparser methods -------------------------------------------------------
+
+    public UnparseResult releaseFlush()
+    {
+        return UnparseResult.NONE;
+    }
+
     // protected methods ------------------------------------------------------
 
     protected boolean isClientSide()

@@ -17,6 +17,8 @@ import com.metavize.mvvm.tapi.event.TCPStreamer;
 
 public class UnparseResult
 {
+    public static final UnparseResult NONE = new UnparseResult();
+
     private static final ByteBuffer[] BYTE_BUFFER_PROTO = new ByteBuffer[0];
     // XXX make List<ByteBuffer> when no XDoclet
     private final ByteBuffer[] result;
@@ -41,7 +43,7 @@ public class UnparseResult
         this.tcpStreamer = tcpStreamer;
     }
 
-    public UnparseResult()
+    private UnparseResult()
     {
         this.result = BYTE_BUFFER_PROTO;
         this.tcpStreamer = null;

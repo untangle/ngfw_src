@@ -59,6 +59,8 @@ public class SpywareHttpHandler extends HttpStateMachine
     private RequestLine responseRequest;
     private StatusLine statusLine;
 
+    // constructors -----------------------------------------------------------
+
     SpywareHttpHandler(TCPSession session, SpywareImpl transform)
     {
         super(session);
@@ -67,6 +69,9 @@ public class SpywareHttpHandler extends HttpStateMachine
         this.session = session;
     }
 
+    // HttpStateMachine methods -----------------------------------------------
+
+    @Override
     protected TokenResult doRequestLine(RequestLine requestLine)
     {
         logger.debug("got request line");
@@ -82,6 +87,7 @@ public class SpywareHttpHandler extends HttpStateMachine
         return new TokenResult(null, new Token[] { requestLine });
     }
 
+    @Override
     protected TokenResult doRequestHeader(Header requestHeader)
     {
         logger.debug("got request header");
@@ -102,18 +108,21 @@ public class SpywareHttpHandler extends HttpStateMachine
         return new TokenResult(null, new Token[] { h });
     }
 
+    @Override
     protected TokenResult doRequestBody(Chunk chunk)
     {
         logger.debug("got request body");
         return new TokenResult(null, new Token[] { chunk });
     }
 
+    @Override
     protected TokenResult doRequestBodyEnd(EndMarker endMarker)
     {
         logger.debug("got request body end");
         return new TokenResult(null, new Token[] { endMarker });
     }
 
+    @Override
     protected TokenResult doStatusLine(StatusLine statusLine)
     {
         this.statusLine = statusLine;
@@ -127,6 +136,7 @@ public class SpywareHttpHandler extends HttpStateMachine
         return new TokenResult(new Token[] { statusLine }, null);
     }
 
+    @Override
     protected TokenResult doResponseHeader(Header header)
     {
         logger.debug("got response header");
@@ -143,6 +153,7 @@ public class SpywareHttpHandler extends HttpStateMachine
         return new TokenResult(new Token[] { h }, null);
     }
 
+    @Override
     protected TokenResult doResponseBody(Chunk chunk)
     {
         logger.debug("got response body");
@@ -152,10 +163,19 @@ public class SpywareHttpHandler extends HttpStateMachine
         return new TokenResult(new Token[] { chunk }, null);
     }
 
+    @Override
     protected TokenResult doResponseBodyEnd(EndMarker endMarker)
     {
         logger.debug("got response body end");
         return new TokenResult(new Token[] { endMarker }, null);
+    }
+
+    // TokenHandler methods ---------------------------------------------------
+
+    @Override
+    public TokenResult releaseFlush()
+    {
+        return TokenResult.NONE;
     }
 
     // cookie stuff -----------------------------------------------------------

@@ -21,20 +21,24 @@ import com.metavize.tran.token.TokenResult;
 
 public abstract class HttpStateMachine extends AbstractTokenHandler
 {
-    private static final int REQ_START_STATE = 0;
-    private static final int REQ_LINE_STATE = 1;
-    private static final int REQ_HEADER_STATE = 2;
-    private static final int REQ_BODY_STATE = 3;
-    private static final int REQ_BODY_END_STATE = 4;
+    protected enum ClientState {
+        REQ_START_STATE,
+        REQ_LINE_STATE,
+        REQ_HEADER_STATE,
+        REQ_BODY_STATE,
+        REQ_BODY_END_STATE
+    };
 
-    private static final int RESP_START_STATE = 5;
-    private static final int RESP_STATUS_LINE_STATE = 6;
-    private static final int RESP_HEADER_STATE = 7;
-    private static final int RESP_BODY_STATE = 8;
-    private static final int RESP_BODY_END_STATE = 9;
+    protected enum ServerState {
+        RESP_START_STATE,
+        RESP_STATUS_LINE_STATE,
+        RESP_HEADER_STATE,
+        RESP_BODY_STATE,
+        RESP_BODY_END_STATE
+    };
 
-    private int clientState = REQ_START_STATE;
-    private int serverState = RESP_START_STATE;
+    private ClientState clientState = ClientState.REQ_START_STATE;
+    private ServerState serverState = ServerState.RESP_START_STATE;
 
     // constructors -----------------------------------------------------------
 
@@ -43,7 +47,7 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
         super(session);
     }
 
-    // protected abstract -----------------------------------------------------
+    // protected abstract methods ---------------------------------------------
 
     // XXX the default impls should pass through?
 
@@ -56,6 +60,18 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
     protected abstract TokenResult doResponseHeader(Header h);
     protected abstract TokenResult doResponseBody(Chunk c);
     protected abstract TokenResult doResponseBodyEnd(EndMarker em);
+
+    // protected methods ------------------------------------------------------
+
+    protected ClientState getClientState()
+    {
+        return clientState;
+    }
+
+    protected ServerState getServerState()
+    {
+        return serverState;
+    }
 
     // AbstractTokenHandler methods -------------------------------------------
 
@@ -113,31 +129,31 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
 
     // private methods --------------------------------------------------------
 
-    private int nextClientState(Object o)
+    private ClientState nextClientState(Object o)
     {
         switch (clientState) {
         case REQ_START_STATE:
-            return REQ_LINE_STATE;
+            return ClientState.REQ_LINE_STATE;
 
         case REQ_LINE_STATE:
-            return REQ_HEADER_STATE;
+            return ClientState.REQ_HEADER_STATE;
 
         case REQ_HEADER_STATE:
             if (o instanceof Chunk) {
-                return REQ_BODY_STATE;
+                return ClientState.REQ_BODY_STATE;
             } else {
-                return REQ_BODY_END_STATE;
+                return ClientState.REQ_BODY_END_STATE;
             }
 
         case REQ_BODY_STATE:
             if (o instanceof Chunk) {
-                return REQ_BODY_STATE;
+                return ClientState.REQ_BODY_STATE;
             } else {
-                return REQ_BODY_END_STATE;
+                return ClientState.REQ_BODY_END_STATE;
             }
 
         case REQ_BODY_END_STATE:
-            return REQ_LINE_STATE;
+            return ClientState.REQ_LINE_STATE;
 
         default:
             throw new IllegalStateException("Illegal state: " + clientState);
@@ -145,31 +161,31 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
     }
 
 
-    private int nextServerState(Object o)
+    private ServerState nextServerState(Object o)
     {
         switch (serverState) {
         case RESP_START_STATE:
-            return RESP_STATUS_LINE_STATE;
+            return ServerState.RESP_STATUS_LINE_STATE;
 
         case RESP_STATUS_LINE_STATE:
-            return RESP_HEADER_STATE;
+            return ServerState.RESP_HEADER_STATE;
 
         case RESP_HEADER_STATE:
             if (o instanceof Chunk) {
-                return RESP_BODY_STATE;
+                return ServerState.RESP_BODY_STATE;
             } else {
-                return RESP_BODY_END_STATE;
+                return ServerState.RESP_BODY_END_STATE;
             }
 
         case RESP_BODY_STATE:
             if (o instanceof Chunk) {
-                return RESP_BODY_STATE;
+                return ServerState.RESP_BODY_STATE;
             } else {
-                return RESP_BODY_END_STATE;
+                return ServerState.RESP_BODY_END_STATE;
             }
 
         case RESP_BODY_END_STATE:
-            return RESP_STATUS_LINE_STATE;
+            return ServerState.RESP_STATUS_LINE_STATE;
 
         default:
             throw new IllegalStateException("Illegal state: " + serverState);

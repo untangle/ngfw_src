@@ -66,6 +66,7 @@ public class HttpBlockerHandler extends HttpStateMachine
 
     // HttpStateMachine methods -----------------------------------------------
 
+    @Override
     protected TokenResult doRequestLine(RequestLine requestLine)
     {
         logger.debug("in doRequestLine: " + requestLine);
@@ -73,9 +74,10 @@ public class HttpBlockerHandler extends HttpStateMachine
         this.requestLine = requestLine;
         requests.add(requestLine);
 
-        return new TokenResult((Token[])null, null);
+        return TokenResult.NONE;
     }
 
+    @Override
     protected TokenResult doRequestHeader(Header requestHeader)
     {
         logger.debug("in doRequestHeader(): " + requestHeader);
@@ -100,6 +102,7 @@ public class HttpBlockerHandler extends HttpStateMachine
         }
     }
 
+    @Override
     protected TokenResult doRequestBody(Chunk c)
     {
         logger.debug("in doRequestBody(): " + c);
@@ -111,6 +114,7 @@ public class HttpBlockerHandler extends HttpStateMachine
         }
     }
 
+    @Override
     protected TokenResult doRequestBodyEnd(EndMarker endMarker)
     {
         logger.debug("in doRequestBodyEnd: " + endMarker);
@@ -130,6 +134,7 @@ public class HttpBlockerHandler extends HttpStateMachine
         }
     }
 
+    @Override
     protected TokenResult doStatusLine(StatusLine statusLine)
     {
         logger.debug("in doStatusLine: " + statusLine);
@@ -143,6 +148,7 @@ public class HttpBlockerHandler extends HttpStateMachine
         return TokenResult.NONE;
     }
 
+    @Override
     protected TokenResult doResponseHeader(Header header)
     {
         logger.debug("in doResponseHeader: " + header);
@@ -168,6 +174,7 @@ public class HttpBlockerHandler extends HttpStateMachine
         }
     }
 
+    @Override
     protected TokenResult doResponseBody(Chunk c)
     {
         logger.debug("in doResponseBody: " + c);
@@ -179,6 +186,7 @@ public class HttpBlockerHandler extends HttpStateMachine
         }
     }
 
+    @Override
     protected TokenResult doResponseBodyEnd(EndMarker em)
     {
         logger.debug("in doResponseBodyEnd: " + em);
@@ -198,6 +206,17 @@ public class HttpBlockerHandler extends HttpStateMachine
 
             Token[] r = (Token[])l.toArray(new Token[l.size()]);
             return new TokenResult(r, null);
+        }
+    }
+
+    @Override
+    public TokenResult releaseFlush()
+    {
+        // XXX we do not even attempt to deal with outstanding block pages
+        if (ClientState.REQ_LINE_STATE == getClientState()) {
+            return new TokenResult(null, new Token[] { requestLine });
+        } else {
+            return TokenResult.NONE;
         }
     }
 

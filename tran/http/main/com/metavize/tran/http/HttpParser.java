@@ -342,6 +342,40 @@ public class HttpParser extends AbstractParser
         return new ParseResult(l, b);
     }
 
+    private boolean completeLine(ByteBuffer b)
+    {
+        return b.get(b.limit() - 1) == LF;
+    }
+
+    private boolean completeHeader(ByteBuffer b)
+    {
+        ByteBuffer d = b.duplicate();
+
+        if (d.remaining() >= 4) {
+            d.position(d.limit() - 4);
+        }
+
+        byte c = ' ';
+        while (CR != c && LF != c) {
+            if (d.hasRemaining()) {
+                c = d.get();
+            } else {
+                return false;
+            }
+        }
+
+        if (LF == c || CR == c && d.hasRemaining() && LF == d.get()) {
+            if (d.hasRemaining()) {
+                c = d.get();
+                return LF == c || CR == c && d.hasRemaining() && LF == d.get();
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
     public ParseResult parseEnd(ByteBuffer buf) throws ParseException
     {
         if (buf.hasRemaining()) {
@@ -420,40 +454,6 @@ public class HttpParser extends AbstractParser
     }
 
     // private methods --------------------------------------------------------
-
-    private boolean completeLine(ByteBuffer b)
-    {
-        return b.get(b.limit() - 1) == LF;
-    }
-
-    private boolean completeHeader(ByteBuffer b)
-    {
-        ByteBuffer d = b.duplicate();
-
-        if (d.remaining() >= 4) {
-            d.position(d.limit() - 4);
-        }
-
-        byte c = ' ';
-        while (CR != c && LF != c) {
-            if (d.hasRemaining()) {
-                c = d.get();
-            } else {
-                return false;
-            }
-        }
-
-        if (LF == c || CR == c && d.hasRemaining() && LF == d.get()) {
-            if (d.hasRemaining()) {
-                c = d.get();
-                return LF == c || CR == c && d.hasRemaining() && LF == d.get();
-            } else {
-                return false;
-            }
-        } else {
-            return false;
-        }
-    }
 
     private Object firstLine(ByteBuffer data) throws ParseException
     {

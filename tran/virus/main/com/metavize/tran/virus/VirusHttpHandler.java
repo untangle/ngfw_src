@@ -184,6 +184,14 @@ class VirusHttpHandler extends HttpStateMachine
         }
     }
 
+    // TokenHandler methods ---------------------------------------------------
+
+    @Override
+    public TokenResult releaseFlush()
+    {
+        return TokenResult.NONE;
+    }
+
     // private methods --------------------------------------------------------
 
     private TokenResult scanFile()

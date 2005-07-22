@@ -86,6 +86,11 @@ class HttpUnparser extends AbstractUnparser
         }
     }
 
+    public UnparseResult releaseFlush()
+    {
+        return dequeueOutput();
+    }
+
     private UnparseResult statusLine(StatusLine s)
     {
         logger.debug(sessStr + " status-line");

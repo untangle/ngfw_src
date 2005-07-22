@@ -34,6 +34,7 @@ public class Chunk implements Token
     }
 
     // accessors --------------------------------------------------------------
+
     /**
      * This method directly returns the internal ByteBuffer,
      * so changes to the returned ByteBuffer <b>will</b>
@@ -45,6 +46,7 @@ public class Chunk implements Token
     }
 
     // Token methods ----------------------------------------------------------
+
     /**
      * Returns a duplicate of the internal ByteBuffer, allowing
      * the caller to modify the returned ByteBuffer without concern

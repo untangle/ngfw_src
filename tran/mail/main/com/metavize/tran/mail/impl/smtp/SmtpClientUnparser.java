@@ -14,18 +14,9 @@ package com.metavize.tran.mail.impl.smtp;
 import static com.metavize.tran.util.Ascii.*;
 import static com.metavize.tran.util.BufferUtil.*;
 
-import com.metavize.tran.mail.papi.smtp.*;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
-import java.util.LinkedList;
-import java.util.List;
-
 import com.metavize.mvvm.*;
 import com.metavize.mvvm.tapi.*;
+import com.metavize.tran.mail.papi.smtp.*;
 import com.metavize.tran.token.*;
 import com.metavize.tran.util.*;
 import org.apache.log4j.Logger;
@@ -36,7 +27,7 @@ public class SmtpClientUnparser
   private final Logger m_logger = Logger.getLogger(SmtpClientUnparser.class);
 
   private final SmtpCasing m_parentCasing;
-  
+
   public SmtpClientUnparser(TCPSession session,
     SmtpCasing parent) {
     super(session, true);
@@ -50,7 +41,7 @@ public class SmtpClientUnparser
     m_logger.debug("Token of class " + token.getClass().getName());
     if(token instanceof MetadataToken) {
       //Don't pass along metadata tokens
-      return new UnparseResult();
+      return UnparseResult.NONE;
     }
     if(token instanceof Response) {
       Response resp = (Response) token;
@@ -59,12 +50,12 @@ public class SmtpClientUnparser
     }
 
     m_parentCasing.traceUnparse(token.getBytes());
-    return new UnparseResult(token.getBytes());    
+    return new UnparseResult(token.getBytes());
   }
-  
+
   public TokenStreamer endSession() {
     m_logger.debug("End Session");
     m_parentCasing.endSession(false);
     return null;
-  }                           
+  }
 }

@@ -11,8 +11,37 @@
 
 package com.metavize.tran.token;
 
+/**
+ * An Unparser transforms tokens into bytes.
+ *
+ * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
+ * @version 1.0
+ */
 public interface Unparser
 {
+    /**
+     * Transform tokens back into bytes.
+     *
+     * @param token next token.
+     * @return UnparseResult containing byte content of token.
+     * @exception UnparseException on unparse error.
+     */
     UnparseResult unparse(Token token) throws UnparseException;
+
+    /**
+     * Called when a session is being released. The unparser should
+     * return any queued data.
+     *
+     * @return Unparse result containing queued data.
+     * @exception UnparseException if thrown, it will cause the
+     * session to be closed.
+     */
+    UnparseResult releaseFlush() throws UnparseException;
+
+    /**
+     * On session end, the unparser has an opportunity to stream data.
+     *
+     * @return TokenStreamer that streams the final data.
+     */
     TokenStreamer endSession();
 }
