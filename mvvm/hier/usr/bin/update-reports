@@ -6,7 +6,7 @@ JAVA_HOME=${JAVA_HOME:-/opt/java}
 
 CLASSPATH="@MVVM_HOME@/lib/mvvm.jar"
 
-reporting_tid=$(@USR_BIN@/mcli instances | grep running | grep reporting-transform | awk '{print $1}')
+is_reporting_enabled=$(@USR_BIN@/mcli isReportingEnabled)
 mars=$(@USR_BIN@/mcli instances | grep running | awk '{print $2}' | sed 's|^\(.*\)$|@MVVM_TOOLBOX@/\1.mar|')
 
 for f in @THIRDPARTY_LIB@/*jar ; do
@@ -25,10 +25,10 @@ rm -f $REPORT_DIR/current
 rm -f $REPORT_DIR/index.html
 
 # Only generate today's reports if the reporting transform is running
-if [ ! -z $reporting_tid ]; then
+if [ $is_reporting_enabled == 'true' ]; then
     $JAVA_HOME/bin/java -Xmx512m \
         -Dlog4j.configuration=file:@MVVM_HOME@/conf/log4j-reporter.xml \
-        com.metavize.mvvm.reporting.Reporter $REPORT_DIR 32 $mars
+        com.metavize.mvvm.reporting.Reporter -o $REPORT_DIR -d 32 "$@" $mars
 
     cp -pr $REPORT_DIR/images $REPORT_DIR/current
 
