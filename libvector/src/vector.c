@@ -428,13 +428,15 @@ static int  _vector_handle_src_event (vector_t* vec, relay_t* relay, int revents
      */
     if ( revents & MVPOLLERR ) {
         return _vector_handle_src_error_event( vec, relay );
+    } else if ( revents & MVPOLLIN ) {
+        return _vector_handle_src_input_event( vec, relay );
     } else if ( revents & MVPOLLHUP ) {
         return _vector_handle_src_shutdown_event( vec, relay );
-    } else if ( MVPOLLIN ) {
+    } else {
+        errlog( ERR_WARNING, "Got source event with invalid event mask: 0x%08x", revents );        
+        /* do the default thing anyway */
         return _vector_handle_src_input_event( vec, relay );
-    } 
-
-    return errlog( ERR_CRITICAL, "Got source event with invalid event mask: 0x%08x", revents );        
+    }
 }
 
 static int  _vector_handle_src_input_event    ( vector_t* vec, relay_t* relay )
