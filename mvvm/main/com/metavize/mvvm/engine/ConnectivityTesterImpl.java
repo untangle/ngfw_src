@@ -11,20 +11,19 @@
 
 package com.metavize.mvvm.engine;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.Random;
 
+import com.metavize.mvvm.ConnectivityTester;
 import org.apache.log4j.Logger;
 
-import com.metavize.mvvm.ConnectivityTester;
-
-public class ConnectivityTesterImpl implements ConnectivityTester
-{    
+class ConnectivityTesterImpl implements ConnectivityTester
+{
     private static final Logger logger = Logger.getLogger( ConnectivityTesterImpl.class );
-    
+
     /* Name of the host to lookup */
     private static final String TEST_HOSTNAME_BASE    = "release";
     private static final String TEST_HOSTNAME_DOMAIN  = "metavize.com";
@@ -34,7 +33,7 @@ public class ConnectivityTesterImpl implements ConnectivityTester
 
     /* Address to use if the DNS lookup fails */
     private static final InetAddress BACKUP_ADDRESS;
-    
+
     /* Port the TCP test will try to connect to */
     private static final int TCP_TEST_PORT = 80;
 
@@ -43,9 +42,9 @@ public class ConnectivityTesterImpl implements ConnectivityTester
     private static final int TCP_TEST_TIMEOUT_MS = 10000;
 
     private static final Random RANDOM = new Random();
-    
+
     private static ConnectivityTester INSTANCE   = new ConnectivityTesterImpl();
-    
+
     /* Address of release */
     private InetAddress address;
 
@@ -57,7 +56,7 @@ public class ConnectivityTesterImpl implements ConnectivityTester
         /* Returns the lookuped address if DNS is working, or null if it is not */
         return ConnectionStatus.makeConnectionStatus( isDnsWorking(), isTcpWorking());
     }
-    
+
     /**
      * Test that DNS is working
      */
@@ -67,7 +66,7 @@ public class ConnectivityTesterImpl implements ConnectivityTester
         Thread test = new Thread( dnsTest );
 
         test.start();
-        
+
         try {
             test.join( DNS_TEST_TIMEOUT_MS );
             if ( test.isAlive()) {
@@ -78,7 +77,7 @@ public class ConnectivityTesterImpl implements ConnectivityTester
         }
 
         this.address = dnsTest.address;
-        
+
         return dnsTest.isWorking;
     }
 
@@ -95,11 +94,11 @@ public class ConnectivityTesterImpl implements ConnectivityTester
         }
 
         TcpTest tcpTest = new TcpTest( testAddress );
-        
+
         Thread test = new Thread( tcpTest );
-        
+
         test.start();
-        
+
         try {
             test.join( TCP_TEST_TIMEOUT_MS );
             if ( test.isAlive()) {
@@ -108,7 +107,7 @@ public class ConnectivityTesterImpl implements ConnectivityTester
         } catch( InterruptedException e ) {
             logger.error( "Interrupted while testing TCP connectivity.", e );
         }
-        
+
         return tcpTest.isWorking;
     }
 
@@ -119,14 +118,14 @@ public class ConnectivityTesterImpl implements ConnectivityTester
 
     static {
         InetAddress address = null;
-        
+
         try {
             address = InetAddress.getByName( BACKUP_ADDRESS_STRING );
         } catch ( UnknownHostException e ) {
             System.err.println( "!!!! This should never happen" + e );
             address = null;
         }
-        
+
         BACKUP_ADDRESS = address;
     }
 
@@ -138,8 +137,8 @@ public class ConnectivityTesterImpl implements ConnectivityTester
         public DnsTest()
         {
         }
-        
-        public void run() 
+
+        public void run()
         {
             /* This always works after the first time, so it doesn't actually do anything */
             try {
@@ -154,7 +153,7 @@ public class ConnectivityTesterImpl implements ConnectivityTester
             }
 
             this.isWorking = false;
-            
+
             /* Try a random host that doesn't exist.    *
              * the negative response should be returned *
              * immediately */
@@ -175,13 +174,13 @@ public class ConnectivityTesterImpl implements ConnectivityTester
     {
         private final InetAddress address ;
         boolean isWorking = false;
-        
+
         public TcpTest( InetAddress address )
         {
             this.address = address;
         }
-        
-        public void run() 
+
+        public void run()
         {
             try {
                 logger.debug( "Trying to connect to " + this.address );
@@ -192,7 +191,7 @@ public class ConnectivityTesterImpl implements ConnectivityTester
                 this.isWorking = false;
                 logger.error( "Unable to connect to " + this.address, e );
             }
-        }        
+        }
     }
 }
 
@@ -205,23 +204,23 @@ class ConnectionStatus implements ConnectivityTester.Status
 
     private final boolean isDnsWorking;
     private final boolean isTcpWorking;
-        
+
     ConnectionStatus( boolean isDnsWorking, boolean isTcpWorking )
     {
             this.isDnsWorking = isDnsWorking;
             this.isTcpWorking = isTcpWorking;
     }
-        
+
     public boolean isTcpWorking()
     {
         return this.isTcpWorking;
     }
-    
+
     public boolean isDnsWorking()
     {
         return this.isDnsWorking;
     }
-    
+
     static ConnectionStatus makeConnectionStatus( boolean isDnsWorking, boolean isTcpWorking )
     {
         if ( isDnsWorking && isTcpWorking ) {

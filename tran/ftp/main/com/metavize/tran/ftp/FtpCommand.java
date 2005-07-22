@@ -32,6 +32,12 @@ public class FtpCommand implements Token
 
     // constructors -----------------------------------------------------------
 
+    /**
+     * Creates a new <code>FtpCommand</code> instance.
+     *
+     * @param function the FTP function. null if empty line.
+     * @param argument function arguments. null if none, or empty line.
+     */
     public FtpCommand(FtpFunction function, String argument)
     {
         this.function = function;
@@ -73,7 +79,7 @@ public class FtpCommand implements Token
 
     public ByteBuffer getBytes()
     {
-        String cmd = function.toString();
+        String cmd = null == function ? "" : function.toString();
 
         int l = cmd.length() + 2 + (null == argument ? 0 : argument.length());
 
