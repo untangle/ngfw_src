@@ -362,8 +362,6 @@ public class HttpParser extends AbstractParser
     {
         ByteBuffer d = b.duplicate();
 
-        int s = d.position();
-
         if (d.remaining() >= 4) {
             d.position(d.limit() - 4);
         }
@@ -375,14 +373,6 @@ public class HttpParser extends AbstractParser
             } else {
                 return false;
             }
-        }
-
-        if (maxHeader < (d.position() - s)) {
-            // XXX send error page instead
-            logger.error("header exceeded maxHeaderLength: "
-                         + AsciiCharBuffer.wrap(b));
-            session.shutdownClient();
-            session.shutdownServer();
         }
 
         if (LF == c || CR == c && d.hasRemaining() && LF == d.get()) {
@@ -574,11 +564,26 @@ public class HttpParser extends AbstractParser
 
     private Header header(ByteBuffer data) throws ParseException
     {
+        ByteBuffer dup = data.duplicate();
+
         Header header = new Header();
+
+        int s = data.position();
 
         while (data.remaining() > 2) {
             field(header, data);
             eatCrLf(data);
+        }
+
+        if (maxHeader < (data.position() - s)) {
+            // if we parsed up to this point, it does not qualify as
+            // non-HTTP traffic, so will be blocked, not released
+            logger.error("header exceeded maxHeaderLength:\n"
+                         + AsciiCharBuffer.wrap(dup));
+
+            //XXX send error page instead
+            session.shutdownClient();
+            session.shutdownServer();
         }
 
         while (data.hasRemaining()) {
