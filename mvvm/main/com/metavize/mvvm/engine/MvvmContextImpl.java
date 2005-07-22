@@ -17,12 +17,14 @@ import com.metavize.mvvm.ArgonManager;
 import com.metavize.mvvm.MailSender;
 import com.metavize.mvvm.MvvmLocalContext;
 import com.metavize.mvvm.NetworkingManager;
+import com.metavize.mvvm.ReportingManager;
 import com.metavize.mvvm.ConnectivityTester;
 import com.metavize.mvvm.ToolboxManager;
 import com.metavize.mvvm.argon.Argon;
 import com.metavize.mvvm.argon.ArgonManagerImpl;
 import com.metavize.mvvm.client.MvvmRemoteContext;
 import com.metavize.mvvm.logging.LoggingManager;
+import com.metavize.mvvm.reporting.ReportingManagerImpl;
 import com.metavize.mvvm.security.AdminManager;
 import com.metavize.mvvm.security.MvvmLogin;
 import com.metavize.mvvm.tapi.MPipeManager;
@@ -57,6 +59,7 @@ public class MvvmContextImpl extends MvvmContextBase
     private MPipeManager mPipeManager;
     private MailSenderImpl mailSender;
     private NetworkingManager networkingManager;
+    private ReportingManager reportingManager;
     private ConnectivityTester connectivityTester;
     private PipelineFoundryImpl pipelineFoundry;
     private ToolboxManagerImpl toolboxManager;
@@ -118,6 +121,11 @@ public class MvvmContextImpl extends MvvmContextBase
     public NetworkingManager networkingManager()
     {
         return networkingManager;
+    }
+
+    public ReportingManager reportingManager()
+    {
+        return reportingManager;
     }
 
     public ConnectivityTester getConnectivityTester()
@@ -227,6 +235,9 @@ public class MvvmContextImpl extends MvvmContextBase
         // Retrieve the networking configuration manager
         networkingManager = NetworkingManagerImpl.getInstance();
 
+        // Retrieve the reporting configuration manager
+        reportingManager = ReportingManagerImpl.reportingManager();
+
         // Retrieve the connectivity tester
         connectivityTester = ConnectivityTesterImpl.getInstance();
 
@@ -293,6 +304,7 @@ public class MvvmContextImpl extends MvvmContextBase
         // XXX destroy methods for:
         // - pipelineFoundry
         // - networkingManager
+        // - reportingManager
         // - connectivityTester (Doesn't really need one)
         // - argonManager
 
