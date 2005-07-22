@@ -1,7 +1,14 @@
-<%@ page language="java" %>
+<%@ page language="java" import="com.metavize.mvvm.*, com.metavize.mvvm.client.*" %>
 
 <%
 
+ServletContext sc = getServletContext();
+MvvmRemoteContext mvvm = (MvvmRemoteContext) sc.getAttribute("mvvm");
+if (mvvm == null) {
+    mvvm = MvvmRemoteContextFactory.localLogin();
+    sc.setAttribute("mvvm", mvvm);
+}
+boolean reportsAvailable = mvvm.reportingManager().isReportsAvailable();
 String host=request.getHeader("host");
 String scheme=request.getScheme();
 String ctxPath=request.getContextPath();
@@ -189,9 +196,10 @@ String helpClickHere = "Click <a href=\"help.html\">here</a> for more informatio
               <div style="text-align: center;">
                 <a href="gui.jnlp">Launch EdgeGuard Client</a><br>
 
-		<br><a href="<%=scheme%>://<%=host%>/reports">View EdgeReport Reports</a>
-
-		<% } %>
+                <% if (reportsAvailable) { %>
+	   	   <br><a href="<%=scheme%>://<%=host%>/reports">View EdgeReports</a>
+	        <% } %>
+               <% } %>
               </div>
               <% } %>
             </td>

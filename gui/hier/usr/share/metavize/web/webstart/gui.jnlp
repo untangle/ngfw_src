@@ -18,8 +18,13 @@ int colonIndex = host.indexOf(':');
 if( colonIndex >= 0 )
     host = host.substring(0, colonIndex);
 
-MvvmRemoteContext mc = MvvmRemoteContextFactory.localLogin();
-MackageDesc[] mds = mc.toolboxManager().installed();
+ServletContext sc = getServletContext();
+MvvmRemoteContext mvvm = (MvvmRemoteContext) sc.getAttribute("mvvm");
+if (mvvm == null) {
+    mvvm = MvvmRemoteContextFactory.localLogin();
+    sc.setAttribute("mvvm", mvvm);
+}
+MackageDesc[] mds = mvvm.toolboxManager().installed();
 %>
 
 <?xml version="1.0" encoding="utf-8"?>
