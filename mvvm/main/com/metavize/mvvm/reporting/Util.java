@@ -18,13 +18,35 @@ import java.sql.*;
 
 public class Util {
 
-    static {
+
+    // REPORT GENERATION TIME PERIODS ///////
+    static final int MAX_ROWS_PER_REPORT = 500;  // gives ~25 pages
+    static Calendar reportNow;
+    static Timestamp midnight;
+    static Timestamp lastday;
+    static Timestamp lastweek;
+    static Timestamp lastmonth;
+    /////////////////////////////////////////////
+
+    // FOR UNIT CONVERSIONS ///////
+    static final int KILO =  0;
+    static final int MEGA =  1;
+    static final int GIGA =  2;
+    static final int TERA =  3;
+    static final int PETA =  4;
+    static final int EXA  =  5;
+    ///////////////////////////////
+
+
+    static void init(boolean toMidnight) {
 	// INITIALIZE TIME CONSTANTS
         Calendar c = Calendar.getInstance();
-        c.set(Calendar.HOUR_OF_DAY, 0); // should be 0, but 20 for testing purposes
-        c.set(Calendar.MINUTE, 0);
-        c.set(Calendar.SECOND, 0);
-        c.set(Calendar.MILLISECOND, 0);
+        if (toMidnight) {
+            c.set(Calendar.HOUR_OF_DAY, 0); // should be 0, but 20 for testing purposes
+            c.set(Calendar.MINUTE, 0);
+            c.set(Calendar.SECOND, 0);
+            c.set(Calendar.MILLISECOND, 0);
+        }
         reportNow = (Calendar) c.clone();
 	midnight = new Timestamp(c.getTimeInMillis());
 	Calendar lastdayCalendar = (Calendar) c.clone();
@@ -38,14 +60,6 @@ public class Util {
         lastmonth = new Timestamp(lastmonthCalendar.getTimeInMillis());
     }
 
-    // FOR UNIT CONVERSIONS ///////
-    static final int KILO =  0;
-    static final int MEGA =  1;
-    static final int GIGA =  2;
-    static final int TERA =  3;
-    static final int PETA =  4;
-    static final int EXA  =  5;
-    ///////////////////////////////
 
     public static String trimNumber(String suffix, long number){
 
@@ -83,16 +97,6 @@ public class Util {
 	double percentage = (double) number / (double) total;
 	return decimalFormat.format( percentage );
     }
-
-
-    // REPORT GENERATION TIME PERIODS ///////
-    public static final int MAX_ROWS_PER_REPORT = 500;  // gives ~25 pages
-    public static final Calendar reportNow;
-    public static final Timestamp midnight;
-    public static final Timestamp lastday;
-    public static final Timestamp lastweek;
-    public static final Timestamp lastmonth;
-    /////////////////////////////////////////////
 
     public static String getDateDirName(Calendar c)
     {      
@@ -148,6 +152,6 @@ public class Util {
         // now that we tried to clear the directory out, we can try to delete it
         // again
         return dir.delete();  
-    }   
+    }
 
 }

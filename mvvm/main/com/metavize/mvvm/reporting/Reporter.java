@@ -17,7 +17,6 @@ import java.sql.*;
 import java.util.*;
 import java.util.jar.*;
 
-import com.metavize.mvvm.engine.MvvmTransformHandler;
 import com.metavize.mvvm.reporting.summary.*;
 import com.metavize.mvvm.security.Tid;
 import com.metavize.mvvm.reporting.Util;
@@ -43,9 +42,11 @@ public class Reporter
 
 
 
-    private Reporter(File outputBaseDir)
+    private Reporter(File outputBaseDir, boolean toMidnight)
     {
         this.outputBaseDir = outputBaseDir;
+
+        Util.init(toMidnight);
 
         Calendar c = Calendar.getInstance();
 
@@ -81,21 +82,31 @@ public class Reporter
             Class.forName("org.postgresql.Driver");
             conn = DriverManager.getConnection("jdbc:postgresql://localhost/mvvm",
                                                "metavize", "foo");
-            File outputBaseDir = new File(args[0]);
-            int daysToKeep;
-            try {
-                daysToKeep = Integer.parseInt(args[1]);
-                if (daysToKeep < 1)
-                    daysToKeep = 1;
-            } catch (NumberFormatException x) {
-                logger.warn("usage: reporter base-dir days-to-save [mars]");
-                System.exit(1);
-                return;
+
+            String outputBaseDirName = "/tmp";
+            int daysToKeep = 90;
+            boolean toMidnight = true;
+            int i;
+            for (i = 0; i < args.length; i++) {
+                if (args[i].equals("-o")) {
+                    outputBaseDirName = args[++i];
+                } else if (args[i].equals("-d")) {
+                    daysToKeep = Integer.parseInt(args[++i]);
+                    if (daysToKeep < 1)
+                        daysToKeep = 1;
+                } else if (args[i].equals("-n")) {
+                    toMidnight = false;
+                } else {
+                    break;      // Into the mars
+                }
             }
-                
-            Reporter reporter = new Reporter(outputBaseDir);
+            int numMars = args.length - i;
+            String[] mars = new String[numMars];
+            System.arraycopy(args, i, mars, 0, numMars);
+            File outputBaseDir = new File(outputBaseDirName);
+            Reporter reporter = new Reporter(outputBaseDir, toMidnight);
             reporter.prepare(conn);
-            reporter.generateNewReports(conn, args);
+            reporter.generateNewReports(conn, mars);
             reporter.purgeOldReports(conn, daysToKeep);
 
         } catch (ClassNotFoundException exn) {
@@ -113,6 +124,9 @@ public class Reporter
             logger.error("Unexpected Jasper exception");
             exn.printStackTrace();
             System.exit(1);
+        } catch (NumberFormatException x) {
+            logger.warn("usage: reporter base-dir days-to-save [mars]");
+            System.exit(1);
         }
     }
 
@@ -124,15 +138,15 @@ public class Reporter
     }
 
 
-    private void generateNewReports(Connection conn, String[] args)
+    private void generateNewReports(Connection conn, String[] mars)
         throws IOException, JRScriptletException, SQLException, ClassNotFoundException
     {
 	
         Thread ct = Thread.currentThread();
         ClassLoader oldCl = ct.getContextClassLoader();
 
-        for (int i = 2; i < args.length; i++) {
-            File f = new File(args[i]);
+        for (int i = 0; i < mars.length; i++) {
+            File f = new File(mars[i]);
 
             // assume file is "tranname-transform.mar"
             String fn = f.getName();
@@ -154,7 +168,7 @@ public class Reporter
 
     private void purgeOldReports(Connection conn, int daysToKeep)
     {
-        DhcpMap.get().deleteAddressMap(conn);
+        // DhcpMap.get().deleteAddressMap(conn);
 
         // Since daysToKeep will always be at least 1, we'll always keep today's.
         Calendar firstPurged = (Calendar) Util.reportNow.clone();
