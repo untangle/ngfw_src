@@ -29,6 +29,7 @@ import com.metavize.mvvm.tapi.event.TCPChunkEvent;
 import com.metavize.mvvm.tapi.event.TCPChunkResult;
 import com.metavize.mvvm.tapi.event.TCPNewSessionRequestEvent;
 import com.metavize.mvvm.tapi.event.TCPSessionEvent;
+import com.metavize.mvvm.tapi.event.TCPStreamer;
 import com.metavize.mvvm.tapi.event.UDPNewSessionRequestEvent;
 import com.metavize.mvvm.tapi.event.UDPPacketEvent;
 import com.metavize.mvvm.tapi.event.UDPSessionEvent;
@@ -280,10 +281,14 @@ public class TokenAdaptor extends AbstractEventHandler
         if (tr.isStreamer()) {
             if (tr.s2cStreamer() != null) {
                 logger.debug("beginning client stream");
-                session.beginClientStream(tr.s2cStreamer());
+                TokenStreamer tokSt = tr.s2cStreamer();
+                TCPStreamer ts = new TokenStreamerAdaptor(pipeline, tokSt);
+                session.beginClientStream(ts);
             } else {
                 logger.debug("beginning server stream");
-                session.beginServerStream(tr.c2sStreamer());
+                TokenStreamer tokSt = tr.c2sStreamer();
+                TCPStreamer ts = new TokenStreamerAdaptor(pipeline, tokSt);
+                session.beginServerStream(ts);
             }
             // just means nothing extra to send before beginning stream.
             return IPDataResult.DO_NOT_PASS;
@@ -321,12 +326,12 @@ public class TokenAdaptor extends AbstractEventHandler
                     TokenStreamer cStm = utr.c2sStreamer();
 
                     TokenStreamer sStm = new ReleaseTokenStreamer
-                        (pipeline, utr.s2cStreamer(), release);
+                        (utr.s2cStreamer(), release);
 
                     return new TokenResult(sStm, cStm);
                 } else {
                     TokenStreamer cStm = new ReleaseTokenStreamer
-                        (pipeline, utr.c2sStreamer(), release);
+                        (utr.c2sStreamer(), release);
                     TokenStreamer sStm = utr.s2cStreamer();
 
                     return new TokenResult(sStm, cStm);

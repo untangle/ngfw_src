@@ -14,10 +14,10 @@ package com.metavize.tran.mail;
 import java.nio.ByteBuffer;
 
 import com.metavize.mvvm.tapi.TCPSession;
+import com.metavize.mvvm.tapi.event.TCPStreamer;
 import com.metavize.tran.token.AbstractUnparser;
 import com.metavize.tran.token.Chunk;
 import com.metavize.tran.token.Token;
-import com.metavize.tran.token.TokenStreamer;
 import com.metavize.tran.token.UnparseException;
 import com.metavize.tran.token.UnparseResult;
 import org.apache.log4j.Logger;
@@ -41,5 +41,5 @@ class ImapUnparser extends AbstractUnparser
         return new UnparseResult(buf);
     }
 
-    public TokenStreamer endSession() { return null; }
+    public TCPStreamer endSession() { return null; }
 }

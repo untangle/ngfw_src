@@ -32,6 +32,8 @@ tar zcf $outdir/files-$datestamp.tar.gz --ignore-failed-read -C @PREFIX@/ \
     usr/share/metavize/conf/networking.sh \
     usr/share/metavize/conf/shield.cfg
 
+mkg installed > $outdir/installed-$datestamp
+
 if [ $method = "usb" ]; then
     umount /mnt
 fi

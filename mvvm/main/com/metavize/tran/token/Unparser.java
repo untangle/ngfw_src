@@ -11,6 +11,8 @@
 
 package com.metavize.tran.token;
 
+import com.metavize.mvvm.tapi.event.TCPStreamer;
+
 /**
  * An Unparser transforms tokens into bytes.
  *
@@ -43,5 +45,5 @@ public interface Unparser
      *
      * @return TokenStreamer that streams the final data.
      */
-    TokenStreamer endSession();
+    TCPStreamer endSession();
 }

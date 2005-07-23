@@ -214,7 +214,7 @@ public class VirusSmtpHandler extends SmtpStateMachine
         logger.debug("passing through header and body");
         try {
             FileChunkStreamer streamer = new FileChunkStreamer
-                (getPipeline(), bodyFile, header, endToken, false);
+                (bodyFile, header, endToken, false);
 
             this.header = null;
             this.bodyFile = null;

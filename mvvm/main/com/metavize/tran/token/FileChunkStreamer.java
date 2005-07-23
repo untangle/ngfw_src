@@ -20,7 +20,6 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import com.metavize.mvvm.tapi.Pipeline;
 import org.apache.log4j.Logger;
 
 /**
@@ -29,7 +28,7 @@ import org.apache.log4j.Logger;
  * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
  */
-public class FileChunkStreamer extends TokenStreamer
+public class FileChunkStreamer implements TokenStreamer
 {
     private static final int CHUNK_SIZE = 1024;
 
@@ -49,13 +48,10 @@ public class FileChunkStreamer extends TokenStreamer
 
     // constructors -----------------------------------------------------------
 
-    private FileChunkStreamer(Pipeline pipeline,
-                              File file, FileChannel channel,
+    private FileChunkStreamer(File file, FileChannel channel,
                               List<Token> beginTokens, List<Token> endTokens,
                               boolean closeWhenDone)
     {
-        super(pipeline);
-
         this.file = file;
         this.channel = channel;
         this.beginTokens = beginTokens;
@@ -70,25 +66,24 @@ public class FileChunkStreamer extends TokenStreamer
         }
     }
 
-    public FileChunkStreamer(Pipeline pipeline,
-                             File file, FileChannel channel,
+    public FileChunkStreamer(File file, FileChannel channel,
                              Token beginToken, Token endToken,
                              boolean closeWhenDone)
     {
-        this(pipeline, file, channel,
+        this(file, channel,
              null == beginToken ? null : Arrays.asList(new Token[] { beginToken }),
              null == endToken ? null : Arrays.asList(new Token[] { endToken }),
              closeWhenDone);
     }
 
 
-    public FileChunkStreamer(Pipeline pipeline, File file,
+    public FileChunkStreamer(File file,
                              Token beginToken, Token endToken,
                              boolean closeWhenDone)
         throws IOException
     {
-        this(pipeline, file, new FileInputStream(file).getChannel(),
-             beginToken, endToken, closeWhenDone);
+        this(file, new FileInputStream(file).getChannel(), beginToken,
+             endToken, closeWhenDone);
     }
 
     // TCPStreamer methods ----------------------------------------------------
@@ -100,7 +95,7 @@ public class FileChunkStreamer extends TokenStreamer
 
     // TokenStreamer methods --------------------------------------------------
 
-    protected Token nextToken()
+    public Token nextToken()
     {
         logger.debug("nextToken()");
 

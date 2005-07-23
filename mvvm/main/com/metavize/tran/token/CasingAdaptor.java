@@ -145,19 +145,22 @@ public class CasingAdaptor extends AbstractEventHandler
     @Override
     public void handleTCPClientFIN(TCPSessionEvent e)
     {
-        TokenStreamer ts = null;
+        TCPStreamer tcpStream = null;
 
         TCPSession s = (TCPSession)e.ipsession();
         Casing c = getCasing(s);
 
         if (clientSide) {
-            ts = c.parser().endSession();
+            TokenStreamer tokSt = c.parser().endSession();
+            if (null != tokSt) {
+                tcpStream = new TokenStreamerAdaptor(getPipeline(s), tokSt);
+            }
         } else {
-            ts = c.unparser().endSession();
+            tcpStream = c.unparser().endSession();
         }
 
-        if (null != ts) {
-            s.beginServerStream(ts);
+        if (null != tcpStream) {
+            s.beginServerStream(tcpStream);
         } else {
             s.shutdownServer();
         }
@@ -166,7 +169,7 @@ public class CasingAdaptor extends AbstractEventHandler
     @Override
     public void handleTCPServerFIN(TCPSessionEvent e)
     {
-        TokenStreamer ts = null;
+        TCPStreamer ts = null;
 
         TCPSession s = (TCPSession)e.ipsession();
         Casing c = getCasing(s);
@@ -174,7 +177,10 @@ public class CasingAdaptor extends AbstractEventHandler
         if (clientSide) {
             ts = c.unparser().endSession();
         } else {
-            ts = c.parser().endSession();
+            TokenStreamer tokSt = c.parser().endSession();
+            if (null != tokSt) {
+                ts = new TokenStreamerAdaptor(getPipeline(s), tokSt);
+            }
         }
 
         if (null != ts) {
@@ -369,7 +375,8 @@ public class CasingAdaptor extends AbstractEventHandler
         }
 
         if (pr.isStreamer()) {
-            TokenStreamer ts = pr.getTokenStreamer();
+            TokenStreamer tokSt = pr.getTokenStreamer();
+            TCPStreamer ts = new TokenStreamerAdaptor(pipeline, tokSt);
             if (s2c) {
                 s.beginClientStream(ts);
             } else {

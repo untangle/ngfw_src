@@ -989,13 +989,13 @@ public class HttpParser extends AbstractParser
         Pipeline pipeline = MvvmContextFactory.context().pipelineFoundry()
             .getPipeline(session.id());
 
-        return new TokenStreamer(pipeline)
+        return new TokenStreamer()
             {
                 private boolean sent = false;
 
                 public boolean closeWhenDone() { return true; }
 
-                protected Token nextToken()
+                public Token nextToken()
                 {
                     if (sent) {
                         return null;

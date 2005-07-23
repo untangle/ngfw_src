@@ -13,18 +13,15 @@ package com.metavize.tran.token;
 
 import com.metavize.mvvm.tapi.Pipeline;
 
-class ReleaseTokenStreamer extends TokenStreamer
+class ReleaseTokenStreamer implements TokenStreamer
 {
     private final TokenStreamer streamer;
     private final Release release;
 
     private boolean released = false;
 
-    ReleaseTokenStreamer(Pipeline pipeline, TokenStreamer streamer,
-                         Release release)
+    ReleaseTokenStreamer(TokenStreamer streamer, Release release)
     {
-        super(pipeline);
-
         this.streamer = streamer;
         this.release = release;
     }
@@ -38,7 +35,7 @@ class ReleaseTokenStreamer extends TokenStreamer
 
     // TokenStreamer methods --------------------------------------------------
 
-    protected Token nextToken()
+    public Token nextToken()
     {
         if (released) {
             return null;

@@ -11,13 +11,10 @@
 
 package com.metavize.tran.token;
 
-import java.nio.ByteBuffer;
-
-import com.metavize.mvvm.tapi.Pipeline;
-import com.metavize.mvvm.tapi.event.TCPStreamer;
-import org.apache.log4j.Logger;
 
 import java.util.*;
+
+import com.metavize.mvvm.tapi.Pipeline;
 
 
 /**
@@ -36,7 +33,7 @@ public class TokenResultBuilder {
   private DynTokenStreamer m_forServerStreamer;
 
   private Pipeline m_pipeline;
-  
+
 
   public TokenResultBuilder(Pipeline pipeline) {
     m_pipeline = pipeline;
@@ -52,21 +49,21 @@ public class TokenResultBuilder {
   /**
    * Add a token intended to go from
    * client to server
-   */  
+   */
   public void addTokenForServer(Token token) {
     addToken(token, false);
   }
   /**
    * Add a streamer intended to go from
    * server to client
-   */  
+   */
   public void addStreamerForClient(TokenStreamer streamer) {
     addStreamer(streamer, true);
   }
   /**
    * Add a streamer intended to go from
    * client to server
-   */  
+   */
   public void addStreamerForServer(TokenStreamer streamer) {
     addStreamer(streamer, false);
   }
@@ -104,7 +101,7 @@ public class TokenResultBuilder {
     }
     return (Token[]) list.toArray(new Token[list.size()]);
   }
-  
+
   private void addStreamer(TokenStreamer streamer, boolean forClient) {
     if(forClient) {
       if(m_forClientStreamer != null) {
@@ -146,11 +143,11 @@ public class TokenResultBuilder {
         }
       }
     }
-  }  
+  }
 
   private void addToken(Token t, boolean forClient) {
 
-  
+
     if(forClient) {
       if(m_forClientStreamer != null) {
         //Add to the streamer
@@ -174,7 +171,7 @@ public class TokenResultBuilder {
           m_forServerTokens = new ArrayList<Token>();
         }
         m_forServerTokens.add(t);
-      }    
+      }
     }
   }
 
@@ -187,7 +184,7 @@ public class TokenResultBuilder {
   }
 
   private class DynTokenStreamer
-    extends TokenStreamer {
+    implements TokenStreamer {
 
     private TokenResultBuilder.StreamState m_state;
     private final List<Token> m_pre;
@@ -203,7 +200,7 @@ public class TokenResultBuilder {
     DynTokenStreamer(TokenStreamer s1) {
       this(null, s1, null);
     }
-    
+
     DynTokenStreamer(TokenStreamer s1,
       TokenStreamer s2) {
       this(null, s1, s2);
@@ -212,17 +209,17 @@ public class TokenResultBuilder {
     DynTokenStreamer(List<Token> pre,
       TokenStreamer s1) {
       this(pre, s1, null);
-    }    
+    }
 
     DynTokenStreamer(List<Token> pre,
       TokenStreamer s1,
       TokenStreamer s2) {
-      super(m_pipeline);
+      super();
       m_pre = pre;
       m_s1 = s1;
       m_s2 = s2;
     }
-    
+
     public boolean closeWhenDone() {
       return false;
     }
@@ -234,9 +231,9 @@ public class TokenResultBuilder {
       m_tail.add(token);
     }
 
-    protected Token nextToken() {
+      public Token nextToken() {
       Token ret = null;
-      while(true) {    
+      while(true) {
         switch(m_state) {
           case INIT_TOKENS:
             if(m_pre == null) {
@@ -300,6 +297,6 @@ public class TokenResultBuilder {
          }
       }
     }
-    
+
   }
 }

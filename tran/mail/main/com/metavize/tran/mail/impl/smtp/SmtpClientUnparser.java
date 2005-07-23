@@ -16,6 +16,7 @@ import static com.metavize.tran.util.BufferUtil.*;
 
 import com.metavize.mvvm.*;
 import com.metavize.mvvm.tapi.*;
+import com.metavize.mvvm.tapi.event.TCPStreamer;
 import com.metavize.tran.mail.papi.smtp.*;
 import com.metavize.tran.token.*;
 import com.metavize.tran.util.*;
@@ -53,7 +54,7 @@ public class SmtpClientUnparser
     return new UnparseResult(token.getBytes());
   }
 
-  public TokenStreamer endSession() {
+  public TCPStreamer endSession() {
     m_logger.debug("End Session");
     m_parentCasing.endSession(false);
     return null;

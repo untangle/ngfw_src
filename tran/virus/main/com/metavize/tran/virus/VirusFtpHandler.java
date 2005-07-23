@@ -34,6 +34,8 @@ import com.metavize.tran.token.FileChunkStreamer;
 import com.metavize.tran.token.Token;
 import com.metavize.tran.token.TokenException;
 import com.metavize.tran.token.TokenResult;
+import com.metavize.tran.token.TokenStreamer;
+import com.metavize.tran.token.TokenStreamerAdaptor;
 import org.apache.log4j.Logger;
 
 class VirusFtpHandler extends FtpStateMachine
@@ -221,8 +223,9 @@ class VirusFtpHandler extends FtpStateMachine
         if (result.isClean()) {
             transform.incrementCount( PASS_COUNTER );
             Pipeline p = getPipeline();
-            return new FileChunkStreamer(p, file, inChannel, null,
-                                         EndMarker.MARKER, true);
+            TokenStreamer tokSt = new FileChunkStreamer
+                (file, inChannel, null, EndMarker.MARKER, true);
+            return new TokenStreamerAdaptor(p, tokSt);
         } else {
             transform.incrementCount( BLOCK_COUNTER );
             // Todo: Quarantine (for now, don't delete the file) XXX

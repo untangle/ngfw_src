@@ -17,10 +17,10 @@ import java.nio.ByteBuffer;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.tapi.Fitting;
 import com.metavize.mvvm.tapi.TCPSession;
+import com.metavize.mvvm.tapi.event.TCPStreamer;
 import com.metavize.tran.token.AbstractUnparser;
 import com.metavize.tran.token.ParseException;
 import com.metavize.tran.token.Token;
-import com.metavize.tran.token.TokenStreamer;
 import com.metavize.tran.token.UnparseException;
 import com.metavize.tran.token.UnparseResult;
 
@@ -64,5 +64,5 @@ class FtpUnparser extends AbstractUnparser
         return new UnparseResult(new ByteBuffer[] { token.getBytes() });
     }
 
-    public TokenStreamer endSession() { return null; }
+    public TCPStreamer endSession() { return null; }
 }

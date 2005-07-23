@@ -225,7 +225,7 @@ class VirusHttpHandler extends HttpStateMachine
             }
 
             FileChunkStreamer streamer = new FileChunkStreamer
-                (getPipeline(), file, inFile, null, EndMarker.MARKER, false);
+                (file, inFile, null, EndMarker.MARKER, false);
 
             return new TokenResult(streamer, null);
         } else {

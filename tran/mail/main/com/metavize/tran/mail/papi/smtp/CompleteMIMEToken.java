@@ -14,20 +14,17 @@ package com.metavize.tran.mail.papi.smtp;
 import static com.metavize.tran.util.Ascii.*;
 import static com.metavize.tran.util.BufferUtil.*;
 
-import com.metavize.tran.mail.papi.ByteBufferByteStuffer;
-
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
-import java.util.LinkedList;
-import java.util.List;
 
 import com.metavize.mvvm.*;
 import com.metavize.mvvm.tapi.*;
+import com.metavize.tran.mail.papi.ByteBufferByteStuffer;
+import com.metavize.tran.mime.*;
 import com.metavize.tran.token.*;
 import com.metavize.tran.util.*;
 import org.apache.log4j.Logger;
-import com.metavize.tran.mime.*;
 
 
 /**
@@ -39,7 +36,7 @@ public class CompleteMIMEToken
   extends MetadataToken {
 
   private static final int CHUNK_SZ = 1024*4;
-  
+
   private final Logger m_logger =
     Logger.getLogger(CompleteMIMEToken.class);
 
@@ -70,27 +67,26 @@ public class CompleteMIMEToken
 
   //TODO bscott How can we be assured we closed this stream/channel?
   private class MIMETokenStreamer
-    extends TokenStreamer {
+    implements TokenStreamer {
 
     private FileInputStream m_fos;
     private FileChannel m_channel;
     private final ByteBuffer m_readBuf = ByteBuffer.allocate(CHUNK_SZ);
     private ByteBufferByteStuffer m_bbbs = new ByteBufferByteStuffer();
 
-    
+
     MIMETokenStreamer(final Pipeline pipeline) {
-      super(pipeline);
       try {
         File file = m_msgHolder.toFile(new FileFactory() {
           public File createFile(String name)
             throws IOException {
             return createFile();
           }
-          
+
           public File createFile()
             throws IOException {
             return pipeline.mktemp();
-          }          
+          }
         });
         m_fos = new FileInputStream(file);
         m_channel = m_fos.getChannel();
@@ -106,11 +102,11 @@ public class CompleteMIMEToken
       m_fos = null;
       m_channel = null;
     }
-    
+
     public boolean closeWhenDone() {
       return false;
     }
-    protected Token nextToken() {
+    public Token nextToken() {
       if(m_channel == null) {
         return null;
       }
@@ -132,9 +128,9 @@ public class CompleteMIMEToken
       catch(Exception ex) {
         m_logger.error(ex);
         close();
-        return null;        
+        return null;
       }
 
-    }    
+    }
   }
 }
