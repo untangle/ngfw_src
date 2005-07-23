@@ -1,5 +1,5 @@
 reports/SpywareMaster.jasper:Spyware_Blocker--Summary:Summary
-com/metavize/tran/spyware/reports/SpywareActiveXDetail.jasper:Spyware_Blocker--ActiveX_Incidents:ActiveX Incidents
-com/metavize/tran/spyware/reports/SpywareAccessDetail.jasper:Spyware_Blocker--Access_Incidents:Access Incidents
-com/metavize/tran/spyware/reports/SpywareCookieDetail.jasper:Spyware_Blocker--Cookie_Incidents:Cookie Incidents
+reports/SpywareActiveXDetail.jasper:Spyware_Blocker--ActiveX_Incidents:ActiveX Incidents
+reports/SpywareAccessDetail.jasper:Spyware_Blocker--Access_Incidents:Access Incidents
+reports/SpywareCookieDetail.jasper:Spyware_Blocker--Cookie_Incidents:Cookie Incidents
 com.metavize.tran.spyware.reports.SpywareSummarizer:summarizer:Summarizer

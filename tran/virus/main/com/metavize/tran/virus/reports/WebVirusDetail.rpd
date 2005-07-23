@@ -19,7 +19,7 @@ QUERY=SELECT evt.time_stamp, c_client_addr, c_server_addr, c_server_port, name, 
  FROM tr_virus_evt_http evt \
  JOIN tr_http_evt_req ON request_line = request_id \
  JOIN pl_endp USING (session_id) \
- JOIN merged_address_map mam ON c_client_addr = addr AND evt.time_stamp >= mam.start_time AND evt.time_stamp < mam.end_time \
+ LEFT OUTER JOIN merged_address_map mam ON c_client_addr = addr AND evt.time_stamp >= mam.start_time AND evt.time_stamp < mam.end_time \
  WHERE evt.time_stamp > $P{startTime} AND evt.time_stamp < $P{endTime} AND NOT clean \
  ORDER BY time_stamp
 TOPLEFT.label=Timestamp
@@ -30,7 +30,7 @@ BOTRMID.label=Host
 TOPRIGHT.label=Server
 BOTRIGHT.label=Port
 TOPRMID.expr=$F{virus_name}
-TOPLMID.expr=$F{name}
+TOPLMID.expr=$F{name} == null ? "" : $F{name}
 TOPLEFT.expr=$F{time_stamp}
 BOTRMID.expr=$F{host}
 BOTLMID.expr=$F{c_client_addr}

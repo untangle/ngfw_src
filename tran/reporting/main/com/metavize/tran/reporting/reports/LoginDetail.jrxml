@@ -31,7 +31,7 @@
 	<parameter name="endTime" isForPrompting="true" class="java.sql.Timestamp"/>
 	<queryString><![CDATA[SELECT evt.time_stamp, evt.client_addr, evt.login, evt.succeeded, evt.reason, name
 FROM mvvm_login_evt evt
-JOIN merged_address_map mam ON client_addr = addr AND evt.time_stamp >= mam.start_time AND evt.time_stamp < mam.end_time
+LEFT OUTER JOIN merged_address_map mam ON client_addr = addr AND evt.time_stamp >= mam.start_time AND evt.time_stamp < mam.end_time
 WHERE evt.time_stamp > $P{startTime} AND evt.time_stamp < $P{endTime} AND NOT evt.local
 ORDER BY evt.time_stamp]]></queryString>
 	<field name="time_stamp" class="java.sql.Timestamp"/>
@@ -564,7 +564,7 @@ ORDER BY evt.time_stamp]]></queryString>
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
 						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$F{name}.equals($F{client_addr}) ? "" : $F{name}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{name} == null ? "" : $F{name}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
