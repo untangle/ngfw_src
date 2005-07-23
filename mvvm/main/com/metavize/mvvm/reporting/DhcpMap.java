@@ -96,14 +96,14 @@ public class DhcpMap
     private static final String MANUAL_MAP_QUERY =
         "SELECT addr, name " + 
         " FROM (SELECT addr, min(position) AS min_idx " + 
-        "        FROM (SELECT c_client_addr AS addr FROM pl_endp " +
-        "              UNION SELECT c_server_addr AS addr FROM pl_endp " + 
-        "              UNION SELECT s_client_addr AS addr FROM pl_endp " +
-        "              UNION SELECT s_server_addr AS addr FROM pl_endp " +
+        "        FROM (SELECT c_client_addr AS addr FROM pl_endp WHERE pl_endp.client_intf = 1 " +
+        "              UNION SELECT c_server_addr AS addr FROM pl_endp WHERE pl_endp.server_intf = 1 " + 
+        // "              UNION SELECT s_client_addr AS addr FROM pl_endp " +
+        // "              UNION SELECT s_server_addr AS addr FROM pl_endp " +
         "              UNION SELECT client_addr   AS addr FROM mvvm_login_evt " +
-        "              UNION SELECT ip            AS addr FROM shield_rejection_evt " +
+        // "              UNION SELECT ip            AS addr FROM shield_rejection_evt " +
         "             ) AS addrs " + 
-        "        LEFT OUTER JOIN ipmaddr_dir_entries entry JOIN ipmaddr_rule rule USING (rule_id) " +
+        "        JOIN ipmaddr_dir_entries entry JOIN ipmaddr_rule rule USING (rule_id) " +
         "        ON rule.ipmaddr >>= addr " +
         "        WHERE NOT addr ISNULL " +
         "        GROUP BY addr) AS pos_idxs " +
