@@ -27,6 +27,8 @@ public class HttpSettings implements Serializable
 {
     public static final int MIN_HEADER_LENGTH = 1024;
     public static final int MAX_HEADER_LENGTH = 4096;
+    public static final int MIN_URI_LENGTH = 1024;
+    public static final int MAX_URI_LENGTH = 4096;
 
     private static final long serialVersionUID = -8901463578794639216L;
 
@@ -36,6 +38,9 @@ public class HttpSettings implements Serializable
     private boolean enabled = true;
     private boolean nonHttpBlocked = false;
     private int maxHeaderLength = MAX_HEADER_LENGTH;
+    private boolean blockLongHeaders = false;
+    private int maxUriLength = MAX_URI_LENGTH;
+    private boolean blockLongUris = false;
 
     // constructors -----------------------------------------------------------
 
@@ -134,5 +139,68 @@ public class HttpSettings implements Serializable
                                                + maxHeaderLength);
         }
         this.maxHeaderLength = maxHeaderLength;
+    }
+
+    /**
+     * Enable blocking of headers that exceed maxHeaderLength. If not
+     * explicitly blocked the connection is treated as non-HTTP and
+     * the behavior is determined by setNonHttpBlocked.
+     *
+     * @return true if connections containing long headers are blocked.
+     * @hibernate.property
+     * column="BLOCK_LONG_HEADERS"
+     * not-null="true"
+     */
+    public boolean getBlockLongHeaders()
+    {
+        return blockLongHeaders;
+    }
+
+    public void setBlockLongHeaders(boolean blockLongHeaders)
+    {
+        this.blockLongHeaders = blockLongHeaders;
+    }
+
+    /**
+     * Maximum allowable URI length.
+     *
+     * @return maximum characters allowed in the request-line URI.
+     * @hibernate.property
+     * column="MAX_URI_LENGTH"
+     * not-null="true"
+     */
+    public int getMaxUriLength()
+    {
+        return maxUriLength;
+    }
+
+    public void setMaxUriLength(int maxUriLength)
+    {
+        if (MIN_URI_LENGTH > maxUriLength
+            || MAX_URI_LENGTH < maxUriLength) {
+            throw new IllegalArgumentException("out of bounds: "
+                                               + maxUriLength);
+        }
+        this.maxUriLength = maxUriLength;
+    }
+
+    /**
+     * Enable blocking of URIs that exceed maxUriLength. If not
+     * explicitly blocked the connection is treated as non-HTTP and
+     * the behavior is determined by setNonHttpBlocked.
+     *
+     * @return true if connections containing long URIs are blocked.
+     * @hibernate.property
+     * column="BLOCK_LONG_URIS"
+     * not-null="true"
+     */
+    public boolean getBlockLongUris()
+    {
+        return blockLongUris;
+    }
+
+    public void setBlockLongUris(boolean blockLongUris)
+    {
+        this.blockLongUris = blockLongUris;
     }
 }

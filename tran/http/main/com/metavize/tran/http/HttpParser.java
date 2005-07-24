@@ -62,8 +62,11 @@ public class HttpParser extends AbstractParser
     private static final int END_MARKER_STATE = 10;
 
     private final HttpCasing casing;
-    private final byte[] buf = new byte[BUFFER_SIZE];
+    private final byte[] buf;
     private final int maxHeader;
+    private final boolean blockLongHeaders;
+    private final int maxUri;
+    private final boolean blockLongUris;
     private final String sessStr;
 
     private final Logger logger = Logger.getLogger(HttpParser.class);
@@ -84,8 +87,12 @@ public class HttpParser extends AbstractParser
     HttpParser(TCPSession session, boolean clientSide, HttpCasing casing)
     {
         super(session, clientSide);
-        this.maxHeader = casing.getTransform().getHttpSettings()
-            .getMaxHeaderLength();
+        HttpSettings settings = casing.getTransform().getHttpSettings();
+        this.maxHeader = settings.getMaxHeaderLength();
+        this.blockLongHeaders = settings.getBlockLongHeaders();
+        this.maxUri = settings.getMaxUriLength();
+        this.buf = new byte[maxUri];
+        this.blockLongUris = settings.getBlockLongUris();
         this.casing = casing;
         this.sessStr = "HttpParser sid: " + session.id()
             + (clientSide ? " client-side " : " server-side ");
@@ -144,18 +151,30 @@ public class HttpParser extends AbstractParser
             case ACCUMULATE_HEADER_STATE:
                 {
                     logger.debug(sessStr + "in ACCUMULATE_HEADER_STATE");
+
                     if (!completeHeader(b)) {
                         if (b.capacity() < maxHeader) {
                             ByteBuffer nb = ByteBuffer.allocate(maxHeader + 2);
                             nb.put(b);
+                            nb.flip();
                             b = nb;
+                        } else if (b.remaining() >= maxHeader) {
+                            String msg = "header exceeds " + maxHeader
+                                + ":\n" + AsciiCharBuffer.wrap(b);
+                            if (blockLongHeaders) {
+                                logger.warn(msg);
+                                // XXX send error page instead
+                                session.shutdownClient();
+                                session.shutdownServer();
+                                return new ParseResult();
+                            } else {
+                                // allow session to be released, or not
+                                throw new ParseException(msg);
+                            }
                         }
 
                         b.compact();
-                        if (!b.hasRemaining()) {
-                            logger.error(sessStr
-                                         + "header can't fit in this buffer");
-                        }
+
                         done = true;
                     } else {
                         state = HEADER_STATE;
@@ -564,26 +583,11 @@ public class HttpParser extends AbstractParser
 
     private Header header(ByteBuffer data) throws ParseException
     {
-        ByteBuffer dup = data.duplicate();
-
         Header header = new Header();
-
-        int s = data.position();
 
         while (data.remaining() > 2) {
             field(header, data);
             eatCrLf(data);
-        }
-
-        if (maxHeader < (data.position() - s)) {
-            // if we parsed up to this point, it does not qualify as
-            // non-HTTP traffic, so will be blocked, not released
-            logger.error("header exceeded maxHeaderLength:\n"
-                         + AsciiCharBuffer.wrap(dup));
-
-            //XXX send error page instead
-            session.shutdownClient();
-            session.shutdownServer();
         }
 
         while (data.hasRemaining()) {
@@ -691,6 +695,17 @@ public class HttpParser extends AbstractParser
         String uri = null;
 
         for (int i = 0; b.hasRemaining(); i++) {
+            if (buf.length <= i) {
+                String msg = "(buf limit exceeded) " + buf.length
+                    + ": " + new String(buf);
+                if (blockLongUris) {
+                    session.shutdownClient();
+                    session.shutdownServer();
+                    throw new ParseException("blocking " + msg);
+                } else {
+                    throw new ParseException("non-http " + msg);
+                }
+            }
             buf[i] = b.get();
 
             if (SP == buf[i] || HT == buf[i]) {
@@ -790,13 +805,24 @@ public class HttpParser extends AbstractParser
     // read *TEXT, folding LWS
     // TEXT           = <any OCTET except CTLs,
     //                  but including LWS>
-    private String eatText(ByteBuffer b)
+    private String eatText(ByteBuffer b) throws ParseException
     {
         eatLws(b);
 
         int l = b.remaining();
 
         for (int i = 0; b.hasRemaining(); i++) {
+            if (buf.length <= i) {
+                String msg = "(buf limit exceeded) " + buf.length
+                    + ": " + new String(buf);
+                if (blockLongUris) {
+                    session.shutdownClient();
+                    session.shutdownServer();
+                    throw new ParseException("blocking " + msg);
+                } else {
+                    throw new ParseException("non-http " + msg);
+                }
+            }
             buf[i] = b.get();
             if (isCtl(buf[i])) {
                 b.position(b.position() - 1);

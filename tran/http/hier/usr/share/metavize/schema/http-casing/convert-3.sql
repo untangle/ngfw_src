@@ -12,7 +12,6 @@ ALTER TABLE events.tr_http_evt_resp
 ALTER TABLE events.tr_http_evt_resp
     ALTER COLUMN event_id SET NOT NULL;
 
-
 -- com.metavize.tran.http.HttpRequestEvent
 CREATE TABLE events.tr_http_evt_req AS SELECT * FROM public.tr_http_evt_req;
 
@@ -47,8 +46,12 @@ CREATE TABLE settings.tr_http_settings (
     tid,
     enabled,
     non_http_blocked,
-    max_header_length)
-AS SELECT nextval('hibernate_sequence'), tid, true, false, 4096::int4
+    max_header_length,
+    block_long_headers,
+    max_uri_length,
+    block_long_uris)
+AS SELECT nextval('hibernate_sequence'), tid, true, false,
+          4096::int4, false, 4096::int4, false
    FROM transform_persistent_state WHERE name = 'http-casing';
 
 ALTER TABLE settings.tr_http_settings
@@ -63,6 +66,12 @@ ALTER TABLE settings.tr_http_settings
     ALTER COLUMN non_http_blocked SET NOT NULL;
 ALTER TABLE settings.tr_http_settings
     ALTER COLUMN max_header_length SET NOT NULL;
+ALTER TABLE settings.tr_http_settings
+    ALTER COLUMN block_long_headers SET NOT NULL;
+ALTER TABLE settings.tr_http_settings
+    ALTER COLUMN max_uri_length SET NOT NULL;
+ALTER TABLE settings.tr_http_settings
+    ALTER COLUMN block_long_uris SET NOT NULL;
 
 -- foreign key constraints
 
