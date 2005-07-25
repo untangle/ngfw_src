@@ -214,7 +214,7 @@ class HttpInvoker extends InvokerBase
                         LoginDesc loginDesc = logins.get(loginSession);
                         InetAddress cAddr = loginSession.getClientAddr();
                         // don't expire local logins
-                        if (!cAddr.isLocalAddress() && null != loginDesc) {
+                        if (!cAddr.isLoopbackAddress() && null != loginDesc) {
                             Date lastAccess = loginDesc.getLastAccess();
                             if (cutoff.after(lastAccess)) {
                                 logins.remove(loginSession);
