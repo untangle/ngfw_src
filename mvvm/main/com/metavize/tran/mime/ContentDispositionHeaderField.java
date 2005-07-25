@@ -37,9 +37,9 @@ import java.io.*;
 public class ContentDispositionHeaderField 
   extends HeaderField {
 
-  private static final String ATTACH_VAL = "attachment";
-  private static final String INLINE_VAL = "inline";
-  private static final String FILENAME_KEY = "filename";
+  public static final String ATTACH_VAL = "attachment";
+  public static final String INLINE_VAL = "inline";
+  public static final String FILENAME_KEY = "filename";
   
   public enum DispositionType {
     ATTACH,

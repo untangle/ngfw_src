@@ -14,6 +14,7 @@ import org.apache.log4j.Logger;
 import java.io.*;
 import static com.metavize.tran.util.ASCIIUtil.*;
 import java.nio.*;
+import com.metavize.tran.util.TemplateValues;
 
 
 /**
@@ -24,10 +25,22 @@ import java.nio.*;
  * cases, we're dealing with individual HeaderField entries.  Where things are
  * ambigious, the docs for the method will specify.
  * <br>
+ * <br>
+ * This class also implements {@link com.metavize.tran.util.TemplateValues TemplateValues}.
+ * Valid token names for headers are <code>MIMEHeader:&lt;headerName></code> where <code>headerName</code>
+ * is the case insensitive name of the header.  This variable will be replaced by the variable
+ * of that name, or null if not found.  If there are multiple HeaderFields for the given header
+ * name, a comma (",") will be used to separate values.
+ * <br>
+ * <br> 
  * <b>Not threadsafe</b>
  */
-public class Headers {
+public class Headers
+  implements TemplateValues,
+    Iterable<HeaderField> {
 
+  public static String MIME_HEADER_VAR_PREFIX = "MIMEHeader:";
+  
   private final Logger m_logger = Logger.getLogger(Headers.class);
 
   private HeaderFieldFactory m_factory;
@@ -72,6 +85,38 @@ public class Headers {
     m_headersInOrder = headersInOrder;
     m_headersByName = headersByName;
     m_changed = false;
+  }
+
+  public Iterator<HeaderField> iterator() {
+    return m_headersInOrder.iterator();
+  }
+
+  /**
+   * For use in Templates (see JavaDoc at the top of this class
+   * for explanation of vairable format}.
+   */
+  public String getTemplateValue(String key) {
+    int index = key.toLowerCase().indexOf(MIME_HEADER_VAR_PREFIX);
+    if(index > 0) {
+      String headerName = key.substring(MIME_HEADER_VAR_PREFIX.length());
+      List<HeaderField> headers = getHeaderFields(headerName);
+      if(headers == null) {
+        return null;
+      }
+      StringBuilder sb = new StringBuilder();
+      boolean first = true;
+      for(HeaderField header : headers) {
+        if(first) {
+          first = false;
+        }
+        else {
+          sb.append(", ");
+        }
+        sb.append(header.getValueAsString());
+      }
+      return sb.toString();
+    }
+    return null;
   }
   
   public void setObserver(HeadersObserver observer) {
@@ -177,6 +222,11 @@ public class Headers {
   private void changed() {
     m_changed = true;
     m_sourceRecord = null;
+  }
+
+  protected void clearChanged(MIMESourceRecord sourceRecord) {
+    m_changed = false;
+    m_sourceRecord = sourceRecord;
   }
   
   /**

@@ -56,8 +56,12 @@ public class ContentTypeHeaderField
   //popular subtypes
   public static final String PLAIN_SUB_TYPE_STR = "plain";
   public static final String HTML_SUB_TYPE_STR = "html";  
-  public static final String RFC222_SUB_TYPE_STR = "rfc822";    
-  
+  public static final String RFC222_SUB_TYPE_STR = "rfc822";
+  public static final String MIXED_SUB_TYPE_STR = "mixed";   
+
+  public static final String MULTIPART_MIXED = MULTIPART_PRIM_TYPE_STR + "/" + MIXED_SUB_TYPE_STR;
+  public static final String MESSAGE_RFC822 = MESSAGE_PRIM_TYPE_STR + "/" + RFC222_SUB_TYPE_STR;
+  public static final String TEXT_PLAIN = TEXT_PRIM_TYPE_STR + "/" + PLAIN_SUB_TYPE_STR;
   
 
   

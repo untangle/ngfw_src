@@ -35,6 +35,7 @@ public class MIMEPart {
   private MIMEPartObserver m_observer;
   
   private MIMESourceRecord m_sourceRecord;
+  private List<MIMESourceRecord> m_oldSourceRecords;
   private ContentXFerEncodingHeaderField.XFreEncoding m_sourceEncoding;
   private long m_preambleLen;//Only when Multipart
   private long m_epilogueLen;//Only when Multipart
@@ -45,9 +46,15 @@ public class MIMEPart {
   
   private boolean m_changed = false;
   private boolean m_disposed = false;
+
+  private MIMEPart m_parent;
   
   protected MIMEPart() {
+    this(new MIMEPartHeaders());
   }
+  protected MIMEPart(MIMEPartHeaders headers) {
+    m_headers = headers;
+  }  
  
   
   /**
@@ -55,6 +62,7 @@ public class MIMEPart {
    */
   public MIMEPart(MIMEParsingInputStream stream,
     MIMESource source,
+    boolean ownsSource,
     MIMEPolicy policy,
     String outerBoundary) throws IOException,
       InvalidHeaderDataException, 
@@ -64,6 +72,7 @@ public class MIMEPart {
     parse(new MIMEPartHeaderFieldFactory(),
       stream,
       source,
+      ownsSource,
       policy,
       outerBoundary);
   }
@@ -72,6 +81,7 @@ public class MIMEPart {
    */
   public MIMEPart(MIMEParsingInputStream stream,
     MIMESource source,
+    boolean ownsSource,
     MIMEPolicy policy,
     String outerBoundary,
     MIMEPartHeaders headers) throws IOException,
@@ -84,6 +94,7 @@ public class MIMEPart {
       
     parseAfterHeaders(stream,
       source,
+      ownsSource,
       policy,
       outerBoundary);
   }  
@@ -94,18 +105,22 @@ public class MIMEPart {
  // Factory Methods
  //==============================
     
-//  public static MIMEPart createMultipart(String subtype) {
-//    MIMEPart part = new MIMEPart();
-//    m_headers = new MIMEPartHeaders(new MIMEPartHeaderFieldFactory());
-//    m_children = new ArrayList<MIMEPart>();
-//  }
-  
-    
-  
+
  //==============================
  // Lifecycle Methods
  //==============================
-  
+
+  /**
+   * Get the parent part of this MIME part.  Note that
+   * this may be null if this is a top-level (or unattached)
+   * part.
+   */
+  public MIMEPart getParent() {
+    return m_parent;
+  }
+  public void setParent(MIMEPart parent) {
+    m_parent = parent;
+  }
   /**
    * Dispose of this Part and 
    * any children (if {@link #isMultipart multipart}.
@@ -117,7 +132,7 @@ public class MIMEPart {
   public void dispose() {
     m_disposed = true;
     if(isMultipart()) {
-      for(MIMEPart child : m_children) {
+      for(MIMEPart child : getChildList()) {
         child.setObserver(null);
         child.dispose();
       }
@@ -129,7 +144,14 @@ public class MIMEPart {
     closeSourceRecord(m_decodedContentRecord);
     m_decodedContentRecord = null;
     closeSourceRecord(m_rawContentRecord);
-    m_rawContentRecord = null;   
+    m_rawContentRecord = null;
+    if(m_oldSourceRecords != null) {
+      for(MIMESourceRecord record : m_oldSourceRecords) {
+        closeSourceRecord(record);
+      }
+      m_oldSourceRecords.clear();
+      m_oldSourceRecords = null;
+    }
   }
   
   private void closeSourceRecord(MIMESourceRecord record) {
@@ -149,7 +171,7 @@ public class MIMEPart {
     return m_disposed;
   }
   
-  private void checkDisposed()
+  protected void checkDisposed()
     throws IllegalStateException {
     if(m_disposed) {
       throw new IllegalStateException("MIMEPart already disposed");
@@ -161,7 +183,11 @@ public class MIMEPart {
     if(m_observer != null) {
       m_observer.mIMEPartChanged(this);
     }
-  } 
+  }
+  protected MIMESourceRecord getSourceRecord() {
+    return m_sourceRecord;
+  }
+  
   public boolean isChanged() {
     return m_changed;
   } 
@@ -230,10 +256,17 @@ public class MIMEPart {
    * to have no children.
    */
   public boolean hasChildren() {
+    return getNumChildren() > 0;
+  }
+
+  /**
+   * Gets the number of children (only applies to multiparts)
+   */
+  public int getNumChildren() {
     checkDisposed();
     return isMultipart()?
-      m_children != null && m_children.size() > 0:
-      false;
+      getChildList().size():
+      0;    
   }
   
   /**
@@ -255,7 +288,7 @@ public class MIMEPart {
     }
     //Copy array, so no one can manipulate
     //without us knowing
-    return mpListToArray(m_children);
+    return mpListToArray(getChildList());
   }
   
   /**
@@ -272,7 +305,7 @@ public class MIMEPart {
   
   private void getLeafPartsInto(List<MIMEPart> list, 
     boolean recurse) {
-    for(MIMEPart child : m_children) {
+    for(MIMEPart child : getChildList()) {
     
       if(child.isMultipart()) {
         if(recurse) {
@@ -293,6 +326,14 @@ public class MIMEPart {
   }
   
   /**
+   * Remove the given child part.  This method only applies
+   * to Multipart parts.
+   * <br><br>
+   * <b>Use this method only if you know what you're doing.
+   * Otherwise, I recommend calling
+   * {@link com.metavize.tran.mime.MIMEUtil#removeChild MIMEUtil} to
+   * fixup alignment/content type issues.</b>
+   * <br><br>
    * <b>Note that the child is disposed after this
    * method is called.  If the part is to be re-used in
    * another message, it must be copied first</b>
@@ -302,7 +343,7 @@ public class MIMEPart {
     if(!isMultipart()) {
       return;
     }    
-    ListIterator<MIMEPart> it = m_children.listIterator();
+    ListIterator<MIMEPart> it = getChildList().listIterator();
     while(it.hasNext()) {
       MIMEPart child = it.next();
       if(child.equals(doomed)) {
@@ -318,7 +359,7 @@ public class MIMEPart {
     if(!isMultipart()) {
       return false;
     }
-    return m_children.contains(part);
+    return getChildList().contains(part);
   }
   /**
    * This method throws an UnsupportedOperationException if the
@@ -329,15 +370,41 @@ public class MIMEPart {
     if(!isMultipart()) {
       throw new UnsupportedOperationException("Cannot add children if not multipart");
     }
-    m_children.add(child);
+    getChildList().add(child);
+    child.setParent(this);
     child.setObserver(m_childObserver);
     changed();
+  }
+
+
+  /**
+   * Use this method carefully.  It assumes that the content
+   * is encoded, unless the encoding defined by the headers
+   * on this part do not require decoding (such as 7bit).
+   * <br><br>
+   * This only applies to non-multiparts.
+   */
+  public void setContent(MIMESourceRecord record) {
+    changed();
+    if(m_decodedContentRecord != null && !m_decodedContentRecord.isShared()) {
+      m_decodedContentRecord.source.close();
+    }
+    if(m_rawContentRecord != null && !m_rawContentRecord.isShared()) {
+      m_rawContentRecord.source.close();
+    }
+    if(m_sourceRecord != null && !m_sourceRecord.isShared()) {
+      m_sourceRecord.source.close();
+    }
+    m_decodedContentRecord = null;
+    m_rawContentRecord = null;
+    m_decodedContentRecord = record;
+    m_sourceRecord = record;
   }
   
   private static void addAttachmentsInto(MIMEPart source,
     List<MIMEPart> target) {
     if(source.isMultipart()) {
-      for(MIMEPart part : source.m_children) {
+      for(MIMEPart part : source.getChildList()) {
         addAttachmentsInto(part, target);
       }
     }
@@ -348,6 +415,13 @@ public class MIMEPart {
   
   private MIMEPart[] mpListToArray(List<MIMEPart> list) {
     return (MIMEPart[]) list.toArray(new MIMEPart[list.size()]);
+  }
+
+  private List<MIMEPart> getChildList() {
+    if(m_children == null) {
+      m_children = new ArrayList<MIMEPart>();
+    }
+    return m_children;
   }
   
   
@@ -533,7 +607,8 @@ public class MIMEPart {
  //==============================
  // Output Methods
  //==============================
-    
+
+
   
   /**
    * Write this MIMEPart and all children to
@@ -545,7 +620,7 @@ public class MIMEPart {
    *
    * @param out the output stream
    */
-  public final void writeTo(MIMEOutputStream out)
+  public void writeTo(MIMEOutputStream out)
     throws IOException {  
     
     checkDisposed();
@@ -568,7 +643,7 @@ public class MIMEPart {
           String boundary = m_headers.getContentTypeHF().getBoundary();//Shouldn't be null
           
           //Write preamble (if there was one)
-          if(m_preambleLen > 0) {
+          if(m_preambleLen > 0 && m_sourceRecord!= null) {
             mpis = m_sourceRecord.source.getInputStream(m_sourceRecord.start);
             out.pipe(mpis, m_preambleLen);
             mpis.close();
@@ -576,7 +651,7 @@ public class MIMEPart {
           out.write((byte)DASH);
           out.write((byte)DASH);
           out.write(boundary);
-          for(MIMEPart child : m_children) {
+          for(MIMEPart child : getChildList()) {
             out.writeLine();
             child.writeTo(out);
             out.writeLine();
@@ -588,7 +663,7 @@ public class MIMEPart {
           out.write((byte)DASH);
           out.writeLine();
           //Write epilogue (if there was one)
-          if(m_epilogueLen > 0) {
+          if(m_epilogueLen > 0 && m_sourceRecord!= null) {
             mpis = m_sourceRecord.source.getInputStream(m_sourceRecord.len - m_epilogueLen);
             out.pipe(mpis, m_epilogueLen);
             mpis.close();
@@ -637,6 +712,7 @@ public class MIMEPart {
     MIMEPartHeaderFieldFactory headerFactory,
     MIMEParsingInputStream stream,
     MIMESource source,
+    boolean ownsSource,
     MIMEPolicy policy,
     String outerBoundary) throws IOException,
       InvalidHeaderDataException, 
@@ -653,6 +729,7 @@ public class MIMEPart {
       
     return parseAfterHeaders(stream,
       source,
+      ownsSource,
       policy,
       outerBoundary);
   }
@@ -660,6 +737,7 @@ public class MIMEPart {
     
   protected MIMEParsingInputStream.BoundaryResult parseAfterHeaders(MIMEParsingInputStream stream,
     MIMESource source,
+    boolean ownsSource,
     MIMEPolicy policy,
     String outerBoundary)  throws IOException, 
       InvalidHeaderDataException, 
@@ -700,6 +778,7 @@ public class MIMEPart {
         return parseBodyContent(stream,
           source,
           (int) stream.position(),
+          ownsSource,
           policy,
           outerBoundary);
       }
@@ -707,6 +786,7 @@ public class MIMEPart {
         return parseMultipartContent(stream,
           source,
           (int) stream.position(),
+          ownsSource,
           policy,
           innerBoundary,
           outerBoundary);
@@ -716,6 +796,7 @@ public class MIMEPart {
       return parseBodyContent(stream,
         source,
         (int) stream.position(),
+        ownsSource,        
         policy,
         outerBoundary);
     }
@@ -727,6 +808,7 @@ public class MIMEPart {
   private MIMEParsingInputStream.BoundaryResult parseBodyContent(MIMEParsingInputStream stream,
     MIMESource source,
     int contentStart,
+    boolean ownsSource,
     MIMEPolicy policy,
     String outerBoundary) 
     throws IOException, 
@@ -756,7 +838,7 @@ public class MIMEPart {
     m_sourceRecord = new MIMESourceRecord(source,
       contentStart,
       (int) recordLen,
-      true);
+      !ownsSource);
     m_sourceEncoding = getXFerEncoding();
     m_logger.debug("ENDOF parse body content (position: " + 
       stream.position() + ")");     
@@ -766,6 +848,7 @@ public class MIMEPart {
   private MIMEParsingInputStream.BoundaryResult parseMultipartContent(MIMEParsingInputStream stream,
     MIMESource source,
     int contentStart,
+    boolean ownsSource,
     MIMEPolicy policy,
     String innerBoundary,
     String outerBoundary) 
@@ -801,7 +884,7 @@ public class MIMEPart {
       m_sourceRecord = new MIMESourceRecord(source,
         contentStart,
         ((int) stream.position()) - contentStart,
-        true);
+        !ownsSource);
       m_logger.debug("ENDOF parse multipart part (position: " + 
         stream.position() + ")");
       return boundaryResult;       
@@ -815,11 +898,13 @@ public class MIMEPart {
       m_logger.debug("BEGIN Add Child Part (position: " + stream.position() + ")");
       boundaryResult = newChild.parse(new MIMEPartHeaderFieldFactory(),
         stream, 
-        source, 
+        source,
+        false,
         policy, 
         innerBoundary);
       m_logger.debug("ENDOF Add Child Part (position: " + stream.position() + ")");
       newChild.setObserver(m_childObserver);
+      newChild.setParent(this);
       m_children.add(newChild);        
     }
     
@@ -843,7 +928,7 @@ public class MIMEPart {
     m_sourceRecord = new MIMESourceRecord(source,
       contentStart,
       (int) recordLen,
-      true);
+      !ownsSource);
     m_logger.debug("ENDOF parse multipart part (position: " + 
       stream.position() + ")");        
     return boundaryResult;
@@ -931,6 +1016,7 @@ public class MIMEPart {
     
     MIMEPart mp = new MIMEPart(source.getInputStream(),
       source,
+      true,
       new MIMEPolicy(),
       null);
     

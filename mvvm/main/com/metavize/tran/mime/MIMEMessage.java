@@ -31,7 +31,10 @@ public class MIMEMessage
   
   protected MIMEMessage() {
     super();
-  }  
+  }
+  protected MIMEMessage(MIMEMessageHeaders headers) {
+    super(headers);
+  }    
   
   /**
    * Construct a MIME part, reading until the outerBoundary.
@@ -49,6 +52,7 @@ public class MIMEMessage
     parse(new MailMessageHeaderFieldFactory(),
       stream,
       source,
+      true,
       policy,
       outerBoundary);
   }
@@ -64,7 +68,7 @@ public class MIMEMessage
       InvalidHeaderDataException, 
       HeaderParseException,
       MIMEPartParseException {    
-    super(stream, source, policy, outerBoundary, headers);
+    super(stream, source, true, policy, outerBoundary, headers);
   }
   
   /**
@@ -75,6 +79,39 @@ public class MIMEMessage
    */
   public MIMEMessageHeaders getMMHeaders() {
     return (MIMEMessageHeaders) getMPHeaders();
+  }
+
+ /**
+  * Get the contents of this MIMEPart as a file.  This applies to
+  * 
+  */
+  public final File toFile(FileFactory fileFactory)
+    throws IOException {
+    //TODO bscott an optimization would be to accumulate old SourceRecords,
+    //     so if a changed MIMEMessage is written to file twice, we really only
+    //     write it once (and assign the new File as the SourceRecord).
+    if(isChanged() || getSourceRecord() == null) {
+      FileOutputStream fOut = null;
+      try {
+        File ret = fileFactory.createFile();
+        fOut = new FileOutputStream(ret);
+        BufferedOutputStream bufOut = new BufferedOutputStream(fOut);
+        MIMEOutputStream mimeOut = new MIMEOutputStream(bufOut);
+        writeTo(mimeOut);
+        mimeOut.flush();
+        bufOut.flush();
+        fOut.flush();
+        fOut.close();
+        return ret;
+      }
+      catch(IOException ex) {
+        try{fOut.close();}catch(Exception ignore){}
+        IOException ex2 = new IOException();
+        ex2.initCause(ex);
+        throw ex;
+      }
+    }
+    return getSourceRecord().source.toFile(fileFactory);
   }  
   
 //------------- Debug/Test ---------------  
