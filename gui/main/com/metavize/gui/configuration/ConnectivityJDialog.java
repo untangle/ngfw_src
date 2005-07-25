@@ -102,7 +102,7 @@ public class ConnectivityJDialog extends javax.swing.JDialog implements java.awt
         getContentPane().add(jProgressBar, gridBagConstraints);
 
         proceedJButton.setFont(new java.awt.Font("Default", 0, 12));
-        proceedJButton.setText("<html><b>Close</b> window</html>");
+        proceedJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/images/Button_Close_Dialog_106x17.png")));
         proceedJButton.setDoubleBuffered(true);
         proceedJButton.setFocusPainted(false);
         proceedJButton.setFocusable(false);

@@ -25,22 +25,11 @@ public class BlinkJLabel extends JLabel implements ActionListener {
     
     private static final int BLINK_DELAY_MILLIS = 750;
     
-    private static ImageIcon iconOnState, iconOffState, iconStoppedState, iconPausedState;
     private Icon lastIcon, targetIcon;
     private volatile boolean blink = false;
     private Timer blinkTimer;
-
     
     public BlinkJLabel() {        
-        if(iconOnState == null)  
-            iconOnState = new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/metavize/gui/transform/IconOnState28x28.png"));
-        if(iconOffState == null)
-            iconOffState = new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/metavize/gui/transform/IconOffState28x28.png"));    
-        if(iconStoppedState == null)
-            iconStoppedState = new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/metavize/gui/transform/IconStoppedState28x28.png"));
-        if(iconPausedState == null)
-            iconPausedState = new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/metavize/gui/transform/IconAttentionState28x28.png"));
-
 	blinkTimer = new Timer( BLINK_DELAY_MILLIS, (ActionListener) this );
 	blinkTimer.setInitialDelay( 0 );
     }
@@ -59,30 +48,30 @@ public class BlinkJLabel extends JLabel implements ActionListener {
 	switch(viewState){
 	    // dynamic states
             case PROBLEM_STATE :
-                lastIcon = iconStoppedState;
+                lastIcon = Util.getIconStoppedState();
                 blink(true);
                 break;
             case PROCESSING_STATE :
-		if(this.getIcon() != iconPausedState)
+		if(this.getIcon() != Util.getIconPausedState())
 		    lastIcon = this.getIcon();
                 blink(true);
                 break;
             case STARTING_STATE :
-                lastIcon = iconOnState;
+                lastIcon = Util.getIconOnState();
                 blink(true);
                 break;
             case STOPPING_STATE :
             case REMOVING_STATE :
-                lastIcon = iconOffState;
+                lastIcon = Util.getIconOffState();
                 blink(true);
                 break;
 		// static states
             case ON_STATE :
-                targetIcon = iconOnState;
+                targetIcon = Util.getIconOnState();
                 blink(false);
                 break;
             case OFF_STATE :
-                targetIcon = iconOffState;
+                targetIcon = Util.getIconOffState();
                 blink(false);
                 break;
             }
@@ -106,8 +95,8 @@ public class BlinkJLabel extends JLabel implements ActionListener {
 
     public synchronized void actionPerformed(ActionEvent evt){
         if( blink ){
-            if( this.getIcon() != iconPausedState )
-                this.setIcon(iconPausedState);
+            if( this.getIcon() != Util.getIconPausedState() )
+                this.setIcon(Util.getIconPausedState());
             else
                 this.setIcon(lastIcon);
         }

@@ -186,7 +186,8 @@ public class UpgradeJDialog extends javax.swing.JDialog implements Savable, Refr
         noAutoJRadioButton = new javax.swing.JRadioButton();
         detailJTextArea1 = new javax.swing.JTextArea();
         detailNameJTextField = new javax.swing.JTextField();
-        commitJButton = new javax.swing.JButton();
+        reloadJButton = new javax.swing.JButton();
+        saveJButton = new javax.swing.JButton();
         backgroundJLabel = new com.metavize.gui.widgets.MTiledIconLabel();
 
         getContentPane().setLayout(new java.awt.GridBagLayout());
@@ -196,11 +197,13 @@ public class UpgradeJDialog extends javax.swing.JDialog implements Savable, Refr
         setModal(true);
         setResizable(false);
         closeJButton.setFont(new java.awt.Font("Default", 0, 12));
-        closeJButton.setText("<html><b>Close</b> Window</html>");
+        closeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/images/Button_Close_Window_106x17.png")));
         closeJButton.setDoubleBuffered(true);
         closeJButton.setFocusPainted(false);
         closeJButton.setFocusable(false);
-        closeJButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
+        closeJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        closeJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
+        closeJButton.setMaximumSize(new java.awt.Dimension(117, 25));
         closeJButton.setMinimumSize(new java.awt.Dimension(117, 25));
         closeJButton.setPreferredSize(new java.awt.Dimension(117, 25));
         closeJButton.addActionListener(new java.awt.event.ActionListener() {
@@ -234,12 +237,15 @@ public class UpgradeJDialog extends javax.swing.JDialog implements Savable, Refr
         actionJPanel.setLayout(new java.awt.GridBagLayout());
 
         upgradeJButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        upgradeJButton.setText("<html><b>Upgrade</b> EdgeGuard</html>");
+        upgradeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/images/Button_Upgrade_EdgeGuard_130x17.png")));
         upgradeJButton.setDoubleBuffered(true);
         upgradeJButton.setFocusPainted(false);
         upgradeJButton.setFocusable(false);
         upgradeJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        upgradeJButton.setMargin(new java.awt.Insets(4, 15, 4, 15));
+        upgradeJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
+        upgradeJButton.setMaximumSize(new java.awt.Dimension(157, 25));
+        upgradeJButton.setMinimumSize(new java.awt.Dimension(157, 25));
+        upgradeJButton.setPreferredSize(new java.awt.Dimension(157, 25));
         upgradeJButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 upgradeJButtonActionPerformed(evt);
@@ -456,25 +462,48 @@ public class UpgradeJDialog extends javax.swing.JDialog implements Savable, Refr
         gridBagConstraints.insets = new java.awt.Insets(15, 15, 15, 15);
         advancedJPanel.add(contentJPanel2, gridBagConstraints);
 
-        commitJButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        commitJButton.setText("<html><B>Save Settings</B></html>");
-        commitJButton.setDoubleBuffered(true);
-        commitJButton.setFocusPainted(false);
-        commitJButton.setFocusable(false);
-        commitJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        commitJButton.setMargin(new java.awt.Insets(4, 15, 4, 15));
-        commitJButton.addActionListener(new java.awt.event.ActionListener() {
+        reloadJButton.setFont(new java.awt.Font("Arial", 0, 12));
+        reloadJButton.setIcon(Util.getButtonReloadSettings());
+        reloadJButton.setDoubleBuffered(true);
+        reloadJButton.setFocusPainted(false);
+        reloadJButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
+        reloadJButton.setMaximumSize(new java.awt.Dimension(120, 25));
+        reloadJButton.setMinimumSize(new java.awt.Dimension(120, 25));
+        reloadJButton.setPreferredSize(new java.awt.Dimension(120, 25));
+        reloadJButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                commitJButtonActionPerformed(evt);
+                reloadJButtonActionPerformed(evt);
             }
         });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
-        gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 15, 0);
-        advancedJPanel.add(commitJButton, gridBagConstraints);
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTHEAST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 15, 140);
+        advancedJPanel.add(reloadJButton, gridBagConstraints);
+
+        saveJButton.setFont(new java.awt.Font("Arial", 0, 12));
+        saveJButton.setIcon(Util.getButtonSaveSettings());
+        saveJButton.setDoubleBuffered(true);
+        saveJButton.setFocusPainted(false);
+        saveJButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
+        saveJButton.setMaximumSize(new java.awt.Dimension(78, 25));
+        saveJButton.setMinimumSize(new java.awt.Dimension(78, 25));
+        saveJButton.setPreferredSize(new java.awt.Dimension(78, 25));
+        saveJButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                saveJButtonActionPerformed(evt);
+            }
+        });
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.ipadx = 40;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTHEAST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 15, 15);
+        advancedJPanel.add(saveJButton, gridBagConstraints);
 
         jTabbedPane.addTab("Scheduled Automatic Upgrade", advancedJPanel);
 
@@ -502,15 +531,30 @@ public class UpgradeJDialog extends javax.swing.JDialog implements Savable, Refr
         setBounds((screenSize.width-640)/2, (screenSize.height-480)/2, 640, 480);
     }//GEN-END:initComponents
 
+    private void reloadJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reloadJButtonActionPerformed
+        try{
+            reloadJButton.setIcon(Util.getButtonReloading());
+            doRefresh( Util.getToolboxManager().getUpgradeSettings() );
+        }
+        catch(Exception e){
+            try{
+                Util.handleExceptionWithRestart("Error committing upgrade data", e);
+            }
+            catch(Exception f){
+                Util.handleExceptionNoRestart("Error committing upgrade data", f);
+            }
+        }
+        finally{
+            reloadJButton.setIcon(Util.getButtonReloadSettings());
+        }
+    }//GEN-LAST:event_reloadJButtonActionPerformed
 
-
-
-
-    private void commitJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_commitJButtonActionPerformed
+    private void saveJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveJButtonActionPerformed
         if( Util.getIsDemo() )
             return;
 
         try{
+            saveJButton.setIcon(Util.getButtonSaving());
             UpgradeSettings upgradeSettings = Util.getToolboxManager().getUpgradeSettings();
             doSave( upgradeSettings, false );
             Util.getToolboxManager().setUpgradeSettings( upgradeSettings );
@@ -523,7 +567,14 @@ public class UpgradeJDialog extends javax.swing.JDialog implements Savable, Refr
                 Util.handleExceptionNoRestart("Error committing upgrade data", f);
             }
         }
-    }//GEN-LAST:event_commitJButtonActionPerformed
+        finally{
+            saveJButton.setIcon(Util.getButtonSaveSettings());
+        }
+    }//GEN-LAST:event_saveJButtonActionPerformed
+
+
+
+
 
     private void upgradeJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_upgradeJButtonActionPerformed
         if( Util.getIsDemo() )
@@ -713,7 +764,6 @@ public class UpgradeJDialog extends javax.swing.JDialog implements Savable, Refr
     private javax.swing.JLabel backgroundJLabel;
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JButton closeJButton;
-    protected javax.swing.JButton commitJButton;
     private javax.swing.JPanel contentJPanel;
     private javax.swing.JPanel contentJPanel2;
     protected javax.swing.JTextArea detailJTextArea1;
@@ -728,7 +778,9 @@ public class UpgradeJDialog extends javax.swing.JDialog implements Savable, Refr
     private javax.swing.JTabbedPane jTabbedPane;
     private javax.swing.JCheckBox mondayJCheckBox;
     private javax.swing.JRadioButton noAutoJRadioButton;
+    private javax.swing.JButton reloadJButton;
     private javax.swing.JCheckBox saturdayJCheckBox;
+    private javax.swing.JButton saveJButton;
     private javax.swing.JCheckBox sundayJCheckBox;
     private javax.swing.JCheckBox thursdayJCheckBox;
     private javax.swing.JSpinner timeJSpinner;

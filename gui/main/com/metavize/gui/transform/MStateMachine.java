@@ -129,7 +129,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
     class SaveThread extends Thread{
 	public SaveThread(){
 	    super("MVCLIENT-MStateMachine.SaveThread: " + transformContext.getMackageDesc().getDisplayName());
-	    saveJButton.setText("<html>(saving)</html>");
+	    saveJButton.setIcon(Util.getButtonSaving());
 	    setProcessingView(false);
 	    this.start();
 	}
@@ -148,7 +148,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
 		}
 	    }
 	    finally{
-		saveJButton.setText("<html><b>Save</b> Settings</html>");
+		saveJButton.setIcon(Util.getButtonSaveSettings());
 	    }
 	}
     }
@@ -157,7 +157,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
     class RefreshThread extends Thread{
 	public RefreshThread(){
 	    super("MVCLIENT-MStateMachine.RefreshThread: " + transformContext.getMackageDesc().getDisplayName());
-	    reloadJButton.setText("<html>(reloading)</html>");
+	    reloadJButton.setIcon(Util.getButtonReloading());
 	    setProcessingView(false);
 	    this.start();
 	}
@@ -176,7 +176,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
 		}
 	    }
 	    finally{
-		reloadJButton.setText("<html><b>Reload</b> Settings</html>");
+		reloadJButton.setIcon(Util.getButtonReloadSettings());
 	    }
 	}
     }

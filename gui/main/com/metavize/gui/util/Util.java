@@ -28,21 +28,48 @@ import com.metavize.mvvm.security.*;
 import com.metavize.mvvm.tran.*;
 
 
-/**
- *
- * @author  Ian Nieves
- */
 public class Util {
 
-    // 2.4.0 INFO /////////////////
-    private static String version = "2.5.0"; /* DO NOT EDIT BY HAND */
-    public static String getVersion(){ return version; }
-    /////////////////////////////////
+    static{
+        log = new Vector();
+	ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+	iconOnState = new ImageIcon( classLoader.getResource("com/metavize/gui/transform/IconOnState28x28.png") );
+	iconOffState = new ImageIcon( classLoader.getResource("com/metavize/gui/transform/IconOffState28x28.png") );    
+	iconStoppedState = new ImageIcon( classLoader.getResource("com/metavize/gui/transform/IconStoppedState28x28.png") );
+	iconPausedState = new ImageIcon( classLoader.getResource("com/metavize/gui/transform/IconAttentionState28x28.png") );
+	buttonReloading = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Reloading_106x17.png") );
+	buttonReloadSettings = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Reload_Settings_106x17.png") );
+	buttonSaving = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Saving_106x17.png") );
+	buttonSaveSettings = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Save_Settings_106x17.png") );
+	buttonRefreshLog = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Refresh_Log_106x17.png") );
+	buttonRefreshing = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Refreshing_106x17.png") );
+	buttonStartAutoRefresh = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Start_Auto_Refresh_106x17.png") );
+	buttonStopAutoRefresh = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Stop_Auto_Refresh_106x17.png") );
+	buttonExpandSettings = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Expand_Settings_106x17.png") );
+	buttonCollapseSettings = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Collapse_Settings_106x17.png") );
+
+	buttonCancelPowerOn = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Cancel_Power_On_130x17.png") );
+	buttonContinuePowerOn = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Continue_Power_On_130x17.png") );
+	buttonCancelPowerOff = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Cancel_Power_Off_130x17.png") );
+	buttonContinuePowerOff = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Continue_Power_Off_130x17.png") );
+	buttonCancelRemove = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Cancel_Remove_106x17.png") );
+	buttonContinueRemoving = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Continue_Removing_130x17.png") );
+	buttonCancelSave = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Cancel_Save_106x17.png") );
+	buttonContinueSaving = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Continue_Saving_106x17.png") );
+	buttonCancel = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Cancel_106x17.png") );
+	buttonCancelling = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Cancelling_106x17.png") );
+	buttonProcure = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Procure_106x17.png") );
+	buttonProcuring = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Procuring_106x17.png") );
+	buttonBackupToHardDisk = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Backup_To_Hard_Disk_130x17.png") );
+	buttonBackupToUsbKey = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Backup_To_Usb_Key_130x17.png") );
+    }
+
 
     // LOGIN //////////////////////
     public static final int LOGIN_RETRY_COUNT = 6;
     public static final long LOGIN_RETRY_SLEEP = 3000l;
     ///////////////////////////////
+
     
     // SERVER PROXIES ///////////////
     private static MvvmRemoteContext mvvmContext;
@@ -70,10 +97,73 @@ public class Util {
     public static NetworkingManager getNetworkingManager(){ return networkingManager; }
     ///////////////////////////////////
 
+
+    // BUTTON DECALS /////////////////
+    private static ImageIcon iconOnState;
+    private static ImageIcon iconOffState;
+    private static ImageIcon iconStoppedState;
+    private static ImageIcon iconPausedState;
+    private static ImageIcon buttonReloading;
+    private static ImageIcon buttonReloadSettings;
+    private static ImageIcon buttonSaving;
+    private static ImageIcon buttonSaveSettings;
+    private static ImageIcon buttonRefreshLog;
+    private static ImageIcon buttonRefreshing;
+    private static ImageIcon buttonStartAutoRefresh;
+    private static ImageIcon buttonStopAutoRefresh;
+    private static ImageIcon buttonExpandSettings;
+    private static ImageIcon buttonCollapseSettings;
+    private static ImageIcon buttonCancelPowerOn;
+    private static ImageIcon buttonContinuePowerOn;
+    private static ImageIcon buttonCancelPowerOff;
+    private static ImageIcon buttonContinuePowerOff;
+    private static ImageIcon buttonCancelRemove;
+    private static ImageIcon buttonContinueRemoving;
+    private static ImageIcon buttonCancelSave;
+    private static ImageIcon buttonContinueSaving;
+    private static ImageIcon buttonCancel;
+    private static ImageIcon buttonCancelling;
+    private static ImageIcon buttonProcure;
+    private static ImageIcon buttonProcuring;
+    private static ImageIcon buttonBackupToHardDisk;
+    private static ImageIcon buttonBackupToUsbKey;
+
+    public static ImageIcon getIconOnState(){ return iconOnState; }
+    public static ImageIcon getIconOffState(){ return iconOffState; }
+    public static ImageIcon getIconStoppedState(){ return iconStoppedState; }
+    public static ImageIcon getIconPausedState(){ return iconPausedState; }
+    public static ImageIcon getButtonReloading(){ return buttonReloading; }
+    public static ImageIcon getButtonReloadSettings(){ return buttonReloadSettings; }
+    public static ImageIcon getButtonSaving(){ return buttonSaving; }
+    public static ImageIcon getButtonSaveSettings(){ return buttonSaveSettings; }
+    public static ImageIcon getButtonRefreshLog(){ return buttonRefreshLog; }
+    public static ImageIcon getButtonRefreshing(){ return buttonRefreshing; }
+    public static ImageIcon getButtonStartAutoRefresh(){ return buttonStartAutoRefresh; }
+    public static ImageIcon getButtonStopAutoRefresh(){ return buttonStopAutoRefresh; }
+    public static ImageIcon getButtonExpandSettings(){ return buttonExpandSettings; }
+    public static ImageIcon getButtonCollapseSettings(){ return buttonCollapseSettings; }
+    public static ImageIcon getButtonCancelPowerOn(){ return buttonCancelPowerOn; }
+    public static ImageIcon getButtonContinuePowerOn(){ return buttonContinuePowerOn; }
+    public static ImageIcon getButtonCancelPowerOff(){ return buttonCancelPowerOff; }
+    public static ImageIcon getButtonContinuePowerOff(){ return buttonContinuePowerOff; }
+    public static ImageIcon getButtonCancelRemove(){ return buttonCancelRemove; }
+    public static ImageIcon getButtonContinueRemoving(){ return buttonContinueRemoving; }
+    public static ImageIcon getButtonCancelSave(){ return buttonCancelSave; }
+    public static ImageIcon getButtonContinueSaving(){ return buttonContinueSaving; }
+    public static ImageIcon getButtonCancel(){ return buttonCancel; }
+    public static ImageIcon getButtonCancelling(){ return buttonCancelling; }
+    public static ImageIcon getButtonProcure(){ return buttonProcure; }
+    public static ImageIcon getButtonProcuring(){ return buttonProcuring; }
+    public static ImageIcon getButtonBackupToHardDisk(){ return buttonBackupToHardDisk; }
+    public static ImageIcon getButtonBackupToUsbKey(){ return buttonBackupToUsbKey; }
+    //////////////////////////////////
+
+
     // VALIDATION //////////////////
     public static Color INVALID_BACKGROUND_COLOR = Color.PINK;
     public static Color VALID_BACKGROUND_COLOR = new Color(224, 224, 224);
     ///////////////////////////////
+
 
     // LOCAL //////////////////////
     private static boolean isLocal = false;
@@ -81,6 +171,7 @@ public class Util {
     public static void setLocal(boolean isLocalX){ isLocal = isLocalX; }
     public static boolean isLocal(){ return isLocal; }
     //////////////////////////////    
+
 
     // CODEBASE /////////////////
     private static URL serverCodeBase;
@@ -116,6 +207,7 @@ public class Util {
     }
     /////////////////////////////////
 
+
     // UPGRADE /////////////////////
     public static final int UPGRADE_THREAD_SLEEP_MILLIS = 60 * (60 * 1000); // X * (minutes * 1000)
     public static final long UPGRADE_STORE_CHECK_FRESH_MILLIS = 60l * (5l * 1000l); // X * (minutes * 1000)
@@ -130,12 +222,14 @@ public class Util {
     public static void checkedUpgrades(){ lastUpgradeCheck = System.currentTimeMillis(); }
     ///////////////////////////////
 
+
     // DefaultTableColumnModel constants /////////
     public static final int TABLE_TOTAL_WIDTH = 471; /* in pixels (contains extra pixel) */
     public static final int LINENO_MIN_WIDTH = 38; /* # */
     public static final int STATUS_MIN_WIDTH = 55; /* status */
     public static final int TIMESTAMP_MIN_WIDTH = 55; /* time stamp */
     //////////////////////////////////////////////
+
 
     // GUI COMPONENTS AND FUNCTIONALITY //////////
     private static ClassLoader initClassLoader = null;
@@ -166,14 +260,8 @@ public class Util {
     ////////////////////////////////////////////
 
 
+    // EXITING AND SHUTDOWN ///////////////////
     private static boolean killThreads = false;
-    private static final boolean PRINT_MESSAGES = true;
-
-    private static Vector log;
-
-    static{
-        log = new Vector();
-    }
 
     public static boolean getKillThreads(){
         return killThreads;
@@ -182,11 +270,10 @@ public class Util {
         killThreads = true;
         System.exit(i);
     }
-
-
     ////////////////////////////////////////////
     
     
+    // WINDOW PLACEMENT AND FORMATTING /////////
     public static GraphicsConfiguration getGraphicsConfiguration(){
 	GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
         GraphicsDevice graphicsDevice = graphicsEnvironment.getDefaultScreenDevice();
@@ -218,26 +305,6 @@ public class Util {
             childBounds.y = 0;
 
         return childBounds;
-    }
-
-    public static String wrapString(String originalString, int lineLength){
-	StringTokenizer stringTokenizer = new StringTokenizer(originalString);
-	StringBuffer stringBuffer = new StringBuffer();
-	String tempString;
-	int currentLineLength = 0;
-	while( stringTokenizer.hasMoreTokens() ){
-	    tempString = stringTokenizer.nextToken();
-	    
-	    if( currentLineLength + tempString.length() >= lineLength ){
-		stringBuffer.append("<br>" + tempString + " ");
-		currentLineLength = tempString.length() + 1;
-	    }
-	    else{
-		stringBuffer.append(tempString + " ");
-		currentLineLength += (tempString.length() + 1);
-	    }
-	}
-	return stringBuffer.toString();
     }
     
     public static int determineMinHeight(int attemptedMinHeight){
@@ -301,6 +368,12 @@ public class Util {
         //}
 
     }
+    //////////////////////////////////////////////////////
+
+    
+    // EXCEPTION HANDLING AND MESSAGE PRINTING ////////////
+    private static final boolean PRINT_MESSAGES = true;
+    private static Vector log;
 
     public static void handleExceptionNoRestart(String output, Exception e){
         printMessage(output);
@@ -309,7 +382,6 @@ public class Util {
         log.add(e.getMessage());
         log.add(e.getStackTrace());
     }
-
 
     public static void handleExceptionWithRestart(String output, Exception e) throws Exception {
         // DEAL WITH COMMUNICATIONS FAILURES
@@ -361,8 +433,11 @@ public class Util {
         if(PRINT_MESSAGES)
             System.err.println(message);
     }
+    /////////////////////////////////////////////////
 
-    /* choose largest of two values */
+
+
+    // GENERAL UTIL ////////////////////////////////
     public static int chooseMax(int iValue, int iMinValue)
     {
         if (iValue >= iMinValue)
@@ -383,7 +458,11 @@ public class Util {
 	else
 	    return false;
     }
+    ///////////////////////////////////////////
 
+
+
+    // STRING FORMATTING //////////////////////
     public static String padZero(long number){
 	if( number >= 100 )  // uses all 3 digits
 	    return Long.toString(number);
@@ -392,4 +471,25 @@ public class Util {
 	else // uses only 1 digit
 	    return "00" + Long.toString(number);
     }
+
+    public static String wrapString(String originalString, int lineLength){
+	StringTokenizer stringTokenizer = new StringTokenizer(originalString);
+	StringBuffer stringBuffer = new StringBuffer();
+	String tempString;
+	int currentLineLength = 0;
+	while( stringTokenizer.hasMoreTokens() ){
+	    tempString = stringTokenizer.nextToken();
+	    
+	    if( currentLineLength + tempString.length() >= lineLength ){
+		stringBuffer.append("<br>" + tempString + " ");
+		currentLineLength = tempString.length() + 1;
+	    }
+	    else{
+		stringBuffer.append(tempString + " ");
+		currentLineLength += (tempString.length() + 1);
+	    }
+	}
+	return stringBuffer.toString();
+    }
+    ///////////////////////////////////////////
 }

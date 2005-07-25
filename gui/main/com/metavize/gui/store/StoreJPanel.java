@@ -31,6 +31,8 @@ public class StoreJPanel extends javax.swing.JPanel {
         
         initComponents();
         
+        statusProgressBar.setVisible(false);
+        
         if( Util.isLocal() ){
             moreJButton.setEnabled(false);
         }
@@ -55,6 +57,7 @@ public class StoreJPanel extends javax.swing.JPanel {
         priceJLabel = new javax.swing.JLabel();
         moreJButton = new javax.swing.JButton();
         localJLabel = new javax.swing.JLabel();
+        statusProgressBar = new javax.swing.JProgressBar();
 
         setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -116,6 +119,13 @@ public class StoreJPanel extends javax.swing.JPanel {
 
         add(purchaseJPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
 
+        statusProgressBar.setMaximumSize(new java.awt.Dimension(32767, 16));
+        statusProgressBar.setMinimumSize(new java.awt.Dimension(10, 16));
+        statusProgressBar.setPreferredSize(new java.awt.Dimension(148, 16));
+        statusProgressBar.setString("");
+        statusProgressBar.setStringPainted(true);
+        add(statusProgressBar, new org.netbeans.lib.awtextra.AbsoluteConstraints(15, 330, 575, -1));
+
     }//GEN-END:initComponents
 
     private void moreJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_moreJButtonActionPerformed
@@ -138,6 +148,7 @@ public class StoreJPanel extends javax.swing.JPanel {
     private javax.swing.JButton moreJButton;
     private javax.swing.JLabel priceJLabel;
     private javax.swing.JPanel purchaseJPanel;
+    private javax.swing.JProgressBar statusProgressBar;
     private javax.swing.JScrollPane storeJScrollPane;
     // End of variables declaration//GEN-END:variables
     

@@ -83,10 +83,13 @@ public class BackupRestoreJDialog extends javax.swing.JDialog implements java.aw
         setModal(true);
         setResizable(false);
         closeJButton.setFont(new java.awt.Font("Default", 0, 12));
-        closeJButton.setText("Close Window");
+        closeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/images/Button_Close_Window_106x17.png")));
         closeJButton.setDoubleBuffered(true);
         closeJButton.setFocusPainted(false);
         closeJButton.setFocusable(false);
+        closeJButton.setMaximumSize(new java.awt.Dimension(117, 25));
+        closeJButton.setMinimumSize(new java.awt.Dimension(117, 25));
+        closeJButton.setPreferredSize(new java.awt.Dimension(117, 25));
         closeJButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 closeJButtonActionPerformed(evt);
@@ -127,12 +130,15 @@ public class BackupRestoreJDialog extends javax.swing.JDialog implements java.aw
 
         actionJPanel.setLayout(new java.awt.GridBagLayout());
 
-        backupHardDiskJButton.setText("Backup to Hard Disk");
+        backupHardDiskJButton.setIcon(Util.getButtonBackupToHardDisk());
         backupHardDiskJButton.setDoubleBuffered(true);
         backupHardDiskJButton.setFocusPainted(false);
         backupHardDiskJButton.setFocusable(false);
         backupHardDiskJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        backupHardDiskJButton.setMargin(new java.awt.Insets(4, 15, 4, 15));
+        backupHardDiskJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
+        backupHardDiskJButton.setMaximumSize(new java.awt.Dimension(155, 25));
+        backupHardDiskJButton.setMinimumSize(new java.awt.Dimension(155, 25));
+        backupHardDiskJButton.setPreferredSize(new java.awt.Dimension(155, 25));
         backupHardDiskJButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 backupHardDiskJButtonActionPerformed(evt);
@@ -198,12 +204,15 @@ public class BackupRestoreJDialog extends javax.swing.JDialog implements java.aw
 
         actionJPanel1.setLayout(new java.awt.GridBagLayout());
 
-        backupUSBKeyJButton.setText("Backup to USB Key");
+        backupUSBKeyJButton.setIcon(Util.getButtonBackupToUsbKey());
         backupUSBKeyJButton.setDoubleBuffered(true);
         backupUSBKeyJButton.setFocusPainted(false);
         backupUSBKeyJButton.setFocusable(false);
         backupUSBKeyJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        backupUSBKeyJButton.setMargin(new java.awt.Insets(4, 15, 4, 15));
+        backupUSBKeyJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
+        backupUSBKeyJButton.setMaximumSize(new java.awt.Dimension(155, 25));
+        backupUSBKeyJButton.setMinimumSize(new java.awt.Dimension(155, 25));
+        backupUSBKeyJButton.setPreferredSize(new java.awt.Dimension(155, 25));
         backupUSBKeyJButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 backupUSBKeyJButtonActionPerformed(evt);

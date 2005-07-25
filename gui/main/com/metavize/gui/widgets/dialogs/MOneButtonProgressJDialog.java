@@ -69,12 +69,15 @@ public class MOneButtonProgressJDialog extends javax.swing.JDialog implements ja
         getContentPane().add(messageJLabel, gridBagConstraints);
 
         proceedJButton.setFont(new java.awt.Font("Default", 0, 12));
-        proceedJButton.setText("<html><b>Close</b> Dialog</html>");
+        proceedJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/images/Button_Close_Dialog_106x17.png")));
         proceedJButton.setDoubleBuffered(true);
         proceedJButton.setFocusPainted(false);
         proceedJButton.setFocusable(false);
-        proceedJButton.setMinimumSize(new java.awt.Dimension(175, 25));
-        proceedJButton.setPreferredSize(new java.awt.Dimension(175, 25));
+        proceedJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        proceedJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
+        proceedJButton.setMaximumSize(new java.awt.Dimension(125, 25));
+        proceedJButton.setMinimumSize(new java.awt.Dimension(125, 25));
+        proceedJButton.setPreferredSize(new java.awt.Dimension(125, 25));
         proceedJButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 proceedJButtonActionPerformed(evt);

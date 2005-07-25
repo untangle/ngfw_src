@@ -150,15 +150,15 @@ public class MLogTableJPanel extends javax.swing.JPanel {
         eventJPanel.setFocusable(false);
         eventJPanel.setOpaque(false);
         refreshLogJButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        refreshLogJButton.setText("<html><b>Refresh</b> Log</html>");
+        refreshLogJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/images/Button_Refresh_Log_106x17.png")));
         refreshLogJButton.setDoubleBuffered(true);
         refreshLogJButton.setFocusPainted(false);
         refreshLogJButton.setFocusable(false);
         refreshLogJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        refreshLogJButton.setMargin(new java.awt.Insets(3, 5, 3, 5));
-        refreshLogJButton.setMaximumSize(new java.awt.Dimension(100, 27));
-        refreshLogJButton.setMinimumSize(new java.awt.Dimension(100, 27));
-        refreshLogJButton.setPreferredSize(new java.awt.Dimension(100, 27));
+        refreshLogJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
+        refreshLogJButton.setMaximumSize(new java.awt.Dimension(100, 25));
+        refreshLogJButton.setMinimumSize(new java.awt.Dimension(100, 25));
+        refreshLogJButton.setPreferredSize(new java.awt.Dimension(100, 25));
         refreshLogJButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 refreshLogJButtonActionPerformed(evt);
@@ -172,11 +172,13 @@ public class MLogTableJPanel extends javax.swing.JPanel {
         eventJPanel.add(refreshLogJButton, gridBagConstraints);
 
         streamingJToggleButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        streamingJToggleButton.setText("<html> <b>Start</b> Auto-refresh </html>");
+        streamingJToggleButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/images/Button_Start_Auto_Refresh_106x17.png")));
         streamingJToggleButton.setFocusPainted(false);
-        streamingJToggleButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
-        streamingJToggleButton.setMinimumSize(new java.awt.Dimension(125, 27));
-        streamingJToggleButton.setPreferredSize(new java.awt.Dimension(125, 27));
+        streamingJToggleButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        streamingJToggleButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
+        streamingJToggleButton.setMaximumSize(new java.awt.Dimension(125, 25));
+        streamingJToggleButton.setMinimumSize(new java.awt.Dimension(125, 25));
+        streamingJToggleButton.setPreferredSize(new java.awt.Dimension(125, 25));
         streamingJToggleButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 streamingJToggleButtonActionPerformed(evt);
@@ -209,17 +211,15 @@ public class MLogTableJPanel extends javax.swing.JPanel {
     
     private void streamingJToggleButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_streamingJToggleButtonActionPerformed
        if(streamingJToggleButton.isSelected()){
-	   if( (lastMLogTableJPanel != null) && (lastMLogTableJPanel != this) && (lastMLogTableJPanel.streamingJToggleButton.isSelected()) )
-	       lastMLogTableJPanel.streamingJToggleButton.doClick();
            refreshLogJButton.setEnabled(false); 
            refreshThread = new RefreshThread(true);
-           streamingJToggleButton.setText("<html><center><b>Stop</b> Auto-refresh</center></html>");
+           streamingJToggleButton.setIcon(Util.getButtonStopAutoRefresh());
 	   lastMLogTableJPanel = this;
        }
        else{
            refreshLogJButton.setEnabled(true);
            refreshThread.interrupt();
-           streamingJToggleButton.setText("<html><center><b>Start</b> Auto-refresh</center></html>");
+           streamingJToggleButton.setIcon(Util.getButtonStartAutoRefresh());
        }
     }//GEN-LAST:event_streamingJToggleButtonActionPerformed
 
@@ -247,9 +247,15 @@ public class MLogTableJPanel extends javax.swing.JPanel {
 	public RefreshThread(boolean isAutoRefresh){
 	    super("MVCLIENT-MLogTableJPanel.RefreshThread: " + logTransform.getTransformDesc().getDisplayName());
 	    this.isAutoRefresh = isAutoRefresh;
+	    if( !isAutoRefresh // a button was pressed, stop other streaming
+		&& (MLogTableJPanel.this.lastMLogTableJPanel != null)
+		&& (MLogTableJPanel.this.lastMLogTableJPanel != MLogTableJPanel.this)
+		&& (MLogTableJPanel.this.lastMLogTableJPanel.streamingJToggleButton.isSelected()) )
+		MLogTableJPanel.this.lastMLogTableJPanel.streamingJToggleButton.doClick();
 	    if(!isAutoRefresh){
+		MLogTableJPanel.this.streamingJToggleButton.setEnabled(false);
 		MLogTableJPanel.this.refreshLogJButton.setEnabled(false);
-		MLogTableJPanel.this.refreshLogJButton.setText("<html>(refreshing)</html>");
+		MLogTableJPanel.this.refreshLogJButton.setIcon(Util.getButtonRefreshing());
 	    }
 	    this.start();
 	}
@@ -277,8 +283,11 @@ public class MLogTableJPanel extends javax.swing.JPanel {
 	    }
 	    finally{
 		if(!isAutoRefresh){
-		    MLogTableJPanel.this.refreshLogJButton.setEnabled(true);
-		    MLogTableJPanel.this.refreshLogJButton.setText("<html><b>Refresh</b> Log</html>");
+		    SwingUtilities.invokeLater( new Runnable(){ public void run(){
+			MLogTableJPanel.this.streamingJToggleButton.setEnabled(true);
+			MLogTableJPanel.this.refreshLogJButton.setEnabled(true);
+			MLogTableJPanel.this.refreshLogJButton.setIcon(Util.getButtonRefreshLog());
+		    }});
 		}
 	    }
 	}

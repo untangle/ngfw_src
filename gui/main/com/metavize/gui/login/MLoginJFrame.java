@@ -507,7 +507,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
 		    // VERSION MISMATCH ///////
 		    String version = mvvmContext.version();
 		    if( !version.equals("-1") ){
-			if( !version.equals( Util.getVersion() ) ){
+			if( !version.equals( Version.getVersion() ) ){
 			    resetLogin("Error: Client version incorrect.  Try Restarting.");
 			    return;
 			}

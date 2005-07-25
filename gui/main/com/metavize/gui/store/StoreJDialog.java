@@ -31,6 +31,7 @@ import com.metavize.mvvm.tran.*;
  */
 public class StoreJDialog extends MConfigJDialog implements Savable, Refreshable {
 
+
     private static final String NAME_STORE = "Procure a Software Appliance";
 
     private StoreJPanel storeJPanel;
@@ -53,19 +54,20 @@ public class StoreJDialog extends MConfigJDialog implements Savable, Refreshable
         
         storeJPanel.mTransformJPanel.add(mTransformJButton, gridBagConstraints);
         storeJPanel.descriptionJTextArea.setText(mTransformJButton.getFullDescription());
-        
-            
-        this.reloadJButton.setText("<html><b>Cancel</b></html>");
-        this.saveJButton.setText("<html><b>Procure</b></html>");
 
 	super.savableMap.put(NAME_STORE, this);
 	super.refreshableMap.put(NAME_STORE, this);
     }
 
-    public void generateGui(){}
-    public void refreshSettings(){}
-    public void sendSettings(Object settings) throws Exception {}
-    
+    final public void generateGui(){}
+    final public void refreshSettings(){}
+    final public void sendSettings(Object settings) throws Exception {}
+    final public void generateButtonText(){
+	RELOAD_INIT_STRING = Util.getButtonCancel();
+	RELOAD_ACTION_STRING = Util.getButtonCancelling();
+	SAVE_INIT_STRING = Util.getButtonProcure();
+	SAVE_ACTION_STRING = Util.getButtonProcuring();
+    }    
 
     public void doSave(Object settings, boolean validateOnly) throws Exception {
         this.purchasedTransform = true;

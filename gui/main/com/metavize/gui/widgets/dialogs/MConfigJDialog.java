@@ -35,9 +35,7 @@ import javax.swing.event.*;
  */
 public abstract class MConfigJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
 
-    protected Dimension MIN_SIZE = new Dimension(640, 480);
-    protected Dimension MAX_SIZE = new Dimension(1600, 1200);
-
+    
     // SAVING/REFRESHING ///////////
     protected Map<String, Refreshable> refreshableMap = new LinkedHashMap(5);
     protected Map<String, Savable> savableMap = new LinkedHashMap(5);
@@ -45,10 +43,9 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
     ///////////////////////////////
 
 
-
     public MConfigJDialog() {
         super(Util.getMMainJFrame(), true);
-
+	this.generateButtonText();
         this.initComponents();
         this.setBounds( Util.generateCenteredBounds( Util.getMMainJFrame().getBounds(), this.getWidth(), this.getHeight()) );
         this.addWindowListener(this);   
@@ -63,6 +60,19 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
 	refreshAll();
     }
 
+    // BUTTON STRINGS //////////////////////////////////
+    protected ImageIcon RELOAD_INIT_STRING;
+    protected ImageIcon RELOAD_ACTION_STRING;
+    protected ImageIcon SAVE_INIT_STRING;
+    protected ImageIcon SAVE_ACTION_STRING;
+
+    protected void generateButtonText(){	
+	RELOAD_INIT_STRING = Util.getButtonReloadSettings();
+	RELOAD_ACTION_STRING = Util.getButtonReloading();
+	SAVE_INIT_STRING = Util.getButtonSaveSettings();
+	SAVE_ACTION_STRING = Util.getButtonSaving();
+    }
+    ////////////////////////////////////////////////////
 
     // SAVING/REFRESHING ///////////////////////////////
     protected abstract void sendSettings(Object settings) throws Exception;
@@ -124,9 +134,15 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
     ////////////////////////////////////////////
 
 
+    // SIZING ///////////////////////////////
+    protected Dimension MIN_SIZE = new Dimension(640, 480);
+    protected Dimension MAX_SIZE = new Dimension(1600, 1200);
+
     private void dialogResized(){
         Util.resizeCheck(this, MIN_SIZE, MAX_SIZE);
     }
+    ////////////////////////////////////////
+
 
     public void removeActionButtons(){
 	reloadJButton.setVisible(false);
@@ -164,10 +180,15 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
         getContentPane().add(contentJTabbedPane, gridBagConstraints);
 
         closeJButton.setFont(new java.awt.Font("Default", 0, 12));
-        closeJButton.setText("<html><b>Close</b> Window</html>");
+        closeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/images/Button_Close_Window_106x17.png")));
         closeJButton.setDoubleBuffered(true);
         closeJButton.setFocusPainted(false);
         closeJButton.setFocusable(false);
+        closeJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        closeJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
+        closeJButton.setMaximumSize(new java.awt.Dimension(140, 25));
+        closeJButton.setMinimumSize(new java.awt.Dimension(140, 25));
+        closeJButton.setPreferredSize(new java.awt.Dimension(140, 25));
         closeJButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 closeJButtonActionPerformed(evt);
@@ -177,13 +198,12 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
-        gridBagConstraints.ipadx = 50;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 15, 15, 0);
         getContentPane().add(closeJButton, gridBagConstraints);
 
         reloadJButton.setFont(new java.awt.Font("Arial", 0, 12));
-        reloadJButton.setText("<html><b>Reload</b> Settings</html>");
+        reloadJButton.setIcon(RELOAD_INIT_STRING);
         reloadJButton.setDoubleBuffered(true);
         reloadJButton.setFocusPainted(false);
         reloadJButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
@@ -205,7 +225,7 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
         getContentPane().add(reloadJButton, gridBagConstraints);
 
         saveJButton.setFont(new java.awt.Font("Arial", 0, 12));
-        saveJButton.setText("<html><b>Save</b> Settings</html>");
+        saveJButton.setIcon(SAVE_INIT_STRING);
         saveJButton.setDoubleBuffered(true);
         saveJButton.setFocusPainted(false);
         saveJButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
@@ -282,7 +302,7 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
             saveJButton.setEnabled(false);
             reloadJButton.setEnabled(false);
             closeJButton.setEnabled(false);
-	    saveJButton.setText("<html>(saving)</html>");
+	    saveJButton.setIcon(SAVE_ACTION_STRING);
             this.start();
         }
         
@@ -297,7 +317,7 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
                 saveJButton.setEnabled(true);
                 reloadJButton.setEnabled(true);
                 closeJButton.setEnabled(true);
-		saveJButton.setText("<html><b>Save</b> Settings</html>");
+		saveJButton.setIcon(SAVE_INIT_STRING);
             }
         }
     }
@@ -309,7 +329,7 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
             saveJButton.setEnabled(false);
             reloadJButton.setEnabled(false);
             closeJButton.setEnabled(false);
-	    reloadJButton.setText("<html>(reloading)</html>");
+	    reloadJButton.setIcon(RELOAD_ACTION_STRING);
             this.start();
         }
         
@@ -324,7 +344,7 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
                 saveJButton.setEnabled(true);
                 reloadJButton.setEnabled(true);
                 closeJButton.setEnabled(true);
-		reloadJButton.setText("<html><b>Reload</b> Settings</html>");
+		reloadJButton.setIcon(RELOAD_INIT_STRING);
             }
         }
     }

@@ -210,7 +210,6 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
         reloadJButton = new javax.swing.JButton();
         saveJButton = new javax.swing.JButton();
         readoutJLabel = new javax.swing.JLabel();
-        tintJPanel = new javax.swing.JPanel();
         backgroundJLabel = new com.metavize.gui.widgets.MTiledIconLabel();
 
         setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -238,7 +237,7 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
         contentJPanel.add(mTabbedPane, gridBagConstraints);
 
         removeJButton.setFont(new java.awt.Font("Arial", 0, 12));
-        removeJButton.setText("<html><b>Remove</b> Appliance</html>");
+        removeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/images/Button_Remove_Appliance_106x17.png")));
         removeJButton.setDoubleBuffered(true);
         removeJButton.setFocusPainted(false);
         removeJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -254,7 +253,7 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
         contentJPanel.add(removeJButton, gridBagConstraints);
 
         expandJButton.setFont(new java.awt.Font("Arial", 0, 12));
-        expandJButton.setText("<html><b>Expand</b> Settings</html>");
+        expandJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/images/Button_Expand_Settings_106x17.png")));
         expandJButton.setDoubleBuffered(true);
         expandJButton.setFocusPainted(false);
         expandJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -277,7 +276,7 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
         contentJPanel.add(expandJButton, gridBagConstraints);
 
         reloadJButton.setFont(new java.awt.Font("Arial", 0, 12));
-        reloadJButton.setText("<html><b>Reload</b> Settings</html>");
+        reloadJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/images/Button_Reload_Settings_106x17.png")));
         reloadJButton.setDoubleBuffered(true);
         reloadJButton.setFocusPainted(false);
         reloadJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -300,7 +299,7 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
         contentJPanel.add(reloadJButton, gridBagConstraints);
 
         saveJButton.setFont(new java.awt.Font("Arial", 0, 12));
-        saveJButton.setText("<html><b>Save</b> Settings</html>");
+        saveJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/images/Button_Save_Settings_106x17.png")));
         saveJButton.setDoubleBuffered(true);
         saveJButton.setFocusPainted(false);
         saveJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -333,12 +332,6 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
         readoutJLabel.setIconTextGap(0);
         add(readoutJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(175, 50, 250, 250));
 
-        tintJPanel.setMaximumSize(new java.awt.Dimension(596, 380));
-        tintJPanel.setMinimumSize(new java.awt.Dimension(596, 380));
-        tintJPanel.setOpaque(false);
-        tintJPanel.setPreferredSize(new java.awt.Dimension(596, 380));
-        add(tintJPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
-
         backgroundJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/images/LightGreyBackground1600x100.png")));
         backgroundJLabel.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(128, 127, 127)));
         backgroundJLabel.setDoubleBuffered(true);
@@ -363,11 +356,11 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
 
             // place new window in the center of parent window and show
             MTransformControlsJPanel.this.expandJDialog.setBounds( Util.generateCenteredBounds(Util.getMMainJFrame().getBounds(), expandJDialog.getWidth(), expandJDialog.getHeight()) );
-	    expandJButton.setText("<html><b>Collapse</b> Settings</html>");
+	    expandJButton.setIcon(Util.getButtonCollapseSettings());
             MTransformControlsJPanel.this.expandJDialog.setVisible(true);
 
             // cleanup after new window is closed
-	    expandJButton.setText("<html><b>Expand</b> Settings</html>");
+	    expandJButton.setIcon(Util.getButtonExpandSettings());
             MTransformControlsJPanel.this.expandJDialog.getContentPane().remove(contentJPanel);
             MTransformControlsJPanel.this.socketJPanel.add(contentJPanel);
             MTransformControlsJPanel.this.socketJPanel.revalidate();
@@ -389,7 +382,6 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
     protected javax.swing.JButton saveJButton;
     protected javax.swing.JPanel socketJPanel;
     private javax.swing.ButtonGroup stateButtonGroup;
-    private javax.swing.JPanel tintJPanel;
     // End of variables declaration//GEN-END:variables
 
 

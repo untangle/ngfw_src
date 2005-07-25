@@ -11,7 +11,7 @@
 
 package com.metavize.gui.widgets.dialogs;
 
-
+import com.metavize.gui.util.Util;
 /**
  *
  * @author inieves
@@ -21,13 +21,13 @@ final public class PowerProceedDialog extends MTwoButtonJDialog {
     public PowerProceedDialog(String applianceName, boolean powerOn) {
         this.setTitle(applianceName + " Warning");
         if(powerOn){
-            this.cancelJButton.setText("<html><b>Cancel</b> power on</html>");
-            this.proceedJButton.setText("<html><b>Continue</b> power on</html>");
+            this.cancelJButton.setIcon(Util.getButtonCancelPowerOn());
+            this.proceedJButton.setIcon(Util.getButtonContinuePowerOn());
             messageJLabel.setText("<html><center>" + applianceName + " is about to be powered on.<br><br><b>Would you like to proceed?<b></center></html>");
         }
         else{
-            this.cancelJButton.setText("<html><b>Cancel</b> power off</html>");
-            this.proceedJButton.setText("<html><b>Continue</b> power off</html>");
+            this.cancelJButton.setIcon(Util.getButtonCancelPowerOff());
+            this.proceedJButton.setIcon(Util.getButtonContinuePowerOff());
             messageJLabel.setText("<html><center>" + applianceName + " is about to be powered off.<br><br><b>Would you like to proceed?<b></center></html>");
         }
         
