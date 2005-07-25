@@ -46,7 +46,7 @@ public class ProtoFilterImpl extends AbstractTransform implements ProtoFilter
         + "client_intf, server_intf "
         + "FROM pl_endp endp "
         + "JOIN tr_protofilter_evt USING (session_id) "
-        + "ORDER BY create_date DESC LIMIT 100";
+        + "ORDER BY create_date DESC LIMIT ?";
 
     private final SoloPipeSpec pipeSpec = new SoloPipeSpec
         ("protofilter", this, handler, Fitting.OCTET_STREAM,
