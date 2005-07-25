@@ -375,6 +375,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
         <include name="com/metavize/tran/mail/MessageInfo.class"/>
         <include name="com/metavize/tran/mail/MessageInfoAddr.class"/>
         <include name="com/metavize/tran/mail/MessageStats.class"/>
+        <include name="com/metavize/tran/mail/MIMEMessageHolderT.class"/>
         <include name="com/metavize/tran/mail/MimeBoundary.class"/>
         <include name="com/metavize/tran/mail/MimeStateMachine*.class"/>
         <include name="com/metavize/tran/mail/PopCommand*.class"/>
@@ -384,7 +385,6 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
         <include name="com/metavize/tran/mail/SMTPNotifyAction*.class"/>
         <include name="com/metavize/tran/mail/SMTPNotifyActionUserType*.class"/>
         <include name="com/metavize/tran/mail/SmtpCommand*.class"/>
-        <include name="com/metavize/tran/mail/SmtpNotify.class"/>
         <include name="com/metavize/tran/mail/SmtpReply*.class"/>
         <include name="com/metavize/tran/mail/SmtpStateMachine*.class"/>
         <include name="com/metavize/tran/mail/papi/smtp/sapi/*.class"/>
