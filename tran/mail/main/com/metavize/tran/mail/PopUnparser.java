@@ -161,8 +161,6 @@ class PopUnparser extends AbstractUnparser
         return new UnparseResult(zWriteBufs.toArray(new ByteBuffer[zWriteBufs.size()]));
     }
 
-    public TokenStreamer endSession() { return null; }
-
     private ByteBuffer updateMsgDataSz(int iNewMsgDataSz)
     {
         String zMsgDataSz = zMsgDataReply.getMsgDataSz();
