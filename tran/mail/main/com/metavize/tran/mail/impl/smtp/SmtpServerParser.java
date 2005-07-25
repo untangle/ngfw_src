@@ -65,7 +65,7 @@ public class SmtpServerParser
       try {
         Response resp = m_parser.parse(buf);
         if(resp != null) {
-          m_logger.debug("Adding response token");
+          m_logger.debug("Adding response token with code " + resp.getCode());
           toks.add(resp);
           m_parser.reset();
         }
@@ -83,22 +83,29 @@ public class SmtpServerParser
         return new ParseResult(new Chunk(dup));
       }
     }
-    
-    buf.compact();
-    if(buf.position() > 0 && buf.remaining() < 1024/*TODO bscott a real value*/) {
-      ByteBuffer b = ByteBuffer.allocate(buf.capacity() + 1024);
-      buf.flip();
-      b.put(buf);
-      buf = b;
-    }
-    else {
-      if(!buf.hasRemaining()) {
-        buf = null;
+
+    if(buf.hasRemaining()) {
+      buf.compact();
+      if(buf.position() > 0 && buf.remaining() < 1024/*TODO bscott a real value*/) {
+        ByteBuffer b = ByteBuffer.allocate(buf.capacity() + 1024);
+        buf.flip();
+        b.put(buf);
+        buf = b;
       }
     }
-    m_logger.debug("returning ParseResult with " +
-      toks.size() + " tokens and a " + (buf==null?"null":"") + " buffer");
-    return new ParseResult(toks, buf);      
+    else {
+      buf = null;
+    }
+    
+    if(buf == null) {
+      m_logger.debug("returning ParseResult with " +
+        toks.size() + " tokens and a null buffer");    
+    }
+    else {
+      m_logger.debug("returning ParseResult with " +
+        toks.size() + " tokens and a buffer with " + buf.remaining() + " remaining");
+    }
+    return new ParseResult(toks, buf);
   }
                   
   public ParseResult parseEnd(ByteBuffer chunk)

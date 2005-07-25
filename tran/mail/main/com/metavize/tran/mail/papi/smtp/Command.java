@@ -51,8 +51,8 @@ public class Command
   };
 
   private final CommandType m_type;
-  private String m_cmdStr;
-  private final String m_argStr;
+  private final String m_cmdStr;
+  private String m_argStr;
 
   public Command(CommandType type,
     String cmdStr,
@@ -62,6 +62,12 @@ public class Command
     m_argStr = argStr;
   }
 
+  public Command(CommandType type) {
+    m_type = type;
+    m_cmdStr = type.toString();
+    m_argStr = null;
+  }
+
   /**
    * Get the string of the command (i.e. "HELO", "RCPT").
    */
@@ -69,8 +75,8 @@ public class Command
     return m_cmdStr;
   }
 
-  protected void setCmdStr(String cmdStr) {
-    m_cmdStr = cmdStr;
+  protected void setArgStr(String argStr) {
+    m_argStr = argStr;
   }
 
 

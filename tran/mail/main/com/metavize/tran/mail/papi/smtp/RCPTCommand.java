@@ -35,37 +35,37 @@ public class RCPTCommand
 
   private static final String NULL_TO_STR = "TO:<>";
 
-  public RCPTCommand(String cmdStr,
+  public RCPTCommand(String cmd,
     String argStr) throws ParseException {
     
-    super(CommandType.RCPT, cmdStr, argStr);
+    super(CommandType.RCPT, cmd, argStr);
     
-    if(cmdStr == null) {
+    if(argStr == null) {
       //TODO bscott What should we do?  Fix this up?
-      setCmdStr(NULL_TO_STR);
+      setArgStr(NULL_TO_STR);
       setAddress(EmailAddress.NULL_ADDRESS);
     }
-    cmdStr = cmdStr.trim();
+    argStr = argStr.trim();
 
-    if(cmdStr.length() == 0) {
+    if(argStr.length() == 0) {
       //TODO bscott What should we do?  Fix this up?
-      setCmdStr(NULL_TO_STR);
+      setArgStr(NULL_TO_STR);
       setAddress(EmailAddress.NULL_ADDRESS);
     }
     else {
       //Strip-off the "to" if found
       //TODO bscott  This is a hack
-      String cmdStrLower = cmdStr.toLowerCase();
+      String argStrLower = argStr.toLowerCase();
       int toStrip = 0;
-      if(cmdStrLower.startsWith("to:")) {
-        cmdStr = cmdStr.substring(3);
+      if(argStrLower.startsWith("to:")) {
+        argStr = argStr.substring(3);
       }
-      else if(cmdStrLower.startsWith("to")) {
-        cmdStr = cmdStr.substring(2);
+      else if(argStrLower.startsWith("to")) {
+        argStr = argStr.substring(2);
       }
-      EmailAddress addr = parseAddress(cmdStr);
+      EmailAddress addr = parseAddress(argStr);
       if(addr.isNullAddress()) {
-        setCmdStr(NULL_TO_STR);
+        setArgStr(NULL_TO_STR);
         setAddress(addr);
       }
       else {
@@ -87,14 +87,14 @@ public class RCPTCommand
     super(CommandType.MAIL, "RCPT", null);
     if(addr == null || addr.isNullAddress()) {
       setAddress(EmailAddress.NULL_ADDRESS);
-      setCmdStr(NULL_TO_STR);
+      setArgStr(NULL_TO_STR);
     }
     else {
       setAddress(addr);
       StringBuilder sb = new StringBuilder();
       sb.append("TO:");
       sb.append(addr.toSMTPString());
-      setCmdStr(sb.toString());
+      setArgStr(sb.toString());
     }
   }
 }

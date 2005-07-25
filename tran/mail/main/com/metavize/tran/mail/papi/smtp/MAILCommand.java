@@ -42,37 +42,36 @@ public class MAILCommand
    *        be in the form "FROM:&lt;X>" where "X"
    *        must be a parsable address or blank.
    */
-  public MAILCommand(String cmdStr,
+  public MAILCommand(String cmd,
     String argStr) throws ParseException {
     
-    super(CommandType.MAIL, cmdStr, argStr);
+    super(CommandType.MAIL, cmd, argStr);
     
-    if(cmdStr == null) {
+    if(argStr == null) {
       //TODO bscott What should we do?  Fix this up?
-      setCmdStr(NULL_FROM_STR);
+      setArgStr(NULL_FROM_STR);
       setAddress(EmailAddress.NULL_ADDRESS);
     }
-    cmdStr = cmdStr.trim();
+    argStr = argStr.trim();
 
-    if(cmdStr.length() == 0) {
+    if(argStr.length() == 0) {
       //TODO bscott What should we do?  Fix this up?
-      setCmdStr(NULL_FROM_STR);
+      setArgStr(NULL_FROM_STR);
       setAddress(EmailAddress.NULL_ADDRESS);
     }
     else {
       //Strip-off the "from" if found
       //TODO bscott  This is a hack
-      String cmdStrLower = cmdStr.toLowerCase();
-      int toStrip = 0;
-      if(cmdStrLower.startsWith("from:")) {
-        cmdStr = cmdStr.substring(5);
+      String argStrLower = argStr.toLowerCase();
+      if(argStrLower.startsWith("from:")) {
+        argStr = argStr.substring(5);
       }
-      else if(cmdStrLower.startsWith("from")) {
-        cmdStr = cmdStr.substring(4);
+      else if(argStrLower.startsWith("from")) {
+        argStr = argStr.substring(4);
       }
-      EmailAddress addr = parseAddress(cmdStr);
+      EmailAddress addr = parseAddress(argStr);
       if(addr.isNullAddress()) {
-        setCmdStr(NULL_FROM_STR);
+        setArgStr(NULL_FROM_STR);
         setAddress(addr);
       }
       else {
@@ -92,14 +91,50 @@ public class MAILCommand
     super(CommandType.MAIL, "MAIL", null);
     if(addr == null || addr.isNullAddress()) {
       setAddress(EmailAddress.NULL_ADDRESS);
-      setCmdStr(NULL_FROM_STR);
+      setArgStr(NULL_FROM_STR);
     }
     else {
       setAddress(addr);
       StringBuilder sb = new StringBuilder();
       sb.append("FROM:");
       sb.append(addr.toSMTPString());
-      setCmdStr(sb.toString());
+      setArgStr(sb.toString());
     }
   }
+
+
+/*
+
+//TESTING CODE  
+  
+  public static void main(String[] args)
+    throws Exception {
+    String[] tests = new String[] {
+      "FROM:foo@moo.com",
+      "FROM:<foo@moo.com",
+      "FROM:foo@moo.com>",
+      "FROM:<foo@moo.com>",
+      "FROM:<>",
+      "FROM: foo@moo.com",
+      "FROM: <foo@moo.com",
+      "FROM: foo@moo.com>",
+      "FROM: <foo@moo.com>",
+      "FROM: <>",
+      "from foo@moo.com",
+      "from <foo@moo.com",
+      "from foo@moo.com>",
+      "from <foo@moo.com>",
+      "from <>",
+      "fromfoo@moo.com",
+      "from<foo@moo.com",
+      "fromfoo@moo.com>",
+      "from<foo@moo.com>",
+      "from<>"
+    };
+    for(String s : tests) {
+      System.out.println("Address: " +s);
+      System.out.println("   Became \"" + new MAILCommand("MAIL", s).getAddress() + "\"");
+    }
+  }
+*/  
 }

@@ -114,4 +114,25 @@ public interface SessionHandler {
    */
   public TransactionHandler createTxHandler(SmtpTransaction tx);
 
+
+  /**
+   * Handle a FIN from the server.
+   *
+   * @param currentTX the current transaction (if there is one open).
+   *
+   * @return true if the client should be shutdown.  False
+   *         to leave the client side open.
+   */  
+  public boolean handleServerFIN(TransactionHandler currentTX);
+
+  /**
+   * Handle a FIN from the client.
+   *
+   * @param currentTX the current transaction (if there is one open).
+   *
+   * @return true if the server should be shutdown.  False
+   *         to leave the server side open.
+   */  
+  public boolean handleClientFIN(TransactionHandler currentTX);
+
 }

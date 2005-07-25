@@ -16,6 +16,13 @@ public interface TokenHandler
     // XXX what should these throw?
     TokenResult handleClientToken(Token token) throws TokenException;
     TokenResult handleServerToken(Token token) throws TokenException;
+
+    /**
+     * Handle a FIN from the client.  By default, this FIN
+     * does <b>not</b> result in the shutdown of the server.
+     * To accomplish this (to logically propigate the
+     * shutdown) call <code>m_myTCPSession.shutdownServer()</code>
+     */
     void handleClientFin() throws TokenException;
     void handleServerFin() throws TokenException;
     void handleTimer() throws TokenException;

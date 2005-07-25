@@ -45,11 +45,14 @@ public final class Session
    */
   public interface SmtpActions {
 
+    //TODO bscott simplify interface so the server-facing token
+    //and the ResponseCompletion are made in one call
+
     /**
      * Get the TokenResultBuilder, used to pass along tokens
      * to the Client or Server
      */
-    public TokenResultBuilder getTokenResultBuilder();
+//    public TokenResultBuilder getTokenResultBuilder();
 
     /**
      * Request that the Session enqueue a response handler.
@@ -62,7 +65,7 @@ public final class Session
      * @param cont the code to execute when a response
      *        comes back from the server.
      */
-    public void enqueueResponseHandler(ResponseCompletion cont);
+//    public void enqueueResponseHandler(ResponseCompletion cont);
 
     /**
      * Cause client tokens to be queued before this
@@ -76,6 +79,39 @@ public final class Session
      * that this may be called even if the client is not disabled.
      */
     public void enableClientTokens();
+
+    /**
+     * Callback indicating that the transaction has ended.  Normally,
+     * the Session knows this based on the input from the client.  However,
+     * if manipulation is taking place the Session may not be able to detect
+     * this.  As such, it is a "good idea" to always call this method.
+     */
+    public void transactionEnded(TransactionHandler handler);
+
+    /**
+     * Send a FIN to the server (i.e. shutdown the server-half).
+     * Note that this takes place as soon as the call is made
+     * (i.e. possibly trapping any tokens headed for the server);
+     */
+    public void sendFINToServer();
+
+    /**
+     * Send a FIN to the client (i.e. shutdown the client-half).
+     * Note that this takes place as soon as the call is made
+     * (i.e. possibly trapping any tokens headed for the client);     
+     */
+    public void sendFINToClient();
+
+    public void sendCommandToServer(Command command,
+      ResponseCompletion compl);
+    public void sendBeginMIMEToServer(BeginMIMEToken token);
+    public void sendContinuedMIMEToServer(ContinuedMIMEToken token);
+    public void sendFinalMIMEToServer(ContinuedMIMEToken token,
+      ResponseCompletion compl);
+    public void sentWholeMIMEToServer(CompleteMIMEToken token,
+      ResponseCompletion compl);
+      
+  
 
   }
 
@@ -102,7 +138,7 @@ public final class Session
      * will be called to issue the "fake" response (with
      * the same TokenStreamer, to preserve ordering).
      */
-    public void appendSyntheticResponse(SyntheticAction synth);
+    public void appendSyntheticResponse(SyntheticResponse synth);
 
   }
 
@@ -114,6 +150,8 @@ public final class Session
   public interface SmtpResponseActions
     extends SmtpActions {
 
+    public void sendResponseToClient(Response resp);    
+
   }
 
 
@@ -121,7 +159,8 @@ public final class Session
   // Data Members
   //===========================
   
-
+  private final Logger m_logger = Logger.getLogger(Session.class);
+  
   private MySmtpTokenStreamHandler m_streamHandler =
     new MySmtpTokenStreamHandler();
 
@@ -176,8 +215,8 @@ public final class Session
   private void processSynths(HoldsSyntheticActions synths,
     TokenResultBuilder trb) {
     
-    SmtpActionsImpl actions = new SmtpActionsImpl(trb);
-    SyntheticAction action = synths.popAction();
+    SmtpResponseActionsImpl actions = new SmtpResponseActionsImpl(trb);
+    SyntheticResponse action = synths.popAction();
     while(action != null) {
       action.handle(actions);
       action = synths.popAction();
@@ -218,10 +257,49 @@ public final class Session
       m_outstandingRequests.add(new OutstandingRequest(cont));
     }
     public void disableClientTokens() {
+      Session.this.disableClientTokens();
     }
 
     public void enableClientTokens() {
+      Session.this.enableClientTokens();    
     }
+    public void transactionEnded(TransactionHandler handler) {
+      if(m_currentTxHandler == handler) {
+        m_currentTxHandler = null;
+      }
+    }
+    public void sendFINToServer() {
+      m_logger.debug("Sending FIN to server");
+      Session.this.getSession().shutdownServer();
+    }
+
+    public void sendFINToClient() {
+      m_logger.debug("Sending FIN to client");
+      Session.this.getSession().shutdownClient();    
+    }
+
+    public void sendCommandToServer(Command command,
+      ResponseCompletion compl) {
+      getTokenResultBuilder().addTokenForServer(command);
+      enqueueResponseHandler(compl);
+    }
+    public void sendBeginMIMEToServer(BeginMIMEToken token) {
+      getTokenResultBuilder().addTokenForServer(token);
+    }
+    public void sendContinuedMIMEToServer(ContinuedMIMEToken token) {
+      getTokenResultBuilder().addTokenForServer(token);
+    }
+    public void sendFinalMIMEToServer(ContinuedMIMEToken token,
+      ResponseCompletion compl) {
+      getTokenResultBuilder().addTokenForServer(token);
+      enqueueResponseHandler(compl);
+    }
+    public void sentWholeMIMEToServer(CompleteMIMEToken token,
+      ResponseCompletion compl) {
+      getTokenResultBuilder().addTokenForServer(token);
+      enqueueResponseHandler(compl);
+    }
+
   }
 
   
@@ -235,6 +313,10 @@ public final class Session
     SmtpResponseActionsImpl(TokenResultBuilder ts) {
       super(ts);
     }
+    public void sendResponseToClient(Response resp) {
+      getTokenResultBuilder().addTokenForClient(resp);
+    }  
+
   }
   
 
@@ -251,9 +333,9 @@ public final class Session
       super(ts);
     }
 
-    public void appendSyntheticResponse(SyntheticAction synth) {
+    public void appendSyntheticResponse(SyntheticResponse synth) {
       if(m_outstandingRequests.size() == 0) {
-        if(m_immediateActions != null) {
+        if(m_immediateActions == null) {
           m_immediateActions = new HoldsSyntheticActions();
         }
         m_immediateActions.pushAction(synth);
@@ -270,18 +352,18 @@ public final class Session
   //=============== Inner Class Separator ====================
 
   private class HoldsSyntheticActions {
-    private List<SyntheticAction> m_additionalActions;
+    private List<SyntheticResponse> m_additionalActions;
 
-    void pushAction(SyntheticAction synth) {
+    void pushAction(SyntheticResponse synth) {
       if(m_additionalActions == null) {
-        m_additionalActions = new LinkedList<SyntheticAction>();
+        m_additionalActions = new LinkedList<SyntheticResponse>();
       }
       m_additionalActions.add(synth);
     }
     //Must keep calling this until it returns null, as
     //one synthetic may enqueue another
-    SyntheticAction popAction() {
-      if(m_additionalActions == null) {
+    SyntheticResponse popAction() {
+      if(m_additionalActions == null || m_additionalActions.size() == 0) {
         return null;
       }
       return m_additionalActions.remove(0);
@@ -326,7 +408,14 @@ public final class Session
         }
       }
       else {
-        m_sessionHandler.handleCommand(cmd, actions);
+        //Odd case, but we're not here to enfore good SMTP (at least not in this class)
+        if(cmd.getType() == Command.CommandType.DATA) {
+          TransactionHandler handler = getOrCreateTxHandler();
+          handler.handleCommand(cmd, actions);
+        }
+        else {
+          m_sessionHandler.handleCommand(cmd, actions);
+        }
       }
       actions.followup();
     }
@@ -369,9 +458,10 @@ public final class Session
   
     public void handleResponse(TokenResultBuilder resultBuilder,
       Response resp) {
-
+      m_logger.debug("[handleResponse()]");
       if(m_outstandingRequests.size() == 0) {
         //TODO bscott Major programming error.  We should log this
+        m_logger.error("Response received without a registered handler");
         resultBuilder.addTokenForClient(resp);
         return;
       }
@@ -401,7 +491,14 @@ public final class Session
       SmtpCommandActionsImpl actions = new SmtpCommandActionsImpl(resultBuilder);
       handler.handleCompleteMIME(token, actions);
       actions.followup();
-    }    
+    }
+    public boolean handleServerFIN() {
+      return m_sessionHandler.handleServerFIN(m_currentTxHandler);
+    }
+
+    public boolean handleClientFIN() {
+      return m_sessionHandler.handleClientFIN(m_currentTxHandler);
+    }
   }//ENDOF MySmtpTokenStreamHandler Class Definition
  
 }//ENDOF Session Class Definition

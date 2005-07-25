@@ -69,6 +69,23 @@ public class TokenResultBuilder {
   }
 
   /**
+   * Query method to detect if this TokenResultBuilder currently
+   * has any Tokens/Streamers bound for the server
+   */
+  public boolean hasDataForServer() {
+    return m_forServerStreamer != null ||
+      m_forServerTokens != null;
+  }
+  /**
+   * Query method to detect if this TokenResultBuilder currently
+   * has any Tokens/Streamers bound for the client
+   */
+  public boolean hasDataForClient() {
+    return m_forClientStreamer != null ||
+      m_forClientTokens != null;
+  }  
+
+  /**
    * Get a TokenResult from any internally gathered
    * Tokens and/or streamers.
    */

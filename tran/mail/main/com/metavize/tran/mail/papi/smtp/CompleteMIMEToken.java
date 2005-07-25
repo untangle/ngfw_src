@@ -20,6 +20,7 @@ import java.nio.channels.FileChannel;
 
 import com.metavize.mvvm.*;
 import com.metavize.mvvm.tapi.*;
+import com.metavize.mvvm.tapi.event.*;
 import com.metavize.tran.mail.papi.ByteBufferByteStuffer;
 import com.metavize.tran.mime.*;
 import com.metavize.tran.token.*;
@@ -60,14 +61,16 @@ public class CompleteMIMEToken
    * @param pipeline the pipeline (needed for the Streamer stuff)
    * @return the TokenStreamer
    */
-  public TokenStreamer toTokenStreamer(Pipeline pipeline) {
-    return new MIMETokenStreamer(pipeline);
+  public TCPStreamer toTCPStreamer(Pipeline pipeline) {
+    m_logger.debug("About to return a new MIMETCPStreamer");
+    return new MIMETCPStreamer(pipeline);
   }
 
 
   //TODO bscott How can we be assured we closed this stream/channel?
-  private class MIMETokenStreamer
-    implements TokenStreamer {
+  private class MIMETCPStreamer
+    implements TCPStreamer {
+
 
     private FileInputStream m_fos;
     private FileChannel m_channel;
@@ -75,7 +78,9 @@ public class CompleteMIMEToken
     private ByteBufferByteStuffer m_bbbs = new ByteBufferByteStuffer();
 
 
-    MIMETokenStreamer(final Pipeline pipeline) {
+    MIMETCPStreamer(final Pipeline pipeline) {
+      //TODO bscott Remove this debugging
+      m_logger.debug("Created Complete MIME message streamer");
       try {
         File file = m_msgHolder.toFile(new FileFactory() {
           public File createFile(String name)
@@ -88,6 +93,7 @@ public class CompleteMIMEToken
             return pipeline.mktemp();
           }
         });
+        m_logger.debug("File is of length: " + file.length());
         m_fos = new FileInputStream(file);
         m_channel = m_fos.getChannel();
       }
@@ -106,7 +112,9 @@ public class CompleteMIMEToken
     public boolean closeWhenDone() {
       return false;
     }
-    public Token nextToken() {
+    
+    public ByteBuffer nextChunk() {
+      m_logger.debug("Next Chunk called");
       if(m_channel == null) {
         return null;
       }
@@ -117,12 +125,17 @@ public class CompleteMIMEToken
         int read = m_channel.read(m_readBuf);
         if(read > 0) {
           //TODO bscott the JavaDocs are unclear about "0"
+          m_logger.debug("Read a chunk of MIME from file of size: " + read);
           m_bbbs.transfer(m_readBuf, sinkBuf);
-          return new Chunk(sinkBuf);
+          m_logger.debug("Returning a ByteBuffer of size: " + sinkBuf.remaining());
+          return sinkBuf;
         }
         else {
+          m_logger.debug("No more MIME to read");
           close();
-          return new Chunk(m_bbbs.getLast(true));
+          ByteBuffer toWrap = m_bbbs.getLast(true);
+          m_logger.debug("Final wrapped buffer of size: " + toWrap.remaining());
+          return toWrap;
         }
       }
       catch(Exception ex) {

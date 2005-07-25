@@ -150,4 +150,21 @@ public interface SmtpTokenStreamHandler {
    */
   public void handleCompleteMIME(TokenResultBuilder resultBuilder,
     CompleteMIMEToken token);
+
+  /**
+   * Handle a FIN from the server.
+   *
+   * @return true if the client should be shutdown.  False
+   *         to leave the client side open.
+   */
+  public boolean handleServerFIN();
+
+
+  /**
+   * Handle a FIN from the client.
+   *
+   * @return true if the server should be shutdown.  False
+   *         to leave the server side open.
+   */
+  public boolean handleClientFIN();
 }

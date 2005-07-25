@@ -15,16 +15,16 @@ import com.metavize.tran.mail.papi.smtp.Response;
 
 /**
  * Convienence implementation of ResponseCompletion
- * which simply passes back to the client.
+ * which does nothing
  * 
  */
-public class PassthruResponseCompletion
+public class NoopResponseCompletion
   implements ResponseCompletion {
 
 
   public void handleResponse(Response resp,
     Session.SmtpResponseActions actions) {
-    actions.sendResponseToClient(resp);
+    //Nothing to do...
   }
 
 }

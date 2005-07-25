@@ -104,9 +104,9 @@ public class SmtpClientParser
 //    }
     ByteBuffer dup = buf.duplicate();
     try {
-      m_logger.debug("**DEBUG*** BEGIN Call parseImpl");
+      m_logger.debug("BEGIN Call parseImpl");
       ParseResult ret = parseImpl(buf);
-      m_logger.debug("**DEBUG*** ENDOF Call parseImpl");
+      m_logger.debug("ENDOF Call parseImpl");
       return ret;
     }
     catch(Exception ex) {
@@ -114,7 +114,6 @@ public class SmtpClientParser
       //TODO bscott Possibly (if we're still parsing headers)
       //     send along the magical token indicating that
       //     data is trapped in a file.
-      m_logger.debug("FOO");
       m_logger.error("Unexpected exception parsing from client", ex);
       m_state = SmtpClientState.PASSTHRU;
       List<Token> toks = new LinkedList<Token>();
@@ -135,7 +134,7 @@ public class SmtpClientParser
     boolean done = false;
     
     while(!done && buf.hasRemaining()) {
-      m_logger.debug("***DEBUG*** In while loop (looking for done and remaining in buffer)");
+      m_logger.debug("In while loop (looking for done and remaining in buffer)");
       switch(m_state) {
         case COMMAND:
           //TODO bscott we need a guard here to prevent
@@ -164,10 +163,11 @@ public class SmtpClientParser
                 createTXIfNotOpen();
                 m_state = SmtpClientState.HEADERS;
                 try {
-                  m_tx.file = pipeline.mktemp();
+                  //TODO bscott FixThis
+                  m_tx.file = pipeline.mktemp();//new File("MIME" + System.currentTimeMillis() + ".txt");//
                   m_tx.fOut = new FileOutputStream(m_tx.file);
                   m_tx.scanner = new MessageBoundaryScanner();
-                  m_logger.debug("created temp file for MIME message");
+                  m_logger.debug("created temp file \"" + m_tx.file.getAbsolutePath() + "\" for MIME message");
                 }
                 catch(IOException ex) {
                   m_logger.error("Exception creating a temp file for MIME message", ex);
@@ -194,30 +194,39 @@ public class SmtpClientParser
           try {
             if(m_tx.scanner.processHeaders(buf, 1024*4)) {//TODO bscott a real value here
               m_logger.debug("Found header end.  Now Parse");
+              //Record the SourceRecord
+              int headersLen = buf.position() - dup.position();
               if(m_tx.scanner.isHeadersBlank()) {
                 m_tx.headers = new MIMEMessageHeaders();
-                if(m_tx.scanner.isEmptyMessage()) {
-                  //TODO bscott figure out what to do with the blank message case
-                }
               }
               else {
                 dup.limit(buf.position());
+                m_logger.debug("Write remaining " + dup.remaining() + " header bytes to file");
                 while(dup.hasRemaining()) {
                   fc.write(dup);
                 }
+                //TODO bscott remove this debug.
+                m_logger.debug("Message file is now: " + m_tx.file.length() + " bytes long");
                 parseHeaders();
-                m_logger.debug("Adding Begin MIME to token");
-                toks.add(new BeginMIMEToken(m_tx.headers, m_tx.source));
-                m_state = SmtpClientState.BODY;
-                break;
               }
+              m_logger.debug("Adding Begin MIME to token");
+              toks.add(new BeginMIMEToken(m_tx.headers, m_tx.source, headersLen));
+              m_state = SmtpClientState.BODY;
+              if(m_tx.scanner.isEmptyMessage()) {
+                toks.add(new ContinuedMIMEToken(true));
+                m_state = SmtpClientState.COMMAND;
+              }
+              break;
             }
             else {
               m_logger.debug("Need more header bytes");
               dup.limit(buf.position());
+              m_logger.debug("Write " + dup.remaining() + " header bytes to file");              
               while(dup.hasRemaining()) {
                 fc.write(dup);
               }
+              //TODO bscott remove debug
+              m_logger.debug("Message file is now: " + m_tx.file.length() + " bytes long");
               done = true;
             }
           }
@@ -229,6 +238,8 @@ public class SmtpClientParser
           }
           break;
         case BODY:
+          //TODO bscott remove debug
+          m_logger.debug("BODY state.  Message file: " + m_tx.file.length() + " bytes long");
           m_logger.debug("BODY state " + buf.remaining() + " remaining");
           ByteBuffer bodyBuf = ByteBuffer.allocate(buf.remaining());
           boolean bodyEnd = m_tx.scanner.processBody(buf, bodyBuf);
@@ -241,7 +252,7 @@ public class SmtpClientParser
             done = true;
           }
           m_logger.debug("Adding continued MIME token with length: " + bodyBuf.remaining());
-          toks.add(new ContinuedMIMEToken(bodyBuf, bodyEnd));
+          toks.add(new ContinuedMIMEToken(bodyBuf, bodyEnd, false));
           break;
         case PASSTHRU:
           toks.add(PassThruToken.PASSTHRU);
@@ -252,17 +263,17 @@ public class SmtpClientParser
     }
 
     //Handle any remainder
-    buf.compact();
-    if(buf.position() > 0 && buf.remaining() < 1024/*TODO bscott a real value*/) {
-      ByteBuffer b = ByteBuffer.allocate(buf.capacity() + 1024);
-      buf.flip();
-      b.put(buf);
-      buf = b;
+    if(buf.hasRemaining()) {
+      buf.compact();
+      if(buf.position() > 0 && buf.remaining() < 1024/*TODO bscott a real value*/) {
+        ByteBuffer b = ByteBuffer.allocate(buf.capacity() + 1024);
+        buf.flip();
+        b.put(buf);
+        buf = b;
+      }
     }
     else {
-      if(!buf.hasRemaining()) {
-        buf = null;
-      }
+      buf = null;
     }
     m_logger.debug("returning ParseResult with " +
       toks.size() + " tokens and a " + (buf==null?"null":"") + " buffer");

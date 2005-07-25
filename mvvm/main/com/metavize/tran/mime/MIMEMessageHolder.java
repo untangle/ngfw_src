@@ -11,6 +11,7 @@
 package com.metavize.tran.mime;
 import java.io.*;
 import com.metavize.tran.util.FileFactory;
+import java.nio.ByteBuffer;
 
 
 /**
@@ -55,6 +56,20 @@ public class MIMEMessageHolder {
     else {
       out.pipe(m_source.getInputStream());
     }
+  }
+
+  /**
+   * <b>Do not use this method.  It is for debugging.  It will
+   * cause too much to be read into memory</b>
+   *
+   * Returned buffer is ready for reading.
+   */
+  public ByteBuffer toByteBuffer() throws IOException {
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    MIMEOutputStream mos = new MIMEOutputStream(baos);
+    writeTo(mos);
+    mos.flush();
+    return ByteBuffer.wrap(baos.toByteArray());
   }
 
   /**

@@ -38,7 +38,7 @@ public interface ResponseCompletion {
    * Completion wishes to pass the Response back
    * through to the client they should use
    * <code>
-   * actions.getTokenResultBuilder().addTokenForClient(resp);
+   * actions.sendResponseToClient(resp);
    * </code>
    * <br>
    * If the Request was synthetic (i.e. issued by the Handler,

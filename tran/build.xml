@@ -387,6 +387,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
         <include name="com/metavize/tran/mail/SmtpNotify.class"/>
         <include name="com/metavize/tran/mail/SmtpReply*.class"/>
         <include name="com/metavize/tran/mail/SmtpStateMachine*.class"/>
+        <include name="com/metavize/tran/mail/papi/smtp/sapi/*.class"/>
         <include name="com/metavize/tran/mail/papi/smtp/*.class"/>
         <include name="com/metavize/tran/mail/papi/*.class"/>
         <include name="com/metavize/tran/mail/MessageBoundaryScanner*.class"/>

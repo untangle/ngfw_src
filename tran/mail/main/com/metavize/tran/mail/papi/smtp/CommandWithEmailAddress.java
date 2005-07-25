@@ -48,6 +48,7 @@ public abstract class CommandWithEmailAddress
     return m_address;
   }
 
+
   /**
    * Helper method to parse an address read from
    * a Command argument.  Subclasses using this method
@@ -81,4 +82,25 @@ public abstract class CommandWithEmailAddress
       throw new ParseException(ex);
     }
   }
+
+/*
+
+//TESTING CODE  
+
+  public static void main(String[] args)
+    throws Exception {
+    String[] tests = new String[] {
+      "foo@moo.com",
+      "<foo@moo.com",
+      "foo@moo.com>",
+      "<foo@moo.com>",
+      "<>"
+    };
+    for(String s : tests) {
+      System.out.println("Address: " + s);
+      System.out.println("   Became \"" + parseAddress(s) + "\"");
+    }
+  }
+*/
+  
 }

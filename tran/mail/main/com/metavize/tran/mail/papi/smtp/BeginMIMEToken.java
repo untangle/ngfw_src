@@ -41,11 +41,22 @@ public class BeginMIMEToken
 
   private MIMEMessageHeaders m_headers;
   private FileMIMESource m_mimeSource;
+  private int m_headersLength;
 
   public BeginMIMEToken(MIMEMessageHeaders headers,
-    FileMIMESource mimeSource) {
+    FileMIMESource mimeSource,
+    int headersLength) {
     m_headers = headers;
     m_mimeSource = mimeSource;
+    m_headersLength = headersLength;
+  }
+
+  /**
+   * Get the length of the headers (including terminator)
+   * within {@link #getMIMESource the file}.
+   */ 
+  public int getHeadersLength() {
+    return m_headersLength;
   }
   
   /**

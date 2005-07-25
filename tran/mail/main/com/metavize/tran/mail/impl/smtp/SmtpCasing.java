@@ -32,6 +32,7 @@ public class SmtpCasing extends AbstractCasing {
   private final boolean m_trace;
   private FileOutputStream m_fOut;
   private FileChannel m_channel;
+  private int m_closeCount = 0;
 
   // constructors -----------------------------------------------------------
 
@@ -115,7 +116,9 @@ public class SmtpCasing extends AbstractCasing {
 
   public void endSession(boolean calledFromParser) {
     if(m_trace) {
-      closeTrace();
+      if(++m_closeCount > 1) {
+        closeTrace();
+      }
     }
   }
 

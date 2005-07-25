@@ -225,6 +225,7 @@ public class ByteBufferByteStuffer {
           throw new RuntimeException("Illegal action" + action);//Bug in the software
       }
     }
+    sink.flip();
     return m_leftover.available();
   }
 

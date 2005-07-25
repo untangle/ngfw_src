@@ -44,19 +44,30 @@ public class ContinuedMIMEToken
   private final Logger m_logger = Logger.getLogger(ContinuedMIMEToken.class);
 
   private final boolean m_isLast;
-  private final boolean m_isMessageBlank;
+  private boolean m_dataWrittenToFile;
 
-  private ContinuedMIMEToken(ByteBuffer buf,
-    boolean isLast,
-    boolean blankMessage) {
-    super(buf);
-    m_isLast = isLast;
-    m_isMessageBlank = blankMessage;
-  }
 
   public ContinuedMIMEToken(ByteBuffer buf,
-    boolean isLast) {
-    this(buf, isLast, false);
+    boolean isLast,
+    boolean isDataWrittenToFile) {
+    super(buf);
+    m_isLast = isLast;
+    m_dataWrittenToFile = isDataWrittenToFile;
+  }
+  public ContinuedMIMEToken(boolean isLast) {
+    this(null, isLast, true);
+  }
+
+  /**
+   * Has the data contained in this token (if there
+   * is any) already been written to the original
+   * File holding the entire message.
+   */
+  public boolean isDataWrittenToFile() {
+    return m_dataWrittenToFile;
+  }
+  public void dataWrittenToFile() {
+    m_dataWrittenToFile = true;
   }
 
   /**
@@ -66,14 +77,14 @@ public class ContinuedMIMEToken
   public boolean isLast() {
     return m_isLast;
   }
-  
+
   /**
-   * Only applies for the first (and only!)
-   * chunk of a MIME message, where there
-   * was no body.  If this is true
-   * then {@link #isLast isLast} is also true.
+   * Does this continued MIME token contain data, or is it simply
+   * a pointer to indicate that the original FileMIMESource
+   * has been updated with data.
    */
-  public boolean isMessageBlank() {
-    return m_isMessageBlank;
+  public boolean containsData() {
+    return getData() != null;
   }
+
 }

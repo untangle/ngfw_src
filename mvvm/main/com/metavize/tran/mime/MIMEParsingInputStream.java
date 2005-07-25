@@ -42,7 +42,7 @@ import org.apache.log4j.Logger;
  */
 public class MIMEParsingInputStream extends InputStream {
 
-  private final Logger m_logger = Logger.getLogger(MIMEPart.class);  
+  private final Logger m_logger = Logger.getLogger(MIMEParsingInputStream.class);  
 
   private static final int LINE_SZ = 1024;
 

@@ -35,6 +35,7 @@ public class SimpleTransactionHandler
 
     m_logger.debug("[handleRSETCommand] (will pass along to handleCommand)");
     getTransaction().reset();
+    actions.transactionEnded(this);
     handleCommand(command, actions);
   }
   
@@ -43,42 +44,50 @@ public class SimpleTransactionHandler
     Session.SmtpCommandActions actions) {
     
     m_logger.debug("[handleCommand]");
-    actions.getTokenResultBuilder().addTokenForServer(command);
-    actions.enqueueResponseHandler(new PassthruResponseCompletion());
+    actions.sendCommandToServer(command, new PassthruResponseCompletion());
+//    actions.getTokenResultBuilder().addTokenForServer(command);
+//    actions.enqueueResponseHandler(new PassthruResponseCompletion());
   }
   @Override
   public void handleMAILCommand(MAILCommand command,
     Session.SmtpCommandActions actions) {
     
     m_logger.debug("[handleMAILCommand]");
+    actions.sendCommandToServer(command, new MAILContinuation(command.getAddress()));
+/*    
     actions.getTokenResultBuilder().addTokenForServer(command);
-    actions.enqueueResponseHandler(new MAILContinuation(command.getAddress()));       
+    actions.enqueueResponseHandler(new MAILContinuation(command.getAddress()));
+*/    
   }
   @Override
   public void handleRCPTCommand(RCPTCommand command,
     Session.SmtpCommandActions actions) {
     
     m_logger.debug("[handleRCPTCommand]");
+    actions.sendCommandToServer(command, new RCPTContinuation(command.getAddress()));
+/*    
     actions.getTokenResultBuilder().addTokenForServer(command);
     actions.enqueueResponseHandler(new RCPTContinuation(command.getAddress()));
+*/    
   }
   @Override
   public void handleBeginMIME(BeginMIMEToken token,
     Session.SmtpCommandActions actions) {
     m_logger.debug("[handleBeginMIME] (no response expected, so none will be queued");
-    actions.getTokenResultBuilder().addTokenForServer(token);
+    actions.sendBeginMIMEToServer(token);
   }
   @Override    
   public void handleContinuedMIME(ContinuedMIMEToken token,
     Session.SmtpCommandActions actions) {
     if(token.isLast()) {
       m_logger.debug("[handleContinuedMIME] (last token, so enqueue a continuation for the response");
-      actions.getTokenResultBuilder().addTokenForServer(token);
-      actions.enqueueResponseHandler(new DataTransmissionContinuation());
+      actions.sendFinalMIMEToServer(token, new DataTransmissionContinuation());
+//      actions.getTokenResultBuilder().addTokenForServer(token);
+//      actions.enqueueResponseHandler(new DataTransmissionContinuation());
     }
     else {
       m_logger.debug("[handleContinuedMIME] (not last - no response expected, so none will be queued");
-      actions.getTokenResultBuilder().addTokenForServer(token);    
+      actions.sendContinuedMIMEToServer(token);    
     }
   }
   @Override
@@ -110,6 +119,7 @@ public class SimpleTransactionHandler
       else {
         getTransaction().failed();
       }
+      actions.transactionEnded(SimpleTransactionHandler.this);
       super.handleResponse(resp, actions);
     }
   }

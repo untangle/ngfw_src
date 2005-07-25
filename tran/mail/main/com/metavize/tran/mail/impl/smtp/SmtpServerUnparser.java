@@ -14,6 +14,12 @@ package com.metavize.tran.mail.impl.smtp;
 import static com.metavize.tran.util.Ascii.*;
 import static com.metavize.tran.util.BufferUtil.*;
 
+import com.metavize.tran.mail.papi.smtp.*;
+
+import com.metavize.tran.mail.papi.ByteBufferByteStuffer;
+
+import java.io.*;
+
 import java.nio.ByteBuffer;
 
 import com.metavize.mvvm.*;
@@ -42,12 +48,16 @@ public class SmtpServerUnparser
     m_parentCasing = parent;
     m_pipeline = MvvmContextFactory.context().
       pipelineFoundry().getPipeline(session.id());
+
+    //TODO bscott for classloader
+    CompleteMIMEToken cmt = new CompleteMIMEToken(null);
+
   }
 
 
   public UnparseResult unparse(Token token)
     throws UnparseException {
-    m_logger.debug("**DEBUG*** unparse");
+    m_logger.debug("unparse token of type " + (token==null?"null":token.getClass().getName()));
 
     if(token instanceof PassThruToken) {
       m_logger.error("Received PASSTHRU token");
@@ -81,11 +91,33 @@ public class SmtpServerUnparser
     }
     if(token instanceof CompleteMIMEToken) {
       m_logger.debug("Received CompleteMIMEToken to pass");
-      //TODO bscott What about my nifty trace stuff?
+      //TODO bscott Fix this hack once we talk to Aaron
 
-      // XXX XXX XXX i commented this out because i changed
-      //return new UnparseResult(((CompleteMIMEToken) token).toTokenStreamer(m_pipeline));
-    }
+      try {
+        CompleteMIMEToken cmt = (CompleteMIMEToken) token;
+        
+        ByteBuffer tempBuf = ((CompleteMIMEToken) token).getHolder().toByteBuffer();
+        m_logger.debug("About to byte stuff buffer of length: " + tempBuf.remaining());
+        ByteBufferByteStuffer tempBBBS = new ByteBufferByteStuffer();
+        ByteBuffer b1 = ByteBuffer.allocate(tempBuf.remaining());
+        tempBBBS.transfer(tempBuf, b1);
+        ByteBuffer b2 = tempBBBS.getLast(true);
+  
+        ByteBuffer finalBuf = ByteBuffer.allocate(b1.remaining() + b2.remaining());
+        finalBuf.put(b1).put(b2);
+        finalBuf.flip();
+        m_logger.debug("Returning buffer of length: " + finalBuf.remaining());
+        return new UnparseResult(finalBuf);
+      }
+      catch(IOException ex) {
+        m_logger.error(ex);
+        return null;//new UnparseResult();
+      }
+/*     
+      return new UnparseResult(((CompleteMIMEToken) token).toTCPStreamer(m_pipeline));
+*/       
+    }    
+
     if(token instanceof ContinuedMIMEToken) {
       boolean last = ((ContinuedMIMEToken) token).isLast();
       ByteBuffer buf = token.getBytes();
@@ -95,7 +127,7 @@ public class SmtpServerUnparser
 
       ByteBuffer sink = ByteBuffer.allocate(buf.remaining());
       m_byteStuffer.transfer(buf, sink);
-      sink.flip();
+//      sink.flip();
       m_logger.debug("After stuffing, wound up with: " + sink.remaining() + " bytes");
       if(last) {
         ByteBuffer remainder = m_byteStuffer.getLast(true);

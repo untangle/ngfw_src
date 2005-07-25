@@ -29,18 +29,30 @@ public class SimpleSessionHandler
     Session.SmtpCommandActions actions) {
     m_logger.debug("[handleCommand] with command of type \"" +
       command.getType() + "\"");
+    actions.sendCommandToServer(command, new PassthruResponseCompletion());
+/*    
     actions.getTokenResultBuilder().addTokenForServer(command);
     actions.enqueueResponseHandler(new PassthruResponseCompletion());
+*/    
   }
 
   public void handleOpeningResponse(Response resp,
     Session.SmtpResponseActions actions) {
     m_logger.debug("[handleOpeningResponse]");
-    actions.getTokenResultBuilder().addTokenForClient(resp);
+    actions.sendResponseToClient(resp);
+//    actions.getTokenResultBuilder().addTokenForClient(resp);
   }    
     
   public TransactionHandler createTxHandler(SmtpTransaction tx) {
     return new SimpleTransactionHandler(tx);
   }
+  public boolean handleServerFIN(TransactionHandler currentTX) {
+    return true;
+  }
+
+  public boolean handleClientFIN(TransactionHandler currentTX) {
+    return true;
+  }
+
 
 }
