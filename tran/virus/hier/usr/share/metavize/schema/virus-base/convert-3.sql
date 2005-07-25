@@ -207,7 +207,7 @@ ALTER TABLE settings.tr_virus_vs_mt
 -- add vendor name
 CREATE TABLE events.tr_virus_evt
     AS SELECT event_id, session_id, clean, virus_name, virus_cleaned,
-              'Clam'::varchar(255), time_stamp
+              'Clam'::varchar(255) as vendor_name, time_stamp
        FROM public.tr_virus_evt;
 
 ALTER TABLE events.tr_virus_evt
@@ -220,7 +220,7 @@ ALTER TABLE events.tr_virus_evt
 
 CREATE TABLE events.tr_virus_evt_http
     AS SELECT event_id, request_line, clean, virus_name, virus_cleaned,
-              'Clam'::varchar(255), time_stamp
+              'Clam'::varchar(255) as vendor_name, time_stamp
        FROM public.tr_virus_evt_http;
 
 ALTER TABLE events.tr_virus_evt_http
