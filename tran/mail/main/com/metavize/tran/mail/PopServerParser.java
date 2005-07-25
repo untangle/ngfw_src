@@ -373,7 +373,7 @@ public class PopServerParser extends AbstractParser
 
     private MessageInfo createMsgInfo(MIMEMessageHeaders zMMHeader)
     {
-        MessageInfo zMsgInfo = new MessageInfo(session, zMMHeader.getSubject());
+        MessageInfo zMsgInfo = new MessageInfo(session.id(), session.serverPort(), zMMHeader.getSubject());
         EmailAddress zFrom = zMMHeader.getFrom();
         zMsgInfo.addAddress(AddressKind.FROM, zFrom.getAddress(), zFrom.getPersonal()); /* from address will never be null */
 
