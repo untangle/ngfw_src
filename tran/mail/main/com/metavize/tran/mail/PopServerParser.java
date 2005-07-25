@@ -25,7 +25,15 @@ import java.util.List;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.tapi.Pipeline;
 import com.metavize.mvvm.tapi.TCPSession;
+import com.metavize.tran.mime.EmailAddress;
+import com.metavize.tran.mime.EmailAddressWithRcptType;
+import com.metavize.tran.mime.HeaderParseException;
+import com.metavize.tran.mime.InvalidHeaderDataException;
+import com.metavize.tran.mime.LineTooLongException;
+import com.metavize.tran.mime.RcptType;
+import com.metavize.tran.mime.MIMEMessageHeaders;
 import com.metavize.tran.token.AbstractParser;
+import com.metavize.tran.token.Chunk;
 import com.metavize.tran.token.EndMarker;
 import com.metavize.tran.token.ParseException;
 import com.metavize.tran.token.ParseResult;
@@ -37,30 +45,26 @@ public class PopServerParser extends AbstractParser
 {
     private final static Logger logger = Logger.getLogger(PopServerParser.class);
 
-    private final static String DIGVAL = "(\\p{Digit})++";
-    private final static String SZVAL = DIGVAL + " octets";
-    private final static String OK = "+OK ";
-    private final static String OKREPLY = "^\\" + OK;
-    private final static String CRLF = "\r\n";
-    private final static String EOLINE = CRLF;
-    private final static String PEOLINE = EOLINE + "$"; /* protocol EOLINE */
+    private final static File BUNNICULA_TMP = new File(System.getProperty("bunnicula.tmp.dir"));
 
-    private final static String DATAOK = OKREPLY + SZVAL + "[^" + PEOLINE + "]*" + PEOLINE;
-    private final static String EODATA_TAIL = "." + PEOLINE;
-    private final static String EODATA_FULL = PEOLINE + EODATA_TAIL;
+    private final static String EODATA_TAIL = "." + PopReply.PEOLINE;
+    private final static String EODATA_FULL = PopReply.PEOLINE + EODATA_TAIL;
 
     private final static int LINE_SZ = 1024;
 
-    private enum State { REPLY,
-                         DATA
-                       };
+    private enum State {
+        REPLY,
+        DATA
+    };
 
+    private final MessageBoundaryScanner zMBScanner;
     private final Pipeline pipeline;
 
-    private MimeParser mimeParser = null;
     private State state;
-    private File msgFile;
-    private FileChannel msgChannel;
+    private File zMsgFile;
+    private FileChannel zMsgChannel;
+    private MIMEMessageHolderT zMMHolderT;
+    private boolean bSendAll;
 
     // constructors -----------------------------------------------------------
 
@@ -69,6 +73,9 @@ public class PopServerParser extends AbstractParser
         super(session, true);
         lineBuffering(false);
         state = State.REPLY;
+
+        zMBScanner = new MessageBoundaryScanner();
+        bSendAll = false;
 
         pipeline = MvvmContextFactory.context().pipelineFoundry().getPipeline(session.id());
     }
@@ -79,32 +86,37 @@ public class PopServerParser extends AbstractParser
     {
         logger.debug("parse(" + buf + ")");
 
-        List<Token> toks = new LinkedList<Token>();
+        List<Token> zTokens = new LinkedList<Token>(); /* send asap */
         boolean done = false;
+
+        int iReplyEnd;
 
         while (false == done && true == buf.hasRemaining()) {
             switch (state) {
             case REPLY:
                 logger.debug("REPLY state");
-                if (0 <= findCrLf(buf)) {
+                iReplyEnd = findCRLFEnd(buf);
+                if (1 < iReplyEnd) {
                     logger.debug("contains CRLF: " + buf);
-                    PopReply reply = PopReply.parse(buf);
+                    PopReply reply = PopReply.parse(buf, iReplyEnd);
                     //logger.debug("reply: " + reply.toString());
                     logger.debug("parsed reply: " + buf);
-                    toks.add(reply);
+                    zTokens.add(reply);
 
-                    if (true == reply.toString().matches(DATAOK)) {
+                    if (true == reply.isMsgData()) {
                         logger.debug("entering DATA state");
                         state = State.DATA;
                         try {
-                            msgFile = pipeline.mktemp();
-                            msgChannel = new FileOutputStream(msgFile).getChannel();
+                            zMsgFile = pipeline.mktemp(); //XXXX
+                            zMsgChannel = new FileOutputStream(zMsgFile, true).getChannel();
                         } catch (IOException exn) {
                             logger.warn("cannot create message file: ", exn);
-                            msgFile = null;
-                            msgChannel = null;
+                            zMsgChannel = null;
+                            zMsgFile = null;
+                            break;
                         }
-                        mimeParser = new MimeParser();
+
+                        zMMHolderT = new MIMEMessageHolderT(zMsgFile);
                     }
                 } else {
                     logger.debug("does not end with CRLF");
@@ -120,64 +132,107 @@ public class PopServerParser extends AbstractParser
                 logger.debug("cutoff at: " + iLimit);
 
                 ByteBuffer dup = buf.duplicate();
-                dup.limit(iLimit);
                 buf.position(iLimit);
-
-                try {
-                    for (ByteBuffer bout = dup.duplicate();
-                         null != msgChannel && true == bout.hasRemaining();
-                         msgChannel.write(bout)) ;
-                } catch (IOException exn) {
-                    logger.warn("cannot write message: ", exn);
-                    msgFile = null;
-                    msgChannel = null;
-                }
+                dup.limit(iLimit);
 
                 if (true == dup.hasRemaining()) {
-                    logger.debug("parsing message: " + dup);
-                    ParseResult pr = mimeParser.parse(dup);
-                    logger.debug("parsed message: " + dup);
-                    dup = pr.getReadBuffer();
-                    toks.addAll(pr.getResults());
+                    if (false == bSendAll)
+                    {
+                        /* this casing temporarily buffers and writes header */
+
+                        try
+                        {
+                            bSendAll = zMBScanner.processHeaders(dup.duplicate(), LINE_SZ);
+                        }
+                        catch (LineTooLongException exn)
+                        {
+                            logger.warn("cannot parse message header: " + exn);
+                            handleException(zTokens, dup.duplicate());
+                            break;
+                        }
+
+                        logger.debug("message header is complete: " + bSendAll);
+
+                        writeFile(dup.duplicate());
+
+                        if (true == bSendAll)
+                        {
+                            closeMsgChannel();
+                            zMsgFile = null;
+
+                            try
+                            {
+                                MIMEMessageHeaders zMMHeader = MIMEMessageHeaders.parseMMHeaders(zMMHolderT.getInputStream(), zMMHolderT.getFileMIMESource());
+                                MessageInfo zMsgInfo = createMsgInfo(zMMHeader);
+                                zMMHolderT.setMIMEMessageHeader(zMMHeader);
+                                zMMHolderT.setMessageInfo(zMsgInfo);
+                                zTokens.add(zMMHolderT);
+                            }
+                            catch (IOException exn)
+                            {
+                                logger.warn("cannot parse message header: " + exn);
+                                handleException(zTokens, dup.duplicate());
+                                break;
+                            }
+                            catch (InvalidHeaderDataException exn)
+                            {
+                                logger.warn("cannot parse message header: " + exn);
+                                handleException(zTokens, dup.duplicate());
+                                break;
+                            }
+                            catch (HeaderParseException exn)
+                            {
+                                logger.warn("cannot parse message header: " + exn);
+                                handleException(zTokens, dup.duplicate());
+                                break;
+                            }
+
+                            dup.position(iLimit); /* consume message */
+                        }
+                    }
+                    else
+                    {
+                        logger.debug("message body: " + dup);
+
+                        /* transform will buffer and write remaining data */
+                        zTokens.add(consumeChunk(dup));
+                    }
                 } else {
-                    logger.debug("not enough data to parse message");
+                    logger.debug("no data");
                 }
 
                 if (true == buf.hasRemaining() && true == startsWith(buf, EODATA_TAIL)) {
-                    if (null != dup && 0 != dup.position()) {
-                        dup.flip();
-                        logger.debug("message not fully consumed: '" +
-                                     AsciiCharBuffer.wrap(dup) + "'");
-                        throw new ParseException("message not fully consumed");
+                    logger.debug("got message end: " + dup);
+
+                    if (true == dup.hasRemaining()) {
+                        dup.rewind();
+                        throw new ParseException("message not fully consumed: '" + AsciiCharBuffer.wrap(dup) + "'");
                     }
 
-                    logger.debug("got message end");
-                    if (null != msgChannel) {
-                        try {
-                            msgChannel.close();
-                        } catch (IOException exn) {
-                            logger.warn("cannot close message file: ", exn);
-                        }
-                    }
-                    toks.add(new MessageFile(msgFile));
-                    toks.add(EndMarker.MARKER);
+                    bSendAll = false;
+                    zMBScanner.reset();
+                    zMMHolderT = null;
+
+                    zTokens.add(EndMarker.MARKER);
                     // XXX check if .[[:space:]]*CRLF is allowed
                     buf.position(buf.position() + 3); // XXX consume .CRLF
 
                     logger.debug("entering REPLY state");
                     state = State.REPLY;
                 } else {
-                    if (null != dup && 0 != dup.position()) {
-                        dup.flip();
+                    if (true == dup.hasRemaining()) {
+                        /* append data fragment (e.g., all remaining data) */
+                        dup.rewind();
                         if (true == buf.hasRemaining()) {
                             logger.debug("copying into new buffer");
                             int len = dup.remaining() + buf.remaining();
                             logger.debug("size of dup + buf: " + len);
                             len += LINE_SZ;
+
                             ByteBuffer bufTmp = ByteBuffer.allocate(len);
                             bufTmp.put(dup);
                             bufTmp.put(buf);
-                            bufTmp.flip();
+                            bufTmp.rewind();
                             buf = bufTmp;
                         } else {
                             logger.debug("dup is now buf");
@@ -198,19 +253,18 @@ public class PopServerParser extends AbstractParser
         }
 
         buf.compact();
-
         if (0 < buf.position() && LINE_SZ >= buf.remaining()) {
             ByteBuffer bufTmp = ByteBuffer.allocate(buf.capacity() + LINE_SZ);
-            buf.flip();
+            buf.rewind();
             bufTmp.put(buf);
             buf = bufTmp;
         }
 
         buf = 0 < buf.position() ? buf : null;
 
-        logger.debug("returning ParseResult(" + toks + ", " + buf + ")");
+        logger.debug("returning ParseResult(" + zTokens + ", " + buf + ")");
 
-        return new ParseResult(toks, buf);
+        return new ParseResult(zTokens, buf);
     }
 
     public ParseResult parseEnd(ByteBuffer buf) throws ParseException
@@ -225,6 +279,15 @@ public class PopServerParser extends AbstractParser
     }
 
     // private methods --------------------------------------------------------
+
+    private int findCRLFEnd(ByteBuffer zBuf)
+    {
+        /* returns 1 (if no CRLF) or greater (if CRLF found)
+         * - findCrLf returns -1 if buffer contains no CRLF pair
+         * - findCrLf returns absolute index of end of CRLF pair in buffer
+         */
+        return findCrLf(zBuf) + (1 + 1);
+    }
 
     /**
      * Select a cutoff for message data, either before the . or at the
@@ -257,5 +320,105 @@ public class PopServerParser extends AbstractParser
                 }
             }
         }
+    }
+
+    private Chunk consumeChunk(ByteBuffer zBuf)
+    {
+        ByteBuffer zBufTmp = ByteBuffer.allocate(zBuf.remaining());
+        zBufTmp.put(zBuf);
+        zBufTmp.rewind();
+
+        return new Chunk(zBufTmp);
+    }
+
+    private void writeFile(ByteBuffer zBuf)
+    {
+        try
+        {
+            for (; true == zBuf.hasRemaining(); )
+            {
+                zMsgChannel.write(zBuf);
+            }
+        }
+        catch (IOException exn)
+        {
+            closeMsgChannel();
+            zMsgFile = null;
+            logger.warn("cannot write data to message file: ", exn);
+        }
+
+        return;
+    }
+
+    private void closeMsgChannel()
+    {
+        logger.debug("close message channel file");
+
+        try
+        {
+            zMsgChannel.force(true);
+            zMsgChannel.close();
+        }
+        catch (IOException exn)
+        {
+            logger.warn("cannot close message file: ", exn);
+        }
+        finally
+        {
+            zMsgChannel = null;
+        }
+
+        return;
+    }
+
+    private MessageInfo createMsgInfo(MIMEMessageHeaders zMMHeader)
+    {
+        MessageInfo zMsgInfo = new MessageInfo(session, zMMHeader.getSubject());
+        EmailAddress zFrom = zMMHeader.getFrom();
+        zMsgInfo.addAddress(AddressKind.FROM, zFrom.getAddress(), zFrom.getPersonal()); /* from address will never be null */
+
+        EmailAddress zRcpt;
+        AddressKind zKind;
+
+        List<EmailAddressWithRcptType> zRcptTypes = zMMHeader.getAllRecipients();
+        for (EmailAddressWithRcptType zRcptType : zRcptTypes)
+        {
+            zRcpt = zRcptType.address;
+            if (false == zRcpt.isNullAddress())
+            {
+                switch(zRcptType.type)
+                {
+                case TO:
+                    zKind = AddressKind.TO;
+                    break;
+
+                case CC:
+                    zKind = AddressKind.CC;
+                    break;
+
+                default:
+                case BCC:
+                    continue; /* skip BCC */
+                }
+
+                zMsgInfo.addAddress(zKind, zRcpt.getAddress(), zRcpt.getPersonal());
+            }
+        }
+
+        return zMsgInfo;
+    }
+
+    private void handleException(List<Token> zTokens, ByteBuffer zBuf) throws ParseException
+    {
+        PopReply reply = PopReply.parse(zBuf, zBuf.limit());
+        //logger.debug("reply: " + reply.toString());
+        logger.debug("parsed reply (exception): " + zBuf);
+        zTokens.add(reply);
+
+        closeMsgChannel();
+        zMsgFile = null;
+
+        state = State.REPLY;
+        return;
     }
 }

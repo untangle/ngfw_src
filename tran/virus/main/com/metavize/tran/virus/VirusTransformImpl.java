@@ -93,7 +93,6 @@ public class VirusTransformImpl extends AbstractTransform
         +        "NOT clean AS infected, "
         +        "CASE WHEN msg_action = 'P' THEN 'PASSED' "
         +             "WHEN msg_action = 'R' THEN 'REMOVED' "
-        +             "WHEN msg_action = 'C' THEN 'CLEANED' "
         +        "END AS action, "
         +        "virus_name, "
         +        "c_client_addr, c_client_port, s_server_addr, s_server_port, "
@@ -111,7 +110,6 @@ public class VirusTransformImpl extends AbstractTransform
         +        "NOT clean AS infected, "
         +        "CASE WHEN msg_action = 'P' THEN 'PASSED' "
         +             "WHEN msg_action = 'R' THEN 'REMOVED' "
-        +             "WHEN msg_action = 'C' THEN 'CLEANED' "
         +             "WHEN msg_action = 'B' THEN 'BLOCKED' "
         +        "END AS action, "
         +        "virus_name, "
@@ -132,6 +130,7 @@ public class VirusTransformImpl extends AbstractTransform
     private static final int FTP = 0;
     private static final int HTTP = 1;
     private static final int SMTP = 2;
+    private static final int POP = 3;
 
     private final VirusScanner scanner;
 
@@ -144,7 +143,10 @@ public class VirusTransformImpl extends AbstractTransform
                          Fitting.HTTP_TOKENS, Affinity.SERVER, 0),
         new SoloPipeSpec("virus-smtp", this,
                          new TokenAdaptor(new VirusSmtpFactory(this)),
-                         Fitting.SMTP_TOKENS, Affinity.SERVER, 0)
+                         Fitting.SMTP_TOKENS, Affinity.SERVER, 0),
+        new SoloPipeSpec("virus-pop", this,
+                         new TokenAdaptor(new VirusPopFactory(this)),
+                         Fitting.POP_TOKENS, Affinity.SERVER, 0)
         };
 
     private final Logger logger = Logger.getLogger(VirusTransformImpl.class);
@@ -269,6 +271,15 @@ public class VirusTransformImpl extends AbstractTransform
 
         pipeSpecs[SMTP].setSubscriptions(subscriptions);
 
+        // POP
+        subscriptions = new HashSet();
+        {
+            Subscription subscription = new Subscription
+                (Protocol.TCP, Interface.ANY, Interface.ANY);
+            subscriptions.add(subscription);
+        }
+
+        pipeSpecs[POP].setSubscriptions(subscriptions);
     }
 
     // AbstractTransform methods ----------------------------------------------
