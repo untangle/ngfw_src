@@ -20,7 +20,7 @@ public class SpywareLog implements Comparable<SpywareLog>, Serializable
 {
     private static final long serialVersionUID = -394881366677267209L;
 
-    public enum Type { COOKIE, ACTIVEX, ACCESS, BLACKLIST };
+    public enum Type { COOKIE, ACTIVEX, ACCESS, BLACKLIST, NONE };
 
     private final Date createDate;
     private final Type type;
