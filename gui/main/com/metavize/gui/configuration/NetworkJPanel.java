@@ -136,7 +136,7 @@ public class NetworkJPanel extends javax.swing.JPanel implements Savable, Refres
 	// DHCP ENABLED /////
 	boolean isDhcpEnabled = networkingConfiguration.isDhcpEnabled();
 	setDhcpEnabledDependency( isDhcpEnabled );
-        renewDhcpLeaseJButton.setEnabled( false );  // Dirk wanted this... isDhcpEnabled );
+        renewDhcpLeaseJButton.setEnabled( isDhcpEnabled );
 	if( isDhcpEnabled )
             dhcpEnabledRadioButton.setSelected(true);
         else
@@ -193,7 +193,7 @@ public class NetworkJPanel extends javax.swing.JPanel implements Savable, Refres
         renewDhcpLeaseJButton = new javax.swing.JButton();
         jSeparator3 = new javax.swing.JSeparator();
         jLabel10 = new javax.swing.JLabel();
-        renewDhcpLeaseJButton1 = new javax.swing.JButton();
+        connectivityTestJButton = new javax.swing.JButton();
 
         setLayout(new java.awt.GridBagLayout());
 
@@ -368,19 +368,19 @@ public class NetworkJPanel extends javax.swing.JPanel implements Savable, Refres
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 0);
         dhcpJPanel.add(jLabel10, gridBagConstraints);
 
-        renewDhcpLeaseJButton1.setFont(new java.awt.Font("Dialog", 0, 12));
-        renewDhcpLeaseJButton1.setText("Run Connectivity Test");
-        renewDhcpLeaseJButton1.setFocusPainted(false);
-        renewDhcpLeaseJButton1.addActionListener(new java.awt.event.ActionListener() {
+        connectivityTestJButton.setFont(new java.awt.Font("Dialog", 0, 12));
+        connectivityTestJButton.setText("Run Connectivity Test");
+        connectivityTestJButton.setFocusPainted(false);
+        connectivityTestJButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                renewDhcpLeaseJButton1ActionPerformed(evt);
+                connectivityTestJButtonActionPerformed(evt);
             }
         });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
-        dhcpJPanel.add(renewDhcpLeaseJButton1, gridBagConstraints);
+        dhcpJPanel.add(connectivityTestJButton, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -393,7 +393,7 @@ public class NetworkJPanel extends javax.swing.JPanel implements Savable, Refres
 
     }//GEN-END:initComponents
 
-    private void renewDhcpLeaseJButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_renewDhcpLeaseJButton1ActionPerformed
+    private void connectivityTestJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectivityTestJButtonActionPerformed
         try{
 	    ConnectivityJDialog connectivityJDialog = new ConnectivityJDialog();
 	    connectivityJDialog.setVisible(true);
@@ -402,7 +402,7 @@ public class NetworkJPanel extends javax.swing.JPanel implements Savable, Refres
 	    try{ Util.handleExceptionWithRestart("Error showing connectivity tester", e); }
 	    catch(Exception f){ Util.handleExceptionNoRestart("Error showing connectivity tester", f); }
 	}
-    }//GEN-LAST:event_renewDhcpLeaseJButton1ActionPerformed
+    }//GEN-LAST:event_connectivityTestJButtonActionPerformed
 
     private void renewDhcpLeaseJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_renewDhcpLeaseJButtonActionPerformed
         DhcpLeaseRenewDialog dhcpLeaseRenewDialog = new DhcpLeaseRenewDialog();
@@ -429,6 +429,7 @@ public class NetworkJPanel extends javax.swing.JPanel implements Savable, Refres
 
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton connectivityTestJButton;
     private javax.swing.ButtonGroup dhcpButtonGroup;
     public javax.swing.JRadioButton dhcpDisabledRadioButton;
     public javax.swing.JRadioButton dhcpEnabledRadioButton;
@@ -450,7 +451,6 @@ public class NetworkJPanel extends javax.swing.JPanel implements Savable, Refres
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JButton renewDhcpLeaseJButton;
-    private javax.swing.JButton renewDhcpLeaseJButton1;
     private javax.swing.ButtonGroup restrictAdminButtonGroup;
     private javax.swing.ButtonGroup sshButtonGroup;
     private javax.swing.JPanel staticIPJPanel;
