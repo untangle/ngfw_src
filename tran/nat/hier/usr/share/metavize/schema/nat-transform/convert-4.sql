@@ -187,8 +187,8 @@ DROP TABLE public.tr_nat_dns_hosts;
 DROP TABLE public.dns_static_host_rule;
 DROP TABLE public.tr_nat_evt_dhcp;
 DROP TABLE public.dhcp_abs_lease;
-DROP table public.tr_nat_evt_dhcp_abs;
-DROP table public.tr_nat_evt_dhcp_abs_leases;
+DROP TABLE public.tr_nat_evt_dhcp_abs;
+DROP TABLE public.tr_nat_evt_dhcp_abs_leases;
 
 ---------------
 -- new tables |
@@ -218,4 +218,11 @@ CREATE TABLE events.tr_nat_statistic_evt (
     time_stamp timestamp,
     PRIMARY KEY (event_id));
 
+------------
+-- analyze |
+------------
 
+ANALYZE events.tr_nat_evt_dhcp;
+ANALYZE events.dhcp_abs_lease;
+ANALYZE events.tr_nat_evt_dhcp_abs;
+ANALYZE events.tr_nat_evt_dhcp_abs_leases;

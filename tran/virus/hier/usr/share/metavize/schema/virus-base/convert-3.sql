@@ -335,3 +335,10 @@ DROP TABLE public.tr_virus_vs_mt;
 DROP TABLE public.tr_virus_settings;
 DROP TABLE public.tr_virus_evt;
 DROP TABLE public.tr_virus_evt_http;
+
+------------
+-- analyze |
+------------
+
+ANALYZE events.tr_virus_evt;
+ANALYZE events.tr_virus_evt_http;

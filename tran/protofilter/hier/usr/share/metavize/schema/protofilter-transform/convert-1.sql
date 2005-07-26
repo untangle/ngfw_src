@@ -74,3 +74,9 @@ ALTER TABLE tr_protofilter_pattern DROP CONSTRAINT fke929349b79192ab7;
 DROP TABLE public.tr_protofilter_settings;
 DROP TABLE public.tr_protofilter_pattern;
 DROP TABLE public.tr_protofilter_evt;
+
+------------
+-- analyze |
+------------
+
+ANALYZE events.tr_protofilter_evt;

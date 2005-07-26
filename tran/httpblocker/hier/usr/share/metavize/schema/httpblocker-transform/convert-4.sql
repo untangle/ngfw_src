@@ -213,3 +213,9 @@ DROP TABLE public.tr_httpblk_mime_types;
 DROP TABLE public.tr_httpblk_passed_clients;
 DROP TABLE public.tr_httpblk_blocked_urls;
 DROP TABLE public.tr_httpblk_blcat;
+
+------------
+-- analyze |
+------------
+
+ANALYZE events.tr_httpblk_evt_blk;

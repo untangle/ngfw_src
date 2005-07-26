@@ -84,3 +84,11 @@ ALTER TABLE tr_http_settings
 CREATE INDEX tr_http_evt_req_ts_idx ON tr_http_evt_req (time_stamp);
 CREATE INDEX tr_http_evt_req_sid_idx ON tr_http_evt_req (session_id);
 CREATE INDEX tr_http_evt_resp_rid_idx ON tr_http_evt_resp (request_id);
+
+------------
+-- analyze |
+------------
+
+ANALYZE events.tr_http_evt_resp;
+ANALYZE events.tr_http_evt_req;
+ANALYZE events.tr_http_req_line;

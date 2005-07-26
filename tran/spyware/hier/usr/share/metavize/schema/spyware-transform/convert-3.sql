@@ -186,3 +186,11 @@ CREATE INDEX tr_spyware_ax_rid_idx
     ON events.tr_spyware_evt_activex (request_id);
 CREATE INDEX tr_spyware_acc_sid_idx
     ON events.tr_spyware_evt_access (session_id);
+
+------------
+-- analyze |
+------------
+
+ANALYZE events.tr_spyware_evt_access;
+ANALYZE events.tr_spyware_evt_activex;
+ANALYZE events.tr_spyware_evt_cookie;

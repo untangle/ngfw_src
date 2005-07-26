@@ -415,7 +415,7 @@ DROP TABLE public.mvvm_evt_pipeline;
 
 ANALYZE settings.pl_stats;
 
--- Table for shield events
+-- table for shield events
 
 CREATE TABLE events.shield_rejection_evt (
     event_id int8 NOT NULL,
@@ -427,3 +427,11 @@ CREATE TABLE events.shield_rejection_evt (
     dropped int4,
     time_stamp timestamp,
     PRIMARY KEY (event_id));
+
+------------
+-- analyze |
+------------
+
+ANALYZE events.mvvm_login_evt;
+ANALYZE events.pl_endp;
+ANALYZE events.pl_stats;
