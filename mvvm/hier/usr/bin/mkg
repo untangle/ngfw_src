@@ -44,6 +44,14 @@ aptlog()
         echo -e "----------\n" >> $APT_LOG
 }
 
+my_dpkg_query()
+{
+    PKGS="`dpkg --get-selections $1 | egrep 'install$' | awk '{print $1}'`"
+    if [ ! -z "$PKGS" ] ; then
+        echo "$PKGS" | xargs dpkg-query -W 
+    fi
+}
+
 if [ $# -lt 1 ] ; then
     printusage
 fi
@@ -51,10 +59,10 @@ fi
 if [ -z $prefix ] ; then
     # invoked in real environment
     if [ "$1" = "installed" ] ; then
-        (dpkg-query -W '*-transform'
-            dpkg-query -W '*-casing' ;
-            dpkg-query -W 'metavize-client';
-            dpkg-query -W 'mvvm') 2>/dev/null \
+        (my_dpkg_query '*-transform'
+            my_dpkg_query '*-casing' ;
+            my_dpkg_query 'metavize-client';
+            my_dpkg_query 'mvvm') 2>/dev/null \
                 | awk '{ if ($2) printf("%s %s\n",$1,$2) }'
     elif [ "$1" = "available" ] ; then
         pkgs=$(apt-cache search '.-transform$|.-casing$|^mvvm$|^metavize-client$'\
