@@ -18,7 +18,6 @@ int colonIndex = host.indexOf(':');
 if( colonIndex >= 0 )
     host = host.substring(0, colonIndex);
 
-
 MvvmRemoteContext mvvm = MvvmRemoteContextFactory.localLogin();
 // XXX logins timeout
 //ServletContext sc = getServletContext();

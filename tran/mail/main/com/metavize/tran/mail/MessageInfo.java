@@ -13,8 +13,8 @@ package com.metavize.tran.mail;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import com.metavize.tran.mime.*;
 
+import com.metavize.tran.mime.*;
 import org.apache.log4j.Logger;
 
 /**
@@ -51,7 +51,7 @@ public class MessageInfo implements Serializable
     /* Senders/Receivers */
     private List addressList = new ArrayList();
 
-    
+
     /* constructors */
     public MessageInfo() {}
 
@@ -148,6 +148,7 @@ public class MessageInfo implements Serializable
      * @return RFC822 Subject.
      * @hibernate.property
      * column="SUBJECT"
+     * not-null="true"
      */
     public String getSubject()
     {
@@ -187,7 +188,7 @@ public class MessageInfo implements Serializable
     public static MessageInfo fromMIMEMessage(MIMEMessageHeaders headers,
       int sessionId,
       int port) {
-      
+
       MessageInfo ret = new MessageInfo(sessionId, port, headers.getSubject());
 
       //Drain all TO and CC
@@ -211,5 +212,5 @@ public class MessageInfo implements Serializable
             from.getPersonal());
       }
       return ret;
-    }    
+    }
 }

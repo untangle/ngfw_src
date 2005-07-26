@@ -1,10 +1,9 @@
 <%@ page language="java" import="com.metavize.mvvm.*, com.metavize.mvvm.client.*, com.metavize.mvvm.security.Tid, com.metavize.mvvm.tran.*, com.metavize.mvvm.tapi.*, com.metavize.mvvm.util.SessionUtil, org.apache.log4j.helpers.AbsoluteTimeDateFormat, java.util.Properties, java.net.URL, java.io.PrintWriter, javax.naming.*" %>
 
 <%
-ServletContext sc = getServletContext();
-
 MvvmRemoteContext mvvm = MvvmRemoteContextFactory.localLogin();
-// logins timeout
+// XXX logins timeout
+//ServletContext sc = getServletContext();
 //MvvmRemoteContext mvvm = (MvvmRemoteContext) sc.getAttribute("mvvm");
 //if (mvvm == null) {
 //    mvvm = MvvmRemoteContextFactory.localLogin();

@@ -27,20 +27,22 @@ CREATE TABLE settings.tr_mail_settings (
 CREATE TABLE events.tr_mail_message_info (
     id int8 NOT NULL,
     session_id int4,
-    server_type char NOT NULL,
     subject varchar(255) NOT NULL,
+    server_type char(1) NOT NULL,
     PRIMARY KEY (id));
 
 CREATE TABLE events.tr_mail_message_info_addr (
     id int8 NOT NULL,
     addr varchar(255) NOT NULL,
     personal varchar(255),
-    kind char,
+    kind char(1),
+    msg_id int8,
+    position int4,
     PRIMARY KEY (id));
 
 CREATE TABLE events.tr_mail_message_stats (
     id int8 NOT NULL,
-    msg_id int8 NOT NULL,
+    msg_id int8,
     msg_bytes int8,
     msg_attachments int4,
     PRIMARY KEY (id));

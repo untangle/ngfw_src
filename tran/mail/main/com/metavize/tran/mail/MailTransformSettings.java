@@ -141,6 +141,7 @@ public class MailTransformSettings implements Serializable
      * @return timeout for SMTP in millis.
      * @hibernate.property
      * column="SMTP_INBOUND_TIMEOUT"
+     * not-null="true"
      */
     public long getSmtpInboundTimeout()
     {
@@ -158,6 +159,7 @@ public class MailTransformSettings implements Serializable
      * @return timeout for SMTP in millis.
      * @hibernate.property
      * column="SMTP_OUTBOUND_TIMEOUT"
+     * not-null="true"
      */
     public long getSmtpOutboundTimeout()
     {
@@ -175,6 +177,7 @@ public class MailTransformSettings implements Serializable
      * @return timeout for POP in millis.
      * @hibernate.property
      * column="POP_INBOUND_TIMEOUT"
+     * not-null="true"
      */
     public long getPopInboundTimeout()
     {
@@ -192,6 +195,7 @@ public class MailTransformSettings implements Serializable
      * @return timeout for POP in millis.
      * @hibernate.property
      * column="POP_OUTBOUND_TIMEOUT"
+     * not-null="true"
      */
     public long getPopOutboundTimeout()
     {
@@ -209,6 +213,7 @@ public class MailTransformSettings implements Serializable
      * @return timeout for IMAP in millis.
      * @hibernate.property
      * column="IMAP_INBOUND_TIMEOUT"
+     * not-null="true"
      */
     public long getImapInboundTimeout()
     {
@@ -226,6 +231,7 @@ public class MailTransformSettings implements Serializable
      * @return timeout for IMAP in millis.
      * @hibernate.property
      * column="IMAP_OUTBOUND_TIMEOUT"
+     * not-null="true"
      */
     public long getImapOutboundTimeout()
     {
