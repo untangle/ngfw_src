@@ -33,8 +33,6 @@ adworldnetwork.com
 alamo.com
 all-yours.net
 alxnet.com
-amazon.com
-aol.com
 arcticnightfall.com
 asia1.com.sg
 ask.co.uk
@@ -44,7 +42,6 @@ attbi.com
 atwola.com
 bannerspace.com
 batleby.com
-bestbuy.com
 bfast.com
 bfndevelopment.com
 bitzi.com
@@ -65,7 +62,6 @@ childrensministry.com
 clickagents.com
 clickheretofind.com
 clickzs.com
-cnet.com
 columbiahouse.com
 com.com
 comcast.com
@@ -116,7 +112,6 @@ gator.com
 geocities.com
 go.com
 go2net.com
-google.com
 gorillanation.com
 gotoast.com
 gunbound.net
@@ -129,7 +124,6 @@ hitslink.com
 honda.com
 hostdepartment.com
 hotlog.ru
-hotmail.com
 hp.com
 humanclick.com
 hyperbanner.net
@@ -156,8 +150,6 @@ linksynergy.com
 list.ru
 liveperson.net
 lycos.co.uk
-lycos.com
-macromedia.com
 matchcraft.com
 mediaclay.com
 mediaplex.com
@@ -165,9 +157,7 @@ merchantselect.com
 mess.be
 metareward.com
 metriweb.be
-microsoft.com
 mircx.com
-msn.com
 mysimon.com
 nbc5.com
 neoholic.com
@@ -182,7 +172,6 @@ oneplace.com
 onestat.com
 overture.com
 passport.com
-paypal.com
 paypopup.com
 pcstats.com
 pokerroom.com
@@ -251,5 +240,4 @@ xmbforum.com
 xmbhacks.co.uk
 xmts.net
 xupiter.com
-yahoo.com
 zedo.com
