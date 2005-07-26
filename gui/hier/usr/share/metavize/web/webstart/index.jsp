@@ -2,12 +2,14 @@
 
 <%
 
-ServletContext sc = getServletContext();
-MvvmRemoteContext mvvm = (MvvmRemoteContext) sc.getAttribute("mvvm");
-if (mvvm == null) {
-    mvvm = MvvmRemoteContextFactory.localLogin();
-    sc.setAttribute("mvvm", mvvm);
-}
+MvvmRemoteContext mvvm = MvvmRemoteContextFactory.localLogin();
+// XXX logins timeout
+//ServletContext sc = getServletContext();
+//MvvmRemoteContext mvvm = (MvvmRemoteContext) sc.getAttribute("mvvm");
+//if (mvvm == null) {
+//    mvvm = MvvmRemoteContextFactory.localLogin();
+//    sc.setAttribute("mvvm", mvvm);
+//}
 boolean reportsAvailable = mvvm.reportingManager().isReportsAvailable();
 String host=request.getHeader("host");
 String scheme=request.getScheme();
@@ -33,7 +35,7 @@ String helpClickHere = "Click <a href=\"help.html\">here</a> for more informatio
     <% if ( isIndex ) { %>
     <script language="JavaScript" type="text/javascript">
       <!-- // Hide script from older browsers -->
-        var javawsInstalled    = 0; 
+        var javawsInstalled    = 0;
         var javaws142Installed = 0;
         var javaws150Installed = 0;
         isIE = "false";
@@ -56,8 +58,8 @@ String helpClickHere = "Click <a href=\"help.html\">here</a> for more informatio
           }
         }
      <!-- //  -->
-    </script> 
-    
+    </script>
+
     <script language="VBScript" type="text/vbscript">
       <!-- // Hide script from older browsers
         on error resume next
@@ -97,7 +99,7 @@ String helpClickHere = "Click <a href=\"help.html\">here</a> for more informatio
           <tr>
             <td style="vertical-align: top; font-family: helvetica,arial,sans-serif; width: 400px;">
               <div style="text-align: center;">
-                <img alt="" src="images/LogoNoText96x96.gif" 
+                <img alt="" src="images/LogoNoText96x96.gif"
                      style="border: 0px solid ; width: 96px; height: 96px;" align="top"
                      hspace="0" vspace="0"/>
                 <br/>
@@ -108,9 +110,9 @@ String helpClickHere = "Click <a href=\"help.html\">here</a> for more informatio
                 <br/>
                 <br/>
                 <% if ( host.equalsIgnoreCase( "egdemo.metavize.com" )) { %>
-        	<b>Login: egdemo</b>
-		<br/>
-		<b>Password: egdemo</b>
+            <b>Login: egdemo</b>
+        <br/>
+        <b>Password: egdemo</b>
                 <br/>
                 <br/>
                 <% } %>
@@ -129,22 +131,22 @@ String helpClickHere = "Click <a href=\"help.html\">here</a> for more informatio
                   </a>
                 </object>
                 <% } else { // if ( isDownload ) %>
-		<center>
-		<table border="0">
-	        <tr><td align="right">Server:</td>
+        <center>
+        <table border="0">
+            <tr><td align="right">Server:</td>
                 <td><i>
                   &nbsp;<%=host %>
                 </i></td></tr>
-		<tr><td align="right">Connection:</td>
-		<td><i>
+        <tr><td align="right">Connection:</td>
+        <td><i>
                   <% if(isSecure){  %>
-			&nbsp;https (secure)
-		<%} else {%>
-			&nbsp;http (standard)
+            &nbsp;https (secure)
+        <%} else {%>
+            &nbsp;http (standard)
                 <% } %>
                 </i></td></tr>
-		</table>
-		</center>
+        </table>
+        </center>
               </div>
               <% if ( !isDownload ) { %>
               <br/>
@@ -152,13 +154,13 @@ String helpClickHere = "Click <a href=\"help.html\">here</a> for more informatio
               <% } // if ( !isDownload )
               if ( isIndex ) { %>
               <script type="text/javascript" language="Javascript">
-                <!-- 
+                <!--
                      showMessage();
                 -->
               </script>
               <noscript>
                 Because Javascript is disabled, the latest version
-                of Java Web Start could not be detected.&nbsp; 
+                of Java Web Start could not be detected.&nbsp;
                 <%= helpClickHere %>
                 <br/>
                 <br/>
@@ -170,7 +172,7 @@ String helpClickHere = "Click <a href=\"help.html\">here</a> for more informatio
               </noscript>
               <% } else if ( isHelp ) { %>
               The latest version
-              of Java Web Start could not be detected.&nbsp; 
+              of Java Web Start could not be detected.&nbsp;
               <br/>
               <br/>
               <ul>
@@ -197,8 +199,8 @@ String helpClickHere = "Click <a href=\"help.html\">here</a> for more informatio
                 <a href="gui.jnlp">Launch EdgeGuard Client</a><br>
 
                 <% if (reportsAvailable) { %>
-	   	   <br><a href="<%=scheme%>://<%=host%>/reports">View EdgeReports</a>
-	        <% } %>
+           <br><a href="<%=scheme%>://<%=host%>/reports">View EdgeReports</a>
+            <% } %>
                <% } %>
               </div>
               <% } %>
@@ -209,6 +211,6 @@ String helpClickHere = "Click <a href=\"help.html\">here</a> for more informatio
     </center>
     <br/>
     <br/>
-    <br/>    
+    <br/>
   </body>
 </html>

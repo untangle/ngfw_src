@@ -1,14 +1,17 @@
 <%@ page language="java" import="com.metavize.mvvm.*, com.metavize.mvvm.client.*, com.metavize.mvvm.security.Tid, com.metavize.mvvm.tran.*, com.metavize.mvvm.tapi.*, com.metavize.mvvm.util.SessionUtil, org.apache.log4j.helpers.AbsoluteTimeDateFormat, java.util.Properties, java.net.URL, java.io.PrintWriter, javax.naming.*" %>
 
-<% 
+<%
 ServletContext sc = getServletContext();
-MvvmRemoteContext mvvm = (MvvmRemoteContext) sc.getAttribute("mvvm");
-if (mvvm == null) {
-    mvvm = MvvmRemoteContextFactory.localLogin();
-    sc.setAttribute("mvvm", mvvm);
-}
+
+MvvmRemoteContext mvvm = MvvmRemoteContextFactory.localLogin();
+// logins timeout
+//MvvmRemoteContext mvvm = (MvvmRemoteContext) sc.getAttribute("mvvm");
+//if (mvvm == null) {
+//    mvvm = MvvmRemoteContextFactory.localLogin();
+//    sc.setAttribute("mvvm", mvvm);
+//}
   ReportingManager reportingManager = mvvm.reportingManager();
- 
+
   boolean reportingInstalled = reportingManager.isReportingEnabled();
   boolean reportsAvailable = reportingManager.isReportsAvailable();
   if (!reportsAvailable) {
@@ -26,7 +29,7 @@ body {
      margin: 15px;
      background: #FFFFFF url(./images/background_body.gif) repeat-x top left;
      text-align: center;
-}  
+}
 
 table {
     font: normal normal normal 10pt/14pt Arial,Sans-Serif;
@@ -140,7 +143,7 @@ h4 {
       <table border="0" cellpadding="0" cellspacing="0" width="904">
 
         <!-- TOP THIRD -->
-        <tr> 
+        <tr>
           <td id="table_main_top_left">
             <img src="./images/spacer.gif" alt=" " width="23" height="23"/><br/>
           </td>
@@ -154,7 +157,7 @@ h4 {
         <!-- END TOP THIRD -->
 
         <!-- MIDDLE THIRD -->
-        <tr> 
+        <tr>
           <td id="table_main_left">
             <img src="./images/spacer.gif" alt=" " width="1" height="1"/>
           </td>
@@ -176,27 +179,27 @@ h4 {
         </tr>
         <!-- END MIDDLE THIRD -->
 
-	<tr>
-	<td id="table_main_left"></td>
-	<td id="table_main_center">
-	    <center>
-	    <b><i>
-		No reports are available.<br/>
-		<br/>
+    <tr>
+    <td id="table_main_left"></td>
+    <td id="table_main_center">
+        <center>
+        <b><i>
+        No reports are available.<br/>
+        <br/>
 
-		<% if(!reportingInstalled){ %>
-			EdgeReport is not installed into your rack.<br/>
-			Reports are only generated when EdgeReport is running.
-		<% } else{ %>
-                	<i>No reports are available, please check back tomorrow morning.</i><br/>
-                	<i>Reports are generated every night automatically.</i>
-		<% } %>
+        <% if(!reportingInstalled){ %>
+            EdgeReport is not installed into your rack.<br/>
+            Reports are only generated when EdgeReport is running.
+        <% } else{ %>
+                    <i>No reports are available, please check back tomorrow morning.</i><br/>
+                    <i>Reports are generated every night automatically.</i>
+        <% } %>
 
-	    </i></b>
-	    </center>
-	</td>
-	<td id="table_main_right"></td>
-	</tr>
+        </i></b>
+        </center>
+    </td>
+    <td id="table_main_right"></td>
+    </tr>
 
         <!-- BOTTOM THIRD -->
         <tr>
@@ -219,7 +222,7 @@ h4 {
 </HTML>
 
 <%
-	} else {
+    } else {
             // We can redirect them. If it fails (shouldn't with any modern
             // browser), serve them the following backup page.
             response.sendRedirect("./current");
@@ -243,5 +246,5 @@ to a new location.</u></p>
 </body></html>
 
 <%
-	}
+    }
 %>
