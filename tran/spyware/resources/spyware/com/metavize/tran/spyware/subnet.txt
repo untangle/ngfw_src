@@ -627,14 +627,6 @@
 217.17.157.128 mask 255.255.255.192,Malware,Various,
 207.68.128.0 mask 255.255.192.0,Malware,MSN
 207.68.192.0 mask 255.255.240.0,Malware,MSN
-207.46.0.0 mask 255.255.0.0,Malware,Microsoft/Conxion*
-207.68.128.0 mask 255.255.128.0,Malware,Microsoft/Conxion*
-206.204.0.0 mask 255.255.0.0,Malware,Microsoft/Conxion*
-65.52.0.0 mask 255.252.0.0,Malware,Microsoft*
-131.107.0.0 mask 255.255.0.0,Malware,Microsoft
-198.105.232.0 mask 255.255.252.0,Malware,Microsoft
-81.52.248.0 mask 255.255.254.0,Malware,Microsoft/Akamai
-81.52.250.0 mask 255.255.255.128,Malware,Microsoft/Akamai
 213.35.101.0 mask 255.255.255.0,Malware,ConXion/AWS
 63.80.0.0 mask 255.255.255.0,Malware,24/7
 209.213.215.0 mask 255.255.255.0,Malware,24/7

@@ -70,6 +70,7 @@
 1nl.cqcounter.com
 1pt.cqcounter.com
 1se.cqcounter.com
+1st-sex.us
 1st-software-downloads.com
 1stblaze.com
 1stsoftwaredownloads.com
@@ -79,6 +80,7 @@
 2.adbrite.com
 2.marketbanker.com
 20.sharedsource.org
+2003.yauu.net
 2004search.cc
 2020search.com
 20x2p.com
@@ -109,6 +111,7 @@
 404errorpage.com
 411ferret.com
 462.dapfeed.com
+48.dapfeed.com
 4count.com
 4hotstocks.com
 4netmedia.com
@@ -128,6 +131,7 @@
 700k.com
 700xxx.com
 75tz.com
+773.dapfeed.com
 7842.directwebsearch.net
 7adpower.com
 7am.com
@@ -144,6 +148,7 @@ a-search.biz
 a-search4u.com
 a.adstome.com
 a.as-eu.falkag.net
+a.as-test.falkag.net
 a.as-us.falkag.net
 a.as-us.falkag.net
 a.boom.ro
@@ -210,6 +215,7 @@ ad.ads.dk
 ad.adslim.com
 ad.adsmart.net
 ad.adver.com.tw
+ad.ar.doubleclick.net
 ad.au.doubleclick.net
 ad.backyardgardener.com
 ad.bannerbank.ru
@@ -390,6 +396,7 @@ adimages.earthweb.com
 adimages.go.com
 adimages.go.com
 adimages.imaginemedia.com
+adimages.vendaregroup.com
 adimg.cnet.com
 adimg.com.com
 adimg.egroups.com
@@ -405,6 +412,7 @@ adlogix.com
 adman.freeze.com
 admedia.xoom.com
 admin.abcsearch.com
+admin.as-eu.falkag.net
 admin.popupsponsor.com
 admin.startsurfing.com
 adminder.com
@@ -412,6 +420,7 @@ admintds.megatds.com
 admonitor.net
 adops.adbureau.net
 adopt.hotbar.com
+adopt.precisead.com
 adopt.specificclick.net
 adorigin.com
 adp.ikena.com
@@ -519,6 +528,7 @@ ads.expedia.com
 ads.ezcybersearch.com
 ads.fairfax.com.au
 ads.fairfax.com.au
+ads.fhm.valueclick.net
 ads.flashtrack.net
 ads.flooble.com
 ads.flooble.com
@@ -577,6 +587,7 @@ ads.internetfuel.com
 ads.ipowerweb.com
 ads.irover.com
 ads.isoftmarketing.com
+ads.isp.valueclick.jp
 ads.ixo.com
 ads.jpost.com
 ads.jpost.com
@@ -622,6 +633,8 @@ ads.newline.aol.com
 ads.newsint.co.uk
 ads.ninemsn.com.au
 ads.ninemsn.com.au
+ads.nj.com
+ads.northjersey.com
 ads.nwsource.com
 ads.nypost.com
 ads.nytimes.com
@@ -676,6 +689,7 @@ ads.telegraph.co.uk
 ads.tiscali.fr
 ads.toplayerserver.com
 ads.track-star.com
+ads.trafficaces.com
 ads.trafficvenue.net
 ads.tripod.com
 ads.tripod.com
@@ -683,6 +697,7 @@ ads.tripod.lycos.co.uk
 ads.tripod.lycos.co.uk
 ads.tucows.com
 ads.ucomics.com
+ads.udc.advance.net
 ads.undertonenetworks.com
 ads.unlimitedbanners.com
 ads.uproar.com
@@ -743,6 +758,7 @@ ads09.hyperbanner.net
 ads1.activeagent.at
 ads1.ad-flow.com
 ads1.advance.net
+ads1.itadnetwork.co.uk
 ads1.revenue.net
 ads1.searchmiracle.com
 ads1.speedbit.com
@@ -750,26 +766,33 @@ ads1.speedbit.com
 ads1.sptimes.com
 ads1.theglobeandmail.com
 ads1.tripod.com
+ads1.udc.advance.net
 ads1.updated.com
 ads10.bpath.com
 ads10.focalink.com
 ads10.hyperbanner.net
 ads10.speedbit.com
+ads10.udc.advance.net
 ads11.focalink.com
 ads11.hyperbanner.net
+ads11.udc.advance.net
 ads12.bpath.com
 ads12.focalink.com
 ads12.hyperbanner.net
+ads12.udc.advance.net
 ads13.bpath.com
 ads13.focalink.com
 ads13.hyperbanner.net
+ads13.udc.advance.net
 ads14.bpath.com
 ads14.focalink.com
 ads14.hyperbanner.net
+ads14.udc.advance.net
 ads15.bpath.com
 ads15.bpath.com
 ads15.focalink.com
 ads15.hyperbanner.net
+ads15.udc.advance.net
 ads16.bpath.com
 ads16.focalink.com
 ads16.hyperbanner.net
@@ -786,6 +809,7 @@ ads2.playnet.com
 ads2.revenue.net
 ads2.speedbit.com
 ads2.speedbit.com
+ads2.udc.advance.net
 ads2.zdnet.com
 ads20.bpath.com
 ads20.focalink.com
@@ -807,6 +831,7 @@ ads28.bpath.com
 ads29.bpath.com
 ads3.speedbit.com
 ads3.speedbit.com
+ads3.udc.advance.net
 ads3.virtumundo.com
 ads3.wunderground.com
 ads3.zdnet.com
@@ -815,25 +840,32 @@ ads4.clearchannel.com
 ads4.revenue.net
 ads4.speedbit.com
 ads4.speedbit.com
+ads4.udc.advance.net
 ads4.virtumundo.com
 ads5.canoe.ca
 ads5.gamecity.net
 ads5.peel.com
 ads5.speedbit.com
 ads5.speedbit.com
+ads5.udc.advance.net
 ads6.speedbit.com
 ads6.speedbit.com
+ads6.udc.advance.net
 ads7.inet1.com
 ads7.speedbit.com
 ads7.speedbit.com
+ads7.udc.advance.net
 ads8.speedbit.com
 ads8.speedbit.com
+ads8.udc.advance.net
 ads9.speedbit.com
+ads9.udc.advance.net
 adsatt.abcnews.starwave.com
 adsatt.disney.starwave.com
 adsatt.espn.starwave.com
 adscpm.com
 adscpm.com
+adserv.680130.net
 adserv.680180.net
 adserv.adbonus.com
 adserv.bravenet.com
@@ -923,8 +955,10 @@ adservices.google.com
 adserving.autotrader.com
 adsfac.net
 adshooter.com
+adshttp.com
 adsincontext.com
 adsintl.starwave.com
+adsonwww.com
 adsremote.scripps.com
 adsrve.com
 adstats.adviva.net
@@ -1028,7 +1062,6 @@ aidintime.com
 aim.aol.com
 aimgames.wildtangent.com
 aiminstaller.wildtangent.com
-airteens.com
 ajim.delphibbs.com
 ajokeaday.com
 ak.bluestreak.com
@@ -1057,16 +1090,21 @@ allcybersearch.com
 allneedsearch.com
 allposters.com
 allsitessearch.com
+allspyremover.com
+allspyremover.net
 allstarsearch.net
 allways.drusearch.com
 allxxxteen.com
 alpha.searchassistant.net
+alphaerotica.com
 alset.com
 altfarm.mediaplex.com
 altnet.com
 amateur.xxxcounter.com
 amaturevideos.nl
 amazingautossearch.com
+ambush-script.com
+ambush-soft.com
 amch.questionmarket.com
 amch.questionmarket.com
 ami.pointroll.com
@@ -1074,6 +1112,7 @@ amigeek.com
 amnv.net
 ams-download.nocreditcard.com
 ams-download.nocreditcardgay.com
+analsextech.com
 andr.com
 angelsfucked.com
 anna.homeftp.net
@@ -1112,9 +1151,9 @@ arc2.msn.com
 arc3.msn.com
 arc9.msn.com
 archiviohard.com
+areuhorny.com
 armbender.com
 arsconsole.global-intermedia.com
-arscounter.com
 artistdirectcollect.247realmedia.com
 artwork.aim4media.com
 as.adwave.com
@@ -1327,7 +1366,6 @@ banners.hotlinks.net
 banners.hotlinks.net
 banners.hotqueens.com
 banners.inetfast.com
-banners.internetsexprovider.com
 banners.kanoodle.com
 banners.largecash.com
 banners.leadingedgecash.com
@@ -1350,6 +1388,7 @@ banners.specificpop.com
 banners.spylog.com
 banners.toteme.com
 banners.truecash.com
+banners.tucson.com
 banners.valuead.com
 banners.valuead.com
 banners.vipprofits.com
@@ -1377,6 +1416,7 @@ bar.mytotalsearch.com
 bar.mywebsearch.com
 bargain-buddy.net
 barnesandnoble.bfast.com
+bastion.xhpro.com
 bbcww.adbureau.net
 bc2.gator.com
 bde3d.com
@@ -1407,6 +1447,7 @@ bestmatchfinder.net
 bestoffers.bz
 bestsearch.cc
 bestsearch.com
+bestsearcher.info
 bestserials.com
 besttraff.us
 beta.oversee.net
@@ -1422,6 +1463,7 @@ bi.gator.com
 bianka.cafreedom.com
 bidclix.net
 bidtxt.whenu.com
+big-search.info
 bigbrother.gigatechsoftware.com
 bigbuks.info
 bigclicks.com
@@ -1435,6 +1477,7 @@ bilbo.counted.com
 bilbo.counted.com
 bill.dce.nextstat.com
 billingnow.com
+billingsupportcenter.com
 bin.wordsx.cc
 bingorevenue.directtrack.com
 bins.lop.com
@@ -1444,6 +1487,7 @@ bins2.media-motor.net
 binzoo.com
 bis.180solutions.com
 bisads.180solutions.com
+bitchesonline.net
 bittorrent-ultra.com
 bizad.nikkeibp.co.jp
 bizonio.com
@@ -1463,13 +1507,16 @@ bookedspace.com
 bookmark.t2t2.com
 botw.topbucks.com
 bounty.bighits.net
+boxsearch.net
 bp2.getredirect.com
 bravenet.com
 bravenet.com
+brdatahost.com
 breakthroughsearch.com
 breakthroughsearch.net
 bride.ru
 brilliantdigital.com
+broadcaster.streamate.com
 browser.secondpower.com
 browseraccelerator.com
 browseraid.com
@@ -1495,6 +1542,7 @@ buy-traffic.net
 buy.rpts.net
 buysearch.cc
 bvads.infospace.com
+bw.as-test.falkag.net
 bw.as-us.falkag.net
 by.advertising.com
 by.optimost.com
@@ -1555,6 +1603,7 @@ campaigns.outerinfo.com
 campaigns2.outerinfo.com
 camz.tintel.nl
 canwest.112.2O7.net
+capitalhardcores.com
 capitali-images.adbureau.net
 cards.searchalot.com
 casalamedia.com
@@ -1587,6 +1636,7 @@ ccc01.opinionlab.com
 cdn.climaxbucks.com
 cdn.eyewonder.com
 cdn.fastclick.net
+cdn.gms1.net
 cdn.movies-etc.com
 cdn.pg.valueclick.net
 cdn.valueclick.com
@@ -1623,9 +1673,9 @@ cheats.joysticknetworks.com
 checkin.clickalchemy.com
 checkspy.com
 chewbacca.cybereps.com
-chillout.real.com
 christmascursors.cometsystems.com
 chromium.whenu.com
+cimpanst.com
 cinnam.vibrahost.com
 citi.bridgetrack.com
 civiv.info
@@ -1722,6 +1772,8 @@ clrsch.com
 clubonly18.com
 cluster-03.topbucks.com
 cluster.blingblingcontent.com
+cm.myway.com
+cm.need2find.com
 cm8.lycos.com
 cmhtml.overture.com
 cmi.ibill.com
@@ -1744,7 +1796,6 @@ codice.shinystat.it
 colinsdialer.com
 collect.tps108.org
 collector.deepmetrix.com
-com.com
 comclick.com
 cometcursor.com
 cometcursor.cometsystems.com
@@ -1759,9 +1810,9 @@ commonsearch.com
 commonwealth.riddler.com
 community.derbiz.com
 community.globaleaccess.com
+community.surfya.com
 compnet.us.intellitxt.com
 computerwoche.de.intellitxt.com
-conf.conspy.com
 conf.redswoosh.com
 conf.redswoosh.net
 conf.searchmyrequest.com
@@ -1779,7 +1830,6 @@ connect.online-dialer.com
 connectionzone.com
 cons.xrenoder.com
 console.popupsponsor.com
-conspy.com
 consumeralertsystem.com
 consumerreview.us.intellitxt.com
 contacts.slemshield.com
@@ -1886,6 +1936,7 @@ counter9.sextracker.com
 counterbot.com
 counters.freewebs.com
 counters.honesty.com
+counters.vendio.com
 counterstrike.server.us
 counts.tucows.com
 coupons.gator.com
@@ -1909,7 +1960,6 @@ creatives.ads360.com
 creatives.doubleclick.net
 crosskirk.com
 crossroad.trekdata.com
-crs.akamai.com
 crs.akamai.com
 crsky2004.yeah.net
 crue.4-counter.com
@@ -1959,10 +2009,12 @@ d3.webhancer.com
 dae.responsetarget.com
 dafinder.com
 daily-search.com
+dailyfreepass.com
 daocash.com
 daoclick.com
 daosearch.com
 daotalk.com
+dapfeed.com
 dappc.com
 dapsol.com
 darin.eq5.oversee.net
@@ -1978,6 +2030,7 @@ database.ibhackers.com
 datapop.cmpnet.com
 datastorm.biz
 dating.friendsearch.com
+datingwcats.com
 db0.net-filter.com
 db0.sitestats.com
 db1.sitestats.com
@@ -2005,12 +2058,17 @@ dcs.wtlive.com
 ddl.crackarchive.com
 de.2.cqcounter.com
 de.intellitxt.com
+de.mspaceads.com
 de.netstatpro.net
 de.sitestat.nedstat.net
 de1.doubleclick.net
+debr.mspaceads.com
 deepestsearch.com
 defaultsearching.com
+defb.mspaceads.com
+defp.mspaceads.com
 deksten.biz
+delb.mspaceads.com
 delfinproject.com
 delivery.inet-traffic.com
 delpyware.com
@@ -2020,7 +2078,10 @@ deluxe.spy-kill.com
 demo.advertising.com
 demon1.linksummary.com
 demon2.linksummary.com
+demr.mspaceads.com
 derbiz.com
+derdb.mspaceads.com
+desk.mspaceads.com
 desktop.grokster.com
 desktop.kazaa.com
 desktoptraffic.net
@@ -2044,12 +2105,14 @@ dialxs.nl
 dictoinary.com
 didtheyreadit.com
 digital-delivery.us
+digitalnames.net
 dimattic.com
 dinamo.directwebsearch.net
 dir.3721.com
 dir.spylog.ru
 dir1.spylog.ru
 direct-ip.com
+direct.data-line.us
 direct.simpletraffic.com
 directads.mcafee.com
 directcoupons.com
@@ -2085,11 +2148,14 @@ dm.cometsystems.com
 dm.screensavers.com
 dmvlite.com
 dn.adzerver.com
+dnaads.com
+dnplugin.digitalnames.net
 dnserror.cc
 docs1.iwon.com
 doctor-alex.com
 doctoradware.com
 doctoradwarepro.com
+dofinder.com
 domaincar.com
 domainimages.targetwords.com
 domainimages2.targetwords.com
@@ -2120,6 +2186,7 @@ download.centralserver.net
 download.clipgenie.com
 download.cometsystems.com
 download.contextplus.net
+download.digitalnames.net
 download.dlsearchbar.com
 download.energyfactor.com
 download.feiyang.com
@@ -2130,6 +2197,7 @@ download.internetfuel.com
 download.internetwasher.com
 download.ipinsight.net
 download.mediacharger.com
+download.moonri.com
 download.nocreditcard.com
 download.nocreditcardgay.com
 download.online-dialer.com
@@ -2140,6 +2208,7 @@ download.psguard.com
 download.quickflicks.com
 download.redswoosh.com
 download.redswoosh.net
+download.regfreeze.net
 download.rfwnad.com
 download.secondpower.com
 download.securityiguard.com
@@ -2161,6 +2230,7 @@ download.websearch.com
 download.whenu.com
 download.wildarcade.com
 download.wildtangent.com
+download.winfixer.com
 download1.shopathomeselect.com
 download1.speedbit.com
 download2.abetterinternet.com
@@ -2228,6 +2298,7 @@ earth.goclick.com
 easy-search.biz
 easy.adpowerzone.com
 easyantispy.com
+easysearchingtips.com
 easytoolbar.com
 easywebfinder.net
 ebony.andlotsmore.com
@@ -2252,6 +2323,7 @@ eimg.com
 elite.sextracker.com
 els.redswoosh.net
 emoticons4us.com
+empnads.com
 emptysearch.com
 engage.everyone.net
 enhancemysearch.com
@@ -2315,6 +2387,7 @@ extreme-virgins.com
 extremelyamateurs.com
 extremelybabes.com
 ez-finder.com
+eza1netsearch.com
 ezcybersearch.com
 ezcybersearch.mail.everyone.net
 eztracks.aavalue.com
@@ -2380,6 +2453,7 @@ feed.searchanyway.com
 feeds.global-intermedia.com
 fhg.aboutclicker.com
 fhg.dacash.com
+fhgstr.com
 fih.4count.com
 file.altnet.com
 file.obalduyam.net
@@ -2515,7 +2589,6 @@ g3ads.com
 g5.us.intellitxt.com
 gadgeteer.pdamart.com
 gallery.rampid.com
-games-dl.real.com
 games.andlotsmore.com
 games.zango.com
 gaming.gamesplayground.com
@@ -2539,6 +2612,7 @@ geo.deepmetrix.com
 geo2.track-star.com
 get-access.com
 get-search.cc
+get-sex.net
 get.downloadalot.com
 get.freephone.cc
 get.hitbox.com
@@ -2553,7 +2627,9 @@ gfx.dvlabs.com
 gi.gator.com
 gif.hitexchange.net
 gifs.burstnet.com
+giga-search.info
 gigasearch.biz
+gigaseek.info
 gigex.com
 girl4sex.org
 girls4rent.net
@@ -2581,6 +2657,7 @@ go.securecasting.com
 go.sidebysidesearch.com
 go.startnow.com
 go.targetsearch.info
+go2-search.com
 go2net.com
 goadbar.com
 goclick.com
@@ -2600,6 +2677,7 @@ goodsearch4u.com
 goodsearchengine.com
 google.begin2search.com
 google.tucows.com
+gophersearch.com
 gopopup.com
 goporn.us
 gorefer.com
@@ -2613,12 +2691,15 @@ gpaper138.112.2o7.net
 gpaper149.112.2O7.net
 gpaper158.112.2O7.net
 gpaper171.112.2o7.net
+gpaper199.112.2O7.net
+gpaper202.112.2o7.net
 gpapercareer.112.2o7.net
 gr.us.publicus.com
 gr3.cc
 grab.nastydollars.com
 grafix.xxxcounter.com
 granada.adbureau.net
+grandfun.com
 grandstreetinteractive.com
 graphics.friendfinder.com
 graphics.nicecards.com
@@ -2720,12 +2801,14 @@ home-search.cc
 home.about-blank.biz
 home.about.com
 home.adultcash.com
+home.dworx.org
 home.free-banners.com
 home.iwon.com
 home.netster.com
 home.searchwords.com
 hop.clickbank.net
 hop.clickbank.net
+hornyisland.org
 horse-active.net
 horse-dns.net
 horse-search.net
@@ -2763,6 +2846,7 @@ hourly.gammae.com
 hp.qsrch.com
 hpu.bluezipper.com
 hstde.tradedoubler.com
+hstus.tradedoubler.com
 html.overture.com
 htmlpublishers.com
 http.content.ru4.com
@@ -2800,9 +2884,9 @@ i.1cat.com
 i.casalemedia.com
 i.euniverse.com
 i.flowgo.com
+i.gms1.net
 i.perfectnav.com
 i.popupsponsor.com
-i.real.com
 i.rn11.com
 i1img.com
 ia.spinbox.net
@@ -2863,6 +2947,7 @@ image.ugo.com
 image.versiontracker.com
 image2000.mtreexxx.net
 imageads.googleadservices.com
+imageads1.googleadservices.com
 images-aud-pg.osdn.com
 images-aud.freshmeat.net
 images-aud.slashdot.org
@@ -2879,6 +2964,7 @@ images.atweb.com
 images.azoogleads.com
 images.azooimages.com
 images.blogads.com
+images.bnmq.com
 images.bonzi.com
 images.brainfox.com
 images.bravenet.com
@@ -3007,6 +3093,7 @@ install.wildtangent.com
 install.xxxtoolbar.com
 install30.searchmiracle.com
 install38.msupdater.org
+install38.yupsearch.com
 installcash.com
 installs.180solutions.com
 installs.hotbar.com
@@ -3034,6 +3121,9 @@ internetwasher.com
 intra.valueclick.com
 inventory.overture.com
 invite.insightexpress.com
+ip.spacash.com
+ip.sponsoradulto.com
+ip.sponsorix.com
 ipassist.biz
 ipcons.biz
 ipend.datastorm.biz
@@ -3086,7 +3176,6 @@ jbravenet.cjt1.net
 jcdcover.cjt1.net
 jclickspring.cjt1.net
 jcms.cydoor.com
-jcms.cydoor.com
 jcollegehumor.cjt1.net
 jcontent.bns1.m7z.net
 jcontent.bns1.net
@@ -3117,6 +3206,7 @@ join.exitfuel.com
 join.popcorn.net
 join4free.cf.mtreexxx.net
 join4free.com
+josynet.com
 jp00001.itbdns.com
 jp1.sb01.com
 jpalt.cjt1.net
@@ -3155,13 +3245,16 @@ jwarezp2p.cjt1.net
 jwildmedia.cjt1.net
 k-search.biz
 k17177.bins.lop.com
+ka.bar.need2find.com
 kabanga.com
 kansas.valueclick.com
 kansas.valueclick.com
 karmajunction.com
 kazaa.adserver.co.il
 kazaa.com
+kazaalite.pl
 kazanon.com
+kc.search.need2find.com
 keenvalue.com
 keywordmax.com
 keywords.bcentral.com
@@ -3169,6 +3262,7 @@ keywordstech.com
 kita-search.com
 klikfeed.com
 klikfind.com
+klikw.com
 klipads.dvlabs.com
 klipmart.forbes.com
 kloun.com
@@ -3180,11 +3274,14 @@ konetil1.acecounter.com
 koolbar.net
 krasava.v-nature.biz
 krd.realcities.com
+krimbaset.com
 kt3.kliptracker.com
 kt4.kliptracker.com
 kudd.com
 kutsap.com
 kw.drsnsrch.com
+kz.js.need2find.com
+kz.search.need2find.com
 l1.zedo.com
 l5.zedo.com
 lab-wire.com
@@ -3201,6 +3298,7 @@ lastfind4u.com
 lastsearch4u.com
 lastsearchengine.com
 laurel.netster.com
+layer-ads.de
 layout1.realtracker.com
 lb01.casalemedia.com
 lb1.netster.com
@@ -3251,6 +3349,7 @@ live.sex-explorer.com
 liveadvert.com
 livegabmling.com
 livegaycinema.com
+livelines.ads365.com
 liveperson.net
 lives.sex-explorer.com
 livesearchpage.com
@@ -3264,7 +3363,6 @@ lmcd.us.intellitxt.com
 ln.doubleclick.net
 ln.doubleclick.net
 load.focalex.com
-loadcash.biz
 lobby.sexlist.com
 loc1.hitsprocessor.com
 localhost
@@ -3299,6 +3397,7 @@ looksmartclicks.com
 lop.com
 lop.com
 loudcash.com
+love-catalog.net
 loveadot.com
 lp.zango.com
 ls.winpopupguard.com
@@ -3325,6 +3424,7 @@ m.rmbclick.com
 m.tribalfusion.com
 m.us.doubleclick.net
 m1.nedstatbasic.net
+m2.2mdn.net
 m2.doubleclick.net
 m2.doubleclick.net
 m3.doubleclick.net
@@ -3443,11 +3543,9 @@ media32.fastclick.net
 media4.fastclick.net
 media47.fastclick.net
 media5.fastclick.net
-media59.fastclick.net
 media6.fastclick.net
 media7.fastclick.net
 media73.fastclick.net
-media79.fastclick.net
 media8.fastclick.net
 media9.fastclick.net
 media94.fastclick.net
@@ -3469,6 +3567,8 @@ mediatrack.revenue.net
 mediatrack.revenue.net
 mediatrack.revenue.net
 medicinenet.us.intellitxt.com
+meduza.xhpro.com
+meet-your-love.net
 mega.directwebsearch.net
 megabyte.crosswinds.net
 megacash.de
@@ -3526,6 +3626,7 @@ mojosearch.com
 mojoworks.mediaplex.com
 money.cafreedom.com
 money2.netfirms.com
+moneytree.sextracker.com
 moniker.qsrch.com
 monitor.looksmart.com
 monsterhitz.to
@@ -3559,6 +3660,7 @@ msearch.3721.com
 mserv1.realmedia.com
 msfind4u.com
 msgtag.com
+mshelpdesk.net
 mssearch4u.com
 msupdater.com
 msupdater.net
@@ -3587,7 +3689,9 @@ mt32.mtree.com
 mt33.mtree.com
 mt34.mtree.com
 mt37.mtree.com
+mt4.mtree.com
 mt44.mtree.com
+mt55.mtree.com
 mt78.mtree.com
 mt90.mtree.com
 mt94.mtree.com
@@ -3621,6 +3725,7 @@ myexexex.com
 myfavoritegames.us.intellitxt.com
 myfind4u.com
 myfriends.go2me.biz
+myglobalsearch.com
 myhitlogger.com
 mynetprotector.com
 mypagefinder.com
@@ -3637,6 +3742,7 @@ myspyfreepc.com
 mywebsearch.com
 mzyzlu.t.muxa.cc
 n-case.com
+n-ex.s-redirect.com
 n-lite.com
 n24.de
 n3349ad.doubleclick.net
@@ -3684,6 +3790,7 @@ network.realmedia.com
 network.strip-player.com
 network.stripplayer.com
 neverseen.freeandexclusive.com
+new.8ad.com
 new.tnc4u.com
 newads.cmpnet.com
 newads.cmpnet.com
@@ -3769,7 +3876,6 @@ omniture.112.2o7.net
 on-search.com
 one.ru
 onemoresearch.net
-onestepsearch.net
 online-casino-searcher.com
 online-dialer.com
 online-service.cc
@@ -3785,6 +3891,7 @@ orbitcycle.com
 orbitz.rpts.net
 orders.webpower.com
 oreo.matchmaker.com
+orgsvet.com
 origin.as-eu.falkag.net
 origin.as-us.falkag.net
 origin.midaddle.com
@@ -3801,7 +3908,6 @@ our-counter.com
 our.affiliatetracking.net
 ourlinklist.com
 out.true-counter.com
-outpost.real.com
 outwar.com
 oversee.net
 overture.411web.com
@@ -3845,10 +3951,12 @@ paypopup.com
 paypopup.com
 pchi-vtrk.virtumundo.com
 pcsafe.com
+pcsecurityupdates.com
 pcwlrh.t.muxa.cc
 pdownload.mii.instacontent.net
 penton.us.intellitxt.com
 perfectnav.com
+perou-voyage.com
 perso.estat.com
 personal-search.info
 personal404.com
@@ -3871,9 +3979,10 @@ php.offshoreclicks.com
 phpadsnew.com
 phplive.inet-traffic.com
 pic.geocities.com
+pickup-ur-girl.com
+pickup-ur-girl.net
 pics.teens3.com
 pigmailer.scarryserv.biz
-pillz.info
 ping.180solutions.com
 pinkcount.com
 pisces.clickspring.net
@@ -3904,6 +4013,7 @@ popbehinds.com
 popclose.com
 popcorn.net
 popfind.net
+popfinder.net
 popinads.com
 popme.163.com
 popmechanics.us.intellitxt.com
@@ -3927,10 +4037,13 @@ popupsponsor.com
 popuptraffic.com
 porn.mtree.com
 pornlandz.com
+pornnimbus.com
 porno.find-on-the-net.com
 pornography.com
 pornosite.com
+pornothumbgals.com
 portalsearching.com
+postfiking.com
 powdersearch.com
 power-cleaner.com
 power-search.info
@@ -3965,6 +4078,7 @@ promote4profit.com
 proredirect.com
 prosearching.com
 prostol.com
+protectsoft.net
 proxy.blogads.com
 proxy.ia2.marketscore.com
 proxy.ia3.marketscore.com
@@ -4047,6 +4161,7 @@ randy.dce.nextstat.com
 ranking.websearch.com
 ranks.sextracker.com
 rapidblaster.com
+ras.moonri.com
 rate.opinionlab.com
 ravertje.trafficstandard.com
 ravesearch.net
@@ -4067,7 +4182,7 @@ realads.realmedia.com
 realaudio.cimedia.net
 realfreeavs.com
 realfreelists.com
-realguide.real.com
+realitycasino.net
 realmedia-a800.d4p.net
 realmedia.com
 realmedia.com
@@ -4079,6 +4194,7 @@ realtracker.com
 rebateshoppers.com
 reciperewards.aavalue.com
 red.as-eu.falkag.net
+red.as-test.falkag.net
 red01.as-eu.falkag.net
 red01.as-us.falkag.net
 reddest.org
@@ -4101,6 +4217,7 @@ refer100.outster.com
 referral.topbucks.com
 reg.stats4all.com
 regfly.qsrch.com
+regfreeze.net
 regio.adlink.de
 regio.adlink.de
 register.wildtangent.com
@@ -4109,6 +4226,7 @@ remote.webconnect.net
 remotead-internal.cnet.com
 remotead.cnet.com
 removespyware.htmlpublishers.com
+ren.bestsearcher.info
 report.broadcastpc.tv
 reporting.webconnect.net
 reports.extreme-dm.com
@@ -4134,6 +4252,7 @@ rev.startsurfing.com
 revenue.bcentral.com
 revenue.net
 revenue.net
+review-find.info
 rf104.com
 rg.qsrch.com
 richfind.com
@@ -4142,6 +4261,7 @@ rightfinder.net
 rightmedia.net
 rightsearch.cc
 rightstats.com
+rimbizz.com
 rimssearch.com
 riversoftware.net
 rl.webtracer.cc
@@ -4151,6 +4271,7 @@ rmads.msn.com
 rmedia.boston.com
 rn11.com
 ron.drsnsrch.com
+rooms4poker.com
 roquvp.t.rack.cc
 roscoe.burstmedia.com
 rotator.adjuggler.com
@@ -4172,7 +4293,9 @@ rs.websearch.com
 rsp.btthost.com
 rspsearch.com
 runsearch.com
+ruutli.xhpro.com
 rydium.us.intellitxt.com
+s-redirect.com
 s.abetterinternet.com
 s.as-us.falkag.net
 s.boom.ro
@@ -4273,7 +4396,7 @@ search-explorer.com
 search-explorer.net
 search-itnow.com
 search-links.net
-search-o-matic2000.com
+search-motor.com
 search-paga.com
 search-planet.net
 search-q.com
@@ -4284,11 +4407,13 @@ search-to-find.com
 search-world.net
 search.123-search.net
 search.active-max.com
+search.adwave.com
 search.antarasystems.com
 search.bigclicks.com
 search.brainfox.com
 search.clickfinders.com
 search.clicksor.com
+search.digitalnames.net
 search.domainsponsor.com
 search.downloadaccelerator.com
 search.drsnsrch.com
@@ -4367,6 +4492,7 @@ searchdisp.hotbar.com
 searchemup.info
 searchenginebar.com
 searchenhancement.com
+searcheverywhere.info
 searchexe.com
 searchfind.info
 searchforfree.info
@@ -4436,12 +4562,15 @@ secure.systemsoap.com
 secure.systemsoap.net
 secure.webconnect.net
 secure.winantivirus.com
+secure.winfixer.com
 securinews.free.fr
 security-look.cc
 security-updater.com
 securitycenter.cc
+securitydownload.net
 securityiguard.com
 seek4freetoolbar.mygeek.com
+seekeverything.info
 seekingeye.com
 seekio.com
 seekseek.com
@@ -4491,16 +4620,21 @@ server.hamster.com
 server.iad.liveperson.net
 server.ipinsight.net
 server.opistat.com
+server.trafficaces.com
 server.webhancer.com
 server01.popupmoney.com
 server02.us2.egwn.net
+server1.103092804.com
 server1.adsrve.com
 server1.opentracker.net
+server2.103092804.com
 server2.adsrve.com
 server2.as5000.com
 server2.internetdump.com
+server3.103092804.com
 server3.adsrve.com
 server3.web-stat.com
+server4.103092804.com
 server4.adsrve.com
 server4.tps108.org
 service.bfast.com
@@ -4514,6 +4648,7 @@ sex-pics.biz
 sex.girlshost.net
 sex.totsex.net
 sex.x-park.net
+sexlife69.com
 sexoque.com
 sexprovider.com
 sexswap.com
@@ -4522,6 +4657,7 @@ sextracker.com
 sexxx-direct.com
 sexy-mature-sluts.com
 sexygirl.eurolove.biz
+sexygirlfriends.org
 sexyplugin.com
 sexyque.com
 sfads.osdn.com
@@ -4593,6 +4729,7 @@ smartbrowse.netster.com
 smartclicks.net
 smarter.com
 smartpops.com
+smartsearchpage.com
 smartshopper.com
 smc.silvercash.com
 smile.modchipstore.com
@@ -4604,7 +4741,6 @@ snugweb.com
 soap.alexa.com
 soda.shopnav.com
 softantispy.com
-software-dl.real.com
 software.global-netcom.de
 software.x10.com
 software4thenet.com
@@ -4612,6 +4748,7 @@ softwareds.com
 solar-porn.com
 solar.directwebsearch.net
 solongas.com
+somesearch.net
 somewebspace.com
 sonicsearch.subportal.com
 sort.trafficjuicer.com
@@ -4640,7 +4777,7 @@ spinbox.versiontracker.com
 spms.bpath.com
 spms.hyperbanner.net
 sponsor2.ucmore.com
-sponsormatch.oversee.net
+sponsoradulto.com
 spotresults.com
 sprinks-clicks.about.com
 sprinks-clicks.about.com
@@ -4648,8 +4785,10 @@ spweather.whenu.com
 spweb.whenu.com
 spy-crusher.com
 spy-kill.com
+spyantivirus.info
 spyassassin.com
 spyblast.com
+spybotremover.net
 spybouncer.com
 spydestroy.com
 spyeraser.net
@@ -4672,13 +4811,16 @@ spywarecrusher.com
 spywarehelp.net
 spywarelabs.com
 spywarelabs.fileburst.com
+spywaremustdie.com
 spywareno.com
 spywareremoval.ws
 spywareremover.spybouncer.com
 spywareremover.storebiz4u.com
 spywarestormer.com
 spywarevanisher.com
+spywarewasher.net
 spywarewizard.com
+sql.yauu.net
 sqwire.com
 sr.adwave.com
 sr.websearch.com
@@ -4752,6 +4894,7 @@ static.everyone.net
 static.flingstone.com
 static.freecontentbuilder.com
 static.getitandgo.com
+static.gfx.streamate.com
 static.hitfarm.com
 static.sex-explorer.com
 static.smni.com
@@ -4811,6 +4954,7 @@ statse.webtrendslive.com
 statswhere.com
 status.clrsch.com
 status.qckads.com
+stepsofsearch.com
 stickylist.com
 stop-popup-ads-now.com
 stop-that-spammer.com
@@ -4818,9 +4962,11 @@ stopannoyingpopups.com
 storage.savingshound.com
 storage.trafic.ro
 store.x10.com
+stphork.com
 stream.pussyharem.com
 stream1000.babenet.com
 stream10k.redhotnetworks.com
+streamate.com
 streamhc.redhotnetworks.com
 streaming.tv69.com
 streamit.hardwarezone.com
@@ -4887,11 +5033,13 @@ surfassistant.com
 surfenhance.com
 surffastnow.com
 surfsidekick.com
+surfya.com
 survey.advantageresearch.com
 survey.otxresearch.com
 survey.proactive.nl
 survey.questionmarket.com
 survey1-au.imrworldwide.com
+sutra.spyantivirus.info
 sv1.xmcmx.net
 sview.avenuea.com
 swift-look.com
@@ -4921,6 +5069,10 @@ tafmaster-t.focalex.com
 tafmaster-v.focalex.com
 tafmaster-v10.focalex.com
 tafmaster-v11.focalex.com
+tafmaster-v12.focalex.com
+tafmaster-v14.focalex.com
+tafmaster-v15.focalex.com
+tafmaster-v16.focalex.com
 tafmaster-v2.focalex.com
 tafmaster-v3.focalex.com
 tafmaster-v4.focalex.com
@@ -4931,7 +5083,7 @@ tafmaster-v8.focalex.com
 tafmaster-v9.focalex.com
 tafmaster.com
 take4look.com
-take5.real.com
+takethischiks.com
 talkcity.realtracker.com
 tar.popuppers.com
 targetclicks.net
@@ -5012,6 +5164,7 @@ theaffiliateprogram.com
 thebestse.com
 thebugs.ws
 thecounter.com
+thefullm.com
 thehun.net
 thenewsearch.com
 thepowerstrip.com
@@ -5027,6 +5180,7 @@ thumbnails.alexa.com
 thunderdownloads.com
 tibsystems.com
 tickerbar.info
+timinthq.com
 tin.whenu.com
 tinybar.com
 titan.guestworld.tripod.lycos.com
@@ -5057,8 +5211,10 @@ toolbar.worldanywhere.com
 toolbar2.globalwebsearch.com
 toolbar2.trafficgeneration.biz
 toolbar3.trafficgeneration.biz
+toolbar4.trafficgeneration.biz
 toolbarcash.com
 toolbarpartner.com
+toolbars-cash.com
 tools.hitbox.com
 tools.opensols.com
 tools2.hitbox.com
@@ -5084,6 +5240,7 @@ topsearch4u.com
 topsearcher.com
 topshop-counter.rambler.ru
 topsites.us
+totalsearches.com
 totalvelocity.com
 toteen.com
 totsex.net
@@ -5121,6 +5278,7 @@ tracker.pythonvideo.com
 tracker.sitescout.com
 tracker.snowball.com
 tracker.tradedoubler.com
+trackhits.cc
 tracking.247search.com
 tracking.clickfinders.com
 tracking.roispy.com
@@ -5133,9 +5291,11 @@ tradedoubler.com
 tradeexit.com
 tradetraffic.com
 traf34.com
+traff-store.com
 traffic.adlogix.com
 traffic.alexa.com
 traffic4sale.biz
+trafficaces.com
 trafficcounters.com
 trafficexplorer.com
 trafficfile.com
@@ -5148,6 +5308,7 @@ trafficpro.us
 trafficsource.adlogix.com
 trafficvenue.net
 trafficworld.biz
+traffstore.com
 trafic.xiti.com
 transparty.net
 travel-airfare-airline-car-rental-hotel-reservations.com
@@ -5166,6 +5327,7 @@ troyanov.net
 true-counter.com
 trustbid.ws
 trustedbrowsers.com
+trustedpharmacy.net
 trustgauge.com
 trustyhound.com
 try-this-search.biz
@@ -5179,6 +5341,7 @@ tss.altnet.com
 tt2.avres.net
 ttarget.adbureau.net
 tuerck.de.counted.com
+tumpank.com
 tunders.com
 turbo.internetfuel.com
 turbodownload.net
@@ -5227,7 +5390,9 @@ uni--search.com
 unimax.us
 up.isp.2ch.net
 up2.kjdhendieldiouyu.com
+update.680130.net
 update.680180.net
+update.digitalnames.net
 update.downloadaccelerator.com
 update.downloadv3.com
 update.msupdater.com
@@ -5238,6 +5403,7 @@ update.smart-browser.com
 update.thunderdownloads.com
 update.topconverting.com
 update.webhancer.com
+update.yupsearch.com
 update2.outerinfo.com
 update2.thunderdownloads.com
 update32.searchmiracle.com
@@ -5250,6 +5416,7 @@ updates.lzio.com
 updates.shopperreports.com
 updatesearches.com
 updateserver.gator.com
+upgrade.digitalnames.net
 upgrade.new.tech.new.net
 upgrade.newdotnet.net
 upgrade.qsrch.info
@@ -5278,6 +5445,9 @@ usa.nedstatbasic.net
 usachoice.net
 usads.vibrantmedia.com
 usaporn.org
+usefulholes.com
+usefulholes.net
+usefullsoft.net
 user.3721.com
 users.bullseye-media.net
 users.effectivebrand.com
@@ -5308,11 +5478,13 @@ vant.guj.de
 vantagesoftware.com
 vbs.searchwww.com
 vcatch.com
+vcodec.com
 venus.goclick.com
 venus.goclick.com
 verisignwildcard.112.2o7.net
 verschk.com
 verticaltheories.com
+veryeasysearch.com
 vesbiz.biz
 vibrantmedia.com
 view.accendo.com
@@ -5349,6 +5521,7 @@ visit.geocities.com
 visit.referralware.com
 visit.theglobeandmail.com
 visite.weborama.fr
+visitfind.net
 vivi.vibrahost.com
 vladzone.com
 vlogic.ak-networks.com
@@ -5466,6 +5639,7 @@ web-counter.5u.com
 web-free-hosting.net
 web-searcher.info
 web-stat.com
+web-traffic-shop.com
 web.adknowledge.com
 web.all-find.org
 web.balance.gator.com
@@ -5517,6 +5691,7 @@ websearch.co.uk
 websearch.com
 websearch.drsnsrch.com
 websearch.shopnav.com
+websearchnetwork.com
 webseeking.com
 websidestory.com
 websponsors.com
@@ -5638,6 +5813,7 @@ www.1-viagra-on-line.com
 www.1000funnyvideos.com
 www.100mature.net
 www.100topdownloads.net
+www.103092804.com
 www.10s.com.br
 www.11zz.com
 www.1200land.com
@@ -5706,6 +5882,7 @@ www.4netmedia.com
 www.53best.com
 www.600pics.com
 www.638725.net
+www.680130.net
 www.680180.net
 www.68737075.com
 www.69sexsearch.com
@@ -5778,6 +5955,7 @@ www.adcipta.net
 www.adcomplete.com
 www.adcopy.info
 www.adcycle.com
+www.add-to-favorites.net
 www.addfreestats.com
 www.addictivegamez.com
 www.addictivetechnologies.com
@@ -5806,6 +5984,7 @@ www.adrotator.com
 www.adroz.com
 www.ads234.com
 www.ads345.com
+www.ads365.com
 www.ads55.com
 www.adscpm.com
 www.adserv.com
@@ -5835,14 +6014,19 @@ www.adult-dvdmovie.com
 www.adultbizvoice.com
 www.adultbrowser.com
 www.adultclicks.com
+www.adultfreegals.com
 www.adultfreeware.net
 www.adultfriendfinder.com
 www.adultfriendsearch.com
 www.adultgambling.net
+www.adultgambling.org
+www.adulthell.com
 www.adultlinksco.com
 www.adultoweb.com
 www.adultpassfinder.com
+www.adultplayersclub.com
 www.adultrevenueservice.com
+www.adultweetplace.com
 www.adultxxxgames.net
 www.adverity.com
 www.adverlead.com
@@ -5887,10 +6071,8 @@ www.aidintime.com
 www.aim4media.com
 www.aimdolls.com
 www.aimphuck.com
-www.airteens.com
 www.alarm-works.com
 www.albiondrugs.com
-www.alcena.com
 www.alexa.com
 www.alfa-search.com
 www.alibabanet.net
@@ -5906,6 +6088,7 @@ www.alladvantage.com
 www.allclicks.com
 www.allclicks.com
 www.allcybersearch.com
+www.allfreegals.com
 www.allheadlinenews.com
 www.allseek.info
 www.allsponsor.de
@@ -5945,10 +6128,11 @@ www.any-find.com
 www.apmebf.com
 www.appliedsemantics.com
 www.archiviohard.com
+www.archiviosex.com
 www.archiviosex.net
+www.areasex.biz
 www.armbender.com
 www.armor2net.com
-www.arscounter.com
 www.artalex.biz
 www.artoffinding.com
 www.asdbiz.biz
@@ -6005,6 +6189,7 @@ www.beseen.com
 www.besstsearchs.com
 www.best-poker.biz
 www.best-web-search.com
+www.bestadultgals.com
 www.bestcracks.net
 www.bestdrugsdeal.com
 www.bestfind4u.com
@@ -6012,10 +6197,13 @@ www.bestoffers.bz
 www.bestofonlinesearch.com
 www.bestoftheweb.cc
 www.bestpopupkiller.com
+www.bestporngals.com
 www.bestsearch.com
+www.bestsearcher.info
 www.bestsearchnet.com
 www.besttraff.us
 www.bestwebsearch.org
+www.betting-cards-games.com
 www.bfast.com
 www.bhakimi.com
 www.bidclix.com
@@ -6032,8 +6220,10 @@ www.bigtrafficnetwork.com
 www.bigwebfind.com
 www.bigwebportal.com
 www.billingnow.com
+www.bitchesonline.net
 www.bitoma.com
 www.bittorrent-ultra.com
+www.bitwisepublishing.com
 www.bizonio.com
 www.black-hole.co.uk
 www.blacklogic.net
@@ -6048,6 +6238,7 @@ www.bluehavenmedia.com
 www.bluestreak.com
 www.bluetidesoftware.com
 www.bluezipper.com
+www.bnmq.com
 www.bns1.net
 www.bns2.net
 www.bonzi.com
@@ -6059,6 +6250,7 @@ www.boonsolutions.com
 www.boredlife.com
 www.botsquash.com
 www.boxfrog.com
+www.boxsearch.net
 www.bpath.com
 www.brainfox.com
 www.bravenet.com
@@ -6095,6 +6287,7 @@ www.callingpay.de
 www.camberageflex.com
 www.candythumbs.com
 www.cannotfind.net
+www.cardsgames.net
 www.care2.com
 www.casalamedia.com
 www.casalemedia.com
@@ -6132,12 +6325,14 @@ www.chk-web.com
 www.christmassavers1st.com
 www.cibleclick.com
 www.cibleclick.com
+www.ciuccia-cazzi.biz
 www.cj.com
 www.cj.com
 www.classifiedadcentral.com
 www.classifieds1000.com
 www.claus.drehteile-rieche.de
 www.cleanbrowser.com
+www.cleanbrowser.org
 www.cleangetaway.biz
 www.cleanyourpc.net
 www.clear-search.com
@@ -6212,13 +6407,13 @@ www.competitorkeywords.com
 www.computershield.com
 www.conscorr.com
 www.consoleads.com
-www.conspy.com
 www.consumersoftwarelabs.com
 www.contenidospc.com
 www.content.overture.com
 www.contextpanel.com
 www.contextplus.com
 www.contextplus.net
+www.contextpro.com
 www.contextuads.com
 www.contextualclicks.com
 www.contexualsearch.com
@@ -6291,6 +6486,7 @@ www.date-manager.com
 www.date.se
 www.datez.com
 www.dateznews.com
+www.datingforlove.org
 www.daz.com
 www.ddupdates.com
 www.dealbandit.com
@@ -6315,6 +6511,7 @@ www.diamonddollz.com
 www.dictoinary.com
 www.didtheyreadit.com
 www.digimedia.com
+www.digitalnames.net
 www.dimattic.com
 www.dinerotica.com
 www.direct-ip.com
@@ -6327,7 +6524,9 @@ www.dlmax.biz
 www.dmvlite.com
 www.dnscaching.net
 www.dnsstat.net
+www.dnyx.net
 www.doctor-alex.com
+www.dofinder.com
 www.domaincar.com
 www.domainsponsor.com
 www.domamil.cz
@@ -6356,12 +6555,14 @@ www.duolaimi.net
 www.dustat.com
 www.dvd-download-free.com
 www.dvd-music-downloads.com
+www.dynamicontext.com
 www.e-bannerx.com
 www.e-clk.com
 www.e-finder.cc
 www.e-group.org
 www.e-mailpromotion.com
 www.e-plus.cc
+www.e-regpatch.com
 www.e-sexcash.com
 www.e-trends.com
 www.e-zaza.com
@@ -6372,7 +6573,6 @@ www.eaglehousing.com
 www.easycounter.com
 www.easyerase.com
 www.easysearch4you.com
-www.easysearchbar.com
 www.easyspywarekiller.com
 www.easyspywarescanner.com
 www.easywebdating.net
@@ -6402,6 +6602,8 @@ www.emorningmoss.net
 www.emoticons4us.com
 www.enbrowser.com
 www.enconfidence.com
+www.engine-find.info
+www.engine-to-search.com
 www.enhancemysearch.com
 www.enjoysearch.info
 www.enlargeyourpockets.com
@@ -6492,6 +6694,7 @@ www.fet2cash.com
 www.fetish-pix.com
 www.fetishtoolbar.com
 www.ff.iij4u.or.jp
+www.fhgstr.com
 www.fightpopups.net
 www.filefront.net
 www.filehog.com
@@ -6506,10 +6709,12 @@ www.find-online.net
 www.find-quick.com
 www.find4u.net
 www.find777.com
+www.findabouteverything.com
 www.findallgood.com
 www.findallresults.net
 www.findcracks.com
 www.findin.org
+www.findinnet.com
 www.findloss.com
 www.findology.com
 www.findspyware.net
@@ -6536,6 +6741,7 @@ www.flycast.co.uk
 www.flycast.com
 www.flyeagles.com
 www.flyinads.com
+www.flyingcroc.com
 www.flyordie.com
 www.fmn-media.com
 www.fmnmedia.com
@@ -6550,6 +6756,7 @@ www.free-banners.com
 www.free-computer-anti-virus.com
 www.free-hit.com
 www.free-movies-download.com
+www.free-patriotic-screensavers.com
 www.free-scratch-cards.com
 www.free-windows-games.com
 www.free2xsite.com
@@ -6575,6 +6782,8 @@ www.freespywarescan.org
 www.freestats.com
 www.freestats.net
 www.freestuffengine.com
+www.freetgpgals.com
+www.freeticketcash.com
 www.freewebsites.com
 www.freexxxpages.net
 www.freexxxplace.com
@@ -6618,6 +6827,7 @@ www.gedera-news.com
 www.genericscanner.com
 www.genhit.com
 www.geowhere.net
+www.getaflick.biz
 www.getdafuck.com
 www.getfound.com
 www.getitandgo.com
@@ -6654,6 +6864,7 @@ www.globalwebsearch.com
 www.globe-finder.net
 www.globesearch.com
 www.globolook.com
+www.gms1.net
 www.go2realsearch.com
 www.goclick.com
 www.gocybersearch.com
@@ -6664,6 +6875,7 @@ www.gohip.com
 www.goindirect.com
 www.goindirect.nu
 www.goinnow.com
+www.goldmembersarea.com
 www.goldstats.net
 www.gonnasearch.com
 www.gontijoamaral.hpg.com.br
@@ -6675,6 +6887,7 @@ www.goodsearch4u.com
 www.goodsearchengine.com
 www.goodsitesguide.com
 www.googleadservices.com
+www.gophersearch.com
 www.gopopup.com
 www.gopopup.com
 www.goporn.us
@@ -6682,6 +6895,7 @@ www.gorefer.com
 www.gotraffic.us
 www.gotsmiley.com
 www.grandstreetinteractive.com
+www.grannymax.com
 www.greasycow.com
 www.great-pc-software.com
 www.greatplugin.com
@@ -6787,6 +7001,7 @@ www.icansearch.net
 www.iclicks.net
 www.icommerce.ws
 www.iconarmy.com
+www.icooloader.com
 www.icountertop.com
 www.ics900.com
 www.idgsearch.com
@@ -6903,6 +7118,7 @@ www.jraun.com
 www.judysearch.com
 www.juicymatures.com
 www.k-search.biz
+www.kabanga.com
 www.kanoodle.com
 www.karmamedia.com
 www.kazaa-tools.com
@@ -6934,9 +7150,11 @@ www.kliksoftware.com
 www.kliptracker.com
 www.klounada.com
 www.kmindex.ru
+www.kontera.com
 www.koolbar.net
 www.kqzyfj.com
 www.kudd.com
+www.ladylust.com
 www.lalasearch.com
 www.last-find.com
 www.last-find4u.com
@@ -6975,7 +7193,6 @@ www.livepokeroom.com
 www.livepokeroom.net
 www.livestat.com
 www.livetechnology.com
-www.loadcash.biz
 www.loading-lolita.com
 www.loadingwebsite.com
 www.localnrd.com
@@ -7065,6 +7282,7 @@ www.medialoads.com
 www.mediaplex.com
 www.mediaplex.com
 www.mediatickets.net
+www.meet-wet-holes.com
 www.megacash.de
 www.megacounter.de
 www.megago.com
@@ -7099,6 +7317,7 @@ www.moltenmagnet.net
 www.mommypic.com
 www.money-athome.net
 www.money4exit.de
+www.moonri.com
 www.moreresults.net
 www.morpheus-downloads-morpheus-download.com
 www.morwillsearch.com
@@ -7150,6 +7369,8 @@ www.my-search.cc
 www.my-search4u.com
 www.my-stats.com
 www.my-stats.com
+www.my247eshop.com
+www.myadtrack.com
 www.myaffiliateprogram.com
 www.myarmory.com
 www.mybans.com
@@ -7159,6 +7380,7 @@ www.mydailyhoroscope.net
 www.myemessenger.com
 www.myexexex.com
 www.myfunstart.com
+www.myglobalsearch.com
 www.myhandysearch.com
 www.myiefavorites.com
 www.mylinker.net
@@ -7258,6 +7480,7 @@ www.nowfind.biz
 www.nowfind.net
 www.ntsearch.com
 www.nude-teens-bodies.com
+www.nudecash.com
 www.nudelinkz.com
 www.nuker.com
 www.nzads.net.nz
@@ -7304,6 +7527,7 @@ www.p3marketing.com
 www.pacerd.com
 www.pacimedia.com
 www.padonak.info
+www.pageforyou.net
 www.paidpopup.de
 www.palsoftwareworks.com
 www.palsol.com
@@ -7341,13 +7565,14 @@ www.perfect-search.net
 www.perfectnav.com
 www.permanentsurfer.com
 www.permissionresearch.com
+www.perou-voyage.com
 www.personal-photo.net
 www.peruvianmarket.com
 www.pestbot.com
 www.phpadsnew.com
 www.pickoftheweb.com
-www.pillz.info
 www.pinkcount.com
+www.pinknylons.com
 www.pinkyellow.com
 www.pixpox.com
 www.placeforsearch.com
@@ -7393,6 +7618,7 @@ www.porn-server.org
 www.porncash.de
 www.porncash.tv
 www.pornmail.com
+www.pornnimbus.com
 www.pornsponsors.com
 www.portalsearching.com
 www.positionsguru.com
@@ -7425,6 +7651,7 @@ www.proredirect.com
 www.prosearching.com
 www.prostol.com
 www.protectedmedia.com
+www.protectsoft.net
 www.prtracker.com
 www.prutect.com
 www.psguard.com
@@ -7486,7 +7713,6 @@ www.realclicks.com
 www.realenduser.com
 www.realfreeavs.com
 www.realfreelists.com
-www.realld.com
 www.realpositions.com
 www.realtracker.com
 www.rebateshoppers.com
@@ -7500,9 +7726,13 @@ www.redzip.com
 www.refcount.com
 www.refcount.net
 www.reference-sexe.com
+www.regcleanerpro.com
+www.regfreeze.net
 www.registrarads.com
 www.relevantknowledge.com
 www.relmaxtop.com
+www.repairmyreg.com
+www.repairreg.com
 www.resultsmaster.com
 www.revenue.net
 www.revenue.net
@@ -7542,6 +7772,7 @@ www.savehits.com
 www.savingshound.com
 www.sbvr.com
 www.scanspyware.net
+www.scenicreflections.com
 www.scorpionsearch.com
 www.screengizmos.com
 www.screensavers.com
@@ -7570,7 +7801,6 @@ www.search-instructor.com
 www.search-itnow.com
 www.search-more.net
 www.search-motor.com
-www.search-o-matic2000.com
 www.search-paga.com
 www.search-pounder.com
 www.search-q.com
@@ -7590,6 +7820,7 @@ www.search42.com
 www.search4www.com
 www.searchaccelerator.com
 www.searchaccurate.com
+www.searchadv.com
 www.searchalot.com
 www.searchandclick.com
 www.searchant.com
@@ -7650,6 +7881,7 @@ www.searchtraffic.com
 www.searchv.com
 www.searchweb2.com
 www.searchwebzone.com
+www.searchwhatuwant.com
 www.searchwho.com
 www.searchwords.com
 www.searchwww.com
@@ -7659,16 +7891,18 @@ www.searchzoomer.com
 www.secondpower.com
 www.secure-processingcenter.com
 www.securefavorites.com
-www.securemywindows.com
 www.security-look.cc
 www.security-updater.com
 www.securitycenter.cc
+www.securitydownload.net
 www.securityiguard.com
 www.seehits.com
 www.seeitherefirst.com
 www.seek2.com
 www.seekdrive.com
 www.seekerbar.com
+www.seekeveryday.info
+www.seekeverything.info
 www.seekseek.com
 www.seektheglobe.com
 www.seekways.com
@@ -7754,23 +7988,28 @@ www.smartestsearch.com
 www.smartpops.com
 www.smartsearch.com
 www.smartsearch.com.au
+www.smartsearchpage.com
 www.smartshopper.com
 www.smartshoppernetworks.com
 www.smarttargetting.com
 www.smarttargetting.net
 www.smilepop.com
 www.smoothcontent.com
+www.smut1000.com
 www.smutserver.com
 www.snugweb.com
 www.soft-aware.com
+www.softantispy.com
 www.softbulldog.com
 www.software4thenet.com
 www.softwareds.com
 www.sohodigital.net
 www.solidlabs.com
+www.somesearch.net
 www.somewebspace.com
 www.sonicsearch.net
 www.sonixwarez.com
+www.spacash.com
 www.spacedish.com
 www.spamblockerutility.com
 www.spamfree.com
@@ -7800,12 +8039,14 @@ www.spy-block.com
 www.spy-kill.com
 www.spy-killer.com
 www.spy-spyware.com
+www.spyantivirus.info
 www.spyarsenal.com
 www.spyassassin.com
 www.spyblast.com
 www.spyblocs.com
 www.spybot-spyware-killer.com
 www.spybot-spyware-removal.com
+www.spybotremover.net
 www.spybouncer.com
 www.spycounter.net
 www.spycs.com
@@ -7824,6 +8065,7 @@ www.spylog.ru
 www.spymoon.com
 www.spyopposition.com
 www.spyopposition.org
+www.spyprotect.org
 www.spysheriff.com
 www.spyspotter.com
 www.spystriker.com
@@ -7838,6 +8080,7 @@ www.spyware-pest-remover.com
 www.spywareavenger.com
 www.spywarebegone.com
 www.spywarebomber.com
+www.spywarecleaner.org
 www.spywarecleanerdownload2.com
 www.spywarecops.com
 www.spywarecrusher.com
@@ -7849,6 +8092,7 @@ www.spywarekill.com
 www.spywarekilla.com
 www.spywarekiller.net
 www.spywarelabs.com
+www.spywaremustdie.com
 www.spywareno.com
 www.spywarenuker.com
 www.spywareremove.net
@@ -7858,6 +8102,7 @@ www.spywarestriker.com
 www.spywaretek.com
 www.spywarethis.com
 www.spywarevanisher.com
+www.spywarewasher.net
 www.spywarewizard.com
 www.spywarezapper.com
 www.sqwire.com
@@ -7883,6 +8128,7 @@ www.statomatic.com
 www.stats4all.ws
 www.stats4you.com
 www.statsbank.com
+www.stepsofsearch.com
 www.stickypops.com
 www.stingware.com
 www.stop-popup-ads-now.com
@@ -7890,6 +8136,7 @@ www.stop-that-spammer.com
 www.stopannoyingpopups.com
 www.stopitblockit.com
 www.storebiz4u.com
+www.streamate.com
 www.strip-player.com
 www.sturfajtn.com
 www.super-web-search.com
@@ -7907,6 +8154,7 @@ www.surfernetwork.com
 www.surfertools.com
 www.surfmask.com
 www.surfsidekick.com
+www.surfya.com
 www.surveynetworks.com
 www.surveyscore.com
 www.surveysite.com
@@ -7914,6 +8162,7 @@ www.swanksoft.com
 www.sweetbar.com
 www.swift-look.com
 www.swimsuitnetwork.com
+www.swipespy.com
 www.symantecreview.com
 www.symantic.com
 www.sysini.com
@@ -7947,6 +8196,7 @@ www.teens-action.net
 www.teens-dream.com
 www.teens-dreams.net
 www.teens3.com
+www.teensales.com
 www.teensearchbar.com
 www.teenygirlshome.com
 www.tekeffect.com
@@ -7982,7 +8232,6 @@ www.thesearchaccelerator.com
 www.thesearchster.com
 www.theshoppingwiz.com
 www.thespywaredetective.com
-www.thespywarekiller.com
 www.thetop10.com
 www.thindivide.com
 www.thinkingmedia.net
@@ -8033,11 +8282,13 @@ www.toptext.net
 www.topwarez-fr.com
 www.torrentsearcher.net
 www.totalfax.net
+www.totalsearches.com
 www.totalvelocity.com
 www.toys-galleries.com
 www.tps108.org
 www.tqlkg.com
 www.track-star.com
+www.trackhits.cc
 www.tracktraff.cc
 www.trackzapper.com
 www.tradeexit.com
@@ -8096,6 +8347,7 @@ www.twinktoolbar.com
 www.twistedhumor.com
 www.txiframe.biz
 www.type2find.com
+www.typeintofind.com
 www.typicalsearch.com
 www.ucbill.com
 www.ucmore.com
@@ -8114,6 +8366,7 @@ www.ultimatesearchranking.com
 www.ultraload.net
 www.ultsearch.com
 www.umaxlogin.com
+www.umaxpartner.com
 www.umaxsearch.com
 www.uncover.us
 www.undergroundlair.net
@@ -8123,16 +8376,17 @@ www.unimax.us
 www.uninstaller.com
 www.unionwarez.com
 www.unitedvending.net
+www.up-the-creek.com
 www.updatenow.org
 www.updatepatch.info
 www.updatesearches.com
 www.upgradenow.org
-www.upp2ono41xi9rman2.com
 www.upspiral.com
 www.urlblaze.com
 www.urlblaze.net
 www.usa-phendimetrazine.com
 www.useful-linx.com
+www.usefullsoft.com
 www.usercount.com
 www.uslocalweather.com
 www.ustimerz.com
@@ -8145,10 +8399,12 @@ www.valueclick.com
 www.valuesponsor.com
 www.vantagesoftware.com
 www.vcatch.com
+www.vcodec.com
 www.veevo.com
 www.verigay.com
 www.verschk.com
 www.verticlick.com
+www.veryeasysearch.com
 www.vesbiz.biz
 www.vesperexchange.com
 www.vibrantmedia.com
@@ -8164,6 +8420,7 @@ www.virtuescope.com
 www.virtumundo.com
 www.virushunter.com
 www.virussoftwarereview.com
+www.visitfind.net
 www.vistainteractivemedia.com
 www.vladzone.com
 www.voonda.com
@@ -8199,6 +8456,7 @@ www.web-exit.com
 www.web-free-hosting.net
 www.web-search.biz
 www.web-stat.com
+www.web-traffic-shop.com
 www.web3000.co.uk
 www.web3000.com
 www.webads.nl
@@ -8221,6 +8479,7 @@ www.websearch.com.au
 www.websearch.net
 www.websearch24.com
 www.websearcher.info
+www.websearchplace.com
 www.websecurealert.com
 www.webseeking.com
 www.websidestory.com
@@ -8295,6 +8554,7 @@ www.windupdates.com
 www.winfallpublishing.com
 www.winfind4u.com
 www.winfirewall.com
+www.winfixer.com
 www.wingowin.com
 www.winkeeper.net
 www.winmsn.com
@@ -8303,6 +8563,7 @@ www.winpl.com
 www.winpopupguard.com
 www.winprivacy.com
 www.winprotect.net
+www.winregfix.com
 www.winsearch4u.com
 www.winsearchengine.com
 www.winshow.biz
@@ -8379,6 +8640,7 @@ www.youmakemoney.com
 www.your-find.com
 www.your-soft.com
 www.your.com
+www.yourblackjack.com
 www.yourcontrolpanel.com
 www.yourpoiskovik.com
 www.yoursearch247.com
@@ -8458,10 +8720,12 @@ www2.addfreestats.com
 www2.adhost.com
 www2.azesearch.com
 www2.bannerspace.com
+www2.bigtrafficnetwork.com
 www2.browsertoolbar.com
 www2.burstnet.com
 www2.burstnet.com
 www2.click-fr.com
+www2.click2begin.com
 www2.consumercreditusa.com
 www2.cqcounter.com
 www2.doubleclick.com
@@ -8502,6 +8766,7 @@ www3.addfreestats.com
 www3.azesearch.com
 www3.bannerspace.com
 www3.bannerspace.com
+www3.bigtrafficnetwork.com
 www3.burstnet.com
 www3.click-fr.com
 www3.counter.bloke.com
@@ -8585,6 +8850,8 @@ xbs.nyc.mtree.com
 xbs.pao.mtree.com
 xbs.sea.mtree.com
 xcounters.com
+xhpro.com
+xibu315.com
 ximages.cliks.org
 ximages.offeroptimizer.com
 xit.sexlist.com
@@ -8646,7 +8913,6 @@ your-finder.com
 your-searcher.com
 your.com
 your.wishbone.com
-yourbookmarks.info
 youriskalka.com
 yourpoiskovik.com
 yoursearch.ws
