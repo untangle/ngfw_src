@@ -18,12 +18,15 @@ int colonIndex = host.indexOf(':');
 if( colonIndex >= 0 )
     host = host.substring(0, colonIndex);
 
-ServletContext sc = getServletContext();
-MvvmRemoteContext mvvm = (MvvmRemoteContext) sc.getAttribute("mvvm");
-if (mvvm == null) {
-    mvvm = MvvmRemoteContextFactory.localLogin();
-    sc.setAttribute("mvvm", mvvm);
-}
+
+MvvmRemoteContext mvvm = MvvmRemoteContextFactory.localLogin();
+// XXX logins timeout
+//ServletContext sc = getServletContext();
+//MvvmRemoteContext mvvm = (MvvmRemoteContext) sc.getAttribute("mvvm");
+//if (mvvm == null) {
+//    mvvm = MvvmRemoteContextFactory.localLogin();
+//    sc.setAttribute("mvvm", mvvm);
+//}
 MackageDesc[] mds = mvvm.toolboxManager().installed();
 %>
 
