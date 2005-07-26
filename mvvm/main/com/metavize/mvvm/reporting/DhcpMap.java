@@ -170,7 +170,8 @@ public class DhcpMap
         // to know for sure.
         try {
             Statement stmt = conn.createStatement();
-            stmt.executeUpdate( TEST_INSTALLED );
+            ResultSet rs = stmt.executeQuery( TEST_INSTALLED );
+            try { rs.close(); stmt.close(); } catch (SQLException e) { }
         } catch ( SQLException e ) {
             System.out.println("no NAT transform install");
             natTransformInstalled = false;
