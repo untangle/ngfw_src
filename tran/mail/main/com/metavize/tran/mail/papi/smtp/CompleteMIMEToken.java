@@ -13,6 +13,7 @@ package com.metavize.tran.mail.papi.smtp;
 
 import static com.metavize.tran.util.Ascii.*;
 import static com.metavize.tran.util.BufferUtil.*;
+import com.metavize.tran.mail.*;
 
 import java.io.*;
 import java.nio.ByteBuffer;
@@ -41,17 +42,24 @@ public class CompleteMIMEToken
   private final Logger m_logger =
     Logger.getLogger(CompleteMIMEToken.class);
 
-  private final MIMEMessageHolder m_msgHolder;
+  private final MIMEMessage m_msg;
+  private final MessageInfo m_msgInfo;
 
-  public CompleteMIMEToken(MIMEMessageHolder holder) {
-    m_msgHolder = holder;
+  public CompleteMIMEToken(MIMEMessage msg,
+    MessageInfo msgInfo) {
+    m_msg = msg;
+    m_msgInfo = msgInfo;
   }
 
   /**
-   * Get the Holder of the MIMEMessage
+   * Get the MIMEMessage
    */
-  public MIMEMessageHolder getHolder() {
-    return m_msgHolder;
+  public MIMEMessage getMessage() {
+    return m_msg;
+  }
+
+  public MessageInfo getMessageInfo() {
+    return m_msgInfo;
   }
 
   /**
@@ -82,7 +90,7 @@ public class CompleteMIMEToken
       //TODO bscott Remove this debugging
       m_logger.debug("Created Complete MIME message streamer");
       try {
-        File file = m_msgHolder.toFile(new FileFactory() {
+        File file = m_msg.toFile(new FileFactory() {
           public File createFile(String name)
             throws IOException {
             return createFile();

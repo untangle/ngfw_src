@@ -11,7 +11,7 @@
 
 package com.metavize.tran.mail.impl.smtp;
 
-import com.metavize.tran.mail.MessageBoundaryScanner;
+import com.metavize.tran.mail.*;
 
 import com.metavize.tran.mail.papi.smtp.*;
 import static com.metavize.tran.util.Ascii.*;
@@ -56,17 +56,7 @@ import com.metavize.tran.mime.*;
 public class SmtpClientParser
   extends AbstractParser {
 
-//  private final byte[] CRLF_DOT_CRLF = new byte[] {
-//    (byte) CR, (byte) LF, (byte) DOT, (byte) CR, (byte) LF
-//  };
-//  private final byte[] CRLF_DOT_DOT_CRLF = new byte[] {
-//    (byte) CR, (byte) LF, (byte) DOT, (byte) DOT, (byte) CR, (byte) LF
-//  };  
-//  private final byte[] CRLF_CRLF = new byte[] {
-//    (byte) CR, (byte) LF, (byte) CR, (byte) LF
-//  };  
-    
-  
+
   private final Pipeline pipeline;//For making temp files
   private final Logger m_logger = Logger.getLogger(SmtpClientParser.class);
   
@@ -82,15 +72,18 @@ public class SmtpClientParser
   
   //Transient
   private MailTransaction m_tx;
+  private TransactionTracker m_tracker;
 
   public SmtpClientParser(TCPSession session,
-    SmtpCasing parent) {
+    SmtpCasing parent,
+    TransactionTracker tracker) {
     super(session, true);
     m_logger.debug("Created");
     m_parentCasing = parent;
     lineBuffering(false);
     pipeline = MvvmContextFactory.context().
       pipelineFoundry().getPipeline(session.id());
+    m_tracker = tracker;
   }
   
 
@@ -122,8 +115,8 @@ public class SmtpClientParser
       return new ParseResult(toks, null);      
     }
   }
-  
-  
+
+
   private ParseResult parseImpl(ByteBuffer buf) 
     throws ParseException {
     
@@ -146,6 +139,7 @@ public class SmtpClientParser
           m_logger.debug("COMMAND state");
           if(findCrLf(buf) >= 0) {//BEGIN Complete Command 
             Command cmd = CommandParser.parse(buf);
+            m_tracker.commandReceived(cmd);
             m_logger.debug("Adding Command (\"" + cmd.getType() + "\") to tokens");
             toks.add(cmd);
 
@@ -189,6 +183,7 @@ public class SmtpClientParser
           break;
         case HEADERS:
           m_logger.debug("HEADERS state");
+          m_tracker.beginMsgTransmission();
           ByteBuffer dup = buf.duplicate();
           FileChannel fc = m_tx.fOut.getChannel();
           try {
@@ -210,7 +205,35 @@ public class SmtpClientParser
                 parseHeaders();
               }
               m_logger.debug("Adding Begin MIME to token");
-              toks.add(new BeginMIMEToken(m_tx.headers, m_tx.source, headersLen));
+              
+              //Create the MessageInfo
+              MessageInfo messageInfo = MessageInfo.fromMIMEMessage(m_tx.headers,
+                getSession().id(),
+                getSession().serverPort());
+              //Add anyone from the transaction
+              SmtpTransaction smtpTx = m_tracker.getCurrentTransaction();
+              if(smtpTx == null) {
+                m_logger.error("Transaction tracker returned null for current transaction");
+              }
+              else {
+                //Transfer the FROM
+                if(smtpTx.getFrom() != null && !smtpTx.getFrom().isNullAddress()) {
+                  messageInfo.addAddress(AddressKind.ENVELOPE_FROM,
+                    smtpTx.getFrom().getAddress(),
+                    smtpTx.getFrom().getPersonal());
+                }
+                List<EmailAddress> txRcpts = smtpTx.getRecipients(false);
+                for(EmailAddress addr : txRcpts) {
+                  if(addr.isNullAddress()) {
+                    continue;
+                  }
+                  messageInfo.addAddress(AddressKind.ENVELOPE_TO, addr.getAddress(), addr.getPersonal());
+                }
+              }
+              toks.add(new BeginMIMEToken(m_tx.headers,
+                m_tx.source,
+                headersLen,
+                messageInfo));
               m_state = SmtpClientState.BODY;
               if(m_tx.scanner.isEmptyMessage()) {
                 toks.add(new ContinuedMIMEToken(true));

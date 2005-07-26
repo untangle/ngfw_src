@@ -39,14 +39,16 @@ public class Command
     DATA,
     RSET,
     QUIT,
-    SEND,
-    SOML,
-    SAML,
-    TURN,
+    SEND,//
+    SOML,//
+    SAML,//
+    TURN,//
     VRFY,
     EXPN,
     HELP,
     NOOP,
+    SIZE,
+    PIPELINING,
     UNKNOWN
   };
 

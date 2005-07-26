@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.ArrayList;
 import com.metavize.tran.mime.EmailAddress;
 import org.apache.log4j.Logger;
+import com.metavize.tran.util.TemplateValues;
+import static com.metavize.tran.util.Ascii.CRLF;
 
 
 /**
@@ -31,8 +33,31 @@ import org.apache.log4j.Logger;
  * Confirmed means the server accepted, provisional 
  * means the request was issued by client yet final
  * disposition is unknown.
+ * <br>
+ * <br>
+ * This class also implements {@link com.metavize.tran.util.TemplateValues TemplateValues}.
+ * Valid key names which can be derefferenced from an SmtpTransaction begin with
+ * the literal <code>$SMTPTransaction:</code> followed by any of the following tokens:
+ * <ul>
+ *   <li>
+ *     <code><b>TO</b></code> The "TO" addresses, as passed in any "RCPT TO:" commands.
+ *     Each recipient is on its own line.  Even if there is only one recipient,
+ *     this variable will be substituted with the value of the recipient <i>followed
+ *     by a CRLF.</i>  If there are no recipients (?!?), than this will
+ *     simply return a blank String ("").
+ *   </li>
+ *   <li>
+ *     <code><b>FROM</b></code> The "FROM" as passed in the "MAIL FROM:" command.
+ *     If there is no FROM value (or it was "&lt;>"), the literal "&lt;>" will be substituted.
+ *   </li>
+ * </ul>
  */
-public final class SmtpTransaction {
+public final class SmtpTransaction
+  implements TemplateValues {
+
+  private static final String SMTP_TX_TEMPLATE_PREFIX = "SMTPTransaction:".toLowerCase();
+  private static final String TO_TV = "TO".toLowerCase();
+  private static final String FROM_TV = "FROM".toLowerCase();
 
   /**
    * Enum of Transaction states.
@@ -199,6 +224,30 @@ public final class SmtpTransaction {
    */
   public boolean isFromConfirmed() {
     return m_fromConfirmed;
+  }
+
+  /**
+  * For use in Templates (see JavaDoc at the top of this class
+  * for explanation of vairable format}.
+  */
+  public String getTemplateValue(String key) {
+    key = key.trim().toLowerCase();
+    if(key.startsWith(SMTP_TX_TEMPLATE_PREFIX)) {
+      key = key.substring(SMTP_TX_TEMPLATE_PREFIX.length());
+      if(key.equals(TO_TV)) {
+        StringBuilder sb = new StringBuilder();
+        for(EmailAddressWithStatus eaws : m_recipients) {
+          sb.append(eaws.addr.toSMTPString());
+          sb.append(CRLF);
+        }
+        return sb.toString();
+      }
+      else if(key.equals(FROM_TV)) {
+        return (m_from==null || m_from.isNullAddress())?
+          "<>":m_from.toSMTPString();
+      }
+    }
+    return null;
   }
 
 

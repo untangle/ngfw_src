@@ -32,25 +32,7 @@ public class TemplateValuesChain
     this(new TemplateValues[] {v1});
   }  
   
-  public TemplateValuesChain(TemplateValues v1,
-    TemplateValues v2) {
-    this(new TemplateValues[] {v1, v2});
-  }
-  
-  public TemplateValuesChain(TemplateValues v1,
-    TemplateValues v2,
-    TemplateValues v3) {
-    this(new TemplateValues[] {v1, v2, v3});
-  }
-  
-  public TemplateValuesChain(TemplateValues v1,
-    TemplateValues v2,
-    TemplateValues v3,
-    TemplateValues v4) {
-    this(new TemplateValues[] {v1, v2, v3, v4});
-  }
-    
-  public TemplateValuesChain(TemplateValues[] tvs) {
+  public TemplateValuesChain(TemplateValues... tvs) {
     m_valueList = Arrays.asList(tvs);
   }
   

@@ -34,6 +34,15 @@ public abstract class AbstractParser implements Parser
             + session.id() + ">";
     }
 
+    /**
+     * Get the underlying Session associated with this parser
+     *
+     * @return the session.
+     */
+    protected TCPSession getSession() {
+      return session;
+    }
+
     // Parser noops -----------------------------------------------------------
 
     public TokenStreamer endSession() { return null; }

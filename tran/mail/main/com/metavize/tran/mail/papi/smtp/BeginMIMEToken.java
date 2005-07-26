@@ -20,6 +20,7 @@ import com.metavize.tran.mime.*;
 //import com.metavize.tran.mime.FileMIMESource;
 import java.io.IOException;
 import com.metavize.tran.token.Token;
+import com.metavize.tran.mail.*;
 
 
 /**
@@ -42,13 +43,16 @@ public class BeginMIMEToken
   private MIMEMessageHeaders m_headers;
   private FileMIMESource m_mimeSource;
   private int m_headersLength;
+  private MessageInfo m_messageInfo;
 
   public BeginMIMEToken(MIMEMessageHeaders headers,
     FileMIMESource mimeSource,
-    int headersLength) {
+    int headersLength,
+    MessageInfo messageInfo) {
     m_headers = headers;
     m_mimeSource = mimeSource;
     m_headersLength = headersLength;
+    m_messageInfo = messageInfo;
   }
 
   /**
@@ -73,6 +77,10 @@ public class BeginMIMEToken
    */
   public FileMIMESource getMIMESource() {
     return m_mimeSource;
+  }
+
+  public MessageInfo getMessageInfo() {
+    return m_messageInfo;
   }
 
   /**

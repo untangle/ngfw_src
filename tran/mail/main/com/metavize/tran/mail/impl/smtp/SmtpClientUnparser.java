@@ -28,12 +28,15 @@ public class SmtpClientUnparser
   private final Logger m_logger = Logger.getLogger(SmtpClientUnparser.class);
 
   private final SmtpCasing m_parentCasing;
+  private final TransactionTracker m_tracker;
 
   public SmtpClientUnparser(TCPSession session,
-    SmtpCasing parent) {
+    SmtpCasing parent,
+    TransactionTracker tracker) {
     super(session, true);
     m_logger.debug("Created");
     m_parentCasing = parent;
+    m_tracker = tracker;
   }
 
 

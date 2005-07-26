@@ -102,6 +102,16 @@ public class MailTransformImpl extends AbstractTransform
     {
         settings = new MailTransformSettings();
         settings.setTid(getTid());
+        //Set the defaults
+        settings.setSmtpEnabled(true);
+        settings.setPopEnabled(true);
+        settings.setImapEnabled(false);//TODO bscott this is currently neutered
+        settings.setSmtpInboundTimeout(1000*30);
+        settings.setSmtpOutboundTimeout(1000*30);
+        settings.setPopInboundTimeout(1000*30);
+        settings.setPopOutboundTimeout(1000*30);
+        settings.setImapInboundTimeout(1000*30);
+        settings.setImapOutboundTimeout(1000*30);
         setMailTransformSettings(settings);
     }
 

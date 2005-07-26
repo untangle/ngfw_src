@@ -50,7 +50,7 @@ public class SmtpServerUnparser
       pipelineFoundry().getPipeline(session.id());
 
     //TODO bscott for classloader
-    CompleteMIMEToken cmt = new CompleteMIMEToken(null);
+    CompleteMIMEToken cmt = new CompleteMIMEToken(null, null);
 
   }
 
@@ -96,7 +96,7 @@ public class SmtpServerUnparser
       try {
         CompleteMIMEToken cmt = (CompleteMIMEToken) token;
         
-        ByteBuffer tempBuf = ((CompleteMIMEToken) token).getHolder().toByteBuffer();
+        ByteBuffer tempBuf = ((CompleteMIMEToken) token).getMessage().toByteBuffer();
         m_logger.debug("About to byte stuff buffer of length: " + tempBuf.remaining());
         ByteBufferByteStuffer tempBBBS = new ByteBufferByteStuffer();
         ByteBuffer b1 = ByteBuffer.allocate(tempBuf.remaining());

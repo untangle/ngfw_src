@@ -10,10 +10,12 @@
   */
 package com.metavize.tran.mime;
 import java.io.*;
+import java.nio.*;
 import java.util.*;
 import org.apache.log4j.Logger;
 import static com.metavize.tran.util.Ascii.*;
 import com.metavize.tran.util.*;
+import com.metavize.tran.util.TemplateValues;
 
 
 /**
@@ -21,11 +23,54 @@ import com.metavize.tran.util.*;
  * {@link #getMMHeaders MIMEMessageHeaders} with convienence 
  * members for a top-level message (such as recipient
  * and subject manipulation).
- * <br>
- * <b>Work in progress</b>
+ * <br><br>
+ * This class also implements {@link com.metavize.tran.util.TemplateValues TemplateValues}.
+ * The variable syntax for accessing elements of the MIMEMessage is based on
+ * <code>MIMEMessage:&lt;name></code> where <code>name</code> can be any
+ * one of the following:
+ * <ul>
+ *   <li>
+ *     <code><b>TO</b></code> The "TO" addresses, as found in the MIME Headers
+ *     Each recipient is on its own line.  Even if there is only one recipient,
+ *     this variable will be substituted with the value of the recipient <i>followed
+ *     by a CRLF.</i>  If there are no "TO" values on the header, than this will
+ *     simply return a blank String ("").
+ *   </li>
+ *   <li>
+ *     <code><b>CC</b></code> Any CC recipients, following the same rules for
+ *     multiple values and new lines as <code>TO</code>
+ *   </li>
+ *   <li>
+ *     <code><b>RECIPIENTS</b></code> Combination of <code>TO</code> and <code>CC</code>
+ *   </li>
+ *   <li>
+ *     <code><b>FROM</b></code> The "FROM" as found in the headers.  If there is no
+ *     FROM value, the literal "&lt;>" will be substituted.
+ *   </li>
+ *   <li>
+ *     <code><b>SUBJECT</b></code> The Subject, as found on the message.  If there is
+ *     no subject (or it is null), a blank string ("") will be returned.
+ *   </li>
+ * <!--
+ *   <li>
+ *     <code><b>XXXXX</b></code>
+ *   </li>
+ * -->
+ * </ul>
+ * Note also that any variables from the embedded Headers will also be
+ * evaluated (see the docs on {@link com.metavize.tran.mime.Headers Headers}
+ * for a list of possible variables).
  */
 public class MIMEMessage 
-  extends MIMEPart {
+  extends MIMEPart
+  implements TemplateValues {
+
+  private static final String MIME_MESSAGE_TEMPLATE_PREFIX = "MIMEMessage:".toLowerCase();
+  private static final String TO_TV = "TO".toLowerCase();
+  private static final String CC_TV = "CC".toLowerCase();
+  private static final String RECIP_TV = "RECIPIENTS".toLowerCase();
+  private static final String FROM_TV = "FROM".toLowerCase();
+  private static final String SUBJECT_TV = "SUBJECT".toLowerCase();
   
   private final Logger m_logger = Logger.getLogger(MIMEPart.class); 
   
@@ -70,6 +115,64 @@ public class MIMEMessage
       MIMEPartParseException {    
     super(stream, source, true, policy, outerBoundary, headers);
   }
+
+  /**
+   * For use in a Template
+   */
+  public String getTemplateValue(String key) {
+    //First, see if this key is for the child
+    //Headers
+    String headerRet = getMMHeaders().getTemplateValue(key);
+    if(headerRet != null) {
+      return headerRet;
+    }
+
+    //Not for the headers.  Evaluate if this
+    //is a MIMEMessage variable
+    key = key.trim().toLowerCase();
+    if(key.startsWith(MIME_MESSAGE_TEMPLATE_PREFIX)) {
+      key = key.substring(MIME_MESSAGE_TEMPLATE_PREFIX.length());
+      if(key.equals(TO_TV)) {
+        Set<EmailAddress> tos = getMMHeaders().getRecipients(RcptType.TO);
+        StringBuilder sb = new StringBuilder();
+        for(EmailAddress addr : tos) {
+          sb.append(addr.toMIMEString());
+          sb.append(CRLF);
+        }
+        return sb.toString();
+      }
+      else if(key.equals(CC_TV)) {
+        Set<EmailAddress> ccs = getMMHeaders().getRecipients(RcptType.CC);
+        StringBuilder sb = new StringBuilder();
+        for(EmailAddress addr : ccs) {
+          sb.append(addr.toMIMEString());
+          sb.append(CRLF);
+        }
+        return sb.toString();      
+      }
+      else if(key.equals(RECIP_TV)) {
+        List<EmailAddressWithRcptType> allRcpts = getMMHeaders().getAllRecipients();
+        StringBuilder sb = new StringBuilder();
+        for(EmailAddressWithRcptType eawrt : allRcpts) {
+          sb.append(eawrt.address.toMIMEString());
+          sb.append(CRLF);
+        }
+        return sb.toString();          
+      }
+      else if(key.equals(FROM_TV)) {
+        EmailAddress from = getMMHeaders().getFrom();
+        if(from == null || from.isNullAddress()) {
+          return "<>";
+        }
+        return from.toMIMEString();
+      }
+      else if(key.equals(SUBJECT_TV)) {
+        return getMMHeaders().getSubject() == null?
+          "":getMMHeaders().getSubject();
+      }
+    }
+    return null;
+  }
   
   /**
    * Get the MIMEMessageHeaders for this MIMEMessage.  Changes
@@ -112,6 +215,20 @@ public class MIMEMessage
       }
     }
     return getSourceRecord().source.toFile(fileFactory);
+  }
+
+  /**
+   * <b>Do not use this method.  It is for debugging.  It will
+   * cause too much to be read into memory</b>
+   *
+   * Returned buffer is ready for reading.
+   */
+  public ByteBuffer toByteBuffer() throws IOException {
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    MIMEOutputStream mos = new MIMEOutputStream(baos);
+    writeTo(mos);
+    mos.flush();
+    return ByteBuffer.wrap(baos.toByteArray());
   }  
   
 //------------- Debug/Test ---------------  

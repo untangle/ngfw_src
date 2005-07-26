@@ -39,7 +39,7 @@ public class Headers
   implements TemplateValues,
     Iterable<HeaderField> {
 
-  public static String MIME_HEADER_VAR_PREFIX = "MIMEHeader:";
+  public static String MIME_HEADER_VAR_PREFIX = "MIMEHeader:".toLowerCase();
   
   private final Logger m_logger = Logger.getLogger(Headers.class);
 
@@ -96,8 +96,7 @@ public class Headers
    * for explanation of vairable format}.
    */
   public String getTemplateValue(String key) {
-    int index = key.toLowerCase().indexOf(MIME_HEADER_VAR_PREFIX);
-    if(index > 0) {
+    if(key.toLowerCase().startsWith(MIME_HEADER_VAR_PREFIX)) {
       String headerName = key.substring(MIME_HEADER_VAR_PREFIX.length());
       List<HeaderField> headers = getHeaderFields(headerName);
       if(headers == null) {

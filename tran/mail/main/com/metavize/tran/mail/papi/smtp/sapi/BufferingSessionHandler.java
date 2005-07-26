@@ -12,7 +12,7 @@
 package com.metavize.tran.mail.papi.smtp.sapi;
 
 import com.metavize.tran.mail.papi.smtp.*;
-
+import com.metavize.tran.mail.*;
 import com.metavize.tran.mime.*;
 
 import org.apache.log4j.Logger;
@@ -47,23 +47,23 @@ public abstract class BufferingSessionHandler
    * <b>B</b>lock, <b>P</b>ass, or <b>M</b>odify Evaluation result.
    */
   public static class BPMEvaluationResult {
-    private MIMEMessageHolder m_mmHolder;
+    private MIMEMessage m_newMsg;
     private final boolean m_block;
     private BPMEvaluationResult(boolean block) {
       m_block = block;
     }
-    public BPMEvaluationResult(MIMEMessageHolder holder) {
+    public BPMEvaluationResult(MIMEMessage newMsg) {
       m_block = false;
-      m_mmHolder = holder;
+      m_newMsg = newMsg;
     }
     public boolean isBlock() {
       return m_block;
     }
     public boolean messageModified() {
-      return m_mmHolder != null;
+      return m_newMsg != null;
     }
-    public MIMEMessageHolder getMsgHolder() {
-      return m_mmHolder;
+    public MIMEMessage getMessage() {
+      return m_newMsg;
     }
   }
   /**
@@ -104,9 +104,13 @@ public abstract class BufferingSessionHandler
    */
   public abstract boolean isBufferAndTrickle();
 
-  public abstract BPMEvaluationResult blockPassOrModify(MIMEMessageHolder msgHolder);
+  public abstract BPMEvaluationResult blockPassOrModify(MIMEMessage msg,
+    SmtpTransaction tx,
+    MessageInfo msgInfo);
 
-  public abstract BlockOrPassResult blockOrPass(MIMEMessageHolder msgHolder);
+  public abstract BlockOrPassResult blockOrPass(MIMEMessage msg,
+    SmtpTransaction tx,
+    MessageInfo msgInfo);
   
   /**
    * Method subclasses can optionally override.  Lets
@@ -272,7 +276,9 @@ public abstract class BufferingSessionHandler
     private FileMIMESource m_mimeSource;
     private MIMEMessageHeaders m_headers;
     private int m_headersLengthInSource;
-    private MIMEMessageHolder m_mmHolder;
+//    private MIMEMessageHolder m_mmHolder;
+    private MIMEMessage m_msg;
+    private MessageInfo m_msgInfo;
 
     private int m_dataResp = -1;//Special case for when we get a negative
                                 //response to our sending of a "real" DATA
@@ -307,18 +313,16 @@ public abstract class BufferingSessionHandler
      * was changed, it'll just be picked-up implicitly.
      */
     private boolean evaluateMessage(boolean canModify) {
-      if(m_mmHolder == null) {
+      if(m_msg == null) {
         MIMEParsingInputStream mimeIn = null;
         try {
           mimeIn = m_mimeSource.getInputStream();
-          MIMEMessage mimeMessage =
-            new MIMEMessage(mimeIn,
-              m_mimeSource,
-              new MIMEPolicy(),
-              null,
-              m_headers);
+          m_msg = new MIMEMessage(mimeIn,
+            m_mimeSource,
+            new MIMEPolicy(),
+            null,
+            m_headers);
           mimeIn.close();
-          m_mmHolder = new MIMEMessageHolder(mimeMessage, m_mimeSource);
         }
         catch(Exception ex) {
           try{mimeIn.close();}catch(Exception ignore){}
@@ -329,10 +333,12 @@ public abstract class BufferingSessionHandler
       }
 
       if(canModify) {
-        BPMEvaluationResult result = blockPassOrModify(m_mmHolder);
+        BPMEvaluationResult result = blockPassOrModify(m_msg,
+          getTransaction(),
+          m_msgInfo);
         if(result.messageModified()) {
           m_txLog.add("Evaluation modified MIME message");
-          m_mmHolder = result.getMsgHolder();
+          m_msg = result.getMessage();
           return true;
         }
         else {
@@ -340,9 +346,12 @@ public abstract class BufferingSessionHandler
         }
       }
       else {
-        return blockOrPass(m_mmHolder) == BlockOrPassResult.PASS;
+        return blockOrPass(m_msg, getTransaction(), m_msgInfo) == BlockOrPassResult.PASS;
       }
     }
+
+    //TODO bscott Nuke the file if we were accumulating MIME.  This means
+    //     we need to handle the "client" and "server" close stuff
 
     @Override
     public void handleRSETCommand(Command command,
@@ -465,6 +474,7 @@ public abstract class BufferingSessionHandler
       m_mimeSource = token.getMIMESource();
       m_headers = token.getHeaders();
       m_headersLengthInSource = token.getHeadersLength();
+      m_msgInfo = token.getMessageInfo();
 
       handleMIMEChunk(true,
         false,
@@ -499,7 +509,10 @@ public abstract class BufferingSessionHandler
         return;
       }   
             
-      m_mmHolder = token.getHolder();
+      m_msg = token.getMessage();
+      m_msgInfo = token.getMessageInfo();
+      //TODO bscott Should we close the file of accumulated MIME?  It is really
+      //     an error to have the file at all
       m_mimeSource = null;
       m_headers = null;
       handleMIMEChunk(true, true, null, actions);
@@ -768,15 +781,18 @@ public abstract class BufferingSessionHandler
           
           //Pass either complete MIME or begin/end (if there
           //was a parse error)
-          if(m_mmHolder == null) {
+          if(m_msg == null) {
             m_txLog.add("Passing along an unparsable MIME message in two tokens");
-            actions.sendBeginMIMEToServer(new BeginMIMEToken(m_headers, m_mimeSource, m_headersLengthInSource));
+            actions.sendBeginMIMEToServer(new BeginMIMEToken(m_headers,
+              m_mimeSource,
+              m_headersLengthInSource,
+              m_msgInfo));
             actions.sendFinalMIMEToServer(new ContinuedMIMEToken(true),
               new MailTransmissionContinuation());
           }
           else {
             m_txLog.add("Passing along parsed MIME in one token");
-            actions.sentWholeMIMEToServer(new CompleteMIMEToken(m_mmHolder),
+            actions.sentWholeMIMEToServer(new CompleteMIMEToken(m_msg, m_msgInfo),
               new MailTransmissionContinuation());
           }
           

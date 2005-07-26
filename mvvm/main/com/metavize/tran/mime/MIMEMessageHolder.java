@@ -20,6 +20,8 @@ import java.nio.ByteBuffer;
  * MIMESource.  It is assumes that the
  * MIMESource contains the <b>entire</b>
  * MIMEMessage.
+ *
+ * @depricated
  */
 public class MIMEMessageHolder {
 
@@ -38,6 +40,10 @@ public class MIMEMessageHolder {
       }
     });
     m_source = source;
+  }
+
+  public MIMEMessage getMIMEMessage() {
+    return m_message;
   }
     
   /**

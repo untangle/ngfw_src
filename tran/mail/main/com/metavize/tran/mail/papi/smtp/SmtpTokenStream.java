@@ -47,6 +47,9 @@ public class SmtpTokenStream
   private long m_clientTimestamp;
   private long m_serverTimestamp;
 
+  /**
+   * Note that withouth a handler, everything just passes through
+   */
   public SmtpTokenStream(TCPSession session) {
     this(session, null);
   }
