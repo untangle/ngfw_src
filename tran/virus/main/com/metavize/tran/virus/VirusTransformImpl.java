@@ -50,6 +50,8 @@ import org.apache.log4j.Logger;
 public class VirusTransformImpl extends AbstractTransform
     implements VirusTransform
 {
+    // XXX these queries need to be optimized once I have some real
+    // data from the mail transform
     private static final String FTP_QUERY
         = "SELECT create_date, "
         +        "'FTP' AS type, "
@@ -218,7 +220,7 @@ public class VirusTransformImpl extends AbstractTransform
 
     public List<VirusLog> getEventLogs(int limit)
     {
-        List<VirusLog> l = new ArrayList<VirusLog>(4 * limit);
+        List<VirusLog> l = new ArrayList<VirusLog>(QUERIES.length * limit);
 
         for (String q : QUERIES) {
             getEventLogs(q, l, limit);
@@ -226,7 +228,11 @@ public class VirusTransformImpl extends AbstractTransform
 
         Collections.sort(l);
 
-        return new ArrayList(l.subList(0, Math.min(limit, l.size())));
+        for (int i = Math.min(limit, l.size()); i < l.size(); i++) {
+            l.remove(i);
+        }
+
+        return l;
     }
 
     // Transform methods ------------------------------------------------------
@@ -605,9 +611,8 @@ public class VirusTransformImpl extends AbstractTransform
     // private methods --------------------------------------------------------
 
     private List<VirusLog> getEventLogs(String q, List<VirusLog> l,
-                                          int limit)
+                                        int limit)
     {
-
         Session s = TransformContextFactory.context().openSession();
         try {
             Connection c = s.connection();

@@ -168,7 +168,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
 
     public List<SpywareLog> getEventLogs(int limit)
     {
-        List<SpywareLog> l = new ArrayList<SpywareLog>(4 * limit);
+        List<SpywareLog> l = new ArrayList<SpywareLog>(QUERIES.length * limit);
 
         for (String q : QUERIES) {
             getEventLogs(q, l, limit);
@@ -176,12 +176,16 @@ public class SpywareImpl extends AbstractTransform implements Spyware
 
         Collections.sort(l);
 
-        return new ArrayList(l.subList(0, Math.min(limit, l.size())));
+        for (int i = Math.min(limit, l.size()); i < l.size(); i++) {
+            l.remove(i);
+        }
+
+        return l;
     }
 
     // Transform methods ------------------------------------------------------
 
-    // XXX aviod
+    // XXX avoid
 
     public void reconfigure()
     {
