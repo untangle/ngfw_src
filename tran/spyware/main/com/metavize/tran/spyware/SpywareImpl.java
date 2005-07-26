@@ -51,34 +51,46 @@ import org.apache.log4j.Logger;
 
 public class SpywareImpl extends AbstractTransform implements Spyware
 {
-    private static final String HTTP_QUERY
+private static final String COOKIE_QUERY
         = "SELECT req.time_stamp, "
-        + "CASE WHEN NOT bl.event_id IS NULL THEN 'BLACKLIST' "
-        + "     WHEN NOT co.event_id IS NULL THEN 'COOKIE' "
-        + "     WHEN NOT ax.event_id IS NULL THEN 'ACTIVEX' "
-        + "     ELSE 'NONE' "
-        + "END AS type, "
-        + "CASE WHEN NOT bl.event_id IS NULL THEN host "
-        + "     ELSE 'http://' || host || uri "
-        + "END AS location, "
-        + "CASE WHEN NOT bl.event_id IS NULL THEN host "
-        + "     WHEN NOT co.event_id IS NULL THEN co.ident "
-        + "     WHEN NOT ax.event_id IS NULL THEN ax.ident "
-        + "     ELSE host, "
-        + "END AS ident, "
-        + "CASE WHEN NOT bl.event_id IS NULL THEN true "
-        + "     WHEN NOT co.event_id IS NULL THEN true "
-        + "     WHEN NOT ax.event_id IS NULL THEN true "
-        + "     ELSE false "
-        + "END AS blocked, "
-        + "c_client_addr, c_client_port, s_server_addr, s_server_port, "
-        + "client_intf, server_intf "
-        + "FROM tr_http_req_line rl "
-        + "JOIN tr_http_evt_req req USING (request_id) "
+        +        "'COOKIE' AS type, "
+        +        "'http://' || host || uri AS location, "
+        +        "ident, "
+        +        "true AS blocked, "
+        +        "c_client_addr, c_client_port, s_server_addr, s_server_port, "
+        +        "client_intf, server_intf "
+        + "FROM tr_http_evt_req req "
+        + "JOIN pl_endp USING (session_id) "
+        + "JOIN tr_http_req_line rl USING (request_id) "
+        + "JOIN tr_spyware_evt_cookie cookie USING (request_id) "
+        + "ORDER BY req.time_stamp DESC LIMIT ?";
+
+    private static final String ACTIVEX_QUERY
+        = "SELECT req.time_stamp, "
+        +        "'ACTIVEX' AS type, "
+        +        "'http://' || host || uri AS location, "
+        +        "ident, "
+        +        "true AS blocked, "
+        +        "c_client_addr, c_client_port, s_server_addr, s_server_port, "
+        +        "client_intf, server_intf "
+        + "FROM tr_http_evt_req req "
         + "JOIN pl_endp endp USING (session_id) "
-        + "LEFT OUTER JOIN tr_spyware_evt_cookie co ON co.request_id = rl.request_id "
-        + "LEFT OUTER JOIN tr_spyware_evt_activex ax ON ax.request_id = rl.request_id "
-        + "LEFT OUTER JOIN tr_spyware_evt_blacklist bl ON bl.request_id = rl.request_id "
+        + "JOIN tr_http_req_line rl USING (request_id) "
+        + "JOIN tr_spyware_evt_activex ax USING (request_id) "
+        + "ORDER BY req.time_stamp DESC LIMIT ?";
+
+    private static final String BLACKLIST_QUERY
+        = "SELECT req.time_stamp, "
+        +        "'BLACKLIST' AS type, "
+        +        "'http://' || host || uri AS location, "
+        +        "host AS ident, "
+        +        "true AS blocked, "
+        +        "c_client_addr, c_client_port, s_server_addr, s_server_port, "
+        +        "client_intf, server_intf "
+        + "FROM tr_http_evt_req req "
+        + "JOIN pl_endp endp USING (session_id) "
+        + "JOIN tr_http_req_line rl USING (request_id) "
+        + "JOIN tr_spyware_evt_blacklist bl USING (request_id) "
         + "ORDER BY req.time_stamp DESC LIMIT ?";
 
     private static final String ACCESS_QUERY
@@ -95,7 +107,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
 
 
     private static final String[] QUERIES = new String[]
-        { HTTP_QUERY, ACCESS_QUERY };
+        { COOKIE_QUERY, ACTIVEX_QUERY, BLACKLIST_QUERY, ACCESS_QUERY };
 
     private static final String ACTIVEX_LIST
         = "com/metavize/tran/spyware/blocklist.reg";
