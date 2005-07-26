@@ -12,7 +12,7 @@ DELETE FROM tr_http_req_line
     WHERE NOT EXISTS
         (SELECT 1 FROM tr_http_evt_req
             WHERE tr_http_req_line.request_id = request_id)
-    OR NOT EXISTS
+    AND NOT EXISTS
         (SELECT 1 FROM tr_http_evt_resp
             WHERE tr_http_req_line.request_id = request_id);
 
