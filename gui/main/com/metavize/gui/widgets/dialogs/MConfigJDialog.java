@@ -119,17 +119,24 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
 	// REFRESH SETTINGS FROM SERVER
 	try{
 	    refreshSettings();
-	    for( Map.Entry<String, Refreshable> refreshableMapEntry : refreshableMap.entrySet() ){
-		String componentName = refreshableMapEntry.getKey();
-		Refreshable refreshableComponent = refreshableMapEntry.getValue();
-		refreshableComponent.doRefresh(settings);
-	    }
 	}
 	catch(Exception e){
             Util.handleExceptionNoRestart("Error preparing settings for refreshing", e);
 	    new RefreshFailureDialog( this.getTitle() );
 	}
-
+        
+	for( Map.Entry<String, Refreshable> refreshableMapEntry : refreshableMap.entrySet() ){
+            String componentName = "";
+            try{
+		componentName = refreshableMapEntry.getKey();
+		Refreshable refreshableComponent = refreshableMapEntry.getValue();
+		refreshableComponent.doRefresh(settings);
+	    }
+            catch(Exception e){
+                Util.handleExceptionNoRestart("Error preparing settings for refreshing", e);
+                new RefreshFailureDialog( componentName );
+            }
+        }
     }
     ////////////////////////////////////////////
 
@@ -206,6 +213,7 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
         reloadJButton.setIcon(RELOAD_INIT_STRING);
         reloadJButton.setDoubleBuffered(true);
         reloadJButton.setFocusPainted(false);
+        reloadJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         reloadJButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
         reloadJButton.setMaximumSize(new java.awt.Dimension(120, 25));
         reloadJButton.setMinimumSize(new java.awt.Dimension(120, 25));
@@ -228,6 +236,7 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
         saveJButton.setIcon(SAVE_INIT_STRING);
         saveJButton.setDoubleBuffered(true);
         saveJButton.setFocusPainted(false);
+        saveJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         saveJButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
         saveJButton.setMaximumSize(new java.awt.Dimension(78, 25));
         saveJButton.setMinimumSize(new java.awt.Dimension(78, 25));
@@ -338,7 +347,7 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
                 MConfigJDialog.this.refreshAll();
             }
             catch(Exception e){
-                Util.handleExceptionNoRestart("Error saving settings", e);
+                Util.handleExceptionNoRestart("Error refreshing settings", e);
             }
             finally{
                 saveJButton.setEnabled(true);

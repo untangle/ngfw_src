@@ -51,7 +51,7 @@ public class MaintenanceJPanel extends javax.swing.JPanel implements Savable, Re
     }
 
     public void doRefresh(Object settings){
-        NetworkingConfiguration networkingConfiguration = (NetworkingConfiguration) settings;
+        NetworkingConfiguration networkingConfiguration = (NetworkingConfiguration) Util.getNetworkingManager().get();
         
         // SSH ENABLED ///////
 	boolean isSshEnabled = networkingConfiguration.isSshEnabled();
