@@ -51,7 +51,7 @@ import org.apache.log4j.Logger;
 
 public class SpywareImpl extends AbstractTransform implements Spyware
 {
-private static final String COOKIE_QUERY
+    private static final String COOKIE_QUERY
         = "SELECT req.time_stamp, "
         +        "'COOKIE' AS type, "
         +        "'http://' || host || uri AS location, "
@@ -104,7 +104,6 @@ private static final String COOKIE_QUERY
         + "FROM tr_spyware_evt_access acc "
         + "JOIN pl_endp endp USING (session_id) "
         + "ORDER BY create_date DESC LIMIT ?";
-
 
     private static final String[] QUERIES = new String[]
         { COOKIE_QUERY, ACTIVEX_QUERY, BLACKLIST_QUERY, ACCESS_QUERY };
@@ -515,7 +514,6 @@ private static final String COOKIE_QUERY
     private List<SpywareLog> getEventLogs(String q, List<SpywareLog> l,
                                           int limit)
     {
-
         Session s = TransformContextFactory.context().openSession();
         try {
             Connection c = s.connection();
