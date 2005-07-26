@@ -16,10 +16,7 @@ import com.metavize.tran.mail.MailTransformSettings;
 
 import java.awt.*;
 import javax.swing.*;
-/**
- *
- * @author  inieves
- */
+
 public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
 
     private static final int TIMEOUT_MAX = 86400;
@@ -29,12 +26,12 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
         super(transformContext);
         initComponents();
         
-        smtpInboundJSpinner.setModel( new SpinnerNumberModel(1, TIMEOUT_MIN, TIMEOUT_MAX, 1) );
-        smtpOutboundJSpinner.setModel( new SpinnerNumberModel(1, TIMEOUT_MIN, TIMEOUT_MAX, 1) );
-        popInboundJSpinner.setModel( new SpinnerNumberModel(1, TIMEOUT_MIN, TIMEOUT_MAX, 1) );
-        popOutboundJSpinner.setModel( new SpinnerNumberModel(1, TIMEOUT_MIN, TIMEOUT_MAX, 1) );
-        imapInboundJSpinner.setModel( new SpinnerNumberModel(1, TIMEOUT_MIN, TIMEOUT_MAX, 1) );
-        imapOutboundJSpinner.setModel( new SpinnerNumberModel(1, TIMEOUT_MIN, TIMEOUT_MAX, 1) );
+        smtpInboundJSpinner.setModel( new SpinnerNumberModel(TIMEOUT_MIN, TIMEOUT_MIN, TIMEOUT_MAX, 1) );
+        smtpOutboundJSpinner.setModel( new SpinnerNumberModel(TIMEOUT_MIN, TIMEOUT_MIN, TIMEOUT_MAX, 1) );
+        popInboundJSpinner.setModel( new SpinnerNumberModel(TIMEOUT_MIN, TIMEOUT_MIN, TIMEOUT_MAX, 1) );
+        popOutboundJSpinner.setModel( new SpinnerNumberModel(TIMEOUT_MIN, TIMEOUT_MIN, TIMEOUT_MAX, 1) );
+        imapInboundJSpinner.setModel( new SpinnerNumberModel(TIMEOUT_MIN, TIMEOUT_MIN, TIMEOUT_MAX, 1) );
+        imapOutboundJSpinner.setModel( new SpinnerNumberModel(TIMEOUT_MIN, TIMEOUT_MIN, TIMEOUT_MAX, 1) );
     }
 
     public void doSave(Object settings, boolean validateOnly) throws Exception {
