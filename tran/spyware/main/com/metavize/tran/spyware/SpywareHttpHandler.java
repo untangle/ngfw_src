@@ -215,7 +215,7 @@ public class SpywareHttpHandler extends HttpStateMachine
                 logger.debug("blocking cookie: " + domain);
                 transform.incrementCount(Spyware.BLOCK);
 
-                eventLogger.info(new SpywareCookieEvent(getSession().id(), responseRequest, domain, true));
+                eventLogger.info(new SpywareCookieEvent(getSession().id(), requestRequest, domain, true));
                 i.remove();
                 logger.debug("making cookieKiller: " + domain);
                 cookieKillers.addAll(makeCookieKillers(cookie, host));
