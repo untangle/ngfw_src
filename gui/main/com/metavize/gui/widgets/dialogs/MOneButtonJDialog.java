@@ -31,7 +31,6 @@ public class MOneButtonJDialog extends javax.swing.JDialog implements java.awt.e
 	init();
         this.setTitle(applianceName + " Warning");
         messageJLabel.setText("<html><center>" + warning + "</center></html>");
-        proceedJButton.setText("<html><b>Close</b> Warning</html>");
         this.setVisible(true);
     }
 

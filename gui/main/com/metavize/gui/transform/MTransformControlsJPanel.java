@@ -64,7 +64,9 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
         // SETUP EXPAND DIALOG
 	if(greyBackgroundImageIcon == null)
 	    greyBackgroundImageIcon = new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/metavize/gui/images/DarkGreyBackground1600x100.png"));
-        expandJDialog = new JDialog( Util.getMMainJFrame(), "expanded settings window", true);
+        expandJDialog = new JDialog( Util.getMMainJFrame(), 
+				     mTransformJPanel.getTransformContext().getMackageDesc().getDisplayName()
+				     + " (expanded settings window)", true);
         expandJDialog.setSize(MIN_SIZE);
         expandJDialog.addComponentListener( 
             new java.awt.event.ComponentAdapter() {
