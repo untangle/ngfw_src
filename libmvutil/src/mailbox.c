@@ -233,8 +233,6 @@ static void*   _mailbox_timed_get ( mailbox_t* mb, struct timespec* ts )
     if ( sem_timedwait( &mb->list_size_sem, ts ) != 0 ) {
         if (errno != ETIMEDOUT) {
             debug_backtrace( 0,  "sem_timedwait\n" );
-            errlog( ERR_CRITICAL, "sem_timedwait parameters: %d %ld %#010x\n", ts->tv_sec, 
-                    ts->tv_nsec, mb->list_size_sem );
             perrlog("sem_timedwait");
         }
         return NULL;

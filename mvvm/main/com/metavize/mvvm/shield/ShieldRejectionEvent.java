@@ -27,7 +27,8 @@ import com.metavize.mvvm.logging.LogEvent;
  */
 public class ShieldRejectionEvent extends LogEvent implements Serializable
 {
-    private InetAddress ip;
+    private InetAddress clientAddr;
+    private byte        clientIntf;
     private double      reputation;
     private int         mode;
     private int         limited;
@@ -42,10 +43,11 @@ public class ShieldRejectionEvent extends LogEvent implements Serializable
     {
     }
 
-    public ShieldRejectionEvent( InetAddress ip, double reputation, int mode, int limited, 
-                                 int rejected, int dropped )
+    public ShieldRejectionEvent( InetAddress clientAddr, byte clientIntf, double reputation, int mode, 
+                                 int limited, int dropped, int rejected )
     {
-        this.ip         = ip;
+        this.clientAddr = clientAddr;
+        this.clientIntf = clientIntf;
         this.reputation = reputation;
         this.mode       = mode;
         this.limited    = limited;
@@ -61,17 +63,34 @@ public class ShieldRejectionEvent extends LogEvent implements Serializable
      * @hibernate.property
      * type="com.metavize.mvvm.type.InetAddressUserType"
      * @hibernate.column
-     * name="IP"
+     * name="CLIENT_ADDR"
      * sql-type="inet"
      */
-    public InetAddress getIP()
+    public InetAddress getClientAddr()
     {
-        return ip;
+        return this.clientAddr;
     }
 
-    public void setIP( InetAddress ip )
+    public void setClientAddr( InetAddress clientAddr )
     {
-        this.ip = ip;
+        this.clientAddr = clientAddr;
+    }
+
+    /**
+     * Interface where all of the events were received.
+     *
+     * @return the identity of the user that generated the event
+     * @hibernate.property
+     * column="CLIENT_INTF"
+     */
+    public byte getClientIntf()
+    {
+        return this.clientIntf;
+    }
+
+    public void setClientIntf( byte clientIntf )
+    {
+        this.clientIntf = clientIntf;
     }
 
     /**

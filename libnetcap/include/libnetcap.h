@@ -700,32 +700,46 @@ typedef enum {
     NC_SHIELD_EVENT_STATISTIC
 } netcap_shield_event_type_t;
 
+typedef struct 
+{
+    int accepted;  // Number of accepted packets/sessions
+    int limited;   // Number of limited packets/sessions
+    int dropped;   // Number of dropped packets/sessions
+    int rejected;  // Number of rejected packets/sessions
+} netcap_shield_response_counters_t;
+
+typedef struct 
+{
+    netcap_shield_response_counters_t total;
+    netcap_shield_response_counters_t tcp;
+    netcap_shield_response_counters_t udp;
+    netcap_shield_response_counters_t icmp;    
+} netcap_shield_counters_t;
+
 typedef struct
 {
     netcap_shield_event_type_t type;
     
     union {
-        /* Bad behavior stats for one ip */
+        /* Bad behavior stats for one ip and its corresponding interface */
         struct {
             in_addr_t ip;
             double reputation;
             netcap_shield_mode_t mode;
+            netcap_intf_t client_intf;
             int limited;
             int dropped;
             int rejected;
         } rejection;
         
          /* These are statistics for the whole shield */
-        struct {
-            int accepted;     // Number of accepted packets/sessions
-            int limited;      // Number of limited packets/sessions
-            int dropped;      // Number of dropped packets/sessions
-            int rejected;     // Number of rejected packets/sessions
+        struct {            
+            netcap_shield_counters_t counters;
 
-            int relaxed;      // Number of ticks in the relaxed mode
-            int lax;          // Number of ticks in the lax mode
-            int tight;        // Number of ticks in the tight mode
-            int closed;       // Number of ticks in the closed mode
+            int relaxed;   // Number of ticks in the relaxed mode
+            int lax;       // Number of ticks in the lax mode
+            int tight;     // Number of ticks in the tight mode
+            int closed;    // Number of ticks in the closed mode
         } statistic;
     } data;
 } netcap_shield_event_data_t;

@@ -44,14 +44,18 @@ typedef enum {
 
 typedef struct {
     u_char if_print;
-    u_char tcp;
-    u_char udp;
-    u_char icmp;
+    u_char ans;
 } netcap_shield_response_t;
 
 typedef struct {
     netcap_shield_response_t ans;
 } shield_tls_t;
+
+typedef struct {
+    int limited;      /* Total number of requests given limited access */
+    int dropped;      /* Total number of dropped requests */    
+    int rejected;     /* Total number of requests that are rejected */
+} nc_shield_rejection_counter_t;
 
 typedef struct reputation {
     pthread_mutex_t mutex;
@@ -63,15 +67,9 @@ typedef struct reputation {
 #endif
     int             active_sessions;
     
-    uint             limited_sessions;      /* Total number of sessions given limited access */
-    uint             rejected_sessions;     /* Total number of sessions that are rejected */
-    uint             dropped_sessions;      /* Total number of dropped sessions */
-
-    struct {
-        uint limited_sessions;  /* Number of limited session the last log time */
-        uint rejected_sessions; /* Number of rejected session the last log time */
-        uint dropped_sessions;  /* Total number of dropped sessions */
-    } last_log;
+    /* These are the number of events since the last log event */
+    /* xxx terrible waste of space, but it is efficient */
+    nc_shield_rejection_counter_t counters[NC_INTF_MAX];
     
     nc_shield_rep_t rep;           /* The current reputation for the IP */
     netcap_load_t   evil_load;     /* Evil events per second */
@@ -88,7 +86,7 @@ typedef struct reputation {
 } nc_shield_reputation_t;
 
 /* Indicate if an IP should allowed in */
-netcap_shield_response_t* netcap_shield_rep_check        ( in_addr_t ip );
+netcap_shield_response_t* netcap_shield_rep_check        ( in_addr_t ip, int protocol, netcap_intf_t intf );
 
 int                       netcap_shield_rep_add_request  ( in_addr_t ip );
 
@@ -119,6 +117,6 @@ int nc_shield_reputation_update( nc_shield_reputation_t* reputation );
 int nc_shield_event_hook( netcap_shield_event_data_t* event );
 
 /* Add an session to the global stats */
-int nc_shield_stats_add_session( netcap_shield_ans_t response );
+int nc_shield_stats_add_session( int protocol, netcap_shield_ans_t response );
 
 #endif /* __NETCAP_SHIELD_H_ */

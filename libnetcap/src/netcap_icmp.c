@@ -65,7 +65,7 @@ static int _cache_packet( char* full_pkt, int full_pkt_len, mailbox_t* icmp_mb )
 
 static int _restore_cached_msg( mailbox_t* mb, netcap_icmp_msg_t* msg );
 
-static int _shield_check_reputation( netcap_pkt_t* pkt, in_addr_t ip );
+static int _shield_check_reputation( netcap_pkt_t* pkt, in_addr_t ip, netcap_intf_t intf );
 
 /** 
  * Retrieve an ICMP session using the packet as the key 
@@ -793,7 +793,7 @@ static _find_t _icmp_find_session( netcap_pkt_t* pkt, netcap_session_t** netcap_
         case ICMP_ECHO:
             if (( session = _icmp_get_tuple( pkt )) == NULL ) {
                 /* Check if this sessions should be allowed */
-                if ( _shield_check_reputation( pkt, pkt->src.host.s_addr ) < 0 ) {
+                if ( _shield_check_reputation( pkt, pkt->src.host.s_addr, pkt->src.intf ) < 0 ) {
                     ret = _FIND_DROP;
                     break;
                 }
@@ -832,7 +832,7 @@ static _find_t _icmp_find_session( netcap_pkt_t* pkt, netcap_session_t** netcap_
                 }
 
                 /* Check if this sessions should be allowed */
-                if ( _shield_check_reputation( pkt, session->cli.cli.host.s_addr ) < 0 ) {
+                if ( _shield_check_reputation( pkt, session->cli.cli.host.s_addr, session->cli.cli.intf ) < 0 ) {
                     ret = _FIND_DROP;
                     break;
                 }
@@ -884,7 +884,7 @@ static _find_t _icmp_find_session( netcap_pkt_t* pkt, netcap_session_t** netcap_
             }
 
             /* Check if this sessions should be allowed */
-            if ( _shield_check_reputation( pkt, session->cli.cli.host.s_addr ) < 0 ) {
+            if ( _shield_check_reputation( pkt, session->cli.cli.host.s_addr, session->cli.cli.intf ) < 0 ) {
                 ret = _FIND_DROP;
                 break;
             }
@@ -977,17 +977,17 @@ static int _cache_packet( char* full_pkt, int full_pkt_len, mailbox_t* icmp_mb )
     return 0;
 }
 
-static int _shield_check_reputation( netcap_pkt_t* pkt, in_addr_t ip )
+static int _shield_check_reputation( netcap_pkt_t* pkt, in_addr_t ip, netcap_intf_t intf )
 {
-    netcap_shield_response_t* ans;
+    netcap_shield_response_t* response;
     
-    if (( ans = netcap_shield_rep_check( ip )) == NULL ) {
+    if (( response = netcap_shield_rep_check( ip, IPPROTO_ICMP, intf )) == NULL ) {
         errlog ( ERR_CRITICAL, "netcap_shield_rep_check\n" );
     } else {
-        switch ( ans->icmp ) {
+        switch ( response->ans ) {
         case NC_SHIELD_DROP:
         case NC_SHIELD_RESET:
-            if ( ans->if_print ) {
+            if ( response->if_print ) {
                 debug( 4, "ICMP: Shield dropped packet: %s:%d -> %s:%d\n",
                        unet_next_inet_ntoa ( pkt->src.host.s_addr ), pkt->src.port, 
                        unet_next_inet_ntoa ( pkt->dst.host.s_addr ), pkt->dst.port );

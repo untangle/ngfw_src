@@ -31,10 +31,10 @@
 #define _NC_SHIELD_UPD_INTVL_USEC MSEC_TO_USEC( 50 )
 
 /* Generate a shield event every 6000 ticks (5 minutes at 50 milliseconds) */
-#define _NC_SHIELD_EVT_TICKS 6000
+// #define _NC_SHIELD_EVT_TICKS 6000
 
 /*  USE JUST FOR TESTING */
-// #define _NC_SHIELD_EVT_TICKS 200
+#define _NC_SHIELD_EVT_TICKS 200
 
 #define _EXCEED_MODE( MODE ) (( cpu_load      > cfg->limit.cpu_load. MODE )    || \
                               ( num_sessions  > cfg->limit.sessions.  MODE )     || \
@@ -54,19 +54,16 @@ static struct
     nc_shield_fence_t** fence;
     /* Number of ticks since generating the last event */
     int ticks;
-
-    /* This is the number of times in each mode since the last tick */
+    
+    netcap_shield_counters_t counters;
+    
     struct {
-        int accepted;
-        int limited;
-        int dropped;
-        int rejected;
-
+        /* This is the number of times in each mode since the last tick */
         int relaxed;
         int lax;
         int tight;
         int closed;
-    } counters;
+    } mode_ticks;
 } _shield_mode = {
     .is_alive 0,
     .cfg      NULL,
@@ -77,7 +74,7 @@ static struct
     
     .ticks    0,
 
-    .counters {
+    .mode_ticks {
         .relaxed 0,
         .lax     0,
         .tight   0,
@@ -134,14 +131,50 @@ int nc_shield_mode_cleanup( void )
     return 0;
 }
 
-int nc_shield_stats_add_session( netcap_shield_ans_t response )
+int nc_shield_stats_add_session( int protocol, netcap_shield_ans_t response )
 {
+    netcap_shield_response_counters_t* protocol_counter = NULL;
+    
     if ( _is_alive()) {
+        switch ( protocol ) {
+        case IPPROTO_TCP:
+            protocol_counter = &_shield_mode.counters.tcp;
+            break;
+            
+        case IPPROTO_UDP:
+            protocol_counter = &_shield_mode.counters.udp;
+            break;
+            
+        case IPPROTO_ICMP:
+            protocol_counter = &_shield_mode.counters.icmp;
+            break;
+            
+        default:
+            errlog( ERR_CRITICAL, "Unknown protocol: %d\n", protocol );
+            protocol_counter = NULL;
+        }
+
         switch ( response ) {
-        case NC_SHIELD_RESET:   _shield_mode.counters.rejected++; break;
-        case NC_SHIELD_DROP:    _shield_mode.counters.dropped++;  break;
-        case NC_SHIELD_LIMITED: _shield_mode.counters.limited++;  break;
-        case NC_SHIELD_YES:     _shield_mode.counters.accepted++; break;
+        case NC_SHIELD_RESET:
+            _shield_mode.counters.total.rejected++; 
+            if ( protocol_counter != NULL ) protocol_counter->rejected++;
+            break;
+            
+        case NC_SHIELD_DROP:
+            _shield_mode.counters.total.dropped++;  
+            if ( protocol_counter != NULL ) protocol_counter->dropped++;
+            break;
+            
+        case NC_SHIELD_LIMITED:
+            _shield_mode.counters.total.limited++;
+            if ( protocol_counter != NULL ) protocol_counter->limited++;
+            break;
+
+        case NC_SHIELD_YES:
+            _shield_mode.counters.total.accepted++;
+            if ( protocol_counter != NULL ) protocol_counter->accepted++;
+            break;
+
         default: 
             return errlog( ERR_CRITICAL, "Invalid response: %d\n", response );
         }
@@ -197,21 +230,21 @@ static int _update( nc_shield_cfg_t* cfg, nc_shield_reputation_t* root_rep,
     if ( _EXCEED_MODE( closed )) {
         *mode = NC_SHIELD_MODE_CLOSED;
         *fence = &cfg->fence.closed;
-        _shield_mode.counters.closed++;
+        _shield_mode.mode_ticks.closed++;
     } 
     else if ( _EXCEED_MODE( tight )) {
         *mode = NC_SHIELD_MODE_TIGHT;
         *fence = &cfg->fence.tight;
-        _shield_mode.counters.tight++;
+        _shield_mode.mode_ticks.tight++;
     } 
     else if ( _EXCEED_MODE( lax )) {
         *mode = NC_SHIELD_MODE_LAX;
         *fence = &cfg->fence.lax;
-        _shield_mode.counters.lax++;
+        _shield_mode.mode_ticks.lax++;
     } else {
         *mode = NC_SHIELD_MODE_RELAXED;
         *fence = &cfg->fence.relaxed;
-        _shield_mode.counters.relaxed++;
+        _shield_mode.mode_ticks.relaxed++;
     }
     
     return 0;
@@ -259,16 +292,13 @@ static int _event( void )
     event.type = NC_SHIELD_EVENT_STATISTIC;
 
     /* Response statistics */
-    event.data.statistic.accepted = _shield_mode.counters.accepted;
-    event.data.statistic.limited  = _shield_mode.counters.limited;
-    event.data.statistic.dropped  = _shield_mode.counters.dropped;
-    event.data.statistic.rejected = _shield_mode.counters.rejected;
+    memcpy( &event.data.statistic.counters, &_shield_mode.counters, sizeof( _shield_mode.counters ));
 
     /* Mode statistics */
-    event.data.statistic.relaxed  = _shield_mode.counters.relaxed;
-    event.data.statistic.lax      = _shield_mode.counters.lax;
-    event.data.statistic.tight    = _shield_mode.counters.tight;
-    event.data.statistic.closed   = _shield_mode.counters.closed;
+    event.data.statistic.relaxed  = _shield_mode.mode_ticks.relaxed;
+    event.data.statistic.lax      = _shield_mode.mode_ticks.lax;
+    event.data.statistic.tight    = _shield_mode.mode_ticks.tight;
+    event.data.statistic.closed   = _shield_mode.mode_ticks.closed;
     
     /* Call the shield event hook */
     if ( nc_shield_event_hook( &event ) < 0 )
@@ -281,6 +311,7 @@ static void _reset_counters()
 {
     /* Zero out all of the counters */
     bzero( &_shield_mode.counters, sizeof( _shield_mode.counters ));
+    bzero( &_shield_mode.mode_ticks, sizeof( _shield_mode.mode_ticks ));
     
     /* Reset the ticks */
     _shield_mode.ticks = 1;

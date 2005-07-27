@@ -19,7 +19,7 @@ public final class Shield
 
     private static final ShieldEventListener NULL_EVENT_LISTENER = new ShieldEventListener()
         {
-            public void rejectionEvent( InetAddress ip, double reputation, int mode, 
+            public void rejectionEvent( InetAddress ip, byte clientIntf, double reputation, int mode, 
                                         int limited, int dropped, int rejected )
             {
                 /* Null event listener nothing to do */
@@ -91,10 +91,10 @@ public final class Shield
     }
 
     /* This function is called from C to get into java */
-    private void callRejectionEventListener( long ip, double reputation, int mode, 
+    private void callRejectionEventListener( long ip, byte clientIntf, double reputation, int mode, 
                                              int limited, int dropped, int rejected )
     {
-        this.listener.rejectionEvent( Inet4AddressConverter.toAddress( ip ), reputation, mode, 
+        this.listener.rejectionEvent( Inet4AddressConverter.toAddress( ip ), clientIntf, reputation, mode, 
                                       limited, dropped, rejected );
     }
 

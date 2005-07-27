@@ -22,7 +22,7 @@
 
 #define _SHIELD_OBJ_STR          JP_BUILD_NAME( Shield )
 #define _SHIELD_METHOD_REJ_NAME  "callRejectionEventListener"
-#define _SHIELD_METHOD_REJ_DESC  "(JDIIII)V"
+#define _SHIELD_METHOD_REJ_DESC  "(JBDIIII)V"
 
 #define _SHIELD_METHOD_STAT_NAME "callStatisticEventListener"
 #define _SHIELD_METHOD_STAT_DESC "(IIIIIIII)V"
@@ -255,17 +255,18 @@ static void _event_hook ( netcap_shield_event_data_t* event )
     case NC_SHIELD_EVENT_REJECTION:
         (*env)->CallVoidMethod( env, _shield.object, _shield.call_listener_rejection_mid, 
                                 (jlong)event->data.rejection.ip,
+                                (jbyte)event->data.rejection.client_intf,
                                 (jdouble)event->data.rejection.reputation,
                                 event->data.rejection.mode, event->data.rejection.limited, 
                                 event->data.rejection.dropped, event->data.rejection.rejected );
         
         break;
     case NC_SHIELD_EVENT_STATISTIC:
-        (*env)->CallVoidMethod( env, _shield.object, _shield.call_listener_statistic_mid, 
-                                event->data.statistic.accepted,
-                                event->data.statistic.limited,
-                                event->data.statistic.dropped,
-                                event->data.statistic.rejected,
+        (*env)->CallVoidMethod( env, _shield.object, _shield.call_listener_statistic_mid,
+                                event->data.statistic.counters.total.accepted,
+                                event->data.statistic.counters.total.limited,
+                                event->data.statistic.counters.total.dropped,
+                                event->data.statistic.counters.total.rejected,
                                 event->data.statistic.relaxed,
                                 event->data.statistic.lax,
                                 event->data.statistic.tight,

@@ -19,6 +19,8 @@ import com.metavize.jnetcap.ShieldEventListener;
 
 import com.metavize.mvvm.MvvmContextFactory;
 
+import com.metavize.mvvm.argon.IntfConverter;
+
 public class ShieldMonitor implements ShieldEventListener
 {
     private static ShieldMonitor INSTANCE = null;
@@ -30,8 +32,9 @@ public class ShieldMonitor implements ShieldEventListener
     {        
     }
 
-    public void rejectionEvent( InetAddress ip, double reputation, int mode, int limited, int dropped,
-                                int rejected )
+    public void rejectionEvent( InetAddress ip, byte clientIntf, double reputation, int mode, 
+                                int limited, int dropped, int rejected )
+                                
     {
         if ( Thread.currentThread().getContextClassLoader() == null ) {
             Thread.currentThread().setContextClassLoader( getClass().getClassLoader());
@@ -40,7 +43,14 @@ public class ShieldMonitor implements ShieldEventListener
         logger.warn( "Shield limited session(s) from " + ip + " with reputation " + reputation +
                      " limited: " + limited + " dropped: " + dropped + " rejected: " + rejected  );
 
-        eventLogger.info( new ShieldRejectionEvent( ip, reputation, mode, limited, dropped, rejected ));
+        try {
+            clientIntf = IntfConverter.toArgon( clientIntf );
+            
+            eventLogger.info( new ShieldRejectionEvent( ip, clientIntf, reputation, mode, limited, dropped, 
+                                                        rejected ));
+        } catch ( IllegalArgumentException e ) {
+            logger.warn( "Invalid interface for shield rejection event: " + clientIntf );
+        }
     }
     
     public void statisticEvent( int accepted, int limited, int dropped, int rejected, int relaxed,

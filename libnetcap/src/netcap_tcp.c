@@ -119,7 +119,7 @@ int  netcap_tcp_callback ( netcap_session_t* netcap_sess, netcap_callback_action
 
 int  netcap_tcp_syn_hook ( netcap_pkt_t* syn )
 {
-    netcap_shield_response_t* ans;
+    netcap_shield_response_t* response;
 
     if ( syn == NULL )
         return errlogargs();
@@ -146,17 +146,18 @@ int  netcap_tcp_syn_hook ( netcap_pkt_t* syn )
     /**
      * Check the reputation
      */
-    if (( ans = netcap_shield_rep_check ( syn->src.host.s_addr )) == NULL ) {
+    response = netcap_shield_rep_check ( syn->src.host.s_addr, IPPROTO_TCP, syn->src.intf );
+    if ( response == NULL ) {
         errlog( ERR_WARNING, "netcap_shield_rep_check\n" );
         return netcap_pkt_action_raze( syn, NF_ACCEPT );
     }
     
-    switch( ans->tcp ) {
+    switch( response->ans ) {
     case NC_SHIELD_YES:
         break;
 
     case NC_SHIELD_LIMITED:
-        if ( ans->if_print ) {
+        if ( response->if_print ) {
             debug( 4, "TCP: Session in opaque mode: %s:%d -> %s:%d\n", 
                    unet_next_inet_ntoa ( syn->src.host.s_addr ), syn->src.port,
                    unet_next_inet_ntoa ( syn->dst.host.s_addr ), syn->dst.port );
@@ -169,16 +170,16 @@ int  netcap_tcp_syn_hook ( netcap_pkt_t* syn )
         }
         /* fallthrough */
     case NC_SHIELD_DROP:
-        if ( ans->if_print ) {
+        if ( response->if_print ) {
             debug( 4, "TCP: SYN packet %s: %s:%d -> %s:%d\n",
-                   ( ans->tcp == NC_SHIELD_RESET ) ? "reset" : "dropped",
+                   ( response->ans == NC_SHIELD_RESET ) ? "reset" : "dropped",
                    unet_next_inet_ntoa( syn->src.host.s_addr ), syn->src.port,
                    unet_next_inet_ntoa( syn->dst.host.s_addr ), syn->dst.port );
         }
         return netcap_pkt_action_raze( syn, NF_DROP );
         
     default:
-        errlog( ERR_WARNING, "netcap_shield_rep_check: invalid verdict: %d\n", ans );
+        errlog( ERR_WARNING, "netcap_shield_rep_check: invalid verdict: %d\n", response->ans );
         return netcap_pkt_action_raze( syn, NF_ACCEPT );
     }
     

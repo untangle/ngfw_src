@@ -17,14 +17,16 @@ public interface ShieldEventListener
 {
     /** 
      * ip:         Ip that was limited, rejected or dropped
+     * clientIntf: Interface where the events where generated
      * reputation: Current reputation of the IP.
      * mode:       Mode was in at the time of the rejection.
      * limited:    Number of limited responses since the last event.
      * rejected:   Number of rejected responses since the last event.
      * dropped:    Number of dropped sessions since the last event.
      */
-    void rejectionEvent( InetAddress ip, double reputation, int mode, int limited, int dropped, 
-                         int rejected  );
+    void rejectionEvent( InetAddress ip, byte clientIntf, double reputation, int mode, int limited,
+                         int dropped, int rejected );
+                         
 
     /**
      * Event triggered to log statistics

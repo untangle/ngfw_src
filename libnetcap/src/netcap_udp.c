@@ -209,7 +209,7 @@ int  netcap_udp_call_hooks (netcap_pkt_t* pkt, void* arg)
     int full_pkt_len;
     mailbox_t* mb = NULL;
     mailbox_t* icmp_mb = NULL;
-    netcap_shield_response_t* ans;
+    netcap_shield_response_t* response;
 
     /* If the packet was queued (non-zero id), dequeue it */
     if ( pkt == NULL ) {
@@ -234,15 +234,16 @@ int  netcap_udp_call_hooks (netcap_pkt_t* pkt, void* arg)
             errlog ( ERR_CRITICAL, "netcap_shield_rep_add_session\n" );
         }
         
-        if (( ans = netcap_shield_rep_check( pkt->src.host.s_addr )) == NULL ) {
+        response = netcap_shield_rep_check( pkt->src.host.s_addr, IPPROTO_UDP, pkt->src.intf );
+        if ( response == NULL ) {
             errlog ( ERR_CRITICAL, "netcap_shield_rep_check\n" );
         } else {
-            switch ( ans->udp ) {
+            switch ( response->ans ) {
             case NC_SHIELD_DROP:
             case NC_SHIELD_RESET:
                 netcap_pkt_raze ( pkt );
                 SESSTABLE_UNLOCK();
-                if ( ans->if_print ) {
+                if ( response->if_print ) {
                     unet_reset_inet_ntoa();
                     debug( 4, "UDP: Shield rejected session: %s:%d -> %s:%d\n", 
                            unet_next_inet_ntoa ( pkt->src.host.s_addr ), pkt->src.port, 
@@ -353,17 +354,19 @@ int  netcap_udp_call_hooks (netcap_pkt_t* pkt, void* arg)
             SESSTABLE_UNLOCK();
             return 0;
         }
+        
+        response = netcap_shield_rep_check( session->cli.cli.host.s_addr, IPPROTO_UDP, session->cli.cli.intf );
 
-        if (( ans = netcap_shield_rep_check( session->cli.cli.host.s_addr )) == NULL ) {
+        if ( response == NULL ) {
             errlog( ERR_CRITICAL, "netcap_shield_rep_check\n" );
         } else {
-            switch ( ans->udp ) {
+            switch ( response->ans ) {
             case NC_SHIELD_DROP:
             case NC_SHIELD_RESET:
             case NC_SHIELD_LIMITED:
                 netcap_pkt_raze ( pkt );
                 SESSTABLE_UNLOCK();
-                if ( ans->if_print ) {
+                if ( response->if_print ) {
                     unet_reset_inet_ntoa();
                     debug( 4, "UDP: Shield rejected packet: %s:%d -> %s:%d\n", 
                            unet_next_inet_ntoa( session->cli.cli.host.s_addr ), session->cli.cli.port, 

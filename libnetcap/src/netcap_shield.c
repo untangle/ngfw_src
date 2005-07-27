@@ -117,8 +117,11 @@ static int             _reputation_update   ( nc_shield_reputation_t* rep, int c
 static nc_shield_rep_t _reputation_eval     ( netcap_trie_item_t* item );
 static int             _reputation_init     ( netcap_trie_item_t* item, in_addr_t ip );
 static void            _reputation_destroy  ( netcap_trie_item_t* item );
-static netcap_shield_ans_t _put_in_fence    ( nc_shield_fence_t* fence, nc_shield_rep_t rep_val );
+static netcap_shield_ans_t _put_in_fence    ( nc_shield_fence_t* fence, nc_shield_rep_t rep_val, 
+                                              nc_shield_reputation_t* rep, int protocol );
 
+static void _report_intf_event( netcap_intf_t intf, netcap_shield_event_data_t* event, 
+                                nc_shield_rejection_counter_t* counter );
 
 static __inline__ nc_shield_fence_t* _get_fence( int mode )
 {
@@ -131,11 +134,17 @@ static __inline__ nc_shield_fence_t* _get_fence( int mode )
     return errlog_null( ERR_CRITICAL, "Invalid mode: %d\n", mode );
 }
 
-static __inline__ int _check_if_print( in_addr_t ip, nc_shield_reputation_t* rep, netcap_shield_response_t* response )
+static int _check_if_print( in_addr_t ip, nc_shield_reputation_t* rep, netcap_shield_response_t* response )
 {
     int ret = 0;
+    int c;
     netcap_shield_event_data_t event;
-    int tmp;
+
+    /* Never print for the YES responses */
+    if ( response->ans == NC_SHIELD_YES ) {
+        response->if_print = 0;
+        return 0;
+    }
 
     if ( rep->print_load.load > _shield.cfg.print_rate ) {
         response->if_print = 0;
@@ -149,27 +158,15 @@ static __inline__ int _check_if_print( in_addr_t ip, nc_shield_reputation_t* rep
          * value */
         if ((volatile double)(rep->print_load.load) <  _shield.cfg.print_rate ) {
             bzero( &event, sizeof( event ));
-
             event.type                      = NC_SHIELD_EVENT_REJECTION;
             event.data.rejection.ip         = ip;
             event.data.rejection.reputation = rep->rep;
             event.data.rejection.mode       = _shield.mode;
+
+            for (  c = 1 ; c <= NC_INTF_MAX ; c++ ) {
+                _report_intf_event((netcap_intf_t)c, &event, &rep->counters[c-1] );
+            }
             
-            tmp  = rep->limited_sessions - rep->last_log.limited_sessions;
-            event.data.rejection.limited    =  ( tmp > 0 ) ? tmp : 0;
-
-            tmp = rep->rejected_sessions - rep->last_log.rejected_sessions;
-            event.data.rejection.rejected   = ( tmp > 0 ) ? tmp : 0;
-
-            tmp  = rep->dropped_sessions - rep->last_log.dropped_sessions;
-            event.data.rejection.dropped    = ( tmp > 0 ) ? tmp : 0;
-
-            _shield.event_hook( &event );
-
-            rep->last_log.limited_sessions  = rep->limited_sessions;
-            rep->last_log.rejected_sessions = rep->rejected_sessions;
-            rep->last_log.dropped_sessions  = rep->dropped_sessions;
-
             netcap_load_update( &rep->print_load, 1, 1 );
             /* In some cases one event will not put the print load high enough */
             if ( rep->print_load.load < _shield.cfg.print_rate ) {
@@ -279,14 +276,13 @@ int netcap_shield_cleanup ( void )
 }
 
 /* Indicate if an IP should allowed in */
-netcap_shield_response_t* netcap_shield_rep_check        ( in_addr_t ip )
+netcap_shield_response_t* netcap_shield_rep_check        ( in_addr_t ip, int protocol, netcap_intf_t intf )
 { 
     netcap_trie_item_t* item = NULL;
     _apply_func_t func = { .func _reputation_update, .arg NULL };
     netcap_shield_mode_t mode;    
     nc_shield_rep_t rep_val;
-    netcap_shield_ans_t ans = NC_SHIELD_YES;
-    nc_shield_reputation_t*  rep;
+    nc_shield_reputation_t*  rep = NULL;
     nc_shield_fence_t* fence = NULL;
     netcap_shield_response_t* response = NULL;
 
@@ -294,22 +290,14 @@ netcap_shield_response_t* netcap_shield_rep_check        ( in_addr_t ip )
     
     /* If the shield is not enabled return true */
     if ( !_shield.enabled ) {
-        response->tcp      = NC_SHIELD_YES;
-        response->udp      = NC_SHIELD_YES;
-        response->icmp     = NC_SHIELD_YES;
+        response->ans      = NC_SHIELD_YES;
         response->if_print = 1;
         return response;
     }
 
     do {
-        rep = _shield.root;
-
-        /* Update the mode, and the current overall shield mode */
+        /* Get the current shield mode */
         mode = _shield.mode;
-
-        // if (( mode = _shield.mode = _mode_eval()) < 0 ) {
-        // return errlog_null ( ERR_CRITICAL, "_mode_eval\n" );
-        // }
         
         /* If things are really bad, do not let anything in */
         if ( mode == NC_SHIELD_MODE_CLOSED ) { 
@@ -342,47 +330,27 @@ netcap_shield_response_t* netcap_shield_rep_check        ( in_addr_t ip )
         rep_val = rep_val *  fence->inheritance;
     }
     
-    ans = _put_in_fence ( fence, rep_val );
+    response->ans = _put_in_fence( fence, rep_val, rep, protocol );
     
-    /* XXX Could add a mutex ??? for the ++, but the information is not critical, just for debugging */
-    switch ( ans ) {
-    case NC_SHIELD_LIMITED: rep->limited_sessions++;  break;
-    case NC_SHIELD_DROP:    rep->dropped_sessions++;  break;
-    case NC_SHIELD_RESET:   rep->rejected_sessions++; break;
-    default: break;
-    }
-    
-    nc_shield_rep_t prob;
-
-    if ( ans == NC_SHIELD_YES ) {
-        if ( rep->icmp_chk_load.load > _shield.cfg.mult.icmp_chk_load ) {
-            prob = ( rand() + 0.0 ) / RAND_MAX;
-            if ( prob < ( _shield.cfg.mult.icmp_chk_load / rep->icmp_chk_load.load )) {
-                response->icmp = NC_SHIELD_YES;
-            } else {
-                rep->dropped_sessions++;
-                response->icmp = NC_SHIELD_DROP;
-            }
-        } else {
-            response->icmp = NC_SHIELD_YES;
-        }
+    /* xxx Could add a mutex for the ++, but the information is not critical, just for logging/debugging */
+    if ( intf < 1 || intf > NC_INTF_MAX ) {
+        errlog( ERR_CRITICAL, "Unable to track session for interface %d\n", intf );
     } else {
-        response->icmp = ans;
+        switch ( response->ans ) {
+        case NC_SHIELD_LIMITED: rep->counters[intf-1].limited++;  break;
+        case NC_SHIELD_DROP:    rep->counters[intf-1].dropped++;  break;
+        case NC_SHIELD_RESET:   rep->counters[intf-1].rejected++; break;
+        default: break;
+        }
     }
-
-
+    
     response->if_print = 0;
+    
+    _check_if_print( ip, rep, response );
         
-    if ( ans != NC_SHIELD_YES || response->icmp != NC_SHIELD_YES ) {
-        _check_if_print( ip, rep, response );
-        
+    if ( nc_shield_stats_add_session( protocol, response->ans ) < 0 ) {
+        errlog( ERR_CRITICAL, "nc_shield_stats_add_session\n" );
     }
-    
-    /* XXX For now set TCP and UDP the same. */
-    response->tcp = ans;
-    response->udp = ans;
-    
-    if ( nc_shield_stats_add_session( ans ) < 0 ) errlog( ERR_CRITICAL, "nc_shield_stats_add_session\n" );
 
     return response;
 }
@@ -819,13 +787,9 @@ static int  _reputation_init     ( netcap_trie_item_t* item, in_addr_t ip )
     if ( rep->rep < 0 ) rep->rep = 0;
 
     rep->active_sessions   = 0;
-    rep->limited_sessions  = 0;
-    rep->rejected_sessions = 0;
-    rep->dropped_sessions  = 0;
 
-    rep->last_log.limited_sessions  = 0;
-    rep->last_log.rejected_sessions = 0;
-    rep->last_log.dropped_sessions  = 0;
+    /* Reset all of the counters */
+    bzero( &rep->counters, sizeof( rep->counters ));
 
     if (( fence = _get_fence( _shield.mode )) == NULL ) {
         ret = errlog( ERR_CRITICAL, "_get_fence\n" );
@@ -900,7 +864,8 @@ static void _reputation_destroy  ( netcap_trie_item_t* item )
 #endif // _TRIE_DEBUG_PRINT
 }
 
-static netcap_shield_ans_t _put_in_fence  ( nc_shield_fence_t* fence, nc_shield_rep_t rep_val )
+static netcap_shield_ans_t _put_in_fence  ( nc_shield_fence_t* fence, nc_shield_rep_t rep_val, 
+                                            nc_shield_reputation_t*  rep, int protocol )
 {
     nc_shield_rep_t prob;
     netcap_shield_ans_t ans = NC_SHIELD_DROP;
@@ -915,6 +880,20 @@ static netcap_shield_ans_t _put_in_fence  ( nc_shield_fence_t* fence, nc_shield_
         ans = ( prob < fence->limited.prob ) ? NC_SHIELD_LIMITED : NC_SHIELD_YES;
     } else {
         ans = NC_SHIELD_YES;
+    }
+
+    /* ICMP is always rate limited and handled slightly differently */
+    if ( ans == NC_SHIELD_YES && protocol == IPPROTO_ICMP ) {
+        if ( rep->icmp_chk_load.load > _shield.cfg.mult.icmp_chk_load ) {
+            prob = ( rand() + 0.0 ) / RAND_MAX;
+            if ( prob < ( _shield.cfg.mult.icmp_chk_load / rep->icmp_chk_load.load )) {
+                ans = NC_SHIELD_YES;
+            } else {
+                ans = NC_SHIELD_DROP;
+            }
+        } else {
+            ans = NC_SHIELD_YES;
+        }
     }
     
     return ans;
@@ -933,6 +912,27 @@ static void            _null_event_hook     ( netcap_shield_event_data_t* data )
     /* Null hook */
 }
 
+static void _report_intf_event( netcap_intf_t intf, netcap_shield_event_data_t* event, 
+                                nc_shield_rejection_counter_t* counter )
+{
+    int tmp;
+
+    if ( counter->limited > 0 || counter->rejected > 0 || counter->dropped > 0 ) {
+        event->data.rejection.client_intf = intf;
+        tmp = counter->limited;
+        event->data.rejection.limited     = ( tmp > 0 ) ? tmp : 0;
+
+        tmp = counter->dropped;
+        event->data.rejection.dropped     = ( tmp > 0 ) ? tmp : 0;
+
+        tmp = counter->rejected;
+        event->data.rejection.rejected    = ( tmp > 0 ) ? tmp : 0;
+        
+        _shield.event_hook( event );
+    }
+
+    bzero( counter, sizeof( nc_shield_rejection_counter_t ));
+}
 
 #ifdef _TRIE_DEBUG_PRINT
 static int  _status             ( int conn, struct sockaddr_in *dst_addr )
@@ -997,7 +997,7 @@ static int  _status             ( int conn, struct sockaddr_in *dst_addr )
                              rep->udp_chk_load.load, rep->udp_chk_load.total,
                              rep->icmp_chk_load.load, rep->icmp_chk_load.total,
                              rep->byte_load.load, rep->byte_load.total,
-                            rep->rejected_sessions, rep->limited_sessions );
+                             rep->counters[0].rejected, rep->counters[0].limited );
         if ( sendto( conn, buf, msg_len, 0, dst_addr, sizeof( struct sockaddr_in )) < 0 ) {
             return perrlog ( "sendto" );
         }

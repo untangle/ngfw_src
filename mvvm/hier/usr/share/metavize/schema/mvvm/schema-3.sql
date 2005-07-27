@@ -218,12 +218,13 @@ CREATE TABLE events.pl_stats (
 -- com.metavize.mvvm.shield.ShieldRejectionEvent
 CREATE TABLE events.shield_rejection_evt (
     event_id int8 NOT NULL,
-    ip inet,
+    client_addr inet,
+    client_intf int2,
     reputation float8,
     mode int4,
     limited int4,
-    rejected int4,
     dropped int4,
+    rejected int4,
     time_stamp timestamp,
     PRIMARY KEY (event_id));
 
