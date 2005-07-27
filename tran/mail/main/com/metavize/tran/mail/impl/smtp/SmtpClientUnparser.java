@@ -22,44 +22,52 @@ import com.metavize.tran.token.*;
 import com.metavize.tran.util.*;
 import org.apache.log4j.Logger;
 
-public class SmtpClientUnparser
-  extends AbstractUnparser {
+/**
+ * ...name says it all...
+ */
+class SmtpClientUnparser
+  extends SmtpUnparser {
 
   private final Logger m_logger = Logger.getLogger(SmtpClientUnparser.class);
-
-  private final SmtpCasing m_parentCasing;
   private final TransactionTracker m_tracker;
 
-  public SmtpClientUnparser(TCPSession session,
+  SmtpClientUnparser(TCPSession session,
     SmtpCasing parent,
     TransactionTracker tracker) {
-    super(session, true);
+    super(session, parent, true);
     m_logger.debug("Created");
-    m_parentCasing = parent;
     m_tracker = tracker;
   }
 
 
   public UnparseResult unparse(Token token)
     throws UnparseException {
-    m_logger.debug("Token of class " + token.getClass().getName());
+    
+    m_logger.debug("unparse token of type " + (token==null?"null":token.getClass().getName()));
+
+    //-----------------------------------------------------------
+    if(token instanceof PassThruToken) {
+      m_logger.debug("Received PASSTHRU token");
+      declarePassthru();//Inform the parser of this state
+      return UnparseResult.NONE;
+    }
+
+    //-----------------------------------------------------------
     if(token instanceof MetadataToken) {
       //Don't pass along metadata tokens
       return UnparseResult.NONE;
     }
+
+    //-----------------------------------------------------------
     if(token instanceof Response) {
       Response resp = (Response) token;
+      m_tracker.responseReceived(resp);
       m_logger.debug("Unparsing response with code " +
         resp.getCode() + " and " + resp.getArgs().length + " lines");
     }
 
-    m_parentCasing.traceUnparse(token.getBytes());
+    getSmtpCasing().traceUnparse(token.getBytes());
     return new UnparseResult(token.getBytes());
   }
 
-  public TCPStreamer endSession() {
-    m_logger.debug("End Session");
-    m_parentCasing.endSession(false);
-    return null;
-  }
 }

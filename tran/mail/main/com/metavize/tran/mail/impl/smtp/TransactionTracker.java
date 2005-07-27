@@ -30,6 +30,8 @@ class TransactionTracker {
 
   TransactionTracker() {
     m_outstandingRequests = new LinkedList<ResponseAction>();
+    //Add response for initial salutation
+    m_outstandingRequests.add(new ResponseAction());    
   }
 
   /**
@@ -43,8 +45,7 @@ class TransactionTracker {
   void beginMsgTransmission() {
     getOrCreateTransaction();
     m_outstandingRequests.add(new TransmissionResponseAction());
-    //Add response for initial salutation
-    m_outstandingRequests.add(new ResponseAction());
+
   }
   
   void commandReceived(Command command) {

@@ -86,6 +86,10 @@ public abstract class AbstractParser implements Parser
         session.cancelTimer();
     }
 
+    protected boolean isClientSide() {
+      return clientSide;
+    }
+
     // no-ops methods ---------------------------------------------------------
 
     public void handleTimer() { }

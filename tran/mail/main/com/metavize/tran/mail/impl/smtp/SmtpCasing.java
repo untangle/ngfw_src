@@ -24,8 +24,8 @@ public class SmtpCasing extends AbstractCasing {
 
   private final Logger m_logger = Logger.getLogger(SmtpCasing.class);
 
-  private final Parser m_parser;
-  private final Unparser m_unparser;
+  private final SmtpParser m_parser;
+  private final SmtpUnparser m_unparser;
 
   private static final boolean TRACE = true;
 
@@ -62,6 +62,18 @@ public class SmtpCasing extends AbstractCasing {
         m_channel = null;
       }
     }
+  }
+
+  /**
+   * Callback from either parser or unparser,
+   * indicating that we are entering passthru mode.
+   * This is required as the passthru token may only
+   * flow in one direction.  The casing will ensure that
+   * both parser and unparser enter passthru.
+   */
+  protected void passthru() {
+    m_parser.passthru();
+    m_unparser.passthru();
   }
 
   private static File s_traceRoot;

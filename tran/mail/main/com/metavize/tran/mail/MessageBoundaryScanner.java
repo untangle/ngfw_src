@@ -139,6 +139,8 @@ public class MessageBoundaryScanner {
    * @param buf the buffer to scan
    * @param maxHeaderLineSz the max header line size
    *
+   * @return true if end of headers encountered
+   *
    * @exception LineTooLongException if a terminated line
    *            could not be found in the first
    *            maxHeaderLineSz bytes
@@ -261,24 +263,27 @@ public class MessageBoundaryScanner {
    * Process a body chunk, moving bytes from
    * source to sink.  Look for lines to 
    * "dot escape" as well as the terminator.
-   * <br>
+   * <br><br>
    * If this method returns false, data may be
    * left in the buffer.  This is a simplification,
    * in case the last few bytes were candidates
    * for a significant sequence (please use
    * some magic to cause them to come back to this object
    * on the next read).
-   * <br>
+   * <br><br>
    * A return of true indicates that we found the
    * end.  If true is returned, the source is positioned 
    * just after the "CRLF.CRLF" sequence.
    * Sink should be as big as the source, although
    * it may be underfilled by "dot escaped"
    * lines or the terminator.
-   * <br>
+   * <br><br>
+   * The sink is <b>not</b>flipped when this method returns.
+   * <br><br>
    * <b>Do not call this method again
    * after the end was found (i.e. when
-   * state is DONE).
+   * state is DONE).</b>
+   * 
    *
    * @param source the source
    * @param sink the sink

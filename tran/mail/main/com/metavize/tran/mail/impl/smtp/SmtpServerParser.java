@@ -11,10 +11,9 @@
 
 package com.metavize.tran.mail.impl.smtp;
 
-import static com.metavize.tran.util.Ascii.*;
-import static com.metavize.tran.util.BufferUtil.*;
 
-import com.metavize.tran.mail.papi.smtp.*;
+import com.metavize.tran.mail.papi.smtp.ResponseParser;
+import com.metavize.tran.mail.papi.smtp.Response;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -29,36 +28,41 @@ import com.metavize.tran.token.*;
 import com.metavize.tran.util.*;
 import org.apache.log4j.Logger;
 
+/**
+ * ...name says it all...
+ */
+class SmtpServerParser
+  extends SmtpParser {
 
-public class SmtpServerParser
-  extends AbstractParser {
-
-  private final Pipeline pipeline;
   private final Logger m_logger = Logger.getLogger(SmtpServerParser.class);
-
-  private final SmtpCasing m_parentCasing;
   private ResponseParser m_parser = new ResponseParser();
   
-  public SmtpServerParser(TCPSession session,
+  SmtpServerParser(TCPSession session,
     SmtpCasing parent) {
-    super(session, false);
+    super(session, parent, false);
+    
     m_logger.debug("Created");
-    m_parentCasing = parent;
     lineBuffering(false);
-    pipeline = MvvmContextFactory.context().
-      pipelineFoundry().getPipeline(session.id());
   }
   
   public ParseResult parse(ByteBuffer buf) 
     throws ParseException {
-    m_logger.debug("**DEBUG*** Parse");
+    m_logger.debug("parse");
 
+    //Trace stuff
+    getSmtpCasing().traceParse(buf);
+    
+    //Check for passthru
+    if(isPassthru()) {
+      return new ParseResult(new Chunk(buf));
+    }
+
+    //Duplicate the buffer, so if we have an exception we can enter passthru
+    //mode.    
     ByteBuffer dup = buf.duplicate();
-    
-    m_parentCasing.traceParse(buf);
-    
-    List<Token> toks = new ArrayList<Token>();
 
+        
+    List<Token> toks = new ArrayList<Token>();
     boolean done = false;
     
     while(buf.hasRemaining() && ! done) {
@@ -75,27 +79,19 @@ public class SmtpServerParser
         }
       }
       catch(Exception ex) {
-        //TODO bscott figure out how to recover
         //TODO bscott recover anything trapped in the parser
         m_logger.error("Exception parsing server response", ex);
         m_parser = null;
-        //TODO bscott Go into passthru mode?
-        return new ParseResult(new Chunk(dup));
+        declarePassthru();
+        toks.clear();//Could truncate some stuff, but I suspect we're already hosed anyway.
+        toks.add(PassThruToken.PASSTHRU);
+        toks.add(new Chunk(dup));
+        return new ParseResult(toks);
       }
     }
 
-    if(buf.hasRemaining()) {
-      buf.compact();
-      if(buf.position() > 0 && buf.remaining() < 1024/*TODO bscott a real value*/) {
-        ByteBuffer b = ByteBuffer.allocate(buf.capacity() + 1024);
-        buf.flip();
-        b.put(buf);
-        buf = b;
-      }
-    }
-    else {
-      buf = null;
-    }
+    //Compact the buffer
+    buf = compactIfNotEmpty(buf);
     
     if(buf == null) {
       m_logger.debug("returning ParseResult with " +
@@ -108,17 +104,5 @@ public class SmtpServerParser
     return new ParseResult(toks, buf);
   }
                   
-  public ParseResult parseEnd(ByteBuffer chunk)
-    throws ParseException {
-    if (chunk.hasRemaining()) {
-      m_logger.warn("data trapped in read buffer: "
-        + AsciiCharBuffer.wrap(chunk));
-    }
-    return new ParseResult();       
-  }
-  public TokenStreamer endSession() {
-    m_logger.debug("End Session");
-    m_parentCasing.endSession(true);
-    return null;
-  }
+
 }

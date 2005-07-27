@@ -630,7 +630,12 @@ public abstract class BufferingSessionHandler
   
             if(tooBig || (timedOut && !isBufferAndTrickle())) {
               //Passthru DATA Sent
-              m_txLog.add("Mail too big or timed-out w/o needing to buffer");
+              if(tooBig) {
+                m_txLog.add("Mail too big for scanning.  Begin trickle");
+              }
+              else {
+                m_txLog.add("Mail timed-out w/o needing to buffer (trickle, not buffer-and-trickle)");
+              }
               //Disable tokens from client until we get the disposition to the DATA command
               actions.disableClientTokens();
               //Send the DATA command to the server

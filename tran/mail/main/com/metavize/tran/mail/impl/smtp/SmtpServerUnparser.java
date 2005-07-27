@@ -31,64 +31,76 @@ import com.metavize.tran.token.*;
 import com.metavize.tran.util.*;
 import org.apache.log4j.Logger;
 
-public class SmtpServerUnparser
-  extends AbstractUnparser {
+/**
+ * ...name says it all...
+ */
+class SmtpServerUnparser
+  extends SmtpUnparser {
 
   private final Logger m_logger = Logger.getLogger(SmtpServerUnparser.class);
-  private final Pipeline m_pipeline;
-
-  private final SmtpCasing m_parentCasing;
 
   private ByteBufferByteStuffer m_byteStuffer;
 
-  public SmtpServerUnparser(TCPSession session,
+  SmtpServerUnparser(TCPSession session,
     SmtpCasing parent) {
-    super(session, false);
+    super(session, parent, false);
     m_logger.debug("Created");
-    m_parentCasing = parent;
-    m_pipeline = MvvmContextFactory.context().
-      pipelineFoundry().getPipeline(session.id());
-
-    //TODO bscott for classloader
-    CompleteMIMEToken cmt = new CompleteMIMEToken(null, null);
-
   }
 
 
   public UnparseResult unparse(Token token)
     throws UnparseException {
+    
     m_logger.debug("unparse token of type " + (token==null?"null":token.getClass().getName()));
 
+    //-----------------------------------------------------------
     if(token instanceof PassThruToken) {
-      m_logger.error("Received PASSTHRU token");
-      return new UnparseResult(token.getBytes());
+      m_logger.debug("Received PASSTHRU token");
+      declarePassthru();//Inform the parser of this state
+      return UnparseResult.NONE;
     }
+
+    //-----------------------------------------------------------
+    if(token instanceof MetadataToken) {
+      //Don't pass along metadata tokens
+      return UnparseResult.NONE;
+    }    
+
+    //-----------------------------------------------------------
     if(token instanceof MAILCommand) {
       MAILCommand mc = (MAILCommand) token;
       m_logger.debug("Received MAIL Commandfor address \"" +
         mc.getAddress() + "\"");
     }
+
+    //-----------------------------------------------------------
     if(token instanceof RCPTCommand) {
       RCPTCommand mc = (RCPTCommand) token;
       m_logger.debug("Received RCPT Commandfor address \"" +
         mc.getAddress() + "\"");
     }
+
+    //-----------------------------------------------------------
     if(token instanceof Command) {
       m_logger.debug("Received Command \"" +
         (((Command) token).getType()) + "\" to pass");
 
       ByteBuffer buf = token.getBytes();
-      m_parentCasing.traceUnparse(buf);
+      getSmtpCasing().traceUnparse(buf);
       return new UnparseResult(buf);
     }
+
+    //-----------------------------------------------------------
     if(token instanceof BeginMIMEToken) {
       m_logger.debug("Received BeginMIMEToken to pass");
       ByteBuffer buf = token.getBytes();
-      m_parentCasing.traceUnparse(buf);
+      getSmtpCasing().traceUnparse(buf);
       m_byteStuffer = new ByteBufferByteStuffer();
       m_byteStuffer.advancePastHeaders();
       return new UnparseResult(buf);
     }
+
+    //-----------------------------------------------------------
     if(token instanceof CompleteMIMEToken) {
       m_logger.debug("Received CompleteMIMEToken to pass");
       //TODO bscott Fix this hack once we talk to Aaron
@@ -117,7 +129,7 @@ public class SmtpServerUnparser
       return new UnparseResult(((CompleteMIMEToken) token).toTCPStreamer(m_pipeline));
 */       
     }    
-
+    //-----------------------------------------------------------
     if(token instanceof ContinuedMIMEToken) {
       boolean last = ((ContinuedMIMEToken) token).isLast();
       ByteBuffer buf = token.getBytes();
@@ -127,33 +139,28 @@ public class SmtpServerUnparser
 
       ByteBuffer sink = ByteBuffer.allocate(buf.remaining());
       m_byteStuffer.transfer(buf, sink);
-//      sink.flip();
-      m_logger.debug("After stuffing, wound up with: " + sink.remaining() + " bytes");
+      m_logger.debug("After byte stuffing, wound up with: " + sink.remaining() + " bytes");
       if(last) {
         ByteBuffer remainder = m_byteStuffer.getLast(true);
-        m_parentCasing.traceUnparse(sink);
-        m_parentCasing.traceUnparse(remainder);
+        getSmtpCasing().traceUnparse(sink);
+        getSmtpCasing().traceUnparse(remainder);
         return new UnparseResult(new ByteBuffer[] {sink, remainder});
       }
       else {
-        m_parentCasing.traceUnparse(sink);
+        getSmtpCasing().traceUnparse(sink);
         return new UnparseResult(sink);
       }
     }
+    //-----------------------------------------------------------
     if(token instanceof Chunk) {
       ByteBuffer buf = token.getBytes();
       m_logger.debug("Received Chunk to pass (" + buf.remaining() + ")");
-      m_parentCasing.traceUnparse(buf);
+      getSmtpCasing().traceUnparse(buf);
       return new UnparseResult(buf);
     }
-    m_logger.debug("Received unknown \"" + token.getClass().getName() + "\" token");
+
+    //Default (bad) case
+    m_logger.error("Received unknown \"" + token.getClass().getName() + "\" token");
     return new UnparseResult(token.getBytes());
-
-  }
-
-  public TCPStreamer endSession() {
-    m_logger.debug("End Session");
-    m_parentCasing.endSession(false);
-    return null;
   }
 }
