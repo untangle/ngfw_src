@@ -11,10 +11,14 @@
 
 package com.metavize.tran.spam;
 
+import java.util.List;
+
 import com.metavize.mvvm.tran.Transform;
 
 public interface SpamTransform extends Transform
 {
     void setSpamSettings(SpamSettings spamSettings);
     SpamSettings getSpamSettings();
+
+    List<SpamLog> getEventLogs(int limit);
 }

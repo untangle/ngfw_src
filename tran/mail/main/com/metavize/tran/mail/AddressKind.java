@@ -86,7 +86,7 @@ public class AddressKind implements Serializable
         return key;
     }
 
-    // Object kinds ---------------------------------------------------------
+    // Object kinds -----------------------------------------------------------
 
     public String toString() { return kind; }
 
