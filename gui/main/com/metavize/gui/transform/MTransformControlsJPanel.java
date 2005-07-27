@@ -40,12 +40,14 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
     protected Object settings;
     
     // EXPANDING/CONTACTING
+
     protected Dimension MIN_SIZE = new Dimension(800, 600);
     protected Dimension MAX_SIZE = new Dimension(1600, 1200);
     private AbsoluteConstraints oldConstraints;
     private JDialog expandJDialog;
     private static final int EXPAND_WIDTH = 700;
     private static final int EXPAND_HEIGHT = 500;
+    private static final int EXPAND_INSET = 75;
     private static GridBagConstraints greyBackgroundConstraints = new GridBagConstraints(0,0,1,1,1d,1d,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0,0,0,0), 0, 0);
     private static GridBagConstraints contentConstraints = new GridBagConstraints(0,0,1,1,1d,1d,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(15,15,15,15), 0, 0);
     private static ImageIcon greyBackgroundImageIcon;
@@ -357,7 +359,9 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
             MTransformControlsJPanel.this.expandJDialog.getContentPane().add(contentJPanel, contentConstraints, 0);
 
             // place new window in the center of parent window and show
-            MTransformControlsJPanel.this.expandJDialog.setBounds( Util.generateCenteredBounds(Util.getMMainJFrame().getBounds(), expandJDialog.getWidth(), expandJDialog.getHeight()) );
+            MTransformControlsJPanel.this.expandJDialog.setBounds( Util.generateCenteredBounds(Util.getMMainJFrame().getBounds(),
+											       Util.getMMainJFrame().getWidth()-EXPAND_INSET,
+											       Util.getMMainJFrame().getHeight()-EXPAND_INSET) );
 	    expandJButton.setIcon(Util.getButtonCollapseSettings());
             MTransformControlsJPanel.this.expandJDialog.setVisible(true);
 
