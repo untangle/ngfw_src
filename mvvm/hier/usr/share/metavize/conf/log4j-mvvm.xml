@@ -82,16 +82,6 @@
     <priority value="WARN"/>
   </category>
 
-  <category name="com.metavize.tran.spam">
-      <priority value="DEBUG"/>
-  </category>
-
-
-  <category name="com.metavize.tran.mail">
-        <priority value="DEBUG"/>
-  </category>
-
-
   <category name="com.metavize.jvector">
     <priority value="WARN"/>
   </category>
