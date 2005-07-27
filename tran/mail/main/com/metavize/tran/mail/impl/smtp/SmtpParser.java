@@ -109,9 +109,9 @@ abstract class SmtpParser
   protected static ByteBuffer compactIfNotEmpty(ByteBuffer buf) {
     if(buf.hasRemaining()) {
       buf.compact();
-      if(buf.position() > 0 && buf.remaining() < 1024/*TODO bscott a real value*/) {
+      if(buf.remaining() < 1024/*TODO bscott a real value*/) {
         ByteBuffer b = ByteBuffer.allocate(buf.capacity() + 1024);
-        buf.flip();
+        buf.flip();        
         b.put(buf);
         return b;
       }

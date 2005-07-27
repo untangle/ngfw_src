@@ -52,6 +52,8 @@ public class FileMIMESource
   }
   
   public void close() {
+    //TODO bscott Implemement me, closing the file
+    //and any open streams.
   } 
   
   public File getFile() {

@@ -48,6 +48,8 @@ public class MIMEPart {
   private boolean m_disposed = false;
 
   private MIMEPart m_parent;
+
+  private Object m_userObj;
   
   protected MIMEPart() {
     this(new MIMEPartHeaders());
@@ -130,7 +132,9 @@ public class MIMEPart {
    * {@link #isDisposed isDisposed()}.
    */  
   public void dispose() {
-    m_disposed = true;
+    if(m_disposed) {
+      return;
+    }
     if(isMultipart()) {
       for(MIMEPart child : getChildList()) {
         child.setObserver(null);
@@ -152,6 +156,7 @@ public class MIMEPart {
       m_oldSourceRecords.clear();
       m_oldSourceRecords = null;
     }
+    m_disposed = true;    
   }
   
   private void closeSourceRecord(MIMESourceRecord record) {
@@ -190,7 +195,33 @@ public class MIMEPart {
   
   public boolean isChanged() {
     return m_changed;
-  } 
+  }
+
+  /**
+   * Associate an arbitrary Object with this Part.
+   * This is useful when iterating through a collection
+   * of MIMEParts, to detect if a given MIMEPart (which has
+   * no real unique identifier) has been visited.
+   * <br><br>
+   * This class does nothing with the user object except
+   * store it for the consumer.
+   * 
+   * @param obj the user object (may be null).
+   */
+  public void setUserObject(Object obj) {
+    m_userObj = obj;
+  }
+
+  /**
+   * Get the {@link #setUserObject arbitrary object}
+   * associated with this part.
+   *
+   * @return the user object, or null if
+   *         one was not {@link #setUserObject set}
+   */
+  public Object getUserObject() {
+    return m_userObj;
+  }
   
   
   
@@ -232,7 +263,7 @@ public class MIMEPart {
    */
   public String getAttachmentName() {
     checkDisposed();
-    return isAttachment()?
+    return !isAttachment()?
       null:
       m_headers.getContentDispositionHF().getFilename();
   }

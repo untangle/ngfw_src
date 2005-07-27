@@ -110,7 +110,9 @@ public class ResponseParser {
       
       ResponseLine respLine = new ResponseLine(replyCode, arg, isLast);
       if(!respLine.isLast) {
-        m_lines = new ArrayList<ResponseLine>();
+        if(m_lines == null) {
+          m_lines = new ArrayList<ResponseLine>();
+        }
         m_lines.add(respLine);
         continue;
       }
@@ -240,6 +242,13 @@ public class ResponseParser {
     inputStr = "123-foo" + crlf + "123 moo" + crlf;
     outputStr = inputStr;
     doTest("text on each line", inputStr.getBytes(), outputStr.getBytes(), false);
+
+    inputStr = "123-foo" + crlf +
+      "123-moo" + crlf +
+      "123-doo" + crlf +
+      "123 goo" + crlf;
+    outputStr = inputStr;
+    doTest("text on each of 4 lines", inputStr.getBytes(), outputStr.getBytes(), false);    
   }
 
 

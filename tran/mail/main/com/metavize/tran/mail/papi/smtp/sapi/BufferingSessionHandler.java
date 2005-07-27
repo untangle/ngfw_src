@@ -112,21 +112,7 @@ public abstract class BufferingSessionHandler
     SmtpTransaction tx,
     MessageInfo msgInfo);
   
-  /**
-   * Method subclasses can optionally override.  Lets
-   * subclasses modify the response to an EHLO
-   * command.
-   * <br>
-   * Default implementation does nothing (returns the argument)
-   *
-   * @param response the response bound for the client
-   * @return the (possibly new) response which will be
-   *         sent to the client.
-   */
-  public Response handleEHLOResponse(Response response) {
-    return response;
-  }
-  
+
   public final void handleCommand(Command command,
     Session.SmtpCommandActions actions) {
 
@@ -139,12 +125,12 @@ public abstract class BufferingSessionHandler
     
     ResponseCompletion compl = null;
     
-    if(command.getType() == Command.CommandType.EHLO) {
-      compl = new EHLOResponseCompletion();
-    }
-    else {
+//    if(command.getType() == Command.CommandType.EHLO) {
+//      compl = new EHLOResponseCompletion();
+//    }
+//    else {
       compl = new PassthruResponseCompletion();
-    }
+//    }
     actions.sendCommandToServer(command, compl);
   }
 
@@ -195,6 +181,7 @@ public abstract class BufferingSessionHandler
   /**
    * Callback from the EHLO response
    */
+/*   
   private class EHLOResponseCompletion
     extends PassthruResponseCompletion {
 
@@ -206,7 +193,7 @@ public abstract class BufferingSessionHandler
       super.handleResponse(handleEHLOResponse(resp), actions);
     }
   }  
-
+*/
   /**
    * Possible states for the Transactions
    */

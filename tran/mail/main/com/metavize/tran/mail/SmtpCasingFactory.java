@@ -29,6 +29,6 @@ class SmtpCasingFactory implements CasingFactory
 
     public Casing casing(TCPSession session, boolean clientSide)
     {
-        return new SmtpCasing(session, clientSide);
+        return new com.metavize.tran.mail.impl.smtp.SmtpCasing(session, clientSide);
     }
 }

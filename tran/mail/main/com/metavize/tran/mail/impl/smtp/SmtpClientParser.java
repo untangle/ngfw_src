@@ -255,14 +255,16 @@ class SmtpClientParser
 
     //Compact the buffer
     buf = compactIfNotEmpty(buf);
-    
+
     if(buf == null) {
       m_logger.debug("returning ParseResult with " +
         toks.size() + " tokens and a null buffer");    
     }
     else {
       m_logger.debug("returning ParseResult with " +
-        toks.size() + " tokens and a buffer with " + buf.remaining() + " remaining");
+        toks.size() + " tokens and a buffer with " +
+        buf.remaining() + " remaining (" +
+        buf.position() + " to be seen on next invocation)");
     }
     return new ParseResult(toks, buf);
   }

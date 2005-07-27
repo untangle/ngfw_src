@@ -17,8 +17,10 @@ import com.metavize.tran.mail.papi.smtp.sapi.*;
 import com.metavize.tran.mail.papi.smtp.*;
 import com.metavize.tran.mime.*;
 import com.metavize.tran.util.*;
+import com.metavize.mvvm.tapi.*;
 import com.metavize.mvvm.MvvmContextFactory;
 import java.util.*;
+import java.io.*;
 
 
 /**
@@ -38,6 +40,8 @@ public class SmtpSessionHandler
   private static final String IS_HAM_HEADER_VALUE = "NO";
   
   private final Logger m_logger = Logger.getLogger(SmtpSessionHandler.class);
+  private final Pipeline m_pipeline;
+  private final MyFileFactory m_fileFactory = new MyFileFactory();  
   private static final Logger m_eventLogger = MvvmContextFactory
     .context().eventLogger();
 
@@ -48,11 +52,10 @@ public class SmtpSessionHandler
   private final SpamImpl m_spamImpl;
   private final SpamSMTPConfig m_config;
 
-  //TODO bscott This should be in the "properties" stuff, and would
-  //     likely vary by channel (in/out).
   private final WrappedMessageGenerator m_wrapper;
 
-  public SmtpSessionHandler(long maxClientWait,
+  public SmtpSessionHandler(TCPSession session,
+    long maxClientWait,
     long maxSvrWait,
     SpamImpl impl,
     SpamSMTPConfig config,
@@ -60,11 +63,13 @@ public class SmtpSessionHandler
     
     m_logger.debug("Created with client wait " +
       maxClientWait + " and server wait " + maxSvrWait);
-    m_maxClientWait = maxClientWait;
-    m_maxServerWait = maxSvrWait;
+    m_maxClientWait = maxClientWait<=0?Integer.MAX_VALUE:maxClientWait;
+    m_maxServerWait = maxSvrWait<=0?Integer.MAX_VALUE:maxSvrWait;
     m_spamImpl = impl;
     m_config = config;
     m_wrapper = wrapper;
+    m_pipeline = MvvmContextFactory.context().
+      pipelineFoundry().getPipeline(session.id());     
   }
 
   @Override
@@ -132,6 +137,7 @@ public class SmtpSessionHandler
         return PASS_MESSAGE;
       }
       else if(action == SMTPSpamMessageAction.MARK) {
+        m_logger.debug("Marking message as-per policy");
         MIMEMessage wrappedMsg = m_wrapper.wrap(msg, tx, report);
         return new BPMEvaluationResult(wrappedMsg);
       }
@@ -194,19 +200,73 @@ public class SmtpSessionHandler
     }
   }
 
-  public Response handleEHLOResponse(Response response) {
-    m_logger.debug("[handleEHLOResponse]");
-    return response;
-  }
-
+  /**
+   * Wrapper method around the real scanner, which
+   * swallows exceptions and simply returns null
+   */
   private SpamReport scan(MIMEMessage msg) {
-    //TODO bscott Wire this up to the real spam guy
+  
+    //Get the part as a file
+    File f = null;
+    try {
+      f = msg.getContentAsFile(m_fileFactory, true);
+    }
+    catch(Exception ex) {
+      m_logger.error("Exception writing MIME Message to file", ex);
+      return null;
+    }
+
+    //Attempt scan
+    try {
+      SpamReport ret = m_spamImpl.getScanner().scanFile(f, THRESHOLD);
+      if(ret == null || ret == SpamReport.ERROR) {
+        m_logger.error("Received ERROR SpamReport");
+        return null;
+      }
+      return ret;
+    }
+    catch(Exception ex) {
+      m_logger.error("Exception scanning message");
+      return null;
+    }
+    
+
+/*
+    //Fake Negative  
+    m_logger.debug("Currently pretending this mail is not spam");
+    ReportItem ri = new ReportItem(0,
+      "FakeCategory");
+    List<ReportItem> list = new ArrayList<ReportItem>();
+    list.add(ri);
+    return new SpamReport(list, THRESHOLD);
+*/    
+/*
+    //Fake Positive  
     m_logger.debug("Currently pretending this mail is spam");
     ReportItem ri = new ReportItem(THRESHOLD + 1,
       "FakeCategory");
     List<ReportItem> list = new ArrayList<ReportItem>();
     list.add(ri);
     return new SpamReport(list, THRESHOLD);
+*/    
   }
+
+  //================= Inner Class =================
+
+  /**
+   * Acts as a FileFactory, to create temp files
+   * when a MIME part needs to be decoded to disk.
+   */
+  private class MyFileFactory implements FileFactory {
+    public File createFile(String name)
+      throws IOException {
+      return createFile();
+    }
+
+    public File createFile()
+      throws IOException {
+      return m_pipeline.mktemp();
+    }
+  }  
   
 }

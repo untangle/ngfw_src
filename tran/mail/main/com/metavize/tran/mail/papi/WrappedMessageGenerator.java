@@ -156,6 +156,7 @@ public class WrappedMessageGenerator {
     MIMEMessage ret = msg;
     if(m_bodyTemplate != null) {
       try {
+        m_logger.debug("Wrapping body");
         ret = MIMEUtil.simpleWrap(m_bodyTemplate.format(values), msg);
       }
       catch(Exception ex) {
@@ -164,7 +165,8 @@ public class WrappedMessageGenerator {
     }
     if(m_subjectTemplate != null) {
       try {
-        msg.getMMHeaders().setSubject(m_subjectTemplate.format(values));
+        m_logger.debug("Wrapping subject");
+        ret.getMMHeaders().setSubject(m_subjectTemplate.format(values));
       }
       catch(Exception ex) {
         m_logger.error(ex);

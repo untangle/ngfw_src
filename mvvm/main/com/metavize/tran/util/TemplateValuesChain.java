@@ -58,14 +58,16 @@ public class TemplateValuesChain
     //Assign method-local reference, for thread
     //safety
     List<TemplateValues> list = m_valueList;
-    String ret = null;
-    for(int i = 0; i<list.size(); i++) {
-      ret = list.get(i).getTemplateValue(key);
+    for(TemplateValues values : list) {
+      if(values == null) {
+        continue;
+      }
+      String ret = values.getTemplateValue(key);
       if(ret != null) {
-        break;
+        return ret;
       }
     }
-    return ret;
+    return null;
   }
 
 }

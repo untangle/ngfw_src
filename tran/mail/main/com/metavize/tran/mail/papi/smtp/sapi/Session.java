@@ -19,6 +19,10 @@ import com.metavize.tran.token.Chunk;
 import org.apache.log4j.Logger;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Set;
+import java.util.HashSet;
+import com.metavize.tran.util.*;
 
 
 /**
@@ -44,28 +48,6 @@ public final class Session
    * on {@link com.metavize.tran.mail.papi.smtp.sapi.SyntheticAction SyntheticAction}s
    */
   public interface SmtpActions {
-
-    //TODO bscott simplify interface so the server-facing token
-    //and the ResponseCompletion are made in one call
-
-    /**
-     * Get the TokenResultBuilder, used to pass along tokens
-     * to the Client or Server
-     */
-//    public TokenResultBuilder getTokenResultBuilder();
-
-    /**
-     * Request that the Session enqueue a response handler.
-     * <br>
-     * This is generally called after the handler has
-     * passed-along a request to the server.  The request
-     * itself may be from the client, or issued by the
-     * handler itself ("synthetic").
-     *
-     * @param cont the code to execute when a response
-     *        comes back from the server.
-     */
-//    public void enqueueResponseHandler(ResponseCompletion cont);
 
     /**
      * Cause client tokens to be queued before this
@@ -102,12 +84,55 @@ public final class Session
      */
     public void sendFINToClient();
 
+    /**
+     * Send a Command to the server
+     *
+     * @param command the command
+     * @param compl the completion to be called when the response
+     *        to <b>this</b> command returns from the server
+     */
     public void sendCommandToServer(Command command,
       ResponseCompletion compl);
+
+    /**
+     * Send the start of a MIME message to the server.
+     * <br><br>
+     * Note that this does not have a corresponding
+     * ResponseCompletion because there is no expected
+     * response to a <i>portion</i> of the message
+     *
+     * @param token the token
+     */ 
     public void sendBeginMIMEToServer(BeginMIMEToken token);
+
+    /**
+     * Send a non-end MIME token to the server.
+     * <br><br>
+     * Note that this does not have a corresponding
+     * ResponseCompletion because there is no expected
+     * response to a <i>portion</i> of the message
+     *
+     * @param token the continued MIME token     
+     */     
     public void sendContinuedMIMEToServer(ContinuedMIMEToken token);
+
+    /**
+     * Send the remaining MIME content to the server.
+     *
+     * @param token the last MIME token
+     * @param compl the completion to be called when the response
+     *        to <i>this</i> data transmission returns from the server
+     */
     public void sendFinalMIMEToServer(ContinuedMIMEToken token,
       ResponseCompletion compl);
+
+    /**
+     * Send a complete MIME message to the server
+     *
+     * @param token the message
+     * @param compl the completion to be called when the response
+     *        to <i>this</i> data transmission returns from the server
+     */      
     public void sentWholeMIMEToServer(CompleteMIMEToken token,
       ResponseCompletion compl);
       
@@ -150,6 +175,11 @@ public final class Session
   public interface SmtpResponseActions
     extends SmtpActions {
 
+    /**
+     * Send a Response to the client.
+     *
+     * @param resp the response
+     */
     public void sendResponseToClient(Response resp);    
 
   }
@@ -158,6 +188,37 @@ public final class Session
   //==========================
   // Data Members
   //===========================
+
+  private static final String[] DEF_ALLOWED_COMMANDS = {
+    "DATA",
+    "HELP",
+    "HELO",
+    "EHLO",
+    "RCPT",
+    "MAIL",
+    "EXPN",
+    "QUIT",
+    "RSET",
+    "VRFY",
+    "NOOP"
+  };
+
+  private static final String[] DEF_ALLOWED_EXTENSIONS = {
+    "DATA",
+    "HELP",
+    "HELO",
+    "EHLO",
+    "RCPT",
+    "MAIL",
+    "EXPN",
+    "QUIT",
+    "RSET",
+    "VRFY",
+    "NOOP",
+    "SIZE",
+    "PIPELINING",
+    "OK"//Added in case they just send "250 OK"
+  };
   
   private final Logger m_logger = Logger.getLogger(Session.class);
   
@@ -168,6 +229,11 @@ public final class Session
   private TransactionHandler m_currentTxHandler;//Sink
 
   private List<OutstandingRequest> m_outstandingRequests;
+
+  private Set<String> m_allowedCommandsSet;
+  private String[] m_allowedCommands;
+  private String[] m_allowedExtensionsLC;
+  private String[] m_allowedExtensions;
 
 
 
@@ -201,13 +267,72 @@ public final class Session
           m_sessionHandler.handleOpeningResponse(resp, actions);
         }
       }));
+    setAllowedCommands(DEF_ALLOWED_COMMANDS);
+    setAllowedExtensions(DEF_ALLOWED_EXTENSIONS);
+  }
+
+  
+  //==========================
+  // Properties
+  //===========================  
+
+  /**
+   * Set the list of permitted commands (e.g. "EHLO", "DATA").  Note 
+   * that this method is not smart, and you could pass-in something
+   * stupid like an array w/o "HELO".
+   *
+   * @param commands the permitted commands
+   */
+  public void setAllowedCommands(String[] commands) {
+    Set<String> newAllowedCommandsSet = new HashSet<String>();
+    for(String command : commands) {
+      newAllowedCommandsSet.add(command.toLowerCase());
+    }
+    m_allowedCommandsSet = newAllowedCommandsSet;
+    m_allowedCommands = commands;
+  }
+
+  /**
+   * Get the list of {@link setAllowedCommands Allowed COmmands}
+   */
+  public String[] getAllowedCommands() {
+    return m_allowedCommands;
+  }
+
+  /**
+   * Set the list of permitted extensions.  This class
+   * is dumb, so it will not detect if you set this to
+   * a blank list.  It also does not imply that these
+   * extensions will be advertized, only that these
+   * will <b>not</b> be stripped from an EHLO
+   * response.
+   *
+   *
+   *
+   * @param commands the permitted extensions
+   */  
+  public void setAllowedExtensions(String[] extensions) {
+    String[] newAllowedExtensionsLC = new String[extensions.length];
+
+    for(int i = 0; i<extensions.length; i++) {
+      newAllowedExtensionsLC[i] = extensions[i].toLowerCase().trim();
+    }
+    m_allowedExtensionsLC = newAllowedExtensionsLC;
+    m_allowedExtensions = extensions;
+  }
+
+  /**
+   * Get the list of {@link #setAllowedExtensions Allowed Extensions}
+   */  
+  public String[] getAllowedExtensions() {
+    return m_allowedExtensions;
   }
 
 
   
   //==========================
   // Helpers
-  //===========================
+  //===========================  
 
   /**
    * Process any Synthetic actions
@@ -231,6 +356,61 @@ public final class Session
       m_currentTxHandler = m_sessionHandler.createTxHandler(new SmtpTransaction());
     }
     return m_currentTxHandler;
+  }
+
+  /**
+   * Method which removes any unknown ESMTP extensions
+   */
+  private Response fixupEHLOResponse(Response resp) {
+
+    String[] respLines = resp.getArgs();
+    if(respLines == null || respLines.length < 2) {
+      //Note first line is the "doman" junk
+      return resp;
+    }
+
+
+
+    List<String> finalList = new ArrayList<String>();
+    finalList.add(respLines[0]);//Add domain line
+
+    for(int i = 1; i<respLines.length; i++) {
+      String verb = getCapabilitiesLineVerb(respLines[i]);
+      if(isAllowedExtension(verb)) {
+        m_logger.debug("Allowing ESMTP response line \"" + respLines[i] +
+          "\" to go to client");
+        finalList.add(respLines[i]);
+      }
+      else {
+        m_logger.debug("Removing unknown extension \"" + respLines[i] + "\" (" + verb + ")");
+      }
+    }
+
+    String[] newRespLines = (String[]) finalList.toArray(new String[finalList.size()]);
+    return new Response(resp.getCode(), newRespLines);
+  }
+
+  private boolean isAllowedExtension(String extensionName) {
+    //Thread safety
+    String[] allowedExtensionsLC = m_allowedExtensionsLC;  
+    for(String permitted : allowedExtensionsLC) {
+      if(extensionName.toLowerCase().equals(permitted)) {
+        return true;
+      }
+    }
+    return false;
+  }
+    
+
+  private String getCapabilitiesLineVerb(String str) {
+    //TODO bscott.  Are all commands separated
+    //     by a space from any arguments?
+    str = str.trim();
+    int index = str.indexOf(' ');
+    if(index < 0) {
+      return str;
+    }
+    return str.substring(0, index);
   }
 
 
@@ -398,6 +578,24 @@ public final class Session
     public void handleCommand(TokenResultBuilder resultBuilder,
       Command cmd) {
       SmtpCommandActionsImpl actions = new SmtpCommandActionsImpl(resultBuilder);
+      
+      //Check for allowed commands
+      String cmdStrLower = cmd.getCmdString().toLowerCase();
+      if(!m_allowedCommandsSet.contains(cmdStrLower)) {
+        m_logger.debug("Enqueuing negative response to " +
+          "non-allowed command \"" + cmd.getCmdString() + "\"");
+        actions.appendSyntheticResponse(new FixedSyntheticResponse(500, "Syntax error, command unrecognized"));
+        return;
+      }
+
+      //Check for "EHLO"
+      if(cmd.getType() == Command.CommandType.EHLO) {
+        m_logger.debug("Enqueuing private response handler to EHLO command so " +
+          "unknown extensions can be disabled");
+        actions.sendCommandToServer(cmd, new SessionOpenResponse());
+        return;
+      }
+      
       if(m_currentTxHandler != null) {
         if(cmd.getType() == Command.CommandType.RSET) {
           m_currentTxHandler.handleRSETCommand(cmd, actions);
@@ -499,6 +697,21 @@ public final class Session
     public boolean handleClientFIN() {
       return m_sessionHandler.handleClientFIN(m_currentTxHandler);
     }
+
+    //============ Inner-Inner Class ==============
+
+    /**
+     * Class which handles the ESMTP open response
+     */
+    private class SessionOpenResponse
+      implements ResponseCompletion {
+      public void handleResponse(Response resp,
+        Session.SmtpResponseActions actions) {
+        m_logger.debug("Processing response to EHLO Command");
+        actions.sendResponseToClient(fixupEHLOResponse(resp));
+      }
+    }
+    
   }//ENDOF MySmtpTokenStreamHandler Class Definition
  
 }//ENDOF Session Class Definition

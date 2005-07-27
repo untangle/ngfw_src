@@ -61,12 +61,6 @@ class SmtpServerUnparser
     }
 
     //-----------------------------------------------------------
-    if(token instanceof MetadataToken) {
-      //Don't pass along metadata tokens
-      return UnparseResult.NONE;
-    }    
-
-    //-----------------------------------------------------------
     if(token instanceof MAILCommand) {
       MAILCommand mc = (MAILCommand) token;
       m_logger.debug("Received MAIL Commandfor address \"" +
@@ -158,6 +152,12 @@ class SmtpServerUnparser
       getSmtpCasing().traceUnparse(buf);
       return new UnparseResult(buf);
     }
+
+    //-----------------------------------------------------------
+    if(token instanceof MetadataToken) {
+      //Don't pass along metadata tokens
+      return UnparseResult.NONE;
+    }     
 
     //Default (bad) case
     m_logger.error("Received unknown \"" + token.getClass().getName() + "\" token");
