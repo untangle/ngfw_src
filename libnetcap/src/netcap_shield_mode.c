@@ -31,10 +31,10 @@
 #define _NC_SHIELD_UPD_INTVL_USEC MSEC_TO_USEC( 50 )
 
 /* Generate a shield event every 6000 ticks (5 minutes at 50 milliseconds) */
-// #define _NC_SHIELD_EVT_TICKS 6000
+#define _NC_SHIELD_EVT_TICKS 6000
 
 /*  USE JUST FOR TESTING */
-#define _NC_SHIELD_EVT_TICKS 200
+// #define _NC_SHIELD_EVT_TICKS 200
 
 #define _EXCEED_MODE( MODE ) (( cpu_load      > cfg->limit.cpu_load. MODE )    || \
                               ( num_sessions  > cfg->limit.sessions.  MODE )     || \
