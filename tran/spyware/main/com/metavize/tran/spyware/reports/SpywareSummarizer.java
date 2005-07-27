@@ -79,10 +79,11 @@ public class SpywareSummarizer extends BaseSummarizer {
             logger.warn("could not summarize", exn);
         }
 
-        addEntry("Total potential spyware accesses detected", Util.trimNumber("",accessCount));
-        addEntry("&nbsp;&nbsp;&nbsp;Blocked potential spyware accesses", Util.trimNumber("",blockCount) + " (" + Util.percentNumber(blockCount,accessCount)  + ")");
-        addEntry("&nbsp;&nbsp;&nbsp;Blocked spyware cookies", Util.trimNumber("",cookieCount) + " (" + Util.percentNumber(cookieCount,accessCount)  + ")");
-        addEntry("&nbsp;&nbsp;&nbsp;Blocked spyware ActiveX", Util.trimNumber("",axCount) + " (" + Util.percentNumber(axCount,accessCount)  + ")");
+        addEntry("Potential spyware communications detected", Util.trimNumber("",accessCount));
+        addEntry("&nbsp;&nbsp;&nbsp;Blocked spyware", Util.trimNumber("",blockCount) + " (" + Util.percentNumber(blockCount,accessCount)  + ")");
+        addEntry("&nbsp;&nbsp;&nbsp;Blocked cookies", Util.trimNumber("",cookieCount) + " (" + Util.percentNumber(cookieCount,accessCount)  + ")");
+        addEntry("&nbsp;&nbsp;&nbsp;Blocked ActiveX", Util.trimNumber("",axCount) + " (" + Util.percentNumber(axCount,accessCount)  + ")");
+        addEntry("&nbsp;&nbsp;&nbsp;Passed", Util.trimNumber("",accessCount-blockCount-cookieCount-axCount) + " (" + Util.percentNumber(accessCount-blockCount-cookieCount-axCount,accessCount)  + ")");
 
         // XXXX
         String tranName = "Spyware Blocker";

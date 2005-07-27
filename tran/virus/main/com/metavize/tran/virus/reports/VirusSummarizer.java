@@ -130,20 +130,20 @@ public class VirusSummarizer extends BaseSummarizer {
         }
 
         addEntry("Scanned Web downloads", Util.trimNumber("",httpScanned));
-        addEntry("&nbsp;&nbsp;&nbsp;Infected & Blocked", Util.trimNumber("",httpBlocked));
-        addEntry("&nbsp;&nbsp;&nbsp;Clean & Passed", Util.trimNumber("",httpScanned - httpBlocked));
+        addEntry("&nbsp;&nbsp;&nbsp;Infected & Blocked", Util.trimNumber("",httpBlocked) + " (" + Util.percentNumber(httpBlocked, httpScanned) + ")");
+        addEntry("&nbsp;&nbsp;&nbsp;Clean & Passed", Util.trimNumber("",httpScanned-httpBlocked) + " (" + Util.percentNumber(httpScanned-httpBlocked, httpScanned) + ")");
 
         addEntry("&nbsp;","&nbsp;");
 
         addEntry("Scanned FTP downloads", Util.trimNumber("",ftpScanned));
-        addEntry("&nbsp;&nbsp;&nbsp;Infected & Blocked", Util.trimNumber("",ftpBlocked));
-        addEntry("&nbsp;&nbsp;&nbsp;Clean & Passed", Util.trimNumber("",ftpScanned - ftpBlocked));
+        addEntry("&nbsp;&nbsp;&nbsp;Infected & Blocked", Util.trimNumber("",ftpBlocked) + " (" + Util.percentNumber(ftpBlocked, ftpScanned) + ")");
+        addEntry("&nbsp;&nbsp;&nbsp;Clean & Passed", Util.trimNumber("",ftpScanned-ftpBlocked) + " (" + Util.percentNumber(ftpScanned-ftpBlocked, ftpScanned) + ")");
 
         addEntry("&nbsp;","&nbsp;");
 
         addEntry("Scanned Email downloads", Util.trimNumber("",emailScanned));
-        addEntry("&nbsp;&nbsp;&nbsp;Infected & Blocked", Util.trimNumber("",emailBlocked));
-        addEntry("&nbsp;&nbsp;&nbsp;Clean & Passed", Util.trimNumber("",emailScanned - emailBlocked));
+        addEntry("&nbsp;&nbsp;&nbsp;Infected & Blocked", Util.trimNumber("",emailBlocked) + " (" + Util.percentNumber(emailBlocked, emailScanned) + ")");
+        addEntry("&nbsp;&nbsp;&nbsp;Clean & Passed", Util.trimNumber("",emailScanned-emailBlocked) + " (" + Util.percentNumber(emailScanned-emailBlocked, emailScanned) + ")");
 
         // XXXX
         String tranName = "Virus";

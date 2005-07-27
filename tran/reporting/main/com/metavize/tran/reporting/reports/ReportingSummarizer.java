@@ -25,21 +25,21 @@ public class ReportingSummarizer extends BaseSummarizer {
     public String getSummaryHtml(Connection conn, Timestamp startDate, Timestamp endDate)
     {
 
-        int succeededCount = 0;
-        int failedCount = 0;
+        long succeededCount = 0;
+        long failedCount = 0;
 
         long c2pOut = 0;
         long p2sOut = 0;
         long s2pOut = 0;
         long p2cOut = 0;
-    int numOut = 0;
-
+	long numOut = 0;
+	
         long c2pIn = 0;
         long p2sIn = 0;
         long s2pIn = 0;
         long p2cIn = 0;
-    int numIn = 0;
-
+	long numIn = 0;
+	
         try {
             String sql = "SELECT sum(c2p_bytes), sum(p2s_bytes), sum(s2p_bytes), sum(p2c_bytes), count(*) FROM pl_endp JOIN pl_stats USING (session_id) WHERE client_intf = 1 AND raze_date >= ? AND create_date < ?";
             PreparedStatement ps = conn.prepareStatement(sql);
@@ -51,7 +51,7 @@ public class ReportingSummarizer extends BaseSummarizer {
             p2sOut = rs.getLong(2);
             s2pOut = rs.getLong(3);
             p2cOut = rs.getLong(4);
-        numOut = rs.getInt(5);
+	    numOut = rs.getLong(5);
             rs.close();
             ps.close();
 
@@ -65,7 +65,7 @@ public class ReportingSummarizer extends BaseSummarizer {
             p2sIn = rs.getLong(2);
             s2pIn = rs.getLong(3);
             p2cIn = rs.getLong(4);
-        numIn = rs.getInt(5);
+	    numIn = rs.getLong(5);
             rs.close();
             ps.close();
 
@@ -75,7 +75,7 @@ public class ReportingSummarizer extends BaseSummarizer {
             ps.setTimestamp(2, endDate);
             rs = ps.executeQuery();
             rs.first();
-            succeededCount = rs.getInt(1);
+            succeededCount = rs.getLong(1);
             rs.close();
             ps.close();
 
@@ -85,7 +85,7 @@ public class ReportingSummarizer extends BaseSummarizer {
             ps.setTimestamp(2, endDate);
             rs = ps.executeQuery();
             rs.first();
-            failedCount = rs.getInt(1);
+            failedCount = rs.getLong(1);
             rs.close();
             ps.close();
 
@@ -93,37 +93,43 @@ public class ReportingSummarizer extends BaseSummarizer {
             logger.warn("could not summarize", exn);
         }
 
-        long totalBytesOutgoing = p2sOut + p2cIn;
-        long totalBytesIncoming = s2pOut + c2pIn;
-        long totalTotal = totalBytesOutgoing + totalBytesIncoming;
+        long bytesReceivedFromOutside = s2pOut + c2pIn;
+        long bytesSentToOutside = p2sOut + p2cIn;
+        long bytesTotalByDirection = bytesReceivedFromOutside + bytesSentToOutside;
 
         long totalOutboundBytes = p2sOut + p2cOut;
         long totalInboundBytes = c2pIn + s2pIn;
 
-        long numSecs = (endDate.getTime() - startDate.getTime()) / 1000;
+        double numSecs = (endDate.getTime() - startDate.getTime()) / 1000d;
         double numDays = ((double)numSecs) / (60d * 60d * 24d);
 
-        addEntry("Total data transferred", Util.trimNumber("Bytes",totalTotal));
-        addEntry("&nbsp;&nbsp;&nbsp;Sent", Util.trimNumber("Bytes",totalBytesOutgoing) + " (" + Util.percentNumber(totalBytesOutgoing,totalTotal) + ")");
-        addEntry("&nbsp;&nbsp;&nbsp;Received", Util.trimNumber("Bytes",totalBytesIncoming) + " (" + Util.percentNumber(totalBytesIncoming,totalTotal) + ")");
+        addEntry("Data transferred", Util.trimNumber("Bytes",bytesTotalByDirection));
+        addEntry("&nbsp;&nbsp;&nbsp;Sent to outside", Util.trimNumber("Bytes",bytesSentToOutside) + " (" + Util.percentNumber(bytesSentToOutside,bytesTotalByDirection) + ")");
+        addEntry("&nbsp;&nbsp;&nbsp;Received from outside", Util.trimNumber("Bytes",bytesReceivedFromOutside) + " (" + Util.percentNumber(bytesReceivedFromOutside,bytesTotalByDirection) + ")");
 
         addEntry("&nbsp;", "&nbsp;");
 
-        addEntry("Total sessions created", Util.trimNumber("",numOut + numIn));
+        addEntry("Sessions created", Util.trimNumber("",numOut + numIn));
         addEntry("&nbsp;&nbsp;&nbsp;Outbound", Util.trimNumber("",numOut) + " (" + Util.percentNumber(numOut,numIn+numOut) + ")");
         addEntry("&nbsp;&nbsp;&nbsp;Inbound", Util.trimNumber("",numIn) + " (" + Util.percentNumber(numIn,numIn+numOut) + ")");
 
+	/*        addEntry("&nbsp;", "&nbsp;");
+
+        addEntry("Data sent", "&nbsp;");
+        addEntry("&nbsp;&nbsp;&nbsp;During outbound sessions", Util.trimNumber("Bytes",totalOutboundBytes));
+        addEntry("&nbsp;&nbsp;&nbsp;During inbound sessions", Util.trimNumber("Bytes",totalInboundBytes));
+	*/
         addEntry("&nbsp;", "&nbsp;");
 
-        addEntry("Data sent during outbound sessions", Util.trimNumber("Bytes",totalOutboundBytes));
-        addEntry("Data sent during inbound sessions", Util.trimNumber("Bytes",totalInboundBytes));
-        addEntry("Average data transfer rate", Util.trimNumber("Bytes/sec",(long) (((float)totalTotal) / numSecs)));
-        addEntry("Daily data transfer rate", Util.trimNumber( "Bytes/day",(long) (((double)totalTotal) / numDays)));
+        addEntry("Average data transfer rates", "&nbsp;");
+        addEntry("&nbsp;&nbsp;&nbsp;Per second", Util.trimNumber("Bytes/sec",(long) (((double)bytesTotalByDirection) / numSecs)));
+        addEntry("&nbsp;&nbsp;&nbsp;Per day", Util.trimNumber( "Bytes/day",(long) (((double)bytesTotalByDirection) / numDays)));
 
         addEntry("&nbsp;", "&nbsp;");
 
-        addEntry("Successful administrative logins", Util.trimNumber("",(long)succeededCount));
-        addEntry("Failed administrative logins", Util.trimNumber("",(long)failedCount) );
+        addEntry("Administrative logins", succeededCount+failedCount);
+        addEntry("&nbsp;&nbsp;&nbsp;Successful", Util.trimNumber("",succeededCount) + " (" + Util.percentNumber(succeededCount,succeededCount+failedCount)  + ")");
+        addEntry("&nbsp;&nbsp;&nbsp;Failed", Util.trimNumber("",failedCount) + " (" +  Util.percentNumber(failedCount,succeededCount+failedCount) + ")");
 
 
         return summarizeEntries("Traffic Flow Rates");

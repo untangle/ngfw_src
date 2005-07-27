@@ -64,7 +64,7 @@ public class AirgapSummarizer extends BaseSummarizer {
         }
 
 	long sessionsRequested = sessionsAccepted + sessionsLimited + sessionsRejected + sessionsDropped;
-        addEntry("Total sessions requested", Util.trimNumber("",sessionsRequested));
+        addEntry("Resource requests", Util.trimNumber("",sessionsRequested));
         addEntry("&nbsp;&nbsp;&nbsp;Accepted", Util.trimNumber("",sessionsAccepted) + " (" + Util.percentNumber(sessionsAccepted,sessionsRequested)  + ")");
         addEntry("&nbsp;&nbsp;&nbsp;Limited", Util.trimNumber("",sessionsLimited) + " (" + Util.percentNumber(sessionsLimited,sessionsRequested)  + ")");
         addEntry("&nbsp;&nbsp;&nbsp;Rejected", Util.trimNumber("",sessionsRejected) + " (" + Util.percentNumber(sessionsRejected,sessionsRequested)  + ")");
@@ -73,11 +73,11 @@ public class AirgapSummarizer extends BaseSummarizer {
         addEntry("&nbsp;", "&nbsp;");
 
 	long loadTotal = loadRelaxed + loadLax + loadTight + loadClosed;
-        addEntry("Load level indicators", "");
-        addEntry("&nbsp;&nbsp;&nbsp;Normal load", Util.percentNumber(loadRelaxed, loadTotal));
-        addEntry("&nbsp;&nbsp;&nbsp;Medium load", Util.percentNumber(loadLax, loadTotal));
-        addEntry("&nbsp;&nbsp;&nbsp;High load", Util.percentNumber(loadTight, loadTotal));
-        addEntry("&nbsp;&nbsp;&nbsp;Overload", Util.percentNumber(loadClosed, loadTotal));
+        addEntry("Resource allocation selectivity", "");
+        addEntry("&nbsp;&nbsp;&nbsp;Normal", Util.percentNumber(loadRelaxed, loadTotal));
+        addEntry("&nbsp;&nbsp;&nbsp;Increased", Util.percentNumber(loadLax, loadTotal));
+        addEntry("&nbsp;&nbsp;&nbsp;High", Util.percentNumber(loadTight, loadTotal));
+        addEntry("&nbsp;&nbsp;&nbsp;Defensive", Util.percentNumber(loadClosed, loadTotal));
 
 
         // XXXX
