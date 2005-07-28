@@ -21,12 +21,12 @@ public class Reason implements Serializable
 {
     private static final long serialVersionUID = -1388743204136725990L;
 
-    public static final Reason BLOCK_CATEGORY = new Reason('D', "in Categories list");
-    public static final Reason BLOCK_URL = new Reason('U', "in URLs list");
-    public static final Reason BLOCK_EXTENSION = new Reason('E', "in File Extensions list");
-    public static final Reason BLOCK_MIME = new Reason('M', "in MIME Types list");
-    public static final Reason PASS_URL = new Reason('I', "in URLs list");
-    public static final Reason PASS_CLIENT = new Reason('C', "in Clients list");
+    public static final Reason BLOCK_CATEGORY = new Reason('D', "in Categories Block list");
+    public static final Reason BLOCK_URL = new Reason('U', "in URLs Block list");
+    public static final Reason BLOCK_EXTENSION = new Reason('E', "in File Extensions Block list");
+    public static final Reason BLOCK_MIME = new Reason('M', "in MIME Types Block list");
+    public static final Reason PASS_URL = new Reason('I', "in URLs Pass list");
+    public static final Reason PASS_CLIENT = new Reason('C', "in Clients Pass list");
 
     /**
      * None is to help the GUI deal with the concept of none, if you
