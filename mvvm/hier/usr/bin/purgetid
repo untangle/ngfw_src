@@ -1,0 +1,17 @@
+#!/bin/sh
+exec >>@MVVM_LOG@/schema.log 2>&1
+
+PSQL="psql -U metavize --tuples-only --no-align mvvm"
+
+if [ $# != 1 ]; then
+    echo "usage: $0 tid"
+    exit 1
+fi
+
+tid=$1
+
+component=$(echo "SELECT name FROM transform_persistent_state WHERE tid = $tid;" | $PSQL)
+
+script="@MVVM_SCHEMA@/$component/purgetid.sql"
+
+psql -U metavize -v tid="$tid" -f "$script" mvvm

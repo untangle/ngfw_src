@@ -1,0 +1,15 @@
+#!/bin/sh
+exec >>@MVVM_LOG@/schema.log 2>&1
+
+if [ $# != 1 ]; then
+    echo "usage: $0 component"
+    exit 1
+fi
+
+component=$1
+
+PSQL="psql -U metavize --tuples-only --no-align mvvm"
+
+script=@MVVM_SCHEMA@/$component/purgetran.sql
+
+psql -U metavize -f $script mvvm
