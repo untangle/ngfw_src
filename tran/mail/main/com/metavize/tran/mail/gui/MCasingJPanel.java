@@ -240,7 +240,7 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
 
         smtpJPanel.setLayout(new java.awt.GridBagLayout());
 
-        jLabel1.setText("SMTP Inbound (secs):");
+        jLabel1.setText("SMTP Inbound (milliseconds):");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -259,7 +259,7 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
         gridBagConstraints.insets = new java.awt.Insets(0, 10, 10, 0);
         smtpJPanel.add(smtpInboundJSpinner, gridBagConstraints);
 
-        jLabel2.setText("SMTP Outbound (secs):");
+        jLabel2.setText("SMTP Outbound (milliseconds):");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
@@ -291,7 +291,7 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
 
         popJPanel.setLayout(new java.awt.GridBagLayout());
 
-        jLabel5.setText("POP Inbound (secs):");
+        jLabel5.setText("POP Inbound (milliseconds):");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -310,7 +310,7 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
         gridBagConstraints.insets = new java.awt.Insets(0, 10, 10, 0);
         popJPanel.add(popInboundJSpinner, gridBagConstraints);
 
-        jLabel6.setText("POP Outbound (secs):");
+        jLabel6.setText("POP Outbound (milliseconds):");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
@@ -342,7 +342,7 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
 
         imapJPanel.setLayout(new java.awt.GridBagLayout());
 
-        jLabel7.setText("IMAP Inbound (secs):");
+        jLabel7.setText("IMAP Inbound (milliseconds):");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -361,7 +361,7 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
         gridBagConstraints.insets = new java.awt.Insets(0, 10, 10, 0);
         imapJPanel.add(imapInboundJSpinner, gridBagConstraints);
 
-        jLabel8.setText("IMAP Outbound (secs):");
+        jLabel8.setText("IMAP Outbound (milliseconds):");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
