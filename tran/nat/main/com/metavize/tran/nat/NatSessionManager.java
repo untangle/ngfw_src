@@ -283,7 +283,7 @@ class SessionRedirect
     synchronized void cleanup( NatImpl transform )
     {
         if ( reservedPort > 0 ) {
-            transform.getHandler().releasePort( key.protocol, serverPort );
+            transform.getHandler().releasePort( key.protocol, reservedPort );
         }
 
         reservedPort = 0;

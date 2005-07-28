@@ -62,7 +62,10 @@ class NatFtpHandler extends FtpStateMachine
     {
         FtpFunction function = command.getFunction();
 
-        updateSessionData();
+        if ( !updateSessionData()) {
+            logger.debug( "Ignoring unmodified session" );
+            return new TokenResult( null, new Token[] { command } );
+        }
 
         logger.debug( "Received command: " + function );
 
@@ -90,8 +93,11 @@ class NatFtpHandler extends FtpStateMachine
     protected TokenResult doReply( FtpReply reply ) throws TokenException
     {
         int replyCode = reply.getReplyCode();
-
-        updateSessionData();
+        
+        if ( !updateSessionData()) {
+            logger.debug( "Ignoring unmodified session" );
+            return new TokenResult( new Token[] { reply }, null );
+        }
 
         logger.debug( "Received reply: " + reply );
 
@@ -136,6 +142,11 @@ class NatFtpHandler extends FtpStateMachine
     private TokenResult portCommand( FtpCommand command ) throws TokenException
     {
         InetSocketAddress addr;
+
+        if ( !updateSessionData()) {
+            logger.debug( "Ignoring unmodified session" );
+            return new TokenResult( null, new Token[] { command } );
+        }
 
         TCPSession session = getSession();
 
@@ -228,6 +239,11 @@ class NatFtpHandler extends FtpStateMachine
 
         TCPSession session = getSession();
 
+        if ( !updateSessionData()) {
+            logger.debug( "Ignoring unmodified session" );
+            return new TokenResult( new Token[] { reply }, null );
+        }
+
         try {
             addr = reply.getSocketAddress();
         } catch ( ParseException e ) {
@@ -244,12 +260,13 @@ class NatFtpHandler extends FtpStateMachine
             throw new TokenException( "wildard address" );
         }
 
-        if ( !ip.equals( session.serverAddr())) {
-            logger.warn( "Dropping reply from modified server address" );
-            return TokenResult.NONE;
-        }
-
         if ( sessionData.isServerRedirect()) {
+            if ( !ip.equals( sessionData.modifiedServerAddr())) {
+                logger.warn( "Dropping reply from incorrect server address: " + ip + " != " + 
+                             sessionData.modifiedServerAddr());
+                return TokenResult.NONE;
+            }
+
             /* Modify the response, this must contain the original address the client thinks it
              * is connecting to. */
             addr = new InetSocketAddress( sessionData.originalServerAddr(), addr.getPort());
@@ -258,6 +275,12 @@ class NatFtpHandler extends FtpStateMachine
 
             /* Modify the reply to the client */
             reply = FtpReply.pasvReply( addr );
+        } else {
+            if ( !ip.equals( session.serverAddr())) {
+                logger.warn( "Dropping reply from incorrect server address: " + ip + " != " + 
+                             session.serverAddr());
+                return TokenResult.NONE;
+            }
         }
 
         /* Reply doesn't have to be modified, but the redirect.
@@ -277,14 +300,13 @@ class NatFtpHandler extends FtpStateMachine
 
     }
 
-    private void updateSessionData() throws TokenException
+    private boolean updateSessionData()
     {
         if ( sessionData == null ) {
             /* Get the information the nat transform is tracking about the session */
-            sessionData = sessionManager.getSessionData( getSession());
-            if ( sessionData == null ) {
-                throw new TokenException( "No session data for this session" );
-            }
+            sessionData = sessionManager.getSessionData( getSession());            
         }
+
+        return ( sessionData != null );
     }
 }

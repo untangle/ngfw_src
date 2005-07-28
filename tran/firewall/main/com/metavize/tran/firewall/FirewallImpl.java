@@ -140,7 +140,7 @@ public class FirewallImpl extends AbstractTransform implements Firewall
                 l.add(0, rl);
             }
             long l1 = System.currentTimeMillis();
-            logger.debug("getActiveXLogs() in: " + (l1 - l0));
+            logger.debug("getEventLogs() in: " + (l1 - l0));
         } catch (SQLException exn) {
             logger.warn("could not get events", exn);
         } catch (HibernateException exn) {
@@ -273,7 +273,8 @@ public class FirewallImpl extends AbstractTransform implements Firewall
                                                  IPMatcher.MATCHER_ALL, IPMatcher.MATCHER_ALL,
                                                  PortMatcher.MATCHER_ALL, new PortMatcher( 21 ),
                                                  true );
-            tmp.setDescription( "Block all incoming traffic destined to port 21 (FTP)" );
+            tmp.setLog( true );
+            tmp.setDescription( "Block and log all incoming traffic destined to port 21 (FTP)" );
             firewallList.add( tmp );
 
             /* Block all traffic TCP traffic from the network 1.2.3.4/255.255.255.0 */
@@ -290,15 +291,16 @@ public class FirewallImpl extends AbstractTransform implements Firewall
                                     IPMatcher.MATCHER_ALL, IPMatcher.parse( "1.2.3.1-1.2.3.10" ),
                                     new PortMatcher( 1000, 5000 ), PortMatcher.MATCHER_ALL,
                                     false );
-            tmp.setDescription( "Accept all traffic to the range 1.2.3.1 - 1.2.3.10 from ports 1000-5000" );
+            tmp.setLog( true );
+            tmp.setDescription( "Accept and log all traffic to the range 1.2.3.1 - 1.2.3.10 from ports 1000-5000" );
             firewallList.add( tmp );
 
             tmp = new FirewallRule( false, ProtocolMatcher.MATCHER_PING,
                                     IntfMatcher.MATCHER_ALL, IntfMatcher.MATCHER_ALL,
                                     IPMatcher.MATCHER_ALL, IPMatcher.parse( "1.2.3.1" ),
                                     PortMatcher.MATCHER_PING, PortMatcher.MATCHER_PING,
-                                    true );
-            tmp.setDescription( "Block PINGs to 1.2.3.1.  Note: the source and destination ports are ignored." );
+                                    false );
+            tmp.setDescription( "Accept PINGs to 1.2.3.1.  Note: the source and destination ports are ignored." );
             firewallList.add( tmp );
 
 

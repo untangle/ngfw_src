@@ -315,6 +315,8 @@ public class NatImpl extends AbstractTransform implements Nat
                                                  PortMatcher.MATCHER_ALL, new PortMatcher( 8080 ),
                                                  true, IPaddr.parse( "192.168.1.16" ), 80 );
             tmp.setDescription( "Redirect incoming traffic to EdgeGuard port 8080 to port 80 on 192.168.1.16" );
+            tmp.setLog( true );
+
             redirectList.add( tmp );
 
             tmp = new RedirectRule( false, ProtocolMatcher.MATCHER_ALL,
@@ -331,6 +333,8 @@ public class NatImpl extends AbstractTransform implements Nat
                                     PortMatcher.MATCHER_ALL, PortMatcher.MATCHER_ALL,
                                     true, IPaddr.parse( "4.3.2.1" ), 0 );
             tmp.setDescription( "Redirect outgoing traffic going to 1.2.3.4 to 4.2.3.1, (port is unchanged)" );
+            tmp.setLog( true );
+
             redirectList.add( tmp );
 
 

@@ -45,7 +45,7 @@ public class RedirectRule extends TrafficRule
     private static final String ACTION_REDIRECT     = "Redirect";
     private static final String ACTION_REDIRECT_LOG = "Redirect & Log";
     
-    private static final String[] ACTION_ENUMERATION = { ACTION_REDIRECT, ACTION_REDIRECT_LOG };
+    private static final String[] ACTION_ENUMERATION = { ACTION_REDIRECT_LOG, ACTION_REDIRECT };
     
     private boolean isDstRedirect;
 

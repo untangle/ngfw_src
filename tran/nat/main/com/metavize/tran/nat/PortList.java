@@ -14,14 +14,24 @@ import java.util.List;
 import java.util.Collections;
 import java.util.LinkedList;
 
+import java.util.Set;
+import java.util.HashSet;
+
+import org.apache.log4j.Logger;
+
 import java.util.Random;
 
 class PortList {
     private final List<Integer> portList = new LinkedList<Integer>();
+
+    private final Set<Integer> usedPortSet = new HashSet<Integer>();
+
+    private final Logger logger = Logger.getLogger( PortList.class );
+
     final int start;
     final int end;
     
-    private PortList( int start, int end ) {        
+    private PortList( int start, int end ) {
         this.start = start;
         this.end   = end;
 
@@ -61,13 +71,23 @@ class PortList {
     
     synchronized int getNextPort()
     {
-        return portList.remove( 0 );                
+        int port = portList.remove( 0 );
+        
+        if ( !usedPortSet.add( port )) {
+            logger.error( "Reusing port that is on the used port list: " + port );
+        }
+        
+        return port;
     }
 
     synchronized void releasePort( int port )
     {
         if ( start > port || port > end ) {
             throw new IllegalArgumentException( "Invalid port: " + port );
+        }
+
+        if ( !usedPortSet.remove( port )) {
+            logger.error( "Removing port that is not on the used list: " + port );
         }
         
         portList.add( port );

@@ -33,12 +33,9 @@ public class FirewallRule extends TrafficRule
     private static final long serialVersionUID = 1886689190345445284L;
 
     private static final String ACTION_BLOCK     = "Block";
-    private static final String ACTION_BLOCK_LOG = "Block & Log";
     private static final String ACTION_PASS      = "Pass";
-    private static final String ACTION_PASS_LOG  = "Pass & Log";
 
-    private static final String[] ACTION_ENUMERATION = { ACTION_BLOCK, ACTION_BLOCK_LOG,
-                                                         ACTION_PASS,  ACTION_PASS_LOG };
+    private static final String[] ACTION_ENUMERATION = { ACTION_BLOCK, ACTION_PASS };
 
     private boolean isTrafficBlocker;
 
@@ -83,27 +80,16 @@ public class FirewallRule extends TrafficRule
 
     public  String getAction()
     {
-        if ( isTrafficBlocker ) {
-            return ( getLog()) ? ACTION_BLOCK_LOG : ACTION_BLOCK;
-        }
 
-        return ( getLog()) ? ACTION_PASS_LOG : ACTION_PASS;
+        return ( isTrafficBlocker ) ? ACTION_BLOCK : ACTION_PASS;
     }
 
     public  void setAction( String action ) throws ParseException
     {
         if ( action.equalsIgnoreCase( ACTION_BLOCK )) {
             isTrafficBlocker = true;
-            setLog( false );
-        } else if ( action.equalsIgnoreCase( ACTION_BLOCK_LOG )) {
-            isTrafficBlocker = true;
-            setLog( true );
         } else if ( action.equalsIgnoreCase( ACTION_PASS )) {
             isTrafficBlocker = false;
-            setLog( false );
-        } else if ( action.equalsIgnoreCase( ACTION_PASS_LOG )) {
-            isTrafficBlocker = false;
-            setLog( true );
         } else {
             throw new ParseException( "Invalid action: " + action );
         }

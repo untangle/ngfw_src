@@ -158,7 +158,7 @@ class NatEventHandler extends AbstractEventHandler
     public void handleTCPFinalized(TCPSessionEvent event)
         throws MPipeException
     {
-        releasePort( Protocol.TCP, event.ipsession());
+        cleanupSession( Protocol.TCP, event.ipsession());
     }
     
     public void handleUDPFinalized(UDPSessionEvent event)
@@ -194,7 +194,7 @@ class NatEventHandler extends AbstractEventHandler
             }
 
         } else {
-            releasePort( Protocol.UDP, udpsession );
+            cleanupSession( Protocol.UDP, udpsession );
         }
     }
     
@@ -414,12 +414,11 @@ class NatEventHandler extends AbstractEventHandler
     }
 
     /**
-     * Release a port and place and back onto the port list
+     * Cleanup any of the information associated with a UDP or TCP session.
+     * Presently not implemented to handle ICMP sessions.
      */
-    private void releasePort( Protocol protocol, IPSession session )
+    private void cleanupSession( Protocol protocol, IPSession session )
     {        
-        PortList pList = getPortList( protocol );
-
         NatAttachment attachment = (NatAttachment)session.attachment();
         
         if ( attachment == null ) {
