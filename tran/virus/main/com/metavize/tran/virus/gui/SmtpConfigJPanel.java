@@ -45,7 +45,7 @@ class SmtpTableModel extends MSortedTableModel{
     private static final int C1_MW = Util.LINENO_MIN_WIDTH; /* # - invisible */
     private static final int C2_MW = 100; /* source */
     private static final int C3_MW = 55; /* scan */
-    private static final int C4_MW = 125; /* action if SPAM detected */
+    private static final int C4_MW = 140; /* action if SPAM detected */
     private static final int C5_MW = 190; /* notification if SPAM detected */
     private static final int C6_MW = Util.chooseMax(T_TW - (C1_MW + C2_MW + C3_MW + C4_MW + C5_MW), 120); /* description */
 
