@@ -23,13 +23,55 @@ import java.nio.channels.*;
 import java.io.*;
 
 /**
- * <b>Work in progress</b>
+ * Subclass of SessionHandler which yet-again simplifies
+ * consumption of an SMTP stream.  This class was created
+ * for Transforms wishing only to see "a whole mail".
+ * <br><br>
+ * This class <i>buffers</i> mails, meaning it does not
+ * pass each MIME chunk to the server.  Instead, it attempts
+ * to collect them into a file and present them to
+ * the {@link #blockPassOrModify blockPassOrModify} method
+ * for evaluation.
+ * <br><br>
+ * There are two cases when the {@link #blockPassOrModify blockPassOrModify}
+ * method will not be called for a given mail (except for when
+ * a given transaction is aborted, but the subclass does not even
+ * see such aborts).  The first is if the subclass is only interested
+ * in mails {@link #getGiveupSz below a certain size}.  This size is declared
+ * by implementing the {@link #getGiveupSz getGiveupSz()} method.
+ * <br><br>
+ * The second case which prevents {@link #blockPassOrModify blockPassOrModify()} from being
+ * called is when this handler has begun to <i>trickle</i>.  Trickling is
+ * the state in which the BufferingSessionHandler passes MIME chunks
+ * to the server as they arrive.  Tricking is initiated after the
+ * BufferingSessionHandler determines either the client or server is
+ * in danger of timing-out.  The timeout time is set by the subclass
+ * via the {@link #getMaxClientWait getMaxClientWait()} and
+ * {@link #getMaxServerWait getMaxServerWait()} methods.
+ * <br><br>
+ * When timeout occurs, the BufferingSessionHandler can enter one of
+ * two states.  It can <i>giveup-then-trickle</i>, meaning no evaluation
+ * will take place.  Alternatly, it can enter <i>buffer-and-trickle</i>
+ * meaning it will continue to buffer while bytes are sent to the
+ * server.  Which state is entered after timeout is determined by
+ * the subclass' return of the {@link #isBufferAndTrickle isBufferAndTrickle()}
+ * method.
+ * <br><br>
+ * If <i>buffer-and-trickle</i> is selected, the method
+ * {@link #blockOrPass blockOrPass()} will be invoked once the whole
+ * mail is observed.  Note that modification of the MIME message
+ * is forbidden in the {@link #blockOrPass blockOrPass()} callback,
+ * as it is too late to modify the message.
  */
 public abstract class BufferingSessionHandler
-  implements SessionHandler {
+  extends SessionHandler {
 
   private static final String RESP_TXT_354 = "Start mail input; end with <CRLF>.<CRLF>";
 
+
+  //================================
+  // Public Inner Classes
+  //================================
   
   /**
    * Actions the subclass can take when
@@ -46,12 +88,18 @@ public abstract class BufferingSessionHandler
   /**
    * <b>B</b>lock, <b>P</b>ass, or <b>M</b>odify Evaluation result.
    */
-  public static class BPMEvaluationResult {
+  public static final class BPMEvaluationResult {
     private MIMEMessage m_newMsg;
     private final boolean m_block;
     private BPMEvaluationResult(boolean block) {
       m_block = block;
     }
+    /**
+     * Constrctor used to create a result
+     * indicating that the message has been
+     * modified.  This implicitly is not
+     * a block.
+     */
     public BPMEvaluationResult(MIMEMessage newMsg) {
       m_block = false;
       m_newMsg = newMsg;
@@ -76,124 +124,166 @@ public abstract class BufferingSessionHandler
   public static BPMEvaluationResult PASS_MESSAGE = new BPMEvaluationResult(false);
 
   private final Logger m_logger = Logger.getLogger(BufferingSessionHandler.class);
-  private boolean m_closeOnNextCommand = false;//Special flag to close the client
-                                               //connection upon the next request received.
-  
-  public BufferingSessionHandler() {
 
-  }
+
+  //==================================
+  // Abstract Methods
+  //==================================
 
   /**
    * Get the size over-which this class should no
    * longer buffer.  After this point, the
-   * Buffering is abandoned and passed-along
-   * to the next transform/casing.
+   * Buffering is abandoned and the
+   * <i>giveup-then-trickle</i> state is entered.
    */
   public abstract int getGiveupSz();
 
+  /**
+   * The maximum time (in relative milliseconds)
+   * that the client can wait for a response
+   * to DATA transmission.
+   */
   public abstract long getMaxClientWait();
 
+  /**
+   * The maximum time that the server can wait
+   * for a subsequent ("DATA") command.
+   */
   public abstract long getMaxServerWait();
 
   /**
    * If true, this handler will continue to buffer even after 
-   * trickling has begun.  The MIMEMessage can no longer be modified
-   * (i.e. it will not be passed downstream) but the subclass can
-   * choose to close the connection or simply audit the
-   * transmitted message.
+   * trickling has begun (<i>buffer-and-trickle</i> mode).
+   * The MIMEMessage can no longer be modified
+   * (i.e. it will not be passed downstream) but
+   * {@link #blockOrPass blockOrPass()} will still be called
+   * once the complete message has been seen.
    */
   public abstract boolean isBufferAndTrickle();
 
+  /**
+   * Callback once an entire mail has been buffered.  Subclasses
+   * can choose one of the three permitted outcomes (Block, pass, modify).
+   *
+   * @param msg the MIMEMessage
+   * @param tx the transaction
+   * @param msgInfo the MessageInfo (for creating reporting events).
+   */
   public abstract BPMEvaluationResult blockPassOrModify(MIMEMessage msg,
     SmtpTransaction tx,
     MessageInfo msgInfo);
 
+  /**
+   * Callback once a complete message has been buffered,
+   * after the BufferingSessionHandler already entered
+   * <i>buffer-and-trickle</i> mode.  The message
+   * cannot be modified, but it can still be blocked (and
+   * any report events can be sent).
+   * <br><br>
+   * Note that this method is called <i>just before</i>
+   * the last chunk of the message is passed-along to
+   * the server (if it were afterwards, there would be
+   * no ability to block!).
+   *
+   *
+   * @param msg the MIMEMessage
+   * @param tx the transaction
+   * @param msgInfo the MessageInfo (for creating reporting events).
+   */
   public abstract BlockOrPassResult blockOrPass(MIMEMessage msg,
     SmtpTransaction tx,
     MessageInfo msgInfo);
-  
 
+
+    
+  //================================
+  // SessionHandler methods
+  //================================
+    
+  @Override
   public final void handleCommand(Command command,
     Session.SmtpCommandActions actions) {
 
     m_logger.debug("[handleCommand] with command of type \"" +
       command.getType() + "\"");
 
-    if(shouldClose(actions)) {
-      return;
-    }    
-    
-    ResponseCompletion compl = null;
-    
-//    if(command.getType() == Command.CommandType.EHLO) {
-//      compl = new EHLOResponseCompletion();
-//    }
-//    else {
-      compl = new PassthruResponseCompletion();
-//    }
-    actions.sendCommandToServer(command, compl);
+    actions.sendCommandToServer(command, new PassthruResponseCompletion());
   }
 
+  @Override
   public final void handleOpeningResponse(Response resp,
     Session.SmtpResponseActions actions) {
     m_logger.debug("[handleOpeningResponse]");
-    if(shouldClose(actions)) {
-      return;
-    }
+
     actions.sendResponseToClient(resp);
   }
-    
+
+  @Override
   public final TransactionHandler createTxHandler(SmtpTransaction tx) {
     return new BufferingTransactionHandler(tx);
   }
+
+  @Override
   public boolean handleServerFIN(TransactionHandler currentTX) {
     return true;
   }
 
+  @Override
   public boolean handleClientFIN(TransactionHandler currentTX) {
     return true;
   }  
 
 
+  //==========================
+  // Helpers
+  //==========================
+  
   /**
    * Determines, based on timestamps, if
    * trickling should begin
    */
   private boolean shouldBeginTrickle() {
-    return false;
-    //TODO bscott implement me
-  }
 
-  private boolean shouldClose(Session.SmtpActions actions) {
-    if(m_closeOnNextCommand) {
-      m_logger.debug("Closing as-per previous directive");
-      actions.sendFINToClient();
-      return true;
+    //TODO bscott Revisit this
+    
+    //---------------------------------------------------
+    //We assume that the time it takes to send
+    //to the server is the same as the client
+    //transmission time.  This could likely be
+    //optimized, but we'll worry about that later.
+    //
+    //Instead, we choose the shortest of the client/
+    //server times.  We then cut it in half (assuming
+    //transmission the other way).  If we have been
+    //waiting longer than this, then we should begin
+    //to trickle.
+
+    long giveupTime = Math.min(getMaxClientWait(), getMaxServerWait());
+    if(giveupTime <= 0) {
+      //Time equal-to or below zero means give-up
+      return false;
     }
-    return false;
+    giveupTime = (long) giveupTime/2;
+
+    long lastTimestamp = Math.min(
+      getSession().getLastClientTimestamp(),
+      getSession().getLastServerTimestamp());
+
+    long timeRemaining = (lastTimestamp + giveupTime) -
+      System.currentTimeMillis();
+
+    if(timeRemaining < 0) {
+      m_logger.debug("We should begin trickle because " +
+        "we have exceeded " + giveupTime + " milliseconds since" +
+        " last communication");
+    }
+  
+    return timeRemaining < 0;
   }
-
-
 
 
   //===================== Inner Class ====================
 
-  /**
-   * Callback from the EHLO response
-   */
-/*   
-  private class EHLOResponseCompletion
-    extends PassthruResponseCompletion {
-
-    public void handleResponse(Response resp,
-      Session.SmtpResponseActions actions) {
-      if(shouldClose(actions)) {
-        return;
-      }      
-      super.handleResponse(handleEHLOResponse(resp), actions);
-    }
-  }  
-*/
   /**
    * Possible states for the Transactions
    */
@@ -212,6 +302,9 @@ public abstract class BufferingSessionHandler
     DONE
   };
 
+
+  //===================== Inner Class ====================
+  
   /**
    * Log of the transaction (not to be confused with database TX logs).
    * Simply a sequential dialog of what took place, so if there is
@@ -254,7 +347,10 @@ public abstract class BufferingSessionHandler
   }
 
   //===================== Inner Class ====================
-  
+
+  /**
+   * The main workhorse of this class.  
+   */
   private class BufferingTransactionHandler
     extends TransactionHandler {
 
@@ -263,7 +359,6 @@ public abstract class BufferingSessionHandler
     private FileMIMESource m_mimeSource;
     private MIMEMessageHeaders m_headers;
     private int m_headersLengthInSource;
-//    private MIMEMessageHolder m_mmHolder;
     private MIMEMessage m_msg;
     private MessageInfo m_msgInfo;
 
@@ -280,62 +375,6 @@ public abstract class BufferingSessionHandler
         new Date() + ") -------");
     }
 
-    private void changeState(BufTxState newState) {
-      m_txLog.recordStateChange(m_state, newState);
-      m_state = newState;
-    }
-    /**
-     * Helper which prints the tx log to debug
-     * as a final report of what took place
-     */
-    private void finalReport() {
-      //TODO Send TxLog to debug and add final state
-//      m_txLog.add("Final transaction state: " + getTransaction().getState());
-//      m_txLog.dumpToDebug(m_logger);
-    }
-
-    /**
-     * Returns true if we should pass.  If there is a parsing
-     * error, this also returns true.  If the message
-     * was changed, it'll just be picked-up implicitly.
-     */
-    private boolean evaluateMessage(boolean canModify) {
-      if(m_msg == null) {
-        MIMEParsingInputStream mimeIn = null;
-        try {
-          mimeIn = m_mimeSource.getInputStream();
-          m_msg = new MIMEMessage(mimeIn,
-            m_mimeSource,
-            new MIMEPolicy(),
-            null,
-            m_headers);
-          mimeIn.close();
-        }
-        catch(Exception ex) {
-          try{mimeIn.close();}catch(Exception ignore){}
-          m_logger.error("Error parsing MIME", ex);
-          m_txLog.add("Parse error on MIME.  Assume it passed scanning");
-          return true;
-        }
-      }
-
-      if(canModify) {
-        BPMEvaluationResult result = blockPassOrModify(m_msg,
-          getTransaction(),
-          m_msgInfo);
-        if(result.messageModified()) {
-          m_txLog.add("Evaluation modified MIME message");
-          m_msg = result.getMessage();
-          return true;
-        }
-        else {
-          return !result.isBlock();
-        }
-      }
-      else {
-        return blockOrPass(m_msg, getTransaction(), m_msgInfo) == BlockOrPassResult.PASS;
-      }
-    }
 
     //TODO bscott Nuke the file if we were accumulating MIME.  This means
     //     we need to handle the "client" and "server" close stuff
@@ -345,11 +384,6 @@ public abstract class BufferingSessionHandler
       Session.SmtpCommandActions actions) {
       
       m_txLog.receivedToken(command);
-
-      //Check for the manditory close
-      if(shouldClose(actions)) {
-        return;
-      }
 
       //Look for the state we understand.  Note I included "INIT"
       //but that should be impossible by definition
@@ -375,11 +409,6 @@ public abstract class BufferingSessionHandler
     public void handleCommand(Command command,
       Session.SmtpCommandActions actions) {
       m_txLog.receivedToken(command);
-
-      //Check for the manditory close
-      if(shouldClose(actions)) {
-        return;
-      }
 
       if(m_state == BufTxState.GATHER_ENVELOPE ||
         m_state == BufTxState.INIT) {
@@ -409,10 +438,6 @@ public abstract class BufferingSessionHandler
       
       m_txLog.receivedToken(command);
 
-      //Check for the manditory close
-      if(shouldClose(actions)) {
-        return;
-      }
       if(m_state == BufTxState.GATHER_ENVELOPE ||
         m_state == BufTxState.INIT) {
         if(m_state == BufTxState.INIT) {
@@ -453,11 +478,6 @@ public abstract class BufferingSessionHandler
       
       m_txLog.receivedToken(token);
 
-      //Check for the manditory close
-      if(shouldClose(actions)) {
-        return;
-      }      
-
       m_mimeSource = token.getMIMESource();
       m_headers = token.getHeaders();
       m_headersLengthInSource = token.getHeadersLength();
@@ -474,11 +494,6 @@ public abstract class BufferingSessionHandler
       Session.SmtpCommandActions actions) {
       m_txLog.receivedToken(token);
 
-      //Check for the manditory close
-      if(shouldClose(actions)) {
-        return;
-      }
-            
       handleMIMEChunk(false,
         token.isLast(),
         token,
@@ -491,11 +506,6 @@ public abstract class BufferingSessionHandler
       
       m_txLog.receivedToken(token);
 
-      //Check for the manditory close
-      if(shouldClose(actions)) {
-        return;
-      }   
-            
       m_msg = token.getMessage();
       m_msgInfo = token.getMessageInfo();
       //TODO bscott Should we close the file of accumulated MIME?  It is really
@@ -506,33 +516,6 @@ public abstract class BufferingSessionHandler
       
     }
 
-    //If null, just ignore
-    private void appendChunk(ContinuedMIMEToken continuedToken) {
-      if(continuedToken == null || continuedToken.isDataWrittenToFile()
-        || !continuedToken.containsData()) {
-        m_txLog.add("Nothing to add for this Continued chunk");
-        return;
-      }
-      //TODO bscott don't keep openling/closing this channel
-      FileOutputStream fOut = null;
-      try {
-        fOut = new FileOutputStream(m_mimeSource.getFile(), true);
-        FileChannel fc = fOut.getChannel();
-        ByteBuffer writeBuf = continuedToken.getBytes();
-        m_txLog.add("About to write " + writeBuf.remaining() + " body bytes to disk");
-        while(writeBuf.hasRemaining()) {
-          fc.write(writeBuf);//TODO bscott This loop scares me.  Can the channel go haywire?
-        }
-        fOut.flush();
-        fOut.close();
-        //TODO bscott Remove this debugging
-        m_logger.debug("Message file now: " + m_mimeSource.getFile().length() + " bytes long");
-      }
-      catch(Exception ex) {
-        try {fOut.close();}catch(Exception ignore){}
-        m_logger.error("Exception appending chunk", ex);
-      }
-    }
     
     private void handleMIMEChunk(boolean isFirst,
       boolean isLast,
@@ -695,7 +678,7 @@ public abstract class BufferingSessionHandler
           //Page 29
           //Write it to the file regardless
           appendChunk(continuedToken);
-          m_txLog.add("Trickle and buffer.  Whole message obtained.  Pass along last chunk and eval");
+          m_txLog.add("Trickle and buffer.  Whole message obtained.  Evaluate");
           if(isLast) {
             if(evaluateMessage(false)) {
               m_txLog.add("Evaluation passed");
@@ -707,9 +690,14 @@ public abstract class BufferingSessionHandler
             }
             else {
               //Block, the hard way...
-              m_txLog.add("Evaluation failed");
+              m_txLog.add("Evaluation failed.  Send a \"fake\" 250 to client then shutdown server");
               actions.appendSyntheticResponse(new FixedSyntheticResponse(250, "OK"));
-              //TODO bscott talk to Aaron about the various shutdown things.
+              actions.transactionEnded(this);
+              //Put a Response handler here, in case the goofy server
+              //sends an ACK to the FIN (which Exim seems to do!?!)
+              actions.sendFINToServer(new NoopResponseCompletion());
+              getSession().setSessionHandler(
+                new ShuttingDownSessionHandler(1000*60));//TODO bscott a real timeout value
             }
           }
           else {
@@ -733,7 +721,92 @@ public abstract class BufferingSessionHandler
       }
     }
 
-  
+
+    //If null, just ignore
+    private void appendChunk(ContinuedMIMEToken continuedToken) {
+      if(continuedToken == null || continuedToken.isDataWrittenToFile()
+        || !continuedToken.containsData()) {
+        m_txLog.add("Nothing to add for this Continued chunk");
+        return;
+      }
+      //TODO bscott don't keep openling/closing this channel
+      FileOutputStream fOut = null;
+      try {
+        fOut = new FileOutputStream(m_mimeSource.getFile(), true);
+        FileChannel fc = fOut.getChannel();
+        ByteBuffer writeBuf = continuedToken.getBytes();
+        m_txLog.add("About to write " + writeBuf.remaining() + " body bytes to disk");
+        while(writeBuf.hasRemaining()) {
+          fc.write(writeBuf);//TODO bscott This loop scares me.  Can the channel go haywire?
+        }
+        fOut.flush();
+        fOut.close();
+        //TODO bscott Remove this debugging
+        m_logger.debug("Message file now: " + m_mimeSource.getFile().length() + " bytes long");
+      }
+      catch(Exception ex) {
+        try {fOut.close();}catch(Exception ignore){}
+        m_logger.error("Exception appending chunk", ex);
+      }
+    }    
+
+
+    private void changeState(BufTxState newState) {
+      m_txLog.recordStateChange(m_state, newState);
+      m_state = newState;
+    }
+    /**
+     * Helper which prints the tx log to debug
+     * as a final report of what took place
+     */
+    private void finalReport() {
+      //TODO Send TxLog to debug and add final state
+//      m_txLog.add("Final transaction state: " + getTransaction().getState());
+//      m_txLog.dumpToDebug(m_logger);
+    }
+
+    /**
+     * Returns true if we should pass.  If there is a parsing
+     * error, this also returns true.  If the message
+     * was changed, it'll just be picked-up implicitly.
+     */
+    private boolean evaluateMessage(boolean canModify) {
+      if(m_msg == null) {
+        MIMEParsingInputStream mimeIn = null;
+        try {
+          mimeIn = m_mimeSource.getInputStream();
+          m_msg = new MIMEMessage(mimeIn,
+            m_mimeSource,
+            new MIMEPolicy(),
+            null,
+            m_headers);
+          mimeIn.close();
+        }
+        catch(Exception ex) {
+          try{mimeIn.close();}catch(Exception ignore){}
+          m_logger.error("Error parsing MIME", ex);
+          m_txLog.add("Parse error on MIME.  Assume it passed scanning");
+          return true;
+        }
+      }
+
+      if(canModify) {
+        BPMEvaluationResult result = blockPassOrModify(m_msg,
+          getTransaction(),
+          m_msgInfo);
+        if(result.messageModified()) {
+          m_txLog.add("Evaluation modified MIME message");
+          m_msg = result.getMessage();
+          return true;
+        }
+        else {
+          return !result.isBlock();
+        }
+      }
+      else {
+        return blockOrPass(m_msg, getTransaction(), m_msgInfo) == BlockOrPassResult.PASS;
+      }
+    }  
   
   
   
@@ -755,11 +828,6 @@ public abstract class BufferingSessionHandler
         
         m_txLog.receivedResponse(resp);
         m_txLog.add("Response to DATA command was " + resp.getCode());
-
-        //Check for the manditory close
-        if(shouldClose(actions)) {
-          return;
-        }           
 
         //Save this in a variable, so we can pass it along
         //later (if not positive)
@@ -833,11 +901,6 @@ public abstract class BufferingSessionHandler
         m_txLog.receivedResponse(resp);
         m_txLog.add("Response to DATA command was " + resp.getCode());
 
-        //Check for the manditory close
-        if(shouldClose(actions)) {
-          return;
-        }           
-
         //Save this in a variable, so we can pass it along
         //later (if not positive)
         m_dataResp = resp.getCode();
@@ -845,9 +908,15 @@ public abstract class BufferingSessionHandler
         actions.enableClientTokens();
         
         if(resp.getCode() < 400) {
+          m_txLog.add("Begin trickle with BeginMIMEToken");
+          actions.sendBeginMIMEToServer(new BeginMIMEToken(m_headers,
+            m_mimeSource,
+            m_headersLengthInSource,
+            m_msgInfo));
           changeState(m_nextState);
         }
         else {
+          //TODO bscott Nuke the MIME file
           actions.sendCommandToServer(new Command(Command.CommandType.RSET),
             new NoopResponseCompletion());
           changeState(BufTxState.PASSTHRU_PENDING_NACK);
@@ -870,11 +939,6 @@ public abstract class BufferingSessionHandler
         
         m_txLog.receivedResponse(resp);
         m_txLog.add("Response to mail transmission command was " + resp.getCode());
-
-        //Check for the manditory close
-        if(shouldClose(actions)) {
-          return;
-        }           
 
         if(resp.getCode() < 300) {
           getTransaction().commit();
@@ -909,11 +973,6 @@ public abstract class BufferingSessionHandler
       public void handleResponse(Response resp,
         Session.SmtpResponseActions actions) {
 
-        //Check for the manditory close
-        if(shouldClose(actions)) {
-          return;
-        }           
-        
         super.handleResponse(resp, actions);
       }
     }

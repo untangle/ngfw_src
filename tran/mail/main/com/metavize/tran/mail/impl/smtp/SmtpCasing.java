@@ -37,14 +37,14 @@ public class SmtpCasing extends AbstractCasing {
   // constructors -----------------------------------------------------------
 
   public SmtpCasing(TCPSession session, boolean clientSide) {
+    CasingSessionTracker tracker = new CasingSessionTracker();  
     if(clientSide) {
-      TransactionTracker tracker = new TransactionTracker();
       m_parser = new SmtpClientParser(session, this, tracker);
       m_unparser = new SmtpClientUnparser(session, this, tracker);
     }
     else {
-      m_parser = new SmtpServerParser(session, this);
-      m_unparser = new SmtpServerUnparser(session, this);    
+      m_parser = new SmtpServerParser(session, this, tracker);
+      m_unparser = new SmtpServerUnparser(session, this, tracker);    
     }
 
     m_trace = TRACE;//Someday, perhaps a hidden property

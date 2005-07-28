@@ -102,6 +102,13 @@ public class MAILCommand
     }
   }
 
+  protected void setAddress(EmailAddress address) {
+    super.setAddress(address);
+    setArgStr("FROM:" + address.toSMTPString());
+  }
+
+  
+
 
 /*
 

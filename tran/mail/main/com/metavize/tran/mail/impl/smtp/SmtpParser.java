@@ -41,12 +41,15 @@ abstract class SmtpParser
   private final SmtpCasing m_parentCasing;
   private final Logger m_logger = Logger.getLogger(SmtpParser.class);
   private boolean m_passthru = false;
+  private CasingSessionTracker m_tracker;
 
   protected  SmtpParser(TCPSession session,
     SmtpCasing parent,
+    CasingSessionTracker tracker,
     boolean clientSide) {
     
     super(session, clientSide);
+    m_tracker = tracker;
     m_parentCasing = parent;
     m_pipeline = MvvmContextFactory.context().
       pipelineFoundry().getPipeline(session.id());
@@ -57,6 +60,9 @@ abstract class SmtpParser
   }
   protected Pipeline getPipeline() {
     return m_pipeline;
+  }
+  protected CasingSessionTracker getSessionTracker() {
+    return m_tracker;
   }
 
   /**

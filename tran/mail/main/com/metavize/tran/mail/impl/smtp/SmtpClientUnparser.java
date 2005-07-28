@@ -29,14 +29,12 @@ class SmtpClientUnparser
   extends SmtpUnparser {
 
   private final Logger m_logger = Logger.getLogger(SmtpClientUnparser.class);
-  private final TransactionTracker m_tracker;
 
   SmtpClientUnparser(TCPSession session,
     SmtpCasing parent,
-    TransactionTracker tracker) {
-    super(session, parent, true);
+    CasingSessionTracker tracker) {
+    super(session, parent, tracker, true);
     m_logger.debug("Created");
-    m_tracker = tracker;
   }
 
 
@@ -61,7 +59,7 @@ class SmtpClientUnparser
     //-----------------------------------------------------------
     if(token instanceof Response) {
       Response resp = (Response) token;
-      m_tracker.responseReceived(resp);
+      getSessionTracker().responseReceived(resp);
       m_logger.debug("Unparsing response with code " +
         resp.getCode() + " and " + resp.getArgs().length + " lines");
     }

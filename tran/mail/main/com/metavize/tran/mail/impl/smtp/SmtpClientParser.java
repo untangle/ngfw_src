@@ -44,8 +44,7 @@ class SmtpClientParser
     HEADERS,
     BODY
   };
-  private TransactionTracker m_tracker;  
-
+  
   //Transient
   private SmtpClientState m_state = SmtpClientState.COMMAND;
   private MIMEAccumulator m_mimeAccumulator;
@@ -53,13 +52,12 @@ class SmtpClientParser
 
   SmtpClientParser(TCPSession session,
     SmtpCasing parent,
-    TransactionTracker tracker) {
+    CasingSessionTracker tracker) {
     
-    super(session, parent, true);
+    super(session, parent, tracker, true);
     
     m_logger.debug("Created");
     lineBuffering(false);
-    m_tracker = tracker;
   }
   
 
@@ -93,6 +91,8 @@ class SmtpClientParser
     while(!done && buf.hasRemaining()) {
       m_logger.debug("Draining tokens from buffer (" + toks.size() +
         " tokens so far)");
+      //TODO bscott removeme (for testing timeouts).
+//      try {Thread.currentThread().sleep(1000);}catch(Exception ignore){}
       switch(m_state) {
       
         //==================================================
@@ -123,7 +123,7 @@ class SmtpClientParser
 
             m_logger.debug("Parsed \"" + cmd.getType() + "\" Command");
             //Update the transaction tracker
-            m_tracker.commandReceived(cmd);
+            getSessionTracker().commandReceived(cmd);
             toks.add(cmd);
 
             //Check for DATA command, which changes our state
@@ -154,7 +154,7 @@ class SmtpClientParser
         //==================================================
         case HEADERS:
           m_logger.debug(m_state + " state");
-          m_tracker.beginMsgTransmission();
+          getSessionTracker().beginMsgTransmission();
           
           //Duplicate the buffer, in case we have a problem
           ByteBuffer dup = buf.duplicate();
@@ -315,7 +315,7 @@ class SmtpClientParser
       getSession().id(),
       getSession().serverPort());
     //Add anyone from the transaction
-    SmtpTransaction smtpTx = m_tracker.getCurrentTransaction();
+    SmtpTransaction smtpTx = getSessionTracker().getCurrentTransaction();
     if(smtpTx == null) {
       m_logger.error("Transaction tracker returned null for current transaction");
     }

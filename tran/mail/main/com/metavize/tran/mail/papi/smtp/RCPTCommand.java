@@ -97,4 +97,8 @@ public class RCPTCommand
       setArgStr(sb.toString());
     }
   }
+  protected void setAddress(EmailAddress address) {
+    super.setAddress(address);
+    setArgStr("TO:" + address.toSMTPString());
+  }
 }

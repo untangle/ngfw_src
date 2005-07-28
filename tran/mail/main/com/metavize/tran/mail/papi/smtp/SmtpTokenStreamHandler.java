@@ -19,7 +19,7 @@ import org.apache.log4j.Logger;
 
 
 /**
- * Interface for Object wishing to listen-on
+ * Base class for Object wishing to listen-on
  * a raw Smtp Token Stream.  Instances become
  * registered on a Stream by associating
  * itself either in the constructor
@@ -32,7 +32,27 @@ import org.apache.log4j.Logger;
  * pass-along Passthru tokens in each direction.
  * 
  */
-public interface SmtpTokenStreamHandler {
+public abstract class SmtpTokenStreamHandler {
+
+  private SmtpTokenStream m_stream;
+
+  /**
+   * <b>Only to be called by the SmtpTokenStream passing
+   * itself</b>
+   */
+  protected final void setSmtpTokenStream(SmtpTokenStream stream) {
+    m_stream = stream;
+  }
+
+  /**
+   * Get the Stream which is sending tokens to this
+   * instance.  If this instance is not registered
+   * with any SmtpTokenStream, this method
+   * returns null.
+   */
+  public final SmtpTokenStream getSmtpTokenStream() {
+    return m_stream;
+  }
 
   /**
    * Callback indicating that this conversation
@@ -50,7 +70,7 @@ public interface SmtpTokenStreamHandler {
    * @param resultBuilder the builder, to pass along
    *        tokens/streams to the client/server
    */
-  public void passthru(TokenResultBuilder resultBuilder);
+  public abstract void passthru(TokenResultBuilder resultBuilder);
 
   /**
    * Handle a Command token
@@ -60,7 +80,7 @@ public interface SmtpTokenStreamHandler {
    *
    * @param cmd the command
    */
-  public void handleCommand(TokenResultBuilder resultBuilder,
+  public abstract void handleCommand(TokenResultBuilder resultBuilder,
     Command cmd);
 
   /**
@@ -71,7 +91,7 @@ public interface SmtpTokenStreamHandler {
    *
    * @param cmd the command
    */
-  public void handleMAILCommand(TokenResultBuilder resultBuilder,
+  public abstract void handleMAILCommand(TokenResultBuilder resultBuilder,
     MAILCommand cmd);
 
   /**
@@ -82,7 +102,7 @@ public interface SmtpTokenStreamHandler {
    *
    * @param cmd the command
    */
-  public void handleRCPTCommand(TokenResultBuilder resultBuilder,
+  public abstract void handleRCPTCommand(TokenResultBuilder resultBuilder,
     RCPTCommand cmd);
 
   /**
@@ -93,7 +113,7 @@ public interface SmtpTokenStreamHandler {
    *
    * @param token the token
    */
-  public void handleBeginMIME(TokenResultBuilder resultBuilder,
+  public abstract void handleBeginMIME(TokenResultBuilder resultBuilder,
     BeginMIMEToken token);
 
   /**
@@ -104,7 +124,7 @@ public interface SmtpTokenStreamHandler {
    *
    * @param token the token
    */    
-  public void handleContinuedMIME(TokenResultBuilder resultBuilder,
+  public abstract void handleContinuedMIME(TokenResultBuilder resultBuilder,
     ContinuedMIMEToken token);
 
   /**
@@ -115,7 +135,7 @@ public interface SmtpTokenStreamHandler {
    *
    * @param resp the resp
    */    
-  public void handleResponse(TokenResultBuilder resultBuilder,
+  public abstract void handleResponse(TokenResultBuilder resultBuilder,
     Response resp);
 
   /**
@@ -126,7 +146,7 @@ public interface SmtpTokenStreamHandler {
    *
    * @param chunk the chunk
    */    
-  public void handleChunkForClient(TokenResultBuilder resultBuilder,
+  public abstract void handleChunkForClient(TokenResultBuilder resultBuilder,
     Chunk chunk);
 
   /**
@@ -137,7 +157,7 @@ public interface SmtpTokenStreamHandler {
    *
    * @param chunk the chunk
    */
-  public void handleChunkForServer(TokenResultBuilder resultBuilder,
+  public abstract void handleChunkForServer(TokenResultBuilder resultBuilder,
     Chunk chunk);
 
   /**
@@ -148,7 +168,7 @@ public interface SmtpTokenStreamHandler {
    *
    * @param token the token
    */
-  public void handleCompleteMIME(TokenResultBuilder resultBuilder,
+  public abstract void handleCompleteMIME(TokenResultBuilder resultBuilder,
     CompleteMIMEToken token);
 
   /**
@@ -157,7 +177,7 @@ public interface SmtpTokenStreamHandler {
    * @return true if the client should be shutdown.  False
    *         to leave the client side open.
    */
-  public boolean handleServerFIN();
+  public abstract boolean handleServerFIN();
 
 
   /**
@@ -166,5 +186,6 @@ public interface SmtpTokenStreamHandler {
    * @return true if the server should be shutdown.  False
    *         to leave the server side open.
    */
-  public boolean handleClientFIN();
+  public abstract boolean handleClientFIN();
+
 }

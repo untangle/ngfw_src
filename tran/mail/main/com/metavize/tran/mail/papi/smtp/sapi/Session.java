@@ -30,7 +30,12 @@ import com.metavize.tran.util.*;
  * and convert to a more managable
  * {@link com.metavize.tran.mail.papi.smtp.sapi.Session Session-oriented}
  * API.
- * <br>
+ * <br><br>
+ * The primary benifit of this class is that it programatically
+ * enforces transaction boundaries, and provides a queue to allign
+ * requests/responses while permitting (a) protocol manipulation
+ * and (b) pipelining.
+ *
  * @see com.metavize.tran.mail.papi.smtp.sapi.Session
  */
 public final class Session
@@ -74,8 +79,11 @@ public final class Session
      * Send a FIN to the server (i.e. shutdown the server-half).
      * Note that this takes place as soon as the call is made
      * (i.e. possibly trapping any tokens headed for the server);
+     *
+     * The ResponseCompletion is added in case the goofy
+     * server sends an acknowledgement to the response.
      */
-    public void sendFINToServer();
+    public void sendFINToServer(ResponseCompletion compl);
 
     /**
      * Send a FIN to the client (i.e. shutdown the client-half).
@@ -215,7 +223,7 @@ public final class Session
     "RSET",
     "VRFY",
     "NOOP",
-    "SIZE",
+/*    "SIZE",*/
     "PIPELINING",
     "OK"//Added in case they just send "250 OK"
   };
@@ -252,8 +260,20 @@ public final class Session
   public Session(TCPSession session,
     SessionHandler handler) {
     super(session);
+
+    //Set out fixed StreamHandler as
+    //the listener for Stream events
     super.setHandler(m_streamHandler);
-    m_sessionHandler = handler;
+
+    //Install defaults for permitted
+    //commands/extensions
+    setAllowedCommands(DEF_ALLOWED_COMMANDS);
+    setAllowedExtensions(DEF_ALLOWED_EXTENSIONS);
+
+    //Assign the handler
+    setSessionHandler(handler);
+
+    //Build-out request queue
     m_outstandingRequests = new LinkedList<OutstandingRequest>();
 
     //Tricky little thing here.  The first message passed for SMTP
@@ -267,14 +287,24 @@ public final class Session
           m_sessionHandler.handleOpeningResponse(resp, actions);
         }
       }));
-    setAllowedCommands(DEF_ALLOWED_COMMANDS);
-    setAllowedExtensions(DEF_ALLOWED_EXTENSIONS);
+
   }
 
   
   //==========================
   // Properties
-  //===========================  
+  //===========================
+
+  /**
+   * Set the instance which will receive callbacks
+   * around interesting portions of an SMTP session
+   *
+   * @param handler the handler (not tolerant of null).
+   */
+  public void setSessionHandler(SessionHandler handler) {
+    m_sessionHandler = handler;
+    m_sessionHandler.setSession(this);
+  }
 
   /**
    * Set the list of permitted commands (e.g. "EHLO", "DATA").  Note 
@@ -390,18 +420,26 @@ public final class Session
     return new Response(resp.getCode(), newRespLines);
   }
 
+  /**
+   * Scans the allowed extension list for the
+   * presence of "extensionName"
+   */
   private boolean isAllowedExtension(String extensionName) {
     //Thread safety
-    String[] allowedExtensionsLC = m_allowedExtensionsLC;  
+    String[] allowedExtensionsLC = m_allowedExtensionsLC;
+    extensionName = extensionName.toLowerCase();
     for(String permitted : allowedExtensionsLC) {
-      if(extensionName.toLowerCase().equals(permitted)) {
+      if(extensionName.equals(permitted)) {
         return true;
       }
     }
     return false;
   }
     
-
+  /**
+   * Picks the verb out-of an ESMTP response
+   * line (i.e. "SIZE" out of "SIZE 13546654").
+   */
   private String getCapabilitiesLineVerb(String str) {
     //TODO bscott.  Are all commands separated
     //     by a space from any arguments?
@@ -433,7 +471,7 @@ public final class Session
     public TokenResultBuilder getTokenResultBuilder() {
       return m_ts;
     }
-    public void enqueueResponseHandler(ResponseCompletion cont) {
+    private void enqueueResponseHandler(ResponseCompletion cont) {
       m_outstandingRequests.add(new OutstandingRequest(cont));
     }
     public void disableClientTokens() {
@@ -448,8 +486,9 @@ public final class Session
         m_currentTxHandler = null;
       }
     }
-    public void sendFINToServer() {
+    public void sendFINToServer(ResponseCompletion compl) {
       m_logger.debug("Sending FIN to server");
+      m_outstandingRequests.add(new OutstandingRequest(compl));
       Session.this.getSession().shutdownServer();
     }
 
@@ -460,22 +499,27 @@ public final class Session
 
     public void sendCommandToServer(Command command,
       ResponseCompletion compl) {
+      m_logger.debug("Sending Command " + command.getType() + " to server");
       getTokenResultBuilder().addTokenForServer(command);
       enqueueResponseHandler(compl);
     }
     public void sendBeginMIMEToServer(BeginMIMEToken token) {
+      m_logger.debug("Sending BeginMIMEToken to server");
       getTokenResultBuilder().addTokenForServer(token);
     }
     public void sendContinuedMIMEToServer(ContinuedMIMEToken token) {
+      m_logger.debug("Sending intermediate ContinuedMIMEToken to server");
       getTokenResultBuilder().addTokenForServer(token);
     }
     public void sendFinalMIMEToServer(ContinuedMIMEToken token,
       ResponseCompletion compl) {
+      m_logger.debug("Sending final ContinuedMIMEToken to server");
       getTokenResultBuilder().addTokenForServer(token);
       enqueueResponseHandler(compl);
     }
     public void sentWholeMIMEToServer(CompleteMIMEToken token,
       ResponseCompletion compl) {
+      m_logger.debug("Sending whole MIME to server");
       getTokenResultBuilder().addTokenForServer(token);
       enqueueResponseHandler(compl);
     }
@@ -494,6 +538,7 @@ public final class Session
       super(ts);
     }
     public void sendResponseToClient(Response resp) {
+      m_logger.debug("Sending response " + resp.getCode() + " to client");
       getTokenResultBuilder().addTokenForClient(resp);
     }  
 
@@ -514,6 +559,7 @@ public final class Session
     }
 
     public void appendSyntheticResponse(SyntheticResponse synth) {
+      m_logger.debug("Appending synthetic response");
       if(m_outstandingRequests.size() == 0) {
         if(m_immediateActions == null) {
           m_immediateActions = new HoldsSyntheticActions();
@@ -569,12 +615,14 @@ public final class Session
   //=============== Inner Class Separator ====================
 
   private class MySmtpTokenStreamHandler
-    implements SmtpTokenStreamHandler {
-  
+    extends SmtpTokenStreamHandler {
+
+    @Override
     public void passthru(TokenResultBuilder resultBuilder) {
       //Nothing to do
     }
-  
+
+    @Override
     public void handleCommand(TokenResultBuilder resultBuilder,
       Command cmd) {
       SmtpCommandActionsImpl actions = new SmtpCommandActionsImpl(resultBuilder);
@@ -593,6 +641,8 @@ public final class Session
         m_logger.debug("Enqueuing private response handler to EHLO command so " +
           "unknown extensions can be disabled");
         actions.sendCommandToServer(cmd, new SessionOpenResponse());
+        //Let the handler at least see the EHLO command, for logging
+        m_sessionHandler.observeEHLOCommand(cmd);
         return;
       }
       
@@ -617,7 +667,8 @@ public final class Session
       }
       actions.followup();
     }
-  
+
+    @Override
     public void handleMAILCommand(TokenResultBuilder resultBuilder,
       MAILCommand cmd) {
       TransactionHandler handler = getOrCreateTxHandler();
@@ -625,7 +676,8 @@ public final class Session
       handler.handleMAILCommand(cmd, actions);
       actions.followup();
     }
-  
+
+    @Override
     public void handleRCPTCommand(TokenResultBuilder resultBuilder,
       RCPTCommand cmd) {
       TransactionHandler handler = getOrCreateTxHandler();
@@ -633,7 +685,8 @@ public final class Session
       handler.handleRCPTCommand(cmd, actions);
       actions.followup();
     }
-  
+
+    @Override
     public void handleBeginMIME(TokenResultBuilder resultBuilder,
       BeginMIMEToken token) {
       TransactionHandler handler = getOrCreateTxHandler();
@@ -641,7 +694,8 @@ public final class Session
       handler.handleBeginMIME(token, actions);
       actions.followup();
     }
-  
+
+    @Override
     public void handleContinuedMIME(TokenResultBuilder resultBuilder,
       ContinuedMIMEToken token) {
       
@@ -653,7 +707,8 @@ public final class Session
       handler.handleContinuedMIME(token, actions);
       actions.followup();
     }
-  
+
+    @Override
     public void handleResponse(TokenResultBuilder resultBuilder,
       Response resp) {
       m_logger.debug("[handleResponse()]");
@@ -667,16 +722,20 @@ public final class Session
       or.cont.handleResponse(resp, new SmtpResponseActionsImpl(resultBuilder));
       processSynths(or, resultBuilder);
     }
-  
+
+    @Override
     public void handleChunkForClient(TokenResultBuilder resultBuilder,
       Chunk chunk) {
       resultBuilder.addTokenForClient(chunk);
     }
-  
+
+    @Override
     public void handleChunkForServer(TokenResultBuilder resultBuilder,
       Chunk chunk) {
       resultBuilder.addTokenForServer(chunk);
     }
+
+    @Override
     public void handleCompleteMIME(TokenResultBuilder resultBuilder,
       CompleteMIMEToken token) {
       
@@ -690,10 +749,13 @@ public final class Session
       handler.handleCompleteMIME(token, actions);
       actions.followup();
     }
+
+    @Override
     public boolean handleServerFIN() {
       return m_sessionHandler.handleServerFIN(m_currentTxHandler);
     }
 
+    @Override
     public boolean handleClientFIN() {
       return m_sessionHandler.handleClientFIN(m_currentTxHandler);
     }
@@ -708,7 +770,13 @@ public final class Session
       public void handleResponse(Response resp,
         Session.SmtpResponseActions actions) {
         m_logger.debug("Processing response to EHLO Command");
-        actions.sendResponseToClient(fixupEHLOResponse(resp));
+        //Nasty little line below causes
+        //the Session to manipulate the response,
+        //then lets the session do the same with
+        //the already manipulated response.
+        actions.sendResponseToClient(
+          m_sessionHandler.manipulateEHLOResponse(
+            fixupEHLOResponse(resp)));
       }
     }
     

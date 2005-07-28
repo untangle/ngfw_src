@@ -100,7 +100,18 @@ public class SmtpSessionHandler
     m_logger.debug("[handleMessageCanBlock]");
 
     //Scan the message
-    SpamReport report = scan(msg);
+    File f = messageToFile(msg);
+    if(f == null) {
+      m_logger.error("Error writing to file.  Unable to scan.  Assume pass");
+      return PASS_MESSAGE;
+    }
+
+    if(f.length() > GIVEUP_SZ) {
+      m_logger.debug("Message larger than " + GIVEUP_SZ + ".  Don't bother to scan");
+      return PASS_MESSAGE;
+    }
+    
+    SpamReport report = scanFile(f);
 
     //Handle error case
     if(report == null) {
@@ -160,7 +171,18 @@ public class SmtpSessionHandler
     m_logger.debug("[handleMessageCanNotBlock]");
     
     //Scan the message
-    SpamReport report = scan(msg);
+    File f = messageToFile(msg);
+    if(f == null) {
+      m_logger.error("Error writing to file.  Unable to scan.  Assume pass");
+      return BlockOrPassResult.PASS;
+    }
+
+    if(f.length() > GIVEUP_SZ) {
+      m_logger.debug("Message larger than " + GIVEUP_SZ + ".  Don't bother to scan");
+      return BlockOrPassResult.PASS;
+    }    
+    
+    SpamReport report = scanFile(f);
 
     //Handle error case
     if(report == null) {
@@ -201,20 +223,25 @@ public class SmtpSessionHandler
   }
 
   /**
-   * Wrapper method around the real scanner, which
-   * swallows exceptions and simply returns null
+   * Wrapper that handles exceptions, and returns
+   * null if there is a problem
    */
-  private SpamReport scan(MIMEMessage msg) {
-  
+  private File messageToFile(MIMEMessage msg) {
     //Get the part as a file
-    File f = null;
     try {
-      f = msg.getContentAsFile(m_fileFactory, true);
+      return msg.getContentAsFile(m_fileFactory, true);
     }
     catch(Exception ex) {
       m_logger.error("Exception writing MIME Message to file", ex);
       return null;
     }
+  }
+
+  /**
+   * Wrapper method around the real scanner, which
+   * swallows exceptions and simply returns null
+   */
+  private SpamReport scanFile(File f) {
 
     //Attempt scan
     try {

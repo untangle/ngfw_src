@@ -38,8 +38,9 @@ class SmtpServerParser
   private ResponseParser m_parser = new ResponseParser();
   
   SmtpServerParser(TCPSession session,
-    SmtpCasing parent) {
-    super(session, parent, false);
+    SmtpCasing parent,
+    CasingSessionTracker tracker) {
+    super(session, parent, tracker, false);
     
     m_logger.debug("Created");
     lineBuffering(false);

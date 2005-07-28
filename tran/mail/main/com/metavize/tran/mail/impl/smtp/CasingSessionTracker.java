@@ -18,20 +18,40 @@ import org.apache.log4j.Logger;
 
 /**
  * Class which is shared between Client Parser and Unparser, observing
- * transaction-impacting Commands and Responses to accumulate
- * who is part of a transaction (TO/FROM).
+ * state transitions (esp: transaction-impacting) Commands and
+ * Responses to accumulate who is part of a transaction (TO/FROM)
+ * and to align requests with responses.
  */
-class TransactionTracker {
+class CasingSessionTracker {
 
-  private final Logger m_logger = Logger.getLogger(TransactionTracker.class);
+  /**
+   * Interface for Object wishing to
+   * be called-back when the response
+   * to a given Command is received.
+   */
+  interface ResponseAction {
+    /**
+     * Callback corresponding to the
+     * Command for-which this action
+     * was registered.
+     * <br><br>
+     * Note that any changes to the internal
+     * state of the Tracker have <b>already</b>
+     * been made (i.e. the tracker sees the
+     * response before the callback).
+     */
+    void response(int code);
+  }
+
+  private final Logger m_logger = Logger.getLogger(CasingSessionTracker.class);
 
   private SmtpTransaction m_currentTransaction;
   private List<ResponseAction> m_outstandingRequests;
 
-  TransactionTracker() {
+  CasingSessionTracker() {
     m_outstandingRequests = new LinkedList<ResponseAction>();
     //Add response for initial salutation
-    m_outstandingRequests.add(new ResponseAction());    
+    m_outstandingRequests.add(new SimpleResponseAction());    
   }
 
   /**
@@ -43,33 +63,43 @@ class TransactionTracker {
   }
 
   void beginMsgTransmission() {
-    getOrCreateTransaction();
-    m_outstandingRequests.add(new TransmissionResponseAction());
-
+    beginMsgTransmission(null);
   }
   
+  void beginMsgTransmission(ResponseAction chainedAction) {
+    getOrCreateTransaction();
+    m_outstandingRequests.add(new TransmissionResponseAction(chainedAction));
+
+  }
+
   void commandReceived(Command command) {
+    commandReceived(command, null);
+  }
+  
+  void commandReceived(Command command,
+    ResponseAction chainedAction) {
+    
     ResponseAction action = null;
     if(command.getType() == Command.CommandType.MAIL) {
       EmailAddress addr = ((MAILCommand) command).getAddress();
       getOrCreateTransaction().fromRequest(addr);
-      action = new MAILResponseAction(addr);
+      action = new MAILResponseAction(addr, chainedAction);
     }
     else if(command.getType() == Command.CommandType.RCPT) {
       EmailAddress addr = ((RCPTCommand) command).getAddress();
       getOrCreateTransaction().toRequest(addr);
-      action = new RCPTResponseAction(addr);
+      action = new RCPTResponseAction(addr, chainedAction);
     }
     else if(command.getType() == Command.CommandType.RSET) {
       getOrCreateTransaction().reset();
       m_currentTransaction = null;
-      action = new ResponseAction();
+      action = new SimpleResponseAction(chainedAction);
     }
     else if(command.getType() == Command.CommandType.DATA) {
-      action = new DATAResponseAction();
+      action = new DATAResponseAction(chainedAction);
     }
     else {
-      action = new ResponseAction();
+      action = new SimpleResponseAction(chainedAction);
     }
     m_outstandingRequests.add(action);              
   }
@@ -91,22 +121,61 @@ class TransactionTracker {
     return m_currentTransaction;
   }
   
+  private abstract class ChainedResponseAction
+    implements ResponseAction {
 
+    private final ResponseAction m_chained;
 
-  private class ResponseAction {
-    void response(int code) {
-      //Do nothing
+    ChainedResponseAction() {
+      this(null);
+    }
+    ChainedResponseAction(ResponseAction chained) {
+      m_chained = chained;
+    }
+    
+    public final void response(int code) {
+      responseImpl(code);
+      if(m_chained != null) {
+        m_chained.response(code);
+      }
+    }
+
+    abstract void responseImpl(int code);
+  }
+
+  private class SimpleResponseAction
+    extends ChainedResponseAction {
+
+    private ResponseAction m_chained;
+
+    SimpleResponseAction() {
+      super();
+    }
+    SimpleResponseAction(ResponseAction chained) {
+      super(chained);
+    }
+    
+    void responseImpl(int code) {
+      //Do nothing ourselves
     }
   }
 
   
   private class MAILResponseAction
-    extends ResponseAction {
+    extends ChainedResponseAction {
+    
     private final EmailAddress m_addr;
+
     MAILResponseAction(EmailAddress addr) {
-      m_addr = addr;
+      this(addr, null);
     }
-    void response(int code) {
+    MAILResponseAction(EmailAddress addr,
+      ResponseAction chained) {
+      super(chained);
+      m_addr = addr;
+    }    
+
+    void responseImpl(int code) {
       if(m_currentTransaction != null) {
         m_currentTransaction.fromResponse(m_addr, code<300);
       }
@@ -115,12 +184,20 @@ class TransactionTracker {
 
   
   private class RCPTResponseAction
-    extends ResponseAction {
+    extends ChainedResponseAction {
+    
     private final EmailAddress m_addr;
+
     RCPTResponseAction(EmailAddress addr) {
-      m_addr = addr;
+      this(addr, null);
     }
-    void response(int code) {
+    RCPTResponseAction(EmailAddress addr,
+      ResponseAction chained) {
+      super(chained);
+      m_addr = addr;
+    }      
+
+    void responseImpl(int code) {
       if(m_currentTransaction != null) {
         m_currentTransaction.toResponse(m_addr, code<300);
       }
@@ -128,8 +205,16 @@ class TransactionTracker {
   }
 
   private class DATAResponseAction
-    extends ResponseAction {
-    void response(int code) {
+    extends ChainedResponseAction {
+
+    DATAResponseAction() {
+      super();
+    }
+    DATAResponseAction(ResponseAction chained) {
+      super(chained);
+    }    
+    
+    void responseImpl(int code) {
       if(code >= 400) {
         getOrCreateTransaction().failed();
         m_currentTransaction = null;
@@ -138,8 +223,16 @@ class TransactionTracker {
   }  
 
   private class TransmissionResponseAction
-    extends ResponseAction {
-    void response(int code) {
+    extends ChainedResponseAction {
+
+    TransmissionResponseAction() {
+      super();
+    }
+    TransmissionResponseAction(ResponseAction chained) {
+      super(chained);
+    }      
+    
+    void responseImpl(int code) {
       if(m_currentTransaction != null) {
         if(code < 300) {
           m_currentTransaction.commit();

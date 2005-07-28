@@ -21,7 +21,7 @@ import org.apache.log4j.Logger;
  * and perform some debug logging.
  */
 public class SimpleSessionHandler
-  implements SessionHandler {
+  extends SessionHandler {
 
   private final Logger m_logger = Logger.getLogger(SimpleSessionHandler.class);
 

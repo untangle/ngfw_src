@@ -41,12 +41,15 @@ abstract class SmtpUnparser
   private final SmtpCasing m_parentCasing;
   private final Logger m_logger = Logger.getLogger(SmtpUnparser.class);
   private boolean m_passthru = false;
+  private CasingSessionTracker m_tracker;  
 
   protected SmtpUnparser(TCPSession session,
     SmtpCasing parent,
+    CasingSessionTracker tracker,
     boolean clientSide) {
     
     super(session, clientSide);
+    m_tracker = tracker;    
     m_parentCasing = parent;
     m_pipeline = MvvmContextFactory.context().
       pipelineFoundry().getPipeline(session.id());
@@ -58,6 +61,9 @@ abstract class SmtpUnparser
   protected Pipeline getPipeline() {
     return m_pipeline;
   }
+  protected CasingSessionTracker getSessionTracker() {
+    return m_tracker;
+  }  
 
   /**
    * Is the casing currently in passthru mode

@@ -17,7 +17,7 @@ import com.metavize.tran.mail.papi.smtp.SmtpTransaction;
 
 
 /**
- * Root callback interface for Object wishing to
+ * Root callback abstract class for Object wishing to
  * participate in an Smtp Session.  A SessionHandler
  * is passed to the constructor of a
  * {@link com.metavize.tran.mail.papi.smtp.sapi.Session Session}.
@@ -26,7 +26,7 @@ import com.metavize.tran.mail.papi.smtp.SmtpTransaction;
  * called back to handle various transitions within an Smtp
  * Session.
  * <br>
- * This interface and the associated interfaces instances must
+ * This inabstract class and the associated interfaces instances must
  * obey (such as TransactionHandlers) work from the following
  * model.
  * <br>
@@ -68,24 +68,51 @@ import com.metavize.tran.mail.papi.smtp.SmtpTransaction;
  * </ul>
  * 
  */
-public interface SessionHandler {
+public abstract class SessionHandler {
+
+  private Session m_session;
+
+  /**
+   * <b>Only to be called by the Session passing
+   * itself</b>
+   */
+  protected final void setSession(Session stream) {
+    m_session = stream;
+  }
+
+  /**
+   * Get the Session which is calling this class during
+   * an SMTP Session.   If this instance is not registered
+   * with any Session, this method
+   * returns null.
+   */
+  public final Session getSession() {
+    return m_session;
+  }
 
 
   /**
    * Handle a "normal" Command from the client.  This
    * includes things like "HELO" or "HELP" issued
    * outside the boundaries of a transaction.
-   * <br>
+   * <br><br>
    * Note that it may be confusing, but a client
    * can issue a "RSET" when not within a transaction.
    * This is a "safety" thing, for servers which
    * reuse Mail sessions (and want the session in
    * a known state before begining a new Transaction).
+   * <br><br>
+   * Note also that because of the Session's built-in
+   * manipulation of the EHLO command, the EHLO
+   * command will never be sent to this method.
+   * Instead, the EHLO Command is passed to the
+   * {@link #observeEHLOCommand observeEHLOCommand()}
+   * method which can optionally be overidden.
    *
    * @param command the client command
    * @param actions the available actions
    */
-  public void handleCommand(Command command,
+  public abstract void handleCommand(Command command,
     Session.SmtpCommandActions actions);
 
   /**
@@ -99,8 +126,43 @@ public interface SessionHandler {
    * @param resp the response
    * @param actions the available actions.
    */
-  public void handleOpeningResponse(Response resp,
+  public abstract void handleOpeningResponse(Response resp,
     Session.SmtpResponseActions actions);
+
+  /**
+   * The calling {@link #getSession Session} handles
+   * the EHLO command and its response, to ensure
+   * {@link com.metavize.tran.mail.papi.smtp.sapi.Session#setAllowedExtensions only allowed extensions}
+   * are seen by the client.  As-such, subclasses do
+   * <b>not</b> have a chance to explicitly manipulate this
+   * portion of the protocol.  However, for logging purposes
+   * the handler is shown the EHLO line
+   * <br><br>
+   * Default implementation does nothing
+   *
+   * @param cmd the EHLO command
+   */
+  public void observeEHLOCommand(Command cmd) {
+    //Do nothing
+  }
+
+  /**
+   * Chance for subclasses to manipulate the EHLO response.  Note
+   * that the EHLO response has already been altered to ensure
+   * {@link com.metavize.tran.mail.papi.smtp.sapi.Session#setAllowedExtensions only allowed extensions}
+   * are advertized.  Subclasses may wish to further reduce available
+   * extensions, or simply to log what transpired.
+   * <br><br>
+   * Default implementation simply returns the argument (does nothing).
+   *
+   * @param resp the Response from server, already manipulated by
+   *        the {@link @getSession session}
+   * @return the manipualted response, or <code>resp</code>
+   *         if no manipulation is to take place. 
+   */
+  public Response manipulateEHLOResponse(Response resp) {
+    return resp;
+  }
 
   /**
    * Create a new TransactionHandler.  This method is called
@@ -112,7 +174,7 @@ public interface SessionHandler {
    * @param tx the Transaction to be associated with the Handler
    * @return a new TransactionHandler
    */
-  public TransactionHandler createTxHandler(SmtpTransaction tx);
+  public abstract TransactionHandler createTxHandler(SmtpTransaction tx);
 
 
   /**
@@ -123,7 +185,7 @@ public interface SessionHandler {
    * @return true if the client should be shutdown.  False
    *         to leave the client side open.
    */  
-  public boolean handleServerFIN(TransactionHandler currentTX);
+  public abstract boolean handleServerFIN(TransactionHandler currentTX);
 
   /**
    * Handle a FIN from the client.
@@ -133,6 +195,6 @@ public interface SessionHandler {
    * @return true if the server should be shutdown.  False
    *         to leave the server side open.
    */  
-  public boolean handleClientFIN(TransactionHandler currentTX);
+  public abstract boolean handleClientFIN(TransactionHandler currentTX);
 
 }

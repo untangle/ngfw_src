@@ -28,7 +28,7 @@ import java.util.*;
  * <br>
  * Unlike the StateMachine pattern, users do not subclass this
  * Object.  Instead, Transforms can monitor/manipulate
- * the Smtp stream by implementing
+ * the Smtp stream by subclassing
  * {@link com.metavize.tran.mail.papi.smtp.SmtpTokenStreamHandler SmtpTokenStreamHandler}
  * and passing such an instance to the constructor or
  * {@link #setHandler setHandler}.
@@ -37,7 +37,7 @@ public class SmtpTokenStream
   extends AbstractTokenHandler {
 
   private final Logger m_logger = Logger.getLogger(SmtpTokenStream.class);
-  private static final NOOPHandler NOOP_HANDLER = new NOOPHandler();
+  private final NOOPHandler NOOP_HANDLER = new NOOPHandler();
 
   private SmtpTokenStreamHandler m_handler;
   private boolean m_passthru = false;
@@ -74,6 +74,7 @@ public class SmtpTokenStream
     m_handler = handler==null?
       NOOP_HANDLER:
       handler;
+    m_handler.setSmtpTokenStream(this);
   }
 
   /**
@@ -302,61 +303,89 @@ public class SmtpTokenStream
   /**
    * As its name implies, does nothing except pass stuff through
    */
-  private static class NOOPHandler implements SmtpTokenStreamHandler {
+  private class NOOPHandler
+    extends SmtpTokenStreamHandler {
 
+    @Override
     public void passthru(TokenResultBuilder resultBuilder) {
+      updateTimestamps(true, true);
       //Nothing to do
     }
-  
+
+    @Override
     public void handleCommand(TokenResultBuilder resultBuilder,
       Command cmd) {
+      updateTimestamps(true, true);
       resultBuilder.addTokenForServer(cmd);
     }
-  
+
+    @Override
     public void handleMAILCommand(TokenResultBuilder resultBuilder,
       MAILCommand cmd) {
+      updateTimestamps(true, true);
       resultBuilder.addTokenForServer(cmd);
     }
-  
+
+    @Override
     public void handleRCPTCommand(TokenResultBuilder resultBuilder,
       RCPTCommand cmd) {
+      updateTimestamps(true, true);
       resultBuilder.addTokenForServer(cmd);
     }
-  
+
+    @Override
     public void handleBeginMIME(TokenResultBuilder resultBuilder,
       BeginMIMEToken token) {
+      updateTimestamps(true, true);
       resultBuilder.addTokenForServer(token);
     }
-      
+
+    @Override
     public void handleContinuedMIME(TokenResultBuilder resultBuilder,
       ContinuedMIMEToken token) {
+      updateTimestamps(true, true);
       resultBuilder.addTokenForServer(token);
     }
-      
+
+    @Override
     public void handleResponse(TokenResultBuilder resultBuilder,
       Response resp) {
+      updateTimestamps(true, true);
       resultBuilder.addTokenForClient(resp);
     }
-      
+
+    @Override
     public void handleChunkForClient(TokenResultBuilder resultBuilder,
       Chunk chunk) {
+      updateTimestamps(true, true);
       resultBuilder.addTokenForClient(chunk);
     }
-  
+
+    @Override
     public void handleChunkForServer(TokenResultBuilder resultBuilder,
       Chunk chunk) {
+      updateTimestamps(true, true);
       resultBuilder.addTokenForServer(chunk);
     }
+
+    @Override
     public void handleCompleteMIME(TokenResultBuilder resultBuilder,
       CompleteMIMEToken token) {
+      updateTimestamps(true, true);
       resultBuilder.addTokenForServer(token);
     }
+
+    @Override
     public boolean handleServerFIN() {
+      updateTimestamps(false, true);
       return true;
     }
+
+    @Override
     public boolean handleClientFIN() {
+      updateTimestamps(true, false);
       return true;
     }
-  }      
+  }//ENDOF NOOPHandler Class Definition      
   
-}
+}//ENDOF SmtpTokenSteram Class Definition
