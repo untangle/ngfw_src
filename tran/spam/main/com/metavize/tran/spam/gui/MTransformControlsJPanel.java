@@ -17,6 +17,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
     private static final String NAME_SPAM_SMTP = "SMTP";
     private static final String NAME_SPAM_POP = "POP";
     private static final String NAME_SPAM_IMAP = "IMAP";
+    private static final String NAME_LOG = "Event Log";
     
     public MTransformControlsJPanel(MTransformJPanel mTransformJPanel)  {
         super(mTransformJPanel);
@@ -42,6 +43,9 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	super.savableMap.put(NAME_SPAM_IMAP, imapConfigJPanel);
 	super.refreshableMap.put(NAME_SPAM_IMAP, imapConfigJPanel);
 
+	// EVENT LOG /////
+	LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransformContext().transform());
+	this.mTabbedPane.addTab(NAME_LOG, null, logJPanel);
     }
     
 }
