@@ -246,9 +246,7 @@ public class DmzJPanel extends javax.swing.JPanel implements Savable, Refreshabl
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
         gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 10);
         add(externalRemoteJPanel, gridBagConstraints);
 
@@ -336,8 +334,8 @@ public class DmzJPanel extends javax.swing.JPanel implements Savable, Refreshabl
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JRadioButton dmzDisabledJRadioButton;
     public javax.swing.JRadioButton dmzEnabledJRadioButton;
-    private javax.swing.JRadioButton dmzLogDisabledJRadioButton;
-    private javax.swing.JRadioButton dmzLogEnabledJRadioButton;
+    public javax.swing.JRadioButton dmzLogDisabledJRadioButton;
+    public javax.swing.JRadioButton dmzLogEnabledJRadioButton;
     private javax.swing.ButtonGroup enabledButtonGroup;
     private javax.swing.JPanel explanationJPanel;
     private javax.swing.JPanel externalRemoteJPanel;
