@@ -32,7 +32,7 @@
 	<import value="net.sf.jasperreports.engine.data.*" />
 	<parameter name="startTime" isForPrompting="true" class="java.sql.Timestamp"/>
 	<parameter name="endTime" isForPrompting="true" class="java.sql.Timestamp"/>
-	<queryString><![CDATA[SELECT evt.ip as HOST, sum(evt.dropped) as DROPPED, sum(evt.rejected) as REJECTED, sum(evt.limited) as LIMITED,
+	<queryString><![CDATA[SELECT evt.client_addr as HOST, sum(evt.dropped) as DROPPED, sum(evt.rejected) as REJECTED, sum(evt.limited) as LIMITED,
        (sum(evt.dropped) + sum(evt.rejected) + sum(evt.limited)) as TOTAL_ACTIONS
 FROM shield_rejection_evt evt
 WHERE evt.time_stamp >= $P{startTime} and evt.time_stamp <= $P{endTime}
