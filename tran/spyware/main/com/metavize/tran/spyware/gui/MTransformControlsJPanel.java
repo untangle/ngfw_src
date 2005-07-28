@@ -26,10 +26,10 @@ import javax.swing.border.EmptyBorder;
 public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransformControlsJPanel{
 
     private static final String NAME_BLOCK = "Block Lists";
-    private static final String NAME_BLOCK_ACTIVEX = "ActiveX Block List";
-    private static final String NAME_BLOCK_SPYWARE = "Spyware Block List";
-    private static final String NAME_BLOCK_COOKIE = "Cookie Block List";
-    private static final String NAME_BLOCK_URL = "URL Block List";
+    private static final String NAME_BLOCK_ACTIVEX = "ActiveX List";
+    private static final String NAME_BLOCK_SPYWARE = "Subnet List";
+    private static final String NAME_BLOCK_COOKIE = "Cookie List";
+    private static final String NAME_BLOCK_URL = "URL List";
     private static final String NAME_SETTINGS = "General Settings";
     private static final String NAME_LOG = "Event Log";
     

@@ -1,6 +1,6 @@
 TEMPLATE=Detail
 REPORT_NAME=AccessDetail
-REPORT_TITLE=Access Incidents
+REPORT_TITLE=Subnet Incidents
 FIELD_1.name=time_stamp
 FIELD_1.type=Timestamp
 FIELD_2.name=name

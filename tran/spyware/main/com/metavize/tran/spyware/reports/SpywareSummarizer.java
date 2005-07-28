@@ -25,23 +25,24 @@ public class SpywareSummarizer extends BaseSummarizer {
 
     public String getSummaryHtml(Connection conn, Timestamp startDate, Timestamp endDate)
     {
-        int accessCount = 0;
-        int blockCount = 0;
-        int cookieCount = 0;
-        int axCount = 0;
+        long cookieBlockCount = 0l;
+        long subnetBlockCount = 0l;
+        long subnetPassCount = 0l;
+        long activeXBlockCount = 0l;
+        long urlBlockCount = 0l;
 
         try {
 	    String sql;
 	    PreparedStatement ps;
 	    ResultSet rs;
 
-            sql = "select count(*) from tr_spyware_evt_access where time_stamp >= ? and time_stamp < ?";
+            sql = "select count(*) from tr_spyware_evt_cookie where time_stamp >= ? and time_stamp < ?";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
             rs = ps.executeQuery();
             rs.first();
-            accessCount = rs.getInt(1);
+            cookieBlockCount = rs.getLong(1);
             rs.close();
             ps.close();
 
@@ -51,17 +52,17 @@ public class SpywareSummarizer extends BaseSummarizer {
             ps.setTimestamp(2, endDate);
             rs = ps.executeQuery();
             rs.first();
-            blockCount = rs.getInt(1);
+            subnetBlockCount = rs.getLong(1);
             rs.close();
             ps.close();
 
-            sql = "select count(*) from tr_spyware_evt_cookie where time_stamp >= ? and time_stamp < ?";
+            sql = "select count(*) from tr_spyware_evt_access where time_stamp >= ? and time_stamp < ? and blocked = 'f'";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
             rs = ps.executeQuery();
             rs.first();
-            cookieCount = rs.getInt(1);
+            subnetPassCount = rs.getLong(1);
             rs.close();
             ps.close();
 
@@ -71,7 +72,17 @@ public class SpywareSummarizer extends BaseSummarizer {
             ps.setTimestamp(2, endDate);
             rs = ps.executeQuery();
             rs.first();
-            axCount = rs.getInt(1);
+            activeXBlockCount = rs.getLong(1);
+            rs.close();
+            ps.close();
+
+            sql = "select count(*) from tr_spyware_evt_blacklist where time_stamp >= ? and time_stamp < ?";
+            ps = conn.prepareStatement(sql);
+            ps.setTimestamp(1, startDate);
+            ps.setTimestamp(2, endDate);
+            rs = ps.executeQuery();
+            rs.first();
+            urlBlockCount = rs.getLong(1);
             rs.close();
             ps.close();
 
@@ -79,11 +90,15 @@ public class SpywareSummarizer extends BaseSummarizer {
             logger.warn("could not summarize", exn);
         }
 
-        addEntry("Potential spyware communications detected", Util.trimNumber("",accessCount));
-        addEntry("&nbsp;&nbsp;&nbsp;Blocked spyware", Util.trimNumber("",blockCount) + " (" + Util.percentNumber(blockCount,accessCount)  + ")");
-        addEntry("&nbsp;&nbsp;&nbsp;Blocked cookies", Util.trimNumber("",cookieCount) + " (" + Util.percentNumber(cookieCount,accessCount)  + ")");
-        addEntry("&nbsp;&nbsp;&nbsp;Blocked ActiveX", Util.trimNumber("",axCount) + " (" + Util.percentNumber(axCount,accessCount)  + ")");
-        addEntry("&nbsp;&nbsp;&nbsp;Passed", Util.trimNumber("",accessCount-blockCount-cookieCount-axCount) + " (" + Util.percentNumber(accessCount-blockCount-cookieCount-axCount,accessCount)  + ")");
+	long totalCount = cookieBlockCount + subnetBlockCount + subnetPassCount + activeXBlockCount + urlBlockCount;
+	
+        addEntry("Potential spyware communications detected", Util.trimNumber("",totalCount));
+        addEntry("&nbsp;&nbsp;&nbsp;Blocked cookies", Util.trimNumber("",cookieBlockCount) + " (" + Util.percentNumber(cookieBlockCount,totalCount)  + ")");
+        addEntry("&nbsp;&nbsp;&nbsp;Blocked subnets", Util.trimNumber("",subnetBlockCount) + " (" + Util.percentNumber(subnetBlockCount,totalCount)  + ")");
+        addEntry("&nbsp;&nbsp;&nbsp;Blocked activeX", Util.trimNumber("",activeXBlockCount) + " (" + Util.percentNumber(activeXBlockCount,totalCount)  + ")");
+        addEntry("&nbsp;&nbsp;&nbsp;Blocked URLs", Util.trimNumber("",urlBlockCount) + " (" + Util.percentNumber(urlBlockCount,totalCount)  + ")");
+        addEntry("&nbsp;&nbsp;&nbsp;Passed subnets", Util.trimNumber("",subnetPassCount) + " (" + Util.percentNumber(subnetPassCount,totalCount)  + ")");
+
 
         // XXXX
         String tranName = "Spyware Blocker";
