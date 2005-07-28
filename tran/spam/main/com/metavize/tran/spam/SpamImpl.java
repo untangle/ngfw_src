@@ -255,7 +255,7 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
 
     public Object getSettings()
     {
-        return null;
+        return getSpamSettings();
     }
 
     public void setSettings(Object settings)
