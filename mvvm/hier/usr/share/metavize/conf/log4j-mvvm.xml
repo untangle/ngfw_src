@@ -71,7 +71,7 @@
   </category>
 
   <category name="com.metavize.mvvm.logging">
-    <priority value="WARN"/>
+    <priority value="DEBUG"/>
   </category>
 
   <category name="com.metavize.mvvm.argon">
@@ -89,6 +89,18 @@
   <category name="net.sf.hibernate">
     <priority value="WARN"/>
   </category>
+
+  <category name="com.metavize.tran.spam">
+      <priority value="DEBUG"/>
+  </category>
+
+  <category name="com.metavize.tran.mail">
+        <priority value="DEBUG"/>
+  </category>
+
+  <category name="com.metavize.tran.virus">
+        <priority value="DEBUG"/>
+  </category>    
 
 
   <!-- ============================================== -->

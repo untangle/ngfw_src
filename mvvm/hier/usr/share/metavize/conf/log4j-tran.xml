@@ -86,7 +86,7 @@
   </category>
 
   <category name="com.metavize.tran.spam">
-    <priority value="WARN"/>
+    <priority value="DEBUG"/>
   </category>
 
   <category name="com.metavize.tran.ftp">
