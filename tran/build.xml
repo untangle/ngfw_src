@@ -21,6 +21,8 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
 
   <import file="../buildtools/buildmagic.xml"/>
 
+  <!-- When creating new transforms (casings or bases) you need to carefully update the depends in build.tran
+       so that the appropriate stamps are removed so the subtransforms are rebuilt -->
   <property name="casings"
         value="http,ftp,mail"/>
   <property name="bases"
@@ -62,11 +64,27 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       <then>
         <!-- if changed a base or casing, rebuild all transforms -->
         <if> <equals arg1="${tran.type}" arg2="casing"/> <then>
-          <delete><fileset dir="${build.dist}" includes="stamp-transform-*"/></delete>
-          <delete><fileset dir="${build.dist}" includes="stamp-base-*"/></delete>
+	  <if> <equals arg1="${tran.name}" arg2="ftp"/> <then>
+            <delete><fileset dir="${build.dist}" includes="stamp-base-virus"/></delete>
+	  </then> </if>
+	  <if> <equals arg1="${tran.name}" arg2="http"/> <then>
+            <delete><fileset dir="${build.dist}" includes="stamp-base-virus"/></delete>
+	  </then> </if>
+	  <if> <equals arg1="${tran.name}" arg2="mail"/> <then>
+            <delete><fileset dir="${build.dist}" includes="stamp-base-virus"/></delete>
+            <delete><fileset dir="${build.dist}" includes="stamp-base-spam"/></delete>
+	  </then> </if>
         </then> </if>
         <if> <equals arg1="${tran.type}" arg2="base"/> <then>
-          <delete><fileset dir="${build.dist}" includes="stamp-transform-*"/></delete>
+	  <if> <equals arg1="${tran.name}" arg2="virus"/> <then>
+            <delete><fileset dir="${build.dist}" includes="stamp-transform-sophos"/></delete>
+            <delete><fileset dir="${build.dist}" includes="stamp-transform-fprot"/></delete>
+            <delete><fileset dir="${build.dist}" includes="stamp-transform-clam"/></delete>
+            <delete><fileset dir="${build.dist}" includes="stamp-transform-hauri"/></delete>
+	  </then> </if>
+	  <if> <equals arg1="${tran.name}" arg2="spam"/> <then>
+            <delete><fileset dir="${build.dist}" includes="stamp-transform-spamasssassin"/></delete>
+	  </then> </if>
         </then> </if>
 
     <echo message="Building '${tran.name}'"/>
