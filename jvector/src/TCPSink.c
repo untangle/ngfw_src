@@ -101,12 +101,17 @@ JNIEXPORT jint JNICALL JF_TCPSink( write )
                 debug( 5, "TCPSink: fd %d reset\n", fd );
                 number_bytes = -1;
                 break;
+                
+            case EPIPE:
+                errlog( ERR_WARNING, "TCPSink: Broken pipe fd %d, resetting\n", fd );
+                number_bytes = -1;
+                break;
 
             case EAGAIN:
                 /* Unable to write at this time, would have blocked */
                 debug( 5, "TCPSink: fd %d polled when unable to write data\n", fd );
                 number_bytes = 0;
-                break;
+                break;                
 
             default:
                 jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "TCPSink: write: %s\n", errstr );
