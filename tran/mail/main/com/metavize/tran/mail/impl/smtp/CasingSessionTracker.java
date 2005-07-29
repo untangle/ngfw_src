@@ -71,6 +71,14 @@ class CasingSessionTracker {
     m_outstandingRequests.add(new TransmissionResponseAction(chainedAction));
 
   }
+  /**
+   * Inform that the server has been shut-down.  This
+   * enqueues an extra response handler (in case the server
+   * ACKS the FIN).
+   */
+  void serverShutdown() {
+    m_outstandingRequests.add(new SimpleResponseAction());
+  }
 
   void commandReceived(Command command) {
     commandReceived(command, null);

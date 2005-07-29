@@ -13,11 +13,30 @@ package com.metavize.mvvm;
 
 import java.util.List;
 import java.io.File;
+import java.io.InputStream;
 import javax.mail.internet.MimeBodyPart;
 
 
 public interface MailSender
 {
+
+    /**
+     * Sends an already formatted RFC822 (i.e. MIME) message.  The TO, FROM, etc
+     * are lifted from the MIME (no chance for "bcc").
+     * <br><br>
+     * With or without a positive outcome, the
+     * passed-in stream is <b>not</b> closed
+     * <br><br>
+     * All headers (date, to, from) should already
+     * be set.  The only header added is "X-Mailer".
+     *
+     * @param msgStream the stream containing the message, positioned
+     *        just before the headers and <b>not</b> byte stuffed (for SMTP).
+     *
+     * @return true if sent, false if an error.
+     */
+    boolean sendMessage(InputStream msgStream);
+
     /**
      * <code>sendAlert</code> sends an email to all administrative
      * users who have selected to receive alert emails.

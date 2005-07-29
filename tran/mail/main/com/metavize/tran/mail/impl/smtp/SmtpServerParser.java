@@ -70,6 +70,7 @@ class SmtpServerParser
       try {
         Response resp = m_parser.parse(buf);
         if(resp != null) {
+          getSessionTracker().responseReceived(resp);
           m_logger.debug("Adding response token with code " + resp.getCode());
           toks.add(resp);
           m_parser.reset();

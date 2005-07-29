@@ -51,10 +51,10 @@ public class MIMEPart {
 
   private Object m_userObj;
   
-  protected MIMEPart() {
+  public MIMEPart() {
     this(new MIMEPartHeaders());
   }
-  protected MIMEPart(MIMEPartHeaders headers) {
+  public MIMEPart(MIMEPartHeaders headers) {
     m_headers = headers;
   }  
  

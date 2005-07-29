@@ -24,6 +24,8 @@ public interface HeaderNames {
   public static final String CC = "cc";
   public static final String FROM = "From";
   public static final String CONTENT_DISPOSITION = "Content-Disposition";
+  public static final String DATE = "Date";
+  public static final String MIME_VERSION = "Mime-Version";
   
   
   public static final LCString CONTENT_TYPE_LC = new LCString(CONTENT_TYPE);

@@ -373,6 +373,40 @@ public class MailSenderImpl implements MailSender
         }
     }
 
+    /*
+     * See doc on interface
+     */
+    public boolean sendMessage(InputStream msgStream) {
+      //TODO bscott Need better error handling
+      //TODO bscott by using JavaMail, we don't seem to be able to have
+      //     a null ("<>") MAIL FROM.  This is a violation of some spec
+      //     or another, which declares that the envelope from should
+      //     be blank for notifications (so other servers don't send
+      //     dead letters causing a loop).
+
+      MimeMessage msg = null;
+      
+      try {
+        msg = new MimeMessage(mvSession, msgStream);
+        msg.setHeader("X-Mailer", Mailer);
+      }
+      catch(Exception ex) {
+        logger.error("Unable to convert input stream to MIMEMessage", ex);
+        return false;
+      }
+
+      //Send the message
+      try {
+        Transport.send(msg);
+        logIt(msg);
+        return true;
+      }
+      catch(Exception ex) {
+        logger.error("Unable to send Message", ex);
+        return false;
+      }
+    }
+
 
     private Message prepMessage(Session session, String[] to, String subject)
     {

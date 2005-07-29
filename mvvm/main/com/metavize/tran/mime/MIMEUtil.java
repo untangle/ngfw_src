@@ -14,6 +14,7 @@ import static com.metavize.tran.mime.HeaderNames.*;
 import java.util.*;
 import java.io.*;
 import java.nio.*;
+import javax.mail.internet.MailDateFormat;
 
 /**
  * Utility methods for working with MIME
@@ -80,6 +81,28 @@ public class MIMEUtil {
 
     return ret;
     
+  }
+
+  /**
+   * Get the RFC822-compliant representation of
+   * the current time
+   *
+   * @return the formatted String
+   */
+  public static String getRFC822Date() {
+    return getRFC822Date(new Date());
+  }  
+
+  /**
+   * Get the RFC822-compliant representation of
+   * the given Date
+   *
+   * @param d the date
+   * @return the formatted String
+   */
+  public static String getRFC822Date(Date d) {
+    //Cheat and use JavaMail
+    return new MailDateFormat().format(d);
   }
 
   /**

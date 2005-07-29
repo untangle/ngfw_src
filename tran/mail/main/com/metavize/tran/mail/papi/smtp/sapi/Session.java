@@ -208,7 +208,8 @@ public final class Session
     "QUIT",
     "RSET",
     "VRFY",
-    "NOOP"
+    "NOOP",
+    "STARTTLS"
   };
 
   private static final String[] DEF_ALLOWED_EXTENSIONS = {
@@ -225,6 +226,7 @@ public final class Session
     "NOOP",
 /*    "SIZE",*/
     "PIPELINING",
+    "STARTTLS",
     "OK"//Added in case they just send "250 OK"
   };
   

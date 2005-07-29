@@ -48,9 +48,15 @@ public class Command
     HELP,
     NOOP,
     SIZE,
-    PIPELINING,
+    STARTTLS,
     UNKNOWN
   };
+
+  //==========================================
+  // Warning - if you add to the list above,
+  // you must also modify the
+  // "stringToCommandType" method
+  //==========================================  
 
   private final CommandType m_type;
   private final String m_cmdStr;
@@ -134,6 +140,9 @@ public class Command
    * the type may come back as "UNKNOWN".
    */
   public static CommandType stringToCommandType(String cmdStr) {
+
+    //Commands, aligned with their enum type.
+  
     if(cmdStr.equalsIgnoreCase("HELO")) {
       return CommandType.HELO;
     }
@@ -179,6 +188,12 @@ public class Command
     if(cmdStr.equalsIgnoreCase("NOOP")) {
       return CommandType.NOOP;
     }
+    if(cmdStr.equalsIgnoreCase("SIZE")) {
+      return CommandType.SIZE;
+    }
+    if(cmdStr.equalsIgnoreCase("STARTTLS")) {
+      return CommandType.STARTTLS;
+    }     
     return CommandType.UNKNOWN;                                                       
   }
 }

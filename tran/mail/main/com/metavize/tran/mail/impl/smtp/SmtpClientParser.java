@@ -123,7 +123,14 @@ class SmtpClientParser
 
             m_logger.debug("Parsed \"" + cmd.getType() + "\" Command");
             //Update the transaction tracker
-            getSessionTracker().commandReceived(cmd);
+            if(cmd.getType() == Command.CommandType.STARTTLS) {
+              m_logger.debug("Saw STARTTLS command.  Enqueue response action to go into " +
+                "passthru if accepted");
+              getSessionTracker().commandReceived(cmd, new TLSResponseCallback());
+            }
+            else {            
+              getSessionTracker().commandReceived(cmd);
+            }
             toks.add(cmd);
 
             //Check for DATA command, which changes our state
@@ -277,6 +284,33 @@ class SmtpClientParser
     return super.endSession();
   }  
 
+
+  /**
+   * Callback if TLS starts
+   */
+  private void tlsStarting() {
+    m_logger.debug("TLS Command accepted.  Enter passthru mode so as to not attempt to parse cyphertext");
+    declarePassthru();//Inform the parser of this state
+  }
+
+  //================ Inner Class =================
+
+  /**
+   * Callback registered with the CasingSessionTracker
+   * for the response to the STARTTLS command
+   */
+  class TLSResponseCallback
+    implements CasingSessionTracker.ResponseAction {
+    public void response(int code) {
+      if(code < 300) {
+        tlsStarting();
+      }
+      else {
+        m_logger.debug("STARTTLS command rejected.  Do not go into passthru");
+      }
+    }    
+  }  
+  
   /**
    * Open the MIME accumulator.  If there was an error,
    * the MIMEAccumulator (m_mimeAccumulator) is not

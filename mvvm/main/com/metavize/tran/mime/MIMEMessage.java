@@ -74,10 +74,10 @@ public class MIMEMessage
   
   private final Logger m_logger = Logger.getLogger(MIMEPart.class); 
   
-  protected MIMEMessage() {
+  public MIMEMessage() {
     super();
   }
-  protected MIMEMessage(MIMEMessageHeaders headers) {
+  public MIMEMessage(MIMEMessageHeaders headers) {
     super(headers);
   }    
   

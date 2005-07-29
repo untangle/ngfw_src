@@ -32,13 +32,10 @@ import org.apache.log4j.Logger;
  * wrapped (i.e. disables wrapping).
  *
  */
-public class WrappedMessageGenerator {
+public class WrappedMessageGenerator
+  extends MessageGenerator {
 
   private final Logger m_logger = Logger.getLogger(WrappedMessageGenerator.class);
-
-  private Template m_subjectTemplate;
-  private Template m_bodyTemplate;
-
 
   public WrappedMessageGenerator() {
     this(null, null);
@@ -53,56 +50,8 @@ public class WrappedMessageGenerator {
    */
   public WrappedMessageGenerator(String subjectTemplate,
     String bodyTemplate) {
-    setSubjectTemplate(subjectTemplate);
-    setBodyTemplate(bodyTemplate);
-  }  
-
-  
-  public String getSubjectTemplate() {
-    return m_subjectTemplate==null?
-      null:m_subjectTemplate.getTemplate();
+    super(subjectTemplate, bodyTemplate);
   }
-
-  /**
-   * Set the subject template.
-   *
-   * @param template the template (or null to declare
-   *        that subjects should not be modified).
-   */
-  public void setSubjectTemplate(String template) {
-    if(template == null) {
-      m_subjectTemplate = null;
-    }
-    if(m_subjectTemplate == null) {
-      m_subjectTemplate = new Template(template, false);
-    }
-    else {
-      m_subjectTemplate.setTemplate(template);
-    }
-  }
-
-  public String getBodyTemplate() {
-    return m_bodyTemplate==null?
-      null:m_bodyTemplate.getTemplate();
-  }
-
-  /**
-   * Set the body template.
-   *
-   * @param template the template (or null to declare
-   *        that body should not be wrapped).
-   */  
-  public void setBodyTemplate(String template) {
-    if(template == null) {
-      m_bodyTemplate = null;
-    }  
-    if(m_bodyTemplate == null) {
-      m_bodyTemplate = new Template(template, false);
-    }
-    else {
-      m_bodyTemplate.setTemplate(template);
-    }
-  }  
 
   /**
    * Wrap the given MIMEMessage.  Only the message
@@ -154,19 +103,21 @@ public class WrappedMessageGenerator {
     values.append(msg);
     
     MIMEMessage ret = msg;
-    if(m_bodyTemplate != null) {
+    Template bodyTemplate = getBodyTemplate();
+    if(bodyTemplate != null) {
       try {
         m_logger.debug("Wrapping body");
-        ret = MIMEUtil.simpleWrap(m_bodyTemplate.format(values), msg);
+        ret = MIMEUtil.simpleWrap(bodyTemplate.format(values), msg);
       }
       catch(Exception ex) {
         m_logger.error(ex);
       }
     }
-    if(m_subjectTemplate != null) {
+    Template subjectTemplate = getSubjectTemplate();
+    if(subjectTemplate != null) {
       try {
         m_logger.debug("Wrapping subject");
-        ret.getMMHeaders().setSubject(m_subjectTemplate.format(values));
+        ret.getMMHeaders().setSubject(subjectTemplate.format(values));
       }
       catch(Exception ex) {
         m_logger.error(ex);

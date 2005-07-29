@@ -64,6 +64,7 @@ class SmtpServerUnparser
     //-----------------------------------------------------------
     if(token instanceof MAILCommand) {
       MAILCommand mc = (MAILCommand) token;
+      getSessionTracker().commandReceived(mc);      
       m_logger.debug("Received MAIL Commandfor address \"" +
         mc.getAddress() + "\"");
     }
@@ -71,15 +72,24 @@ class SmtpServerUnparser
     //-----------------------------------------------------------
     if(token instanceof RCPTCommand) {
       RCPTCommand mc = (RCPTCommand) token;
+      getSessionTracker().commandReceived(mc);
       m_logger.debug("Received RCPT Commandfor address \"" +
         mc.getAddress() + "\"");
     }
 
     //-----------------------------------------------------------
     if(token instanceof Command) {
+      Command command = (Command) token;
       m_logger.debug("Received Command \"" +
-        (((Command) token).getType()) + "\" to pass");
-
+        command.getType() + "\" to pass");
+      if(command.getType() == Command.CommandType.STARTTLS) {
+        m_logger.debug("Saw STARTTLS command.  Enqueue response action to go into " +
+          "passthru if accepted");
+        getSessionTracker().commandReceived(command, new TLSResponseCallback());
+      }
+      else {
+        getSessionTracker().commandReceived(command);  
+      }
       ByteBuffer buf = token.getBytes();
       getSmtpCasing().traceUnparse(buf);
       return new UnparseResult(buf);
@@ -88,6 +98,7 @@ class SmtpServerUnparser
     //-----------------------------------------------------------
     if(token instanceof BeginMIMEToken) {
       m_logger.debug("Received BeginMIMEToken to pass");
+      getSessionTracker().beginMsgTransmission();
       ByteBuffer buf = token.getBytes();
       getSmtpCasing().traceUnparse(buf);
       m_byteStuffer = new ByteBufferByteStuffer();
@@ -99,7 +110,7 @@ class SmtpServerUnparser
     if(token instanceof CompleteMIMEToken) {
       m_logger.debug("Received CompleteMIMEToken to pass");
       //TODO bscott Fix this hack once we talk to Aaron
-
+      getSessionTracker().beginMsgTransmission();
       try {
         CompleteMIMEToken cmt = (CompleteMIMEToken) token;
         
@@ -163,5 +174,29 @@ class SmtpServerUnparser
     //Default (bad) case
     m_logger.error("Received unknown \"" + token.getClass().getName() + "\" token");
     return new UnparseResult(token.getBytes());
+  }
+
+  private void tlsStarting() {
+    m_logger.debug("TLS Command accepted.  Enter passthru mode so as to not attempt to parse cyphertext");
+    declarePassthru();//Inform the parser of this state
+  }
+
+
+  //================ Inner Class =================
+
+  /**
+   * Callback registered with the CasingSessionTracker
+   * for the response to the STARTTLS command
+   */  
+  class TLSResponseCallback
+    implements CasingSessionTracker.ResponseAction {
+    public void response(int code) {
+      if(code < 300) {
+        tlsStarting();
+      }
+      else {
+        m_logger.debug("STARTTLS command rejected.  Do not go into passthru");
+      }      
+    }    
   }
 }
