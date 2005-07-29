@@ -227,7 +227,6 @@ public class HibernateAppender extends AppenderSkeleton
                 Transaction tx = s.beginTransaction();
 
                 for (LogEvent logEvent : l) {
-                    logger.debug("savin: " + logEvent);
                     s.save(logEvent);
                 }
 
