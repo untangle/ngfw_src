@@ -138,7 +138,8 @@ public class ByteBufferByteStuffer {
    * As such, one must also end the use of this
    * Object with {@link #getLast getLast()} which
    * transfers the remaining bytes.
-   * <br>
+   * <br><br>
+   * The returned buffer is ready for reading (already flipped).
    *
    * @return the number of bytes queued
    */

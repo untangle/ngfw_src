@@ -109,8 +109,15 @@ class SmtpServerUnparser
     //-----------------------------------------------------------
     if(token instanceof CompleteMIMEToken) {
       m_logger.debug("Received CompleteMIMEToken to pass");
-      //TODO bscott Fix this hack once we talk to Aaron
+
+//TO MAKE THIS WORK, Uncomment the lines bounded by "HACK"
+
+//TO SEE THE PROBLEM, Uncomment lines bounded by "NOT-WORKING"
+      
       getSessionTracker().beginMsgTransmission();
+
+
+//BEGIN HACK         
       try {
         CompleteMIMEToken cmt = (CompleteMIMEToken) token;
         
@@ -131,9 +138,13 @@ class SmtpServerUnparser
         m_logger.error(ex);
         return null;//new UnparseResult();
       }
-/*     
-      return new UnparseResult(((CompleteMIMEToken) token).toTCPStreamer(m_pipeline));
-*/       
+//ENDOF HACK
+
+/*
+//BEGIN NOT-WORKING
+      return new UnparseResult(((CompleteMIMEToken) token).toTCPStreamer(getPipeline()));
+//ENDOF NOT-WORKING
+*/
     }    
     //-----------------------------------------------------------
     if(token instanceof ContinuedMIMEToken) {
