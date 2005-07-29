@@ -17,8 +17,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 
 import com.metavize.mvvm.MvvmContextFactory;
@@ -35,11 +35,26 @@ import com.metavize.tran.token.EndMarker;
 import com.metavize.tran.token.FileChunkStreamer;
 import com.metavize.tran.token.Header;
 import com.metavize.tran.token.Token;
+import com.metavize.tran.token.TokenException;
 import com.metavize.tran.token.TokenResult;
 import org.apache.log4j.Logger;
 
 class VirusHttpHandler extends HttpStateMachine
 {
+    // make configurable
+    private static final int TIMEOUT = 30000;
+    private static final int SIZE_LIMIT = 256000;
+
+    private static final String BLOCK_MESSAGE
+        = "<HTML><HEAD>"
+        + "<TITLE>403 Forbidden</TITLE>"
+        + "</HEAD><BODY>"
+        + "<H1>Forbidden</H1>"
+        + "The requested URL %s contained a virus.<P>"
+        + "<HR>"
+        + "<ADDRESS>Metavize EdgeGuard</ADDRESS>"
+        + "</BODY></HTML>";
+
     private static final int SCAN_COUNTER  = Transform.GENERIC_0_COUNTER;
     private static final int BLOCK_COUNTER = Transform.GENERIC_1_COUNTER;
     private static final int PASS_COUNTER  = Transform.GENERIC_2_COUNTER;
@@ -50,10 +65,15 @@ class VirusHttpHandler extends HttpStateMachine
         .context().eventLogger();
 
     private final VirusTransformImpl transform;
-    private final List requestQueue = new LinkedList();
+    private final List<Token> requestQueue = new ArrayList<Token>();
+    private final List<Token> responseQueue = new ArrayList<Token>();
 
     private RequestLine responseRequest;
     private boolean scan;
+    private long bufferingStart;
+    private boolean buffering;
+    private int outstanding;
+    private boolean persistent;
     private String extension;
     private String fileName;
     private FileChannel outFile;
@@ -124,7 +144,11 @@ class VirusHttpHandler extends HttpStateMachine
         responseRequest = 100 == statusLine.getStatusCode()
             ? null : (RequestLine)requestQueue.remove(0);
 
-        return new TokenResult(new Token[] { statusLine }, null);
+        assert 0 == responseQueue.size();
+
+        responseQueue.add(statusLine);
+
+        return TokenResult.NONE;
     }
 
     @Override
@@ -150,19 +174,27 @@ class VirusHttpHandler extends HttpStateMachine
             reason = mimeType;
         }
 
+        responseQueue.add(header);
         if (scan) {
-            setupFile( reason );
+            persistent = isPersistent(header);
+            buffering = true;
+            bufferingStart = System.currentTimeMillis();
+            outstanding = 0;
+            setupFile(reason);
+            return TokenResult.NONE;
+        } else {
+            header.replaceField("accept-ranges", "none");
+            Token[] toks = responseQueue.toArray(new Token[responseQueue.size()]);
+            responseQueue.clear();
+            return new TokenResult(toks, null);
         }
-
-        header.replaceField("accept-ranges", "none");
-        return new TokenResult(new Token[] { header }, null);
     }
 
     @Override
-    protected TokenResult doResponseBody(Chunk chunk)
+    protected TokenResult doResponseBody(Chunk chunk) throws TokenException
     {
         if (scan) {
-            return handleTokenTrickle(chunk);
+            return bufferOrTrickle(chunk);
         } else {
             logger.debug("passing through");
             return new TokenResult(new Token[] { chunk }, null);
@@ -198,8 +230,8 @@ class VirusHttpHandler extends HttpStateMachine
     {
         VirusScannerResult result;
         try {
-            logger.debug("Scanning the file: " + fileName );
-            transform.incrementCount( SCAN_COUNTER );
+            logger.debug("Scanning the file: " + fileName);
+            transform.incrementCount(SCAN_COUNTER);
             result = transform.getScanner().scanFile(fileName);
         } catch (IOException e) {
             logger.error("Virus scan failed: "+ e);
@@ -208,12 +240,15 @@ class VirusHttpHandler extends HttpStateMachine
             logger.error("Virus scan failed: "+ e);
             result = VirusScannerResult.ERROR;
         }
+
         if (result == null) {
             logger.error("Virus scan failed: null");
             result = VirusScannerResult.ERROR;
         }
 
-        eventLogger.info(new VirusHttpEvent(responseRequest, result, transform.getScanner().getVendorName()));
+        String vendor = transform.getScanner().getVendorName();
+
+        eventLogger.info(new VirusHttpEvent(responseRequest, result,  vendor));
 
         if (result.isClean()) {
             transform.incrementCount(PASS_COUNTER, 1);
@@ -224,19 +259,50 @@ class VirusHttpHandler extends HttpStateMachine
                 logger.info("Clean");
             }
 
-            FileChunkStreamer streamer = new FileChunkStreamer
-                (file, inFile, null, EndMarker.MARKER, false);
+            if (buffering) {
+                Token[] toks = responseQueue.toArray(new Token[responseQueue.size()]);
+                responseQueue.clear();
+                return new TokenResult(toks, null);
+            } else {
+                FileChunkStreamer streamer = new FileChunkStreamer
+                    (file, inFile, null, EndMarker.MARKER, false);
+                return new TokenResult(streamer, null);
+            }
 
-            return new TokenResult(streamer, null);
         } else {
             logger.info("Virus found, killing session");
             // Todo: Quarantine (for now, don't delete the file) XXX
             transform.incrementCount(BLOCK_COUNTER, 1);
-            getSession().shutdownClient();
-            getSession().shutdownServer();
 
-            return TokenResult.NONE;
+            if (buffering) {
+                responseQueue.clear();
+                return blockMessage();
+            } else {
+                getSession().shutdownClient();
+                getSession().shutdownServer();
+                return TokenResult.NONE;
+            }
         }
+    }
+
+    private TokenResult blockMessage()
+    {
+        StatusLine sl = new StatusLine("HTTP/1.1", 403, "Forbidden");
+
+        String message = String.format(BLOCK_MESSAGE,
+                                       responseRequest.getRequestUri());
+
+        Header h = new Header();
+        h.addField("Content-Length", Integer.toString(message.length()));
+        h.addField("Content-Type", "text/html");
+        h.addField("Connection", persistent ? "Keep-Alive" : "Close");
+
+        ByteBuffer buf = ByteBuffer.allocate(message.length());
+        buf.put(message.getBytes());
+        buf.flip();
+        Chunk c = new Chunk(buf);
+
+        return new TokenResult(new Token[] { sl, h, c, EndMarker.MARKER }, null);
     }
 
     private boolean matchesExtension(String extension)
@@ -244,7 +310,7 @@ class VirusHttpHandler extends HttpStateMachine
         if (null == extension) { return false; }
 
         for (Iterator i = transform.getExtensions().iterator();
-             i.hasNext(); ) {
+             i.hasNext();) {
             StringRule sr = (StringRule)i.next();
             if (sr.isLive() && sr.getString().equalsIgnoreCase(extension)) {
                 return true;
@@ -269,19 +335,19 @@ class VirusHttpHandler extends HttpStateMachine
          * few rules in this list.
          */
         for (Iterator i = transform.getHttpMimeTypes().iterator();
-             i.hasNext(); ) {
+             i.hasNext();) {
 
             MimeTypeRule mtr = (MimeTypeRule)i.next();
             String currentMt = mtr.getMimeType().getType();
 
             /* Skip all of the shorter or equal mimetypes */
-            if ( currentMt.length() <= longestMatch ) {
+            if (currentMt.length() <= longestMatch) {
                 continue;
             }
 
-            if ( mtr.getMimeType().matches( mimeType )) {
+            if (mtr.getMimeType().matches(mimeType)) {
                 /* Exact match, break */
-                if ( currentMt.length() == mimeType.length() ) {
+                if (currentMt.length() == mimeType.length()) {
                     isLive = mtr.isLive();
                     match = currentMt;
                     break;
@@ -296,8 +362,8 @@ class VirusHttpHandler extends HttpStateMachine
             }
         }
 
-        if ( logger.isDebugEnabled())
-            logger.debug( "Mapped: " + mimeType + " to: '" + match + "' scan: "+ isLive );
+        if (logger.isDebugEnabled())
+            logger.debug("Mapped: " + mimeType + " to: '" + match + "' scan: "+ isLive);
 
         return isLive;
     }
@@ -313,8 +379,8 @@ class VirusHttpHandler extends HttpStateMachine
 
             this.fileName = fileBuf.getAbsolutePath();
 
-            if ( logger.isDebugEnabled())
-                logger.debug( "VIRUS: Using temporary file: " + this.fileName );
+            if (logger.isDebugEnabled())
+                logger.debug("VIRUS: Using temporary file: " + this.fileName);
 
             this.outFile = (new FileOutputStream(fileBuf)).getChannel();
             this.inFile = (new FileInputStream(fileBuf)).getChannel();
@@ -326,45 +392,62 @@ class VirusHttpHandler extends HttpStateMachine
         }
     }
 
-    private TokenResult handleTokenTrickle(Chunk chunk)
+    private TokenResult bufferOrTrickle(Chunk chunk) throws TokenException
+    {
+        ByteBuffer buf = chunk.getData();
+
+        try {
+            for (ByteBuffer bb = buf.duplicate(); bb.hasRemaining(); outFile.write(bb));
+        } catch (IOException e) {
+            logger.warn("Unable to write to buffer file: " + e);
+            throw new TokenException(e);
+        }
+
+        outstanding += buf.remaining();
+
+        if (buffering) {
+            buffering = TIMEOUT > (System.currentTimeMillis() - bufferingStart)
+                && SIZE_LIMIT > outstanding;
+            if (buffering) {    /* remain in buffering mode */
+                logger.debug("buffering");
+                responseQueue.add(chunk);
+                return TokenResult.NONE;
+            } else {            /* switch to trickle mode */
+                logger.debug("switching to trickling");
+                Chunk c = trickle();
+                StatusLine sl = (StatusLine)responseQueue.get(0);
+                Header h = (Header)responseQueue.get(1);
+                responseQueue.clear();
+                return new TokenResult(new Token[] { sl, h, c }, null);
+            }
+        } else {                /* stay in trickle mode */
+            logger.debug("trickling");
+            Chunk c = trickle();
+            return new TokenResult(new Token[] { c }, null);
+        }
+    }
+
+    private Chunk trickle() throws TokenException
     {
         logger.debug("handleTokenTrickle()");
 
-        ByteBuffer buff =  chunk.getData();
         int tricklePercent = transform.getTricklePercent();
-        int trickleLen = (buff.remaining() * tricklePercent)/100;
+        int trickleLen = (outstanding * tricklePercent) / 100;
         ByteBuffer inbuf = ByteBuffer.allocate(trickleLen);
-        ByteBuffer[] bufs = new ByteBuffer[1];
-
-        bufs[0] = inbuf;
-
-        try {
-            ByteBuffer bb = buff.duplicate();
-            while (bb.remaining()>0) {
-                this.outFile.write(bb);
-            }
-        } catch (IOException e) {
-            logger.warn("Unable to write to buffer file: " + e);
-            return TokenResult.NONE;
-        }
 
         inbuf.limit(trickleLen);
 
         try {
-            if (this.inFile.read(inbuf)<trickleLen) {
-                logger.warn("Read unsuccessful/truncated");
-            }
+            for (; inbuf.hasRemaining(); inFile.read(inbuf));
         } catch (IOException e) {
             logger.warn("Unable to read from buffer file: " + e);
-            return TokenResult.NONE;
+            throw new TokenException(e);
         }
 
         inbuf.flip();
+        outstanding = 0;
 
-        Chunk ck = new Chunk(inbuf);
-
-        //logger.debug("VIRUS: Flushing \"" + (char)inbuf.get(0) + "\" to Receiver");
-        return new TokenResult(new Token[] { ck }, null);
+        return new Chunk(inbuf);
     }
 
     private String makeFileName (TCPSession sess)
@@ -373,5 +456,11 @@ class VirusHttpHandler extends HttpStateMachine
             + ":" + Integer.toString(sess.clientPort()) + "-"
             + sess.serverAddr().getHostAddress().toString()
             + ":" + Integer.toString(sess.serverPort());
+    }
+
+    private boolean isPersistent(Header header)
+    {
+        String con = header.getValue("connection");
+        return null == con ? false : con.equalsIgnoreCase("keep-alive");
     }
 }

@@ -82,7 +82,7 @@
   </category>
 
   <category name="com.metavize.tran.virus">
-    <priority value="WARN"/>
+    <priority value="DEBUG"/>
   </category>
 
   <category name="com.metavize.tran.spam">

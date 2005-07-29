@@ -17,6 +17,7 @@ import com.metavize.tran.token.Chunk;
 import com.metavize.tran.token.EndMarker;
 import com.metavize.tran.token.Header;
 import com.metavize.tran.token.Token;
+import com.metavize.tran.token.TokenException;
 import com.metavize.tran.token.TokenResult;
 
 public abstract class HttpStateMachine extends AbstractTokenHandler
@@ -51,15 +52,23 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
 
     // XXX the default impls should pass through?
 
-    protected abstract TokenResult doRequestLine(RequestLine rl);
-    protected abstract TokenResult doRequestHeader(Header h);
-    protected abstract TokenResult doRequestBody(Chunk c);
-    protected abstract TokenResult doRequestBodyEnd(EndMarker em);
+    protected abstract TokenResult doRequestLine(RequestLine rl)
+        throws TokenException;
+    protected abstract TokenResult doRequestHeader(Header h)
+        throws TokenException;
+    protected abstract TokenResult doRequestBody(Chunk c)
+        throws TokenException;
+    protected abstract TokenResult doRequestBodyEnd(EndMarker em)
+        throws TokenException;
 
-    protected abstract TokenResult doStatusLine(StatusLine sl);
-    protected abstract TokenResult doResponseHeader(Header h);
-    protected abstract TokenResult doResponseBody(Chunk c);
-    protected abstract TokenResult doResponseBodyEnd(EndMarker em);
+    protected abstract TokenResult doStatusLine(StatusLine sl)
+        throws TokenException;
+    protected abstract TokenResult doResponseHeader(Header h)
+        throws TokenException;
+    protected abstract TokenResult doResponseBody(Chunk c)
+        throws TokenException;
+    protected abstract TokenResult doResponseBodyEnd(EndMarker em)
+        throws TokenException;
 
     // protected methods ------------------------------------------------------
 
@@ -75,7 +84,7 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
 
     // AbstractTokenHandler methods -------------------------------------------
 
-    public TokenResult handleClientToken(Token token)
+    public TokenResult handleClientToken(Token token) throws TokenException
     {
         clientState = nextClientState(token);
 
@@ -101,7 +110,7 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
         }
     }
 
-    public TokenResult handleServerToken(Token token)
+    public TokenResult handleServerToken(Token token) throws TokenException
     {
         serverState = nextServerState(token);
 
