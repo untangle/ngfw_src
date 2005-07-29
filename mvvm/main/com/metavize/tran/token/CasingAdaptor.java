@@ -43,10 +43,26 @@ public class CasingAdaptor extends AbstractEventHandler
         .pipelineFoundry();
     private final Logger logger = Logger.getLogger(CasingAdaptor.class);
 
-    public CasingAdaptor(CasingFactory casingFactory, boolean clientSide)
+    private volatile boolean releaseParseExceptions;
+
+    public CasingAdaptor(CasingFactory casingFactory, boolean clientSide,
+                         boolean releaseParseExceptions)
     {
         this.casingFactory = casingFactory;
         this.clientSide = clientSide;
+        this.releaseParseExceptions = releaseParseExceptions;
+    }
+
+    // accessors --------------------------------------------------------------
+
+    public boolean getReleaseParseExceptions()
+    {
+        return releaseParseExceptions;
+    }
+
+    public void setReleaseParseExceptions(boolean releaseParseExceptions)
+    {
+        this.releaseParseExceptions = releaseParseExceptions;
     }
 
     // SessionEventListener methods -------------------------------------------
@@ -368,10 +384,16 @@ public class CasingAdaptor extends AbstractEventHandler
                 pr = p.parse(buf);
             }
         } catch (Exception exn) {
-            // XXX make configurable
-            logger.warn("parse exception, releasing session", exn);
-            s.release();
-            pr = new ParseResult(new Release(dup));
+            if (releaseParseExceptions) {
+                // XXX make configurable
+                logger.warn("parse exception, releasing session", exn);
+                s.release();
+                pr = new ParseResult(new Release(dup));
+            } else {
+                s.shutdownServer();
+                s.shutdownClient();
+                return IPDataResult.DO_NOT_PASS;
+            }
         }
 
         if (pr.isStreamer()) {

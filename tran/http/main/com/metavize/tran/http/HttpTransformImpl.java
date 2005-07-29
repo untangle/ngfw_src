@@ -27,7 +27,7 @@ public class HttpTransformImpl extends AbstractTransform
 {
     private final Logger logger = Logger.getLogger(HttpTransformImpl.class);
 
-    private final PipeSpec pipeSpec = new CasingPipeSpec
+    private final CasingPipeSpec pipeSpec = new CasingPipeSpec
         ("http", this, new HttpCasingFactory(this),
          Fitting.HTTP_STREAM, Fitting.HTTP_TOKENS);
 
@@ -65,6 +65,8 @@ public class HttpTransformImpl extends AbstractTransform
                 logger.warn("could not close hibernate session", exn);
             }
         }
+
+        pipeSpec.setReleaseParseExceptions(!settings.isNonHttpBlocked());
 
         reconfigure();
     }

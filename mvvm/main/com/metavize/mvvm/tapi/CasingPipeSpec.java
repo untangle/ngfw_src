@@ -39,6 +39,8 @@ public class CasingPipeSpec extends PipeSpec
 
     private MPipe outsideMPipe;
 
+    private boolean releaseParseExceptions = true;
+
     // constructors -----------------------------------------------------------
 
     public CasingPipeSpec(String name, Transform transform, Set subscriptions,
@@ -47,8 +49,8 @@ public class CasingPipeSpec extends PipeSpec
     {
         super(name, transform, subscriptions);
 
-        insideAdaptor = new CasingAdaptor(casingFactory, true);
-        outsideAdaptor = new CasingAdaptor(casingFactory, false);
+        insideAdaptor = new CasingAdaptor(casingFactory, true, true);
+        outsideAdaptor = new CasingAdaptor(casingFactory, false, true);
 
         this.input = input;
         this.output = output;
@@ -60,8 +62,8 @@ public class CasingPipeSpec extends PipeSpec
     {
         super(name, transform);
 
-        insideAdaptor = new CasingAdaptor(casingFactory, true);
-        outsideAdaptor = new CasingAdaptor(casingFactory, false);
+        insideAdaptor = new CasingAdaptor(casingFactory, true, true);
+        outsideAdaptor = new CasingAdaptor(casingFactory, false, true);
 
         this.input = input;
         this.output = output;
@@ -88,6 +90,20 @@ public class CasingPipeSpec extends PipeSpec
     {
         return outsideAdaptor;
     }
+
+    public boolean getReleaseParseExceptions()
+    {
+        return releaseParseExceptions;
+    }
+
+    public void setReleaseParseExceptions(boolean releaseParseExceptions)
+    {
+        this.releaseParseExceptions = releaseParseExceptions;
+        insideAdaptor.setReleaseParseExceptions(releaseParseExceptions);
+        outsideAdaptor.setReleaseParseExceptions(releaseParseExceptions);
+    }
+
+    // PipeSpec methods -------------------------------------------------------
 
     @Override
     public void connectMPipe()
