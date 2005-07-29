@@ -133,7 +133,6 @@ public class SmtpSessionHandler
           action,
           m_config.getNotifyAction(),
           m_virusImpl.getScanner().getVendorName());
-        System.out.println("HI FUKER");
         m_eventLogger.info(event);
 
         m_logger.debug("Part contained virus");
