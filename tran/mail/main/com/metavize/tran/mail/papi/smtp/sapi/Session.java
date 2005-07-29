@@ -224,9 +224,11 @@ public final class Session
     "RSET",
     "VRFY",
     "NOOP",
-/*    "SIZE",*/
+    "SIZE",
     "PIPELINING",
     "STARTTLS",
+    "DSN",
+    "DELIVERBY",
     "OK"//Added in case they just send "250 OK"
   };
   
@@ -713,7 +715,7 @@ public final class Session
     @Override
     public void handleResponse(TokenResultBuilder resultBuilder,
       Response resp) {
-      m_logger.debug("[handleResponse()]");
+      m_logger.debug("[handleResponse()] with code " + resp.getCode());
       if(m_outstandingRequests.size() == 0) {
         //TODO bscott Major programming error.  We should log this
         m_logger.error("Response received without a registered handler");

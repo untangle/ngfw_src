@@ -110,7 +110,7 @@ public class ByteStuffingOutputStream
    */
   public void terminateBody()
     throws IOException {
-    //TODO bscott Should we be "smart" about
+    //     Note: Should we be "smart" about
     //     the last chars being CRLF?  I don't
     //     think so, as they would have belonged
     //     to the body.

@@ -91,8 +91,7 @@ class SmtpClientParser
     while(!done && buf.hasRemaining()) {
       m_logger.debug("Draining tokens from buffer (" + toks.size() +
         " tokens so far)");
-      //TODO bscott removeme (for testing timeouts).
-//      try {Thread.currentThread().sleep(1000);}catch(Exception ignore){}
+
       switch(m_state) {
       
         //==================================================
@@ -114,6 +113,9 @@ class SmtpClientParser
               cmd = CommandParser.parse(buf);
             }
             catch(ParseException pe) {
+              //TODO bscott This is yet-another way to bypass filtering.
+              //If a client sends crap, we go into passthru mode.  Then,
+              //they can send whatever they like!
               m_logger.error("Exception parsing a command.  Declare passthru", pe);
               declarePassthru();
               toks.add(PassThruToken.PASSTHRU);

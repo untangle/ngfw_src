@@ -56,8 +56,8 @@ public class SmtpSessionHandler
     WrappedMessageGenerator wrapper,
     SmtpNotifyMessageGenerator notifier) {
 
-    m_logger.debug("Created with client wait " +
-      maxClientWait + " and server wait " + maxSvrWait);
+//    m_logger.debug("Created with client wait " +
+//      maxClientWait + " and server wait " + maxSvrWait);
     m_maxClientWait = maxClientWait<=0?Integer.MAX_VALUE:maxClientWait;
     m_maxServerWait = maxSvrWait<=0?Integer.MAX_VALUE:maxSvrWait;
     m_virusImpl = impl;

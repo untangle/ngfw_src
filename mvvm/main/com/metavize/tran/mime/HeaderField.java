@@ -65,7 +65,7 @@ public class HeaderField {
    * {@link #assignFromString assignFromString}).
    * <br>
    * The ordering here is subtle, so pay attention if
-   * you are subclassing.  TODO: bscott Finish these (subtle) docs
+   * you are subclassing.  
    */
   public final void assignFromLines(RawHeaderField rawField,
     boolean markAsChanged)
@@ -148,7 +148,6 @@ public class HeaderField {
 
 
   protected void changed() {
-    //TODO: bscott Inform container.
     if(m_observer != null) {
       m_observer.headerFieldChanged(this);
     }

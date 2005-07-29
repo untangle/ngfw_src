@@ -30,7 +30,6 @@ import com.metavize.tran.token.Token;
 public class MAILCommand 
   extends CommandWithEmailAddress {
 
-  private static final String NULL_FROM_STR = "FROM:<>";
 
   /**
    * Construct a MAIL command from the given
@@ -48,15 +47,12 @@ public class MAILCommand
     super(CommandType.MAIL, cmd, argStr);
     
     if(argStr == null) {
-      //TODO bscott What should we do?  Fix this up?
-      setArgStr(NULL_FROM_STR);
       setAddress(EmailAddress.NULL_ADDRESS);
     }
     argStr = argStr.trim();
 
-    if(argStr.length() == 0) {
+    if(argStr.length() == 0 || "<>".equals(argStr)) {
       //TODO bscott What should we do?  Fix this up?
-      setArgStr(NULL_FROM_STR);
       setAddress(EmailAddress.NULL_ADDRESS);
     }
     else {
@@ -69,14 +65,7 @@ public class MAILCommand
       else if(argStrLower.startsWith("from")) {
         argStr = argStr.substring(4);
       }
-      EmailAddress addr = parseAddress(argStr);
-      if(addr.isNullAddress()) {
-        setArgStr(NULL_FROM_STR);
-        setAddress(addr);
-      }
-      else {
-        setAddress(addr);
-      }
+      assignFromWire(argStr);
     }
   }
 
@@ -89,23 +78,18 @@ public class MAILCommand
   public MAILCommand(EmailAddress addr)
     throws ParseException {
     super(CommandType.MAIL, "MAIL", null);
-    if(addr == null || addr.isNullAddress()) {
-      setAddress(EmailAddress.NULL_ADDRESS);
-      setArgStr(NULL_FROM_STR);
+    
+    setEsmtpExtra(null);
+    if(addr == null) {
+      addr = EmailAddress.NULL_ADDRESS;
     }
-    else {
-      setAddress(addr);
-      StringBuilder sb = new StringBuilder();
-      sb.append("FROM:");
-      sb.append(addr.toSMTPString());
-      setArgStr(sb.toString());
-    }
+    setAddress(addr);
   }
 
-  protected void setAddress(EmailAddress address) {
-    super.setAddress(address);
-    setArgStr("FROM:" + address.toSMTPString());
+  protected String getArgStrPrefix() {
+    return "FROM:";
   }
+
 
   
 

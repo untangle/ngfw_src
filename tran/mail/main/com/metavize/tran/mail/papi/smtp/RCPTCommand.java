@@ -41,36 +41,25 @@ public class RCPTCommand
     super(CommandType.RCPT, cmd, argStr);
     
     if(argStr == null) {
-      //TODO bscott What should we do?  Fix this up?
-      setArgStr(NULL_TO_STR);
       setAddress(EmailAddress.NULL_ADDRESS);
     }
     argStr = argStr.trim();
 
-    if(argStr.length() == 0) {
+    if(argStr.length() == 0 || "<>".equals(argStr)) {
       //TODO bscott What should we do?  Fix this up?
-      setArgStr(NULL_TO_STR);
       setAddress(EmailAddress.NULL_ADDRESS);
     }
     else {
-      //Strip-off the "to" if found
+      //Strip-off the "from" if found
       //TODO bscott  This is a hack
       String argStrLower = argStr.toLowerCase();
-      int toStrip = 0;
       if(argStrLower.startsWith("to:")) {
         argStr = argStr.substring(3);
       }
       else if(argStrLower.startsWith("to")) {
         argStr = argStr.substring(2);
       }
-      EmailAddress addr = parseAddress(argStr);
-      if(addr.isNullAddress()) {
-        setArgStr(NULL_TO_STR);
-        setAddress(addr);
-      }
-      else {
-        setAddress(addr);
-      }
+      assignFromWire(argStr);
     }
   }
 
@@ -85,20 +74,16 @@ public class RCPTCommand
   public RCPTCommand(EmailAddress addr)
     throws ParseException {
     super(CommandType.MAIL, "RCPT", null);
-    if(addr == null || addr.isNullAddress()) {
-      setAddress(EmailAddress.NULL_ADDRESS);
-      setArgStr(NULL_TO_STR);
+    
+    setEsmtpExtra(null);
+    if(addr == null) {
+      addr = EmailAddress.NULL_ADDRESS;
     }
-    else {
-      setAddress(addr);
-      StringBuilder sb = new StringBuilder();
-      sb.append("TO:");
-      sb.append(addr.toSMTPString());
-      setArgStr(sb.toString());
-    }
+    setAddress(addr);
   }
-  protected void setAddress(EmailAddress address) {
-    super.setAddress(address);
-    setArgStr("TO:" + address.toSMTPString());
-  }
+
+  protected String getArgStrPrefix() {
+    return "TO:";
+  }  
+
 }

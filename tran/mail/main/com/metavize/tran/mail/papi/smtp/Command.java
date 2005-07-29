@@ -108,6 +108,8 @@ public class Command
   /**
    * Convert the command back to a valid line (with
    * terminator).
+   * This is done by appending the type with
+   * the results of {@link #getArgString getArgString()}.
    */
   public ByteBuffer getBytes() {
     //Do a bit of fixup on the string
@@ -123,9 +125,10 @@ public class Command
       3);
 
     buf.put(cmdStr.getBytes());
-    if(m_argStr != null) {
+    String argStr = getArgString();
+    if(argStr != null) {
       buf.put((byte)SP);
-      buf.put(m_argStr.getBytes());
+      buf.put(argStr.getBytes());
     }
     buf.put((byte)CR);
     buf.put((byte)LF);

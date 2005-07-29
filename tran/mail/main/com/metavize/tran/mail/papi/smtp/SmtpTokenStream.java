@@ -198,20 +198,17 @@ public class SmtpTokenStream
   private final void handleClientTokenImpl(Token token,
     TokenResultBuilder trb)
     throws TokenException {
-    
-    m_logger.debug("[handleClientTokenImpl] Called with token type \"" +
-      token.getClass().getName() + "\"");
 
     //Check for passthrough
     if(m_passthru) {
-      m_logger.debug("[handleClientTokenImpl] (In passthru)");
+      m_logger.debug("(In passthru, client token) passing token of type " + token.getClass().getName());
       trb.addTokenForServer(token);
       return;
     }
 
     //Passthru
     if(token instanceof PassThruToken) {
-      m_logger.debug("[handleClientTokenImpl] Entering Passthru");
+      m_logger.debug("(client token) Entering Passthru");
       m_passthru = true;
       trb.addTokenForServer(token);
       m_handler.passthru(trb);
@@ -245,7 +242,7 @@ public class SmtpTokenStream
       m_handler.handleChunkForServer(trb, (Chunk) token);
       return;     
     }
-    m_logger.error("Unexpected Token of type \"" +
+    m_logger.error("(client token) Unexpected Token of type \"" +
       token.getClass().getName() + "\".  Pass it along");
     trb.addTokenForServer(token);
   }  
@@ -259,14 +256,15 @@ public class SmtpTokenStream
       token.getClass().getName() + "\"");
 
     if(m_passthru) {
-      m_logger.debug("[handleServerTokenImpl] (In passthru)");
+      m_logger.debug("(In passthru, server token) passing token of type " +
+        token.getClass().getName());
       trb.addTokenForClient(token);
       return;
     }
     
     //Passthru
     if(token instanceof PassThruToken) {
-      m_logger.debug("[handleServerTokenImpl] Entering Passthru");
+      m_logger.debug("(server token) Entering Passthru");
       m_passthru = true;
       trb.addTokenForClient(token);
       m_handler.passthru(trb);
