@@ -8,7 +8,7 @@
 CREATE TABLE settings.tr_virus_smtp_config (
     config_id int8 NOT NULL,
     scan bool NOT NULL,
-    msg_action char(1) NOT NULL,
+    action char(1) NOT NULL,
     notify_action char(1) NOT NULL,
     notes varchar(255),
     PRIMARY KEY (config_id));
@@ -17,7 +17,7 @@ CREATE TABLE settings.tr_virus_smtp_config (
 CREATE TABLE settings.tr_virus_pop_config (
     config_id int8 NOT NULL,
     scan bool NOT NULL,
-    msg_action char(1) NOT NULL,
+    action char(1) NOT NULL,
     notes varchar(255),
     PRIMARY KEY (config_id));
 
@@ -25,7 +25,7 @@ CREATE TABLE settings.tr_virus_pop_config (
 CREATE TABLE settings.tr_virus_imap_config (
     config_id int8 NOT NULL,
     scan bool NOT NULL,
-    msg_action char(1) NOT NULL,
+    action char(1) NOT NULL,
     notes varchar(255),
     PRIMARY KEY (config_id));
 
@@ -36,7 +36,7 @@ CREATE TABLE events.tr_virus_evt_smtp (
     clean bool,
     virus_name varchar(255),
     virus_cleaned bool,
-    msg_action char(1),
+    action char(1),
     notify_action char(1),
     vendor_name varchar(255),
     time_stamp timestamp,
@@ -49,7 +49,7 @@ CREATE TABLE events.tr_virus_evt_mail (
     clean bool,
     virus_name varchar(255),
     virus_cleaned bool,
-    msg_action char(1),
+    action char(1),
     vendor_name varchar(255),
     time_stamp timestamp,
     PRIMARY KEY (event_id));

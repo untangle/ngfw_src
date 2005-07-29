@@ -71,7 +71,7 @@
   </category>
 
   <category name="com.metavize.mvvm.logging">
-    <priority value="WARN"/>
+    <priority value="DEBUG"/>
   </category>
 
   <category name="com.metavize.mvvm.argon">

@@ -10,17 +10,19 @@
  */
 
 package com.metavize.tran.spam;
-import org.apache.log4j.Logger;
+
+import java.io.*;
+import java.util.*;
+
+import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.tapi.*;
 import com.metavize.tran.mail.*;
 import com.metavize.tran.mail.papi.*;
-import com.metavize.tran.mail.papi.smtp.sapi.*;
 import com.metavize.tran.mail.papi.smtp.*;
+import com.metavize.tran.mail.papi.smtp.sapi.*;
 import com.metavize.tran.mime.*;
 import com.metavize.tran.util.*;
-import com.metavize.mvvm.tapi.*;
-import com.metavize.mvvm.MvvmContextFactory;
-import java.util.*;
-import java.io.*;
+import org.apache.log4j.Logger;
 
 
 /**
@@ -38,10 +40,10 @@ public class SmtpSessionHandler
   private static final LCString SPAM_HEADER_NAME_LC = new LCString(SPAM_HEADER_NAME);
   private static final String IS_SPAM_HEADER_VALUE = "YES";
   private static final String IS_HAM_HEADER_VALUE = "NO";
-  
+
   private final Logger m_logger = Logger.getLogger(SmtpSessionHandler.class);
   private final Pipeline m_pipeline;
-  private final MyFileFactory m_fileFactory = new MyFileFactory();  
+  private final MyFileFactory m_fileFactory = new MyFileFactory();
   private static final Logger m_eventLogger = MvvmContextFactory
     .context().eventLogger();
 
@@ -60,7 +62,7 @@ public class SmtpSessionHandler
     SpamImpl impl,
     SpamSMTPConfig config,
     WrappedMessageGenerator wrapper) {
-    
+
     m_logger.debug("Created with client wait " +
       maxClientWait + " and server wait " + maxSvrWait);
     m_maxClientWait = maxClientWait<=0?Integer.MAX_VALUE:maxClientWait;
@@ -69,30 +71,30 @@ public class SmtpSessionHandler
     m_config = config;
     m_wrapper = wrapper;
     m_pipeline = MvvmContextFactory.context().
-      pipelineFoundry().getPipeline(session.id());     
+      pipelineFoundry().getPipeline(session.id());
   }
 
   @Override
   public int getGiveupSz() {
     return GIVEUP_SZ;
   }
-  
+
   @Override
   public long getMaxClientWait() {
     return m_maxClientWait;
   }
-  
+
   @Override
   public long getMaxServerWait() {
     return m_maxServerWait;
   }
-  
+
   @Override
   public boolean isBufferAndTrickle() {
-    //TODO bscott Should we trickle?  Sounds complicated for little mails    
+    //TODO bscott Should we trickle?  Sounds complicated for little mails
     return false;
   }
-  
+
   @Override
   public BPMEvaluationResult blockPassOrModify(MIMEMessage msg,
     SmtpTransaction tx,
@@ -110,7 +112,7 @@ public class SmtpSessionHandler
       m_logger.debug("Message larger than " + GIVEUP_SZ + ".  Don't bother to scan");
       return PASS_MESSAGE;
     }
-    
+
     SpamReport report = scanFile(f);
 
     //Handle error case
@@ -127,14 +129,14 @@ public class SmtpSessionHandler
     }
     catch(HeaderParseException shouldNotHappen) {
       m_logger.error(shouldNotHappen);
-    }    
-    
+    }
+
     if(report.isSpam()) {//BEGIN SPAM
       m_logger.debug("Spam found");
 
       SMTPSpamMessageAction action = m_config.getMsgAction();
 
-      //Create an event for the reports      
+      //Create an event for the reports
       SpamSmtpEvent spamEvent = new SpamSmtpEvent(
         msgInfo,
         report.getScore(),
@@ -163,13 +165,13 @@ public class SmtpSessionHandler
     }//ENDOF HAM
   }
 
-  
+
   @Override
   public BlockOrPassResult blockOrPass(MIMEMessage msg,
     SmtpTransaction tx,
     MessageInfo msgInfo) {
     m_logger.debug("[handleMessageCanNotBlock]");
-    
+
     //Scan the message
     File f = messageToFile(msg);
     if(f == null) {
@@ -180,8 +182,8 @@ public class SmtpSessionHandler
     if(f.length() > GIVEUP_SZ) {
       m_logger.debug("Message larger than " + GIVEUP_SZ + ".  Don't bother to scan");
       return BlockOrPassResult.PASS;
-    }    
-    
+    }
+
     SpamReport report = scanFile(f);
 
     //Handle error case
@@ -191,10 +193,10 @@ public class SmtpSessionHandler
     }
     if(report.isSpam()) {
       m_logger.debug("Spam");
-      
+
       SMTPSpamMessageAction action = m_config.getMsgAction();
 
-      //Create an event for the reports      
+      //Create an event for the reports
       SpamSmtpEvent spamEvent = new SpamSmtpEvent(
         msgInfo,
         report.getScore(),
@@ -214,7 +216,7 @@ public class SmtpSessionHandler
       else {//BLOCK
         m_logger.debug("Blocking SPAM message as-per policy");
         return BlockOrPassResult.BLOCK;
-      }      
+      }
     }
     else {
       m_logger.debug("Not Spam");
@@ -256,26 +258,26 @@ public class SmtpSessionHandler
       m_logger.error("Exception scanning message");
       return null;
     }
-    
+
 
 /*
-    //Fake Negative  
+    //Fake Negative
     m_logger.debug("Currently pretending this mail is not spam");
     ReportItem ri = new ReportItem(0,
       "FakeCategory");
     List<ReportItem> list = new ArrayList<ReportItem>();
     list.add(ri);
     return new SpamReport(list, THRESHOLD);
-*/    
+*/
 /*
-    //Fake Positive  
+    //Fake Positive
     m_logger.debug("Currently pretending this mail is spam");
     ReportItem ri = new ReportItem(THRESHOLD + 1,
       "FakeCategory");
     List<ReportItem> list = new ArrayList<ReportItem>();
     list.add(ri);
     return new SpamReport(list, THRESHOLD);
-*/    
+*/
   }
 
   //================= Inner Class =================
@@ -294,6 +296,6 @@ public class SmtpSessionHandler
       throws IOException {
       return m_pipeline.mktemp();
     }
-  }  
-  
+  }
+
 }

@@ -11,17 +11,18 @@
 
 package com.metavize.tran.virus;
 
-import org.apache.log4j.Logger;
+import java.io.*;
+import java.util.*;
+
+import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.tapi.*;
 import com.metavize.tran.mail.*;
 import com.metavize.tran.mail.papi.*;
-import com.metavize.tran.mail.papi.smtp.sapi.*;
 import com.metavize.tran.mail.papi.smtp.*;
+import com.metavize.tran.mail.papi.smtp.sapi.*;
 import com.metavize.tran.mime.*;
 import com.metavize.tran.util.*;
-import com.metavize.mvvm.tapi.*;
-import com.metavize.mvvm.MvvmContextFactory;
-import java.util.*;
-import java.io.*;
+import org.apache.log4j.Logger;
 
 
 /**
@@ -32,27 +33,27 @@ public class SmtpSessionHandler
   extends BufferingSessionHandler {
 
   private static final MIMEPart[] EMPTY_MIME_PARTS = new MIMEPart[0];
-  
+
   private final Logger m_logger = Logger.getLogger(SmtpSessionHandler.class);
   private final Logger m_eventLogger = MvvmContextFactory
     .context().eventLogger();
   private final Pipeline m_pipeline;
   private final MyFileFactory m_fileFactory = new MyFileFactory();
-    
+
   private final long m_maxClientWait;
   private final long m_maxServerWait;
   private final VirusTransformImpl m_virusImpl;
   private final VirusSMTPConfig m_config;
   private final WrappedMessageGenerator m_wrapper;
 
-  
+
   public SmtpSessionHandler(TCPSession session,
     long maxClientWait,
     long maxSvrWait,
     VirusTransformImpl impl,
     VirusSMTPConfig config,
     WrappedMessageGenerator wrapper) {
-    
+
     m_logger.debug("Created with client wait " +
       maxClientWait + " and server wait " + maxSvrWait);
     m_maxClientWait = maxClientWait<=0?Integer.MAX_VALUE:maxClientWait;
@@ -61,31 +62,31 @@ public class SmtpSessionHandler
     m_config = config;
     m_wrapper = wrapper;
     m_pipeline = MvvmContextFactory.context().
-      pipelineFoundry().getPipeline(session.id());    
+      pipelineFoundry().getPipeline(session.id());
   }
 
   @Override
   public int getGiveupSz() {
     return Integer.MAX_VALUE;
   }
-  
+
   @Override
   public long getMaxClientWait() {
     return m_maxClientWait;
   }
-  
+
   @Override
   public long getMaxServerWait() {
     return m_maxServerWait;
   }
-  
+
   @Override
   public boolean isBufferAndTrickle() {
     //For virus, we allow buffer-then-trickle so we can
     //(at worst) drop the connection to prevent a virus.
     return true;
   }
-  
+
   @Override
   public BPMEvaluationResult blockPassOrModify(MIMEMessage msg,
     SmtpTransaction tx,
@@ -102,7 +103,7 @@ public class SmtpSessionHandler
     VirusScannerResult scanResultForWrap = null;
 
     SMTPVirusMessageAction action = m_config.getMsgAction();
-    
+
     for(MIMEPart part : candidateParts) {
       if(!shouldScan(part)) {
         m_logger.debug("Skipping part which does not need to be scanned");
@@ -132,8 +133,9 @@ public class SmtpSessionHandler
           action,
           m_config.getNotifyAction(),
           m_virusImpl.getScanner().getVendorName());
-        m_eventLogger.info(event);        
-        
+        System.out.println("HI FUKER");
+        m_eventLogger.info(event);
+
         m_logger.debug("Part contained virus");
         if(action == SMTPVirusMessageAction.PASS) {
           m_logger.debug("Passing part as-per policy");
@@ -150,7 +152,7 @@ public class SmtpSessionHandler
           else {
             m_logger.debug("Removing infected part");
           }
-          
+
           try {
             MIMEUtil.removeChild(part);
           }
@@ -171,7 +173,7 @@ public class SmtpSessionHandler
     return PASS_MESSAGE;
   }
 
-  
+
   @Override
   public BlockOrPassResult blockOrPass(MIMEMessage msg,
     SmtpTransaction tx,
@@ -180,7 +182,7 @@ public class SmtpSessionHandler
 
     //TODO bscott There has to be a way to share more code
     //     with the "blockPassOrModify" method
-    
+
     MIMEPart[] candidateParts = getCandidateParts(msg);
     m_logger.debug("Message has: " + candidateParts.length + " scannable parts");
     SMTPVirusMessageAction action = m_config.getMsgAction();
@@ -193,7 +195,7 @@ public class SmtpSessionHandler
         " to \"BLOCK\" as we have already begun to trickle");
       action = SMTPVirusMessageAction.BLOCK;
     }
-    
+
     for(MIMEPart part : candidateParts) {
       if(!shouldScan(part)) {
         m_logger.debug("Skipping part which does not need to be scanned");
@@ -212,7 +214,7 @@ public class SmtpSessionHandler
       }
       else {
         m_logger.debug("Part contained virus");
-        
+
         //Make log report
         VirusSmtpEvent event = new VirusSmtpEvent(
           msgInfo,
@@ -220,7 +222,7 @@ public class SmtpSessionHandler
           action,
           m_config.getNotifyAction(),
           m_virusImpl.getScanner().getVendorName());
-        m_eventLogger.info(event);        
+        m_eventLogger.info(event);
 
         if(action == SMTPVirusMessageAction.PASS) {
           m_logger.debug("Passing part as-per policy");
@@ -254,7 +256,7 @@ public class SmtpSessionHandler
       else {
         return EMPTY_MIME_PARTS;
       }
-    }  
+    }
   }
 
   /**
@@ -264,7 +266,7 @@ public class SmtpSessionHandler
 
     return part.getMPHeaders().getContentTypeHF() != null &&
       !part.getMPHeaders().getContentTypeHF().getPrimaryType().
-        equalsIgnoreCase(ContentTypeHeaderField.TEXT_PRIM_TYPE_STR);  
+        equalsIgnoreCase(ContentTypeHeaderField.TEXT_PRIM_TYPE_STR);
   }
 
   /**
@@ -273,7 +275,7 @@ public class SmtpSessionHandler
   private VirusScannerResult scanPart(MIMEPart part) {
 
 /*
-    //Fake scanning (for test)  
+    //Fake scanning (for test)
     if(System.currentTimeMillis() > 0) {
       if(part.isAttachment()) {
         String fileName = part.getAttachmentName();
@@ -291,7 +293,7 @@ public class SmtpSessionHandler
       }
       return new VirusScannerResult(true, null, false);
     }
-*/    
+*/
     //Get the part as a file
     File f = null;
     try {
@@ -301,7 +303,7 @@ public class SmtpSessionHandler
       m_logger.error("Exception writing MIME part to file", ex);
       return null;
     }
-    
+
     //Call VirusScanner
     try {
 

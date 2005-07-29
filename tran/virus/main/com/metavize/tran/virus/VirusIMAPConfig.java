@@ -43,9 +43,9 @@ public class VirusIMAPConfig implements Serializable
 
     public VirusIMAPConfig(boolean bScan, VirusMessageAction zMsgAction, String zNotes)
     {
-        this.bScan = bScan;   
-        this.zMsgAction = zMsgAction;   
-        this.zNotes = zNotes;   
+        this.bScan = bScan;
+        this.zMsgAction = zMsgAction;
+        this.zNotes = zNotes;
     }
 
     // business methods ------------------------------------------------------
@@ -106,7 +106,7 @@ public class VirusIMAPConfig implements Serializable
      *
      * @return the action to take if a message is judged to be virus.
      * @hibernate.property
-     * column="MSG_ACTION"
+     * column="ACTION"
      * type="com.metavize.tran.virus.VirusMessageActionUserType"
      * not-null="true"
      */
