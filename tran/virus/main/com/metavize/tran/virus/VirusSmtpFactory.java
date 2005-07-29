@@ -22,6 +22,8 @@ import com.metavize.tran.mail.papi.smtp.sapi.Session;
 import com.metavize.tran.mail.papi.smtp.sapi.SimpleSessionHandler;
 import static com.metavize.tran.util.Ascii.*;
 import org.apache.log4j.Logger;
+import com.metavize.mvvm.MailSender;
+import com.metavize.mvvm.MvvmContextFactory;
 
 public class VirusSmtpFactory
   implements TokenHandlerFactory {
@@ -36,6 +38,17 @@ public class VirusSmtpFactory
     
   private static final String IN_MOD_SUB_TEMPLATE = OUT_MOD_SUB_TEMPLATE;
   private static final String IN_MOD_BODY_TEMPLATE = OUT_MOD_BODY_TEMPLATE;
+
+  private static final String OUT_NOTIFY_SUB_TEMPLATE =
+    "[VIRUS NOTIFICATION] re: $MIMEMessage:SUBJECT$";
+    
+  private static final String OUT_NOTIFY_BODY_TEMPLATE =
+    "On $MIMEHeader:DATE$ a message from $MIMEMessage:FROM$ ($SMTPTransaction:FROM$) was received " + CRLF +
+    "and found to contain the virus \"$VirusReport:VIRUS_NAME$\".  The infected portion of the email " + CRLF +
+    "was removed";
+
+  private static final String IN_NOTIFY_SUB_TEMPLATE = OUT_NOTIFY_SUB_TEMPLATE;
+  private static final String IN_NOTIFY_BODY_TEMPLATE = OUT_NOTIFY_BODY_TEMPLATE;  
   
 
   private final Logger m_logger =
@@ -46,7 +59,10 @@ public class VirusSmtpFactory
     new WrappedMessageGenerator(IN_MOD_SUB_TEMPLATE, IN_MOD_BODY_TEMPLATE);
 
   private WrappedMessageGenerator m_outWrapper =
-    new WrappedMessageGenerator(OUT_MOD_SUB_TEMPLATE, OUT_MOD_BODY_TEMPLATE);  
+    new WrappedMessageGenerator(OUT_MOD_SUB_TEMPLATE, OUT_MOD_BODY_TEMPLATE);
+
+  private SmtpNotifyMessageGenerator m_inNotifier;
+  private SmtpNotifyMessageGenerator m_outNotifier;    
 
   private final VirusTransformImpl m_virusImpl;
   private final MailExport m_mailExport;  
@@ -54,6 +70,19 @@ public class VirusSmtpFactory
   VirusSmtpFactory(VirusTransformImpl transform) {
     m_virusImpl = transform;
     m_mailExport = MailExportFactory.getExport();
+
+    MailSender mailSender = MvvmContextFactory.context().mailSender();    
+    m_inNotifier = new SmtpNotifyMessageGenerator(
+      IN_NOTIFY_SUB_TEMPLATE,
+      IN_NOTIFY_BODY_TEMPLATE,
+      false,
+      mailSender);
+
+    m_outNotifier = new SmtpNotifyMessageGenerator(
+      OUT_NOTIFY_SUB_TEMPLATE,
+      OUT_NOTIFY_BODY_TEMPLATE,
+      false,
+      mailSender);      
   }
 
   public TokenHandler tokenHandler(TCPSession session) {
@@ -73,6 +102,9 @@ public class VirusSmtpFactory
     WrappedMessageGenerator msgWrapper =
       inbound?m_inWrapper:m_outWrapper;
 
+    SmtpNotifyMessageGenerator notifier =
+      inbound?m_inNotifier:m_outNotifier;      
+
     MailTransformSettings casingSettings = m_mailExport.getExportSettings();
     return new Session(session,
       new SmtpSessionHandler(
@@ -81,7 +113,8 @@ public class VirusSmtpFactory
         inbound?casingSettings.getSmtpInboundTimeout():casingSettings.getSmtpOutboundTimeout(),
         m_virusImpl,
         virusConfig,
-        msgWrapper));
+        msgWrapper,
+        notifier));
 
     
   }

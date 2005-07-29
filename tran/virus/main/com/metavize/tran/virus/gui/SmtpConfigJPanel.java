@@ -86,7 +86,7 @@ class SmtpTableModel extends MSortedTableModel{
 		virusSMTPConfigInbound = virusSMTPConfig;
 	    }
 	    else if( ((String)rowVector.elementAt(2)).equals(VIRUS_OUTBOUND) ){
-		virusSMTPConfigInbound = virusSMTPConfig;
+		virusSMTPConfigOutbound = virusSMTPConfig;
 	    }  
         }
 	

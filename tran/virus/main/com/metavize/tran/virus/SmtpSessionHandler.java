@@ -45,6 +45,7 @@ public class SmtpSessionHandler
   private final VirusTransformImpl m_virusImpl;
   private final VirusSMTPConfig m_config;
   private final WrappedMessageGenerator m_wrapper;
+  private final SmtpNotifyMessageGenerator m_notifier;
 
 
   public SmtpSessionHandler(TCPSession session,
@@ -52,7 +53,8 @@ public class SmtpSessionHandler
     long maxSvrWait,
     VirusTransformImpl impl,
     VirusSMTPConfig config,
-    WrappedMessageGenerator wrapper) {
+    WrappedMessageGenerator wrapper,
+    SmtpNotifyMessageGenerator notifier) {
 
     m_logger.debug("Created with client wait " +
       maxClientWait + " and server wait " + maxSvrWait);
@@ -61,6 +63,7 @@ public class SmtpSessionHandler
     m_virusImpl = impl;
     m_config = config;
     m_wrapper = wrapper;
+    m_notifier = notifier;    
     m_pipeline = MvvmContextFactory.context().
       pipelineFoundry().getPipeline(session.id());
   }
@@ -103,6 +106,10 @@ public class SmtpSessionHandler
     VirusScannerResult scanResultForWrap = null;
 
     SMTPVirusMessageAction action = m_config.getMsgAction();
+    if(action == null) {
+      m_logger.error("SMTPVirusMessageAction null.  Assume REMOVE");
+      action = SMTPVirusMessageAction.REMOVE;
+    }
 
     for(MIMEPart part : candidateParts) {
       if(!shouldScan(part)) {
@@ -137,11 +144,11 @@ public class SmtpSessionHandler
 
         m_logger.debug("Part contained virus");
         if(action == SMTPVirusMessageAction.PASS) {
-          m_logger.debug("Passing part as-per policy");
+          m_logger.debug("Passing infected part as-per policy");
         }
         else if(action == SMTPVirusMessageAction.BLOCK) {
-          m_logger.debug("Blocking message as-per policy");
-          return BLOCK_MESSAGE;
+          m_logger.debug("Stop scanning remaining parts, as the policy is to block");
+          break;
         }
         else {
           if(part == msg) {
@@ -161,13 +168,32 @@ public class SmtpSessionHandler
         }
       }
     }
-
-    //If we're here, then either there were no viruses or we found
-    //at least one and we still need to "wrap" the message
-    if(foundVirus && action != SMTPVirusMessageAction.PASS) {
-      m_logger.debug("Wrap message");
-      MIMEMessage wrappedMsg = m_wrapper.wrap(msg, tx, scanResultForWrap);
-      return new BPMEvaluationResult(wrappedMsg);
+    
+    if(foundVirus) {
+      //Perform notification (if we should)
+      if(m_notifier.sendNotification(
+        m_config.getNotifyAction(),
+        msg,
+        tx,
+        tx, scanResultForWrap)) {
+        m_logger.debug("Notification handled without error");
+      }
+      else {
+        m_logger.error("Error sending notification");
+      }
+      
+      if(action == SMTPVirusMessageAction.BLOCK) {
+        m_logger.debug("Returning BLOCK as-per policy");
+        return BLOCK_MESSAGE;
+      }
+      else if(action == SMTPVirusMessageAction.REMOVE) {
+        m_logger.debug("REMOVE (wrap) message");
+        MIMEMessage wrappedMsg = m_wrapper.wrap(msg, tx, scanResultForWrap);
+        return new BPMEvaluationResult(wrappedMsg);        
+      }
+      else {
+        m_logger.debug("Passing infected message (as-per policy)");
+      }
     }
     return PASS_MESSAGE;
   }
@@ -195,6 +221,9 @@ public class SmtpSessionHandler
       action = SMTPVirusMessageAction.BLOCK;
     }
 
+    boolean foundVirus = false;
+    VirusScannerResult scanResultForWrap = null;
+
     for(MIMEPart part : candidateParts) {
       if(!shouldScan(part)) {
         m_logger.debug("Skipping part which does not need to be scanned");
@@ -213,6 +242,10 @@ public class SmtpSessionHandler
       }
       else {
         m_logger.debug("Part contained virus");
+        if(!foundVirus) {
+          scanResultForWrap = scanResult;
+        }
+        foundVirus = true;
 
         //Make log report
         VirusSmtpEvent event = new VirusSmtpEvent(
@@ -224,13 +257,30 @@ public class SmtpSessionHandler
         m_eventLogger.info(event);
 
         if(action == SMTPVirusMessageAction.PASS) {
-          m_logger.debug("Passing part as-per policy");
+          m_logger.debug("Passing infected part as-per policy");
         }
         else {
-          m_logger.debug("Blocking message as-per policy");
-          return BlockOrPassResult.BLOCK;
+          m_logger.debug("Scop scanning any remaining parts as we will block message");
+          break;
         }
       }
+    }
+    if(foundVirus) {
+      //Make notification
+      if(m_notifier.sendNotification(
+        m_config.getNotifyAction(),
+        msg,
+        tx,
+        tx, scanResultForWrap)) {
+        m_logger.debug("Notification handled without error");
+      }
+      else {
+        m_logger.error("Error sending notification");
+      }
+      if(action == SMTPVirusMessageAction.BLOCK) {
+        m_logger.debug("Blocking mail as-per policy");
+        return BlockOrPassResult.BLOCK;
+      }      
     }
     return BlockOrPassResult.PASS;
   }

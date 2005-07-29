@@ -81,7 +81,7 @@ class ImapTableModel extends MSortedTableModel{
 		virusIMAPConfigInbound = virusIMAPConfig;
 	    }
 	    else if( ((String)rowVector.elementAt(2)).equals(VIRUS_OUTBOUND) ){
-		virusIMAPConfigInbound = virusIMAPConfig;
+		virusIMAPConfigOutbound = virusIMAPConfig;
 	    }  
         }
 	

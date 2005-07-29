@@ -27,7 +27,7 @@ public class SmtpCasing extends AbstractCasing {
   private final SmtpParser m_parser;
   private final SmtpUnparser m_unparser;
 
-  private static final boolean TRACE = true;
+  private static final boolean TRACE = false;
 
   private final boolean m_trace;
   private FileOutputStream m_fOut;

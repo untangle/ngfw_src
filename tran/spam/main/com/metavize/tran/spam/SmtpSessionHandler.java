@@ -55,13 +55,15 @@ public class SmtpSessionHandler
   private final SpamSMTPConfig m_config;
 
   private final WrappedMessageGenerator m_wrapper;
+  private final SmtpNotifyMessageGenerator m_notifier;
 
   public SmtpSessionHandler(TCPSession session,
     long maxClientWait,
     long maxSvrWait,
     SpamImpl impl,
     SpamSMTPConfig config,
-    WrappedMessageGenerator wrapper) {
+    WrappedMessageGenerator wrapper,
+    SmtpNotifyMessageGenerator notifier) {
 
     m_logger.debug("Created with client wait " +
       maxClientWait + " and server wait " + maxSvrWait);
@@ -70,6 +72,7 @@ public class SmtpSessionHandler
     m_spamImpl = impl;
     m_config = config;
     m_wrapper = wrapper;
+    m_notifier = notifier;
     m_pipeline = MvvmContextFactory.context().
       pipelineFoundry().getPipeline(session.id());
   }
@@ -144,6 +147,18 @@ public class SmtpSessionHandler
         action,
         m_spamImpl.getScanner().getVendorName());
       m_eventLogger.info(spamEvent);
+
+      //Perform notification (if we should)
+      if(m_notifier.sendNotification(
+        m_config.getNotifyAction(),
+        msg,
+        tx,
+        tx, report)) {
+        m_logger.debug("Notification handled without error");
+      }
+      else {
+        m_logger.error("Error sending notification");
+      }
 
       if(action == SMTPSpamMessageAction.PASS) {
         m_logger.debug("Although SPAM detected, pass message as-per policy");
@@ -244,7 +259,6 @@ public class SmtpSessionHandler
    * swallows exceptions and simply returns null
    */
   private SpamReport scanFile(File f) {
-
     //Attempt scan
     try {
       SpamReport ret = m_spamImpl.getScanner().scanFile(f, THRESHOLD);

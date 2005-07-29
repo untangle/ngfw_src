@@ -81,7 +81,7 @@ class PopTableModel extends MSortedTableModel{
 		spamPOPConfigInbound = spamPOPConfig;
 	    }
 	    else if( ((String)rowVector.elementAt(2)).equals(SPAM_OUTBOUND) ){
-		spamPOPConfigInbound = spamPOPConfig;
+		spamPOPConfigOutbound = spamPOPConfig;
 	    }  
         }
 	

@@ -58,11 +58,41 @@ public class SmtpNotifyMessageGenerator
   public boolean isAttachCause() {
     return m_attachCause;
   }
+
+  /**
+   * If true, the message which caused the notification
+   * will be attached.
+   */
   public void setAttachCause(boolean attachCause) {
     m_attachCause = attachCause;
   }
 
-
+  /**
+   * Send a Notification (if the <code>action</code>
+   * determines we should).
+   * <br><br>
+   * Returns false if an error occured (only really
+   * for logging.  There is nothing the caller can do).
+   * <br><br>
+   * The transaction is <b>not</b> implicitly added
+   * to the <code>substitutionSources</code>
+   *
+   * @param action the action to take
+   * @param cause the message which, when inspected, caused this notification
+   * @param tx the current transaction (which had <code>cause</code> as its
+   *        message data).
+   * @param substitutionSources Any TemplateValues used for substitution values
+   */
+  public boolean sendNotification(SMTPNotifyAction action,
+    MIMEMessage cause,
+    SmtpTransaction tx,
+    TemplateValues... substitutionSources) {
+    return sendNotification(action,
+      cause,
+      tx,
+      new TemplateValuesChain(substitutionSources));
+  }
+  
   /**
    * Send a Notification (if the <code>action</code>
    * determines we should).

@@ -86,7 +86,7 @@ class SmtpTableModel extends MSortedTableModel{
 		spamSMTPConfigInbound = spamSMTPConfig;
 	    }
 	    else if( ((String)rowVector.elementAt(2)).equals(SPAM_OUTBOUND) ){
-		spamSMTPConfigInbound = spamSMTPConfig;
+		spamSMTPConfigOutbound = spamSMTPConfig;
 	    }  
         }
 	
