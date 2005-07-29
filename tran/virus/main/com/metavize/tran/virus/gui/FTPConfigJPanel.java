@@ -66,8 +66,8 @@ class FTPTableModel extends MSortedTableModel{
 	for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
 
             VirusConfig virusConfig = new VirusConfig();            
-            virusConfig.setScan( (Boolean) rowVector.elementAt(4) );
-            virusConfig.setNotes( (String) rowVector.elementAt(5) );
+            virusConfig.setScan( (Boolean) rowVector.elementAt(3) );
+            virusConfig.setNotes( (String) rowVector.elementAt(4) );
 
 	    // SAVE SETTINGS ///////
 	    if( !validateOnly ){
