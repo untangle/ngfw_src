@@ -1,8 +1,11 @@
+100bao|: Peer to Peer
 AIM|: Instant Messenger
 AIM web content|: Instant Messenger
 Audiogalaxy|: Music
 Apple Juice|: Peer to Peer
+Ares|: Peer to Peer]
 Battlefield 1942|: Video Game
+Battlefield 2|: Video Game
 BGP|: Networking
 Biff|: Email
 Bittorrent|: Peer to Peer
@@ -12,14 +15,20 @@ Counter Strike|: Video Game
 CVS|: Software Development
 DHCP|: Networking
 Direct Connect|: Peer to Peer
+Doom 3|: Video Game
 DNS|: Networking
+eDonkey2000|: Peer to Peer
 FastTrack|: Peer to Peer
+Finger|: Networking
+Freenet|: Peer to Peer
 FTP|: File Transfer
 Gkrellm|: System Administration
 GnucleusLAN (the LAN-only version)|: Peer to Peer
 Gnutella|: Peer to Peer
 GoBoogy|: Peer to Peer
+Gopher|: Networking
 H.323|: Voice over IP
+Half-Life 2 Deathmatch|: Video Game
 hddtemp|: System Administration
 Hotline|: Peer to Peer
 HTTP|: Web
@@ -28,15 +37,18 @@ IMAP|: Email
 IP printing|: Printing
 IRC|: Instant Messenger
 Jabber (XMPP)|: Instant Messenger
+KuGoo|: Peer to Peer
 live365|: Music
 LPD|: Printing
 MSN Filetransfers|: Instant Messenger
 MSN Messenger|: Instant Messenger
 MUTE|: Peer to Peer
 Netbios name service|: Networking
+NetBIOS|: Networking
 NCP|: Networking
 Nimda|: Worm
 NNTP|: Internet News
+(Simple) Network Time Protocol|: Networking
 OpenFT : P2P network (implemented in giFT library)|: Peer to Peer
 POP3|: Email
 pressplay|: Music
@@ -48,13 +60,19 @@ RTSP|: Networking
 Shoutcast & Icecast|: Music
 Skype|: Instant Messenger
 Samba/SMB|: Networking
+SIP|: Voice over IP
+Skype|: Voice over IP
+Skype to phone|: Voice over IP
+Skype to Skype|: Voice over IP
 SMTP|: Email
 SNMP|: Networking
+Soribada|: Peer to Peer
 SOCKS Version 5|: Networking
 SSDP (Simple Service Discovery Protocol): helps computers find network devices|: Networking
 SSH|: System Administration
 Subspace|: Video Game
 Telnet|: System Administration
+Tencent QQ Protocol|: Instant Messenger
 Tesla Advanced Communication|: Peer to Peer
 TFTP|: File Transfer
 TLS|: Networking
