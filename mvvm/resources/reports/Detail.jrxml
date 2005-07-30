@@ -186,6 +186,22 @@
             </textField>
         </band>
     </detail>
+    <lastPageFooter>
+        <band height="16">
+            <printWhenExpression><![CDATA[20 < $V{PAGE_NUMBER}.intValue() ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+            <line>
+                <reportElement positionType="Float" x="0" y="15" width="572" height="1"/>
+                <graphicElement pen="2Point"/>
+            </line>
+            <staticText>
+                <reportElement positionType="Float" x="0" y="0" width="572" height="15"/>
+                <textElement>
+                    <font size="12" isItalic="true" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Note: Report limited to 500 entries]]></text>
+            </staticText>
+        </band>
+    </lastPageFooter>
     <summary>
         <band height="4">
             <line>
