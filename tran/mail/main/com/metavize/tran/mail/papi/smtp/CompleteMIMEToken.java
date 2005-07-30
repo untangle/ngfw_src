@@ -126,13 +126,13 @@ public class CompleteMIMEToken
       if(m_channel == null) {
         return null;
       }
-
       try {
         m_readBuf.clear();
         ByteBuffer sinkBuf = ByteBuffer.allocate(CHUNK_SZ);
         int read = m_channel.read(m_readBuf);
         if(read > 0) {
           //TODO bscott the JavaDocs are unclear about "0"
+          m_readBuf.flip();
           m_logger.debug("Read a chunk of MIME from file of size: " + read);
           m_bbbs.transfer(m_readBuf, sinkBuf);
           m_logger.debug("Returning a ByteBuffer of size: " + sinkBuf.remaining());
@@ -151,7 +151,6 @@ public class CompleteMIMEToken
         close();
         return null;
       }
-
     }
   }
 }

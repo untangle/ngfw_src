@@ -30,6 +30,7 @@ import com.metavize.tran.mail.papi.smtp.*;
 import com.metavize.tran.token.*;
 import com.metavize.tran.util.*;
 import org.apache.log4j.Logger;
+import java.util.*;
 
 /**
  * ...name says it all...
@@ -109,43 +110,9 @@ class SmtpServerUnparser
     //-----------------------------------------------------------
     if(token instanceof CompleteMIMEToken) {
       m_logger.debug("Received CompleteMIMEToken to pass");
-
-//TO MAKE THIS WORK, Uncomment the lines bounded by "HACK"
-
-//TO SEE THE PROBLEM, Uncomment lines bounded by "NOT-WORKING"
-      
       getSessionTracker().beginMsgTransmission();
-
-
-//BEGIN HACK         
-      try {
-        CompleteMIMEToken cmt = (CompleteMIMEToken) token;
-        
-        ByteBuffer tempBuf = ((CompleteMIMEToken) token).getMessage().toByteBuffer();
-        m_logger.debug("About to byte stuff buffer of length: " + tempBuf.remaining());
-        ByteBufferByteStuffer tempBBBS = new ByteBufferByteStuffer();
-        ByteBuffer b1 = ByteBuffer.allocate(tempBuf.remaining());
-        tempBBBS.transfer(tempBuf, b1);
-        ByteBuffer b2 = tempBBBS.getLast(true);
-  
-        ByteBuffer finalBuf = ByteBuffer.allocate(b1.remaining() + b2.remaining());
-        finalBuf.put(b1).put(b2);
-        finalBuf.flip();
-        m_logger.debug("Returning buffer of length: " + finalBuf.remaining());
-        return new UnparseResult(finalBuf);
-      }
-      catch(IOException ex) {
-        m_logger.error(ex);
-        return null;//new UnparseResult();
-      }
-//ENDOF HACK
-
-/*
-//BEGIN NOT-WORKING
       return new UnparseResult(((CompleteMIMEToken) token).toTCPStreamer(getPipeline()));
-//ENDOF NOT-WORKING
-*/
-    }    
+    }
     //-----------------------------------------------------------
     if(token instanceof ContinuedMIMEToken) {
       boolean last = ((ContinuedMIMEToken) token).isLast();
