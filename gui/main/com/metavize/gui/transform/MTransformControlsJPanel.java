@@ -40,7 +40,6 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
     protected Object settings;
     
     // EXPANDING/CONTACTING
-
     protected Dimension MIN_SIZE = new Dimension(800, 600);
     protected Dimension MAX_SIZE = new Dimension(1600, 1200);
     private AbsoluteConstraints oldConstraints;
@@ -67,7 +66,7 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
 	if(greyBackgroundImageIcon == null)
 	    greyBackgroundImageIcon = new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/metavize/gui/images/DarkGreyBackground1600x100.png"));
         expandJDialog = new JDialog( Util.getMMainJFrame(), 
-				     mTransformJPanel.getTransformContext().getMackageDesc().getDisplayName()
+				     mTransformJPanel.getMackageDesc().getDisplayName()
 				     + " (expanded settings window)", true);
         expandJDialog.setSize(MIN_SIZE);
         expandJDialog.addComponentListener( 
@@ -124,10 +123,11 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
             return;
 
 	// GENERATE AND VALIDATE ALL SETTINGS
-	StringBuilder message = new StringBuilder();
+	String transformName = mTransformJPanel.getMackageDesc().getDisplayName();
 	String componentName = "";
+	StringBuilder message = new StringBuilder();
         try {
-	    message.append("Saving: "+ mTransformJPanel.getTransformContext().getTransformDesc().getDisplayName() );
+	    message.append("Saving: " + transformName);
 	    for( Map.Entry<String, Savable> savableMapEntry : savableMap.entrySet() ){
 		componentName = savableMapEntry.getKey();
 		Savable savableComponent = savableMapEntry.getValue();
@@ -138,8 +138,7 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
                 ((Validatable)settings).validate();
         }
         catch(Exception e){
-            new ValidateFailureDialog( mTransformJPanel.getTransformContext().getTransformDesc().getDisplayName(),
-				       componentName, e.getMessage() );
+            new ValidateFailureDialog( transformName, componentName, e.getMessage() );
 	    return;
         }
         
@@ -150,10 +149,10 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
         }
         catch ( Exception e ) {
             try{
-                Util.handleExceptionWithRestart("ERROR SAVING: " + mTransformJPanel.getTransformContext().getMackageDesc().getDisplayName(), e);
+                Util.handleExceptionWithRestart("ERROR SAVING: " + transformName, e);
             }
             catch(Exception f){
-                Util.handleExceptionNoRestart("ERROR SAVING: " + mTransformJPanel.getTransformContext().getMackageDesc().getDisplayName(), f);
+                Util.handleExceptionNoRestart("ERROR SAVING: " + transformName, f);
                 new SaveFailureDialog( mTransformJPanel.getTransformContext().getTransformDesc().getDisplayName() );
             }
         }
@@ -166,10 +165,11 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
 
      
     protected void refreshAll(){
+	String transformName = mTransformJPanel.getMackageDesc().getDisplayName();
 	StringBuilder message = new StringBuilder();
 	try{
 	    settings = mTransformJPanel.getTransformContext().transform().getSettings();
-	    message.append("Refreshing: "+ mTransformJPanel.getTransformContext().getTransformDesc().getDisplayName() );
+	    message.append("Refreshing: " + transformName );
 	    for( Map.Entry<String, Refreshable> refreshableMapEntry : refreshableMap.entrySet() ){
 		String componentName = refreshableMapEntry.getKey();
 		Refreshable refreshableComponent = refreshableMapEntry.getValue();
@@ -179,11 +179,11 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
 	}
 	catch(Exception e){
 	    try{
-		Util.handleExceptionWithRestart("ERROR REFRESHING: " + mTransformJPanel.getTransformContext().getMackageDesc().getDisplayName(), e);
+		Util.handleExceptionWithRestart("ERROR REFRESHING: " + transformName, e);
 	    }
 	    catch(Exception f){
-		Util.handleExceptionNoRestart("ERROR REFRESHING: " + mTransformJPanel.getTransformContext().getMackageDesc().getDisplayName(), f);
-		new RefreshFailureDialog( mTransformJPanel.getTransformContext().getTransformDesc().getDisplayName() );
+		Util.handleExceptionNoRestart("ERROR REFRESHING: " + transformName, f);
+		new RefreshFailureDialog( transformName );
 	    }
 	}
 	finally{

@@ -11,12 +11,6 @@
 
 package com.metavize.gui.main;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
-import javax.swing.*;
-import javax.swing.border.*;
-
 import com.metavize.gui.configuration.*;
 import com.metavize.gui.pipeline.*;
 import com.metavize.gui.store.*;
@@ -27,6 +21,12 @@ import com.metavize.gui.util.*;
 import com.metavize.mvvm.*;
 import com.metavize.mvvm.security.*;
 import com.metavize.mvvm.tran.*;
+
+import java.awt.*;
+import java.awt.event.*;
+import java.util.*;
+import javax.swing.*;
+import javax.swing.border.*;
 
 
 public class MMainJFrame extends javax.swing.JFrame {
@@ -72,7 +72,7 @@ public class MMainJFrame extends javax.swing.JFrame {
                 continue;
 	    else if( installedMackages[i].getRackPosition() < 0 )
 		continue;
-            ButtonKey buttonKey = new ButtonKey(installedMackages[i].getName(),installedMackages[i].getRackPosition());
+            ButtonKey buttonKey = new ButtonKey(installedMackages[i]);
             MTransformJButton button = new MTransformJButton(installedMackages[i]);
             Tid[] transformInstances = Util.getTransformManager().transformInstances( button.getName() );
             if(  Util.isArrayEmpty(transformInstances) ){
@@ -98,7 +98,7 @@ public class MMainJFrame extends javax.swing.JFrame {
                 continue;
 	    else if( storeMackages[i].getRackPosition() < 0 )
 		continue;
-            ButtonKey buttonKey = new ButtonKey(storeMackages[i].getName(), storeMackages[i].getRackPosition());
+            ButtonKey buttonKey = new ButtonKey(storeMackages[i]);
             if(!toolboxMap.containsKey( buttonKey )){
                 MTransformJButton button = new MTransformJButton(storeMackages[i]);
 		button.setProcurableView();
@@ -332,7 +332,7 @@ public class MMainJFrame extends javax.swing.JFrame {
         jPanel8.setFocusable(false);
         adminJButton.setFont(new java.awt.Font("Arial", 0, 12));
         adminJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText32x32.png")));
-        adminJButton.setText("<html>Administrator<br>Accounts</html>");
+        adminJButton.setText("<html>Accounts</html>");
         adminJButton.setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.EtchedBorder(), new javax.swing.border.EmptyBorder(new java.awt.Insets(2, 2, 2, 0))));
         adminJButton.setDoubleBuffered(true);
         adminJButton.setFocusPainted(false);
@@ -401,7 +401,7 @@ public class MMainJFrame extends javax.swing.JFrame {
 
         backupJButton.setFont(new java.awt.Font("Arial", 0, 12));
         backupJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText32x32.png")));
-        backupJButton.setText("<html>Backup and<br>Restore</html>");
+        backupJButton.setText("<html>Backup &amp;<br>Restore</html>");
         backupJButton.setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.EtchedBorder(), new javax.swing.border.EmptyBorder(new java.awt.Insets(2, 2, 2, 0))));
         backupJButton.setDoubleBuffered(true);
         backupJButton.setFocusPainted(false);
@@ -419,12 +419,12 @@ public class MMainJFrame extends javax.swing.JFrame {
         gridBagConstraints.gridx = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(10, 1, 3, 3);
+        gridBagConstraints.insets = new java.awt.Insets(0, 1, 3, 3);
         jPanel8.add(backupJButton, gridBagConstraints);
 
         protocolJButton.setFont(new java.awt.Font("Arial", 0, 12));
         protocolJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText32x32.png")));
-        protocolJButton.setText("<html>Traffic Protocol<br>Settings</html>");
+        protocolJButton.setText("<html>Protocol<br>Settings</html>");
         protocolJButton.setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.EtchedBorder(), new javax.swing.border.EmptyBorder(new java.awt.Insets(2, 2, 2, 0))));
         protocolJButton.setDoubleBuffered(true);
         protocolJButton.setFocusPainted(false);
@@ -447,7 +447,7 @@ public class MMainJFrame extends javax.swing.JFrame {
 
         maintenanceJButton.setFont(new java.awt.Font("Arial", 0, 12));
         maintenanceJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText32x32.png")));
-        maintenanceJButton.setText("<html>Support and<br>Maintenance</html>");
+        maintenanceJButton.setText("<html>Support</html>");
         maintenanceJButton.setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.EtchedBorder(), new javax.swing.border.EmptyBorder(new java.awt.Insets(2, 2, 2, 0))));
         maintenanceJButton.setDoubleBuffered(true);
         maintenanceJButton.setFocusPainted(false);
@@ -757,7 +757,6 @@ public class MMainJFrame extends javax.swing.JFrame {
 	}
 
     }
-
 
 
     private void storeActionPerformed(java.awt.event.ActionEvent evt){

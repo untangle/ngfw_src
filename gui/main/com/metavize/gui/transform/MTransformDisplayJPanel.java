@@ -49,7 +49,6 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
     protected UpdateGraphThread updateGraphThread;
     private volatile boolean updateGraph = false;
     private volatile boolean killGraph = false;
-    private Transform graphTransform;
     private Tid graphTransformTid;
     
     // THROUGHPUT & SESSION COUNT DISPLAY
@@ -73,8 +72,6 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
     public MTransformDisplayJPanel(MTransformJPanel mTransformJPanel) {
         this.mTransformJPanel = mTransformJPanel;
         
-
-        graphTransform = mTransformJPanel.transformContext().transform();
         graphTransformTid = mTransformJPanel.transformContext().getTid();
         
         throughputDynamicTimeSeriesCollection = new AreaDynamicTimeSeriesCollection(1, 60, new Second());
@@ -147,19 +144,14 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
         axis.setAutoRangeIncludesZero(true);
         axis.setLowerBound(0.0d);
         axis.setUpperBound(100.0d);
-        
-
-        
-         
+       
         // CHART
         ChartPanel chartPanel = new ChartPanel(jFreeChart, false, false, false, false, false);
         chartPanel.setOpaque(true);
         chartPanel.setMinimumDrawHeight(20);
         chartPanel.setMinimumDrawWidth(20);
-
-        
+ 
         return chartPanel;
-
     }
         
     
@@ -412,7 +404,7 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
 
         
         public UpdateGraphThread(){
-	    super("MVCLIENT-UpdateGraphThread: " + MTransformDisplayJPanel.this.mTransformJPanel.getTransformContext().getMackageDesc().getDisplayName());
+	    super("MVCLIENT-UpdateGraphThread: " + MTransformDisplayJPanel.this.mTransformJPanel.getMackageDesc().getDisplayName());
             this.setDaemon(true);
             resetCounters();
 	    this.start();

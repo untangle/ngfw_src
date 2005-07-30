@@ -325,7 +325,7 @@
                             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                               <Image iconType="3" name="/com/metavize/gui/icons/LogoNoText32x32.png"/>
                             </Property>
-                            <Property name="text" type="java.lang.String" value="&lt;html&gt;Administrator&lt;br&gt;Accounts&lt;/html&gt;"/>
+                            <Property name="text" type="java.lang.String" value="&lt;html&gt;Accounts&lt;/html&gt;"/>
                             <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                               <Border info="org.netbeans.modules.form.compat2.border.CompoundBorderInfo">
                                 <CompundBorder>
@@ -448,7 +448,7 @@
                             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                               <Image iconType="3" name="/com/metavize/gui/icons/LogoNoText32x32.png"/>
                             </Property>
-                            <Property name="text" type="java.lang.String" value="&lt;html&gt;Backup and&lt;br&gt;Restore&lt;/html&gt;"/>
+                            <Property name="text" type="java.lang.String" value="&lt;html&gt;Backup &amp;amp;&lt;br&gt;Restore&lt;/html&gt;"/>
                             <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                               <Border info="org.netbeans.modules.form.compat2.border.CompoundBorderInfo">
                                 <CompundBorder>
@@ -477,7 +477,7 @@
                           </Events>
                           <Constraints>
                             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
-                              <GridBagConstraints gridX="0" gridY="-1" gridWidth="1" gridHeight="1" fill="2" ipadX="0" ipadY="0" insetsTop="10" insetsLeft="1" insetsBottom="3" insetsRight="3" anchor="10" weightX="1.0" weightY="0.0"/>
+                              <GridBagConstraints gridX="0" gridY="-1" gridWidth="1" gridHeight="1" fill="2" ipadX="0" ipadY="0" insetsTop="0" insetsLeft="1" insetsBottom="3" insetsRight="3" anchor="10" weightX="1.0" weightY="0.0"/>
                             </Constraint>
                           </Constraints>
                         </Component>
@@ -489,7 +489,7 @@
                             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                               <Image iconType="3" name="/com/metavize/gui/icons/LogoNoText32x32.png"/>
                             </Property>
-                            <Property name="text" type="java.lang.String" value="&lt;html&gt;Traffic Protocol&lt;br&gt;Settings&lt;/html&gt;"/>
+                            <Property name="text" type="java.lang.String" value="&lt;html&gt;Protocol&lt;br&gt;Settings&lt;/html&gt;"/>
                             <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                               <Border info="org.netbeans.modules.form.compat2.border.CompoundBorderInfo">
                                 <CompundBorder>
@@ -530,7 +530,7 @@
                             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                               <Image iconType="3" name="/com/metavize/gui/icons/LogoNoText32x32.png"/>
                             </Property>
-                            <Property name="text" type="java.lang.String" value="&lt;html&gt;Support and&lt;br&gt;Maintenance&lt;/html&gt;"/>
+                            <Property name="text" type="java.lang.String" value="&lt;html&gt;Support&lt;/html&gt;"/>
                             <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                               <Border info="org.netbeans.modules.form.compat2.border.CompoundBorderInfo">
                                 <CompundBorder>

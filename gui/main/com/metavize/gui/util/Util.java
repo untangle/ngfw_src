@@ -355,10 +355,10 @@ public class Util {
             resetSize = true;
         }
         if(resetSize){
-        //Rectangle rectangle = resizableComponent.getBounds();
+	    //Rectangle rectangle = resizableComponent.getBounds();
             //resizableComponent.setBounds( rectangle.x, rectangle.y, currentSize.width, currentSize.height);
-        //final Dimension newSize = currentSize;
-        //SwingUtilities.invokeLater( new Runnable() { public void run(){
+	    //final Dimension newSize = currentSize;
+	    //SwingUtilities.invokeLater( new Runnable() { public void run(){
         resizableComponent.setSize( newWidth, newHeight );
         //System.err.println(" SCREEN CHANGE ---> New size: " + newSize);
         //}});
@@ -384,9 +384,6 @@ public class Util {
     }
 
     public static void handleExceptionWithRestart(String output, Exception e) throws Exception {
-        // DEAL WITH COMMUNICATIONS FAILURES
-
-	// System.err.println("catching exception: " + e.toString() );
 	Throwable throwableRef = e;
 	
 	while( throwableRef != null){
@@ -423,9 +420,7 @@ public class Util {
 	    throwableRef = throwableRef.getCause();
 	}
         
-	// System.err.println("THROWING");
 	throw e;
-        
     }
 
 

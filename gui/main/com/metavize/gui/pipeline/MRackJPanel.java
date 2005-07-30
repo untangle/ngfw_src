@@ -21,10 +21,7 @@ import javax.swing.*;
 import javax.swing.border.*;
 
 
-/**
- *
- * @author  inieves
- */
+
 public class MRackJPanel extends JPanel {
 
     private Map<ButtonKey,MTransformJPanel> rackMap;

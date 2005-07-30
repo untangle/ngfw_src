@@ -11,7 +11,7 @@
 
 package com.metavize.gui.transform;
 
-import com.metavize.mvvm.tran.TransformContext;
+import com.metavize.mvvm.*;
 
 
 public class ButtonKey implements Comparable<ButtonKey> {
@@ -24,11 +24,11 @@ public class ButtonKey implements Comparable<ButtonKey> {
     }
     
     public ButtonKey(MTransformJPanel mTransformJPanel){
-        this(mTransformJPanel.getTransformContext());
+        this(mTransformJPanel.getMackageDesc());
     }
     
-    public ButtonKey(TransformContext transformContext){
-        init(transformContext.getTransformDesc().getName(), transformContext.getMackageDesc().getRackPosition() );
+    public ButtonKey(MackageDesc mackageDesc){
+        init(mackageDesc.getName(), mackageDesc.getRackPosition() );
     }
 
     public ButtonKey(String applianceName, int rackPosition){

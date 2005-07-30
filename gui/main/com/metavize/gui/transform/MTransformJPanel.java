@@ -11,26 +11,27 @@
 
 package com.metavize.gui.transform;
 
+import com.metavize.gui.util.*;
+import com.metavize.gui.util.*;
+import com.metavize.gui.util.*;
 
+import com.metavize.mvvm.tran.*;
+import com.metavize.mvvm.*;
 
 import java.awt.*;
 import java.lang.reflect.Constructor;
 import java.util.*;
 import javax.swing.*;
 
-import com.metavize.gui.util.*;
-import com.metavize.gui.util.*;
-import com.metavize.mvvm.tran.TransformContext;
-import com.metavize.gui.util.*;
-
 
 public class MTransformJPanel extends javax.swing.JPanel {
 
-
-
-    private TransformContext transformContext;
+    protected TransformContext transformContext;
     public TransformContext transformContext() { return transformContext; }
     public TransformContext getTransformContext(){ return transformContext; }
+    protected MackageDesc mackageDesc;
+    public MackageDesc mackageDesc(){ return mackageDesc; }
+    public MackageDesc getMackageDesc(){ return mackageDesc; }
     private MTransformControlsJPanel mTransformControlsJPanel; protected MTransformControlsJPanel mTransformControlsJPanel(){ return mTransformControlsJPanel; }
     private MTransformDisplayJPanel mTransformDisplayJPanel;  protected MTransformDisplayJPanel mTransformDisplayJPanel() { return mTransformDisplayJPanel; }
 
@@ -41,8 +42,10 @@ public class MTransformJPanel extends javax.swing.JPanel {
     // GUI assets
     private static Dimension maxDimension, minDimension;
 
+
     public MTransformJPanel(TransformContext transformContext) {
         this.transformContext = transformContext;
+	this.mackageDesc = transformContext.getMackageDesc();
 
         // INIT GUI
         initComponents();
@@ -79,8 +82,7 @@ public class MTransformJPanel extends javax.swing.JPanel {
     // DYNAMICALLY LOAD ICONS
     String name = null;
     try{
-
-        name = transformContext.transform().getTransformDesc().getName();
+        name = getMackageDesc().getName();
         name = name.substring(0, name.indexOf('-'));
 
         descriptionIconJLabel.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/metavize/tran/" + name +  "/gui/IconDesc42x42.png")));
@@ -109,9 +111,7 @@ public class MTransformJPanel extends javax.swing.JPanel {
         
         
         // SETUP COLORS and name
-        mTransformDisplayJPanel.setOpaque(false);
-        tintJPanel.setBackground( transformContext.getTransformPreferences().getGuiBackgroundColor() );
-        descriptionTextJLabel.setText( transformContext.getTransformDesc().getDisplayName() );
+        descriptionTextJLabel.setText( getMackageDesc().getDisplayName() );
 
 
         // SETUP STATE
@@ -135,7 +135,6 @@ public class MTransformJPanel extends javax.swing.JPanel {
         descriptionIconJLabel = new javax.swing.JLabel();
         organizationIconJLabel = new javax.swing.JLabel();
         powerJToggleButton = new javax.swing.JToggleButton();
-        tintJPanel = new javax.swing.JPanel();
         backgroundJLabel = new javax.swing.JLabel();
 
         setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -207,13 +206,6 @@ public class MTransformJPanel extends javax.swing.JPanel {
         powerJToggleButton.setSelectedIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/metavize/gui/transform/IconPowerOnState28x28.png")));
         add(powerJToggleButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(606, 54, 28, 28));
 
-        tintJPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        tintJPanel.setMinimumSize(new java.awt.Dimension(688, 100));
-        tintJPanel.setOpaque(false);
-        tintJPanel.setPreferredSize(new java.awt.Dimension(688, 100));
-        add(tintJPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 688, 100));
-
         backgroundJLabel.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/metavize/gui/transform/TransformBackground688x100.png")));
         backgroundJLabel.setDisabledIcon(new javax.swing.ImageIcon(""));
         backgroundJLabel.setDoubleBuffered(true);
@@ -265,7 +257,6 @@ public class MTransformJPanel extends javax.swing.JPanel {
     protected javax.swing.JLabel organizationIconJLabel;
     protected javax.swing.JToggleButton powerJToggleButton;
     private javax.swing.JLabel stateJLabel;
-    javax.swing.JPanel tintJPanel;
     // End of variables declaration//GEN-END:variables
 
 }

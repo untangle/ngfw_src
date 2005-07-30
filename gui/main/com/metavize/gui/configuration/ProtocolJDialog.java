@@ -49,7 +49,7 @@ public class ProtocolJDialog extends MConfigJDialog {
             contentJScrollPane = new JScrollPane( mCasingJPanel );
             contentJScrollPane.setHorizontalScrollBarPolicy( ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER );
             contentJScrollPane.setVerticalScrollBarPolicy( ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS );
-            casingDisplayName = mCasingJPanel.getTransformContext().getMackageDesc().getDisplayName();
+            casingDisplayName = mCasingJPanel.getMackageDesc().getDisplayName();
             this.contentJTabbedPane.addTab(casingDisplayName, null, contentJScrollPane);
             super.savableMap.put(casingDisplayName, mCasingJPanel);
             super.refreshableMap.put(casingDisplayName, mCasingJPanel);
