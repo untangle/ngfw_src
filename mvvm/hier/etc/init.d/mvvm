@@ -21,6 +21,7 @@ MVVM_CMD=${MVVM_CMD:-@PREFIX@/usr/bin/mvvm.sh}
 MVVM_USER=${MVVM_USER:-$USER}
 MVVM_PID="mvvm.pid"
 MVVM_CHUSER=" --chuid $MVVM_USER:$MVVM_USER "
+MVVM_TIMEOUT=600
 
 # if in the build
 if [ "x" != "x@PREFIX@" ] ; then
@@ -70,7 +71,7 @@ case "$1" in
         echo -n "." ; sleep 1 ; echo -n "." ; sleep 1 # time for console.log to be rm'd
 
         # Wait for completion
-        for i in `seq 1 120` ; do
+        for i in `seq 1 $MVVM_TIMEOUT` ; do
             EXPC="`cat $MVVM_CONSOLE_LOG 2>/dev/null | grep -i exception `"
             FINI="`cat $MVVM_CONSOLE_LOG 2>/dev/null | grep -i 'vegetables' `"
             sleep 1
@@ -93,7 +94,7 @@ case "$1" in
         done
 
         # Wait for completion, ignore exceptions because they are transform exceptions
-        for i in `seq 1 120` ; do
+        for i in `seq 1 $MVVM_TIMEOUT` ; do
             FINI="`cat $MVVM_CONSOLE_LOG 2>/dev/null | grep -i 'postInit complete' `"
             sleep 1
             echo -n "."
