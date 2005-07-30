@@ -393,7 +393,8 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
         <include name="com/metavize/tran/mail/MessageInfo.class"/>
         <include name="com/metavize/tran/mail/MessageInfoAddr.class"/>
         <include name="com/metavize/tran/mail/MessageStats.class"/>
-        <include name="com/metavize/tran/mail/MIMEMessageHolderT.class"/>
+        <include name="com/metavize/tran/mail/MIMEMessageT.class"/>
+        <include name="com/metavize/tran/mail/MIMEMessageTrickleT.class"/>
         <include name="com/metavize/tran/mail/MimeBoundary.class"/>
         <include name="com/metavize/tran/mail/MimeStateMachine*.class"/>
         <include name="com/metavize/tran/mail/PopCommand*.class"/>

@@ -14,13 +14,11 @@ package com.metavize.tran.virus;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
 import com.metavize.mvvm.argon.IntfConverter;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.tran.mail.PopStateMachine;
-import com.metavize.tran.mime.HeaderParseException;
 import com.metavize.tran.mime.MIMEPart;
 import com.metavize.tran.token.Token;
 import com.metavize.tran.token.TokenException;
@@ -49,43 +47,31 @@ public class VirusPopHandler extends PopStateMachine
         zVendorName = zScanner.getVendorName();
 
         VirusPOPConfig zConfig;
-        if (IntfConverter.INSIDE == session.clientIntf())
-        {
+        if (IntfConverter.INSIDE == session.clientIntf()) {
             zConfig = transform.getVirusSettings().getPOPInbound();
-logger.debug("inside");
-        }
-        else
-        {
+        } else {
             zConfig = transform.getVirusSettings().getPOPOutbound();
-logger.debug("outside");
         }
         bScan = zConfig.getScan();
         zMsgAction = zConfig.getMsgAction();
-logger.debug("scan: " + bScan + ", message action: " + zMsgAction);
+        //logger.debug("scan: " + bScan + ", message action: " + zMsgAction);
     }
 
     // PopStateMachine methods -----------------------------------------------
 
     protected TokenResult scanMessage() throws TokenException
     {
-        if (true == zMMessage.isMultipart())
-        {
-logger.debug("message contains MIME parts");
+        if (true == zMMessage.isMultipart()) {
             MIMEPart azMPart[] = zMMessage.getLeafParts(true);
             TempFileFactory zTFFactory = new TempFileFactory();
 
             File zMPFile;
 
-            for (MIMEPart zMPart : azMPart)
-            {
-                if (false == zMPart.isMultipart())
-                {
-                    try
-                    {
+            for (MIMEPart zMPart : azMPart) {
+                if (false == zMPart.isMultipart()) {
+                    try {
                         zMPFile = zMPart.getContentAsFile(zTFFactory, true);
-                    }
-                    catch (IOException exn)
-                    {
+                    } catch (IOException exn) {
                         throw new TokenException("cannot get message/mime part file: ", exn);
                     }
 
@@ -93,45 +79,35 @@ logger.debug("message contains MIME parts");
                 }
             }
         }
+        //else {
+            //logger.debug("message contains no MIME parts");
+        //}
 
-        return new TokenResult(new Token[] { zMMHolderT }, null);
+        return new TokenResult(new Token[] { zMMessageT }, null);
     }
 
     private void scanFile(File zFile) throws TokenException
     {
-        if (false == bScan)
-        {
+        if (false == bScan) {
             return;
         }
 
-        try
-        {
-logger.debug("scanning message attachments");
+        try {
             VirusScannerResult zScanResult = zScanner.scanFile(zFile.getPath());
             eventLogger.info(new VirusMailEvent(zMsgInfo, zScanResult, zMsgAction, zVendorName));
 
-//XXXX message action - pass, clean
-            if (VirusMessageAction.REMOVE == zMsgAction)
-            {
-                try
-                {
-                    zMMessage.getMPHeaders().addHeaderField("X-MV-Virus-Found", "YES");
-                }
-                catch (HeaderParseException exn2)
-                {
-                    throw new TokenException("cannot add header field: ", exn2);
-                }
+            if (false == zScanResult.isClean() &&
+                VirusMessageAction.REMOVE == zMsgAction) {
+                //XXXX remove virus/wrap message
             }
-            /* else CLEAN - do nothing */
+            /* else PASS - do nothing */
 
             return;
         }
-        catch (IOException exn)
-        {
+        catch (IOException exn) {
             throw new TokenException("cannot scan message/mime part file: ", exn);
         }
-        catch (InterruptedException exn)
-        { // XXX deal with this in scanner
+        catch (InterruptedException exn) { // XXX deal with this in scanner
             throw new TokenException("scan interrupted: ", exn);
         }
     }

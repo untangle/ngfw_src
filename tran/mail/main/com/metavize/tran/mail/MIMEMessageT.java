@@ -25,7 +25,7 @@ import com.metavize.tran.mime.MIMEMessage;
 import com.metavize.tran.mime.MIMEMessageHeaders;
 import com.metavize.tran.mime.MIMEParsingInputStream;
 
-public class MIMEMessageHolderT implements Token
+public class MIMEMessageT implements Token
 {
     /* need reference copy of File
      * because File cannot be accessed through FileMIMESource
@@ -39,7 +39,7 @@ public class MIMEMessageHolderT implements Token
 
     // constructors -----------------------------------------------------------
 
-    public MIMEMessageHolderT(File zMsgFile)
+    public MIMEMessageT(File zMsgFile)
     {
         this.zMsgFile = zMsgFile;
         zFMSource = new FileMIMESource(zMsgFile);

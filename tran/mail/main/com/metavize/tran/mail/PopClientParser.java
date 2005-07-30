@@ -55,7 +55,7 @@ public class PopClientParser extends AbstractParser
 
     public ParseResult parse(ByteBuffer buf) throws ParseException
     {
-        //logger.debug("parse(" + AsciiCharBuffer.wrap(buf).toString() + ", " + buf + ")");
+        //logger.debug("parse(" + AsciiCharBuffer.wrap(buf) + "), " + buf);
         logger.debug("parse(" + buf + ")");
 
         List<Token> toks = new LinkedList<Token>();

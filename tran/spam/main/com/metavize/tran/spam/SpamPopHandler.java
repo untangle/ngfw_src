@@ -11,18 +11,34 @@
 
 package com.metavize.tran.spam;
 
+import java.io.File;
+import java.io.IOException;
+
 import com.metavize.mvvm.argon.IntfConverter;
+import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.tran.mail.PopStateMachine;
+import com.metavize.tran.mime.HeaderParseException;
+import com.metavize.tran.mime.LCString;
+import com.metavize.tran.token.Token;
 import com.metavize.tran.token.TokenException;
 import com.metavize.tran.token.TokenResult;
 import org.apache.log4j.Logger;
 
-class SpamPopHandler extends PopStateMachine
+public class SpamPopHandler extends PopStateMachine
 {
-    private final Logger logger = Logger.getLogger(SpamPopHandler.class);
+    private final static Logger logger = Logger.getLogger(SpamPopHandler.class);
+    private final static Logger eventLogger = MvvmContextFactory.context().eventLogger();
+
+    private final static String SPAM_HDR_NAME = "X-Spam-Flag";
+    private final static LCString SPAM_HDR_NAME_LC = new LCString(SPAM_HDR_NAME);
+    private final static String IS_SPAM_HDR_VALUE = "YES";
+    private final static String IS_HAM_HDR_VALUE = "NO";
+
+    private final static float SPAM_SCORE = 5;
 
     private final SpamScanner zScanner;
+    private final String zVendorName;
 
     private final SpamMessageAction zMsgAction;
     private final boolean bScan;
@@ -34,25 +50,58 @@ class SpamPopHandler extends PopStateMachine
         super(session);
 
         zScanner = transform.getScanner();
+        zVendorName = zScanner.getVendorName();
 
         SpamPOPConfig zConfig;
-        if (IntfConverter.INSIDE == session.clientIntf())
-        {
+        if (IntfConverter.INSIDE == session.clientIntf()) {
             zConfig = transform.getSpamSettings().getPOPInbound();
-        }
-        else
-        {
+        } else {
             zConfig = transform.getSpamSettings().getPOPOutbound();
         }
         bScan = zConfig.getScan();
         zMsgAction = zConfig.getMsgAction();
+        //logger.debug("scan: " + bScan + ", message action: " + zMsgAction);
     }
 
     // PopStateMachine methods -----------------------------------------------
 
     protected TokenResult scanMessage() throws TokenException
     {
-//XXXX
-        return null;
+        scanFile(zMsgFile);
+
+        return new TokenResult(new Token[] { zMMessageT }, null);
+    }
+
+    private void scanFile(File zFile) throws TokenException
+    {
+        if (false == bScan) {
+            return;
+        }
+
+        try {
+            SpamReport zReport = zScanner.scanFile(zFile, SPAM_SCORE);
+            eventLogger.info(new SpamLogEvent(zMsgInfo, zReport.getScore(), zReport.isSpam(), zMsgAction, zVendorName));
+
+            try {
+                zMMessage.getMMHeaders().removeHeaderFields(SPAM_HDR_NAME_LC);
+                zMMessage.getMMHeaders().addHeaderField(SPAM_HDR_NAME, true == zReport.isSpam() ? IS_SPAM_HDR_VALUE : IS_HAM_HDR_VALUE);
+            }
+            catch (HeaderParseException exn) {
+                logger.error(exn);
+            }
+
+            if (true == zReport.isSpam() &&
+                SpamMessageAction.MARK == zMsgAction) {
+                //XXXX wrap message with spam markers
+            }
+            /* else PASS - do nothing */
+
+            return;
+        }
+        catch (IOException exn) {
+            throw new TokenException("cannot scan message/mime part file: ", exn);
+        } catch (InterruptedException exn) { // XXX deal with this in scanner
+            throw new TokenException("scan interrupted: ", exn);
+        }
     }
 }

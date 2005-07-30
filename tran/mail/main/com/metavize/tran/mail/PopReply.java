@@ -32,7 +32,7 @@ import org.apache.log4j.Logger;
  */
 public class PopReply implements Token
 {
-    private final static Logger logger = Logger.getLogger(PopReply.class);
+    //private final static Logger logger = Logger.getLogger(PopReply.class);
 
     private final static String DIGVAL = "(\\p{Digit})++";
     private final static String SZVAL = DIGVAL + " octets";
@@ -62,21 +62,20 @@ public class PopReply implements Token
 
     public static PopReply parse(ByteBuffer buf, int iEnd) throws ParseException
     {
-        logger.debug("parse reply");
-
         String zMsgDataSz;
 
         ByteBuffer dup = buf.duplicate();
         dup.limit(iEnd);
         String zTmp = AsciiCharBuffer.wrap(dup).toString();
         boolean bIsMsgData = zTmp.matches(DATAOK);
-        if (true == bIsMsgData)
+        //logger.debug("reply is message: " + bIsMsgData);
+        if (false == bIsMsgData)
         {
-            zMsgDataSz = parseMsgDataSz(zTmp);
+            zMsgDataSz = null;
         }
         else
         {
-            zMsgDataSz = null;
+            zMsgDataSz = parseMsgDataSz(zTmp);
         }
 
         String reply = consumeToken(buf);
@@ -85,7 +84,16 @@ public class PopReply implements Token
         }
 
         eatSpace(buf);
-        String arg = consumeLine(buf); /* eat CRLF */
+
+        String arg;
+        if (false == bIsMsgData)
+        {
+            arg = consumeBuf(buf);
+        }
+        else
+        {
+            arg = consumeLine(buf, iEnd);
+        }
 
         return new PopReply(reply, (0 == arg.length()) ? null : arg, zMsgDataSz, bIsMsgData);
     }
@@ -134,7 +142,7 @@ public class PopReply implements Token
     // private methods --------------------------------------------------------
     private static ByteBuffer getBytes(String zReply, String zArgument)
     {
-        int len = zReply.length() + (null == zArgument ? 0 : zArgument.length() + 1) + 2;
+        int len = zReply.length() + (null == zArgument ? 0 : zArgument.length() + 1);
         ByteBuffer buf = ByteBuffer.allocate(len);
 
         buf.put(zReply.getBytes());
@@ -143,12 +151,31 @@ public class PopReply implements Token
             buf.put((byte)SP); /* restore */
             buf.put(zArgument.getBytes());
         }
-        buf.put((byte)CR); /* restore */
-        buf.put((byte)LF); /* restore */
 
         buf.flip();
 
         return buf;
+    }
+
+    /* consume line in buffer (including any terminating CRLF) up to iEnd */
+    private static String consumeLine(ByteBuffer zBuf, int iEnd)
+    {
+        ByteBuffer zDup = zBuf.duplicate();
+        zBuf.position(iEnd);
+        zDup.limit(iEnd);
+        return consumeBuf(zDup);
+    }
+
+    /* consume rest of buffer (including any terminating CRLF) */
+    private static String consumeBuf(ByteBuffer zBuf)
+    {
+        StringBuilder zSBuilder = new StringBuilder();
+        while (true == zBuf.hasRemaining())
+        {
+            zSBuilder.append((char) zBuf.get());
+        }
+
+        return zSBuilder.toString();
     }
 
     /* parse reply for original message size */

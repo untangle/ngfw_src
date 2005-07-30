@@ -46,9 +46,10 @@ class PopUnparser extends AbstractUnparser
     private final static String ENCODING = System.getProperty("file.encoding");
     private final static Charset CHARSET = Charset.forName(ENCODING);
 
-    private final static int LINE_SZ = 1024;
+    private final static int DATA_SZ = 4192;
 
     private PopReply zMsgDataReply;
+    private ByteBufferByteStuffer zByteStuffer;
 
     public PopUnparser(TCPSession session, boolean clientSide)
     {
@@ -63,116 +64,156 @@ class PopUnparser extends AbstractUnparser
 
         List<ByteBuffer> zWriteBufs = new LinkedList<ByteBuffer>();
 
-        if (token instanceof MIMEMessageHolderT)
-        {
-            /* we'll insert message reply to start of list later
-             * (after we determine if message has been modified)
-             *
-             * XXXX change later
-             *      (to obtain count of and to stream byte stuffed data
-             *       from file and
-             *       to avoid reading byte stuffed data into memory)
-             */
-
-            MIMEMessageHolderT zMMHolderT = (MIMEMessageHolderT) token;
-            File zMsgFile = zMMHolderT.getFile();
-
-            try
-            {            
-                FileChannel zMsgChannel = new FileInputStream(zMsgFile).getChannel();
-
-                ByteBufferByteStuffer zByteStuffer = new ByteBufferByteStuffer();
-                ByteBuffer zReadBuf = ByteBuffer.allocate(LINE_SZ);
-                int iNewMsgDataSz = 0;
-
-                ByteBuffer zWriteBuf;
-
-                try
-                {
-                    while (0 < zMsgChannel.read(zReadBuf))
-                    {
-                        zWriteBuf = ByteBuffer.allocate(LINE_SZ);
-                        iNewMsgDataSz += zByteStuffer.transfer(zReadBuf, zWriteBuf);
-                        zWriteBufs.add(zWriteBuf);
-                    }
-
-                    zWriteBuf = zByteStuffer.getLast(true);
-                    iNewMsgDataSz += zWriteBuf.limit();
-                    zWriteBufs.add(zWriteBuf);
-
-                    zWriteBufs.add(0, updateMsgDataSz(iNewMsgDataSz));
-                }
-                catch (IOException exn2)
-                {
-                    zWriteBufs.clear();
-                    logger.warn("cannot read data from message file: ", exn2);
-                }
-                finally
-                {
-                    closeMsgChannel(zMsgChannel);
-//XXXX                zMsgFile.delete(); //XXXX
-                    zMsgFile = null;
-                }
-            }
-            catch (FileNotFoundException exn)
-            {
-                zWriteBufs.clear();
-                logger.warn("cannot access message file: ", exn);
-            }
-            finally
-            {
-                MIMEMessage zMMessage = zMMHolderT.getMIMEMessage();
-                if (null != zMMessage)
-                {
-                    zMMessage.dispose();
-                }
-                else
-                {
-//XXXX
-                }
-            }
-        }
-        else if (token instanceof PopReply)
-        {
+        if (token instanceof PopCommand) {
+            zWriteBufs.add(token.getBytes());
+        } else if (token instanceof PopReply) {
             PopReply zReply = (PopReply) token;
 
             if (null == zMsgDataReply &&
-                true == zReply.isMsgData())
-            {
+                true == zReply.isMsgData()) {
                 zMsgDataReply = zReply;
-            }
-            else if (null != zMsgDataReply)
-            {
-                /* something went wrong with parser so dump everything */
-                zWriteBufs.add(zMsgDataReply.getBytes());
+                zByteStuffer = new ByteBufferByteStuffer();
+            } else if (null != zMsgDataReply) {
+                /* something is wrong with parser
+                 * - it sent 2nd message before terminating 1st message
+                 * - dump everything
+                 */
+                logger.error("new message has been received but previous message may be incomplete; sending new message");
+
+                zMsgDataReply = zReply;
+                zByteStuffer = new ByteBufferByteStuffer();
+            } else { /* non-message reply */
                 zWriteBufs.add(zReply.getBytes());
-                zMsgDataReply = null;
             }
-            else
-            {
-                zWriteBufs.add(zReply.getBytes());
-            }
-        }
-        else
-        {
-            zWriteBufs.add(token.getBytes());
+        } else if (token instanceof MIMEMessageT) {
+            writeData((MIMEMessageT) token, zWriteBufs, true);
+            zByteStuffer = null;
+            zMsgDataReply = null;
+        } else if (token instanceof Chunk) { /* trickle continue */
+            writeData((Chunk) token, zWriteBufs);
+        } else if (token instanceof MIMEMessageTrickleT) { /* trickle start */
+            writeData((MIMEMessageTrickleT) token, zWriteBufs);
+        } else if (token instanceof EndMarker) { /* trickle end */
+            writeEOD(zWriteBufs);
+            zByteStuffer = null;
+            zMsgDataReply = null;
+        } else { /* unknown/unsupported */
+            logger.error("cannot handle token: " + token.getClass());
+            return UnparseResult.NONE;
         }
 
         return new UnparseResult(zWriteBufs.toArray(new ByteBuffer[zWriteBufs.size()]));
     }
 
+    private void writeData(MIMEMessageT zMMessageT, List<ByteBuffer> zWriteBufs, boolean bIsComplete)
+    {
+        /* we'll insert message reply to start of list later
+         * (after we determine if message has been modified)
+         *
+         * XXXX change later
+         *      (to obtain count of and to stream byte stuffed data
+         *       from file and
+         *       to avoid reading byte stuffed data into memory)
+         */
+
+        File zMsgFile = zMMessageT.getFile();
+
+        try {
+            FileChannel zMsgChannel = new FileInputStream(zMsgFile).getChannel();
+            long lMsgFileSz = zMsgFile.length();
+            int iDataSz = (int) ((DATA_SZ < lMsgFileSz) ? DATA_SZ : lMsgFileSz);
+            ByteBuffer zReadBuf = ByteBuffer.allocate(iDataSz);
+            int iNewMsgDataSz = 0;
+
+            ByteBuffer zWriteBuf;
+
+            try {
+                while (0 < zMsgChannel.read(zReadBuf)) {
+                    zReadBuf.flip();
+                    zWriteBuf = ByteBuffer.allocate(iDataSz);
+                    zByteStuffer.transfer(zReadBuf, zWriteBuf);
+                    iNewMsgDataSz += zWriteBuf.remaining();
+                    zWriteBufs.add(zWriteBuf);
+
+                    zReadBuf.clear();
+                }
+
+                zWriteBuf = zByteStuffer.getLast(bIsComplete);
+                iNewMsgDataSz += zWriteBuf.remaining();
+                zWriteBufs.add(zWriteBuf);
+
+                if (false == bIsComplete) {
+                    /* if trickling,
+                     * we assume that message has not been modified and
+                     * original message size is unchanged
+                     */
+                    zWriteBufs.add(0, zMsgDataReply.getBytes());
+
+                    /* remaining data will trickle as chunks and
+                     * terminate with end marker
+                     */
+                } else {
+                    zWriteBufs.add(0, updateMsgDataSz(iNewMsgDataSz));
+                }
+            } catch (IOException exn2) {
+                zWriteBufs.clear();
+                logger.warn("cannot read data from message file: ", exn2);
+            } finally {
+                closeMsgChannel(zMsgChannel);
+            }
+        } catch (FileNotFoundException exn) {
+            zWriteBufs.clear();
+            logger.warn("cannot access message file: ", exn);
+        } finally {
+            MIMEMessage zMMessage = zMMessageT.getMIMEMessage();
+            if (null != zMMessage) {
+                zMMessage.dispose();
+            } else {
+                //XXXX trickling but still need to dispose message header???
+                zMsgFile.delete();
+            }
+            zMsgFile = null;
+        }
+
+        return;
+    }
+
+    private void writeData(MIMEMessageTrickleT zMMTrickleT, List<ByteBuffer> zWriteBufs)
+    {
+        writeData(zMMTrickleT.getMMessageT(), zWriteBufs, false);
+        return;
+    }
+
+    private void writeData(Chunk zChunk, List<ByteBuffer> zWriteBufs)
+    {
+        ByteBuffer zReadBuf = zChunk.getBytes();
+        ByteBuffer zWriteBuf = ByteBuffer.allocate(zReadBuf.remaining());
+        zByteStuffer.transfer(zReadBuf, zWriteBuf);
+        zWriteBufs.add(zWriteBuf);
+
+        /* getLast returns any remaining data later */
+        return;
+    }
+
+    private void writeEOD(List<ByteBuffer> zWriteBufs)
+    {
+        ByteBuffer zWriteBuf = zByteStuffer.getLast(true);
+        zWriteBufs.add(zWriteBuf);
+
+        return;
+    }
+
     private ByteBuffer updateMsgDataSz(int iNewMsgDataSz)
     {
+        ByteBuffer zNewBuf = zMsgDataReply.getBytes();
+
         String zMsgDataSz = zMsgDataReply.getMsgDataSz();
         int iMsgDataSz = Integer.valueOf(zMsgDataSz).intValue();
 
-        ByteBuffer zNewBuf = zMsgDataReply.getBytes();
-
-        if (iMsgDataSz != iNewMsgDataSz)
-        {
+        if (iMsgDataSz != iNewMsgDataSz) {
             /* rebuild retrieve-ok reply because message size has changed */
 
-            logger.debug("orig size: " + iMsgDataSz + ", new size: " + iNewMsgDataSz);
+            //logger.debug("orig size: " + iMsgDataSz + ", new size: " + iNewMsgDataSz);
 
             Pattern zMsgDataSzP = Pattern.compile(zMsgDataSz);
 
@@ -180,12 +221,11 @@ class PopUnparser extends AbstractUnparser
             Matcher zMatcher = zMsgDataSzP.matcher(zDataOK);
 
             String zNewDataOK = zMatcher.replaceAll(String.valueOf(iNewMsgDataSz));
-            try
-            {
+
+            try {
                 zNewBuf = toByteBuffer(zNewDataOK);
-            }
-            catch (CharacterCodingException exn)
-            {
+                zNewBuf.rewind();
+            } catch (CharacterCodingException exn) {
                 logger.error("Unable to encode line: " + zNewDataOK + " : " + exn);
                 zNewBuf = null;
             }
@@ -198,23 +238,18 @@ class PopUnparser extends AbstractUnparser
     private ByteBuffer toByteBuffer(String zStr) throws CharacterCodingException
     {
         ByteBuffer zLine = CHARSET.newEncoder().encode(CharBuffer.wrap(zStr));
-        zLine.position(zLine.limit()); /* set position to indicate that ByteBuffer contains data */
+        zLine.position(zLine.limit()); /* set position because ByteBuffer contains data */
 
         return zLine;
     }
 
     private void closeMsgChannel(FileChannel zMsgChannel)
     {
-        try
-        {
+        try {
             zMsgChannel.close();
-        }
-        catch (IOException exn)
-        {
+        } catch (IOException exn) {
             logger.warn("cannot close message file: ", exn);
-        }
-        finally
-        {
+        } finally {
             zMsgChannel = null;
         }
 

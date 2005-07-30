@@ -25,12 +25,9 @@ import java.util.List;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.tapi.Pipeline;
 import com.metavize.mvvm.tapi.TCPSession;
-import com.metavize.tran.mime.EmailAddress;
-import com.metavize.tran.mime.EmailAddressWithRcptType;
 import com.metavize.tran.mime.HeaderParseException;
 import com.metavize.tran.mime.InvalidHeaderDataException;
 import com.metavize.tran.mime.LineTooLongException;
-import com.metavize.tran.mime.RcptType;
 import com.metavize.tran.mime.MIMEMessageHeaders;
 import com.metavize.tran.token.AbstractParser;
 import com.metavize.tran.token.Chunk;
@@ -63,8 +60,9 @@ public class PopServerParser extends AbstractParser
     private State state;
     private File zMsgFile;
     private FileChannel zMsgChannel;
-    private MIMEMessageHolderT zMMHolderT;
-    private boolean bSendAll;
+    private MIMEMessageT zMMessageT;
+    private boolean bHdrDone;
+    private boolean bBodyDone;
 
     // constructors -----------------------------------------------------------
 
@@ -75,7 +73,8 @@ public class PopServerParser extends AbstractParser
         state = State.REPLY;
 
         zMBScanner = new MessageBoundaryScanner();
-        bSendAll = false;
+        bHdrDone = false;
+        bBodyDone = false;
 
         pipeline = MvvmContextFactory.context().pipelineFoundry().getPipeline(session.id());
     }
@@ -84,31 +83,32 @@ public class PopServerParser extends AbstractParser
 
     public ParseResult parse(ByteBuffer buf) throws ParseException
     {
+        //logger.debug("parse(" + AsciiCharBuffer.wrap(buf) + "), " + buf);
         logger.debug("parse(" + buf + ")");
 
-        List<Token> zTokens = new LinkedList<Token>(); /* send asap */
-        boolean done = false;
+        List<Token> zTokens = new LinkedList<Token>();
+        boolean bDone = false;
 
-        int iReplyEnd;
-
-        while (false == done && true == buf.hasRemaining()) {
+        while (false == bDone) {
             switch (state) {
             case REPLY:
-                logger.debug("REPLY state");
-                iReplyEnd = findCRLFEnd(buf);
+                logger.debug("REPLY state, " + buf);
+
+                int iReplyEnd = findCRLFEnd(buf);
                 if (1 < iReplyEnd) {
-                    logger.debug("contains CRLF: " + buf);
+
+                    /* scan and consume reply */
                     PopReply reply = PopReply.parse(buf, iReplyEnd);
-                    //logger.debug("reply: " + reply.toString());
-                    logger.debug("parsed reply: " + buf);
                     zTokens.add(reply);
 
                     if (true == reply.isMsgData()) {
-                        logger.debug("entering DATA state");
-                        state = State.DATA;
+                        //logger.debug("retr message reply: " + reply + ", " + buf);
+                        logger.debug("retr message reply: " + buf);
+
                         try {
-                            zMsgFile = pipeline.mktemp(); //XXXX
-                            zMsgChannel = new FileOutputStream(zMsgFile, true).getChannel();
+                            zMsgFile = pipeline.mktemp();
+                            zMsgChannel = new FileOutputStream(zMsgFile).getChannel();
+                            //logger.debug("message file: " + zMsgFile);
                         } catch (IOException exn) {
                             logger.warn("cannot create message file: ", exn);
                             zMsgChannel = null;
@@ -116,133 +116,138 @@ public class PopServerParser extends AbstractParser
                             break;
                         }
 
-                        zMMHolderT = new MIMEMessageHolderT(zMsgFile);
+                        zMMessageT = new MIMEMessageT(zMsgFile);
+
+                        logger.debug("entering DATA state");
+                        state = State.DATA;
+
+                        if (false == buf.hasRemaining()) {
+                            logger.debug("buf is empty");
+
+                            buf = null;
+                            bDone = true;
+                        }
+                        /* else if we have more data to parse
+                         * (e.g., data is message fragment),
+                         * then parse remaining data
+                         */
+                    } else {
+                        //logger.debug("message reply: " + reply + ", " + buf);
+                        logger.debug("message reply: " + buf);
+
+                        buf = null;
+                        bDone = true;
                     }
                 } else {
-                    logger.debug("does not end with CRLF");
-                    done = true;
+                    logger.debug("buf does not contain CRLF");
+
+                    /* wait for more data */
+                    bDone = true;
                 }
 
                 break;
 
             case DATA:
-                logger.debug("DATA state");
+                logger.debug("DATA state, " + buf);
 
-                int iLimit = dataCutoff(buf);
-                logger.debug("cutoff at: " + iLimit);
+                if (true == buf.hasRemaining()) {
+                    ByteBuffer dup = buf.duplicate();
 
-                ByteBuffer dup = buf.duplicate();
-                buf.position(iLimit);
-                dup.limit(iLimit);
+                    if (false == bHdrDone) {
+                        /* casing temporarily buffers and writes header */
+                        logger.debug("message header: " + dup);
 
-                if (true == dup.hasRemaining()) {
-                    if (false == bSendAll)
-                    {
-                        /* this casing temporarily buffers and writes header */
+                        ByteBuffer writeDup = dup.duplicate();
 
-                        try
-                        {
-                            bSendAll = zMBScanner.processHeaders(dup.duplicate(), LINE_SZ);
-                        }
-                        catch (LineTooLongException exn)
-                        {
+                        try {
+                            /* scan and "consume" message frag */
+                            bHdrDone = zMBScanner.processHeaders(dup, LINE_SZ);
+                        } catch (LineTooLongException exn) {
                             logger.warn("cannot parse message header: " + exn);
-                            handleException(zTokens, dup.duplicate());
+                            handleException(zTokens, buf.duplicate());
                             break;
                         }
 
-                        logger.debug("message header is complete: " + bSendAll);
+                        logger.debug("message header is complete: " + bHdrDone + ", " + dup);
 
-                        writeFile(dup.duplicate());
+                        /* writeDup position is already set */
+                        writeDup.limit(dup.position());
+                        writeFile(writeDup);
 
-                        if (true == bSendAll)
-                        {
+                        if (true == bHdrDone) {
                             closeMsgChannel();
                             zMsgFile = null;
 
-                            try
-                            {
-                                MIMEMessageHeaders zMMHeader = MIMEMessageHeaders.parseMMHeaders(zMMHolderT.getInputStream(), zMMHolderT.getFileMIMESource());
-                                MessageInfo zMsgInfo = createMsgInfo(zMMHeader);
-                                zMMHolderT.setMIMEMessageHeader(zMMHeader);
-                                zMMHolderT.setMessageInfo(zMsgInfo);
-                                zTokens.add(zMMHolderT);
-                            }
-                            catch (IOException exn)
-                            {
+                            try {
+                                MIMEMessageHeaders zMMHeader = MIMEMessageHeaders.parseMMHeaders(zMMessageT.getInputStream(), zMMessageT.getFileMIMESource());
+                                MessageInfo zMsgInfo = MessageInfo.fromMIMEMessage(zMMHeader, session.id(), session.serverPort());
+
+                                zMMessageT.setMIMEMessageHeader(zMMHeader);
+                                zMMessageT.setMessageInfo(zMsgInfo);
+
+                                zTokens.add(zMMessageT);
+                            } catch (IOException exn) {
                                 logger.warn("cannot parse message header: " + exn);
-                                handleException(zTokens, dup.duplicate());
+                                handleException(zTokens, buf.duplicate());
+                                break;
+                            } catch (InvalidHeaderDataException exn) {
+                                logger.warn("cannot parse message header: " + exn);
+                                handleException(zTokens, buf.duplicate());
+                                break;
+                            } catch (HeaderParseException exn) {
+                                logger.warn("cannot parse message header: " + exn);
+                                handleException(zTokens, buf.duplicate());
                                 break;
                             }
-                            catch (InvalidHeaderDataException exn)
-                            {
-                                logger.warn("cannot parse message header: " + exn);
-                                handleException(zTokens, dup.duplicate());
-                                break;
-                            }
-                            catch (HeaderParseException exn)
-                            {
-                                logger.warn("cannot parse message header: " + exn);
-                                handleException(zTokens, dup.duplicate());
-                                break;
-                            }
-
-                            dup.position(iLimit); /* consume message */
-                        }
-                    }
-                    else
-                    {
-                        logger.debug("message body: " + dup);
-
-                        /* transform will buffer and write remaining data */
-                        zTokens.add(consumeChunk(dup));
-                    }
-                } else {
-                    logger.debug("no data");
-                }
-
-                if (true == buf.hasRemaining() && true == startsWith(buf, EODATA_TAIL)) {
-                    logger.debug("got message end: " + dup);
-
-                    if (true == dup.hasRemaining()) {
-                        dup.rewind();
-                        throw new ParseException("message not fully consumed: '" + AsciiCharBuffer.wrap(dup) + "'");
-                    }
-
-                    bSendAll = false;
-                    zMBScanner.reset();
-                    zMMHolderT = null;
-
-                    zTokens.add(EndMarker.MARKER);
-                    // XXX check if .[[:space:]]*CRLF is allowed
-                    buf.position(buf.position() + 3); // XXX consume .CRLF
-
-                    logger.debug("entering REPLY state");
-                    state = State.REPLY;
-                } else {
-                    if (true == dup.hasRemaining()) {
-                        /* append data fragment (e.g., all remaining data) */
-                        dup.rewind();
-                        if (true == buf.hasRemaining()) {
-                            logger.debug("copying into new buffer");
-                            int len = dup.remaining() + buf.remaining();
-                            logger.debug("size of dup + buf: " + len);
-                            len += LINE_SZ;
-
-                            ByteBuffer bufTmp = ByteBuffer.allocate(len);
-                            bufTmp.put(dup);
-                            bufTmp.put(buf);
-                            bufTmp.rewind();
-                            buf = bufTmp;
-                        } else {
-                            logger.debug("dup is now buf");
-                            buf = dup;
                         }
                     } else {
-                        logger.debug("buf is still buf");
+                        /* transform writes body */
+                        logger.debug("message body: " + dup);
+
+                        /* scan and "copy" message frag */
+                        ByteBuffer chunkDup = ByteBuffer.allocate(dup.limit());
+                        bBodyDone = zMBScanner.processBody(dup, chunkDup);
+
+                        chunkDup.rewind();
+                        zTokens.add(new Chunk(chunkDup));
+
+                        if (true == bBodyDone) {
+                            logger.debug("got message end: " + dup);
+
+                            zMBScanner.reset();
+                            zMMessageT = null;
+                            bHdrDone = false;
+                            bBodyDone = false;
+
+                            zTokens.add(EndMarker.MARKER);
+
+                            logger.debug("re-entering REPLY state");
+                            state = State.REPLY;
+                        }
+
+                        /* stop even though buf may not be empty
+                         * - remaining fragment can't be handled yet
+                         */
+                        bDone = true;
                     }
 
-                    done = true;
+                    if (false == dup.hasRemaining()) {
+                        logger.debug("buf is empty");
+
+                        buf = null;
+                        bDone = true;
+                    } else {
+                        logger.debug("compact buf: " + dup);
+
+                        buf.clear();
+                        buf.put(dup);
+                        buf.flip();
+                    }
+                } else {
+                    logger.debug("no (more) data");
+
+                    buf = null;
+                    bDone = true;
                 }
 
                 break;
@@ -252,16 +257,6 @@ public class PopServerParser extends AbstractParser
             }
         }
 
-        buf.compact();
-        if (0 < buf.position() && LINE_SZ >= buf.remaining()) {
-            ByteBuffer bufTmp = ByteBuffer.allocate(buf.capacity() + LINE_SZ);
-            buf.rewind();
-            bufTmp.put(buf);
-            buf = bufTmp;
-        }
-
-        buf = 0 < buf.position() ? buf : null;
-
         logger.debug("returning ParseResult(" + zTokens + ", " + buf + ")");
 
         return new ParseResult(zTokens, buf);
@@ -270,7 +265,7 @@ public class PopServerParser extends AbstractParser
     public ParseResult parseEnd(ByteBuffer buf) throws ParseException
     {
         if (true == buf.hasRemaining()) {
-            logger.warn("data trapped in read buffer: " + AsciiCharBuffer.wrap(buf));
+            logger.warn("data trapped in read buffer: " + AsciiCharBuffer.wrap(buf) + ", " + buf);
         }
 
         // XXX do something?
@@ -289,59 +284,13 @@ public class PopServerParser extends AbstractParser
         return findCrLf(zBuf) + (1 + 1);
     }
 
-    /**
-     * Select a cutoff for message data, either before the . or at the
-     * beginning of the last incomplete line.
-     *
-     * @param buf buffer to search.
-     * @return the absolute index of the cutoff.
-     */
-    private int dataCutoff(ByteBuffer buf)
-    {
-        logger.debug("dataCutoff(" + buf + ")");
-        if (true == startsWith(buf, EODATA_TAIL)) {
-            logger.debug("buffer starts with .CRLF");
-            return 0;
-        } else {
-            int i = findString(buf, EODATA_FULL);
-            if (0 <= i) {
-                logger.debug("found CRLF.CRLF");
-                return i + 2;
-            } else {
-                // return through last complete line
-                int j = findLastString(buf, CRLF);
-
-                if (0 <= j) {
-                    logger.debug("cutoff at last CRLF");
-                    return j + 2;
-                } else {
-                    logger.debug("no CRLF, cutoff at position");
-                    return buf.position();
-                }
-            }
-        }
-    }
-
-    private Chunk consumeChunk(ByteBuffer zBuf)
-    {
-        ByteBuffer zBufTmp = ByteBuffer.allocate(zBuf.remaining());
-        zBufTmp.put(zBuf);
-        zBufTmp.rewind();
-
-        return new Chunk(zBufTmp);
-    }
-
     private void writeFile(ByteBuffer zBuf)
     {
-        try
-        {
-            for (; true == zBuf.hasRemaining(); )
-            {
+        try {
+            for (; true == zBuf.hasRemaining(); ) {
                 zMsgChannel.write(zBuf);
             }
-        }
-        catch (IOException exn)
-        {
+        } catch (IOException exn) {
             closeMsgChannel();
             zMsgFile = null;
             logger.warn("cannot write data to message file: ", exn);
@@ -354,64 +303,22 @@ public class PopServerParser extends AbstractParser
     {
         logger.debug("close message channel file");
 
-        try
-        {
+        try {
             zMsgChannel.force(true);
             zMsgChannel.close();
-        }
-        catch (IOException exn)
-        {
+        } catch (IOException exn) {
             logger.warn("cannot close message file: ", exn);
-        }
-        finally
-        {
+        } finally {
             zMsgChannel = null;
         }
 
         return;
     }
 
-    private MessageInfo createMsgInfo(MIMEMessageHeaders zMMHeader)
-    {
-        MessageInfo zMsgInfo = new MessageInfo(session.id(), session.serverPort(), zMMHeader.getSubject());
-        EmailAddress zFrom = zMMHeader.getFrom();
-        zMsgInfo.addAddress(AddressKind.FROM, zFrom.getAddress(), zFrom.getPersonal()); /* from address will never be null */
-
-        EmailAddress zRcpt;
-        AddressKind zKind;
-
-        List<EmailAddressWithRcptType> zRcptTypes = zMMHeader.getAllRecipients();
-        for (EmailAddressWithRcptType zRcptType : zRcptTypes)
-        {
-            zRcpt = zRcptType.address;
-            if (false == zRcpt.isNullAddress())
-            {
-                switch(zRcptType.type)
-                {
-                case TO:
-                    zKind = AddressKind.TO;
-                    break;
-
-                case CC:
-                    zKind = AddressKind.CC;
-                    break;
-
-                default:
-                case BCC:
-                    continue; /* skip BCC */
-                }
-
-                zMsgInfo.addAddress(zKind, zRcpt.getAddress(), zRcpt.getPersonal());
-            }
-        }
-
-        return zMsgInfo;
-    }
-
     private void handleException(List<Token> zTokens, ByteBuffer zBuf) throws ParseException
     {
         PopReply reply = PopReply.parse(zBuf, zBuf.limit());
-        //logger.debug("reply: " + reply.toString());
+        //logger.debug("parsed reply (exception): " + reply.toString() + ", " + zBuf);
         logger.debug("parsed reply (exception): " + zBuf);
         zTokens.add(reply);
 
