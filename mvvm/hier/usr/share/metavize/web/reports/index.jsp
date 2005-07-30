@@ -11,7 +11,7 @@ MvvmRemoteContext mvvm = MvvmRemoteContextFactory.localLogin();
 //}
   ReportingManager reportingManager = mvvm.reportingManager();
 
-  boolean reportingInstalled = reportingManager.isReportingEnabled();
+  boolean reportingEnabled = reportingManager.isReportingEnabled();
   boolean reportsAvailable = reportingManager.isReportsAvailable();
   if (!reportsAvailable) {
 %>
@@ -186,11 +186,11 @@ h4 {
         No reports are available.<br/>
         <br/>
 
-        <% if(!reportingInstalled){ %>
-            EdgeReport is not installed into your rack.<br/>
+        <% if(!reportingEnabled){ %>
+            EdgeReport is not installed into your rack or it is not turned on.<br/>
             Reports are only generated when EdgeReport is running.
         <% } else{ %>
-                    <i>No reports are available, please check back tomorrow morning.</i><br/>
+                    <i>Please check back tomorrow morning.</i><br/>
                     <i>Reports are generated every night automatically.</i>
         <% } %>
 

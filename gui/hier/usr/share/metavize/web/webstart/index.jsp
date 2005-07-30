@@ -10,7 +10,7 @@ MvvmRemoteContext mvvm = MvvmRemoteContextFactory.localLogin();
 //    mvvm = MvvmRemoteContextFactory.localLogin();
 //    sc.setAttribute("mvvm", mvvm);
 //}
-boolean reportsAvailable = mvvm.reportingManager().isReportsAvailable();
+boolean reportingEnabled = mvvm.reportingManager().isReportingEnabled();
 String host=request.getHeader("host");
 String scheme=request.getScheme();
 String ctxPath=request.getContextPath();
@@ -198,7 +198,7 @@ String helpClickHere = "Click <a href=\"help.html\">here</a> for more informatio
               <div style="text-align: center;">
                 <a href="gui.jnlp">Launch EdgeGuard Client</a><br>
 
-                <% if (reportsAvailable) { %>
+                <% if (reportingEnabled) { %>
            <br><a href="<%=scheme%>://<%=host%>/reports">View EdgeReports</a>
             <% } %>
                <% } %>
