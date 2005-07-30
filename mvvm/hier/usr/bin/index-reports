@@ -15,7 +15,9 @@ fi
 
 cd @MVVM_REPORTS@/current
 
-tran_list=@MVVM_REPORTS@/current/*
+
+ordered_tran_list=`@USR_BIN@/mcli instances | awk '{print $2}' | sed 's|^\(.*\)$|@MVVM_REPORTS@/current/\1|'`
+
 
 
 # generate email argument list
@@ -346,7 +348,7 @@ cat >> $main_index <<EOF
                   </td></tr>
 EOF
 
-for f in $tran_list; do
+for f in $ordered_tran_list; do
     if [ -d $f ]; then
         generate_menu_entry $f
     fi
@@ -394,14 +396,14 @@ cat >> $main_index <<EOF
               <!-- SUMMARY AREA -->
 EOF
 
-for f in $tran_list; do
+for f in $ordered_tran_list; do
     if [ -d $f ]; then
         generate_summary_entry $f false
     fi
 done
 
 
-for f in $tran_list; do
+for f in $ordered_tran_list; do
     if [ -d $f ]; then
         generate_summary_entry $f true
     fi
