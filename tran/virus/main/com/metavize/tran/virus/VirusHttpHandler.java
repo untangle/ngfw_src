@@ -260,6 +260,7 @@ class VirusHttpHandler extends HttpStateMachine
             }
 
             if (buffering) {
+                responseQueue.add(EndMarker.MARKER);
                 Token[] toks = responseQueue.toArray(new Token[responseQueue.size()]);
                 responseQueue.clear();
                 return new TokenResult(toks, null);

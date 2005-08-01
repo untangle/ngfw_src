@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: ProtoFilterPattern.java,v 1.9 2005/03/18 02:34:49 amread Exp $
+ * $Id$
  */
 package com.metavize.tran.protofilter;
 
@@ -43,6 +43,11 @@ public class ProtoFilterPattern implements Serializable
                               String definition,  String quality,
                               boolean blocked, boolean alert, boolean log)
     {
+        if (4096 < definition.length()) {
+            throw new IllegalArgumentException("definition too long:"
+                                               + definition);
+        }
+
         this.protocol = protocol;
         this.category = category;
         this.description = description;
@@ -58,8 +63,8 @@ public class ProtoFilterPattern implements Serializable
      * column="RULE_ID"
      * generator-class="native"
      */
-    protected Long getId() {return id;}
-    protected void setId(Long id) {this.id = id;}
+    protected Long getId() { return id; }
+    protected void setId(Long id) { this.id = id; }
 
     /**
      * Protocol name
@@ -67,8 +72,8 @@ public class ProtoFilterPattern implements Serializable
      * @hibernate.property
      * column="PROTOCOL"
      */
-    public String getProtocol() {return this.protocol;}
-    public void setProtocol(String s) {this.protocol = s;}
+    public String getProtocol() { return this.protocol; }
+    public void setProtocol(String s) { this.protocol = s; }
 
     /**
      * Description name
@@ -76,8 +81,8 @@ public class ProtoFilterPattern implements Serializable
      * @hibernate.property
      * column="DESCRIPTION"
      */
-    public String getDescription() {return this.description;}
-    public void setDescription(String s) {this.description = s;}
+    public String getDescription() { return this.description; }
+    public void setDescription(String s) { this.description = s; }
 
     /**
      * Category of the rule
@@ -85,8 +90,8 @@ public class ProtoFilterPattern implements Serializable
      * @hibernate.property
      * column="CATEGORY"
      */
-    public String getCategory() {return this.category;}
-    public void setCategory(String s) {this.category = s;}
+    public String getCategory() { return this.category; }
+    public void setCategory(String s) { this.category = s; }
 
     /**
      * Definition (Regex) of the rule
@@ -95,8 +100,16 @@ public class ProtoFilterPattern implements Serializable
      * column="DEFINITION"
      * length="4096"
      */
-    public String getDefinition() {return this.definition;}
-    public void setDefinition(String s) {this.definition = s;}
+    public String getDefinition() { return this.definition; }
+
+    public void setDefinition(String s)
+    {
+        if (4096 < s.length()) {
+            throw new IllegalArgumentException("argument too long:" + s);
+        }
+
+        this.definition = s;
+    }
 
     /**
      * Flag that indicates if the traffic should be quality
@@ -104,8 +117,8 @@ public class ProtoFilterPattern implements Serializable
      * @hibernate.property
      * column="QUALITY"
      */
-    public String getQuality() {return this.quality;}
-    public void setQuality(String s) {this.quality = s;}
+    public String getQuality() { return this.quality; }
+    public void setQuality(String s) { this.quality = s; }
 
     /**
      * Flag that indicates if the traffic should be blocked
@@ -113,8 +126,8 @@ public class ProtoFilterPattern implements Serializable
      * @hibernate.property
      * column="BLOCKED"
      */
-    public boolean isBlocked() {return this.blocked;}
-    public void setBlocked(boolean b) {this.blocked = b;}
+    public boolean isBlocked() { return this.blocked; }
+    public void setBlocked(boolean b) { this.blocked = b; }
 
     /**
      * Should admin be alerted.

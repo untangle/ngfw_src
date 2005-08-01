@@ -63,7 +63,7 @@ public class SmtpSessionHandler
     m_virusImpl = impl;
     m_config = config;
     m_wrapper = wrapper;
-    m_notifier = notifier;    
+    m_notifier = notifier;
     m_pipeline = MvvmContextFactory.context().
       pipelineFoundry().getPipeline(session.id());
   }
@@ -168,7 +168,7 @@ public class SmtpSessionHandler
         }
       }
     }
-    
+
     if(foundVirus) {
       //Perform notification (if we should)
       if(m_notifier.sendNotification(
@@ -181,7 +181,7 @@ public class SmtpSessionHandler
       else {
         m_logger.error("Error sending notification");
       }
-      
+
       if(action == SMTPVirusMessageAction.BLOCK) {
         m_logger.debug("Returning BLOCK as-per policy");
         return BLOCK_MESSAGE;
@@ -189,7 +189,7 @@ public class SmtpSessionHandler
       else if(action == SMTPVirusMessageAction.REMOVE) {
         m_logger.debug("REMOVE (wrap) message");
         MIMEMessage wrappedMsg = m_wrapper.wrap(msg, tx, scanResultForWrap);
-        return new BPMEvaluationResult(wrappedMsg);        
+        return new BPMEvaluationResult(wrappedMsg);
       }
       else {
         m_logger.debug("Passing infected message (as-per policy)");
@@ -280,7 +280,7 @@ public class SmtpSessionHandler
       if(action == SMTPVirusMessageAction.BLOCK) {
         m_logger.debug("Blocking mail as-per policy");
         return BlockOrPassResult.BLOCK;
-      }      
+      }
     }
     return BlockOrPassResult.PASS;
   }

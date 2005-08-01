@@ -79,12 +79,12 @@ public class ProtoFilterImpl extends AbstractTransform implements ProtoFilter
 
             tx.commit();
         } catch (HibernateException exn) {
-            logger.warn("could not get HttpBlockerSettings", exn);
+            logger.warn("could not set ProtoFilterSettings", exn);
         } finally {
             try {
                 s.close();
             } catch (HibernateException exn) {
-                logger.warn("could not close hibernate sessino", exn);
+                logger.warn("could not close hibernate session", exn);
             }
         }
 
