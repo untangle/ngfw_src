@@ -32,7 +32,7 @@ import com.metavize.gui.util.StringConstants;
  */
 public class AdminConfigJDialog extends MConfigJDialog {
     
-    private static final String NAME_ADMIN_ACCOUNTS = "Administrator Accounts";
+    private static final String NAME_ADMIN_ACCOUNTS = "Accounts";
 
     public AdminConfigJDialog( ) {
     }

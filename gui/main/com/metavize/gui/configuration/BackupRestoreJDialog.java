@@ -79,7 +79,7 @@ public class BackupRestoreJDialog extends javax.swing.JDialog implements java.aw
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-        setTitle("Backup and Restore");
+        setTitle("Backup & Restore");
         setModal(true);
         setResizable(false);
         closeJButton.setFont(new java.awt.Font("Default", 0, 12));

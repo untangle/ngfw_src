@@ -28,7 +28,7 @@ import javax.swing.*;
  */
 public class ProtocolJDialog extends MConfigJDialog {
 
-    private static final String NAME_MANUAL_OVERRIDE_SETTINGS = "Traffic Protocol Settings";
+    private static final String NAME_MANUAL_OVERRIDE_SETTINGS = "Protocol Settings";
 
     
     public ProtocolJDialog( ) {
