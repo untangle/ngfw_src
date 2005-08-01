@@ -13,7 +13,7 @@ package com.metavize.tran.spam;
 
 
 import com.metavize.mvvm.tapi.TCPSession;
-import com.metavize.tran.mail.ImapStateMachine;
+import com.metavize.tran.mail.papi.imap.ImapStateMachine;
 import org.apache.log4j.Logger;
 
 class SpamImapHandler extends ImapStateMachine

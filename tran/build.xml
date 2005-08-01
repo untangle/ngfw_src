@@ -381,6 +381,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <target name="jar.mail">
     <jar destfile="${build.jar}/mail-export.jar">
       <fileset dir="${build.root}/mail">
+<!--            
         <include name="com/metavize/tran/mail/AddressKind.class"/>
         <include name="com/metavize/tran/mail/AddressKindUserType.class"/>
         <include name="com/metavize/tran/mail/ImapCommand*.class"/>
@@ -406,12 +407,21 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
         <include name="com/metavize/tran/mail/papi/pop/*.class"/>
         <include name="com/metavize/tran/mail/papi/*.class"/>
         <include name="com/metavize/tran/mail/MessageBoundaryScanner*.class"/>
+-->
+        <include name="com/metavize/tran/mail/papi/*.class"/>
+        <include name="com/metavize/tran/mail/papi/pop/*.class"/>
+        <include name="com/metavize/tran/mail/papi/imap/*.class"/>
+        <include name="com/metavize/tran/mail/papi/smtp/*.class"/>
+        <include name="com/metavize/tran/mail/papi/smtp/sapi/*.class"/>        
       </fileset>
       <fileset dir="${build.gensrc}/mail">
-        <include name="com/metavize/tran/mail/AddressKind.hbm.xml"/>
-        <include name="com/metavize/tran/mail/MessageInfo.hbm.xml"/>
-        <include name="com/metavize/tran/mail/MessageInfoAddr.hbm.xml"/>
-        <include name="com/metavize/tran/mail/MessageStats.hbm.xml"/>
+        <include name="com/metavize/tran/mail/papi/*.hbm.xml"/>
+        <include name="com/metavize/tran/mail/papi/smtp/*.hbm.xml"/>
+<!--        
+        <include name="com/metavize/tran/mail/papi/MessageInfo.hbm.xml"/>
+        <include name="com/metavize/tran/mail/papi/MessageInfoAddr.hbm.xml"/>
+        <include name="com/metavize/tran/mail/papi/MessageStats.hbm.xml"/>
+-->        
       </fileset>
     </jar>
   </target>

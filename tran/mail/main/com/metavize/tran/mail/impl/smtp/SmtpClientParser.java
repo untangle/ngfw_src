@@ -12,6 +12,7 @@
 package com.metavize.tran.mail.impl.smtp;
 
 import com.metavize.tran.mail.*;
+import com.metavize.tran.mail.papi.*;
 
 import com.metavize.tran.mail.papi.smtp.*;
 import static com.metavize.tran.util.Ascii.*;

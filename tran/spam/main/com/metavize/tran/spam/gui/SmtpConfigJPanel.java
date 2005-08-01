@@ -10,7 +10,7 @@ import com.metavize.gui.transform.*;
 import com.metavize.gui.util.*;
 import com.metavize.gui.widgets.editTable.*;
 import com.metavize.tran.spam.*;
-import com.metavize.tran.mail.*;
+import com.metavize.tran.mail.papi.smtp.SMTPNotifyAction;
 import com.metavize.mvvm.tran.TransformContext;
 
 

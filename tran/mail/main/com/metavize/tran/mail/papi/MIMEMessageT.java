@@ -18,7 +18,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import com.metavize.tran.mail.MessageInfo;
 import com.metavize.tran.token.ParseException;
 import com.metavize.tran.token.Token;
 import com.metavize.tran.mime.FileMIMESource;

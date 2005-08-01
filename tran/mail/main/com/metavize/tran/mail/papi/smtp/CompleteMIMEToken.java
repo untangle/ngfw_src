@@ -13,7 +13,7 @@ package com.metavize.tran.mail.papi.smtp;
 
 import static com.metavize.tran.util.Ascii.*;
 import static com.metavize.tran.util.BufferUtil.*;
-import com.metavize.tran.mail.*;
+import com.metavize.tran.mail.papi.*;
 
 import java.io.*;
 import java.nio.ByteBuffer;

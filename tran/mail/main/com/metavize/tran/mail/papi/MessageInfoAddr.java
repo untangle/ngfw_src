@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.metavize.tran.mail;
+package com.metavize.tran.mail.papi;
 
 import java.io.Serializable;
 
@@ -104,7 +104,7 @@ public class MessageInfoAddr implements Serializable
      *
      * @return addressKind.
      * @hibernate.property
-     * type="com.metavize.tran.mail.AddressKindUserType"
+     * type="com.metavize.tran.mail.papi.AddressKindUserType"
      * column="KIND"
      */
     public AddressKind getKind()

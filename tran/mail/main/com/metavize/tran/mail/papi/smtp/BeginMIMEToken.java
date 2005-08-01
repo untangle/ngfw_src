@@ -21,6 +21,7 @@ import com.metavize.tran.mime.*;
 import java.io.IOException;
 import com.metavize.tran.token.Token;
 import com.metavize.tran.mail.*;
+import com.metavize.tran.mail.papi.*;
 
 
 /**

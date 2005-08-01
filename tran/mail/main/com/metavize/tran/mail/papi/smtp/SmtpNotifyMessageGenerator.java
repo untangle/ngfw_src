@@ -11,7 +11,6 @@
 
 package com.metavize.tran.mail.papi.smtp;
 import com.metavize.tran.mail.papi.*;
-import com.metavize.tran.mail.SMTPNotifyAction;
 import com.metavize.tran.mime.*;
 import com.metavize.tran.util.*;
 import org.apache.log4j.Logger;

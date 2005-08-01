@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.metavize.tran.mail;
+package com.metavize.tran.mail.papi.smtp;
 
 import java.io.Serializable;
 import java.util.HashMap;

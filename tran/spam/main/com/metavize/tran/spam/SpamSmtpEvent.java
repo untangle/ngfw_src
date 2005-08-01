@@ -12,7 +12,7 @@
 package com.metavize.tran.spam;
 
 import com.metavize.mvvm.logging.LogEvent;
-import com.metavize.tran.mail.MessageInfo;
+import com.metavize.tran.mail.papi.MessageInfo;
 
 /**
  * Log for SMTP Spam events.

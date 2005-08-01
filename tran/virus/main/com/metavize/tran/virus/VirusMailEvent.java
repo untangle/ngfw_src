@@ -12,7 +12,7 @@
 package com.metavize.tran.virus;
 
 import com.metavize.mvvm.logging.LogEvent;
-import com.metavize.tran.mail.MessageInfo;
+import com.metavize.tran.mail.papi.MessageInfo;
 
 /**
  * Log for POP3/IMAP Virus events.

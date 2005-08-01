@@ -12,7 +12,7 @@ import com.metavize.gui.util.*;
 import com.metavize.mvvm.security.*;
 import com.metavize.mvvm.*;
 import com.metavize.mvvm.tran.*;
-import com.metavize.tran.mail.MailTransformSettings;
+import com.metavize.tran.mail.papi.MailTransformSettings;
 
 import java.awt.*;
 import javax.swing.*;

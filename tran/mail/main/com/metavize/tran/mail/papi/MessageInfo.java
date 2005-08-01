@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.metavize.tran.mail;
+package com.metavize.tran.mail.papi;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -113,7 +113,7 @@ public class MessageInfo implements Serializable
      * @hibernate.collection-index
      * column="POSITION"
      * @hibernate.collection-one-to-many
-     * class="com.metavize.tran.mail.MessageInfoAddr"
+     * class="com.metavize.tran.mail.papi.MessageInfoAddr"
      */
     public List getAddresses()
     {

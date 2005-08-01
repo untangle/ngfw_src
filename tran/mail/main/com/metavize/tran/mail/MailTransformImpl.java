@@ -11,6 +11,8 @@
 
 package com.metavize.tran.mail;
 
+import com.metavize.tran.mail.PopCasingFactory;
+import com.metavize.tran.mail.papi.*;
 import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.CasingPipeSpec;
 import com.metavize.mvvm.tapi.Fitting;
@@ -21,6 +23,8 @@ import net.sf.hibernate.Query;
 import net.sf.hibernate.Session;
 import net.sf.hibernate.Transaction;
 import org.apache.log4j.Logger;
+import com.metavize.tran.mail.impl.imap.ImapCasingFactory;
+import com.metavize.tran.mail.impl.smtp.SmtpCasingFactory;
 
 public class MailTransformImpl extends AbstractTransform
     implements MailTransform, MailExport

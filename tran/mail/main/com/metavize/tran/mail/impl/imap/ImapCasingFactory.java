@@ -9,20 +9,20 @@
  * $Id$
  */
 
-package com.metavize.tran.mail;
+package com.metavize.tran.mail.impl.imap;
 
 import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.tran.token.Casing;
 import com.metavize.tran.token.CasingFactory;
 
-class ImapCasingFactory implements CasingFactory
+public class ImapCasingFactory implements CasingFactory
 {
     private static final ImapCasingFactory IMAP_CASING_FACTORY
         = new ImapCasingFactory();
 
     private ImapCasingFactory() { }
 
-    static ImapCasingFactory factory()
+    public static ImapCasingFactory factory()
     {
         return IMAP_CASING_FACTORY;
     }

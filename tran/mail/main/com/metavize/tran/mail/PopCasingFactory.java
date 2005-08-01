@@ -15,14 +15,14 @@ import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.tran.token.Casing;
 import com.metavize.tran.token.CasingFactory;
 
-class PopCasingFactory implements CasingFactory
+public class PopCasingFactory implements CasingFactory
 {
     private static final PopCasingFactory POP_CASING_FACTORY
         = new PopCasingFactory();
 
     private PopCasingFactory() { }
 
-    static PopCasingFactory factory()
+    public static PopCasingFactory factory()
     {
         return POP_CASING_FACTORY;
     }

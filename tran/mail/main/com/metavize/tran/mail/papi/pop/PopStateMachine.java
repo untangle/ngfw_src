@@ -18,7 +18,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
 import com.metavize.mvvm.tapi.TCPSession;
-import com.metavize.tran.mail.MessageInfo;
+import com.metavize.tran.mail.papi.MessageInfo;
 import com.metavize.tran.mail.papi.MIMEMessageT;
 import com.metavize.tran.mail.papi.MIMEMessageTrickleT;
 import com.metavize.tran.mime.InvalidHeaderDataException;

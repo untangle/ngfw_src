@@ -12,9 +12,9 @@
 package com.metavize.tran.virus;
 
 import com.metavize.mvvm.logging.LogEvent;
-import com.metavize.tran.mail.MessageInfo;
-import com.metavize.tran.mail.SMTPNotifyAction;
-import com.metavize.tran.mail.SMTPNotifyActionUserType;
+import com.metavize.tran.mail.papi.MessageInfo;
+import com.metavize.tran.mail.papi.smtp.SMTPNotifyAction;
+import com.metavize.tran.mail.papi.smtp.SMTPNotifyActionUserType;
 
 /**
  * Log for SMTP Virus events.
@@ -118,7 +118,7 @@ public class VirusSmtpEvent extends LogEvent
      *
      * @return action.
      * @hibernate.property
-     * type="com.metavize.tran.mail.SMTPNotifyActionUserType"
+     * type="com.metavize.tran.mail.papi.smtp.SMTPNotifyActionUserType"
      * column="NOTIFY_ACTION"
      */
     public SMTPNotifyAction getNotifyAction()

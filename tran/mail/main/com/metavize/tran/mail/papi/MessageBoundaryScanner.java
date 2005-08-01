@@ -9,7 +9,7 @@
  * $Id: MailExport.java 1317 2005-07-12 23:58:12Z amread $
  */
 
-package com.metavize.tran.mail;
+package com.metavize.tran.mail.papi;
 import static com.metavize.tran.util.Ascii.*;
 import static com.metavize.tran.util.BufferUtil.*;
 import static com.metavize.tran.util.ASCIIUtil.*;

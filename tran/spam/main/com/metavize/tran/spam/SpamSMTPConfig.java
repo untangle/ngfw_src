@@ -13,7 +13,7 @@ package com.metavize.tran.spam;
 
 import java.io.Serializable;
 
-import com.metavize.tran.mail.SMTPNotifyAction;
+import com.metavize.tran.mail.papi.smtp.SMTPNotifyAction;
 
 /**
  * Spam control: Definition of spam control settings (either direction)
@@ -145,7 +145,7 @@ public class SpamSMTPConfig implements Serializable
      * @return the action to take if a message is judged to be spam.
      * @hibernate.property
      * column="NOTIFY_ACTION"
-     * type="com.metavize.tran.mail.SMTPNotifyActionUserType"
+     * type="com.metavize.tran.mail.papi.smtp.SMTPNotifyActionUserType"
      * not-null="true"
      */
     public SMTPNotifyAction getNotifyAction()

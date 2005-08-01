@@ -90,4 +90,6 @@ else
     JAVA_OPTS="$JAVA_OPTS_COMMON $JAVA_OPTS_SUN" #   SUN
 fi
 
+JAVA_OPTS="$JAVA_OPTS -Dargon.inside=vmnet1"
+
 export JAVA_OPTS

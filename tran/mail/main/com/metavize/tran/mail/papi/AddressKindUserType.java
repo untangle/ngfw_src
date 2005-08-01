@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.metavize.tran.mail;
+package com.metavize.tran.mail.papi;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -19,12 +19,12 @@ import java.sql.Types;
 import net.sf.hibernate.HibernateException;
 import net.sf.hibernate.UserType;
 
-public class SMTPNotifyActionUserType implements UserType
+public class AddressKindUserType implements UserType
 {
     private static final int[] SQL_TYPES = { Types.CHAR };
 
     public int[] sqlTypes() { return SQL_TYPES; }
-    public Class returnedClass() { return SMTPNotifyAction.class; }
+    public Class returnedClass() { return AddressKind.class; }
     public boolean equals(Object x, Object y) { return x == y; }
     public Object deepCopy(Object value) { return value; }
     public boolean isMutable() { return false; }
@@ -33,10 +33,10 @@ public class SMTPNotifyActionUserType implements UserType
         throws HibernateException, SQLException
     {
         String s = rs.getString(names[0]);
-        if (true == rs.wasNull() || 1 != s.length()) {
+        if (rs.wasNull() || 1 != s.length()) {
             return null;
         } else {
-            return SMTPNotifyAction.getInstance(s.charAt(0));
+            return AddressKind.getInstance(s.charAt(0));
         }
     }
 
@@ -47,10 +47,8 @@ public class SMTPNotifyActionUserType implements UserType
             // 0 means no value/null
             ps.setString(i, "0");
         } else {
-            SMTPNotifyAction a = (SMTPNotifyAction)v;
-            ps.setString(i, Character.toString(a.getKey()));
+            AddressKind m = (AddressKind)v;
+            ps.setString(i, Character.toString(m.getKey()));
         }
-
-        return;
     }
 }

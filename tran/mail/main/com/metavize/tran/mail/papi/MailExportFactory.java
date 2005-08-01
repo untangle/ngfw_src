@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.metavize.tran.mail;
+package com.metavize.tran.mail.papi;
 
 import com.metavize.mvvm.tapi.ProxyGenerator;
 

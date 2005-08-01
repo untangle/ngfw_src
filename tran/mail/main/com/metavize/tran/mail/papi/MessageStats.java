@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.metavize.tran.mail;
+package com.metavize.tran.mail.papi;
 
 import org.apache.log4j.Logger;
 

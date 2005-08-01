@@ -13,7 +13,7 @@ package com.metavize.tran.virus;
 
 import java.io.Serializable;
 
-import com.metavize.tran.mail.SMTPNotifyAction;
+import com.metavize.tran.mail.papi.smtp.SMTPNotifyAction;
 
 /**
  * Virus control: Definition of virus control settings (either direction)
@@ -147,7 +147,7 @@ public class VirusSMTPConfig implements Serializable
      * @return the action to take if a message is judged to be virus.
      * @hibernate.property
      * column="NOTIFY_ACTION"
-     * type="com.metavize.tran.mail.SMTPNotifyActionUserType"
+     * type="com.metavize.tran.mail.papi.smtp.SMTPNotifyActionUserType"
      * not-null="true"
      */
     public SMTPNotifyAction getNotifyAction()

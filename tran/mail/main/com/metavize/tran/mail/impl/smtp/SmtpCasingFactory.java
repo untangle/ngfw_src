@@ -9,26 +9,26 @@
  * $Id$
  */
 
-package com.metavize.tran.mail;
+package com.metavize.tran.mail.impl.smtp;
 
 import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.tran.token.Casing;
 import com.metavize.tran.token.CasingFactory;
 
-class SmtpCasingFactory implements CasingFactory
+public class SmtpCasingFactory implements CasingFactory
 {
     private static final SmtpCasingFactory SMTP_CASING_FACTORY
         = new SmtpCasingFactory();
 
     private SmtpCasingFactory() { }
 
-    static SmtpCasingFactory factory()
+    public static SmtpCasingFactory factory()
     {
         return SMTP_CASING_FACTORY;
     }
 
     public Casing casing(TCPSession session, boolean clientSide)
     {
-        return new com.metavize.tran.mail.impl.smtp.SmtpCasing(session, clientSide);
+        return new SmtpCasing(session, clientSide);
     }
 }
