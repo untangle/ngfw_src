@@ -324,10 +324,10 @@ DROP TABLE public.mvvm_login_evt;
 ---------------
 
 -- shield rejection events
-
+-- com.metavize.mvvm.shield.ShieldRejectionEvent
 CREATE TABLE events.shield_rejection_evt (
     event_id int8 NOT NULL,
-    ip inet,
+    client_addr inet,
     reputation float8,
     mode int4,
     limited int4,
@@ -338,6 +338,7 @@ CREATE TABLE events.shield_rejection_evt (
 
 -- shield statistics
 
+-- com.metavize.mvvm.shield.ShieldStatisticEvent
 CREATE TABLE events.shield_statistic_evt (
     event_id int8 NOT NULL,
     accepted int4,
@@ -414,20 +415,6 @@ DROP TABLE public.pipeline_info;
 DROP TABLE public.mvvm_evt_pipeline;
 
 ANALYZE settings.pl_stats;
-
--- table for shield events
-
-CREATE TABLE events.shield_rejection_evt (
-    event_id int8 NOT NULL,
-    client_addr inet,
-    client_intf int2,
-    reputation float8,
-    mode int4,
-    limited int4,
-    dropped int4,
-    rejected int4,
-    time_stamp timestamp,
-    PRIMARY KEY (event_id));
 
 ------------
 -- analyze |
