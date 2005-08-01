@@ -46,7 +46,8 @@ public class MaintenanceJPanel extends javax.swing.JPanel implements Savable, Re
 	if( !validateOnly ){
 	    NetworkingConfiguration networkingConfiguration = Util.getNetworkingManager().get();
             networkingConfiguration.isSshEnabled( isSshEnabled );
-            networkingConfiguration.isExceptionReportingEnabled( isExceptionReportingEnabled );            
+            networkingConfiguration.isExceptionReportingEnabled( isExceptionReportingEnabled );
+	    Util.getNetworkingManager().set( networkingConfiguration );
         }
     }
 
