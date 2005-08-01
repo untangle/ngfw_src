@@ -15,6 +15,7 @@ import com.metavize.tran.mail.*;
 
 import com.metavize.tran.mail.papi.smtp.*;
 import static com.metavize.tran.util.Ascii.*;
+import static com.metavize.tran.util.ASCIIUtil.*;
 import static com.metavize.tran.util.BufferUtil.*;
 
 import java.io.*;
@@ -92,6 +93,10 @@ class SmtpClientParser
       m_logger.debug("Draining tokens from buffer (" + toks.size() +
         " tokens so far)");
 
+      if(isPassthru()) {
+        return new ParseResult(new Chunk(buf));
+      }         
+        
       switch(m_state) {
       
         //==================================================
@@ -113,14 +118,24 @@ class SmtpClientParser
               cmd = CommandParser.parse(buf);
             }
             catch(ParseException pe) {
-              //TODO bscott This is yet-another way to bypass filtering.
-              //If a client sends crap, we go into passthru mode.  Then,
-              //they can send whatever they like!
-              m_logger.error("Exception parsing a command.  Declare passthru", pe);
-              declarePassthru();
-              toks.add(PassThruToken.PASSTHRU);
-              toks.add(new Chunk(dup));
-              return new ParseResult(toks, null);
+              //Duplicate the bad buffer
+              dup.limit(findCrLf(dup) + 2);
+              ByteBuffer badBuf = ByteBuffer.allocate(dup.remaining());
+              badBuf.put(dup);
+              badBuf.flip();
+              //Position the "real" buffer beyond the bad point.
+              buf.position(dup.position());
+
+              m_logger.error("Exception parsing command line \"" +
+                ASCIIUtil.bbToString(badBuf) + "\".  Pass to server and monitor response", pe);
+
+              cmd = new UnparsableCommand(badBuf);
+                
+              getSessionTracker().commandReceived(cmd,
+                new CommandParseErrorResponseCallback(badBuf));
+
+              toks.add(cmd);
+              break;
             }
 
             m_logger.debug("Parsed \"" + cmd.getType() + "\" Command");
@@ -311,7 +326,38 @@ class SmtpClientParser
         m_logger.debug("STARTTLS command rejected.  Do not go into passthru");
       }
     }    
-  }  
+  }
+
+  //================ Inner Class =================
+
+  /**
+   * Callback registered with the CasingSessionTracker
+   * for the response to a command we could not parse.
+   * If the response can be parsed, and it is an error,
+   * we do not go into passthru.  If the response is positive,
+   * then we go into passthru.
+   */
+  class CommandParseErrorResponseCallback
+    implements CasingSessionTracker.ResponseAction {
+
+    private String m_offendingCommand;
+
+    CommandParseErrorResponseCallback(ByteBuffer bufWithOffendingLine) {
+      m_offendingCommand = bbToString(bufWithOffendingLine);
+    }
+    
+    public void response(int code) {
+      if(code < 300) {
+        m_logger.error("Could not parse command line \"" +
+          m_offendingCommand + "\" yet accepted by server.  Parser error.  Enter passthru");
+        declarePassthru();
+      }
+      else {
+        m_logger.debug("Command \"" + m_offendingCommand + "\" unparsable, and rejected " +
+          "by server.  Do not enter passthru (assume errant client)");
+      }
+    }    
+  }   
   
   /**
    * Open the MIME accumulator.  If there was an error,

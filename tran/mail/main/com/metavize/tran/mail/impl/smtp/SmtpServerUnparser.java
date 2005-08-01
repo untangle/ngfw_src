@@ -13,6 +13,7 @@ package com.metavize.tran.mail.impl.smtp;
 
 import static com.metavize.tran.util.Ascii.*;
 import static com.metavize.tran.util.BufferUtil.*;
+import static com.metavize.tran.util.ASCIIUtil.bbToString;
 
 import com.metavize.tran.mail.papi.smtp.*;
 
@@ -81,14 +82,22 @@ class SmtpServerUnparser
     //-----------------------------------------------------------
     if(token instanceof Command) {
       Command command = (Command) token;
-      m_logger.debug("Received Command \"" +
-        command.getType() + "\" to pass");
-      if(command.getType() == Command.CommandType.STARTTLS) {
+
+      if(command instanceof UnparsableCommand) {
+        m_logger.debug("Received UnparsableCommand to pass.  Register " +
+          "response action to know if there is a local parser error, or if " +
+          "this is an errant command");
+        getSessionTracker().commandReceived(command,
+          new CommandParseErrorResponseCallback(command.getBytes()));
+      }
+      else if(command.getType() == Command.CommandType.STARTTLS) {
         m_logger.debug("Saw STARTTLS command.  Enqueue response action to go into " +
           "passthru if accepted");
         getSessionTracker().commandReceived(command, new TLSResponseCallback());
       }
       else {
+        m_logger.debug("Received Command \"" +
+          command.getType() + "\" to pass");      
         getSessionTracker().commandReceived(command);  
       }
       ByteBuffer buf = token.getBytes();
@@ -158,6 +167,36 @@ class SmtpServerUnparser
     m_logger.debug("TLS Command accepted.  Enter passthru mode so as to not attempt to parse cyphertext");
     declarePassthru();//Inform the parser of this state
   }
+
+
+  //================ Inner Class =================  
+
+  /**
+   * Callback registered with the CasingSessionTracker
+   * for the response to a command that could
+   * not be parsed.
+   */
+  class CommandParseErrorResponseCallback
+    implements CasingSessionTracker.ResponseAction {
+
+    private String m_offendingCommand;
+
+    CommandParseErrorResponseCallback(ByteBuffer bufWithOffendingLine) {
+      m_offendingCommand = bbToString(bufWithOffendingLine);
+    }
+    
+    public void response(int code) {
+      if(code < 300) {
+        m_logger.error("Parser could not parse command line \"" +
+          m_offendingCommand + "\" yet accepted by server.  Parser error.  Enter passthru");
+        declarePassthru();
+      }
+      else {
+        m_logger.debug("Command \"" + m_offendingCommand + "\" unparsable, and rejected " +
+          "by server.  Do not enter passthru (assume errant client)");
+      }
+    }    
+  }   
 
 
   //================ Inner Class =================
