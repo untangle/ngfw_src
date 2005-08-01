@@ -71,7 +71,7 @@
   </category>
 
   <category name="com.metavize.mvvm.logging">
-    <priority value="DEBUG"/>
+    <priority value="WARN"/>
   </category>
 
   <category name="com.metavize.mvvm.argon">
@@ -100,7 +100,7 @@
 
   <category name="com.metavize.tran.virus">
         <priority value="DEBUG"/>
-  </category>    
+  </category>
 
 
   <!-- ============================================== -->
