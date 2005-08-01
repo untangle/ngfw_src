@@ -14,7 +14,7 @@ package com.metavize.tran.spam;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.metavize.tran.mail.Rfc822Header;
+//import com.metavize.tran.mail.Rfc822Header;
 import com.metavize.tran.token.header.IllegalFieldException;
 import org.apache.log4j.Logger;
 import com.metavize.tran.util.TemplateValues;
@@ -107,6 +107,7 @@ public class SpamReport
     /**
      * @depricated
      */
+/*     
     public Rfc822Header rewriteHeader(Rfc822Header h)
     {
         if (isSpam()) {
@@ -127,7 +128,7 @@ public class SpamReport
 
         return h;
     }
-
+*/
     public boolean isSpam()
     {
         return threshold <= score;
