@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.metavize.tran.mail;
+package com.metavize.tran.mail.impl.pop;
 
 import static com.metavize.tran.util.Ascii.*;
 import static com.metavize.tran.util.BufferUtil.*;
@@ -25,6 +25,7 @@ import java.util.List;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.tapi.Pipeline;
 import com.metavize.mvvm.tapi.TCPSession;
+import com.metavize.tran.mail.papi.pop.PopCommand;
 import com.metavize.tran.token.AbstractParser;
 import com.metavize.tran.token.EndMarker;
 import com.metavize.tran.token.ParseException;
@@ -43,7 +44,7 @@ public class PopClientParser extends AbstractParser
 
     // constructors -----------------------------------------------------------
 
-    PopClientParser(TCPSession session)
+    public PopClientParser(TCPSession session)
     {
         super(session, true);
         lineBuffering(false);

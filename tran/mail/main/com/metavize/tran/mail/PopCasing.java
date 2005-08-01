@@ -12,6 +12,9 @@
 package com.metavize.tran.mail;
 
 import com.metavize.mvvm.tapi.TCPSession;
+import com.metavize.tran.mail.impl.pop.PopClientParser;
+import com.metavize.tran.mail.impl.pop.PopServerParser;
+import com.metavize.tran.mail.impl.pop.PopUnparser;
 import com.metavize.tran.token.AbstractCasing;
 import com.metavize.tran.token.Parser;
 import com.metavize.tran.token.Unparser;

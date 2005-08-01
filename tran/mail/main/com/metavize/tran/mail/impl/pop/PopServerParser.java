@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.metavize.tran.mail;
+package com.metavize.tran.mail.impl.pop;
 
 import static com.metavize.tran.util.Ascii.*;
 import static com.metavize.tran.util.BufferUtil.*;
@@ -25,6 +25,10 @@ import java.util.List;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.tapi.Pipeline;
 import com.metavize.mvvm.tapi.TCPSession;
+import com.metavize.tran.mail.MessageBoundaryScanner;
+import com.metavize.tran.mail.MessageInfo;
+import com.metavize.tran.mail.papi.MIMEMessageT;
+import com.metavize.tran.mail.papi.pop.PopReply;
 import com.metavize.tran.mime.HeaderParseException;
 import com.metavize.tran.mime.InvalidHeaderDataException;
 import com.metavize.tran.mime.LineTooLongException;
@@ -66,7 +70,7 @@ public class PopServerParser extends AbstractParser
 
     // constructors -----------------------------------------------------------
 
-    PopServerParser(TCPSession session)
+    public PopServerParser(TCPSession session)
     {
         super(session, true);
         lineBuffering(false);

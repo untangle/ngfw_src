@@ -17,7 +17,7 @@ import java.io.IOException;
 import com.metavize.mvvm.argon.IntfConverter;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.tapi.TCPSession;
-import com.metavize.tran.mail.PopStateMachine;
+import com.metavize.tran.mail.papi.pop.PopStateMachine;
 import com.metavize.tran.mime.HeaderParseException;
 import com.metavize.tran.mime.LCString;
 import com.metavize.tran.token.Token;

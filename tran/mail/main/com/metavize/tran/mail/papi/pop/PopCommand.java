@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.metavize.tran.mail;
+package com.metavize.tran.mail.papi.pop;
 
 import static com.metavize.tran.util.Ascii.*;
 import static com.metavize.tran.util.Rfc822Util.*;

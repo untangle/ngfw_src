@@ -393,13 +393,8 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
         <include name="com/metavize/tran/mail/MessageInfo.class"/>
         <include name="com/metavize/tran/mail/MessageInfoAddr.class"/>
         <include name="com/metavize/tran/mail/MessageStats.class"/>
-        <include name="com/metavize/tran/mail/MIMEMessageT.class"/>
-        <include name="com/metavize/tran/mail/MIMEMessageTrickleT.class"/>
         <include name="com/metavize/tran/mail/MimeBoundary.class"/>
         <include name="com/metavize/tran/mail/MimeStateMachine*.class"/>
-        <include name="com/metavize/tran/mail/PopCommand*.class"/>
-        <include name="com/metavize/tran/mail/PopReply*.class"/>
-        <include name="com/metavize/tran/mail/PopStateMachine*.class"/>
         <include name="com/metavize/tran/mail/Rfc822Header*.class"/>
         <include name="com/metavize/tran/mail/SMTPNotifyAction*.class"/>
         <include name="com/metavize/tran/mail/SMTPNotifyActionUserType*.class"/>
@@ -408,6 +403,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
         <include name="com/metavize/tran/mail/SmtpStateMachine*.class"/>
         <include name="com/metavize/tran/mail/papi/smtp/sapi/*.class"/>
         <include name="com/metavize/tran/mail/papi/smtp/*.class"/>
+        <include name="com/metavize/tran/mail/papi/pop/*.class"/>
         <include name="com/metavize/tran/mail/papi/*.class"/>
         <include name="com/metavize/tran/mail/MessageBoundaryScanner*.class"/>
       </fileset>

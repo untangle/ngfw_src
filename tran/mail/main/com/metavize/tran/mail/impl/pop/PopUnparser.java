@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.metavize.tran.mail;
+package com.metavize.tran.mail.impl.pop;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -27,9 +27,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.metavize.mvvm.tapi.TCPSession;
+import com.metavize.mvvm.tapi.event.TCPStreamer;
 import com.metavize.tran.mime.MIMEMessage;
 import com.metavize.tran.mail.papi.ByteBufferByteStuffer;
-import com.metavize.mvvm.tapi.event.TCPStreamer;
+import com.metavize.tran.mail.papi.pop.PopCommand;
+import com.metavize.tran.mail.papi.pop.PopReply;
+import com.metavize.tran.mail.papi.MIMEMessageT;
+import com.metavize.tran.mail.papi.MIMEMessageTrickleT;
 import com.metavize.tran.token.AbstractUnparser;
 import com.metavize.tran.token.Chunk;
 import com.metavize.tran.token.EndMarker;
@@ -39,7 +43,7 @@ import com.metavize.tran.token.UnparseResult;
 import com.metavize.tran.util.AsciiCharBuffer;
 import org.apache.log4j.Logger;
 
-class PopUnparser extends AbstractUnparser
+public class PopUnparser extends AbstractUnparser
 {
     private final static Logger logger = Logger.getLogger(PopUnparser.class);
 

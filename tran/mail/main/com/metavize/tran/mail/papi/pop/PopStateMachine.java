@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.metavize.tran.mail;
+package com.metavize.tran.mail.papi.pop;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -18,6 +18,9 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
 import com.metavize.mvvm.tapi.TCPSession;
+import com.metavize.tran.mail.MessageInfo;
+import com.metavize.tran.mail.papi.MIMEMessageT;
+import com.metavize.tran.mail.papi.MIMEMessageTrickleT;
 import com.metavize.tran.mime.InvalidHeaderDataException;
 import com.metavize.tran.mime.HeaderParseException;
 import com.metavize.tran.mime.MIMEMessage;
