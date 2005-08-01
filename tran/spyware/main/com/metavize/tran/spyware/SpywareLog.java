@@ -64,13 +64,13 @@ public class SpywareLog implements Comparable<SpywareLog>, Serializable
     public String getReason()
     {
         if (type == Type.COOKIE) {
-            return "in Cookie Block List";
+            return "in Cookie List";
         } else if (type == Type.ACTIVEX) {
-            return "in ActiveX Block List";
+            return "in ActiveX List";
         } else if (type == Type.ACCESS) {
-            return "in Spyware Block List";
+            return "in Subnet List";
         } else if (type == Type.BLACKLIST) {
-            return "in URL Block List";
+            return "in URL List";
         } else {
             return null;
         }
