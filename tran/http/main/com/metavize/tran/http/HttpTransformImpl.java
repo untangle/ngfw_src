@@ -109,6 +109,10 @@ public class HttpTransformImpl extends AbstractTransform
             }
         }
 
+        if (null == settings) {
+            initializeSettings();
+        }
+
         reconfigure();
     }
 

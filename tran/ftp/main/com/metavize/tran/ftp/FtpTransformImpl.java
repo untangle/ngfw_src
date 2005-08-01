@@ -111,6 +111,10 @@ public class FtpTransformImpl extends AbstractTransform
             }
         }
 
+        if (null == settings) {
+            initializeSettings();
+        }
+
         reconfigure();
     }
 

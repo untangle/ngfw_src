@@ -137,6 +137,10 @@ public class MailTransformImpl extends AbstractTransform
             }
         }
 
+        if (null == settings) {
+            initializeSettings();
+        }
+
         reconfigure();
     }
 
