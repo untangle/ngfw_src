@@ -270,6 +270,7 @@ class TransformManagerImpl implements TransformManager
             Tid tid = tps.getTid();
 
             try {
+                logger.info("initializing transform desc for: " + tps.getName());
                 TransformDesc tDesc = initTransformDesc(urls, tid);
                 tDescs.put(tid, tDesc);
             } catch (DeployException exn) {
@@ -373,6 +374,7 @@ class TransformManagerImpl implements TransformManager
 
         URL[] urls = tbm.resources(transformName);
         MackageDesc mackageDesc = tbm.mackageDesc(transformName);
+        logger.info("initializing transform desc for: " + transformName);
         TransformDesc tDesc = initTransformDesc(urls, tid);
 
         synchronized (this) {
