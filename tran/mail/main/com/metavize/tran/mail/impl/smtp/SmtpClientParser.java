@@ -178,7 +178,7 @@ class SmtpClientParser
           
         //==================================================
         case HEADERS:
-          m_logger.debug(m_state + " state");
+          m_logger.debug(m_state + " state. buf remaining " + buf.remaining());
           getSessionTracker().beginMsgTransmission();
           
           //Duplicate the buffer, in case we have a problem
@@ -202,9 +202,19 @@ class SmtpClientParser
           ByteBuffer dup2 = dup.duplicate();
           dup2.limit(buf.position());
 
-          m_logger.debug("About to write the " +
-            (endOfHeaders?"last":"next") + " " +
-            dup2.remaining() + " header bytes to disk");
+          if(m_mimeAccumulator.getScanner().isHeadersBlank()) {
+            //TODO bscott remove debugging (yet again)
+            int len = dup.remaining()>80?80:dup.remaining();
+            ByteBuffer dup3 = dup.duplicate();
+            dup3.limit(dup3.position() + len);
+            m_logger.debug("Headers are blank (first " +
+              len + " bytes \"" + ASCIIUtil.bbToString(dup3) + "\")");
+          }
+          else {
+            m_logger.debug("About to write the " +
+              (endOfHeaders?"last":"next") + " " +
+              dup2.remaining() + " header bytes to disk");
+          }
 
           if(!writeHeaderBytesToFile(dup2)) {
             m_logger.error("Unable to write header bytes to disk.  Enter passthru");
@@ -246,6 +256,7 @@ class SmtpClientParser
               createMessageInfo()));
             m_state = SmtpClientState.BODY;
             if(m_mimeAccumulator.getScanner().isEmptyMessage()) {
+              m_logger.debug("Message blank.  Skip to reading commands");
               toks.add(new ContinuedMIMEToken(true));
               m_state = SmtpClientState.COMMAND;
             }
@@ -297,6 +308,31 @@ class SmtpClientParser
   @Override
   public TokenStreamer endSession() {
     if(m_mimeAccumulator != null) {
+      //TODO bscott temp debugging
+      m_logger.debug("Unexpected closed in state " + m_state);
+      FileOutputStream fOut = null;
+      FileInputStream fIn = null;
+      try {
+        m_logger.debug("MIME file is " + m_mimeAccumulator.getFile().length() + " bytes long");
+        File f = File.createTempFile("SMTP_DEBUG", ".tmp");
+        fOut = new FileOutputStream(f);
+        fIn = new FileInputStream(m_mimeAccumulator.getFile());
+        byte[] transferBuf = new byte[1024];
+        int read = fIn.read(transferBuf);
+        while(read > 0) {
+          fOut.write(transferBuf, 0, read);
+          read = fIn.read(transferBuf);
+        }
+        fOut.flush();
+        fOut.close();
+        fIn.close();
+        m_logger.debug("Wrote MIME file for session to file " +
+          f.getAbsolutePath());
+      }
+      catch(Exception ex) {
+        try {fOut.close();}catch(Exception ignore){}
+        try {fIn.close();}catch(Exception ignore){}
+      }
       m_mimeAccumulator.closeFromError();
     }
     return super.endSession();
