@@ -37,9 +37,9 @@ import org.apache.log4j.Logger;
 public class SpywareHttpHandler extends HttpStateMachine
 {
     private static final Pattern OBJECT_PATTERN
-        = Pattern.compile("<object");
+        = Pattern.compile("<object", Pattern.CASE_INSENSITIVE);
     private static final Pattern CLSID_PATTERN
-        = Pattern.compile("clsid:([0-9\\-]*)");
+        = Pattern.compile("clsid:([0-9\\-]*)", Pattern.CASE_INSENSITIVE);
 
     private final TCPSession session;
 
@@ -390,7 +390,6 @@ public class SpywareHttpHandler extends HttpStateMachine
                     }
                 }
             }
-
 
             return c;
         } else {
