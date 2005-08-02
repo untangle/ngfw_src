@@ -44,18 +44,6 @@ public class SpamSmtpFactory
   //TODO bscott why the heck would someone want to be notified of spam?
   //     isn't that spam itself?
     
-  private static final String OUT_MOD_SUB_TEMPLATE =
-    "[SPAM] $MIMEMessage:SUBJECT$";
-
-  private static final String OUT_MOD_BODY_TEMPLATE =
-    "The attached message from $MIMEMessage:FROM$ ($SMTPTransaction:FROM$) was determined " + CRLF +
-    "to be SPAM based on a score of $SPAMReport:SCORE$ where anything above $SPAMReport:THRESHOLD$" + CRLF +
-    "is SPAM.  The details of the report are as follows:" + CRLF + CRLF +
-    "$SPAMReport:FULL$";
-    
-  private static final String IN_MOD_SUB_TEMPLATE = OUT_MOD_SUB_TEMPLATE;
-  private static final String IN_MOD_BODY_TEMPLATE = OUT_MOD_BODY_TEMPLATE;
-
   private static final String OUT_NOTIFY_SUB_TEMPLATE =
     "[SPAM NOTIFICATION] re: $MIMEMessage:SUBJECT$";
     
@@ -73,17 +61,15 @@ public class SpamSmtpFactory
   private static final Logger m_logger =
     Logger.getLogger(SpamSmtpFactory.class);
 
-
   private WrappedMessageGenerator m_inWrapper =
-    new WrappedMessageGenerator(IN_MOD_SUB_TEMPLATE, IN_MOD_BODY_TEMPLATE);
+    new WrappedMessageGenerator(SpamSettings.IN_MOD_SUB_TEMPLATE, SpamSettings.IN_MOD_BODY_SMTP_TEMPLATE);
 
   private WrappedMessageGenerator m_outWrapper =
-    new WrappedMessageGenerator(OUT_MOD_SUB_TEMPLATE, OUT_MOD_BODY_TEMPLATE);
+    new WrappedMessageGenerator(SpamSettings.OUT_MOD_SUB_TEMPLATE, SpamSettings.OUT_MOD_BODY_SMTP_TEMPLATE);
 
   private SmtpNotifyMessageGenerator m_inNotifier;
   private SmtpNotifyMessageGenerator m_outNotifier;
 
-    
   public SpamSmtpFactory(SpamImpl impl) {
     m_mailExport = MailExportFactory.getExport();
     m_spamImpl = impl;

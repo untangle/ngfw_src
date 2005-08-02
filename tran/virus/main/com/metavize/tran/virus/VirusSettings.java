@@ -28,6 +28,19 @@ public class VirusSettings implements Serializable
 {
     private static final long serialVersionUID = -7246008133224046834L;
 
+    public static final String OUT_MOD_SUB_TEMPLATE =
+      "[VIRUS] $MIMEMessage:SUBJECT$";
+    public static final String OUT_MOD_BODY_TEMPLATE =
+      "The attached message from $MIMEMessage:FROM$ was found to contain\r\n" +
+      "the virus \"$VirusReport:VIRUS_NAME$\".  The infected portion of the attached email was removed.\r\n";
+    public static final String OUT_MOD_BODY_SMTP_TEMPLATE =
+      "The attached message from $MIMEMessage:FROM$ ($SMTPTransaction:FROM$) was found to contain\r\n" +
+      "the virus \"$VirusReport:VIRUS_NAME$\".  The infected portion of the attached email was removed.\r\n";
+
+    public static final String IN_MOD_SUB_TEMPLATE = OUT_MOD_SUB_TEMPLATE;
+    public static final String IN_MOD_BODY_TEMPLATE = OUT_MOD_BODY_TEMPLATE;
+    public static final String IN_MOD_BODY_SMTP_TEMPLATE = OUT_MOD_BODY_SMTP_TEMPLATE;
+
     private Long id;
     private Tid tid;
     private boolean ftpDisableResume = true;

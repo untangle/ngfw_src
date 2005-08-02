@@ -32,8 +32,6 @@ import org.apache.log4j.Logger;
 public class SmtpSessionHandler
   extends BufferingSessionHandler {
 
-  private static final MIMEPart[] EMPTY_MIME_PARTS = new MIMEPart[0];
-
   private final Logger m_logger = Logger.getLogger(SmtpSessionHandler.class);
   private final Logger m_eventLogger = MvvmContextFactory
     .context().eventLogger();
@@ -96,7 +94,7 @@ public class SmtpSessionHandler
     MessageInfo msgInfo) {
     m_logger.debug("[handleMessageCanBlock]");
 
-    MIMEPart[] candidateParts = getCandidateParts(msg);
+    MIMEPart[] candidateParts = MIMEUtil.getCandidateParts(msg);
     m_logger.debug("Message has: " + candidateParts.length + " scannable parts");
 
     boolean foundVirus = false;
@@ -112,7 +110,7 @@ public class SmtpSessionHandler
     }
 
     for(MIMEPart part : candidateParts) {
-      if(!shouldScan(part)) {
+      if(!MIMEUtil.shouldScan(part)) {
         m_logger.debug("Skipping part which does not need to be scanned");
         continue;
       }
@@ -210,7 +208,7 @@ public class SmtpSessionHandler
     //TODO bscott There has to be a way to share more code
     //     with the "blockPassOrModify" method
 
-    MIMEPart[] candidateParts = getCandidateParts(msg);
+    MIMEPart[] candidateParts = MIMEUtil.getCandidateParts(msg);
     m_logger.debug("Message has: " + candidateParts.length + " scannable parts");
     SMTPVirusMessageAction action = m_config.getMsgAction();
 
@@ -227,7 +225,7 @@ public class SmtpSessionHandler
     VirusScannerResult scanResultForWrap = null;
 
     for(MIMEPart part : candidateParts) {
-      if(!shouldScan(part)) {
+      if(!MIMEUtil.shouldScan(part)) {
         m_logger.debug("Skipping part which does not need to be scanned");
         continue;
       }
@@ -285,39 +283,6 @@ public class SmtpSessionHandler
       }
     }
     return BlockOrPassResult.PASS;
-  }
-
-  /**
-   * Helper which returns a list of parts which may
-   * be candidates for scanning.  Takes care of boundary
-   * case where top-level part is actualy an attachment
-   */
-  private MIMEPart[] getCandidateParts(MIMEMessage msg) {
-    //Need to special-case the top-level message
-    //which itsef is only an attachment
-    if(msg.isMultipart()) {
-      return msg.getLeafParts(true);
-    }
-    else {
-      if(shouldScan(msg)) {
-        m_logger.debug("Message itself is scannable (no child parts, but not \"" +
-          ContentTypeHeaderField.TEXT_PRIM_TYPE_STR + "/*\" content type");
-        return new MIMEPart[] {msg};
-      }
-      else {
-        return EMPTY_MIME_PARTS;
-      }
-    }
-  }
-
-  /**
-   * Currently any non-text part is scanned
-   */
-  private boolean shouldScan(MIMEPart part) {
-
-    return part.getMPHeaders().getContentTypeHF() != null &&
-      !part.getMPHeaders().getContentTypeHF().getPrimaryType().
-        equalsIgnoreCase(ContentTypeHeaderField.TEXT_PRIM_TYPE_STR);
   }
 
   /**

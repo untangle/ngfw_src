@@ -28,17 +28,6 @@ import com.metavize.mvvm.MvvmContextFactory;
 public class VirusSmtpFactory
   implements TokenHandlerFactory {
 
-
-  private static final String OUT_MOD_SUB_TEMPLATE =
-    "[VIRUS] $MIMEMessage:SUBJECT$";
-
-  private static final String OUT_MOD_BODY_TEMPLATE =
-    "The attached message from $MIMEMessage:FROM$ ($SMTPTransaction:FROM$) was found to contain " + CRLF +
-    "the virus \"$VirusReport:VIRUS_NAME$\".  The infected portion of the attached email was removed" + CRLF;
-    
-  private static final String IN_MOD_SUB_TEMPLATE = OUT_MOD_SUB_TEMPLATE;
-  private static final String IN_MOD_BODY_TEMPLATE = OUT_MOD_BODY_TEMPLATE;
-
   private static final String OUT_NOTIFY_SUB_TEMPLATE =
     "[VIRUS NOTIFICATION] re: $MIMEMessage:SUBJECT$";
     
@@ -49,17 +38,16 @@ public class VirusSmtpFactory
 
   private static final String IN_NOTIFY_SUB_TEMPLATE = OUT_NOTIFY_SUB_TEMPLATE;
   private static final String IN_NOTIFY_BODY_TEMPLATE = OUT_NOTIFY_BODY_TEMPLATE;  
-  
 
   private final Logger m_logger =
     Logger.getLogger(VirusSmtpFactory.class);
 
   //TODO bscott These should be paramaterized in the Config objects
   private WrappedMessageGenerator m_inWrapper =
-    new WrappedMessageGenerator(IN_MOD_SUB_TEMPLATE, IN_MOD_BODY_TEMPLATE);
+    new WrappedMessageGenerator(VirusSettings.IN_MOD_SUB_TEMPLATE, VirusSettings.IN_MOD_BODY_SMTP_TEMPLATE);
 
   private WrappedMessageGenerator m_outWrapper =
-    new WrappedMessageGenerator(OUT_MOD_SUB_TEMPLATE, OUT_MOD_BODY_TEMPLATE);
+    new WrappedMessageGenerator(VirusSettings.OUT_MOD_SUB_TEMPLATE, VirusSettings.OUT_MOD_BODY_SMTP_TEMPLATE);
 
   private SmtpNotifyMessageGenerator m_inNotifier;
   private SmtpNotifyMessageGenerator m_outNotifier;    

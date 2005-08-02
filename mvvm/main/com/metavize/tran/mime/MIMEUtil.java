@@ -9,17 +9,23 @@
   * $Id:$
   */
 package com.metavize.tran.mime;
-import com.metavize.tran.util.*;
+
 import static com.metavize.tran.mime.HeaderNames.*;
-import java.util.*;
 import java.io.*;
 import java.nio.*;
+import java.util.*;
 import javax.mail.internet.MailDateFormat;
+
+import com.metavize.tran.util.*;
+import org.apache.log4j.Logger;
 
 /**
  * Utility methods for working with MIME
  */
 public class MIMEUtil {
+  private static final Logger m_logger = Logger.getLogger(MIMEUtil.class);
+
+  public static final MIMEPart[] EMPTY_MIME_PARTS = new MIMEPart[0];
 
   /**
    * Wraps the given MIMEMessage in a new MIMEMessage with
@@ -32,8 +38,6 @@ public class MIMEUtil {
    */
   public static MIMEMessage simpleWrap(String plainBodyContent,
     MIMEMessage oldMsg) throws Exception/*TODO bscott exception is lazy*/ {
-
-
 
     //First, we need to "steal" the old headers.  This
     // is easiest by simply re-parsing them
@@ -178,6 +182,38 @@ public class MIMEUtil {
     return sb.toString();
   }
 
+  /**
+   * Helper which returns a list of parts which may
+   * be candidates for scanning.  Takes care of boundary
+   * case where top-level part is actualy an attachment
+   */
+  public static MIMEPart[] getCandidateParts(MIMEMessage msg) {
+    //Need to special-case the top-level message
+    //which itsef is only an attachment
+    if(msg.isMultipart()) {
+      return msg.getLeafParts(true);
+    }
+    else {
+      if(shouldScan(msg)) {
+        m_logger.debug("Message itself is scannable (no child parts, but not \"" +
+          ContentTypeHeaderField.TEXT_PRIM_TYPE_STR + "/*\" content type");
+        return new MIMEPart[] {msg};
+      }
+      else {
+        return EMPTY_MIME_PARTS;
+      }
+    }
+  }
+
+  /**
+   * Currently any non-text part is scanned
+   */
+  public static boolean shouldScan(MIMEPart part) {
+
+    return part.getMPHeaders().getContentTypeHF() != null &&
+      !part.getMPHeaders().getContentTypeHF().getPrimaryType().
+        equalsIgnoreCase(ContentTypeHeaderField.TEXT_PRIM_TYPE_STR);
+  }
 
 
 //------------- Debug/Test ---------------  

@@ -18,11 +18,16 @@ import com.metavize.mvvm.argon.IntfConverter;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.tran.mail.papi.pop.PopStateMachine;
+import com.metavize.tran.mail.papi.MIMEMessageT;
+import com.metavize.tran.mail.papi.WrappedMessageGenerator;
 import com.metavize.tran.mime.HeaderParseException;
 import com.metavize.tran.mime.LCString;
+import com.metavize.tran.mime.MIMEMessage;
+import com.metavize.tran.mime.MIMEUtil;
 import com.metavize.tran.token.Token;
 import com.metavize.tran.token.TokenException;
 import com.metavize.tran.token.TokenResult;
+import com.metavize.tran.util.FileFactory;
 import org.apache.log4j.Logger;
 
 public class SpamPopHandler extends PopStateMachine
@@ -40,6 +45,7 @@ public class SpamPopHandler extends PopStateMachine
     private final SpamScanner zScanner;
     private final String zVendorName;
 
+    private final WrappedMessageGenerator zWMsgGenerator;
     private final SpamMessageAction zMsgAction;
     private final boolean bScan;
 
@@ -53,13 +59,17 @@ public class SpamPopHandler extends PopStateMachine
         zVendorName = zScanner.getVendorName();
 
         SpamPOPConfig zConfig;
+        WrappedMessageGenerator zWMGenerator;
         if (IntfConverter.INSIDE == session.clientIntf()) {
             zConfig = transform.getSpamSettings().getPOPInbound();
+            zWMGenerator = new WrappedMessageGenerator(SpamSettings.IN_MOD_SUB_TEMPLATE, SpamSettings.IN_MOD_BODY_TEMPLATE);
         } else {
             zConfig = transform.getSpamSettings().getPOPOutbound();
+            zWMGenerator = new WrappedMessageGenerator(SpamSettings.OUT_MOD_SUB_TEMPLATE, SpamSettings.OUT_MOD_BODY_TEMPLATE);
         }
         bScan = zConfig.getScan();
         zMsgAction = zConfig.getMsgAction();
+        zWMsgGenerator = zWMGenerator;
         //logger.debug("scan: " + bScan + ", message action: " + zMsgAction);
     }
 
@@ -67,17 +77,44 @@ public class SpamPopHandler extends PopStateMachine
 
     protected TokenResult scanMessage() throws TokenException
     {
-        scanFile(zMsgFile);
+        if (true == bScan) {
+            SpamReport zReport;
+
+            if (null != (zReport = scanFile(zMsgFile)) &&
+                SpamMessageAction.MARK == zMsgAction) {
+                /* wrap spam message and rebuild message token */
+                MIMEMessage zWMMessage = zWMsgGenerator.wrap(zMMessage, zReport);
+                try {
+                    zMsgFile = zWMMessage.toFile(new FileFactory() {
+                        public File createFile(String name) throws IOException {                          return createFile();
+                        }
+
+                        public File createFile() throws IOException {
+                          return getPipeline().mktemp();
+                        }
+                    } );
+
+                    zMMessageT = new MIMEMessageT(zMsgFile);
+                    zMMessageT.setMIMEMessage(zWMMessage);
+
+                    /* dispose original message
+                     * (will discard remaining references during reset)
+                     */
+                    zMMessage.dispose();
+                } catch (IOException exn2) {
+                    throw new TokenException("cannot wrap original message/mime part: ", exn2);
+                }
+            }
+        }
+        //else {
+            //logger.debug("scan is not enabled");
+        //}
 
         return new TokenResult(new Token[] { zMMessageT }, null);
     }
 
-    private void scanFile(File zFile) throws TokenException
+    private SpamReport scanFile(File zFile) throws TokenException
     {
-        if (false == bScan) {
-            return;
-        }
-
         try {
             SpamReport zReport = zScanner.scanFile(zFile, SPAM_SCORE);
             eventLogger.info(new SpamLogEvent(zMsgInfo, zReport.getScore(), zReport.isSpam(), zMsgAction, zVendorName));
@@ -90,13 +127,12 @@ public class SpamPopHandler extends PopStateMachine
                 logger.error(exn);
             }
 
-            if (true == zReport.isSpam() &&
-                SpamMessageAction.MARK == zMsgAction) {
-                //XXXX wrap message with spam markers
+            if (true == zReport.isSpam()) {
+                return zReport;
             }
             /* else PASS - do nothing */
 
-            return;
+            return null;
         }
         catch (IOException exn) {
             throw new TokenException("cannot scan message/mime part file: ", exn);

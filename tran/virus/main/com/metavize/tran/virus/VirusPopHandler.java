@@ -19,10 +19,16 @@ import com.metavize.mvvm.argon.IntfConverter;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.tran.mail.papi.pop.PopStateMachine;
+import com.metavize.tran.mail.papi.MIMEMessageT;
+import com.metavize.tran.mail.papi.WrappedMessageGenerator;
+import com.metavize.tran.mime.HeaderParseException;
+import com.metavize.tran.mime.MIMEMessage;
 import com.metavize.tran.mime.MIMEPart;
+import com.metavize.tran.mime.MIMEUtil;
 import com.metavize.tran.token.Token;
 import com.metavize.tran.token.TokenException;
 import com.metavize.tran.token.TokenResult;
+import com.metavize.tran.util.FileFactory;
 import com.metavize.tran.util.TempFileFactory;
 import org.apache.log4j.Logger;
 
@@ -34,6 +40,7 @@ public class VirusPopHandler extends PopStateMachine
     private final VirusScanner zScanner;
     private final String zVendorName;
 
+    private final WrappedMessageGenerator zWMsgGenerator;
     private final VirusMessageAction zMsgAction;
     private final boolean bScan;
 
@@ -47,13 +54,17 @@ public class VirusPopHandler extends PopStateMachine
         zVendorName = zScanner.getVendorName();
 
         VirusPOPConfig zConfig;
+        WrappedMessageGenerator zWMGenerator;
         if (IntfConverter.INSIDE == session.clientIntf()) {
             zConfig = transform.getVirusSettings().getPOPInbound();
+            zWMGenerator = new WrappedMessageGenerator(VirusSettings.IN_MOD_SUB_TEMPLATE, VirusSettings.IN_MOD_BODY_TEMPLATE);
         } else {
             zConfig = transform.getVirusSettings().getPOPOutbound();
+            zWMGenerator = new WrappedMessageGenerator(VirusSettings.OUT_MOD_SUB_TEMPLATE, VirusSettings.OUT_MOD_BODY_TEMPLATE);
         }
         bScan = zConfig.getScan();
         zMsgAction = zConfig.getMsgAction();
+        zWMsgGenerator = zWMGenerator;
         //logger.debug("scan: " + bScan + ", message action: " + zMsgAction);
     }
 
@@ -61,50 +72,88 @@ public class VirusPopHandler extends PopStateMachine
 
     protected TokenResult scanMessage() throws TokenException
     {
-        if (true == zMMessage.isMultipart()) {
-            MIMEPart azMPart[] = zMMessage.getLeafParts(true);
-            TempFileFactory zTFFactory = new TempFileFactory();
+        MIMEPart azMPart[];
 
+        if (true == bScan &&
+            MIMEUtil.EMPTY_MIME_PARTS != (azMPart = MIMEUtil.getCandidateParts(zMMessage))) {
+            TempFileFactory zTFFactory = new TempFileFactory();
+            VirusScannerResult zFirstResult = null;
+
+            VirusScannerResult zCurResult;
             File zMPFile;
+            boolean bWrap;
 
             for (MIMEPart zMPart : azMPart) {
-                if (false == zMPart.isMultipart()) {
+                if (true == MIMEUtil.shouldScan(zMPart)) {
                     try {
                         zMPFile = zMPart.getContentAsFile(zTFFactory, true);
                     } catch (IOException exn) {
                         throw new TokenException("cannot get message/mime part file: ", exn);
                     }
 
-                    scanFile(zMPFile);
+                    if (null != (zCurResult = scanFile(zMPFile)) &&
+                        VirusMessageAction.REMOVE == zMsgAction) {
+                        try {
+                            MIMEUtil.removeChild(zMPart);
+                        } catch (HeaderParseException exn) {
+                            throw new TokenException("cannot remove message/mime part containing virus: ", exn);
+                        }
+
+                        if (null == zFirstResult) {
+                            /* use 1st scan result to wrap message */
+                            zFirstResult = zCurResult;
+                        }
+                    }
+                }
+            }
+
+            if (null != zFirstResult) {
+                /* wrap infected message and rebuild message token */
+                MIMEMessage zWMMessage = zWMsgGenerator.wrap(zMMessage, zFirstResult);
+                try {
+                    zMsgFile = zWMMessage.toFile(new FileFactory() {
+                        public File createFile(String name) throws IOException {
+                          return createFile();
+                        }
+
+                        public File createFile() throws IOException {
+                          return getPipeline().mktemp();
+                        }
+                    } );
+
+                    zMMessageT = new MIMEMessageT(zMsgFile);
+                    zMMessageT.setMIMEMessage(zWMMessage);
+
+                    /* dispose original message
+                     * (will discard remaining references during reset)
+                     */
+                    zMMessage.dispose();
+                } catch (IOException exn) {
+                    throw new TokenException("cannot wrap original message/mime part: ", exn);
                 }
             }
         }
         //else {
-            //logger.debug("message contains no MIME parts");
+            //logger.debug("scan is not enabled or message contains no MIME parts");
         //}
 
         return new TokenResult(new Token[] { zMMessageT }, null);
     }
 
-    private void scanFile(File zFile) throws TokenException
+    private VirusScannerResult scanFile(File zFile) throws TokenException
     {
-        if (false == bScan) {
-            return;
-        }
-
         try {
             VirusScannerResult zScanResult = zScanner.scanFile(zFile.getPath());
+
             eventLogger.info(new VirusMailEvent(zMsgInfo, zScanResult, zMsgAction, zVendorName));
 
-            if (false == zScanResult.isClean() &&
-                VirusMessageAction.REMOVE == zMsgAction) {
-                //XXXX remove virus/wrap message
+            if (false == zScanResult.isClean()) {
+                return zScanResult;
             }
-            /* else PASS - do nothing */
+            /* else not infected - discard scan result */
 
-            return;
-        }
-        catch (IOException exn) {
+            return null;
+        } catch (IOException exn) {
             throw new TokenException("cannot scan message/mime part file: ", exn);
         }
         catch (InterruptedException exn) { // XXX deal with this in scanner

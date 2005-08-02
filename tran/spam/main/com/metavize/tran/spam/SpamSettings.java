@@ -27,6 +27,23 @@ public class SpamSettings implements Serializable
 {
     private static final long serialVersionUID = -7246008133224040004L;
 
+    public static final String OUT_MOD_SUB_TEMPLATE =
+      "[SPAM] $MIMEMessage:SUBJECT$";
+    public static final String OUT_MOD_BODY_TEMPLATE =
+      "The attached message from $MIMEMessage:FROM$ was determined\r\n " +
+      "to be SPAM based on a score of $SPAMReport:SCORE$ where anything above $SPAMReport:THRESHOLD$\r\n" +
+      "is SPAM.  The details of the report are as follows:\r\n\r\n" +
+      "$SPAMReport:FULL$";
+    public static final String OUT_MOD_BODY_SMTP_TEMPLATE =
+      "The attached message from $MIMEMessage:FROM$ ($SMTPTransaction:FROM$) was determined\r\n " +
+      "to be SPAM based on a score of $SPAMReport:SCORE$ where anything above $SPAMReport:THRESHOLD$\r\n" +
+      "is SPAM.  The details of the report are as follows:\r\n\r\n" +
+      "$SPAMReport:FULL$";
+
+    public static final String IN_MOD_SUB_TEMPLATE = OUT_MOD_SUB_TEMPLATE;
+    public static final String IN_MOD_BODY_TEMPLATE = OUT_MOD_BODY_TEMPLATE;
+    public static final String IN_MOD_BODY_SMTP_TEMPLATE = OUT_MOD_BODY_SMTP_TEMPLATE;
+
     private Long id;
     private Tid tid;
 
