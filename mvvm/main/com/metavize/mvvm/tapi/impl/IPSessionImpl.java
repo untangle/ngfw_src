@@ -29,9 +29,12 @@ import com.metavize.mvvm.tran.Transform;
 import com.metavize.mvvm.tran.TransformState;
 import com.metavize.mvvm.util.MetaEnv;
 import org.apache.log4j.Logger;
+import org.apache.log4j.MDC;
 import org.apache.log4j.helpers.AbsoluteTimeDateFormat;
 
 abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineListener {
+
+    private static final String SESSION_ID_KEY = "SessionID";
 
     protected boolean released = false;
     protected boolean needsFinalization = true;
@@ -436,10 +439,18 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
         return didSomething;
     }
 
+    //==================================================
+    // 8/2/05 - wrs.  Added "MDC" stuff to cause
+    // the session ID to be accessible from the
+    // log appender
+    //
+    //===================================================
+
     // This is the main write hook called by the Vectoring machine
     public void writeEvent(int side, OutgoingSocketQueue out)
     {
         String sideName = side == CLIENT ? "client" : "server";
+        MDC.put(SESSION_ID_KEY, id());
         try {
             assert out != null;
             if (!out.isEmpty()) {
@@ -485,13 +496,17 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
             killSession(message);
         } catch (OutOfMemoryError x) {
             Main.fatalError("SessionHandler", x);
+        } finally {
+          MDC.remove(SESSION_ID_KEY);
         }
+        
     }
 
 
     public void readEvent(int side, IncomingSocketQueue in)
     {
         String sideName = side == CLIENT ? "client" : "server";
+        MDC.put(SESSION_ID_KEY, id());
         try {
             assert in != null;
             if (!in.isEnabled()) {
@@ -553,6 +568,8 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
             killSession(message);
         } catch (OutOfMemoryError x) {
             Main.fatalError("SessionHandler", x);
+        } finally {
+          MDC.remove(SESSION_ID_KEY);
         }
     }
 

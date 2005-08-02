@@ -397,9 +397,10 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
         
     StringBuffer logPrefix()
     {
-        StringBuffer logPrefix = new StringBuffer("<U");
-        logPrefix.append(id());
-        logPrefix.append("> (");
+      //8/2/05 - wrs.  Took out id.  Now part of MDC stuff from Log4J
+        StringBuffer logPrefix = new StringBuffer();
+//        logPrefix.append(id());
+        logPrefix.append("(");
         logPrefix.append(Thread.currentThread().getName());
         logPrefix.append("): ");
         return logPrefix;

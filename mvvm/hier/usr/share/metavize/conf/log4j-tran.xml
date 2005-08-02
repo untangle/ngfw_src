@@ -26,7 +26,7 @@
     <param name="MaxBackupIndex" value="9"/>
     <param name="Threshold" value="ALL"/>
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d{ABSOLUTE} %-5p [%c{1}] %m%n"/>
+      <param name="ConversionPattern" value="%d{ABSOLUTE} %-5p [%c{1}] [SID:%X{SessionID}] %m%n"/>
     </layout>
   </appender>
 
