@@ -124,10 +124,9 @@ public class VirusPopHandler extends PopStateMachine
                     zMMessageT = new MIMEMessageT(zMsgFile);
                     zMMessageT.setMIMEMessage(zWMMessage);
 
-                    /* dispose original message
-                     * (will discard remaining references during reset)
+                    /* do not dispose original message
+                     * (wrapped message references original message)
                      */
-                    zMMessage.dispose();
                 } catch (IOException exn) {
                     throw new TokenException("cannot wrap original message/mime part: ", exn);
                 }

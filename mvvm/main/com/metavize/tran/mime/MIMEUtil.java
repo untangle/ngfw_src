@@ -31,6 +31,8 @@ public class MIMEUtil {
    * Wraps the given MIMEMessage in a new MIMEMessage with
    * the old as an RFC822 attachment, with the new
    * plaintext (not multipart-alt) body.
+   * (Since the wrapped MIMEMessage references the given MIMEMessage,
+   *  do not dispose the given MIMEMessage.)
    *
    * @param plainBodyContent the new body content (should be line-formatted
    *        such that lines are not longer than 76 chars).
