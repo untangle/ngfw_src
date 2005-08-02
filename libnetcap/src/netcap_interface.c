@@ -503,6 +503,7 @@ static int _interface_update_addrs( void )
             
             if ( addr.s_addr != inet_addr("127.0.0.1")) {
                 debug(4,"Interface : %i\n",_num_if);
+                debug(4,"Name      : %s\n", interfaces[i].ifr_name );
                 debug(4,"IP        : %s\n",inet_ntoa(addr));
                 debug(4,"Netmask   : %s\n",inet_ntoa(netmask));
                 debug(4,"Broadcast : %s\n",inet_ntoa(broadcast));
@@ -551,14 +552,85 @@ static int _update_dev_info( void )
     
     do {
         _interface.count = 0;
-        for ( i = 1 ; i < NETCAP_MAX_INTERFACES ; i++ ) {
-            if ( if_indextoname( i, if_name ) == NULL ) continue;
+                
+        struct ifconf conf;
+        struct ifreq interfaces[NETCAP_MAX_INTERFACES];
+
+        conf.ifc_len = sizeof( interfaces );
+        conf.ifc_req = interfaces;
+        if ( ioctl( sockfd, SIOCGIFCONF, &conf ) < 0 ) {
+            ret = perrlog("ioctl");
+            break;
+        }
+        
+        i =  conf.ifc_len / sizeof(struct ifreq);
+        _num_if = 0;
+        
+        for ( ; ( --i >= 0 ) && ( ret == 0 ) ; ) {
+            struct in_addr addr;
+            struct in_addr broadcast;
+            struct in_addr netmask;
+            struct ifreq ifr;
             
-            if ( strncmp( if_name, "lo", 2 ) == 0 ) continue;
-            if ( strncmp( if_name, "sit", 3 ) == 0 ) continue;
-            if ( strncmp( if_name, "dummy", 5 ) == 0 ) continue;
+            memcpy(&addr,&(*(struct sockaddr_in*)&interfaces[i].ifr_addr).sin_addr,sizeof(struct in_addr));
+            
+            strncpy(ifr.ifr_name, interfaces[i].ifr_name, sizeof(interfaces[i].ifr_name));
+            
+            if (ioctl(sockfd, SIOCGIFBRDADDR, &ifr) < 0) {
+                ret = perrlog("ioctl");
+                break;
+            } else {
+                broadcast = (*(struct sockaddr_in*)&ifr.ifr_broadaddr).sin_addr; 
+            }
+            
+            if (ioctl(sockfd, SIOCGIFNETMASK, &ifr) < 0) {
+                ret = perrlog("ioctl");
+                break;
+            } else {
+                netmask = (*(struct sockaddr_in*)&ifr.ifr_netmask).sin_addr;
+            }
+            
+            if ( addr.s_addr != inet_addr("127.0.0.1")) {
+                debug( 3, "INTERFACE: Retrieving information for device: %s\n", interfaces[i].ifr_name );
+                
+                dev_info = &_interface.dev_info_array[_interface.count];
+                dev_info->index = _interface.count++;
+                /* Copy in the interface name */
+                strncpy( dev_info->name, interfaces[i].ifr_name, NETCAP_MAX_IF_NAME_LEN );
+                memcpy( &dev_info->address, &addr, sizeof( dev_info->address ));
+                memcpy( &dev_info->netmask, &netmask, sizeof( dev_info->netmask ));
+                memcpy( &dev_info->broadcast, &broadcast, sizeof( dev_info->broadcast ));
+
+                if ( ht_add( &_interface.table, dev_info->name, dev_info ) < 0 ) {
+                    ret = errlog( ERR_CRITICAL, "ht_add\n" );
+                    break;
+                }
+
+                dev_info->is_valid = 1;
+            }
+        }
+
+        if ( ret < 0 ) break;             
+        
+        for ( i = 1 ; i < NETCAP_MAX_INTERFACES ; i++ ) {
+            if ( if_indextoname( i, if_name ) == NULL ) {
+                debug( 4, "INTERFACE: %d doesn't exist\n", i );
+                continue;
+            }
+            
+            if (( strncmp( if_name, "lo", 2 ) == 0 ) ||
+                ( strncmp( if_name, "sit", 3 ) == 0 )  ||
+                ( strncmp( if_name, "dummy", 5 ) == 0 )) {
+                debug( 4, "INTERFACE: skipping %s\n", if_name );
+                continue;
+            }
 
             debug( 3, "INTERFACE: Retrieving information for device: %s\n", if_name );
+
+            if ( ht_lookup( &_interface.table, if_name ) != NULL ) {
+                debug( 3, "INTERFACE: Is %s already in the table, skipping\n", if_name );
+                continue;
+            }
 
             dev_info = &_interface.dev_info_array[_interface.count];
             dev_info->index = _interface.count++;

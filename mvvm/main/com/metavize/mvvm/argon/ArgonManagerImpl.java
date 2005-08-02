@@ -148,8 +148,8 @@ public class ArgonManagerImpl implements ArgonManager
             if ( netConfig.isDhcpEnabled()) {
                 args += outside + " " + PUMP_FLAG;
             } else {
-                String outsideAddress = netConfig.outsideNetwork().getAddr().getHostAddress();
-                String outsideNetmask = netConfig.outsideNetmask().getAddr().getHostAddress();
+                String outsideAddress = netConfig.host().getAddr().getHostAddress();
+                String outsideNetmask = netConfig.netmask().getAddr().getHostAddress();
                 String gateway        = netConfig.gateway().getAddr().getHostAddress();
                 
                 args += outside  + " " + outsideAddress + " " + outsideNetmask + " " + gateway;
@@ -164,7 +164,7 @@ public class ArgonManagerImpl implements ArgonManager
 
             /* Dust settling */
             try {
-                Thread.sleep( 1000 );
+                Thread.sleep( 2000 );
             } catch ( Exception e ) {
             }
 
@@ -209,8 +209,8 @@ public class ArgonManagerImpl implements ArgonManager
             if ( netConfig.isDhcpEnabled()) {
                 args += PUMP_FLAG;
             } else {
-                String outsideAddress = netConfig.outsideNetwork().getAddr().getHostAddress();
-                String outsideNetmask = netConfig.outsideNetmask().getAddr().getHostAddress();
+                String outsideAddress = netConfig.host().getAddr().getHostAddress();
+                String outsideNetmask = netConfig.netmask().getAddr().getHostAddress();
                 String gateway        = netConfig.gateway().getAddr().getHostAddress();
                 
                 args += " " + outsideAddress + " " + outsideNetmask + " " + gateway;
@@ -225,7 +225,7 @@ public class ArgonManagerImpl implements ArgonManager
 
             /* Dust settling */
             try {
-                Thread.sleep( 1000 );
+                Thread.sleep( 2000 );
             } catch ( Exception e ) {
             }
 
@@ -265,12 +265,14 @@ public class ArgonManagerImpl implements ArgonManager
             if ( netConfig.isDhcpEnabled()) {
                 args += PUMP_FLAG;
             } else {
-                String outsideAddress = netConfig.outsideNetwork().getAddr().getHostAddress();
-                String outsideNetmask = netConfig.outsideNetmask().getAddr().getHostAddress();
+                String outsideAddress = netConfig.host().getAddr().getHostAddress();
+                String outsideNetmask = netConfig.netmask().getAddr().getHostAddress();
                 String gateway        = netConfig.gateway().getAddr().getHostAddress();
                 
                 args += " " + outsideAddress + " " + outsideNetmask + " " + gateway;
             }
+
+            System.out.println( "sh " + BRIDGE_ENABLE_SCRIPT + args );
             
             /* Call the rule generator */
             Process p = Runtime.getRuntime().exec( "sh " + BRIDGE_ENABLE_SCRIPT + args );
@@ -281,7 +283,7 @@ public class ArgonManagerImpl implements ArgonManager
 
             /* Dust settling */
             try {
-                Thread.sleep( 1000 );
+                Thread.sleep( 2000 );
             } catch ( Exception e ) {
             }
 

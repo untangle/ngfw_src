@@ -65,7 +65,6 @@ public class NetworkingManagerImpl implements NetworkingManager
     private static final Logger logger = Logger.getLogger( NetworkingManagerImpl.class );
     
     private static NetworkingManager INSTANCE   = new NetworkingManagerImpl();
-    boolean isModified = false;
     
     /* A cache of the current configuration */
     NetworkingConfiguration configuration = new NetworkingConfiguration();
@@ -89,15 +88,9 @@ public class NetworkingManagerImpl implements NetworkingManager
      */
     public synchronized void set( NetworkingConfiguration netConfig )
     {
-        /* Once the configuration is modified, a reset is called and it cannot be
-         * modified again */
-        if ( isModified ) return;
-        isModified = true;
-
-        this.configuration = configuration;
+        this.configuration = netConfig;
+        
         save();
-
-        System.out.println( "Calling load networking" );
 
         try {
             MvvmContextFactory.context().argonManager().loadNetworkingConfiguration( netConfig );
@@ -293,7 +286,6 @@ public class NetworkingManagerImpl implements NetworkingManager
 
 
     private void saveNameservers() {
-        
         StringBuilder sb = new StringBuilder();
         
         if ( configuration.isDhcpEnabled())
