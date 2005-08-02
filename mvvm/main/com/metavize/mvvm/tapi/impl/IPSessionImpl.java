@@ -183,8 +183,7 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
             out = ((com.metavize.mvvm.argon.Session)pSession).serverOutgoingSocketQueue();
         if (out == null || out.isClosed()) {
             String sideName = side == CLIENT ? "client" : "server";
-            error("Ignoring crumb for dead " + sideName + " sink: Crumb type " + buf.type());
-            logger.error( "Stack trace", new Exception( "do it" ));
+            error("Ignoring crumb for dead " + sideName + " sink");
             return;
         }
 
