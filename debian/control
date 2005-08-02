@@ -84,7 +84,7 @@ Description: The Metavize eMail SpamGuard
 
 Package: hauri-transform
 Architecture: any
-Depends: mvvm, hauri-mv, http-casing, ftp-casing
+Depends: mvvm, hauri-mv, http-casing, ftp-casing, mail-casing
 XB-Price: 400
 XB-Display-Name: Hauri AntiVirus Scanner
 XB-Website: http://www.metavize.com/hauri_antivirus.html
@@ -96,7 +96,7 @@ Description: The Hauri AntiVirus Scanner
 
 Package: clam-transform
 Architecture: any
-Depends: mvvm, clamav-mv, http-casing, ftp-casing
+Depends: mvvm, clamav-mv, http-casing, ftp-casing, mail-casing
 XB-Price: 0
 XB-Display-Name: Clam AntiVirus Scanner
 XB-Website: http://www.metavize.com/clam_antivirus.html
@@ -145,7 +145,7 @@ Description: The Metavize Firewall Software Appliance
 
 Package: spamassassin-transform
 Architecture: any
-Depends: mvvm, spamc-mv
+Depends: mvvm, spamc-mv, mail-casing
 XB-Price: 0
 XB-Display-Name: SpamGuard
 XB-Website: http://www.metavize.com/spam.html

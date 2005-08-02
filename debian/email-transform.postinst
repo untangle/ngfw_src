@@ -5,7 +5,7 @@ mcli -t 30 register email-transform 2>/dev/null || true
 # Remove all email-transforms
 REMOVED=0
 mcli instances | grep email-transform | awk '{print $1}' | while read i ; do 
-    echo "Removing $i"
+    echo "Removing TID:$i (old email-transform)"
     mcli stop $i &> /dev/null
     mcli destroy $i &> /dev/null
     REMOVED=1
@@ -13,5 +13,6 @@ done
 
 # If we removed an email-transform replace with a spamassassin-transform
 if [ $REMOVED == 1 ] ; then
+    echo "Inserting new spamassassin-transform"
     mcli loadt spamassassin
 fi
