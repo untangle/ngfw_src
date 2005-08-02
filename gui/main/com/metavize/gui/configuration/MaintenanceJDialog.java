@@ -52,14 +52,5 @@ public class MaintenanceJDialog extends MConfigJDialog {
     protected void sendSettings(Object settings) throws Exception {}
     protected void refreshSettings(){}
 
-    protected void saveAll(){
-	// ASK THE USER IF HE REALLY WANTS TO SAVE SETTINGS ////////
-        SaveSettingsProceedJDialog saveSettingsProceedJDialog = new SaveSettingsProceedJDialog();
-        boolean isProceeding = saveSettingsProceedJDialog.isProceeding();
-        if( isProceeding ){ 
-            super.saveAll();
-            new RestartDialog();
-        }
-    }
 
 }
