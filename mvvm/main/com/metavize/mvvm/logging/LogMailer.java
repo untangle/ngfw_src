@@ -22,6 +22,7 @@ import com.metavize.mvvm.MailSender;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.MvvmLocalContext;
 import com.metavize.mvvm.NetworkingConfiguration;
+import com.metavize.mvvm.engine.Version;
 import com.metavize.mvvm.security.Tid;
 import com.metavize.mvvm.tapi.TransformContextFactory;
 import com.metavize.mvvm.tran.TransformContext;
@@ -215,8 +216,11 @@ public class LogMailer implements Runnable
         sb.append(netConf.dns2().toString());
 
         String bodyText = sb.toString();
+        String version = Version.getVersion();
 
         sb = new StringBuilder(subjectBase);
+        sb.append(" ");
+        sb.append(version);
         sb.append(" (");
         sb.append(host);
         sb.append(")");
