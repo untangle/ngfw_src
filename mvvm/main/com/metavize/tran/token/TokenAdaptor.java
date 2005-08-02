@@ -305,8 +305,6 @@ public class TokenAdaptor extends AbstractEventHandler
             for (int i = 0; null != sr && i < sr.length; i++) {
                 logger.debug("  to server: " + sr[i]);
             }
-            logger.warn("CR: " + cr);
-            logger.warn("SR: " + sr);
 
             return new TCPChunkResult(cr, sr, b);
         }
