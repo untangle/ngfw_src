@@ -116,6 +116,8 @@ public class SmtpSessionHandler
       return PASS_MESSAGE;
     }
 
+    SMTPSpamMessageAction action = m_config.getMsgAction();
+
     SpamReport report = scanFile(f);
 
     //Handle error case
@@ -123,6 +125,16 @@ public class SmtpSessionHandler
       m_logger.error("Error scanning message.  Assume pass");
       return PASS_MESSAGE;
     }
+
+
+    //Create an event for the reports
+    SpamSmtpEvent spamEvent = new SpamSmtpEvent(
+      msgInfo,
+      report.getScore(),
+      report.isSpam(),//TODO bscott Isn't this redundant?  Don't we only log on negative cases?
+      action,
+      m_spamImpl.getScanner().getVendorName());
+    m_eventLogger.info(spamEvent);
 
     //Mark headers regardless of other actions
     try {
@@ -137,16 +149,8 @@ public class SmtpSessionHandler
     if(report.isSpam()) {//BEGIN SPAM
       m_logger.debug("Spam found");
 
-      SMTPSpamMessageAction action = m_config.getMsgAction();
 
-      //Create an event for the reports
-      SpamSmtpEvent spamEvent = new SpamSmtpEvent(
-        msgInfo,
-        report.getScore(),
-        report.isSpam(),//TODO bscott Isn't this redundant?  Don't we only log on negative cases?
-        action,
-        m_spamImpl.getScanner().getVendorName());
-      m_eventLogger.info(spamEvent);
+
 
       //Perform notification (if we should)
       if(m_notifier.sendNotification(

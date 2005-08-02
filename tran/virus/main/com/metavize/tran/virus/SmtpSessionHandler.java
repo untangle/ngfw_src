@@ -124,6 +124,15 @@ public class SmtpSessionHandler
         continue;
       }
 
+      //Make log report
+      VirusSmtpEvent event = new VirusSmtpEvent(
+        msgInfo,
+        scanResult,
+        action,
+        m_config.getNotifyAction(),
+        m_virusImpl.getScanner().getVendorName());
+      m_eventLogger.info(event);
+
       if(scanResult.isClean()) {
         m_logger.debug("Part clean");
       }
@@ -133,14 +142,7 @@ public class SmtpSessionHandler
         }
         foundVirus = true;
 
-        //Make log report
-        VirusSmtpEvent event = new VirusSmtpEvent(
-          msgInfo,
-          scanResult,
-          action,
-          m_config.getNotifyAction(),
-          m_virusImpl.getScanner().getVendorName());
-        m_eventLogger.info(event);
+
 
         m_logger.debug("Part contained virus");
         if(action == SMTPVirusMessageAction.PASS) {

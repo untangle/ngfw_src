@@ -118,14 +118,15 @@ public class Command
       cmdStr = m_cmdStr;
     }
 
+    String argStr = getArgString();
     
     ByteBuffer buf = ByteBuffer.allocate(
       cmdStr.length()/*always 4?*/ +
-      (m_argStr == null?0:m_argStr.length()) +
+      (argStr == null?(0):(argStr.length() + 1)) +
       3);
 
     buf.put(cmdStr.getBytes());
-    String argStr = getArgString();
+    
     if(argStr != null) {
       buf.put((byte)SP);
       buf.put(argStr.getBytes());

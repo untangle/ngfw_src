@@ -629,14 +629,21 @@ public final class Session
     @Override
     public void handleCommand(TokenResultBuilder resultBuilder,
       Command cmd) {
+
+      m_logger.debug("Received Command \"" + cmd.getCmdString() + "\"" +
+        " of type \"" + cmd.getClass().getName() + "\"");
+      
       SmtpCommandActionsImpl actions = new SmtpCommandActionsImpl(resultBuilder);
       
       //Check for allowed commands
       String cmdStrLower = cmd.getCmdString().toLowerCase();
-      if(!m_allowedCommandsSet.contains(cmdStrLower)) {
+      if(
+        (!(cmd instanceof UnparsableCommand)) &&
+        !m_allowedCommandsSet.contains(cmdStrLower)) {
         m_logger.debug("Enqueuing negative response to " +
           "non-allowed command \"" + cmd.getCmdString() + "\"");
         actions.appendSyntheticResponse(new FixedSyntheticResponse(500, "Syntax error, command unrecognized"));
+        actions.followup();
         return;
       }
 
@@ -647,9 +654,10 @@ public final class Session
         actions.sendCommandToServer(cmd, new SessionOpenResponse());
         //Let the handler at least see the EHLO command, for logging
         m_sessionHandler.observeEHLOCommand(cmd);
+        actions.followup();
         return;
       }
-      
+
       if(m_currentTxHandler != null) {
         if(cmd.getType() == Command.CommandType.RSET) {
           m_currentTxHandler.handleRSETCommand(cmd, actions);
