@@ -326,6 +326,7 @@ static int  _handle_message (epoll_info_t* info, int revents)
                         if ( _epoll_info_add( fd, EPOLL_INPUT_SET, POLL_UDP_INCOMING, sub, NULL ) < 0 ) {
                             _server_unlock();
                             perrlog("_epoll_info_add");
+                            break;
                         }
                     }
                 }

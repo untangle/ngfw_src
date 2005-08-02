@@ -67,8 +67,8 @@ public class AirgapSummarizer extends BaseSummarizer {
         addEntry("Resource requests", Util.trimNumber("",sessionsRequested));
         addEntry("&nbsp;&nbsp;&nbsp;Accepted", Util.trimNumber("",sessionsAccepted) + " (" + Util.percentNumber(sessionsAccepted,sessionsRequested)  + ")");
         addEntry("&nbsp;&nbsp;&nbsp;Limited", Util.trimNumber("",sessionsLimited) + " (" + Util.percentNumber(sessionsLimited,sessionsRequested)  + ")");
-        addEntry("&nbsp;&nbsp;&nbsp;Rejected", Util.trimNumber("",sessionsRejected) + " (" + Util.percentNumber(sessionsRejected,sessionsRequested)  + ")");
         addEntry("&nbsp;&nbsp;&nbsp;Dropped", Util.trimNumber("",sessionsDropped) + " (" + Util.percentNumber(sessionsDropped,sessionsRequested)  + ")");
+        addEntry("&nbsp;&nbsp;&nbsp;Rejected", Util.trimNumber("",sessionsRejected) + " (" + Util.percentNumber(sessionsRejected,sessionsRequested)  + ")");
 
         addEntry("&nbsp;", "&nbsp;");
 

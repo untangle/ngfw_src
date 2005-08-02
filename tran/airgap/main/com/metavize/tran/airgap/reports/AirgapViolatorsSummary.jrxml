@@ -39,8 +39,8 @@ WHERE evt.time_stamp >= $P{startTime} and evt.time_stamp <= $P{endTime}
 GROUP BY HOST
 ORDER BY TOTAL_ACTIONS DESC, HOST ASC]]></queryString>
 	<field name="HOST" class="java.lang.String"/>
-	<field name="DROPPED" class="java.lang.Long"/>
 	<field name="REJECTED" class="java.lang.Long"/>
+	<field name="DROPPED" class="java.lang.Long"/>
 	<field name="LIMITED" class="java.lang.Long"/>
 	<field name="TOTAL_ACTIONS" class="java.lang.Long"/>
 	<variable name="RANK" class="java.lang.Integer" resetType="Report" calculation="Count">
