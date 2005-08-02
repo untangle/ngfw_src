@@ -17,12 +17,10 @@ INSERT INTO dead_string_rules
 
 DELETE FROM tr_httpblk_passed_urls
     WHERE rule_id IN (SELECT * FROM dead_string_rules);
-
 DELETE FROM tr_httpblk_extensions
     WHERE rule_id IN (SELECT * FROM dead_string_rules);
 DELETE FROM tr_httpblk_blocked_urls
     WHERE rule_id IN (SELECT * FROM dead_string_rules);
-
 DELETE FROM string_rule WHERE rule_id IN (SELECT * FROM dead_string_rules);
 
 CREATE TEMPORARY TABLE dead_mime_rules

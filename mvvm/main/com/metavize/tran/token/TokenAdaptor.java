@@ -299,12 +299,15 @@ public class TokenAdaptor extends AbstractEventHandler
             ByteBuffer[] sr = processResults(tr.c2sTokens(), pipeline);
 
             logger.debug("returning results, readBuffer: " + b);
-            for (int i = 0; i < cr.length; i++) {
+            for (int i = 0; null != cr && i < cr.length; i++) {
                 logger.debug("  to client: " + cr[i]);
             }
-            for (int i = 0; i < sr.length; i++) {
+            for (int i = 0; null != sr && i < sr.length; i++) {
                 logger.debug("  to server: " + sr[i]);
             }
+            logger.warn("CR: " + cr);
+            logger.warn("SR: " + sr);
+
             return new TCPChunkResult(cr, sr, b);
         }
     }
@@ -380,7 +383,7 @@ public class TokenAdaptor extends AbstractEventHandler
         }
         bb.flip();
 
-        return new ByteBuffer[] { bb };
+        return 0 == bb.remaining() ? null : new ByteBuffer[] { bb };
     }
 }
 

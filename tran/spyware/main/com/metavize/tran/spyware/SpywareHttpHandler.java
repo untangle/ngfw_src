@@ -99,8 +99,10 @@ public class SpywareHttpHandler extends HttpStateMachine
                 (getSession().id(), requestRequest);
             eventLogger.info(evt);
             // XXX we could send a page back instead, this isn't really right
+            logger.debug("detected spyware, shutting down");
             session.shutdownServer();
             session.shutdownClient();
+            session.release();
             return TokenResult.NONE;
         }
 
