@@ -64,19 +64,19 @@ final public class SaveSettingsProceedJDialog extends javax.swing.JDialog implem
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 13, 240);
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 13, 135);
         getContentPane().add(cancelJButton, gridBagConstraints);
 
         proceedJButton.setFont(new java.awt.Font("Default", 0, 12));
-        proceedJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/images/Button_Save_Settings_And_Restart_EdgeGuard_220x17.png")));
+        proceedJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/images/Button_Save_Settings_106x17.png")));
         proceedJButton.setDoubleBuffered(true);
         proceedJButton.setFocusPainted(false);
         proceedJButton.setFocusable(false);
         proceedJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         proceedJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
-        proceedJButton.setMaximumSize(new java.awt.Dimension(240, 25));
-        proceedJButton.setMinimumSize(new java.awt.Dimension(240, 25));
-        proceedJButton.setPreferredSize(new java.awt.Dimension(240, 25));
+        proceedJButton.setMaximumSize(new java.awt.Dimension(130, 25));
+        proceedJButton.setMinimumSize(new java.awt.Dimension(130, 25));
+        proceedJButton.setPreferredSize(new java.awt.Dimension(130, 25));
         proceedJButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 proceedJButtonActionPerformed(evt);
@@ -87,12 +87,12 @@ final public class SaveSettingsProceedJDialog extends javax.swing.JDialog implem
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
-        gridBagConstraints.insets = new java.awt.Insets(0, 150, 13, 0);
+        gridBagConstraints.insets = new java.awt.Insets(0, 135, 13, 0);
         getContentPane().add(proceedJButton, gridBagConstraints);
 
         messageJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
         messageJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        messageJLabel.setText("<html><center>\nSaving these settings requires that the Metavize EdgeGuard be<br>\nautomatically restarted.  You may log in again after a restart.<br>\n<br>\nWould you like to save your settings?\n</center></html>");
+        messageJLabel.setText("<html><center>\nThese settings are critical to the proper operation of EdgeGuard<br>\nand must be set correctly.<br>\n<br>\nWould you like to save your settings?\n</center></html>");
         messageJLabel.setDoubleBuffered(true);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
