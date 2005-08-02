@@ -75,11 +75,10 @@ public class MLoginJFrame extends javax.swing.JFrame {
     public void resetLogin(final String message){
 	SwingUtilities.invokeLater( new Runnable() {
 		public void run(){
-                    //inputJPanel.setVisible(true);
-                    //validate();
 		    acceptJButton.setEnabled(true);
 		    loginJTextField.setEnabled(true);
 		    passJPasswordField.setEnabled(true);
+		    passJPasswordField.setText("");
 		    serverJTextField.setEnabled(true);
                     protocolJTextField.setEnabled(true);
 		    statusJProgressBar.setString(message);
@@ -97,8 +96,6 @@ public class MLoginJFrame extends javax.swing.JFrame {
 			    mMainJFrame.dispose();
 			    mMainJFrame = null;
 			}
-                        //inputJPanel.setVisible(true);
-                        //validate();
             if(!MLoginJFrame.this.isVisible())
                 MLoginJFrame.this.setVisible(true);
 		    }
