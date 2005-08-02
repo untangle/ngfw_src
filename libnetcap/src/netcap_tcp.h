@@ -12,7 +12,6 @@
 #define __NETCAP_TCP_H_
 
 #include "libnetcap.h"
-#include "netcap_subscriptions.h"
 
 typedef netcap_tcp_conn_state_t conn_state_t;
 
@@ -32,8 +31,16 @@ typedef struct tcp_msg {
 int  netcap_tcp_init();
 int  netcap_tcp_cleanup();
 
+int  netcap_tcp_redirect_port_range( int* base_port, int* count );
+
+/* socket_array is updated to point to an array of sockets that are currently opened for 
+ * redirection.
+ * Returns the number of sockets that were opened for redirect.
+ */
+int  netcap_tcp_redirect_socks( int** socket_array );
+
 int  netcap_tcp_syn_hook ( netcap_pkt_t* pkt );
-int  netcap_tcp_accept_hook ( int cli_sock, struct sockaddr_in client, netcap_sub_t* sub );
+int  netcap_tcp_accept_hook ( int cli_sock, struct sockaddr_in client );
 
 int  netcap_tcp_callback ( netcap_session_t* tcp_sess, netcap_callback_action_t action, netcap_callback_flag_t flags );
 

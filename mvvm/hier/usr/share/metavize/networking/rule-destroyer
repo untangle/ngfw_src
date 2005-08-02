@@ -1,0 +1,34 @@
+#!/bin/sh
+
+exec >> @MVVM_LOG@/iptables.log 2>&1
+
+FUNCTIONS_FILE=@MVVM_HOME@/networking/functions
+
+if [ -r ${FUNCTIONS_FILE} ]; then
+    . ${FUNCTIONS_FILE}
+else
+    echo "Unable to load the functions file ${FUNCTIONS_FILE}"
+    exit -1
+fi
+
+echo "Flushing all of the rules and deleting all of the chains"
+
+IPTABLES="/sbin/iptables"
+#IPTABLES=iptablesDbg
+
+
+function flush() {
+    for table in ${TABLE_LIST}; do 
+        ${IPTABLES} -t ${table} -F 
+    done
+
+    ## Remove all of the sub chains
+    for chain in ${CHAINS_ORDER} ; do
+        ${IPTABLES} -t mangle -X ${chain} 2> /dev/null
+    done
+}
+
+
+
+## Flush all of the rules
+flush

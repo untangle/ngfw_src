@@ -31,6 +31,7 @@ import com.metavize.mvvm.tapi.TransformContextFactory;
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.TransformException;
 import com.metavize.mvvm.tran.TransformStartException;
+import com.metavize.mvvm.tran.TransformStopException;
 import com.metavize.mvvm.tran.TransformState;
 import com.metavize.mvvm.tran.firewall.IPMatcher;
 import com.metavize.mvvm.tran.firewall.IntfMatcher;
@@ -131,11 +132,11 @@ public class NatImpl extends AbstractTransform implements Nat
             if (getRunState() == TransformState.RUNNING) {
                 /* NAT configuration needs information from the
                  * networking settings. */
-                NetworkingConfiguration netConfig = MvvmContextFactory
-                    .context().networkingManager().get();
+                NetworkingConfiguration netConfig = MvvmContextFactory.context().networkingManager().get();
 
-                this.handler.configure(settings, netConfig);
+                /* Have to configure DHCP before the handler */
                 DhcpManager.getInstance().configure(settings, netConfig);
+                this.handler.configure(settings, netConfig);
             }
         } catch (TransformException exn) {
             logger.error( "Could not save Nat settings", exn );
@@ -173,18 +174,18 @@ public class NatImpl extends AbstractTransform implements Nat
 
         NatSettings settings = getDefaultSettings();
 
-        try{
+        /* Disable everything */
+
+        /* deconfigure the event handle and the dhcp manager */
+        DhcpManager.getInstance().deconfigure();
+
+        try {
             setNatSettings(settings);
-        }
-        catch(Exception e){
+            handler.deconfigure();
+        } catch( Exception e ) {
             logger.error( "Unable to set Nat Settings", e );
-            return;
         }
 
-        /* Disable everything */
-        /* deconfigure the event handle and the dhcp manager */
-        handler.deconfigure();
-        DhcpManager.getInstance().deconfigure();
         /* Stop the statistics manager */
         NatStatisticManager.getInstance().stop();
     }
@@ -225,8 +226,14 @@ public class NatImpl extends AbstractTransform implements Nat
         NetworkingConfiguration netConfig = MvvmContextFactory.context()
             .networkingManager().get();
 
-        handler.configure( settings, netConfig );
+
         DhcpManager.getInstance().configure( settings, netConfig );
+        try {
+            handler.configure( settings, netConfig );
+        } catch ( TransformException e ) {
+            throw new TransformStartException(e);
+        }
+
         NatStatisticManager.getInstance().start();
     }
 
@@ -236,14 +243,19 @@ public class NatImpl extends AbstractTransform implements Nat
         shutdownMatchingSessions();
     }
 
-    protected void postStop()
+    protected void postStop() throws TransformStopException
     {
         /* Kill all active sessions */
         shutdownMatchingSessions();
 
-        /* deconfigure the event handle */
-        handler.deconfigure();
         DhcpManager.getInstance().deconfigure();
+        
+        /* deconfigure the event handle */
+        try {
+            handler.deconfigure();
+        } catch ( TransformException e ) {
+            throw new TransformStopException( e );
+        }
         NatStatisticManager.getInstance().stop();
     }
 

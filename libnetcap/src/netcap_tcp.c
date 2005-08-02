@@ -28,6 +28,7 @@
 #include <mvutil/unet.h>
 #include <mvutil/mailbox.h>
 #include <linux/netfilter_ipv4.h>
+
 #include "libnetcap.h"
 #include "netcap_hook.h"
 #include "netcap_session.h"
@@ -38,7 +39,17 @@
 #include "netcap_sesstable.h"
 #include "netcap_shield.h"
 
-static int syn_mode = 1;
+/* The number of sockets to listen on for TCP */
+#define RDR_TCP_LOCALS_SOCKS 128
+
+static struct {
+    int syn_mode;
+    int base_port;
+    int redirect_socks[RDR_TCP_LOCALS_SOCKS];
+} _tcp = {
+    .syn_mode   1,
+    .base_port -1
+};
 
 /* Callback functions */
 /* XX May make more sense to call extern functions that are not global netcap functions
@@ -56,17 +67,23 @@ extern int  _netcap_tcp_callback_cli_reject  ( netcap_session_t* netcap_sess,
                                                netcap_callback_action_t action, 
                                                netcap_callback_flag_t flags );
 
+/* Initialization and cleanup routines */
+static int  _redirect_ports_open( void );
+static void _redirect_ports_close( void );
+
 /* Mailbox functions */
 static int _session_put_syn         (netcap_session_t* netcap_sess, netcap_pkt_t* syn );
 static int _session_put_complete_fd (netcap_session_t* netcap_sess, int client_fd );
 
 /* Hook functions */
-static int  _netcap_tcp_accept_hook ( int cli_sock, struct sockaddr_in client, netcap_sub_t* sub );
+static int  _netcap_tcp_accept_hook ( int cli_sock, struct sockaddr_in client );
 static int  _netcap_tcp_syn_hook    ( netcap_pkt_t* syn );
 
 /* Util functions */
 extern int _netcap_tcp_setsockopt_cli( int sock );
 extern int _netcap_tcp_cli_send_reset( netcap_pkt_t* pkt );
+
+
 
 static netcap_session_t* _netcap_get_or_create_sess( int* created_flag,
                                                      in_addr_t cli_addr, u_short cli_port, int cli_sock,
@@ -77,17 +94,44 @@ static netcap_session_t* _netcap_get_or_create_sess( int* created_flag,
 
 int  netcap_tcp_init ( void )
 {
+    if ( _redirect_ports_open() < 0 ) return errlog( ERR_CRITICAL, "_redirect_ports_open\n" );
+
     return 0;
 }
 
 int  netcap_tcp_cleanup ( void )
 {
+    _redirect_ports_close();
     return 0;
 }
 
+int  netcap_tcp_redirect_ports( int* port_low, int* port_high )
+{
+    if (( port_low == NULL ) || ( port_high == NULL )) return errlogargs();
+
+    if ( _tcp.base_port < 0 ) return errlog( ERR_CRITICAL, "TCP Redirect ports are uninitialized\n" );
+
+    *port_low  = _tcp.base_port;
+    *port_high = _tcp.base_port + RDR_TCP_LOCALS_SOCKS - 1;
+    
+    return 0;
+}
+
+int  netcap_tcp_redirect_socks( int** sock_array )
+{
+    if ( sock_array == NULL ) return errlogargs();
+
+    if ( _tcp.base_port < 0 ) return errlog( ERR_CRITICAL, "TCP Redirect ports are uninitialized\n" );
+
+    *sock_array = _tcp.redirect_socks;
+
+    return RDR_TCP_LOCALS_SOCKS;
+}
+
+
 int  netcap_tcp_syn_mode ( int toggle )
 {
-    syn_mode = toggle;
+    _tcp.syn_mode = toggle;
     return 0;
 }
 
@@ -124,7 +168,7 @@ int  netcap_tcp_syn_hook ( netcap_pkt_t* syn )
     if ( syn == NULL )
         return errlogargs();
 
-    if (!syn_mode)
+    if ( !_tcp.syn_mode )
         return netcap_pkt_action_raze( syn, NF_ACCEPT );
 
     if (!( syn->th_flags & TH_SYN )) {
@@ -191,12 +235,12 @@ int  netcap_tcp_syn_hook ( netcap_pkt_t* syn )
     return 0;
 }
 
-int  netcap_tcp_accept_hook ( int cli_sock, struct sockaddr_in client, netcap_sub_t* sub )
+int  netcap_tcp_accept_hook ( int cli_sock, struct sockaddr_in client )
 {
-    if (!sub || cli_sock<=0)
+    if ( cli_sock <= 0 )
         return errlogargs();
 
-    return _netcap_tcp_accept_hook(cli_sock,client,sub);
+    return _netcap_tcp_accept_hook( cli_sock, client );
 }
 
 void netcap_tcp_null_hook ( netcap_session_t* netcap_sess, void *arg )
@@ -262,6 +306,45 @@ int        netcap_tcp_msg_raze    ( tcp_msg_t* msg )
     return 0;
 }
 
+static int  _redirect_ports_open( void )
+{
+    int c;
+    u_short base_port;
+    
+    _tcp.base_port = -1;
+
+    /* Clear out all of the ports */
+    for ( c = 0 ; c < RDR_TCP_LOCALS_SOCKS ; c++ ) {
+        /* XXX May want to try and close the one before */
+        _tcp.redirect_socks[c] = -1;
+    }
+
+    if ( unet_startlisten_on_portrange( RDR_TCP_LOCALS_SOCKS, &base_port, _tcp.redirect_socks ) < 0 ) {
+        return errlog( ERR_CRITICAL, "unet_startlisten_on_portrange\n" );
+    }
+    
+    _tcp.base_port = base_port;
+    
+    return 0;
+}
+
+static void _redirect_ports_close( void )
+{
+    int c;
+    
+    /* Clear out all of the ports */
+    for ( c = 0 ; c < RDR_TCP_LOCALS_SOCKS ; c++ ) {
+        if (( _tcp.redirect_socks[c] > 0 ) && ( close( _tcp.redirect_socks[c] ) < 0 )) {
+            perrlog( "close" );
+        }
+
+        _tcp.redirect_socks[c] = -1;
+    }
+
+    _tcp.base_port = -1;
+}
+
+
 int  netcap_tcp_syn_null_hook ( netcap_pkt_t* syn )
 {
     errlog( ERR_CRITICAL, "netcap_tcp_syn_null_hook: No TCP SYN hook registered\n" );
@@ -270,15 +353,14 @@ int  netcap_tcp_syn_null_hook ( netcap_pkt_t* syn )
     return 0;    
 }
 
-static int  _netcap_tcp_accept_hook ( int cli_sock, struct sockaddr_in client, netcap_sub_t* sub )
+static int  _netcap_tcp_accept_hook ( int cli_sock, struct sockaddr_in client )
 {
     netcap_intf_t cli_intf_idx;
     in_addr_t cli_addr,srv_addr;
     u_short   cli_port,srv_port;
     struct sockaddr_in server;
     int server_len = sizeof(server);
-    void* arg;
-    int   flags;
+    int   flags = 0;  /* XXX Ignored now that subscriptions are gone */
     int   new_sess_flag = 0;
     netcap_session_t* sess = NULL;
     int nfmark;
@@ -303,12 +385,6 @@ static int  _netcap_tcp_accept_hook ( int cli_sock, struct sockaddr_in client, n
     cli_port = ntohs(client.sin_port);
     srv_port = ntohs(server.sin_port);
     
-    /**
-     * Get misc info, sub, flags
-     */
-    arg   = sub->arg;
-    flags = sub->rdr.flags;
-
     unet_reset_inet_ntoa();
     debug( 5, "TCP:         Connection Accepted :: (%s:%-5i) -> (%s:%-5i)\n",
            unet_next_inet_ntoa( cli_addr ), cli_port,
@@ -339,7 +415,7 @@ static int  _netcap_tcp_accept_hook ( int cli_sock, struct sockaddr_in client, n
         if (_netcap_tcp_setsockopt_cli(cli_sock)<0)
             perrlog("_netcap_tcp_setsockopt_cli");
 
-        global_tcp_hook( sess,arg );
+        global_tcp_hook( sess, NULL ); /* XXX NULL argument */
     }
     else {
         _session_put_complete_fd( sess, cli_sock );

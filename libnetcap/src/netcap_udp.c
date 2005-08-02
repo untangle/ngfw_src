@@ -32,7 +32,17 @@
 /* Cleanup at most 2 UDP packets per iteration */
 #define _ICMP_CACHE_CLEANUP_MAX 2
 
-static int _udpsend_fd;
+static struct {
+    int send_sock;
+    int divert_port;
+    int divert_sock;
+} _udp = {
+    .send_sock   -1,
+    .divert_port -1,
+    .divert_sock -1
+};
+
+static int _divert_port_open( void );
 
 static int _netcap_udp_sendto(int sock, void* buf, size_t len, int flags, netcap_pkt_t* pkt);
 
@@ -62,7 +72,7 @@ int  netcap_udp_init ()
     /**
      * create the socket used to send/spoof outgoing udp packets
      */
-    if(( _udpsend_fd = socket(AF_INET,SOCK_DGRAM,0)) < 0) {
+    if(( _udp.send_sock = socket(AF_INET,SOCK_DGRAM,0)) < 0) {
         errlog( ERR_CRITICAL, "Unable to open udp send socket\n" );
         return perrlog ( "socket" );
     }
@@ -70,8 +80,15 @@ int  netcap_udp_init ()
     /**
      * set all the needed socket options
      */
-    if (setsockopt(_udpsend_fd, SOL_SOCKET, SO_BROADCAST,&one, sizeof(one)) < 0) {
+    if (setsockopt(_udp.send_sock, SOL_SOCKET, SO_BROADCAST,&one, sizeof(one)) < 0) {
         return perrlog ( "setsockopt" );
+    }
+
+    /**
+     * Setup the divert socket
+     */
+    if ( _divert_port_open() < 0 ) {
+        return errlog( ERR_CRITICAL, "_divert_port_open\n" );
     }
 
     return 0;
@@ -79,7 +96,9 @@ int  netcap_udp_init ()
 
 int  netcap_udp_cleanup()
 {
-    if ( _udpsend_fd > 0 && ( close( _udpsend_fd ) < 0 )) perrlog("close");
+    if ( _udp.send_sock > 0 && ( close( _udp.send_sock ) < 0 )) perrlog("close");
+    
+    if (( _udp.divert_sock > 0 ) && ( close( _udp.divert_sock ) < 0 )) perrlog( "close" );
 
     return 0;
 }
@@ -89,7 +108,7 @@ int  netcap_udp_send (char* data, int data_len, netcap_pkt_t* pkt)
     if ( !data || !pkt ) return -1;
     if ( !data_len ) return 0;
         
-    return _netcap_udp_sendto(_udpsend_fd, data, data_len, 0, pkt); 
+    return _netcap_udp_sendto( _udp.send_sock, data, data_len, 0, pkt ); 
 }
 
 int  netcap_udp_recvfrom (int sock, void* buf, size_t len, int flags, netcap_pkt_t* pkt)
@@ -411,6 +430,56 @@ void netcap_udp_null_hook (netcap_session_t* netcap_sess, void *arg)
 
     /* Remove the session */
     netcap_udp_session_raze(NC_SESSTABLE_LOCK, netcap_sess);
+}
+
+int netcap_udp_divert_sock( void )
+{
+    if (( _udp.divert_port < 0 ) || ( _udp.divert_sock < 0 )) {
+        return errlog( ERR_CRITICAL, "Unitialized UDP divert port or socket\n" );
+    }
+    
+    return _udp.divert_sock;
+}
+
+int netcap_udp_divert_port( void )
+{
+    if ( _udp.divert_port < 0 ) return errlog( ERR_CRITICAL, "Uninitialized UDP divert port\n" );
+    
+    return _udp.divert_port;
+}
+
+static int _divert_port_open( void )
+{
+    int one  = 1;
+    int sock = -1;
+    u_short port = -1;
+    
+    _udp.divert_sock = -1;
+    _udp.divert_port = -1;
+    
+    if ( unet_startlisten_on_anyport_udp( &port, &sock ) < 0 ) {
+        return perrlog("unet_startlisten_on_anyport_udp");
+    }
+    
+    /* set all the options (XXX Should an error here cause a failure) */
+    if ( setsockopt( sock, SOL_IP,     IP_PKTINFO,    &one, sizeof(one)) < 0 )
+        perrlog( "setsockopt" );
+    if ( setsockopt( sock, SOL_SOCKET, SO_BROADCAST,  &one, sizeof(one)) < 0 )
+        perrlog( "setsockopt" );
+    if ( setsockopt( sock, SOL_IP,     IP_RECVTOS,    &one, sizeof(one)) < 0 )
+        perrlog( "setsockopt" );
+    if ( setsockopt( sock, SOL_IP,     IP_RECVTTL,    &one, sizeof(one)) < 0 )
+        perrlog( "setsockopt" );
+    if ( setsockopt( sock, SOL_IP,     IP_RETOPTS,    &one, sizeof(one)) < 0 )
+        perrlog( "setsockopt" );
+    if ( setsockopt( sock, SOL_UDP,    UDP_RECVDHDR,  &one, sizeof(one)) < 0 )
+        perrlog( "setsockopt" );
+    if ( setsockopt( sock, SOL_IP,     IP_RECVNFMARK, &one, sizeof(one)) < 0 )
+        perrlog( "setsockopt" );
+    
+    _udp.divert_sock = sock;
+    _udp.divert_port = port;
+    return 0;
 }
 
 

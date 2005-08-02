@@ -49,8 +49,11 @@ public final class IPMatcher implements Serializable
     /* A range for matching local traffic */
     public static final IPMatcher MATCHER_LOCAL = new IPMatcher( true );
 
-    static InetAddress localAddress = null;
-    static long        localLong = -1L;
+    static InetAddress outsideAddress = null;
+    static long        outsideLong = -1L;
+
+    static InetAddress insideAddress = null;
+    static long        insideLong = -1L;
 
     static final int INADDRSZ = 4;
 
@@ -212,7 +215,7 @@ public final class IPMatcher implements Serializable
         // System.out.println( "matcher[ base: " + base + " second: " + second + " tmp: " + tmp + " isRange: " + isRange + "]" );
 
         if ( isLocal ) {
-            return ( tmp == localLong );
+            return ( tmp == outsideLong );
         } else if ( isRange ) {
             if (( base <= tmp ) && ( tmp <= second )) return true;
         } else {
@@ -295,26 +298,48 @@ public final class IPMatcher implements Serializable
         return val;
     }
 
-    public static void setLocalAddress( IPaddr address )
+    public static void setOutsideAddress( IPaddr address )
     {
-        setLocalAddress( address.getAddr());
+        setOutsideAddress( address.getAddr());
     }
 
-    public static void setLocalAddress( InetAddress address )
+    public static void setOutsideAddress( InetAddress address )
     {
-        localAddress = address;
+        outsideAddress = address;
 
         /* If the input address is empty, do not match anything */
-        localLong = ( address == null ) ? -1L : toLong((Inet4Address)address );
+        outsideLong = ( address == null ) ? -1L : toLong((Inet4Address)address );
 
-        if ( localLong == 0 ) {
-            localLong = -1L;
+        if ( outsideLong == 0 ) {
+            outsideLong = -1L;
         }
     }
 
-    public static InetAddress getLocalAddress()
+    public static void setInsideAddress( IPaddr address )
     {
-        return localAddress;
+        setInsideAddress( address.getAddr());
+    }
+
+    public static void setInsideAddress( InetAddress address )
+    {
+        insideAddress = address;
+
+        /* If the input address is empty, do not match anything */
+        insideLong = ( address == null ) ? -1L : toLong((Inet4Address)address );
+
+        if ( insideLong == 0 ) {
+            insideLong = -1L;
+        }
+    }
+
+    public static InetAddress getOutsideAddress()
+    {
+        return outsideAddress;
+    }
+    
+    public static InetAddress getInsideAddress()
+    {
+        return insideAddress;
     }
 
     /** Convert and address to a long */

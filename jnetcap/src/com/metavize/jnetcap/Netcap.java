@@ -14,6 +14,8 @@ package com.metavize.jnetcap;
 import java.io.FileReader;
 import java.io.BufferedReader;
 
+import java.util.regex.Pattern;
+
 import java.net.InetAddress;
 import org.apache.log4j.Logger;
 
@@ -33,16 +35,49 @@ public final class Netcap {
 
     /* The proc file containing the routing tables */
     private static final String ROUTE_PROC_FILE = "/proc/net/route";
-    private static final String ROUTE_PREFIX    = "br0\t00000000\t";
+
+    private static final String GATEWAY_PATTERN = "^[^\t]*\t00000000\t([^\t]*)\t.*";
+    private static final String GATEWAY_REPLACE = "$1";
+
 
     /* Maximum number of lines to read from the routing table */
     private static final int ROUTE_READ_LIM  = 50;
 
+    private static final Netcap INSTANCE = new Netcap();
+
     protected static final Logger logger = Logger.getLogger( Netcap.class );
 
-    /* Singleton, no point in instanciating this */
+    /* Singleton */
     private Netcap()
     {
+    }
+
+    /*  Get the Redirect port range */
+    public PortRange tcpRedirectPortRange() throws JNetcapException {
+        PortRange portRange = null;
+
+        try {
+            int[] ports = cTcpRedirectPorts();
+            portRange = new PortRange( ports[0], ports[1] );
+        } catch ( Exception e ) {
+            throw new JNetcapException( e );
+        }
+        
+        return portRange;
+    }
+    
+    /* Get the Divert port */
+    public int udpDivertPort() throws JNetcapException
+    {
+        int divertPort = 0;
+
+        try {
+            divertPort = cUdpDivertPort();
+        } catch ( Exception e ) {
+            throw new JNetcapException( e );
+        }
+                
+        return divertPort;
     }
 
     /**
@@ -125,23 +160,7 @@ public final class Netcap {
     {
         return init( enableShield, level, level );
     }
-
-    /**
-     * Retrieve the IP address of the box
-     */
-    public static InetAddress getHost()
-    {
-        return Inet4AddressConverter.toAddress( getHostLong());
-    }
-
-    /**
-     * Retrieve the Netmask of the box 
-     */
-    public static InetAddress getNetmask()
-    {
-        return Inet4AddressConverter.toAddress( getNetmaskLong());
-    }
-
+    
     /**
      * Retrieve the gateway of the box.
      */
@@ -153,13 +172,14 @@ public final class Netcap {
         /* Open up the default route file */
         try { 
             in = new BufferedReader(new FileReader( ROUTE_PROC_FILE ));
+            Pattern pattern = Pattern.compile( GATEWAY_PATTERN );
+
             String str;
 
             /* Limit the number of lines to read */
             for ( int c = 0 ; (( str = in.readLine()) != null ) && c < ROUTE_READ_LIM ; c++ ) {
-                if ( str.startsWith( ROUTE_PREFIX )) {
-                    str = str.substring( ROUTE_PREFIX.length(), 
-                                         ROUTE_PREFIX.length() + Inet4AddressConverter.INADDRSZ * 2 );
+                if ( str.matches( GATEWAY_PATTERN )) {
+                    str = pattern.matcher( str ).replaceAll( GATEWAY_REPLACE );
                     addr = Inet4AddressConverter.getByHexAddress( str, true );
                     break;
                 }
@@ -180,40 +200,35 @@ public final class Netcap {
         return addr;
     }
 
-    /* 
-     * Block that traffic that would go to the box in the port range that came in on
-     * interface intf
+    /**
+     * Retrieve the address of an interface
      */
-    public static void blockIncomingTraffic( int protocol, int intf, Range ports )
+    public InetAddress getInterfaceAddress( String interfaceString ) throws JNetcapException
     {
-        blockIncomingTraffic( true, protocol, intf, ports.low(), ports.high());
+        InetAddress address;
+        try {
+            address = Inet4AddressConverter.toAddress( getInterfaceAddressLong( interfaceString ));
+        } catch ( Exception e ) {
+            throw new JNetcapException( "Error retrieving interface address", e );
+        }
+        
+        return address;
     }
-    
-    public static void unblockIncomingTraffic( int protocol, int intf, Range ports )
-    {
-        blockIncomingTraffic( false, protocol, intf, ports.low(), ports.high());
-    }
-
-    private static native void blockIncomingTraffic( boolean isAdd, int protocol, int intf, 
-                                                     int low, int high );
 
     /**
-     * Limit traffic to the subnet of the bridge.</p>
-     * @param inside - Name of the inside interface.
-     * @param outside - Name of the inside interface.
+     * Retrieve the netmask of an interface
      */
-    public static native void limitSubnet( String inside, String outside );
-
-    /* XXX the gates should probably be bytes, but stringToIntf returns an intf */
-    // Inside of the wrapper risky to use.
-    // public static native void stationGuard( int gate, String tcpPorts, String udpPorts );
-    // public static native void relieveGuard( int gate );
-    public static native void stationTcpGuard( int gate, String ports, String guests );
-    public static native void stationUdpGuard( int gate, String ports, String guests );
-
-    public static native void relieveTcpGuard( int gate, String ports, String guests );
-    public static native void relieveUdpGuard( int gate, String ports, String guests );
-
+    public InetAddress getInterfaceNetmask( String interfaceString ) throws JNetcapException
+    {
+        InetAddress netmask;
+        try {
+            netmask = Inet4AddressConverter.toAddress( getInterfaceNetmaskLong( interfaceString ));
+        } catch ( Exception e ) {
+            throw new JNetcapException( "Error retrieving interface address", e );
+        }
+        
+        return netmask;
+    }
     
     /**
      * Retrieve the IP address of the box (br0).
@@ -224,6 +239,16 @@ public final class Netcap {
      * Retrieve the Netmask of the box (br0).
      */
     private static native long getNetmaskLong();
+
+    /**
+     * Retrieve the IP address of an interface
+     */
+    private native long getInterfaceAddressLong( String interfaceString );
+    
+    /**
+     * Retrieve the netmask of an interface
+     */
+    private native long getInterfaceNetmaskLong( String interfaceString );
     
     public static void jnetcapDebugLevel( int level ) { debugLevel( JNETCAP_DEBUG, level ); }
     public static void netcapDebugLevel( int level ) { debugLevel( NETCAP_DEBUG, level ); }
@@ -351,20 +376,25 @@ public final class Netcap {
     {
         logger.fatal( o );
     }
+
+    public static Netcap getInstance()
+    {
+        return INSTANCE;
+    }
     
     /**
-     * Specialty functions for NAT, DHCP and updating the address 
-     * inside:   Netcap interface that is the inside, not used when disabling.
-     *           If there is an address for br0:0, then that address is blocked
-     *           on the outside and antisubscribed on the inside.
-     * outside:  Netcap interface that is the outside.
+     * Specialty functions for NAT and DHCP events to update the address.
      */
+    public static native void updateAddress();
+
+    /**
+     * Function to retrieve the TCP redirect ports
+     */
+    private native int[] cTcpRedirectPorts();
     
-    public static native void updateAddress( int inside, int outside );
-    
-    public static native void enableLocalAntisubscribe();
-    public static native void disableLocalAntisubscribe();
-    
-    public static native void enableDhcpForwarding();
-    public static native void disableDhcpForwarding();
+
+    /**
+     * Function to retrieve the UDP divert port 
+     */
+    private native int cUdpDivertPort();
 }

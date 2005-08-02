@@ -13,11 +13,13 @@
 
 #include <pthread.h>
 #include <netinet/in.h>
-#include <libnetcap.h>
+
 #include <mvutil/mailbox.h>
 #include <mvutil/hash.h>
 #include <mvutil/lock.h>
-#include "netcap_traffic.h"
+
+#include <libnetcap.h>
+
 
 #define NC_SESSION_IF_MB 1
 

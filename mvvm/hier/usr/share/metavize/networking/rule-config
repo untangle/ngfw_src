@@ -1,0 +1,70 @@
+#!/bin/sh
+
+## These are for network configuration settings.
+MVVM_NETWORK_PARAMS_FILE=@PREFIX@/usr/share/metavize/conf/networking.sh
+
+## These are for parameters that can change during MVVM execution, eg enable DHCP forwarding
+MVVM_TMP_PARAMS_FILE=@MVVM_CONF@/tmp_params
+
+## These are parameters that rarely change, these are mostly items that are shared between
+## the outside world and the mvvm (eg inside/outside)
+MVVM_DEFAULTS_FILE=@PREFIX@/etc/default/mvvm
+
+if [ -f ${MVVM_NETWORK_PARAMS_FILE} ]; then
+    . ${MVVM_NETWORK_PARAMS_FILE}
+else
+    echo "File ${MVVM_NETWORK_PARAMS_FILE} not found."
+fi
+
+if [ -f ${MVVM_DEFAULTS_FILE} ] ; then
+    . ${MVVM_DEFAULTS_FILE}
+else
+    echo "File ${MVVM_DEFAULTS_FILE} not found."
+fi
+
+if [ -f ${MVVM_TMP_PARAMS_FILE} ]; then
+    . ${MVVM_TMP_PARAMS_FILE}
+else
+    echo "File ${MVVM_TMP_PARAMS_FILE} not found."
+fi
+
+## Local ports to antisubscribe to
+ANTISUBSCRIBES_LOCAL_TCP_PORTS="22,80,443"
+
+## Possible for NAT
+ANTISUBSCRIBES_LOCAL_UDP_PORTS="53"
+
+#### Handle all of the port guards
+
+#### TCP Port guards
+GUARD_OUTSIDE_TCP_PORTS="80"
+GUARD_INSIDE_TCP_PORTS=""
+
+# disabled by default
+if [ "${MVVM_ALLOW_OUT_HTTPS}x" = "truex" ]; then
+    # not restricted by default
+    if [ "${MVVM_ALLOW_OUT_RES}x" = "xtrue" -a "x$MVVM_ALLOW_OUT_NET" != "x" ]; then
+        if [ "${MVVM_ALLOW_OUT_MASK}x" = "x" ]; then
+            GUARD_OUTSIDE_TCP_PORTS="${GUARD_OUTSIDE_TCP_PORTS} 443.$MVVM_ALLOW_OUT_NET"
+        else
+            GUARD_OUTSIDE_TCP_PORTS="${GUARD_OUTSIDE_TCP_PORTS} 443.$MVVM_ALLOW_OUT_NET/$MVVM_ALLOW_OUT_MASK"
+        fi
+    fi
+else
+    GUARD_OUTSIDE_TCP_PORTS="${GUARD_OUTSIDE_TCP_PORTS} 443"
+fi
+
+# enabled by default
+if [ "x$MVVM_ALLOW_IN_HTTP" = "xfalse" ]; then
+    GUARD_INSIDE_TCP_PORTS="${GUARD_INSIDE_TCP_PORTS} 80"
+fi
+
+# if in the build
+if [ "x" != "x@PREFIX@" ] ; then
+    GUARD_OUTSIDE_TCP_PORTS=""
+    GUARD_INSIDE_TCP_PORTS=""
+fi
+
+## Port guards (always true)
+GUARD_OUTSIDE_UDP_PORTS="53"
+

@@ -40,14 +40,6 @@ int jnetcap_initialized( void );
 #define JN_Netcap(VAL)  JN_BUILD_NAME( Netcap, VAL )
 #define JF_Netcap(FUNC) JF_BUILD_NAME( Netcap, FUNC )
 
-#define JH_Subscription       "com_metavize_jnetcap_Subscription.h"
-#define JN_Subscription(VAL)  JN_BUILD_NAME( Subscription, VAL )
-#define JF_Subscription(FUNC) JF_BUILD_NAME( Subscription, FUNC )
-
-#define JH_SubscriptionGen       "com_metavize_jnetcap_SubscriptionGenerator.h"
-#define JN_SubscriptionGen(VAL)  JN_BUILD_NAME( SubscriptionGenerator, VAL )
-#define JF_SubscriptionGen(FUNC) JF_BUILD_NAME( SubscriptionGenerator, FUNC )
-
 #define JH_Session       "com_metavize_jnetcap_NetcapSession.h"
 #define JN_Session(VAL)  JN_BUILD_NAME( NetcapSession, VAL )
 #define JF_Session(FUNC) JF_BUILD_NAME( NetcapSession, FUNC )
@@ -59,10 +51,6 @@ int jnetcap_initialized( void );
 #define JH_TCPSession       "com_metavize_jnetcap_NetcapTCPSession.h"
 #define JN_TCPSession(VAL)  JN_BUILD_NAME( NetcapTCPSession, VAL )
 #define JF_TCPSession(FUNC) JF_BUILD_NAME( NetcapTCPSession, FUNC )
-
-#define JH_InterfaceSet       "com_metavize_jnetcap_InterfaceSet.h"
-#define JN_InterfaceSet(VAL)  JN_BUILD_NAME( InterfaceSet, VAL )
-#define JF_InterfaceSet(FUNC) JF_BUILD_NAME( InterfaceSet, FUNC )
 
 #define JH_IPTraffic       "com_metavize_jnetcap_IPTraffic.h"
 #define JN_IPTraffic(VAL)  JN_BUILD_NAME( IPTraffic, VAL )

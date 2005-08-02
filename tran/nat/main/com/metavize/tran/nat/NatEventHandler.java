@@ -21,6 +21,7 @@ import com.metavize.mvvm.tapi.Protocol;
 import com.metavize.mvvm.NetworkingConfiguration;
 
 import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.ArgonManager;
 
 import com.metavize.mvvm.tapi.AbstractEventHandler;
 import com.metavize.mvvm.tapi.IPNewSessionRequest;
@@ -36,6 +37,9 @@ import com.metavize.mvvm.tapi.IPSession;
 import com.metavize.mvvm.tapi.UDPSession;
 
 import com.metavize.mvvm.tran.Transform;
+import com.metavize.mvvm.tran.TransformException;
+import com.metavize.mvvm.argon.ArgonException;
+
 import org.apache.log4j.Logger;
 
 import com.metavize.mvvm.tran.IPaddr;
@@ -198,7 +202,7 @@ class NatEventHandler extends AbstractEventHandler
         }
     }
     
-    void configure( NatSettings settings, NetworkingConfiguration netConfig )
+    void configure( NatSettings settings, NetworkingConfiguration netConfig ) throws TransformException
     {
         IPMatcher localHostMatcher = IPMatcher.MATCHER_LOCAL;
 
@@ -216,14 +220,12 @@ class NatEventHandler extends AbstractEventHandler
                                        PortMatcher.MATCHER_ALL, PortMatcher.MATCHER_ALL,
                                        false, null, -1 );
             
-            
-            
-            enableNat();
+            enableNat( netConfig );
         } else {
             nat = RedirectMatcher.MATCHER_DISABLED;
-            disableNat();
+            disableNat( netConfig );
         }
-
+        
         /* Configure the DMZ */
         if ( settings.getDmzEnabled()) {
             dmz = new RedirectMatcher( true, ProtocolMatcher.MATCHER_ALL,
@@ -253,10 +255,10 @@ class NatEventHandler extends AbstractEventHandler
         }        
     }
 
-    void deconfigure()
+    void deconfigure() throws TransformException
     {
         /* Bring down NAT */
-        disableNat();
+        disableNat( MvvmContextFactory.context().networkingManager().get());
     }
 
 
@@ -294,7 +296,7 @@ class NatEventHandler extends AbstractEventHandler
 
             /* Change the source in the request */
             /* All redirecting occurs here */
-            InetAddress localAddr = IPMatcher.getLocalAddress();
+            InetAddress localAddr = IPMatcher.getOutsideAddress();
             // Unfortunately, as of 5/02/05, this can sometimes be null, probably due to
             // initialization order, the sleeping involved, etc.  For now, just make sure
             // not to ever change the client addr to null, which causes awful things to happen.  jdi XXX
@@ -460,38 +462,16 @@ class NatEventHandler extends AbstractEventHandler
         throw new IllegalArgumentException( "Unknown protocol: " + protocol );
     }
 
-    private void enableNat()
+    private void enableNat( NetworkingConfiguration netConfig ) throws TransformException
     {
-        int code;
-        
-        /* Wait for this to finish */
         try {
-            Process p = Runtime.getRuntime().exec( "/sbin/ifconfig br0:0 " + internalAddress.toString() + 
-                                                   " netmask " + internalSubnet.toString());
-            
-            code = p.waitFor();
+            ArgonManager argonManager = MvvmContextFactory.context().argonManager();
+            argonManager.disableLocalAntisubscribe();
+            argonManager.destroyBridge( netConfig, internalAddress.getAddr(), internalSubnet.getAddr());
         } catch ( Exception e ) {
             logger.error( "Interrupting while reconfiguring interface" );
-            /* XXXXXXXXXXX, not nice to throw these, but they don't have to be declared */
-            throw new IllegalStateException( "Interrupting while reconfiguring interface", e );
+            throw new TransformException( "Interrupting while reconfiguring interface", e );
         }
-
-        if ( code != 0 ) {
-            throw new IllegalStateException( "Unable to update the internal address" );
-        }        
-        
-        /* Sleep a second while the "dust settles" */
-        try {
-            Thread.sleep( SLEEP_TIME );
-        } catch ( Exception e ) {
-            logger.error( "Interrupting while reconfiguring interface" );
-            /* XXXXXXXXXXX, not nice to throw these, but they don't have to be declared */
-            throw new IllegalStateException( "Interrupting while reconfiguring interface", e );
-        }
-           
-        /* Reconfigure the MVVM */
-        MvvmContextFactory.context().argonManager().updateAddress();
-        MvvmContextFactory.context().argonManager().disableLocalAntisubscribe();
     }
 
     private boolean isFtp( IPNewSessionRequest request, Protocol protocol )
@@ -503,40 +483,17 @@ class NatEventHandler extends AbstractEventHandler
         return false;
     }
    
-    private void disableNat()
+    private void disableNat( NetworkingConfiguration netConfig ) throws TransformException
     {
-        int code;
-        
         /* Wait for this to finish */
         try {
-            /* Bring down interface br0:0 */
-            Process p = Runtime.getRuntime().exec( "/sbin/ifconfig br0:0 down" );
-
-            code = p.waitFor();
+            ArgonManager argonManager = MvvmContextFactory.context().argonManager();
+            argonManager.enableLocalAntisubscribe();
+            argonManager.restoreBridge( netConfig );
         } catch ( Exception e ) {
             logger.error( "Interrupting while reconfiguring interface" );
-            /* XXXXXXXXXXX, not nice to throw these, but they don't have to be declared */
-            throw new IllegalStateException( "Interrupting while reconfiguring interface", e );
-        }
-
-        if ( code != 0 ) {
-            logger.error( "Error bringing down br0:0, ignoring" );
+            throw new TransformException( "Interrupting while reconfiguring interface", e );
         }        
-        
-        /* Sleep a second while the "dust settles" */
-        try {
-            Thread.sleep( SLEEP_TIME );
-        } catch ( Exception e ) {
-            logger.error( "Interrupting while reconfiguring interface" );
-            /* XXXXXXXXXXX, not nice to throw these, but they don't have to be declared */
-            throw new IllegalStateException( "Interrupting while reconfiguring interface", e );
-        }
-           
-        /* Reconfigure the MVVM */
-        MvvmContextFactory.context().argonManager().updateAddress();
-
-        /* Don't catch traffic to the local host */
-        MvvmContextFactory.context().argonManager().enableLocalAntisubscribe();
     }
 }
 

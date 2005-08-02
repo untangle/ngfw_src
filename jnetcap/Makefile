@@ -24,13 +24,13 @@ javac_classpath=$(src_path)
 
 class_base=com.metavize.$(sub_name)
 
-c_src=jnetcap.c jinterface_set.c jsubscription.c jsession.c judp.c jtcp.c Shield.c
+c_src=jnetcap.c jsession.c judp.c jtcp.c Shield.c
 objects=$(c_src:.c=.o)
 
-java_src=Subscription.java Range.java InterfaceSet.java Inet4AddressConverter.java  \
+java_src=PortRange.java Inet4AddressConverter.java  \
         Netcap.java NetcapSession.java NetcapUDPSession.java NetcapHook.java \
-        UDPPacket.java NetcapTCPSession.java TCPEndpoints.java SubscriptionGenerator.java \
-        CPointer.java IPTraffic.java SubscriptionManager.java Shield.java
+        UDPPacket.java NetcapTCPSession.java TCPEndpoints.java \
+        CPointer.java IPTraffic.java Shield.java
 classes=$(java_src:.java=.class)
 
 all: build

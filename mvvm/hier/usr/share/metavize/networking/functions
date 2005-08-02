@@ -1,0 +1,137 @@
+#!/bin/sh
+
+PUMP_FLAG="pump"
+
+TABLE_LIST="nat mangle filter raw"
+CHAIN_MARKINTF="markintf"
+CHAIN_GUARDS="guards"
+CHAIN_ANTISUB="antisub"
+CHAIN_INTERCEPT="intercept"
+CHAINS_ORDER="${CHAIN_MARKINTF} ${CHAIN_GUARDS} ${CHAIN_ANTISUB} ${CHAIN_INTERCEPT}"
+
+## Utility functions for the mv-networking scripts
+
+function joinLines() {
+    sed -e '{:start;N;s/\n/ /g;t start}'
+}
+
+## The script runs in two phases, generation is the process of creating the current configuration
+## The "get" functions are used to query the configuration created in the generate phase.
+
+function generateConfiguration() {
+    generateBridges
+    generateInterfaces
+}
+
+function generateBridges() {
+    bridgeList=""
+    for bridge in `brctl show | sed -e '1,1d' | grep "^br" | awk '{ print $1 }'` ; do
+        generateBridge $bridge
+        bridgeList="$bridgeList $bridge"
+    done
+}
+
+function generateBridge() {
+    bridge=$1
+
+    name="${bridge}"
+    addresses=`generateAddresses $bridge`
+    interfaces=`generateBridgeInterfaces $bridge`
+    
+    for intf in ${interfaces} ; do
+        ## Set the bridge identifier for each interface
+        eval ${intf}_bridge=\"$bridge\"
+    done
+
+    eval ${bridge}_name="${name}"
+    eval ${bridge}_addresses=\"${addresses}\"
+    eval ${bridge}_interfaces=\"${interfaces}\"
+    
+## DBG    echo "Generated configuration for ${bridge}" # XDBG
+## DBG    echo "name: ${name}" # XDBG
+## DBG    echo "addresses: ${addresses}" # XDBG
+## DBG    echo "interfaces: ${interfaces}" # XDBG
+}
+
+function generateInterfaces() {
+## DBG    echo "Generating interfaces" # XDBG
+    interfaceList=""
+
+    for intf in `ifconfig | grep -v br0 | grep -v lo | grep -v '^ ' | grep -v '^$' | awk '{ print $1 }' | grep -v :`; do
+        ### Check if the interface is in a bridge
+        if [ -z `getBridge $intf` ]; then
+            name="$intf"
+            addresses=`generateAddresses $intf`
+
+## DBG      echo "name: ${name}"  # XDBG
+## DBG      echo "addresses: ${addresses}" # XDBG
+            if [ -n "$addresses" ]; then
+                eval ${intf}_name="${name}"
+                eval ${intf}_addresses=\"${addresses}\"
+                interfaceList="$interfaceList $intf"
+            fi
+        fi
+    done
+}
+
+## print the address for a particular interface.  This will return aliases
+## also, unless the input ($1) is specific.
+## EG. br0=1.2.3.4/255.255.255.0, br0:0=10.0.0.1/255.0.0.0
+## getAddresses br0 => "1.2.3.4/255.255.255.0 10.0.0.1/255.0.0.0"
+## getAddresses br0:0 => "1.2.3.4/255.255.255.0"
+function generateAddresses() {
+## DBG    echo "generateAddresses $1" > /dev/stderr
+    ifconfig | grep -A 4 $1 | awk '/inet/ { print $2 "/" $4 }' | sed -e 's/addr://' -e 's/Mask://' | grep -v "^$" | joinLines
+}
+
+## Returns all of the interfaces that participate in a bridge
+function generateBridgeInterfaces() {
+## DBG    echo "generateBridgeInterfaces $1" > /dev/stderr # XDBG
+    brctl showstp $1 | grep -v '^$' | grep -v '^ ' | grep -v "can't" | grep -v $1 | awk '{ print $1 }' | joinLines
+}
+
+function getAddresses() {
+    if [ -n $1 ]; then
+        eval echo \$${1}_addresses | sed 's/\/.*//'
+    fi
+}
+
+function getNetmasks() {
+    if [ -n $1 ]; then
+        eval echo \$${1}_addresses | sed 's/[^/]*\///'
+    fi
+}
+
+## Return the bridge that an interface($1) participates in or the empty string if it doesn't
+function getBridge() {
+    eval echo \$${1}_bridge
+}
+
+function getBridgeAddresses() {    
+    getAddresses `getBridge $1`
+}
+
+function isPumpRunning() {
+    if [ -n $1 ]; then
+        ps aux | grep pump | grep $1 | grep -v grep
+    fi
+}
+
+function killPump() {
+    echo "Killing PUMP"
+    killall -KILL pump
+}
+
+function deleteBridge() {
+    bridge=$1
+    if [ -n ${bridge} ]; then
+        echo "Deleting bridge ${bridge}"
+        ifconfig ${bridge} down 
+        brctl delbr ${bridge}
+    fi
+}
+
+function iptablesDbg() {
+    echo /sbin/iptables $@
+    /sbin/iptables $@
+}

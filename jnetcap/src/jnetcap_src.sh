@@ -10,8 +10,8 @@
 
 ## first: element = c name or if no second, c and java name
 ## second: java name
-packages=( "Netcap" "Subscription" "SubscriptionGen SubscriptionGenerator" "Session NetcapSession"
-    "UDPSession NetcapUDPSession" "TCPSession NetcapTCPSession" "InterfaceSet" "IPTraffic" "Shield" "ICMPTraffic" )
+packages=( "Netcap" "Session NetcapSession"
+    "UDPSession NetcapUDPSession" "TCPSession NetcapTCPSession" "IPTraffic" "Shield" "ICMPTraffic" )
 package=$1
 
 c_package=${package//./_}

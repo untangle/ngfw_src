@@ -1,13 +1,6 @@
 #! /bin/sh
 # $Id: mvvm,v 1.10 2005/03/22 01:51:56 cng Exp $
 
-# Read the networking configuration parameters, this must be parsed before running the
-# defaults.
-MVVM_PARAMS_FILE=@PREFIX@/usr/share/metavize/conf/networking.sh
-if [ -f "$MVVM_PARAMS_FILE"  -a ! -d "$MVVM_PARAMS_FILE" ]; then
-    . $MVVM_PARAMS_FILE
-fi
-
 if [ -f @PREFIX@/etc/default/mvvm ] ; then
     . @PREFIX@/etc/default/mvvm
 fi

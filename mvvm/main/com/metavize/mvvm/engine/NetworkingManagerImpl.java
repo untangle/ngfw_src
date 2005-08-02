@@ -28,8 +28,13 @@ import com.metavize.jnetcap.Netcap;
 
 import com.metavize.mvvm.tran.IPaddr;
 
+import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.NetworkingConfiguration;
 import com.metavize.mvvm.NetworkingManager;
+import com.metavize.mvvm.ArgonManager;
+import com.metavize.mvvm.MvvmException;
+
+import com.metavize.mvvm.argon.ArgonManagerImpl;
 
 public class NetworkingManagerImpl implements NetworkingManager
 {
@@ -40,6 +45,7 @@ public class NetworkingManagerImpl implements NetworkingManager
     private static final String BUNNICULA_RESET_SCRIPT = BUNNICULA_BASE + "/mvvm_restart.sh";
     private static final String SSH_ENABLE_SCRIPT      = BUNNICULA_BASE + "/ssh_enable.sh";
     private static final String SSH_DISABLE_SCRIPT     = BUNNICULA_BASE + "/ssh_disable.sh";
+    private static final String DHCP_RENEW_SCRIPT      = BUNNICULA_BASE + "/networking/dhcp-renew";
     
     private static final String IP_CFG_FILE    = "/etc/network/interfaces";
     private static final String NS_CFG_FILE    = "/etc/resolv.conf";
@@ -81,7 +87,7 @@ public class NetworkingManagerImpl implements NetworkingManager
      * Set a network configuration.
      * @param configuration - Configuration to save
      */
-    public synchronized void set( NetworkingConfiguration configuration )
+    public synchronized void set( NetworkingConfiguration netConfig )
     {
         /* Once the configuration is modified, a reset is called and it cannot be
          * modified again */
@@ -90,8 +96,14 @@ public class NetworkingManagerImpl implements NetworkingManager
 
         this.configuration = configuration;
         save();
-        resetMvvm();
-        
+
+        System.out.println( "Calling load networking" );
+
+        try {
+            MvvmContextFactory.context().argonManager().loadNetworkingConfiguration( netConfig );
+        } catch ( Exception ex ) {
+            logger.error( "Unable to load networking configuration", ex );
+        }
     }
 
     private NetworkingManagerImpl()
@@ -113,10 +125,12 @@ public class NetworkingManagerImpl implements NetworkingManager
     private void getInterface()
     {
         getDhcp();
+        
+        ArgonManager argon = ArgonManagerImpl.getInstance();
 
-        configuration.host( new IPaddr((Inet4Address)Netcap.getHost()));
-        configuration.netmask( new IPaddr((Inet4Address)Netcap.getNetmask()));
-        configuration.gateway( new IPaddr( (Inet4Address)Netcap.getGateway()));
+        configuration.host( new IPaddr((Inet4Address)argon.getOutsideAddress()));
+        configuration.netmask( new IPaddr((Inet4Address)argon.getOutsideNetmask()));
+        configuration.gateway( new IPaddr((Inet4Address)Netcap.getGateway()));
     }
 
     private void getDhcp()
@@ -368,15 +382,6 @@ public class NetworkingManagerImpl implements NetworkingManager
         close( out );
     }
     
-    private void resetMvvm()
-    {
-        try {
-            Runtime.getRuntime().exec( BUNNICULA_RESET_SCRIPT );
-        } catch ( Exception ex ) {
-            logger.error( "Unable to reset bunnicula", ex );
-        }
-    }
-
     public static NetworkingManager getInstance() 
     {
         return INSTANCE;
@@ -403,7 +408,18 @@ public class NetworkingManagerImpl implements NetworkingManager
     }
 
     public NetworkingConfiguration renewDhcpLease() throws Exception {
-        return null;
+        /* Renew the address */
+        Process p = Runtime.getRuntime().exec( "sh " + DHCP_RENEW_SCRIPT );
+        
+        if ( p.waitFor() != 0 ) {
+            throw new MvvmException( "Error while Renewing DHCP Lease" );
+        }
+        
+        /* Update the address and generate new rules */
+        MvvmContextFactory.context().argonManager().updateAddress();
+
+        /* Return a new copy of the Networking configuration */
+        return get();
     }
     
 }

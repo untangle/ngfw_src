@@ -1,0 +1,341 @@
+#!/bin/sh
+
+exec >> @MVVM_LOG@/iptables.log 2>&1
+
+RULE_CONFIG_FILE=@MVVM_HOME@/networking/rule-config
+FUNCTIONS_FILE=@MVVM_HOME@/networking/functions
+
+if [ -r ${RULE_CONFIG_FILE}  ]; then
+    . ${RULE_CONFIG_FILE}
+else
+    echo "Unable to load the rule configuration file ${RULE_CONFIG_FILE}"
+    exit -2
+fi
+
+if [ -r ${FUNCTIONS_FILE} ]; then
+    . ${FUNCTIONS_FILE}
+else
+    echo "Unable to load the functions file ${FUNCTIONS_FILE}"
+    exit -1
+fi
+
+echo "Reconstructing all of the tables"
+
+## A few constants
+IPTABLES="/sbin/iptables"
+#IPTABLES=iptablesDbg
+MARK_ANTISUB="0x01000000"
+MARK_NOTRACK="0x02000000"
+MARK_LOCAL="0x00001000"
+MARK_LOCAL_ADDRESS_BASE="0x00000010"
+
+## This list must get longer when there are more interfaces
+INTERFACE_ORDER="${MVVM_OUTSIDE_INTF} ${MVVM_INSIDE_INTF}"
+
+## List of ICMP types to antisubscribe to.
+ANTISUBSCRIBES_ICMP="parameter-problem source-quench fragmentation-needed"
+
+FLAG_INSIDE_INTF="inside"
+FLAG_OUTSIDE_INTF="outside"
+FLAG_BOTH_INTF="both"
+
+## DHCP Port range 
+DHCP_SERVER_PORT="67"
+DHCP_CLIENT_PORT="68"
+DHCP_PORT_RANGE="${DHCP_SERVER_PORT}:${DHCP_CLIENT_PORT}"
+
+function flush() {
+    for table in ${TABLE_LIST}; do 
+        ${IPTABLES} -t ${table} -F 
+    done
+}
+
+## This creates the foundation
+function buildFoundation() {
+    ## Flush out the prerouting table
+    ${IPTABLES} -t mangle -F PREROUTING
+
+    ## Create the sub tables and insert the rules into the PREROUTING table to link
+    for chain in ${CHAINS_ORDER} ; do
+        ${IPTABLES} -t mangle -N ${chain} 2> /dev/null
+        ${IPTABLES} -t mangle -F ${chain}
+        ${IPTABLES} -t mangle -A PREROUTING -j ${chain}
+    done
+}
+
+function blockForwarding() {
+    ## Flush the forward table
+    ${IPTABLES} -t filter -F FORWARD
+    
+    ## Block non-antisubscribed TCP traffic from being forwarded
+    ${IPTABLES} -t filter -A FORWARD -m mark -p tcp --mark 0/${MARK_ANTISUB} \
+        -j REJECT --reject-with tcp-reset
+
+    ## XXX Not sure if this is necessary with two interfaces
+    if [ "${DHCP_BLOCK_FORWARDING}x" = "truex" ]; then
+        ${IPTABLES} -t filter -A FORWARD -p udp --source-port ${DHCP_PORT_RANGE} \
+            --destination-port ${DHCP_PORT_RANGE} -j DROP
+    fi
+}
+
+function guardRules() {
+    ## Flush the forward table
+    ${IPTABLES} -t mangle -F ${CHAIN_GUARDS}
+    
+    ## Drop stuff going to the UDP divert port from outside.
+    ${IPTABLES} -t mangle -A ${CHAIN_GUARDS} -p udp -m mark --mark ${MARK_LOCAL}/${MARK_LOCAL} \
+        --destination-port ${UDP_DIVERT_PORT} -j DROP
+
+    ## Drop stuff going to the TCP redirect ports from the outside
+    ${IPTABLES} -t mangle -A ${CHAIN_GUARDS} -p tcp -m mark --mark ${MARK_LOCAL}/${MARK_LOCAL} \
+        --destination-port ${TCP_REDIRECT_PORTS} -j DROP
+
+    ## Insert all of the guards for outside and inside
+    for ports in ${GUARD_OUTSIDE_UDP_PORTS}; do
+        generateGuardRule udp $ports ${FLAG_OUTSIDE_INTF}
+    done
+
+    for ports in ${GUARD_OUTSIDE_TCP_PORTS}; do
+        generateGuardRule tcp $ports ${FLAG_OUTSIDE_INTF}
+    done
+
+    for ports in ${GUARD_INSIDE_UDP_PORTS}; do
+        generateGuardRule udp $ports ${FLAG_INSIDE_INTF}
+    done
+
+    for ports in ${GUARD_INSIDE_TCP_PORTS}; do
+        generateGuardRule tcp $ports ${FLAG_INSIDE_INTF}
+    done
+
+    for ports in ${GUARD_BOTH_UDP_PORTS}; do
+        generateGuardRule udp $ports ${FLAG_BOTH_INTF}
+    done
+
+    for ports in ${GUARD_BOTH_TCP_PORTS}; do
+        generateGuardRule tcp $ports ${FLAG_BOTH_INTF}
+    done
+}
+
+## internal function to generate one guard rule
+## $1: Ports (either comma separated, dash seperated (range) or no separator (one port)
+## $2: Protocol
+## $3: "inside","outside" or "both"
+function generateGuardRule() {
+    protocol=$1
+    ports=$2
+    intf=$3
+    
+    if [ "${ports}x" = "x" ]; then
+        echo "Ignoring empty ports string"
+    fi
+        
+    regulated=${ports#*.}
+    
+    if [ "${regulated}x" != "${ports}x" ]; then
+        ports=${ports%.*}
+        regulated="-s ! ${regulated}"
+    else
+        regulated=""
+    fi
+    
+    ## This will have to be pushed into each guard rule when there are more than two interfaces.x
+    if [ "${intf}x" == "${FLAG_INSIDE_INTF}x" ]; then
+        mark=2
+    elif [ "${intf}x" == "${FLAG_OUTSIDE_INTF}x" ]; then
+        mark=1
+    elif [ "${intf}x" == "${FLAG_BOTH_INTF}x" ]; then
+        mark=3
+    else
+        echo "Unable to determine which interface to put the guard for ports $ports protocol $protocol"
+        return
+    fi
+
+    mark=$(( ${mark} | ${MARK_LOCAL} ))
+    markMask=$(( ${MARK_LOCAL} | 0xF ))
+    
+    if [ "$(echo $ports | grep ':')x" != "x" ]; then
+        ${IPTABLES} -t mangle -A ${CHAIN_GUARDS} -p ${protocol} ${regulated} \
+            -m mark --mark ${mark}/${markMask} \
+            --destination-port ${ports} -j DROP
+    elif [ "$(echo $ports | grep ',')x" != "x" ]; then
+        ${IPTABLES} -t mangle -A ${CHAIN_GUARDS} -p ${protocol} -m multiport ${regulated} \
+            -m mark --mark ${mark}/${markMask} \
+            --destination-ports ${ports} -j DROP
+    else
+        ${IPTABLES} -t mangle -A ${CHAIN_GUARDS} -p ${protocol} ${regulated} \
+            -m mark --mark ${mark}/${markMask} \
+            --destination-port ${ports} -j DROP
+    fi
+    
+}
+
+function markIntfRules () {
+    ## Flush the interface marking table
+    ${IPTABLES} -t mangle -F ${CHAIN_MARKINTF}
+    
+    c=1
+    for interface in ${INTERFACE_ORDER} ; do
+        if [ -z `getBridge $interface` ]; then
+            addresses=`getAddresses $interface`
+            matchType="-i "
+        else
+            addresses=`getBridgeAddresses $interface`
+            matchType="-m physdev --physdev-in"
+        fi
+
+        ${IPTABLES} -t mangle -A ${CHAIN_MARKINTF} ${matchType} ${interface} -j MARK --set-mark ${c}
+        
+        d=${MARK_LOCAL_ADDRESS_BASE}
+        for address in $addresses; do
+            ${IPTABLES} -t mangle -A ${CHAIN_MARKINTF} ${matchType} ${interface} --destination $address \
+                -j MARK --set-mark $(( $c | $d | ${MARK_LOCAL} ))
+            d="$(( $d << 1 ))"
+        done
+        c=$(( $c + 1 ))
+    done
+}
+
+function rawRules() {
+    ## Flush the raw table
+    ${IPTABLES} -t raw -F
+
+    ## Insert the no track rule
+    ${IPTABLES} -t raw -A OUTPUT -m mark -j NOTRACK --mark ${MARK_NOTRACK}/${MARK_NOTRACK}
+}
+
+function antisubscribeRules() {
+    ## flush the antisubscribe chain
+    ${IPTABLES} -t mangle -F ${CHAIN_ANTISUB}
+
+    ## antisubscribe to related non-tcp packets
+    ${IPTABLES} -t mangle -A ${CHAIN_ANTISUB} -m state -m mark -p ! tcp --mark 0/${MARK_ANTISUB} \
+        --state related,established -j MARK --set-mark ${MARK_ANTISUB}
+
+    ## Antisubscribe to localhost
+    ${IPTABLES} -t mangle -A ${CHAIN_ANTISUB} -m mark --mark 0/${MARK_ANTISUB} \
+        --source 127.0.0.0/8 --destination 127.0.0.0/8 -j MARK --set-mark ${MARK_ANTISUB}
+
+    ## Determine whether or not to antisubscribe to local traffic
+    antisubscribeLocalTraffic ${FLAG_OUTSIDE_INTF} ${ANTISUBSCRIBE_LOCAL_OUTSIDE}
+    antisubscribeLocalTraffic ${FLAG_INSIDE_INTF}  ${ANTISUBSCRIBE_LOCAL_INSIDE}
+
+    ## Antisubscribe to the locally requested traffic
+    antisubscribeLocal "tcp" "${ANTISUBSCRIBES_LOCAL_TCP_PORTS}"
+    
+    antisubscribeLocal "udp" "${ANTISUBSCRIBES_LOCAL_UDP_PORTS}"
+    
+    ## antisubscribe to unwanted ICMP
+    for icmpType in ${ANTISUBSCRIBES_ICMP} ; do
+        ${IPTABLES} -t mangle -A ${CHAIN_ANTISUB} -p icmp -m mark --mark 0/${MARK_ANTISUB} \
+            --icmp-type ${icmpType} -j MARK --set-mark ${MARK_ANTISUB}
+    done
+
+    ## Antisubscribe to DHCP
+    ${IPTABLES} -t mangle -A ${CHAIN_ANTISUB} -p udp -m mark --mark 0/${MARK_ANTISUB} \
+        --source-port ${DHCP_PORT_RANGE} --destination-port ${DHCP_PORT_RANGE} \
+        -j MARK --set-mark ${MARK_ANTISUB}
+        
+}
+
+function antisubscribeLocal() {
+    protocol=$1
+    portList=$2
+
+    if [ -n $portList ]; then
+        ${IPTABLES} -t mangle -A ${CHAIN_ANTISUB} -m multiport -m mark  -p ${protocol}  \
+            --destination-ports ${portList} --mark ${MARK_LOCAL}/$(( $MARK_ANTISUB | $MARK_LOCAL )) \
+            -j MARK --set-mark 0x01000000
+    else
+        echo "No local antisubscribes for ${protocol}"
+    fi
+}
+
+## Antisubscribe to all local traffic on a particular interface
+function antisubscribeLocalTraffic() {
+    intf=$1
+    flag=$2
+
+    if [  "${flag}x" = "truex" ]; then
+        if [ "${intf}x" == "${FLAG_INSIDE_INTF}x" ]; then
+            mark=2
+        elif [ "${intf}x" == "${FLAG_OUTSIDE_INTF}x" ]; then
+            mark=1
+        else
+            echo "Unable to determine which interface ${intf} to antisubscribe to"
+            return
+        fi
+
+        mark=$(( ${mark} | ${MARK_LOCAL} ))
+        markMask=$(( ${MARK_ANTISUB} | ${MARK_LOCAL} | 0xF ))
+
+        ${IPTABLES} -t mangle -A ${CHAIN_ANTISUB} -m mark --mark ${mark}/${markMask} \
+            -j MARK --set-mark ${MARK_ANTISUB}
+    fi
+}
+
+## intercept everything and then use antisubscribes to not intercept certain packets
+function interceptRules() {
+## Flush the intercept chain
+    ${IPTABLES} -t mangle -F ${CHAIN_INTERCEPT}
+
+## If the packet is antisubscribed, return
+    ${IPTABLES} -t mangle -A ${CHAIN_INTERCEPT} -m mark --mark ${MARK_ANTISUB}/${MARK_ANTISUB} -j RETURN
+    
+## Queue all packets for TCP and ICMP
+    ${IPTABLES} -t mangle -A ${CHAIN_INTERCEPT} -p tcp --tcp-flags SYN,ACK SYN -j QUEUE
+    
+    ${IPTABLES} -t mangle -A ${CHAIN_INTERCEPT} -p icmp -j QUEUE
+
+## Divert all of the UDP traffic
+    if [ "${UDP_DIVERT_PORT}x" != "x" ]; then
+        ${IPTABLES} -t mangle -A ${CHAIN_INTERCEPT} -p udp -j DIVERT --to-port ${UDP_DIVERT_PORT}
+    fi
+
+## Redirect all of the TCP traffic that is not antisubscribed
+    if [ "${TCP_REDIRECT_PORTS}x" != "x" ]; then
+        ${IPTABLES} -t nat -A PREROUTING -m mark --mark 0/${MARK_ANTISUB} -p tcp \
+            -j REDIRECT --to-ports ${TCP_REDIRECT_PORTS/:/-}
+    else
+        echo "The TCP Redirect port is not set"
+    fi
+}
+
+function uturnRules() {
+    c=1
+    for interface in ${INTERFACE_ORDER}; do
+        if [ -z `getBridge $interface` ]; then
+            addresses=`getAddresses $interface`
+            matchType="-o "
+        else
+            addresses=`getBridgeAddresses $interface`
+            matchType="-m physdev --physdev-out"
+        fi
+        
+        ${IPTABLES} -t filter -A OUTPUT -m mark ${matchType} ${interface} --mark ${c}/0xF -j DROP
+        c=$(( $c + 1 ))
+    done
+}
+
+###############################################################
+######### Start of script #####################################
+###############################################################
+generateConfiguration
+
+## XXXX Flush all of the rules
+flush
+
+buildFoundation
+
+blockForwarding
+
+guardRules
+
+markIntfRules
+
+rawRules
+
+antisubscribeRules
+
+interceptRules
+
+uturnRules

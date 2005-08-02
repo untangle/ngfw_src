@@ -552,7 +552,7 @@ int  netcap_icmp_get_source( char* data, int data_len, netcap_pkt_t* pkt, struct
     if ( data == NULL || pkt == NULL || source == NULL ) return errlogargs();
     
     if ( data_len < ICMP_MINLEN ) {
-        errlog( ERR_WARNING, "ICMP Packet is too short" );
+        errlog( ERR_WARNING, "ICMP Packet is too short\n" );
         return 0;
     }
 

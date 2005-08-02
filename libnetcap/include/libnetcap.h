@@ -30,62 +30,6 @@
 
 #define NC_INTF_MAX NC_INTF_15
 
-typedef u_int netcap_intfset_t;
-
-typedef enum {
-    /**
-     * this flag to only half open the connection
-     * the server socket value will be -1 in this case, and
-     * you must call the callback to complete the connection
-     */
-    NETCAP_FLAG_SRV_UNFINI = 1,
-    /**
-     * this flag means call the tcp hook before the client connection is accepted
-     * note, you must call the callback to complete the connection
-     */
-    NETCAP_FLAG_CLI_UNFINI = 2,
-    /**
-     * this flag is to anti subscribe when subscribing
-     * All anti subscription override all subscriptions
-     */
-    NETCAP_FLAG_ANTI_SUBSCRIBE = 4,
-    /**
-     * this flag means to block all currently active connections
-     * instead of only redirecting new connections
-     */
-    NETCAP_FLAG_BLOCK_CURRENT = 8,
-    /**
-     * this flag to call sudo when inserting fw rules
-     * you can give the option of sudo'ing all calls
-     * this is so you can run your app as non root
-     * /etc/sudoers must be set so that no passwd is required
-     */
-    NETCAP_FLAG_SUDO = 16,
-    /**
-     * Local antisubscribe: This subscription is interested in traffic destined to the local
-     * machine.
-     */
-    NETCAP_FLAG_LOCAL_ANTI_SUBSCRIBE = 32,
-    /**
-     * Fake subscription
-     * Will subscribe to whatever, but is_subset always returns false
-     */
-    NETCAP_FLAG_IS_FAKE = 64,
-    /**
-     * Local subscription.  (Presently only effective for antisubscribes)
-     */
-    NETCAP_FLAG_LOCAL = 128,
-    /**
-     * Do not create the reverse rule.  This is important for antisubscribing to traffic to the local
-     * host.  Since Antisubscribes use the local traffic mark, the reverse of a rule like antisubscribe
-     * traffic to port 23, would also antisubscribe traffic from port 23 that is destined to the local
-     * machine.  This outgoing packets are not a problem because traffic that is generated from other 
-     * ports go into the conntrack table, and anything in the conntrack table is antisubscribed anyway.
-     * (Presently only effective for antisubscribes)
-     */
-    NETCAP_FLAG_NO_REVERSE = 256
-} netcap_subscription_flags_t;
-
 typedef enum {
     ACTION_NULL=0,
     CLI_COMPLETE,
@@ -216,97 +160,6 @@ typedef struct netcap_pkt {
      */
     void* app_data;
 } netcap_pkt_t;
-
-typedef struct netcap_traffic {
-    /*! \brief the protocol
-     *  this must be IPPROTO_TCP or IPPROTO_UDP \n
-     *  you must fill this out before registering the module \n
-     */
-    int protocol; 
-
-    /**
-     * A number indicating the input interface or 0 if it is unknown.
-     */
-    netcap_intf_t cli_intf;
-
-    /**
-     * A number indicating the output interface or 0 if it is unknown.
-     */
-    netcap_intf_t srv_intf;
-
-    /* The client interface set for a subscription */
-    netcap_intfset_t        cli_intfset;
-    
-    /* The server interface set for a subscription */
-    netcap_intfset_t        srv_intfset;
-
-    /*! \brief a flag for shost
-     *  indicates whether or not shost is a discrimator
-     */
-    u_char shost_used;
-    u_char shost_netmask_used;
-    
-    /*! \brief the source host to intercept
-     */
-    in_addr_t shost;
-
-    /*! \brief the netmask of the source dest
-     *  if shost in not used this is ignored
-     *  from 1.2.3.x will match this description
-     */
-    in_addr_t shost_netmask;
-
-    /*! \brief a flag for dhost
-     *  indicates whether or not dhost is a discrimator
-     */
-    u_char dhost_used;
-    u_char dhost_netmask_used;
-
-    /*! \brief the destination host to intercept
-     */
-    in_addr_t dhost;
-
-    /*! \brief the netmask of the source dest
-     *  if dhost in not used this is ignored
-     *  to 1.2.3.x will match this description
-     */
-    in_addr_t dhost_netmask;
-
-    /*! \brief the source port to intercept
-     *  if 0 then use sport and dport \n
-     *  if 1 then use sport_low and sport_high 
-     *  and dport_low and dport_high\n
-     */
-    u_short src_port_range_flag;
-    u_short dst_port_range_flag;
-    
-    /*! \brief the source port to intercept
-     *  if 0 libnetcap will treat it as a wildcard (any port) \n
-     */
-    u_short sport;
-    
-    /*! \brief the destination port to intercept
-     *  if 0 libnetcap will treat it as a wildcard (any port) \n
-     */
-    u_short dport;
-
-    /*! \brief the low source port to intercept
-     */
-    u_short sport_low;
-    
-    /*! \brief the low destination port to intercept
-     */
-    u_short dport_low;
-
-    /*! \brief the high source port to intercept
-     */
-    u_short sport_high;
-    
-    /*! \brief the high destination port to intercept
-     */
-    u_short dport_high;
-
-} netcap_traffic_t;
 
 typedef struct netcap_session {
     /**
@@ -473,7 +326,7 @@ const char* netcap_version (void);
 void  netcap_debug_set_level   (int lev);
 
 /** Update everything that must change when the address of the box changes */
-int   netcap_update_address( int inside, int outside );
+int   netcap_update_address( void );
 
 /**
  * Thread management
@@ -490,35 +343,6 @@ int   netcap_udp_hook_register   (netcap_udp_hook_t hook);
 int   netcap_udp_hook_unregister ();
 int   netcap_icmp_hook_register   (netcap_icmp_hook_t hook);
 int   netcap_icmp_hook_unregister ();
-
-/**
- * Subscription management
- */
-int   netcap_subscribe (int flags, void* arg, int proto, 
-                        netcap_intfset_t cli_intfset, netcap_intfset_t srv_intfset,
-                        in_addr_t* src, in_addr_t* shost_netmask, u_short src_port_min, u_short src_port_max,
-                        in_addr_t* dst, in_addr_t* dhost_netmask, u_short dst_port_min, u_short dst_port_max);
-int   netcap_unsubscribe     (int traffic_id);
-int   netcap_unsubscribe_all (void);
-int   netcap_subscription_is_subset ( int sub_id, netcap_traffic_t* traf );
-
-/** Allow DHCP traffic to pass through the box */
-int   netcap_subscription_disable_dhcp_forwarding( void );
-
-/** Disallow DHCP traffic to pass through the box */
-int   netcap_subscription_enable_dhcp_forwarding( void );
-
-/* XXXXXXXX These only work properly if none of the subscriptions subscribe to local traffic */
-/** Unsubscribe from all local traffic */
-int   netcap_subscription_enable_local( void );
-
-/** Subscribe to all local traffic */
-int   netcap_subscription_disable_local( void );
-
-/* Block or unblock traffic going to certain ports on the input chain.  These are packets that would
- * go to a server on the local machine */
-int netcap_subscription_block_incoming( int if_add, int protocol, netcap_intf_t intf, 
-                                        int port_low, int port_high );
 
 /**
  * Packet Sending (XXX include pkt_create?)
@@ -573,7 +397,17 @@ int netcap_interface_is_multicast (in_addr_t addr);
 int netcap_interface_is_local (in_addr_t addr);
 int netcap_interface_count (void);
 
+int netcap_interface_get_address( char* interface_name, struct in_addr* address );
+int netcap_interface_get_netmask( char* interface_name, struct in_addr* netmask );
+
 in_addr_t* netcap_interface_addrs (void);
+
+/**
+ * Query information about the redirect and divert ports
+ */
+int netcap_tcp_redirect_ports( int* port_low, int* port_high );
+int netcap_udp_divert_port   ( void );
+
 
 /**
  * Session table management
@@ -616,44 +450,8 @@ int               netcap_sesstable_merge_icmp_tuple ( netcap_session_t* netcap_s
                                                       in_addr_t src, in_addr_t dst, netcap_intf_t intf,
                                                       int icmp_pid );
 
-/**
- * netcap_traffic  functions
- */
-int  netcap_traffic_bzero(netcap_traffic_t* traf);
-int  netcap_traffic_copy (netcap_traffic_t* dst, netcap_traffic_t* src);
-int  netcap_traffic_is_subset (netcap_traffic_t* desc, netcap_traffic_t* inst);
-int  netcap_traffic_equals (netcap_traffic_t* traf1, netcap_traffic_t* traf2);
-void netcap_traffic_debug_print_prefix (int level, netcap_traffic_t* traf, char* prefix);
-void netcap_traffic_debug_print (int level, netcap_traffic_t* traf);
-
 int  netcap_endpoints_copy          ( netcap_endpoints_t* dst, netcap_endpoints_t* src );
 int  netcap_endpoints_bzero         ( netcap_endpoints_t* tuple );
-
-/**
- * Functions on the interface set
- */
-
-/**
- * Turn all interfaces on
- */
-int netcap_intfset_clear ( netcap_intfset_t* intfset);
-/**
- * Set an interface in the set.  (This enables one interface)
- */
-int netcap_intfset_add   ( netcap_intfset_t* intfset, netcap_intf_t intf);
-/**
- * Check an interface in the set. (Returns 1 if set, 0 if not, -1 on error
- */
-int netcap_intfset_get   ( netcap_intfset_t* intfset, netcap_intf_t intf);
-/**
- * Retrieve an interface set with all of the interfaces turned on.
- */
-int netcap_intfset_get_all ( netcap_intfset_t* intfset );
-/**
- * Combine all of the interfaces that are set in the interface set into one string separated
- * by spaces.
- */
-int netcap_intfset_to_string ( char* dst, int dst_len, netcap_intfset_t* intfset);
 
 /**
  * Interface functions
@@ -661,19 +459,6 @@ int netcap_intfset_to_string ( char* dst, int dst_len, netcap_intfset_t* intfset
 
 /* Return 1 if the bridge exists, 0 otherwise */
 int netcap_interface_bridge_exists( void );
-
-/* Limit traffic to just this subnet */
-int netcap_interface_limit_subnet   (char* dev_inside, char* dev_outside);
-
-/**
- * Block all traffic on interface gate to this port.
- */
-int netcap_interface_station_port_guard( netcap_intf_t gate, int protocol, char* ports, char* guests );
-
-/**
- * Remove the rule blocking traffic to a port.
- */
-int netcap_interface_relieve_port_guard( netcap_intf_t gate, int protocol, char* ports, char* guests );
 
 /* Convert a string representation of an interface to a netcap representation */
 int netcap_interface_string_to_intf (char *intf_str, netcap_intf_t *intf);

@@ -71,7 +71,7 @@ chk:
 alpine_libs=jnetcap netcap vector jvector mvutil jmvutil
 lib_deps = $(patsubst %,$(build_lib_path)/lib%.a,$(alpine_libs))
 
-$(lib_file_name): LIBS = xml2
+$(lib_file_name): LIBS = xml2 sysfs
 $(lib_file_name): $(lib_deps)
 	@echo "==> gcc ($(alpine_libs)) -> $@"
 	@$(CC) $(CFLAGS) $(LIBS_FLAGS) -Wl,--whole-archive  $(lib_deps) -lipq -Wl,--no-whole-archive \

@@ -11,7 +11,7 @@
 
 package com.metavize.jnetcap;
 
-public class Range {
+public class PortRange {
     private final int low;
     private final int high;
 
@@ -20,7 +20,7 @@ public class Range {
      * @param low - low value (inclusive).
      * @param high - high value (inclusive).
      */
-    public Range( int low, int high ) throws JNetcapException
+    public PortRange( int low, int high ) throws JNetcapException
     {
         if ( low > high ) {
             throw new JNetcapException( "Reversed port range: low=" + low + " high=" + high );

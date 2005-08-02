@@ -106,11 +106,6 @@ static void              jnetcap_thread_free    ( jnetcap_thread_t* input );
 static void              jnetcap_thread_destroy ( jnetcap_thread_t* input );
 static void              jnetcap_thread_raze    ( jnetcap_thread_t* input );
 
-static void              _command_port_guard( JNIEnv* env, jint gate, jint protocol, jstring ports, 
-                                              jstring guard, int if_add );
-
-static int _get_interface_address ( char* interface_name, in_addr_t* address, in_addr_t* netmask );
-
 static __inline__ void     _detach_thread( JavaVM* jvm ) 
 {
     (*jvm)->DetachCurrentThread(jvm);
@@ -190,40 +185,60 @@ JNIEXPORT jint JNICALL JF_Netcap( init )
 
 /*
  * Class:     com_metavize_jnetcap_Netcap
- * Method:    getHostLong
+ * Method:    getInterfaceAddressLong
  * Signature: ();
  */
-JNIEXPORT jlong JNICALL JF_Netcap( getHostLong )
-  (JNIEnv *env, jclass _class)
+JNIEXPORT jlong JNICALL JF_Netcap( getInterfaceAddressLong )
+  (JNIEnv *env, jobject _this, jstring j_interface_string )
 {
-    /* May want to one day make the interface name an argument, but for now
-     * that is not necessary */
-    in_addr_t address;
+    const char* str;
+    struct in_addr address;
+    int ret;
     
+    if (( str = (*env)->GetStringUTFChars( env, j_interface_string, NULL )) == NULL ) {
+        return jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "(*env)->GetStringUTFChars\n" );
+    }
     
-    if ( _get_interface_address( "br0", &address, NULL ) < 0 )
-        address = 0;
-    
-    return (jlong)address;
+    ret = netcap_interface_get_address((char*)str, &address );
+
+    (*env)->ReleaseStringUTFChars( env, j_interface_string, str );
+
+    if ( ret < 0 ) {
+        jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "Unable to retrieve interface address.\n" );
+        return (jlong)-1L;
+    }
+        
+    return (jlong)address.s_addr;
 }
 
 /*
  * Class:     com_metavize_jnetcap_Netcap
- * Method:    getNetmask
+ * Method:    getInterfaceNetmaskLong
  * Signature: ()Z;
  */
-JNIEXPORT jlong JNICALL JF_Netcap( getNetmaskLong )
-    (JNIEnv *env, jclass _class )
+JNIEXPORT jlong JNICALL JF_Netcap( getInterfaceNetmaskLong )
+    (JNIEnv *env, jobject _this, jstring j_interface_string )
 {
-    /* May want to one day make the interface name an argument, but for now
-     * that is not necessary */
-    in_addr_t netmask;
+    const char* str;
+    struct in_addr netmask;
+    int ret;
     
-    if ( _get_interface_address( "br0", NULL, &netmask ) < 0 )
-        netmask = 0;
+    if (( str = (*env)->GetStringUTFChars( env, j_interface_string, NULL )) == NULL ) {
+        return jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "(*env)->GetStringUTFChars\n" );
+    }
+
+    ret = netcap_interface_get_netmask((char*)str, &netmask );
     
-    return (jlong)netmask;
+    (*env)->ReleaseStringUTFChars( env, j_interface_string, str );
+
+    if ( ret < 0 ) {
+        jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "Unable to netmask for interface." );
+        return (jlong)-1L;
+    }
+        
+    return (jlong)netmask.s_addr;
 }
+
 
 /*
  * Class:     Netcap
@@ -284,7 +299,7 @@ JNIEXPORT jbyte JNICALL JF_Netcap( convertStringToIntf )
 
     if (( str = (*env)->GetStringUTFChars( env, string_intf, NULL )) == NULL ) {
         return jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "(*env)->GetStringUTFChars\n" );
-    };
+    }
 
     do {
         if ( netcap_interface_string_to_intf( (char*)str, &intf ) < 0 ) {
@@ -315,140 +330,6 @@ JNIEXPORT jstring JNICALL JF_Netcap( convertIntfToString )
 
     return (*env)->NewStringUTF( env, buf );    
 }
-
-/*
- * Class:     com_metavize_jnetcap_Netcap
- * Method:    blockIncomingTraffic
- * Signature: (ZIIII)V
- */
-JNIEXPORT void JNICALL JF_Netcap( blockIncomingTraffic )
-  (JNIEnv *env, jclass _class, jboolean if_add, jint protocol, jint intf, jint low, jint high )
-{
-    if_add = ( if_add == JNI_TRUE ) ? 1 : 0;
-
-    if ( netcap_subscription_block_incoming( if_add, protocol, intf, low, high ) < 0 ) {
-        jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "netcap_subscription_block_incoming\n" );
-    }
-}
-
-/*
- * Class:     com_metavize_jnetcap_Netcap
- * Method:    limitSubnet
- * Signature: (Ljava/lang/String;Ljava/lang/String;)V
- */
-JNIEXPORT void JNICALL JF_Netcap( limitSubnet )
-    (JNIEnv *env, jclass _class, jstring inside, jstring outside )
-{
-    const char* inside_str = NULL;
-    const char* outside_str = NULL;
-
-    if (( inside_str = (*env)->GetStringUTFChars( env, inside, NULL )) == NULL ) {
-        return jmvutil_error_void( JMVUTIL_ERROR_STT, ERR_CRITICAL, "(*env)->GetStringUTFChars\n" );
-    };
-
-    do {
-        if (( outside_str = (*env)->GetStringUTFChars( env, outside, NULL )) == NULL ) {
-            jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "(*env)->GetStringUTFChars\n" );
-            break;
-        };
-
-        if ( netcap_interface_limit_subnet( (char*)inside_str, (char*)outside_str ) < 0 ) {
-            jmvutil_error( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "netcap_interface_limit_subnet\n" );
-            break;
-        }
-        
-    } while ( 0 );
-    
-    (*env)->ReleaseStringUTFChars( env, inside, inside_str );
-    if ( outside_str != NULL ) (*env)->ReleaseStringUTFChars( env, outside, outside_str );    
-}
-
-/*
- * Class:     com_metavize_jnetcap_Netcap
- * Method:    stationTcpGuard
- * Signature: (II)V
- */
-JNIEXPORT void JNICALL JF_Netcap( stationTcpGuard )
-    (JNIEnv *env, jclass _class, jint gate, jstring ports, jstring guests )
-{
-    _command_port_guard( env, gate, IPPROTO_TCP, ports, guests, _STATION_GUARD );
-}
-
-/*
- * Class:     com_metavize_jnetcap_Netcap
- * Method:    stationUdpGuard
- * Signature: (II)V
- */
-JNIEXPORT void JNICALL JF_Netcap( stationUdpGuard )
-    (JNIEnv *env, jclass _class, jint gate, jstring ports, jstring guests )
-{
-    _command_port_guard( env, gate, IPPROTO_UDP, ports, guests, _STATION_GUARD );
-}
-
-/*
- * Class:     com_metavize_jnetcap_Netcap
- * Method:    relieveTcpGuard
- * Signature: (II)V
- */
-JNIEXPORT void JNICALL JF_Netcap( relieveTcpGuard )
-    (JNIEnv *env, jclass _class, jint gate, jstring ports, jstring guests )
-{
-    _command_port_guard( env, gate, IPPROTO_TCP, ports, guests, _RELIEVE_GUARD );
-}
-
-/*
- * Class:     com_metavize_jnetcap_Netcap
- * Method:    relieveUdpGuard
- * Signature: (II)V
- */
-JNIEXPORT void JNICALL JF_Netcap( relieveUdpGuard )
-    (JNIEnv *env, jclass _class, jint gate, jstring ports, jstring guests )
-{
-    _command_port_guard( env, gate, IPPROTO_UDP, ports, guests, _RELIEVE_GUARD );
-}
-
-static void _command_port_guard( JNIEnv* env, jint gate, jint protocol, jstring ports, jstring guests, 
-                                 int if_add )
-{
-    const char* ports_str  = NULL;
-    const char* guests_str = NULL;
-    int ret = 0;
-
-    if ( ports == NULL ) {
-        return jmvutil_error_void( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "NULL ports" );
-    } else {
-        if (( ports_str = (*env)->GetStringUTFChars( env, ports, NULL )) == NULL ) {
-            return jmvutil_error_void( JMVUTIL_ERROR_STT, ERR_CRITICAL, "(*env)->GetStringUTFChars\n" );
-        };
-    }
-
-    do {
-        if ( guests != NULL ) {
-            if (( guests_str = (*env)->GetStringUTFChars( env, guests, NULL )) == NULL ) {
-                jmvutil_error_void( JMVUTIL_ERROR_STT, ERR_CRITICAL, "(*env)->GetStringUTFChars\n" );
-                break;
-            }
-        }
-        
-        if ( if_add == _STATION_GUARD ) {
-            ret = netcap_interface_station_port_guard((netcap_intf_t)gate, protocol, (char*)ports_str, 
-                                                     (char*)guests_str );
-            if ( ret < 0 ) {
-                jmvutil_error( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "Unable to station guard\n" );
-            }
-        } else { 
-            ret = netcap_interface_relieve_port_guard((netcap_intf_t)gate, protocol, (char*)ports_str,
-                                                      (char*)guests_str );
-            if ( ret < 0 ) {
-                jmvutil_error( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "Unable to relieve guard\n" );
-            }
-        }
-    } while( 0 );
-
-    if ( ports_str != NULL ) (*env)->ReleaseStringUTFChars( env, ports, ports_str );
-    if ( guests_str != NULL ) (*env)->ReleaseStringUTFChars( env, guests, guests_str );
-}
-
 
 /*
  * Class:     com_metavize_jnetcap_Netcap
@@ -674,62 +555,53 @@ JNIEXPORT jboolean JNICALL JF_Netcap( isMulticast )
  * Signature: ()V;
  */
 JNIEXPORT void JNICALL JF_Netcap( updateAddress )
-    ( JNIEnv* env, jclass _class, jint inside, jint outside )
+    ( JNIEnv* env, jclass _class )
 {
-    if ( netcap_update_address( inside, outside ) < 0 ) {
-        jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "netcap_update_address\n" );
+    if ( netcap_update_address() < 0 ) {
+        jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "netcap_update_address" );
     }
 }
 
 /*
  * Class:     com_metavize_jnetcap_Netcap
- * Method:    disableLocalAntisubscribe
+ * Method:    cTcpRedirectPorts
  * Signature: ()V;
  */
-JNIEXPORT void JNICALL JF_Netcap( disableLocalAntisubscribe )
-    ( JNIEnv* env, jclass _class )
+JNIEXPORT jintArray JNICALL JF_Netcap( cTcpRedirectPorts )
+    ( JNIEnv* env, jobject _this )
 {
-    if ( netcap_subscription_enable_local() < 0 ) {
-        jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "netcap_subscription_enable_local\n" );
+    int ports[2];
+    jintArray j_ports;
+
+    if ( netcap_tcp_redirect_ports( &ports[0], &ports[1] ) < 0 ) {
+        return jmvutil_error_null( JMVUTIL_ERROR_STT, ERR_CRITICAL, "netcap_tcp_redirect_ports" );
     }
+
+    /** Make an array to return the two values */
+    if (( j_ports = (*env)->NewIntArray( env, 2 )) == NULL ) {
+        return jmvutil_error_null( JMVUTIL_ERROR_STT, ERR_CRITICAL, "(*env)->NewByteArray" );
+    }
+    
+    (*env)->SetIntArrayRegion( env, j_ports, 0, 2, (jint*)ports );
+
+    return j_ports;
 }
 
 /*
  * Class:     com_metavize_jnetcap_Netcap
- * Method:    enableLocalAntisubscribe
- * Signature: ()V;
+ * Method:    cUdpDivertPort
+ * Signature: ()I;
  */
-JNIEXPORT void JNICALL JF_Netcap( enableLocalAntisubscribe )
-    ( JNIEnv* env, jclass _class )
+JNIEXPORT jint JNICALL JF_Netcap( cUdpDivertPort )
+    ( JNIEnv* env, jobject _this )
 {
-    if ( netcap_subscription_disable_local() < 0 ) {
-        jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "netcap_subscription_disable_local\n" );
-    }
-}
-/*
- * Class:     com_metavize_jnetcap_Netcap
- * Method:    disableDhcpForwarding
- * Signature: ()V;
- */
-JNIEXPORT void JNICALL JF_Netcap( disableDhcpForwarding )
-    ( JNIEnv* env, jclass _class )
-{
-    if ( netcap_subscription_disable_dhcp_forwarding() < 0 ) {
-        jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "netcap_subscription_disable_dhcp_forwarding\n" );
-    }
-}
+    int port = -1;
 
-/*
- * Class:     com_metavize_jnetcap_Netcap
- * Method:    enableDhcpForwarding
- * Signature: ()V;
- */
-JNIEXPORT void JNICALL JF_Netcap( enableDhcpForwarding )
-    ( JNIEnv* env, jclass _class )
-{
-    if ( netcap_subscription_enable_dhcp_forwarding() < 0 ) {
-        jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "netcap_subscription_enable_dhcp_forwarding\n" );
+    if (( port = netcap_udp_divert_port()) < 0 ) {
+        return jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "netcap_udp_divert_port" );
     }
+
+    return port;
 }
 
 
@@ -1082,35 +954,4 @@ static void              jnetcap_thread_raze    ( jnetcap_thread_t* input )
 
     jnetcap_thread_destroy(input);
     jnetcap_thread_free(input);
-}
-
-/* Retrieves the address of br0 */
-static int _get_interface_address ( char* interface_name, in_addr_t* address, in_addr_t* netmask )
-{
-    int sockfd, ret = 0;
-    struct ifreq ifr;
-    
-    if (( sockfd = socket( PF_INET, SOCK_DGRAM, 0 )) < 0 ) 
-        return perrlog( "socket" );
-
-    do {
-        strncpy( ifr.ifr_name, interface_name, sizeof( ifr.ifr_name ));
-
-        /* Get the address */
-        if ( address != NULL ) {
-            if ( ioctl( sockfd, SIOCGIFADDR, &ifr ) < 0 ) { ret = perrlog( "ioctl" ); break; }
-            *address = (*(struct sockaddr_in*)&ifr.ifr_netmask).sin_addr.s_addr;
-        }
-
-        /* Get the netmask */
-        if ( netmask != NULL ) {
-            if ( ioctl( sockfd, SIOCGIFNETMASK, &ifr ) < 0 ) { ret = perrlog( "ioctl" ); break; }
-            *netmask = (*(struct sockaddr_in*)&ifr.ifr_netmask).sin_addr.s_addr;
-        }
-    } while ( 0 );
-
-    if ( close ( sockfd )  < 0 ) 
-        return perrlog( "close" );
-    
-    return ret;
 }

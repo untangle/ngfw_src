@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: IntfConverter.java,v 1.6 2005/01/25 01:20:19 rbscott Exp $
+ *  $Id$
  */
 
 package com.metavize.mvvm.argon;
@@ -46,6 +46,10 @@ public final class IntfConverter
      */
     private final byte toNetcap[] = new byte[MAX_INTERFACE];
 
+    private final String insideString;
+    private final String outsideString;
+    private final String dmzString[];
+
     private static IntfConverter INSTANCE = null;
 
     private Logger logger;
@@ -56,21 +60,25 @@ public final class IntfConverter
 
         logger = Logger.getLogger(IntfConverter.class.getName());
 
+        this.insideString  = inside;
+        this.outsideString = outside;
+        this.dmzString     = dmz;
+
         /* Invalidate all of the interfaces */
-        for ( int c = 0 ; c < MAX_INTERFACE; c++ ) {
-            toArgon[c] = INVALID_INTERFACE;
-            toNetcap[c] = INVALID_INTERFACE;
-        }
-        setInterface( outside, OUTSIDE );
-        setInterface( inside, INSIDE );
+//         for ( int c = 0 ; c < MAX_INTERFACE; c++ ) {
+//             toArgon[c]  = INVALID_INTERFACE;
+//             toNetcap[c] = INVALID_INTERFACE;
+//         }
+//         setInterface( outside, OUTSIDE );
+//         setInterface( inside, INSIDE );
         
-        int length = ( dmz == null ) ? 0 : dmz.length;
+//         int length = ( dmz == null ) ? 0 : dmz.length;
         
-        if ( length == 0 ) return;
+//         if ( length == 0 ) return;
         
-        for ( int c = 0 ; c < length ; c++ ) {
-            setInterface( dmz[c], (byte)( DMZ_1 + c ));
-        }
+//         for ( int c = 0 ; c < length ; c++ ) {
+//             setInterface( dmz[c], (byte)( DMZ_1 + c ));
+//         }
 
     }
 
@@ -99,7 +107,8 @@ public final class IntfConverter
      */
     public static byte inside()
     {
-        return INSTANCE.toNetcap[INSIDE];
+        // return INSTANCE.toNetcap[INSIDE];
+        return 2;
     }
 
     /**
@@ -107,7 +116,22 @@ public final class IntfConverter
      */
     public static byte outside()
     {
-        return INSTANCE.toNetcap[OUTSIDE];
+        // return INSTANCE.toNetcap[OUTSIDE];
+        return 1;
+    }
+
+    public String addressString( byte argonInterface ) throws ArgonException
+    {
+        switch ( argonInterface ) {
+        case OUTSIDE:
+            return outsideString;
+
+        case INSIDE:
+            return insideString;
+            
+        default:
+            throw new ArgonException( "Unable to convert " + argonInterface + " to a string" );
+        }
     }
 
     /**
@@ -116,17 +140,23 @@ public final class IntfConverter
      */
     public static byte toNetcap( byte argonIntf )
     {
-        if ( argonIntf > INSTANCE.toNetcap.length ) {
-            throw new IllegalArgumentException( "Invalid argon interface: " + argonIntf );
-        }
-
-        byte netcapIntf = INSTANCE.toNetcap[argonIntf];
-
-        if ( netcapIntf == INVALID_INTERFACE ) {
+        if ( argonIntf < 0 || argonIntf > 15 ) {
             throw new IllegalArgumentException( "Invalid argon interface: " + argonIntf );
         }
         
-        return netcapIntf;
+        return (byte)(argonIntf + 1);
+            
+//         if ( argonIntf > INSTANCE.toNetcap.length ) {
+//             throw new IllegalArgumentException( "Invalid argon interface: " + argonIntf );
+//         }
+
+//         byte netcapIntf = INSTANCE.toNetcap[argonIntf];
+
+//         if ( netcapIntf == INVALID_INTERFACE ) {
+//             throw new IllegalArgumentException( "Invalid argon interface: " + argonIntf );
+//         }
+        
+//         return netcapIntf;
     }
 
 
@@ -135,18 +165,24 @@ public final class IntfConverter
      */
     public static byte toArgon( byte netcapIntf )
     {
-        if ( netcapIntf > INSTANCE.toArgon.length ) {
+        if ( netcapIntf < 1  || netcapIntf > 15 ) {
             throw new IllegalArgumentException( "Invalid netcap interface: " + netcapIntf );
-        }
-
-        byte argonIntf = INSTANCE.toArgon[netcapIntf];
-
-        if ( argonIntf == INVALID_INTERFACE ) {
-            throw new IllegalArgumentException( "Invalid netcap interface: " + netcapIntf );
-            
         }
         
-        return argonIntf;
+        return (byte)(netcapIntf - 1);
+
+//         if ( netcapIntf > INSTANCE.toArgon.length ) {
+//             throw new IllegalArgumentException( "Invalid netcap interface: " + netcapIntf );
+//         }
+
+//         byte argonIntf = INSTANCE.toArgon[netcapIntf];
+
+//         if ( argonIntf == INVALID_INTERFACE ) {
+//             throw new IllegalArgumentException( "Invalid netcap interface: " + netcapIntf );
+            
+//         }
+        
+//        return argonIntf;
     }
     /**
      * Lookup the argon interface identifier for a DMZ zone.
@@ -169,34 +205,39 @@ public final class IntfConverter
 
     public static void validateNetcapIntf( byte netcapIntf )
     {
-        if ( netcapIntf < 0 || netcapIntf > MAX_INTERFACE ) {
-            throw new IllegalArgumentException( "Invalid netcap interface: " + netcapIntf );
-        }
+//         if ( netcapIntf < 0 || netcapIntf > MAX_INTERFACE ) {
+//             throw new IllegalArgumentException( "Invalid netcap interface: " + netcapIntf );
+//         }
 
-        if ( INSTANCE.toArgon[netcapIntf] == INVALID_INTERFACE ) {
-            throw new IllegalArgumentException( "Invalid netcap interface: " + netcapIntf );
-        }
+//         if ( INSTANCE.toArgon[netcapIntf] == INVALID_INTERFACE ) {
+//             throw new IllegalArgumentException( "Invalid netcap interface: " + netcapIntf );
+//         }
     }
 
     public static void validateArgonIntf( byte argonIntf )
     {
-        if ( argonIntf < 0 || argonIntf > MAX_INTERFACE ) {
-            throw new IllegalArgumentException( "Invalid argon interface: " + argonIntf );
-        }
+//         if ( argonIntf < 0 || argonIntf > MAX_INTERFACE ) {
+//             throw new IllegalArgumentException( "Invalid argon interface: " + argonIntf );
+//         }
 
-        if ( INSTANCE.toNetcap[argonIntf] == INVALID_INTERFACE ) {
-            throw new IllegalArgumentException( "Invalid argon interface: " + argonIntf );
-        }
+//         if ( INSTANCE.toNetcap[argonIntf] == INVALID_INTERFACE ) {
+//             throw new IllegalArgumentException( "Invalid argon interface: " + argonIntf );
+//         }
     }
 
     /* Initialize the INSTANCE */
-    public synchronized static void init( String inside, String outside, String dmz[] )
+    public synchronized static void init( String inside, String outside, String dmz[] ) throws ArgonException
     {
         if ( INSTANCE == null ) {
             INSTANCE = new IntfConverter( inside, outside, dmz );
             INSTANCE.logger.info("IntfConverted init: inside = " + inside + ", outside =  " + outside);
-        } else {
-            throw new IllegalStateException( "Attempt to initialize the IntfConverter Twice" );
-        }
+         } else {
+             throw new ArgonException( "Attempt to initialize the IntfConverter Twice" );
+         }
+    }
+
+    public synchronized static IntfConverter getInstance()
+    {
+        return INSTANCE;
     }
 }

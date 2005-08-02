@@ -25,12 +25,10 @@
 #include <mvutil/unet.h>
 #include "libnetcap.h"
 #include "netcap_globals.h"
-#include "netcap_subscriptions.h"
 #include "netcap_queue.h"
 #include "netcap_hook.h"
 #include "netcap_session.h"
 #include "netcap_pkt.h"
-#include "netcap_rdr.h"
 #include "netcap_udp.h"
 #include "netcap_tcp.h"
 #include "netcap_icmp.h"
@@ -79,12 +77,6 @@ typedef struct epoll_info {
      * the type of this epoll fd
      */
     poll_type_t     type;
-
-    /**
-     * the subscription pertaining to this epoll fd (if any)
-     * used in type = {POLL_TCP_INCOMING,POLL_UDP_INCOMING,POLL_TCP_WAITING,POLLQ_QUEUE}
-     */
-    netcap_sub_t*          sub;
     
     /**
      * the tcp sessi pertaining to this epoll fd (if any)
@@ -105,7 +97,7 @@ static int  _handle_udp (epoll_info_t* info, int revents, int sock );
 static int  _handle_queue (epoll_info_t* info, int revents);
 
 /* static int  _start_open_connection (struct in_addr* destaddr,u_short destport); */
-static int  _epoll_info_add (int fd, int events, int type, netcap_sub_t* sub, netcap_session_t* netcap_sess);
+static int  _epoll_info_add (int fd, int events, int type, netcap_session_t* netcap_sess);
 static int  _epoll_info_del (epoll_info_t* info);
 static int  _epoll_info_del_fd (int fd);
 
@@ -117,8 +109,25 @@ static volatile int _server_lock_val = 1;
 static volatile int _server_threads = 0;
 static volatile int _active_threads = 0;
 
+static struct {
+    struct {
+        int *sock_array;
+        int count;
+    } tcp;
+    
+    int udp_divert_sock;
+} _server = {
+    .tcp {
+        .sock_array NULL,
+        .count      -1
+    },
+    .udp_divert_sock -1
+};
+
 int  netcap_server_init (void)
 {
+    int c;
+
     if (lock_init(&_server_lock,LOCK_FLAG_NOTRACK_READERS)<0)
         return perrlog("lock_init");
 
@@ -129,11 +138,35 @@ int  netcap_server_init (void)
     if (ht_init(&_epoll_table, EPOLL_MAX_EVENT+1, int_hash_func, int_equ_func, HASH_FLAG_KEEP_LIST)<0)
         return perrlog("ht_init");
 
-    if (_epoll_info_add(_message_pipe[0], EPOLL_INPUT_SET,POLL_MESSAGE,NULL,NULL)<0)
+    if (_epoll_info_add(_message_pipe[0], EPOLL_INPUT_SET,POLL_MESSAGE,NULL)<0)
         return perrlog("_epoll_info_add");
-    if (_epoll_info_add(netcap_queue_get_sock(),EPOLL_INPUT_SET,POLL_QUEUE_INCOMING,NULL,NULL)<0)
+    if (_epoll_info_add(netcap_queue_get_sock(),EPOLL_INPUT_SET,POLL_QUEUE_INCOMING,NULL)<0)
         return perrlog("_epoll_info_add");
 
+    if ((( _server.tcp.count = netcap_tcp_redirect_socks( &_server.tcp.sock_array )) < 0 ) || 
+        ( _server.tcp.sock_array == NULL )) {
+        return errlog( ERR_CRITICAL, "netcap_tcp_redirect_sockets\n" );
+    }
+    
+    /* Add the TCP Redirect port to EPOLL */
+    for ( c = 0 ; c < _server.tcp.count ; c++ ) {
+        int fd = _server.tcp.sock_array[c];
+        debug( 11, "NETCAP: Inserting socket: %d\n", fd );
+        
+        if ( _epoll_info_add( fd, EPOLL_INPUT_SET, POLL_TCP_INCOMING, NULL ) < 0 ) {
+            return perrlog( "_epoll_info_add" );
+        }
+    }
+
+    /* Add the UDP Divert port to EPOLL */
+    if (( _server.udp_divert_sock = netcap_udp_divert_sock()) < 0 ) {
+        return errlog( ERR_CRITICAL, "netcap_udp_divert_port\n" );
+    }
+    
+    if ( _epoll_info_add( _server.udp_divert_sock, EPOLL_INPUT_SET, POLL_UDP_INCOMING, NULL ) < 0 ) {
+        return perrlog("_epoll_info_add");
+    }
+    
     return 0;
 }
 
@@ -156,6 +189,19 @@ int  netcap_server_shutdown (void)
         perrlog("_epoll_info_del_fd");
     if (_epoll_info_del_fd(netcap_queue_get_sock())<0) 
         perrlog("_epoll_info_del_fd");
+    
+    if (( _server.udp_divert_sock > 0 ) && ( _epoll_info_del_fd( _server.udp_divert_sock ) < 0 )) {
+        perrlog("_epoll_info_del_fd");
+    }
+    
+    if (( _server.tcp.count > 0 ) && ( _server.tcp.sock_array != NULL )) {
+        int c;
+        
+        for  ( c = 0 ; c < _server.tcp.count ; c++ ) {
+            int fd = _server.tcp.sock_array[c];
+            if ( _epoll_info_del_fd( fd ) < 0 ) perrlog( "_epoll_info_del_fd\n" );
+        }
+    }
 
     if (ht_destroy(&_epoll_table)>0)
         errlog(ERR_WARNING,"Entries left in epoll table\n");
@@ -168,6 +214,9 @@ int  netcap_server_shutdown (void)
         perrlog("close");
     if (close(_epoll_fd)<0)
         perrlog("close");
+
+    
+    
         
     return 0;
 }
@@ -278,8 +327,6 @@ static int  _handle_message (epoll_info_t* info, int revents)
     if (ret < sizeof(buf)) {
         perrlog("read");
     } else {
-        netcap_sub_t* sub;
-        
         switch(*msg) {
 
         case NETCAP_MSG_REFRESH:
@@ -292,85 +339,15 @@ static int  _handle_message (epoll_info_t* info, int revents)
             break;
 
         case NETCAP_MSG_ADD_SUB:
-            sub = *arg;
-
-            /* Nothing to do for antisubscribes */
-            if (( sub->rdr.flags & NETCAP_FLAG_ANTI_SUBSCRIBE ) == 0 ) {
-                if (sub->traf.protocol == IPPROTO_TCP) {
-                    int c;
-                    int size = sub->rdr.port_max - sub->rdr.port_min + 1;
-                    
-                    if ( sub->rdr.socks == NULL || size < 1 || sub->rdr.socks[0] == -1 ) {
-                        errlog( ERR_CRITICAL, "For TCP, there must be at least one local\n" );
-                    } else {
-                        for ( c = 0 ; c < size ; c++ ) {
-                            int fd = sub->rdr.socks[c];
-                            debug( 11, "NETCAP: Inserting socket: %d\n", fd );
-                            
-                            if ( _epoll_info_add( fd, EPOLL_INPUT_SET, POLL_TCP_INCOMING, sub, NULL ) < 0 ) {
-                                perrlog("_epoll_info_add");
-                                break;
-                            }
-                        }
-                    }
-                }
-                else if (sub->traf.protocol == IPPROTO_UDP) {
-                    int size = sub->rdr.port_max - sub->rdr.port_min + 1;
-                    int fd;
-                    
-                    if ( sub->rdr.socks == NULL || size < 1 || sub->rdr.socks[0] == -1 ) {
-                        errlog( ERR_CRITICAL, "For UDP, there must be at least one local\n" );
-                    } else {
-                        fd = sub->rdr.socks[0];
-                        
-                        if ( _epoll_info_add( fd, EPOLL_INPUT_SET, POLL_UDP_INCOMING, sub, NULL ) < 0 ) {
-                            _server_unlock();
-                            perrlog("_epoll_info_add");
-                            break;
-                        }
-                    }
-                }
-                else if (sub->traf.protocol == IPPROTO_ICMP ||
-                         sub->traf.protocol == IPPROTO_ALL) {
-                    /* no epoll info added */
-                } else {
-                    errlog(ERR_CRITICAL,"Unknown Protocol: %i\n",sub->traf.protocol);
-                }
-            }
             _server_unlock();
+            errlog( ERR_CRITICAL, "NETCAP_MSG_ADD_SUB is unsupported\n" );
             break;
             
         case NETCAP_MSG_REM_SUB:
-            sub = *arg;
-
-            if (!sub)
-                errlogargs();
-            else {
-                int c;
-
-                if ( sub->rdr.socks != NULL ) {
-                    int size = sub->rdr.port_max - sub->rdr.port_min + 1;
-                    int fd;
-                    
-                    debug( 11, "Removing (%08x,%d,%d)", sub->rdr.socks, sub->rdr.port_min, sub->rdr.port_max );
-
-                    for ( c = 0 ; c < size ; c++ ) {
-                        fd = sub->rdr.socks[c];
-                        debug( 11, "Removing socket[%d]: %d\n",c , fd );
-                        
-                        if ( fd != -1 && _epoll_info_del_fd( fd ) < 0 ) {
-                            perrlog("_epoll_info_del_fd");
-                        }
-                    }
-                }
-            
-                netcap_traffic_destroy( &sub->traf );
-                rdr_destroy( &sub->rdr );
-                subscription_raze( sub );
-            }
-             
-            _server_unlock();
+            _server_unlock();            
+            errlog( ERR_CRITICAL, "NETCAP_MSG_REM_SUB is unsupported\n" );
             break;
+
 
         case NETCAP_MSG_SHUTDOWN:
             debug(5,"NETCAP: Shutdown Received, Thread Terminating\n");
@@ -396,9 +373,8 @@ static int  _handle_tcp_incoming (epoll_info_t* info, int revents, int fd )
     struct sockaddr_in cli_addr;
     int cli_addrlen = sizeof(cli_addr);
     int cli_sock;
-    netcap_sub_t* sub;
 
-    if (!info || !info->sub) {
+    if ( !info ) {
         _server_unlock();
         return errlogargs();
     }
@@ -408,8 +384,6 @@ static int  _handle_tcp_incoming (epoll_info_t* info, int revents, int fd )
         _server_unlock();
         return -1;
     }
-
-    sub = info->sub;
 
     /**
      * Accept the connection 
@@ -421,17 +395,16 @@ static int  _handle_tcp_incoming (epoll_info_t* info, int revents, int fd )
     }
 
     /**
-     * if they only want a half complete connection 
+     * if they only want a half complete connection.  Connections are always unfinished
      */
-    if (sub->rdr.flags & NETCAP_FLAG_SRV_UNFINI) {
+    if ( 1 ) {
         _server_unlock();
-        if (netcap_tcp_accept_hook(cli_sock,cli_addr,sub)<0) {
+        if ( netcap_tcp_accept_hook( cli_sock, cli_addr ) < 0 ) {
             if (close(cli_sock)<0)
                 perrlog("close");
         }
         return 0;
     }
-
 
     errlog(ERR_CRITICAL,"non UNFINI mode is UNSUPPORTED at the moment.\n");
     _server_unlock();
@@ -467,8 +440,6 @@ static int  _handle_completion (epoll_info_t* info, int revents)
     int            result      = -1;
     int            result_size = sizeof(result);
     int            flags;
-    rdr_t* rdr;
-    netcap_sub_t* sub;
     netcap_session_t*  netcap_sess;
 
     _server_unlock();
@@ -479,14 +450,12 @@ static int  _handle_completion (epoll_info_t* info, int revents)
     /**
      * Sanity checks
      */
-    if (!info || !info->sub || !info->netcap_sess) {
-        debug(1,"0x%08x 0x%08x 0x%08x\n",info,info->sub,info->netcap_sess);
+    if ( !info || !info->netcap_sess ) {
+        debug(1,"0x%08x 0x%08x\n",info,info->netcap_sess);
         _server_unlock();
         return errlogargs();
     }
 
-    sub = info->sub;
-    rdr = &sub->rdr;
     netcap_sess = info->netcap_sess;
     
     if (!(revents & EPOLLOUT)) {
@@ -560,19 +529,14 @@ static int  _handle_udp (epoll_info_t* info, int revents, int sock )
     netcap_pkt_t* pkt;
     int              len;
     char*            buf;
-    rdr_t* rdr;
-    netcap_sub_t* sub;
 
     /**
      * Sanity checks
      */
-    if (!info || !info->sub) {
+    if ( !info ) {
         _server_unlock();
         return errlogargs();
     }
-
-    sub = info->sub;
-    rdr = &sub->rdr;
     
     if (!(revents & EPOLLIN)) {
         _epoll_print_stat(revents);
@@ -617,7 +581,7 @@ static int  _handle_udp (epoll_info_t* info, int revents, int sock )
     _server_unlock();
 
     // Check to see if the session already exists
-    return netcap_udp_call_hooks(pkt,sub->arg);
+    return netcap_udp_call_hooks( pkt, NULL );
 }
 
 static int  _handle_queue (epoll_info_t* info, int revents)
@@ -691,12 +655,12 @@ static int  _handle_queue (epoll_info_t* info, int revents)
         return errlog(ERR_CRITICAL,"Unknown protocol from QUEUE\n");
 }
 
-static int  _epoll_info_add (int fd, int events, int type, netcap_sub_t* sub, netcap_session_t* netcap_sess)
+static int  _epoll_info_add (int fd, int events, int type, netcap_session_t* netcap_sess)
 {
     epoll_info_t* info;
     struct epoll_event ev;
 
-    if (fd == -1) return errlogargs();
+    if ( fd < 0 ) return errlogargs();
     
     info = malloc(sizeof(epoll_info_t));
     if (!info)
@@ -704,7 +668,6 @@ static int  _epoll_info_add (int fd, int events, int type, netcap_sub_t* sub, ne
 
     info->fd    = fd;
     info->type  = type;
-    info->sub   = sub;
     info->netcap_sess = netcap_sess;
     
     bzero(&ev,sizeof(struct epoll_event));

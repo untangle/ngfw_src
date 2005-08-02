@@ -72,8 +72,6 @@ abstract class ArgonHook implements Runnable
      */
     public void run()
     {
-        Argon.registerSessionThread();
-
         try {
             ClassLoader cl = getClass().getClassLoader();
             Thread.currentThread().setContextClassLoader(cl);
@@ -160,9 +158,7 @@ abstract class ArgonHook implements Runnable
                 logger.debug( "Exiting thread: " + sessionGlobalState );
         } catch ( Exception e ) {
             logger.error( "Exception exiting hook:", e );
-        }
-        
-        Argon.deregisterSessionThread();
+        }        
     }
 
     /**

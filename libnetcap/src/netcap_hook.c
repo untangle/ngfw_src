@@ -7,7 +7,6 @@
 #include <mvutil/errlog.h>
 #include "libnetcap.h"
 #include "netcap_globals.h"
-#include "netcap_traffic.h"
 #include "netcap_udp.h"
 #include "netcap_tcp.h"
 #include "netcap_icmp.h"

@@ -17,47 +17,21 @@ MVVM_CMD=@PREFIX@/usr/bin/mvvm.sh
 MVVM_USER=root
 MVVM_ARGS=""
 
-GUARDS_OUT="80"
-GUARDS_OUT_RES=""
-GUARDS_IN=""
+## Set here, if unset, they will be set to eth1, eth0 respectively later
+MVVM_INSIDE_INTF=""
+MVVM_OUTSIDE_INTF=""
 
-# enabled by default
-if [ "x$MVVM_ALLOW_IN_HTTP" = "xfalse" ]; then
-    GUARDS_IN="$GUARDS_IN 80"
-fi
-
-# disabled by default
-if [ "x$MVVM_ALLOW_OUT_HTTPS" = "xtrue" ]; then
-    # not restricted by default
-    if [ "x$MVVM_ALLOW_OUT_RES" = "xtrue" -a "x$MVVM_ALLOW_OUT_NET" != "x" ]; then
-        if [ "x$MVVM_ALLOW_OUT_MASK" = "x" ]; then
-            GUARDS_OUT_RES="$GUARDS_OUT_RES 443:$MVVM_ALLOW_OUT_NET"
-        else
-            GUARDS_OUT_RES="$GUARDS_OUT_RES 443:$MVVM_ALLOW_OUT_NET/$MVVM_ALLOW_OUT_MASK"
-        fi
-    fi
-else
-    GUARDS_OUT="$GUARDS_OUT 443"
-fi
-
-GUARDS_OUT=-Dargon.guard.outside=`join_string "$GUARDS_OUT" ","`
-GUARDS_OUT_RES=-Dargon.guard.outside.regulated=`join_string "$GUARDS_OUT_RES" ";"`
-GUARDS_IN=-Dargon.guard.inside=`join_string "$GUARDS_IN" ","`
-
-# if in the build
-if [ "x" != "x@PREFIX@" ] ; then
-    GUARDS_OUT=""
-    GUARDS_IN=""
-fi
-
-## Append the guards
-MVVM_ARGS="$MVVM_ARGS $GUARDS_OUT $GUARDS_IN $GUARDS_OUT_RES"
+## Set inside and outside interface to a default if it is not set
+MVVM_INSIDE_INTF=${MVVM_INSIDE_INTF:-"eth1"}
+MVVM_OUTSIDE_INTF=${MVVM_OUTSIDE_INTF:-"eth0"}
 
 if [ "x${USER}" = "xroot" ]; then
         MVVM_NICENESS=-15
 else
         MVVM_NICENESS=0
 fi
+
+MVVM_ARGS="${MVVM_ARGS} -Dargon.inside=${MVVM_INSIDE_INTF} -Dargon.outside=${MVVM_OUTSIDE_INTF}"
 
 #
 # Profiling

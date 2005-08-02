@@ -21,7 +21,6 @@
 #include <mvutil/uthread.h>
 
 #include "netcap_globals.h"
-#include "netcap_subscriptions.h"
 #include "netcap_server.h"
 #include "netcap_queue.h"
 #include "netcap_hook.h"
@@ -31,7 +30,6 @@
 #include "netcap_interface.h"
 #include "netcap_session.h"
 #include "netcap_sesstable.h"
-#include "netcap_antisubscribe.h"
 #include "netcap_shield.h"
 #include "netcap_sched.h"
 
@@ -73,10 +71,6 @@ int netcap_init( int shield_enable )
     if ( pthread_mutex_unlock( &_init.mutex ) < 0 ) {
         return perrlog( "pthread_mutex_lock" );
     }
-
-    /* This must happen after netcap is initialized */
-    if (netcap_local_antisubscribe_init()<0)
-        return perrlog("netcap_local_antisubscribe_init");
     
     return ret;
     
@@ -90,11 +84,6 @@ static int _netcap_init( int shield_enable )
     if ( pthread_key_create( &_init.tls_key, uthread_tls_free ) != 0 )
         return perrlog( "pthread_key_create\n" );
 
-    /* Due to structuring of the iptables rules, netcap_interface_init must go before
-     * netcap_subscription_init, now netcap_redirect_tables_init is the only thing that
-     * must go before netcap_subscription_init and netcap_interface_init. */
-    if (netcap_redirect_tables_init()<0)
-        return perrlog("netcap_redirect_tables_init");
     if (netcap_interface_init()<0) 
         return perrlog("netcap_interface_init");
     if (netcap_sesstable_init()<0)
@@ -103,8 +92,6 @@ static int _netcap_init( int shield_enable )
         return perrlog("netcap_sessions_init");
     if (netcap_hooks_init()<0) 
         return perrlog("netcap_hooks_init");
-    if (netcap_subscriptions_init()<0) 
-        return perrlog("netcap_subscriptions_init");
     if (netcap_queue_init()<0) 
         return perrlog("netcap_queue_init");
     if (netcap_tcp_init()<0) 
@@ -146,14 +133,8 @@ int netcap_cleanup()
     if ( ret < 0 )
         return errlog( ERR_CRITICAL, "NETCAP: Skipping second clean\n" );;
 
-    if (netcap_local_antisubscribe_cleanup()<0)
-        perrlog("netcap_local_antisubscribe_cleanup");
-    if (netcap_unsubscribe_all()<0) 
-        perrlog("netcap_unsubscribe_all");
     if (netcap_server_shutdown()<0)
         perrlog("netcap_server_shutdown");
-    if (netcap_subscriptions_cleanup()<0)
-        perrlog("netcap_subscriptions_cleanup");
     if (netcap_queue_cleanup()<0)
         perrlog("netcap_queue_cleanup");
     if (netcap_tcp_cleanup()<0)
@@ -169,8 +150,6 @@ int netcap_cleanup()
         return perrlog("netcap_sesstable_cleanup");
     if (netcap_interface_cleanup()<0) 
         return perrlog("netcap_interface_cleanup");
-    if (netcap_redirect_tables_cleanup()<0)
-        return perrlog("netcap_redirect_tables_init");
     if (netcap_shield_cleanup()<0)
         perrlog("netcap_shield_cleanup");
     if (netcap_sched_cleanup_z ( NULL ) < 0 )
@@ -207,10 +186,10 @@ int netcap_is_initialized()
     return ret;
 }
 
-int netcap_update_address( int inside, int outside )
+int netcap_update_address( void )
 {
     if ( _init.status == STATUS_INITIALIZED ) {
-        if ( netcap_interface_update_address( inside, outside ) < 0 )
+        if ( netcap_interface_update_address() < 0 )
             return errlog( ERR_CRITICAL, "netcap_interface_update_address\n" );
     } else {
         debug( 1, "NETCAP: Not updating address because netcap is not initialized\n" );
