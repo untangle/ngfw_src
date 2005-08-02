@@ -219,11 +219,11 @@ public class LogMailer implements Runnable
         String version = Version.getVersion();
 
         sb = new StringBuilder(subjectBase);
-        sb.append(" ");
-        sb.append(version);
         sb.append(" (");
         sb.append(host);
         sb.append(")");
+        sb.append(" v");
+        sb.append(version);
         String subjectText = sb.toString();
 
         MailSender ms = MvvmContextFactory.context().mailSender();
