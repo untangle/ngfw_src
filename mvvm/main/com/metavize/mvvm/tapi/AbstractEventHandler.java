@@ -134,15 +134,25 @@ public abstract class AbstractEventHandler implements SessionEventListener {
     public IPDataResult handleTCPClientChunk(TCPChunkEvent event)
         throws MPipeException
     {
-        // Default just sends the bytes onwards.
-        return IPDataResult.PASS_THROUGH;
+        TCPSession session = event.session();
+        byte serverState = session.serverState();
+        // Default just sends the bytes onwards if the output is open.
+        if (serverState == IPSessionDesc.OPEN || serverState == TCPSessionDesc.HALF_OPEN_OUTPUT)
+            return IPDataResult.PASS_THROUGH;
+        else
+            return IPDataResult.DO_NOT_PASS;
     }
 
     public IPDataResult handleTCPServerChunk(TCPChunkEvent event)
         throws MPipeException
     {
-        // Default just sends the bytes onwards.
-        return IPDataResult.PASS_THROUGH;
+        TCPSession session = event.session();
+        byte clientState = session.clientState();
+        // Default just sends the bytes onwards if the output is open.
+        if (clientState == IPSessionDesc.OPEN || clientState == TCPSessionDesc.HALF_OPEN_OUTPUT)
+            return IPDataResult.PASS_THROUGH;
+        else
+            return IPDataResult.DO_NOT_PASS;
     }
 
     public IPDataResult handleTCPServerWritable(TCPSessionEvent event)
@@ -218,17 +228,21 @@ public abstract class AbstractEventHandler implements SessionEventListener {
     public void handleUDPClientPacket(UDPPacketEvent event)
         throws MPipeException
     {
-        // Default just sends the packet onwards.
-        UDPSession sess = event.session();
-        sess.sendServerPacket(event.packet(), event.header());
+        UDPSession session = event.session();
+        byte serverState = session.serverState();
+        // Default just sends the bytes onwards if the output is open.
+        if (serverState == IPSessionDesc.OPEN)
+            session.sendServerPacket(event.packet(), event.header());
     }
 
     public void handleUDPServerPacket(UDPPacketEvent event)
         throws MPipeException
     {
-        // Default just sends the packet onwards.
-        UDPSession sess = event.session();
-        sess.sendClientPacket(event.packet(), event.header());
+        UDPSession session = event.session();
+        byte clientState = session.clientState();
+        // Default just sends the bytes onwards if the output is open.
+        if (clientState == IPSessionDesc.OPEN)
+            session.sendClientPacket(event.packet(), event.header());
     }
 
     public void handleUDPClientError(UDPErrorEvent event)
