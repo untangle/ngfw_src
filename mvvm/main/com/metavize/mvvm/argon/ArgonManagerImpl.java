@@ -190,6 +190,12 @@ public class ArgonManagerImpl implements ArgonManager
      * that can restore the bridge after a shutdown */
     synchronized void argonRestoreBridge( NetworkingConfiguration netConfig ) throws ArgonException
     {
+        /* Nothing to do, bridge was never modified */
+        if ( this.isBridgeEnabled ) {
+            logger.debug( "Bridge was already enabled, ignoring" );
+            return;
+        }
+
         try {
             IntfConverter intfConverter = IntfConverter.getInstance();
             
