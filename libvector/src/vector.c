@@ -489,7 +489,10 @@ static int  _vector_handle_src_error_event    ( vector_t* vec, relay_t* relay )
 
     /* This must be a shutdown event */
     if ( evt == NULL || !event_is_shutdown( evt->type )) {
-        errlog( ERR_WARNING, "VECTOR(%08x): ERR event without a shutdown event\n", vec );
+        if (evt == NULL)
+            errlog( ERR_WARNING, "VECTOR(%08x): HUP without a shutdown event (event is NULL)\n", vec);
+        else
+            errlog( ERR_WARNING, "VECTOR(%08x): ERR event without a shutdown event (event type: %08x) \n", vec, evt->type );
         
         /* Free the event, and return, if there is an error, no need to queue it
          * the event is invalid */
@@ -523,7 +526,11 @@ static int  _vector_handle_src_shutdown_event ( vector_t* vec, relay_t* relay )
 
     /* This must be a shutdown event */
     if ( evt == NULL || !event_is_shutdown( evt->type )) {
-        errlog( ERR_WARNING, "VECTOR(%08x): HUP without a shutdown event\n", vec );
+        if (evt == NULL)
+            errlog( ERR_WARNING, "VECTOR(%08x): HUP without a shutdown event (event is NULL)\n", vec);
+        else
+            errlog( ERR_WARNING, "VECTOR(%08x): HUP without a shutdown event (event type: %08x) \n", vec, evt->type );
+            
         
         /* Free the event */
         if ( evt != NULL )
