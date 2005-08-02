@@ -1,14 +1,8 @@
 /var/log/mvvm/console.log {
-rotate 30
-daily
-compress
-copytruncate
-}
-
-/var/log/mvvm/wrapper.log {
 rotate 9
 size 100k
 compress
+notifempty
 copytruncate
 }
 
@@ -16,20 +10,31 @@ copytruncate
 rotate 9
 size 100k
 compress
+notifempty
 copytruncate
 }
 
 /var/log/mvvm/schema.log {
 rotate 9
-size 500k
+size 100k
 compress
+notifempty
+copytruncate
+}
+
+/var/log/mvvm/wrapper.log {
+rotate 2
+daily
+compress
+notifempty
 copytruncate
 }
 
 /var/log/mvvm/gc.log {
-rotate 2
-daily
+rotate 9
+size daily
 compress
+notifempty
 copytruncate
 }
 
