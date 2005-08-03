@@ -244,41 +244,11 @@ public abstract class BufferingSessionHandler
    */
   private boolean shouldBeginTrickle() {
 
-    //TODO bscott Revisit this
-    
-    //---------------------------------------------------
-    //We assume that the time it takes to send
-    //to the server is the same as the client
-    //transmission time.  This could likely be
-    //optimized, but we'll worry about that later.
-    //
-    //Instead, we choose the shortest of the client/
-    //server times.  We then cut it in half (assuming
-    //transmission the other way).  If we have been
-    //waiting longer than this, then we should begin
-    //to trickle.
-
-    long giveupTime = Math.min(getMaxClientWait(), getMaxServerWait());
-    if(giveupTime <= 0) {
-      //Time equal-to or below zero means give-up
-      return false;
-    }
-    giveupTime = (long) giveupTime/2;
-
-    long lastTimestamp = Math.min(
-      getSession().getLastClientTimestamp(),
-      getSession().getLastServerTimestamp());
-
-    long timeRemaining = (lastTimestamp + giveupTime) -
-      System.currentTimeMillis();
-
-    if(timeRemaining < 0) {
-      m_logger.debug("We should begin trickle because " +
-        "we have exceeded " + giveupTime + " milliseconds since" +
-        " last communication");
-    }
-  
-    return timeRemaining < 0;
+    return MessageTransmissionTimeoutStrategy.inTimeoutDanger(
+      Math.min(getMaxClientWait(), getMaxServerWait()),
+      Math.min(
+        getSession().getLastClientTimestamp(),
+        getSession().getLastServerTimestamp()));
   }
 
 
