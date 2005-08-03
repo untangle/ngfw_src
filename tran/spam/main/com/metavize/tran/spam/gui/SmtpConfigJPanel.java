@@ -63,8 +63,8 @@ class SmtpTableModel extends MSortedTableModel{
         return tableColumnModel;
     }
 
-    private static final String SPAM_INBOUND = "inbound SMTP";
-    private static final String SPAM_OUTBOUND = "outbound SMTP";
+    private static final String SOURCE_INBOUND = "inbound SMTP";
+    private static final String SOURCE_OUTBOUND = "outbound SMTP";
 
     public void generateSettings(Object settings, boolean validateOnly) throws Exception {
 	SpamSMTPConfig spamSMTPConfigInbound = null;
@@ -82,10 +82,10 @@ class SmtpTableModel extends MSortedTableModel{
             spamSMTPConfig.setNotifyAction( notifyAction );
             spamSMTPConfig.setNotes( (String) rowVector.elementAt(6) );
 	    
-	    if( ((String)rowVector.elementAt(2)).equals(SPAM_INBOUND) ){
+	    if( ((String)rowVector.elementAt(2)).equals(SOURCE_INBOUND) ){
 		spamSMTPConfigInbound = spamSMTPConfig;
 	    }
-	    else if( ((String)rowVector.elementAt(2)).equals(SPAM_OUTBOUND) ){
+	    else if( ((String)rowVector.elementAt(2)).equals(SOURCE_OUTBOUND) ){
 		spamSMTPConfigOutbound = spamSMTPConfig;
 	    }  
         }
@@ -109,7 +109,7 @@ class SmtpTableModel extends MSortedTableModel{
         SpamSMTPConfig spamSMTPConfigInbound = spamSettings.getSMTPInbound();
         inboundRow.add( super.ROW_SAVED );
         inboundRow.add( new Integer(1) );
-        inboundRow.add( SPAM_INBOUND );
+        inboundRow.add( SOURCE_INBOUND );
         inboundRow.add( spamSMTPConfigInbound.getScan() );
         ComboBoxModel inboundActionComboBoxModel =  super.generateComboBoxModel( SMTPSpamMessageAction.getValues(), spamSMTPConfigInbound.getMsgAction() );
         inboundRow.add( inboundActionComboBoxModel );
@@ -123,7 +123,7 @@ class SmtpTableModel extends MSortedTableModel{
         SpamSMTPConfig spamSMTPConfigOutbound = spamSettings.getSMTPOutbound();
         outboundRow.add( super.ROW_SAVED );
         outboundRow.add( new Integer(1) );
-        outboundRow.add( SPAM_OUTBOUND );
+        outboundRow.add( SOURCE_OUTBOUND );
         outboundRow.add( spamSMTPConfigOutbound.getScan() );
         ComboBoxModel outboundActionComboBoxModel =  super.generateComboBoxModel( SMTPSpamMessageAction.getValues(), spamSMTPConfigOutbound.getMsgAction() );
         outboundRow.add( outboundActionComboBoxModel );

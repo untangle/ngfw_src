@@ -64,8 +64,8 @@ class SmtpTableModel extends MSortedTableModel{
         return tableColumnModel;
     }
 
-    private static final String VIRUS_INBOUND = "inbound SMTP";
-    private static final String VIRUS_OUTBOUND = "outbound SMTP";
+    private static final String SOURCE_INBOUND = "inbound SMTP";
+    private static final String SOURCE_OUTBOUND = "outbound SMTP";
 
     public void generateSettings(Object settings, boolean validateOnly) throws Exception {
 	VirusSMTPConfig virusSMTPConfigInbound = null;
@@ -83,10 +83,10 @@ class SmtpTableModel extends MSortedTableModel{
             virusSMTPConfig.setNotifyAction( notifyAction );
             virusSMTPConfig.setNotes( (String) rowVector.elementAt(6) );
 	    
-	    if( ((String)rowVector.elementAt(2)).equals(VIRUS_INBOUND) ){
+	    if( ((String)rowVector.elementAt(2)).equals(SOURCE_INBOUND) ){
 		virusSMTPConfigInbound = virusSMTPConfig;
 	    }
-	    else if( ((String)rowVector.elementAt(2)).equals(VIRUS_OUTBOUND) ){
+	    else if( ((String)rowVector.elementAt(2)).equals(SOURCE_OUTBOUND) ){
 		virusSMTPConfigOutbound = virusSMTPConfig;
 	    }  
         }
@@ -110,7 +110,7 @@ class SmtpTableModel extends MSortedTableModel{
         VirusSMTPConfig virusSMTPConfigInbound = virusSettings.getSMTPInbound();
         inboundRow.add( super.ROW_SAVED );
         inboundRow.add( new Integer(1) );
-        inboundRow.add( VIRUS_INBOUND );
+        inboundRow.add( SOURCE_INBOUND );
         inboundRow.add( virusSMTPConfigInbound.getScan() );
         ComboBoxModel inboundActionComboBoxModel =  super.generateComboBoxModel( SMTPVirusMessageAction.getValues(), virusSMTPConfigInbound.getMsgAction() );
         inboundRow.add( inboundActionComboBoxModel );
@@ -124,7 +124,7 @@ class SmtpTableModel extends MSortedTableModel{
         VirusSMTPConfig virusSMTPConfigOutbound = virusSettings.getSMTPOutbound();
         outboundRow.add( super.ROW_SAVED );
         outboundRow.add( new Integer(1) );
-        outboundRow.add( VIRUS_OUTBOUND );
+        outboundRow.add( SOURCE_OUTBOUND );
         outboundRow.add( virusSMTPConfigOutbound.getScan() );
         ComboBoxModel outboundActionComboBoxModel =  super.generateComboBoxModel( SMTPVirusMessageAction.getValues(), virusSMTPConfigOutbound.getMsgAction() );
         outboundRow.add( outboundActionComboBoxModel );

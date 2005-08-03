@@ -61,8 +61,8 @@ class PopTableModel extends MSortedTableModel{
         return tableColumnModel;
     }
 
-    private static final String VIRUS_INBOUND = "inbound SMTP";
-    private static final String VIRUS_OUTBOUND = "outbound SMTP";
+    private static final String SOURCE_INBOUND = "inbound POP";
+    private static final String SOURCE_OUTBOUND = "outbound POP";
 
     public void generateSettings(Object settings, boolean validateOnly) throws Exception {
 	VirusPOPConfig virusPOPConfigInbound = null;
@@ -77,10 +77,10 @@ class PopTableModel extends MSortedTableModel{
             virusPOPConfig.setMsgAction( messageAction );
             virusPOPConfig.setNotes( (String) rowVector.elementAt(5) );
 	    
-	    if( ((String)rowVector.elementAt(2)).equals(VIRUS_INBOUND) ){
+	    if( ((String)rowVector.elementAt(2)).equals(SOURCE_INBOUND) ){
 		virusPOPConfigInbound = virusPOPConfig;
 	    }
-	    else if( ((String)rowVector.elementAt(2)).equals(VIRUS_OUTBOUND) ){
+	    else if( ((String)rowVector.elementAt(2)).equals(SOURCE_OUTBOUND) ){
 		virusPOPConfigOutbound = virusPOPConfig;
 	    }  
         }
@@ -104,7 +104,7 @@ class PopTableModel extends MSortedTableModel{
         VirusPOPConfig virusPOPConfigInbound = virusSettings.getPOPInbound();
         inboundRow.add( super.ROW_SAVED );
         inboundRow.add( new Integer(1) );
-        inboundRow.add( VIRUS_INBOUND );
+        inboundRow.add( SOURCE_INBOUND );
         inboundRow.add( virusPOPConfigInbound.getScan() );
         ComboBoxModel inboundActionComboBoxModel =  super.generateComboBoxModel( VirusMessageAction.getValues(), virusPOPConfigInbound.getMsgAction() );
         inboundRow.add( inboundActionComboBoxModel );
@@ -116,7 +116,7 @@ class PopTableModel extends MSortedTableModel{
         VirusPOPConfig virusPOPConfigOutbound = virusSettings.getPOPOutbound();
         outboundRow.add( super.ROW_SAVED );
         outboundRow.add( new Integer(1) );
-        outboundRow.add( VIRUS_OUTBOUND );
+        outboundRow.add( SOURCE_OUTBOUND );
         outboundRow.add( virusPOPConfigOutbound.getScan() );
         ComboBoxModel outboundActionComboBoxModel =  super.generateComboBoxModel( VirusMessageAction.getValues(), virusPOPConfigOutbound.getMsgAction() );
         outboundRow.add( outboundActionComboBoxModel );

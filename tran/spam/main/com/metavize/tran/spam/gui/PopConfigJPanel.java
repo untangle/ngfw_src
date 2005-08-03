@@ -61,8 +61,8 @@ class PopTableModel extends MSortedTableModel{
         return tableColumnModel;
     }
 
-    private static final String SPAM_INBOUND = "inbound SMTP";
-    private static final String SPAM_OUTBOUND = "outbound SMTP";
+    private static final String SOURCE_INBOUND = "inbound POP";
+    private static final String SOURCE_OUTBOUND = "outbound POP";
 
     public void generateSettings(Object settings, boolean validateOnly) throws Exception {
 	SpamPOPConfig spamPOPConfigInbound = null;
@@ -77,10 +77,10 @@ class PopTableModel extends MSortedTableModel{
             spamPOPConfig.setMsgAction( messageAction );
             spamPOPConfig.setNotes( (String) rowVector.elementAt(5) );
 	    
-	    if( ((String)rowVector.elementAt(2)).equals(SPAM_INBOUND) ){
+	    if( ((String)rowVector.elementAt(2)).equals(SOURCE_INBOUND) ){
 		spamPOPConfigInbound = spamPOPConfig;
 	    }
-	    else if( ((String)rowVector.elementAt(2)).equals(SPAM_OUTBOUND) ){
+	    else if( ((String)rowVector.elementAt(2)).equals(SOURCE_OUTBOUND) ){
 		spamPOPConfigOutbound = spamPOPConfig;
 	    }  
         }
@@ -104,7 +104,7 @@ class PopTableModel extends MSortedTableModel{
         SpamPOPConfig spamPOPConfigInbound = spamSettings.getPOPInbound();
         inboundRow.add( super.ROW_SAVED );
         inboundRow.add( new Integer(1) );
-        inboundRow.add( SPAM_INBOUND );
+        inboundRow.add( SOURCE_INBOUND );
         inboundRow.add( spamPOPConfigInbound.getScan() );
         ComboBoxModel inboundActionComboBoxModel =  super.generateComboBoxModel( SpamMessageAction.getValues(), spamPOPConfigInbound.getMsgAction() );
         inboundRow.add( inboundActionComboBoxModel );
@@ -116,7 +116,7 @@ class PopTableModel extends MSortedTableModel{
         SpamPOPConfig spamPOPConfigOutbound = spamSettings.getPOPOutbound();
         outboundRow.add( super.ROW_SAVED );
         outboundRow.add( new Integer(1) );
-        outboundRow.add( SPAM_OUTBOUND );
+        outboundRow.add( SOURCE_OUTBOUND );
         outboundRow.add( spamPOPConfigOutbound.getScan() );
         ComboBoxModel outboundActionComboBoxModel =  super.generateComboBoxModel( SpamMessageAction.getValues(), spamPOPConfigOutbound.getMsgAction() );
         outboundRow.add( outboundActionComboBoxModel );
