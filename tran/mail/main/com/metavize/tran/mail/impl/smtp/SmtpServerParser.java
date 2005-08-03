@@ -95,7 +95,7 @@ class SmtpServerParser
     }
 
     //Compact the buffer
-    buf = compactIfNotEmpty(buf);
+    buf = compactIfNotEmpty(buf, (1024*2));//TODO bscott a real value
     
     if(buf == null) {
 //      m_logger.debug("returning ParseResult with " +

@@ -40,6 +40,8 @@ class SmtpClientParser
   extends SmtpParser {
 
   private final Logger m_logger = Logger.getLogger(SmtpClientParser.class);
+
+  private static final int MAX_COMMAND_LINE_SZ = 1024*2;
   
   private enum SmtpClientState {
     COMMAND,
@@ -173,8 +175,15 @@ class SmtpClientParser
             }            
           }//ENDOF Complete Command
           else {//BEGIN Not complete Command
-            //TODO bscott see note above.  This is vulnerable
-            //     to attack
+            //Check for attack
+            if(buf.remaining() > MAX_COMMAND_LINE_SZ) {
+              m_logger.debug("Line longer than " + MAX_COMMAND_LINE_SZ + " received without new line. " +
+                "Assume tunneling (permitted) and declare passthru");
+              declarePassthru();
+              toks.add(PassThruToken.PASSTHRU);
+              toks.add(new Chunk(buf));
+              return new ParseResult(toks, null);
+            }
             m_logger.debug("Command line does not end with CRLF.  Need more bytes");
             done = true;
           }//ENDOF Not complete Command
@@ -294,7 +303,7 @@ class SmtpClientParser
     }
 
     //Compact the buffer
-    buf = compactIfNotEmpty(buf);
+    buf = compactIfNotEmpty(buf, MAX_COMMAND_LINE_SZ);
 
     if(buf == null) {
       m_logger.debug("returning ParseResult with " +
