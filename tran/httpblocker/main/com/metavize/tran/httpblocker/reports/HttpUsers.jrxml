@@ -19,7 +19,7 @@
     </parameter>
     <parameter name="endTime" class="java.sql.Timestamp">
     </parameter>
-    <queryString><![CDATA[SELECT name, count(*) AS hits, sum(resp.content_length), total_size
+    <queryString><![CDATA[SELECT COALESCE(name, host(c_client_addr)) as hname, count(*) AS hits, sum(resp.content_length), total_size
   FROM (SELECT sum(resp.content_length) AS total_size FROM tr_http_evt_resp AS resp
   WHERE resp.time_stamp > $P{startTime} AND resp.time_stamp < $P{endTime}) AS size,
   tr_http_evt_req req JOIN pl_endp endp USING (session_id)
@@ -27,9 +27,9 @@
   LEFT OUTER JOIN merged_address_map mam ON addr = c_client_addr AND resp.time_stamp >= mam.start_time AND resp.time_stamp < mam.end_time
   WHERE resp.time_stamp > $P{startTime} AND resp.time_stamp < $P{endTime}
   AND NOT c_client_addr ISNULL
-  GROUP BY name, total_size
+  GROUP BY hname, total_size
   ORDER BY sum DESC]]></queryString>
-    <field name="name" class="java.lang.String">
+    <field name="hname" class="java.lang.String">
     </field>
     <field name="hits" class="java.lang.Long">
     </field>
@@ -44,7 +44,7 @@
         <variableExpression><![CDATA[$F{hits}]]></variableExpression>
     </variable>
     <variable name="n" class="java.lang.Integer" calculation="Count">
-        <variableExpression><![CDATA[$F{name} == null ? "" : $F{name}]]></variableExpression>
+        <variableExpression><![CDATA[$F{hname}]]></variableExpression>
     </variable>
     <background>
         <band>
@@ -118,7 +118,7 @@
                 <textElement>
                     <font fontName="SansSerif" size="9" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
                 </textElement>
-                <textFieldExpression class="java.lang.String"><![CDATA[$F{name}]]></textFieldExpression>
+                <textFieldExpression class="java.lang.String"><![CDATA[$F{hname}]]></textFieldExpression>
             </textField>
             <textField pattern="">
                 <reportElement key="textField" mode="Opaque" x="155" y="0" width="78" height="13"/>

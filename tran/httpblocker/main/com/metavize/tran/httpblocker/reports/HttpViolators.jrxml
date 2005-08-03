@@ -11,7 +11,7 @@
   <parameter name="endTime" class="java.sql.Timestamp">
   </parameter>
   <queryString><![CDATA[
-  SELECT name, total_violations, count(*) AS violations
+  SELECT COALESCE(name, host(c_client_addr)) as hname, total_violations, count(*) AS violations
   FROM (SELECT count(*) AS total_violations FROM tr_httpblk_evt_blk blk
   WHERE blk.time_stamp > $P{startTime} AND blk.time_stamp < $P{endTime}) AS violations,
   tr_httpblk_evt_blk blk
@@ -21,17 +21,17 @@
   LEFT OUTER JOIN merged_address_map mam ON addr = c_client_addr AND blk.time_stamp >= mam.start_time AND blk.time_stamp < mam.end_time
   WHERE blk.time_stamp > $P{startTime} AND blk.time_stamp < $P{endTime}
   AND NOT c_client_addr ISNULL
-  GROUP BY name, total_violations
+  GROUP BY hname, total_violations
   ORDER BY violations DESC
   ]]></queryString>
-  <field name="name" class="java.lang.String">
+  <field name="hname" class="java.lang.String">
   </field>
   <field name="violations" class="java.lang.Long">
   </field>
   <field name="total_violations" class="java.lang.Long">
   </field>
   <variable name="n" class="java.lang.Integer" calculation="Count">
-    <variableExpression><![CDATA[$F{name}]]></variableExpression>
+    <variableExpression><![CDATA[$F{hname}]]></variableExpression>
   </variable>
   <background>
     <band>
@@ -97,7 +97,7 @@
         <textElement>
           <font fontName="SansSerif" size="9" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
         </textElement>
-        <textFieldExpression class="java.lang.String"><![CDATA[$F{name} == null ? "" : $F{name}]]></textFieldExpression>
+        <textFieldExpression class="java.lang.String"><![CDATA[$F{hname}]]></textFieldExpression>
       </textField>
       <textField>
         <reportElement positionType="Float" x="234" y="0" width="42" height="13"/>
