@@ -42,7 +42,7 @@ subnet:
 	@cat ./files/blockips-single.txt | awk '{print $$1 " mask 255.255.255.255,Malware," $$2 }' >> ./files/subnet.txt
 	@cat ./files/blockips-mask.txt | awk '{print $$1 " mask " $$2 ",Malware," $$3 }' >> ./files/subnet.txt
 	@cat ./files/subnet.txt | egrep '^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3} mask [0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' > ./files/subnet.txt.tmp
-	@cat ./files/subnet.txt.tmp | egrep -v -i "(Microsoft|MSN)" > ./subnet.txt
+	@cat ./files/subnet.txt.tmp | egrep -v -i "(Microsoft|MSN|Netscape)" > ./subnet.txt
 	@echo -e "\n\ndone (none) \n\n"
 
 clean:
