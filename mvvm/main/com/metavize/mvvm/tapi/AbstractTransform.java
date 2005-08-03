@@ -70,9 +70,11 @@ public abstract class AbstractTransform extends TransformBase
         // casing)
         List<IPSessionDesc> sds = new LinkedList<IPSessionDesc>();
 
-        for (PipeSpec ps : pipeSpecs) {
-            for (IPSessionDesc isd : ps.liveSessionDescs()) {
-                sds.add(isd);
+        if (null != pipeSpecs) {
+            for (PipeSpec ps : pipeSpecs) {
+                for (IPSessionDesc isd : ps.liveSessionDescs()) {
+                    sds.add(isd);
+                }
             }
         }
 
