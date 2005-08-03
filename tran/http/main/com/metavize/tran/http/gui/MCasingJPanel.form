@@ -67,7 +67,7 @@
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="Dialog" size="12" style="0"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Allow&lt;/b&gt; the processing of web traffic.  (This is the default settings)&lt;/html&gt;"/>
+            <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Enable Processing&lt;/b&gt; of web traffic.  (This is the default settings)&lt;/html&gt;"/>
             <Property name="focusPainted" type="boolean" value="false"/>
           </Properties>
           <AuxValues>
@@ -87,7 +87,7 @@
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="Dialog" size="12" style="0"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Stop&lt;/b&gt; the processing of all web traffic.&lt;/html&gt;"/>
+            <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Disable Processing&lt;/b&gt; of web traffic.&lt;/html&gt;"/>
             <Property name="focusPainted" type="boolean" value="false"/>
           </Properties>
           <AuxValues>
@@ -140,7 +140,7 @@
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="Dialog" size="12" style="0"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Allow&lt;/b&gt; the processing of long URIs.  The traffic is considered &quot;Non-Http&quot;.  (This is the default settings)&lt;/html&gt;"/>
+            <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Enable Processing&lt;/b&gt; of long URIs.  The traffic is considered &quot;Non-Http&quot;.  (This is the default settings)&lt;/html&gt;"/>
             <Property name="focusPainted" type="boolean" value="false"/>
           </Properties>
           <AuxValues>
@@ -160,7 +160,7 @@
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="Dialog" size="12" style="0"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Stop&lt;/b&gt; the processing of long URIs.&lt;/html&gt;"/>
+            <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Disable Processing&lt;/b&gt; of long URIs.&lt;/html&gt;"/>
             <Property name="focusPainted" type="boolean" value="false"/>
           </Properties>
           <AuxValues>
@@ -184,7 +184,7 @@
             </Constraint>
           </Constraints>
         </Component>
-        <Container class="javax.swing.JPanel" name="smtpJPanel">
+        <Container class="javax.swing.JPanel" name="uriSpinnerJPanel">
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
               <GridBagConstraints gridX="0" gridY="-1" gridWidth="1" gridHeight="1" fill="0" ipadX="0" ipadY="0" insetsTop="10" insetsLeft="10" insetsBottom="10" insetsRight="0" anchor="17" weightX="0.0" weightY="0.0"/>
@@ -195,7 +195,7 @@
           <SubComponents>
             <Component class="javax.swing.JLabel" name="jLabel3">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Max URI Length (characters):"/>
+                <Property name="text" type="java.lang.String" value="Max URI Length (characters)"/>
               </Properties>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
@@ -218,6 +218,19 @@
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
                   <GridBagConstraints gridX="1" gridY="0" gridWidth="1" gridHeight="1" fill="0" ipadX="0" ipadY="0" insetsTop="0" insetsLeft="10" insetsBottom="0" insetsRight="0" anchor="17" weightX="1.0" weightY="0.0"/>
+                </Constraint>
+              </Constraints>
+            </Component>
+            <Component class="javax.swing.JLabel" name="maxUriLimitsJLabel">
+              <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Dialog" size="12" style="0"/>
+                </Property>
+                <Property name="text" type="java.lang.String" value="(max= min= )"/>
+              </Properties>
+              <Constraints>
+                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
+                  <GridBagConstraints gridX="2" gridY="0" gridWidth="1" gridHeight="1" fill="0" ipadX="0" ipadY="0" insetsTop="0" insetsLeft="15" insetsBottom="0" insetsRight="0" anchor="17" weightX="0.0" weightY="0.0"/>
                 </Constraint>
               </Constraints>
             </Component>
@@ -264,7 +277,7 @@
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="Dialog" size="12" style="0"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Allow&lt;/b&gt; the processing of long headers.  The traffic is considered &quot;Non-Http&quot;.  (This is the default settings)&lt;/html&gt;"/>
+            <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Enable Processing&lt;/b&gt; of long headers.  The traffic is considered &quot;Non-Http&quot;.  (This is the default settings)&lt;/html&gt;"/>
             <Property name="focusPainted" type="boolean" value="false"/>
           </Properties>
           <AuxValues>
@@ -284,7 +297,7 @@
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="Dialog" size="12" style="0"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Stop&lt;/b&gt; the processing of long headers.&lt;/html&gt;"/>
+            <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Disable Processing&lt;/b&gt; of long headers.&lt;/html&gt;"/>
             <Property name="focusPainted" type="boolean" value="false"/>
           </Properties>
           <AuxValues>
@@ -308,7 +321,7 @@
             </Constraint>
           </Constraints>
         </Component>
-        <Container class="javax.swing.JPanel" name="smtpJPanel1">
+        <Container class="javax.swing.JPanel" name="headerSpinnerJpanel">
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
               <GridBagConstraints gridX="0" gridY="-1" gridWidth="1" gridHeight="1" fill="0" ipadX="0" ipadY="0" insetsTop="10" insetsLeft="10" insetsBottom="10" insetsRight="0" anchor="17" weightX="0.0" weightY="0.0"/>
@@ -319,7 +332,7 @@
           <SubComponents>
             <Component class="javax.swing.JLabel" name="jLabel5">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Max Header Length (characters):"/>
+                <Property name="text" type="java.lang.String" value="Max Header Length (characters)"/>
               </Properties>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
@@ -342,6 +355,19 @@
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
                   <GridBagConstraints gridX="1" gridY="0" gridWidth="1" gridHeight="1" fill="0" ipadX="0" ipadY="0" insetsTop="0" insetsLeft="10" insetsBottom="0" insetsRight="0" anchor="17" weightX="1.0" weightY="0.0"/>
+                </Constraint>
+              </Constraints>
+            </Component>
+            <Component class="javax.swing.JLabel" name="maxHeaderLimitsJLabel">
+              <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Dialog" size="12" style="0"/>
+                </Property>
+                <Property name="text" type="java.lang.String" value="(max= min= )"/>
+              </Properties>
+              <Constraints>
+                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
+                  <GridBagConstraints gridX="2" gridY="0" gridWidth="1" gridHeight="1" fill="0" ipadX="0" ipadY="0" insetsTop="0" insetsLeft="15" insetsBottom="0" insetsRight="0" anchor="17" weightX="0.0" weightY="0.0"/>
                 </Constraint>
               </Constraints>
             </Component>

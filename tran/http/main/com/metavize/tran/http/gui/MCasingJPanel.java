@@ -25,12 +25,16 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
         super(transformContext);
         initComponents();
         
-        maxUriJSpinner.setModel( new SpinnerNumberModel(HttpSettings.MIN_URI_LENGTH, 
-                                                        HttpSettings.MIN_URI_LENGTH,
-                                                        HttpSettings.MAX_URI_LENGTH, 1) );
-        maxHeaderJSpinner.setModel( new SpinnerNumberModel(HttpSettings.MIN_HEADER_LENGTH, 
-                                                        HttpSettings.MIN_HEADER_LENGTH,
-                                                        HttpSettings.MAX_HEADER_LENGTH, 1) );
+        maxUriJSpinner.setModel( new SpinnerNumberModel((Integer)HttpSettings.MIN_URI_LENGTH, 
+                                                        (Integer)HttpSettings.MIN_URI_LENGTH,
+                                                        (Integer)HttpSettings.MAX_URI_LENGTH,
+							(Integer)1) );
+        maxHeaderJSpinner.setModel( new SpinnerNumberModel((Integer)HttpSettings.MIN_HEADER_LENGTH, 
+                                                        (Integer)HttpSettings.MIN_HEADER_LENGTH,
+                                                        (Integer)HttpSettings.MAX_HEADER_LENGTH,
+							(Integer)1) );
+        maxUriLimitsJLabel.setText("(max=" + HttpSettings.MAX_URI_LENGTH + " min=" + HttpSettings.MIN_URI_LENGTH + ")");
+        maxHeaderLimitsJLabel.setText("(max=" + HttpSettings.MAX_HEADER_LENGTH + " min=" + HttpSettings.MIN_HEADER_LENGTH + ")");
     }
 
     public void doSave(Object settings, boolean validateOnly) throws Exception {
@@ -118,17 +122,19 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
         longUriEnabledRadioButton = new javax.swing.JRadioButton();
         longUriDisabledRadioButton = new javax.swing.JRadioButton();
         jSeparator3 = new javax.swing.JSeparator();
-        smtpJPanel = new javax.swing.JPanel();
+        uriSpinnerJPanel = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
         maxUriJSpinner = new javax.swing.JSpinner();
+        maxUriLimitsJLabel = new javax.swing.JLabel();
         headerJPanel = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
         longHeadersEnabledRadioButton = new javax.swing.JRadioButton();
         longHeadersDisabledRadioButton = new javax.swing.JRadioButton();
         jSeparator4 = new javax.swing.JSeparator();
-        smtpJPanel1 = new javax.swing.JPanel();
+        headerSpinnerJpanel = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
         maxHeaderJSpinner = new javax.swing.JSpinner();
+        maxHeaderLimitsJLabel = new javax.swing.JLabel();
         nonHttpJPanel = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
         nonHttpEnabledRadioButton = new javax.swing.JRadioButton();
@@ -148,7 +154,7 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
 
         httpButtonGroup.add(httpEnabledRadioButton);
         httpEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        httpEnabledRadioButton.setText("<html><b>Allow</b> the processing of web traffic.  (This is the default settings)</html>");
+        httpEnabledRadioButton.setText("<html><b>Enable Processing</b> of web traffic.  (This is the default settings)</html>");
         httpEnabledRadioButton.setFocusPainted(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -158,7 +164,7 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
 
         httpButtonGroup.add(httpDisabledRadioButton);
         httpDisabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        httpDisabledRadioButton.setText("<html><b>Stop</b> the processing of all web traffic.</html>");
+        httpDisabledRadioButton.setText("<html><b>Disable Processing</b> of web traffic.</html>");
         httpDisabledRadioButton.setFocusPainted(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -184,7 +190,7 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
 
         longUriButtonGroup.add(longUriEnabledRadioButton);
         longUriEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        longUriEnabledRadioButton.setText("<html><b>Allow</b> the processing of long URIs.  The traffic is considered \"Non-Http\".  (This is the default settings)</html>");
+        longUriEnabledRadioButton.setText("<html><b>Enable Processing</b> of long URIs.  The traffic is considered \"Non-Http\".  (This is the default settings)</html>");
         longUriEnabledRadioButton.setFocusPainted(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -194,7 +200,7 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
 
         longUriButtonGroup.add(longUriDisabledRadioButton);
         longUriDisabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        longUriDisabledRadioButton.setText("<html><b>Stop</b> the processing of long URIs.</html>");
+        longUriDisabledRadioButton.setText("<html><b>Disable Processing</b> of long URIs.</html>");
         longUriDisabledRadioButton.setFocusPainted(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -210,14 +216,14 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         uriJPanel.add(jSeparator3, gridBagConstraints);
 
-        smtpJPanel.setLayout(new java.awt.GridBagLayout());
+        uriSpinnerJPanel.setLayout(new java.awt.GridBagLayout());
 
-        jLabel3.setText("Max URI Length (characters):");
+        jLabel3.setText("Max URI Length (characters)");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        smtpJPanel.add(jLabel3, gridBagConstraints);
+        uriSpinnerJPanel.add(jLabel3, gridBagConstraints);
 
         maxUriJSpinner.setMaximumSize(new java.awt.Dimension(100, 20));
         maxUriJSpinner.setMinimumSize(new java.awt.Dimension(100, 20));
@@ -228,13 +234,22 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 0);
-        smtpJPanel.add(maxUriJSpinner, gridBagConstraints);
+        uriSpinnerJPanel.add(maxUriJSpinner, gridBagConstraints);
+
+        maxUriLimitsJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+        maxUriLimitsJLabel.setText("(max= min= )");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 15, 0, 0);
+        uriSpinnerJPanel.add(maxUriLimitsJLabel, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 0);
-        uriJPanel.add(smtpJPanel, gridBagConstraints);
+        uriJPanel.add(uriSpinnerJPanel, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -253,7 +268,7 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
 
         headerButtonGroup.add(longHeadersEnabledRadioButton);
         longHeadersEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        longHeadersEnabledRadioButton.setText("<html><b>Allow</b> the processing of long headers.  The traffic is considered \"Non-Http\".  (This is the default settings)</html>");
+        longHeadersEnabledRadioButton.setText("<html><b>Enable Processing</b> of long headers.  The traffic is considered \"Non-Http\".  (This is the default settings)</html>");
         longHeadersEnabledRadioButton.setFocusPainted(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -263,7 +278,7 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
 
         headerButtonGroup.add(longHeadersDisabledRadioButton);
         longHeadersDisabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        longHeadersDisabledRadioButton.setText("<html><b>Stop</b> the processing of long headers.</html>");
+        longHeadersDisabledRadioButton.setText("<html><b>Disable Processing</b> of long headers.</html>");
         longHeadersDisabledRadioButton.setFocusPainted(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -279,14 +294,14 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         headerJPanel.add(jSeparator4, gridBagConstraints);
 
-        smtpJPanel1.setLayout(new java.awt.GridBagLayout());
+        headerSpinnerJpanel.setLayout(new java.awt.GridBagLayout());
 
-        jLabel5.setText("Max Header Length (characters):");
+        jLabel5.setText("Max Header Length (characters)");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        smtpJPanel1.add(jLabel5, gridBagConstraints);
+        headerSpinnerJpanel.add(jLabel5, gridBagConstraints);
 
         maxHeaderJSpinner.setMaximumSize(new java.awt.Dimension(100, 20));
         maxHeaderJSpinner.setMinimumSize(new java.awt.Dimension(100, 20));
@@ -297,13 +312,22 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 0);
-        smtpJPanel1.add(maxHeaderJSpinner, gridBagConstraints);
+        headerSpinnerJpanel.add(maxHeaderJSpinner, gridBagConstraints);
+
+        maxHeaderLimitsJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+        maxHeaderLimitsJLabel.setText("(max= min= )");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 15, 0, 0);
+        headerSpinnerJpanel.add(maxHeaderLimitsJLabel, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 0);
-        headerJPanel.add(smtpJPanel1, gridBagConstraints);
+        headerJPanel.add(headerSpinnerJpanel, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -357,6 +381,7 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup headerButtonGroup;
     private javax.swing.JPanel headerJPanel;
+    private javax.swing.JPanel headerSpinnerJpanel;
     private javax.swing.ButtonGroup httpButtonGroup;
     public javax.swing.JRadioButton httpDisabledRadioButton;
     public javax.swing.JRadioButton httpEnabledRadioButton;
@@ -368,20 +393,21 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JSeparator jSeparator4;
-    private javax.swing.JRadioButton longHeadersDisabledRadioButton;
-    private javax.swing.JRadioButton longHeadersEnabledRadioButton;
+    public javax.swing.JRadioButton longHeadersDisabledRadioButton;
+    public javax.swing.JRadioButton longHeadersEnabledRadioButton;
     private javax.swing.ButtonGroup longUriButtonGroup;
-    private javax.swing.JRadioButton longUriDisabledRadioButton;
-    private javax.swing.JRadioButton longUriEnabledRadioButton;
+    public javax.swing.JRadioButton longUriDisabledRadioButton;
+    public javax.swing.JRadioButton longUriEnabledRadioButton;
     private javax.swing.JSpinner maxHeaderJSpinner;
+    private javax.swing.JLabel maxHeaderLimitsJLabel;
     private javax.swing.JSpinner maxUriJSpinner;
+    private javax.swing.JLabel maxUriLimitsJLabel;
     private javax.swing.ButtonGroup nonHttpButtonGroup;
-    private javax.swing.JRadioButton nonHttpDisabledRadioButton;
-    private javax.swing.JRadioButton nonHttpEnabledRadioButton;
+    public javax.swing.JRadioButton nonHttpDisabledRadioButton;
+    public javax.swing.JRadioButton nonHttpEnabledRadioButton;
     private javax.swing.JPanel nonHttpJPanel;
-    private javax.swing.JPanel smtpJPanel;
-    private javax.swing.JPanel smtpJPanel1;
     private javax.swing.JPanel uriJPanel;
+    private javax.swing.JPanel uriSpinnerJPanel;
     private javax.swing.JPanel webJPanel;
     // End of variables declaration//GEN-END:variables
     

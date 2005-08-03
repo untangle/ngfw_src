@@ -19,19 +19,35 @@ import javax.swing.*;
 
 public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
 
-    private static final int TIMEOUT_MAX = 86400;
-    private static final int TIMEOUT_MIN = 0;
-    
     public MCasingJPanel(TransformContext transformContext) {
         super(transformContext);
         initComponents();
         
-        smtpInboundJSpinner.setModel( new SpinnerNumberModel(TIMEOUT_MIN, TIMEOUT_MIN, TIMEOUT_MAX, 1) );
-        smtpOutboundJSpinner.setModel( new SpinnerNumberModel(TIMEOUT_MIN, TIMEOUT_MIN, TIMEOUT_MAX, 1) );
-        popInboundJSpinner.setModel( new SpinnerNumberModel(TIMEOUT_MIN, TIMEOUT_MIN, TIMEOUT_MAX, 1) );
-        popOutboundJSpinner.setModel( new SpinnerNumberModel(TIMEOUT_MIN, TIMEOUT_MIN, TIMEOUT_MAX, 1) );
-        imapInboundJSpinner.setModel( new SpinnerNumberModel(TIMEOUT_MIN, TIMEOUT_MIN, TIMEOUT_MAX, 1) );
-        imapOutboundJSpinner.setModel( new SpinnerNumberModel(TIMEOUT_MIN, TIMEOUT_MIN, TIMEOUT_MAX, 1) );
+        smtpInboundJSpinner.setModel( new SpinnerNumberModel((Long)MailTransformSettings.TIMEOUT_MIN,
+							     (Long)MailTransformSettings.TIMEOUT_MIN,
+							     (Long)MailTransformSettings.TIMEOUT_MAX,
+							     (Long)1l) );
+        smtpOutboundJSpinner.setModel( new SpinnerNumberModel((Long)MailTransformSettings.TIMEOUT_MIN,
+							      (Long)MailTransformSettings.TIMEOUT_MIN,
+							      (Long)MailTransformSettings.TIMEOUT_MAX,
+							      (Long)1l) );
+        popInboundJSpinner.setModel( new SpinnerNumberModel((Long)MailTransformSettings.TIMEOUT_MIN,
+							    (Long)MailTransformSettings.TIMEOUT_MIN,
+							    (Long)MailTransformSettings.TIMEOUT_MAX,
+							    (Long)1l) );
+        popOutboundJSpinner.setModel( new SpinnerNumberModel((Long)MailTransformSettings.TIMEOUT_MIN,
+							     (Long)MailTransformSettings.TIMEOUT_MIN,
+							     (Long)MailTransformSettings.TIMEOUT_MAX,
+							     (Long)1l) );
+        imapInboundJSpinner.setModel( new SpinnerNumberModel((Long)MailTransformSettings.TIMEOUT_MIN,
+							     (Long)MailTransformSettings.TIMEOUT_MIN,
+							     (Long)MailTransformSettings.TIMEOUT_MAX,
+							     (Long)1l) );
+        imapOutboundJSpinner.setModel( new SpinnerNumberModel((Long)MailTransformSettings.TIMEOUT_MIN,
+							      (Long)MailTransformSettings.TIMEOUT_MIN,
+							      (Long)MailTransformSettings.TIMEOUT_MAX,
+							      (Long)1l) );
+	timeoutLimitsJLabel.setText("(max=" + MailTransformSettings.TIMEOUT_MAX + " min=" +  MailTransformSettings.TIMEOUT_MIN + ")");
     }
 
     public void doSave(Object settings, boolean validateOnly) throws Exception {
@@ -91,12 +107,12 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
             imapDisabledRadioButton.setSelected(true);
         
         // EMAIL TIMEOUT /////////////
-        smtpInboundJSpinner.setValue( mailTransformSettings.getSmtpInboundTimeout() );
-        smtpOutboundJSpinner.setValue( mailTransformSettings.getSmtpOutboundTimeout() );
-        popInboundJSpinner.setValue( mailTransformSettings.getPopInboundTimeout() );
-        popOutboundJSpinner.setValue( mailTransformSettings.getPopOutboundTimeout() );
-        imapInboundJSpinner.setValue( mailTransformSettings.getImapInboundTimeout() );
-        imapOutboundJSpinner.setValue( mailTransformSettings.getImapOutboundTimeout() );
+        smtpInboundJSpinner.setValue( (Long) mailTransformSettings.getSmtpInboundTimeout() );
+        smtpOutboundJSpinner.setValue( (Long) mailTransformSettings.getSmtpOutboundTimeout() );
+        popInboundJSpinner.setValue( (Long) mailTransformSettings.getPopInboundTimeout() );
+        popOutboundJSpinner.setValue( (Long) mailTransformSettings.getPopOutboundTimeout() );
+        imapInboundJSpinner.setValue( (Long) mailTransformSettings.getImapInboundTimeout() );
+        imapOutboundJSpinner.setValue( (Long) mailTransformSettings.getImapOutboundTimeout() );
     }
     
     
@@ -118,6 +134,7 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
         imapDisabledRadioButton = new javax.swing.JRadioButton();
         timeoutJPanel = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
+        timeoutLimitsJLabel = new javax.swing.JLabel();
         smtpJPanel = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         smtpInboundJSpinner = new javax.swing.JSpinner();
@@ -138,9 +155,9 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
 
         setLayout(new java.awt.GridBagLayout());
 
-        setMaximumSize(new java.awt.Dimension(563, 488));
-        setMinimumSize(new java.awt.Dimension(563, 488));
-        setPreferredSize(new java.awt.Dimension(563, 488));
+        setMaximumSize(new java.awt.Dimension(563, 520));
+        setMinimumSize(new java.awt.Dimension(563, 520));
+        setPreferredSize(new java.awt.Dimension(563, 520));
         overrideJPanel.setLayout(new java.awt.GridBagLayout());
 
         overrideJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Email Overrides", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
@@ -150,7 +167,7 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
 
         smtpButtonGroup.add(smtpEnabledRadioButton);
         smtpEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        smtpEnabledRadioButton.setText("<html><b>Allow SMTP</b> email processing.  (This is the default settings)</html>");
+        smtpEnabledRadioButton.setText("<html><b>Enable SMTP</b> email processing.  (This is the default settings)</html>");
         smtpEnabledRadioButton.setFocusPainted(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -160,7 +177,7 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
 
         smtpButtonGroup.add(smtpDisabledRadioButton);
         smtpDisabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        smtpDisabledRadioButton.setText("<html><b>Stop SMTP</b> traffic processing.</html>");
+        smtpDisabledRadioButton.setText("<html><b>Disable SMTP</b> email processing.</html>");
         smtpDisabledRadioButton.setFocusPainted(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -177,7 +194,7 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
 
         popButtonGroup.add(popEnabledRadioButton);
         popEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        popEnabledRadioButton.setText("<html><b>Allow POP</b> email processing.  (This is the default settings)</html>");
+        popEnabledRadioButton.setText("<html><b>Enable POP</b> email processing.  (This is the default settings)</html>");
         popEnabledRadioButton.setFocusPainted(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -187,7 +204,7 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
 
         popButtonGroup.add(popDisabledRadioButton);
         popDisabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        popDisabledRadioButton.setText("<html><b>Stop POP</b> traffic processing.</html>");
+        popDisabledRadioButton.setText("<html><b>Disable POP</b> email processing.</html>");
         popDisabledRadioButton.setFocusPainted(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -204,7 +221,7 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
 
         imapButtonGroup.add(imapEnabledRadioButton);
         imapEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        imapEnabledRadioButton.setText("<html><b>Allow IMAP</b> email processing.  (This is the default settings)</html>");
+        imapEnabledRadioButton.setText("<html><b>Enable IMAP</b> email processing.  (This is the default settings)</html>");
         imapEnabledRadioButton.setFocusPainted(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -214,7 +231,7 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
 
         imapButtonGroup.add(imapDisabledRadioButton);
         imapDisabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        imapDisabledRadioButton.setText("<html><b>Stop IMAP</b> traffic processing.</html>");
+        imapDisabledRadioButton.setText("<html><b>Disable IMAP</b> email processing.</html>");
         imapDisabledRadioButton.setFocusPainted(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -236,11 +253,20 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
         timeoutJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Email Timeouts", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
         jLabel4.setFont(new java.awt.Font("Dialog", 0, 12));
         jLabel4.setText("Warning:  These settings should not be changed unless instructed to do so by support.");
-        timeoutJPanel.add(jLabel4, new java.awt.GridBagConstraints());
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        timeoutJPanel.add(jLabel4, gridBagConstraints);
+
+        timeoutLimitsJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+        timeoutLimitsJLabel.setText("(max= min= )");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.insets = new java.awt.Insets(10, 0, 0, 0);
+        timeoutJPanel.add(timeoutLimitsJLabel, gridBagConstraints);
 
         smtpJPanel.setLayout(new java.awt.GridBagLayout());
 
-        jLabel1.setText("SMTP Inbound (milliseconds):");
+        jLabel1.setText("SMTP Inbound (milliseconds)");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -259,7 +285,7 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
         gridBagConstraints.insets = new java.awt.Insets(0, 10, 10, 0);
         smtpJPanel.add(smtpInboundJSpinner, gridBagConstraints);
 
-        jLabel2.setText("SMTP Outbound (milliseconds):");
+        jLabel2.setText("SMTP Outbound (milliseconds)");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
@@ -291,7 +317,7 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
 
         popJPanel.setLayout(new java.awt.GridBagLayout());
 
-        jLabel5.setText("POP Inbound (milliseconds):");
+        jLabel5.setText("POP Inbound (milliseconds)");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -310,7 +336,7 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
         gridBagConstraints.insets = new java.awt.Insets(0, 10, 10, 0);
         popJPanel.add(popInboundJSpinner, gridBagConstraints);
 
-        jLabel6.setText("POP Outbound (milliseconds):");
+        jLabel6.setText("POP Outbound (milliseconds)");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
@@ -342,7 +368,7 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
 
         imapJPanel.setLayout(new java.awt.GridBagLayout());
 
-        jLabel7.setText("IMAP Inbound (milliseconds):");
+        jLabel7.setText("IMAP Inbound (milliseconds)");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -361,7 +387,7 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
         gridBagConstraints.insets = new java.awt.Insets(0, 10, 10, 0);
         imapJPanel.add(imapInboundJSpinner, gridBagConstraints);
 
-        jLabel8.setText("IMAP Outbound (milliseconds):");
+        jLabel8.setText("IMAP Outbound (milliseconds)");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
@@ -431,6 +457,7 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
     private javax.swing.JPanel smtpJPanel;
     private javax.swing.JSpinner smtpOutboundJSpinner;
     private javax.swing.JPanel timeoutJPanel;
+    private javax.swing.JLabel timeoutLimitsJLabel;
     // End of variables declaration//GEN-END:variables
     
 
