@@ -13,6 +13,7 @@ package com.metavize.tran.mail.papi.smtp;
 
 //import static com.metavize.tran.util.Rfc822Util.*;
 import static com.metavize.tran.util.Ascii.*;
+import static com.metavize.tran.util.ASCIIUtil.bbToString;
 
 import java.nio.ByteBuffer;
 
@@ -137,6 +138,15 @@ public class Command
     buf.flip();
 
     return buf;
+  }
+
+  /**
+   * For debug logging
+   */
+  public String toDebugString() {
+    ByteBuffer buf = getBytes();
+    buf.limit(buf.limit() - 2);//Remove CRLF for debugging
+    return bbToString(buf);
   }
 
   /**

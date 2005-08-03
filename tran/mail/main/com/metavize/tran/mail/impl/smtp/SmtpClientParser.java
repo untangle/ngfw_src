@@ -77,13 +77,14 @@ class SmtpClientParser
     //   -wrs 7/05
     //
       
-    m_logger.debug("parse.  State: " + m_state);
+//    m_logger.debug("parse.  State: " + m_state);
 
     //Do tracing stuff
     getSmtpCasing().traceParse(buf);
 
     //Check for passthru
     if(isPassthru()) {
+      m_logger.debug("Passthru buffer (" + buf.remaining() + " bytes)");
       return new ParseResult(new Chunk(buf));
     }       
     
@@ -108,7 +109,7 @@ class SmtpClientParser
           //     in ever-increasing sizes.  Otherwise, 
           //     an easy attack is to simply stream
           //     bytes w/o CRLF        
-          m_logger.debug(m_state + " state");
+//          m_logger.debug(m_state + " state");
           if(findCrLf(buf) >= 0) {//BEGIN Complete Command
           
             //Parse the next command.  If there is a parse error,
@@ -139,21 +140,17 @@ class SmtpClientParser
               break;
             }
 
-            m_logger.debug("Parsed \"" + cmd.getType() + "\" Command");
-            //Update the transaction tracker
+            //If we're here, we have a legitimate command
+            toks.add(cmd);
+            m_logger.debug("Received command: " + cmd.toDebugString());
+            
             if(cmd.getType() == Command.CommandType.STARTTLS) {
-              m_logger.debug("Saw STARTTLS command.  Enqueue response action to go into " +
-                "passthru if accepted");
+              m_logger.debug("Enqueue observer for response to STARTTLS, " +
+                "to go into passthru if accepted");
               getSessionTracker().commandReceived(cmd, new TLSResponseCallback());
             }
-            else {            
-              getSessionTracker().commandReceived(cmd);
-            }
-            toks.add(cmd);
-
-            //Check for DATA command, which changes our state
-            if(cmd.getType() == Command.CommandType.DATA) {
-              m_logger.debug("entering DATA state");
+            else if(cmd.getType() == Command.CommandType.DATA) {
+              m_logger.debug("entering data transmission (DATA)");
               if(!openMIMEAccumulator()) {
                 //Error opening the temp file.  The
                 //error has been reported and the temp file
@@ -164,21 +161,28 @@ class SmtpClientParser
                 toks.add(new Chunk(buf));
                 return new ParseResult(toks, null);                
               }
-              m_state = SmtpClientState.HEADERS;
-              //Go back and start evaluating the header bytes.
+              m_logger.debug("Change state to " +
+                SmtpClientState.HEADERS + ".  Enqueue response handler in case DATA " +
+                "command rejected (returning us to " + SmtpClientState.COMMAND + ")");
+              getSessionTracker().commandReceived(cmd, new DATAResponseCallback());                
+              changeState(SmtpClientState.HEADERS);
+              //Go back and start evaluating the header bytes.            
             }
+            else {
+              getSessionTracker().commandReceived(cmd);
+            }            
           }//ENDOF Complete Command
           else {//BEGIN Not complete Command
             //TODO bscott see note above.  This is vulnerable
             //     to attack
-            m_logger.debug("does not end with CRLF");
+            m_logger.debug("Command line does not end with CRLF.  Need more bytes");
             done = true;
           }//ENDOF Not complete Command
           break;
           
         //==================================================
         case HEADERS:
-          m_logger.debug(m_state + " state. buf remaining " + buf.remaining());
+//          m_logger.debug(m_state + " state. buf remaining " + buf.remaining());
           getSessionTracker().beginMsgTransmission();
           
           //Duplicate the buffer, in case we have a problem
@@ -254,11 +258,11 @@ class SmtpClientParser
               m_mimeAccumulator.getFileSource(),
               headersLength,
               createMessageInfo()));
-            m_state = SmtpClientState.BODY;
+            changeState(SmtpClientState.BODY);
             if(m_mimeAccumulator.getScanner().isEmptyMessage()) {
               m_logger.debug("Message blank.  Skip to reading commands");
               toks.add(new ContinuedMIMEToken(true));
-              m_state = SmtpClientState.COMMAND;
+              changeState(SmtpClientState.COMMAND);
             }
             m_mimeAccumulator.closeNormal();            
           }//ENDOF End of Headers
@@ -270,7 +274,7 @@ class SmtpClientParser
 
         //==================================================
         case BODY:
-          m_logger.debug(m_state + " state");
+//          m_logger.debug(m_state + " state");
           ByteBuffer bodyBuf = ByteBuffer.allocate(buf.remaining());
           boolean bodyEnd = m_mimeAccumulator.getScanner().processBody(buf, bodyBuf);
           bodyBuf.flip();
@@ -278,7 +282,7 @@ class SmtpClientParser
             m_logger.debug("Found end of body");
             m_mimeAccumulator.closeNormal();
             m_mimeAccumulator = null;
-            m_state = SmtpClientState.COMMAND;
+            changeState(SmtpClientState.COMMAND);
           }
           else {
             done = true;
@@ -309,7 +313,16 @@ class SmtpClientParser
   public TokenStreamer endSession() {
     if(m_mimeAccumulator != null) {
       //TODO bscott temp debugging
-      m_logger.debug("Unexpected closed in state " + m_state);
+      
+      File f = m_mimeAccumulator.getFile();
+      if(f != null) {
+        m_logger.debug("Unexpected closed in state " + m_state +
+          " with " + f.length() + " bytes in MIME file");
+      }
+      else {
+        m_logger.debug("Unexpected closed in state " + m_state);      
+      }
+/*      
       FileOutputStream fOut = null;
       FileInputStream fIn = null;
       try {
@@ -333,10 +346,17 @@ class SmtpClientParser
         try {fOut.close();}catch(Exception ignore){}
         try {fIn.close();}catch(Exception ignore){}
       }
+*/      
       m_mimeAccumulator.closeFromError();
     }
     return super.endSession();
-  }  
+  }
+
+  private void changeState(SmtpClientState newState) {
+    m_logger.debug("Change state " +
+      m_state + "->" + newState);
+    m_state = newState;
+  }
 
 
   /**
@@ -346,6 +366,27 @@ class SmtpClientParser
     m_logger.debug("TLS Command accepted.  Enter passthru mode so as to not attempt to parse cyphertext");
     declarePassthru();//Inform the parser of this state
   }
+
+  //================ Inner Class =================
+
+  /**
+   * Callback registered with the CasingSessionTracker
+   * for the response to the DATA command
+   */
+  class DATAResponseCallback
+    implements CasingSessionTracker.ResponseAction {
+    public void response(int code) {
+      if(code < 400) {
+        m_logger.debug("DATA command accepted");
+      }
+      else {
+        m_logger.debug("DATA command rejected");
+        m_mimeAccumulator.closeFromError();
+        m_mimeAccumulator = null;
+        changeState(SmtpClientState.COMMAND);
+      }
+    }    
+  }  
 
   //================ Inner Class =================
 

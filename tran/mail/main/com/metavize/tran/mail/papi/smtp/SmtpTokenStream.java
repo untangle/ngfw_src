@@ -182,15 +182,23 @@ public class SmtpTokenStream
   public final void handleClientFin()
     throws TokenException {
     if(m_handler.handleClientFIN()) {
+      m_logger.debug("Passing along client FIN");    
       getSession().shutdownServer();
     }
+    else {
+      m_logger.debug("Supress client FIN");
+    }     
   }
 
   public final void handleServerFin()
     throws TokenException {
     if(m_handler.handleServerFIN()) {
+      m_logger.debug("Passing along server FIN");
       getSession().shutdownClient();
-    }    
+    }
+    else {
+      m_logger.debug("Supress server FIN");    
+    }   
   }
 
   
@@ -252,8 +260,8 @@ public class SmtpTokenStream
   private final void handleServerTokenImpl(Token token,
     TokenResultBuilder trb)
     throws TokenException {
-    m_logger.debug("[handleServerTokenImpl] Called with token type \"" +
-      token.getClass().getName() + "\"");
+//    m_logger.debug("[handleServerTokenImpl] Called with token type \"" +
+//      token.getClass().getName() + "\"");
 
     if(m_passthru) {
       m_logger.debug("(In passthru, server token) passing token of type " +

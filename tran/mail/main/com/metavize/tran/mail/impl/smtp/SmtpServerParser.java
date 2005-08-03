@@ -48,13 +48,14 @@ class SmtpServerParser
   
   public ParseResult parse(ByteBuffer buf) 
     throws ParseException {
-    m_logger.debug("parse");
+//    m_logger.debug("parse");
 
     //Trace stuff
     getSmtpCasing().traceParse(buf);
     
     //Check for passthru
     if(isPassthru()) {
+      m_logger.debug("Passthru buffer (" + buf.remaining() + " bytes )");
       return new ParseResult(new Chunk(buf));
     }
 
@@ -71,7 +72,8 @@ class SmtpServerParser
         Response resp = m_parser.parse(buf);
         if(resp != null) {
           getSessionTracker().responseReceived(resp);
-          m_logger.debug("Adding response token with code " + resp.getCode());
+          m_logger.debug("Received response: " +
+            resp.toDebugString());
           toks.add(resp);
           m_parser.reset();
         }
@@ -96,8 +98,8 @@ class SmtpServerParser
     buf = compactIfNotEmpty(buf);
     
     if(buf == null) {
-      m_logger.debug("returning ParseResult with " +
-        toks.size() + " tokens and a null buffer");    
+//      m_logger.debug("returning ParseResult with " +
+//        toks.size() + " tokens and a null buffer");    
     }
     else {
       m_logger.debug("returning ParseResult with " +

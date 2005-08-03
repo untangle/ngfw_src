@@ -764,12 +764,16 @@ public final class Session
 
     @Override
     public boolean handleServerFIN() {
-      return m_sessionHandler.handleServerFIN(m_currentTxHandler);
+      boolean ret = m_sessionHandler.handleServerFIN(m_currentTxHandler);
+      m_logger.debug("Returning " + ret + " to reciept of server FIN");
+      return ret;
     }
 
     @Override
     public boolean handleClientFIN() {
-      return m_sessionHandler.handleClientFIN(m_currentTxHandler);
+      boolean ret = m_sessionHandler.handleClientFIN(m_currentTxHandler);
+      m_logger.debug("Returning " + ret + " to reciept of client FIN");
+      return ret;
     }
 
     //============ Inner-Inner Class ==============

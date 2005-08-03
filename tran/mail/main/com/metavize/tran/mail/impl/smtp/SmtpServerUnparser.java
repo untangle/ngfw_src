@@ -54,29 +54,13 @@ class SmtpServerUnparser
   public UnparseResult unparse(Token token)
     throws UnparseException {
     
-    m_logger.debug("unparse token of type " + (token==null?"null":token.getClass().getName()));
+//    m_logger.debug("unparse token of type " + (token==null?"null":token.getClass().getName()));
 
     //-----------------------------------------------------------
     if(token instanceof PassThruToken) {
       m_logger.debug("Received PASSTHRU token");
       declarePassthru();//Inform the parser of this state
       return UnparseResult.NONE;
-    }
-
-    //-----------------------------------------------------------
-    if(token instanceof MAILCommand) {
-      MAILCommand mc = (MAILCommand) token;
-      getSessionTracker().commandReceived(mc);      
-      m_logger.debug("Received MAIL Commandfor address \"" +
-        mc.getAddress() + "\"");
-    }
-
-    //-----------------------------------------------------------
-    if(token instanceof RCPTCommand) {
-      RCPTCommand mc = (RCPTCommand) token;
-      getSessionTracker().commandReceived(mc);
-      m_logger.debug("Received RCPT Commandfor address \"" +
-        mc.getAddress() + "\"");
     }
 
     //-----------------------------------------------------------
@@ -96,8 +80,8 @@ class SmtpServerUnparser
         getSessionTracker().commandReceived(command, new TLSResponseCallback());
       }
       else {
-        m_logger.debug("Received Command \"" +
-          command.getType() + "\" to pass");      
+        m_logger.debug("Send command to server: " +
+          command.toDebugString());
         getSessionTracker().commandReceived(command);  
       }
       ByteBuffer buf = token.getBytes();
@@ -107,7 +91,7 @@ class SmtpServerUnparser
 
     //-----------------------------------------------------------
     if(token instanceof BeginMIMEToken) {
-      m_logger.debug("Received BeginMIMEToken to pass");
+      m_logger.debug("Send BeginMIMEToken to server");
       getSessionTracker().beginMsgTransmission();
       ByteBuffer buf = token.getBytes();
       getSmtpCasing().traceUnparse(buf);
@@ -118,7 +102,7 @@ class SmtpServerUnparser
 
     //-----------------------------------------------------------
     if(token instanceof CompleteMIMEToken) {
-      m_logger.debug("Received CompleteMIMEToken to pass");
+      m_logger.debug("Send CompleteMIMEToken to server");
       getSessionTracker().beginMsgTransmission();
       return new UnparseResult(((CompleteMIMEToken) token).toTCPStreamer(getPipeline()));
     }
@@ -126,8 +110,8 @@ class SmtpServerUnparser
     if(token instanceof ContinuedMIMEToken) {
       boolean last = ((ContinuedMIMEToken) token).isLast();
       ByteBuffer buf = token.getBytes();
-      m_logger.debug("Received ContinuedMIMEToken (" +
-        buf.remaining() + " bytes) to pass (" +
+      m_logger.debug("Send continued MIME chunk to server (" +
+        buf.remaining() + " bytes, " +
         (last?"":"not ") + "last)");
 
       ByteBuffer sink = ByteBuffer.allocate(buf.remaining());
@@ -147,7 +131,7 @@ class SmtpServerUnparser
     //-----------------------------------------------------------
     if(token instanceof Chunk) {
       ByteBuffer buf = token.getBytes();
-      m_logger.debug("Received Chunk to pass (" + buf.remaining() + ")");
+      m_logger.debug("Sending chunk (" + buf.remaining() + " bytes) to server");
       getSmtpCasing().traceUnparse(buf);
       return new UnparseResult(buf);
     }

@@ -41,11 +41,9 @@ class SmtpClientUnparser
   public UnparseResult unparse(Token token)
     throws UnparseException {
     
-    m_logger.debug("unparse token of type " + (token==null?"null":token.getClass().getName()));
-
     //-----------------------------------------------------------
     if(token instanceof PassThruToken) {
-      m_logger.debug("Received PASSTHRU token");
+      m_logger.debug("Received PASSTHRU token.  Enter passthru mode");
       declarePassthru();//Inform the parser of this state
       return UnparseResult.NONE;
     }
@@ -53,6 +51,7 @@ class SmtpClientUnparser
     //-----------------------------------------------------------
     if(token instanceof MetadataToken) {
       //Don't pass along metadata tokens
+      m_logger.debug("Pass along Metadata token as nothing");
       return UnparseResult.NONE;
     }
 
@@ -60,8 +59,12 @@ class SmtpClientUnparser
     if(token instanceof Response) {
       Response resp = (Response) token;
       getSessionTracker().responseReceived(resp);
-      m_logger.debug("Unparsing response with code " +
-        resp.getCode() + " and " + resp.getArgs().length + " lines");
+
+      m_logger.debug("Passing response to client: " +
+        resp.toDebugString());
+    }
+    else {
+      m_logger.debug("Unparse token of type " + (token==null?"null":token.getClass().getName()));
     }
 
     getSmtpCasing().traceUnparse(token.getBytes());

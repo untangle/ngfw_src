@@ -96,7 +96,28 @@ public class Response
     ret.flip();
 
     return ret;
-  }  
+  }
+
+  /**
+   * For debug logging.
+   */
+  public String toDebugString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append(Integer.toString(m_code));
+    if(getArgs() != null) {
+      sb.append(" (");
+      if(getArgs().length == 1) {
+        sb.append("\"");
+        sb.append(getArgs()[0]);
+        sb.append("\"");
+      }
+      else {
+        sb.append("multiline response");
+      }
+      sb.append(")");
+    }
+    return sb.toString();
+  }
   
 
 }
