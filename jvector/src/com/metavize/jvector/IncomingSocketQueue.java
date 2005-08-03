@@ -133,8 +133,9 @@ public class IncomingSocketQueue extends Sink implements SocketQueue
     protected int send_event( Crumb crumb )
     {
         sq.add( crumb );
-
+        
         if ( crumb.isShutdown()) {
+            /* XXX FIXME THIS WON'T WORK IF SOCKET QUEUE SIZE IS GREATER THAN 1 */
             sq.eventList.clear();
             sq.callListenersRemove();
             return Vector.ACTION_SHUTDOWN;
@@ -153,7 +154,8 @@ public class IncomingSocketQueue extends Sink implements SocketQueue
                                      " queue size:" + sq.eventList.size());
                 }
             }
-
+            
+            /* XXX FIXME THIS WON'T WORK IF SOCKET QUEUE SIZE IS GREATER THAN 1 */
             sq.removeFirst();
             return Vector.ACTION_NOTHING;
         }
@@ -249,6 +251,7 @@ public class IncomingSocketQueue extends Sink implements SocketQueue
             
             notifyMvpoll();
             
+            /* XXX FIXME THIS WON'T WORK IF SOCKET QUEUE SIZE IS GREATER THAN 1 */
             if ( wasShutdown ) {
                 /* Clear out all of the events */
                 eventList.clear();
