@@ -166,7 +166,7 @@ class SmtpClientParser
                 "command rejected (returning us to " + SmtpClientState.COMMAND + ")");
               getSessionTracker().commandReceived(cmd, new DATAResponseCallback());                
               changeState(SmtpClientState.HEADERS);
-              //Go back and start evaluating the header bytes.            
+              //Go back and start evaluating the header bytes.
             }
             else {
               getSessionTracker().commandReceived(cmd);

@@ -386,6 +386,7 @@ public final class Session
    * Helper 
    */
   private TransactionHandler getOrCreateTxHandler() {
+    m_logger.debug("Creating new Transaction Handler");
     if(m_currentTxHandler == null) {
       m_currentTxHandler = m_sessionHandler.createTxHandler(new SmtpTransaction());
     }
@@ -487,6 +488,7 @@ public final class Session
     }
     public void transactionEnded(TransactionHandler handler) {
       if(m_currentTxHandler == handler) {
+        m_logger.debug("Deregistering transaction handler");
         m_currentTxHandler = null;
       }
     }
@@ -569,6 +571,9 @@ public final class Session
           m_immediateActions = new HoldsSyntheticActions();
         }
         m_immediateActions.pushAction(synth);
+      }
+      else {
+        m_outstandingRequests.get(m_outstandingRequests.size()-1).pushAction(synth);
       }
     }
     void followup() {

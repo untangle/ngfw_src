@@ -186,7 +186,7 @@ public class MIMEUtil {
 
   /**
    * Helper which returns a list of parts which may
-   * be candidates for scanning.  Takes care of boundary
+   * be candidates for virus scanning.  Takes care of boundary
    * case where top-level part is actualy an attachment
    */
   public static MIMEPart[] getCandidateParts(MIMEMessage msg) {
@@ -208,13 +208,13 @@ public class MIMEUtil {
   }
 
   /**
-   * Currently any non-text part is scanned
+   * Currently any non-text part (or attachment) is scanned
    */
   public static boolean shouldScan(MIMEPart part) {
 
-    return part.getMPHeaders().getContentTypeHF() != null &&
+    return part.isAttachment() || (part.getMPHeaders().getContentTypeHF() != null &&
       !part.getMPHeaders().getContentTypeHF().getPrimaryType().
-        equalsIgnoreCase(ContentTypeHeaderField.TEXT_PRIM_TYPE_STR);
+        equalsIgnoreCase(ContentTypeHeaderField.TEXT_PRIM_TYPE_STR));
   }
 
 
