@@ -110,7 +110,6 @@
 216.110.36.129 mask 255.255.255.255,Malware,IPInsight
 64.40.36.12 mask 255.255.255.255,Malware,ISTBar
 69.56.130.21 mask 255.255.255.255,Malware,JetSeeker
-207.68.176.189 mask 255.255.255.255,Malware,related.msn.com
 192.146.101.142 mask 255.255.255.255,Malware,LexMark
 64.237.61.3 mask 255.255.255.255,Malware,LinkReplacer
 69.20.20.161 mask 255.255.255.255,Malware,Look2Me
@@ -128,8 +127,6 @@
 216.157.91.36 mask 255.255.255.255,Malware,Naviscope
 207.182.241.228 mask 255.255.255.255,Malware,Netpal/FavoriteMan
 64.201.101.4 mask 255.255.255.255,Malware,Netpal/FavoriteMan
-64.12.151.216 mask 255.255.255.255,Malware,Netscape
-207.200.82.138 mask 255.255.255.255,Malware,Netscape
 205.206.208.231 mask 255.255.255.255,Malware,Netster
 208.38.61.228 mask 255.255.255.255,Malware,Netster
 62.39.85.25 mask 255.255.255.255,Malware,Netdialers/ComLoad
@@ -625,8 +622,6 @@
 63.218.11.128 mask 255.255.255.248,Malware,<unknown>
 207.44.232.0 mask 255.255.255.128,Malware,Various/multiple
 217.17.157.128 mask 255.255.255.192,Malware,Various,
-207.68.128.0 mask 255.255.192.0,Malware,MSN
-207.68.192.0 mask 255.255.240.0,Malware,MSN
 213.35.101.0 mask 255.255.255.0,Malware,ConXion/AWS
 63.80.0.0 mask 255.255.255.0,Malware,24/7
 209.213.215.0 mask 255.255.255.0,Malware,24/7
