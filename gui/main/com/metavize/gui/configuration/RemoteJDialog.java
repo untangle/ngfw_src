@@ -62,7 +62,6 @@ public class RemoteJDialog extends MConfigJDialog {
         boolean isProceeding = saveSettingsProceedJDialog.isProceeding();
         if( isProceeding ){ 
             super.saveAll();
-            new RestartDialog();
         }
     }
 
