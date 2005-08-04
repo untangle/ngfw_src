@@ -75,15 +75,18 @@ public class ReportGenerator
                 throw new IllegalArgumentException("Template dir " + templateSrcDir.getAbsolutePath() + " does not exist");
             ReportGenerator rg = new ReportGenerator(templateSrcDir);
             String jrxmlFileName;
+            File jrxmlFile;
             if (outputDirName == null) {
                 jrxmlFileName = rpdFileName.substring(0, rpdFileName.length() - 4) + JRXML_SUFFIX;
+                jrxmlFile = new File(jrxmlFileName);
             } else {
                 File rpdFile = new File(rpdFileName);
                 String rpdSimple = rpdFile.getName();
                 String jrxmlSimple = rpdSimple.substring(0, rpdSimple.length() - 4) + JRXML_SUFFIX;
-                File jrxmlFile = new File(outputDirName, jrxmlSimple);
+                jrxmlFile = new File(outputDirName, jrxmlSimple);
                 jrxmlFileName = jrxmlFile.toString();
             }
+            jrxmlFile.delete();
             rg.generate(rpdFileName, jrxmlFileName);
         } catch (Exception x) {
             System.out.println("Unable to process " + rpdFileName + ": " + x.getMessage());
