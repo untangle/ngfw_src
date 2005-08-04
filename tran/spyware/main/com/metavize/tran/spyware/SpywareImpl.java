@@ -299,6 +299,9 @@ public class SpywareImpl extends AbstractTransform implements Spyware
 
     boolean isBlockedCookie(String domain)
     {
+        domain = domain.startsWith(".") && 1 < domain.length()
+            ? domain.substring(1) : domain;
+
         if (null == cookieRules && !settings.getCookieBlockerEnabled()) {
             return false;
         }
