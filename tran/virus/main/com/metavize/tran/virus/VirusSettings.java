@@ -32,10 +32,12 @@ public class VirusSettings implements Serializable
       "[VIRUS] $MIMEMessage:SUBJECT$";
     public static final String OUT_MOD_BODY_TEMPLATE =
       "The attached message from $MIMEMessage:FROM$ was found to contain\r\n" +
-      "the virus \"$VirusReport:VIRUS_NAME$\".  The infected portion of the attached email was removed.\r\n";
+      "the virus \"$VirusReport:VIRUS_NAME$\".  The infected portion of the attached email was removed\r\n" +
+      "by Metavize EdgeGuard.\r\n";
     public static final String OUT_MOD_BODY_SMTP_TEMPLATE =
       "The attached message from $MIMEMessage:FROM$ ($SMTPTransaction:FROM$) was found to contain\r\n" +
-      "the virus \"$VirusReport:VIRUS_NAME$\".  The infected portion of the attached email was removed.\r\n";
+      "the virus \"$VirusReport:VIRUS_NAME$\".  The infected portion of the attached email was removed\r\n" +
+      "by Metavize EdgeGuard.\r\n";
 
     public static final String IN_MOD_SUB_TEMPLATE = OUT_MOD_SUB_TEMPLATE;
     public static final String IN_MOD_BODY_TEMPLATE = OUT_MOD_BODY_TEMPLATE;
