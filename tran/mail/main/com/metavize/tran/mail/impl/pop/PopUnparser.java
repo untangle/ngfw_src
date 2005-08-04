@@ -35,7 +35,9 @@ import com.metavize.tran.mail.papi.DoNotCareChunkT;
 import com.metavize.tran.mail.papi.MIMEMessageT;
 import com.metavize.tran.mail.papi.MIMEMessageTrickleT;
 import com.metavize.tran.mail.papi.pop.PopCommand;
+import com.metavize.tran.mail.papi.pop.PopCommandMore;
 import com.metavize.tran.mail.papi.pop.PopReply;
+import com.metavize.tran.mail.papi.pop.PopReplyMore;
 import com.metavize.tran.token.AbstractUnparser;
 import com.metavize.tran.token.Chunk;
 import com.metavize.tran.token.EndMarker;
@@ -70,7 +72,8 @@ public class PopUnparser extends AbstractUnparser
 
         List<ByteBuffer> zWriteBufs = new LinkedList<ByteBuffer>();
 
-        if (token instanceof PopCommand) {
+        if (token instanceof PopCommand ||
+            token instanceof PopCommandMore) {
             zWriteBufs.add(token.getBytes());
         } else if (token instanceof PopReply) {
             PopReply zReply = (PopReply) token;
@@ -103,6 +106,8 @@ public class PopUnparser extends AbstractUnparser
             writeEOD(zWriteBufs);
             zByteStuffer = null;
             zMsgDataReply = null;
+        } else if (token instanceof PopReplyMore) {
+            zWriteBufs.add(token.getBytes());
         } else if (token instanceof DoNotCareT) { /* do not care */
             writeData((DoNotCareT) token, zWriteBufs);
         } else if (token instanceof DoNotCareChunkT) { /* do not care */
