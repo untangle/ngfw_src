@@ -36,11 +36,7 @@ public class Argon
 
     /* Amount of time between subsequent calls to shutdown all of the vectoring machines */
     protected static final int SHUTDOWN_PAUSE    = 2000;
-    
-    /* True if there was an error on initialization, 
-     * a real shutdown does not occur if this is false */
-    protected static boolean isValid = true;
-    
+        
     private static int sleepingThreads;
     private static int totalThreads;
     private static int activeThreads;
@@ -79,18 +75,6 @@ public class Argon
      */
     public static void main( String args[] ) // throws ArgonException
     {
-        if ( !Netcap.isBridgeAlive()) {
-            /* essentially, Go into fake mode */
-            logger.error( "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" );
-            logger.error( "Bridge does not exist, going into fake mode" );
-            logger.error( "Bridge does not exist, going into fake mode" );
-            logger.error( "Bridge does not exist, going into fake mode" );
-            logger.error( "Bridge does not exist, going into fake mode" );
-            logger.error( "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" );
-            isValid = false;
-            return;
-        }
-            
         /* Get an instance of the shield */
         shield = Shield.getInstance();
 
@@ -214,17 +198,6 @@ public class Argon
         
         RuleManager.getInstance().isShutdown();
         argonManager.isShutdown();
-
-        if ( !isValid ) {
-            /* essentially, Go into fake mode */
-            logger.error( "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" );
-            logger.error( "Error on startup, no shutdown" );
-            logger.error( "Error on startup, no shutdown" );
-            logger.error( "Error on startup, no shutdown" );
-            logger.error( "Error on startup, no shutdown" );            
-            logger.error( "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" );
-            return;
-        }
         
         shield.unregisterEventListener();
         

@@ -207,10 +207,8 @@ String helpClickHere = "Click <a href=\"help.html\">here</a> for more informatio
 
               <br/>
               <br/>
-              <div>
-                <i>If you are not connected to the internet and Java Web Start 
-                is not installed, please click <a href="jre-1_5_0_04-windows-i586-p.exe">here</a> to 
-                download Java Web Start v1.5.</i>
+              <div style="text-align: right; font-style: italic; font-size: 85%;">
+               <a href="jre-1_5_0_04-windows-i586-p.exe">Download Java v1.5 (Offline)</a>
               </div>
             </td>
           </tr>
