@@ -26,8 +26,8 @@ import java.awt.*;
  */
 public class RemoteJPanel extends javax.swing.JPanel implements Savable, Refreshable {
 
-    private static final String EXCEPTION_OUTSIDE_ACCESS_NETWORK = "Invalid Remote Administration \"IP Address\" specified.";
-    private static final String EXCEPTION_OUTSIDE_ACCESS_NETMASK = "Invalid Remote Administration \"Netmask\" specified.";
+    private static final String EXCEPTION_OUTSIDE_ACCESS_NETWORK = "Invalid External Remote Administration \"IP Address\" specified.";
+    private static final String EXCEPTION_OUTSIDE_ACCESS_NETMASK = "Invalid External Remote Administration \"Netmask\" specified.";
 
     
     public RemoteJPanel() {

@@ -26,11 +26,11 @@ import java.awt.*;
  */
 public class NetworkJPanel extends javax.swing.JPanel implements Savable, Refreshable {
 
-    private static final String EXCEPTION_DHCP_IP_ADDRESS = "Invalid DHCP \"IP Address\" specified.";
-    private static final String EXCEPTION_DHCP_NETMASK = "Invalid DHCP \"Netmask\" specified.";
-    private static final String EXCEPTION_DHCP_GATEWAY = "Invalid DHCP \"Default Route\" specified.";
-    private static final String EXCEPTION_DHCP_DNS_1 = "Invalid DHCP \"Primary DNS\" specified.";
-    private static final String EXCEPTION_DHCP_DNS_2 = "Invalid DHCP \"Secondary DNS\" specified.";
+    private static final String EXCEPTION_DHCP_IP_ADDRESS = "Invalid \"IP Address\" manually specified.";
+    private static final String EXCEPTION_DHCP_NETMASK = "Invalid \"Netmask\" manually specified.";
+    private static final String EXCEPTION_DHCP_GATEWAY = "Invalid \"Default Route\" manually specified.";
+    private static final String EXCEPTION_DHCP_DNS_1 = "Invalid \"Primary DNS\" maually specified.";
+    private static final String EXCEPTION_DHCP_DNS_2 = "Invalid \"Secondary DNS\" manually specified.";
 
     
     public NetworkJPanel() {
