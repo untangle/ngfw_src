@@ -38,4 +38,11 @@ notifempty
 copytruncate
 }
 
+/var/log/mvvm/iptables.log {
+rotate 9
+size daily
+compress
+notifempty
+copytruncate
+}
 
