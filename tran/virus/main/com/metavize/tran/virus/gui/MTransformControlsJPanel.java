@@ -115,13 +115,9 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	this.refreshableMap.put(NAME_GENERAL_SETTINGS, generalConfigJPanel);
 
 	// EVENT LOG ///////////////
-	LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransformContext().transform());
+	LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransformContext().transform(), this);
 	super.mTabbedPane.addTab(NAME_LOG, null, logJPanel);
 
-	// SET SELECTED TABS ///////
-	//        httpJTabbedPane.setSelectedIndex(0);
-	//	emailJTabbedPane.setSelectedIndex(0);
-	//	ftpJTabbedPane.setSelectedIndex(0);
     }
     
 }

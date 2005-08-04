@@ -11,17 +11,20 @@
 
 package com.metavize.tran.spam.gui;
 
-import com.metavize.gui.widgets.editTable.*;
-import com.metavize.mvvm.tran.Transform;
 import com.metavize.tran.spam.*;
+
+import com.metavize.gui.widgets.editTable.*;
+import com.metavize.gui.transform.*;
+
+import com.metavize.mvvm.tran.Transform;
 
 import javax.swing.table.*;
 import java.util.*;
 
 public class LogJPanel extends MLogTableJPanel {
 
-    public LogJPanel(Transform transform){
-        super(transform);
+    public LogJPanel(Transform transform, MTransformControlsJPanel mTransformControlsJPanel){
+        super(transform, mTransformControlsJPanel);
 	setTableModel(new LogTableModel());
     }
 

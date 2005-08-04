@@ -91,6 +91,15 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
         if(mTabbedPane.getTabCount() > 0)
             mTabbedPane.setSelectedIndex(0);
     }
+
+    public void collapseControlPanel(){
+	if( expandJDialog.isVisible() )
+	    expandJDialog.setVisible(false);
+    }
+    
+    public boolean getControlsShowing(){
+	return mTransformJPanel.getControlsShowing();
+    }
     
     public void setAllEnabled(boolean enabled){
         int innerComponentCount, outerComponentCount;
@@ -192,12 +201,7 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
 	
     }
     
-
-    public void collapseControlPanel(){
-	if( expandJDialog.isVisible() )
-	    expandJDialog.setVisible(false);
-    }
-    
+	
 
     public JButton saveJButton(){ return saveJButton; }
     public JButton reloadJButton(){ return reloadJButton; }

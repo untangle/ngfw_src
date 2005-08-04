@@ -14,15 +14,17 @@ package com.metavize.tran.virus.gui;
 import java.util.*;
 import javax.swing.table.*;
 
+import com.metavize.gui.transform.*;
 import com.metavize.gui.widgets.editTable.*;
+
 import com.metavize.mvvm.tran.Transform;
 import com.metavize.tran.virus.*;
 
 public class LogJPanel extends MLogTableJPanel {
 
-    public LogJPanel(Transform transform){
-        super(transform);
-    setTableModel(new LogTableModel());
+    public LogJPanel(Transform transform, MTransformControlsJPanel mTransformControlsJPanel){
+        super(transform, mTransformControlsJPanel);
+	setTableModel(new LogTableModel());
     }
 
     public Vector generateRows(Object settings){

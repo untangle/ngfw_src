@@ -44,7 +44,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	super.refreshableMap.put(NAME_SPAM_IMAP, imapConfigJPanel);
 
 	// EVENT LOG /////
-	LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransformContext().transform());
+	LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransformContext().transform(), this);
 	this.mTabbedPane.addTab(NAME_LOG, null, logJPanel);
     }
     

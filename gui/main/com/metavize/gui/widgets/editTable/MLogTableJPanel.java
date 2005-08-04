@@ -34,13 +34,15 @@ public class MLogTableJPanel extends javax.swing.JPanel {
     protected static MLogTableJPanel lastMLogTableJPanel;
     
     protected Transform logTransform;
+    protected MTransformControlsJPanel mTransformControlsJPanel;
 
     private static final long STREAM_SLEEP_MILLIS = 15000l;
     
     private static final Color TABLE_BACKGROUND_COLOR = new Color(213, 213, 226);
     
-    public MLogTableJPanel(Transform logTransform) {
+    public MLogTableJPanel(Transform logTransform, MTransformControlsJPanel mTransformControlsJPanel) {
         this.logTransform = logTransform;
+	this.mTransformControlsJPanel = mTransformControlsJPanel;
         // INIT GUI & CUSTOM INIT
         initComponents();
         entryJScrollPane.getViewport().setOpaque(true);
@@ -55,8 +57,6 @@ public class MLogTableJPanel extends javax.swing.JPanel {
             if(object instanceof JComponent) ((JComponent)object).setFont(new Font("Dialog", 0, 9));
         }
         depthJSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
-        
-
     }
 
     
@@ -211,6 +211,8 @@ public class MLogTableJPanel extends javax.swing.JPanel {
     
     private void streamingJToggleButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_streamingJToggleButtonActionPerformed
        if(streamingJToggleButton.isSelected()){
+	   if( (lastMLogTableJPanel != null) && (lastMLogTableJPanel != this) && (lastMLogTableJPanel.streamingJToggleButton.isSelected()) )
+	       lastMLogTableJPanel.streamingJToggleButton.doClick();
            refreshLogJButton.setEnabled(false); 
            refreshThread = new RefreshThread(true);
            streamingJToggleButton.setIcon(Util.getButtonStopAutoRefresh());
@@ -263,9 +265,15 @@ public class MLogTableJPanel extends javax.swing.JPanel {
 	public void run(){
 	    try{
 		do{
+		    if( !MLogTableJPanel.this.mTransformControlsJPanel.getControlsShowing() ){
+			SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+			    MLogTableJPanel.this.lastMLogTableJPanel.streamingJToggleButton.doClick();
+			}});
+		    }
 		    getTableModel().doRefresh(null);
-		    if(isAutoRefresh)
+		    if(isAutoRefresh){
 			this.sleep(STREAM_SLEEP_MILLIS);
+		    }
 		}
 		while(isAutoRefresh);
 	    }

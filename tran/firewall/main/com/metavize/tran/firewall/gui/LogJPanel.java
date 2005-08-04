@@ -11,6 +11,7 @@
 
 package com.metavize.tran.firewall.gui;
 
+import com.metavize.gui.transform.*;
 import com.metavize.gui.widgets.editTable.*;
 import com.metavize.mvvm.tran.Transform;
 import com.metavize.tran.firewall.*;
@@ -20,8 +21,8 @@ import java.util.*;
 
 public class LogJPanel extends MLogTableJPanel {
 
-    public LogJPanel(Transform transform){
-        super(transform);
+    public LogJPanel(Transform transform, MTransformControlsJPanel mTransformControlsJPanel){
+        super(transform, mTransformControlsJPanel);
 	setTableModel(new LogTableModel());
     }
 
