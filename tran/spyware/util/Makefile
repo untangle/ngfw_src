@@ -8,12 +8,12 @@ build: url activex cookie subnet
 
 url:
 	@echo -e "\n\n\nCreating URL List... "
-	@( cd ./files ; wget http://www.geocities.com/spywarekilla/hosts.zip && unzip hosts.zip)
+	@( cd ./files ; wget http://www.geocities.com/spywarekilla/hosts.zip && unzip -o hosts.zip)
 	@( cd ./files ; wget http://www.mvps.org/winhelp2002/hosts.txt )
-	@cat ./files/hosts > urlblacklist
-	@cat ./files/hosts.txt >> urlblacklist
-	@cat urlblacklist | grep -v "^#.*" | grep "^127.0.0.1" | awk '{print $$2}' | sed 's/\#.*//' | sort > urlblacklist.txt
-	@rm -f urlblacklist
+	@cat ./files/hosts > ./files/urlblacklist
+	@cat ./files/hosts.txt >> ./files/urlblacklist
+	@cat ./files/urlblacklist | grep -v "^#.*" | grep "^127.0.0.1" | awk '{print $$2}' | sed 's/\#.*//' | sort > ./files/urlblacklist.txt
+	@cat ./files/urlblacklist.txt | grep -v "yimg.com" > urlblacklist.txt
 	@echo -e "\n\ndone (urlblacklist.txt) \n\n"
 
 activex:
