@@ -21,8 +21,8 @@ INST_OPTS=" -o DPkg::Options::=--force-confnew --yes --force-yes --fix-broken "
 UPGD_OPTS=" -o DPkg::Options::=--force-confnew --yes --force-yes --fix-broken "
 UPDT_OPTS=" --yes --force-yes "
 REMO_OPTS=" --yes --force-yes --fix-broken --purge "
-
 DEBUG_OPTS=" -o Debug::pkgDPkgPM=true "
+RET=0
 
 printusage()
 {
@@ -64,25 +64,30 @@ if [ -z $prefix ] ; then
             my_dpkg_query 'metavize-client';
             my_dpkg_query 'mvvm') 2>/dev/null \
                 | awk '{ if ($2) printf("%s %s\n",$1,$2) }'
+        #RET=$? return code ignored
     elif [ "$1" = "available" ] ; then
         pkgs=$(apt-cache search '.-transform$|.-casing$|^mvvm$|^metavize-client$'\
             | cut -d ' ' -f 1)
         for pkg in $pkgs; do
             apt-cache show --no-all-versions $pkg
+            #RET=$? return code ignored
         done
     elif [ "$1" = "install" ] ; then
         aptlog "apt-get install $INST_OPTS \"$2-transform\""
         apt-get install $INST_OPTS "$2-transform" 2>&1 | tee -a $APT_LOG   # XXX the way i create mackage name is wrong
+        RET=$?
         aptlog "done"
     elif [ "$1" = "update" ] ; then
         aptlog "apt-get update $UPDT_OPTS"
         apt-get update $UPDT_OPTS 2>&1 | tee -a $APT_LOG
+        #RET=$? return code ignored
         aptlog "done"
     elif [ "$1" = "upgrade" ] ; then
         aptlog "apt-get upgrade $UPGD_OPTS"
 
         t0=$(stat -L -c %Y /vmlinuz)
         apt-get dist-upgrade $UPGD_OPTS 2>&1 | tee -a $APT_LOG
+        RET=$?
         t1=$(stat -L -c %Y /vmlinuz)
 
         if [ $t0 -ne $t1 ]; then
@@ -94,6 +99,7 @@ if [ -z $prefix ] ; then
     elif [ "$1" = "remove" ] ; then
         aptlog "apt-get remove $REMO_OPTS \"$2-transform\""
         apt-get remove $REMO_OPTS "$2-transform" 2>&1 | tee -a $APT_LOG
+        RET=$?
         aptlog "done"
     fi
 else
@@ -113,3 +119,5 @@ else
             | awk '{ print $0 }; /^Package: / { print "Version: 10.0" }'
     fi
 fi
+
+exit $RET
