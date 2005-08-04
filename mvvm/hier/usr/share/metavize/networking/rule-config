@@ -43,11 +43,11 @@ GUARD_INSIDE_TCP_PORTS=""
 # disabled by default
 if [ "${MVVM_ALLOW_OUT_HTTPS}x" = "truex" ]; then
     # not restricted by default
-    if [ "${MVVM_ALLOW_OUT_RES}x" = "xtrue" -a "x$MVVM_ALLOW_OUT_NET" != "x" ]; then
+    if [ "${MVVM_ALLOW_OUT_RES}x" = "truex" -a "${MVVM_ALLOW_OUT_NET}x" != "x" ]; then
         if [ "${MVVM_ALLOW_OUT_MASK}x" = "x" ]; then
-            GUARD_OUTSIDE_TCP_PORTS="${GUARD_OUTSIDE_TCP_PORTS} 443.$MVVM_ALLOW_OUT_NET"
+            GUARD_OUTSIDE_TCP_PORTS="${GUARD_OUTSIDE_TCP_PORTS} 443_$MVVM_ALLOW_OUT_NET"
         else
-            GUARD_OUTSIDE_TCP_PORTS="${GUARD_OUTSIDE_TCP_PORTS} 443.$MVVM_ALLOW_OUT_NET/$MVVM_ALLOW_OUT_MASK"
+            GUARD_OUTSIDE_TCP_PORTS="${GUARD_OUTSIDE_TCP_PORTS} 443_$MVVM_ALLOW_OUT_NET/$MVVM_ALLOW_OUT_MASK"
         fi
     fi
 else

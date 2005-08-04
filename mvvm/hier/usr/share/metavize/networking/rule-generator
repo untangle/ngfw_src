@@ -129,10 +129,10 @@ function generateGuardRule() {
         echo "Ignoring empty ports string"
     fi
         
-    regulated=${ports#*.}
+    regulated=${ports#*_}
     
     if [ "${regulated}x" != "${ports}x" ]; then
-        ports=${ports%.*}
+        ports=${ports%_*}
         regulated="-s ! ${regulated}"
     else
         regulated=""
@@ -153,7 +153,7 @@ function generateGuardRule() {
     mark=$(( ${mark} | ${MARK_LOCAL} ))
     markMask=$(( ${MARK_LOCAL} | 0xF ))
     
-    if [ "$(echo $ports | grep ':')x" != "x" ]; then
+    if [ "${regulated}x" != "x" ]; then
         ${IPTABLES} -t mangle -A ${CHAIN_GUARDS} -p ${protocol} ${regulated} \
             -m mark --mark ${mark}/${markMask} \
             --destination-port ${ports} -j DROP

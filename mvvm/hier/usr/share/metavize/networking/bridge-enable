@@ -12,7 +12,7 @@ else
 fi
 
 if [ $# -ne 4 ] && [ $# -ne 6 ]; then
-    echo "USAGE: $0 <bridge> <inside> <outside> [<bridgeAddress> <bridgeNetmask> <gateway>|${PUMP_FLAG}]" > /dev/stderr
+    echo "USAGE: $0 <bridge> <inside> <outside> [<bridgeAddress> <bridgeNetmask> <gateway>|${PUMP_FLAG}]"
     exit -1
 fi
 
@@ -31,21 +31,25 @@ generateBridge ${bridge}
 ## First test to see if the bridge is already configured
 if [ "$(getBridge ${inside})x" = "${bridge}x" ] && [ "$(getBridge ${outside})x" = "${bridge}x" ]; then
     if [ $bridgeAddress = ${PUMP_FLAG} ]; then 
-        echo "Bridge is already configured, pumping interface." > /dev/stderr
+        echo "Bridge is already configured, pumping interface."
         pump --script="" -i ${bridge}
         exit
     else
         if [ $(getAddresses $bridge) = ${bridgeAddress} ] && 
             [ $(getNetmasks $bridge) = ${bridgeNetmask} ]; then
-            echo "Bridge is already configured." > /dev/stderr
+            echo "Bridge is already configured."
             status=0
-            if [ -n "$(isPumpRunning ${bridge})" ]; then
-                ## kill pump and manually configure the address
-                echo "Killing pump" > /dev/stderr
-                killPump
-                ifconfig ${bridge} ${bridgeAddress} netmask ${bridgeNetmask}
-                status=$?
-            fi
+            
+             ## kill pump and manually configure the address
+            killPump
+            ifconfig ${bridge} ${bridgeAddress} netmask ${bridgeNetmask}
+
+            status=$?
+            ## Delete all of the default routes
+            for t in `route -n | grep "^0.0.0.0" | awk '{ print $2}'`; do route del default gw $t ; done
+            ## Insert the new default route
+            route add default gw $gateway
+
             exit ${status}
         fi
     fi    

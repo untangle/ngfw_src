@@ -80,13 +80,13 @@ function generateInterfaces() {
 ## getAddresses br0 => "1.2.3.4/255.255.255.0 10.0.0.1/255.0.0.0"
 ## getAddresses br0:0 => "1.2.3.4/255.255.255.0"
 function generateAddresses() {
-## DBG    echo "generateAddresses $1" > /dev/stderr
+## DBG    echo "generateAddresses $1"
     ifconfig | grep -A 4 $1 | awk '/inet/ { print $2 "/" $4 }' | sed -e 's/addr://' -e 's/Mask://' | grep -v "^$" | joinLines
 }
 
 ## Returns all of the interfaces that participate in a bridge
 function generateBridgeInterfaces() {
-## DBG    echo "generateBridgeInterfaces $1" > /dev/stderr # XDBG
+## DBG    echo "generateBridgeInterfaces $1" # XDBG
     brctl showstp $1 | grep -v '^$' | grep -v '^ ' | grep -v "can't" | grep -v $1 | awk '{ print $1 }' | joinLines
 }
 
@@ -118,7 +118,7 @@ function isPumpRunning() {
 }
 
 function killPump() {
-    echo "Killing PUMP"
+    echo "Killing pump"
     killall -KILL pump
 }
 

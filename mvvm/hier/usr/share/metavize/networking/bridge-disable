@@ -12,8 +12,8 @@ else
 fi
 
 if [ $# -ne 6 ] && [ $# -ne 8 ]; then
-    echo "USAGE: $0 <bridge> <inside> <insideAddress> <insideNetmask>" > /dev/stderr
-    echo " <outside> [<outsideAddress> <outsideNetmask> <gateway>|${PUMP_FLAG}]" > /dev/stderr
+    echo "USAGE: $0 <bridge> <inside> <insideAddress> <insideNetmask>"
+    echo " <outside> [<outsideAddress> <outsideNetmask> <gateway>|${PUMP_FLAG}]"
     exit -1
 fi
 

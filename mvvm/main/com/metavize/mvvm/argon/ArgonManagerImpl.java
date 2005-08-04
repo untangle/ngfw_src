@@ -271,8 +271,6 @@ public class ArgonManagerImpl implements ArgonManager
                 
                 args += " " + outsideAddress + " " + outsideNetmask + " " + gateway;
             }
-
-            System.out.println( "sh " + BRIDGE_ENABLE_SCRIPT + args );
             
             /* Call the rule generator */
             Process p = Runtime.getRuntime().exec( "sh " + BRIDGE_ENABLE_SCRIPT + args );
