@@ -46,7 +46,7 @@ done
 killPump
 
 if [ $outsideAddress = ${PUMP_FLAG} ]; then 
-    pump --script="" -i ${outside}
+    pump -i ${outside}
 else
     ifconfig ${outside} ${outsideAddress} netmask ${outsideNetmask}
     route add default gw $gateway    

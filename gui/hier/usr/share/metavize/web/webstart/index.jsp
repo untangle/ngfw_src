@@ -18,14 +18,11 @@ String cb = scheme + "://" + host + ctxPath + "/";
 String pageName = request.getServletPath();
 
 boolean isIndex    = pageName.equals("/index.html");
-boolean isHelp     = pageName.equals("/help.html");
 boolean isDownload = pageName.equals("/download.html");
 boolean isSecure   = scheme.equals("https");
 
 /* If they request anything else, give them the index page */
-if (!( isIndex || isHelp || isDownload)) isIndex = true;
-
-String helpClickHere = "Click <a href=\"help.html\">here</a> for more information.";
+if (!( isIndex || isDownload)) isIndex = true;
 
 %>
 
@@ -54,7 +51,7 @@ String helpClickHere = "Click <a href=\"help.html\">here</a> for more informatio
         function showMessage()
         {
           if ( javaws150Installed == 0 && ( navigator.userAgent.indexOf("Gecko") == -1 )) {
-            document.write( 'Java Web Start v1.5 was not detected.&nbsp; <%= helpClickHere %><br/><br/><div style="text-align: center;"><a href="download.html">Install Java Web Start v1.5</a></div><br/><br/>' );
+            document.write( 'Java Web Start v1.5 was not detected.&nbsp;<br/><br/><div style="text-align: center;"><a href="download.html">Install Java Web Start v1.5</a></div><br/><br/>' );
           }
         }
      <!-- //  -->
@@ -130,25 +127,27 @@ String helpClickHere = "Click <a href=\"help.html\">here</a> for more informatio
                     Download Java Web Start
                   </a>
                 </object>
-                <% } else { // if ( isDownload ) %>
-        <center>
-        <table border="0">
-            <tr><td align="right">Server:</td>
-                <td><i>
-                  &nbsp;<%=host %>
-                </i></td></tr>
-        <tr><td align="right">Connection:</td>
-        <td><i>
-                  <% if(isSecure){  %>
-            &nbsp;https (secure)
-        <%} else {%>
-            &nbsp;http (standard)
                 <% } %>
-                </i></td></tr>
-        </table>
-        </center>
+                <% if ( !isDownload ) { %>
+                  <center>
+                    <table border="0">
+                      <tr>
+                        <td align="right">Server:</td>
+                        <td><i>&nbsp;<%=host %></i></td>
+                      </tr>
+                      <tr>
+                        <td align="right">Connection:</td>
+                        <td style="font-style: italic;">
+                          <% if(isSecure){  %>
+                            &nbsp;https (secure)
+                          <% } else { %>
+                            &nbsp;http (standard)
+                          <% } %>
+                        </td>
+                      </tr>
+                    </table>
+                  </center>
               </div>
-              <% if ( !isDownload ) { %>
               <br/>
               <br/>
               <% } // if ( !isDownload )
@@ -158,57 +157,24 @@ String helpClickHere = "Click <a href=\"help.html\">here</a> for more informatio
                      showMessage();
                 -->
               </script>
-              <noscript>
-                Because Javascript is disabled, the latest version
-                of Java Web Start could not be detected.&nbsp;
-                <%= helpClickHere %>
-                <br/>
-                <br/>
+              <% if ( !isDownload ) { %>
                 <div style="text-align: center;">
-                  <a href="download.html">Install Java Web Start v1.5</a>
-                </div>
-                <br/>
-                <br/>
-              </noscript>
-              <% } else if ( isHelp ) { %>
-              The latest version
-              of Java Web Start could not be detected.&nbsp;
-              <br/>
-              <br/>
-              <ul>
-                <li>
-                  This software requires Java Web Start v1.5 to execute.
-                </li>
-                <li>
-                  If you have the latest version of Java Web Start
-                  installed, please click "Launch EdgeGuard Client"
-                </li>
-                <li>
-                  If you are unsure of which version of Java Web Start
-                  you have installed please click "Install Java Web Start v1.5"
-                </li>
-              </ul>
-              <div style="text-align: center;">
-                <a href="download.html">Install Java Web Start v1.5</a>
-              </div>
-              <br/>
-              <br/>
-              <% } // else if ( isHelp )
-              if ( !isDownload ) { %>
-              <div style="text-align: center;">
-                <a href="gui.jnlp">Launch EdgeGuard Client</a><br>
+                  <a href="gui.jnlp">Launch EdgeGuard Client</a><br>
 
-                <% if (reportingEnabled) { %>
-           <br><a href="<%=scheme%>://<%=host%>/reports">View EdgeReports</a>
-            <% } %>
-               <% } %>
-              </div>
+                  <% if (reportingEnabled) { %>
+                    <br><a href="<%=scheme%>://<%=host%>/reports">View EdgeReports</a>
+                  <% } %>
+                </div>
+                <% } %>
               <% } %>
 
               <br/>
               <br/>
-              <div style="text-align: right; font-style: italic; font-size: 85%;">
-               <a href="jre-1_5_0_04-windows-i586-p.exe">Download Java v1.5 (Offline)</a>
+              <div style="text-align: right; font-style: italic; font-size: 80%;">
+               <a href="jre-1_5_0_04-windows-i586-p.exe">Download Java v1.5 (Offline)</a><br/>
+               <% if ( !isDownload ) { %>
+                 <a href="download.html">Download Java v1.5 (Online)</a><br/>
+               <% } %>
               </div>
             </td>
           </tr>

@@ -32,7 +32,9 @@ generateBridge ${bridge}
 if [ "$(getBridge ${inside})x" = "${bridge}x" ] && [ "$(getBridge ${outside})x" = "${bridge}x" ]; then
     if [ $bridgeAddress = ${PUMP_FLAG} ]; then 
         echo "Bridge is already configured, pumping interface."
-        pump --script="" -i ${bridge}
+        killPump
+
+        pump -i ${bridge}
         exit
     else
         if [ $(getAddresses $bridge) = ${bridgeAddress} ] && 

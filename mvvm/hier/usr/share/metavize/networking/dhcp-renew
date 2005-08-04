@@ -26,9 +26,8 @@ generateConfiguration
 
 bridge=$(getBridge ${MVVM_OUTSIDE_INTF} )
 
-## Make sure not to invoke the update script
 if [ "${bridge}x" = "x" ]; then
-    pump --script="" -i ${MVVM_OUTSIDE_INTF}
+    pump -R -i ${MVVM_OUTSIDE_INTF}
 else
-    pump --script="" -i ${bridge}
+    pump -R -i ${bridge}
 fi
