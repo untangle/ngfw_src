@@ -129,7 +129,7 @@ public class SpamPopHandler extends PopStateMachine
             if (true == zReport.isSpam()) {
                 return zReport;
             }
-            /* else PASS - do nothing */
+            /* else not spam - do nothing */
 
             return null;
         }

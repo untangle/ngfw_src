@@ -25,10 +25,13 @@ import java.util.List;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.tapi.Pipeline;
 import com.metavize.mvvm.tapi.TCPSession;
+import com.metavize.tran.mail.papi.DoNotCareT;
+import com.metavize.tran.mail.papi.DoNotCareChunkT;
 import com.metavize.tran.mail.papi.MessageBoundaryScanner;
 import com.metavize.tran.mail.papi.MessageInfo;
 import com.metavize.tran.mail.papi.MIMEMessageT;
 import com.metavize.tran.mail.papi.pop.PopReply;
+import com.metavize.tran.mail.papi.pop.PopReplyMore;
 import com.metavize.tran.mime.HeaderParseException;
 import com.metavize.tran.mime.InvalidHeaderDataException;
 import com.metavize.tran.mime.LineTooLongException;
@@ -55,15 +58,17 @@ public class PopServerParser extends AbstractParser
 
     private enum State {
         REPLY,
-        DATA
+        DATA,
+        DONOTCARE
     };
 
-    private final MessageBoundaryScanner zMBScanner;
     private final Pipeline pipeline;
+    private final MessageBoundaryScanner zMBScanner;
 
-    private State state;
     private File zMsgFile;
     private FileChannel zMsgChannel;
+
+    private State state;
     private MIMEMessageT zMMessageT;
     private boolean bHdrDone;
     private boolean bBodyDone;
@@ -74,13 +79,13 @@ public class PopServerParser extends AbstractParser
     {
         super(session, true);
         lineBuffering(false);
-        state = State.REPLY;
 
-        zMBScanner = new MessageBoundaryScanner();
+        state = State.REPLY;
         bHdrDone = false;
         bBodyDone = false;
 
         pipeline = MvvmContextFactory.context().pipelineFoundry().getPipeline(session.id());
+        zMBScanner = new MessageBoundaryScanner();
     }
 
     // Parser methods ---------------------------------------------------------
@@ -88,7 +93,6 @@ public class PopServerParser extends AbstractParser
     public ParseResult parse(ByteBuffer buf) throws ParseException
     {
         //logger.debug("parse(" + AsciiCharBuffer.wrap(buf) + "), " + buf);
-        logger.debug("parse(" + buf + ")");
 
         List<Token> zTokens = new LinkedList<Token>();
         boolean bDone = false;
@@ -100,10 +104,25 @@ public class PopServerParser extends AbstractParser
 
                 int iReplyEnd = findCRLFEnd(buf);
                 if (1 < iReplyEnd) {
+                    ByteBuffer dup = buf.duplicate();
 
                     /* scan and consume reply */
-                    PopReply reply = PopReply.parse(buf, iReplyEnd);
-                    zTokens.add(reply);
+                    PopReply reply;
+                    try {
+                        reply = PopReply.parse(buf, iReplyEnd);
+                        zTokens.add(reply);
+                    } catch (ParseException exn) {
+                        /* long reply may break before CRLF sequence
+                         * so if PopReply fails,
+                         * we assume long reply spans multiple buffers
+                         */
+                        zTokens.add(new PopReplyMore(dup));
+                        logger.debug("reply (more): " + dup + ", " + exn);
+
+                        buf = null;
+                        bDone = true;
+                        break;
+                    }
 
                     if (true == reply.isMsgData()) {
                         //logger.debug("retr message reply: " + reply + ", " + buf);
@@ -136,8 +155,8 @@ public class PopServerParser extends AbstractParser
                          * then parse remaining data
                          */
                     } else {
-                        //logger.debug("message reply: " + reply + ", " + buf);
-                        logger.debug("message reply: " + buf);
+                        //logger.debug("reply: " + reply + ", " + buf);
+                        logger.debug("reply: " + buf);
 
                         buf = null;
                         bDone = true;
@@ -159,23 +178,27 @@ public class PopServerParser extends AbstractParser
 
                     if (false == bHdrDone) {
                         /* casing temporarily buffers and writes header */
-                        logger.debug("message header: " + dup);
+                        logger.debug("message header: " + buf);
 
-                        ByteBuffer writeDup = dup.duplicate();
+                        ByteBuffer writeDup = buf.duplicate();
 
                         try {
                             /* scan and "consume" message frag */
-                            bHdrDone = zMBScanner.processHeaders(dup, LINE_SZ);
+                            bHdrDone = zMBScanner.processHeaders(buf, LINE_SZ);
                         } catch (LineTooLongException exn) {
-                            logger.warn("cannot parse message header: " + exn);
-                            handleException(zTokens, buf.duplicate());
+                            logger.warn("cannot process message header: " + exn);
+                            closeMsgChannel();
+                            zMsgFile = null;
+                            handleException(zTokens, dup);
+                            buf = null;
+                            bDone = true;
                             break;
                         }
 
-                        logger.debug("message header is complete: " + bHdrDone + ", " + dup);
+                        logger.debug("message header is complete: " + bHdrDone + ", " + buf);
 
                         /* writeDup position is already set */
-                        writeDup.limit(dup.position());
+                        writeDup.limit(buf.position());
                         writeFile(writeDup);
 
                         if (true == bHdrDone) {
@@ -192,41 +215,41 @@ public class PopServerParser extends AbstractParser
                                 zTokens.add(zMMessageT);
                             } catch (IOException exn) {
                                 logger.warn("cannot parse message header: " + exn);
-                                handleException(zTokens, buf.duplicate());
+                                handleException(zTokens, dup);
+                                buf = null;
+                                bDone = true;
                                 break;
                             } catch (InvalidHeaderDataException exn) {
                                 logger.warn("cannot parse message header: " + exn);
-                                handleException(zTokens, buf.duplicate());
+                                handleException(zTokens, dup);
+                                buf = null;
+                                bDone = true;
                                 break;
                             } catch (HeaderParseException exn) {
                                 logger.warn("cannot parse message header: " + exn);
-                                handleException(zTokens, buf.duplicate());
+                                handleException(zTokens, dup);
+                                buf = null;
+                                bDone = true;
                                 break;
                             }
                         }
                     } else {
                         /* transform writes body */
-                        logger.debug("message body: " + dup);
+                        logger.debug("message body: " + buf);
 
                         /* scan and "copy" message frag */
-                        ByteBuffer chunkDup = ByteBuffer.allocate(dup.limit());
-                        bBodyDone = zMBScanner.processBody(dup, chunkDup);
+                        ByteBuffer chunkDup = ByteBuffer.allocate(buf.limit());
+                        bBodyDone = zMBScanner.processBody(buf, chunkDup);
 
                         chunkDup.rewind();
                         zTokens.add(new Chunk(chunkDup));
 
                         if (true == bBodyDone) {
-                            logger.debug("got message end: " + dup);
-
-                            zMBScanner.reset();
-                            zMMessageT = null;
-                            bHdrDone = false;
-                            bBodyDone = false;
+                            logger.debug("got message end: " + buf);
 
                             zTokens.add(EndMarker.MARKER);
 
-                            logger.debug("re-entering REPLY state");
-                            state = State.REPLY;
+                            reset();
                         }
 
                         /* stop even though buf may not be empty
@@ -235,17 +258,18 @@ public class PopServerParser extends AbstractParser
                         bDone = true;
                     }
 
-                    if (false == dup.hasRemaining()) {
+                    if (false == buf.hasRemaining()) {
                         logger.debug("buf is empty");
 
                         buf = null;
                         bDone = true;
                     } else {
-                        logger.debug("compact buf: " + dup);
+                        logger.debug("compact buf: " + buf);
 
-                        buf.clear();
-                        buf.put(dup);
-                        buf.flip();
+                        dup.clear();
+                        dup.put(buf);
+                        dup.flip();
+                        buf = dup;
                     }
                 } else {
                     logger.debug("no (more) data");
@@ -254,6 +278,16 @@ public class PopServerParser extends AbstractParser
                     bDone = true;
                 }
 
+                break;
+
+            case DONOTCARE:
+                /* once we enter DONOTCARE stage, we cannot exit */
+                logger.debug("DONOTCARE state, " + buf);
+
+                zTokens.add(new DoNotCareChunkT(buf));
+
+                buf = null;
+                bDone = true;
                 break;
 
             default:
@@ -305,6 +339,10 @@ public class PopServerParser extends AbstractParser
 
     private void closeMsgChannel()
     {
+        if (null == zMsgChannel) {
+            return;
+        }
+
         logger.debug("close message channel file");
 
         try {
@@ -321,15 +359,36 @@ public class PopServerParser extends AbstractParser
 
     private void handleException(List<Token> zTokens, ByteBuffer zBuf) throws ParseException
     {
-        PopReply reply = PopReply.parse(zBuf, zBuf.limit());
-        //logger.debug("parsed reply (exception): " + reply.toString() + ", " + zBuf);
         logger.debug("parsed reply (exception): " + zBuf);
-        zTokens.add(reply);
 
-        closeMsgChannel();
-        zMsgFile = null;
+        logger.debug("entering DONOTCARE state");
+        state = State.DONOTCARE;
 
+logger.debug("in queue: " + zTokens);
+        /* when state machine receives this token,
+         * it will pull up,
+         * swap MIMEMessage token with trickle token, and
+         * pass through do-not-care tokens (and stay in DONOTCARE stage)
+         */
+        zTokens.add(new DoNotCareT(zBuf));
+logger.debug("in queue: " + zTokens);
+
+//        closeMsgChannel();
+//        zMsgFile = null;
+//
+        return;
+    }
+
+    private void reset()
+    {
+        logger.debug("re-entering REPLY state");
         state = State.REPLY;
+
+        bHdrDone = false;
+        bBodyDone = false;
+
+        zMBScanner.reset();
+        zMMessageT = null;
         return;
     }
 }

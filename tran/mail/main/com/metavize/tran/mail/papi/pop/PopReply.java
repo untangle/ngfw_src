@@ -32,7 +32,7 @@ import org.apache.log4j.Logger;
  */
 public class PopReply implements Token
 {
-    //private final static Logger logger = Logger.getLogger(PopReply.class);
+    private final static Logger logger = Logger.getLogger(PopReply.class);
 
     private final static String DIGVAL = "(\\p{Digit})++";
     private final static String SZVAL = DIGVAL + " octets";
@@ -47,8 +47,8 @@ public class PopReply implements Token
 
     private final String reply;
     private final String argument;
-    private final String zMsgDataSz;
-    private final boolean bIsMsgData;
+    private String zMsgDataSz;
+    private boolean bIsMsgData;
 
     private PopReply(String reply, String argument, String zMsgDataSz, boolean bIsMsgData)
     {
@@ -69,30 +69,25 @@ public class PopReply implements Token
         String zTmp = AsciiCharBuffer.wrap(dup).toString();
         boolean bIsMsgData = zTmp.matches(DATAOK);
         //logger.debug("reply is message: " + bIsMsgData);
-        if (false == bIsMsgData)
-        {
+        if (false == bIsMsgData) {
             zMsgDataSz = null;
-        }
-        else
-        {
+        } else {
             zMsgDataSz = parseMsgDataSz(zTmp);
         }
 
-        String reply = consumeToken(buf);
+        dup = buf.duplicate();
+        String reply = consumeToken(dup);
         if (0 == reply.length()) {
-            throw new ParseException("no reply found");
+            throw new ParseException("cannot identify reply: " + AsciiCharBuffer.wrap(buf));
         }
 
-        eatSpace(buf);
+        eatSpace(dup);
 
         String arg;
-        if (false == bIsMsgData)
-        {
-            arg = consumeBuf(buf);
-        }
-        else
-        {
-            arg = consumeLine(buf, iEnd);
+        if (false == bIsMsgData) {
+            arg = consumeBuf(dup);
+        } else {
+            arg = consumeLine(dup, iEnd);
         }
 
         return new PopReply(reply, (0 == arg.length()) ? null : arg, zMsgDataSz, bIsMsgData);
@@ -118,6 +113,13 @@ public class PopReply implements Token
     public boolean isMsgData()
     {
         return bIsMsgData;
+    }
+
+    public void resetMsgData()
+    {
+        zMsgDataSz = null;
+        bIsMsgData = false;
+        return;
     }
 
     // Token methods ---------------------------------------------------------
@@ -146,8 +148,7 @@ public class PopReply implements Token
         ByteBuffer buf = ByteBuffer.allocate(len);
 
         buf.put(zReply.getBytes());
-        if (null != zArgument)
-        {
+        if (null != zArgument) {
             buf.put((byte)SP); /* restore */
             buf.put(zArgument.getBytes());
         }
@@ -170,8 +171,7 @@ public class PopReply implements Token
     private static String consumeBuf(ByteBuffer zBuf)
     {
         StringBuilder zSBuilder = new StringBuilder();
-        while (true == zBuf.hasRemaining())
-        {
+        while (true == zBuf.hasRemaining()) {
             zSBuilder.append((char) zBuf.get());
         }
 
@@ -182,8 +182,7 @@ public class PopReply implements Token
     private static String parseMsgDataSz(String zDataOK)
     {
         Matcher zMatcher = SZVALP.matcher(zDataOK);
-        if (false == zMatcher.find())
-        {
+        if (false == zMatcher.find()) {
             /* should never occur
              * (if size fragment is missing, then we can not reach here)
              */
@@ -192,8 +191,7 @@ public class PopReply implements Token
 
         String zSzVal = zMatcher.group();
         zMatcher = DIGVALP.matcher(zSzVal);
-        if (false == zMatcher.find())
-        {
+        if (false == zMatcher.find()) {
             /* should never occur
              * (if size value is missing, then we can not reach here)
              */

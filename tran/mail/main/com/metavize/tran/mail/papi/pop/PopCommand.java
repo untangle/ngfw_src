@@ -17,6 +17,7 @@ import static com.metavize.tran.util.Rfc822Util.*;
 import java.nio.ByteBuffer;
 
 import com.metavize.tran.token.ParseException;
+import com.metavize.tran.util.AsciiCharBuffer;
 import com.metavize.tran.token.Token;
 
 public class PopCommand implements Token
@@ -34,15 +35,16 @@ public class PopCommand implements Token
 
     // static factories -------------------------------------------------------
 
-    public static PopCommand parse(ByteBuffer buf) throws ParseException
+    public static PopCommand parse(ByteBuffer buf, int iEnd) throws ParseException
     {
-        String cmd = consumeToken(buf);
+        ByteBuffer dup = buf.duplicate();
+        String cmd = consumeToken(dup);
         if (0 == cmd.length()) {
-            throw new ParseException("no command found");
+            throw new ParseException("cannot identify command: " + AsciiCharBuffer.wrap(buf));
         }
 
-        eatSpace(buf);
-        String arg = consumeLine(buf); /* eat CRLF */
+        eatSpace(dup);
+        String arg = consumeLine(dup, iEnd); /* eat CRLF */
         return new PopCommand(cmd, 0 == arg.length() ? null : arg);
     }
 
@@ -70,11 +72,29 @@ public class PopCommand implements Token
             buf.put((byte)SP);
             buf.put(argument.getBytes());
         }
-        buf.put((byte)CR);
-        buf.put((byte)LF);
 
         buf.flip();
 
         return buf;
+    }
+
+    /* consume line in buffer (including any terminating CRLF) up to iEnd */
+    private static String consumeLine(ByteBuffer zBuf, int iEnd)
+    {
+        ByteBuffer zDup = zBuf.duplicate();
+        zBuf.position(iEnd);
+        zDup.limit(iEnd);
+        return consumeBuf(zDup);
+    }
+
+    /* consume rest of buffer (including any terminating CRLF) */
+    private static String consumeBuf(ByteBuffer zBuf)
+    {
+        StringBuilder zSBuilder = new StringBuilder();
+        while (true == zBuf.hasRemaining()) {
+            zSBuilder.append((char) zBuf.get());
+        }
+
+        return zSBuilder.toString();
     }
 }

@@ -26,6 +26,7 @@ import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.tapi.Pipeline;
 import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.tran.mail.papi.pop.PopCommand;
+import com.metavize.tran.mail.papi.pop.PopCommandMore;
 import com.metavize.tran.token.AbstractParser;
 import com.metavize.tran.token.EndMarker;
 import com.metavize.tran.token.ParseException;
@@ -59,37 +60,47 @@ public class PopClientParser extends AbstractParser
         //logger.debug("parse(" + AsciiCharBuffer.wrap(buf) + "), " + buf);
         logger.debug("parse(" + buf + ")");
 
-        List<Token> toks = new LinkedList<Token>();
+        List<Token> zTokens = new LinkedList<Token>();
 
-        boolean done = false;
+        boolean bDone = false;
 
-        while (false == done && true == buf.hasRemaining()) {
-            if (0 <= findCrLf(buf)) {
-                logger.debug("contains CRLF: " + buf);
-                PopCommand cmd = PopCommand.parse(buf);
-                //logger.debug("cmd: " + cmd.toString());
-                logger.debug("parsed cmd: " + buf);
-                toks.add(cmd);
+        while (false == bDone) {
+            int iCmdEnd = findCRLFEnd(buf);
+            if (1 < iCmdEnd) {
+                ByteBuffer dup = buf.duplicate();
+
+                PopCommand cmd;
+                try {
+                    cmd = PopCommand.parse(buf, iCmdEnd);
+                    zTokens.add(cmd);
+                } catch (ParseException exn) {
+                    /* long command may break before CRLF sequence
+                     * so if parse fails,
+                     * we assume long command spans multiple buffers
+                     */
+                    zTokens.add(new PopCommandMore(dup));
+                    logger.debug("command (more): " + dup + ", " + exn);
+
+                    buf = null;
+                    bDone = true;
+                    break;
+                }
+
+                //logger.debug("command: " + cmd + ", " + buf);
+                logger.debug("command: " + buf);
+                buf = null;
+                bDone = true;
             } else {
-                logger.debug("does not end with CRLF");
-                done = true;
+                logger.debug("buf does not contain CRLF");
+
+                /* wait for more data */
+                bDone = true;
             }
         }
 
-        buf.compact();
+        logger.debug("returning ParseResult(" + zTokens + ", " + buf + ")");
 
-        if (0 < buf.position() && LINE_SZ >= buf.remaining()) {
-            ByteBuffer bufTmp = ByteBuffer.allocate(buf.capacity() + LINE_SZ);
-            buf.flip();
-            bufTmp.put(buf);
-            buf = bufTmp;
-        }
-
-        buf = 0 < buf.position() ? buf : null;
-
-        logger.debug("returning ParseResult(" + toks + ", " + buf + ")");
-
-        return new ParseResult(toks, buf);
+        return new ParseResult(zTokens, buf);
     }
 
     public ParseResult parseEnd(ByteBuffer buf) throws ParseException
@@ -104,4 +115,13 @@ public class PopClientParser extends AbstractParser
     }
 
     // private methods --------------------------------------------------------
+
+    private int findCRLFEnd(ByteBuffer zBuf)
+    {
+        /* returns 1 (if no CRLF) or greater (if CRLF found)
+         * - findCrLf returns -1 if buffer contains no CRLF pair
+         * - findCrLf returns absolute index of end of CRLF pair in buffer
+         */
+        return findCrLf(zBuf) + (1 + 1);
+    }
 }

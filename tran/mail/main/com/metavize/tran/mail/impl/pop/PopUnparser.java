@@ -30,10 +30,12 @@ import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.mvvm.tapi.event.TCPStreamer;
 import com.metavize.tran.mime.MIMEMessage;
 import com.metavize.tran.mail.papi.ByteBufferByteStuffer;
-import com.metavize.tran.mail.papi.pop.PopCommand;
-import com.metavize.tran.mail.papi.pop.PopReply;
+import com.metavize.tran.mail.papi.DoNotCareT;
+import com.metavize.tran.mail.papi.DoNotCareChunkT;
 import com.metavize.tran.mail.papi.MIMEMessageT;
 import com.metavize.tran.mail.papi.MIMEMessageTrickleT;
+import com.metavize.tran.mail.papi.pop.PopCommand;
+import com.metavize.tran.mail.papi.pop.PopReply;
 import com.metavize.tran.token.AbstractUnparser;
 import com.metavize.tran.token.Chunk;
 import com.metavize.tran.token.EndMarker;
@@ -93,14 +95,18 @@ public class PopUnparser extends AbstractUnparser
             writeData((MIMEMessageT) token, zWriteBufs, true);
             zByteStuffer = null;
             zMsgDataReply = null;
-        } else if (token instanceof Chunk) { /* trickle continue */
-            writeData((Chunk) token, zWriteBufs);
         } else if (token instanceof MIMEMessageTrickleT) { /* trickle start */
             writeData((MIMEMessageTrickleT) token, zWriteBufs);
+        } else if (token instanceof Chunk) { /* trickle continue */
+            writeData((Chunk) token, zWriteBufs);
         } else if (token instanceof EndMarker) { /* trickle end */
             writeEOD(zWriteBufs);
             zByteStuffer = null;
             zMsgDataReply = null;
+        } else if (token instanceof DoNotCareT) { /* do not care */
+            writeData((DoNotCareT) token, zWriteBufs);
+        } else if (token instanceof DoNotCareChunkT) { /* do not care */
+            writeData((DoNotCareChunkT) token, zWriteBufs);
         } else { /* unknown/unsupported */
             logger.error("cannot handle token: " + token.getClass());
             return UnparseResult.NONE;
@@ -196,6 +202,32 @@ public class PopUnparser extends AbstractUnparser
         zWriteBufs.add(zWriteBuf);
 
         /* getLast returns any remaining data later */
+        return;
+    }
+
+    private void writeData(DoNotCareT zDoNotCareT, List<ByteBuffer> zWriteBufs)
+    {
+        if (null != zMsgDataReply) {
+            zWriteBufs.add(zMsgDataReply.getBytes());
+            zByteStuffer = null;
+            zMsgDataReply = null;
+        }
+
+        /* since do-not-care data are not byte unstuffed,
+         * it does not need to be byte stuffed
+         */
+        zWriteBufs.add(zDoNotCareT.getBytes());
+
+        return;
+    }
+
+    private void writeData(DoNotCareChunkT zDoNotCareChunkT, List<ByteBuffer> zWriteBufs)
+    {
+        /* since do-not-care data are not byte unstuffed,
+         * it does not need to be byte stuffed
+         */
+        zWriteBufs.add(zDoNotCareChunkT.getBytes());
+
         return;
     }
 

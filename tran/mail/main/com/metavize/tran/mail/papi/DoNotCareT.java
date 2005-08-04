@@ -15,30 +15,30 @@ import java.nio.ByteBuffer;
 
 import com.metavize.tran.token.Token;
 
-public class MIMEMessageTrickleT implements Token
+public class DoNotCareT implements Token
 {
-    private final MIMEMessageT zMMessageT;
+    private final ByteBuffer zBuf;
 
     // constructors -----------------------------------------------------------
 
-    public MIMEMessageTrickleT(MIMEMessageT zMMessageT)
+    public DoNotCareT(ByteBuffer zBuf)
     {
-        this.zMMessageT = zMMessageT;
+        this.zBuf = zBuf;
     }
 
     // static factories -------------------------------------------------------
 
     // accessors --------------------------------------------------------------
 
-    public MIMEMessageT getMMessageT()
+    public ByteBuffer getBuf()
     {
-        return zMMessageT;
+        return zBuf;
     }
 
     // Token methods ----------------------------------------------------------
 
     public ByteBuffer getBytes()
     {
-        return null;
+        return zBuf.duplicate();
     }
 }
