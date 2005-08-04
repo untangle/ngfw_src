@@ -97,8 +97,8 @@ public class ConnectivityJDialog extends javax.swing.JDialog implements java.awt
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
-        gridBagConstraints.insets = new java.awt.Insets(130, 30, 0, 30);
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
+        gridBagConstraints.insets = new java.awt.Insets(0, 30, 50, 30);
         getContentPane().add(jProgressBar, gridBagConstraints);
 
         proceedJButton.setFont(new java.awt.Font("Default", 0, 12));
@@ -106,6 +106,8 @@ public class ConnectivityJDialog extends javax.swing.JDialog implements java.awt
         proceedJButton.setDoubleBuffered(true);
         proceedJButton.setFocusPainted(false);
         proceedJButton.setFocusable(false);
+        proceedJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        proceedJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
         proceedJButton.setMaximumSize(new java.awt.Dimension(125, 25));
         proceedJButton.setMinimumSize(new java.awt.Dimension(125, 25));
         proceedJButton.setPreferredSize(new java.awt.Dimension(125, 25));
@@ -118,8 +120,8 @@ public class ConnectivityJDialog extends javax.swing.JDialog implements java.awt
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
-        gridBagConstraints.insets = new java.awt.Insets(160, 0, 13, 0);
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 13, 0);
         getContentPane().add(proceedJButton, gridBagConstraints);
 
         backgroundJLabel.setFont(new java.awt.Font("Default", 0, 12));
@@ -142,7 +144,7 @@ public class ConnectivityJDialog extends javax.swing.JDialog implements java.awt
     }//GEN-END:initComponents
 
     private void proceedJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_proceedJButtonActionPerformed
-        setVisible(false);
+        this.setVisible(false);
     }//GEN-LAST:event_proceedJButtonActionPerformed
     
     

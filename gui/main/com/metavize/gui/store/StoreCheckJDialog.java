@@ -98,8 +98,8 @@ public class StoreCheckJDialog extends javax.swing.JDialog implements java.awt.e
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
-        gridBagConstraints.insets = new java.awt.Insets(130, 30, 0, 30);
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
+        gridBagConstraints.insets = new java.awt.Insets(0, 30, 50, 30);
         getContentPane().add(jProgressBar, gridBagConstraints);
 
         proceedJButton.setFont(new java.awt.Font("Default", 1, 12));
@@ -116,8 +116,8 @@ public class StoreCheckJDialog extends javax.swing.JDialog implements java.awt.e
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
-        gridBagConstraints.insets = new java.awt.Insets(160, 0, 13, 0);
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 13, 0);
         getContentPane().add(proceedJButton, gridBagConstraints);
 
         backgroundJLabel.setFont(new java.awt.Font("Default", 0, 12));
