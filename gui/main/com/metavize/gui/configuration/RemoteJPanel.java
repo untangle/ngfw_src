@@ -113,8 +113,8 @@ public class RemoteJPanel extends javax.swing.JPanel implements Savable, Refresh
 	restrictIPaddrJTextField.setBackground( Color.WHITE );
 
 	// OUTSIDE ACCESS RESTRICTED NETMASK /////
-        restrictIPaddrJTextField.setText( networkingConfiguration.outsideNetwork().toString() );
-	restrictIPaddrJTextField.setBackground( Color.white );
+        restrictNetmaskJTextField.setText( networkingConfiguration.outsideNetmask().toString() );
+	restrictNetmaskJTextField.setBackground( Color.white );
         
 	// INSIDE INSECURE ENABLED ///////
 	boolean isInsideInsecureEnabled = networkingConfiguration.isInsideInsecureEnabled();
