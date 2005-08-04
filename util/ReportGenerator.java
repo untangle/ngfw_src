@@ -29,16 +29,28 @@ public class ReportGenerator
     public static final String FIELDS_PROPERTY = "FIELDS";
     public static final String FIELD_PROPERTY_PREFIX = "FIELD_";
     public static final String DEFAULT_TEMPLATE_SRC_DIR = "mvvm/resources/reports";
-
-    public static Map<String, String> typeAliases = new HashMap<String, String>();
+    
+    // These should be somewhere else.  XXX
+    public static final Map<String, String> SlotTypes = new HashMap<String, String>();
     static {
-        typeAliases.put("String", "java.lang.String");
-        typeAliases.put("Integer", "java.lang.Integer");
-        typeAliases.put("Float", "java.lang.Float");
-        typeAliases.put("Double", "java.lang.Double"); 
-        typeAliases.put("Long", "java.lang.Long");
-        typeAliases.put("Boolean", "java.lang.Boolean");
-        typeAliases.put("Timestamp", "java.sql.Timestamp");
+        SlotTypes.put("TOPRMID",       "java.lang.String");
+        SlotTypes.put("TOPLMID",       "java.lang.String");
+        SlotTypes.put("TOPLEFT",       "java.sql.Timestamp");
+        SlotTypes.put("BOTRMID",       "java.lang.String");
+        SlotTypes.put("BOTLMID",       "java.lang.String");
+        SlotTypes.put("BOTRIGHT",      "java.lang.Integer");
+        SlotTypes.put("TOPRIGHT",      "java.lang.String");
+    }
+
+    public static final Map<String, String> TypeAliases = new HashMap<String, String>();
+    static {
+        TypeAliases.put("String",    "java.lang.String");
+        TypeAliases.put("Integer",   "java.lang.Integer");
+        TypeAliases.put("Float",     "java.lang.Float");
+        TypeAliases.put("Double",    "java.lang.Double"); 
+        TypeAliases.put("Long",      "java.lang.Long");
+        TypeAliases.put("Boolean",   "java.lang.Boolean");
+        TypeAliases.put("Timestamp", "java.sql.Timestamp");
     }
         
     private File templateSrcDir;
@@ -122,8 +134,16 @@ public class ReportGenerator
         // System.out.println("FIELDS: " + fieldsProp);
         fset.addFilter(FIELDS_PROPERTY, fieldsProp);
 
+        for (String defaultSlotName : SlotTypes.keySet()) {
+            String defaultSlotType = SlotTypes.get(defaultSlotName);
+            String pname = defaultSlotName + ".type";
+            if (props.getProperty(pname) == null)
+                fset.addFilter(pname, defaultSlotType);
+        }
+
         FilterSetCollection fsets = new FilterSetCollection();
         fsets.addFilterSet(fset);
+
         FileUtils.newFileUtils().copyFile(template.toString(), jrxmlFileName, fsets);
     }
 
@@ -142,7 +162,7 @@ public class ReportGenerator
             String type = props.getProperty(FIELD_PROPERTY_PREFIX + i + ".type");
             if (type == null)
                 throw new IllegalArgumentException("Missing type " + i);
-            String canonType = typeAliases.get(type);
+            String canonType = TypeAliases.get(type);
             if (canonType != null)
                 type = canonType;
             sb.append("<field name=\"");

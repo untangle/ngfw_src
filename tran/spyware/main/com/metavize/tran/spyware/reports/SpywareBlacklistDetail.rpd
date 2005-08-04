@@ -15,11 +15,11 @@ FIELD_6.name=uri
 FIELD_6.type=String
 FIELD_7.name=host
 FIELD_7.type=String
-QUERY=SELECT evt.time_stamp, name, c_client_addr, c_server_addr, c_server_port, uri, host, p2c_bytes \
+QUERY=SELECT evt.time_stamp, name, c_client_addr, c_server_addr, c_server_port, uri, host \
 FROM tr_spyware_evt_blacklist evt \
 JOIN pl_endp USING (session_id) \
-JOIN pl_stats USING (session_id) \
 JOIN tr_http_evt_req USING (request_id) \
+JOIN tr_http_req_line USING (request_id) \
 LEFT OUTER JOIN merged_address_map mam ON addr = c_client_addr AND evt.time_stamp >= mam.start_time AND evt.time_stamp < mam.end_time \
 WHERE evt.time_stamp > $P{startTime} AND evt.time_stamp < $P{endTime} \
 ORDER BY time_stamp

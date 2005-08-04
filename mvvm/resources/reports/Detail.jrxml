@@ -142,14 +142,14 @@
                 <textElement>
                     <font fontName="SansSerif"/>
                 </textElement>
-                <textFieldExpression class="java.lang.String"><![CDATA[@TOPRMID.expr@]]></textFieldExpression>
+                <textFieldExpression class="@TOPRMID.type@"><![CDATA[@TOPRMID.expr@]]></textFieldExpression>
             </textField>
             <textField>
                 <reportElement positionType="Float" x="112" y="0" width="92" height="12"/>
                 <textElement>
                     <font fontName="SansSerif"/>
                 </textElement>
-                <textFieldExpression class="java.lang.String"><![CDATA[@TOPLMID.expr@]]></textFieldExpression>
+                <textFieldExpression class="@TOPLMID.type@"><![CDATA[@TOPLMID.expr@]]></textFieldExpression>
             </textField>
             <line>
                 <reportElement positionType="Float" x="0" y="13" width="572" height="1" forecolor="#c0c0c0"/>
@@ -162,27 +162,27 @@
             <textField>
                 <reportElement positionType="Float" x="0" y="0" width="110" height="12"/>
                 <textElement/>
-                <textFieldExpression class="java.sql.Timestamp"><![CDATA[@TOPLEFT.expr@]]></textFieldExpression>
+                <textFieldExpression class="@TOPLEFT.type@"><![CDATA[@TOPLEFT.expr@]]></textFieldExpression>
             </textField>
             <textField>
                 <reportElement positionType="Float" x="206" y="14" width="286" height="12"/>
                 <textElement/>
-                <textFieldExpression class="java.lang.String"><![CDATA[@BOTRMID.expr@]]></textFieldExpression>
+                <textFieldExpression class="@BOTRMID.type@"><![CDATA[@BOTRMID.expr@]]></textFieldExpression>
             </textField>
             <textField>
                 <reportElement positionType="Float" x="112" y="14" width="92" height="12"/>
                 <textElement/>
-                <textFieldExpression class="java.lang.String"><![CDATA[@BOTLMID.expr@]]></textFieldExpression>
+                <textFieldExpression class="@BOTLMID.type@"><![CDATA[@BOTLMID.expr@]]></textFieldExpression>
             </textField>
             <textField>
                 <reportElement positionType="Float" x="493" y="14" width="79" height="12"/>
                 <textElement/>
-                <textFieldExpression class="java.lang.Integer"><![CDATA[@BOTRIGHT.expr@]]></textFieldExpression>
+                <textFieldExpression class="@BOTRIGHT.type@"><![CDATA[@BOTRIGHT.expr@]]></textFieldExpression>
             </textField>
             <textField>
                 <reportElement positionType="Float" x="493" y="0" width="79" height="12"/>
                 <textElement/>
-                <textFieldExpression class="java.lang.String"><![CDATA[@TOPRIGHT.expr@]]></textFieldExpression>
+                <textFieldExpression class="@TOPRIGHT.type@"><![CDATA[@TOPRIGHT.expr@]]></textFieldExpression>
             </textField>
         </band>
     </detail>

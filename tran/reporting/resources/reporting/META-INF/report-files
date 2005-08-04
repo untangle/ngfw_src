@@ -1,3 +1,3 @@
-com/metavize/tran/reporting/reports/LoginDetail.jasper:EdgeGuard_Appliance--Administrative_Logins:Administrative Logins
+reports/LoginDetail.jasper:EdgeGuard_Appliance--Administrative_Logins:Administrative Logins
 com.metavize.tran.reporting.reports.ReportingSummarizer:summarizer:Summarizer
 com.metavize.tran.reporting.reports.SummaryGraph:summaryGraph:EdgeGuard_Appliance--Summary_Graph

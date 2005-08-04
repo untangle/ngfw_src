@@ -11,7 +11,7 @@
     <parameter name="endTime" class="java.sql.Timestamp">
     </parameter>
     <queryString><![CDATA[
-    SELECT COALESCE(name, host(c_client_addr)) as hname, count(hname) AS count, total_count
+    SELECT COALESCE(name, host(c_client_addr)) as hname, count(*) AS count, total_count
 FROM (SELECT count(*) AS total_count FROM tr_spyware_evt_access AS evt
       WHERE evt.time_stamp > $P{startTime} AND evt.time_stamp < $P{endTime}) AS foo,
      tr_spyware_evt_access evt
