@@ -43,10 +43,10 @@ for t in `route -n | grep "^0.0.0.0" | awk '{ print $2}'`; do
     route del default gw $t
 done
 
-killall -KILL pump
+killPump
 
 if [ $outsideAddress = ${PUMP_FLAG} ]; then 
-    pump -i ${outside}
+    pump --script="" -i ${outside}
 else
     ifconfig ${outside} ${outsideAddress} netmask ${outsideNetmask}
     route add default gw $gateway    

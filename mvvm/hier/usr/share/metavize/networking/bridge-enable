@@ -32,7 +32,7 @@ generateBridge ${bridge}
 if [ "$(getBridge ${inside})x" = "${bridge}x" ] && [ "$(getBridge ${outside})x" = "${bridge}x" ]; then
     if [ $bridgeAddress = ${PUMP_FLAG} ]; then 
         echo "Bridge is already configured, pumping interface." > /dev/stderr
-        pump -i ${bridge}
+        pump --script="" -i ${bridge}
         exit
     else
         if [ $(getAddresses $bridge) = ${bridgeAddress} ] && 
@@ -42,7 +42,7 @@ if [ "$(getBridge ${inside})x" = "${bridge}x" ] && [ "$(getBridge ${outside})x" 
             if [ -n "$(isPumpRunning ${bridge})" ]; then
                 ## kill pump and manually configure the address
                 echo "Killing pump" > /dev/stderr
-                killall pump
+                killPump
                 ifconfig ${bridge} ${bridgeAddress} netmask ${bridgeNetmask}
                 status=$?
             fi

@@ -22,6 +22,8 @@ public class NetworkingConfiguration implements Serializable
     private static final long serialVersionUID = -8235095115996174553L;
 
     public static final IPaddr  EMPTY_IPADDR;
+    public static final IPaddr  DEF_OUTSIDE_NETWORK;
+    public static final IPaddr  DEF_OUTSIDE_NETMASK;
 
     public static final boolean DEF_IS_DHCP_EN            = false;
     public static final boolean DEF_IS_INSIDE_INSECURE_EN = true;
@@ -79,8 +81,8 @@ public class NetworkingConfiguration implements Serializable
     private boolean isOutsideAccessRestricted = DEF_IS_OUTSIDE_RESTRICTED;
 
 
-    private IPaddr outsideNetwork;
-    private IPaddr outsideNetmask;
+    private IPaddr outsideNetwork = DEF_OUTSIDE_NETWORK;
+    private IPaddr outsideNetmask = DEF_OUTSIDE_NETMASK;
 
     public NetworkingConfiguration()
     {
@@ -262,7 +264,7 @@ public class NetworkingConfiguration implements Serializable
     public void outsideNetwork( IPaddr network )
     {
         if ( network == null ) 
-            network = EMPTY_IPADDR;
+            network = DEF_OUTSIDE_NETWORK;
 
         this.outsideNetwork = network;
     }
@@ -270,7 +272,7 @@ public class NetworkingConfiguration implements Serializable
     public IPaddr outsideNetwork()
     {
         if ( this.outsideNetwork == null ) 
-            this.outsideNetwork = EMPTY_IPADDR;
+            this.outsideNetwork = DEF_OUTSIDE_NETWORK;
 
         return this.outsideNetwork;
     }
@@ -281,7 +283,7 @@ public class NetworkingConfiguration implements Serializable
     public void outsideNetmask( IPaddr netmask )
     {
         if ( netmask == null ) 
-            netmask = EMPTY_IPADDR;
+            netmask = DEF_OUTSIDE_NETMASK;
 
         this.outsideNetmask = netmask;
     }
@@ -289,20 +291,27 @@ public class NetworkingConfiguration implements Serializable
     public IPaddr outsideNetmask()
     {
         if ( this.outsideNetmask == null ) 
-            this.outsideNetmask = EMPTY_IPADDR;
+            this.outsideNetmask = DEF_OUTSIDE_NETMASK;
 
         return this.outsideNetmask;
     }
 
     static {
-        Inet4Address emptyAddr = null;
+        Inet4Address emptyAddr      = null;
+        Inet4Address outsideNetwork = null;
+        Inet4Address outsideNetmask = null;
 
         try {
             emptyAddr = (Inet4Address)InetAddress.getByName( "0.0.0.0" );
-        } catch( Exception ex ) {
+            outsideNetwork = (Inet4Address)InetAddress.getByName( "1.2.3.4" );
+            outsideNetmask = (Inet4Address)InetAddress.getByName( "255.255.255.0" );
+        } catch( Exception e ) {
+            System.out.println( "this should never happen: " + e );
             /* THIS SHOULD NEVER HAPPEN */
         }
 
         EMPTY_IPADDR = new IPaddr( emptyAddr );
+        DEF_OUTSIDE_NETWORK = new IPaddr( outsideNetwork );
+        DEF_OUTSIDE_NETMASK = new IPaddr( outsideNetmask );
     }
 }
