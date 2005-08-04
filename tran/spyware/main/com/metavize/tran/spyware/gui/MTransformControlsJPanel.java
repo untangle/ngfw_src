@@ -29,7 +29,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
     private static final String NAME_BLOCK_ACTIVEX = "ActiveX List";
     private static final String NAME_BLOCK_SPYWARE = "Subnet List";
     private static final String NAME_BLOCK_COOKIE = "Cookie List";
-    private static final String NAME_BLOCK_URL = "Spyware and Add URL List";
+    private static final String NAME_BLOCK_URL = "URL List";
     private static final String NAME_SETTINGS = "General Settings";
     private static final String NAME_LOG = "Event Log";
     

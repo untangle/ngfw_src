@@ -13,6 +13,7 @@ package com.metavize.tran.spam.gui;
 
 import com.metavize.tran.spam.*;
 
+import com.metavize.gui.util.Util;
 import com.metavize.gui.widgets.editTable.*;
 import com.metavize.gui.transform.*;
 
@@ -38,7 +39,7 @@ public class LogJPanel extends MLogTableJPanel {
 
         for( SpamLog requestLog : requestLogList ){
             event = new Vector();
-            event.add( requestLog.getTimeStamp().toString() );
+            event.add( Util.getLogDateFormat().format( requestLog.getTimeStamp() ));
 	    event.add( requestLog.getAction() );
             event.add( requestLog.getClientAddr() + ":" + ((Integer)requestLog.getClientPort()).toString() );
 	    event.add( requestLog.getSubject() );

@@ -14,6 +14,7 @@ package com.metavize.tran.virus.gui;
 import java.util.*;
 import javax.swing.table.*;
 
+import com.metavize.gui.util.Util;
 import com.metavize.gui.transform.*;
 import com.metavize.gui.widgets.editTable.*;
 
@@ -36,7 +37,7 @@ public class LogJPanel extends MLogTableJPanel {
 
         for( VirusLog log : logList ){
             event = new Vector();
-            event.add( log.getCreateDate().toString() );
+            event.add( Util.getLogDateFormat().format( log.getCreateDate() ));
 	    event.add( log.getAction() );
             event.add( log.getClientAddr() + ":" + ((Integer)log.getClientPort()).toString() );
 	    event.add( log.getTraffic() );

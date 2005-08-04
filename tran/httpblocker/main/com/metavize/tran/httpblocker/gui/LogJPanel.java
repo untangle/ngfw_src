@@ -14,6 +14,7 @@ package com.metavize.tran.httpblocker.gui;
 import java.util.*;
 import javax.swing.table.*;
 
+import com.metavize.gui.util.Util;
 import com.metavize.gui.transform.*;
 import com.metavize.gui.widgets.editTable.*;
 import com.metavize.mvvm.tran.Transform;
@@ -39,7 +40,7 @@ public class LogJPanel extends MLogTableJPanel {
 
         for( HttpRequestLog requestLog : requestLogList ){
             event = new Vector();
-            event.add( requestLog.timeStamp().toString() );
+            event.add( Util.getLogDateFormat().format( requestLog.timeStamp() ));
 
             Action action = requestLog.getAction();
             Reason reason = requestLog.getReason();

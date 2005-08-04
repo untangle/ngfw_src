@@ -70,7 +70,7 @@ public class UrlConfigJPanel extends javax.swing.JPanel implements Savable, Refr
         contentJPanel.setBorder(new javax.swing.border.EtchedBorder());
         ftpButtonGroup.add(urlEnabledRadioButton);
         urlEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        urlEnabledRadioButton.setText("<html><b>Enable</b> spyware URL blocking</html>");
+        urlEnabledRadioButton.setText("<html><b>Enable</b> spyware and ad URL blocking</html>");
         urlEnabledRadioButton.setFocusPainted(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -80,7 +80,7 @@ public class UrlConfigJPanel extends javax.swing.JPanel implements Savable, Refr
 
         ftpButtonGroup.add(urlDisabledRadioButton);
         urlDisabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        urlDisabledRadioButton.setText("<html><b>Disable</b> spyware URL blocking</html>");
+        urlDisabledRadioButton.setText("<html><b>Disable</b> spyware and ad URL blocking</html>");
         urlDisabledRadioButton.setFocusPainted(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;

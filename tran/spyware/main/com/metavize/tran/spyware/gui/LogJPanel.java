@@ -11,6 +11,7 @@
 
 package com.metavize.tran.spyware.gui;
 
+import com.metavize.gui.util.Util;
 import com.metavize.gui.transform.*;
 import com.metavize.gui.widgets.editTable.*;
 import com.metavize.mvvm.tran.Transform;
@@ -36,7 +37,7 @@ public class LogJPanel extends MLogTableJPanel {
 
         for( SpywareLog requestLog : requestLogList ){
             event = new Vector();
-            event.add( requestLog.getCreateDate().toString() );
+            event.add( Util.getLogDateFormat().format( requestLog.getCreateDate() ));
 	    event.add( requestLog.getAction() );
             event.add( requestLog.getClientAddr() + ":" + ((Integer)requestLog.getClientPort()).toString() );
 	    event.add( requestLog.getLocation() + " : " + requestLog.getIdent() );

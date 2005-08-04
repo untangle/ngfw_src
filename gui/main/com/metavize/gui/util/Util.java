@@ -11,6 +11,7 @@
 
 package com.metavize.gui.util;
 
+import java.text.*;
 import java.awt.*;
 import java.net.*;
 import java.util.*;
@@ -31,6 +32,7 @@ import com.metavize.mvvm.tran.*;
 public class Util {
 
     static{
+	logDateFormat = new SimpleDateFormat("EEE, MMM d HH:mm:ss");
         log = new Vector();
 	ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 	iconOnState = new ImageIcon( classLoader.getResource("com/metavize/gui/transform/IconOnState28x28.png") );
@@ -458,6 +460,10 @@ public class Util {
 
 
     // STRING FORMATTING //////////////////////
+    private static DateFormat logDateFormat;
+
+    public static DateFormat getLogDateFormat(){ return logDateFormat; }
+
     public static String padZero(long number){
 	if( number >= 100 )  // uses all 3 digits
 	    return Long.toString(number);

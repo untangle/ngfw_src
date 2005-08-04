@@ -49,7 +49,7 @@ class MIMETypeTableModel extends MSortedTableModel{
     private static final int C0_MW = Util.STATUS_MIN_WIDTH; /* status */
     private static final int C1_MW = Util.LINENO_MIN_WIDTH; /* # */
     // private static final int C2_MW = 150; /* category */
-    private static final int C2_MW = 150; /* MIME type */
+    private static final int C2_MW = 239; /* MIME type */
     private static final int C3_MW = 55; /* block */
     private static final int C4_MW = Util.chooseMax(T_TW - (C0_MW + C1_MW + C2_MW + C3_MW), 120); /* description */
 

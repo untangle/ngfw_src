@@ -11,6 +11,7 @@
 
 package com.metavize.tran.protofilter.gui;
 
+import com.metavize.gui.util.Util;
 import com.metavize.gui.transform.*;
 import com.metavize.gui.widgets.editTable.*;
 import com.metavize.mvvm.tran.Transform;
@@ -35,7 +36,7 @@ public class LogJPanel extends MLogTableJPanel {
 
         for( ProtoFilterLog log : logList ){
             event = new Vector();
-            event.add( log.getCreateDate().toString() );
+            event.add( Util.getLogDateFormat().format( log.getCreateDate() ));
 	    event.add( log.getAction() );
             event.add( log.getClientAddr() + ":" + ((Integer)log.getCClientPort()).toString() );
 	    event.add( log.getProtocol() );
