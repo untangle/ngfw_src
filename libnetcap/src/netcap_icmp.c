@@ -718,7 +718,7 @@ static int  _netcap_icmp_send( char *data, int data_len, netcap_pkt_t* pkt, int 
     
     if (( ret = sendmsg( _icmp.fd, &msg, flags )) < 0 ) {
         if ( errno == EPERM ) {
-            errlog( ERR_CRITICAL, "UDP: EPERM sending a UDP packet\n" );
+            errlog( ERR_CRITICAL, "ICMP: EPERM sending an ICMP packet\n" );
         } else {
             errlog(ERR_CRITICAL,"sendmsg: %s | ",errstr);
             errlog_noprefix(ERR_CRITICAL, "(%s -> ", inet_ntoa(pkt->src.host));

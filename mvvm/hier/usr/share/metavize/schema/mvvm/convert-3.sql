@@ -328,6 +328,7 @@ DROP TABLE public.mvvm_login_evt;
 CREATE TABLE events.shield_rejection_evt (
     event_id int8 NOT NULL,
     client_addr inet,
+    client_intf int2,
     reputation float8,
     mode int4,
     limited int4,

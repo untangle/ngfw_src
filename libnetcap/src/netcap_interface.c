@@ -614,14 +614,14 @@ static int _update_dev_info( void )
         
         for ( i = 1 ; i < NETCAP_MAX_INTERFACES ; i++ ) {
             if ( if_indextoname( i, if_name ) == NULL ) {
-                debug( 4, "INTERFACE: %d doesn't exist\n", i );
+                debug( 10, "INTERFACE: %d doesn't exist\n", i );
                 continue;
             }
             
             if (( strncmp( if_name, "lo", 2 ) == 0 ) ||
                 ( strncmp( if_name, "sit", 3 ) == 0 )  ||
                 ( strncmp( if_name, "dummy", 5 ) == 0 )) {
-                debug( 4, "INTERFACE: skipping %s\n", if_name );
+                debug( 10, "INTERFACE: skipping %s\n", if_name );
                 continue;
             }
 
