@@ -182,8 +182,12 @@ public class MIMEPart {
       throw new IllegalStateException("MIMEPart already disposed");
     }
   }
-  
-  protected void changed() {
+
+  /**
+   * <b>This has been made public for tests.  Do not call it.  It
+   * is intended to subclasses</b>
+   */
+  public void changed() {
     m_changed = true;
     if(m_observer != null) {
       m_observer.mIMEPartChanged(this);
@@ -678,6 +682,7 @@ public class MIMEPart {
             mpis = m_sourceRecord.source.getInputStream(m_sourceRecord.start);
             out.pipe(mpis, m_preambleLen);
             mpis.close();
+            out.writeLine();
           }
           out.write((byte)DASH);
           out.write((byte)DASH);
@@ -922,7 +927,7 @@ public class MIMEPart {
     }
     
     //Record the preamble length
-    m_preambleLen = ((stream.position() - boundaryResult.boundaryLen) - pos)-1;
+    m_preambleLen = ((stream.position() - boundaryResult.boundaryLen) - pos);
   
     while(boundaryResult.boundaryFound && !boundaryResult.boundaryWasLast) {
       MIMEPart newChild = new MIMEPart();
