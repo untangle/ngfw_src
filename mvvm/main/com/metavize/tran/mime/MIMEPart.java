@@ -77,6 +77,16 @@ public class MIMEPart {
       ownsSource,
       policy,
       outerBoundary);
+
+    m_logger.debug("[<init>] Created " +
+      (isMultipart()?"multipart ":"") +
+      (isAttachment()?"attachment ":"") +
+      "part with preamble len: " + m_preambleLen +
+      "and epilogue len: " + m_epilogueLen +
+      "with content starting at: " + m_sourceRecord.start +
+      " of source record");
+      
+      
   }
   /**
    * Construct a MIME part using the already-parsed headers.
@@ -99,7 +109,15 @@ public class MIMEPart {
       ownsSource,
       policy,
       outerBoundary);
-  }  
+
+    m_logger.debug("[<init>] Created " +
+      (isMultipart()?"multipart ":"") +
+      (isAttachment()?"attachment ":"") +
+      "part with preamble len: " + m_preambleLen +
+      " and epilogue len: " + m_epilogueLen +
+      " with content starting at: " + m_sourceRecord.start +
+      " of source record");
+  }
 
   
   
@@ -420,6 +438,7 @@ public class MIMEPart {
    * This only applies to non-multiparts.
    */
   public void setContent(MIMESourceRecord record) {
+    m_logger.debug("[setContent()] Called");
     changed();
     if(m_decodedContentRecord != null && !m_decodedContentRecord.isShared()) {
       m_decodedContentRecord.source.close();
@@ -434,6 +453,8 @@ public class MIMEPart {
     m_rawContentRecord = null;
     m_decodedContentRecord = record;
     m_sourceRecord = record;
+    m_preambleLen = 0;
+    m_epilogueLen = 0;
   }
   
   private static void addAttachmentsInto(MIMEPart source,
@@ -667,18 +688,21 @@ public class MIMEPart {
     m_headers.writeTo(out);
     
     if(!m_changed && m_sourceRecord != null) {//BEGIN Source unchanged
-      //======= Write from Source =======   
+      //======= Write from Source =======
+      m_logger.debug("[writeTo()] Writing out to stream from source record (did not change)");
       out.write(m_sourceRecord);
     }//ENDOF Source unchanged
     else {//BEGIN Source Changed
       //======= Re-Assemble =======
       if(isMultipart()) {//BEGIN Multi Part
+        m_logger.debug("[writeTo()] Re-assemble mutlipart from components");
         MIMEParsingInputStream mpis = null;
         try {
           String boundary = m_headers.getContentTypeHF().getBoundary();//Shouldn't be null
           
           //Write preamble (if there was one)
           if(m_preambleLen > 0 && m_sourceRecord!= null) {
+            m_logger.debug("[writeTo()] write preamble");
             mpis = m_sourceRecord.source.getInputStream(m_sourceRecord.start);
             out.pipe(mpis, m_preambleLen);
             mpis.close();
@@ -688,6 +712,7 @@ public class MIMEPart {
           out.write((byte)DASH);
           out.write(boundary);
           for(MIMEPart child : getChildList()) {
+            m_logger.debug("[writeTo()] writing child");
             out.writeLine();
             child.writeTo(out);
             out.writeLine();
@@ -700,6 +725,7 @@ public class MIMEPart {
           out.writeLine();
           //Write epilogue (if there was one)
           if(m_epilogueLen > 0 && m_sourceRecord!= null) {
+            m_logger.debug("[writeTo()] writing epilogue");
             mpis = m_sourceRecord.source.getInputStream(m_sourceRecord.len - m_epilogueLen);
             out.pipe(mpis, m_epilogueLen);
             mpis.close();
@@ -719,6 +745,7 @@ public class MIMEPart {
           //TODO bscott should we assert or something
         }
         else {
+          m_logger.debug("[writeTo()] writing leaf part from source record");
           out.write(m_sourceRecord);
         }
       }//ENDOF Simple Part

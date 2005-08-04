@@ -219,11 +219,13 @@ public class Headers
 
   
   private void changed() {
+    m_logger.debug("Headers changed");
     m_changed = true;
     m_sourceRecord = null;
   }
 
   protected void clearChanged(MIMESourceRecord sourceRecord) {
+    m_logger.debug("Headers clear changed (new source record)");
     m_changed = false;
     m_sourceRecord = sourceRecord;
   }
@@ -235,9 +237,11 @@ public class Headers
   public final void writeTo(MIMEOutputStream out)
     throws IOException {
     if(!m_changed && m_sourceRecord != null) {
+      m_logger.debug("writing out from source record (not null and not changed)");
       out.write(m_sourceRecord);
     }
     else {
+      m_logger.debug("Writing out individual headers (source record null or headers changed)");
       for(HeaderField field : m_headersInOrder) {
         field.writeTo(out);
       }

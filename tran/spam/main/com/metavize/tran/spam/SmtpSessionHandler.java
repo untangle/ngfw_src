@@ -273,7 +273,7 @@ public class SmtpSessionHandler
       return ret;
     }
     catch(Exception ex) {
-      m_logger.error("Exception scanning message");
+      m_logger.error("Exception scanning message", ex);
       return null;
     }
 

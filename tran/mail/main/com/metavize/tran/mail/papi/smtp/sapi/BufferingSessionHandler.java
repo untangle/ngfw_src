@@ -745,6 +745,7 @@ public abstract class BufferingSessionHandler
         MIMEParsingInputStream mimeIn = null;
         try {
           mimeIn = m_mimeSource.getInputStream();
+          mimeIn.skip(m_headersLengthInSource);
           m_msg = new MIMEMessage(mimeIn,
             m_mimeSource,
             new MIMEPolicy(),

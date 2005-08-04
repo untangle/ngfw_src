@@ -84,12 +84,12 @@ public class AttachedMIMEMessage
   @Override
   public final void writeTo(MIMEOutputStream out)
     throws IOException {  
-    
     checkDisposed();
-
+    m_logger.debug("[writeTo()] write headers");
     getMPHeaders().writeTo(out);
-
+    m_logger.debug("[writeTo()] BEGIN write Wrapped");
     m_attach.writeTo(out);
+    m_logger.debug("[writeTo()] ENDOF write Wrapped");
   }
 
 }
