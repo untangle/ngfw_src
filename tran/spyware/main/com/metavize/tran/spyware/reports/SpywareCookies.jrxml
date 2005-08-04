@@ -41,7 +41,7 @@ ORDER BY cookies DESC
                 <textElement textAlignment="Center">
                     <font fontName="SansSerif" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
                 </textElement>
-                <text><![CDATA[Cookies]]></text>
+                <text><![CDATA[Top Cookies]]></text>
             </staticText>
         </band>
     </title>
@@ -61,7 +61,7 @@ ORDER BY cookies DESC
                 <textElement textAlignment="Right">
                     <font fontName="SansSerif" size="9" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
                 </textElement>
-                <text><![CDATA[Cookies]]></text>
+                <text><![CDATA[Count]]></text>
             </staticText>
             <staticText>
                 <reportElement positionType="Float" x="234" y="0" width="42" height="13"/>

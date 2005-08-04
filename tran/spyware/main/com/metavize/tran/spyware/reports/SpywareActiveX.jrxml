@@ -42,7 +42,7 @@ SELECT COALESCE(name, host(c_client_addr)) as hname, count(*) AS hits, total_hit
                 <textElement textAlignment="Center">
                     <font fontName="SansSerif" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
                 </textElement>
-                <text><![CDATA[ActiveX Users]]></text>
+                <text><![CDATA[Top ActiveX]]></text>
             </staticText>
         </band>
     </title>
@@ -62,7 +62,7 @@ SELECT COALESCE(name, host(c_client_addr)) as hname, count(*) AS hits, total_hit
                 <textElement textAlignment="Right">
                     <font fontName="SansSerif" size="9" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
                 </textElement>
-                <text><![CDATA[Hits]]></text>
+                <text><![CDATA[Count]]></text>
             </staticText>
             <staticText>
                 <reportElement positionType="Float" x="234" y="0" width="42" height="13"/>
