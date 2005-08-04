@@ -2354,7 +2354,6 @@ etype.adbureau.net
 eu-adcenter.net
 eu.link.decideinteractive.com
 eula.winadclient.com
-eur.a1.yimg.com
 euro-randomizer.com
 eventuresnv.com
 everyone.net
@@ -5425,7 +5424,6 @@ urlblaze.com
 urm.lxsystems.com
 us-sg1.tibsystems.com
 us.2.cqcounter.com
-us.a1.yimg.com
 us.adserver.yahoo.com
 us.cqcounter.com
 us.intellitxt.com
