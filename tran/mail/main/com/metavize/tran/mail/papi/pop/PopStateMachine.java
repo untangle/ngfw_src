@@ -314,6 +314,8 @@ public abstract class PopStateMachine extends AbstractTokenHandler
                     serverState = ServerState.DATA_REPLY;
                 }
                 /* else fall through */
+            } else if (token instanceof PopReplyMore) {
+                serverState = ServerState.REPLY_MORE;
             } else if (token instanceof DoNotCareT) {
                 serverState = ServerState.DONOTCARE_START;
             } else {

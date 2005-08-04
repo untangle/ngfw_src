@@ -64,9 +64,9 @@ public class PopReply implements Token
     {
         String zMsgDataSz;
 
-        ByteBuffer dup = buf.duplicate();
-        dup.limit(iEnd);
-        String zTmp = AsciiCharBuffer.wrap(dup).toString();
+        ByteBuffer zDup = buf.duplicate();
+        zDup.limit(iEnd);
+        String zTmp = AsciiCharBuffer.wrap(zDup).toString();
         boolean bIsMsgData = zTmp.matches(DATAOK);
         //logger.debug("reply is message: " + bIsMsgData);
         if (false == bIsMsgData) {
@@ -75,19 +75,20 @@ public class PopReply implements Token
             zMsgDataSz = parseMsgDataSz(zTmp);
         }
 
-        dup = buf.duplicate();
-        String reply = consumeToken(dup);
+        buf.mark(); /* in case we need to reset later */
+        String reply = consumeToken(buf);
         if (0 == reply.length()) {
+            buf.reset();
             throw new ParseException("cannot identify reply: " + AsciiCharBuffer.wrap(buf));
         }
 
-        eatSpace(dup);
+        eatSpace(buf);
 
         String arg;
         if (false == bIsMsgData) {
-            arg = consumeBuf(dup);
+            arg = consumeBuf(buf); /* consume rest of buffer */
         } else {
-            arg = consumeLine(dup, iEnd);
+            arg = consumeLine(buf, iEnd); /* consume up to end of line */
         }
 
         return new PopReply(reply, (0 == arg.length()) ? null : arg, zMsgDataSz, bIsMsgData);
