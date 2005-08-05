@@ -39,11 +39,12 @@ public class BackupRestoreJDialog extends javax.swing.JDialog implements java.aw
     public BackupRestoreJDialog() {
         super(Util.getMMainJFrame());
 
-
-
-
         // BUILD GENERAL GUI
         initComponents();
+        this.setBounds( Util.generateCenteredBounds( Util.getMMainJFrame().getBounds(),
+							this.getWidth(),
+							this.getHeight()) );
+        
         this.addWindowListener(this);
 
 

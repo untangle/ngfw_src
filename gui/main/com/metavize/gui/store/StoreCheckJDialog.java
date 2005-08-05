@@ -22,8 +22,6 @@ import javax.swing.*;
  */
 public class StoreCheckJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
     
-    private boolean upgradesAvailable = true;
-    
     /** Creates new form ProceedJDialog */
     public StoreCheckJDialog() {
         super(Util.getMMainJFrame(), true);
@@ -31,10 +29,6 @@ public class StoreCheckJDialog extends javax.swing.JDialog implements java.awt.e
         this.addWindowListener(this);
 
 	this.setBounds( Util.generateCenteredBounds(Util.getMMainJFrame().getBounds(), this.getWidth(), this.getHeight()) );
-    }
-    
-    public boolean upgradesAvailable(){
-        return upgradesAvailable;
     }
     
     public void setVisible(boolean isVisible){
@@ -174,19 +168,20 @@ public class StoreCheckJDialog extends javax.swing.JDialog implements java.awt.e
         }
         public void run() {
             try{
-                SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+                SwingUtilities.invokeLater( new Runnable(){ public void run(){
                     StoreCheckJDialog.this.jProgressBar.setIndeterminate(true);
                     StoreCheckJDialog.this.jProgressBar.setString("Checking for upgrades...");
                 }});
             
-                Thread.sleep(1500l);
+                Thread.sleep(2000l);
                 
                 Util.getToolboxManager().update();
                 MackageDesc[] mackageDescs = Util.getToolboxManager().upgradable();
                 if( Util.isArrayEmpty(mackageDescs) ){
-                    upgradesAvailable = false;
                     Util.getMMainJFrame().updateJButton(0);
-                    SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+                    Util.setUpgradeCount(0);
+                    Util.checkedUpgrades();
+                    SwingUtilities.invokeLater( new Runnable(){ public void run(){
                         StoreCheckJDialog.this.jProgressBar.setIndeterminate(false);
                         StoreCheckJDialog.this.jProgressBar.setString("No upgrades found.  Proceeding.");
                     }});
@@ -194,14 +189,14 @@ public class StoreCheckJDialog extends javax.swing.JDialog implements java.awt.e
                     StoreCheckJDialog.this.setVisible(false);
                 }
                 else{
-                    upgradesAvailable = true;
                     Util.getMMainJFrame().updateJButton(mackageDescs.length);
-                    SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+                    Util.setUpgradeCount(mackageDescs.length);
+                    Util.checkedUpgrades();
+                    SwingUtilities.invokeLater( new Runnable(){ public void run(){
                         StoreCheckJDialog.this.jProgressBar.setIndeterminate(false);
                         StoreCheckJDialog.this.jProgressBar.setString("Upgrades found.  Please perform upgrades.");
                     }});
                 }
-                Util.checkedUpgrades();
             }
             catch(Exception e){
                 Util.handleExceptionNoRestart("Error auto checking for upgrades on server", e);

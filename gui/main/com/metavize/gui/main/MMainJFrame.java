@@ -132,16 +132,16 @@ public class MMainJFrame extends javax.swing.JFrame {
 			upgradeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/upgrade/IconAvailable32x32.png")));
                         upgradeJButton.setEnabled(true);
 		    }
-		    else if( count > 1){
+		    else if( count > 1 ){
 			upgradeJButton.setText("<html><center><b>Upgrade<br>(" + count + " upgrades)</b></center></html>");
 			upgradeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/upgrade/IconAvailable32x32.png")));
                         upgradeJButton.setEnabled(true);
 		    }
-		    else if( count == -1){
+		    else if( count == Util.UPGRADE_UNAVAILABLE ){
 			upgradeJButton.setText("<html><center>Upgrade<br>(unavailable)</center></html>");
 			upgradeJButton.setEnabled(true);
 		    }
-		    else if( count == -2 ){
+		    else if( count == Util.UPGRADE_CHECKING ){
 			upgradeJButton.setText("<html><center>Upgrade<br>(checking...)</center></html>");
 			upgradeJButton.setEnabled(true);
 		    }
@@ -611,9 +611,6 @@ public class MMainJFrame extends javax.swing.JFrame {
     private void backupJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backupJButtonActionPerformed
 	try{
 	    BackupRestoreJDialog backupRestoreJDialog = new BackupRestoreJDialog();
-	    backupRestoreJDialog.setBounds( Util.generateCenteredBounds( Util.getMMainJFrame().getBounds(),
-									 backupRestoreJDialog.getWidth(),
-									 backupRestoreJDialog.getHeight()) );
 	    backupRestoreJDialog.setVisible(true);
 	}
 	catch(Exception e){
@@ -651,15 +648,12 @@ public class MMainJFrame extends javax.swing.JFrame {
     private void upgradeJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_upgradeJButtonActionPerformed
 	try{
 	    UpgradeJDialog upgradeJDialog =  new UpgradeJDialog();
+            upgradeJDialog.setVisible(true);
 	}
 	catch(Exception e){
 	    try{ Util.handleExceptionWithRestart("Error checking for upgrades on server", e); }
-	    catch(Exception f){
-		Util.handleExceptionNoRestart("Error checking for upgrades on server", f);
-		updateJButton(-1);
-	    }
-	}
-	
+	    catch(Exception f){ Util.handleExceptionNoRestart("Error checking for upgrades on server", f); }
+	}	
     }//GEN-LAST:event_upgradeJButtonActionPerformed
 
     private void adminJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_adminJButtonActionPerformed
@@ -762,13 +756,12 @@ public class MMainJFrame extends javax.swing.JFrame {
     private void storeActionPerformed(java.awt.event.ActionEvent evt){
         MTransformJButton targetMTransformJButton = (MTransformJButton) evt.getSource();
         StoreJDialog storeJDialog = new StoreJDialog(targetMTransformJButton.duplicate());
-	storeJDialog.setBounds( Util.generateCenteredBounds(MMainJFrame.this.getBounds(), storeJDialog.getWidth(), storeJDialog.getHeight()) );
 	storeJDialog.setVisible(true);
 	if( storeJDialog.getPurchasedMTransformJButton() != null){
 	    if( Util.mustCheckUpgrades() ){
 		StoreCheckJDialog storeCheckJDialog = new StoreCheckJDialog();
 		storeCheckJDialog.setVisible(true);
-		if( !storeCheckJDialog.upgradesAvailable() ){
+		if( Util.getUpgradeCount() == 0 ){
 		    targetMTransformJButton.purchase();
 		}
 	    }
@@ -830,8 +823,8 @@ public class MMainJFrame extends javax.swing.JFrame {
         public void run() {
 	    MackageDesc[] mackageDescs;
             
-            updateJButton(-2);
-            
+            // FORCE THE SERVER TO UPDATE ONCE
+            updateJButton(Util.UPGRADE_CHECKING);
             try{
                 Util.getToolboxManager().update();
             }
@@ -844,20 +837,27 @@ public class MMainJFrame extends javax.swing.JFrame {
                     if(Util.getKillThreads())
                         return;
                     
+                    // CHECK FOR UPGRADES
+                    updateJButton(Util.UPGRADE_CHECKING);
 		    mackageDescs = Util.getToolboxManager().upgradable();
-                    if( Util.isArrayEmpty(mackageDescs) )
+                    if( Util.isArrayEmpty(mackageDescs) ){
                         updateJButton(0);
-                    else
+                        Util.setUpgradeCount(0);
+                    }
+                    else{
                         updateJButton(mackageDescs.length);
+                        Util.setUpgradeCount(mackageDescs.length);
+                    }
 		    Util.checkedUpgrades();
-                    Thread.sleep(Util.UPGRADE_THREAD_SLEEP_MILLIS);
 		}
 		catch(Exception e){
-		    Util.handleExceptionNoRestart("Error auto checking for upgrades on server", e);
-		    updateJButton(-1);
-		    try{ Thread.sleep(Util.UPGRADE_THREAD_SLEEP_MILLIS); }
-		    catch(Exception f){ Util.handleExceptionNoRestart("Error waiting on upgrade thread", f); }
+		    Util.handleExceptionNoRestart("Error checking for upgrades on server", e);
+		    updateJButton(Util.UPGRADE_UNAVAILABLE);		    
 		}
+                finally{
+                    try{ Thread.sleep(Util.UPGRADE_THREAD_SLEEP_MILLIS); }
+		    catch(Exception f){ Util.handleExceptionNoRestart("Error sleeping in upgrade check thread", f); }
+                }
 	    }
         }
     }
