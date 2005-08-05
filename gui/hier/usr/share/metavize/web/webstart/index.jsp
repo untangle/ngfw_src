@@ -51,7 +51,7 @@ if (!( isIndex || isDownload)) isIndex = true;
         function showMessage()
         {
           if ( javaws150Installed == 0 && ( navigator.userAgent.indexOf("Gecko") == -1 )) {
-            document.write( 'Java Web Start v1.5 was not detected.&nbsp;<br/><br/><div style="text-align: center;"><a href="download.html">Install Java Web Start v1.5</a></div><br/><br/>' );
+            document.write( 'Java&trade; v1.5 was not detected.  You may need to download and install Java&trade; v1.5.<br/><br/>' );
           }
         }
      <!-- //  -->
@@ -124,7 +124,7 @@ if (!( isIndex || isDownload)) isIndex = true;
                   <param name="back" value="true"/>
                   <!-- Alternate HTML for browsers which cannot instantiate the object -->
                   <a href="http://java.sun.com/cgi-bin/javawebstart-platform.sh?">
-                    Download Java Web Start
+                    Download Java&trade; v1.5
                   </a>
                 </object>
                 <% } %>
@@ -149,7 +149,6 @@ if (!( isIndex || isDownload)) isIndex = true;
                   </center>
               </div>
               <br/>
-              <br/>
               <% } // if ( !isDownload )
               if ( isIndex ) { %>
               <script type="text/javascript" language="Javascript">
@@ -171,9 +170,9 @@ if (!( isIndex || isDownload)) isIndex = true;
               <br/>
               <br/>
               <div style="text-align: right; font-style: italic; font-size: 80%;">
-               <a href="jre-1_5_0_04-windows-i586-p.exe">Download Java v1.5 (Offline)</a><br/>
+               <a href="jre-1_5_0_04-windows-i586-p.exe">Download Java&trade; v1.5 (Offline)</a><br/>
                <% if ( !isDownload ) { %>
-                 <a href="download.html">Download Java v1.5 (Online)</a><br/>
+                 <a href="download.html">Download Java&trade; v1.5 (Online)</a><br/>
                <% } %>
               </div>
             </td>
