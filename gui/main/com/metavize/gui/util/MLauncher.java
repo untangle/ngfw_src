@@ -13,20 +13,27 @@ package com.metavize.gui.util;
 
 import com.metavize.gui.login.MLoginJFrame;
 
-import javax.swing.UIManager;
-import java.awt.Toolkit;
 import java.lang.reflect.Constructor;    
 import java.security.*;
 
 import java.net.URLClassLoader;
 import java.net.URL;
-/**
- *
- * @author inieves
- */
+
+
 public class MLauncher {
         
     public static void main(String args[]) {
+
+	// set the proper look and feel, and dynamic resizing
+        try {
+          com.incors.plaf.kunststoff.KunststoffLookAndFeel kunststoffLaf = new com.incors.plaf.kunststoff.KunststoffLookAndFeel();
+          kunststoffLaf.setCurrentTheme(new com.incors.plaf.kunststoff.KunststoffTheme());
+          javax.swing.UIManager.setLookAndFeel(kunststoffLaf);
+          java.awt.Toolkit.getDefaultToolkit().setDynamicLayout(true);
+        }
+        catch (Exception e) {
+            Util.handleExceptionNoRestart("Error setting LAF:", e);
+        }
         
         // start a shutdown hook
         Runtime.getRuntime().addShutdownHook( new ShutdownHookThread() );
@@ -61,18 +68,6 @@ public class MLauncher {
         catch(Exception e){
             System.err.println(e);
         }
-
-	// set the proper look and feel, and dynamic resizing
-        try {
-          com.incors.plaf.kunststoff.KunststoffLookAndFeel kunststoffLnF = new com.incors.plaf.kunststoff.KunststoffLookAndFeel();
-          kunststoffLnF.setCurrentTheme(new com.incors.plaf.kunststoff.KunststoffTheme());
-          UIManager.setLookAndFeel(kunststoffLnF);
-          Toolkit.getDefaultToolkit().setDynamicLayout(true);
-        }
-        catch (Exception e) {
-            Util.handleExceptionNoRestart("Error:", e);
-        }
-
         
         // load and start the login dialog
         new MLoginJFrame(args);
