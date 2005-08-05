@@ -11,21 +11,22 @@
 package com.metavize.tran.virus;
 
 import java.io.Serializable;
+
 import com.metavize.tran.util.TemplateValues;
 
 /**
- * Virus scan result.
- * <br><br>
- * This class also implements {@link com.metavize.tran.util.TemplateValues TemplateValues}.
- * There is only one key which can be derefferenced - <code>VirusReport:VIRUS_NAME</code>.
- * This will be replaced with the name of the virus which was found.
+ * Virus scan result.  <br><br> This class also implements {@link
+ * com.metavize.tran.util.TemplateValues TemplateValues}.  There is
+ * only one key which can be derefferenced -
+ * <code>VirusReport:VIRUS_NAME</code>.  This will be replaced with
+ * the name of the virus which was found.
  *
  * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
  */
 public class VirusScannerResult
   implements Serializable, TemplateValues {
-  
+
     private static final long serialVersionUID = -9165160954531529727L;
 
     private static final String VIRUS_NAME_KEY = "VirusReport:VIRUS_NAME";
@@ -104,5 +105,5 @@ public class VirusScannerResult
         return getVirusName();
       }
       return null;
-    }     
+    }
 }

@@ -49,8 +49,11 @@ class VirusHttpHandler extends HttpStateMachine
         = "<HTML><HEAD>"
         + "<TITLE>403 Forbidden</TITLE>"
         + "</HEAD><BODY>"
-        + "<H1>Forbidden</H1>"
-        + "The requested URL %s contained a virus.<P>"
+        + "<center><b>Metavize %s Transform</b></center>"
+        + "<p>This site blocked because it contained a virus</p>"
+        + "<p>Host: %s</p>"
+        + "<p>URI: %s</p>"
+        + "<p>Please contact your network administrator</p>"
         + "<HR>"
         + "<ADDRESS>Metavize EdgeGuard</ADDRESS>"
         + "</BODY></HTML>";
@@ -64,11 +67,14 @@ class VirusHttpHandler extends HttpStateMachine
     private static final Logger eventLogger = MvvmContextFactory
         .context().eventLogger();
 
+    private final String vendor;
     private final VirusTransformImpl transform;
     private final List<Token> requestQueue = new ArrayList<Token>();
+    private final List<String> hostQueue = new ArrayList<String>();
     private final List<Token> responseQueue = new ArrayList<Token>();
 
     private RequestLine responseRequest;
+    private String responseHost;
     private boolean scan;
     private long bufferingStart;
     private boolean buffering;
@@ -87,6 +93,7 @@ class VirusHttpHandler extends HttpStateMachine
         super(session);
 
         this.transform = transform;
+        this.vendor = transform.getScanner().getVendorName();
     }
 
     // HttpStateMachine methods -----------------------------------------------
@@ -110,6 +117,9 @@ class VirusHttpHandler extends HttpStateMachine
     protected TokenResult doRequestHeader(Header requestHeader)
     {
         logger.debug("got a request header");
+
+        String host = requestHeader.getValue("host");
+        hostQueue.add(host);
 
         String range = requestHeader.getValue("byte-range");
         if (null == range || range.startsWith("0")) {
@@ -141,8 +151,11 @@ class VirusHttpHandler extends HttpStateMachine
     @Override
     protected TokenResult doStatusLine(StatusLine statusLine)
     {
+        // XXX is this correct??? probaby not assign null when 100
         responseRequest = 100 == statusLine.getStatusCode()
             ? null : (RequestLine)requestQueue.remove(0);
+        responseHost = 100 == statusLine.getStatusCode()
+            ? null : (String)hostQueue.remove(0);
 
         assert 0 == responseQueue.size();
 
@@ -246,8 +259,6 @@ class VirusHttpHandler extends HttpStateMachine
             result = VirusScannerResult.ERROR;
         }
 
-        String vendor = transform.getScanner().getVendorName();
-
         eventLogger.info(new VirusHttpEvent(responseRequest, result,  vendor));
 
         if (result.isClean()) {
@@ -291,6 +302,8 @@ class VirusHttpHandler extends HttpStateMachine
         StatusLine sl = new StatusLine("HTTP/1.1", 403, "Forbidden");
 
         String message = String.format(BLOCK_MESSAGE,
+                                       vendor,
+                                       responseHost,
                                        responseRequest.getRequestUri());
 
         Header h = new Header();

@@ -40,6 +40,7 @@ public class HttpBlockerHandler extends HttpStateMachine
 
     /* Holds pipelined responses XXX factor out*/
     private List responseQueue = new LinkedList();
+    private List hostQueue = new LinkedList();
     private List requests = new LinkedList();
 
     private RequestLine requestLine;
@@ -231,7 +232,7 @@ public class HttpBlockerHandler extends HttpStateMachine
         ByteBuffer buf = ByteBuffer.allocate(replacement.length());
         buf.put(replacement.getBytes()).flip();
 
-        StatusLine sl = new StatusLine("HTTP/1.1", 200, "OK");
+        StatusLine sl = new StatusLine("HTTP/1.1", 403, "Forbidden");
         response.add(sl);
 
         Header h = new Header();

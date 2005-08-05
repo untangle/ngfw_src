@@ -235,7 +235,8 @@ class Blacklist
                     (requestLine, Action.BLOCK, Reason.BLOCK_EXTENSION, exn);
                 eventLogger.info(hbe);
 
-                return settings.getBlockTemplate().render(host, uri, "extension");
+                return settings.getBlockTemplate()
+                    .render(host, uri, "extension (" + exn + ")");
             }
         }
 
@@ -260,7 +261,8 @@ class Blacklist
                 String host = header.getValue("host");
                 URI uri = requestLine.getRequestUri();
 
-                return settings.getBlockTemplate().render(host, uri, "mime-type");
+                return settings.getBlockTemplate()
+                    .render(host, uri, "Mime-Type (" + contentType + ")");
             }
         }
 

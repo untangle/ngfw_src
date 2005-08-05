@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: BlockTemplate.java,v 1.5 2005/03/15 02:11:53 amread Exp $
+ * $Id$
  */
 
 package com.metavize.tran.httpblocker;
@@ -29,12 +29,18 @@ public class BlockTemplate implements Serializable
 
     // XXX someone, make this pretty
     private static final String BLOCK_TEMPLATE
-        = "<html><center><b>%s</b></center>"
+        = "<HTML><HEAD>"
+        + "<TITLE>403 Forbidden</TITLE>"
+        + "</HEAD><BODY>"
+        + "<center><b>%s</b></center>"
         + "<p>This site blocked because of inappropriate content</p>"
         + "<p>Host: %s</p>"
         + "<p>URI: %s</p>"
         + "<p>Category: %s</p>"
-        + "<p>Please contact %s</p>";
+        + "<p>Please contact %s</p>"
+        + "<HR>"
+        + "<ADDRESS>Metavize EdgeGuard</ADDRESS>"
+        + "</BODY></HTML>";
 
     private Long id;
     private String header = "Metavize Content Filter";
