@@ -151,11 +151,10 @@ class VirusHttpHandler extends HttpStateMachine
     @Override
     protected TokenResult doStatusLine(StatusLine statusLine)
     {
-        // XXX is this correct??? probaby not assign null when 100
-        responseRequest = 100 == statusLine.getStatusCode()
-            ? null : (RequestLine)requestQueue.remove(0);
-        responseHost = 100 == statusLine.getStatusCode()
-            ? null : (String)hostQueue.remove(0);
+        if (100 != statusLine.getStatusCode()) {
+            responseRequest = (RequestLine)requestQueue.remove(0);
+            responseHost = (String)hostQueue.remove(0);
+        }
 
         assert 0 == responseQueue.size();
 
