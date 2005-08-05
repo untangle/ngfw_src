@@ -13,6 +13,7 @@
     </parameter>
     <parameter name="endTime" class="java.sql.Timestamp">
     </parameter>
+    @EXTRA_PARAMS@
     <queryString><![CDATA[@QUERY@]]></queryString>
     @FIELDS@
     <title>

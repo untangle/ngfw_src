@@ -28,6 +28,8 @@ public class ReportGenerator
     public static final String WHICH_TEMPLATE_PROPERTY = "TEMPLATE";
     public static final String FIELDS_PROPERTY = "FIELDS";
     public static final String FIELD_PROPERTY_PREFIX = "FIELD_";
+    public static final String EXTRA_PARAMS_PROPERTY = "EXTRA_PARAMS";
+    public static final String EXTRA_PARAM_PROPERTY_PREFIX = "EXTRA_PARAM_";
     public static final String DEFAULT_TEMPLATE_SRC_DIR = "mvvm/resources/reports";
     
     // These should be somewhere else.  XXX
@@ -130,9 +132,14 @@ public class ReportGenerator
 
         FilterSet fset = new FilterSet();
         fset.setFiltersfile(rpdFile);
+
         String fieldsProp = getFields(props);
         // System.out.println("FIELDS: " + fieldsProp);
         fset.addFilter(FIELDS_PROPERTY, fieldsProp);
+
+        String paramsProps = getParams(props);
+        // System.out.println("FIELDS: " + fieldsProp);
+        fset.addFilter(EXTRA_PARAMS_PROPERTY, paramsProps);
 
         for (String defaultSlotName : SlotTypes.keySet()) {
             String defaultSlotType = SlotTypes.get(defaultSlotName);
@@ -166,6 +173,33 @@ public class ReportGenerator
             if (canonType != null)
                 type = canonType;
             sb.append("<field name=\"");
+            sb.append(name);
+            sb.append("\" class=\"");
+            sb.append(type);
+            sb.append("\"/>\n");
+        }
+        return sb.toString();
+    }
+
+    private String getParams(Properties props)
+    {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0;; i++) {
+            String name = props.getProperty(EXTRA_PARAM_PROPERTY_PREFIX + i + ".name");
+            // System.out.println("Looking for " + FIELD_PROPERTY_PREFIX + i + ".name" + ", got " + name);
+            if (name == null) {
+                if (i > 0)
+                    break;
+                else
+                    continue;
+            }
+            String type = props.getProperty(EXTRA_PARAM_PROPERTY_PREFIX + i + ".type");
+            if (type == null)
+                throw new IllegalArgumentException("Missing type " + i);
+            String canonType = TypeAliases.get(type);
+            if (canonType != null)
+                type = canonType;
+            sb.append("<parameter name=\"");
             sb.append(name);
             sb.append("\" class=\"");
             sb.append(type);

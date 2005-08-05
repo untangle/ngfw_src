@@ -2,9 +2,6 @@ For 2.5
 -------
 change 'clean' to 'remove'
 
-converters -- vendorName
-
-
 What should be semantics when a shutdown arrives for a disabled queue.
 
 

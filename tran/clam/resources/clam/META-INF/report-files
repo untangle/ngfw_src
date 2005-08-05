@@ -1,5 +1,6 @@
 reports/VirusMaster.jasper:Clam_AntiVirus--Summary:Summary
 reports/WebVirusDetail.jasper:Clam_AntiVirus--Web_Incidents:Web Incidents
 reports/FtpVirusDetail.jasper:Clam_AntiVirus--FTP_Incidents:FTP Incidents
-# com/metavize/tran/virus/reports/EmailVirusDetail.jasper:Clam_AntiVirus--Email_Incidents:Email Incidents
+reports/EmailVirusDetail.jasper:Clam_AntiVirus--Email_Incidents:Email Incidents
 com.metavize.tran.virus.reports.VirusSummarizer:summarizer:Summarizer
+virusVendor:parameter:Clam

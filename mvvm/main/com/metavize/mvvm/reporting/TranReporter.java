@@ -43,6 +43,8 @@ public class TranReporter {
     private final URLClassLoader ucl;
     private final JarFile jf;
     private final File tranDir;
+
+    private Map<String,Object> extraParams = new HashMap<String,Object>();
     
     TranReporter(File outputDir, String tranName, JarFile jf, URLClassLoader ucl)
     {
@@ -80,7 +82,14 @@ public class TranReporter {
 	    String resourceOrClassname = tok.nextToken();
 	    if (!tok.hasMoreTokens()) { continue; }
 	    String type = tok.nextToken();
-	    if (type.equalsIgnoreCase("summarizer")) {
+	    if (type.equalsIgnoreCase("parameter")) {
+                String paramName = resourceOrClassname;
+                if (!tok.hasMoreTokens())
+                    throw new Error("Missing parameter value");
+                // XXX String only right now.
+                String paramValue = tok.nextToken();
+                extraParams.put(paramName, paramValue);
+            } else if (type.equalsIgnoreCase("summarizer")) {
 		String className = resourceOrClassname;
 		ClassLoader cl = Thread.currentThread().getContextClassLoader();
 		try {
@@ -215,6 +224,10 @@ public class TranReporter {
 	Map params = new HashMap();
 	params.put("startTime", startTime);
 	params.put("endTime", endTime);
+        for (String paramName : extraParams.keySet()) {
+            Object paramValue = extraParams.get(paramName);
+            params.put(paramName, paramValue);
+        }
 	params.put(JRParameter.REPORT_MAX_COUNT, Util.MAX_ROWS_PER_REPORT);
 	logger.debug("Filling report");
 	JasperPrint print = JasperFillManager.fillReport(jasperIs, params, conn);
