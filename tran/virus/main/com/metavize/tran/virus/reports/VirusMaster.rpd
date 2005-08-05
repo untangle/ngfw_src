@@ -1,5 +1,6 @@
-TEMPLATE=MasterOfTwoChildren
+TEMPLATE=MasterOfThreeChildren
 REPORT_NAME=VirusMaster
 REPORT_TITLE=AntiVirus
-SUBREPORT_1=com/metavize/tran/virus/reports/WebVirus.jasper
-SUBREPORT_2=com/metavize/tran/virus/reports/FtpVirus.jasper
+SUBREPORT_1=reports/WebVirus.jasper
+SUBREPORT_2=reports/FtpVirus.jasper
+SUBREPORT_3=reports/EmailVirus.jasper

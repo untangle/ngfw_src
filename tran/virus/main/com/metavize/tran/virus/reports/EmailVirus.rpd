@@ -1,0 +1,41 @@
+TEMPLATE=Sub3
+REPORT_NAME=EmailVirus
+REPORT_TITLE=Email Viruses
+EXTRA_PARAM_1.name=virusVendor
+EXTRA_PARAM_1.type=java.lang.String
+FIELD_1.name=name
+FIELD_1.type=String
+FIELD_2.name=count
+FIELD_2.type=Long
+FIELD_3.name=total_count
+FIELD_3.type=Long
+QUERY=SELECT virus_name AS name, count(virus_name), total_count \
+FROM (SELECT count(*) AS total_count FROM tr_virus_evt_mail \
+WHERE time_stamp > $P{startTime} AND time_stamp < $P{endTime} AND NOT clean) AS foo, \
+tr_virus_evt_mail evt \
+WHERE evt.time_stamp > $P{startTime} \
+AND evt.time_stamp < $P{endTime} \
+AND NOT clean \
+AND vendor_name = $P{virusVendor} \
+GROUP BY name, total_count \
+UNION \
+SELECT virus_name AS name, count(virus_name), total_count \
+FROM (SELECT count(*) AS total_count FROM tr_virus_evt_smtp \
+WHERE time_stamp > $P{startTime} AND time_stamp < $P{endTime} AND NOT clean) AS foo2, \
+tr_virus_evt_smtp evt \
+WHERE evt.time_stamp > $P{startTime} \
+AND evt.time_stamp < $P{endTime} \
+AND NOT clean \
+AND vendor_name = $P{virusVendor} ) \
+GROUP BY name, total_count \
+ORDER BY count DESC
+LEFT.label=Virus Name
+MIDDLE.label=Count
+RIGHT.label=%
+LEFT.expr=$F{name}
+MIDDLE.expr=$F{count}
+RIGHT.expr=Math.round($F{count}.doubleValue() / $F{total_count}.doubleValue() * 100) + "%"
+LEFT.total=Totals:
+MIDDLE.total=$F{total_count}
+RIGHT.total=100%
+UNIQUE_COUNT.expr=$F{name}

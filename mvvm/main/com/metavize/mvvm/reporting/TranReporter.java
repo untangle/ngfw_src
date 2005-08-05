@@ -73,7 +73,8 @@ public class TranReporter {
             logger.info("Beginning generation for: " + tranName);
         }
 	BufferedReader br = new BufferedReader(new InputStreamReader(is));
-	
+
+	// Need to do the parameters first.
 	for (String line = br.readLine(); null != line; line = br.readLine()) {
             if (line.startsWith("#"))
                 continue;
@@ -89,6 +90,20 @@ public class TranReporter {
                 // XXX String only right now.
                 String paramValue = tok.nextToken();
                 extraParams.put(paramName, paramValue);
+            }
+        }
+
+        // Now do everything else.
+	for (String line = br.readLine(); null != line; line = br.readLine()) {
+            if (line.startsWith("#"))
+                continue;
+	    StringTokenizer tok = new StringTokenizer(line, ":");
+	    if (!tok.hasMoreTokens()) { continue; }
+	    String resourceOrClassname = tok.nextToken();
+	    if (!tok.hasMoreTokens()) { continue; }
+	    String type = tok.nextToken();
+	    if (type.equalsIgnoreCase("parameter")) {
+                continue;
             } else if (type.equalsIgnoreCase("summarizer")) {
 		String className = resourceOrClassname;
 		ClassLoader cl = Thread.currentThread().getContextClassLoader();
