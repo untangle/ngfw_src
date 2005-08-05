@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: ProtoConfigJPanel.java 194 2005-04-06 19:13:55Z rbscott $
+ * $Id: BlockJPanel.java 194 2005-04-06 19:13:55Z inieves $
  */
 package com.metavize.tran.firewall.gui;
 
@@ -89,6 +89,7 @@ class BlockTableModel extends MSortedTableModel{
         addTableColumn( tableColumnModel, 10, C10_MW, true,  true,  false, false, String.class, "2-5", sc.html("destination<br>port") );
         addTableColumn( tableColumnModel, 11, C11_MW, true,  true,  false, false, String.class, sc.EMPTY_CATEGORY, sc.TITLE_CATEGORY);
         addTableColumn( tableColumnModel, 12, C12_MW, true,  true,  false, true,  String.class, sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
+        addTableColumn( tableColumnModel, 13, 10,     false, false, true,  false, FirewallRule.class, null, "");
         return tableColumnModel;
     }
     
@@ -98,7 +99,7 @@ class BlockTableModel extends MSortedTableModel{
         int rowIndex = 1;
         for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
 
-            FirewallRule firewallRule = new FirewallRule();
+            FirewallRule firewallRule = (FirewallRule) rowVector.elementAt(13);
             firewallRule.setLive( (Boolean) rowVector.elementAt(2) );
             firewallRule.setAction( ((ComboBoxModel) rowVector.elementAt(3)).getSelectedItem().toString() );
             firewallRule.setLog( (Boolean) rowVector.elementAt(4) );
@@ -148,6 +149,7 @@ class BlockTableModel extends MSortedTableModel{
 	    rowVector.add(firewallRule.getDstPort().toString());  
 	    rowVector.add(firewallRule.getCategory());
 	    rowVector.add(firewallRule.getDescription());
+	    rowVector.add(firewallRule);
 	    allRowsVector.add(rowVector);
 	    index++;
         }

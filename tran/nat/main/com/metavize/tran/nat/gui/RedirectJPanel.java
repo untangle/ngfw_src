@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: ProtoConfigJPanel.java 194 2005-04-06 19:13:55Z rbscott $
+ * $Id: RedirectJPanel.java 194 2005-04-06 19:13:55Z inieves $
  */
 package com.metavize.tran.nat.gui;
 
@@ -91,6 +91,7 @@ class RedirectTableModel extends MSortedTableModel{
         addTableColumn( tableColumnModel, 11, C11_MW, true,  true,  false, false, String.class, "5", sc.html("redirect<br>port") );
         addTableColumn( tableColumnModel, 12, C12_MW, true,  true,  false, false, String.class, sc.EMPTY_CATEGORY, sc.TITLE_CATEGORY);
         addTableColumn( tableColumnModel, 13, C13_MW, true,  true,  false, true,  String.class, sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
+        addTableColumn( tableColumnModel, 14, 10,     false, false, true,  false, RedirectRule.class, null, "");
         return tableColumnModel;
     }
     
@@ -100,7 +101,7 @@ class RedirectTableModel extends MSortedTableModel{
         int rowIndex = 1;
         for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
             
-            RedirectRule redirectRule = new RedirectRule();
+            RedirectRule redirectRule = (RedirectRule) rowVector.elementAt(14);
             redirectRule.setLive( (Boolean) rowVector.elementAt(2) );
             redirectRule.setLog( (Boolean) rowVector.elementAt(3) );
             redirectRule.setProtocol( ProtocolMatcher.parse(((ComboBoxModel) rowVector.elementAt(4)).getSelectedItem().toString()) );
@@ -155,6 +156,7 @@ class RedirectTableModel extends MSortedTableModel{
 	    rowVector.add(redirectRule.getRedirectPortString());
 	    rowVector.add(redirectRule.getCategory());
 	    rowVector.add(redirectRule.getDescription());
+	    rowVector.add(redirectRule);
 	    allRowsVector.add(rowVector);
 	    index++;
         }

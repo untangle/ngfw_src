@@ -71,7 +71,8 @@ class ProtoTableModel extends MSortedTableModel{
         addTableColumn( tableColumnModel,  5, C5_MW, false, true,  false, false, Boolean.class, "false", sc.bold("log"));
         addTableColumn( tableColumnModel,  6, C6_MW, true,  true,  false, true,  String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION );
         addTableColumn( tableColumnModel,  7, C7_MW, true,  true,  false, false, String.class,  sc.empty("no signature"), "signature");
-        addTableColumn( tableColumnModel,  8, 0, false, false, true,  false, String.class,  tempPattern.getQuality(), "quality");
+        addTableColumn( tableColumnModel,  8, 0,     false, false, true,  false, String.class,  tempPattern.getQuality(), "");
+        addTableColumn( tableColumnModel,  9, 10,    false, false, true,  false, ProtoFilterPattern.class, null, "");
         return tableColumnModel;
     }
     
@@ -79,7 +80,7 @@ class ProtoTableModel extends MSortedTableModel{
         List elemList = new ArrayList();
 	for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
             
-	    ProtoFilterPattern newElem = new ProtoFilterPattern();
+	    ProtoFilterPattern newElem = (ProtoFilterPattern) rowVector.elementAt(9);
             newElem.setCategory( (String) rowVector.elementAt(2) );
             newElem.setProtocol( (String) rowVector.elementAt(3) );
             newElem.setBlocked( ((Boolean) rowVector.elementAt(4)).booleanValue());
@@ -115,7 +116,7 @@ class ProtoTableModel extends MSortedTableModel{
             row.add(newElem.getDescription());
             row.add(newElem.getDefinition());
 	    row.add(newElem.getQuality());
-
+	    row.add(newElem);
             allRows.add(row);
 	    count++;
         }

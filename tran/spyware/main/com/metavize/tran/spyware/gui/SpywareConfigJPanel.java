@@ -67,6 +67,7 @@ class SpyTableModel extends MSortedTableModel{
         addTableColumn( tableColumnModel,  4, C4_MW, false, true,  false, false, Boolean.class, "true", sc.bold("block"));
         addTableColumn( tableColumnModel,  5, C5_MW, false, true,  false, false, Boolean.class, "true", sc.bold("log"));
         addTableColumn( tableColumnModel,  6, C6_MW, true,  true,  false, true,  String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
+        addTableColumn( tableColumnModel,  7, 10,    false, false, true,  false, IPMaddrRule.class, null, "");
         return tableColumnModel;
     }
     
@@ -75,7 +76,7 @@ class SpyTableModel extends MSortedTableModel{
 	int rowIndex = 1;
 	for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
 
-            IPMaddrRule newElem = new IPMaddrRule();
+            IPMaddrRule newElem = (IPMaddrRule) rowVector.elementAt(7);
             // newElem.setCategory( (String) rowVector.elementAt(2) );
             newElem.setName( (String) rowVector.elementAt(2) );
 	    try{
@@ -114,7 +115,7 @@ class SpyTableModel extends MSortedTableModel{
             row.add(Boolean.valueOf( newElem.isLive()));
             row.add(Boolean.valueOf( newElem.getLog()));
             row.add(newElem.getDescription());
-            
+            row.add(newElem);
             allRows.add(row);
 	    count++;
         }

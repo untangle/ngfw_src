@@ -62,6 +62,7 @@ class MIMETableModel extends MSortedTableModel{
         addTableColumn( tableColumnModel,  2, C2_MW, true,  true,  false, false, String.class,  "undefined type", "MIME type");
         addTableColumn( tableColumnModel,  3, C3_MW, false, true,  false, false, Boolean.class, "true", sc.bold("scan"));
         addTableColumn( tableColumnModel,  4, C4_MW, true,  true,  false, true,  String.class, sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION );
+        addTableColumn( tableColumnModel,  5, 10,    false, false, true,  false, MimeTypeRule.class, null, "" );
 
         return tableColumnModel;
     }
@@ -71,7 +72,7 @@ class MIMETableModel extends MSortedTableModel{
         List elemList = new ArrayList();
 	for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
 
-            MimeTypeRule newElem = new MimeTypeRule();
+            MimeTypeRule newElem = (MimeTypeRule) rowVector.elementAt(5);
             newElem.setMimeType( new MimeType( (String)rowVector.elementAt(2) ) );
             newElem.setLive( (Boolean)rowVector.elementAt(3)  );
             newElem.setName( (String)rowVector.elementAt(4) );
@@ -98,7 +99,7 @@ class MIMETableModel extends MSortedTableModel{
             newRow.add( newElem.getMimeType().getType() );
             newRow.add( newElem.isLive() );
             newRow.add( newElem.getName() );
-
+	    newRow.add( newElem );
             allRows.add( newRow );
             counter++;
         }

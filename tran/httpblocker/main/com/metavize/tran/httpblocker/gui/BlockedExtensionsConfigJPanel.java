@@ -64,6 +64,7 @@ class ExtensionTableModel extends MSortedTableModel{
         addTableColumn( tableColumnModel,  3, C3_MW, true,  true,  false, false, String.class,  "no extension", "extension");
         addTableColumn( tableColumnModel,  4, C4_MW, false, true,  false, false, Boolean.class, "true", sc.bold("block"));
         addTableColumn( tableColumnModel,  5, C5_MW, true,  true,  false, true,  String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
+        addTableColumn( tableColumnModel,  6, 10,    false, false, true,  false, StringRule.class, null, "");
         return tableColumnModel;
     }
 
@@ -72,7 +73,7 @@ class ExtensionTableModel extends MSortedTableModel{
         List elemList = new ArrayList();
 	for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
 
-            StringRule newElem = new StringRule();
+            StringRule newElem = (StringRule) rowVector.elementAt(6);
             newElem.setName( (String) rowVector.elementAt(2) );
             newElem.setString( (String) rowVector.elementAt(3) );
             newElem.setLive( ((Boolean) rowVector.elementAt(4)).booleanValue() );
@@ -100,7 +101,7 @@ class ExtensionTableModel extends MSortedTableModel{
             row.add(newElem.getString());
             row.add(Boolean.valueOf(newElem.isLive()));
             row.add(newElem.getCategory());
-
+	    row.add(newElem);
             allRows.add(row);
 
             counter++;

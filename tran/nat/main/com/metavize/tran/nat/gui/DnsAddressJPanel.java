@@ -70,26 +70,8 @@ class DnsAddressTableModel extends MSortedTableModel{
         addTableColumn( tableColumnModel,  3,  C3_MW, true,  true,  false, false, String.class, "1.2.3.4", sc.html("into this<br><b>IP address</b>") );
         addTableColumn( tableColumnModel,  4,  C4_MW, true,  true,  false, false, String.class, sc.EMPTY_CATEGORY, sc.TITLE_CATEGORY);
         addTableColumn( tableColumnModel,  5,  C5_MW, true,  true,  false, true,  String.class, sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
+        addTableColumn( tableColumnModel,  6,  10,    false, false, true,  false, DnsStaticHostRule.class, null, "");
         return tableColumnModel;
-    }
-    
-    public Vector generateRows(Object settings) {    
-        NatSettings natSettings = (NatSettings) settings;
-        Vector allRowsVector = new Vector();
-        int count = 1;
-        for( DnsStaticHostRule hostRule : (List<DnsStaticHostRule>) natSettings.getDnsStaticHostList() ){
-
-	    Vector rowVector = new Vector();
-	    rowVector.add(super.ROW_SAVED);
-	    rowVector.add(new Integer(count));
-	    rowVector.add(hostRule.getHostNameList().toString());
-	    rowVector.add(hostRule.getStaticAddress().toString());
-	    rowVector.add(hostRule.getCategory());
-	    rowVector.add(hostRule.getDescription());
-	    allRowsVector.add(rowVector);
-	    count++;
-        }
-        return allRowsVector;
     }
     
     public void generateSettings(Object settings, boolean validateOnly) throws Exception {
@@ -98,7 +80,7 @@ class DnsAddressTableModel extends MSortedTableModel{
         int rowIndex = 1;
         for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
 
-            DnsStaticHostRule hostRule = new DnsStaticHostRule();
+            DnsStaticHostRule hostRule = (DnsStaticHostRule) rowVector.elementAt(6);
             try{ hostRule.setHostNameList( HostNameList.parse( (String)rowVector.elementAt(2)) ); }
             catch(Exception e){ throw new Exception("Invalid \"hostname\" in row: " + rowIndex); }
             try{ hostRule.setStaticAddress( IPaddr.parse( (String)rowVector.elementAt(3)) ); }
@@ -115,6 +97,26 @@ class DnsAddressTableModel extends MSortedTableModel{
 	}
     }
     
+    
+    public Vector generateRows(Object settings) {    
+        NatSettings natSettings = (NatSettings) settings;
+        Vector allRowsVector = new Vector();
+        int count = 1;
+        for( DnsStaticHostRule hostRule : (List<DnsStaticHostRule>) natSettings.getDnsStaticHostList() ){
+
+	    Vector rowVector = new Vector();
+	    rowVector.add(super.ROW_SAVED);
+	    rowVector.add(new Integer(count));
+	    rowVector.add(hostRule.getHostNameList().toString());
+	    rowVector.add(hostRule.getStaticAddress().toString());
+	    rowVector.add(hostRule.getCategory());
+	    rowVector.add(hostRule.getDescription());
+	    rowVector.add(hostRule);
+	    allRowsVector.add(rowVector);
+	    count++;
+        }
+        return allRowsVector;
+    }
     
 }
 

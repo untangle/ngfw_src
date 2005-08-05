@@ -50,8 +50,6 @@ class ActiveXTableModel extends MSortedTableModel{
     private static final int C3_MW = 55; /* block */
     private static final int C4_MW = Util.chooseMax(T_TW - (C0_MW + C1_MW + C2_MW + C3_MW), 120); /* description */
 
-
-
     public TableColumnModel getTableColumnModel(){
         
         DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
@@ -60,7 +58,8 @@ class ActiveXTableModel extends MSortedTableModel{
         addTableColumn( tableColumnModel,  1, C1_MW, false, false, true,  false, Integer.class, null, sc.TITLE_INDEX);
         addTableColumn( tableColumnModel,  2, C2_MW, true,  true,  false, false, String.class,  sc.empty( "no identification" ), "identification" );
         addTableColumn( tableColumnModel,  3, C3_MW, false, true,  false, false, Boolean.class, "true", sc.bold("block"));
-        addTableColumn( tableColumnModel,  4, C4_MW, true,  true,  false, true, String.class, sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
+        addTableColumn( tableColumnModel,  4, C4_MW, true,  true,  false, true,  String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
+        addTableColumn( tableColumnModel,  5, 10,    false, false, true,  false, StringRule.class, null, "");
         return tableColumnModel;
     }
     
@@ -68,7 +67,7 @@ class ActiveXTableModel extends MSortedTableModel{
         List elemList = new ArrayList();
 	for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
 
-            StringRule newElem = new StringRule();
+            StringRule newElem = (StringRule) rowVector.elementAt(5);
             newElem.setString( (String) rowVector.elementAt(2) );
             newElem.setLive( ((Boolean) rowVector.elementAt(3)).booleanValue() );
             newElem.setDescription( (String) rowVector.elementAt(4) );
@@ -95,6 +94,7 @@ class ActiveXTableModel extends MSortedTableModel{
             row.add(newElem.getString());
             row.add(Boolean.valueOf( newElem.isLive()));
             row.add(newElem.getDescription());
+	    row.add(newElem);
 
             allRows.add(row);
 	    count++;

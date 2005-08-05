@@ -78,8 +78,35 @@ class AddressTableModel extends MSortedTableModel{
         addTableColumn( tableColumnModel,  6,  C6_MW, true,  false, false, false, String.class, "", sc.html("current<br>lease end") );
         addTableColumn( tableColumnModel,  7,  C7_MW, true,  true,  false, false, String.class, sc.EMPTY_CATEGORY, sc.TITLE_CATEGORY);
         addTableColumn( tableColumnModel,  8,  C8_MW, true,  true,  false, true,  String.class, sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
+        addTableColumn( tableColumnModel,  9,  10,    false, false, true,  false, DhcpLeaseRule.class, null, "");
         return tableColumnModel;
     }
+
+    
+    public void generateSettings(Object settings, boolean validateOnly) throws Exception {
+        NatSettings natSettings = (NatSettings) settings;        
+        List leaseRulesList = new ArrayList();
+        int rowIndex = 1;
+        for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
+
+            DhcpLeaseRule leaseRule = (DhcpLeaseRule) rowVector.elementAt(9);
+            try{ leaseRule.setMacAddress( MACAddress.parse( (String)rowVector.elementAt(2)) ); }
+            catch(Exception e){ throw new Exception("Invalid \"MAC address\" in row: " + rowIndex); }
+            try{ leaseRule.setStaticAddress( IPNullAddr.parse( (String)rowVector.elementAt(3)) ); }
+            catch(Exception e){ throw new Exception("Invalid \"target static IP address\" in row: " + rowIndex); }
+            leaseRule.setCategory( (String) rowVector.elementAt(7) );
+            leaseRule.setDescription( (String) rowVector.elementAt(8) );
+            leaseRulesList.add(leaseRule);
+	    rowIndex++;
+        }
+        
+	// SAVE SETTINGS ////////
+	if( !validateOnly ){
+	    natSettings.setDhcpLeaseList(leaseRulesList);
+	}
+    }
+    
+
     
     public Vector generateRows(Object settings) {    
         NatSettings natSettings = (NatSettings) settings;
@@ -97,35 +124,12 @@ class AddressTableModel extends MSortedTableModel{
 	    rowVector.add(leaseRule.getEndOfLease().toString());
 	    rowVector.add(leaseRule.getCategory());
 	    rowVector.add(leaseRule.getDescription());
+	    rowVector.add(leaseRule);
 	    allRowsVector.add(rowVector);
 	    count++;
         }
         return allRowsVector;
     }
-    
-    public void generateSettings(Object settings, boolean validateOnly) throws Exception {
-        NatSettings natSettings = (NatSettings) settings;        
-        List leaseRulesList = new ArrayList();
-        int rowIndex = 1;
-        for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
-
-            DhcpLeaseRule leaseRule = new DhcpLeaseRule();
-            try{ leaseRule.setMacAddress( MACAddress.parse( (String)rowVector.elementAt(2)) ); }
-            catch(Exception e){ throw new Exception("Invalid \"MAC address\" in row: " + rowIndex); }
-            try{ leaseRule.setStaticAddress( IPNullAddr.parse( (String)rowVector.elementAt(3)) ); }
-            catch(Exception e){ throw new Exception("Invalid \"target static IP address\" in row: " + rowIndex); }
-            leaseRule.setCategory( (String) rowVector.elementAt(7) );
-            leaseRule.setDescription( (String) rowVector.elementAt(8) );
-            leaseRulesList.add(leaseRule);
-	    rowIndex++;
-        }
-        
-	// SAVE SETTINGS ////////
-	if( !validateOnly ){
-	    natSettings.setDhcpLeaseList(leaseRulesList);
-	}
-    }
-    
     
 }
 

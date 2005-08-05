@@ -55,13 +55,14 @@ class PassedClientsTableModel extends MSortedTableModel{
     public TableColumnModel getTableColumnModel(){
         
         DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
-        //                                 #  min  rsz    edit   remv   desc   typ            def
+        //                                 #  min    rsz    edit   remv   desc   typ            def
         addTableColumn( tableColumnModel,  0, C0_MW, false, false, false, false, String.class,  null, sc.TITLE_STATUS);
         addTableColumn( tableColumnModel,  1, C1_MW, false, false, false, false, Integer.class, null, sc.TITLE_INDEX);
         addTableColumn( tableColumnModel,  2, C2_MW, true,  true,  false, false, String.class,  sc.EMPTY_CATEGORY, sc.TITLE_CATEGORY);
         addTableColumn( tableColumnModel,  3, C3_MW, true,  true,  false, false, String.class,  "0.0.0.0/32", "client IP address");
         addTableColumn( tableColumnModel,  4, C4_MW, false, true,  false, false, Boolean.class, "true", sc.bold("pass"));
-        addTableColumn( tableColumnModel,  5, C5_MW, true, true, false, true, String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
+        addTableColumn( tableColumnModel,  5, C5_MW, true,  true,  false, true,  String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
+        addTableColumn( tableColumnModel,  6, 10,    false, false, true,  false, IPMaddrRule.class, null, "");
         return tableColumnModel;
     }
 
@@ -71,7 +72,7 @@ class PassedClientsTableModel extends MSortedTableModel{
 	int rowIndex = 1;
 	for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
 
-            IPMaddrRule newElem = new IPMaddrRule();
+            IPMaddrRule newElem = (IPMaddrRule) rowVector.elementAt(6);
             newElem.setCategory( (String) rowVector.elementAt(2) );
             try{
 		IPMaddr newIPMaddr = IPMaddr.parse( (String) rowVector.elementAt(3) );
@@ -106,7 +107,7 @@ class PassedClientsTableModel extends MSortedTableModel{
             row.add(newElem.getIpMaddr().toString());
             row.add(Boolean.valueOf(newElem.isLive()) );
             row.add(newElem.getDescription());
-
+	    row.add(newElem);
             allRows.add(row);
             counter++;
         }

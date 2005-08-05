@@ -446,8 +446,14 @@ public abstract class MSortedTableModel extends DefaultTableModel implements Ref
                 }
                 else{
                     try{
-                        Constructor newClassConstructor = newClass.getConstructor( new Class[] {defaultValue.getClass()} );
-                        newField = newClassConstructor.newInstance( new Object[] {defaultValue} );
+			if(defaultValue != null){
+			    Constructor newClassConstructor = newClass.getConstructor( new Class[] {defaultValue.getClass()} );
+			    newField = newClassConstructor.newInstance( new Object[] {defaultValue} );
+			}
+			else{
+			    Constructor newClassConstructor = newClass.getConstructor( new Class[] {} );
+			    newField = newClassConstructor.newInstance( new Object[] {} );
+			}
                     }
                     catch(Exception e){
                         Util.handleExceptionNoRestart("error generating row", e);

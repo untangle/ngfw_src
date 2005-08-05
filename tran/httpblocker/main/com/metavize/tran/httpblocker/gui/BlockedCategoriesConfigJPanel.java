@@ -66,6 +66,7 @@ class CategoryTableModel extends MSortedTableModel
         addTableColumn( tableColumnModel,  5, C5_MW, false, true,  false, false, Boolean.class, null, sc.bold("block<br>expressions"));
         addTableColumn( tableColumnModel,  6, C6_MW, true,  true,  false, true,  String.class,  null, sc.TITLE_DESCRIPTION);
         addTableColumn( tableColumnModel,  7, C7_MW, false, false, true,  false, String.class,  null, "original name");
+        addTableColumn( tableColumnModel,  8, 10,    false, false, true,  false, BlacklistCategory.class, null, "");
         return tableColumnModel;
     }
     
@@ -74,14 +75,14 @@ class CategoryTableModel extends MSortedTableModel
         List elemList = new ArrayList();
 	for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
             
-            BlacklistCategory newElem = new BlacklistCategory();
+            BlacklistCategory newElem = (BlacklistCategory) rowVector.elementAt(8);
             newElem.setDisplayName( (String) rowVector.elementAt(2) );
             newElem.setBlockDomains( ((Boolean) rowVector.elementAt(3)).booleanValue() );
             newElem.setBlockUrls( ((Boolean) rowVector.elementAt(4)).booleanValue() );
             newElem.setBlockExpressions( ((Boolean) rowVector.elementAt(5)).booleanValue() );
             newElem.setDescription( (String) rowVector.elementAt(6) );
-            newElem.setName( (String) rowVector.elementAt(7) );	    
-            elemList.add(newElem);  
+            newElem.setName( (String) rowVector.elementAt(7) );
+            elemList.add(newElem);
         }
         
 	// SAVE SETTINGS /////////
@@ -108,7 +109,7 @@ class CategoryTableModel extends MSortedTableModel
             row.add(Boolean.valueOf(newElem.getBlockExpressions()) );
             row.add(newElem.getDescription());
             row.add(newElem.getName());
-
+	    row.add(newElem);
             allRows.add(row);
             counter++;
         }

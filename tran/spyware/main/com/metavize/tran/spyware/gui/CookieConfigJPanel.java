@@ -63,6 +63,7 @@ class CookieTableModel extends MSortedTableModel{
         addTableColumn( tableColumnModel,  2, C2_MW, true,  true,  false, false, String.class,  sc.empty( "no identification" ), "identification");
         addTableColumn( tableColumnModel,  3, C3_MW, false, true,  false, false, Boolean.class, "true", sc.bold("block"));
         addTableColumn( tableColumnModel,  4, C4_MW, true,  true,  false, true,  String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
+        addTableColumn( tableColumnModel,  5, 10,    false, false, true,  false, StringRule.class, null, "");
         return tableColumnModel;
     }
     
@@ -70,7 +71,7 @@ class CookieTableModel extends MSortedTableModel{
         List elemList = new ArrayList();
 	for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
 
-            StringRule newElem = new StringRule();
+            StringRule newElem = (StringRule) rowVector.elementAt(5);
             newElem.setString( (String) rowVector.elementAt(2) );
             newElem.setLive( ((Boolean) rowVector.elementAt(3)).booleanValue() );
             newElem.setDescription( (String) rowVector.elementAt(4) );
@@ -97,6 +98,7 @@ class CookieTableModel extends MSortedTableModel{
             row.add(newElem.getString());
             row.add(Boolean.valueOf( newElem.isLive()));
             row.add(newElem.getDescription());
+	    row.add(newElem);
             allRows.add(row);
 	    count++;
         }
