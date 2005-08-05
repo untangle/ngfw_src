@@ -121,7 +121,8 @@ class VirusHttpHandler extends HttpStateMachine
         String host = requestHeader.getValue("host");
         hostQueue.add(host);
 
-        String range = requestHeader.getValue("byte-range");
+        String range = requestHeader.getValue("range");
+
         if (null == range || range.startsWith("0")) {
             logger.debug("passing because range: " + range);
             return new TokenResult(null, new Token[] { requestHeader });
