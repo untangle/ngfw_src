@@ -37,6 +37,7 @@ MVVM_ARGS="${MVVM_ARGS} -Dargon.inside=${MVVM_INSIDE_INTF} -Dargon.outside=${MVV
 # Profiling
 #
 PROFILE_MVVM_YJP=${PROFILE_MVVM_YJP=$:-no}
+export PROFILE_MVVM_YJP
 
 #
 # JAVA options
