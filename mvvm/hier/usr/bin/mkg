@@ -74,19 +74,19 @@ if [ -z $prefix ] ; then
         done
     elif [ "$1" = "install" ] ; then
         aptlog "apt-get install $INST_OPTS \"$2-transform\""
-        apt-get install $INST_OPTS "$2-transform" 2>&1 | tee -a $APT_LOG   # XXX the way i create mackage name is wrong
+        apt-get install $INST_OPTS "$2-transform" >> $APT_LOG 2>&1    # XXX the way i create mackage name is wrong
         RET=$?
         aptlog "done"
     elif [ "$1" = "update" ] ; then
         aptlog "apt-get update $UPDT_OPTS"
-        apt-get update $UPDT_OPTS 2>&1 | tee -a $APT_LOG
+        apt-get update $UPDT_OPTS >> $APT_LOG 2>&1 
         #RET=$? return code ignored
         aptlog "done"
     elif [ "$1" = "upgrade" ] ; then
         aptlog "apt-get upgrade $UPGD_OPTS"
 
         t0=$(stat -L -c %Y /vmlinuz)
-        apt-get dist-upgrade $UPGD_OPTS 2>&1 | tee -a $APT_LOG
+        apt-get dist-upgrade $UPGD_OPTS >> $APT_LOG 2>&1 
         RET=$?
         t1=$(stat -L -c %Y /vmlinuz)
 
@@ -98,7 +98,7 @@ if [ -z $prefix ] ; then
         aptlog "done"
     elif [ "$1" = "remove" ] ; then
         aptlog "apt-get remove $REMO_OPTS \"$2-transform\""
-        apt-get remove $REMO_OPTS "$2-transform" 2>&1 | tee -a $APT_LOG
+        apt-get remove $REMO_OPTS "$2-transform" >> $APT_LOG 2>&1 
         RET=$?
         aptlog "done"
     fi
