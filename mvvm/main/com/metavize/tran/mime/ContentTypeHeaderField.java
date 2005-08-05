@@ -75,7 +75,8 @@ public class ContentTypeHeaderField
   public ContentTypeHeaderField(String name) {
     super(name, HeaderNames.CONTENT_TYPE_LC);
   }
-  
+
+
   /**
    * Get the primary type defined by this header,
    * or {@link #TEXT_PRIM_TYPE_STR text} if either the

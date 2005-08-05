@@ -25,8 +25,11 @@ public class MIMEPart {
 
   private MIMEPartHeaders m_headers;
   private List<MIMEPart> m_children;
-  
-  private MyMIMEPartObserver m_childObserver = 
+
+  /**
+   * Made protected only for the "AttachedMIMEMessage" subclass
+   */
+  protected MyMIMEPartObserver m_childObserver =
     new MyMIMEPartObserver();//Only when Multipart
   
   private MyHeadersObserver m_headersObserver = 
@@ -82,8 +85,9 @@ public class MIMEPart {
       (isMultipart()?"multipart ":"") +
       (isAttachment()?"attachment ":"") +
       "part with preamble len: " + m_preambleLen +
-      "and epilogue len: " + m_epilogueLen +
-      "with content starting at: " + m_sourceRecord.start +
+      " and epilogue len: " + m_epilogueLen +
+      " and content length: " + m_sourceRecord.len + 
+      " with content starting at: " + m_sourceRecord.start +
       " of source record");
       
       
@@ -115,6 +119,7 @@ public class MIMEPart {
       (isAttachment()?"attachment ":"") +
       "part with preamble len: " + m_preambleLen +
       " and epilogue len: " + m_epilogueLen +
+      " and content length: " + m_sourceRecord.len + 
       " with content starting at: " + m_sourceRecord.start +
       " of source record");
   }
@@ -473,7 +478,10 @@ public class MIMEPart {
     return (MIMEPart[]) list.toArray(new MIMEPart[list.size()]);
   }
 
-  private List<MIMEPart> getChildList() {
+  /**
+   * Access to the internal List of children.
+   */
+  protected List<MIMEPart> getChildList() {
     if(m_children == null) {
       m_children = new ArrayList<MIMEPart>();
     }
@@ -929,7 +937,7 @@ public class MIMEPart {
     //Not really needed, but for completeness.
     m_sourceEncoding = getXFerEncoding();
     
-    m_children = new ArrayList<MIMEPart>();  
+//    m_children = new ArrayList<MIMEPart>();  
 
   
     //************ Read Preamble ****************  
@@ -954,9 +962,41 @@ public class MIMEPart {
     }
     
     //Record the preamble length
-    m_preambleLen = ((stream.position() - boundaryResult.boundaryLen) - pos);
+    m_preambleLen = ((stream.position() - boundaryResult.boundaryLen) - pos) - 1;
   
     while(boundaryResult.boundaryFound && !boundaryResult.boundaryWasLast) {
+      MIMEPartHeaders childHeaders = (MIMEPartHeaders) new HeadersParser().parseHeaders(stream,
+        source,
+        new MIMEPartHeaderFieldFactory(),
+        policy);
+
+      MIMEPart newChild = null;
+      m_logger.debug("BEGIN Add Child Part (position: " + stream.position() + ")");
+      //Special-case the attached message
+      if(childHeaders.getContentTypeHF() != null &&
+        childHeaders.getContentTypeHF().isMessageRFC822()) {
+        m_logger.debug("BEGIN Child is itself a MIMEMessage (\"attached mime message\")");
+        newChild = new AttachedMIMEMessage(childHeaders);
+        boundaryResult = ((AttachedMIMEMessage) newChild).parseChild(
+          stream,
+          source,
+          policy,
+          innerBoundary);
+        m_logger.debug("ENDOF Child is itself a MIMEMessage (\"attached mime message\")");
+      }
+      else {
+        newChild = new MIMEPart(childHeaders);
+        boundaryResult = newChild.parseAfterHeaders(stream, 
+          source,
+          false,
+          policy, 
+          innerBoundary);        
+      }
+      m_logger.debug("ENDOF Add Child Part (position: " + stream.position() + ")");
+      newChild.setObserver(m_childObserver);
+      newChild.setParent(this);
+      getChildList().add(newChild);      
+/*    
       MIMEPart newChild = new MIMEPart();
       m_logger.debug("BEGIN Add Child Part (position: " + stream.position() + ")");
       boundaryResult = newChild.parse(new MIMEPartHeaderFieldFactory(),
@@ -968,7 +1008,8 @@ public class MIMEPart {
       m_logger.debug("ENDOF Add Child Part (position: " + stream.position() + ")");
       newChild.setObserver(m_childObserver);
       newChild.setParent(this);
-      m_children.add(newChild);        
+      getChildList().add(newChild);
+*/      
     }
     
     
@@ -1040,7 +1081,65 @@ public class MIMEPart {
   }//ENDOF MyHeadersObserver
   
  
-//------------- Debug/Test ---------------  
+//------------- Debug/Test ---------------
+
+  /**
+   * Debugging method which describes a MIME message
+   * in terms loosely found in the IMAP spec.
+   */
+  public String describe() {
+    StringBuilder sb = new StringBuilder();
+    describeImpl(sb, null, 0);
+    return sb.toString();
+  }
+
+  protected void describeImpl(StringBuilder sb,
+    String numSoFar,
+    int thisIndex) {
+
+    String newLine = System.getProperty("line.separator", "\n");
+    
+    String prefix = numSoFar==null?"":(numSoFar + Integer.toString(thisIndex));
+    sb.append(prefix).append("  ");
+    sb.append("HEADER: ").
+      append(getMPHeaders().getNumHeaderFields()).
+      append(" fields").append(newLine);
+    if(m_headers.getContentTypeHF() != null) {
+      sb.append(prefix).
+        append("  ").
+        append("HEADER: Content-Type: ").
+        append(m_headers.getContentTypeHF().getContentType()).
+        append(newLine);
+    }
+    if(isMultipart()) {
+      sb.append(prefix).
+        append("  ").
+        append("BODY: multipart").
+        append(newLine);
+      MIMEPart[] kids = getChildParts();
+      if(!("".equals(prefix))) {
+        prefix = prefix + ".";
+      }
+      for(int i = 0; i<kids.length; i++) {
+        kids[i].describeImpl(sb, prefix, i+1);
+      }
+    }
+    else {
+      sb.append(prefix).
+        append("  ").
+        append("BODY: len: ").
+        append(Integer.toString(m_sourceRecord.len)).
+        append(newLine);
+      if(isAttachment()) {
+        sb.append(prefix).
+          append("  ").
+          append("BODY: attachment.  Name: ").
+          append(getMPHeaders().getFilename()).
+          append(newLine);
+      } 
+    }
+
+  }
 
   public static void main(String[] args) throws Exception {
 

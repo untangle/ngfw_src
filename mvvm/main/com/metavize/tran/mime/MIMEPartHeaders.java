@@ -60,6 +60,13 @@ public class MIMEPartHeaders
       null:
       headers.get(0));  
   }
+  /**
+   * Only applies to attachments, but still may be null
+   */
+  public String getFilename() {
+    return getContentDispositionHF()==null?
+      null:getContentDispositionHF().getFilename();
+  }
 
   /**
    * Helper method.  Parses the headers from source

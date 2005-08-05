@@ -79,6 +79,28 @@ public class MIMEMessage
   }
   public MIMEMessage(MIMEMessageHeaders headers) {
     super(headers);
+  }
+
+  /**
+   * Construct a MIME part, reading until the outerBoundary.
+   */
+  public MIMEMessage(MIMEParsingInputStream stream,
+    MIMESource source,
+    boolean ownsSource,
+    MIMEPolicy policy,
+    String outerBoundary) throws IOException,
+      InvalidHeaderDataException, 
+      HeaderParseException,
+      MIMEPartParseException {  
+    
+    super();  
+      
+    parse(new MailMessageHeaderFieldFactory(),
+      stream,
+      source,
+      ownsSource,
+      policy,
+      outerBoundary);
   }    
   
   /**
@@ -91,15 +113,7 @@ public class MIMEMessage
       InvalidHeaderDataException, 
       HeaderParseException,
       MIMEPartParseException {  
-    
-    super();  
-      
-    parse(new MailMessageHeaderFieldFactory(),
-      stream,
-      source,
-      true,
-      policy,
-      outerBoundary);
+    this(stream, source, true, policy, outerBoundary);
   }
 
   /**

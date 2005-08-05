@@ -29,9 +29,17 @@ public class AttachedMIMEMessage
 
   private MIMEMessage m_attach;
 
+  public AttachedMIMEMessage(MIMEPartHeaders headers) throws IOException,
+      InvalidHeaderDataException, 
+      HeaderParseException,
+      MIMEPartParseException {
+      
+    super(headers);
+
+  }  
+
   public AttachedMIMEMessage(MIMEMessage attach) {
     super();
-    m_attach = attach;
 
     try {
       getMPHeaders().addHeaderField(CONTENT_TYPE, ContentTypeHeaderField.MESSAGE_RFC822);
@@ -42,14 +50,109 @@ public class AttachedMIMEMessage
       //SHouldn't happen!
       m_logger.error(ex);
     }
+    setWrappedMessage(attach);
   }
 
+  public AttachedMIMEMessage(MIMEParsingInputStream stream,
+    MIMESource source,
+    boolean ownsSource,
+    MIMEPolicy policy,
+    String outerBoundary,
+    MIMEPartHeaders headers) throws IOException,
+      InvalidHeaderDataException, 
+      HeaderParseException,
+      MIMEPartParseException {
+      
+    super(headers);
+    m_logger.debug("[<init>] parse child");
+    m_attach = new MIMEMessage(stream,
+      source,
+      false,
+      policy,
+      outerBoundary);
+    m_attach.setObserver(m_childObserver);
+    m_attach.setParent(this);
+    getChildList().add(m_attach);
+  }
+
+  protected MIMEParsingInputStream.BoundaryResult parseChild(
+    MIMEParsingInputStream stream,
+    MIMESource source,
+    MIMEPolicy policy,
+    String outerBoundary) throws IOException,
+      InvalidHeaderDataException, 
+      HeaderParseException,
+      MIMEPartParseException {
+
+    MIMEMessage msg = new MIMEMessage();
+    MIMEParsingInputStream.BoundaryResult ret =
+      msg.parse(new MailMessageHeaderFieldFactory(),
+        stream,
+        source,
+        false,
+        policy,
+        outerBoundary);
+    setWrappedMessage(msg);
+    return ret;
+  }
+    
+  
+/*
   @Override
   public void dispose() {
     m_attach.dispose();
     m_attach = null;
     super.dispose();
   }
+*/
+  @Override
+  public boolean isMultipart() {
+    checkDisposed();  
+    return true;
+  }
+/*
+  @Override
+  public boolean hasChildren() {
+    return getNumChildren() > 0;
+  }
+
+  @Override
+  public int getNumChildren() {
+    checkDisposed();
+    return getWrappedMessage()==null?0:1;    
+  }
+
+  @Override
+  public MIMEPart[] getChildParts() {
+    checkDisposed();
+    if(hasChildren()) {
+      return new MIMEPart[] {getWrappedMessage()};
+    }
+    else {
+      return new MIMEPart[0];
+    }
+  }
+*/
+  @Override
+  public void addChild(MIMEPart child) {
+    checkDisposed();
+    if(!(child instanceof MIMEMessage)) {
+      throw new UnsupportedOperationException("Can only set one child of type MIMEMessage");
+    }
+    if(getWrappedMessage() != null) {
+      removeChild(getWrappedMessage());
+    }
+    m_attach = (MIMEMessage) child;
+    super.addChild(child);
+  }
+
+  public MIMEMessage getWrappedMessage() {
+    return m_attach;
+  }
+  public void setWrappedMessage(MIMEMessage msg) {
+    addChild(msg);
+  }
+
 
   @Override
   public File getContentAsFile(FileFactory factory,
