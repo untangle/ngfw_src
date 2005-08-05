@@ -323,6 +323,11 @@ public class ArgonManagerImpl implements ArgonManager
         RuleManager.getInstance().generateIptablesRules();
     }
 
+    public String getInside() throws ArgonException
+    {
+        return IntfConverter.getInstance().addressString( IntfConverter.INSIDE );
+    }
+
     public InetAddress getInsideAddress()
     {
         return this.insideAddress;
@@ -331,6 +336,11 @@ public class ArgonManagerImpl implements ArgonManager
     public InetAddress getInsideNetmask()
     {
         return this.insideNetmask;
+    }
+
+    public String getOutside() throws ArgonException
+    {
+        return IntfConverter.getInstance().addressString( IntfConverter.OUTSIDE );
     }
 
     public InetAddress getOutsideAddress()

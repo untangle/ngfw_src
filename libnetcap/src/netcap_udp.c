@@ -591,7 +591,9 @@ static int _netcap_udp_sendto (int sock, void* data, size_t data_len, int flags,
     
     if (( ret = sendmsg( sock, &msg, flags )) < 0 ) {
         if ( errno == EPERM ) {
-            errlog(ERR_WARNING, "UDP: EPERM sending a UDP packet\n" );
+            errlog( ERR_WARNING, "UDP: EPERM sending a UDP packet\n" );
+            /* Use the data length to fake that the packet was written. This way the packet is consumed */
+            ret = data_len;
         } else {
             errlog(ERR_CRITICAL,"sendmsg: %s | ",errstr);
             errlog_noprefix(ERR_CRITICAL, "(%s:%i -> ", inet_ntoa(pkt->src.host), pkt->src.port );

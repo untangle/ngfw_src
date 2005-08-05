@@ -55,6 +55,9 @@ class DhcpManager
     private static final String FLAG_DNS_LISTEN       = "listen-address";
     private static final String FLAG_DNS_LISTEN_PORT  = "port";
 
+    private static final String FLAG_DNS_BIND_INTERFACES = "bind-interfaces";
+    private static final String FLAG_DNS_INTERFACE       = "interface";
+
     private static final int DHCP_LEASE_ENTRY_LENGTH  = 5;
     private static final String DHCP_LEASE_DELIM      = " ";
 
@@ -98,23 +101,12 @@ class DhcpManager
 
     void configure( NatSettings settings, NetworkingConfiguration netConfig ) throws TransformStartException
     {
-        int code;
 
         try { 
             writeConfiguration( settings, netConfig );
-            writeHosts( settings );
-            
-            logger.debug( "Reloading DNS Masq server" );
-            
-            /* restart dnsmasq */
-            Process p = Runtime.getRuntime().exec( DNS_MASQ_CMD_RESTART );
-            code = p.waitFor();
+            writeHosts( settings );            
         } catch ( Exception e ) {
             throw new TransformStartException( "Unable to reload DNS masq configuration", e );
-        }
-
-        if ( code != 0 ) {
-            throw new TransformStartException( "Error starting DNS masq server" + code );
         }
 
         /* Enable/Disable DHCP forwarding  */
@@ -130,6 +122,25 @@ class DhcpManager
             }
         } catch ( Exception e ) {
             throw new TransformStartException( "Error updating DHCP forwarding settings", e );
+        }
+    }
+
+    void startDnsMasq() throws TransformStartException
+    {
+        int code;
+        
+        try { 
+            logger.debug( "Restarting DNS Masq server" );
+            
+            /* restart dnsmasq */
+            Process p = Runtime.getRuntime().exec( DNS_MASQ_CMD_RESTART );
+            code = p.waitFor();
+        } catch ( Exception e ) {
+            throw new TransformStartException( "Unable to reload DNS masq configuration", e );
+        }
+        
+        if ( code != 0 ) {
+            throw new TransformStartException( "Error starting DNS masq server" + code );
         }
     }
     
@@ -182,7 +193,7 @@ class DhcpManager
                 parseLease( str, leaseList, now, macMap );
             }
         } catch ( Exception ex ) {
-            logger.error( "Error reading file: " + DHCP_LEASES_FILE, ex );
+            logger.warn( "Error reading file: " + DHCP_LEASES_FILE );
         }
         
         try {
@@ -322,6 +333,22 @@ class DhcpManager
             comment( sb, "DHCP Range:" );
             sb.append( FLAG_DHCP_RANGE + "=" + settings.getDhcpStartAddress().toString());
             sb.append( "," + settings.getDhcpEndAddress().toString() + ",4h\n\n\n" );
+
+            /* Bind to the inside interface if using Nat */
+            if ( settings.getNatEnabled()) {
+                String inside = null;
+
+                try {
+                    inside = MvvmContextFactory.context().argonManager().getInside();
+                } catch( Exception e ) {
+                    logger.error( "Error retrieving inside interface, not binding to inside" );
+                    inside = null;
+                }
+                
+                comment( sb, "Bind to the inside interface" );
+                sb.append( FLAG_DNS_BIND_INTERFACES + "\n" );
+                sb.append( FLAG_DNS_INTERFACE + "=" + inside + "\n\n" );
+            }
             
             /* Configure all of the hosts */
             List<DhcpLeaseRule> list = (List<DhcpLeaseRule>)settings.getDhcpLeaseList();

@@ -75,6 +75,13 @@ function blockForwarding() {
     if [ "${DHCP_BLOCK_FORWARDING}x" = "truex" ]; then
         ${IPTABLES} -t filter -A FORWARD -p udp --source-port ${DHCP_PORT_RANGE} \
             --destination-port ${DHCP_PORT_RANGE} -j DROP
+
+        ## Drop anything to the DHCP server on the outside
+        ${IPTABLES} -t filter -A INPUT -p udp -i ${MVVM_OUTSIDE_INTF} \
+            --destination-port ${DHCP_SERVER_PORT} -j DROP
+
+        ${IPTABLES} -t filter -A INPUT -p udp -m physdev --physdev-in ${MVVM_OUTSIDE_INTF} \
+            --destination-port ${DHCP_SERVER_PORT} -j DROP
     fi
 }
 

@@ -137,6 +137,7 @@ public class NatImpl extends AbstractTransform implements Nat
                 /* Have to configure DHCP before the handler */
                 DhcpManager.getInstance().configure(settings, netConfig);
                 this.handler.configure(settings, netConfig);
+                DhcpManager.getInstance().startDnsMasq();
             }
         } catch (TransformException exn) {
             logger.error( "Could not save Nat settings", exn );
@@ -233,6 +234,7 @@ public class NatImpl extends AbstractTransform implements Nat
         } catch ( TransformException e ) {
             throw new TransformStartException(e);
         }
+        DhcpManager.getInstance().startDnsMasq();
 
         NatStatisticManager.getInstance().start();
     }
@@ -256,6 +258,7 @@ public class NatImpl extends AbstractTransform implements Nat
         } catch ( TransformException e ) {
             throw new TransformStopException( e );
         }
+
         NatStatisticManager.getInstance().stop();
     }
 

@@ -64,11 +64,17 @@ public interface ArgonManager
     /* Update all of the iptables rules and the internal address database */
     public void generateRules() throws ArgonException;
 
+    /* Get the interface name for the inside interface */
+    public String getInside() throws ArgonException;
+
     /* Get the address of the inside interface */
     public InetAddress getInsideAddress();
 
     /* Get the netmask of the inside interface */
     public InetAddress getInsideNetmask();
+
+    /* Get the interface name for the outside interface */
+    public String getOutside() throws ArgonException;
     
     /* Get the address of the outside interface */
     public InetAddress getOutsideAddress();
