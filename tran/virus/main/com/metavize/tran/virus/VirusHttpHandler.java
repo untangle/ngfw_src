@@ -131,8 +131,10 @@ class VirusHttpHandler extends HttpStateMachine
             // we dont accept ranges
             // XXX log this event
             // XXX make a response instead of shutting down
-            getSession().shutdownServer();
-            getSession().shutdownClient();
+            TCPSession s = getSession();
+            s.shutdownServer();
+            s.shutdownClient();
+            s.release();
             return TokenResult.NONE;
         }
     }
@@ -290,8 +292,10 @@ class VirusHttpHandler extends HttpStateMachine
                 responseQueue.clear();
                 return blockMessage();
             } else {
-                getSession().shutdownClient();
-                getSession().shutdownServer();
+                TCPSession s = getSession();
+                s.shutdownClient();
+                s.shutdownServer();
+                s.release();
                 return TokenResult.NONE;
             }
         }
