@@ -2,6 +2,8 @@
 # $Id: mvvm.sh,v 1.8 2005/03/22 18:46:43 cng Exp $
 
 MVVM_CONSOLE_LOG=${MVVM_CONSOLE_LOG:-"@PREFIX@/var/log/mvvm/console.log"}
+MVVM_MVVM_LOG=${MVVM_CONSOLE_LOG:-"@PREFIX@/var/log/mvvm/mvvm.log"}
+MVVM_GC_LOG=${MVVM_CONSOLE_LOG:-"@PREFIX@/var/log/mvvm/gc.log"}
 MVVM_WRAPPER_LOG=${MVVM_WRAPPER_LOG:-"@PREFIX@/var/log/mvvm/wrapper.log"}
 MVVM_LAUNCH=${MVVM_LAUNCH:-"@PREFIX@/usr/bin/bunnicula"}
 
@@ -100,8 +102,13 @@ while true; do
 
     flushIptables
     echo "*** bunnicula returned $? on `date` in `pwd` ***" >> $MVVM_WRAPPER_LOG
-    echo "*** copied $MVVM_CONSOLE_LOG to $MVVM_CONSOLE_LOG.crash ***" >> $MVVM_WRAPPER_LOG
 
+    echo "*** copied $MVVM_CONSOLE_LOG to $MVVM_CONSOLE_LOG.crash ***" >> $MVVM_WRAPPER_LOG
+    echo "*** copied $MVVM_MVVM_LOG to $MVVM_MVVM_LOG.crash ***" >> $MVVM_WRAPPER_LOG
+    echo "*** copied $MVVM_GC_LOG to $MVVM_GC_LOG.crash ***" >> $MVVM_WRAPPER_LOG
     cp -f $MVVM_CONSOLE_LOG $MVVM_CONSOLE_LOG.crash
+    cp -f $MVVM_MVVM_LOG $MVVM_MVVM_LOG.crash
+    cp -f $MVVM_GC_LOG $MVVM_GC_LOG.crash
+
     sleep 2
 done
