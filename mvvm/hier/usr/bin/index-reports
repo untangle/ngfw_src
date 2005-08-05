@@ -2,10 +2,12 @@
 
 main_index=@MVVM_REPORTS@/current/$1
 index=$1
+period=$2
+generate_email_index=$3
 mail_reports_arguments_daily=@PREFIX@/tmp/mail_reports_arguments_daily.txt
 mail_reports_arguments_weekly=@PREFIX@/tmp/mail_reports_arguments_weekly.txt
 mail_reports_arguments_monthly=@PREFIX@/tmp/mail_reports_arguments_monthly.txt
-generate_email_index=$2
+
 
 if [ "$generate_email_index" != false ]; then
 web_base=http://metavize.com/mail_blast
@@ -19,29 +21,26 @@ cd @MVVM_REPORTS@/current
 ordered_tran_list=`@USR_BIN@/mcli instances | awk '{print $2}' | sed 's|^\(.*\)$|@MVVM_REPORTS@/current/\1|'`
 
 
-
 # generate email argument list
-if [ "$generate_email_index" = daily ]; then
-mail_reports_arguments="$mail_reports_arguments_daily"
-fi
-
-if [ "$generate_email_index" = weekly ]; then
-mail_reports_arguments="$mail_reports_arguments_weekly"
-fi
-
-if [ "$generate_email_index" = monthly ]; then
-mail_reports_arguments="$mail_reports_arguments_monthly"
-fi
-
 if [ "$generate_email_index" != false ]; then
+    if [ "$period" = daily ]; then
+	mail_reports_arguments="$mail_reports_arguments_daily"
+    elif [ "$period" = weekly ]; then
+	mail_reports_arguments="$mail_reports_arguments_weekly"
+    elif [ "$period" = monthly ]; then
+	mail_reports_arguments="$mail_reports_arguments_monthly"
+    fi
+
     rm -f $mail_reports_arguments
     touch $mail_reports_arguments
+
+    echo "--> mail_reports_arguments: $mail_reports_arguments"
 fi
 
-echo "--> mail_reports_arguments: $mail_reports_arguments"
+
 
 if [ "$generate_email_index" != false ]; then
-    echo "-s \"Metavize EdgeReport ($generate_email_index)\"" >> $mail_reports_arguments
+    echo "-s \"Metavize EdgeReport ($period)\"" >> $mail_reports_arguments
     echo "./$index" >> $mail_reports_arguments
     find ./images/* -type f >> $mail_reports_arguments
 fi
@@ -209,31 +208,38 @@ h4 {
               <td class="page_header_alternate" align="right">
 EOF
 
-/bin/date +'%A %B %d, %Y' >> $main_index
+/bin/date +'%A %B %e, %Y' >> $main_index
 
-if [ "$generate_email_index" = false ]; then
-cat >> $main_index <<EOF
-                <br/>(online)
-EOF
-else
-if [ "$generate_email_index" = daily ]; then
+if [ "$generate_email_index" = true ]; then
+    if [ "$period" = daily ]; then
 cat >> $main_index <<EOF
                 <br/>(daily email)
 EOF
-fi
-
-if [ "$generate_email_index" = weekly ]; then
+    elif [ "$period" = weekly ]; then
 cat >> $main_index <<EOF
                 <br/>(weekly email)
 EOF
-fi
-
-if [ "$generate_email_index" = monthly ]; then
+    elif [ "$period" = monthly ]; then
 cat >> $main_index <<EOF
                 <br/>(monthly email)
 EOF
+    fi
+else
+    if [ "$period" = daily ]; then
+cat >> $main_index <<EOF
+                <br/>(daily online)
+EOF
+    elif [ "$period" = weekly ]; then
+cat >> $main_index <<EOF
+                <br/>(weekly online)
+EOF
+    elif [ "$period" = monthly ]; then
+cat >> $main_index <<EOF
+                <br/>(monthly online)
+EOF
+    fi
 fi
-fi
+
 
 cat >> $main_index <<EOF
               </td>
@@ -296,7 +302,9 @@ EOF
               <td width="200px" valign="top">
 EOF
 
-        generate_menu
+	generate_period_menu
+        generate_report_menu
+	generate_key
 
         cat >> $main_index <<EOF
               </td>
@@ -331,7 +339,22 @@ EOF
 EOF
 }
 
-generate_menu ()
+generate_period_menu ()
+{
+if [ "$generate_email_index" = false ]; then
+cat >> $main_index <<EOF
+                <table width="95%" border="1" bordercolor="bbbbbb" cellspacing="0" cellpadding="5">
+                  <tr><td bgcolor="cccccc"><h3><b>Available Periods:</b></h3></td></tr>
+                  <tr><td>> <a href="index_online_monthly.html">Monthly</a></td></tr>
+                  <tr><td>> <a href="index_online_weekly.html">Weekly</a></td></tr>
+                  <tr><td>> <a href="index.html">Daily</a></td></tr>
+                </table>
+<br/>
+EOF
+fi
+}
+
+generate_report_menu ()
 {
 
 cat >> $main_index <<EOF
@@ -350,13 +373,21 @@ EOF
 
 for f in $ordered_tran_list; do
     if [ -d $f ]; then
-        generate_menu_entry $f
+        generate_report_menu_entry $f
     fi
 done
 
 cat >> $main_index <<EOF
                 </table>
 <br/>
+                <!-- END AVAILABLE REPORTS -->
+EOF
+
+}
+
+generate_key ()
+{
+cat >> $main_index <<EOF
 <center>
 <table border="0">
 <tr><td><b>Key:</b><td></tr>
@@ -365,12 +396,11 @@ cat >> $main_index <<EOF
 <tr><td>G = x 1,000,000,000<br/><td></tr>
 </table>
 </center>
-                <!-- END AVAILABLE REPORTS -->
 EOF
-
 }
 
-generate_menu_entry ()
+
+generate_report_menu_entry ()
 {
 ls $1/*-daily.html >/dev/null 2>&1 || return
 tran_dir=$1
@@ -440,25 +470,23 @@ rel_dir=$(echo $1 | sed -e 's/^\(.*\/current\/\)//')
 
 
 # generate email argument list
-if [ "$generate_email_index" = daily ]; then
+if [ "$generate_email_index" = true ]; then
+    if [ "$period" = daily ]; then
     #find $rel_dir/images/* -type f >> $mail_reports_arguments
     #find $rel_dir/ -type f -name "summary*daily.html" >> $mail_reports_arguments
     #find $rel_dir/ -type d -name "summary*daily.html_files" -exec find {} -type f \; >> $mail_reports_arguments
-    find $rel_dir/*daily.pdf -type f >> $mail_reports_arguments
-fi
-
-if [ "$generate_email_index" = weekly ]; then
+	find $rel_dir/*daily.pdf -type f >> $mail_reports_arguments
+    elif [ "$period" = weekly ]; then
     #find $rel_dir/images/* -type f >> $mail_reports_arguments
     #find $rel_dir/ -type f -name "summary*weekly.html" >> $mail_reports_arguments
     #find $rel_dir/ -type d -name "summary*weekly.html_files" -exec find {} -type f \; >> $mail_reports_arguments
-    find $rel_dir/*weekly.pdf -type f >> $mail_reports_arguments
-fi
-
-if [ "$generate_email_index" = monthly ]; then
+	find $rel_dir/*weekly.pdf -type f >> $mail_reports_arguments
+    elif [ "$period" = monthly ]; then
     #find $rel_dir/images/* -type f >> $mail_reports_arguments
     #find $rel_dir/ -type f -name "summary*monthly.html" >> $mail_reports_arguments
     #find $rel_dir/ -type d -name "summary*monthly.html_files" -exec find {} -type f \; >> $mail_reports_arguments
-    find $rel_dir/*monthly.pdf -type f >> $mail_reports_arguments
+	find $rel_dir/*monthly.pdf -type f >> $mail_reports_arguments
+    fi
 fi
 
 
@@ -543,21 +571,13 @@ EOF
     rel_dir=$(echo $1 | sed -e 's/^\(.*\/current\/\)//')
 
 
-if [ "$generate_email_index" = false ]; then
-    cat $rel_dir/sum-monthly.html | cat >> $main_index
-fi
-
-if [ "$generate_email_index" = daily ]; then
-    cat $rel_dir/sum-daily.html | cat >> $main_index
-fi
-
-if [ "$generate_email_index" = weekly ]; then
-    cat $rel_dir/sum-weekly.html | cat >> $main_index
-fi
-
-if [ "$generate_email_index" = monthly ]; then
-    cat $rel_dir/sum-monthly.html | cat >> $main_index
-fi
+    if [ "$period" = daily ]; then
+	cat $rel_dir/sum-daily.html | cat >> $main_index
+    elif [ "$period" = weekly ]; then
+	cat $rel_dir/sum-weekly.html | cat >> $main_index
+    elif [ "$period" = monthly ]; then
+	cat $rel_dir/sum-monthly.html | cat >> $main_index
+    fi
 
 
 cat >>$main_index <<EOF
@@ -611,22 +631,22 @@ cat >>$main_index <<EOF
 <td width="125px" align="right"><i>weekly</i></td>
 <td width="125px" align="right"><i>monthly</i></td>
 EOF
-fi
-
-if [ "$generate_email_index" = daily ]; then
+else
+    if [ "$period" = daily ]; then
 cat >>$main_index <<EOF
 <td width="*" align="right" colspan="4"><i>daily</i></td>
 EOF
-fi
-if [ "$generate_email_index" = weekly ]; then
+    fi
+    if [ "$period" = weekly ]; then
 cat >>$main_index <<EOF
 <td width="*" align="right" colspan="4"><i>weekly</i></td>
 EOF
-fi
-if [ "$generate_email_index" = monthly ]; then
+    fi
+    if [ "$period" = monthly ]; then
 cat >>$main_index <<EOF
 <td width="*" align="right" colspan="4"><i>monthly</i></td>
 EOF
+    fi
 fi
 
 cat >>$main_index <<EOF
@@ -657,17 +677,17 @@ cat >> $main_index <<EOF
 EOF
 else
 #    if [ "`echo $rep_name | grep -i 'Summary' `x" != "x" ]; then
-if [ "$generate_email_index" = daily ]; then
+if [ "$period" = daily ]; then
 cat >> $main_index <<EOF
 <td width="375px" align="right" colspan="3">(<a href="$rel_dir/$base_name--daily.pdf">PDF</a>)</td>
 EOF
 fi
-if [ "$generate_email_index" = weekly ]; then
+if [ "$period" = weekly ]; then
 cat >> $main_index <<EOF
 <td width="375px" align="right" colspan="3">(<a href="$rel_dir/$base_name--weekly.pdf">PDF</a>)</td>
 EOF
 fi
-if [ "$generate_email_index" = monthly ]; then
+if [ "$period" = monthly ]; then
 cat >> $main_index <<EOF
 <td width="375px" align="right" colspan="3">(<a href="$rel_dir/$base_name--monthly.pdf">PDF</a>)</td>
 EOF

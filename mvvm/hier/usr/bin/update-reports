@@ -34,12 +34,14 @@ if [ $is_reporting_enabled == 'true' ]; then
     cp -pr $REPORT_DIR/images $REPORT_DIR/current
 
 # generate the web viewable page
-    @USR_BIN@/index-reports index.html false
+    @USR_BIN@/index-reports index.html daily false
+    @USR_BIN@/index-reports index_online_weekly.html weekly false
+    @USR_BIN@/index-reports index_online_monthly.html monthly false
 
 # generate the emailable page
-    @USR_BIN@/index-reports index_email_daily.html daily
-    @USR_BIN@/index-reports index_email_weekly.html weekly
-    @USR_BIN@/index-reports index_email_monthly.html monthly
+    @USR_BIN@/index-reports index_email_daily.html daily true
+    @USR_BIN@/index-reports index_email_weekly.html weekly true
+    @USR_BIN@/index-reports index_email_monthly.html monthly true
 
 # email the reports to all recipients
     cd $REPORT_DIR/current
