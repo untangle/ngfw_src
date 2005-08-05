@@ -157,7 +157,15 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
      */
     public void reconfigure()
     {
-        Blacklist.BLACKLIST.reconfigure();
+        new Thread(new Runnable() {
+                public void run() {
+                    synchronized (Blacklist.BLACKLIST) {
+                        System.out.println("DOING IT");
+                        Blacklist.BLACKLIST.reconfigure();
+                        System.out.println("DONE");
+                    }
+                }
+            }).start();
     }
 
     // AbstractTransform methods ----------------------------------------------
@@ -175,8 +183,8 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
 
         List s = new ArrayList();
 
-	// this third column is more of a description than a category, the way the client is using it
-	// the second column is being used as the "category"
+    // this third column is more of a description than a category, the way the client is using it
+    // the second column is being used as the "category"
         s.add(new StringRule("exe", "executable", "an executable file format" , false));
         s.add(new StringRule("ocx", "executable", "an executable file format", false));
         s.add(new StringRule("dll", "executable", "an executable file format", false));
@@ -390,7 +398,7 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
 
         logger.debug("IN POSTINIT SET BLACKLIST " + settings);
         Blacklist.BLACKLIST.configure(settings);
-        Blacklist.BLACKLIST.reconfigure();
+        reconfigure();
     }
 
     protected void postDestroy()
