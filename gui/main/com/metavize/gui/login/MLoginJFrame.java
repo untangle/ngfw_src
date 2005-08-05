@@ -26,10 +26,7 @@ import com.metavize.mvvm.client.*;
 import com.metavize.mvvm.security.*;
 
 
-/**
- *
- * @author  root
- */
+
 public class MLoginJFrame extends javax.swing.JFrame {
 
 
@@ -70,7 +67,6 @@ public class MLoginJFrame extends javax.swing.JFrame {
         resetLogin("Please enter your login and password.");
     }
     
-
     
     public void resetLogin(final String message){
 	SwingUtilities.invokeLater( new Runnable() {
@@ -86,6 +82,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
 		    statusJProgressBar.setIndeterminate(false);
 		} } );
     }
+
 
     public void reshowLogin(){
 	SwingUtilities.invokeLater( new Runnable() {
@@ -128,6 +125,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
             return false;
     }
 
+
     private int loginCount() {
         LoginSession loginSession = MvvmRemoteContextFactory.loginSession();
         LoginSession[] loggedInUsers = mvvmContext.adminManager().loggedInUsers();
@@ -139,7 +137,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
         return statusJProgressBar;
     }
 
-    // initialize the GUI
+
     private void initComponents() {//GEN-BEGIN:initComponents
         java.awt.GridBagConstraints gridBagConstraints;
 
@@ -391,13 +389,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_acceptJButtonKeyPressed
 
     private void acceptJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_acceptJButtonActionPerformed
-        try{
         new ConnectThread();
-    }
-    catch(Exception e){
-        e.printStackTrace();
-        resetLogin("Please enter your login and password.");
-    }
     }//GEN-LAST:event_acceptJButtonActionPerformed
 
     private void serverJTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serverJTextFieldActionPerformed
@@ -415,9 +407,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
             acceptJButton.doClick();
     }//GEN-LAST:event_loginJTextFieldActionPerformed
 
-    // handle movement of the caret in the pass field
-    // handle movement of the caret in the login field
-    // update the accept button to only be pressable when both the login and pass fields have some actual text
+
     private void updateAcceptJButtonState(){
         return;
         /*
@@ -435,8 +425,6 @@ public class MLoginJFrame extends javax.swing.JFrame {
     private void exitForm(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_exitForm
         Util.exit(0);
     }//GEN-LAST:event_exitForm
-
-
 
 
 
@@ -465,10 +453,11 @@ public class MLoginJFrame extends javax.swing.JFrame {
 	    acceptJButton.setEnabled(false);
 	    this.start();
         }
+
 	public void run() {
-	    
+
+	    // (UPDATE GUI) PREPARE FOR LOGIN	    
 	    try{
-		// (UPDATE GUI) PREPARE FOR LOGIN
 		SwingUtilities.invokeAndWait( new Runnable() {
 			public void run() {
 			    loginJTextField.setEnabled(false);
@@ -480,15 +469,9 @@ public class MLoginJFrame extends javax.swing.JFrame {
 			    statusJProgressBar.setString("Authenticating");
 			} } );
 		
-		// CHECK THE USER INPUT
 		Thread.sleep(1000);
-		
 	    }
-	    catch(Exception e){
-		resetLogin("No server at host:port");
-		Util.handleExceptionNoRestart("Error in host:port", e);
-		return;
-	    }
+	    catch(Exception e){ /* do nothing on purpose*/  }
 	    
 	    // ATTEMPT TO LOG IN
 	    int retryLogin = 0;
@@ -505,7 +488,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
 		    String version = mvvmContext.version();
 		    if( !version.equals("-1") ){
 			if( !version.equals( Version.getVersion() ) ){
-			    resetLogin("Error: Client version incorrect.  Try Restarting.");
+			    resetLogin("Client/Server version mismatch.  Try Restarting.");
 			    return;
 			}
 		    }
@@ -517,8 +500,6 @@ public class MLoginJFrame extends javax.swing.JFrame {
 		    else{
 			Util.setIsDemo(false);
 		    }
-		    
-
 		    
 		    // CHEKS PASSED ///////////////////
 		    Util.setMvvmContext(mvvmContext);
@@ -532,11 +513,12 @@ public class MLoginJFrame extends javax.swing.JFrame {
 				passJPasswordField.setText("");
 			    } } );
 		    Thread.sleep(2000);
+		    retryLogin = -1;
 		    break;
 		}
 		catch(FailedLoginException e){
 		    resetLogin("Error: Invalid login/password.");
-		    Util.handleExceptionNoRestart("Error: Invalid login/password.", e);
+		    retryLogin = -1;
 		    return;
 		}
 		catch(com.metavize.mvvm.client.InvocationTargetExpiredException e){
@@ -609,7 +591,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
 				mMainJFrame.setExtendedState(Frame.MAXIMIZED_BOTH);
 				mMainJFrame.setVisible(true);
 			    } } );
-		    
+		    retryClient = -1;
 		    break;
 		}
 		
