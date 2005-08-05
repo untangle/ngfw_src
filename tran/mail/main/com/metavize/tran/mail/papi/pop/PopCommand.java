@@ -35,7 +35,7 @@ public class PopCommand implements Token
 
     // static factories -------------------------------------------------------
 
-    public static PopCommand parse(ByteBuffer buf, int iEnd) throws ParseException
+    public static PopCommand parse(ByteBuffer buf) throws ParseException
     {
         ByteBuffer dup = buf.duplicate();
         String cmd = consumeToken(dup);
@@ -44,7 +44,7 @@ public class PopCommand implements Token
         }
 
         eatSpace(dup);
-        String arg = consumeLine(dup, iEnd); /* eat CRLF */
+        String arg = consumeBuf(dup); /* eat CRLF */
         return new PopCommand(cmd, 0 == arg.length() ? null : arg);
     }
 
@@ -76,15 +76,6 @@ public class PopCommand implements Token
         buf.flip();
 
         return buf;
-    }
-
-    /* consume line in buffer (including any terminating CRLF) up to iEnd */
-    private static String consumeLine(ByteBuffer zBuf, int iEnd)
-    {
-        ByteBuffer zDup = zBuf.duplicate();
-        zBuf.position(iEnd);
-        zDup.limit(iEnd);
-        return consumeBuf(zDup);
     }
 
     /* consume rest of buffer (including any terminating CRLF) */

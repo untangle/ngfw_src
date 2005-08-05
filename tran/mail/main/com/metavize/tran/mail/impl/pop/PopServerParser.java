@@ -238,7 +238,7 @@ public class PopServerParser extends AbstractParser
                         logger.debug("message body: " + buf);
 
                         /* scan and "copy" message frag */
-                        ByteBuffer chunkDup = ByteBuffer.allocate(buf.limit());
+                        ByteBuffer chunkDup = ByteBuffer.allocate(buf.remaining());
                         bBodyDone = zMBScanner.processBody(buf, chunkDup);
 
                         chunkDup.rewind();
@@ -252,9 +252,6 @@ public class PopServerParser extends AbstractParser
                             reset();
                         }
 
-                        /* stop even though buf may not be empty
-                         * - remaining fragment can't be handled yet
-                         */
                         bDone = true;
                     }
 
@@ -269,6 +266,7 @@ public class PopServerParser extends AbstractParser
                         dup.clear();
                         dup.put(buf);
                         dup.flip();
+
                         buf = dup;
                     }
                 } else {
@@ -293,6 +291,13 @@ public class PopServerParser extends AbstractParser
             default:
                 throw new IllegalStateException("unknown state: " + state);
             }
+        }
+
+        if (null != buf) {
+            buf.position(buf.limit());
+            buf.limit(buf.capacity());
+
+            //logger.debug("reset (compacted) buf to add more data: " + buf);
         }
 
         logger.debug("returning ParseResult(" + zTokens + ", " + buf + ")");

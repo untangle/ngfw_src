@@ -71,7 +71,7 @@ public class PopClientParser extends AbstractParser
 
                 PopCommand cmd;
                 try {
-                    cmd = PopCommand.parse(buf, iCmdEnd);
+                    cmd = PopCommand.parse(buf);
                     zTokens.add(cmd);
                 } catch (ParseException exn) {
                     /* long command may break before CRLF sequence

@@ -64,6 +64,7 @@ public class PopUnparser extends AbstractUnparser
         super(session, clientSide);
 
         zMsgDataReply = null;
+        zByteStuffer = null;
     }
 
     public UnparseResult unparse(Token token) throws UnparseException
@@ -73,7 +74,8 @@ public class PopUnparser extends AbstractUnparser
         List<ByteBuffer> zWriteBufs = new LinkedList<ByteBuffer>();
 
         if (token instanceof PopCommand ||
-            token instanceof PopCommandMore) {
+            token instanceof PopCommandMore ||
+            token instanceof PopReplyMore) {
             zWriteBufs.add(token.getBytes());
         } else if (token instanceof PopReply) {
             PopReply zReply = (PopReply) token;
@@ -87,7 +89,7 @@ public class PopUnparser extends AbstractUnparser
                  * - it sent 2nd message before terminating 1st message
                  * - dump everything
                  */
-                logger.error("new message has been received but previous message may be incomplete; sending new message");
+                logger.error("new message has been received before previous message has been sent; trying to send new message");
 
                 zMsgDataReply = zReply;
                 zByteStuffer = new ByteBufferByteStuffer();
@@ -106,10 +108,10 @@ public class PopUnparser extends AbstractUnparser
             writeEOD(zWriteBufs);
             zByteStuffer = null;
             zMsgDataReply = null;
-        } else if (token instanceof PopReplyMore) {
-            zWriteBufs.add(token.getBytes());
         } else if (token instanceof DoNotCareT) { /* do not care */
             writeData((DoNotCareT) token, zWriteBufs);
+            zByteStuffer = null;
+            zMsgDataReply = null;
         } else if (token instanceof DoNotCareChunkT) { /* do not care */
             writeData((DoNotCareChunkT) token, zWriteBufs);
         } else { /* unknown/unsupported */
@@ -119,6 +121,8 @@ public class PopUnparser extends AbstractUnparser
 
         return new UnparseResult(zWriteBufs.toArray(new ByteBuffer[zWriteBufs.size()]));
     }
+
+    public TCPStreamer endSession() { return null; }
 
     private void writeData(MIMEMessageT zMMessageT, List<ByteBuffer> zWriteBufs, boolean bIsComplete)
     {
@@ -214,8 +218,6 @@ public class PopUnparser extends AbstractUnparser
     {
         if (null != zMsgDataReply) {
             zWriteBufs.add(zMsgDataReply.getBytes());
-            zByteStuffer = null;
-            zMsgDataReply = null;
         }
 
         /* since do-not-care data are not byte unstuffed,
@@ -296,6 +298,4 @@ public class PopUnparser extends AbstractUnparser
 
         return;
     }
-
-    public TCPStreamer endSession() { return null; }
 }
