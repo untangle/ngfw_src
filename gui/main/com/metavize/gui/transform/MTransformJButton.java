@@ -269,7 +269,7 @@ public class MTransformJButton extends JButton {
 		catch(Exception f){
                         Util.handleExceptionNoRestart("Error installing transform",  f);
 			MTransformJButton.this.setFailedDeployView();
-			new MOneButtonJDialog(MTransformJButton.this.getDisplayName(), "A problem occurred while installing:<br>" + MTransformJButton.this.getDisplayName() + "<br>Please try again later.");
+			new MOneButtonJDialog(MTransformJButton.this.getDisplayName(), "A problem occurred while installing:<br>" + MTransformJButton.this.getDisplayName() + "<br>Please contact Metavize support.");
 		}
 	    }
         }
@@ -300,7 +300,7 @@ public class MTransformJButton extends JButton {
 		catch(Exception f){
 		    Util.handleExceptionNoRestart("Error purchasing transform:", f);
 		    MTransformJButton.this.setFailedProcureView();
-		    new MOneButtonJDialog(MTransformJButton.this.getDisplayName(), "A problem occurred while procuring:<br>" + MTransformJButton.this.getDisplayName() + "<br>Please try again later.");
+		    new MOneButtonJDialog(MTransformJButton.this.getDisplayName(), "A problem occurred while procuring:<br>" + MTransformJButton.this.getDisplayName() + "<br>Please check your network settings.");
 		}
 	    }	    
 	}
@@ -330,7 +330,7 @@ public class MTransformJButton extends JButton {
 		catch(Exception f){
 		    Util.handleExceptionNoRestart("Error removing transform:", f);
 		    MTransformJButton.this.setFailedRemoveFromToolboxView();
-		    new MOneButtonJDialog(MTransformJButton.this.getDisplayName(), "A problem occurred while removing:<br>" + MTransformJButton.this.getDisplayName() + "<br>Please try again later.");
+		    new MOneButtonJDialog(MTransformJButton.this.getDisplayName(), "A problem occurred while removing:<br>" + MTransformJButton.this.getDisplayName() + "<br>Please contact Metavize support.");
 		}
 	    }
 
