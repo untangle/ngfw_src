@@ -64,18 +64,18 @@ public class PopCommand implements Token
 
     public ByteBuffer getBytes()
     {
-        int len = command.length() + (null == argument ? 0 : argument.length() + 1) + 2;
-        ByteBuffer buf = ByteBuffer.allocate(len);
+        int iLen = command.length() + (null == argument ? 0 : argument.length() + 1) + 2;
+        ByteBuffer zBuf = ByteBuffer.allocate(iLen);
 
-        buf.put(command.getBytes());
+        zBuf.put(command.getBytes());
         if (null != argument) {
-            buf.put((byte)SP);
-            buf.put(argument.getBytes());
+            zBuf.put((byte)SP); /* restore */
+            zBuf.put(argument.getBytes());
         }
 
-        buf.flip();
+        zBuf.flip();
 
-        return buf;
+        return zBuf;
     }
 
     /* consume rest of buffer (including any terminating CRLF) */

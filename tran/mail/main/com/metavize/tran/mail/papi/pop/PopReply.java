@@ -145,18 +145,18 @@ public class PopReply implements Token
     // private methods --------------------------------------------------------
     private static ByteBuffer getBytes(String zReply, String zArgument)
     {
-        int len = zReply.length() + (null == zArgument ? 0 : zArgument.length() + 1);
-        ByteBuffer buf = ByteBuffer.allocate(len);
+        int iLen = zReply.length() + (null == zArgument ? 0 : zArgument.length() + 1);
+        ByteBuffer zBuf = ByteBuffer.allocate(iLen);
 
-        buf.put(zReply.getBytes());
+        zBuf.put(zReply.getBytes());
         if (null != zArgument) {
-            buf.put((byte)SP); /* restore */
-            buf.put(zArgument.getBytes());
+            zBuf.put((byte)SP); /* restore */
+            zBuf.put(zArgument.getBytes());
         }
 
-        buf.flip();
+        zBuf.flip();
 
-        return buf;
+        return zBuf;
     }
 
     /* consume line in buffer (including any terminating CRLF) up to iEnd */
