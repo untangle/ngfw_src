@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: ClamTest.java,v 1.1 2005/02/26 04:11:31 dmorris Exp $
+ * $Id$
  */
 package com.metavize.tran.clam;
 
@@ -25,16 +25,7 @@ public class ClamTest
         ClamScanner scanner = new ClamScanner();
         VirusScannerResult result = null;
         
-        try {
-            result = scanner.scanFile(args[0]);
-        }
-        catch (java.io.IOException e) {
-            System.err.println("Error: " + e);
-        }
-        catch (java.lang.InterruptedException e) {
-            System.err.println("Error: " + e);
-        }
-
+        result = scanner.scanFile(args[0]);
         System.out.println(result);
         System.exit(0);
     }

@@ -27,90 +27,28 @@ import org.apache.log4j.Logger;
 import com.metavize.tran.virus.VirusScanner;
 import com.metavize.tran.virus.VirusScannerResult;
 
-public class HauriScanner implements VirusScanner {
-
+public class HauriScanner implements VirusScanner
+{
     private static final Logger logger = Logger.getLogger(HauriScanner.class.getName());
+    private static final int timeout = 30000; /* XXX should be user configurable */
 
     public HauriScanner() {}
 
-    public String getVendorName() {
+    public String getVendorName()
+    {
         return "Hauri";
     }
 
     public VirusScannerResult scanFile (String pathName)
-        throws IOException, InterruptedException
     {
-        /* Hauri ViRobot SDK can process some special files (zip/etc) and
-         * by default, it handles these special files
-         */
-        Process proc = Runtime.getRuntime().exec("nice -n 19 virobot " + pathName);
-        InputStream is  = proc.getInputStream();
-        OutputStream os = proc.getOutputStream();
-        BufferedReader in = new BufferedReader(new InputStreamReader(is));
-        os.close();
-
-        String virusName = null;
-        String s;
-        int i;
-
-        /**
-         * Drain sweep output
-         */
-        while ((s = in.readLine()) != null) {
-            /**
-             * virobot output
-             * "/home/dmorris/q347558.exe.2  Infection: W32/Swen.A@mm"
-             * This returns the 3rd word
-             */
-            if (s.startsWith(" Detected")) {
-                StringTokenizer st = new StringTokenizer(s);
-                String str = null;
-
-                for (i=0 ; st.hasMoreTokens() ; i++) {
-                    str = st.nextToken();
-
-                    if (i==1) {
-                        virusName = str;
-                        break;
-                    }
-                }
-            }
-        }
-
-        /**
-         * PROGRAM EXIT CODES
-         * 0      Normal exit.  Nothing found, nothing done.
-         * 1      Virus Found
-         * 255    Error
-         */
-        proc.waitFor();
-        i = proc.exitValue();
-        in.close();
-        is.close();
-
-        switch(i) {
-        case 0:
-            logger.info("virobot: clean");
-            return VirusScannerResult.CLEAN;
-        case 1:
-            if (virusName == null) {
-                logger.info("virobot: infected (unknown)");
-                return VirusScannerResult.INFECTED;
-            } else {
-                logger.info("virobot: infected (" + virusName + ")");
-                return new VirusScannerResult(false,virusName,false);
-            }
-        case 255:
-            logger.error("virobot exit code error: " + i);
-            return VirusScannerResult.ERROR;
-        default:
-            logger.error("Unknown virobot exit code: " + i);
-            return VirusScannerResult.ERROR;
-        }
+        HauriScannerLauncher scan = new HauriScannerLauncher(pathName);
+        Thread thread = new Thread(scan);
+        thread.start();
+        
+        return scan.waitFor(this.timeout);
     }
 
-    public VirusScannerResult scanBufs(List bufs)
-        throws IOException, InterruptedException
+    public VirusScannerResult scanBufs(List bufs) throws java.io.IOException
     {
         File fileBuf = File.createTempFile("virobot-cache",null);
         FileChannel outFile = (new FileOutputStream(fileBuf)).getChannel();
