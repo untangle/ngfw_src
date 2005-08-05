@@ -254,7 +254,7 @@ class Blacklist
 
         for (MimeTypeRule rule : (List<MimeTypeRule>)settings.getBlockedMimeTypes()) {
             MimeType mt = rule.getMimeType();
-            if (rule.isLive() && mt.matches( contentType )) {
+            if (rule.isLive() && mt.matches(contentType)) {
                 HttpBlockerEvent hbe = new HttpBlockerEvent
                     (requestLine, Action.BLOCK, Reason.BLOCK_MIME, contentType);
                 eventLogger.info(hbe);
@@ -455,7 +455,7 @@ class Blacklist
         clause.append(table);
         if (0 < cats.size()) {
             clause.append(" WHERE category IN (");
-            for (Iterator<String> i = cats.iterator(); i.hasNext(); ) {
+            for (Iterator<String> i = cats.iterator(); i.hasNext();) {
                 clause.append("'");
                 clause.append(i.next());
                 clause.append("'");

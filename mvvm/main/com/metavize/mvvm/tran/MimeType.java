@@ -63,33 +63,35 @@ public class MimeType implements Serializable
      */
     public boolean matches(String val)
     {
-        if ( isWildcard()) {
+        val = getType(val);
+
+        if (isWildcard()) {
             int length = mimeTypeNoWildcard.length();
 
             /* Not possible to wildcard match if the input string is
              * shorter than the text */
-            if ( length > val.length())
+            if (length > val.length())
                 return false;
 
             /* The * gets stripped off at construction time */
-            return val.substring( 0, length ).equalsIgnoreCase( mimeTypeNoWildcard );
+            return val.substring(0, length).equalsIgnoreCase(mimeTypeNoWildcard);
         }
 
-        return mimeType.equalsIgnoreCase( val );
+        return mimeType.equalsIgnoreCase(val);
     }
 
     public boolean isWildcard()
     {
-        if ( mimeTypeNoWildcard == null ) {
-            if ( mimeType.endsWith("*")) {
+        if (mimeTypeNoWildcard == null) {
+            if (mimeType.endsWith("*")) {
                 /* Remove the * at the end */
-                mimeTypeNoWildcard = mimeType.substring( 0, mimeType.length() - 1);
+                mimeTypeNoWildcard = mimeType.substring(0, mimeType.length() - 1);
             } else {
                 mimeTypeNoWildcard = mimeType;
             }
         }
 
-        return ( mimeTypeNoWildcard == mimeType ) ? false : true;
+        return (mimeTypeNoWildcard == mimeType) ? false : true;
     }
 
     // Object methods ---------------------------------------------------------
