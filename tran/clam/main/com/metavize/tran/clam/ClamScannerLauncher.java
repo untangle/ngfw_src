@@ -105,7 +105,8 @@ public class ClamScannerLauncher implements Runnable
         }
             
         try {
-            this.scanProcess = Runtime.getRuntime().exec("nice -n 19 clamdscan " + pathName);
+            String command = "nice -n 19 clamdscan " + pathName;
+            this.scanProcess = Runtime.getRuntime().exec(command);
             InputStream is  = scanProcess.getInputStream();
             OutputStream os = scanProcess.getOutputStream();
             BufferedReader in = new BufferedReader(new InputStreamReader(is));
@@ -204,7 +205,7 @@ public class ClamScannerLauncher implements Runnable
                 return;
             default:
             case 2:
-                logger.error("clamdscan exit code error: " + i);
+                logger.error("clamdscan exit code error: " + i + " cmd: " + command);
                 this.result = VirusScannerResult.ERROR;
                 synchronized (this) {this.notifyAll();}
                 return;
