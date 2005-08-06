@@ -10,22 +10,25 @@
  */
 package com.metavize.tran.virus;
 
-
 import com.metavize.mvvm.tapi.TCPSession;
+import com.metavize.tran.mail.papi.MailExport;
+import com.metavize.tran.mail.papi.MailExportFactory;
 import com.metavize.tran.token.TokenHandler;
 import com.metavize.tran.token.TokenHandlerFactory;
 
 public class VirusPopFactory implements TokenHandlerFactory
 {
     private final VirusTransformImpl transform;
+    private final MailExport zMExport;
 
     VirusPopFactory(VirusTransformImpl transform)
     {
         this.transform = transform;
+        zMExport = MailExportFactory.getExport();
     }
 
     public TokenHandler tokenHandler(TCPSession session)
     {
-        return new VirusPopHandler(session, transform);
+        return new VirusPopHandler(session, transform, zMExport);
     }
 }

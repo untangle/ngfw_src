@@ -17,9 +17,11 @@ import java.io.IOException;
 import com.metavize.mvvm.argon.IntfConverter;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.tapi.TCPSession;
-import com.metavize.tran.mail.papi.pop.PopStateMachine;
+import com.metavize.tran.mail.papi.MailExport;
+import com.metavize.tran.mail.papi.MailTransformSettings;
 import com.metavize.tran.mail.papi.MIMEMessageT;
 import com.metavize.tran.mail.papi.WrappedMessageGenerator;
+import com.metavize.tran.mail.papi.pop.PopStateMachine;
 import com.metavize.tran.mime.HeaderParseException;
 import com.metavize.tran.mime.LCString;
 import com.metavize.tran.mime.MIMEMessage;
@@ -40,6 +42,7 @@ public class SpamPopHandler extends PopStateMachine
     private final static String IS_SPAM_HDR_VALUE = "YES";
     private final static String IS_HAM_HDR_VALUE = "NO";
 
+    private final static int GIVEUP_SZ = 1 << 18; /* 256k */
     private final static float SPAM_SCORE = 5;
 
     private final SpamScanner zScanner;
@@ -51,33 +54,39 @@ public class SpamPopHandler extends PopStateMachine
 
     // constructors -----------------------------------------------------------
 
-    SpamPopHandler(TCPSession session, SpamImpl transform)
+    SpamPopHandler(TCPSession session, SpamImpl transform, MailExport zMExport)
     {
         super(session);
 
         zScanner = transform.getScanner();
         zVendorName = zScanner.getVendorName();
 
+        MailTransformSettings zMTSettings = zMExport.getExportSettings();
+
         SpamPOPConfig zConfig;
         WrappedMessageGenerator zWMGenerator;
+
         if (IntfConverter.INSIDE == session.clientIntf()) {
             zConfig = transform.getSpamSettings().getPOPInbound();
             zWMGenerator = new WrappedMessageGenerator(SpamSettings.IN_MOD_SUB_TEMPLATE, SpamSettings.IN_MOD_BODY_TEMPLATE);
+            lTimeout = zMTSettings.getPopInboundTimeout();
         } else {
             zConfig = transform.getSpamSettings().getPOPOutbound();
             zWMGenerator = new WrappedMessageGenerator(SpamSettings.OUT_MOD_SUB_TEMPLATE, SpamSettings.OUT_MOD_BODY_TEMPLATE);
+            lTimeout = zMTSettings.getPopOutboundTimeout();
         }
         bScan = zConfig.getScan();
         zMsgAction = zConfig.getMsgAction();
         zWMsgGenerator = zWMGenerator;
-        //logger.debug("scan: " + bScan + ", message action: " + zMsgAction);
+        //logger.debug("scan: " + bScan + ", message action: " + zMsgAction + ", timeout: " + lTimeout);
     }
 
     // PopStateMachine methods -----------------------------------------------
 
     protected TokenResult scanMessage() throws TokenException
     {
-        if (true == bScan) {
+        if (true == bScan &&
+            GIVEUP_SZ >= zMsgFile.length()) {
             SpamReport zReport;
 
             if (null != (zReport = scanFile(zMsgFile)) &&
@@ -104,8 +113,7 @@ public class SpamPopHandler extends PopStateMachine
                     throw new TokenException("cannot wrap original message/mime part: ", exn2);
                 }
             }
-        }
-        //else {
+        } //else {
             //logger.debug("scan is not enabled");
         //}
 

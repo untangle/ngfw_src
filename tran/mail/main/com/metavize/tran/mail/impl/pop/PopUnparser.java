@@ -25,7 +25,6 @@ import java.util.regex.Pattern;
 
 import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.mvvm.tapi.event.TCPStreamer;
-import com.metavize.tran.mime.MIMEMessage;
 import com.metavize.tran.mail.papi.ByteBufferByteStuffer;
 import com.metavize.tran.mail.papi.DoNotCareT;
 import com.metavize.tran.mail.papi.DoNotCareChunkT;
@@ -35,6 +34,8 @@ import com.metavize.tran.mail.papi.pop.PopCommand;
 import com.metavize.tran.mail.papi.pop.PopCommandMore;
 import com.metavize.tran.mail.papi.pop.PopReply;
 import com.metavize.tran.mail.papi.pop.PopReplyMore;
+import com.metavize.tran.mime.MIMEMessage;
+import com.metavize.tran.mime.MIMEMessageHeaders;
 import com.metavize.tran.token.AbstractUnparser;
 import com.metavize.tran.token.Chunk;
 import com.metavize.tran.token.EndMarker;
@@ -69,9 +70,7 @@ public class PopUnparser extends AbstractUnparser
         PopStreamer zPopStreamer;
 
         if (token instanceof MIMEMessageT) { /* complete message */
-            zPopStreamer = writeData((MIMEMessageT) token, true);
-            zByteStuffer = null;
-            zMsgDataReply = null;
+            zPopStreamer = writeData((MIMEMessageT) token);
             return new UnparseResult(zPopStreamer);
         } else if (token instanceof MIMEMessageTrickleT) { /* trickle start */
             zPopStreamer = writeData((MIMEMessageTrickleT) token);
@@ -110,12 +109,8 @@ public class PopUnparser extends AbstractUnparser
             writeData((Chunk) token, zWriteBufs);
         } else if (token instanceof EndMarker) { /* trickle end */
             writeEOD(zWriteBufs);
-            zByteStuffer = null;
-            zMsgDataReply = null;
         } else if (token instanceof DoNotCareT) { /* do not care */
             writeData((DoNotCareT) token, zWriteBufs);
-            zByteStuffer = null;
-            zMsgDataReply = null;
         } else if (token instanceof DoNotCareChunkT) { /* do not care */
             writeData((DoNotCareChunkT) token, zWriteBufs);
         } else { /* unknown/unsupported */
@@ -165,6 +160,7 @@ public class PopUnparser extends AbstractUnparser
         } else {
             int iNewMsgDataSz = zPopStreamer.getSize();
             zPopStreamer.prepend(updateMsgDataSz(iNewMsgDataSz));
+            reset();
         }
 
         MIMEMessage zMMessage = zMMessageT.getMIMEMessage();
@@ -178,9 +174,26 @@ public class PopUnparser extends AbstractUnparser
         return zPopStreamer;
     }
 
+    private PopStreamer writeData(MIMEMessageT zMMessageT) throws UnparseException
+    {
+        boolean bIsComplete;
+
+        if (null == zMMessageT.getMIMEMessageHeader()) {
+            /* message has been re-assembled */
+            bIsComplete = true;
+        } else {
+            /* message has not been re-assembled yet;
+             * more chunks and marker have yet to arrive
+             */
+            bIsComplete = false;
+        }
+
+        return writeData(zMMessageT, bIsComplete);
+    }
+
     private PopStreamer writeData(MIMEMessageTrickleT zMMTrickleT) throws UnparseException
     {
-        return writeData(zMMTrickleT.getMMessageT(), false);
+        return writeData(zMMTrickleT.getMMessageT());
     }
 
     private void writeData(Chunk zChunk, List<ByteBuffer> zWriteBufs)
@@ -204,6 +217,7 @@ public class PopUnparser extends AbstractUnparser
          * it does not need to be byte stuffed
          */
         zWriteBufs.add(zDoNotCareT.getBytes());
+        reset();
 
         return;
     }
@@ -222,6 +236,7 @@ public class PopUnparser extends AbstractUnparser
     {
         ByteBuffer zWriteBuf = zByteStuffer.getLast(true);
         zWriteBufs.add(zWriteBuf);
+        reset();
 
         return;
     }
@@ -264,5 +279,12 @@ public class PopUnparser extends AbstractUnparser
         zLine.position(zLine.limit()); /* set position because ByteBuffer contains data */
 
         return zLine;
+    }
+
+    private void reset()
+    {
+        zByteStuffer = null;
+        zMsgDataReply = null;
+        return;
     }
 }

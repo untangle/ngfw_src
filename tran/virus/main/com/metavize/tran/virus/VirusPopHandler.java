@@ -18,9 +18,11 @@ import java.io.IOException;
 import com.metavize.mvvm.argon.IntfConverter;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.tapi.TCPSession;
-import com.metavize.tran.mail.papi.pop.PopStateMachine;
+import com.metavize.tran.mail.papi.MailExport;
+import com.metavize.tran.mail.papi.MailTransformSettings;
 import com.metavize.tran.mail.papi.MIMEMessageT;
 import com.metavize.tran.mail.papi.WrappedMessageGenerator;
+import com.metavize.tran.mail.papi.pop.PopStateMachine;
 import com.metavize.tran.mime.HeaderParseException;
 import com.metavize.tran.mime.MIMEMessage;
 import com.metavize.tran.mime.MIMEPart;
@@ -46,26 +48,32 @@ public class VirusPopHandler extends PopStateMachine
 
     // constructors -----------------------------------------------------------
 
-    VirusPopHandler(TCPSession session, VirusTransformImpl transform)
+    VirusPopHandler(TCPSession session, VirusTransformImpl transform, MailExport zMExport)
     {
         super(session);
 
         zScanner = transform.getScanner();
         zVendorName = zScanner.getVendorName();
 
+        MailTransformSettings zMTSettings = zMExport.getExportSettings();
+
         VirusPOPConfig zConfig;
         WrappedMessageGenerator zWMGenerator;
+
         if (IntfConverter.INSIDE == session.clientIntf()) {
             zConfig = transform.getVirusSettings().getPOPInbound();
             zWMGenerator = new WrappedMessageGenerator(VirusSettings.IN_MOD_SUB_TEMPLATE, VirusSettings.IN_MOD_BODY_TEMPLATE);
+            lTimeout = zMTSettings.getPopInboundTimeout();
         } else {
             zConfig = transform.getVirusSettings().getPOPOutbound();
             zWMGenerator = new WrappedMessageGenerator(VirusSettings.OUT_MOD_SUB_TEMPLATE, VirusSettings.OUT_MOD_BODY_TEMPLATE);
+            lTimeout = zMTSettings.getPopOutboundTimeout();
         }
+
         bScan = zConfig.getScan();
         zMsgAction = zConfig.getMsgAction();
         zWMsgGenerator = zWMGenerator;
-        //logger.debug("scan: " + bScan + ", message action: " + zMsgAction);
+        //logger.debug("scan: " + bScan + ", message action: " + zMsgAction + ", timeout: " + lTimeout);
     }
 
     // PopStateMachine methods -----------------------------------------------
@@ -131,8 +139,7 @@ public class VirusPopHandler extends PopStateMachine
                     throw new TokenException("cannot wrap original message/mime part: ", exn);
                 }
             }
-        }
-        //else {
+        } //else {
             //logger.debug("scan is not enabled or message contains no MIME parts");
         //}
 

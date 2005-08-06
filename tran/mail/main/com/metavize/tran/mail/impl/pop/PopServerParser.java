@@ -232,6 +232,10 @@ public class PopServerParser extends AbstractParser
                                 bDone = true;
                                 break;
                             }
+                            /* if we have more data, we have body to process */
+                        } else {
+                            /* we don't have enough data; we need more data */
+                            bDone = true;
                         }
                     } else {
                         /* transform writes body */

@@ -30,7 +30,6 @@ package com.metavize.tran.mail.papi;
  */
 public class MessageTransmissionTimeoutStrategy {
 
-
   /**
    * Test if there is a danger of timeout
    *
@@ -51,10 +50,6 @@ public class MessageTransmissionTimeoutStrategy {
     }
     maxWaitPeriod = (long) maxWaitPeriod/2;
 
-    long timeRemaining = (lastTimestamp + maxWaitPeriod) -
-      System.currentTimeMillis();
-
-    return timeRemaining < 0;    
+    return (System.currentTimeMillis() - lastTimestamp) < maxWaitPeriod ? false : true;
   }
-
 }
