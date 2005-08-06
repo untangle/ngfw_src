@@ -12,17 +12,29 @@
 package com.metavize.mvvm.reporting;
 
 import java.sql.Connection;
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.HashMap;
 
 public abstract class BaseSummarizer implements ReportSummarizer {
     
     protected List<Entry> entries;
 
+    protected Map<String,Object> extraParams;
+
     protected BaseSummarizer() {
         entries = new ArrayList<Entry>();
+        extraParams = new HashMap<String,Object>();
+    }
+
+    // Backwards compatibility
+    public String getSummaryHtml(Connection conn, Timestamp startDate, Timestamp endDate, Map<String,Object> extraParams) {
+        this.extraParams = new HashMap<String,Object>(extraParams); // Make a copy just in case
+        return getSummaryHtml(conn, startDate, endDate);
     }
 
     protected class Entry {

@@ -26,7 +26,7 @@ tr_virus_evt_smtp evt \
 WHERE evt.time_stamp > $P{startTime} \
 AND evt.time_stamp < $P{endTime} \
 AND NOT clean \
-AND vendor_name = $P{virusVendor} ) \
+AND vendor_name = $P{virusVendor} \
 GROUP BY name, total_count \
 ORDER BY count DESC
 LEFT.label=Virus Name

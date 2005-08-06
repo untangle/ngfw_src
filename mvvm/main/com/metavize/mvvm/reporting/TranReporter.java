@@ -72,9 +72,9 @@ public class TranReporter {
 	} else {
             logger.info("Beginning generation for: " + tranName);
         }
-	BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
 	// Need to do the parameters first.
+	BufferedReader br = new BufferedReader(new InputStreamReader(is));
 	for (String line = br.readLine(); null != line; line = br.readLine()) {
             if (line.startsWith("#"))
                 continue;
@@ -92,8 +92,11 @@ public class TranReporter {
                 extraParams.put(paramName, paramValue);
             }
         }
+        is.close();
 
         // Now do everything else.
+	is = ucl.getResourceAsStream("META-INF/report-files");
+	br = new BufferedReader(new InputStreamReader(is));
 	for (String line = br.readLine(); null != line; line = br.readLine()) {
             if (line.startsWith("#"))
                 continue;
@@ -219,7 +222,7 @@ public class TranReporter {
     private void processReportSummarizer(ReportSummarizer reportSummarizer, Connection conn, String fileName, Timestamp startTime, Timestamp endTime)
         throws IOException
     {
-        String result = reportSummarizer.getSummaryHtml(conn, startTime, endTime);
+        String result = reportSummarizer.getSummaryHtml(conn, startTime, endTime, extraParams);
         BufferedWriter bw = new BufferedWriter(new FileWriter(new File(fileName)));
         bw.write(result);
         bw.close();

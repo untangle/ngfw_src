@@ -30,6 +30,11 @@ public class VirusSummarizer extends BaseSummarizer {
     public String getSummaryHtml(Connection conn, Timestamp startDate,
                                  Timestamp endDate)
     {
+        // XXX shouldn't have this constant here.
+        String virusVendor = (String) extraParams.get("virusVendor");
+
+        logger.info("Virus Vendor: " + virusVendor);
+
         int httpScanned = 0;
         int httpBlocked = 0;
         int ftpScanned = 0;
@@ -42,80 +47,88 @@ public class VirusSummarizer extends BaseSummarizer {
 	    PreparedStatement ps;
 	    ResultSet rs;
 
-	    sql = "SELECT count(*) FROM tr_virus_evt_http WHERE time_stamp >= ? AND time_stamp < ?";
+	    sql = "SELECT count(*) FROM tr_virus_evt_http WHERE time_stamp >= ? AND time_stamp < ? AND vendor_name = ?";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
+            ps.setString(3, virusVendor);
             rs = ps.executeQuery();
             rs.first();
             httpScanned = rs.getInt(1);
             rs.close();
             ps.close();
 
-            sql = "SELECT count(*) FROM tr_virus_evt_http WHERE time_stamp >= ? AND time_stamp < ? AND clean = false";
+            sql = "SELECT count(*) FROM tr_virus_evt_http WHERE time_stamp >= ? AND time_stamp < ? AND vendor_name = ? AND clean = false";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
+            ps.setString(3, virusVendor);
             rs = ps.executeQuery();
             rs.first();
             httpBlocked = rs.getInt(1);
             rs.close();
             ps.close();
 
-            sql = "SELECT count(*) FROM tr_virus_evt WHERE time_stamp >= ? AND time_stamp < ?";
+            sql = "SELECT count(*) FROM tr_virus_evt WHERE time_stamp >= ? AND time_stamp < ? AND vendor_name = ?";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
+            ps.setString(3, virusVendor);
             rs = ps.executeQuery();
             rs.first();
             ftpScanned = rs.getInt(1);
             rs.close();
             ps.close();
 
-            sql = "SELECT count(*) FROM tr_virus_evt WHERE time_stamp >= ? AND time_stamp < ? AND clean = false";
+            sql = "SELECT count(*) FROM tr_virus_evt WHERE time_stamp >= ? AND time_stamp < ? AND vendor_name = ? AND clean = false";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
+            ps.setString(3, virusVendor);
             rs = ps.executeQuery();
             rs.first();
             ftpBlocked = rs.getInt(1);
             rs.close();
             ps.close();
 
-            sql = "SELECT count(*) FROM tr_virus_evt_mail WHERE time_stamp >= ? AND time_stamp < ? AND clean = false";
+            sql = "SELECT count(*) FROM tr_virus_evt_mail WHERE time_stamp >= ? AND time_stamp < ? AND vendor_name = ? AND clean = false";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
+            ps.setString(3, virusVendor);
             rs = ps.executeQuery();
             rs.first();
             emailBlocked = rs.getInt(1);
             rs.close();
             ps.close();
 
-            sql = "SELECT count(*) FROM tr_virus_evt_smtp WHERE time_stamp >= ? AND time_stamp < ? AND clean = false";
+            sql = "SELECT count(*) FROM tr_virus_evt_smtp WHERE time_stamp >= ? AND time_stamp < ? AND vendor_name = ? AND clean = false";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
+            ps.setString(3, virusVendor);
             rs = ps.executeQuery();
             rs.first();
             emailBlocked += rs.getInt(1);
             rs.close();
             ps.close();
 
-            sql = "SELECT count(*) FROM tr_virus_evt_mail WHERE time_stamp >= ? AND time_stamp < ?";
+            sql = "SELECT count(*) FROM tr_virus_evt_mail WHERE time_stamp >= ? AND time_stamp < ? AND vendor_name = ?";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
+            ps.setString(3, virusVendor);
             rs = ps.executeQuery();
             rs.first();
             emailScanned = rs.getInt(1);
             rs.close();
             ps.close();
 
-            sql = "SELECT count(*) FROM tr_virus_evt_smtp WHERE time_stamp >= ? AND time_stamp < ?";
+            sql = "SELECT count(*) FROM tr_virus_evt_smtp WHERE time_stamp >= ? AND time_stamp < ? AND vendor_name = ?";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
+            ps.setString(3, virusVendor);
             rs = ps.executeQuery();
             rs.first();
             emailScanned += rs.getInt(1);
