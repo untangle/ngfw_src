@@ -23,7 +23,12 @@ bridgeAddress=$4
 bridgeNetmask=$5
 gateway=$6
 
-echo "Enabling bridge: ${bridge} to ${bridgeAddress} ${bridgeNetmask} ${gateway}"
+echo "Enabling bridge(`date`): ${bridge} to ${bridgeAddress} ${bridgeNetmask} ${gateway}"
+
+
+echo "Flushing intercept table"
+## Always flush intercepting first to avoid a few errant packets flying in unmarked.
+${IPTABLES} -t mangle -F ${CHAIN_INTERCEPT}
 
 ## Create the bridge
 generateBridge ${bridge}
@@ -34,25 +39,27 @@ if [ "$(getBridge ${inside})x" = "${bridge}x" ] && [ "$(getBridge ${outside})x" 
         echo "Bridge is already configured, pumping interface."
         killPump
 
-        pump -i ${bridge}
-        exit
+        pumpInterface ${bridge}
+
+        ## No failing here
+        exit 0
     else
         if [ $(getAddresses $bridge) = ${bridgeAddress} ] && 
             [ $(getNetmasks $bridge) = ${bridgeNetmask} ]; then
             echo "Bridge is already configured."
-            status=0
             
              ## kill pump and manually configure the address
             killPump
             ifconfig ${bridge} ${bridgeAddress} netmask ${bridgeNetmask}
-
-            status=$?
+            
             ## Delete all of the default routes
-            for t in `route -n | grep "^0.0.0.0" | awk '{ print $2}'`; do route del default gw $t ; done
-            ## Insert the new default route
-            route add default gw $gateway
+            deleleteGateways
 
-            exit ${status}
+            ## Insert the new default route
+            addGateway ${gateway}
+
+            ## No failing here
+            exit 0
         fi
     fi    
 fi
@@ -75,14 +82,14 @@ killPump
 ## XXX May need to delete all of the routes???
 
 ## Delete all of the default routes
-for t in `route -n | grep "^0.0.0.0" | awk '{ print $2}'`; do route del default gw $t ; done
+deleteGateways
 
 if [ $bridgeAddress = ${PUMP_FLAG} ]; then 
-    pump -i ${bridge}
+    pumpInterface ${bridge}
 else
     ifconfig ${bridge} ${bridgeAddress} netmask ${bridgeNetmask}
-    route add default gw $gateway
+    addGateway ${gateway}
 fi
 
-
-
+## No failure
+exit 0

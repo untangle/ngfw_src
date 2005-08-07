@@ -26,6 +26,11 @@ import com.metavize.mvvm.tran.firewall.IPMatcher;
 public class ArgonManagerImpl implements ArgonManager
 {    
     private static final Shield shield = Shield.getInstance();
+    private static final String BOGUS_OUTSIDE_ADDRESS_STRING = "169.254.210.51";
+    private static final String BOGUS_INSIDE_ADDRESS_STRING  = "169.254.210.52";
+
+    private static final InetAddress BOGUS_OUTSIDE_ADDRESS;
+    private static final InetAddress BOGUS_INSIDE_ADDRESS;
 
     private static final ArgonManagerImpl INSTANCE = new ArgonManagerImpl();
     private static final String PUMP_FLAG = "pump";
@@ -87,14 +92,38 @@ public class ArgonManagerImpl implements ArgonManager
         Netcap.updateAddress();
         try {
             this.insideAddress  = netcap.getInterfaceAddress( inside );
-            this.insideNetmask  = netcap.getInterfaceNetmask( inside );
-            this.outsideAddress = netcap.getInterfaceAddress( outside );
-            this.outsideNetmask = netcap.getInterfaceNetmask( outside );
-
-            IPMatcher.setInsideAddress( insideAddress );
-            IPMatcher.setOutsideAddress( outsideAddress );
         } catch ( Exception e ) {
-            throw new ArgonException( "Unable to update the address", e );
+            logger.warn( "Exception retrieving inside address, setting to null" );
+            this.insideAddress = null;
+        }
+        
+        try {
+            this.insideNetmask  = netcap.getInterfaceNetmask( inside );
+        } catch ( Exception e ) {
+            logger.warn( "Exception retrieving inside netmask, setting to null" );
+            this.insideNetmask = null;
+        }
+        
+        try {
+            this.outsideAddress = netcap.getInterfaceAddress( outside );
+        } catch ( Exception e ) {
+            logger.warn( "Exception retrieving outside address, setting to null" );
+            this.outsideAddress = null;
+        }
+
+        try {
+            this.outsideNetmask = netcap.getInterfaceNetmask( outside );
+        } catch ( Exception e ) {
+            logger.warn( "Exception retrieving outside netmask, setting to null" );
+            this.outsideNetmask = null;
+        }
+        
+        IPMatcher.setInsideAddress( insideAddress );
+        
+        if (( this.outsideAddress == null ) || ( this.outsideAddress.equals( BOGUS_OUTSIDE_ADDRESS ))) {
+            IPMatcher.setOutsideAddress((InetAddress)null );
+        } else {
+            IPMatcher.setOutsideAddress( outsideAddress );
         }
     }
 
@@ -356,5 +385,24 @@ public class ArgonManagerImpl implements ArgonManager
     public static final ArgonManagerImpl getInstance()
     {
         return INSTANCE;
+    }
+
+    static {
+        InetAddress outside  = null;
+        InetAddress inside = null;
+        
+        try {
+            outside = InetAddress.getByName( BOGUS_OUTSIDE_ADDRESS_STRING );
+            inside  = InetAddress.getByName( BOGUS_INSIDE_ADDRESS_STRING );
+        } catch ( Exception e ) {
+            System.err.println( "THIS SHOULD NEVER HAPPEN: error parsing " + BOGUS_OUTSIDE_ADDRESS_STRING );
+            System.err.println( "THIS SHOULD NEVER HAPPEN: error parsing " + BOGUS_INSIDE_ADDRESS_STRING );
+            System.err.println( "EXCEPTION: " + e );
+            inside  = null;
+            outside = null;
+        }
+        
+        BOGUS_OUTSIDE_ADDRESS = outside;
+        BOGUS_INSIDE_ADDRESS  = inside;
     }
 }

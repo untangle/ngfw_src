@@ -2,12 +2,20 @@
 
 PUMP_FLAG="pump"
 
+## A few constants
+IPTABLES="/sbin/iptables"
+#IPTABLES=iptablesDbg
+
 TABLE_LIST="nat mangle filter raw"
 CHAIN_MARKINTF="markintf"
 CHAIN_GUARDS="guards"
 CHAIN_ANTISUB="antisub"
 CHAIN_INTERCEPT="intercept"
 CHAINS_ORDER="${CHAIN_MARKINTF} ${CHAIN_GUARDS} ${CHAIN_ANTISUB} ${CHAIN_INTERCEPT}"
+
+## Invalid address and netmask used when pump fails.
+BOGUS_ADDRESS="169.254.210.51"
+BOGUS_NETMASK="255.255.0.0"
 
 ## Utility functions for the mv-networking scripts
 
@@ -117,6 +125,16 @@ function isPumpRunning() {
     fi
 }
 
+function pumpInterface() {
+    interface=$1
+    echo "Pumping interface ${interface}"
+    pump -i ${interface}
+    if [ $? != 0 ]; then
+        echo "Unable to pump interface ${interface}, going to bogus address"
+        ifconfig ${interface} ${BOGUS_ADDRESS} netmask ${BOGUS_NETMASK}
+    fi
+}
+
 function killPump() {
     echo "Killing pump"
     killall -KILL pump
@@ -135,3 +153,20 @@ function iptablesDbg() {
     echo /sbin/iptables $@
     /sbin/iptables $@
 }
+
+function addGateway() {
+    gateway=$1
+    
+    if [ "${gateway}x" != "x" ] && [ "${gateway}x" != "0.0.0.0x" ]; then
+        route add default gw $gateway
+    fi
+}
+
+function deleteGateways() {
+    for gateway in `route -n | grep "^0.0.0.0" | awk '{ print $2}'`; do
+        route del default gw ${gateway}
+        ## No returning an error here
+        echo -n
+    done
+}
+

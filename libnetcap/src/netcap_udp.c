@@ -590,15 +590,24 @@ static int _netcap_udp_sendto (int sock, void* data, size_t data_len, int flags,
 
     
     if (( ret = sendmsg( sock, &msg, flags )) < 0 ) {
-        if ( errno == EPERM ) {
-            errlog( ERR_WARNING, "UDP: EPERM sending a UDP packet\n" );
+        switch ( errno ) {
+        case EPERM:
+            /* Fallthrough */
+        case ENETUNREACH:
+            /* Fallthrough */
+        case EHOSTUNREACH:
+            /* Fallthrough */
+            errlog( ERR_WARNING, "UDP: unable to send packet(%s), innocuous response code\n",
+                    strerror(errno));
             /* Use the data length to fake that the packet was written. This way the packet is consumed */
             ret = data_len;
-        } else {
-            errlog(ERR_CRITICAL,"sendmsg: %s | ",errstr);
-            errlog_noprefix(ERR_CRITICAL, "(%s:%i -> ", inet_ntoa(pkt->src.host), pkt->src.port );
-            errlog_noprefix(ERR_CRITICAL, "%s:%i) data_len:%i ttl:%i tos:%i nfmark:%i\n",
-                            inet_ntoa(pkt->dst.host),pkt->dst.port,data_len, pkt->ttl, pkt->tos, nfmark);
+            break;
+        default:
+            errlog( ERR_CRITICAL, "sendmsg: %s | (%s:%i -> %s:%i) data_len:%i ttl:%i tos:%i nfmark:%i\n", 
+                    errstr, 
+                    unet_next_inet_ntoa( pkt->src.host.s_addr ), pkt->src.port,
+                    unet_next_inet_ntoa( pkt->dst.host.s_addr ), pkt->dst.port,
+                    data_len, pkt->ttl, pkt->tos, nfmark );
         }
     }
     

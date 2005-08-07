@@ -21,9 +21,6 @@ fi
 
 echo "Reconstructing all of the tables"
 
-## A few constants
-IPTABLES="/sbin/iptables"
-#IPTABLES=iptablesDbg
 MARK_ANTISUB="0x01000000"
 MARK_NOTRACK="0x02000000"
 MARK_LOCAL="0x00001000"
@@ -45,6 +42,8 @@ DHCP_CLIENT_PORT="68"
 DHCP_PORT_RANGE="${DHCP_SERVER_PORT}:${DHCP_CLIENT_PORT}"
 
 function flush() {
+    ## Always flush intercepting first to avoid a few errant packets flying in unmarked.
+    ${IPTABLES} -t mangle -F ${CHAIN_INTERCEPT}
     for table in ${TABLE_LIST}; do 
         ${IPTABLES} -t ${table} -F 
     done
@@ -194,7 +193,7 @@ function markIntfRules () {
         
         d=${MARK_LOCAL_ADDRESS_BASE}
         for address in $addresses; do
-            ${IPTABLES} -t mangle -A ${CHAIN_MARKINTF} ${matchType} ${interface} --destination $address \
+            ${IPTABLES} -t mangle -A ${CHAIN_MARKINTF} ${matchType} ${interface} --destination ${address} \
                 -j MARK --set-mark $(( $c | $d | ${MARK_LOCAL} ))
             d="$(( $d << 1 ))"
         done

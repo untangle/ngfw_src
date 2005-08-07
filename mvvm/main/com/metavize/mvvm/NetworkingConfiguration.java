@@ -103,7 +103,7 @@ public class NetworkingConfiguration implements Serializable
      */
     public void host( IPaddr host )
     {
-        if ( host == null ) 
+        if ( host == null || host.getAddr() == null ) 
             host = EMPTY_IPADDR;
 
         this.host = host;
@@ -111,7 +111,7 @@ public class NetworkingConfiguration implements Serializable
 
     public IPaddr host()
     {
-        if ( this.host == null )
+        if ( this.host == null || this.host.getAddr() == null )
             this.host = EMPTY_IPADDR;
 
         return this.host;
@@ -119,7 +119,7 @@ public class NetworkingConfiguration implements Serializable
 
     public void netmask( IPaddr netmask )
     {
-        if ( netmask == null ) 
+        if ( netmask == null || netmask.getAddr() == null ) 
             netmask = EMPTY_IPADDR;
 
         this.netmask = netmask;
@@ -127,7 +127,7 @@ public class NetworkingConfiguration implements Serializable
 
     public IPaddr netmask()
     {
-        if ( this.netmask == null )
+        if ( this.netmask == null || this.netmask.getAddr() == null )
             this.netmask = EMPTY_IPADDR;
 
         return this.netmask;
@@ -138,7 +138,7 @@ public class NetworkingConfiguration implements Serializable
      */
     public void gateway( IPaddr gateway )
     {
-        if ( gateway == null )
+        if ( gateway == null || gateway.getAddr() == null )
             gateway = EMPTY_IPADDR;
 
         this.gateway = gateway;
@@ -146,7 +146,7 @@ public class NetworkingConfiguration implements Serializable
 
     public IPaddr gateway()
     {
-        if ( this.gateway == null )
+        if ( this.gateway == null || this.gateway.getAddr() == null  )
             this.gateway = EMPTY_IPADDR;
 
         return this.gateway;

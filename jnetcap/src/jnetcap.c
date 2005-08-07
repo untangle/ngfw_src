@@ -232,7 +232,7 @@ JNIEXPORT jlong JNICALL JF_Netcap( getInterfaceNetmaskLong )
     (*env)->ReleaseStringUTFChars( env, j_interface_string, str );
 
     if ( ret < 0 ) {
-        jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "Unable to netmask for interface." );
+        jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "Unable to netmask for interface.\n" );
         return (jlong)-1L;
     }
         

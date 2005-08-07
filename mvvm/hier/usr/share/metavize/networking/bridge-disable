@@ -26,9 +26,13 @@ outsideAddress=$6
 outsideNetmask=$7
 gateway=$8
 
-echo "Disabling bridge: ${bridge} to "
+echo "Disabling bridge(`date`): ${bridge} to "
 echo "  ${inside}: ${insideAddress}/${insideNetmask}"
 echo "  ${outside}: ${outsideAddress} ${outsideNetmask} ${gateway}"
+
+echo "Flushing intercept table"
+## Always flush intercepting first to avoid a few errant packets flying in unmarked.
+${IPTABLES} -t mangle -F ${CHAIN_INTERCEPT}
 
 ## Remove the bridge
 deleteBridge ${bridge}
@@ -39,16 +43,14 @@ ifconfig ${inside}  ${insideAddress} netmask ${insideNetmask}
 ## XXXX May need to delete routes ????
  
 ## Delete all of the default gateways
-for t in `route -n | grep "^0.0.0.0" | awk '{ print $2}'`; do 
-    route del default gw $t
-done
+deleteGateways
 
 killPump
 
 if [ $outsideAddress = ${PUMP_FLAG} ]; then 
-    pump -i ${outside}
+    pumpInterface ${outside}
 else
     ifconfig ${outside} ${outsideAddress} netmask ${outsideNetmask}
-    route add default gw $gateway    
+    addGateway ${gateway}
 fi
 

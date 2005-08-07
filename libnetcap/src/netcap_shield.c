@@ -334,14 +334,15 @@ netcap_shield_response_t* netcap_shield_rep_check        ( in_addr_t ip, int pro
     
     /* xxx Could add a mutex for the ++, but the information is not critical, just for logging/debugging */
     if ( intf < 1 || intf > NC_INTF_MAX ) {
-        errlog( ERR_CRITICAL, "Unable to track session for interface %d\n", intf );
-    } else {
-        switch ( response->ans ) {
-        case NC_SHIELD_LIMITED: rep->counters[intf-1].limited++;  break;
-        case NC_SHIELD_DROP:    rep->counters[intf-1].dropped++;  break;
-        case NC_SHIELD_RESET:   rep->counters[intf-1].rejected++; break;
-        default: break;
-        }
+        debug( 4, "Unable to track session for interface %d, using %d\n", intf, 1 );
+        intf = 1;
+    }
+    
+    switch ( response->ans ) {
+    case NC_SHIELD_LIMITED: rep->counters[intf-1].limited++;  break;
+    case NC_SHIELD_DROP:    rep->counters[intf-1].dropped++;  break;
+    case NC_SHIELD_RESET:   rep->counters[intf-1].rejected++; break;
+    default: break;
     }
     
     response->if_print = 0;

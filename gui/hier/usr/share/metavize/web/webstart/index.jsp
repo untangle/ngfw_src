@@ -106,12 +106,12 @@ if (!( isIndex || isDownload)) isIndex = true;
                 </span>
                 <br/>
                 <br/>
-                <% if ( host.equalsIgnoreCase( "egdemo.metavize.com" )) { %>
-            <b>Login: egdemo</b>
-        <br/>
-        <b>Password: egdemo</b>
-                <br/>
-                <br/>
+                <% if ( host.equalsIgnoreCase( "egdemo.metavize.com" )  && !isDownload ) { %>
+                  <b>Login: egdemo</b>
+                  <br/>
+                  <b>Password: egdemo</b>
+                  <br/>
+                  <br/>
                 <% } %>
                 <br/>
                 <% if ( isDownload ) { %>
@@ -122,11 +122,11 @@ if (!( isIndex || isDownload)) isIndex = true;
                   <param name="type" value="application/x-java-applet"/>
                   <param name="app" value="<%=cb%>gui.jnlp"/>
                   <param name="back" value="true"/>
-                  <!-- Alternate HTML for browsers which cannot instantiate the object -->
-                  <a href="http://java.sun.com/cgi-bin/javawebstart-platform.sh?">
-                    Download Java&trade; v1.5
-                  </a>
                 </object>
+                <!-- Alternate HTML for browsers which cannot instantiate the object -->
+                <a href="http://java.sun.com/cgi-bin/javawebstart-platform.sh?">
+                  Download Java&trade; v1.5
+                </a>
                 <% } %>
                 <% if ( !isDownload ) { %>
                   <center>

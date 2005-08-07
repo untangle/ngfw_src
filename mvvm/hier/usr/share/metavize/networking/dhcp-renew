@@ -20,14 +20,14 @@ else
     exit -1
 fi
 
-echo "Renewing DHCP lease"
+echo "Renewing DHCP lease(`date`)"
 
 generateConfiguration
 
 bridge=$(getBridge ${MVVM_OUTSIDE_INTF} )
 
 if [ "${bridge}x" = "x" ]; then
-    pump -R -i ${MVVM_OUTSIDE_INTF}
+    pumpInterface ${MVVM_OUTSIDE_INTF}
 else
-    pump -R -i ${bridge}
+    pumpInterface ${bridge}
 fi

@@ -129,31 +129,37 @@ class NatEventHandler extends AbstractEventHandler
         request.attach( attachment );
         
         /* Check for NAT, Redirects or DMZ */
-        if ( isNat(  request, protocol ) ||
-             isRedirect( request, protocol ) || 
-             isDmz(  request,  protocol )) {
-            request.release( true );
-            
-            if ( isFtp( request, protocol )) {
-                transform.getSessionManager().registerSession( request, protocol,
-                                                               clientAddr, clientPort,
-                                                               serverAddr, serverPort );
+        try {
+            if ( isNat(  request, protocol ) ||
+                 isRedirect( request, protocol ) || 
+                 isDmz(  request,  protocol )) {
+                request.release( true );
                 
-                attachment.isManagedSession( true );
+                if ( isFtp( request, protocol )) {
+                    transform.getSessionManager().registerSession( request, protocol,
+                                                                   clientAddr, clientPort,
+                                                                   serverAddr, serverPort );
+                    
+                    attachment.isManagedSession( true );
+                }
+                return;
             }
-            return;
-        }
-        
-        /* If nat is on, and this session wasn't natted, redirected or dmzed, it
-         * must be rejected */
-        if ( nat.isEnabled()) {
-            /* Increment the block counter */
-            transform.incrementCount( BLOCK_COUNTER ); // BLOCK COUNTER
             
-            /* XXX How should the session be rejected */
+            /* If nat is on, and this session wasn't natted, redirected or dmzed, it
+             * must be rejected */
+            if ( nat.isEnabled()) {
+                /* Increment the block counter */
+                transform.incrementCount( BLOCK_COUNTER ); // BLOCK COUNTER
+                
+                /* XXX How should the session be rejected */
+                request.rejectSilently();
+                return;
+            }
+        } catch ( NatUnconfiguredException e ) {
+            logger.warn( "Outside network is presently not configured, rejecting session silently" );
             request.rejectSilently();
             return;
-        } 
+        }
         
         /* Otherwise release the session, and don't care about the finalization */
         request.release(false);
@@ -281,7 +287,8 @@ class NatEventHandler extends AbstractEventHandler
     /**
      * Determine if a session is natted, and if necessary, rewrite its session information.
      */
-    private boolean isNat( IPNewSessionRequest request, Protocol protocol ) throws MPipeException
+    private boolean isNat( IPNewSessionRequest request, Protocol protocol ) 
+        throws MPipeException, NatUnconfiguredException
     {
         int port;
                 
@@ -300,11 +307,7 @@ class NatEventHandler extends AbstractEventHandler
             // Unfortunately, as of 5/02/05, this can sometimes be null, probably due to
             // initialization order, the sleeping involved, etc.  For now, just make sure
             // not to ever change the client addr to null, which causes awful things to happen.  jdi XXX
-            if (localAddr == null) {
-                logger.warn("null localAddr in isNat");
-                // We return false, which will cause the session to be blocked later.
-                return false;
-            }
+            if (localAddr == null) throw NatUnconfiguredException.getInstance();
 
             request.clientAddr(localAddr);
             
@@ -469,8 +472,8 @@ class NatEventHandler extends AbstractEventHandler
             argonManager.disableLocalAntisubscribe();
             argonManager.destroyBridge( netConfig, internalAddress.getAddr(), internalSubnet.getAddr());
         } catch ( Exception e ) {
-            logger.error( "Interrupting while reconfiguring interface" );
-            throw new TransformException( "Interrupting while reconfiguring interface", e );
+            logger.error( "error while reconfiguring interface" );
+            throw new TransformException( "unable to reconfiguring interface", e );
         }
     }
 
@@ -531,3 +534,20 @@ class NatAttachment
         this.releasePort = releasePort;
     }
 }
+
+/* Just used to indicate that the outside interface is not configured, it happens in one very well defined
+ * case, hence it doesn't need a message 
+ */
+class NatUnconfiguredException extends Exception {
+    private static NatUnconfiguredException INSTANCE = new NatUnconfiguredException();
+    
+    NatUnconfiguredException()
+    {
+        super();
+    }
+
+    static NatUnconfiguredException getInstance() {
+        return INSTANCE;
+    }
+}
+
