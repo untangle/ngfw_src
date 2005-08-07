@@ -160,9 +160,7 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
         new Thread(new Runnable() {
                 public void run() {
                     synchronized (Blacklist.BLACKLIST) {
-                        System.out.println("DOING IT");
                         Blacklist.BLACKLIST.reconfigure();
-                        System.out.println("DONE");
                     }
                 }
             }).start();
