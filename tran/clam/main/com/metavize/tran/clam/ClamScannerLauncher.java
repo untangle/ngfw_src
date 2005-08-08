@@ -113,34 +113,38 @@ public class ClamScannerLauncher implements Runnable
             os.close();
 
             String virusName = null;
-            String s;
+            String firstLine = null;
+            String line;
             int i = -1;
 
             /**
              * Drain clamdscan output
              */
             try {
-                while ((s = in.readLine()) != null) {
-                    /**
-                     * This returns the 2nd word if " FOUND" is present:
-                     *
-                     * clamdscan found output:
-                     * /home/dmorris/q347558.exe: Worm.Gibe.F FOUND
-                     *
-                     * ----------- SCAN SUMMARY -----------
-                     * Infected files: 1
-                     * Time: 0.016 sec (0 m 0 s)
-                     *
-                     * clamdscan not found output:
-                     * /home/dmorris/foo: OK
-                     *
-                     * ----------- SCAN SUMMARY -----------
-                     * Infected files: 0
-                     * Time: 0.002 sec (0 m 0 s)
-                     */
+                /**
+                 * This returns the 2nd word if " FOUND" is present:
+                 *
+                 * clamdscan found output:
+                 * /home/dmorris/q347558.exe: Worm.Gibe.F FOUND
+                 *
+                 * ----------- SCAN SUMMARY -----------
+                 * Infected files: 1
+                 * Time: 0.016 sec (0 m 0 s)
+                 *
+                 * clamdscan not found output:
+                 * /home/dmorris/foo: OK
+                 *
+                 * ----------- SCAN SUMMARY -----------
+                 * Infected files: 0
+                 * Time: 0.002 sec (0 m 0 s)
+                 */
 
-                    if (true == s.endsWith(" FOUND")) {
-                        StringTokenizer st = new StringTokenizer(s);
+                while ((line = in.readLine()) != null) {
+                    if (firstLine == null)
+                        firstLine = line;
+                    
+                    if (true == line.endsWith(" FOUND")) {
+                        StringTokenizer st = new StringTokenizer(line);
                         String str = null;
 
                         for (i = 0 ; true == st.hasMoreTokens() ; i++) {
@@ -205,7 +209,7 @@ public class ClamScannerLauncher implements Runnable
                 return;
             default:
             case 2:
-                logger.error("clamdscan exit code error: " + i + " cmd: " + command);
+                logger.error("clamdscan exit code error: " + i + " \nCommand: " + command + " \nfirstLine output: " + firstLine);
                 this.result = VirusScannerResult.ERROR;
                 synchronized (this) {this.notifyAll();}
                 return;
