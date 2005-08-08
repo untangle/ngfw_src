@@ -29,10 +29,6 @@ import java.awt.*;
 import javax.swing.event.*;
 
 
-/**
- *
- * @author  inieves
- */
 public abstract class MConfigJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
 
     
@@ -99,6 +95,7 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
 	// SEND SETTINGS TO SERVER
         try {
 	    sendSettings(settings);
+	    refreshAll();
         }
         catch ( Exception e ) {
             try{
@@ -107,24 +104,27 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
             catch(Exception f){
                 Util.handleExceptionNoRestart("Error saving settings", f);
                 new SaveFailureDialog( this.getTitle() );
-                return;
             }
         }
-	finally{
-	    refreshAll();
-	}
     }
 
     protected void refreshAll(){
-	// REFRESH SETTINGS FROM SERVER
+	// GET SETTINGS FROM SERVER
 	try{
 	    refreshSettings();
 	}
 	catch(Exception e){
-            Util.handleExceptionNoRestart("Error preparing settings for refreshing", e);
-	    new RefreshFailureDialog( this.getTitle() );
+	    try{
+		Util.handleExceptionWithRestart("Error loading settings", e);
+	    }
+	    catch(Exception f){	    
+		Util.handleExceptionNoRestart("Error loading settings", f);
+		new RefreshFailureDialog( this.getTitle() );
+		return;
+	    }
 	}
         
+	// UPDATE PANELS WITH NEW SETTINGS
 	for( Map.Entry<String, Refreshable> refreshableMapEntry : refreshableMap.entrySet() ){
             String componentName = "";
             try{
@@ -316,18 +316,11 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
         }
         
         public void run(){
-            try{
-                MConfigJDialog.this.saveAll();
-            }
-            catch(Exception e){
-                Util.handleExceptionNoRestart("Error saving settings", e);
-            }
-            finally{
-                saveJButton.setEnabled(true);
-                reloadJButton.setEnabled(true);
-                closeJButton.setEnabled(true);
-		saveJButton.setIcon(SAVE_INIT_STRING);
-            }
+	    MConfigJDialog.this.saveAll();
+	    saveJButton.setEnabled(true);
+	    reloadJButton.setEnabled(true);
+	    closeJButton.setEnabled(true);
+	    saveJButton.setIcon(SAVE_INIT_STRING);
         }
     }
     
@@ -343,18 +336,11 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
         }
         
         public void run(){
-            try{
-                MConfigJDialog.this.refreshAll();
-            }
-            catch(Exception e){
-                Util.handleExceptionNoRestart("Error refreshing settings", e);
-            }
-            finally{
-                saveJButton.setEnabled(true);
-                reloadJButton.setEnabled(true);
-                closeJButton.setEnabled(true);
-		reloadJButton.setIcon(RELOAD_INIT_STRING);
-            }
+	    MConfigJDialog.this.refreshAll();
+	    saveJButton.setEnabled(true);
+	    reloadJButton.setEnabled(true);
+	    closeJButton.setEnabled(true);
+	    reloadJButton.setIcon(RELOAD_INIT_STRING);
         }
     }
 }
