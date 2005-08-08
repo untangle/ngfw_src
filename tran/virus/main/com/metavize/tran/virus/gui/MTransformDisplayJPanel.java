@@ -22,6 +22,7 @@ public class MTransformDisplayJPanel extends com.metavize.gui.transform.MTransfo
         super.activity0JLabel.setText("SCAN");
         super.activity1JLabel.setText("BLOCK");
         super.activity2JLabel.setText("PASS");
+        super.activity3JLabel.setText("REMOVE");
     }
     
 }
