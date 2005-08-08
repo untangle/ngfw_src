@@ -397,22 +397,16 @@ public class Util {
 	while( throwableRef != null){
 	    if( throwableRef instanceof InvocationConnectionException ){
 		mLoginJFrame.resetLogin("Server communication failure.  Re-login.");
-		if(PRINT_MESSAGES)
-		    e.printStackTrace(System.err);
 		mLoginJFrame.reshowLogin();
 		return;
 	    }
 	    else if( throwableRef instanceof InvocationTargetExpiredException ){
 		mLoginJFrame.resetLogin("Server synchronization failure.  Re-login.");
-		if(PRINT_MESSAGES)
-		    e.printStackTrace(System.err);
 		mLoginJFrame.reshowLogin();
 		return;
 	    }
 	    else if( throwableRef instanceof com.metavize.mvvm.client.LoginExpiredException ){
 		mLoginJFrame.resetLogin("Login expired.  Re-login.");
-		if(PRINT_MESSAGES)
-		    e.printStackTrace(System.err);
 		mLoginJFrame.reshowLogin();
 		return;
 	    }
@@ -420,8 +414,6 @@ public class Util {
 		     || (throwableRef instanceof SocketException)
 		     || (throwableRef instanceof SocketTimeoutException) ){
 		mLoginJFrame.resetLogin("Server connection failure.  Re-login.");
-		if(PRINT_MESSAGES)
-		    e.printStackTrace(System.err);
 		mLoginJFrame.reshowLogin();
 		return;
 	    }
