@@ -48,7 +48,7 @@ public class MessageTransmissionTimeoutStrategy {
       //Time equal-to or below zero means give-up
       return false;
     }
-    maxWaitPeriod = (long) maxWaitPeriod/2;
+    maxWaitPeriod = (long) (maxWaitPeriod * 0.95);//TODO bscott a real "slop" factor - not a guess
 
     return (System.currentTimeMillis() - lastTimestamp) < maxWaitPeriod ? false : true;
   }

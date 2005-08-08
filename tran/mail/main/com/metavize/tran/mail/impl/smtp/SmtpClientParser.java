@@ -51,7 +51,6 @@ class SmtpClientParser
   
   //Transient
   private SmtpClientState m_state = SmtpClientState.COMMAND;
-//  private CPMIMEAccumulator m_mimeAccumulator;
   private ScannerAndAccumulator m_sac;
 
 

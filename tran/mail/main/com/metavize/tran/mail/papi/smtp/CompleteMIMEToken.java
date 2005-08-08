@@ -84,6 +84,8 @@ public class CompleteMIMEToken
     private FileChannel m_channel;
     private final ByteBuffer m_readBuf = ByteBuffer.allocate(CHUNK_SZ);
     private ByteBufferByteStuffer m_bbbs = new ByteBufferByteStuffer();
+    private final Logger m_logger =
+      Logger.getLogger(CompleteMIMEToken.MIMETCPStreamer.class);    
 
 
     MIMETCPStreamer(final Pipeline pipeline) {

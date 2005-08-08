@@ -653,8 +653,8 @@ public abstract class BufferingSessionHandler
           //Page 29
           //Write it to the file regardless
           appendChunk(continuedToken);
-          m_txLog.add("Trickle and buffer.  Whole message obtained.  Evaluate");
           if(isLast) {
+            m_txLog.add("Trickle and buffer.  Whole message obtained.  Evaluate");
             if(evaluateMessage(false)) {
               m_txLog.add("Evaluation passed");
               actions.sendFinalMIMEToServer(continuedToken,

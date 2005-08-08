@@ -39,7 +39,7 @@ public class SmtpCasing extends AbstractCasing {
 
   public SmtpCasing(TCPSession session, boolean clientSide) {
   
-    m_logger.debug("Creating SMTP Casing.  Client: " +
+    m_logger.debug("Creating " + (clientSide?"client":"server") + " SMTP Casing.  Client: " +
       session.clientAddr() + "(" + Integer.toString((int) session.clientIntf()) + "), " +
       "Server: " +
       session.serverAddr() + "(" + Integer.toString((int) session.serverIntf()) + ")");

@@ -222,7 +222,7 @@ public class MIMEAccumulator {
     boolean isLast) {
     int next = nextIndex();
     m_logger.debug("[createChunk()] Creating MIMEChunk " +
-      next + " with " + buf==null?"0":Integer.toString(buf.remaining()) + " bytes");
+      next + " with " + (buf==null?"0":Integer.toString(buf.remaining())) + " bytes");
     return new MIMEChunk(buf, isLast, nextIndex());
   }
 
@@ -577,6 +577,7 @@ public class MIMEAccumulator {
   private class HeadersOnlyTCPStreamer
     implements TCPStreamer {
     private boolean m_sentChunk = false;
+
     public boolean closeWhenDone() {
       return false;
     }
@@ -602,6 +603,7 @@ public class MIMEAccumulator {
     private final ByteBuffer m_readBuf = ByteBuffer.allocate(CHUNK_SZ);
     private ByteBufferByteStuffer m_bbbs = new ByteBufferByteStuffer();
     private boolean m_wroteHeaders = false;
+    private Logger m_logger = Logger.getLogger(MIMEAccumulator.PartialTCPStreamer.class);    
 
     PartialTCPStreamer() {
       m_logger.debug("Created Partial MIME message streamer");
