@@ -326,11 +326,10 @@ public abstract class BufferingSessionHandler
 
     private TxLog m_txLog = new TxLog();
     private BufTxState m_state = BufTxState.INIT;
-    private FileMIMESource m_mimeSource;
-    private MIMEMessageHeaders m_headers;
-    private int m_headersLengthInSource;
+
+    private MIMEAccumulator m_accumulator;
+    private MessageInfo m_messageInfo;
     private MIMEMessage m_msg;
-    private MessageInfo m_msgInfo;
 
     private int m_dataResp = -1;//Special case for when we get a negative
                                 //response to our sending of a "real" DATA
@@ -365,6 +364,10 @@ public abstract class BufferingSessionHandler
         actions.sendCommandToServer(command, new PassthruResponseCompletion());
         changeState(BufTxState.DONE);
         finalReport();
+        if(m_accumulator != null) {
+          m_accumulator.dispose();
+          m_accumulator = null;
+        }
       }
       else {//State/command misalignment
         m_txLog.add("Impossible command now");
@@ -448,10 +451,8 @@ public abstract class BufferingSessionHandler
       
       m_txLog.receivedToken(token);
 
-      m_mimeSource = token.getMIMESource();
-      m_headers = token.getHeaders();
-      m_headersLengthInSource = token.getHeadersLength();
-      m_msgInfo = token.getMessageInfo();
+      m_accumulator = token.getMIMEAccumulator();
+      m_messageInfo = token.getMessageInfo();
 
       handleMIMEChunk(true,
         false,
@@ -463,6 +464,9 @@ public abstract class BufferingSessionHandler
     public void handleContinuedMIME(ContinuedMIMEToken token,
       Session.SmtpCommandActions actions) {
       m_txLog.receivedToken(token);
+
+      //TODO bscott ***DEBUG***
+      token.getMIMEChunk().superDebugMe(m_logger, "[handleContinuedMIME()]");
 
       handleMIMEChunk(false,
         token.isLast(),
@@ -477,11 +481,11 @@ public abstract class BufferingSessionHandler
       m_txLog.receivedToken(token);
 
       m_msg = token.getMessage();
-      m_msgInfo = token.getMessageInfo();
+      m_messageInfo = token.getMessageInfo();
       //TODO bscott Should we close the file of accumulated MIME?  It is really
       //     an error to have the file at all
-      m_mimeSource = null;
-      m_headers = null;
+      m_accumulator = null;
+      m_messageInfo = null;
       handleMIMEChunk(true, true, null, actions);
       
     }
@@ -502,15 +506,17 @@ public abstract class BufferingSessionHandler
         case DRAIN_MAIL_WAIT_REPLY:
         case T_B_DATA_SENT:        
         case DONE:
+          //TODO bscott handle this case better.  Dump anything we have first and
+          //     declare passthru
           m_txLog.add("Impossible command now");
           m_txLog.dumpToError(m_logger);
           appendChunk(continuedToken);
-          if(isLast) {
-            actions.sendContinuedMIMEToServer(new ContinuedMIMEToken(false));
-          }
-          else {
-            actions.sendFinalMIMEToServer(new ContinuedMIMEToken(true), new PassthruResponseCompletion());
-          }
+ //         if(isLast) {
+ //           actions.sendContinuedMIMEToServer(new ContinuedMIMEToken(false));
+ //         }
+ //         else {
+ //           actions.sendFinalMIMEToServer(new ContinuedMIMEToken(true), new PassthruResponseCompletion());
+ //         }
           changeState(BufTxState.DONE);
           break;                
         case BUFFERING_MAIL:
@@ -535,6 +541,8 @@ public abstract class BufferingSessionHandler
                                                         //It only ever gets callback and does some reporting
             }//ENDOF Not Blocking
             else {//BEGIN Blocking Message
+              //TODO bscott is it safe to nuke the accumulator and/or message
+              //     here, or do we wait for the callback?
               //We're blocking the message
               m_txLog.add("Message failed evaluation (we're going to block it)");
               //Send a fake 250 to client
@@ -565,7 +573,7 @@ public abstract class BufferingSessionHandler
             //
             //We simply record the new chunk if nothing
             //else is to be done.
-            boolean tooBig = m_mimeSource.getFile().length() > getGiveupSz();
+            boolean tooBig = m_accumulator.fileSize() > getGiveupSz();
             boolean timedOut = shouldBeginTrickle();
   
             if(tooBig || (timedOut && !isBufferAndTrickle())) {
@@ -652,10 +660,7 @@ public abstract class BufferingSessionHandler
           if(isLast) {
             if(evaluateMessage(false)) {
               m_txLog.add("Evaluation passed");
-              actions.sendFinalMIMEToServer(new ContinuedMIMEToken(
-                continuedToken.getData(),
-                true,
-                true),
+              actions.sendFinalMIMEToServer(continuedToken,
                 new MailTransmissionContinuation());
             }
             else {
@@ -671,10 +676,7 @@ public abstract class BufferingSessionHandler
             }
           }
           else {
-            actions.sendContinuedMIMEToServer(new ContinuedMIMEToken(
-              continuedToken.getData(),
-              false,
-              true));
+            actions.sendContinuedMIMEToServer(continuedToken);
           }
           break;
         default:
@@ -683,10 +685,10 @@ public abstract class BufferingSessionHandler
           actions.transactionEnded(this);
           appendChunk(continuedToken);
           if(isLast) {
-            actions.sendContinuedMIMEToServer(new ContinuedMIMEToken(false));
+            actions.sendContinuedMIMEToServer(continuedToken);
           }
           else {
-            actions.sendFinalMIMEToServer(new ContinuedMIMEToken(true), new PassthruResponseCompletion());
+            actions.sendFinalMIMEToServer(continuedToken, new PassthruResponseCompletion());
           }
       }
     }
@@ -694,30 +696,19 @@ public abstract class BufferingSessionHandler
 
     //If null, just ignore
     private void appendChunk(ContinuedMIMEToken continuedToken) {
-      if(continuedToken == null || continuedToken.isDataWrittenToFile()
-        || !continuedToken.containsData()) {
-        m_txLog.add("Nothing to add for this Continued chunk");
+      if(m_accumulator == null) {
+        m_logger.error("Received ContinuedMIMEToken without a MIMEAccumulator set");
+      }
+      if(continuedToken == null) {
         return;
       }
-      //TODO bscott don't keep openling/closing this channel
-      FileOutputStream fOut = null;
-      try {
-        fOut = new FileOutputStream(m_mimeSource.getFile(), true);
-        FileChannel fc = fOut.getChannel();
-        ByteBuffer writeBuf = continuedToken.getBytes();
-        m_txLog.add("About to write " + writeBuf.remaining() + " body bytes to disk");
-        while(writeBuf.hasRemaining()) {
-          fc.write(writeBuf);//TODO bscott This loop scares me.  Can the channel go haywire?
-        }
-        fOut.flush();
-        fOut.close();
-        //TODO bscott Remove this debugging
-        m_logger.debug("Message file now: " + m_mimeSource.getFile().length() + " bytes long");
+      if(!m_accumulator.appendChunkToFile(continuedToken.getMIMEChunk())) {
+        m_logger.error("Error appending MIME Chunk");
+        //TODO bscott If there is a write-error, should we dispose?
+        m_accumulator.dispose();
+        m_accumulator = null;
       }
-      catch(Exception ex) {
-        try {fOut.close();}catch(Exception ignore){}
-        m_logger.error("Exception appending chunk", ex);
-      }
+      
     }    
 
 
@@ -742,29 +733,17 @@ public abstract class BufferingSessionHandler
      */
     private boolean evaluateMessage(boolean canModify) {
       if(m_msg == null) {
-        MIMEParsingInputStream mimeIn = null;
-        try {
-          mimeIn = m_mimeSource.getInputStream();
-          mimeIn.skip(m_headersLengthInSource);
-          m_msg = new MIMEMessage(mimeIn,
-            m_mimeSource,
-            new MIMEPolicy(),
-            null,
-            m_headers);
-          mimeIn.close();
-        }
-        catch(Exception ex) {
-          try{mimeIn.close();}catch(Exception ignore){}
-          m_logger.error("Error parsing MIME", ex);
+        m_msg = m_accumulator.parseBody();
+        m_accumulator.closeInput();
+        if(m_msg == null) {
           m_txLog.add("Parse error on MIME.  Assume it passed scanning");
           return true;
         }
       }
-
       if(canModify) {
         BPMEvaluationResult result = blockPassOrModify(m_msg,
           getTransaction(),
-          m_msgInfo);
+          m_messageInfo);
         if(result.messageModified()) {
           m_txLog.add("Evaluation modified MIME message");
           m_msg = result.getMessage();
@@ -775,7 +754,7 @@ public abstract class BufferingSessionHandler
         }
       }
       else {
-        return blockOrPass(m_msg, getTransaction(), m_msgInfo) == BlockOrPassResult.PASS;
+        return blockOrPass(m_msg, getTransaction(), m_messageInfo) == BlockOrPassResult.PASS;
       }
     }  
   
@@ -814,16 +793,19 @@ public abstract class BufferingSessionHandler
           //was a parse error)
           if(m_msg == null) {
             m_txLog.add("Passing along an unparsable MIME message in two tokens");
-            actions.sendBeginMIMEToServer(new BeginMIMEToken(m_headers,
-              m_mimeSource,
-              m_headersLengthInSource,
-              m_msgInfo));
-            actions.sendFinalMIMEToServer(new ContinuedMIMEToken(true),
+            actions.sendBeginMIMEToServer(new BeginMIMEToken(m_accumulator, m_messageInfo));
+            actions.sendFinalMIMEToServer(
+              new ContinuedMIMEToken(m_accumulator.createChunk(null, true)),
               new MailTransmissionContinuation());
+            m_accumulator = null;
           }
           else {
             m_txLog.add("Passing along parsed MIME in one token");
-            actions.sentWholeMIMEToServer(new CompleteMIMEToken(m_msg, m_msgInfo),
+            if(m_accumulator != null) {
+              m_accumulator.closeInput();
+              m_accumulator = null;
+            }
+            actions.sentWholeMIMEToServer(new CompleteMIMEToken(m_msg, m_messageInfo),
               new MailTransmissionContinuation());
           }
           
@@ -833,7 +815,17 @@ public abstract class BufferingSessionHandler
         }
         else {
           //Discard message
-
+          if(m_accumulator != null) {
+            m_accumulator.closeInput();
+          }
+          if(m_msg != null) {
+            m_msg.dispose();
+          }
+          else {
+            m_accumulator.dispose();
+          }
+          m_accumulator = null;
+          m_msg = null;
           //Transaction Failed
           getTransaction().failed();
 
@@ -880,14 +872,22 @@ public abstract class BufferingSessionHandler
         
         if(resp.getCode() < 400) {
           m_txLog.add("Begin trickle with BeginMIMEToken");
-          actions.sendBeginMIMEToServer(new BeginMIMEToken(m_headers,
-            m_mimeSource,
-            m_headersLengthInSource,
-            m_msgInfo));
+          actions.sendBeginMIMEToServer(new BeginMIMEToken(m_accumulator, m_messageInfo));
           changeState(m_nextState);
         }
         else {
-          //TODO bscott Nuke the MIME file
+          //Discard message
+          if(m_accumulator != null) {
+            m_accumulator.closeInput();
+          }
+          if(m_msg != null) {
+            m_msg.dispose();
+          }
+          else {
+            m_accumulator.dispose();
+          }
+          m_accumulator = null;
+          m_msg = null;
           actions.sendCommandToServer(new Command(Command.CommandType.RSET),
             new NoopResponseCompletion());
           changeState(BufTxState.PASSTHRU_PENDING_NACK);

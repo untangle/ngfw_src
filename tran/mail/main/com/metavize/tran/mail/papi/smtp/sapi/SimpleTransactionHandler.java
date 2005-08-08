@@ -45,8 +45,6 @@ public class SimpleTransactionHandler
     
     m_logger.debug("[handleCommand]");
     actions.sendCommandToServer(command, new PassthruResponseCompletion());
-//    actions.getTokenResultBuilder().addTokenForServer(command);
-//    actions.enqueueResponseHandler(new PassthruResponseCompletion());
   }
   @Override
   public void handleMAILCommand(MAILCommand command,
@@ -54,10 +52,6 @@ public class SimpleTransactionHandler
     
     m_logger.debug("[handleMAILCommand]");
     actions.sendCommandToServer(command, new MAILContinuation(command.getAddress()));
-/*    
-    actions.getTokenResultBuilder().addTokenForServer(command);
-    actions.enqueueResponseHandler(new MAILContinuation(command.getAddress()));
-*/    
   }
   @Override
   public void handleRCPTCommand(RCPTCommand command,
@@ -65,10 +59,6 @@ public class SimpleTransactionHandler
     
     m_logger.debug("[handleRCPTCommand]");
     actions.sendCommandToServer(command, new RCPTContinuation(command.getAddress()));
-/*    
-    actions.getTokenResultBuilder().addTokenForServer(command);
-    actions.enqueueResponseHandler(new RCPTContinuation(command.getAddress()));
-*/    
   }
   @Override
   public void handleBeginMIME(BeginMIMEToken token,
@@ -82,8 +72,6 @@ public class SimpleTransactionHandler
     if(token.isLast()) {
       m_logger.debug("[handleContinuedMIME] (last token, so enqueue a continuation for the response");
       actions.sendFinalMIMEToServer(token, new DataTransmissionContinuation());
-//      actions.getTokenResultBuilder().addTokenForServer(token);
-//      actions.enqueueResponseHandler(new DataTransmissionContinuation());
     }
     else {
       m_logger.debug("[handleContinuedMIME] (not last - no response expected, so none will be queued");

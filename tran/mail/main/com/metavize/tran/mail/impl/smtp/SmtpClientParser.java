@@ -51,7 +51,8 @@ class SmtpClientParser
   
   //Transient
   private SmtpClientState m_state = SmtpClientState.COMMAND;
-  private MIMEAccumulator m_mimeAccumulator;
+//  private CPMIMEAccumulator m_mimeAccumulator;
+  private ScannerAndAccumulator m_sac;
 
 
   SmtpClientParser(TCPSession session,
@@ -73,13 +74,11 @@ class SmtpClientParser
     // cleanup after errors easier.  In general,
     // there are a lot of helper functions called
     // which return true/false.  Most of these operate
-    // on the MIMEAccumulator data member.  If false
+    // on the ScannerAndAccumulator data member.  If false
     // is returned from these methods, this method
     // performs cleanup and enters passthru mode.
     //   -wrs 7/05
     //
-      
-//    m_logger.debug("parse.  State: " + m_state);
 
     //Do tracing stuff
     getSmtpCasing().traceParse(buf);
@@ -97,6 +96,8 @@ class SmtpClientParser
       m_logger.debug("Draining tokens from buffer (" + toks.size() +
         " tokens so far)");
 
+      //Re-check passthru, in case we hit it while looping in
+      //this method.
       if(isPassthru()) {
         return new ParseResult(new Chunk(buf));
       }         
@@ -105,15 +106,7 @@ class SmtpClientParser
       
         //==================================================
         case COMMAND:
-          //TODO bscott we need a guard here to prevent
-          //     obscenely long lines, and to prevent us from
-          //     kicking-back the buffer to the caller 
-          //     in ever-increasing sizes.  Otherwise, 
-          //     an easy attack is to simply stream
-          //     bytes w/o CRLF        
-//          m_logger.debug(m_state + " state");
           if(findCrLf(buf) >= 0) {//BEGIN Complete Command
-          
             //Parse the next command.  If there is a parse error,
             //pass along the original chunk
             ByteBuffer dup = buf.duplicate();
@@ -153,7 +146,7 @@ class SmtpClientParser
             }
             else if(cmd.getType() == Command.CommandType.DATA) {
               m_logger.debug("entering data transmission (DATA)");
-              if(!openMIMEAccumulator()) {
+              if(!openSAC()) {
                 //Error opening the temp file.  The
                 //error has been reported and the temp file
                 //cleaned-up
@@ -191,22 +184,17 @@ class SmtpClientParser
           
         //==================================================
         case HEADERS:
-//          m_logger.debug(m_state + " state. buf remaining " + buf.remaining());
           getSessionTracker().beginMsgTransmission();
           
           //Duplicate the buffer, in case we have a problem
           ByteBuffer dup = buf.duplicate();
           boolean endOfHeaders = false;
           try {
-            endOfHeaders = m_mimeAccumulator.getScanner().processHeaders(buf, 1024*4);//TODO bscott a real value here
+            endOfHeaders = m_sac.scanner.processHeaders(buf, 1024*4);//TODO bscott a real value here
           }
           catch(LineTooLongException ltle) {
             m_logger.error("Exception looking for headers end", ltle);
-            m_mimeAccumulator.closeFromError();
-            m_mimeAccumulator = null;
-            declarePassthru();
-            toks.add(PassThruToken.PASSTHRU);
-            toks.add(new Chunk(dup));
+            puntDuringHeaders(toks, dup);
             return new ParseResult(toks, null);
           }
 
@@ -215,13 +203,8 @@ class SmtpClientParser
           ByteBuffer dup2 = dup.duplicate();
           dup2.limit(buf.position());
 
-          if(m_mimeAccumulator.getScanner().isHeadersBlank()) {
-            //TODO bscott remove debugging (yet again)
-            int len = dup.remaining()>80?80:dup.remaining();
-            ByteBuffer dup3 = dup.duplicate();
-            dup3.limit(dup3.position() + len);
-            m_logger.debug("Headers are blank (first " +
-              len + " bytes \"" + ASCIIUtil.bbToString(dup3) + "\")");
+          if(m_sac.scanner.isHeadersBlank()) {
+            m_logger.debug("Headers are blank");
           }
           else {
             m_logger.debug("About to write the " +
@@ -229,51 +212,30 @@ class SmtpClientParser
               dup2.remaining() + " header bytes to disk");
           }
 
-          if(!writeHeaderBytesToFile(dup2)) {
+          if(!m_sac.accumulator.addHeaderBytes(dup2, endOfHeaders)) {
             m_logger.error("Unable to write header bytes to disk.  Enter passthru");
-            //Get any bytes trapped in the file
-            ByteBuffer trapped = drainFileToByteBuffer();
-            //Nuke the accumulator
-            m_mimeAccumulator.closeFromError();
-            //Passthru
-            declarePassthru();
-            toks.add(PassThruToken.PASSTHRU);
-            if(trapped != null && trapped.remaining() > 0) {
-              toks.add(new Chunk(trapped));
-            }
-            toks.add(new Chunk(dup));
-            return new ParseResult(toks, null);            
+            puntDuringHeaders(toks, dup);
+            return new ParseResult(toks, null);
           }
 
           if(endOfHeaders) {//BEGIN End of Headers
-            if(!parseHeaders()) {//BEGIN Header PArse Error
+            if(m_sac.accumulator.parseHeaders() == null) {//BEGIN Header PArse Error
               m_logger.error("Unable to parse headers.  Enter passthru");
-              //Get any bytes trapped in the file
-              ByteBuffer trapped = drainFileToByteBuffer();
-              //Nuke the accumulator
-              m_mimeAccumulator.closeFromError();
-              //Passthru
-              declarePassthru();
-              toks.add(PassThruToken.PASSTHRU);
-              if(trapped != null && trapped.remaining() > 0) {
-                toks.add(new Chunk(trapped));
-              }
-              toks.add(new Chunk(dup));
-              return new ParseResult(toks, null);                
+              puntDuringHeaders(toks, dup);
+              return new ParseResult(toks, null);
             }//ENDOF Header PArse Error
-            int headersLength = (int) m_mimeAccumulator.getFile().length();
-            m_logger.debug("Parsed headers successfully (length " + headersLength + ")");
-            toks.add(new BeginMIMEToken(m_mimeAccumulator.getHeaders(),
-              m_mimeAccumulator.getFileSource(),
-              headersLength,
+
+            m_logger.debug("Adding the BeginMIMEToken");
+            toks.add(new BeginMIMEToken(m_sac.accumulator,
               createMessageInfo()));
             changeState(SmtpClientState.BODY);
-            if(m_mimeAccumulator.getScanner().isEmptyMessage()) {
+            if(m_sac.scanner.isEmptyMessage()) {
               m_logger.debug("Message blank.  Skip to reading commands");
-              toks.add(new ContinuedMIMEToken(true));
+              toks.add(new ContinuedMIMEToken(m_sac.accumulator.createChunk(null, true)));
               changeState(SmtpClientState.COMMAND);
+              m_sac = null;
             }
-            m_mimeAccumulator.closeNormal();            
+
           }//ENDOF End of Headers
           else {
             m_logger.debug("Need more header bytes");
@@ -283,21 +245,23 @@ class SmtpClientParser
 
         //==================================================
         case BODY:
-//          m_logger.debug(m_state + " state");
           ByteBuffer bodyBuf = ByteBuffer.allocate(buf.remaining());
-          boolean bodyEnd = m_mimeAccumulator.getScanner().processBody(buf, bodyBuf);
+          boolean bodyEnd = m_sac.scanner.processBody(buf, bodyBuf);
           bodyBuf.flip();
+          MIMEAccumulator.MIMEChunk mimeChunk = null;
           if(bodyEnd) {
             m_logger.debug("Found end of body");
-            m_mimeAccumulator.closeNormal();
-            m_mimeAccumulator = null;
+            mimeChunk = m_sac.accumulator.createChunk(bodyBuf, true);
+            m_logger.debug("Adding last MIME token with length: " + mimeChunk.getData().remaining());
+            m_sac = null;
             changeState(SmtpClientState.COMMAND);
           }
           else {
+            mimeChunk = m_sac.accumulator.createChunk(bodyBuf, false);
+            m_logger.debug("Adding continued MIME token with length: " + mimeChunk.getData().remaining());
             done = true;
           }
-          m_logger.debug("Adding continued MIME token with length: " + bodyBuf.remaining());
-          toks.add(new ContinuedMIMEToken(bodyBuf, bodyEnd, false));
+          toks.add(new ContinuedMIMEToken(mimeChunk));
           break;
       }
     }
@@ -320,43 +284,9 @@ class SmtpClientParser
 
   @Override
   public TokenStreamer endSession() {
-    if(m_mimeAccumulator != null) {
-      //TODO bscott temp debugging
-      
-      File f = m_mimeAccumulator.getFile();
-      if(f != null) {
-        m_logger.debug("Unexpected closed in state " + m_state +
-          " with " + f.length() + " bytes in MIME file");
-      }
-      else {
-        m_logger.debug("Unexpected closed in state " + m_state);      
-      }
-/*      
-      FileOutputStream fOut = null;
-      FileInputStream fIn = null;
-      try {
-        m_logger.debug("MIME file is " + m_mimeAccumulator.getFile().length() + " bytes long");
-        File f = File.createTempFile("SMTP_DEBUG", ".tmp");
-        fOut = new FileOutputStream(f);
-        fIn = new FileInputStream(m_mimeAccumulator.getFile());
-        byte[] transferBuf = new byte[1024];
-        int read = fIn.read(transferBuf);
-        while(read > 0) {
-          fOut.write(transferBuf, 0, read);
-          read = fIn.read(transferBuf);
-        }
-        fOut.flush();
-        fOut.close();
-        fIn.close();
-        m_logger.debug("Wrote MIME file for session to file " +
-          f.getAbsolutePath());
-      }
-      catch(Exception ex) {
-        try {fOut.close();}catch(Exception ignore){}
-        try {fIn.close();}catch(Exception ignore){}
-      }
-*/      
-      m_mimeAccumulator.closeFromError();
+    if(m_sac != null) {
+      m_logger.debug("Unexpected closed in state " + m_state);
+      m_sac.accumulator.dispose();
     }
     return super.endSession();
   }
@@ -373,7 +303,7 @@ class SmtpClientParser
    */
   private void tlsStarting() {
     m_logger.debug("TLS Command accepted.  Enter passthru mode so as to not attempt to parse cyphertext");
-    declarePassthru();//Inform the parser of this state
+    declarePassthru();//Inform the unparser of this state
   }
 
   //================ Inner Class =================
@@ -390,8 +320,8 @@ class SmtpClientParser
       }
       else {
         m_logger.debug("DATA command rejected");
-        m_mimeAccumulator.closeFromError();
-        m_mimeAccumulator = null;
+        m_sac.accumulator.dispose();
+        m_sac = null;
         changeState(SmtpClientState.COMMAND);
       }
     }    
@@ -447,28 +377,22 @@ class SmtpClientParser
   }   
   
   /**
-   * Open the MIME accumulator.  If there was an error,
-   * the MIMEAccumulator (m_mimeAccumulator) is not
+   * Open the MIMEAccumulator and Scanner (ScannerAndAccumulator).
+   * If there was an error,
+   * the ScannerAndAccumulator is not
    * set as a data member and any files/streams
    * are cleaned-up.
    * 
    * @return false if there was an error creating the file.
    */
-  private boolean openMIMEAccumulator() {
-    m_logger.debug("Opening temp file to buffer MIME");
-    File file = null;
-    FileOutputStream fOut = null;
+  private boolean openSAC() {
     try {
-      file = getPipeline().mktemp();
-      fOut = new FileOutputStream(file);
-      m_mimeAccumulator = new MIMEAccumulator(file, fOut);
+      m_sac = new ScannerAndAccumulator(
+        new MIMEAccumulator(getPipeline()));
       return true;
     }
     catch(IOException ex) {
-      m_logger.error("Exception creating a temp file for MIME message", ex);
-      try {fOut.close();}catch(Exception ignore){}
-      try {file.delete();}catch(Exception ignore){}
-      m_mimeAccumulator = null;
+      m_logger.error("Exception creating MIME Accumulator", ex);
       return false;
     }    
   }
@@ -480,7 +404,7 @@ class SmtpClientParser
    */
   private MessageInfo createMessageInfo() {
 
-    MessageInfo ret = MessageInfo.fromMIMEMessage(m_mimeAccumulator.getHeaders(),
+    MessageInfo ret = MessageInfo.fromMIMEMessage(m_sac.accumulator.parseHeaders(),
       getSession().id(),
       getSession().serverPort());
     //Add anyone from the transaction
@@ -507,145 +431,40 @@ class SmtpClientParser
   }
 
   /**
-   * Returns true if the headers were parsed correctly.
-   * As a side effect, the MIMEAccumulator is "completed"
-   * by having its MIMESource set.
-   *
-   * If there is an error, the MIMESource is not set
-   * and the headers are blank.  The MIMEAccumulator
-   * is not cleaned-up, but there should be no temp
-   * streams open.
-   *
-   *
-   * @return false if there was an error   
+   * This code was moved-out of the "parse" method as
+   * it was repeated a few times.
    */
-  private boolean parseHeaders() {
-    FileMIMESource source = null;
-    MIMEParsingInputStream in = null;
-    try {
-      source = new FileMIMESource(m_mimeAccumulator.getFile());
-      in = source.getInputStream();
-      m_mimeAccumulator.setHeaders(MIMEMessageHeaders.parseMMHeaders(in, source));
-      in.close();
-      m_mimeAccumulator.setFileSource(source);      
-      return true;
+  private void puntDuringHeaders(List<Token> toks,
+    ByteBuffer buf) {
+    //Get any bytes trapped in the file
+    ByteBuffer trapped = m_sac.accumulator.drainFileToByteBuffer();
+    //Nuke the accumulator
+    m_sac.accumulator.dispose();
+    m_sac = null;
+    //Passthru
+    declarePassthru();
+    toks.add(PassThruToken.PASSTHRU);
+    if(trapped != null && trapped.remaining() > 0) {
+      toks.add(new Chunk(trapped));
     }
-    catch(Exception ex) {
-      m_logger.error("Error parsing MIMEHeaders", ex);
-      try {in.close();}catch(Exception ignore){}
-      try {source.close();}catch(Exception ignore){}
-      return false;
-    }
+    toks.add(new Chunk(buf));
   }
 
-  /**
-   * Drains the buffer into the File used to accumulate
-   * the headers.
-   *
-   * @return false if there was an error
-   */
-  private boolean writeHeaderBytesToFile(ByteBuffer buf) {
-    try {
-      FileChannel fc = m_mimeAccumulator.getFileOutputStream().getChannel();
-      while(buf.hasRemaining()) {
-        fc.write(buf);
-      }
-      return true;
-    }
-    catch(Exception ex) {
-      m_logger.error("Error writing header bytes to file", ex);
-      return false;
-    }
-  }
+  //=========================== Inner Class ===========================
 
   /**
-   * Method called when we are reading headers,
-   * and encounter an exception parsing the headers.
-   * If there is an error, the MIMEAccumulator
-   * is not closed but any temp streams are.
-   *
-   * Returned buffer is flipped.
+   * Little class to associate the
+   * MIMEAccumulator and the boundary scanner
+   * as-one.
    */
-  private ByteBuffer drainFileToByteBuffer() {
-    FileInputStream fIn = null;
-    try {
-      fIn = new FileInputStream(m_mimeAccumulator.getFile());
-      ByteBuffer buf = ByteBuffer.allocate((int) m_mimeAccumulator.getFile().length());
-      FileChannel fc = fIn.getChannel();
-      while(buf.hasRemaining()) {
-        fc.read(buf);
-      }
-      fIn.close();
-      buf.flip();
-      return buf;
-    }
-    catch(Exception ex) {
-      try {fIn.close();}catch(Exception ignore){}
-      m_logger.error("Error draining headers trapped in file to buffer");
-      return null;
-    }
-  }
+  private class ScannerAndAccumulator {
   
+    final MessageBoundaryScanner scanner;
+    final MIMEAccumulator accumulator;
 
-  //============== Inner Class =====================
-  
-  /**
-   * Class used to accumulate the temporary
-   * file and associated members for
-   * a MIMEMessage.
-   */
-  class MIMEAccumulator {
-    private File m_file;
-    private FileOutputStream m_fOut;
-    private MIMEMessageHeaders m_headers;
-    private MessageBoundaryScanner m_scanner;
-    private FileMIMESource m_source;
-
-    MIMEAccumulator(File file,
-      FileOutputStream fOut) {
-      m_file = file;
-      m_fOut = fOut;
-      m_scanner = new MessageBoundaryScanner();
+    ScannerAndAccumulator(MIMEAccumulator accumulator) {
+      scanner = new MessageBoundaryScanner();
+      this.accumulator = accumulator;
     }
-    MessageBoundaryScanner getScanner() {
-      return m_scanner;
-    }
-
-    File getFile() {
-      return m_file;
-    }
-    FileOutputStream getFileOutputStream() {
-      return m_fOut;
-    }
-    void setHeaders(MIMEMessageHeaders headers) {
-      m_headers = headers;
-    }
-    MIMEMessageHeaders getHeaders() {
-      return m_headers;
-    }
-    void setFileSource(FileMIMESource source) {
-      m_source = source;
-    }
-    FileMIMESource getFileSource() {
-      return m_source;
-    }
-
-    /**
-     * Closes the input stream, but leaves the file
-     * assuming it'll be passed downstream.
-     */
-    void closeNormal() {
-      try {m_fOut.close();}catch(Exception ignore){}
-    }
-    /**
-     * Closes any streams and removes the file.
-     */
-    void closeFromError() {
-      closeNormal();
-      try {m_source.close();}catch(Exception ignore){}
-      try {m_file.delete();}catch(Exception ignore){}
-    }
-    
   }
-
 }

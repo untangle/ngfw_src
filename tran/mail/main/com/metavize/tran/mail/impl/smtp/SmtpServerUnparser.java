@@ -93,39 +93,59 @@ class SmtpServerUnparser
     if(token instanceof BeginMIMEToken) {
       m_logger.debug("Send BeginMIMEToken to server");
       getSessionTracker().beginMsgTransmission();
-      ByteBuffer buf = token.getBytes();
-      getSmtpCasing().traceUnparse(buf);
+      //Initialize the byte stuffer.
       m_byteStuffer = new ByteBufferByteStuffer();
-      m_byteStuffer.advancePastHeaders();
-      return new UnparseResult(buf);
+      return new UnparseResult(
+        getSmtpCasing().wrapUnparseStreamerForTrace(
+        ((BeginMIMEToken) token).toTCPStreamer(m_byteStuffer)));
     }
 
     //-----------------------------------------------------------
     if(token instanceof CompleteMIMEToken) {
       m_logger.debug("Send CompleteMIMEToken to server");
       getSessionTracker().beginMsgTransmission();
-      return new UnparseResult(((CompleteMIMEToken) token).toTCPStreamer(getPipeline()));
+      return new UnparseResult(
+        getSmtpCasing().wrapUnparseStreamerForTrace(
+        ((CompleteMIMEToken) token).toTCPStreamer(getPipeline())));
     }
     //-----------------------------------------------------------
     if(token instanceof ContinuedMIMEToken) {
-      boolean last = ((ContinuedMIMEToken) token).isLast();
-      ByteBuffer buf = token.getBytes();
-      m_logger.debug("Send continued MIME chunk to server (" +
-        buf.remaining() + " bytes, " +
-        (last?"":"not ") + "last)");
+      ContinuedMIMEToken continuedToken = (ContinuedMIMEToken) token;
 
-      ByteBuffer sink = ByteBuffer.allocate(buf.remaining());
-      m_byteStuffer.transfer(buf, sink);
-      m_logger.debug("After byte stuffing, wound up with: " + sink.remaining() + " bytes");
-      if(last) {
-        ByteBuffer remainder = m_byteStuffer.getLast(true);
-        getSmtpCasing().traceUnparse(sink);
-        getSmtpCasing().traceUnparse(remainder);
-        return new UnparseResult(new ByteBuffer[] {sink, remainder});
+      ByteBuffer sink = null;
+      if(continuedToken.shouldUnparse()) {
+        m_logger.debug("Sending continued MIME chunk to server");
+        continuedToken.getMIMEChunk().superDebugMe(m_logger, "[handleContinuedMIME()]");
+        ByteBuffer buf = token.getBytes();
+        sink = ByteBuffer.allocate(buf.remaining() + (m_byteStuffer.getLeftoverCount()*2));
+        m_byteStuffer.transfer(buf, sink);
+        m_logger.debug("After byte stuffing, wound up with: " + sink.remaining() + " bytes");
       }
       else {
-        getSmtpCasing().traceUnparse(sink);
-        return new UnparseResult(sink);
+        m_logger.debug("Continued MIME chunk should not go to server (already sent or empty)");
+      }
+      if(continuedToken.getMIMEChunk().isLast()) {
+        m_logger.debug("Last MIME chunk");
+        ByteBuffer remainder = m_byteStuffer.getLast(true);
+        if(sink != null) {
+          getSmtpCasing().traceUnparse(sink);
+        }
+        getSmtpCasing().traceUnparse(remainder);
+        m_byteStuffer = null;
+        return new UnparseResult(
+          sink==null?
+          new ByteBuffer[] {remainder}:
+          new ByteBuffer[] {sink, remainder});
+      }
+      else {
+        if(sink != null) {
+          getSmtpCasing().traceUnparse(sink);
+          return new UnparseResult(sink);
+        }
+        else {
+          m_logger.debug("Continued token empty (return nothing)");
+          return UnparseResult.NONE;
+        }
       }
     }
     //-----------------------------------------------------------

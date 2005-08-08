@@ -386,8 +386,8 @@ public final class Session
    * Helper 
    */
   private TransactionHandler getOrCreateTxHandler() {
-    m_logger.debug("Creating new Transaction Handler");
     if(m_currentTxHandler == null) {
+      m_logger.debug("Creating new Transaction Handler");
       m_currentTxHandler = m_sessionHandler.createTxHandler(new SmtpTransaction());
     }
     return m_currentTxHandler;
@@ -778,6 +778,12 @@ public final class Session
     public boolean handleClientFIN() {
       boolean ret = m_sessionHandler.handleClientFIN(m_currentTxHandler);
       m_logger.debug("Returning " + ret + " to reciept of client FIN");
+      if(ret) {
+        //Add extra response handler, just in case
+        m_outstandingRequests.add(new OutstandingRequest(
+          new NoopResponseCompletion()));        
+        
+      }
       return ret;
     }
 

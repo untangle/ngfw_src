@@ -18,6 +18,7 @@ import java.nio.*;
 import java.io.*;
 import org.apache.log4j.Logger;
 import java.nio.channels.*;
+import com.metavize.mvvm.tapi.event.*;
 
 
 public class SmtpCasing extends AbstractCasing {
@@ -37,6 +38,12 @@ public class SmtpCasing extends AbstractCasing {
   // constructors -----------------------------------------------------------
 
   public SmtpCasing(TCPSession session, boolean clientSide) {
+  
+    m_logger.debug("Creating SMTP Casing.  Client: " +
+      session.clientAddr() + "(" + Integer.toString((int) session.clientIntf()) + "), " +
+      "Server: " +
+      session.serverAddr() + "(" + Integer.toString((int) session.serverIntf()) + ")");
+      
     CasingSessionTracker tracker = new CasingSessionTracker();  
     if(clientSide) {
       m_parser = new SmtpClientParser(session, this, tracker);
@@ -74,6 +81,19 @@ public class SmtpCasing extends AbstractCasing {
   protected void passthru() {
     m_parser.passthru();
     m_unparser.passthru();
+  }
+
+  /**
+   * If trace is enabled, this wrapps the stream to
+   * observer the output of a streamer
+   */
+  protected TCPStreamer wrapUnparseStreamerForTrace(TCPStreamer streamer) {
+    if(m_trace) {
+      return new TCPStreamerUnparseWrapper(streamer);
+    }
+    else {
+      return streamer;
+    }
   }
 
   private static File s_traceRoot;
@@ -132,6 +152,24 @@ public class SmtpCasing extends AbstractCasing {
       if(++m_closeCount > 1) {
         closeTrace();
       }
+    }
+  }
+
+  private class TCPStreamerUnparseWrapper
+    implements TCPStreamer {
+    private final TCPStreamer m_wrapped;
+    TCPStreamerUnparseWrapper(TCPStreamer wrap) {
+      m_wrapped = wrap;
+    }
+    public boolean closeWhenDone() {
+      return m_wrapped.closeWhenDone();
+    }
+    public ByteBuffer nextChunk() {
+      ByteBuffer ret = m_wrapped.nextChunk();
+      if(ret != null) {
+        traceUnparse(ret);
+      }
+      return ret;
     }
   }
 

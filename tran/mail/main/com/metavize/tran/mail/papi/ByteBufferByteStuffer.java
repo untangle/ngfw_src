@@ -105,6 +105,13 @@ public class ByteBufferByteStuffer {
   }
 
   /**
+   * Number of bytes left over
+   */
+  public int getLeftoverCount() {
+    return m_leftover.available();
+  }
+
+  /**
    * Get any queued bytes.  Optionaly,
    * include the CRLF.CRLF in the
    * returned buffer.

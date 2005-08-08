@@ -11,80 +11,75 @@
 
 package com.metavize.tran.mail.papi.smtp;
 
-import static com.metavize.tran.util.Ascii.*;
-import static com.metavize.tran.util.BufferUtil.*;
-
-import java.io.*;
+import com.metavize.tran.token.Token;
+import com.metavize.tran.mail.papi.MIMEAccumulator;
 import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
-import java.util.LinkedList;
-import java.util.List;
-
-import com.metavize.mvvm.*;
-import com.metavize.mvvm.tapi.*;
-import com.metavize.tran.token.*;
-import com.metavize.tran.util.*;
-import org.apache.log4j.Logger;
-import com.metavize.tran.mime.*;
 
 
 /**
  * Token which follows a {@link com.metavize.tran.mail.BeginMIMEToken BeginMIMEToken}.
- * There may be one or more ContinuedMIMETokens after the begin token.  The last
- * ContinuedMIMEToken can be detected via the {@link #isLast isLast} property.
+ * There may be one or more ContinuedMIMETokens after the begin token.  Remaining
+ * interesting properties about this token are found in the internal
+ * {@link #getMIMEChunk MIMEChunk}.
  */
-public class ContinuedMIMEToken
-  extends Chunk {
+public final class ContinuedMIMEToken
+  implements Token {
 
   private static final ByteBuffer EMPTY_BUFFER = ByteBuffer.allocate(0);
 
-  public static final ContinuedMIMEToken EMPTY_BODY =
-    new ContinuedMIMEToken(EMPTY_BUFFER, true, true);
+  private final MIMEAccumulator.MIMEChunk m_chunk;
 
-  private final Logger m_logger = Logger.getLogger(ContinuedMIMEToken.class);
-
-  private final boolean m_isLast;
-  private boolean m_dataWrittenToFile;
-
-
-  public ContinuedMIMEToken(ByteBuffer buf,
-    boolean isLast,
-    boolean isDataWrittenToFile) {
-    super(buf);
-    m_isLast = isLast;
-    m_dataWrittenToFile = isDataWrittenToFile;
-  }
-  public ContinuedMIMEToken(boolean isLast) {
-    this(null, isLast, true);
+  public ContinuedMIMEToken(MIMEAccumulator.MIMEChunk chunk) {
+    m_chunk = chunk;
   }
 
   /**
-   * Has the data contained in this token (if there
-   * is any) already been written to the original
-   * File holding the entire message.
+   * Get the internal
+   * {@link com.metavize.tran.mail.papi.MIMEAccumulator#MIMEChunk MIMEChunk}.
+   *
+   * @return the chunk
    */
-  public boolean isDataWrittenToFile() {
-    return m_dataWrittenToFile;
+  public MIMEAccumulator.MIMEChunk getMIMEChunk() {
+    return m_chunk;
   }
-  public void dataWrittenToFile() {
-    m_dataWrittenToFile = true;
-  }
-
   /**
-   * Does this chunk represent the past in a series
-   * of MIME messages
+   * Convienence method.  Equivilant to
+   * <code>getMIMEChunk().shouldUnparse()</code>.
+   * This <b>must</b> be called before unparsing
+   * (calling {@link #getBytes getBytes} as the
+   * data in this chunk may have already been unparsed
+   * as a result of being in buffer-and-passthru
+   * mode.
+   *
+   * @return true if this token should be
+   *         unparsed (its <code>getBytes()</code>
+   *         method can then be used to get the unparsed
+   *         bytes).  
+   */
+  public boolean shouldUnparse() {
+    return m_chunk.shouldUnparse();
+  }
+  
+  /**
+   * Convienence method.  Equivilant to
+   * <code>getMIMEChunk().isLast()</code>.
+   *
+   * @return true if this token represents
+   *         the last of the MIME chunks
    */
   public boolean isLast() {
-    return m_isLast;
-  }
+    return m_chunk.isLast();
+  }  
 
   /**
-   * Does this continued MIME token contain data, or is it simply
-   * a pointer to indicate that the original FileMIMESource
-   * has been updated with data.
+   * Get the bytes for this chunk (unparse).  WARNING - this
+   * will always return data, even if {@link #shouldUnparse shouldUnparse}
+   * returns false.
+   *
+   * @return the bytes, as-per Token contract
    */
-  public boolean containsData() {
-    return getData() != null;
+  public ByteBuffer getBytes() {
+    return m_chunk.hasData()?m_chunk.getData():EMPTY_BUFFER;
   }
-
+  
 }

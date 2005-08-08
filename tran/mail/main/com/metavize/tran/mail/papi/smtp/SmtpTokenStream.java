@@ -138,17 +138,25 @@ public class SmtpTokenStream
     m_queuedClientTokens.add(token);
     
     if(!m_clientTokensEnabled) {
-      m_logger.debug("[handleClientToken] Queuing Token");
+      m_logger.debug("[handleClientToken] Queuing Token \"" +
+        token.getClass().getName() + "\" (" +
+        m_queuedClientTokens.size() + " tokens queued)");
     }
     else {
       //Important - the enablement of client tokens
       //could change as this loop is running.
       while(m_queuedClientTokens.size() > 0 && m_clientTokensEnabled) {
         if(m_queuedClientTokens.size() > 1) {
-          m_logger.debug("[handleClientToken] Draining Queued Token");
+          m_logger.debug("[handleClientToken] Draining Queued Token \"" +
+            m_queuedClientTokens.get(0).getClass().getName() + "\" (" + 
+            m_queuedClientTokens.size() + " tokens remain)");
         }
         handleClientTokenImpl(m_queuedClientTokens.remove(0), trb);
       }
+    }
+    if(m_queuedClientTokens.size() > 0) {
+      m_logger.debug("[handleClientToken] returning with (" +
+        m_queuedClientTokens.size() + " queued tokens)");
     }
     updateTimestamps(trb.hasDataForClient(), trb.hasDataForServer());
     return trb.getTokenResult();
@@ -164,7 +172,9 @@ public class SmtpTokenStream
     TokenResultBuilder trb = new TokenResultBuilder(m_pipeline);
 
     while(m_queuedClientTokens.size() > 0 && m_clientTokensEnabled) {
-      m_logger.debug("[handleServerToken] Draining Queued Token");
+      m_logger.debug("[handleServerToken] Draining Queued Client Token \"" +
+        m_queuedClientTokens.get(0).getClass().getName() + "\" (" + 
+        m_queuedClientTokens.size() + " tokens remain)");
       handleClientTokenImpl(m_queuedClientTokens.remove(0), trb);
     }    
     handleServerTokenImpl(token, trb);
@@ -172,9 +182,15 @@ public class SmtpTokenStream
     //Important - the enablement of client tokens
     //could change as this loop is running.
     while(m_queuedClientTokens.size() > 0 && m_clientTokensEnabled) {
-      m_logger.debug("[handleServerToken] Draining Queued Token");
+      m_logger.debug("[handleServerToken] Draining Queued Token \"" +
+        m_queuedClientTokens.get(0).getClass().getName() + "\" (" + 
+        m_queuedClientTokens.size() + " tokens remain)");
       handleClientTokenImpl(m_queuedClientTokens.remove(0), trb);
     }
+    if(m_queuedClientTokens.size() > 0) {
+      m_logger.debug("[handleServerToken] returning with (" +
+        m_queuedClientTokens.size() + " queued tokens)");
+    }    
     updateTimestamps(trb.hasDataForClient(), trb.hasDataForServer());    
     return trb.getTokenResult();
   }

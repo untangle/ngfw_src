@@ -11,91 +11,95 @@
 
 package com.metavize.tran.mail.papi.smtp;
 
-import java.nio.ByteBuffer;
 import org.apache.log4j.Logger;
-import com.metavize.tran.mime.*;
-//If these lines are uncommented, some code generator
-//based on doclet barfs. - wrs
-//import com.metavize.tran.mime.MIMEMessageHeaders;
-//import com.metavize.tran.mime.FileMIMESource;
-import java.io.IOException;
-import com.metavize.tran.token.Token;
-import com.metavize.tran.mail.*;
-import com.metavize.tran.mail.papi.*;
+import com.metavize.tran.mime.MIMEMessage;
+import com.metavize.mvvm.tapi.event.TCPStreamer;
+import com.metavize.tran.token.MetadataToken;
+import com.metavize.tran.mail.papi.MIMEAccumulator;
+import com.metavize.tran.mail.papi.MessageInfo;
+import com.metavize.tran.mail.papi.ByteBufferByteStuffer;
+import java.nio.ByteBuffer;
 
 
 /**
  * Token reprsenting the Begining
  * of a MIME message.
  * <br>
- * Warning - This is not a "Metadata" token.  It will
- * write-out.  Make sure not to duplicate headers
- * by passing this token along by accident.
+ * Note that since this is a Metadata
+ * Token, you must use {@link #toTCPStreamer toTCPStreamer}
+ * to write this out
+ * 
  */
 public class BeginMIMEToken
-  implements Token {
-
-  private static final ByteBuffer EMPTY_BUFFER =
-    ByteBuffer.allocate(0);
+  extends MetadataToken {
 
   private final Logger m_logger =
     Logger.getLogger(BeginMIMEToken.class);
 
-  private MIMEMessageHeaders m_headers;
-  private FileMIMESource m_mimeSource;
-  private int m_headersLength;
+  private MIMEAccumulator m_accumulator;
   private MessageInfo m_messageInfo;
 
-  public BeginMIMEToken(MIMEMessageHeaders headers,
-    FileMIMESource mimeSource,
-    int headersLength,
+
+  public BeginMIMEToken(MIMEAccumulator accumulator,
     MessageInfo messageInfo) {
-    m_headers = headers;
-    m_mimeSource = mimeSource;
-    m_headersLength = headersLength;
+    m_accumulator = accumulator;
     m_messageInfo = messageInfo;
+    //TODO bscott ***DEBUG*** remove debug
+    m_logger.debug("Created");
   }
 
-  /**
-   * Get the length of the headers (including terminator)
-   * within {@link #getMIMESource the file}.
-   */ 
-  public int getHeadersLength() {
-    return m_headersLength;
-  }
-  
-  /**
-   * Get the Headers of the MIME message
-   */
-  public MIMEMessageHeaders getHeaders() {
-    return m_headers;
-  }
-
-  /**
-   * Get the FileMIMESource, which holds
-   * the Headers as well as any accumulated
-   * portions of the body.
-   */
-  public FileMIMESource getMIMESource() {
-    return m_mimeSource;
-  }
 
   public MessageInfo getMessageInfo() {
     return m_messageInfo;
   }
 
+  public MIMEAccumulator getMIMEAccumulator() {
+    return m_accumulator;
+  }
+
+
+
   /**
-   * Method returns the bytes of the header.
+   * Get a TokenStreamer for the initial
+   * contents of this message
+   *
+   * @param byteStuffer the byte stuffer used for initial bytes.  The
+   *        stuffer will retain its state, so subsequent writes will
+   *        cary-over any retained bytes.
+   * @return the TokenStreamer
    */
-  public ByteBuffer getBytes() {
-    try {
-      return m_headers == null?
-        EMPTY_BUFFER:
-        m_headers.toByteBuffer();
+  public TCPStreamer toTCPStreamer(ByteBufferByteStuffer byteStuffer) {
+    return new ByteBtuffingTCPStreamer(m_accumulator.toTCPStreamer(),
+      byteStuffer);
+  }  
+
+  //----------------- Inner Class -----------------------
+
+  private class ByteBtuffingTCPStreamer
+    implements TCPStreamer {
+    
+    private final TCPStreamer m_wrappedStreamer;
+    private final ByteBufferByteStuffer m_bbbs;
+
+    ByteBtuffingTCPStreamer(TCPStreamer wrapped,
+      ByteBufferByteStuffer bbbs) {
+      m_wrappedStreamer = wrapped;
+      m_bbbs = bbbs;
     }
-    catch(IOException ex) {
-      m_logger.error("Unable to write Headers Buffer", ex);
-      return EMPTY_BUFFER;
+    
+    public boolean closeWhenDone() {
+      return m_wrappedStreamer.closeWhenDone();
     }
+    
+    public ByteBuffer nextChunk() {
+      ByteBuffer next = m_wrappedStreamer.nextChunk();
+      if(next != null) {
+        ByteBuffer ret = ByteBuffer.allocate(next.remaining() +
+          (m_bbbs.getLeftoverCount()*2));
+        m_bbbs.transfer(next, ret);
+        return ret;
+      }
+      return next;
+    }    
   }
 }
