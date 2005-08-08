@@ -78,6 +78,13 @@ public class PopCommand implements Token
         return zBuf;
     }
 
+    // Object methods ---------------------------------------------------------
+
+    public String toString()
+    {
+        return AsciiCharBuffer.wrap(getBytes()).toString();
+    }
+
     /* consume rest of buffer (including any terminating CRLF) */
     private static String consumeBuf(ByteBuffer zBuf)
     {

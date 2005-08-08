@@ -373,14 +373,12 @@ public class PopServerParser extends AbstractParser
         logger.debug("entering DONOTCARE state");
         state = State.DONOTCARE;
 
-logger.debug("in queue: " + zTokens);
         /* when state machine receives this token,
          * it will pull up,
          * swap MIMEMessage token with trickle token, and
          * pass through do-not-care tokens (and stay in DONOTCARE stage)
          */
         zTokens.add(new DoNotCareT(zBuf));
-logger.debug("in queue: " + zTokens);
 
 //        closeMsgChannel();
 //        zMsgFile = null;
