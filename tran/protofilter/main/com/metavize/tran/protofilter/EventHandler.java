@@ -231,7 +231,7 @@ public class EventHandler extends AbstractEventHandler
                 /* XXX Do alert here */
             }
 
-            if (elem.isBlocked() == true) {
+            if (elem.isBlocked()) {
                 transform.incrementCount( BLOCK_COUNTER );
 
                 if (logger.isDebugEnabled()) {
@@ -249,6 +249,8 @@ public class EventHandler extends AbstractEventHandler
                     ((UDPSession)sess).expireClient(); /* XXX correct? */
                     ((UDPSession)sess).expireServer(); /* XXX correct? */
                 }
+
+                sess.release();
             }
 
             ProtoFilterLogEvent evt = new ProtoFilterLogEvent
