@@ -465,9 +465,6 @@ public abstract class BufferingSessionHandler
       Session.SmtpCommandActions actions) {
       m_txLog.receivedToken(token);
 
-      //TODO bscott ***DEBUG***
-      token.getMIMEChunk().superDebugMe(m_logger, "[handleContinuedMIME()]");
-
       handleMIMEChunk(false,
         token.isLast(),
         token,

@@ -115,7 +115,7 @@ class SmtpServerUnparser
       ByteBuffer sink = null;
       if(continuedToken.shouldUnparse()) {
         m_logger.debug("Sending continued MIME chunk to server");
-        continuedToken.getMIMEChunk().superDebugMe(m_logger, "[handleContinuedMIME()]");
+//        continuedToken.getMIMEChunk().superDebugMe(m_logger, "[handleContinuedMIME()]");
         ByteBuffer buf = token.getBytes();
         sink = ByteBuffer.allocate(buf.remaining() + (m_byteStuffer.getLeftoverCount()*2));
         m_byteStuffer.transfer(buf, sink);
