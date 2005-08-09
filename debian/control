@@ -38,7 +38,7 @@ Depends: mvvm
 XB-Price: 0
 XB-Display-Name: Packet Attack Shield
 XB-Website: http://www.metavize.com/packetshield.html
-XB-Rack-Position: 0
+XB-Rack-Position: 1001
 Description: The Metavize Packet Attack Shield
  The Packet Attack Shield prevents packet based attacks on your
  network.
@@ -146,7 +146,7 @@ Depends: mvvm, spamc-mv, mail-casing
 XB-Price: 0
 XB-Display-Name: SpamGuard
 XB-Website: http://www.metavize.com/spam.html
-XB-Rack-Position: 1001
+XB-Rack-Position: 0
 Description: The Metavize SpamGuard Software Appliance
  The SpamGuard Software Appliance marks Spam email as Spam.
 
