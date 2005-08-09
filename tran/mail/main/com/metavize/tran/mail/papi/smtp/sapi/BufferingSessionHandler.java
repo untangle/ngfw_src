@@ -521,7 +521,9 @@ public abstract class BufferingSessionHandler
           if(isLast) {
             //We have the complete message.
             m_txLog.add("Have whole message.  Evaluate");
-            appendChunk(continuedToken);
+            if(continuedToken != null) {
+              appendChunk(continuedToken);
+            }
             if(evaluateMessage(true)) {//BEGIN Not Blocking
               m_txLog.add("Message passed evaluation");
               //We're passing the message (or there was a silent parser error)
@@ -693,11 +695,11 @@ public abstract class BufferingSessionHandler
 
     //If null, just ignore
     private void appendChunk(ContinuedMIMEToken continuedToken) {
-      if(m_accumulator == null) {
-        m_logger.error("Received ContinuedMIMEToken without a MIMEAccumulator set");
-      }
       if(continuedToken == null) {
         return;
+      }    
+      if(m_accumulator == null) {
+        m_logger.error("Received ContinuedMIMEToken without a MIMEAccumulator set");
       }
       if(!m_accumulator.appendChunkToFile(continuedToken.getMIMEChunk())) {
         m_logger.error("Error appending MIME Chunk");
