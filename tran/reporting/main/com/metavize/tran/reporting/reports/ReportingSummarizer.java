@@ -101,7 +101,7 @@ public class ReportingSummarizer extends BaseSummarizer {
         long totalInboundBytes = c2pIn + s2pIn;
 
         double numSecs = (endDate.getTime() - startDate.getTime()) / 1000d;
-        double numDays = ((double)numSecs) / (60d * 60d * 24d);
+
 
         addEntry("Data transferred", Util.trimNumber("Bytes",bytesTotalByDirection));
         addEntry("&nbsp;&nbsp;&nbsp;Sent to outside", Util.trimNumber("Bytes",bytesSentToOutside) + " (" + Util.percentNumber(bytesSentToOutside,bytesTotalByDirection) + ")");
@@ -123,7 +123,7 @@ public class ReportingSummarizer extends BaseSummarizer {
 
         addEntry("Average data transfer rates", "&nbsp;");
         addEntry("&nbsp;&nbsp;&nbsp;Per second", Util.trimNumber("Bytes/sec",(long) (((double)bytesTotalByDirection) / numSecs)));
-        addEntry("&nbsp;&nbsp;&nbsp;Per day", Util.trimNumber( "Bytes/day",(long) (((double)bytesTotalByDirection) / numDays)));
+        addEntry("&nbsp;&nbsp;&nbsp;Per day", Util.trimNumber( "Bytes/day",(long) (((double)bytesTotalByDirection) / numSecs) * 86400l ));
 
         addEntry("&nbsp;", "&nbsp;");
 
