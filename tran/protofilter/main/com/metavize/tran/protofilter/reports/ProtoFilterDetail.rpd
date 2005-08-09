@@ -1,6 +1,6 @@
 TEMPLATE=Detail
 REPORT_NAME=ProtoFilterDetail
-REPORT_TITLE=Protocol Policy Violations
+REPORT_TITLE=Rogue Protocol Control - Protocol Policy Violations
 FIELD_1.name=time_stamp
 FIELD_1.type=Timestamp
 FIELD_2.name=c_client_addr

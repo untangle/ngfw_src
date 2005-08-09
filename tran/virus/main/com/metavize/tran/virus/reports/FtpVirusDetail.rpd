@@ -1,6 +1,6 @@
 TEMPLATE=Detail
 REPORT_NAME=FtpVirusDetail
-REPORT_TITLE=FTP Virus Incidents
+REPORT_TITLE=AntiVirus - FTP Incidents
 FIELD_1.name=time_stamp
 FIELD_1.type=Timestamp
 FIELD_2.name=c_client_addr

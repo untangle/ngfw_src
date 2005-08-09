@@ -1,6 +1,6 @@
 TEMPLATE=Detail
 REPORT_NAME=CookieDetail
-REPORT_TITLE=Cookie Incidents
+REPORT_TITLE=Spyware Blocker - Cookie Incidents
 FIELD_1.name=time_stamp
 FIELD_1.type=Timestamp
 FIELD_2.name=name

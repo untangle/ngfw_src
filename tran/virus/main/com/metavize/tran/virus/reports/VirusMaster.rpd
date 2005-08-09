@@ -1,6 +1,6 @@
 TEMPLATE=MasterOfThreeChildren
 REPORT_NAME=VirusMaster
-REPORT_TITLE=AntiVirus
+REPORT_TITLE=AntiVirus - Summary
 SUBREPORT_1=reports/WebVirus.jasper
 SUBREPORT_2=reports/FtpVirus.jasper
 SUBREPORT_3=reports/EmailVirus.jasper

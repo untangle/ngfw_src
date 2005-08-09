@@ -1,6 +1,6 @@
 TEMPLATE=Detail
 REPORT_NAME=ActiveXDetail
-REPORT_TITLE=ActiveX Incidents
+REPORT_TITLE=Spyware Blocker - ActiveX Incidents
 FIELD_1.name=time_stamp
 FIELD_1.type=Timestamp
 FIELD_2.name=name

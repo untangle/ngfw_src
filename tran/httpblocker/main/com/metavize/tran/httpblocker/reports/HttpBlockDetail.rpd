@@ -1,6 +1,6 @@
 TEMPLATE=Detail
 REPORT_NAME=BlockDetail
-REPORT_TITLE=Web Control Policy Violations
+REPORT_TITLE=Web Content Control - Policy Violations
 FIELD_1.name=c_server_port
 FIELD_1.type=Integer
 FIELD_2.name=client_addr

@@ -23,7 +23,7 @@
     <title>
         <band height="14">
             <staticText>
-                <reportElement key="staticText" positionType="Float" mode="Opaque" x="53" y="0" width="169" height="14"/>
+                <reportElement key="staticText" positionType="Float" mode="Opaque" x="53" y="0" width="500" height="14"/>
                 <box topBorder="None" topBorderColor="#0" leftBorder="None" leftBorderColor="#0" bottomBorder="None" bottomBorderColor="#0" rightBorder="None" rightBorderColor="#ffffff"/>
                 <textElement textAlignment="Center">
                     <font fontName="SansSerif" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>

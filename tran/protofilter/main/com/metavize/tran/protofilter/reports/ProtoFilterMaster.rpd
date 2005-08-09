@@ -1,5 +1,5 @@
 TEMPLATE=MasterOfTwoChildren
 REPORT_NAME=ProtoMaster
-REPORT_TITLE=Rogue Protocol Control
+REPORT_TITLE=Rogue Protocol Control - Summary
 SUBREPORT_1=com/metavize/tran/protofilter/reports/ProtoFilterLogged.jasper
 SUBREPORT_2=com/metavize/tran/protofilter/reports/ProtoFilterBlocked.jasper

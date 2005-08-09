@@ -1,6 +1,6 @@
 TEMPLATE=Detail
 REPORT_NAME=BlocklistDetail
-REPORT_TITLE=URL Blocklist Incidents
+REPORT_TITLE=Spyware Blocker - URL Blocklist Incidents
 FIELD_1.name=time_stamp
 FIELD_1.type=Timestamp
 FIELD_2.name=name

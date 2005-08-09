@@ -34,7 +34,7 @@
                 <textElement>
                     <font fontName="SansSerif" size="14" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
                 </textElement>
-                <text><![CDATA[Network Sharing]]></text>
+                <text><![CDATA[Network Sharing - Summary]]></text>
             </staticText>
             <textField pattern="">
                 <reportElement key="textField" mode="Opaque" x="0" y="50" width="305" height="15"/>
