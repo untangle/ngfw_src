@@ -323,7 +323,7 @@ public class TranReporter {
             logger.debug("Exporting report to: " + fileName);
             //f =  new File(fileName);
             //fileName = f.getName();
-            ChartUtilities.saveChartAsJPEG(new File(fileName), jFreeChart, 400, 300);
+            ChartUtilities.saveChartAsJPEG(new File(fileName), jFreeChart, 600, 200);
             //result.append("<img SRC=\"").append(fileName).append("\" WIDTH=\"400\" HEIGHT=\"300\">");
             //result.append("<p>\n");
         }

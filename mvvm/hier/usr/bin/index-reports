@@ -600,7 +600,7 @@ cat $tran_dir/report-files | while read line; do
 cat >>$main_index <<EOF
 <!-- VISUAL SUMMARY -->
 <center>
-<img src="$rel_dir/$graph_name--daily.jpg" width="400" height="300" alt="Visual Summary may take some additional time to load.  If it does not load, it may not viewable from this email client.  Please use your browser to view reports directly from EdgeGuard."/>
+<img src="$rel_dir/$graph_name--daily.jpg" width="600" height="200" alt="Visual Summary may take some additional time to load.  If it does not load, it may not viewable from this email client.  Please use your browser to view reports directly from EdgeGuard."/>
 </center>
 <!-- END VISUAL SUMMARY -->
 EOF
