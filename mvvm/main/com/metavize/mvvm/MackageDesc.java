@@ -32,7 +32,7 @@ public class MackageDesc implements Serializable
     private final String website;
     private final int size;
     private final int installedSize;
-    private final double price;
+    private final String price;
     private final byte[] orgIcon;
     private final byte[] descIcon;
     private final int rackPosition;
@@ -61,11 +61,10 @@ public class MackageDesc implements Serializable
         availableVersion = m.get("version");
 
         // price
-        String v = m.get("price");
-        price = null == v ? 0 : Double.parseDouble(v);
+        price = m.get("price");
 
         // rack position
-        v = m.get("rack-position");
+        String v = m.get("rack-position");
         rackPosition = null == v ? 0 : Integer.parseInt(v);
 
         // size
@@ -156,7 +155,7 @@ public class MackageDesc implements Serializable
         return installedSize;
     }
 
-    public double getPrice()
+    public String getPrice()
     {
         return price;
     }
