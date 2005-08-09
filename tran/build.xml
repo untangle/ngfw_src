@@ -28,7 +28,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <property name="bases"
         value="virus,spam"/>
   <property name="transforms"
-        value="nat,firewall,airgap,reporting,protofilter,test,sigma,hauri,clam,spyware,httpblocker,spamassassin,fprot,sophos,email"/>
+        value="nat,firewall,airgap,reporting,protofilter,test,sigma,hauri,clam,spyware,httpblocker,spamassassin,email"/>
 
 
 
@@ -77,8 +77,6 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
         </then> </if>
         <if> <equals arg1="${tran.type}" arg2="base"/> <then>
 	  <if> <equals arg1="${tran.name}" arg2="virus"/> <then>
-            <delete><fileset dir="${build.dist}" includes="stamp-transform-sophos"/></delete>
-            <delete><fileset dir="${build.dist}" includes="stamp-transform-fprot"/></delete>
             <delete><fileset dir="${build.dist}" includes="stamp-transform-clam"/></delete>
             <delete><fileset dir="${build.dist}" includes="stamp-transform-hauri"/></delete>
 	  </then> </if>
@@ -188,7 +186,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
 
     <!-- FIXME email special case -->
     <if> <equals arg1="${tran.name}" arg2="email"/> <then>
-        <var name="extra.classes" value="../tran/output/jar/sophos-transform.mar:../tran/output/jar/fprot-transform.mar:../tran/output/jar/hauri-transform.mar:../tran/output/jar/clam-transform.mar"/>
+        <var name="extra.classes" value="../tran/output/jar/hauri-transform.mar:../tran/output/jar/clam-transform.mar"/>
     </then> </if>
 
     <javac destdir="${build.root}/${tran.name}"
@@ -289,26 +287,6 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
 
   <target name="install.virus"/>
   <target name="install.spam"/>
-
-  <target name="install.sophos">
-    <copy todir="${dist.mvvm.schema}/sophos-transform">
-      <fileset dir="virus/hier/${suffix.mvvm.schema}/virus-base"/>
-    </copy>
-    <!-- XXX hack attack, need real gui jars -->
-    <jar update="true" destfile="${dist.mvvm.webstart}/sophos-transform.mar">
-      <fileset dir="${build.root}/mail"/>
-    </jar>
-  </target>
-
-  <target name="install.fprot">
-    <copy todir="${dist.mvvm.schema}/fprot-transform">
-      <fileset dir="virus/hier/${suffix.mvvm.schema}/virus-base"/>
-    </copy>
-    <!-- XXX hack attack, need real gui jars -->
-    <jar update="true" destfile="${dist.mvvm.webstart}/fprot-transform.mar">
-      <fileset dir="${build.root}/mail"/>
-    </jar>
-  </target>
 
   <target name="install.hauri">
     <copy todir="${dist.mvvm.schema}/hauri-transform">
@@ -446,17 +424,9 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <target name="jar.sigma"/>
   <target name="jar.airgap"/>
   <target name="jar.reporting"/>
-  <target name="jar.email"> <!-- include Sophos, Fprot, Clam, and Hauri Scanners -->
+  <target name="jar.email"> <!-- include Clam, and Hauri Scanners -->
     <jar destfile="${build.jar}/${tran.name}-${tran.type}.mar" index="yes"
          update="true">
-      <fileset dir="${build.root}/sophos"/>
-      <fileset dir="sophos/${src.main}">
-        <include name="**/*png"/>
-      </fileset>
-      <fileset dir="${build.root}/fprot"/>
-      <fileset dir="fprot/${src.main}">
-        <include name="**/*png"/>
-      </fileset>
       <fileset dir="${build.root}/hauri"/>
       <fileset dir="hauri/${src.main}">
         <include name="**/*png"/>
@@ -466,20 +436,6 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
         <include name="**/*png"/>
       </fileset>
       <fileset dir="${build.root}/virus"/>
-    </jar>
-  </target>
-  <target name="jar.sophos"> <!-- include Virus Abstract transform -->
-    <jar destfile="${build.jar}/${tran.name}-${tran.type}.mar" index="yes"
-         update="true">
-      <fileset dir="${build.root}/virus"/>
-      <fileset dir="${build.gensrc}/virus"/>
-    </jar>
-  </target>
-  <target name="jar.fprot"> <!-- include Virus Abstract transform -->
-    <jar destfile="${build.jar}/${tran.name}-${tran.type}.mar" index="yes"
-         update="true">
-      <fileset dir="${build.root}/virus"/>
-      <fileset dir="${build.gensrc}/virus"/>
     </jar>
   </target>
   <target name="jar.hauri"> <!-- include Virus Abstract transform -->
@@ -513,8 +469,6 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <target name="compile.mail"/>
   <target name="compile.virus"/>
   <target name="compile.spam"/>
-  <target name="compile.sophos"/>
-  <target name="compile.fprot"/>
   <target name="compile.hauri"/>
   <target name="compile.clam"/>
   <target name="compile.spamassassin"/>

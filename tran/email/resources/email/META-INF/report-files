@@ -1,7 +1,1 @@
-com/metavize/tran/email/EmailMaster.jasper:eMail_SpamGuard--Summary:Summary
-com/metavize/tran/email/EmailMaster2.jasper:eMail_SpamGuard--Summary_Continued:Summary (continued)
-com/metavize/tran/email/SpamRuleDetail.jasper:eMail_SpamGuard--Spam_Incidents:Spam Rule Incidents
-com/metavize/tran/email/VirusRuleDetail.jasper:eMail_SpamGuard--Virus_Incidents:Virus Rule Incidents
-com/metavize/tran/email/CustomRuleDetail.jasper:eMail_SpamGuard--Custom_Incidents:Custom Rule Incidents
-com/metavize/tran/email/SizeRelayDetail.jasper:eMail_SpamGuard--Message_Processing_Incidents:Message not processed Incidents
-com.metavize.tran.email.EmailSummarizer:summarizer:Summarizer
+
