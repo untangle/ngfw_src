@@ -105,7 +105,7 @@ public class ClamScannerLauncher implements Runnable
         }
             
         try {
-            String command = "nice -n 19 clamdscan " + pathName;
+            String command = "clamdscan " + pathName;
             this.scanProcess = Runtime.getRuntime().exec(command);
             InputStream is  = scanProcess.getInputStream();
             OutputStream os = scanProcess.getOutputStream();

@@ -84,7 +84,7 @@ public class HauriScannerLauncher implements Runnable
         }
             
         try {
-            this.scanProcess = Runtime.getRuntime().exec("nice -n 19 virobot " + pathName);
+            this.scanProcess = Runtime.getRuntime().exec("virobot " + pathName);
             InputStream is  = this.scanProcess.getInputStream();
             OutputStream os = this.scanProcess.getOutputStream();
             BufferedReader in = new BufferedReader(new InputStreamReader(is));
