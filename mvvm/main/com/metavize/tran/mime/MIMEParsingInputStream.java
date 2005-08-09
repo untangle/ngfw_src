@@ -347,7 +347,7 @@ public class MIMEParsingInputStream extends InputStream {
       toString().getBytes();
     
     final int matchPatternLen = matchPattern.length;
-
+    long boundaryStart = position();   
     int read = read();
     
     //Members which are used while scanning for a
@@ -355,7 +355,7 @@ public class MIMEParsingInputStream extends InputStream {
     int candidatePos = 0;//In case someone positioned us after a EOL,
                          //start at "0" instead of "-1"
 
-    long boundaryStart = position();   
+
     long boundaryEnd = 0;
     int boundaryStartEOL = 0;//TODO Make this a symbol                                                  
     int isEOL;             
@@ -638,7 +638,40 @@ public class MIMEParsingInputStream extends InputStream {
       return LF_EOL;
     }
     return NOT_EOL;
-  }  
+  }
+
+
+  public static void main(String[] args) throws Exception {
+    String crlf = new String(CRLF_BA);
+
+    doTest(crlf + "--foo" + crlf + "next line");
+    doTest("ABC" + crlf + "--foo" + crlf + "next line");
+    doTest("--foo" + crlf + "next line");
+
+      
+  }
+
+  private static void doTest(String str)
+    throws Exception {
+    System.out.println("\n\n----------------\n");
+    byte[] bytes = str.getBytes();
+    for(int i = 0; i<bytes.length; i++) {
+      String toPrint =
+        bytes[i] == CR?
+          "<CR>":
+          bytes[i] == LF?
+            "<LF>":new StringBuilder().append((char) bytes[i]).toString();
+      System.out.println(i + " " + toPrint);
+    }
+    java.io.ByteArrayInputStream bais =
+      new java.io.ByteArrayInputStream(bytes);
+    MIMEParsingInputStream stream = new MIMEParsingInputStream(bais);
+    System.out.println("Position: " + stream.position());
+    BoundaryResult br = stream.skipToBoundary("foo", false);
+    System.out.println("boundaryStartPos: " + br.boundaryStartPos);
+    System.out.println("boundaryLen: " + br.boundaryLen);
+    System.out.println("Position: " + stream.position());    
+  }
   
      
 }

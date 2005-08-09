@@ -962,7 +962,7 @@ public class MIMEPart {
     }
     
     //Record the preamble length
-    m_preambleLen = ((stream.position() - boundaryResult.boundaryLen) - pos) - 1;
+    m_preambleLen = ((stream.position() - boundaryResult.boundaryLen) - pos);
   
     while(boundaryResult.boundaryFound && !boundaryResult.boundaryWasLast) {
       MIMEPartHeaders childHeaders = (MIMEPartHeaders) new HeadersParser().parseHeaders(stream,
