@@ -22,18 +22,13 @@ import java.io.Serializable;
  * @hibernate.class
  * table="TR_SPAM_POP_CONFIG"
  */
-public class SpamPOPConfig implements Serializable
+public class SpamPOPConfig extends SpamProtoConfig
 {
     private static final long serialVersionUID = 7520156745253589117L;
 
-    public static final String NO_NOTES = "no description";
-
-    private Long id;
-
     /* settings */
     private SpamMessageAction zMsgAction = SpamMessageAction.MARK;
-    private boolean bScan = false;
-    private String zNotes = NO_NOTES;
+
 
     // constructor ------------------------------------------------------------
 
@@ -42,11 +37,10 @@ public class SpamPOPConfig implements Serializable
      */
     public SpamPOPConfig() {}
 
-    public SpamPOPConfig(boolean bScan, SpamMessageAction zMsgAction, String zNotes)
+    public SpamPOPConfig(boolean bScan, SpamMessageAction zMsgAction, int strength, String zNotes)
     {
-        this.bScan = bScan;   
+        super(bScan, strength, zNotes);
         this.zMsgAction = zMsgAction;   
-        this.zNotes = zNotes;   
     }
 
     // business methods ------------------------------------------------------
@@ -64,42 +58,6 @@ public class SpamPOPConfig implements Serializable
     */
 
     // accessors --------------------------------------------------------------
-
-    /**
-     * @hibernate.id
-     * column="CONFIG_ID"
-     * generator-class="native"
-     * not-null="true"
-     */
-    public Long getId()
-    {
-        return id;
-    }
-
-    public void setId(Long id)
-    {
-        this.id = id;
-        return;
-    }
-
-    /**
-     * scan: a boolean specifying whether or not to scan a message for spam (defaults to true)
-     *
-     * @return whether or not to scan message for spam
-     * @hibernate.property
-     * column="SCAN"
-     * not-null="true"
-     */
-    public boolean getScan()
-    {
-        return bScan;
-    }
-
-    public void setScan(boolean bScan)
-    {
-        this.bScan = bScan;
-        return;
-    }
 
     /**
      * messageAction: a string specifying a response if a message contains spam (defaults to MARK)
@@ -135,21 +93,4 @@ public class SpamPOPConfig implements Serializable
         return azStr;
     }
 
-    /**
-     * notes: a string containing notes (defaults to NO_NOTES)
-     *
-     * @return the notes for this spam config
-     * @hibernate.property
-     * column="NOTES"
-     */
-    public String getNotes()
-    {
-        return zNotes;
-    }
-
-    public void setNotes(String zNotes)
-    {
-        this.zNotes = zNotes;
-        return;
-    }
 }

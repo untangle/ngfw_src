@@ -32,10 +32,6 @@ import org.apache.log4j.Logger;
 public class SmtpSessionHandler
   extends BufferingSessionHandler {
 
-  //TODO bscott talk to Aaron/John re: threshold.  It was burned-into the last version.
-  //     Do we normalize at each impl?  Should this be a property of each class of scanner?
-  private static final float THRESHOLD = 5;
-
   private static final String SPAM_HEADER_NAME = "X-Spam-Flag";
   private static final LCString SPAM_HEADER_NAME_LC = new LCString(SPAM_HEADER_NAME);
   private static final String IS_SPAM_HEADER_VALUE = "YES";
@@ -46,8 +42,6 @@ public class SmtpSessionHandler
   private final MyFileFactory m_fileFactory = new MyFileFactory();
   private static final Logger m_eventLogger = MvvmContextFactory
     .context().eventLogger();
-
-  private static final int GIVEUP_SZ = 1 << 18;//256k
 
   private final long m_maxClientWait;
   private final long m_maxServerWait;
@@ -79,7 +73,7 @@ public class SmtpSessionHandler
 
   @Override
   public int getGiveupSz() {
-    return GIVEUP_SZ;
+    return m_config.getMsgSizeLimit();
   }
 
   @Override
@@ -111,8 +105,8 @@ public class SmtpSessionHandler
       return PASS_MESSAGE;
     }
 
-    if(f.length() > GIVEUP_SZ) {
-      m_logger.debug("Message larger than " + GIVEUP_SZ + ".  Don't bother to scan");
+    if(f.length() > getGiveupSz()) {
+      m_logger.debug("Message larger than " + getGiveupSz() + ".  Don't bother to scan");
       return PASS_MESSAGE;
     }
 
@@ -198,8 +192,8 @@ public class SmtpSessionHandler
       return BlockOrPassResult.PASS;
     }
 
-    if(f.length() > GIVEUP_SZ) {
-      m_logger.debug("Message larger than " + GIVEUP_SZ + ".  Don't bother to scan");
+    if(f.length() > getGiveupSz()) {
+      m_logger.debug("Message larger than " + getGiveupSz() + ".  Don't bother to scan");
       return BlockOrPassResult.PASS;
     }
 
@@ -265,7 +259,7 @@ public class SmtpSessionHandler
   private SpamReport scanFile(File f) {
     //Attempt scan
     try {
-      SpamReport ret = m_spamImpl.getScanner().scanFile(f, THRESHOLD);
+      SpamReport ret = m_spamImpl.getScanner().scanFile(f, m_config.getStrength()/10.0f);
       if(ret == null || ret == SpamReport.ERROR) {
         m_logger.error("Received ERROR SpamReport");
         return null;

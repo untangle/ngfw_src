@@ -154,32 +154,38 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
           new SpamSMTPConfig(true,
             SMTPSpamMessageAction.MARK,
             SMTPNotifyAction.NEITHER,
+                             SpamProtoConfig.DEFAULT_STRENGTH,
             "Scan incoming SMTP e-mail" ));
             
         zTmpSpamSettings.setSMTPOutbound(
           new SpamSMTPConfig(false,
             SMTPSpamMessageAction.PASS,
             SMTPNotifyAction.NEITHER,
+                             SpamProtoConfig.DEFAULT_STRENGTH,
             "Do not scan outgoing SMTP e-mail" ));
 
         zTmpSpamSettings.setPOPInbound(
           new SpamPOPConfig(true,
             SpamMessageAction.MARK,
+                             SpamProtoConfig.DEFAULT_STRENGTH,
             "Scan incoming POP e-mail" ));
             
         zTmpSpamSettings.setPOPOutbound(
           new SpamPOPConfig(true,
             SpamMessageAction.PASS,
+                             SpamProtoConfig.DEFAULT_STRENGTH,
             "Scan outgoing POP e-mail" ));
 
         zTmpSpamSettings.setIMAPInbound(
           new SpamIMAPConfig(true,
             SpamMessageAction.MARK,
+                             SpamProtoConfig.DEFAULT_STRENGTH,
             "Scan incoming IMAP e-mail" ));
             
         zTmpSpamSettings.setIMAPOutbound(
           new SpamIMAPConfig(true,
             SpamMessageAction.PASS,
+                             SpamProtoConfig.DEFAULT_STRENGTH,
             "Scan outgoing IMAP e-mail" ));
 
             

@@ -7,6 +7,8 @@
 CREATE TABLE settings.tr_spam_smtp_config (
     config_id int8 NOT NULL,
     scan bool NOT NULL,
+    strength int4 NOT NULL,
+    msg_size_limit int4 NOT NULL,
     msg_action char(1) NOT NULL,
     notify_action char(1) NOT NULL,
     notes varchar(255),
@@ -15,6 +17,8 @@ CREATE TABLE settings.tr_spam_smtp_config (
 CREATE TABLE settings.tr_spam_pop_config (
     config_id int8 NOT NULL,
     scan bool NOT NULL,
+    strength int4 NOT NULL,
+    msg_size_limit int4 NOT NULL,
     msg_action char(1) NOT NULL,
     notes varchar(255),
     PRIMARY KEY (config_id));
@@ -22,6 +26,8 @@ CREATE TABLE settings.tr_spam_pop_config (
 CREATE TABLE settings.tr_spam_imap_config (
     config_id int8 NOT NULL,
     scan bool NOT NULL,
+    strength int4 NOT NULL,
+    msg_size_limit int4 NOT NULL,
     msg_action char(1) NOT NULL,
     notes varchar(255),
     PRIMARY KEY (config_id));

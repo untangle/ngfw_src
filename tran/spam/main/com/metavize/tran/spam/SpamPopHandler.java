@@ -43,9 +43,6 @@ public class SpamPopHandler extends PopStateMachine
     private final static String IS_SPAM_HDR_VALUE = "YES";
     private final static String IS_HAM_HDR_VALUE = "NO";
 
-    private final static int GIVEUP_SZ = 1 << 18; /* 256k */
-    private final static float SPAM_SCORE = 5;
-
     /* no block counter */
     private final static int SCAN_COUNTER = Transform.GENERIC_0_COUNTER;
     private final static int PASS_COUNTER = Transform.GENERIC_2_COUNTER;
@@ -58,6 +55,8 @@ public class SpamPopHandler extends PopStateMachine
     private final WrappedMessageGenerator zWMsgGenerator;
     private final SpamMessageAction zMsgAction;
     private final boolean bScan;
+    private final int strength; 
+    private final int giveUpSize;
 
     // constructors -----------------------------------------------------------
 
@@ -85,6 +84,8 @@ public class SpamPopHandler extends PopStateMachine
         }
         bScan = zConfig.getScan();
         zMsgAction = zConfig.getMsgAction();
+        strength = zConfig.getStrength();
+        giveUpSize = zConfig.getMsgSizeLimit();
         zWMsgGenerator = zWMGenerator;
         //logger.debug("scan: " + bScan + ", message action: " + zMsgAction + ", timeout: " + lTimeout);
     }
@@ -94,7 +95,7 @@ public class SpamPopHandler extends PopStateMachine
     protected TokenResult scanMessage() throws TokenException
     {
         if (true == bScan &&
-            GIVEUP_SZ >= zMsgFile.length()) {
+            giveUpSize >= zMsgFile.length()) {
             zTransform.incrementCount(SCAN_COUNTER);
 
             SpamReport zReport;
@@ -140,7 +141,7 @@ public class SpamPopHandler extends PopStateMachine
     private SpamReport scanFile(File zFile) throws TokenException
     {
         try {
-            SpamReport zReport = zScanner.scanFile(zFile, SPAM_SCORE);
+            SpamReport zReport = zScanner.scanFile(zFile, strength/10.0f);
             eventLogger.info(new SpamLogEvent(zMsgInfo, zReport.getScore(), zReport.isSpam(), zMsgAction, zVendorName));
 
             try {
