@@ -17,7 +17,7 @@ QUERY=SELECT evt.time_stamp, evt.client_addr, evt.login, evt.succeeded, evt.reas
 FROM mvvm_login_evt evt \
 LEFT OUTER JOIN merged_address_map mam ON client_addr = addr AND evt.time_stamp >= mam.start_time AND evt.time_stamp < mam.end_time \
 WHERE evt.time_stamp > $P{startTime} AND evt.time_stamp < $P{endTime} AND NOT evt.local \
-ORDER BY evt.time_stamp
+ORDER BY evt.time_stamp DESC
 TOPLEFT.label=Timestamp
 TOPLMID.label=
 BOTLMID.label=

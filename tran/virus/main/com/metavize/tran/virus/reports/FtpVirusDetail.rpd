@@ -20,7 +20,7 @@ QUERY=SELECT evt.time_stamp, c_client_addr, c_server_addr, c_server_port, virus_
  JOIN pl_endp USING (session_id) \
  LEFT OUTER JOIN merged_address_map mam ON c_client_addr = addr AND evt.time_stamp >= mam.start_time AND evt.time_stamp < mam.end_time \
  WHERE evt.time_stamp > $P{startTime} AND evt.time_stamp < $P{endTime} AND NOT CLEAN \
- ORDER BY time_stamp
+ ORDER BY time_stamp DESC
 TOPLEFT.label=Timestamp
 TOPLMID.label=User
 BOTLMID.label=Client

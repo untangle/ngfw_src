@@ -35,7 +35,7 @@ QUERY=(SELECT evt.time_stamp, \
  WHERE evt.time_stamp > $P{startTime} AND evt.time_stamp < $P{endTime} \
  AND vendor_name = $P{virusVendor} \
  AND NOT clean \
- ORDER BY evt.time_stamp) \
+ ORDER BY evt.time_stamp DESC) \
 UNION \
 (SELECT evt.time_stamp, \
         server_type, \
@@ -53,7 +53,7 @@ UNION \
  WHERE evt.time_stamp > $P{startTime} AND evt.time_stamp < $P{endTime} \
  AND vendor_name = $P{virusVendor} \
  AND NOT clean \
- ORDER BY evt.time_stamp)
+ ORDER BY evt.time_stamp DESC)
 TOPLEFT.label=Timestamp
 TOPLMID.label=Virus name
 BOTLMID.label=Action
