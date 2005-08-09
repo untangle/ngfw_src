@@ -125,8 +125,34 @@ public class EmailAddress {
    * what is returned.
    */
   public String getPersonal() {
-    return isNullAddress()?
-      null:m_jmAddress.getPersonal();
+
+
+    //----------------------------------
+    // Workaround JavaMail sometimes
+    // returning personal wrapped in
+    // single quotes
+    // 8/9/05 - wrs
+    //----------------------------------
+
+//    return isNullAddress()?
+//      null:
+//      m_jmAddress.getPersonal();    
+    
+    if(isNullAddress()) {
+      return null;
+    }
+    String ret = m_jmAddress.getPersonal();
+    if(ret == null) {
+      return null;
+    }
+    ret = ret.trim();
+    if(ret.startsWith("'")) {
+      ret = ret.substring(1);
+    }
+    if(ret.endsWith("'")) {
+      ret = ret.substring(0, ret.length()-1);
+    }
+    return ret;
   }
   
   /**
@@ -260,6 +286,97 @@ public class EmailAddress {
       throw new BadEmailAddressFormatException(ex);
     }
     
+  }
+
+  public static void main(String[] args)
+    throws Exception {
+    //Check bug w/ single quotes
+    parseTest("\"foo\"<foo@moo>");
+    parseTest("\"foo\" <foo@moo>");
+    parseTest("\"foo\" foo@moo");
+    parseTest("'foo'<foo@moo>");
+    parseTest("'foo' <foo@moo>");
+    parseTest("'foo' foo@moo");
+    parseTest("foo <foo@moo>");
+    parseTest("foo<foo@moo>");
+    
+    parseTest("(\"foo\")<foo@moo>");
+    parseTest("(\"foo\") <foo@moo>");
+    parseTest("(\"foo\") foo@moo");
+    parseTest("('foo')<foo@moo>");
+    parseTest("('foo') <foo@moo>");
+    parseTest("('foo') foo@moo");
+    parseTest("(foo) <foo@moo>");
+    parseTest("(foo)<foo@moo>");
+
+    parseTest("\"(foo)\"<foo@moo>");
+    parseTest("\"(foo)\" <foo@moo>");
+    parseTest("\"(foo)\" foo@moo");
+    parseTest("'(foo)'<foo@moo>");
+    parseTest("'(foo)' <foo@moo>");
+    parseTest("'(foo)' foo@moo");
+    parseTest("(foo) <foo@moo>");
+    parseTest("(foo)<foo@moo>");
+
+    parseTest("\"(foo)\"<>");
+    parseTest("\"(foo)\" <>");
+    parseTest("\"(foo)\" ");
+    parseTest("'(foo)'<>");
+    parseTest("'(foo)' <>");
+    parseTest("'(foo)' ");
+    parseTest("(foo) <>");
+    parseTest("(foo)<>");
+
+    //Test apostrophy
+    parseTest("\"foo o'connor\"<foo@moo>");
+    parseTest("\"foo o'connor\" <foo@moo>");
+    parseTest("\"foo o'connor\" foo@moo");
+    parseTest("'foo o'connor'<foo@moo>");
+    parseTest("'foo o'connor' <foo@moo>");
+    parseTest("'foo o'connor' foo@moo");
+    parseTest("foo o'connor <foo@moo>");
+    parseTest("foo o'connor<foo@moo>");
+    
+    parseTest("(\"foo o'connor\")<foo@moo>");
+    parseTest("(\"foo o'connor\") <foo@moo>");
+    parseTest("(\"foo o'connor\") foo@moo");
+    parseTest("('foo o'connor')<foo@moo>");
+    parseTest("('foo o'connor') <foo@moo>");
+    parseTest("('foo o'connor') foo@moo");
+    parseTest("(foo o'connor) <foo@moo>");
+    parseTest("(foo o'connor)<foo@moo>");
+
+    parseTest("\"(foo o'connor)\"<foo@moo>");
+    parseTest("\"(foo o'connor)\" <foo@moo>");
+    parseTest("\"(foo o'connor)\" foo@moo");
+    parseTest("'(foo o'connor)'<foo@moo>");
+    parseTest("'(foo o'connor)' <foo@moo>");
+    parseTest("'(foo o'connor)' foo@moo");
+    parseTest("(foo o'connor) <foo@moo>");
+    parseTest("(foo o'connor)<foo@moo>");
+
+    parseTest("\"(foo o'connor)\"<>");
+    parseTest("\"(foo o'connor)\" <>");
+    parseTest("\"(foo o'connor)\" ");
+    parseTest("'(foo o'connor)'<>");
+    parseTest("'(foo o'connor)' <>");
+    parseTest("'(foo o'connor)' ");
+    parseTest("(foo o'connor) <>");
+    parseTest("(foo o'connor)<>");
+    
+    
+  }
+
+  private static void parseTest(String str) {
+    try {
+      System.out.println("\n\n-----------------------------\nParsing \"" + str + "\"");
+      EmailAddress addr = parse(str);
+      System.out.println("Address: " + addr.getAddress());
+      System.out.println("Personal: " + addr.getPersonal());
+    }
+    catch(Exception ex) {
+      ex.printStackTrace();
+    }
   }
 
 }
