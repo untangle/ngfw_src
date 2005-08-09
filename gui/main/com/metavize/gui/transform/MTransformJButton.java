@@ -166,7 +166,7 @@ public class MTransformJButton extends JButton {
     public String getName(){ return mackageDesc.getName(); }
     public String getDisplayName(){ return mackageDesc.getDisplayName(); }
     public int    getRackPosition(){ return mackageDesc.getRackPosition(); }
-    public double getPrice(){ return mackageDesc.getPrice(); }
+    public String getPrice(){ return mackageDesc.getPrice(); }
     public String getWebpage(){ return mackageDesc.getWebsite(); }
     ////////////////////////////////////////////
 
