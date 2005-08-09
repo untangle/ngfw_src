@@ -52,7 +52,7 @@ class AddressTableModel extends MSortedTableModel{
     
     private static final int  T_TW = Util.TABLE_TOTAL_WIDTH;
     private static final int  C0_MW = Util.STATUS_MIN_WIDTH; /* status */
-    private static final int  C1_MW = Util.LINENO_MIN_WIDTH; /* line number */
+    private static final int  C1_MW = Util.LINENO_MIN_WIDTH; /* # - invisible */
     private static final int  C2_MW = 130;  /* MAC address */
     private static final int  C3_MW = 130;  /* current static target IP */
     private static final int  C4_MW = 130;  /* current IP */
@@ -60,7 +60,7 @@ class AddressTableModel extends MSortedTableModel{
     private static final int  C6_MW = 100;  /* current lease end */
     private static final int  C7_MW = 120;  /* category */
     
-    private final int C8_MW = Util.chooseMax(T_TW - (C0_MW + C1_MW + C2_MW + C3_MW + C4_MW + C5_MW + C6_MW + C7_MW), 120); /* description */
+    private final int C8_MW = Util.chooseMax(T_TW - (C0_MW + C2_MW + C3_MW + C4_MW + C5_MW + C6_MW + C7_MW), 120); /* description */
 
 
         

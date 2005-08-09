@@ -45,11 +45,10 @@ class CategoryTableModel extends MSortedTableModel
 { 
     private static final int T_TW = Util.TABLE_TOTAL_WIDTH;
     private static final int C0_MW = Util.STATUS_MIN_WIDTH; /* status */
-    private static final int C1_MW = Util.LINENO_MIN_WIDTH; /* # */
+    private static final int C1_MW = Util.LINENO_MIN_WIDTH; /* # - invisible */
     private static final int C2_MW = 195; /* category */
-    private static final int C3_MW = 100; /* block domains */
-    private static final int C4_MW = 120; /* description */
-    private static final int C5_MW = Util.chooseMax(T_TW - (C0_MW + C1_MW + C2_MW + C3_MW + C4_MW), 55); /* original name */
+    private static final int C3_MW = 55;  /* block domains */
+    private static final int C4_MW = Util.chooseMax(T_TW - (C0_MW + C2_MW + C3_MW), 120); /* description */
 
     
     public TableColumnModel getTableColumnModel(){
@@ -61,7 +60,7 @@ class CategoryTableModel extends MSortedTableModel
         addTableColumn( tableColumnModel,  2, C2_MW, true,  false, false, false, String.class,  null, sc.TITLE_CATEGORY);
         addTableColumn( tableColumnModel,  3, C3_MW, false, true,  false, false, Boolean.class, null, sc.bold("block"));
         addTableColumn( tableColumnModel,  4, C4_MW, true,  true,  false, true,  String.class,  null, sc.TITLE_DESCRIPTION);
-        addTableColumn( tableColumnModel,  5, C5_MW, false, false, true,  false, String.class,  null, "original name");
+        addTableColumn( tableColumnModel,  5, 10,    false, false, true,  false, String.class,  null, "original name");
         addTableColumn( tableColumnModel,  6, 10,    false, false, true,  false, BlacklistCategory.class, null, "");
         return tableColumnModel;
     }

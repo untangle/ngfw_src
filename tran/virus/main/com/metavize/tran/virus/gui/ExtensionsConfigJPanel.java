@@ -47,10 +47,10 @@ class ExtensionTableModel extends MSortedTableModel{
 
     private static final int T_TW = Util.TABLE_TOTAL_WIDTH;
     private static final int C0_MW = Util.STATUS_MIN_WIDTH; /* status */
-    private static final int C1_MW = Util.LINENO_MIN_WIDTH; /* # */
+    private static final int C1_MW = Util.LINENO_MIN_WIDTH; /* # - invisible */
     private static final int C2_MW = 130; /* Extension type */
     private static final int C3_MW = 75; /* block */
-    private static final int C4_MW = Util.chooseMax(T_TW - (C0_MW + C1_MW + C2_MW + C3_MW), 120); /* description */
+    private static final int C4_MW = Util.chooseMax(T_TW - (C0_MW + C2_MW + C3_MW), 120); /* description */
 
 
     protected boolean getSortable(){ return false; }

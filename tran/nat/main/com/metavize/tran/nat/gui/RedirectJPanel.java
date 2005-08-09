@@ -48,7 +48,7 @@ public class RedirectJPanel extends MEditTableJPanel {
 
 class RedirectTableModel extends MSortedTableModel{ 
     
-    private static final int  T_TW = Util.TABLE_TOTAL_WIDTH;
+    private static final int  T_TW = Util.TABLE_TOTAL_WIDTH_LARGE;
     private static final int  C0_MW = Util.STATUS_MIN_WIDTH; /* status */
     private static final int  C1_MW = Util.LINENO_MIN_WIDTH; /* # */
     private static final int  C2_MW = 75;  /* redirect */

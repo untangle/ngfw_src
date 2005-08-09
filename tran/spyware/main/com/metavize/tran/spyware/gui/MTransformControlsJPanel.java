@@ -50,26 +50,26 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	// COOKIES //////////////
 	CookieConfigJPanel cookieConfigJPanel = new CookieConfigJPanel();
         blockJTabbedPane.addTab(NAME_BLOCK_COOKIE, null, cookieConfigJPanel);
-	super.savableMap.put(NAME_BLOCK + NAME_BLOCK_COOKIE, cookieConfigJPanel);
-	super.refreshableMap.put(NAME_BLOCK + NAME_BLOCK_COOKIE, cookieConfigJPanel);
+	super.savableMap.put(NAME_BLOCK + " " + NAME_BLOCK_COOKIE, cookieConfigJPanel);
+	super.refreshableMap.put(NAME_BLOCK + " " + NAME_BLOCK_COOKIE, cookieConfigJPanel);
 
 	// SPYWARE ///////////////
 	SpywareConfigJPanel spywareConfigJPanel = new SpywareConfigJPanel();
         blockJTabbedPane.addTab(NAME_BLOCK_SPYWARE, null, spywareConfigJPanel);
-	super.savableMap.put(NAME_BLOCK + NAME_BLOCK_SPYWARE, spywareConfigJPanel);
-	super.refreshableMap.put(NAME_BLOCK + NAME_BLOCK_SPYWARE, spywareConfigJPanel);
+	super.savableMap.put(NAME_BLOCK + " " + NAME_BLOCK_SPYWARE, spywareConfigJPanel);
+	super.refreshableMap.put(NAME_BLOCK + " " + NAME_BLOCK_SPYWARE, spywareConfigJPanel);
 
 	// ACTIVEX ///////////////
 	ActiveXConfigJPanel activeXConfigJPanel = new ActiveXConfigJPanel();
         blockJTabbedPane.addTab(NAME_BLOCK_ACTIVEX, null, activeXConfigJPanel);
-	super.savableMap.put(NAME_BLOCK + NAME_BLOCK_ACTIVEX, activeXConfigJPanel);
-	super.refreshableMap.put(NAME_BLOCK + NAME_BLOCK_ACTIVEX, activeXConfigJPanel);
+	super.savableMap.put(NAME_BLOCK + " " + NAME_BLOCK_ACTIVEX, activeXConfigJPanel);
+	super.refreshableMap.put(NAME_BLOCK + " " + NAME_BLOCK_ACTIVEX, activeXConfigJPanel);
         
         // URL ///////////////
 	UrlConfigJPanel urlConfigJPanel = new UrlConfigJPanel();
         blockJTabbedPane.addTab(NAME_BLOCK_URL, null, urlConfigJPanel);
-	super.savableMap.put(NAME_BLOCK + NAME_BLOCK_URL, urlConfigJPanel);
-	super.refreshableMap.put(NAME_BLOCK + NAME_BLOCK_URL, urlConfigJPanel);
+	super.savableMap.put(NAME_BLOCK + " " + NAME_BLOCK_URL, urlConfigJPanel);
+	super.refreshableMap.put(NAME_BLOCK + " " + NAME_BLOCK_URL, urlConfigJPanel);
 
         // GENERAL SETTINGS ////////
 	GeneralConfigJPanel generalConfigJPanel = new GeneralConfigJPanel();

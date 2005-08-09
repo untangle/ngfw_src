@@ -137,7 +137,7 @@ public abstract class SpamProtoConfig implements Serializable
     private static final String[] SSE_PROTO = new String[0];
 
 
-    public String[] getScanStrengthEnumeration()
+    public static String[] getScanStrengthEnumeration()
     {
         
         return (String[])scanStrengthEnumeration.keySet().toArray(SSE_PROTO);

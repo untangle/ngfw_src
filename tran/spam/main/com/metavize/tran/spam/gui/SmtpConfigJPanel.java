@@ -40,14 +40,15 @@ public class SmtpConfigJPanel extends MEditTableJPanel {
 
 class SmtpTableModel extends MSortedTableModel{
 
-    private static final int T_TW = Util.TABLE_TOTAL_WIDTH;
+    private static final int T_TW = Util.TABLE_TOTAL_WIDTH_LARGE;
     private static final int C0_MW = Util.STATUS_MIN_WIDTH; /* status */
     private static final int C1_MW = Util.LINENO_MIN_WIDTH; /* # - invisible */
     private static final int C2_MW = 100; /* source */
-    private static final int C3_MW = 55; /* scan */
-    private static final int C4_MW = 125; /* action if SPAM detected */
-    private static final int C5_MW = 190; /* notification if SPAM detected */
-    private static final int C6_MW = Util.chooseMax(T_TW - (C1_MW + C2_MW + C3_MW + C4_MW + C5_MW), 120); /* description */
+    private static final int C3_MW = 55;  /* scan */
+    private static final int C4_MW = 125; /* scan strength */
+    private static final int C5_MW = 125; /* action if SPAM detected */
+    private static final int C6_MW = 190; /* notification if SPAM detected */
+    private static final int C7_MW = Util.chooseMax(T_TW - (C0_MW + C2_MW + C3_MW + C4_MW + C5_MW + C6_MW), 120); /* description */
 
     public TableColumnModel getTableColumnModel(){
 
@@ -57,9 +58,10 @@ class SmtpTableModel extends MSortedTableModel{
         addTableColumn( tableColumnModel,  1, C1_MW, false, false, true,  false, Integer.class, null, sc.TITLE_INDEX);
         addTableColumn( tableColumnModel,  2, C2_MW, false, false, false, false, String.class,  null, "source");
         addTableColumn( tableColumnModel,  3, C3_MW, false, true,  false, false, Boolean.class,  null, sc.bold("scan") );
-        addTableColumn( tableColumnModel,  4, C4_MW, false, true,  false, false, ComboBoxModel.class,  null, sc.html("action if<br>SPAM detected"));
-        addTableColumn( tableColumnModel,  5, C5_MW, false, true,  false, false, ComboBoxModel.class,  null, sc.html("notification if<br>SPAM detected"));
-        addTableColumn( tableColumnModel,  6, C6_MW, true,  true,  false, true,  String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
+        addTableColumn( tableColumnModel,  4, C4_MW, false, true,  false, false, ComboBoxModel.class,  null, sc.html("scan<br>strength"));
+        addTableColumn( tableColumnModel,  5, C5_MW, false, true,  false, false, ComboBoxModel.class,  null, sc.html("action if<br>SPAM detected"));
+        addTableColumn( tableColumnModel,  6, C6_MW, false, true,  false, false, ComboBoxModel.class,  null, sc.html("notification if<br>SPAM detected"));
+        addTableColumn( tableColumnModel,  7, C7_MW, true,  true,  false, true,  String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
         return tableColumnModel;
     }
 
@@ -74,13 +76,15 @@ class SmtpTableModel extends MSortedTableModel{
 
             SpamSMTPConfig spamSMTPConfig = new SpamSMTPConfig();
             spamSMTPConfig.setScan( (Boolean) rowVector.elementAt(3) );
-	    String actionString = (String) ((ComboBoxModel)rowVector.elementAt(4)).getSelectedItem();
+	    String strengthString = (String) ((ComboBoxModel)rowVector.elementAt(4)).getSelectedItem();
+	    spamSMTPConfig.setStrengthByName( strengthString );
+	    String actionString = (String) ((ComboBoxModel)rowVector.elementAt(5)).getSelectedItem();
 	    SMTPSpamMessageAction messageAction = SMTPSpamMessageAction.getInstance( actionString );
             spamSMTPConfig.setMsgAction( messageAction );
-	    String notifyString = (String) ((ComboBoxModel)rowVector.elementAt(5)).getSelectedItem();
+	    String notifyString = (String) ((ComboBoxModel)rowVector.elementAt(6)).getSelectedItem();
 	    SMTPNotifyAction notifyAction = SMTPNotifyAction.getInstance( notifyString );
             spamSMTPConfig.setNotifyAction( notifyAction );
-            spamSMTPConfig.setNotes( (String) rowVector.elementAt(6) );
+            spamSMTPConfig.setNotes( (String) rowVector.elementAt(7) );
 	    
 	    if( ((String)rowVector.elementAt(2)).equals(SOURCE_INBOUND) ){
 		spamSMTPConfigInbound = spamSMTPConfig;
@@ -111,6 +115,8 @@ class SmtpTableModel extends MSortedTableModel{
         inboundRow.add( new Integer(1) );
         inboundRow.add( SOURCE_INBOUND );
         inboundRow.add( spamSMTPConfigInbound.getScan() );
+	ComboBoxModel inboundStrengthComboBoxModel = super.generateComboBoxModel( SpamSMTPConfig.getScanStrengthEnumeration(), spamSMTPConfigInbound.getStrengthByName());
+	inboundRow.add( inboundStrengthComboBoxModel );
         ComboBoxModel inboundActionComboBoxModel =  super.generateComboBoxModel( SMTPSpamMessageAction.getValues(), spamSMTPConfigInbound.getMsgAction() );
         inboundRow.add( inboundActionComboBoxModel );
         ComboBoxModel inboundNotificationComboBoxModel = super.generateComboBoxModel( SMTPNotifyAction.getValues(), spamSMTPConfigInbound.getNotifyAction() );
@@ -125,6 +131,8 @@ class SmtpTableModel extends MSortedTableModel{
         outboundRow.add( new Integer(1) );
         outboundRow.add( SOURCE_OUTBOUND );
         outboundRow.add( spamSMTPConfigOutbound.getScan() );
+	ComboBoxModel outboundStrengthComboBoxModel = super.generateComboBoxModel( SpamSMTPConfig.getScanStrengthEnumeration(), spamSMTPConfigOutbound.getStrengthByName());
+	outboundRow.add( outboundStrengthComboBoxModel );
         ComboBoxModel outboundActionComboBoxModel =  super.generateComboBoxModel( SMTPSpamMessageAction.getValues(), spamSMTPConfigOutbound.getMsgAction() );
         outboundRow.add( outboundActionComboBoxModel );
         ComboBoxModel outboundNotificationComboBoxModel = super.generateComboBoxModel( SMTPNotifyAction.getValues(), spamSMTPConfigOutbound.getNotifyAction() );

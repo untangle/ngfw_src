@@ -40,13 +40,14 @@ public class ImapConfigJPanel extends MEditTableJPanel {
 
 class ImapTableModel extends MSortedTableModel{
 
-    private static final int T_TW = Util.TABLE_TOTAL_WIDTH;
+    private static final int T_TW = Util.TABLE_TOTAL_WIDTH_LARGE;
     private static final int C0_MW = Util.STATUS_MIN_WIDTH; /* status */
     private static final int C1_MW = Util.LINENO_MIN_WIDTH; /* # - invisible */
     private static final int C2_MW = 100; /* source */
-    private static final int C3_MW = 55; /* scan */
-    private static final int C4_MW = 125; /* action if SPAM detected */
-    private static final int C5_MW = Util.chooseMax(T_TW - (C1_MW + C2_MW + C3_MW + C4_MW), 120); /* description */
+    private static final int C3_MW = 55;  /* scan */
+    private static final int C4_MW = 125; /* scan strength */
+    private static final int C5_MW = 125; /* action if SPAM detected */
+    private static final int C6_MW = Util.chooseMax(T_TW - (C0_MW + C2_MW + C3_MW + C4_MW + C5_MW), 120); /* description */
 
     public TableColumnModel getTableColumnModel(){
 
@@ -56,8 +57,9 @@ class ImapTableModel extends MSortedTableModel{
         addTableColumn( tableColumnModel,  1, C1_MW, false, false, true,  false, Integer.class, null, sc.TITLE_INDEX);
         addTableColumn( tableColumnModel,  2, C2_MW, false, false, false, false, String.class,  null, "source");
         addTableColumn( tableColumnModel,  3, C3_MW, false, true,  false, false, Boolean.class,  null, sc.bold("scan") );
-        addTableColumn( tableColumnModel,  4, C4_MW, false, true,  false, false, ComboBoxModel.class,  null, sc.html("action if<br>SPAM detected"));
-        addTableColumn( tableColumnModel,  5, C5_MW, true,  true,  false, true,  String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
+        addTableColumn( tableColumnModel,  4, C4_MW, false, true,  false, false, ComboBoxModel.class,  null, sc.html("scan<br>strength"));
+        addTableColumn( tableColumnModel,  5, C5_MW, false, true,  false, false, ComboBoxModel.class,  null, sc.html("action if<br>SPAM detected"));
+        addTableColumn( tableColumnModel,  6, C6_MW, true,  true,  false, true,  String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
         return tableColumnModel;
     }
 
@@ -72,10 +74,12 @@ class ImapTableModel extends MSortedTableModel{
 
             SpamIMAPConfig spamIMAPConfig = new SpamIMAPConfig();
             spamIMAPConfig.setScan( (Boolean) rowVector.elementAt(3) );
-	    String actionString = (String) ((ComboBoxModel)rowVector.elementAt(4)).getSelectedItem();
+	    String strengthString = (String) ((ComboBoxModel)rowVector.elementAt(4)).getSelectedItem();
+	    spamIMAPConfig.setStrengthByName( strengthString );
+	    String actionString = (String) ((ComboBoxModel)rowVector.elementAt(5)).getSelectedItem();
 	    SpamMessageAction messageAction = SpamMessageAction.getInstance( actionString );
             spamIMAPConfig.setMsgAction( messageAction );
-            spamIMAPConfig.setNotes( (String) rowVector.elementAt(5) );
+            spamIMAPConfig.setNotes( (String) rowVector.elementAt(6) );
 	    
 	    if( ((String)rowVector.elementAt(2)).equals(SOURCE_INBOUND) ){
 		spamIMAPConfigInbound = spamIMAPConfig;
@@ -106,6 +110,8 @@ class ImapTableModel extends MSortedTableModel{
         inboundRow.add( new Integer(1) );
         inboundRow.add( SOURCE_INBOUND );
         inboundRow.add( spamIMAPConfigInbound.getScan() );
+	ComboBoxModel inboundStrengthComboBoxModel = super.generateComboBoxModel( SpamIMAPConfig.getScanStrengthEnumeration(), spamIMAPConfigInbound.getStrengthByName());
+	inboundRow.add( inboundStrengthComboBoxModel );
         ComboBoxModel inboundActionComboBoxModel =  super.generateComboBoxModel( SpamMessageAction.getValues(), spamIMAPConfigInbound.getMsgAction() );
         inboundRow.add( inboundActionComboBoxModel );
         inboundRow.add( spamIMAPConfigInbound.getNotes() );
@@ -118,6 +124,8 @@ class ImapTableModel extends MSortedTableModel{
         outboundRow.add( new Integer(1) );
         outboundRow.add( SOURCE_OUTBOUND );
         outboundRow.add( spamIMAPConfigOutbound.getScan() );
+	ComboBoxModel outboundStrengthComboBoxModel = super.generateComboBoxModel( SpamIMAPConfig.getScanStrengthEnumeration(), spamIMAPConfigOutbound.getStrengthByName());
+	outboundRow.add( outboundStrengthComboBoxModel );
         ComboBoxModel outboundActionComboBoxModel =  super.generateComboBoxModel( SpamMessageAction.getValues(), spamIMAPConfigOutbound.getMsgAction() );
         outboundRow.add( outboundActionComboBoxModel );
         outboundRow.add( spamIMAPConfigOutbound.getNotes() );

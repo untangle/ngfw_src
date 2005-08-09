@@ -41,10 +41,10 @@ public class DirectoryConfigJPanel extends MEditTableJPanel {
 
 class DirectoryTableModel extends MSortedTableModel{ 
 
-    private static final int T_TW = Util.TABLE_TOTAL_WIDTH;
+    private static final int T_TW = Util.TABLE_TOTAL_WIDTH_LARGE;
     private static final int C0_MW = Util.STATUS_MIN_WIDTH; /* status */
     private static final int C1_MW = Util.LINENO_MIN_WIDTH; /* # - invisible */
-    private static final int C2_MW = 150; /* user name */
+    private static final int C2_MW = 135; /* user name */
     private static final int C3_MW = 150; /* IPMaddr */
     private static final int C4_MW = Util.chooseMax(T_TW - (C0_MW + C1_MW + C2_MW + C3_MW), 120); /* description */
 
