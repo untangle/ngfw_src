@@ -213,29 +213,29 @@ EOF
 if [ "$generate_email_index" = true ]; then
     if [ "$period" = daily ]; then
 cat >> $main_index <<EOF
-                <br/>(daily email)
+                <br/><b>(daily email)</b>
 EOF
     elif [ "$period" = weekly ]; then
 cat >> $main_index <<EOF
-                <br/>(weekly email)
+                <br/><b>(weekly email)</b>
 EOF
     elif [ "$period" = monthly ]; then
 cat >> $main_index <<EOF
-                <br/>(monthly email)
+                <br/><b>(monthly email)</b>
 EOF
     fi
 else
     if [ "$period" = daily ]; then
 cat >> $main_index <<EOF
-                <br/>(daily online)
+                <br/><b>(daily online)</b>
 EOF
     elif [ "$period" = weekly ]; then
 cat >> $main_index <<EOF
-                <br/>(weekly online)
+                <br/><b>(weekly online)</b>
 EOF
     elif [ "$period" = monthly ]; then
 cat >> $main_index <<EOF
-                <br/>(monthly online)
+                <br/><b>(monthly online)</b>
 EOF
     fi
 fi
