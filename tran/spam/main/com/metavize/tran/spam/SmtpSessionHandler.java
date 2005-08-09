@@ -23,6 +23,7 @@ import com.metavize.tran.mail.papi.smtp.sapi.*;
 import com.metavize.tran.mime.*;
 import com.metavize.tran.util.*;
 import org.apache.log4j.Logger;
+import com.metavize.mvvm.tran.Transform;
 
 
 /**
@@ -31,6 +32,11 @@ import org.apache.log4j.Logger;
  */
 public class SmtpSessionHandler
   extends BufferingSessionHandler {
+
+  private final static int SCAN_COUNTER = Transform.GENERIC_0_COUNTER;
+  private final static int BLOCK_COUNTER = Transform.GENERIC_1_COUNTER;
+  private final static int PASS_COUNTER = Transform.GENERIC_2_COUNTER;
+  private final static int MARK_COUNTER = Transform.GENERIC_3_COUNTER;
 
   private static final String SPAM_HEADER_NAME = "X-Spam-Flag";
   private static final LCString SPAM_HEADER_NAME_LC = new LCString(SPAM_HEADER_NAME);
@@ -98,15 +104,21 @@ public class SmtpSessionHandler
     MessageInfo msgInfo) {
     m_logger.debug("[handleMessageCanBlock]");
 
+    //I'm incrementing the count, even if the message is too big
+    //or cannot be converted to file
+    m_spamImpl.incrementCount(SCAN_COUNTER);
+
     //Scan the message
     File f = messageToFile(msg);
     if(f == null) {
       m_logger.error("Error writing to file.  Unable to scan.  Assume pass");
+      m_spamImpl.incrementCount(PASS_COUNTER);
       return PASS_MESSAGE;
     }
 
     if(f.length() > getGiveupSz()) {
       m_logger.debug("Message larger than " + getGiveupSz() + ".  Don't bother to scan");
+      m_spamImpl.incrementCount(PASS_COUNTER);
       return PASS_MESSAGE;
     }
 
@@ -117,6 +129,7 @@ public class SmtpSessionHandler
     //Handle error case
     if(report == null) {
       m_logger.error("Error scanning message.  Assume pass");
+      m_spamImpl.incrementCount(PASS_COUNTER);
       return PASS_MESSAGE;
     }
 
@@ -125,8 +138,8 @@ public class SmtpSessionHandler
     SpamSmtpEvent spamEvent = new SpamSmtpEvent(
       msgInfo,
       report.getScore(),
-      report.isSpam(),//TODO bscott Isn't this redundant?  Don't we only log on negative cases?
-      action,
+      report.isSpam(),
+      report.isSpam()?action:SMTPSpamMessageAction.PASS,
       m_spamImpl.getScanner().getVendorName());
     m_eventLogger.info(spamEvent);
 
@@ -143,9 +156,6 @@ public class SmtpSessionHandler
     if(report.isSpam()) {//BEGIN SPAM
       m_logger.debug("Spam found");
 
-
-
-
       //Perform notification (if we should)
       if(m_notifier.sendNotification(
         m_config.getNotifyAction(),
@@ -160,20 +170,24 @@ public class SmtpSessionHandler
 
       if(action == SMTPSpamMessageAction.PASS) {
         m_logger.debug("Although SPAM detected, pass message as-per policy");
+        m_spamImpl.incrementCount(PASS_COUNTER);
         return PASS_MESSAGE;
       }
       else if(action == SMTPSpamMessageAction.MARK) {
         m_logger.debug("Marking message as-per policy");
+        m_spamImpl.incrementCount(MARK_COUNTER);
         MIMEMessage wrappedMsg = m_wrapper.wrap(msg, tx, report);
         return new BPMEvaluationResult(wrappedMsg);
       }
       else {//BLOCK
         m_logger.debug("Blocking SPAM message as-per policy");
+        m_spamImpl.incrementCount(BLOCK_COUNTER);
         return BLOCK_MESSAGE;
       }
     }//ENDOF SPAM
     else {//BEGIN HAM
       m_logger.debug("Not spam");
+      m_spamImpl.incrementCount(PASS_COUNTER);
       return PASS_MESSAGE;
     }//ENDOF HAM
   }
@@ -185,15 +199,19 @@ public class SmtpSessionHandler
     MessageInfo msgInfo) {
     m_logger.debug("[handleMessageCanNotBlock]");
 
+    m_spamImpl.incrementCount(SCAN_COUNTER);
+
     //Scan the message
     File f = messageToFile(msg);
     if(f == null) {
       m_logger.error("Error writing to file.  Unable to scan.  Assume pass");
+      m_spamImpl.incrementCount(PASS_COUNTER);
       return BlockOrPassResult.PASS;
     }
 
     if(f.length() > getGiveupSz()) {
       m_logger.debug("Message larger than " + getGiveupSz() + ".  Don't bother to scan");
+      m_spamImpl.incrementCount(PASS_COUNTER);
       return BlockOrPassResult.PASS;
     }
 
@@ -202,37 +220,52 @@ public class SmtpSessionHandler
     //Handle error case
     if(report == null) {
       m_logger.error("Error scanning message.  Assume pass");
+      m_spamImpl.incrementCount(PASS_COUNTER);
       return BlockOrPassResult.PASS;
     }
+
+    SMTPSpamMessageAction action = m_config.getMsgAction();
+    
+    //Check for the impossible-to-satisfy action of "REMOVE"
+    if(action == SMTPSpamMessageAction.MARK) {
+      //Change action now, as it'll make the event logs
+      //more accurate
+      m_logger.debug("Implicitly converting policy from \"MARK\"" +
+        " to \"PASS\" as we have already begun to trickle");
+      action = SMTPSpamMessageAction.PASS;
+    }
+
+    //Create an event for the reports
+    SpamSmtpEvent spamEvent = new SpamSmtpEvent(
+      msgInfo,
+      report.getScore(),
+      report.isSpam(),
+      report.isSpam()?action:SMTPSpamMessageAction.PASS,
+      m_spamImpl.getScanner().getVendorName());
+    m_eventLogger.info(spamEvent);
+    
     if(report.isSpam()) {
       m_logger.debug("Spam");
 
-      SMTPSpamMessageAction action = m_config.getMsgAction();
-
-      //Create an event for the reports
-      SpamSmtpEvent spamEvent = new SpamSmtpEvent(
-        msgInfo,
-        report.getScore(),
-        report.isSpam(),//TODO bscott Isn't this redundant?  Don't we only log on negative cases?
-        action,
-        m_spamImpl.getScanner().getVendorName());
-      m_eventLogger.info(spamEvent);
-
       if(action == SMTPSpamMessageAction.PASS) {
         m_logger.debug("Although SPAM detected, pass message as-per policy");
+        m_spamImpl.incrementCount(PASS_COUNTER);
         return BlockOrPassResult.PASS;
       }
       else if(action == SMTPSpamMessageAction.MARK) {
         m_logger.debug("Cannot mark at this time.  Simply pass");
+        m_spamImpl.incrementCount(PASS_COUNTER);
         return BlockOrPassResult.PASS;
       }
       else {//BLOCK
         m_logger.debug("Blocking SPAM message as-per policy");
+        m_spamImpl.incrementCount(BLOCK_COUNTER);
         return BlockOrPassResult.BLOCK;
       }
     }
     else {
       m_logger.debug("Not Spam");
+      m_spamImpl.incrementCount(PASS_COUNTER);
       return BlockOrPassResult.PASS;
     }
   }
