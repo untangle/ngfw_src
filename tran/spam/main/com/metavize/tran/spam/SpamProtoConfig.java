@@ -107,7 +107,7 @@ public abstract class SpamProtoConfig implements Serializable
     public static final int MEDIUM_STRENGTH = 50;
     public static final int HIGH_STRENGTH = 43;
     public static final int VERY_HIGH_STRENGTH = 35;
-    public static final Map<String,Integer> scanStrengthEnumeration = new LinkedHashMap<String,Integer>();
+    public static final Map scanStrengthEnumeration = new LinkedHashMap();
     static {
         scanStrengthEnumeration.put("very low",  VERY_LOW_STRENGTH);
         scanStrengthEnumeration.put("low",       LOW_STRENGTH);
@@ -125,10 +125,10 @@ public abstract class SpamProtoConfig implements Serializable
 
     public String getStrengthByName()
     {
-        for (String strname : scanStrengthEnumeration.keySet()) {
-            int strval = scanStrengthEnumeration.get(strname);
+        for (Object strname : scanStrengthEnumeration.keySet()) {
+            int strval = (Integer) scanStrengthEnumeration.get(strname);
             if (strength >= strval)
-                return strname;
+                return (String) strname;
         }
         // Failsafe, shouldn't happen.
         return "very low";
