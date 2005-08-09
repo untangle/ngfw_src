@@ -53,7 +53,7 @@ public class StoreJPanel extends javax.swing.JPanel {
         storeJScrollPane = new javax.swing.JScrollPane();
         descriptionJTextArea = new javax.swing.JTextArea();
         mTransformJPanel1 = new javax.swing.JPanel();
-        accountJLabel1 = new javax.swing.JLabel();
+        priceNameJLabel = new javax.swing.JLabel();
         priceJLabel = new javax.swing.JLabel();
         moreJButton = new javax.swing.JButton();
         localJLabel = new javax.swing.JLabel();
@@ -89,15 +89,16 @@ public class StoreJPanel extends javax.swing.JPanel {
 
         mTransformJPanel1.setBorder(new javax.swing.border.TitledBorder(null, "Procurement Information", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 0, 11)));
         mTransformJPanel1.setOpaque(false);
-        accountJLabel1.setFont(new java.awt.Font("Arial", 0, 12));
-        accountJLabel1.setText("Account #:");
-        accountJLabel1.setDoubleBuffered(true);
-        mTransformJPanel1.add(accountJLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 20, -1, -1));
+        priceNameJLabel.setFont(new java.awt.Font("Arial", 1, 12));
+        priceNameJLabel.setText("Price:");
+        priceNameJLabel.setDoubleBuffered(true);
+        mTransformJPanel1.add(priceNameJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 30, -1, -1));
 
         priceJLabel.setFont(new java.awt.Font("Arial", 0, 12));
-        priceJLabel.setText("Price:");
+        priceJLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        priceJLabel.setText(" ");
         priceJLabel.setDoubleBuffered(true);
-        mTransformJPanel1.add(priceJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 40, -1, -1));
+        mTransformJPanel1.add(priceJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 30, 140, -1));
 
         purchaseJPanel.add(mTransformJPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 200, 210, 90));
 
@@ -140,13 +141,13 @@ public class StoreJPanel extends javax.swing.JPanel {
     
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel accountJLabel1;
     protected javax.swing.JTextArea descriptionJTextArea;
     private javax.swing.JLabel localJLabel;
     protected javax.swing.JPanel mTransformJPanel;
     private javax.swing.JPanel mTransformJPanel1;
     private javax.swing.JButton moreJButton;
-    private javax.swing.JLabel priceJLabel;
+    protected javax.swing.JLabel priceJLabel;
+    private javax.swing.JLabel priceNameJLabel;
     private javax.swing.JPanel purchaseJPanel;
     private javax.swing.JProgressBar statusProgressBar;
     private javax.swing.JScrollPane storeJScrollPane;

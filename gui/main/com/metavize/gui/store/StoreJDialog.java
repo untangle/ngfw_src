@@ -54,6 +54,12 @@ public class StoreJDialog extends MConfigJDialog implements Savable, Refreshable
         
         storeJPanel.mTransformJPanel.add(mTransformJButton, gridBagConstraints);
         storeJPanel.descriptionJTextArea.setText(mTransformJButton.getFullDescription());
+        String price = mTransformJButton.getPrice();
+        storeJPanel.priceJLabel.setText("$" + price);
+        if( price.equals("0") ){
+            super.saveJButton.setText("<html><b>Download</b></html>");
+            super.saveJButton.setIcon(null);
+        }
 
 	super.savableMap.put(NAME_STORE, this);
 	super.refreshableMap.put(NAME_STORE, this);
