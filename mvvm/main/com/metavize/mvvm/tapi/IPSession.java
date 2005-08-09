@@ -54,10 +54,11 @@ public interface IPSession extends IPSessionDesc, Session  {
     // void closeServer(boolean force);
 
     /**
-     * <code>release</code> releases all interest in further events for this session.
+     * <code>release</code> releases all interest in all non-final events for this session.  Only
+     * the finalization event will be delievered, when the resulting session ends.
      *
      * This call is only valid while in NORMAL_MODE.
-     * Note: Just calls release(false);
+     * Note: Just calls release(true);
      *
      */
     void release();

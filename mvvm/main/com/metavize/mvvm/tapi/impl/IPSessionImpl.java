@@ -93,7 +93,9 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
     
     public void release()
     {
-        release(false);
+        // 8/8/05 jdi -- default changed to true -- finalization is almost always important
+        // when it is defined.
+        release(true);
     }
 
     // This one is for releasing once the session has been alive.
@@ -185,8 +187,12 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
         else
             out = ((com.metavize.mvvm.argon.Session)pSession).serverOutgoingSocketQueue();
         if (out == null || out.isClosed()) {
-            String sideName = side == CLIENT ? "client" : "server";
-            error("Ignoring crumb for dead " + sideName + " sink");
+            // 8/8/05 jdi -- if we've released, this isn't an error because
+            // we're just using the stupid passthrough version.
+            if (!released) {
+                String sideName = side == CLIENT ? "client" : "server";
+                error("Ignoring crumb for dead " + sideName + " outgoing socket queue");
+            }
             return;
         }
 

@@ -374,6 +374,7 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
         // from transform's packet handler.
     }
 
+    @Override
     protected void closeFinal()
     {
         try {

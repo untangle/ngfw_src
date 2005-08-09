@@ -604,6 +604,7 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
         return logPrefix;
     }
 
+    @Override
     protected void closeFinal()
     {
         try {
