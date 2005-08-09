@@ -423,6 +423,9 @@ public class MIMEAccumulator {
     if(m_mimeMessage != null) {
       return m_mimeMessage;
     }
+    if(m_fileMIMESource == null) {
+      m_fileMIMESource = new FileMIMESource(m_file);
+    }
     MIMEParsingInputStream mimeIn = null;
     try {
       mimeIn = m_fileMIMESource.getInputStream();
