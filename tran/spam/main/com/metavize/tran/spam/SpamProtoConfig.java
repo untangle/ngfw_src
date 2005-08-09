@@ -118,7 +118,7 @@ public abstract class SpamProtoConfig implements Serializable
 
     public void setStrengthByName(String strengthEnum)
     {
-        Integer str = scanStrengthEnumeration.get(strengthEnum);
+        Integer str = (Integer) scanStrengthEnumeration.get(strengthEnum);
         if (str != null)
             strength = str.intValue();
     }
