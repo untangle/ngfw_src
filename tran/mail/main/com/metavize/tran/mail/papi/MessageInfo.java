@@ -57,6 +57,11 @@ public class MessageInfo implements Serializable
 
     public MessageInfo(int sessionId, int serverPort, String subject)
     {
+        // Subject really shouldn't be NOT NULL, but it's easier for now to fix by using an empty
+        // string... XXX jdi 8/9/05
+        if (subject == null)
+            subject = "";
+
         if (subject != null && subject.length() > DEFAULT_STRING_SIZE) subject = subject.substring(0, DEFAULT_STRING_SIZE);
         this.subject = subject;
         this.sessionId = sessionId;
