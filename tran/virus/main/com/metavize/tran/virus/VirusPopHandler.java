@@ -177,15 +177,9 @@ public class VirusPopHandler extends PopStateMachine
             /* else not infected - discard scan result */
 
             return null;
-        } catch (IOException exn) { //XXXX  transforms (and not base) should always handle IOException
-            /* we'll reuse original message */
-            throw new TokenException("cannot scan message/mime part file: " + exn);
-        } catch (InterruptedException exn) { //XXXX  transforms (and not base) should always handle InterruptedException
-            /* we'll reuse original message */
-            throw new TokenException("cannot scan message/mime part file: " + exn);
-        } catch (Exception exn) { // Should never happen
-            /* we'll reuse original message */
-            throw new TokenException("cannot scan message/mime part file: " + exn);
+        } catch (Exception exn) {
+            // Should never happen
+            throw new TokenException("cannot scan message/mime part file: ", exn);
         }
     }
 }

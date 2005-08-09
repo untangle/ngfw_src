@@ -210,10 +210,9 @@ class VirusFtpHandler extends FtpStateMachine
         try {
             transform.incrementCount( SCAN_COUNTER );
             result = transform.getScanner().scanFile(file.getPath());
-        } catch (IOException exn) {
+        } catch (Exception exn) {
+            // Should never happen
             throw new TokenException("could not scan TokenException", exn);
-        } catch (InterruptedException exn) { // XXX deal with this in scanner
-            throw new TokenException("interrupted while scanning", exn);
         }
 
         /* XXX handle the case where result is null */

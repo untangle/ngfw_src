@@ -48,23 +48,33 @@ public class ClamScanner implements VirusScanner
         return scan.waitFor(this.timeout);
     }
 
-    public VirusScannerResult scanBufs(List bufs) throws java.io.IOException
+    public VirusScannerResult scanBufs(List bufs)
     {
-        File fileBuf = File.createTempFile("clamdscan-cache",null);
-        FileChannel outFile = (new FileOutputStream(fileBuf)).getChannel();
+        File fileBuf;
+        try {
+            fileBuf = File.createTempFile("clamdscan-cache",null);
+            FileChannel outFile = (new FileOutputStream(fileBuf)).getChannel();
 
-        ByteBuffer bb;
+            ByteBuffer bb;
 
-        for (int i = 0; i < bufs.size(); i++) {
-            bb = (ByteBuffer)bufs.get(i);
-            bb.flip();
-            while (0 < bb.remaining())
-                outFile.write(bb);
+            for (int i = 0; i < bufs.size(); i++) {
+                bb = (ByteBuffer)bufs.get(i);
+                bb.flip();
+                while (0 < bb.remaining())
+                    outFile.write(bb);
+            }
+            outFile.close();
+        } catch (Exception x) {
+            logger.error("clamdscan: unable to write file to be scanned", x);
+            return VirusScannerResult.ERROR;
         }
-        outFile.close();
-
+        
         VirusScannerResult ret = scanFile(fileBuf.getAbsolutePath());
-        fileBuf.delete();
+        try {
+            fileBuf.delete();
+        } catch (Exception x) {
+            logger.error("clamdscan: unable to delete scanned file", x);
+        }
 
         return ret;
     }

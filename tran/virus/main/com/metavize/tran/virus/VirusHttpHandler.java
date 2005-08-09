@@ -248,15 +248,14 @@ class VirusHttpHandler extends HttpStateMachine
             logger.debug("Scanning the file: " + fileName);
             transform.incrementCount(SCAN_COUNTER);
             result = transform.getScanner().scanFile(fileName);
-        } catch (IOException e) {
-            logger.error("Virus scan failed: "+ e);
-            result = VirusScannerResult.ERROR;
-        } catch (InterruptedException e) {
+        } catch (Exception e) {
+            // Should never happen
             logger.error("Virus scan failed: "+ e);
             result = VirusScannerResult.ERROR;
         }
 
         if (result == null) {
+            // Should never happen
             logger.error("Virus scan failed: null");
             result = VirusScannerResult.ERROR;
         }

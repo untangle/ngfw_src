@@ -23,8 +23,15 @@ public interface VirusScanner
      */
     String getVendorName();
 
-    VirusScannerResult scanFile (String fileName)
-        throws IOException, InterruptedException;
-    VirusScannerResult scanBufs (List bufs)
-        throws IOException, InterruptedException;
+    /**
+     * Scans the file for viruses, producing a virus report.  Note that the contract for this
+     * requires that a report always be generated, for any problems or exceptions an
+     * "clean" report is generated (and the error/warning should be logged).
+     *
+     * @param fileName a <code>String</code> value
+     * @return a <code>VirusScannerResult</code> value
+     */
+    VirusScannerResult scanFile (String fileName);
+
+    VirusScannerResult scanBufs (List bufs);
 }
