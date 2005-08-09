@@ -133,7 +133,7 @@ diff -urN linux-2.6.12.3/net/ipv4/ip_output.c linux-2.6.12.3-extensions/net/ipv4
  	}
  	iph->tos = inet->tos;
 +
-+    if (IPCB(skb)->pkt_ip_tos && sk->sk_protocol == IPPROTO_UDP) /* why just UDP? */
++    if (IPCB(skb)->pkt_ip_tos) 
 +        iph->tos = IPCB(skb)->pkt_ip_tos;
 +
  	iph->tot_len = htons(skb->len);
@@ -144,7 +144,7 @@ diff -urN linux-2.6.12.3/net/ipv4/ip_output.c linux-2.6.12.3-extensions/net/ipv4
  	}
  	iph->ttl = ttl;
 +
-+    if (IPCB(skb)->pkt_ip_ttl && sk->sk_protocol == IPPROTO_UDP) /* why just UDP? */
++    if (IPCB(skb)->pkt_ip_ttl) 
 +        iph->ttl = IPCB(skb)->pkt_ip_ttl;
 +
  	iph->protocol = sk->sk_protocol;
