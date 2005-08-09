@@ -29,6 +29,7 @@ public class ReportGenerator
     public static final String FIELDS_PROPERTY = "FIELDS";
     public static final String FIELD_PROPERTY_PREFIX = "FIELD_";
     public static final String EXTRA_PARAMS_PROPERTY = "EXTRA_PARAMS";
+    public static final String SUBREPORT_EXTRA_PARAMS_PROPERTY = "SUBREPORT_EXTRA_PARAMS";
     public static final String EXTRA_PARAM_PROPERTY_PREFIX = "EXTRA_PARAM_";
     public static final String DEFAULT_TEMPLATE_SRC_DIR = "mvvm/resources/reports";
     
@@ -138,8 +139,11 @@ public class ReportGenerator
         fset.addFilter(FIELDS_PROPERTY, fieldsProp);
 
         String paramsProps = getParams(props);
-        // System.out.println("FIELDS: " + fieldsProp);
         fset.addFilter(EXTRA_PARAMS_PROPERTY, paramsProps);
+        
+        String subreportParamsProps = getSubreportParams(props);
+        fset.addFilter(SUBREPORT_EXTRA_PARAMS_PROPERTY, subreportParamsProps);
+
 
         for (String defaultSlotName : SlotTypes.keySet()) {
             String defaultSlotType = SlotTypes.get(defaultSlotName);
@@ -204,6 +208,33 @@ public class ReportGenerator
             sb.append("\" class=\"");
             sb.append(type);
             sb.append("\"/>\n");
+        }
+        return sb.toString();
+    }
+
+    private String getSubreportParams(Properties props)
+    {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0;; i++) {
+            String name = props.getProperty(EXTRA_PARAM_PROPERTY_PREFIX + i + ".name");
+            // System.out.println("Looking for " + FIELD_PROPERTY_PREFIX + i + ".name" + ", got " + name);
+            if (name == null) {
+                if (i > 0)
+                    break;
+                else
+                    continue;
+            }
+            String type = props.getProperty(EXTRA_PARAM_PROPERTY_PREFIX + i + ".type");
+            if (type == null)
+                throw new IllegalArgumentException("Missing type " + i);
+            String canonType = TypeAliases.get(type);
+            if (canonType != null)
+                type = canonType;
+            sb.append("<subreportParameter name=\"");
+            sb.append(name);
+            sb.append("\"> <subreportParameterExpression><![CDATA[$P{");
+            sb.append(name);
+            sb.append("}]]></subreportParameterExpression> </subreportParameter>\n");
         }
         return sb.toString();
     }

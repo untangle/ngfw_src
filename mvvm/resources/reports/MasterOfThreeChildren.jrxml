@@ -21,6 +21,7 @@
     </parameter>
     <parameter name="endTime" class="java.sql.Timestamp">
     </parameter>
+    @EXTRA_PARAMS@
     <queryString><![CDATA[SELECT 1]]></queryString>
     <background>
         <band>
@@ -68,6 +69,7 @@
                 <subreportParameter name="endTime">
                     <subreportParameterExpression><![CDATA[$P{endTime}]]></subreportParameterExpression>
                 </subreportParameter>
+                @SUBREPORT_EXTRA_PARAMS@
                 <connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
                 <subreportExpression class="java.lang.String"><![CDATA["@SUBREPORT_1@"]]></subreportExpression>
             </subreport>
@@ -79,6 +81,7 @@
                 <subreportParameter name="endTime">
                     <subreportParameterExpression><![CDATA[$P{endTime}]]></subreportParameterExpression>
                 </subreportParameter>
+                @SUBREPORT_EXTRA_PARAMS@
                 <connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
                 <subreportExpression class="java.lang.String"><![CDATA["@SUBREPORT_2@"]]></subreportExpression>
             </subreport>
@@ -90,6 +93,7 @@
                 <subreportParameter name="endTime">
                     <subreportParameterExpression><![CDATA[$P{endTime}]]></subreportParameterExpression>
                 </subreportParameter>
+                @SUBREPORT_EXTRA_PARAMS@
                 <connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
                 <subreportExpression class="java.lang.String"><![CDATA["@SUBREPORT_3@"]]></subreportExpression>
             </subreport>
