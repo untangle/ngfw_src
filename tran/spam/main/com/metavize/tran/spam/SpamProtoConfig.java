@@ -101,6 +101,44 @@ public abstract class SpamProtoConfig implements Serializable
         this.strength = strength;
     }
 
+    /**
+     * msgSizeLimit: an integer giving scan message size limit.  Files over this size are
+     * presumed not to be spam, and not scanned for performance reasons.
+     *
+     * @return an <code>int</code> giving the spam message size limit (cutoff) in bytes.
+     * @hibernate.property
+     * column="MSG_SIZE_LIMIT"
+     * not-null="true"
+     */
+    public int getMsgSizeLimit()
+    {
+        return msgSizeLimit;
+    }
+
+    public void setMsgSizeLimit(int msgSizeLimit)
+    {
+        this.msgSizeLimit = msgSizeLimit;
+    }
+
+    /**
+     * notes: a string containing notes (defaults to NO_NOTES)
+     *
+     * @return the notes for this spam config
+     * @hibernate.property
+     * column="NOTES"
+     */
+    public String getNotes()
+    {
+        return zNotes;
+    }
+
+    public void setNotes(String zNotes)
+    {
+        this.zNotes = zNotes;
+        return;
+    }
+
+
     // Help for the UI follows.
     public static final int VERY_LOW_STRENGTH = 80;
     public static final int LOW_STRENGTH = 65;
@@ -142,45 +180,4 @@ public abstract class SpamProtoConfig implements Serializable
         
         return (String[])scanStrengthEnumeration.keySet().toArray(SSE_PROTO);
     }
-
-
-
-    /**
-     * msgSizeLimit: an integer giving scan message size limit.  Files over this size are
-     * presumed not to be spam, and not scanned for performance reasons.
-     *
-     * @return an <code>int</code> giving the spam message size limit (cutoff) in bytes.
-     * @hibernate.property
-     * column="MSG_SIZE_LIMIT"
-     * not-null="true"
-     */
-    public int getMsgSizeLimit()
-    {
-        return msgSizeLimit;
-    }
-
-    public void setMsgSizeLimit(int msgSizeLimit)
-    {
-        this.msgSizeLimit = msgSizeLimit;
-    }
-
-    /**
-     * notes: a string containing notes (defaults to NO_NOTES)
-     *
-     * @return the notes for this spam config
-     * @hibernate.property
-     * column="NOTES"
-     */
-    public String getNotes()
-    {
-        return zNotes;
-    }
-
-    public void setNotes(String zNotes)
-    {
-        this.zNotes = zNotes;
-        return;
-    }
-
-
 }
