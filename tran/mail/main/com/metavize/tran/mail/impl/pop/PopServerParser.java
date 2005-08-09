@@ -25,6 +25,8 @@ import java.util.List;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.tapi.Pipeline;
 import com.metavize.mvvm.tapi.TCPSession;
+import com.metavize.tran.mail.PopCasing;
+import com.metavize.tran.mail.papi.AddressKind;
 import com.metavize.tran.mail.papi.DoNotCareT;
 import com.metavize.tran.mail.papi.DoNotCareChunkT;
 import com.metavize.tran.mail.papi.MessageBoundaryScanner;
@@ -63,6 +65,7 @@ public class PopServerParser extends AbstractParser
     };
 
     private final Pipeline pipeline;
+    private final PopCasing zCasing;
     private final MessageBoundaryScanner zMBScanner;
 
     private File zMsgFile;
@@ -75,17 +78,18 @@ public class PopServerParser extends AbstractParser
 
     // constructors -----------------------------------------------------------
 
-    public PopServerParser(TCPSession session)
+    public PopServerParser(TCPSession session, PopCasing zCasing)
     {
         super(session, true);
         lineBuffering(false);
 
+        pipeline = MvvmContextFactory.context().pipelineFoundry().getPipeline(session.id());
+        this.zCasing = zCasing;
+        zMBScanner = new MessageBoundaryScanner();
+
         state = State.REPLY;
         bHdrDone = false;
         bBodyDone = false;
-
-        pipeline = MvvmContextFactory.context().pipelineFoundry().getPipeline(session.id());
-        zMBScanner = new MessageBoundaryScanner();
     }
 
     // Parser methods ---------------------------------------------------------
@@ -207,7 +211,9 @@ public class PopServerParser extends AbstractParser
 
                             try {
                                 MIMEMessageHeaders zMMHeader = MIMEMessageHeaders.parseMMHeaders(zMMessageT.getInputStream(), zMMessageT.getFileMIMESource());
+
                                 MessageInfo zMsgInfo = MessageInfo.fromMIMEMessage(zMMHeader, session.id(), session.serverPort());
+                                zMsgInfo.addAddress(AddressKind.USER, zCasing.getUser(), null);
 
                                 zMMessageT.setMIMEMessageHeader(zMMHeader);
                                 zMMessageT.setMessageInfo(zMsgInfo);

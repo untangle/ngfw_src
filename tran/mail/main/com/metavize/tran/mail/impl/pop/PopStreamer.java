@@ -94,6 +94,7 @@ public class PopStreamer implements TCPStreamer
         }
 
         long lOrgFileSz = zOrgFile.length();
+        zLog.debug("byte unstuffed message file size: " + lOrgFileSz);
         int iDataSz = (int) ((DATA_SZ < lOrgFileSz) ? DATA_SZ : lOrgFileSz);
         ByteBuffer zReadBuf = ByteBuffer.allocate(iDataSz);
         ByteBuffer zWriteBuf = ByteBuffer.allocate(iDataSz);
@@ -132,6 +133,7 @@ public class PopStreamer implements TCPStreamer
 
         closeChannel(zReadChannel);
         closeChannel(zWriteChannel);
+        zLog.debug("byte stuffed message file size: " + iNewFileSz + ", " + zNewFile.length());
 
         /* ready to build PopStreamer */
         PopStreamer zPopStreamer = new PopStreamer();

@@ -15,37 +15,178 @@ import static com.metavize.tran.util.Ascii.*;
 import static com.metavize.tran.util.Rfc822Util.*;
 
 import java.nio.ByteBuffer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.metavize.tran.token.ParseException;
 import com.metavize.tran.util.AsciiCharBuffer;
 import com.metavize.tran.token.Token;
+import org.apache.log4j.Logger;
 
+/* We handle USER and APOP but not AUTH.
+ *
+ * RFC 1939:
+ * USER name
+ *    Arguments:
+ *        a string identifying a mailbox (required), which is of
+ *        significance ONLY to the server
+ *    Restrictions:
+ *        may only be given in the AUTHORIZATION state after the POP3
+ *        greeting or after an unsuccessful USER or PASS command
+ *    Discussion:
+ *        To authenticate using the USER and PASS command
+ *        combination, the client must first issue the USER
+ *        command.  If the POP3 server responds with a positive
+ *        status indicator ("+OK"), then the client may issue
+ *        either the PASS command to complete the authentication,
+ *        or the QUIT command to terminate the POP3 session.  If
+ *        the POP3 server responds with a negative status indicator
+ *        ("-ERR") to the USER command, then the client may either
+ *        issue a new authentication command or may issue the QUIT
+ *        command.
+ *        The server may return a positive response even though no
+ *        such mailbox exists.  The server may return a negative
+ *        response if mailbox exists, but does not permit plaintext
+ *        password authentication.
+ *
+ * APOP name digest
+ *    Arguments:
+ *        a string identifying a mailbox and a MD5 digest string
+ *        (both required)
+ *    Restrictions:
+ *        may only be given in the AUTHORIZATION state after the POP3
+ *        greeting or after an unsuccessful USER or PASS command
+ *    Discussion:
+ *        Normally, each POP3 session starts with a USER/PASS
+ *        exchange.  This results in a server/user-id specific
+ *        password being sent in the clear on the network.  For
+ *        intermittent use of POP3, this may not introduce a sizable
+ *        risk.  However, many POP3 client implementations connect to
+ *        the POP3 server on a regular basis -- to check for new
+ *        mail.  Further the interval of session initiation may be on
+ *        the order of five minutes.  Hence, the risk of password
+ *        capture is greatly enhanced.
+ *        An alternate method of authentication is required which
+ *        provides for both origin authentication and replay
+ *        protection, but which does not involve sending a password
+ *        in the clear over the network.  The APOP command provides
+ *        this functionality.
+ *        When the POP3 server receives the APOP command, it verifies
+ *        the digest provided.  If the digest is correct, the POP3
+ *        server issues a positive response, and the POP3 session
+ *        enters the TRANSACTION state.  Otherwise, a negative
+ *        response is issued and the POP3 session remains in the
+ *        AUTHORIZATION state.
+ *
+ * RFC 1734:
+ * AUTH mechanism
+ *   Arguments:
+ *       a string identifying an IMAP4 authentication mechanism,
+ *       such as defined by [IMAP4-AUTH].  Any use of the string
+ *       "imap" used in a server authentication identity in the
+ *       definition of an authentication mechanism is replaced with
+ *       the string "pop".
+ *   Restrictions:
+ *       may only be given in the AUTHORIZATION state
+ *   Discussion:
+ *       The AUTH command indicates an authentication mechanism to
+ *       the server.  If the server supports the requested
+ *       authentication mechanism, it performs an authentication
+ *       protocol exchange to authenticate and identify the user.
+ *       Optionally, it also negotiates a protection mechanism for
+ *       subsequent protocol interactions.  If the requested
+ *       authentication mechanism is not supported, the server
+ *       should reject the AUTH command by sending a negative
+ *       response.
+ *       The authentication protocol exchange consists of a series
+ *       of server challenges and client answers that are specific
+ *       to the authentication mechanism.  A server challenge,
+ *       otherwise known as a ready response, is a line consisting
+ *       of a "+" character followed by a single space and a BASE64
+ *       encoded string.  The client answer consists of a line
+ *       containing a BASE64 encoded string.  If the client wishes
+ *       to cancel an authentication exchange, it should issue a
+ *       line with a single "*".  If the server receives such an
+ *       answer, it must reject the AUTH command by sending a
+ *       negative response.
+ *       The server is not required to support any particular
+ *       authentication mechanism, nor are authentication mechanisms
+ *       required to support any protection mechanisms.  If an AUTH
+ *       command fails with a negative response, the session remains
+ *       in the AUTHORIZATION state and client may try another
+ *       authentication mechanism by issuing another AUTH command,
+ *       or may attempt to authenticate by using the USER/PASS or
+ *       APOP commands.  In other words, the client may request
+ *       authentication types in decreasing order of preference,
+ *       with the USER/PASS or APOP command as a last resort.
+ *       Should the client successfully complete the authentication
+ *       exchange, the POP3 server issues a positive response and
+ *       the POP3 session enters the TRANSACTION state.
+ */
 public class PopCommand implements Token
 {
+    private final static Logger logger = Logger.getLogger(PopCommand.class);
+
+    private final static String USER = "^USER ";
+    private final static String APOP = "^APOP ";
+    private final static String LWSP = "\\p{Blank}"; /* linear-white-space */
+    private final static String CRLF = "\r\n";
+    private final static String PEOLINE = CRLF + "$"; /* protocol EOLINE */
+    private final static String LWSPEOL = "(" + LWSP + "|" + PEOLINE + ")";
+    private final static Pattern USERP = Pattern.compile(USER, Pattern.CASE_INSENSITIVE);
+    private final static Pattern APOPP = Pattern.compile(APOP, Pattern.CASE_INSENSITIVE);
+    private final static Pattern LWSPEOLP = Pattern.compile(LWSPEOL);
+
+    private final static String NO_USER = "unknown";
+
     private final String command;
     private final String argument;
+    private final String zUser;
 
     // constructors -----------------------------------------------------------
 
-    private PopCommand(String command, String argument)
+    private PopCommand(String command, String argument, String zUser)
     {
         this.command = command;
         this.argument = argument;
+        this.zUser = zUser;
     }
 
     // static factories -------------------------------------------------------
 
     public static PopCommand parse(ByteBuffer buf) throws ParseException
     {
-        ByteBuffer dup = buf.duplicate();
-        String cmd = consumeToken(dup);
+        ByteBuffer zDup = buf.duplicate();
+        String cmd = consumeToken(zDup);
         if (0 == cmd.length()) {
             throw new ParseException("cannot identify command: " + AsciiCharBuffer.wrap(buf));
         }
 
-        eatSpace(dup);
-        String arg = consumeBuf(dup); /* eat CRLF */
-        return new PopCommand(cmd, 0 == arg.length() ? null : arg);
+        eatSpace(zDup);
+        String arg = consumeBuf(zDup); /* eat CRLF */
+        return new PopCommand(cmd, 0 == arg.length() ? null : arg, null);
+    }
+
+    public static PopCommand parseUser(ByteBuffer buf) throws ParseException
+    {
+        ByteBuffer zDup = buf.duplicate();
+        String zTmp = AsciiCharBuffer.wrap(zDup).toString();
+
+        String zUser;
+
+        if (null == (zUser = getUser(zTmp, USERP)) &&
+            null == (zUser = getUser(zTmp, APOPP))) {
+            zUser = null;
+        }
+
+        String cmd = consumeToken(zDup);
+        if (0 == cmd.length()) {
+            throw new ParseException("cannot identify command: " + AsciiCharBuffer.wrap(buf));
+        }
+
+        eatSpace(zDup);
+        String arg = consumeBuf(zDup); /* eat CRLF */
+        return new PopCommand(cmd, 0 == arg.length() ? null : arg, zUser);
     }
 
     // accessors --------------------------------------------------------------
@@ -58,6 +199,16 @@ public class PopCommand implements Token
     public String getArgument()
     {
         return argument;
+    }
+
+    public String getUser()
+    {
+        return (null == zUser) ? NO_USER : zUser;
+    }
+
+    public boolean isUser()
+    {
+        return (null == zUser) ? false : true;
     }
 
     // Token methods ----------------------------------------------------------
@@ -94,5 +245,24 @@ public class PopCommand implements Token
         }
 
         return zSBuilder.toString();
+    }
+
+    private static String getUser(String zCmd, Pattern zPattern)
+    {
+        Matcher zMatcher = zPattern.matcher(zCmd);
+        if (false == zMatcher.find()) {
+            return null;
+        }
+
+        int iStart = zMatcher.end();
+        zMatcher = LWSPEOLP.matcher(zCmd);
+        if (false == zMatcher.find(iStart)) {
+            return null;
+        }
+
+        //String zUser = (String) zCmd.subSequence(iStart, zMatcher.start());
+        //logger.debug("user name is: " + zUser);
+        //return zUser;
+        return (String) zCmd.subSequence(iStart, zMatcher.start());
     }
 }

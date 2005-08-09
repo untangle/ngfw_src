@@ -25,6 +25,7 @@ import java.util.List;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.tapi.Pipeline;
 import com.metavize.mvvm.tapi.TCPSession;
+import com.metavize.tran.mail.PopCasing;
 import com.metavize.tran.mail.papi.pop.PopCommand;
 import com.metavize.tran.mail.papi.pop.PopCommandMore;
 import com.metavize.tran.token.AbstractParser;
@@ -39,18 +40,18 @@ public class PopClientParser extends AbstractParser
 {
     private final static Logger logger = Logger.getLogger(PopClientParser.class);
 
-    private final static int LINE_SZ = 1024;
-
     private final Pipeline pipeline;
+    private final PopCasing zCasing;
 
     // constructors -----------------------------------------------------------
 
-    public PopClientParser(TCPSession session)
+    public PopClientParser(TCPSession session, PopCasing zCasing)
     {
         super(session, true);
         lineBuffering(false);
 
         pipeline = MvvmContextFactory.context().pipelineFoundry().getPipeline(session.id());
+        this.zCasing = zCasing;
     }
 
     // Parser methods ---------------------------------------------------------
@@ -69,10 +70,20 @@ public class PopClientParser extends AbstractParser
             if (1 < iCmdEnd) {
                 ByteBuffer dup = buf.duplicate();
 
-                PopCommand cmd;
                 try {
-                    cmd = PopCommand.parse(buf);
+                    PopCommand cmd;
+
+                    if (null == zCasing.getUser()) {
+                        /* we only check for user once per session */
+                        cmd = PopCommand.parseUser(buf);
+                    } else {
+                        cmd = PopCommand.parse(buf);
+                    }
+
                     zTokens.add(cmd);
+
+                    //logger.debug("command: " + cmd + ", " + buf);
+                    logger.debug("command: " + buf);
                 } catch (ParseException exn) {
                     /* long command may break before CRLF sequence
                      * so if parse fails,
@@ -80,14 +91,9 @@ public class PopClientParser extends AbstractParser
                      */
                     zTokens.add(new PopCommandMore(dup));
                     logger.debug("command (more): " + dup + ", " + exn);
-
-                    buf = null;
-                    bDone = true;
-                    break;
+                    /* fall through */
                 }
 
-                //logger.debug("command: " + cmd + ", " + buf);
-                logger.debug("command: " + buf);
                 buf = null;
                 bDone = true;
             } else {

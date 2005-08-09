@@ -19,18 +19,21 @@ import com.metavize.tran.token.AbstractCasing;
 import com.metavize.tran.token.Parser;
 import com.metavize.tran.token.Unparser;
 
-class PopCasing extends AbstractCasing
+public class PopCasing extends AbstractCasing
 {
     private final Parser parser;
     private final PopUnparser unparser;
+
+    private String zUser;
 
     // constructors -----------------------------------------------------------
 
     PopCasing(TCPSession session, boolean clientSide)
     {
-        parser = clientSide ? new PopClientParser(session)
-            : new PopServerParser(session);
-        unparser = new PopUnparser(session, clientSide);
+        parser = true == clientSide ? new PopClientParser(session, this) : new PopServerParser(session, this);
+        unparser = new PopUnparser(session, clientSide, this);
+
+        zUser = null;
     }
 
     // Casing methods ---------------------------------------------------------
@@ -43,5 +46,16 @@ class PopCasing extends AbstractCasing
     public Unparser unparser()
     {
         return unparser;
+    }
+
+    public void setUser(String zUser)
+    {
+        this.zUser = zUser;
+        return;
+    }
+
+    public String getUser()
+    {
+        return zUser;
     }
 }

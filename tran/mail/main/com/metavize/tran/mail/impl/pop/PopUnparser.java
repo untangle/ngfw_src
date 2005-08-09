@@ -25,6 +25,7 @@ import java.util.regex.Pattern;
 
 import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.mvvm.tapi.event.TCPStreamer;
+import com.metavize.tran.mail.PopCasing;
 import com.metavize.tran.mail.papi.ByteBufferByteStuffer;
 import com.metavize.tran.mail.papi.DoNotCareT;
 import com.metavize.tran.mail.papi.DoNotCareChunkT;
@@ -52,12 +53,15 @@ public class PopUnparser extends AbstractUnparser
     private final static String ENCODING = System.getProperty("file.encoding");
     private final static Charset CHARSET = Charset.forName(ENCODING);
 
+    private final PopCasing zCasing;
+
     private PopReply zMsgDataReply;
     private ByteBufferByteStuffer zByteStuffer;
 
-    public PopUnparser(TCPSession session, boolean clientSide)
+    public PopUnparser(TCPSession session, boolean clientSide, PopCasing zCasing)
     {
         super(session, clientSide);
+        this.zCasing = zCasing;
 
         zMsgDataReply = null;
         zByteStuffer = null;
@@ -80,9 +84,17 @@ public class PopUnparser extends AbstractUnparser
 
         List<ByteBuffer> zWriteBufs = new LinkedList<ByteBuffer>();
 
-        if (token instanceof PopCommand ||
-            token instanceof PopCommandMore ||
-            token instanceof PopReplyMore) {
+        if (token instanceof PopCommand) {
+            PopCommand zCommand = (PopCommand) token;
+
+            if (null == zCasing.getUser()) {
+                /* workaround to supply user to server parser */
+                zCasing.setUser(zCommand.getUser());
+            }
+
+            zWriteBufs.add(zCommand.getBytes());
+        } else if (token instanceof PopCommandMore ||
+                   token instanceof PopReplyMore) {
             zWriteBufs.add(token.getBytes());
         } else if (token instanceof PopReply) {
             PopReply zReply = (PopReply) token;

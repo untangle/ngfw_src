@@ -47,28 +47,27 @@ public class PopReply implements Token
 
     private final String reply;
     private final String argument;
-    private String zMsgDataSz;
-    private boolean bIsMsgData;
+    private final String zMsgDataSz;
 
-    private PopReply(String reply, String argument, String zMsgDataSz, boolean bIsMsgData)
+    private PopReply(String reply, String argument, String zMsgDataSz)
     {
         this.reply = reply;
         this.argument = argument;
         this.zMsgDataSz = zMsgDataSz;
-        this.bIsMsgData = bIsMsgData;
     }
 
     // static factories ------------------------------------------------------
 
     public static PopReply parse(ByteBuffer buf, int iEnd) throws ParseException
     {
-        String zMsgDataSz;
-
         ByteBuffer zDup = buf.duplicate();
         zDup.limit(iEnd);
         String zTmp = AsciiCharBuffer.wrap(zDup).toString();
         boolean bIsMsgData = zTmp.matches(DATAOK);
         //logger.debug("reply is message: " + bIsMsgData);
+
+        String zMsgDataSz;
+
         if (false == bIsMsgData) {
             zMsgDataSz = null;
         } else {
@@ -91,7 +90,7 @@ public class PopReply implements Token
             arg = consumeLine(buf, iEnd); /* consume up to end of line */
         }
 
-        return new PopReply(reply, (0 == arg.length()) ? null : arg, zMsgDataSz, bIsMsgData);
+        return new PopReply(reply, (0 == arg.length()) ? null : arg, zMsgDataSz);
     }
 
     // bean methods -----------------------------------------------------------
@@ -113,14 +112,7 @@ public class PopReply implements Token
 
     public boolean isMsgData()
     {
-        return bIsMsgData;
-    }
-
-    public void resetMsgData()
-    {
-        zMsgDataSz = null;
-        bIsMsgData = false;
-        return;
+        return (null == zMsgDataSz) ? false : true;
     }
 
     // Token methods ---------------------------------------------------------
