@@ -42,7 +42,6 @@ public abstract class PopStateMachine extends AbstractTokenHandler
 {
     private final static Logger logger = Logger.getLogger(PopStateMachine.class);
 
-    /* documented as fyi - not explicitly used */
     public enum ClientState {
         COMMAND,
         COMMAND_MORE
@@ -54,12 +53,19 @@ public abstract class PopStateMachine extends AbstractTokenHandler
         DATA_REPLY,
         DATA_START,
         DATA,
-        END_MARKER,
-        TRICKLE_START,
-        TRICKLE_DATA,
-        TRICKLE_END_MARKER,
-        DONOTCARE_START,
-        DONOTCARE_DATA
+        MARKER,
+        TRICKLE_START, /* state machine/transform only state */
+        TRICKLE_DATA, /* state machine/transform only state */
+        TRICKLE_MARKER, /* state machine/transform only state */
+        DONOTCARE_START, /* casing only state */
+        DONOTCARE_DATA /* casing only state */
+    };
+
+    public enum ExceptionState {
+        MESSAGE_COMPLETE,
+        MESSAGE,
+        MESSAGE_DATA,
+        MESSAGE_MARKER
     };
 
     protected File zMsgFile;
@@ -152,7 +158,7 @@ public abstract class PopStateMachine extends AbstractTokenHandler
             zResult = doMIMEMessageChunk((Chunk) token);
             break;
 
-        case END_MARKER:
+        case MARKER:
             zResult = doMIMEMessageEnd((EndMarker) token);
             break;
 
@@ -164,7 +170,7 @@ public abstract class PopStateMachine extends AbstractTokenHandler
             zResult = doMIMEMessageTrickleChunk((Chunk) token);
             break;
 
-        case TRICKLE_END_MARKER:
+        case TRICKLE_MARKER:
             zResult = doMIMEMessageTrickleEnd((EndMarker) token);
             break;
 
@@ -207,89 +213,83 @@ public abstract class PopStateMachine extends AbstractTokenHandler
     protected TokenResult doMIMEMessage(MIMEMessageT zMMessageT) throws TokenException
     {
         if (true == trickleNow(lTimeout, lServerTS)) {
-            MIMEMessageTrickleT zMMTrickleT = new MIMEMessageTrickleT(zMMessageT);
-            //logger.debug("trickling message: " + zMMessageT.toString() + ", " + zMMTrickleT.toString() + ", " + this);
-            serverState = ServerState.TRICKLE_START;
-            //logger.debug("next state: " + serverState);
-            return new TokenResult(new Token[] { zMMTrickleT }, null);
+            return trickleMessage(zMMessageT);
         }
 
         this.zMMessageT = zMMessageT;
         zMsgFile = zMMessageT.getFile();
-
         zMMHeader = zMMessageT.getMIMEMessageHeader();
+
         if (null == zMMHeader) {
             /* message has already been re-assembled and can be scanned */
             zMMessage = zMMessageT.getMIMEMessage();
             zMsgInfo = zMMessageT.getMessageInfo();
 
-            TokenResult zResult = scanMessage();
+            TokenResult zResult;
+
+            try {
+                zResult = scanMessage();
+            } catch (TokenException exn) {
+                logger.warn("problem occurred during scan; scan result for message may have been discarded: " + exn);
+                zResult = handleException(ExceptionState.MESSAGE_COMPLETE, zMMessageT);
+                /* fall through */
+            }
 
             resetServer();
-
             return zResult;
         }
         /* else message needs to be re-assembled */
 
         try {
             zMsgChannel = new FileOutputStream(zMsgFile, true).getChannel();
+            return TokenResult.NONE; /* hold message reply for later */
         } catch (IOException exn) {
-            resetServer();
-            logger.warn("message file does not exist: ", exn);
+            /* cannot recover if byte unstuffed message file no longer exists */
+            logger.error("byte unstuffed message file does not exist: " + exn);
+            return handleException(ExceptionState.MESSAGE, zMMessageT);
         }
-
-        return TokenResult.NONE;
     }
 
     protected TokenResult doMIMEMessageChunk(Chunk zChunkT) throws TokenException
     {
         if (null != zMMessage) {
-            return TokenResult.NONE; //XXXX ???
+            /* cannot recover if message is missing */
+            throw new TokenException("message is not defined; cannot append chunk to message");
         }
 
         if (null != zMMessageT &&
             true == trickleNow(lTimeout, lServerTS)) {
-            MIMEMessageTrickleT zMMTrickleT = new MIMEMessageTrickleT(zMMessageT);
-            //logger.debug("trickling message w/chunk: " + zMMessageT.toString() + ", " + zMMTrickleT.toString() + ", " + this);
-            zMMessageT = null;
-            serverState = ServerState.TRICKLE_DATA;
-            //logger.debug("next state: " + serverState);
-            return new TokenResult(new Token[] { zMMTrickleT, zChunkT }, null);
+            return trickleChunk(zChunkT);
         }
 
-        return writeFile(zChunkT.getData());
+        return writeFile(zChunkT);
     }
 
     protected TokenResult doMIMEMessageEnd(EndMarker zEndMarkerT) throws TokenException
     {
         if (null != zMMessage) {
-            return TokenResult.NONE; //XXXX ???
+            throw new TokenException("message is not defined; cannot end message");
         }
 
         if (null != zMMessageT &&
             true == trickleNow(lTimeout, lServerTS)) {
-            MIMEMessageTrickleT zMMTrickleT = new MIMEMessageTrickleT(zMMessageT);
-            //logger.debug("trickling message w/marker: " + zMMessageT.toString() + ", " + zMMTrickleT.toString() + ", " + this);
-            zMMessageT = null;
-            serverState = ServerState.TRICKLE_END_MARKER;
-            //logger.debug("next state: " + serverState);
-            return new TokenResult(new Token[] { zMMTrickleT, zEndMarkerT }, null);
+            return trickleMarker(zEndMarkerT);
         }
 
         try {
             zMMessage = new MIMEMessage(zMMessageT.getInputStream(), zMMessageT.getFileMIMESource(), new MIMEPolicy(), null, zMMHeader);
         } catch (IOException exn) {
-            logger.warn("cannot get FileMIMESource MIMEParsingInputStream: ", exn);
-            return TokenResult.NONE; //XXXX ???
+            logger.warn("cannot get FileMIMESource MIMEParsingInputStream: " + exn);
+            return handleException(ExceptionState.MESSAGE_MARKER, zEndMarkerT);
         } catch (InvalidHeaderDataException exn) {
-            logger.warn("cannot create MIME message: ", exn);
-            return TokenResult.NONE; //XXXX ???
+            logger.warn("cannot identify MIME message header: " + exn);
+            return handleException(ExceptionState.MESSAGE_MARKER, zEndMarkerT);
         } catch (HeaderParseException exn) {
-            logger.warn("cannot create MIME message: ", exn);
-            return TokenResult.NONE; //XXXX ???
+            logger.warn("cannot parse MIME message header: " + exn);
+            return handleException(ExceptionState.MESSAGE_MARKER, zEndMarkerT);
         } catch (MIMEPartParseException exn) {
-            logger.warn("cannot create MIME message: ", exn);
-            return TokenResult.NONE; //XXXX ???
+            logger.warn("cannot parse MIME message part(s): " + exn);
+            return handleException(ExceptionState.MESSAGE_MARKER, zEndMarkerT);
         }
 
         zMMessageT.setMIMEMessage(zMMessage);
@@ -298,10 +298,16 @@ public abstract class PopStateMachine extends AbstractTokenHandler
 
         zMsgInfo = zMMessageT.getMessageInfo();
 
-        TokenResult zResult = scanMessage();
+        TokenResult zResult;
+        try {
+            zResult = scanMessage();
+        } catch (TokenException exn) {
+            logger.warn("problem occurred during scan; scan result for message may have been discarded: " + exn);
+            zResult = handleException(ExceptionState.MESSAGE_COMPLETE, zMMessageT);
+            /* fall through */
+        }
 
         resetServer();
-
         return zResult;
     }
 
@@ -319,6 +325,8 @@ public abstract class PopStateMachine extends AbstractTokenHandler
 
     protected TokenResult doMIMEMessageTrickleEnd(EndMarker zEndMarkerT) throws TokenException
     {
+        resetServer();
+
         //logger.debug("trickling marker (contd): " + zEndMarkerT.toString());
         return new TokenResult(new Token[] { zEndMarkerT }, null);
     }
@@ -329,7 +337,7 @@ public abstract class PopStateMachine extends AbstractTokenHandler
             return new TokenResult(new Token[] { zDoNotCareT }, null);
         }
         /* else change MIMEMessageT,
-         * that leads DoNotCareT,
+         * that precedes DoNotCareT,
          * into MIMEMessageTrickleT and
          * push both on pipeline again
          */
@@ -357,6 +365,35 @@ public abstract class PopStateMachine extends AbstractTokenHandler
     private boolean trickleNow(long lTimeout, long lLastTS)
     {
         return MessageTransmissionTimeoutStrategy.inTimeoutDanger(lTimeout, lLastTS);
+    }
+
+    private TokenResult trickleMessage(MIMEMessageT zMMessageT)
+    {
+        MIMEMessageTrickleT zMMTrickleT = new MIMEMessageTrickleT(zMMessageT);
+        //logger.debug("trickling message: " + zMMessageT.toString() + ", " + zMMTrickleT.toString() + ", " + this);
+        serverState = ServerState.TRICKLE_START;
+        //logger.debug("next state: " + serverState);
+        return new TokenResult(new Token[] { zMMTrickleT }, null);
+    }
+
+    private TokenResult trickleChunk(Chunk zChunkT)
+    {
+        MIMEMessageTrickleT zMMTrickleT = new MIMEMessageTrickleT(zMMessageT);
+        //logger.debug("trickling message w/chunk: " + zMMessageT.toString() + ", " + zMMTrickleT.toString() + ", " + this);
+        zMMessageT = null;
+        serverState = ServerState.TRICKLE_DATA;
+        //logger.debug("next state: " + serverState);
+        return new TokenResult(new Token[] { zMMTrickleT, zChunkT }, null);
+    }
+
+    private TokenResult trickleMarker(EndMarker zEndMarkerT)
+    {
+        MIMEMessageTrickleT zMMTrickleT = new MIMEMessageTrickleT(zMMessageT);
+        //logger.debug("trickling message w/marker: " + zMMessageT.toString() + ", " + zMMTrickleT.toString() + ", " + this);
+        zMMessageT = null;
+        serverState = ServerState.TRICKLE_MARKER;
+        //logger.debug("next state: " + serverState);
+        return new TokenResult(new Token[] { zMMTrickleT, zEndMarkerT }, null);
     }
 
     private ClientState nextClientState(Token token) throws TokenException
@@ -431,7 +468,7 @@ public abstract class PopStateMachine extends AbstractTokenHandler
             if (token instanceof Chunk) {
                 serverState = ServerState.DATA;
             } else if (token instanceof EndMarker) {
-                serverState = ServerState.END_MARKER;
+                serverState = ServerState.MARKER;
             } else {
                 throw new TokenException("cur: " + serverState + ", next: bad token: " + token.toString());
             }
@@ -442,15 +479,15 @@ public abstract class PopStateMachine extends AbstractTokenHandler
             if (token instanceof Chunk) {
                 serverState = ServerState.DATA;
             } else if (token instanceof EndMarker) {
-                serverState = ServerState.END_MARKER;
+                serverState = ServerState.MARKER;
             } else {
                 throw new TokenException("cur: " + serverState + ", next: bad token: " + token.toString());
             }
 
             return serverState;
 
-        case END_MARKER:
-        case TRICKLE_END_MARKER:
+        case MARKER:
+        case TRICKLE_MARKER:
             if (token instanceof PopReply) {
                 if (true == ((PopReply) token).isMsgData()) {
                     serverState = ServerState.DATA_REPLY;
@@ -467,7 +504,7 @@ public abstract class PopStateMachine extends AbstractTokenHandler
             if (token instanceof Chunk) {
                 serverState = ServerState.TRICKLE_DATA;
             } else if (token instanceof EndMarker) {
-                serverState = ServerState.TRICKLE_END_MARKER;
+                serverState = ServerState.TRICKLE_MARKER;
             } else if (token instanceof DoNotCareT) {
                 serverState = ServerState.DONOTCARE_START;
             } else {
@@ -480,7 +517,7 @@ public abstract class PopStateMachine extends AbstractTokenHandler
             if (token instanceof Chunk) {
                 serverState = ServerState.TRICKLE_DATA;
             } else if (token instanceof EndMarker) {
-                serverState = ServerState.TRICKLE_END_MARKER;
+                serverState = ServerState.TRICKLE_MARKER;
             } else {
                 throw new TokenException("cur: " + serverState + ", next: bad token: " + token.toString());
             }
@@ -500,16 +537,18 @@ public abstract class PopStateMachine extends AbstractTokenHandler
         }
     }
 
-    private TokenResult writeFile(ByteBuffer zBuf) throws TokenException
+    private TokenResult writeFile(Chunk zChunkT) throws TokenException
     {
         if (null != zMsgChannel) {
+            ByteBuffer zBuf = zChunkT.getBytes();
+
             try {
                 for (; true == zBuf.hasRemaining(); ) {
                      zMsgChannel.write(zBuf);
                 }
             } catch (IOException exn) {
-                resetServer();
-                throw new TokenException("cannot write date to message file: ", exn);
+                logger.error("cannot write date to byte unstuffed message file: " + exn);
+                return handleException(ExceptionState.MESSAGE_DATA, zChunkT);
             }
         }
 
@@ -525,12 +564,44 @@ public abstract class PopStateMachine extends AbstractTokenHandler
         try {
             zMsgChannel.close();
         } catch (IOException exn) {
-            logger.warn("cannot close message file: ", exn);
+            logger.warn("cannot close message file: " + exn);
+            /* fall through - don't stop */
         } finally {
             zMsgChannel = null;
         }
 
         return;
+    }
+
+    private TokenResult handleException(ExceptionState zExceptState, Token zToken)
+    {
+        TokenResult zResult;
+
+        switch (zExceptState) {
+        case MESSAGE_COMPLETE:
+            zResult = new TokenResult(new Token[] { zToken }, null);
+            break;
+
+        case MESSAGE:
+            zResult = trickleMessage((MIMEMessageT) zToken);
+            zMMessageT = null;
+            break;
+
+        case MESSAGE_DATA:
+            zResult = trickleChunk((Chunk) zToken);
+            break;
+
+        case MESSAGE_MARKER:
+            zResult = trickleMarker((EndMarker) zToken);
+            break;
+
+        default:
+            logger.error("unsupported exception state: " + zExceptState);
+            zResult = TokenResult.NONE;
+            break;
+        }
+
+        return zResult;
     }
 
     private void resetClient()

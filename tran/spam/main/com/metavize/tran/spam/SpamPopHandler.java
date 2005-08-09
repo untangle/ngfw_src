@@ -17,6 +17,7 @@ import java.io.IOException;
 import com.metavize.mvvm.argon.IntfConverter;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.tapi.TCPSession;
+import com.metavize.mvvm.tran.Transform;
 import com.metavize.tran.mail.papi.MailExport;
 import com.metavize.tran.mail.papi.MailTransformSettings;
 import com.metavize.tran.mail.papi.MIMEMessageT;
@@ -45,6 +46,12 @@ public class SpamPopHandler extends PopStateMachine
     private final static int GIVEUP_SZ = 1 << 18; /* 256k */
     private final static float SPAM_SCORE = 5;
 
+    /* no block counter */
+    private final static int SCAN_COUNTER = Transform.GENERIC_0_COUNTER;
+    private final static int PASS_COUNTER = Transform.GENERIC_2_COUNTER;
+    private final static int MARK_COUNTER = Transform.GENERIC_3_COUNTER;
+
+    private final SpamImpl zTransform;
     private final SpamScanner zScanner;
     private final String zVendorName;
 
@@ -58,6 +65,7 @@ public class SpamPopHandler extends PopStateMachine
     {
         super(session);
 
+        zTransform = transform;
         zScanner = transform.getScanner();
         zVendorName = zScanner.getVendorName();
 
@@ -87,19 +95,24 @@ public class SpamPopHandler extends PopStateMachine
     {
         if (true == bScan &&
             GIVEUP_SZ >= zMsgFile.length()) {
+            zTransform.incrementCount(SCAN_COUNTER);
+
             SpamReport zReport;
 
             if (null != (zReport = scanFile(zMsgFile)) &&
                 SpamMessageAction.MARK == zMsgAction) {
+                zTransform.incrementCount(MARK_COUNTER);
+
                 /* wrap spam message and rebuild message token */
                 MIMEMessage zWMMessage = zWMsgGenerator.wrap(zMMessage, zReport);
                 try {
                     zMsgFile = zWMMessage.toFile(new FileFactory() {
-                        public File createFile(String name) throws IOException {                          return createFile();
+                        public File createFile(String name) throws IOException {
+                            return createFile();
                         }
 
                         public File createFile() throws IOException {
-                          return getPipeline().mktemp();
+                            return getPipeline().mktemp();
                         }
                     } );
 
@@ -109,9 +122,13 @@ public class SpamPopHandler extends PopStateMachine
                     /* do not dispose original message
                      * (wrapped message references original message)
                      */
-                } catch (IOException exn2) {
-                    throw new TokenException("cannot wrap original message/mime part: ", exn2);
+                } catch (IOException exn) {
+                    /* we'll reuse original message */
+                    //XXXX - need to dispose wrapped message?
+                    throw new TokenException("cannot create wrapped message file after marking message as spam: " + exn);
                 }
+            } else {
+                zTransform.incrementCount(PASS_COUNTER);
             }
         } //else {
             //logger.debug("scan is not enabled");
@@ -131,7 +148,8 @@ public class SpamPopHandler extends PopStateMachine
                 zMMessage.getMMHeaders().addHeaderField(SPAM_HDR_NAME, true == zReport.isSpam() ? IS_SPAM_HDR_VALUE : IS_HAM_HDR_VALUE);
             }
             catch (HeaderParseException exn) {
-                logger.error(exn);
+                /* we'll reuse original message */
+                throw new TokenException("cannot add spam report header to scanned message/mime part: " + exn);
             }
 
             if (true == zReport.isSpam()) {
@@ -140,10 +158,9 @@ public class SpamPopHandler extends PopStateMachine
             /* else not spam - do nothing */
 
             return null;
-        }
-        catch (Exception exn) {
-            // Should never happen
-            throw new TokenException("cannot scan message/mime part file: ", exn);
+        } catch (Exception exn) { // Should never happen
+            /* we'll reuse original message */
+            throw new TokenException("cannot scan message/mime part file: " + exn);
         }
     }
 }

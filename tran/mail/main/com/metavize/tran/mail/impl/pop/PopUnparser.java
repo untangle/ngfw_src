@@ -135,6 +135,7 @@ public class PopUnparser extends AbstractUnparser
             zNewMsgFile = File.createTempFile("bs-", null, zOrgMsgFile.getParentFile());
             //logger.debug("created byte stuffed message file: " + zNewMsgFile);
         } catch (IOException exn) {
+            /* cannot recover if byte stuffed mesasge file cannot be created */
             throw new UnparseException("cannot create byte stuffed message file: " + exn);
         }
 
@@ -143,6 +144,7 @@ public class PopUnparser extends AbstractUnparser
          */
         PopStreamer zPopStreamer = PopStreamer.stuffFile(zOrgMsgFile, zNewMsgFile, zByteStuffer, bIsComplete);
         if (null == zPopStreamer) {
+            /* cannot recover if byte stuffed message file cannot be updated */
             throw new UnparseException("cannot create streamer for byte stuffed message file");
         }
 
@@ -264,8 +266,9 @@ public class PopUnparser extends AbstractUnparser
                 zNewBuf = toByteBuffer(zNewDataOK);
                 zNewBuf.rewind();
             } catch (CharacterCodingException exn) {
-                logger.error("Unable to encode line: " + zNewDataOK + " : " + exn);
-                zNewBuf = null;
+                /* may not recover if new message reply cannot be formed */
+                logger.error("Unable to encode new message reply line: " + zNewDataOK + ", reusing org reply line as last resort: " + zMsgDataReply + ": " + exn);
+                zNewBuf = zMsgDataReply.getBytes();
             }
         }
 
