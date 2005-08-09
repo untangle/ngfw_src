@@ -17,7 +17,8 @@ CHAINS_ORDER="${CHAIN_MARKINTF} ${CHAIN_GUARDS} ${CHAIN_ANTISUB} ${CHAIN_INTERCE
 BOGUS_ADDRESS="169.254.210.51"
 BOGUS_NETMASK="255.255.0.0"
 
-## Utility functions for the mv-networking scripts
+## Utility functions for the mv-networking scripts, use t_ flag for temporary variables, this
+## way global variables like bridge do not get overriden in functions.
 
 function joinLines() {
     sed -e '{:start;N;s/\n/ /g;t start}'
@@ -33,50 +34,50 @@ function generateConfiguration() {
 
 function generateBridges() {
     bridgeList=""
-    for bridge in `brctl show | sed -e '1,1d' | grep "^br" | awk '{ print $1 }'` ; do
-        generateBridge $bridge
-        bridgeList="$bridgeList $bridge"
+    for t_bridge in `brctl show | sed -e '1,1d' | grep "^br" | awk '{ print $1 }'` ; do
+        generateBridge $t_bridge
+        bridgeList="${bridgeList} ${t_bridge}"
     done
 }
 
 function generateBridge() {
-    bridge=$1
+    t_bridge=$1
 
-    name="${bridge}"
-    addresses=`generateAddresses $bridge`
-    interfaces=`generateBridgeInterfaces $bridge`
+    t_name="${t_bridge}"
+    t_addresses=`generateAddresses ${t_bridge}`
+    t_interfaces=`generateBridgeInterfaces ${t_bridge}`
     
-    for intf in ${interfaces} ; do
+    for t_intf in ${t_interfaces} ; do
         ## Set the bridge identifier for each interface
-        eval ${intf}_bridge=\"$bridge\"
+        eval ${t_intf}_bridge=\"$t_bridge\"
     done
 
-    eval ${bridge}_name="${name}"
-    eval ${bridge}_addresses=\"${addresses}\"
-    eval ${bridge}_interfaces=\"${interfaces}\"
+    eval ${t_bridge}_name="${name}"
+    eval ${t_bridge}_addresses=\"${t_addresses}\"
+    eval ${t_bridge}_interfaces=\"${t_interfaces}\"
     
-## DBG    echo "Generated configuration for ${bridge}" # XDBG
-## DBG    echo "name: ${name}" # XDBG
-## DBG    echo "addresses: ${addresses}" # XDBG
-## DBG    echo "interfaces: ${interfaces}" # XDBG
+## DBG    echo "Generated configuration for ${t_bridge}" # XDBG
+## DBG    echo "name: ${t_name}" # XDBG
+## DBG    echo "addresses: ${t_addresses}" # XDBG
+## DBG    echo "interfaces: ${t_interfaces}" # XDBG
 }
 
 function generateInterfaces() {
 ## DBG    echo "Generating interfaces" # XDBG
     interfaceList=""
 
-    for intf in `ifconfig | grep -v br0 | grep -v lo | grep -v '^ ' | grep -v '^$' | awk '{ print $1 }' | grep -v :`; do
+    for t_intf in `ifconfig | grep -v br0 | grep -v lo | grep -v '^ ' | grep -v '^$' | awk '{ print $1 }' | grep -v :`; do
         ### Check if the interface is in a bridge
-        if [ -z `getBridge $intf` ]; then
-            name="$intf"
-            addresses=`generateAddresses $intf`
+        if [ -z `getBridge ${t_intf}` ]; then
+            t_name="${t_intf}"
+            t_addresses=`generateAddresses ${t_intf}`
 
 ## DBG      echo "name: ${name}"  # XDBG
 ## DBG      echo "addresses: ${addresses}" # XDBG
-            if [ -n "$addresses" ]; then
-                eval ${intf}_name="${name}"
-                eval ${intf}_addresses=\"${addresses}\"
-                interfaceList="$interfaceList $intf"
+            if [ -n "${t_addresses}" ]; then
+                eval ${t_intf}_name="${t_name}"
+                eval ${t_intf}_addresses=\"${t_addresses}\"
+                interfaceList="${interfaceList} ${t_intf}"
             fi
         fi
     done
@@ -126,12 +127,12 @@ function isPumpRunning() {
 }
 
 function pumpInterface() {
-    interface=$1
-    echo "Pumping interface ${interface}"
-    pump -i ${interface}
+    t_interface=$1
+    echo "Pumping interface ${t_interface}"
+    pump -i ${t_interface}
     if [ $? != 0 ]; then
-        echo "Unable to pump interface ${interface}, going to bogus address"
-        ifconfig ${interface} ${BOGUS_ADDRESS} netmask ${BOGUS_NETMASK}
+        echo "Unable to pump interface ${t_interface}, going to bogus address"
+        ifconfig ${t_interface} ${BOGUS_ADDRESS} netmask ${BOGUS_NETMASK}
     fi
 }
 
@@ -141,11 +142,11 @@ function killPump() {
 }
 
 function deleteBridge() {
-    bridge=$1
-    if [ -n ${bridge} ]; then
+    t_bridge=$1
+    if [ -n ${t_bridge} ]; then
         echo "Deleting bridge ${bridge}"
-        ifconfig ${bridge} down 
-        brctl delbr ${bridge}
+        ifconfig ${t_bridge} down 
+        brctl delbr ${t_bridge}
     fi
 }
 
@@ -155,16 +156,16 @@ function iptablesDbg() {
 }
 
 function addGateway() {
-    gateway=$1
+    t_gateway=$1
     
-    if [ "${gateway}x" != "x" ] && [ "${gateway}x" != "0.0.0.0x" ]; then
-        route add default gw $gateway
+    if [ "${t_gateway}x" != "x" ] && [ "${t_gateway}x" != "0.0.0.0x" ]; then
+        route add default gw ${t_gateway}
     fi
 }
 
 function deleteGateways() {
-    for gateway in `route -n | grep "^0.0.0.0" | awk '{ print $2}'`; do
-        route del default gw ${gateway}
+    for t_gateway in `route -n | grep "^0.0.0.0" | awk '{ print $2}'`; do
+        route del default gw ${t_gateway}
         ## No returning an error here
         echo -n
     done
