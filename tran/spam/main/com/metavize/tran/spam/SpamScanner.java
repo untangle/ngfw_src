@@ -23,6 +23,14 @@ public interface SpamScanner
      */
     String getVendorName();
 
-    SpamReport scanFile(File file, float threshold)
-        throws IOException, InterruptedException;
+    /**
+     * Scans the file for Spam, producing a spam report.  Note that the contract for this
+     * requires that a report always be generated, for any problems or exceptions an
+     * empty report is generated (and the error/warning should be logged).
+     *
+      * @param file the <code>File</code> containing the complete message to scan for spam
+     * @param threshold a <code>float</code> giving the spam cutoff value 
+     * @return a <code>SpamReport</code> value
+     */
+    SpamReport scanFile(File file, float threshold);
 }

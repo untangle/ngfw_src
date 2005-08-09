@@ -141,10 +141,9 @@ public class SpamPopHandler extends PopStateMachine
 
             return null;
         }
-        catch (IOException exn) {
+        catch (Exception exn) {
+            // Should never happen
             throw new TokenException("cannot scan message/mime part file: ", exn);
-        } catch (InterruptedException exn) { // XXX deal with this in scanner
-            throw new TokenException("scan interrupted: ", exn);
         }
     }
 }

@@ -58,10 +58,11 @@ class SpamAssassinScanner implements SpamScanner
             }
 
             proc.waitFor();
-        } catch (IOException exn) {
-            logger.error("could not run spamc", exn);
-        } catch (InterruptedException exn) {
-            logger.warn("could not run spamc", exn);
+        } catch (Exception exn) {
+            if (items.size() > 0)
+                logger.warn("Partial run of spamc.", exn);
+            else
+                logger.error("Could not run spamc, assume pass.", exn);
         }
 
         return new SpamReport(items, threshold);
