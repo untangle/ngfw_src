@@ -25,10 +25,7 @@ import javax.swing.border.*;
 import java.util.*;
 import java.awt.*;
 
-/**
- *
- * @author  inieves
- */
+
 public class MLogTableJPanel extends javax.swing.JPanel {
 
     protected static MLogTableJPanel lastMLogTableJPanel;
@@ -244,7 +241,7 @@ public class MLogTableJPanel extends javax.swing.JPanel {
     // End of variables declaration//GEN-END:variables
     
 
-    class RefreshThread extends Thread {
+    class RefreshThread extends Thread implements ChangeListener {
 	private boolean isAutoRefresh;
 	public RefreshThread(boolean isAutoRefresh){
 	    super("MVCLIENT-MLogTableJPanel.RefreshThread: " + logTransform.getTransformDesc().getDisplayName());
@@ -262,14 +259,19 @@ public class MLogTableJPanel extends javax.swing.JPanel {
 	    this.start();
 	}
 	
+	public void stateChanged(ChangeEvent changeEvent){
+	    JToggleButton controlsJToggleButton = (JToggleButton) changeEvent.getSource();
+	    if( !controlsJToggleButton.isSelected() ){
+		MLogTableJPanel.this.lastMLogTableJPanel.streamingJToggleButton.doClick();
+	    }
+	}
+
 	public void run(){
 	    try{
+		if(isAutoRefresh){
+		    MLogTableJPanel.this.mTransformControlsJPanel.getControlsJToggleButton().addChangeListener(this);
+		}
 		do{
-		    if( !MLogTableJPanel.this.mTransformControlsJPanel.getControlsShowing() ){
-			SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
-			    MLogTableJPanel.this.lastMLogTableJPanel.streamingJToggleButton.doClick();
-			}});
-		    }
 		    getTableModel().doRefresh(null);
 		    if(isAutoRefresh){
 			this.sleep(STREAM_SLEEP_MILLIS);
@@ -278,7 +280,7 @@ public class MLogTableJPanel extends javax.swing.JPanel {
 		while(isAutoRefresh);
 	    }
 	    catch(InterruptedException e){
-		// this is normal, means the thread was stopped by a button press
+		// this is normal, means the thread was stopped by pressing the toggle button
 	    }
 	    catch(Exception f){
 		try{
@@ -290,12 +292,15 @@ public class MLogTableJPanel extends javax.swing.JPanel {
 		}
 	    }
 	    finally{
-		if(!isAutoRefresh){
+		if(!isAutoRefresh){ // the case where the toggle was stopped by a button press
 		    SwingUtilities.invokeLater( new Runnable(){ public void run(){
 			MLogTableJPanel.this.streamingJToggleButton.setEnabled(true);
 			MLogTableJPanel.this.refreshLogJButton.setEnabled(true);
 			MLogTableJPanel.this.refreshLogJButton.setIcon(Util.getButtonRefreshLog());
 		    }});
+		}
+		else{
+		    MLogTableJPanel.this.mTransformControlsJPanel.getControlsJToggleButton().removeChangeListener(this);
 		}
 	    }
 	}

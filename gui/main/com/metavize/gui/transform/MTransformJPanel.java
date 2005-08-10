@@ -222,6 +222,7 @@ public class MTransformJPanel extends javax.swing.JPanel {
 
     public void setControlsShowing(boolean showingBoolean){ handleControlsJButton(showingBoolean); }
     public boolean getControlsShowing(){ return controlsJToggleButton.isSelected(); }
+    public JToggleButton getControlsJToggleButton(){ return controlsJToggleButton; };
 
     private void handleControlsJButton(boolean isShowing){
         

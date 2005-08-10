@@ -100,6 +100,8 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
     public boolean getControlsShowing(){
 	return mTransformJPanel.getControlsShowing();
     }
+
+    public JToggleButton getControlsJToggleButton(){ return mTransformJPanel.getControlsJToggleButton(); }
     
     public void setAllEnabled(boolean enabled){
         int innerComponentCount, outerComponentCount;
