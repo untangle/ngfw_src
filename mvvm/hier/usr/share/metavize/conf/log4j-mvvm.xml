@@ -90,18 +90,6 @@
     <priority value="WARN"/>
   </category>
 
-  <category name="com.metavize.tran.spam">
-      <priority value="DEBUG"/>
-  </category>
-
-  <category name="com.metavize.tran.mail">
-        <priority value="DEBUG"/>
-  </category>
-
-  <category name="com.metavize.tran.virus">
-        <priority value="DEBUG"/>
-  </category>
-
 
   <!-- ============================================== -->
   <!-- The Root Category                              -->
