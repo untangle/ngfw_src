@@ -40,7 +40,7 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
     // XXX not yet tested, still need to index, etc...
     private static final String SMTP_QUERY
         = "SELECT evt.time_stamp, score, "
-        + "       CASE WHEN action = 'P' THEN 'PASS' "
+        + "       CASE WHEN action = 'P' OR NOT is_spam THEN 'PASS' "
         + "            WHEN action = 'M' THEN 'MARK' "
         + "            WHEN action = 'B' THEN 'BLOCK' "
         + "       END AS action, "
@@ -52,12 +52,12 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
         + "JOIN pl_endp endp ON info.session_id = endp.session_id "
         + "LEFT OUTER JOIN tr_mail_message_info_addr rcpt ON info.id = rcpt.msg_id AND rcpt.kind = 'B' "
         + "LEFT OUTER JOIN tr_mail_message_info_addr send ON info.id = send.msg_id AND send.kind = 'G' "
-        + "WHERE vendor = ? "
+        + "WHERE vendor_name = ? "
         + "ORDER BY evt.time_stamp DESC LIMIT ?";
 
     private static final String MAIL_QUERY
-        = "SELECT evt.time_stamp, score, action, "
-        + "       CASE WHEN action = 'P' THEN 'PASS' "
+        = "SELECT evt.time_stamp, score, "
+        + "       CASE WHEN action = 'P' OR NOT is_spam THEN 'PASS' "
         + "            WHEN action = 'M' THEN 'MARK' "
         + "       END AS action, "
         + "       subject, rcpt.addr AS receiver, send.addr AS sender, "
@@ -68,7 +68,7 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
         + "JOIN pl_endp endp ON info.session_id = endp.session_id "
         + "LEFT OUTER JOIN tr_mail_message_info_addr rcpt ON info.id = rcpt.msg_id AND rcpt.kind = 'U' "
         + "LEFT OUTER JOIN tr_mail_message_info_addr send ON info.id = send.msg_id AND send.kind = 'T' "
-        + "WHERE vendor = ? "
+        + "WHERE vendor_name = ? "
         + "ORDER BY evt.time_stamp DESC LIMIT ?";
 
     private static final String[] QUERIES = new String[]
@@ -240,7 +240,8 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
         try {
             Connection c = s.connection();
             PreparedStatement ps = c.prepareStatement(q);
-            ps.setInt(1, limit);
+            ps.setString(1, scanner.getVendorName());
+            ps.setInt(2, limit);
             long l0 = System.currentTimeMillis();
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
