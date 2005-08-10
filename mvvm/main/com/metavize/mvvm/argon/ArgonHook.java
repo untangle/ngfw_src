@@ -90,17 +90,19 @@ abstract class ArgonHook implements Runnable
             /* Initialize all of the transforms */
             initTransforms();
 
+            /* Connect to the server */
+            boolean serverActionCompleted = connectServer();
+
             /* Now generate the server side since the transforms may have
-             * modified the endpoints */
+             * modified the endpoints (we can't do it until we connect to the server since
+             * that is what actually modifies the session global state. */
             serverSide = new NetcapIPSessionDescImpl( sessionGlobalState, false );
 
-            pipelineFoundry.registerEndpoints( clientSide, serverSide );
-
-            /* Connect to the server */
-            connectServer();
-
             /* Connect to the client */
-            connectClient();
+            boolean clientActionCompleted = connectClient();
+
+            if (serverActionCompleted && clientActionCompleted)
+                pipelineFoundry.registerEndpoints( clientSide, serverSide );
 
             /* Only start vectoring if the session is alive */
             if ( alive()) {
@@ -180,8 +182,14 @@ abstract class ArgonHook implements Runnable
         }
     }
 
-    protected void connectServer()
+    /**
+     * Describe <code>connectServer</code> method here.
+     *
+     * @return a <code>boolean</code> true if the server was completed OR we explicitly rejected
+     */
+    private boolean connectServer()
     {
+        boolean serverActionCompleted = true;
         switch ( state ) {
         case IPNewSessionRequest.REQUESTED:
             /* If the server doesn't complete, we have to "vector" the reset */
@@ -191,6 +199,7 @@ abstract class ArgonHook implements Runnable
                     /* Forward the rejection type that was passed from the server */
                     state        = IPNewSessionRequest.REJECTED;
                     rejectCode = REJECT_CODE_SRV;
+                    serverActionCompleted = false;
                 } else {
                     state = IPNewSessionRequest.ENDPOINTED;
                 }
@@ -207,16 +216,26 @@ abstract class ArgonHook implements Runnable
             throw new IllegalStateException( "Invalid state" );
 
         }
+        return serverActionCompleted;
     }
 
-    protected void connectClient()
+    /**
+     * Describe <code>connectClient</code> method here.
+     *
+     * @return a <code>boolean</code> true if the client was completed OR we explicitly rejected
+     */
+    private boolean connectClient()
     {
+        boolean clientActionCompleted = true;
+        boolean createPipelineInfo = true;
+
         switch ( state ) {
         case IPNewSessionRequest.REQUESTED:
         case IPNewSessionRequest.ENDPOINTED:
             if ( !clientComplete()) {
                 logger.warn( "Unable to complete connection to client" );
                 state = IPNewSessionRequest.REJECTED;
+                clientActionCompleted = false;
             }
             break;
 
@@ -228,11 +247,13 @@ abstract class ArgonHook implements Runnable
         case IPNewSessionRequest.REJECTED_SILENT:
             logger.debug( "Rejecting session silently" );
             clientRejectSilent();
-            return;
+            break;
 
         default:
             throw new IllegalStateException( "Invalid state" );
         }
+
+        return clientActionCompleted;
     }
 
     protected void buildPipeline() {
