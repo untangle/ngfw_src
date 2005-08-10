@@ -26,105 +26,122 @@ public class SpamSummarizer extends BaseSummarizer {
 
     public String getSummaryHtml(Connection conn, Timestamp startDate, Timestamp endDate)
     {
-        int blockSpamCnt = 0;
-        int blockVirusCnt = 0;
-        int replaceVirusCnt = 0;
-        int blockCustomCnt = 0;
-        int exchangeCustomCnt = 0;
-        int passCnt = 0;
-        int relaySzCnt = 0;
+        // XXX shouldn't have this constant here.
+        String spamVendor = (String) extraParams.get("spamVendor");
 
-	//        try {
-	    String sql;
+        logger.info("Spam Vendor: " + spamVendor);
+
+        int smtpScanned = 0;
+        int smtpMarked = 0;
+        int smtpBlocked = 0;
+        int smtpPassed = 0;
+        int popimapScanned = 0;
+        int popimapMarked = 0;
+        int popimapPassed = 0;
+
+        try {
+            String sql;
 	    PreparedStatement ps;
 	    ResultSet rs;
-	    /*
-            sql = "SELECT COUNT(*) FROM tr_email_spam_evt WHERE time_stamp >= ? AND time_stamp < ? AND (action != 'M')";
+
+	    sql = "SELECT count(*) FROM tr_spam_evt_smtp WHERE time_stamp >= ? AND time_stamp < ? AND vendor_name = ?";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
+            ps.setString(3, spamVendor);
             rs = ps.executeQuery();
             rs.first();
-            blockSpamCnt = rs.getInt(1);
+            smtpScanned = rs.getInt(1);
             rs.close();
             ps.close();
 
-            sql = "SELECT COUNT(*) FROM tr_email_virus_evt WHERE time_stamp >= ? AND time_stamp < ? AND (action != 'P' AND action != 'C')";
+            sql = "SELECT count(*) FROM tr_spam_evt_smtp WHERE time_stamp >= ? AND time_stamp < ? AND vendor_name = ? AND is_spam AND action = 'M'";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
+            ps.setString(3, spamVendor);
             rs = ps.executeQuery();
             rs.first();
-            blockVirusCnt = rs.getInt(1);
+            smtpMarked = rs.getInt(1);
             rs.close();
             ps.close();
 
-            sql = "SELECT COUNT(*) FROM tr_email_virus_evt WHERE time_stamp >= ? AND time_stamp < ? AND action = 'C'";
+            sql = "SELECT count(*) FROM tr_spam_evt_smtp WHERE time_stamp >= ? AND time_stamp < ? AND vendor_name = ? AND is_spam AND action = 'P'";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
+            ps.setString(3, spamVendor);
             rs = ps.executeQuery();
-            rs.first(); 
-            replaceVirusCnt = rs.getInt(1);
+            rs.first();
+            smtpPassed = rs.getInt(1);
             rs.close();
             ps.close();
 
-            sql = "SELECT COUNT(*) FROM tr_email_custom_evt WHERE time_stamp >= ? AND time_stamp < ? AND action = 'B'";
+            sql = "SELECT count(*) FROM tr_spam_evt_smtp WHERE time_stamp >= ? AND time_stamp < ? AND vendor_name = ? AND is_spam AND action = 'B'";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
+            ps.setString(3, spamVendor);
             rs = ps.executeQuery();
             rs.first();
-            blockCustomCnt = rs.getInt(1);
-            rs.close();
-            ps.close();
-	    */
-            //sql = "SELECT COUNT(*) FROM tr_email_custom_evt WHERE time_stamp >= ? AND time_stamp < ? AND action = 'E'";
-            //ps = conn.prepareStatement(sql);
-            //ps.setTimestamp(1, startDate);
-            //ps.setTimestamp(2, endDate);
-            //rs = ps.executeQuery();
-            //rs.first();
-            //exchangeCustomCnt = rs.getInt(1);
-            //rs.close();
-            //ps.close();
-	    /*
-            sql = "SELECT COUNT(*) FROM tr_email_szrelay_evt WHERE time_stamp >= ? AND time_stamp < ?";
-            ps = conn.prepareStatement(sql);
-            ps.setTimestamp(1, startDate);
-            ps.setTimestamp(2, endDate);
-            rs = ps.executeQuery();
-            rs.first();
-            relaySzCnt = rs.getInt(1);
+            smtpBlocked = rs.getInt(1);
             rs.close();
             ps.close();
 
-            sql = "SELECT COUNT(*) FROM tr_email_custom_evt WHERE time_stamp >= ? AND time_stamp < ? AND action = 'P'";
+            sql = "SELECT count(*) FROM tr_spam_evt WHERE time_stamp >= ? AND time_stamp < ? AND vendor_name = ?";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
+            ps.setString(3, spamVendor);
             rs = ps.executeQuery();
             rs.first();
-            passCnt = rs.getInt(1);
+            popimapScanned = rs.getInt(1);
             rs.close();
             ps.close();
-	    */
-	    //} catch (SQLException exn) {
-            //logger.warn("could not summarize", exn);
-	    //}
 
-        //int totalCnt = blockSpamCnt + blockVirusCnt + replaceVirusCnt + blockCustomCnt + passCnt;
-        //addEntry("Total scanned messages", Util.trimNumber("",totalCnt));
-        //addEntry("&nbsp;&nbsp;&nbsp;Blocked spam messages", Util.trimNumber("",blockSpamCnt));
-        //addEntry("&nbsp;&nbsp;&nbsp;Blocked virus messages", Util.trimNumber("",blockVirusCnt));
-        //addEntry("&nbsp;&nbsp;&nbsp;Modified virus messages", Util.trimNumber("",replaceVirusCnt));
-        //addEntry("&nbsp;&nbsp;&nbsp;Blocked custom rule messages", Util.trimNumber("",blockCustomCnt));
-        //addEntry("Number of modified Custom rule messages", exchangeCustomCnt);
-        //addEntry("&nbsp;&nbsp;&nbsp;Passed messages", Util.trimNumber("",passCnt));
-        //addEntry("Total messages not processed", Util.trimNumber("",relaySzCnt));
+            sql = "SELECT count(*) FROM tr_spam_evt WHERE time_stamp >= ? AND time_stamp < ? AND vendor_name = ? AND is_spam AND action = 'P'";
+            ps = conn.prepareStatement(sql);
+            ps.setTimestamp(1, startDate);
+            ps.setTimestamp(2, endDate);
+            ps.setString(3, spamVendor);
+            rs = ps.executeQuery();
+            rs.first();
+            popimapPassed = rs.getInt(1);
+            rs.close();
+            ps.close();
+
+            sql = "SELECT count(*) FROM tr_spam_evt WHERE time_stamp >= ? AND time_stamp < ? AND vendor_name = ? AND is_spam AND action = 'M'";
+            ps = conn.prepareStatement(sql);
+            ps.setTimestamp(1, startDate);
+            ps.setTimestamp(2, endDate);
+            ps.setString(3, spamVendor);
+            rs = ps.executeQuery();
+            rs.first();
+            popimapMarked = rs.getInt(1);
+            rs.close();
+            ps.close();
+
+        } catch (SQLException exn) {
+            logger.warn("could not summarize", exn);
+        }
+
+        addEntry("Scanned Email messages (SMTP)", Util.trimNumber("",smtpScanned));
+        addEntry("&nbsp;&nbsp;&nbsp;Spam & Blocked", Util.trimNumber("",smtpBlocked) + " (" + Util.percentNumber(smtpBlocked, smtpScanned) + ")");
+        addEntry("&nbsp;&nbsp;&nbsp;Spam & Marked", Util.trimNumber("",smtpMarked) + " (" + Util.percentNumber(smtpMarked, smtpScanned) + ")");
+        addEntry("&nbsp;&nbsp;&nbsp;Spam & Passed", Util.trimNumber("",smtpPassed) + " (" + Util.percentNumber(smtpPassed, smtpScanned) + ")");
+        int totalSpam = smtpBlocked + smtpMarked + smtpPassed;
+        addEntry("&nbsp;&nbsp;&nbsp;Clean & Passed", Util.trimNumber("",smtpScanned-totalSpam) + " (" + Util.percentNumber(smtpScanned-totalSpam, smtpScanned) + ")");
+
+        addEntry("&nbsp;","&nbsp;");
+
+        addEntry("Scanned Email messages (POP/IMAP)", Util.trimNumber("",popimapScanned));
+        addEntry("&nbsp;&nbsp;&nbsp;Spam & Marked", Util.trimNumber("",popimapMarked) + " (" + Util.percentNumber(popimapMarked, popimapScanned) + ")");
+        addEntry("&nbsp;&nbsp;&nbsp;Spam & Passed", Util.trimNumber("",popimapPassed) + " (" + Util.percentNumber(popimapPassed, popimapScanned) + ")");
+        totalSpam = popimapMarked + popimapPassed;
+        addEntry("&nbsp;&nbsp;&nbsp;Clean & Passed", Util.trimNumber("",popimapScanned-totalSpam) + " (" + Util.percentNumber(popimapScanned-totalSpam, popimapScanned) + ")");
 
         // XXXX
-        String tranName = "Spam";
+        String tranName = "SpamGuard";
 
         return summarizeEntries(tranName);
     }
