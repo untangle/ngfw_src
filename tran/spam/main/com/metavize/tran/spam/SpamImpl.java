@@ -74,10 +74,12 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
     private static final String[] QUERIES = new String[]
         { SMTP_QUERY, MAIL_QUERY };
 
+    // We want to make sure that spam is before virus in the pipeline (towards the client for smtp,
+    // server for pop/imap).
     private final PipeSpec[] pipeSpecs = new PipeSpec[] {
-        new SoloPipeSpec("spam-smtp", this, new TokenAdaptor(new SpamSmtpFactory(this)), Fitting.SMTP_TOKENS, Affinity.SERVER, 0),
-        new SoloPipeSpec("pop-smtp", this, new TokenAdaptor(new SpamPopFactory(this)), Fitting.POP_TOKENS, Affinity.SERVER, 0),
-        new SoloPipeSpec("imap-smtp", this, new TokenAdaptor(new SpamImapFactory(this)), Fitting.IMAP_TOKENS, Affinity.SERVER, 0)
+        new SoloPipeSpec("spam-smtp", this, new TokenAdaptor(new SpamSmtpFactory(this)), Fitting.SMTP_TOKENS, Affinity.CLIENT, 10),
+        new SoloPipeSpec("pop-smtp", this, new TokenAdaptor(new SpamPopFactory(this)), Fitting.POP_TOKENS, Affinity.SERVER, 10),
+        new SoloPipeSpec("imap-smtp", this, new TokenAdaptor(new SpamImapFactory(this)), Fitting.IMAP_TOKENS, Affinity.SERVER, 10)
     };
 
     private final SpamScanner scanner;
