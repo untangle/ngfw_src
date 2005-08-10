@@ -94,8 +94,7 @@ public class HttpParser extends AbstractParser
         this.buf = new byte[maxUri];
         this.blockLongUris = settings.getBlockLongUris();
         this.casing = casing;
-        this.sessStr = "HttpParser sid: " + session.id()
-            + (clientSide ? " client-side " : " server-side ");
+        this.sessStr = "HttpParser" + (clientSide ? " client-side " : " server-side ");
 
         lineBuffering(true);
     }

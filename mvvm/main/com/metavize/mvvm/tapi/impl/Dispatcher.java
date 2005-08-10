@@ -54,6 +54,9 @@ class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {
     // in the command/session dispatchers.
     public static final boolean HANDLE_ALL_INLINE = true;
 
+    static final String SESSION_ID_MDC_KEY = "SessionID";
+
+
     private Logger logger;
 
     private MPipeImpl mPipe;
@@ -249,9 +252,14 @@ class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {
 
         // entering TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         ct.setContextClassLoader(classLoader);
+
+        StringBuilder sb = new StringBuilder("NT");
+        sb.append(request.id());
+        MDC.put(SESSION_ID_MDC_KEY, sb.toString());
         try {
             return newSessionInternal(request);
         } finally {
+            MDC.remove(SESSION_ID_MDC_KEY);
             ct.setContextClassLoader(oldCl);
             // left TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         }
@@ -265,9 +273,14 @@ class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {
 
         // entering TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         ct.setContextClassLoader(classLoader);
+
+        StringBuilder sb = new StringBuilder("NU");
+        sb.append(request.id());
+        MDC.put(SESSION_ID_MDC_KEY, sb.toString());
         try {
             return newSessionInternal(request);
         } finally {
+            MDC.remove(SESSION_ID_MDC_KEY);
             ct.setContextClassLoader(oldCl);
             // left TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         }

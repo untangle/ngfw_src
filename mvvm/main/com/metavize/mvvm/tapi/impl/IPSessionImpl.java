@@ -28,13 +28,12 @@ import com.metavize.mvvm.tapi.event.IPStreamer;
 import com.metavize.mvvm.tran.Transform;
 import com.metavize.mvvm.tran.TransformState;
 import com.metavize.mvvm.util.MetaEnv;
+import static com.metavize.mvvm.tapi.impl.Dispatcher.SESSION_ID_MDC_KEY;
 import org.apache.log4j.Logger;
 import org.apache.log4j.MDC;
 import org.apache.log4j.helpers.AbsoluteTimeDateFormat;
 
 abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineListener {
-
-    private static final String SESSION_ID_KEY = "SessionID";
 
     protected boolean released = false;
     protected boolean needsFinalization = true;
@@ -218,6 +217,7 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
         return size;
     }
 
+
     public void raze()
     {
         Transform xform = mPipe().transform();
@@ -234,6 +234,7 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
 
         // entering TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         ct.setContextClassLoader(classLoader);
+        MDC.put(SESSION_ID_MDC_KEY, idForMDC());
         try {
             if (released) {
                 debug("raze released");
@@ -250,6 +251,7 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
             }
             closeFinal();
         } finally {
+            MDC.remove(SESSION_ID_MDC_KEY);
             ct.setContextClassLoader(oldCl);
             // left TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         }
@@ -456,7 +458,7 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
     public void writeEvent(int side, OutgoingSocketQueue out)
     {
         String sideName = side == CLIENT ? "client" : "server";
-        MDC.put(SESSION_ID_KEY, idForMDC());
+        MDC.put(SESSION_ID_MDC_KEY, idForMDC());
         try {
             assert out != null;
             if (!out.isEmpty()) {
@@ -503,7 +505,7 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
         } catch (OutOfMemoryError x) {
             Main.fatalError("SessionHandler", x);
         } finally {
-          MDC.remove(SESSION_ID_KEY);
+          MDC.remove(SESSION_ID_MDC_KEY);
         }
         
     }
@@ -512,7 +514,7 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
     public void readEvent(int side, IncomingSocketQueue in)
     {
         String sideName = side == CLIENT ? "client" : "server";
-        MDC.put(SESSION_ID_KEY, idForMDC());
+        MDC.put(SESSION_ID_MDC_KEY, idForMDC());
         try {
             assert in != null;
             if (!in.isEnabled()) {
@@ -575,7 +577,7 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
         } catch (OutOfMemoryError x) {
             Main.fatalError("SessionHandler", x);
         } finally {
-          MDC.remove(SESSION_ID_KEY);
+          MDC.remove(SESSION_ID_MDC_KEY);
         }
     }
 
