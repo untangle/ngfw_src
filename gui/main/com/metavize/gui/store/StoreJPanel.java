@@ -65,7 +65,7 @@ public class StoreJPanel extends javax.swing.JPanel {
 
         mTransformJPanel.setLayout(new java.awt.GridBagLayout());
 
-        mTransformJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Software Appliance to Procure", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 0, 11)));
+        mTransformJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Software Appliance to Purchase", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 0, 11)));
         mTransformJPanel.setOpaque(false);
         purchaseJPanel.add(mTransformJPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 30, 210, 150));
 
@@ -87,7 +87,7 @@ public class StoreJPanel extends javax.swing.JPanel {
 
         mTransformJPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        mTransformJPanel1.setBorder(new javax.swing.border.TitledBorder(null, "Procurement Information", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 0, 11)));
+        mTransformJPanel1.setBorder(new javax.swing.border.TitledBorder(null, "Purchase Information", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 0, 11)));
         mTransformJPanel1.setOpaque(false);
         priceNameJLabel.setFont(new java.awt.Font("Arial", 1, 12));
         priceNameJLabel.setText("Price:");

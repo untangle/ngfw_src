@@ -144,7 +144,6 @@ public class MTransformJButton extends JButton {
 
         // TOOLTIP
         toolTipString = Util.wrapString( mackageDesc.getLongDescription(), 80);
-        this.setTT("Initializing...");
 
         this.setMargin(new Insets(0,0,0,0));
         this.setFocusPainted(false);
@@ -185,16 +184,16 @@ public class MTransformJButton extends JButton {
     }
 
     public void setDeployableView(){ updateView(null, "Ready to be Installed into Rack.", true); }
-    public void setProcurableView(){ updateView(null, "Ready to be Procured from Store.", true); }
+    public void setProcurableView(){ updateView(null, "Ready to be Purchased from Store.", true); }
     public void setDeployedView(){ updateView(null, "Installed into rack.", false); }
 
     public void setDeployingView(){ updateView("installing", "Installing.", false); }
-    public void setProcuringView(){ updateView("procuring", "Procuring.", false); }
+    public void setProcuringView(){ updateView("purchasing", "Purchasing.", false); }
     public void setRemovingFromToolboxView(){ updateView("removing", "Removing from Toolbox.", false); }
     public void setRemovingFromRackView(){ updateView("removing", "Removing from Rack.", false); }
 
     public void setFailedInitView(){ updateView(null, "Failed Graphical Initialization.", false); }
-    public void setFailedProcureView(){ updateView(null, "Failed Procurement.", true); }
+    public void setFailedProcureView(){ updateView(null, "Failed Purchase.", true); }
     public void setFailedDeployView(){ updateView(null, "Failed Installation.", true); }
     public void setFailedRemoveFromToolboxView(){ updateView(null, "Failed Removal from Toolbox.", true); }
     public void setFailedRemoveFromRackView(){ updateView(null, "Failed Removal from Rack.", false); }

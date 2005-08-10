@@ -32,7 +32,7 @@ import com.metavize.mvvm.tran.*;
 public class StoreJDialog extends MConfigJDialog implements Savable, Refreshable {
 
 
-    private static final String NAME_STORE = "Procure a Software Appliance";
+    private static final String NAME_STORE = "Purchase a Software Appliance";
 
     private StoreJPanel storeJPanel;
     private boolean purchasedTransform = false;
@@ -58,6 +58,10 @@ public class StoreJDialog extends MConfigJDialog implements Savable, Refreshable
         storeJPanel.priceJLabel.setText("$" + price);
         if( price.equals("0") ){
             super.saveJButton.setText("<html><b>Download</b></html>");
+            super.saveJButton.setIcon(null);
+        }
+        else{
+            super.saveJButton.setText("<html><b>Purchase</b></html>");
             super.saveJButton.setIcon(null);
         }
 

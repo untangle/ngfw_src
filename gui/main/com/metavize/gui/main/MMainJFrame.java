@@ -755,7 +755,8 @@ public class MMainJFrame extends javax.swing.JFrame {
 
     private void storeActionPerformed(java.awt.event.ActionEvent evt){
         MTransformJButton targetMTransformJButton = (MTransformJButton) evt.getSource();
-        StoreJDialog storeJDialog = new StoreJDialog(targetMTransformJButton.duplicate());
+        MTransformJButton duplicateMTransformJButton = targetMTransformJButton.duplicate();
+        StoreJDialog storeJDialog = new StoreJDialog(duplicateMTransformJButton);
 	storeJDialog.setVisible(true);
 	if( storeJDialog.getPurchasedMTransformJButton() != null){
 	    if( Util.mustCheckUpgrades() ){
