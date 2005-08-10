@@ -192,9 +192,6 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         while (l.size() > limit) { l.remove(l.size() - 1); }
         long t1 = System.currentTimeMillis();
 
-        System.out.println("limit: " + limit + " l size: " + l.size()
-                           + " millis: " + (t1 - t0));
-
         return l;
     }
 
@@ -566,8 +563,6 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         }
 
         long t1 = System.currentTimeMillis();
-
-        System.out.println(q + " IN: " + (t1 - t0));
 
         return l;
     }
