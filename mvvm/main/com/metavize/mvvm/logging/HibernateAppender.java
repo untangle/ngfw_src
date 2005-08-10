@@ -232,7 +232,7 @@ public class HibernateAppender extends AppenderSkeleton
 
                 tx.commit();
             } catch (Exception exn) {
-                logger.warn("could persist log events", exn);
+                logger.warn("could not persist log events", exn);
             } finally {
                 try {
                     s.close();

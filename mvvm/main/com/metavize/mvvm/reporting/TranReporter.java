@@ -32,7 +32,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 public class TranReporter {
 
-    private static final Logger logger = Logger.getLogger(Reporter.class);
+    private static final Logger logger = Logger.getLogger(TranReporter.class);
     public static final String ICON_DESC = "IconDesc42x42.png";
     public static final String ICON_ORG = "IconOrg42x42.png";
     private static final String SUMMARY_FRAGMENT_DAILY = "sum-daily.html";
@@ -139,6 +139,14 @@ public class TranReporter {
 		    logger.debug("Found graph: " + className);
 		    String dailyFile = new File(tranDir, name + "--daily.jpg").getCanonicalPath();
 		    processReportGraph(reportGraph, conn, dailyFile, Util.lastday, Util.midnight);
+                    /*
+                     * Not yet implemented below us... XXX
+
+		    String weeklyFile = new File(tranDir, name + "--weekly.jpg").getCanonicalPath();
+		    processReportGraph(reportGraph, conn, weeklyFile, Util.lastweek, Util.midnight);
+		    String monthlyFile = new File(tranDir, name + "--monthly.jpg").getCanonicalPath();
+		    processReportGraph(reportGraph, conn, monthlyFile, Util.lastmonth, Util.midnight);
+                    */
 		} catch (Exception x) {
 		    logger.warn("No such class: " + className);
 		}
