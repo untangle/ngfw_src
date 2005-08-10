@@ -53,7 +53,7 @@ if [ "$(getBridge ${inside})x" = "${bridge}x" ] && [ "$(getBridge ${outside})x" 
             ifconfig ${bridge} ${bridgeAddress} netmask ${bridgeNetmask}
             
             ## Delete all of the default routes
-            deleleteGateways
+            deleteGateways
 
             ## Insert the new default route
             addGateway ${gateway}
