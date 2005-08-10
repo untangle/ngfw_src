@@ -55,7 +55,6 @@ public class ClamScannerLauncher implements Runnable
                                                         "MSCAB.ExceededFileSize",
                                                         "Archive.ExceededRecursionLimit" };
 
-
     /**
      * Create a Launcher for the give file
      */
@@ -177,11 +176,18 @@ public class ClamScannerLauncher implements Runnable
              * 2 : An error occured.
              */
             switch(i) {
+                /**
+                 * Clean
+                 */
             case 0:
                 logger.info("clamdscan: clean");
                 this.result = VirusScannerResult.CLEAN;
                 synchronized (this) {this.notifyAll();}
                 return;
+
+                /**
+                 * Virus found
+                 */
             case 1:
                 if (virusName == null) {
                     logger.error("clamdscan: missing \"FOUND\" string (exit code 1)");
@@ -202,14 +208,36 @@ public class ClamScannerLauncher implements Runnable
                     synchronized (this) {this.notifyAll();}
                     return;
                 }
+
+                /**
+                 * Killed
+                 */
             case 143:
                 logger.warn("clamdscan prematurely killed");
                 this.result = VirusScannerResult.ERROR;
                 synchronized (this) {this.notifyAll();}
                 return;
+
+                /**
+                 * Error
+                 */
             default:
             case 2:
-                logger.error("clamdscan exit code error: " + i + " \nCommand: " + command + " \nfirstLine output: " + firstLine);
+                String errorOut = null;
+                try {
+                    InputStream es  = scanProcess.getErrorStream();
+                    int numbytes = es.available();
+                    byte[] b = new byte[numbytes];
+                    es.read(b,0,numbytes);
+                    errorOut = new String(b);
+                } catch (Exception e) {
+                    logger.warn("Exception reading Error output: " + e);
+                }
+                
+                logger.error("clamdscan exit code error: " + i + 
+                             " \nCommand: " + command + 
+                             " \nfirstLine output: " + firstLine + 
+                             " \nfirstLine error: " + errorOut);
                 this.result = VirusScannerResult.ERROR;
                 synchronized (this) {this.notifyAll();}
                 return;
