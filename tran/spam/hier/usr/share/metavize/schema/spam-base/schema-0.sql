@@ -71,6 +71,11 @@ CREATE TABLE events.tr_spam_evt (
 -- constraints |
 ----------------
 
+-- indeces for reporting
+
+CREATE INDEX tr_spam_evt_smtp_ts_idx ON tr_spam_evt_smtp (time_stamp);
+CREATE INDEX tr_spam_evt_ts_idx ON tr_spam_evt (time_stamp);
+
 -- foreign key constraints
 
 ALTER TABLE settings.tr_spam_settings
