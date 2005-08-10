@@ -69,9 +69,10 @@ public class CompleteMIMEToken
    * @param pipeline the pipeline (needed for the Streamer stuff)
    * @return the TokenStreamer
    */
-  public TCPStreamer toTCPStreamer(Pipeline pipeline) {
+  public TCPStreamer toTCPStreamer(Pipeline pipeline,
+    boolean disposeWhenComplete) {
     m_logger.debug("About to return a new MIMETCPStreamer");
-    return new MIMETCPStreamer(pipeline);
+    return new MIMETCPStreamer(pipeline, disposeWhenComplete);
   }
 
 
@@ -86,9 +87,11 @@ public class CompleteMIMEToken
     private ByteBufferByteStuffer m_bbbs = new ByteBufferByteStuffer();
     private final Logger m_logger =
       Logger.getLogger(CompleteMIMEToken.MIMETCPStreamer.class);    
+    private final boolean m_disposeWhenComplete;
 
-
-    MIMETCPStreamer(final Pipeline pipeline) {
+    MIMETCPStreamer(final Pipeline pipeline,
+      boolean disposeWhenComplete) {
+      m_disposeWhenComplete = disposeWhenComplete;
       //TODO bscott Remove this debugging
       m_logger.debug("Created Complete MIME message streamer");
       try {
@@ -117,6 +120,10 @@ public class CompleteMIMEToken
       try {m_fos.close();}catch(Exception ignore){}
       m_fos = null;
       m_channel = null;
+      if(m_disposeWhenComplete) {
+        m_msg.dispose();
+        m_logger.debug("Disposing of MIME file");
+      }
     }
 
     public boolean closeWhenDone() {

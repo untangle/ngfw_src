@@ -470,6 +470,7 @@ public class MIMEAccumulator {
    * accumulator has been unparsed.
    */
   public void closeInput() {
+    m_logger.debug("Closing input");
     try {m_fileOut.close();}catch(Exception ignore){}
     m_fileOut = null;
     m_fileChannel = null;
@@ -480,6 +481,7 @@ public class MIMEAccumulator {
    * file and any MIME message
    */
   public void dispose() {
+    m_logger.debug("Disposing of accumulator file");
     closeInput();
     try {m_mimeMessage.dispose();}catch(Exception ignore){}
     try {m_fileMIMESource.close();}catch(Exception ignore){}

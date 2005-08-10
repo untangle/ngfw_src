@@ -32,6 +32,7 @@ import com.metavize.tran.token.*;
 import com.metavize.tran.util.*;
 import org.apache.log4j.Logger;
 import java.util.*;
+import com.metavize.tran.mail.papi.MIMEAccumulator;
 
 /**
  * ...name says it all...
@@ -42,6 +43,7 @@ class SmtpServerUnparser
   private final Logger m_logger = Logger.getLogger(SmtpServerUnparser.class);
 
   private ByteBufferByteStuffer m_byteStuffer;
+  private MIMEAccumulator m_accumulator;
 
   SmtpServerUnparser(TCPSession session,
     SmtpCasing parent,
@@ -93,11 +95,13 @@ class SmtpServerUnparser
     if(token instanceof BeginMIMEToken) {
       m_logger.debug("Send BeginMIMEToken to server");
       getSessionTracker().beginMsgTransmission();
+      BeginMIMEToken bmt = (BeginMIMEToken) token;
       //Initialize the byte stuffer.
       m_byteStuffer = new ByteBufferByteStuffer();
+      m_accumulator = bmt.getMIMEAccumulator();
       return new UnparseResult(
         getSmtpCasing().wrapUnparseStreamerForTrace(
-        ((BeginMIMEToken) token).toTCPStreamer(m_byteStuffer)));
+          bmt.toTCPStreamer(m_byteStuffer)));
     }
 
     //-----------------------------------------------------------
@@ -106,7 +110,7 @@ class SmtpServerUnparser
       getSessionTracker().beginMsgTransmission();
       return new UnparseResult(
         getSmtpCasing().wrapUnparseStreamerForTrace(
-        ((CompleteMIMEToken) token).toTCPStreamer(getPipeline())));
+        ((CompleteMIMEToken) token).toTCPStreamer(getPipeline(), true)));
     }
     //-----------------------------------------------------------
     if(token instanceof ContinuedMIMEToken) {
@@ -132,6 +136,8 @@ class SmtpServerUnparser
         }
         getSmtpCasing().traceUnparse(remainder);
         m_byteStuffer = null;
+        m_accumulator.dispose();
+        m_accumulator = null;
         return new UnparseResult(
           sink==null?
           new ByteBuffer[] {remainder}:
