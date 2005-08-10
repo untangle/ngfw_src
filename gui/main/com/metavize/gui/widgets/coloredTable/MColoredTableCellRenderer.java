@@ -173,6 +173,7 @@ public class MColoredTableCellRenderer extends DefaultTableCellRenderer {
                         renderJLabel.setIcon( savedImageIcon );
                     }
                     else{
+			renderJLabel.setHorizontalAlignment(JTextField.LEFT);
                         renderJLabel.setIcon(null);
                         renderJLabel.setText(value.toString());
                     }
