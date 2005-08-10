@@ -244,10 +244,14 @@ public class SpywareHttpHandler extends HttpStateMachine
 
             logger.debug("handling server cookie: " + v);
 
-            Map m = CookieParser.parseCookie(v);
-            String domain = (String)m.get("domain");
+            Map<String, String> m = CookieParser.parseCookie(v);
+            String domain = m.get("domain");
             logger.debug("got domain: " + domain);
             if (null == domain) {
+                logger.debug("NULL domain IN: " + m);
+                for (String foo : m.keySet()) {
+                    logger.debug("eq " + foo + "? " + foo.equals("domain"));
+                }
                 domain = reqDomain;
                 logger.debug("using request domain: " + domain);
             }

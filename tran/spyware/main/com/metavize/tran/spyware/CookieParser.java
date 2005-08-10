@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: CookieParser.java,v 1.3 2005/01/27 10:00:42 amread Exp $
+ * $Id$
  */
 
 package com.metavize.tran.spyware;
@@ -24,13 +24,24 @@ public class CookieParser
 
     private static final Logger logger = Logger.getLogger(CookieParser.class);
 
-    public static Map parseCookie(String v)
+    /**
+     * Parses a cookie, keys and values are converted to lower case.
+     *
+     * XXX find a 3rd party parser, or beef this one up.
+     *
+     * XXX converting to lower case probably bad, we need to preserve
+     * case, yet allow lookups.
+     *
+     * @param v the cookie string from the HTTP header.
+     * @return a map of cookie keys and values.
+     */
+    public static Map<String, String> parseCookie(String v)
     {
         logger.debug("parsing cookie: " + v);
 
         int state = KEY_STATE;
 
-        Map m = new HashMap();
+        Map<String, String> m = new HashMap<String, String>();
 
         StringBuilder keyBuffer = new StringBuilder();
         StringBuilder valueBuffer = new StringBuilder();
@@ -43,7 +54,7 @@ public class CookieParser
                     if ('=' == c) {
                         state = VALUE_STATE;
                     } else {
-                        keyBuffer.append(c);
+                        keyBuffer.append(Character.toLowerCase(c));
                     }
                     break;
                 }
@@ -53,7 +64,7 @@ public class CookieParser
                         if (0 < valueBuffer.length()) {
                             state = END_AVPAIR_STATE;
                         }
-                    } else if (';' == c || ',' == c) {
+                    } else if (';' == c) {
                         m.put(keyBuffer.toString().trim(),
                               valueBuffer.toString().trim());
                         keyBuffer = new StringBuilder();
