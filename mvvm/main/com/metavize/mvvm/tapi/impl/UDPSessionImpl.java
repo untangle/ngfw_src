@@ -375,6 +375,14 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
     }
 
     @Override
+    String idForMDC()
+    {
+        StringBuilder logPrefix = new StringBuilder("U");
+        logPrefix.append(id());
+        return logPrefix.toString();
+    }
+
+    @Override
     protected void closeFinal()
     {
         try {
@@ -390,23 +398,13 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
         super.closeFinal();
     }
 
+    @Override
     protected void killSession(String reason)
     {   
         // Sends a RST both directions and nukes the socket queues.
         pSession.killSession();
     } 
         
-    StringBuffer logPrefix()
-    {
-      //8/2/05 - wrs.  Took out id.  Now part of MDC stuff from Log4J
-        StringBuffer logPrefix = new StringBuffer();
-//        logPrefix.append(id());
-        logPrefix.append("(");
-        logPrefix.append(Thread.currentThread().getName());
-        logPrefix.append("): ");
-        return logPrefix;
-    }
-
     // Don't need equal or hashcode since we can only have one of these objects per
     // session (so the memory address is ok for equals/hashcode).
 }

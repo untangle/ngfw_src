@@ -592,16 +592,12 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
         return numRead;
     }
 
-
-    StringBuffer logPrefix()
+    @Override
+    String idForMDC()
     {
-      //8/2/05 - wrs.  Took out id.  Now part of MDC stuff from Log4J    
-        StringBuffer logPrefix = new StringBuffer("");
-//        logPrefix.append(id());
-        logPrefix.append("(");
-        logPrefix.append(Thread.currentThread().getName());
-        logPrefix.append("): ");
-        return logPrefix;
+        StringBuilder logPrefix = new StringBuilder("T");
+        logPrefix.append(id());
+        return logPrefix.toString();
     }
 
     @Override
@@ -622,6 +618,7 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
         super.closeFinal();
     }
 
+    @Override
     protected void killSession(String reason)
     {
         // Sends a RST both directions and nukes the socket queues.

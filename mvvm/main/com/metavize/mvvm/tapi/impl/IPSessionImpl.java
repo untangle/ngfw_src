@@ -456,7 +456,7 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
     public void writeEvent(int side, OutgoingSocketQueue out)
     {
         String sideName = side == CLIENT ? "client" : "server";
-        MDC.put(SESSION_ID_KEY, id());
+        MDC.put(SESSION_ID_KEY, idForMDC());
         try {
             assert out != null;
             if (!out.isEmpty()) {
@@ -512,7 +512,7 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
     public void readEvent(int side, IncomingSocketQueue in)
     {
         String sideName = side == CLIENT ? "client" : "server";
-        MDC.put(SESSION_ID_KEY, id());
+        MDC.put(SESSION_ID_KEY, idForMDC());
         try {
             assert in != null;
             if (!in.isEnabled()) {
@@ -600,56 +600,42 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
 
     protected void error(String message)
     {
-        StringBuffer msg = logPrefix();
-        msg.append(message);
-        logger.error(msg.toString());
+        logger.error(message.toString());
     }
 
     protected void error(String message, Exception x)
     {
-        StringBuffer msg = logPrefix();
-        msg.append(message);
-        logger.error(msg.toString(), x);
+        logger.error(message.toString(), x);
     }
 
     protected void warn(String message)
     {
-        StringBuffer msg = logPrefix();
-        msg.append(message);
-        logger.warn(msg.toString());
+        logger.warn(message.toString());
     }
 
     protected void warn(String message, Exception x)
     {
-        StringBuffer msg = logPrefix();
-        msg.append(message);
-        logger.warn(msg.toString(), x);
+        logger.warn(message.toString(), x);
     }
 
     protected void info(String message)
     {
         if (logger.isInfoEnabled()) {
-            StringBuffer msg = logPrefix();
-            msg.append(message);
-            logger.info(msg.toString());
+            logger.info(message.toString());
         }
     }
 
     protected void debug(String message)
     {
         if (logger.isDebugEnabled()) {
-            StringBuffer msg = logPrefix();
-            msg.append(message);
-            logger.debug(msg.toString());
+            logger.debug(message.toString());
         }
     }
 
     protected void debug(String message, Exception x)
     {
         if (logger.isDebugEnabled()) {
-            StringBuffer msg = logPrefix();
-            msg.append(message);
-            logger.debug(msg.toString(), x);
+            logger.debug(message.toString(), x);
         }
     }
 
@@ -678,7 +664,7 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
     abstract void tryRead(int side, IncomingSocketQueue in, boolean warnIfUnable)
         throws MPipeException;
 
-    abstract StringBuffer logPrefix();
+    abstract String idForMDC();
 
     private static DateFormat formatter = new AbsoluteTimeDateFormat();
 
