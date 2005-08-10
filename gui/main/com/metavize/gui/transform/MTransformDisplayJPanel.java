@@ -445,7 +445,7 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
         
         private void generateCountLabel(long count, String suffix, JLabel label){
             if(count < 1000l)
-                label.setText( Long.toString( count ) + suffix);
+                label.setText( Long.toString( count ) + " " + suffix);
             else if(count < 1000000l)
                 label.setText( Long.toString( count/1000l ) + "." + Util.padZero( count%1000l ) + " K" + suffix);
             else if(count < 1000000000l)
