@@ -1,0 +1,30 @@
+TEMPLATE=Sub3
+REPORT_NAME=TopPop
+REPORT_TITLE=Top POP/IMAP Recipients
+EXTRA_PARAM_1.name=spamVendor
+EXTRA_PARAM_1.type=java.lang.String
+FIELD_1.name=addr
+FIELD_1.type=String
+FIELD_2.name=count
+FIELD_2.type=Long
+FIELD_3.name=mail_percent
+FIELD_3.type=Float
+QUERY=SELECT addr, \
+       count(*), \
+       count(*)::float / (SELECT count(*) FROM tr_spam_evt evt WHERE evt.time_stamp > $P{startTime} AND evt.time_stamp < $P{endTime}) * 100 AS mail_percent \
+FROM tr_mail_message_info info \
+JOIN tr_mail_message_info_addr addr ON addr.msg_id = info.id \
+JOIN tr_spam_evt evt ON evt.msg_id = info.id \
+WHERE kind = 'U' AND evt.time_stamp > $P{startTime} AND evt.time_stamp < $P{endTime} \
+GROUP BY addr \
+ORDER BY count DESC LIMIT 20
+LEFT.label=Recipient
+MIDDLE.label=Count
+RIGHT.label=%
+LEFT.expr=$F{addr}
+MIDDLE.expr=$F{count}
+RIGHT.expr=String.format("%d%%", Math.round($F{mail_percent}))
+LEFT.total=Totals:
+MIDDLE.total=$F{count}
+RIGHT.total=100%
+UNIQUE_COUNT.expr=$F{addr}

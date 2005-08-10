@@ -18,14 +18,11 @@ import java.util.*;
 import java.util.jar.*;
 
 import com.metavize.mvvm.reporting.summary.*;
-import com.metavize.mvvm.security.Tid;
-import com.metavize.mvvm.reporting.Util;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.export.*;
 import org.apache.log4j.Logger;
 import org.jfree.chart.*;
 import org.xml.sax.*;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 
 public class Reporter
@@ -141,7 +138,7 @@ public class Reporter
     private void generateNewReports(Connection conn, String[] mars)
         throws IOException, JRScriptletException, SQLException, ClassNotFoundException
     {
-	
+
         Thread ct = Thread.currentThread();
         ClassLoader oldCl = ct.getContextClassLoader();
 
@@ -155,15 +152,15 @@ public class Reporter
             try {
                 URLClassLoader ucl = new URLClassLoader(new URL[] { f.toURL() });
                 ct.setContextClassLoader(ucl);
-                logger.debug("Running TranReporter for " + tranName);
-		TranReporter tranReporter = new TranReporter(outputDir, tranName, new JarFile(f), ucl);
-		tranReporter.process(conn);
+                logger.info("Running TranReporter for " + tranName);
+        TranReporter tranReporter = new TranReporter(outputDir, tranName, new JarFile(f), ucl);
+        tranReporter.process(conn);
             } catch (Exception exn) {
                 logger.warn("bad mar: " + f);
                 exn.printStackTrace();
             }
         }
- 
+
     }
 
     private void purgeOldReports(Connection conn, int daysToKeep)

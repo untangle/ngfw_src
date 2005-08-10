@@ -1,7 +1,5 @@
 #!/bin/sh
 
-set -e
-
 JAVA_HOME=${JAVA_HOME:-/opt/java}
 
 CLASSPATH="@MVVM_HOME@/lib/mvvm.jar"

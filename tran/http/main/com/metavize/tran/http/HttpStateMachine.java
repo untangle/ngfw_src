@@ -80,8 +80,8 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
     protected ServerState getServerState()
     {
         return serverState;
-    }
 
+}
     // AbstractTokenHandler methods -------------------------------------------
 
     public TokenResult handleClientToken(Token token) throws TokenException

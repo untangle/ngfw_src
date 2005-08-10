@@ -1,0 +1,9 @@
+TEMPLATE=MasterOfFourChildren
+REPORT_NAME=SpamMaster
+REPORT_TITLE=Spam - Summary
+SUBREPORT_1=reports/TopSmtp.jasper
+SUBREPORT_2=reports/TopPop.jasper
+SUBREPORT_3=reports/TopSpamSmtp.jasper
+SUBREPORT_4=reports/TopSpamPop.jasper
+EXTRA_PARAM_1.name=spamVendor
+EXTRA_PARAM_1.type=java.lang.String

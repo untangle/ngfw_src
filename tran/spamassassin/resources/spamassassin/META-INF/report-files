@@ -1,3 +1,4 @@
-# reports/SpamMaster.jasper:SpamAssassin_AntiSpam--Summary:Summary
-# com/metavize/tran/spam/reports/EmailSpamDetail.jasper:SpamAssassin_AntiSpam--Email_Incidents:Email Incidents
-# com.metavize.tran.spam.reports/SpamSummarizer:summarizer:Summarizer
+reports/SpamMaster.jasper:SpamAssassin_AntiSpam--Summary:Summary
+com/metavize/tran/spam/reports/EmailSpamDetail.jasper:SpamAssassin_AntiSpam--Email_Incidents:Email Incidents
+com.metavize.tran.spam.reports.SpamSummarizer:summarizer:Summarizer
+spamVendor:parameter:SpamAssassin

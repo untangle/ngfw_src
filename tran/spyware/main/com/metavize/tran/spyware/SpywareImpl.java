@@ -188,9 +188,12 @@ public class SpywareImpl extends AbstractTransform implements Spyware
 
         Collections.sort(l);
 
-        for (int i = Math.min(limit, l.size()); i < l.size(); i++) {
-            l.remove(i);
-        }
+        long t0 = System.currentTimeMillis();
+        while (l.size() > limit) { l.remove(l.size() - 1); }
+        long t1 = System.currentTimeMillis();
+
+        System.out.println("limit: " + limit + " l size: " + l.size()
+                           + " millis: " + (t1 - t0));
 
         return l;
     }
@@ -517,6 +520,8 @@ public class SpywareImpl extends AbstractTransform implements Spyware
     private List<SpywareLog> getEventLogs(String q, List<SpywareLog> l,
                                           int limit)
     {
+        long t0 = System.currentTimeMillis();
+
         Session s = TransformContextFactory.context().openSession();
         try {
             Connection c = s.connection();
@@ -559,6 +564,10 @@ public class SpywareImpl extends AbstractTransform implements Spyware
                 logger.warn("could not close Hibernate session", exn);
             }
         }
+
+        long t1 = System.currentTimeMillis();
+
+        System.out.println(q + " IN: " + (t1 - t0));
 
         return l;
     }
