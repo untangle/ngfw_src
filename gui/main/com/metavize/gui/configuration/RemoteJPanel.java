@@ -137,6 +137,8 @@ public class RemoteJPanel extends javax.swing.JPanel implements Savable, Refresh
         sshButtonGroup = new javax.swing.ButtonGroup();
         externalRemoteJPanel = new javax.swing.JPanel();
         externalAdminEnabledRadioButton = new javax.swing.JRadioButton();
+        externalAdminDisabledRadioButton = new javax.swing.JRadioButton();
+        jSeparator2 = new javax.swing.JSeparator();
         enableRemoteJPanel = new javax.swing.JPanel();
         externalAdminRestrictDisabledRadioButton = new javax.swing.JRadioButton();
         externalAdminRestrictEnabledRadioButton = new javax.swing.JRadioButton();
@@ -145,7 +147,6 @@ public class RemoteJPanel extends javax.swing.JPanel implements Savable, Refresh
         restrictIPaddrJTextField = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
         restrictNetmaskJTextField = new javax.swing.JTextField();
-        externalAdminDisabledRadioButton = new javax.swing.JRadioButton();
         internalRemoteJPanel = new javax.swing.JPanel();
         internalAdminEnabledRadioButton = new javax.swing.JRadioButton();
         internalAdminDisabledRadioButton = new javax.swing.JRadioButton();
@@ -161,7 +162,7 @@ public class RemoteJPanel extends javax.swing.JPanel implements Savable, Refresh
         externalRemoteJPanel.setBorder(new javax.swing.border.TitledBorder(null, "External Remote Administration", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
         externalAdminButtonGroup.add(externalAdminEnabledRadioButton);
         externalAdminEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        externalAdminEnabledRadioButton.setText("<html><b>Allow</b> Remote Administration by authorized users outside of the local network.</html>");
+        externalAdminEnabledRadioButton.setText("<html><b>Allow</b> Remote Administration outside the local network, via secure http (https).</html>");
         externalAdminEnabledRadioButton.setFocusPainted(false);
         externalAdminEnabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -175,11 +176,34 @@ public class RemoteJPanel extends javax.swing.JPanel implements Savable, Refresh
         gridBagConstraints.weightx = 1.0;
         externalRemoteJPanel.add(externalAdminEnabledRadioButton, gridBagConstraints);
 
+        externalAdminButtonGroup.add(externalAdminDisabledRadioButton);
+        externalAdminDisabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
+        externalAdminDisabledRadioButton.setText("<html><b>Disallow</b> Remote Administration outside the local network, via secure http (https).<br>(This is the default setting.)</html>");
+        externalAdminDisabledRadioButton.setFocusPainted(false);
+        externalAdminDisabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                externalAdminDisabledRadioButtonActionPerformed(evt);
+            }
+        });
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
+        externalRemoteJPanel.add(externalAdminDisabledRadioButton, gridBagConstraints);
+
+        jSeparator2.setForeground(new java.awt.Color(200, 200, 200));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        externalRemoteJPanel.add(jSeparator2, gridBagConstraints);
+
         enableRemoteJPanel.setLayout(new java.awt.GridBagLayout());
 
         restrictAdminButtonGroup.add(externalAdminRestrictDisabledRadioButton);
         externalAdminRestrictDisabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        externalAdminRestrictDisabledRadioButton.setText("<html><b>Unrestrict</b> so any IP address can connect for remote administration.</html>");
+        externalAdminRestrictDisabledRadioButton.setText("<html><b>Unrestrict</b> so any outside IP address can remotely administer.</html>");
         externalAdminRestrictDisabledRadioButton.setFocusPainted(false);
         externalAdminRestrictDisabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -195,7 +219,7 @@ public class RemoteJPanel extends javax.swing.JPanel implements Savable, Refresh
 
         restrictAdminButtonGroup.add(externalAdminRestrictEnabledRadioButton);
         externalAdminRestrictEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        externalAdminRestrictEnabledRadioButton.setText("<html><b>Restrict</b> the set of IP addresses that can remotely administer to the following:</html>");
+        externalAdminRestrictEnabledRadioButton.setText("<html><b>Restrict</b> the IP address(es) that can remotely administer to the following:</html>");
         externalAdminRestrictEnabledRadioButton.setFocusPainted(false);
         externalAdminRestrictEnabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -219,11 +243,13 @@ public class RemoteJPanel extends javax.swing.JPanel implements Savable, Refresh
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         restrictIPJPanel.add(jLabel5, gridBagConstraints);
 
+        restrictIPaddrJTextField.setMaximumSize(new java.awt.Dimension(150, 19));
+        restrictIPaddrJTextField.setMinimumSize(new java.awt.Dimension(150, 19));
+        restrictIPaddrJTextField.setPreferredSize(new java.awt.Dimension(150, 19));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
         restrictIPJPanel.add(restrictIPaddrJTextField, gridBagConstraints);
 
@@ -235,17 +261,18 @@ public class RemoteJPanel extends javax.swing.JPanel implements Savable, Refresh
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         restrictIPJPanel.add(jLabel8, gridBagConstraints);
 
+        restrictNetmaskJTextField.setMaximumSize(new java.awt.Dimension(150, 19));
+        restrictNetmaskJTextField.setMinimumSize(new java.awt.Dimension(150, 19));
+        restrictNetmaskJTextField.setPreferredSize(new java.awt.Dimension(150, 19));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
         restrictIPJPanel.add(restrictNetmaskJTextField, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.ipadx = 150;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 50, 0, 0);
         enableRemoteJPanel.add(restrictIPJPanel, gridBagConstraints);
@@ -254,25 +281,8 @@ public class RemoteJPanel extends javax.swing.JPanel implements Savable, Refresh
         gridBagConstraints.gridx = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 50, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
         externalRemoteJPanel.add(enableRemoteJPanel, gridBagConstraints);
-
-        externalAdminButtonGroup.add(externalAdminDisabledRadioButton);
-        externalAdminDisabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        externalAdminDisabledRadioButton.setText("<html><b>Disallow</b> Remote Administration by any user outside of the local network.  (This is the default setting.)</html>");
-        externalAdminDisabledRadioButton.setFocusPainted(false);
-        externalAdminDisabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                externalAdminDisabledRadioButtonActionPerformed(evt);
-            }
-        });
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
-        externalRemoteJPanel.add(externalAdminDisabledRadioButton, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -286,7 +296,7 @@ public class RemoteJPanel extends javax.swing.JPanel implements Savable, Refresh
         internalRemoteJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Internal Remote Administration", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
         internalAdminButtonGroup.add(internalAdminEnabledRadioButton);
         internalAdminEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        internalAdminEnabledRadioButton.setText("<html><b>Allow</b> insecure Remote Administration inside the local network via http.  (This is the default setting.)</html>");
+        internalAdminEnabledRadioButton.setText("<html><b>Allow</b> Remote Administration inside the local network, via http.<br>(This is the default setting.)</html>");
         internalAdminEnabledRadioButton.setFocusPainted(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -296,7 +306,7 @@ public class RemoteJPanel extends javax.swing.JPanel implements Savable, Refresh
 
         internalAdminButtonGroup.add(internalAdminDisabledRadioButton);
         internalAdminDisabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        internalAdminDisabledRadioButton.setText("<html><b>Disallow</b> insecure Remote Administration inside the local network via http.</html>");
+        internalAdminDisabledRadioButton.setText("<html><b>Disallow</b> Remote Administration inside the local network, via http.</html>");
         internalAdminDisabledRadioButton.setFocusPainted(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -371,6 +381,7 @@ public class RemoteJPanel extends javax.swing.JPanel implements Savable, Refresh
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JSeparator jSeparator2;
     private javax.swing.ButtonGroup restrictAdminButtonGroup;
     private javax.swing.JPanel restrictIPJPanel;
     public javax.swing.JTextField restrictIPaddrJTextField;
