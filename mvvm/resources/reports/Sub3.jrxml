@@ -16,6 +16,7 @@
     <variable name="n" class="java.lang.Integer" calculation="Count">
         <variableExpression><![CDATA[@UNIQUE_COUNT.expr@]]></variableExpression>
     </variable>
+    @EXTRA_VARS@
     <background>
         <band>
         </band>

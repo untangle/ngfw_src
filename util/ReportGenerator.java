@@ -28,9 +28,11 @@ public class ReportGenerator
     public static final String WHICH_TEMPLATE_PROPERTY = "TEMPLATE";
     public static final String FIELDS_PROPERTY = "FIELDS";
     public static final String FIELD_PROPERTY_PREFIX = "FIELD_";
-    public static final String EXTRA_PARAMS_PROPERTY = "EXTRA_PARAMS";
     public static final String SUBREPORT_EXTRA_PARAMS_PROPERTY = "SUBREPORT_EXTRA_PARAMS";
+    public static final String EXTRA_PARAMS_PROPERTY = "EXTRA_PARAMS";
     public static final String EXTRA_PARAM_PROPERTY_PREFIX = "EXTRA_PARAM_";
+    public static final String EXTRA_VARS_PROPERTY = "EXTRA_VARS";
+    public static final String EXTRA_VAR_PROPERTY_PREFIX = "EXTRA_VAR_";
     public static final String DEFAULT_TEMPLATE_SRC_DIR = "mvvm/resources/reports";
     
     // These should be somewhere else.  XXX
@@ -141,6 +143,9 @@ public class ReportGenerator
         String paramsProps = getParams(props);
         fset.addFilter(EXTRA_PARAMS_PROPERTY, paramsProps);
         
+        String varsProps = getVars(props);
+        fset.addFilter(EXTRA_VARS_PROPERTY, varsProps);
+        
         String subreportParamsProps = getSubreportParams(props);
         fset.addFilter(SUBREPORT_EXTRA_PARAMS_PROPERTY, subreportParamsProps);
 
@@ -172,7 +177,7 @@ public class ReportGenerator
             }
             String type = props.getProperty(FIELD_PROPERTY_PREFIX + i + ".type");
             if (type == null)
-                throw new IllegalArgumentException("Missing type " + i);
+                throw new IllegalArgumentException("Missing field type " + i);
             String canonType = TypeAliases.get(type);
             if (canonType != null)
                 type = canonType;
@@ -199,7 +204,7 @@ public class ReportGenerator
             }
             String type = props.getProperty(EXTRA_PARAM_PROPERTY_PREFIX + i + ".type");
             if (type == null)
-                throw new IllegalArgumentException("Missing type " + i);
+                throw new IllegalArgumentException("Missing param type " + i);
             String canonType = TypeAliases.get(type);
             if (canonType != null)
                 type = canonType;
@@ -208,6 +213,65 @@ public class ReportGenerator
             sb.append("\" class=\"");
             sb.append(type);
             sb.append("\"/>\n");
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Describe <code>getVars</code> method here.
+     *
+     * name, type, and value are required.
+     * resetType, incrementType, and calculation are optional.
+     *
+     * @param props a <code>Properties</code> value
+     * @return a <code>String</code> value
+     */
+    private String getVars(Properties props)
+    {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0;; i++) {
+            String name = props.getProperty(EXTRA_VAR_PROPERTY_PREFIX + i + ".name");
+            if (name == null) {
+                if (i > 0)
+                    break;
+                else
+                    continue;
+            }
+            String type = props.getProperty(EXTRA_VAR_PROPERTY_PREFIX + i + ".type");
+            if (type == null)
+                throw new IllegalArgumentException("Missing var type " + i);
+            String canonType = TypeAliases.get(type);
+            if (canonType != null)
+                type = canonType;
+            String value = props.getProperty(EXTRA_VAR_PROPERTY_PREFIX + i + ".value");
+            if (value == null)
+                throw new IllegalArgumentException("Missing var value " + i);
+            String resetType = props.getProperty(EXTRA_VAR_PROPERTY_PREFIX + i + ".resetType");
+            String incrementType = props.getProperty(EXTRA_VAR_PROPERTY_PREFIX + i + ".incrementType");
+            String calculation = props.getProperty(EXTRA_VAR_PROPERTY_PREFIX + i + ".calculation");
+            sb.append("<variable name=\"");
+            sb.append(name);
+            sb.append("\" class=\"");
+            sb.append(type);
+            sb.append("\"");
+            if (resetType != null) {
+                sb.append(" resetType=\"");
+                sb.append(resetType);
+                sb.append("\"");
+            }
+            if (incrementType != null) {
+                sb.append(" incrementType=\"");
+                sb.append(incrementType);
+                sb.append("\"");
+            }
+            if (calculation != null) {
+                sb.append(" calculation=\"");
+                sb.append(calculation);
+                sb.append("\"");
+            }
+            sb.append("> <variableExpression><![CDATA[");
+            sb.append(value);
+            sb.append("]]></variableExpression> </variable>\n");
         }
         return sb.toString();
     }
@@ -226,7 +290,7 @@ public class ReportGenerator
             }
             String type = props.getProperty(EXTRA_PARAM_PROPERTY_PREFIX + i + ".type");
             if (type == null)
-                throw new IllegalArgumentException("Missing type " + i);
+                throw new IllegalArgumentException("Missing subreport param type " + i);
             String canonType = TypeAliases.get(type);
             if (canonType != null)
                 type = canonType;
