@@ -27,5 +27,5 @@ MIDDLE.expr=$F{count}
 RIGHT.expr=Math.round($F{count}.doubleValue() / $F{total_count}.doubleValue() * 100) + "%"
 LEFT.total=Totals:
 MIDDLE.total=$F{total_count}
-RIGHT.total=100%
+RIGHT.total="100%"
 UNIQUE_COUNT.expr=$F{name}

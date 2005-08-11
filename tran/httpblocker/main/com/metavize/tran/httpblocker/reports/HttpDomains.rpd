@@ -23,5 +23,5 @@ MIDDLE.expr=$F{hits}
 RIGHT.expr=Math.round($F{hits}.doubleValue() / $F{total_hosts}.doubleValue() * 100) + "%"
 MIDDLE.total=$F{total_hosts}
 LEFT.total=Totals:
-RIGHT.total=100%
+RIGHT.total="100%"
 UNIQUE_COUNT.expr=$F{host}
