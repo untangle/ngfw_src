@@ -95,17 +95,7 @@ public class CompleteMIMEToken
       //TODO bscott Remove this debugging
       m_logger.debug("Created Complete MIME message streamer");
       try {
-        File file = m_msg.toFile(new FileFactory() {
-          public File createFile(String name)
-            throws IOException {
-            return createFile();
-          }
-
-          public File createFile()
-            throws IOException {
-            return pipeline.mktemp();
-          }
-        });
+        File file = m_msg.toFile(new TempFileFactory(pipeline));
         m_logger.debug("File is of length: " + file.length());
         m_fos = new FileInputStream(file);
         m_channel = m_fos.getChannel();

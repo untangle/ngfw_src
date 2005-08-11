@@ -36,6 +36,7 @@ import com.metavize.tran.token.TokenException;
 import com.metavize.tran.token.TokenResult;
 import com.metavize.tran.token.TokenStreamer;
 import com.metavize.tran.token.TokenStreamerAdaptor;
+import com.metavize.tran.util.TempFileFactory;
 import org.apache.log4j.Logger;
 
 class VirusFtpHandler extends FtpStateMachine
@@ -58,6 +59,7 @@ class VirusFtpHandler extends FtpStateMachine
     private FileChannel inChannel;
     private FileChannel outChannel;
     private boolean c2s;
+    private final TempFileFactory m_fileFactory;
 
     // constructors -----------------------------------------------------------
 
@@ -76,6 +78,8 @@ class VirusFtpHandler extends FtpStateMachine
             scanClient = vs.getFtpInbound().getScan();
             scanServer = vs.getFtpOutbound().getScan();
         }
+
+        m_fileFactory = new TempFileFactory(getPipeline());
     }
 
     // FtpStateMachine methods ------------------------------------------------
@@ -238,7 +242,7 @@ class VirusFtpHandler extends FtpStateMachine
     private void createFile() throws TokenException
     {
         try {
-            file = File.createTempFile("ftp-virus", null);
+            file = m_fileFactory.createFile("ftp-virus");
 
             FileInputStream fis = new FileInputStream(file);
             inChannel = fis.getChannel();

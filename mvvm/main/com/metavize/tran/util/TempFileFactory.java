@@ -9,43 +9,34 @@
   * $Id:$
   */
 package com.metavize.tran.util;
+import com.metavize.mvvm.tapi.Pipeline;
 import java.io.File;
 import java.io.IOException;
+
 
 
 /**
  * Implementation of FileFactory which creates temp files.
  */
 public class TempFileFactory
-  implements FileFactory {
+    implements FileFactory {
 
-  private File m_dir;
+    private Pipeline pipeline;
   
-  public TempFileFactory() {
-    this(null);
-  }
-  public TempFileFactory(File rootDir) {
-    m_dir = rootDir;
-  }
-  
-  public File createFile(String name) 
-    throws IOException {
-    if(name == null) {
-      name = "meta";
+    public TempFileFactory(Pipeline pipeline) {
+        this.pipeline = pipeline;
     }
-    //Javasoft requires 3 characters in prefix !?!
-    while(name.length() < 3) {
-      name = name+"X";
-    }
-    return File.createTempFile(name, null, m_dir);
-  }
   
-  /**
-   * Create an anonymous file.
-   */
-  public File createFile() 
-    throws IOException {
-    return createFile(null);
-  }
-
+    public File createFile(String name) 
+        throws IOException {
+        return pipeline.mktemp(name);
+    }
+  
+    /**
+     * Create an anonymous file.
+     */
+    public File createFile() 
+        throws IOException {
+        return pipeline.mktemp();
+    }
 }

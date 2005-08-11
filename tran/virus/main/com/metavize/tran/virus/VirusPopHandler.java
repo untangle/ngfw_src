@@ -94,7 +94,7 @@ public class VirusPopHandler extends PopStateMachine
             MIMEUtil.EMPTY_MIME_PARTS != (azMPart = MIMEUtil.getCandidateParts(zMMessage))) {
             zTransform.incrementCount(SCAN_COUNTER);
 
-            TempFileFactory zTFFactory = new TempFileFactory();
+            TempFileFactory zTFFactory = new TempFileFactory(getPipeline());
             VirusScannerResult zFirstResult = null;
 
             VirusScannerResult zCurResult;
@@ -133,15 +133,7 @@ public class VirusPopHandler extends PopStateMachine
                 /* wrap infected message and rebuild message token */
                 MIMEMessage zWMMessage = zWMsgGenerator.wrap(zMMessage, zFirstResult);
                 try {
-                    zMsgFile = zWMMessage.toFile(new FileFactory() {
-                        public File createFile(String name) throws IOException {
-                            return createFile();
-                        }
-
-                        public File createFile() throws IOException {
-                            return getPipeline().mktemp();
-                        }
-                    } );
+                    zMsgFile = zWMMessage.toFile(zTFFactory);
 
                     zMMessageT = new MIMEMessageT(zMsgFile);
                     zMMessageT.setMIMEMessage(zWMMessage);

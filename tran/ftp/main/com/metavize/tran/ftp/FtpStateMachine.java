@@ -37,8 +37,7 @@ public abstract class FtpStateMachine extends AbstractTokenHandler
     {
         super(session);
 
-        Pipeline p = MvvmContextFactory.context().pipelineFoundry()
-            .getPipeline(session.id());
+        Pipeline p = getPipeline();
         clientFitting = p.getClientFitting(session.mPipe());
         serverFitting = p.getServerFitting(session.mPipe());
     }

@@ -32,6 +32,4 @@ public interface VirusScanner
      * @return a <code>VirusScannerResult</code> value
      */
     VirusScannerResult scanFile (String fileName);
-
-    VirusScannerResult scanBufs (List bufs);
 }

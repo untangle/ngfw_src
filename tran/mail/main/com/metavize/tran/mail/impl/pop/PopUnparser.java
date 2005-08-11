@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.tapi.Pipeline;
 import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.mvvm.tapi.event.TCPStreamer;
 import com.metavize.tran.mail.PopCasing;
@@ -44,6 +46,7 @@ import com.metavize.tran.token.Token;
 import com.metavize.tran.token.UnparseException;
 import com.metavize.tran.token.UnparseResult;
 import com.metavize.tran.util.AsciiCharBuffer;
+import com.metavize.tran.util.TempFileFactory;
 import org.apache.log4j.Logger;
 
 public class PopUnparser extends AbstractUnparser
@@ -58,6 +61,8 @@ public class PopUnparser extends AbstractUnparser
     private PopReply zMsgDataReply;
     private ByteBufferByteStuffer zByteStuffer;
 
+    private TempFileFactory zTempFactory;
+
     public PopUnparser(TCPSession session, boolean clientSide, PopCasing zCasing)
     {
         super(session, clientSide);
@@ -65,6 +70,8 @@ public class PopUnparser extends AbstractUnparser
 
         zMsgDataReply = null;
         zByteStuffer = null;
+        zTempFactory = new TempFileFactory(MvvmContextFactory.context().pipelineFoundry()
+                                           .getPipeline(session.id()));
     }
 
     public UnparseResult unparse(Token token) throws UnparseException
@@ -144,7 +151,7 @@ public class PopUnparser extends AbstractUnparser
         File zOrgMsgFile = zMMessageT.getFile();
         File zNewMsgFile;
         try {
-            zNewMsgFile = File.createTempFile("bs-", null, zOrgMsgFile.getParentFile());
+            zNewMsgFile = zTempFactory.createFile("bs");
             //logger.debug("created byte stuffed message file: " + zNewMsgFile);
         } catch (IOException exn) {
             /* cannot recover if byte stuffed mesasge file cannot be created */

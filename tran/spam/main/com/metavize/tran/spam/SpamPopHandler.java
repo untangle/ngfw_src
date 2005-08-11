@@ -31,6 +31,7 @@ import com.metavize.tran.token.Token;
 import com.metavize.tran.token.TokenException;
 import com.metavize.tran.token.TokenResult;
 import com.metavize.tran.util.FileFactory;
+import com.metavize.tran.util.TempFileFactory;
 import org.apache.log4j.Logger;
 
 public class SpamPopHandler extends PopStateMachine
@@ -107,15 +108,7 @@ public class SpamPopHandler extends PopStateMachine
                 /* wrap spam message and rebuild message token */
                 MIMEMessage zWMMessage = zWMsgGenerator.wrap(zMMessage, zReport);
                 try {
-                    zMsgFile = zWMMessage.toFile(new FileFactory() {
-                        public File createFile(String name) throws IOException {
-                            return createFile();
-                        }
-
-                        public File createFile() throws IOException {
-                            return getPipeline().mktemp();
-                        }
-                    } );
+                    zMsgFile = zWMMessage.toFile(new TempFileFactory(getPipeline()));
 
                     zMMessageT = new MIMEMessageT(zMsgFile);
                     zMMessageT.setMIMEMessage(zWMMessage);

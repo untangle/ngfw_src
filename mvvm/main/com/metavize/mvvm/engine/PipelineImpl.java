@@ -115,7 +115,21 @@ class PipelineImpl implements Pipeline
 
     public File mktemp() throws IOException
     {
-        File f = File.createTempFile(sessionPrefix, null, BUNNICULA_TMP);
+        return mktemp(null);
+    }
+
+    public File mktemp(String prefix) throws IOException
+    {
+        String name;
+        if (prefix == null) {
+            name = sessionPrefix;
+        } else {
+            StringBuilder sb = new StringBuilder(prefix);
+            sb.append("-");
+            sb.append(sessionPrefix);
+            name = sb.toString();
+        }
+        File f = File.createTempFile(name, null, BUNNICULA_TMP);
         synchronized (files) {
             files.add(f);
         }

@@ -45,7 +45,7 @@ public class SmtpSessionHandler
 
   private final Logger m_logger = Logger.getLogger(SmtpSessionHandler.class);
   private final Pipeline m_pipeline;
-  private final MyFileFactory m_fileFactory = new MyFileFactory();
+  private final TempFileFactory m_fileFactory;
   private static final Logger m_eventLogger = MvvmContextFactory
     .context().eventLogger();
 
@@ -75,6 +75,7 @@ public class SmtpSessionHandler
     m_notifier = notifier;
     m_pipeline = MvvmContextFactory.context().
       pipelineFoundry().getPipeline(session.id());
+    m_fileFactory = new TempFileFactory(m_pipeline);
   }
 
   @Override
@@ -324,23 +325,4 @@ public class SmtpSessionHandler
     return new SpamReport(list, THRESHOLD);
 */
   }
-
-  //================= Inner Class =================
-
-  /**
-   * Acts as a FileFactory, to create temp files
-   * when a MIME part needs to be decoded to disk.
-   */
-  private class MyFileFactory implements FileFactory {
-    public File createFile(String name)
-      throws IOException {
-      return createFile();
-    }
-
-    public File createFile()
-      throws IOException {
-      return m_pipeline.mktemp();
-    }
-  }
-
 }

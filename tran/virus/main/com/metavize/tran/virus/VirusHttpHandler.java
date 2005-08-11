@@ -37,6 +37,7 @@ import com.metavize.tran.token.Header;
 import com.metavize.tran.token.Token;
 import com.metavize.tran.token.TokenException;
 import com.metavize.tran.token.TokenResult;
+import com.metavize.tran.util.TempFileFactory;
 import org.apache.log4j.Logger;
 
 class VirusHttpHandler extends HttpStateMachine
@@ -388,11 +389,9 @@ class VirusHttpHandler extends HttpStateMachine
     private void setupFile(String reason)
     {
         logger.info("VIRUS: Scanning because of: " + reason);
-        String localFileName = null;
-
         try {
-            localFileName= makeFileName(getSession());
-            File fileBuf = File.createTempFile(localFileName,null);
+            TempFileFactory tff = new TempFileFactory(getPipeline());
+            File fileBuf = tff.createFile("http-virus");
 
             this.fileName = fileBuf.getAbsolutePath();
 
@@ -404,7 +403,7 @@ class VirusHttpHandler extends HttpStateMachine
             this.file = fileBuf;
             this.scan = true;
         } catch (IOException e) {
-            logger.warn("Unable to create file: " + localFileName + "\n" + e);
+            logger.warn("Unable to create temporary file: " + e);
             this.scan = false;
         }
     }
@@ -465,14 +464,6 @@ class VirusHttpHandler extends HttpStateMachine
         outstanding = 0;
 
         return new Chunk(inbuf);
-    }
-
-    private String makeFileName (TCPSession sess)
-    {
-        return "filebuf-" + sess.clientAddr().getHostAddress().toString()
-            + ":" + Integer.toString(sess.clientPort()) + "-"
-            + sess.serverAddr().getHostAddress().toString()
-            + ":" + Integer.toString(sess.serverPort());
     }
 
     private boolean isPersistent(Header header)

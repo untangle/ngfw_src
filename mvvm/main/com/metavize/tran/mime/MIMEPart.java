@@ -1187,7 +1187,7 @@ public class MIMEPart {
 
 
     
-    TempFileFactory factory = new TempFileFactory(tempDir);
+    MyFileFactory factory = new MyFileFactory(tempDir);
     
     File file = null;    
     if(mp.isMultipart()) {  
@@ -1263,7 +1263,32 @@ public class MIMEPart {
 
 //------------- Debug/Test ---------------
     
+//================= Inner Class =================
+
+  /**
+   * Acts as a FileFactory, to create temp files
+   * when a MIME part needs to be decoded to disk.
+   */
+  private static class MyFileFactory implements FileFactory {
+      private File m_dir;
+      public MyFileFactory(File rootDir) {
+          m_dir = rootDir;
+      }
   
-  
+      public File createFile(String name) 
+          throws IOException {
+          if(name == null) {
+              name = "meta";
+          }
+          //Javasoft requires 3 characters in prefix !?!
+          while(name.length() < 3) {
+              name = name+"X";
+          }
+          return File.createTempFile(name, null, m_dir);
+      }
+      public File createFile() throws IOException {
+          return createFile(null);
+      }
+  }
 
 }

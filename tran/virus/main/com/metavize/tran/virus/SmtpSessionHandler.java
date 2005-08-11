@@ -42,7 +42,7 @@ public class SmtpSessionHandler
   private final Logger m_eventLogger = MvvmContextFactory
     .context().eventLogger();
   private final Pipeline m_pipeline;
-  private final MyFileFactory m_fileFactory = new MyFileFactory();
+  private final TempFileFactory m_fileFactory;
 
   private final long m_maxClientWait;
   private final long m_maxServerWait;
@@ -70,6 +70,7 @@ public class SmtpSessionHandler
     m_notifier = notifier;
     m_pipeline = MvvmContextFactory.context().
       pipelineFoundry().getPipeline(session.id());
+    m_fileFactory = new TempFileFactory(m_pipeline);
   }
 
   @Override
@@ -353,24 +354,6 @@ public class SmtpSessionHandler
       //No need to delete the file.  This will be handled by the MIMEPart itself
       //through its normal lifecycle
       return null;
-    }
-  }
-
-  //================= Inner Class =================
-
-  /**
-   * Acts as a FileFactory, to create temp files
-   * when a MIME part needs to be decoded to disk.
-   */
-  private class MyFileFactory implements FileFactory {
-    public File createFile(String name)
-      throws IOException {
-      return createFile();
-    }
-
-    public File createFile()
-      throws IOException {
-      return m_pipeline.mktemp();
     }
   }
 }
