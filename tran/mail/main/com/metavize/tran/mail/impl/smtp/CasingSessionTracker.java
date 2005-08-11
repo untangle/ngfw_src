@@ -47,6 +47,7 @@ class CasingSessionTracker {
 
   private SmtpTransaction m_currentTransaction;
   private List<ResponseAction> m_outstandingRequests;
+  private boolean m_closing = false;
 
   CasingSessionTracker() {
     m_outstandingRequests = new LinkedList<ResponseAction>();
@@ -60,6 +61,13 @@ class CasingSessionTracker {
    */
   SmtpTransaction getCurrentTransaction() {
     return m_currentTransaction;
+  }
+  /**
+   * Inform the tracker that we're closing, so it can supress
+   * any final message from the server.
+   */
+  void closing() {
+    m_closing = true;
   }
 
   void beginMsgTransmission() {
@@ -115,7 +123,9 @@ class CasingSessionTracker {
   
   void responseReceived(Response response) {
     if(m_outstandingRequests.size() == 0) {
-      m_logger.error("Misalignment of req/resp tracking.  No outstanding response");
+      if(!m_closing) {
+        m_logger.error("Misalignment of req/resp tracking.  No outstanding response");
+      }
     }
     else {
       m_outstandingRequests.remove(0).response(response.getCode());

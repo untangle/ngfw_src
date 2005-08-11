@@ -34,6 +34,7 @@ public class SmtpCasing extends AbstractCasing {
   private FileOutputStream m_fOut;
   private FileChannel m_channel;
   private int m_closeCount = 0;
+  private CasingSessionTracker m_tracker;
 
   // constructors -----------------------------------------------------------
 
@@ -44,14 +45,14 @@ public class SmtpCasing extends AbstractCasing {
       "Server: " +
       session.serverAddr() + "(" + Integer.toString((int) session.serverIntf()) + ")");
       
-    CasingSessionTracker tracker = new CasingSessionTracker();  
+    m_tracker = new CasingSessionTracker();
     if(clientSide) {
-      m_parser = new SmtpClientParser(session, this, tracker);
-      m_unparser = new SmtpClientUnparser(session, this, tracker);
+      m_parser = new SmtpClientParser(session, this, m_tracker);
+      m_unparser = new SmtpClientUnparser(session, this, m_tracker);
     }
     else {
-      m_parser = new SmtpServerParser(session, this, tracker);
-      m_unparser = new SmtpServerUnparser(session, this, tracker);    
+      m_parser = new SmtpServerParser(session, this, m_tracker);
+      m_unparser = new SmtpServerUnparser(session, this, m_tracker);    
     }
 
     m_trace = TRACE;//Someday, perhaps a hidden property
@@ -148,6 +149,7 @@ public class SmtpCasing extends AbstractCasing {
   }
 
   public void endSession(boolean calledFromParser) {
+    m_tracker.closing();
     if(m_trace) {
       if(++m_closeCount > 1) {
         closeTrace();
