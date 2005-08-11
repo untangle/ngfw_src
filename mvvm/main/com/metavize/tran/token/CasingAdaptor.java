@@ -385,8 +385,18 @@ public class CasingAdaptor extends AbstractEventHandler
             }
         } catch (Exception exn) {
             if (releaseParseExceptions) {
+                String sessionEndpoints = "Endpoints ["
+                    + " protocol: " + s.protocol()
+                    + " clientIntf: " + s.clientIntf()
+                    + " clientAddr: " + s.clientAddr()
+                    + " clientPort: " + s.clientPort()
+                    + " serverIntf: " + s.serverIntf()
+                    + " serverAddr: " + s.serverAddr()
+                    + " serverPort: " + s.serverPort() + "]";
+
                 // XXX make configurable
-                logger.warn("parse exception, releasing session", exn);
+                logger.warn("parse exception, releasing session. "
+                            + sessionEndpoints , exn);
                 s.release();
                 pr = new ParseResult(new Release(dup));
             } else {
