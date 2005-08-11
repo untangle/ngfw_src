@@ -194,6 +194,7 @@ public class RemoteJPanel extends javax.swing.JPanel implements Savable, Refresh
         externalRemoteJPanel.add(externalAdminDisabledRadioButton, gridBagConstraints);
 
         jSeparator2.setForeground(new java.awt.Color(200, 200, 200));
+        jSeparator2.setPreferredSize(new java.awt.Dimension(0, 1));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;

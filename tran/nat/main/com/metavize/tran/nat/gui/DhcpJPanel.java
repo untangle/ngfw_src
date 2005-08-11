@@ -228,11 +228,13 @@ public class DhcpJPanel extends javax.swing.JPanel implements Savable, Refreshab
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         restrictIPJPanel.add(jLabel5, gridBagConstraints);
 
+        startAddressIPaddrJTextField.setMaximumSize(new java.awt.Dimension(150, 19));
+        startAddressIPaddrJTextField.setMinimumSize(new java.awt.Dimension(150, 19));
+        startAddressIPaddrJTextField.setPreferredSize(new java.awt.Dimension(150, 19));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
         restrictIPJPanel.add(startAddressIPaddrJTextField, gridBagConstraints);
 
@@ -244,11 +246,13 @@ public class DhcpJPanel extends javax.swing.JPanel implements Savable, Refreshab
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         restrictIPJPanel.add(jLabel8, gridBagConstraints);
 
+        endAddressIPaddrJTextField.setMaximumSize(new java.awt.Dimension(150, 19));
+        endAddressIPaddrJTextField.setMinimumSize(new java.awt.Dimension(150, 19));
+        endAddressIPaddrJTextField.setPreferredSize(new java.awt.Dimension(150, 19));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
         restrictIPJPanel.add(endAddressIPaddrJTextField, gridBagConstraints);
 

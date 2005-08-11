@@ -215,11 +215,13 @@ public class DmzJPanel extends javax.swing.JPanel implements Savable, Refreshabl
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         restrictIPJPanel.add(jLabel5, gridBagConstraints);
 
+        targetAddressIPaddrJTextField.setMaximumSize(new java.awt.Dimension(150, 19));
+        targetAddressIPaddrJTextField.setMinimumSize(new java.awt.Dimension(150, 19));
+        targetAddressIPaddrJTextField.setPreferredSize(new java.awt.Dimension(150, 19));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
         restrictIPJPanel.add(targetAddressIPaddrJTextField, gridBagConstraints);
 

@@ -257,11 +257,13 @@ public class NatJPanel extends javax.swing.JPanel implements Savable, Refreshabl
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         restrictIPJPanel.add(jLabel5, gridBagConstraints);
 
+        internalAddressIPaddrJTextField.setMaximumSize(new java.awt.Dimension(150, 19));
+        internalAddressIPaddrJTextField.setMinimumSize(new java.awt.Dimension(150, 19));
+        internalAddressIPaddrJTextField.setPreferredSize(new java.awt.Dimension(150, 19));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
         restrictIPJPanel.add(internalAddressIPaddrJTextField, gridBagConstraints);
 
@@ -273,11 +275,13 @@ public class NatJPanel extends javax.swing.JPanel implements Savable, Refreshabl
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         restrictIPJPanel.add(jLabel8, gridBagConstraints);
 
+        internalSubnetIPaddrJTextField.setMaximumSize(new java.awt.Dimension(150, 19));
+        internalSubnetIPaddrJTextField.setMinimumSize(new java.awt.Dimension(150, 19));
+        internalSubnetIPaddrJTextField.setPreferredSize(new java.awt.Dimension(150, 19));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
         restrictIPJPanel.add(internalSubnetIPaddrJTextField, gridBagConstraints);
 

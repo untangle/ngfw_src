@@ -204,11 +204,13 @@ public class DnsJPanel extends javax.swing.JPanel implements Savable, Refreshabl
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         suffixJPanel.add(jLabel5, gridBagConstraints);
 
+        suffixJTextField.setMaximumSize(new java.awt.Dimension(250, 19));
+        suffixJTextField.setMinimumSize(new java.awt.Dimension(250, 19));
+        suffixJTextField.setPreferredSize(new java.awt.Dimension(250, 19));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
         suffixJPanel.add(suffixJTextField, gridBagConstraints);
 
