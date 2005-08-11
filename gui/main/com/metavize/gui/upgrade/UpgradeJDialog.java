@@ -657,6 +657,16 @@ public class UpgradeJDialog extends javax.swing.JDialog implements Savable, Refr
                     Util.setUpgradeCount(upgradable.length);
                 }
                 Util.checkedUpgrades();
+		final int upgradesTotal = upgradable.length;
+		int tempUpgradesVisible = 0;
+		for( MackageDesc mackageDesc : upgradable ){
+		    if( mackageDesc.getType() == MackageDesc.CASING_TYPE )
+			continue;
+		    else
+			tempUpgradesVisible++;
+		}
+		final int upgradesVisible = tempUpgradesVisible;
+		    
                 
                 // TELL THE USER THE RESULTS
                 SwingUtilities.invokeLater( new Runnable(){ public void run(){
@@ -666,7 +676,7 @@ public class UpgradeJDialog extends javax.swing.JDialog implements Savable, Refr
                         UpgradeJDialog.this.actionJProgressBar.setString("No upgrades found.");
                     }
                     else{
-                        UpgradeJDialog.this.actionJProgressBar.setString("Upgrades found.");
+                        UpgradeJDialog.this.actionJProgressBar.setString("Upgrades found.  " + "Visible: " + upgradesVisible + "  Total: " + upgradesTotal);
                     }
                 }});
 
@@ -814,41 +824,41 @@ class UpgradeTableModel extends MSortedTableModel {
 	ToolboxManager toolboxManager = (ToolboxManager) settings;
         MackageDesc[] mackageDesc = toolboxManager.upgradable();
         Vector dataVector = new Vector();
-
+	int index = 0;
         Vector rowVector;
         for(int i=0; i<mackageDesc.length; i++){
             if( mackageDesc[i].getType() == MackageDesc.CASING_TYPE )
                 continue;
-        try{
-            
-        rowVector = new Vector();
-        rowVector.add( new Integer(i+1) );
-
-        byte[] orgIcon = mackageDesc[i].getOrgIcon();
-        byte[] descIcon = mackageDesc[i].getDescIcon();
-        if( orgIcon != null)
-            rowVector.add( new ImageIcon(orgIcon) );
-        else
-            rowVector.add( new ImageIcon(getClass().getResource("/com/metavize/gui/transform/IconOrgUnknown42x42.png"))) ;
-
-        if( descIcon != null)
-            rowVector.add( new ImageIcon(descIcon) );
-        else
-            rowVector.add( new ImageIcon(getClass().getResource("/com/metavize/gui/transform/IconDescUnknown42x42.png"))) ;
-
-        rowVector.add( new String(mackageDesc[i].getDisplayName()) );
-        rowVector.add( new String(mackageDesc[i].getAvailableVersion()) );
-        if( mackageDesc[i].getType() == 0 )
-            rowVector.add( "System Component" );
-        else
-            rowVector.add( "Software Appliance" );
-        rowVector.add( new String(Integer.toString(mackageDesc[i].getSize()/1000) + " kB") );
-        rowVector.add( new String(mackageDesc[i].getLongDescription()) );
-        dataVector.add(rowVector);
-        }
-        catch(Exception e){
-        e.printStackTrace();
-        }
+	    try{
+		index++;
+		rowVector = new Vector();
+		rowVector.add( new Integer(index) );
+		
+		byte[] orgIcon = mackageDesc[i].getOrgIcon();
+		byte[] descIcon = mackageDesc[i].getDescIcon();
+		if( orgIcon != null)
+		    rowVector.add( new ImageIcon(orgIcon) );
+		else
+		    rowVector.add( new ImageIcon(getClass().getResource("/com/metavize/gui/transform/IconOrgUnknown42x42.png"))) ;
+		
+		if( descIcon != null)
+		    rowVector.add( new ImageIcon(descIcon) );
+		else
+		    rowVector.add( new ImageIcon(getClass().getResource("/com/metavize/gui/transform/IconDescUnknown42x42.png"))) ;
+		
+		rowVector.add( new String(mackageDesc[i].getDisplayName()) );
+		rowVector.add( new String(mackageDesc[i].getAvailableVersion()) );
+		if( mackageDesc[i].getType() == 0 )
+		    rowVector.add( "System Component" );
+		else
+		    rowVector.add( "Software Appliance" );
+		rowVector.add( new String(Integer.toString(mackageDesc[i].getSize()/1000) + " kB") );
+		rowVector.add( new String(mackageDesc[i].getLongDescription()) );
+		dataVector.add(rowVector);
+	    }
+	    catch(Exception e){
+		e.printStackTrace();
+	    }
         }
         return dataVector;
     }
