@@ -108,7 +108,7 @@ public class DnsJPanel extends javax.swing.JPanel implements Savable, Refreshabl
         nameserversJPanel.setBorder(new javax.swing.border.TitledBorder(null, "DNS Forwarding", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
         jTextArea1.setEditable(false);
         jTextArea1.setLineWrap(true);
-        jTextArea1.setText("DNS Forwarding allows EdgeGuard to act as a DNS server for the internal network, by forwarding DNS requests to your external DNS server.  Your external DNS server is specified in the \"Network Settings\" Config Panel.  (Note: If DHCP is enabled, this will also return hostnames served by DHCP.)");
+        jTextArea1.setText("DNS Forwarding allows EdgeGuard to act as a DNS server for the internal network.  (Note: This will also serve hostnames from the DHCP Address map and the DNS Forwarding Address Map, if they are enabled.)");
         jTextArea1.setWrapStyleWord(true);
         jTextArea1.setOpaque(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -183,7 +183,7 @@ public class DnsJPanel extends javax.swing.JPanel implements Savable, Refreshabl
         domainSuffixJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Domain Name Suffix", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
         jTextArea3.setEditable(false);
         jTextArea3.setLineWrap(true);
-        jTextArea3.setText("For example, \"acme.com\".  The Domain Name Suffix allows hosts on the internal network to be accessible by hostname only, such as \"host1\", because the suffix is automatically appended to form the complete request \"host1.acme.com\".  This functionality is enabled only when DNS Forwarding is enabled.");
+        jTextArea3.setText("For example, \"acme.com\".  The Domain Name Suffix allows hosts on the internal network to be accessible by fully qualified hostname, such as \"host1.acme.com\".  The suffix is appended to unqualified hostnames in the DNS Forwarding Address Map and the DHCP Address Map.  This functionality is enabled only when DNS Forwarding is enabled.");
         jTextArea3.setWrapStyleWord(true);
         jTextArea3.setOpaque(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
