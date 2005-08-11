@@ -121,7 +121,7 @@ public class MLogTableJPanel extends javax.swing.JPanel {
         depthJSlider.setPaintLabels(true);
         depthJSlider.setPaintTicks(true);
         depthJSlider.setSnapToTicks(true);
-        depthJSlider.setToolTipText("<html>\n<b>Log Depth Slider</b><br>\nThis slider allows you to specify how many events are visible at a time<br>\nwhen the \"Refresh Log\" or \"Start Streaming\" buttons are pressed.</html>");
+        depthJSlider.setToolTipText("<html>\n<b>Event Log Depth Slider</b><br>\nThis slider allows you to specify the maximum number of visible events<br>\nwhen the \"Refresh Log\" or \"Start Auto-refresh\" buttons are pressed.</html>");
         depthJSlider.setMaximumSize(new java.awt.Dimension(65, 32767));
         depthJSlider.setMinimumSize(new java.awt.Dimension(65, 36));
         depthJSlider.setPreferredSize(new java.awt.Dimension(65, 200));

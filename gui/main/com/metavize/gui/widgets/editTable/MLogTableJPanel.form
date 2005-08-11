@@ -68,7 +68,7 @@
                 <Property name="paintLabels" type="boolean" value="true"/>
                 <Property name="paintTicks" type="boolean" value="true"/>
                 <Property name="snapToTicks" type="boolean" value="true"/>
-                <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;&#xa;&lt;b&gt;Log Depth Slider&lt;/b&gt;&lt;br&gt;&#xa;This slider allows you to specify how many events are visible at a time&lt;br&gt;&#xa;when the &quot;Refresh Log&quot; or &quot;Start Streaming&quot; buttons are pressed.&lt;/html&gt;"/>
+                <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;&#xa;&lt;b&gt;Event Log Depth Slider&lt;/b&gt;&lt;br&gt;&#xa;This slider allows you to specify the maximum number of visible events&lt;br&gt;&#xa;when the &quot;Refresh Log&quot; or &quot;Start Auto-refresh&quot; buttons are pressed.&lt;/html&gt;"/>
                 <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                   <Dimension value="[65, 32767]"/>
                 </Property>
