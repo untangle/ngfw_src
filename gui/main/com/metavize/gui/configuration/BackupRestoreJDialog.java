@@ -261,7 +261,7 @@ public class BackupRestoreJDialog extends javax.swing.JDialog implements java.aw
         contentJPanel2.setLayout(new java.awt.GridBagLayout());
 
         jLabel3.setFont(new java.awt.Font("Dialog", 0, 12));
-        jLabel3.setText("<html>\nAfter backing up your system configuration, you can restore that configuration through the <b>Backup and Restore Utilities</b>.  To access the Backup and Restore Utilities, you must have a monitor and keyboard physically plugged into EdgeGuard when it is turned on, and then select \"Backup and Restore Utilities\" from the boot prompt. \n</html>");
+        jLabel3.setText("<html>\nAfter backing up your system configuration, you can restore that configuration through the <b>Restore Utilities</b> on EdgeGuard once it is done booting.\n<br>\n<br>To access the <b>Restore Utilities</b>, you must have a monitor and keyboard physically plugged into the EdgeGuard, and then right click on the desktop when it is done booting... select \"Advanced\" from the menu... select \"EdgeGuard Recovery\", and proceed from there. \n</html>");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
