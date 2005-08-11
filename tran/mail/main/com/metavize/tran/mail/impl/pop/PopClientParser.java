@@ -40,8 +40,15 @@ public class PopClientParser extends AbstractParser
 {
     private final static Logger logger = Logger.getLogger(PopClientParser.class);
 
+    private enum State {
+        COMMAND,
+        AUTH_LOGIN
+    };
+
     private final Pipeline pipeline;
     private final PopCasing zCasing;
+
+    private State state;
 
     // constructors -----------------------------------------------------------
 
@@ -52,6 +59,8 @@ public class PopClientParser extends AbstractParser
 
         pipeline = MvvmContextFactory.context().pipelineFoundry().getPipeline(session.id());
         this.zCasing = zCasing;
+
+        state = State.COMMAND;
     }
 
     // Parser methods ---------------------------------------------------------
@@ -59,49 +68,84 @@ public class PopClientParser extends AbstractParser
     public ParseResult parse(ByteBuffer buf) throws ParseException
     {
         //logger.debug("parse(" + AsciiCharBuffer.wrap(buf) + "), " + buf);
-        logger.debug("parse(" + buf + ")");
 
         List<Token> zTokens = new LinkedList<Token>();
 
         boolean bDone = false;
 
         while (false == bDone) {
-            int iCmdEnd = findCRLFEnd(buf);
-            if (1 < iCmdEnd) {
-                ByteBuffer dup = buf.duplicate();
+            switch (state) {
+            case COMMAND:
+                logger.debug("COMMAND state, " + buf);
 
-                try {
-                    PopCommand cmd;
+                int iCmdEnd = findCRLFEnd(buf);
+                if (1 < iCmdEnd) {
+                    ByteBuffer dup = buf.duplicate();
 
-                    if (null == zCasing.getUser()) {
-                        /* we only check for user once per session */
-                        cmd = PopCommand.parseUser(buf);
-                    } else {
-                        cmd = PopCommand.parse(buf);
+                    try {
+                        PopCommand cmd;
+
+                        if (null == zCasing.getUser()) {
+                            /* we only check for user once per session */
+                            cmd = PopCommand.parseUser(buf);
+                            if (true == cmd.isAuthLogin()) {
+                                logger.debug("entering AUTH LOGIN state");
+                                state = State.AUTH_LOGIN;
+                            } else if (true == cmd.isUser()) {
+                                zCasing.setUser(cmd.getUser());
+                            }
+                        } else {
+                            cmd = PopCommand.parse(buf);
+                        }
+
+                        zTokens.add(cmd);
+                    } catch (ParseException exn) {
+                        /* long command may break before CRLF sequence
+                         * so if parse fails,
+                         * we assume long command spans multiple buffers
+                         */
+                        zTokens.add(new PopCommandMore(dup));
+                        logger.debug("command (more): " + dup + ", " + exn);
+                        /* fall through */
                     }
 
-                    zTokens.add(cmd);
+                    buf = null;
+                    bDone = true;
+                } else {
+                    logger.debug("buf does not contain CRLF");
 
-                    //logger.debug("command: " + cmd + ", " + buf);
-                    logger.debug("command: " + buf);
-                } catch (ParseException exn) {
-                    /* long command may break before CRLF sequence
-                     * so if parse fails,
-                     * we assume long command spans multiple buffers
-                     */
-                    zTokens.add(new PopCommandMore(dup));
-                    logger.debug("command (more): " + dup + ", " + exn);
-                    /* fall through */
+                    /* wait for more data */
+                    bDone = true;
                 }
+
+                break;
+
+            case AUTH_LOGIN:
+                logger.debug("AUTH LOGIN state, " + buf);
+
+                /* we only check for user once per session */
+                PopCommandMore cmdMore = PopCommandMore.parseAuthUser(buf);
+                zCasing.setUser(cmdMore.getUser());
+
+                zTokens.add(cmdMore);
+
+                logger.debug("re-entering COMMAND state");
+                state = State.COMMAND;
 
                 buf = null;
                 bDone = true;
-            } else {
-                logger.debug("buf does not contain CRLF");
+                break;
 
-                /* wait for more data */
-                bDone = true;
+            default:
+                throw new IllegalStateException("unknown state: " + state);
             }
+        }
+
+        if (null != buf) {
+            buf.position(buf.limit());
+            buf.limit(buf.capacity());
+
+            //logger.debug("reset (compacted) buf to add more data: " + buf);
         }
 
         logger.debug("returning ParseResult(" + zTokens + ", " + buf + ")");

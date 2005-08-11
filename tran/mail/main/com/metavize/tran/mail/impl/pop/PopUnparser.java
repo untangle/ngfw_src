@@ -94,7 +94,8 @@ public class PopUnparser extends AbstractUnparser
         if (token instanceof PopCommand) {
             PopCommand zCommand = (PopCommand) token;
 
-            if (null == zCasing.getUser()) {
+            if (null == zCasing.getUser() &&
+                true == zCommand.isUser()) {
                 /* workaround to supply user to server parser */
                 zCasing.setUser(zCommand.getUser());
             }
@@ -102,7 +103,15 @@ public class PopUnparser extends AbstractUnparser
             zWriteBufs.add(zCommand.getBytes());
         } else if (token instanceof PopCommandMore ||
                    token instanceof PopReplyMore) {
-            zWriteBufs.add(token.getBytes());
+            PopCommandMore zCommandMore = (PopCommandMore) token;
+
+            if (null == zCasing.getUser() &&
+                true == zCommandMore.isUser()) {
+                /* workaround to supply user to server parser */
+                zCasing.setUser(zCommandMore.getUser());
+            }
+
+            zWriteBufs.add(zCommandMore.getBytes());
         } else if (token instanceof PopReply) {
             PopReply zReply = (PopReply) token;
 
