@@ -1,120 +1,191 @@
-                               METAVIZE INC.
-                           EVALUATION AGREEMENT
+			Metavize Inc.
+		      LICENES AGREEMENT
 
+Carefully read the terms and conditions of this License Agreement
+(License) before you click on the AGREE button at the end of this
+document. The Metavize Inc. (Metavize) hardware (the Hardware) you
+have purchased contains previously installed software (the Installed
+Code). Metavize is only willing to license the Installed Code, and the
+user manuals and online instructions concerning the Hardware and the
+Installed Code (the Documentation), among other things, to the
+individual or entity (the Licensee) purchasing the Hardware, under the
+terms and conditions of this License. By clicking on the AGREE button,
+Licensee acknowledges its acceptance of these terms and conditions and
+forms a binding legal contract with Metavize. If Licensee does not
+accept these terms and conditions, click on the DO NOT AGREE button
+and return the Hardware with the Installed Code and Documentation to
+Metavize.
 
-1. Demonstration Software. The Demonstration Software is: Metavize EdgeGuard.
+1.Grant of License to Installed Code. Upon payment of the applicable
+  fees for a Metavize maintenance and support service (the
+  Subscription Service), Metavize grants to Licensee a
+  nontransferable, nonexclusive license to use the Installed Code
+  solely in connection with Licensees use of the Hardware on Licensees
+  computer network.
 
-2. Grant of License. The Company grants to Evaluator, during the Evaluation
-   Period, the nontransferable, nonexclusive license to use one (1) copy of
-   the Demonstration Software on one (1) computer for the sole purpose of
-   internal evaluation and testing for suitability for purchase of a license
-   by Evaluator only. Title to the Demonstration Software shall remain with
-   the Company at all times. Evaluator assigns to the Company all rights
-   associated with any input or suggestions provided by Evaluator to the
-   Company concerning the Demonstration Software.
+2.Maintenance and Support. Upon payment of the applicable fees for the
+  Subscription Service, Licensee shall have the right to receive the
+  maintenance and support services provided by Metavize generally to
+  its other subscribers purchasing the same subscription service as
+  Licensee. If any software is provided to Licensee as part of the
+  Subscription Service, such software shall be provided to Licensee
+  either (a) under the terms of this License, as if such software were
+  Installed Code, or (b) under the terms of a separate license if a
+  separate license is provided. Metavize shall have the right to
+  change the maintenance and support services provided to Licensee in
+  the Subscription Service from time to time, or cancel the
+  Subscription Service at any time, without notice.
 
-3. Evaluation Period. The "Evaluation Period" shall begin upon installation
-   of the Demonstration Software to Evaluator and shall continue until
-   (a) terminated by either party upon written notice; (b) thirty (30) days
-   after installation of the Demonstration Software; or (c) activation of
-   disabling code embedded in the Demonstration Software.
+  Provided that Licensee is current on payment of its Subscription
+  Service fees and not otherwise in default of this License, Metavize or
+  its distributors will:
 
-4. Exclusions.  Evaluator shall not:
-a. copy any part of the Demonstration Software except to make one copy for
-   back-up purposes;
-b. reverse compile or reverse assemble any portion of the
-   Demonstration Software or circumvent any disabling code;
-c. distribute, disclose, market, rent, lease, or transfer the
-   Demonstration Software;
-d. export the Demonstration Software;
-e. disclose benchmarks or other comparisons of the Demonstration Software
-   without the Company's prior written consent;
-f. disclose any Confidential Information provided by the Company;
-g. modify the Demonstration Software;
-h. allow others to make or obtain copies of the Demonstration Software; or 
-i. use the Demonstration Software for production purposes.
+  a)provide to Licensee technical support by telephone or electronic
+  mail during Metavize normal business hours concerning the use of the
+  Hardware and the Installed Code as set forth in the Documentation;
 
-5. "Confidential Information" means the Demonstration Software, documentation
-   related to the Demonstration Software, the Company's confidential
-   marketing plans, the contents, design and functional characteristics of
-   the Demonstration Software, the results of evaluating the Demonstration
-   Software, and any other information disclosed by the Company which is
-   marked "Confidential," "Proprietary," or in some other manner to indicate
-   its confidential nature. "Confidential Information" does not include
-   information that (a) is in the public domain in its compiled form at the
-   time it is disclosed or enters in the public domain in its compiled form
-   other than through an infringement of the rights of the Company; (b) is
-   known to Evaluator, without restriction, in its compiled form, at the time
-   of disclosure; or (c) is independently developed by Evaluator without any
-   use of the Confidential Information.
+  b)exercise commercially reasonable efforts to correct any
+  programming defect in any Installed Code designed by Metavize; and
 
-6. Evaluation Procedures.  At the Company's request, Evaluator shall:
-a. allow representatives of the Company to visit the evaluation site upon
-   prior notice; 
-b. establish a formal communications liaison between the Company and specific
-   Evaluator personnel; 
-c. maintain and deliver to the Company activity and performance logs; 
-d. timely complete questionnaires prepared by the Company, and respond
-   to inquiries from the Company, relating to the Demonstration Software; and
-e. do such other reasonable things relating to the Demonstration Software as
-   the Company may request.
+  c)deliver automatically to Licensees Hardware unit maintenance
+  releases, updates, enhancements, and/or modifications to the
+  Installed Code.
 
-7. Support. The Company may during the Evaluation Period make available
-   updates, enhancements, and/or modifications to the Demonstration Software
-   and may provide such updates to Evaluator. Use by Evaluator of such
-   updates, enhancements, and/or modifications to the Demonstration Software
-   shall be subject to all terms and conditions of this Agreement and shall
-   expire at the end of the Evaluation Period.
+  Licensee shall do nothing to prevent Metavize from automatically
+  delivering and installing on the Hardware additional software
+  ordered by Licensee, or delivering and installing maintenance
+  releases, updates, enhancements, additional software and/or
+  modifications to the Installed Code. Such maintenance releases,
+  updates, enhancements, additional software, and/or modifications to
+  the Installed Code shall constitute Installed Code for purposes of
+  this License and shall be subject to all terms and conditions of
+  this License.
 
-8. Use of Demonstration Software After Evaluation Period. At the end of the
-   Evaluation Period, Evaluator will either purchase a license to continue
-   using the Demonstration Software at the Company's then-current rates, if
-   applicable, or return all copies of the Demonstration Software and any
-   related materials to the Company.
+3.Metavize Right to Disable. If Licensee fails to pay any fee for the
+  Subscription Service when due, Metavize shall have the right,
+  without prior notice to Licensee, to disable any software installed
+  on Licensees Hardware unit including, without limitation, the
+  Installed Software. Metavize shall not be liable for any costs or
+  damages incurred by Licensee or any third party as a result of any
+  software being disabled by Metavize.
 
-9. Restricted Rights of Government Users: If an end user of the Demonstration
-   Software is an agency, department, or other entity of the United States
-   Government (the "Government"), Government use, duplication, reproduction,
-   release, modification, disclosure, or transfer of the Demonstration
-   Software, or any related documentation of any kind, including without
-   limitation technical data, is restricted in accordance with Federal
-   Acquisition Regulation ("FAR") 12.212 for civilian agencies and Defense
-   Federal Acquisition Regulation Supplement ("DFARS") 227.7202 for military
-   agencies. The Demonstration Software is commercial computer software and
-   may be accompanied by commercial computer software documentation. The use
-   of the Demonstration Software and related documentation by the Government
-   is further restricted in accordance with the terms of this Agreement, or
-   any modification to this Agreement.
+4.Title. Title to the Installed Code shall remain with Metavize or its
+  suppliers at all times. The rights granted under this License are
+  personal to Licensee, and do not extend to any subsidiary, parent,
+  or affiliate of Licensee. Title to the Hardware remains with
+  Licensee.
 
-10. SPECIFIC DISCLAIMER OF WARRANTY AND LIMITATION OF LIABILITY. THE
-    EVALUATOR UNDERSTANDS AND AGREES THAT THE DEMONSTRATION SOFTWARE IS
-    PROVIDED FOR EVALUATION PURPOSES ONLY, AND EVALUATOR WILL NOT USE THE
-    DEMONSTRATION SOFTWARE OUTSIDE OF AN EVALUATION ENVIRONMENT. THE COMPANY
-    DOES NOT WARRANT THAT THE DEMONSTRATION SOFTWARE IS ERROR-FREE OR THAT IT
-    WILL INTERFACE WITH ANY OF EVALUATOR'S COMPUTER SYSTEMS OR NETWORKS
-    WITHOUT ANY PROBLEMS. EVALUATOR AGREES THAT EVALUATOR WILL MAKE NO CLAIM
-    AGAINST THE COMPANY BASED ON USE OF THE DEMONSTRATION SOFTWARE. THE
-    DEMONSTRATION SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND,
-    EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NO LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND
-    NONINFRINGEMENT. THE COMPANY WILL NOT BE LIABLE TO EVALUATOR FOR ANY
-    DAMAGES, INCLUDING BUT NOT LIMITED TO ANY LOST PROFITS, LOST SAVINGS, OR
-    OTHER INCIDENTAL OR CONSEQUENTIAL DAMAGES ARISING IN TORT, CONTRACT, OR
-    OTHERWISE, OR FOR ANY CLAIM BY ANY OTHER PARTY, ARISING OUT OF THE USE OF
-    OR INABILITY TO USE THE DEMONSTRATION SOFTWARE EVEN IF THE COMPANY HAS
-    BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+5.Third Party Code. Portions of the Installed Code are licensed by
+  third parties under various licenses including, without limitation,
+  the General Public License, the Lesser General Public License, the
+  Apache License, the Berkeley Software Distribution License, and the
+  Sun Public License (collectively, the Open Source). Copies of such
+  licenses are available in the ___________ file of the Installed
+  Software, the applicable source code files for the portion of
+  Installed Code to which they pertain, or from Metavize at
+  www.metavize.com/____________. Copies of the source code for files
+  licensed under the General Public License, the Lesser General Public
+  License, the Apache License, and the Sun Public License, including
+  Metavize modifications to such source code, are available from
+  Metavize at www.metavize.com/____________. All Open Source is
+  licensed under the terms of applicable third party licenses.
 
-11. Governing Law: This Agreement shall be governed by the laws of the State
-    of California, U.S.A, without regard to its conflicts of laws rules. If
-    either party employs attorneys to enforce any rights arising out of or
-    relating to this Agreement, the prevailing party shall be entitled to
-    recover reasonable attorney's fees. The parties consent to the exclusive
-    jurisdiction of the California courts.
+6.Exclusions.  Licensee shall not:
 
-12. Entire Agreement: This Agreement constitutes the entire agreement between
-    the parties concerning Evaluator's use of the Demonstration Software.
-    This Agreement supersedes any prior verbal understanding between the
-    parties and any Evaluator purchase order or other ordering document,
-    regardless of whether such document is received by the Company before or
-    after execution of this Agreement. This Agreement may be amended only in
-    a writing signed by an authorized officer of the Company.
+  a)copy any part of the Installed Code except to make one copy for
+  back-up purposes;
+
+  b)reverse engineer, reverse compile, or disassemble any portion of
+  the Installed Code or circumvent any License or disabling code;
+
+  c)distribute, rent, lease, assign, or otherwise transfer any
+  interest in the Installed Code separate from the Hardware;
+
+  d)export the Installed Code;
+
+  e)disclose benchmarks or other comparisons of the Installed Code
+  without Metavizes prior written consent;
+
+  f)modify the Installed Code; or
+
+  g)allow others to reverse engineer, reverse compile, disassemble, or
+  make or obtain copies of the Installed Code.
+
+  In addition, Licensee shall not transfer or assign any interest in
+  the Installed Code except in connection with an assignment or other
+  transfer of the Hardware containing the Installed Code, and then
+  only upon the agreement by the assignee or transferee to the terms
+  of this License.
+
+7.Specific Disclaimers of Warranty and Limitation of Liability.
+  Licensee understands that Metavize provides no assurance that
+  Licensees network will operate with the Hardware. In addition, any
+  change in the operating system or other software or configuration of
+  Licensees network may affect the performance and operation of the
+  Hardware. Accordingly, Metavize shall have no liability to Licensee
+  for any impairment or nonperformance of any computer network or any
+  portion thereof. Metavize does not warrant that the Installed Code
+  is error-free or that it will operate with Licensees computer
+  network without any impairment of the Installed Code or Licensees
+  computer network. The Hardware and the Installed Code is provided as
+  is without warranty of any kind, either expressed or implied,
+  including, without limitation, the implied warranties of
+  merchantability, fitness for a particular purpose, title, and
+  noninfringement. Metavize also disclaims any express or implied
+  warranty concerning any maintenance or support services provided to
+  Licensee including, without limitation, the Subscription Service.
+  Neither Metavise nor any contributor of Open Source shall be liable
+  to Licensee or any third party for any defects in the Installed
+  Code. Metavize will not be liable to Licensee for any lost profits,
+  lost savings, loss of use, or other special, incidental, or
+  consequential damages arising in tort, contract, or otherwise, or
+  for any claim by any other party, arising out of the use of or
+  inability to use the Installed Code or the Hardware even if Metavize
+  has been advised of the possibility of such damages. Metavizes
+  liabilty to Licensee in any event shall not exceed the amount of
+  fees paid by Licensee to Metavize. This disclaimer constitutes an
+  essential part of this Agreement, and no use of the Hardware,
+  Installed Code, or Subscription Service is authorized hereunder
+  except under this Disclaimer.
+
+8.High Risk Activities. 
+  None of the Hardware, Installed Code, or Subscription Service is
+  fault-tolerant and is not licensed for use in hazardous environments
+  requiring fail-safe performance, such as in the operation of nuclear
+  facilities, aircraft navigation or communication systems, air
+  traffic control, direct life support machines, or weapons systems,
+  in which the failure of the Hardware or Installed Code could lead
+  directly to death, personal injury, or severe physical or
+  environmental damage (High Risk Activities). Accordingly, Licensor
+  and its suppliers specifically disclaim any express or implied
+  warranty of fitness for High Risk Activities. Licensee agrees that
+  Metavize and its suppliers will not be liable for any claims or
+  damages arising from the use of the Hardware or Installed Code in
+  such applications.
+
+9.Termination: This License automatically terminates upon any breach
+  by Licensee of any of its terms or conditions.
+
+10.Governing Law: This License shall be governed by the laws of the
+   State of California, U.S.A, without regard to its conflicts of laws
+   rules or the United Nations Convention on the International Sale of
+   Goods. If either party employs attorneys to enforce any rights
+   arising out of or relating to this License, the prevailing party
+   shall be entitled to recover reasonable attorneys fees. The parties
+   consent to the exclusive jurisdiction of the state and federal
+   courts located in San Mateo County, California, USA.
+
+11.Entire Agreement. This License constitutes the entire agreement
+   between the parties concerning Licensees use of the Installed Code.
+   This License supersedes any prior verbal understanding between the
+   parties and any Licensee purchase order or other ordering document,
+   regardless of whether such document is received by Metavize before
+   or after Licensee agrees to this License. This License may be
+   amended only in a writing signed by an authorized officer of
+   Metavize specifically evidencing an intent to amend this License.
+   Metavize may use Licensees name in any customer reference list or
+   in any press release issued by Metavize regarding the purchase of
+   the Hardware and the Subscription Service and/or provide to third
+   parties Licensees name and the names of the Hardware and
+   Subscription Service purchased by Licensee.
+   
