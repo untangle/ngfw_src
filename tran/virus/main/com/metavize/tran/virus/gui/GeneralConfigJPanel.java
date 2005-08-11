@@ -81,11 +81,15 @@ class GeneralTableModel extends MSortedTableModel{
 	if( !validateOnly ){
 	    VirusSettings virusSettings = (VirusSettings) settings;
 	    virusSettings.setFtpDisableResume( ftpDisableResume );
-	    virusSettings.setFtpDisableResumeDetails( ftpDisableResumeDetails );
+      //8/11/05 - wrs.  Commented-out as they are never "really"
+      //                persisted (they are really "help") and
+      //                the help text overflows the back-end DB
+      //                constraint
+//	    virusSettings.setFtpDisableResumeDetails( ftpDisableResumeDetails );
 	    virusSettings.setHttpDisableResume( httpDisableResume );
-	    virusSettings.setHttpDisableResumeDetails( httpDisableResumeDetails );
+//	    virusSettings.setHttpDisableResumeDetails( httpDisableResumeDetails );
 	    virusSettings.setTricklePercent( tricklePercent );
-	    virusSettings.setTricklePercentDetails( tricklePercentDetails );
+//	    virusSettings.setTricklePercentDetails( tricklePercentDetails );
 	}
 
     }
