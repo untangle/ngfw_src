@@ -50,7 +50,7 @@ class VirusHttpHandler extends HttpStateMachine
         = "<HTML><HEAD>"
         + "<TITLE>403 Forbidden</TITLE>"
         + "</HEAD><BODY>"
-        + "<center><b>Metavize %s Transform</b></center>"
+        + "<center><b>%s AntiVirus Scanner</b></center>"
         + "<p>This site blocked because it contained a virus</p>"
         + "<p>Host: %s</p>"
         + "<p>URI: %s</p>"
