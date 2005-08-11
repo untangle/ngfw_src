@@ -46,6 +46,7 @@ class FTPTableModel extends MSortedTableModel{
     private static final int C3_MW = 55;  /* block */
     private static final int C4_MW = Util.chooseMax(T_TW - (C0_MW + C2_MW + C3_MW), 120); /* description */
 
+    protected boolean getSortable(){ return false; }
     
     public TableColumnModel getTableColumnModel(){
         

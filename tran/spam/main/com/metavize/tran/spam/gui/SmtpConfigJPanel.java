@@ -50,6 +50,8 @@ class SmtpTableModel extends MSortedTableModel{
     private static final int C6_MW = 190; /* notification if SPAM detected */
     private static final int C7_MW = Util.chooseMax(T_TW - (C0_MW + C2_MW + C3_MW + C4_MW + C5_MW + C6_MW), 120); /* description */
 
+    protected boolean getSortable(){ return false; }
+
     public TableColumnModel getTableColumnModel(){
 
         DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
