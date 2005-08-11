@@ -68,7 +68,8 @@ public class ShuttingDownSessionHandler
 
   @Override
   public boolean handleServerFIN(TransactionHandler currentTX) {
-    return true;
+    m_logger.debug("Supress Server FIN");
+    return false;
   }
 
   @Override

@@ -670,6 +670,7 @@ public abstract class BufferingSessionHandler
               //Put a Response handler here, in case the goofy server
               //sends an ACK to the FIN (which Exim seems to do!?!)
               actions.sendFINToServer(new NoopResponseCompletion());
+              m_txLog.add("Replace SessionHandler with shutdown dummy");
               getSession().setSessionHandler(
                 new ShuttingDownSessionHandler(1000*60));//TODO bscott a real timeout value
             }
