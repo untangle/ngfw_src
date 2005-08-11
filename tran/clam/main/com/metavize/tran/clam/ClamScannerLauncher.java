@@ -237,7 +237,7 @@ public class ClamScannerLauncher implements Runnable
                 logger.error("clamdscan exit code error: " + i + 
                              " \nCommand: " + command + 
                              " \nfirstLine output: " + firstLine + 
-                             " \nfirstLine error: " + errorOut);
+                             " \error      output: " + errorOut);
                 this.result = VirusScannerResult.ERROR;
                 synchronized (this) {this.notifyAll();}
                 return;
