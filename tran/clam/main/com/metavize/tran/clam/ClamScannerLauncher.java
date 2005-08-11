@@ -197,8 +197,8 @@ public class ClamScannerLauncher implements Runnable
                 } else {
                     for (i=0 ; i<invalidVirusNames.length ; i++) {
                         if (virusName.equalsIgnoreCase(invalidVirusNames[i])) {
-                            logger.warn("clamdscan: " + i);
-                            this.result = VirusScannerResult.ERROR;
+                            logger.warn("clamdscan: " + invalidVirusNames[i]);
+                            this.result = VirusScannerResult.CLEAN;
                             synchronized (this) {this.notifyAll();}
                             return;
                         }
