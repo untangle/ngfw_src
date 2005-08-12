@@ -14,14 +14,14 @@ public class MsgOption extends IDSOption {
 	public MsgOption(IDSRuleSignature signature, String params) {
 		super(signature, params);
 		this.signature = signature;
-		int first = params.indexOf("\"");
-		int last = params.lastIndexOf("\"");	
-		if(first >= 0 && last > first) {
-			message = params.substring(first+1,last);
-		}
-		else
-			message = params;
-		super.getSignature().setMessage(message);	
+		//int first = params.indexOf("\"");
+		//int last = params.lastIndexOf("\"");	
+		//if(first >= 0 && last > first) {
+		//	message = params.substring(first+1,last);
+		//}
+		//else
+		//	message = params;
+		super.getSignature().setMessage(params);	
 	}
 
 	public boolean runnable() {

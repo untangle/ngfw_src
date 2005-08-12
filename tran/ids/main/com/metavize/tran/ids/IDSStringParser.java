@@ -42,7 +42,7 @@ public class IDSStringParser {
 				returnSignature.addOption(opt, options[i].substring(delim+1).trim());
 			}
 		}
-			
+		
 		return returnSignature;
 	}	
 	public static IDSRuleHeader parseHeader(String header) throws ParseException {

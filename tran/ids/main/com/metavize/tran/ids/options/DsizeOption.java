@@ -27,19 +27,19 @@ public class DsizeOption extends IDSOption {
 		String range[] = params.split("<>");
 		try {
 			if(range.length == 2) {
-				min = Integer.parseInt(range[0]);
-				max = Integer.parseInt(range[1]);
+				min = Integer.parseInt(range[0].trim());
+				max = Integer.parseInt(range[1].trim());
 			}
 		 	else if(ch == '<') {
 				min = 0;
-				max = Integer.parseInt(params.substring(1));
+				max = Integer.parseInt(params.substring(1).trim());
 		 	}
 			else if(ch == '>') {
-				min = Integer.parseInt(params.substring(1));
+				min = Integer.parseInt(params.substring(1).trim());
 				max = Integer.MAX_VALUE;
 			}
 			else 
-				min = max = Integer.parseInt(params);
+				min = max = Integer.parseInt(params.trim());
 		}
 		catch(NumberFormatException e) { 
 			log.error("Invalid Dsize param: " + params);

@@ -15,12 +15,10 @@ import com.metavize.tran.ids.IDSSessionInfo;
  * @Author Nick Childers
  */
 
-//TODO: add negation flag - check multiple content options in one signature
-
 public class ContentOption extends IDSOption {
 
-	private int start;
-	private int end;
+	private int start = 0;
+	private int end = 0;
 
 	private Pattern contentPattern;
 	
@@ -31,7 +29,7 @@ public class ContentOption extends IDSOption {
 	
 	public ContentOption(IDSRuleSignature signature, String params) {
 		super(signature, params);
-		params = params.replaceAll("\"","");
+		//params = params.replaceAll("\"","");
 		int index = params.indexOf('|');
 		if(index < 0) {
 			contentPattern = Pattern.compile(params, Pattern.LITERAL);
@@ -50,7 +48,14 @@ public class ContentOption extends IDSOption {
 		contentPattern = Pattern.compile(contentPattern.pattern(), contentPattern.flags() | Pattern.CASE_INSENSITIVE);
 	}
 
+	public void setOffset(int val) {
+		start = val;
+	}
 
+	public void setDepth(int val) {
+		end = start+val;
+	}
+		
 	public boolean runnable() {
 		return true;
 	}
@@ -58,9 +63,11 @@ public class ContentOption extends IDSOption {
 	public boolean run() {
 		ByteBuffer eventData = getSignature().getSessionInfo().getEvent().data();
 		String data = new String(eventData.array());
-	//	System.out.println("Negation Flag: " + negationFlag());
-		return negationFlag() ^ contentPattern.matcher(data).find();
-	//	return contentPattern.matcher(data).find();
+		if(start > data.length() || start < 0)
+			return false;
+		if(end <= 0 || end > data.length())
+			end = data.length();
+		return negationFlag() ^ contentPattern.matcher(data.substring(start)).find();
 	}
 
 	/**
@@ -69,9 +76,6 @@ public class ContentOption extends IDSOption {
 	 * a sub function to put those bytes in the objects binaryBuffer. It will parse out the
 	 * string sections using a second sub function. That second sub function will also put all 
 	 * the bytes of the string onto the byte buffer.
-	 *
-	 * Note: this means that the nocase option cannot work - no way (that I know of) to use case
-	 * insensitivity when the string is converted into bytes 
 	 */
 	
 	private void buildBytePattern(String params, int index) {
@@ -81,7 +85,7 @@ public class ContentOption extends IDSOption {
 			bytes = bytes.replaceAll(" ", "");
 			parseBinaryPattern(bytes);
 			String substring = params.substring(index+1);
-			index = substring.indexOf('|',1) ;
+			index = substring.indexOf('|') ;
 			
 			if(substring.length() > 0)
 				buildBytePattern(substring, index);

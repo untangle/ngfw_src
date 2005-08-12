@@ -6,6 +6,7 @@ import org.apache.log4j.Level;
 
 import com.metavize.mvvm.tapi.event.*;
 import com.metavize.tran.ids.IDSRuleSignature;
+import com.metavize.mvvm.tran.ParseException;
 
 public abstract class IDSOption {
 	private IDSRuleSignature signature;
@@ -37,8 +38,11 @@ public abstract class IDSOption {
 		boolean flag = false;
 		if(params.charAt(0) == '!')  {
 			flag = true;
-			params = params.replaceFirst("!","");
+			params = params.replaceFirst("!","").trim();
 		}
+
+		if(params.charAt(0) == '\"' && params.charAt(params.length()-1) == '\"') 
+			params = params.substring(1,params.length()-1);
 
 		IDSOption option = null;
 		Class optionDefinition;
@@ -54,6 +58,12 @@ public abstract class IDSOption {
 			optionDefinition = Class.forName("com.metavize.tran.ids.options."+optionName+"Option");
 			optionConstructor = optionDefinition.getConstructor(argsClass);
 			option = (IDSOption) createObject(optionConstructor, optionArgs);
+			if(option == null) {
+				System.out.println("NULLNULLNULLNULLNULLNULL");
+				System.out.println(optionName);
+				System.out.println(params+"\n");
+				return null;
+			}
 			option.negationFlag = flag;
 		} catch (ClassNotFoundException e) {
 			log.debug("Could not load option: "+e.getMessage());
@@ -67,15 +77,15 @@ public abstract class IDSOption {
 		Object object = null;
 		try {
 			object = constructor.newInstance(arguments);
-			return object;
 		} catch (InstantiationException e) {
-			log.debug("Could not create object: "+e.getMessage());
+			log.warn("Could not create object(InstantiationException): "+e.getMessage());
 		} catch (IllegalAccessException e) {
-			log.debug("Could not create object: "+e.getMessage());
+			log.warn("Could not create object(IllegalAccessException): "+e.getMessage());
 		} catch (IllegalArgumentException e) {
-			log.debug("Could not create object: "+e.getMessage());
+			log.warn("Could not create object(IllegalArgumentException): "+e.getMessage());
 		} catch (InvocationTargetException e) {
-			log.debug("Could not create object: "+e.getMessage());
+			log.warn("Could not create object(InvocationTargetException): "+e.getMessage());
+			e.printStackTrace();
 		}
 		return object;
 	}

@@ -32,17 +32,19 @@ public class IDSRules {
 
 	public void addRule(String rule) throws ParseException {
 		
-		/*Have to seperate Header from signature*/
-		if(rule.charAt(0) == '#')
+		if(rule.length() <= 0 || rule.charAt(0) == '#')
 			return;
 		rule = substituteVariables(rule);
 		String ruleParts[] 			= IDSStringParser.parseRuleSplit(rule);
 		IDSRuleHeader header		= IDSStringParser.parseHeader(ruleParts[0]);
 		IDSRuleSignature signature	= IDSStringParser.parseSignature(ruleParts[1], header.getAction());
-		
+	
+		signature.setToString(ruleParts[1]);
 		//Might want to change this.
-		header.setSignature(signature);
-		rules.add(header);
+		if(!signature.remove()) {
+			header.setSignature(signature);
+			rules.add(header);
+		}
 	}
 
 	public List<IDSRuleSignature> matchesHeader(Protocol protocol, InetAddress clientAddr, int clientPort, InetAddress serverAddr, int serverPort) {
@@ -69,7 +71,9 @@ public class IDSRules {
 	private String substituteVariables(String string) {
 		string = string.replaceAll("\\$EXTERNAL_NET","!10.0.0.1/24");
 		string = string.replaceAll("\\$HOME_NET", "10.0.0.1/24");
-		string = string.replaceAll("\\$HTTP_PORTS", "any");
+		string = string.replaceAll("\\$HTTP_PORTS", ":80");
+		string = string.replaceAll("\\$HTTP_SERVERS", "10.0.0.1/24");
+		string = string.replaceAll("\\$SMTP_SERVERS", "any");
 		string = string.replaceAll("\\$SSH_PORTS", "any");
 		string = string.replaceAll("\\$.*\b", "any");
 		

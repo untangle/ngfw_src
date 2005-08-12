@@ -46,7 +46,13 @@ public class IDSSessionInfo {
 		}
 	}
 	
+	/**Debug methods*/
 	public boolean testSignature(int num) {
 		return signatures.get(num).execute(this);
 	}
+
+	public IDSRuleSignature getSignature(int num) {
+		return signatures.get(num);
+	}
+	// */
 }

@@ -16,12 +16,14 @@ public class IDSRuleSignature {
 	private List<IDSOption> options = new Vector<IDSOption>();
 	private IDSSessionInfo info;
 	
+	private String toString;
 	private String message = "No message set";
 	private int action;
+	private boolean removeFlag = false;
 	
 	private static final Logger log = Logger.getLogger(IDSRuleSignature.class);
 	static {
-		log.setLevel(Level.INFO);
+		log.setLevel(Level.WARN);
 	}
 	public IDSRuleSignature(int action) {
 		this.action = action;
@@ -31,6 +33,13 @@ public class IDSRuleSignature {
 		return info;
 	}
 
+	public void remove(boolean remove) {
+		removeFlag = remove;
+	}
+
+	public boolean remove() {
+		return removeFlag;
+	}
 	public void addOption(String optionName, String params) {
 		IDSOption option = IDSOption.buildOption(this,optionName,params);
 		if(option != null && option.runnable())
@@ -80,10 +89,18 @@ public class IDSRuleSignature {
 	private void doAction() {
 		switch(action) {
 			case IDSRules.ALERT:
-				//System.out.println(message);
+				System.out.println(message);
 				break;
 			case IDSRules.LOG:
 				break;
 		}
+	}
+
+	public void setToString(String string) {
+		toString = string;
+	}
+	
+	public String toString() {
+		return toString;
 	}
 }

@@ -43,17 +43,32 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 		return pipeSpecs;
 	}
 
-	protected void postInit(String args[]) {
-		/*String path =  System.getProperty("bunnicula.home");
-		log.info("*****************************");
+	private void visitAllFiles(File file) {
+		if (file.isDirectory()) {
+			String[] children = file.list();
+			for (int i=0; i<children.length; i++) 
+				visitAllFiles(new File(file, children[i]));
+		} 
+		else 
+			processFile(file);
+	}
+	
+	private void processFile(File file) {
 		try {
-			BufferedReader in = new BufferedReader(new FileReader(path+"/ids-transform/debug.txt"));
+			BufferedReader in = new BufferedReader(new FileReader(file));
 			String str;
 			while ((str = in.readLine()) != null) {
-				IDSDetectionEngine.instance().addRule(str);
+				IDSDetectionEngine.instance().addRule(str.trim());
 			}
 			in.close();
-		} catch (IOException e) { e.printStackTrace(); }//log.error("Failed to load rules from rules.txt"); } */
+		} catch (IOException e) { e.printStackTrace(); }
+	}
+
+	protected void postInit(String args[]) {
+/*		log.info("\n*******************Loading Rules**********************");
+		String path =  System.getProperty("bunnicula.home");
+		File file = new File(path+"/ids-transform/rules");
+		visitAllFiles(file); // */
 	}
 
 	protected void preStart() throws TransformStartException {

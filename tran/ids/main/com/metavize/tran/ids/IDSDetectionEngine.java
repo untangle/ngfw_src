@@ -17,7 +17,7 @@ public class IDSDetectionEngine {
 
 	private static final Logger log = Logger.getLogger(IDSDetectionEngine.class);
 	static {
-		log.setLevel(Level.INFO);
+		log.setLevel(Level.ERROR);
 	}
 		
 	private IDSRules rules = new IDSRules();
@@ -41,7 +41,12 @@ public class IDSDetectionEngine {
 	public void addRule(String rule) {
 		try {
 			rules.addRule(rule);
-		} catch (ParseException e) { log.warn("Could not parse rule; " + e.getMessage()); }		
+		} catch (ParseException e) { 
+			log.warn("Could not parse rule; " + e.getMessage()); 
+		} catch (Exception e) {
+			log.error("Some sort of exception: " + e.getMessage());
+			e.printStackTrace();
+		}
 	}
 
 	public boolean processNewSession(IPNewSessionRequest session, Protocol protocol) {
@@ -53,6 +58,10 @@ public class IDSDetectionEngine {
 		else
 			session.release();
 		return false; // Fix me - not sure what I want to return
+	}
+
+	public IDSRules getRulesForTesting() {
+		return rules;
 	}
 	
 	public void handleChunk(IPDataEvent event, IPSession session, boolean isServer) {
