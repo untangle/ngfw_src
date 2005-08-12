@@ -14,8 +14,8 @@ REGEDIT4
 ;;  
 ;; For more information, visit : http://www.spywareguide.com/blockfile.php 
 ;; File stats: 
-;;     Generated on    : 2005-8-03 11:09:34
-;;     CLSIDs included : 1792
+;;     Generated on    : 2005-8-11 16:42:28
+;;     CLSIDs included : 1797
 ;;  
 ;; ----------------------------------------------------------------------------
 
@@ -1269,6 +1269,9 @@ REGEDIT4
 "Compatibility Flags"=dword:00000400
 
 [HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{205ff73b-ca67-11d5-99dd-444553540002}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{205ff73b-ca67-11d5-99dd-444553540006}]
 "Compatibility Flags"=dword:00000400
 
 [HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{20702008-645e-5e68-7894-149f70075eb0}]
@@ -2666,6 +2669,12 @@ REGEDIT4
 [HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{4e330863-6a11-11d0-bfd8-006097237877}]
 "Compatibility Flags"=dword:00000400
 
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{4e7bd74f-2b8d-469e-92b0-a921f8d5e22e}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{4e7bd74f-2b8d-469e-92b0-a921f8d5e22f}]
+"Compatibility Flags"=dword:00000400
+
 [HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{4e7bd74f-2b8d-469e-95be-b378ba9cb52d}]
 "Compatibility Flags"=dword:00000400
 
@@ -3546,6 +3555,9 @@ REGEDIT4
 "Compatibility Flags"=dword:00000400
 
 [HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{65b818e1-f4d8-4f96-a1df-35f3d1c86194}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{65e7db1d-0101-4100-bd66-c5c78c917f93}]
 "Compatibility Flags"=dword:00000400
 
 [HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{65f8e0e6-24e9-3c69-36b5-085d3872912a}]
@@ -4638,6 +4650,9 @@ REGEDIT4
 "Compatibility Flags"=dword:00000400
 
 [HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{a19a291a-9653-4498-93f6-5ba06cf699d8}]
+"Compatibility Flags"=dword:00000400
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{a1a961da-2ba6-4032-859e-01ac35357163}]
 "Compatibility Flags"=dword:00000400
 
 [HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\ActiveX Compatibility\{a1cd9b9f-6fcf-4a4a-b5b2-e6949340c57c}]

@@ -951,7 +951,6 @@ adserver1.realtracker.com
 adserver2.imaginemedia.com
 adserver2.realtracker.com
 adservice.recon-networks.com
-adservices.google.com
 adserving.autotrader.com
 adsfac.net
 adshooter.com
@@ -1033,7 +1032,6 @@ adwarepatrol.com
 adwarepro.com
 adwaresoft.com
 adwarexterminator.com
-adwords.google.com
 adzones.ircspy.com
 aehistory.112.2o7.net
 aesp.adatom.com
@@ -2674,8 +2672,6 @@ goodfind4u.com
 goodoldsearch.com
 goodsearch4u.com
 goodsearchengine.com
-google.begin2search.com
-google.tucows.com
 gophersearch.com
 gopopup.com
 goporn.us
@@ -2945,8 +2941,6 @@ image.masterstats.com
 image.ugo.com
 image.versiontracker.com
 image2000.mtreexxx.net
-imageads.googleadservices.com
-imageads1.googleadservices.com
 images-aud-pg.osdn.com
 images-aud.freshmeat.net
 images-aud.slashdot.org
@@ -3921,9 +3915,6 @@ p4p.baidu.com
 pacman.crazywinnings.com
 padonak.info
 page-not-found.net
-pagead.googlesyndication.com
-pagead2.googlesyndication.com
-pagead2.googlesyndication.com
 pageload2.babenet.com
 painterdialer.com
 paintertraffic.com
@@ -6884,7 +6875,6 @@ www.goodfind4u.com
 www.goodsearch4u.com
 www.goodsearchengine.com
 www.goodsitesguide.com
-www.googleadservices.com
 www.gophersearch.com
 www.gopopup.com
 www.gopopup.com
