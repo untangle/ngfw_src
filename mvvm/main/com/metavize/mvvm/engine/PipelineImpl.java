@@ -140,8 +140,8 @@ class PipelineImpl implements Pipeline
 
     void destroy()
     {
-//        for (File f : files) {
-//            f.delete();
-//        }
+        for (File f : files) {
+            f.delete();
+        }
     }
 }
