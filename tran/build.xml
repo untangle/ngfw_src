@@ -28,9 +28,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <property name="bases"
         value="virus,spam"/>
   <property name="transforms"
-        value="nat,firewall,airgap,reporting,protofilter,test,sigma,hauri,clam,spyware,httpblocker,spamassassin,email"/>
-
-
+        value="nat,firewall,airgap,reporting,protofilter,test,sigma,hauri,clam,spyware,httpblocker,spamassassin,email,ids"/>
 
   <!--              -->
   <!-- main targets -->
@@ -64,25 +62,25 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       <then>
         <!-- if changed a base or casing, rebuild all transforms -->
         <if> <equals arg1="${tran.type}" arg2="casing"/> <then>
-	  <if> <equals arg1="${tran.name}" arg2="ftp"/> <then>
+      <if> <equals arg1="${tran.name}" arg2="ftp"/> <then>
             <delete><fileset dir="${build.dist}" includes="stamp-base-virus"/></delete>
-	  </then> </if>
-	  <if> <equals arg1="${tran.name}" arg2="http"/> <then>
+      </then> </if>
+      <if> <equals arg1="${tran.name}" arg2="http"/> <then>
             <delete><fileset dir="${build.dist}" includes="stamp-base-virus"/></delete>
-	  </then> </if>
-	  <if> <equals arg1="${tran.name}" arg2="mail"/> <then>
+      </then> </if>
+      <if> <equals arg1="${tran.name}" arg2="mail"/> <then>
             <delete><fileset dir="${build.dist}" includes="stamp-base-virus"/></delete>
             <delete><fileset dir="${build.dist}" includes="stamp-base-spam"/></delete>
-	  </then> </if>
+      </then> </if>
         </then> </if>
         <if> <equals arg1="${tran.type}" arg2="base"/> <then>
-	  <if> <equals arg1="${tran.name}" arg2="virus"/> <then>
+      <if> <equals arg1="${tran.name}" arg2="virus"/> <then>
             <delete><fileset dir="${build.dist}" includes="stamp-transform-clam"/></delete>
             <delete><fileset dir="${build.dist}" includes="stamp-transform-hauri"/></delete>
-	  </then> </if>
-	  <if> <equals arg1="${tran.name}" arg2="spam"/> <then>
+      </then> </if>
+      <if> <equals arg1="${tran.name}" arg2="spam"/> <then>
             <delete><fileset dir="${build.dist}" includes="stamp-transform-spamasssassin"/></delete>
-	  </then> </if>
+      </then> </if>
         </then> </if>
 
     <echo message="Building '${tran.name}'"/>
@@ -269,6 +267,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <!--              -->
 
   <target name="install.test"/>
+  <target name="install.ids"/>
   <target name="install.nat"/>
   <target name="install.firewall"/>
   <target name="install.spyware"/>
@@ -332,6 +331,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <!--              -->
 
   <target name="jar.test"/>
+  <target name="jar.ids"/>
   <target name="jar.nat"/>
   <target name="jar.firewall"/>
   <target name="jar.spyware"/>
@@ -359,7 +359,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <target name="jar.mail">
     <jar destfile="${build.jar}/mail-export.jar">
       <fileset dir="${build.root}/mail">
-<!--            
+<!--
         <include name="com/metavize/tran/mail/AddressKind.class"/>
         <include name="com/metavize/tran/mail/AddressKindUserType.class"/>
         <include name="com/metavize/tran/mail/ImapCommand*.class"/>
@@ -390,16 +390,16 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
         <include name="com/metavize/tran/mail/papi/pop/*.class"/>
         <include name="com/metavize/tran/mail/papi/imap/*.class"/>
         <include name="com/metavize/tran/mail/papi/smtp/*.class"/>
-        <include name="com/metavize/tran/mail/papi/smtp/sapi/*.class"/>        
+        <include name="com/metavize/tran/mail/papi/smtp/sapi/*.class"/>
       </fileset>
       <fileset dir="${build.gensrc}/mail">
         <include name="com/metavize/tran/mail/papi/*.hbm.xml"/>
         <include name="com/metavize/tran/mail/papi/smtp/*.hbm.xml"/>
-<!--        
+<!--
         <include name="com/metavize/tran/mail/papi/MessageInfo.hbm.xml"/>
         <include name="com/metavize/tran/mail/papi/MessageInfoAddr.hbm.xml"/>
         <include name="com/metavize/tran/mail/papi/MessageStats.hbm.xml"/>
--->        
+-->
       </fileset>
     </jar>
   </target>
@@ -461,6 +461,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   </target>
 
   <target name="compile.test"/>
+  <target name="compile.ids"/>
   <target name="compile.nat"/>
   <target name="compile.firewall"/>
   <target name="compile.spyware"/>

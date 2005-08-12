@@ -90,4 +90,8 @@ public class PortRange implements Serializable
 
         return result;
     }
+
+	public String toString() {
+		return low +"-"+ high;
+	}
 }
