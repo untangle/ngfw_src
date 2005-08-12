@@ -197,7 +197,7 @@ public class MIMEAccumulator {
     m_logger.debug("Opening temp file to buffer MIME");
     try {
       //new File("SMTP" + System.currentTimeMillis() + ".tmp");
-      m_file = pipeline.mktemp();
+      m_file = pipeline.mktemp("mime");
       m_fileOut = new FileOutputStream(m_file);
       m_fileChannel = m_fileOut.getChannel();
     }

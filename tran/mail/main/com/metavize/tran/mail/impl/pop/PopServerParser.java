@@ -133,7 +133,7 @@ public class PopServerParser extends AbstractParser
                         logger.debug("retr message reply: " + buf);
 
                         try {
-                            zMsgFile = pipeline.mktemp();
+                            zMsgFile = pipeline.mktemp("popsp");
                             zMsgChannel = new FileOutputStream(zMsgFile).getChannel();
                             //logger.debug("message file: " + zMsgFile);
                         } catch (IOException exn) {
