@@ -91,11 +91,11 @@ public class ShuttingDownSessionHandler
       return;
     }
     if(command.getType() == Command.CommandType.RSET) {
-      actions.appendSyntheticResponse(new FixedSyntheticResponse(250, "OK"));
+      actions.sendResponseNow(new Response(250, "OK"));
       return;
     }
     if(command.getType() == Command.CommandType.NOOP) {
-      actions.appendSyntheticResponse(new FixedSyntheticResponse(250, "OK"));
+      actions.sendResponseNow(new Response(250, "OK"));
       return;
     }
     send421(actions);
@@ -110,7 +110,7 @@ public class ShuttingDownSessionHandler
   }
 
   private void send421(Session.SmtpCommandActions actions) {
-    actions.appendSyntheticResponse(new FixedSyntheticResponse(421,
+    actions.sendResponseNow(new Response(421,
       "Service not available, closing transmission channel"));
   }
 

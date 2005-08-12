@@ -34,7 +34,7 @@ public class MailTransformSettings implements Serializable
     private boolean popEnabled = true;
     private boolean imapEnabled = true;
 
-    public static final long TIMEOUT_MAX = 86400l;
+    public static final long TIMEOUT_MAX = 86400000l;
     public static final long TIMEOUT_MIN = 0l;
     
     private long smtpInboundTimeout;

@@ -173,6 +173,17 @@ public final class Session
      */
     public void appendSyntheticResponse(SyntheticResponse synth);
 
+
+    /**
+     * This is a <b>really</b> specialized method, only to be used
+     * if you know what you're doing.  This will send a response
+     * to the client <b>ignoring</b> the queue of outstanding responses.
+     * <br><br>
+     * This is to be used <b>only</b> when the server has been discarded,
+     * but may send one more obnoxious "bye" message.
+     */
+    public void sendResponseNow(Response response);
+
   }
 
   /**
@@ -563,6 +574,10 @@ public final class Session
     SmtpCommandActionsImpl(TokenResultBuilder ts) {
       super(ts);
     }
+
+    public void sendResponseNow(Response response) {
+      getTokenResultBuilder().addTokenForClient(response);
+    }    
 
     public void appendSyntheticResponse(SyntheticResponse synth) {
       m_logger.debug("Appending synthetic response");
