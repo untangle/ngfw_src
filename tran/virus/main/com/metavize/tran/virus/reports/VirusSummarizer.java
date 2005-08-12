@@ -91,7 +91,7 @@ public class VirusSummarizer extends BaseSummarizer {
             rs.close();
             ps.close();
 
-            sql = "SELECT count(*) FROM tr_virus_evt_mail WHERE time_stamp >= ? AND time_stamp < ? AND vendor_name = ? AND clean = false";
+            sql = "SELECT count(*) FROM tr_virus_evt_mail WHERE time_stamp >= ? AND time_stamp < ? AND vendor_name = ? AND clean = false AND NOT msg_id IS NULL";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
@@ -102,7 +102,7 @@ public class VirusSummarizer extends BaseSummarizer {
             rs.close();
             ps.close();
 
-            sql = "SELECT count(*) FROM tr_virus_evt_smtp WHERE time_stamp >= ? AND time_stamp < ? AND vendor_name = ? AND clean = false";
+            sql = "SELECT count(*) FROM tr_virus_evt_smtp WHERE time_stamp >= ? AND time_stamp < ? AND vendor_name = ? AND clean = false AND NOT msg_id IS NULL";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
@@ -113,7 +113,7 @@ public class VirusSummarizer extends BaseSummarizer {
             rs.close();
             ps.close();
 
-            sql = "SELECT count(*) FROM tr_virus_evt_mail WHERE time_stamp >= ? AND time_stamp < ? AND vendor_name = ?";
+            sql = "SELECT count(*) FROM tr_virus_evt_mail WHERE time_stamp >= ? AND time_stamp < ? AND vendor_name = ? AND NOT msg_id IS NULL";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
@@ -124,7 +124,7 @@ public class VirusSummarizer extends BaseSummarizer {
             rs.close();
             ps.close();
 
-            sql = "SELECT count(*) FROM tr_virus_evt_smtp WHERE time_stamp >= ? AND time_stamp < ? AND vendor_name = ?";
+            sql = "SELECT count(*) FROM tr_virus_evt_smtp WHERE time_stamp >= ? AND time_stamp < ? AND vendor_name = ? AND NOT msg_id IS NULL";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
