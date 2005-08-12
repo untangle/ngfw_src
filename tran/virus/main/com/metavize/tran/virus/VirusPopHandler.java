@@ -105,6 +105,7 @@ public class VirusPopHandler extends PopStateMachine
                 if (true == MIMEUtil.shouldScan(zMPart)) {
                     try {
                         zMPFile = zMPart.getContentAsFile(zTFFactory, true);
+logger.debug("MIME Part file: " + zMPFile);
                     } catch (IOException exn) {
                         /* we'll reuse original message */
                         throw new TokenException("cannot get message/mime part file: " + exn);

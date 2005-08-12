@@ -94,15 +94,23 @@ public class PopUnparser extends AbstractUnparser
         if (token instanceof PopCommand) {
             PopCommand zCommand = (PopCommand) token;
 
-            if (null == zCasing.getUser()) {
+            if (null == zCasing.getUser() &&
+                true == zCommand.isUser()) {
                 /* workaround to supply user to server parser */
                 zCasing.setUser(zCommand.getUser());
             }
 
             zWriteBufs.add(zCommand.getBytes());
-        } else if (token instanceof PopCommandMore ||
-                   token instanceof PopReplyMore) {
-            zWriteBufs.add(token.getBytes());
+        } else if (token instanceof PopCommandMore) {
+            PopCommandMore zCommandMore = (PopCommandMore) token;
+
+            if (null == zCasing.getUser() &&
+                true == zCommandMore.isUser()) {
+                /* workaround to supply user to server parser */
+                zCasing.setUser(zCommandMore.getUser());
+            }
+
+            zWriteBufs.add(zCommandMore.getBytes());
         } else if (token instanceof PopReply) {
             PopReply zReply = (PopReply) token;
 
@@ -124,6 +132,8 @@ public class PopUnparser extends AbstractUnparser
             } else { /* non-message reply */
                 zWriteBufs.add(zReply.getBytes());
             }
+        } else if (token instanceof PopReplyMore) {
+            zWriteBufs.add(token.getBytes());
         } else if (token instanceof Chunk) { /* trickle continue */
             writeData((Chunk) token, zWriteBufs);
         } else if (token instanceof EndMarker) { /* trickle end */
