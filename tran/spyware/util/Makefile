@@ -13,7 +13,7 @@ url:
 	@cat ./files/hosts > ./files/urlblacklist
 	@cat ./files/hosts.txt >> ./files/urlblacklist
 	@cat ./files/urlblacklist | grep -v "^#.*" | grep "^127.0.0.1" | awk '{print $$2}' | sed 's/\#.*//' | sort > ./files/urlblacklist.txt
-	@cat ./files/urlblacklist.txt | grep -v "yimg.com" > urlblacklist.txt
+	@cat ./files/urlblacklist.txt | grep -v "yimg.com" | grep -v "google" > urlblacklist.txt
 	@echo -e "\n\ndone (urlblacklist.txt) \n\n"
 
 activex:
