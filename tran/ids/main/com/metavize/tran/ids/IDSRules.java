@@ -25,7 +25,7 @@ public class IDSRules {
 	
 	private static final Logger log = Logger.getLogger(IDSRules.class);
 	static {
-		log.setLevel(Level.ALL);
+		log.setLevel(Level.WARN);
 	}
 	public IDSRules() {
 	}
@@ -69,9 +69,9 @@ public class IDSRules {
 	private String substituteVariables(String string) {
 		string = string.replaceAll("\\$EXTERNAL_NET","!10.0.0.1/24");
 		string = string.replaceAll("\\$HOME_NET", "10.0.0.1/24");
-		string = string.replaceAll("\\$HTTP_PORTS", "80");
-		string = string.replaceAll("\\$SSH_PORTS", "22");
-		string = string.replaceAll("\b\\$.*\b", "any");
+		string = string.replaceAll("\\$HTTP_PORTS", "any");
+		string = string.replaceAll("\\$SSH_PORTS", "any");
+		string = string.replaceAll("\\$.*\b", "any");
 		
 		return string;
 	}

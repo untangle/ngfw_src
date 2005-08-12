@@ -8,8 +8,10 @@ public class TestOption extends IDSOption {
 		super(signature, params);
 	}
 
+	public boolean runnable() {
+		return false;
+	}
 	public boolean run() {
-		System.out.println("Test Option works :D");
-		return true;
+		return false;
 	}
 }

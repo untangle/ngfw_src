@@ -27,8 +27,7 @@ public class IDSRuleHeader {
 	private	IDSRuleSignature testSignature;
 
 	/**
-	 * Negation Flags, XORed with the Matcher value
-	 * to generate the correct match.
+	 * Negation Flags: flag XOR input = answer
 	 * */
 	private boolean 	clientIPFlag = false;
 	private boolean   	clientPortFlag = false;
@@ -54,17 +53,17 @@ public class IDSRuleHeader {
 	}
 
 	public boolean matches(Protocol protocol, InetAddress clientAddr, int clientPort, InetAddress serverAddr, int serverPort) {
-		
 		if(this.protocol != protocol)
 			return false;
 		
-		/*Check Port Match*/
+		/**Check Port Match*/
 		boolean clientPortMatch = clientPortRange.contains(clientPort);
 		boolean serverPortMatch = serverPortRange.contains(serverPort);
-		boolean portMatch = (clientPortMatch ^= clientPortFlag) && (serverPortMatch ^= serverPortFlag);
+		boolean portMatch = (clientPortMatch ^ clientPortFlag) && (serverPortMatch ^ serverPortFlag);
 		if(!portMatch && !bidirectional)
 			return false;
 		
+		/**Check IP Match*/
 		boolean clientIPMatch = false;
 		Iterator<IPMatcher> clientIt = clientIPList.iterator();
 		while(clientIt.hasNext() && !clientIPMatch)  {
@@ -78,13 +77,16 @@ public class IDSRuleHeader {
 			 IPMatcher matcher = serverIt.next();
 			 serverIPMatch = matcher.isMatch(serverAddr);
 		 }
-		 boolean ipMatch = (clientIPMatch ^= clientIPFlag) && (serverIPMatch ^= serverIPFlag);
-		if(!ipMatch && !portMatch && bidirectional && !swapFlag) {
-			swapFlag = true;
-			return matches(protocol, serverAddr, serverPort, clientAddr, clientPort);
-		}
-		if(swapFlag)
-			swapFlag = false;
+		 boolean ipMatch = (clientIPMatch ^ clientIPFlag) && (serverIPMatch ^ serverIPFlag);
+		
+		 /**Check Directional flag*/
+		 if(!(ipMatch && portMatch) && bidirectional && !swapFlag) {
+			 swapFlag = true;
+			 return matches(protocol, serverAddr, serverPort, clientAddr, clientPort);
+		 }
+		 
+		 if(swapFlag)
+			 swapFlag = false;
 
 		return ipMatch && portMatch;
 	}

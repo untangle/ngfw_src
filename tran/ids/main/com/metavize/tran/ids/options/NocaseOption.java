@@ -14,7 +14,11 @@ public class NocaseOption extends IDSOption {
 				
 	}
 
+	public boolean runnable() {
+		return false;
+	}
+	
 	public boolean run() {
-		return true;
+		return false;
 	}
 }

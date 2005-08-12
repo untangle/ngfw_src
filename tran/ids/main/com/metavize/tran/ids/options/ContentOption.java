@@ -11,7 +11,7 @@ import com.metavize.tran.ids.IDSSessionInfo;
 
 /**
  * This class matches the content option found in snort based rule signatures.
- *M
+ *
  * @Author Nick Childers
  */
 
@@ -34,72 +34,35 @@ public class ContentOption extends IDSOption {
 		params = params.replaceAll("\"","");
 		int index = params.indexOf('|');
 		if(index < 0) {
-			hasBinaryData = false;
 			contentPattern = Pattern.compile(params, Pattern.LITERAL);
 		}
 		else {
-			hasBinaryData = true;
 			buildBytePattern(params, index);
 			bytePattern = new byte[binaryBuffer.position()];
 			binaryBuffer.flip();
 			binaryBuffer.get(bytePattern);
-			//System.out.println("\n\n:::BYTE PATTERN:::");
-			//for(int i = 0; i < bytePattern.length; i++)
-			//	System.out.print(Integer.toHexString(bytePattern[i]));
+			String pattern = new String(bytePattern);
+			contentPattern = Pattern.compile(pattern, Pattern.LITERAL);
 		}	
 	}
 	
 	public void setNoCase() {
-		//if(contentPattern != null)
-			contentPattern = Pattern.compile(contentPattern.pattern(), contentPattern.flags() | Pattern.CASE_INSENSITIVE);
+		contentPattern = Pattern.compile(contentPattern.pattern(), contentPattern.flags() | Pattern.CASE_INSENSITIVE);
 	}
 
 
+	public boolean runnable() {
+		return true;
+	}
+	
 	public boolean run() {
-		ByteBuffer eventData = signature.getSessionInfo().getEvent().data();
-		if(hasBinaryData) {
-			return binaryFind(eventData.array(), bytePattern);
-		}
-		else {
-			String data = new String(eventData.array());
-			return contentPattern.matcher(data).find();
-		}
+		ByteBuffer eventData = getSignature().getSessionInfo().getEvent().data();
+		String data = new String(eventData.array());
+	//	System.out.println("Negation Flag: " + negationFlag());
+		return negationFlag() ^ contentPattern.matcher(data).find();
+	//	return contentPattern.matcher(data).find();
 	}
 
-	/**Worst pattern matcher EVAR.
-	 * Replace this with something more effective.
-	 * Please.
-	 * implement byte based Boyer-Moore ?
-	 */
-	
-	private boolean binaryFind(byte[] data, byte[] pattern) {
-		int position = 0;
-		int returnIndex = 0;
-		boolean checkingPattern = false;
-		
-		for(int i=0; i < data.length; i++) {
-			
-			if(!checkingPattern)
-				returnIndex++;
-			
-			if(data[i] == pattern[position]) {
-				position++;
-				if(position == 1) {
-					checkingPattern = true;
-					returnIndex = i+1;
-				}
-				if(position == pattern.length)
-					return true;
-			}
-			else {
-				checkingPattern = false;
-				position = 0;
-				i = returnIndex;
-			}
-		}
-		return false;
-	}
-	
 	/**
 	 * This must parse strings in the form of "|byte byte byte| string | byte | string" etc...
 	 * This class will recursivly call itself to iterate over all the | byte | sections, calling 
@@ -116,7 +79,7 @@ public class ContentOption extends IDSOption {
 			index = params.indexOf('|', 1);
 			String bytes = params.substring(1,index);
 			bytes = bytes.replaceAll(" ", "");
-			parseByteStringPattern(bytes);
+			parseBinaryPattern(bytes);
 			String substring = params.substring(index+1);
 			index = substring.indexOf('|',1) ;
 			
@@ -126,7 +89,7 @@ public class ContentOption extends IDSOption {
 		else {
 			if(index < 0)
 				index = params.length();
-			parseCharBytesPattern(params.substring(0,index));
+			parseASCIIPattern(params.substring(0,index));
 			String substring = params.substring(index);
 			index = 0;
 			
@@ -135,7 +98,7 @@ public class ContentOption extends IDSOption {
 		}	
 	}
 
-	private void parseCharBytesPattern(String params) {
+	private void parseASCIIPattern(String params) {
 		if(params.length() > binaryBuffer.remaining()) {
 			System.out.println("Very larger error");
 			return;
@@ -143,7 +106,7 @@ public class ContentOption extends IDSOption {
 		binaryBuffer.put(params.getBytes());
 	}
 
-	private void parseByteStringPattern(String bytes) {
+	private void parseBinaryPattern(String bytes) {
 		if(bytes.length()%2 != 0 || bytes.length() > binaryBuffer.remaining()) {
 			System.out.println("Very larger error"); //throw error
 			return;
@@ -152,7 +115,7 @@ public class ContentOption extends IDSOption {
 			byte head =  Byte.parseByte(""+bytes.charAt(2*i),16);
 			byte tail = Byte.parseByte(""+bytes.charAt(2*i+1),16);
 			byte tmpByte = head;
-			tmpByte *= 16;
+			tmpByte  = (byte) (tmpByte << 4);
 			tmpByte = (byte) (tmpByte | tail);
 			binaryBuffer.put(tmpByte);
 		}

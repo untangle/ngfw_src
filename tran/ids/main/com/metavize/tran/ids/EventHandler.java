@@ -32,23 +32,23 @@ public class EventHandler extends AbstractEventHandler {
 
 	public IPDataResult handleTCPClientChunk(TCPChunkEvent event) {
 			if(event.session().attachment() != null) // is there a better way to test this? Like ignore sessions wtih no matches?
-				idsEngine.handleChunk(event, event.session());
+				idsEngine.handleChunk(event, event.session(), false);
 			return IPDataResult.PASS_THROUGH;
 	}
 
 	public IPDataResult handleTCPServerChunk(TCPChunkEvent event) {
 			 if(event.session().attachment() != null) 
-				idsEngine.handleChunk(event, event.session());
+				idsEngine.handleChunk(event, event.session(), true);
 			return IPDataResult.PASS_THROUGH;
 	}
 
 	public void handleUDPClientPacket(UDPPacketEvent event) throws MPipeException {
-		idsEngine.handleChunk(event, event.session());
+		idsEngine.handleChunk(event, event.session(),false);
 		super.handleUDPClientPacket(event);
 	}
 
 	public void handleUDPServerPacket(UDPPacketEvent event) throws MPipeException {
-		idsEngine.handleChunk(event, event.session());
+		idsEngine.handleChunk(event, event.session(),true);
 		super.handleUDPServerPacket(event);
 	}
 

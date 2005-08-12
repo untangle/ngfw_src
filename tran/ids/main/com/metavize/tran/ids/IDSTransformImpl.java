@@ -22,7 +22,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 	private IDSRules rules = new IDSRules();
 	
 	static {                        
-		log.setLevel(Level.WARN);
+		log.setLevel(Level.INFO);
 	}   
 			 
 	private final EventHandler handler;
@@ -53,13 +53,13 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 				IDSDetectionEngine.instance().addRule(str);
 			}
 			in.close();
-		} catch (IOException e) { e.printStackTrace(); }//log.error("Failed to load rules from rules.txt"); } 
-		*/
+		} catch (IOException e) { e.printStackTrace(); }//log.error("Failed to load rules from rules.txt"); } */
 	}
 
 	protected void preStart() throws TransformStartException {
-		//if(!test.runTest())
-		//  throw new TransformStartException("IDS Test failed");
+		IDSTest test = new IDSTest();
+		if(!test.runTest())
+		  throw new TransformStartException("IDS Test failed");
 		
 	}
 	

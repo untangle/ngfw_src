@@ -31,7 +31,7 @@ public class IDSStringParser {
 	public static IDSRuleSignature parseSignature(String signatureString, int action) throws ParseException {
 		IDSRuleSignature returnSignature = new IDSRuleSignature(action);
 		
-		String options[] = signatureString.trim().split(";( |$)"); //Need a way to ignore ; within " " of each option
+		String options[] = signatureString.trim().split(";( |$)"); //add a way to ignore ; within " " of each option
 		for(int i = 0; i < options.length; i++) {
 			options[i].trim();
 			int delim = options[i].indexOf(':');

@@ -1,46 +1,60 @@
 package com.metavize.tran.ids;
 
-import java.util.Vector;
-import java.util.List;
-import java.util.Iterator;
-import java.util.Random;
+import java.util.*;
+import java.nio.ByteBuffer;
 
 import java.net.InetAddress;
 import org.apache.log4j.Logger;
 import org.apache.log4j.Level;
 
 import com.metavize.mvvm.tapi.Protocol;
+import com.metavize.mvvm.tapi.IPSession;
 import com.metavize.mvvm.tapi.event.*;
 import com.metavize.mvvm.tran.ParseException;
 
 public class IDSTest {
 
+	private class TestDataEvent implements IPDataEvent {
+		ByteBuffer buffer;
+		public TestDataEvent() {
+			buffer = ByteBuffer.allocate(512);
+		}
+
+		public void setData(byte[] data) {
+			buffer.clear();
+			buffer.put(data);
+			buffer.flip();
+		}
+		public ByteBuffer data() {
+			return buffer;
+		}
+	}
+	
 	private static final Logger log = Logger.getLogger(IDSTest.class);
 	private IDSRules rules = new IDSRules();
 	
 	static {
-		log.setLevel(Level.ERROR);
+		log.setLevel(Level.ALL);
 	}
-	public IDSTest() {
-		log.debug("Testing");
-	}
+	public IDSTest() {}
 
 	public boolean runTest() {
-		log.warn("\n\n******************************************************");
-		boolean passGenTest = generateRuleTest();
-		runRulesMatchTest();
-		generateRandomRuleHeaders(5000);
+		log.warn("\n\n************************Running Test******************************");
+		generateRuleTest();
+		runHeaderTest();
+		runSignatureTest();
+		generateRandomRuleHeaders(1000);
 		runTimeTest(5);
 		return true;
 	}
 
-	public boolean generateRuleTest() {
+	private boolean generateRuleTest() {
 		String testValidStrings[] 	= { 
-			"alert tcp any any -> any any (msg:Rule One;)",
-			"alert tcp 10.0.0.40-10.0.0.101 any -> 66.35.250.0/24 80 (msg:Rule twO;)",
-			"alert tcp 10.0.0.101 !5000: -> 10.0.0.1/16 !80 (msg: Rule 3;)",
-			"alert TCP 10.0.0.101 4000:5000 <> 10.0.0.1/24 :6000 (msg:  Rule 4;)",
-			"alert tcp [10.0.0.101,192.168.1.1,10.0.0.44] !:80 -> any 80 (msg: Rule x5x     ; )"}; 
+			"alert tcp any any -> any any (msg:\"Rule Zero\";)",
+			"alert tcp 10.0.0.40-10.0.0.101 any -> 66.35.250.0/24 80 (content:\"bob\"; msg:\"Rule One\"; flow: to_server;)",
+			"alert tcp 10.0.0.101 !5000: -> 10.0.0.1/16 !80 (content: \"BOB\"; nocase; msg:\"Rule tW0\"; flow: from_server;)",
+			"alert TCP 10.0.0.101 4000:5000 <> 10.0.0.1/24 :6000 (content:\"bob\"; content:\"BOB\"; nocase; msg:  Rule 3;)",
+			"alert tcp [10.0.0.101,192.168.1.1,10.0.0.44] !:80 -> any 80 (msg: Rule x4x     ; )"}; 
 		
 		for(int i=0; i < testValidStrings.length; i++) {
 			try { 
@@ -50,7 +64,44 @@ public class IDSTest {
 		return true;
 	}
 
-	private void runRulesMatchTest() {
+	private void runSignatureTest() {
+		/**These test ignore header matching, and thus can deal with
+		 * all the test signatures*/
+		
+		/**Setup*/
+		List<IDSRuleHeader> ruleList = rules.getHeaders();
+		List<IDSRuleSignature> signatures = new LinkedList<IDSRuleSignature>();
+		Iterator<IDSRuleHeader> it = ruleList.iterator();
+		while(it.hasNext())
+			signatures.add(it.next().getSignature());
+		IDSSessionInfo info = new IDSSessionInfo(signatures);
+
+		/**Run Tests*/
+		TestDataEvent test = new TestDataEvent();
+		checkSessionData(info, test, true, 0, true);
+		
+		byte[] basicNoCase = {'b','o','b'};
+		test.setData(basicNoCase);
+		checkSessionData(info, test, false, 1, true);
+		checkSessionData(info, test, true, 1, false);
+		checkSessionData(info, test, true, 2, true);
+		checkSessionData(info, test, true, 3, true);
+
+		byte[] basicNoCase1 = {'B','O','B'};
+		test.setData(basicNoCase1);
+		checkSessionData(info, test, false, 1, false);
+        checkSessionData(info, test, true, 2, true);
+	}
+				
+	private void checkSessionData(IDSSessionInfo info, IPDataEvent event, boolean isServer,int ruleNum,  boolean answer) {
+		info.setEvent(event);
+		info.setFlow(isServer);
+		if(!checkAnswer(info.testSignature(ruleNum), answer))
+			log.warn("Option Test Failed on rule: " + ruleNum);
+	}
+					
+
+	private void runHeaderTest() {
 		
 		List<IDSRuleHeader> ruleList = rules.getHeaders();
 		
@@ -64,7 +115,7 @@ public class IDSTest {
 		matchTest(ruleList.get(4), Protocol.TCP, "10.0.0.43", 1024, "10.0.0.101", 4747, false);
 		matchTest(ruleList.get(1), Protocol.TCP, "10.0.0.101",3232,"10.0.0.31",4999, false);
 		matchTest(ruleList.get(2), Protocol.TCP, "10.0.0.101",3232,"10.0.0.31",4999, true);
-		matchTest(ruleList.get(3), Protocol.TCP, "10.0.0.101",3232,"10.0.0.31",4999, false); 
+		matchTest(ruleList.get(3), Protocol.TCP, "10.0.0.101",3232,"10.0.0.31",4999, false);
 	}
 
 	private void matchTest(IDSRuleHeader header, Protocol protocol, String clientAddr, int clientPort, String serverAddr, int serverPort, boolean answer) {
@@ -131,7 +182,7 @@ public class IDSTest {
 			serverPort = getRandomPort();
 
 			try {
-				rules.addRule("alert"+prot+clientIP+clientPort+dir+serverIP+serverPort+" ( content: I like spoons; msg: This is just a test; invalidOption: this does nothing; invalidOption: this does nothing; nocase; )");
+				rules.addRule("alert"+prot+clientIP+clientPort+dir+serverIP+serverPort+" ( content: \"I like spoons\"; msg: \"This is just a test\";)");
 			} catch(ParseException e) { log.error("Could not parse rule; " + e.getMessage()); }
 		}
 		long endTime = System.currentTimeMillis() - startTime;
@@ -179,5 +230,5 @@ public class IDSTest {
 				str = "any";
 		}
 		return " "+str;
-	}		
+	}
 }

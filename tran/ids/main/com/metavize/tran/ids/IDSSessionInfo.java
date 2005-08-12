@@ -10,11 +10,14 @@ public class IDSSessionInfo {
 	private List<IDSRuleSignature> signatures;
 	private IPSession session;
 	private IPDataEvent event;
+	private boolean isServer;
 
 	public IDSSessionInfo(List<IDSRuleSignature> signatures) {
 		this.signatures = signatures;
 	}
-
+	/**Do i need to set session data? I dont think so..
+	 * Check later.
+	 */
 	public void setSession(IPSession session) {
 		this.session = session;
 	}
@@ -23,8 +26,16 @@ public class IDSSessionInfo {
 		this.event = event;
 	}
 
+	public void setFlow(boolean isServer) {
+		this.isServer = isServer;
+	}
+
 	public IPDataEvent getEvent() {
 		return event;
+	}
+
+	public boolean isServer() {
+		return isServer;
 	}
 
 	public void processSignatures() {
@@ -33,5 +44,9 @@ public class IDSSessionInfo {
 			IDSRuleSignature signature = (IDSRuleSignature)it.next();
 			signature.execute(this);
 		}
-	}		
+	}
+	
+	public boolean testSignature(int num) {
+		return signatures.get(num).execute(this);
+	}
 }

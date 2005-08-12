@@ -47,10 +47,13 @@ public class DsizeOption extends IDSOption {
 			max = Integer.MAX_VALUE;
 		}
 	}
+	
+	public boolean runnable() {
+		return true;
+	}
 
-	public boolean run() {
-		
-		IPDataEvent event = signature.getSessionInfo().getEvent();
+	public boolean run() {	
+		IPDataEvent event = super.getSignature().getSessionInfo().getEvent();
 		int size = event.data().remaining();
 		if(min <= size && max >= size)
 			return true;

@@ -4,6 +4,7 @@ import java.lang.reflect.*;
 import java.util.List;
 import java.util.Vector;
 import java.util.Iterator;
+import java.util.ListIterator;
 import org.apache.log4j.Logger;
 import org.apache.log4j.Level;
 
@@ -20,7 +21,7 @@ public class IDSRuleSignature {
 	
 	private static final Logger log = Logger.getLogger(IDSRuleSignature.class);
 	static {
-		log.setLevel(Level.WARN);
+		log.setLevel(Level.INFO);
 	}
 	public IDSRuleSignature(int action) {
 		this.action = action;
@@ -31,23 +32,28 @@ public class IDSRuleSignature {
 	}
 
 	public void addOption(String optionName, String params) {
-		IDSOption option = IDSOption.crazyFoo(this,optionName,params);
-		if(option != null)
+		IDSOption option = IDSOption.buildOption(this,optionName,params);
+		if(option != null && option.runnable())
 			options.add(option);
-		else
-			log.info("No option found: " + optionName);
+		else if(option == null)
+			log.info("Could not add option: " + optionName);
 	}
 
 	public IDSOption getOption(String name) {
-		Iterator<IDSOption> it = options.iterator();
+		/**Have to iterate backwards over the options so that options that 
+		 * act as modifiers will modify the correct option
+		 * eg, in situations where there are multiple content options.
+		 */
+		
+		ListIterator<IDSOption> it = options.listIterator(options.size());
 		Class optionDefinition = null;
 		try {
 			optionDefinition = Class.forName("com.metavize.tran.ids.options."+name);
 		} catch (ClassNotFoundException e) {
 			log.error("Could not load option: " + e.getMessage());
 		}
-		while(it.hasNext()) {
-			IDSOption option = it.next();
+		while(it.hasPrevious()) {
+			IDSOption option = it.previous();
 			if(optionDefinition.isInstance(option))
 				return option;
 		}
@@ -58,22 +64,23 @@ public class IDSRuleSignature {
 		message = msg;
 	}
 
-	public void execute(IDSSessionInfo info) {
+	public boolean execute(IDSSessionInfo info) {
 		this.info = info;
 		
 		Iterator<IDSOption> it = options.iterator();
 		while(it.hasNext()) {
 			IDSOption option = it.next();
 			if(!option.run())
-				return;
+				return false;
 		}
-	//	doAction();
+		doAction();
+		return true;
 	}
 
 	private void doAction() {
 		switch(action) {
 			case IDSRules.ALERT:
-				System.out.println(message);
+				//System.out.println(message);
 				break;
 			case IDSRules.LOG:
 				break;

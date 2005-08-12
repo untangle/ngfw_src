@@ -17,7 +17,7 @@ public class IDSDetectionEngine {
 
 	private static final Logger log = Logger.getLogger(IDSDetectionEngine.class);
 	static {
-		log.setLevel(Level.ERROR);
+		log.setLevel(Level.INFO);
 	}
 		
 	private IDSRules rules = new IDSRules();
@@ -32,8 +32,10 @@ public class IDSDetectionEngine {
 	}
 
 	private IDSDetectionEngine() {
-		String test = "alert tcp 10.0.0.40-10.0.0.101 any -> 66.35.250.0/24 80 ( test: hi; content: slashdot; msg:\"OMG teH SLASHd0t\";)";
+		String test = "alert tcp 10.0.0.40-10.0.0.101 any -> 66.35.250.0/24 80 (content:\"slashdot\"; msg:\"OMG teH SLASHd0t\";)";
+		String tesT = "alert tcp 10.0.0.1/24 any -> any any (content: \"spOOns|FF FF FF FF|spoons\"; msg:\"Matched binary FF FF FF and spoons\"; nocase;)";
 		addRule(test);
+		addRule(tesT);
 	}
 
 	public void addRule(String rule) {
@@ -53,11 +55,12 @@ public class IDSDetectionEngine {
 		return false; // Fix me - not sure what I want to return
 	}
 	
-	public void handleChunk(IPDataEvent event, IPSession session) {
+	public void handleChunk(IPDataEvent event, IPSession session, boolean isServer) {
 		IDSSessionInfo info = (IDSSessionInfo) session.attachment();
 		
 		info.setSession(session);
 		info.setEvent(event);
+		info.setFlow(isServer);
 
 		info.processSignatures();
 	}
