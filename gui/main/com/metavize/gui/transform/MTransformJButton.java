@@ -175,28 +175,35 @@ public class MTransformJButton extends JButton {
 
 
     // VIEW UPDATING ///////////
-    private void updateView(final String message, final String toolTip, final boolean isEnabled){
-	SwingUtilities.invokeLater( new Runnable() { public void run() {
+    private void updateView(final String message, final String toolTip, final boolean isEnabled, boolean doNow){
+	if(doNow){
+	    MTransformJButton.this.setMessage(message);
+	    MTransformJButton.this.setTT(toolTip);
+	    MTransformJButton.this.setEnabled(isEnabled);
+	}
+	else{
+	    SwingUtilities.invokeLater( new Runnable() { public void run() {
 		MTransformJButton.this.setMessage(message);
 		MTransformJButton.this.setTT(toolTip);
 		MTransformJButton.this.setEnabled(isEnabled);
-	} } );
+	    } } );
+	}
     }
 
-    public void setDeployableView(){ updateView(null, "Ready to be Installed into Rack.", true); }
-    public void setProcurableView(){ updateView(null, "Ready to be Purchased from Store.", true); }
-    public void setDeployedView(){ updateView(null, "Installed into rack.", false); }
+    public void setDeployableView(){ updateView(null, "Ready to be Installed into Rack.", true, false); }
+    public void setProcurableView(){ updateView(null, "Ready to be Purchased from Store.", true, false); }
+    public void setDeployedView(){ updateView(null, "Installed into rack.", false, false); }
 
-    public void setDeployingView(){ updateView("installing", "Installing.", false); }
-    public void setProcuringView(){ updateView("purchasing", "Purchasing.", false); }
-    public void setRemovingFromToolboxView(){ updateView("removing", "Removing from Toolbox.", false); }
-    public void setRemovingFromRackView(){ updateView("removing", "Removing from Rack.", false); }
+    public void setDeployingView(){ updateView("installing", "Installing.", false, true); }
+    public void setProcuringView(){ updateView("purchasing", "Purchasing.", false, true); }
+    public void setRemovingFromToolboxView(){ updateView("removing", "Removing from Toolbox.", false, true); }
+    public void setRemovingFromRackView(){ updateView("removing", "Removing from Rack.", false, false); }
 
-    public void setFailedInitView(){ updateView(null, "Failed Graphical Initialization.", false); }
-    public void setFailedProcureView(){ updateView(null, "Failed Purchase.", true); }
-    public void setFailedDeployView(){ updateView(null, "Failed Installation.", true); }
-    public void setFailedRemoveFromToolboxView(){ updateView(null, "Failed Removal from Toolbox.", true); }
-    public void setFailedRemoveFromRackView(){ updateView(null, "Failed Removal from Rack.", false); }
+    public void setFailedInitView(){ updateView(null, "Failed Graphical Initialization.", false, false); }
+    public void setFailedProcureView(){ updateView(null, "Failed Purchase.", true, false); }
+    public void setFailedDeployView(){ updateView(null, "Failed Installation.", true, false); }
+    public void setFailedRemoveFromToolboxView(){ updateView(null, "Failed Removal from Toolbox.", true, false); }
+    public void setFailedRemoveFromRackView(){ updateView(null, "Failed Removal from Rack.", false, false); }
     /////////////////////////////
 
 
