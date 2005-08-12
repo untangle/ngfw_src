@@ -16,3 +16,4 @@ usr/share/metavize/ssh_disable.sh
 usr/share/metavize/ssh_enable.sh
 usr/share/metavize/web/*
 usr/share/metavize/networking/*
+usr/share/metavize/tmp/
