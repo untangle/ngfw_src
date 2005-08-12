@@ -23,9 +23,7 @@ import com.metavize.tran.util.AsciiCharBuffer;
 import com.metavize.tran.token.Token;
 import org.apache.log4j.Logger;
 
-/* We handle USER, APOP, and AUTH LOGIN but no other AUTH types.
- * (Other AUTH types, such as AUTH KERBEROS_V4 and AUTH CRAM-MD5,
- *  use encryption schemes that we do not handle.)
+/* We handle USER and APOP but not AUTH.
  *
  * RFC 1939:
  * USER name
@@ -132,13 +130,11 @@ public class PopCommand implements Token
     private final static String USER = "^USER ";
     private final static String APOP = "^APOP ";
     private final static String LWSP = "\\p{Blank}"; /* linear-white-space */
-    private final static String AUTHLOGIN = "^AUTH" + LWSP + "LOGIN";
     private final static String CRLF = "\r\n";
     private final static String PEOLINE = CRLF + "$"; /* protocol EOLINE */
     private final static String LWSPEOL = "(" + LWSP + "|" + PEOLINE + ")";
     private final static Pattern USERP = Pattern.compile(USER, Pattern.CASE_INSENSITIVE);
     private final static Pattern APOPP = Pattern.compile(APOP, Pattern.CASE_INSENSITIVE);
-    private final static Pattern AUTHLOGINP = Pattern.compile(AUTHLOGIN, Pattern.CASE_INSENSITIVE);
     private final static Pattern LWSPEOLP = Pattern.compile(LWSPEOL);
 
     private final static String NO_USER = "unknown";
@@ -146,16 +142,14 @@ public class PopCommand implements Token
     private final String command;
     private final String argument;
     private final String zUser;
-    private final boolean bIsAuthLogin;
 
     // constructors -----------------------------------------------------------
 
-    private PopCommand(String command, String argument, String zUser, boolean bIsAuthLogin)
+    private PopCommand(String command, String argument, String zUser)
     {
         this.command = command;
         this.argument = argument;
         this.zUser = zUser;
-        this.bIsAuthLogin = bIsAuthLogin;
     }
 
     // static factories -------------------------------------------------------
@@ -170,7 +164,7 @@ public class PopCommand implements Token
 
         eatSpace(zDup);
         String arg = consumeBuf(zDup); /* eat CRLF */
-        return new PopCommand(cmd, 0 == arg.length() ? null : arg, null, false);
+        return new PopCommand(cmd, 0 == arg.length() ? null : arg, null);
     }
 
     public static PopCommand parseUser(ByteBuffer buf) throws ParseException
@@ -179,16 +173,10 @@ public class PopCommand implements Token
         String zTmp = AsciiCharBuffer.wrap(zDup).toString();
 
         String zUser;
-        boolean bIsAuthLogin;
 
         if (null == (zUser = getUser(zTmp, USERP)) &&
             null == (zUser = getUser(zTmp, APOPP))) {
             zUser = null;
-
-            Matcher zMatcher = AUTHLOGINP.matcher(zTmp);
-            bIsAuthLogin = zMatcher.find();
-        } else {
-            bIsAuthLogin = false;
         }
 
         String cmd = consumeToken(zDup);
@@ -198,7 +186,7 @@ public class PopCommand implements Token
 
         eatSpace(zDup);
         String arg = consumeBuf(zDup); /* eat CRLF */
-        return new PopCommand(cmd, 0 == arg.length() ? null : arg, zUser, bIsAuthLogin);
+        return new PopCommand(cmd, 0 == arg.length() ? null : arg, zUser);
     }
 
     // accessors --------------------------------------------------------------
@@ -221,11 +209,6 @@ public class PopCommand implements Token
     public boolean isUser()
     {
         return (null == zUser) ? false : true;
-    }
-
-    public boolean isAuthLogin()
-    {
-        return bIsAuthLogin;
     }
 
     // Token methods ----------------------------------------------------------
