@@ -5,6 +5,7 @@ usr/share/metavize/web/webstart
 usr/share/metavize/web/session-dumper
 usr/share/metavize/conf/etc
 usr/share/metavize/conf/etc/network
+usr/share/metavize/tmp
 var/log/mvvm
 var/lib/mvvm
 
