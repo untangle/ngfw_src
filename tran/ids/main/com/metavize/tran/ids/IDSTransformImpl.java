@@ -33,7 +33,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 	
 	public IDSTransformImpl() {
 		handler = new EventHandler();
-	 	octetPipeSpec = new SoloPipeSpec("ids-octet", this, handler,Fitting.OCTET_STREAM, Affinity.SERVER,0);
+	 	octetPipeSpec = new SoloPipeSpec("ids-octet", this, handler,Fitting.OCTET_STREAM, Affinity.SERVER,10);
 		httpPipeSpec = new SoloPipeSpec("ids-http", this, new TokenAdaptor(new IDSHttpFactory(this)), Fitting.HTTP_TOKENS, Affinity.SERVER,0);
 		pipeSpecs = new PipeSpec[] { httpPipeSpec, octetPipeSpec };
 	}

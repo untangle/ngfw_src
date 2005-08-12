@@ -17,5 +17,5 @@ $Id: mvvm-transform.xml,v 1.3 2005/02/07 22:15:39 amread Exp $
                   classname="com.metavize.tran.ids.IDSTransformImpl"
                   gui-classname="com.metavize.tran.ids.gui.MTransformJPanel"
   />
-  <!-- <parent>http-casing</parent>	-->		  
+  <parent>http-casing</parent>		  
 </mvvm-transform>

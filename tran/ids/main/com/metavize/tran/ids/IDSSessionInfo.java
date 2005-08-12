@@ -10,10 +10,17 @@ public class IDSSessionInfo {
 	private List<IDSRuleSignature> signatures;
 	private IPSession session;
 	private IPDataEvent event;
+	private String uriPath;
 	private boolean isServer;
 
-	public IDSSessionInfo(List<IDSRuleSignature> signatures) {
-		this.signatures = signatures;
+	public IDSSessionInfo() { };
+	
+	public void setUriPath(String path) {
+		uriPath = path;
+	}
+
+	public String  getUriPath() {
+		return uriPath;
 	}
 	/**Do i need to set session data? I dont think so..
 	 * Check later.
@@ -22,16 +29,20 @@ public class IDSSessionInfo {
 		this.session = session;
 	}
 
+	public void setSignatures(List<IDSRuleSignature> signatures) {
+		this.signatures = signatures;
+	}
+
 	public void setEvent(IPDataEvent event) {
 		this.event = event;
+	}
+	
+	public IPDataEvent getEvent() {
+		return event;
 	}
 
 	public void setFlow(boolean isServer) {
 		this.isServer = isServer;
-	}
-
-	public IPDataEvent getEvent() {
-		return event;
 	}
 
 	public boolean isServer() {

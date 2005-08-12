@@ -82,7 +82,8 @@ public class IDSTest {
 		Iterator<IDSRuleHeader> it = ruleList.iterator();
 		while(it.hasNext())
 			signatures.add(it.next().getSignature());
-		IDSSessionInfo info = new IDSSessionInfo(signatures);
+		IDSSessionInfo info = new IDSSessionInfo();
+		info.setSignatures(signatures);
 
 		/**Run Tests*/
 		TestDataEvent test = new TestDataEvent();

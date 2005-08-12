@@ -82,7 +82,7 @@ public class IDSRuleSignature {
 			if(!option.run())
 				return false;
 		}
-		doAction();
+		//doAction();
 		return true;
 	}
 

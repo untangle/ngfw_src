@@ -1,7 +1,7 @@
 package com.metavize.tran.ids.options;
 
 import java.util.regex.*;
-import java.util.Vector;
+//import java.util.Vector;
 
 import java.nio.ByteBuffer;
 import com.metavize.mvvm.tapi.event.*;
@@ -29,7 +29,6 @@ public class ContentOption extends IDSOption {
 	
 	public ContentOption(IDSRuleSignature signature, String params) {
 		super(signature, params);
-		//params = params.replaceAll("\"","");
 		int index = params.indexOf('|');
 		if(index < 0) {
 			contentPattern = Pattern.compile(params, Pattern.LITERAL);
@@ -61,13 +60,13 @@ public class ContentOption extends IDSOption {
 	}
 	
 	public boolean run() {
-		ByteBuffer eventData = getSignature().getSessionInfo().getEvent().data();
+		ByteBuffer eventData = super.getSignature().getSessionInfo().getEvent().data();
 		String data = new String(eventData.array());
 		if(start > data.length() || start < 0)
 			return false;
 		if(end <= 0 || end > data.length())
 			end = data.length();
-		return negationFlag() ^ contentPattern.matcher(data.substring(start)).find();
+		return super.negationFlag() ^ contentPattern.matcher(data.substring(start)).find();
 	}
 
 	/**

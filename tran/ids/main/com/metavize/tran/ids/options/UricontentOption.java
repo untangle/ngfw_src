@@ -1,0 +1,24 @@
+package com.metavize.tran.ids.options;
+
+import java.util.regex.*;
+import com.metavize.tran.ids.IDSRuleSignature;
+
+public class UricontentOption extends IDSOption {
+
+	private Pattern uriPattern;
+	public UricontentOption(IDSRuleSignature signature, String params) {
+		super(signature, params);
+		uriPattern = Pattern.compile(params, Pattern.LITERAL);
+	}
+
+	public boolean runnable() {
+		return true;
+	}
+	public boolean run() {
+		String path = super.getSignature().getSessionInfo().getUriPath();
+		if(path != null) {
+			return super.negationFlag() ^ uriPattern.matcher(path).find();
+		}
+		return false;
+	}
+}

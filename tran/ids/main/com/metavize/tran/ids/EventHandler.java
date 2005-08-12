@@ -31,7 +31,7 @@ public class EventHandler extends AbstractEventHandler {
 	}
 
 	public IPDataResult handleTCPClientChunk(TCPChunkEvent event) {
-			if(event.session().attachment() != null) // is there a better way to test this? Like ignore sessions wtih no matches?
+//			if(event.session().attachment() != null) // is there a better way to test this? Like ignore sessions wtih no matches?
 				idsEngine.handleChunk(event, event.session(), false);
 			return IPDataResult.PASS_THROUGH;
 	}
