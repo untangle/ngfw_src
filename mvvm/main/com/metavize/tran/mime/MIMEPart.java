@@ -511,25 +511,24 @@ public class MIMEPart {
     boolean decoded) 
     throws IOException {
     checkDisposed();
-    
-    String fileName = isAttachment()?
-      getAttachmentName():
-      "MIMEPART" + System.identityHashCode(this);
+
+    // 8/11/05 jdi -- User provided file name removed.
+    String fileNamePrefix = "mimepart";
         
     if(!decoded) {
-      return getRawContentRecord(factory).source.toFile(factory, fileName);
+      return getRawContentRecord(factory).source.toFile(factory, fileNamePrefix);
     }
     else {
       if(m_decodedContentRecord != null) {
-        return m_decodedContentRecord.source.toFile(factory, fileName);
+        return m_decodedContentRecord.source.toFile(factory, fileNamePrefix);
       }
       else {
         switch(m_sourceEncoding) {
           case QP:
-            decodedContentToFileSource(factory, fileName, new QPDecoderFactory());
+            decodedContentToFileSource(factory, fileNamePrefix, new QPDecoderFactory());
             return ((FileMIMESource) m_decodedContentRecord.source).getFile();
           case BASE64:
-            decodedContentToFileSource(factory, fileName, new BASE64DecoderFactory());
+            decodedContentToFileSource(factory, fileNamePrefix, new BASE64DecoderFactory());
             return ((FileMIMESource) m_decodedContentRecord.source).getFile();          
           case SEVEN_BIT:
           case EIGHT_BIT:
@@ -537,7 +536,7 @@ public class MIMEPart {
           case UUENCODE://For now, don't attempt uudecode
           case UNKNOWN:          
           default:
-             return getRawContentRecord(factory).source.toFile(factory, fileName);
+             return getRawContentRecord(factory).source.toFile(factory, fileNamePrefix);
         }
       }
     }
