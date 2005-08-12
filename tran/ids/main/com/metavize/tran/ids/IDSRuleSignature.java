@@ -67,7 +67,7 @@ public class IDSRuleSignature {
 			if(!option.run())
 				return;
 		}
-		doAction();
+	//	doAction();
 	}
 
 	private void doAction() {

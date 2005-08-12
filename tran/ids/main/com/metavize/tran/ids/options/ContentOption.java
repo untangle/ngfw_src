@@ -112,7 +112,6 @@ public class ContentOption extends IDSOption {
 	 */
 	
 	private void buildBytePattern(String params, int index) {
-		//while(sub
 		if(index == 0) {
 			index = params.indexOf('|', 1);
 			String bytes = params.substring(1,index);
@@ -120,6 +119,7 @@ public class ContentOption extends IDSOption {
 			parseByteStringPattern(bytes);
 			String substring = params.substring(index+1);
 			index = substring.indexOf('|',1) ;
+			
 			if(substring.length() > 0)
 				buildBytePattern(substring, index);
 		}
@@ -129,6 +129,7 @@ public class ContentOption extends IDSOption {
 			parseCharBytesPattern(params.substring(0,index));
 			String substring = params.substring(index);
 			index = 0;
+			
 			if(substring.length() > 0) 
 				buildBytePattern(substring, index);
 		}	

@@ -32,10 +32,8 @@ public class IDSDetectionEngine {
 	}
 
 	private IDSDetectionEngine() {
-		/*String test = "alert tcp 10.0.0.40-10.0.0.101 any -> 66.35.250.0/24 80 ( test: hi; content: slashdot; msg:\"OMG teH SLASHd0t\";)";
-		try {
-			rules.addRule(test);
-		} catch (ParseException e) { System.out.println("Could not parse rule; " + e.getMessage()); }*/
+		String test = "alert tcp 10.0.0.40-10.0.0.101 any -> 66.35.250.0/24 80 ( test: hi; content: slashdot; msg:\"OMG teH SLASHd0t\";)";
+		addRule(test);
 	}
 
 	public void addRule(String rule) {
@@ -57,6 +55,7 @@ public class IDSDetectionEngine {
 	
 	public void handleChunk(IPDataEvent event, IPSession session) {
 		IDSSessionInfo info = (IDSSessionInfo) session.attachment();
+		
 		info.setSession(session);
 		info.setEvent(event);
 

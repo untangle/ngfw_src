@@ -44,7 +44,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 	}
 
 	protected void postInit(String args[]) {
-		String path =  System.getProperty("bunnicula.home");
+		/*String path =  System.getProperty("bunnicula.home");
 		log.info("*****************************");
 		try {
 			BufferedReader in = new BufferedReader(new FileReader(path+"/ids-transform/debug.txt"));
@@ -54,6 +54,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 			}
 			in.close();
 		} catch (IOException e) { e.printStackTrace(); }//log.error("Failed to load rules from rules.txt"); } 
+		*/
 	}
 
 	protected void preStart() throws TransformStartException {
