@@ -64,6 +64,8 @@ public class MTransformJButton extends JButton {
         organizationIconJLabel = new JLabel();
         if( mackageDesc.getOrgIcon() != null )
             organizationIconJLabel.setIcon( new javax.swing.ImageIcon(mackageDesc.getOrgIcon()) );
+	else
+	    organizationIconJLabel.setIcon( new ImageIcon(getClass().getResource("/com/metavize/gui/transform/IconOrgUnknown42x42.png")) );
         //organizationIconJLabel.setDisabledIcon(this.orgIcon);
         organizationIconJLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         organizationIconJLabel.setFocusable(false);
@@ -81,6 +83,8 @@ public class MTransformJButton extends JButton {
         descriptionIconJLabel = new JLabel();
         if( mackageDesc.getDescIcon() != null )
             descriptionIconJLabel.setIcon( new javax.swing.ImageIcon(mackageDesc.getDescIcon()) );
+	else
+	    descriptionIconJLabel.setIcon( new ImageIcon(getClass().getResource("/com/metavize/gui/transform/IconDescUnknown42x42.png")) );
         //descriptionIconJLabel.setDisabledIcon(this.descIcon);
         descriptionIconJLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         descriptionIconJLabel.setFocusable(false);
