@@ -17,6 +17,7 @@ import com.metavize.mvvm.tran.PortRange;
 
 public class IDSDetectionEngine {
 
+	private int tmpcount = 0;
 	private IDSRules rules = new IDSRules();
 	Map<Integer,IDSSessionInfo> sessionInfoMap = new ConcurrentHashMap<Integer,IDSSessionInfo>();
 	

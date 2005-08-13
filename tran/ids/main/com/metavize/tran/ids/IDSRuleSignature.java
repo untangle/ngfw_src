@@ -13,6 +13,15 @@ import com.metavize.tran.ids.options.*;
 
 public class IDSRuleSignature {
 	
+	/***************************************
+	 * These are options that are safe to ignore
+	 * Any other option *WILL DROP THE RULE*
+	 * 
+	 * These rules should all be added at some point!
+	 *****************************************/
+	private String[] ignoreSafeOptions = { "rev","sid","classtype","reference" };
+	/** **************************************/
+	
 	private List<IDSOption> options = new Vector<IDSOption>();
 	private IDSSessionInfo info;
 	
@@ -41,11 +50,18 @@ public class IDSRuleSignature {
 		return removeFlag;
 	}
 	public void addOption(String optionName, String params) {
+		 for(int i = 0; i < ignoreSafeOptions.length; i++) {
+			 if(optionName.equalsIgnoreCase(ignoreSafeOptions[i]))
+				 return;
+		 }
+		 
 		IDSOption option = IDSOption.buildOption(this,optionName,params);
 		if(option != null && option.runnable())
 			options.add(option);
-		else if(option == null)
+		else if(option == null) {
 			log.info("Could not add option: " + optionName);
+			removeFlag = true;
+		}
 	}
 
 	public IDSOption getOption(String name) {
@@ -82,7 +98,7 @@ public class IDSRuleSignature {
 			if(!option.run())
 				return false;
 		}
-		//doAction();
+//		doAction();
 		return true;
 	}
 

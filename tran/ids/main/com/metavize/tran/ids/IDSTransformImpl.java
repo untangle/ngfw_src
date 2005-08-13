@@ -65,7 +65,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 	}
 
 	protected void postInit(String args[]) {
-/*		log.info("\n*******************Loading Rules**********************");
+		log.info("\n*******************Loading Rules**********************");
 		String path =  System.getProperty("bunnicula.home");
 		File file = new File(path+"/ids-transform/rules");
 		visitAllFiles(file); // */
@@ -74,7 +74,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 	protected void preStart() throws TransformStartException {
 		IDSTest test = new IDSTest();
 		if(!test.runTest())
-		  throw new TransformStartException("IDS Test failed");
+		  throw new TransformStartException("IDS Test failed"); // */
 		
 	}
 	

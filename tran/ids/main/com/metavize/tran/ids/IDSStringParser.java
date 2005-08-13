@@ -2,6 +2,7 @@ package com.metavize.tran.ids;
 
 import java.util.regex.*;
 import java.util.List;
+import java.util.LinkedList;
 import java.util.Vector;
 
 import com.metavize.tran.ids.options.*;
@@ -13,6 +14,9 @@ import com.metavize.mvvm.tran.ParseException;
 public class IDSStringParser {
 
 	private static Pattern maskPattern = Pattern.compile("\\d\\d");
+	private static Pattern semicolonMask = Pattern.compile("\\;");
+	//private static Pattern qouteMaskPattern = Pattern.compile("\\b\"[^\"\\r\\n\\t]*?(;|:)[^\"\\r\\n\\t]*?\"\\b");
+	//private static Pattern replacementPattern = Pattern.compile("@@REPLACMENT@@");
 	
 	private static boolean clientIPFlag;
 	private static boolean clientPortFlag;
@@ -22,15 +26,81 @@ public class IDSStringParser {
 	public static String[] parseRuleSplit(String rule) throws ParseException {
 		int first = rule.indexOf("(");
 		int last = rule.lastIndexOf(")");
-		String parts[] = { rule.substring(0,first), rule.substring(first+1,last) };
 		if(first < 0 || last < 0)
-			throw new ParseException("Could not split rule: " + rule + " :: "+parts.length);
+			throw new ParseException("Could not split rule: ");
+		String parts[] = { rule.substring(0,first).trim(), rule.substring(first+1,last).trim() };
+		
 		return parts;
 	}
 	
 	public static IDSRuleSignature parseSignature(String signatureString, int action) throws ParseException {
 		IDSRuleSignature returnSignature = new IDSRuleSignature(action);
+		/*
+		int delim;
+		while((delim = signatureString.indexOf(';')) > 0 ) {
+			
+			int first = signatureString.indexOf('"');
+			int second;
+			
+			int index = signatureString.indexOf(':');
+		//	int nextIndex;
+			
+		//	if(index > 0)
+		//		nextIndex = index+1+signatureString.substring(index+1).indexOf(':');
+		//	else
+		//		nextIndex = signatureString.length();
+	//		System.out.println("Index: " + index + "NextIndex: "+nextIndex);
+			//second = (first >= 0) ? (first+1+signatureString.substring(first+1,nextIndex).lastIndexOf('"')) : -1;
+			second = (first >= 0) ? (first+1+signatureString.substring(first+1).indexOf('"')) : -1;
+			while(delim > first && delim < second) 
+				delim = delim+1+signatureString.substring(delim+1).indexOf(';');
+			String optionName;
+			String params;
+			if(index >= 0 && index < delim) {
+				optionName = signatureString.substring(0,index).trim();
+				params = signatureString.substring(index+1,delim).trim();
+			}
+			else {
+				optionName = signatureString.substring(0,delim).trim();
+				params = "No params";
+			}
+			signatureString = signatureString.substring(delim+1).trim();
+	//		System.out.println("\n\n\nRaawr");
+	//		System.out.println(optionName);
+	//		System.out.println(params);
+	//		System.out.println(signatureString);
+			returnSignature.addOption(optionName, params);
+		}*/
+		/*
+		int index;
+		while((index = signatureString.indexOf(':')) > 0 ) {
+			String optionName = signatureString.substring(0,index).trim();
+			signatureString = signatureString.substring(index+1);
+			index = signatureString.indexOf(':');
+			int delim = signatureString.substring(0,index).lastIndexOf(';');
+			String params = signatureString.substring(0,delim).trim();
+			signatureString = signatureString.substring(delim+1);
+			System.out.println(" ***************: " + optionName+", " + params);
+			returnSignature.addOption(optionName, params);
+		}*/
 		
+		String replaceChar = ""+0xff42;
+		signatureString = signatureString.replaceAll("\\\\;",replaceChar);
+		String options[] = signatureString.trim().split(";");
+		for(int i = 0; i < options.length; i++) {
+			options[i].trim();	
+		//	System.out.println("FKSF: "+options[i]);
+			options[i] = options[i].replaceAll(replaceChar,"\\\\;");
+		//	System.out.println("OPTION: "+options[i]);
+			int delim = options[i].indexOf(':');
+			if(delim < 0)
+				returnSignature.addOption(options[i].trim(),"No Params");
+			else {
+				String opt = options[i].substring(0,delim).trim();
+				returnSignature.addOption(opt, options[i].substring(delim+1).trim());
+			}
+		} // */ 
+		/*
 		String options[] = signatureString.trim().split(";( |$)"); //add a way to ignore ; within " " of each option
 		for(int i = 0; i < options.length; i++) {
 			options[i].trim();
@@ -41,8 +111,8 @@ public class IDSStringParser {
 				String opt = options[i].substring(0,delim).trim();
 				returnSignature.addOption(opt, options[i].substring(delim+1).trim());
 			}
-		}
-		
+		} */
+	
 		return returnSignature;
 	}	
 	public static IDSRuleHeader parseHeader(String header) throws ParseException {
@@ -121,7 +191,7 @@ public class IDSStringParser {
 		else if(direction.equals("->"))
 			return !IDSRuleHeader.IS_BIDIRECTIONAL;
 		else
-			throw new ParseException("Invalid direction opperator:" + direction);
+			throw new ParseException("Invalid direction opperator: " + direction);
 	}
 
 	private static String stripNegation(String str) {

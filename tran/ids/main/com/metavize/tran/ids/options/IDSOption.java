@@ -1,6 +1,7 @@
 package com.metavize.tran.ids.options;
 
 import java.lang.reflect.*;
+import java.util.regex.PatternSyntaxException;
 import org.apache.log4j.Logger;
 import org.apache.log4j.Level;
 
@@ -52,7 +53,14 @@ public abstract class IDSOption {
 		
 		optionName = optionName.toLowerCase();
 		char ch = optionName.charAt(0);
-		optionName = optionName.replaceFirst(""+ch,""+(char)(ch - 'a' + 'A'));
+		try {
+			optionName = optionName.replaceFirst(""+ch,""+(char)(ch - 'a' + 'A'));
+		} catch(PatternSyntaxException e) {
+			System.out.println("Char:: " + ch);
+			System.out.println(optionName);
+			System.out.println(params);
+			e.printStackTrace();
+		}
 		
 		try {
 			optionDefinition = Class.forName("com.metavize.tran.ids.options."+optionName+"Option");
@@ -66,9 +74,9 @@ public abstract class IDSOption {
 			}
 			option.negationFlag = flag;
 		} catch (ClassNotFoundException e) {
-			log.debug("Could not load option: "+e.getMessage());
+			log.debug("Could not load option(ClassNotFound): "+e.getMessage());
 		} catch (NoSuchMethodException e) {
-			log.debug("Could not load option: "+e.getMessage());
+			log.debug("Could not load option(NoSuchMethod): "+e.getMessage());
 		}
 		return option;
 	}

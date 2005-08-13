@@ -10,7 +10,7 @@ import com.metavize.tran.ids.IDSSessionInfo;
 
 public class DsizeOption extends IDSOption {
 	
-	private IDSSessionInfo info;
+//	private IDSSessionInfo info;
 	
 	private static final Logger log = Logger.getLogger(DsizeOption.class);
 	static {
@@ -21,7 +21,7 @@ public class DsizeOption extends IDSOption {
 	int max;
 	public DsizeOption(IDSRuleSignature signature, String params) {
 		super(signature, params);
-		info = signature.getSessionInfo();
+		IDSSessionInfo info = signature.getSessionInfo();
 		
 		char ch = params.charAt(0);	
 		String range[] = params.split("<>");

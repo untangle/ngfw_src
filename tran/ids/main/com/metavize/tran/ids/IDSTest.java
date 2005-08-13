@@ -43,18 +43,18 @@ public class IDSTest {
 	public IDSTest() {}
 
 	public boolean runTest() {
-		log.warn("\n************************Running Test******************************");
+		log.warn("**Running Test**");
 		generateRuleTest();
 		runHeaderTest();
 		runSignatureTest();
-		generateRandomRuleHeaders(1000);
-		runTimeTest(1);
+		//generateRandomRuleHeaders(1000);
+		//runTimeTest(1);
 		return true;
 	}
 
 	private boolean generateRuleTest() {
 		String testValidStrings[] 	= { 
-			"alert tcp any any -> any any (msg:\"Rule Zero\"; content:\"|00|bob|00||00|bob\")",
+			"alert tcp any any -> any any (msg:\"Rule Zero\"; content:\"|00|bob|00||00|bob\";)",
 			"alert tcp 10.0.0.40-10.0.0.101 any -> 66.35.250.0/24 80 (content:\"bob\"; msg:\"Rule One\"; flow: to_server;)",
 			"alert tcp 10.0.0.101 !5000: -> 10.0.0.1/16 !80 (content: \"BOB\"; offset: 3; nocase; msg:\"Rule tW0\"; flow: from_server;)",
 			"alert TCP 10.0.0.101 4000:5000 <> 10.0.0.1/24 :6000 (content:\"bob\"; content:\"BOB\"; nocase; msg:  Rule 3; dsize: < 5;)",
@@ -62,7 +62,11 @@ public class IDSTest {
 			"alert tcp any any -> any any (msg:\"Rule 5\"; dsize:  > 4 ;)",
 			"alert tcp any any -> any any (msg:\"Rule 6\"; content:|DE AD BE EF|BOB; nocase;)", 
 			"alert tcp any any -> any any (msg:\"Rule 7\"; pcre:\"/r(a|u)wr/smi\" ;)",
-			"alert tcp 66.35.250.0/24 any -> 10.0.0.1/24 any (msg:\"Rule 8, Server as client test\")" };
+			"alert tcp 66.35.250.0/24 any -> 10.0.0.1/24 any (msg:\"Rule 8, Server as client test\")", 
+			"alert udp any any -> any any (msg:\"Rule 9\"; uricontent:\"/is/just/a/\"; nocase;)",
+			"alert udp any any -> any any (msg:\"rule 10 (exploit test1)\"; flow:to_server,established; content:\"|90 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90|\"; reference:bugtraq,2347; reference:cve,2001-0144; reference:cve,2001-0572; classtype:shellcode-detect; sid:1326; rev:6;)",
+			"alert udp $EXTERNAL_NET any -> $HOME_NET 22 (msg:\"Rule 11(exploit test2)\"; flow:to_server,established; content:\"|00 01|W|00 00 00 18|\"; depth:7; content:\"|FF FF FF FF 00 00|\"; depth:14; offset:8; reference:bugtraq,2347; reference:cve,2001-0144; reference:cve,2001-0572; classtype:shellcode-detect; sid:1327; rev:7;)",
+			"alert tcp any any -> any any (msg:\"Rule 12\"; nocase; pcre:\"/(stuff=.*(a|b|c|\\;|d?rar))/i\"; dsize:  > 4 ;)"};
 		
 		for(int i=0; i < testValidStrings.length; i++) {
 			try { 
@@ -70,8 +74,8 @@ public class IDSTest {
 			} catch (ParseException e)  { log.error(e.getMessage()); }
 		}
 		return true;
-	}
-
+	}				
+		
 	private void runSignatureTest() {
 		/**These test ignore header matching, and thus can deal with
 		 * all the test signatures*/
@@ -84,12 +88,15 @@ public class IDSTest {
 			signatures.add(it.next().getSignature());
 		IDSSessionInfo info = new IDSSessionInfo();
 		info.setSignatures(signatures);
+		info.setUriPath("/this/is/just/a/test");
 
 		/**Run Tests*/
 		TestDataEvent test = new TestDataEvent();
 		checkSessionData(info, test, true, 0, false);
 		checkSessionData(info, test, false, 4, false);
+		checkSessionData(info, test, true, 9, true);
 		
+		info.setUriPath("rawr");
 		byte[] basicNoCase = {'b','o','b'};
 		test.setData(basicNoCase);
 		checkSessionData(info, test, false, 1, true);
@@ -97,6 +104,8 @@ public class IDSTest {
 		checkSessionData(info, test, true, 2, false);
 		checkSessionData(info, test, true, 3, true);
 		checkSessionData(info, test, false, 5, false);
+		checkSessionData(info, test, false, 9, false);
+		checkSessionData(info, test, false, 12, false);
 
 		byte[] basicNoCase1 = {'1','2','3','B','O','B'};
 		test.setData(basicNoCase1);
@@ -117,14 +126,30 @@ public class IDSTest {
 		checkSessionData(info, test, false,4, false);
 		checkSessionData(info, test, true, 5, true);
 		checkSessionData(info, test, false, 6, true);
-	}
-				
+		checkSessionData(info, test, false, 10, false);
+
+		byte[] nopSled = new byte[20];
+		for(int i=0; i<nopSled.length;i++)
+			nopSled[i] = (byte) 0x90;
+		test.setData(nopSled);
+		checkSessionData(info, test, false, 6, false);
+		checkSessionData(info, test, false, 10, true);
+
+		byte[] test11 = { (byte)0x00, (byte) 0x01, 'W',  (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x18, 'f', (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte) 0x00, (byte) 0x00 };	
+		test.setData(test11);
+		checkSessionData(info, test, false, 11, true);	
+		
+		byte[] test11FailDepth = { (byte)0x00, (byte) 0x01, 'W',  (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x18, 'f', 'a','a','a','a','a','a','a','a','a','a','a', (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte) 0x00, (byte) 0x00 }; 
+	test.setData(test11FailDepth);   
+	checkSessionData(info, test, false, 11, false);
+			
+	}			
 	private void checkSessionData(IDSSessionInfo info, IPDataEvent event, boolean isServer,int ruleNum,  boolean answer) {
 		info.setEvent(event);
 		info.setFlow(isServer);
 		if(!checkAnswer(info.testSignature(ruleNum), answer)) {
-			log.warn("\tOption Test Failed on rule:\n " + ruleNum);
-			log.warn("\tSignature contents::\n " + info.getSignature(ruleNum));
+			log.warn("Option Test Failed on rule: " + ruleNum);
+			log.warn("\tSignature contents::\n" + info.getSignature(ruleNum));
 			log.warn("Data: " + new String(event.data().array()));
 		}
 	}
@@ -137,6 +162,7 @@ public class IDSTest {
 		matchTest(ruleList.get(1), Protocol.TCP, "10.0.0.101", 33242, "66.35.250.8", 80, true);
 		matchTest(ruleList.get(0), Protocol.TCP, "192.168.1.1", 33065, "66.33.22.111", 80, true);
 		matchTest(ruleList.get(0), Protocol.UDP, "192.168.1.1", 33065, "66.33.22.111", 80, false);
+		matchTest(ruleList.get(11), Protocol.UDP, "123.123.123.123", 1254, "10.0.0.123", 22, true);
 		matchTest(ruleList.get(1), Protocol.TCP, "192.168.1.1", 33065, "66.33.22.111", 80, false);
 		matchTest(ruleList.get(2), Protocol.TCP, "192.168.1.1", 33065, "66.33.22.111", 80, false);
 		matchTest(ruleList.get(4), Protocol.TCP, "192.168.1.1", 33065, "66.33.22.111", 80, true);

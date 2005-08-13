@@ -48,13 +48,20 @@ public class ContentOption extends IDSOption {
 	}
 
 	public void setOffset(int val) {
-		start = val;
+		setStartAndEndPoints(val,end);
 	}
 
 	public void setDepth(int val) {
-		end = start+val;
+		setStartAndEndPoints(start,val);
 	}
-		
+	
+	private void setStartAndEndPoints(int offset, int depth) {
+		start = offset;
+		end = offset+depth;
+		if(start == end)
+			end = 0;
+	}
+	
 	public boolean runnable() {
 		return true;
 	}
@@ -66,7 +73,7 @@ public class ContentOption extends IDSOption {
 			return false;
 		if(end <= 0 || end > data.length())
 			end = data.length();
-		return super.negationFlag() ^ contentPattern.matcher(data.substring(start)).find();
+		return super.negationFlag() ^ contentPattern.matcher(data.substring(start,end)).find();
 	}
 
 	/**

@@ -49,13 +49,18 @@ public class IDSRules {
 
 	public List<IDSRuleSignature> matchesHeader(Protocol protocol, InetAddress clientAddr, int clientPort, InetAddress serverAddr, int serverPort) {
 		List<IDSRuleSignature> returnList = new LinkedList();
+	//	System.out.println(rules.size()); /** *****************************************/
 		
 		Iterator<IDSRuleHeader> it = rules.iterator();
 		while(it.hasNext()) {
 			IDSRuleHeader header = it.next();
-			if(header.matches(protocol, clientAddr, clientPort, serverAddr, serverPort))
+			if(header.matches(protocol, clientAddr, clientPort, serverAddr, serverPort)) {
 				returnList.add(header.getSignature());
+			//	System.out.println("\n\n"+header+"\n"+header.getSignature());
+			}
 		}
+	//	System.out.println(returnList.size()); /** *****************************************/
+		
 		return returnList;
 	}
 
@@ -75,8 +80,11 @@ public class IDSRules {
 		string = string.replaceAll("\\$HTTP_SERVERS", "10.0.0.1/24");
 		string = string.replaceAll("\\$SMTP_SERVERS", "any");
 		string = string.replaceAll("\\$SSH_PORTS", "any");
-		string = string.replaceAll("\\$.*\b", "any");
-		
+		string = string.replaceAll("\\$SQL_SERVERS", "any");
+		string = string.replaceAll("\\$TELNET_SERVERS", "any");
+		string = string.replaceAll("\\$ORACLE_PORTS", "any");
+		string = string.replaceAll("\\$AIM_SERVERS", "any");
+		//string = string.replaceAll("\\b\\$.*\\b", "any");
 		return string;
 	}
 }
