@@ -208,7 +208,7 @@ h4 {
               <td class="page_header_alternate" align="right">
 EOF
 
-/bin/date +'%A %B %e, %Y' >> $main_index
+/bin/date -d'yesterday' +'%A %B %e, %Y' >> $main_index
 
 if [ "$generate_email_index" = true ]; then
     if [ "$period" = daily ]; then
