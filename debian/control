@@ -176,10 +176,11 @@ Package: ids-transform
 Architecture: any
 Depends: mvvm
 XB-Price: 0
-XB-Display-Name: IDS
+XB-Display-Name: Intrusion Detection
 XB-Website: http://www.metavize.com
 XB-Rack-Position: 42
-Description: What is the meaning of Life? The Universe? Everything?
+Description: The Metavize Intrusion Detection Software Appliance
+  What is the meaning of Life? The Universe? Everything?
 
 Package: metavize-client
 Architecture: any

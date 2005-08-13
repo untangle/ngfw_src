@@ -352,6 +352,10 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       <fileset dir="../tran/spamassassin/main">
         <include name="**/*png"/>
       </fileset>
+      <fileset dir="../tran/ids/main">
+        <include name="**/*png"/>
+      </fileset>
+
 
 
     </jar>
