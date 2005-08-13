@@ -126,6 +126,7 @@ public abstract class PopStateMachine extends AbstractTokenHandler
             break;
 
         default:
+            resetClient();
             throw new IllegalStateException("unexpected state: " + clientState);
         }
 
@@ -183,6 +184,7 @@ public abstract class PopStateMachine extends AbstractTokenHandler
             break;
 
         default:
+            resetServer();
             throw new IllegalStateException("unexpected state: " + serverState);
         }
 
@@ -254,6 +256,7 @@ public abstract class PopStateMachine extends AbstractTokenHandler
     {
         if (null != zMMessage) {
             /* cannot recover if message is missing */
+            resetServer();
             throw new TokenException("message is not defined; cannot append chunk to message");
         }
 
@@ -268,6 +271,7 @@ public abstract class PopStateMachine extends AbstractTokenHandler
     protected TokenResult doMIMEMessageEnd(EndMarker zEndMarkerT) throws TokenException
     {
         if (null != zMMessage) {
+            resetServer();
             throw new TokenException("message is not defined; cannot end message");
         }
 
@@ -406,12 +410,14 @@ public abstract class PopStateMachine extends AbstractTokenHandler
             } else if (token instanceof PopCommandMore) {
                 clientState = ClientState.COMMAND_MORE;
             } else {
+                resetClient();
                 throw new TokenException("cur: " + clientState + ", next: bad token: " + token.toString());
             }
 
             return clientState;
 
         default:
+            resetClient();
             throw new IllegalStateException("bad state: " + clientState);
         }
     }
@@ -431,6 +437,7 @@ public abstract class PopStateMachine extends AbstractTokenHandler
             } else if (token instanceof DoNotCareT) {
                 serverState = ServerState.DONOTCARE_START;
             } else {
+                resetServer();
                 throw new TokenException("cur: " + serverState + ", next: bad token: " + token.toString());
             }
 
@@ -446,6 +453,7 @@ public abstract class PopStateMachine extends AbstractTokenHandler
             } else if (token instanceof PopReplyMore) {
                 serverState = ServerState.REPLY_MORE;
             } else {
+                resetServer();
                 throw new TokenException("cur: " + serverState + ", next: bad token: " + token.toString());
             }
 
@@ -459,6 +467,7 @@ public abstract class PopStateMachine extends AbstractTokenHandler
             } else if (token instanceof DoNotCareT) {
                 serverState = ServerState.DONOTCARE_START;
             } else {
+                resetServer();
                 throw new TokenException("cur: " + serverState + ", next: bad token: " + token.toString());
             }
 
@@ -470,6 +479,7 @@ public abstract class PopStateMachine extends AbstractTokenHandler
             } else if (token instanceof EndMarker) {
                 serverState = ServerState.MARKER;
             } else {
+                resetServer();
                 throw new TokenException("cur: " + serverState + ", next: bad token: " + token.toString());
             }
 
@@ -481,6 +491,7 @@ public abstract class PopStateMachine extends AbstractTokenHandler
             } else if (token instanceof EndMarker) {
                 serverState = ServerState.MARKER;
             } else {
+                resetServer();
                 throw new TokenException("cur: " + serverState + ", next: bad token: " + token.toString());
             }
 
@@ -495,6 +506,7 @@ public abstract class PopStateMachine extends AbstractTokenHandler
                     serverState = ServerState.REPLY;
                 }
             } else {
+                resetServer();
                 throw new TokenException("cur: " + serverState + ", next: bad token: " + token.toString());
             }
 
@@ -508,6 +520,7 @@ public abstract class PopStateMachine extends AbstractTokenHandler
             } else if (token instanceof DoNotCareT) {
                 serverState = ServerState.DONOTCARE_START;
             } else {
+                resetServer();
                 throw new TokenException("cur: " + serverState + ", next: bad token: " + token.toString());
             }
 
@@ -519,6 +532,7 @@ public abstract class PopStateMachine extends AbstractTokenHandler
             } else if (token instanceof EndMarker) {
                 serverState = ServerState.TRICKLE_MARKER;
             } else {
+                resetServer();
                 throw new TokenException("cur: " + serverState + ", next: bad token: " + token.toString());
             }
 
@@ -533,6 +547,7 @@ public abstract class PopStateMachine extends AbstractTokenHandler
             return serverState;
 
         default:
+            resetServer();
             throw new IllegalStateException("bad state: " + serverState);
         }
     }

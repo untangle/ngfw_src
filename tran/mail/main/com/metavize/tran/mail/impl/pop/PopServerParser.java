@@ -384,11 +384,10 @@ public class PopServerParser extends AbstractParser
          * swap MIMEMessage token with trickle token, and
          * pass through do-not-care tokens (and stay in DONOTCARE stage)
          */
-        zTokens.add(new DoNotCareT(zBuf));
-
-//        closeMsgChannel();
-//        zMsgFile = null;
-//
+        ByteBuffer zDup = ByteBuffer.allocate(zBuf.remaining());
+        zDup.put(zBuf);
+        zDup.rewind();
+        zTokens.add(new DoNotCareT(zDup));
         return;
     }
 
