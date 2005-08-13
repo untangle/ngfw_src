@@ -43,6 +43,8 @@ public class HibernateAppender extends AppenderSkeleton
     private static final int BATCH_SIZE = 1000;
     private static final int SLEEP_TIME = 15000;
 
+    private static final Object WRITE_LOCK = new Object();
+
     private static final Logger logger = Logger
         .getLogger(HibernateAppender.class);
 
@@ -170,7 +172,9 @@ public class HibernateAppender extends AppenderSkeleton
                 try {
                     drainTo(l);
                     if (!shutdown) {
-                        persist(l);
+                        synchronized (WRITE_LOCK) {
+                            persist(l);
+                        }
                     }
                 } catch (Exception exn) {
                     logger.warn("danger, will robinson", exn); // never die
