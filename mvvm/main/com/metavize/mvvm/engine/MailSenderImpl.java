@@ -67,7 +67,8 @@ public class MailSenderImpl implements MailSender
 
     private static final MimetypesFileTypeMap mimetypesFileTypeMap = new MimetypesFileTypeMap();
 
-    // This is the session used to send alert mail inside the organization
+    // This is the session used to send alert mail inside the organization, including
+    // SMTP spam/virus notification.
     private Session alertSession;
 
     // This is the session used to send report mail inside the organization
@@ -201,12 +202,8 @@ public class MailSenderImpl implements MailSender
     // Called when settings updated.
     private void refreshSessions(MailSettings settings) {
         Properties mvProps = new Properties();
-        // If they have set a SMTP host, trust it (since we might not be able to route
-        // mail out at all directly), otherwise use us directly.
-        if (settings.getSmtpHost() != null)
-            mvProps.put(MAIL_HOST_PROP, settings.getSmtpHost());
-        else
-            mvProps.put(MAIL_HOST_PROP, METAVIZE_SMTP_RELAY);
+        // This one uses our SMTP host.
+        mvProps.put(MAIL_HOST_PROP, METAVIZE_SMTP_RELAY);
         // What we really want here is something that will uniquely identify the customer,
         // including the serial # stamped on the CD. XXXX
         mvProps.put(MAIL_FROM_PROP, settings.getFromAddress());
@@ -348,11 +345,23 @@ public class MailSenderImpl implements MailSender
         String[] recipients = new String[1];
         recipients[0] = ERROR_LOG_RECIPIENT;
 
-        if (parts == null) {
-            // Do this simplest thing.  Shouldn't be used. XX
-            sendSimple(mvSession, recipients, subject, bodyText, null);
-        } else {
-            sendMixed(mvSession, recipients, subject, bodyText, parts);
+        // New behavior 8/15/05: First try our own mail server, if that doesn't work
+        // (they have a firewall rule preventing it, for instance), try their email
+        // server.  If that doesn't work, go ahead and drop it.  jdi
+        Session[] trySessions = new Session[] { mvSession, alertSession };
+        boolean success = false;
+        for (Session session : trySessions) {
+            if (parts == null) {
+                // Do this simplest thing.  Shouldn't be used. XX
+                success = sendSimple(session, recipients, subject, bodyText, null);
+            } else {
+                success = sendMixed(session, recipients, subject, bodyText, parts);
+            }
+            if (success)
+                break;
+        }
+        if (!success) {
+            logger.error("Unable to send exception email, dropping");
         }
     }
 
@@ -387,7 +396,7 @@ public class MailSenderImpl implements MailSender
       MimeMessage msg = null;
       
       try {
-        msg = new MimeMessage(mvSession, msgStream);
+        msg = new MimeMessage(alertSession, msgStream);
         msg.setHeader("X-Mailer", Mailer);
       }
       catch(Exception ex) {
@@ -402,7 +411,7 @@ public class MailSenderImpl implements MailSender
         return true;
       }
       catch(Exception ex) {
-        logger.error("Unable to send Message", ex);
+        logger.warn("Unable to send Message", ex);
         return false;
       }
     }
@@ -473,8 +482,8 @@ public class MailSenderImpl implements MailSender
         }
     }
 
-    void sendSimple(Session session, String[] to, String subject,
-                    String bodyText, MimeBodyPart attachment)
+    boolean sendSimple(Session session, String[] to, String subject,
+                       String bodyText, MimeBodyPart attachment)
     {
         if (SessionDebug)
             session.setDebug(true);
@@ -483,7 +492,7 @@ public class MailSenderImpl implements MailSender
         Message msg = prepMessage(session, to, subject);
         if (msg == null)
             // Nevermind after all.
-            return;
+            return true;
 
         try {
             if (attachment == null) {
@@ -501,13 +510,15 @@ public class MailSenderImpl implements MailSender
             // send it
             Transport.send(msg);
             logIt(msg);
+            return true;
         } catch (MessagingException x) {
-            logger.error("Unable to send message", x);
+            logger.warn("Unable to send message", x);
+            return false;
         }
     }
 
-    void sendRelated(Session session, String[] to, String subject,
-                     String bodyHTML, List<MimeBodyPart> extras)
+    boolean sendRelated(Session session, String[] to, String subject,
+                        String bodyHTML, List<MimeBodyPart> extras)
     {
         if (SessionDebug)
             session.setDebug(true);
@@ -516,7 +527,7 @@ public class MailSenderImpl implements MailSender
         Message msg = prepMessage(session, to, subject);
         if (msg == null)
             // Nevermind after all.
-            return;
+            return true;
 
         try {
             Multipart mp = new MimeMultipart("related");
@@ -531,12 +542,14 @@ public class MailSenderImpl implements MailSender
             // send it
             Transport.send(msg);
             logIt(msg);
+            return true;
         } catch (MessagingException x) {
-            logger.error("Unable to send message", x);
+            logger.warn("Unable to send message", x);
+            return false;
         }
     }
 
-    void sendMixed(Session session, String[] to, String subject,
+    boolean sendMixed(Session session, String[] to, String subject,
                    String bodyText, List<MimeBodyPart> extras)
     {
         if (SessionDebug)
@@ -546,7 +559,7 @@ public class MailSenderImpl implements MailSender
         Message msg = prepMessage(session, to, subject);
         if (msg == null)
             // Nevermind after all.
-            return;
+            return true;
 
         try {
             Multipart mp = new MimeMultipart("mixed");
@@ -561,8 +574,10 @@ public class MailSenderImpl implements MailSender
             // send it
             Transport.send(msg);
             logIt(msg);
+            return true;
         } catch (MessagingException x) {
-            logger.error("Unable to send message", x);
+            logger.warn("Unable to send message", x);
+            return false;
         }
     }
 
