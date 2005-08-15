@@ -64,50 +64,46 @@ public class MPipelineJPanel extends javax.swing.JPanel {
 	    }	    
         }
 	if( installedTransformID.length == 0 )
-	    Util.getStatusJProgressBar().setValue(64);
+	    Util.getStatusJProgressBar().setValue(54);
 	
         while(installedCount < initialInstallCount){
             try{
-                Thread.sleep(250l);
+                Thread.sleep(100l);
             }
             catch(Exception e){}
         }
+	loadAllCasings(false);
+	Util.getStatusJProgressBar().setValue(64);
     }
     
     // USED FOR LOADING/PRELOADING OF CASINGS
     public MCasingJPanel[] loadAllCasings(boolean generateGuis){
+	final String casingNames[] = {"mail-casing", "ftp-casing", "http-casing"};
 	Vector<MCasingJPanel> mCasingJPanels = new Vector<MCasingJPanel>();
-	Tid allTransformInstances[] = Util.getTransformManager().transformInstances();
+	Tid casingInstances[] = null;
 	TransformContext transformContext = null;
 	TransformDesc transformDesc = null;
-	MackageDesc mackageDesc = null;
-	String casingName = null;
 	String casingGuiClassName = null;
 	Class casingGuiClass = null;
 	Constructor casingGuiConstructor = null;
 	MCasingJPanel mCasingJPanel = null;
-        for(Tid tid : allTransformInstances){
-	    transformContext = Util.getTransformManager().transformContext(tid);
-	    transformDesc = transformContext.getTransformDesc();
-	    mackageDesc = transformContext.getMackageDesc();
-	    casingName = transformDesc.getName();
-	    casingGuiClassName = transformDesc.getGuiClassName();
-	    if( mackageDesc.getType() == MackageDesc.CASING_TYPE ){
-		if( casingName.equals("mail-casing")
-		    || casingName.equals("http-casing")
-		    || casingName.equals("ftp-casing") ){
-		    try{
-			casingGuiClass = Util.getClassLoader().loadClass( casingGuiClassName, casingName );
-			if(generateGuis){
-			    casingGuiConstructor = casingGuiClass.getConstructor(new Class[]{TransformContext.class});
-			    mCasingJPanel = (MCasingJPanel) casingGuiConstructor.newInstance(new Object[]{transformContext});
-			    mCasingJPanels.add(mCasingJPanel);
-			}
-		    }
-		    catch(Exception e){
-			Util.handleExceptionNoRestart("Error building gui from casing context: " + casingName, e);
-		    }
+        for(String casingName : casingNames){
+	    try{
+		casingInstances = Util.getTransformManager().transformInstances(casingName);
+		if( Util.isArrayEmpty(casingInstances) )
+		    continue;
+		transformContext = Util.getTransformManager().transformContext(casingInstances[0]);
+		transformDesc = transformContext.getTransformDesc();
+		casingGuiClassName = transformDesc.getGuiClassName();
+		casingGuiClass = Util.getClassLoader().loadClass( casingGuiClassName, casingName );
+		if(generateGuis){
+		    casingGuiConstructor = casingGuiClass.getConstructor(new Class[]{TransformContext.class});
+		    mCasingJPanel = (MCasingJPanel) casingGuiConstructor.newInstance(new Object[]{transformContext});
+		    mCasingJPanels.add(mCasingJPanel);
 		}
+	    }
+	    catch(Exception e){
+		Util.handleExceptionNoRestart("Error building gui from casing context: " + casingName, e);
 	    }
 	}
 	return mCasingJPanels.toArray( new MCasingJPanel[0] );
@@ -189,7 +185,7 @@ public class MPipelineJPanel extends javax.swing.JPanel {
 	}
 	finally{
 	    synchronized(this){
-		Util.getStatusJProgressBar().setValue(16 + (int) ((((float)installedCount)/(float)initialInstallCount)*48f) );
+		Util.getStatusJProgressBar().setValue(16 + (int) ((((float)installedCount)/(float)initialInstallCount)*38f) );
 		installedCount++;
 	    }
 	}
