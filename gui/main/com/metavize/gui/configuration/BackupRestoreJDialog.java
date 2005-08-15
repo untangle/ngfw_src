@@ -28,14 +28,9 @@ import com.metavize.gui.widgets.dialogs.*;
 import com.metavize.mvvm.*;
 
 
-/**
- *
- * @author  inieves
- */
 public class BackupRestoreJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
 
 
-    /** Creates new form UpgradeJDialog */
     public BackupRestoreJDialog() {
         super(Util.getMMainJFrame());
 
@@ -304,35 +299,44 @@ public class BackupRestoreJDialog extends javax.swing.JDialog implements java.aw
     }//GEN-END:initComponents
 
     private void backupUSBKeyJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backupUSBKeyJButtonActionPerformed
-        (new BackupThread(false)).start();
+        new BackupThread(false);
     }//GEN-LAST:event_backupUSBKeyJButtonActionPerformed
 
     private void backupHardDiskJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backupHardDiskJButtonActionPerformed
-        (new BackupThread(true)).start();
+        new BackupThread(true);
     }//GEN-LAST:event_backupHardDiskJButtonActionPerformed
 
 
     private class BackupThread extends Thread {
         private boolean isLocal;
+	private JProgressBar activeJProgressBar;
+	private String successString;
+	private String failedString;
         public BackupThread(boolean isLocal){
+	    super("MVCLIENT-BackupThread");
             this.isLocal = isLocal;
+	    backupUSBKeyJButton.setEnabled(false);
+	    backupHardDiskJButton.setEnabled(false);
+	    if(isLocal){
+		activeJProgressBar = backupHardDiskJProgressBar;
+		successString = "Success:  The Hard Disk backup procedure completed.";
+		failedString = "Error:  The Hard Disk backup procedure failed.  Contact support for further direction.";
+	    }
+	    else{
+		activeJProgressBar = backupUSBKeyJProgressBar;
+		successString = "Success:  The USB Key backup procedure completed.";
+		failedString = "Error:  The USB Key backup procedure failed.  Contact support for further direction.";
+	    }
+	    this.start();
         }
         public void run() {
-            final JProgressBar activeJProgressBar;
-            if(isLocal)
-                activeJProgressBar = backupHardDiskJProgressBar;
-            else
-                activeJProgressBar = backupUSBKeyJProgressBar;
-                    
             try{
                 SwingUtilities.invokeAndWait( new Runnable() {
-                public void run() {
-                backupUSBKeyJButton.setEnabled(false);
-                backupHardDiskJButton.setEnabled(false);
-                activeJProgressBar.setValue(0);
-                activeJProgressBar.setString("");
-                activeJProgressBar.setIndeterminate(true);
-                } } );
+			public void run() {
+			    activeJProgressBar.setValue(0);
+			    activeJProgressBar.setString("");
+			    activeJProgressBar.setIndeterminate(true);
+			} } );
                 
                 if(isLocal)
                     Util.getMvvmContext().localBackup();
@@ -340,44 +344,36 @@ public class BackupRestoreJDialog extends javax.swing.JDialog implements java.aw
                     Util.getMvvmContext().usbBackup();
                 
                 SwingUtilities.invokeAndWait( new Runnable() {
-                public void run() {
-                if(isLocal)    
-                    activeJProgressBar.setString("Success:  The Hard Disk backup procedure completed.");
-                else
-                    activeJProgressBar.setString("Success:  The USB Key backup procedure completed.");
-                activeJProgressBar.setIndeterminate(false);
-                activeJProgressBar.setValue(100);
-                } } );
-                }
+			public void run() {
+			    activeJProgressBar.setString( successString );
+			    activeJProgressBar.setIndeterminate(false);
+			    activeJProgressBar.setValue(100);
+			} } );
+	    }
             catch(Exception e){
                 Util.handleExceptionNoRestart("Error backing up", e);
                 try{
-                SwingUtilities.invokeAndWait( new Runnable() {
-                public void run() {
-                if(isLocal)
-                    activeJProgressBar.setString("Error:  The Hard Disk backup procedure failed.  Contact support for further direction.");
-                else
-                    activeJProgressBar.setString("Error:  The USB Key backup procedure failed.  Contact support for further direction.");
-                } } );
+		    SwingUtilities.invokeAndWait( new Runnable() {
+			    public void run() {
+				activeJProgressBar.setString( failedString );
+			    } } );
                 }
                 catch(Exception f){}
             }
             finally{
-                try{
-                SwingUtilities.invokeAndWait( new Runnable() {
-                public void run() {
-                activeJProgressBar.setIndeterminate(false);
-                backupUSBKeyJButton.setEnabled(true);
-                backupHardDiskJButton.setEnabled(true);
-                } } );
-                }
-                catch(Exception f){}
-            }
-
-            
-        }
+		SwingUtilities.invokeLater( new Runnable() {
+			public void run() {
+			    activeJProgressBar.setIndeterminate(false);
+			    backupUSBKeyJButton.setEnabled(true);
+			    backupHardDiskJButton.setEnabled(true);
+			} } );
+	    }
+	}
+	
+	
     }
-    
+
+
     private void closeJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeJButtonActionPerformed
         windowClosing(null);
     }//GEN-LAST:event_closeJButtonActionPerformed

@@ -29,10 +29,7 @@ import javax.swing.event.*;
 import javax.swing.table.*;
 import javax.swing.text.*;
 
-/**
- *
- * @author  inieves
- */
+
 public class UpgradeJDialog extends javax.swing.JDialog implements Savable, Refreshable, java.awt.event.WindowListener {
 
 
@@ -40,7 +37,7 @@ public class UpgradeJDialog extends javax.swing.JDialog implements Savable, Refr
     private UpgradeTableModel upgradeTableModel;
     private CheckForUpgradesThread checkForUpgradesThread;
 
-    /** Creates new form UpgradeJDialog */
+
     public UpgradeJDialog() {
         super(Util.getMMainJFrame(), true);
 
@@ -119,7 +116,78 @@ public class UpgradeJDialog extends javax.swing.JDialog implements Savable, Refr
         // set time value
         timeJSpinner.setValue(calendar.getTime());
     }
+
+
+    private class SaveAllThread extends Thread{
+        public SaveAllThread(){
+	    super("MVCLIENT-UpgradeJDialog.SaveAllThread");
+            saveJButton.setEnabled(false);
+            saveJButton.setIcon(Util.getButtonSaving());
+            reloadJButton.setEnabled(false);
+            closeJButton.setEnabled(false);
+            this.start();
+        }
+        
+        public void run(){
+	    try{
+		UpgradeSettings upgradeSettings = Util.getToolboxManager().getUpgradeSettings();
+		doSave( upgradeSettings, false );
+		Util.getToolboxManager().setUpgradeSettings( upgradeSettings );
+	    }
+	    catch(Exception e){
+		try{
+		    Util.handleExceptionWithRestart("Error committing upgrade data", e);
+		}
+		catch(Exception f){
+		    Util.handleExceptionNoRestart("Error committing upgrade data", f);
+		}
+	    }
+	    finally{
+		saveJButton.setIcon(Util.getButtonSaveSettings());
+		saveJButton.setEnabled(true);
+		reloadJButton.setEnabled(true);
+		closeJButton.setEnabled(true);
+	    }       
+        }
+    }
+
+
+
     
+    private class RefreshAllThread extends Thread{
+        public RefreshAllThread(){
+	    super("MVCLIENT-UpgradeJDialog.RefreshAllThread");
+            saveJButton.setEnabled(false);
+            reloadJButton.setIcon(Util.getButtonReloading());
+            reloadJButton.setEnabled(false);
+            closeJButton.setEnabled(false);
+            this.start();
+        }
+        
+        public void run(){
+	    try{
+		doRefresh( Util.getToolboxManager().getUpgradeSettings() );
+	    }
+	    catch(Exception e){
+		try{
+		    Util.handleExceptionWithRestart("Error committing upgrade data", e);
+		}
+		catch(Exception f){
+		    Util.handleExceptionNoRestart("Error committing upgrade data", f);
+		}
+	    }
+	    finally{
+		reloadJButton.setIcon(Util.getButtonReloadSettings());
+		reloadJButton.setEnabled(true);
+		saveJButton.setEnabled(true);
+		closeJButton.setEnabled(true);
+	    }
+	    
+        }
+    }    
+
+
+
     
     public void setVisible(boolean isVisible){
         if(isVisible){
@@ -525,48 +593,14 @@ public class UpgradeJDialog extends javax.swing.JDialog implements Savable, Refr
     }//GEN-END:initComponents
 
     private void reloadJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reloadJButtonActionPerformed
-        try{
-            reloadJButton.setIcon(Util.getButtonReloading());
-            doRefresh( Util.getToolboxManager().getUpgradeSettings() );
-        }
-        catch(Exception e){
-            try{
-                Util.handleExceptionWithRestart("Error committing upgrade data", e);
-            }
-            catch(Exception f){
-                Util.handleExceptionNoRestart("Error committing upgrade data", f);
-            }
-        }
-        finally{
-            reloadJButton.setIcon(Util.getButtonReloadSettings());
-        }
+	new RefreshAllThread();
     }//GEN-LAST:event_reloadJButtonActionPerformed
 
     private void saveJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveJButtonActionPerformed
-        if( Util.getIsDemo() )
-            return;
-
-        try{
-            saveJButton.setIcon(Util.getButtonSaving());
-            UpgradeSettings upgradeSettings = Util.getToolboxManager().getUpgradeSettings();
-            doSave( upgradeSettings, false );
-            Util.getToolboxManager().setUpgradeSettings( upgradeSettings );
-        }
-        catch(Exception e){
-            try{
-                Util.handleExceptionWithRestart("Error committing upgrade data", e);
-            }
-            catch(Exception f){
-                Util.handleExceptionNoRestart("Error committing upgrade data", f);
-            }
-        }
-        finally{
-            saveJButton.setIcon(Util.getButtonSaveSettings());
-        }
+	if( Util.getIsDemo() )
+	    return;
+	new SaveAllThread();
     }//GEN-LAST:event_saveJButtonActionPerformed
-
-
-
 
 
     private void upgradeJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_upgradeJButtonActionPerformed
@@ -637,7 +671,6 @@ public class UpgradeJDialog extends javax.swing.JDialog implements Savable, Refr
                 SwingUtilities.invokeLater( new Runnable(){ public void run(){
                     UpgradeJDialog.this.upgradeJButton.setEnabled(false);
                     UpgradeJDialog.this.jTabbedPane.setEnabled(false);
-                    UpgradeJDialog.this.closeJButton.setEnabled(false);
                     UpgradeJDialog.this.actionJProgressBar.setValue(0);
                     UpgradeJDialog.this.actionJProgressBar.setString("downloading upgrade list from server...");
                     UpgradeJDialog.this.actionJProgressBar.setIndeterminate(true);
@@ -701,7 +734,6 @@ public class UpgradeJDialog extends javax.swing.JDialog implements Savable, Refr
                 SwingUtilities.invokeLater( new Runnable(){ public void run(){
                     UpgradeJDialog.this.actionJProgressBar.setValue(0);
                     UpgradeJDialog.this.jTabbedPane.setEnabled(true);
-                    UpgradeJDialog.this.closeJButton.setEnabled(true);
                 }});                
 
                 
@@ -710,7 +742,6 @@ public class UpgradeJDialog extends javax.swing.JDialog implements Savable, Refr
                 SwingUtilities.invokeLater( new Runnable(){ public void run(){
                     UpgradeJDialog.this.upgradeJButton.setEnabled(true);
                     UpgradeJDialog.this.jTabbedPane.setEnabled(true);
-                    UpgradeJDialog.this.closeJButton.setEnabled(true);
                 }});
             }
             catch(Exception e){
@@ -719,13 +750,14 @@ public class UpgradeJDialog extends javax.swing.JDialog implements Savable, Refr
                 SwingUtilities.invokeLater( new Runnable(){ public void run(){
                     UpgradeJDialog.this.upgradeJButton.setEnabled(false);
                     UpgradeJDialog.this.jTabbedPane.setEnabled(true);
-                    UpgradeJDialog.this.closeJButton.setEnabled(true);
                     UpgradeJDialog.this.actionJProgressBar.setIndeterminate(false);
                     UpgradeJDialog.this.actionJProgressBar.setValue(0);
                     UpgradeJDialog.this.actionJProgressBar.setString("Upgrade problem.  Please try again later.");
                 }});
             }
-            UpgradeJDialog.this.checkForUpgradesThread = null;
+	    finally{
+		UpgradeJDialog.this.checkForUpgradesThread = null;
+	    }
         }
     }
 

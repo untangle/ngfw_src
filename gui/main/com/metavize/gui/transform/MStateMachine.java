@@ -65,51 +65,56 @@ public class MStateMachine implements java.awt.event.ActionListener {
             String displayName = mackageDesc.getDisplayName();
             
             if( source.equals(saveJButton) ){
-                boolean isProceeding = true;
                 if( transformName.equals("nat-transform") ){
-                    isProceeding = (new SaveProceedDialog( displayName )).isProceeding();
+		    saveJButton.setEnabled(false);
+                    if( (new SaveProceedDialog( displayName )).isProceeding() ){
+			new SaveThread();
+		    }
                 }
-                if(isProceeding)
+		else{
                     new SaveThread();
+		}
             }
             else if( source.equals(reloadJButton) ){
 		new RefreshThread();
 	    }
             else if( source.equals(removeJButton) ){
+		removeJButton.setEnabled(false);
                 if( (new RemoveProceedDialog(displayName)).isProceeding() ){
                     new RemoveThread(false);
                 }
+		removeJButton.setEnabled(true);
             }
             else if( source.equals(powerJToggleButton) ){ 
 		int modifiers = evt.getModifiers();
+		powerJToggleButton.setEnabled(false);
 		if( (modifiers & java.awt.event.ActionEvent.SHIFT_MASK) > 0 ){
 		    if( (modifiers & java.awt.event.ActionEvent.CTRL_MASK) == 0 ){
                         if( (new RemoveProceedDialog(displayName)).isProceeding() ){
                             new RemoveThread(false);
                         }
                         else{
-                            boolean wasEnabled = powerJToggleButton.isEnabled();
-                            powerJToggleButton.setEnabled(false);
                             powerJToggleButton.setSelected( !powerJToggleButton.isSelected() );
-                            powerJToggleButton.setEnabled(wasEnabled);
+			    powerJToggleButton.setEnabled(true);
                         }
 		    }
 		    else{
 			// new RemoveThread(true); not implemented properly now
+			powerJToggleButton.setEnabled(true);
 		    }
 		}
 		else{
-                    boolean isProceeding = true;
                     if( transformName.equals("nat-transform") ){
-                        isProceeding = (new PowerProceedDialog(displayName, powerJToggleButton.isSelected())).isProceeding();
+			if( (new PowerProceedDialog(displayName, powerJToggleButton.isSelected())).isProceeding() ){
+			    new PowerThread();
+			}
+			else{
+			    powerJToggleButton.setSelected( !powerJToggleButton.isSelected() );
+			    powerJToggleButton.setEnabled(true);
+			}
                     }
-                    if(isProceeding)
-                        new PowerThread();
                     else{
-                            boolean wasEnabled = powerJToggleButton.isEnabled();
-                            powerJToggleButton.setEnabled(false);
-                            powerJToggleButton.setSelected( !powerJToggleButton.isSelected() );
-                            powerJToggleButton.setEnabled(wasEnabled);
+                        new PowerThread();
                     }
 		}
 	    }

@@ -577,6 +577,7 @@ public class MMainJFrame extends javax.swing.JFrame {
 
     private void protocolJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_protocolJButtonActionPerformed
         try{
+	    protocolJButton.setEnabled(false);
 	    ProtocolJDialog protocolJDialog = new ProtocolJDialog();
 	    protocolJDialog.setVisible(true);
 	}
@@ -584,10 +585,14 @@ public class MMainJFrame extends javax.swing.JFrame {
 	    try{ Util.handleExceptionWithRestart("Error showing protocol settings", e); }
 	    catch(Exception f){ Util.handleExceptionNoRestart("Error showing protocol settings", f); }
 	}
+	finally{
+	    protocolJButton.setEnabled(true);
+	}
     }//GEN-LAST:event_protocolJButtonActionPerformed
 
     private void maintenanceJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_maintenanceJButtonActionPerformed
         try{
+	    maintenanceJButton.setEnabled(false);
 	    MaintenanceJDialog maintenanceJDialog = new MaintenanceJDialog();
 	    maintenanceJDialog.setVisible(true);
 	}
@@ -595,10 +600,14 @@ public class MMainJFrame extends javax.swing.JFrame {
 	    try{ Util.handleExceptionWithRestart("Error showing remote maintenance settings", e); }
 	    catch(Exception f){ Util.handleExceptionNoRestart("Error showing remote maintenance settings", f); }
 	}
+	finally{
+	    maintenanceJButton.setEnabled(true);
+	}
     }//GEN-LAST:event_maintenanceJButtonActionPerformed
 
     private void remoteJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_remoteJButtonActionPerformed
         try{
+	    remoteJButton.setEnabled(false);
 	    RemoteJDialog remoteJDialog = new RemoteJDialog();
 	    remoteJDialog.setVisible(true);
 	}
@@ -606,10 +615,14 @@ public class MMainJFrame extends javax.swing.JFrame {
 	    try{ Util.handleExceptionWithRestart("Error showing remote administration settings", e); }
 	    catch(Exception f){ Util.handleExceptionNoRestart("Error showing remote administration settings", f); }
 	}
+	finally{
+	    remoteJButton.setEnabled(true);
+	}
     }//GEN-LAST:event_remoteJButtonActionPerformed
 
     private void backupJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backupJButtonActionPerformed
 	try{
+	    backupJButton.setEnabled(false);
 	    BackupRestoreJDialog backupRestoreJDialog = new BackupRestoreJDialog();
 	    backupRestoreJDialog.setVisible(true);
 	}
@@ -617,10 +630,14 @@ public class MMainJFrame extends javax.swing.JFrame {
 	    try{ Util.handleExceptionWithRestart("Error showing backup and restore panel", e);}
 	    catch(Exception f){Util.handleExceptionNoRestart("Error showing backup and restore panel", f);}
 	}
+	finally{
+	    backupJButton.setEnabled(true);
+	}
     }//GEN-LAST:event_backupJButtonActionPerformed
 
     private void networkJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_networkJButtonActionPerformed
 	try{
+	    networkJButton.setEnabled(false);
 	    NetworkJDialog networkJDialog = new NetworkJDialog();
 	    networkJDialog.setVisible(true);
 	}
@@ -628,16 +645,23 @@ public class MMainJFrame extends javax.swing.JFrame {
 	    try{ Util.handleExceptionWithRestart("Error showing network settings", e); }
 	    catch(Exception f){ Util.handleExceptionNoRestart("Error showing network settings", f); }
 	}
+	finally{
+	    networkJButton.setEnabled(true);
+	}
     }//GEN-LAST:event_networkJButtonActionPerformed
 
     private void aboutJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutJButtonActionPerformed
 	try{
+	    aboutJButton.setEnabled(false);
 	    AboutJDialog aboutJDialog = new AboutJDialog();
 	    aboutJDialog.setVisible(true);
 	}
 	catch(Exception e){
 	    try{ Util.handleExceptionWithRestart("Error showing about", e); }
 	    catch(Exception f){ Util.handleExceptionNoRestart("Error showing about", f); }
+	}
+	finally{
+	    aboutJButton.setEnabled(true);
 	}
     }//GEN-LAST:event_aboutJButtonActionPerformed
 
@@ -647,23 +671,31 @@ public class MMainJFrame extends javax.swing.JFrame {
 
     private void upgradeJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_upgradeJButtonActionPerformed
 	try{
+	    upgradeJButton.setEnabled(false);
 	    UpgradeJDialog upgradeJDialog =  new UpgradeJDialog();
             upgradeJDialog.setVisible(true);
 	}
 	catch(Exception e){
 	    try{ Util.handleExceptionWithRestart("Error checking for upgrades on server", e); }
 	    catch(Exception f){ Util.handleExceptionNoRestart("Error checking for upgrades on server", f); }
-	}	
+	}
+	finally{
+	    upgradeJButton.setEnabled(true);
+	}
     }//GEN-LAST:event_upgradeJButtonActionPerformed
 
     private void adminJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_adminJButtonActionPerformed
 	try{
+	    adminJButton.setEnabled(false);
 	    AdminConfigJDialog adminConfigJDialog = new AdminConfigJDialog();
 	    adminConfigJDialog.setVisible(true);
 	}
 	catch(Exception e){
 	    try{ Util.handleExceptionWithRestart("Error changing admins", e); }
 	    catch(Exception f){ Util.handleExceptionNoRestart("Error changing admins", f); }
+	}
+	finally{
+	    adminJButton.setEnabled(true);
 	}
     }//GEN-LAST:event_adminJButtonActionPerformed
 
@@ -756,20 +788,26 @@ public class MMainJFrame extends javax.swing.JFrame {
     private void storeActionPerformed(java.awt.event.ActionEvent evt){
         MTransformJButton targetMTransformJButton = (MTransformJButton) evt.getSource();
         MTransformJButton duplicateMTransformJButton = targetMTransformJButton.duplicate();
+	targetMTransformJButton.setEnabled(false);
         StoreJDialog storeJDialog = new StoreJDialog(duplicateMTransformJButton);
 	storeJDialog.setVisible(true);
 	if( storeJDialog.getPurchasedMTransformJButton() != null){
 	    if( Util.mustCheckUpgrades() ){
 		StoreCheckJDialog storeCheckJDialog = new StoreCheckJDialog();
 		storeCheckJDialog.setVisible(true);
+		//targetMTransformJButton.setEnabled(true);
 		if( Util.getUpgradeCount() == 0 ){
 		    targetMTransformJButton.purchase();
 		}
 	    }
 	    else{
+		//targetMTransformJButton.setEnabled(true);
 		targetMTransformJButton.purchase();
 	    }
         }
+	else{
+	    targetMTransformJButton.setEnabled(true);
+	}
     }    
     
     private void toolboxActionPerformed(java.awt.event.ActionEvent evt){

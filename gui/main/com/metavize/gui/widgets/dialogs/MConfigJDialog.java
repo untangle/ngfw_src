@@ -78,7 +78,7 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
     
     protected void saveAll(){
 	// GENERATE AND VALIDATE ALL SETTINGS
-	String componentName = null;
+	String componentName = "UNKNOWN";
         try {
 	    for( Map.Entry<String, Savable> savableMapEntry : savableMap.entrySet() ){
 		componentName = savableMapEntry.getKey();
@@ -126,7 +126,7 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
         
 	// UPDATE PANELS WITH NEW SETTINGS
 	for( Map.Entry<String, Refreshable> refreshableMapEntry : refreshableMap.entrySet() ){
-            String componentName = "";
+            String componentName = "UNKNOWN";
             try{
 		componentName = refreshableMapEntry.getKey();
 		Refreshable refreshableComponent = refreshableMapEntry.getValue();
