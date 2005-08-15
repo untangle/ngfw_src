@@ -117,8 +117,14 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
         OutgoingSocketQueue out = ((com.metavize.mvvm.argon.Session)pSession).serverOutgoingSocketQueue();
         if (out != null) {
             Crumb crumb = ShutdownCrumb.getInstance(true);
-            boolean success = out.write(crumb);
-            assert success;
+            out.write(crumb);
+            // 8/15/05 we also now reset the incoming side, to avoid the race in case a packet outraces
+            // the close-other-half event.
+            IncomingSocketQueue in = ((com.metavize.mvvm.argon.Session)pSession).serverIncomingSocketQueue();
+            if (in != null) {
+                // Should always happen.
+                in.reset();
+            }
         }
     }
 
@@ -127,8 +133,14 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
         OutgoingSocketQueue out = ((com.metavize.mvvm.argon.Session)pSession).clientOutgoingSocketQueue();
         if (out != null) {
             Crumb crumb = ShutdownCrumb.getInstance(true);
-            boolean success = out.write(crumb);
-            assert success;
+            out.write(crumb);
+            // 8/15/05 we also now reset the incoming side, to avoid the race in case a packet outraces
+            // the close-other-half event.
+            IncomingSocketQueue in = ((com.metavize.mvvm.argon.Session)pSession).clientIncomingSocketQueue();
+            if (in != null) {
+                // Should always happen.
+                in.reset();
+            }
         }
     }
 
