@@ -1,5 +1,5 @@
 TEMPLATE=Detail
-REPORT_NAME=CookieDetail
+REPORT_NAME=EmailVirusDetail
 REPORT_TITLE=AntiVirus - Email Incidents
 EXTRA_PARAM_1.name=virusVendor
 EXTRA_PARAM_1.type=java.lang.String
