@@ -78,7 +78,7 @@ public class MPipelineJPanel extends javax.swing.JPanel {
     
     // USED FOR LOADING/PRELOADING OF CASINGS
     public MCasingJPanel[] loadAllCasings(boolean generateGuis){
-	final String casingNames[] = {"mail-casing", "ftp-casing", "http-casing"};
+	final String casingNames[] = {"mail-casing", "http-casing", "ftp-casing"};
 	Vector<MCasingJPanel> mCasingJPanels = new Vector<MCasingJPanel>();
 	Tid casingInstances[] = null;
 	TransformContext transformContext = null;
