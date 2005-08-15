@@ -63,13 +63,13 @@ public class LogJPanel extends MLogTableJPanel {
 	    //                                 #   min  rsz    edit   remv   desc   typ           def
 	    addTableColumn( tableColumnModel,  0,  150, true,  false, false, false, String.class, null, "timestamp" );
 	    addTableColumn( tableColumnModel,  1,   55, true,  false, false, false, String.class, null, "action" );
-	    addTableColumn( tableColumnModel,  2,  155, true,  false, false, false, String.class, null, sc.html("client") );
+	    addTableColumn( tableColumnModel,  2,  165, true,  false, false, false, String.class, null, sc.html("client") );
 	    addTableColumn( tableColumnModel,  3,  100, true,  false, false, false, String.class, null, "subject" );
 	    addTableColumn( tableColumnModel,  4,  100, true,  false, false, false, String.class, null, "receiver" );
 	    addTableColumn( tableColumnModel,  5,  100, true,  false, false, false, String.class, null, "sender" );
 	    addTableColumn( tableColumnModel,  6,   55, true,  false, false, false, String.class, null, sc.html("spam<br>score") );
-	    addTableColumn( tableColumnModel,  7,  100, true,  false, false, false, String.class, null, sc.html("request<br>direction") );
-	    addTableColumn( tableColumnModel,  8,  155, true,  false, false, false, String.class, null, "server" );
+	    addTableColumn( tableColumnModel,  7,  100, true,  false, false, false, String.class, null, sc.html("spam<br>direction") );
+	    addTableColumn( tableColumnModel,  8,  165, true,  false, false, false, String.class, null, "server" );
 	    return tableColumnModel;
 	}
 
