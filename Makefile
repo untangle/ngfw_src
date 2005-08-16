@@ -14,7 +14,11 @@ packages      ?= "all"
 
 %: %.pre_base %.post_base ;
 
-all: chk build
+all: downloads chk build
+
+downloads:
+	@echo "==> downloads"
+	@make -C ../downloads
 
 ## This limits the rules that are caught by the wildcard above
 distclean.pre_base clean.pre_base:
@@ -51,10 +55,14 @@ clean.post_base:
 	@sudo rm -rf $(build_dist)/usr/share/metavize
 	@fakeroot debian/rules clean
 
+## Distclean also removes all of the downloads
 distclean.post_base:
 	@rm -f $(lib_file_name)
 	@sudo rm -rf $(build_dist)/usr/share/metavize
 	@fakeroot debian/rules distclean
+	@echo "==> downloads distclean"
+	@make -C ../downloads distclean
+
 
 
 ## This is the catch all for all of the rules that do not execute anything after calling the

@@ -8,32 +8,32 @@ XMLDIFF_HOME=/opt/xmldiff
 
 # You shouldn't need to change anything past here.
 
-ANTCONTRIB_HOME=../../downloads/ant-contrib-0.6
-ANTCPPTASKS_HOME=../../downloads/cpptasks-1.0b1
-CONCURRENT_HOME=../../downloads/concurrent-1.3.4
-DERBY_HOME=../../downloads/incubating-derby-10.0.2.1-lib
-HIBERNATE_EXT_HOME=../../downloads/hibernate-extensions-2.1.3
-HIBERNATE_HOME=../../downloads/hibernate-2.1.8
-ITEXT_HOME=../../downloads/itext-1.2
-JAF_HOME=../../downloads/jaf-1.0.2
-JASPER_REPORTS_HOME=../../downloads/jasperreports-0.6.8
-JAVAMAIL_HOME=../../downloads/javamail-1.3.1
-JAVASSIST_HOME=../../downloads/javassist-3.0RC1
-JFREECHART_HOME=../../downloads/jfreechart-0.9.21
-JNLP_HOME=../../downloads/jnlp
-JSS_HOME=../../downloads/jss-3.4
-JUNIT_HOME=../../downloads/junit3.8.1
-KUNSTSTOFF_HOME=../../downloads/kunststoff-2_0_1
-LOG4J_HOME=../../downloads/logging-log4j-1.2.9
-TOMCAT_EMBED_HOME=../../downloads/jakarta-tomcat-5.0.28-embed
-TROVE_HOME=../../downloads/trove
-POSTGRES_HOME=../../downloads/postgres-jdbc-7.4_215
-XDOCLET_HOME=../../downloads/xdoclet-lib-1.2.2
-NETBEANS_HOME=../../downloads/netbeans-3.5
+ANTCONTRIB_HOME=../../downloads/output/ant-contrib-0.6
+ANTCPPTASKS_HOME=../../downloads/output/cpptasks-1.0b1
+CONCURRENT_HOME=../../downloads/output/concurrent-1.3.4
+DERBY_HOME=../../downloads/output/incubating-derby-10.0.2.1-lib
+HIBERNATE_EXT_HOME=../../downloads/output/hibernate-extensions-2.1.3
+HIBERNATE_HOME=../../downloads/output/hibernate-2.1
+ITEXT_HOME=../../downloads/output/itext-1.2
+JAF_HOME=../../downloads/output/jaf-1.0.2
+JASPER_REPORTS_HOME=../../downloads/output/jasperreports-0.6.8
+JAVAMAIL_HOME=../../downloads/output/javamail-1.3.1
+JAVASSIST_HOME=../../downloads/output/javassist-3.0RC1
+JFREECHART_HOME=../../downloads/output/jfreechart-0.9.21
+JNLP_HOME=../../downloads/output/jnlp
+JSS_HOME=../../downloads/output/jss-3.4
+JUNIT_HOME=../../downloads/output/junit3.8.1
+KUNSTSTOFF_HOME=../../downloads/output/kunststoff-2_0_1
+LOG4J_HOME=../../downloads/output/logging-log4j-1.2.9
+TOMCAT_EMBED_HOME=../../downloads/output/jakarta-tomcat-5.0.28-embed
+TROVE_HOME=../../downloads/output/trove-1.0.2
+POSTGRES_HOME=../../downloads/output/postgres-jdbc-7.4_215
+XDOCLET_HOME=../../downloads/output/xdoclet-lib-1.2.2
+NETBEANS_HOME=../../downloads/output/netbeans-3.5
 
 # XXX soon obsolete
-JAVASSIST_HOME=../../downloads/javassist-3.0RC1
-JXPATH_HOME=../../downloads/commons-jxpath-1.1
+JAVASSIST_HOME=../../downloads/output/javassist-3.0RC1
+JXPATH_HOME=../../downloads/output/commons-jxpath-1.1
 
 # ANT_OPTS="-DIVB_HOME=\"${XMLDIFFHOME}\""
-# export LD_LIBRARY_PATH=../../downloads/jss-3.4:4:../../downloads/nss-3.6/lib
+# export LD_LIBRARY_PATH=../../downloads/output/jss-3.4:4:../../downloads/output/nss-3.6/lib
