@@ -13,14 +13,11 @@ package com.metavize.gui.widgets.dialogs;
 
 import com.metavize.gui.util.Util;
 import com.metavize.mvvm.ToolboxManager;
-/**
- *
- * @author  inieves
- */
+
+
 public class MOneButtonJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
     
     
-    /** Creates new form ProceedJDialog */
     public MOneButtonJDialog() {
 	super(Util.getMMainJFrame(), true);
 	init();

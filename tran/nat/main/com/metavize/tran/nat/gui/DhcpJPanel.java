@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: NatEventHandler.java 194 2005-04-06 19:13:55Z rbscott $
+ * $Id: DhcpJPanel.java 194 2005-04-06 19:13:55Z rbscott $
  */
 
 package com.metavize.tran.nat.gui;
@@ -19,10 +19,7 @@ import com.metavize.mvvm.tran.IPaddr;
 
 import java.awt.*;
 
-/**
- *
- * @author  inieves
- */
+
 public class DhcpJPanel extends javax.swing.JPanel implements Savable, Refreshable {
 
     private static final String EXCEPTION_DHCP_RANGE_START = "The DHCP Start Address must be a valid IP address.";

@@ -14,10 +14,6 @@ package com.metavize.gui.util;
 import java.io.InputStream;
 import java.net.*;
 
-/**
- *
- * @author inieves
- */
 public class MURLClassLoader extends URLClassLoader {
     
     

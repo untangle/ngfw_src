@@ -1,8 +1,15 @@
 /*
- * MCasingJPanel.java
+ * Copyright (c) 2003,2004 Metavize Inc.
+ * All rights reserved.
  *
- * Created on February 22, 2005, 1:10 PM
+ * This software is the confidential and proprietary information of
+ * Metavize Inc. ("Confidential Information").  You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id$
  */
+
+
 
 package com.metavize.tran.spyware.gui;
 
@@ -16,10 +23,7 @@ import com.metavize.tran.spyware.*;
 
 import java.awt.*;
 
-/**
- *
- * @author  inieves
- */
+
 public class UrlConfigJPanel extends javax.swing.JPanel implements Savable, Refreshable {
 
     

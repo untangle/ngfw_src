@@ -11,10 +11,6 @@
 
 package com.metavize.gui.util;
 
-/**
- *
- * @author  Dirk Morris
- */
 public class Version {
     private static String version = "VERSION"; 
 

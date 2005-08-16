@@ -15,10 +15,7 @@ import java.io.*;
 import javax.swing.*;
 import java.awt.*;
 
-/**
- *
- * @author  inieves
- */
+
 public class MLogger extends javax.swing.JFrame implements Runnable, FilenameFilter {
     
     private static final long THREAD_SLEEP_MILLIS = 1500l;

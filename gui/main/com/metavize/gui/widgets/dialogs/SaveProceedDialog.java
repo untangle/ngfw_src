@@ -13,10 +13,7 @@ package com.metavize.gui.widgets.dialogs;
 
 import com.metavize.gui.util.Util;
 
-/**
- *
- * @author inieves
- */
+
 final public class SaveProceedDialog extends MTwoButtonJDialog {
     
     public SaveProceedDialog(String applianceName) {

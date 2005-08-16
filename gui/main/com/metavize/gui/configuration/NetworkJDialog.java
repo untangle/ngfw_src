@@ -23,10 +23,7 @@ import javax.swing.table.*;
 import javax.swing.*;
 
 
-/**
- *
- * @author  inieves
- */
+
 public class NetworkJDialog extends MConfigJDialog {
 
     private static final String NAME_NETWORK_SETTINGS = "Network Settings";

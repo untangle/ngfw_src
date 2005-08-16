@@ -1,13 +1,14 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2003, 2004, 2005 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id$
+ * $Id: LogJPanel.java 194 2005-04-06 19:13:55Z rbscott $
  */
+
 
 package com.metavize.tran.httpblocker.gui;
 

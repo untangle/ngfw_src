@@ -12,10 +12,8 @@
 package com.metavize.gui.widgets.dialogs;
 
 import com.metavize.gui.util.Util;
-/**
- *
- * @author inieves
- */
+
+
 final public class PowerProceedDialog extends MTwoButtonJDialog {
     
     public PowerProceedDialog(String applianceName, boolean powerOn) {

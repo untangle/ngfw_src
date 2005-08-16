@@ -14,10 +14,7 @@ package com.metavize.gui.widgets.coloredTable;
 import javax.swing.border.LineBorder;
 import java.awt.Color;
 
-/**
- *
- * @author inieves
- */
+
 public class MLineBorder extends LineBorder{
         MLineBorder(Color inColor){
             super(inColor);

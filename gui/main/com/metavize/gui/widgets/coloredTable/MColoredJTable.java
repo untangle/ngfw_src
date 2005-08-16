@@ -20,10 +20,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
 
-/**
- *
- * @author  inieves
- */
+
 public class MColoredJTable extends JTable {
     
     private MColoredTableCellEditor tableCellEditor;

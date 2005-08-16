@@ -6,8 +6,9 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: MTransformDisplayJPanel.java,v 1.3 2005/02/01 07:00:11 inieves Exp $
+ * $Id$
  */
+
 package com.metavize.tran.protofilter.gui;
 
 import com.metavize.gui.transform.*;

@@ -12,10 +12,6 @@
 package com.metavize.gui.widgets.dialogs;
 
 
-/**
- *
- * @author inieves
- */
 final public class RefreshLogFailureDialog extends MOneButtonJDialog {
     
     public RefreshLogFailureDialog(String applianceName) {

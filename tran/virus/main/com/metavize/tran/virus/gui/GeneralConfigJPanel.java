@@ -1,8 +1,15 @@
 /*
- * 
+ * Copyright (c) 2003,2004 Metavize Inc.
+ * All rights reserved.
  *
- * Created on March 25, 2004, 6:11 PM
+ * This software is the confidential and proprietary information of
+ * Metavize Inc. ("Confidential Information").  You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id$
  */
+
+
 
 package com.metavize.tran.virus.gui;
 

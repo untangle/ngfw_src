@@ -12,10 +12,7 @@
 package com.metavize.gui.widgets.dialogs;
 
 
-/**
- *
- * @author inieves
- */
+
 final public class ValidateFailureDialog extends MOneButtonJDialog {
     
     public ValidateFailureDialog(String applianceName, String componentName, String failureMessage) {

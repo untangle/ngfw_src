@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: NatEventHandler.java 194 2005-04-06 19:13:55Z rbscott $
+ * $Id: SettingsJPanel.java 194 2005-04-06 19:13:55Z rbscott $
  */
 
 package com.metavize.tran.firewall.gui;
@@ -19,10 +19,6 @@ import com.metavize.mvvm.tran.IPaddr;
 
 import java.awt.*;
 
-/**
- *
- * @author  inieves
- */
 public class SettingsJPanel extends javax.swing.JPanel implements Savable, Refreshable {
     
     public SettingsJPanel() {

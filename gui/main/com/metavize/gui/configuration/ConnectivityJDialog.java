@@ -16,10 +16,7 @@ import com.metavize.mvvm.*;
 
 import javax.swing.*;
 
-/**
- *
- * @author  inieves
- */
+
 public class ConnectivityJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
     
     private boolean upgradesAvailable = true;

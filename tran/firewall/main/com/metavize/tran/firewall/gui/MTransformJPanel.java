@@ -8,6 +8,7 @@
  *
  * $Id$
  */
+
 package com.metavize.tran.firewall.gui;
 
 import com.metavize.gui.util.Util;

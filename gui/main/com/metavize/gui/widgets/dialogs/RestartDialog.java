@@ -13,14 +13,11 @@ package com.metavize.gui.widgets.dialogs;
 
 import com.metavize.gui.util.Util;
 import com.metavize.mvvm.ToolboxManager;
-/**
- *
- * @author  inieves
- */
+
+
 final public class RestartDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
     
     
-    /** Creates new form ProceedJDialog */
     public RestartDialog() {
         super(Util.getMMainJFrame(), true);
         initComponents();

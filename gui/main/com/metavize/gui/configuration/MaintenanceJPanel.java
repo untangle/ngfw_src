@@ -17,15 +17,8 @@ import com.metavize.gui.util.*;
 import com.metavize.mvvm.security.*;
 import com.metavize.mvvm.*;
 import com.metavize.mvvm.tran.*;
-//import com.metavize.tran.http.HttpSettings;
-//import com.metavize.tran.ftp.FtpSettings;
-//import com.metavize.tran.mail.MailTransformSettings;
 import java.awt.*;
 
-/**
- *
- * @author  inieves
- */
 public class MaintenanceJPanel extends javax.swing.JPanel implements Savable, Refreshable {
 
     

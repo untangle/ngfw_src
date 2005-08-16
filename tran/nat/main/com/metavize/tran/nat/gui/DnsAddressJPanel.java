@@ -6,8 +6,9 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: ProtoConfigJPanel.java 194 2005-04-06 19:13:55Z rbscott $
+ * $Id: DnsAddressJPanel.java 194 2005-04-06 19:13:55Z rbscott $
  */
+
 package com.metavize.tran.nat.gui;
 
 

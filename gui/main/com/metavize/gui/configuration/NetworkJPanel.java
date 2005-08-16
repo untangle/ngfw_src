@@ -20,10 +20,7 @@ import com.metavize.mvvm.tran.*;
 
 import java.awt.*;
 
-/**
- *
- * @author  inieves
- */
+
 public class NetworkJPanel extends javax.swing.JPanel implements Savable, Refreshable {
 
     private static final String EXCEPTION_DHCP_IP_ADDRESS = "Invalid \"IP Address\" manually specified.";

@@ -21,10 +21,6 @@ import javax.swing.plaf.*;
 import javax.swing.plaf.basic.BasicToolTipUI;
 import javax.swing.text.*;
 
-/**
- *
- * @author inieves
- */
 
 public class MultilineToolTipUI extends BasicToolTipUI {
 

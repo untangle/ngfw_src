@@ -13,10 +13,8 @@ package com.metavize.gui.upgrade;
 
 import com.metavize.gui.util.Util;
 import com.metavize.mvvm.ToolboxManager;
-/**
- *
- * @author  inieves
- */
+
+
 final public class ProceedJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
     
     private boolean isUpgrading = false;

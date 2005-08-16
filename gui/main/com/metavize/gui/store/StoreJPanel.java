@@ -17,10 +17,6 @@ import javax.jnlp.ServiceManager;
 import javax.jnlp.BasicService;
 import java.net.URL;
 
-/**
- *
- * @author  inieves
- */
 public class StoreJPanel extends javax.swing.JPanel {
     
     private String url;

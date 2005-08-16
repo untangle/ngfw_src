@@ -8,6 +8,7 @@
  *
  * $Id$
  */
+
 package com.metavize.tran.protofilter.gui;
 
 import com.metavize.mvvm.tran.Transform;

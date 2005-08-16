@@ -11,10 +11,7 @@
 
 package com.metavize.gui.widgets;
 
-/**
- *
- * @author  inieves
- */
+
 // JMultiLineToolTip.java
 import javax.swing.*;
 import javax.swing.plaf.*;
@@ -27,9 +24,7 @@ import javax.swing.plaf.basic.BasicToolTipUI;
 import javax.swing.text.*;
 import javax.swing.border.*;
 
-/**
- * @author Zafir Anjum
- */
+
  
 
 public class MMultilineToolTip extends JToolTip

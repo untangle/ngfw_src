@@ -8,6 +8,7 @@
  *
  * $Id$
  */
+
 package com.metavize.tran.spam.gui;
 
 import com.metavize.gui.transform.*;

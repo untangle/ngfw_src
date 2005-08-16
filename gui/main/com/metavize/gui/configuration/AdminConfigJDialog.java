@@ -26,10 +26,7 @@ import com.metavize.mvvm.*;
 import com.metavize.gui.util.StringConstants;
 
 
-/**
- *
- * @author  inieves
- */
+
 public class AdminConfigJDialog extends MConfigJDialog {
     
     private static final String NAME_ADMIN_ACCOUNTS = "Accounts";

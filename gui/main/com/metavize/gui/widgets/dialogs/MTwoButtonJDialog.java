@@ -13,15 +13,13 @@ package com.metavize.gui.widgets.dialogs;
 
 import com.metavize.gui.util.Util;
 import com.metavize.mvvm.ToolboxManager;
-/**
- *
- * @author  inieves
- */
+
+
 public class MTwoButtonJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
     
     private boolean isProceeding = false;
     
-    /** Creates new form ProceedJDialog */
+
     public MTwoButtonJDialog() {
         super(Util.getMMainJFrame(), true);
         initComponents();

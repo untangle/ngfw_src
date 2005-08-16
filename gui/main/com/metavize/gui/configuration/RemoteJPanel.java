@@ -20,10 +20,7 @@ import com.metavize.mvvm.tran.*;
 
 import java.awt.*;
 
-/**
- *
- * @author  inieves
- */
+
 public class RemoteJPanel extends javax.swing.JPanel implements Savable, Refreshable {
 
     private static final String EXCEPTION_OUTSIDE_ACCESS_NETWORK = "Invalid External Remote Administration \"IP Address\" specified.";

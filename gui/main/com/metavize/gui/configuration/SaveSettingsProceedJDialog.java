@@ -13,10 +13,8 @@ package com.metavize.gui.configuration;
 
 import com.metavize.gui.util.Util;
 import com.metavize.mvvm.ToolboxManager;
-/**
- *
- * @author  inieves
- */
+
+
 final public class SaveSettingsProceedJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
     
     private boolean isProceeding = false;

@@ -8,6 +8,7 @@
  *
  * $Id$
  */
+
 package com.metavize.tran.httpblocker.gui;
 
 import java.awt.*;

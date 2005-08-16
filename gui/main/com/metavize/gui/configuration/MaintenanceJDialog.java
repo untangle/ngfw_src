@@ -23,10 +23,7 @@ import javax.swing.table.*;
 import javax.swing.*;
 
 
-/**
- *
- * @author  inieves
- */
+
 public class MaintenanceJDialog extends MConfigJDialog {
 
     private static final String NAME_REMOTE_SETTINGS = "Support";

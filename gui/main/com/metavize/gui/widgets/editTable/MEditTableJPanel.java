@@ -21,10 +21,8 @@ import javax.swing.table.*;
 import java.util.Vector;
 import java.awt.*;
 import javax.swing.border.*;
-/**
- *
- * @author  inieves
- */
+
+
 public class MEditTableJPanel extends javax.swing.JPanel implements ListSelectionListener, TableModelListener, Refreshable, Savable {
 
     private JLabel messageJLabel;

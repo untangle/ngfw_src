@@ -13,10 +13,7 @@ package com.metavize.gui.util;
 
 import javax.swing.JPasswordField;
 
-/**
- *
- * @author  inieves
- */
+
 public class MPasswordField extends JPasswordField {
     
     private byte[] byteArray;

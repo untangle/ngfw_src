@@ -16,10 +16,6 @@ import com.metavize.mvvm.*;
 
 import javax.swing.*;
 
-/**
- *
- * @author  inieves
- */
 public class StoreCheckJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
     
     /** Creates new form ProceedJDialog */

@@ -17,10 +17,7 @@ import com.metavize.gui.util.Util;
 import javax.swing.*;
 import java.awt.event.*;
 
-/**
- *
- * @author  inieves
- */
+
 public class BlinkJLabel extends JLabel implements ActionListener {
     
     private static final int BLINK_DELAY_MILLIS = 750;

@@ -19,10 +19,7 @@ import com.metavize.mvvm.NetworkingConfiguration;
 
 import javax.swing.*;
 
-/**
- *
- * @author inieves
- */
+
 final public class DhcpLeaseRenewDialog extends MOneButtonProgressJDialog {
     
     private NetworkingConfiguration networkingConfiguration = null;

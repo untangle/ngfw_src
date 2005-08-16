@@ -25,10 +25,6 @@ import com.metavize.mvvm.*;
 import com.metavize.mvvm.tran.*;
 
 
-/**
- *
- * @author  inieves
- */
 public class StoreJDialog extends MConfigJDialog implements Savable, Refreshable {
 
 

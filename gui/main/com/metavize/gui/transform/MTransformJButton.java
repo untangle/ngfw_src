@@ -27,10 +27,7 @@ import java.util.*;
 import javax.swing.*;
 import javax.swing.border.*;
 
-/**
- *
- * @author  Ian Nieves
- */
+
 public class MTransformJButton extends JButton {
 
     // FADED BACKGROUND /////////////

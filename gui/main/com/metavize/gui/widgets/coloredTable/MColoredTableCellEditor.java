@@ -21,11 +21,6 @@ import javax.swing.table.*;
 import java.awt.*;
 
 
-
-/**
- *
- * @author  inieves
- */
 public class MColoredTableCellEditor extends DefaultCellEditor implements KeyListener, ActionListener, ChangeListener, CaretListener {
         
     private MColoredJTable mColoredJTable;

@@ -28,10 +28,7 @@ import javax.swing.border.*;
 import javax.swing.table.*;
 import java.util.*;
 
-/**
- *
- * @author  root
- */
+
 public class MTransformControlsJPanel extends javax.swing.JPanel {
 
     // SAVING/REFRESHING //////////

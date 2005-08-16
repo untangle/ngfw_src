@@ -12,10 +12,7 @@
 package com.metavize.gui.widgets.dialogs;
 
 
-/**
- *
- * @author inieves
- */
+
 final public class SaveFailureDialog extends MOneButtonJDialog {
     
     public SaveFailureDialog(String applianceName) {
