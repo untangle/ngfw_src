@@ -370,7 +370,8 @@ int netcap_sesstable_remove_session (int if_lock, netcap_session_t* netcap_sess)
         }
         
         /* Only remove the reverse if this is a UDP Connection */
-        if ( netcap_sess->protocol == IPPROTO_UDP ) {
+        if ( netcap_sess->protocol == IPPROTO_UDP && 
+             ( netcap_sess->remove_tuples == NETCAP_SESSION_REMOVE_SERVER_TUPLE )) {
             /* Remove the reverse endpoints */
             endpoints = &netcap_sess->srv;
             
@@ -397,6 +398,7 @@ static int _netcap_sesstable_remove (netcap_session_t* netcap_sess)
 {
     /* Static/private function, no error checking necessary */
     if (ht_remove(&_sess_id_table,(void*)netcap_sess->session_id)<0) {
+        /* ???? Why are errors ignored ???? */
         return -1;
     }
     
@@ -411,8 +413,7 @@ static int _netcap_sesstable_remove_tuple(u_short proto,
     session_tuple_t st = {proto,shost,dhost,sport,dport,seq};
 
     if (ht_remove(&_sess_tuple_table,(void*)&st)<0) {
-        debug( 3, "ht_remove\n" );
-        return -1;        
+        return errlog( ERR_WARNING, "ht_remove (proto: %d)\n", proto );
     }
 
     return 0;
@@ -515,6 +516,8 @@ static int _netcap_sesstable_merge_tuple( netcap_session_t* netcap_sess, int pro
     netcap_sess->srv.cli.host.s_addr = dst;
     netcap_sess->srv.cli.port        = dport;
     netcap_sess->icmp.server_id      = icmp_pid;
+
+    netcap_sess->remove_tuples = NETCAP_SESSION_REMOVE_SERVER_TUPLE;
    
     SESSTABLE_UNLOCK();
     

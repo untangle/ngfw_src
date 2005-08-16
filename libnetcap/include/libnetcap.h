@@ -161,6 +161,8 @@ typedef struct netcap_pkt {
     void* app_data;
 } netcap_pkt_t;
 
+#define NETCAP_SESSION_REMOVE_SERVER_TUPLE 0x7BCD
+
 typedef struct netcap_session {
     /**
      * this will be IPPROTO_TCP or IPPROTO_UDP \n
