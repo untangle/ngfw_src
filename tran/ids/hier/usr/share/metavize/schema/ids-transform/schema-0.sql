@@ -9,7 +9,13 @@ create table settings.TR_IDS_SETTINGS (
 	
 create table settings.TR_IDS_RULE (
 	RULE_ID int8 not null, 
-	RULE varchar(4095), 
+	RULE varchar(4095),
+	NAME varchar(255),
+	CATEGORY varchar(255),
+	DESCRIPTION varchar(255),
+	LIVE bool,
+	ALERT bool,
+	LOG bool,
 	SETTINGS_ID int8, 
 	POSITION int4, 
 	primary key (RULE_ID));

@@ -51,10 +51,7 @@ public class IDSLog implements Serializable {
     }
     
     public String getReason(){
-	if(blocked)
-	    return "blocked in rule list";
-	else
-	    return "not blocked in rule list";
+		return message;
     }
     // accessors --------------------------------------------------------------
 

@@ -1,5 +1,7 @@
 package com.metavize.tran.ids;
 
+import com.metavize.mvvm.tran.Rule;
+
 import java.io.Serializable;
 
 /**
@@ -11,14 +13,8 @@ import java.io.Serializable;
  * table="TR_IDS_RULE"
  */
 
-public class IDSRule implements Serializable {
+public class IDSRule extends Rule implements Serializable {
 	private static final long serialVersionUID = -7009708957041660234L;
-	private Long id;
-
-	private boolean on;
-	private boolean alert;
-	private boolean blocked;
-	private boolean log;
 	private String rule;
 
 	/**
@@ -28,21 +24,14 @@ public class IDSRule implements Serializable {
 
 	public IDSRule(String rule) {
 
+		super("test","test","test",false);
+		
 		if(4096 < rule.length())
 			throw new IllegalArgumentException("definition too long:" + rule);
 
 		this.rule = rule;
 	}
-
-	/**
-	 * @hibernate.id
-	 * column="RULE_ID"
-	 * generator-class="native"
-	 */
-
-	protected Long getID() { return id; }
-	protected void setID(Long id) { this.id = id; }
-
+	
 	/**
 	 * @hibernate.property
 	 * column="RULE"
