@@ -26,7 +26,7 @@ import javax.swing.event.*;
 
 public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransformControlsJPanel{
     
-    //private static final String NAME_BLOCK_LIST = "Protocol Block List";
+    private static final String NAME_RULE_LIST = "Rule List";
     private static final String NAME_LOG = "Event Log";
     
     public MTransformControlsJPanel(MTransformJPanel mTransformJPanel) {
@@ -34,11 +34,11 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
     }
 
     protected void generateGui(){
-	// BLOCK LIST /////
-	//ProtoConfigJPanel protoConfigJPanel = new ProtoConfigJPanel();
-        //this.mTabbedPane.addTab(NAME_BLOCK_LIST, null, protoConfigJPanel);
-	//super.savableMap.put(NAME_BLOCK_LIST, protoConfigJPanel);
-	//super.refreshableMap.put(NAME_BLOCK_LIST, protoConfigJPanel);
+	// RULE LIST /////
+	IDSConfigJPanel idsConfigJPanel = new IDSConfigJPanel();
+        this.mTabbedPane.addTab(NAME_RULE_LIST, null, idsConfigJPanel);
+	super.savableMap.put(NAME_RULE_LIST, idsConfigJPanel);
+	super.refreshableMap.put(NAME_RULE_LIST, idsConfigJPanel);
 
         // EVENT LOG ///////
         LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransformContext().transform(), this);

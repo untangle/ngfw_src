@@ -6,16 +6,15 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: MTransformControlsJPanel.java 2121 2005-08-16 01:17:11Z inieves $
+ * $Id: MTransformControlsJPanel.java 2144 2005-08-16 22:21:18Z inieves $
  */
 
 
 
-package com.metavize.tran.protofilter.gui;
+package com.metavize.tran.ids.gui;
 
 import com.metavize.gui.transform.*;
 import com.metavize.gui.pipeline.MPipelineJPanel;
-import com.metavize.tran.protofilter.*;
 import com.metavize.gui.widgets.editTable.*;
 import com.metavize.gui.util.*;
 
@@ -27,7 +26,7 @@ import javax.swing.event.*;
 
 public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransformControlsJPanel{
     
-    private static final String NAME_BLOCK_LIST = "Protocol Block List";
+    private static final String NAME_RULE_LIST = "Rule List";
     private static final String NAME_LOG = "Event Log";
     
     public MTransformControlsJPanel(MTransformJPanel mTransformJPanel) {
@@ -35,11 +34,11 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
     }
 
     protected void generateGui(){
-	// BLOCK LIST /////
-	ProtoConfigJPanel protoConfigJPanel = new ProtoConfigJPanel();
+	// RULE LIST /////
+	IDSConfigJPanel idsConfigJPanel = new IDSConfigJPanel();
         this.mTabbedPane.addTab(NAME_BLOCK_LIST, null, protoConfigJPanel);
-	super.savableMap.put(NAME_BLOCK_LIST, protoConfigJPanel);
-	super.refreshableMap.put(NAME_BLOCK_LIST, protoConfigJPanel);
+	super.savableMap.put(NAME_RULE_LIST, idsConfigJPanel);
+	super.refreshableMap.put(NAME_RULE_LIST, idsConfigJPanel);
 
         // EVENT LOG ///////
         LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransformContext().transform(), this);
