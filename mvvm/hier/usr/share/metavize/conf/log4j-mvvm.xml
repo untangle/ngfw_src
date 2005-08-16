@@ -63,12 +63,9 @@
     <appender-ref ref="eventlog"/>
   </category>
 
-  <!-- #       DEBUG           every allocation and release -->
-  <!-- #       INFO            periodic buffer pool statistics and all
-                               gc-reclaimed buffers are noted -->
-
+  <!-- Engine's normal logging level is INFO -->
   <category name="com.metavize.mvvm.engine">
-    <priority value="WARN"/>
+    <priority value="INFO"/>
   </category>
 
   <category name="com.metavize.mvvm.logging">
