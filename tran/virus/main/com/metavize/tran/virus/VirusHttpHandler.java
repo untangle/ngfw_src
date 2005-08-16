@@ -122,22 +122,9 @@ class VirusHttpHandler extends HttpStateMachine
         String host = requestHeader.getValue("host");
         hostQueue.add(host);
 
-        String range = requestHeader.getValue("range");
+        requestHeader.removeField("range");
 
-        if (null == range || range.startsWith("0")) {
-            logger.debug("passing because range: " + range);
-            return new TokenResult(null, new Token[] { requestHeader });
-        } else {
-            logger.info("we dont accept ranges: " + range);
-            // we dont accept ranges
-            // XXX log this event
-            // XXX make a response instead of shutting down
-            TCPSession s = getSession();
-            s.shutdownServer();
-            s.shutdownClient();
-            s.release();
-            return TokenResult.NONE;
-        }
+        return new TokenResult(null, new Token[] { requestHeader });
     }
 
     @Override

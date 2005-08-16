@@ -28,13 +28,13 @@ import java.util.Map;
  */
 public class Header implements Token
 {
-    private Map header = new LinkedHashMap();
+    private Map<String, Field> header = new LinkedHashMap<String, Field>();
 
     public Header() { }
 
     public void addField(String key, String value)
     {
-        Field f = (Field)header.get(key.toUpperCase());
+        Field f = header.get(key.toUpperCase());
 
         if (null == f) {
             f = new Field(key);
@@ -44,6 +44,11 @@ public class Header implements Token
         f.addValue(value);
     }
 
+    public void removeField(String key)
+    {
+        header.remove(key.toUpperCase());
+    }
+
     /**
      * Replace a field value.  If any values exists, they are all
      * removed and the new value is added.
@@ -51,7 +56,7 @@ public class Header implements Token
     public void replaceField(String key, String value)
     {
         key = key.toUpperCase();
-        Field f = (Field)header.get(key);
+        Field f = header.get(key);
 
         /* Item is not in the current header, add a new field */
         if (null == f) {
@@ -67,30 +72,30 @@ public class Header implements Token
 
     public String getValue(String key)
     {
-        Field f = (Field)header.get(key.toUpperCase());
-        return (null == f || f.values.size() == 0) ? null : (String)f.values.get(0);
+        Field f = header.get(key.toUpperCase());
+        return (null == f || f.values.size() == 0) ? null : f.values.get(0);
     }
 
     public List getValues(String key)
     {
-        Field f = (Field)header.get(key.toUpperCase());
+        Field f = header.get(key.toUpperCase());
         return ( null == f ) ? null : f.values;
     }
 
-    public Iterator keyIterator()
+    public Iterator<String> keyIterator()
     {
         return new Iterator()
             {
-                private Iterator i = header.keySet().iterator();
+                private Iterator<String> i = header.keySet().iterator();
 
                 public boolean hasNext() {
                     return i.hasNext();
                 }
 
-                public Object next()
+                public String next()
                 {
                     Object k = i.next();
-                    Field f = (Field)header.get(k);
+                    Field f = header.get(k);
                     return f.key;
                 }
 
@@ -104,7 +109,7 @@ public class Header implements Token
     private static class Field
     {
         String key;
-        List values = new LinkedList();
+        List<String> values = new LinkedList<String>();
 
         Field(String key)
         {
@@ -128,8 +133,8 @@ public class Header implements Token
     public ByteBuffer getBytes()
     {
         StringBuilder sb = new StringBuilder();
-        for (Iterator i = keyIterator(); i.hasNext(); ) {
-            String k = (String)i.next();
+        for (Iterator<String> i = keyIterator(); i.hasNext(); ) {
+            String k = i.next();
             List vl = getValues(k);
             if ( vl != null ) {
                 for ( Iterator vi = vl.iterator(); vi.hasNext(); ) {
