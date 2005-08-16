@@ -132,6 +132,6 @@ public class SpywareLog implements Comparable<SpywareLog>, Serializable
 
     public int compareTo(SpywareLog sl)
     {
-        return createDate.compareTo(sl.createDate);
+        return -createDate.compareTo(sl.createDate);
     }
 }
