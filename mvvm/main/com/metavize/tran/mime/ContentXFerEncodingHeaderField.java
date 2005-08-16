@@ -10,11 +10,9 @@
   */
 package com.metavize.tran.mime;
 
-import javax.mail.internet.*;
-import javax.mail.*;
-import java.util.*;
-import java.io.*;
-import static com.metavize.tran.util.Ascii.*;
+import java.io.IOException;
+import static com.metavize.tran.util.Ascii.SEMI;
+import static com.metavize.tran.util.Ascii.COLON;
 
 
 /**
@@ -33,6 +31,9 @@ public class ContentXFerEncodingHeaderField
   public static final String UUENCODE_STR_ALT = "x-uuencode";  
   public static final String UNKNOWN_STR = BINARY_STR;
 
+  /**
+   * Enum of the transfer encodings defined by RFC 2045 sec 6.
+   */
   public enum XFreEncoding {
     SEVEN_BIT,
     EIGHT_BIT,
@@ -66,8 +67,8 @@ public class ContentXFerEncodingHeaderField
     }
     
     //Shouldn't have other stuff but....
-    if(val.indexOf(";") > 0) {
-      val = val.substring(0, val.indexOf(";"));
+    if(val.indexOf(SEMI) > 0) {
+      val = val.substring(0, val.indexOf(SEMI));
     }
     val = val.trim().toLowerCase();
     
@@ -111,7 +112,15 @@ public class ContentXFerEncodingHeaderField
     parseStringValue();
     
   }
-  
+
+  /**
+   * Converts the enumerated XFer encoding to a String (since we cannot use the nifty
+   * Java enum toString because some tokens start with numbers).
+   *
+   * @param encoding the encoding
+   *
+   * @return the String representation
+   */
   public static String enumToString(ContentXFerEncodingHeaderField.XFreEncoding encoding) {
     switch(encoding) {
       case SEVEN_BIT:
@@ -144,7 +153,7 @@ public class ContentXFerEncodingHeaderField
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append(getName());
-    sb.append(':');
+    sb.append(COLON);
     sb.append(enumToString(getEncodingType()));
     return sb.toString();
   }  

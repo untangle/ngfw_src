@@ -11,22 +11,103 @@
 package com.metavize.tran.mime;
 
 import static com.metavize.tran.mime.HeaderNames.*;
-import java.io.*;
-import java.nio.*;
-import java.util.*;
-import javax.mail.internet.MailDateFormat;
-
-import com.metavize.tran.util.*;
+import java.io.ByteArrayOutputStream;
+import java.util.Date;
+import static com.metavize.tran.util.Ascii.*;
 import org.apache.log4j.Logger;
+import java.text.SimpleDateFormat;
 
 /**
  * Utility methods for working with MIME
  */
 public class MIMEUtil {
-  private static final Logger m_logger = Logger.getLogger(MIMEUtil.class);
 
+
+  private static final Logger m_logger = Logger.getLogger(MIMEUtil.class);
+  public static final String MAIL_FORMAT_STR = "EEE, d MMM yyyy HH:mm:ss 'ZZZZZ'";
+
+
+  public static final byte[] MIME_SPECIALS = {
+    (byte) '(',
+    (byte) ')',
+    (byte) '<',
+    (byte) '>',
+    (byte) '@',
+    (byte) ',',
+    (byte) ';',
+    (byte) ':',
+    (byte) '\\',
+    (byte) '"',
+    (byte) '/',
+    (byte) '[',
+    (byte) ']',
+    (byte) '?',
+    (byte) '='
+  };
+  
+  /**
+   * Convienence blank array of MIMEParts
+   */
   public static final MIMEPart[] EMPTY_MIME_PARTS = new MIMEPart[0];
 
+  /**
+   * Method to test if the given header value needs quoting
+   *
+   * @param str the String to test
+   * @return true if it needs quoting
+   */
+  public static boolean needsHeaderQuote(final String str) {
+    boolean needsQuote = str.indexOf(SP) > 0 ||
+      str.indexOf(HTAB) > 0 ||
+      str.indexOf(QUOTE) > 0;
+    if(!needsQuote) {
+      for(byte b : MIME_SPECIALS) {
+        if(str.indexOf((char) b) > 0) {
+          needsQuote = true;
+          break;
+        }
+      }
+    }
+    return needsQuote;
+  }
+
+  /**
+   * Returns a quoted String, if the given String
+   * {@link #needsHeaderQuote needs quoting}.  This is
+   * used when creating MIME headers.
+   *
+   * @param str the String which may need quoting
+   *
+   * @return the quoted String, or <code>str</code>
+   *         if quoting {@link #needsHeaderQuote was not required}.
+   */
+  public static String headerQuoteIfNeeded(final String str) {
+    if(needsHeaderQuote(str)) {
+      return headerQuote(str);
+    }
+    return str;
+  }  
+
+  /**
+   * Quotes the given string for MIME headers.
+   *
+   * @param str the String to quote
+   *
+   * @return the quoted String
+   */
+  public static String headerQuote(final String str) {
+    StringBuilder sb = new StringBuilder(str.length()+2);
+    sb.append(QUOTE);
+    for(int i = 0; i<str.length(); i++) {
+      if(str.charAt(i) == QUOTE) {
+        sb.append(BACK_SLASH);
+      }
+      sb.append(str.charAt(i));
+    }
+    sb.append(QUOTE);
+    return sb.toString();
+  }
+  
   /**
    * Wraps the given MIMEMessage in a new MIMEMessage with
    * the old as an RFC822 attachment, with the new
@@ -107,8 +188,7 @@ public class MIMEUtil {
    * @return the formatted String
    */
   public static String getRFC822Date(Date d) {
-    //Cheat and use JavaMail
-    return new MailDateFormat().format(d);
+    return new SimpleDateFormat(MAIL_FORMAT_STR).format(d);
   }
 
   /**
@@ -219,7 +299,7 @@ public class MIMEUtil {
 
 
 //------------- Debug/Test ---------------  
-
+/*
   public static void main(String[] args) throws Exception {
 
     File f = new File(args[0]);
@@ -238,6 +318,7 @@ public class MIMEUtil {
     fOut.flush();
     fOut.close();
   }
+*/  
 
 //------------- Debug/Test --------------- 
   

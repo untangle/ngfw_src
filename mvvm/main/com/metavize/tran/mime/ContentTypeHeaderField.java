@@ -10,21 +10,8 @@
   */
 package com.metavize.tran.mime;
 
-import javax.mail.internet.*;
-import javax.mail.*;
-import java.util.*;
-import java.io.*;
 import static com.metavize.tran.util.Ascii.*;
 
-
-//===========================================
-// Implementation Note.  We're currently
-// leaning on the JavaMail API for the 
-// heavy lifting (parsing).  We've created
-// this wrapper in case we need to move alway
-// from JavaMail in the future.
-// -wrs 6/05
-//===========================================
 
 /**
  * Object representing a "Content-Type" Header as found in an 
@@ -37,10 +24,20 @@ import static com.metavize.tran.util.Ascii.*;
  * respectivly.  
  */
 public class ContentTypeHeaderField 
-  extends HeaderField {
+  extends HeaderFieldWithParams {
 
-  private static final String BOUNDARY_PARAM_KEY = "boundary";
-  private static final String CHARSET_PARAM_KEY = "charset";  
+  private static final String BOUNDARY_PARAM_NAME = "boundary";
+  private static final String CHARSET_PARAM_NAME = "charset";
+  private static final String NAME_NAME = "name";
+  private static final String FORMAT_NAME = "format";
+  private static final String DELSP_NAME = "delsp";
+  
+  private static final LCString BOUNDARY_PARAM_KEY = new LCString(BOUNDARY_PARAM_NAME);
+  private static final LCString CHARSET_PARAM_KEY = new LCString(CHARSET_PARAM_NAME);
+  private static final LCString NAME_KEY = new LCString(NAME_NAME);
+  //Next two from RFC 3676
+  private static final LCString FORMAT_KEY = new LCString(FORMAT_NAME);
+  private static final LCString DELSP_KEY = new LCString(DELSP_NAME);
   
   //Composite primary types
   public static final String MULTIPART_PRIM_TYPE_STR = "multipart";
@@ -67,8 +64,7 @@ public class ContentTypeHeaderField
   
   private String m_primaryType;
   private String m_subtype;
-  private ParameterList m_paramList;  
- 
+
   public ContentTypeHeaderField() {
     super(HeaderNames.CONTENT_TYPE, HeaderNames.CONTENT_TYPE_LC);
   }  
@@ -138,7 +134,7 @@ public class ContentTypeHeaderField
    * only applies to multipart sections, and may be null.
    */
   public String getBoundary() {
-    return getAttribute(BOUNDARY_PARAM_KEY);
+    return getParam(BOUNDARY_PARAM_KEY);
   }
   
   /**
@@ -147,27 +143,31 @@ public class ContentTypeHeaderField
    * to a composite type just because you set this value
    * (i.e. you must make {@link #setPrimaryType the primary type}
    * {@link #MULTIPART_PRIM_TYPE_STR multipart})
-   * <br>
+   * <br><br>
    * Note that the boundary may start with "--", but when used as
    * a boundary two more dashes ("--") will be prepended to each occurance
    * within the content and two more appended to the terminating
-   * boundary.
-   * <br>
+   * boundary (see RFC 2045).
+   * <br><br>
    * Setting this to null causes the Boundary attribute to be
    * removed.
+   * <br><br>
+   * Note that
+   * {@link com.metavize.tran.mime.MIMEUtil#makeBoundary MIMEUtil has a helper method}
+   * for creating boundaries
    *
    * @param boundary the boundary.  If null, this "unsets" 
    *        the boundary attribute.
    */
   public void setBoundary(String boundary) {
-    setAttribute(BOUNDARY_PARAM_KEY, boundary);
+    setParam(BOUNDARY_PARAM_KEY.str, boundary);
   }
   
   public String getCharset() {
-    return getAttribute(CHARSET_PARAM_KEY);
+    return getParam(CHARSET_PARAM_KEY);
   }
   public void setCharset(String charset) {
-    setAttribute(CHARSET_PARAM_KEY, charset);
+    setParam(CHARSET_PARAM_KEY.str, charset);
   }
   
   /**
@@ -188,86 +188,89 @@ public class ContentTypeHeaderField
     return getPrimaryType().equalsIgnoreCase(MESSAGE_PRIM_TYPE_STR) &&
       getSubType().equalsIgnoreCase(RFC222_SUB_TYPE_STR);
   }
-  
-    
-  
-  @Override  
-  protected void parseStringValue() 
-    throws HeaderParseException {
-    
-    ContentType ct = null;
-    try {
-      ct = new ContentType(getValueAsString());
-      if(ct == null) {
-        throw new Exception("Null returned from parse");
-      }
-    }
-    catch(Exception pe) {
-      throw new HeaderParseException("Cannot parse \"" + 
-        getValueAsString() + "\" into ContentType header line", pe);
-    }
-    
-    m_primaryType = ct.getPrimaryType();
-    m_subtype = ct.getSubType();
-    
-    m_paramList = ct.getParameterList();  
 
-    
-  }
-  
   @Override
-  protected void parseLines() 
+  protected void parsePrimaryValue(HeaderFieldTokenizer t)
     throws HeaderParseException {
     
-    parseStringValue();
+    HeaderFieldTokenizer.Token token1 = t.nextTokenIgnoreComments();
+    if(token1 == null ||
+      (token1.getType() != HeaderFieldTokenizer.TokenType.ATOM &&
+        token1.getType() != HeaderFieldTokenizer.TokenType.QTEXT)) {
+      throw new HeaderParseException("Invalid ContentType header \"" +
+        t.getOriginal() + "\".  First token null or not ATOM or QTEXT");      
+    }
     
+    HeaderFieldTokenizer.Token token2 = t.nextTokenIgnoreComments();    
+    if(token2 == null || token2.getDelim() != (byte) FWD_SLASH) {
+      throw new HeaderParseException("Invalid ContentType header \"" +
+        t.getOriginal() + "\".  Second token null or not /");
+    }
+    
+    HeaderFieldTokenizer.Token token3 = t.nextTokenIgnoreComments();    
+    if(token3 == null ||
+      (token3.getType() != HeaderFieldTokenizer.TokenType.ATOM &&
+        token3.getType() != HeaderFieldTokenizer.TokenType.QTEXT)) {
+      throw new HeaderParseException("Invalid ContentType header \"" +
+        t.getOriginal() + "\".  Third token null or not ATOM or QTEXT");
+    }         
+
+    m_primaryType = token1.toString();
+    m_subtype = token3.toString();
   }
-  
+
   @Override
-  public void writeToAssemble(MIMEOutputStream out)
-    throws IOException {
-    out.write(toString());
-    out.writeLine();
-  }   
-  
-  /**
-   * Really only for debugging, not to produce output suitable
-   * for output.
-   */  
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append(getName());
-    sb.append(':');
+  protected void writePrimaryValue(StringBuilder sb) {
     sb.append(getPrimaryType());
-    sb.append('/');
+    sb.append(FWD_SLASH);
     sb.append(getSubType());
-    if (m_paramList!=null) {
-      sb.append(m_paramList.toString(sb.length()));
+//    sb.append(COLON);
+  }
+
+  @Override 
+  protected ParamParsePolicy getParamParsePolicy(String paramName) {
+    paramName = paramName.toLowerCase();
+    if(BOUNDARY_PARAM_KEY.str.equals(paramName)) {
+      return ParamParsePolicy.QTEXT_OR_ALL;
     }
-    return sb.toString();
+    if(
+      CHARSET_PARAM_KEY.str.equals(paramName) ||
+      FORMAT_KEY.str.equals(paramName) ||
+      DELSP_KEY.str.equals(paramName)
+      ) {
+      return ParamParsePolicy.ATOM_OR_QTEXT;
+    }
+    if(NAME_KEY.str.equals(paramName)) {
+      return ParamParsePolicy.LOOSE;
+    }    
+    return super.getParamParsePolicy(paramName);
+  }
+
+  public static void main(String[] args) throws Exception {
+    String crlf = "\r\n";
+    test("text/plain");
+    test(
+      "multipart/mixed; " + "boundary=\"--abc\"xRND_CRAP");
+    test(
+      "multipart/mixed; " + "boundary=\"--abc\"xRND_CRAP;name=a b c;charset=US-ASCII");
+    test(
+      "multipart/mixed; " + "boundary=\"--abc\"xRND_CRAP;name=a b c; charset=US-ASCII");
+    test(
+      "multipart/mixed; " + "boundary=\"--abc\"xRND_CRAP;name=a b c; charset=US-ASCII (plain text) goo=doo");          
+    test(
+      "multipart/mixed; " + "boundary=\"--abc\"xRND_CRAP; foo=\"moo\"");
+    test(
+      "multipart/mixed; a b=\"doo\"; " +  
+      "boundary=------------070407010503030002060104 xRND_CRAP; foo=\"moo\"");
+  }
+  public static void test(String s) throws Exception {
+    System.out.println("\n\n========================\n" + s + "\n\n");
+    ContentTypeHeaderField hf = new ContentTypeHeaderField();
+    hf.assignFromString(s, true);
+    hf.parseLines();
+    System.out.println("-------------------------");
+    System.out.println(hf.toString());
+    System.out.println("-------------------------");    
   }
   
-  private String getAttribute(String attribName) {
-    return m_paramList == null?
-      null:
-      m_paramList.get(attribName);    
-  }
-  
-  private void setAttribute(String attribName,
-    String val) {
-    ensureParamList();
-    if(val == null) {
-      m_paramList.remove(attribName);
-    }
-    else {
-      m_paramList.set(attribName, val);    
-    }
-    changed();      
-  }
-  
-  private void ensureParamList() {
-    if(m_paramList == null) {
-      m_paramList = new ParameterList();
-    }
-  }    
 }  

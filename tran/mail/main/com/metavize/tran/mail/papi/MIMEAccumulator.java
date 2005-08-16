@@ -294,7 +294,7 @@ public class MIMEAccumulator {
       }
     }
     if(isLast) {
-      try {m_fileOut.flush();}catch(Exception wtf){m_logger.error(wtf);}
+      try {m_fileOut.flush();}catch(Exception wtf){m_logger.error("Error adding header bytes", wtf);}
       m_headersLen = (int) m_file.length();
     }
     return true;
@@ -423,6 +423,10 @@ public class MIMEAccumulator {
     if(m_mimeMessage != null) {
       return m_mimeMessage;
     }
+    if(parseHeaders() == null) {
+      m_logger.error("Cannot parse headers, so body cannot be parsed");
+      return null;
+    }
     if(m_fileMIMESource == null) {
       m_fileMIMESource = new FileMIMESource(m_file);
     }
@@ -434,7 +438,7 @@ public class MIMEAccumulator {
         m_fileMIMESource,
         new MIMEPolicy(),
         null,
-        m_headers);
+        parseHeaders());
       mimeIn.close();
       closeInput();
       return m_mimeMessage;
@@ -456,7 +460,7 @@ public class MIMEAccumulator {
    * @return the TokenStreamer
    */
   public TCPStreamer toTCPStreamer() {
-    if(m_file.length() == m_headersLen) {
+    if((m_file.length() == m_headersLen) && m_headers != null) {
       m_logger.debug("[toTCPStreamer()] Returning headers-only streamer");
       return new HeadersOnlyTCPStreamer();
     }
@@ -615,16 +619,22 @@ public class MIMEAccumulator {
 
       try {
         m_logger.debug("File is of length: " + m_file.length());
-        m_fis = new FileInputStream(m_fileMIMESource.getFile());
-        m_logger.debug("Advance " + m_headersLen + " bytes to get past headers");
-        long toSkip = m_headersLen;
-        while(toSkip > 0) {
-          toSkip-=m_fis.skip(toSkip);
+        m_fis = new FileInputStream(m_file);
+        if(m_headers == null) {
+          m_logger.debug("Headers null.  Likely a parse error.  Write-out raw bytes");
+          m_wroteHeaders = true;
+        }
+        else {
+          m_logger.debug("Advance " + m_headersLen + " bytes to get past headers");
+          long toSkip = m_headersLen;
+          while(toSkip > 0) {
+            toSkip-=m_fis.skip(toSkip);
+          }          
         }
         m_fileInChannel = m_fis.getChannel();
       }
       catch(Exception ex) {
-        m_logger.error(ex);
+        m_logger.error("Error opening streamer file", ex);
         close();
       }
     }

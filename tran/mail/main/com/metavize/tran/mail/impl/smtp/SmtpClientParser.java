@@ -192,6 +192,8 @@ class SmtpClientParser
             endOfHeaders = m_sac.scanner.processHeaders(buf, 1024*4);//TODO bscott a real value here
           }
           catch(LineTooLongException ltle) {
+            //TODO bscott THis still needs to be more gracefully unwound
+            //     in the stateful transforms
             m_logger.error("Exception looking for headers end", ltle);
             puntDuringHeaders(toks, dup);
             return new ParseResult(toks, null);
@@ -213,20 +215,23 @@ class SmtpClientParser
 
           if(!m_sac.accumulator.addHeaderBytes(dup2, endOfHeaders)) {
             m_logger.error("Unable to write header bytes to disk.  Enter passthru");
+            //TODO bscott THis still needs to be more gracefully unwound
+            //     in the stateful transforms            
             puntDuringHeaders(toks, dup);
             return new ParseResult(toks, null);
           }
 
           if(endOfHeaders) {//BEGIN End of Headers
-            if(m_sac.accumulator.parseHeaders() == null) {//BEGIN Header PArse Error
-              m_logger.error("Unable to parse headers.  Enter passthru");
-              puntDuringHeaders(toks, dup);
-              return new ParseResult(toks, null);
+            MIMEMessageHeaders headers = m_sac.accumulator.parseHeaders();
+            if(headers == null) {//BEGIN Header PArse Error
+              m_logger.error("Unable to parse headers.  This will be caught downstream");
+//              puntDuringHeaders(toks, dup);
+//              return new ParseResult(toks, null);
             }//ENDOF Header PArse Error
 
             m_logger.debug("Adding the BeginMIMEToken");
             toks.add(new BeginMIMEToken(m_sac.accumulator,
-              createMessageInfo()));
+              createMessageInfo(headers)));
             changeState(SmtpClientState.BODY);
             if(m_sac.scanner.isEmptyMessage()) {
               m_logger.debug("Message blank.  Skip to reading commands");
@@ -401,9 +406,13 @@ class SmtpClientParser
    * Helper method to break-out the
    * creation of a MessageInfo
    */
-  private MessageInfo createMessageInfo() {
+  private MessageInfo createMessageInfo(MIMEMessageHeaders headers) {
 
-    MessageInfo ret = MessageInfo.fromMIMEMessage(m_sac.accumulator.parseHeaders(),
+    if(headers == null) {
+      headers = new MIMEMessageHeaders();
+    }
+  
+    MessageInfo ret = MessageInfo.fromMIMEMessage(headers,
       getSession().id(),
       getSession().serverPort());
     //Add anyone from the transaction
@@ -437,6 +446,12 @@ class SmtpClientParser
     ByteBuffer buf) {
     //Get any bytes trapped in the file
     ByteBuffer trapped = m_sac.accumulator.drainFileToByteBuffer();
+    if(trapped == null) {
+      m_logger.debug("Could not recover buffered header bytes");
+    }
+    else {
+      m_logger.debug("Retreived " + trapped.remaining() + " bytes trapped in file");
+    }
     //Nuke the accumulator
     m_sac.accumulator.dispose();
     m_sac = null;

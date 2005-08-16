@@ -10,23 +10,6 @@
   */
 package com.metavize.tran.mime;
 
-import javax.mail.internet.*;
-import javax.mail.*;
-import java.util.*;
-import com.metavize.tran.util.ASCIIStringBuilder;
-import static com.metavize.tran.util.Ascii.*;
-import java.io.*;
-
-//===========================================
-// Implementation Note.  We're currently
-// leaning on the JavaMail API for the 
-// heavy lifting (parsing).  We've created
-// this wrapper in case we need to move alway
-// from JavaMail in the future.
-// -wrs 6/05
-//===========================================
-
-
 //TODO: bscott Make sure we also set the "name" attribute,
 //      for compatability with crappy MUAs
 
@@ -35,20 +18,37 @@ import java.io.*;
  * RFC 821/RFC 2045 document.
  */
 public class ContentDispositionHeaderField 
-  extends HeaderField {
+  extends HeaderFieldWithParams {
+
+  public static final String FILENAME_PARAM_NAME = "filename";
+  public static final String CREATION_DATE_PARAM_NAME = "creation-date";
+  public static final String MODIFICATION_DATE_PARAM_NAME = "modification-date";
+  public static final String READ_DATE_PARAM_NAME = "read-date";
+  public static final String SIZE_PARAM_NAME = "size";
+  public static final String NAME_PARAM_NAME = "name";
+
+  public static final LCString FILENAME_PARAM_NAME_KEY = new LCString(FILENAME_PARAM_NAME);
+  public static final LCString CREATION_DATE_PARAM_NAME_KEY = new LCString(CREATION_DATE_PARAM_NAME);
+  public static final LCString MODIFICATION_DATE_PARAM_NAME_KEY = new LCString(MODIFICATION_DATE_PARAM_NAME);
+  public static final LCString READ_DATE_PARAM_NAME_KEY = new LCString(READ_DATE_PARAM_NAME);
+  public static final LCString SIZE_PARAM_NAME_KEY = new LCString(SIZE_PARAM_NAME);
+  public static final LCString NAME_PARAM_NAME_KEY = new LCString(NAME_PARAM_NAME);
 
   public static final String ATTACH_VAL = "attachment";
   public static final String INLINE_VAL = "inline";
-  public static final String FILENAME_KEY = "filename";
-  
+
+  /**
+   * Enum of the only two legal "disposition type" values.
+   * If not specified or of an unknown string, implicitly converted
+   * to "ATTACH"
+   */
   public enum DispositionType {
     ATTACH,
     INLINE
   }
   
   private DispositionType m_dispType;
-  private ParameterList m_paramList;
- 
+
   public ContentDispositionHeaderField(String name) {
     super(name, HeaderNames.CONTENT_DISPOSITION_LC);
   }
@@ -97,9 +97,7 @@ public class ContentDispositionHeaderField
    * is true.
    */
   public String getFilename() {
-    return m_paramList == null?
-      null:
-      m_paramList.get(FILENAME_KEY);
+    return getParam(FILENAME_PARAM_NAME_KEY);
   }
   /**
    * Set the filename attribute.  Note that this does
@@ -110,13 +108,9 @@ public class ContentDispositionHeaderField
    * @param filename the name of the file
    */
   public void setFilename(String filename) {
-    ensureParamList();
-    if(filename == null) {
-      m_paramList.remove(FILENAME_KEY);
-    }
-    else {
-      m_paramList.set(FILENAME_KEY, filename);    
-    }
+    //Note that passing null to the
+    //base class is an implicit remove
+    setParam(FILENAME_PARAM_NAME, filename);
     changed();
   }  
   
@@ -131,69 +125,42 @@ public class ContentDispositionHeaderField
     return distType == ContentDispositionHeaderField.DispositionType.ATTACH?
       ATTACH_VAL:INLINE_VAL;
   }
-  
-  
-  @Override  
-  protected void parseStringValue() 
+
+  @Override
+  protected ParamParsePolicy getParamParsePolicy(String paramName) {
+    paramName = paramName.toLowerCase();
+    if(
+      FILENAME_PARAM_NAME_KEY.str.equals(paramName) ||
+      CREATION_DATE_PARAM_NAME_KEY.str.equals(paramName) ||
+      MODIFICATION_DATE_PARAM_NAME_KEY.str.equals(paramName) ||
+      READ_DATE_PARAM_NAME_KEY.str.equals(paramName) ||
+      NAME_PARAM_NAME_KEY.str.equals(paramName)) {
+      return ParamParsePolicy.LOOSE;
+    }
+    if(SIZE_PARAM_NAME_KEY.str.equals(paramName)) {
+      return ParamParsePolicy.ATOM_OR_QTEXT;
+    }    
+    return super.getParamParsePolicy(paramName);
+  }
+
+  @Override
+  protected void parsePrimaryValue(HeaderFieldTokenizer t)
     throws HeaderParseException {
-    
-    ContentDisposition cd = null;
-    try {
-      cd = new ContentDisposition(getValueAsString());
-      if(cd == null) {
-        throw new Exception("Null returned from parse");
-      }
+    HeaderFieldTokenizer.Token token = t.nextTokenIgnoreComments();
+    if(token == null ||
+      (token.getType() != HeaderFieldTokenizer.TokenType.QTEXT &&
+      token.getType() != HeaderFieldTokenizer.TokenType.ATOM) ) {
+      throw new HeaderParseException("Illegal Content-Disposition header \"" +
+        t.getOriginal() + "\"");
     }
-    catch(Exception pe) {
-      throw new HeaderParseException("Cannot parse \"" + 
-        getValueAsString() + "\" into ContentDisposition header line", pe);
-    }
-    
-    String dispString = cd.getDisposition();
-    
-    
-    //RFC2183 Section 2.8 says default to "attachment"
     m_dispType = DispositionType.ATTACH;
-    if(dispString != null && INLINE_VAL.equals(dispString.trim().toLowerCase())) {
+    if(INLINE_VAL.equals(token.toString().trim().toLowerCase())) {
       m_dispType = DispositionType.INLINE;
     }
-    m_paramList = cd.getParameterList();    
-    
-  }  
-  
-  @Override
-  public void parseLines() 
-    throws HeaderParseException {
-
-    parseStringValue();
   }
-  
+
   @Override
-  public void writeToAssemble(MIMEOutputStream out)
-    throws IOException {
-    out.write(toString());
-    out.writeLine();
-  }  
-  
-  /**
-   * Really only for debugging, not to produce output suitable
-   * for various protocols and MIME
-   */  
-  public String toString() {
-  
-    ASCIIStringBuilder sb = new ASCIIStringBuilder();
-    sb.append(getName());
-    sb.append(COLON);
-    sb.append(dispositionTypeToString(getDispositionType()));    
-    if(m_paramList != null) {
-      sb.append(m_paramList.toString(sb.length()));
-    }
-    return sb.toString();
-   }
-  
-  private void ensureParamList() {
-    if(m_paramList == null) {
-      m_paramList = new ParameterList();
-    }
+  protected void writePrimaryValue(StringBuilder sb) {
+    sb.append(dispositionTypeToString(getDispositionType()));  
   }
 }

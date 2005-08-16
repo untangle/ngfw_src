@@ -30,7 +30,11 @@ public class ParseUnparse {
       new MIMEPolicy(),
       null);
 
+    final String outFileName = args[0] + ".out";
       
+    System.out.println("================================");
+    System.out.println(mp.describe());
+    System.out.println("================================");
     mp.changed();
     File newFile = mp.toFile(new FileFactory() {
       public File createFile(String name)
@@ -39,9 +43,10 @@ public class ParseUnparse {
       }
       public File createFile()
         throws IOException {
-        return new File(args[0] + ".out");
+        return new File(outFileName);
       }
     });
+    System.out.println("Wrote back out to " + outFileName);
 
   }
 

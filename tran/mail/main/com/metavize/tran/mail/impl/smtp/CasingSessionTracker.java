@@ -43,11 +43,59 @@ class CasingSessionTracker {
     void response(int code);
   }
 
+  /**
+   * Holds the last few commands
+   */
+  private class CSHistory {
+    private final String[] m_items;
+    private final int m_len;
+    private int m_tail = 0;
+    private int m_head = 0;
+
+    CSHistory(int len) {
+      m_items = new String[len+1];
+      m_len = len+1;
+    }
+
+    void add(String str) {
+    
+      int nextTail = next(m_tail);
+      if(nextTail == m_head) {
+        m_head = next(m_head);
+      }
+      m_items[m_tail] = str;
+      m_tail = nextTail;
+    }
+    
+    java.util.List<String> getHistory() {
+      java.util.List<String> ret = new java.util.ArrayList<String>();
+
+      int head = m_head;
+      
+      while(head != m_tail) {
+        ret.add(m_items[head]);
+        head = next(head);
+      }
+      return ret;
+    }
+
+    private int next(int i) {
+      return (++i >= m_len)?0:i;
+    }
+    
+  } 
+
+    
+
   private final Logger m_logger = Logger.getLogger(CasingSessionTracker.class);
 
   private SmtpTransaction m_currentTransaction;
   private List<ResponseAction> m_outstandingRequests;
   private boolean m_closing = false;
+  private CSHistory m_history = new CSHistory(25);
+
+
+  
 
   CasingSessionTracker() {
     m_outstandingRequests = new LinkedList<ResponseAction>();
@@ -77,6 +125,7 @@ class CasingSessionTracker {
   void beginMsgTransmission(ResponseAction chainedAction) {
     getOrCreateTransaction();
     m_outstandingRequests.add(new TransmissionResponseAction(chainedAction));
+    m_history.add("(c) <Begin Msg Transmission>");
 
   }
   /**
@@ -94,6 +143,15 @@ class CasingSessionTracker {
   
   void commandReceived(Command command,
     ResponseAction chainedAction) {
+
+    if(command instanceof UnparsableCommand) {
+      m_history.add("(c) " + command.getCmdString() + " (" +
+        command.getArgString() + ")"); 
+    }
+    else {
+      m_history.add("(c) " + command.getCmdString());
+    }
+       
     
     ResponseAction action = null;
     if(command.getType() == Command.CommandType.MAIL) {
@@ -122,9 +180,11 @@ class CasingSessionTracker {
 
   
   void responseReceived(Response response) {
+    m_history.add("(s) " + response.getCode());
     if(m_outstandingRequests.size() == 0) {
       if(!m_closing) {
-        m_logger.error("Misalignment of req/resp tracking.  No outstanding response");
+        m_logger.error("Misalignment of req/resp tracking.  No outstanding response.  " +
+          "Recent history: " + historyToString());
       }
     }
     else {
@@ -137,6 +197,17 @@ class CasingSessionTracker {
       m_currentTransaction = new SmtpTransaction();
     }
     return m_currentTransaction;
+  }
+
+  private String historyToString() {
+    StringBuilder sb = new StringBuilder();
+    for(String s : m_history.getHistory()) {
+      if(sb.length() != 0) {
+        sb.append(',');
+      }
+      sb.append(s);
+    }
+    return sb.toString();
   }
   
   private abstract class ChainedResponseAction
