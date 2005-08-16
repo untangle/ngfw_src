@@ -25,8 +25,8 @@
     <param name="MaxFileSize" value="5000KB"/>
     <param name="MaxBackupIndex" value="9"/>
     <param name="Threshold" value="ALL"/>
-    <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d{ABSOLUTE} %-5p [%c{1}] &lt;%X{SessionID}&gt; %m%n"/>
+    <layout class="com.metavize.mvvm.logging.MvPatternLayout">
+      <param name="ConversionPattern" value="%D %-5p [%c{1}] &lt;%X{SessionID}&gt; %m%n"/>
     </layout>
   </appender>
 

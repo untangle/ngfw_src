@@ -19,9 +19,9 @@
     <!-- Rollover at midnight each day -->
     <param name="DatePattern" value="'.'yyyy-MM-dd"/>
 
-    <layout class="org.apache.log4j.PatternLayout">
+    <layout class="com.metavize.mvvm.logging.MvPatternLayout">
       <!-- The default pattern: Date Priority [Category] Message\n -->
-      <param name="ConversionPattern" value="%d{ABSOLUTE} %-5p [%c{1}] %m%n"/>
+      <param name="ConversionPattern" value="%D %-5p [%c{1}] %m%n"/>
     </layout>
   </appender>
 
