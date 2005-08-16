@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.Level;
 
 import com.metavize.mvvm.tapi.event.*;
+import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.tran.ids.options.*;
 
 public class IDSRuleSignature {
@@ -30,6 +31,7 @@ public class IDSRuleSignature {
 	private int action;
 	private boolean removeFlag = false;
 	
+	private final Logger eventLog = MvvmContextFactory.context().eventLogger();
 	private static final Logger log = Logger.getLogger(IDSRuleSignature.class);
 	static {
 		log.setLevel(Level.WARN);
@@ -98,18 +100,20 @@ public class IDSRuleSignature {
 			if(!option.run())
 				return false;
 		}
-//		doAction();
+		doAction();
 		return true;
 	}
 
 	private void doAction() {
 		switch(action) {
-			case IDSRules.ALERT:
-				System.out.println(message);
+			case IDSRuleManager.ALERT:
+		//		System.out.println(message);
 				break;
-			case IDSRules.LOG:
+			case IDSRuleManager.LOG:
 				break;
 		}
+		int id = (info.getSession() == null) ? -1 : info.getSession().id();
+		eventLog.info(new IDSLogEvent(id,message,false));
 	}
 
 	public void setToString(String string) {

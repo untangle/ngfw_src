@@ -29,6 +29,10 @@ public class IDSSessionInfo {
 		this.session = session;
 	}
 
+	public IPSession getSession() {
+		return session;
+	}
+	
 	public void setSignatures(List<IDSRuleSignature> signatures) {
 		this.signatures = signatures;
 	}

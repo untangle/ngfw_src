@@ -174,13 +174,15 @@ Description: The Metavize Report Generator
 
 Package: ids-transform
 Architecture: any
-Depends: mvvm
+Depends: mvvm, http-casing
 XB-Price: 0
 XB-Display-Name: Intrusion Prevention
 XB-Website: http://www.metavize.com
 XB-Rack-Position: 42
-Description: The Metavize Intrusion Prevention Software Appliance
-  What is the meaning of Life? The Universe? Everything?
+Description: The Metavize Intrusion Detection And Prevention Appliance 
+ The Metavize Intrusion Detection And Prevention Appliance is an inline traffic 
+ scanner that detects exploits and intrusion attempts. It contains a library of 
+ over 2000 rules which can be easily expanded on with custom rules.
 
 Package: metavize-client
 Architecture: any
@@ -188,7 +190,7 @@ Depends: mvvm
 Conflicts: metavize-gui
 XB-Display-Name: Metavize Client
 XB-Website: http://www.metavize.com
-Description: The Metavize Client
+Description: The Metavize Client 
  The Metavize Client is the User Interface for accessing and
  controlling EdgeGuard.
 

@@ -15,25 +15,25 @@ import com.metavize.mvvm.tran.PortRange;
 import com.metavize.mvvm.tran.firewall.IPMatcher;
 import com.metavize.mvvm.tran.ParseException;
 
-public class IDSRules {
+public class IDSRuleManager {
 	
 	public static final int ALERT = 0;
 	public static final int LOG = 1;
 	public static final String[] ACTIONS = { "alert", "log" };
 			
-	private List<IDSRuleHeader> rules = new Vector<IDSRuleHeader>();
+	private List<IDSRuleHeader> ruleHeaders = new Vector<IDSRuleHeader>();
 	
-	private static final Logger log = Logger.getLogger(IDSRules.class);
+	private static final Logger log = Logger.getLogger(IDSRuleManager.class);
 	static {
 		log.setLevel(Level.WARN);
 	}
-	public IDSRules() {
+	public IDSRuleManager() {
 	}
 
-	public void addRule(String rule) throws ParseException {
+	public boolean addRule(String rule) throws ParseException {
 		
 		if(rule.length() <= 0 || rule.charAt(0) == '#')
-			return;
+			return false;
 		rule = substituteVariables(rule);
 		String ruleParts[] 			= IDSStringParser.parseRuleSplit(rule);
 		IDSRuleHeader header		= IDSStringParser.parseHeader(ruleParts[0]);
@@ -43,15 +43,17 @@ public class IDSRules {
 		//Might want to change this.
 		if(!signature.remove()) {
 			header.setSignature(signature);
-			rules.add(header);
+			ruleHeaders.add(header);
+			return true;
 		}
+		return false;
 	}
 
 	public List<IDSRuleSignature> matchesHeader(Protocol protocol, InetAddress clientAddr, int clientPort, InetAddress serverAddr, int serverPort) {
 		List<IDSRuleSignature> returnList = new LinkedList();
-	//	System.out.println(rules.size()); /** *****************************************/
+		//System.out.println(ruleHeaders.size()); /** *****************************************/
 		
-		Iterator<IDSRuleHeader> it = rules.iterator();
+		Iterator<IDSRuleHeader> it = ruleHeaders.iterator();
 		while(it.hasNext()) {
 			IDSRuleHeader header = it.next();
 			if(header.matches(protocol, clientAddr, clientPort, serverAddr, serverPort)) {
@@ -59,18 +61,18 @@ public class IDSRules {
 			//	System.out.println("\n\n"+header+"\n"+header.getSignature());
 			}
 		}
-	//	System.out.println(returnList.size()); /** *****************************************/
+		//System.out.println(returnList.size()); /** *****************************************/
 		
 		return returnList;
 	}
 
 	/*For debug yo*/
 	public List<IDSRuleHeader> getHeaders() {
-		return rules;
+		return ruleHeaders;
 	}
 
 	public void clear() {
-		rules.clear();
+		ruleHeaders.clear();
 	}
 
 	private String substituteVariables(String string) {
@@ -88,4 +90,3 @@ public class IDSRules {
 		return string;
 	}
 }
-

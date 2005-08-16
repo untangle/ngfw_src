@@ -18,7 +18,7 @@ import com.metavize.mvvm.tran.PortRange;
 public class IDSDetectionEngine {
 
 	private int tmpcount = 0;
-	private IDSRules rules = new IDSRules();
+	private IDSRuleManager rules = new IDSRuleManager();
 	Map<Integer,IDSSessionInfo> sessionInfoMap = new ConcurrentHashMap<Integer,IDSSessionInfo>();
 	
 	private static final Logger log = Logger.getLogger(IDSDetectionEngine.class);
@@ -42,15 +42,16 @@ public class IDSDetectionEngine {
 		addRule(TesT);
 	}
 
-	public void addRule(String rule) {
+	public boolean addRule(String rule) {
 		try {
-			rules.addRule(rule);
+			return rules.addRule(rule);
 		} catch (ParseException e) { 
 			log.warn("Could not parse rule; " + e.getMessage()); 
 		} catch (Exception e) {
 			log.error("Some sort of really bad exception: " + e.getMessage());
 			e.printStackTrace();
 		}
+		return false;
 	}
 
 	public boolean processNewSession(IPNewSessionRequest session, Protocol protocol) {
@@ -70,7 +71,7 @@ public class IDSDetectionEngine {
 		return false; // Fix me - not sure what I want to return
 	}
 
-	public IDSRules getRulesForTesting() {
+	public IDSRuleManager getRulesForTesting() {
 		return rules;
 	}
 	

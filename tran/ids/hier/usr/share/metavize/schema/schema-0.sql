@@ -1,0 +1,26 @@
+-------------
+-- settings |
+-------------
+
+create table settings.TR_IDS_SETTINGS (
+	settings_id int8 not null,
+	tid int8 not null unique, 
+	primary key (settings_id));
+	
+create table settings.TR_IDS_RULE (
+	RULE_ID int8 not null, 
+	RULE varchar(4095), 
+	SETTINGS_ID int8, 
+	POSITION int4, 
+	primary key (RULE_ID));
+
+-----------
+-- events |
+-----------
+create table events.TR_IDS_EVT (
+	event_id int8 NOT NULL,
+	session_id int4,
+	message char(512),
+	blocked bool,
+	time_stamp timestamp,
+	PRIMARY KEY (event_id));

@@ -37,7 +37,7 @@ public class EventHandler extends AbstractEventHandler {
 	}
 
 	public IPDataResult handleTCPServerChunk(TCPChunkEvent event) {
-			 if(event.session().attachment() != null) 
+//			 if(event.session().attachment() != null) 
 				idsEngine.handleChunk(event, event.session(), true);
 			return IPDataResult.PASS_THROUGH;
 	}

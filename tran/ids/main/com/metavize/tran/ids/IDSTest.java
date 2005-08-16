@@ -35,7 +35,7 @@ public class IDSTest {
 	}
 	
 	private static final Logger log = Logger.getLogger(IDSTest.class);
-	private IDSRules rules = new IDSRules();
+	private IDSRuleManager rules = new IDSRuleManager();
 	
 	static {
 		log.setLevel(Level.ALL);

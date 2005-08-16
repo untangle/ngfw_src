@@ -35,63 +35,14 @@ public class IDSStringParser {
 	
 	public static IDSRuleSignature parseSignature(String signatureString, int action) throws ParseException {
 		IDSRuleSignature returnSignature = new IDSRuleSignature(action);
-		/*
-		int delim;
-		while((delim = signatureString.indexOf(';')) > 0 ) {
-			
-			int first = signatureString.indexOf('"');
-			int second;
-			
-			int index = signatureString.indexOf(':');
-		//	int nextIndex;
-			
-		//	if(index > 0)
-		//		nextIndex = index+1+signatureString.substring(index+1).indexOf(':');
-		//	else
-		//		nextIndex = signatureString.length();
-	//		System.out.println("Index: " + index + "NextIndex: "+nextIndex);
-			//second = (first >= 0) ? (first+1+signatureString.substring(first+1,nextIndex).lastIndexOf('"')) : -1;
-			second = (first >= 0) ? (first+1+signatureString.substring(first+1).indexOf('"')) : -1;
-			while(delim > first && delim < second) 
-				delim = delim+1+signatureString.substring(delim+1).indexOf(';');
-			String optionName;
-			String params;
-			if(index >= 0 && index < delim) {
-				optionName = signatureString.substring(0,index).trim();
-				params = signatureString.substring(index+1,delim).trim();
-			}
-			else {
-				optionName = signatureString.substring(0,delim).trim();
-				params = "No params";
-			}
-			signatureString = signatureString.substring(delim+1).trim();
-	//		System.out.println("\n\n\nRaawr");
-	//		System.out.println(optionName);
-	//		System.out.println(params);
-	//		System.out.println(signatureString);
-			returnSignature.addOption(optionName, params);
-		}*/
-		/*
-		int index;
-		while((index = signatureString.indexOf(':')) > 0 ) {
-			String optionName = signatureString.substring(0,index).trim();
-			signatureString = signatureString.substring(index+1);
-			index = signatureString.indexOf(':');
-			int delim = signatureString.substring(0,index).lastIndexOf(';');
-			String params = signatureString.substring(0,delim).trim();
-			signatureString = signatureString.substring(delim+1);
-			System.out.println(" ***************: " + optionName+", " + params);
-			returnSignature.addOption(optionName, params);
-		}*/
+		
 		
 		String replaceChar = ""+0xff42;
 		signatureString = signatureString.replaceAll("\\\\;",replaceChar);
 		String options[] = signatureString.trim().split(";");
 		for(int i = 0; i < options.length; i++) {
 			options[i].trim();	
-		//	System.out.println("FKSF: "+options[i]);
 			options[i] = options[i].replaceAll(replaceChar,"\\\\;");
-		//	System.out.println("OPTION: "+options[i]);
 			int delim = options[i].indexOf(':');
 			if(delim < 0)
 				returnSignature.addOption(options[i].trim(),"No Params");
@@ -99,20 +50,7 @@ public class IDSStringParser {
 				String opt = options[i].substring(0,delim).trim();
 				returnSignature.addOption(opt, options[i].substring(delim+1).trim());
 			}
-		} // */ 
-		/*
-		String options[] = signatureString.trim().split(";( |$)"); //add a way to ignore ; within " " of each option
-		for(int i = 0; i < options.length; i++) {
-			options[i].trim();
-			int delim = options[i].indexOf(':');
-			if(delim < 0)
-				returnSignature.addOption(options[i].trim(),"No Params");
-			else {
-				String opt = options[i].substring(0,delim).trim();
-				returnSignature.addOption(opt, options[i].substring(delim+1).trim());
-			}
-		} */
-	
+		} 
 		return returnSignature;
 	}	
 	public static IDSRuleHeader parseHeader(String header) throws ParseException {
@@ -168,7 +106,7 @@ public class IDSStringParser {
 	}
 
 	private static int parseAction(String action) throws ParseException {
-		String validActions[] = IDSRules.ACTIONS;
+		String validActions[] = IDSRuleManager.ACTIONS;
 		for(int i=0; i < validActions.length;i++) {
 			if(validActions[i].equalsIgnoreCase(action))
 				return i;
