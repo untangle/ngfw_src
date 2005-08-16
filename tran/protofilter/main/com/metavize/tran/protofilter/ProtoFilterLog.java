@@ -78,7 +78,7 @@ public class ProtoFilterLog implements Serializable
         return clientAddr;
     }
 
-    public int getCClientPort()
+    public int getClientPort()
     {
         return clientPort;
     }
@@ -88,7 +88,7 @@ public class ProtoFilterLog implements Serializable
         return serverAddr;
     }
 
-    public int getSServerPort()
+    public int getServerPort()
     {
         return serverPort;
     }

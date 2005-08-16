@@ -47,11 +47,11 @@ public class LogJPanel extends MLogTableJPanel {
             Reason reason = requestLog.getReason();
 	    
 	    event.add( action.toString() );
-            event.add( requestLog.getClientAddr() + ":" + ((Integer)requestLog.getCClientPort()).toString() );
+            event.add( requestLog.getClientAddr() + ":" + ((Integer)requestLog.getClientPort()).toString() );
 	    event.add( requestLog.getUrl().toString() );
 	    event.add( reason.toString() );
             event.add( requestLog.getDirection().getDirectionName() );
-            event.add( requestLog.getServerAddr() + ":" + ((Integer)requestLog.getSServerPort()).toString() );
+            event.add( requestLog.getServerAddr() + ":" + ((Integer)requestLog.getServerPort()).toString() );
             allEvents.insertElementAt(event,0);
         }
 

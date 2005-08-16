@@ -38,11 +38,11 @@ public class LogJPanel extends MLogTableJPanel {
             event = new Vector();
             event.add( Util.getLogDateFormat().format( log.getCreateDate() ));
 	    event.add( log.getAction() );
-            event.add( log.getClientAddr() + ":" + ((Integer)log.getCClientPort()).toString() );
+            event.add( log.getClientAddr() + ":" + ((Integer)log.getClientPort()).toString() );
 	    event.add( log.getProtocol() );
 	    event.add( log.getReason() );
             event.add( log.getDirection().getDirectionName() );
-            event.add( log.getServerAddr() + ":" + ((Integer)log.getSServerPort()).toString() );
+            event.add( log.getServerAddr() + ":" + ((Integer)log.getServerPort()).toString() );
             allEvents.insertElementAt(event,0);
         }
 	
