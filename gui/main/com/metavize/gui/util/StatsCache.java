@@ -42,10 +42,16 @@ public class StatsCache
         killUpdate = true;
     }
 
-    protected class UpdateThread extends Thread {
+    protected class UpdateThread extends Thread implements Killable {
+	// KILLABLE //////////
+	private volatile boolean killed;
+	public void setKilled(boolean killed){ this.killed = killed; }
+	///////////////////////
+
         protected UpdateThread() {
 	    super("MVCLIENT-StatsCache.UpdateThread");
             this.setDaemon(true);
+	    Util.addKillableThread(this);
         }
 
         public void run() {
@@ -54,7 +60,7 @@ public class StatsCache
                     // KILL UPDATE IF NECESSARY
                     if(killUpdate)
                         return;
-                    if(Util.getKillThreads())
+                    if(killed)
                         return;
 
                     // get all transform stats
@@ -70,13 +76,11 @@ public class StatsCache
 
                     // PAUSE A NORMAL AMOUNT OF TIME
                     Thread.sleep(SLEEP_MILLIS);
-                } catch (InterruptedException x) {
-                    System.err.println("StatsCache got interrupted");
-                    return;
-                } catch (Exception x) {
+                }
+		catch (Exception x) {
                     // Server is probably down.
                     // This is ugly: XXXXXXXXXXXXXXX
-            try { Thread.currentThread().sleep(10000); } catch(Exception f) {}
+		    try { Thread.currentThread().sleep(10000); } catch(Exception f) {}
                 }
             }
         }

@@ -32,6 +32,7 @@ import com.metavize.mvvm.tran.*;
 public class Util {
 
     static{
+	daemonThreadVector = new Vector<Killable>();
 	logDateFormat = new SimpleDateFormat("EEE, MMM d HH:mm:ss");
         log = new Vector();
 	ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
@@ -271,6 +272,7 @@ public class Util {
 
     // EXITING AND SHUTDOWN ///////////////////
     private static boolean killThreads = false;
+    private static Vector<Killable> daemonThreadVector;
 
     public static boolean getKillThreads(){
         return killThreads;
@@ -278,6 +280,15 @@ public class Util {
     public static void exit(int i){
         killThreads = true;
         System.exit(i);
+    }
+    public static void addKillableThread(Killable killable){
+	daemonThreadVector.add(killable);
+    }
+    public static void killDaemonThreads(){
+	for( Killable killable : daemonThreadVector ){
+	    killable.setKilled(true);
+	}
+	daemonThreadVector.clear();
     }
     ////////////////////////////////////////////
     
@@ -397,16 +408,19 @@ public class Util {
 	
 	while( throwableRef != null){
 	    if( throwableRef instanceof InvocationConnectionException ){
+		killDaemonThreads();
 		mLoginJFrame.resetLogin("Server communication failure.  Re-login.");
 		mLoginJFrame.reshowLogin();
 		return;
 	    }
 	    else if( throwableRef instanceof InvocationTargetExpiredException ){
+		killDaemonThreads();
 		mLoginJFrame.resetLogin("Server synchronization failure.  Re-login.");
 		mLoginJFrame.reshowLogin();
 		return;
 	    }
 	    else if( throwableRef instanceof com.metavize.mvvm.client.LoginExpiredException ){
+		killDaemonThreads();
 		mLoginJFrame.resetLogin("Login expired.  Re-login.");
 		mLoginJFrame.reshowLogin();
 		return;
@@ -414,6 +428,7 @@ public class Util {
 	    else if(    (throwableRef instanceof ConnectException)
 		     || (throwableRef instanceof SocketException)
 		     || (throwableRef instanceof SocketTimeoutException) ){
+		killDaemonThreads();
 		mLoginJFrame.resetLogin("Server connection failure.  Re-login.");
 		mLoginJFrame.reshowLogin();
 		return;

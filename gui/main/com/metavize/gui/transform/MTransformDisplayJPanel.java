@@ -382,7 +382,12 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
         killGraph = true;
     }
     
-    private class UpdateGraphThread extends Thread {
+    private class UpdateGraphThread extends Thread implements Killable{
+	// KILLABLE ////////
+	private volatile boolean killed;
+	public void setKilled(boolean killed){ this.killed = killed; }
+	////////////////////
+
         TransformStats currentStats = null;
         long sessionCountCurrent = 0;
         long sessionCountTotal = 0;
@@ -390,7 +395,6 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
         long sessionRequestLast = 0;
         long byteCountLast = 0;
         long byteCountCurrent = 0;
-
 
         double sessionFactor;
         double throughputFactor;
@@ -406,6 +410,7 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
         public UpdateGraphThread(){
 	    super("MVCLIENT-UpdateGraphThread: " + MTransformDisplayJPanel.this.mTransformJPanel.getMackageDesc().getDisplayName());
             this.setDaemon(true);
+	    Util.addKillableThread(this);
             resetCounters();
 	    this.start();
         }
@@ -473,7 +478,7 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
                     // KILL GRAPHING IF NECESSARY
                     if(killGraph)
                         return;
-                    if(Util.getKillThreads())
+                    if(killed)
                         return;
 
                     // DEAL WITH TURNING THE GRAPHS OFF
@@ -490,8 +495,13 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
                         byteCountLast = byteCountCurrent = 0;
                         sessionRequestLast = sessionRequestCurrent = 0;
                         doUpdateGraph();
-                        while(!updateGraph)
+                        while(!updateGraph){
                             Thread.sleep(SLEEP_MILLIS);
+			    if(killGraph)
+				return;
+			    if(killed)
+				return;			   
+			}
                     }
 
                     // PAUSE A NORMAL AMOUNT OF TIME
@@ -528,8 +538,7 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
 
                 }
                 catch(Exception e){  // handle this exception much more gracefully
-		    try{ Thread.currentThread().sleep(10000); }
-		    catch(Exception f){}
+		    try{ Thread.currentThread().sleep(10000); } catch(Exception f){}
                 }
             }
         }

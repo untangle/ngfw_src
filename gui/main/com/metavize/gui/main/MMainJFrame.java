@@ -852,10 +852,16 @@ public class MMainJFrame extends javax.swing.JFrame {
 
 
 
-    private class UpdateCheckThread extends Thread {
+    private class UpdateCheckThread extends Thread implements Killable {
+	// KILLABLE //////
+	private volatile boolean killed;
+	public void setKilled(boolean killed){ this.killed = killed; }
+	//////////////////
+
         public UpdateCheckThread(){
 	    super("MVCLIENT-UpdateCheckThread");
             this.setDaemon(true);
+	    Util.addKillableThread(this);
 	    this.setContextClassLoader(Util.getClassLoader());
             this.start();
         }
@@ -873,7 +879,7 @@ public class MMainJFrame extends javax.swing.JFrame {
             
 	    while(true){
 		try{
-                    if(Util.getKillThreads())
+                    if(killed)
                         return;
                     
                     // CHECK FOR UPGRADES
@@ -888,15 +894,16 @@ public class MMainJFrame extends javax.swing.JFrame {
                         Util.setUpgradeCount(mackageDescs.length);
                     }
 		    Util.checkedUpgrades();
+                    Thread.sleep(Util.UPGRADE_THREAD_SLEEP_MILLIS);
+		}
+		catch(InterruptedException ie){
+		    return;  // closed by interruption
 		}
 		catch(Exception e){
 		    Util.handleExceptionNoRestart("Error checking for upgrades on server", e);
-		    updateJButton(Util.UPGRADE_UNAVAILABLE);		    
+		    updateJButton(Util.UPGRADE_UNAVAILABLE);
+		    try{ Thread.currentThread().sleep(10000); }  catch(Exception f){}
 		}
-                finally{
-                    try{ Thread.sleep(Util.UPGRADE_THREAD_SLEEP_MILLIS); }
-		    catch(Exception f){ Util.handleExceptionNoRestart("Error sleeping in upgrade check thread", f); }
-                }
 	    }
         }
     }
