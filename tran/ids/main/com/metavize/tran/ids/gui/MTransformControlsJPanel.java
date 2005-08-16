@@ -9,6 +9,8 @@
  * $Id$
  */
 
+
+
 package com.metavize.tran.ids.gui;
 
 import com.metavize.gui.transform.*;
@@ -24,11 +26,23 @@ import javax.swing.event.*;
 
 public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransformControlsJPanel{
     
+    //private static final String NAME_BLOCK_LIST = "Protocol Block List";
+    private static final String NAME_LOG = "Event Log";
+    
     public MTransformControlsJPanel(MTransformJPanel mTransformJPanel) {
         super(mTransformJPanel);
     }
 
     protected void generateGui(){
+	// BLOCK LIST /////
+	//ProtoConfigJPanel protoConfigJPanel = new ProtoConfigJPanel();
+        //this.mTabbedPane.addTab(NAME_BLOCK_LIST, null, protoConfigJPanel);
+	//super.savableMap.put(NAME_BLOCK_LIST, protoConfigJPanel);
+	//super.refreshableMap.put(NAME_BLOCK_LIST, protoConfigJPanel);
+
+        // EVENT LOG ///////
+        LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransformContext().transform(), this);
+        this.mTabbedPane.addTab(NAME_LOG, null, logJPanel);
     }
     
 }

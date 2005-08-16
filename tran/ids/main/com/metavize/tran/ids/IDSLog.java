@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: ProtoFilterLog.java 1355 2005-07-13 22:51:22Z inieves $
+ * $Id: IDSLog.java 1355 2005-07-13 22:51:22Z inieves $
  */
 
 package com.metavize.tran.ids;
@@ -18,7 +18,7 @@ import com.metavize.mvvm.tran.Direction;
 
 public class IDSLog implements Serializable {
     
-	private final Date createDate;
+    private final Date createDate;
     private final String message;
     private final boolean blocked;
     private final String clientAddr;
@@ -52,9 +52,9 @@ public class IDSLog implements Serializable {
     
     public String getReason(){
 	if(blocked)
-	    return "blocked in block list";
+	    return "blocked in rule list";
 	else
-	    return "not blocked in block list";
+	    return "not blocked in rule list";
     }
     // accessors --------------------------------------------------------------
 
@@ -78,7 +78,7 @@ public class IDSLog implements Serializable {
         return clientAddr;
     }
 
-    public int getCClientPort()
+    public int getClientPort()
     {
         return clientPort;
     }
@@ -88,7 +88,7 @@ public class IDSLog implements Serializable {
         return serverAddr;
     }
 
-    public int getSServerPort()
+    public int getServerPort()
     {
         return serverPort;
     }
