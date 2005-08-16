@@ -58,7 +58,7 @@
                 <textElement textAlignment="Center">
                     <font fontName="SansSerif" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
                 </textElement>
-                <text><![CDATA[Web Users]]></text>
+                <text><![CDATA[Top 15 Web Users]]></text>
             </staticText>
         </band>
     </title>
@@ -103,7 +103,7 @@
     </columnHeader>
     <detail>
         <band height="13">
-            <printWhenExpression><![CDATA[new Boolean($V{n}.intValue() < 20)]]></printWhenExpression>
+            <printWhenExpression><![CDATA[new Boolean($V{n}.intValue() <= 15)]]></printWhenExpression>
             <textField pattern="">
                 <reportElement key="textField" positionType="Float" mode="Opaque" x="92" y="0" width="62" height="13"/>
                 <box topBorderColor="#0" leftBorderColor="#0" bottomBorderColor="#0" rightBorderColor="#ffffff"/>

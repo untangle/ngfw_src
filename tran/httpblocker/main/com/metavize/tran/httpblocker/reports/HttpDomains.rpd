@@ -1,6 +1,7 @@
 TEMPLATE=Sub3
 REPORT_NAME=HttpDomains
-REPORT_TITLE=Visited Domains
+REPORT_TITLE=Top 15 Visited Domains
+REPORT_MAX_LENGTH=15
 FIELD_1.name=host
 FIELD_1.type=String
 FIELD_2.name=hits

@@ -1,6 +1,6 @@
 TEMPLATE=MasterOfFourChildren
 REPORT_NAME=SpamMaster
-REPORT_TITLE=Spam - Summary
+REPORT_TITLE=SpamGuard - Summary
 SUBREPORT_1=reports/TopSmtp.jasper
 SUBREPORT_2=reports/TopPop.jasper
 SUBREPORT_3=reports/TopSpamSmtp.jasper

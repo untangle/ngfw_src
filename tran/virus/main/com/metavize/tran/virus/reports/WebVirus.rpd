@@ -1,6 +1,7 @@
 TEMPLATE=Sub3
 REPORT_NAME=WebVirus
-REPORT_TITLE=Web Viruses
+REPORT_TITLE=Top 15 Web Viruses
+REPORT_MAX_LENGTH=15
 EXTRA_PARAM_1.name=virusVendor
 EXTRA_PARAM_1.type=java.lang.String
 FIELD_1.name=name

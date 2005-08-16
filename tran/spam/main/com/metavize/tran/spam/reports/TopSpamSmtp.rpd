@@ -1,6 +1,7 @@
 TEMPLATE=Sub3
 REPORT_NAME=TopSmtp
-REPORT_TITLE=Top SMTP Spam Recipients
+REPORT_TITLE=Top 15 SMTP Spam Recipients
+REPORT_MAX_LENGTH=15
 EXTRA_PARAM_1.name=spamVendor
 EXTRA_PARAM_1.type=java.lang.String
 EXTRA_VAR_1.name=total_count
@@ -25,7 +26,7 @@ JOIN tr_spam_evt_smtp evt ON id = msg_id \
 JOIN tr_mail_message_info_addr addr ON info.id = addr.msg_id \
 WHERE vendor_name = $P{spamVendor} AND kind = 'B' AND evt.time_stamp > $P{startTime} AND evt.time_stamp < $P{endTime} \
 GROUP BY addr \
-ORDER BY count DESC LIMIT 20
+ORDER BY count DESC LIMIT 15
 LEFT.label=Recipient
 MIDDLE.label=Count
 RIGHT.label=%

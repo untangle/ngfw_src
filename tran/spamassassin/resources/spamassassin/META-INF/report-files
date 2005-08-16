@@ -1,5 +1,5 @@
-reports/SpamMaster.jasper:SpamAssassin_AntiSpam--Summary:Summary
-reports/SpamSmtpDetail.jasper:SpamAssassin_AntiSpam--Email_Incidents_SMTP:Emails (SMTP)
-reports/SpamDetail.jasper:SpamAssassin_AntiSpam--Email_Incidents:Emails (POP/IMAP)
+reports/SpamMaster.jasper:SpamGuard--Summary:Summary
+reports/SpamSmtpDetail.jasper:SpamGuard--Spam_Incidents_SMTP:Spam Incidents (SMTP)
+reports/SpamDetail.jasper:SpamGuard--Spam_Incidents_POP_IMAP:Spam Incidents (POP/IMAP)
 com.metavize.tran.spam.reports.SpamSummarizer:summarizer:Summarizer
 spamVendor:parameter:SpamAssassin

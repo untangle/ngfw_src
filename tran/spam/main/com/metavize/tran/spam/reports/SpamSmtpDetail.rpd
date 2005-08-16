@@ -1,6 +1,6 @@
 TEMPLATE=Detail
 REPORT_NAME=SpamSmtpDetail
-REPORT_TITLE=SpamGuard - Emails (SMTP)
+REPORT_TITLE=SpamGuard - Spam Incidents (SMTP)
 EXTRA_PARAM_1.name=spamVendor
 EXTRA_PARAM_1.type=java.lang.String
 FIELD_1.name=time_stamp

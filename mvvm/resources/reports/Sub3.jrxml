@@ -66,7 +66,7 @@
     </columnHeader>
     <detail>
         <band height="13">
-            <printWhenExpression><![CDATA[new Boolean($V{n}.intValue() < 20)]]></printWhenExpression>
+            <printWhenExpression><![CDATA[new Boolean($V{n}.intValue() <= @REPORT_MAX_LENGTH@)]]></printWhenExpression>
             <textField pattern="">
                 <reportElement key="textField" positionType="Float" mode="Opaque" x="172" y="0" width="62" height="13"/>
                 <box topBorderColor="#0" leftBorderColor="#0" bottomBorderColor="#0" rightBorderColor="#ffffff"/>
