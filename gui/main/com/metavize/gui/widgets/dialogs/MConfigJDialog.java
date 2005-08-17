@@ -317,10 +317,12 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
         
         public void run(){
 	    MConfigJDialog.this.saveAll();
-	    saveJButton.setEnabled(true);
-	    reloadJButton.setEnabled(true);
-	    closeJButton.setEnabled(true);
-	    saveJButton.setIcon(SAVE_INIT_STRING);
+	    SwingUtilities.invokeLater( new Runnable(){ public void run(){
+		MConfigJDialog.this.saveJButton.setEnabled(true);
+		MConfigJDialog.this.reloadJButton.setEnabled(true);
+		MConfigJDialog.this.closeJButton.setEnabled(true);
+		MConfigJDialog.this.saveJButton.setIcon(SAVE_INIT_STRING);
+	    }});
         }
     }
     
@@ -337,10 +339,12 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
         
         public void run(){
 	    MConfigJDialog.this.refreshAll();
-	    saveJButton.setEnabled(true);
-	    reloadJButton.setEnabled(true);
-	    closeJButton.setEnabled(true);
-	    reloadJButton.setIcon(RELOAD_INIT_STRING);
+	    SwingUtilities.invokeLater( new Runnable(){ public void run(){
+		MConfigJDialog.this.saveJButton.setEnabled(true);
+		MConfigJDialog.this.reloadJButton.setEnabled(true);
+		MConfigJDialog.this.closeJButton.setEnabled(true);
+		MConfigJDialog.this.reloadJButton.setIcon(RELOAD_INIT_STRING);
+	    }});
         }
     }
 }
