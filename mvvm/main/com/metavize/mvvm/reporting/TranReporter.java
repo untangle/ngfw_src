@@ -32,7 +32,11 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 public class TranReporter {
 
-    private static final Logger logger = Logger.getLogger(TranReporter.class);
+    public static final float CHART_QUALITY = .9f;
+    public static final int CHART_WIDTH = 600;
+    public static final int CHART_HEIGHT = 200;
+
+    private static final Logger logger = Logger.getLogger(Reporter.class);
     public static final String ICON_DESC = "IconDesc42x42.png";
     public static final String ICON_ORG = "IconOrg42x42.png";
     private static final String SUMMARY_FRAGMENT_DAILY = "sum-daily.html";
@@ -138,15 +142,11 @@ public class TranReporter {
 		    reportGraph = (ReportGraph) reportClass.newInstance();
 		    logger.debug("Found graph: " + className);
 		    String dailyFile = new File(tranDir, name + "--daily.jpg").getCanonicalPath();
-		    processReportGraph(reportGraph, conn, dailyFile, Util.lastday, Util.midnight);
-                    /*
-                     * Not yet implemented below us... XXX
-
+		    processReportGraph(reportGraph, conn, dailyFile, Util.REPORT_TYPE_DAILY, Util.lastday, Util.midnight);
 		    String weeklyFile = new File(tranDir, name + "--weekly.jpg").getCanonicalPath();
-		    processReportGraph(reportGraph, conn, weeklyFile, Util.lastweek, Util.midnight);
+		    processReportGraph(reportGraph, conn, weeklyFile, Util.REPORT_TYPE_WEEKLY, Util.lastweek, Util.midnight);
 		    String monthlyFile = new File(tranDir, name + "--monthly.jpg").getCanonicalPath();
-		    processReportGraph(reportGraph, conn, monthlyFile, Util.lastmonth, Util.midnight);
-                    */
+		    processReportGraph(reportGraph, conn, monthlyFile, Util.REPORT_TYPE_MONTHLY, Util.lastmonth, Util.midnight);
 		} catch (Exception x) {
 		    logger.warn("No such class: " + className);
 		}
@@ -277,68 +277,17 @@ public class TranReporter {
 
 
     
-    private void processReportGraph(ReportGraph reportGraph, Connection conn, String fileName, Timestamp startTime, Timestamp endTime)
+    private void processReportGraph(ReportGraph reportGraph, Connection conn, String fileName, int type, Timestamp startTime, Timestamp endTime)
         throws IOException, JRScriptletException, SQLException, ClassNotFoundException
     {
-
-
-	/*
-        String graphName = "AllOutgoingTrafficByPortGraph";
-        ReportGraph g1 = new TrafficByPortGraph(slet, graphName,
-                                                "Outgoing Traffic", false,
-                                                true, true,
-                                                true, false);
-        JFreeChart c1 = g1.doInternal(conn);
-        // JPeg
-        String jpegFile = base + "-allinbyport.jpg";
-        File f =  new File(jpegFile);
-        String fileName = f.getName();
-        logger.debug("Exporting report to: " + jpegFile);
-        ChartUtilities.saveChartAsJPEG(new File(jpegFile), c1, 400, 300);
-        result.append("<img SRC=\"").append(fileName).append("\" WIDTH=\"400\" HEIGHT=\"300\">");
-        result.append("<p>\n");
-
-        graphName = "AllIncomingTrafficByPortGraph";
-        ReportGraph g2 = new TrafficByPortGraph(slet, graphName,
-                                                "Incoming Traffic", false,
-                                                true, true,
-                                                false, true);
-        JFreeChart c2 = g2.doInternal(conn);
-        // JPeg
-        jpegFile = base + "-alloutbyport.jpg";
-        logger.debug("Exporting report to: " + jpegFile);
-        f =  new File(jpegFile);
-        fileName = f.getName();
-        ChartUtilities.saveChartAsJPEG(f, c2, 400, 300);
-        result.append("<img SRC=\"").append(fileName).append("\" WIDTH=\"400\" HEIGHT=\"300\">");
-        result.append("<p>\n");
-	*/
-
-        // HACK ALERT XXX
-        if (endTime.getTime() - startTime.getTime() <= (1000 * 60 * 60 * 24 + 1000 * 60)) {
-            //graphName = "AllTrafficDayByMinuteGraph";
-            //ReportGraph g3 = new TrafficDayByMinuteGraph(slet, graphName,
-            //                                             "Traffic",
-            //                                             true, true,
-            //                                             "Outgoing", "Incoming", "Total");
-	    Map<String,Object> params = new HashMap<String,Object>();
-	    params.put(ReportGraph.PARAM_REPORT_START_DATE, Util.lastday);
-	    params.put(ReportGraph.PARAM_REPORT_END_DATE, Util.midnight);
-	    JRDefaultScriptlet scriptlet = new FakeScriptlet(conn, params);
-            JFreeChart jFreeChart = reportGraph.doInternal(conn, scriptlet, "Traffic");
-            // JPeg
-            //jpegFile = base + "-alldaybymin.jpg";
-            logger.debug("Exporting report to: " + fileName);
-            //f =  new File(fileName);
-            //fileName = f.getName();
-            ChartUtilities.saveChartAsJPEG(new File(fileName), jFreeChart, 600, 200);
-            //result.append("<img SRC=\"").append(fileName).append("\" WIDTH=\"400\" HEIGHT=\"300\">");
-            //result.append("<p>\n");
-        }
-
-        // ...
-
-
+	Map<String,Object> params = new HashMap<String,Object>();
+	params.put(ReportGraph.PARAM_REPORT_START_DATE, startTime);
+	params.put(ReportGraph.PARAM_REPORT_END_DATE, endTime);
+	params.put(ReportGraph.PARAM_REPORT_TYPE, type);
+	JRDefaultScriptlet scriptlet = new FakeScriptlet(conn, params);
+	JFreeChart jFreeChart = reportGraph.doInternal(conn, scriptlet);
+	logger.debug("Exporting report to: " + fileName);
+	ChartUtilities.saveChartAsJPEG(new File(fileName), CHART_QUALITY, jFreeChart, CHART_WIDTH, CHART_HEIGHT);
     }
 
 

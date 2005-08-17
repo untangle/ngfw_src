@@ -1,3 +1,4 @@
 reports/HttpMaster.jasper:Web_Content_Control--Summary:Summary
 reports/HttpBlockDetail.jasper:Web_Content_Control--Policy_Violations:Policy Violations
 com.metavize.tran.httpblocker.reports.HttpBlockerSummarizer:summarizer:Summarizer
+reportTitlePrefix:parameter:none

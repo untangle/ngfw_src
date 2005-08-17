@@ -1,8 +1,10 @@
 TEMPLATE=Detail
 REPORT_NAME=SpamDetail
 REPORT_TITLE=SpamGuard - Spam Incidents (POP/IMAP)
-EXTRA_PARAM_1.name=spamVendor
+EXTRA_PARAM_1.name=reportTitlePrefix
 EXTRA_PARAM_1.type=java.lang.String
+EXTRA_PARAM_2.name=spamVendor
+EXTRA_PARAM_2.type=java.lang.String
 FIELD_1.name=time_stamp
 FIELD_1.type=Timestamp
 FIELD_2.name=score

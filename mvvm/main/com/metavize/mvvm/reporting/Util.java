@@ -18,6 +18,11 @@ import java.sql.*;
 
 public class Util {
 
+    // REPORT TYPES ////////////////
+    static final int REPORT_TYPE_DAILY = 0;
+    static final int REPORT_TYPE_WEEKLY = 1;
+    static final int REPORT_TYPE_MONTHLY = 2;
+    ////////////////////////////////
 
     // REPORT GENERATION TIME PERIODS ///////
     static final int MAX_ROWS_PER_REPORT = 500;  // gives ~25 pages
@@ -42,7 +47,7 @@ public class Util {
 	// INITIALIZE TIME CONSTANTS
         Calendar c = Calendar.getInstance();
         if (toMidnight) {
-            c.set(Calendar.HOUR_OF_DAY, 0); // should be 0, but 20 for testing purposes
+            c.set(Calendar.HOUR_OF_DAY, 0);
             c.set(Calendar.MINUTE, 0);
             c.set(Calendar.SECOND, 0);
             c.set(Calendar.MILLISECOND, 0);

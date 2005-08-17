@@ -1,3 +1,4 @@
 reports/ProtoFilterMaster.jasper:Rogue_Protocol_Control--Summary:Summary
 reports/ProtoFilterDetail.jasper:Rogue_Protocol_Control--Policy_Violations:Protocol Policy Violations
 com.metavize.tran.protofilter.reports.ProtoFilterSummarizer:summarizer:Summarizer
+reportTitlePrefix:parameter:none

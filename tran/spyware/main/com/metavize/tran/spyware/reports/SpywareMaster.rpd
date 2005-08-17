@@ -1,6 +1,8 @@
 TEMPLATE=MasterOfFourChildren
 REPORT_NAME=SpywareMaster
 REPORT_TITLE=Spyware Blocker - Summary
+EXTRA_PARAM_1.name=reportTitlePrefix
+EXTRA_PARAM_1.type=java.lang.String
 SUBREPORT_1=com/metavize/tran/spyware/reports/SpywareCookies.jasper
 SUBREPORT_2=com/metavize/tran/spyware/reports/SpywareClients.jasper
 SUBREPORT_3=com/metavize/tran/spyware/reports/SpywareSources.jasper

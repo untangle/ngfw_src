@@ -29,14 +29,14 @@
     </background>
     <title>
         <band height="180">
-            <staticText>
-                <reportElement key="staticText" positionType="Float" mode="Opaque" x="0" y="28" width="500" height="17"/>
+            <textField pattern="">
+                <reportElement key="textField" positionType="Float" mode="Opaque" x="0" y="28" width="500" height="17"/>
                 <box topBorder="None" topBorderColor="#0" leftBorder="None" leftBorderColor="#0" bottomBorder="None" bottomBorderColor="#0" rightBorder="None" rightBorderColor="#ffffff"/>
                 <textElement>
                     <font fontName="SansSerif" size="14" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
                 </textElement>
-                <text><![CDATA[@REPORT_TITLE@]]></text>
-            </staticText>
+                <textFieldExpression class="java.lang.String"><![CDATA[new String( ((new String($P{reportTitlePrefix})).equals("none") ? "" : $P{reportTitlePrefix} + " ") + "@REPORT_TITLE@")]]></textFieldExpression>
+            </textField>
             <textField pattern="">
                 <reportElement key="textField" mode="Opaque" x="0" y="50" width="305" height="15"/>
                 <box topBorder="None" topBorderColor="#0" leftBorder="None" leftBorderColor="#0" bottomBorder="None" bottomBorderColor="#0" rightBorder="None" rightBorderColor="#ffffff"/>

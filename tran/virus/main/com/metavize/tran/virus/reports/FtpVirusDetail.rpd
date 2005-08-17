@@ -1,6 +1,10 @@
 TEMPLATE=Detail
 REPORT_NAME=FtpVirusDetail
 REPORT_TITLE=AntiVirus - FTP Incidents
+EXTRA_PARAM_1.name=reportTitlePrefix
+EXTRA_PARAM_1.type=java.lang.String
+EXTRA_PARAM_2.name=virusVendor
+EXTRA_PARAM_2.type=java.lang.String
 FIELD_1.name=time_stamp
 FIELD_1.type=Timestamp
 FIELD_2.name=c_client_addr

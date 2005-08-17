@@ -1,6 +1,10 @@
 TEMPLATE=Detail
 REPORT_NAME=WebVirusDetail
 REPORT_TITLE=AntiVirus - Web Incidents
+EXTRA_PARAM_1.name=reportTitlePrefix
+EXTRA_PARAM_1.type=java.lang.String
+EXTRA_PARAM_2.name=virusVendor
+EXTRA_PARAM_2.type=java.lang.String
 FIELD_1.name=c_server_port
 FIELD_1.type=Integer
 FIELD_2.name=c_client_addr

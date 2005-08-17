@@ -1,6 +1,8 @@
 TEMPLATE=Detail
 REPORT_NAME=AccessDetail
 REPORT_TITLE=Spyware Blocker - Subnet Incidents
+EXTRA_PARAM_1.name=reportTitlePrefix
+EXTRA_PARAM_1.type=java.lang.String
 FIELD_1.name=time_stamp
 FIELD_1.type=Timestamp
 FIELD_2.name=name

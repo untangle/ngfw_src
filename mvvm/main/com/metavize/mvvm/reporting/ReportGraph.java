@@ -41,6 +41,7 @@ public abstract class ReportGraph
     // General ones
     public static final String PARAM_REPORT_START_DATE = "ReportStartDate";
     public static final String PARAM_REPORT_END_DATE = "ReportEndDate";
+    public static final String PARAM_REPORT_TYPE = "ReportType";
 
     protected static final Font TITLE_FONT = new Font("Arial", Font.BOLD, 14);
     protected static final Font LABEL_FONT = new Font("Arial", Font.PLAIN, 10);
@@ -53,23 +54,22 @@ public abstract class ReportGraph
     // General ones
     protected Timestamp startDate;
     protected Timestamp endDate;
-
-    private String resultVarName;
+    protected int type;
 
     protected ReportGraph()
     {
 
     }
 
-    public void doIt(JRDefaultScriptlet ourScriptlet, String resultVarName) throws JRScriptletException
+    public void doIt(JRDefaultScriptlet ourScriptlet) throws JRScriptletException
     {
         Connection con = null;
         try {
             Class.forName("org.postgresql.Driver");
             con = DriverManager.getConnection("jdbc:postgresql://localhost/mvvm",
                                                          "metavize", "foo");
-            JFreeChart chart = doInternal(con, ourScriptlet, resultVarName);
-            ourScriptlet.setVariableValue(resultVarName, new JCommonDrawableRenderer(chart));
+            JFreeChart chart = doInternal(con, ourScriptlet);
+            ourScriptlet.setVariableValue("Traffic", new JCommonDrawableRenderer(chart));
         } catch (SQLException x) {
             x.printStackTrace();
             throw new JRScriptletException(x);
@@ -81,11 +81,10 @@ public abstract class ReportGraph
         }
     }
 
-    public JFreeChart doInternal(Connection con, JRDefaultScriptlet ourScriptlet, String resultVarName) throws JRScriptletException, SQLException,
+    public JFreeChart doInternal(Connection con, JRDefaultScriptlet ourScriptlet) throws JRScriptletException, SQLException,
                                                         ClassNotFoundException
     {
 	this.ourScriptlet = ourScriptlet;
-        this.resultVarName = resultVarName;
 	initParams();
         return doChart(con);
     }
@@ -101,6 +100,7 @@ public abstract class ReportGraph
         endDate = (Timestamp) gpv(PARAM_REPORT_END_DATE);
         if (endDate == null)
             endDate = new Timestamp(now);
+	type = (Integer) gpv(PARAM_REPORT_TYPE);
     }
 
     protected abstract JFreeChart doChart(Connection con) throws JRScriptletException, SQLException;

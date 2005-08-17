@@ -2,4 +2,5 @@ reports/SpamMaster.jasper:SpamGuard--Summary:Summary
 reports/SpamSmtpDetail.jasper:SpamGuard--Spam_Incidents_SMTP:Spam Incidents (SMTP)
 reports/SpamDetail.jasper:SpamGuard--Spam_Incidents_POP_IMAP:Spam Incidents (POP/IMAP)
 com.metavize.tran.spam.reports.SpamSummarizer:summarizer:Summarizer
+reportTitlePrefix:parameter:none
 spamVendor:parameter:SpamAssassin

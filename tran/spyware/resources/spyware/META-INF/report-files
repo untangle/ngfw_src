@@ -4,3 +4,4 @@ reports/SpywareAccessDetail.jasper:Spyware_Blocker--Subnet_Incidents:Subnet Inci
 reports/SpywareActiveXDetail.jasper:Spyware_Blocker--ActiveX_Incidents:ActiveX Incidents
 reports/SpywareBlacklistDetail.jasper:Spyware_Blocker--Blocklist_Incidents:URL Blocklist Incidents
 com.metavize.tran.spyware.reports.SpywareSummarizer:summarizer:Summarizer
+reportTitlePrefix:parameter:none
