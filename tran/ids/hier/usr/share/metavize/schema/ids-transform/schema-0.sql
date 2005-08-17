@@ -4,6 +4,7 @@
 
 create table settings.TR_IDS_SETTINGS (
 	settings_id int8 not null,
+	max_chunks int8 not null,
 	tid int8 not null unique, 
 	primary key (settings_id));
 	

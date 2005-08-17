@@ -150,6 +150,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 		visitAllFiles(file); // */
 								
 		IDSSettings settings = new IDSSettings(getTid());
+		settings.setMaxChunks(IDSDetectionEngine.instance().getMaxChunks());
 		settings.setRules(ruleList);
 		setIDSSettings(settings);
 		log.info(ruleList.size() + " rules loaded");
@@ -219,6 +220,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 		if(currentSettings == null)
 			throw new TransformException("Failed to get IDS settings: " + currentSettings);
 
+		IDSDetectionEngine.instance().setMaxChunks(currentSettings.getMaxChunks());
 		List<IDSRule> rules = (List<IDSRule>) currentSettings.getRules();
 		Iterator<IDSRule> it = rules.iterator();
 		while(it.hasNext()) {

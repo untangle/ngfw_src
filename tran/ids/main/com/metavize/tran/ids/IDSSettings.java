@@ -18,6 +18,7 @@ import com.metavize.mvvm.security.Tid;
 
 public class IDSSettings implements Serializable {
 	private static final long serialVersionUID = -7056565971726289302L;
+	private int maxChunks;
 	private Long id;
 	private Tid tid;
 	private List rules = new ArrayList();
@@ -39,6 +40,14 @@ public class IDSSettings implements Serializable {
 	protected Long getID() { return id; }
 	protected void setID(Long id) { this.id = id; }
 
+	/**
+	 * @hibernate.property
+	 * column="MAX_CHUNKS"
+	 */
+
+	protected int getMaxChunks() { return maxChunks; }
+	protected void setMaxChunks(int maxChunks) { this.maxChunks = maxChunks; }
+		
 	/**
 	 * Transform id for these settings.
 	 *

@@ -17,7 +17,7 @@ import com.metavize.mvvm.tran.PortRange;
 
 public class IDSDetectionEngine {
 
-	private int tmpcount = 0;
+	private int maxChunks = 8;
 	private IDSRuleManager rules = new IDSRuleManager();
 	Map<Integer,IDSSessionInfo> sessionInfoMap = new ConcurrentHashMap<Integer,IDSSessionInfo>();
 	
@@ -42,6 +42,14 @@ public class IDSDetectionEngine {
 		addRule(TesT);
 	}
 
+	public void setMaxChunks(int max) {
+		maxChunks = max;
+	}
+
+	public int getMaxChunks() {
+		return maxChunks;
+	}
+	
 	public boolean addRule(String rule) {
 		try {
 			return rules.addRule(rule);
@@ -76,6 +84,10 @@ public class IDSDetectionEngine {
 	}
 	
 	public void handleChunk(IPDataEvent event, IPSession session, boolean isServer) {
+		SessionStats stats = session.stats();
+		if(stats.s2tChunks() > maxChunks || stats.c2tChunks() > maxChunks)
+			session.release();
+		
 		IDSSessionInfo info = (IDSSessionInfo) session.attachment();
 		
 		info.setSession(session);
