@@ -46,7 +46,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 	
 	private static final Logger log = Logger.getLogger(IDSTransformImpl.class);
 	static {                    
-		log.setLevel(Level.INFO);
+		log.setLevel(Level.DEBUG);
 	}   
 			 
 	//private IDSRules rules = new IDSRules();	
@@ -110,6 +110,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 				log.warn("could not close Hibernate session", exn);
 			}
 		}
+		System.out.println("Returning logs! " + l.size()); /** ******************/
 		return l;
 	}
 				
@@ -187,10 +188,6 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 			q.setParameter("tid", getTid());
 			this.settings = (IDSSettings)q.uniqueResult();
 			//updateToCurrent(this.settings);
-			try {
-				reconfigure();
-			}
-			catch (Exception e) {e.printStackTrace(); }
 			tx.commit();
 		} catch (HibernateException exn) {
 			//logger.warn("Could not get Intrusion Detection settings", exn);
@@ -207,9 +204,16 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 		IDSTest test = new IDSTest();
 		if(!test.runTest())
 		  throw new TransformStartException("IDS Test failed"); // */
+		
+		try {
+			reconfigure();
+		}
+		catch (Exception e) {e.printStackTrace(); }
+					
 	}
 	
 	public void reconfigure() throws TransformException {
+		System.out.println("RECONFIGUREING"); /** ********************/
 		IDSSettings currentSettings = getIDSSettings();
 		log.debug("reconfigure()");
 		if(currentSettings == null)
@@ -226,7 +230,10 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 	//XXX soon to be deprecated ------------------------------------------
 	
 	public Object getSettings() {
-		return null;
+		return getIDSSettings();
+//		Object test = getIDSSettings();
+//		System.out.println("WHATAMI::: " + test);
+//		return test; //WTF. Deprecate me.
 	}
 
 	public void setSettings(Object obj) {

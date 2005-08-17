@@ -23,7 +23,7 @@ public class IDSDetectionEngine {
 	
 	private static final Logger log = Logger.getLogger(IDSDetectionEngine.class);
 	static {
-		log.setLevel(Level.ERROR);
+		log.setLevel(Level.INFO);
 	}	
 	private static IDSDetectionEngine instance = null; 
 	public static IDSDetectionEngine instance() {

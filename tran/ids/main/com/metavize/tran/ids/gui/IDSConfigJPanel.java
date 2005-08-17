@@ -73,7 +73,7 @@ class IDSTableModel extends MSortedTableModel{
     }
     
     public void generateSettings(Object settings, boolean validateOnly) throws Exception{
-        List elemList = new ArrayList();
+		List elemList = new ArrayList();
 	for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
             
 	    IDSRule newElem = (IDSRule) rowVector.elementAt(7);
@@ -95,7 +95,7 @@ class IDSTableModel extends MSortedTableModel{
     
     public Vector generateRows(Object settings){
 	IDSSettings idsSettings = (IDSSettings) settings;
-        Vector allRows = new Vector();
+	Vector allRows = new Vector();
         int count = 1;
 	for( IDSRule newElem : (List<IDSRule>) idsSettings.getRules() ){
 
