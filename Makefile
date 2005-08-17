@@ -84,7 +84,7 @@ $(lib_file_name): $(lib_deps)
 	@echo "==> gcc ($(alpine_libs)) -> $@"
 	@$(CC) $(CFLAGS) $(LIBS_FLAGS) -Wl,--whole-archive  $(lib_deps) -lipq -Wl,--no-whole-archive \
 		-shared -o output/$@
-	@$(STRIPCMD) $@
+	@$(STRIPCMD) output/$@
 	@echo "==> cp output/$@ -> $(build_lib_path)/$@"
 	@cp output/$@ $(build_lib_path)/$@ # FIXME
 
