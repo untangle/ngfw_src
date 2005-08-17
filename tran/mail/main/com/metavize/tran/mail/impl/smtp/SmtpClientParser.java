@@ -183,8 +183,6 @@ class SmtpClientParser
           
         //==================================================
         case HEADERS:
-          getSessionTracker().beginMsgTransmission();
-          
           //Duplicate the buffer, in case we have a problem
           ByteBuffer dup = buf.duplicate();
           boolean endOfHeaders = false;
@@ -230,6 +228,7 @@ class SmtpClientParser
             }//ENDOF Header PArse Error
 
             m_logger.debug("Adding the BeginMIMEToken");
+            getSessionTracker().beginMsgTransmission();
             toks.add(new BeginMIMEToken(m_sac.accumulator,
               createMessageInfo(headers)));
             changeState(SmtpClientState.BODY);
