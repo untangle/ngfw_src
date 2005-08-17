@@ -318,9 +318,9 @@ class TransformManagerImpl implements TransformManager
                     logger.info("Restarting: " + tid + " (" + name + ")");
                     try {
                         TransformContextImpl tc = new TransformContextImpl
-                            (urls, tDesc, args, mackageDesc, false);
+                            (urls, tDesc, mackageDesc, false);
                         tids.put(tid, tc);
-
+                        tc.init(args);
                         logger.info("Restarted: " + tid);
                     } catch (Exception exn) {
                         logger.warn("Could not restart: " + tid, exn);
@@ -379,9 +379,9 @@ class TransformManagerImpl implements TransformManager
 
         synchronized (this) {
             TransformContextImpl tc = new TransformContextImpl
-                (urls, tDesc, args, mackageDesc, true);
-
+                (urls, tDesc, mackageDesc, true);
             tids.put(tid, tc);
+            tc.init(args);
         }
 
         return tid;

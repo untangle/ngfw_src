@@ -60,16 +60,17 @@ class TransformContextImpl implements TransformContext
     private final TransformPreferences transformPreferences;
     private final TransformPersistentState persistentState;
     private final MackageDesc mackageDesc;
-    private final TransformBase transform;
     private final ClassLoader classLoader;
-    private final SessionFactory sessionFactory;
+    private final boolean isNew;
+
+    private TransformBase transform;
+    private SessionFactory sessionFactory;
 
     private final TransformManagerImpl transformManager = TransformManagerImpl
         .manager();
 
-    // XXX break out init();
     TransformContextImpl(URL[] resources, TransformDesc transformDesc,
-                         String args[], MackageDesc mackageDesc, boolean isNew)
+                         MackageDesc mackageDesc, boolean isNew)
         throws DeployException
     {
         SchemaUtil.initSchema(transformDesc.getName());
@@ -77,6 +78,7 @@ class TransformContextImpl implements TransformContext
         this.transformDesc = transformDesc;
         this.tid = transformDesc.getTid();
         this.mackageDesc = mackageDesc;
+        this.isNew = isNew;
 
         checkInstanceCount(transformDesc);
 
@@ -141,9 +143,12 @@ class TransformContextImpl implements TransformContext
                     + " (" + transformDesc.getName() + ")");
 
         CasingClassLoader parentCl = transformManager.getCasingClassLoader();
+        classLoader = new URLClassLoader(resources, parentCl);
+        CONTEXTS.put(classLoader, this);
+    }
 
-        Set<TransformContext>parentCtxs = new HashSet<TransformContext>();
-
+    void init(String[] args) throws DeployException
+    {
         List<String> exports = transformDesc.getExports();
         URL[] urls = new URL[exports.size()];
         int i = 0;
@@ -155,20 +160,16 @@ class TransformContextImpl implements TransformContext
                 throw new DeployException("bad export: " + export, exn);
             }
         }
-        parentCl.addResources(urls);
+        transformManager.getCasingClassLoader().addResources(urls);
 
+        Set<TransformContext>parentCtxs = new HashSet<TransformContext>();
         List<String> parents = transformDesc.getParents();
         for (String parent : parents) {
             parentCtxs.add(startParent(parent));
         }
 
-        classLoader = new URLClassLoader(resources, parentCl);
-        CONTEXTS.put(classLoader, this);
-
         Thread ct = Thread.currentThread();
-
         ClassLoader oldCl = ct.getContextClassLoader();
-
         // entering transform ClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         ct.setContextClassLoader(classLoader);
         try {
