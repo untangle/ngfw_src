@@ -23,7 +23,7 @@ public class MTransformDisplayJPanel extends com.metavize.gui.transform.MTransfo
         
         super.activity0JLabel.setText("BLOCK");
         super.activity1JLabel.setText("NAT");
-        super.activity2JLabel.setText("REDIR");
+        super.activity2JLabel.setText("REDIRECT");
         super.activity3JLabel.setText("DMZ");
     }
 
