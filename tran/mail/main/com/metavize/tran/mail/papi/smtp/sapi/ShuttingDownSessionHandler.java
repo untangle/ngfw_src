@@ -77,6 +77,11 @@ public class ShuttingDownSessionHandler
     return true;
   }
 
+  @Override
+  public void handleFinalized() {
+    //
+  }  
+
   private void handleCommandImpl(Command command,
     Session.SmtpCommandActions actions) {
 
@@ -178,7 +183,10 @@ public class ShuttingDownSessionHandler
       }      
       send421(actions);
     }
-  
+    @Override
+    public void handleFinalized() {
+      //
+    }    
   }
 
 

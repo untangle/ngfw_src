@@ -231,7 +231,12 @@ public abstract class BufferingSessionHandler
   @Override
   public boolean handleClientFIN(TransactionHandler currentTX) {
     return true;
-  }  
+  }
+
+  @Override
+  public void handleFinalized() {
+    //
+  }    
 
 
   //==========================
@@ -486,6 +491,19 @@ public abstract class BufferingSessionHandler
       handleMIMEChunk(true, true, null, actions);
       
     }
+    @Override
+    public void handleFinalized() {
+      if(m_accumulator != null) {
+        m_logger.debug("Dispose of accumulator for finalize");
+        m_accumulator.dispose();
+        m_accumulator = null;
+      }
+      if(m_msg != null) {
+        m_logger.debug("Dispose of Message for finalize");
+        m_msg.dispose();
+        m_msg = null;
+      }      
+    }     
 
     
     private void handleMIMEChunk(boolean isFirst,

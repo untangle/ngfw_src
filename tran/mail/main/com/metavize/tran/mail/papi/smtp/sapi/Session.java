@@ -802,6 +802,14 @@ public final class Session
       return ret;
     }
 
+    @Override
+    public void handleFinalized() {
+      m_sessionHandler.handleFinalized();
+      if(m_currentTxHandler != null) {
+        m_currentTxHandler.handleFinalized();
+      }
+    }
+
     //============ Inner-Inner Class ==============
 
     /**

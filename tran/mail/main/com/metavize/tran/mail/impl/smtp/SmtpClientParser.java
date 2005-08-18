@@ -287,11 +287,17 @@ class SmtpClientParser
 
   @Override
   public TokenStreamer endSession() {
-    if(m_sac != null) {
-      m_logger.debug("Unexpected closed in state " + m_state);
-      m_sac.accumulator.dispose();
-    }
     return super.endSession();
+  }
+
+  @Override
+  public void handleFinalized() {
+    m_logger.debug("[handleFinalized()]");
+    if(m_sac != null) {
+      m_logger.debug("Unexpected finalized in state " + m_state);
+      m_sac.accumulator.dispose();
+      m_sac = null;
+    }
   }
 
   private void changeState(SmtpClientState newState) {

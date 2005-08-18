@@ -197,4 +197,11 @@ public abstract class SessionHandler {
    */  
   public abstract boolean handleClientFIN(TransactionHandler currentTX);
 
+  /**
+   * Called when both client and server sides are closed.  Any
+   * associated resources should be closed and any interesting logging
+   * made.
+   */
+  public abstract void handleFinalized();  
+
 }

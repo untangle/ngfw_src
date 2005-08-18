@@ -50,5 +50,10 @@ public class SimpleSessionHandler
     return true;
   }
 
+  @Override
+  public void handleFinalized() {
+    //
+  }
+
 
 }

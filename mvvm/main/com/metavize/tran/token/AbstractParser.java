@@ -93,6 +93,7 @@ public abstract class AbstractParser implements Parser
     // no-ops methods ---------------------------------------------------------
 
     public void handleTimer() { }
+    public void handleFinalized() { }
 
     // Object methods ---------------------------------------------------------
 
@@ -100,4 +101,6 @@ public abstract class AbstractParser implements Parser
     {
         return idStr;
     }
+
+
 }

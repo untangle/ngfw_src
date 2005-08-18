@@ -23,7 +23,7 @@ public class DescribeMIME {
 
     File mimeFile = new File(args[0]);
 
-    FileMIMESource source = new FileMIMESource(mimeFile);
+    FileMIMESource source = new FileMIMESource(mimeFile, false);
     
     MIMEMessage mp = new MIMEMessage(source.getInputStream(),
       source,

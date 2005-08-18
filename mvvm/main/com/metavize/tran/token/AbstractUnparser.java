@@ -38,6 +38,10 @@ public abstract class AbstractUnparser implements Unparser
         return UnparseResult.NONE;
     }
 
+    public void handleFinalized() {
+      //Noop
+    }    
+
     // protected methods ------------------------------------------------------
 
     protected boolean isClientSide()

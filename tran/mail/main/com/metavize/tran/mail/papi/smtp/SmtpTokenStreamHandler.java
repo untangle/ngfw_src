@@ -188,4 +188,11 @@ public abstract class SmtpTokenStreamHandler {
    */
   public abstract boolean handleClientFIN();
 
+  /**
+   * Called when both client and server sides are closed.  Any
+   * associated resources should be closed and any interesting logging
+   * made.
+   */
+  public abstract void handleFinalized();
+
 }

@@ -47,4 +47,10 @@ public interface Parser
      * Called on scheduled timer event.
      */
     void handleTimer();
+
+    /**
+     * Called when both client and server sides 
+     * {@link com.metavize.mvvm.tapi.event.SessionEventListener#handleTCPFinalized are shutdown}
+     */
+    void handleFinalized();
 }

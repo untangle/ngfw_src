@@ -84,6 +84,11 @@ public class SimpleTransactionHandler
     throw new RuntimeException("TODO bscott implement me");
   }
 
+  @Override
+  public void handleFinalized() {
+    //
+  }
+
 
 
 

@@ -117,4 +117,14 @@ public abstract class TransactionHandler {
   public abstract void handleCompleteMIME(CompleteMIMEToken token,
     Session.SmtpCommandActions action);
 
+  /**
+   * Called when both client and server sides are closed.  Any
+   * associated resources should be closed and any interesting logging
+   * made.
+   * <br><br>
+   * Will only be called if there is an open transaction at
+   * completion time.
+   */
+  public abstract void handleFinalized();      
+
 }

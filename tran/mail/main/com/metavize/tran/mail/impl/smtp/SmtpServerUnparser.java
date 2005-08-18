@@ -178,6 +178,15 @@ class SmtpServerUnparser
     declarePassthru();//Inform the parser of this state
   }
 
+  @Override
+  public void handleFinalized() {
+    m_logger.debug("[handleFinalized()]");
+    if(m_accumulator != null) {
+      m_accumulator.dispose();
+      m_accumulator = null;
+    }
+  }  
+
 
   //================ Inner Class =================  
 

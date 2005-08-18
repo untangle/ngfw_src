@@ -210,6 +210,9 @@ public class CasingAdaptor extends AbstractEventHandler
     public void handleTCPFinalized(TCPSessionEvent e) throws MPipeException
     {
         logger.debug("finalizing " + e.session().id());
+        Casing c = getCasing((TCPSession)e.ipsession());
+        c.parser().handleFinalized();
+        c.unparser().handleFinalized();
         removeCasingDesc(e.session());
     }
 

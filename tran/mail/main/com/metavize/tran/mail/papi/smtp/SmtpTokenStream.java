@@ -124,6 +124,10 @@ public class SmtpTokenStream
     }
   }
 
+  public void handleFinalized() {
+    m_handler.handleFinalized();    
+  }
+
   //FROM Client
   public final TokenResult handleClientToken(Token token)
     throws TokenException {
@@ -408,6 +412,8 @@ public class SmtpTokenStream
       updateTimestamps(true, false);
       return true;
     }
+    @Override
+    public void handleFinalized() {}
   }//ENDOF NOOPHandler Class Definition      
   
 }//ENDOF SmtpTokenSteram Class Definition

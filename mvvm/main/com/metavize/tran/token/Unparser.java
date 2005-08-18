@@ -46,4 +46,10 @@ public interface Unparser
      * @return TokenStreamer that streams the final data.
      */
     TCPStreamer endSession();
+
+    /**
+     * Called when both client and server sides 
+     * {@link com.metavize.mvvm.tapi.event.SessionEventListener#handleTCPFinalized are shutdown}
+     */
+    void handleFinalized();    
 }
