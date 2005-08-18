@@ -90,29 +90,23 @@ public class Rfc822Util
         return sb.toString();
     }
 
+
     /**
      * Consumes from the point, until but not including the CRLF.
      *
      * @param buf buffer with position
      * @return a <code>String</code> value
-     * @exception ParseException if an error occurs
+     * @exception ParseException if a CRLF was not found in the buffer's remaining data
      */
-    public static String consumeLine(ByteBuffer buf) throws ParseException
-    {
-        StringBuilder sb = new StringBuilder();
-        while (buf.hasRemaining()) {
-            char c = (char)buf.get();
-            if (CR == c) {
-                if (LF != buf.get()) {
-                    throw new ParseException("CR without LF");
-                } else {
-                    break;
-                }
-            } else {
-                sb.append(c);
-            }
-        }
+    public static String consumeLine(ByteBuffer buf)
+      throws ParseException {
 
-        return sb.toString();
+      int index = BufferUtil.findCrLf(buf);
+      if(index < 0) {
+        throw new ParseException("No Line terminator in \"" + ASCIIUtil.bbToString(buf) + "\"");
+      }
+      ByteBuffer dup = buf.duplicate();
+      dup.limit(index);
+      return ASCIIUtil.bbToString(buf);    
     }
 }

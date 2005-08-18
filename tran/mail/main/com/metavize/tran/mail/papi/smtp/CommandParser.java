@@ -38,6 +38,8 @@ public class CommandParser {
     //     be 4 in length?  Should we make this some type
     //     of guard against evildooers?
     String cmdStr = consumeToken(buf);
+    cmdStr=cmdStr==null?
+      "":cmdStr.trim();
     eatSpace(buf);
     String argStr = consumeLine(buf);
     Command.CommandType type = Command.stringToCommandType(cmdStr);
@@ -51,4 +53,76 @@ public class CommandParser {
         return new Command(type, cmdStr, argStr);    
     }
   }
+
+  public static void main(String[] args) throws Exception {
+    String crlf = "\r\n";
+
+    System.out.println(parse(ByteBuffer.wrap(("\r" + crlf).getBytes())).getCmdString());
+    
+    System.out.println(parse(ByteBuffer.wrap(("FOO" + crlf).getBytes())).getCmdString());
+    System.out.println(parse(ByteBuffer.wrap(("" + crlf).getBytes())).getCmdString());
+    System.out.println(parse(ByteBuffer.wrap((" " + crlf).getBytes())).getCmdString());
+    System.out.println(parse(ByteBuffer.wrap(("\t" + crlf).getBytes())).getCmdString());
+    System.out.println(parse(ByteBuffer.wrap((" \t" + crlf).getBytes())).getCmdString());
+    System.out.println(parse(ByteBuffer.wrap(("\t " + crlf).getBytes())).getCmdString());
+    System.out.println(parse(ByteBuffer.wrap((" \t " + crlf).getBytes())).getCmdString());
+    System.out.println(parse(ByteBuffer.wrap(("FOO " + crlf).getBytes())).getCmdString());
+    System.out.println(parse(ByteBuffer.wrap(("FOO  " + crlf).getBytes())).getCmdString());
+    System.out.println(parse(ByteBuffer.wrap(("FOO\t" + crlf).getBytes())).getCmdString());
+    System.out.println(parse(ByteBuffer.wrap(("FOO \t" + crlf).getBytes())).getCmdString());
+    System.out.println(parse(ByteBuffer.wrap(("FOO\t " + crlf).getBytes())).getCmdString());
+    System.out.println(parse(ByteBuffer.wrap(("FOO \t " + crlf).getBytes())).getCmdString());
+
+    System.out.println(parse(ByteBuffer.wrap((" FOO" + crlf).getBytes())).getCmdString());
+    System.out.println(parse(ByteBuffer.wrap((" FOO " + crlf).getBytes())).getCmdString());
+    System.out.println(parse(ByteBuffer.wrap((" FOO  " + crlf).getBytes())).getCmdString());
+    System.out.println(parse(ByteBuffer.wrap((" FOO\t" + crlf).getBytes())).getCmdString());
+    System.out.println(parse(ByteBuffer.wrap((" FOO \t" + crlf).getBytes())).getCmdString());
+    System.out.println(parse(ByteBuffer.wrap((" FOO\t " + crlf).getBytes())).getCmdString());
+    System.out.println(parse(ByteBuffer.wrap((" FOO \t " + crlf).getBytes())).getCmdString());
+
+    System.out.println(parse(ByteBuffer.wrap((" FOO x" + crlf).getBytes())).getCmdString());
+    System.out.println(parse(ByteBuffer.wrap((" FOO  x" + crlf).getBytes())).getCmdString());
+    System.out.println(parse(ByteBuffer.wrap((" FOO\tx" + crlf).getBytes())).getCmdString());
+    System.out.println(parse(ByteBuffer.wrap((" FOO \tx" + crlf).getBytes())).getCmdString());
+    System.out.println(parse(ByteBuffer.wrap((" FOO\t x" + crlf).getBytes())).getCmdString());
+    System.out.println(parse(ByteBuffer.wrap((" FOO \t x" + crlf).getBytes())).getCmdString());
+
+    System.out.println(parse(ByteBuffer.wrap((" FOO x " + crlf).getBytes())).getCmdString());
+    System.out.println(parse(ByteBuffer.wrap((" FOO x  " + crlf).getBytes())).getCmdString());
+    System.out.println(parse(ByteBuffer.wrap((" FOO x\t" + crlf).getBytes())).getCmdString());
+    System.out.println(parse(ByteBuffer.wrap((" FOO x \t" + crlf).getBytes())).getCmdString());
+    System.out.println(parse(ByteBuffer.wrap((" FOO x\t " + crlf).getBytes())).getCmdString());
+    System.out.println(parse(ByteBuffer.wrap((" FOO x \t " + crlf).getBytes())).getCmdString());
+
+    System.out.println(parse(ByteBuffer.wrap((" FOO  x " + crlf).getBytes())).getCmdString());
+    System.out.println(parse(ByteBuffer.wrap((" FOO  x  " + crlf).getBytes())).getCmdString());
+    System.out.println(parse(ByteBuffer.wrap((" FOO  x\t" + crlf).getBytes())).getCmdString());
+    System.out.println(parse(ByteBuffer.wrap((" FOO  x \t" + crlf).getBytes())).getCmdString());
+    System.out.println(parse(ByteBuffer.wrap((" FOO  x\t " + crlf).getBytes())).getCmdString());
+    System.out.println(parse(ByteBuffer.wrap((" FOO  x \t " + crlf).getBytes())).getCmdString());
+
+    System.out.println(parse(ByteBuffer.wrap((" FOO\tx " + crlf).getBytes())).getCmdString());
+    System.out.println(parse(ByteBuffer.wrap((" FOO\tx  " + crlf).getBytes())).getCmdString());
+    System.out.println(parse(ByteBuffer.wrap((" FOO\tx\t" + crlf).getBytes())).getCmdString());
+    System.out.println(parse(ByteBuffer.wrap((" FOO\tx \t" + crlf).getBytes())).getCmdString());
+    System.out.println(parse(ByteBuffer.wrap((" FOO\tx\t " + crlf).getBytes())).getCmdString());
+    System.out.println(parse(ByteBuffer.wrap((" FOO\tx \t " + crlf).getBytes())).getCmdString());
+
+    System.out.println(parse(ByteBuffer.wrap((" FOO \tx " + crlf).getBytes())).getCmdString());
+    System.out.println(parse(ByteBuffer.wrap((" FOO \tx  " + crlf).getBytes())).getCmdString());
+    System.out.println(parse(ByteBuffer.wrap((" FOO \tx\t" + crlf).getBytes())).getCmdString());
+    System.out.println(parse(ByteBuffer.wrap((" FOO \tx \t" + crlf).getBytes())).getCmdString());
+    System.out.println(parse(ByteBuffer.wrap((" FOO \tx\t " + crlf).getBytes())).getCmdString());
+    System.out.println(parse(ByteBuffer.wrap((" FOO \tx \t " + crlf).getBytes())).getCmdString());
+
+    System.out.println(parse(ByteBuffer.wrap((" FOO \tx " + crlf).getBytes())).getCmdString());
+    System.out.println(parse(ByteBuffer.wrap((" FOO \tx  " + crlf).getBytes())).getCmdString());
+    System.out.println(parse(ByteBuffer.wrap((" FOO \tx\t" + crlf).getBytes())).getCmdString());
+    System.out.println(parse(ByteBuffer.wrap((" FOO \tx\t " + crlf).getBytes())).getCmdString());
+    System.out.println(parse(ByteBuffer.wrap((" FOO \tx \t" + crlf).getBytes())).getCmdString());
+    System.out.println(parse(ByteBuffer.wrap((" FOO \tx \t " + crlf).getBytes())).getCmdString());
+
+  }
+  
 }
