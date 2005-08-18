@@ -179,8 +179,8 @@ XB-Price: 0
 XB-Display-Name: Intrusion Prevention
 XB-Website: http://www.metavize.com
 XB-Rack-Position: 42
-Description: The Metavize Intrusion Detection And Prevention Appliance 
- The Metavize Intrusion Detection And Prevention Appliance is an inline traffic 
+Description: The Metavize Intrusion Prevention Appliance 
+ The Metavize Intrusion Prevention Appliance is an inline traffic 
  scanner that detects exploits and intrusion attempts. It contains a library of 
  over 2000 rules which can be easily expanded on with custom rules.
 
