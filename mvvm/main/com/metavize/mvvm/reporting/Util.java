@@ -71,7 +71,7 @@ public class Util {
 	String returnString;
 
 	if(number < 1000l)
-	    returnString = new String(  Long.toString(number) + " " + suffix );
+	    returnString = new String(  Long.toString(number) + (suffix.length()==0?"":" " + suffix) );
 	else if(number < 1000000l){
 	    if( suffix.length() == 0 )
 		returnString = Long.toString(number/1000l) + "," + String.format("%1$03d", number%1000l);
@@ -95,7 +95,7 @@ public class Util {
 
     public static String percentNumber(long number, long total){
 	if( total < 1 )
-	    return "0%";
+	    return "0.00%";
 	DecimalFormat decimalFormat = new DecimalFormat("#0.00%");
 	decimalFormat.setMultiplier(100);
 

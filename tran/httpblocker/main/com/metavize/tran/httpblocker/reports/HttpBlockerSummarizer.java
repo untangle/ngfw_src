@@ -77,8 +77,8 @@ public class HttpBlockerSummarizer extends BaseSummarizer {
         addEntry("&nbsp;", "&nbsp;");
 
         addEntry("Total web hits", Util.trimNumber("",hitCount));
-        addEntry("&nbsp;&nbsp;&nbsp;Blocked hits", Util.trimNumber("",blockCount) + " (" + Util.percentNumber(blockCount,hitCount) + ")");
-        addEntry("&nbsp;&nbsp;&nbsp;Passed hits", Util.trimNumber("",hitCount-blockCount) + " (" + Util.percentNumber(hitCount-blockCount,hitCount) + ")");
+        addEntry("&nbsp;&nbsp;&nbsp;Blocked hits", Util.trimNumber("",blockCount), Util.percentNumber(blockCount,hitCount));
+        addEntry("&nbsp;&nbsp;&nbsp;Passed hits", Util.trimNumber("",hitCount-blockCount), Util.percentNumber(hitCount-blockCount,hitCount));
 
 
         // XXXX

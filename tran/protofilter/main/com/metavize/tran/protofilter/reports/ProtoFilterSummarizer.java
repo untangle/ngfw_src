@@ -58,8 +58,8 @@ public class ProtoFilterSummarizer extends BaseSummarizer {
         }
 
         addEntry("Detected protocol sessions", Util.trimNumber("",logCount));
-        addEntry("&nbsp;&nbsp;&nbsp;Blocked sessions", Util.trimNumber("",blockCount) + " (" + Util.percentNumber(blockCount,logCount) + ")");
-        addEntry("&nbsp;&nbsp;&nbsp;Passed sessions", Util.trimNumber("",logCount - blockCount) + " (" + Util.percentNumber(logCount-blockCount,logCount) + ")");
+        addEntry("&nbsp;&nbsp;&nbsp;Blocked sessions", Util.trimNumber("",blockCount), Util.percentNumber(blockCount,logCount));
+        addEntry("&nbsp;&nbsp;&nbsp;Passed sessions", Util.trimNumber("",logCount - blockCount), Util.percentNumber(logCount-blockCount,logCount));
 
         // XXXX
         String tranName = "Rogue Protocol Control";

@@ -93,11 +93,11 @@ public class SpywareSummarizer extends BaseSummarizer {
 	long totalCount = cookieBlockCount + subnetBlockCount + subnetPassCount + activeXBlockCount + urlBlockCount;
 	
         addEntry("Potential spyware communications detected", Util.trimNumber("",totalCount));
-        addEntry("&nbsp;&nbsp;&nbsp;Blocked cookies", Util.trimNumber("",cookieBlockCount) + " (" + Util.percentNumber(cookieBlockCount,totalCount)  + ")");
-        addEntry("&nbsp;&nbsp;&nbsp;Blocked subnets", Util.trimNumber("",subnetBlockCount) + " (" + Util.percentNumber(subnetBlockCount,totalCount)  + ")");
-        addEntry("&nbsp;&nbsp;&nbsp;Blocked activeX", Util.trimNumber("",activeXBlockCount) + " (" + Util.percentNumber(activeXBlockCount,totalCount)  + ")");
-        addEntry("&nbsp;&nbsp;&nbsp;Blocked URLs", Util.trimNumber("",urlBlockCount) + " (" + Util.percentNumber(urlBlockCount,totalCount)  + ")");
-        addEntry("&nbsp;&nbsp;&nbsp;Passed subnets", Util.trimNumber("",subnetPassCount) + " (" + Util.percentNumber(subnetPassCount,totalCount)  + ")");
+        addEntry("&nbsp;&nbsp;&nbsp;Blocked cookies", Util.trimNumber("",cookieBlockCount), Util.percentNumber(cookieBlockCount,totalCount));
+        addEntry("&nbsp;&nbsp;&nbsp;Blocked subnets", Util.trimNumber("",subnetBlockCount), Util.percentNumber(subnetBlockCount,totalCount));
+        addEntry("&nbsp;&nbsp;&nbsp;Blocked activeX", Util.trimNumber("",activeXBlockCount), Util.percentNumber(activeXBlockCount,totalCount));
+        addEntry("&nbsp;&nbsp;&nbsp;Blocked URLs", Util.trimNumber("",urlBlockCount), Util.percentNumber(urlBlockCount,totalCount));
+        addEntry("&nbsp;&nbsp;&nbsp;Passed subnets", Util.trimNumber("",subnetPassCount), Util.percentNumber(subnetPassCount,totalCount));
 
 
         // XXXX

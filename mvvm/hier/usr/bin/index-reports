@@ -98,7 +98,7 @@ a:hover {
 }
 
 .page_header_alternate {
-    font: normal normal normal 15pt Arial,Sans-Serif;
+    font: normal normal normal 20pt Arial,Sans-Serif;
     color: #777777;
 }
 
@@ -208,38 +208,38 @@ h4 {
               <td class="page_header_alternate" align="right">
 EOF
 
-/bin/date -d'yesterday' +'%A %B %e, %Y' >> $main_index
 
 if [ "$generate_email_index" = true ]; then
     if [ "$period" = daily ]; then
 cat >> $main_index <<EOF
-                <br/><b>(daily email)</b>
+                <b>daily email</b><br/>
 EOF
     elif [ "$period" = weekly ]; then
 cat >> $main_index <<EOF
-                <br/><b>(weekly email)</b>
+                <b>weekly email</b><br/>
 EOF
     elif [ "$period" = monthly ]; then
 cat >> $main_index <<EOF
-                <br/><b>(monthly email)</b>
+                <b>monthly email</b><br/>
 EOF
     fi
 else
     if [ "$period" = daily ]; then
 cat >> $main_index <<EOF
-                <br/><b>(daily online)</b>
+                <b>daily online</b><br/>
 EOF
     elif [ "$period" = weekly ]; then
 cat >> $main_index <<EOF
-                <br/><b>(weekly online)</b>
+                <b>weekly online</b><br/>
 EOF
     elif [ "$period" = monthly ]; then
 cat >> $main_index <<EOF
-                <br/><b>(monthly online)</b>
+                <b>monthly online</b><br/>
 EOF
     fi
 fi
 
+/bin/date -d'yesterday' +'%A %B %e, %Y' >> $main_index
 
 cat >> $main_index <<EOF
               </td>
@@ -605,7 +605,9 @@ cat >>$main_index <<EOF
 <!-- END VISUAL SUMMARY -->
 EOF
 
-echo "$rel_dir/$graph_name--daily.jpg" >> $mail_reports_arguments
+if [ "$generate_email_index" = true ]; then
+    echo "$rel_dir/$graph_name--daily.jpg" >> $mail_reports_arguments
+fi
 
 fi
 done
@@ -624,30 +626,22 @@ generate_detailed_reports ()
 <tr>
 EOF
 
-if [ "$generate_email_index" = false ]; then
-cat >>$main_index <<EOF
-<td width="*"></td>
-<td width="125px" align="right"><i>daily</i></td>
-<td width="125px" align="right"><i>weekly</i></td>
-<td width="125px" align="right"><i>monthly</i></td>
-EOF
-else
     if [ "$period" = daily ]; then
 cat >>$main_index <<EOF
-<td width="*" align="right" colspan="4"><i>daily</i></td>
+<td width="*" align="right" colspan="4"><i>daily&nbsp;</i></td>
 EOF
     fi
     if [ "$period" = weekly ]; then
 cat >>$main_index <<EOF
-<td width="*" align="right" colspan="4"><i>weekly</i></td>
+<td width="*" align="right" colspan="4"><i>weekly&nbsp;</i></td>
 EOF
     fi
     if [ "$period" = monthly ]; then
 cat >>$main_index <<EOF
-<td width="*" align="right" colspan="4"><i>monthly</i></td>
+<td width="*" align="right" colspan="4"><i>monthly&nbsp;</i></td>
 EOF
     fi
-fi
+
 
 cat >>$main_index <<EOF
 </tr>
@@ -666,37 +660,41 @@ cat $tran_dir/report-files | while read line; do
         fi
         cat >>$main_index <<EOF
 <tr bgcolor=$color>
-<td width="*">$rep_name: </td>
+<td width="*">&nbsp;$rep_name: </td>
 EOF
 
-if [ "$generate_email_index" = false ]; then
+if [ "$generate_email_index" = true ]; then
+    if [ "$period" = daily ]; then
 cat >> $main_index <<EOF
-<td width="125px" align="right">(<a href="$rel_dir/$base_name--daily.html">HTML</a> | <a href="$rel_dir/$base_name--daily.pdf">PDF</a>)</td>
-<td width="125px" align="right">(<a href="$rel_dir/$base_name--weekly.html">HTML</a> | <a href="$rel_dir/$base_name--weekly.pdf">PDF</a>)</td>
-<td width="125px" align="right">(<a href="$rel_dir/$base_name--monthly.html">HTML</a> | <a href="$rel_dir/$base_name--monthly.pdf">PDF</a>)</td>
+<td width="375px" align="right" colspan="3">(<a href="$rel_dir/$base_name--daily.pdf">PDF</a>)&nbsp;</td>
 EOF
+    fi
+    if [ "$period" = weekly ]; then
+cat >> $main_index <<EOF
+<td width="375px" align="right" colspan="3">(<a href="$rel_dir/$base_name--weekly.pdf">PDF</a>)&nbsp;</td>
+EOF
+    fi
+    if [ "$period" = monthly ]; then
+cat >> $main_index <<EOF
+<td width="375px" align="right" colspan="3">(<a href="$rel_dir/$base_name--monthly.pdf">PDF</a>)&nbsp;</td>
+EOF
+    fi
 else
-#    if [ "`echo $rep_name | grep -i 'Summary' `x" != "x" ]; then
-if [ "$period" = daily ]; then
+    if [ "$period" = daily ]; then
 cat >> $main_index <<EOF
-<td width="375px" align="right" colspan="3">(<a href="$rel_dir/$base_name--daily.pdf">PDF</a>)</td>
+<td width="375px" align="right" colspan="3">(<a href="$rel_dir/$base_name--daily.html">HTML</a> | <a href="$rel_dir/$base_name--daily.pdf">PDF</a>)&nbsp;</td>
 EOF
-fi
-if [ "$period" = weekly ]; then
+    fi
+    if [ "$period" = weekly ]; then
 cat >> $main_index <<EOF
-<td width="375px" align="right" colspan="3">(<a href="$rel_dir/$base_name--weekly.pdf">PDF</a>)</td>
+<td width="375px" align="right" colspan="3">(<a href="$rel_dir/$base_name--weekly.html">HTML</a> | <a href="$rel_dir/$base_name--weekly.pdf">PDF</a>)&nbsp;</td>
 EOF
-fi
-if [ "$period" = monthly ]; then
+    fi
+    if [ "$period" = monthly ]; then
 cat >> $main_index <<EOF
-<td width="375px" align="right" colspan="3">(<a href="$rel_dir/$base_name--monthly.pdf">PDF</a>)</td>
+<td width="375px" align="right" colspan="3">(<a href="$rel_dir/$base_name--monthly.html">HTML</a> | <a href="$rel_dir/$base_name--monthly.pdf">PDF</a>)&nbsp;</td>
 EOF
-fi
-#    else
-#cat >> $main_index <<EOF
-#<td width="375px" align="right" colspan="3"><i>Not attached to email.  Use EdgeReport online to view.</i></td>
-#EOF
-#    fi
+    fi
 fi
 
 

@@ -103,23 +103,6 @@ public class ReportingSummarizer extends BaseSummarizer {
         double numSecs = (endDate.getTime() - startDate.getTime()) / 1000d;
         double numDays = ((double)numSecs) / (60d * 60d * 24d);
 
-        addEntry("Data transferred", Util.trimNumber("Bytes",bytesTotalByDirection));
-        addEntry("&nbsp;&nbsp;&nbsp;Outbound", Util.trimNumber("Bytes",bytesSentToOutside) + " (" + Util.percentNumber(bytesSentToOutside,bytesTotalByDirection) + ")");
-        addEntry("&nbsp;&nbsp;&nbsp;Inbound", Util.trimNumber("Bytes",bytesReceivedFromOutside) + " (" + Util.percentNumber(bytesReceivedFromOutside,bytesTotalByDirection) + ")");
-
-        addEntry("&nbsp;", "&nbsp;");
-
-        addEntry("Sessions created", Util.trimNumber("",numOut + numIn));
-        addEntry("&nbsp;&nbsp;&nbsp;Outbound", Util.trimNumber("",numOut) + " (" + Util.percentNumber(numOut,numIn+numOut) + ")");
-        addEntry("&nbsp;&nbsp;&nbsp;Inbound", Util.trimNumber("",numIn) + " (" + Util.percentNumber(numIn,numIn+numOut) + ")");
-
-	/*        addEntry("&nbsp;", "&nbsp;");
-
-        addEntry("Data sent", "&nbsp;");
-        addEntry("&nbsp;&nbsp;&nbsp;During outbound sessions", Util.trimNumber("Bytes",totalOutboundBytes));
-        addEntry("&nbsp;&nbsp;&nbsp;During inbound sessions", Util.trimNumber("Bytes",totalInboundBytes));
-	*/
-        addEntry("&nbsp;", "&nbsp;");
 
         addEntry("Average data transfer rates", "&nbsp;");
         addEntry("&nbsp;&nbsp;&nbsp;Per second", Util.trimNumber("Bytes/sec",(long) (((double)bytesTotalByDirection) / numSecs)));
@@ -127,9 +110,21 @@ public class ReportingSummarizer extends BaseSummarizer {
 
         addEntry("&nbsp;", "&nbsp;");
 
+        addEntry("Data transferred", Util.trimNumber("Bytes",bytesTotalByDirection));
+        addEntry("&nbsp;&nbsp;&nbsp;Outbound", Util.trimNumber("Bytes",bytesSentToOutside), Util.percentNumber(bytesSentToOutside,bytesTotalByDirection));
+        addEntry("&nbsp;&nbsp;&nbsp;Inbound", Util.trimNumber("Bytes",bytesReceivedFromOutside), Util.percentNumber(bytesReceivedFromOutside,bytesTotalByDirection));
+
+        addEntry("&nbsp;", "&nbsp;");
+
+        addEntry("Sessions created", Util.trimNumber("",numOut + numIn));
+        addEntry("&nbsp;&nbsp;&nbsp;Outbound", Util.trimNumber("",numOut), Util.percentNumber(numOut,numIn+numOut));
+        addEntry("&nbsp;&nbsp;&nbsp;Inbound", Util.trimNumber("",numIn), Util.percentNumber(numIn,numIn+numOut));
+
+        addEntry("&nbsp;", "&nbsp;");
+
         addEntry("Administrative logins", succeededCount+failedCount);
-        addEntry("&nbsp;&nbsp;&nbsp;Successful", Util.trimNumber("",succeededCount) + " (" + Util.percentNumber(succeededCount,succeededCount+failedCount)  + ")");
-        addEntry("&nbsp;&nbsp;&nbsp;Failed", Util.trimNumber("",failedCount) + " (" +  Util.percentNumber(failedCount,succeededCount+failedCount) + ")");
+        addEntry("&nbsp;&nbsp;&nbsp;Successful", Util.trimNumber("",succeededCount), Util.percentNumber(succeededCount,succeededCount+failedCount));
+        addEntry("&nbsp;&nbsp;&nbsp;Failed", Util.trimNumber("",failedCount), Util.percentNumber(failedCount,succeededCount+failedCount));
 
 
         return summarizeEntries("Traffic Flow Rates");

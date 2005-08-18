@@ -82,20 +82,20 @@ public class NatSummarizer extends BaseSummarizer {
         addEntry("&nbsp;","&nbsp;");
 
         addEntry("TCP redirections", Util.trimNumber("",tcpRedirections));
-        addEntry("&nbsp;&nbsp;&nbsp;Inbound", Util.trimNumber("",tcpInboundRedirections) 
-		 + "(" + Util.percentNumber(tcpInboundRedirections, totalRedirections) + ")");
-        addEntry("&nbsp;&nbsp;&nbsp;Outbound", Util.trimNumber("",tcpOutboundRedirections) 
-		 + "(" + Util.percentNumber(tcpOutboundRedirections, totalRedirections) + ")");
+        addEntry("&nbsp;&nbsp;&nbsp;Inbound", Util.trimNumber("",tcpInboundRedirections),
+		 Util.percentNumber(tcpInboundRedirections, totalRedirections));
+        addEntry("&nbsp;&nbsp;&nbsp;Outbound", Util.trimNumber("",tcpOutboundRedirections),
+		 Util.percentNumber(tcpOutboundRedirections, totalRedirections));
         addEntry("UDP redirections", Util.trimNumber("",udpRedirections));
-        addEntry("&nbsp;&nbsp;&nbsp;Inbound", Util.trimNumber("",udpInboundRedirections) 
-		 + "(" + Util.percentNumber(udpInboundRedirections, totalRedirections) + ")");
-        addEntry("&nbsp;&nbsp;&nbsp;Outbound", Util.trimNumber("",udpOutboundRedirections) 
-		 + "(" + Util.percentNumber(udpOutboundRedirections, totalRedirections) + ")");
+        addEntry("&nbsp;&nbsp;&nbsp;Inbound", Util.trimNumber("",udpInboundRedirections),
+		 Util.percentNumber(udpInboundRedirections, totalRedirections));
+        addEntry("&nbsp;&nbsp;&nbsp;Outbound", Util.trimNumber("",udpOutboundRedirections),
+		 Util.percentNumber(udpOutboundRedirections, totalRedirections));
         addEntry("PING redirections", Util.trimNumber("",pingRedirections));
-        addEntry("&nbsp;&nbsp;&nbsp;Inbound", Util.trimNumber("",pingInboundRedirections)  
-		 + "(" + Util.percentNumber(pingInboundRedirections, totalRedirections) + ")");
-        addEntry("&nbsp;&nbsp;&nbsp;Outbound", Util.trimNumber("",pingOutboundRedirections)  
-		 + "(" + Util.percentNumber(pingOutboundRedirections, totalRedirections) + ")");
+        addEntry("&nbsp;&nbsp;&nbsp;Inbound", Util.trimNumber("",pingInboundRedirections),
+		 Util.percentNumber(pingInboundRedirections, totalRedirections));
+        addEntry("&nbsp;&nbsp;&nbsp;Outbound", Util.trimNumber("",pingOutboundRedirections),
+		 Util.percentNumber(pingOutboundRedirections, totalRedirections));
 	
 	addEntry("&nbsp;","&nbsp;");
 
