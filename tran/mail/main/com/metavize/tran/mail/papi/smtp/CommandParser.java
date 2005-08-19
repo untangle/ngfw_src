@@ -57,10 +57,10 @@ public class CommandParser {
   public static void main(String[] args) throws Exception {
     String crlf = "\r\n";
 
-    System.out.println(parse(ByteBuffer.wrap(("\r" + crlf).getBytes())).getCmdString());
-    
-    System.out.println(parse(ByteBuffer.wrap(("FOO" + crlf).getBytes())).getCmdString());
-    System.out.println(parse(ByteBuffer.wrap(("" + crlf).getBytes())).getCmdString());
+    testParse("FOO moo" + crlf);
+    testParse("\r" + crlf);
+    testParse("FOO" + crlf);
+    testParse("" + crlf);
     System.out.println(parse(ByteBuffer.wrap((" " + crlf).getBytes())).getCmdString());
     System.out.println(parse(ByteBuffer.wrap(("\t" + crlf).getBytes())).getCmdString());
     System.out.println(parse(ByteBuffer.wrap((" \t" + crlf).getBytes())).getCmdString());
@@ -123,6 +123,14 @@ public class CommandParser {
     System.out.println(parse(ByteBuffer.wrap((" FOO \tx \t" + crlf).getBytes())).getCmdString());
     System.out.println(parse(ByteBuffer.wrap((" FOO \tx \t " + crlf).getBytes())).getCmdString());
 
+  }
+
+  private static void testParse(String str) throws Exception {
+    System.out.println("\n\n===================");
+    System.out.println(str);
+    Command c = parse(ByteBuffer.wrap(str.getBytes()));
+    System.out.println("CMD: " + c.getCmdString());
+    System.out.println("ARGS: " + c.getArgString());
   }
   
 }

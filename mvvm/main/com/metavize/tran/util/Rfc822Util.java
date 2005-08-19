@@ -107,6 +107,7 @@ public class Rfc822Util
       }
       ByteBuffer dup = buf.duplicate();
       dup.limit(index);
-      return ASCIIUtil.bbToString(buf);    
+      buf.position(index+2);
+      return ASCIIUtil.bbToString(dup);    
     }
 }
