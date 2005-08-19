@@ -42,12 +42,12 @@ public class PcreOption extends IDSOption {
 		return true;
 	}
 	public boolean run() {
-		ByteBuffer eventData = getSignature().getSessionInfo().getEvent().data();
+		ByteBuffer eventData = signature.getSessionInfo().getEvent().data();
 		String data = new String(eventData.array());
-		if(pcrePattern == null) {
-			System.out.println("pcrePattern is null\n\n"+getSignature());
-			return false;
-		}
-		return negationFlag() ^ pcrePattern.matcher(data).find();
+	//	if(pcrePattern == null) {
+	//		System.out.println("pcrePattern is null\n\n"+getSignature());
+	//		return false;
+	//	}
+		return negationFlag ^ pcrePattern.matcher(data).find();
 	}
 }

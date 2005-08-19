@@ -11,7 +11,7 @@ public class OffsetOption extends IDSOption {
 
 	public OffsetOption(IDSRuleSignature signature, String params) throws ParseException {
 		super(signature, params);
-		ContentOption option = (ContentOption) signature.getOption("ContentOption");
+		ContentOption option = (ContentOption) signature.getOption("ContentOption",this);
 		if(option == null) 
 				return;	
 		

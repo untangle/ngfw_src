@@ -26,7 +26,7 @@ public class IDSRuleSignature {
 	private List<IDSOption> options = new Vector<IDSOption>();
 	private IDSSessionInfo info;
 	
-	private String toString;
+	private String toString = "Starting..";
 	private String message = "No message set";
 	private int action;
 	private boolean removeFlag = false;
@@ -66,13 +66,15 @@ public class IDSRuleSignature {
 		}
 	}
 
-	public IDSOption getOption(String name) {
+	public IDSOption getOption(String name, IDSOption callingOption) {
 		/**Have to iterate backwards over the options so that options that 
 		 * act as modifiers will modify the correct option
 		 * eg, in situations where there are multiple content options.
 		 */
-		
-		ListIterator<IDSOption> it = options.listIterator(options.size());
+		int index = options.indexOf(callingOption);
+		index = (index < 0) ? options.size():index;
+
+		ListIterator<IDSOption> it = options.listIterator(index);
 		Class optionDefinition = null;
 		try {
 			optionDefinition = Class.forName("com.metavize.tran.ids.options."+name);
@@ -107,7 +109,7 @@ public class IDSRuleSignature {
 	private void doAction() {
 		switch(action) {
 			case IDSRuleManager.ALERT:
-				System.out.println(message);
+		//		System.out.println(message);
 				break;
 			case IDSRuleManager.LOG:
 				break;

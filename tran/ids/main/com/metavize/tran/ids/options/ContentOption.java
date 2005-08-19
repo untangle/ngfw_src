@@ -15,10 +15,17 @@ import com.metavize.tran.ids.IDSSessionInfo;
  * @Author Nick Childers
  */
 
+///XXX - ADD ERROR HANDELING OMG!
+
 public class ContentOption extends IDSOption {
 
+	private ContentOption previousContentOption = null;
+	
+	private int indexOfMatch = 0;
 	private int start = 0;
 	private int end = 0;
+	private int distance = 0;
+	private int within = 0;
 
 	private Pattern contentPattern;
 	
@@ -26,6 +33,8 @@ public class ContentOption extends IDSOption {
 	private ByteBuffer binaryBuffer = ByteBuffer.allocate(2048);
 	
 	private boolean hasBinaryData = false;
+	private boolean withinFlag = false;
+	private boolean distanceFlag = false;
 	
 	public ContentOption(IDSRuleSignature signature, String params) {
 		super(signature, params);
@@ -43,6 +52,10 @@ public class ContentOption extends IDSOption {
 		}	
 	}
 	
+	public int getIndexOfLastMatch() {
+		return indexOfMatch;
+	}
+	
 	public void setNoCase() {
 		contentPattern = Pattern.compile(contentPattern.pattern(), contentPattern.flags() | Pattern.CASE_INSENSITIVE);
 	}
@@ -54,6 +67,27 @@ public class ContentOption extends IDSOption {
 	public void setDepth(int val) {
 		setStartAndEndPoints(start,val);
 	}
+
+	public void setDistance(int val) {
+		previousContentOption = getPreviousContentOption();
+		distance = val;
+		distanceFlag = true;
+	}
+
+	public void setWithin(int val) {
+		previousContentOption = getPreviousContentOption();
+		within = val+contentPattern.pattern().length()-1;
+		withinFlag = true;
+	}
+
+	private ContentOption getPreviousContentOption() {
+		IDSOption option = signature.getOption("ContentOption",this);
+		if(option != null)
+			return (ContentOption) option;
+		signature.remove(true);
+		return null; //error checking OMGWTFBBQ
+	}
+						 
 	
 	private void setStartAndEndPoints(int offset, int depth) {
 		start = offset;
@@ -67,13 +101,31 @@ public class ContentOption extends IDSOption {
 	}
 	
 	public boolean run() {
-		ByteBuffer eventData = super.getSignature().getSessionInfo().getEvent().data();
+		ByteBuffer eventData = signature.getSessionInfo().getEvent().data();
 		String data = new String(eventData.array());
+		
+		if(distanceFlag)
+			start = previousContentOption.getIndexOfLastMatch()+distance;
+		
+		if(withinFlag) {
+			if(distanceFlag)
+				setStartAndEndPoints(start,within);
+			else
+				setStartAndEndPoints(previousContentOption.getIndexOfLastMatch(),within);
+		}
+		
 		if(start > data.length() || start < 0)
 			return false;
+		
 		if(end <= 0 || end > data.length())
 			end = data.length();
-		return super.negationFlag() ^ contentPattern.matcher(data.substring(start,end)).find();
+		Matcher matcher = contentPattern.matcher(data.substring(start,end));
+		//return super.negationFlag() ^ contentPattern.matcher(data.substring(start,end)).find();
+		if(matcher.find()) {
+			indexOfMatch = matcher.end();
+			return true;
+		}
+		return false;
 	}
 
 	/**

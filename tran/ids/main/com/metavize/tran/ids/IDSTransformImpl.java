@@ -15,6 +15,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.Iterator;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -56,7 +57,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 	private final SoloPipeSpec octetPipeSpec, httpPipeSpec;
 	private final PipeSpec[] pipeSpecs;
 	
-	private List ruleList = new ArrayList();
+	private List ruleList = Collections.synchronizedList(new ArrayList());
 	
 	public IDSTransformImpl() {
 		handler = new EventHandler();
@@ -110,7 +111,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 				log.warn("could not close Hibernate session", exn);
 			}
 		}
-		System.out.println("Returning logs! " + l.size()); /** ******************/
+		//System.out.println("Returning logs! " + l.size()); /** ******************/
 		return l;
 	}
 				
@@ -214,7 +215,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 	}
 	
 	public void reconfigure() throws TransformException {
-		System.out.println("RECONFIGUREING"); /** ********************/
+		//System.out.println("RECONFIGUREING"); /** ********************/
 		IDSSettings currentSettings = getIDSSettings();
 		log.debug("reconfigure()");
 		if(currentSettings == null)

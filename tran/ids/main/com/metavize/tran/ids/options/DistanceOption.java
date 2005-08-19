@@ -2,14 +2,15 @@ package com.metavize.tran.ids.options;
 
 import com.metavize.tran.ids.IDSRuleSignature;
 
-public class NocaseOption extends IDSOption {
+public class DistanceOption extends IDSOption {
 
-	public NocaseOption(IDSRuleSignature signature, String params) {
+	public DistanceOption(IDSRuleSignature signature, String params) {
 		super(signature, params);
+		int distance = Integer.parseInt(params);
 		IDSOption option = signature.getOption("ContentOption",this);
 		if(option != null) {
 			ContentOption content = (ContentOption) option;
-			content.setNoCase();
+			content.setDistance(distance);
 		}
 				
 	}

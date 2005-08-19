@@ -63,6 +63,7 @@ public class IDSDetectionEngine {
 	}
 
 	public boolean processNewSession(IPNewSessionRequest session, Protocol protocol) {
+		
 		List<IDSRuleSignature> signatures = rules.matchesHeader(protocol, session.clientAddr(), session.clientPort(), session.serverAddr(), session.serverPort());
 		if(signatures.size() > 0) {
 			IDSSessionInfo info = getSessionInfo(session.id());

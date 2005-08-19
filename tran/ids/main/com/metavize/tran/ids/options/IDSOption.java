@@ -10,8 +10,8 @@ import com.metavize.tran.ids.IDSRuleSignature;
 import com.metavize.mvvm.tran.ParseException;
 
 public abstract class IDSOption {
-	private IDSRuleSignature signature;
-	private boolean negationFlag = false;
+	protected IDSRuleSignature signature;
+	protected boolean negationFlag = false;
 	
 	private static final Logger log = Logger.getLogger(IDSOption.class);
 	static {
@@ -22,15 +22,7 @@ public abstract class IDSOption {
 		
 		this.signature = signature;
 	}
-		
-	public IDSRuleSignature getSignature() {
-		return signature;
-	}
-	
-	public boolean negationFlag() {
-		return negationFlag;
-	}
-	
+
 	abstract public boolean runnable();
 	abstract public boolean run();
 
@@ -66,12 +58,6 @@ public abstract class IDSOption {
 			optionDefinition = Class.forName("com.metavize.tran.ids.options."+optionName+"Option");
 			optionConstructor = optionDefinition.getConstructor(argsClass);
 			option = (IDSOption) createObject(optionConstructor, optionArgs);
-			if(option == null) {
-				System.out.println("NULLNULLNULLNULLNULLNULL");
-				System.out.println(optionName);
-				System.out.println(params+"\n");
-				return null;
-			}
 			option.negationFlag = flag;
 		} catch (ClassNotFoundException e) {
 			log.debug("Could not load option(ClassNotFound): "+e.getMessage());

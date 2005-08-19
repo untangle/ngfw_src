@@ -10,8 +10,6 @@ import com.metavize.tran.ids.IDSSessionInfo;
 
 public class DsizeOption extends IDSOption {
 	
-//	private IDSSessionInfo info;
-	
 	private static final Logger log = Logger.getLogger(DsizeOption.class);
 	static {
 		log.setLevel(Level.WARN);
@@ -52,8 +50,9 @@ public class DsizeOption extends IDSOption {
 		return true;
 	}
 
+	//XXX - check negation flag?
 	public boolean run() {	
-		IPDataEvent event = super.getSignature().getSessionInfo().getEvent();
+		IPDataEvent event = signature.getSessionInfo().getEvent();
 		int size = event.data().remaining();
 		if(min <= size && max >= size)
 			return true;

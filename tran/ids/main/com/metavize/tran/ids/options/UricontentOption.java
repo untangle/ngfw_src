@@ -15,9 +15,9 @@ public class UricontentOption extends IDSOption {
 		return true;
 	}
 	public boolean run() {
-		String path = super.getSignature().getSessionInfo().getUriPath();
+		String path = signature.getSessionInfo().getUriPath();
 		if(path != null) {
-			return super.negationFlag() ^ uriPattern.matcher(path).find();
+			return negationFlag ^ uriPattern.matcher(path).find();
 		}
 		return false;
 	}

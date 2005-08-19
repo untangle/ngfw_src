@@ -66,7 +66,9 @@ public class IDSTest {
 			"alert udp any any -> any any (msg:\"Rule 9\"; uricontent:\"/is/just/a/\"; nocase;)",
 			"alert udp any any -> any any (msg:\"rule 10 (exploit test1)\"; flow:to_server,established; content:\"|90 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90|\"; reference:bugtraq,2347; reference:cve,2001-0144; reference:cve,2001-0572; classtype:shellcode-detect; sid:1326; rev:6;)",
 			"alert udp $EXTERNAL_NET any -> $HOME_NET 22 (msg:\"Rule 11(exploit test2)\"; flow:to_server,established; content:\"|00 01|W|00 00 00 18|\"; depth:7; content:\"|FF FF FF FF 00 00|\"; depth:14; offset:8; reference:bugtraq,2347; reference:cve,2001-0144; reference:cve,2001-0572; classtype:shellcode-detect; sid:1327; rev:7;)",
-			"alert tcp any any -> any any (msg:\"Rule 12\"; nocase; pcre:\"/(stuff=.*(a|b|c|\\;|d?rar))/i\"; dsize:  > 4 ;)"};
+			"alert tcp any any -> any any (msg:\"Rule 12\"; nocase; pcre:\"/(stuff=.*(a|b|c|\\;|d?rar))/i\"; dsize:  > 4 ;)",
+			"alert tcp any any -> any any (msg:\"Rule 13\";  content:\"Hi\"; content:\"Bob\"; distance: 2; )",
+			"alert tcp any any -> any any (msg:\"Rule 14\";  content:\"Hi\"; content:\"Bob\"; within: 5; )"};
 		
 		for(int i=0; i < testValidStrings.length; i++) {
 			try { 
@@ -140,10 +142,26 @@ public class IDSTest {
 		checkSessionData(info, test, false, 11, true);	
 		
 		byte[] test11FailDepth = { (byte)0x00, (byte) 0x01, 'W',  (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x18, 'f', 'a','a','a','a','a','a','a','a','a','a','a', (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte) 0x00, (byte) 0x00 }; 
-	test.setData(test11FailDepth);   
-	checkSessionData(info, test, false, 11, false);
-			
+		test.setData(test11FailDepth);   
+		checkSessionData(info, test, false, 11, false);
+		
+		byte[] distanceTest = { 'H','i','q','q','B','o','b' };
+		test.setData(distanceTest);
+		checkSessionData(info, test, true, 13, true);
+		checkSessionData(info, test, true, 14, true);		
+	
+		byte[] distanceTest2 = { 'H','i','q','B','o','b' };
+		test.setData(distanceTest2);
+		checkSessionData(info, test, true, 13, false);
+		checkSessionData(info, test, true, 14, true);
+
+		byte[] distanceTest3 = { 'H','i','q','q','q','q','q','B','o','b' };
+		test.setData(distanceTest3);
+		checkSessionData(info, test, true, 13, true);
+		checkSessionData(info, test, true, 14, false);
+								
 	}			
+	
 	private void checkSessionData(IDSSessionInfo info, IPDataEvent event, boolean isServer,int ruleNum,  boolean answer) {
 		info.setEvent(event);
 		info.setFlow(isServer);

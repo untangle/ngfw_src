@@ -39,8 +39,8 @@ public class FlowOption extends IDSOption {
 	}
 	
 	public boolean run() {
-		boolean fromServer = getSignature().getSessionInfo().isServer();
-		boolean returnValue = !(fromServer ^= matchFromServer);
-		return (negationFlag() ^ returnValue);
+		boolean fromServer = signature.getSessionInfo().isServer();
+		boolean returnValue = !(fromServer ^ matchFromServer);
+		return (negationFlag ^ returnValue);
 	}
 }

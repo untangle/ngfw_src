@@ -1,7 +1,8 @@
 package com.metavize.tran.ids;
 
 import java.util.List;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -21,7 +22,7 @@ public class IDSRuleManager {
 	public static final int LOG = 1;
 	public static final String[] ACTIONS = { "alert", "log" };
 			
-	private List<IDSRuleHeader> ruleHeaders = new Vector<IDSRuleHeader>();
+	private List<IDSRuleHeader> ruleHeaders = Collections.synchronizedList(new ArrayList<IDSRuleHeader>());
 	
 	private static final Logger log = Logger.getLogger(IDSRuleManager.class);
 	static {
@@ -51,8 +52,9 @@ public class IDSRuleManager {
 
 	public List<IDSRuleSignature> matchesHeader(Protocol protocol, InetAddress clientAddr, int clientPort, InetAddress serverAddr, int serverPort) {
 		List<IDSRuleSignature> returnList = new LinkedList();
-		//System.out.println(ruleHeaders.size()); /** *****************************************/
-		
+	//	System.out.println(ruleHeaders.size()); /** *****************************************/
+	
+		synchronized(ruleHeaders) {
 		Iterator<IDSRuleHeader> it = ruleHeaders.iterator();
 		while(it.hasNext()) {
 			IDSRuleHeader header = it.next();
@@ -61,7 +63,8 @@ public class IDSRuleManager {
 			//	System.out.println("\n\n"+header+"\n"+header.getSignature());
 			}
 		}
-		//System.out.println(returnList.size()); /** *****************************************/
+		}
+	//	System.out.println(returnList.size()); /** *****************************************/
 		
 		return returnList;
 	}
