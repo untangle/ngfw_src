@@ -39,11 +39,13 @@ public class ReportGenerator
     public static final Map<String, String> SlotTypes = new HashMap<String, String>();
     static {
         SlotTypes.put("TOPRMID",       "java.lang.String");
+        SlotTypes.put("TOPMMID",       "java.lang.String");
         SlotTypes.put("TOPLMID",       "java.lang.String");
         SlotTypes.put("TOPLEFT",       "java.sql.Timestamp");
         SlotTypes.put("BOTRMID",       "java.lang.String");
+        SlotTypes.put("BOTMMID",       "java.lang.String");
         SlotTypes.put("BOTLMID",       "java.lang.String");
-        SlotTypes.put("BOTRIGHT",      "java.lang.Integer");
+        SlotTypes.put("BOTRIGHT",      "java.lang.String");
         SlotTypes.put("TOPRIGHT",      "java.lang.String");
     }
 
