@@ -181,7 +181,6 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       <src path="${build.gensrc}"/>
 
       <include name="com/metavize/mvvm/*.java"/>
-      <exclude name="com/metavize/mvvm/MvvmContextFactory.java"/>
       <include name="com/metavize/mvvm/argon/SessionEndpoints.java"/>
       <include name="com/metavize/mvvm/argon/ArgonException.java"/>
       <include name="com/metavize/mvvm/client/*.java"/>
@@ -201,7 +200,6 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       <exclude name="com/metavize/mvvm/tran/MutateTStats.java"/>
       <include name="com/metavize/mvvm/util/PortServiceNames.java"/>
       <include name="com/metavize/mvvm/util/SessionUtil.java"/>
-      <include name="com/metavize/mvvm/shield/ShieldEvent.java"/>
     </javac>
   </target>
 
@@ -216,6 +214,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
         <include name="com/metavize/mvvm/engine/HttpInvokerStub*.class"/>
         <include name="com/metavize/mvvm/engine/ProxyInputStream*.class"/>
         <include name="com/metavize/mvvm/engine/SocketInvokerStub*.class"/>
+        <include name="com/metavize/mvvm/engine/Version*.class"/>
         <include name="com/metavize/mvvm/logging/LogEvent*.class"/>
         <include name="com/metavize/mvvm/logging/LoggingManager*.class"/>
         <include name="com/metavize/mvvm/security/*.class"/>
@@ -227,7 +226,6 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
         <exclude name="com/metavize/mvvm/tran/MutateTStats*.class"/>
         <include name="com/metavize/mvvm/util/PortServiceNames*.class"/>
         <include name="com/metavize/mvvm/util/SessionUtil*.class"/>
-        <include name="com/metavize/mvvm/shield/ShieldEvent.class"/>
       </fileset>
     </jar>
   </target>
