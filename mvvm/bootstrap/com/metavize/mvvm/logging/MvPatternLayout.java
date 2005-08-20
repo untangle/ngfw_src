@@ -33,7 +33,8 @@ public class MvPatternLayout extends PatternLayout {
     public MvPatternLayout(String pattern) {
         super(pattern);
     }
-    
+
+    @Override
     public PatternParser createPatternParser(String pattern) {
         return new MvPatternParser(pattern == null ? MV_DEFAULT_CONVERSION_PATTERN : pattern);
     }
@@ -136,6 +137,7 @@ public class MvPatternLayout extends PatternLayout {
             }
 
             // Never used.
+            @Override
             public Date parse(String s, ParsePosition pos) {
                 return null;
             }  

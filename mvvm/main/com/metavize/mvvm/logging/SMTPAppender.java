@@ -55,49 +55,12 @@ public class SMTPAppender extends AppenderSkeleton
 
     // constructors -----------------------------------------------------------
 
-    private class OurLayout extends PatternLayout {
-        // Right now we use the same thing as the main log4j logs
-        static final String LAYOUT = "%d{ABSOLUTE} %-5p [%c{1}] %m%n";
-        private TransformContext tctx;
-        OurLayout(TransformContext tctx) {
-            super(LAYOUT);
-            this.tctx = tctx;
-        }
-        @Override public String getHeader() {
-            StringBuilder sb = new StringBuilder();
-            sb.append("\n");
-            String name;
-            if (tctx == null)
-                name = "MVVM";
-            else
-                name = tctx.getTransformDesc().getName();
-            sb.append(name);
-            sb.append("\n");
-            for (int i = 0; i < name.length(); i++)
-                sb.append('-');
-            sb.append("\n");
-            return sb.toString();
-        }
-        @Override public String getFooter() {
-            StringBuilder sb = new StringBuilder();
-            sb.append("\nEnd of ");
-            String name;
-            if (tctx == null)
-                name = "MVVM";
-            else
-                name = tctx.getTransformDesc().getName();
-            sb.append(name);
-            sb.append("\n\n");
-            return sb.toString();
-        }
-    }
-            
-
     public SMTPAppender()
     {
         super();
 
         TransformContext tctx;
+        String name;
         if (MvvmContextFactory.state() == MvvmLocalContext.MvvmState.LOADED) {
             tid = new Tid(0L);
             tctx = null;
@@ -108,15 +71,28 @@ public class SMTPAppender extends AppenderSkeleton
             else
                 tid = tctx.getTid();
         }
-        Layout layout = new OurLayout(tctx);
+        if (tctx == null)
+            name = "MVVM";
+        else
+            name = tctx.getTransformDesc().getName();
+
+        // We make the layout ourselves -- it's not in the XML.
+        Layout layout = new MvMailLayout(name);
         setLayout(layout);
 
         parent = LogMailer.get();
         parent.register(tid, this);
     }
 
+    // DOM XML parser calls in here with LayoutConversionPattern param.
+    public void setLayoutConversionPattern(String pattern) {
+        MvMailLayout layout = (MvMailLayout) getLayout();
+        layout.setConversionPattern(pattern);
+    }
+
     // Appender methods -------------------------------------------------------
 
+    @Override
     protected void append(LoggingEvent event)
     {
         try {

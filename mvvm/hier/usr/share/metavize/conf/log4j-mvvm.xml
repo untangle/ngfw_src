@@ -49,7 +49,7 @@
 
   <appender name="EmailAppender"
             class="com.metavize.mvvm.logging.SMTPAppender">
-    <!-- Want to restrict level here? -->
+    <!-- We use the default conversion pattern, so it's omitted. -->
   </appender>
 
 

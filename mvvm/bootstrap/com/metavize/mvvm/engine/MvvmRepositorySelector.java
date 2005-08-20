@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: MvvmRepositorySelector.java,v 1.1 2005/01/14 07:59:45 amread Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.engine;
@@ -141,6 +141,8 @@ public class MvvmRepositorySelector implements RepositorySelector
     }
 
     public void reconfigureAll() {
+        Thread ct = Thread.currentThread();
+        ClassLoader oldCl = ct.getContextClassLoader();
         for (Iterator iter = ht.keySet().iterator(); iter.hasNext();) {
             ClassLoader cl = (ClassLoader) iter.next();
             MVHierarchy h = (MVHierarchy) ht.get(cl);
@@ -149,8 +151,13 @@ public class MvvmRepositorySelector implements RepositorySelector
                 continue;
             }
             System.out.println("Resetting log configuration for class loader " + cl);
-            InputStream is = findConfig(h.name, h);
-            doConfiguration(is, h);
+            ct.setContextClassLoader(cl);
+            try {
+                InputStream is = findConfig(h.name, h);
+                doConfiguration(is, h);
+            } finally {
+                ct.setContextClassLoader(oldCl);
+            }
         }
     }
 
