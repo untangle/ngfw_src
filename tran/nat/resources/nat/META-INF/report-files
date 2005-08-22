@@ -1,6 +1,6 @@
 com/metavize/tran/nat/reports/NatMaster.jasper:Network_Sharing--Summary:Summary
-com/metavize/tran/nat/reports/NatRedirectDetail.jasper:Network_Sharing--Redirect_Events:Redirect Events
-com/metavize/tran/nat/reports/NatDmzDetail.jasper:Network_Sharing--DMZ_Events:DMZ Events
-com/metavize/tran/nat/reports/NatDhcpDetail.jasper:Network_Sharing--DHCP_Events:DHCP Events
+reports/NatRedirectDetail.jasper:Network_Sharing--Redirect_Events:Redirect Events
+reports/NatDmzDetail.jasper:Network_Sharing--DMZ_Events:DMZ Events
+reports/NatDhcpDetail.jasper:Network_Sharing--DHCP_Events:DHCP Events
 com.metavize.tran.nat.reports.NatSummarizer:summarizer:Summarizer
 reportTitlePrefix:parameter:none
