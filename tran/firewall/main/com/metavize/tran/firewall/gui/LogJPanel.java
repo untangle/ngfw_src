@@ -37,7 +37,7 @@ public class LogJPanel extends MLogTableJPanel {
 
         for( FirewallLog requestLog : requestLogList ){
             event = new Vector();
-            event.add( Util.getLogDateFormat().format( requestLog.getCreateDate() ));
+            event.add( requestLog.getCreateDate() );
 	    event.add( requestLog.getAction() );
             event.add( requestLog.getClientAddr() + ":" + ((Integer)requestLog.getClientPort()).toString() );
 	    event.add( requestLog.getReason() );
@@ -54,9 +54,9 @@ public class LogJPanel extends MLogTableJPanel {
 	public TableColumnModel getTableColumnModel(){
 	    DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
 	    //                                 #   min  rsz    edit   remv   desc   typ               def                                
-	    addTableColumn( tableColumnModel,  0,  150, true,  false, false, false, String.class, null, "timestamp" );
+	    addTableColumn( tableColumnModel,  0,  150, true,  false, false, false, Date.class,   null, "timestamp" );
 	    addTableColumn( tableColumnModel,  1,  55,  true,  false, false, false, String.class, null, "action" );
-	    addTableColumn( tableColumnModel,  2,  165, true,  false, false, false, String.class, null, sc.html("client") );
+	    addTableColumn( tableColumnModel,  2,  165, true,  false, false, false, String.class, null, "client" );
 	    addTableColumn( tableColumnModel,  3,  100, true,  false, false, false, String.class, null, sc.html("reason for<br>action") );
 	    addTableColumn( tableColumnModel,  4,  100, true,  false, false, false, String.class, null, sc.html("request<br>direction") );
 	    addTableColumn( tableColumnModel,  5,  165, true,  false, false, false, String.class, null, "server" );

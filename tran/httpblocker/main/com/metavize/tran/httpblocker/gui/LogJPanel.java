@@ -41,15 +41,11 @@ public class LogJPanel extends MLogTableJPanel {
 
         for( HttpRequestLog requestLog : requestLogList ){
             event = new Vector();
-            event.add( Util.getLogDateFormat().format( requestLog.timeStamp() ));
-
-            Action action = requestLog.getAction();
-            Reason reason = requestLog.getReason();
-	    
-	    event.add( action.toString() );
+            event.add( requestLog.timeStamp() );
+	    event.add( requestLog.getAction().toString() );
             event.add( requestLog.getClientAddr() + ":" + ((Integer)requestLog.getClientPort()).toString() );
 	    event.add( requestLog.getUrl().toString() );
-	    event.add( reason.toString() );
+	    event.add( requestLog.getReason().toString() );
             event.add( requestLog.getDirection().getDirectionName() );
             event.add( requestLog.getServerAddr() + ":" + ((Integer)requestLog.getServerPort()).toString() );
             allEvents.insertElementAt(event,0);
@@ -65,9 +61,9 @@ public class LogJPanel extends MLogTableJPanel {
     public TableColumnModel getTableColumnModel(){
         DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
         //                                 #   min  rsz    edit   remv   desc   typ               def
-        addTableColumn( tableColumnModel,  0,  150, true,  false, false, false, String.class, null, "timestamp" );
+        addTableColumn( tableColumnModel,  0,  150, true,  false, false, false, Date.class,   null, "timestamp" );
         addTableColumn( tableColumnModel,  1,  55,  true,  false, false, false, String.class, null, "action" );
-        addTableColumn( tableColumnModel,  2,  165, true,  false, false, false, String.class, null, sc.html("client") );
+        addTableColumn( tableColumnModel,  2,  165, true,  false, false, false, String.class, null, "client" );
         addTableColumn( tableColumnModel,  3,  200, true,  false, false, false, String.class, null, "request" );
         addTableColumn( tableColumnModel,  4,  140, true,  false, false, false, String.class, null, sc.html("reason for<br>action") );
         addTableColumn( tableColumnModel,  5,  100, true,  false, false, false, String.class, null, sc.html("request<br>direction") );

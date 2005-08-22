@@ -18,6 +18,7 @@ import javax.swing.*;
 import java.awt.*;
 import javax.swing.table.*;
 import javax.swing.border.*;
+import java.util.Date;
 
 import com.metavize.gui.util.MPasswordField;
  
@@ -203,6 +204,12 @@ public class MColoredTableCellRenderer extends DefaultTableCellRenderer {
                 renderJSpinner.setModel( (SpinnerNumberModel) value );
                 renderJComponent = renderJSpinner;
             }
+	    else if(value instanceof Date){
+		renderJLabel.setIcon(null);
+		renderJLabel.setHorizontalAlignment(JTextField.LEFT);
+		renderJLabel.setText( Util.getLogDateFormat().format((Date)value) );
+		renderJComponent = renderJLabel;
+	    }
             else{
                 if(value != null)
                     renderJLabel.setText("UNSUPPORTED RENDER for: " + value.getClass());

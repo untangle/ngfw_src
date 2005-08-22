@@ -39,13 +39,13 @@ public class LogJPanel extends MLogTableJPanel {
 
         for( SpamLog requestLog : requestLogList ){
             event = new Vector();
-            event.add( Util.getLogDateFormat().format( requestLog.getTimeStamp() ));
+            event.add( requestLog.getTimeStamp() );
 	    event.add( requestLog.getAction().toString() );
             event.add( requestLog.getClientAddr() + ":" + ((Integer)requestLog.getClientPort()).toString() );
 	    event.add( requestLog.getSubject() );
 	    event.add( requestLog.getReceiver() );
 	    event.add( requestLog.getSender() );
-	    event.add( Float.toString(requestLog.getScore()) );
+	    event.add( requestLog.getScore() );
             event.add( requestLog.getDirection().getDirectionName() );
             event.add( requestLog.getServerAddr() + ":" + ((Integer)requestLog.getServerPort()).toString() );
             allEvents.insertElementAt(event,0);
@@ -61,13 +61,13 @@ public class LogJPanel extends MLogTableJPanel {
 	public TableColumnModel getTableColumnModel(){
 	    DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
 	    //                                 #   min  rsz    edit   remv   desc   typ           def
-	    addTableColumn( tableColumnModel,  0,  150, true,  false, false, false, String.class, null, "timestamp" );
+	    addTableColumn( tableColumnModel,  0,  150, true,  false, false, false, Date.class,   null, "timestamp" );
 	    addTableColumn( tableColumnModel,  1,   55, true,  false, false, false, String.class, null, "action" );
-	    addTableColumn( tableColumnModel,  2,  165, true,  false, false, false, String.class, null, sc.html("client") );
+	    addTableColumn( tableColumnModel,  2,  165, true,  false, false, false, String.class, null, "client" );
 	    addTableColumn( tableColumnModel,  3,  100, true,  false, false, false, String.class, null, "subject" );
 	    addTableColumn( tableColumnModel,  4,  100, true,  false, false, false, String.class, null, "receiver" );
 	    addTableColumn( tableColumnModel,  5,  100, true,  false, false, false, String.class, null, "sender" );
-	    addTableColumn( tableColumnModel,  6,   55, true,  false, false, false, String.class, null, sc.html("spam<br>score") );
+	    addTableColumn( tableColumnModel,  6,   55, true,  false, false, false, Float.class,  null, sc.html("spam<br>score") );
 	    addTableColumn( tableColumnModel,  7,  100, true,  false, false, false, String.class, null, sc.html("spam<br>direction") );
 	    addTableColumn( tableColumnModel,  8,  165, true,  false, false, false, String.class, null, "server" );
 	    return tableColumnModel;
