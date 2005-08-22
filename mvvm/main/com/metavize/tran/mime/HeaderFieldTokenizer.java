@@ -35,6 +35,9 @@ public class HeaderFieldTokenizer {
     QTEXT
   };
 
+  /**
+   * Class reprsenting a returned token
+   */
   public class Token {
     private final byte m_delim;
     private final StringBuilder m_sb;
@@ -53,20 +56,46 @@ public class HeaderFieldTokenizer {
       m_tokenType = type;
     }
     /**
-     * Only applies for DELIM.
+     * Only applies for DELIM.  Otherwise, returns 0
      */    
     public byte getDelim() {
       return m_delim;
     }
+    /**
+     * Get the text of this Token.  Only applies to "QTEXT" and "ATOM"
+     */
     public StringBuilder getText() {
       return m_sb;
     }
+    /**
+     * Get the token type
+     */
     public TokenType getType() {
       return m_tokenType;
     }
     public String toString() {
       return m_delim==0?
         getText().toString():new String(new byte[] {getDelim()});
+    }
+    /**
+     * Returns true if this is a delim (not an ATOM or QTEXT)
+     */
+    public boolean isDelim() {
+      return m_delim != 0;
+    }
+
+    /**
+     * Append the value of this token (either a single char
+     * or the return of {@link #getText 
+     */
+    public void appendTo(StringBuilder sb) {
+      if(getType() == TokenType.ATOM ||
+        getType() == TokenType.QTEXT) {
+        sb.append(toString());
+      }
+      else {
+        sb.append((char) getDelim());
+      }
     }
   }
 
@@ -97,10 +126,27 @@ public class HeaderFieldTokenizer {
     return new String(m_data);
   }
 
+  /**
+   * Get the open comment count.  <b>Warning - this count
+   * drops to zero as the last closing ")" is returned</b>
+   */
   public int openCommentCount() {
     return m_openCommentCount;
   }
 
+  /**
+   * Gets the current position.  Initialy, this
+   * is zero.  As each token is returned,
+   * this is the position of the next byte (i.e. one past the
+   * end of the token just returned).
+   */
+  public int position() {
+    return m_pos;
+  }
+
+  /**
+   * Get the next token w/o comments
+   */
   public Token nextTokenIgnoreComments() {
     Token ret = nextToken();
     while(ret != null &&
@@ -111,6 +157,9 @@ public class HeaderFieldTokenizer {
     return ret;
   }
 
+  /**
+   * Get the next token
+   */
   public Token nextTokenWithComments() {
     return nextToken();
   }
@@ -169,7 +218,7 @@ public class HeaderFieldTokenizer {
               sb.append(QUOTE);
             }
             else {
-              sb.append(BACK_SLASH);
+              sb.append(m_data[m_pos++]);
             }
           }
           else {

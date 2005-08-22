@@ -15,6 +15,7 @@ import javax.mail.*;
 import java.util.*;
 import java.io.*;
 import static com.metavize.tran.util.Ascii.*;
+import org.apache.log4j.Logger;
 
 //===========================================
 // Implementation Note.  We're currently
@@ -33,6 +34,8 @@ import static com.metavize.tran.util.Ascii.*;
 public class EmailAddressHeaderField 
   extends HeaderField {
 
+  private static Logger m_logger = Logger.getLogger(EmailAddressHeaderField.class);
+
   private List<EmailAddress> m_addresses;
   
   public EmailAddressHeaderField(String name,
@@ -42,15 +45,8 @@ public class EmailAddressHeaderField
   public EmailAddressHeaderField(String name) {
     super(name);
   }  
-/*  
-  public EmailAddressHeaderField(String name,
-    LCString lCName,
-    Line[] sourceLines,
-    int valueStartOffset) {
-    
-    super(name, lCName, sourceLines, valueStartOffset);
-  } 
-*/
+
+  
   /**
    * Get the Address at the given index.
    * 
@@ -223,36 +219,206 @@ public class EmailAddressHeaderField
     out.writeLine();
   }
 
+  public static List<EmailAddress> parseHeaderLine(String line)
+    throws HeaderParseException {
+    return parseHeaderLine(line, false);
+  }
   
   /**
    * Parse a raw header line into a collection of EmailAddresses,
    * as per RFC821 and its successors.
    *
    * @param line a line containing addresses
+   * @param skipBadAddresses if true, bad addresses will be skipped (no exceptions thrown)
    * @return a Listof EmailAddresses.
    */
-  public static List<EmailAddress> parseHeaderLine(String line) 
+  public static List<EmailAddress> parseHeaderLine(String line,
+    boolean skipBadAddresses) 
     throws HeaderParseException {
+
+    List<EmailAddress> ret = new ArrayList<EmailAddress>();
     
-    //For now, we'll be lazy and use JavaMail.  If they ever break, 
-    //we'll have to do this on our own - wrs.
-    try {
-      InternetAddress[] addresses = InternetAddress.parseHeader(line, false);
-//      System.out.println("[EmailAddressHeaderField] Parsed \"" + 
-//        line + "\" into: " + addresses.length + " addresses");
-      List<EmailAddress> ret = new ArrayList<EmailAddress>();
-      if(addresses != null) {
-        for(int i = 0; i<addresses.length; i++) {
-          ret.add(EmailAddress.fromJavaMail(addresses[i]));
+    HeaderFieldTokenizer tokenizer = new HeaderFieldTokenizer(line);
+
+    HeaderFieldTokenizer.Token t = null;
+    StringBuilder sb = new StringBuilder();
+    boolean sawGT = false;
+    boolean sawAt = false;
+    boolean sawLT = false;
+    do {
+      t = tokenizer.nextTokenWithComments();
+
+      if(t == null) {
+        //process last bits, if there were any
+        if(sb.length() == 0) {
+          //Nothing to see here
+          continue;
         }
+        //For now, I'll assume we can parse a personal only?
+        if(sawLT && !sawGT) {
+          sb.append(GT);
+        }
+        String addrStr = sb.toString().trim();
+        if("".equals(addrStr) || "<>".equals(addrStr)) {
+          continue;
+        }
+        try {
+          ret.add(EmailAddress.parse(sb.toString()));
+        }
+        catch(Exception ex) {
+          HeaderParseException hpe = new HeaderParseException("Unable to parse \"" +
+            sb.toString() + "\" into address from header line \"" +
+            line + "\"", ex);
+          if(skipBadAddresses) {
+            m_logger.error(hpe.fillInStackTrace());
+          }
+          else {
+            throw hpe;
+          }
+        }
+        sb = new StringBuilder();
+        sawGT = false;
+        sawAt = false;
+        sawLT = false;
+        break;
       }
-      return ret;
-    }
-    catch(AddressException ex) {
-      throw new HeaderParseException("Unable to parse \"" + 
-        line + "\" into addresses", ex);
-    }
+      //If we're in a comment, simply append blindly
+      if(tokenizer.openCommentCount() > 0 ||
+        t.getDelim() == CLOSE_PAREN_B) {
+        t.appendTo(sb);
+        continue;
+      }
+      //Look for ending delims
+      if(t.getDelim() == SEMI_B || t.getDelim() == COMMA_B) {
+        //Separator
+        if(sb.length() == 0) {
+          //Nothing to see here
+          continue;
+        }
+        //For now, I'll assume we can parse a personal only?
+        if(sawLT && !sawGT) {
+          sb.append(GT);
+        }
+        String addrStr = sb.toString().trim();
+        if("".equals(addrStr) || "<>".equals(addrStr)) {
+          continue;
+        }
+        try {
+          ret.add(EmailAddress.parse(sb.toString()));
+        }
+        catch(Exception ex) {
+          throw new HeaderParseException("Unable to parse \"" + 
+            sb.toString() + "\" into address from header line \"" +
+            line + "\"", ex);
+        }
+        sb = new StringBuilder();
+        sawGT = false;
+        sawAt = false;
+        sawLT = false;
+        continue;        
+      }
+      if(t.isDelim()) {
+        if(t.getDelim() == GT_B) {
+          sawGT = true;
+        }
+        if(t.getDelim() == LT_B) {
+          sawLT = true;
+        }
+        if(t.getDelim() == AT_B) {
+          sawAt = true;
+        }
+        t.appendTo(sb);
+      }
+      else {
+        boolean wasQuote = t.getType() == HeaderFieldTokenizer.TokenType.QTEXT;
+        if(wasQuote) {
+          sb.append(QUOTE);
+        }
+        t.appendTo(sb);
+        if(wasQuote) {
+          sb.append(QUOTE);
+        }        
+      }
+      
+    }while(t != null);
+    return ret;
+  }
+
+  public static void main(String[] args) throws Exception {
+    if(args.length < 1) {
+      testAddress("foo moo<foo moo>");
+      testAddress("\"foo moo\"");
+      testAddress("foo moo");
+      testAddress("Linus Torvalds; linux-kernel@vger.kernel.org");
+      testAddress("\"Davda, Bhavesh P \\(Bhavesh\\)\" <bhavesh@avaya.com>");
+      testAddress("\"Andi Kleen\" <ak@suse.de>, \"Brown, Len\" <len.brown@intel.com>,");
+      testAddress("Bill Scott<bscott@metavize.com>");
+      testAddress(";;Bill Scott<bscott@metavize.com>");
+      testAddress(",,Bill Scott<bscott@metavize.com>");
+      testAddress(", Bill Scott<bscott@metavize.com>");
+      testAddress(", ; Bill Scott<bscott@metavize.com>");
+      testAddress(",;Bill Scott<bscott@metavize.com>");
+      testAddress("Bill Scott<bscott@metavize.com>,");
+      testAddress(";;Bill Scott<bscott@metavize.com> ,");
+      testAddress(",,Bill Scott<bscott@metavize.com> ;");
+      testAddress(", Bill Scott<bscott@metavize.com>;");
+      testAddress(", ; Bill Scott<bscott@metavize.com>;,");
+      testAddress(",;Bill Scott<bscott@metavize.com> ,;");
     
+      testAddress("Bill Scott<bscott@metavize.com");
+      testAddress(";;Bill Scott<bscott@metavize.com");
+      testAddress(",,Bill Scott<bscott@metavize.com");
+      testAddress(", Bill Scott<bscott@metavize.com");
+      testAddress(", ; Bill Scott<bscott@metavize.com");
+      testAddress(",;Bill Scott<bscott@metavize.com");
+      testAddress("Bill Scott<bscott@metavize.com,");
+      testAddress(";;Bill Scott<bscott@metavize.com ,");
+      testAddress(",,Bill Scott<bscott@metavize.com ;");
+      testAddress(", Bill Scott<bscott@metavize.com;");
+      testAddress(", ; Bill Scott<bscott@metavize.com;,");
+      testAddress(",;Bill Scott<bscott@metavize.com ,;");
+    }
+    else {
+      BufferedReader reader = new BufferedReader(new FileReader(args[0]));
+  
+      String line = null;
+      
+      while((line = reader.readLine()) != null) {
+        line = line.trim();
+        if("".equals(line)) {
+          continue;
+        }
+        testAddress(line);
+      }
+    }
+  }
+
+  //Reads the named file and parses each line.
+  private static void testAddress(String line) {
+    System.out.println("=====================================");
+    System.out.println(line);
+    System.out.println("-----------------------------");
+    try {
+      List<EmailAddress> list = parseHeaderLine(line);
+      boolean first = true;
+      for(EmailAddress addr : list) {
+        if(first) {
+          first = false;
+        }
+        else {
+          System.out.print(", ");
+        }
+        System.out.print(addr.toMIMEString());
+      }
+      System.out.println("");
+      
+    }
+    catch(Exception ex) {
+      System.out.println("***EXCEPTION***");
+      System.err.println("***EXCEPTION***");
+      ex.printStackTrace(System.out);
+    }
+    System.out.println("-----------------------------");    
   }
   
 

@@ -29,6 +29,9 @@ public class Ascii
     public static final char SEMI = ';';
     public static final char OPEN_PAREN = '(';
     public static final char CLOSE_PAREN = ')';
+    public static final char GT = '>';
+    public static final char LT = '<';
+    public static final char AT = '@';
 
     public static final byte CR_B = (byte) CR;
     public static final byte LF_B = (byte) LF;
@@ -46,6 +49,9 @@ public class Ascii
     public static final byte SEMI_B = (byte) SEMI;
     public static final char OPEN_PAREN_B = (byte) OPEN_PAREN;
     public static final char CLOSE_PAREN_B = (byte) CLOSE_PAREN;
+    public static final char GT_B = (byte) GT;
+    public static final char LT_B = (byte) LT;
+    public static final char AT_B = (byte) AT;
 
 
     /**
