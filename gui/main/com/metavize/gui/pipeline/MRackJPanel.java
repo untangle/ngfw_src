@@ -97,8 +97,8 @@ public class MRackJPanel extends JPanel {
 
     public synchronized void addTransform(MTransformJPanel mTransformJPanel){
         ButtonKey buttonKey = new ButtonKey(mTransformJPanel);
-        if( rackMap.containsKey(buttonKey) )
-            return;
+	if( rackMap.containsKey(buttonKey) )
+	    Util.printMessage("Warning: duplicate appliance found: " + buttonKey.getApplianceName() );
         
         rackMap.put(buttonKey, mTransformJPanel);
         int position = ((TreeMap)rackMap).headMap(buttonKey).size();
