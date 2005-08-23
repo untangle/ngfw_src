@@ -213,6 +213,14 @@ $Id: common-classpaths.xml,v 1.32 2005/02/10 23:25:44 jdi Exp $
     <include name="*jdbc3.jar"/>
   </fileset>
 
+  <fileset id="bcel.jarset" dir="${BCEL_HOME}">
+    <include name="bcel-5.1.jar"/>
+  </fileset>
+
+  <path id="bcel.classpath">
+    <fileset refid="bcel.jarset"/>
+  </path>
+
   <path id="gui.thirdparty.classpath">
     <path refid="netbeans.jarset"/>
     <path refid="kunststoff.jarset"/>
@@ -222,6 +230,7 @@ $Id: common-classpaths.xml,v 1.32 2005/02/10 23:25:44 jdi Exp $
 
   <path id="mvvm.thirdparty.classpath">
     <path refid="activation.classpath"/>
+    <path refid="bcel.classpath"/>
     <path refid="concurrent.classpath"/>
     <path refid="hibernate.classpath"/>
     <path refid="jasperreports.classpath"/>

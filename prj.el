@@ -13,7 +13,7 @@
 (jde-set-variables
  '(jde-sourcepath
    (append
-    '("./mvvm/main" "./mvvm/bootstrap")
+    '("./mvvm/main" "./mvvm/bootstrap" "./util")
     (mapcar (lambda (a) (concat "./tran/" a "/main")) transforms)
     (mapcar (lambda (a) (concat "./tran/" a "/main")) casings)
     (mapcar (lambda (a) (concat "./" a "/src/")) jni-projects)))
@@ -25,19 +25,20 @@
    (append
     (mapcar (lambda (a)
               (concat "./tran/output/" a)) casings)
-    '("../downloads/concurrent-1.3.4/lib/concurrent.jar"
-      "../downloads/hibernate-2.1.8/hibernate2.jar"
-      "../downloads/hibernate-2.1.8/lib/commons-logging-1.0.4.jar"
-      "../downloads/hibernate-2.1.8/lib/proxool-0.8.3.jar"
-      "../downloads/jakarta-tomcat-5.0.28-embed/lib/catalina-optional.jar"
-      "../downloads/jakarta-tomcat-5.0.28-embed/lib/catalina.jar"
-      "../downloads/jakarta-tomcat-5.0.28-embed/lib/servlet-api.jar"
-      "../downloads/javamail-1.3.1/mail.jar"
-      "../downloads/javassist-2.6/javassist.jar"
-      "../downloads/junit3.8.1/junit.jar"
-      "../downloads/logging-log4j-1.2.9/dist/lib/log4j-1.2.9.jar"
-      "../downloads/trove/lib/trove.jar"
-      "./mvvm/output/jar/mvvm.jar"
-      "./mvvm/output/jar/tranutil.jar"
+    '("../downloads/output/bcel-5.1/bcel-5.1.jar"
+      "../downloads/output/concurrent-1.3.4/lib/concurrent.jar"
+      "../downloads/output/hibernate-2.1.8/hibernate2.jar"
+      "../downloads/output/hibernate-2.1.8/lib/commons-logging-1.0.4.jar"
+      "../downloads/output/hibernate-2.1.8/lib/proxool-0.8.3.jar"
+      "../downloads/output/jakarta-tomcat-5.0.28-embed/lib/catalina-optional.jar"
+      "../downloads/output/jakarta-tomcat-5.0.28-embed/lib/catalina.jar"
+      "../downloads/output/jakarta-tomcat-5.0.28-embed/lib/servlet-api.jar"
+      "../downloads/output/javamail-1.3.1/mail.jar"
+      "../downloads/output/javassist-2.6/javassist.jar"
+      "../downloads/output/junit3.8.1/junit.jar"
+      "../downloads/output/logging-log4j-1.2.9/dist/lib/log4j-1.2.9.jar"
+      "../downloads/output/trove/lib/trove.jar"
       "./jnetcap/output/jar/jnetcap.jar"
-      "./jvector/output/jar/jvector.jar"))))
+      "./jvector/output/jar/jvector.jar"
+      "./mvvm/output/jar/mvvm.jar"
+      "./mvvm/output/jar/tranutil.jar"))))

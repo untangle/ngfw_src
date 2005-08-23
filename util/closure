@@ -1,0 +1,9 @@
+#!/bin/sh
+
+JAVA_HOME=${JAVA_HOME:-/opt/java}
+
+export JAVA_HOME
+
+CLASSPATH="../../downloads/output/bcel-5.1/bcel-5.1.jar:./output/util"
+
+$JAVA_HOME/bin/java -cp "$CLASSPATH" Closure $@

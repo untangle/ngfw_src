@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <!--
-Copyright (c) 2004 Metavize Inc.
+Copyright (c) 2004, 2005 Metavize Inc.
 All rights reserved.
 
 This software is the confidential and proprietary information of
@@ -37,7 +37,7 @@ $Id$
            optimize="false"
            deprecation="on"
            source="1.5"
-	   target="1.5"
+           target="1.5"
            includeAntRuntime="false">
 
       <src path="${src.util}"/>
@@ -57,8 +57,8 @@ $Id$
       <param name="jdoc.src" value="${src.util}"/>
     </antcall>
   </target>
-  
-  <!-- 
+
+  <!--
     Copy source files to ${jdoc.bigtree.src}
     for inclusion in big JavaDoc generation
   -->

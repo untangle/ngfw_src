@@ -169,7 +169,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
            optimize="false"
            deprecation="on"
            source="1.5"
-       target="1.5"
+           target="1.5"
            includeAntRuntime="false">
 
       <classpath refid="jnetcap.classpath"/>
