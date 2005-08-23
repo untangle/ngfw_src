@@ -93,6 +93,10 @@ public class IDSRuleSignature {
 		message = msg;
 	}
 
+	public String getMessage() {
+		return message;
+	}
+
 	public boolean execute(IDSSessionInfo info) {
 		this.info = info;
 		

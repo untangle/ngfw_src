@@ -50,7 +50,6 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 		log.setLevel(Level.DEBUG);
 	}   
 			 
-	//private IDSRules rules = new IDSRules();	
 	private IDSSettings settings = null;
 
 	private final EventHandler handler;
@@ -111,7 +110,6 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 				log.warn("could not close Hibernate session", exn);
 			}
 		}
-		//System.out.println("Returning logs! " + l.size()); /** ******************/
 		return l;
 	}
 				
@@ -137,29 +135,29 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 				log.warn("Could not close hibernate session",e);
 			}
 		}
-//		try {
-//			reconfigure();
-//		}
-//		catch(TransformException e) {
-//			log.error("Could not save IDS settings",e);
-//		}
 	}
 	
 	protected void initializeSettings() {
 		
-		log.info("\n*******************Loading Rules**********************");
-		String path =  System.getProperty("bunnicula.home");
-		File file = new File(path+"/schema/ids-transform/rules");
-		visitAllFiles(file); // */
-				
+		//Set Variables
 		IDSSettings settings = new IDSSettings(getTid());
-		settings.setMaxChunks(IDSDetectionEngine.instance().getMaxChunks());
-		settings.setRules(ruleList);	
 		settings.setVariables(IDSRuleManager.defaultVariables);
 		
+		//Load Rules
+		log.info("Loading Rules...");
+		String path =  System.getProperty("bunnicula.home");
+		File file = new File(path+"/schema/ids-transform/rules");
+		visitAllFiles(file);
+				
+		//Update settings
+		settings.setMaxChunks(IDSDetectionEngine.instance().getMaxChunks());
+		settings.setRules(ruleList);	
 		setIDSSettings(settings);
 		log.info(ruleList.size() + " rules loaded");
 	}
+
+	/** Temp subroutines for loading local snort rules.
+	 */
 	private void visitAllFiles(File file) {
 		if (file.isDirectory()) {
 			String[] children = file.list();
@@ -170,6 +168,8 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 			processFile(file);
 	}
 	
+	/** Temp subroutines for loading local snort rules.
+	 */
 	private void processFile(File file) {
 		IDSRuleManager testManager = new IDSRuleManager();
 		try {
@@ -178,8 +178,11 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 			int count = 0;
 			while ((str = in.readLine()) != null) {
 				try {
-					if(testManager.addRule(str.trim()))
-						ruleList.add(new IDSRule(str));
+					IDSRuleHeader header = testManager.addRule(str.trim());
+					if(header != null) {
+						IDSRuleSignature signature = header.getSignature();
+						ruleList.add(new IDSRule(str, file.getName().replaceAll(".rules",""),signature.getMessage()));
+					}
 				}
 				catch (Exception e) {} //ParseException?
 			}
@@ -224,7 +227,6 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 	}
 	
 	public void reconfigure() throws TransformException {
-		//System.out.println("RECONFIGUREING"); /** ********************/
 		IDSSettings currentSettings = getIDSSettings();
 		log.debug("reconfigure()");
 		if(currentSettings == null)
@@ -241,13 +243,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 
 	//XXX soon to be deprecated ------------------------------------------
 	
-	public Object getSettings() {
-		return getIDSSettings();
-//		Object test = getIDSSettings();
-//		System.out.println("WHATAMI::: " + test);
-//		return test; //WTF. Deprecate me.
-	}
+	public Object getSettings() { return getIDSSettings(); }
 
-	public void setSettings(Object obj) {
-	}
+	public void setSettings(Object obj) {}
 }

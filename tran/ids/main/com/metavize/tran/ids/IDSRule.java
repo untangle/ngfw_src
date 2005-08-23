@@ -22,9 +22,9 @@ public class IDSRule extends Rule implements Serializable {
 	 */
 	public IDSRule() {}
 
-	public IDSRule(String rule) {
+	public IDSRule(String rule, String  category, String description) {
 
-		super("test","test","test",false);
+		super("Name", category,description,false);
 		
 		if(4096 < rule.length())
 			throw new IllegalArgumentException("definition too long:" + rule);

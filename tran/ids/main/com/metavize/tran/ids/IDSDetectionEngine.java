@@ -62,7 +62,7 @@ public class IDSDetectionEngine {
 	
 	public boolean addRule(String rule) {
 		try {
-			return rules.addRule(rule);
+			return (rules.addRule(rule) != null);
 		} catch (ParseException e) { 
 			log.warn("Could not parse rule; " + e.getMessage()); 
 		} catch (Exception e) {
