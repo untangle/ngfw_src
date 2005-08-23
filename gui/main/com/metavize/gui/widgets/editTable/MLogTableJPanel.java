@@ -24,36 +24,41 @@ import javax.swing.table.*;
 import javax.swing.border.*;
 import java.util.*;
 import java.awt.*;
-
+import java.awt.event.*;
 
 public class MLogTableJPanel extends javax.swing.JPanel {
 
     protected static MLogTableJPanel lastMLogTableJPanel;
+    private static final long STREAM_SLEEP_MILLIS = 15000l;    
+    private static final Color TABLE_BACKGROUND_COLOR = new Color(213, 213, 226);
     
     protected Transform logTransform;
     protected MTransformControlsJPanel mTransformControlsJPanel;
 
-    private static final long STREAM_SLEEP_MILLIS = 15000l;
-    
-    private static final Color TABLE_BACKGROUND_COLOR = new Color(213, 213, 226);
     
     public MLogTableJPanel(Transform logTransform, MTransformControlsJPanel mTransformControlsJPanel) {
         this.logTransform = logTransform;
 	this.mTransformControlsJPanel = mTransformControlsJPanel;
-        // INIT GUI & CUSTOM INIT
-        initComponents();
-        entryJScrollPane.getViewport().setOpaque(true);
-        entryJScrollPane.getViewport().setBackground(TABLE_BACKGROUND_COLOR);
-        entryJScrollPane.setViewportBorder(new MatteBorder(2, 2, 2, 1, TABLE_BACKGROUND_COLOR));
-        this.setOpaque(false);
-        contentJPanel.setOpaque(false);
-        Dictionary dictionary = depthJSlider.getLabelTable();
-        Enumeration enumeration = dictionary.elements();
-        while(enumeration.hasMoreElements()){
-            Object object = enumeration.nextElement();
-            if(object instanceof JComponent) ((JComponent)object).setFont(new Font("Dialog", 0, 9));
-        }
-        depthJSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
+
+	try{
+	    SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+		// INIT GUI & CUSTOM INIT
+		initComponents();
+		entryJScrollPane.getViewport().setOpaque(true);
+		entryJScrollPane.getViewport().setBackground(TABLE_BACKGROUND_COLOR);
+		entryJScrollPane.setViewportBorder(new MatteBorder(2, 2, 2, 1, TABLE_BACKGROUND_COLOR));
+		MLogTableJPanel.this.setOpaque(false);
+		contentJPanel.setOpaque(false);
+		Dictionary dictionary = depthJSlider.getLabelTable();
+		Enumeration enumeration = dictionary.elements();
+		while(enumeration.hasMoreElements()){
+		    Object object = enumeration.nextElement();
+		    if(object instanceof JComponent) ((JComponent)object).setFont(new Font("Dialog", 0, 9));
+		}
+		depthJSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
+	    }});
+	}
+	catch(Exception e){ Util.handleExceptionNoRestart("Error building Log Table", e); }
     }
 
     
@@ -241,7 +246,7 @@ public class MLogTableJPanel extends javax.swing.JPanel {
     // End of variables declaration//GEN-END:variables
     
 
-    class RefreshThread extends Thread implements ChangeListener {
+    class RefreshThread extends Thread implements ActionListener {
 	private boolean isAutoRefresh;
 	public RefreshThread(boolean isAutoRefresh){
 	    super("MVCLIENT-MLogTableJPanel.RefreshThread: " + logTransform.getTransformDesc().getDisplayName());
@@ -259,17 +264,17 @@ public class MLogTableJPanel extends javax.swing.JPanel {
 	    this.start();
 	}
 	
-	public void stateChanged(ChangeEvent changeEvent){
-	    JToggleButton controlsJToggleButton = (JToggleButton) changeEvent.getSource();
+	public void actionPerformed(ActionEvent actionEvent){
+	    System.err.println("actionPerformed: " + actionEvent);
+	    JToggleButton controlsJToggleButton = (JToggleButton) actionEvent.getSource();
 	    if( !controlsJToggleButton.isSelected() ){
 		MLogTableJPanel.this.lastMLogTableJPanel.streamingJToggleButton.doClick();
 	    }
 	}
-
 	public void run(){
 	    try{
 		if(isAutoRefresh){
-		    MLogTableJPanel.this.mTransformControlsJPanel.getControlsJToggleButton().addChangeListener(this);
+		    MLogTableJPanel.this.mTransformControlsJPanel.getControlsJToggleButton().addActionListener(this);
 		}
 		do{
 		    getTableModel().doRefresh(null);
@@ -300,7 +305,7 @@ public class MLogTableJPanel extends javax.swing.JPanel {
 		    }});
 		}
 		else{
-		    MLogTableJPanel.this.mTransformControlsJPanel.getControlsJToggleButton().removeChangeListener(this);
+		    MLogTableJPanel.this.mTransformControlsJPanel.getControlsJToggleButton().removeActionListener(this);
 		}
 	    }
 	}
