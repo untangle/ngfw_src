@@ -11,8 +11,6 @@
 
 package com.metavize.gui.util;
 
-import com.metavize.gui.login.MLoginJFrame;
-
 import java.lang.reflect.Constructor;    
 import java.security.*;
 
@@ -52,12 +50,15 @@ public class MLauncher {
         );
 
         // set up the new class loader
-        MURLClassLoader mURLClassLoader = new MURLClassLoader( Thread.currentThread().getContextClassLoader() );
-        Util.setClassLoader( mURLClassLoader );
-        Thread.currentThread().setContextClassLoader(mURLClassLoader);
+        MURLClassLoader mUrlClassLoader = new MURLClassLoader( Thread.currentThread().getContextClassLoader() );
+        Util.setClassLoader( mUrlClassLoader );
+        Thread.currentThread().setContextClassLoader(mUrlClassLoader);
     
         // apply the new class loader to future swing threads
-        try{ 
+	javax.swing.UIManager.getLookAndFeelDefaults().put("ClassLoader", mUrlClassLoader);
+
+	// THE OLD WAY OF SETTING THE CLASSLOADER
+	/*        try{ 
             java.awt.EventQueue eq = java.awt.Toolkit.getDefaultToolkit().getSystemEventQueue();
             eq.invokeAndWait(new Runnable() {
                 public void run() {
@@ -68,9 +69,10 @@ public class MLauncher {
         catch(Exception e){
             System.err.println(e);
         }
-        
+        */
+
         // load and start the login dialog
-        new MLoginJFrame(args);
+        new com.metavize.gui.login.MLoginJFrame(args);
     }
 
     
@@ -78,9 +80,7 @@ public class MLauncher {
 	public ShutdownHookThread(){
 	    super("MVCLIENT-ShutdownHookThread");
 	}
-        public void run(){
-            
-        }
+        public void run(){}
     }
         
 }
