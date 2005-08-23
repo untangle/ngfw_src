@@ -46,8 +46,12 @@ public class MaintenanceJDialog extends MConfigJDialog {
 	super.refreshableMap.put(NAME_REMOTE_SETTINGS, maintenanceJPanel);
     }
     
-    protected void sendSettings(Object settings) throws Exception {}
-    protected void refreshSettings(){}
+    protected void sendSettings(Object settings) throws Exception {
+	Util.getNetworkingManager().set( (NetworkingConfiguration) settings );
+    }
+    protected void refreshSettings(){
+	settings = Util.getNetworkingManager().get();
+    }
 
 
 }

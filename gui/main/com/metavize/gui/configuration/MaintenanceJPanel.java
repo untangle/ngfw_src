@@ -34,18 +34,16 @@ public class MaintenanceJPanel extends javax.swing.JPanel implements Savable, Re
         // REPORTING ENABLED //////
         boolean isExceptionReportingEnabled = reportJCheckBox.isSelected();
         
-        
 	// SAVE SETTINGS ////////////
 	if( !validateOnly ){
-	    NetworkingConfiguration networkingConfiguration = Util.getNetworkingManager().get();
+	    NetworkingConfiguration networkingConfiguration = (NetworkingConfiguration) settings;
             networkingConfiguration.isSshEnabled( isSshEnabled );
             networkingConfiguration.isExceptionReportingEnabled( isExceptionReportingEnabled );
-	    Util.getNetworkingManager().set( networkingConfiguration );
         }
     }
 
     public void doRefresh(Object settings){
-        NetworkingConfiguration networkingConfiguration = (NetworkingConfiguration) Util.getNetworkingManager().get();
+        NetworkingConfiguration networkingConfiguration = (NetworkingConfiguration) settings;
         
         // SSH ENABLED ///////
 	boolean isSshEnabled = networkingConfiguration.isSshEnabled();

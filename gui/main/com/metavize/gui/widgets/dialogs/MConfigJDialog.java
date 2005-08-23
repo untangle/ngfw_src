@@ -87,9 +87,14 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
 	    }
         }
         catch(Exception e){
-            Util.handleExceptionNoRestart("Error preparing settings for saving", e);
-            new ValidateFailureDialog( this.getTitle(), componentName, e.getMessage() );
-            return;
+	    try{
+		Util.handleExceptionWithRestart("Error saving settings", e);
+	    }
+	    catch(Exception f){
+		Util.handleExceptionNoRestart("Error saving settings", f);
+		new ValidateFailureDialog( this.getTitle(), componentName, e.getMessage() );
+		return;
+	    }
         }
         
 	// SEND SETTINGS TO SERVER
@@ -99,10 +104,10 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
         }
         catch ( Exception e ) {
             try{
-                Util.handleExceptionWithRestart("Error saving settings", e);
+                Util.handleExceptionWithRestart("Error sending saved settings", e);
             }
             catch(Exception f){
-                Util.handleExceptionNoRestart("Error saving settings", f);
+                Util.handleExceptionNoRestart("Error sending saved settings", f);
                 new SaveFailureDialog( this.getTitle() );
             }
         }

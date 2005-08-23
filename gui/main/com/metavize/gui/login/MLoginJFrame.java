@@ -75,6 +75,10 @@ public class MLoginJFrame extends javax.swing.JFrame {
 		    loginJTextField.setEnabled(true);
 		    passJPasswordField.setEnabled(true);
 		    passJPasswordField.setText("");
+		    if(loginJTextField.getText().length() == 0)
+			loginJTextField.requestFocus();
+		    else
+			passJPasswordField.requestFocus();
 		    serverJTextField.setEnabled(true);
                     protocolJTextField.setEnabled(true);
 		    statusJProgressBar.setString(message);
