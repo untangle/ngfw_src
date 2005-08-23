@@ -1,11 +1,12 @@
 package com.metavize.tran.ids;
 
+import java.util.regex.*;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
-
+import java.util.regex.*;
 import org.apache.log4j.Logger;
 import org.apache.log4j.Level;
 
@@ -17,16 +18,32 @@ import com.metavize.mvvm.tran.firewall.IPMatcher;
 import com.metavize.mvvm.tran.ParseException;
 
 public class IDSRuleManager {
-	
+
 	public static final int ALERT = 0;
 	public static final int LOG = 1;
 	public static final String[] ACTIONS = { "alert", "log" };
 			
 	private List<IDSRuleHeader> ruleHeaders = Collections.synchronizedList(new ArrayList<IDSRuleHeader>());
 	
+	private static Pattern variablePattern = Pattern.compile("\\$[^ \n\r\t]+");
+	
+	public static List<IDSVariable> defaultVariables = new ArrayList<IDSVariable>(); 
+	static {
+		defaultVariables.add(new IDSVariable("$EXTERNAL_NET","!10.0.0.1/24"));
+		defaultVariables.add(new IDSVariable("$HOME_NET", "10.0.0.1/24"));
+		defaultVariables.add(new IDSVariable("$HTTP_PORTS", ":80"));
+		defaultVariables.add(new IDSVariable("$HTTP_SERVERS", "10.0.0.1/24"));
+		defaultVariables.add(new IDSVariable("$SMTP_SERVERS", "any"));
+		defaultVariables.add(new IDSVariable("$SSH_PORTS", "any"));
+		defaultVariables.add(new IDSVariable("$SQL_SERVERS", "any"));
+		defaultVariables.add(new IDSVariable("$TELNET_SERVERS", "any"));
+		defaultVariables.add(new IDSVariable("$ORACLE_PORTS", "any"));
+		defaultVariables.add(new IDSVariable("$AIM_SERVERS", "any"));
+	}
+																													
 	private static final Logger log = Logger.getLogger(IDSRuleManager.class);
 	static {
-		log.setLevel(Level.WARN);
+		log.setLevel(Level.INFO);
 	}
 	public IDSRuleManager() {
 	}
@@ -79,17 +96,34 @@ public class IDSRuleManager {
 	}
 
 	private String substituteVariables(String string) {
-		string = string.replaceAll("\\$EXTERNAL_NET","!10.0.0.1/24");
-		string = string.replaceAll("\\$HOME_NET", "10.0.0.1/24");
-		string = string.replaceAll("\\$HTTP_PORTS", ":80");
-		string = string.replaceAll("\\$HTTP_SERVERS", "10.0.0.1/24");
-		string = string.replaceAll("\\$SMTP_SERVERS", "any");
-		string = string.replaceAll("\\$SSH_PORTS", "any");
-		string = string.replaceAll("\\$SQL_SERVERS", "any");
-		string = string.replaceAll("\\$TELNET_SERVERS", "any");
-		string = string.replaceAll("\\$ORACLE_PORTS", "any");
-		string = string.replaceAll("\\$AIM_SERVERS", "any");
-		//string = string.replaceAll("\\b\\$.*\\b", "any");
+		//If string matches
+		Matcher match = variablePattern.matcher(string);
+		if(match.find()) {
+			List<IDSVariable> varList;
+			if(IDSDetectionEngine.instance().getSettings() == null)
+				varList = defaultVariables;
+			else {
+				varList = (List<IDSVariable>) IDSDetectionEngine.instance().getSettings().getVariables();
+			}
+			Iterator<IDSVariable> it = varList.iterator();
+			while(it.hasNext()) {
+				IDSVariable var = it.next();
+				string = string.replaceAll("\\"+var.getVariable(),var.getDefinition());
+			}
+		/*	
+		//replace
+			string = string.replaceAll("\\$EXTERNAL_NET","!10.0.0.1/24");
+			string = string.replaceAll("\\$HOME_NET", "10.0.0.1/24");
+			string = string.replaceAll("\\$HTTP_PORTS", ":80");
+			string = string.replaceAll("\\$HTTP_SERVERS", "10.0.0.1/24");
+			string = string.replaceAll("\\$SMTP_SERVERS", "any");
+			string = string.replaceAll("\\$SSH_PORTS", "any");
+			string = string.replaceAll("\\$SQL_SERVERS", "any");
+			string = string.replaceAll("\\$TELNET_SERVERS", "any");
+			string = string.replaceAll("\\$ORACLE_PORTS", "any");
+			string = string.replaceAll("\\$AIM_SERVERS", "any");
+		*/																			
+		}
 		return string;
 	}
 }

@@ -68,7 +68,9 @@ public class IDSTest {
 			"alert udp $EXTERNAL_NET any -> $HOME_NET 22 (msg:\"Rule 11(exploit test2)\"; flow:to_server,established; content:\"|00 01|W|00 00 00 18|\"; depth:7; content:\"|FF FF FF FF 00 00|\"; depth:14; offset:8; reference:bugtraq,2347; reference:cve,2001-0144; reference:cve,2001-0572; classtype:shellcode-detect; sid:1327; rev:7;)",
 			"alert tcp any any -> any any (msg:\"Rule 12\"; nocase; pcre:\"/(stuff=.*(a|b|c|\\;|d?rar))/i\"; dsize:  > 4 ;)",
 			"alert tcp any any -> any any (msg:\"Rule 13\";  content:\"Hi\"; content:\"Bob\"; distance: 2; )",
-			"alert tcp any any -> any any (msg:\"Rule 14\";  content:\"Hi\"; content:\"Bob\"; within: 5; )"};
+			"alert tcp any any -> any any (msg:\"Rule 14\";  content:\"Hi\"; content:\"Bob\"; within: 5; )",
+			"alert tcp any any -> any any (msg:\"Rule 15\";  content:\"Hi\"; content:\"|02|\"; within:1; distance:1;)",
+			"alert tcp any any -> any any (msg:\"Rule 16\";  content:\"Hi\"; distance:1; within:3; content:\"|02|\"; within:2; distance:2;)"};
 		
 		for(int i=0; i < testValidStrings.length; i++) {
 			try { 
@@ -155,10 +157,18 @@ public class IDSTest {
 		checkSessionData(info, test, true, 13, false);
 		checkSessionData(info, test, true, 14, true);
 
-		byte[] distanceTest3 = { 'H','i','q','q','q','q','q','B','o','b' };
+		byte[] distanceTest3 = { 'H','i','q','q','q','q','q','q','B','o','b' };
 		test.setData(distanceTest3);
 		checkSessionData(info, test, true, 13, true);
 		checkSessionData(info, test, true, 14, false);
+		
+		byte[] withinDebug = { 'H','i','q',(byte)0x02 };
+		test.setData(withinDebug);	
+		checkSessionData(info, test, true, 15, true);
+
+		byte[] withinDebug1 = { 'H','i','q',(byte)0x02 };
+		test.setData(withinDebug1);	
+		//////////////////////checkSessionData(info, test, true, 16, true);
 								
 	}			
 	

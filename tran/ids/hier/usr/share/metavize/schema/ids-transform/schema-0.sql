@@ -8,6 +8,14 @@ create table settings.TR_IDS_SETTINGS (
 	tid int8 not null unique, 
 	primary key (settings_id));
 	
+create table settings.TR_IDS_VARIABLE (
+	VARIABLE_ID int8 not null,
+	VARIABLE varchar(512),
+	DEFINITION varchar(512),
+	SETTINGS_ID int8,
+	POSITION int4,
+	primary key (VARIABLE_ID));
+	
 create table settings.TR_IDS_RULE (
 	RULE_ID int8 not null, 
 	RULE varchar(4095),

@@ -125,6 +125,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 			Transaction tx = s.beginTransaction();
 			s.saveOrUpdateCopy(settings);
 			this.settings = settings;
+			IDSDetectionEngine.instance().setSettings(settings);
 			tx.commit();
 		}catch(HibernateException e) {
 			log.warn("Could not set IDSSettings", e);
@@ -145,14 +146,17 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 	}
 	
 	protected void initializeSettings() {
+		
 		log.info("\n*******************Loading Rules**********************");
 		String path =  System.getProperty("bunnicula.home");
 		File file = new File(path+"/schema/ids-transform/rules");
 		visitAllFiles(file); // */
-								
+				
 		IDSSettings settings = new IDSSettings(getTid());
 		settings.setMaxChunks(IDSDetectionEngine.instance().getMaxChunks());
-		settings.setRules(ruleList);
+		settings.setRules(ruleList);	
+		settings.setVariables(IDSRuleManager.defaultVariables);
+		
 		setIDSSettings(settings);
 		log.info(ruleList.size() + " rules loaded");
 	}
@@ -162,7 +166,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 			for (int i=0; i<children.length; i++) 
 				visitAllFiles(new File(file, children[i]));
 		} 
-		else 
+		else
 			processFile(file);
 	}
 	
@@ -171,14 +175,18 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 		try {
 			BufferedReader in = new BufferedReader(new FileReader(file));
 			String str;
+			int count = 0;
 			while ((str = in.readLine()) != null) {
-				if(testManager.addRule(str.trim()))
-					ruleList.add(new IDSRule(str));
+				try {
+					if(testManager.addRule(str.trim()))
+						ruleList.add(new IDSRule(str));
+				}
+				catch (Exception e) {} //ParseException?
 			}
 			in.close();
 		} catch (IOException e) { 
 			e.printStackTrace(); 
-		} catch (ParseException e) {}
+		}
 	}
 
 	protected void postInit(String args[]) {
@@ -189,6 +197,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 			Query q = s.createQuery("from IDSSettings ids where ids.tid = :tid");
 			q.setParameter("tid", getTid());
 			this.settings = (IDSSettings)q.uniqueResult();
+			IDSDetectionEngine.instance().setSettings(settings);
 			//updateToCurrent(this.settings);
 			tx.commit();
 		} catch (HibernateException exn) {

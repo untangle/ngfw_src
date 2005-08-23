@@ -22,6 +22,7 @@ public class IDSSettings implements Serializable {
 	private Long id;
 	private Tid tid;
 	private List rules = new ArrayList();
+	private List variables = new ArrayList();
 
 	/**
 	 * Hibernate constructor
@@ -76,5 +77,21 @@ public class IDSSettings implements Serializable {
 	 * class="com.metavize.tran.ids.IDSRule"
 	 */
 	public List getRules() { return this.rules; }
-	public void setRules(List rules) { this.rules = rules; }		
+	public void setRules(List rules) { this.rules = rules; }	
+
+	/**
+	 * @hibernate.list
+	 * cascade="all-delete-orphan"
+	 * @hibernate.collection-key
+	 * column="SETTINGS_ID"
+	 * @hibernate.collection-index
+	 * column="POSITION"
+	 * @hibernate.collection-one-to-many
+	 * class="com.metavize.tran.ids.IDSVariable"
+	 */
+
+	public List getVariables() { return this.variables;	}
+	public void setVariables(List variables) { this.variables = variables; }
+
+	
 }

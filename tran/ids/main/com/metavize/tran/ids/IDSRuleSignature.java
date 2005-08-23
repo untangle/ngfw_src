@@ -109,7 +109,7 @@ public class IDSRuleSignature {
 	private void doAction() {
 		switch(action) {
 			case IDSRuleManager.ALERT:
-		//		System.out.println(message);
+				//System.out.println(message);
 				break;
 			case IDSRuleManager.LOG:
 				break;

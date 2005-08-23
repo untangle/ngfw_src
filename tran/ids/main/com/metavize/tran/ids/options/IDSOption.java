@@ -48,10 +48,9 @@ public abstract class IDSOption {
 		try {
 			optionName = optionName.replaceFirst(""+ch,""+(char)(ch - 'a' + 'A'));
 		} catch(PatternSyntaxException e) {
-			System.out.println("Char:: " + ch);
+			System.out.println("Char:: " + ch); /** ********************/
 			System.out.println(optionName);
 			System.out.println(params);
-			e.printStackTrace();
 		}
 		
 		try {

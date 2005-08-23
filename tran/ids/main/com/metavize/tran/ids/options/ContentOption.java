@@ -70,13 +70,25 @@ public class ContentOption extends IDSOption {
 
 	public void setDistance(int val) {
 		previousContentOption = getPreviousContentOption();
+		
+		if(previousContentOption == null) {
+			setOffset(val);
+			return;
+		}
+		
 		distance = val;
 		distanceFlag = true;
 	}
 
 	public void setWithin(int val) {
 		previousContentOption = getPreviousContentOption();
-		within = val+contentPattern.pattern().length()-1;
+		
+		if(previousContentOption == null) {
+			setDepth(val+contentPattern.pattern().length());
+			return;
+		}
+		
+		within = val+contentPattern.pattern().length();
 		withinFlag = true;
 	}
 
@@ -84,7 +96,6 @@ public class ContentOption extends IDSOption {
 		IDSOption option = signature.getOption("ContentOption",this);
 		if(option != null)
 			return (ContentOption) option;
-		signature.remove(true);
 		return null; //error checking OMGWTFBBQ
 	}
 						 

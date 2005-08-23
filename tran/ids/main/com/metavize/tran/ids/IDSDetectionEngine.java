@@ -18,6 +18,7 @@ import com.metavize.mvvm.tran.PortRange;
 public class IDSDetectionEngine {
 
 	private int maxChunks = 8;
+	private IDSSettings settings = null;
 	private IDSRuleManager rules = new IDSRuleManager();
 	Map<Integer,IDSSessionInfo> sessionInfoMap = new ConcurrentHashMap<Integer,IDSSessionInfo>();
 	
@@ -25,7 +26,7 @@ public class IDSDetectionEngine {
 	static {
 		log.setLevel(Level.INFO);
 	}	
-	private static IDSDetectionEngine instance = null; 
+	private static IDSDetectionEngine instance = new IDSDetectionEngine();//null; 
 	public static IDSDetectionEngine instance() {
 		if(instance == null) 
 			instance = new IDSDetectionEngine();
@@ -42,6 +43,15 @@ public class IDSDetectionEngine {
 		addRule(TesT);
 	}
 
+	public IDSSettings getSettings() {
+		return settings;
+	}
+
+	public void setSettings(IDSSettings settings) {
+		this.settings = settings;
+	}
+	
+	//fix this - settigns?
 	public void setMaxChunks(int max) {
 		maxChunks = max;
 	}

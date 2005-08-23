@@ -40,8 +40,6 @@ public class IDSLog implements Serializable {
         this.serverAddr = serverAddr;
         this.serverPort = serverPort;
         this.direction = direction;
-
-		System.out.println("Makeing new IDSLog!"); /** ***************** */
     }
 
     // util -------------------------------------------------------------------
