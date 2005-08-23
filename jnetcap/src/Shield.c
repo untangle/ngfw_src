@@ -53,6 +53,12 @@ JNIEXPORT void JNICALL JF_Shield( config )
     ( JNIEnv* env, jobject _this, jstring file_name )
 {
     const char* file_str;
+
+#ifdef _MCD_CHECK
+    /*XXX This is only valid for the MCD checker */
+    /* Dump out the memory logs */
+    showMemStats( 0 );
+#endif
     
     if (( file_str = (*env)->GetStringUTFChars( env, file_name, NULL )) == NULL ) {
         return jmvutil_error_void( JMVUTIL_ERROR_STT, ERR_CRITICAL, "(*env)->GetStringUTFChars\n" );

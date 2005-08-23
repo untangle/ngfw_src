@@ -276,7 +276,7 @@ JNIEXPORT void JNICALL JF_Netcap( cleanup )
 #ifdef _MCD_CHECK
         /*XXX This is only valid for the MCD checker */
         /* Dump out the memory logs */
-        showMemStats();
+        showMemStats( 1 );
 #endif
     } while( 0 );
 

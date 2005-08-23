@@ -4,11 +4,6 @@ import java.util.LinkedList;
 
 public abstract class SocketQueueImpl implements SocketQueue
 {
-    protected final static int MVPOLLIN  = 0x001;
-    protected final static int MVPOLLOUT = 0x004;
-    protected final static int MVPOLLERR = 0x008;
-    protected final static int MVPOLLHUP = 0x010;
-
     protected boolean containsReset = false;
     protected boolean containsShutdown = false;
     protected int mvpollKey = 0;

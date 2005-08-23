@@ -221,7 +221,7 @@ public class OutgoingSocketQueue extends Source implements SocketQueue
         public int poll()
         {
             /* If the relay side is closed, always return HUP */
-            if ( isRelaySideClosed ) return MVPOLLHUP;
+            if ( isRelaySideClosed ) return Vector.MVPOLLHUP;
             
             if ( containsShutdown ) {
                 /* containsShutdown, doesn't matter if it is enabled, already shutdown */
@@ -229,16 +229,16 @@ public class OutgoingSocketQueue extends Source implements SocketQueue
                 /* If the event list is empty (shutdown already read), or the next event is
                  * shutdown, return a HUP */
                 if ( eventList.isEmpty() || ((Crumb)(eventList.getFirst())).isShutdown()) {
-                    return MVPOLLHUP;
+                    return Vector.MVPOLLHUP;
                 }
                 
                 /* More events, but not a shutdown */
-                return MVPOLLIN;
+                return Vector.MVPOLLIN;
             }
 
-            /* If enabled, and there are more events, then this is writable */
+            /* If enabled, and there are more events, then this is readable */
             if ( isEnabled && !eventList.isEmpty())
-                return MVPOLLIN;
+                return Vector.MVPOLLIN;
             
             /* No events are ready right now */
             return 0;

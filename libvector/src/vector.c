@@ -192,7 +192,11 @@ int       vector (vector_t* vec)
     int i,num_events;
     int timeout = -1;
     struct mvpoll_event events[MVPOLL_MAX_SIZE];
-    int tick = 0;
+    /* The ticks can't start on zero or 1 because it is used to detect shutdown's on sinks
+     * and sources that occur during the same tick.  If it did start with 0, there would be a slim
+     * chance that the flag snk_shutdown and tick would match, which would be somewhat confusing.
+     */
+    int tick = 2;
     
     if (_vector_setup(vec)<0)
         return perrlog("vector_setup");
@@ -285,12 +289,21 @@ int       vector (vector_t* vec)
                             errlog( ERR_CRITICAL, "_vector_handle_snk_event\n" );
                             goto vector_out;
                         }
-                        if ( stub->relay->snk_shutdown )
+                        if ( stub->relay->snk_shutdown == 1 )
                             stub->relay->snk_shutdown = tick;
 
                     } else {
-                        errlog( ERR_CRITICAL, "Mishandled Event(snk_shutdown)\n" );
-                        goto vector_out;
+                        if ( stub->relay->snk_shutdown == tick ) {
+                            /* This is not an error(no vector_out), EG
+                             * one tick that contains a source and then sink, and source
+                             * event where the source receives an error which skips
+                             * the relay and places it directly into the sink.
+                             */
+                            debug( 6, "VECTOR(%08x): src shutdown snk with event in same tick\n", vec );
+                        } else {
+                            errlog( ERR_CRITICAL, "VECTOR(%08x): Mishandled Event(snk shutdown)\n", vec );
+                            goto vector_out;
+                        }
                     }
                 } else {
                     if ( !stub->relay->src_shutdown ) {
@@ -298,16 +311,21 @@ int       vector (vector_t* vec)
                             errlog(ERR_WARNING,"Mishandled Event\n");
                             goto vector_out;
                         }
+
+                        /* Indicate that the sink was shutdown on this tick, if necessary */
+                        if ( stub->relay->snk_shutdown == 1 ) {
+                            stub->relay->snk_shutdown = tick;
+                        }
                     } else {
                         if ( stub->relay->snk_shutdown == tick ) {
-                            /* This may not be an error(no vector_out), EG
+                            /* This is not an error(no vector_out), EG
                              * one tick that contains a sink and source
                              * event that where the sink event closes the
                              * source.
                              */
-                            debug( 6, "VECTOR(%08x): snk shutdown then src event in same tick\n" );
+                            debug( 6, "VECTOR(%08x): snk shutdown then src event in same tick\n", vec );
                         } else {
-                            errlog( ERR_CRITICAL, "Mishandled Event(src shutdown)\n" );
+                            errlog( ERR_CRITICAL, "VECTOR(%08x): Mishandled Event(src shutdown)\n", vec );
                             goto vector_out;
                         }
                     }
@@ -433,7 +451,8 @@ static int  _vector_handle_src_event (vector_t* vec, relay_t* relay, int revents
     } else if ( revents & MVPOLLHUP ) {
         return _vector_handle_src_shutdown_event( vec, relay );
     } else {
-        errlog( ERR_WARNING, "Got source event with invalid event mask: 0x%08x", revents );        
+        errlog( ERR_WARNING, "VECTOR(%08x): Got source event with invalid event mask: 0x%08x", 
+                vec, revents );
         /* do the default thing anyway */
         return _vector_handle_src_input_event( vec, relay );
     }
@@ -454,10 +473,9 @@ static int  _vector_handle_src_input_event    ( vector_t* vec, relay_t* relay )
         return -1;
     }
 
-
     /* INPUT events cannot extend the relay queue */
     if ( list_length(&relay->event_q) >= relay->event_q_max_len )
-        return errlog( ERR_CRITICAL, "Constraint failed. Relay full.\n" );
+        return errlog( ERR_CRITICAL, "VECTOR(%08x): Constraint failed. Relay full.\n", vec );
 
     /* Retrieve the event and verify it is non-null */
     if (( evt = relay->src->get_event( relay->src )) == NULL )
@@ -489,16 +507,28 @@ static int  _vector_handle_src_error_event    ( vector_t* vec, relay_t* relay )
 
     /* This must be a shutdown event */
     if ( evt == NULL || !event_is_shutdown( evt->type )) {
-        if (evt == NULL)
-            errlog( ERR_WARNING, "VECTOR(%08x): HUP without a shutdown event (event is NULL)\n", vec);
-        else
-            errlog( ERR_WARNING, "VECTOR(%08x): ERR event without a shutdown event (event type: %08x) \n", vec, evt->type );
+        mvpoll_key_t* key;
+        int key_type;
+
+        if (( key = relay->src->get_event_key( relay->src )) == NULL ) {
+            /* This check just guarantees that the a NULL key is not dereferenced */
+            errlog( ERR_WARNING, "VECTOR(%08x): Null key\n", vec );
+            key_type = 0x1234;
+        } else {
+            key_type = key->type;
+        }
         
-        /* Free the event, and return, if there is an error, no need to queue it
-         * the event is invalid */
-        if ( evt != NULL )
+        if (evt == NULL) {
+            errlog( ERR_WARNING, "VECTOR(%08x): ERR without a shutdown event (event is NULL/0x%08x)\n", 
+                    vec, key_type );
+        } else {
+            errlog( ERR_WARNING, "VECTOR(%08x): ERR without a shutdown event (event type: %08x/%08x)\n",
+                    vec, evt->type, key_type );
+            
+            /* Free the event, and return, if there is an error, no need to queue it */
             evt->raze( evt );
-        
+        }
+                
         if (( evt = event_create( EVENT_BASE_ERROR_SHUTDOWN )) == NULL )
             return errlog( ERR_CRITICAL, "event_create\n" );
     }
@@ -525,16 +555,16 @@ static int  _vector_handle_src_shutdown_event ( vector_t* vec, relay_t* relay )
         errlog( ERR_WARNING, "relay->src->get_event\n" );
 
     /* This must be a shutdown event */
-    if ( evt == NULL || !event_is_shutdown( evt->type )) {
-        if (evt == NULL)
+    if (( evt == NULL ) || !event_is_shutdown( evt->type )) {
+        if (evt == NULL) {
             errlog( ERR_WARNING, "VECTOR(%08x): HUP without a shutdown event (event is NULL)\n", vec);
-        else
-            errlog( ERR_WARNING, "VECTOR(%08x): HUP without a shutdown event (event type: %08x) \n", vec, evt->type );
-            
+        } else {
+            errlog( ERR_WARNING, "VECTOR(%08x): HUP without a shutdown event (event type: %08x) \n", vec, 
+                    evt->type );
         
-        /* Free the event */
-        if ( evt != NULL )
+            /* Free the event */
             evt->raze( evt );
+        }
         
         if (( evt = event_create( EVENT_BASE_SHUTDOWN )) == NULL )
             return errlog( ERR_CRITICAL, "event_create\n" );
@@ -805,8 +835,6 @@ static int  _vector_cleanup (vector_t* vec)
     return 0;
 }
 
-
-
 /**
  * Adds event the queue
  * Enables writing of sink (if needed)
@@ -814,15 +842,50 @@ static int  _vector_cleanup (vector_t* vec)
  */
 static int _relay_add_queue (relay_t* relay, event_t* event)
 {
-    if (list_add_head(&relay->event_q,(void*)event)<0)
-        return errlog(ERR_CRITICAL,"Event Dropped\n");
-    
-    if (list_length(&relay->event_q) >= relay->event_q_max_len)
-        if (_relay_src_disable(relay)<0) return -1;
+    /**
+     * Error events skip the relay and go directly to the sink.
+     * Don't worry about clearing the relay, any events in there are automatically
+     * removed at the end of vectoring.
+     */
+    if ( event_is_shutdown_error( event->type )) {
+        /* Push the error event to the next sink */
+        if ( !relay->snk_shutdown ) {
+            event_action_t action;
+            action = relay->snk->send_event( relay->snk, event );
+            switch ( action ) {
+            case EVENT_ACTION_SHUTDOWN:
+                break;
+            case EVENT_ACTION_ERROR:
+            case EVENT_ACTION_NOTHING:
+            case EVENT_ACTION_DEQUEUE:
+            default:
+                errlog( ERR_CRITICAL, "VECTOR(%08x): Non-shutdown action(%d) to an error crumb", 
+                        relay->my_vec, action );
+            }
 
-    if (list_length(&relay->event_q) == 1)
-        if (_relay_snk_enable(relay)<0) return -1;
+            /* Raze the event */
+            event->raze( event );
+
+            /* Close the sink */
+            if ( _relay_snk_close( relay ) < 0 ) perrlog( "_relay_snk_close" );
+        } else {
+            /* Raze the event */
+            event->raze( event );
+
+            /* This is an error because a source cannot be open if the corresponding sink is closed. */
+            errlog( ERR_CRITICAL, "VECTOR(%08x): error crumb for shutdown sink\n", relay->my_vec );
+        }        
+    } else {
+        if (list_add_head(&relay->event_q,(void*)event)<0)
+            return errlog(ERR_CRITICAL,"Event Dropped\n");
         
+        if (list_length(&relay->event_q) >= relay->event_q_max_len)
+            if (_relay_src_disable(relay)<0) return -1;
+        
+        if (list_length(&relay->event_q) == 1)
+            if (_relay_snk_enable(relay)<0) return -1;
+    }
+
     return 0;
 }
 

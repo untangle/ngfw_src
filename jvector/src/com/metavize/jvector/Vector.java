@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: Vector.java,v 1.14 2005/02/10 06:37:58 rbscott Exp $
+ * $Id$
  */
 
 package com.metavize.jvector;
@@ -31,6 +31,13 @@ public class Vector
 
     /* For telling the vectoring machine to shutdown */
     private static final int MSG_SHUTDOWN = 1;
+    
+    /* Poll flags */
+    protected final static int MVPOLLIN  = 0x001;
+    protected final static int MVPOLLOUT = 0x004;
+    protected final static int MVPOLLERR = 0x008;
+    protected final static int MVPOLLHUP = 0x010;
+
 
     protected static final Logger logger = Logger.getLogger( Vector.class );
 

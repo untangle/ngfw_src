@@ -99,23 +99,30 @@ JNIEXPORT jint JNICALL JF_TCPSink( write )
             case ECONNRESET:
                 /* Received a reset, let the caller know */
                 debug( 5, "TCPSink: fd %d reset\n", fd );
-                number_bytes = -1;
+                number_bytes = JN_TCPSink( WRITE_RETURN_IGNORE );
                 break;
                 
             case EPIPE:
-                errlog( ERR_WARNING, "TCPSink: Broken pipe fd %d, resetting\n", fd );
-                number_bytes = -1;
+                /**
+                 * This occurs if the corresponding source reads the reset, and then the
+                 * sink is called.  In this situation, the reset has already been read, but 
+                 * the fd is being used anyway).  This starting cropping up with the new
+                 * vectoring that services POLLHUP | POLLIN as a POLLIN.
+                 */
+                debug( 5, "TCPSink: Broken pipe fd %d, resetting\n", fd );
+                number_bytes = JN_TCPSink( WRITE_RETURN_IGNORE );
                 break;
 
             case EAGAIN:
-                /* Unable to write at this time, would have blocked */
+                /* Unable to write at this time, would have blocked 
+                 * XXXX Why isn't this an error */
                 debug( 5, "TCPSink: fd %d polled when unable to write data\n", fd );
                 number_bytes = 0;
                 break;                
 
             default:
                 jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "TCPSink: write: %s\n", errstr );
-                /* Doesn't matter, it will through an error */
+                /* Doesn't matter, it will throw an error */
                 number_bytes = -2;
             }
         }

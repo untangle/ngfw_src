@@ -11,45 +11,80 @@
 
 package com.metavize.jvector;
 
-import java.util.ListIterator;
+import java.util.Iterator;
+import java.util.List;
+import java.util.LinkedList;
 
-public class IncomingSocketQueue extends Sink implements SocketQueue
+/**
+ * IncomingSocketQueue:
+ * This is not actually a queue, it is a way to hand off events(crumbs)
+ * from the relay to any of the listeners.  This object doesn't actually hold any data
+ * in its normal state, and there is no notion of "leaving" things inside of a incoming
+ * socket queue.  What this means, is at the end of each event, the crumb is either taken
+ * by the listener and removed from the relay, or it is left in the relay at which point
+ * a new event will occur with the same crumb.
+ */
+public class IncomingSocketQueue extends Sink
 {
-    protected final ISocketQueue sq;
+    private Object attachment;
 
-    /**
-     * This is a hook that is called after reading a shutdown crumb
-     */
-    protected SocketQueueShutdownHook shutdownHook = null;
-
-    protected boolean isClosed = false;
-
-    // True once the session is killed
-    protected boolean isKilled = false;
+    /* True if the listeners want events */
+    private boolean isEnabled = true;
     
-    // True once the session has been reset
-    protected boolean isReset  = false;
+    /* True once the session is shutdown.
+     *  a. A read event was delivered to a listener where the crumb was a shutdown event.
+     *     This will shutdown the IncomingSocketQueue regardless of whether the listener actually 
+     *     reads the event.
+     *  b. A transform explicitly kills or resets an incoming socket queue
+     */
+    private boolean isShutdown = false;
+
+    /* This seems very redundant of isShutdown, but it is not.  The IncomingSocketQueue contains
+     * a shutdown after the first time vectoring sends a shutdown event, but isShutdown is false
+     * until after the readEvent is delivered to the listeners
+     */
+    private boolean containsShutdown = false;
+
+    /* True once the session is killed A kill is an explicit event
+     * caused by an error during a read event, after killing an
+     * IncomingSocketQueue, iteration of the listeners is stopped
+     */
+    private boolean isKilled = false;
+    
+    /* True once a reset has been occured. */
+    private boolean isReset  = false;
+
+    /* XXXX This seems very redundant of isReset */
+    private boolean containsReset = false;
+
+    private boolean containsTimeout = false;
+
+    // Current crumb to read out
+    private Crumb currentCrumb;
+    
+    // List of listeners
+    private final List listeners = new LinkedList<SocketQueueListener>();
         
     public IncomingSocketQueue()
     {
-        pointer = create();
-        sq = new ISocketQueue( mvpollKey( pointer ));
-    }
-
-    /* Kind of no longer needed since IncomingSocketQueue implemts SocketQueue */
-    public SocketQueue sq()
-    {
-        return sq;
+        /* The pointer is from the sink */
+        this.pointer = create();
     }
 
     public Crumb read()
     {
         if ( isReset ) {
+            currentCrumb = null;
+
             /* Return a reset crumb */
             return ResetCrumb.getInstance();
         }
+        
+        /* XXX This should throw an exception if there isn't anything in there */
+        Crumb crumb = (Crumb)currentCrumb;
 
-        Crumb crumb = (Crumb)sq.removeFirst();
+        /* Null out the current crumb to indicate that the data has been read */
+        currentCrumb = null;
         
         if ( Vector.isDebugEnabled()) {
             if ( crumb.isData()) {
@@ -60,13 +95,66 @@ public class IncomingSocketQueue extends Sink implements SocketQueue
             }
         }
         
-        /* Once the client reads the shutdown crumb, the socket queue is shutdown */
-        if  ( crumb.isShutdown()) isClosed = true;
-
-        /* XXX, not sure if this is used. Call the shutdown hook */
-        if ( shutdownHook != null ) shutdownHook.shutdownEvent( this );
+        /* Once the client reads the shutdown crumb, the socket queue is closed */
+        if  ( crumb.isShutdown()) isShutdown = true;
 
         return crumb;
+    }
+
+    public int send_event( Crumb crumb )
+    {
+        boolean wasShutdown = isShutdown;
+
+        switch ( crumb.type()) {
+        case Crumb.TYPE_RESET:
+            this.containsReset = true;
+            /* ???? Should the isResetFlag be set here */
+
+            /* Fallthrough */
+        case Crumb.TYPE_SHUTDOWN:
+            this.containsShutdown = true;
+        }
+        
+        mvpollNotifyObservers();
+        
+        /* Nothing to do */
+        if ( wasShutdown ) return Vector.ACTION_SHUTDOWN;
+
+        this.currentCrumb = crumb;
+        
+        for ( Iterator<SocketQueueListener> iter = this.listeners.iterator() ; iter.hasNext() ; ) {
+            SocketQueueListener ll = iter.next();
+            ll.event( this );
+
+            /* If an exception killed the thread, don't finish iterating the list */
+            if ( isKilled ) break;
+        }
+
+        if ( crumb.isShutdown() || this.isShutdown ) {
+            /* Closing time */
+            this.isShutdown  = true;
+            this.currentCrumb = null;
+            mvpollNotifyObservers();
+            return Vector.ACTION_SHUTDOWN;
+        }
+
+        /* This determines whether to dequeue from relay, or to leave the crumb in the relay */
+        if ( currentCrumb == null ) {
+            /* Crumb was read out, it is a listeners responsibility now, dequeue it from the relay */
+            return Vector.ACTION_DEQUEUE;
+        }
+
+        /* Crumb hasn't been processed yet, it must be stay inside of the relay */
+        this.currentCrumb = null;
+        return Vector.ACTION_NOTHING;
+    }
+
+    /**
+     * somewhat deprecated, but still used
+     */
+    public int numEvents()
+    {
+        return ( currentCrumb == null ) ? 1 : 0;
     }
     
     /** 
@@ -75,7 +163,7 @@ public class IncomingSocketQueue extends Sink implements SocketQueue
      */
     public Crumb peek()
     {
-        return (Crumb)sq.eventList.getFirst();
+        return currentCrumb;
     }
 
     /**
@@ -89,10 +177,10 @@ public class IncomingSocketQueue extends Sink implements SocketQueue
             Vector.logDebug( "reset(" + this + ")" );
 
         /* Clear everything in the event list */
-        isReset = true;
-        sq.eventList.clear();
-        sq.isShutdown = true;
-        sq.notifyMvpoll();
+        isReset      = true;
+        currentCrumb = null;
+        isShutdown   = true;
+        mvpollNotifyObservers();
     }
     
     /**
@@ -101,7 +189,7 @@ public class IncomingSocketQueue extends Sink implements SocketQueue
      */
     public boolean isClosed()
     {
-        return isClosed;
+        return isShutdown;
     }
 
     /**
@@ -109,7 +197,7 @@ public class IncomingSocketQueue extends Sink implements SocketQueue
      */
     public boolean isEnabled()
     {
-        return sq.isEnabled;
+        return isEnabled;
     }
 
     /**
@@ -117,8 +205,8 @@ public class IncomingSocketQueue extends Sink implements SocketQueue
      */
     public void disable()
     {
-        sq.isEnabled = false;
-        sq.notifyMvpoll();
+        isEnabled = false;
+        mvpollNotifyObservers();
     }
     
     /**
@@ -126,43 +214,10 @@ public class IncomingSocketQueue extends Sink implements SocketQueue
      */
     public void enable()
     {
-        sq.isEnabled = true;
-        sq.notifyMvpoll();
+        isEnabled = true;
+        mvpollNotifyObservers();
     }
     
-    protected int send_event( Crumb crumb )
-    {
-        sq.add( crumb );
-        
-        if ( crumb.isShutdown()) {
-            /* XXX FIXME THIS WON'T WORK IF SOCKET QUEUE SIZE IS GREATER THAN 1 */
-            sq.eventList.clear();
-            sq.callListenersRemove();
-            return Vector.ACTION_SHUTDOWN;
-        }
-
-        if ( !sq.isEmpty()) {
-            if ( Vector.isDebugEnabled()) {
-                if ( crumb.isData()) {
-                    DataCrumb dc = (DataCrumb)crumb;
-                    Vector.logDebug( "Put data crumb " + crumb + "(" + dc.offset() + "," + dc.limit() + 
-                                     ") back in relay from IncomingSocketQueue: " + this +
-                                     " queue size:" + sq.eventList.size());
-                } else {
-                    Vector.logDebug( "Put non-data crumb " + crumb +
-                                     "back in relay from IncomingSocketQueue: " + this +
-                                     " queue size:" + sq.eventList.size());
-                }
-            }
-            
-            /* XXX FIXME THIS WON'T WORK IF SOCKET QUEUE SIZE IS GREATER THAN 1 */
-            sq.removeFirst();
-            return Vector.ACTION_NOTHING;
-        }
-        
-        return Vector.ACTION_DEQUEUE;
-    }
-
     protected int shutdown() 
     {
         /**
@@ -170,7 +225,9 @@ public class IncomingSocketQueue extends Sink implements SocketQueue
          * notified them yet, this is at expiration time, the session is dead,
          * and you must use an expired session crumb 
          */
-        if ( !isClosed ) sq.add( ShutdownCrumb.getInstanceExpired());
+        if ( !isShutdown ) {
+            send_event( ShutdownCrumb.getInstanceExpired());
+        }
 
         return 0;
     }
@@ -180,95 +237,73 @@ public class IncomingSocketQueue extends Sink implements SocketQueue
      */
     public void kill()
     {
-        isClosed = true;
-        sq.isShutdown = true;
-        isKilled = true;
+        this.isShutdown = true;
+        this.isKilled   = true;
         
         /* Deregister all listeners */
-        sq.listeners.clear();
+        this.currentCrumb = null;
         
-        sq.notifyMvpoll();
+        mvpollNotifyObservers();
     }
 
-    protected native int create();
-    protected static native int mvpollKey( int pointer );
-
-    public boolean isEmpty () { return sq.isEmpty(); } 
-
-    public boolean isFull () { return sq.isFull(); }
-
-    public boolean containsReset() { return sq.containsReset(); }
-
-    public boolean containsShutdown() { return sq.containsShutdown(); }
-
-    public int 	numEvents () { return sq.numEvents(); }
-
-    /* ??? Does this need to be in the SocketQueue interface */
-    public void maxEvents( int n ) { sq.maxEvents( n ); }
-
-    public void attach ( Object o ) { sq.attach( o ); }
-
-    public boolean add( Crumb crumb ) { return sq.add( crumb ); }
-
-    public Object attachment () { return sq.attachment(); }
-
-    public boolean registerListener( SocketQueueListener l ) { return sq.registerListener( l ); }
-
-    public boolean unregisterListener ( SocketQueueListener l ) { return sq.unregisterListener( l ); }
-    
-    public int poll() { return sq.poll(); }
-
-    private class ISocketQueue extends SocketQueueImpl
+    public boolean isEmpty () 
     {
-        protected boolean isEnabled  = true;
-        /* Once an Incoming Socket queue is shutdown, poll always returns
-         * MVPOLL_HUP */
-        protected boolean isShutdown = false;
-        
-        protected ISocketQueue( int mvpollKey )
-        {
-            super( mvpollKey );
-        }
+        return ( this.currentCrumb == null );
+    } 
 
-        public int poll()
-        {
-            int mask = 0;
-            
-            if ( isShutdown ) return MVPOLLHUP;
-            
-            if ( isEnabled && !this.isFull())
-                mask |= MVPOLLOUT;
-            
-            return mask;
-        }
-        
-        protected void callListenersAdd( Crumb crumb )
-        {
-            int poll;
-            boolean wasShutdown = isShutdown;
-
-            if ( crumb.isShutdown() ) isShutdown = true;
-            
-            notifyMvpoll();
-            
-            /* XXX FIXME THIS WON'T WORK IF SOCKET QUEUE SIZE IS GREATER THAN 1 */
-            if ( wasShutdown ) {
-                /* Clear out all of the events */
-                eventList.clear();
-            } else {
-                for (ListIterator iter = this.listeners.listIterator() ; iter.hasNext() ;) {
-                    SocketQueueListener ll = (SocketQueueListener) iter.next();
-                    ll.event( IncomingSocketQueue.this );
-                    /* If an exception killed the thread, don't finish iterating the list */
-                    if ( isKilled ) break;
-                }
-            }
-        }
-
-        protected void callListenersRemove()
-        {
-            notifyMvpoll();
-        }
+    public boolean isFull ()
+    {
+        return ( this.currentCrumb != null );
     }
+
+    public boolean containsReset()
+    { 
+        return this.containsReset; 
+    }
+
+    public boolean containsShutdown() 
+    { 
+        return containsShutdown;
+    }
+
+    public boolean containsTimeout()
+    {
+        return containsTimeout;
+    }
+
+    public void attach( Object o )
+    {
+        this.attachment = o;
+    }
+
+    public Object attachment()
+    {
+        return this.attachment;
+    }
+
+    public boolean registerListener( SocketQueueListener l )
+    {
+        return this.listeners.add( l );
+    }
+
+    public boolean unregisterListener( SocketQueueListener l )
+    { 
+        return this.listeners.remove( l ); 
+    }
+    
+    public int poll() { 
+        if ( isShutdown ) return Vector.MVPOLLHUP;
+        if ( isEnabled )  return Vector.MVPOLLOUT;
+        
+        return 0;
+    }
+    
+    private void mvpollNotifyObservers()
+    {
+       mvpollNotifyObservers( this.pointer, poll());
+    }
+    
+    private native int create();
+    private native void mvpollNotifyObservers( int pointer, int eventMask );
 }
 

@@ -19,7 +19,7 @@
 #include <vector/source.h>
 #include <vector/event.h>
 
-#define JV_EVENT_TYPE   ( 0xA34 | EVENT_TYPE_MASK )
+#define JV_EVENT_TYPE   ( 0xA34 & EVENT_TYPE_MASK )
 
 #define JV_KEY_TYPE     0x4321
 #define JV_UDP_KEY_TYPE 0x4322

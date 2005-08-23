@@ -234,7 +234,6 @@ int               jvector_load                ( JNIEnv* env )
         errlog( ERR_CRITICAL, "NewGlobalRef\n" );
         return JNI_ERR;
     }
-
    
     debug( 8, "JVECTOR: Loaded\n" );
 
@@ -609,8 +608,8 @@ static event_t*          _source_get_event    ( source_t* src )
     event_type = 0;
 
     switch ( type ) {
-    case JN_Crumb( TYPE_RESET ):                                      /*fallthrough*/
-    case JN_Crumb( TYPE_SHUTDOWN ): event_type = EVENT_BASE_SHUTDOWN; /*fallthrough*/
+    case JN_Crumb( TYPE_RESET ):    event_type |= EVENT_SHUTDOWN_ERROR_MASK; /*fallthrough*/
+    case JN_Crumb( TYPE_SHUTDOWN ): event_type |= EVENT_SHUTDOWN_MASK;       /*fallthrough*/
 
     case JN_Crumb( TYPE_UDP_PACKET ): /*fallthrough*/
     case JN_Crumb( TYPE_ICMP_PACKET ): /*fallthrough*/        

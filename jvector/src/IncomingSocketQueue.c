@@ -22,6 +22,8 @@
 #include <vector/source.h>
 #include <vector/sink.h>
 
+#include <jmvutil.h>
+
 
 #include "jvector.h"
 #include "jni_header.h"
@@ -54,15 +56,18 @@ JNIEXPORT jint JNICALL JF_IncomingSocketQueue( create )
 
 /*
  * Class:     IncomingSocketQueue
- * Method:    mvpollKey
- * Signature: (I)I
+ * Method:    mvpollNotifyObservers
+ * Signature: (II)V
  */
-JNIEXPORT jint JNICALL JF_IncomingSocketQueue( mvpollKey )
-  (JNIEnv* env, jclass _this, jint pointer )
+JNIEXPORT void JNICALL JF_IncomingSocketQueue( mvpollNotifyObservers )
+  (JNIEnv* env, jclass _this, jint pointer, jint eventmask )
 {
     jvector_sink_t* jv_snk = (jvector_sink_t*)pointer;
-    if ( jv_snk == NULL ) return (jint)errlogargs_null();
+    if (( jv_snk == NULL ) || ( jv_snk->key == NULL )) {
+        
+        return jmvutil_error_void( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "NULL sink or key" );
+    }
     
-    return (jint)jv_snk->key;
+    mvpoll_key_notify_observers( jv_snk->key, (eventmask_t)eventmask );
 }
 

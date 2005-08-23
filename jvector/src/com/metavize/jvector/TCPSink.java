@@ -6,13 +6,15 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: TCPSink.java,v 1.11 2005/01/30 00:07:38 rbscott Exp $
+ * $Id$
  */
 
 package com.metavize.jvector;
 
 public class TCPSink extends Sink
 {
+    static final int WRITE_RETURN_IGNORE = -3;
+
     protected SinkEndpointListener listener = null;
 
     public TCPSink( int fd )
@@ -64,7 +66,9 @@ public class TCPSink extends Sink
         numWritten = write( pointer, crumb.data(), offset, size );
 
         if ( numWritten < 0 ) {
-            Vector.logError( "TCP: Unable to write crumb" );
+            if ( numWritten != WRITE_RETURN_IGNORE ) {
+                Vector.logError( "TCP: Unable to write crumb" );
+            }
             return Vector.ACTION_SHUTDOWN;
         }
 

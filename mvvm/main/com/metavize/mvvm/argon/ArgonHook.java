@@ -437,7 +437,7 @@ abstract class ArgonHook implements Runnable
                 continue;
             }
             
-            session.serverIncomingSocketQueue.add( reset );
+            session.serverIncomingSocketQueue.send_event( reset );
 
             /* Make sure the guardian didn't leave a crumb in the queue */
             /* XXX Don't really need to do this */
