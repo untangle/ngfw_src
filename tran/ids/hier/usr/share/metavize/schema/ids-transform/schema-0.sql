@@ -12,6 +12,7 @@ create table settings.TR_IDS_VARIABLE (
 	VARIABLE_ID int8 not null,
 	VARIABLE varchar(512),
 	DEFINITION varchar(512),
+	DESCRIPTION varchar(1024),
 	SETTINGS_ID int8,
 	POSITION int4,
 	primary key (VARIABLE_ID));

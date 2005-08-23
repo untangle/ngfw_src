@@ -29,16 +29,16 @@ public class IDSRuleManager {
 	
 	public static List<IDSVariable> defaultVariables = new ArrayList<IDSVariable>(); 
 	static {
-		defaultVariables.add(new IDSVariable("$EXTERNAL_NET","!10.0.0.1/24"));
-		defaultVariables.add(new IDSVariable("$HOME_NET", "10.0.0.1/24"));
-		defaultVariables.add(new IDSVariable("$HTTP_PORTS", ":80"));
-		defaultVariables.add(new IDSVariable("$HTTP_SERVERS", "10.0.0.1/24"));
-		defaultVariables.add(new IDSVariable("$SMTP_SERVERS", "any"));
-		defaultVariables.add(new IDSVariable("$SSH_PORTS", "any"));
-		defaultVariables.add(new IDSVariable("$SQL_SERVERS", "any"));
-		defaultVariables.add(new IDSVariable("$TELNET_SERVERS", "any"));
-		defaultVariables.add(new IDSVariable("$ORACLE_PORTS", "any"));
-		defaultVariables.add(new IDSVariable("$AIM_SERVERS", "any"));
+		defaultVariables.add(new IDSVariable("$EXTERNAL_NET","!10.0.0.1/24","This is a description"));
+		defaultVariables.add(new IDSVariable("$HOME_NET", "10.0.0.1/24","This is a description"));
+		defaultVariables.add(new IDSVariable("$HTTP_PORTS", ":80","This is a description"));
+		defaultVariables.add(new IDSVariable("$HTTP_SERVERS", "10.0.0.1/24","This is a description"));
+		defaultVariables.add(new IDSVariable("$SMTP_SERVERS", "any","This is a description"));
+		defaultVariables.add(new IDSVariable("$SSH_PORTS", "any","This is a description"));
+		defaultVariables.add(new IDSVariable("$SQL_SERVERS", "any","This is a description"));
+		defaultVariables.add(new IDSVariable("$TELNET_SERVERS", "any","This is a description"));
+		defaultVariables.add(new IDSVariable("$ORACLE_PORTS", "any","This is a description"));
+		defaultVariables.add(new IDSVariable("$AIM_SERVERS", "any","This is a description"));
 	}
 																													
 	private static final Logger log = Logger.getLogger(IDSRuleManager.class);

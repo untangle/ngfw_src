@@ -18,19 +18,21 @@ public class IDSVariable implements Serializable {
 	private static final long serialVersionUID = -7777708957041660234L;
 	private String variable;
 	private String definition;
+	private String description;
 
 	/**
 	 * Hibernate constructor
 	 */
 	public IDSVariable() {}
 
-	public IDSVariable(String var, String def) {
+	public IDSVariable(String var, String def, String desc) {
 		
 		if(512 < var.length() || 512 < def.length())
 			throw new IllegalArgumentException("IDS Variable argument too long");
 
 		this.variable = var;
 		this.definition = def;
+		this.description = desc;
 	}
 	
 	/**
@@ -57,5 +59,14 @@ public class IDSVariable implements Serializable {
 
     public String getDefinition() { return this.definition; }
 	public void setDefinition(String s) { this.definition = s; }
+
+	/**
+	 * @hibernate.property
+	 * column="DESCRIPTION"
+	 * length="1024"
+	 */
+
+	public String getDescription() { return this.description; }
+	public void setDescription(String s) { this.description = s; }
 }
 		
