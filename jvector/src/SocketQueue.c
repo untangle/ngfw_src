@@ -27,8 +27,6 @@
 #include "jni_header.h"
 #include "jvector.h"
 
-#include JH_SocketQueue
-
 typedef struct sq_mvpoll_key {
     mvpoll_key_t key;
 
@@ -42,40 +40,6 @@ static eventmask_t   _poll_wrapper (mvpoll_key_t* key);
 
 static int  _sq_key_destroy ( mvpoll_key_t* key );
 
-static struct {
-    jmethodID poll;
-} _socket_queue = 
-{
-    .poll NULL
-};
-
-int socket_queue_init( JNIEnv* env )
-{       
-    if ( env == NULL ) return errlogargs();
-    
-    jclass cls    = (*env)->FindClass( env, "com/metavize/jvector/SocketQueue" );
-
-    _socket_queue.poll = (*env)->GetMethodID( env, cls, "poll", "()I" );
-
-    if ( _socket_queue.poll == NULL ) 
-        errlog( ERR_CRITICAL, "poll method ID not found\n" );
-    
-    return 0;
-}
-
-/*
- * Class:     SocketQueueImpl
- * Method:    mvpoll_key_notify_observers
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL JF_SocketQueue( mvpoll_1key_1notify_1observers )
-  ( JNIEnv* env, jobject _this, jint ptr, jint eventmask )
-{
-    mvpoll_key_notify_observers((mvpoll_key_t*)ptr,(eventmask_t)eventmask);
-
-    return 0;
-}
-
 static eventmask_t   _poll_wrapper (mvpoll_key_t* key)
 {
     sq_mvpoll_key_t* sq_key = (sq_mvpoll_key_t*)key;
@@ -86,8 +50,6 @@ static eventmask_t   _poll_wrapper (mvpoll_key_t* key)
 
     if ( env == NULL ) return errlog( ERR_CRITICAL, "jmvutil_get_java_env" );
 
-    /* XXX Probably should go back to the main cached method idz methods */
-    // mask = (eventmask_t)(*env)->CallIntMethod( env, key->data, _socket_queue.poll );
     mask = (eventmask_t)(*env)->CallIntMethod( env, sq_key->key.data, sq_key->mid.poll );
     
     if ( jmvutil_error_exception_clear() < 0 ) return errlog( ERR_CRITICAL, "Exception calling poll\n" );

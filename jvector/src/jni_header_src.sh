@@ -2,7 +2,7 @@
 
 ## first: element = c name or if no second, c and java name
 ## second: java name
-packages=( "Vector" "IncomingSocketQueue" "OutgoingSocketQueue" "TCPSink" "TCPSource" "SocketQueue SocketQueueImpl" "Relay" "Crumb" "Source" "Sink" "UDPSource" "UDPSink" )
+packages=( "Vector" "IncomingSocketQueue" "OutgoingSocketQueue" "TCPSink" "TCPSource" "Relay" "Crumb" "Source" "Sink" "UDPSource" "UDPSink" )
 package=$1
 
 c_package=${package//./_}

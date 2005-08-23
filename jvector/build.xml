@@ -58,7 +58,6 @@ $Id: build.xml,v 1.5 2005/03/22 01:27:49 inieves Exp $
   <target name="jni.jvector">
     <mkdir dir="${jni.dst.jvector}"/>
     <javah destdir="${jni.dst.jvector}" classpath="${build.jvector}">
-      <class name="com.metavize.jvector.SocketQueue"/>
       <class name="com.metavize.jvector.OutgoingSocketQueue"/>
       <class name="com.metavize.jvector.IncomingSocketQueue"/>
       <class name="com.metavize.jvector.Relay"/>
@@ -69,7 +68,6 @@ $Id: build.xml,v 1.5 2005/03/22 01:27:49 inieves Exp $
       <class name="com.metavize.jvector.TCPSource"/>
       <class name="com.metavize.jvector.UDPSource"/>
       <class name="com.metavize.jvector.UDPSink"/>
-      <class name="com.metavize.jvector.SocketQueueImpl"/>
       <class name="com.metavize.jvector.Crumb"/>
     </javah>
   </target>

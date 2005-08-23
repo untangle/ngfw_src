@@ -66,8 +66,6 @@ jvector_event_t*  jvector_event_malloc        ( void );
 int               jvector_event_init          ( jvector_event_t* snk );
 jvector_event_t*  jvector_event_create        ( void );
 
-int               socket_queue_init           ( JNIEnv* env );
-
 mvpoll_key_t*     socket_queue_key_malloc     ( void );
 int               socket_queue_key_init       ( mvpoll_key_t* key, jobject this );
 mvpoll_key_t*     socket_queue_key_create     ( jobject this );

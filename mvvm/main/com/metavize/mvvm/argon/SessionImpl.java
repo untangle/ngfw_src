@@ -17,12 +17,11 @@ import com.metavize.jnetcap.NetcapSession;
 
 import com.metavize.jvector.IncomingSocketQueue;
 import com.metavize.jvector.OutgoingSocketQueue;
-import com.metavize.jvector.SocketQueueShutdownHook;
 import com.metavize.jvector.ShutdownCrumb;
 import com.metavize.jvector.SocketQueueListener;
 import com.metavize.jvector.ResetCrumb;
 
-public abstract class SessionImpl implements Session, SocketQueueShutdownHook
+public abstract class SessionImpl implements Session
 {
     protected int maxInputSize  = 0;
     protected int maxOutputSize = 0;

@@ -11,50 +11,61 @@
 
 package com.metavize.jvector;
 
-import java.util.ListIterator;
+import java.util.List;
+import java.util.LinkedList;
 
-public class OutgoingSocketQueue extends Source implements SocketQueue
+public class OutgoingSocketQueue extends Source
 {
-    protected final OSocketQueue sq;
     /**
-     * This is a hook that is called after writing a shutdown crumb
+     * List of events to go out
      */
-    protected SocketQueueShutdownHook shutdownHook = null;
+    private final List<Crumb> eventList = new LinkedList<Crumb>();
+    
+    /**
+     * List of listeners
+     */
+    private final List<SocketQueueListener> listenerList = new LinkedList<SocketQueueListener>();
 
     /**
-     *  Closed relative to the Listeners
+     * The attachment
      */
-    protected boolean isListenersSideClosed = false;
+    private Object attachment = null;
+
+    /**
+     *  Closed relative to the listeners
+     */
+    private boolean isListenersSideClosed = false;
 
     /**
      * Closed relative to the relay, this occurs when a shutdown is read from the
      * relay
      */
-    protected boolean isRelaySideClosed = false;
+    private boolean isRelaySideClosed = false;
+    
+    private boolean isEnabled             = false;
+    private boolean containsReset         = false;
+    private boolean containsShutdown      = false;
+    
+    /* Max events is the capacity of the outgoing socket queue */
+    private int maxEvents = 1;
     
     public OutgoingSocketQueue()
     {
         pointer = create();
-        sq = new OSocketQueue( mvpollKey( pointer ));
-    }
-
-    /* Kind of no longer needed since IncomingSocketQueue implements SocketQueue */
-    public SocketQueue sq()
-    {
-        return sq;
     }
 
     protected Crumb get_event()
     {
-        if ( sq.isEmpty()) {
-            Vector.logError( "get_event without any data in the socket queue" );
+        if ( this.eventList.isEmpty()) {
+            Vector.logError( "get_event without any data in the OutgoingSocketQueue" );
 
             if ( isRelaySideClosed ) return ShutdownCrumb.getInstance();
                 
             throw new IllegalStateException( "get_event without any data in the socket queue" );
         }
 
-        Crumb crumb = (Crumb)sq.removeFirst();
+        Crumb crumb = eventList.remove( 0 );
+        callListenersRemove();
         
         if ( Vector.isDebugEnabled()) {
             if ( crumb.isData()) {
@@ -67,7 +78,7 @@ public class OutgoingSocketQueue extends Source implements SocketQueue
 
         if ( crumb.isShutdown()) {
             isRelaySideClosed = true;
-            sq.notifyMvpoll();
+            mvpollNotifyObservers();
         }
 
         return crumb;
@@ -90,11 +101,11 @@ public class OutgoingSocketQueue extends Source implements SocketQueue
         }
         if ( crumb.isShutdown()) {
             isListenersSideClosed = true;
-        } else if ( sq.isFull()) {
+        } else if ( isFull()) {
             Vector.logError( "Adding non-shutdown crumb to full socket" );
         }
 
-        return sq.add( crumb );
+        return add( crumb );
     }
    
     /** 
@@ -113,7 +124,7 @@ public class OutgoingSocketQueue extends Source implements SocketQueue
      */
     public boolean isEnabled()
     {
-        return sq.isEnabled;
+        return isEnabled;
     }
 
     /**
@@ -121,8 +132,8 @@ public class OutgoingSocketQueue extends Source implements SocketQueue
      */
     public void disable()
     {
-        sq.isEnabled = false;
-        sq.notifyMvpoll();
+        isEnabled = false;
+        mvpollNotifyObservers();
     }
 
     /**
@@ -130,8 +141,8 @@ public class OutgoingSocketQueue extends Source implements SocketQueue
      */
     public void enable()
     {
-        sq.isEnabled = true;
-        sq.notifyMvpoll();
+        isEnabled = true;
+        mvpollNotifyObservers();
     }
 
     /**
@@ -142,138 +153,161 @@ public class OutgoingSocketQueue extends Source implements SocketQueue
         isListenersSideClosed = true;
 
         /* Clear all of the elements in the event list */
-        sq.eventList.clear();
+        this.eventList.clear();
 
         /* Send a reset crumb down the line */
         if ( !isRelaySideClosed ) {
-            sq.add( ResetCrumb.getInstance());
+            add( ResetCrumb.getInstance());
         }
-    }
-
-    /**
-     * Register a hook to be called after writing a shutdown crumb.
-     */
-    public void registerShutdownHook( SocketQueueShutdownHook hook )
-    {
-        shutdownHook = hook; 
     }
 
     protected int shutdown() {
         isRelaySideClosed     = true;
 
         /* Clear all of the elements in the event list */
-        sq.eventList.clear();
+        this.eventList.clear();
 
         /* Call the shutdown hook */
-        for (ListIterator iter = sq.listeners.listIterator() ; iter.hasNext() ;) {
-            SocketQueueListener ll = (SocketQueueListener) iter.next();
-            ll.shutdownEvent( OutgoingSocketQueue.this );
+        
+        for ( SocketQueueListener listener : this.listenerList ) {
+            listener.shutdownEvent( this );
         }
 
         return 0;
     }
     
-    protected native int create();
-    protected static native int mvpollKey( int pointer );
+    public boolean isEmpty()
+    {
+        return this.eventList.isEmpty();
+    } 
 
-    public boolean isEmpty () { return sq.isEmpty(); } 
+    public boolean isFull()
+    {
+        return ( this.eventList.size() >= maxEvents );
+    }
 
-    public boolean isFull () { return sq.isFull(); }
+    public boolean containsReset()
+    {
+        return this.containsReset;
+    }
 
-    public boolean containsReset() { return sq.containsReset(); }
+    public boolean containsShutdown()
+    {
+        return this.containsShutdown; 
+    }
 
-    public boolean containsShutdown() { return sq.containsShutdown(); }
-
-    public int 	numEvents () { return sq.numEvents(); }
-
-    /**
-     * XXX This should go away
-     */
-    public int numBytes() 
-    { 
+    public int 	numEvents()
+    {
+        return eventList.size(); 
+    }
+    
+    public int numBytes()
+    {
         return -1;
     }
 
-    /* ??? Does this need to be in the SocketQueue interface */
-    public void maxEvents( int n ) { sq.maxEvents( n ); }
-
-    public void attach ( Object o ) { sq.attach( o ); }
-
-    public boolean add( Crumb crumb ) { return sq.add( crumb ); }
-
-    public Object attachment () { return sq.attachment(); }
-
-    public boolean registerListener( SocketQueueListener l ) { return sq.registerListener( l ); }
-
-    public boolean unregisterListener ( SocketQueueListener l ) { return sq.unregisterListener( l ); }
-
-    public int poll() { return sq.poll(); }
-
-    private class OSocketQueue extends SocketQueueImpl
+    public void maxEvents( int maxEvents )
     {
-        protected boolean isEnabled = true;
+        this.maxEvents = maxEvents;
+    }
+
+    public void attach( Object o )
+    {
+        this.attachment = o;
+    }
+
+    public Object attachment() { 
+        return this.attachment;
+    }
+
+    public boolean add( Crumb crumb )
+    {
+        switch( crumb.type()) {
+        case Crumb.TYPE_RESET:
+            containsShutdown = true;
+            containsReset   = true;
+            eventList.add( 0, crumb );
+            break;
+
+        case Crumb.TYPE_SHUTDOWN:
+            containsShutdown = true;
+
+            /* Fallthrough */
+        default:
+            eventList.add( crumb );
+        }
+       
+         /* Relay side was closed, but the transform is not aware yet */
+        if ( isRelaySideClosed ) {
+            /* Drop the buffer */
+            eventList.clear();
+        } else {
+            mvpollNotifyObservers();
+        }
+
+        return true;
+    }
+
+    public boolean registerListener( SocketQueueListener l )
+    {
+        return this.listenerList.add( l ); 
+    }
+
+    public boolean unregisterListener( SocketQueueListener l )
+    {
+        return this.listenerList.remove( l );
+    }
+
+    public int poll()
+    {
+        /* If the relay side is closed, always return HUP */
+        if ( isRelaySideClosed ) return Vector.MVPOLLHUP;
         
-        protected OSocketQueue( int mvpollKey )
-        {
-            super( mvpollKey );
-        }
-
-        public int poll()
-        {
-            /* If the relay side is closed, always return HUP */
-            if ( isRelaySideClosed ) return Vector.MVPOLLHUP;
+        if ( containsShutdown ) {
+            /* containsShutdown, doesn't matter if it is enabled, already shutdown */
             
-            if ( containsShutdown ) {
-                /* containsShutdown, doesn't matter if it is enabled, already shutdown */
-
-                /* If the event list is empty (shutdown already read), or the next event is
-                 * shutdown, return a HUP */
-                if ( eventList.isEmpty() || ((Crumb)(eventList.getFirst())).isShutdown()) {
-                    return Vector.MVPOLLHUP;
-                }
-                
-                /* More events, but not a shutdown */
-                return Vector.MVPOLLIN;
+            /* If the event list is empty (shutdown already read), or the next event is
+             * shutdown, return a HUP */
+            if ( eventList.isEmpty() || (eventList.get( 0 )).isShutdown()) {
+                return Vector.MVPOLLHUP;
             }
-
-            /* If enabled, and there are more events, then this is readable */
-            if ( isEnabled && !eventList.isEmpty())
-                return Vector.MVPOLLIN;
             
-            /* No events are ready right now */
-            return 0;
+            /* More events, but not a shutdown */
+            return Vector.MVPOLLIN;
         }
         
-        protected void callListenersAdd( Crumb crumb ) /* call Listeners Non Empty (readable) Event */
-        {
-            /* Relay side was closed, but the transform is not aware yet */
-            if ( isRelaySideClosed ) {
-                /* Drop the buffer */
-                eventList.clear();
-            } else {
-                notifyMvpoll();
-            }
-        }
+        /* If enabled, and there are more events, then this is readable */
+        if ( isEnabled && !eventList.isEmpty())
+            return Vector.MVPOLLIN;
+        
+        /* No events are ready right now */
+        return 0;
+    }
 
-        protected void callListenersRemove() /* call Listeners Non Full (writable) Event */
-        {
-            /**
-             * if it is still full after removing, neither mvpoll nor
-             * the listeners need to know because the state hasnt
-             * changed (its still not writable)
-             **/
-            if (isFull()) 
-                return;
-            
-            notifyMvpoll();
+    private void mvpollNotifyObservers()
+    {
+       mvpollNotifyObservers( this.pointer, poll());
+    }
 
-            /** Only call the listeners if there side is open */
-            if ( !isListenersSideClosed ) {
-                for (ListIterator iter = this.listeners.listIterator() ; iter.hasNext() ;) {
-                    SocketQueueListener ll = (SocketQueueListener) iter.next();
-                    ll.event( OutgoingSocketQueue.this );
-                }
+    private void callListenersRemove() /* call Listeners Non Full (writable) Event */
+    {
+        /**
+         * if it is still full after removing, neither mvpoll nor
+         * the listeners need to know because the state hasnt
+         * changed (its still not writable)
+         **/
+        if ( isFull()) return;
+        
+        mvpollNotifyObservers();
+        
+        /** Only call the listeners if there side is open */
+        if ( !isListenersSideClosed ) {
+            for ( SocketQueueListener listener : this.listenerList ) {
+                listener.event( OutgoingSocketQueue.this );
             }
         }
     }
+
+    private native int create();
+    private native void mvpollNotifyObservers( int pointer, int eventMask );
 }

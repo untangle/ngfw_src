@@ -56,8 +56,6 @@ JNIEXPORT jint JNICALL JF_Vector( cLoad )
 {    
     if ( jvector_load( env ) < 0 ) return errlog( ERR_CRITICAL, "jvector_load\n" );
     
-    if ( socket_queue_init( env ) < 0 ) return errlog( ERR_CRITICAL, "socket_queue_init\n" );
-
     return 0;
 }
 

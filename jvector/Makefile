@@ -28,8 +28,7 @@ c_src=SocketQueue.c OutgoingSocketQueue.c IncomingSocketQueue.c \
 
 objects=$(c_src:.c=.o) jvector.o
 
-java_src=SocketQueue.java IncomingSocketQueue.java SocketQueueImpl.java \
-	 OutgoingSocketQueue.java Relay.java \
+java_src=IncomingSocketQueue.java OutgoingSocketQueue.java Relay.java \
 	 Vector.java TCPSink.java TCPSource.java \
          DataCrumb.java Crumb.java ShutdownCrumb.java ResetCrumb.java \
 	 SocketQueueListener.java Sink.java Source.java UDPSource.java UDPSink.java \

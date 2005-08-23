@@ -24,13 +24,10 @@
 
 #include <jmvutil.h>
 
-
 #include "jvector.h"
 #include "jni_header.h"
 
-#include JH_SocketQueue
 #include JH_IncomingSocketQueue
-
 
 /*
  * Class:     IncomingSocketQueue
@@ -63,8 +60,8 @@ JNIEXPORT void JNICALL JF_IncomingSocketQueue( mvpollNotifyObservers )
   (JNIEnv* env, jclass _this, jint pointer, jint eventmask )
 {
     jvector_sink_t* jv_snk = (jvector_sink_t*)pointer;
+    
     if (( jv_snk == NULL ) || ( jv_snk->key == NULL )) {
-        
         return jmvutil_error_void( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "NULL sink or key" );
     }
     

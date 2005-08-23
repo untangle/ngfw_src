@@ -509,17 +509,17 @@ static int  _vector_handle_src_error_event    ( vector_t* vec, relay_t* relay )
     if ( evt == NULL || !event_is_shutdown( evt->type )) {
         mvpoll_key_t* key;
         int key_type;
-
+        
+        /* This check guarantees that a NULL key is not dereferenced */
         if (( key = relay->src->get_event_key( relay->src )) == NULL ) {
-            /* This check just guarantees that the a NULL key is not dereferenced */
             errlog( ERR_WARNING, "VECTOR(%08x): Null key\n", vec );
-            key_type = 0x1234;
+            key_type = 0xDEAD;
         } else {
             key_type = key->type;
         }
         
         if (evt == NULL) {
-            errlog( ERR_WARNING, "VECTOR(%08x): ERR without a shutdown event (event is NULL/0x%08x)\n", 
+            errlog( ERR_WARNING, "VECTOR(%08x): ERR without a shutdown event (event NULL/%08x)\n", 
                     vec, key_type );
         } else {
             errlog( ERR_WARNING, "VECTOR(%08x): ERR without a shutdown event (event type: %08x/%08x)\n",
@@ -556,11 +556,24 @@ static int  _vector_handle_src_shutdown_event ( vector_t* vec, relay_t* relay )
 
     /* This must be a shutdown event */
     if (( evt == NULL ) || !event_is_shutdown( evt->type )) {
-        if (evt == NULL) {
-            errlog( ERR_WARNING, "VECTOR(%08x): HUP without a shutdown event (event is NULL)\n", vec);
+        mvpoll_key_t* key;
+        int key_type;
+
+        /* This check guarantees that a NULL key is not dereferenced */
+        if (( key = relay->src->get_event_key( relay->src )) == NULL ) {
+            /* This check just guarantees that the a NULL key is not dereferenced */
+            errlog( ERR_WARNING, "VECTOR(%08x): Null key\n", vec );
+            key_type = 0xDEAD;
         } else {
-            errlog( ERR_WARNING, "VECTOR(%08x): HUP without a shutdown event (event type: %08x) \n", vec, 
-                    evt->type );
+            key_type = key->type;
+        }
+
+        if (evt == NULL) {
+            errlog( ERR_WARNING, "VECTOR(%08x): HUP without a shutdown event (event NULL/%08x)\n", 
+                    vec, key_type );
+        } else {
+            errlog( ERR_WARNING, "VECTOR(%08x): HUP without a shutdown event (event type: %08x/%08x)\n", 
+                    vec, evt->type, key_type );
         
             /* Free the event */
             evt->raze( evt );

@@ -11,7 +11,6 @@
 
 package com.metavize.jvector;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.LinkedList;
 
@@ -63,7 +62,7 @@ public class IncomingSocketQueue extends Sink
     private Crumb currentCrumb;
     
     // List of listeners
-    private final List listeners = new LinkedList<SocketQueueListener>();
+    private final List<SocketQueueListener> listenerList = new LinkedList<SocketQueueListener>();
         
     public IncomingSocketQueue()
     {
@@ -122,9 +121,8 @@ public class IncomingSocketQueue extends Sink
 
         this.currentCrumb = crumb;
         
-        for ( Iterator<SocketQueueListener> iter = this.listeners.iterator() ; iter.hasNext() ; ) {
-            SocketQueueListener ll = iter.next();
-            ll.event( this );
+        for ( SocketQueueListener listener : this.listenerList ) {
+            listener.event( this );
 
             /* If an exception killed the thread, don't finish iterating the list */
             if ( isKilled ) break;
@@ -283,12 +281,12 @@ public class IncomingSocketQueue extends Sink
 
     public boolean registerListener( SocketQueueListener l )
     {
-        return this.listeners.add( l );
+        return this.listenerList.add( l );
     }
 
     public boolean unregisterListener( SocketQueueListener l )
     { 
-        return this.listeners.remove( l ); 
+        return this.listenerList.remove( l ); 
     }
     
     public int poll() { 
