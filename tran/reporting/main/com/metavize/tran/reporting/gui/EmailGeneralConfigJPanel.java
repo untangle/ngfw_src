@@ -49,7 +49,7 @@ class EmailGeneralTableModel extends MSortedTableModel{
     private static final int C1_MW = Util.LINENO_MIN_WIDTH; /* # - invisible */
     private static final int C2_MW = 200; /* setting name */
     private static final int C3_MW = 215; /* setting value */
-    private static final int C4_MW = Util.chooseMax(T_TW - (C0_MW + C1_MW + C2_MW + C3_MW), 120); /* description */
+    private static final int C4_MW = Util.chooseMax(T_TW - (C0_MW + C2_MW + C3_MW), 120); /* description */
 
     
     public TableColumnModel getTableColumnModel(){
@@ -84,16 +84,18 @@ class EmailGeneralTableModel extends MSortedTableModel{
     public Vector generateRows(Object settings){
 	MailSettings mailSettings = Util.getAdminManager().getMailSettings();
         Vector allRows = new Vector(1);
-        Vector tempRowVector;
+	int rowIndex = 0;
+        Vector tempRow;
 
         // outgoing mail server
-        tempRowVector = new Vector(4);
-        tempRowVector.add(super.ROW_SAVED);
-        tempRowVector.add(new Integer(1));
-        tempRowVector.add("outgoing email server");
-        tempRowVector.add( mailSettings.getSmtpHost() );
-        tempRowVector.add("An SMTP email host (either IP address or hostname), which is required to send internal report emails.");
-        allRows.add( tempRowVector );
+	rowIndex++;
+        tempRow = new Vector(5);
+        tempRow.add( super.ROW_SAVED );
+        tempRow.add( rowIndex );
+        tempRow.add( "outgoing email server" );
+        tempRow.add( mailSettings.getSmtpHost() );
+        tempRow.add( "An SMTP email host (either IP address or hostname), which is required to send internal report emails." );
+        allRows.add( tempRow );
 
         return allRows;
     }

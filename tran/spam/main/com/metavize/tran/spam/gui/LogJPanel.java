@@ -30,15 +30,12 @@ public class LogJPanel extends MLogTableJPanel {
     }
 
     public Vector generateRows(Object settings){
-
         List<SpamLog> requestLogList = (List<SpamLog>) ((SpamTransform)super.logTransform).getEventLogs(depthJSlider.getValue());
         Vector allEvents = new Vector();
-
-        Vector test = new Vector();
-        Vector event;
+        Vector event = null;
 
         for( SpamLog requestLog : requestLogList ){
-            event = new Vector();
+            event = new Vector(9);
             event.add( requestLog.getTimeStamp() );
 	    event.add( requestLog.getAction().toString() );
             event.add( requestLog.getClientAddr() + ":" + ((Integer)requestLog.getClientPort()).toString() );

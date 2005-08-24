@@ -68,6 +68,7 @@ class ImapTableModel extends MSortedTableModel{
         addTableColumn( tableColumnModel,  4, C4_MW, false, true,  false, false, ComboBoxModel.class,  null, sc.html("scan<br>strength"));
         addTableColumn( tableColumnModel,  5, C5_MW, false, true,  false, false, ComboBoxModel.class,  null, sc.html("action if<br>SPAM detected"));
         addTableColumn( tableColumnModel,  6, C6_MW, true,  true,  false, true,  String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
+        addTableColumn( tableColumnModel,  7, 10,    false, false, true,  false, SpamIMAPConfig.class,  null, "");
         return tableColumnModel;
     }
 
@@ -79,8 +80,7 @@ class ImapTableModel extends MSortedTableModel{
 	SpamIMAPConfig spamIMAPConfigOutbound = null;
 
 	for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
-
-            SpamIMAPConfig spamIMAPConfig = new SpamIMAPConfig();
+            SpamIMAPConfig spamIMAPConfig = (SpamIMAPConfig) rowVector.elementAt(7);
             spamIMAPConfig.setScan( (Boolean) rowVector.elementAt(3) );
 	    String strengthString = (String) ((ComboBoxModel)rowVector.elementAt(4)).getSelectedItem();
 	    spamIMAPConfig.setStrengthByName( strengthString );
@@ -109,13 +109,15 @@ class ImapTableModel extends MSortedTableModel{
 
     public Vector generateRows(Object settings) {
         SpamSettings spamSettings = (SpamSettings) settings;
-        Vector allRows = new Vector();
+        Vector allRows = new Vector(2);
+	int rowIndex = 0;
 
 	// INBOUND
-	Vector inboundRow = new Vector();
+	rowIndex++;
+	Vector inboundRow = new Vector(8);
         SpamIMAPConfig spamIMAPConfigInbound = spamSettings.getIMAPInbound();
         inboundRow.add( super.ROW_SAVED );
-        inboundRow.add( new Integer(1) );
+        inboundRow.add( rowIndex );
         inboundRow.add( SOURCE_INBOUND );
         inboundRow.add( spamIMAPConfigInbound.getScan() );
 	ComboBoxModel inboundStrengthComboBoxModel = super.generateComboBoxModel( SpamIMAPConfig.getScanStrengthEnumeration(), spamIMAPConfigInbound.getStrengthByName());
@@ -123,13 +125,15 @@ class ImapTableModel extends MSortedTableModel{
         ComboBoxModel inboundActionComboBoxModel =  super.generateComboBoxModel( SpamMessageAction.getValues(), spamIMAPConfigInbound.getMsgAction() );
         inboundRow.add( inboundActionComboBoxModel );
         inboundRow.add( spamIMAPConfigInbound.getNotes() );
+	inboundRow.add( spamIMAPConfigInbound );
 	allRows.add(inboundRow);
 
 	// OUTBOUND
-	Vector outboundRow = new Vector();
+	rowIndex++;
+	Vector outboundRow = new Vector(8);
         SpamIMAPConfig spamIMAPConfigOutbound = spamSettings.getIMAPOutbound();
         outboundRow.add( super.ROW_SAVED );
-        outboundRow.add( new Integer(1) );
+        outboundRow.add( rowIndex );
         outboundRow.add( SOURCE_OUTBOUND );
         outboundRow.add( spamIMAPConfigOutbound.getScan() );
 	ComboBoxModel outboundStrengthComboBoxModel = super.generateComboBoxModel( SpamIMAPConfig.getScanStrengthEnumeration(), spamIMAPConfigOutbound.getStrengthByName());
@@ -137,6 +141,7 @@ class ImapTableModel extends MSortedTableModel{
         ComboBoxModel outboundActionComboBoxModel =  super.generateComboBoxModel( SpamMessageAction.getValues(), spamIMAPConfigOutbound.getMsgAction() );
         outboundRow.add( outboundActionComboBoxModel );
         outboundRow.add( spamIMAPConfigOutbound.getNotes() );
+	outboundRow.add( spamIMAPConfigOutbound );
 	allRows.add(outboundRow);
 
         return allRows;

@@ -97,71 +97,72 @@ class RedirectTableModel extends MSortedTableModel{
     
     
     public void generateSettings(Object settings, boolean validateOnly) throws Exception {                
-        List redirectRulesList = new ArrayList();
-        int rowIndex = 1;
-        for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
-            
-            RedirectRule redirectRule = (RedirectRule) rowVector.elementAt(14);
-            redirectRule.setLive( (Boolean) rowVector.elementAt(2) );
-            redirectRule.setLog( (Boolean) rowVector.elementAt(3) );
-            redirectRule.setProtocol( ProtocolMatcher.parse(((ComboBoxModel) rowVector.elementAt(4)).getSelectedItem().toString()) );
-            redirectRule.setDirection( ((ComboBoxModel) rowVector.elementAt(5)).getSelectedItem().toString() );
-            try{ redirectRule.setSrcAddress( IPMatcher.parse((String) rowVector.elementAt(6)) ); }
-            catch(Exception e){ throw new Exception("Invalid \"source address\" in row: " + rowIndex); }
-            try{ redirectRule.setDstAddress( IPMatcher.parse((String) rowVector.elementAt(7)) ); }
-            catch(Exception e){ throw new Exception("Invalid \"destination address\" in row: " + rowIndex); }
-            try{ redirectRule.setSrcPort( PortMatcher.parse((String) rowVector.elementAt(8)) ); }
-            catch(Exception e){ throw new Exception("Invalid \"source port\" in row: " + rowIndex); }
-            try{ redirectRule.setDstPort( PortMatcher.parse((String) rowVector.elementAt(9)) ); }
-            catch(Exception e){ throw new Exception("Invalid \"destination port\" in row: " + rowIndex); }
-            try{ redirectRule.setRedirectAddress((String) rowVector.elementAt(10)); }
-            catch(Exception e){ throw new Exception("Invalid \"redirect address\" in row: " + rowIndex); }
-            try{ redirectRule.setRedirectPort((String) rowVector.elementAt(11)); }
-            catch(Exception e){ throw new Exception("Invalid \"redirect port\" in row: " + rowIndex); }
-            redirectRule.setCategory( (String) rowVector.elementAt(12) );                
-            redirectRule.setDescription( (String) rowVector.elementAt(13) );
+        List elemList = new ArrayList();
+	RedirectRule newElem = null;
+        int rowIndex = 0;
 
-            /* For now, all redirects are destination redirects */
-            redirectRule.setDstRedirect( true );
-            redirectRulesList.add(redirectRule);
+        for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
             rowIndex++;
+            newElem = (RedirectRule) rowVector.elementAt(14);
+            newElem.setLive( (Boolean) rowVector.elementAt(2) );
+            newElem.setLog( (Boolean) rowVector.elementAt(3) );
+            newElem.setProtocol( ProtocolMatcher.parse(((ComboBoxModel) rowVector.elementAt(4)).getSelectedItem().toString()) );
+            newElem.setDirection( ((ComboBoxModel) rowVector.elementAt(5)).getSelectedItem().toString() );
+            try{ newElem.setSrcAddress( IPMatcher.parse((String) rowVector.elementAt(6)) ); }
+            catch(Exception e){ throw new Exception("Invalid \"source address\" in row: " + rowIndex); }
+            try{ newElem.setDstAddress( IPMatcher.parse((String) rowVector.elementAt(7)) ); }
+            catch(Exception e){ throw new Exception("Invalid \"destination address\" in row: " + rowIndex); }
+            try{ newElem.setSrcPort( PortMatcher.parse((String) rowVector.elementAt(8)) ); }
+            catch(Exception e){ throw new Exception("Invalid \"source port\" in row: " + rowIndex); }
+            try{ newElem.setDstPort( PortMatcher.parse((String) rowVector.elementAt(9)) ); }
+            catch(Exception e){ throw new Exception("Invalid \"destination port\" in row: " + rowIndex); }
+            try{ newElem.setRedirectAddress((String) rowVector.elementAt(10)); }
+            catch(Exception e){ throw new Exception("Invalid \"redirect address\" in row: " + rowIndex); }
+            try{ newElem.setRedirectPort((String) rowVector.elementAt(11)); }
+            catch(Exception e){ throw new Exception("Invalid \"redirect port\" in row: " + rowIndex); }
+            newElem.setCategory( (String) rowVector.elementAt(12) );                
+            newElem.setDescription( (String) rowVector.elementAt(13) );
+	    newElem.setDstRedirect( true );  // For now, all redirects are destination redirects
+
+            elemList.add(newElem);
         }
         
 	// SAVE SETTINGS ////////////
 	if( !validateOnly ){
 	    NatSettings natSettings = (NatSettings) settings;
-	    natSettings.setRedirectList(redirectRulesList);
+	    natSettings.setRedirectList( elemList );
 	}
     }
     
     
     public Vector generateRows(Object settings) {
         NatSettings natSettings = (NatSettings) settings;
-        Vector allRowsVector = new Vector();
-        int index = 1;
-        for( RedirectRule redirectRule : (List<RedirectRule>) natSettings.getRedirectList() ){
+        Vector allRows = new Vector();
+	Vector tempRow = null;
+        int rowIndex = 0;
 
-	    Vector rowVector = new Vector();
-	    rowVector.add(super.ROW_SAVED);
-	    rowVector.add(new Integer(index));
-	    rowVector.add(redirectRule.isLive());
-	    rowVector.add(redirectRule.getLog());
-	    rowVector.add(super.generateComboBoxModel( ProtocolMatcher.getProtocolEnumeration(), redirectRule.getProtocol().toString() ));
-	    rowVector.add(super.generateComboBoxModel( TrafficRule.getDirectionEnumeration(), redirectRule.getDirection().toString() ));
-	    rowVector.add(redirectRule.getSrcAddress().toString());
-	    rowVector.add(redirectRule.getDstAddress().toString());
-	    rowVector.add(redirectRule.getSrcPort().toString());
-	    rowVector.add(redirectRule.getDstPort().toString());
-	    rowVector.add(redirectRule.getRedirectAddressString().toString());
-	    rowVector.add(redirectRule.getRedirectPortString());
-	    rowVector.add(redirectRule.getCategory());
-	    rowVector.add(redirectRule.getDescription());
-	    rowVector.add(redirectRule);
-	    allRowsVector.add(rowVector);
-	    index++;
+        for( RedirectRule redirectRule : (List<RedirectRule>) natSettings.getRedirectList() ){
+	    rowIndex++;
+	    tempRow = new Vector(15);
+	    tempRow.add( super.ROW_SAVED );
+	    tempRow.add( rowIndex );
+	    tempRow.add( redirectRule.isLive() );
+	    tempRow.add( redirectRule.getLog() );
+	    tempRow.add( super.generateComboBoxModel( ProtocolMatcher.getProtocolEnumeration(), redirectRule.getProtocol().toString() ) );
+	    tempRow.add( super.generateComboBoxModel( TrafficRule.getDirectionEnumeration(), redirectRule.getDirection().toString() ) );
+	    tempRow.add( redirectRule.getSrcAddress().toString() );
+	    tempRow.add( redirectRule.getDstAddress().toString() );
+	    tempRow.add( redirectRule.getSrcPort().toString() );
+	    tempRow.add( redirectRule.getDstPort().toString() );
+	    tempRow.add( redirectRule.getRedirectAddressString().toString() );
+	    tempRow.add( redirectRule.getRedirectPortString() );
+	    tempRow.add( redirectRule.getCategory() );
+	    tempRow.add( redirectRule.getDescription() );
+	    tempRow.add( redirectRule );
+	    allRows.add( tempRow );
         }
 
-        return allRowsVector;
+        return allRows;
     }
     
 }

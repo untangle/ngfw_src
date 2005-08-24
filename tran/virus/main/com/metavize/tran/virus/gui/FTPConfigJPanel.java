@@ -63,6 +63,7 @@ class FTPTableModel extends MSortedTableModel{
         addTableColumn( tableColumnModel,  2, C2_MW, false, false, false, false, String.class,  null, "source");
         addTableColumn( tableColumnModel,  3, C3_MW, false, true,  false, false, Boolean.class, null, sc.bold("scan"));
         addTableColumn( tableColumnModel,  4, C4_MW, true,  true,  false, true,  String.class, sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION );
+        addTableColumn( tableColumnModel,  5, 10,    false, false, true,  false, VirusConfig.class, null, "" );
         return tableColumnModel;
     }
 
@@ -72,7 +73,7 @@ class FTPTableModel extends MSortedTableModel{
     public void generateSettings(Object settings, boolean validateOnly) throws Exception {
 	for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
 
-            VirusConfig virusConfig = new VirusConfig();            
+            VirusConfig virusConfig = (VirusConfig) rowVector.elementAt(5);
             virusConfig.setScan( (Boolean) rowVector.elementAt(3) );
             virusConfig.setNotes( (String) rowVector.elementAt(4) );
 
@@ -93,26 +94,31 @@ class FTPTableModel extends MSortedTableModel{
     
     public Vector generateRows(Object settings){
 	VirusSettings virusSettings = (VirusSettings) settings;
-	Vector allRows = new Vector();
+	Vector allRows = new Vector(2);
+	int rowIndex = 0;
 
-	// INBOUND 
-	Vector inboundRow = new Vector();
+	// INBOUND
+	rowIndex++;
+	Vector inboundRow = new Vector(6);
         VirusConfig virusInboundCtl  = virusSettings.getFtpInbound();
         inboundRow.add( super.ROW_SAVED );
-        inboundRow.add( new Integer(1) );
+        inboundRow.add( rowIndex );
         inboundRow.add( SOURCE_INBOUND );
         inboundRow.add( virusInboundCtl.getScan() );
         inboundRow.add( virusInboundCtl.getNotes() );
+	inboundRow.add( virusInboundCtl );
 	allRows.add(inboundRow);
 
 	// OUTBOUND
-	Vector outboundRow = new Vector();
+	rowIndex++;
+	Vector outboundRow = new Vector(6);
         VirusConfig virusOutboundCtl = virusSettings.getFtpOutbound();
         outboundRow.add( super.ROW_SAVED );
-        outboundRow.add( new Integer(2) );
+        outboundRow.add( rowIndex );
         outboundRow.add( SOURCE_OUTBOUND );
         outboundRow.add( virusOutboundCtl.getScan() );
         outboundRow.add( virusOutboundCtl.getNotes() );
+	outboundRow.add( virusOutboundCtl );
 	allRows.add(outboundRow);
 
         return allRows;

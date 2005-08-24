@@ -1,8 +1,14 @@
 /*
+ * Copyright (c) 2005 Metavize Inc.
+ * All rights reserved.
  *
+ * This software is the confidential and proprietary information of
+ * Metavize Inc. ("Confidential Information").  You shall
+ * not disclose such Confidential Information.
  *
- * Created on March 25, 2004, 6:11 PM
+ * $Id$
  */
+
 
 package com.metavize.tran.spam.gui;
 
@@ -64,6 +70,7 @@ class SmtpTableModel extends MSortedTableModel{
         addTableColumn( tableColumnModel,  5, C5_MW, false, true,  false, false, ComboBoxModel.class,  null, sc.html("action if<br>SPAM detected"));
         addTableColumn( tableColumnModel,  6, C6_MW, false, true,  false, false, ComboBoxModel.class,  null, sc.html("notification if<br>SPAM detected"));
         addTableColumn( tableColumnModel,  7, C7_MW, true,  true,  false, true,  String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
+        addTableColumn( tableColumnModel,  8, 10,    false, false, true,  false, SpamSMTPConfig.class, null, "");
         return tableColumnModel;
     }
 
@@ -75,8 +82,7 @@ class SmtpTableModel extends MSortedTableModel{
 	SpamSMTPConfig spamSMTPConfigOutbound = null;
 
 	for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
-
-            SpamSMTPConfig spamSMTPConfig = new SpamSMTPConfig();
+            SpamSMTPConfig spamSMTPConfig = (SpamSMTPConfig) rowVector.elementAt(8);
             spamSMTPConfig.setScan( (Boolean) rowVector.elementAt(3) );
 	    String strengthString = (String) ((ComboBoxModel)rowVector.elementAt(4)).getSelectedItem();
 	    spamSMTPConfig.setStrengthByName( strengthString );
@@ -108,13 +114,15 @@ class SmtpTableModel extends MSortedTableModel{
 
     public Vector generateRows(Object settings) {
         SpamSettings spamSettings = (SpamSettings) settings;
-        Vector allRows = new Vector();
+        Vector allRows = new Vector(2);
+	int rowIndex = 0;
 
 	// INBOUND
-	Vector inboundRow = new Vector();
+	rowIndex++;
+	Vector inboundRow = new Vector(9);
         SpamSMTPConfig spamSMTPConfigInbound = spamSettings.getSMTPInbound();
         inboundRow.add( super.ROW_SAVED );
-        inboundRow.add( new Integer(1) );
+        inboundRow.add( rowIndex );
         inboundRow.add( SOURCE_INBOUND );
         inboundRow.add( spamSMTPConfigInbound.getScan() );
 	ComboBoxModel inboundStrengthComboBoxModel = super.generateComboBoxModel( SpamSMTPConfig.getScanStrengthEnumeration(), spamSMTPConfigInbound.getStrengthByName());
@@ -124,13 +132,15 @@ class SmtpTableModel extends MSortedTableModel{
         ComboBoxModel inboundNotificationComboBoxModel = super.generateComboBoxModel( SMTPNotifyAction.getValues(), spamSMTPConfigInbound.getNotifyAction() );
         inboundRow.add( inboundNotificationComboBoxModel );
         inboundRow.add( spamSMTPConfigInbound.getNotes() );
+	inboundRow.add( spamSMTPConfigInbound );
 	allRows.add(inboundRow);
 
 	// OUTBOUND
-	Vector outboundRow = new Vector();
+	rowIndex++;
+	Vector outboundRow = new Vector(9);
         SpamSMTPConfig spamSMTPConfigOutbound = spamSettings.getSMTPOutbound();
         outboundRow.add( super.ROW_SAVED );
-        outboundRow.add( new Integer(1) );
+        outboundRow.add( rowIndex );
         outboundRow.add( SOURCE_OUTBOUND );
         outboundRow.add( spamSMTPConfigOutbound.getScan() );
 	ComboBoxModel outboundStrengthComboBoxModel = super.generateComboBoxModel( SpamSMTPConfig.getScanStrengthEnumeration(), spamSMTPConfigOutbound.getStrengthByName());
@@ -140,6 +150,7 @@ class SmtpTableModel extends MSortedTableModel{
         ComboBoxModel outboundNotificationComboBoxModel = super.generateComboBoxModel( SMTPNotifyAction.getValues(), spamSMTPConfigOutbound.getNotifyAction() );
         outboundRow.add( outboundNotificationComboBoxModel );
         outboundRow.add( spamSMTPConfigOutbound.getNotes() );
+	outboundRow.add( spamSMTPConfigOutbound );
 	allRows.add(outboundRow);
 
         return allRows;

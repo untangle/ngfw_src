@@ -69,19 +69,17 @@ class EmailTableModel extends MSortedTableModel{
     
     
     public void generateSettings(Object settings, boolean validateOnly) throws Exception {
-        // ArrayList elemList = new ArrayList();
 	StringBuilder elemList = new StringBuilder();
-	int rowIndex = 1;
-	for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
+	String newElem = null;
+	int rowIndex = 0;
 
-	    String newElem;
+	for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
+	    rowIndex++;
 	    newElem = ((String) rowVector.elementAt(2)).trim();
 
 	    if(rowIndex != 1)
 		elemList.append(", ");	    
 	    elemList.append(newElem);
-
-	    rowIndex++;
         }
 
 	// SAVE SETTINGS /////
@@ -97,15 +95,16 @@ class EmailTableModel extends MSortedTableModel{
 	String recipients = mailSettings.getReportEmail();
 	StringTokenizer recipientsTokenizer = new StringTokenizer(recipients, ",");
         Vector allRows = new Vector();
-        int count = 1;
-	while( recipientsTokenizer.hasMoreTokens() ){
-	    Vector row = new Vector();
-            row.add(super.ROW_SAVED);
-            row.add(new Integer(count));
-            row.add(recipientsTokenizer.nextToken().trim());
+	Vector tempRow = null;
+        int rowIndex = 0;
 
-            allRows.add(row);
-	    count++;
+	while( recipientsTokenizer.hasMoreTokens() ){
+	    rowIndex++;
+	    tempRow = new Vector(3);
+            tempRow.add( super.ROW_SAVED );
+            tempRow.add( rowIndex );
+            tempRow.add( recipientsTokenizer.nextToken().trim() );
+            allRows.add( tempRow );
 	}
         return allRows;
     }

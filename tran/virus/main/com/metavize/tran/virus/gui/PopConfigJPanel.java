@@ -60,6 +60,7 @@ class PopTableModel extends MSortedTableModel{
         addTableColumn( tableColumnModel,  3, C3_MW, false, true,  false, false, Boolean.class,  null, sc.bold("scan") );
         addTableColumn( tableColumnModel,  4, C4_MW, false, true,  false, false, ComboBoxModel.class,  null, sc.html("action if<br>Virus detected"));
         addTableColumn( tableColumnModel,  5, C5_MW, true,  true,  false, true,  String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
+        addTableColumn( tableColumnModel,  6, 10,    false, false, true,  false, VirusPOPConfig.class,  null, "");
         return tableColumnModel;
     }
 
@@ -71,8 +72,7 @@ class PopTableModel extends MSortedTableModel{
 	VirusPOPConfig virusPOPConfigOutbound = null;
 
 	for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
-
-            VirusPOPConfig virusPOPConfig = new VirusPOPConfig();
+            VirusPOPConfig virusPOPConfig = (VirusPOPConfig) rowVector.elementAt(6);
             virusPOPConfig.setScan( (Boolean) rowVector.elementAt(3) );
 	    String actionString = (String) ((ComboBoxModel)rowVector.elementAt(4)).getSelectedItem();
 	    VirusMessageAction messageAction = VirusMessageAction.getInstance( actionString );
@@ -99,30 +99,35 @@ class PopTableModel extends MSortedTableModel{
 
     public Vector generateRows(Object settings) {
         VirusSettings virusSettings = (VirusSettings) settings;
-        Vector allRows = new Vector();
+        Vector allRows = new Vector(2);
+	int rowIndex = 0;
 
 	// INBOUND
-	Vector inboundRow = new Vector();
+	rowIndex++;
+	Vector inboundRow = new Vector(7);
         VirusPOPConfig virusPOPConfigInbound = virusSettings.getPOPInbound();
         inboundRow.add( super.ROW_SAVED );
-        inboundRow.add( new Integer(1) );
+        inboundRow.add( rowIndex );
         inboundRow.add( SOURCE_INBOUND );
         inboundRow.add( virusPOPConfigInbound.getScan() );
         ComboBoxModel inboundActionComboBoxModel =  super.generateComboBoxModel( VirusMessageAction.getValues(), virusPOPConfigInbound.getMsgAction() );
         inboundRow.add( inboundActionComboBoxModel );
         inboundRow.add( virusPOPConfigInbound.getNotes() );
+	inboundRow.add( virusPOPConfigInbound );
 	allRows.add(inboundRow);
 
 	// OUTBOUND
-	Vector outboundRow = new Vector();
+	rowIndex++;
+	Vector outboundRow = new Vector(7);
         VirusPOPConfig virusPOPConfigOutbound = virusSettings.getPOPOutbound();
         outboundRow.add( super.ROW_SAVED );
-        outboundRow.add( new Integer(1) );
+        outboundRow.add( rowIndex );
         outboundRow.add( SOURCE_OUTBOUND );
         outboundRow.add( virusPOPConfigOutbound.getScan() );
         ComboBoxModel outboundActionComboBoxModel =  super.generateComboBoxModel( VirusMessageAction.getValues(), virusPOPConfigOutbound.getMsgAction() );
         outboundRow.add( outboundActionComboBoxModel );
         outboundRow.add( virusPOPConfigOutbound.getNotes() );
+	outboundRow.add( virusPOPConfigOutbound );
 	allRows.add(outboundRow);
 
         return allRows;

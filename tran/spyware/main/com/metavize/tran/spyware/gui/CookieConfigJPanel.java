@@ -75,11 +75,12 @@ class CookieTableModel extends MSortedTableModel{
     
     public void generateSettings(Object settings, boolean validateOnly) throws Exception {
         List elemList = new ArrayList();
-	for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
+	StringRule newElem = null;
 
-            StringRule newElem = (StringRule) rowVector.elementAt(5);
+	for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
+	    newElem = (StringRule) rowVector.elementAt(5);
             newElem.setString( (String) rowVector.elementAt(2) );
-            newElem.setLive( ((Boolean) rowVector.elementAt(3)).booleanValue() );
+            newElem.setLive( (Boolean) rowVector.elementAt(3) );
             newElem.setDescription( (String) rowVector.elementAt(4) );
             elemList.add(newElem);
         }
@@ -95,18 +96,19 @@ class CookieTableModel extends MSortedTableModel{
     public Vector generateRows(Object settings){
 	SpywareSettings spywareSettings = (SpywareSettings) settings;
         Vector allRows = new Vector();
-	int count = 1;
-	for( StringRule newElem : (List<StringRule>) spywareSettings.getCookieRules() ){
+	Vector tempRow = null;
+	int rowIndex = 0;
 
-            Vector row = new Vector();
-            row.add(super.ROW_SAVED);
-            row.add(new Integer(count));
-            row.add(newElem.getString());
-            row.add(Boolean.valueOf( newElem.isLive()));
-            row.add(newElem.getDescription());
-	    row.add(newElem);
-            allRows.add(row);
-	    count++;
+	for( StringRule newElem : (List<StringRule>) spywareSettings.getCookieRules() ){
+	    rowIndex++;
+	    tempRow = new Vector(6);
+            tempRow.add( super.ROW_SAVED );
+            tempRow.add( rowIndex );
+            tempRow.add( newElem.getString() );
+            tempRow.add( newElem.isLive() );
+            tempRow.add( newElem.getDescription() );
+	    tempRow.add( newElem );
+            allRows.add( tempRow );
         }
         return allRows;
     }  

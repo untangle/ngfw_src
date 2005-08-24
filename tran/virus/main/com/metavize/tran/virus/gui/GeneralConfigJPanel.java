@@ -51,7 +51,7 @@ class GeneralTableModel extends MSortedTableModel{
     private static final int C1_MW = Util.LINENO_MIN_WIDTH; /* # - invisible */
     private static final int C2_MW = 200; /* setting name */
     private static final int C3_MW = 200; /* setting value */
-    private static final int C4_MW = Util.chooseMax(T_TW - (C1_MW + C2_MW + C3_MW), 120); /* description */
+    private static final int C4_MW = Util.chooseMax(T_TW - (C0_MW + C2_MW + C3_MW), 120); /* description */
 
     
     public TableColumnModel getTableColumnModel(){
@@ -103,35 +103,39 @@ class GeneralTableModel extends MSortedTableModel{
     
     public Vector generateRows(Object settings){
 	VirusSettings virusSettings = (VirusSettings) settings;
-        Vector allRows = new Vector(8);
-        Vector tempRowVector;
+        Vector allRows = new Vector(3);
+        Vector tempRow = null;
+	int rowIndex = 0;
 
         // ftpDisableResume
-        tempRowVector = new Vector(4);
-        tempRowVector.add(super.ROW_SAVED);
-        tempRowVector.add(new Integer(1));
-        tempRowVector.add("disable FTP download resume");
-        tempRowVector.add( virusSettings.getFtpDisableResume() );
-        tempRowVector.add( "This setting specifies that if an FTP transfer has stopped or been blocked for some reason (perhaps a virus was detected), the transfer cannot be restarted from the middle where it was left off.  Allowing transfers to restart from the middle may allow unwanted traffic to enter the network." ); //virusSettings.getFtpDisableResumeDetails() );
-        allRows.add( tempRowVector );
+	rowIndex++;
+        tempRow = new Vector(5);
+        tempRow.add( super.ROW_SAVED );
+        tempRow.add( rowIndex );
+        tempRow.add( "disable FTP download resume" );
+        tempRow.add( virusSettings.getFtpDisableResume() );
+        tempRow.add( "This setting specifies that if an FTP transfer has stopped or been blocked for some reason (perhaps a virus was detected), the transfer cannot be restarted from the middle where it was left off.  Allowing transfers to restart from the middle may allow unwanted traffic to enter the network." ); //virusSettings.getFtpDisableResumeDetails() );
+        allRows.add( tempRow );
         
         // httpDisableResume
-        tempRowVector = new Vector(4);
-        tempRowVector.add(super.ROW_SAVED);
-        tempRowVector.add(new Integer(2));
-        tempRowVector.add("disable HTTP download resume");
-        tempRowVector.add( virusSettings.getHttpDisableResume() );
-        tempRowVector.add( "This setting specifies that if an HTTP transfer has stopped or been blocked for some reason (perhaps a virus was detected), the transfer cannot be restarted from the middle where it was left off.  Allowing transfers to restart from the middle may allow unwanted traffic to enter the network." ); //virusSettings.getHttpDisableResumeDetails() );
-        allRows.add( tempRowVector );
+	rowIndex++;
+        tempRow = new Vector(5);
+        tempRow.add( super.ROW_SAVED );
+        tempRow.add( rowIndex );
+        tempRow.add( "disable HTTP download resume" );
+        tempRow.add( virusSettings.getHttpDisableResume() );
+        tempRow.add( "This setting specifies that if an HTTP transfer has stopped or been blocked for some reason (perhaps a virus was detected), the transfer cannot be restarted from the middle where it was left off.  Allowing transfers to restart from the middle may allow unwanted traffic to enter the network." ); //virusSettings.getHttpDisableResumeDetails() );
+        allRows.add( tempRow );
         
         // tricklePercent
-        tempRowVector = new Vector(4);
-        tempRowVector.add(super.ROW_SAVED);
-        tempRowVector.add(new Integer(3));
-        tempRowVector.add("scan trickle rate (percent)");
-        tempRowVector.add( new SpinnerNumberModel( virusSettings.getTricklePercent(), 1, 99, 1) );
-        tempRowVector.add( "This setting specifies the rate the user will download a file (which is being scanned), relative to the rate the EdgeGuard is receiving the actual file." ); //virusSettings.getTricklePercentDetails() );
-        allRows.add( tempRowVector );
+	rowIndex++;
+        tempRow = new Vector(5);
+        tempRow.add( super.ROW_SAVED );
+        tempRow.add( rowIndex );
+        tempRow.add( "scan trickle rate (percent)" );
+        tempRow.add( new SpinnerNumberModel( virusSettings.getTricklePercent(), 1, 99, 1) );
+        tempRow.add( "This setting specifies the rate the user will download a file (which is being scanned), relative to the rate the EdgeGuard is receiving the actual file." ); //virusSettings.getTricklePercentDetails() );
+        allRows.add( tempRow );
 
         return allRows;
     }

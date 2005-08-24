@@ -77,46 +77,48 @@ class DnsAddressTableModel extends MSortedTableModel{
     
     public void generateSettings(Object settings, boolean validateOnly) throws Exception {
         NatSettings natSettings = (NatSettings) settings;        
-        List hostRulesList = new ArrayList();
-        int rowIndex = 1;
-        for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
+        List elemList = new ArrayList();
+	DnsStaticHostRule newElem = null;
+        int rowIndex = 0;
 
-            DnsStaticHostRule hostRule = (DnsStaticHostRule) rowVector.elementAt(6);
-            try{ hostRule.setHostNameList( HostNameList.parse( (String)rowVector.elementAt(2)) ); }
-            catch(Exception e){ throw new Exception("Invalid \"hostname\" in row: " + rowIndex); }
-            try{ hostRule.setStaticAddress( IPaddr.parse( (String)rowVector.elementAt(3)) ); }
-            catch(Exception e){ throw new Exception("Invalid \"IP address\" in row: " + rowIndex); }
-            hostRule.setCategory( (String) rowVector.elementAt(4) );
-            hostRule.setDescription( (String) rowVector.elementAt(5) );
-            hostRulesList.add(hostRule);
+        for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
 	    rowIndex++;
+            newElem = (DnsStaticHostRule) rowVector.elementAt(6);
+            try{ newElem.setHostNameList( HostNameList.parse( (String)rowVector.elementAt(2)) ); }
+            catch(Exception e){ throw new Exception("Invalid \"hostname\" in row: " + rowIndex); }
+            try{ newElem.setStaticAddress( IPaddr.parse( (String)rowVector.elementAt(3)) ); }
+            catch(Exception e){ throw new Exception("Invalid \"IP address\" in row: " + rowIndex); }
+            newElem.setCategory( (String) rowVector.elementAt(4) );
+            newElem.setDescription( (String) rowVector.elementAt(5) );
+            elemList.add(newElem);
         }
         
 	// SAVE SETTINGS ////////
 	if( !validateOnly ){
-	    natSettings.setDnsStaticHostList(hostRulesList);
+	    natSettings.setDnsStaticHostList( elemList );
 	}
     }
     
     
     public Vector generateRows(Object settings) {    
         NatSettings natSettings = (NatSettings) settings;
-        Vector allRowsVector = new Vector();
-        int count = 1;
-        for( DnsStaticHostRule hostRule : (List<DnsStaticHostRule>) natSettings.getDnsStaticHostList() ){
+        Vector allRows = new Vector();
+	Vector tempRow = null;
+	int rowIndex = 0;
 
-	    Vector rowVector = new Vector();
-	    rowVector.add(super.ROW_SAVED);
-	    rowVector.add(new Integer(count));
-	    rowVector.add(hostRule.getHostNameList().toString());
-	    rowVector.add(hostRule.getStaticAddress().toString());
-	    rowVector.add(hostRule.getCategory());
-	    rowVector.add(hostRule.getDescription());
-	    rowVector.add(hostRule);
-	    allRowsVector.add(rowVector);
-	    count++;
+        for( DnsStaticHostRule hostRule : (List<DnsStaticHostRule>) natSettings.getDnsStaticHostList() ){
+	    rowIndex++;
+	    tempRow = new Vector(7);
+	    tempRow.add( super.ROW_SAVED );
+	    tempRow.add( rowIndex );
+	    tempRow.add( hostRule.getHostNameList().toString() );
+	    tempRow.add( hostRule.getStaticAddress().toString() );
+	    tempRow.add( hostRule.getCategory() );
+	    tempRow.add( hostRule.getDescription() );
+	    tempRow.add( hostRule );
+	    allRows.add( tempRow);
         }
-        return allRowsVector;
+        return allRows;
     }
     
 }

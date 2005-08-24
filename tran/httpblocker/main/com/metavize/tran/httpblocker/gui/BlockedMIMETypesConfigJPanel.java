@@ -71,15 +71,15 @@ class MIMETypeTableModel extends MSortedTableModel{
 
     
     public void generateSettings(Object settings, boolean validateOnly) throws Exception{
-        List elemList = new ArrayList();        
+        List elemList = new ArrayList();
+	MimeTypeRule newElem = null;
+
 	for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
-            
-            MimeTypeRule newElem = (MimeTypeRule) rowVector.elementAt(5);
+            newElem = (MimeTypeRule) rowVector.elementAt(5);
             // newElem.setCategory( (String) rowVector.elementAt(2) );
-            newElem.setMimeType( new MimeType( (String)rowVector.elementAt(2) ));
-            newElem.setLive( ((Boolean) rowVector.elementAt(3)).booleanValue() );
-            newElem.setName( (String) rowVector.elementAt(4) );
-                                    
+            newElem.setMimeType( new MimeType( (String)rowVector.elementAt(2) ));  // MimeType is immutable, so we must create a new one
+            newElem.setLive( (Boolean) rowVector.elementAt(3) );
+            newElem.setName( (String) rowVector.elementAt(4) );                                    
             elemList.add(newElem);  
         }
         
@@ -94,19 +94,20 @@ class MIMETypeTableModel extends MSortedTableModel{
     public Vector generateRows(Object settings){
 	HttpBlockerSettings httpBlockerSettings = (HttpBlockerSettings) settings;
         Vector allRows = new Vector();
-        int counter = 1;
-	for( MimeTypeRule newElem : (List<MimeTypeRule>) httpBlockerSettings.getBlockedMimeTypes() ){
+	Vector tempRow = null;
+	int rowIndex = 0;
 
-            Vector row = new Vector();
-            row.add(super.ROW_SAVED);
-            row.add(new Integer(counter));
-            // row.add(newElem.getCategory());
-            row.add(newElem.getMimeType().getType());
-            row.add(Boolean.valueOf(newElem.isLive()));
-            row.add(newElem.getName());
-	    row.add(newElem);
-            allRows.add(row);
-            counter++;
+	for( MimeTypeRule newElem : (List<MimeTypeRule>) httpBlockerSettings.getBlockedMimeTypes() ){
+	    rowIndex++;
+	    tempRow = new Vector(6);
+            tempRow.add( super.ROW_SAVED );
+            tempRow.add( rowIndex );
+            // tempRow.add( newElem.getCategory() );
+            tempRow.add( newElem.getMimeType().getType() );
+            tempRow.add( newElem.isLive() );
+            tempRow.add( newElem.getName() );
+	    tempRow.add( newElem );
+            allRows.add( tempRow );
         }
         return allRows;
     }

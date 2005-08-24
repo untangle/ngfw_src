@@ -1,8 +1,14 @@
 /*
+ * Copyright (c) 2005 Metavize Inc.
+ * All rights reserved.
  *
+ * This software is the confidential and proprietary information of
+ * Metavize Inc. ("Confidential Information").  You shall
+ * not disclose such Confidential Information.
  *
- * Created on March 25, 2004, 6:11 PM
+ * $Id$
  */
+
 
 package com.metavize.tran.spam.gui;
 
@@ -62,6 +68,7 @@ class PopTableModel extends MSortedTableModel{
         addTableColumn( tableColumnModel,  4, C4_MW, false, true,  false, false, ComboBoxModel.class,  null, sc.html("scan<br>strength"));
         addTableColumn( tableColumnModel,  5, C5_MW, false, true,  false, false, ComboBoxModel.class,  null, sc.html("action if<br>SPAM detected"));
         addTableColumn( tableColumnModel,  6, C6_MW, true,  true,  false, true,  String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
+        addTableColumn( tableColumnModel,  7, 10,    false, false, true,  false, SpamPOPConfig.class, null, "");
         return tableColumnModel;
     }
 
@@ -73,8 +80,7 @@ class PopTableModel extends MSortedTableModel{
 	SpamPOPConfig spamPOPConfigOutbound = null;
 
 	for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
-
-            SpamPOPConfig spamPOPConfig = new SpamPOPConfig();
+            SpamPOPConfig spamPOPConfig = (SpamPOPConfig) rowVector.elementAt(7);
             spamPOPConfig.setScan( (Boolean) rowVector.elementAt(3) );
 	    String strengthString = (String) ((ComboBoxModel)rowVector.elementAt(4)).getSelectedItem();
 	    spamPOPConfig.setStrengthByName( strengthString );
@@ -103,13 +109,15 @@ class PopTableModel extends MSortedTableModel{
 
     public Vector generateRows(Object settings) {
         SpamSettings spamSettings = (SpamSettings) settings;
-        Vector allRows = new Vector();
+        Vector allRows = new Vector(2);
+	int rowIndex = 0;
 
 	// INBOUND
-	Vector inboundRow = new Vector();
+	rowIndex++;
+	Vector inboundRow = new Vector(8);
         SpamPOPConfig spamPOPConfigInbound = spamSettings.getPOPInbound();
         inboundRow.add( super.ROW_SAVED );
-        inboundRow.add( new Integer(1) );
+        inboundRow.add( rowIndex );
         inboundRow.add( SOURCE_INBOUND );
         inboundRow.add( spamPOPConfigInbound.getScan() );
 	ComboBoxModel inboundStrengthComboBoxModel = super.generateComboBoxModel( SpamPOPConfig.getScanStrengthEnumeration(), spamPOPConfigInbound.getStrengthByName());
@@ -117,13 +125,15 @@ class PopTableModel extends MSortedTableModel{
         ComboBoxModel inboundActionComboBoxModel =  super.generateComboBoxModel( SpamMessageAction.getValues(), spamPOPConfigInbound.getMsgAction() );
         inboundRow.add( inboundActionComboBoxModel );
         inboundRow.add( spamPOPConfigInbound.getNotes() );
+	inboundRow.add( spamPOPConfigInbound );
 	allRows.add(inboundRow);
 
 	// OUTBOUND
-	Vector outboundRow = new Vector();
+	rowIndex++;
+	Vector outboundRow = new Vector(8);
         SpamPOPConfig spamPOPConfigOutbound = spamSettings.getPOPOutbound();
         outboundRow.add( super.ROW_SAVED );
-        outboundRow.add( new Integer(1) );
+        outboundRow.add( rowIndex );
         outboundRow.add( SOURCE_OUTBOUND );
         outboundRow.add( spamPOPConfigOutbound.getScan() );
 	ComboBoxModel outboundStrengthComboBoxModel = super.generateComboBoxModel( SpamPOPConfig.getScanStrengthEnumeration(), spamPOPConfigOutbound.getStrengthByName());
@@ -131,6 +141,7 @@ class PopTableModel extends MSortedTableModel{
         ComboBoxModel outboundActionComboBoxModel =  super.generateComboBoxModel( SpamMessageAction.getValues(), spamPOPConfigOutbound.getMsgAction() );
         outboundRow.add( outboundActionComboBoxModel );
         outboundRow.add( spamPOPConfigOutbound.getNotes() );
+	outboundRow.add( spamPOPConfigOutbound );
 	allRows.add(outboundRow);
 
         return allRows;

@@ -72,15 +72,17 @@ class ProtoTableModel extends MSortedTableModel{
         addTableColumn( tableColumnModel,  5, C5_MW, false, true,  false, false, Boolean.class, "false", sc.bold("log"));
         addTableColumn( tableColumnModel,  6, C6_MW, true,  true,  false, true,  String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION );
         addTableColumn( tableColumnModel,  7, C7_MW, true,  true,  false, false, String.class,  sc.empty("no signature"), "signature");
-        addTableColumn( tableColumnModel,  8, 0,     false, false, true,  false, String.class,  tempPattern.getQuality(), "");
+        addTableColumn( tableColumnModel,  8, 10,    false, false, true,  false, String.class,  tempPattern.getQuality(), "");
         addTableColumn( tableColumnModel,  9, 10,    false, false, true,  false, ProtoFilterPattern.class, null, "");
         return tableColumnModel;
     }
     
     public void generateSettings(Object settings, boolean validateOnly) throws Exception{
         List elemList = new ArrayList();
+	ProtoFilterPattern newElem = null;
+
 	for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
-	    ProtoFilterPattern newElem = (ProtoFilterPattern) rowVector.elementAt(9);
+	    newElem = (ProtoFilterPattern) rowVector.elementAt(9);
             newElem.setCategory( (String) rowVector.elementAt(2) );
             newElem.setProtocol( (String) rowVector.elementAt(3) );
             newElem.setBlocked( (Boolean) rowVector.elementAt(4) );
@@ -94,7 +96,7 @@ class ProtoTableModel extends MSortedTableModel{
 	// SAVE SETTINGS ////////
 	if( !validateOnly ){
 	    ProtoFilterSettings transformSettings = (ProtoFilterSettings) settings;
-	    transformSettings.setPatterns(elemList);
+	    transformSettings.setPatterns( elemList );
 	}
 
     }
@@ -102,21 +104,23 @@ class ProtoTableModel extends MSortedTableModel{
     public Vector generateRows(Object settings){
 	ProtoFilterSettings protoFilterSettings = (ProtoFilterSettings) settings;
         Vector allRows = new Vector();
-        int count = 1;
+	Vector tempRow = null;
+	int rowIndex = 0;
+
 	for( ProtoFilterPattern newElem : (List<ProtoFilterPattern>) protoFilterSettings.getPatterns() ){
-            Vector row = new Vector();
-            row.add(super.ROW_SAVED);
-            row.add(new Integer(count));
-            row.add(newElem.getCategory());
-            row.add(newElem.getProtocol());
-            row.add(Boolean.valueOf(newElem.isBlocked()));
-            row.add(Boolean.valueOf(newElem.getLog()));
-            row.add(newElem.getDescription());
-            row.add(newElem.getDefinition());
-	    row.add(newElem.getQuality());
-	    row.add(newElem);
-            allRows.add(row);
-	    count++;
+	    rowIndex++;
+            tempRow = new Vector(10);
+            tempRow.add( super.ROW_SAVED );
+            tempRow.add( rowIndex );
+            tempRow.add( newElem.getCategory() );
+            tempRow.add( newElem.getProtocol() );
+            tempRow.add( newElem.isBlocked() );
+            tempRow.add( newElem.getLog() );
+            tempRow.add( newElem.getDescription() );
+            tempRow.add( newElem.getDefinition() );
+	    tempRow.add( newElem.getQuality() );
+	    tempRow.add( newElem );
+            allRows.add( tempRow );
         }
         return allRows;
     }

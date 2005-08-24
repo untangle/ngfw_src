@@ -854,45 +854,48 @@ class UpgradeTableModel extends MSortedTableModel {
 
     public Vector generateRows(Object settings){
 	ToolboxManager toolboxManager = (ToolboxManager) settings;
-        MackageDesc[] mackageDesc = toolboxManager.upgradable();
-        Vector dataVector = new Vector();
-	int index = 0;
-        Vector rowVector;
-        for(int i=0; i<mackageDesc.length; i++){
-            if( mackageDesc[i].getType() == MackageDesc.CASING_TYPE )
+        MackageDesc[] mackageDescs = toolboxManager.upgradable();
+        Vector allRows = new Vector();
+	Vector tempRow = null;
+	int rowIndex = 0;
+
+        for( MackageDesc mackageDesc : mackageDescs ){
+            if( mackageDesc.getType() == MackageDesc.CASING_TYPE )
                 continue;
 	    try{
-		index++;
-		rowVector = new Vector();
-		rowVector.add( new Integer(index) );
+		rowIndex++;
+		tempRow = new Vector(7);
+		tempRow.add( rowIndex );
 		
-		byte[] orgIcon = mackageDesc[i].getOrgIcon();
-		byte[] descIcon = mackageDesc[i].getDescIcon();
+		byte[] orgIcon = mackageDesc.getOrgIcon();
+		byte[] descIcon = mackageDesc.getDescIcon();
 		if( orgIcon != null)
-		    rowVector.add( new ImageIcon(orgIcon) );
+		    tempRow.add( new ImageIcon(orgIcon) );
 		else
-		    rowVector.add( new ImageIcon(getClass().getResource("/com/metavize/gui/transform/IconOrgUnknown42x42.png"))) ;
+		    tempRow.add( new ImageIcon(getClass().getResource("/com/metavize/gui/transform/IconOrgUnknown42x42.png"))) ;
 		
 		if( descIcon != null)
-		    rowVector.add( new ImageIcon(descIcon) );
+		    tempRow.add( new ImageIcon(descIcon) );
 		else
-		    rowVector.add( new ImageIcon(getClass().getResource("/com/metavize/gui/transform/IconDescUnknown42x42.png"))) ;
+		    tempRow.add( new ImageIcon(getClass().getResource("/com/metavize/gui/transform/IconDescUnknown42x42.png"))) ;
 		
-		rowVector.add( new String(mackageDesc[i].getDisplayName()) );
-		rowVector.add( new String(mackageDesc[i].getAvailableVersion()) );
-		if( mackageDesc[i].getType() == 0 )
-		    rowVector.add( "System Component" );
+		tempRow.add( mackageDesc.getDisplayName() );
+		tempRow.add( mackageDesc.getAvailableVersion() );
+		if( mackageDesc.getType() == MackageDesc.SYSTEM_TYPE )
+		    tempRow.add( "System Component" );
+		else if( mackageDesc.getType() == MackageDesc.TRANSFORM_TYPE )
+		    tempRow.add( "Software Appliance" );
 		else
-		    rowVector.add( "Software Appliance" );
-		rowVector.add( new String(Integer.toString(mackageDesc[i].getSize()/1000) + " kB") );
-		rowVector.add( new String(mackageDesc[i].getLongDescription()) );
-		dataVector.add(rowVector);
+		    tempRow.add( "Unknown" );
+		tempRow.add( Integer.toString(mackageDesc.getSize()/1000) + " kB" );
+		tempRow.add( mackageDesc.getLongDescription() );
+		allRows.add( tempRow );
 	    }
 	    catch(Exception e){
 		e.printStackTrace();
 	    }
         }
-        return dataVector;
+        return allRows;
     }
 
 

@@ -76,12 +76,13 @@ class MIMETableModel extends MSortedTableModel{
 
     public void generateSettings(Object settings, boolean validateOnly) throws Exception {
         List elemList = new ArrayList();
-	for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
+	MimeTypeRule newElem = null;
 
-            MimeTypeRule newElem = (MimeTypeRule) rowVector.elementAt(5);
-            newElem.setMimeType( new MimeType( (String)rowVector.elementAt(2) ) );
-            newElem.setLive( (Boolean)rowVector.elementAt(3)  );
-            newElem.setName( (String)rowVector.elementAt(4) );
+	for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
+            newElem = (MimeTypeRule) rowVector.elementAt(5);
+            newElem.setMimeType( new MimeType( (String)rowVector.elementAt(2) ) ); // new because MimeType is immutable
+            newElem.setLive( (Boolean) rowVector.elementAt(3)  );
+            newElem.setName( (String) rowVector.elementAt(4) );
             elemList.add(newElem);
         }
 
@@ -96,18 +97,19 @@ class MIMETableModel extends MSortedTableModel{
     public Vector generateRows(Object settings){
         VirusSettings virusSettings = (VirusSettings) settings;
         Vector allRows = new Vector();
-        int counter = 1;
-	for( MimeTypeRule newElem : (List<MimeTypeRule>) virusSettings.getHttpMimeTypes() ){
+	Vector tempRow = null;
+	int rowIndex = 0;
 
-            Vector newRow = new Vector();
-            newRow.add( super.ROW_SAVED );
-            newRow.add( new Integer(counter) );
-            newRow.add( newElem.getMimeType().getType() );
-            newRow.add( newElem.isLive() );
-            newRow.add( newElem.getName() );
-	    newRow.add( newElem );
-            allRows.add( newRow );
-            counter++;
+	for( MimeTypeRule newElem : (List<MimeTypeRule>) virusSettings.getHttpMimeTypes() ){
+	    rowIndex++;
+            tempRow = new Vector(6);
+            tempRow.add( super.ROW_SAVED );
+	    tempRow.add( rowIndex );
+            tempRow.add( newElem.getMimeType().getType() );
+            tempRow.add( newElem.isLive() );
+            tempRow.add( newElem.getName() );
+	    tempRow.add( newElem );
+            allRows.add( tempRow );
         }
 
         return allRows;

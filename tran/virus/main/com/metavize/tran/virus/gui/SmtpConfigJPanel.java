@@ -69,6 +69,7 @@ class SmtpTableModel extends MSortedTableModel{
         addTableColumn( tableColumnModel,  4, C4_MW, false, true,  false, false, ComboBoxModel.class,  null, sc.html("action if<br>Virus detected"));
         addTableColumn( tableColumnModel,  5, C5_MW, false, true,  false, false, ComboBoxModel.class,  null, sc.html("notification if<br>Virus detected"));
         addTableColumn( tableColumnModel,  6, C6_MW, true,  true,  false, true,  String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
+        addTableColumn( tableColumnModel,  7, 10,    false, false, true,  false, VirusSMTPConfig.class,  null, "");
         return tableColumnModel;
     }
 
@@ -80,8 +81,7 @@ class SmtpTableModel extends MSortedTableModel{
 	VirusSMTPConfig virusSMTPConfigOutbound = null;
 
 	for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
-
-            VirusSMTPConfig virusSMTPConfig = new VirusSMTPConfig();
+            VirusSMTPConfig virusSMTPConfig = (VirusSMTPConfig) rowVector.elementAt(7);
             virusSMTPConfig.setScan( (Boolean) rowVector.elementAt(3) );
 	    String actionString = (String) ((ComboBoxModel)rowVector.elementAt(4)).getSelectedItem();
 	    SMTPVirusMessageAction messageAction = SMTPVirusMessageAction.getInstance( actionString );
@@ -111,13 +111,15 @@ class SmtpTableModel extends MSortedTableModel{
 
     public Vector generateRows(Object settings) {
         VirusSettings virusSettings = (VirusSettings) settings;
-        Vector allRows = new Vector();
+        Vector allRows = new Vector(2);
+	int rowIndex = 0;
 
 	// INBOUND
-	Vector inboundRow = new Vector();
+	rowIndex++;
+	Vector inboundRow = new Vector(8);
         VirusSMTPConfig virusSMTPConfigInbound = virusSettings.getSMTPInbound();
         inboundRow.add( super.ROW_SAVED );
-        inboundRow.add( new Integer(1) );
+        inboundRow.add( rowIndex );
         inboundRow.add( SOURCE_INBOUND );
         inboundRow.add( virusSMTPConfigInbound.getScan() );
         ComboBoxModel inboundActionComboBoxModel =  super.generateComboBoxModel( SMTPVirusMessageAction.getValues(), virusSMTPConfigInbound.getMsgAction() );
@@ -125,13 +127,15 @@ class SmtpTableModel extends MSortedTableModel{
         ComboBoxModel inboundNotificationComboBoxModel = super.generateComboBoxModel( SMTPNotifyAction.getValues(), virusSMTPConfigInbound.getNotifyAction() );
         inboundRow.add( inboundNotificationComboBoxModel );
         inboundRow.add( virusSMTPConfigInbound.getNotes() );
+	inboundRow.add( virusSMTPConfigInbound );
 	allRows.add(inboundRow);
 
 	// OUTBOUND
-	Vector outboundRow = new Vector();
+	rowIndex++;
+	Vector outboundRow = new Vector(8);
         VirusSMTPConfig virusSMTPConfigOutbound = virusSettings.getSMTPOutbound();
         outboundRow.add( super.ROW_SAVED );
-        outboundRow.add( new Integer(1) );
+        outboundRow.add( rowIndex );
         outboundRow.add( SOURCE_OUTBOUND );
         outboundRow.add( virusSMTPConfigOutbound.getScan() );
         ComboBoxModel outboundActionComboBoxModel =  super.generateComboBoxModel( SMTPVirusMessageAction.getValues(), virusSMTPConfigOutbound.getMsgAction() );
@@ -139,6 +143,7 @@ class SmtpTableModel extends MSortedTableModel{
         ComboBoxModel outboundNotificationComboBoxModel = super.generateComboBoxModel( SMTPNotifyAction.getValues(), virusSMTPConfigOutbound.getNotifyAction() );
         outboundRow.add( outboundNotificationComboBoxModel );
         outboundRow.add( virusSMTPConfigOutbound.getNotes() );
+	outboundRow.add( virusSMTPConfigOutbound );
 	allRows.add(outboundRow);
 
         return allRows;

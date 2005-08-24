@@ -29,14 +29,12 @@ public class LogJPanel extends MLogTableJPanel {
     }
 
     public Vector generateRows(Object settings){
-
         List<VirusLog> logList = (List<VirusLog>) ((VirusTransform)super.logTransform).getEventLogs(depthJSlider.getValue());
         Vector allEvents = new Vector();
-
-        Vector event;
+        Vector event = null;
 
         for( VirusLog log : logList ){
-            event = new Vector();
+            event = new Vector(7);
             event.add( log.getCreateDate() );
 	    event.add( log.getAction() );
             event.add( log.getClientAddr() + ":" + ((Integer)log.getClientPort()).toString() );

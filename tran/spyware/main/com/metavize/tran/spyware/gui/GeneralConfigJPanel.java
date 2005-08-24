@@ -50,10 +50,10 @@ class GeneralTableModel extends MSortedTableModel{
 
     private static final int T_TW = Util.TABLE_TOTAL_WIDTH;
     private static final int C0_MW = Util.STATUS_MIN_WIDTH; /* status */
-    private static final int C1_MW = Util.LINENO_MIN_WIDTH; /* # */
+    private static final int C1_MW = Util.LINENO_MIN_WIDTH; /* # - invisible */
     private static final int C2_MW = 200; /* setting name */
     private static final int C3_MW = 200; /* setting value */
-    private static final int C4_MW = Util.chooseMax(T_TW - (C0_MW + C1_MW + C2_MW + C3_MW), 120); /* description */
+    private static final int C4_MW = Util.chooseMax(T_TW - (C0_MW + C2_MW + C3_MW), 120); /* description */
 
     private static final StringConstants sc = StringConstants.getInstance();
 
@@ -77,31 +77,34 @@ class GeneralTableModel extends MSortedTableModel{
                 
         // blockAllActiveX
         tempRowVector = (Vector) dataVector.elementAt(0);
+	boolean blockAllActiveX = (Boolean) tempRowVector.elementAt(3);
+	String blockAllActiveXDetails = (String) tempRowVector.elementAt(4);
 
 	// SAVE SETTINGS ////////////
 	if( !validateOnly ){
 	    SpywareSettings spywareSettings = (SpywareSettings) settings;
-	    spywareSettings.setBlockAllActiveX( ((Boolean)tempRowVector.elementAt(3)).booleanValue() );
-	    spywareSettings.setBlockAllActiveXDetails( (String) tempRowVector.elementAt(4) );
+	    spywareSettings.setBlockAllActiveX( blockAllActiveX );
+	    spywareSettings.setBlockAllActiveXDetails( blockAllActiveXDetails );
         }
       
     }
     
     public Vector generateRows(Object settings){
         SpywareSettings spywareSettings = (SpywareSettings) settings;
-
         Vector allRows = new Vector(1);
-        Vector tempRowVector;
+        Vector tempRow = null;
+	int rowIndex = 0;
                        
         // blockAllActiveX
-        tempRowVector = new Vector(5);
-        tempRowVector.add(super.ROW_SAVED);
-        tempRowVector.add(new Integer(1));
-        tempRowVector.add("block all ActiveX");
-        tempRowVector.add( Boolean.valueOf( spywareSettings.getBlockAllActiveX()));
-        tempRowVector.add( "This settings allows you to block ActiveX from being transferred, regardless of if the ActiveX is known to the ActiveX Block List or not." );//spywareSettings.getBlockAllActiveXDetails());
-        allRows.add( tempRowVector );
-        
+	rowIndex++;
+        tempRow = new Vector(5);
+        tempRow.add( super.ROW_SAVED );
+        tempRow.add( rowIndex );
+        tempRow.add( "block all ActiveX" );
+        tempRow.add( spywareSettings.getBlockAllActiveX() );
+        tempRow.add( "This settings allows you to block ActiveX from being transferred, regardless of if the ActiveX is known to the ActiveX Block List or not." );//spywareSettings.getBlockAllActiveXDetails());
+        allRows.add( tempRow );
+  
         return allRows;
     }
 }

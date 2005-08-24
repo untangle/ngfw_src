@@ -70,21 +70,21 @@ class PassedClientsTableModel extends MSortedTableModel{
     
     public void generateSettings(Object settings, boolean validateOnly) throws Exception {
         List elemList = new ArrayList();
-	int rowIndex = 1;
-	for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
+	IPMaddrRule newElem = null;
+	int rowIndex = 0;
 
-            IPMaddrRule newElem = (IPMaddrRule) rowVector.elementAt(6);
+	for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
+	    rowIndex++;
+            newElem = (IPMaddrRule) rowVector.elementAt(6);
             newElem.setCategory( (String) rowVector.elementAt(2) );
             try{
 		IPMaddr newIPMaddr = IPMaddr.parse( (String) rowVector.elementAt(3) );
 		newElem.setIpMaddr( newIPMaddr );
 	    }
             catch(Exception e){ throw new Exception("Invalid \"client IP address\" specified in row: " + rowIndex); }
-            newElem.setLive( ((Boolean) rowVector.elementAt(4)).booleanValue() );
+            newElem.setLive( (Boolean) rowVector.elementAt(4) );
             newElem.setDescription( (String) rowVector.elementAt(5) );
-
             elemList.add(newElem);  
-	    rowIndex++;
         }
         
         // SAVE SETTINGS //////////
@@ -98,19 +98,20 @@ class PassedClientsTableModel extends MSortedTableModel{
     public Vector generateRows(Object settings){
 	HttpBlockerSettings httpBlockerSettings = (HttpBlockerSettings) settings;
         Vector allRows = new Vector();
-        int counter = 1;
+	Vector tempRow = null;
+	int rowIndex = 0;
+
 	for( IPMaddrRule newElem : (List<IPMaddrRule>) httpBlockerSettings.getPassedClients() ){
-            
-            Vector row = new Vector();
-            row.add(super.ROW_SAVED);
-            row.add(new Integer(counter));
-            row.add(newElem.getCategory());
-            row.add(newElem.getIpMaddr().toString());
-            row.add(Boolean.valueOf(newElem.isLive()) );
-            row.add(newElem.getDescription());
-	    row.add(newElem);
-            allRows.add(row);
-            counter++;
+            rowIndex++;
+            tempRow = new Vector(7);
+            tempRow.add( super.ROW_SAVED );
+            tempRow.add( rowIndex );
+            tempRow.add( newElem.getCategory() );
+            tempRow.add( newElem.getIpMaddr().toString() );
+            tempRow.add( newElem.isLive() );
+            tempRow.add( newElem.getDescription() );
+	    tempRow.add( newElem );
+            allRows.add( tempRow );
         }
         return allRows;
     }

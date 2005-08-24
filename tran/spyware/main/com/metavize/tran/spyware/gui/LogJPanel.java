@@ -28,15 +28,12 @@ public class LogJPanel extends MLogTableJPanel {
     }
 
     public Vector generateRows(Object settings){
-
         List<SpywareLog> requestLogList = (List<SpywareLog>) ((Spyware)super.logTransform).getEventLogs(depthJSlider.getValue());
         Vector allEvents = new Vector();
-
-        Vector test = new Vector();
-        Vector event;
+        Vector event = null;
 
         for( SpywareLog requestLog : requestLogList ){
-            event = new Vector();
+            event = new Vector(7);
             event.add( requestLog.getCreateDate() );
 	    event.add( requestLog.getAction() );
             event.add( requestLog.getClientAddr() + ":" + ((Integer)requestLog.getClientPort()).toString() );

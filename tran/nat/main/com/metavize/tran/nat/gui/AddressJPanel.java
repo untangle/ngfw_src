@@ -86,24 +86,25 @@ class AddressTableModel extends MSortedTableModel{
     
     public void generateSettings(Object settings, boolean validateOnly) throws Exception {
         NatSettings natSettings = (NatSettings) settings;        
-        List leaseRulesList = new ArrayList();
-        int rowIndex = 1;
-        for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
+        List elemList = new ArrayList();
+	DhcpLeaseRule newElem = null;
+        int rowIndex = 0;
 
-            DhcpLeaseRule leaseRule = (DhcpLeaseRule) rowVector.elementAt(9);
-            try{ leaseRule.setMacAddress( MACAddress.parse( (String)rowVector.elementAt(2)) ); }
-            catch(Exception e){ throw new Exception("Invalid \"MAC address\" in row: " + rowIndex); }
-            try{ leaseRule.setStaticAddress( IPNullAddr.parse( (String)rowVector.elementAt(3)) ); }
-            catch(Exception e){ throw new Exception("Invalid \"target static IP address\" in row: " + rowIndex); }
-            leaseRule.setCategory( (String) rowVector.elementAt(7) );
-            leaseRule.setDescription( (String) rowVector.elementAt(8) );
-            leaseRulesList.add(leaseRule);
+        for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
 	    rowIndex++;
+            newElem = (DhcpLeaseRule) rowVector.elementAt(9);
+            try{ newElem.setMacAddress( MACAddress.parse( (String)rowVector.elementAt(2)) ); }
+            catch(Exception e){ throw new Exception("Invalid \"MAC address\" in row: " + rowIndex); }
+            try{ newElem.setStaticAddress( IPNullAddr.parse( (String)rowVector.elementAt(3)) ); }
+            catch(Exception e){ throw new Exception("Invalid \"target static IP address\" in row: " + rowIndex); }
+            newElem.setCategory( (String) rowVector.elementAt(7) );
+            newElem.setDescription( (String) rowVector.elementAt(8) );
+            elemList.add(newElem);
         }
         
 	// SAVE SETTINGS ////////
 	if( !validateOnly ){
-	    natSettings.setDhcpLeaseList(leaseRulesList);
+	    natSettings.setDhcpLeaseList(elemList);
 	}
     }
     
@@ -111,25 +112,26 @@ class AddressTableModel extends MSortedTableModel{
     
     public Vector generateRows(Object settings) {    
         NatSettings natSettings = (NatSettings) settings;
-        Vector allRowsVector = new Vector();
-        int count = 1;
-        for( DhcpLeaseRule leaseRule : (List<DhcpLeaseRule>) natSettings.getDhcpLeaseList() ){
+        Vector allRows = new Vector();
+	Vector tempRow = null;
+        int rowIndex = 0;
 
-	    Vector rowVector = new Vector();
-	    rowVector.add(super.ROW_SAVED);
-	    rowVector.add(new Integer(count));
-	    rowVector.add(leaseRule.getMacAddress().toString());
-	    rowVector.add(leaseRule.getStaticAddress().toString());
-	    rowVector.add(leaseRule.getCurrentAddress().toString());
-	    rowVector.add(leaseRule.getHostname());
-	    rowVector.add(leaseRule.getEndOfLease().toString());
-	    rowVector.add(leaseRule.getCategory());
-	    rowVector.add(leaseRule.getDescription());
-	    rowVector.add(leaseRule);
-	    allRowsVector.add(rowVector);
-	    count++;
+        for( DhcpLeaseRule leaseRule : (List<DhcpLeaseRule>) natSettings.getDhcpLeaseList() ){
+	    rowIndex++;
+	    tempRow = new Vector(10);
+	    tempRow.add( super.ROW_SAVED );
+	    tempRow.add( rowIndex );
+	    tempRow.add( leaseRule.getMacAddress().toString() );
+	    tempRow.add( leaseRule.getStaticAddress().toString() );
+	    tempRow.add( leaseRule.getCurrentAddress().toString() );
+	    tempRow.add( leaseRule.getHostname() );
+	    tempRow.add( leaseRule.getEndOfLease().toString() );
+	    tempRow.add( leaseRule.getCategory() );
+	    tempRow.add( leaseRule.getDescription() );
+	    tempRow.add( leaseRule );
+	    allRows.add( tempRow );
         }
-        return allRowsVector;
+        return allRows;
     }
     
 }

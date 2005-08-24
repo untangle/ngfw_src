@@ -72,12 +72,13 @@ class ExtensionTableModel extends MSortedTableModel{
 
     public void generateSettings(Object settings, boolean validateOnly) throws Exception {
         List elemList = new ArrayList();
-	for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
+	StringRule newElem = null;
 
-            StringRule newElem = (StringRule) rowVector.elementAt(6);
+	for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
+            newElem = (StringRule) rowVector.elementAt(6);
             newElem.setName( (String) rowVector.elementAt(2) );
             newElem.setString( (String) rowVector.elementAt(3) );
-            newElem.setLive( ((Boolean) rowVector.elementAt(4)).booleanValue() );
+            newElem.setLive( (Boolean) rowVector.elementAt(4) );
             newElem.setCategory( (String) rowVector.elementAt(5) );
             elemList.add(newElem);
         }
@@ -92,20 +93,20 @@ class ExtensionTableModel extends MSortedTableModel{
     public Vector generateRows(Object settings){
 	HttpBlockerSettings httpBlockerSettings = (HttpBlockerSettings) settings;
         Vector allRows = new Vector();
-        int counter = 1;
+	Vector tempRow = null;
+	int rowIndex = 0;
+
 	for( StringRule newElem : (List<StringRule>) httpBlockerSettings.getBlockedExtensions() ){
-
-            Vector row = new Vector();
-            row.add(super.ROW_SAVED);
-            row.add(new Integer(counter));
-            row.add(newElem.getName());
-            row.add(newElem.getString());
-            row.add(Boolean.valueOf(newElem.isLive()));
-            row.add(newElem.getCategory());
-	    row.add(newElem);
-            allRows.add(row);
-
-            counter++;
+	    rowIndex++;
+            tempRow = new Vector(7);
+            tempRow.add( super.ROW_SAVED );
+            tempRow.add( rowIndex );
+            tempRow.add( newElem.getName() );
+            tempRow.add( newElem.getString() );
+            tempRow.add( newElem.isLive() );
+            tempRow.add( newElem.getCategory() );
+	    tempRow.add( newElem );
+            allRows.add( tempRow );
         }
         return allRows;
     }

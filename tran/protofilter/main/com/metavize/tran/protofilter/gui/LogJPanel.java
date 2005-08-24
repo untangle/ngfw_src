@@ -28,14 +28,12 @@ public class LogJPanel extends MLogTableJPanel {
     }
 
     public Vector generateRows(Object settings){
-
         List<ProtoFilterLog> logList = (List<ProtoFilterLog>) ((ProtoFilter)super.logTransform).getLogs(depthJSlider.getValue());
         Vector allEvents = new Vector();
-
-        Vector event;
+        Vector event = null;
 
         for( ProtoFilterLog log : logList ){
-            event = new Vector();
+            event = new Vector(7);
             event.add( log.getCreateDate() );
 	    event.add( log.getAction() );
             event.add( log.getClientAddr() + ":" + ((Integer)log.getClientPort()).toString() );

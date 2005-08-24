@@ -95,11 +95,11 @@ class AdminConfigTableModel extends MSortedTableModel {
                         
         loginHashtable.clear();
 	boolean oneValidAccount = false;
-        int rowIndex = 1;
+        int rowIndex = 0;
         // go through all the rows and perform some tests
 	Util.printMessage("STATUS: STARTING VERIFICATION of " + this.getOriginalDataVector().size() + " user(s)");	
         for( Vector tempUser : (Vector<Vector>) this.getOriginalDataVector() ){
-            
+            rowIndex++;
             byte[] origPasswd = ((MPasswordField)tempUser.elementAt(4)).getByteArray();
             char[] newPasswd = ((MPasswordField)tempUser.elementAt(5)).getPassword();
             char[] newConfPasswd  = ((MPasswordField)tempUser.elementAt(6)).getPassword();
@@ -135,7 +135,7 @@ class AdminConfigTableModel extends MSortedTableModel {
             if( !((String)tempUser.elementAt(0)).equals(super.ROW_REMOVE) ){
                 oneValidAccount = true;
             }
-	    rowIndex++;
+
         }
 
         // verify that there is at least one valid entry after all operations
@@ -149,15 +149,15 @@ class AdminConfigTableModel extends MSortedTableModel {
 
 	prevalidate();
 	Set allRows = new LinkedHashSet();
-
+	User newElem = null;
 	Util.printMessage("STATUS: STARTING SAVING of accounts");
-	int rowIndex = 1;
+	int rowIndex = 0;
+
         for( Vector rowVector : (Vector<Vector>) this.getOriginalDataVector() ){
-	    User newElem;
+	    rowIndex++;
             
             byte[] origPasswd = ((MPasswordField)rowVector.elementAt(4)).getByteArray();
-            char[] newPasswd = ((MPasswordField)rowVector.elementAt(5)).getPassword();
-            
+            char[] newPasswd = ((MPasswordField)rowVector.elementAt(5)).getPassword();            
 	    Util.printMessage("> UPDATE: row status " + (String) rowVector.elementAt(0) );
 
             if( ((String)rowVector.elementAt(0)).equals(super.ROW_REMOVE) ){
@@ -181,9 +181,8 @@ class AdminConfigTableModel extends MSortedTableModel {
             }
 
             newElem.setEmail( (String) rowVector.elementAt(8) );
-            newElem.setSendAlerts( ((Boolean) rowVector.elementAt(9)).booleanValue() );            
+            newElem.setSendAlerts( (Boolean) rowVector.elementAt(9) );
             allRows.add(newElem);
-	    rowIndex++;
         }
         
 	// SAVE SETTINGS /////////////
@@ -196,33 +195,30 @@ class AdminConfigTableModel extends MSortedTableModel {
 
     public Vector generateRows(Object settings) {
 	AdminSettings adminSettings = (AdminSettings) settings;
-        Vector configVector = new Vector();
+        Vector allRows = new Vector();
+	Vector tempRow = null;
+        int rowIndex = 0;
 
-        int count = 1;
-	for( User newElem : (Set<User>) adminSettings.getUsers() ){
-            Vector rowVector = new Vector();
-            rowVector.add(super.ROW_SAVED);
-            rowVector.add( new Integer(count) );
-
-            rowVector.add( newElem.getName() );
-            rowVector.add( newElem.getLogin() );
-
-            /* XXX What is this */
-            MPasswordField tempMPasswordField = new MPasswordField( newElem.getPassword() );
-            rowVector.add( tempMPasswordField );
-            rowVector.add( new MPasswordField() );
-            rowVector.add( new MPasswordField() );
+	for( User user : (Set<User>) adminSettings.getUsers() ){
+	    rowIndex++;
+            tempRow = new Vector(10);
+            tempRow.add( super.ROW_SAVED );
+            tempRow.add( rowIndex );
+            tempRow.add( user.getName() );
+            tempRow.add( user.getLogin() );
+            MPasswordField tempMPasswordField = new MPasswordField( user.getPassword() );
+            tempRow.add( tempMPasswordField );
+            tempRow.add( new MPasswordField() );
+            tempRow.add( new MPasswordField() );
 	    MPasswordField originalMPasswordField = new MPasswordField();
 	    originalMPasswordField.setGeneratesChangeEvent(false);
-            rowVector.add( originalMPasswordField );
-            rowVector.add( newElem.getEmail() );
-            rowVector.add( new Boolean(newElem.getSendAlerts()) );
-            
-            configVector.add(rowVector);
-            count++;
+            tempRow.add( originalMPasswordField );
+            tempRow.add( user.getEmail() );
+            tempRow.add( user.getSendAlerts() );
+            allRows.add( tempRow );
         }
         
-        return configVector;
+        return allRows;
     }
 
 

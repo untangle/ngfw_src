@@ -24,13 +24,13 @@ import com.metavize.gui.pipeline.MPipelineJPanel;
 import com.metavize.gui.widgets.editTable.*;
 import com.metavize.gui.util.*;
 
-import java.awt.*;
-import javax.swing.*;
+//import java.awt.*;
+//import javax.swing.*;
+
+import java.awt.Insets;
 import javax.swing.table.*;
-import java.util.Vector;
-import java.util.List;
-import java.util.ArrayList;
-import javax.swing.event.*;
+import java.util.*;
+//import javax.swing.event.*;
 
 public class SpywareConfigJPanel extends MEditTableJPanel{
     
@@ -80,10 +80,12 @@ class SpyTableModel extends MSortedTableModel{
     
     public void generateSettings(Object settings, boolean validateOnly) throws Exception{
         List elemList = new ArrayList();
-	int rowIndex = 1;
-	for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
+	IPMaddrRule newElem = null;
+	int rowIndex = 0;
 
-            IPMaddrRule newElem = (IPMaddrRule) rowVector.elementAt(7);
+	for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
+	    rowIndex++;
+            newElem = (IPMaddrRule) rowVector.elementAt(7);
             // newElem.setCategory( (String) rowVector.elementAt(2) );
             newElem.setName( (String) rowVector.elementAt(2) );
 	    try{
@@ -91,18 +93,17 @@ class SpyTableModel extends MSortedTableModel{
 		newElem.setIpMaddr( newIPMaddr );
 	    }
             catch(Exception e){ throw new Exception("Invalid \"subnet\" specified at row: " + rowIndex); }
-            newElem.setLive( ((Boolean) rowVector.elementAt(4)).booleanValue() );
-            newElem.setLog( ((Boolean) rowVector.elementAt(5)).booleanValue() );
+            newElem.setLive( (Boolean) rowVector.elementAt(4) );
+            newElem.setLog( (Boolean) rowVector.elementAt(5) );
             newElem.setDescription( (String) rowVector.elementAt(6) );
 
             elemList.add(newElem);
-	    rowIndex++;
         }
 
 	// SAVE SETTINGS /////////
 	if( !validateOnly ){
 	    SpywareSettings spywareSettings = (SpywareSettings) settings;
-	    spywareSettings.setSubnetRules(elemList);
+	    spywareSettings.setSubnetRules( elemList );
 	}
 
     }
@@ -110,21 +111,22 @@ class SpyTableModel extends MSortedTableModel{
     public Vector generateRows(Object settings){
 	SpywareSettings spywareSettings = (SpywareSettings) settings;
         Vector allRows = new Vector();
-	int count = 1;
-	for( IPMaddrRule newElem : (List<IPMaddrRule>) spywareSettings.getSubnetRules() ){
+	Vector tempRow = null;
+	int rowIndex = 0;
 
-            Vector row = new Vector();
-            row.add(super.ROW_SAVED);
-            row.add(new Integer(count));
-            // row.add(newElem.getCategory());
-            row.add(newElem.getName());
-            row.add(newElem.getIpMaddr().toString());
-            row.add(Boolean.valueOf( newElem.isLive()));
-            row.add(Boolean.valueOf( newElem.getLog()));
-            row.add(newElem.getDescription());
-            row.add(newElem);
-            allRows.add(row);
-	    count++;
+	for( IPMaddrRule newElem : (List<IPMaddrRule>) spywareSettings.getSubnetRules() ){
+	    rowIndex++;
+            tempRow = new Vector(8);
+            tempRow.add( super.ROW_SAVED );
+            tempRow.add( rowIndex );
+            // tempRow.add( newElem.getCategory() );
+            tempRow.add( newElem.getName() );
+            tempRow.add( newElem.getIpMaddr().toString() );
+            tempRow.add( newElem.isLive() );
+            tempRow.add( newElem.getLog() );
+            tempRow.add( newElem.getDescription() );
+            tempRow.add( newElem );
+            allRows.add( tempRow );
         }
         return allRows;
     } 

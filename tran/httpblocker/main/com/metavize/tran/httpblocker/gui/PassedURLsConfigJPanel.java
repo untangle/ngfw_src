@@ -72,20 +72,21 @@ class PassedURLTableModel extends MSortedTableModel{
     
     public void generateSettings(Object settings, boolean validateOnly) throws Exception {
         List elemList = new ArrayList();
-	int rowIndex = 1;
+	StringRule newElem = null;
+	int rowIndex = 0;
+
 	for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
-            StringRule newElem = (StringRule) rowVector.elementAt(6);
+	    rowIndex++;
+            newElem = (StringRule) rowVector.elementAt(6);
             newElem.setCategory( (String) rowVector.elementAt(2) );
 	    try{
 		URL newURL = new URL( (String) rowVector.elementAt(3) );
 		newElem.setString( newURL.toString() );
 	    }
 	    catch(Exception e){ throw new Exception("Invalid \"URL\" specified in row: " + rowIndex); }
-            newElem.setLive( ((Boolean) rowVector.elementAt(4)).booleanValue() );
-            newElem.setDescription( (String) rowVector.elementAt(5) );
-                        
+            newElem.setLive( (Boolean) rowVector.elementAt(4) );
+            newElem.setDescription( (String) rowVector.elementAt(5) );            
             elemList.add(newElem);  
-	    rowIndex++;
         }
         
 	// SAVE SETTINGS /////////
@@ -99,19 +100,20 @@ class PassedURLTableModel extends MSortedTableModel{
     public Vector generateRows(Object settings){
 	HttpBlockerSettings httpBlockerSettings = (HttpBlockerSettings) settings;
         Vector allRows = new Vector();
-        int counter = 1;
+	Vector tempRow = null;
+	int rowIndex = 0;
+
 	for( StringRule newElem : (List<StringRule>) httpBlockerSettings.getPassedUrls() ){
-            
-            Vector row = new Vector();
-            row.add(super.ROW_SAVED);
-            row.add(new Integer(counter));
-            row.add(newElem.getCategory());
-            row.add(newElem.getString());
-            row.add( new Boolean(newElem.isLive()) );
-            row.add(newElem.getDescription());
-            row.add(newElem);
-            allRows.add(row);
-            counter++;
+            rowIndex++;
+            tempRow = new Vector(7);
+            tempRow.add( super.ROW_SAVED );
+            tempRow.add( rowIndex );
+            tempRow.add( newElem.getCategory() );
+            tempRow.add( newElem.getString() );
+            tempRow.add( newElem.isLive() );
+            tempRow.add( newElem.getDescription() );
+            tempRow.add( newElem );
+            allRows.add( tempRow );
         }
         return allRows;
     }

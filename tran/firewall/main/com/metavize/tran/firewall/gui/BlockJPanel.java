@@ -95,35 +95,35 @@ class BlockTableModel extends MSortedTableModel{
     
     
     public void generateSettings(Object settings, boolean validateOnly) throws Exception {        
-        List firewallRulesList = new ArrayList();
-        int rowIndex = 1;
+        List elemList = new ArrayList();
+	FirewallRule newElem = null;
+        int rowIndex = 0;
+
         for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
-
-            FirewallRule firewallRule = (FirewallRule) rowVector.elementAt(13);
-            firewallRule.setLive( (Boolean) rowVector.elementAt(2) );
-            firewallRule.setAction( ((ComboBoxModel) rowVector.elementAt(3)).getSelectedItem().toString() );
-            firewallRule.setLog( (Boolean) rowVector.elementAt(4) );
-	    firewallRule.setProtocol( ProtocolMatcher.parse(((ComboBoxModel) rowVector.elementAt(5)).getSelectedItem().toString()) );
-            firewallRule.setDirection( ((ComboBoxModel) rowVector.elementAt(6)).getSelectedItem().toString() );
-            try{ firewallRule.setSrcAddress( IPMatcher.parse((String) rowVector.elementAt(7)) ); }
+	    rowIndex++;
+            newElem = (FirewallRule) rowVector.elementAt(13);
+            newElem.setLive( (Boolean) rowVector.elementAt(2) );
+            newElem.setAction( ((ComboBoxModel) rowVector.elementAt(3)).getSelectedItem().toString() );
+            newElem.setLog( (Boolean) rowVector.elementAt(4) );
+	    newElem.setProtocol( ProtocolMatcher.parse(((ComboBoxModel) rowVector.elementAt(5)).getSelectedItem().toString()) );
+            newElem.setDirection( ((ComboBoxModel) rowVector.elementAt(6)).getSelectedItem().toString() );
+            try{ newElem.setSrcAddress( IPMatcher.parse((String) rowVector.elementAt(7)) ); }
             catch(Exception e){ throw new Exception("Invalid \"source address\" in row: " + rowIndex); }
-            try{ firewallRule.setDstAddress( IPMatcher.parse((String) rowVector.elementAt(8)) ); }
+            try{ newElem.setDstAddress( IPMatcher.parse((String) rowVector.elementAt(8)) ); }
             catch(Exception e){ throw new Exception("Invalid \"destination address\" in row: " + rowIndex); }
-            try{ firewallRule.setSrcPort( PortMatcher.parse((String) rowVector.elementAt(9)) ); }
+            try{ newElem.setSrcPort( PortMatcher.parse((String) rowVector.elementAt(9)) ); }
             catch(Exception e){ throw new Exception("Invalid \"source port\" in row: " + rowIndex); }
-            try{ firewallRule.setDstPort( PortMatcher.parse((String) rowVector.elementAt(10)) ); }
+            try{ newElem.setDstPort( PortMatcher.parse((String) rowVector.elementAt(10)) ); }
             catch(Exception e){ throw new Exception("Invalid \"destination port\" in row: " + rowIndex); }
-            firewallRule.setCategory( (String) rowVector.elementAt(11) );
-            firewallRule.setDescription( (String) rowVector.elementAt(12) );
-
-            firewallRulesList.add(firewallRule);
-            rowIndex++;
+            newElem.setCategory( (String) rowVector.elementAt(11) );
+            newElem.setDescription( (String) rowVector.elementAt(12) );
+            elemList.add(newElem);
         }
         
 	// SAVE SETTINGS //////////
 	if( !validateOnly ){
 	    FirewallSettings firewallSettings = (FirewallSettings) settings;
-	    firewallSettings.setFirewallRuleList(firewallRulesList);
+	    firewallSettings.setFirewallRuleList( elemList );
 	}
     }
 
@@ -131,29 +131,30 @@ class BlockTableModel extends MSortedTableModel{
 
     public Vector generateRows(Object settings) {
         FirewallSettings firewallSettings = (FirewallSettings) settings;
-        Vector allRowsVector = new Vector();
-        int index = 1;
-        for( FirewallRule firewallRule : (List<FirewallRule>) firewallSettings.getFirewallRuleList() ){
+        Vector allRows = new Vector();
+	Vector tempRow = null;
+        int rowIndex = 0;
 
-	    Vector rowVector = new Vector();	    
-	    rowVector.add(super.ROW_SAVED);
-	    rowVector.add(new Integer(index));
-	    rowVector.add(firewallRule.isLive());
-	    rowVector.add( super.generateComboBoxModel( FirewallRule.getActionEnumeration(), firewallRule.getAction().toString() ));
-	    rowVector.add(firewallRule.getLog());
-	    rowVector.add( super.generateComboBoxModel( ProtocolMatcher.getProtocolEnumeration(), firewallRule.getProtocol().toString() ));
-	    rowVector.add( super.generateComboBoxModel( TrafficRule.getDirectionEnumeration(), firewallRule.getDirection().toString() ));
-	    rowVector.add(firewallRule.getSrcAddress().toString());
-	    rowVector.add(firewallRule.getDstAddress().toString());
-	    rowVector.add(firewallRule.getSrcPort().toString());
-	    rowVector.add(firewallRule.getDstPort().toString());  
-	    rowVector.add(firewallRule.getCategory());
-	    rowVector.add(firewallRule.getDescription());
-	    rowVector.add(firewallRule);
-	    allRowsVector.add(rowVector);
-	    index++;
+        for( FirewallRule firewallRule : (List<FirewallRule>) firewallSettings.getFirewallRuleList() ){
+	    rowIndex++;
+	    tempRow = new Vector(14);
+	    tempRow.add( super.ROW_SAVED );
+	    tempRow.add( rowIndex );
+	    tempRow.add( firewallRule.isLive() );
+	    tempRow.add( super.generateComboBoxModel( FirewallRule.getActionEnumeration(), firewallRule.getAction().toString() ) );
+	    tempRow.add( firewallRule.getLog() );
+	    tempRow.add( super.generateComboBoxModel( ProtocolMatcher.getProtocolEnumeration(), firewallRule.getProtocol().toString() ) );
+	    tempRow.add( super.generateComboBoxModel( TrafficRule.getDirectionEnumeration(), firewallRule.getDirection().toString() ) );
+	    tempRow.add( firewallRule.getSrcAddress().toString() );
+	    tempRow.add( firewallRule.getDstAddress().toString() );
+	    tempRow.add( firewallRule.getSrcPort().toString() );
+	    tempRow.add( firewallRule.getDstPort().toString() );  
+	    tempRow.add( firewallRule.getCategory() );
+	    tempRow.add( firewallRule.getDescription() );
+	    tempRow.add( firewallRule );
+	    allRows.add( tempRow );
         }
-        return allRowsVector;
+        return allRows;
     }
     
     
