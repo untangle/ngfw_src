@@ -21,14 +21,16 @@ import java.awt.*;
 
 public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransformControlsJPanel{
     
+    private static final String NAME_GENERAL_SETTINGS = "General Settings";
+    private static final String NAME_LOG = "Event Log";
     
     public MTransformControlsJPanel(MTransformJPanel mTransformJPanel) {
         super(mTransformJPanel);
         
 	super.contentJPanel.remove(super.saveJButton);
 	super.contentJPanel.remove(super.reloadJButton);
-	super.contentJPanel.remove(super.expandJButton);
 
+	// GENERAL SETTINGS //////
 	JPanel messageJPanel = new JPanel();
 	messageJPanel.setLayout(new GridBagLayout());
 	JLabel messageJLabel = new JLabel();
@@ -37,7 +39,12 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	messageJLabel.setHorizontalAlignment(SwingConstants.CENTER);
 	messageJLabel.setVerticalAlignment(SwingConstants.CENTER);
 	messageJPanel.add(messageJLabel, new GridBagConstraints(0,0,1,1,0d,0d,GridBagConstraints.CENTER,GridBagConstraints.BOTH,new Insets(0,0,0,0),0,0));
-	super.mTabbedPane.add("General Settings", messageJPanel);
+	super.mTabbedPane.add(NAME_GENERAL_SETTINGS, messageJPanel);
+
+	// EVENT LOG ///////////////
+	LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransformContext().transform(), this);
+	super.mTabbedPane.addTab(NAME_LOG, null, logJPanel);
+
     }
      
     
