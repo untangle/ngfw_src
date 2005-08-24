@@ -27,6 +27,7 @@ import javax.swing.event.*;
 public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransformControlsJPanel{
     
     private static final String NAME_RULE_LIST = "Rule List";
+    private static final String NAME_VARIABLE_LIST = "Variable List";
     private static final String NAME_LOG = "Event Log";
     
     public MTransformControlsJPanel(MTransformJPanel mTransformJPanel) {
@@ -39,6 +40,12 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
         this.mTabbedPane.addTab(NAME_RULE_LIST, null, idsConfigJPanel);
 	super.savableMap.put(NAME_RULE_LIST, idsConfigJPanel);
 	super.refreshableMap.put(NAME_RULE_LIST, idsConfigJPanel);
+
+	// VARIABLE LIST /////
+	IDSVariableJPanel idsVariableJPanel = new IDSVariableJPanel();
+        this.mTabbedPane.addTab(NAME_VARIABLE_LIST, null, idsVariableJPanel);
+	super.savableMap.put(NAME_VARIABLE_LIST, idsVariableJPanel);
+	super.refreshableMap.put(NAME_VARIABLE_LIST, idsVariableJPanel);
 
         // EVENT LOG ///////
         LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransformContext().transform(), this);

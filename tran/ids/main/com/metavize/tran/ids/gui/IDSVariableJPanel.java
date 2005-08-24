@@ -1,0 +1,114 @@
+/*
+ * Copyright (c) 2003,2004 Metavize Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Metavize Inc. ("Confidential Information").  You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id$
+ */
+
+
+
+package com.metavize.tran.ids.gui;
+
+import com.metavize.gui.transform.*;
+import com.metavize.gui.pipeline.MPipelineJPanel;
+import com.metavize.mvvm.tran.TransformContext;
+
+import com.metavize.tran.ids.*;
+
+import com.metavize.gui.widgets.editTable.*;
+import com.metavize.gui.util.*;
+
+import java.awt.Insets;
+//import javax.swing.*;
+import javax.swing.table.*;
+import java.util.*;
+//import javax.swing.event.*;
+
+public class IDSVariableJPanel extends MEditTableJPanel {
+        
+    public IDSVariableJPanel() {
+        super(true, true);
+        super.setInsets(new Insets(4, 4, 2, 2));
+        super.setTableTitle("General Settings");
+        super.setDetailsTitle("rule notes");
+        super.setAddRemoveEnabled(true);
+        
+        // create actual table model
+        IDSVariableTableModel tableModel = new IDSVariableTableModel();
+        this.setTableModel( tableModel );
+    }
+}
+
+
+
+class IDSVariableTableModel extends MSortedTableModel{ 
+
+    private static final int T_TW = Util.TABLE_TOTAL_WIDTH;
+    private static final int C0_MW = Util.STATUS_MIN_WIDTH; /* status */
+    private static final int C1_MW = Util.LINENO_MIN_WIDTH; /* # */
+    private static final int C2_MW = 200; /* variable name */
+    private static final int C3_MW = 200; /* variable value */
+    private static final int C4_MW = Util.chooseMax(T_TW - (C0_MW + C1_MW + C2_MW + C3_MW), 120); /* description */
+
+    private static final StringConstants sc = StringConstants.getInstance();
+
+    
+    public TableColumnModel getTableColumnModel(){
+        
+        DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
+        //                                 #  min    rsz    edit   remv   desc   typ            def
+        addTableColumn( tableColumnModel,  0, C0_MW, false, false, false, false, String.class,  null, sc.TITLE_STATUS);
+        addTableColumn( tableColumnModel,  1, C1_MW, false, false, true,  false, Integer.class, null, sc.TITLE_INDEX);
+        addTableColumn( tableColumnModel,  2, C2_MW, true,  false, false, false, String.class,  null, "variable name");
+        addTableColumn( tableColumnModel,  3, C3_MW, true,  true,  false, false, Object.class,  null, sc.bold("variable value"));
+        addTableColumn( tableColumnModel,  4, C4_MW, true,  false, false, true,  String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
+        addTableColumn( tableColumnModel,  5, 10,    false, false, true,  false, IDSVariable.class,  null, "");
+        return tableColumnModel;
+    }
+    
+    
+    public void generateSettings(Object settings, boolean validateOnly) throws Exception{
+        List elemList = new ArrayList();
+	IDSVariable newElem = null;
+
+	for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
+	    newElem = (IDSVariable) rowVector.elementAt(5);
+	    newElem.setVariable( (String) rowVector.elementAt(2) );
+	    newElem.setDefinition( (String) rowVector.elementAt(3) );
+	    newElem.setDescription( (String) rowVector.elementAt(4) );
+	    elemList.add(newElem);
+	}
+
+	// SAVE SETTINGS ////////////
+	if( !validateOnly ){
+	    IDSSettings idsSettings = (IDSSettings) settings;
+	    idsSettings.setVariables( elemList );
+        }
+      
+    }
+    
+    public Vector generateRows(Object settings){
+	IDSSettings idsSettings = (IDSSettings) settings;
+        Vector allRows = new Vector();
+	Vector tempRow = null;
+	int rowIndex = 0;
+
+	for( IDSVariable idsVariable : (List<IDSVariable>) idsSettings.getVariables() ){
+	    rowIndex++;
+	    tempRow = new Vector(6);
+	    tempRow.add( super.ROW_SAVED );
+	    tempRow.add( rowIndex );
+	    tempRow.add( idsVariable.getVariable() );
+	    tempRow.add( idsVariable.getDefinition() );
+	    tempRow.add( idsVariable.getDescription() );
+	    tempRow.add( idsVariable );
+	    allRows.add( tempRow );
+	}
+        
+        return allRows;
+    }
+}

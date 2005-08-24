@@ -28,14 +28,12 @@ public class LogJPanel extends MLogTableJPanel {
     }
 
     public Vector generateRows(Object settings){
-
         List<IDSLog> logList = (List<IDSLog>) ((IDSTransform)super.logTransform).getLogs(depthJSlider.getValue());
         Vector allEvents = new Vector();
-
-        Vector event;
+        Vector event = null;
 
         for( IDSLog log : logList ){
-            event = new Vector();
+            event = new Vector(6);
             event.add( Util.getLogDateFormat().format( log.getCreateDate() ));
 	    event.add( log.getAction() );
             event.add( log.getClientAddr() + ":" + ((Integer)log.getClientPort()).toString() );

@@ -50,11 +50,11 @@ class IDSTableModel extends MSortedTableModel{
     private static final int T_TW = Util.TABLE_TOTAL_WIDTH_LARGE;
     private static final int C0_MW = Util.STATUS_MIN_WIDTH; /* status */
     private static final int C1_MW = Util.LINENO_MIN_WIDTH; /* # - invisible */
-    private static final int C2_MW = 140; /* category */
-    private static final int C3_MW = 55;  /* on */
-    private static final int C4_MW = 55;  /* log */
-    private static final int C5_MW = 100; /* signature */
-    private static final int C6_MW = Util.chooseMax(T_TW - (C0_MW + C2_MW + C3_MW + C4_MW + C5_MW), 120); /* description */
+    private static final int C2_MW = 55;  /* on */
+    private static final int C3_MW = 55;  /* log */
+    private static final int C4_MW = 150; /* category */
+    private static final int C5_MW = 150; /* signature */
+    private static final int C6_MW = Util.chooseMax(T_TW - (C0_MW + C1_MW + C2_MW + C3_MW + C4_MW + C5_MW), 120); /* description */
 
     
     public TableColumnModel getTableColumnModel(){        
@@ -62,24 +62,25 @@ class IDSTableModel extends MSortedTableModel{
         DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
         //                                 #  min    rsz    edit   remv   desc   typ            def
         addTableColumn( tableColumnModel,  0, C0_MW, false, false, false, false, String.class,  null, sc.TITLE_STATUS );
-        addTableColumn( tableColumnModel,  1, C1_MW, false, false, true,  false, Integer.class, null, sc.TITLE_INDEX );
-        addTableColumn( tableColumnModel,  2, C2_MW, true,  true,  false, false, String.class,  sc.EMPTY_CATEGORY, sc.TITLE_CATEGORY );
-        addTableColumn( tableColumnModel,  3, C3_MW, false, true,  false, false, Boolean.class, "false", sc.bold("on"));
-        addTableColumn( tableColumnModel,  4, C4_MW, false, true,  false, false, Boolean.class, "false", sc.bold("log"));
-        addTableColumn( tableColumnModel,  5, C5_MW, true,  true,  false, false, String.class,  sc.empty("no signature"), "signature");
+        addTableColumn( tableColumnModel,  1, C1_MW, false, false, false, false, Integer.class, null, sc.TITLE_INDEX );
+        addTableColumn( tableColumnModel,  2, C2_MW, false, true,  false, false, Boolean.class, "false", sc.bold("on"));
+        addTableColumn( tableColumnModel,  3, C3_MW, false, true,  false, false, Boolean.class, "false", sc.bold("log"));
+        addTableColumn( tableColumnModel,  4, C4_MW, true,  true,  false, false, String.class,  sc.EMPTY_CATEGORY, sc.TITLE_CATEGORY );
+        addTableColumn( tableColumnModel,  5, C5_MW, true,  true,  false, false, String.class,  sc.empty("no rule text"), "rule text");
         addTableColumn( tableColumnModel,  6, C6_MW, true,  true,  false, true,  String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION );
         addTableColumn( tableColumnModel,  7, 10,    false, false, true,  false, IDSRule.class, null, "");
         return tableColumnModel;
     }
     
     public void generateSettings(Object settings, boolean validateOnly) throws Exception{
-		List elemList = new ArrayList();
-	for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
-            
-	    IDSRule newElem = (IDSRule) rowVector.elementAt(7);
-            newElem.setCategory( (String) rowVector.elementAt(2) );
-            newElem.setLive( (Boolean) rowVector.elementAt(3) );
-            newElem.setLog( (Boolean) rowVector.elementAt(4) );
+	List elemList = new ArrayList();
+	IDSRule newElem = null;
+
+	for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){            
+	    newElem = (IDSRule) rowVector.elementAt(7);
+            newElem.setLive( (Boolean) rowVector.elementAt(2) );
+            newElem.setLog( (Boolean) rowVector.elementAt(3) );
+            newElem.setCategory( (String) rowVector.elementAt(4) );
             newElem.setRule( (String) rowVector.elementAt(5) );
             newElem.setDescription( (String) rowVector.elementAt(6) );
             elemList.add(newElem);
@@ -96,20 +97,21 @@ class IDSTableModel extends MSortedTableModel{
     public Vector generateRows(Object settings){
 	IDSSettings idsSettings = (IDSSettings) settings;
 	Vector allRows = new Vector();
-        int count = 1;
-	for( IDSRule newElem : (List<IDSRule>) idsSettings.getRules() ){
+	Vector tempRow = null;
+        int rowIndex = 0;
 
-            Vector row = new Vector();
-            row.add(super.ROW_SAVED);
-            row.add(new Integer(count));
-            row.add(newElem.getCategory());
-            row.add((Boolean) newElem.isLive());
-            row.add((Boolean) newElem.getLog());
-            row.add(newElem.getRule());
-            row.add(newElem.getDescription());
-	    row.add(newElem);
-            allRows.add(row);
-	    count++;
+	for( IDSRule newElem : (List<IDSRule>) idsSettings.getRules() ){
+	    rowIndex++;
+            tempRow = new Vector(8);
+            tempRow.add( super.ROW_SAVED );
+            tempRow.add( rowIndex );
+            tempRow.add( newElem.isLive() );
+            tempRow.add( newElem.getLog() );
+            tempRow.add( newElem.getCategory() );
+            tempRow.add( newElem.getRule() );
+            tempRow.add( newElem.getDescription() );
+	    tempRow.add( newElem );
+            allRows.add( tempRow );
         }
         return allRows;
     }
