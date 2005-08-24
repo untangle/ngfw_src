@@ -48,7 +48,7 @@ public class FirewallImpl extends AbstractTransform implements Firewall
     private static final String EVENT_QUERY
         = "SELECT create_date, is_traffic_blocker, "
         + "c_client_addr, c_client_port, s_server_addr, s_server_port, "
-        + "client_intf, server_intf "
+        + "client_intf, server_intf, rule_index "
         + "FROM pl_endp endp "
         + "JOIN tr_firewall_evt evt ON endp.session_id = evt.session_id "
         + "JOIN firewall_rule rule ON evt.rule_id = rule.rule_id "
@@ -130,12 +130,13 @@ public class FirewallImpl extends AbstractTransform implements Firewall
                 int serverPort = rs.getInt("s_server_port");
                 byte clientIntf = rs.getByte("client_intf");
                 byte serverIntf = rs.getByte("server_intf");
+                int ruleIndex = rs.getInt("rule_index");
 
                 Direction d = Direction.getDirection(clientIntf, serverIntf);
 
                 FirewallLog rl = new FirewallLog
                     (createDate, trafficBlocker, clientAddr, clientPort,
-                     serverAddr, serverPort, d);
+                     serverAddr, serverPort, d, ruleIndex);
 
                 l.add(0, rl);
             }

@@ -21,7 +21,7 @@ public class FirewallLog implements Serializable
     private static final long serialVersionUID = 8643460289284345065L;
 
     private final Date createDate;
-    private final String reason = "in list";
+    private final String reason;
     private final boolean blocked;
     private final String clientAddr;
     private final int clientPort;
@@ -31,7 +31,7 @@ public class FirewallLog implements Serializable
 
     public FirewallLog(Date createDate, boolean blocked, String clientAddr,
                       int clientPort, String serverAddr, int serverPort,
-                      Direction direction)
+                      Direction direction, int ruleIndex )
     {
         this.createDate = createDate;
         this.blocked = blocked;
@@ -40,6 +40,7 @@ public class FirewallLog implements Serializable
         this.serverAddr = serverAddr;
         this.serverPort = serverPort;
         this.direction = direction;
+        this.reason    = "Firewall Rule #" + ruleIndex;
     }
 
     // util -------------------------------------------------------------------
