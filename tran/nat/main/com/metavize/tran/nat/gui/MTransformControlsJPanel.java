@@ -38,6 +38,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
     private static final String NAME_DNS = "DNS Forwarding";
     private static final String NAME_DNS_FORWARDING = "Settings";
     private static final String NAME_DNS_ADDRESS_MAP = "Address Map";
+    private static final String NAME_LOG = "Event Log";
 
     protected Dimension MIN_SIZE = new Dimension(640, 480);
     protected Dimension MAX_SIZE = new Dimension(640, 1200);
@@ -118,6 +119,8 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
         super.savableMap.put(NAME_DNS + " " + NAME_DNS_ADDRESS_MAP, dnsAddressJPanel);
         super.refreshableMap.put(NAME_DNS + " " + NAME_DNS_ADDRESS_MAP, dnsAddressJPanel);
 
+        LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransformContext().transform(), this);
+        super.mTabbedPane.addTab( NAME_LOG, null, logJPanel );
     }
         
 }

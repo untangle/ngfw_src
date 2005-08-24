@@ -15,6 +15,12 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.Date;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.NetworkingConfiguration;
@@ -25,10 +31,11 @@ import com.metavize.mvvm.tapi.Affinity;
 import com.metavize.mvvm.tapi.Fitting;
 import com.metavize.mvvm.tapi.MPipe;
 import com.metavize.mvvm.tapi.PipeSpec;
-import com.metavize.mvvm.tapi.PipelineFoundry;
 import com.metavize.mvvm.tapi.SoloPipeSpec;
 import com.metavize.mvvm.tapi.TransformContextFactory;
+import com.metavize.mvvm.tapi.Protocol;
 import com.metavize.mvvm.tran.IPaddr;
+import com.metavize.mvvm.tran.Direction;
 import com.metavize.mvvm.tran.TransformException;
 import com.metavize.mvvm.tran.TransformStartException;
 import com.metavize.mvvm.tran.TransformStopException;
@@ -46,8 +53,26 @@ import org.apache.log4j.Logger;
 
 public class NatImpl extends AbstractTransform implements Nat
 {
-    private static final PipelineFoundry FOUNDRY = MvvmContextFactory
-        .context().pipelineFoundry();
+    private static final String REDIRECT_EVENT_QUERY
+        = "SELECT create_date, proto, c_client_addr, c_client_port, s_client_addr,"
+        + " c_server_addr, c_server_port, s_server_addr, s_server_port,"
+        + " client_intf, server_intf, rule_index, is_dmz "
+        + " FROM pl_endp JOIN tr_nat_redirect_evt USING ( session_id )"
+        + " ORDER BY create_date DESC LIMIT ?";
+
+    private static final int CREATE_DATE_IDX   =  1;
+    private static final int PROTO_IDX         =  2;
+    private static final int O_CLIENT_ADDR_IDX =  3;
+    private static final int O_CLIENT_PORT_IDX =  4;
+    private static final int R_CLIENT_ADDR_IDX =  5;
+    private static final int O_SERVER_ADDR_IDX =  6;
+    private static final int O_SERVER_PORT_IDX =  7;
+    private static final int R_SERVER_ADDR_IDX =  8;
+    private static final int R_SERVER_PORT_IDX =  9;
+    private static final int CLIENT_INTF_IDX   = 10;
+    private static final int SERVER_INTF_IDX   = 11;
+    private static final int RULE_INDEX_IDX    = 12;
+    private static final int IS_DMZ_IDX        = 13;
 
     private final NatEventHandler handler;
     private final NatSessionManager sessionManager;
@@ -142,6 +167,70 @@ public class NatImpl extends AbstractTransform implements Nat
         } catch (TransformException exn) {
             logger.error( "Could not save Nat settings", exn );
         }
+    }
+
+    public List<NatRedirectLogEntry> getLogs( int limit )
+    {
+        List<NatRedirectLogEntry> l = new LinkedList<NatRedirectLogEntry>();
+
+        Session s = TransformContextFactory.context().openSession();
+        try {
+            Connection c = s.connection();
+            PreparedStatement ps = c.prepareStatement( REDIRECT_EVENT_QUERY );
+            ps.setInt( 1, limit );
+            long l0 = System.currentTimeMillis();
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Date createDate           = new Date( rs.getTimestamp( CREATE_DATE_IDX ).getTime());
+                String clientAddr         = rs.getString( O_CLIENT_ADDR_IDX );
+                boolean isNatd            = !clientAddr.equalsIgnoreCase( rs.getString( R_CLIENT_ADDR_IDX ));
+                int    clientPort         = rs.getInt( O_CLIENT_PORT_IDX );
+                String originalServerAddr = rs.getString( O_SERVER_ADDR_IDX );
+                int    originalServerPort = rs.getInt( O_SERVER_PORT_IDX);
+                String redirectServerAddr = rs.getString( R_SERVER_ADDR_IDX );
+                int    redirectServerPort = rs.getInt( R_SERVER_PORT_IDX );
+                Protocol proto            = Protocol.getInstance( rs.getInt( PROTO_IDX ));
+                /* Just in case, it is null */
+                String protocol = ( proto == null ) ? "UNK" : proto.toString();
+
+                /* XXX Dirty ICMP hack */
+                if ( clientPort == 0 ) protocol = "Ping";
+
+                /* Set the direction */
+                byte clientIntf           = rs.getByte( CLIENT_INTF_IDX );
+                byte serverIntf           = rs.getByte( SERVER_INTF_IDX );
+                Direction direction       = Direction.getDirection( clientIntf, serverIntf );
+
+                /* Determine the reason
+                 * The rule index is presently ignored, because the rule may have already
+                 * been modified, which could be confusing ot the user 
+                 */
+                boolean isDmz             = rs.getBoolean( IS_DMZ_IDX );
+                int ruleIndex             = rs.getInt( RULE_INDEX_IDX );
+
+                NatRedirectLogEntry redirectLogEntry = new NatRedirectLogEntry
+                    ( createDate, protocol, clientAddr, clientPort, isNatd,
+                      originalServerAddr, originalServerPort, redirectServerAddr, redirectServerPort,
+                      direction, isDmz, ruleIndex );
+
+                l.add( 0, redirectLogEntry );
+            }
+            long l1 = System.currentTimeMillis();
+            logger.debug( "getAccessLogs() in: " + ( l1 - l0 ));
+        } catch (SQLException exn) {
+            logger.warn( "could not get events", exn );
+        } catch (HibernateException exn) {
+            logger.warn( "could not get events", exn );
+        } finally {
+            try {
+                s.close();
+            } catch (HibernateException exn) {
+                logger.warn("could not close Hibernate session", exn);
+            }
+        }
+
+        return l;
+
     }
 
     // package protected methods ----------------------------------------------
