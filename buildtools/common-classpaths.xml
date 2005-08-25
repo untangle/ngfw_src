@@ -221,6 +221,15 @@ $Id: common-classpaths.xml,v 1.32 2005/02/10 23:25:44 jdi Exp $
     <fileset refid="bcel.jarset"/>
   </path>
 
+  <!-- Kind of a hack to include YJP only when it is present on the building machine. XXX -->
+  <fileset id="yjp.jarset" dir="/opt">
+    <include name="yjp/lib/yjp-controller-api-redist.jar"/>
+  </fileset>
+
+  <path id="yjp.classpath">
+    <fileset refid="yjp.jarset"/>
+  </path>
+
   <path id="gui.thirdparty.classpath">
     <path refid="netbeans.jarset"/>
     <path refid="kunststoff.jarset"/>
@@ -239,5 +248,6 @@ $Id: common-classpaths.xml,v 1.32 2005/02/10 23:25:44 jdi Exp $
     <path refid="log4j.classpath"/>
     <path refid="tomcat.classpath"/>
     <path refid="trove.classpath"/>
+    <path refid="yjp.classpath"/>
   </path>
 </project>
