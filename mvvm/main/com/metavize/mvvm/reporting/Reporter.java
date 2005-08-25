@@ -110,16 +110,13 @@ public class Reporter
             logger.error("Could not load the Postgres JDBC driver");
             System.exit(1);
         } catch (IOException exn) {
-            logger.error("IOException writing reports");
-            exn.printStackTrace();
+            logger.error("IOException writing reports", exn);
             System.exit(1);
         } catch (SQLException exn) {
-            logger.error("Could not get JDBC connection");
-            exn.printStackTrace();
+            logger.error("Could not get JDBC connection", exn);
             System.exit(1);
         } catch (JRScriptletException exn) {
-            logger.error("Unexpected Jasper exception");
-            exn.printStackTrace();
+            logger.error("Unexpected Jasper exception", exn);
             System.exit(1);
         } catch (NumberFormatException x) {
             logger.warn("usage: reporter base-dir days-to-save [mars]");
@@ -156,8 +153,7 @@ public class Reporter
         TranReporter tranReporter = new TranReporter(outputDir, tranName, new JarFile(f), ucl);
         tranReporter.process(conn);
             } catch (Exception exn) {
-                logger.warn("bad mar: " + f);
-                exn.printStackTrace();
+                logger.warn("bad mar: " + f, exn);
             }
         }
 

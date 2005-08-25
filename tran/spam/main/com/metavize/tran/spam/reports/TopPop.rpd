@@ -20,11 +20,11 @@ FIELD_3.name=mail_percent
 FIELD_3.type=Float
 QUERY=SELECT addr, \
        count(*), \
-       count(*)::float / (SELECT count(*) FROM tr_spam_evt evt WHERE evt.time_stamp > $P{startTime} AND evt.time_stamp < $P{endTime}) * 100 AS mail_percent \
+       count(*)::float / COALESCE(NULLIF((SELECT count(*) FROM tr_spam_evt evt WHERE vendor_name = $P{spamVendor} AND evt.time_stamp > $P{startTime} AND evt.time_stamp < $P{endTime}), 0), 1) * 100 AS mail_percent \
 FROM tr_mail_message_info info \
 JOIN tr_mail_message_info_addr addr ON addr.msg_id = info.id \
 JOIN tr_spam_evt evt ON evt.msg_id = info.id \
-WHERE kind = 'U' AND evt.time_stamp > $P{startTime} AND evt.time_stamp < $P{endTime} \
+WHERE vendor_name = $P{spamVendor} AND kind = 'U' AND evt.time_stamp > $P{startTime} AND evt.time_stamp < $P{endTime} \
 GROUP BY addr \
 ORDER BY count DESC LIMIT 15
 LEFT.label=Recipient

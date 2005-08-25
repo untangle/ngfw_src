@@ -81,8 +81,6 @@ public class TrafficDayByMinuteGraph extends DayByMinuteTimeSeriesGraph
             incomingDataset = new TimeSeries(incomingSeriesTitle, Minute.class);
         }
 
-        System.out.println("ACK2!");
-
         // Load up the datasets
         String sql = "SELECT client_intf, create_date, raze_date, c2p_bytes, p2s_bytes, s2p_bytes, p2c_bytes FROM pl_endp JOIN pl_stats USING (session_id) where ";
         if (!doIncomingSessions || !doOutgoingSessions)
@@ -106,12 +104,8 @@ public class TrafficDayByMinuteGraph extends DayByMinuteTimeSeriesGraph
         ourEnd = (ourEnd / MINUTE_INTERVAL) * MINUTE_INTERVAL;
         long ourInterval = ourEnd - ourStart;
         int ourMins = (int)(ourInterval / MINUTE_INTERVAL);
-        System.out.println("start: " + ourStart);
-        System.out.println("end: " + ourEnd);
-        System.out.println("mins: " + ourMins);
         // Protect against really big dataset.  Should usally just be 1440.
         if (ourMins > 1441) {
-            System.out.println("Warning, too many minutes: " + ourMins);
             ourMins = 1440;
         }
         double counts[] = new double[ourMins];
@@ -153,8 +147,6 @@ public class TrafficDayByMinuteGraph extends DayByMinuteTimeSeriesGraph
             }
             double outgoingBytesPerInterval = (double)outgoingByteCount / numIntervals;
 
-            System.out.println("hires line doing row, in: " + incomingBytesPerInterval +
-                               ", out: " + outgoingBytesPerInterval);
             if (doThreeSeries) {
                 for (int interval = startInterval; interval < endInterval; interval++) {
                     incomingCounts[interval] += incomingBytesPerInterval;

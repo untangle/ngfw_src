@@ -20,7 +20,7 @@ FIELD_3.name=spam_percent
 FIELD_3.type=Float
 QUERY=SELECT addr, \
        count(CASE WHEN is_spam = TRUE THEN 1 ELSE NULL END) AS count, \
-       count(CASE WHEN is_spam = TRUE THEN 1 ELSE NULL END)::float / (SELECT count(*) FROM tr_spam_evt_smtp evt WHERE evt.time_stamp > $P{startTime} AND evt.time_stamp < $P{endTime}) * 100 AS spam_percent \
+       count(CASE WHEN is_spam = TRUE THEN 1 ELSE NULL END)::float / COALESCE(NULLIF((SELECT count(*) FROM tr_spam_evt_smtp evt WHERE vendor_name = $P{spamVendor} AND evt.time_stamp > $P{startTime} AND evt.time_stamp < $P{endTime} AND is_spam), 0), 1) * 100 AS spam_percent \
 FROM tr_mail_message_info info \
 JOIN tr_spam_evt_smtp evt ON id = msg_id \
 JOIN tr_mail_message_info_addr addr ON info.id = addr.msg_id \

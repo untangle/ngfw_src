@@ -81,7 +81,6 @@ public class TrafficByPortGraph extends TopTenPieGraph
         PortServiceNames psn = PortServiceNames.get();
         int count;
         for (count = 1; rs.next(); count++) {
-            System.out.println("doing row " + count);
             short proto = rs.getShort(1);
             int serverPort = rs.getInt(2);
             short clientIntf = rs.getShort(3);
