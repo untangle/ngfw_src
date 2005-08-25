@@ -119,7 +119,7 @@ Description: The Metavize Rogue Protocol Control
 
 Package: nat-transform
 Architecture: any
-Depends: mvvm, dnsmasq
+Depends: mvvm, dnsmasq, ftp-casing
 XB-Price: 0
 XB-Display-Name: Network Sharing
 XB-Website: http://www.metavize.com/networksharing.html
