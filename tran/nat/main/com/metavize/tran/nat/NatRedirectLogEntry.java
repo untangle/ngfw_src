@@ -40,11 +40,11 @@ public class NatRedirectLogEntry implements Serializable
     private final int       ruleIndex;
     private final boolean   isNatd;
 
-    public NatRedirectLogEntry( Date createDate, String protocol,
-                                String clientAddr, int clientPort, boolean isNatd,
-                                String originalServerAddr, int originalServerPort,
-                                String redirectServerAddr, int redirectServerPort,
-                                Direction direction, boolean isDmz, int ruleIndex )
+    NatRedirectLogEntry( Date createDate, String protocol,
+                         String clientAddr, int clientPort, boolean isNatd,
+                         String originalServerAddr, int originalServerPort,
+                         String redirectServerAddr, int redirectServerPort,
+                         Direction direction, boolean isDmz, int ruleIndex )
     {
         this.createDate         = createDate;
         this.protocol           = protocol;

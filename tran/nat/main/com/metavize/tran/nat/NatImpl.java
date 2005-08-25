@@ -10,7 +10,6 @@
  */
 package com.metavize.tran.nat;
 
-
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -230,7 +229,6 @@ public class NatImpl extends AbstractTransform implements Nat
         }
 
         return l;
-
     }
 
     // package protected methods ----------------------------------------------
