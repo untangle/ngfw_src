@@ -146,7 +146,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 		//Load Rules
 		log.info("Loading Rules...");
 		String path =  System.getProperty("bunnicula.home");
-		File file = new File(path+"/schema/ids-transform/rules");
+		File file = new File(path+"/rules");
 		visitAllFiles(file);
 				
 		//Update settings
@@ -179,24 +179,12 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 			while ((str = in.readLine()) != null) {
 				try {
 					if(testManager.addRule(str.trim())) {
-					//	int counter = 0; /******************************/
-					//	for(IDSRuleSignature signature : header.getSignatures()) {
-					//		System.out.println("Num times called: "+counter++);
-							IDSRuleSignature sig = testManager.getNewestSignature();
-							String message = (null == sig) ? "The signature failed to load" : sig.getMessage();
-							ruleList.add(new IDSRule(str, file.getName().replaceAll(".rules",""),message));//signature.getMessage()));
-					//	}
+						IDSRuleSignature sig = testManager.getNewestSignature();
+						String message = (null == sig) ? "The signature failed to load" : sig.getMessage();
+						ruleList.add(new IDSRule(str, file.getName().replaceAll(".rules",""),message));
 					}
 				} catch(Exception e) { }
 			}
-			//int counter = 0; /******************************/
-			/*for(IDSRuleHeader header : testManager.getHeaders()) {
-				for(IDSRuleSignature signature : header.getSignatures()) {
-					try {
-						ruleList.add(new IDSRule(str, file.getName().replaceAll(".rules",""),signature.getMessage()));
-					} catch (Exception e) {System.out.println("There was an exception: "+e.print); }
-				}
-			}*/
 			in.close();
 		} catch (IOException e) { 
 			e.printStackTrace(); 
@@ -226,7 +214,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 	}
 
 	protected void preStart() throws TransformStartException {
-		//Testing is hella broke - rule headers
+		//Testing is hella broke - rule headers are no longer 1-1 with signatures
 		//IDSTest test = new IDSTest();
 		//if(!test.runTest())
 		//  throw new TransformStartException("IDS Test failed"); // */

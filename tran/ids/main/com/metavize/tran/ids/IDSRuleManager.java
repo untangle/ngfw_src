@@ -144,10 +144,7 @@ public class IDSRuleManager {
 			else {
 				varList = (List<IDSVariable>) IDSDetectionEngine.instance().getSettings().getVariables();
 			}
-		//	Iterator<IDSVariable> it = varList.iterator();
-		//	while(it.hasNext()) {
-		//		IDSVariable var = it.next();
-		for(IDSVariable var : varList) {
+			for(IDSVariable var : varList) {
 				string = string.replaceAll("\\"+var.getVariable(),var.getDefinition());
 			}																		
 		}
