@@ -53,15 +53,17 @@ public class SpamPopHandler extends PopStateMachine
     private final SpamScanner zScanner;
     private final String zVendorName;
 
-    private final WrappedMessageGenerator zWMsgGenerator;
     private final SpamMessageAction zMsgAction;
     private final boolean bScan;
     private final int strength; 
     private final int giveUpSize;
 
+    // This one needs to be changable by subclasses
+    protected WrappedMessageGenerator zWMsgGenerator;
+
     // constructors -----------------------------------------------------------
 
-    SpamPopHandler(TCPSession session, SpamImpl transform, MailExport zMExport)
+    protected SpamPopHandler(TCPSession session, SpamImpl transform, MailExport zMExport)
     {
         super(session);
 
@@ -138,8 +140,8 @@ public class SpamPopHandler extends PopStateMachine
             eventLogger.info(new SpamLogEvent(zMsgInfo, zReport.getScore(), zReport.isSpam(), zMsgAction, zVendorName));
 
             try {
-                zMMessage.getMMHeaders().removeHeaderFields(SPAM_HDR_NAME_LC);
-                zMMessage.getMMHeaders().addHeaderField(SPAM_HDR_NAME, true == zReport.isSpam() ? IS_SPAM_HDR_VALUE : IS_HAM_HDR_VALUE);
+                zMMessage.getMMHeaders().removeHeaderFields(spamHeaderNameLC());
+                zMMessage.getMMHeaders().addHeaderField(spamHeaderName(), true == zReport.isSpam() ? IS_SPAM_HDR_VALUE : IS_HAM_HDR_VALUE);
             }
             catch (HeaderParseException exn) {
                 /* we'll reuse original message */
@@ -156,5 +158,13 @@ public class SpamPopHandler extends PopStateMachine
             /* we'll reuse original message */
             throw new TokenException("cannot scan message/mime part file: " + exn);
         }
+    }
+
+    // A method so it can be overriden
+    protected String spamHeaderName() {
+        return SPAM_HDR_NAME;
+    }
+    protected LCString spamHeaderNameLC() {
+        return SPAM_HDR_NAME_LC;
     }
 }

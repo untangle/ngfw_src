@@ -51,14 +51,15 @@ public class SpamReport
     private static final String THRESHOLD_KEY = "THRESHOLD".toLowerCase();
     private static final String SCORE_KEY = "SCORE".toLowerCase();
 
-    public static final float MAX_THRESHOLD = 1000;
-
-    public static final SpamReport ERROR =
-        new SpamReport(new LinkedList<ReportItem>(), MAX_THRESHOLD);
-
     private final float threshold;
     private final List<ReportItem> items;
     private final float score;
+
+    public static final float MAX_THRESHOLD = 1000f;
+    public static final float MIN_THRESHOLD = 0f;
+
+    public static final SpamReport EMPTY =
+        new SpamReport(new LinkedList<ReportItem>(), MAX_THRESHOLD);
 
     private Logger logger = Logger.getLogger(SpamReport.class);
 

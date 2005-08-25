@@ -270,7 +270,7 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
                 l.add(0, rl);
             }
             long l1 = System.currentTimeMillis();
-            logger.debug("getActiveXLogs() in: " + (l1 - l0));
+            logger.debug("getSpamLogs() in: " + (l1 - l0));
         } catch (SQLException exn) {
             logger.warn("could not get events", exn);
         } catch (HibernateException exn) {

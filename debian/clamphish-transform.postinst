@@ -1,0 +1,5 @@
+#! /bin/sh
+
+mcli -t 30 register clamphish-transform 2>/dev/null || true
+
+

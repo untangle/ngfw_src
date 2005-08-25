@@ -1,0 +1,51 @@
+TEMPLATE=Detail
+REPORT_NAME=PhishDetail
+REPORT_TITLE=PhishNet - Emails (POP/IMAP)
+EXTRA_PARAM_1.name=spamVendor
+EXTRA_PARAM_1.type=java.lang.String
+FIELD_1.name=time_stamp
+FIELD_1.type=Timestamp
+FIELD_2.name=subject
+FIELD_2.type=String
+FIELD_3.name=recip_addr
+FIELD_3.type=String
+FIELD_4.name=from_addr
+FIELD_4.type=String
+FIELD_5.name=is_spam
+FIELD_5.type=Boolean
+FIELD_6.name=ip_addr
+FIELD_6.type=String
+FIELD_7.name=action
+FIELD_7.type=String
+QUERY=SELECT evt.time_stamp, \
+        subject, \
+        recip_addr.addr as recip_addr, \
+        from_addr.addr as from_addr, \
+        is_spam, \
+        s_server_addr as ip_addr, \
+        action \
+ FROM tr_mail_message_info msg  \
+ LEFT OUTER JOIN tr_mail_message_info_addr recip_addr ON msg.id = recip_addr.msg_id AND recip_addr.kind = 'U' \
+ LEFT OUTER JOIN tr_mail_message_info_addr from_addr ON msg.id = from_addr.msg_id AND from_addr.kind = 'F' \
+ JOIN tr_spam_evt evt ON msg.id = evt.msg_id \
+ JOIN pl_endp USING (session_id) \
+ WHERE evt.time_stamp > $P{startTime} AND evt.time_stamp < $P{endTime} \
+ AND vendor_name = $P{spamVendor} \
+ AND NOT server_type = 'S' \
+ AND is_spam \ 
+ ORDER BY evt.time_stamp DESC
+TOPLEFT.label=Timestamp
+TOPLMID.label=Phish?
+BOTLMID.label=Action
+TOPRMID.label=Subject
+BOTRMID.label=Msg receiver
+TOPRIGHT.label=Source IP
+BOTRIGHT.label=Msg sender
+TOPLEFT.expr=$F{time_stamp}
+TOPLMID.expr=$F{is_spam}.booleanValue() ? "PHISH" : ""
+BOTLMID.expr=$F{is_spam}.booleanValue() ? ($F{action}.charAt(0) == 'P' ? "pass message" : $F{action}.charAt(0) == 'M' ? "mark message" : $F{action}.charAt(0) == 'B' ? "block message" : "unknown") : ""
+TOPRMID.expr=$F{subject}
+BOTRMID.expr=$F{recip_addr} == null ? "unknown" : $F{recip_addr}
+TOPRIGHT.expr=$F{ip_addr}
+BOTRIGHT.expr=$F{from_addr}
+BOTRIGHT.type=java.lang.String

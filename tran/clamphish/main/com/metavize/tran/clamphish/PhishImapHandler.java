@@ -9,25 +9,23 @@
  * $Id$
  */
 
-package com.metavize.tran.spam;
+package com.metavize.tran.clamphish;
 
 
 import com.metavize.mvvm.tapi.TCPSession;
+import com.metavize.tran.spam.SpamImapHandler;
 import com.metavize.tran.mail.papi.imap.ImapStateMachine;
 import org.apache.log4j.Logger;
 
-public class SpamImapHandler extends ImapStateMachine
+class PhishImapHandler extends SpamImapHandler
 {
-    private final Logger logger = Logger.getLogger(SpamImapHandler.class);
-
-    private final SpamImpl transform;
+    private final Logger logger = Logger.getLogger(PhishImapHandler.class);
 
     // constructors -----------------------------------------------------------
 
-    protected SpamImapHandler(TCPSession session, SpamImpl transform)
+    PhishImapHandler(TCPSession session, ClamPhishTransform transform)
     {
-        super(session);
-        this.transform = transform;
+        super(session, transform);
     }
 
     // ImapStateMachine methods -----------------------------------------------

@@ -146,8 +146,8 @@ public class SmtpSessionHandler
 
     //Mark headers regardless of other actions
     try {
-      msg.getMMHeaders().removeHeaderFields(SPAM_HEADER_NAME_LC);
-      msg.getMMHeaders().addHeaderField(SPAM_HEADER_NAME,
+      msg.getMMHeaders().removeHeaderFields(spamHeaderNameLC());
+      msg.getMMHeaders().addHeaderField(spamHeaderName(),
         report.isSpam()?IS_SPAM_HEADER_VALUE:IS_HAM_HEADER_VALUE);
     }
     catch(HeaderParseException shouldNotHappen) {
@@ -271,6 +271,14 @@ public class SmtpSessionHandler
     }
   }
 
+    // A method so it can be overriden
+    protected String spamHeaderName() {
+        return SPAM_HEADER_NAME;
+    }
+    protected LCString spamHeaderNameLC() {
+        return SPAM_HEADER_NAME_LC;
+    }
+
   /**
    * Wrapper that handles exceptions, and returns
    * null if there is a problem
@@ -294,7 +302,7 @@ public class SmtpSessionHandler
     //Attempt scan
     try {
       SpamReport ret = m_spamImpl.getScanner().scanFile(f, m_config.getStrength()/10.0f);
-      if(ret == null || ret == SpamReport.ERROR) {
+      if(ret == null) {
         m_logger.error("Received ERROR SpamReport");
         return null;
       }

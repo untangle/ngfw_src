@@ -22,13 +22,15 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <import file="../buildtools/buildmagic.xml"/>
 
   <!-- When creating new transforms (casings or bases) you need to carefully update the depends in build.tran
-       so that the appropriate stamps are removed so the subtransforms are rebuilt -->
+       so that the appropriate stamps are removed so the subtransforms are rebuilt.
+       Also note that the build order here is meaningful as we use earlier parts in later parts without
+       explicit dependencies.  -->
   <property name="casings"
         value="http,ftp,mail"/>
   <property name="bases"
         value="virus,spam"/>
   <property name="transforms"
-        value="nat,firewall,airgap,reporting,protofilter,test,sigma,hauri,clam,spyware,httpblocker,spamassassin,email,ids"/>
+        value="nat,firewall,airgap,reporting,protofilter,test,sigma,hauri,clam,spyware,httpblocker,spamassassin,clamphish,ids,email"/>
 
   <!--              -->
   <!-- main targets -->
@@ -80,7 +82,8 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       </then> </if>
       <if> <equals arg1="${tran.name}" arg2="spam"/> <then>
             <delete><fileset dir="${build.dist}" includes="stamp-transform-spamasssassin"/></delete>
-      </then> </if>
+            <delete><fileset dir="${build.dist}" includes="stamp-transform-clamphish"/></delete>
+	  </then> </if>
         </then> </if>
 
     <echo message="Building '${tran.name}'"/>
@@ -185,6 +188,11 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
     <!-- FIXME email special case -->
     <if> <equals arg1="${tran.name}" arg2="email"/> <then>
         <var name="extra.classes" value="../tran/output/jar/hauri-transform.mar:../tran/output/jar/clam-transform.mar"/>
+    </then> </if>
+
+    <!-- FIXME clamphish special case -->
+    <if> <equals arg1="${tran.name}" arg2="clamphish"/> <then>
+        <var name="extra.classes" value="../tran/output/jar/clam-transform.mar:../tran/output/jar/spam-base.mar:../tran/output/jar/virus-base.mar:../tran/output/jar/mail-casing.mar"/>
     </then> </if>
 
     <javac destdir="${build.root}/${tran.name}"
@@ -317,6 +325,16 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
     </jar>
   </target>
 
+  <target name="install.clamphish">
+    <copy todir="${dist.mvvm.schema}/clamphish-transform">
+      <fileset dir="spam/hier/${suffix.mvvm.schema}/spam-base"/>
+    </copy>
+    <!-- XXX hack attack, need real gui jars -->
+    <jar update="true" destfile="${dist.mvvm.webstart}/clamphish-transform.mar">
+      <fileset dir="${build.root}/mail"/>
+    </jar>
+  </target>
+
 
   <target name="install.httpblocker"/>
   <target name="install.airgap"/>
@@ -442,21 +460,42 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
     <jar destfile="${build.jar}/${tran.name}-${tran.type}.mar" index="yes"
          update="true">
       <fileset dir="${build.root}/virus"/>
-      <fileset dir="${build.gensrc}/virus"/>
+      <fileset dir="${build.gensrc}/virus">
+        <exclude name="**/*jrxml"/>
+      </fileset>
     </jar>
   </target>
   <target name="jar.clam"> <!-- include Virus Abstract transform -->
     <jar destfile="${build.jar}/${tran.name}-${tran.type}.mar" index="yes"
          update="true">
       <fileset dir="${build.root}/virus"/>
-      <fileset dir="${build.gensrc}/virus"/>
+      <fileset dir="${build.gensrc}/virus">
+        <exclude name="**/*jrxml"/>
+      </fileset>
     </jar>
   </target>
   <target name="jar.spamassassin"> <!-- include Spam Abstract transform -->
     <jar destfile="${build.jar}/${tran.name}-${tran.type}.mar" index="yes"
          update="true">
       <fileset dir="${build.root}/spam"/>
-      <fileset dir="${build.gensrc}/spam"/>
+      <fileset dir="${build.gensrc}/spam">
+        <exclude name="**/*jrxml"/>
+      </fileset>
+    </jar>
+  </target>
+  <target name="jar.clamphish"> <!-- include Spam Abstract transform, include Clam Scanners -->
+    <jar destfile="${build.jar}/${tran.name}-${tran.type}.mar" index="yes"
+         update="true">
+      <fileset dir="${build.root}/spam"/>
+      <fileset dir="${build.gensrc}/spam">
+        <exclude name="**/*jrxml"/>
+      </fileset>
+      <fileset dir="${build.root}/virus">
+        <include name="com/metavize/tran/virus/VirusScanner*.class"/>
+      </fileset>
+      <fileset dir="${build.root}/clam">
+        <include name="com/metavize/tran/clam/ClamScannerLauncher.class"/>
+      </fileset>
     </jar>
   </target>
 
@@ -473,6 +512,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <target name="compile.hauri"/>
   <target name="compile.clam"/>
   <target name="compile.spamassassin"/>
+  <target name="compile.clamphish"/>
   <target name="compile.httpblocker"/>
   <target name="compile.airgap"/>
   <target name="compile.reporting"/>

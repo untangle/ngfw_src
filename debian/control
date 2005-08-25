@@ -150,6 +150,16 @@ XB-Rack-Position: 0
 Description: The Metavize SpamGuard Software Appliance
  The SpamGuard Software Appliance marks Spam email as Spam.
 
+Package: clamphish-transform
+Architecture: any
+Depends: mvvm, clamav-mv, mail-casing
+XB-Price: 0
+XB-Display-Name: PhishNet
+XB-Website: http://www.metavize.com/phish.html
+XB-Rack-Position: 0
+Description: The Metavize PhishNet Software Appliance
+ The PhishNet Software Appliance marks Phishing emails as Phish.
+
 Package: test-transform
 Architecture: any
 Depends: mvvm
