@@ -7,11 +7,57 @@ import com.metavize.mvvm.tran.PortRange;
 import com.metavize.mvvm.tran.firewall.IPMatcher;
 
 import java.util.List;
+import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.Iterator;
 
 public class IDSRuleHeader {
-	
+	/*
+	private class SignatureLinkedList {
+		
+		private class Node {
+			private Node next = null;
+			public IDSRuleSignature signature;
+
+			public Node(IDSRuleSignature signature) {
+				this.signature = signature;
+			}
+
+			public void next(Node node) {
+				next = node;
+			}
+
+			public Node next() {
+				return next;
+			}
+		}
+
+		private int size = 0;
+		private Node rootNode = null;
+		private Node currentNode = null;
+		
+		public SignatureLinkedList() { }
+		
+		public void add(IDSRuleSignature signature) {
+			if(currentNode == null) {
+				currentNode = new Node(signature);
+				rootNode = currentNode;
+			}
+			else {
+				Node nextNode = new Node(signature);
+				currentNode.next(nextNode);
+				currentNode = nextNode;
+			}
+		}
+
+		public void add(SignatureLinkedList other) {
+			currentNode.next(other.rootNode);
+			currentNode = other.currnetNode;
+		}
+	}*/
+
 	public static final boolean	IS_BIDIRECTIONAL = true;
+	public static final boolean	IS_SERVER = true;
 	
 	private int 			action = 0;
 	private Protocol		protocol;
@@ -24,7 +70,7 @@ public class IDSRuleHeader {
 	private List<IPMatcher>	serverIPList;
 	private PortRange 		serverPortRange;
 
-	private	IDSRuleSignature testSignature;
+	private	List<IDSRuleSignature> signatures = new LinkedList<IDSRuleSignature>();
 
 	/**
 	 * Negation Flags: flag XOR input = answer
@@ -52,6 +98,13 @@ public class IDSRuleHeader {
 		this.serverPortRange = serverPortRange;
 	}
 
+	public boolean portMatches(int port, boolean toServer) {
+		if(toServer)
+			return serverPortFlag ^ serverPortRange.contains(port);
+		else
+			return clientPortFlag ^ clientPortRange.contains(port);
+	}
+			
 	public boolean matches(Protocol protocol, InetAddress clientAddr, int clientPort, InetAddress serverAddr, int serverPort) {
 		if(this.protocol != protocol)
 			return false;
@@ -99,16 +152,28 @@ public class IDSRuleHeader {
 		serverPortFlag = serverPort;
 	}
 
-	public void setSignature(IDSRuleSignature test) {
-		testSignature = test;
+	public void addSignature(IDSRuleSignature sig) {
+		signatures.add(sig);
 	}
 
 	public int getAction() {
 		return action;
 	}
 	
-	public IDSRuleSignature getSignature() {
-		return testSignature;
+	public List<IDSRuleSignature> getSignatures() {
+		return signatures;
+	}
+	
+	public boolean equals(IDSRuleHeader other) {
+		boolean action = (this.action == other.action);
+		boolean protocol = (this.protocol == other.protocol); // ?
+		boolean clientPorts = (this.clientPortRange.equals(other.clientPortRange));
+		boolean serverPorts = (this.serverPortRange.equals(other.serverPortRange));
+		boolean serverIP = (this.serverIPList.equals(other.serverIPList));
+		boolean clientIP = (this.serverIPList.equals(other.serverIPList));
+		boolean direction = (this.bidirectional == other.bidirectional);
+
+		return action && protocol && clientPorts && serverPorts && serverIP && clientIP && direction;
 	}
 	
 	public String toString() {

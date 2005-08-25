@@ -113,13 +113,13 @@ public class IDSRuleSignature {
 	private void doAction() {
 		switch(action) {
 			case IDSRuleManager.ALERT:
-				//System.out.println(message);
+			//	System.out.println(message);
 				break;
 			case IDSRuleManager.LOG:
 				break;
 		}
 		int id = (info.getSession() == null) ? -1 : info.getSession().id();
-		eventLog.info(new IDSLogEvent(id,message,false));
+		eventLog.info(new IDSLogEvent(id,message,false)); //Add list number that this rule came from
 	}
 
 	public void setToString(String string) {

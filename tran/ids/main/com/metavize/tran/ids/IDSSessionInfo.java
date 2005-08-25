@@ -7,7 +7,8 @@ import com.metavize.mvvm.tapi.event.*;
 
 public class IDSSessionInfo {
 	
-	private List<IDSRuleSignature> signatures;
+	private List<IDSRuleSignature> c2sSignatures;
+	private List<IDSRuleSignature> s2cSignatures;
 	private IPSession session;
 	private IPDataEvent event;
 	private String uriPath;
@@ -33,10 +34,13 @@ public class IDSSessionInfo {
 		return session;
 	}
 	
-	public void setSignatures(List<IDSRuleSignature> signatures) {
-		this.signatures = signatures;
+	public void setc2sSignatures(List<IDSRuleSignature> signatures) {
+		this.c2sSignatures = signatures;
 	}
 
+	public void sets2cSignatures(List<IDSRuleSignature> signatures) {	
+		this.s2cSignatures = signatures;
+	}
 	public void setEvent(IPDataEvent event) {
 		this.event = event;
 	}
@@ -53,21 +57,18 @@ public class IDSSessionInfo {
 		return isServer;
 	}
 
-	public void processSignatures() {
-		Iterator it = signatures.iterator();
-		while(it.hasNext()) {
-			IDSRuleSignature signature = (IDSRuleSignature)it.next();
-			signature.execute(this);
-		}
+	public void processC2SSignatures() {
+		for(IDSRuleSignature sig : c2sSignatures)
+			sig.execute(this);
 	}
 	
 	/**Debug methods*/
 	public boolean testSignature(int num) {
-		return signatures.get(num).execute(this);
+		return c2sSignatures.get(num).execute(this);
 	}
 
 	public IDSRuleSignature getSignature(int num) {
-		return signatures.get(num);
+		return c2sSignatures.get(num);
 	}
 	// */
 }

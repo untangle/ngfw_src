@@ -3,6 +3,7 @@ package com.metavize.tran.ids;
 import java.nio.*;
 import java.util.List;
 import java.util.Vector;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -21,10 +22,12 @@ public class IDSDetectionEngine {
 	private IDSSettings settings = null;
 	private IDSRuleManager rules = new IDSRuleManager();
 	Map<Integer,IDSSessionInfo> sessionInfoMap = new ConcurrentHashMap<Integer,IDSSessionInfo>();
+	Map<Integer,List<IDSRuleHeader>> portS2CMap = new ConcurrentHashMap<Integer,List<IDSRuleHeader>>();
+	Map<Integer,List<IDSRuleHeader>> portC2SMap = new ConcurrentHashMap<Integer,List<IDSRuleHeader>>();
 	
 	private static final Logger log = Logger.getLogger(IDSDetectionEngine.class);
 	static {
-		log.setLevel(Level.INFO);
+		log.setLevel(Level.WARN);
 	}	
 	private static IDSDetectionEngine instance = new IDSDetectionEngine();//null; 
 	public static IDSDetectionEngine instance() {
@@ -62,7 +65,7 @@ public class IDSDetectionEngine {
 	
 	public boolean addRule(String rule) {
 		try {
-			return (rules.addRule(rule) != null);
+			return (rules.addRule(rule));
 		} catch (ParseException e) { 
 			log.warn("Could not parse rule; " + e.getMessage()); 
 		} catch (Exception e) {
@@ -73,20 +76,56 @@ public class IDSDetectionEngine {
 	}
 
 	public boolean processNewSession(IPNewSessionRequest session, Protocol protocol) {
+		long startTime = System.nanoTime();
 		
-		List<IDSRuleSignature> signatures = rules.matchesHeader(protocol, session.clientAddr(), session.clientPort(), session.serverAddr(), session.serverPort());
-		if(signatures.size() > 0) {
+		//Get Mapped list
+		List<IDSRuleHeader> c2sList = portC2SMap.get(session.serverPort());
+		List<IDSRuleHeader> s2cList = portS2CMap.get(session.serverPort());
+		
+		if(c2sList == null) {
+			c2sList = rules.matchingPortsList(session.serverPort(), IDSRuleManager.TO_SERVER);
+			portC2SMap.put(session.serverPort(),c2sList);
+			
+			log.debug("\nc2sList Size: "+c2sList.size() + " For port: "+session.serverPort());
+		}
+		
+		if(s2cList == null) {
+			s2cList = rules.matchingPortsList(session.serverPort(), IDSRuleManager.TO_CLIENT);
+			portS2CMap.put(session.serverPort(),s2cList);
+			
+			log.debug("\ns2cList Size: "+s2cList.size() + " For port: "+session.serverPort());
+		}
+		
+		log.debug("Time memo: " + (float)(System.nanoTime() - startTime)/1000000f);
+		
+		//Check matches
+		List<IDSRuleSignature> c2sSignatures = rules.matchesHeader(
+				protocol, session.clientAddr(), session.clientPort(), 
+				session.serverAddr(), session.serverPort(), c2sList);
+
+		List<IDSRuleSignature> s2cSignatures = rules.matchesHeader(
+				protocol, session.clientAddr(), session.clientPort(),
+				session.serverAddr(), session.serverPort(), s2cList);
+		
+		if(c2sSignatures.size() > 0) {
 			IDSSessionInfo info = getSessionInfo(session.id());
+			
+			//I need to fix uricontent
 			if(info == null) {
 				info = new IDSSessionInfo();
-				info.setSignatures(signatures);
+				info.setc2sSignatures(c2sSignatures);
+				info.sets2cSignatures(s2cSignatures);
 			}
-			else
-				info.setSignatures(signatures);
+			else {
+				info.setc2sSignatures(c2sSignatures);
+				info.sets2cSignatures(s2cSignatures);
+			}
 			session.attach(info);
 		}
 		else
 			session.release();
+		
+		log.debug("Time total: " + (float)(System.nanoTime() - startTime)/1000000f);
 		return false; // Fix me - not sure what I want to return
 	}
 
@@ -105,7 +144,7 @@ public class IDSDetectionEngine {
 		info.setEvent(event);
 		info.setFlow(isServer);
 
-		info.processSignatures();
+		info.processC2SSignatures();
 	}
 
 	public void mapSessionInfo(int id, IDSSessionInfo info) {

@@ -19,14 +19,17 @@ import com.metavize.mvvm.tran.ParseException;
 
 public class IDSRuleManager {
 
+	public static final boolean TO_SERVER = true;	
+	public static final boolean TO_CLIENT = false;
+
 	public static final int ALERT = 0;
 	public static final int LOG = 1;
 	public static final String[] ACTIONS = { "alert", "log" };
-			
-	private List<IDSRuleHeader> ruleHeaders = Collections.synchronizedList(new ArrayList<IDSRuleHeader>());
+	
+	private IDSRuleSignature newSignature = null;
+	private List<IDSRuleHeader> knownHeaders = Collections.synchronizedList(new LinkedList<IDSRuleHeader>());
 	
 	private static Pattern variablePattern = Pattern.compile("\\$[^ \n\r\t]+");
-	
 	public static List<IDSVariable> defaultVariables = new ArrayList<IDSVariable>(); 
 	static {
 		defaultVariables.add(new IDSVariable("$EXTERNAL_NET","!10.0.0.1/24","This is a description"));
@@ -48,51 +51,88 @@ public class IDSRuleManager {
 	public IDSRuleManager() {
 	}
 
-	public IDSRuleHeader addRule(String rule) throws ParseException {
+	public boolean addRule(String rule) throws ParseException {
 		
 		if(rule.length() <= 0 || rule.charAt(0) == '#')
-			return null;
+			return false;
 		rule = substituteVariables(rule);
 		String ruleParts[] 			= IDSStringParser.parseRuleSplit(rule);
 		IDSRuleHeader header		= IDSStringParser.parseHeader(ruleParts[0]);
 		IDSRuleSignature signature	= IDSStringParser.parseSignature(ruleParts[1], header.getAction());
 	
 		signature.setToString(ruleParts[1]);
-		//Might want to change this.
+	
 		if(!signature.remove()) {
-			header.setSignature(signature);
-			ruleHeaders.add(header);
-			return header;
+			for(IDSRuleHeader known : knownHeaders) {
+				if(known.equals(header)) {
+					known.addSignature(signature);
+					newSignature = signature;
+					return true;
+				}
+			}
+			header.addSignature(signature);
+			newSignature = signature;
+		////////////////////////////////////////	System.out.println(header);
+			knownHeaders.add(header);
+			return true;
 		}
-		return null;
+		return false;
 	}
 
-	public List<IDSRuleSignature> matchesHeader(Protocol protocol, InetAddress clientAddr, int clientPort, InetAddress serverAddr, int serverPort) {
-		List<IDSRuleSignature> returnList = new LinkedList();
-	//	System.out.println(ruleHeaders.size()); /** *****************************************/
+	public List<IDSRuleHeader> matchingPortsList(int port, boolean toServer) {
+		List<IDSRuleHeader> returnList = new LinkedList();
+		synchronized(knownHeaders) {
+			for(IDSRuleHeader header : knownHeaders) {
+				if(header.portMatches(port, toServer)) {
+					returnList.add(header);
+					//  System.out.println("\n\n"+header+"\n"+header.getSignature());
+				}
+			}
+		}
+		return returnList;
+	}
 	
-		synchronized(ruleHeaders) {
-			Iterator<IDSRuleHeader> it = ruleHeaders.iterator();
-			while(it.hasNext()) {
-				IDSRuleHeader header = it.next();
+	public List<IDSRuleSignature> matchesHeader(
+			Protocol protocol, InetAddress clientAddr, int clientPort, 
+			InetAddress serverAddr, int serverPort) {
+		
+		return matchesHeader(protocol, clientAddr, clientPort, serverAddr, serverPort, knownHeaders);
+	}
+	
+	public List<IDSRuleSignature> matchesHeader(
+			Protocol protocol, InetAddress clientAddr, int clientPort, 
+			InetAddress serverAddr, int serverPort, List<IDSRuleHeader> matchList) {
+		
+		List<IDSRuleSignature> returnList = new LinkedList();
+		//System.out.println("Total List size: "+matchList.size()); /** *****************************************/
+	
+		synchronized(matchList) {
+			//Iterator<IDSRuleHeader> it = matchList.iterator();
+			//while(it.hasNext()) {
+			//	IDSRuleHeader header = it.next();
+			for(IDSRuleHeader header : matchList) {
 				if(header.matches(protocol, clientAddr, clientPort, serverAddr, serverPort)) {
-					returnList.add(header.getSignature());
+					/**********************************************************************************************************/
+					returnList.addAll(header.getSignatures());
 				//	System.out.println("\n\n"+header+"\n"+header.getSignature());
 				}
 			}
 		}
-	//	System.out.println(returnList.size()); /** *****************************************/
-		
+		//System.out.println("Signature List Size: "+returnList.size()); /** *****************************************/
 		return returnList;
 	}
 
 	/*For debug yo*/
 	public List<IDSRuleHeader> getHeaders() {
-		return ruleHeaders;
+		return knownHeaders;
 	}
 
 	public void clear() {
-		ruleHeaders.clear();
+		knownHeaders.clear();
+	}
+	
+	public IDSRuleSignature getNewestSignature() {
+		return newSignature;
 	}
 
 	private String substituteVariables(String string) {
@@ -104,9 +144,10 @@ public class IDSRuleManager {
 			else {
 				varList = (List<IDSVariable>) IDSDetectionEngine.instance().getSettings().getVariables();
 			}
-			Iterator<IDSVariable> it = varList.iterator();
-			while(it.hasNext()) {
-				IDSVariable var = it.next();
+		//	Iterator<IDSVariable> it = varList.iterator();
+		//	while(it.hasNext()) {
+		//		IDSVariable var = it.next();
+		for(IDSVariable var : varList) {
 				string = string.replaceAll("\\"+var.getVariable(),var.getDefinition());
 			}																		
 		}

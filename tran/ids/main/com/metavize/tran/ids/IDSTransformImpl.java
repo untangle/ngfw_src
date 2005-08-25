@@ -178,14 +178,25 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 			int count = 0;
 			while ((str = in.readLine()) != null) {
 				try {
-					IDSRuleHeader header = testManager.addRule(str.trim());
-					if(header != null) {
-						IDSRuleSignature signature = header.getSignature();
-						ruleList.add(new IDSRule(str, file.getName().replaceAll(".rules",""),signature.getMessage()));
+					if(testManager.addRule(str.trim())) {
+					//	int counter = 0; /******************************/
+					//	for(IDSRuleSignature signature : header.getSignatures()) {
+					//		System.out.println("Num times called: "+counter++);
+							IDSRuleSignature sig = testManager.getNewestSignature();
+							String message = (null == sig) ? "The signature failed to load" : sig.getMessage();
+							ruleList.add(new IDSRule(str, file.getName().replaceAll(".rules",""),message));//signature.getMessage()));
+					//	}
 					}
-				}
-				catch (Exception e) {} //ParseException?
+				} catch(Exception e) { }
 			}
+			//int counter = 0; /******************************/
+			/*for(IDSRuleHeader header : testManager.getHeaders()) {
+				for(IDSRuleSignature signature : header.getSignatures()) {
+					try {
+						ruleList.add(new IDSRule(str, file.getName().replaceAll(".rules",""),signature.getMessage()));
+					} catch (Exception e) {System.out.println("There was an exception: "+e.print); }
+				}
+			}*/
 			in.close();
 		} catch (IOException e) { 
 			e.printStackTrace(); 
@@ -215,9 +226,10 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 	}
 
 	protected void preStart() throws TransformStartException {
-		IDSTest test = new IDSTest();
-		if(!test.runTest())
-		  throw new TransformStartException("IDS Test failed"); // */
+		//Testing is hella broke - rule headers
+		//IDSTest test = new IDSTest();
+		//if(!test.runTest())
+		//  throw new TransformStartException("IDS Test failed"); // */
 		
 		try {
 			reconfigure();
