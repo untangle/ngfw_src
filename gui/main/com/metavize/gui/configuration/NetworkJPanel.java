@@ -28,6 +28,7 @@ public class NetworkJPanel extends javax.swing.JPanel implements Savable, Refres
     private static final String EXCEPTION_DHCP_GATEWAY = "Invalid \"Default Route\" manually specified.";
     private static final String EXCEPTION_DHCP_DNS_1 = "Invalid \"Primary DNS\" maually specified.";
     private static final String EXCEPTION_DHCP_DNS_2 = "Invalid \"Secondary DNS\" manually specified.";
+    private static final String EMPTY_DNS2 = "";
 
     
     public NetworkJPanel() {
@@ -104,7 +105,12 @@ public class NetworkJPanel extends javax.swing.JPanel implements Savable, Refres
         dnsSecondaryJTextField.setBackground( Color.WHITE );
 	if( !isDhcpEnabled ){
             try{
-                dns2 = IPaddr.parse( dnsSecondaryJTextField.getText() );
+                String value = dnsSecondaryJTextField.getText().trim();
+                if ( value.length() > 0 ) {
+                    dns2 = IPaddr.parse( value );
+                } else {
+                    /* Ignoring empty secondary DNS entry, dns2 = null is okay for network settings */
+                }
             }
             catch(Exception e){
                 dnsSecondaryJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
@@ -156,9 +162,12 @@ public class NetworkJPanel extends javax.swing.JPanel implements Savable, Refres
 	dnsPrimaryJTextField.setBackground( Color.WHITE );
 
 	// DNS2 //////////
-        dnsSecondaryJTextField.setText( networkingConfiguration.dns2().toString() );
+        if ( networkingConfiguration.hasDns2()) {
+            dnsSecondaryJTextField.setText( networkingConfiguration.dns2().toString() );
+        } else {
+            dnsSecondaryJTextField.setText( EMPTY_DNS2 );
+        }
 	dnsSecondaryJTextField.setBackground( Color.WHITE );
-        	
     }
     
     

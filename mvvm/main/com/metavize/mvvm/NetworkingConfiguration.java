@@ -183,6 +183,11 @@ public class NetworkingConfiguration implements Serializable
         return this.dns2;
     }
 
+    public boolean hasDns2() 
+    {
+        return ( this.dns2 != null && !this.dns2.equals( EMPTY_IPADDR ));
+    }
+
     public boolean isSshEnabled()
     {
         return this.isSshEnabled;
