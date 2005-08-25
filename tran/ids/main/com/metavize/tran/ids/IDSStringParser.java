@@ -13,10 +13,10 @@ import com.metavize.mvvm.tran.ParseException;
 
 public class IDSStringParser {
 
+	public static final String HOME_IP = "Home"+0xBEEF;
+	public static final String EXTERNAL_IP = "EXTERNAL"+0xBEEF;
 	private static Pattern maskPattern = Pattern.compile("\\d\\d");
 	private static Pattern semicolonMask = Pattern.compile("\\;");
-	//private static Pattern qouteMaskPattern = Pattern.compile("\\b\"[^\"\\r\\n\\t]*?(;|:)[^\"\\r\\n\\t]*?\"\\b");
-	//private static Pattern replacementPattern = Pattern.compile("@@REPLACMENT@@");
 	
 	private static boolean clientIPFlag;
 	private static boolean clientPortFlag;
@@ -146,6 +146,10 @@ public class IDSStringParser {
 		List<IPMatcher> ipList = new Vector<IPMatcher>();
 		if(ipString.equalsIgnoreCase("any"))
 			ipList.add(IPMatcher.MATCHER_ALL);
+		else if(ipString.equalsIgnoreCase(EXTERNAL_IP))
+				ipList.add(IPMatcher.MATCHER_EXTERNAL);
+		else if(ipString.equalsIgnoreCase(HOME_IP))
+				ipList.add(IPMatcher.MATCHER_INTERNAL);
 		else {
 			ipString = ipString.replaceAll("\\[","");
 			ipString = ipString.replaceAll("\\]","");

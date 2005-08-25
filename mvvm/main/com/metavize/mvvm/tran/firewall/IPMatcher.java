@@ -48,6 +48,10 @@ public final class IPMatcher implements Serializable
 
     /* A range for matching local traffic */
     public static final IPMatcher MATCHER_LOCAL = new IPMatcher( true );
+    
+	/* A matcher for dynamic ip address */
+	public static final IPMatcher MATCHER_INTERNAL = new IPMatcher( true, false );
+    public static final IPMatcher MATCHER_EXTERNAL = new IPMatcher( false, true );
 
     static InetAddress outsideAddress = null;
     static long        outsideLong = -1L;
@@ -78,8 +82,18 @@ public final class IPMatcher implements Serializable
      * isLocal: True if this is a matcher for local traffic 
      */
     private final boolean isLocal;
+	
+	/**
+	 * isInternal: True if this is a matcher for internal traffic
+	 */
+	private final boolean isInternal;
         
-    public IPMatcher( Inet4Address base, Inet4Address second, boolean isRange ) 
+	/**
+	 * isExternal: True if this is a matcher for external traffic
+	 */
+	private final boolean isExternal;
+    
+	public IPMatcher( Inet4Address base, Inet4Address second, boolean isRange ) 
     {
         long tmpBase;
         long tmpSecond;
@@ -88,6 +102,9 @@ public final class IPMatcher implements Serializable
         tmpBase = toLong( base );
         
         isLocal = false;
+		isInternal = false;
+		isExternal = false;
+	
         
         if ( isRange ) {
             tmpSecond = toLong( second );
@@ -119,6 +136,8 @@ public final class IPMatcher implements Serializable
         this.second = this.base = toLong( base );
         isRange     = true;
         isLocal     = false;
+		isInternal = false;
+		isExternal = false;
     }
 
     public IPMatcher( IPaddr base )
@@ -140,6 +159,8 @@ public final class IPMatcher implements Serializable
         }
 
         this.isLocal = false;
+		this.isInternal = false;
+		this.isExternal = false;
     }
     
     /* Internal for creating local ip matchers */
@@ -149,7 +170,19 @@ public final class IPMatcher implements Serializable
         this.second  = 0;
         this.isRange = true;
         this.isLocal = true;
+		this.isInternal = false;
+		this.isExternal = false;
     }
+
+	/* Matcher to automatically track local IP addr changes */
+	private IPMatcher(boolean internal, boolean external) {
+		this.base 	= 0;
+		this.second = 0;
+        this.isLocal = false;
+        this.isRange = false;
+		this.isInternal	= internal;
+		this.isExternal	= external;
+	}
 
     /**
      * An IPMatcher can be specified in one of the following formats:
@@ -185,7 +218,6 @@ public final class IPMatcher implements Serializable
             /* Just an address a range where the start and end are the same */
             return new IPMatcher( base, base, true );
         }
-
         String strArray[] = str.split( marker, 3 );
 
         if ( strArray.length != 2 ) {
@@ -218,6 +250,10 @@ public final class IPMatcher implements Serializable
             return ( tmp == outsideLong );
         } else if ( isRange ) {
             if (( base <= tmp ) && ( tmp <= second )) return true;
+        } else if ( isInternal ) {
+			return ( tmp == insideLong );
+        } else if ( isExternal ) {
+			return ( tmp != insideLong );
         } else {
             /* Mask off the bits from the subnet */
             if (( tmp & second ) == base ) return true;

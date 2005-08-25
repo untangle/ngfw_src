@@ -32,8 +32,11 @@ public class IDSRuleManager {
 	private static Pattern variablePattern = Pattern.compile("\\$[^ \n\r\t]+");
 	public static List<IDSVariable> defaultVariables = new ArrayList<IDSVariable>(); 
 	static {
-		defaultVariables.add(new IDSVariable("$EXTERNAL_NET","!10.0.0.1/24","This is a description"));
-		defaultVariables.add(new IDSVariable("$HOME_NET", "10.0.0.1/24","This is a description"));
+		//Overwrite any replacement to external or home net with the internal IPManger
+		//To automatically track any changes made to the ip address
+		//defaultVariables.add(new IDSVariable("$EXTERNAL_NET",""+0xDEAD,"This is a description"));
+		//defaultVariables.add(new IDSVariable("$HOME_NET", ""+0xBEEF,"This is a description"));
+		
 		defaultVariables.add(new IDSVariable("$HTTP_PORTS", ":80","This is a description"));
 		defaultVariables.add(new IDSVariable("$HTTP_SERVERS", "10.0.0.1/24","This is a description"));
 		defaultVariables.add(new IDSVariable("$SMTP_SERVERS", "any","This is a description"));
@@ -107,15 +110,9 @@ public class IDSRuleManager {
 		//System.out.println("Total List size: "+matchList.size()); /** *****************************************/
 	
 		synchronized(matchList) {
-			//Iterator<IDSRuleHeader> it = matchList.iterator();
-			//while(it.hasNext()) {
-			//	IDSRuleHeader header = it.next();
 			for(IDSRuleHeader header : matchList) {
-				if(header.matches(protocol, clientAddr, clientPort, serverAddr, serverPort)) {
-					/**********************************************************************************************************/
+				if(header.matches(protocol, clientAddr, clientPort, serverAddr, serverPort))
 					returnList.addAll(header.getSignatures());
-				//	System.out.println("\n\n"+header+"\n"+header.getSignature());
-				}
 			}
 		}
 		//System.out.println("Signature List Size: "+returnList.size()); /** *****************************************/
@@ -136,6 +133,10 @@ public class IDSRuleManager {
 	}
 
 	private String substituteVariables(String string) {
+		//Set 
+		string = string.replaceAll("\\$EXTERNAL_NET",IDSStringParser.EXTERNAL_IP);
+		string = string.replaceAll("\\$HOME_NET",IDSStringParser.HOME_IP);
+		
 		Matcher match = variablePattern.matcher(string);
 		if(match.find()) {
 			List<IDSVariable> varList;
