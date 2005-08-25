@@ -69,6 +69,7 @@
                 <subreportParameter name="endTime">
                     <subreportParameterExpression><![CDATA[$P{endTime}]]></subreportParameterExpression>
                 </subreportParameter>
+                @SUBREPORT_EXTRA_PARAMS@
                 <connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
                 <subreportExpression class="java.lang.String"><![CDATA["@SUBREPORT_1@"]]></subreportExpression>
             </subreport>
@@ -80,6 +81,7 @@
                 <subreportParameter name="endTime">
                     <subreportParameterExpression><![CDATA[$P{endTime}]]></subreportParameterExpression>
                 </subreportParameter>
+                @SUBREPORT_EXTRA_PARAMS@
                 <connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
                 <subreportExpression class="java.lang.String"><![CDATA["@SUBREPORT_2@"]]></subreportExpression>
             </subreport>
