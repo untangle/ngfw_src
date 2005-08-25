@@ -20,6 +20,7 @@ import java.util.HashSet;
 import java.io.File;
 import java.io.FileReader;
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 
 import java.net.UnknownHostException;
 
@@ -204,6 +205,8 @@ class DhcpMonitor implements Runnable
             
             /* Log the absolute event */
             if ( isAbsolute ) eventLogger.info( absoluteEvent );
+        } catch ( FileNotFoundException ex ) {
+            logger.info( "The file: " + DHCP_LEASES_FILE + " does not exist yet" );
         } catch ( Exception ex ) {
             logger.error( "Error reading file: " + DHCP_LEASES_FILE, ex );
         } finally  {

@@ -21,6 +21,7 @@ import java.io.FileWriter;
 import java.io.FileReader;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
 
 import org.apache.log4j.Logger;
 
@@ -192,16 +193,18 @@ class DhcpManager
             while (( str = in.readLine()) != null ) {
                 parseLease( str, leaseList, now, macMap );
             }
+        } catch ( FileNotFoundException ex ) {
+            logger.info( "The file: " + DHCP_LEASES_FILE + " does not exist yet" );
         } catch ( Exception ex ) {
-            logger.warn( "Error reading file: " + DHCP_LEASES_FILE );
+            logger.error( "Error reading file: " + DHCP_LEASES_FILE, ex );
+        } finally {
+            try {
+                if ( in != null )  in.close();
+            } catch ( Exception ex ) {
+                logger.error( "Unable to close file: " + DHCP_LEASES_FILE, ex );
+            }
         }
-        
-        try {
-            if ( in != null )  in.close();
-        } catch ( Exception ex ) {
-            logger.error( "Unable to close file: " + DHCP_LEASES_FILE, ex );
-        }
-
+            
         /* Lay over the settings from NAT */
         List <DhcpLeaseRule> staticList = settings.getDhcpLeaseList();
         
