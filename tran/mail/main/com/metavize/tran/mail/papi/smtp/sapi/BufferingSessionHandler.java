@@ -487,9 +487,10 @@ public abstract class BufferingSessionHandler
       //TODO bscott Should we close the file of accumulated MIME?  It is really
       //     an error to have the file at all
       m_accumulator = null;
-      m_messageInfo = null;
+
       handleMIMEChunk(true, true, null, actions);
-      
+
+      m_messageInfo = null;
     }
     @Override
     public void handleFinalized() {
