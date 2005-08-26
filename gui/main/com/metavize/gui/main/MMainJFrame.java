@@ -57,16 +57,15 @@ public class MMainJFrame extends javax.swing.JFrame {
         storeJScrollPane.getVerticalScrollBar().setUnitIncrement(5);
         toolboxJScrollPane.getVerticalScrollBar().setUnitIncrement(5);
         configurationJScrollPane.getVerticalScrollBar().setUnitIncrement(5);
-
-	// SCREEN SIZE AND RESIZE
 	java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
         setBounds((screenSize.width-1024)/2, (screenSize.height-768)/2, 1024, 768);
-	// System.err.println("Setting screen size to: " + screenSize);
 
         
         // QUERY AND LOAD BUTTONS INTO TOOLBOX
-        Util.getStatusJProgressBar().setString("populating Toolbox...");
-        MackageDesc[] installedMackages = Util.getToolboxManager().installed();
+	SwingUtilities.invokeLater( new Runnable(){ public void run(){
+	    Util.getStatusJProgressBar().setString("populating Toolbox...");
+	}});
+        final MackageDesc[] installedMackages = Util.getToolboxManager().installed();
         for(int i=0; i<installedMackages.length; i++){
             if( installedMackages[i].getType() != MackageDesc.TRANSFORM_TYPE )
                 continue;
@@ -85,14 +84,21 @@ public class MMainJFrame extends javax.swing.JFrame {
 		button.setDeployedView();
             }
             this.addMTransformJButtonToToolbox( button );
-            Util.getStatusJProgressBar().setValue(64 + (int) ((((float)i)/(float)installedMackages.length)*16f) );
+	    final int iProgress = i;
+	    SwingUtilities.invokeLater( new Runnable(){ public void run(){
+		Util.getStatusJProgressBar().setValue(64 + (int) ((((float)iProgress)/(float)installedMackages.length)*16f) );
+	    }});
         }
-        Util.getStatusJProgressBar().setValue(80);
+	SwingUtilities.invokeLater( new Runnable(){ public void run(){
+	    Util.getStatusJProgressBar().setValue(80);
+	}});
         
         
         // QUERY AND LOAD BUTTONS INTO STORE
-        Util.getStatusJProgressBar().setString("populating Store...");
-        MackageDesc[] storeMackages = Util.getToolboxManager().uninstalled();
+	SwingUtilities.invokeLater( new Runnable(){ public void run(){
+	    Util.getStatusJProgressBar().setString("populating Store...");
+	}});
+        final MackageDesc[] storeMackages = Util.getToolboxManager().uninstalled();
         for(int i=0; i<storeMackages.length; i++){
             if( storeMackages[i].getType() != MackageDesc.TRANSFORM_TYPE )
                 continue;
@@ -104,9 +110,14 @@ public class MMainJFrame extends javax.swing.JFrame {
 		button.setProcurableView();
                 this.addMTransformJButtonToStore(button);
             }
-            Util.getStatusJProgressBar().setValue(80 + (int) ((((float)i)/(float)storeMackages.length)*16f) );
+	    final int iProgress = i;
+	    SwingUtilities.invokeLater( new Runnable(){ public void run(){
+		Util.getStatusJProgressBar().setValue(80 + (int) ((((float)iProgress)/(float)storeMackages.length)*16f) );
+	    }});
         }
-	Util.getStatusJProgressBar().setValue(96);
+	SwingUtilities.invokeLater( new Runnable(){ public void run(){
+	    Util.getStatusJProgressBar().setValue(96);
+	}});
 
 
 	if( storeMap.size() == 0 )
@@ -787,27 +798,13 @@ public class MMainJFrame extends javax.swing.JFrame {
 
     private void storeActionPerformed(java.awt.event.ActionEvent evt){
         MTransformJButton targetMTransformJButton = (MTransformJButton) evt.getSource();
-        MTransformJButton duplicateMTransformJButton = targetMTransformJButton.duplicate();
 	targetMTransformJButton.setEnabled(false);
-        StoreJDialog storeJDialog = new StoreJDialog(duplicateMTransformJButton);
+        StoreJDialog storeJDialog = new StoreJDialog(targetMTransformJButton);
 	storeJDialog.setVisible(true);
-	if( storeJDialog.getPurchasedMTransformJButton() != null){
-	    if( Util.mustCheckUpgrades() ){
-		StoreCheckJDialog storeCheckJDialog = new StoreCheckJDialog();
-		storeCheckJDialog.setVisible(true);
-		//targetMTransformJButton.setEnabled(true);
-		if( Util.getUpgradeCount() == 0 ){
-		    targetMTransformJButton.purchase();
-		}
-	    }
-	    else{
-		//targetMTransformJButton.setEnabled(true);
-		targetMTransformJButton.purchase();
-	    }
-        }
-	else{
-	    targetMTransformJButton.setEnabled(true);
+	if( storeJDialog.getPurchasedMTransformJButton() == null){
+	    targetMTransformJButton.setEnabled(true); // nothing was purchased
 	}
+	// else - something was purchased, handled in the above dialog
     }    
     
     private void toolboxActionPerformed(java.awt.event.ActionEvent evt){

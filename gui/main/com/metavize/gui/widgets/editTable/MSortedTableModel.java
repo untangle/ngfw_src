@@ -567,7 +567,8 @@ public abstract class MSortedTableModel extends DefaultTableModel implements Ref
 	Vector dataVector = generateRows( settings );
 	super.getDataVector().removeAllElements();
 	super.getDataVector().addAll(dataVector);
-	this.fireTableDataChanged();
+	
+	MSortedTableModel.this.fireTableDataChanged();
     }
     
     // save the data from the table, and tell the table to reflect that the data has been saved

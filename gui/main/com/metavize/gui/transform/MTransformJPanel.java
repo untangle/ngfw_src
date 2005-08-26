@@ -106,7 +106,7 @@ public class MTransformJPanel extends javax.swing.JPanel {
         add(mTransformControlsJPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(46, 100, 596, 380), 0);
         setMinimumSize(minDimension);
         setMaximumSize(maxDimension);
-        mTransformControlsJPanel.setVisible(false);
+        //mTransformControlsJPanel.setVisible(false);
         setPreferredSize(minDimension);
         
         
@@ -120,7 +120,6 @@ public class MTransformJPanel extends javax.swing.JPanel {
         mTransformControlsJPanel.saveJButton().addActionListener(mStateMachine);
         mTransformControlsJPanel.reloadJButton().addActionListener(mStateMachine);
         mTransformControlsJPanel.removeJButton().addActionListener(mStateMachine);
-
 
     }
 
@@ -234,7 +233,7 @@ public class MTransformJPanel extends javax.swing.JPanel {
             setPreferredSize(minDimension);
             controlsJToggleButton.setText("Show Settings");
         }
-        mTransformControlsJPanel.setVisible(isShowing);
+        //mTransformControlsJPanel.setVisible(isShowing);
 	//        focus();  people no longer want this shizzle
 
     }

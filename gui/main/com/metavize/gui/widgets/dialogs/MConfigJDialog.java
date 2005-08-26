@@ -22,12 +22,12 @@ import com.metavize.mvvm.*;
 
 import javax.swing.*;
 import javax.swing.text.*;
+import javax.swing.table.*;
+import javax.swing.event.*;
+import java.awt.*;
+import java.awt.event.*;
 import java.text.*;
 import java.util.*;
-import javax.swing.table.*;
-import java.awt.*;
-import javax.swing.event.*;
-
 
 public abstract class MConfigJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
 
@@ -46,27 +46,25 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
         this.setBounds( Util.generateCenteredBounds( Util.getMMainJFrame().getBounds(), this.getWidth(), this.getHeight()) );
         this.addWindowListener(this);   
 
-        this.addComponentListener( 
-				  new java.awt.event.ComponentAdapter() {
-				      public void componentResized(java.awt.event.ComponentEvent evt) {
-					  dialogResized();
-				      }
-				  } );
+        this.addComponentListener( new ComponentAdapter() { public void componentResized(ComponentEvent evt) {
+	    dialogResized();
+	}});
+
 	generateGui();
-	refreshAll();
+	new RefreshAllThread();
     }
 
     // BUTTON STRINGS //////////////////////////////////
-    protected ImageIcon RELOAD_INIT_STRING;
-    protected ImageIcon RELOAD_ACTION_STRING;
-    protected ImageIcon SAVE_INIT_STRING;
-    protected ImageIcon SAVE_ACTION_STRING;
+    protected String RELOAD_INIT_STRING;
+    protected String RELOAD_ACTION_STRING;
+    protected String SAVE_INIT_STRING;
+    protected String SAVE_ACTION_STRING;
 
-    protected void generateButtonText(){	
-	RELOAD_INIT_STRING = Util.getButtonReloadSettings();
-	RELOAD_ACTION_STRING = Util.getButtonReloading();
-	SAVE_INIT_STRING = Util.getButtonSaveSettings();
-	SAVE_ACTION_STRING = Util.getButtonSaving();
+    protected void generateButtonText(){
+	RELOAD_INIT_STRING = "<html><b>Reload</b> Settings</html>";
+	RELOAD_ACTION_STRING = "<html>(reloading)</html>";
+	SAVE_INIT_STRING = "<html><b>Save</b> Settings</html>";
+	SAVE_ACTION_STRING = "<html>(saving)</html>";
     }
     ////////////////////////////////////////////////////
 
@@ -75,23 +73,33 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
     protected abstract void refreshSettings();
     protected abstract void generateGui();
 
-    
+    private Exception saveException;
     protected void saveAll(){
 	// GENERATE AND VALIDATE ALL SETTINGS
 	String componentName = "UNKNOWN";
         try {
 	    for( Map.Entry<String, Savable> savableMapEntry : savableMap.entrySet() ){
 		componentName = savableMapEntry.getKey();
-		Savable savableComponent = savableMapEntry.getValue();
-		savableComponent.doSave(settings, false);
+		final Savable savableComponent = savableMapEntry.getValue();
+		saveException = null;
+		SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+		    try{
+			savableComponent.doSave(settings, false);
+		    }
+		    catch(Exception f){
+			saveException = f;
+		    }
+		}});
+		if(saveException != null)
+		    throw saveException;
 	    }
         }
         catch(Exception e){
 	    try{
 		Util.handleExceptionWithRestart("Error saving settings", e);
 	    }
-	    catch(Exception f){
-		Util.handleExceptionNoRestart("Error saving settings", f);
+	    catch(Exception g){
+		Util.handleExceptionNoRestart("Error saving settings", g);
 		new ValidateFailureDialog( this.getTitle(), componentName, e.getMessage() );
 		return;
 	    }
@@ -113,6 +121,7 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
         }
     }
 
+    private Exception refreshException;
     protected void refreshAll(){
 	// GET SETTINGS FROM SERVER
 	try{
@@ -122,8 +131,8 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
 	    try{
 		Util.handleExceptionWithRestart("Error loading settings", e);
 	    }
-	    catch(Exception f){	    
-		Util.handleExceptionNoRestart("Error loading settings", f);
+	    catch(Exception g){
+		Util.handleExceptionNoRestart("Error loading settings", g);
 		new RefreshFailureDialog( this.getTitle() );
 		return;
 	    }
@@ -134,8 +143,18 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
             String componentName = "UNKNOWN";
             try{
 		componentName = refreshableMapEntry.getKey();
-		Refreshable refreshableComponent = refreshableMapEntry.getValue();
-		refreshableComponent.doRefresh(settings);
+		final Refreshable refreshableComponent = refreshableMapEntry.getValue();
+		refreshException = null;
+		SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+		    try{
+			refreshableComponent.doRefresh(settings);
+		    }
+		    catch(Exception f){
+			refreshException = f;
+		    }
+		}});
+		if(refreshException != null)
+		    throw refreshException;
 	    }
             catch(Exception e){
                 Util.handleExceptionNoRestart("Error preparing settings for refreshing", e);
@@ -215,7 +234,7 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
         getContentPane().add(closeJButton, gridBagConstraints);
 
         reloadJButton.setFont(new java.awt.Font("Arial", 0, 12));
-        reloadJButton.setIcon(RELOAD_INIT_STRING);
+        reloadJButton.setText(RELOAD_INIT_STRING);
         reloadJButton.setDoubleBuffered(true);
         reloadJButton.setFocusPainted(false);
         reloadJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -238,7 +257,7 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
         getContentPane().add(reloadJButton, gridBagConstraints);
 
         saveJButton.setFont(new java.awt.Font("Arial", 0, 12));
-        saveJButton.setIcon(SAVE_INIT_STRING);
+        saveJButton.setText(SAVE_INIT_STRING);
         saveJButton.setDoubleBuffered(true);
         saveJButton.setFocusPainted(false);
         saveJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -316,7 +335,7 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
             saveJButton.setEnabled(false);
             reloadJButton.setEnabled(false);
             closeJButton.setEnabled(false);
-	    saveJButton.setIcon(SAVE_ACTION_STRING);
+	    saveJButton.setText(SAVE_ACTION_STRING);
             this.start();
         }
         
@@ -326,7 +345,7 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
 		MConfigJDialog.this.saveJButton.setEnabled(true);
 		MConfigJDialog.this.reloadJButton.setEnabled(true);
 		MConfigJDialog.this.closeJButton.setEnabled(true);
-		MConfigJDialog.this.saveJButton.setIcon(SAVE_INIT_STRING);
+		MConfigJDialog.this.saveJButton.setText(SAVE_INIT_STRING);
 	    }});
         }
     }
@@ -338,7 +357,7 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
             saveJButton.setEnabled(false);
             reloadJButton.setEnabled(false);
             closeJButton.setEnabled(false);
-	    reloadJButton.setIcon(RELOAD_ACTION_STRING);
+	    reloadJButton.setText(RELOAD_ACTION_STRING);
             this.start();
         }
         
@@ -348,7 +367,7 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
 		MConfigJDialog.this.saveJButton.setEnabled(true);
 		MConfigJDialog.this.reloadJButton.setEnabled(true);
 		MConfigJDialog.this.closeJButton.setEnabled(true);
-		MConfigJDialog.this.reloadJButton.setIcon(RELOAD_INIT_STRING);
+		MConfigJDialog.this.reloadJButton.setText(RELOAD_INIT_STRING);
 	    }});
         }
     }

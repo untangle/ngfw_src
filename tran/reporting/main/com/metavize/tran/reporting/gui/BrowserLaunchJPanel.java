@@ -59,7 +59,7 @@ public class BrowserLaunchJPanel extends JPanel implements ActionListener {
 	    launchJLabel.setFont(new java.awt.Font("Arial", 0, 11));
 	    launchJLabel.setHorizontalAlignment(SwingConstants.CENTER);
 	    launchJLabel.setHorizontalTextPosition(SwingConstants.CENTER);
-	    launchJLabel.setText("<html><center><br>To view reports a web browser, go to:<br>" + newURL.toString() + "</center></html>");
+	    launchJLabel.setText("<html><center><br>To view reports through a web browser, go to:<br>" + newURL.toString() + "</center></html>");
 	    this.add(launchJLabel, launchJLabelConstraints);
 	}
 	catch(Exception f){

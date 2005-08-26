@@ -16,18 +16,18 @@ import com.metavize.gui.util.Util;
 import javax.jnlp.ServiceManager;
 import javax.jnlp.BasicService;
 import java.net.URL;
+import javax.swing.JProgressBar;
 
 public class StoreJPanel extends javax.swing.JPanel {
     
     private String url;
     
-    /** Creates new form StoreJPanel */
+
     public StoreJPanel(String url) {
         this.url = url;
         
         initComponents();
         
-        statusProgressBar.setVisible(false);
         
         if( Util.isLocal() ){
             moreJButton.setEnabled(false);
@@ -38,6 +38,8 @@ public class StoreJPanel extends javax.swing.JPanel {
         
     }
     
+    JProgressBar getProgressBar(){ return statusProgressBar; }
+
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -116,6 +118,8 @@ public class StoreJPanel extends javax.swing.JPanel {
 
         add(purchaseJPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
 
+        statusProgressBar.setFont(new java.awt.Font("Dialog", 0, 12));
+        statusProgressBar.setForeground(new java.awt.Color(68, 91, 255));
         statusProgressBar.setMaximumSize(new java.awt.Dimension(32767, 16));
         statusProgressBar.setMinimumSize(new java.awt.Dimension(10, 16));
         statusProgressBar.setPreferredSize(new java.awt.Dimension(148, 16));

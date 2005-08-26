@@ -29,29 +29,9 @@ public class LogJPanel extends MLogTableJPanel {
 	setTableModel(new LogTableModel());
     }
 
-    public Vector generateRows(Object settings){
-        List<SpamLog> requestLogList = (List<SpamLog>) ((SpamTransform)super.logTransform).getEventLogs(depthJSlider.getValue());
-        Vector allEvents = new Vector();
-        Vector event = null;
-
-        for( SpamLog requestLog : requestLogList ){
-            event = new Vector(9);
-            event.add( requestLog.getTimeStamp() );
-	    event.add( requestLog.getAction().toString() );
-            event.add( requestLog.getClientAddr() + ":" + ((Integer)requestLog.getClientPort()).toString() );
-	    event.add( requestLog.getSubject() );
-	    event.add( requestLog.getReceiver() );
-	    event.add( requestLog.getSender() );
-	    event.add( requestLog.getScore() );
-            event.add( requestLog.getDirection().getDirectionName() );
-            event.add( requestLog.getServerAddr() + ":" + ((Integer)requestLog.getServerPort()).toString() );
-            allEvents.insertElementAt(event,0);
-        }
-	
-        return allEvents;
+    protected void refreshSettings(){
+	settings = ((SpamTransform)super.logTransform).getEventLogs(depthJSlider.getValue());
     }
-    
-
     
     class LogTableModel extends MSortedTableModel{
 	
@@ -69,12 +49,34 @@ public class LogJPanel extends MLogTableJPanel {
 	    addTableColumn( tableColumnModel,  8,  165, true,  false, false, false, String.class, null, "server" );
 	    return tableColumnModel;
 	}
-
+	
 	public void generateSettings(Object settings, boolean validateOnly) throws Exception {}
 	
-	public Vector generateRows(Object settings) {
-	    return LogJPanel.this.generateRows(null);                                                                              
+	
+	public Vector generateRows(Object settings){
+	    List<SpamLog> requestLogList = (List<SpamLog>) settings;
+	    Vector allEvents = new Vector();
+	    Vector event = null;
+	    
+	    for( SpamLog requestLog : requestLogList ){
+		event = new Vector(9);
+		event.add( requestLog.getTimeStamp() );
+		event.add( requestLog.getAction().toString() );
+		event.add( requestLog.getClientAddr() + ":" + ((Integer)requestLog.getClientPort()).toString() );
+		event.add( requestLog.getSubject() );
+		event.add( requestLog.getReceiver() );
+		event.add( requestLog.getSender() );
+		event.add( requestLog.getScore() );
+		event.add( requestLog.getDirection().getDirectionName() );
+		event.add( requestLog.getServerAddr() + ":" + ((Integer)requestLog.getServerPort()).toString() );
+		allEvents.insertElementAt(event,0);
+	    }
+	    
+	    return allEvents;
 	}
+    
+
+
 	
     }       
 

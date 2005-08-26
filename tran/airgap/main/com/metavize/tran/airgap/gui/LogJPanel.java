@@ -27,29 +27,9 @@ public class LogJPanel extends MLogTableJPanel {
 	setTableModel(new LogTableModel());
     }
 
-    public Vector generateRows(Object settings){
-        List<ShieldRejectionLogEntry> logList = 
-            ((AirgapTransform)super.logTransform).getLogs(depthJSlider.getValue());
-
-        Vector allEvents = new Vector();
-        Vector event = null;
-
-	for ( ShieldRejectionLogEntry log : logList ) {
-            event = new Vector(6);
-            event.add( Util.getLogDateFormat().format( log.getCreateDate() ));
-	    event.add( log.getClient() );
-            event.add( log.getClientIntf() );
-	    event.add( log.getReputationString() );
-            event.add( log.getLimited() );
-            event.add( log.getDropped() );
-            event.add( log.getRejected() );
-
-            allEvents.insertElementAt(event,0);
-        }
-        return allEvents;
+    protected void refreshSettings(){
+	settings = ((AirgapTransform)super.logTransform).getLogs(depthJSlider.getValue());
     }
-    
-
     
     class LogTableModel extends MSortedTableModel{
 	
@@ -68,9 +48,25 @@ public class LogJPanel extends MLogTableJPanel {
 	
 	public void generateSettings(Object settings, boolean validateOnly) throws Exception {}
 	
-	public Vector generateRows(Object settings) {
-	    return LogJPanel.this.generateRows(null);
+	public Vector generateRows(Object settings){
+	    List<ShieldRejectionLogEntry> logList = (List<ShieldRejectionLogEntry>) settings;
+	    Vector allEvents = new Vector();
+	    Vector event = null;
+	    
+	    for ( ShieldRejectionLogEntry log : logList ) {
+		event = new Vector(7);
+		event.add( Util.getLogDateFormat().format( log.getCreateDate() ));
+		event.add( log.getClient() );
+		event.add( log.getClientIntf() );
+		event.add( log.getReputationString() );
+		event.add( log.getLimited() );
+		event.add( log.getDropped() );
+		event.add( log.getRejected() );
+		allEvents.insertElementAt(event,0);
+	    }
+	    return allEvents;
 	}
+	
     }       
-
+    
 }

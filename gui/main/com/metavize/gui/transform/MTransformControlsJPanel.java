@@ -22,12 +22,12 @@ import com.metavize.mvvm.tran.*;
 import org.netbeans.lib.awtextra.AbsoluteConstraints;
 import org.netbeans.lib.awtextra.AbsoluteLayout;
 import java.util.*;
-import javax.swing.*;
 import java.awt.*;
+import java.util.*;
+import java.awt.event.*;
+import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.table.*;
-import java.util.*;
-
 
 public class MTransformControlsJPanel extends javax.swing.JPanel {
 
@@ -66,12 +66,9 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
 				     mTransformJPanel.getMackageDesc().getDisplayName()
 				     + " (expanded settings window)", true);
         expandJDialog.setSize(MIN_SIZE);
-        expandJDialog.addComponentListener( 
-            new java.awt.event.ComponentAdapter() {
-                public void componentResized(java.awt.event.ComponentEvent evt) {
-                    dialogResized();
-                }
-            } );
+	expandJDialog.addComponentListener( new ComponentAdapter() { public void componentResized(ComponentEvent evt) {
+	    dialogResized();
+	}});
         expandJDialog.getContentPane().setLayout(new GridBagLayout());
 	expandJDialog.getContentPane().add(new com.metavize.gui.widgets.MTiledIconLabel("",greyBackgroundImageIcon,JLabel.CENTER), greyBackgroundConstraints);
     
@@ -125,6 +122,7 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
     
     protected void generateGui(){};
 
+    private Exception saveException;
     protected void saveAll(){
 
         if(Util.getIsDemo())
@@ -138,8 +136,18 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
 	    message.append("Saving: " + transformName);
 	    for( Map.Entry<String, Savable> savableMapEntry : savableMap.entrySet() ){
 		componentName = savableMapEntry.getKey();
-		Savable savableComponent = savableMapEntry.getValue();
-		savableComponent.doSave(settings, false);
+		final Savable savableComponent = savableMapEntry.getValue();
+		saveException = null;
+		SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+		    try{
+			savableComponent.doSave(settings, false);
+		    }
+		    catch(Exception f){
+			saveException = f;
+		    }
+		}});
+		if( saveException != null )
+		    throw saveException;
 		message.append("\n  " + componentName);
 	    }
             if( settings instanceof Validatable )
@@ -171,7 +179,7 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
 
     }
 
-     
+    private Exception refreshException;
     protected void refreshAll(){
 	String transformName = mTransformJPanel.getMackageDesc().getDisplayName();
 	StringBuilder message = new StringBuilder();
@@ -180,8 +188,18 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
 	    message.append("Refreshing: " + transformName );
 	    for( Map.Entry<String, Refreshable> refreshableMapEntry : refreshableMap.entrySet() ){
 		String componentName = refreshableMapEntry.getKey();
-		Refreshable refreshableComponent = refreshableMapEntry.getValue();
-		refreshableComponent.doRefresh(settings);
+		final Refreshable refreshableComponent = refreshableMapEntry.getValue();
+		refreshException = null;
+		SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+		    try{
+			refreshableComponent.doRefresh(settings);
+		    }
+		    catch(Exception f){
+			refreshException = f;
+		    }
+		}});
+		if( refreshException != null )
+		    throw refreshException;
 		message.append("\n  " + componentName);
 	    }
 	}

@@ -25,7 +25,7 @@ import com.metavize.mvvm.*;
 import com.metavize.mvvm.tran.*;
 
 
-public class StoreJDialog extends MConfigJDialog implements Savable, Refreshable {
+public class StoreJDialog extends MConfigJDialog implements Refreshable, Savable {
 
 
     private static final String NAME_STORE = "Purchase a Software Appliance";
@@ -48,18 +48,22 @@ public class StoreJDialog extends MConfigJDialog implements Savable, Refreshable
         this.setTitle(NAME_STORE);
         setResizable(false);
         
-        storeJPanel.mTransformJPanel.add(mTransformJButton, gridBagConstraints);
+        storeJPanel.mTransformJPanel.add(mTransformJButton.duplicate(), gridBagConstraints);
         storeJPanel.descriptionJTextArea.setText(mTransformJButton.getFullDescription());
         String price = mTransformJButton.getPrice();
         storeJPanel.priceJLabel.setText("$" + price);
         if( price.equals("0") ){
-            super.saveJButton.setText("<html><b>Download</b></html>");
-            super.saveJButton.setIcon(null);
+	    super.SAVE_INIT_STRING = "<html><b>Download</b></html>";
+	    super.SAVE_ACTION_STRING = "<html>(downloading)</html>";
         }
         else{
-            super.saveJButton.setText("<html><b>Purchase</b></html>");
-            super.saveJButton.setIcon(null);
+	    super.SAVE_INIT_STRING = "<html><b>Purchase</b></html>";
+	    super.SAVE_ACTION_STRING = "<html>(purchasing)</html>";
         }
+	super.saveJButton.setText( super.SAVE_INIT_STRING );
+	super.RELOAD_INIT_STRING = "<html><b>Cancel</b></html>";
+	super.reloadJButton.setText( super.RELOAD_INIT_STRING );
+	super.RELOAD_ACTION_STRING = "<html>(cancelling)</html>";
 
 	super.savableMap.put(NAME_STORE, this);
 	super.refreshableMap.put(NAME_STORE, this);
@@ -68,20 +72,32 @@ public class StoreJDialog extends MConfigJDialog implements Savable, Refreshable
     final public void generateGui(){}
     final public void refreshSettings(){}
     final public void sendSettings(Object settings) throws Exception {}
-    final public void generateButtonText(){
-	RELOAD_INIT_STRING = Util.getButtonCancel();
-	RELOAD_ACTION_STRING = Util.getButtonCancelling();
-	SAVE_INIT_STRING = Util.getButtonProcure();
-	SAVE_ACTION_STRING = Util.getButtonProcuring();
-    }    
 
     public void doSave(Object settings, boolean validateOnly) throws Exception {
         this.purchasedTransform = true;
-        
-        if(Util.getIsDemo())
+
+        // DEMO ////////
+        if(Util.getIsDemo()){
             this.purchasedTransform = false;
+	    this.windowClosing(null);
+	}
         
+	// UPGRADE CHECK ///////
+	if( Util.mustCheckUpgrades() ){
+	    StoreCheckJDialog storeCheckJDialog = new StoreCheckJDialog();
+	    storeCheckJDialog.setVisible(true);
+	    if( Util.getUpgradeCount() > 0 ){
+		this.purchasedTransform = false;
+		this.windowClosing(null);
+	    }
+	}
+
+	// PURCHASE ///////
+	mTransformJButton.purchase( storeJPanel.getProgressBar() );
+
+	// CLOSE WINDOW //////
         this.windowClosing(null);
+
     }
 
     public void doRefresh(Object settings){

@@ -27,27 +27,9 @@ public class LogJPanel extends MLogTableJPanel {
 	setTableModel(new LogTableModel());
     }
 
-    public Vector generateRows(Object settings){
-        List<SpywareLog> requestLogList = (List<SpywareLog>) ((Spyware)super.logTransform).getEventLogs(depthJSlider.getValue());
-        Vector allEvents = new Vector();
-        Vector event = null;
-
-        for( SpywareLog requestLog : requestLogList ){
-            event = new Vector(7);
-            event.add( requestLog.getCreateDate() );
-	    event.add( requestLog.getAction() );
-            event.add( requestLog.getClientAddr() + ":" + ((Integer)requestLog.getClientPort()).toString() );
-	    event.add( requestLog.getLocation() + " : " + requestLog.getIdent() );
-	    event.add( requestLog.getReason() );
-            event.add( requestLog.getDirection().getDirectionName() );
-            event.add( requestLog.getServerAddr() + ":" + ((Integer)requestLog.getServerPort()).toString() );
-            allEvents.insertElementAt(event,0);
-        }
-	
-        return allEvents;
+    protected void refreshSettings(){
+	settings = ((Spyware)super.logTransform).getEventLogs(depthJSlider.getValue());
     }
-    
-
     
     class LogTableModel extends MSortedTableModel{
 	
@@ -66,9 +48,26 @@ public class LogJPanel extends MLogTableJPanel {
 
 	public void generateSettings(Object settings, boolean validateOnly) throws Exception {}
 	
-	public Vector generateRows(Object settings) {
-	    return LogJPanel.this.generateRows(null);                                                                              
+	public Vector generateRows(Object settings){
+	    List<SpywareLog> requestLogList = (List<SpywareLog>) settings;
+	    Vector allEvents = new Vector();
+	    Vector event = null;
+	    
+	    for( SpywareLog requestLog : requestLogList ){
+		event = new Vector(7);
+		event.add( requestLog.getCreateDate() );
+		event.add( requestLog.getAction() );
+		event.add( requestLog.getClientAddr() + ":" + ((Integer)requestLog.getClientPort()).toString() );
+		event.add( requestLog.getLocation() + " : " + requestLog.getIdent() );
+		event.add( requestLog.getReason() );
+		event.add( requestLog.getDirection().getDirectionName() );
+		event.add( requestLog.getServerAddr() + ":" + ((Integer)requestLog.getServerPort()).toString() );
+		allEvents.insertElementAt(event,0);
+	    }
+	    
+	    return allEvents;
 	}
+	
 	
     }       
 

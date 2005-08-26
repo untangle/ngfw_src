@@ -156,7 +156,9 @@ public class MStateMachine implements java.awt.event.ActionListener {
 		}
 	    }
 	    finally{
-		saveJButton.setIcon(Util.getButtonSaveSettings());
+		SwingUtilities.invokeLater( new Runnable(){ public void run(){
+		    saveJButton.setIcon(Util.getButtonSaveSettings());
+		}});
 	    }
 	}
     }
@@ -184,7 +186,9 @@ public class MStateMachine implements java.awt.event.ActionListener {
 		}
 	    }
 	    finally{
-		reloadJButton.setIcon(Util.getButtonReloadSettings());
+		SwingUtilities.invokeLater( new Runnable(){ public void run(){
+		    reloadJButton.setIcon(Util.getButtonReloadSettings());
+		}});
 	    }
 	}
     }

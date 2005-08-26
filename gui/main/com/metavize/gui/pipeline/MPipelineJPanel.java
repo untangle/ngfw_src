@@ -43,7 +43,9 @@ public class MPipelineJPanel extends javax.swing.JPanel {
         mPipelineJScrollPane.getVerticalScrollBar().setOpaque(false);
 
         // ADD TRANSFORMS
-        Util.getStatusJProgressBar().setString("adding Software Appliances...");
+	SwingUtilities.invokeLater( new Runnable(){ public void run(){
+	    Util.getStatusJProgressBar().setString("adding Software Appliances...");
+	}});
         Tid installedTransformID[] = Util.getTransformManager().transformInstances();
         initialInstallCount = installedTransformID.length;
         TransformContext installedTransformContext;
@@ -63,8 +65,11 @@ public class MPipelineJPanel extends javax.swing.JPanel {
 		new AddTransformThread(installedTransformContext, installedMackageDesc.getDisplayName());
 	    }	    
         }
-	if( installedTransformID.length == 0 )
-	    Util.getStatusJProgressBar().setValue(54);
+	if( installedTransformID.length == 0 ){
+	    SwingUtilities.invokeLater( new Runnable(){ public void run(){
+		Util.getStatusJProgressBar().setValue(54);
+	    }});
+	}
 	
         while(installedCount < initialInstallCount){
             try{
@@ -73,7 +78,9 @@ public class MPipelineJPanel extends javax.swing.JPanel {
             catch(Exception e){}
         }
 	loadAllCasings(false);
-	Util.getStatusJProgressBar().setValue(64);
+	SwingUtilities.invokeLater( new Runnable(){ public void run(){
+	    Util.getStatusJProgressBar().setValue(64);
+	}});
     }
     
     // USED FOR LOADING/PRELOADING OF CASINGS
@@ -185,8 +192,10 @@ public class MPipelineJPanel extends javax.swing.JPanel {
 	}
 	finally{
 	    synchronized(this){
-		Util.getStatusJProgressBar().setValue(16 + (int) ((((float)installedCount)/(float)initialInstallCount)*38f) );
-		installedCount++;
+		SwingUtilities.invokeLater( new Runnable(){ public void run(){
+		    Util.getStatusJProgressBar().setValue(16 + (int) ((((float)installedCount)/(float)initialInstallCount)*38f) );
+		    installedCount++;
+		}});
 	    }
 	}
 	return mTransformJPanel;

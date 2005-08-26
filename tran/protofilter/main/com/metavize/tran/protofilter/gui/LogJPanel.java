@@ -27,26 +27,9 @@ public class LogJPanel extends MLogTableJPanel {
 	setTableModel(new LogTableModel());
     }
 
-    public Vector generateRows(Object settings){
-        List<ProtoFilterLog> logList = (List<ProtoFilterLog>) ((ProtoFilter)super.logTransform).getLogs(depthJSlider.getValue());
-        Vector allEvents = new Vector();
-        Vector event = null;
-
-        for( ProtoFilterLog log : logList ){
-            event = new Vector(7);
-            event.add( log.getCreateDate() );
-	    event.add( log.getAction() );
-            event.add( log.getClientAddr() + ":" + ((Integer)log.getClientPort()).toString() );
-	    event.add( log.getProtocol() );
-	    event.add( log.getReason() );
-            event.add( log.getDirection().getDirectionName() );
-            event.add( log.getServerAddr() + ":" + ((Integer)log.getServerPort()).toString() );
-            allEvents.insertElementAt(event,0);
-        }
-	
-        return allEvents;
+    protected void refreshSettings(){
+	settings = ((ProtoFilter)super.logTransform).getLogs(depthJSlider.getValue());
     }
-    
 
     
     class LogTableModel extends MSortedTableModel{                                                                                       
@@ -54,7 +37,7 @@ public class LogJPanel extends MLogTableJPanel {
 	public TableColumnModel getTableColumnModel(){                                                                                   
 	    DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();                                                    
 	    //                                 #   min  rsz    edit   remv   desc   typ               def
-	    addTableColumn( tableColumnModel,  0,  140, true,  false, false, false, Date.class,   null, "timestamp" );
+	    addTableColumn( tableColumnModel,  0,  150, true,  false, false, false, Date.class,   null, "timestamp" );
 	    addTableColumn( tableColumnModel,  1,  55,  true,  false, false, false, String.class, null, "action" );
 	    addTableColumn( tableColumnModel,  2,  165, true,  false, false, false, String.class, null, "client" );
 	    addTableColumn( tableColumnModel,  3,  100, true,  false, false, false, String.class, null, "request" );
@@ -65,11 +48,27 @@ public class LogJPanel extends MLogTableJPanel {
 	}
 	
 	public void generateSettings(Object settings, boolean validateOnly) throws Exception {}                                          
-	
-	public Vector generateRows(Object settings) {                                                                                    
-	    return LogJPanel.this.generateRows(null);                                                                              
-	}                                                                                                                                
-	
-    }       
 
+	public Vector generateRows(Object settings){
+	    List<ProtoFilterLog> logList = (List<ProtoFilterLog>) settings;
+	    Vector allEvents = new Vector();
+	    Vector event = null;
+	    
+	    for( ProtoFilterLog log : logList ){
+		event = new Vector(7);
+		event.add( log.getCreateDate() );
+		event.add( log.getAction() );
+		event.add( log.getClientAddr() + ":" + ((Integer)log.getClientPort()).toString() );
+		event.add( log.getProtocol() );
+		event.add( log.getReason() );
+		event.add( log.getDirection().getDirectionName() );
+		event.add( log.getServerAddr() + ":" + ((Integer)log.getServerPort()).toString() );
+		allEvents.insertElementAt(event,0);
+	    }
+	    
+	    return allEvents;
+	}
+    	
+    }       
+    
 }

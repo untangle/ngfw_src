@@ -35,11 +35,10 @@ public class MLoginJFrame extends javax.swing.JFrame {
     private MMainJFrame mMainJFrame;
 
 
-
     public MLoginJFrame(final String[] args) {
-	this.args = args;
 
 	// PARSE ARGS
+	this.args = args;
 	if( !Util.isArrayEmpty(args) ){
 	    if( args.length <= 2){  // local
 		if(args[0].equals("local"))
@@ -47,60 +46,61 @@ public class MLoginJFrame extends javax.swing.JFrame {
 	    }
 	}
 	
+	// PRINT THE LOCATION OF THE CLIENT
 	if( Util.isLocal() )
 	    Util.printMessage("[Running on localhost]");
 	else
 	    Util.printMessage("[Running remotely]");
 
-        Util.setMLoginJFrame(this);
-	initComponents();
-	Util.setStatusJProgressBar(statusJProgressBar);
-	MLoginJFrame.this.setBounds( Util.generateCenteredBounds(null, MLoginJFrame.this.getWidth(), MLoginJFrame.this.getHeight()) );
-        serverJTextField.setText( Util.getServerCodeBase().getHost() );
-	
-	if( Util.isSecureViaHttps() )
-	    protocolJTextField.setText( "https (secure)");
-	else
-	    protocolJTextField.setText( "http (standard)");
-	
-	MLoginJFrame.this.setVisible(true);
-        resetLogin("Please enter your login and password.");
+	// CREATE AND SHOW THE LOGIN
+	SwingUtilities.invokeLater( new Runnable(){ public void run(){
+	    initComponents();
+	    Util.setMLoginJFrame(MLoginJFrame.this);
+	    Util.setStatusJProgressBar(statusJProgressBar);
+	    MLoginJFrame.this.setBounds( Util.generateCenteredBounds(null, MLoginJFrame.this.getWidth(), MLoginJFrame.this.getHeight()) );
+	    serverJTextField.setText( Util.getServerCodeBase().getHost() );	    
+	    if( Util.isSecureViaHttps() )
+		protocolJTextField.setText( "https (secure)");
+	    else
+		protocolJTextField.setText( "http (standard)");	    
+	    MLoginJFrame.this.setVisible(true);
+	    resetLogin("Please enter your login and password.");
+	}});
     }
     
     
     public void resetLogin(final String message){
-	SwingUtilities.invokeLater( new Runnable() {
-		public void run(){
-		    acceptJButton.setEnabled(true);
-		    loginJTextField.setEnabled(true);
-		    passJPasswordField.setEnabled(true);
-		    passJPasswordField.setText("");
-		    if(loginJTextField.getText().length() == 0)
-			loginJTextField.requestFocus();
-		    else
-			passJPasswordField.requestFocus();
-		    serverJTextField.setEnabled(true);
-                    protocolJTextField.setEnabled(true);
-		    statusJProgressBar.setString(message);
-		    statusJProgressBar.setValue(0);
-		    statusJProgressBar.setIndeterminate(false);
-		} } );
+	SwingUtilities.invokeLater( new Runnable(){ public void run(){
+	    acceptJButton.setEnabled(true);
+	    loginJTextField.setEnabled(true);
+	    passJPasswordField.setEnabled(true);
+	    passJPasswordField.setText("");
+	    if(loginJTextField.getText().length() == 0)
+		loginJTextField.requestFocus();
+	    else
+		passJPasswordField.requestFocus();
+	    serverJTextField.setEnabled(true);
+	    protocolJTextField.setEnabled(true);
+	    statusJProgressBar.setString(message);
+	    statusJProgressBar.setValue(0);
+	    statusJProgressBar.setIndeterminate(false);
+	}});
     }
 
 
     public void reshowLogin(){
-	SwingUtilities.invokeLater( new Runnable() {
-		public void run() {
-		    synchronized(this){
-			if(mMainJFrame != null){
-			    mMainJFrame.setVisible(false);
-			    mMainJFrame.dispose();
-			    mMainJFrame = null;
-			}
-            if(!MLoginJFrame.this.isVisible())
-                MLoginJFrame.this.setVisible(true);
-		    }
-		} } );
+	SwingUtilities.invokeLater( new Runnable(){ public void run(){
+	    synchronized(this){
+		if(mMainJFrame != null){
+		    mMainJFrame.setVisible(false);
+		    mMainJFrame.dispose();
+		    mMainJFrame = null;
+		}
+		if(!MLoginJFrame.this.isVisible()){
+		    MLoginJFrame.this.setVisible(true);
+		}
+	    }
+	}});
     }
     
 
@@ -462,17 +462,15 @@ public class MLoginJFrame extends javax.swing.JFrame {
 
 	    // (UPDATE GUI) PREPARE FOR LOGIN	    
 	    try{
-		SwingUtilities.invokeAndWait( new Runnable() {
-			public void run() {
-			    loginJTextField.setEnabled(false);
-			    passJPasswordField.setEnabled(false);
-			    serverJTextField.setEnabled(false);
-			    protocolJTextField.setEnabled(false);
-			    statusJProgressBar.setValue(0);
-			    statusJProgressBar.setIndeterminate(true);
-			    statusJProgressBar.setString("Authenticating");
-			} } );
-		
+		SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+		    loginJTextField.setEnabled(false);
+		    passJPasswordField.setEnabled(false);
+		    serverJTextField.setEnabled(false);
+		    protocolJTextField.setEnabled(false);
+		    statusJProgressBar.setValue(0);
+		    statusJProgressBar.setIndeterminate(true);
+		    statusJProgressBar.setString("Authenticating");
+		}});
 		Thread.sleep(1000);
 	    }
 	    catch(Exception e){ /* do nothing on purpose*/  }
@@ -509,13 +507,12 @@ public class MLoginJFrame extends javax.swing.JFrame {
 		    Util.setMvvmContext(mvvmContext);
 
 		    // READOUT SUCCESS /////////////////
-		    SwingUtilities.invokeAndWait( new Runnable() {
-			    public void run() {
-				statusJProgressBar.setValue(16);
-				statusJProgressBar.setIndeterminate(false);
-				statusJProgressBar.setString("Successful authentication");
-				passJPasswordField.setText("");
-			    } } );
+		    SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+			statusJProgressBar.setValue(16);
+			statusJProgressBar.setIndeterminate(false);
+			statusJProgressBar.setString("Successful authentication");
+			passJPasswordField.setText("");
+		    }});
 		    Thread.sleep(2000);
 		    retryLogin = -1;
 		    break;
@@ -557,44 +554,41 @@ public class MLoginJFrame extends javax.swing.JFrame {
 	    int retryClient = 0;
 	    while( true ){
 		retryClient++;
-		try{
-		    
+		try{		    
 		    // load GUI with proper context
 		    mMainJFrame = new MMainJFrame();
 		    Util.setMMainJFrame(mMainJFrame);
 		    
 		    // (UPDATE GUI) tell the user we are about to see the gui
-		    SwingUtilities.invokeAndWait( new Runnable() {
-			    public void run () {
-				statusJProgressBar.setString("Showing EdgeGuard client...");
-				statusJProgressBar.setValue(100);
-			    } } );
+		    SwingUtilities.invokeAndWait( new Runnable(){ public void run (){
+			statusJProgressBar.setString("Showing EdgeGuard client...");
+			statusJProgressBar.setValue(100);
+		    }});
 		    
 		    // wait for a little bit
 		    Thread.sleep(3000);
 		    
 		    // (UPDATE GUI) show the main window
-		    SwingUtilities.invokeAndWait( new Runnable() {
-			    public void run () {
-				MLoginJFrame.this.setVisible(false);
-				mMainJFrame.setBounds( Util.generateCenteredBounds(MLoginJFrame.this.getBounds(), 
-										   mMainJFrame.getWidth(), 
-										   mMainJFrame.getHeight()) );
-				String securedString;
-				if( Util.isSecureViaHttps() )
-				    securedString = "  |  Connection: https (secure)";
-				else
-				    securedString = "  |  Connection: http (standard)";
-				
-				mMainJFrame.setTitle( "Metavize EdgeGuard v" + 
-						      Version.getVersion() + "  |  Login: " +
-						      loginJTextField.getText() + "  |  Server: " + 
-						      Util.getServerCodeBase().getHost() + securedString );
-				if(Util.getIsDemo())
-				    mMainJFrame.setTitle( mMainJFrame.getTitle() + "  [DEMO MODE]" );
-				mMainJFrame.setExtendedState(Frame.MAXIMIZED_BOTH);
-				mMainJFrame.setVisible(true);
-			    } } );
+		    SwingUtilities.invokeAndWait( new Runnable(){ public void run (){
+			MLoginJFrame.this.setVisible(false);
+			mMainJFrame.setBounds( Util.generateCenteredBounds(MLoginJFrame.this.getBounds(), 
+									   mMainJFrame.getWidth(), 
+									   mMainJFrame.getHeight()) );
+			String securedString;
+			if( Util.isSecureViaHttps() )
+			    securedString = "  |  Connection: https (secure)";
+			else
+			    securedString = "  |  Connection: http (standard)";
+			
+			mMainJFrame.setTitle( "Metavize EdgeGuard v" + 
+					      Version.getVersion() + "  |  Login: " +
+					      loginJTextField.getText() + "  |  Server: " + 
+					      Util.getServerCodeBase().getHost() + securedString );
+			if(Util.getIsDemo())
+			    mMainJFrame.setTitle( mMainJFrame.getTitle() + "  [DEMO MODE]" );
+			mMainJFrame.setExtendedState(Frame.MAXIMIZED_BOTH);
+			mMainJFrame.setVisible(true);
+		    }});
 		    retryClient = -1;
 		    break;
 		}

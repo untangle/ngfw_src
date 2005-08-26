@@ -28,33 +28,13 @@ public class LogJPanel extends MLogTableJPanel
 	setTableModel(new LogTableModel());
     }
 
-    public Vector generateRows(Object settings)
-    {
-        List<NatRedirectLogEntry> logList = ((Nat)super.logTransform).getLogs( depthJSlider.getValue());
-        Vector allEvents = new Vector();
-        Vector event = null;
-
-        for( NatRedirectLogEntry log : logList ){
-            event = new Vector(8);
-            event.add( log.getCreateDate() );
-	    event.add( log.getAction() );
-	    event.add( log.getProtocol() );
-            event.add( log.getClient() );
-            event.add( log.getOriginalServer() );
-            event.add( log.getRedirectServer() );
-	    event.add( log.getReason() );
-            event.add( log.getDirection().getDirectionName() );
-            allEvents.insertElementAt( event, 0 );
-        }
-	
-        return allEvents;
+    protected void refreshSettings(){
+	settings = ((Nat)super.logTransform).getLogs( depthJSlider.getValue());
     }
-    
-    class LogTableModel extends MSortedTableModel
-    {
+
+    class LogTableModel extends MSortedTableModel {
 	
-	public TableColumnModel getTableColumnModel()
-        {
+	public TableColumnModel getTableColumnModel(){
 	    DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
 	    //                                 #   min  rsz    edit   remv   desc   typ               def
 	    addTableColumn( tableColumnModel,  0,  150, true,  false, false, false, Date.class,   null, "timestamp" );
@@ -68,13 +48,28 @@ public class LogJPanel extends MLogTableJPanel
 	    return tableColumnModel;                                                                                                     
 	}
 	
-	public void generateSettings(Object settings, boolean validateOnly ) throws Exception 
-        {
-        }
+	public void generateSettings(Object settings, boolean validateOnly ) throws Exception {}
 
-	public Vector generateRows( Object settings )
-        {
-	    return LogJPanel.this.generateRows( null );
+	public Vector generateRows(Object settings){
+	    List<NatRedirectLogEntry> logList = (List<NatRedirectLogEntry>) settings;
+	    Vector allEvents = new Vector();
+	    Vector event = null;
+	    
+	    for( NatRedirectLogEntry log : logList ){
+		event = new Vector(8);
+		event.add( log.getCreateDate() );
+		event.add( log.getAction() );
+		event.add( log.getProtocol() );
+		event.add( log.getClient() );
+		event.add( log.getOriginalServer() );
+		event.add( log.getRedirectServer() );
+		event.add( log.getReason() );
+		event.add( log.getDirection().getDirectionName() );
+		allEvents.insertElementAt( event, 0 );
+	    }
+	    
+	    return allEvents;
 	}
+	
     }       
 }

@@ -26,7 +26,9 @@ import java.util.*;
 import java.awt.*;
 import java.awt.event.*;
 
-public class MLogTableJPanel extends javax.swing.JPanel {
+public abstract class MLogTableJPanel extends javax.swing.JPanel {
+
+    protected Object settings;
 
     protected static MLogTableJPanel lastMLogTableJPanel;
     private static final long STREAM_SLEEP_MILLIS = 15000l;    
@@ -47,8 +49,6 @@ public class MLogTableJPanel extends javax.swing.JPanel {
 		entryJScrollPane.getViewport().setOpaque(true);
 		entryJScrollPane.getViewport().setBackground(TABLE_BACKGROUND_COLOR);
 		entryJScrollPane.setViewportBorder(new MatteBorder(2, 2, 2, 1, TABLE_BACKGROUND_COLOR));
-		MLogTableJPanel.this.setOpaque(false);
-		contentJPanel.setOpaque(false);
 		Dictionary dictionary = depthJSlider.getLabelTable();
 		Enumeration enumeration = dictionary.elements();
 		while(enumeration.hasMoreElements()){
@@ -61,7 +61,7 @@ public class MLogTableJPanel extends javax.swing.JPanel {
 	catch(Exception e){ Util.handleExceptionNoRestart("Error building Log Table", e); }
     }
 
-    
+    protected abstract void refreshSettings();
     
     public void setTableModel(MSortedTableModel mSortedTableModel){
         entryJTable.setModel( mSortedTableModel );
@@ -98,11 +98,14 @@ public class MLogTableJPanel extends javax.swing.JPanel {
 
         setLayout(new java.awt.GridBagLayout());
 
+        setOpaque(false);
         contentJPanel.setLayout(new java.awt.GridBagLayout());
 
+        contentJPanel.setOpaque(false);
         tableJPanel.setLayout(new java.awt.GridBagLayout());
 
         tableJPanel.setMinimumSize(new java.awt.Dimension(40, 40));
+        tableJPanel.setOpaque(false);
         entryJScrollPane.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         entryJScrollPane.setDoubleBuffered(true);
         entryJTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
@@ -118,24 +121,29 @@ public class MLogTableJPanel extends javax.swing.JPanel {
         gridBagConstraints.weighty = 1.0;
         tableJPanel.add(entryJScrollPane, gridBagConstraints);
 
+        depthJSlider.setFont(new java.awt.Font("Dialog", 0, 12));
         depthJSlider.setMajorTickSpacing(100);
         depthJSlider.setMaximum(1000);
         depthJSlider.setMinimum(100);
-        depthJSlider.setMinorTickSpacing(50);
+        depthJSlider.setMinorTickSpacing(25);
         depthJSlider.setOrientation(javax.swing.JSlider.VERTICAL);
         depthJSlider.setPaintLabels(true);
         depthJSlider.setPaintTicks(true);
         depthJSlider.setSnapToTicks(true);
         depthJSlider.setToolTipText("<html>\n<b>Event Log Depth Slider</b><br>\nThis slider allows you to specify the maximum number of visible events<br>\nwhen the \"Refresh Log\" or \"Start Auto-refresh\" buttons are pressed.</html>");
-        depthJSlider.setMaximumSize(new java.awt.Dimension(65, 32767));
-        depthJSlider.setMinimumSize(new java.awt.Dimension(65, 36));
-        depthJSlider.setPreferredSize(new java.awt.Dimension(65, 200));
+        depthJSlider.setDebugGraphicsOptions(javax.swing.DebugGraphics.NONE_OPTION);
+        depthJSlider.setDoubleBuffered(true);
+        depthJSlider.setFocusable(false);
+        depthJSlider.setMaximumSize(null);
+        depthJSlider.setMinimumSize(null);
+        depthJSlider.setOpaque(false);
+        depthJSlider.setPreferredSize(null);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.VERTICAL;
         gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(15, 5, 15, 10);
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 10);
         tableJPanel.add(depthJSlider, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -245,7 +253,7 @@ public class MLogTableJPanel extends javax.swing.JPanel {
     private javax.swing.JPanel tableJPanel;
     // End of variables declaration//GEN-END:variables
     
-
+    private Exception refreshException;
     class RefreshThread extends Thread implements ActionListener {
 	private boolean isAutoRefresh;
 	public RefreshThread(boolean isAutoRefresh){
@@ -265,7 +273,6 @@ public class MLogTableJPanel extends javax.swing.JPanel {
 	}
 	
 	public void actionPerformed(ActionEvent actionEvent){
-	    System.err.println("actionPerformed: " + actionEvent);
 	    JToggleButton controlsJToggleButton = (JToggleButton) actionEvent.getSource();
 	    if( !controlsJToggleButton.isSelected() ){
 		MLogTableJPanel.this.lastMLogTableJPanel.streamingJToggleButton.doClick();
@@ -277,7 +284,18 @@ public class MLogTableJPanel extends javax.swing.JPanel {
 		    MLogTableJPanel.this.mTransformControlsJPanel.getControlsJToggleButton().addActionListener(this);
 		}
 		do{
-		    getTableModel().doRefresh(null);
+		    refreshSettings();
+		    refreshException = null;
+		    SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+			try{
+			    getTableModel().doRefresh(settings);
+			}
+			catch(Exception f){
+			    refreshException = f;
+			}
+		    }});
+		    if( refreshException != null)
+			throw refreshException;
 		    if(isAutoRefresh){
 			this.sleep(STREAM_SLEEP_MILLIS);
 		    }
@@ -287,12 +305,12 @@ public class MLogTableJPanel extends javax.swing.JPanel {
 	    catch(InterruptedException e){
 		// this is normal, means the thread was stopped by pressing the toggle button
 	    }
-	    catch(Exception f){
+	    catch(Exception g){
 		try{
-		    Util.handleExceptionWithRestart("Error refreshing event log", f);
+		    Util.handleExceptionWithRestart("Error refreshing event log", g);
 		}
-		catch(Exception g){
-		    Util.handleExceptionNoRestart("Error refreshing event log", g);
+		catch(Exception h){
+		    Util.handleExceptionNoRestart("Error refreshing event log", h);
 		    new RefreshLogFailureDialog( logTransform.getTransformDesc().getDisplayName() );
 		}
 	    }

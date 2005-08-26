@@ -194,6 +194,7 @@ public class NetworkJPanel extends javax.swing.JPanel implements Savable, Refres
         dnsPrimaryJTextField = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
         dnsSecondaryJTextField = new javax.swing.JTextField();
+        jLabel5 = new javax.swing.JLabel();
         jSeparator2 = new javax.swing.JSeparator();
         jLabel9 = new javax.swing.JLabel();
         renewDhcpLeaseJButton = new javax.swing.JButton();
@@ -324,6 +325,14 @@ public class NetworkJPanel extends javax.swing.JPanel implements Savable, Refres
         gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
         staticIPJPanel.add(dnsSecondaryJTextField, gridBagConstraints);
 
+        jLabel5.setFont(new java.awt.Font("Dialog", 0, 12));
+        jLabel5.setText(" (Optional)");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        staticIPJPanel.add(jLabel5, gridBagConstraints);
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.ipadx = 150;
@@ -452,6 +461,7 @@ public class NetworkJPanel extends javax.swing.JPanel implements Savable, Refres
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JSeparator jSeparator2;

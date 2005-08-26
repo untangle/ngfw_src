@@ -32,6 +32,17 @@ import javax.swing.text.*;
 
 public class UpgradeJDialog extends javax.swing.JDialog implements Savable, Refreshable, java.awt.event.WindowListener {
 
+    // DOWNLOAD DELAYS //////////////
+    private static final int DOWNLOAD_INITIAL_SLEEP_MILLIS = 3000;
+    private static final int DOWNLOAD_SLEEP_MILLIS = 3000;
+    private static final int DOWNLOAD_FINAL_SLEEP_MILLIS = 3000;
+    /////////////////////////////////
+
+    // SAVING/REFRESHING ///////////
+    protected Map<String, Refreshable> refreshableMap = new LinkedHashMap(1);
+    protected Map<String, Savable> savableMap = new LinkedHashMap(1);
+    protected Object settings;
+    ///////////////////////////////
 
     private MEditTableJPanel mEditTableJPanel;
     private UpgradeTableModel upgradeTableModel;
@@ -41,8 +52,7 @@ public class UpgradeJDialog extends javax.swing.JDialog implements Savable, Refr
     public UpgradeJDialog() {
         super(Util.getMMainJFrame(), true);
 
-
-        // BUILD FIRST TAB (MANUAL UPGRADE)
+        // UPGRADE
         mEditTableJPanel = new MEditTableJPanel(false, true);
         mEditTableJPanel.setInsets(new Insets(0,0,0,0));
         mEditTableJPanel.setTableTitle("Available Upgrades");
@@ -51,12 +61,26 @@ public class UpgradeJDialog extends javax.swing.JDialog implements Savable, Refr
         upgradeTableModel = new UpgradeTableModel();
         mEditTableJPanel.setTableModel( upgradeTableModel );
         mEditTableJPanel.getJTable().setRowHeight(49);
-
-
-        // BUILD GENERAL GUI
+	
+        // AUTOMATIC UPGRADES
         initComponents();
         this.addWindowListener(this);         
 	this.setBounds( Util.generateCenteredBounds( Util.getMMainJFrame().getBounds(), this.getWidth(), this.getHeight()) );
+	this.savableMap.put("Automatic Upgrade", this);
+	this.refreshableMap.put("Automatic Upgrade", this);
+	
+	
+	// REFRESH AND CHECK FOR UPGRADES
+	new RefreshAllThread();
+	new CheckForUpgradesThread();
+    }
+
+    protected void sendSettings(Object settings) throws Exception {
+	Util.getToolboxManager().setUpgradeSettings( (UpgradeSettings) settings);        
+    }
+
+    protected void refreshSettings(){
+	settings = Util.getToolboxManager().getUpgradeSettings();
     }
 
     public void doSave(Object settings, boolean validateOnly) throws Exception {
@@ -95,7 +119,12 @@ public class UpgradeJDialog extends javax.swing.JDialog implements Savable, Refr
         
         // BUILD SECOND TAB (SCHEDULED AUTOMATIC UPGRADE)
         int hour, minute;
-	yesAutoJRadioButton.setSelected(upgradeSettings.getAutoUpgrade());
+	if(upgradeSettings.getAutoUpgrade()){
+	    yesAutoJRadioButton.setSelected(true);
+	}
+	else{
+	    noAutoJRadioButton.setSelected(true);
+	}
 	Period period = upgradeSettings.getPeriod();
 	
 	hour = period.getHour();
@@ -118,6 +147,7 @@ public class UpgradeJDialog extends javax.swing.JDialog implements Savable, Refr
     }
 
 
+    private Exception saveException;
     private class SaveAllThread extends Thread{
         public SaveAllThread(){
 	    super("MVCLIENT-UpgradeJDialog.SaveAllThread");
@@ -130,30 +160,41 @@ public class UpgradeJDialog extends javax.swing.JDialog implements Savable, Refr
         
         public void run(){
 	    try{
-		UpgradeSettings upgradeSettings = Util.getToolboxManager().getUpgradeSettings();
-		doSave( upgradeSettings, false );
-		Util.getToolboxManager().setUpgradeSettings( upgradeSettings );
+		saveException = null;
+		SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+		    try{
+			doSave( settings, false );
+		    }
+		    catch(Exception f){
+			saveException = f;
+		    }
+		}});
+		if(saveException != null)
+		    throw saveException;
+		sendSettings(settings);
 	    }
 	    catch(Exception e){
 		try{
 		    Util.handleExceptionWithRestart("Error committing upgrade data", e);
 		}
-		catch(Exception f){
-		    Util.handleExceptionNoRestart("Error committing upgrade data", f);
+		catch(Exception g){
+		    Util.handleExceptionNoRestart("Error committing upgrade data", g);
 		}
 	    }
 	    finally{
-		saveJButton.setIcon(Util.getButtonSaveSettings());
-		saveJButton.setEnabled(true);
-		reloadJButton.setEnabled(true);
-		closeJButton.setEnabled(true);
+		SwingUtilities.invokeLater( new Runnable(){ public void run(){
+		    saveJButton.setIcon(Util.getButtonSaveSettings());
+		    saveJButton.setEnabled(true);
+		    reloadJButton.setEnabled(true);
+		    closeJButton.setEnabled(true);
+		}});
 	    }       
         }
     }
 
 
 
-    
+    private Exception refreshException;
     private class RefreshAllThread extends Thread{
         public RefreshAllThread(){
 	    super("MVCLIENT-UpgradeJDialog.RefreshAllThread");
@@ -166,21 +207,34 @@ public class UpgradeJDialog extends javax.swing.JDialog implements Savable, Refr
         
         public void run(){
 	    try{
-		doRefresh( Util.getToolboxManager().getUpgradeSettings() );
+		refreshSettings();
+		refreshException = null;
+		SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+		    try{
+			doRefresh( settings );
+		    }
+		    catch(Exception f){
+			refreshException = f;
+		    }
+		}});
+		if( refreshException != null )
+		    throw refreshException;
 	    }
 	    catch(Exception e){
 		try{
 		    Util.handleExceptionWithRestart("Error committing upgrade data", e);
 		}
-		catch(Exception f){
-		    Util.handleExceptionNoRestart("Error committing upgrade data", f);
+		catch(Exception g){
+		    Util.handleExceptionNoRestart("Error committing upgrade data", g);
 		}
 	    }
 	    finally{
-		reloadJButton.setIcon(Util.getButtonReloadSettings());
-		reloadJButton.setEnabled(true);
-		saveJButton.setEnabled(true);
-		closeJButton.setEnabled(true);
+		SwingUtilities.invokeLater( new Runnable(){ public void run(){
+		    reloadJButton.setIcon(Util.getButtonReloadSettings());
+		    reloadJButton.setEnabled(true);
+		    saveJButton.setEnabled(true);
+		    closeJButton.setEnabled(true);
+		}});
 	    }
 	    
         }
@@ -189,15 +243,6 @@ public class UpgradeJDialog extends javax.swing.JDialog implements Savable, Refr
 
 
     
-    public void setVisible(boolean isVisible){
-        if(isVisible){
-            checkForUpgradesThread = new CheckForUpgradesThread();
-            super.setVisible(true);
-        }
-        else
-            super.setVisible(false);
-    }
-
 
     private void initComponents() {//GEN-BEGIN:initComponents
         java.awt.GridBagConstraints gridBagConstraints;
@@ -616,43 +661,58 @@ public class UpgradeJDialog extends javax.swing.JDialog implements Savable, Refr
 	    this.start();
 	}
         public void run() {
+	    try{
+		// ASK THE USER IF HE REALLY WANTS TO UPGRADE
+		ProceedJDialog proceedJDialog = new ProceedJDialog();
+		if( !proceedJDialog.isUpgrading() )
+		    return;
 
-            // ASK THE USER IF HE REALLY WANTS TO UPGRADE
-            ProceedJDialog proceedJDialog = new ProceedJDialog();
-            if( !proceedJDialog.isUpgrading() )
-                return;
+		// LET THE USER KNOW WERE STARTING
+		SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+		    // prevent GUI from interacting
+		    UpgradeJDialog.this.jTabbedPane.setEnabled(false);
+		    UpgradeJDialog.this.upgradeJButton.setEnabled(false);
+		    UpgradeJDialog.this.closeJButton.setEnabled(false);		    
+		    // tell user whats going on
+		    UpgradeJDialog.this.actionJProgressBar.setValue(0);
+		    UpgradeJDialog.this.actionJProgressBar.setString("Starting upgrade...");
+		    UpgradeJDialog.this.actionJProgressBar.setIndeterminate(true);
+		}});		
+		Thread.currentThread().sleep(DOWNLOAD_INITIAL_SLEEP_MILLIS);
+                /* int upgradeIndex = */ Util.getToolboxManager().upgrade();
+		
+		// DO THE DOWNLOAD
+		/*
+		String loopPhase;
+		do{
+		    final String status = "";
+		    final int progress = 0;
+		    final String phase = "";
+		    loopPhase = phase;
+		    SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+			UpgradeJDialog.this.actionJProgressBar.setString( phase + " : " + status);
+			UpgradeJDialog.this.actionJProgressBar.setValue(progress);
+		    }});
+		    
+		    Thread.currentThread().sleep(DOWNLOAD_SLEEP_MILLIS);
+		}
+		while( !loopPhase.equals("Finished") );
+		*/
+		Thread.currentThread().sleep(DOWNLOAD_FINAL_SLEEP_MILLIS);
 
-            SwingUtilities.invokeLater( new Runnable(){ public void run(){
-                // prevent GUI from interacting
-                UpgradeJDialog.this.jTabbedPane.setEnabled(false);
-                UpgradeJDialog.this.upgradeJButton.setEnabled(false);
-                UpgradeJDialog.this.closeJButton.setEnabled(false);
-
-                // tell user whats going on
-                UpgradeJDialog.this.actionJProgressBar.setValue(0);
-                UpgradeJDialog.this.actionJProgressBar.setString("upgrading...");
-                UpgradeJDialog.this.actionJProgressBar.setIndeterminate(true);
-            }});
-
-
-            // start upgrade... should either throw a timeout exception or return
-            try{
-                Util.getToolboxManager().upgrade();
-            }
+		// LET THE USER KNOW WERE FINISHED
+		SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+		    UpgradeJDialog.this.actionJProgressBar.setIndeterminate(true);
+		    UpgradeJDialog.this.actionJProgressBar.setValue(100);
+		    UpgradeJDialog.this.actionJProgressBar.setString("Shutting down...");
+		}});
+	    }
             catch(Exception e){
-                // do nothing because there is nothing to do, but fall through the code
-                Util.handleExceptionNoRestart("Termination of upgrade:", e);
-            }
-
-            SwingUtilities.invokeLater( new Runnable(){ public void run(){
-                // to trigger an automatic restart if upgrade() actually returns
-                UpgradeJDialog.this.actionJProgressBar.setIndeterminate(true);
-                UpgradeJDialog.this.actionJProgressBar.setValue(100);
-                UpgradeJDialog.this.actionJProgressBar.setString("shutting down...");
-            }});
-
-            new RestartDialog();
-                            
+		Util.handleExceptionNoRestart("Termination of upgrade:", e);
+	    }
+	    finally{
+		new RestartDialog();
+	    }
         }
     }
 
@@ -665,34 +725,31 @@ public class UpgradeJDialog extends javax.swing.JDialog implements Savable, Refr
         public void run() {
             try{
                 
-                doRefresh( Util.getToolboxManager().getUpgradeSettings() );
-                
                 // PREVENT GUI FROM INTERACTING
-                SwingUtilities.invokeLater( new Runnable(){ public void run(){
+                SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
                     UpgradeJDialog.this.upgradeJButton.setEnabled(false);
                     UpgradeJDialog.this.jTabbedPane.setEnabled(false);
                     UpgradeJDialog.this.actionJProgressBar.setValue(0);
                     UpgradeJDialog.this.actionJProgressBar.setString("downloading upgrade list from server...");
                     UpgradeJDialog.this.actionJProgressBar.setIndeterminate(true);
                 }});                
-
                 Thread.sleep(2000);
                 
                 // CHECK FOR UPGRADES
                 Util.getToolboxManager().update();
-                final MackageDesc[] upgradable = Util.getToolboxManager().upgradable();
-                if( Util.isArrayEmpty(upgradable) ){
+                final MackageDesc[] upgradableMackages = Util.getToolboxManager().upgradable();
+                if( Util.isArrayEmpty(upgradableMackages) ){
                     Util.getMMainJFrame().updateJButton(0);
                     Util.setUpgradeCount(0);
                 }
                 else{
-                    Util.getMMainJFrame().updateJButton(upgradable.length);
-                    Util.setUpgradeCount(upgradable.length);
+                    Util.getMMainJFrame().updateJButton(upgradableMackages.length);
+                    Util.setUpgradeCount(upgradableMackages.length);
                 }
                 Util.checkedUpgrades();
-		final int upgradesTotal = upgradable.length;
+		final int upgradesTotal = upgradableMackages.length;
 		int tempUpgradesVisible = 0;
-		for( MackageDesc mackageDesc : upgradable ){
+		for( MackageDesc mackageDesc : upgradableMackages ){
 		    if( mackageDesc.getType() == MackageDesc.CASING_TYPE )
 			continue;
 		    else
@@ -700,12 +757,11 @@ public class UpgradeJDialog extends javax.swing.JDialog implements Savable, Refr
 		}
 		final int upgradesVisible = tempUpgradesVisible;
 		    
-                
                 // TELL THE USER THE RESULTS
-                SwingUtilities.invokeLater( new Runnable(){ public void run(){
+                SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
                     UpgradeJDialog.this.actionJProgressBar.setIndeterminate(false);
                     UpgradeJDialog.this.actionJProgressBar.setValue(50);
-                    if( Util.isArrayEmpty(upgradable) ){
+                    if( Util.isArrayEmpty(upgradableMackages) ){
                         UpgradeJDialog.this.actionJProgressBar.setString("No upgrades found.");
                     }
                     else{
@@ -715,23 +771,24 @@ public class UpgradeJDialog extends javax.swing.JDialog implements Savable, Refr
 
                 // SHOW THE UPGRADES
                 Thread.sleep(2000);
-                upgradeTableModel.doRefresh(null);
+                SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+		    upgradeTableModel.doRefresh(upgradableMackages);
+		}});
                 
                 
                 // FINISH THE PROCESS
-                SwingUtilities.invokeLater( new Runnable(){ public void run(){
+                SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
                     UpgradeJDialog.this.actionJProgressBar.setValue(100);
-                    if( Util.isArrayEmpty(upgradable) ){
+                    if( Util.isArrayEmpty(upgradableMackages) ){
                         UpgradeJDialog.this.upgradeJButton.setEnabled(false);
                     }
                     else{
                         UpgradeJDialog.this.upgradeJButton.setEnabled(true);
                     }
                 }});
-
                 Thread.sleep(1000);
                
-                SwingUtilities.invokeLater( new Runnable(){ public void run(){
+                SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
                     UpgradeJDialog.this.actionJProgressBar.setValue(0);
                     UpgradeJDialog.this.jTabbedPane.setEnabled(true);
                 }});                
@@ -766,7 +823,6 @@ public class UpgradeJDialog extends javax.swing.JDialog implements Savable, Refr
     }//GEN-LAST:event_closeJButtonActionPerformed
 
 
-
     public void windowClosing(java.awt.event.WindowEvent windowEvent) {
         if( checkForUpgradesThread != null ){
             checkForUpgradesThread.interrupt();
@@ -780,14 +836,6 @@ public class UpgradeJDialog extends javax.swing.JDialog implements Savable, Refr
     public void windowOpened(java.awt.event.WindowEvent windowEvent) {}
     public void windowActivated(java.awt.event.WindowEvent windowEvent) {}
     public void windowClosed(java.awt.event.WindowEvent windowEvent) {}
-
-
-
-
-
-
-
-
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -829,11 +877,6 @@ public class UpgradeJDialog extends javax.swing.JDialog implements Savable, Refr
 
 class UpgradeTableModel extends MSortedTableModel {
 
-    public void doRefresh(Object settings){
-	super.doRefresh( Util.getToolboxManager() );
-    }
-
-
     public TableColumnModel getTableColumnModel(){
 
     DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
@@ -853,8 +896,7 @@ class UpgradeTableModel extends MSortedTableModel {
     public void generateSettings(Object settings, boolean validateOnly) throws Exception { }
 
     public Vector generateRows(Object settings){
-	ToolboxManager toolboxManager = (ToolboxManager) settings;
-        MackageDesc[] mackageDescs = toolboxManager.upgradable();
+        MackageDesc[] mackageDescs = (MackageDesc[]) settings;
         Vector allRows = new Vector();
 	Vector tempRow = null;
 	int rowIndex = 0;

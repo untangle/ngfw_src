@@ -30,6 +30,12 @@ import javax.swing.border.*;
 
 public class MTransformJButton extends JButton {
 
+    // DOWNLOAD DELAYS //////////////
+    private static final int DOWNLOAD_INITIAL_SLEEP_MILLIS = 3000;
+    private static final int DOWNLOAD_SLEEP_MILLIS = 3000;
+    private static final int DOWNLOAD_FINAL_SLEEP_MILLIS = 3000;
+    /////////////////////////////////
+
     // FADED BACKGROUND /////////////
     private static final int FADE_DELAY_MILLIS = 150;
     private static final float FADE_DECREMENT = .1f;
@@ -196,7 +202,7 @@ public class MTransformJButton extends JButton {
     public void setDeployedView(){ updateView(null, "Installed into rack.", false, false); }
 
     public void setDeployingView(){ updateView("installing", "Installing.", false, true); }
-    public void setProcuringView(){ updateView("purchasing", "Purchasing.", false, true); }
+    public void setProcuringView(){ updateView("purchasing", "Purchasing.", false, false); }
     public void setRemovingFromToolboxView(){ updateView("removing", "Removing from Toolbox.", false, true); }
     public void setRemovingFromRackView(){ updateView("removing", "Removing from Rack.", false, false); }
 
@@ -248,10 +254,10 @@ public class MTransformJButton extends JButton {
         new UninstallThread();
     }
 
-    public void purchase(){
+    public void purchase( JProgressBar progressBar ){
         if(Util.getIsDemo())
             return;
-        new PurchaseThread();
+        new PurchaseThread(progressBar);
     }
 
     private class InstallThread extends Thread {
@@ -284,19 +290,54 @@ public class MTransformJButton extends JButton {
     
 
     private class PurchaseThread extends Thread {
-
-        public PurchaseThread(){
+	private JProgressBar progressBar;
+        public PurchaseThread(JProgressBar progressBar){
 	    this.setContextClassLoader( Util.getClassLoader() );
 	    MTransformJButton.this.setProcuringView();
-	    this.start();
+	    this.progressBar = progressBar;
+	    SwingUtilities.invokeLater( new Runnable(){ public void run(){
+		PurchaseThread.this.progressBar.setIndeterminate(true);
+		PurchaseThread.this.progressBar.setString("Starting download...");
+		PurchaseThread.this.progressBar.setValue(0);
+	    }});
+	    this.run();  // no longer a thread... just a method call now
 	}    
 
 	public void run() {	    
-	    try{  // START TO DOWNLOAD THE TRANSFORM
+	    try{
+		// LET THE USER KNOW WERE STARTING
+		Thread.currentThread().sleep(DOWNLOAD_INITIAL_SLEEP_MILLIS);
 		int dashIndex = MTransformJButton.this.getName().indexOf('-');
-		Util.getToolboxManager().install(MTransformJButton.this.getName().substring(0, dashIndex));
-		Util.getMMainJFrame().addMTransformJButtonToToolbox(MTransformJButton.this);
+		SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+		    progressBar.setIndeterminate(false);
+		}});
+		/* int progressIndex =  */ Util.getToolboxManager().install(MTransformJButton.this.getName().substring(0, dashIndex));
+		
+		// DO THE DOWNLOAD
+		String loopPhase;
+		/*
+		do{
+		    final String status = "";
+		    final int progress = 0;
+		    final String phase = "";
+		    loopPhase = phase;
+		    SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+			progressBar.setString( phase + " : " + status);
+			progressBar.setValue(progress);
+		    }});
+		    
+		    Thread.currentThread().sleep(DOWNLOAD_SLEEP_MILLIS);
+		}
+		while( !loopPhase.equals("Finished") );
+		*/
+
 		// LET THE USER KNOW WERE DONE
+		SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+		    progressBar.setString("Download Finished.");
+		    progressBar.setValue(100);
+		}});
+		Thread.currentThread().sleep(DOWNLOAD_FINAL_SLEEP_MILLIS);
+		Util.getMMainJFrame().addMTransformJButtonToToolbox(MTransformJButton.this);
 		MTransformJButton.this.setDeployableView();
 		Util.getMMainJFrame().focusInToolbox(MTransformJButton.this);
 	    }
@@ -307,7 +348,9 @@ public class MTransformJButton extends JButton {
 		catch(Exception f){
 		    Util.handleExceptionNoRestart("Error purchasing transform:", f);
 		    MTransformJButton.this.setFailedProcureView();
-		    new MOneButtonJDialog(MTransformJButton.this.getDisplayName(), "A problem occurred while procuring:<br>" + MTransformJButton.this.getDisplayName() + "<br>Please check your network settings.");
+		    progressBar.setString("Download problem occurred...");
+		    progressBar.setValue(100);
+		    new MOneButtonJDialog(MTransformJButton.this.getDisplayName(), "A problem occurred while purchasing:<br>" + MTransformJButton.this.getDisplayName() + "<br>Please contact Metavize for assistance.");
 		}
 	    }	    
 	}

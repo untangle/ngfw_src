@@ -237,7 +237,7 @@ public class Util {
     public static final int TABLE_TOTAL_WIDTH_LARGE = 501; /* in pixels (contains extra pixel) */
     public static final int LINENO_MIN_WIDTH = 38; /* # */
     public static final int STATUS_MIN_WIDTH = 55; /* status */
-    public static final int TIMESTAMP_MIN_WIDTH = 55; /* time stamp */
+    public static final int TIMESTAMP_MIN_WIDTH = 150; /* time stamp */
     //////////////////////////////////////////////
 
 

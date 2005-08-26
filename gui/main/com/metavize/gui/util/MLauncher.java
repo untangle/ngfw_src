@@ -32,6 +32,9 @@ public class MLauncher {
         catch (Exception e) {
             Util.handleExceptionNoRestart("Error setting LAF:", e);
         }
+
+	// SET THE REPAINT MANAGER
+	javax.swing.RepaintManager.setCurrentManager( new DebugRepaintManager() );
         
         // start a shutdown hook
         Runtime.getRuntime().addShutdownHook( new ShutdownHookThread() );
