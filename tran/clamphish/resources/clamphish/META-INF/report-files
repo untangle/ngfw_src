@@ -3,3 +3,4 @@ reports/PhishSmtpDetail.jasper:ClamPhish_AntiPhishing--Email_Incidents_SMTP:Emai
 reports/PhishDetail.jasper:ClamPhish_AntiPhishing--Email_Incidents:Emails (POP/IMAP)
 com.metavize.tran.clamphish.reports.PhishSummarizer:summarizer:Summarizer
 spamVendor:parameter:Clam
+reportTitlePrefix:parameter:none
