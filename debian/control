@@ -32,16 +32,25 @@ Description: The Metavize eMail Decoder
  The Mail Casing allows other software appliances
  to parse and analyze eMail (SMTP/IMAP/POP3) traffic and documents.
 
-Package: airgap-transform
+Package: spamassassin-transform
 Architecture: any
-Depends: mvvm
+Depends: mvvm, spamc-mv, mail-casing
 XB-Price: 0
-XB-Display-Name: Packet Attack Shield
-XB-Website: http://www.metavize.com/packetshield.html
-XB-Rack-Position: 1001
-Description: The Metavize Packet Attack Shield
- The Packet Attack Shield prevents packet based attacks on your
- network.
+XB-Display-Name: SpamGuard
+XB-Website: http://www.metavize.com/spam.html
+XB-Rack-Position: 0
+Description: The Metavize SpamGuard Software Appliance
+ The SpamGuard Software Appliance marks Spam email as Spam.
+
+Package: clamphish-transform
+Architecture: any
+Depends: mvvm, clamav-mv, mail-casing
+XB-Price: 0
+XB-Display-Name: PhishNet
+XB-Website: http://www.metavize.com/phish.html
+XB-Rack-Position: 1
+Description: The Metavize PhishNet Software Appliance
+ The PhishNet Software Appliance marks Phishing emails as Phish.
 
 Package: spyware-transform
 Architecture: any
@@ -49,7 +58,7 @@ Depends: mvvm, http-casing
 XB-Price: 0
 XB-Display-Name: Spyware Blocker
 XB-Website: http://www.metavize.com/spyware.html
-XB-Rack-Position: 1
+XB-Rack-Position: 2
 Description: The Metavize Spyware Blocker
  The Spyware Blocker detects and prevents Spyware infections, with
  ActiveX and Cookie blacklist. It also can detect and block clients
@@ -61,23 +70,11 @@ Depends: mvvm, http-casing, urlblacklist.com-mv
 XB-Price: 0
 XB-Display-Name: Web Content Control
 XB-Website: http://www.metavize.com/webcontrol.html
-XB-Rack-Position: 2
+XB-Rack-Position: 3
 Description: The Metavize Web Content Filter
  Web Content Control enforces your web browsing policy.  It can filter
  based on content type (category), web address, MIME type, file
  extension, etc.
-
-Package: email-transform
-Architecture: any
-Depends: mvvm, spamc-mv, spamassassin-transform
-Conflicts: xmailscanner-transform
-XB-Price: 0
-XB-Display-Name: eMail SpamGuard
-XB-Website: http://www.metavize.com
-XB-Rack-Position: -3
-Description: The Metavize eMail SpamGuard
- The eMail SpamGuard, based on SpamAssassin, is able to
- mark SPAM incoming and outgoing SMTP, POP3, and IMAP.
 
 Package: hauri-transform
 Architecture: any
@@ -140,25 +137,28 @@ Description: The Metavize Firewall Software Appliance
  The Firewall Software Appliance allows network traffic to be blocked
  based on simple rules.
 
-Package: spamassassin-transform
+Package: ids-transform
 Architecture: any
-Depends: mvvm, spamc-mv, mail-casing
+Depends: mvvm, http-casing
 XB-Price: 0
-XB-Display-Name: SpamGuard
-XB-Website: http://www.metavize.com/spam.html
-XB-Rack-Position: 0
-Description: The Metavize SpamGuard Software Appliance
- The SpamGuard Software Appliance marks Spam email as Spam.
+XB-Display-Name: Intrusion Prevention
+XB-Website: http://www.metavize.com
+XB-Rack-Position: 42
+Description: The Metavize Intrusion Prevention Appliance 
+ The Metavize Intrusion Prevention Appliance is an inline traffic 
+ scanner that detects exploits and intrusion attempts. It contains a library of 
+ over 2000 rules which can be easily expanded on with custom rules.
 
-Package: clamphish-transform
+Package: airgap-transform
 Architecture: any
-Depends: mvvm, clamav-mv, mail-casing
+Depends: mvvm
 XB-Price: 0
-XB-Display-Name: PhishNet
-XB-Website: http://www.metavize.com/phish.html
-XB-Rack-Position: 0
-Description: The Metavize PhishNet Software Appliance
- The PhishNet Software Appliance marks Phishing emails as Phish.
+XB-Display-Name: Packet Attack Shield
+XB-Website: http://www.metavize.com/packetshield.html
+XB-Rack-Position: 1001
+Description: The Metavize Packet Attack Shield
+ The Packet Attack Shield prevents packet based attacks on your
+ network.
 
 Package: test-transform
 Architecture: any
@@ -182,18 +182,6 @@ Description: The Metavize Report Generator
  EdgeReport will report general network activity, and information supplied
  by other Software Appliances.
 
-Package: ids-transform
-Architecture: any
-Depends: mvvm, http-casing
-XB-Price: 0
-XB-Display-Name: Intrusion Prevention
-XB-Website: http://www.metavize.com
-XB-Rack-Position: 42
-Description: The Metavize Intrusion Prevention Appliance 
- The Metavize Intrusion Prevention Appliance is an inline traffic 
- scanner that detects exploits and intrusion attempts. It contains a library of 
- over 2000 rules which can be easily expanded on with custom rules.
-
 Package: metavize-client
 Architecture: any
 Depends: mvvm
@@ -214,3 +202,15 @@ XB-Website: http://www.metavize.com
 Description: The Metavize Virtual Machine (MVVM)
  The Metavize Virtual Machine for securing your network and enforcing
  network policy.
+
+Package: email-transform
+Architecture: any
+Depends: mvvm, spamc-mv, spamassassin-transform
+Conflicts: xmailscanner-transform
+XB-Price: 0
+XB-Display-Name: eMail SpamGuard
+XB-Website: http://www.metavize.com
+XB-Rack-Position: -3
+Description: The Metavize eMail SpamGuard
+ The eMail SpamGuard, based on SpamAssassin, is able to
+ mark SPAM incoming and outgoing SMTP, POP3, and IMAP.
