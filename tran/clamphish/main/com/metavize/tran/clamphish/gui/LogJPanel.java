@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.metavize.tran.spam.gui;
+package com.metavize.tran.clamphish.gui;
 
 import com.metavize.tran.spam.*;
 
@@ -44,9 +44,8 @@ public class LogJPanel extends MLogTableJPanel {
 	    addTableColumn( tableColumnModel,  3,  100, true,  false, false, false, String.class, null, "subject" );
 	    addTableColumn( tableColumnModel,  4,  100, true,  false, false, false, String.class, null, "receiver" );
 	    addTableColumn( tableColumnModel,  5,  100, true,  false, false, false, String.class, null, "sender" );
-	    addTableColumn( tableColumnModel,  6,   55, true,  false, false, false, Float.class,  null, sc.html("SPAM<br>score") );
-	    addTableColumn( tableColumnModel,  7,  100, true,  false, false, false, String.class, null, sc.html("SPAM<br>direction") );
-	    addTableColumn( tableColumnModel,  8,  165, true,  false, false, false, String.class, null, "server" );
+	    addTableColumn( tableColumnModel,  6,  100, true,  false, false, false, String.class, null, sc.html("PHISH<br>direction") );
+	    addTableColumn( tableColumnModel,  7,  165, true,  false, false, false, String.class, null, "server" );
 	    return tableColumnModel;
 	}
 	
@@ -59,14 +58,13 @@ public class LogJPanel extends MLogTableJPanel {
 	    Vector event = null;
 	    
 	    for( SpamLog requestLog : requestLogList ){
-		event = new Vector(9);
+		event = new Vector(8);
 		event.add( requestLog.getTimeStamp() );
 		event.add( requestLog.getAction().toString() );
 		event.add( requestLog.getClientAddr() + ":" + ((Integer)requestLog.getClientPort()).toString() );
 		event.add( requestLog.getSubject() );
 		event.add( requestLog.getReceiver() );
 		event.add( requestLog.getSender() );
-		event.add( requestLog.getScore() );
 		event.add( requestLog.getDirection().getDirectionName() );
 		event.add( requestLog.getServerAddr() + ":" + ((Integer)requestLog.getServerPort()).toString() );
 		allEvents.insertElementAt(event,0);
