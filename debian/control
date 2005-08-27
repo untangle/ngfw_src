@@ -203,14 +203,3 @@ Description: The Metavize Virtual Machine (MVVM)
  The Metavize Virtual Machine for securing your network and enforcing
  network policy.
 
-Package: email-transform
-Architecture: any
-Depends: mvvm, spamc-mv, spamassassin-transform
-Conflicts: xmailscanner-transform
-XB-Price: 0
-XB-Display-Name: eMail SpamGuard
-XB-Website: http://www.metavize.com
-XB-Rack-Position: -3
-Description: The Metavize eMail SpamGuard
- The eMail SpamGuard, based on SpamAssassin, is able to
- mark SPAM incoming and outgoing SMTP, POP3, and IMAP.

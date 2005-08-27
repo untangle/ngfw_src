@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # exclude email-transform, it is custom
-files="`ls *-transform.version | grep -v template | grep -v email-transform`"
+files="`ls *-transform.version | grep -v template`"
 
 for i in $files ; do 
     tran="`echo $i | awk -F\. '{print $1}' `"

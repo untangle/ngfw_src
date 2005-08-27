@@ -95,7 +95,7 @@ pkgs: chk
 
 release: pkgs
 	@buildtools/incVersion.sh "$(packages)"
-	@buildtools/release.sh    "$(packages)"
+	@buildtools/release.sh    "$(packages)" $(RELEASE)
 
 src: clean
 	@echo "==> src"
