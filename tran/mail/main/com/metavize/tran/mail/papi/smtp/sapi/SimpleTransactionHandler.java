@@ -81,7 +81,8 @@ public class SimpleTransactionHandler
   @Override
   public void handleCompleteMIME(CompleteMIMEToken token,
     Session.SmtpCommandActions actions) {
-    throw new RuntimeException("TODO bscott implement me");
+    m_logger.debug("[handleCompleteMIME]");
+    actions.sentWholeMIMEToServer(token, new DataTransmissionContinuation());
   }
 
   @Override

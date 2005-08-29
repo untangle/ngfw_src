@@ -111,7 +111,7 @@ public class PhishSmtpFactory
 
     if(!spamConfig.getScan()) {
       m_logger.debug("Scanning disabled.  Return passthrough token handler");
-      return new SmtpTokenStream(session);
+      return Session.createPassthruSession(session);
     }
 
     WrappedMessageGenerator msgWrapper =

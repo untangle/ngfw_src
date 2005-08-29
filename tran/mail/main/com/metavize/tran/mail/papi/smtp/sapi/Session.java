@@ -305,6 +305,18 @@ public final class Session
 
   }
 
+  /**
+   * Create a Session which will simply pass-thru all
+   * commands (yet continue to do any SMTP fixup goodness).
+   *
+   * @param session the TCPSession
+   *
+   * @return the passthru session.
+   */
+  public static Session createPassthruSession(TCPSession session) {
+    return new Session(session, new SimpleSessionHandler());
+  }
+
   
   //==========================
   // Properties
