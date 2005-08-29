@@ -158,7 +158,7 @@ class SmtpClientParser
               m_logger.debug("Change state to " +
                 SmtpClientState.HEADERS + ".  Enqueue response handler in case DATA " +
                 "command rejected (returning us to " + SmtpClientState.COMMAND + ")");
-              getSessionTracker().commandReceived(cmd, new DATAResponseCallback());                
+              getSessionTracker().commandReceived(cmd, new DATAResponseCallback(m_sac));                
               changeState(SmtpClientState.HEADERS);
               //Go back and start evaluating the header bytes.
             }
@@ -323,15 +323,27 @@ class SmtpClientParser
    */
   class DATAResponseCallback
     implements CasingSessionTracker.ResponseAction {
+
+    private ScannerAndAccumulator m_targetSAC;
+    
+    DATAResponseCallback(ScannerAndAccumulator sac) {
+      m_targetSAC = sac;
+    }
+    
     public void response(int code) {
       if(code < 400) {
         m_logger.debug("DATA command accepted");
       }
       else {
         m_logger.debug("DATA command rejected");
-        m_sac.accumulator.dispose();
-        m_sac = null;
-        changeState(SmtpClientState.COMMAND);
+        if(m_targetSAC == m_sac) {
+          m_sac.accumulator.dispose();
+          m_sac = null;
+          changeState(SmtpClientState.COMMAND);
+        }
+        else {
+          m_logger.debug("DATA command rejected, yet we have moved on to a new transaction");
+        }
       }
     }    
   }  
