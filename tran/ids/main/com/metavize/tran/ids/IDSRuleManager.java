@@ -30,6 +30,11 @@ public class IDSRuleManager {
 	private List<IDSRuleHeader> knownHeaders = Collections.synchronizedList(new LinkedList<IDSRuleHeader>());
 	
 	private static Pattern variablePattern = Pattern.compile("\\$[^ \n\r\t]+");
+	public static List<IDSVariable> immutableVariables = new ArrayList<IDSVariable>(); 
+	static {
+		immutableVariables.add(new IDSVariable("$EXTERNAL_NET","Set by Edgeguard","This is a description"));
+		immutableVariables.add(new IDSVariable("$HOME_NET","Set by EdgeGuard","This is a description"));
+	}
 	public static List<IDSVariable> defaultVariables = new ArrayList<IDSVariable>(); 
 	static {
 		//Overwrite any replacement to external or home net with the internal IPManger
@@ -37,14 +42,14 @@ public class IDSRuleManager {
 		//defaultVariables.add(new IDSVariable("$EXTERNAL_NET",""+0xDEAD,"This is a description"));
 		//defaultVariables.add(new IDSVariable("$HOME_NET", ""+0xBEEF,"This is a description"));
 		
-		defaultVariables.add(new IDSVariable("$HTTP_PORTS", ":80","This is a description"));
-		defaultVariables.add(new IDSVariable("$HTTP_SERVERS", "10.0.0.1/24","This is a description"));
-		defaultVariables.add(new IDSVariable("$SMTP_SERVERS", "any","This is a description"));
-		defaultVariables.add(new IDSVariable("$SSH_PORTS", "any","This is a description"));
-		defaultVariables.add(new IDSVariable("$SQL_SERVERS", "any","This is a description"));
-		defaultVariables.add(new IDSVariable("$TELNET_SERVERS", "any","This is a description"));
-		defaultVariables.add(new IDSVariable("$ORACLE_PORTS", "any","This is a description"));
-		defaultVariables.add(new IDSVariable("$AIM_SERVERS", "any","This is a description"));
+		defaultVariables.add(new IDSVariable("$HTTP_PORTS", "80","This is a description"));
+		defaultVariables.add(new IDSVariable("$HTTP_SERVERS", "!any","This is a description"));
+		defaultVariables.add(new IDSVariable("$SMTP_SERVERS", "!any","This is a description"));
+		defaultVariables.add(new IDSVariable("$SSH_PORTS", "22","This is a description"));
+		defaultVariables.add(new IDSVariable("$SQL_SERVERS", "!any","This is a description"));
+		defaultVariables.add(new IDSVariable("$TELNET_SERVERS", "!any","This is a description"));
+		defaultVariables.add(new IDSVariable("$ORACLE_PORTS", "!any","This is a description"));
+		defaultVariables.add(new IDSVariable("$AIM_SERVERS", "!any","This is a description"));
 	}
 																													
 	private static final Logger log = Logger.getLogger(IDSRuleManager.class);

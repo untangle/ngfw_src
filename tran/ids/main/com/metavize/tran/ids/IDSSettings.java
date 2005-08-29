@@ -23,6 +23,7 @@ public class IDSSettings implements Serializable {
 	private Tid tid;
 	private List rules = new ArrayList();
 	private List variables = new ArrayList();
+	private List immutableVariables = new ArrayList();
 
 	/**
 	 * Hibernate constructor
@@ -82,16 +83,34 @@ public class IDSSettings implements Serializable {
 	/**
 	 * @hibernate.list
 	 * cascade="all-delete-orphan"
+	 * table="TR_IDS_MUTABLE_VARIABLES"
 	 * @hibernate.collection-key
-	 * column="SETTINGS_ID"
+	 * column="SETTING_ID"
 	 * @hibernate.collection-index
 	 * column="POSITION"
-	 * @hibernate.collection-one-to-many
+	 * @hibernate.collection-many-to-many
 	 * class="com.metavize.tran.ids.IDSVariable"
+ 	 * column="VARIABLE_ID"
 	 */
 
 	public List getVariables() { return this.variables;	}
 	public void setVariables(List variables) { this.variables = variables; }
 
-	
+	/**
+ 	 * @hibernate.list
+ 	 * cascade="all-delete-orphan"
+	 * table="TR_IDS_IMMUTABLE_VARIABLES"
+ 	 * @hibernate.collection-key
+ 	 * column="SETTING_ID"
+ 	 * @hibernate.collection-index
+ 	 * column="POSITION"
+ 	 * @hibernate.collection-many-to-many
+ 	 * class="com.metavize.tran.ids.IDSVariable"
+ 	 * column="VARIABLE_ID"
+	 */
+
+	 public List getImmutableVariables() { return this.immutableVariables; }
+	 public void setImmutableVariables(List variables) { this.immutableVariables = immutableVariables; }
+
+			
 }

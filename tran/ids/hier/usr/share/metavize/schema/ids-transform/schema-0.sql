@@ -16,7 +16,19 @@ create table settings.TR_IDS_VARIABLE (
 	SETTINGS_ID int8,
 	POSITION int4,
 	primary key (VARIABLE_ID));
-	
+
+create table settings.TR_IDS_IMMUTABLE_VARIABLES (
+   	setting_id int8 NOT NULL,
+   	variable_id int8 NOT NULL,
+   	position int4 NOT NULL,
+   	PRIMARY KEY (setting_id, position));
+
+create table settings.TR_IDS_MUTABLE_VARIABLES (
+	setting_id int8 NOT NULL,
+	variable_id int8 NOT NULL,
+	position int4 NOT NULL,
+	PRIMARY KEY (setting_id, position));
+						
 create table settings.TR_IDS_RULE (
 	RULE_ID int8 not null, 
 	RULE varchar(4095),

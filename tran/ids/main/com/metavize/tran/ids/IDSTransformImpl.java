@@ -142,6 +142,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 		//Set Variables
 		IDSSettings settings = new IDSSettings(getTid());
 		settings.setVariables(IDSRuleManager.defaultVariables);
+		settings.setImmutableVariables(IDSRuleManager.immutableVariables);
 		
 		//Load Rules
 		log.info("Loading Rules...");
@@ -180,7 +181,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 				try {
 					if(testManager.addRule(str.trim())) {
 						IDSRuleSignature sig = testManager.getNewestSignature();
-						String message = (null == sig) ? "The signature failed to load" : sig.getMessage();
+						String message = (sig == null) ? "The signature failed to load" : sig.getMessage();
 						ruleList.add(new IDSRule(str, file.getName().replaceAll(".rules",""),message));
 					}
 				} catch(Exception e) { }
@@ -215,9 +216,9 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 
 	protected void preStart() throws TransformStartException {
 		//Testing is hella broke - rule headers are no longer 1-1 with signatures
-		//IDSTest test = new IDSTest();
-		//if(!test.runTest())
-		//  throw new TransformStartException("IDS Test failed"); // */
+		IDSTest test = new IDSTest();
+		if(!test.runTest())
+		  throw new TransformStartException("IDS Test failed"); // */
 		
 		try {
 			reconfigure();

@@ -27,7 +27,7 @@ public class IDSDetectionEngine {
 	
 	private static final Logger log = Logger.getLogger(IDSDetectionEngine.class);
 	static {
-		log.setLevel(Level.WARN);
+		log.setLevel(Level.DEBUG);
 	}	
 	private static IDSDetectionEngine instance = new IDSDetectionEngine();//null; 
 	public static IDSDetectionEngine instance() {
@@ -96,8 +96,6 @@ public class IDSDetectionEngine {
 			log.debug("\ns2cList Size: "+s2cList.size() + " For port: "+session.serverPort());
 		}
 		
-		log.debug("Time memo: " + (float)(System.nanoTime() - startTime)/1000000f);
-		
 		//Check matches
 		List<IDSRuleSignature> c2sSignatures = rules.matchesHeader(
 				protocol, session.clientAddr(), session.clientPort(), 
@@ -125,7 +123,7 @@ public class IDSDetectionEngine {
 		else
 			session.release();
 		
-		log.debug("Time total: " + (float)(System.nanoTime() - startTime)/1000000f);
+		log.debug("Time NewSession: " + (float)(System.nanoTime() - startTime)/1000000f);
 		return false; // Fix me - not sure what I want to return
 	}
 
@@ -133,7 +131,9 @@ public class IDSDetectionEngine {
 		return rules;
 	}
 	
+	//In process of fixing this
 	public void handleChunk(IPDataEvent event, IPSession session, boolean isServer) {
+		long startTime = System.nanoTime();
 		SessionStats stats = session.stats();
 		if(stats.s2tChunks() > maxChunks || stats.c2tChunks() > maxChunks)
 			session.release();
@@ -145,6 +145,7 @@ public class IDSDetectionEngine {
 		info.setFlow(isServer);
 
 		info.processC2SSignatures();
+		log.debug("Time HandleChunk: " + (float)(System.nanoTime() - startTime)/1000000f);
 	}
 
 	public void mapSessionInfo(int id, IDSSessionInfo info) {

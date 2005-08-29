@@ -100,9 +100,7 @@ public class IDSRuleSignature {
 	public boolean execute(IDSSessionInfo info) {
 		this.info = info;
 		
-		Iterator<IDSOption> it = options.iterator();
-		while(it.hasNext()) {
-			IDSOption option = it.next();
+		for(IDSOption option : options) {
 			if(!option.run())
 				return false;
 		}
