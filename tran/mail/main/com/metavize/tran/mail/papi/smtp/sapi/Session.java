@@ -208,6 +208,8 @@ public final class Session
   // Data Members
   //===========================
 
+  private static final long LIKELY_TIMEOUT_LENGTH = 1000*60;//1 minute
+
   private static final String[] DEF_ALLOWED_COMMANDS = {
     "DATA",
     "HELP",
@@ -499,9 +501,9 @@ public final class Session
     public TokenResultBuilder getTokenResultBuilder() {
       return m_ts;
     }
-    private void enqueueResponseHandler(ResponseCompletion cont) {
-      m_outstandingRequests.add(new OutstandingRequest(cont));
-    }
+//    private void enqueueResponseHandler(ResponseCompletion cont) {
+//      m_outstandingRequests.add(new OutstandingRequest(cont));
+//    }
     public void disableClientTokens() {
       Session.this.disableClientTokens();
     }
@@ -530,7 +532,7 @@ public final class Session
       ResponseCompletion compl) {
       m_logger.debug("Sending Command " + command.getType() + " to server");
       getTokenResultBuilder().addTokenForServer(command);
-      enqueueResponseHandler(compl);
+      m_outstandingRequests.add(new OutstandingRequest(compl));
     }
     public void sendBeginMIMEToServer(BeginMIMEToken token) {
       m_logger.debug("Sending BeginMIMEToken to server");
@@ -544,13 +546,13 @@ public final class Session
       ResponseCompletion compl) {
       m_logger.debug("Sending final ContinuedMIMEToken to server");
       getTokenResultBuilder().addTokenForServer(token);
-      enqueueResponseHandler(compl);
+      m_outstandingRequests.add(new OutstandingRequest(compl));
     }
     public void sentWholeMIMEToServer(CompleteMIMEToken token,
       ResponseCompletion compl) {
       m_logger.debug("Sending whole MIME to server");
       getTokenResultBuilder().addTokenForServer(token);
-      enqueueResponseHandler(compl);
+      m_outstandingRequests.add(new OutstandingRequest(compl));
     }
 
   }
@@ -703,7 +705,17 @@ public final class Session
         //Odd case, but we're not here to enfore good SMTP (at least not in this class)
         if(cmd.getType() == Command.CommandType.DATA) {
           TransactionHandler handler = getOrCreateTxHandler();
-          handler.handleCommand(cmd, actions);
+          if(handler.getTransaction().hasAtLeastOneConfirmedRecipient()) {
+            handler.handleCommand(cmd, actions);
+          }
+          else {
+            m_logger.debug("Enqueuing negative response to DATA command " +
+              "as there are no valid accepted recipients (likely a PIPELINING client)");
+            actions.appendSyntheticResponse(
+              new FixedSyntheticResponse(554, "no valid recipients given"));
+            actions.followup();
+          }
+          
         }
         else {
           m_sessionHandler.handleCommand(cmd, actions);
@@ -757,8 +769,14 @@ public final class Session
       Response resp) {
       m_logger.debug("[handleResponse()] with code " + resp.getCode());
       if(m_outstandingRequests.size() == 0) {
-        //TODO bscott Major programming error.  We should log this
-        m_logger.error("Response received without a registered handler");
+        long timeDiff = System.currentTimeMillis() - getLastServerTimestamp();
+        if(timeDiff > LIKELY_TIMEOUT_LENGTH) {
+          m_logger.error("Unsolicited response from server.  Likely a timeout (" +
+            timeDiff + " millis since last communication)");
+        }
+        else {
+          m_logger.error("Response received without a registered handler");
+        }
         resultBuilder.addTokenForClient(resp);
         return;
       }

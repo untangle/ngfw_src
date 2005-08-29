@@ -73,6 +73,7 @@ public final class SmtpTransaction
   private EmailAddress m_from;
   private boolean m_fromConfirmed;
   private List<EmailAddressWithStatus> m_recipients;
+  private boolean m_hasAtLeastOneRecipient = false;
 
   public SmtpTransaction() {
     m_recipients = new ArrayList<EmailAddressWithStatus>();
@@ -158,6 +159,8 @@ public final class SmtpTransaction
     //In case someone (dumb) attempts
     //to request the same recipient twice,
     //scan from top-down for the to
+    m_hasAtLeastOneRecipient = true;
+    
     for(int i = 0; i<m_recipients.size(); i++) {
       EmailAddressWithStatus eaws = m_recipients.get(i);
       if(!eaws.addr.equals(addr)) {
@@ -174,6 +177,19 @@ public final class SmtpTransaction
     //If we're here, there is a programming
     //error with the caller
     //TODO bscott assert?  Warn?
+    EmailAddressWithStatus eaws = new EmailAddressWithStatus(addr);
+    eaws.confirmed = true;
+    m_recipients.add(eaws);
+  }
+
+  /**
+   * Quick test to see if there is at least one 
+   * {@link #toResponse confirmed recipient}.
+   *
+   * @return true if at least one recipient has been confirmed.
+   */
+  public boolean hasAtLeastOneConfirmedRecipient() {
+    return m_hasAtLeastOneRecipient;
   }
 
   /**
