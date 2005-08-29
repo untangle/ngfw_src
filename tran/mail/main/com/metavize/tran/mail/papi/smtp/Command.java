@@ -129,8 +129,11 @@ public class Command
     buf.put(cmdStr.getBytes());
     
     if(argStr != null) {
-      buf.put((byte)SP);
-      buf.put(argStr.getBytes());
+      argStr = argStr.trim();
+      if(!"".equals(argStr)) {
+        buf.put((byte)SP);
+        buf.put(argStr.getBytes());
+      }
     }
     buf.put((byte)CR);
     buf.put((byte)LF);
