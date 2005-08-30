@@ -333,6 +333,7 @@ public class MIMEAccumulator {
       m_fileMIMESource = new FileMIMESource(m_file);
       in = m_fileMIMESource.getInputStream();
       m_headers = MIMEMessageHeaders.parseMMHeaders(in, m_fileMIMESource);
+      m_headersLen = (int) in.position();
       in.close();
       return m_headers;
     }

@@ -85,7 +85,8 @@ class CasingSessionTracker {
     
   } 
 
-    
+
+  private static final long LIKELY_TIMEOUT_LENGTH = 1000*60;//1 minute
 
   private final Logger m_logger = Logger.getLogger(CasingSessionTracker.class);
 
@@ -93,14 +94,15 @@ class CasingSessionTracker {
   private List<ResponseAction> m_outstandingRequests;
   private boolean m_closing = false;
   private CSHistory m_history = new CSHistory(25);
-
+  private long m_lastTransmissionTimestamp;
 
   
 
   CasingSessionTracker() {
     m_outstandingRequests = new LinkedList<ResponseAction>();
     //Add response for initial salutation
-    m_outstandingRequests.add(new SimpleResponseAction());    
+    m_outstandingRequests.add(new SimpleResponseAction());
+    updateLastTransmissionTimestamp(); 
   }
 
   /**
@@ -183,13 +185,24 @@ class CasingSessionTracker {
     m_history.add("(s) " + response.getCode());
     if(m_outstandingRequests.size() == 0) {
       if(!m_closing) {
-        m_logger.error("Misalignment of req/resp tracking.  No outstanding response.  " +
-          "Recent history: " + historyToString());
+        long diff = System.currentTimeMillis() - m_lastTransmissionTimestamp;
+        if(diff > LIKELY_TIMEOUT_LENGTH) {
+          m_logger.error("Unsolicited response from server.  Likely a timeout notification as " +
+            diff + " milliseconds have transpired since last communication");
+        }
+        else {
+          m_logger.error("Misalignment of req/resp tracking.  No outstanding response.  " +
+            "Recent history: " + historyToString());
+        }
       }
     }
     else {
       m_outstandingRequests.remove(0).response(response.getCode());
     }
+  }
+
+  private void updateLastTransmissionTimestamp() {
+    m_lastTransmissionTimestamp = System.currentTimeMillis();
   }
 
   private SmtpTransaction getOrCreateTransaction() {
