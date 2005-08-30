@@ -78,12 +78,12 @@ class PopTableModel extends MSortedTableModel{
 	SpamPOPConfig spamPOPConfigOutbound = null;
 
 	for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
-            SpamPOPConfig spamPOPConfig = (SpamPOPConfig) rowVector.elementAt(7);
+            SpamPOPConfig spamPOPConfig = (SpamPOPConfig) rowVector.elementAt(6);
             spamPOPConfig.setScan( (Boolean) rowVector.elementAt(3) );
-	    String actionString = (String) ((ComboBoxModel)rowVector.elementAt(5)).getSelectedItem();
+	    String actionString = (String) ((ComboBoxModel)rowVector.elementAt(4)).getSelectedItem();
 	    SpamMessageAction messageAction = SpamMessageAction.getInstance( actionString );
             spamPOPConfig.setMsgAction( messageAction );
-            spamPOPConfig.setNotes( (String) rowVector.elementAt(6) );
+            spamPOPConfig.setNotes( (String) rowVector.elementAt(5) );
 	    
 	    if( ((String)rowVector.elementAt(2)).equals(SOURCE_INBOUND) ){
 		spamPOPConfigInbound = spamPOPConfig;

@@ -80,15 +80,15 @@ class SmtpTableModel extends MSortedTableModel{
 	SpamSMTPConfig spamSMTPConfigOutbound = null;
 
 	for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
-            SpamSMTPConfig spamSMTPConfig = (SpamSMTPConfig) rowVector.elementAt(8);
+            SpamSMTPConfig spamSMTPConfig = (SpamSMTPConfig) rowVector.elementAt(7);
             spamSMTPConfig.setScan( (Boolean) rowVector.elementAt(3) );
-	    String actionString = (String) ((ComboBoxModel)rowVector.elementAt(5)).getSelectedItem();
+	    String actionString = (String) ((ComboBoxModel)rowVector.elementAt(4)).getSelectedItem();
 	    SMTPSpamMessageAction messageAction = SMTPSpamMessageAction.getInstance( actionString );
             spamSMTPConfig.setMsgAction( messageAction );
-	    String notifyString = (String) ((ComboBoxModel)rowVector.elementAt(6)).getSelectedItem();
+	    String notifyString = (String) ((ComboBoxModel)rowVector.elementAt(5)).getSelectedItem();
 	    SMTPNotifyAction notifyAction = SMTPNotifyAction.getInstance( notifyString );
             spamSMTPConfig.setNotifyAction( notifyAction );
-            spamSMTPConfig.setNotes( (String) rowVector.elementAt(7) );
+            spamSMTPConfig.setNotes( (String) rowVector.elementAt(6) );
 	    
 	    if( ((String)rowVector.elementAt(2)).equals(SOURCE_INBOUND) ){
 		spamSMTPConfigInbound = spamSMTPConfig;

@@ -78,12 +78,12 @@ class ImapTableModel extends MSortedTableModel{
 	SpamIMAPConfig spamIMAPConfigOutbound = null;
 
 	for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
-            SpamIMAPConfig spamIMAPConfig = (SpamIMAPConfig) rowVector.elementAt(7);
+            SpamIMAPConfig spamIMAPConfig = (SpamIMAPConfig) rowVector.elementAt(6);
             spamIMAPConfig.setScan( (Boolean) rowVector.elementAt(3) );
-	    String actionString = (String) ((ComboBoxModel)rowVector.elementAt(5)).getSelectedItem();
+	    String actionString = (String) ((ComboBoxModel)rowVector.elementAt(4)).getSelectedItem();
 	    SpamMessageAction messageAction = SpamMessageAction.getInstance( actionString );
             spamIMAPConfig.setMsgAction( messageAction );
-            spamIMAPConfig.setNotes( (String) rowVector.elementAt(6) );
+            spamIMAPConfig.setNotes( (String) rowVector.elementAt(5) );
 	    
 	    if( ((String)rowVector.elementAt(2)).equals(SOURCE_INBOUND) ){
 		spamIMAPConfigInbound = spamIMAPConfig;
