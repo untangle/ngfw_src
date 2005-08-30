@@ -17,6 +17,8 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -47,11 +49,12 @@ class AptLogTail implements Runnable
 
     private final RandomAccessFile raf;
 
-    private final List<InstallProgress> events
-        = new LinkedList<InstallProgress>();
+    private final ArrayBlockingQueue<InstallProgress> events
+        = new ArrayBlockingQueue<InstallProgress>(10);
+
+    private volatile boolean live = true;
 
     private StringBuilder builder = new StringBuilder(80);
-    private boolean live = true;
     private long lastActivity = -1;
 
 
@@ -86,13 +89,20 @@ class AptLogTail implements Runnable
 
     List<InstallProgress> getEvents()
     {
+        logger.debug("getting events");
         List<InstallProgress> l = new LinkedList<InstallProgress>();
 
-        synchronized (events) {
-            l.addAll(events);
-            events.clear();
+        InstallProgress ip = null;
+        try {
+            ip = events.poll(1, TimeUnit.SECONDS);
+        } catch (InterruptedException exn) { }
+
+        if (null != ip) {
+            l.add(ip);
+            events.drainTo(l);
         }
 
+        logger.debug("returning events: " + l);
         return l;
     }
 
@@ -103,9 +113,7 @@ class AptLogTail implements Runnable
 
     boolean isDead()
     {
-        synchronized (events) {
-            return !live && events.size() == 0;
-        }
+        return !live && events.size() == 0;
     }
 
     // Runnable methods -------------------------------------------------------
@@ -156,11 +164,19 @@ class AptLogTail implements Runnable
                 Matcher m = DOWNLOAD_PATTERN.matcher(line);
                 if (line.startsWith("DOWNLOAD SUCCEEDED: ")) {
                     logger.debug("download succeeded");
-                    events.add(new DownloadComplete(true));
+                    try {
+                        events.put(new DownloadComplete(true));
+                    } catch (InterruptedException exn) {
+                        logger.warn("dropping DownloadComplete(true)");
+                    }
                     break;
                 } else if (line.startsWith("DOWNLOAD FAILED: " )) {
                     logger.debug("download failed");
-                    events.add(new DownloadComplete(false));
+                    try {
+                        events.put(new DownloadComplete(false));
+                    } catch (InterruptedException exn) {
+                        logger.warn("dropping DownloadComplete(false)");
+                    }
                     break;
                 } else if (m.matches()) {
                     int bytesDownloaded = Integer.parseInt(m.group(1)) * 100;
@@ -172,8 +188,10 @@ class AptLogTail implements Runnable
                         (pi.file, bytesDownloaded, pi.size, speed);
                     logger.debug("Adding event: " + dpe);
 
-                    synchronized (events) {
-                        events.add(dpe);
+                    try {
+                        events.put(dpe);
+                    } catch (InterruptedException exn) {
+                        logger.warn("dropping: " + dpe);
                     }
                 } else {
                     logger.debug("ignoring line: " + line);
@@ -181,11 +199,13 @@ class AptLogTail implements Runnable
             }
         }
 
-        synchronized (events) {
-            logger.debug("installation complete");
-            events.add(new InstallComplete(true));
-            live = false;
+        logger.debug("installation complete");
+        try {
+            events.put(new InstallComplete(true));
+        } catch (InterruptedException exn) {
+            logger.warn("dropping InstallComplete(true)");
         }
+        live = false;
     }
 
     private String readLine()
@@ -198,8 +218,13 @@ class AptLogTail implements Runnable
                     try {
                         if (TIMEOUT < t - lastActivity) {
                             // just end the thread adding TimeoutEvent
-                            events.add(new InstallTimeout(t));
-                            throw new RuntimeException("timing out");
+                            try {
+                                events.put(new InstallTimeout(t));
+                            } catch (InterruptedException exn) {
+                                logger.warn("dropping InstallTimeout");
+                            }
+                            throw new RuntimeException("timing out: "
+                                                       + (t - lastActivity));
                         } else {
                             logger.debug("end of input, sleeping");
                             Thread.currentThread().sleep(100);

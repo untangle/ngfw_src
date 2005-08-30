@@ -616,11 +616,6 @@ public class RemoteClient
             for (InstallProgress ip : lip) {
                 ip.accept(v);
             }
-            if (0 == lip.size()) {
-                try {
-                    Thread.currentThread().sleep(500);
-                } catch (InterruptedException exn) { }
-            }
         }
     }
 

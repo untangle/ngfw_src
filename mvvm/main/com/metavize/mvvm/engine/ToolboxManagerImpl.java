@@ -157,22 +157,30 @@ class ToolboxManagerImpl implements ToolboxManager
 
     public List<InstallProgress> getProgress(long key)
     {
+        logger.debug("getProgress(" + key + ")");
         AptLogTail alt;
+        logger.debug("getting alt");
         synchronized (tails) {
             alt = tails.get(key);
         }
+        logger.debug("got alt");
 
         if (null == alt) {
+            logger.warn("no such progress key: " + key);
             throw new RuntimeException("no such key: " + key);
         }
 
+        logger.debug("getting events");
         List<InstallProgress> l = alt.getEvents();
+        logger.debug("seeing if isDead");
         if (alt.isDead()) {
             synchronized (tails) {
+                logger.debug("removing dead alt");
                 tails.remove(key);
             }
         }
 
+        logger.debug("returning progress: " + l);
         return l;
     }
 
