@@ -38,7 +38,7 @@ public class Closure
 
         for (int i = 0; i < args.length; i++) {
             String arg = args[i];
-            if (arg.equals("-cp") || arg.equals("classpath")) {
+            if (arg.equals("-cp") || arg.equals("-classpath")) {
                 String[] classpath = args[++i].split(":");
                 urls = new URL[classpath.length];
                 for (int j = 0; j < classpath.length; j++) {

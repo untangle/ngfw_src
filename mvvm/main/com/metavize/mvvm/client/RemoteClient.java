@@ -14,7 +14,12 @@ package com.metavize.mvvm.client;
 import java.net.InetAddress;
 import java.util.List;
 
+import com.metavize.mvvm.DownloadProgress;
+import com.metavize.mvvm.InstallComplete;
+import com.metavize.mvvm.InstallProgress;
+import com.metavize.mvvm.InstallTimeout;
 import com.metavize.mvvm.MackageDesc;
+import com.metavize.mvvm.ProgressVisitor;
 import com.metavize.mvvm.ToolboxManager;
 import com.metavize.mvvm.security.LoginSession;
 import com.metavize.mvvm.security.MvvmPrincipal;
@@ -151,13 +156,15 @@ public class RemoteClient
         } else if (args[0].equalsIgnoreCase("resetLogs")) {
             resetLogs();
         } else if (args[0].equalsIgnoreCase("shieldStatus")) {
-            shieldStatus( args[1], args[2] );
+            shieldStatus(args[1], args[2]);
         } else if (args[0].equalsIgnoreCase("shieldReconfigure")) {
             shieldReconfigure();
         } else if (args[0].equalsIgnoreCase("updateAddress")) {
             updateAddress();
         } else if (args[0].equalsIgnoreCase("gc")) {
             doFullGC();
+        } else if (args[0].equalsIgnoreCase("aptTail")) {
+            doAptTail(Long.parseLong(args[1]));
         } else {
             System.out.print("dont know: ");
             for (int i = 0; i < args.length; i++) {
@@ -172,10 +179,45 @@ public class RemoteClient
         MvvmRemoteContextFactory.logout();
     }
 
+    private static class Visitor implements ProgressVisitor
+    {
+        private boolean done = false;
+
+        // public methods ----------------------------------------------------
+
+        public boolean isDone()
+        {
+            return done;
+        }
+
+        // ProgressVisitor methods -------------------------------------------
+
+        public void visitDownloadProgress(DownloadProgress dp)
+        {
+            System.out.println("Downloading " + dp.getName() + " "
+                               + dp.getBytesDownloaded() + "/" + dp.getSize()
+                               + " " + dp.getSpeed() + "M/s");
+        }
+
+        public void visitInstallComplete(InstallComplete ic)
+        {
+            System.out.println("Installation complete");
+            done = true;
+        }
+
+        public void visitInstallTimeout(InstallTimeout it)
+        {
+            System.out.println("Install timed out at: " + it.getTime());
+            done = true;
+        }
+    }
+
     private static void install(String mackageName)
         throws Exception
     {
-        tool.install(mackageName);
+        long key = tool.install(mackageName);
+
+        doAptTail(key);
     }
 
     private static void uninstall(String mackageName)
@@ -193,7 +235,9 @@ public class RemoteClient
     private static void upgrade()
         throws Exception
     {
-        tool.upgrade();
+        long key = tool.upgrade();
+
+        doAptTail(key);
     }
 
     private static void available()
@@ -550,13 +594,30 @@ public class RemoteClient
         mc.doFullGC();
     }
 
+    private static void doAptTail(long key)
+    {
+        Visitor v = new Visitor();
+        while (!v.isDone()) {
+            List<InstallProgress> lip = tool.getProgress(key);
+            for (InstallProgress ip : lip) {
+                ip.accept(v);
+            }
+            if (0 == lip.size()) {
+                try {
+                    Thread.currentThread().sleep(500);
+                } catch (InterruptedException exn) { }
+            }
+        }
+    }
+
     /**
      * <code>shieldStatus</code> Sends out the current state of the shield
      * via UDP to the host and port specified in the command line
      */
-    private static void shieldStatus( String host, String port ) throws Exception
+    private static void shieldStatus(String host, String port) throws Exception
     {
-        mc.argonManager().shieldStatus( InetAddress.getByName( host ), Integer.parseInt( port ));
+        mc.argonManager().shieldStatus(InetAddress.getByName(host),
+                                       Integer.parseInt(port));
     }
 
     /**
@@ -666,7 +727,9 @@ public class RemoteClient
         System.out.println("    mcli register mackage-name");
         System.out.println("    mcli unregister mackage-name");
         System.out.println("  argon commands:");
-        System.out.println("    mcli shieldStatus <ip> <port>");
+        System.out.println("    mcli shieldStatus ip port");
         System.out.println("    mcli shieldReconfigure");
+        System.out.println("  debugging commands:");
+        System.out.println("    mcli aptTail");
     }
 }

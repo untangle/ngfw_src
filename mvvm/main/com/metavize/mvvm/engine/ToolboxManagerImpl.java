@@ -28,6 +28,7 @@ import java.util.StringTokenizer;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import com.metavize.mvvm.InstallProgress;
 import com.metavize.mvvm.MackageDesc;
 import com.metavize.mvvm.MackageException;
 import com.metavize.mvvm.MackageInstallException;
@@ -51,8 +52,7 @@ class ToolboxManagerImpl implements ToolboxManager
         = System.getProperty("bunnicula.home") + "/../../bin/mkg ";
 
     private static final Object LOCK = new Object();
-    private static final MackageDesc[] MACKAGE_DESC_PROTO
-        = new MackageDesc[0];
+    private static final MackageDesc[] MACKAGE_DESC_PROTO = new MackageDesc[0];
 
     private static final Logger logger = Logger
         .getLogger(ToolboxManagerImpl.class);
@@ -70,6 +70,8 @@ class ToolboxManagerImpl implements ToolboxManager
     }
 
     private final UpdateDaemon updateDaemon = new UpdateDaemon();
+    private final Map<Long, AptLogTail> tails
+        = new HashMap<Long, AptLogTail>();
 
     private volatile Map packageMap;
     private volatile MackageDesc[] available;
@@ -77,6 +79,8 @@ class ToolboxManagerImpl implements ToolboxManager
     private volatile MackageDesc[] uninstalled;
     private volatile MackageDesc[] upgradable;
     private volatile MackageDesc[] upToDate;
+
+    private long lastTailKey = System.currentTimeMillis();
 
     private ToolboxManagerImpl()
     {
@@ -151,13 +155,46 @@ class ToolboxManagerImpl implements ToolboxManager
         return (MackageDesc)packageMap.get(name);
     }
 
-    public void install(String name) throws MackageInstallException
+    public List<InstallProgress> getProgress(long key)
     {
+        AptLogTail alt;
+        synchronized (tails) {
+            alt = tails.get(key);
+        }
+
+        if (null == alt) {
+            throw new RuntimeException("no such key: " + key);
+        }
+
+        List<InstallProgress> l = alt.getEvents();
+        if (alt.isDead()) {
+            synchronized (tails) {
+                tails.remove(key);
+            }
+        }
+
+        return l;
+    }
+
+    public long install(String name) throws MackageInstallException
+    {
+        AptLogTail alt;
+
+        synchronized (tails) {
+            long i = ++lastTailKey;
+            alt = new AptLogTail(i);
+            tails.put(i, alt);
+        }
+
+        new Thread(alt).start();
+
         try {
-            execMkg("install " + name);
+            execMkg("install " + name, alt.getKey());
         } catch (MackageException exn) {
             throw new MackageInstallException(exn);
         }
+
+        return alt.getKey();
     }
 
     public void uninstall(String name) throws MackageUninstallException
@@ -175,12 +212,26 @@ class ToolboxManagerImpl implements ToolboxManager
         execMkg("update");
     }
 
-    public void upgrade() throws MackageException
+    public long upgrade() throws MackageException
     {
-        execMkg("upgrade");
-    }
+        AptLogTail alt;
 
-    private static final String[] STRINGS_PROTO = new String[0];
+        synchronized (tails) {
+            long i = ++lastTailKey;
+            alt = new AptLogTail(i);
+            tails.put(i, alt);
+        }
+
+        new Thread(alt).start();
+
+        try {
+            execMkg("upgrade");
+        } catch (MackageException exn) {
+            throw new MackageInstallException(exn);
+        }
+
+        return alt.getKey();
+    }
 
     // ToolboxManagerPriv implementation --------------------------------------
 
@@ -278,6 +329,9 @@ class ToolboxManagerImpl implements ToolboxManager
             return null;
         }
     }
+
+    // private classes --------------------------------------------------------
+
 
     // private methods --------------------------------------------------------
 
@@ -532,11 +586,12 @@ class ToolboxManagerImpl implements ToolboxManager
         return m;
     }
 
-    private synchronized void execMkg(String command) throws MackageException
+    private synchronized void execMkg(String command, long key)
+        throws MackageException
     {
         Exception exn;
 
-        String cmdStr = MKG_CMD + command;
+        String cmdStr = MKG_CMD + (0 > key ? "" : "-k " + key + " ") + command;
 
         logger.debug("running: " + cmdStr);
         try {
@@ -564,6 +619,11 @@ class ToolboxManagerImpl implements ToolboxManager
         }
 
         refreshLists();
+    }
+
+    private void execMkg(String command) throws MackageException
+    {
+        execMkg(command, -1);
     }
 
     private class UpdateDaemon

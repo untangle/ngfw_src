@@ -38,19 +38,29 @@ printusage()
 
 aptlog()
 {
-        echo -e "----------" >> $APT_LOG
-        echo $1 >> $APT_LOG
-        date >> $APT_LOG
-        echo -e "----------\n" >> $APT_LOG
+        echo -e "----------" >>$APT_LOG
+        while [ 0 -lt $# ]; do
+            echo $1 >>$APT_LOG
+            shift
+        done
+        date >>$APT_LOG
+        echo -e "----------\n" >>$APT_LOG
 }
 
 my_dpkg_query()
 {
     PKGS="`dpkg --get-selections $1 | egrep 'install$' | awk '{print $1}'`"
     if [ ! -z "$PKGS" ] ; then
-        echo "$PKGS" | xargs dpkg-query -W 
+        echo "$PKGS" | xargs dpkg-query -W
     fi
 }
+
+while getopts k: f; do
+  case $f in
+      k) stamp=$OPTARG
+  esac
+done
+shift $(expr $OPTIND - 1)
 
 if [ $# -lt 1 ] ; then
     printusage
@@ -73,20 +83,38 @@ if [ -z $prefix ] ; then
             #RET=$? return code ignored
         done
     elif [ "$1" = "install" ] ; then
-        aptlog "apt-get install $INST_OPTS \"$2-transform\""
-        apt-get install $INST_OPTS "$2-transform" >> $APT_LOG 2>&1    # XXX the way i create mackage name is wrong
+        aptlog "start $stamp"
+
+        aptlog "downloading: \"$2-transform\""
+        # XXX the way i create mackage name is wrong:
+        aptlist=$(mktemp)
+
+        apt-get install $INST_OPTS --print-uris "$2-transform" \
+            | awk " /^'http:\\/\\// { print \$0 } " >$aptlist
+
+        cat $aptlist >>$APT_LOG
+        echo "END PACKAGE LIST" >>$APT_LOG
+
+        cat $aptlist | awk '{ print $1 }' \
+            | xargs wget -P /var/cache/apt/archives >>$APT_LOG 2>&1
+
+        aptlog "installing: \"$2-transform\""
+        # XXX the way i create mackage name is wrong:
+        apt-get install $INST_OPTS "$2-transform" >>$APT_LOG 2>&1
         RET=$?
-        aptlog "done"
+
+        aptlog "done $stamp"
+
     elif [ "$1" = "update" ] ; then
-        aptlog "apt-get update $UPDT_OPTS"
-        apt-get update $UPDT_OPTS >> $APT_LOG 2>&1 
+        aptlog "start $tstamp" "apt-get update $UPDT_OPTS"
+        apt-get update $UPDT_OPTS >>$APT_LOG 2>&1
         #RET=$? return code ignored
-        aptlog "done"
+        aptlog "done $stamp"
     elif [ "$1" = "upgrade" ] ; then
-        aptlog "apt-get upgrade $UPGD_OPTS"
+        aptlog "start $stamp"  "apt-get upgrade $UPGD_OPTS"
 
         t0=$(stat -L -c %Y /vmlinuz)
-        apt-get dist-upgrade $UPGD_OPTS >> $APT_LOG 2>&1 
+        apt-get dist-upgrade $UPGD_OPTS >>$APT_LOG 2>&1
         RET=$?
         t1=$(stat -L -c %Y /vmlinuz)
 
@@ -95,12 +123,12 @@ if [ -z $prefix ] ; then
             reboot
         fi
 
-        aptlog "done"
+        aptlog "done $stamp"
     elif [ "$1" = "remove" ] ; then
-        aptlog "apt-get remove $REMO_OPTS \"$2-transform\""
-        apt-get remove $REMO_OPTS "$2-transform" >> $APT_LOG 2>&1 
+        aptlog "start $stamp" "apt-get remove $REMO_OPTS \"$2-transform\""
+        apt-get remove $REMO_OPTS "$2-transform" >>$APT_LOG 2>&1
         RET=$?
-        aptlog "done"
+        aptlog "done $stamp"
     fi
 else
     # invoked in development environment

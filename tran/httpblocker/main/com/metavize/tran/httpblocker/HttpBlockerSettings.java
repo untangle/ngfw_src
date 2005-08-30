@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: HttpBlockerSettings.java,v 1.7 2005/02/25 02:45:29 amread Exp $
+ * $Id$
  */
 
 package com.metavize.tran.httpblocker;
@@ -167,7 +167,7 @@ public class HttpBlockerSettings implements Serializable
      * @return the list of passed URLs.
      * @hibernate.list
      * cascade="all-delete-orphan"
-     * table="TR_HTTPBLK_PASSED_URLS"
+    * table="TR_HTTPBLK_PASSED_URLS"
      * @hibernate.collection-key
      * column="SETTING_ID"
      * @hibernate.collection-index

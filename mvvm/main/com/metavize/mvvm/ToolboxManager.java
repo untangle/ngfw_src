@@ -6,12 +6,13 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: ToolboxManager.java,v 1.6 2005/02/24 02:53:06 amread Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm;
 
 import java.net.URL;
+import java.util.List;
 
 import com.metavize.mvvm.tran.DeployException;
 
@@ -69,13 +70,27 @@ public interface ToolboxManager
     MackageDesc mackageDesc(String name);
 
     /**
+     * Returns install or upgrade events. When install or upgrade is
+     * called, a key is returned that allows the client to get a list
+     * of events since the client last called getProgress(). The end
+     * of events is signaled by an element of type
+     * <code>InstallComplete</code>. A call to this method after such
+     * an element is returned will result in a
+     * <code>RuntimeException</code>.
+     *
+     * @param key returned from the install or upgrade method.
+     * @return list of events since the last call to getProgress().
+     */
+    List<InstallProgress> getProgress(long key);
+
+    /**
      * Install a Mackage in the Toolbox.
      *
      * @param name the name of the Mackage.
      * @exception MackageInstallException when <code>name</code> cannot
      *     be installed.
      */
-    void install(String name) throws MackageInstallException;
+    long install(String name) throws MackageInstallException;
 
     /**
      * Remove a Mackage from the toolbox.
@@ -88,9 +103,9 @@ public interface ToolboxManager
 
     void update() throws MackageException;
 
-    void upgrade() throws MackageException;
+    long upgrade() throws MackageException;
 
-   /**
+    /**
      * Register the deployment of a Mackage at a particular URL.
      *
      * @param url location of the Mackage.
@@ -98,7 +113,7 @@ public interface ToolboxManager
      */
     void register(String name) throws MackageInstallException;
 
-   /**
+    /**
      * Register the deployment of a Mackage at a particular URL.
      *
      * @param url location of the Mackage.

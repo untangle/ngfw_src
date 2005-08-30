@@ -65,7 +65,7 @@
 
   <!-- Engine's normal logging level is INFO -->
   <category name="com.metavize.mvvm.engine">
-    <priority value="INFO"/>
+    <priority value="DEBUG"/>
   </category>
 
   <category name="com.metavize.mvvm.logging">

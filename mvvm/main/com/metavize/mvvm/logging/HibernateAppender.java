@@ -226,7 +226,6 @@ public class HibernateAppender extends AppenderSkeleton
                 }
             }
 
-
             try {
                 Transaction tx = s.beginTransaction();
 

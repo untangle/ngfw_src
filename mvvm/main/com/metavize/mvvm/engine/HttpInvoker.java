@@ -156,7 +156,6 @@ class HttpInvoker extends InvokerBase
                 // Left TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             }
 
-
             if (retVal instanceof MvvmRemoteContext) { // XXX if is to login()
                 LoginSession ls = newLogin.get();
                 newLogin.remove();
