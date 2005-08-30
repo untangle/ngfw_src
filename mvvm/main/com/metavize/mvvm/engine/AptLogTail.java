@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.metavize.mvvm.DownloadComplete;
 import com.metavize.mvvm.DownloadProgress;
 import com.metavize.mvvm.InstallComplete;
 import com.metavize.mvvm.InstallProgress;
@@ -150,13 +151,18 @@ class AptLogTail implements Runnable
 
         for (PackageInfo pi : downloadQueue) {
             logger.debug("downloading: " + pi);
-            boolean foundOne = false;
             while (true) {
                 String line = readLine();
                 Matcher m = DOWNLOAD_PATTERN.matcher(line);
-                if (m.matches()) {
-                    foundOne = true;
-
+                if (line.startsWith("DOWNLOAD SUCCEEDED: ")) {
+                    logger.debug("download succeeded");
+                    events.add(new DownloadComplete(true));
+                    break;
+                } else if (line.startsWith("DOWNLOAD FAILED: " )) {
+                    logger.debug("download failed");
+                    events.add(new DownloadComplete(false));
+                    break;
+                } else if (m.matches()) {
                     int bytesDownloaded = Integer.parseInt(m.group(1)) * 100;
                     int percent = Integer.parseInt(m.group(2));
                     float speed = Float.parseFloat(m.group(3));
@@ -169,16 +175,6 @@ class AptLogTail implements Runnable
                     synchronized (events) {
                         events.add(dpe);
                     }
-
-                    if (100 == percent) {
-                        logger.debug("100% downloaded");
-                        break;
-                    }
-
-                } else if (foundOne) {
-                    logger.warn("premature end of download: " + pi.url);
-                    // XXX event for this?
-                    break;
                 } else {
                     logger.debug("ignoring line: " + line);
                 }
@@ -186,8 +182,8 @@ class AptLogTail implements Runnable
         }
 
         synchronized (events) {
-            logger.debug("adding: " + InstallComplete.COMPLETE);
-            events.add(InstallComplete.COMPLETE);
+            logger.debug("installation complete");
+            events.add(new InstallComplete(true));
             live = false;
         }
     }
@@ -206,7 +202,7 @@ class AptLogTail implements Runnable
                             throw new RuntimeException("timing out");
                         } else {
                             logger.debug("end of input, sleeping");
-                            Thread.currentThread().sleep(500);
+                            Thread.currentThread().sleep(100);
                         }
                     } catch (InterruptedException exn) { }
                 } else if ('\n' == c) {

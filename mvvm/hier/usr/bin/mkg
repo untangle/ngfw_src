@@ -95,8 +95,18 @@ if [ -z $prefix ] ; then
         cat $aptlist >>$APT_LOG
         echo "END PACKAGE LIST" >>$APT_LOG
 
-        cat $aptlist | awk '{ print $1 }' \
-            | xargs wget -P /var/cache/apt/archives >>$APT_LOG 2>&1
+        for u in $(cat $aptlist | awk '{ print $1 }' | sed "s/'//g"); do
+            echo "downloading: $u" >>$APT_LOG
+            dltmp=$(mktemp -d)
+            wget --progress=dot -P "$dltmp" "$u" >>$APT_LOG 2>&1
+            if [ $? -eq 0 ]; then
+                mv $dltmp/* /var/cache/apt/archives
+                echo "DOWNLOAD SUCCEEDED: $u" >>$APT_LOG
+            else
+                echo "DOWNLOAD FAILED: $u" >>$APT_LOG
+            fi
+            rm -r $dltmp
+        done
 
         aptlog "installing: \"$2-transform\""
         # XXX the way i create mackage name is wrong:

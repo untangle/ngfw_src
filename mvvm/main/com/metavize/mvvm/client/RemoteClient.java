@@ -14,6 +14,7 @@ package com.metavize.mvvm.client;
 import java.net.InetAddress;
 import java.util.List;
 
+import com.metavize.mvvm.DownloadComplete;
 import com.metavize.mvvm.DownloadProgress;
 import com.metavize.mvvm.InstallComplete;
 import com.metavize.mvvm.InstallProgress;
@@ -201,8 +202,21 @@ public class RemoteClient
 
         public void visitInstallComplete(InstallComplete ic)
         {
-            System.out.println("Installation complete");
+            if (ic.getSuccess()) {
+                System.out.println("Installation succeeded");
+            } else {
+                System.out.println("Installation failed");
+            }
             done = true;
+        }
+
+        public void visitDownloadComplete(DownloadComplete dc)
+        {
+            if (dc.getSuccess()) {
+                System.out.println("Download succeeded");
+            } else {
+                System.out.println("Download failed");
+            }
         }
 
         public void visitInstallTimeout(InstallTimeout it)

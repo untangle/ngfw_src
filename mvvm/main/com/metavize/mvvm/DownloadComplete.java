@@ -13,13 +13,13 @@ package com.metavize.mvvm;
 
 import java.io.Serializable;
 
-public class InstallComplete implements InstallProgress, Serializable
+public class DownloadComplete implements InstallProgress, Serializable
 {
     // XXX serial UID
 
     private final boolean success;
 
-    public InstallComplete(boolean success)
+    public DownloadComplete(boolean success)
     {
         this.success = success;
     }
@@ -35,6 +35,6 @@ public class InstallComplete implements InstallProgress, Serializable
 
     public void accept(ProgressVisitor visitor)
     {
-        visitor.visitInstallComplete(this);
+        visitor.visitDownloadComplete(this);
     }
 }

@@ -193,6 +193,7 @@ class TransformManagerImpl implements TransformManager
                 logger.warn("could not close Session", exn);
             }
         }
+
         // Free up our logger.  This kind of stuff should be in a hook. XXX
         LogMailer lm = LogMailer.get();
         lm.unregister(tid);
