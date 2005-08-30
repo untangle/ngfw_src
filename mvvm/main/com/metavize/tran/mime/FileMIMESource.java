@@ -76,9 +76,9 @@ public class FileMIMESource
       }
       else {
         destroyStream(m_cachedStream);
-        m_cachedStream = null;
-        ret = createBaseStream();   
+        ret = createBaseStream();
       }
+      m_cachedStream = null;//Make sure we do not give this out twice
     }
     else {
       ret = createBaseStream();
@@ -105,9 +105,17 @@ public class FileMIMESource
   // See doc on MIMESource
   //-------------------------  
   public void close() {
-    for(MIMEParsingInputStream s : m_openStreams) {
+    //Bug 779 - Copy contents of open streams before
+    //          attempting to iterate, as iteration
+    //          removes from the list
+    MIMEParsingInputStream[] openStreams =
+      (MIMEParsingInputStream[]) m_openStreams.toArray(
+        new MIMEParsingInputStream[m_openStreams.size()]);
+        
+    for(MIMEParsingInputStream s : openStreams) {
       destroyStream(s);
     }
+    
     destroyStream(m_cachedStream);//Should be redundant
     m_cachedStream = null;
     if(m_deleteFileOnClose) {
@@ -150,12 +158,16 @@ public class FileMIMESource
   }
 
   private void destroyStream(MIMEParsingInputStream stream) {
+    if(stream == null) {return;}
     try {stream.close();}catch(Exception ignore){}
     try {m_openStreams.remove(stream);}catch(Exception ignore){}
   }
 
   private void returnStream(MIMEParsingInputStream stream) {
     if(m_cachedStream != null) {
+      //Test if we should replace the cached stream.  We do
+      //this if the new stream is at a lower position (more
+      //likely to be useful).
       if(m_cachedStream.position() < stream.position()) {
         destroyStream(stream);
       }
