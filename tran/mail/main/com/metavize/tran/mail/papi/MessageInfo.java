@@ -186,36 +186,4 @@ public class MessageInfo implements Serializable
         this.serverType = serverType;
     }
 
-    /**
-     * Helper factory method which constructs a MessageInfo from
-     * the contents of a MIME message.
-     */
-    public static MessageInfo fromMIMEMessage(MIMEMessageHeaders headers,
-      int sessionId,
-      int port) {
-
-      MessageInfo ret = new MessageInfo(sessionId, port, headers.getSubject());
-
-      //Drain all TO and CC
-      List<EmailAddressWithRcptType> allRcpts = headers.getAllRecipients();
-      for(EmailAddressWithRcptType eawrt : allRcpts) {
-        if(!eawrt.address.isNullAddress()) {
-          ret.addAddress(
-            ((eawrt.type == RcptType.TO)?AddressKind.TO:AddressKind.CC),
-            eawrt.address.getAddress(),
-            eawrt.address.getPersonal());
-        }
-      }
-
-      //Drain FROM
-      EmailAddress from = headers.getFrom();
-      if(from != null &&
-        !from.isNullAddress()) {
-        ret.addAddress(
-            AddressKind.FROM,
-            from.getAddress(),
-            from.getPersonal());
-      }
-      return ret;
-    }
 }

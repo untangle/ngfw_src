@@ -431,7 +431,7 @@ class SmtpClientParser
       headers = new MIMEMessageHeaders();
     }
   
-    MessageInfo ret = MessageInfo.fromMIMEMessage(headers,
+    MessageInfo ret = MessageInfoFactory.fromMIMEMessage(headers,
       getSession().id(),
       getSession().serverPort());
     //Add anyone from the transaction

@@ -163,8 +163,9 @@ public abstract class SpamProtoConfig implements Serializable
 
     public String getStrengthByName()
     {
-        for (Object strname : scanStrengthEnumeration.keySet()) {
-            int strval = (Integer) scanStrengthEnumeration.get(strname);
+        for (Iterator iter = scanStrengthEnumeration.keySet().iterator(); iter.hasNext();) {
+            String strname = (String) iter.next();
+            int strval = ((Integer) scanStrengthEnumeration.get(strname)).intValue();
             if (strength >= strval)
                 return (String) strname;
         }

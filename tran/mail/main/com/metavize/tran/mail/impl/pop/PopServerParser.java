@@ -31,6 +31,7 @@ import com.metavize.tran.mail.papi.DoNotCareT;
 import com.metavize.tran.mail.papi.DoNotCareChunkT;
 import com.metavize.tran.mail.papi.MessageBoundaryScanner;
 import com.metavize.tran.mail.papi.MessageInfo;
+import com.metavize.tran.mail.papi.MessageInfoFactory;
 import com.metavize.tran.mail.papi.MIMEMessageT;
 import com.metavize.tran.mail.papi.pop.PopReply;
 import com.metavize.tran.mail.papi.pop.PopReplyMore;
@@ -212,7 +213,7 @@ public class PopServerParser extends AbstractParser
                             try {
                                 MIMEMessageHeaders zMMHeader = MIMEMessageHeaders.parseMMHeaders(zMMessageT.getInputStream(), zMMessageT.getFileMIMESource());
 
-                                MessageInfo zMsgInfo = MessageInfo.fromMIMEMessage(zMMHeader, session.id(), session.serverPort());
+                                MessageInfo zMsgInfo = MessageInfoFactory.fromMIMEMessage(zMMHeader, session.id(), session.serverPort());
                                 zMsgInfo.addAddress(AddressKind.USER, zCasing.getUser(), null);
 
                                 zMMessageT.setMIMEMessageHeader(zMMHeader);
