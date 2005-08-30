@@ -303,6 +303,7 @@ public abstract class BufferingSessionHandler
         logger.error(s);
       }
       logger.error("=======ENDOF Transaction Log=============");
+      clear();
     }
     void dumpToDebug(Logger logger) {
       logger.debug("=======BEGIN Transaction Log=============");
@@ -310,6 +311,7 @@ public abstract class BufferingSessionHandler
         logger.debug(s);
       }
       logger.debug("=======ENDOF Transaction Log=============");
+      clear();
     }
 
     //TODO bscott this is temp, just for debugging
@@ -335,6 +337,14 @@ public abstract class BufferingSessionHandler
     private MIMEAccumulator m_accumulator;
     private MessageInfo m_messageInfo;
     private MIMEMessage m_msg;
+    private boolean m_isMessageMaster;//Flag indicating if this handler
+                                      //is the "master" of the message (accumulator
+                                      //or MIMEMessage).  The master is defined
+                                      //as the last transform to receive the object
+                                      //in question.  The master designation is set
+                                      //once a Begin/complete token is received, and
+                                      //relinquished once any BEGIN/Complete
+                                      //token is passed 
 
     private int m_dataResp = -1;//Special case for when we get a negative
                                 //response to our sending of a "real" DATA
@@ -347,6 +357,7 @@ public abstract class BufferingSessionHandler
       super(tx);
       m_txLog.add("---- Initial state " + m_state + " (" +
         new Date() + ") -------");
+      m_isMessageMaster = false;
     }
 
 
@@ -369,10 +380,7 @@ public abstract class BufferingSessionHandler
         actions.sendCommandToServer(command, new PassthruResponseCompletion());
         changeState(BufTxState.DONE);
         finalReport();
-        if(m_accumulator != null) {
-          m_accumulator.dispose();
-          m_accumulator = null;
-        }
+        closeMessageResources(false);
       }
       else {//State/command misalignment
         m_txLog.add("Impossible command now");
@@ -458,6 +466,7 @@ public abstract class BufferingSessionHandler
 
       m_accumulator = token.getMIMEAccumulator();
       m_messageInfo = token.getMessageInfo();
+      m_isMessageMaster = true;
 
       handleMIMEChunk(true,
         false,
@@ -484,6 +493,7 @@ public abstract class BufferingSessionHandler
 
       m_msg = token.getMessage();
       m_messageInfo = token.getMessageInfo();
+      m_isMessageMaster = true;
       //TODO bscott Should we close the file of accumulated MIME?  It is really
       //     an error to have the file at all
       m_accumulator = null;
@@ -494,17 +504,8 @@ public abstract class BufferingSessionHandler
     }
     @Override
     public void handleFinalized() {
-      if(m_accumulator != null) {
-        m_logger.debug("Dispose of accumulator for finalize");
-        m_accumulator.dispose();
-        m_accumulator = null;
-      }
-      if(m_msg != null) {
-        m_logger.debug("Dispose of Message for finalize");
-        m_msg.dispose();
-        m_msg = null;
-      }      
-    }     
+      closeMessageResources(true);
+    }
 
     
     private void handleMIMEChunk(boolean isFirst,
@@ -527,12 +528,6 @@ public abstract class BufferingSessionHandler
           m_txLog.add("Impossible command now");
           m_txLog.dumpToError(m_logger);
           appendChunk(continuedToken);
- //         if(isLast) {
- //           actions.sendContinuedMIMEToServer(new ContinuedMIMEToken(false));
- //         }
- //         else {
- //           actions.sendFinalMIMEToServer(new ContinuedMIMEToken(true), new PassthruResponseCompletion());
- //         }
           changeState(BufTxState.DONE);
           break;                
         case BUFFERING_MAIL:
@@ -723,9 +718,14 @@ public abstract class BufferingSessionHandler
       }
       if(!m_accumulator.appendChunkToFile(continuedToken.getMIMEChunk())) {
         m_logger.error("Error appending MIME Chunk");
-        //TODO bscott If there is a write-error, should we dispose?
-        m_accumulator.dispose();
-        m_accumulator = null;
+        //I'm not going to dispose of the file at this point,
+        //as it may cause other downstream NPEs.  Basically,
+        //we're screwed if this occurs (and should only occur if
+        //we get a disk I/O error, which is unrecoverable).
+//        if(m_isMessageMaster) {
+//          m_accumulator.dispose();
+//          m_accumulator = null;
+//        }
       }
       
     }    
@@ -735,6 +735,20 @@ public abstract class BufferingSessionHandler
       m_txLog.recordStateChange(m_state, newState);
       m_state = newState;
     }
+
+    private void closeMessageResources(boolean force) {
+      if(m_isMessageMaster || force) {
+        if(m_accumulator != null) {
+          m_accumulator.dispose();
+          m_accumulator = null;
+        }
+        if(m_msg != null) {
+          m_msg.dispose();
+          m_msg = null;
+        }        
+      }
+    }
+    
     /**
      * Helper which prints the tx log to debug
      * as a final report of what took place
@@ -812,6 +826,7 @@ public abstract class BufferingSessionHandler
           //was a parse error)
           if(m_msg == null) {
             m_txLog.add("Passing along an unparsable MIME message in two tokens");
+            m_isMessageMaster = false;
             actions.sendBeginMIMEToServer(new BeginMIMEToken(m_accumulator, m_messageInfo));
             actions.sendFinalMIMEToServer(
               new ContinuedMIMEToken(m_accumulator.createChunk(null, true)),
@@ -826,6 +841,8 @@ public abstract class BufferingSessionHandler
             }
             actions.sentWholeMIMEToServer(new CompleteMIMEToken(m_msg, m_messageInfo),
               new MailTransmissionContinuation());
+            m_isMessageMaster = false;
+            m_msg = null;
           }
           
 
@@ -834,17 +851,8 @@ public abstract class BufferingSessionHandler
         }
         else {
           //Discard message
-          if(m_accumulator != null) {
-            m_accumulator.closeInput();
-          }
-          if(m_msg != null) {
-            m_msg.dispose();
-          }
-          else {
-            m_accumulator.dispose();
-          }
-          m_accumulator = null;
-          m_msg = null;
+          closeMessageResources(false);
+          
           //Transaction Failed
           getTransaction().failed();
 
@@ -892,21 +900,13 @@ public abstract class BufferingSessionHandler
         if(resp.getCode() < 400) {
           m_txLog.add("Begin trickle with BeginMIMEToken");
           actions.sendBeginMIMEToServer(new BeginMIMEToken(m_accumulator, m_messageInfo));
+          m_isMessageMaster = false;
           changeState(m_nextState);
         }
         else {
           //Discard message
-          if(m_accumulator != null) {
-            m_accumulator.closeInput();
-          }
-          if(m_msg != null) {
-            m_msg.dispose();
-          }
-          else {
-            m_accumulator.dispose();
-          }
-          m_accumulator = null;
-          m_msg = null;
+          closeMessageResources(false);
+          
           actions.sendCommandToServer(new Command(Command.CommandType.RSET),
             new NoopResponseCompletion());
           changeState(BufTxState.PASSTHRU_PENDING_NACK);
@@ -987,7 +987,7 @@ public abstract class BufferingSessionHandler
       }
     }
   
-  
+ 
     //****************** Inner-Inner Class Separator ******************
       
     private class RCPTContinuation

@@ -223,14 +223,13 @@ class SmtpClientParser
             MIMEMessageHeaders headers = m_sac.accumulator.parseHeaders();
             if(headers == null) {//BEGIN Header PArse Error
               m_logger.error("Unable to parse headers.  This will be caught downstream");
-//              puntDuringHeaders(toks, dup);
-//              return new ParseResult(toks, null);
             }//ENDOF Header PArse Error
 
             m_logger.debug("Adding the BeginMIMEToken");
             getSessionTracker().beginMsgTransmission();
             toks.add(new BeginMIMEToken(m_sac.accumulator,
               createMessageInfo(headers)));
+            m_sac.noLongerAccumulatorMaster();
             changeState(SmtpClientState.BODY);
             if(m_sac.scanner.isEmptyMessage()) {
               m_logger.debug("Message blank.  Skip to reading commands");
@@ -336,7 +335,10 @@ class SmtpClientParser
       }
       else {
         m_logger.debug("DATA command rejected");
-        if(m_targetSAC == m_sac) {
+        if(m_sac != null &&
+          m_targetSAC == m_sac &&
+          m_sac.isMasterOfAccumulator()) {
+          
           m_sac.accumulator.dispose();
           m_sac = null;
           changeState(SmtpClientState.COMMAND);
@@ -492,10 +494,17 @@ class SmtpClientParser
   
     final MessageBoundaryScanner scanner;
     final MIMEAccumulator accumulator;
+    private boolean m_isMasterOfAccumulator = true;
 
     ScannerAndAccumulator(MIMEAccumulator accumulator) {
       scanner = new MessageBoundaryScanner();
       this.accumulator = accumulator;
+    }
+    boolean isMasterOfAccumulator() {
+      return m_isMasterOfAccumulator;
+    }
+    void noLongerAccumulatorMaster() {
+      m_isMasterOfAccumulator = false;
     }
   }
 }
