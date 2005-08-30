@@ -29,7 +29,7 @@ else
 fi
 
 ## Local ports to antisubscribe to
-ANTISUBSCRIBES_LOCAL_TCP_PORTS="22,80,443"
+ANTISUBSCRIBES_LOCAL_TCP_PORTS="22,443 80_inside"
 
 ## Possible for NAT
 ANTISUBSCRIBES_LOCAL_UDP_PORTS="53"
@@ -37,7 +37,7 @@ ANTISUBSCRIBES_LOCAL_UDP_PORTS="53"
 #### Handle all of the port guards
 
 #### TCP Port guards
-GUARD_OUTSIDE_TCP_PORTS="80"
+GUARD_OUTSIDE_TCP_PORTS=""
 GUARD_INSIDE_TCP_PORTS=""
 
 # disabled by default
@@ -63,7 +63,11 @@ fi
 if [ "x" != "x@PREFIX@" ] ; then
     GUARD_OUTSIDE_TCP_PORTS=""
     GUARD_INSIDE_TCP_PORTS=""
+else
+    ## When in the production environment, never antisubscribe to the outside
+    ANTISUBSCRIBE_LOCAL_OUTSIDE=false
 fi
+
 
 ## Port guards (always true)
 GUARD_OUTSIDE_UDP_PORTS="53"

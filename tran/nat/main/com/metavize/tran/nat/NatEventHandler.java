@@ -469,6 +469,8 @@ class NatEventHandler extends AbstractEventHandler
     {
         try {
             ArgonManager argonManager = MvvmContextFactory.context().argonManager();
+            /* Local antisubscribe is only used in non-production environments, 
+             * in production environments it is never antisubscribed */
             argonManager.disableLocalAntisubscribe();
             argonManager.destroyBridge( netConfig, internalAddress.getAddr(), internalSubnet.getAddr());
         } catch ( Exception e ) {
@@ -491,6 +493,8 @@ class NatEventHandler extends AbstractEventHandler
         /* Wait for this to finish */
         try {
             ArgonManager argonManager = MvvmContextFactory.context().argonManager();
+            /* Local antisubscribe is only used in non-production environments, 
+             * in production environments it is never antisubscribed */
             argonManager.enableLocalAntisubscribe();
             argonManager.restoreBridge( netConfig );
         } catch ( Exception e ) {

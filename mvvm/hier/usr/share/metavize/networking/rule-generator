@@ -226,9 +226,13 @@ function antisubscribeRules() {
     antisubscribeLocalTraffic ${FLAG_INSIDE_INTF}  ${ANTISUBSCRIBE_LOCAL_INSIDE}
 
     ## Antisubscribe to the locally requested traffic
-    antisubscribeLocal "tcp" "${ANTISUBSCRIBES_LOCAL_TCP_PORTS}"
+    for c_portList in ${ANTISUBSCRIBES_LOCAL_TCP_PORTS}; do
+        antisubscribeLocal "tcp" ${c_portList}
+    done
     
-    antisubscribeLocal "udp" "${ANTISUBSCRIBES_LOCAL_UDP_PORTS}"
+    for c_portList in ${ANTISUBSCRIBES_LOCAL_UDP_PORTS}; do
+        antisubscribeLocal "udp" ${c_portList}
+    done
     
     ## antisubscribe to unwanted ICMP
     for icmpType in ${ANTISUBSCRIBES_ICMP} ; do
@@ -244,13 +248,33 @@ function antisubscribeRules() {
 }
 
 function antisubscribeLocal() {
-    protocol=$1
-    portList=$2
+    t_protocol=$1
+    t_portList=$2
 
-    if [ -n $portList ]; then
-        ${IPTABLES} -t mangle -A ${CHAIN_ANTISUB} -m multiport -m mark  -p ${protocol}  \
-            --destination-ports ${portList} --mark ${MARK_LOCAL}/$(( $MARK_ANTISUB | $MARK_LOCAL )) \
-            -j MARK --set-mark 0x01000000
+    if [ -n ${t_portList} ]; then
+        ## Check if antisubscribing on only one interface
+        t_intf=${t_portList#*_}
+        if [ "${t_intf}x" != "${t_portList}x" ]; then
+            t_portList=${t_portList%_*}
+            if [ "${t_intf}x" == "${FLAG_INSIDE_INTF}x" ]; then
+                t_mark=2
+            elif [ "${t_intf}x" == "${FLAG_OUTSIDE_INTF}x" ]; then
+                t_mark=1
+            else
+                echo "Unable to determine which interface to antisubscribe  for ${t_protocol} ${t_portList}"
+                return
+            fi
+            
+            t_mark=$(( ${t_mark} | ${MARK_LOCAL} ))
+            t_markMask=$(( ${MARK_ANTISUB} | ${MARK_LOCAL} | 0xF ))
+        else
+            t_mark=${MARK_LOCAL}
+            t_markMask=$(( ${MARK_ANTISUB} | ${MARK_LOCAL} ))
+        fi
+
+        ${IPTABLES} -t mangle -A ${CHAIN_ANTISUB} -m multiport -m mark -p ${t_protocol}  \
+            --destination-ports ${t_portList} --mark ${t_mark}/${t_markMask} \
+            -j MARK --set-mark ${MARK_ANTISUB}
     else
         echo "No local antisubscribes for ${protocol}"
     fi
@@ -258,23 +282,23 @@ function antisubscribeLocal() {
 
 ## Antisubscribe to all local traffic on a particular interface
 function antisubscribeLocalTraffic() {
-    intf=$1
-    flag=$2
+    t_intf=$1
+    t_flag=$2
 
-    if [  "${flag}x" = "truex" ]; then
-        if [ "${intf}x" == "${FLAG_INSIDE_INTF}x" ]; then
-            mark=2
-        elif [ "${intf}x" == "${FLAG_OUTSIDE_INTF}x" ]; then
-            mark=1
+    if [  "${t_flag}x" = "truex" ]; then
+        if [ "${t_intf}x" == "${FLAG_INSIDE_INTF}x" ]; then
+            t_mark=2
+        elif [ "${t_intf}x" == "${FLAG_OUTSIDE_INTF}x" ]; then
+            t_mark=1
         else
-            echo "Unable to determine which interface ${intf} to antisubscribe to"
+            echo "Unable to determine which interface ${t_intf} to antisubscribe to"
             return
         fi
 
-        mark=$(( ${mark} | ${MARK_LOCAL} ))
-        markMask=$(( ${MARK_ANTISUB} | ${MARK_LOCAL} | 0xF ))
+        t_mark=$(( ${t_mark} | ${MARK_LOCAL} ))
+        t_markMask=$(( ${MARK_ANTISUB} | ${MARK_LOCAL} | 0xF ))
 
-        ${IPTABLES} -t mangle -A ${CHAIN_ANTISUB} -m mark --mark ${mark}/${markMask} \
+        ${IPTABLES} -t mangle -A ${CHAIN_ANTISUB} -m mark --mark ${t_mark}/${t_markMask} \
             -j MARK --set-mark ${MARK_ANTISUB}
     fi
 }
