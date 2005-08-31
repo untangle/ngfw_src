@@ -49,7 +49,7 @@ class PopTableModel extends MSortedTableModel{
     private static final int T_TW = Util.TABLE_TOTAL_WIDTH_LARGE;
     private static final int C0_MW = Util.STATUS_MIN_WIDTH; /* status */
     private static final int C1_MW = Util.LINENO_MIN_WIDTH; /* # - invisible */
-    private static final int C2_MW = 100; /* source */
+    private static final int C2_MW = 125; /* source */
     private static final int C3_MW = 55;  /* scan */
     private static final int C4_MW = 95; /* scan strength */
     private static final int C5_MW = 125; /* action if SPAM detected */
@@ -72,8 +72,8 @@ class PopTableModel extends MSortedTableModel{
         return tableColumnModel;
     }
 
-    private static final String SOURCE_INBOUND = "inbound POP";
-    private static final String SOURCE_OUTBOUND = "outbound POP";
+    private static final String SOURCE_INBOUND  = "incoming message";
+    private static final String SOURCE_OUTBOUND = "outgoing message";
 
     public void generateSettings(Object settings, boolean validateOnly) throws Exception {
 	SpamPOPConfig spamPOPConfigInbound = null;
