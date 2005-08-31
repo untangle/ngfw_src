@@ -180,13 +180,12 @@ class ToolboxManagerImpl implements ToolboxManager
             }
         }
 
-        logger.debug("returning progress: " + l);
         return l;
     }
 
-    public long install(String name) throws MackageInstallException
+    public long install(final String name) throws MackageInstallException
     {
-        AptLogTail alt;
+        final AptLogTail alt;
 
         synchronized (tails) {
             long i = ++lastTailKey;
@@ -196,11 +195,16 @@ class ToolboxManagerImpl implements ToolboxManager
 
         new Thread(alt).start();
 
-        try {
-            execMkg("install " + name, alt.getKey());
-        } catch (MackageException exn) {
-            throw new MackageInstallException(exn);
-        }
+        new Thread(new Runnable() {
+                public void run()
+                {
+                    try {
+                        execMkg("install " + name, alt.getKey());
+                    } catch (MackageException exn) {
+                        logger.warn("install failed", exn);
+                    }
+                }
+            }).start();
 
         return alt.getKey();
     }
@@ -232,11 +236,16 @@ class ToolboxManagerImpl implements ToolboxManager
 
         new Thread(alt).start();
 
-        try {
-            execMkg("upgrade");
-        } catch (MackageException exn) {
-            throw new MackageInstallException(exn);
-        }
+        new Thread(new Runnable() {
+                public void run()
+                {
+                    try {
+                        execMkg("upgrade");
+                    } catch (MackageException exn) {
+                        logger.warn("could not upgrade", exn);
+                    }
+                }
+            }).start();
 
         return alt.getKey();
     }

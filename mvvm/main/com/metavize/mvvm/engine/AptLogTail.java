@@ -17,8 +17,6 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -49,8 +47,8 @@ class AptLogTail implements Runnable
 
     private final RandomAccessFile raf;
 
-    private final ArrayBlockingQueue<InstallProgress> events
-        = new ArrayBlockingQueue<InstallProgress>(10);
+    private final List<InstallProgress> events
+        = new LinkedList<InstallProgress>();
 
     private volatile boolean live = true;
 
@@ -91,14 +89,8 @@ class AptLogTail implements Runnable
         logger.debug("getting events");
         List<InstallProgress> l = new LinkedList<InstallProgress>();
 
-        InstallProgress ip = null;
-        try {
-            ip = events.poll(1, TimeUnit.SECONDS);
-        } catch (InterruptedException exn) { }
-
-        if (null != ip) {
-            l.add(ip);
-            events.drainTo(l);
+        synchronized (events) {
+            l.addAll(events);
         }
 
         logger.debug("returning events: " + l);
@@ -112,7 +104,9 @@ class AptLogTail implements Runnable
 
     boolean isDead()
     {
-        return !live && events.size() == 0;
+        synchronized (events) {
+            return !live && events.size() == 0;
+        }
     }
 
     // Runnable methods -------------------------------------------------------
@@ -163,18 +157,14 @@ class AptLogTail implements Runnable
                 Matcher m = DOWNLOAD_PATTERN.matcher(line);
                 if (line.startsWith("DOWNLOAD SUCCEEDED: ")) {
                     logger.debug("download succeeded");
-                    try {
-                        events.put(new DownloadComplete(true));
-                    } catch (InterruptedException exn) {
-                        logger.warn("dropping DownloadComplete(true)");
+                    synchronized (events) {
+                        events.add(new DownloadComplete(true));
                     }
                     break;
                 } else if (line.startsWith("DOWNLOAD FAILED: " )) {
                     logger.debug("download failed");
-                    try {
-                        events.put(new DownloadComplete(false));
-                    } catch (InterruptedException exn) {
-                        logger.warn("dropping DownloadComplete(false)");
+                    synchronized (events) {
+                        events.add(new DownloadComplete(false));
                     }
                     break;
                 } else if (m.matches()) {
@@ -187,10 +177,8 @@ class AptLogTail implements Runnable
                         (pi.file, bytesDownloaded, pi.size, speed);
                     logger.debug("Adding event: " + dpe);
 
-                    try {
-                        events.put(dpe);
-                    } catch (InterruptedException exn) {
-                        logger.warn("dropping: " + dpe);
+                    synchronized (events) {
+                        events.add(dpe);
                     }
                 } else {
                     logger.debug("ignoring line: " + line);
@@ -199,10 +187,8 @@ class AptLogTail implements Runnable
         }
 
         logger.debug("installation complete");
-        try {
-            events.put(new InstallComplete(true));
-        } catch (InterruptedException exn) {
-            logger.warn("dropping InstallComplete(true)");
+        synchronized (events) {
+            events.add(new InstallComplete(true));
         }
         live = false;
     }
@@ -220,26 +206,21 @@ class AptLogTail implements Runnable
                     try {
                         if (TIMEOUT < t - lastActivity) {
                             // just end the thread adding TimeoutEvent
-                            try {
-                                logger.warn("AptLogTail timing out: "
-                                            + (t - lastActivity));
-                                events.put(new InstallTimeout(t));
-                            } catch (InterruptedException exn) {
-                                logger.warn("dropping InstallTimeout");
+                            logger.warn("AptLogTail timing out: "
+                                        + (t - lastActivity));
+                            synchronized (events) {
+                                events.add(new InstallTimeout(t));
                             }
                             throw new RuntimeException("timing out: "
                                                        + (t - lastActivity));
                         } else {
-                            logger.debug("end of input, sleeping");
                             Thread.currentThread().sleep(100);
-                            logger.debug("waking up");
                         }
                     } catch (InterruptedException exn) { }
                 } else if ('\n' == c) {
                     lastActivity = t;
                     String s = builder.toString().trim();
                     builder.delete(0, builder.length());
-                    logger.debug("got line: \"" + s + "\"");
                     return s;
                 } else {
                     lastActivity = t;
