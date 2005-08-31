@@ -98,7 +98,7 @@ public class ProtoFilterImpl extends AbstractTransform implements ProtoFilter
 
     public List<ProtoFilterLog> getLogs(int limit)
     {
-        List<ProtoFilterLog> l = new LinkedList<ProtoFilterLog>();
+        List<ProtoFilterLog> l = new ArrayList<ProtoFilterLog>(limit);
 
         Session s = TransformContextFactory.context().openSession();
         try {
@@ -125,7 +125,7 @@ public class ProtoFilterImpl extends AbstractTransform implements ProtoFilter
                     (createDate, protocol, blocked, clientAddr, clientPort,
                      serverAddr, serverPort, d);
 
-                l.add(0, rl);
+                l.add(rl);
             }
             long l1 = System.currentTimeMillis();
             logger.debug("getAccessLogs() in: " + (l1 - l0));

@@ -139,6 +139,7 @@ public class VirusLog implements Comparable<VirusLog>, Serializable
 
     public int compareTo(VirusLog vl)
     {
-        return createDate.compareTo(vl.createDate);
+        // Sort descending instead of ascending.
+        return -createDate.compareTo(vl.createDate);
     }
 }

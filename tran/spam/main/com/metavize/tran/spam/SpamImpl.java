@@ -106,9 +106,7 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
 
         Collections.sort(l);
 
-        for (int i = Math.min(limit, l.size()); i < l.size(); i++) {
-            l.remove(i);
-        }
+        while (l.size() > limit) { l.remove(l.size() - 1); }
 
         return l;
     }
@@ -267,7 +265,7 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
                     (timeStamp, score, action, subject, receiver, sender,
                      clientAddr, clientPort, serverAddr, serverPort, d);
 
-                l.add(0, rl);
+                l.add(rl);
             }
             long l1 = System.currentTimeMillis();
             logger.debug("getSpamLogs() in: " + (l1 - l0));

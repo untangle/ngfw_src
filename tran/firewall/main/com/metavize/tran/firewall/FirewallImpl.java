@@ -111,7 +111,7 @@ public class FirewallImpl extends AbstractTransform implements Firewall
 
     public List<FirewallLog> getEventLogs(int limit)
     {
-        List<FirewallLog> l = new LinkedList<FirewallLog>();
+        List<FirewallLog> l = new ArrayList<FirewallLog>(limit);
 
         Session s = TransformContextFactory.context().openSession();
         try {
@@ -138,7 +138,7 @@ public class FirewallImpl extends AbstractTransform implements Firewall
                     (createDate, trafficBlocker, clientAddr, clientPort,
                      serverAddr, serverPort, d, ruleIndex);
 
-                l.add(0, rl);
+                l.add(rl);
             }
             long l1 = System.currentTimeMillis();
             logger.debug("getEventLogs() in: " + (l1 - l0));

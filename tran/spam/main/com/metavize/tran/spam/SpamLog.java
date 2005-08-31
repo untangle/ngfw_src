@@ -113,6 +113,7 @@ public class SpamLog implements Comparable<SpamLog>, Serializable
 
     public int compareTo(SpamLog sl)
     {
-        return timeStamp.compareTo(sl.timeStamp);
+        // Sort descending instead of ascending.
+        return -timeStamp.compareTo(sl.timeStamp);
     }
 }

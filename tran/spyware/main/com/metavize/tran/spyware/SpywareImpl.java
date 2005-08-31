@@ -552,7 +552,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
                     (createDate, type, location, ident, blocked, clientAddr,
                      clientPort, serverAddr, serverPort, d);
 
-                l.add(0, rl);
+                l.add(rl);
             }
             long l1 = System.currentTimeMillis();
             logger.debug("getActiveXLogs() in: " + (l1 - l0));

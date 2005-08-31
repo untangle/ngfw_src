@@ -98,7 +98,7 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
 
     public List<HttpRequestLog> getEvents(int limit)
     {
-        List<HttpRequestLog> l = new LinkedList<HttpRequestLog>();
+        List<HttpRequestLog> l = new ArrayList<HttpRequestLog>(limit);
 
         Session s = TransformContextFactory.context().openSession();
         try {
@@ -131,7 +131,7 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
                      contentType, contentLength, clientAddr, clientPort,
                      serverAddr, serverPort, d);
 
-                l.add(0, rl);
+                l.add(rl);
             }
             long l1 = System.currentTimeMillis();
             logger.debug("getEvents() in: " + (l1 - l0));
