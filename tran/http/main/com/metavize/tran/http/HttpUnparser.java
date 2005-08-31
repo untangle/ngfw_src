@@ -36,8 +36,6 @@ class HttpUnparser extends AbstractUnparser
     private static final byte[] CRLF = "\r\n".getBytes();
     private static final byte[] COLON_SPACE = ": ".getBytes();
 
-    private static final int BUFFER_SIZE = 4096;
-
     private static final int CLOSE_ENCODING = 0;
     private static final int CONTENT_LENGTH_ENCODING = 1;
     private static final int CHUNKED_ENCODING = 2;
@@ -103,7 +101,6 @@ class HttpUnparser extends AbstractUnparser
     private UnparseResult requestLine(RequestLine rl)
     {
         logger.debug(sessStr + " request-line");
-        ByteBuffer buf = ByteBuffer.allocate(BUFFER_SIZE);
 
         HttpMethod method = rl.getMethod();
         logger.debug(sessStr + " Unparser got method: " + method);

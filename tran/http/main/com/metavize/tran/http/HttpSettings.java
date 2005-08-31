@@ -26,7 +26,7 @@ import com.metavize.mvvm.security.Tid;
 public class HttpSettings implements Serializable
 {
     public static final int MIN_HEADER_LENGTH = 1024;
-    public static final int MAX_HEADER_LENGTH = 4096;
+    public static final int MAX_HEADER_LENGTH = 8192;
     public static final int MIN_URI_LENGTH = 1024;
     public static final int MAX_URI_LENGTH = 4096;
 

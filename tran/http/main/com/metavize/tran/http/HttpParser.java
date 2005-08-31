@@ -46,7 +46,6 @@ public class HttpParser extends AbstractParser
     private static final int CONTENT_LENGTH_ENCODING = 3;
 
     // longest allowable token or text:
-    private static final int BUFFER_SIZE = 4096;
     private static final int TIMEOUT = 30000;
 
     private static final int PRE_FIRST_LINE_STATE = 0;
