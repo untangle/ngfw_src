@@ -228,10 +228,10 @@ public class Main
             throw new RuntimeException("could not load Proxool", exn);
         }
         Properties info = new Properties();
-        info.setProperty("proxool.maximum-connection-count", "50");
+        info.setProperty("proxool.maximum-connection-count", "100");
         info.setProperty("proxool.house-keeping-test-sql", "select CURRENT_DATE");
         /* XXX not for production: */
-        info.setProperty("proxool.statistics", "1m,15m,1d");
+        // info.setProperty("proxool.statistics", "1m,15m,1d");
         info.setProperty("user", "metavize");
         info.setProperty("password", "foo");
         String alias = "mvvm";
@@ -272,6 +272,7 @@ public class Main
         fileLog.setPrefix("tomcat");
         fileLog.setSuffix(".log");
         fileLog.setTimestamp(true);
+        // fileLog.setVerbosityLevel("DEBUG");
 
         emb = new Embedded(fileLog, new MvvmRealm());
         emb.setCatalinaHome(bunniculaHome);
