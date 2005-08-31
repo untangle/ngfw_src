@@ -10,6 +10,7 @@
   */
 package com.metavize.tran.mime;
 
+import org.apache.log4j.Logger;
 import static com.metavize.tran.util.Ascii.*;
 
 
@@ -61,6 +62,7 @@ public class ContentTypeHeaderField
   public static final String TEXT_PLAIN = TEXT_PRIM_TYPE_STR + "/" + PLAIN_SUB_TYPE_STR;
   
 
+  private final Logger m_logger = Logger.getLogger(ContentTypeHeaderField.class);
   
   private String m_primaryType;
   private String m_subtype;
@@ -192,31 +194,38 @@ public class ContentTypeHeaderField
   @Override
   protected void parsePrimaryValue(HeaderFieldTokenizer t)
     throws HeaderParseException {
-    
-    HeaderFieldTokenizer.Token token1 = t.nextTokenIgnoreComments();
-    if(token1 == null ||
-      (token1.getType() != HeaderFieldTokenizer.TokenType.ATOM &&
-        token1.getType() != HeaderFieldTokenizer.TokenType.QTEXT)) {
-      throw new HeaderParseException("Invalid ContentType header \"" +
-        t.getOriginal() + "\".  First token null or not ATOM or QTEXT");      
-    }
-    
-    HeaderFieldTokenizer.Token token2 = t.nextTokenIgnoreComments();    
-    if(token2 == null || token2.getDelim() != (byte) FWD_SLASH) {
-      throw new HeaderParseException("Invalid ContentType header \"" +
-        t.getOriginal() + "\".  Second token null or not /");
-    }
-    
-    HeaderFieldTokenizer.Token token3 = t.nextTokenIgnoreComments();    
-    if(token3 == null ||
-      (token3.getType() != HeaderFieldTokenizer.TokenType.ATOM &&
-        token3.getType() != HeaderFieldTokenizer.TokenType.QTEXT)) {
-      throw new HeaderParseException("Invalid ContentType header \"" +
-        t.getOriginal() + "\".  Third token null or not ATOM or QTEXT");
-    }         
 
-    m_primaryType = token1.toString();
-    m_subtype = token3.toString();
+    try {
+      HeaderFieldTokenizer.Token token1 = t.nextTokenIgnoreComments();
+      if(token1 == null ||
+        (token1.getType() != HeaderFieldTokenizer.TokenType.ATOM &&
+          token1.getType() != HeaderFieldTokenizer.TokenType.QTEXT)) {
+        throw new HeaderParseException("Invalid ContentType header \"" +
+          t.getOriginal() + "\".  First token null or not ATOM or QTEXT");      
+      }
+      
+      HeaderFieldTokenizer.Token token2 = t.nextTokenIgnoreComments();    
+      if(token2 == null || token2.getDelim() != (byte) FWD_SLASH) {
+        throw new HeaderParseException("Invalid ContentType header \"" +
+          t.getOriginal() + "\".  Second token null or not /");
+      }
+      
+      HeaderFieldTokenizer.Token token3 = t.nextTokenIgnoreComments();    
+      if(token3 == null ||
+        (token3.getType() != HeaderFieldTokenizer.TokenType.ATOM &&
+          token3.getType() != HeaderFieldTokenizer.TokenType.QTEXT)) {
+        throw new HeaderParseException("Invalid ContentType header \"" +
+          t.getOriginal() + "\".  Third token null or not ATOM or QTEXT");
+      }         
+  
+      m_primaryType = token1.toString();
+      m_subtype = token3.toString();
+    }
+    catch(Exception ex) {
+      m_logger.warn("Exception parsing content type.  Assume text/plain", ex);
+      m_primaryType = TEXT_PRIM_TYPE_STR;
+      m_subtype = PLAIN_SUB_TYPE_STR;
+    }
   }
 
   @Override
