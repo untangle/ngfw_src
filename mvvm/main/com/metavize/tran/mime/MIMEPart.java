@@ -512,6 +512,10 @@ public class MIMEPart {
     throws IOException {
     checkDisposed();
 
+    if(isMultipart()) {
+      throw new IOException("Cannot get content for non-leaf part");
+    }
+
     // 8/11/05 jdi -- User provided file name removed.
     String fileNamePrefix = "mimepart";
         
@@ -523,6 +527,9 @@ public class MIMEPart {
         return m_decodedContentRecord.source.toFile(factory, fileNamePrefix);
       }
       else {
+        if(m_sourceEncoding == null) {
+          m_sourceEncoding = ContentXFerEncodingHeaderField.XFreEncoding.UNKNOWN;
+        }
         switch(m_sourceEncoding) {
           case QP:
             decodedContentToFileSource(factory, fileNamePrefix, new QPDecoderFactory());

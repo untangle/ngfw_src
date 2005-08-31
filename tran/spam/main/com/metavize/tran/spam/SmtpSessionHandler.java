@@ -286,7 +286,7 @@ public class SmtpSessionHandler
   private File messageToFile(MIMEMessage msg) {
     //Get the part as a file
     try {
-      return msg.getContentAsFile(m_fileFactory, true);
+      return msg.toFile(m_fileFactory);
     }
     catch(Exception ex) {
       m_logger.error("Exception writing MIME Message to file", ex);
