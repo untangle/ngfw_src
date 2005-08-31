@@ -214,21 +214,23 @@ public class Util {
     // UPGRADE /////////////////////
     public static final int UPGRADE_THREAD_SLEEP_MILLIS = 60 * (60 * 1000); // X * (minutes * Y)
     public static final long UPGRADE_STORE_CHECK_FRESH_MILLIS = 60l * (5l * 1000l); // X * (minutes * Y)
-    private static long lastUpgradeCheck = 0l;
     public static final int UPGRADE_UNAVAILABLE = -1;
     public static final int UPGRADE_CHECKING = -2;
+    private static long lastUpgradeCheck = 0l;
     private static int upgradeCount = UPGRADE_CHECKING;
 
-    public static synchronized void setUpgradeCount(int upgradeCountX){ upgradeCount = upgradeCountX;}
+    public static synchronized void setUpgradeCount(int upgradeCountX){
+	upgradeCount = upgradeCountX;
+	lastUpgradeCheck = System.currentTimeMillis();
+    }
     public static synchronized int getUpgradeCount(){ return upgradeCount; }
     public static synchronized boolean mustCheckUpgrades(){
 	if( (System.currentTimeMillis() - lastUpgradeCheck > UPGRADE_STORE_CHECK_FRESH_MILLIS)
-            || (upgradeCount > 0) )
+            || (upgradeCount != 0) )
 	    return true;
 	else
 	    return false;
     }
-    public static synchronized void checkedUpgrades(){ lastUpgradeCheck = System.currentTimeMillis(); }
     ///////////////////////////////
 
 

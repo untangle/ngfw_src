@@ -16,6 +16,8 @@ import com.metavize.gui.pipeline.*;
 import com.metavize.gui.util.*;
 import com.metavize.gui.widgets.dialogs.*;
 import com.metavize.gui.widgets.MMultilineToolTip;
+import com.metavize.gui.store.StoreJDialog;
+
 
 import com.metavize.mvvm.*;
 
@@ -32,7 +34,7 @@ public class MTransformJButton extends JButton {
 
     // DOWNLOAD DELAYS //////////////
     private static final int DOWNLOAD_INITIAL_SLEEP_MILLIS = 3000;
-    private static final int DOWNLOAD_SLEEP_MILLIS = 3000;
+    private static final int DOWNLOAD_SLEEP_MILLIS = 500;
     private static final int DOWNLOAD_FINAL_SLEEP_MILLIS = 3000;
     /////////////////////////////////
 
@@ -313,38 +315,39 @@ public class MTransformJButton extends JButton {
 		SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
 		    progressBar.setIndeterminate(false);
 		}});
-		/* int progressIndex =  */ Util.getToolboxManager().install(MTransformJButton.this.getName().substring(0, dashIndex));
-		
-		// DO THE DOWNLOAD
-		String loopPhase;
-		/*
-		do{
-		    final String status = "";
-		    final int progress = 0;
-		    final String phase = "";
-		    loopPhase = phase;
-		    SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
-			progressBar.setString( phase + " : " + status);
-			progressBar.setValue(progress);
-		    }});
-		    
-		    Thread.currentThread().sleep(DOWNLOAD_SLEEP_MILLIS);
+                		
+		// DO THE DOWNLOAD AND INSTALL
+                long key = Util.getToolboxManager().install(MTransformJButton.this.getName().substring(0, dashIndex));		
+		com.metavize.gui.util.Visitor visitor = new com.metavize.gui.util.Visitor(progressBar);
+		while (!visitor.isDone()) {
+		    java.util.List<InstallProgress> lip = Util.getToolboxManager().getProgress(key);
+		    for (InstallProgress ip : lip) {
+			ip.accept(visitor);
+		    }
+		    if (0 == lip.size()) {
+			Thread.currentThread().sleep(DOWNLOAD_SLEEP_MILLIS);
+		    }
 		}
-		while( !loopPhase.equals("Finished") );
-		*/
 
-		// LET THE USER KNOW WERE DONE
-		SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
-		    progressBar.setString("Download Finished.");
-		    progressBar.setValue(100);
-		}});
-		Thread.currentThread().sleep(DOWNLOAD_FINAL_SLEEP_MILLIS);
-		SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
-		    dialog.setVisible(false);
-		}});
-		Util.getMMainJFrame().addMTransformJButtonToToolbox(MTransformJButton.this);
-		MTransformJButton.this.setDeployableView();
-		Util.getMMainJFrame().focusInToolbox(MTransformJButton.this);
+		// GIVE OPTIONS BASED ON RESULTS
+		if( visitor.isSuccessful() ){
+		    Thread.currentThread().sleep(DOWNLOAD_FINAL_SLEEP_MILLIS);
+		    SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+			dialog.setVisible(false);
+		    }});
+		    Util.getMMainJFrame().addMTransformJButtonToToolbox(MTransformJButton.this);
+		    MTransformJButton.this.setDeployableView();
+		    Util.getMMainJFrame().focusInToolbox(MTransformJButton.this);
+		}
+		else{
+		    SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+			progressBar.setValue(0);
+			((StoreJDialog)dialog).resetButtons();
+		    }});
+		    MTransformJButton.this.setFailedProcureView();
+		    new MOneButtonJDialog(MTransformJButton.this.getDisplayName(), "A problem occurred while purchasing:<br>" + MTransformJButton.this.getDisplayName() + "<br>Please contact Metavize for assistance.");
+		}
+
 		
 	    }
 	    catch(Exception e){
@@ -429,5 +432,8 @@ public class MTransformJButton extends JButton {
 		fadeLeft = 0f;
 	}
     }
+
+
+
 
 }

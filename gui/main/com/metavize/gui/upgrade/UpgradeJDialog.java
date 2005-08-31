@@ -68,8 +68,7 @@ public class UpgradeJDialog extends javax.swing.JDialog implements Savable, Refr
 	this.setBounds( Util.generateCenteredBounds( Util.getMMainJFrame().getBounds(), this.getWidth(), this.getHeight()) );
 	this.savableMap.put("Automatic Upgrade", this);
 	this.refreshableMap.put("Automatic Upgrade", this);
-	
-	
+		
 	// REFRESH AND CHECK FOR UPGRADES
 	new RefreshAllThread();
 	new CheckForUpgradesThread();
@@ -676,34 +675,30 @@ public class UpgradeJDialog extends javax.swing.JDialog implements Savable, Refr
 		    // tell user whats going on
 		    UpgradeJDialog.this.actionJProgressBar.setValue(0);
 		    UpgradeJDialog.this.actionJProgressBar.setString("Starting upgrade...");
-		    UpgradeJDialog.this.actionJProgressBar.setIndeterminate(true);
+		    UpgradeJDialog.this.actionJProgressBar.setIndeterminate(false);
 		}});		
 		Thread.currentThread().sleep(DOWNLOAD_INITIAL_SLEEP_MILLIS);
-                /* int upgradeIndex = */ Util.getToolboxManager().upgrade();
 		
-		// DO THE DOWNLOAD
-		/*
-		String loopPhase;
-		do{
-		    final String status = "";
-		    final int progress = 0;
-		    final String phase = "";
-		    loopPhase = phase;
-		    SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
-			UpgradeJDialog.this.actionJProgressBar.setString( phase + " : " + status);
-			UpgradeJDialog.this.actionJProgressBar.setValue(progress);
-		    }});
-		    
-		    Thread.currentThread().sleep(DOWNLOAD_SLEEP_MILLIS);
+		// DO THE DOWNLOAD AND INSTALL
+                long key = Util.getToolboxManager().upgrade();
+		com.metavize.gui.util.Visitor visitor = new com.metavize.gui.util.Visitor(actionJProgressBar);
+		while (!visitor.isDone()) {
+		    java.util.List<InstallProgress> lip = Util.getToolboxManager().getProgress(key);
+		    for (InstallProgress ip : lip) {
+			ip.accept(visitor);
+		    }
+		    if (0 == lip.size()) {
+			Thread.currentThread().sleep(DOWNLOAD_SLEEP_MILLIS);
+		    }
 		}
-		while( !loopPhase.equals("Finished") );
-		*/
+
+
 		Thread.currentThread().sleep(DOWNLOAD_FINAL_SLEEP_MILLIS);
 
 		// LET THE USER KNOW WERE FINISHED
 		SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
 		    UpgradeJDialog.this.actionJProgressBar.setIndeterminate(true);
-		    UpgradeJDialog.this.actionJProgressBar.setValue(100);
+		    UpgradeJDialog.this.actionJProgressBar.setValue(0);
 		    UpgradeJDialog.this.actionJProgressBar.setString("Shutting down...");
 		}});
 	    }
@@ -746,7 +741,6 @@ public class UpgradeJDialog extends javax.swing.JDialog implements Savable, Refr
                     Util.getMMainJFrame().updateJButton(upgradableMackages.length);
                     Util.setUpgradeCount(upgradableMackages.length);
                 }
-                Util.checkedUpgrades();
 		final int upgradesTotal = upgradableMackages.length;
 		int tempUpgradesVisible = 0;
 		for( MackageDesc mackageDesc : upgradableMackages ){

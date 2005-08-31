@@ -97,7 +97,13 @@ public class StoreJDialog extends javax.swing.JDialog implements java.awt.event.
     protected Dimension MAX_SIZE = new Dimension(640, 480);
     ////////////////////////////////////////
 
-
+    public void resetButtons(){
+	saveJButton.setEnabled(true);
+        reloadJButton.setEnabled(true);
+        closeJButton.setEnabled(true);
+        saveJButton.setText(SAVE_INIT_STRING);
+        reloadJButton.setText(RELOAD_INIT_STRING);
+    }
     
     private void initComponents() {//GEN-BEGIN:initComponents
         java.awt.GridBagConstraints gridBagConstraints;
@@ -323,7 +329,7 @@ public class StoreJDialog extends javax.swing.JDialog implements java.awt.event.
         if( Util.mustCheckUpgrades() ){
             StoreCheckJDialog storeCheckJDialog = new StoreCheckJDialog();
             storeCheckJDialog.setVisible(true);
-            if( Util.getUpgradeCount() > 0 ){
+            if( Util.getUpgradeCount() != 0 ){
                 StoreJDialog.this.setVisible(false);
                 return;
             }

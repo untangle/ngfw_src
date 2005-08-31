@@ -890,7 +890,6 @@ public class MMainJFrame extends javax.swing.JFrame {
                         updateJButton(mackageDescs.length);
                         Util.setUpgradeCount(mackageDescs.length);
                     }
-		    Util.checkedUpgrades();
                     Thread.sleep(Util.UPGRADE_THREAD_SLEEP_MILLIS);
 		}
 		catch(InterruptedException ie){
