@@ -47,17 +47,19 @@ public final class IPMatcher implements Serializable
     public static final IPMatcher MATCHER_NIL   = new IPMatcher( 1, 0, true );
 
     /* A range for matching local traffic */
-    public static final IPMatcher MATCHER_LOCAL = new IPMatcher( true );
+    public static final IPMatcher MATCHER_LOCAL    = new IPMatcher();
     
-	/* A matcher for dynamic ip address */
-	public static final IPMatcher MATCHER_INTERNAL = new IPMatcher( true, false );
+    /* A matcher for dynamic ip address */
+    public static final IPMatcher MATCHER_INTERNAL = new IPMatcher( true, false );
     public static final IPMatcher MATCHER_EXTERNAL = new IPMatcher( false, true );
 
     static InetAddress outsideAddress = null;
     static long        outsideLong = -1L;
+    static long        outsideNetmaskLong = -1L;
 
     static InetAddress insideAddress = null;
     static long        insideLong = -1L;
+    static long        insideNetmaskLong = -1L;
 
     static final int INADDRSZ = 4;
 
@@ -78,22 +80,26 @@ public final class IPMatcher implements Serializable
      */
     private final boolean isRange;
 
+    /* XXX Clean up the isLocal, isInternal and isExternal to use isSpecial and then a 
+     * type
+     */
+
     /**
      * isLocal: True if this is a matcher for local traffic 
      */
     private final boolean isLocal;
 	
-	/**
-	 * isInternal: True if this is a matcher for internal traffic
-	 */
-	private final boolean isInternal;
-        
-	/**
-	 * isExternal: True if this is a matcher for external traffic
-	 */
-	private final boolean isExternal;
+    /**
+     * isInternal: True if this is a matcher for internal traffic
+     */
+    private final boolean isInternal;
     
-	public IPMatcher( Inet4Address base, Inet4Address second, boolean isRange ) 
+    /**
+     * isExternal: True if this is a matcher for external traffic
+     */
+    private final boolean isExternal;
+    
+    public IPMatcher( Inet4Address base, Inet4Address second, boolean isRange )
     {
         long tmpBase;
         long tmpSecond;
@@ -101,10 +107,9 @@ public final class IPMatcher implements Serializable
         this.isRange = isRange;
         tmpBase = toLong( base );
         
-        isLocal = false;
-		isInternal = false;
-		isExternal = false;
-	
+        isLocal    = false;
+        isInternal = false;
+        isExternal = false;
         
         if ( isRange ) {
             tmpSecond = toLong( second );
@@ -136,8 +141,8 @@ public final class IPMatcher implements Serializable
         this.second = this.base = toLong( base );
         isRange     = true;
         isLocal     = false;
-		isInternal = false;
-		isExternal = false;
+        isInternal = false;
+        isExternal = false;
     }
 
     public IPMatcher( IPaddr base )
@@ -159,31 +164,31 @@ public final class IPMatcher implements Serializable
         }
 
         this.isLocal = false;
-		this.isInternal = false;
-		this.isExternal = false;
+        this.isInternal = false;
+        this.isExternal = false;
     }
     
     /* Internal for creating local ip matchers */
-    private IPMatcher( boolean isLocal )
+    private IPMatcher()
     {
         this.base    = 0;
         this.second  = 0;
         this.isRange = true;
         this.isLocal = true;
-		this.isInternal = false;
-		this.isExternal = false;
+        this.isInternal = false;
+        this.isExternal = false;
     }
 
-	/* Matcher to automatically track local IP addr changes */
-	private IPMatcher(boolean internal, boolean external) {
-		this.base 	= 0;
-		this.second = 0;
-        this.isLocal = false;
-        this.isRange = false;
-		this.isInternal	= internal;
-		this.isExternal	= external;
-	}
-
+    /* Matcher to automatically track local IP addr changes */
+    private IPMatcher(boolean internal, boolean external) {
+        this.base 	= 0;
+        this.second     = 0;
+        this.isLocal    = false;
+        this.isRange    = false;
+        this.isInternal	= internal;
+        this.isExternal	= external;
+    }
+    
     /**
      * An IPMatcher can be specified in one of the following formats:
      * 1. Just an IP address: (x.y.w.z)
@@ -251,9 +256,9 @@ public final class IPMatcher implements Serializable
         } else if ( isRange ) {
             if (( base <= tmp ) && ( tmp <= second )) return true;
         } else if ( isInternal ) {
-			return ( tmp == insideLong );
+            return (( tmp & insideNetmaskLong ) == ( insideLong & insideNetmaskLong ));
         } else if ( isExternal ) {
-			return ( tmp != insideLong );
+            return (( tmp & insideNetmaskLong ) != ( insideLong & insideNetmaskLong ));
         } else {
             /* Mask off the bits from the subnet */
             if (( tmp & second ) == base ) return true;
@@ -334,37 +339,45 @@ public final class IPMatcher implements Serializable
         return val;
     }
 
-    public static void setOutsideAddress( IPaddr address )
+    public static void setOutsideAddress( IPaddr address, IPaddr netmask )
     {
-        setOutsideAddress( address.getAddr());
+        setOutsideAddress( address.getAddr(), netmask.getAddr());
     }
 
-    public static void setOutsideAddress( InetAddress address )
+    public static void setOutsideAddress( InetAddress address, InetAddress netmask )
     {
         outsideAddress = address;
 
         /* If the input address is empty, do not match anything */
         outsideLong = ( address == null ) ? -1L : toLong((Inet4Address)address );
+        outsideNetmaskLong = ( netmask == null ) ? -1L : toLong((Inet4Address)netmask );
 
         if ( outsideLong == 0 ) {
             outsideLong = -1L;
         }
+        if ( outsideNetmaskLong == 0 ) {
+            outsideNetmaskLong = -1L;
+        }
     }
 
-    public static void setInsideAddress( IPaddr address )
+    public static void setInsideAddress( IPaddr address, IPaddr netmask )
     {
-        setInsideAddress( address.getAddr());
+        setInsideAddress( address.getAddr(), netmask.getAddr());
     }
 
-    public static void setInsideAddress( InetAddress address )
+    public static void setInsideAddress( InetAddress address, InetAddress netmask )
     {
         insideAddress = address;
 
         /* If the input address is empty, do not match anything */
         insideLong = ( address == null ) ? -1L : toLong((Inet4Address)address );
+        insideNetmaskLong = ( netmask == null ) ? -1L : toLong((Inet4Address)netmask );
 
         if ( insideLong == 0 ) {
             insideLong = -1L;
+        }
+        if ( insideNetmaskLong == 0 ) {
+            insideNetmaskLong = -1L;
         }
     }
 

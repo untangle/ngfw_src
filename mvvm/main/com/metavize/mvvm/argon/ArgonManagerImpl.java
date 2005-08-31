@@ -118,12 +118,12 @@ public class ArgonManagerImpl implements ArgonManager
             this.outsideNetmask = null;
         }
         
-        IPMatcher.setInsideAddress( insideAddress );
+        IPMatcher.setInsideAddress( insideAddress, insideNetmask );
         
         if (( this.outsideAddress == null ) || ( this.outsideAddress.equals( BOGUS_OUTSIDE_ADDRESS ))) {
-            IPMatcher.setOutsideAddress((InetAddress)null );
+            IPMatcher.setOutsideAddress((InetAddress)null, (InetAddress)null );
         } else {
-            IPMatcher.setOutsideAddress( outsideAddress );
+            IPMatcher.setOutsideAddress( outsideAddress, outsideNetmask );
         }
     }
 
