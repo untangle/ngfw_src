@@ -94,7 +94,7 @@ public class SpywareHttpHandler extends HttpStateMachine
 
         // XXX we could check the request-uri for an absolute address too...
         String host = requestHeader.getValue("host");
-        if (transform.isBlacklistDomain(host)) {
+        if (transform.isBlacklistDomain(host, requestRequest.getRequestUri())) {
             SpywareBlacklistEvent evt = new SpywareBlacklistEvent
                 (getSession().id(), requestRequest);
             eventLogger.info(evt);

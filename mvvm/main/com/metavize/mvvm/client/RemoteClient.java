@@ -610,9 +610,12 @@ public class RemoteClient
 
     private static void doAptTail(long key)
     {
+        System.out.println("doAptTail(" + key + ")");
         Visitor v = new Visitor();
         while (!v.isDone()) {
+            System.out.println("GETTING PROGRESS");
             List<InstallProgress> lip = tool.getProgress(key);
+            System.out.println("GOT PROGRESS");
             for (InstallProgress ip : lip) {
                 ip.accept(v);
             }

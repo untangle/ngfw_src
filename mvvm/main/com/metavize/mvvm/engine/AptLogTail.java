@@ -33,7 +33,7 @@ class AptLogTail implements Runnable
 {
     private static final String APT_LOG
         = System.getProperty("bunnicula.log.dir") + "/apt.log";
-    private static final long TIMEOUT = 300000;
+    private static final long TIMEOUT = 500000;
 
     private static final Pattern FETCH_PATTERN;
     private static final Pattern DOWNLOAD_PATTERN;
@@ -56,7 +56,6 @@ class AptLogTail implements Runnable
 
     private StringBuilder builder = new StringBuilder(80);
     private long lastActivity = -1;
-
 
     // constructor ------------------------------------------------------------
 
@@ -213,12 +212,17 @@ class AptLogTail implements Runnable
         try {
             while (true) {
                 long t = System.currentTimeMillis();
+                if (0 > lastActivity) {
+                    lastActivity = t;
+                }
                 int c = raf.read();
                 if (0 > c) {
                     try {
                         if (TIMEOUT < t - lastActivity) {
                             // just end the thread adding TimeoutEvent
                             try {
+                                logger.warn("AptLogTail timing out: "
+                                            + (t - lastActivity));
                                 events.put(new InstallTimeout(t));
                             } catch (InterruptedException exn) {
                                 logger.warn("dropping InstallTimeout");
@@ -228,13 +232,14 @@ class AptLogTail implements Runnable
                         } else {
                             logger.debug("end of input, sleeping");
                             Thread.currentThread().sleep(100);
+                            logger.debug("waking up");
                         }
                     } catch (InterruptedException exn) { }
                 } else if ('\n' == c) {
                     lastActivity = t;
                     String s = builder.toString().trim();
                     builder.delete(0, builder.length());
-                    logger.debug("read line: \"" + s + "\"");
+                    logger.debug("got line: \"" + s + "\"");
                     return s;
                 } else {
                     lastActivity = t;

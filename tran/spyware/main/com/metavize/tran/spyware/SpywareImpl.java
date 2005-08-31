@@ -15,6 +15,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URI;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -282,9 +283,14 @@ public class SpywareImpl extends AbstractTransform implements Spyware
 
     // package private methods ------------------------------------------------
 
-    boolean isBlacklistDomain(String domain)
+    boolean isBlacklistDomain(String domain, URI uri)
     {
         if (!settings.getUrlBlacklistEnabled()) {
+            return false;
+        }
+
+        // XXX make a whitelist
+        if (domain.equalsIgnoreCase("switch.atdmt.com") && uri.toString().startsWith("/action/msn_hm")) {
             return false;
         }
 
