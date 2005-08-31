@@ -98,7 +98,7 @@ if [ -z $prefix ] ; then
         for u in $(cat $aptlist | awk '{ print $1 }' | sed "s/'//g"); do
             echo "downloading: $u" >>$APT_LOG
             dltmp=$(mktemp -d)
-            wget --progress=dot -P --limit-rate=20k "$dltmp" "$u" >>$APT_LOG 2>&1
+            wget --progress=dot -P "$dltmp" "$u" >>$APT_LOG 2>&1
             if [ $? -eq 0 ]; then
                 mv $dltmp/* /var/cache/apt/archives
                 echo "DOWNLOAD SUCCEEDED: $u" >>$APT_LOG
