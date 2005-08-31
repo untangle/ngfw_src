@@ -160,8 +160,11 @@ public class VirusPopHandler extends PopStateMachine
     {
         try {
             VirusScannerResult zScanResult = zScanner.scanFile(zFile.getPath());
-
-            eventLogger.info(new VirusMailEvent(zMsgInfo, zScanResult, zMsgAction, zVendorName));
+            VirusMailEvent event = new VirusMailEvent(zMsgInfo,
+                                                      zScanResult,
+                                                      zScanResult.isClean() ? VirusMessageAction.PASS : zMsgAction,
+                                                      zVendorName);
+            eventLogger.info(event);
 
             if (false == zScanResult.isClean()) {
                 return zScanResult;

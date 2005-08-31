@@ -137,7 +137,12 @@ public class SpamPopHandler extends PopStateMachine
     {
         try {
             SpamReport zReport = zScanner.scanFile(zFile, strength/10.0f);
-            eventLogger.info(new SpamLogEvent(zMsgInfo, zReport.getScore(), zReport.isSpam(), zMsgAction, zVendorName));
+            SpamLogEvent event = new SpamLogEvent(zMsgInfo,
+                                                  zReport.getScore(),
+                                                  zReport.isSpam(),
+                                                  zReport.isSpam() ? zMsgAction : SpamMessageAction.PASS,
+                                                  zVendorName);
+            eventLogger.info(event);
 
             try {
                 zMMessage.getMMHeaders().removeHeaderFields(spamHeaderNameLC());
