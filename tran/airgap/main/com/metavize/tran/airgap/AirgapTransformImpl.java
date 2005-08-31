@@ -10,7 +10,7 @@
  */
 package com.metavize.tran.airgap;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Date;
 
@@ -119,7 +119,7 @@ public class AirgapTransformImpl extends AbstractTransform
 
     public List<ShieldRejectionLogEntry> getLogs( int limit )
     {
-        List<ShieldRejectionLogEntry> l = new LinkedList<ShieldRejectionLogEntry>();
+        List<ShieldRejectionLogEntry> l = new ArrayList<ShieldRejectionLogEntry>(limit);
 
         Session s = TransformContextFactory.context().openSession();
         try {
@@ -143,7 +143,7 @@ public class AirgapTransformImpl extends AbstractTransform
                 ShieldRejectionLogEntry entry = new ShieldRejectionLogEntry
                     ( createDate, clientAddr, clientIntf, reputation, limited, dropped, rejected );
 
-                l.add( 0, entry );
+                l.add(entry);
             }
             long l1 = System.currentTimeMillis();
             logger.debug( "getAccessLogs() in: " + ( l1 - l0 ));

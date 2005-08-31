@@ -11,6 +11,7 @@
 package com.metavize.tran.nat;
 
 import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -170,7 +171,7 @@ public class NatImpl extends AbstractTransform implements Nat
 
     public List<NatRedirectLogEntry> getLogs( int limit )
     {
-        List<NatRedirectLogEntry> l = new LinkedList<NatRedirectLogEntry>();
+        List<NatRedirectLogEntry> l = new ArrayList<NatRedirectLogEntry>(limit);
 
         Session s = TransformContextFactory.context().openSession();
         try {
@@ -212,7 +213,7 @@ public class NatImpl extends AbstractTransform implements Nat
                       originalServerAddr, originalServerPort, redirectServerAddr, redirectServerPort,
                       direction, isDmz, ruleIndex );
 
-                l.add( 0, redirectLogEntry );
+                l.add(redirectLogEntry );
             }
             long l1 = System.currentTimeMillis();
             logger.debug( "getAccessLogs() in: " + ( l1 - l0 ));

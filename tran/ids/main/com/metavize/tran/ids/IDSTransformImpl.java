@@ -71,7 +71,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 	}
 
 	public List<IDSLog> getLogs(int limit) {
-		List<IDSLog> l = new LinkedList<IDSLog>();
+		List<IDSLog> l = new ArrayList<IDSLog>(limit);
 		
 		Session s = TransformContextFactory.context().openSession();
 		try {
@@ -94,7 +94,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 				
 				Direction d = Direction.getDirection(clientIntf, serverIntf);
 				IDSLog rl = new IDSLog(createDate, message, blocked, clientAddr, clientPort, serverAddr, serverPort, d);
-				l.add(0, rl);
+				l.add(rl);
 			}
 			long l1 = System.currentTimeMillis();
 			log.debug("getAccessLogs() in: " + (l1 - l0));
