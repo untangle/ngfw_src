@@ -247,7 +247,7 @@ public class MvvmContextImpl extends MvvmContextBase
         // start vectoring:
         String argonFake = System.getProperty(ARGON_FAKE_KEY);
         if (null == argonFake || !argonFake.equalsIgnoreCase("yes")) {
-            Argon.main(new String[0]); // XXX static
+            Argon.getInstance().run(new String[0]);
         } else {
             logger.info("Argon not activated");
         }
@@ -287,7 +287,7 @@ public class MvvmContextImpl extends MvvmContextBase
         String argonFake = System.getProperty(ARGON_FAKE_KEY);
         if (null == argonFake || !argonFake.equalsIgnoreCase("yes")) {
             try {
-                Argon.destroy();
+                Argon.getInstance().destroy();
             } catch (Exception exn) {
                 logger.warn("could not destroy Argon", exn);
             }

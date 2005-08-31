@@ -36,34 +36,36 @@ public class Argon
 
     /* Amount of time between subsequent calls to shutdown all of the vectoring machines */
     protected static final int SHUTDOWN_PAUSE    = 2000;
-        
-    private static int sleepingThreads;
-    private static int totalThreads;
-    private static int activeThreads;
 
+    /* Maximum number of threads allowed at any time */
     private static int MAX_THREADS = 10000;
     
-    protected static int netcapDebugLevel    = 1;
-    protected static int jnetcapDebugLevel   = 1;
-    protected static int vectorDebugLevel    = 0;
-    protected static int jvectorDebugLevel   = 0;
-    protected static int mvutilDebugLevel    = 0;
-    protected static boolean isShieldEnabled = true;
-    protected static String shieldFile = null;
-    protected static Shield shield;
+    /* Singleton */
+    private static final Argon INSTANCE = new Argon();
+        
+    private int sleepingThreads;
+    private int totalThreads;
+    private int activeThreads;
+    
+    protected int netcapDebugLevel    = 1;
+    protected int jnetcapDebugLevel   = 1;
+    protected int vectorDebugLevel    = 0;
+    protected int jvectorDebugLevel   = 0;
+    protected int mvutilDebugLevel    = 0;
+    protected boolean isShieldEnabled = true;
+    protected String shieldFile       = null;
+    protected Shield shield;
     
     /* Number of threads to donate to netcap */
-    protected static int numThreads        = 15;
+    protected int numThreads        = 15;
 
     /* Debugging */
-    private static final Logger logger = Logger.getLogger( Argon.class );
+    private final Logger logger = Logger.getLogger( this.getClass());
 
     /* Inside device */
-    protected static String inside  = "eth1";
-    protected static String outside = "eth0";
-    protected static String dmz[]   = null;
-
-    private static Argon INSTANCE = new Argon();
+    protected String inside  = "eth1";
+    protected String outside = "eth0";
+    protected String dmz[]   = null;
 
     /* Singleton */
     private Argon()
@@ -75,6 +77,12 @@ public class Argon
      */
     public static void main( String args[] ) // throws ArgonException
     {
+        INSTANCE.run( args );
+    }
+    
+    /* For some reason this also can't be called main, even though one is static and one is not */
+    public void run( String args[] )
+    {
         /* Get an instance of the shield */
         shield = Shield.getInstance();
 
@@ -84,14 +92,12 @@ public class Argon
         init();
 
         registerHooks();
-
-        /* Wait for shutdown */
     }
 
     /**
      * Parse the user supplied properties
      */
-    private static void parseProperties()
+    private void parseProperties()
     {
         String temp;
         if (( temp = System.getProperty( "argon.inside" )) != null ) {
@@ -143,7 +149,7 @@ public class Argon
     /**
      * Register the TCP and UDP hooks
      */
-    private static void registerHooks()
+    private void registerHooks()
     {
         Netcap.registerUDPHook( UDPHook.getInstance());
 
@@ -153,7 +159,7 @@ public class Argon
     /**
      * Initialize Netcap and any other supporting libraries.
      */
-    private static void init()
+    private void init()
     {
         Netcap.init( isShieldEnabled, netcapDebugLevel, jnetcapDebugLevel );
 
@@ -191,7 +197,7 @@ public class Argon
         }
     }
 
-    public static void destroy() 
+    public void destroy() 
     {
         logger.debug( "Shutting down" );
         ArgonManagerImpl argonManager = ArgonManagerImpl.getInstance();
@@ -239,7 +245,7 @@ public class Argon
 
     }
 
-    public Argon getInstance()
+    public static Argon getInstance()
     {
         return INSTANCE;
     }

@@ -69,8 +69,9 @@ public class ArgonManagerImpl implements ArgonManager
 
     public void shieldReconfigure()
     {
-        if ( Argon.shieldFile != null ) {
-            shield.config( Argon.shieldFile );
+        String shieldFile = Argon.getInstance().shieldFile;
+        if ( shieldFile  != null ) {
+            shield.config( shieldFile );
         }
     }
 
