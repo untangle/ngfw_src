@@ -881,7 +881,7 @@ class UpgradeTableModel extends MSortedTableModel {
         addTableColumn( tableColumnModel,  3, 150, true,  false, false, false, String.class, null, "name");
         addTableColumn( tableColumnModel,  4,  75, false, false, false, false, String.class, null, sc.html("new<br>version"));
         addTableColumn( tableColumnModel,  5, 125, false, false, false, false, String.class, null, "type");
-	addTableColumn( tableColumnModel,  6,  70, true,  false, false, false, String.class, null, "size");
+	addTableColumn( tableColumnModel,  6,  70, true,  false, false, false, Integer.class, null, sc.html("size<br>(KB)"));
         addTableColumn( tableColumnModel,  7, 125, false, false, true,  true,  String.class, null, "description");
 
         return tableColumnModel;
@@ -923,7 +923,7 @@ class UpgradeTableModel extends MSortedTableModel {
 		    tempRow.add( "Software Appliance" );
 		else
 		    tempRow.add( "Unknown" );
-		tempRow.add( Integer.toString(mackageDesc.getSize()/1000) + " kB" );
+		tempRow.add( Integer.toString(mackageDesc.getSize()/1000));
 		tempRow.add( mackageDesc.getLongDescription() );
 		allRows.add( tempRow );
 	    }
