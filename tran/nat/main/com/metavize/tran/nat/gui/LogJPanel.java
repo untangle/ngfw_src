@@ -52,8 +52,8 @@ public class LogJPanel extends MLogTableJPanel
 
 	public Vector generateRows(Object settings){
 	    List<NatRedirectLogEntry> logList = (List<NatRedirectLogEntry>) settings;
-	    Vector allEvents = new Vector();
-	    Vector event = null;
+	    Vector allEvents = new Vector(logList.size());
+	    Vector event;
 	    
 	    for( NatRedirectLogEntry log : logList ){
 		event = new Vector(8);
@@ -65,7 +65,7 @@ public class LogJPanel extends MLogTableJPanel
 		event.add( log.getRedirectServer() );
 		event.add( log.getReason() );
 		event.add( log.getDirection().getDirectionName() );
-		allEvents.insertElementAt( event, 0 );
+		allEvents.add( event );
 	    }
 	    
 	    return allEvents;

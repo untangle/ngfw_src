@@ -55,8 +55,8 @@ public class LogJPanel extends MLogTableJPanel {
 	
 	public Vector generateRows(Object settings){
 	    List<HttpRequestLog> requestLogList = (List<HttpRequestLog>) settings;
-	    Vector allEvents = new Vector();
-	    Vector event = null;
+	    Vector allEvents = new Vector(requestLogList.size());
+	    Vector event;
 	    
 	    for( HttpRequestLog requestLog : requestLogList ){
 		event = new Vector(7);
@@ -67,7 +67,7 @@ public class LogJPanel extends MLogTableJPanel {
 		event.add( requestLog.getReason().toString() );
 		event.add( requestLog.getDirection().getDirectionName() );
 		event.add( requestLog.getServerAddr() + ":" + ((Integer)requestLog.getServerPort()).toString() );
-		allEvents.insertElementAt(event,0);
+		allEvents.add( event );
 	    }
 	    
 	    return allEvents;

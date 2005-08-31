@@ -51,8 +51,8 @@ public class LogJPanel extends MLogTableJPanel {
 
 	public Vector generateRows(Object settings){
 	    List<ProtoFilterLog> logList = (List<ProtoFilterLog>) settings;
-	    Vector allEvents = new Vector();
-	    Vector event = null;
+	    Vector allEvents = new Vector(logList.size());
+	    Vector event;
 	    
 	    for( ProtoFilterLog log : logList ){
 		event = new Vector(7);
@@ -63,7 +63,7 @@ public class LogJPanel extends MLogTableJPanel {
 		event.add( log.getReason() );
 		event.add( log.getDirection().getDirectionName() );
 		event.add( log.getServerAddr() + ":" + ((Integer)log.getServerPort()).toString() );
-		allEvents.insertElementAt(event,0);
+		allEvents.add( event );
 	    }
 	    
 	    return allEvents;

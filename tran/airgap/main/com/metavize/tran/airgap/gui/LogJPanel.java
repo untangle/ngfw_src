@@ -50,8 +50,8 @@ public class LogJPanel extends MLogTableJPanel {
 	
 	public Vector generateRows(Object settings){
 	    List<ShieldRejectionLogEntry> logList = (List<ShieldRejectionLogEntry>) settings;
-	    Vector allEvents = new Vector();
-	    Vector event = null;
+	    Vector allEvents = new Vector(logList.size());
+	    Vector event;
 	    
 	    for ( ShieldRejectionLogEntry log : logList ) {
 		event = new Vector(7);
@@ -62,7 +62,7 @@ public class LogJPanel extends MLogTableJPanel {
 		event.add( log.getLimited() );
 		event.add( log.getDropped() );
 		event.add( log.getRejected() );
-		allEvents.insertElementAt(event,0);
+		allEvents.add( event );
 	    }
 	    return allEvents;
 	}

@@ -49,8 +49,8 @@ public class LogJPanel extends MLogTableJPanel {
 	
 	public Vector generateRows(Object settings){
 	    List<FirewallLog> requestLogList = (List<FirewallLog>) settings;
-	    Vector allEvents = new Vector();
-	    Vector event = null;
+	    Vector allEvents = new Vector(requestLogList.size());
+	    Vector event;
 	    
 	    for( FirewallLog requestLog : requestLogList ){
 		event = new Vector(6);
@@ -60,7 +60,7 @@ public class LogJPanel extends MLogTableJPanel {
 		event.add( requestLog.getReason() );
 		event.add( requestLog.getDirection().getDirectionName() );
 		event.add( requestLog.getServerAddr() + ":" + ((Integer)requestLog.getServerPort()).toString() );
-		allEvents.insertElementAt(event,0);
+		allEvents.add( event );
 	    }
 	    
 	    return allEvents;

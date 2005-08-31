@@ -52,8 +52,8 @@ public class LogJPanel extends MLogTableJPanel {
 	
 	public Vector generateRows(Object settings){
 	    List<VirusLog> logList = (List<VirusLog>) settings;
-	    Vector allEvents = new Vector();
-	    Vector event = null;
+	    Vector allEvents = new Vector(logList.size());
+	    Vector event;
 	    
 	    for( VirusLog log : logList ){
 		event = new Vector(7);
@@ -64,7 +64,7 @@ public class LogJPanel extends MLogTableJPanel {
 		event.add( log.getReason() );
 		event.add( log.getDirection().getDirectionName() );
 		event.add( log.getServerAddr() + ":" + ((Integer)log.getServerPort()).toString() );
-		allEvents.insertElementAt(event,0);
+		allEvents.add( event );
 	    }
 	    
 	    return allEvents;
