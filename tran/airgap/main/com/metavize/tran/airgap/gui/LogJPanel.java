@@ -41,7 +41,7 @@ public class LogJPanel extends MLogTableJPanel {
 	    addTableColumn( tableColumnModel,  2,  100, true,  false, false, false, String.class, null,  sc.html("source<br>interface") );
 	    addTableColumn( tableColumnModel,  3,  75,  true,  false, false, false, String.class, null,  "reputation" );
 	    addTableColumn( tableColumnModel,  4,  55,  true,  false, false, false, Integer.class, null, "limited" );
-	    addTableColumn( tableColumnModel,  5,  75,  true,  false, false, false, Integer.class, null, "droppped" );
+	    addTableColumn( tableColumnModel,  5,  75,  true,  false, false, false, Integer.class, null, "dropped" );
 	    addTableColumn( tableColumnModel,  6,  55,  true,  false, false, false, Integer.class, null, "reject" );
 	    return tableColumnModel;
 	}
