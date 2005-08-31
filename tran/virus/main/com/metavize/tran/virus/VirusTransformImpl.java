@@ -334,6 +334,7 @@ public class VirusTransformImpl extends AbstractTransform
         s.add(new MimeTypeRule(new MimeType("application/pdf"), "Adobe Acrobat", "document", false));
         s.add(new MimeTypeRule(new MimeType("application/postscript"), "Postscript", "document", false));
         s.add(new MimeTypeRule(new MimeType("application/*"), "applications", "misc", true));
+        s.add(new MimeTypeRule(new MimeType("message/*"), "messages", "misc", true));
         s.add(new MimeTypeRule(new MimeType("image/*"), "images", "image", false));
         s.add(new MimeTypeRule(new MimeType("video/*"), "video", "video", false));
         s.add(new MimeTypeRule(new MimeType("text/*"), "text", "text", false));
@@ -497,6 +498,7 @@ public class VirusTransformImpl extends AbstractTransform
         s.add(new StringRule("scr", "executable", "download" , true));
         s.add(new StringRule("cpl", "executable", "download" , true));
         s.add(new StringRule("zip", "archive", "download" , true));
+        s.add(new StringRule("eml", "archive", "download" , true));
         s.add(new StringRule("hqx", "archive", "download", true));
         s.add(new StringRule("rar", "archive", "download" , true));
         s.add(new StringRule("arj", "archive", "download" , true));
