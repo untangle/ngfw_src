@@ -147,7 +147,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 		//Load Rules
 		log.info("Loading Rules...");
 		String path =  System.getProperty("bunnicula.home");
-		File file = new File(path+"/IDSRules");
+		File file = new File(path+"/idsrules");
 		visitAllFiles(file);
 				
 		//Update settings

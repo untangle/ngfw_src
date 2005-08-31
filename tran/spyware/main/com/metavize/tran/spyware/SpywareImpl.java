@@ -342,12 +342,12 @@ public class SpywareImpl extends AbstractTransform implements Spyware
                 urls.add(line);
             }
         } catch (IOException exn) {
-            logger.error("Could not read file: " + ACTIVEX_LIST, exn);
+            logger.error("Could not read file: " + URL_LIST, exn);
         } finally {
             try {
                 is.close();
             } catch (IOException exn) {
-                logger.warn("Could not close file: " + ACTIVEX_LIST, exn);
+                logger.warn("Could not close file: " + URL_LIST, exn);
             }
         }
 
