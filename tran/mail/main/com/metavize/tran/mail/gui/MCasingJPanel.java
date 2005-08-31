@@ -173,7 +173,7 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
 
         smtpButtonGroup.add(smtpEnabledRadioButton);
         smtpEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        smtpEnabledRadioButton.setText("<html><b>Enable SMTP</b> email processing.  (This is the default settings)</html>");
+        smtpEnabledRadioButton.setText("<html><b>Enable SMTP</b> email processing.  (This is the default setting)</html>");
         smtpEnabledRadioButton.setFocusPainted(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -200,7 +200,7 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
 
         popButtonGroup.add(popEnabledRadioButton);
         popEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        popEnabledRadioButton.setText("<html><b>Enable POP</b> email processing.  (This is the default settings)</html>");
+        popEnabledRadioButton.setText("<html><b>Enable POP</b> email processing.  (This is the default setting)</html>");
         popEnabledRadioButton.setFocusPainted(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -227,7 +227,7 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
 
         imapButtonGroup.add(imapEnabledRadioButton);
         imapEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        imapEnabledRadioButton.setText("<html><b>Enable IMAP</b> email processing.  (This is the default settings)</html>");
+        imapEnabledRadioButton.setText("<html><b>Enable IMAP</b> email processing.  (This is the default setting)</html>");
         imapEnabledRadioButton.setFocusPainted(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;

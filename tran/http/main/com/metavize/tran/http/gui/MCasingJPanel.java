@@ -161,7 +161,7 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
 
         httpButtonGroup.add(httpEnabledRadioButton);
         httpEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        httpEnabledRadioButton.setText("<html><b>Enable Processing</b> of web traffic.  (This is the default settings)</html>");
+        httpEnabledRadioButton.setText("<html><b>Enable Processing</b> of web traffic.  (This is the default setting)</html>");
         httpEnabledRadioButton.setFocusPainted(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -197,7 +197,7 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
 
         longUriButtonGroup.add(longUriEnabledRadioButton);
         longUriEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        longUriEnabledRadioButton.setText("<html><b>Enable Processing</b> of long URIs.  The traffic is considered \"Non-Http\".  (This is the default settings)</html>");
+        longUriEnabledRadioButton.setText("<html><b>Enable Processing</b> of long URIs.  The traffic is considered \"Non-Http\".  (This is the default setting)</html>");
         longUriEnabledRadioButton.setFocusPainted(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -275,7 +275,7 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
 
         headerButtonGroup.add(longHeadersEnabledRadioButton);
         longHeadersEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        longHeadersEnabledRadioButton.setText("<html><b>Enable Processing</b> of long headers.  The traffic is considered \"Non-Http\".  (This is the default settings)</html>");
+        longHeadersEnabledRadioButton.setText("<html><b>Enable Processing</b> of long headers.  The traffic is considered \"Non-Http\".  (This is the default setting)</html>");
         longHeadersEnabledRadioButton.setFocusPainted(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -353,7 +353,7 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
 
         nonHttpButtonGroup.add(nonHttpEnabledRadioButton);
         nonHttpEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        nonHttpEnabledRadioButton.setText("<html><b>Allow</b> non-Http traffic to travel over port 80.  (This is the default settings)</html>");
+        nonHttpEnabledRadioButton.setText("<html><b>Allow</b> non-Http traffic to travel over port 80.  (This is the default setting)</html>");
         nonHttpEnabledRadioButton.setFocusPainted(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;

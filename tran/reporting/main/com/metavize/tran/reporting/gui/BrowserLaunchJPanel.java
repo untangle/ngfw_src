@@ -48,7 +48,7 @@ public class BrowserLaunchJPanel extends JPanel implements ActionListener {
             noteJLabel.setFont(new java.awt.Font("Arial", 0, 11));
 	    noteJLabel.setHorizontalAlignment(SwingConstants.CENTER);
 	    noteJLabel.setHorizontalTextPosition(SwingConstants.CENTER);
-	    noteJLabel.setText("<html><center><b>Note:</b> No web browser is installed on this machine for security reasons.<br>Please re-connect from an extrernal machine.</center></html>");
+	    noteJLabel.setText("<html><center><b>Note:</b> No web browser is installed on this machine for security reasons.<br>Please re-connect from an external machine.</center></html>");
             this.add(noteJLabel, noteJLabelConstraints);
         }
         

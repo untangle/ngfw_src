@@ -80,7 +80,7 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
 
         ftpButtonGroup.add(ftpEnabledRadioButton);
         ftpEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        ftpEnabledRadioButton.setText("<html><b>Enable Processing</b> of FTP traffic.  (This is the default settings)</html>");
+        ftpEnabledRadioButton.setText("<html><b>Enable Processing</b> of FTP traffic.  (This is the default setting)</html>");
         ftpEnabledRadioButton.setFocusPainted(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
