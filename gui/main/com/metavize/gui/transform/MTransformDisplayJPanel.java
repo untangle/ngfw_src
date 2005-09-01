@@ -104,6 +104,10 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
         updateGraphThread = new UpdateGraphThread();
     }
     
+    void doShutdown(){
+	killGraph();
+    }
+
     
     private ChartPanel createBarChart(CategoryDataset dataset) {    
         

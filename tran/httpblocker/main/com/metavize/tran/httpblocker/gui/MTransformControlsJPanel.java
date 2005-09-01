@@ -43,7 +43,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
         blockJTabbedPane.setFocusable(false);
         blockJTabbedPane.setFont(new java.awt.Font("Arial", 0, 11));
         blockJTabbedPane.setRequestFocusEnabled(false);
-        this.mTabbedPane.addTab(NAME_BLOCK, null, blockJTabbedPane);
+        super.mTabbedPane.addTab(NAME_BLOCK, null, blockJTabbedPane);
 
 	// BLOCKED CATEGORIES /////////
 	BlockedCategoriesConfigJPanel blockedCategoriesConfigJPanel = new BlockedCategoriesConfigJPanel();
@@ -75,7 +75,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
         passJTabbedPane.setFocusable(false);
         passJTabbedPane.setFont(new java.awt.Font("Arial", 0, 11));
         passJTabbedPane.setRequestFocusEnabled(false);
-        this.mTabbedPane.addTab(NAME_PASS, null, passJTabbedPane);
+        super.mTabbedPane.addTab(NAME_PASS, null, passJTabbedPane);
 
 	// PASSED URLS /////////
 	PassedURLsConfigJPanel passedURLsConfigJPanel = new PassedURLsConfigJPanel();
@@ -91,8 +91,8 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 
  	// EVENT LOG ///////
 	LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransformContext().transform(), this);
-        this.mTabbedPane.addTab(NAME_LOG, null, logJPanel);
-
+        super.mTabbedPane.addTab(NAME_LOG, null, logJPanel);
+	super.shutdownableMap.put(NAME_LOG, logJPanel);
     }
     
 }

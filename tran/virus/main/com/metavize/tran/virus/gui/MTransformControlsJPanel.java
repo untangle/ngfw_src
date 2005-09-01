@@ -48,25 +48,25 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
         httpJTabbedPane.setFocusable(false);
         httpJTabbedPane.setFont(new java.awt.Font("Arial", 0, 11));
         httpJTabbedPane.setRequestFocusEnabled(false);
-        this.mTabbedPane.addTab(NAME_WEB, null, httpJTabbedPane);
+        super.mTabbedPane.addTab(NAME_WEB, null, httpJTabbedPane);
         
 	// WEB SOURCES ////////
 	HTTPConfigJPanel httpConfigJPanel = new HTTPConfigJPanel();
         httpJTabbedPane.addTab(NAME_WEB_SOURCES, null, httpConfigJPanel);
-	this.savableMap.put(NAME_WEB + " " + NAME_WEB_SOURCES, httpConfigJPanel);
-	this.refreshableMap.put(NAME_WEB + " " + NAME_WEB_SOURCES, httpConfigJPanel);
+	super.savableMap.put(NAME_WEB + " " + NAME_WEB_SOURCES, httpConfigJPanel);
+	super.refreshableMap.put(NAME_WEB + " " + NAME_WEB_SOURCES, httpConfigJPanel);
 	
 	// WEB MIME ///////////
 	MIMEConfigJPanel mimeConfigJPanel = new MIMEConfigJPanel();
         httpJTabbedPane.addTab(NAME_WEB_MIME, null, mimeConfigJPanel);
-	this.savableMap.put(NAME_WEB + " " + NAME_WEB_MIME, mimeConfigJPanel);
-	this.refreshableMap.put(NAME_WEB + " " + NAME_WEB_MIME, mimeConfigJPanel);
+	super.savableMap.put(NAME_WEB + " " + NAME_WEB_MIME, mimeConfigJPanel);
+	super.refreshableMap.put(NAME_WEB + " " + NAME_WEB_MIME, mimeConfigJPanel);
 
 	// WEB EXTENSIONS ///////
 	ExtensionsConfigJPanel extensionsConfigJPanel = new ExtensionsConfigJPanel();
         httpJTabbedPane.addTab(NAME_WEB_EXTENSIONS, null, extensionsConfigJPanel);
-	this.savableMap.put(NAME_WEB + " " + NAME_WEB_EXTENSIONS, extensionsConfigJPanel);
-	this.refreshableMap.put(NAME_WEB + " " + NAME_WEB_EXTENSIONS, extensionsConfigJPanel);
+	super.savableMap.put(NAME_WEB + " " + NAME_WEB_EXTENSIONS, extensionsConfigJPanel);
+        super.refreshableMap.put(NAME_WEB + " " + NAME_WEB_EXTENSIONS, extensionsConfigJPanel);
 
 	// EMAIL //////////////////
 	JTabbedPane emailJTabbedPane = new JTabbedPane();
@@ -74,25 +74,25 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
         emailJTabbedPane.setFocusable(false);
         emailJTabbedPane.setFont(new java.awt.Font("Arial", 0, 11));
         emailJTabbedPane.setRequestFocusEnabled(false);
-        this.mTabbedPane.addTab(NAME_EMAIL, null, emailJTabbedPane);
+        super.mTabbedPane.addTab(NAME_EMAIL, null, emailJTabbedPane);
 
 	// EMAIL SMTP /////////
 	SmtpConfigJPanel smtpConfigJPanel = new SmtpConfigJPanel();
         emailJTabbedPane.addTab(NAME_EMAIL_SMTP, null, smtpConfigJPanel);
-	this.savableMap.put(NAME_EMAIL + " " + NAME_EMAIL_SMTP, smtpConfigJPanel);
-	this.refreshableMap.put(NAME_EMAIL + " " + NAME_EMAIL_SMTP, smtpConfigJPanel);
+	super.savableMap.put(NAME_EMAIL + " " + NAME_EMAIL_SMTP, smtpConfigJPanel);
+	super.refreshableMap.put(NAME_EMAIL + " " + NAME_EMAIL_SMTP, smtpConfigJPanel);
 
 	// EMAIL POP /////////
 	PopConfigJPanel popConfigJPanel = new PopConfigJPanel();
         emailJTabbedPane.addTab(NAME_EMAIL_POP, null, popConfigJPanel);
-	this.savableMap.put(NAME_EMAIL + " " + NAME_EMAIL_POP, popConfigJPanel);
-	this.refreshableMap.put(NAME_EMAIL + " " + NAME_EMAIL_POP, popConfigJPanel);
+	super.savableMap.put(NAME_EMAIL + " " + NAME_EMAIL_POP, popConfigJPanel);
+	super.refreshableMap.put(NAME_EMAIL + " " + NAME_EMAIL_POP, popConfigJPanel);
 
 	// EMAIL IMAP /////////
 	ImapConfigJPanel imapConfigJPanel = new ImapConfigJPanel();
         emailJTabbedPane.addTab(NAME_EMAIL_IMAP, null, imapConfigJPanel);
-	this.savableMap.put(NAME_EMAIL + " " + NAME_EMAIL_IMAP, imapConfigJPanel);
-	this.refreshableMap.put(NAME_EMAIL + " " + NAME_EMAIL_IMAP, imapConfigJPanel);
+	super.savableMap.put(NAME_EMAIL + " " + NAME_EMAIL_IMAP, imapConfigJPanel);
+	super.refreshableMap.put(NAME_EMAIL + " " + NAME_EMAIL_IMAP, imapConfigJPanel);
 
 	// FTP /////////////////////
         JTabbedPane ftpJTabbedPane = new JTabbedPane();
@@ -100,7 +100,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
         ftpJTabbedPane.setFocusable(false);
         ftpJTabbedPane.setFont(new java.awt.Font("Arial", 0, 11));
         ftpJTabbedPane.setRequestFocusEnabled(false);
-        this.mTabbedPane.addTab(NAME_FTP, null, ftpJTabbedPane);
+        super.mTabbedPane.addTab(NAME_FTP, null, ftpJTabbedPane);
 
 	// FTP SOURCES /////////
 	FTPConfigJPanel ftpConfigJPanel = new FTPConfigJPanel();
@@ -110,14 +110,14 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 
         // GENERAL CONFIG //////////
 	GeneralConfigJPanel generalConfigJPanel = new GeneralConfigJPanel();
-        this.mTabbedPane.addTab(NAME_GENERAL_SETTINGS, null, generalConfigJPanel);
-	this.savableMap.put(NAME_GENERAL_SETTINGS, generalConfigJPanel);
-	this.refreshableMap.put(NAME_GENERAL_SETTINGS, generalConfigJPanel);
+        super.mTabbedPane.addTab(NAME_GENERAL_SETTINGS, null, generalConfigJPanel);
+	super.savableMap.put(NAME_GENERAL_SETTINGS, generalConfigJPanel);
+	super.refreshableMap.put(NAME_GENERAL_SETTINGS, generalConfigJPanel);
 
 	// EVENT LOG ///////////////
 	LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransformContext().transform(), this);
 	super.mTabbedPane.addTab(NAME_LOG, null, logJPanel);
-
+	super.shutdownableMap.put(NAME_LOG, logJPanel);
     }
     
 }

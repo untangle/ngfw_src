@@ -44,7 +44,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	// EVENT LOG ///////////////
 	LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransformContext().transform(), this);
 	super.mTabbedPane.addTab(NAME_LOG, null, logJPanel);
-
+	super.shutdownableMap.put(NAME_LOG, logJPanel);
     }
      
     

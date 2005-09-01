@@ -52,7 +52,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
         blockJTabbedPane.setFocusable(false);
         blockJTabbedPane.setFont(new java.awt.Font("Arial", 0, 11));
         blockJTabbedPane.setRequestFocusEnabled(false);
-        this.mTabbedPane.addTab(NAME_BLOCK, null, blockJTabbedPane);
+        super.mTabbedPane.addTab(NAME_BLOCK, null, blockJTabbedPane);
 
 	// COOKIES //////////////
 	CookieConfigJPanel cookieConfigJPanel = new CookieConfigJPanel();
@@ -80,14 +80,14 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 
         // GENERAL SETTINGS ////////
 	GeneralConfigJPanel generalConfigJPanel = new GeneralConfigJPanel();
-        this.mTabbedPane.addTab(NAME_SETTINGS, null, generalConfigJPanel);
+        super.mTabbedPane.addTab(NAME_SETTINGS, null, generalConfigJPanel);
 	super.savableMap.put(NAME_SETTINGS, generalConfigJPanel);
 	super.refreshableMap.put(NAME_SETTINGS, generalConfigJPanel);
 
  	// EVENT LOG ///////
 	LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransformContext().transform(), this);
-        this.mTabbedPane.addTab(NAME_LOG, null, logJPanel);
-        
+        super.mTabbedPane.addTab(NAME_LOG, null, logJPanel);
+        super.shutdownableMap.put(NAME_LOG, logJPanel);
     }
 }
 

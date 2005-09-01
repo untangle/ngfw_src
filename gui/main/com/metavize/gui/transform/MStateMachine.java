@@ -199,12 +199,11 @@ public class MStateMachine implements java.awt.event.ActionListener {
 	    super("MVCLIENT-MStateMachine.RemoveThread: " + mackageDesc.getDisplayName());
 	    this.removeAll = removeAll;
 	    setRemovingView(false);
-            mTransformControlsJPanel.collapseControlPanel();   
 	    this.start();
 	}
 	public void run(){
 	    try{
-		mTransformDisplayJPanel.killGraph();
+		mTransformJPanel.doShutdown();
 		Util.getMPipelineJPanel().removeTransform(mTransformJPanel);
 	    }
 	    catch(Exception e){

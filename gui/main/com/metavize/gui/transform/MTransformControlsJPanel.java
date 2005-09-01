@@ -31,12 +31,14 @@ import javax.swing.table.*;
 
 public class MTransformControlsJPanel extends javax.swing.JPanel {
 
-    // SAVING/REFRESHING //////////
+    // SAVING/REFRESHING/SHUTDOWN //////////
     protected Map<String, Refreshable> refreshableMap = new LinkedHashMap(5);
     protected Map<String, Savable> savableMap = new LinkedHashMap(5);
+    protected Map<String, Shutdownable> shutdownableMap = new LinkedHashMap(1);
     protected Object settings;
+    ///////////////////////////////
     
-    // EXPANDING/CONTACTING
+    // EXPANDING/CONTACTING //////
     protected Dimension MIN_SIZE = new Dimension(640, 480);
     protected Dimension MAX_SIZE = new Dimension(1600, 1200);
     private AbsoluteConstraints oldConstraints;
@@ -47,11 +49,11 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
     private static GridBagConstraints greyBackgroundConstraints = new GridBagConstraints(0,0,1,1,1d,1d,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0,0,0,0), 0, 0);
     private static GridBagConstraints contentConstraints = new GridBagConstraints(0,0,1,1,1d,1d,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(15,15,15,15), 0, 0);
     private static ImageIcon greyBackgroundImageIcon;
-
+    //////////////////////////////
 
     protected MTransformJPanel mTransformJPanel;
     
-    /** Creates new form TransformMinJPanel */
+
     public MTransformControlsJPanel(MTransformJPanel mTransformJPanel) {
         this.mTransformJPanel = mTransformJPanel;
         // INITIALIZE GUI
@@ -76,16 +78,18 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
 	generateGui();
 	refreshAll();
     }
+
+    public void doShutdown(){
+	collapseControlPanel();
+	for(Map.Entry<String,Shutdownable> shutdownable : shutdownableMap.entrySet()){
+	    shutdownable.getValue().doShutdown();
+	}
+    }
     
     private void dialogResized(){
         Util.resizeCheck(expandJDialog, MIN_SIZE, MAX_SIZE);
     }
     
-    protected void postInit(){
-        if(mTabbedPane.getTabCount() > 0)
-            mTabbedPane.setSelectedIndex(0);
-    }
-
     public void collapseControlPanel(){
 	if( expandJDialog.isVisible() )
 	    expandJDialog.setVisible(false);

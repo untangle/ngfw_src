@@ -37,13 +37,14 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
     protected void generateGui(){
 	// BLOCK LIST /////
 	ProtoConfigJPanel protoConfigJPanel = new ProtoConfigJPanel();
-        this.mTabbedPane.addTab(NAME_BLOCK_LIST, null, protoConfigJPanel);
+        super.mTabbedPane.addTab(NAME_BLOCK_LIST, null, protoConfigJPanel);
 	super.savableMap.put(NAME_BLOCK_LIST, protoConfigJPanel);
 	super.refreshableMap.put(NAME_BLOCK_LIST, protoConfigJPanel);
 
         // EVENT LOG ///////
         LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransformContext().transform(), this);
-        this.mTabbedPane.addTab(NAME_LOG, null, logJPanel);
+        super.mTabbedPane.addTab(NAME_LOG, null, logJPanel);
+	super.shutdownableMap.put(NAME_LOG, logJPanel);
     }
     
 }

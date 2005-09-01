@@ -109,18 +109,19 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
         JScrollPane dnsJScrollPane = new JScrollPane( dnsJPanel );
         dnsJScrollPane.setHorizontalScrollBarPolicy( ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER );
         dnsJScrollPane.setVerticalScrollBarPolicy( ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS );
-        dnsJTabbedPane.addTab(NAME_DNS_FORWARDING, null, dnsJScrollPane );
+        dnsJTabbedPane.addTab(NAME_DNS_FORWARDING, null, dnsJScrollPane);
 	super.savableMap.put(NAME_DNS + " " + NAME_DNS_FORWARDING, dnsJPanel);
 	super.refreshableMap.put(NAME_DNS + " " + NAME_DNS_FORWARDING, dnsJPanel);
 
 	// DNS HOSTS /////
 	DnsAddressJPanel dnsAddressJPanel = new DnsAddressJPanel();
-        dnsJTabbedPane.addTab(NAME_DNS_ADDRESS_MAP, null, dnsAddressJPanel );
+        dnsJTabbedPane.addTab(NAME_DNS_ADDRESS_MAP, null, dnsAddressJPanel);
         super.savableMap.put(NAME_DNS + " " + NAME_DNS_ADDRESS_MAP, dnsAddressJPanel);
         super.refreshableMap.put(NAME_DNS + " " + NAME_DNS_ADDRESS_MAP, dnsAddressJPanel);
 
         LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransformContext().transform(), this);
-        super.mTabbedPane.addTab( NAME_LOG, null, logJPanel );
+        super.mTabbedPane.addTab(NAME_LOG, null, logJPanel);
+	super.shutdownableMap.put(NAME_LOG, logJPanel);
     }
         
 }

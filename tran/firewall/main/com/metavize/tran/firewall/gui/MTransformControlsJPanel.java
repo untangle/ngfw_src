@@ -45,8 +45,8 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
         // SETUP FIREWALL
         BlockJPanel blockJPanel = new BlockJPanel();
         super.mTabbedPane.addTab(NAME_BLOCK_LIST, null, blockJPanel );
-	savableMap.put(NAME_BLOCK_LIST, blockJPanel);
-	refreshableMap.put(NAME_BLOCK_LIST, blockJPanel);
+	super.savableMap.put(NAME_BLOCK_LIST, blockJPanel);
+	super.refreshableMap.put(NAME_BLOCK_LIST, blockJPanel);
         
         // SETUP GENERAL SETTINGS
         SettingsJPanel settingsJPanel = new SettingsJPanel();
@@ -54,12 +54,13 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
         settingsJScrollPane.setHorizontalScrollBarPolicy( ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER );
         settingsJScrollPane.setVerticalScrollBarPolicy( ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS );
         super.mTabbedPane.addTab(NAME_GENERAL_SETTINGS, null, settingsJScrollPane );
-        savableMap.put(NAME_GENERAL_SETTINGS, settingsJPanel);
-	refreshableMap.put(NAME_GENERAL_SETTINGS, settingsJPanel);
+        super.savableMap.put(NAME_GENERAL_SETTINGS, settingsJPanel);
+	super.refreshableMap.put(NAME_GENERAL_SETTINGS, settingsJPanel);
 
 	// EVENT LOG
 	LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransformContext().transform(), this);
 	super.mTabbedPane.addTab(NAME_LOG, null, logJPanel);
+	super.shutdownableMap.put(NAME_LOG, logJPanel);
     }
 
 }

@@ -37,19 +37,20 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
     protected void generateGui(){
 	// RULE LIST /////
 	IDSConfigJPanel idsConfigJPanel = new IDSConfigJPanel();
-        this.mTabbedPane.addTab(NAME_RULE_LIST, null, idsConfigJPanel);
+        super.mTabbedPane.addTab(NAME_RULE_LIST, null, idsConfigJPanel);
 	super.savableMap.put(NAME_RULE_LIST, idsConfigJPanel);
 	super.refreshableMap.put(NAME_RULE_LIST, idsConfigJPanel);
 
 	// VARIABLE LIST /////
 	IDSVariableJPanel idsVariableJPanel = new IDSVariableJPanel();
-        this.mTabbedPane.addTab(NAME_VARIABLE_LIST, null, idsVariableJPanel);
+        super.mTabbedPane.addTab(NAME_VARIABLE_LIST, null, idsVariableJPanel);
 	super.savableMap.put(NAME_VARIABLE_LIST, idsVariableJPanel);
 	super.refreshableMap.put(NAME_VARIABLE_LIST, idsVariableJPanel);
 
         // EVENT LOG ///////
         LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransformContext().transform(), this);
-        this.mTabbedPane.addTab(NAME_LOG, null, logJPanel);
+        super.mTabbedPane.addTab(NAME_LOG, null, logJPanel);
+	super.shutdownableMap.put(NAME_LOG, logJPanel);
     }
     
 }

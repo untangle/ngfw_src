@@ -26,7 +26,7 @@ import java.util.*;
 import java.awt.*;
 import java.awt.event.*;
 
-public abstract class MLogTableJPanel extends javax.swing.JPanel {
+public abstract class MLogTableJPanel extends javax.swing.JPanel implements Shutdownable {
 
     protected Object settings;
 
@@ -59,6 +59,11 @@ public abstract class MLogTableJPanel extends javax.swing.JPanel {
 	    }});
 	}
 	catch(Exception e){ Util.handleExceptionNoRestart("Error building Log Table", e); }
+    }
+
+    public void doShutdown(){
+	if( refreshThread != null )
+	    refreshThread.interrupt();
     }
 
     protected abstract void refreshSettings();
@@ -232,6 +237,7 @@ public abstract class MLogTableJPanel extends javax.swing.JPanel {
        else{
            refreshLogJButton.setEnabled(true);
            refreshThread.interrupt();
+	   refreshThread = null;
            streamingJToggleButton.setIcon(Util.getButtonStartAutoRefresh());
        }
     }//GEN-LAST:event_streamingJToggleButtonActionPerformed
@@ -304,7 +310,7 @@ public abstract class MLogTableJPanel extends javax.swing.JPanel {
 		while(isAutoRefresh);
 	    }
 	    catch(InterruptedException e){
-		// this is normal, means the thread was stopped by pressing the toggle button
+		// this is normal, means the thread was stopped by pressing the toggle button, or doShutdown
 	    }
 	    catch(Exception g){
 		try{
