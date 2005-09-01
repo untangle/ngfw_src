@@ -18,22 +18,23 @@ import com.metavize.mvvm.tran.PortRange;
 
 public class IDSDetectionEngine {
 
-	private int maxChunks = 8;
-	private IDSSettings settings = null;
-	private IDSRuleManager rules = new IDSRuleManager();
-	Map<Integer,IDSSessionInfo> sessionInfoMap = new ConcurrentHashMap<Integer,IDSSessionInfo>();
-	Map<Integer,List<IDSRuleHeader>> portS2CMap = new ConcurrentHashMap<Integer,List<IDSRuleHeader>>();
-	Map<Integer,List<IDSRuleHeader>> portC2SMap = new ConcurrentHashMap<Integer,List<IDSRuleHeader>>();
+	private int 			maxChunks 	= 8;
+	private IDSSettings 	settings 	= null;
+	private IDSRuleManager 	rules 		= new IDSRuleManager();
+	
+	Map<Integer,IDSSessionInfo> 		sessionInfoMap 	= new ConcurrentHashMap<Integer,IDSSessionInfo>();
+	Map<Integer,List<IDSRuleHeader>> 	portS2CMap 		= new ConcurrentHashMap<Integer,List<IDSRuleHeader>>();
+	Map<Integer,List<IDSRuleHeader>> 	portC2SMap 		= new ConcurrentHashMap<Integer,List<IDSRuleHeader>>();
 	
 	private static final Logger log = Logger.getLogger(IDSDetectionEngine.class);
 	static {
-		log.setLevel(Level.DEBUG);
-	}	
-	private static IDSDetectionEngine instance = new IDSDetectionEngine();//null; 
-	public static IDSDetectionEngine instance() {
+		log.setLevel(Level.WARN);
+	}
+	
+	private static IDSDetectionEngine instance = new IDSDetectionEngine();
+	public  static IDSDetectionEngine instance() {
 		if(instance == null) 
 			instance = new IDSDetectionEngine();
-
 		return instance;
 	}
 
@@ -70,13 +71,12 @@ public class IDSDetectionEngine {
 			log.warn("Could not parse rule; " + e.getMessage()); 
 		} catch (Exception e) {
 			log.error("Some sort of really bad exception: " + e.getMessage());
-			e.printStackTrace();
+			log.error("For rule: " + rule);
 		}
 		return false;
 	}
 
-	public boolean processNewSession(IPNewSessionRequest session, Protocol protocol) {
-		long startTime = System.nanoTime();
+	public void processNewSession(IPNewSessionRequest session, Protocol protocol) {
 		
 		//Get Mapped list
 		List<IDSRuleHeader> c2sList = portC2SMap.get(session.serverPort());
@@ -111,20 +111,18 @@ public class IDSDetectionEngine {
 			//I need to fix uricontent
 			if(info == null) {
 				info = new IDSSessionInfo();
-				info.setc2sSignatures(c2sSignatures);
-				info.sets2cSignatures(s2cSignatures);
+				info.setC2SSignatures(c2sSignatures);
+				info.setS2CSignatures(s2cSignatures);
 			}
 			else {
-				info.setc2sSignatures(c2sSignatures);
-				info.sets2cSignatures(s2cSignatures);
+				info.setC2SSignatures(c2sSignatures);
+				info.setS2CSignatures(s2cSignatures);
 			}
 			session.attach(info);
 		}
 		else
 			session.release();
-		
-		log.debug("Time NewSession: " + (float)(System.nanoTime() - startTime)/1000000f);
-		return false; // Fix me - not sure what I want to return
+		//return false; // Fix me - not sure what I want to return
 	}
 
 	public IDSRuleManager getRulesForTesting() {
@@ -134,6 +132,7 @@ public class IDSDetectionEngine {
 	//In process of fixing this
 	public void handleChunk(IPDataEvent event, IPSession session, boolean isServer) {
 		long startTime = System.nanoTime();
+		
 		SessionStats stats = session.stats();
 		if(stats.s2tChunks() > maxChunks || stats.c2tChunks() > maxChunks)
 			session.release();
@@ -143,9 +142,13 @@ public class IDSDetectionEngine {
 		info.setSession(session);
 		info.setEvent(event);
 		info.setFlow(isServer);
-
-		info.processC2SSignatures();
-		log.debug("Time HandleChunk: " + (float)(System.nanoTime() - startTime)/1000000f);
+		
+		if(isServer)
+			info.processC2SSignatures();
+		else
+			info.processS2CSignatures();
+		
+		log.debug("Time: " + (float)(System.nanoTime() - startTime)/1000000f);
 	}
 
 	public void mapSessionInfo(int id, IDSSessionInfo info) {
