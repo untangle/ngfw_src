@@ -209,7 +209,8 @@ public class PopUnparser extends AbstractUnparser
     {
         boolean bIsComplete;
 
-        if (null == zMMessageT.getMIMEMessageHeader()) {
+        if (null == zMMessageT.getMIMEMessageHeader() &&
+            null != zMMessageT.getMIMEMessage()) {
             /* message has been re-assembled */
             bIsComplete = true;
         } else {

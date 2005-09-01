@@ -77,7 +77,7 @@ public abstract class PopStateMachine extends AbstractTokenHandler
     private ClientState clientState;
     private ServerState serverState;
 
-    private FileChannel zMsgChannel;
+    private FileChannel zWrChannel;
     private MIMEMessageHeaders zMMHeader; /* if set, message is null */
 
     private long lServerTS;
@@ -96,7 +96,7 @@ public abstract class PopStateMachine extends AbstractTokenHandler
         zMMessage = null;
         zMsgInfo = null;
 
-        zMsgChannel = null;
+        zWrChannel = null;
         zMMHeader = null;
 
         updateServerTS();
@@ -237,13 +237,13 @@ public abstract class PopStateMachine extends AbstractTokenHandler
                 /* fall through */
             }
 
-            resetServer();
+            resetServer(); /* done so reset */
             return zResult;
         }
         /* else message needs to be re-assembled */
 
         try {
-            zMsgChannel = new FileOutputStream(zMsgFile, true).getChannel();
+            zWrChannel = new FileOutputStream(zMsgFile, true).getChannel();
             return TokenResult.NONE; /* hold message reply for later */
         } catch (IOException exn) {
             /* cannot recover if byte unstuffed message file no longer exists */
@@ -311,7 +311,7 @@ public abstract class PopStateMachine extends AbstractTokenHandler
             /* fall through */
         }
 
-        resetServer();
+        resetServer(); /* done so reset */
         return zResult;
     }
 
@@ -329,7 +329,7 @@ public abstract class PopStateMachine extends AbstractTokenHandler
 
     protected TokenResult doMIMEMessageTrickleEnd(EndMarker zEndMarkerT) throws TokenException
     {
-        resetServer();
+        resetServer(); /* done so reset */
 
         //logger.debug("trickling marker (contd): " + zEndMarkerT.toString());
         return new TokenResult(new Token[] { zEndMarkerT }, null);
@@ -344,11 +344,14 @@ public abstract class PopStateMachine extends AbstractTokenHandler
          * that precedes DoNotCareT,
          * into MIMEMessageTrickleT and
          * push both on pipeline again
+         *
+         * - we should never enter this section
          */
 
         MIMEMessageTrickleT zMMTrickleT = new MIMEMessageTrickleT(zMMessageT);
 
-        resetServer();
+        resetServer(); /* not really done but reset ... */
+        serverState = ServerState.DONOTCARE_DATA; /* ... and change state */
 
         return new TokenResult(new Token[] { zMMTrickleT, zDoNotCareT }, null);
     }
@@ -430,7 +433,7 @@ public abstract class PopStateMachine extends AbstractTokenHandler
                 if (true == ((PopReply) token).isMsgData()) {
                     serverState = ServerState.DATA_REPLY;
                 } else {
-                    serverState = ServerState.REPLY;
+                    // no change
                 }
             } else if (token instanceof PopReplyMore) {
                 serverState = ServerState.REPLY_MORE;
@@ -451,7 +454,7 @@ public abstract class PopStateMachine extends AbstractTokenHandler
                     serverState = ServerState.REPLY;
                 }
             } else if (token instanceof PopReplyMore) {
-                serverState = ServerState.REPLY_MORE;
+                // no change
             } else {
                 resetServer();
                 throw new TokenException("cur: " + serverState + ", next: bad token: " + token.toString());
@@ -487,7 +490,7 @@ public abstract class PopStateMachine extends AbstractTokenHandler
 
         case DATA:
             if (token instanceof Chunk) {
-                serverState = ServerState.DATA;
+                // no change
             } else if (token instanceof EndMarker) {
                 serverState = ServerState.MARKER;
             } else {
@@ -528,7 +531,7 @@ public abstract class PopStateMachine extends AbstractTokenHandler
 
         case TRICKLE_DATA:
             if (token instanceof Chunk) {
-                serverState = ServerState.TRICKLE_DATA;
+                // no change
             } else if (token instanceof EndMarker) {
                 serverState = ServerState.TRICKLE_MARKER;
             } else {
@@ -554,12 +557,12 @@ public abstract class PopStateMachine extends AbstractTokenHandler
 
     private TokenResult writeFile(Chunk zChunkT) throws TokenException
     {
-        if (null != zMsgChannel) {
+        if (null != zWrChannel) {
             ByteBuffer zBuf = zChunkT.getBytes();
 
             try {
                 for (; true == zBuf.hasRemaining(); ) {
-                     zMsgChannel.write(zBuf);
+                     zWrChannel.write(zBuf);
                 }
             } catch (IOException exn) {
                 logger.error("cannot write date to byte unstuffed message file: " + exn);
@@ -570,22 +573,20 @@ public abstract class PopStateMachine extends AbstractTokenHandler
         return TokenResult.NONE;
     }
 
-    private void closeMsgChannel()
+    private FileChannel closeChannel(FileChannel zChannel)
     {
-        if (null == zMsgChannel) {
-            return;
+        if (null == zChannel) {
+            return null;
         }
 
         try {
-            zMsgChannel.close();
+            zChannel.close();
         } catch (IOException exn) {
             logger.warn("cannot close message file: " + exn);
             /* fall through - don't stop */
-        } finally {
-            zMsgChannel = null;
         }
 
-        return;
+        return null;
     }
 
     private TokenResult handleException(ExceptionState zExceptState, Token zToken)
@@ -630,7 +631,7 @@ public abstract class PopStateMachine extends AbstractTokenHandler
         serverState = ServerState.REPLY;
 
         zMMHeader = null;
-        closeMsgChannel();
+        zWrChannel = closeChannel(zWrChannel);
 
         zMsgFile = null;
         zMMessageT = null;
