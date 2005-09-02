@@ -24,7 +24,9 @@ public class IDSRuleManager {
 
 	public static final int ALERT = 0;
 	public static final int LOG = 1;
-	public static final String[] ACTIONS = { "alert", "log" };
+	public static final int PASS = 2;
+	public static final int BLOCK = 3;
+	public static final String[] ACTIONS = { "alert","log","pass","block" };
 	
 	private IDSRuleSignature newSignature = null;
 	private List<IDSRuleHeader> knownHeaders = Collections.synchronizedList(new LinkedList<IDSRuleHeader>());
@@ -37,11 +39,6 @@ public class IDSRuleManager {
 	}
 	public static List<IDSVariable> defaultVariables = new ArrayList<IDSVariable>(); 
 	static {
-		//Overwrite any replacement to external or home net with the internal IPManger
-		//To automatically track any changes made to the ip address
-		//defaultVariables.add(new IDSVariable("$EXTERNAL_NET",""+0xDEAD,"This is a description"));
-		//defaultVariables.add(new IDSVariable("$HOME_NET", ""+0xBEEF,"This is a description"));
-		
 		defaultVariables.add(new IDSVariable("$HTTP_PORTS", "80","This is a description"));
 		defaultVariables.add(new IDSVariable("$HTTP_SERVERS", "!any","This is a description"));
 		defaultVariables.add(new IDSVariable("$SMTP_SERVERS", "!any","This is a description"));
@@ -59,6 +56,9 @@ public class IDSRuleManager {
 	public IDSRuleManager() {
 	}
 
+	public boolean addRule(IDSRule rule) throws ParseException {
+		return addRule(rule.getRule());
+	}
 	public boolean addRule(String rule) throws ParseException {
 		
 		if(rule.length() <= 0 || rule.charAt(0) == '#')

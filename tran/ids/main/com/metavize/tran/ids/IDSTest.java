@@ -104,7 +104,8 @@ public class IDSTest {
 				signatures.add(sig);
 		
 		IDSSessionInfo info = new IDSSessionInfo();
-		info.setc2sSignatures(signatures);
+		info.setC2SSignatures(signatures);
+		info.setS2CSignatures(signatures);
 		info.setUriPath("/this/is/just/a/test");
 
 		/**Run Tests*/

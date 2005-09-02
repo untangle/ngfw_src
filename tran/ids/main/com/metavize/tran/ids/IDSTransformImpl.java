@@ -238,7 +238,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 		Iterator<IDSRule> it = rules.iterator();
 		while(it.hasNext()) {
 			IDSRule rule = it.next();
-			IDSDetectionEngine.instance().addRule(rule.getRule());
+			IDSDetectionEngine.instance().addRule(rule);
 		}
 	}
 

@@ -42,9 +42,14 @@ public class IDSDetectionEngine {
 		String test = "alert tcp 10.0.0.40-10.0.0.101 any -> 66.35.250.0/24 80 (content:\"slashdot\"; msg:\"OMG teH SLASHd0t\";)";
 		String tesT = "alert tcp 10.0.0.1/24 any -> any any (content: \"spOOns|FF FF FF FF|spoons\"; msg:\"Matched binary FF FF FF and spoons\"; nocase;)";
 		String TesT = "alert tcp 10.0.0.1/24 any -> any any (uricontent:\"slashdot\"; nocase; msg:\"Uricontent matched\";)";
-		addRule(test);
-		addRule(tesT);
-		addRule(TesT);
+		try {
+			rules.addRule(test);
+			rules.addRule(tesT);
+			rules.addRule(TesT);
+		} catch (ParseException e) {
+			log.warn("Could not parse rule; " + e.getMessage());
+		}
+												
 	}
 
 	public IDSSettings getSettings() {
@@ -64,7 +69,7 @@ public class IDSDetectionEngine {
 		return maxChunks;
 	}
 	
-	public boolean addRule(String rule) {
+	public boolean addRule(IDSRule rule) {
 		try {
 			return (rules.addRule(rule));
 		} catch (ParseException e) { 
