@@ -17,6 +17,8 @@ public class IDSRule extends Rule implements Serializable {
 	private static final long serialVersionUID = -7009708957041660234L;
 	private String rule;
 
+	private boolean modified;
+
 	/**
 	 * Hibernate constructor
 	 */
@@ -30,6 +32,20 @@ public class IDSRule extends Rule implements Serializable {
 			throw new IllegalArgumentException("definition too long:" + rule);
 
 		this.rule = rule;
+		this.modified = true;
+	}
+	
+	/**
+	 * @hibernate.property
+	 * column="MODIFIED"
+	 */
+	
+	public boolean getModified() {
+		return modified;
+	}
+
+	public void setModified(boolean val) {
+		modified = val;
 	}
 	
 	/**
@@ -39,5 +55,10 @@ public class IDSRule extends Rule implements Serializable {
 	 */
 
 	public String getRule() { return this.rule; }
-	public void setRule(String s) { this.rule = s; }		
+	public void setRule(String s) { this.rule = s; }	
+
+	public void setLive(boolean live) { 
+		super.setLive(live);
+		//System.out.println("SetLive is being called");
+	}
 }

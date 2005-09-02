@@ -15,7 +15,7 @@ create table settings.TR_IDS_VARIABLE (
 	DESCRIPTION varchar(1024),
 	SETTINGS_ID int8,
 	POSITION int4,
-	primary key (VARIABLE_ID));
+	PRIMARY KEY (VARIABLE_ID));
 
 create table settings.TR_IDS_IMMUTABLE_VARIABLES (
    	setting_id int8 NOT NULL,
@@ -35,6 +35,7 @@ create table settings.TR_IDS_RULE (
 	NAME varchar(255),
 	CATEGORY varchar(255),
 	DESCRIPTION varchar(255),
+	MODIFIED bool,
 	LIVE bool,
 	ALERT bool,
 	LOG bool,

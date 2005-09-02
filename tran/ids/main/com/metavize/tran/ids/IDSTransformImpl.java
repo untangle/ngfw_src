@@ -193,6 +193,12 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 	}
 
 	protected void postInit(String args[]) {
+		
+	//	IDSTest test = new IDSTest();
+	//	if(!test.runTest())
+	//	  throw new TransformStartException("IDS Test failed"); // */
+//		reconfigure();
+/*		
 		Session s = TransformContextFactory.context().openSession();
 		try {
 			Transaction tx = s.beginTransaction();
@@ -201,7 +207,6 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 			q.setParameter("tid", getTid());
 			this.settings = (IDSSettings)q.uniqueResult();
 			IDSDetectionEngine.instance().setSettings(settings);
-			//updateToCurrent(this.settings);
 			tx.commit();
 		} catch (HibernateException exn) {
 			//logger.warn("Could not get Intrusion Detection settings", exn);
@@ -211,11 +216,10 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 			} catch (HibernateException exn) {
 				//logger.warn("could not close Hibernate session", exn);
 			}
-		}
+		}*/
 	}
 
 	protected void preStart() throws TransformStartException {
-		//Testing is hella broke - rule headers are no longer 1-1 with signatures
 		IDSTest test = new IDSTest();
 		if(!test.runTest())
 		  throw new TransformStartException("IDS Test failed"); // */
@@ -228,17 +232,36 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 	}
 	
 	public void reconfigure() throws TransformException {
-		IDSSettings currentSettings = getIDSSettings();
+		
+		Session s = TransformContextFactory.context().openSession();
+		try {
+			Transaction tx = s.beginTransaction();
+			
+			Query q = s.createQuery("from IDSSettings ids where ids.tid = :tid");
+			q.setParameter("tid", getTid());
+			this.settings = (IDSSettings)q.uniqueResult();
+			IDSDetectionEngine.instance().setSettings(settings);
+			tx.commit();
+		} catch (HibernateException e) { 
+			try {
+				s.close();
+			} catch (HibernateException exn) {
+				//logger.warn("could not close Hibernate session", exn);
+			}
+		}
+	
+		//IDSSettings settings = getIDSSettings();
 		log.debug("reconfigure()");
-		if(currentSettings == null)
-			throw new TransformException("Failed to get IDS settings: " + currentSettings);
+		if(settings == null)
+			throw new TransformException("Failed to get IDS settings: " + settings);
 
-		IDSDetectionEngine.instance().setMaxChunks(currentSettings.getMaxChunks());
-		List<IDSRule> rules = (List<IDSRule>) currentSettings.getRules();
-		Iterator<IDSRule> it = rules.iterator();
-		while(it.hasNext()) {
-			IDSRule rule = it.next();
-			IDSDetectionEngine.instance().addRule(rule);
+		IDSDetectionEngine.instance().setMaxChunks(settings.getMaxChunks());
+		List<IDSRule> rules = (List<IDSRule>) settings.getRules();
+		for(IDSRule rule : rules) {
+			if(rule.getModified()) {
+				IDSDetectionEngine.instance().addRule(rule);
+				rule.setModified(false);
+			}
 		}
 	}
 
