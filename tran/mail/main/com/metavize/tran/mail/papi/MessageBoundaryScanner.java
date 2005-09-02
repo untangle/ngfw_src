@@ -314,6 +314,7 @@ public class MessageBoundaryScanner {
         (source.get(source.position()+1) == CR) &&
         (source.get(source.position()+2) == LF)) {
         m_isEmptyMessage = true;
+        source.position(source.position()+3);
         m_state = ScanningState.DONE;
         return true;
       }

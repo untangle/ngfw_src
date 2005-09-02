@@ -238,7 +238,7 @@ public final class Session
     "VRFY",
     "NOOP",
     "SIZE",
-    "PIPELINING",
+//    "PIPELINING",
     "STARTTLS",
     "DSN",
     "DELIVERBY",
@@ -705,17 +705,7 @@ public final class Session
         //Odd case, but we're not here to enfore good SMTP (at least not in this class)
         if(cmd.getType() == Command.CommandType.DATA) {
           TransactionHandler handler = getOrCreateTxHandler();
-          if(handler.getTransaction().hasAtLeastOneConfirmedRecipient()) {
-            handler.handleCommand(cmd, actions);
-          }
-          else {
-            m_logger.debug("Enqueuing negative response to DATA command " +
-              "as there are no valid accepted recipients (likely a PIPELINING client)");
-            actions.appendSyntheticResponse(
-              new FixedSyntheticResponse(554, "no valid recipients given"));
-            actions.followup();
-          }
-          
+          handler.handleCommand(cmd, actions);
         }
         else {
           m_sessionHandler.handleCommand(cmd, actions);
