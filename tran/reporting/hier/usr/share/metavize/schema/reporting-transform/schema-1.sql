@@ -21,6 +21,6 @@ ALTER TABLE settings.tr_reporting_settings
     ADD CONSTRAINT fk_tr_reporting_settings
     FOREIGN KEY (network_directory) REFERENCES settings.ipmaddr_dir;
 
-ALTER TABLE tr_reporting_settings
-    ADD CONSTRAINT settings.fk_tr_reporting_settings
-    FOREIGN KEY (tid) REFERENCES tid;
+ALTER TABLE settings.tr_reporting_settings
+    ADD CONSTRAINT fk_tr_reporting_settings
+    FOREIGN KEY (tid) REFERENCES settings.tid;
