@@ -10,6 +10,7 @@ import org.apache.log4j.Level;
 
 import com.metavize.mvvm.tapi.event.*;
 import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.tran.Transform;
 import com.metavize.tran.ids.options.*;
 
 public class IDSRuleSignature {
@@ -23,10 +24,10 @@ public class IDSRuleSignature {
 	private String[] ignoreSafeOptions = { "rev","sid","classtype","reference" };
 	/** **************************************/
 	
-//	private static final int PASS_COUNTER = Transform.GENERIC_0_COUNTER;
-//	private static final int LOG_COUNTER = Transform.GENERIC_1_COUNTER;
-//	private static final int ALERT_COUNTER = Transform.GENERIC_2_COUNTER;
-//	private static final int BLOCK_COUNTER = Transform.GENERIC_3_COUNTER;
+	private static final int PASS_COUNTER 	= Transform.GENERIC_0_COUNTER;
+	private static final int LOG_COUNTER 	= Transform.GENERIC_1_COUNTER;
+	private static final int ALERT_COUNTER 	= Transform.GENERIC_2_COUNTER;
+	private static final int BLOCK_COUNTER 	= Transform.GENERIC_3_COUNTER;
 	
 	private List<IDSOption> options = new Vector<IDSOption>();
 	private IDSSessionInfo info;
@@ -106,8 +107,10 @@ public class IDSRuleSignature {
 		this.info = info;
 		
 		for(IDSOption option : options) {
-			if(!option.run())
+			if(!option.run()) {
+				IDSDetectionEngine.instance().updateUICount(PASS_COUNTER);
 				return false;
+			}
 		}
 		doAction();
 		return true;
@@ -116,14 +119,12 @@ public class IDSRuleSignature {
 	private void doAction() {
 		switch(action) {
 			case IDSRuleManager.ALERT:
-		//		transform.incrementCount(ALERT_COUNTER);
+				IDSDetectionEngine.instance().updateUICount(ALERT_COUNTER);
 		//		System.out.println(message);
 				break;
 			case IDSRuleManager.LOG:
-		//		transform.incrementCount(LOG_COUNTER);
+				IDSDetectionEngine.instance().updateUICount(LOG_COUNTER);
 				break;
-			default:
-		//		transform.incrementCount(PASS_COUNTER);
 		}
 		int id = (info.getSession() == null) ? -1 : info.getSession().id();
 		eventLog.info(new IDSLogEvent(id,message,false)); //Add list number that this rule came from

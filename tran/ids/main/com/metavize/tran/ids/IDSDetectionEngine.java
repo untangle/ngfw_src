@@ -15,12 +15,15 @@ import com.metavize.mvvm.tapi.event.*;
 import com.metavize.mvvm.tran.firewall.IPMatcher;
 import com.metavize.mvvm.tran.ParseException;
 import com.metavize.mvvm.tran.PortRange;
+import com.metavize.mvvm.tran.Transform;
 
 public class IDSDetectionEngine {
 
 	private int 			maxChunks 	= 8;
 	private IDSSettings 	settings 	= null;
 	private IDSRuleManager 	rules 		= new IDSRuleManager();
+	
+	private IDSTransformImpl 	transform;
 	
 	//Er - I need to remove stuff from the seesion Map??
 	Map<Integer,IDSSessionInfo> 		sessionInfoMap 	= new ConcurrentHashMap<Integer,IDSSessionInfo>();
@@ -70,6 +73,13 @@ public class IDSDetectionEngine {
 		return maxChunks;
 	}
 
+	public void updateUICount(int counter) {
+		transform.incrementCount(counter);
+	}
+
+	public void setTransform(IDSTransformImpl transform) {
+		this.transform = transform;
+	}
 	public void onReconfigure() {
 		portC2SMap      = new ConcurrentHashMap<Integer,List<IDSRuleHeader>>();
 		portS2CMap      = new ConcurrentHashMap<Integer,List<IDSRuleHeader>>();
@@ -78,26 +88,26 @@ public class IDSDetectionEngine {
 	}
 
 	public void updateRule(IDSRule rule) {
-	/*	try {
+		try {
 			rules.updateRule(rule);
 		} catch (ParseException e) {
 			log.warn("Could not parse rule; " + e.getMessage());
 		} catch (Exception e) {
 			log.error("Some sort of really bad exception: " + e.getMessage());
 			log.error("For rule: " + rule);
-		}*/		
+		}		
 	}
 	
 	//Deprecating?
 	public boolean addRule(IDSRule rule) {
-	/*	try {
-	//		return (rules.addRule(rule));
+		try {
+			return (rules.addRule(rule));
 		} catch (ParseException e) { 
 			log.warn("Could not parse rule; " + e.getMessage()); 
 		} catch (Exception e) {
 			log.error("Some sort of really bad exception: " + e.getMessage());
 			log.error("For rule: " + rule);
-		}*/
+		}
 		return false;
 	}
 
