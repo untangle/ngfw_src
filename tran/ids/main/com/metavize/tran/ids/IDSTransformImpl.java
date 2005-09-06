@@ -194,11 +194,6 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 
 	protected void postInit(String args[]) {
 		
-	//	IDSTest test = new IDSTest();
-	//	if(!test.runTest())
-	//	  throw new TransformStartException("IDS Test failed"); // */
-//		reconfigure();
-/*		
 		Session s = TransformContextFactory.context().openSession();
 		try {
 			Transaction tx = s.beginTransaction();
@@ -216,7 +211,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 			} catch (HibernateException exn) {
 				//logger.warn("could not close Hibernate session", exn);
 			}
-		}*/
+		}
 	}
 
 	protected void preStart() throws TransformStartException {
@@ -233,7 +228,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 	
 	public void reconfigure() throws TransformException {
 		
-		Session s = TransformContextFactory.context().openSession();
+		/*Session s = TransformContextFactory.context().openSession();
 		try {
 			Transaction tx = s.beginTransaction();
 			
@@ -248,26 +243,26 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 			} catch (HibernateException exn) {
 				//logger.warn("could not close Hibernate session", exn);
 			}
-		}
+		}*/
 	
 		//IDSSettings settings = getIDSSettings();
 		log.debug("reconfigure()");
 		if(settings == null)
 			throw new TransformException("Failed to get IDS settings: " + settings);
 
+		IDSDetectionEngine.instance().onReconfigure();
 		IDSDetectionEngine.instance().setMaxChunks(settings.getMaxChunks());
 		List<IDSRule> rules = (List<IDSRule>) settings.getRules();
 		for(IDSRule rule : rules) {
-			if(rule.getModified()) {
-				IDSDetectionEngine.instance().addRule(rule);
-				rule.setModified(false);
-			}
+			IDSDetectionEngine.instance().updateRule(rule);
 		}
+
+		//setIDSSettings(settings);
 	}
 
 	//XXX soon to be deprecated ------------------------------------------
 	
 	public Object getSettings() { return getIDSSettings(); }
 
-	public void setSettings(Object obj) {}
+	public void setSettings(Object obj) { setIDSSettings((IDSSettings)obj); }
 }

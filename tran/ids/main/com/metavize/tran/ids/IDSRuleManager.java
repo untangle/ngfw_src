@@ -4,9 +4,9 @@ import java.util.regex.*;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.regex.*;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import org.apache.log4j.Logger;
 import org.apache.log4j.Level;
 
@@ -30,6 +30,7 @@ public class IDSRuleManager {
 	
 	private IDSRuleSignature newSignature = null;
 	private List<IDSRuleHeader> knownHeaders = Collections.synchronizedList(new LinkedList<IDSRuleHeader>());
+	private Map<Long,IDSRule> knownRules = new ConcurrentHashMap<Long,IDSRule>();
 	
 	private static Pattern variablePattern = Pattern.compile("\\$[^ \n\r\t]+");
 	public static List<IDSVariable> immutableVariables = new ArrayList<IDSVariable>(); 
@@ -56,15 +57,55 @@ public class IDSRuleManager {
 	public IDSRuleManager() {
 	}
 
-	public boolean addRule(IDSRule rule) throws ParseException {
-		return addRule(rule.getRule());
+	public void onReconfigure() {
+		for(IDSRule rule : knownRules.values()) {
+			rule.remove(true);
+		}
 	}
+	public void updateRule(IDSRule rule) throws ParseException {
+		long id = rule.getKeyValue();
+		IDSRule inMap = knownRules.get(id);
+		if(inMap != null) {
+			rule = inMap;
+			rule.remove(false);
+			if(rule.getModified()) {
+				//Delete previous rule
+				IDSRuleHeader header = rule.getHeader();
+				header.removeSignature(rule.getSignature());
+				if(header.signatureListIsEmpty()) {
+					knownRules.remove(id);
+					knownHeaders.remove(header);
+				}
+				//Add the modified rule
+				//log.info("Adding modified rule");
+				addRule(rule);
+			}
+			else {
+				log.info("This rule was not modified");
+			}
+		}
+
+		else {
+			//log.info("Does not contain - adding");
+			addRule(rule);
+		}
+		//remove all rules with remove == true
+		//setModfied == false;
+			
+	}
+	
 	public boolean addRule(String rule) throws ParseException {
+		return addRule(new IDSRule(rule,"Not set", "Not set"));
+	}
+
+	public boolean addRule(IDSRule rule) throws ParseException {
 		
-		if(rule.length() <= 0 || rule.charAt(0) == '#')
+		String ruleText = rule.getText();
+		
+		if(ruleText.length() <= 0 || ruleText.charAt(0) == '#')
 			return false;
-		rule = substituteVariables(rule);
-		String ruleParts[] 			= IDSStringParser.parseRuleSplit(rule);
+		ruleText = substituteVariables(ruleText);
+		String ruleParts[] 			= IDSStringParser.parseRuleSplit(ruleText);
 		IDSRuleHeader header		= IDSStringParser.parseHeader(ruleParts[0]);
 		IDSRuleSignature signature	= IDSStringParser.parseSignature(ruleParts[1], header.getAction());
 	
@@ -73,15 +114,19 @@ public class IDSRuleManager {
 		if(!signature.remove()) {
 			for(IDSRuleHeader known : knownHeaders) {
 				if(known.equals(header)) {
-					known.addSignature(signature);
+					header.addSignature(signature);
 					newSignature = signature;
 					return true;
 				}
 			}
 			header.addSignature(signature);
 			newSignature = signature;
-		////////////////////////////////////////	System.out.println(header);
 			knownHeaders.add(header);
+
+			rule.setHeader(header);
+			rule.setSignature(signature);
+			knownRules.put(rule.getKeyValue(),rule);
+			
 			return true;
 		}
 		return false;

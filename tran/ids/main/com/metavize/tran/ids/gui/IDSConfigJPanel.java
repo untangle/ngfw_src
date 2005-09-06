@@ -81,7 +81,7 @@ class IDSTableModel extends MSortedTableModel{
             newElem.setLive( (Boolean) rowVector.elementAt(2) );
             newElem.setLog( (Boolean) rowVector.elementAt(3) );
             newElem.setCategory( (String) rowVector.elementAt(4) );
-            newElem.setRule( (String) rowVector.elementAt(5) );
+            newElem.setText( (String) rowVector.elementAt(5) );
             newElem.setDescription( (String) rowVector.elementAt(6) );
             elemList.add(newElem);
         }
@@ -108,7 +108,7 @@ class IDSTableModel extends MSortedTableModel{
             tempRow.add( newElem.isLive() );
             tempRow.add( newElem.getLog() );
             tempRow.add( newElem.getCategory() );
-            tempRow.add( newElem.getRule() );
+            tempRow.add( newElem.getText() );
             tempRow.add( newElem.getDescription() );
 	    tempRow.add( newElem );
             allRows.add( tempRow );

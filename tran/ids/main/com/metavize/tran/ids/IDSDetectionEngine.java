@@ -22,13 +22,14 @@ public class IDSDetectionEngine {
 	private IDSSettings 	settings 	= null;
 	private IDSRuleManager 	rules 		= new IDSRuleManager();
 	
+	//Er - I need to remove stuff from the seesion Map??
 	Map<Integer,IDSSessionInfo> 		sessionInfoMap 	= new ConcurrentHashMap<Integer,IDSSessionInfo>();
 	Map<Integer,List<IDSRuleHeader>> 	portS2CMap 		= new ConcurrentHashMap<Integer,List<IDSRuleHeader>>();
 	Map<Integer,List<IDSRuleHeader>> 	portC2SMap 		= new ConcurrentHashMap<Integer,List<IDSRuleHeader>>();
 	
 	private static final Logger log = Logger.getLogger(IDSDetectionEngine.class);
 	static {
-		log.setLevel(Level.WARN);
+		log.setLevel(Level.DEBUG);
 	}
 	
 	private static IDSDetectionEngine instance = new IDSDetectionEngine();
@@ -39,7 +40,7 @@ public class IDSDetectionEngine {
 	}
 
 	private IDSDetectionEngine() {
-		String test = "alert tcp 10.0.0.40-10.0.0.101 any -> 66.35.250.0/24 80 (content:\"slashdot\"; msg:\"OMG teH SLASHd0t\";)";
+	/*	String test = "alert tcp 10.0.0.40-10.0.0.101 any -> 66.35.250.0/24 80 (content:\"slashdot\"; msg:\"OMG teH SLASHd0t\";)";
 		String tesT = "alert tcp 10.0.0.1/24 any -> any any (content: \"spOOns|FF FF FF FF|spoons\"; msg:\"Matched binary FF FF FF and spoons\"; nocase;)";
 		String TesT = "alert tcp 10.0.0.1/24 any -> any any (uricontent:\"slashdot\"; nocase; msg:\"Uricontent matched\";)";
 		try {
@@ -49,7 +50,7 @@ public class IDSDetectionEngine {
 		} catch (ParseException e) {
 			log.warn("Could not parse rule; " + e.getMessage());
 		}
-												
+	*/											
 	}
 
 	public IDSSettings getSettings() {
@@ -68,16 +69,35 @@ public class IDSDetectionEngine {
 	public int getMaxChunks() {
 		return maxChunks;
 	}
+
+	public void onReconfigure() {
+		portC2SMap      = new ConcurrentHashMap<Integer,List<IDSRuleHeader>>();
+		portS2CMap      = new ConcurrentHashMap<Integer,List<IDSRuleHeader>>();
+		rules.onReconfigure();
+		log.debug("Done with reconfigure");
+	}
+
+	public void updateRule(IDSRule rule) {
+	/*	try {
+			rules.updateRule(rule);
+		} catch (ParseException e) {
+			log.warn("Could not parse rule; " + e.getMessage());
+		} catch (Exception e) {
+			log.error("Some sort of really bad exception: " + e.getMessage());
+			log.error("For rule: " + rule);
+		}*/		
+	}
 	
+	//Deprecating?
 	public boolean addRule(IDSRule rule) {
-		try {
-			return (rules.addRule(rule));
+	/*	try {
+	//		return (rules.addRule(rule));
 		} catch (ParseException e) { 
 			log.warn("Could not parse rule; " + e.getMessage()); 
 		} catch (Exception e) {
 			log.error("Some sort of really bad exception: " + e.getMessage());
 			log.error("For rule: " + rule);
-		}
+		}*/
 		return false;
 	}
 
@@ -153,7 +173,7 @@ public class IDSDetectionEngine {
 		else
 			info.processS2CSignatures();
 		
-		log.debug("Time: " + (float)(System.nanoTime() - startTime)/1000000f);
+		//log.debug("Time: " + (float)(System.nanoTime() - startTime)/1000000f);
 	}
 
 	public void mapSessionInfo(int id, IDSSessionInfo info) {

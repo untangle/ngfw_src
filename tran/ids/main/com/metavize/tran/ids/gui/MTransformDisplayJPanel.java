@@ -21,10 +21,10 @@ public class MTransformDisplayJPanel extends com.metavize.gui.transform.MTransfo
     public MTransformDisplayJPanel(MTransformJPanel mTransformJPanel) {
         super(mTransformJPanel);
         
-        super.activity0JLabel.setText("A1");
-        super.activity1JLabel.setText("A2");
-        super.activity2JLabel.setText("A3");
-        super.activity3JLabel.setText("A4");
+        super.activity0JLabel.setText("PASS");
+        super.activity1JLabel.setText("LOG");
+        super.activity2JLabel.setText("ALERT");
+        super.activity3JLabel.setText("BLOCK");
     }
     
 }

@@ -156,12 +156,20 @@ public class IDSRuleHeader {
 		signatures.add(sig);
 	}
 
+	public boolean removeSignature(IDSRuleSignature sig) {
+		return signatures.remove(sig);
+	}
+
 	public int getAction() {
 		return action;
 	}
 	
 	public List<IDSRuleSignature> getSignatures() {
 		return signatures;
+	}
+
+	public boolean signatureListIsEmpty() {
+		return signatures.isEmpty();
 	}
 	
 	public boolean equals(IDSRuleHeader other) {

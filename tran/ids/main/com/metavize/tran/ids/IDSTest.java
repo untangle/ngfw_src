@@ -42,9 +42,9 @@ public class IDSTest {
 	public IDSTest() {}
 
 	public boolean runTest() {
-		generateRuleTest();
-		runHeaderTest();
-		runSignatureTest();
+		//generateRuleTest();
+		//runHeaderTest();
+		//runSignatureTest();
 		//generateRandomRuleHeaders(1000);
 		//runTimeTest(1);
 		return true;

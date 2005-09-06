@@ -23,6 +23,11 @@ public class IDSRuleSignature {
 	private String[] ignoreSafeOptions = { "rev","sid","classtype","reference" };
 	/** **************************************/
 	
+//	private static final int PASS_COUNTER = Transform.GENERIC_0_COUNTER;
+//	private static final int LOG_COUNTER = Transform.GENERIC_1_COUNTER;
+//	private static final int ALERT_COUNTER = Transform.GENERIC_2_COUNTER;
+//	private static final int BLOCK_COUNTER = Transform.GENERIC_3_COUNTER;
+	
 	private List<IDSOption> options = new Vector<IDSOption>();
 	private IDSSessionInfo info;
 	
@@ -111,10 +116,14 @@ public class IDSRuleSignature {
 	private void doAction() {
 		switch(action) {
 			case IDSRuleManager.ALERT:
+		//		transform.incrementCount(ALERT_COUNTER);
 		//		System.out.println(message);
 				break;
 			case IDSRuleManager.LOG:
+		//		transform.incrementCount(LOG_COUNTER);
 				break;
+			default:
+		//		transform.incrementCount(PASS_COUNTER);
 		}
 		int id = (info.getSession() == null) ? -1 : info.getSession().id();
 		eventLog.info(new IDSLogEvent(id,message,false)); //Add list number that this rule came from
