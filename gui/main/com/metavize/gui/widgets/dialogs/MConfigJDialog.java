@@ -43,8 +43,8 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
         super(Util.getMMainJFrame(), true);
 	this.generateButtonText();
         this.initComponents();
-        this.setBounds( Util.generateCenteredBounds( Util.getMMainJFrame().getBounds(), this.getWidth(), this.getHeight()) );
-        this.addWindowListener(this);   
+        this.setBounds( Util.generateCenteredBounds( Util.getMMainJFrame().getBounds(), getMinSize().width, getMinSize().height) );
+        this.addWindowListener(this);
 
         this.addComponentListener( new ComponentAdapter() { public void componentResized(ComponentEvent evt) {
 	    dialogResized();
@@ -166,11 +166,14 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
 
 
     // SIZING ///////////////////////////////
-    protected Dimension MIN_SIZE = new Dimension(640, 480);
-    protected Dimension MAX_SIZE = new Dimension(1600, 1200);
-
+    protected Dimension getMinSize(){
+	return new Dimension(640, 480);
+    }
+    protected Dimension getMaxSize(){
+	return new Dimension(1600, 1200);
+    }
     private void dialogResized(){
-        Util.resizeCheck(this, MIN_SIZE, MAX_SIZE);
+        Util.resizeCheck(this, getMinSize(), getMaxSize());
     }
     ////////////////////////////////////////
 
@@ -291,8 +294,6 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
         gridBagConstraints.weighty = 1.0;
         getContentPane().add(backgroundJLabel, gridBagConstraints);
 
-        java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-        setBounds((screenSize.width-640)/2, (screenSize.height-480)/2, 640, 480);
     }//GEN-END:initComponents
 
     private void saveJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveJButtonActionPerformed

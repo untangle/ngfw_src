@@ -28,8 +28,6 @@ public class RemoteJDialog extends MConfigJDialog {
     private static final String NAME_REMOTE_SETTINGS = "Remote Administration";
 
     public RemoteJDialog( ) {
-        MIN_SIZE = new Dimension(640, 480);
-        MAX_SIZE = new Dimension(640, 1200);
     }
 
     protected void generateGui(){

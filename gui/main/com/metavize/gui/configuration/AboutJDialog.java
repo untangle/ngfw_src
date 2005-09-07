@@ -36,8 +36,6 @@ public class AboutJDialog extends MConfigJDialog {
     private static String aboutString = "<br><br><b>Readme:</b> http://www.metavize.com/egquickstart<br><br><b>Website: </b>http://www.metavize.com</html>";
 
     public AboutJDialog( ) {
-        MIN_SIZE = new Dimension(640, 480);
-        MAX_SIZE = new Dimension(640, 1200);
     }
 
     public void generateGui(){

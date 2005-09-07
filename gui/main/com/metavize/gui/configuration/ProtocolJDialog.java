@@ -29,8 +29,6 @@ public class ProtocolJDialog extends MConfigJDialog {
 
     
     public ProtocolJDialog( ) {
-        MIN_SIZE = new Dimension(640, 480);
-        MAX_SIZE = new Dimension(640, 1200);
     }
 
     protected void generateGui(){
