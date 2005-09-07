@@ -5,9 +5,14 @@
     <element name="transform-desc">
       <attribute name="name"/>
       <attribute name="classname"/>
-      <attribute name="single-instance"/>
+      <optional>
+        <attribute name="single-instance"/>
+      </optional>
       <attribute name="display-name"/>
       <attribute name="gui-classname"/>
+      <optional>
+        <attribute name="transform-base"/>
+      </optional>
     </element>
   </interleave>
 

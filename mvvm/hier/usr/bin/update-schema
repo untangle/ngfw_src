@@ -18,6 +18,20 @@ CREATE TABLE settings.schema_ver (component, version)
 DROP TABLE public.schema_ver;
 
 CREATE TABLE settings.schema_ver (component varchar(64), version int4);
+ALTER TABLE settings.schema_ver
+    ADD CONSTRAINT schema_ver_pkey PRIMARY KEY (component);
+
+
+-- hack for version 2.5
+-- convert clam, fprot, hauri, and sophos to use virus-base schema
+INSERT INTO schema_ver (SELECT 'virus-base' AS component, version FROM schema_ver WHERE component = 'clam-transform' OR component = 'fprot-transform' OR component = 'hauri-transform' OR component = 'sophos-transform' ORDER BY version LIMIT 1);
+DELETE FROM schema_ver WHERE component = 'clam-transform' OR component = 'fprot-transform' OR component = 'hauri-transform' OR component = 'sophos-transform';
+
+-- hack for version 2.5
+-- convert spamassassin, clamphish to use spam-base schema
+INSERT INTO schema_ver (SELECT 'spam-base' AS component, version FROM schema_ver WHERE component = 'spamassassin-transform' OR component = 'clamphish-transform' ORDER BY version LIMIT 1);
+DELETE FROM schema_ver WHERE component = 'spamassassin-transform' OR component = 'clamphish-transform';
+
 EOF
 
 component=$1
@@ -26,6 +40,7 @@ schema_dir=@MVVM_SCHEMA@/$component
 
 ver=$(echo "SELECT version FROM schema_ver WHERE component = '$1'" | $PSQL)
 latest_ver=$(ls $schema_dir/schema-*.sql | sed 's/^.*schema-\([0-9]\+\).sql/\1/' | sort -n -r | head -n1)
+echo "Updating schema: $component on $(date)"
 echo "Current schema version: $ver"
 echo "Latest schema version: $latest_ver"
 
@@ -41,8 +56,7 @@ EOF
 else
     if [ "$ver" -ne "$latest_ver" ]; then
         echo "Updating Schema..."
-        let "v = v + 1"
-        for v in $(seq $ver $latest_ver); do
+        for v in $(seq $(expr $ver + 1) $latest_ver); do
             echo "Updating to $v"
             psql -e -f $schema_dir/convert-$v.sql -U metavize mvvm
         done

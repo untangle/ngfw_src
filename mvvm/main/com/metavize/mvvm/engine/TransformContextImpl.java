@@ -73,6 +73,9 @@ class TransformContextImpl implements TransformContext
                          MackageDesc mackageDesc, boolean isNew)
         throws DeployException
     {
+        if (null != transformDesc.getTransformBase()) {
+            SchemaUtil.initSchema(transformDesc.getTransformBase());
+        }
         SchemaUtil.initSchema(transformDesc.getName());
 
         this.transformDesc = transformDesc;

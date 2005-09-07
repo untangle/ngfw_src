@@ -26,7 +26,7 @@ import com.metavize.mvvm.security.Tid;
  */
 public class TransformDesc implements Serializable
 {
-    private static final long serialVersionUID = 4361064848435100972L;
+    private static final long serialVersionUID = -578021414141899172L;
 
     private final Tid tid;
 
@@ -34,6 +34,7 @@ public class TransformDesc implements Serializable
 
     private final String className;
     private final String guiClassName;
+    private final String transformBase;
 
     private final List<String> exports;
     private final List<String> parents;
@@ -46,14 +47,15 @@ public class TransformDesc implements Serializable
     private final int udpMaxPacketSize = 16384;
 
     public TransformDesc(Tid tid, String name, String className,
-                         String guiClassName, List<String> exports,
-                         List<String> parents, boolean singleInstance,
-                         String displayName)
+                         String guiClassName, String transformBase,
+                         List<String> exports, List<String> parents,
+                         boolean singleInstance, String displayName)
     {
         this.tid = tid;
         this.name = name;
         this.className = className;
         this.guiClassName = guiClassName;
+        this.transformBase = transformBase;
         List<String> l = null == exports ? new LinkedList<String>() : exports;
         this.exports = Collections.unmodifiableList(l);
         l = null == parents ? new LinkedList<String>() : parents;
@@ -172,6 +174,17 @@ public class TransformDesc implements Serializable
     public String getGuiClassName()
     {
         return guiClassName;
+    }
+
+    /**
+     * The transformBase is the name of the base transform. For example
+     * clam-transform's transformBase is virus-base.
+     *
+     * @return the transformBase, null if transform does not have a base.
+     */
+    public String getTransformBase()
+    {
+        return transformBase;
     }
 
     // Object methods ---------------------------------------------------------

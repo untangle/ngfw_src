@@ -15,7 +15,8 @@ $Id: mvvm-transform.xml,v 1.6 2005/03/08 23:05:46 inieves Exp $
   <transform-desc name="sophos-transform"
                   display-name="Sophos AntiVirus Scanner"
                   classname="com.metavize.tran.sophos.SophosTransform"
-                  gui-classname="com.metavize.tran.sophos.gui.MTransformJPanel"/>
+                  gui-classname="com.metavize.tran.sophos.gui.MTransformJPanel"
+                  transform-base="virus-base"/>
   <parent>http-casing</parent>
   <parent>mail-casing</parent>
   <parent>ftp-casing</parent>

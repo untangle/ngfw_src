@@ -134,7 +134,6 @@ public class Rule implements Serializable
         this.category = category;
     }
 
-
     /**
      * Get a description for display purposes.
      *

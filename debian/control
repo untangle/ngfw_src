@@ -29,30 +29,19 @@ Depends: mvvm
 XB-Display-Name: Email
 XB-Website: http://www.metavize.com
 Description: The Metavize eMail Decoder
- The Mail Casing allows other software appliances
- to parse and analyze eMail (SMTP/IMAP/POP3) traffic and documents.
+ The Mail Casing allows other software appliances to parse and analyze
+ eMail (SMTP/IMAP/POP3) traffic and documents.
 
-Package: spamassassin-transform
+Package: airgap-transform
 Architecture: any
-Depends: mvvm, spamc-mv, mail-casing
+Depends: mvvm
 XB-Price: 0
-XB-Display-Name: SpamGuard
-XB-Website: http://www.metavize.com/spam.html
-XB-Rack-Position: 0
-Description: The Metavize SpamGuard Software Appliance
- The SpamGuard Software Appliance marks Spam email as Spam.
-
-Package: clamphish-transform
-Architecture: any
-Depends: mvvm, clamav-mv, mail-casing
-XB-Price: 0
-XB-Display-Name: Fraud Protection
-XB-Website: http://www.metavize.com/phish.html
-XB-Rack-Position: 1
-Description: The Metavize Fraud Protection Software Appliance
- The Fraud Protection Software Appliance protects users from emails,
- commonly known as "phish," intended to steal identity, 
- credit card information, and more.
+XB-Display-Name: Packet Attack Shield
+XB-Website: http://www.metavize.com/packetshield.html
+XB-Rack-Position: 1001
+Description: The Metavize Packet Attack Shield
+ The Packet Attack Shield prevents packet based attacks on your
+ network.
 
 Package: spyware-transform
 Architecture: any
@@ -80,7 +69,7 @@ Description: The Metavize Web Content Filter
 
 Package: hauri-transform
 Architecture: any
-Depends: mvvm, hauri-mv, http-casing, ftp-casing, mail-casing
+Depends: mvvm, virus-base, hauri-mv, http-casing, ftp-casing, mail-casing
 XB-Price: 399
 XB-Display-Name: Hauri AntiVirus Scanner
 XB-Website: http://www.metavize.com/hauri_antivirus.html
@@ -92,7 +81,7 @@ Description: The Hauri AntiVirus Scanner
 
 Package: clam-transform
 Architecture: any
-Depends: mvvm, clamav-mv, http-casing, ftp-casing, mail-casing
+Depends: mvvm, virus-base, clamav-mv, http-casing, ftp-casing, mail-casing
 XB-Price: 0
 XB-Display-Name: Clam AntiVirus Scanner
 XB-Website: http://www.metavize.com/clam_antivirus.html
@@ -139,28 +128,27 @@ Description: The Metavize Firewall Software Appliance
  The Firewall Software Appliance allows network traffic to be blocked
  based on simple rules.
 
-Package: ids-transform
+Package: spamassassin-transform
 Architecture: any
-Depends: mvvm, http-casing
+Depends: mvvm, spam-base, spamc-mv, mail-casing
 XB-Price: 0
-XB-Display-Name: Intrusion Prevention
-XB-Website: http://www.metavize.com/ips.html
-XB-Rack-Position: 42
-Description: The Metavize Intrusion Prevention Appliance 
- The Metavize Intrusion Prevention Appliance is an inline traffic 
- scanner that detects exploits and intrusion attempts. It contains a library of 
- over 2000 rules which can be easily expanded on with custom rules.
+XB-Display-Name: SpamGuard
+XB-Website: http://www.metavize.com/spam.html
+XB-Rack-Position: 0
+Description: The Metavize SpamGuard Software Appliance
+ The SpamGuard Software Appliance marks Spam email as Spam.
 
-Package: airgap-transform
+Package: clamphish-transform
 Architecture: any
-Depends: mvvm
+Depends: mvvm, spam-base, clamav-mv, mail-casing
 XB-Price: 0
-XB-Display-Name: Packet Attack Shield
-XB-Website: http://www.metavize.com/packetshield.html
-XB-Rack-Position: 1001
-Description: The Metavize Packet Attack Shield
- The Packet Attack Shield prevents packet based attacks on your
- network.
+XB-Display-Name: Fraud Protection
+XB-Website: http://www.metavize.com/phish.html
+XB-Rack-Position: 1
+Description: The Metavize Fraud Protection Software Appliance
+ The Fraud Protection Software Appliance protects users from emails,
+ commonly known as "phish," intended to steal identity, credit card
+ information, and more.
 
 Package: test-transform
 Architecture: any
@@ -172,6 +160,19 @@ XB-Rack-Position: 2002
 Description: The Metavize Test Software Appliance
  The Test Software Appliance is for internal Metavize testing.
 
+Package: ids-transform
+Architecture: any
+Depends: mvvm, http-casing
+XB-Price: 0
+XB-Display-Name: Intrusion Prevention
+XB-Website: http://www.metavize.com/ips.html
+XB-Rack-Position: 42
+Description: The Metavize Intrusion Prevention Appliance
+ The Metavize Intrusion Prevention Appliance is an inline traffic
+ scanner that detects exploits and intrusion attempts. It contains a
+ library of over 2000 rules which can be easily expanded on with
+ custom rules.
+
 Package: reporting-transform
 Architecture: any
 Depends: mvvm
@@ -180,9 +181,27 @@ XB-Display-Name: EdgeReport
 XB-Website: http://www.metavize.com/reports.html
 XB-Rack-Position: 10000
 Description: The Metavize Report Generator
- EdgeReport generates document reports about activities on your network.
- EdgeReport will report general network activity, and information supplied
- by other Software Appliances.
+ EdgeReport generates document reports about activities on your
+ network.  EdgeReport will report general network activity, and
+ information supplied by other Software Appliances.
+
+Package: virus-base
+Architecture: any
+Depends: mvvm
+XB-Price: 0
+XB-Display-Name: AntiVirus Base
+XB-Website: http://www.metavize.com
+Description: The Metavize Base Virus Transform
+ The Metavize Base Virus Transform for antivirus transforms
+
+Package: spam-base
+Architecture: any
+Depends: mvvm
+XB-Price: 0
+XB-Display-Name: AntiSpam Base
+XB-Website: http://www.metavize.com
+Description: The Metavize Base Spam Transform
+ The Metavize Base Spam Transform for antivirus transforms
 
 Package: metavize-client
 Architecture: any
@@ -190,7 +209,7 @@ Depends: mvvm
 Conflicts: metavize-gui
 XB-Display-Name: Metavize Client
 XB-Website: http://www.metavize.com
-Description: The Metavize Client 
+Description: The Metavize Client
  The Metavize Client is the User Interface for accessing and
  controlling EdgeGuard.
 

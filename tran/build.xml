@@ -296,40 +296,36 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <target name="install.spam"/>
 
   <target name="install.hauri">
-    <copy todir="${dist.mvvm.schema}/hauri-transform">
-      <fileset dir="virus/hier/${suffix.mvvm.schema}/virus-base"/>
-    </copy>
-    <!-- XXX hack attack, need real gui jars -->
+<!--     <copy todir="${dist.mvvm.schema}/hauri-transform"> -->
+<!--       <fileset dir="virus/hier/${suffix.mvvm.schema}/virus-base"/> -->
+<!--     </copy> -->
     <jar update="true" destfile="${dist.mvvm.webstart}/hauri-transform.mar">
       <fileset dir="${build.root}/mail"/>
     </jar>
   </target>
 
   <target name="install.clam">
-    <copy todir="${dist.mvvm.schema}/clam-transform">
-      <fileset dir="virus/hier/${suffix.mvvm.schema}/virus-base"/>
-    </copy>
-    <!-- XXX hack attack, need real gui jars -->
+<!--     <copy todir="${dist.mvvm.schema}/clam-transform"> -->
+<!--       <fileset dir="virus/hier/${suffix.mvvm.schema}/virus-base"/> -->
+<!--     </copy> -->
     <jar update="true" destfile="${dist.mvvm.webstart}/clam-transform.mar">
       <fileset dir="${build.root}/mail"/>
     </jar>
   </target>
 
   <target name="install.spamassassin">
-    <copy todir="${dist.mvvm.schema}/spamassassin-transform">
-      <fileset dir="spam/hier/${suffix.mvvm.schema}/spam-base"/>
-    </copy>
-    <!-- XXX hack attack, need real gui jars -->
+<!--     <copy todir="${dist.mvvm.schema}/spamassassin-transform"> -->
+<!--       <fileset dir="spam/hier/${suffix.mvvm.schema}/spam-base"/> -->
+<!--     </copy> -->
     <jar update="true" destfile="${dist.mvvm.webstart}/spamassassin-transform.mar">
       <fileset dir="${build.root}/mail"/>
     </jar>
   </target>
 
   <target name="install.clamphish">
-    <copy todir="${dist.mvvm.schema}/clamphish-transform">
-      <fileset dir="spam/hier/${suffix.mvvm.schema}/spam-base"/>
-    </copy>
-    <!-- XXX hack attack, need real gui jars -->
+<!--     <copy todir="${dist.mvvm.schema}/clamphish-transform"> -->
+<!--       <fileset dir="spam/hier/${suffix.mvvm.schema}/spam-base"/> -->
+<!--     </copy> -->
     <jar update="true" destfile="${dist.mvvm.webstart}/clamphish-transform.mar">
       <fileset dir="${build.root}/mail"/>
     </jar>

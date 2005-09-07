@@ -38,6 +38,7 @@ public class MvvmTransformHandler extends DefaultHandler
     private String name = null;
     private String className = null;
     private String guiClassName = null;
+    private String transformBase = null;
     private boolean singleInstance = false;
     private String displayName = null;
 
@@ -45,11 +46,12 @@ public class MvvmTransformHandler extends DefaultHandler
     private StringBuilder exportBuilder;
 
     // public methods ---------------------------------------------------------
+
     public TransformDesc getTransformDesc(Tid tid)
     {
         return new TransformDesc(tid, name, className, guiClassName,
-                                 exports, parents, singleInstance,
-                                 displayName);
+                                 transformBase, exports, parents,
+                                 singleInstance, displayName);
     }
 
     // DefaultHandler methods -------------------------------------------------
@@ -112,6 +114,10 @@ public class MvvmTransformHandler extends DefaultHandler
                 displayName = v;
             } else if (n.equals("gui-classname")) {
                 guiClassName = v;
+            } else if (n.equals("transform-base")) {
+                transformBase = v;
+            } else {
+                logger.warn("skipping unknown attribute: " + n);
             }
         }
     }

@@ -69,7 +69,7 @@ class TransformManagerImpl implements TransformManager
 
     private TransformManagerImpl()
     {
-                Session s = MvvmContextFactory.context().openSession();
+        Session s = MvvmContextFactory.context().openSession();
         try {
             Transaction tx = s.beginTransaction();
 
