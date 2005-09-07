@@ -212,9 +212,9 @@ public class NetworkJPanel extends javax.swing.JPanel implements Savable, Refres
         dhcpJPanel.setBorder(new javax.swing.border.TitledBorder(null, "External IP Settings", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
         dhcpButtonGroup.add(dhcpEnabledRadioButton);
         dhcpEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        dhcpEnabledRadioButton.setText("<html><b>Use DHCP</b> to automatically set EdgeGuard's external IP settings from the network's DHCP server.  The settings are shown in the fields below.</html>");
         dhcpEnabledRadioButton.setActionCommand("<html><b>Use DHCP</b> to automatically set EdgeGuard's IP address from the network's DHCP server.</html>");
         dhcpEnabledRadioButton.setFocusPainted(false);
+        dhcpEnabledRadioButton.setLabel("<html><b>Automatically Set</b>  EdgeGuard's external IP settings from the network's DHCP server.  The settings are shown in the fields below.</html>");
         dhcpEnabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 dhcpEnabledRadioButtonActionPerformed(evt);
@@ -229,8 +229,8 @@ public class NetworkJPanel extends javax.swing.JPanel implements Savable, Refres
 
         dhcpButtonGroup.add(dhcpDisabledRadioButton);
         dhcpDisabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        dhcpDisabledRadioButton.setText("<html><b>Manually Specify</b> EdgeGuard's external IP settings through the fields below.</html>");
         dhcpDisabledRadioButton.setFocusPainted(false);
+        dhcpDisabledRadioButton.setLabel("<html><b>Manually Set</b> EdgeGuard's external IP settings through the fields below.</html>");
         dhcpDisabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 dhcpDisabledRadioButtonActionPerformed(evt);
