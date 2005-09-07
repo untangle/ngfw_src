@@ -141,7 +141,7 @@ public class GeneratedAddressTest {
       System.out.println("Testing: " + sb.toString());
     }
     try {
-      List<EmailAddress> list = EmailAddressHeaderField.parseHeaderLine(sb.toString());
+      List<EmailAddress> list = EmailAddressHeaderField.parseHeaderLine(sb.toString(), false);
       
       if(print) {
         System.out.println("Parsed into " + list.size() + " addresses");

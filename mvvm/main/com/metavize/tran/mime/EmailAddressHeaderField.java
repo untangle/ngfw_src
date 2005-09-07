@@ -221,7 +221,7 @@ public class EmailAddressHeaderField
 
   public static List<EmailAddress> parseHeaderLine(String line)
     throws HeaderParseException {
-    return parseHeaderLine(line, false);
+    return parseHeaderLine(line, true);
   }
   
   /**
@@ -235,6 +235,9 @@ public class EmailAddressHeaderField
   public static List<EmailAddress> parseHeaderLine(String line,
     boolean skipBadAddresses) 
     throws HeaderParseException {
+
+    //TODO bscott See bug 808.  This isn't really "fixed".  It
+    //still cannot handle <foo:;> which is legal.
 
     List<EmailAddress> ret = new ArrayList<EmailAddress>();
     
@@ -270,7 +273,7 @@ public class EmailAddressHeaderField
             sb.toString() + "\" into address from header line \"" +
             line + "\"", ex);
           if(skipBadAddresses) {
-            m_logger.error(hpe.fillInStackTrace());
+            m_logger.warn(hpe.fillInStackTrace());
           }
           else {
             throw hpe;
@@ -307,9 +310,15 @@ public class EmailAddressHeaderField
           ret.add(EmailAddress.parse(sb.toString()));
         }
         catch(Exception ex) {
-          throw new HeaderParseException("Unable to parse \"" + 
+          HeaderParseException hpe = new HeaderParseException("Unable to parse \"" +
             sb.toString() + "\" into address from header line \"" +
             line + "\"", ex);
+          if(skipBadAddresses) {
+            m_logger.warn(hpe.fillInStackTrace());
+          }
+          else {
+            throw hpe;
+          }
         }
         sb = new StringBuilder();
         sawGT = false;
@@ -341,6 +350,7 @@ public class EmailAddressHeaderField
       }
       
     }while(t != null);
+
     return ret;
   }
 
@@ -399,7 +409,7 @@ public class EmailAddressHeaderField
     System.out.println(line);
     System.out.println("-----------------------------");
     try {
-      List<EmailAddress> list = parseHeaderLine(line);
+      List<EmailAddress> list = parseHeaderLine(line, false);
       boolean first = true;
       for(EmailAddress addr : list) {
         if(first) {
