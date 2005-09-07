@@ -425,30 +425,43 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
             if(killGraph)
                 return;
             
-            SwingUtilities.invokeAndWait( new Runnable(){ public void run(){ 
-                if( MTransformDisplayJPanel.this.getUpdateSessions() ){
-                    newestIndex = sessionDynamicTimeSeriesCollection.getNewestIndex();
-                    sessionDynamicTimeSeriesCollection.addValue(0, newestIndex, (float) sessionCountCurrent);
-                    sessionDynamicTimeSeriesCollection.addValue(1, newestIndex, (float) sessionRequestCurrent - sessionRequestLast);
-                    sessionDynamicTimeSeriesCollection.advanceTime();
-                    sessionRequestLast = sessionRequestCurrent;
-                    generateCountLabel(sessionCountTotal, " ACC", sessionTotalJLabel);
-                    generateCountLabel(sessionRequestCurrent, " REQ", sessionRequestTotalJLabel);
-                }
-
-                if( MTransformDisplayJPanel.this.getUpdateThroughput() ){
-                    throughputDynamicTimeSeriesCollection.addValue( 0, throughputDynamicTimeSeriesCollection.getNewestIndex(), ((float)(byteCountCurrent - byteCountLast))/1000f);
-                    throughputDynamicTimeSeriesCollection.advanceTime();
-                    byteCountLast = byteCountCurrent;
-                    generateCountLabel(byteCountCurrent, "B", throughputTotalJLabel);
-                }
-
-                if( MTransformDisplayJPanel.this.getUpdateActivity() ){
-                    dataset.setValue( activity0Count.decayValue(), activitySeriesString, activityString0);
-                    dataset.setValue( activity1Count.decayValue(), activitySeriesString, activityString1);
-                    dataset.setValue( activity2Count.decayValue(), activitySeriesString, activityString2);
-                    dataset.setValue( activity3Count.decayValue(), activitySeriesString, activityString3);
-                }
+            SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+		if(!updateGraph){
+		    resetCounters();
+		    for(int i=0; i< 60; i++){
+			newestIndex = sessionDynamicTimeSeriesCollection.getNewestIndex();
+			sessionDynamicTimeSeriesCollection.addValue(0, newestIndex, 0f);
+			sessionDynamicTimeSeriesCollection.addValue(1, newestIndex, 0f);
+			sessionDynamicTimeSeriesCollection.advanceTime();
+			throughputDynamicTimeSeriesCollection.addValue( 0, throughputDynamicTimeSeriesCollection.getNewestIndex(), 0f);
+			throughputDynamicTimeSeriesCollection.advanceTime();
+		    }
+		    byteCountLast = byteCountCurrent = 0;
+		    sessionRequestLast = sessionRequestCurrent = 0;
+		}
+		if( MTransformDisplayJPanel.this.getUpdateSessions() ){
+		    newestIndex = sessionDynamicTimeSeriesCollection.getNewestIndex();
+		    sessionDynamicTimeSeriesCollection.addValue(0, newestIndex, (float) sessionCountCurrent);
+		    sessionDynamicTimeSeriesCollection.addValue(1, newestIndex, (float) sessionRequestCurrent - sessionRequestLast);
+		    sessionDynamicTimeSeriesCollection.advanceTime();
+		    sessionRequestLast = sessionRequestCurrent;
+		    generateCountLabel(sessionCountTotal, " ACC", sessionTotalJLabel);
+		    generateCountLabel(sessionRequestCurrent, " REQ", sessionRequestTotalJLabel);
+		}		    
+		if( MTransformDisplayJPanel.this.getUpdateThroughput() ){
+		    throughputDynamicTimeSeriesCollection.addValue( 0, 
+								    throughputDynamicTimeSeriesCollection.getNewestIndex(), 
+								    ((float)(byteCountCurrent - byteCountLast))/1000f);
+		    throughputDynamicTimeSeriesCollection.advanceTime();
+		    byteCountLast = byteCountCurrent;
+		    generateCountLabel(byteCountCurrent, "B", throughputTotalJLabel);
+		}		    
+		if( MTransformDisplayJPanel.this.getUpdateActivity() ){
+		    dataset.setValue( activity0Count.decayValue(), activitySeriesString, activityString0);
+		    dataset.setValue( activity1Count.decayValue(), activitySeriesString, activityString1);
+		    dataset.setValue( activity2Count.decayValue(), activitySeriesString, activityString2);
+		    dataset.setValue( activity3Count.decayValue(), activitySeriesString, activityString3);
+		}
             }});
         }
         
@@ -486,18 +499,7 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
                         return;
 
                     // DEAL WITH TURNING THE GRAPHS OFF
-                    if(!updateGraph){
-                        resetCounters();
-                        for(int i=0; i< 60; i++){
-                            newestIndex = sessionDynamicTimeSeriesCollection.getNewestIndex();
-                            sessionDynamicTimeSeriesCollection.addValue(0, newestIndex, 0f);
-                            sessionDynamicTimeSeriesCollection.addValue(1, newestIndex, 0f);
-                            sessionDynamicTimeSeriesCollection.advanceTime();
-                            throughputDynamicTimeSeriesCollection.addValue( 0, throughputDynamicTimeSeriesCollection.getNewestIndex(), 0f);            
-                            throughputDynamicTimeSeriesCollection.advanceTime();
-                        }
-                        byteCountLast = byteCountCurrent = 0;
-                        sessionRequestLast = sessionRequestCurrent = 0;
+                    if(!updateGraph){                 
                         doUpdateGraph();
                         while(!updateGraph){
                             Thread.sleep(SLEEP_MILLIS);
