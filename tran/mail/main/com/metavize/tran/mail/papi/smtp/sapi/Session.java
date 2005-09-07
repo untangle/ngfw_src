@@ -674,7 +674,7 @@ public final class Session
       if(
         (!(cmd instanceof UnparsableCommand)) &&
         !m_allowedCommandsSet.contains(cmdStrLower)) {
-        m_logger.debug("Enqueuing negative response to " +
+        m_logger.warn("Enqueuing negative response to " +
           "non-allowed command \"" + cmd.getCmdString() + "\"");
         actions.appendSyntheticResponse(new FixedSyntheticResponse(500, "Syntax error, command unrecognized"));
         actions.followup();
@@ -765,7 +765,7 @@ public final class Session
             timeDiff + " millis since last communication)");
         }
         else {
-          m_logger.error("Response received without a registered handler");
+          m_logger.warn("Response received without a registered handler");
         }
         resultBuilder.addTokenForClient(resp);
         return;

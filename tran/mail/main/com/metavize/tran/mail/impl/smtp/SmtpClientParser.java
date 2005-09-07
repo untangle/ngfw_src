@@ -186,16 +186,16 @@ class SmtpClientParser
           //Duplicate the buffer, in case we have a problem
           ByteBuffer dup = buf.duplicate();
           boolean endOfHeaders = false;
-          try {
+//          try {
             endOfHeaders = m_sac.scanner.processHeaders(buf, 1024*4);//TODO bscott a real value here
-          }
-          catch(LineTooLongException ltle) {
+//          }
+//          catch(LineTooLongException ltle) {
             //TODO bscott THis still needs to be more gracefully unwound
             //     in the stateful transforms
-            m_logger.error("Exception looking for headers end", ltle);
-            puntDuringHeaders(toks, dup);
-            return new ParseResult(toks, null);
-          }
+//            m_logger.error("Exception looking for headers end", ltle);
+//            puntDuringHeaders(toks, dup);
+//            return new ParseResult(toks, null);
+//          }
 
           //If we're here, we didn't get a line which was too long.  Write
           //what we have to disk.

@@ -193,18 +193,18 @@ public class PopServerParser extends AbstractParser
 
                         ByteBuffer writeDup = buf.duplicate();
 
-                        try {
+//                        try {
                             /* scan and "consume" message frag */
                             bHdrDone = zMBScanner.processHeaders(buf, LINE_SZ);
-                        } catch (LineTooLongException exn) {
-                            logger.warn("cannot process message header: " + exn);
-                            zWrChannel = closeChannel(zWrChannel);
-                            handleException(zTokens, dup);
-                            zMsgFile = null;
-                            buf = null; /* buf has been consumed */
-                            bDone = true;
-                            break;
-                        }
+//                        } catch (LineTooLongException exn) {
+//                            logger.warn("cannot process message header: " + exn);
+//                            zWrChannel = closeChannel(zWrChannel);
+//                            handleException(zTokens, dup);
+//                            zMsgFile = null;
+//                            buf = null; /* buf has been consumed */
+//                            bDone = true;
+//                            break;
+//                        }
 
                         logger.debug("message header is complete: " + bHdrDone + ", " + buf);
 

@@ -13,6 +13,7 @@ package com.metavize.tran.mail.papi;
 import static com.metavize.tran.util.Ascii.*;
 import static com.metavize.tran.util.BufferUtil.*;
 import static com.metavize.tran.util.ASCIIUtil.*;
+import org.apache.log4j.Logger;
 
 import java.nio.*;
 import com.metavize.tran.mime.*;
@@ -65,6 +66,8 @@ public class MessageBoundaryScanner {
     DONE
   };
 
+  private final Logger m_logger = Logger.getLogger(MessageBoundaryScanner.class);  
+  
   private boolean m_headersBlank = false;
   private boolean m_isEmptyMessage = false;
   private ScanningState m_state = ScanningState.INIT;
@@ -141,13 +144,9 @@ public class MessageBoundaryScanner {
    *
    * @return true if end of headers encountered
    *
-   * @exception LineTooLongException if a terminated line
-   *            could not be found in the first
-   *            maxHeaderLineSz bytes
    */
   public boolean processHeaders(ByteBuffer buf,
-    int maxHeaderLineSz)
-    throws LineTooLongException {
+    int maxHeaderLineSz) {
 
     //Note there is a special case we must
     //guard against.  A mail body
@@ -224,7 +223,11 @@ public class MessageBoundaryScanner {
         //header line, or part of the body from a
         //crap message
         if(buf.remaining() > maxHeaderLineSz) {
-          throw new LineTooLongException(maxHeaderLineSz);
+          m_logger.warn("Exceeded max candidate header line length of \"" +
+            maxHeaderLineSz + "\".  Assume no headers");
+          m_headersBlank = true;
+          m_state = ScanningState.INIT_BODY;
+          return true;            
         }
         return false;
       }

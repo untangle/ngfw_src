@@ -139,6 +139,7 @@ public class ByteBufferBuilder {
       }
       byte[] newArray = new byte[newLen];
       System.arraycopy(m_bytes, 0, newArray, 0, m_pos);
+      m_bytes = newArray;
     }
   }
  
