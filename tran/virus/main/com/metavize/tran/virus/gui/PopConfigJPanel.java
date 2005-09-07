@@ -1,7 +1,12 @@
 /*
+ * Copyright (c) 2003,2004 Metavize Inc.
+ * All rights reserved.
  *
+ * This software is the confidential and proprietary information of
+ * Metavize Inc. ("Confidential Information").  You shall
+ * not disclose such Confidential Information.
  *
- * Created on March 25, 2004, 6:11 PM
+ * $Id$
  */
 
 package com.metavize.tran.virus.gui;
@@ -67,11 +72,11 @@ class PopTableModel extends MSortedTableModel{
     private static final String SOURCE_INBOUND  = "incoming message";
     private static final String SOURCE_OUTBOUND = "outgoing message";
 
-    public void generateSettings(Object settings, boolean validateOnly) throws Exception {
+    public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {
 	VirusPOPConfig virusPOPConfigInbound = null;
 	VirusPOPConfig virusPOPConfigOutbound = null;
 
-	for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
+	for( Vector rowVector : tableVector ){
             VirusPOPConfig virusPOPConfig = (VirusPOPConfig) rowVector.elementAt(6);
             virusPOPConfig.setScan( (Boolean) rowVector.elementAt(3) );
 	    String actionString = (String) ((ComboBoxModel)rowVector.elementAt(4)).getSelectedItem();
@@ -97,9 +102,9 @@ class PopTableModel extends MSortedTableModel{
 
     }
 
-    public Vector generateRows(Object settings) {
+    public Vector<Vector> generateRows(Object settings) {
         VirusSettings virusSettings = (VirusSettings) settings;
-        Vector allRows = new Vector(2);
+        Vector<Vector> allRows = new Vector<Vector>(2);
 	int rowIndex = 0;
 
 	// INBOUND

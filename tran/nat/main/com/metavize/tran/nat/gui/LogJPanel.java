@@ -48,11 +48,11 @@ public class LogJPanel extends MLogTableJPanel
 	    return tableColumnModel;                                                                                                     
 	}
 	
-	public void generateSettings(Object settings, boolean validateOnly ) throws Exception {}
+	public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly ) throws Exception {}
 
-	public Vector generateRows(Object settings){
+	public Vector<Vector> generateRows(Object settings){
 	    List<NatRedirectLogEntry> logList = (List<NatRedirectLogEntry>) settings;
-	    Vector allEvents = new Vector(logList.size());
+	    Vector<Vector> allEvents = new Vector<Vector>(logList.size());
 	    Vector event;
 	    
 	    for( NatRedirectLogEntry log : logList ){

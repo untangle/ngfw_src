@@ -72,8 +72,8 @@ class HTTPTableModel extends MSortedTableModel{
     private static final String INBOUND_SOURCE = "inbound HTTP";
     private static final String OUTBOUND_SOURCE = "outbound HTTP";
     
-    public void generateSettings(Object settings, boolean validateOnly) throws Exception {
-	for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
+    public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {
+	for( Vector rowVector : tableVector ){
             
             VirusConfig virusConfig = (VirusConfig) rowVector.elementAt(5);
             virusConfig.setScan( (Boolean) rowVector.elementAt(3) );
@@ -95,9 +95,9 @@ class HTTPTableModel extends MSortedTableModel{
         
     }
     
-    public Vector generateRows(Object settings){
+    public Vector<Vector> generateRows(Object settings){
 	VirusSettings virusSettings = (VirusSettings) settings;
-	Vector allRows = new Vector(2);
+	Vector<Vector> allRows = new Vector<Vector>(2);
 	int rowIndex = 0;
 
 	// INBOUND

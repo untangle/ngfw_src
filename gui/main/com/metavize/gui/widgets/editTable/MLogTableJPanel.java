@@ -84,7 +84,7 @@ public abstract class MLogTableJPanel extends javax.swing.JPanel implements Shut
         return (MColoredJTable) entryJTable;
     }
         
-    protected Vector generateRows(Object settings) {
+    protected Vector<Vector> generateRows(Object settings) {
         return null;
     }
 

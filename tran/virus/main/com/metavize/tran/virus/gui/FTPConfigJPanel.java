@@ -70,8 +70,8 @@ class FTPTableModel extends MSortedTableModel{
     private static final String SOURCE_INBOUND = "inbound FTP";
     private static final String SOURCE_OUTBOUND = "outbound FTP";
 
-    public void generateSettings(Object settings, boolean validateOnly) throws Exception {
-	for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
+    public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {
+	for( Vector rowVector : tableVector ){
 
             VirusConfig virusConfig = (VirusConfig) rowVector.elementAt(5);
             virusConfig.setScan( (Boolean) rowVector.elementAt(3) );
@@ -86,15 +86,14 @@ class FTPTableModel extends MSortedTableModel{
 		else if( ((String)rowVector.elementAt(2)).equals(SOURCE_OUTBOUND) ){
 		    virusSettings.setFtpOutbound(virusConfig);
 		}
-
 	    }
 	    
 	}
     }
     
-    public Vector generateRows(Object settings){
+    public Vector<Vector> generateRows(Object settings){
 	VirusSettings virusSettings = (VirusSettings) settings;
-	Vector allRows = new Vector(2);
+	Vector<Vector> allRows = new Vector<Vector>(2);
 	int rowIndex = 0;
 
 	// INBOUND

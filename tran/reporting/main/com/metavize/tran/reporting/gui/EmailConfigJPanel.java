@@ -68,12 +68,12 @@ class EmailTableModel extends MSortedTableModel{
     
     
     
-    public void generateSettings(Object settings, boolean validateOnly) throws Exception {
-	StringBuilder elemList = new StringBuilder();
+    public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {
+	StringBuilder elemList = new StringBuilder(tableVector.size());
 	String newElem = null;
 	int rowIndex = 0;
 
-	for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
+	for( Vector rowVector : tableVector ){
 	    rowIndex++;
 	    newElem = ((String) rowVector.elementAt(2)).trim();
 
@@ -90,11 +90,11 @@ class EmailTableModel extends MSortedTableModel{
 	}
     }
     
-    public Vector generateRows(Object settings){
+    public Vector<Vector> generateRows(Object settings){
 	MailSettings mailSettings = Util.getAdminManager().getMailSettings();
 	String recipients = mailSettings.getReportEmail();
 	StringTokenizer recipientsTokenizer = new StringTokenizer(recipients, ",");
-        Vector allRows = new Vector();
+        Vector<Vector> allRows = new Vector<Vector>(recipientsTokenizer.countTokens());
 	Vector tempRow = null;
         int rowIndex = 0;
 

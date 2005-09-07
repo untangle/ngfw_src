@@ -74,11 +74,11 @@ class ExtensionTableModel extends MSortedTableModel{
     }
 
 
-    public void generateSettings(Object settings, boolean validateOnly){
-        List elemList = new ArrayList();
+    public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly){
+        List elemList = new ArrayList(tableVector.size());
 	StringRule newElem = null;
 
-	for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
+	for( Vector rowVector : tableVector ){
             newElem = (StringRule) rowVector.elementAt(5);
             newElem.setString( (String) rowVector.elementAt(2) );
             newElem.setLive( (Boolean) rowVector.elementAt(3) );
@@ -93,13 +93,14 @@ class ExtensionTableModel extends MSortedTableModel{
 	}
     }
     
-    public Vector generateRows(Object settings){
+    public Vector<Vector> generateRows(Object settings){
         VirusSettings virusSettings = (VirusSettings) settings;
-        Vector allRows = new Vector();
+	List<StringRule> extensions = (List<StringRule>) virusSettings.getExtensions();
+        Vector<Vector> allRows = new Vector<Vector>(extensions.size());
 	Vector tempRow = null;
 	int rowIndex = 0;
 
-	for( StringRule newElem : (List<StringRule>) virusSettings.getExtensions() ){
+	for( StringRule newElem : extensions ){
 	    rowIndex++;
             tempRow = new Vector(6);
             tempRow.add( super.ROW_SAVED );

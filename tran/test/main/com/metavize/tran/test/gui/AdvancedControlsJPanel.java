@@ -1,8 +1,14 @@
 /*
- * AdvancedControlsJPanel.java
+ * Copyright (c) 2003,2004 Metavize Inc.
+ * All rights reserved.
  *
- * Created on August 2, 2004, 2:52 PM
+ * This software is the confidential and proprietary information of
+ * Metavize Inc. ("Confidential Information").  You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id$
  */
+
 
 package com.metavize.tran.test.gui;
 
@@ -11,10 +17,6 @@ import com.metavize.tran.test.TestSettings;
 import com.metavize.tran.test.TestTransform;
 import com.metavize.gui.util.Util;
 
-/**
- *
- * @author  inieves
- */
 public class AdvancedControlsJPanel extends javax.swing.JPanel {
     
     private TransformContext transformContext;

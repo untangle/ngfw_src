@@ -34,8 +34,8 @@ public class LogJPanel extends MLogTableJPanel {
     
     class LogTableModel extends MSortedTableModel{                                                                                       
 	
-	public TableColumnModel getTableColumnModel(){                                                                                   
-	    DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();                                                    
+	public TableColumnModel getTableColumnModel(){
+	    DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
 	    //                                 #   min  rsz    edit   remv   desc   typ               def
 	    addTableColumn( tableColumnModel,  0,  150, true,  false, false, false, Date.class,   null, "timestamp" );
 	    addTableColumn( tableColumnModel,  1,  55,  true,  false, false, false, String.class, null, "action" );
@@ -44,14 +44,14 @@ public class LogJPanel extends MLogTableJPanel {
 	    addTableColumn( tableColumnModel,  4,  150, true,  false, false, false, String.class, null, sc.html("reason for<br>action") );
 	    addTableColumn( tableColumnModel,  5,  100, true,  false, false, false, String.class, null, sc.html("request<br>direction") );
 	    addTableColumn( tableColumnModel,  6,  165, true,  false, false, false, String.class, null, "server" );
-	    return tableColumnModel;                                                                                                     
+	    return tableColumnModel;
 	}
 	
-	public void generateSettings(Object settings, boolean validateOnly) throws Exception {}                                          
+	public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {}
 
-	public Vector generateRows(Object settings){
+	public Vector<Vector> generateRows(Object settings){
 	    List<ProtoFilterLog> logList = (List<ProtoFilterLog>) settings;
-	    Vector allEvents = new Vector(logList.size());
+	    Vector<Vector> allEvents = new Vector<Vector>(logList.size());
 	    Vector event;
 	    
 	    for( ProtoFilterLog log : logList ){

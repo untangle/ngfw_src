@@ -91,21 +91,27 @@ class AdminConfigTableModel extends MSortedTableModel {
     }
 
 
-    private void prevalidate() throws Exception {
-                        
+    private void prevalidate() throws Exception {                        
         loginHashtable.clear();
 	boolean oneValidAccount = false;
         int rowIndex = 0;
+	Vector<Vector> rawDataVector = (Vector<Vector>) getDataVector();
+
         // go through all the rows and perform some tests
-	Util.printMessage("STATUS: STARTING VERIFICATION of " + this.getOriginalDataVector().size() + " user(s)");	
-        for( Vector tempUser : (Vector<Vector>) this.getOriginalDataVector() ){
+	Util.printMessage("STATUS: STARTING VERIFICATION of " + rawDataVector.size() + " user(s)");	
+        for( Vector tempUser : rawDataVector ){
             rowIndex++;
             byte[] origPasswd = ((MPasswordField)tempUser.elementAt(4)).getByteArray();
             char[] newPasswd = ((MPasswordField)tempUser.elementAt(5)).getPassword();
             char[] newConfPasswd  = ((MPasswordField)tempUser.elementAt(6)).getPassword();
             char[] proceedPasswd  = ((MPasswordField)tempUser.elementAt(7)).getPassword();
             String loginName = (String) tempUser.elementAt(3);
-            
+
+	    // verify that the login name is at least one character long
+            if( loginName.length() < 1 ){
+		throw new Exception("The login name in row: " + rowIndex + "cannot be blank.");
+	    }
+
             // verify that the login name is not duplicated
             if( loginHashtable.containsKey(loginName) ){
 		throw new Exception("The login name: \"" + loginName + "\" in row: " + rowIndex + " already exists.");
@@ -114,18 +120,22 @@ class AdminConfigTableModel extends MSortedTableModel {
 		loginHashtable.put(loginName, loginName);
 	    }
             
-            // verify that all of the new and new confirm passwords and match up (and they are of the proper size)
+	    // verify that the new password is of the proper length
+            if( (newPasswd.length > 0) && (newPasswd.length < MIN_PASSWD_LENGTH) ){
+		throw new Exception("The \"new\" and//or \"new confirm\" passwords for: \"" + loginName + "\" in row: " + rowIndex + " are shorter than the minimum " + MIN_PASSWD_LENGTH + " characters.");
+            }
+
+            // verify that the new and new confirm passwords are the same
             if( !java.util.Arrays.equals(newPasswd, newConfPasswd) ){
 		throw new Exception("The \"new\" and \"new confirm\" passwords are not the same for: \"" + loginName + "\" in row: " + rowIndex + ".");
             }
-            if( (newPasswd.length > 0) && (newPasswd.length < MIN_PASSWD_LENGTH) ){
-		throw new Exception("The \"new\" and//or \"new confirm\" passwords for: \"" + loginName + "\" in row: " + rowIndex + " are shorter than the minimum " + MIN_PASSWD_LENGTH + " characters.");
-            }            
-            // verify that all of the original and proceed passwords are the same for any non saved row
-            if(    !((String)tempUser.elementAt(0)).equals(super.ROW_SAVED)
-		   &&  !PasswordUtil.check( String.valueOf(proceedPasswd), origPasswd )){
+
+            // verify that all of the original and proceed passwords are the same for any non-saved (changed) row
+            if( !((String)tempUser.elementAt(0)).equals(super.ROW_SAVED)
+		&&  !PasswordUtil.check( String.valueOf(proceedPasswd), origPasswd )){
 		throw new Exception("The \"original\" password is not correct for: \"" + loginName + "\" in row: " + rowIndex + ".");
             }
+
             // verify that if this is a new row, a new password has been chosen
             if( ((String)tempUser.elementAt(0)).equals(super.ROW_ADD) && (newPasswd.length == 0) ){
 		throw new Exception("The \"new\" password has not been set for: \"" + loginName + "\" in row: " + rowIndex + ".");
@@ -145,15 +155,14 @@ class AdminConfigTableModel extends MSortedTableModel {
 
     }
     
-    public void generateSettings(Object settings, boolean validateOnly) throws Exception {
+    public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {
 
 	prevalidate();
-	Set allRows = new LinkedHashSet();
+	Set allRows = new LinkedHashSet(tableVector.size());
 	User newElem = null;
 	Util.printMessage("STATUS: STARTING SAVING of accounts");
 	int rowIndex = 0;
-
-        for( Vector rowVector : (Vector<Vector>) this.getOriginalDataVector() ){
+        for( Vector rowVector : tableVector ){
 	    rowIndex++;
             
             byte[] origPasswd = ((MPasswordField)rowVector.elementAt(4)).getByteArray();
@@ -193,13 +202,14 @@ class AdminConfigTableModel extends MSortedTableModel {
 
     }
 
-    public Vector generateRows(Object settings) {
+    public Vector<Vector> generateRows(Object settings) {
 	AdminSettings adminSettings = (AdminSettings) settings;
-        Vector allRows = new Vector();
+	Set<User> users = (Set<User>) adminSettings.getUsers(); 
+        Vector<Vector> allRows = new Vector<Vector>(users.size());
 	Vector tempRow = null;
         int rowIndex = 0;
 
-	for( User user : (Set<User>) adminSettings.getUsers() ){
+	for( User user : users ){
 	    rowIndex++;
             tempRow = new Vector(10);
             tempRow.add( super.ROW_SAVED );

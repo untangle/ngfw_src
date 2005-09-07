@@ -50,12 +50,12 @@ public class LogJPanel extends MLogTableJPanel {
 	    return tableColumnModel;
 	}
 	
-	public void generateSettings(Object settings, boolean validateOnly) throws Exception {}
+	public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {}
 	
 	
-	public Vector generateRows(Object settings){
+	public Vector<Vector> generateRows(Object settings){
 	    List<SpamLog> requestLogList = (List<SpamLog>) settings;
-	    Vector allEvents = new Vector(requestLogList.size());
+	    Vector<Vector> allEvents = new Vector<Vector>(requestLogList.size());
 	    Vector event;
 	    
 	    for( SpamLog requestLog : requestLogList ){

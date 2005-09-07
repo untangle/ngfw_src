@@ -77,11 +77,11 @@ class ProtoTableModel extends MSortedTableModel{
         return tableColumnModel;
     }
     
-    public void generateSettings(Object settings, boolean validateOnly) throws Exception{
-        List elemList = new ArrayList();
+    public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception{
+        List elemList = new ArrayList(tableVector.size());
 	ProtoFilterPattern newElem = null;
 
-	for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
+	for( Vector rowVector : tableVector ){
 	    newElem = (ProtoFilterPattern) rowVector.elementAt(9);
             newElem.setCategory( (String) rowVector.elementAt(2) );
             newElem.setProtocol( (String) rowVector.elementAt(3) );
@@ -101,13 +101,14 @@ class ProtoTableModel extends MSortedTableModel{
 
     }
     
-    public Vector generateRows(Object settings){
+    public Vector<Vector> generateRows(Object settings){
 	ProtoFilterSettings protoFilterSettings = (ProtoFilterSettings) settings;
-        Vector allRows = new Vector();
+	List<ProtoFilterPattern> patterns = (List<ProtoFilterPattern>) protoFilterSettings.getPatterns();
+        Vector<Vector> allRows = new Vector<Vector>(patterns.size());
 	Vector tempRow = null;
 	int rowIndex = 0;
 
-	for( ProtoFilterPattern newElem : (List<ProtoFilterPattern>) protoFilterSettings.getPatterns() ){
+	for( ProtoFilterPattern newElem : patterns ){
 	    rowIndex++;
             tempRow = new Vector(10);
             tempRow.add( super.ROW_SAVED );

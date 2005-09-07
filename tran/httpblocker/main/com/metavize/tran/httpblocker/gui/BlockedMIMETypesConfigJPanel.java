@@ -70,11 +70,11 @@ class MIMETypeTableModel extends MSortedTableModel{
     }
 
     
-    public void generateSettings(Object settings, boolean validateOnly) throws Exception{
-        List elemList = new ArrayList();
+    public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception{
+        List elemList = new ArrayList(tableVector.size());
 	MimeTypeRule newElem = null;
 
-	for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
+	for( Vector rowVector : tableVector ){
             newElem = (MimeTypeRule) rowVector.elementAt(5);
             // newElem.setCategory( (String) rowVector.elementAt(2) );
             newElem.setMimeType( new MimeType( (String)rowVector.elementAt(2) ));  // MimeType is immutable, so we must create a new one
@@ -91,13 +91,14 @@ class MIMETypeTableModel extends MSortedTableModel{
 
     }
     
-    public Vector generateRows(Object settings){
+    public Vector<Vector> generateRows(Object settings){
 	HttpBlockerSettings httpBlockerSettings = (HttpBlockerSettings) settings;
-        Vector allRows = new Vector();
+	List<MimeTypeRule> blockedMimeTypes = (List<MimeTypeRule>) httpBlockerSettings.getBlockedMimeTypes();
+        Vector<Vector> allRows = new Vector<Vector>(blockedMimeTypes.size());
 	Vector tempRow = null;
 	int rowIndex = 0;
 
-	for( MimeTypeRule newElem : (List<MimeTypeRule>) httpBlockerSettings.getBlockedMimeTypes() ){
+	for( MimeTypeRule newElem : blockedMimeTypes ){
 	    rowIndex++;
 	    tempRow = new Vector(6);
             tempRow.add( super.ROW_SAVED );

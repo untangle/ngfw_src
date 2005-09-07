@@ -1,8 +1,14 @@
 /*
- * 
+ * Copyright (c) 2003,2004 Metavize Inc.
+ * All rights reserved.
  *
- * Created on March 25, 2004, 6:11 PM
+ * This software is the confidential and proprietary information of
+ * Metavize Inc. ("Confidential Information").  You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id$
  */
+
 
 package com.metavize.tran.test.gui;
 
@@ -17,8 +23,6 @@ public class MTransformDisplayJPanel extends com.metavize.gui.transform.MTransfo
     
     public MTransformDisplayJPanel(MTransformJPanel mTransformJPanel) throws Exception {
         super(mTransformJPanel);
-        
-
         
         //super.activity0JLabel.setText("TEST 1");
         //super.activity1JLabel.setText("TEST 2");

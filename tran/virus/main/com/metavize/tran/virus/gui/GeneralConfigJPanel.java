@@ -66,22 +66,22 @@ class GeneralTableModel extends MSortedTableModel{
         return tableColumnModel;
     }
 
-    public void generateSettings(Object settings, boolean validateOnly){
+    public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly){
         Vector tempRowVector;
 	
         // ftpDisableResume
-        tempRowVector = (Vector) dataVector.elementAt(0);
+        tempRowVector = tableVector.elementAt(0);
 	boolean ftpDisableResume = (Boolean) tempRowVector.elementAt(3);
 	String ftpDisableResumeDetails = (String) tempRowVector.elementAt(4);
         
         // httpDisableResume
-        tempRowVector = (Vector) dataVector.elementAt(1);
+        tempRowVector = tableVector.elementAt(1);
 	boolean httpDisableResume = (Boolean) tempRowVector.elementAt(3);
 	String httpDisableResumeDetails = (String) tempRowVector.elementAt(4);
 
         // tricklePercent
-        tempRowVector = (Vector) dataVector.elementAt(2);
-	int tricklePercent = ((Integer)((SpinnerNumberModel)tempRowVector.elementAt(3)).getValue()).intValue();
+        tempRowVector = tableVector.elementAt(2);
+	int tricklePercent = (Integer) ((SpinnerNumberModel)tempRowVector.elementAt(3)).getValue();
 	String tricklePercentDetails = (String) tempRowVector.elementAt(4);
 
 	// SAVE SETTINGS //////////
@@ -101,9 +101,9 @@ class GeneralTableModel extends MSortedTableModel{
 
     }
     
-    public Vector generateRows(Object settings){
+    public Vector<Vector> generateRows(Object settings){
 	VirusSettings virusSettings = (VirusSettings) settings;
-        Vector allRows = new Vector(3);
+        Vector<Vector> allRows = new Vector<Vector>(3);
         Vector tempRow = null;
 	int rowIndex = 0;
 

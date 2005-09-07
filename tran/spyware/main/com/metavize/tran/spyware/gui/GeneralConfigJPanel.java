@@ -71,12 +71,11 @@ class GeneralTableModel extends MSortedTableModel{
     }
     
     
-    public void generateSettings(Object settings, boolean validateOnly) throws Exception{
-
+    public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception{
         Vector tempRowVector;
                 
         // blockAllActiveX
-        tempRowVector = (Vector) dataVector.elementAt(0);
+        tempRowVector = tableVector.elementAt(0);
 	boolean blockAllActiveX = (Boolean) tempRowVector.elementAt(3);
 	String blockAllActiveXDetails = (String) tempRowVector.elementAt(4);
 
@@ -89,9 +88,9 @@ class GeneralTableModel extends MSortedTableModel{
       
     }
     
-    public Vector generateRows(Object settings){
+    public Vector<Vector> generateRows(Object settings){
         SpywareSettings spywareSettings = (SpywareSettings) settings;
-        Vector allRows = new Vector(1);
+        Vector<Vector> allRows = new Vector<Vector>(1);
         Vector tempRow = null;
 	int rowIndex = 0;
                        

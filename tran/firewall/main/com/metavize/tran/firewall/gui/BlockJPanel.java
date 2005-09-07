@@ -94,12 +94,12 @@ class BlockTableModel extends MSortedTableModel{
     }
     
     
-    public void generateSettings(Object settings, boolean validateOnly) throws Exception {        
-        List elemList = new ArrayList();
+    public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {        
+        List elemList = new ArrayList(tableVector.size());
 	FirewallRule newElem = null;
         int rowIndex = 0;
 
-        for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
+        for( Vector rowVector : tableVector ){
 	    rowIndex++;
             newElem = (FirewallRule) rowVector.elementAt(13);
             newElem.setLive( (Boolean) rowVector.elementAt(2) );
@@ -129,13 +129,14 @@ class BlockTableModel extends MSortedTableModel{
 
     
 
-    public Vector generateRows(Object settings) {
+    public Vector<Vector> generateRows(Object settings) {
         FirewallSettings firewallSettings = (FirewallSettings) settings;
-        Vector allRows = new Vector();
+	List<FirewallRule> firewallRuleList = (List<FirewallRule>) firewallSettings.getFirewallRuleList();
+        Vector<Vector> allRows = new Vector<Vector>(firewallRuleList.size());
 	Vector tempRow = null;
         int rowIndex = 0;
 
-        for( FirewallRule firewallRule : (List<FirewallRule>) firewallSettings.getFirewallRuleList() ){
+        for( FirewallRule firewallRule : firewallRuleList ){
 	    rowIndex++;
 	    tempRow = new Vector(14);
 	    tempRow.add( super.ROW_SAVED );

@@ -96,12 +96,12 @@ class RedirectTableModel extends MSortedTableModel{
     }
     
     
-    public void generateSettings(Object settings, boolean validateOnly) throws Exception {                
-        List elemList = new ArrayList();
+    public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {
+        List elemList = new ArrayList(tableVector.size());
 	RedirectRule newElem = null;
         int rowIndex = 0;
 
-        for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
+        for( Vector rowVector : tableVector ){
             rowIndex++;
             newElem = (RedirectRule) rowVector.elementAt(14);
             newElem.setLive( (Boolean) rowVector.elementAt(2) );
@@ -135,13 +135,14 @@ class RedirectTableModel extends MSortedTableModel{
     }
     
     
-    public Vector generateRows(Object settings) {
+    public Vector<Vector> generateRows(Object settings) {
         NatSettings natSettings = (NatSettings) settings;
-        Vector allRows = new Vector();
+	List<RedirectRule> redirectList = (List<RedirectRule>) natSettings.getRedirectList();
+        Vector<Vector> allRows = new Vector<Vector>(redirectList.size());
 	Vector tempRow = null;
         int rowIndex = 0;
 
-        for( RedirectRule redirectRule : (List<RedirectRule>) natSettings.getRedirectList() ){
+        for( RedirectRule redirectRule : redirectList ){
 	    rowIndex++;
 	    tempRow = new Vector(15);
 	    tempRow.add( super.ROW_SAVED );

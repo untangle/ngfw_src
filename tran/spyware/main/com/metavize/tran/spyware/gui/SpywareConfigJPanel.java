@@ -78,12 +78,12 @@ class SpyTableModel extends MSortedTableModel{
         return tableColumnModel;
     }
     
-    public void generateSettings(Object settings, boolean validateOnly) throws Exception{
-        List elemList = new ArrayList();
+    public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception{
+        List elemList = new ArrayList(tableVector.size());
 	IPMaddrRule newElem = null;
 	int rowIndex = 0;
 
-	for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
+	for( Vector rowVector : tableVector ){
 	    rowIndex++;
             newElem = (IPMaddrRule) rowVector.elementAt(7);
             // newElem.setCategory( (String) rowVector.elementAt(2) );
@@ -108,13 +108,14 @@ class SpyTableModel extends MSortedTableModel{
 
     }
     
-    public Vector generateRows(Object settings){
+    public Vector<Vector> generateRows(Object settings){
 	SpywareSettings spywareSettings = (SpywareSettings) settings;
-        Vector allRows = new Vector();
+	List<IPMaddrRule> subnetRules = (List<IPMaddrRule>) spywareSettings.getSubnetRules();
+        Vector<Vector> allRows = new Vector<Vector>(subnetRules.size());
 	Vector tempRow = null;
 	int rowIndex = 0;
 
-	for( IPMaddrRule newElem : (List<IPMaddrRule>) spywareSettings.getSubnetRules() ){
+	for( IPMaddrRule newElem : subnetRules ){
 	    rowIndex++;
             tempRow = new Vector(8);
             tempRow.add( super.ROW_SAVED );

@@ -71,11 +71,11 @@ class IDSVariableTableModel extends MSortedTableModel{
     }
     
     
-    public void generateSettings(Object settings, boolean validateOnly) throws Exception{
-        List elemList = new ArrayList();
+    public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception{
+        List elemList = new ArrayList(tableVector.size());
 	IDSVariable newElem = null;
 
-	for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
+	for( Vector rowVector : tableVector ){
 	    newElem = (IDSVariable) rowVector.elementAt(5);
 	    newElem.setVariable( (String) rowVector.elementAt(2) );
 	    newElem.setDefinition( (String) rowVector.elementAt(3) );
@@ -91,13 +91,14 @@ class IDSVariableTableModel extends MSortedTableModel{
       
     }
     
-    public Vector generateRows(Object settings){
+    public Vector<Vector> generateRows(Object settings){
 	IDSSettings idsSettings = (IDSSettings) settings;
-        Vector allRows = new Vector();
+	List<IDSVariable> variables = (List<IDSVariable>) idsSettings.getVariables();
+        Vector<Vector> allRows = new Vector<Vector>(variables.size());
 	Vector tempRow = null;
 	int rowIndex = 0;
 
-	for( IDSVariable idsVariable : (List<IDSVariable>) idsSettings.getVariables() ){
+	for( IDSVariable idsVariable : variables ){
 	    rowIndex++;
 	    tempRow = new Vector(6);
 	    tempRow.add( super.ROW_SAVED );

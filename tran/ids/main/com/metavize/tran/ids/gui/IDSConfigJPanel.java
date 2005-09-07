@@ -72,11 +72,11 @@ class IDSTableModel extends MSortedTableModel{
         return tableColumnModel;
     }
     
-    public void generateSettings(Object settings, boolean validateOnly) throws Exception{
-	List elemList = new ArrayList();
+    public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception{
+	List elemList = new ArrayList(tableVector.size());
 	IDSRule newElem = null;
 
-	for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){            
+	for( Vector rowVector : tableVector ){            
 	    newElem = (IDSRule) rowVector.elementAt(7);
             newElem.setLive( (Boolean) rowVector.elementAt(2) );
             newElem.setLog( (Boolean) rowVector.elementAt(3) );
@@ -94,13 +94,14 @@ class IDSTableModel extends MSortedTableModel{
 
     }
     
-    public Vector generateRows(Object settings){
+    public Vector<Vector> generateRows(Object settings){
 	IDSSettings idsSettings = (IDSSettings) settings;
-	Vector allRows = new Vector();
+	List<IDSRule> rules = (List<IDSRule>) idsSettings.getRules();
+	Vector<Vector> allRows = new Vector<Vector>(rules.size());
 	Vector tempRow = null;
         int rowIndex = 0;
 
-	for( IDSRule newElem : (List<IDSRule>) idsSettings.getRules() ){
+	for( IDSRule newElem : rules ){
 	    rowIndex++;
             tempRow = new Vector(8);
             tempRow.add( super.ROW_SAVED );

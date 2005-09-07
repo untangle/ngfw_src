@@ -64,11 +64,11 @@ class EmailGeneralTableModel extends MSortedTableModel{
         return tableColumnModel;
     }
 
-    public void generateSettings(Object settings, boolean validateOnly) throws Exception {
+    public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {
         Vector tempRowVector;
 	
         // outgoing mail server
-        tempRowVector = (Vector) dataVector.elementAt(0);
+        tempRowVector = tableVector.elementAt(0);
 	String outgoingMailServer = (String) tempRowVector.elementAt(3);
 	String outgoingMailServerDetails = (String) tempRowVector.elementAt(4);
         
@@ -81,9 +81,9 @@ class EmailGeneralTableModel extends MSortedTableModel{
 
     }
     
-    public Vector generateRows(Object settings){
+    public Vector<Vector> generateRows(Object settings){
 	MailSettings mailSettings = Util.getAdminManager().getMailSettings();
-        Vector allRows = new Vector(1);
+        Vector<Vector> allRows = new Vector<Vector>(1);
 	int rowIndex = 0;
         Vector tempRow;
 

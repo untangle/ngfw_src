@@ -57,8 +57,7 @@ public class MEditTableJPanel extends javax.swing.JPanel implements ListSelectio
         this(false, false);
     }
     
-    public MEditTableJPanel(boolean showButtonJPanel, boolean showDetailJPanel) {
-        
+    public MEditTableJPanel(boolean showButtonJPanel, boolean showDetailJPanel) {       
         
         // INIT GUI
         mColoredJTable = new MColoredJTable();
@@ -71,8 +70,7 @@ public class MEditTableJPanel extends javax.swing.JPanel implements ListSelectio
         entryJScrollPane.setViewportBorder(new MatteBorder(2, 2, 2, 1, TABLE_BACKGROUND_COLOR));
         this.setOpaque(false);
         contentJPanel.setOpaque(false);
-        detailJTextArea.setText("no selection...");
-        
+        detailJTextArea.setText("no selection...");        
             
         if(!showButtonJPanel){
             tableJPanel.remove(addJButton);
@@ -148,15 +146,18 @@ public class MEditTableJPanel extends javax.swing.JPanel implements ListSelectio
     }
         
     public void valueChanged(ListSelectionEvent e) {
-	int firstIndex = mColoredJTable.getSelectedRow();
-        if( firstIndex>=0 ){
-            detailJTextArea.setText(((MSortedTableModel) mColoredJTable.getModel()).getDescription( firstIndex ));
-            SwingUtilities.invokeLater( new Runnable(){ public void run(){ 
-                MEditTableJPanel.this.detailJScrollPane.getVerticalScrollBar().setValue(0);
-            }});
+	int selectedViewRows[] = mColoredJTable.getSelectedRows();
+        if( (selectedViewRows==null) || (selectedViewRows.length==0) || (selectedViewRows[0]==-1) ){
+	    detailJTextArea.setText("no selection...");        
         }
-        else
-            detailJTextArea.setText("no selection...");        
+        else{
+	    int firstModelRow = getTableModel().getRowViewToModelIndex(selectedViewRows[0]);
+	    String description = getTableModel().getDescription( firstModelRow );
+            detailJTextArea.setText( description );
+	    SwingUtilities.invokeLater( new Runnable(){ public void run(){ 
+		MEditTableJPanel.this.detailJScrollPane.getVerticalScrollBar().setValue(0);
+            }});	    
+	}
     }
     
     public void tableChanged(TableModelEvent e){
@@ -334,76 +335,122 @@ public class MEditTableJPanel extends javax.swing.JPanel implements ListSelectio
 
     private void fillJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fillJButtonActionPerformed
         try{
-	    final int selectedColumn = entryJTable.getSelectedColumn();
-	    final int selectedRow    = entryJTable.getSelectedRow();
-	    
-	    if(selectedColumn < 0)
+	    // find the selection point, return if not a proper cell
+	    int[] selectedViewRows = entryJTable.getSelectedRows();
+	    if( (selectedViewRows==null) || (selectedViewRows.length!=1) || (selectedViewRows[0]==-1) )
 		return;
+	    int[] selectedViewCols = entryJTable.getSelectedColumns();
+	    if( (selectedViewCols==null) || (selectedViewCols.length!=1) || (selectedViewCols[0]==-1) )
+		return;
+
+	    // translate view cell
+	    int selectedModelCol = getTableModel().getColViewToModelIndex(selectedViewCols[0]);
+	    int selectedModelRow = getTableModel().getRowViewToModelIndex(selectedViewRows[0]);
+
+	    // stop editing, if editing
+	    if(mColoredJTable.isEditing())
+		if(mColoredJTable.getCellEditor().stopCellEditing() == false)
+		    return;
 	    
-	    if(selectedRow < 0)
-		return;        
-	    
-	    entryJTable.getCellEditor().stopCellEditing();
-	    this.getTableModel().fillColumn(selectedRow, selectedColumn);
-	    entryJTable.changeSelection(selectedRow, selectedColumn, false, false);
-	    entryJTable.requestFocus();
+	    // fill actual rows, and determine the new view location
+	    getTableModel().fillColumn(selectedModelRow, selectedModelCol);
+	    int newViewRow = getTableModel().getRowModelToViewIndex(selectedModelRow);
+
+	    // highlight row
+	    entryJTable.clearSelection();
+	    entryJTable.getSelectionModel().addSelectionInterval(newViewRow, newViewRow);
+
+	    // scroll to row
+	    Rectangle rect = entryJTable.getCellRect(newViewRow, 0, true);
+	    entryJTable.scrollRectToVisible(rect);
 	}
 	catch(Exception e){
-	    e.printStackTrace();
+	    Util.handleExceptionNoRestart("Error filling row", e);
 	}
     }//GEN-LAST:event_fillJButtonActionPerformed
 
 
     private void addJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addJButtonActionPerformed
         try{
+	    // find the insertion point, at the top if none specified
+	    int[] selectedViewRows = entryJTable.getSelectedRows();
+	    if( (selectedViewRows==null) || (selectedViewRows.length==0) || (selectedViewRows[0]==-1) )
+		selectedViewRows = new int[]{0};
+
+	    // stop editing, if editing
 	    if(mColoredJTable.isEditing())
 		if(mColoredJTable.getCellEditor().stopCellEditing() == false)
 		    return;
-	    
-	    int selectedRow    = entryJTable.getSelectedRow();
-	    
-	    if(selectedRow < 0)
-		selectedRow = 0;
-	    
-	    // add the new row
-            this.getTableModel().insertNewRow(selectedRow);
+
+	    // translate view row, being careful in case there are no rows in the table that can be translated
+	    int selectedModelRow;
+	    if( getTableModel().getRowCount() == 0 )
+		selectedModelRow = 0;
+	    else
+		selectedModelRow = getTableModel().getRowViewToModelIndex(selectedViewRows[0]);
+
+	    // insert actual row, and determine its new view location
+            getTableModel().insertNewRow(selectedModelRow);
+	    int newViewRow = getTableModel().getRowModelToViewIndex(selectedModelRow);
+
+	    // highlight row
 	    entryJTable.clearSelection();
-	    entryJTable.getSelectionModel().addSelectionInterval(selectedRow, selectedRow);
-	    Rectangle rect = entryJTable.getCellRect(selectedRow, 0, true);
+	    entryJTable.getSelectionModel().addSelectionInterval(newViewRow, newViewRow);
+
+	    // scroll to row
+	    Rectangle rect = entryJTable.getCellRect(newViewRow, 0, true);
 	    entryJTable.scrollRectToVisible(rect);
         }
         catch(Exception e){
-	    e.printStackTrace();
+	    Util.handleExceptionNoRestart("Error adding row", e);
         }
 
-        // scroll the scroll pane to see the new row
-        //Rectangle cellRect = entryJTable.getCellRect(minIndex, 0, true);
-        //entryJScrollPane.getViewport().setViewPosition( new Point(0, cellRect.height) );
-        //entryJTable.getSelectionModel().setSelectionInterval(minIndex, minIndex);
     }//GEN-LAST:event_addJButtonActionPerformed
 
     
     
     private void removeJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeJButtonActionPerformed
         try{
+	    // find the removal selection, return if none
+	    int[] selectedViewRows = entryJTable.getSelectedRows();
+	    if( (selectedViewRows==null) || (selectedViewRows.length==0) || (selectedViewRows[0]==-1) )
+		return;
+
+	    // stop editing, if editing
 	    if(mColoredJTable.isEditing())
 		if(mColoredJTable.getCellEditor().stopCellEditing() == false)
 		    return;
 	    
-	    int selectedRow    = entryJTable.getSelectedRow();
-	    
-	    if(selectedRow < 0)
-		return;
-	    
-	    int[] selectedRows = entryJTable.getSelectedRows();
-	    Vector[] selectedVectors = new Vector[selectedRows.length];
-	    
-	    this.getTableModel().removeSelectedRows(selectedRows);
-	    
+	    // determine the selections within the actual model
+	    int[] selectedModelRows = new int[selectedViewRows.length];
+	    int minViewIndex = -1;
+	    int minViewPosition = -1;
+	    for( int i=0; i<selectedViewRows.length; i++ ){
+		selectedModelRows[i] = getTableModel().getRowViewToModelIndex(selectedViewRows[i]);
+		if( minViewIndex == -1 ){
+		    minViewIndex = i;
+		    minViewPosition = selectedViewRows[i];
+		}
+		else if( minViewPosition > selectedViewRows[i] ){
+		    minViewIndex = i;
+		    minViewPosition = selectedViewRows[i];
+		}	 
+	    }
+
+	    // remove the actual rows, and determine the view location of the first selection
+	    this.getTableModel().removeSelectedRows(selectedModelRows);
+	    int newViewRow = getTableModel().getRowModelToViewIndex(selectedModelRows[minViewIndex]);
+
+	    // highlight row
 	    entryJTable.clearSelection();
+	    entryJTable.getSelectionModel().addSelectionInterval(newViewRow, newViewRow);
+
+	    // scroll to row
+	    Rectangle rect = entryJTable.getCellRect(newViewRow, 0, true);
+	    entryJTable.scrollRectToVisible(rect);
 	}
 	catch(Exception e){
-	    e.printStackTrace();
+	    Util.handleExceptionNoRestart("Error removing row", e);
 	}
     }//GEN-LAST:event_removeJButtonActionPerformed
    

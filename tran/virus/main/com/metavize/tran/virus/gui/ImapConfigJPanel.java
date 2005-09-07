@@ -74,11 +74,11 @@ class ImapTableModel extends MSortedTableModel{
     private static final String SOURCE_INBOUND  = "incoming message";
     private static final String SOURCE_OUTBOUND = "outgoing message";
 
-    public void generateSettings(Object settings, boolean validateOnly) throws Exception {
+    public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {
 	VirusIMAPConfig virusIMAPConfigInbound = null;
 	VirusIMAPConfig virusIMAPConfigOutbound = null;
 
-	for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
+	for( Vector rowVector : tableVector ){
             VirusIMAPConfig virusIMAPConfig = (VirusIMAPConfig) rowVector.elementAt(6);
             virusIMAPConfig.setScan( (Boolean) rowVector.elementAt(3) );
 	    String actionString = (String) ((ComboBoxModel)rowVector.elementAt(4)).getSelectedItem();
@@ -101,12 +101,11 @@ class ImapTableModel extends MSortedTableModel{
 	    virusSettings.setIMAPOutbound( virusIMAPConfigOutbound );
 	}
 
-
     }
 
-    public Vector generateRows(Object settings) {
+    public Vector<Vector> generateRows(Object settings) {
         VirusSettings virusSettings = (VirusSettings) settings;
-        Vector allRows = new Vector(2);
+        Vector<Vector> allRows = new Vector<Vector>(2);
 	int rowIndex = 0;
 
 	// INBOUND

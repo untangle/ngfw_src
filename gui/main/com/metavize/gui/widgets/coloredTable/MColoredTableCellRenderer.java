@@ -38,10 +38,14 @@ public class MColoredTableCellRenderer extends DefaultTableCellRenderer {
         private static final ImageIcon removeImageIcon = new ImageIcon( Thread.currentThread().getContextClassLoader().getResource("/com/metavize/gui/widgets/coloredTable/IconRemove13x13.png") );
         private static final ImageIcon savedImageIcon = new ImageIcon( Thread.currentThread().getContextClassLoader().getResource("/com/metavize/gui/widgets/coloredTable/IconSaved13x13.png") );
     */
-        private static final Color unselectedOddColor = new Color(193, 193, 206);
-        private static final Color unselectedEvenColor = new Color(183, 183, 196);
-        private static final MLineBorder unselectedOddBorder = new MLineBorder(unselectedOddColor, 2);
-        private static final MLineBorder unselectedEvenBorder = new MLineBorder(unselectedEvenColor, 2);
+    private static final Color unselectedOddColor = new Color(193, 193, 206);
+    private static final Color unselectedEvenColor = new Color(183, 183, 196);
+    private static final Color uneditableOddColor = unselectedOddColor; //new Color(216, 193, 193);
+    private static final Color uneditableEvenColor = unselectedEvenColor; //new Color(206, 183, 183);
+    private static final MLineBorder unselectedOddBorder = new MLineBorder(unselectedOddColor, 2);
+    private static final MLineBorder unselectedEvenBorder = new MLineBorder(unselectedEvenColor, 2);
+    private static final MLineBorder uneditableOddBorder = unselectedOddBorder; //new MLineBorder(uneditableOddColor, 2);
+    private static final MLineBorder uneditableEvenBorder = unselectedEvenBorder; //new MLineBorder(uneditableEvenColor, 2);
     
         private static final Color unselectedColor = new Color(193, 193, 206);
         private static final Color selectedColor = new Color(193, 193, 226);
@@ -70,9 +74,7 @@ public class MColoredTableCellRenderer extends DefaultTableCellRenderer {
         
         private static final MLineBorder mLineEditableNormalBorder = new MLineBorder(unselectedColor, 2);
         private static final MLineBorder mLineUneditableNormalBorder = new MLineBorder(unselectedColor, 2);        
-        
-        
-        
+                
         private static JLabel renderJLabel = new JLabel();
         private static JTextField renderJTextField = new JTextField();
         private static JComboBox renderJComboBox = new JComboBox();
@@ -81,9 +83,9 @@ public class MColoredTableCellRenderer extends DefaultTableCellRenderer {
         private static JSpinner renderJSpinner = new JSpinner();
         private static MPasswordField renderMPasswordField = new MPasswordField();
         
+
         public MColoredTableCellRenderer(){
             
-
             if(addImageIcon == null)
                 addImageIcon = new ImageIcon( this.getClass().getResource("/com/metavize/gui/widgets/coloredTable/IconAdd13x13.png") );
             if(changedImageIcon == null)
@@ -263,12 +265,12 @@ public class MColoredTableCellRenderer extends DefaultTableCellRenderer {
                 }
                 else{
                     if(row % 2 == 0){
-                        renderJComponent.setBackground(unselectedEvenColor);
-                        renderJComponent.setBorder(unselectedEvenBorder);
+                        renderJComponent.setBackground(uneditableEvenColor);
+                        renderJComponent.setBorder(uneditableEvenBorder);
                     }
                     else{
-                        renderJComponent.setBackground(unselectedOddColor);
-                        renderJComponent.setBorder(unselectedOddBorder);
+                        renderJComponent.setBackground(uneditableOddColor);
+                        renderJComponent.setBorder(uneditableOddBorder);
                     }
                 }
             }

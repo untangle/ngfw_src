@@ -70,11 +70,11 @@ class ExtensionTableModel extends MSortedTableModel{
     }
 
 
-    public void generateSettings(Object settings, boolean validateOnly) throws Exception {
-        List elemList = new ArrayList();
+    public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {
+        List elemList = new ArrayList(tableVector.size());
 	StringRule newElem = null;
 
-	for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
+	for( Vector rowVector : tableVector ){
             newElem = (StringRule) rowVector.elementAt(6);
             newElem.setName( (String) rowVector.elementAt(2) );
             newElem.setString( (String) rowVector.elementAt(3) );
@@ -87,16 +87,16 @@ class ExtensionTableModel extends MSortedTableModel{
 	    HttpBlockerSettings httpBlockerSettings = (HttpBlockerSettings) settings;
 	    httpBlockerSettings.setBlockedExtensions( elemList );
 	}
-
     }
 
-    public Vector generateRows(Object settings){
+    public Vector<Vector> generateRows(Object settings){
 	HttpBlockerSettings httpBlockerSettings = (HttpBlockerSettings) settings;
-        Vector allRows = new Vector();
+	List<StringRule> blockedExtensions = (List<StringRule>) httpBlockerSettings.getBlockedExtensions();
+        Vector<Vector> allRows = new Vector<Vector>(blockedExtensions.size());
 	Vector tempRow = null;
 	int rowIndex = 0;
 
-	for( StringRule newElem : (List<StringRule>) httpBlockerSettings.getBlockedExtensions() ){
+	for( StringRule newElem : blockedExtensions ){
 	    rowIndex++;
             tempRow = new Vector(7);
             tempRow.add( super.ROW_SAVED );

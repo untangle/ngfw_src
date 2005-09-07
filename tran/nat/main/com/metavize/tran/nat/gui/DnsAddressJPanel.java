@@ -75,13 +75,13 @@ class DnsAddressTableModel extends MSortedTableModel{
         return tableColumnModel;
     }
     
-    public void generateSettings(Object settings, boolean validateOnly) throws Exception {
+    public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {
         NatSettings natSettings = (NatSettings) settings;        
-        List elemList = new ArrayList();
+        List elemList = new ArrayList(tableVector.size());
 	DnsStaticHostRule newElem = null;
         int rowIndex = 0;
 
-        for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
+        for( Vector rowVector : tableVector ){
 	    rowIndex++;
             newElem = (DnsStaticHostRule) rowVector.elementAt(6);
             try{ newElem.setHostNameList( HostNameList.parse( (String)rowVector.elementAt(2)) ); }
@@ -100,13 +100,14 @@ class DnsAddressTableModel extends MSortedTableModel{
     }
     
     
-    public Vector generateRows(Object settings) {    
+    public Vector<Vector> generateRows(Object settings) {    
         NatSettings natSettings = (NatSettings) settings;
-        Vector allRows = new Vector();
+	List<DnsStaticHostRule> dnsStaticHostList = (List<DnsStaticHostRule>) natSettings.getDnsStaticHostList();
+        Vector<Vector> allRows = new Vector<Vector>(dnsStaticHostList.size());
 	Vector tempRow = null;
 	int rowIndex = 0;
 
-        for( DnsStaticHostRule hostRule : (List<DnsStaticHostRule>) natSettings.getDnsStaticHostList() ){
+        for( DnsStaticHostRule hostRule : dnsStaticHostList ){
 	    rowIndex++;
 	    tempRow = new Vector(7);
 	    tempRow.add( super.ROW_SAVED );

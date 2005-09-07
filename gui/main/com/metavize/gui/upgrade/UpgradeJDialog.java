@@ -887,11 +887,11 @@ class UpgradeTableModel extends MSortedTableModel {
         return tableColumnModel;
     }
 
-    public void generateSettings(Object settings, boolean validateOnly) throws Exception { }
+    public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception { }
 
-    public Vector generateRows(Object settings){
+    public Vector<Vector> generateRows(Object settings){
         MackageDesc[] mackageDescs = (MackageDesc[]) settings;
-        Vector allRows = new Vector();
+        Vector<Vector> allRows = new Vector<Vector>(mackageDescs.length);
 	Vector tempRow = null;
 	int rowIndex = 0;
 

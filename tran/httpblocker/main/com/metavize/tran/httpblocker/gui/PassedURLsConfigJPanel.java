@@ -70,12 +70,12 @@ class PassedURLTableModel extends MSortedTableModel{
     }
 
     
-    public void generateSettings(Object settings, boolean validateOnly) throws Exception {
-        List elemList = new ArrayList();
+    public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {
+        List elemList = new ArrayList(tableVector.size());
 	StringRule newElem = null;
 	int rowIndex = 0;
 
-	for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
+	for( Vector rowVector : tableVector ){
 	    rowIndex++;
             newElem = (StringRule) rowVector.elementAt(6);
             newElem.setCategory( (String) rowVector.elementAt(2) );
@@ -97,13 +97,14 @@ class PassedURLTableModel extends MSortedTableModel{
 
     }
     
-    public Vector generateRows(Object settings){
+    public Vector<Vector> generateRows(Object settings){
 	HttpBlockerSettings httpBlockerSettings = (HttpBlockerSettings) settings;
-        Vector allRows = new Vector();
+	List<StringRule> passedUrls = (List<StringRule>) httpBlockerSettings.getPassedUrls();
+        Vector<Vector> allRows = new Vector<Vector>(passedUrls.size());
 	Vector tempRow = null;
 	int rowIndex = 0;
 
-	for( StringRule newElem : (List<StringRule>) httpBlockerSettings.getPassedUrls() ){
+	for( StringRule newElem : passedUrls ){
             rowIndex++;
             tempRow = new Vector(7);
             tempRow.add( super.ROW_SAVED );

@@ -84,13 +84,13 @@ class AddressTableModel extends MSortedTableModel{
     }
 
     
-    public void generateSettings(Object settings, boolean validateOnly) throws Exception {
+    public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {
         NatSettings natSettings = (NatSettings) settings;        
-        List elemList = new ArrayList();
+        List elemList = new ArrayList(tableVector.size());
 	DhcpLeaseRule newElem = null;
         int rowIndex = 0;
 
-        for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
+        for( Vector rowVector : tableVector ){
 	    rowIndex++;
             newElem = (DhcpLeaseRule) rowVector.elementAt(9);
             try{ newElem.setMacAddress( MACAddress.parse( (String)rowVector.elementAt(2)) ); }
@@ -110,13 +110,14 @@ class AddressTableModel extends MSortedTableModel{
     
 
     
-    public Vector generateRows(Object settings) {    
+    public Vector<Vector> generateRows(Object settings) {    
         NatSettings natSettings = (NatSettings) settings;
-        Vector allRows = new Vector();
+	List<DhcpLeaseRule> dhcpLeaseList = (List<DhcpLeaseRule>) natSettings.getDhcpLeaseList();
+        Vector<Vector> allRows = new Vector<Vector>(dhcpLeaseList.size());
 	Vector tempRow = null;
         int rowIndex = 0;
 
-        for( DhcpLeaseRule leaseRule : (List<DhcpLeaseRule>) natSettings.getDhcpLeaseList() ){
+        for( DhcpLeaseRule leaseRule : dhcpLeaseList ){
 	    rowIndex++;
 	    tempRow = new Vector(10);
 	    tempRow.add( super.ROW_SAVED );

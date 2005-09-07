@@ -29,7 +29,7 @@ public class NetworkJDialog extends MConfigJDialog {
     private static final String NAME_NETWORK_SETTINGS = "Network Settings";
 
     public NetworkJDialog( ) {
-        MIN_SIZE = new Dimension(640, 480);
+        MIN_SIZE = new Dimension(640, 550);
         MAX_SIZE = new Dimension(640, 1200);
     }
 

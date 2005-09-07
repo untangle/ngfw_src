@@ -76,11 +76,11 @@ class SmtpTableModel extends MSortedTableModel{
     private static final String SOURCE_INBOUND  = "incoming message";
     private static final String SOURCE_OUTBOUND = "outgoing message";
 
-    public void generateSettings(Object settings, boolean validateOnly) throws Exception {
+    public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {
 	VirusSMTPConfig virusSMTPConfigInbound = null;
 	VirusSMTPConfig virusSMTPConfigOutbound = null;
 
-	for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
+	for( Vector rowVector : tableVector ){
             VirusSMTPConfig virusSMTPConfig = (VirusSMTPConfig) rowVector.elementAt(7);
             virusSMTPConfig.setScan( (Boolean) rowVector.elementAt(3) );
 	    String actionString = (String) ((ComboBoxModel)rowVector.elementAt(4)).getSelectedItem();
@@ -109,9 +109,9 @@ class SmtpTableModel extends MSortedTableModel{
 
     }
 
-    public Vector generateRows(Object settings) {
+    public Vector<Vector> generateRows(Object settings) {
         VirusSettings virusSettings = (VirusSettings) settings;
-        Vector allRows = new Vector(2);
+        Vector<Vector> allRows = new Vector<Vector>(2);
 	int rowIndex = 0;
 
 	// INBOUND

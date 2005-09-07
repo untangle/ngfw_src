@@ -68,12 +68,12 @@ class PassedClientsTableModel extends MSortedTableModel{
     }
 
     
-    public void generateSettings(Object settings, boolean validateOnly) throws Exception {
-        List elemList = new ArrayList();
+    public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {
+        List elemList = new ArrayList(tableVector.size());
 	IPMaddrRule newElem = null;
 	int rowIndex = 0;
 
-	for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
+	for( Vector rowVector : tableVector ){
 	    rowIndex++;
             newElem = (IPMaddrRule) rowVector.elementAt(6);
             newElem.setCategory( (String) rowVector.elementAt(2) );
@@ -95,13 +95,14 @@ class PassedClientsTableModel extends MSortedTableModel{
 
     }
     
-    public Vector generateRows(Object settings){
+    public Vector<Vector> generateRows(Object settings){
 	HttpBlockerSettings httpBlockerSettings = (HttpBlockerSettings) settings;
-        Vector allRows = new Vector();
+	List<IPMaddrRule> passedClients = (List<IPMaddrRule>) httpBlockerSettings.getPassedClients();
+        Vector<Vector> allRows = new Vector<Vector>(passedClients.size());
 	Vector tempRow = null;
 	int rowIndex = 0;
 
-	for( IPMaddrRule newElem : (List<IPMaddrRule>) httpBlockerSettings.getPassedClients() ){
+	for( IPMaddrRule newElem : passedClients ){
             rowIndex++;
             tempRow = new Vector(7);
             tempRow.add( super.ROW_SAVED );

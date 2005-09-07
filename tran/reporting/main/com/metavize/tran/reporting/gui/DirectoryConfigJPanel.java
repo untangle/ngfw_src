@@ -73,12 +73,12 @@ class DirectoryTableModel extends MSortedTableModel{
     
     
     
-    public void generateSettings(Object settings, boolean validateOnly) throws Exception {
-        ArrayList elemList = new ArrayList();
+    public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {
+        ArrayList elemList = new ArrayList(tableVector.size());
 	IPMaddrRule newElem = null;
 	int rowIndex = 0;
 
-	for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
+	for( Vector rowVector : tableVector ){
 	    rowIndex++;
 	    newElem = (IPMaddrRule) rowVector.elementAt(5);
 	    try{
@@ -100,13 +100,14 @@ class DirectoryTableModel extends MSortedTableModel{
 	}
     }
     
-    public Vector generateRows(Object settings){
+    public Vector<Vector> generateRows(Object settings){
 	ReportingSettings reportingSettings = (ReportingSettings) settings;
-        Vector allRows = new Vector();
+	List<IPMaddrRule> entries = (List<IPMaddrRule>) reportingSettings.getNetworkDirectory().getEntries();
+        Vector<Vector> allRows = new Vector<Vector>(entries.size());
 	Vector tempRow = null;
 	int rowIndex = 0;
 
-	for( IPMaddrRule newElem : (List<IPMaddrRule>) reportingSettings.getNetworkDirectory().getEntries() ){
+	for( IPMaddrRule newElem : entries ){
 	    rowIndex++;
             tempRow = new Vector(5);
             tempRow.add( super.ROW_SAVED );

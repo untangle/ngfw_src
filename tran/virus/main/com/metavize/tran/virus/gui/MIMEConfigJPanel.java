@@ -74,11 +74,11 @@ class MIMETableModel extends MSortedTableModel{
     }
 
 
-    public void generateSettings(Object settings, boolean validateOnly) throws Exception {
-        List elemList = new ArrayList();
+    public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {
+        List elemList = new ArrayList(tableVector.size());
 	MimeTypeRule newElem = null;
 
-	for( Vector rowVector : (Vector<Vector>) this.getDataVector() ){
+	for( Vector rowVector : tableVector ){
             newElem = (MimeTypeRule) rowVector.elementAt(5);
             newElem.setMimeType( new MimeType( (String)rowVector.elementAt(2) ) ); // new because MimeType is immutable
             newElem.setLive( (Boolean) rowVector.elementAt(3)  );
@@ -94,13 +94,14 @@ class MIMETableModel extends MSortedTableModel{
 
     }
 
-    public Vector generateRows(Object settings){
+    public Vector<Vector> generateRows(Object settings){
         VirusSettings virusSettings = (VirusSettings) settings;
-        Vector allRows = new Vector();
+	List<MimeTypeRule> httpMimeTypes = (List<MimeTypeRule>) virusSettings.getHttpMimeTypes();
+        Vector<Vector> allRows = new Vector<Vector>(httpMimeTypes.size());
 	Vector tempRow = null;
 	int rowIndex = 0;
 
-	for( MimeTypeRule newElem : (List<MimeTypeRule>) virusSettings.getHttpMimeTypes() ){
+	for( MimeTypeRule newElem : httpMimeTypes ){
 	    rowIndex++;
             tempRow = new Vector(6);
             tempRow.add( super.ROW_SAVED );
