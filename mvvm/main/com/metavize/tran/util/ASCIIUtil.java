@@ -39,7 +39,20 @@ public final class ASCIIUtil {
 
   //Ensure this is only a collection of functions
   private ASCIIUtil() {}
-  
+
+
+  /**
+   * For debugging.  Prints the character.  If the character is
+   * not printable on a normal terminal, prints the decimal value
+   */
+  public static String asciiByteToString(byte b) {
+    if(b>=33 && b <=126) {
+      return new String(new byte[]{b});
+    }
+    else {
+      return "(unprintable) " + Integer.toString((int) b);
+    }
+  }
 
   
   /**
@@ -179,6 +192,10 @@ public final class ASCIIUtil {
    */
   public static boolean isLWS(byte b) {
     return b == SP || b == HTAB;
+  }
+
+  public static boolean isNumber(byte b) {
+    return (b >=48 && b <=57);
   }
   
   /**
