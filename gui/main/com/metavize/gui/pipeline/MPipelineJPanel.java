@@ -54,11 +54,15 @@ public class MPipelineJPanel extends javax.swing.JPanel {
 	    installedTransformContext = Util.getTransformManager().transformContext(installedTransformID[i]);
 	    installedMackageDesc = installedTransformContext.getMackageDesc();
 	    if( installedMackageDesc.getType() != MackageDesc.TRANSFORM_TYPE ){
-		installedCount++;
+		synchronized(this){
+		    installedCount++;
+		}
 		continue;
 	    }
 	    else if( installedMackageDesc.getRackPosition() < 0 ){
-		installedCount++;
+		synchronized(this){
+		    installedCount++;
+		}
 		continue;
 	    }
 	    else{
@@ -192,10 +196,12 @@ public class MPipelineJPanel extends javax.swing.JPanel {
 	}
 	finally{
 	    synchronized(this){
-		SwingUtilities.invokeLater( new Runnable(){ public void run(){
-		    Util.getStatusJProgressBar().setValue(16 + (int) ((((float)installedCount)/(float)initialInstallCount)*38f) );
-		    installedCount++;
-		}});
+		if( installedCount < initialInstallCount ){ // only increment progress bar during startup, not during later installs
+		    SwingUtilities.invokeLater( new Runnable(){ public void run(){
+			installedCount++;
+			Util.getStatusJProgressBar().setValue(16 + (int) ((((float)installedCount)/(float)initialInstallCount)*38f) );
+		    }});
+		}
 	    }
 	}
 	return mTransformJPanel;
