@@ -280,7 +280,7 @@ class Blacklist
     private String passClient(InetAddress clientIp)
     {
         for (IPMaddrRule rule : (List<IPMaddrRule>)settings.getPassedClients()) {
-            if (rule.getIpMaddr().contains(clientIp)) {
+            if (rule.getIpMaddr().contains(clientIp) && rule.isLive()) {
                 return rule.getCategory();
             }
         }
