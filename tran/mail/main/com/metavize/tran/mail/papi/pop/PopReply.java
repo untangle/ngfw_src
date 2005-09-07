@@ -38,9 +38,9 @@ public class PopReply implements Token
     private final static String SZVAL = DIGVAL + " octets";
     private final static String OK = "+OK ";
     private final static String OKREPLY = "^\\" + OK;
-    public final static String PEOLINE = CRLF; /* protocol EOLINE */
+    private final static String EOLINE = CRLF; /* EOLINE */
 
-    private final static String DATAOK = OKREPLY + SZVAL + PEOLINE;
+    private final static String DATAOK = OKREPLY + SZVAL + ".*?" + EOLINE;
 
     private final static Pattern DIGVALP = Pattern.compile(DIGVAL);
     private final static Pattern SZVALP = Pattern.compile(SZVAL, Pattern.CASE_INSENSITIVE);

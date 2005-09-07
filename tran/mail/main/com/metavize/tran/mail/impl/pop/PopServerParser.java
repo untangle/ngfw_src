@@ -55,9 +55,6 @@ public class PopServerParser extends AbstractParser
 
     private static final File BUNNICULA_TMP = new File(System.getProperty("bunnicula.tmp.dir"));
 
-    private static final String EODATA_TAIL = "." + PopReply.PEOLINE;
-    private static final String EODATA_FULL = PopReply.PEOLINE + EODATA_TAIL;
-
     private static final int LINE_SZ = 1024;
 
     private enum State {
@@ -128,7 +125,7 @@ public class PopServerParser extends AbstractParser
                         zTokens.add(new PopReplyMore(dup));
                         logger.debug("reply (more): " + dup + ", " + exn);
 
-                        buf = null;
+                        buf = null; /* buf has been consumed */
                         bDone = true;
                         break;
                     }
@@ -142,10 +139,9 @@ public class PopServerParser extends AbstractParser
                             zWrChannel = new FileOutputStream(zMsgFile).getChannel();
                             //logger.debug("message file: " + zMsgFile);
                         } catch (IOException exn) {
-                            logger.warn("cannot create message file: ", exn);
                             zWrChannel = null;
                             zMsgFile = null;
-                            break;
+                            throw new ParseException("cannot create message file: " + exn + "; releasing session");
                         }
 
                         logger.debug("entering DATA state");
@@ -156,22 +152,28 @@ public class PopServerParser extends AbstractParser
                         if (false == buf.hasRemaining()) {
                             logger.debug("buf is empty");
 
-                            buf = null;
+                            buf = null; /* buf has been consumed */
                             bDone = true;
                         }
-                        /* else if we have more data to parse
-                         * (e.g., data is message fragment),
-                         * then parse remaining data
+                        /* else if we have more data
+                         * (e.g., buf also contains message fragment),
+                         * then parse remaining data in DATA stage
                          */
                     } else {
                         //logger.debug("reply: " + reply + ", " + buf);
                         logger.debug("reply: " + buf);
 
-                        buf = null;
+                        buf = null; /* buf has been consumed */
                         bDone = true;
                     }
                 } else {
                     logger.debug("buf does not contain CRLF");
+
+                    if (buf.limit() == buf.capacity()) {
+                        /* casing adapter will handle full buf for us */
+                        throw new ParseException("server read buf is full and does not contain CRLF; traffic cannot be POP; releasing session: " + buf);
+                    }
+                    /* else buf is already "compact" */
 
                     /* wait for more data */
                     bDone = true;
@@ -199,7 +201,7 @@ public class PopServerParser extends AbstractParser
                             zWrChannel = closeChannel(zWrChannel);
                             handleException(zTokens, dup);
                             zMsgFile = null;
-                            buf = null;
+                            buf = null; /* buf has been consumed */
                             bDone = true;
                             break;
                         }
@@ -227,7 +229,7 @@ public class PopServerParser extends AbstractParser
                                 logger.warn("cannot parse message header: " + exn);
                                 handleException(zTokens, dup);
                                 zMsgFile = null;
-                                buf = null;
+                                buf = null; /* buf has been consumed */
                                 bDone = true;
                                 break;
                             } catch (InvalidHeaderDataException exn) {
@@ -257,7 +259,8 @@ public class PopServerParser extends AbstractParser
                         ByteBuffer chunkDup = ByteBuffer.allocate(buf.remaining());
                         bBodyDone = zMBScanner.processBody(buf, chunkDup);
 
-                        chunkDup.rewind();
+                        /* flip to set limit; rewind doesn't set limit */
+                        chunkDup.flip();
                         zTokens.add(new Chunk(chunkDup));
 
                         if (true == bBodyDone) {
@@ -274,7 +277,7 @@ public class PopServerParser extends AbstractParser
                     if (false == buf.hasRemaining()) {
                         logger.debug("buf is empty");
 
-                        buf = null;
+                        buf = null; /* buf has been consumed */
                         bDone = true;
                     } else {
                         logger.debug("compact buf: " + buf);
@@ -284,11 +287,20 @@ public class PopServerParser extends AbstractParser
                         dup.flip();
 
                         buf = dup;
+
+                        if (buf.limit() == buf.capacity()) {
+                            /* we can only report problem and
+                             * let session terminate
+                             * (we cannot trickle what we have collected and
+                             *  then throw ParseException to release session)
+                             */
+                            logger.error("buf is full but MessageBoundaryScanner did not process (e.g., consume) any data in buf: " + buf);
+                        }
                     }
                 } else {
                     logger.debug("no (more) data");
 
-                    buf = null;
+                    buf = null; /* buf has been consumed */
                     bDone = true;
                 }
 
@@ -316,7 +328,7 @@ public class PopServerParser extends AbstractParser
                 if (false == buf.hasRemaining()) {
                     logger.debug("buf is empty");
 
-                    buf = null;
+                    buf = null; /* buf has been consumed */
                 } else {
                     logger.debug("compact buf: " + buf);
 
@@ -335,7 +347,7 @@ public class PopServerParser extends AbstractParser
 
                 zTokens.add(new DoNotCareChunkT(buf));
 
-                buf = null;
+                buf = null; /* buf has been consumed */
                 bDone = true;
                 break;
 

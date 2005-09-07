@@ -29,15 +29,15 @@ import com.metavize.tran.mail.impl.smtp.SmtpCasingFactory;
 public class MailTransformImpl extends AbstractTransform
     implements MailTransform, MailExport
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = Logger.getLogger(MailTransformImpl.class);
 
-    PipeSpec SMTP_PIPE_SPEC = new CasingPipeSpec
+    private final CasingPipeSpec SMTP_PIPE_SPEC = new CasingPipeSpec
         ("smtp", this, SmtpCasingFactory.factory(),
          Fitting.SMTP_STREAM, Fitting.SMTP_TOKENS);
-    PipeSpec POP_PIPE_SPEC = new CasingPipeSpec
+    private final CasingPipeSpec POP_PIPE_SPEC = new CasingPipeSpec
         ("pop", this, PopCasingFactory.factory(),
          Fitting.POP_STREAM, Fitting.POP_TOKENS);
-    PipeSpec IMAP_PIPE_SPEC = new CasingPipeSpec
+    private final CasingPipeSpec IMAP_PIPE_SPEC = new CasingPipeSpec
         ("imap", this, ImapCasingFactory.factory(),
          Fitting.IMAP_STREAM, Fitting.IMAP_TOKENS);
 
@@ -81,6 +81,12 @@ public class MailTransformImpl extends AbstractTransform
                 logger.warn("could not close hibernate session", exn);
             }
         }
+
+        /* release session if parser doesn't catch or
+         * explicitly throws its own parse exception
+         * (parser will catch certain parse exceptions)
+         */
+        POP_PIPE_SPEC.setReleaseParseExceptions(true);
 
         reconfigure();
     }

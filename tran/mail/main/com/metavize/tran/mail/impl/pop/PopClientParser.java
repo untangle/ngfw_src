@@ -109,10 +109,15 @@ public class PopClientParser extends AbstractParser
                         /* fall through */
                     }
 
-                    buf = null;
+                    buf = null; /* buf has been consumed */
                     bDone = true;
                 } else {
                     logger.debug("buf does not contain CRLF");
+
+                    if (buf.limit() == buf.capacity()) {
+                        /* casing adapter will handle full buf for us */
+                        throw new ParseException("client read buf is full and does not contain CRLF; traffic cannot be POP; releasing session: " + buf);
+                    }
 
                     /* wait for more data */
                     bDone = true;
@@ -132,7 +137,7 @@ public class PopClientParser extends AbstractParser
                 logger.debug("re-entering COMMAND state");
                 state = State.COMMAND;
 
-                buf = null;
+                buf = null; /* buf has been consumed */
                 bDone = true;
                 break;
 
