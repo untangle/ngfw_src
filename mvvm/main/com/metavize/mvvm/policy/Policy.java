@@ -19,7 +19,7 @@ import java.io.Serializable;
  * @author
  * @version
  * @hibernate.class
- * table="POLICIES"
+ * table="POLICY"
  */
 public class Policy implements Serializable
 {

@@ -23,7 +23,7 @@ import java.util.*;
  * @author
  * @version 1.0
  * @hibernate.class
- * table="SYS_POLICY_RULE"
+ * table="SYSTEM_POLICY_RULE"
  */
 public class SystemPolicyRule extends PolicyRule
 {

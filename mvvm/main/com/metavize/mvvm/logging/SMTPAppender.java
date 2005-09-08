@@ -62,12 +62,12 @@ public class SMTPAppender extends AppenderSkeleton
         TransformContext tctx;
         String name;
         if (MvvmContextFactory.state() == MvvmLocalContext.MvvmState.LOADED) {
-            tid = new Tid(0L);
+            tid = new Tid(0L, null);
             tctx = null;
         } else {
             tctx = TransformContextFactory.context();
             if (tctx == null)
-                tid = new Tid(0L);
+                tid = new Tid(0L, null);
             else
                 tid = tctx.getTid();
         }

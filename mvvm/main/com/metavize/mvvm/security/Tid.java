@@ -11,6 +11,7 @@
 
 package com.metavize.mvvm.security;
 
+import com.metavize.mvvm.policy.Policy;
 import java.io.Serializable;
 import java.security.Principal;
 
@@ -28,11 +29,23 @@ public final class Tid implements Principal, Serializable, Comparable
 
     private Long id;
 
+    private Policy policy;
+
     public Tid() { }
 
-    public Tid(Long id)
+    public Tid(Long id, Policy policy)
     {
         this.id = id;
+        this.policy = policy;
+    }
+
+    // Temporary for backwards compatibility.  SHOULD GO AWAY. XXXX
+    public Tid(Long id)
+    {
+        com.metavize.mvvm.policy.PolicyManager pm = com.metavize.mvvm.MvvmContextFactory.context().policyManager();
+        Policy p = pm.getDefaultPolicy();
+        this.id = id;
+        this.policy = p;
     }
 
     /**
@@ -51,6 +64,23 @@ public final class Tid implements Principal, Serializable, Comparable
     private void setId(Long id)
     {
         this.id = id;
+    }
+
+    /**
+     * Policy that this TID lives in
+     *
+     * @return Policy for this Tid
+     * @hibernate.many-to-one
+     * column="POLICY_ID"
+     */
+    public Policy getPolicy()
+    {
+        return policy;
+    }
+
+    public void setPolicy(Policy policy)
+    {
+        this.policy = policy;
     }
 
     // XXX something more appropriate

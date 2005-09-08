@@ -39,11 +39,6 @@ public class PolicyManagerImpl implements PolicyManager
     private PolicyManagerImpl() {
         allPolicies = new ArrayList<Policy>();
 
-        // For now do nothing
-        if (allPolicies.size() == 0)
-            // Always
-            return;
-
         Session s = MvvmContextFactory.context().openSession();
         try {
             Transaction tx = s.beginTransaction();
@@ -67,6 +62,15 @@ public class PolicyManagerImpl implements PolicyManager
                 }
                 assert defaultPolicy != null;
             }
+            
+            q = s.createQuery("from UserPolicyRuleSet uprs");
+            UserPolicyRuleSet uprs = (UserPolicyRuleSet) q.uniqueResult();
+            if (uprs == null) {
+                logger.info("Empty User Policy Rule Set.  Creating empty one."); 
+                uprs = new UserPolicyRuleSet();
+                s.save(uprs);
+            }
+
             tx.commit();
         } catch (HibernateException exn) {
             logger.fatal("could not get Policies", exn);
@@ -92,6 +96,11 @@ public class PolicyManagerImpl implements PolicyManager
     // We also build the in-memory UserPolicyRule list.
     public void reconfigure(byte[] interfaces)
     {
+        // For now do nothing
+        if (allPolicies.size() == 0)
+            // Always
+            return;
+
         synchronized(policyRuleLock) {
             if (logger.isDebugEnabled())
                 logger.debug("Setting interfaces to " + interfaces);
