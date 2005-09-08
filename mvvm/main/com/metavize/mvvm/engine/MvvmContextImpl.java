@@ -25,7 +25,6 @@ import com.metavize.mvvm.argon.ArgonManagerImpl;
 import com.metavize.mvvm.client.MvvmRemoteContext;
 import com.metavize.mvvm.logging.LoggingManager;
 import com.metavize.mvvm.policy.PolicyManager;
-import com.metavize.mvvm.policy.PolicyManagerImpl;
 import com.metavize.mvvm.reporting.ReportingManagerImpl;
 import com.metavize.mvvm.security.AdminManager;
 import com.metavize.mvvm.security.MvvmLogin;

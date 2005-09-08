@@ -37,7 +37,7 @@ public class Policy implements Serializable
      */
     public Policy() {}
 
-    Policy(boolean isDefault, String name, String notes)
+    public Policy(boolean isDefault, String name, String notes)
     {
         this.isDefault = isDefault;
         this.name = name;
@@ -61,8 +61,8 @@ public class Policy implements Serializable
     }
 
     /**
-     * Returns true if this policy is the default policy.  The default policy is the one selected
-     * when a new interface is added.
+     * Returns true if this policy is the default policy.  The default
+     * policy is the one selected when a new interface is added.
      *
      * @return true for the default policy
      * @hibernate.property
@@ -85,7 +85,8 @@ public class Policy implements Serializable
     }
 
     /**
-     * The name of the policy.  This is a short name used in the UI main policy selector.
+     * The name of the policy.  This is a short name used in the UI
+     * main policy selector.
      *
      * @hibernate.property
      * not-null="true"

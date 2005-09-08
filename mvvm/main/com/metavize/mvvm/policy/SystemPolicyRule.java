@@ -11,14 +11,12 @@
 
 package com.metavize.mvvm.policy;
 
-import com.metavize.mvvm.tran.Rule;
-import java.io.Serializable;
 import java.util.*;
 
 /**
- * System Policy Rules.  These are the "fallback" matchers in the policy selector, rows
- * are created automatically by the system when interfaces are added and cannot be added
- * or deleted by the user.
+ * System Policy Rules.  These are the "fallback" matchers in the
+ * policy selector, rows are created automatically by the system when
+ * interfaces are added and cannot be added or deleted by the user.
  *
  * @author
  * @version 1.0
@@ -31,7 +29,8 @@ public class SystemPolicyRule extends PolicyRule
 
     SystemPolicyRule() { }
 
-    SystemPolicyRule(byte clientIntf, byte serverIntf, Policy policy, boolean inbound) {
+    public SystemPolicyRule(byte clientIntf, byte serverIntf, Policy policy,
+                            boolean inbound) {
         super(clientIntf, serverIntf, policy, inbound);
     }
 }

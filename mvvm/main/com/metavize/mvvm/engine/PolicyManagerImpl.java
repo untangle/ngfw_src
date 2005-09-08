@@ -9,15 +9,22 @@
  *  $Id$
  */
 
-package com.metavize.mvvm.policy;
+package com.metavize.mvvm.engine;
+
+import java.util.*;
 
 import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.policy.Policy;
+import com.metavize.mvvm.policy.PolicyException;
+import com.metavize.mvvm.policy.PolicyManager;
+import com.metavize.mvvm.policy.SystemPolicyRule;
+import com.metavize.mvvm.policy.UserPolicyRule;
+import com.metavize.mvvm.policy.UserPolicyRuleSet;
 import net.sf.hibernate.HibernateException;
 import net.sf.hibernate.Query;
 import net.sf.hibernate.Session;
 import net.sf.hibernate.Transaction;
 import org.apache.log4j.Logger;
-import java.util.*;
 
 public class PolicyManagerImpl implements PolicyManager
 {
@@ -26,8 +33,8 @@ public class PolicyManagerImpl implements PolicyManager
 
     private static final Logger logger = Logger.getLogger( PolicyManagerImpl.class );
 
-    private static PolicyManagerImpl POLICY_MANAGER   = new PolicyManagerImpl();
-    
+    private static PolicyManagerImpl POLICY_MANAGER = new PolicyManagerImpl();
+
     private List<Policy> allPolicies; // Also contains default one
     private Policy defaultPolicy;
 
@@ -47,7 +54,7 @@ public class PolicyManagerImpl implements PolicyManager
             List results = q.list();
 
             if (results.size() == 0) {
-                logger.info("Empty policy table.  Creating default policy."); 
+                logger.info("Empty policy table.  Creating default policy.");
                 defaultPolicy = new Policy(true, INITIAL_POLICY_NAME, INITIAL_POLICY_NOTES);
                 allPolicies.add(defaultPolicy);
                 s.save(defaultPolicy);
@@ -62,11 +69,11 @@ public class PolicyManagerImpl implements PolicyManager
                 }
                 assert defaultPolicy != null;
             }
-            
+
             q = s.createQuery("from UserPolicyRuleSet uprs");
             UserPolicyRuleSet uprs = (UserPolicyRuleSet) q.uniqueResult();
             if (uprs == null) {
-                logger.info("Empty User Policy Rule Set.  Creating empty one."); 
+                logger.info("Empty User Policy Rule Set.  Creating empty one.");
                 uprs = new UserPolicyRuleSet();
                 s.save(uprs);
             }
@@ -91,111 +98,6 @@ public class PolicyManagerImpl implements PolicyManager
         return POLICY_MANAGER;
     }
 
-    // MVVM calls in here at boot time and whenever a new interface is added or removed, passing
-    // all interfaces.  We automatically add or removeSystemPolicyRules as appropriate.
-    // We also build the in-memory UserPolicyRule list.
-    public void reconfigure(byte[] interfaces)
-    {
-        // For now do nothing
-        if (allPolicies.size() == 0)
-            // Always
-            return;
-
-        synchronized(policyRuleLock) {
-            if (logger.isDebugEnabled())
-                logger.debug("Setting interfaces to " + interfaces);
-            Session s = MvvmContextFactory.context().openSession();
-            try {
-                Transaction tx = s.beginTransaction();
-
-                Query sysq = s.createQuery("from SystemPolicyRule spr");
-                List existingSys = sysq.list();
-                Query userq = s.createQuery("from UserPolicyRuleSet uprs");
-                UserPolicyRuleSet uprs = (UserPolicyRuleSet) userq.uniqueResult();
-                List existingUser = uprs.getRules();
-
-                Set goodSys = new HashSet();
-                Set goodUser = new HashSet();
-
-                // For each interface pair
-                for (int i = 0; i < interfaces.length - 1; i++) {
-                    for (int j = i+1; j < interfaces.length; j++) {
-                        byte firstIntf = interfaces[i];
-                        byte secondIntf = interfaces[j];
-
-                        // Add in the missing system rules
-                        boolean foundSys = false;
-                        for (Object o : existingSys) {
-                            SystemPolicyRule spr = (SystemPolicyRule)o;
-                            byte clientIntf = spr.getClientIntf();
-                            byte serverIntf = spr.getServerIntf();
-                            if ((clientIntf == firstIntf && serverIntf == secondIntf) || 
-                                (clientIntf == secondIntf && serverIntf == firstIntf)) {
-                                // Good to go.
-                                if (logger.isDebugEnabled())
-                                    logger.debug("Found existing SystemPolicyRule for ci: " + clientIntf + ", si: " + serverIntf);
-                                goodSys.add(spr);
-                                foundSys = true;
-                            }
-                        }
-                        if (!foundSys) {
-                            logger.info("Adding new default inbound SystemPolicyRule for ci: " + firstIntf + ", si: " + secondIntf);
-                            SystemPolicyRule newInRule = new SystemPolicyRule(firstIntf, secondIntf, defaultPolicy, true);
-                            logger.info("Adding new default outbound SystemPolicyRule for ci: " + secondIntf + ", si: " + firstIntf);
-                            SystemPolicyRule newOutRule = new SystemPolicyRule(secondIntf, firstIntf, defaultPolicy, false);
-                            s.save(newInRule);
-                            s.save(newOutRule);
-                            goodSys.add(newInRule);
-                            goodSys.add(newOutRule);
-                        }
-
-                        // Record good user rules.
-                        for (Object o : existingUser) {
-                            UserPolicyRule upr = (UserPolicyRule)o;
-                            byte clientIntf = upr.getClientIntf();
-                            byte serverIntf = upr.getServerIntf();
-                            if ((clientIntf == firstIntf && serverIntf == secondIntf) || 
-                                (clientIntf == secondIntf && serverIntf == firstIntf)) {
-                                // Good to go.
-                                if (logger.isDebugEnabled())
-                                    logger.debug("Found existing UserPolicyRule for ci: " + clientIntf + ", si: " + serverIntf);
-                                goodUser.add(upr);
-                            }
-                        }
-                    }
-                }
-
-                // Get rid of the extra user rules.
-                existingUser.retainAll(goodUser);
-                uprs.setRules(existingUser);
-                s.saveOrUpdateCopy(uprs);
-                
-                // Finally, get rid of the extra system ones.
-                existingSys.removeAll(goodSys);
-                for (Object o : existingSys) {
-                    SystemPolicyRule spr = (SystemPolicyRule)o;
-                    logger.info("Removing unused SystemPolicyRule for ci: " + spr.getClientIntf() + ", si: " + spr.getServerIntf());
-                    s.delete(spr);
-                }
-
-                userRuleSet = uprs;
-                userRules = (UserPolicyRule[]) existingUser.toArray(new UserPolicyRule[] { });
-                sysRules = (SystemPolicyRule[]) goodSys.toArray(new SystemPolicyRule[] { });
-
-                tx.commit();
-            } catch (HibernateException exn) {
-                logger.fatal("could not get PolicyRules", exn);
-                // Now what? XXX
-            } finally {
-                try {
-                    s.close();
-                } catch (HibernateException exn) {
-                    logger.warn("could not close session", exn);
-                }
-            }
-        }
-    }
-
 
     private static final Policy[] POLICY_ARRAY_PROTO = new Policy[0];
 
@@ -206,7 +108,7 @@ public class PolicyManagerImpl implements PolicyManager
     public Policy getDefaultPolicy() {
         return defaultPolicy;
     }
-        
+
     public void addPolicy(String name, String notes)
         throws PolicyException
     {
@@ -291,7 +193,7 @@ public class PolicyManagerImpl implements PolicyManager
     public SystemPolicyRule[] getSystemPolicyRules() {
         return sysRules;
     }
-    
+
     public void setSystemPolicy(SystemPolicyRule rule, Policy p, boolean inbound) {
         // more Sanity checking (policy) XXX
         synchronized(policyRuleLock) {
@@ -347,5 +249,112 @@ public class PolicyManagerImpl implements PolicyManager
             }
         }
     }
-    
+
+    // package protected methods ----------------------------------------------
+
+    // MVVM calls in here at boot time and whenever a new interface is
+    // added or removed, passing all interfaces.  We automatically add
+    // or removeSystemPolicyRules as appropriate.  We also build the
+    // in-memory UserPolicyRule list.
+    void reconfigure(byte[] interfaces)
+    {
+        // For now do nothing
+        if (allPolicies.size() == 0)
+            // Always
+            return;
+
+        synchronized(policyRuleLock) {
+            if (logger.isDebugEnabled())
+                logger.debug("Setting interfaces to " + interfaces);
+            Session s = MvvmContextFactory.context().openSession();
+            try {
+                Transaction tx = s.beginTransaction();
+
+                Query sysq = s.createQuery("from SystemPolicyRule spr");
+                List existingSys = sysq.list();
+                Query userq = s.createQuery("from UserPolicyRuleSet uprs");
+                UserPolicyRuleSet uprs = (UserPolicyRuleSet) userq.uniqueResult();
+                List existingUser = uprs.getRules();
+
+                Set goodSys = new HashSet();
+                Set goodUser = new HashSet();
+
+                // For each interface pair
+                for (int i = 0; i < interfaces.length - 1; i++) {
+                    for (int j = i+1; j < interfaces.length; j++) {
+                        byte firstIntf = interfaces[i];
+                        byte secondIntf = interfaces[j];
+
+                        // Add in the missing system rules
+                        boolean foundSys = false;
+                        for (Object o : existingSys) {
+                            SystemPolicyRule spr = (SystemPolicyRule)o;
+                            byte clientIntf = spr.getClientIntf();
+                            byte serverIntf = spr.getServerIntf();
+                            if ((clientIntf == firstIntf && serverIntf == secondIntf) ||
+                                (clientIntf == secondIntf && serverIntf == firstIntf)) {
+                                // Good to go.
+                                if (logger.isDebugEnabled())
+                                    logger.debug("Found existing SystemPolicyRule for ci: " + clientIntf + ", si: " + serverIntf);
+                                goodSys.add(spr);
+                                foundSys = true;
+                            }
+                        }
+                        if (!foundSys) {
+                            logger.info("Adding new default inbound SystemPolicyRule for ci: " + firstIntf + ", si: " + secondIntf);
+                            SystemPolicyRule newInRule = new SystemPolicyRule(firstIntf, secondIntf, defaultPolicy, true);
+                            logger.info("Adding new default outbound SystemPolicyRule for ci: " + secondIntf + ", si: " + firstIntf);
+                            SystemPolicyRule newOutRule = new SystemPolicyRule(secondIntf, firstIntf, defaultPolicy, false);
+                            s.save(newInRule);
+                            s.save(newOutRule);
+                            goodSys.add(newInRule);
+                            goodSys.add(newOutRule);
+                        }
+
+                        // Record good user rules.
+                        for (Object o : existingUser) {
+                            UserPolicyRule upr = (UserPolicyRule)o;
+                            byte clientIntf = upr.getClientIntf();
+                            byte serverIntf = upr.getServerIntf();
+                            if ((clientIntf == firstIntf && serverIntf == secondIntf) ||
+                                (clientIntf == secondIntf && serverIntf == firstIntf)) {
+                                // Good to go.
+                                if (logger.isDebugEnabled())
+                                    logger.debug("Found existing UserPolicyRule for ci: " + clientIntf + ", si: " + serverIntf);
+                                goodUser.add(upr);
+                            }
+                        }
+                    }
+                }
+
+                // Get rid of the extra user rules.
+                existingUser.retainAll(goodUser);
+                uprs.setRules(existingUser);
+                s.saveOrUpdateCopy(uprs);
+
+                // Finally, get rid of the extra system ones.
+                existingSys.removeAll(goodSys);
+                for (Object o : existingSys) {
+                    SystemPolicyRule spr = (SystemPolicyRule)o;
+                    logger.info("Removing unused SystemPolicyRule for ci: " + spr.getClientIntf() + ", si: " + spr.getServerIntf());
+                    s.delete(spr);
+                }
+
+                userRuleSet = uprs;
+                userRules = (UserPolicyRule[]) existingUser.toArray(new UserPolicyRule[] { });
+                sysRules = (SystemPolicyRule[]) goodSys.toArray(new SystemPolicyRule[] { });
+
+                tx.commit();
+            } catch (HibernateException exn) {
+                logger.fatal("could not get PolicyRules", exn);
+                // Now what? XXX
+            } finally {
+                try {
+                    s.close();
+                } catch (HibernateException exn) {
+                    logger.warn("could not close session", exn);
+                }
+            }
+        }
+    }
 }
