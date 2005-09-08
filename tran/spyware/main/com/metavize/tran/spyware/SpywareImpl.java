@@ -289,11 +289,6 @@ public class SpywareImpl extends AbstractTransform implements Spyware
             return false;
         }
 
-        // XXX make a whitelist
-        if (domain.equalsIgnoreCase("switch.atdmt.com") && uri.toString().startsWith("/action/msn_hm")) {
-            return false;
-        }
-
         boolean match = false;
 
         for (String d = domain; !match && null != d; d = nextHost(d)) {

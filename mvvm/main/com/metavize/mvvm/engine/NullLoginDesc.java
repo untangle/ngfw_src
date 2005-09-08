@@ -18,29 +18,26 @@ import com.metavize.mvvm.security.MvvmLogin;
 
 final class NullLoginDesc extends LoginDesc
 {
-    static final NullLoginDesc LOCAL_LOGIN = new NullLoginDesc(true);
-    static final NullLoginDesc REMOTE_LOGIN = new NullLoginDesc(false);
+    static final NullLoginDesc NULL_LOGIN = new NullLoginDesc();
 
-    private final boolean local;
     private final TargetDesc targetDesc;
 
     // constructors -----------------------------------------------------------
 
-    private NullLoginDesc(boolean local)
+    private NullLoginDesc()
     {
         super(null);
 
-        this.local = local;
-        MvvmLogin login = MvvmContextFactory.context().mvvmLogin(local);
+        MvvmLogin login = MvvmContextFactory.context().mvvmLogin();
 
         targetDesc = new TargetDesc(null, 0, new WeakReference(login));
     }
 
     // static factories -------------------------------------------------------
 
-    static NullLoginDesc getLoginDesc(boolean local)
+    static NullLoginDesc getLoginDesc()
     {
-        return local ? LOCAL_LOGIN : REMOTE_LOGIN;
+        return NULL_LOGIN;
     }
 
     // package protected methods ----------------------------------------------
@@ -55,7 +52,6 @@ final class NullLoginDesc extends LoginDesc
     @Override
     TargetDesc getTargetDesc(Object target, TargetReaper targetReaper)
     {
-        System.out.println("NULLOGINDESC FOR: " + target);
         return targetDesc;
     }
 

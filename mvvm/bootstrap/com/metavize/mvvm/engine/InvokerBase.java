@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004 Metavize Inc.
+ * Copyright (c) 2004, 2005 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -20,9 +20,11 @@ public abstract class InvokerBase
     protected InvokerBase() { }
 
     protected abstract void handleStream(InputStream is, OutputStream os,
-                                         boolean isLocal, InetAddress remoteAddr);
+                                         boolean isLocal,
+                                         InetAddress remoteAddr);
 
-    public void handle(InputStream is, OutputStream os, boolean isLocal, InetAddress remoteAddr)
+    public void handle(InputStream is, OutputStream os, boolean isLocal,
+                       InetAddress remoteAddr)
     {
         handleStream(is, os, isLocal, remoteAddr);
     }

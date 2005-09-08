@@ -2,7 +2,7 @@
 
 <%
 
-MvvmRemoteContext mvvm = MvvmRemoteContextFactory.localLogin();
+MvvmRemoteContext mvvm = MvvmRemoteContextFactory.factory().systemLogin(0);
 // XXX logins timeout
 //ServletContext sc = getServletContext();
 //MvvmRemoteContext mvvm = (MvvmRemoteContext) sc.getAttribute("mvvm");

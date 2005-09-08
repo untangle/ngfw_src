@@ -13,9 +13,8 @@ package com.metavize.mvvm;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Map;
 import java.util.HashMap;
-
+import java.util.Map;
 
 import com.metavize.mvvm.logging.LoggingManager;
 import com.metavize.mvvm.policy.PolicyManager;
@@ -45,26 +44,22 @@ public interface MvvmLocalContext
          * Booted, but not initialized. This is a transient state, just
          * after the world has been instantiated, but before
          * MvvmLocalContext.init() has been called.
-         *
          */
         public static final MvvmState LOADED = new MvvmState("loaded");
 
         /**
          * Initialized, but not running. We've run init() but not yet started
          * the transforms or Tomcat.
-         *
          */
         public static final MvvmState INITIALIZED = new MvvmState("initialized");
 
         /**
          * Running.
-         *
          */
         public static final MvvmState RUNNING = new MvvmState("running");
 
         /**
          * Destroyed, this instance should not be used.
-         *
          */
         public static final MvvmState DESTROYED = new MvvmState("destroyed");
 
@@ -190,7 +185,7 @@ public interface MvvmLocalContext
      * the local host.
      * @return a <code>MvvmLogin</code> value
      */
-    MvvmLogin mvvmLogin(boolean isLocal);
+    MvvmLogin mvvmLogin();
 
     TransformContext transformContext(ClassLoader cl);
 

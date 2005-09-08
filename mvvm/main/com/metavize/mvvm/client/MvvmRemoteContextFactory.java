@@ -29,10 +29,23 @@ import com.metavize.mvvm.security.MvvmLogin;
  */
 public class MvvmRemoteContextFactory
 {
-    private static final Object LOCK = new Object();
+    private static final String SYSTEM_USER = "localadmin";
+    private static final String SYSTEM_PASSWORD = "nimda11lacol";
 
-    private static MvvmRemoteContext REMOTE_CONTEXT;
-    private static HttpInvokerStub HTTP_INVOKER_STUB;
+    private static final MvvmRemoteContextFactory FACTORY
+        = new MvvmRemoteContextFactory();
+
+    private MvvmRemoteContext remoteContext;
+    private HttpInvokerStub httpInvokerStub;
+
+    // factory methods --------------------------------------------------------
+
+    public static MvvmRemoteContextFactory factory()
+    {
+        return FACTORY;
+    }
+
+    // public methods ---------------------------------------------------------
 
     /**
      * Get the <code>MvvmRemoteContext</code> from this classloader.
@@ -40,14 +53,14 @@ public class MvvmRemoteContextFactory
      *
      * @return the <code>MvvmContext</code>.
      */
-    public static MvvmRemoteContext mvvmContext()
+    public MvvmRemoteContext mvvmContext()
     {
-        return REMOTE_CONTEXT;
+        return remoteContext;
     }
 
     /**
-     * Get the MVVM context from a remote MVVM instance by logging in
-     * from the login service on the specified <code>host</code>.
+     * Log in and get a MvvmRemoteContext. This method is for
+     * interactive clients that require an exclusive login.
      *
      * @param host the host of the Mvvm.
      * @param username the username.
@@ -55,111 +68,98 @@ public class MvvmRemoteContextFactory
      * @param timeout an <code>int</code> value.
      * @param classLoader the class loader to be used for deserialization.
      * @param secure use a SSL connection.
+     * @param force logout other interactive logins, if
      * @return the <code>MvvmContext</code> for this machine.
      * @exception MvvmConnectException when an MvvmLogin object cannot
      *    be accessed at given <code>host</code> and <code>port</code>.
-     * @exception FailedLoginException if an error occurs
+     * @exception FailedLoginException when the username and password
+     * are incorrect.
+     * @exception MultipleLoginsException when there is already an
+     * interactive login and force is false.
      */
-    public static MvvmRemoteContext login(String host, String username,
-                                    String password, int timeout,
-                                    ClassLoader classLoader, boolean secure)
-        throws MvvmConnectException, FailedLoginException
+    public MvvmRemoteContext interactiveLogin(String host, String username,
+                                              String password, int timeout,
+                                              ClassLoader classLoader,
+                                              boolean secure, boolean force)
+        throws MvvmConnectException, FailedLoginException,
+               MultipleLoginsException
     {
         URL url;
-
         try {
             url = new URL(secure ? "https" : "http", host, "/http-invoker");
         } catch (MalformedURLException exn) { /* shouldn't happen */
             throw new MvvmConnectException(exn);
         }
 
-        synchronized (LOCK) {
+        synchronized (this) {
             MvvmLogin ml = mvvmLogin(url, timeout, classLoader);
-            REMOTE_CONTEXT = ml.login(username, password);
-            if (null != REMOTE_CONTEXT) {
-                InvocationHandler ih = Proxy.getInvocationHandler(REMOTE_CONTEXT);
-                HTTP_INVOKER_STUB = (HttpInvokerStub)ih;
+            remoteContext = ml.interactiveLogin(username, password, force);
+            if (null != remoteContext) {
+                InvocationHandler ih = Proxy.getInvocationHandler(remoteContext);
+                httpInvokerStub = (HttpInvokerStub)ih;
             }
         }
 
-        return REMOTE_CONTEXT;
+        return remoteContext;
     }
 
     /**
-     * Login with a secure connection.
-     *
-     * @param host the host of the Mvvm.
-     * @param port the port of the <code>HttpNamingContextFactory</code>.
-     * @param username the username.
-     * @param password the password.
-     * @param classLoader the class loader to be used for deserialization.
-     * @return the <code>MvvmRemoteContext</code> for this machine.
-     * @exception MvvmConnectException when an MvvmLogin object cannot
-     *    be accessed at given <code>host</code> and <code>port</code>.
-     */
-    public static MvvmRemoteContext login(String host, String username,
-                                          String password, int timeout,
-                                          ClassLoader classLoader)
-        throws MvvmConnectException, FailedLoginException
-    {
-        return login(host, username, password, timeout, classLoader, true);
-    }
-
-    /**
-     * Get the MVVM context for the localhost "remote" MVVM instance
-     * by logging in (with our magic localhost passwd) from the login
-     * service at http://localhost/http-invoker.
-     *
-     * @return the remote MvvmRemoteContext.
-     * @exception FailedLoginException if an error occurs
-     * @exception MvvmConnectException if an error occurs
-     */
-    public static MvvmRemoteContext localLogin()
-        throws FailedLoginException, MvvmConnectException
-    {
-        return localLogin(0);
-    }
-
-    /**
-     * Get the MVVM context for the localhost "remote" MVVM instance
-     * by logging in (with our magic localhost passwd) from the login
-     * service at http://localhost/http-invoker.
+     * Log in and get a MvvmRemoteContext. This is for system logins
+     * that do not require exclusive access to the MVVM. These logins
+     * are allowed even when a client has an interactive login. Even
+     * though some of these applications (mcli) may change the MVVM
+     * state in a way that an interactive client cannot handle, this
+     * functionality is not exposed to end users.
      *
      * @param timeout an <code>int</code> value
      * @return the remote MvvmRemoteContext.
      * @exception FailedLoginException if an error occurs
      * @exception MvvmConnectException if an error occurs
      */
-    public static MvvmRemoteContext localLogin(int timeout)
+    public MvvmRemoteContext systemLogin(int timeout)
         throws FailedLoginException, MvvmConnectException
     {
-        String localUser = "localadmin";
-        String localPasswd = "nimda11lacol";
-        return login("localhost", localUser, localPasswd, timeout,
-                     null, false);
+        URL url;
+        try {
+            url = new URL("http", "localhost", "/http-invoker");
+        } catch (MalformedURLException exn) { /* shouldn't happen */
+            throw new MvvmConnectException(exn);
+        }
+
+        synchronized (this) {
+            MvvmLogin ml = mvvmLogin(url, timeout, null);
+            remoteContext = ml.systemLogin(SYSTEM_USER, SYSTEM_PASSWORD);
+            if (null != remoteContext) {
+                InvocationHandler ih = Proxy.getInvocationHandler(remoteContext);
+                httpInvokerStub = (HttpInvokerStub)ih;
+            }
+        }
+
+        return remoteContext;
     }
 
-    public static void logout()
+    public void logout()
     {
-        synchronized (LOCK) {
+        synchronized (this) {
             try {
-                HTTP_INVOKER_STUB.invoke(null, null, null);
+                httpInvokerStub.invoke(null, null, null);
             } catch (Exception exn) {
                 throw new RuntimeException(exn); // XXX
             }
-            HTTP_INVOKER_STUB = null;
+            httpInvokerStub = null;
         }
     }
 
-    public static LoginSession loginSession()
+    public LoginSession loginSession()
     {
-        synchronized (LOCK) {
-            return HTTP_INVOKER_STUB.getLoginSession();
+        synchronized (this) {
+            return httpInvokerStub.getLoginSession();
         }
     }
 
-    private static MvvmLogin mvvmLogin(URL url, int timeout,
-                                       ClassLoader classLoader)
+    // private methods --------------------------------------------------------
+
+    private MvvmLogin mvvmLogin(URL url, int timeout, ClassLoader classLoader)
     {
         // Note -- this login session is completely ignored by the server
         // (which it must be since it's made on the client).

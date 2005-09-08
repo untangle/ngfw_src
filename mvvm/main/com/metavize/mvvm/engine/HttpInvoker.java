@@ -21,6 +21,7 @@ import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -28,6 +29,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.metavize.mvvm.client.InvocationTargetExpiredException;
 import com.metavize.mvvm.client.LoginExpiredException;
+import com.metavize.mvvm.client.LoginStolenException;
+import com.metavize.mvvm.client.MultipleLoginsException;
 import com.metavize.mvvm.client.MvvmRemoteContext;
 import com.metavize.mvvm.security.LoginSession;
 import org.apache.log4j.Logger;
@@ -42,7 +45,7 @@ class HttpInvoker extends InvokerBase
 
     private final Map<LoginSession, LoginDesc> logins;
     private final ThreadLocal<LoginSession> activeLogin;
-    private final ThreadLocal<LoginSession> newLogin;
+    private final ThreadLocal<NewLoginDesc> newLogin;
     private final ThreadLocal<InetAddress> clientAddr;
     private final Timer loginReaper = new Timer(true);
     private final TargetReaper targetReaper = new TargetReaper();
@@ -53,7 +56,7 @@ class HttpInvoker extends InvokerBase
     {
         logins = new ConcurrentHashMap<LoginSession, LoginDesc>();
         activeLogin = new ThreadLocal<LoginSession>();
-        newLogin = new ThreadLocal<LoginSession>();
+        newLogin = new ThreadLocal<NewLoginDesc>();
         clientAddr = new ThreadLocal<InetAddress>();
     }
 
@@ -96,7 +99,7 @@ class HttpInvoker extends InvokerBase
 
             if (null == targetId) {
                 if (null == loginSession) {  /* login request */
-                    NullLoginDesc loginDesc = NullLoginDesc.getLoginDesc(local);
+                    NullLoginDesc loginDesc = NullLoginDesc.getLoginDesc();
                     TargetDesc targetDesc = loginDesc.getTargetDesc();
                     Object proxy = targetDesc.getProxy();
                     oos.writeObject(proxy);
@@ -109,11 +112,14 @@ class HttpInvoker extends InvokerBase
             }
 
             LoginDesc loginDesc = null == loginSession
-                ? NullLoginDesc.getLoginDesc(local) /* access MvvmLogin only */
-                : logins.get(loginSession);         /* logged in */
+                ? NullLoginDesc.getLoginDesc() /* access MvvmLogin only */
+                : logins.get(loginSession);    /* logged in */
 
             if (null == loginDesc) {
                 oos.writeObject(new LoginExpiredException("login expired"));
+                return;
+            } else if (loginDesc.isStolen()) {
+                oos.writeObject(new LoginStolenException(loginDesc.getLoginThief()));
                 return;
             } else {
                 loginDesc.touch();
@@ -157,13 +163,22 @@ class HttpInvoker extends InvokerBase
             }
 
             if (retVal instanceof MvvmRemoteContext) { // XXX if is to login()
-                LoginSession ls = newLogin.get();
+                NewLoginDesc nld = newLogin.get();
                 newLogin.remove();
 
-                if (null != ls) {
-                    loginSession = ls;
-                    loginDesc = new LoginDesc(loginSession);
-                    logins.put(loginSession, loginDesc);
+                if (null != nld) {
+                    LoginSession ls = nld.loginSession;
+
+                    if (null != ls) {
+                        LoginSession ols = checkSessions(ls, nld.force);
+                        if (null != ols) {
+                            retVal = new MultipleLoginsException(ols);
+                        } else {
+                            loginSession = ls;
+                            loginDesc = new LoginDesc(loginSession);
+                            logins.put(loginSession, loginDesc);
+                        }
+                    }
                 }
             }
 
@@ -211,9 +226,9 @@ class HttpInvoker extends InvokerBase
 
                     for (LoginSession loginSession : logins.keySet()) {
                         LoginDesc loginDesc = logins.get(loginSession);
-                        InetAddress cAddr = loginSession.getClientAddr();
-                        // don't expire local logins
-                        if (!cAddr.isLoopbackAddress() && null != loginDesc) {
+                        // don't expire system logins
+                        // XXX make servlets more robust instead
+                        if (!loginSession.isSystem() && null != loginDesc) {
                             Date lastAccess = loginDesc.getLastAccess();
                             if (cutoff.after(lastAccess)) {
                                 logins.remove(loginSession);
@@ -231,9 +246,9 @@ class HttpInvoker extends InvokerBase
         targetReaper.destroy();
     }
 
-    void login(LoginSession loginSession)
+    void login(LoginSession loginSession, boolean force)
     {
-        newLogin.set(loginSession);
+        newLogin.set(new NewLoginDesc(loginSession, force));
     }
 
     InetAddress getClientAddr()
@@ -244,5 +259,43 @@ class HttpInvoker extends InvokerBase
     LoginSession[] getLoginSessions()
     {
         return logins.keySet().toArray(new LoginSession[0]);
+    }
+
+    // private classes --------------------------------------------------------
+
+    private static class NewLoginDesc
+    {
+        final LoginSession loginSession;
+        final boolean force;
+
+        NewLoginDesc(LoginSession loginSession, boolean force)
+        {
+            this.loginSession = loginSession;
+            this.force = force;
+        }
+    }
+
+    // private methods --------------------------------------------------------
+
+    private LoginSession checkSessions(LoginSession ls, boolean force)
+    {
+        if (ls.isInteractive()) {
+            for (Iterator<LoginSession> i = logins.keySet().iterator();
+                 i.hasNext(); ) {
+                LoginSession ols = i.next();
+                if (ols.isInteractive()) {
+                    LoginDesc ld = logins.get(ols);
+                    if (null != ld && !ld.isStolen()) {
+                        if (force) {
+                            ld.steal(ls);
+                        } else {
+                            return ols;
+                        }
+                    }
+                }
+            }
+        }
+
+        return null;
     }
 }

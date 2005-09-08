@@ -16,18 +16,22 @@ import java.net.InetAddress;
 
 public class LoginSession implements Serializable
 {
-    private static final long serialVersionUID = 8008547499175175006L;
+    // XXX new serial uid
+
+    public enum LoginType { INTERACTIVE, SYSTEM };
 
     private final MvvmPrincipal mvvmPrincipal;
     private final int sessionId;
     private final InetAddress clientAddr;
+    private final LoginType loginType;
 
     public LoginSession(MvvmPrincipal mp, int sessionId,
-                        InetAddress clientAddr)
+                        InetAddress clientAddr, LoginType loginType)
     {
         this.mvvmPrincipal =  mp;
         this.sessionId = sessionId;
         this.clientAddr = clientAddr;
+        this.loginType = loginType;
     }
 
     public MvvmPrincipal getMvvmPrincipal()
@@ -45,13 +49,28 @@ public class LoginSession implements Serializable
         return clientAddr;
     }
 
+    public LoginType getLoginType()
+    {
+        return loginType;
+    }
+
+    public boolean isInteractive()
+    {
+        return LoginType.INTERACTIVE == loginType;
+    }
+
+    public boolean isSystem()
+    {
+        return LoginType.SYSTEM == loginType;
+    }
+
     // Object methods ---------------------------------------------------------
 
     @Override
     public String toString()
     {
         return (null == mvvmPrincipal ? "nobody" : mvvmPrincipal.getName())
-            + " " + sessionId;
+            + " " + sessionId + " login type: " + loginType;
     }
 
     @Override
@@ -80,6 +99,7 @@ public class LoginSession implements Serializable
             : mvvmPrincipal.equals(ls.mvvmPrincipal)
             && sessionId == ls.sessionId
             && null == clientAddr ? null == ls.clientAddr
-            : clientAddr.equals(ls.clientAddr);
+            : clientAddr.equals(ls.clientAddr)
+            && loginType == ls.loginType;
     }
 }

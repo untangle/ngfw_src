@@ -29,6 +29,7 @@ class LoginDesc
         = new WeakHashMap<Object, TargetDesc>();
 
     private volatile Date lastAccess;
+    private volatile LoginSession loginThief;
 
     private int lastId = 0;
 
@@ -79,6 +80,23 @@ class LoginDesc
     void touch()
     {
         lastAccess = new Date();
+    }
+
+    void steal(LoginSession loginThief)
+    {
+        this.loginThief = loginThief;
+        targets.clear();
+        proxies.clear();
+    }
+
+    LoginSession getLoginThief()
+    {
+        return loginThief;
+    }
+
+    boolean isStolen()
+    {
+        return null != loginThief;
     }
 
     Date getLastAccess()

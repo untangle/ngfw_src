@@ -8,7 +8,7 @@
 <BODY>
 <%
   AbsoluteTimeDateFormat atdf = new AbsoluteTimeDateFormat();
-  MvvmRemoteContext mc = MvvmRemoteContextFactory.localLogin();
+  MvvmRemoteContext mc = MvvmRemoteContextFactory.factory().systemLogin(0);
   TransformManager tm = mc.transformManager();
   Tid[] tids = tm.transformInstances();
   StringBuffer buf;
@@ -128,7 +128,7 @@
       <P>
 <%
   }
-  MvvmRemoteContextFactory.logout();
+  MvvmRemoteContextFactory.factory().logout();
 %>
 </BODY>
 </HTML>

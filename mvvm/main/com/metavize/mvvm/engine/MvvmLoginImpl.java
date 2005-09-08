@@ -15,6 +15,7 @@ import java.net.InetAddress;
 import javax.security.auth.login.FailedLoginException;
 
 import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.client.MultipleLoginsException;
 import com.metavize.mvvm.client.MvvmRemoteContext;
 import com.metavize.mvvm.security.LoginFailureReason;
 import com.metavize.mvvm.security.LoginSession;
@@ -30,119 +31,153 @@ import org.apache.log4j.Logger;
 
 class MvvmLoginImpl implements MvvmLogin
 {
+    private static final String SYSTEM_USER = "localadmin";
+    private static final String SYSTEM_PASSWORD = "nimda11lacol";
     // Add two seconds to each failed login attempt to blunt the force
     // of scripted dictionary attacks.
     private static final long LOGIN_FAIL_SLEEP_TIME = 2000;
 
-    private static final Object LOCK = new Object();
-    private static final Logger logger = Logger.getLogger(MvvmLoginImpl.class);
+    private static final MvvmLoginImpl MVVM_LOGIN = new MvvmLoginImpl();
 
-    private final boolean isLocal;
-    private final Logger eventLogger;
+    private final Logger logger = Logger.getLogger(MvvmLoginImpl.class);
+    private final Logger eventLogger = MvvmContextFactory.context()
+        .eventLogger();
 
-    private static int loginId = 0; /* have LOCK */
+    private int loginId = 0;
 
     // Constructors -----------------------------------------------------------
 
-    MvvmLoginImpl(boolean isLocal)
+    private MvvmLoginImpl() { }
+
+    // factories --------------------------------------------------------------
+
+    static MvvmLoginImpl mvvmLogin()
     {
-        super();
-        this.isLocal = isLocal;
-        this.eventLogger = MvvmContextFactory.context().eventLogger();
+        return MVVM_LOGIN;
     }
 
     // MvvmLogin methods ------------------------------------------------------
 
-    public MvvmRemoteContext login(String login, String password)
-        throws FailedLoginException
+    public MvvmRemoteContext interactiveLogin(String login, String password,
+                                              boolean force)
+        throws FailedLoginException, MultipleLoginsException
     {
-        // Get the client Addr from our partial initial login session
         HttpInvoker invoker = HttpInvoker.invoker();
         InetAddress clientAddr = invoker.getClientAddr();
 
-        boolean success = false;
-        if (isLocal) {
-            // Do something better here. XXX
-            logger.debug("Attempting local login");
-            String localUser = "localadmin";
-            String localPasswd = "nimda11lacol";
-            if (login.equals(localUser) &&
-                password.equals(localPasswd)) {
-                logger.debug("Local login succeeded");
-                eventLogger.info(new LoginEvent(clientAddr, localUser, true, true));
-                success = true;
-            } else {
-                eventLogger.info(new LoginEvent(clientAddr, localUser, true, false));
-                logger.debug("Failed local, trying normal");
-            }
-        }
+        User user = null;
+        Session s = MvvmContextFactory.context().openSession();
+        try {
+            Transaction tx = s.beginTransaction();
 
-        if (!success) {
-            Session s = MvvmContextFactory.context().openSession();
-            FailedLoginException x = null;
-            try {
-                Transaction tx = s.beginTransaction();
+            Query q = s.createQuery("from User u where u.login = :login");
+            q.setString("login", login);
+            user = (User)q.uniqueResult();
 
-                Query q = s.createQuery
-                    ("from User u where u.login = :login");
-                q.setString("login", login);
-                User u = (User)q.uniqueResult();
-
-                if (null != u) {
-                    logger.debug("Attempting login of user: " + u.getLogin());
-                    if (PasswordUtil.check(password, u.getPassword())) {
-                        logger.debug("Password check succeeded");
-                        // Just use login, not id, so it can be
-                        // congruent with "localadmin" from above.
-                        eventLogger.info(new LoginEvent(clientAddr, login, false, true));
-                        success = true;
-                    } else {
-                        logger.debug("Password check failed");
-                        eventLogger.info(new LoginEvent(clientAddr, login, false, false, LoginFailureReason.BAD_PASSWORD));
-                        Thread.sleep(LOGIN_FAIL_SLEEP_TIME);
-                        x = new FailedLoginException("Incorrect password");
-                    }
-                } else {
-                    logger.debug("No user found with login: " + login);
-                    eventLogger.info(new LoginEvent(clientAddr, login, false, false, LoginFailureReason.UNKNOWN_USER));
-                    Thread.sleep(LOGIN_FAIL_SLEEP_TIME);
-                    x = new FailedLoginException("No such user: " + login);
-                }
-
-                tx.commit();
-            } catch (HibernateException exn) {
-                logger.warn("could not get User: " + login, exn);
-            } catch (InterruptedException exn) {
-                // Can't really happen.
-                logger.warn("interrupted in mvvmlogin backend");
-            } finally {
+            tx.commit();
+        } catch (HibernateException exn) {
+            logger.warn("could not get User: " + login, exn);
+        } finally {
+            if (null != s) {
                 try {
                     s.close();
                 } catch (HibernateException exn) {
                     logger.warn("could not close session", exn);
                 }
             }
-
-            if (!success) {
-                throw x;
-            }
         }
 
-        MvvmPrincipal mp = new MvvmPrincipal(login);
+        if (null == user) {
+            logger.debug("no user found with login: " + login);
+            eventLogger.info(new LoginEvent(clientAddr, login, false, false,
+                                            LoginFailureReason.UNKNOWN_USER));
+            try {
+                Thread.sleep(LOGIN_FAIL_SLEEP_TIME);
+            } catch (InterruptedException exn) { /* whateva */ }
+
+            throw new FailedLoginException("no such user: " + login);
+        } else if (!PasswordUtil.check(password, user.getPassword())) {
+            logger.debug("password check failed");
+            eventLogger.info(new LoginEvent(clientAddr, login, false, false,
+                                            LoginFailureReason.BAD_PASSWORD));
+
+            try {
+                Thread.sleep(LOGIN_FAIL_SLEEP_TIME);
+            } catch (InterruptedException exn) { /* whateva */ }
+
+            throw new FailedLoginException("incorrect password");
+        } else {
+            logger.debug("password check succeeded");
+            eventLogger.info(new LoginEvent(clientAddr, login, false, true));
+
+            return login(login, clientAddr, LoginSession.LoginType.INTERACTIVE,
+                         force);
+        }
+
+    }
+
+    public MvvmRemoteContext systemLogin(String username, String password)
+        throws FailedLoginException
+    {
+        HttpInvoker invoker = HttpInvoker.invoker();
+        InetAddress clientAddr = invoker.getClientAddr();
+
+        // Do something better here. XXX
+        logger.debug("attempting local login");
+        if (!clientAddr.isLoopbackAddress()) {
+            logger.debug("systemLogin failed, not localhost");
+
+            eventLogger.info(new LoginEvent(clientAddr, username, true,
+                                            false));
+
+            try {
+                Thread.sleep(LOGIN_FAIL_SLEEP_TIME);
+            } catch (InterruptedException exn) { /* whateva */ }
+
+            throw new FailedLoginException("system login not from localhost");
+        } else if (!isSystemLogin(username, password)) {
+            eventLogger.info(new LoginEvent(clientAddr, username, true,
+                                            false));
+            try {
+                Thread.sleep(LOGIN_FAIL_SLEEP_TIME);
+            } catch (InterruptedException exn) { /* whateva */ }
+
+            throw new FailedLoginException("bad system login");
+        } else {
+            logger.debug("local login succeeded");
+            eventLogger.info(new LoginEvent(clientAddr, username, true, true));
+
+            return login(username, clientAddr, LoginSession.LoginType.SYSTEM,
+                         false);
+        }
+    }
+
+    private MvvmRemoteContext login(String username, InetAddress clientAddr,
+                                    LoginSession.LoginType loginType,
+                                    boolean force)
+    {
+        HttpInvoker invoker = HttpInvoker.invoker();
+
+        MvvmPrincipal mp = new MvvmPrincipal(username);
 
         LoginSession loginSession = new LoginSession(mp, nextLoginId(),
-                                                     clientAddr);
+                                                     clientAddr, loginType);
 
-        invoker.login(loginSession);
+        invoker.login(loginSession, force);
 
         return MvvmContextImpl.getInstance().remoteContext();
     }
 
     // private methods --------------------------------------------------------
 
+    private boolean isSystemLogin(String username, String passwd)
+    {
+        return username.equals(SYSTEM_USER) && passwd.equals(SYSTEM_PASSWORD);
+    }
+
     private int nextLoginId()
     {
-        synchronized (LOCK) {
+        synchronized (this) {
             return ++loginId;
         }
     }

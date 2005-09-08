@@ -14,11 +14,11 @@ package com.metavize.mvvm.engine;
 import java.io.IOException;
 
 import com.metavize.mvvm.ArgonManager;
+import com.metavize.mvvm.ConnectivityTester;
 import com.metavize.mvvm.MailSender;
 import com.metavize.mvvm.MvvmLocalContext;
 import com.metavize.mvvm.NetworkingManager;
 import com.metavize.mvvm.ReportingManager;
-import com.metavize.mvvm.ConnectivityTester;
 import com.metavize.mvvm.ToolboxManager;
 import com.metavize.mvvm.argon.Argon;
 import com.metavize.mvvm.argon.ArgonManagerImpl;
@@ -156,9 +156,9 @@ public class MvvmContextImpl extends MvvmContextBase
         return pipelineFoundry;
     }
 
-    public MvvmLogin mvvmLogin(boolean isLocal)
+    public MvvmLogin mvvmLogin()
     {
-        return ((AdminManagerImpl)adminManager).mvvmLogin(isLocal);
+        return adminManager.mvvmLogin();
     }
 
     public TransformContext transformContext(ClassLoader cl)

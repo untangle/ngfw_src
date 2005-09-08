@@ -76,16 +76,17 @@ public class RemoteClient
             System.exit(-1);
         }
 
+        MvvmRemoteContextFactory factory = MvvmRemoteContextFactory.factory();
         if (host.equals("localhost")) {
-            mc = MvvmRemoteContextFactory.localLogin(timeout);
+            mc = factory.systemLogin(timeout);
         } else {
-            mc = MvvmRemoteContextFactory.login(host, username, passwd,
-                                                timeout, null);
+            mc = factory.interactiveLogin(host, username, passwd, timeout,
+                                          null, true, false);
         }
 
         if (args[0].equalsIgnoreCase("serverStats")) {
             System.out.println("Running");
-            MvvmRemoteContextFactory.logout();
+            factory.logout();
             System.exit(0);
         }
 
@@ -173,11 +174,11 @@ public class RemoteClient
             }
             System.out.println();
             printUsage();
-            MvvmRemoteContextFactory.logout();
+            factory.logout();
             System.exit(-1);
         }
 
-        MvvmRemoteContextFactory.logout();
+        factory.logout();
     }
 
     private static class Visitor implements ProgressVisitor
@@ -538,7 +539,7 @@ public class RemoteClient
 
     private static void who()
     {
-        LoginSession l = MvvmRemoteContextFactory.loginSession();
+        LoginSession l = MvvmRemoteContextFactory.factory().loginSession();
         String ln = null == l ? "nobody" : l.getMvvmPrincipal().getName();
         System.out.println("You are: " + ln + " " + l.getSessionId());
         LoginSession[] ls = mc.adminManager().loggedInUsers();

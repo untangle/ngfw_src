@@ -31,10 +31,9 @@ class AdminManagerImpl implements AdminManager
     private static final String INITIAL_USER_LOGIN = "admin";
     private static final String INITIAL_USER_PASSWORD = "passwd";
 
-    private static AdminManagerImpl ADMIN_MANAGER = new AdminManagerImpl();
+    private static final AdminManagerImpl ADMIN_MANAGER = new AdminManagerImpl();
 
-    private final MvvmLogin mvvmLoginRemote;
-    private final MvvmLogin mvvmLoginLocal;
+    private final MvvmLogin mvvmLogin;
 
     private final Logger logger = Logger.getLogger(AdminManagerImpl.class);
 
@@ -69,8 +68,7 @@ class AdminManagerImpl implements AdminManager
             }
         }
 
-        mvvmLoginRemote = new MvvmLoginImpl(false);
-        mvvmLoginLocal  = new MvvmLoginImpl(true);
+        mvvmLogin = MvvmLoginImpl.mvvmLogin();
 
         logger.info("Initialized AdminManager");
     }
@@ -80,8 +78,8 @@ class AdminManagerImpl implements AdminManager
         return ADMIN_MANAGER;
     }
 
-    MvvmLogin mvvmLogin(boolean isLocal) {
-        return isLocal ? mvvmLoginLocal : mvvmLoginRemote;
+    MvvmLogin mvvmLogin() {
+        return mvvmLogin;
     }
 
     public MailSettings getMailSettings()
