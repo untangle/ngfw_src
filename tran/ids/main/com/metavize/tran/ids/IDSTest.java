@@ -42,9 +42,9 @@ public class IDSTest {
 	public IDSTest() {}
 
 	public boolean runTest() {
-		//generateRuleTest();
-		//runHeaderTest();
-		//runSignatureTest();
+		generateRuleTest();
+		runHeaderTest();
+		runSignatureTest();
 		//generateRandomRuleHeaders(1000);
 		//runTimeTest(1);
 		return true;
@@ -87,7 +87,7 @@ public class IDSTest {
 		
 		for(int i=0; i < testValidStrings.length; i++) {
 			try { 
-				rules.addRule(testValidStrings[i]);
+				rules.addRule(testValidStrings[i], (long)i);
 			} catch (ParseException e)  { log.error(e.getMessage()); }
 		}
 		return true;
@@ -100,7 +100,7 @@ public class IDSTest {
 		/**Setup*/
 		List<IDSRuleSignature> signatures = new LinkedList<IDSRuleSignature>();
 		for(IDSRuleHeader header : rules.getHeaders())
-			for(IDSRuleSignature sig : header.getSignatures())
+			for(IDSRuleSignature sig : header.getSignatures()) 
 				signatures.add(sig);
 		
 		IDSSessionInfo info = new IDSSessionInfo();
@@ -196,6 +196,8 @@ public class IDSTest {
 	private void runHeaderTest() {
 		
 		List<IDSRuleHeader> ruleList = rules.getHeaders();
+		for(IDSRuleHeader header : ruleList)
+			log.error(header);
 		
 		matchTest(ruleList.get(1), Protocol.TCP, "10.0.0.101", 33242, "66.35.250.8", 80, false);
 		matchTest(ruleList.get(3), Protocol.TCP, "192.168.1.1", 33065, "66.33.22.111", 80, true);
@@ -277,9 +279,9 @@ public class IDSTest {
 			clientPort = getRandomPort();
 			serverPort = getRandomPort();
 
-			try {
-				rules.addRule("alert"+prot+clientIP+clientPort+dir+serverIP+serverPort+" ( content: \"I like spoons\"; msg: \"This is just a test\";)");
-			} catch(ParseException e) { log.error("Could not parse rule; " + e.getMessage()); }
+		//	try {
+				//rules.addRule("alert"+prot+clientIP+clientPort+dir+serverIP+serverPort+" ( content: \"I like spoons\"; msg: \"This is just a test\";)");
+		//	} catch(ParseException e) { log.error("Could not parse rule; " + e.getMessage()); }
 		}
 		long endTime = System.currentTimeMillis() - startTime;
 		log.info("Time it took to parse " + num +" rules: " + endTime + " milliseconds");

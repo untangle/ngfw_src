@@ -32,7 +32,7 @@ public class IDSDetectionEngine {
 	
 	private static final Logger log = Logger.getLogger(IDSDetectionEngine.class);
 	static {
-		log.setLevel(Level.DEBUG);
+		log.setLevel(Level.ALL);
 	}
 	
 	private static IDSDetectionEngine instance = new IDSDetectionEngine();
@@ -43,7 +43,8 @@ public class IDSDetectionEngine {
 	}
 
 	private IDSDetectionEngine() {
-	/*	String test = "alert tcp 10.0.0.40-10.0.0.101 any -> 66.35.250.0/24 80 (content:\"slashdot\"; msg:\"OMG teH SLASHd0t\";)";
+		//The Goggles! They do nothing!
+		/*String test = "alert tcp 10.0.0.40-10.0.0.101 any -> 66.35.250.0/24 80 (content:\"slashdot\"; msg:\"OMG teH SLASHd0t\";)";
 		String tesT = "alert tcp 10.0.0.1/24 any -> any any (content: \"spOOns|FF FF FF FF|spoons\"; msg:\"Matched binary FF FF FF and spoons\"; nocase;)";
 		String TesT = "alert tcp 10.0.0.1/24 any -> any any (uricontent:\"slashdot\"; nocase; msg:\"Uricontent matched\";)";
 		try {
@@ -52,8 +53,8 @@ public class IDSDetectionEngine {
 			rules.addRule(TesT);
 		} catch (ParseException e) {
 			log.warn("Could not parse rule; " + e.getMessage());
-		}
-	*/											
+		}*/
+												
 	}
 
 	public IDSSettings getSettings() {
@@ -95,7 +96,7 @@ public class IDSDetectionEngine {
 		} catch (Exception e) {
 			log.error("Some sort of really bad exception: " + e.getMessage());
 			log.error("For rule: " + rule);
-		}		
+		}	
 	}
 	
 	//Deprecating?
@@ -137,10 +138,10 @@ public class IDSDetectionEngine {
 				session.serverAddr(), session.serverPort(), c2sList);
 
 		List<IDSRuleSignature> s2cSignatures = rules.matchesHeader(
-				protocol, session.clientAddr(), session.clientPort(),
-				session.serverAddr(), session.serverPort(), s2cList);
-		
-		if(c2sSignatures.size() > 0) {
+				protocol, session.serverAddr(), session.serverPort(),
+				session.clientAddr(), session.clientPort(), s2cList);
+			
+		if(c2sSignatures.size() > 0 || s2cSignatures.size() > 0) {
 			IDSSessionInfo info = getSessionInfo(session.id());
 			
 			//I need to fix uricontent
@@ -183,7 +184,7 @@ public class IDSDetectionEngine {
 		else
 			info.processS2CSignatures();
 		
-		//log.debug("Time: " + (float)(System.nanoTime() - startTime)/1000000f);
+		log.debug("Time: " + (float)(System.nanoTime() - startTime)/1000000f);
 	}
 
 	public void mapSessionInfo(int id, IDSSessionInfo info) {

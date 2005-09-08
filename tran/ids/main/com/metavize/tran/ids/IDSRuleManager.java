@@ -52,7 +52,7 @@ public class IDSRuleManager {
 																													
 	private static final Logger log = Logger.getLogger(IDSRuleManager.class);
 	static {
-		log.setLevel(Level.INFO);
+		log.setLevel(Level.ALL);
 	}
 	public IDSRuleManager() {
 	}
@@ -62,48 +62,52 @@ public class IDSRuleManager {
 			rule.remove(true);
 		}
 	}
+
 	public void updateRule(IDSRule rule) throws ParseException {
 		long id = rule.getKeyValue();
 		IDSRule inMap = knownRules.get(id);
 		if(inMap != null) {
-			rule = inMap;
 			rule.remove(false);
-			if(rule.getModified()) {
+			if(rule.getModified()) {	
+				log.info("in getModified == true");
+				rule.setModified(false);
+				
 				//Delete previous rule
-				IDSRuleHeader header = rule.getHeader();
-				header.removeSignature(rule.getSignature());
+				IDSRuleHeader header = inMap.getHeader();
+				header.removeSignature(inMap.getSignature());
+				
 				if(header.signatureListIsEmpty()) {
 					knownRules.remove(id);
 					knownHeaders.remove(header);
 				}
+				
 				//Add the modified rule
-				//log.info("Adding modified rule");
+				log.info("Adding modified rule");
 				addRule(rule);
-			}
-			else {
-				log.info("This rule was not modified");
 			}
 		}
 
 		else {
-			//log.info("Does not contain - adding");
+			log.info("Does not contain - adding");
+			rule.setModified(false);
 			addRule(rule);
 		}
 		//remove all rules with remove == true
-		//setModfied == false;
+		//rule.setModified(false);
 			
 	}
 	
-	public boolean addRule(String rule) throws ParseException {
-		return addRule(new IDSRule(rule,"Not set", "Not set"));
+	public boolean addRule(String rule, Long key) throws ParseException {
+		IDSRule test = new IDSRule(rule,"Not set", "Not set");
+		test.setKeyValue(key);
+		return addRule(test);
 	}
-
 	public boolean addRule(IDSRule rule) throws ParseException {
-		
 		String ruleText = rule.getText();
 		
 		if(ruleText.length() <= 0 || ruleText.charAt(0) == '#')
 			return false;
+		
 		ruleText = substituteVariables(ruleText);
 		String ruleParts[] 			= IDSStringParser.parseRuleSplit(ruleText);
 		IDSRuleHeader header		= IDSStringParser.parseHeader(ruleParts[0]);
@@ -114,8 +118,12 @@ public class IDSRuleManager {
 		if(!signature.remove()) {
 			for(IDSRuleHeader known : knownHeaders) {
 				if(known.equals(header)) {
-					header.addSignature(signature);
+					known.addSignature(signature);
 					newSignature = signature;
+					
+					rule.setHeader(known);
+					rule.setSignature(signature);
+					knownRules.put(rule.getKeyValue(),rule);
 					return true;
 				}
 			}
@@ -132,13 +140,33 @@ public class IDSRuleManager {
 		return false;
 	}
 
+	public boolean canParse(String text) {
+		if(text.length() <= 0 || text.charAt(0) == '#')
+			return false;
+
+		text = substituteVariables(text);
+		try {
+			String ruleParts[]          = IDSStringParser.parseRuleSplit(text);
+			IDSRuleHeader header        = IDSStringParser.parseHeader(ruleParts[0]);
+			IDSRuleSignature signature  = IDSStringParser.parseSignature(ruleParts[1], header.getAction());
+			
+			if(!signature.remove()) {
+				newSignature = signature;
+				return true;
+			}
+			return false;			
+		}
+		catch(ParseException e) { 
+			return false;
+		}			
+	}
+
 	public List<IDSRuleHeader> matchingPortsList(int port, boolean toServer) {
 		List<IDSRuleHeader> returnList = new LinkedList();
 		synchronized(knownHeaders) {
 			for(IDSRuleHeader header : knownHeaders) {
 				if(header.portMatches(port, toServer)) {
 					returnList.add(header);
-					//  System.out.println("\n\n"+header+"\n"+header.getSignature());
 				}
 			}
 		}
@@ -157,7 +185,7 @@ public class IDSRuleManager {
 			InetAddress serverAddr, int serverPort, List<IDSRuleHeader> matchList) {
 		
 		List<IDSRuleSignature> returnList = new LinkedList();
-		//System.out.println("Total List size: "+matchList.size()); /** *****************************************/
+		log.debug("Total List size: "+matchList.size()); /** *****************************************/
 	
 		synchronized(matchList) {
 			for(IDSRuleHeader header : matchList) {
@@ -165,7 +193,7 @@ public class IDSRuleManager {
 					returnList.addAll(header.getSignatures());
 			}
 		}
-		//System.out.println("Signature List Size: "+returnList.size()); /** *****************************************/
+		log.debug("Signature List Size: "+returnList.size()); /** *****************************************/
 		return returnList;
 	}
 
@@ -184,8 +212,11 @@ public class IDSRuleManager {
 
 	private String substituteVariables(String string) {
 		//Set 
-		string = string.replaceAll("\\$EXTERNAL_NET",IDSStringParser.EXTERNAL_IP);
-		string = string.replaceAll("\\$HOME_NET",IDSStringParser.HOME_IP);
+		//string = string.replaceAll("\\$EXTERNAL_NET",IDSStringParser.EXTERNAL_IP);
+		//string = string.replaceAll("\\$HOME_NET",IDSStringParser.HOME_IP);
+		
+		string = string.replaceAll("\\$HOME_NET","10.0.0.1/24");
+		string = string.replaceAll("\\$EXTERNAL_NET","!10.0.0.1/24");
 		
 		Matcher match = variablePattern.matcher(string);
 		if(match.find()) {

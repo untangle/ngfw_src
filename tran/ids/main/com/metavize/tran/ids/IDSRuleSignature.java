@@ -119,8 +119,8 @@ public class IDSRuleSignature {
 	private void doAction() {
 		switch(action) {
 			case IDSRuleManager.ALERT:
+				System.out.println(message);
 				IDSDetectionEngine.instance().updateUICount(ALERT_COUNTER);
-		//		System.out.println(message);
 				break;
 			case IDSRuleManager.LOG:
 				IDSDetectionEngine.instance().updateUICount(LOG_COUNTER);

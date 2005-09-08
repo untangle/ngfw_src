@@ -12,49 +12,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class IDSRuleHeader {
-	/*
-	private class SignatureLinkedList {
-		
-		private class Node {
-			private Node next = null;
-			public IDSRuleSignature signature;
-
-			public Node(IDSRuleSignature signature) {
-				this.signature = signature;
-			}
-
-			public void next(Node node) {
-				next = node;
-			}
-
-			public Node next() {
-				return next;
-			}
-		}
-
-		private int size = 0;
-		private Node rootNode = null;
-		private Node currentNode = null;
-		
-		public SignatureLinkedList() { }
-		
-		public void add(IDSRuleSignature signature) {
-			if(currentNode == null) {
-				currentNode = new Node(signature);
-				rootNode = currentNode;
-			}
-			else {
-				Node nextNode = new Node(signature);
-				currentNode.next(nextNode);
-				currentNode = nextNode;
-			}
-		}
-
-		public void add(SignatureLinkedList other) {
-			currentNode.next(other.rootNode);
-			currentNode = other.currnetNode;
-		}
-	}*/
 
 	public static final boolean	IS_BIDIRECTIONAL = true;
 	public static final boolean	IS_SERVER = true;
@@ -113,6 +70,15 @@ public class IDSRuleHeader {
 		boolean clientPortMatch = clientPortRange.contains(clientPort);
 		boolean serverPortMatch = serverPortRange.contains(serverPort);
 		boolean portMatch = (clientPortMatch ^ clientPortFlag) && (serverPortMatch ^ serverPortFlag);
+
+/*		if(!portMatch && !bidirectional) {
+			System.out.println();
+			System.out.println("Header: " + this);
+			System.out.println("ClientPort: " + clientPort);
+			System.out.println("ServerPort: " + serverPort);
+			System.out.println();
+		}*/
+		
 		if(!portMatch && !bidirectional)
 			return false;
 		
@@ -138,6 +104,13 @@ public class IDSRuleHeader {
 			 return matches(protocol, serverAddr, serverPort, clientAddr, clientPort);
 		 }
 		 
+/*		if(!(ipMatch && portMatch)) {
+			System.out.println();
+			System.out.println("Header: " + this);
+			System.out.println("ClientIP: " + clientAddr);
+			System.out.println("ServerIP: " + serverAddr);
+			System.out.println();
+		}*/
 		 if(swapFlag)
 			 swapFlag = false;
 
@@ -185,7 +158,7 @@ public class IDSRuleHeader {
 	}
 	
 	public String toString() {
-		String str = "alert tcp ";
+		String str = "alert "+protocol+" ";
 		if(clientIPFlag)
 			str += "!";
 		str += clientIPList + " ";

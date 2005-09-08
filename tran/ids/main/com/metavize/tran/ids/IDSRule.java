@@ -42,9 +42,8 @@ public class IDSRule extends Rule implements Serializable {
 		this.remove = false;
 	}
 	
-	public long getKeyValue() {
-		return super.getId();
-	}
+	public long getKeyValue() { return super.getId(); }
+	public void setKeyValue(Long val) { super.setId(val); }
 
 	/**
 	 * @hibernate.property
@@ -75,6 +74,7 @@ public class IDSRule extends Rule implements Serializable {
 
 	public void setSignature(IDSRuleSignature signature) {
 		this.signature = signature;
+		//super.setDescription(signature.toString());
 	}
 
 	public IDSRuleSignature getSignature() {

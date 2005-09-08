@@ -110,7 +110,7 @@ public class IDSSettings implements Serializable {
 	 */
 
 	 public List getImmutableVariables() { return this.immutableVariables; }
-	 public void setImmutableVariables(List variables) { this.immutableVariables = immutableVariables; }
+	 public void setImmutableVariables(List variables) { this.immutableVariables = variables; }
 
 			
 }

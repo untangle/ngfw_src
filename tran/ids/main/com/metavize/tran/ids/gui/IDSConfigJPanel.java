@@ -74,6 +74,7 @@ class IDSTableModel extends MSortedTableModel{
     
     public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception{
 	List elemList = new ArrayList(tableVector.size());
+
 	IDSRule newElem = null;
 
 	for( Vector rowVector : tableVector ){            
@@ -83,6 +84,16 @@ class IDSTableModel extends MSortedTableModel{
             newElem.setCategory( (String) rowVector.elementAt(4) );
             newElem.setText( (String) rowVector.elementAt(5) );
             newElem.setDescription( (String) rowVector.elementAt(6) );
+
+	    // an optimization so that the transform knows which rows are changed
+	    String ruleState = (String) rowVector.elementAt(0);
+	    boolean ruleChanged;
+	    if( ROW_ADD.equals(ruleState) || ROW_CHANGED.equals(ruleState) )
+		ruleChanged = true;
+	    else
+		ruleChanged = false;
+	    newElem.setModified(ruleChanged);
+
             elemList.add(newElem);
         }
 
