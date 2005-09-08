@@ -50,6 +50,7 @@ public class Command
     NOOP,
     SIZE,
     STARTTLS,
+    AUTH,
     UNKNOWN
   };
 
@@ -210,7 +211,10 @@ public class Command
     }
     if(cmdStr.equalsIgnoreCase("STARTTLS")) {
       return CommandType.STARTTLS;
-    }     
+    }
+    if(cmdStr.equalsIgnoreCase("AUTH")) {
+      return CommandType.AUTH;
+    }       
     return CommandType.UNKNOWN;                                                       
   }
 }

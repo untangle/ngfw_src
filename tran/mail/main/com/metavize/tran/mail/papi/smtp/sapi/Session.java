@@ -222,7 +222,8 @@ public final class Session
     "RSET",
     "VRFY",
     "NOOP",
-    "STARTTLS"
+    "STARTTLS",
+    "AUTH"
   };
 
   private static final String[] DEF_ALLOWED_EXTENSIONS = {
@@ -242,6 +243,8 @@ public final class Session
     "STARTTLS",
     "DSN",
     "DELIVERBY",
+    "AUTH",
+    "AUTH=LOGIN",
     "OK"//Added in case they just send "250 OK"
   };
   

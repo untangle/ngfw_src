@@ -135,9 +135,32 @@ class SmtpClientParser
             }
 
             //If we're here, we have a legitimate command
-            toks.add(cmd);
             m_logger.debug("Received command: " + cmd.toDebugString());
-            
+
+            if(cmd.getType() == Command.CommandType.AUTH) {
+              m_logger.debug("Going into passthru mode.  Received AUTH request " +
+                "(\"" + cmd.getArgString() + "\")");
+              declarePassthru();
+              toks.add(PassThruToken.PASSTHRU);
+              toks.add(new Chunk(cmd.getBytes()));
+              toks.add(new Chunk(buf));
+              return new ParseResult(toks, null);
+              
+//              String authType = cmd.getArgString();
+//              authType=authType==null?null:authType.toLowerCase();
+//              if(authType != null &&
+//                (authType.startsWith("login") || authType.startsWith("plain"))) {
+//                m_logger.debug("Received Auth login/plain request.  Pass to server");
+//              }
+//              else {
+//                m_logger.debug("Going into passthru mode.  Received AUTH request " +
+//                  "which was not LOGIN/PLAIN (\"" + cmd.getArgString() + "\")");
+//                declarePassthru();
+//              }
+            }
+
+            toks.add(cmd);            
+                        
             if(cmd.getType() == Command.CommandType.STARTTLS) {
               m_logger.debug("Enqueue observer for response to STARTTLS, " +
                 "to go into passthru if accepted");
