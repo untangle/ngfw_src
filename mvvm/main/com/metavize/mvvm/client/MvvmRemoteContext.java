@@ -19,6 +19,7 @@ import com.metavize.mvvm.ReportingManager;
 import com.metavize.mvvm.ConnectivityTester;
 import com.metavize.mvvm.ToolboxManager;
 import com.metavize.mvvm.logging.LoggingManager;
+import com.metavize.mvvm.policy.PolicyManager;
 import com.metavize.mvvm.security.AdminManager;
 import com.metavize.mvvm.tran.TransformManager;
 
@@ -51,6 +52,13 @@ public interface MvvmRemoteContext
      * @return the LoggingManager.
      */
     LoggingManager loggingManager();
+
+    /**
+     * Get the <code>PolicyManager</code> singleton.
+     *
+     * @return the PolicyManager.
+     */
+    PolicyManager policyManager();
 
     /**
      * Get the <code>AdminManager</code> singleton.

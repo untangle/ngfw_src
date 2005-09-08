@@ -21,6 +21,7 @@ import com.metavize.mvvm.ReportingManager;
 import com.metavize.mvvm.ToolboxManager;
 import com.metavize.mvvm.client.MvvmRemoteContext;
 import com.metavize.mvvm.logging.LoggingManager;
+import com.metavize.mvvm.policy.PolicyManager;
 import com.metavize.mvvm.security.AdminManager;
 import com.metavize.mvvm.tran.TransformManager;
 
@@ -50,6 +51,11 @@ class MvvmRemoteContextImpl implements MvvmRemoteContext
     public LoggingManager loggingManager()
     {
         return context.loggingManager();
+    }
+
+    public PolicyManager policyManager()
+    {
+        return context.policyManager();
     }
 
     public AdminManager adminManager()

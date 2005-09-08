@@ -24,6 +24,8 @@ import com.metavize.mvvm.argon.Argon;
 import com.metavize.mvvm.argon.ArgonManagerImpl;
 import com.metavize.mvvm.client.MvvmRemoteContext;
 import com.metavize.mvvm.logging.LoggingManager;
+import com.metavize.mvvm.policy.PolicyManager;
+import com.metavize.mvvm.policy.PolicyManagerImpl;
 import com.metavize.mvvm.reporting.ReportingManagerImpl;
 import com.metavize.mvvm.security.AdminManager;
 import com.metavize.mvvm.security.MvvmLogin;
@@ -56,6 +58,7 @@ public class MvvmContextImpl extends MvvmContextBase
     private ArgonManager argonManager;
     private HttpInvoker httpInvoker;
     private LoggingManagerImpl loggingManager;
+    private PolicyManagerImpl policyManager;
     private MPipeManager mPipeManager;
     private MailSenderImpl mailSender;
     private NetworkingManager networkingManager;
@@ -106,6 +109,11 @@ public class MvvmContextImpl extends MvvmContextBase
     public LoggingManager loggingManager()
     {
         return loggingManager;
+    }
+
+    public PolicyManager policyManager()
+    {
+        return policyManager;
     }
 
     public MailSender mailSender()
@@ -224,6 +232,10 @@ public class MvvmContextImpl extends MvvmContextBase
         adminManager = AdminManagerImpl.adminManager();
         mailSender = MailSenderImpl.mailSender();
         loggingManager = LoggingManagerImpl.loggingManager();
+
+        // Fire up the policy manager.
+        policyManager = PolicyManagerImpl.policyManager();
+
         toolboxManager = ToolboxManagerImpl.toolboxManager();
 
         mPipeManager = MPipeManager.manager();
@@ -243,6 +255,10 @@ public class MvvmContextImpl extends MvvmContextBase
 
         // Retrieve the argon manager
         argonManager = ArgonManagerImpl.getInstance();
+
+        // Fake interfaces for now, get them from Argon for real. XXX
+        byte[] interfaces = new byte[] { 0, 1};
+        policyManager.reconfigure(interfaces);
 
         // start vectoring:
         String argonFake = System.getProperty(ARGON_FAKE_KEY);

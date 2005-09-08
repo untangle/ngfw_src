@@ -18,6 +18,7 @@ import java.util.HashMap;
 
 
 import com.metavize.mvvm.logging.LoggingManager;
+import com.metavize.mvvm.policy.PolicyManager;
 import com.metavize.mvvm.security.AdminManager;
 import com.metavize.mvvm.security.MvvmLogin;
 import com.metavize.mvvm.tapi.MPipeManager;
@@ -121,6 +122,13 @@ public interface MvvmLocalContext
      * @return a <code>LoggingManager</code> value
      */
     LoggingManager loggingManager();
+
+    /**
+     * Get the <code>PolicyManager</code> singleton.
+     *
+     * @return a <code>PolicyManager</code> value
+     */
+    PolicyManager policyManager();
 
     /**
      * Get the <code>AdminManager</code> singleton.
