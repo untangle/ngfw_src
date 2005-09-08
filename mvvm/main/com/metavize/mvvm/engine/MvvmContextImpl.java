@@ -258,7 +258,7 @@ public class MvvmContextImpl extends MvvmContextBase
 
         // Fake interfaces for now, get them from Argon for real. XXX
         byte[] interfaces = new byte[] { 0, 1};
-        policyManager.reconfigure(interfaces);
+        // policyManager.reconfigure(interfaces);
 
         // start vectoring:
         String argonFake = System.getProperty(ARGON_FAKE_KEY);
