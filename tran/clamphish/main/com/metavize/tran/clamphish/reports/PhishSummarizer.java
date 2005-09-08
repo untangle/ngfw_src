@@ -139,8 +139,7 @@ public class PhishSummarizer extends BaseSummarizer {
         totalSpam = popimapMarked + popimapPassed;
         addEntry("&nbsp;&nbsp;&nbsp;Clean & Passed", Util.trimNumber("",popimapScanned-totalSpam) + " (" + Util.percentNumber(popimapScanned-totalSpam, popimapScanned) + ")");
 
-        // XXXX
-        String tranName = "PhishNet";
+        String tranName = "Fraud Protection";
 
         return summarizeEntries(tranName);
     }

@@ -43,14 +43,16 @@ public class PhishSmtpFactory
   //TODO bscott These should be paramaterized in the Config objects
 
     public static final String OUT_MOD_SUB_TEMPLATE =
-      "[PHISH] $MIMEMessage:SUBJECT$";
+      "[FRAUD] $MIMEMessage:SUBJECT$";
     public static final String OUT_MOD_BODY_TEMPLATE =
       "The attached message from $MIMEMessage:FROM$ was determined\r\n " +
-      "to be PHISH.  The details of the report are as follows:\r\n\r\n" +
+      "to be PHISH (a fraudulent email intended to steal information)\r\n." + 
+      "The details of the report are as follows:\r\n\r\n" +
       "$SPAMReport:FULL$";
     public static final String OUT_MOD_BODY_SMTP_TEMPLATE =
       "The attached message from $MIMEMessage:FROM$ ($SMTPTransaction:FROM$) was determined\r\n " +
-      "to be PHISH.  The details of the report are as follows:\r\n\r\n" +
+      "to be PHISH (a fraudulent email intended to steal information)\r\n." +
+      "The details of the report are as follows:\r\n\r\n" +
       "$SPAMReport:FULL$";
 
     public static final String IN_MOD_SUB_TEMPLATE = OUT_MOD_SUB_TEMPLATE;
@@ -58,7 +60,7 @@ public class PhishSmtpFactory
     public static final String IN_MOD_BODY_SMTP_TEMPLATE = OUT_MOD_BODY_SMTP_TEMPLATE;
 
   private static final String OUT_NOTIFY_SUB_TEMPLATE =
-    "[PHISH NOTIFICATION] re: $MIMEMessage:SUBJECT$";
+    "[FRAUD NOTIFICATION] re: $MIMEMessage:SUBJECT$";
     
   private static final String OUT_NOTIFY_BODY_TEMPLATE =
     "On $MIMEHeader:DATE$ a message from $MIMEMessage:FROM$ ($SMTPTransaction:FROM$) was received " + CRLF +
