@@ -297,10 +297,10 @@ public class VirusTransformImpl extends AbstractTransform
     protected void initializeSettings()
     {
         VirusSettings vs = new VirusSettings(getTid());
-        vs.setHttpInbound(new VirusConfig(true, true, "Scan incoming HTTP files"));
-        vs.setHttpOutbound(new VirusConfig(false, true, "Scan outgoing HTTP files" ));
-        vs.setFtpInbound(new VirusConfig(true, true, "Scan incoming FTP files" ));
-        vs.setFtpOutbound(new VirusConfig(false, true, "Scan outgoing FTP files" ));
+        vs.setHttpInbound(new VirusConfig(true, true, "Scan incoming HTTP files on outbound sessions"));
+        vs.setHttpOutbound(new VirusConfig(false, true, "Scan outgoing HTTP files on inbound sessions" ));
+        vs.setFtpInbound(new VirusConfig(true, true, "Scan incoming FTP files on inbound and outbound sessions" ));
+        vs.setFtpOutbound(new VirusConfig(false, true, "Scan outgoing FTP files on inbound and outbound sessions" ));
 
         vs.setSMTPInbound(new VirusSMTPConfig(true, SMTPVirusMessageAction.REMOVE, SMTPNotifyAction.NEITHER, "Scan incoming SMTP e-mail" ));
         vs.setSMTPOutbound(new VirusSMTPConfig(false, SMTPVirusMessageAction.PASS, SMTPNotifyAction.NEITHER, "Scan outgoing SMTP e-mail" ));

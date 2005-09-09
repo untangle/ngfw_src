@@ -69,8 +69,8 @@ class HTTPTableModel extends MSortedTableModel{
         return tableColumnModel;
     }
 
-    private static final String INBOUND_SOURCE = "inbound HTTP";
-    private static final String OUTBOUND_SOURCE = "outbound HTTP";
+    private static final String INBOUND_SOURCE = "incoming files";
+    private static final String OUTBOUND_SOURCE = "outgoing files";
     
     public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {
 	for( Vector rowVector : tableVector ){

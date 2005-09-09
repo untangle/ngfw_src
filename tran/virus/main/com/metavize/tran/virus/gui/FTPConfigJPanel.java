@@ -67,58 +67,58 @@ class FTPTableModel extends MSortedTableModel{
         return tableColumnModel;
     }
 
-    private static final String SOURCE_INBOUND = "inbound FTP";
-    private static final String SOURCE_OUTBOUND = "outbound FTP";
+    private static final String SOURCE_INBOUND = "incoming files";
+    private static final String SOURCE_OUTBOUND = "outgoing files";
 
     public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {
-	for( Vector rowVector : tableVector ){
+        for( Vector rowVector : tableVector ){
 
             VirusConfig virusConfig = (VirusConfig) rowVector.elementAt(5);
             virusConfig.setScan( (Boolean) rowVector.elementAt(3) );
             virusConfig.setNotes( (String) rowVector.elementAt(4) );
 
-	    // SAVE SETTINGS ///////
-	    if( !validateOnly ){
-		VirusSettings virusSettings = (VirusSettings) settings;
-		if( ((String)rowVector.elementAt(2)).equals(SOURCE_INBOUND) ){
-		    virusSettings.setFtpInbound(virusConfig);
-		}
-		else if( ((String)rowVector.elementAt(2)).equals(SOURCE_OUTBOUND) ){
-		    virusSettings.setFtpOutbound(virusConfig);
-		}
-	    }
+            // SAVE SETTINGS ///////
+            if( !validateOnly ){
+                VirusSettings virusSettings = (VirusSettings) settings;
+                if( ((String)rowVector.elementAt(2)).equals(SOURCE_INBOUND) ){
+                    virusSettings.setFtpInbound(virusConfig);
+                }
+                else if( ((String)rowVector.elementAt(2)).equals(SOURCE_OUTBOUND) ){
+                    virusSettings.setFtpOutbound(virusConfig);
+                }
+            }
 	    
-	}
+        }
     }
     
     public Vector<Vector> generateRows(Object settings){
-	VirusSettings virusSettings = (VirusSettings) settings;
-	Vector<Vector> allRows = new Vector<Vector>(2);
-	int rowIndex = 0;
+        VirusSettings virusSettings = (VirusSettings) settings;
+        Vector<Vector> allRows = new Vector<Vector>(2);
+        int rowIndex = 0;
 
-	// INBOUND
-	rowIndex++;
-	Vector inboundRow = new Vector(6);
+        // INBOUND
+        rowIndex++;
+        Vector inboundRow = new Vector(6);
         VirusConfig virusInboundCtl  = virusSettings.getFtpInbound();
         inboundRow.add( super.ROW_SAVED );
         inboundRow.add( rowIndex );
         inboundRow.add( SOURCE_INBOUND );
         inboundRow.add( virusInboundCtl.getScan() );
         inboundRow.add( virusInboundCtl.getNotes() );
-	inboundRow.add( virusInboundCtl );
-	allRows.add(inboundRow);
+        inboundRow.add( virusInboundCtl );
+        allRows.add(inboundRow);
 
-	// OUTBOUND
-	rowIndex++;
-	Vector outboundRow = new Vector(6);
+        // OUTBOUND
+        rowIndex++;
+        Vector outboundRow = new Vector(6);
         VirusConfig virusOutboundCtl = virusSettings.getFtpOutbound();
         outboundRow.add( super.ROW_SAVED );
         outboundRow.add( rowIndex );
         outboundRow.add( SOURCE_OUTBOUND );
         outboundRow.add( virusOutboundCtl.getScan() );
         outboundRow.add( virusOutboundCtl.getNotes() );
-	outboundRow.add( virusOutboundCtl );
-	allRows.add(outboundRow);
+        outboundRow.add( virusOutboundCtl );
+        allRows.add(outboundRow);
 
         return allRows;
     }

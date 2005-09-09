@@ -91,7 +91,7 @@ AS SELECT settings_id, tid, disable_ftp_resume, disable_http_resume,
 UPDATE settings.tr_virus_settings
     SET smtp_inbound = nextval('hibernate_sequence');
 INSERT INTO settings.tr_virus_smtp_config (
-    SELECT smtp_inbound, true, 'R', 'N', 'Scan incoming SMTP e-mail'
+    SELECT smtp_inbound, true, 'R', 'N', 'Scan incoming SMTP e-mail on inbound sessions'
     FROM settings.tr_virus_settings
 );
 
@@ -99,7 +99,7 @@ INSERT INTO settings.tr_virus_smtp_config (
 UPDATE settings.tr_virus_settings
     SET smtp_outbound = nextval('hibernate_sequence');
 INSERT INTO settings.tr_virus_smtp_config (
-    SELECT smtp_outbound, false, 'P', 'N', 'Scan outgoing SMTP e-mail'
+    SELECT smtp_outbound, false, 'P', 'N', 'Scan outgoing SMTP e-mail on outbound sessions'
     FROM settings.tr_virus_settings
 );
 
@@ -107,7 +107,7 @@ INSERT INTO settings.tr_virus_smtp_config (
 UPDATE settings.tr_virus_settings
     SET pop_inbound = nextval('hibernate_sequence');
 INSERT INTO settings.tr_virus_pop_config (
-    SELECT pop_inbound, true, 'R', 'Scan incoming POP e-mail'
+    SELECT pop_inbound, true, 'R', 'Scan incoming POP e-mail on outbound sessions'
     FROM settings.tr_virus_settings
 );
 
@@ -115,7 +115,7 @@ INSERT INTO settings.tr_virus_pop_config (
 UPDATE settings.tr_virus_settings
     SET pop_outbound = nextval('hibernate_sequence');
 INSERT INTO settings.tr_virus_pop_config (
-    SELECT pop_outbound, false, 'P', 'Scan outgoing POP e-mail'
+    SELECT pop_outbound, false, 'P', 'Scan outgoing POP e-mail on inbound sessions'
     FROM settings.tr_virus_settings
 );
 
@@ -123,7 +123,7 @@ INSERT INTO settings.tr_virus_pop_config (
 UPDATE settings.tr_virus_settings
     SET imap_inbound = nextval('hibernate_sequence');
 INSERT INTO settings.tr_virus_imap_config (
-    SELECT imap_inbound, true, 'R', 'Scan incoming IMAP e-mail'
+    SELECT imap_inbound, true, 'R', 'Scan incoming IMAP e-mail on outbound sessions'
     FROM settings.tr_virus_settings
 );
 
@@ -131,7 +131,7 @@ INSERT INTO settings.tr_virus_imap_config (
 UPDATE settings.tr_virus_settings
     SET imap_outbound = nextval('hibernate_sequence');
 INSERT INTO settings.tr_virus_imap_config (
-    SELECT imap_outbound, false, 'P', 'Scan outgoing IMAP e-mail'
+    SELECT imap_outbound, false, 'P', 'Scan outgoing IMAP e-mail on inbound sessions'
     FROM settings.tr_virus_settings
 );
 
