@@ -47,6 +47,8 @@ public interface PolicyManager {
      */
     void removePolicy(Policy policy) throws PolicyException;
 
+    void setPolicy(Policy rule, String name, String notes) throws PolicyException;
+
     /**
      * Returns all system policies rules. The order isn't important, but for convenience is the
      * suggested display order.  If there are 'n' interfaces, there will be 'n choose 2' * 2
@@ -63,7 +65,7 @@ public interface PolicyManager {
      * @param p a <code>Policy</code> giving the new policy
      * @param inbound a <code>boolean</code> giving the new direction
      */
-    void setSystemPolicy(SystemPolicyRule rule, Policy p, boolean inbound);
+    void setSystemPolicyRule(SystemPolicyRule rule, Policy p, boolean inbound);
 
     /**
      * Returns all user policies rules.

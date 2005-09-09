@@ -37,9 +37,18 @@ public class Policy implements Serializable
      */
     public Policy() {}
 
+    // Internal use only
     public Policy(boolean isDefault, String name, String notes)
     {
         this.isDefault = isDefault;
+        this.name = name;
+        this.notes = notes;
+    }
+
+    // UI uses this one.
+    public Policy(String name, String notes)
+    {
+        this.isDefault = false;
         this.name = name;
         this.notes = notes;
     }

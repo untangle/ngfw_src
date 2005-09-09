@@ -51,7 +51,7 @@ public class PolicyManagerImpl implements PolicyManager
         try {
             Transaction tx = s.beginTransaction();
 
-            Query q = s.createQuery("from Policy p");
+            Query q = s.createQuery("from Policy p order by id asc");
             List results = q.list();
 
             if (results.size() == 0) {
@@ -62,11 +62,12 @@ public class PolicyManagerImpl implements PolicyManager
             } else {
                 for (Object o : results) {
                     Policy policy = (Policy)o;
-                    allPolicies.add(policy);
                     if (policy.isDefault()) {
+                        assert allPolicies.size() == 0;
                         assert defaultPolicy == null;
                         defaultPolicy = policy;
                     }
+                    allPolicies.add(policy);
                 }
                 assert defaultPolicy != null;
             }
@@ -113,65 +114,100 @@ public class PolicyManagerImpl implements PolicyManager
     public void addPolicy(String name, String notes)
         throws PolicyException
     {
-        if (name == null)
-            throw new PolicyException("New policy must have a name");
-        for (Policy p : allPolicies) {
-            if (name.equalsIgnoreCase(p.getName()))
-                throw new PolicyException("A policy named " + name + " already exists");
-        }
-
-        Policy p = new Policy(false, name, notes);
-
-        Session s = MvvmContextFactory.context().openSession();
-        try {
-            Transaction tx = s.beginTransaction();
-
-            s.saveOrUpdateCopy(p);
-
-            tx.commit();
-        } catch (HibernateException exn) {
-            logger.error("could not save Policy", exn);
-        } finally {
-            try {
-                s.close();
-            } catch (HibernateException exn) {
-                logger.warn("could not close session", exn); // XXX TransExn
+        synchronized(policyRuleLock) {
+            if (name == null)
+                throw new PolicyException("New policy must have a name");
+            for (Policy p : allPolicies) {
+                if (name.equalsIgnoreCase(p.getName()))
+                    throw new PolicyException("A policy named " + name + " already exists");
             }
-        }
 
-        allPolicies.add(p);
+            Policy p = new Policy(false, name, notes);
+
+            Session s = MvvmContextFactory.context().openSession();
+            try {
+                Transaction tx = s.beginTransaction();
+
+                s.saveOrUpdateCopy(p);
+
+                tx.commit();
+            } catch (HibernateException exn) {
+                logger.error("could not save Policy", exn);
+            } finally {
+                try {
+                    s.close();
+                } catch (HibernateException exn) {
+                    logger.warn("could not close session", exn); // XXX TransExn
+                }
+            }
+
+            allPolicies.add(p);
+        }
     }
 
     public void removePolicy(Policy p)
         throws PolicyException
     {
-        if (p == null)
-            throw new PolicyException("Must specify a policy to remove");
-        if (p.isDefault())
-            throw new PolicyException("Cannot remove the default policy");
-        if (!allPolicies.contains(p))
-            throw new PolicyException("Policy " + p.getName() + " not found in all policies");
-        if (isInUse(p))
-            throw new PolicyException("Policy " + p.getName() + " cannot be removed because it is in use");
+        synchronized(policyRuleLock) {
+            if (p == null)
+                throw new PolicyException("Must specify a policy to remove");
+            if (p.isDefault())
+                throw new PolicyException("Cannot remove the default policy");
+            if (!allPolicies.contains(p))
+                throw new PolicyException("Policy " + p.getName() + " not found in all policies");
+            if (isInUse(p))
+                throw new PolicyException("Policy " + p.getName() + " cannot be removed because it is in use");
 
-        Session s = MvvmContextFactory.context().openSession();
-        try {
-            Transaction tx = s.beginTransaction();
-
-            s.delete(p);
-
-            tx.commit();
-        } catch (HibernateException exn) {
-            logger.error("could not remove Policy", exn);
-        } finally {
+            Session s = MvvmContextFactory.context().openSession();
             try {
-                s.close();
+                Transaction tx = s.beginTransaction();
+
+                s.delete(p);
+
+                tx.commit();
             } catch (HibernateException exn) {
-                logger.warn("could not close session", exn); // XXX TransExn
+                logger.error("could not remove Policy", exn);
+            } finally {
+                try {
+                    s.close();
+                } catch (HibernateException exn) {
+                    logger.warn("could not close session", exn); // XXX TransExn
+                }
+            }
+
+            allPolicies.remove(p);
+        }
+    }
+
+    public void setPolicy(Policy p, String name, String notes)
+        throws PolicyException
+    {
+        synchronized(policyRuleLock) {
+            if (p == null)
+                throw new PolicyException("Must specify a policy to remove");
+            if (!allPolicies.contains(p))
+                throw new PolicyException("Policy " + p.getName() + " not found in all policies");
+
+            p.setName(name);
+            p.setNotes(notes);
+
+            Session s = MvvmContextFactory.context().openSession();
+            try {
+                Transaction tx = s.beginTransaction();
+
+                s.saveOrUpdateCopy(p);
+
+                tx.commit();
+            } catch (HibernateException exn) {
+                logger.error("could not change Policy", exn);
+            } finally {
+                try {
+                    s.close();
+                } catch (HibernateException exn) {
+                    logger.warn("could not close session", exn); // XXX TransExn
+                }
             }
         }
-
-        allPolicies.remove(p);
     }
 
     protected boolean isInUse(Policy p)
@@ -195,7 +231,7 @@ public class PolicyManagerImpl implements PolicyManager
         return sysRules;
     }
 
-    public void setSystemPolicy(SystemPolicyRule rule, Policy p, boolean inbound) {
+    public void setSystemPolicyRule(SystemPolicyRule rule, Policy p, boolean inbound) {
         // more Sanity checking (policy) XXX
         synchronized(policyRuleLock) {
             for (int i = 0; i < sysRules.length; i++) {
@@ -262,8 +298,94 @@ public class PolicyManagerImpl implements PolicyManager
     public void setPolicyConfiguration(PolicyConfiguration pc)
         throws PolicyException
     {
-        // Need to do a lot of error checking here...
-        // Need implmenetation XXX
+        List confpc = pc.getPolicies();
+        List syspc = pc.getSystemPolicyRules();
+        List userpc = pc.getUserPolicyRules();
+
+        // Sanity check the policies
+        if (confpc == null || confpc.size() < 1)
+            throw new PolicyException("List of policies missing or empty");
+        List<Policy> newAllPolicies = new ArrayList<Policy>(confpc.size());
+        Policy newDefaultPolicy = null;
+        for (Object o : confpc) {
+            Policy policy = (Policy)o;
+            if (policy.isDefault()) {
+                if (newDefaultPolicy != null)
+                    throw new PolicyException("Cannot have more than one default policy");
+                newDefaultPolicy = policy;
+            }
+            newAllPolicies.add(policy);
+        }
+        if (newDefaultPolicy == null)
+            throw new PolicyException("Default policy missing");
+
+
+        // Sanity check the system rules
+        if (syspc == null || syspc.size() < 1)
+            throw new PolicyException("System rules missing or empty");
+        // Really need more checking here.  They shouldn't be able to delete or add any rows. XXX
+        SystemPolicyRule[] newSysRules = new SystemPolicyRule[syspc.size()];
+        int i = 0;
+        for (Object o : syspc) {
+            SystemPolicyRule spr = (SystemPolicyRule)o;
+            newSysRules[i++] = spr;
+        }
+
+        // Sanity check the user rules
+        if (userpc == null)
+            throw new PolicyException("User rules missing");
+        // Really need more checking here.  XXX
+        List newUserRules = new ArrayList(userpc.size());
+        for (Object o : userpc) {
+            UserPolicyRule upr = (UserPolicyRule)o;
+            newUserRules.add(upr);
+        }
+
+        // Now do the actual setting
+        synchronized(policyRuleLock) {
+            for (Policy newp : newAllPolicies) {
+                boolean foundIt = false;
+                for (Policy oldp : allPolicies) {
+                    if (newp == oldp) {
+                        if (foundIt)
+                            throw new PolicyException("Policy duplicated");
+                        foundIt = true;
+                        setPolicy(oldp, newp.getName(), newp.getNotes());
+                    }
+                }
+                if (!foundIt)
+                    addPolicy(newp.getName(), newp.getNotes());
+            }
+            for (Policy oldp : allPolicies) {
+                boolean foundIt = false;
+                for (Policy newp : newAllPolicies) {
+                    if (newp == oldp) {
+                        foundIt = true;
+                        break;
+                    }
+                }
+                if (!foundIt)
+                    removePolicy(oldp);
+            }
+            defaultPolicy = newDefaultPolicy;
+
+            for (SystemPolicyRule newspr : newSysRules) {
+                boolean foundIt = false;
+                for (SystemPolicyRule oldspr : sysRules) {
+                    if (newspr == oldspr) {
+                        if (foundIt)
+                            throw new PolicyException("System Policy rule duplicated");
+                        foundIt = true;
+                        setSystemPolicyRule(oldspr, newspr.getPolicy(), newspr.isInbound());
+                    }
+                }
+                if (!foundIt)
+                    throw new PolicyException("System Policy rule to be changed not found");
+            }
+
+            userRuleSet.setRules(newUserRules);
+            setUserPolicyRules(userRuleSet);
+        }
     }
 
     // package protected methods ----------------------------------------------
