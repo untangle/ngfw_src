@@ -15,6 +15,7 @@ import java.util.*;
 
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.policy.Policy;
+import com.metavize.mvvm.policy.PolicyConfiguration;
 import com.metavize.mvvm.policy.PolicyException;
 import com.metavize.mvvm.policy.PolicyManager;
 import com.metavize.mvvm.policy.SystemPolicyRule;

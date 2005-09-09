@@ -192,7 +192,6 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       <include name="com/metavize/mvvm/logging/LogEvent.java"/>
       <include name="com/metavize/mvvm/logging/LoggingManager.java"/>
       <include name="com/metavize/mvvm/policy/*.java"/>
-      <exclude name="com/metavize/mvvm/policy/PolicyManagerImpl.java"/>
       <include name="com/metavize/mvvm/security/*.java"/>
       <include name="com/metavize/mvvm/tapi/*Desc.java"/>
       <include name="com/metavize/mvvm/tapi/SessionStats.java"/>
@@ -220,7 +219,6 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
         <include name="com/metavize/mvvm/logging/LogEvent*.class"/>
         <include name="com/metavize/mvvm/logging/LoggingManager*.class"/>
         <include name="com/metavize/mvvm/policy/*.class"/>
-        <exclude name="com/metavize/mvvm/policy/PolicyManagerImpl*.class"/>
         <include name="com/metavize/mvvm/security/*.class"/>
         <include name="com/metavize/mvvm/tapi/*Desc*.class"/>
         <include name="com/metavize/mvvm/tapi/SessionStats*.class"/>

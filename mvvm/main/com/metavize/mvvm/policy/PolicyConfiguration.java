@@ -25,7 +25,7 @@ public class PolicyConfiguration implements Serializable
 
     private List userPolicyRules;
 
-    PolicyConfiguration(List policies, SystemPolicyRule[] sysRules, UserPolicyRule[] userRules) {
+    public PolicyConfiguration(List policies, SystemPolicyRule[] sysRules, UserPolicyRule[] userRules) {
         this.policies = new ArrayList(policies);
         systemPolicyRules = new ArrayList(sysRules.length);
         for (int i = 0; i < sysRules.length; i++)
