@@ -18,7 +18,7 @@ import java.util.*;
 import javax.jnlp.*;
 import javax.swing.*;
 
-import com.metavize.gui.login.MLoginJFrame;
+import com.metavize.gui.login.*;
 import com.metavize.gui.main.MMainJFrame;
 import com.metavize.gui.pipeline.MPipelineJPanel;
 import com.metavize.gui.pipeline.MRackJPanel;
@@ -432,6 +432,13 @@ public class Util {
 		     || (throwableRef instanceof SocketTimeoutException) ){
 		killDaemonThreads();
 		mLoginJFrame.resetLogin("Server connection failure.  Re-login.");
+		mLoginJFrame.reshowLogin();
+		return;
+	    }
+	    else if( throwableRef instanceof LoginStolenException ){
+		new LoginStolenJDialog(((LoginStolenException)throwableRef).getThief());
+		killDaemonThreads();
+		mLoginJFrame.resetLogin("Login ended by: " + ((LoginStolenException)throwableRef).getThief().getMvvmPrincipal().getName());
 		mLoginJFrame.reshowLogin();
 		return;
 	    }

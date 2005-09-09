@@ -28,7 +28,6 @@ import com.metavize.mvvm.security.*;
 public class MLoginJFrame extends javax.swing.JFrame {
 
 
-    private MvvmRemoteContext mvvmContext;
     private String args[];
     private MMainJFrame mMainJFrame;
 
@@ -104,7 +103,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
 
     private boolean alreadyLoggedIn() {
         LoginSession loginSession = MvvmRemoteContextFactory.factory().loginSession();
-        LoginSession[] loggedInUsers = mvvmContext.adminManager().loggedInUsers();
+        LoginSession[] loggedInUsers = Util.getMvvmContext().adminManager().loggedInUsers();
         int mySessionId = loginSession.getSessionId();
 
         String mySessionName = loginSession.getMvvmPrincipal().getName();
@@ -130,7 +129,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
 
     private int loginCount() {
         LoginSession loginSession = MvvmRemoteContextFactory.factory().loginSession();
-        LoginSession[] loggedInUsers = mvvmContext.adminManager().loggedInUsers();
+        LoginSession[] loggedInUsers = Util.getMvvmContext().adminManager().loggedInUsers();
         return loggedInUsers.length - 1;
     }
 
@@ -449,180 +448,192 @@ public class MLoginJFrame extends javax.swing.JFrame {
 
     private class ConnectThread extends Thread {
 
+	private boolean useForce = false;
+
         public ConnectThread(){
-        super("MVCLIENT-ConnectThread");
-        this.setContextClassLoader( Util.getClassLoader() );
-        acceptJButton.setEnabled(false);
-        this.start();
+	    super("MVCLIENT-ConnectThread");
+	    this.setContextClassLoader( Util.getClassLoader() );
+	    acceptJButton.setEnabled(false);
+	    this.start();
         }
-
-    public void run() {
-
-        // (UPDATE GUI) PREPARE FOR LOGIN
-        try{
-        SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
-            loginJTextField.setEnabled(false);
-            passJPasswordField.setEnabled(false);
-            serverJTextField.setEnabled(false);
-            protocolJTextField.setEnabled(false);
-            statusJProgressBar.setValue(0);
-            statusJProgressBar.setIndeterminate(true);
-            statusJProgressBar.setString("Authenticating");
-        }});
-        Thread.sleep(1000);
-        }
-        catch(Exception e){ /* do nothing on purpose*/  }
-
-        // ATTEMPT TO LOG IN
-        int retryLogin = 0;
-        while( true ){
-        retryLogin++;
-        try{
-
-            // XXX force behavior
-            mvvmContext = MvvmRemoteContextFactory.factory().interactiveLogin( Util.getServerCodeBase().getHost(),
-                                  loginJTextField.getText(),
-                                  new String(passJPasswordField.getPassword()),
-                                  0, Util.getClassLoader(),
-                                  Util.isSecureViaHttps(), false );
-
-            // VERSION MISMATCH ///////
-            String version = mvvmContext.version();
-            if( !version.equals("-1") ){
-            if( !version.equals( Version.getVersion() ) ){
-                resetLogin("Client/Server version mismatch.  Try Restarting.");
-                return;
-            }
-            }
-
-            // EGDEMO ////////////////
-            if( loginJTextField.getText().equals("egdemo") ){
-            Util.setIsDemo(true);
-            }
-            else{
-            Util.setIsDemo(false);
-            }
-
-            // CHEKS PASSED ///////////////////
-            Util.setMvvmContext(mvvmContext);
-
-            // READOUT SUCCESS /////////////////
-            SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
-            statusJProgressBar.setValue(16);
-            statusJProgressBar.setIndeterminate(false);
-            statusJProgressBar.setString("Successful authentication");
-            passJPasswordField.setText("");
-            }});
-            Thread.sleep(2000);
-            retryLogin = -1;
-            break;
-        }
-        catch(FailedLoginException e){
-            resetLogin("Error: Invalid login/password.");
-            retryLogin = -1;
-            return;
-        }
-        catch(com.metavize.mvvm.client.InvocationTargetExpiredException e){
-            //Util.handleExceptionNoRestart("Error:", e);
-        }
-        catch(com.metavize.mvvm.client.InvocationConnectionException e){
-            //Util.handleExceptionNoRestart("Error:", e);
-        }
-        catch(MvvmConnectException e){
-            //Util.handleExceptionNoRestart("Error:", e);
-        }
-        catch(Exception e){
-            //Util.handleExceptionNoRestart("Error:", e);
-        }
-        finally{
-            if( retryLogin >= Util.LOGIN_RETRY_COUNT ){
-            resetLogin("Error: Unable to connect to server.");
-            return;
-            }
-            else if( retryLogin > 1 ){
-            final int retry = retryLogin;
-            SwingUtilities.invokeLater( new Runnable(){ public void run(){
-                statusJProgressBar.setString( "Retrying login..." + " (" + retry + ")" );
-            }});
-            try{ Thread.currentThread().sleep( Util.LOGIN_RETRY_SLEEP ); }
-            catch(Exception e){}
-            }
-        }
-        }
-
-        // ATTEMPT TO LOAD CLIENT
-        int retryClient = 0;
-        while( true ){
-        retryClient++;
-        try{
-            // load GUI with proper context
-            mMainJFrame = new MMainJFrame();
-            Util.setMMainJFrame(mMainJFrame);
-
-            // (UPDATE GUI) tell the user we are about to see the gui
-            SwingUtilities.invokeAndWait( new Runnable(){ public void run (){
-            statusJProgressBar.setString("Showing EdgeGuard client...");
-            statusJProgressBar.setValue(100);
-            }});
-
-            // wait for a little bit
-            Thread.sleep(3000);
-
-            // (UPDATE GUI) show the main window
-            SwingUtilities.invokeAndWait( new Runnable(){ public void run (){
-            MLoginJFrame.this.setVisible(false);
-            mMainJFrame.setBounds( Util.generateCenteredBounds(MLoginJFrame.this.getBounds(),
-                                       mMainJFrame.getWidth(),
-                                       mMainJFrame.getHeight()) );
-            String securedString;
-            if( Util.isSecureViaHttps() )
-                securedString = "  |  Connection: https (secure)";
-            else
-                securedString = "  |  Connection: http (standard)";
-
-            mMainJFrame.setTitle( "Metavize EdgeGuard v" +
-                          Version.getVersion() + "  |  Login: " +
-                          loginJTextField.getText() + "  |  Server: " +
-                          Util.getServerCodeBase().getHost() + securedString );
-            if(Util.getIsDemo())
-                mMainJFrame.setTitle( mMainJFrame.getTitle() + "  [DEMO MODE]" );
-            mMainJFrame.setExtendedState(Frame.MAXIMIZED_BOTH);
-            mMainJFrame.setVisible(true);
-            }});
-            retryClient = -1;
-            break;
-        }
-
-        catch(com.metavize.mvvm.client.InvocationTargetExpiredException e){
-            Util.handleExceptionNoRestart("Error:", e);
-        }
-        catch(com.metavize.mvvm.client.InvocationConnectionException e){
-            Util.handleExceptionNoRestart("Error:", e);
-        }
-        catch(Exception e){
-            Util.handleExceptionNoRestart("Error:", e);
-        }
-        finally{
-            if(retryClient >= Util.LOGIN_RETRY_COUNT){
-            resetLogin("Error: Unable to launch client.");
-            reshowLogin();
-            return;
-            }
-            else if( retryClient > 1 ){
-            final int retry = retryClient;
-            SwingUtilities.invokeLater( new Runnable(){ public void run(){
-                statusJProgressBar.setString( "Retrying launch..." + " (" + retry + ")" );
-            }});
-            try{ Thread.currentThread().sleep( Util.LOGIN_RETRY_SLEEP ); }
-            catch(Exception e){}
-            }
-        }
-        }
-
+	
+	public void run() {
+	    
+	    // (UPDATE GUI) PREPARE FOR LOGIN
+	    try{
+		SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+		    loginJTextField.setEnabled(false);
+		    passJPasswordField.setEnabled(false);
+		    serverJTextField.setEnabled(false);
+		    protocolJTextField.setEnabled(false);
+		    statusJProgressBar.setValue(0);
+		    statusJProgressBar.setIndeterminate(true);
+		    statusJProgressBar.setString("Authenticating");
+		}});
+		Thread.sleep(1000);
+	    }
+	    catch(Exception e){ /* do nothing on purpose*/  }
+	    
+	    // ATTEMPT TO LOG IN
+	    int retryLogin = 0;
+	    while( true ){
+		retryLogin++;
+		try{
+		    
+		    // LOGIN ///////////
+		    MvvmRemoteContext mvvmContext = MvvmRemoteContextFactory.factory().interactiveLogin( Util.getServerCodeBase().getHost(),
+												   loginJTextField.getText(),
+												   new String(passJPasswordField.getPassword()),
+												   0, Util.getClassLoader(),
+												   Util.isSecureViaHttps(), useForce );
+		    Util.setMvvmContext(mvvmContext);
+		    
+		    // VERSION MISMATCH ///////
+		    String version = Util.getMvvmContext().version();
+		    if( !version.equals("-1") ){
+			if( !version.equals( Version.getVersion() ) ){
+			    resetLogin("Client/Server version mismatch.  Try Restarting.");
+			    return;
+			}
+		    }
+		    
+		    // EGDEMO ////////////////
+		    if( loginJTextField.getText().equals("egdemo") ){
+			Util.setIsDemo(true);
+		    }
+		    else{
+			Util.setIsDemo(false);
+		    }
+		    		    
+		    // READOUT SUCCESS /////////////////
+		    SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+			statusJProgressBar.setValue(16);
+			statusJProgressBar.setIndeterminate(false);
+			statusJProgressBar.setString("Successful authentication");
+			passJPasswordField.setText("");
+		    }});
+		    Thread.sleep(2000);
+		    retryLogin = -1;
+		    break;
+		}
+		catch(MultipleLoginsException e){
+		    StealLoginJDialog stealLoginJDialog = new StealLoginJDialog(e.getOtherLogin().getMvvmPrincipal().getName());
+		    if( stealLoginJDialog.isProceeding() ){
+			useForce = true;
+			retryLogin = 0;
+		    }
+		    else{
+			resetLogin("Error: Already logged in: " + e.getOtherLogin().getMvvmPrincipal().getName());
+			retryLogin = -1;
+			return;
+		    }
+		}
+		catch(FailedLoginException e){
+		    resetLogin("Error: Invalid login/password.");
+		    retryLogin = -1;
+		    return;
+		}
+		catch(com.metavize.mvvm.client.InvocationTargetExpiredException e){
+		    //Util.handleExceptionNoRestart("Error:", e);
+		}
+		catch(com.metavize.mvvm.client.InvocationConnectionException e){
+		    //Util.handleExceptionNoRestart("Error:", e);
+		}
+		catch(MvvmConnectException e){
+		    //Util.handleExceptionNoRestart("Error:", e);
+		}
+		catch(Exception e){
+		    //Util.handleExceptionNoRestart("Error:", e);
+		}
+		finally{
+		    if( retryLogin >= Util.LOGIN_RETRY_COUNT ){
+			resetLogin("Error: Unable to connect to server.");
+			return;
+		    }
+		    else if( retryLogin > 1 ){
+			final int retry = retryLogin;
+			SwingUtilities.invokeLater( new Runnable(){ public void run(){
+			    statusJProgressBar.setString( "Retrying login..." + " (" + retry + ")" );
+			}});
+			try{ Thread.currentThread().sleep( Util.LOGIN_RETRY_SLEEP ); }
+			catch(Exception e){}
+		    }
+		}
+	    }
+	    
+	    // ATTEMPT TO LOAD CLIENT
+	    int retryClient = 0;
+	    while( true ){
+		retryClient++;
+		try{
+		    // load GUI with proper context
+		    mMainJFrame = new MMainJFrame();
+		    Util.setMMainJFrame(mMainJFrame);
+		    
+		    // (UPDATE GUI) tell the user we are about to see the gui
+		    SwingUtilities.invokeAndWait( new Runnable(){ public void run (){
+			statusJProgressBar.setString("Showing EdgeGuard client...");
+			statusJProgressBar.setValue(100);
+		    }});
+		    
+		    // wait for a little bit
+		    Thread.sleep(3000);
+		    
+		    // (UPDATE GUI) show the main window
+		    SwingUtilities.invokeAndWait( new Runnable(){ public void run (){
+			MLoginJFrame.this.setVisible(false);
+			mMainJFrame.setBounds( Util.generateCenteredBounds(MLoginJFrame.this.getBounds(),
+									   mMainJFrame.getWidth(),
+									   mMainJFrame.getHeight()) );
+			String securedString;
+			if( Util.isSecureViaHttps() )
+			    securedString = "  |  Connection: https (secure)";
+			else
+			    securedString = "  |  Connection: http (standard)";
+			
+			mMainJFrame.setTitle( "Metavize EdgeGuard v" +
+					      Version.getVersion() + "  |  Login: " +
+					      loginJTextField.getText() + "  |  Server: " +
+					      Util.getServerCodeBase().getHost() + securedString );
+			if(Util.getIsDemo())
+			    mMainJFrame.setTitle( mMainJFrame.getTitle() + "  [DEMO MODE]" );
+			mMainJFrame.setExtendedState(Frame.MAXIMIZED_BOTH);
+			mMainJFrame.setVisible(true);
+		    }});
+		    retryClient = -1;
+		    break;
+		}
+		
+		catch(com.metavize.mvvm.client.InvocationTargetExpiredException e){
+		    Util.handleExceptionNoRestart("Error:", e);
+		}
+		catch(com.metavize.mvvm.client.InvocationConnectionException e){
+		    Util.handleExceptionNoRestart("Error:", e);
+		}
+		catch(Exception e){
+		    Util.handleExceptionNoRestart("Error:", e);
+		}
+		finally{
+		    if(retryClient >= Util.LOGIN_RETRY_COUNT){
+			resetLogin("Error: Unable to launch client.");
+			reshowLogin();
+			return;
+		    }
+		    else if( retryClient > 1 ){
+			final int retry = retryClient;
+			SwingUtilities.invokeLater( new Runnable(){ public void run(){
+			    statusJProgressBar.setString( "Retrying launch..." + " (" + retry + ")" );
+			}});
+			try{ Thread.currentThread().sleep( Util.LOGIN_RETRY_SLEEP ); }
+			catch(Exception e){}
+		    }
+		}
+	    }
+	    
+	}
     }
-    }
-
-
-
-
+    
+    
+    
+    
 }
