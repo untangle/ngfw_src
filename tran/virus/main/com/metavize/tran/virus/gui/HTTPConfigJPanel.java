@@ -50,7 +50,7 @@ class HTTPTableModel extends MSortedTableModel{
     private static final int T_TW = Util.TABLE_TOTAL_WIDTH;
     private static final int C0_MW = Util.STATUS_MIN_WIDTH; /* status */
     private static final int C1_MW = Util.LINENO_MIN_WIDTH; /* # - invisible */
-    private static final int C2_MW = 100; /* source */
+    private static final int C2_MW = 125; /* source */
     private static final int C3_MW = 55;  /* block */
     private static final int C4_MW = Util.chooseMax(T_TW - (C0_MW + C2_MW + C3_MW), 120); /* description */
 
@@ -69,8 +69,8 @@ class HTTPTableModel extends MSortedTableModel{
         return tableColumnModel;
     }
 
-    private static final String INBOUND_SOURCE = "incoming files";
-    private static final String OUTBOUND_SOURCE = "outgoing files";
+    private static final String INBOUND_SOURCE = "incoming documents";
+    private static final String OUTBOUND_SOURCE = "outgoing documents";
     
     public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {
 	for( Vector rowVector : tableVector ){
