@@ -36,11 +36,10 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
     }
 
     protected void generateGui(){
-	// DIRECTORY ///////
-	DirectoryConfigJPanel directoryConfigJPanel = new DirectoryConfigJPanel();
-	mTabbedPane.insertTab(NAME_DIRECTORY, null, directoryConfigJPanel, null, 0);
-	super.savableMap.put(NAME_DIRECTORY, directoryConfigJPanel);
-	super.refreshableMap.put(NAME_DIRECTORY, directoryConfigJPanel);
+
+	// LAUNCH BUTTON /////
+	BrowserLaunchJPanel browserLaunchJPanel = new BrowserLaunchJPanel();
+	mTabbedPane.add(NAME_VIEW, browserLaunchJPanel);
 
 	// REPORTS EMAILING ///////////
         JTabbedPane emailJTabbedPane = new JTabbedPane();
@@ -48,26 +47,25 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
         emailJTabbedPane.setFocusable(false);
         emailJTabbedPane.setFont(new java.awt.Font("Arial", 0, 11));
         emailJTabbedPane.setRequestFocusEnabled(false);
-        this.mTabbedPane.insertTab(NAME_EMAIL, null, emailJTabbedPane, null, 0);        
+        this.mTabbedPane.add(NAME_EMAIL, emailJTabbedPane);
 
 	// REPORTS EMAILING RECIPIENTS LIST /////
 	EmailConfigJPanel emailConfigJPanel = new EmailConfigJPanel();
-	emailJTabbedPane.insertTab(NAME_EMAIL_RECIPIENTS, null, emailConfigJPanel, null, 0);
+	emailJTabbedPane.add(NAME_EMAIL_RECIPIENTS, emailConfigJPanel);
 	super.savableMap.put(NAME_EMAIL + " " + NAME_EMAIL_RECIPIENTS, emailConfigJPanel);
 	super.refreshableMap.put(NAME_EMAIL + " " + NAME_EMAIL_RECIPIENTS, emailConfigJPanel);
 
 	// REPORTS EMAILING GENERAL SETTINGS /////
 	EmailGeneralConfigJPanel emailGeneralConfigJPanel = new EmailGeneralConfigJPanel();
-	emailJTabbedPane.insertTab(NAME_EMAIL_GENERAL_SETTINGS, null, emailGeneralConfigJPanel, null, 0);
+	emailJTabbedPane.add(NAME_EMAIL_GENERAL_SETTINGS, emailGeneralConfigJPanel);
 	super.savableMap.put(NAME_EMAIL + " " + NAME_EMAIL_GENERAL_SETTINGS, emailGeneralConfigJPanel);
 	super.refreshableMap.put(NAME_EMAIL + " " + NAME_EMAIL_GENERAL_SETTINGS, emailGeneralConfigJPanel);
 	
-	// LAUNCH BUTTON /////
-	mTabbedPane.insertTab(NAME_VIEW, null, new BrowserLaunchJPanel(), null, 0);
-
-	// SET TAB SELECTIONS /////////
-        emailJTabbedPane.setSelectedIndex(0);
-
+	// DIRECTORY ///////
+	DirectoryConfigJPanel directoryConfigJPanel = new DirectoryConfigJPanel();
+	mTabbedPane.add(NAME_DIRECTORY, directoryConfigJPanel);
+	super.savableMap.put(NAME_DIRECTORY, directoryConfigJPanel);
+	super.refreshableMap.put(NAME_DIRECTORY, directoryConfigJPanel);
         
     }
     
