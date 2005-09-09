@@ -46,7 +46,7 @@ public final class ContinuedMIMEToken
    * Convienence method.  Equivilant to
    * <code>getMIMEChunk().shouldUnparse()</code>.
    * This <b>must</b> be called before unparsing
-   * (calling {@link #getBytes getBytes} as the
+   * (calling {@link #getBytes getBytes}) as the
    * data in this chunk may have already been unparsed
    * as a result of being in buffer-and-passthru
    * mode.

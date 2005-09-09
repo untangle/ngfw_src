@@ -66,11 +66,10 @@ import java.nio.ByteBuffer;
  * </li>
  * <li>{@link #getQStringToken getQStringToken} returns a QString token
  * (see RFC 3501 section 4.3).  The QString token is stripped of its
- * leading/trailing quotes (&#34), and any internally escaped quotes
- * (&#92&#34) are replaced with quotes.  I'm not sure from reading rfc3501 is
- * quote-escaping is legal (UW Imap Server seems to use a LITERAL any time
- * text contains a quote) but I'm assuming <i>someone</i> out there assumed
- * it was legal and likely does it.
+ * leading/trailing quotes (&#34;), and any internally escaped quotes
+ * (&#92;&#34;) are replaced with quotes.  Reading RFC3501 (page 88) it seems
+ * that escapes for quotes within QStrings are illegal, but I'm assuming 
+ * <i>someone</i> out there assumed it was legal and likely does it.
  * </li>
  * </ul>
  */
@@ -94,6 +93,9 @@ public class IMAPTokenizer {
     QUOTE_B,
     BACK_SLASH_B,
     PLUS_B,
+    PERIOD_B,
+    LT_B,
+    GT_B,
     STAR_B
   };
 
@@ -135,10 +137,13 @@ public class IMAPTokenizer {
      * <li>}</li>
      * <li>(</li>
      * <li>)</li>
-     * <li>&#34</li>
-     * <li>&#92</li>
+     * <li>&#34;</li>
+     * <li>&#92;</li>
      * <li>*</li>
      * <li>+</li>
+     * <li>.</li>
+     * <li>&#60;</li>
+     * <li>></li>
      * </ul>
      * Other delimiters such as spaces are not significant.  EOL charaters
      * are significant, but returned via their own token (NEW_LINE).
@@ -202,7 +207,85 @@ public class IMAPTokenizer {
 //=====================================
 // Stateful Method about current token  
 //=====================================
+
+  /**
+   * Helper method, shortcut for
+   * <code>m_tokenizer.getTokenType() == IMAPTokenizer.IMAPTT.WORD</code>
+   *
+   * @return true if current token is a word
+   */
+  public boolean isTokenWord() {
+    return getTokenType() == IMAPTokenizer.IMAPTT.WORD;
+  }
   
+  /**
+   * Helper method, shortcut for
+   * <code>m_tokenizer.getTokenType() == IMAPTokenizer.IMAPTT.LITERAL</code>
+   *
+   * @return true if current token is a LITERAL
+   */
+  public boolean isTokenLiteral() {
+    return getTokenType() == IMAPTokenizer.IMAPTT.LITERAL;
+  }
+
+  /**
+   * Helper method, shortcut for
+   * <code>m_tokenizer.getTokenType() == IMAPTokenizer.IMAPTT.CONTROL_CHAR</code>
+   *
+   * @return true if current token is a CONTROL_CHAR
+   */
+  public boolean isTokenCtl() {
+    return getTokenType() == IMAPTokenizer.IMAPTT.CONTROL_CHAR;
+  }
+
+  /**
+   * Helper method, shortcut for
+   * <code>m_tokenizer.getTokenType() == IMAPTokenizer.IMAPTT.NEW_LINE</code>
+   *
+   * @return true if current token is a NEW_LINE
+   */
+  public boolean isTokenEOL() {
+    return getTokenType() == IMAPTokenizer.IMAPTT.NEW_LINE;
+  }
+
+  public boolean compareWordAgainst(ByteBuffer buf,
+    byte[] bytes,
+    boolean ignoreCase) {
+    return compareWordAgainst(buf, bytes, 0, bytes.length, ignoreCase); 
+  }  
+
+  /**
+   * Convienence method to test the current WORD for equivilance
+   * against a reference pattern.
+   * <br><br>
+   * This will always return false if the {@link #getTokenType current token}
+   * is not a WORD
+   */
+  public boolean compareWordAgainst(ByteBuffer buf,
+    byte[] bytes,
+    int start,
+    int len,
+    boolean ignoreCase) {
+
+    if(!isTokenWord() || getTokenLength() != len) {
+      return false;
+    }
+    for(int i = 0; i<len; i++) {
+      if(ignoreCase) {
+        if(!equalsIgnoreCase(bytes[i], buf.get(getTokenStart() + i))) {
+          return false;
+        }
+      }
+      else {
+        if(bytes[i] != buf.get(getTokenStart() + i)) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+
   /**
    * If the type is QSTRING, the begin/end quotes
    * <b>are</b> included in the count (i.e.
@@ -214,6 +297,10 @@ public class IMAPTokenizer {
    * to be used, it must have its leading/trailing quotes stripped
    * as well as any embedded escaped quotes).  To get the "proper"
    * QString token, use {@link #getQStringToken getQStringToken}.
+   * <br><br>
+   * Technically, there should not be any forward slashes, CR of LF
+   * in a QStrig but we interpret the fwd-slash-quote sequence as
+   * an escaped quote, and include CRLFs.
    */
   public IMAPTT getTokenType() {
     return m_tt;
@@ -395,10 +482,15 @@ public class IMAPTokenizer {
       case CLOSE_PAREN_B:            
       case PLUS_B:
       case STAR_B:
+      case PERIOD_B:
+      case LT_B:
+      case GT_B:
       case BACK_SLASH_B:
         //I'm very unclear from the lame IMAP spec if
         //  \" encountered bare should indicate an
         //escape of a QString.  I'll assume "no"
+        //
+        //UPDATE - Found on page 88 of RFC 3501
       case CLOSE_BRACE_B:        
         m_tt = IMAPTT.CONTROL_CHAR;
         m_start = m_tokenizer.tokenStart();

@@ -66,7 +66,8 @@ public class BeginMIMEToken
    * @param byteStuffer the byte stuffer used for initial bytes.  The
    *        stuffer will retain its state, so subsequent writes will
    *        cary-over any retained bytes.
-   * @return the TokenStreamer
+   * 
+   * @return the TCPStreamer
    */
   public TCPStreamer toTCPStreamer(ByteBufferByteStuffer byteStuffer) {
     return new ByteBtuffingTCPStreamer(m_accumulator.toTCPStreamer(),

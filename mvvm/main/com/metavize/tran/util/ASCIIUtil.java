@@ -37,6 +37,8 @@ import static com.metavize.tran.util.Ascii.*;
  */
 public final class ASCIIUtil {
 
+  private static final byte UPPER_LOWER_DIFF = 0x20;
+
   //Ensure this is only a collection of functions
   private ASCIIUtil() {}
 
@@ -233,6 +235,78 @@ public final class ASCIIUtil {
       }
     }
     buf.reset();
+    return true;
+  }
+
+  /**
+   * Converts the byte to lower-case, if it is in the alpha range.
+   *
+   * @param b the byte
+   * @return a lowercase byte equivilant, or the passed-in byte
+   */
+  public static final byte toLower(byte b) {
+    if(b >= 65 && b <= 90) {
+      return (byte) (b+UPPER_LOWER_DIFF);
+    }
+    return b;
+  }
+  public static final byte toUpper(byte b) {
+    if(b >= 97 && b <= 122) {
+      return (byte) (b-UPPER_LOWER_DIFF);
+    }
+    return b;
+  }
+
+  /**
+   * Compare the ASCII bytes, using a case-insensitive compare
+   * if they are alpha characters.
+   */
+  public static final boolean equalsIgnoreCase(final byte b1, final byte b2) {
+    return toLower(b1) == toLower(b2);
+  }
+
+  /**
+   * Test if the buffers contain the same bytes. 
+   * <br><br>
+   * This has been added to this class for case-insensitive compares.
+   */
+  public static final boolean buffersEqual(ByteBuffer b1,
+    ByteBuffer b2,
+    boolean ignoreCase) {
+    if(b1.remaining() != b2.remaining()) {
+      return false;
+    }
+    return startsWith(b1, b2, ignoreCase);
+  }
+
+  /**
+   * Test if the target ByteBuffer starts with the bytes in compare.
+   * <br><br>
+   * This has been added to this class for case-insensitive compares.
+   */
+  public static final boolean startsWith(final ByteBuffer target,
+    final ByteBuffer compare,
+    final boolean ignoreCase) {
+
+    if(target.remaining() < compare.remaining()) {
+      return false;
+    }
+    final int len = compare.remaining();
+    final int comparePos = compare.position();
+    final int targetPos = target.position();
+    
+    for(int i = 0; i<len; i++) {
+      if(ignoreCase) {
+        if(!equalsIgnoreCase(compare.get(comparePos+i), target.get(targetPos+1))) {
+          return false;
+        }
+      }
+      else {
+        if(compare.get(comparePos+i) != target.get(targetPos+1)) {
+          return false;
+        }      
+      }
+    }
     return true;
   }
   

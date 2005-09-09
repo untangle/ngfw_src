@@ -11,41 +11,34 @@
 
 package com.metavize.tran.mail.impl.imap;
 
-import static com.metavize.tran.util.Ascii.*;
-import static com.metavize.tran.util.BufferUtil.*;
-
-import com.metavize.tran.mail.papi.smtp.*;
-
-import com.metavize.tran.mail.papi.ByteBufferByteStuffer;
-
-import java.io.*;
-
 import java.nio.ByteBuffer;
+import com.metavize.mvvm.tapi.TCPSession;
+import com.metavize.mvvm.tapi.Pipeline;
+import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.tran.token.TokenStreamer;
+import com.metavize.mvvm.tran.ParseException;
+import com.metavize.tran.token.AbstractParser;
+import com.metavize.tran.token.ParseResult;
+import com.metavize.tran.util.AsciiCharBuffer;
 
-import com.metavize.mvvm.*;
-import com.metavize.mvvm.tapi.*;
-import com.metavize.mvvm.tapi.event.TCPStreamer;
-import com.metavize.tran.mail.papi.ByteBufferByteStuffer;
-import com.metavize.tran.mail.papi.smtp.*;
-import com.metavize.tran.token.*;
-import com.metavize.tran.util.*;
 import org.apache.log4j.Logger;
 
+
 /**
- * Base class for the ImapClient/ServerUnparser
+ * Base class for the ImapClient/ServerParser
  */
-abstract class ImapUnparser
-  extends AbstractUnparser {
+abstract class ImapParser
+  extends AbstractParser {
 
   private final Pipeline m_pipeline;
-  private final ImapCasing m_parentCasing;  
-  private final Logger m_logger = Logger.getLogger(ImapUnparser.class);
+  private final ImapCasing m_parentCasing;
+  private final Logger m_logger = Logger.getLogger(ImapParser.class);
   private boolean m_passthru = false;
 
-  protected ImapUnparser(TCPSession session,
+  ImapParser(TCPSession session,
     ImapCasing parent,
     boolean clientSide) {
-    
+
     super(session, clientSide);
     m_parentCasing = parent;
     m_pipeline = MvvmContextFactory.context().
@@ -86,10 +79,40 @@ abstract class ImapUnparser
     m_passthru = true;
   }
 
-  public TCPStreamer endSession() {
+  public TokenStreamer endSession() {
     m_logger.debug("End Session");
     getImapCasing().endSession(isClientSide());
     return null;
+  }
+
+  public ParseResult parseEnd(ByteBuffer chunk) {
+    if (chunk.hasRemaining()) {
+      m_logger.debug("data trapped in read buffer: "
+        + AsciiCharBuffer.wrap(chunk));
+    }
+    return new ParseResult();       
   }  
+
+  /**
+   * Helper which compacts (and possibly expands)
+   * the buffer if anything remains.  Otherwise,
+   * just returns null.
+   */
+  protected static ByteBuffer compactIfNotEmpty(ByteBuffer buf,
+    int maxSz) {
+    if(buf.hasRemaining()) {
+      buf.compact();
+      if(buf.limit() < maxSz) {
+        ByteBuffer b = ByteBuffer.allocate(maxSz);
+        buf.flip();        
+        b.put(buf);
+        return b;
+      }
+      return buf;
+    }
+    else {
+      return null;
+    }
+  }
   
-}  
+} 
