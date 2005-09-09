@@ -53,3 +53,11 @@ create table events.TR_IDS_EVT (
 	blocked bool,
 	time_stamp timestamp,
 	PRIMARY KEY (event_id));
+
+create table events.TR_IDS_STATISTIC_EVT (
+	event_id int8 NOT NULL,
+	ids_scanned int4,
+	ids_passed int4,
+	ids_blocked int4,
+	time_stamp timestamp,
+	PRIMARY KEY (event_id));

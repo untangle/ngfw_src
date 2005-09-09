@@ -88,7 +88,7 @@ public class IDSRuleManager {
 		}
 
 		else {
-			log.info("Does not contain - adding");
+		//	log.info("Does not contain - adding");
 			rule.setModified(false);
 			addRule(rule);
 		}
@@ -185,7 +185,7 @@ public class IDSRuleManager {
 			InetAddress serverAddr, int serverPort, List<IDSRuleHeader> matchList) {
 		
 		List<IDSRuleSignature> returnList = new LinkedList();
-		log.debug("Total List size: "+matchList.size()); /** *****************************************/
+		//log.debug("Total List size: "+matchList.size()); /** *****************************************/
 	
 		synchronized(matchList) {
 			for(IDSRuleHeader header : matchList) {
@@ -193,7 +193,7 @@ public class IDSRuleManager {
 					returnList.addAll(header.getSignatures());
 			}
 		}
-		log.debug("Signature List Size: "+returnList.size()); /** *****************************************/
+		//log.debug("Signature List Size: "+returnList.size()); /** *****************************************/
 		return returnList;
 	}
 
@@ -211,12 +211,11 @@ public class IDSRuleManager {
 	}
 
 	private String substituteVariables(String string) {
-		//Set 
-		//string = string.replaceAll("\\$EXTERNAL_NET",IDSStringParser.EXTERNAL_IP);
-		//string = string.replaceAll("\\$HOME_NET",IDSStringParser.HOME_IP);
+		string = string.replaceAll("\\$EXTERNAL_NET",IDSStringParser.EXTERNAL_IP);
+		string = string.replaceAll("\\$HOME_NET",IDSStringParser.HOME_IP);
 		
-		string = string.replaceAll("\\$HOME_NET","10.0.0.1/24");
-		string = string.replaceAll("\\$EXTERNAL_NET","!10.0.0.1/24");
+		//string = string.replaceAll("\\$HOME_NET","10.0.0.1/24");
+		//string = string.replaceAll("\\$EXTERNAL_NET","!10.0.0.1/24");
 		
 		Matcher match = variablePattern.matcher(string);
 		if(match.find()) {

@@ -32,7 +32,7 @@ public class IDSDetectionEngine {
 	
 	private static final Logger log = Logger.getLogger(IDSDetectionEngine.class);
 	static {
-		log.setLevel(Level.ALL);
+		log.setLevel(Level.INFO);
 	}
 	
 	private static IDSDetectionEngine instance = new IDSDetectionEngine();

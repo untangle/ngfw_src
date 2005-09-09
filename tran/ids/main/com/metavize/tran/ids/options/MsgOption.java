@@ -7,8 +7,6 @@ import com.metavize.tran.ids.IDSRuleSignature;
 import com.metavize.mvvm.tapi.event.*;
 
 public class MsgOption extends IDSOption {
-
-	private IDSRuleSignature signature;
 	
 	public MsgOption(IDSRuleSignature signature, String params) {
 		super(signature, params);

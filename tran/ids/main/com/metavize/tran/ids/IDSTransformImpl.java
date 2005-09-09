@@ -180,12 +180,16 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 	/** Temp subroutines for loading local snort rules.
 	 */
 	private void processFile(File file) {
+		//System.out.println(file);
 		IDSRuleManager testManager = new IDSRuleManager();
 		try {
 			BufferedReader in = new BufferedReader(new FileReader(file));
 			String str;
 			int count = 0;
 			while ((str = in.readLine()) != null) {
+		//		if(str.contains("RAWR!")) {
+		//			System.out.println("RAWR: " + testManager.canParse(str.trim()));
+		//		}
 				if(testManager.canParse(str.trim())) {
 					IDSRuleSignature sig = testManager.getNewestSignature();
 					String message = (sig == null) ? "The signature failed to load" : sig.getMessage();
@@ -234,8 +238,11 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 		try {
 			reconfigure();
 		}
-		catch (Exception e) {e.printStackTrace(); }
-					
+		catch (Exception e) {
+			throw new TransformStartException(e);
+		}
+
+		IDSStatisticManager.instance().start();
 	}
 	
 	public void reconfigure() throws TransformException {
@@ -256,7 +263,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 		}
 		//remove all deleted rules
 
-		setIDSSettings(settings);
+	//	setIDSSettings(settings);
 	}
 
 	//XXX soon to be deprecated ------------------------------------------

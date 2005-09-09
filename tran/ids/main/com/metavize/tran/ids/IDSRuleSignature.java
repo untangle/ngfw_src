@@ -109,6 +109,7 @@ public class IDSRuleSignature {
 		for(IDSOption option : options) {
 			if(!option.run()) {
 				IDSDetectionEngine.instance().updateUICount(PASS_COUNTER);
+				IDSStatisticManager.instance().incrScanned();
 				return false;
 			}
 		}
@@ -119,7 +120,8 @@ public class IDSRuleSignature {
 	private void doAction() {
 		switch(action) {
 			case IDSRuleManager.ALERT:
-				System.out.println(message);
+		//		System.out.println(message);//////////////////////////////////
+				IDSStatisticManager.instance().incrPassed();
 				IDSDetectionEngine.instance().updateUICount(ALERT_COUNTER);
 				break;
 			case IDSRuleManager.LOG:
