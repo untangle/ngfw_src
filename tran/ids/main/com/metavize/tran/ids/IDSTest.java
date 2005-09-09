@@ -196,8 +196,6 @@ public class IDSTest {
 	private void runHeaderTest() {
 		
 		List<IDSRuleHeader> ruleList = rules.getHeaders();
-		for(IDSRuleHeader header : ruleList)
-			log.error(header);
 		
 		matchTest(ruleList.get(1), Protocol.TCP, "10.0.0.101", 33242, "66.35.250.8", 80, false);
 		matchTest(ruleList.get(3), Protocol.TCP, "192.168.1.1", 33065, "66.33.22.111", 80, true);

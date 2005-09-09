@@ -46,6 +46,7 @@ public class IDSRuleHeader {
 				List<IPMatcher> clientIPList,	PortRange clientPortRange,
 				List<IPMatcher> serverIPList,	PortRange serverPortRange) {
 		
+		this.action = action;
 		this.bidirectional = bidirectional;
 		this.protocol = protocol;
 		this.clientIPList = clientIPList;

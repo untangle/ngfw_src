@@ -67,6 +67,7 @@ public class IDSRuleManager {
 		long id = rule.getKeyValue();
 		IDSRule inMap = knownRules.get(id);
 		if(inMap != null) {
+			log.info("inMap != null");
 			rule.remove(false);
 			if(rule.getModified()) {	
 				log.info("in getModified == true");
@@ -77,6 +78,7 @@ public class IDSRuleManager {
 				header.removeSignature(inMap.getSignature());
 				
 				if(header.signatureListIsEmpty()) {
+					log.info("removing header");
 					knownRules.remove(id);
 					knownHeaders.remove(header);
 				}
@@ -88,7 +90,7 @@ public class IDSRuleManager {
 		}
 
 		else {
-		//	log.info("Does not contain - adding");
+			log.info("Does not contain - adding");
 			rule.setModified(false);
 			addRule(rule);
 		}
@@ -99,15 +101,15 @@ public class IDSRuleManager {
 	
 	public boolean addRule(String rule, Long key) throws ParseException {
 		IDSRule test = new IDSRule(rule,"Not set", "Not set");
+		test.setLog(true);
 		test.setKeyValue(key);
 		return addRule(test);
 	}
 	public boolean addRule(IDSRule rule) throws ParseException {
-		String ruleText = rule.getText();
-		
+		String ruleText = setCorrectAction(rule);
 		if(ruleText.length() <= 0 || ruleText.charAt(0) == '#')
 			return false;
-		
+	
 		ruleText = substituteVariables(ruleText);
 		String ruleParts[] 			= IDSStringParser.parseRuleSplit(ruleText);
 		IDSRuleHeader header		= IDSStringParser.parseHeader(ruleParts[0]);
@@ -115,7 +117,7 @@ public class IDSRuleManager {
 	
 		signature.setToString(ruleParts[1]);
 	
-		if(!signature.remove()) {
+		if(!signature.remove() && !rule.disabled()) {
 			for(IDSRuleHeader known : knownHeaders) {
 				if(known.equals(header)) {
 					known.addSignature(signature);
@@ -123,6 +125,7 @@ public class IDSRuleManager {
 					
 					rule.setHeader(known);
 					rule.setSignature(signature);
+					rule.setText(ruleText);
 					knownRules.put(rule.getKeyValue(),rule);
 					return true;
 				}
@@ -133,10 +136,13 @@ public class IDSRuleManager {
 
 			rule.setHeader(header);
 			rule.setSignature(signature);
+			rule.setText(ruleText);
 			knownRules.put(rule.getKeyValue(),rule);
 			
 			return true;
 		}
+		//rule.setSignature(signature); //Update UI description
+		rule.setText(ruleText);
 		return false;
 	}
 
@@ -210,6 +216,21 @@ public class IDSRuleManager {
 		return newSignature;
 	}
 
+	private String setCorrectAction(IDSRule rule) {
+		String ruleText = rule.getText();
+		String action = ruleText.substring(0,ruleText.indexOf(' '));
+		if(rule.isLive()) {
+			rule.setLog(true);
+			return ruleText.replace(action,ACTIONS[BLOCK]);
+		}
+		else if(rule.getLog()) {
+			return ruleText.replace(action,ACTIONS[LOG]);	
+		}
+		else { 
+			rule.disable();
+			return ruleText.replace(action,ACTIONS[ALERT]);
+		}
+	}
 	private String substituteVariables(String string) {
 		string = string.replaceAll("\\$EXTERNAL_NET",IDSStringParser.EXTERNAL_IP);
 		string = string.replaceAll("\\$HOME_NET",IDSStringParser.HOME_IP);

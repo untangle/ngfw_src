@@ -27,7 +27,7 @@ public class IDSStringParser {
 		int first = rule.indexOf("(");
 		int last = rule.lastIndexOf(")");
 		if(first < 0 || last < 0)
-			throw new ParseException("Could not split rule: ");
+			throw new ParseException("Could not split rule: "+rule);
 		String parts[] = { rule.substring(0,first).trim(), rule.substring(first+1,last).trim() };
 		
 		return parts;
@@ -35,8 +35,7 @@ public class IDSStringParser {
 	
 	public static IDSRuleSignature parseSignature(String signatureString, int action) throws ParseException {
 		IDSRuleSignature returnSignature = new IDSRuleSignature(action);
-		
-		
+			
 		String replaceChar = ""+0xff42;
 		signatureString = signatureString.replaceAll("\\\\;",replaceChar);
 		String options[] = signatureString.trim().split(";");
@@ -108,8 +107,10 @@ public class IDSStringParser {
 	private static int parseAction(String action) throws ParseException {
 		String validActions[] = IDSRuleManager.ACTIONS;
 		for(int i=0; i < validActions.length;i++) {
-			if(validActions[i].equalsIgnoreCase(action))
+			if(validActions[i].equalsIgnoreCase(action)) {
+				System.out.println(validActions[i]+" "+action+": "+i); ///////////////////////////////////////////////////////////////////////
 				return i;
+			}
 		}
 		throw new ParseException("Not a valid action: " + action);
 	}

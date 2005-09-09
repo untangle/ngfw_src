@@ -143,7 +143,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 		log.info("Loading Rules...");
 		//IDSSettings settings = new IDSSettings(getTid());
 		settings = queryDBForSettings();
-		if(settings == null) {
+		if(settings == null || settings.getRules() == null) {
 			settings = new IDSSettings(getTid());
 			settings.setVariables(IDSRuleManager.defaultVariables);
 			settings.setImmutableVariables(IDSRuleManager.immutableVariables);

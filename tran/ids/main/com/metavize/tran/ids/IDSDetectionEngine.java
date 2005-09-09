@@ -82,8 +82,9 @@ public class IDSDetectionEngine {
 		this.transform = transform;
 	}
 	public void onReconfigure() {
-		portC2SMap      = new ConcurrentHashMap<Integer,List<IDSRuleHeader>>();
-		portS2CMap      = new ConcurrentHashMap<Integer,List<IDSRuleHeader>>();
+		portC2SMap = new ConcurrentHashMap<Integer,List<IDSRuleHeader>>();
+		portS2CMap = new ConcurrentHashMap<Integer,List<IDSRuleHeader>>();
+		
 		rules.onReconfigure();
 		log.debug("Done with reconfigure");
 	}

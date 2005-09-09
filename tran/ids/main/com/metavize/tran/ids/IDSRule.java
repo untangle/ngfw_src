@@ -23,7 +23,8 @@ public class IDSRule extends Rule implements Serializable {
 	//Variables set at run time
 	private transient IDSRuleHeader header;
 	private transient IDSRuleSignature signature;
-	private boolean remove;
+	private boolean remove; //Should no longer be in the list
+	private boolean off;	//Rule is disabled
 
 	/**
 	 * Hibernate constructor
@@ -74,7 +75,7 @@ public class IDSRule extends Rule implements Serializable {
 
 	public void setSignature(IDSRuleSignature signature) {
 		this.signature = signature;
-		//super.setDescription(signature.toString());
+		//super.setDescription(getMessage());
 	}
 
 	public IDSRuleSignature getSignature() {
@@ -89,6 +90,14 @@ public class IDSRule extends Rule implements Serializable {
 		remove = val;
 	}
 
+	public void disable() {
+		off = true;
+	}
+
+	public boolean disabled() {
+		return off;
+	}
+
 	public boolean equals(Object other) {
 		System.out.println("Yay, Equals!");
 		if(other instanceof IDSRule) {
@@ -98,7 +107,12 @@ public class IDSRule extends Rule implements Serializable {
 	}
 	
 	public void setLive(boolean live) { 
+		off = false;
 		super.setLive(live);
-		//System.out.println("SetLive is being called");
+	}
+
+	public void setLog(boolean log) {
+		off = false;
+		super.setLog(log);
 	}
 }

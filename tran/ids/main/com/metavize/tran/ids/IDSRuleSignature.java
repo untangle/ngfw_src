@@ -24,10 +24,10 @@ public class IDSRuleSignature {
 	private String[] ignoreSafeOptions = { "rev","sid","classtype","reference" };
 	/** **************************************/
 	
-	private static final int PASS_COUNTER 	= Transform.GENERIC_0_COUNTER;
-	private static final int LOG_COUNTER 	= Transform.GENERIC_1_COUNTER;
-	private static final int ALERT_COUNTER 	= Transform.GENERIC_2_COUNTER;
-	private static final int BLOCK_COUNTER 	= Transform.GENERIC_3_COUNTER;
+	private static final int BLOCK_COUNTER 	= Transform.GENERIC_0_COUNTER;
+	private static final int PASS_COUNTER 	= Transform.GENERIC_1_COUNTER;
+	private static final int LOG_COUNTER 	= Transform.GENERIC_2_COUNTER;
+	private static final int ALERT_COUNTER 	= Transform.GENERIC_3_COUNTER;
 	
 	private List<IDSOption> options = new Vector<IDSOption>();
 	private IDSSessionInfo info;
@@ -43,6 +43,7 @@ public class IDSRuleSignature {
 		log.setLevel(Level.WARN);
 	}
 	public IDSRuleSignature(int action) {
+		log.error("ActionInt: " + action);
 		this.action = action;
 	}
 
@@ -118,18 +119,31 @@ public class IDSRuleSignature {
 	}
 
 	private void doAction() {
+		boolean blocked = false;
 		switch(action) {
 			case IDSRuleManager.ALERT:
-		//		System.out.println(message);//////////////////////////////////
+				log.debug("Alert: "+message);
 				IDSStatisticManager.instance().incrPassed();
 				IDSDetectionEngine.instance().updateUICount(ALERT_COUNTER);
 				break;
+			
 			case IDSRuleManager.LOG:
+				log.debug("Log: "+message);
+				IDSStatisticManager.instance().incrPassed();
 				IDSDetectionEngine.instance().updateUICount(LOG_COUNTER);
 				break;
+			
+			case IDSRuleManager.BLOCK:
+				log.debug("Block: "+message);
+				blocked = true;
+				IDSStatisticManager.instance().incrBlocked();
+				IDSDetectionEngine.instance().updateUICount(BLOCK_COUNTER);
+				info.blockSession();
+				break;
 		}
-		int id = (info.getSession() == null) ? -1 : info.getSession().id();
-		eventLog.info(new IDSLogEvent(id,message,false)); //Add list number that this rule came from
+		int sessionId = (info.getSession() == null) ? -1 : info.getSession().id(); // change to if(!null)
+		if(sessionId >= 0)
+			eventLog.info(new IDSLogEvent(sessionId,message,blocked)); //Add list number that this rule came from
 	}
 
 	public void setToString(String string) {

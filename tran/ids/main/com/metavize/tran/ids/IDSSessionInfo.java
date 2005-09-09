@@ -2,7 +2,7 @@ package com.metavize.tran.ids;
 
 import java.util.List;
 import java.util.Iterator;
-import com.metavize.mvvm.tapi.IPSession;
+import com.metavize.mvvm.tapi.*;
 import com.metavize.mvvm.tapi.event.*;
 
 public class IDSSessionInfo {
@@ -23,7 +23,7 @@ public class IDSSessionInfo {
 	public String  getUriPath() {
 		return uriPath;
 	}
-	/**Do i need to set session data? I dont think so..
+	/**Do i need to set sessionion data? I dont think so..
 	 * Check later.
 	 */
 	public void setSession(IPSession session) {
@@ -66,6 +66,23 @@ public class IDSSessionInfo {
 		for(IDSRuleSignature sig : s2cSignatures)
 			sig.execute(this);
 	}
+
+	public void blockSession() {
+		System.out.println("In block session");
+		if(session instanceof TCPSession) {
+			System.out.println("Resseting TCP");
+			((TCPSession)session).resetClient();
+			((TCPSession)session).resetServer();
+		}
+		else if(session instanceof UDPSession) {
+			System.out.println("Resseting UDP");
+			((UDPSession)session).expireClient(); /* XXX correct? */
+			((UDPSession)session).expireServer(); /* XXX correct? */
+		}
+		session.release();
+	}
+								
+								
 	
 	/**Debug methods*/
 	public boolean testSignature(int num) {
