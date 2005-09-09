@@ -78,4 +78,20 @@ public interface PolicyManager {
      * @param ruleSet an <code>UserPolicyRuleSet</code> value
      */
     void setUserPolicyRules(UserPolicyRuleSet ruleSet);
+
+    /**
+     * Helper for the UI -- get all Policy related configuration in a single object
+     *
+     * @return a <code>PolicyConfiguration</code> containing all policy related settings
+     */
+    PolicyConfiguration getPolicyConfiguration();
+
+    /**
+     * Helper for the UI -- set all Policy related configuration in a single call
+     *
+     * @param pc a <code>PolicyConfiguration</code> value
+     * @exception PolicyException if there is some problem with the settings.
+     */
+    void setPolicyConfiguration(PolicyConfiguration pc) throws PolicyException;
+
 }

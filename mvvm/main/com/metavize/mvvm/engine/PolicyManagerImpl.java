@@ -250,6 +250,21 @@ public class PolicyManagerImpl implements PolicyManager
         }
     }
 
+
+    // For da UI
+    public PolicyConfiguration getPolicyConfiguration() {
+        PolicyConfiguration result = new PolicyConfiguration(allPolicies, sysRules, userRules);
+        return result;
+    }
+
+    // For da UI
+    public void setPolicyConfiguration(PolicyConfiguration pc)
+        throws PolicyException
+    {
+        // Need to do a lot of error checking here...
+        // Need implmenetation XXX
+    }
+
     // package protected methods ----------------------------------------------
 
     // MVVM calls in here at boot time and whenever a new interface is

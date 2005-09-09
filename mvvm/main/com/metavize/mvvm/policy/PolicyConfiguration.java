@@ -1,0 +1,63 @@
+/*
+ * Copyright (c) 2003, 2004, 2005 Metavize Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Metavize Inc. ("Confidential Information").  You shall
+ * not disclose such Confidential Information.
+ *
+ *  $Id$
+ */
+
+package com.metavize.mvvm.policy;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+public class PolicyConfiguration implements Serializable
+{
+    private static final long serialVersionUID = -8235091515969174553L;
+
+    private List policies;
+
+    private List systemPolicyRules;
+
+    private List userPolicyRules;
+
+    PolicyConfiguration(List policies, SystemPolicyRule[] sysRules, UserPolicyRule[] userRules) {
+        this.policies = new ArrayList(policies);
+        systemPolicyRules = new ArrayList(sysRules.length);
+        for (int i = 0; i < sysRules.length; i++)
+            systemPolicyRules.add(sysRules[i]);
+        userPolicyRules = new ArrayList(sysRules.length);
+        for (int i = 0; i < sysRules.length; i++)
+            userPolicyRules.add(userRules[i]);
+    }
+
+    public List getPolicies() {
+        return policies;
+    }
+
+    public void setPolicies(List policies) {
+        this.policies = policies;
+    }
+
+    public List getSystemPolicyRules() {
+        return systemPolicyRules;
+    }
+
+    public void setSystemPolicyRules(List systemPolicyRules) {
+        this.systemPolicyRules = systemPolicyRules;
+    }
+
+    public List getUserPolicyRules() {
+        return userPolicyRules;
+    }
+
+    public void setUserPolicyRules(List userPolicyRules) {
+        this.userPolicyRules = userPolicyRules;
+    }
+}
+
+    
