@@ -517,13 +517,14 @@ public class MLoginJFrame extends javax.swing.JFrame {
 		    break;
 		}
 		catch(MultipleLoginsException e){
-		    StealLoginJDialog stealLoginJDialog = new StealLoginJDialog(e.getOtherLogin().getMvvmPrincipal().getName());
+		    StealLoginJDialog stealLoginJDialog = new StealLoginJDialog(e.getOtherLogin().getMvvmPrincipal().getName(),
+										e.getOtherLogin().getClientAddr().toString());
 		    if( stealLoginJDialog.isProceeding() ){
 			useForce = true;
 			retryLogin = 0;
 		    }
 		    else{
-			resetLogin("Error: Already logged in: " + e.getOtherLogin().getMvvmPrincipal().getName());
+			resetLogin(e.getOtherLogin().getMvvmPrincipal().getName() + " is already logged in at: " + e.getOtherLogin().getClientAddr().toString());
 			retryLogin = -1;
 			return;
 		    }

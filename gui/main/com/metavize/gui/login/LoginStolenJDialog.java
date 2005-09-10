@@ -17,12 +17,12 @@ import com.metavize.gui.util.Util;
 final public class LoginStolenJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
     
     
-    public LoginStolenJDialog(LoginSession loginSession) {
+    public LoginStolenJDialog(String loginName, String loginAddress) {
         super(Util.getMMainJFrame(), true);
         initComponents();
         
-        messageJLabel.setText("<html><center>You have been logged out because the<br>following user has logged in: "
-                            + loginSession.getMvvmPrincipal().getName()
+        messageJLabel.setText("<html><center>You have been logged out because:<br>"
+                            + loginName + " has logged in at " + loginAddress
                             + "<br><br>You must exit now, but you can login again later.</center></html>");
         this.addWindowListener(this);
         this.setBounds( Util.generateCenteredBounds(Util.getMMainJFrame().getBounds(), this.getWidth(), this.getHeight()) );

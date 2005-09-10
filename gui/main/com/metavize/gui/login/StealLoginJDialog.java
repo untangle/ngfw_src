@@ -20,10 +20,10 @@ public class StealLoginJDialog extends javax.swing.JDialog implements java.awt.e
     private boolean isProceeding = false;
     
 
-    public StealLoginJDialog(String loginName) {
+    public StealLoginJDialog(String loginName, String loginAddress) {
         super(Util.getMMainJFrame(), true);
         initComponents();
-        messageJLabel.setText("<html><center>The following user is currently logged in: " + loginName 
+        messageJLabel.setText("<html><center>" + loginName + " is is currently logged in at " + loginAddress 
                             + "<br><br>You may cancel your login, or you can continue your login<br>which will automatically logout the other user.</center></html>");
         this.addWindowListener(this);
         this.setBounds( Util.generateCenteredBounds(Util.getMLoginJFrame().getBounds(), this.getWidth(), this.getHeight()) );
