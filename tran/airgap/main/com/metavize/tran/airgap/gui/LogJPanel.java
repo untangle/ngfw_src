@@ -39,7 +39,7 @@ public class LogJPanel extends MLogTableJPanel {
 	    addTableColumn( tableColumnModel,  0,  150, true,  false, false, false, String.class, null,  "timestamp" );
 	    addTableColumn( tableColumnModel,  1,  100, true,  false, false, false, String.class, null,  sc.html("source") );
 	    addTableColumn( tableColumnModel,  2,  100, true,  false, false, false, String.class, null,  sc.html("source<br>interface") );
-	    addTableColumn( tableColumnModel,  3,  75,  true,  false, false, false, String.class, null,  "reputation" );
+	    addTableColumn( tableColumnModel,  3,  75,  true,  false, false, false, Double.class, null,  "reputation" );
 	    addTableColumn( tableColumnModel,  4,  55,  true,  false, false, false, Integer.class, null, "limited" );
 	    addTableColumn( tableColumnModel,  5,  75,  true,  false, false, false, Integer.class, null, "dropped" );
 	    addTableColumn( tableColumnModel,  6,  55,  true,  false, false, false, Integer.class, null, "reject" );
@@ -58,7 +58,7 @@ public class LogJPanel extends MLogTableJPanel {
 		event.add( Util.getLogDateFormat().format( log.getCreateDate() ));
 		event.add( log.getClient() );
 		event.add( log.getClientIntf() );
-		event.add( log.getReputationString() );
+		event.add( Math.floor(log.getReputation()) );
 		event.add( log.getLimited() );
 		event.add( log.getDropped() );
 		event.add( log.getRejected() );

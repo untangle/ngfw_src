@@ -155,7 +155,11 @@ public class MColoredTableCellRenderer extends DefaultTableCellRenderer {
                 renderJCheckBox.setSelected(((Boolean)value).booleanValue());
                 renderJComponent = renderJCheckBox;
             }
-            else if( (value instanceof String) || (value instanceof Integer) || (value instanceof Float) ){
+            else if( (value instanceof String)
+		     || (value instanceof Integer)
+		     || (value instanceof Float)
+		     || (value instanceof Long)
+		     || (value instanceof Double) ){
                 if(value != null)
                     renderJLabel.setText(value.toString());
                 else
