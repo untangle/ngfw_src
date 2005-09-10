@@ -47,7 +47,7 @@ public class VirusSettings implements Serializable
     private Tid tid;
     private boolean ftpDisableResume = true;
     private boolean httpDisableResume = true;
-    private int tricklePercent = 50;
+    private int tricklePercent = 90;
     private String ftpDisableResumeDetails = "no description";
     private String httpDisableResumeDetails = "no description";
     private String tricklePercentDetails = "no description";

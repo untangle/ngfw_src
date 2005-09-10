@@ -321,7 +321,7 @@ public class VirusTransformImpl extends AbstractTransform
         s.add(new MimeTypeRule(new MimeType("application/rtf"), "Rich Text Format", "document", false));
         s.add(new MimeTypeRule(new MimeType("application/pdf"), "Adobe Acrobat", "document", false));
         s.add(new MimeTypeRule(new MimeType("application/postscript"), "Postscript", "document", false));
-        s.add(new MimeTypeRule(new MimeType("application/*"), "applications", "misc", true));
+        s.add(new MimeTypeRule(new MimeType("application/*"), "applications", "misc", false));
         s.add(new MimeTypeRule(new MimeType("message/*"), "messages", "misc", true));
         s.add(new MimeTypeRule(new MimeType("image/*"), "images", "image", false));
         s.add(new MimeTypeRule(new MimeType("video/*"), "video", "video", false));
