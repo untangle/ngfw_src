@@ -436,7 +436,8 @@ public class Util {
 		return;
 	    }
 	    else if( throwableRef instanceof LoginStolenException ){
-		new LoginStolenJDialog(((LoginStolenException)throwableRef).getThief());
+		new LoginStolenJDialog(((LoginStolenException)throwableRef).getThief().getMvvmPrincipal().getName(),
+				       ((LoginStolenException)throwableRef).getThief().getClientAddr().getHostAddress());
 		killDaemonThreads();
 		mLoginJFrame.resetLogin("Login ended by: " + ((LoginStolenException)throwableRef).getThief().getMvvmPrincipal().getName());
 		mLoginJFrame.reshowLogin();

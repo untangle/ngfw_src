@@ -518,7 +518,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
 		}
 		catch(MultipleLoginsException e){
 		    StealLoginJDialog stealLoginJDialog = new StealLoginJDialog(e.getOtherLogin().getMvvmPrincipal().getName(),
-										e.getOtherLogin().getClientAddr().toString());
+										e.getOtherLogin().getClientAddr().getHostAddress());
 		    if( stealLoginJDialog.isProceeding() ){
 			useForce = true;
 			retryLogin = 0;
