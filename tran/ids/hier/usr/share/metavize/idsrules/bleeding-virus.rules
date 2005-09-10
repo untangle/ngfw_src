@@ -1,0 +1,585 @@
+#
+# $Id: bleeding-virus.rules $
+# Bleeding Snort Virus rules. 
+#  These are rules not stable, mature, or applicable enough to be part of the snort.org official sets. 
+#  Someday some may be, at which time they'll be removed from this list and be available via Snort.org
+#  This is for the bleeding edge junkies. Use at your own risk!!!
+#
+# SID's are 2000000+ to avoid conflicts
+#
+# Only basic testing has been done. At this point all we guarantee is that they won't crash a recent snort release. 
+#
+# More information available at www.bleedingsnort.com
+#
+# Please submit any custom rules or ideas to bleeding@bleedingsnort.com or the snort-sigs mailing list
+#
+#*************************************************************
+#
+#  Copyright (c) 2005, Bleedingsnort.com
+#  All rights reserved.
+#  
+#  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the 
+#  following conditions are met:
+#  
+#  * Redistributions of source code must retain the above copyright notice, this list of conditions and the following 
+#    disclaimer.
+#  * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the 
+#    following disclaimer in the documentation and/or other materials provided with the distribution.
+#  * Neither the name of the nor the names of its contributors may be used to endorse or promote products derived 
+#    from this software without specific prior written permission.
+#  
+#  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS AS IS AND ANY EXPRESS OR IMPLIED WARRANTIES, 
+#  INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+#  DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
+#  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR 
+#  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, 
+#  WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE 
+#  USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
+#
+#
+# BugBear
+
+#Submitted by Brad Doctor, 3/8/2005, for BugBear@MM
+alert tcp $HOME_NET any -> $EXTERNAL_NET 25 (msg: "BLEEDING-EDGE VIRUS - Bugbear@MM virus in SMTP"; flow: established; content:"uv+LRCQID7dIDFEECggDSLm9df8C/zSNKDBBAAoGA0AEUQ+FEN23f7doqAT/dCQk/xWcEQmDxCTD"; reference: url,www.symantec.com/avcenter/venc/data/w32.bugbear@mm.html; classtype: misc-activity; sid: 2001764; rev:3; )
+alert tcp $HOME_NET any -> any 139 (msg: "BLEEDING-EDGE VIRUS - BugBear@MM virus in Network share"; flow: established; content:"|24 48 fb bb ff e6 63 02 3a 20 41 70 61 63 68 65|"; reference: url,www.symantec.com/avcenter/venc/data/w32.bugbear@mm.html; classtype: misc-activity; sid: 2001765; rev:3; )
+alert tcp $HOME_NET any -> any 139 (msg: "BLEEDING-EDGE VIRUS - BugBear@MM Worm Copied to Startup Folder"; flow: established; content:"|77 00 69 00 6B 00 2E 00 65 00 78 00 65 00 00 00|"; reference: url,www.symantec.com/avcenter/venc/data/w32.bugbear@mm.html; classtype: misc-activity; sid: 2001766; rev:3; )
+
+#by Shirkdog
+alert tcp $EXTERNAL_NET any -> $HOME_NET 25 (msg:"BLEEDING-EDGE VIRUS London bombing trojan file"; flow: established; content:"London Terror Moovie.avi"; nocase; content:"Checked By Norton Antivirus.exe"; nocase; reference:url,www.theregister.co.uk/2005/07/08/london_bombing_spambot/; classtype:trojan-activity; sid: 2002086; rev:2;)
+
+# Agobot/Phatbot
+
+#Taken from lurhq.com
+alert tcp $EXTERNAL_NET any -> $HOME_NET any (msg: "BLEEDING-EDGE VIRUS Agobot/Phatbot Infection Successful"; flow: established; dsize: 40; content:"221 Goodbye, have a good infection |3a 29 2e 0d 0a|"; reference: url,www.lurhq.com/phatbot.html; classtype: trojan-activity; sid: 2000014; rev:2; )
+
+# Sober
+
+#Taken from the Netsquid Rules for Sober.F
+alert tcp $HOME_NET any -> $EXTERNAL_NET 25 (msg: "BLEEDING-EDGE VIRUS Sober.F Outbound (1)"; flow: established,to_server; content:"Content-Disposition\: attachment\; filename="; content:"NlJhIn5GWj4mcjUifkZaMmpGejZpImom"; nocase; within: 1280; classtype: trojan-activity; reference:url,securityresponse.symantec.com/avcenter/venc/data/w32.sober.f@mm.html?Open; sid: 2001284; rev:7; )
+alert tcp $HOME_NET any -> $EXTERNAL_NET 25 (msg: "BLEEDING-EDGE VIRUS Sober.F Outbound (2)"; flow: established,to_server; content:"Content-Disposition\: attachment\; filename="; content:"dllygSJ+Rlp2YjEiblZtIm4uJlVtaSJu"; nocase; within: 1280; classtype: trojan-activity; reference:url,securityresponse.symantec.com/avcenter/venc/data/w32.sober.f@mm.html?Open; sid: 2001285; rev:7; )
+
+#Submitted by Mark Scott, 11/19/2004, for Sober.I
+#alert tcp $EXTERNAL_NET any -> $EXTERNAL_NET 25 (msg: "BLEEDING-EDGE VIRUS Sober.I - incoming"; flow: established; content:"Mvrl4gAAAAAAAAAAFBFAABMAQMACIydQQAAAAAAAAAA4AAPAQsBBgAAMAAAABAAAACAAACgsAA"; classtype: misc-activity; reference:url,securityresponse.symantec.com/avcenter/venc/data/w32.sober.i@mm.html; sid: 2001577; rev:8; )
+alert tcp $HOME_NET any -> $EXTERNAL_NET 25 (msg: "BLEEDING-EDGE VIRUS Sober.I - outbound"; flow: established; content:"Mvrl4gAAAAAAAAAAFBFAABMAQMACIydQQAAAAAAAAAA4AAPAQsBBgAAMAAAABAAAACAAACgsAA"; classtype: misc-activity; reference:url,securityresponse.symantec.com/avcenter/venc/data/w32.sober.i@mm.html; sid: 2001578; rev:10; )
+
+#Submitted by David Maciejak for Sober.J
+#Disabling, too many falses. Run this if you don't have any time services on port 37
+#alert tcp $HOME_NET any -> $EXTERNAL_NET 37 (msg: "BLEEDING-EDGE VIRUS Possible Sober.j - outbound"; flow: established; reference: url,vil.mcafeesecurity.com/vil/content/v_130130.htm; classtype: trojan-activity; sid: 2001542; rev:5; )
+
+#Submitted by Mark Scott, 2/24/2005, for Sober.K
+#alert tcp $EXTERNAL_NET any -> $HOME_NET 25 (msg: "BLEEDING-EDGE VIRUS Sober.K Worm - incoming"; flow: established; content:"UEsDBAoAAAAAAAAwVTKUjZv16MkAAOjJAABCAAAAZG9jX2RhdGEtdGV4dC50eHQgICAgICAgICAg"; reference: url,secunia.com/search/?search=sober.k; classtype: misc-activity; sid: 2001749; rev:4; )
+alert tcp $HOME_NET any -> $EXTERNAL_NET 25 (msg: "BLEEDING-EDGE VIRUS Sober.K Worm - outgoing"; flow: established; content:"UEsDBAoAAAAAAAAwVTKUjZv16MkAAOjJAABCAAAAZG9jX2RhdGEtdGV4dC50eHQgICAgICAgICAg"; reference: url,secunia.com/search/?search=sober.k; classtype: misc-activity; sid: 2001750; rev:4; )
+
+#Joe Stewart
+alert tcp $HOME_NET any -> any 25 (msg: "BLEEDING-EDGE VIRUS Sober-style Ehlo - noalert"; flowbits:noalert; flow: established,to_server; dsize: <50; content:"Ehlo"; depth: 4; flowbits:set,SoberEhlo; classtype: string-detect; reference:url,securityresponse.symantec.com/avcenter/venc/data/w32.sober@mm.html; sid: 2001879; rev:6; )
+alert tcp $HOME_NET any -> any 25 (msg: "BLEEDING-EDGE VIRUS Sober-style Ehlo followed by SMTP AUTH - noalert"; flowbits:isset,SoberEhlo; flowbits:noalert; flow: established,to_server; content:"AUTH LOGIN"; depth: 10; flowbits:set,SoberAuth; classtype: string-detect; reference:url,securityresponse.symantec.com/avcenter/venc/data/w32.sober@mm.html; sid: 2001880; rev:8; )
+alert tcp $HOME_NET any -> any 25 (msg: "BLEEDING-EDGE VIRUS Possible Sober virus attachment Outbound"; flowbits: isset,SoberAuth; flow: established,to_server; content:"application/octet-stream|3b| name="; content:"attachment|3b| filename="; within: 100; classtype: string-detect; reference:url,securityresponse.symantec.com/avcenter/venc/data/w32.sober@mm.html; sid: 2001881; rev:6; )
+
+#Sober-O by Evgeny Pinchuk 5/2/05
+alert tcp $HOME_NET any -> any 25 (msg:"BLEEDING-EDGE WORM Sober.O Attachment Outbound (1)"; content:"yu22ZO3JlK0xpc4ehdlnDqDQLbpUfDGZbm1N1VXPAO"; nocase; reference:url,secunia.com/virus_information/17692/; flow:established,to_server; classtype:misc-activity; sid:2002055; rev:2;)
+#alert tcp $EXTERNAL_NET any -> $HOME_NET 25 (msg:"BLEEDING-EDGE WORM Sober.O Attachment Inbound (1)"; content:"yu22ZO3JlK0xpc4ehdlnDqDQLbpUfDGZbm1N1VXPAO"; nocase; reference:url,secunia.com/virus_information/17692/; flow:established,to_server; classtype:misc-activity; sid:2002056; rev:2;)
+
+alert tcp $HOME_NET any -> $EXTERNAL_NET 25 (msg:"BLEEDING-EDGE WORM Sober.O Attachment Outbound (2)"; content:"yu22ZO3JlK0xpc4ehdlnDqDQLbpUfDGZbm1N1VXPAO"; nocase; reference:url,secunia.com/virus_information/17692/; flow:established,to_server; classtype:misc-activity; sid:2001902; rev:4;)
+#alert tcp $EXTERNAL_NET any -> $HOME_NET 25 (msg:"BLEEDING-EDGE WORM Sober.O Attachment Inbound (2)"; content:"yu22ZO3JlK0xpc4ehdlnDqDQLbpUfDGZbm1N1VXPAO"; nocase; reference:url,secunia.com/virus_information/17692/; flow:established,to_server; classtype:misc-activity; sid:2001903; rev:3;)
+
+alert tcp $HOME_NET any -> $EXTERNAL_NET 25 (msg: "BLEEDING-EDGE WORM Sober.O Attachment Outbound (3)"; flow: established,to_server; content:"yu22ZO3JlK0xpc4ehdlnDqDQLbpUfDGZbm1N1VXPAO"; nocase; reference: url,secunia.com/virus_information/17692/; classtype: misc-activity; sid: 2002057; rev:5; )
+#alert tcp $EXTERNAL_NET any -> $HOME_NET 25 (msg: "BLEEDING-EDGE WORM Sober.O Attachment Inbound (3)"; flow: established,to_server; content:"yu22ZO3JlK0xpc4ehdlnDqDQLbpUfDGZbm1N1VXPAO"; nocase; reference: url,secunia.com/virus_information/17692/; classtype: misc-activity; sid: 2002058; rev:4; )
+
+#By joel ebrahimi. Sober.P 5/6/05
+alert tcp $HOME_NET any -> $EXTERNAL_NET 25 (msg:"BLEEDING-EDGE VIRUS Possible Sober.P Outbound (1)"; content:"filename="; pcre:"m/(account_info|autoemail-text|LOL|Fifa_Info-Text|mail_info|okTicket-info|our_secret|_PassWort-Info).zip/"; flow:to_server,established; classtype:trojan-activity; reference:url,securityresponse.symantec.com/avcenter/venc/data/w32.sober.o@mm.html; sid:2002059; rev:4;)
+#alert tcp $EXTERNAL_NET any -> $HOME_NET 25 (msg:"BLEEDING-EDGE VIRUS Possible Sober.P Inbound (1)"; content:"filename="; pcre:"m/(account_info|autoemail-text|LOL|Fifa_Info-Text|mail_info|okTicket-info|our_secret|_PassWort-Info).zip/"; flow:to_server,established; classtype:trojan-activity; reference:url,securityresponse.symantec.com/avcenter/venc/data/w32.sober.o@mm.html; sid:2002060; rev:4;)
+
+alert tcp $HOME_NET any -> $EXTERNAL_NET 25 (msg: "BLEEDING-EDGE VIRUS Possible Sober.P Outbound (2)"; flow: to_server,established; content:"filename="; pcre:"m/(account_info|autoemail-text|LOL|Fifa_Info-Text|mail_info|okTicket-info|our_secret|_PassWort-Info).zip/"; classtype: trojan-activity; reference:url,securityresponse.symantec.com/avcenter/venc/data/w32.sober.o@mm.html; sid: 2001913; rev:5; )
+#alert tcp $EXTERNAL_NET any -> $HOME_NET 25 (msg: "BLEEDING-EDGE VIRUS Possible Sober.P Inbound (2)"; flow: to_server,established; content:"filename="; pcre:"m/(account_info|autoemail-text|LOL|Fifa_Info-Text|mail_info|okTicket-info|our_secret|_PassWort-Info).zip/"; classtype: trojan-activity; reference:url,securityresponse.symantec.com/avcenter/venc/data/w32.sober.o@mm.html; sid: 2001914; rev:5; )
+
+# Sobig
+
+#Unknown submitter - Sobig E-F downloading goodies
+alert udp $HOME_NET any -> $EXTERNAL_NET 8998 (msg: "BLEEDING-EDGE VIRUS Sobig.E-F Trojan Site Download Request"; dsize: 8; content:"|5c bf 01 29 ca 62 eb f1|"; classtype: trojan-activity; reference:url,securityresponse.symantec.com/avcenter/venc/data/w32.sobig.e@mm.html; sid: 2001547; rev:5; )
+
+# Spy.Win32.Bancos Trojan
+
+#Submitted by Matt Jonkman for Spy.Win32.Bancos Trojan
+alert tcp $EXTERNAL_NET $HTTP_PORTS -> $HOME_NET any (msg: "BLEEDING-EDGE Virus Trojan-Spy.Win32.Bancos Download"; flow: established,from_server; content:"[AspackDie!]"; content:"|0f 6d 07 9e 6c 62 6c 68 00 d2 2f 63 6d 64 9d 11 af af 45 c7 72 ac 5f 3138 d0|"; classtype: trojan-activity; reference:url,securityresponse.symantec.com/avcenter/venc/data/pwsteal.bancos.b.html; sid: 2001726; rev:5; )
+
+# Webber/Berbew
+
+#Submitted by Michael Sconzo for Webber/Berbew
+alert tcp $HOME_NET any -> $EXTERNAL_NET $HTTP_PORTS (msg: "BLEEDING-EDGE Webber/Berbew Trojan keystroke log upload"; flow: established; content:"id=crutop|26|vvpupkin0="; depth: 20; reference: url,www.lurhq.com/berbew.html; classtype: trojan-activity; sid: 2001303; rev:3; )
+
+# Zafi Virus
+
+alert tcp $HOME_NET any -> $EXTERNAL_NET 25 (msg: "BLEEDING-EDGE VIRUS Probable Zafi VIRUS Outbound via SMTP"; flow: to_server; content:"TVqQAAMAAAAEAAAAUEUAAEwBAgBG"; content:"AAAAAAAADgAA8BCwEAAAAuAAAAOgAAAAAAAPu+"; distance: 6; classtype: misc-activity; reference:url,securityresponse.symantec.com/avcenter/venc/data/w32.erkez.a@mm.html; sid: 2000310; rev:8; )
+
+#submitted by Mark Scott, 6/13/2004 for Zafi.B
+#alert tcp $EXTERNAL_NET any -> $HOME_NET 25 (msg: "BLEEDING-EDGE VIRUS Zafi Worm - incoming"; flow: established; content:"Uk5FTDMyLmRsbAAAAExvYWRMaWJyYXJ5QQAAR2V0UHJvY0FkZHJlc3MAAAAAAA"; nocase; classtype: misc-activity; reference:url,securityresponse.symantec.com/avcenter/venc/data/w32.erkez.b@mm.html; sid: 2001572; rev:8; )
+alert tcp $HOME_NET any -> $EXTERNAL_NET 25 (msg: "BLEEDING-EDGE VIRUS Zafi Worm outgoing detected"; flow: established; content:"Uk5FTDMyLmRsbAAAAExvYWRMaWJyYXJ5QQAAR2V0UHJvY0FkZHJlc3MAAAAAAA"; nocase; classtype: misc-activity; reference:url,securityresponse.symantec.com/avcenter/venc/data/w32.erkez.b@mm.html; sid: 2001573; rev:10; )
+
+#submitted by Chris Harrington, for Zafi.D
+alert tcp $EXTERNAL_NET any -> $HOME_NET any (msg: "BLEEDING-EDGE VIRUS Zafi.d P2P Infection Attempt (1)"; flow: established; content:"WINAMP 5.7 NEW!.EXE"; nocase; reference: url,www.trendmicro.com/vinfo/virusencyclo/default5.asp?VName=WORM_ZAFI.D; classtype: trojan-activity; sid: 2001592; rev:5; )
+alert tcp $EXTERNAL_NET any -> $HOME_NET any (msg: "BLEEDING-EDGE VIRUS Zafi.d P2P Infection Attempt (2)"; flow: established; content:"ICQ 2005A NEW!.EXE"; nocase; reference: url,www.trendmicro.com/vinfo/virusencyclo/default5.asp?VName=WORM_ZAFI.D; classtype: trojan-activity; sid: 2001593; rev:5; )
+alert tcp $EXTERNAL_NET any -> $HOME_NET 8181 (msg: "BLEEDING-EDGE VIRUS Zafi.d a.exe file upload"; flow: established; content:"a.exe"; nocase; reference: url,www.trendmicro.com/vinfo/virusencyclo/default5.asp?VName=WORM_ZAFI.D; classtype: trojan-activity; sid: 2001594; rev:4; )
+
+#submitted by Mark Scott 12/14/2004 for Zafi.D, variant attachments
+#alert tcp $EXTERNAL_NET any -> $HOME_NET 25 (msg: "BLEEDING-EDGE VIRUS Zafi.D Worm .zip - incoming detected"; flow: established; content:"UEsDBBQAAgAAAHaffjEUNysN4S0AAOEtAAATAAAAeG1hc2NhcmQuaWQ"; nocase; reference: url,secunia.com/virus_information/13874/; classtype: misc-activity; sid: 2001598; rev:4; )
+alert tcp $HOME_NET any -> $EXTERNAL_NET 25 (msg: "BLEEDING-EDGE VIRUS Zafi.D Worm .zip - outgoing detected"; flow: established; content:"UEsDBBQAAgAAAHaffjEUNysN4S0AAOEtAAATAAAAeG1hc2NhcmQuaWQ"; nocase; reference: url,secunia.com/virus_information/13874/; classtype: misc-activity; sid: 2001599; rev:6; )
+#alert tcp $EXTERNAL_NET any -> $HOME_NET 25 (msg: "BLEEDING-EDGE VIRUS Zafi.D Worm .cmd, .com, .pif or .bat - incoming detected"; flow: established; content:"TVoAAAAAAAAAAAAAUEUAAEwBAgBHSUYhAAAAAAAAAADgAA8"; nocase; reference: url,secunia.com/virus_information/13874/; classtype: misc-activity; sid: 2001600; rev:4; )
+alert tcp $HOME_NET any -> $EXTERNAL_NET 25 (msg: "BLEEDING-EDGE VIRUS Zafi.D Worm .cmd, .com, .pif or .bat - outgoing detected"; flow: established; content:"TVoAAAAAAAAAAAAAUEUAAEwBAgBHSUYhAAAAAAAAAADgAA8"; nocase; reference: url,secunia.com/virus_information/13874/; classtype: misc-activity; sid: 2001601; rev:6; )
+
+
+# Akak Trojan
+
+#Submitted by Joe Stewart, Akak Trojan
+alert tcp $HOME_NET any -> $EXTERNAL_NET 4321 (msg: "BLEEDING-EDGE Akak trojan protocol hello"; flow: established,to_server; dsize: 4; content:"|89 13 00 00|"; reference: url,www.lurhq.com/akak.html; classtype: trojan-activity; sid: 2001236; rev:3; )
+alert tcp $HOME_NET 4321 -> $EXTERNAL_NET any (msg: "BLEEDING-EDGE Akak trojan protocol response from infected host"; flow: established,to_client; dsize: 4; content:"|6f 17 00 00|"; reference: url,www.lurhq.com/akak.html; classtype: trojan-activity; sid: 2001237; rev:2; )
+
+# Bofra Worm
+
+#submitted by Matt Jonkman, additions by David Maciejak - Bofra Worm
+alert tcp $HOME_NET !$HTTP_PORTS -> $EXTERNAL_NET 1639 (msg: "BLEEDING-EDGE WORM Bofra Victim Accessing Reactor Page"; flow: from_client,established; content:"GET "; nocase; content:"reactor"; nocase; reference: url,securityresponse.symantec.com/avcenter/venc/data/w32.bofra.e@mm.html; reference: url,us.mcafee.com/virusInfo/default.asp?id=description&virus_k=129631; classtype: trojan-activity; sid: 2001430; rev:7; )
+
+# Dipnet
+
+#Submitted by Sven
+alert tcp $HOME_NET any -> any 15118 (msg: "BLEEDING-EDGE Virus Dipnet infected host response (1)"; flow: established; content:"__123_asdasdfdjhsdf_SAFasdfhjsdf_fsd123"; reference: url,www.lurhq.com/dipnet.html; classtype: trojan-activity; sid: 2001739; rev:4; )
+alert tcp $HOME_NET any -> any 11768 (msg: "BLEEDING-EDGE Virus Dipnet infected host response (2)"; flow: established; content:"__123_asdasdfdjhsdf_SAFasdfhjsdf_fsd123"; reference: url,www.lurhq.com/dipnet.html; classtype: trojan-activity; sid: 2001740; rev:4; )
+
+#Joel Esler
+alert udp $HOME_NET any -> $EXTERNAL_NET 53 (msg: "BLEEDING-EDGE VIRUS Beaconing DREMN Trojan"; content:"Xm"; nocase; offset: 10; pcre:"/(Xm(A|B)...a{21})/i"; reference: url,www.symantec.com/avcenter/venc/data/trojan.dremn.html; classtype: trojan-activity; sid: 2001911; rev:3; )
+alert udp $EXTERNAL_NET 53 -> $HOME_NET any (msg: "BLEEDING-EDGE VIRUS Answering DREMN Trojan"; content:"|80 00 00 01|"; content:"Xm"; nocase; offset: 10; pcre:"/(Xm(A|B)...aa)/i"; reference: url,www.symantec.com/avcenter/venc/data/trojan.dremn.html; classtype: trojan-activity; sid: 2001912; rev:3; )
+
+#by dajackman
+alert tcp $HOME_NET any -> 198.173.4.9 $HTTP_PORTS (msg:"BLEEDING-EDGE TROJAN Trojan.Exphook Sending Info Home"; flow:to_server,established; uricontent:"/view.php"; reference:url,securityresponse.symantec.com/avcenter/venc/data/trojan.exphook.html; classtype:trojan-activity; sid:2002355; rev:1;)
+alert tcp $HOME_NET any -> 66.160.138.149 $HTTP_PORTS (msg:"BLEEDING-EDGE TROJAN Trojan.Exphook Sending Info Home"; flow:to_server,established; uricontent:"/view.php"; reference:url,securityresponse.symantec.com/avcenter/venc/data/trojan.exphook.html; classtype:trojan-activity; sid:2002356; rev:1;)
+alert tcp $HOME_NET any -> 66.225.221.197 $HTTP_PORTS (msg:"BLEEDING-EDGE TROJAN Trojan.Exphook Sending Info Home"; flow:to_server,established; uricontent:"/dma.cgi"; reference:url,securityresponse.symantec.com/avcenter/venc/data/trojan.exphook.html; classtype:trojan-activity; sid:2002357; rev:1;)
+
+#By Joe Stewart of Lurhq
+alert udp any 1025: -> any 10102 (msg: "BLEEDING-EDGE VIRUS Fireby proxy trojan port report"; dsize: 2; classtype: trojan-activity; reference:url,securityresponse.symantec.com/avcenter/venc/data/backdoor.staprew.b.html; sid: 2001967; rev:4; )
+# Reg Quinton mentioned that the trojan apparently uses TCP to communicate.
+# (Several references seem to confirm that). So we added this below, just to make sure.
+alert tcp any any -> any 10102 (msg: "BLEEDING-EDGE VIRUS Fireby proxy trojan port report (TCP)"; flags:S,12; classtype: trojan-activity; reference:url,securityresponse.symantec.com/avcenter/venc/data/backdoor.staprew.b.html; sid:2002156; rev:1; )
+
+#by dajackman
+alert tcp $HOME_NET any -> 202.101.43.83 $HTTP_PORTS (msg:"BLEEDING-EDGE TROJAN Backdoor.Graybird.O Calling Home"; flags: S,12; threshold:type limit, track by_src, count 1, seconds 60; reference:url,securityresponse.symantec.com/avcenter/venc/data/backdoor.graybird.o.html; classtype:trojan-activity; sid:2002358; rev:1;)
+alert tcp $HOME_NET any -> 61.152.93.13 $HTTP_PORTS (msg:"BLEEDING-EDGE TROJAN Backdoor.Graybird.O Calling Home"; flags: S,12; threshold:type limit, track by_src, count 1, seconds 60; reference:url,securityresponse.symantec.com/avcenter/venc/data/backdoor.graybird.o.html; classtype:trojan-activity; sid:2002359; rev:1;)
+
+# Hacker Defender Root Kit
+
+#By Chris Norton 2/22/05
+alert tcp $EXTERNAL_NET any -> $HOME_NET any (msg: "BLEEDING-EDGE Trojan HackerDefender Root Kit Remote Connection Attempt Detected"; flow: established,to_server; content:"|01 9a 8c 66 af c0 4a 11 9e 3f 40 88 12 2c 3a 4a 84 65 38 b0 b4 08 0b af db ce 02 94 34 5f 22|"; rawbytes;tag: session, 20, packets; classtype: trojan-activity; reference:url,securityresponse.symantec.com/avcenter/venc/data/backdoor.hackdefender.html; sid: 2001743; rev:5; )
+
+#Matt Jonkman
+alert tcp $EXTERNAL_NET !$HTTP_PORTS -> $HOME_NET any (msg: "BLEEDING-EDGE VIRUS Hotword Trojan in Transit"; flow: established,from_server; content:"|63 6f 6d 66 69 64 65 6e 74 69 61 6c 20 64 6f 63 75 6d 65 6e 74 20 28 57 6f 72 64 29 20 66 72 6f 6d 20 44 69 67 69 44 6f 63 00 43 4d 20 25 73 20|"; reference: url,securityresponse.symantec.com/avcenter/venc/data/trojan.hotword.html; classtype: trojan-activity; sid: 2001959; rev:4; )
+alert tcp $EXTERNAL_NET $HTTP_PORTS -> $HOME_NET any (msg: "BLEEDING-EDGE VIRUS Hotword Trojan inbound via http"; flow: established,from_server; content:"|63 6f 6d 66 69 64 65 6e 74 69 61 6c 20 64 6f 63 75 6d 65 6e 74 20 28 57 6f 72 64 29 20 66 72 6f 6d 20 44 69 67 69 44 6f 63 00 43 4d 20 25 73 20|"; reference: url,securityresponse.symantec.com/avcenter/venc/data/trojan.hotword.html; classtype: trojan-activity; sid: 2001960; rev:3; )
+alert tcp any any -> $EXTERNAL_NET 21 (msg: "BLEEDING-EDGE VIRUS Hotword Trojan -- Possible File Upload CHJO"; flow: to_server,established; content:"STOR __"; content:"-CHJO.DRV"; nocase; within: 100; reference: url,securityresponse.symantec.com/avcenter/venc/data/trojan.hotword.html; classtype: trojan-activity; sid: 2001961; rev:4; )
+alert tcp any any -> $EXTERNAL_NET 21 (msg: "BLEEDING-EDGE VIRUS Hotword Trojan -- Possible File Upload CFXP"; flow: to_server,established; content:"STOR __"; content:"-CFXP.DRV"; nocase; within: 100; reference: url,securityresponse.symantec.com/avcenter/venc/data/trojan.hotword.html; classtype: trojan-activity; sid: 2001962; rev:4; )
+alert tcp any any -> $EXTERNAL_NET 21 (msg: "BLEEDING-EDGE VIRUS Hotword Trojan -- Possible FTP File Request pspv.exe"; flow: to_server,established; content:"SIZE pspv.exe"; reference: url,securityresponse.symantec.com/avcenter/venc/data/trojan.hotword.html; classtype: trojan-activity; sid: 2001963; rev:4; )
+alert tcp any any -> $EXTERNAL_NET 21 (msg: "BLEEDING-EDGE VIRUS Hotword Trojan -- Possible FTP File Request .tea"; flow: to_server,established; content:"LIST "; content:".tea"; nocase; within: 50; reference: url,securityresponse.symantec.com/avcenter/venc/data/trojan.hotword.html; classtype: trojan-activity; sid: 2001964; rev:4; )
+alert tcp any any -> $EXTERNAL_NET 21 (msg: "BLEEDING-EDGE VIRUS Hotword Trojan -- Possible FTP File Status Upload ___"; flow: to_server,established; content:"|53 54 4f 52 20 5f 5f 5f 0d 0a|"; reference: url,securityresponse.symantec.com/avcenter/venc/data/trojan.hotword.html; classtype: trojan-activity; sid: 2001965; rev:4; )
+alert tcp any any -> $EXTERNAL_NET 21 (msg: "BLEEDING-EDGE VIRUS Hotword Trojan -- Possible FTP File Status Check ___"; flow: to_server,established; content:"|53 49 5a 45 20 5f 5f 5f 0d 0a|"; reference: url,securityresponse.symantec.com/avcenter/venc/data/trojan.hotword.html; classtype: trojan-activity; sid: 2001966; rev:4; )
+
+#from private list
+alert tcp any any -> any $HTTP_PORTS (msg: "BLEEDING-EDGE Botnet HTTP Botnet reg"; flow: established; uricontent:"/reg?u="; nocase; content:"&v="; nocase; within: 15; content:"&s="; nocase; within: 15; content:"&su="; nocase; within: 15; content:"&p="; nocase; within: 15; classtype: trojan-activity; reference:url,www.honeynet.org/papers/bots; sid: 2001899; rev:6; )
+
+#5/2/05 aim distributed in some cases, Matt Jonkman
+alert tcp any any -> any $HTTP_PORTS (msg: "BLEEDING-EDGE BwB Botnet Checkin"; flow: established; uricontent:"/update.php?port="; nocase; content:"&checktime="; nocase; within: 20; content:"&uptime="; nocase; within: 20; content:"&result="; nocase; within: 20; content:"&localip="; nocase; within: 15; content:"&id="; nocase; within: 20; content:"$hash="; nocase; within: 20; classtype: trojan-activity; reference:url,www.honeynet.org/papers/bots; sid: 2001900; rev:5; )
+
+#Joe Stewart from Lurhq
+alert tcp any any -> any $HTTP_PORTS (msg: "BLEEDING-EDGE TROJAN Possible Bobax trojan infection"; flow: established,to_server; content:"GET /reg|3f|u="; depth: 11; content:"|26|v="; within: 3; distance: 8; reference: url,www.lurhq.com/bobax.html; classtype: trojan-activity; sid: 2001901; rev:2; )
+
+# IE Ilookup Trojan
+
+#Submitted by Joseph Gama, for IE Ilookup Trojan
+alert tcp $EXTERNAL_NET $HTTP_PORTS -> $HOME_NET any (msg: "BLEEDING-EDGE IE Ilookup Trojan"; flow: from_server,established; content:"#@~^/gAAAA==@#@&@#@&7lMP\:HVK^P{P[W1Ehn"; content:"#@~^GAIAAA==@#@&\\CMPsX/DD,xPvEU+kmC2"; reference: url,62.131.86.111/analysis.htm; classtype: misc-activity; sid: 2001066; rev:3; )
+
+# IRC Trojan Reporting
+#
+# By Erik Fichtner
+#
+# Bleeding-Remix :: irc / ircbot detection state machine
+# compiled from various sources.
+# thanks to: Joe Stewart of LURHO, Joel Esler, Tomfi.
+
+### Client login process. flowbits needs an OR.
+### Client needs to tell the server who they are, join
+### join a group, and someone needs to say something to
+### someone else.
+
+alert tcp any any -> any any (msg: "BLEEDING-EDGE TROJAN IRC USER command"; flow: to_server,established; content:"USER|20|"; nocase; offset: 0; content:"|203a|"; within: 20; content:"|0a|"; within: 40; flowbits:noalert; flowbits: set,irc.user; classtype: misc-activity; sid: 2002023; rev:5; )
+alert tcp any any -> any any (msg: "BLEEDING-EDGE TROJAN IRC NICK command"; flow: to_server,established; content:"NICK|20|"; nocase; offset: 0; content:"|0a|"; within: 30; flowbits:noalert; flowbits: set,irc.nick; classtype: misc-activity; sid: 2002024; rev:5; )
+alert tcp any any -> any any (msg: "BLEEDING-EDGE TROJAN IRC JOIN command"; flowbits:isset,irc.nick; flow:to_server,established; content:"JOIN|2023|"; nocase; offset: 0; content:"|0a|"; within: 40; flowbits:noalert; flowbits: set,irc.join; flowbits:set,is_proto_irc; classtype: misc-activity; sid: 2002025; rev:6;)
+alert tcp any any -> any any (msg: "BLEEDING-EDGE TROJAN IRC PRIVMSG command"; flowbits:isnotset,is_proto_irc; flowbits:isset,irc.join; flowbits:isset,irc.user; flow: established; content:"PRIVMSG|203a|"; flowbits: noalert; flowbits:set,is_proto_irc; classtype: misc-activity; sid: 2002026; rev:7;)
+
+### Alternate path to is_proto_irc, Catch PING/PONG.
+alert tcp any any -> any any (msg: "BLEEDING-EDGE TROJAN IRC PING command"; flowbits:isnotset,is_proto_irc; flow: from_server,established; content:"PING|203a|"; nocase; offset: 0; flowbits: set,irc.ping; flowbits:noalert; classtype: misc-activity; sid: 2002027; rev:3; )
+alert tcp any any -> any any (msg: "BLEEDING-EDGE TROJAN IRC PONG response"; flowbits:isnotset,is_proto_irc; flowbits:isset,irc.ping; flowbits:noalert; flow: from_client,established; content:"PONG|203a|"; nocase; offset: 0; flowbits: set,is_proto_irc; classtype: misc-activity; sid: 2002028; rev:3; )
+
+# Bot potty
+alert tcp any any -> any any (msg: "BLEEDING-EDGE TROJAN BOT - channel topic scan/exploit command"; flowbits:isset,is_proto_irc; flow: to_client,established; content:"|3a|"; offset: 0; content:"|20|332|20|"; within: 50; content:"|2023|"; within: 20; content:"|203a|"; nocase; within: 40; tag: host,300,seconds,dst; pcre:"/(ntscan [0-9]{1,4} [0-9]{1,4}|dcom\.self|scan\.(start|stop)|scan ([0-9]{1,3}\.[0-9]{1,3})|(advscan|asc|xscan|xploit|adv\.start) (webdav|netbios|ntpass|dcom(2|135|445|1025)|mssql|lsass|optix|upnp|dcass|beagle[12]|mydoom|netdevil|DameWare|kuang2|sub7|iis5ssl|wkssvc|wks1|mysql|wkssvcOth|wkssvcENG|arkeia|arcserve|wins|veritas|netbackup|asn1))/i"; flowbits: set,trojan; classtype: trojan-activity; sid: 2002029; rev:5; )
+alert tcp any any -> any any (msg: "BLEEDING-EDGE TROJAN BOT - potential scan/exploit command"; flowbits:isset,is_proto_irc; flow: established; content:"PRIVMSG|203a|"; nocase; tag: host,300,seconds,dst; pcre:"/(ntscan [0-9]{1,4} [0-9]{1,4}|dcom\.self|scan\.(start|stop)|scan ([0-9]{1,3}\.[0-9]{1,3})|(advscan|asc|xscan|xploit|adv\.start) (webdav|netbios|ntpass|dcom(2|135|445|1025)|mssql|lsass|optix|upnp|dcass|beagle[12]|mydoom|netdevil|DameWare|kuang2|sub7|iis5ssl|wkssvc|wks1|mysql|wkssvcOth|wkssvcENG|arkeia|arcserve|wins|veritas|netbackup|asn1))/i"; flowbits: set,trojan; classtype: trojan-activity; sid: 2002030; rev:6; )
+alert tcp any any -> any any (msg: "BLEEDING-EDGE TROJAN BOT - potential update/download"; flowbits:isset,is_proto_irc; flow: established; tag: host,300,seconds,dst; pcre:"/.((upda|getfile|dl|download) http\x3a\x2f\x2f|http\.(execute|download|update)|ftp\.(execute|download|update))\s+/i"; flowbits: set,trojan; classtype: trojan-activity; sid: 2002031; rev:5; )
+alert tcp any any -> any any (msg: "BLEEDING-EDGE TROJAN BOT - potential DDoS command"; flowbits:isset,is_proto_irc; flow: established; tag: host,300,seconds,dst; pcre:"/(floodnet ([0-9]{1,3}\.){3}[0-9]{1,3}|ddos\.(httpflood|phat(icmp|syn|wonk)|stop|(syn|udp)flood|targa3)|(syn|udp) ([0-9]{1,3}\.){3}[0-9]{1,3}|(tcp|syn|udp|ack|ping|icmp)(flood)? ([0-9]{1,3}\.){3}[0-9]{1,3}|ddos\.(syn|ack|random) ([0-9]{1,3}\.){3}[0-9]{1,3})/i"; flowbits: set,trojan; classtype: trojan-activity; sid: 2002032; rev:4; )
+alert tcp any any -> any any (msg: "BLEEDING-EDGE TROJAN BOT - potential response"; flowbits:isset,is_proto_irc; flow: established; content:"PRIVMSG|203a|"; nocase; tag: host,300,seconds,src; pcre:"/((T?FTP)\x3a File transfer|(random|sequential) Port Scan|Random Scanner|Exploiting IP|Exploiting\.\.|flooding\x3a|flood stopped|sending packets)/i"; flowbits: set,trojan; classtype: trojan-activity; sid: 2002033; rev:6; )
+
+# Submitted by Brad Doctor
+alert tcp $EXTERNAL_NET any -> $HOME_NET 25 (msg: "BLEEDING-EDGE VIRUS - Greeting card gif.exe email incoming SMTP"; flow: established,to_server; content:"postcard.gif.exe"; nocase; classtype: trojan-activity; reference:url,securityresponse.symantec.com/avcenter/venc/data/vbs.postcard@mm.html; sid: 2001919; rev:3; )
+alert tcp $EXTERNAL_NET 110:220 -> $HOME_NET any (msg: "BLEEDING-EDGE VIRUS - Greeting card gif.exe email incoming POP3/IMAP"; flow: established,from_server; content:"postcard.gif.exe"; nocase; classtype: trojan-activity; reference:url,securityresponse.symantec.com/avcenter/venc/data/vbs.postcard@mm.html; sid: 2001920; rev:3; )
+alert tcp $EXTERNAL_NET $HTTP_PORTS -> $HOME_NET any (msg: "BLEEDING-EDGE VIRUS - Greeting card gif.exe email incoming HTTP"; flow: established,from_server; content:"postcard.gif.exe"; nocase; classtype: trojan-activity; reference:url,securityresponse.symantec.com/avcenter/venc/data/vbs.postcard@mm.html; sid: 2001921; rev:3; )
+
+# Psyme Trojan
+
+#Submitted by Matt Jonkman for the Psyme Trojan
+alert tcp $HOME_NET any -> $EXTERNAL_NET $HTTP_PORTS (msg: "BLEEDING-EDGE VIRUS Psyme Trojan Download"; flow: to_server,established; uricontent:"/download/IEService215.chm"; nocase; reference: url,securityresponse.symantec.com/avcenter/venc/data/downloader.psyme.html; classtype: trojan-activity; sid: 2000365; rev:6; )
+
+#By Matt Jonkman
+alert tcp $HOME_NET any -> $EXTERNAL_NET 26 (msg: "BLEEDING-EDGE VIRUS PWS Banker Trojan Sending Report of Infection"; flow: established,to_server; content:"From\: \"PC ID\:"; nocase; content:"Subject\: INFECTED"; nocase; content:"esta infectado"; nocase; classtype: trojan-activity; reference:url,securityresponse.symantec.com/avcenter/venc/data/pwsteal.banker.b.html; sid: 2001933; rev:4; )
+
+#Matt Jonkman, info from Sunbelt Software
+alert tcp $HOME_NET any -> $EXTERNAL_NET $HTTP_PORTS (msg:"BLEEDING-EDGE TROJAN Srv.SSA-KeyLogger Checkin Traffic"; flow:to_server,established; uricontent:"Srv.SSA-KeyLogger"; classtype:trojan-activity; sid:2002175; rev:1;)
+
+#by phear
+alert tcp $HOME_NET any -> $EXTERNAL_NET 1345 (msg: "BLEEDING-EDGE VIRUS AIM Bot im.exe Activity"; flow: established, to_server; content:"JOIN ##aim## n1gg3r"; tag: session, 10, packets; classtype: trojan-activity; sid: 2001905; rev:3; )
+
+#Matt Jonkman, info from Bob Grabowsky
+alert tcp $HOME_NET any -> $EXTERNAL_NET 1345 (msg: "BLEEDING-EDGE VIRUS AIM Bot Outbound Control Channel Open and Login"; flow: to_server,established; content:"PASS"; nocase; pcre:"/PASS\s.*?\x0d\x0aNICK\s.*?\x0d\x0aUSER\s.*?\s\d\s\d\s\:\S/im"; classtype: trojan-activity; sid: 2001910; rev:3; )
+
+# Atak Worm
+
+#Submitted by Michael Sconzo for Atak worm
+alert tcp $HOME_NET any -> $EXTERNAL_NET 25 (msg: "BLEEDING-EDGE VIRUS Possible Atak.mm Worm Outbound"; flow: to_server,established; content:"Authorized Researcher Only"; content:"filename="; content:".zip"; pcre:"m/(Read\ the\ Result\!|Important\ Data\!)/"; reference: url,securityresponse.symantec.com/avcenter/venc/data/w32.atak@mm.html; classtype: trojan-activity; sid: 2000494; rev:4; )
+
+# Bagle variants
+
+#Submitted by Matt Jonkman for Bagel variant 2.jpg
+# alert tcp $HOME_NET any -> $EXTERNAL_NET $HTTP_PORTS (msg:"BLEEDING-EDGE VIRUS Bagle Variant Requesting 2.jpg"; reference:url,isc.sans.org/diary.php?date=2004-08-09; content:"2.jpg"; nocase; pcre:"/(GET |GET (http|https)\:\/\/[-0-9a-z.]*)\/2\.jpg/i"; flow:established; classtype:trojan-activity; sid:2001061; rev:11;)
+alert tcp $HOME_NET any -> $EXTERNAL_NET $HTTP_PORTS (msg: "BLEEDING-EDGE VIRUS Bagle Variant Checking In"; flow: established; uricontent:"/spyware.php"; reference: url,vil.nai.com/vil/content/v_127423.htm; classtype: trojan-activity; sid: 2001064; rev:5; )
+
+#Submitted by Michael Sconzo for Bagle.AI
+alert tcp $HOME_NET any -> $EXTERNAL_NET 25 (msg: "BLEEDING-EDGE VIRUS Possible Bagle.AI Worm Outbound"; flow: to_server,established; content:"filename="; content:"<html>"; pcre:"m/(Dog|MP3|Doll|Garry|Fish|New_MP3_Player|Cat|Cool_MP3).(scr|cpl|zip|exe|com)/"; pcre:"m/(fotogalary\ and\ Music|Animals|foto3\ and\ MP3|fotoinfo|Screen\ and\ Music|Lovely\ animals|Predators|The\ snake)/"; classtype: trojan-activity; reference:url,securityresponse.symantec.com/avcenter/venc/data/w32.beagle.ag@mm.html; sid: 2000561; rev:10; )
+
+#Submitted by Matt Jonkman for Bagle.AQ
+alert tcp $HOME_NET any -> $EXTERNAL_NET 25 (msg: "BLEEDING-EDGE VIRUS Possible Bagle.AQ Worm Outbound"; flow: to_server,established; content:"filename="; nocase; pcre:"m/(price2|new_price|08_price|newprice|new_price|price_new|price|price_08).zip/"; classtype: trojan-activity; reference:url,securityresponse.symantec.com/avcenter/venc/data/w32.beagle.av@mm.html; sid: 2001065; rev:5; )
+
+#Submitted by Matt Jonkman for Bagle.AV
+alert tcp $HOME_NET any -> $EXTERNAL_NET 25 (msg: "BLEEDING-EDGE VIRUS Possible Beagle.AV Worm Outbound"; flow: to_server,established; content:"filename="; pcre:"m/(price|Price|Joke)\.(exe|scr|cpl|com)/"; reference: url,securityresponse.symantec.com/avcenter/venc/data/w32.beagle.av@mm.html; classtype: trojan-activity; sid: 2001390; rev:4; )
+#alert tcp $EXTERNAL_NET any -> $HOME_NET 25 (msg: "BLEEDING-EDGE VIRUS Possible Beagle.AV Worm Inbound"; flow: to_server,established; content:"filename="; pcre:"m/(price|Price|Joke)\.(exe|scr|cpl|com)/"; reference: url,securityresponse.symantec.com/avcenter/venc/data/w32.beagle.av@mm.html; classtype: trojan-activity; sid: 2001391; rev:4; )
+
+#Submitted by Mark Scott 01/27/2005 - Bagle.AY, .BJ - Updated 1/31/2005
+alert TCP $HOME_NET any -> $EXTERNAL_NET $HTTP_PORTS (msg: "BLEEDING-EDGE VIRUS Bagle.BJ -alias .AY, .BC- - download attempt"; flow: established; content:"error.jpg"; nocase; pcre:"/(GET |GET (http|https)\:\/\/[-0-9a-z.]*)\/error\.jpg/i"; reference: url,secunia.com/virus_information/14877/; classtype: trojan-activity; sid: 2001695; rev:10; )
+alert TCP $HOME_NET any -> $EXTERNAL_NET 25 (msg: "BLEEDING-EDGE VIRUS Bagle.BJ -alias .AY, .BC- worm -.com, exe extensions- - outbound"; flow: established; content:"a2dndGtiYmpiZw0KbGhoZ2dqZmRnZGNkaGdodGZoamhranV1aGhqaGZmaGpoamhnDQpsaGhn"; nocase; reference: url,secunia.com/virus_information/14902/; classtype: trojan-activity; sid: 2001691; rev:7; )
+#alert TCP $EXTERNAL_NET any -> $HOME_NET 25 (msg: "BLEEDING-EDGE VIRUS Bagle.BJ -alias .AY, .BC- worm -.com, .exe extensions- - incoming"; flow: established; content:"a2dndGtiYmpiZw0KbGhoZ2dqZmRnZGNkaGdodGZoamhranV1aGhqaGZmaGpoamhnDQpsaGhn"; nocase; reference: url,secunia.com/virus_information/14902/; classtype: trojan-activity; sid: 2001692; rev:6; )
+alert TCP $HOME_NET any -> $EXTERNAL_NET 25 (msg: "BLEEDING-EDGE VIRUS Bagle.BJ -alias .AY, .BC- worm -.cpl extension- - outbound"; flow: established; content:"amdoamh5dXRnamtoZnVrdGl5bGhqZ2ZkZmRmZGdoZ2hqeXVydXRpZ2toZmpndHVpdGtnaGp5"; nocase; reference: url,secunia.com/virus_information/14902/; classtype: trojan-activity; sid: 2001693; rev:6; )
+#alert TCP $EXTERNAL_NET any -> $HOME_NET 25 (msg: "BLEEDING-EDGE VIRUS Bagle.BJ -alias .AY, .BC- worm -.cpl extension- - incoming"; flow: established; content:"amdoamh5dXRnamtoZnVrdGl5bGhqZ2ZkZmRmZGdoZ2hqeXVydXRpZ2toZmpndHVpdGtnaGp5"; nocase; reference: url,secunia.com/virus_information/14902/; classtype: trojan-activity; sid: 2001694; rev:5; )
+
+#Submitted by Mark Scott, 3/5/2005, for Beagle.BK (changed name from Bagle.BA)
+alert TCP $HOME_NET any -> $EXTERNAL_NET 25 (msg: "BLEEDING-EDGE VIRUS Beagle.BK - outbound"; flow: established; content:"UmFyIRoHAM+QcwAADQAAAAAAAABQt3QggCgAuDsAAACEAAACcyJzW9y6ZDIdMwgAIAAAAGRk"; nocase; reference: url,securityresponse.symantec.com/avcenter/venc/data/w32.beagle.bk@mm.html; classtype: trojan-activity; sid: 2001759; rev:3; )
+#alert TCP $EXTERNAL_NET any -> $HOME_NET 25 (msg: "BLEEDING-EDGE VIRUS Beagle.BK - incoming"; flow: established; content:"UmFyIRoHAM+QcwAADQAAAAAAAABQt3QggCgAuDsAAACEAAACcyJzW9y6ZDIdMwgAIAAAAGRk"; nocase; reference: url,securityresponse.symantec.com/avcenter/venc/data/w32.beagle.bk@mm.html; classtype: trojan-activity; sid: 2001760; rev:4; )
+
+#Submitted by Mark Scott, 3/1/2005, for Bagle.BE downloader
+alert tcp $HOME_NET any -> $EXTERNAL_NET $HTTP_PORTS (msg: "BLEEDING-EDGE VIRUS Bagle.BE Download attempt"; flow: established,to_server; content:"zo2.jpg"; nocase; pcre:"/(GET |GET (http|https)\:\/\/[-0-9a-z.]*)\/zo2\.jpg/i"; reference: url,secunia.com/virus_information/15815/bagle.be/; classtype: trojan-activity; sid: 2001752; rev:5; )
+
+#Submitted by Mark Tombaugh, 3/5/2005, for BagleD1-M
+alert tcp $HOME_NET any -> $EXTERNAL_NET 25 (msg: "BLEEDING_EDGE VIRUS BagleDl-M SMTP Outbound"; flow: established,to_server; content:"T9pQXQ1sNbAC/98/FferNn+R2nPBCR8fGhG/1+7j8VY/P0wqMJ+0pdKFqz/vn4oPhgzqj7vq"; reference: url,www.sophos.com/virusinfo/analyses/trojbagledlm.html; classtype: trojan-activity; sid: 2001757; rev:2; )
+#alert tcp $EXTERNAL_NET any -> $HOME_NET 25 (msg: "BLEEDING-EDGE VIRUS BagleDl-M SMTP Inbound"; flow: established,to_server; content:"T9pQXQ1sNbAC/98/FferNn+R2nPBCR8fGhG/1+7j8VY/P0wqMJ+0pdKFqz/vn4oPhgzqj7vq"; reference: url,www.sophos.com/virusinfo/analyses/trojbagledlm.html; classtype: trojan-activity; sid: 2001758; rev:2; )
+
+#Taken from the Netsquid Rules for Bagle.I and other variants
+alert tcp $HOME_NET any -> $EXTERNAL_NET $HTTP_PORTS (msg: "BLEEDING-EDGE VIRUS Beagle User Agent Detected"; flow: to_server,established; dsize: < 150; content:"User-Agent\: beagle_beagle"; nocase; classtype: trojan-activity; reference:url,securityresponse.symantec.com/avcenter/venc/data/w32.beagle.i@mm.html; sid: 2001269; rev:11; )
+alert tcp $HOME_NET any -> $EXTERNAL_NET 25 (msg: "BLEEDING-EDGE VIRUS Possible Bagle.AI Worm"; flow: to_server,established; content:"filename="; pcre:"m/(Dog|MP3|Doll|Garry|Fish|New_MP3_Player|Cat|Cool_MP3).(scr|cpl|zip|exe|com)/"; pcre:"m/(fotogalary\ and\ Music|Animals|foto3\ and\ MP3|fotoinfo|Screen\ and\ Music|Lovely\ animals|Predators|The\ snake)/"; classtype: trojan-activity; reference:url,securityresponse.symantec.com/avcenter/venc/data/w32.beagle.i@mm.html; sid: 2001292; rev:10; )
+alert tcp $HOME_NET any -> $EXTERNAL_NET 25 (msg: "BLEEDING-EDGE VIRUS Bagle Worm"; flow: established; content:"7Ff8i30Ii00MwekCM8DjAvOri00Mg+ED4wLzql/JwggAVYvsV1OLXQyLfQhqGeh1AgAAg8Bh"; classtype: trojan-activity; reference:url,securityresponse.symantec.com/avcenter/venc/data/w32.beagle.i@mm.html; sid: 2001270; rev:7; )
+
+#Submitted by Mark Mcdonagh for W32/Bagle.z@MM
+alert tcp $HOME_NET any -> $EXTERNAL_NET $HTTP_PORTS (msg: "BLEEDING-EDGE VIRUS W32/Bagle.z@MM Requesting 5.php"; flow: to_server,established; content:"5.php"; nocase; pcre:"/(GET |GET (http|https)\:\/\/[-0-9a-z.]*)\/5\.php/i"; reference: mcafee,122415; classtype: trojan-activity; sid: 2001556; rev:9; )
+
+#Submitted by Mark Scott for Bagle Trojan - W32/Bagle.dldr, updated by Frank Knobbe
+alert tcp $HOME_NET any -> $EXTERNAL_NET $HTTP_PORTS (msg: "BLEEDING-EDGE VIRUS W32/Bagle.dldr Trojan - download attempt"; flow: established; content:"zoo.jpg"; nocase; pcre:"/(GET |GET (http|https)\:\/\/[-0-9a-z.]*)\/zoo\.jpg/i"; reference: url,secunia.com/virus_information/13085/; classtype: misc-activity; sid: 2001638; rev:10; )
+
+#Submitted by Mark Scott for generic Bagle (this seems to trip on most Bagles)
+alert TCP $HOME_NET any -> $EXTERNAL_NET 25 (msg: "BLEEDING-EDGE VIRUS Bagel - outbound"; flow: established; content:"TVoAAAEAAAACAAAA//8AAEAAAAAAAAAAQAAAAAAA"; nocase; classtype: trojan-activity; reference:url,securityresponse.symantec.com/avcenter/venc/data/w32.beagle.a@mm.html; sid: 2001567; rev:6; )
+#alert TCP $EXTERNAL_NET any -> $HOME_NET 25 (msg: "BLEEDING-EDGE VIRUS Bagel - incoming"; flow: established; content:"TVoAAAEAAAACAAAA//8AAEAAAAAAAAAAQAAAAAAA"; nocase; classtype: trojan-activity; reference:url,securityresponse.symantec.com/avcenter/venc/data/w32.beagle.a@mm.html; sid: 2001568; rev:6; )
+
+#Submitted by Mark Scott, 5/31/2005, for Bagle.BO or variant
+alert TCP $HOME_NET any -> $EXTERNAL_NET 25 (msg: "BLEEDING-EDGE VIRUS Bagle.BO or variant - OUTBOUND"; flow: established; content:"UEsDBBQAAAAIABihvzJKS8dUyUYAAACOAAAOAAAAMDFfMDVfMjAwNS5leGXsXAdYVMf2PxtM"; nocase; reference: url,secunia.com/virus_information/18441/; classtype: trojan-activity; sid: 2001952; rev:2; )
+#alert TCP $EXTERNAL_NET any -> $HOME_NET 25 (msg: "BLEEDING-EDGE VIRUS Bagle.BO or variant - INBOUND"; flow: established; content:"UEsDBBQAAAAIABihvzJKS8dUyUYAAACOAAAOAAAAMDFfMDVfMjAwNS5leGXsXAdYVMf2PxtM"; nocase; reference: url,secunia.com/virus_information/18441/; classtype: trojan-activity; sid: 2001953; rev:2; )
+
+#Submitted by Mark Scott, 6/26/2005, for Bagle.BQ 
+alert TCP $HOME_NET any -> $EXTERNAL_NET 25 (msg:"BLEEDING-EDGE VIRUS Bagle.BQ - outbound"; flow:established,to_server; content:"nPBrolMAAACQAAALAAAAZjIyLTAxMy5l"; nocase; reference:url,secunia.com/virus_information/19194/; classtype:trojan-activity; sid:2002051; rev:1;)
+#alert TCP $EXTERNAL_NET any -> $HOME_NET 25 (msg:"BLEEDING-EDGE VIRUS Bagle.BQ - incoming"; flow:established,to_server; content:"nPBrolMAAACQAAALAAAAZjIyLTAxMy5l"; nocase; reference:url,secunia.com/virus_information/19194/; classtype:trojan-activity; sid:2002052; rev:2;)
+
+#Submitted by Mark Scott, 8/11/2005, for Bagle.CC
+alert TCP $HOME_NET any -> $EXTERNAL_NET 25 (msg:"BLEEDING-EDGE VIRUS Bagle.CC (aka Win32.Bagle.bz, .ca, .cb) - outbound"; flow:established, to_server; content:"VGF4ZXMuZXhl7F"; reference:url,www.viruslist.com/en/alerts?alertid=168511904; classtype:trojan-activity; sid:2002177; rev:2;)
+#alert TCP $EXTERNAL_NET any -> $HOME_NET 25 (msg:"BLEEDING-EDGE VIRUS Bagle.CC (aka Win32.Bagle.bz, .ca, .cb) - incoming"; flow:established, to_server; content:"VGF4ZXMuZXhl7F"; reference:url,www.viruslist.com/en/alerts?alertid=168511904; classtype:trojan-activity; sid:2002178; rev:2;)
+
+#By dajackman
+alert tcp $HOME_NET any -> $EXTERNAL_NET $HTTP_PORTS (msg:"BLEEDING-EDGE VIRUS W32.Beagle.CE@mm Infection Outbound web.php"; flow:to_server,established; uricontent:"/web.php"; threshold: type threshold, count 5, seconds 60, track by_src; reference:url,securityresponse.symantec.com/avcenter/venc/data/w32.beagle.ce@mm.html; classtype: trojan-activity; sid:2002180; rev:2;)
+
+# Submitted by Mark Tombaugh, 2005-08-12 - Alternative sigs for 2002177/2002178
+#alert tcp $HOME_NET any -> $EXTERNAL_NET 25 (msg:"BLEEDING-EDGE VIRUS BagleDL-S SMTP Outbound"; flow:to_server,established; content:"AAAJAAAAVGF4ZXMuZ"; content:"TPARI740"; distance:15; within:23; reference:url,www.sophos.com/virusinfo/analyses/trojbagledls.html; classtype: trojan-activity; within:104; sid:2002183; rev:2;)
+#alert tcp $EXTERNAL_NET any -> $HOME_NET 25 (msg:"BLEEDING-EDGE VIRUS BagleDL-S SMTP Inbound"; flow:to_server,established; content:"AAAJAAAAVGF4ZXMuZ"; content:"TPARI740"; distance:15; within:23; reference:url,www.sophos.com/virusinfo/analyses/trojbagledls.html; classtype: trojan-activity; sid: 2002184; rev:2;)
+
+# Bropia Worm
+
+#From Evgeny P
+alert tcp $HOME_NET any -> $EXTERNAL_NET 6891:6900 (msg: "BLEEDING-EDGE Virus Bropia.F Worm Propagation"; flow: established,to_server; content:"|E1 37 A2 BA 6E 5C 63 8B D6 D1 F7 3C BA 13 16 FD 77 21 5A 5C 17 1B 29 4A 4F 15 A9 29 CF FA 48 3A|"; reference: url,www.trendmicro.com/vinfo/virusencyclo/default5.asp?VName=WORM%5FBROPIA%2EF; classtype: misc-attack; sid: 2001715; rev:4; )
+
+# CIA
+
+#Submitted by Chris Norton
+alert ip $HOME_NET any -> $EXTERNAL_NET any (msg: "BLEEDING-EDGE Possible CIA download/upload attempt"; content:"|6C 75 66 6A 65 6F 6F|"; classtype: trojan-activity; sid: 2001233; rev:4; )
+
+# Evaman Worm
+
+#Submitted by msconzo@tamu.edu
+alert tcp $HOME_NET any -> $EXTERNAL_NET 25 (msg: "BLEEDING-EDGE VIRUS Possible Evaman Worm Outbound"; flow: to_server,established; content:"filename="; pcre:"m/(body|message|email|returned|text|document)\.(scr|txt\.scr|html\.scr|outlook\.scr|txt\.exe)/"; reference: url,secunia.com/virus_information/10429/evaman; classtype: trojan-activity; sid: 2000343; rev:8; )
+
+#Taken from the Netsquid Rules
+alert tcp $HOME_NET any -> $EXTERNAL_NET 25 (msg: "BLEEDING-EDGE VIRUS Possible Evaman Worm"; flow: to_server,established; content:"filename="; content:"formart"; pcre:"m/(body|message|email|returned|text|document)\.(scr|txt\.scr|html\.scr|outlook\.scr|txt\.exe)/"; reference: url,secunia.com/virus_information/10429/evaman; classtype: trojan-activity; sid: 2001290; rev:7; )
+
+# GDI Exploit
+
+#Submitted by Matt Jonkman
+#alert tcp any any -> any any (msg: "BLEEDING-EDGE GDI Exploit - Worm 1 Successful Execution"; flow: established; content:"USER bawz"; nocase; reference: url,www.easynews.com/virus.txt; classtype: trojan-activity; sid: 2001332; rev:4; )
+
+#by Scott Melnick
+alert tcp $EXTERNAL_NET any -> $HOME_NET any (msg: "BLEEDING-EDGE WORM Possible MSN Worm Exploit php"; flow: established; content:"X-MMS-IM-"; depth:153; content:"http"; nocase; content:".php"; nocase; classtype:misc-activity; sid:2002322; rev:1;)
+alert tcp $EXTERNAL_NET any -> $HOME_NET any (msg: "BLEEDING-EDGE WORM Possible MSN Worm Exploit exe"; flow: established; content:"X-MMS-IM-"; depth:153; content:"http"; nocase; content:".exe"; nocase; classtype:misc-activity; sid:2002323; rev:1;)
+alert tcp $EXTERNAL_NET any -> $HOME_NET any (msg: "BLEEDING-EDGE WORM Possible MSN Worm Exploit pif"; flow: established; content:"X-MMS-IM-"; depth:153; content:"http"; nocase; content:".pif"; nocase; classtype:misc-activity; sid:2002324; rev:1;)
+#Specific Kelvir.HI detection on MSN
+alert tcp $EXTERNAL_NET any -> $HOME_NET any (msg: "BLEEDING-EDGE WORM W32.kelvir.HI"; flow: established; content:"X-MMS-IM-"; depth:153; content:"search.php?data="; reference:url,securityresponse.symantec.com/avcenter/venc/data/w32.kelvir.hi.html; classtype:misc-activity; sid:2002325; rev:1;)
+
+# Korgo Worm
+
+#Submitted by Nick Hatch
+alert tcp $HOME_NET any -> any 445 (msg: "BLEEDING-EDGE Korgo.P offering executable"; flow: to_server,established; content:"|FF|SMB"; depth: 10; content:"|58|http"; content:".exe"; nocase; within: 36; reference: url,www.f-secure.com/v-descs/korgo_p.shtml; classtype: trojan-activity; sid: 2001337; rev:3; )
+alert tcp $HOME_NET any -> any any (msg: "BLEEDING-EDGE Korgo.P binary upload"; flow: to_server,established; content:"|aa4f7ea86c90457d686868f0de687a68689768686868|"; reference: url,www.f-secure.com/v-descs/korgo_p.shtml; classtype: trojan-activity; sid: 2001338; rev:4; )
+
+# Maslan
+#Maslan.C created by Mark Scott, 5/11/2005
+alert TCP $HOME_NET any -> $EXTERNAL_NET 25 (msg: "BLEEDING-EDGE Virus Maslan.C - outbound"; flow: established; content:"CW9hpT0pd0ANKXdADSl3QAUYt6ANOXdAC9iH4A2Zd0AL2IcA"; nocase; reference: url,secunia.com/virus_information/13805/; classtype: misc-activity; sid: 2001930; rev:3; )
+#alert TCP $EXTERNAL_NET any -> any 25 (msg: "BLEEDING-EDGE Virus Maslan.C - inbound"; flow: established; content:"CW9hpT0pd0ANKXdADSl3QAUYt6ANOXdAC9iH4A2Zd0AL2IcA"; nocase; reference: url,secunia.com/virus_information/13805/; classtype: misc-activity; sid: 2001931; rev:3; )
+
+#Jason Alexander
+alert tcp $EXTERNAL_NET 1863 -> $HOME_NET any (msg: "BLEEDING-EDGE WORM General MSN Worm URL Attempt"; flow: established,from_server; content:".php?"; nocase; content:"email="; nocase; within: 5; content:"@"; nocase; within: 20; reference: url,isc.sans.org/diary.php?date=2005-04-13; classtype: attempted-admin; sid: 2001247; rev:5; )
+alert tcp $HOME_NET any -> $EXTERNAL_NET 1863 (msg: "BLEEDING-EDGE WORM General MSN Worm URL Outbound"; flow: established,to_server; content:".php?"; nocase; content:"email="; nocase; within: 5; content:"@"; nocase; within: 20; reference: url,isc.sans.org/diary.php?date=2005-04-13; classtype: attempted-admin; sid: 2001878; rev:4; )
+
+# MyDoom variants
+
+#Submitted by Matt Jonkman for MyDoom.AH
+alert tcp $HOME_NET !$HTTP_PORTS -> $EXTERNAL_NET 1639:1640 (msg: "BLEEDING-EDGE WORM MyDoom.AH Victim Accessing Infected Page"; flow: established,to_server; content:"/index.htm"; nocase; reference: url,us.mcafee.com/virusInfo/default.asp?id=description&virus_k=129631; classtype: trojan-activity; sid: 2001428; rev:7; )
+#alert tcp $EXTERNAL_NET any -> $HOME_NET 25 (msg: "BLEEDING-EDGE WORM Potential MyDoom.AH Email Inbound"; flow: established,to_server; content:"tracking number is A866DEC0"; nocase; reference: url,us.mcafee.com/virusInfo/default.asp?id=description&virus_k=129631; classtype: trojan-activity; sid: 2001431; rev:3; )
+#alert tcp $EXTERNAL_NET any -> $HOME_NET 25 (msg: "BLEEDING-EDGE WORM Potential MyDoom.AH Email Inbound"; flow: established,to_server; content:"Hi! I am looking for new friends. I am from Miami, FL."; nocase; reference: url,us.mcafee.com/virusInfo/default.asp?id=description&virus_k=129631; classtype: trojan-activity; sid: 2001435; rev:2; )
+alert tcp $HOME_NET any -> $EXTERNAL_NET 25 (msg: "BLEEDING-EDGE WORM Potential MyDoom.AH Email Outbound (1)"; flow: established,to_server; content:"tracking number is A866DEC0"; nocase; reference: url,us.mcafee.com/virusInfo/default.asp?id=description&virus_k=129631; classtype: trojan-activity; sid: 2001432; rev:4; )
+#alert tcp $EXTERNAL_NET any -> $HOME_NET 25 (msg: "BLEEDING-EDGE WORM Potential MyDoom.AH Email Inbound"; flow: established,to_server; content:"My name is Jane, I am from Miami, FL"; nocase; content:"with my weblog and last webcam photos!"; nocase; reference: url,us.mcafee.com/virusInfo/default.asp?id=description&virus_k=129631; classtype: trojan-activity; sid: 2001433; rev:3; )
+alert tcp $HOME_NET any -> $EXTERNAL_NET 25 (msg: "BLEEDING-EDGE WORM Potential MyDoom.AH Email Outbound (2)"; flow: established,to_server; content:"My name is Jane, I am from Miami, FL"; nocase; content:"with my weblog and last webcam photos!"; nocase; reference: url,us.mcafee.com/virusInfo/default.asp?id=description&virus_k=129631; classtype: trojan-activity; sid: 2001434; rev:4; )
+alert tcp $HOME_NET any -> $EXTERNAL_NET 25 (msg: "BLEEDING-EDGE WORM Potential MyDoom.AH Email Outbound (3)"; flow: established,to_server; content:"Hi! I am looking for new friends. I am from Miami, FL."; nocase; reference: url,us.mcafee.com/virusInfo/default.asp?id=description&virus_k=129631; classtype: trojan-activity; sid: 2001436; rev:3; )
+#alert tcp $EXTERNAL_NET any -> $HOME_NET 25 (msg: "BLEEDING-EDGE WORM Potential MyDoom.AI Email Inbound"; flow: established,to_server; content:"X-AntiVirus|3a|"; nocase; pcre:"/X-AntiVirus\: (scanned for viruses by AMaViS 0\.2\.1|Checked by Dr\.Web|Checked for viruses by Gordano's AntiVirus)/"; pcre:"/(Look at my homepage with my last webcam photos!|FREE ADULT VIDEO! SIGN UP NOW!)/"; reference: url,us.mcafee.com/virusInfo/default.asp?id=description&virus_k=129631; classtype: trojan-activity; sid: 2001437; rev:4; )
+alert tcp $HOME_NET any -> $EXTERNAL_NET 25 (msg: "BLEEDING-EDGE WORM Potential MyDoom.AI Email Outbound"; flow: established,to_server; content:"X-AntiVirus|3a|"; nocase; pcre:"/X-AntiVirus\: (scanned for viruses by AMaViS 0\.2\.1|Checked by Dr\.Web|Checked for viruses by Gordano's AntiVirus)/"; pcre:"/(Look at my homepage with my last webcam photos!|FREE ADULT VIDEO! SIGN UP NOW!)/"; reference: url,us.mcafee.com/virusInfo/default.asp?id=description&virus_k=129631; classtype: trojan-activity; sid: 2001438; rev:4; )
+
+#From the Netsquid Rules for MyDoom.F
+alert tcp $HOME_NET any -> $EXTERNAL_NET any (msg: "BLEEDING-EDGE VIRUS MyDoom.F Worm"; flow: to_server,established; content:"gICAgICAgICAgICAgICAgICAg"; content:"|57 69 6E 64 6F 77 73 2D 31 32 35 32|"; classtype: trojan-activity; reference:url,vil.mcafeesecurity.com/vil/content/v_101014.htm; sid: 2001279; rev:6; )
+
+#Submitted by Mark Scott, 1/5/2005, for MyDoom.I
+alert TCP $HOME_NET any -> $EXTERNAL_NET 25 (msg: "BLEEDING-EDGE Virus MyDoom.I worm - outbound"; flow: established; content:"zSG4AUzNIVRoaXMgcHJvZ3JhbSBjYW5ub3QgYmUgc"; nocase; reference: url,secunia.com/virus_information/8818/; classtype: misc-activity; sid: 2001672; rev:3; )
+#alert TCP $EXTERNAL_NET any -> $HOME_NET 25 (msg: "BLEEDING-EDGE Virus MyDoom.I worm - inbound"; flow: established; content:"zSG4AUzNIVRoaXMgcHJvZ3JhbSBjYW5ub3QgYmUgc"; nocase; reference: url,secunia.com/virus_information/8818/; classtype: misc-activity; sid: 2001673; rev:2; )
+
+#From the Netsquid Rules for MyDoom/MiMail
+alert tcp $HOME_NET any -> $EXTERNAL_NET 25 (msg: "BLEEDING-EDGE VIRUS MyDoom/MIMAIL.R Outbound 1"; flow: to_server,established; content:"represented in 7-bit ASCII"; nocase; content:"Content-Type\: application/octet-stream"; nocase; content:"Content-Transfer-Encoding\: base64"; nocase; classtype: trojan-activity; reference:url,vil.mcafeesecurity.com/vil/content/Print100989.htm; sid: 2001274; rev:7; )
+alert tcp $HOME_NET any -> $EXTERNAL_NET 25 (msg: "BLEEDING-EDGE VIRUS MyDoom/MIMAIL.R Outbound 2"; flow: to_server,established; content:"Mail transaction failed"; nocase; content:"Content-Type\: application/octet-stream"; nocase; content:"Content-Transfer-Encoding\: base64"; nocase; classtype: trojan-activity; reference:url,vil.mcafeesecurity.com/vil/content/Print100989.htm; sid: 2001275; rev:8; )
+alert tcp $HOME_NET any -> $EXTERNAL_NET 25 (msg: "BLEEDING-EDGE VIRUS MyDoom/MIMAIL.R Outbound 3"; flow: to_server,established; content:"The message contains Unicode characters"; nocase; content:"Content-Type\: application/octet-stream"; nocase; content:"Content-Transfer-Encoding\: base64"; nocase; classtype: trojan-activity; reference:url,vil.mcafeesecurity.com/vil/content/Print100989.htm; sid: 2001276; rev:7; )
+alert tcp $HOME_NET any -> $EXTERNAL_NET 25 (msg: "BLEEDING-EDGE VIRUS MyDoom/MIMAIL.R Variant Outbound"; flow: to_server,established; content:"We are sorry your UTF-8 encoding is not supported by the server"; nocase; classtype: trojan-activity; reference:url,vil.mcafeesecurity.com/vil/content/v_101014.htm; reference:url,vil.mcafeesecurity.com/vil/content/Print100989.htm; sid: 2001277; rev:8; )
+
+#Taken from Lurhq for MyDoom.m,o
+alert tcp $HOME_NET any -> $EXTERNAL_NET $HTTP_PORTS (msg: "BLEEDING-EDGE Mailto domain search possible MyDoom.M,O"; flow: to_server,established; uricontent:"/search?hl=en&ie=UTF-8&oe=UTF-8&q=mailto+"; depth: 45; content:"Host\: www.google.com"; reference: url,www.lurhq.com/zindos.html; classtype: trojan-activity; sid: 2001012; rev:4; )
+
+#Submitted by Joel Esler for MyDoom.P
+alert tcp $HOME_NET any -> $EXTERNAL_NET $HTTP_PORTS (msg: "BLEEDING-EDGE MyDoom.P Query"; flow: to_server,established; content:"/py/psSearch.py|3f|"; nocase; content:"Host|3a| EMAIL.PEOPLE.YAHOO.COM"; classtype: trojan-activity; reference:url,www.sarc.com/avcenter/venc/data/w32.mydoom.p@mm.html; sid: 2001045; rev:8; )
+
+#Submitted by Matt Jonkman for MyDoom.S
+alert tcp $HOME_NET any -> $EXTERNAL_NET 25 (msg: "BLEEDING-EDGE WORM MyDoom.S Outbound"; flow: to_server,established; content:"LOL!\;)"; nocase; content:"filename=photos_arc.exe"; nocase; reference: url,www.f-secure.com/v-descs/mydoom_s.shtml; reference: url,isc.sans.org/diary.php?date=2004-08-16; classtype: trojan-activity; sid: 2001196; rev:5; )
+
+# Extended versions of the Myfib signatures posted by LURQH on August 16, 2005
+alert tcp $HOME_NET any -> $EXTERNAL_NET 34330 (msg:"BLEEDING-EDGE WORM Possible Myfip PDF file transfer - IP theft"; flow:to_server,established; content:"|00 00 00 00|"; depth:4; content:"|3a 5c|"; distance:5; within:2; content:".pdf|00|"; nocase; within:256; reference:url,www.lurhq.com/myfip.html; classtype:trojan-activity; sid:2002336; rev:1;)
+alert tcp $HOME_NET any -> $EXTERNAL_NET 34330 (msg:"BLEEDING-EDGE WORM Possible Myfip DOC file transfer - IP theft"; flow:to_server,established; content:"|00 00 00 00|"; depth:4; content:"|3a 5c|"; distance:5; within:2; content:".doc|00|"; nocase; within:256; reference:url,www.lurhq.com/myfip.html; classtype:trojan-activity; sid:2002337; rev:1;)
+alert tcp $HOME_NET any -> $EXTERNAL_NET 34330 (msg:"BLEEDING-EDGE WORM Possible Myfip DWG file transfer - IP theft"; flow:to_server,established; content:"|00 00 00 00|"; depth:4; content:"|3a 5c|"; distance:5; within:2; content:".dwg|00|"; nocase; within:256; reference:url,www.lurhq.com/myfip.html; classtype:trojan-activity; sid:2002338; rev:1;)
+alert tcp $HOME_NET any -> $EXTERNAL_NET 34330 (msg:"BLEEDING-EDGE WORM Possible Myfip SCH file transfer - IP theft"; flow:to_server,established; content:"|00 00 00 00|"; depth:4; content:"|3a 5c|"; distance:5; within:2; content:".sch|00|"; nocase; within:256; reference:url,www.lurhq.com/myfip.html; classtype:trojan-activity; sid:2002339; rev:1;)
+alert tcp $HOME_NET any -> $EXTERNAL_NET 34330 (msg:"BLEEDING-EDGE WORM Possible Myfip PCB file transfer - IP theft"; flow:to_server,established; content:"|00 00 00 00|"; depth:4; content:"|3a 5c|"; distance:5; within:2; content:".pcb|00|"; nocase; within:256; reference:url,www.lurhq.com/myfip.html; classtype:trojan-activity; sid:2002340; rev:1;)
+alert tcp $HOME_NET any -> $EXTERNAL_NET 34330 (msg:"BLEEDING-EDGE WORM Possible Myfip DWT file transfer - IP theft"; flow:to_server,established; content:"|00 00 00 00|"; depth:4; content:"|3a 5c|"; distance:5; within:2; content:".dwt|00|"; nocase; within:256; reference:url,www.lurhq.com/myfip.html; classtype:trojan-activity; sid:2002341; rev:1;)
+alert tcp $HOME_NET any -> $EXTERNAL_NET 34330 (msg:"BLEEDING-EDGE WORM Possible Myfip DWF file transfer - IP theft"; flow:to_server,established; content:"|00 00 00 00|"; depth:4; content:"|3a 5c|"; distance:5; within:2; content:".dwf|00|"; nocase; within:256; reference:url,www.lurhq.com/myfip.html; classtype:trojan-activity; sid:2002342; rev:1;)
+alert tcp $HOME_NET any -> $EXTERNAL_NET 34330 (msg:"BLEEDING-EDGE WORM Possible Myfip MAX file transfer - IP theft"; flow:to_server,established; content:"|00 00 00 00|"; depth:4; content:"|3a 5c|"; distance:5; within:2; content:".max|00|"; nocase; within:256; reference:url,www.lurhq.com/myfip.html; classtype:trojan-activity; sid:2002343; rev:1;)
+alert tcp $HOME_NET any -> $EXTERNAL_NET 34330 (msg:"BLEEDING-EDGE WORM Possible Myfip MDB file transfer - IP theft"; flow:to_server,established; content:"|00 00 00 00|"; depth:4; content:"|3a 5c|"; distance:5; within:2; content:".mdb|00|"; nocase; within:256; reference:url,www.lurhq.com/myfip.html; classtype:trojan-activity; sid:2002344; rev:1;) 
+
+#alert tcp $EXTERNAL_NET any -> $HOME_NET 25 (msg:"BLEEDING-EDGE WORM Myfip email incoming - FoxMail 4.0 header"; flow:to_server,established; content:"X-Mailer\: FoxMail 4.0 beta 2"; nocase; reference:url,www.lurhq.com/myfip.html; classtype:string-detect; sid:2002345; rev:1;)
+#alert tcp $EXTERNAL_NET any -> $HOME_NET 25 (msg:"BLEEDING-EDGE WORM Myfip email incoming - FoxMail 3.11 header"; flow:to_server,established; content:"X-Mailer\: FoxMail 3.11 Release"; nocase; reference:url,www.lurhq.com/myfip.html; classtype:string-detect; sid:2002346; rev:1;)
+alert tcp $EXTERNAL_NET any -> $HOME_NET 25 (msg:"BLEEDING-EDGE WORM Possible Myfip email incoming - MIME boundary tag"; flow:to_server,established; content:"_NextPart_2rfkindysadvnqw3nerasdf"; reference:url,www.lurhq.com/myfip.html; classtype:string-detect; sid:2002347; rev:1;)
+# MySQL Worm
+
+#Submitted by unknown
+#alert udp $HOME_NET any -> any 53 (msg: "BLEEDING-EDGE MySQL bot DNS lookup"; content:"landingzone"; nocase; reference: url,isc.sans.org/diary.php?date=2005-01-27; classtype: trojan-activity; sid: 2001687; rev:4; )
+alert udp $HOME_NET any -> any 53 (msg: "BLEEDING-EDGE MySQL bot DNS lookup"; content:"|06|zmoker|06|dns2go|03|com"; nocase; reference: url,isc.sans.org/diary.php?date=2005-01-27; classtype: trojan-activity; sid: 2001688; rev:4; )
+alert tcp $HOME_NET any -> !$SQL_SERVERS 3306 (msg: "BLEEDING-EDGE Potential MySQL bot scanning for SQL server"; flags: S,12; reference: url,isc.sans.org/diary.php?date=2005-01-27; classtype: trojan-activity; sid: 2001689; rev:3; )
+alert tcp $HOME_NET any -> $EXTERNAL_NET 5002:5003 (msg: "BLEEDING-EDGE Potential MySQL bot connecting to IRC server"; flags: S,12; reference: url,isc.sans.org/diary.php?date=2005-01-27; classtype: trojan-activity; sid: 2001690; rev:3; )
+
+# Mytob
+
+#Evgeny Pinchuk Mytob 5-9-05
+alert tcp $HOME_NET any -> $EXTERNAL_NET 25 (msg: "BLEEDING-EDGE VIRUS Mytob.ED email attachment 1 Outbound"; flow: established,to_server; content:"GkAWRzRP5MBFtOlRwqi8v"; classtype: misc-activity; reference:url,securityresponse.symantec.com/avcenter/venc/data/w32.mytob.ed@mm.html; sid: 2001922; rev:4; )
+#alert tcp $EXTERNAL_NET any -> $HOME_NET 25 (msg: "BLEEDING-EDGE VIRUS Mytob.ED email attachment 1 Inbound"; flow: established,to_server; content:"GkAWRzRP5MBFtOlRwqi8v"; classtype: misc-activity; reference:url,securityresponse.symantec.com/avcenter/venc/data/w32.mytob.ed@mm.html; sid: 2001925; rev:3; )
+alert tcp $HOME_NET any -> $EXTERNAL_NET 25 (msg: "BLEEDING-EDGE VIRUS Mytob.ED email attachment 2 Outbound"; flow: established,to_server; content:"PVSxbff1mWcbvMEyP7KLn"; classtype: misc-activity; reference:url,securityresponse.symantec.com/avcenter/venc/data/w32.mytob.ed@mm.html; sid: 2001923; rev:4; )
+#alert tcp $EXTERNAL_NET any -> $HOME_NET 25 (msg: "BLEEDING-EDGE VIRUS Mytob.ED email attachment 2 Inbound"; flow: established,to_server; content:"PVSxbff1mWcbvMEyP7KLn"; classtype: misc-activity; reference:url,securityresponse.symantec.com/avcenter/venc/data/w32.mytob.ed@mm.html; sid: 2001926; rev:3; )
+alert tcp $HOME_NET any -> $EXTERNAL_NET 25 (msg: "BLEEDING-EDGE VIRUS Mytob.ED email attachment 3 Outbound"; flow: established,to_server; content:"FxCBYvYtUx1889u4JeD9"; classtype: misc-activity; reference:url,securityresponse.symantec.com/avcenter/venc/data/w32.mytob.ed@mm.html; sid: 2001924; rev:4; )
+#alert tcp $EXTERNAL_NET any -> $HOME_NET 25 (msg: "BLEEDING-EDGE VIRUS Mytob.ED email attachment 3 Inbound"; flow: established,to_server; content:"FxCBYvYtUx1889u4JeD9"; classtype: misc-activity; reference:url,securityresponse.symantec.com/avcenter/venc/data/w32.mytob.ed@mm.html; sid: 2001927; rev:3; )
+
+#Smetona 6-2-05
+alert udp $HOME_NET any -> any 53 (msg: "BLEEDING-EDGE VIRUS Win32.Mytob.CU Worm Infection / DNS lookup"; content:"|03|irc|0b|blackcarder|03|net"; nocase; reference: url,www3.ca.com/securityadvisor/virusinfo/virus.aspx?id=43006; classtype: trojan-activity; sid: 2001955; rev:3; )
+alert tcp $HOME_NET any -> [195.13.58.92/32,213.251.160.15/32,84.244.5.163/32] 4512 (msg: "BLEEDING-EDGE VIRUS Win32.Mytob.CU Worm Infection"; flags: S+; reference: url,www3.ca.com/securityadvisor/virusinfo/virus.aspx?id=43006; classtype: trojan-activity; sid: 2001956; rev:5; )
+
+# Mytob.DI
+#Submitted by Mark Scott, 6/5/2005
+alert TCP $HOME_NET any -> $EXTERNAL_NET 25 (msg: "BLEEDING-EDGE VIRUS Mytob.DI - outbound"; flow: established; content:"xjLEhhn6AK4AAA"; reference: url,secunia.com/virus_information/18407/; classtype: trojan-activity; sid: 2001986; rev:3; )
+#alert TCP $EXTERNAL_NET any -> $HOME_NET 25 (msg: "BLEEDING-EDGE VIRUS Mytob.DI - incoming"; flow: established; content:"xjLEhhn6AK4AAA"; reference: url,secunia.com/virus_information/18407/; classtype: trojan-activity; sid: 2001987; rev:3; )
+
+# Mytob.GC
+#Submitted by Mark Scott, 6/21/2005, for Mytob.GC
+alert TCP $HOME_NET any -> $EXTERNAL_NET 25 (msg: "BLEEDING-EDGE VIRUS Mytob.GC - outbound"; flow: established; content:"K1ryJsALgAAAC4AAB"; reference: url,www.norman.com/Virus/Virus_descriptions/23458/en?show=default; classtype: trojan-activity; sid: 2002049; rev:4; )
+#alert TCP $EXTERNAL_NET any -> $HOME_NET 25 (msg: "BLEEDING-EDGE VIRUS Mytob.GC - incoming"; flow: established; content:"K1ryJsALgAAAC4AAB"; reference: url,www.norman.com/Virus/Virus_descriptions/23458/en?show=default; classtype: trojan-activity; sid: 2002050; rev:3; )
+
+# Mytob.HF
+#Submitted by Mark Scott, 6/26/2005, for Mytob.HF			     
+alert TCP $HOME_NET any -> $EXTERNAL_NET 25 (msg:"BLEEDING-EDGE VIRUS Mytob.HF - outbound"; flow:established, to_server; content:"IMRGVQfuAAAH7gAAB"; reference:url,www.norman.com/Virus/Virus_descriptions/23458/en?show=default; classtype:trojan-activity; sid:2002053; rev:1;)
+#alert TCP $EXTERNAL_NET any -> $HOME_NET 25 (msg:"BLEEDING-EDGE VIRUS Mytob.HF - incoming"; flow:established, to_server; content:"IMRGVQfuAAAH7gAAB"; reference:url,www.norman.com/Virus/Virus_descriptions/23458/en?show=default; classtype:trojan-activity; sid:2002054; rev:1;)
+
+# Mytob.HE
+#Submitted by Mark Scott, 7/8/2005                             
+alert TCP $HOME_NET any -> $EXTERNAL_NET 25 (msg:"BLEEDING-EDGE VIRUS Mytob.HE - outbound"; flow:established, to_server; content:"L7R1pk/6IAAP+iAAB"; reference:url,www.norman.com/Virus/Virus_descriptions/23458/en?show=default; classtype:trojan-activity; sid:2002125; rev:1;)
+#alert TCP $EXTERNAL_NET any -> $HOME_NET 25 (msg:"BLEEDING-EDGE VIRUS Mytob.HE - incoming"; flow:established, to_server; content:"L7R1pk/6IAAP+iAAB"; reference:url,www.norman.com/Virus/Virus_descriptions/23458/en?show=default; classtype:trojan-activity; sid:2002126; rev:1;)
+
+# Nachi/Phatbot Worm
+
+#Taken from the Netsquid Rules
+alert tcp $HOME_NET any -> $EXTERNAL_NET 135 (msg: "BLEEDING-EDGE VIRUS Nachi/Phatbot Worm"; flow: to_server,established; content:"|05|"; within: 1; distance: 0; byte_test:1,<,16,3,relative;content:"|5c 00 5c 00|"; byte_test:4,>,256,-8,relative;reference: cve,CAN-2003-0352; reference: bugtraq,8205; reference: url,www.microsoft.com/technet/security/bulletin/MS03-026.asp; classtype: attempted-admin; sid: 2001302; rev:4; )
+
+# Netsky Worm
+
+#Submitted by Mark Scott, 3/11/2004, for NetSky.C
+#alert tcp $EXTERNAL_NET any -> $HOME_NET 25 (msg: "BLEEDING-EDGE Virus NetSky.C Worm - incoming"; flow: established; content:"l0U3BS5DMQVSaWNoL0MxBQAAAAAAAAAAQ29tcHJlc3NlZCBieSBQZXRp"; nocase; reference: url,secunia.com/virus_information/557/; classtype: misc-activity; sid: 2001590; rev:3; )
+alert tcp $HOME_NET any -> $EXTERNAL_NET 25 (msg: "BLEEDING-EDGE Virus NetSky.C Worm - outgoing detected"; flow: established; content:"l0U3BS5DMQVSaWNoL0MxBQAAAAAAAAAAQ29tcHJlc3NlZCBieSBQZXRp"; nocase; reference: url,secunia.com/virus_information/557/; classtype: misc-activity; sid: 2001591; rev:6; )
+
+#Submitted by Mark Scott, 3/22/2004, for Netsky.P
+#alert tcp $EXTERNAL_NET any -> $HOME_NET 25 (msg: "BLEEDING-EDGE Virus Netsky.P Worm - incoming"; flow: established; content:"AAAAAAYAAAAA4fug4AtAnNIbgBTM0hV2luZG93cyBQcm9ncmFtDQokUEUA"; nocase; classtype: misc-activity; reference:url,vil.nai.com/vil/content/v_101119.htm; sid: 2001565; rev:7; )
+alert tcp $HOME_NET any -> $EXTERNAL_NET 25 (msg: "BLEEDING-EDGE Virus Netsky.P Worm detected"; flow: established; content:"AAAAAAYAAAAA4fug4AtAnNIbgBTM0hV2luZG93cyBQcm9ncmFtDQokUEUA"; nocase; classtype: misc-activity; reference:url,vil.nai.com/vil/content/v_101119.htm; sid: 2001566; rev:10; )
+
+#Submitted by Mark Scott, 5/18/2004, for Netsky.Z
+#alert tcp $EXTERNAL_NET any -> $HOME_NET 25 (msg: "BLEEDING-EDGE Virus Netsky.Z Worm - incoming detected"; flow: established; content:"aD5jNHc0Y8VoPmNfYGNj3mg+Y9xoPmPfaD5j3Gg/Y75oPmO+dy1j1Wg+YzR3NWPZaD5jZG4"; nocase; reference: url,secunia.com/virus_information/8911/; classtype: misc-activity; sid: 2001602; rev:3; )
+alert tcp $HOME_NET any -> $EXTERNAL_NET 25 (msg: "BLEEDING-EDGE Virus Netsky.Z Worm - outgoing detected"; flow: established; content:"aD5jNHc0Y8VoPmNfYGNj3mg+Y9xoPmPfaD5j3Gg/Y75oPmO+dy1j1Wg+YzR3NWPZaD5jZG4"; nocase; reference: url,secunia.com/virus_information/8911/; classtype: misc-activity; sid: 2001603; rev:6; )
+
+#Taken from the Netsquid Rules
+alert tcp $HOME_NET any -> any 139 (msg: "BLEEDING-EDGE VIRUS Netsky message.zip HEX port 139"; flow: to_server,established; content:"|60 00 00 E0 2E 70 65 74 69 74 65 00 00 10 00 00 00 90 01 00 08 05 00 00 00 5E 00 00 00 00 00 00 00 00 00 00 00 00 00 00 40 00 00 40 00 00 00 00|"; classtype: trojan-activity; reference:url,antivirus.about.com/cs/allabout/a/netskyp_2.htm; sid: 2001280; rev:8; )
+alert tcp $HOME_NET any -> any 445 (msg: "BLEEDING-EDGE VIRUS Netsky message.zip HEX port 445"; flow: to_server,established; content:"|60 00 00 E0 2E 70 65 74 69 74 65 00 00 10 00 00 00 90 01 00 08 05 00 00 00 5E 00 00 00 00 00 00 00 00 00 00 00 00 00 00 40 00 00 40 00 00 00 00|"; classtype: trojan-activity; reference:url,antivirus.about.com/cs/allabout/a/netskyp_2.htm; sid: 2001281; rev:8; )
+alert tcp $HOME_NET any -> any 1352 (msg: "BLEEDING-EDGE VIRUS Netsky base64 port 1352"; flow: to_server,established; content:"8FI0MxBcdcOwU0QzEFL0MwBXBDMQWsS2wFIkMxBcdcOgUqQz"; classtype: trojan-activity; reference:url,antivirus.about.com/cs/allabout/a/netskyp_2.htm; sid: 2001282; rev:7; )
+alert tcp $HOME_NET any -> $EXTERNAL_NET 25 (msg: "BLEEDING-EDGE VIRUS Netsky base64 port 25"; flow: established,to_server; content:"8FI0MxBcdcOwU0QzEFL0MwBXBDMQWsS2wFIkMxBcdcOgUqQz"; classtype: trojan-activity; reference:url,antivirus.about.com/cs/allabout/a/netskyp_2.htm; sid: 2001283; rev:8; )
+
+#by dajackman
+alert tcp $HOME_NET any -> 200.18.132.166 any (msg:"BLEEDING-EDGE VIRUS W97M.Nometz.A Sending Info Home"; flags: S,12; threshold:type limit, track by_src, count 1, seconds 60; reference:url,securityresponse.symantec.com/avcenter/venc/data/w97m.nometz.a.html; classtype:trojan-activity; sid:2002360; rev:1;)
+
+# Novarg Worm
+
+#Taken from the Netsquid Rules
+alert tcp $HOME_NET any -> $EXTERNAL_NET 25 (msg: "BLEEDING-EDGE VIRUS Outbound W32.Novarg.A worm"; flow: established; content:"TVqQAAMAAAAEAAAA"; content:"8AALgAAAAAAAAAQ"; within: 20; distance: 2; content:"UEUA..AEwBAW"; content:"DgAA8BCwEHAABQAAAAE"; within: 40; distance: 16; content:"ABVUFgwAAAAAABgAAAAEAAAAAAAAAAEA"; content:"ACAAADg"; within: 30; distance: 16; classtype: trojan-activity; reference:url,securityresponse.symantec.com/avcenter/venc/data/w32.mydoom.a@mm.html; sid: 2001273; rev:11; )
+alert tcp $HOME_NET any -> $EXTERNAL_NET $HTTP_PORTS (msg: "BLEEDING-EDGE VIRUS W32.Novarg.A SCO DOS"; flow: to_server,established; content:"GET HTTP/1.1|0d0a|Host\: www.sco.com|0d0a0d0a|"; offset: 0; depth: 35; classtype: trojan-activity; reference:url,securityresponse.symantec.com/avcenter/venc/data/w32.mydoom.a@mm.html; sid: 2001278; rev:8; )
+
+# OpaServ Worm
+
+#Submitted by Brad Doctor, 3/8/2005, for Opaserv
+alert tcp $HOME_NET any -> $HOME_NET 139 (msg: "BLEEDING-EDGE VIRUS - W32.Opaserv Worm Infection"; flow: established; content:"|5c 73 63 72 73 76 72 2e 65 78 65|"; reference: url,www.sarc.com/avcenter/venc/data/w32.opaserv.worm.html; classtype: misc-activity; sid: 2001763; rev:3; )
+
+# PHPInclude Worm
+
+#Submitted by Matt Jonkman for phpinclude.worm
+alert tcp $EXTERNAL_NET any -> $HOME_NET $HTTP_PORTS (msg: "BLEEDING-EDGE Virus PHPInclude.Worm Inbound Attack"; flow: to_server,established; content:"?&cmd=cd%20/tmp\;wget%20"; nocase; content:"perl%20"; nocase; reference: url,www.k-otik.com/exploits/20041225.PhpIncludeWorm.php; classtype: trojan-activity; sid: 2001614; rev:10; )
+alert tcp $HOME_NET any -> $EXTERNAL_NET $HTTP_PORTS (msg: "BLEEDING-EDGE Virus PHPInclude.Worm Outbound Attack --LOCAL INFECTION--"; flow: to_server,established; content:"?&cmd=cd%20/tmp\;wget%20"; nocase; content:"perl%20"; nocase; reference: url,www.k-otik.com/exploits/20041225.PhpIncludeWorm.php; classtype: trojan-activity; sid: 2001615; rev:10; )
+
+# Rbot trojan
+#Submitted by Christopher Harrington for RXBOT/RBOT
+alert tcp $HOME_NET any -> $EXTERNAL_NET any (msg: "BLEEDING-EDGE RXBOT / RBOT Exploit Report"; flow: established; content:"|5D 3A 20|Exploiting|20|IP|3A 20|"; nocase; reference: url,www.nitroguard.com/rxbot.html; reference: url,www.trendmicro.com/vinfo/virusencyclo/default5.asp?VName=WORM_RBOT.GL; classtype: trojan-activity; sid: 2001220; rev:4; )
+alert tcp any any -> $HOME_NET any (msg: "BLEEDING-EDGE RXBOT / RBOT Vulnerability Scan"; flow: established; content:"|2E|advscan|20|"; nocase; reference: url,www.nitroguard.com/rxbot.html; reference: url,www.trendmicro.com/vinfo/virusencyclo/default5.asp?VName=WORM_RBOT.GL; reference: url,www.muzzleflash.org/readarticle.php?article_id=5#scanning; classtype: trojan-activity; sid: 2001184; rev:3; )
+
+#Submitted by Jason Alexander for RBOT BestFriends.scr
+#alert tcp $HOME_NET any -> $EXTERNAL_NET 5190 (msg: "BLEEDING-EDGE WORM RBOT inbound Bestfriends.scr"; flow: established; content:"http"; nocase; content:"bestfriends.scr"; nocase; within: 80; classtype: trojan-activity; reference:url,spree.mnin.org/forums/viewtopic.php?t-104; sid: 2001367; rev:4; )
+
+#Submitted by Chris Norton for Rbot.Gen
+alert tcp $EXTERNAL_NET any -> $HOME_NET 135 (msg: "BLEEDING-EDGE Worm Rbot.Gen Infection Attempt"; flowbits:isnotset,tagged; content:"|4d 45 4f 57|"; nocase; offset: 122; depth: 4; content:"|cc cc cc cc|"; nocase; tag: host,5,packets,src; flowbits: set,tagged; reference: url,www.f-secure.com/v-descs/rbot.shtml; classtype: trojan-activity; sid: 2001554; rev:4; )
+
+#Submitted by James Riden for bot activity
+alert tcp $EXTERNAL_NET !21:443 -> $HOME_NET !80 (msg: "BLEEDING-EDGE Virus Bot Reporting Scan/Exploit"; flow: to_server,established; content:"PRIVMSG"; nocase; within: 80; tag: session, 20, packets; pcre:"/(webdav|netbios|ntpass|dcom(2|135|445|1025)|mssql|lsass|optix|upnp|beagle[12]|mydoom|netdevil|DameWare|kuang2|sub7|iis5ssl|wkssvc)/i"; reference: url,cert.uni-stuttgart.de/doc/netsec/bots.php; reference: url,www.nitroguard.com/rxbot.html; classtype: trojan-activity; sid: 2001584; rev:4; )
+alert tcp $EXTERNAL_NET !21:443 -> $HOME_NET !80 (msg: "BLEEDING-EDGE Virus Bot Reporting/Commencing DDoS"; flow: to_server,established; content:"PRIVMSG"; nocase; within: 80; tag: session, 20, packets; pcre:"/ddos\.(httpflood|phat(icmp|syn|wonk)|stop|(syn|udp)flood|targa3|syn|ack|random)/i"; reference: url,cert.uni-stuttgart.de/doc/netsec/bots.php; reference: url,www.nitroguard.com/rxbot.html; classtype: trojan-activity; sid: 2001676; rev:5; )
+
+#by M Shirk
+alert tcp $EXTERNAL_NET any -> $HTTP_SERVERS $HTTP_PORTS (msg: "BLEEDING-EDGE VIRUS HTTP Challenge/Response Authentication"; flow: to_server,established; content:"Host|3A 20|"; nocase; content:"|3A 20|Negotiate|20|YIIQegYGKwYBBQUCoIIQbjCCEGqhghBmI4IQYgOCBAEAQUFBQUFBQUFBQUFBQUFB"; nocase; reference: url,isc.sans.org/diary.php?date=2005-06-03; classtype: trojan-activity; sid: 2001985; rev:3; )
+
+#by dajackman
+alert tcp $HOME_NET any -> 69.64.49.207 $HTTP_PORTS (msg:"BLEEDING-EDGE WORM W32.Reatle.I@mm Downloading Spybot.Worm"; flow:established,to_server; uricontent:"/proto.com"; reference:url,securityresponse.symantec.com/avcenter/venc/data/w32.reatle.i@mm.html; classtype:trojan-activity; sid:2002326; rev:3;)
+
+# Santy Worm
+
+#Taken from Dshield for Santy.A
+alert tcp $HOME_NET $HTTP_PORTS -> $EXTERNAL_NET any (msg: "BLEEDING-EDGE Virus Possible santy.A Worm Defaced Page"; flow: from_server,established; content:"This site is defaced!!!"; nocase; content:"NeverEverNoSanity WebWorm generation X"; nocase; reference:url,securityresponse.symantec.com/avcenter/venc/data/perl.santy.html; classtype: trojan-activity; reference:url,securityresponse.symantec.com/avcenter/venc/data/perl.santy.html; sid: 2001607; rev:5; )
+
+#Submitted Erik Fichtner for Santy.B
+alert tcp $HOME_NET any -> $EXTERNAL_NET $HTTP_PORTS (msg: "BLEEDING-EDGE Virus Santy.B worm variants searching for targets (1)"; flow: to_server,established; content:"GET"; nocase; offset: 0; depth: 3; content:"/search|3f|q=inurl|3a2a|.php|3f2a|="; nocase; pcre:"/\d+&start=\d+/iR"; classtype: trojan-activity; reference:url,securityresponse.symantec.com/avcenter/venc/data/perl.santy.b.html; sid: 2001617; rev:9; )
+alert tcp $HOME_NET any -> $EXTERNAL_NET $HTTP_PORTS (msg: "BLEEDING-EDGE Virus Santy.B worm variants searching for targets (2)"; flow: to_server,established; content:"GET"; nocase; offset: 0; depth: 3; content:"/search|3f|"; nocase; content:"q=inurl|3a|"; nocase; content:".php|3f|"; nocase; within: 10; pcre:"/&start=\d+/i"; classtype: trojan-activity; reference:url,securityresponse.symantec.com/avcenter/venc/data/perl.santy.b.html; sid: 2001618; rev:8; )
+alert tcp $HOME_NET any -> $EXTERNAL_NET $HTTP_PORTS (msg: "BLEEDING-EDGE Virus Santy.B worm variants searching for targets (yahoo)"; flow: to_server,established; content:"GET"; nocase; offset: 0; depth: 3; content:"/search|3f|"; nocase; content:"p=inurl|3a|"; nocase; content:".php|3f2a|="; nocase; within: 10; content:"&ei=UTF-8&fl=0&all=1&pstart=1&b="; nocase; pcre:"/\d+/iR"; pcre:"/\d+/iR"; classtype: trojan-activity; reference:url,securityresponse.symantec.com/avcenter/venc/data/perl.santy.b.html; sid: 2001619; rev:8; )
+
+# Sasser Worm
+
+#Submitted by Lin Zhong for Sasser variants
+alert tcp $EXTERNAL_NET any -> $HOME_NET any (msg: "BLEEDING-EDGE VIRUS W32/Sasser.worm.a -NAI-)"; flow: established; content:"|BC 3B 74 0B 50 8B 3D E8 46 A7 3D 09 85 B8 F8 CD 76 40 DE 7C 5B 5C D7 2A A8 E8 58 75 62 96 25 24|"; reference: url,securityresponse.symantec.com/avcenter/venc/data/w32.sasser.worm.html; classtype: misc-activity; sid: 2001057; rev:4; )
+alert tcp $EXTERNAL_NET any -> $HOME_NET any (msg: "BLEEDING-EDGE VIRUS W32/Sasser.worm.b -NAI-)"; flow: established; content:"|58 BC 0C FF 59 57 32 31 BD EC 34 64 6E D6 E3 8D 65 04 68 58 62 79 DF D8 2C 25 6A B5 28 BA 13 74|"; reference: url,securityresponse.symantec.com/avcenter/venc/data/w32.sasser.worm.html; classtype: misc-activity; sid: 2001056; rev:4; )
+alert tcp any any -> any 5554 (msg: "BLEEDING-EDGE VIRUS Sasser FTP Traffic"; flow: to_server,established; content:"up.exe"; classtype: misc-activity; reference:url,vil.mcafeesecurity.com/vil/content/Print125009.htm; sid: 2000040; rev:3; )
+alert tcp any any -> any 9996 (msg: "BLEEDING-EDGE VIRUS Sasser Transfer _up.exe"; flow: established,to_server; content:"|5F75702E657865|"; depth: 250; classtype: misc-activity; reference:url,vil.mcafeesecurity.com/vil/content/Print125009.htm; sid:2000047; rev:3; )
+alert tcp $HOME_NET any -> any 445 (msg: "BLEEDING-EDGE VIRUS Sasser/Korgo Worm"; flow: to_server,established; flowbits: isset,netbios.lsass.bind.attempt; content:"|FF|SMB"; nocase; offset: 4; depth: 4; content:"|05|"; distance: 59; content:"|00|"; within: 1; distance: 1; content:"|09 00|"; within: 2; distance: 19; reference: bugtraq,10108; reference: cve,2003-0533; reference: url,www.microsoft.com/technet/security/bulletin/MS04-011.mspx; classtype: attempted-admin; sid: 2001286; rev:10; )
+
+#Submitted by Joe Stewart for Sasser FTP exploit
+alert tcp $HOME_NET any -> $EXTERNAL_NET 5554 (msg: "BLEEDING-EDGE VIRUS Sasser FTP exploit attempt"; flow: to_server,established; dsize: >150; content:"PORT "; depth: 5; reference: url,www.lurhq.com/dabber.html; classtype: attempted-admin; sid: 2001548; rev:3; )
+
+# Small Trojan
+
+#Submitted by Chris Norton
+alert tcp $HOME_NET any -> $EXTERNAL_NET 80 (msg: "BLEEDING-EDGE Win32/Small.AR outbound activity"; flow: to_server,established; uricontent:"/zosman/cia/index.php"; classtype: trojan-activity; reference:url,www.sophos.com/virusinfo/analyses/trojsmallar.html; sid: 2001234; rev:6; )
+
+# Stdbot
+
+#Taken from the Netsquid Rules stdbot variants
+alert ip $HOME_NET any -> $EXTERNAL_NET any (msg: "BLEEDING-EDGE VIRUS W32/Stdbot.worm.a"; content:"|28 0E 49 8D B5 17 B9 6C 4C 70 B5 41 7B 72 C0 EF 24 35 8D 31 F6 8B 25 40 B4 1C EC 75 C9 A7 BF 93|"; classtype: trojan-activity; reference:McAfee,125306; sid: 2001287; rev:7; )
+alert ip $HOME_NET any -> $EXTERNAL_NET any (msg: "BLEEDING-EDGE VIRUS W32/Stdbot.worm.b"; content:"|FE 26 B9 92 CB 12 FC FA FF 8E 01 3B D0 05 0B 39 BC 6D 61 57 58 C2 89 D9 C2 DA 22 0F 86 74 03 76|"; classtype: trojan-activity; reference:McAfee,125306; sid: 2001288; rev:7; )
+
+# Suspicious Extensions
+
+#Snort.org rule 721 scaled back a bit by Matt Jonkman to not hit on xls, vcf, ppt, rtf, dot, or pdf.
+#If you use this rule disable 721 in the snort sets. This rule will hit on the following:
+#
+# ade, adp, asd, asf, asx, bat, bas, chm, cli, cmd, com, crt, cpl, cpp, diz, dll, ebs, emf, eml, exe, fol, folder, hlp, hsq, hta, ini, inf, ins,
+# isp, js, jse, lnk, mda, mdb, mde, mdw, mdz, mht, mhtm, msi, msc, msg, msp, mst, nws, ocx, pcd, pif, pl, pls, plc,plx, pm, pot, rar,
+# reg, scr, sct, shs, swf, sys, url, vb, vbe, vbs, vxd, wmd, wmf, wms, wmz, wpm, wps, wpz, wsc, wsf, wsh, xlt, xlw, zip
+#
+alert tcp $HOME_NET any -> $EXTERNAL_NET 25 (msg: "BLEEDING-EDGE VIRUS OUTBOUND Suspicious Email Attachment"; flow: to_server,established; content:"Content-Disposition|3A|"; nocase; pcre:"/filename\s*=\s*.*?\.(?=[abcdehijlmnoprsvwx])(a(d[ep]|s[x])|c(rt|[ho]m|li|pl|md|pp)|d(iz|ll)|e(m[fl]|xe|bs)|h(lp|sq|ta)|jse?|m(d[abzew]|s[tcgip]|htm|ht)|p(cd|if|l[xsc]|[lm]|ot)|r(eg|ar)|s(cr|ct|[hy]s|wf)|v(b[es]?|xd)|w(m[dfsz]|p[msz]|s[cfh])|xl[tw]|folder|fol|ba[st]|i(sp|n[sif])|lnk|nws|ocx|zip|url)[\x27\x22\n\r\s]/iR"; classtype: suspicious-filename-detect; sid: 2000562; rev:9; )
+
+#Submitted by Joseph Gama
+alert tcp $EXTERNAL_NET any -> $HOME_NET any (msg: "BLEEDING-EDGE UPX compressed file download - possible worm"; flow: established; content:"MZ"; isdataat: 76,relative; content:"This program cannot be run in DOS mode."; distance: 0; isdataat: 10,relative; content:"PE"; distance: 0; content:"|00|UPX0|00|"; content:"|00|UPX1|00|"; content:"|00|UPX!|00|"; classtype: misc-activity; sid: 2001046; rev:3; )
+alert tcp $EXTERNAL_NET any -> $HOME_NET any (msg: "BLEEDING-EDGE UPX encrypted file download - possible worm"; flow: established; content:"MZ"; isdataat: 76,relative; content:"This program cannot be run in DOS mode."; distance: 0; isdataat: 10,relative; content:"PE"; distance: 0; content:"|00|code|00|"; content:"|00 C0|text|00|"; classtype: misc-activity; sid: 2001047; rev:3; )
+
+# Swen Worm
+
+#Taken from the Netsquid rules
+alert tcp $HOME_NET any -> $EXTERNAL_NET 25 (msg: "BLEEDING-EDGE VIRUS SWEN.A Worm detected"; flow: to_server,established; content:"|54|VqQAAMAAAAEAAAA//8AALgAAAAAAAAAQAA"; classtype: trojan-activity; reference:url,securityresponse.symantec.com/avcenter/venc/data/w32.swen.a@mm.html; sid: 2001268; rev:6; )
+
+# This file should hold any unknown or yet to be named Worms
+
+# Added by Frank Knobbe (hastily after reading an ISC Diary)
+alert udp $HOME_NET any -> any 53 (msg: "BLEEDING-EDGE Unknown Yahoo Messenger Worm DNS lookup"; content:"|0C|yahoo-secret|06|tripod|03|com"; nocase; reference: url,isc.sans.org/diary.php?date=2005-03-20; classtype: trojan-activity; sid: 2001799; rev:2; )
+alert tcp $HOME_NET any -> $EXTERNAL_NET any (msg: "BLEEDING-EDGE Unknown Yahoo Messenger Worm URL access"; flow: established; content:"GET"; nocase; depth: 3; content:"yahoo-secret.tripod.com"; nocase; within: 300; reference: url,isc.sans.org/diary.php?date=2005-03-20; classtype: trojan-activity; sid: 2001800; rev:4; )
+
+# VBSun Worm
+
+#Submitted by Matt Jonkman
+#alert tcp $EXTERNAL_NET any -> $HOME_NET 25 (msg: "BLEEDING-EDGE Virus VBSun.A Tsunami Scam Worm INCOMING"; flow: established,to_server; content:"Tsunami Donation! Please help!"; nocase; content:"Please help us with your donation and view the attachment below!"; nocase; content:"filename="; nocase; content:"tsunami.exe"; nocase; reference: url,www.sophos.com/virusinfo/articles/vbsuna.html; classtype: trojan-activity; sid: 2001680; rev:3; )
+alert tcp $HOME_NET any -> $EXTERNAL_NET 25 (msg: "BLEEDING-EDGE Virus VBSun.A Tsunami Scam Worm OUTBOUND"; flow: established,to_server; content:"Tsunami Donation! Please help!"; nocase; content:"Please help us with your donation and view the attachment below!"; nocase; content:"filename="; nocase; content:"tsunami.exe"; nocase; reference: url,www.sophos.com/virusinfo/articles/vbsuna.html; classtype: trojan-activity; sid: 2001681; rev:3; )
+

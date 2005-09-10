@@ -39,7 +39,7 @@ public class IDSRule extends Rule implements Serializable {
 			throw new IllegalArgumentException("definition too long:" + rule);
 
 		this.rule = rule;
-		this.modified = true;
+		this.modified = false;
 		this.remove = false;
 	}
 	

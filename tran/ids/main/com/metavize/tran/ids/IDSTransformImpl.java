@@ -185,15 +185,13 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 		try {
 			BufferedReader in = new BufferedReader(new FileReader(file));
 			String str;
-			int count = 0;
 			while ((str = in.readLine()) != null) {
-		//		if(str.contains("RAWR!")) {
-		//			System.out.println("RAWR: " + testManager.canParse(str.trim()));
-		//		}
 				if(testManager.canParse(str.trim())) {
 					IDSRuleSignature sig = testManager.getNewestSignature();
 					String message = (sig == null) ? "The signature failed to load" : sig.getMessage();
-					ruleList.add(new IDSRule(str, file.getName().replaceAll(".rules",""),message));
+					String category = file.getName().replaceAll(".rules",""); //Should move this to script land
+					category = category.replace("bleeding-",""); //Should move this to script land
+					ruleList.add(new IDSRule(str, category ,message));
 				}
 			}
 			in.close();
@@ -263,7 +261,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 		}
 		//remove all deleted rules
 
-	//	setIDSSettings(settings);
+		setIDSSettings(settings);
 	}
 
 	//XXX soon to be deprecated ------------------------------------------

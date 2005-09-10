@@ -1,0 +1,81 @@
+#
+# $Id: bleeding-scan.rules $
+# Bleeding Snort scan rules. 
+#  These are rules not stable, mature, or applicable enough to be part of the snort.org official sets. 
+#  Someday some may be, at which time they'll be removed from this list and be available via Snort.org
+#  This is for the bleeding edge junkies. Use at your own risk!!!
+#
+# SID's are 2000000+ to avoid conflicts
+#
+# Only basic testing has been done. At this point all we guarantee is that they won't crash a recent snort release. 
+#
+# More information available at www.bleedingsnort.com
+#
+# Please submit any custom rules or ideas to bleeding@bleedingsnort.com or the snort-sigs mailing list
+#
+#*************************************************************
+#
+#  Copyright (c) 2005, Bleedingsnort.com
+#  All rights reserved.
+#  
+#  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the 
+#  following conditions are met:
+#  
+#  * Redistributions of source code must retain the above copyright notice, this list of conditions and the following 
+#    disclaimer.
+#  * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the 
+#    following disclaimer in the documentation and/or other materials provided with the distribution.
+#  * Neither the name of the nor the names of its contributors may be used to endorse or promote products derived 
+#    from this software without specific prior written permission.
+#  
+#  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS AS IS AND ANY EXPRESS OR IMPLIED WARRANTIES, 
+#  INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+#  DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
+#  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR 
+#  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, 
+#  WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE 
+#  USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
+#
+#
+# Submitted by Frank Knobbe
+#Note: These are more effective as pass rules to avoid getting hits on other rules that don't really apply. This is benign load balancer probe traffic.
+alert tcp $EXTERNAL_NET any -> $HOME_NET 53 (msg: "BLEEDING-EDGE F5 BIG-IP 3DNS TCP Probe 1"; id: 1; dsize: 24; flags: S,12; content:"|00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|"; window: 2048; classtype: misc-activity; reference:url,www.f5.com/f5products/v9intro/index.html; sid: 2001609; rev:6; )
+alert tcp $EXTERNAL_NET any -> $HOME_NET 53 (msg: "BLEEDING-EDGE F5 BIG-IP 3DNS TCP Probe 2"; id: 2; dsize: 24; flags: S,12; content:"|00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|"; window: 2048; classtype: misc-activity; reference:url,www.f5.com/f5products/v9intro/index.html; sid: 2001610; rev:6; )
+alert tcp $EXTERNAL_NET any -> $HOME_NET 53 (msg: "BLEEDING-EDGE F5 BIG-IP 3DNS TCP Probe 3"; id: 3; dsize: 24; flags: S,12; content:"|00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|"; window: 2048; classtype: misc-activity; reference:url,www.f5.com/f5products/v9intro/index.html; sid: 2001611; rev:6; )
+
+#Submitted by Joseph Gama
+alert icmp $EXTERNAL_NET any -> $HOME_NET any (msg: "BLEEDING-EDGE ICMP PING IPTools"; itype: 8; icode: 0; content:"|A7 A7 A7 A7 A7 A7 A7 A7 A7 A7 A7 A7 A7 A7 A7 A7 A7 A7 A7 A7 A7 A7 A7 A7 A7 A7 A7 A7 A7 A7 A7 A7 A7 A7 A7 A7 A7 A7 A7 A7 A7 A7 A7 A7 A7 A7 A7 A7 A7 A7 A7 A7 A7 A7 A7 A7 A7 A7 A7 A7 A7 A7 A7 A7|"; depth: 64; reference: url,www.ks-soft.net/ip-tools.eng; classtype: misc-activity; reference:url,www.ks-soft.net/ip-tools.eng/index.htm; sid: 2000575; rev:3; )
+
+#By Jeff Kell
+alert tcp any any -> $SQL_SERVERS 3306 (msg: "BLEEDING-EDGE SCAN MYSQL 4.0 brute force root login attempt"; flow: to_server,established; content:"|01|"; within: 1; distance: 3; content:"root|00|"; nocase; within: 5; distance: 5; threshold: type both, track by_src, count 5, seconds 60; classtype: protocol-command-decode; sid: 2001906; rev:2; )
+
+# These are intended to catch new worms and such scanning internally. Careful of falses.
+alert tcp $HOME_NET any -> $EXTERNAL_NET 445 (msg: "BLEEDING-EDGE Behavioral Unusual Port 445 traffic, Potential Scan or Infection"; flags: S,12; threshold: type both, track by_src, count 200 , seconds 60; classtype: misc-activity; sid: 2001569; rev:9; )
+alert tcp $HOME_NET any -> $EXTERNAL_NET 139 (msg: "BLEEDING-EDGE Behavioral Unusual Port 139 traffic, Potential Scan or Infection"; flags: S,12; threshold: type both, track by_src, count 200 , seconds 60; classtype: misc-activity; sid: 2001579; rev:9; )
+alert tcp $HOME_NET any -> $EXTERNAL_NET 137 (msg: "BLEEDING-EDGE Behavioral Unusual Port 137 traffic, Potential Scan or Infection"; flags: S,12; threshold: type both, track by_src, count 200 , seconds 60; classtype: misc-activity; sid: 2001580; rev:9; )
+alert tcp $HOME_NET any -> $EXTERNAL_NET 135 (msg: "BLEEDING-EDGE Behavioral Unusual Port 135 traffic, Potential Scan or Infection"; flags: S,12; threshold: type both, track by_src, count 200 , seconds 60; classtype: misc-activity; sid: 2001581; rev:9; )
+alert tcp $HOME_NET any -> $EXTERNAL_NET 1434 (msg: "BLEEDING-EDGE Behavioral Unusual Port 1434 traffic, Potential Scan or Infection"; flags: S,12; threshold: type both, track by_src, count 200 , seconds 60; classtype: misc-activity; sid: 2001582; rev:9; )
+alert tcp $HOME_NET any -> $EXTERNAL_NET 1433 (msg: "BLEEDING-EDGE Behavioral Unusual Port 1433 traffic, Potential Scan or Infection"; flags: S,12; threshold: type both, track by_src, count 200 , seconds 60; classtype: misc-activity; sid: 2001583; rev:9; )
+
+#Submitted by Joseph Gama
+alert ip $EXTERNAL_NET any -> $HOME_NET any (msg: "BLEEDING-EDGE SCAN NMAP -sO"; dsize: 0; ip_proto: 21; reference: arachnids,162; classtype: attempted-recon; sid: 2000536; rev:2; )
+alert tcp $EXTERNAL_NET any -> $HOME_NET any (msg: "BLEEDING-EDGE SCAN NMAP -sS"; fragbits: !D; dsize: 0; flags: S,12; ack: 0; window: 2048; reference: arachnids,162; classtype: attempted-recon; sid: 2000537; rev:2; )
+alert tcp $EXTERNAL_NET any -> $HOME_NET any (msg: "BLEEDING-EDGE SCAN NMAP -sA (1)"; fragbits: !D; dsize: 0; flags: A,12; window: 1024; reference: arachnids,162; classtype: attempted-recon; sid: 2000538; rev:3; )
+alert tcp $EXTERNAL_NET any -> $HOME_NET any (msg: "BLEEDING-EDGE SCAN NMAP -sA (2)"; fragbits: !D; dsize: 0; flags: A,12; window: 3072; reference: arachnids,162; classtype: attempted-recon; sid: 2000540; rev:3; )
+alert tcp $EXTERNAL_NET any -> $HOME_NET any (msg: "BLEEDING-EDGE SCAN NMAP -f -sF"; fragbits: !M; dsize: 0; flags: F,12; ack: 0; window: 2048; reference: arachnids,162; classtype: attempted-recon; sid: 2000543; rev:2; )
+alert tcp $EXTERNAL_NET any -> $HOME_NET any (msg: "BLEEDING-EDGE SCAN NMAP -f -sN"; fragbits: !M; dsize: 0; flags: 0,12; ack: 0; window: 2048; reference: arachnids,162; classtype: attempted-recon; sid: 2000544; rev:2; )
+alert tcp $EXTERNAL_NET any -> $HOME_NET any (msg: "BLEEDING-EDGE SCAN NMAP -f -sS"; fragbits: !M; dsize: 0; flags: S,12; ack: 0; window: 2048; reference: arachnids,162; classtype: attempted-recon; sid: 2000545; rev:2; )
+alert tcp $EXTERNAL_NET any -> $HOME_NET any (msg: "BLEEDING-EDGE SCAN NMAP -f -sX"; fragbits: !M; dsize: 0; flags: FPU,12; ack: 0; window: 2048; reference: arachnids,162; classtype: attempted-recon; sid: 2000546; rev:2; )
+
+#Submitted by Matt Jonkman
+alert tcp $EXTERNAL_NET any -> $HOME_NET 22 (msg: "BLEEDING-EDGE Potential SSH Scan"; flags: S; flowbits: set,ssh.brute.attempt; threshold: type threshold, track by_src, count 5, seconds 120; classtype: suspicious-login; reference:url,www.whitedust.net/article/27/Recent%20SSH%20Brute-Force%20Attacks/; sid: 2001219; rev:12; )
+
+#Idea from dynamicnet
+alert tcp $EXTERNAL_NET any -> $HTTP_SERVERS 443 (msg: "BLEEDING-EDGE Scan Possible SSL Brute Force attack or Site Crawl"; flow: established; flags: S; threshold: type threshold, track by_src, count 100, seconds 60; classtype: attempted-dos; sid: 2001553; rev:5; )
+
+# These are intended to catch new worms and such scanning internally. Careful of falses.
+alert tcp any any -> any 23 (msg: "BLEEDING-EDGE Behavioral Unusually fast Telnet Connections, Potential Scan or Brute Force"; flags: S,12; threshold: type both, track by_src, count 30, seconds 60; classtype: misc-activity; reference:url,www.rapid7.com/nexpose-faq-answer2.htm; sid: 2001904; rev:3; )
+
+# Works for other proto's, may as well extend the idea
+alert tcp $HOME_NET any -> $EXTERNAL_NET 3389 (msg: "BLEEDING-EDGE Behavioral Unusually fast Terminal Server Traffic, Potential Scan or Infection"; flags: S,12; threshold: type both, track by_src, count 30 , seconds 60; classtype: misc-activity; sid: 2001972; rev:11; )
+

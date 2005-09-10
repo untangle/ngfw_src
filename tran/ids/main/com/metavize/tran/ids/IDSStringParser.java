@@ -33,8 +33,8 @@ public class IDSStringParser {
 		return parts;
 	}
 	
-	public static IDSRuleSignature parseSignature(String signatureString, int action) throws ParseException {
-		IDSRuleSignature returnSignature = new IDSRuleSignature(action);
+	public static IDSRuleSignature parseSignature(String signatureString, int action, IDSRule rule) throws ParseException {
+		IDSRuleSignature returnSignature = new IDSRuleSignature(action, rule);
 			
 		String replaceChar = ""+0xff42;
 		signatureString = signatureString.replaceAll("\\\\;",replaceChar);
@@ -107,10 +107,8 @@ public class IDSStringParser {
 	private static int parseAction(String action) throws ParseException {
 		String validActions[] = IDSRuleManager.ACTIONS;
 		for(int i=0; i < validActions.length;i++) {
-			if(validActions[i].equalsIgnoreCase(action)) {
-				System.out.println(validActions[i]+" "+action+": "+i); ///////////////////////////////////////////////////////////////////////
+			if(validActions[i].equalsIgnoreCase(action))
 				return i;
-			}
 		}
 		throw new ParseException("Not a valid action: " + action);
 	}

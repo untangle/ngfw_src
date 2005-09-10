@@ -21,7 +21,7 @@ public class IDSRuleSignature {
 	 * 
 	 * These rules should all be added at some point!
 	 *****************************************/
-	private String[] ignoreSafeOptions = { "rev","sid","classtype","reference" };
+	private String[] ignoreSafeOptions = { "rev","sid","reference","priority" };
 	/** **************************************/
 	
 	private static final int BLOCK_COUNTER 	= Transform.GENERIC_0_COUNTER;
@@ -32,6 +32,7 @@ public class IDSRuleSignature {
 	private List<IDSOption> options = new Vector<IDSOption>();
 	private IDSSessionInfo info;
 	
+	private IDSRule rule;
 	private String toString = "Starting..";
 	private String message = "No message set";
 	private int action;
@@ -42,9 +43,9 @@ public class IDSRuleSignature {
 	static {
 		log.setLevel(Level.WARN);
 	}
-	public IDSRuleSignature(int action) {
-		log.error("ActionInt: " + action);
+	public IDSRuleSignature(int action, IDSRule rule) {
 		this.action = action;
+		this.rule = rule;
 	}
 
 	public IDSSessionInfo getSessionInfo() {
@@ -58,6 +59,11 @@ public class IDSRuleSignature {
 	public boolean remove() {
 		return removeFlag;
 	}
+
+	public IDSRule rule() {
+		return rule;
+	}
+
 	public void addOption(String optionName, String params) {
 		 for(int i = 0; i < ignoreSafeOptions.length; i++) {
 			 if(optionName.equalsIgnoreCase(ignoreSafeOptions[i]))

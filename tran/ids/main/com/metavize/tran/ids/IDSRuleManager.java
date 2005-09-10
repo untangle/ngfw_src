@@ -52,7 +52,7 @@ public class IDSRuleManager {
 																													
 	private static final Logger log = Logger.getLogger(IDSRuleManager.class);
 	static {
-		log.setLevel(Level.ALL);
+		log.setLevel(Level.WARN);
 	}
 	public IDSRuleManager() {
 	}
@@ -67,11 +67,8 @@ public class IDSRuleManager {
 		long id = rule.getKeyValue();
 		IDSRule inMap = knownRules.get(id);
 		if(inMap != null) {
-			log.info("inMap != null");
 			rule.remove(false);
 			if(rule.getModified()) {	
-				log.info("in getModified == true");
-				rule.setModified(false);
 				
 				//Delete previous rule
 				IDSRuleHeader header = inMap.getHeader();
@@ -91,11 +88,10 @@ public class IDSRuleManager {
 
 		else {
 			log.info("Does not contain - adding");
-			rule.setModified(false);
 			addRule(rule);
 		}
 		//remove all rules with remove == true
-		//rule.setModified(false);
+		rule.setModified(false);
 			
 	}
 	
@@ -110,10 +106,10 @@ public class IDSRuleManager {
 		if(ruleText.length() <= 0 || ruleText.charAt(0) == '#')
 			return false;
 	
-		ruleText = substituteVariables(ruleText);
-		String ruleParts[] 			= IDSStringParser.parseRuleSplit(ruleText);
+		String noVarText = substituteVariables(ruleText);
+		String ruleParts[] 			= IDSStringParser.parseRuleSplit(noVarText);
 		IDSRuleHeader header		= IDSStringParser.parseHeader(ruleParts[0]);
-		IDSRuleSignature signature	= IDSStringParser.parseSignature(ruleParts[1], header.getAction());
+		IDSRuleSignature signature	= IDSStringParser.parseSignature(ruleParts[1], header.getAction(), rule);
 	
 		signature.setToString(ruleParts[1]);
 	
@@ -126,6 +122,8 @@ public class IDSRuleManager {
 					rule.setHeader(known);
 					rule.setSignature(signature);
 					rule.setText(ruleText);
+					if(rule.isLive())
+						System.out.println("BLOCK!");
 					knownRules.put(rule.getKeyValue(),rule);
 					return true;
 				}
@@ -134,6 +132,8 @@ public class IDSRuleManager {
 			newSignature = signature;
 			knownHeaders.add(header);
 
+			if(rule.isLive())
+				System.out.println("BLOCK!");
 			rule.setHeader(header);
 			rule.setSignature(signature);
 			rule.setText(ruleText);
@@ -147,6 +147,8 @@ public class IDSRuleManager {
 	}
 
 	public boolean canParse(String text) {
+		IDSRule test = new IDSRule("temp","Not set", "Not set");
+		
 		if(text.length() <= 0 || text.charAt(0) == '#')
 			return false;
 
@@ -154,7 +156,7 @@ public class IDSRuleManager {
 		try {
 			String ruleParts[]          = IDSStringParser.parseRuleSplit(text);
 			IDSRuleHeader header        = IDSStringParser.parseHeader(ruleParts[0]);
-			IDSRuleSignature signature  = IDSStringParser.parseSignature(ruleParts[1], header.getAction());
+			IDSRuleSignature signature  = IDSStringParser.parseSignature(ruleParts[1], header.getAction(),test);
 			
 			if(!signature.remove()) {
 				newSignature = signature;
