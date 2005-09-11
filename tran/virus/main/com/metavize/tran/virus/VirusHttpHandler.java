@@ -45,6 +45,7 @@ class VirusHttpHandler extends HttpStateMachine
     // make configurable
     private static final int TIMEOUT = 30000;
     private static final int SIZE_LIMIT = 256000;
+    private static final int MAX_SCAN_LIMIT = 200000000;
 
     private static final String BLOCK_MESSAGE
         = "<HTML><HEAD>"
@@ -80,6 +81,7 @@ class VirusHttpHandler extends HttpStateMachine
     private long bufferingStart;
     private boolean buffering;
     private int outstanding;
+    private int totalSize;
     private boolean persistent;
     private String extension;
     private String fileName;
@@ -183,6 +185,7 @@ class VirusHttpHandler extends HttpStateMachine
             buffering = true;
             bufferingStart = System.currentTimeMillis();
             outstanding = 0;
+            totalSize = 0;
             setupFile(reason);
             return TokenResult.NONE;
         } else {
@@ -407,6 +410,7 @@ class VirusHttpHandler extends HttpStateMachine
         }
 
         outstanding += buf.remaining();
+        totalSize += buf.remaining();
 
         if (buffering) {
             buffering = TIMEOUT > (System.currentTimeMillis() - bufferingStart)
@@ -425,8 +429,17 @@ class VirusHttpHandler extends HttpStateMachine
             }
         } else {                /* stay in trickle mode */
             logger.debug("trickling");
-            Chunk c = trickle();
-            return new TokenResult(new Token[] { c }, null);
+            if (MAX_SCAN_LIMIT < totalSize) {
+                logger.debug("MAX_SCAN_LIMIT exceeded, not scanning");
+                scan = false;
+                FileChunkStreamer streamer = new FileChunkStreamer
+                    (file, inFile, null, EndMarker.MARKER, false);
+                return new TokenResult(streamer, null);
+            } else {
+                logger.debug("continuing to trickle: " + totalSize);
+                Chunk c = trickle();
+                return new TokenResult(new Token[] { c }, null);
+            }
         }
     }
 
