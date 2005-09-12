@@ -77,15 +77,21 @@ public class StatsCache
                     // PAUSE A NORMAL AMOUNT OF TIME
                     Thread.sleep(SLEEP_MILLIS);
                 }
-		catch (Exception x) {
-                    // Server is probably down.
-                    // This is ugly: XXXXXXXXXXXXXXX
-		    try { Thread.currentThread().sleep(10000); } catch(Exception f) {}
-                }
+		catch (Exception e) {
+		    try{
+			Util.handleExceptionWithRestart("Error getting graph data", e);
+		    }
+		    catch(Exception f){
+			Util.handleExceptionNoRestart("Error getting graph data", f);
+			// Server is probably down.
+			// This is ugly: XXXXXXXXXXXXXXX
+			try { Thread.currentThread().sleep(10000); } catch(Exception g) {}
+		    }
+		}
             }
         }
     }
-
+    
     public class FakeTransform implements Transform {
         private TransformStats stats;
 

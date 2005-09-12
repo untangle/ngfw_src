@@ -436,10 +436,11 @@ public class Util {
 		return;
 	    }
 	    else if( throwableRef instanceof LoginStolenException ){
-		new LoginStolenJDialog(((LoginStolenException)throwableRef).getThief().getMvvmPrincipal().getName(),
-				       ((LoginStolenException)throwableRef).getThief().getClientAddr().getHostAddress());
+		String loginName = ((LoginStolenException)throwableRef).getThief().getMvvmPrincipal().getName();
+		String loginAddress = ((LoginStolenException)throwableRef).getThief().getClientAddr().getHostAddress();
+		new LoginStolenJDialog(loginName, loginAddress);
 		killDaemonThreads();
-		mLoginJFrame.resetLogin("Login ended by: " + ((LoginStolenException)throwableRef).getThief().getMvvmPrincipal().getName());
+		mLoginJFrame.resetLogin("Login ended by: " + loginName + " at " + loginAddress);
 		mLoginJFrame.reshowLogin();
 		return;
 	    }

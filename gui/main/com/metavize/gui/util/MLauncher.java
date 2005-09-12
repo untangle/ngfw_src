@@ -83,7 +83,11 @@ public class MLauncher {
 	public ShutdownHookThread(){
 	    super("MVCLIENT-ShutdownHookThread");
 	}
-        public void run(){}
+        public void run(){
+
+	    com.metavize.mvvm.client.MvvmRemoteContextFactory.factory().logout();
+
+	}
     }
         
 }

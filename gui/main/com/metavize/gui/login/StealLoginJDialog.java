@@ -42,7 +42,7 @@ public class StealLoginJDialog extends javax.swing.JDialog implements java.awt.e
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-        setTitle("Confirm Upgrade...");
+        setTitle("Confirm Login...");
         setModal(true);
         setResizable(false);
         cancelJButton.setFont(new java.awt.Font("Default", 0, 12));

@@ -40,7 +40,7 @@ final public class LoginStolenJDialog extends javax.swing.JDialog implements jav
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-        setTitle("Confirm Restart...");
+        setTitle("Confirm Logout...");
         setModal(true);
         setResizable(false);
         proceedJButton.setFont(new java.awt.Font("Default", 1, 12));
@@ -76,7 +76,7 @@ final public class LoginStolenJDialog extends javax.swing.JDialog implements jav
 
         labelJLabel.setFont(new java.awt.Font("Dialog", 1, 24));
         labelJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        labelJLabel.setText("Login Warning:");
+        labelJLabel.setText("Logout Warning:");
         labelJLabel.setDoubleBuffered(true);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
