@@ -214,11 +214,11 @@ public class MColoredTableCellEditor extends DefaultCellEditor implements KeyLis
     
     private void showStatusChange(){
 	if( selectedValue.equals(newValue) ){
-	    System.err.println("row UNCHANGED: " + newValue.toString() );
+	    //System.err.println("row UNCHANGED: " + newValue.toString() );
 	    mSortedTableModel.setRowState(selectedState, selectedModelRow);
 	}
 	else{
-	    System.err.println("row CHANGED from: " + selectedValue.toString() + " to: " + newValue.toString());
+	    //System.err.println("row CHANGED from: " + selectedValue.toString() + " to: " + newValue.toString());
 	    if(editedComponent instanceof MPasswordField){
 		if( ((MPasswordField)editedComponent).getGeneratesChangeEvent() ){
 		    mSortedTableModel.setRowChanged(selectedModelRow);
