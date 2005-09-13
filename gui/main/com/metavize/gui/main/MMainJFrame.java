@@ -192,6 +192,7 @@ public class MMainJFrame extends javax.swing.JFrame {
         aboutJButton = new javax.swing.JButton();
         configurationSpacerJPanel1 = new javax.swing.JPanel();
         upgradeJButton = new javax.swing.JButton();
+        rackJComboBox = new javax.swing.JComboBox();
         mPipelineJPanel = new com.metavize.gui.pipeline.MPipelineJPanel();
         backgroundJLabel = new com.metavize.gui.widgets.MTiledIconLabel();
 
@@ -226,6 +227,12 @@ public class MMainJFrame extends javax.swing.JFrame {
         metavizeJButton.setFocusable(false);
         metavizeJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         metavizeJButton.setMargin(new java.awt.Insets(1, 3, 3, 3));
+        metavizeJButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                metavizeJButtonActionPerformed(evt);
+            }
+        });
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -553,6 +560,21 @@ public class MMainJFrame extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(15, 20, 10, 20);
         controlsJPanel.add(upgradeJButton, gridBagConstraints);
 
+        rackJComboBox.setFocusable(false);
+        rackJComboBox.setMinimumSize(new java.awt.Dimension(160, 24));
+        rackJComboBox.setPreferredSize(new java.awt.Dimension(160, 24));
+        rackJComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rackJComboBoxActionPerformed(evt);
+            }
+        });
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.insets = new java.awt.Insets(147, 0, 0, 0);
+        controlsJPanel.add(rackJComboBox, gridBagConstraints);
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -585,6 +607,25 @@ public class MMainJFrame extends javax.swing.JFrame {
         java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
         setBounds((screenSize.width-1024)/2, (screenSize.height-768)/2, 1024, 768);
     }//GEN-END:initComponents
+
+    private void rackJComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rackJComboBoxActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_rackJComboBoxActionPerformed
+
+    private void metavizeJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_metavizeJButtonActionPerformed
+        try{
+	    metavizeJButton.setEnabled(false);
+	    PolicyJDialog policyJDialog = new PolicyJDialog();
+	    policyJDialog.setVisible(true);
+	}
+	catch(Exception e){
+	    try{ Util.handleExceptionWithRestart("Error showing policy management settings", e); }
+	    catch(Exception f){ Util.handleExceptionNoRestart("Error showing policy management settings", f); }
+	}
+	finally{
+            metavizeJButton.setEnabled(true);
+	}
+    }//GEN-LAST:event_metavizeJButtonActionPerformed
 
     private void protocolJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_protocolJButtonActionPerformed
         try{
@@ -835,6 +876,7 @@ public class MMainJFrame extends javax.swing.JFrame {
     private javax.swing.JButton metavizeJButton;
     private javax.swing.JButton networkJButton;
     private javax.swing.JButton protocolJButton;
+    private javax.swing.JComboBox rackJComboBox;
     private javax.swing.JButton remoteJButton;
     private javax.swing.JPanel storeJPanel;
     private javax.swing.JScrollPane storeJScrollPane;

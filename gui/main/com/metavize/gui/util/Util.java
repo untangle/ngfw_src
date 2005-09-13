@@ -27,7 +27,7 @@ import com.metavize.mvvm.*;
 import com.metavize.mvvm.client.*;
 import com.metavize.mvvm.security.*;
 import com.metavize.mvvm.tran.*;
-
+import com.metavize.mvvm.policy.*;
 
 public class Util {
 
@@ -81,15 +81,17 @@ public class Util {
     private static AdminManager adminManager;
     private static StatsCache statsCache;
     private static NetworkingManager networkingManager;
+    private static PolicyManager policyManager;
 
     public static void setMvvmContext(MvvmRemoteContext mvvmContextX){
-    mvvmContext = mvvmContextX;
-    toolboxManager = mvvmContext.toolboxManager();
-    transformManager = mvvmContext.transformManager();
+	mvvmContext = mvvmContextX;
+	toolboxManager = mvvmContext.toolboxManager();
+	transformManager = mvvmContext.transformManager();
 	adminManager = mvvmContext.adminManager();
 	networkingManager = mvvmContext.networkingManager();
-        // Somewhere else this should go? XXX jdi
-        statsCache = new StatsCache();
+	policyManager = mvvmContext.policyManager();
+	// Somewhere else this should go? XXX jdi
+	statsCache = new StatsCache();
     }
 
     public static MvvmRemoteContext getMvvmContext(){ return mvvmContext; }
@@ -98,6 +100,7 @@ public class Util {
     public static AdminManager getAdminManager(){ return adminManager; }
     public static StatsCache getStatsCache(){ return statsCache; }
     public static NetworkingManager getNetworkingManager(){ return networkingManager; }
+    public static PolicyManager getPolicyManager(){ return policyManager; }
     ///////////////////////////////////
 
 

@@ -540,10 +540,10 @@ public abstract class MSortedTableModel extends DefaultTableModel implements Ref
     }
     public ComboBoxModel generateComboBoxModel(Object[] options, Object setting){
         DefaultComboBoxModel returnComboBoxModel = new DefaultComboBoxModel();
-        for(int i=0; i < options.length; i++){
-            returnComboBoxModel.insertElementAt(options[i].toString(), i);
-        }
-        returnComboBoxModel.setSelectedItem(setting.toString());        
+	for( Object option : options ){
+	    returnComboBoxModel.addElement(option);
+	}
+        returnComboBoxModel.setSelectedItem(setting);
         return returnComboBoxModel;
     }
     protected Icon getHeaderRendererIcon(int column, int size) {
