@@ -14,6 +14,9 @@ package com.metavize.tran.mail.papi.smtp.sapi;
 import com.metavize.tran.mail.papi.smtp.*;
 import org.apache.log4j.Logger;
 import com.metavize.tran.mime.EmailAddress;
+import com.metavize.tran.mail.papi.BeginMIMEToken;
+import com.metavize.tran.mail.papi.ContinuedMIMEToken;
+import com.metavize.tran.mail.papi.CompleteMIMEToken;
 
 /**
  * Implementation of TransactionHandler which

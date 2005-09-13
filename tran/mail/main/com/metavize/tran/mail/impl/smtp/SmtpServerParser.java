@@ -83,8 +83,7 @@ class SmtpServerParser
         }
       }
       catch(Exception ex) {
-        //TODO bscott recover anything trapped in the parser
-        m_logger.error("Exception parsing server response", ex);
+        m_logger.warn("Exception parsing server response", ex);
         m_parser = null;
         declarePassthru();
         toks.clear();//Could truncate some stuff, but I suspect we're already hosed anyway.

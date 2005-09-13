@@ -15,6 +15,9 @@ package com.metavize.tran.mail.papi.smtp;
 import com.metavize.tran.token.TokenResultBuilder;
 import com.metavize.tran.token.Chunk;
 import org.apache.log4j.Logger;
+import com.metavize.tran.mail.papi.BeginMIMEToken;
+import com.metavize.tran.mail.papi.ContinuedMIMEToken;
+import com.metavize.tran.mail.papi.CompleteMIMEToken;
 
 
 

@@ -33,6 +33,9 @@ import com.metavize.tran.util.*;
 import org.apache.log4j.Logger;
 import java.util.*;
 import com.metavize.tran.mail.papi.MIMEAccumulator;
+import com.metavize.tran.mail.papi.CompleteMIMEToken;
+import com.metavize.tran.mail.papi.BeginMIMEToken;
+import com.metavize.tran.mail.papi.ContinuedMIMEToken;
 
 /**
  * ...name says it all...
@@ -101,7 +104,7 @@ class SmtpServerUnparser
       m_accumulator = bmt.getMIMEAccumulator();
       return new UnparseResult(
         getSmtpCasing().wrapUnparseStreamerForTrace(
-          bmt.toTCPStreamer(m_byteStuffer)));
+          bmt.toStuffedTCPStreamer(m_byteStuffer)));
     }
 
     //-----------------------------------------------------------
@@ -110,7 +113,7 @@ class SmtpServerUnparser
       getSessionTracker().beginMsgTransmission();
       return new UnparseResult(
         getSmtpCasing().wrapUnparseStreamerForTrace(
-        ((CompleteMIMEToken) token).toTCPStreamer(getPipeline(), true)));
+        ((CompleteMIMEToken) token).toStuffedTCPStreamer(getPipeline(), true)));
     }
     //-----------------------------------------------------------
     if(token instanceof ContinuedMIMEToken) {

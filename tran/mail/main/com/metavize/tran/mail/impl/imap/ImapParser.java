@@ -16,11 +16,9 @@ import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.mvvm.tapi.Pipeline;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.tran.token.TokenStreamer;
-import com.metavize.mvvm.tran.ParseException;
 import com.metavize.tran.token.AbstractParser;
 import com.metavize.tran.token.ParseResult;
 import com.metavize.tran.util.AsciiCharBuffer;
-
 import org.apache.log4j.Logger;
 
 
@@ -45,9 +43,16 @@ abstract class ImapParser
       pipelineFoundry().getPipeline(session.id());
   }
 
+  /**
+   * Accessor for the parent casing
+   */
   protected ImapCasing getImapCasing() {
     return m_parentCasing;
   }
+
+  /**
+   * Accessor for the pipeline of this session
+   */  
   protected Pipeline getPipeline() {
     return m_pipeline;
   }
@@ -81,7 +86,7 @@ abstract class ImapParser
 
   public TokenStreamer endSession() {
     m_logger.debug("End Session");
-    getImapCasing().endSession(isClientSide());
+    getImapCasing().endSession(true);
     return null;
   }
 
@@ -101,14 +106,13 @@ abstract class ImapParser
   protected static ByteBuffer compactIfNotEmpty(ByteBuffer buf,
     int maxSz) {
     if(buf.hasRemaining()) {
-      buf.compact();
-      if(buf.limit() < maxSz) {
-        ByteBuffer b = ByteBuffer.allocate(maxSz);
-        buf.flip();        
-        b.put(buf);
-        return b;
-      }
-      return buf;
+      //Note - do not compact, copy instead.  There was an issue
+      //w/ the original buffer being passed as tokens (and we were modifying
+      //the head).
+      ByteBuffer ret = ByteBuffer.allocate(maxSz);
+      ret.put(buf);
+      return ret;
+
     }
     else {
       return null;

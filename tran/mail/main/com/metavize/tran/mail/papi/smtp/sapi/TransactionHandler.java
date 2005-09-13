@@ -12,6 +12,9 @@
 package com.metavize.tran.mail.papi.smtp.sapi;
 
 import com.metavize.tran.mail.papi.smtp.*;
+import com.metavize.tran.mail.papi.BeginMIMEToken;
+import com.metavize.tran.mail.papi.ContinuedMIMEToken;
+import com.metavize.tran.mail.papi.CompleteMIMEToken;
 
 
 /**

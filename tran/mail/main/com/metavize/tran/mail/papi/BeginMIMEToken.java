@@ -9,26 +9,24 @@
  * $Id$
  */
 
-package com.metavize.tran.mail.papi.smtp;
+package com.metavize.tran.mail.papi;
 
 import org.apache.log4j.Logger;
 import com.metavize.tran.mime.MIMEMessage;
 import com.metavize.mvvm.tapi.event.TCPStreamer;
 import com.metavize.tran.token.MetadataToken;
-import com.metavize.tran.mail.papi.MIMEAccumulator;
-import com.metavize.tran.mail.papi.MessageInfo;
-import com.metavize.tran.mail.papi.ByteBufferByteStuffer;
 import java.nio.ByteBuffer;
 
 
 /**
  * Token reprsenting the Begining
- * of a MIME message.
- * <br>
- * Note that since this is a Metadata
- * Token, you must use {@link #toTCPStreamer toTCPStreamer}
- * to write this out
- * 
+ * of a MIME message.  The {@link #getMIMEAccumulator MIMEAccumulator}
+ * member may have only header bytes, or the entire message.  Note, however,
+ * that receivers of a BeginMIMEToken should <b>not</b> consider the message
+ * complete until receiving a {@link com.metavize.tran.mail.papi.ContinuedMIMEToken ContinuedMIMEToken}
+ * with its {@link com.metavize.tran.mail.papi.ContinuedMIMEToken#isLast last}
+ * property set to true.
+ *
  */
 public class BeginMIMEToken
   extends MetadataToken {
@@ -44,20 +42,32 @@ public class BeginMIMEToken
     MessageInfo messageInfo) {
     m_accumulator = accumulator;
     m_messageInfo = messageInfo;
-    //TODO bscott ***DEBUG*** remove debug
-    m_logger.debug("Created");
   }
 
-
+  /**
+   * Accessor for the MessageInfo of the email being
+   * transmitted.
+   */
   public MessageInfo getMessageInfo() {
     return m_messageInfo;
   }
 
+  /**
+   * Object which is gathering the MIME bytes for this email
+   */
   public MIMEAccumulator getMIMEAccumulator() {
     return m_accumulator;
   }
 
-
+  /**
+   * Get a TCPStreamer for the initial contents
+   * of this message, without byte stuffing.
+   * 
+   * @return the TCPStreamer
+   */
+  public TCPStreamer toUnstuffedTCPStreamer() {
+    return m_accumulator.toTCPStreamer();
+  }
 
   /**
    * Get a TokenStreamer for the initial
@@ -69,7 +79,7 @@ public class BeginMIMEToken
    * 
    * @return the TCPStreamer
    */
-  public TCPStreamer toTCPStreamer(ByteBufferByteStuffer byteStuffer) {
+  public TCPStreamer toStuffedTCPStreamer(ByteBufferByteStuffer byteStuffer) {
     return new ByteBtuffingTCPStreamer(m_accumulator.toTCPStreamer(),
       byteStuffer);
   }  

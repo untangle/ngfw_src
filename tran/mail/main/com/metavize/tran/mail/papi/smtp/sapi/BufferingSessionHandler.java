@@ -13,6 +13,7 @@ package com.metavize.tran.mail.papi.smtp.sapi;
 
 import com.metavize.tran.mail.papi.smtp.*;
 import com.metavize.tran.mail.papi.*;
+import com.metavize.tran.mail.papi.BeginMIMEToken;
 import com.metavize.tran.mime.*;
 
 import org.apache.log4j.Logger;

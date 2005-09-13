@@ -147,7 +147,10 @@ public class VirusTransformImpl extends AbstractTransform
                          Fitting.SMTP_TOKENS, Affinity.CLIENT, 5),
         new SoloPipeSpec("virus-pop", this,
                          new TokenAdaptor(this, new VirusPopFactory(this)),
-                         Fitting.POP_TOKENS, Affinity.SERVER, 5)
+                         Fitting.POP_TOKENS, Affinity.SERVER, 5),
+        new SoloPipeSpec("imap-smtp", this,
+                         new TokenAdaptor(this, new VirusImapFactory(this)),
+                         Fitting.IMAP_TOKENS, Affinity.SERVER, 5)
         };
 
     private final Logger logger = Logger.getLogger(VirusTransformImpl.class);

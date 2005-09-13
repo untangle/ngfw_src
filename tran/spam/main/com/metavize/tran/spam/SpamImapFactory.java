@@ -15,6 +15,7 @@ import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.tran.token.TokenHandler;
 import com.metavize.tran.token.TokenHandlerFactory;
 import org.apache.log4j.Logger;
+import com.metavize.tran.mail.papi.imap.ImapTokenStream;
 
 public class SpamImapFactory implements TokenHandlerFactory
 {
@@ -33,6 +34,7 @@ public class SpamImapFactory implements TokenHandlerFactory
 
     public TokenHandler tokenHandler(TCPSession session)
     {
-        return new SpamImapHandler(session, transform);
+      return new ImapTokenStream(session);
+//        return new SpamImapHandler(session, transform);
     }
 }

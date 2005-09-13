@@ -63,6 +63,22 @@ public class TokenResult
         this.c2s = null;
         this.streamer = true;
     }
+    /**
+     * Test if this TokenResult has data (Streamer or tokens)
+     * for the server (c2s)
+     */
+    public boolean hasDataForServer() {
+      return c2sStreamer != null || (c2s!=null && c2s.length>0);
+    }
+
+    /**
+     * Test if this TokenResult has data (Streamer or tokens)
+     * for the client (s2c)
+     */
+    
+    public boolean hasDataForClient() {
+      return s2cStreamer != null || (s2c!=null && s2c.length>0);
+    }
 
     // accessors --------------------------------------------------------------
 

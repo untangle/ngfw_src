@@ -18,6 +18,9 @@ import com.metavize.tran.token.TokenException;
 import com.metavize.tran.token.TokenResult;
 import org.apache.log4j.Logger;
 
+/**
+ * @depricated
+ */
 public abstract class ImapStateMachine extends AbstractTokenHandler
 {
     private final Logger logger = Logger.getLogger(ImapStateMachine.class);

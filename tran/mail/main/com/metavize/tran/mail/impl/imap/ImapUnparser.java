@@ -11,24 +11,14 @@
 
 package com.metavize.tran.mail.impl.imap;
 
-import static com.metavize.tran.util.Ascii.*;
-import static com.metavize.tran.util.BufferUtil.*;
-
-import com.metavize.tran.mail.papi.smtp.*;
-
-import com.metavize.tran.mail.papi.ByteBufferByteStuffer;
-
-import java.io.*;
-
 import java.nio.ByteBuffer;
-
-import com.metavize.mvvm.*;
-import com.metavize.mvvm.tapi.*;
+import com.metavize.mvvm.tapi.TCPSession;
+import com.metavize.mvvm.tapi.Pipeline;
+import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.tapi.event.TCPStreamer;
-import com.metavize.tran.mail.papi.ByteBufferByteStuffer;
-import com.metavize.tran.mail.papi.smtp.*;
-import com.metavize.tran.token.*;
-import com.metavize.tran.util.*;
+import com.metavize.tran.token.AbstractUnparser;
+import com.metavize.tran.token.ParseResult;
+import com.metavize.tran.util.AsciiCharBuffer;
 import org.apache.log4j.Logger;
 
 /**
@@ -52,9 +42,16 @@ abstract class ImapUnparser
       pipelineFoundry().getPipeline(session.id());
   }
 
+  /**
+   * Accessor for the parent casing
+   */
   protected ImapCasing getImapCasing() {
     return m_parentCasing;
   }
+
+  /**
+   * Accessor for the pipeline of this session
+   */
   protected Pipeline getPipeline() {
     return m_pipeline;
   }
@@ -88,7 +85,7 @@ abstract class ImapUnparser
 
   public TCPStreamer endSession() {
     m_logger.debug("End Session");
-    getImapCasing().endSession(isClientSide());
+    getImapCasing().endSession(false);
     return null;
   }  
   

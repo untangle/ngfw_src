@@ -9,15 +9,14 @@
  * $Id$
  */
 
-package com.metavize.tran.mail.papi.smtp;
+package com.metavize.tran.mail.papi;
 
 import com.metavize.tran.token.Token;
-import com.metavize.tran.mail.papi.MIMEAccumulator;
 import java.nio.ByteBuffer;
 
 
 /**
- * Token which follows a {@link com.metavize.tran.mail.BeginMIMEToken BeginMIMEToken}.
+ * Token which follows a {@link com.metavize.tran.mail.papi.BeginMIMEToken BeginMIMEToken}.
  * There may be one or more ContinuedMIMETokens after the begin token.  Remaining
  * interesting properties about this token are found in the internal
  * {@link #getMIMEChunk MIMEChunk}.
@@ -80,6 +79,14 @@ public final class ContinuedMIMEToken
    */
   public ByteBuffer getBytes() {
     return m_chunk.hasData()?m_chunk.getData():EMPTY_BUFFER;
+  }
+
+  /**
+   * Returns the number of bytes in this chunk of MIME.  May return
+   * zero if the internal chunk is null.
+   */
+  public int length() {
+    return m_chunk==null?0:m_chunk.length();
   }
   
 }

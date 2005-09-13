@@ -149,6 +149,14 @@ public class MIMEAccumulator {
         null:
         m_buf.duplicate();
     }
+    /**
+     * Length of internal buffer.  May be 0 is internal
+     * buffer is null
+     */
+    public int length() {
+      return m_buf==null?
+        0:m_buf.remaining();
+    }
     private void writtenToFile() {
       m_writtenToFile = true;
     }
@@ -669,8 +677,6 @@ public class MIMEAccumulator {
           //TODO bscott the JavaDocs are unclear about "0"
           m_readBuf.flip();
           m_logger.debug("Read a chunk of MIME from file of size: " + read);
-          //TODO: bscott remove heavy debug
-          m_logger.debug("Read: " + com.metavize.tran.util.ASCIIUtil.bbToString(m_readBuf));
           return m_readBuf;
         }
         else {

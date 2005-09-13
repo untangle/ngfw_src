@@ -18,6 +18,9 @@ import org.apache.log4j.Logger;
 import com.metavize.mvvm.tapi.Pipeline;
 import com.metavize.mvvm.MvvmContextFactory;
 import java.util.*;
+import com.metavize.tran.mail.papi.BeginMIMEToken;
+import com.metavize.tran.mail.papi.ContinuedMIMEToken;
+import com.metavize.tran.mail.papi.CompleteMIMEToken;
 
 
 

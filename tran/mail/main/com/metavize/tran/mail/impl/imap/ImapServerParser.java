@@ -12,57 +12,45 @@
 package com.metavize.tran.mail.impl.imap;
 
 import java.nio.ByteBuffer;
-
+import org.apache.log4j.Logger;
+import com.metavize.tran.mail.papi.imap.IMAPTokenizer;
 import com.metavize.mvvm.tapi.TCPSession;
+import com.metavize.tran.mime.MIMEPart;
+import com.metavize.tran.mime.MIMEMessageHeaders;
 import com.metavize.tran.token.AbstractParser;
+import com.metavize.tran.token.TokenStreamer;
 import com.metavize.tran.token.Chunk;
 import com.metavize.tran.token.Token;
 import com.metavize.tran.token.ParseException;
 import com.metavize.tran.token.ParseResult;
-import org.apache.log4j.Logger;
-
-import com.metavize.tran.mime.*;
-
-import com.metavize.tran.mail.papi.*;
-import com.metavize.tran.mail.papi.imap.*;
-
-import static com.metavize.tran.util.ASCIIUtil.*;
+import java.util.List;
+import java.util.LinkedList;
 import static com.metavize.tran.util.Ascii.*;
+import com.metavize.tran.mail.papi.MessageInfo;
+import com.metavize.tran.mail.papi.MessageBoundaryScanner;
+import com.metavize.tran.mail.papi.MIMEAccumulator;
+import com.metavize.tran.mail.papi.imap.ImapChunk;
+import com.metavize.tran.mail.papi.imap.UnparsableMIMEChunk;
+import com.metavize.tran.mail.papi.imap.BeginImapMIMEToken;
+import com.metavize.tran.mail.papi.ContinuedMIMEToken;
+import java.io.IOException;
+import com.metavize.tran.mail.papi.AddressKind;
+import com.metavize.tran.mail.papi.MessageInfoFactory;
 
-import com.metavize.tran.mail.papi.imap.*;
-
-import java.io.*;
-
-import java.util.*;
-
+/**
+ * 'name says it all...
+ */
 class ImapServerParser
   extends ImapParser {
 
-  //Fetch pattern variants
-
-  //Basic:
-  //<new line> [WORD|+|*] NNN "FETCH" "(" stuff ")"
-  //
-  //We care about some of the "stuff", such as:
-  //
-  //BODY[]
-  //RFC822
-  //If we see BODY[xxx], punt
-  //If we see BODY[]<nnn>, punt (cause the "<nnn>" is a partial fetch)
-
-  //States
-  //LOOKING_FOR_NEW_LINE
-  //SKIPPING_LITERAL (requires a count of the literal being skipped w/ progress)
-  //NEW_LINE (just saw a new line, or the begining of the conversation)
-  //NL_WORD (<new line> [WORD|+|*])
-  //NL_WORD_WORD
-  //FETCH_RESP 
-  //FETCH_OPEN_P (if not an open paren, punt)
-  //
-
+  /**
+   * State of the parser (*outer* parser)
+   */
   private enum ISPState {
     SCANNING,
-    DRAINING_MSG
+    DRAINING_HEADERS,
+    DRAINING_BODY,
+    DRAINING_HOSED,
   };
   
   private final Logger m_logger =
@@ -71,11 +59,9 @@ class ImapServerParser
   private final IMAPTokenizer m_tokenizer;
   private IMAPBodyScanner m_msgBoundaryScanner;
   private ISPState m_state = ISPState.SCANNING;
-  private int m_msgRemaining = 0;//@depricated
   private MessageGrabber m_msgGrabber;
 
     
-  // constructors -----------------------------------------------------------
 
   ImapServerParser(TCPSession session,
     ImapCasing parent) {
@@ -89,8 +75,241 @@ class ImapServerParser
     m_logger.debug("Created");
   }
 
-  // Parser methods ---------------------------------------------------------
 
+  public ParseResult parse(ByteBuffer buf) {
+
+
+    //TEMP - so folks don't hit my unfinished code by accident
+//    if(System.currentTimeMillis() > 0) {
+//      getImapCasing().traceParse(buf);
+//      return new ParseResult(new Chunk(buf));
+//    }
+
+    //do tracing stuff
+    getImapCasing().traceParse(buf);
+
+    //Check for passthru
+    if(isPassthru()) {
+      return new ParseResult(new Chunk(buf));
+    }
+  
+    ByteBuffer dup = null;
+    List<Token> toks = new LinkedList<Token>();
+
+    while(buf.hasRemaining()) {
+      switch(m_state) {
+        //===================================================
+        case SCANNING:
+          dup = buf.duplicate();
+          if(m_msgBoundaryScanner.scanForMsgState(buf)) {
+            m_logger.debug("Found message boundary start. Octet count: " +
+              m_msgBoundaryScanner.getMessageOctetCount());
+            
+            //First off, we need to put into the returned token
+            //list a Chunk with the bytes which were NOT the
+            //message
+            dup.limit(buf.position());
+            rewindLiteral(dup);
+            m_logger.debug("Adding protocol chunk of length " + dup.remaining());
+            toks.add(new ImapChunk(dup));
+
+            //Open-up the message grabber
+            if(!openMessageGrabber(m_msgBoundaryScanner.getMessageOctetCount())) {
+              m_logger.warn("Message will be bypassed because of error opening accumulator");
+              changeParserState(ISPState.DRAINING_HOSED);
+            }
+            else {
+              changeParserState(ISPState.DRAINING_HEADERS);
+            }
+            break;
+          }
+          else {
+            m_logger.debug("We need more data in SCANNING state");
+            dup.limit(buf.position());
+            m_logger.debug("Adding protocol chunk of length " + dup.remaining());
+            toks.add(new ImapChunk(dup));
+            return returnWithCompactedBuffer(buf, toks);
+          }
+          
+        //===================================================          
+        case DRAINING_HEADERS:
+          //Determine how much of this buffer we will consider as
+          //message data
+          dup = getNextBodyChunkBuffer(buf);
+
+          boolean foundEndOfHeaders =
+            m_msgGrabber.scanner.processHeaders(dup, 1024*4);//TODO bscott a real value here
+
+          //Adjust buffers, such that the HeaderBytes are accounted-for
+          //in "dup" and the original buffer is advanced past what we
+          //accounted-for in "dup"
+          int headersEnd = dup.position();
+          dup.limit(headersEnd);
+          dup.position(buf.position());
+          buf.position(headersEnd);
+
+          //Decrement the amount of message "read"
+          m_msgGrabber.decrementMsgRemaining(dup.remaining());
+
+          if(m_msgGrabber.scanner.isHeadersBlank()) {
+            m_logger.debug("Headers are blank. " +
+              m_msgGrabber.getMsgRemaining() + " msg bytes remain");
+          }
+          else {
+            m_logger.debug("About to write the " +
+              (foundEndOfHeaders?"last":"next") + " " +
+              dup.remaining() + " header bytes to disk. " +
+              m_msgGrabber.getMsgRemaining() + " msg bytes remain");
+          }
+
+          //Write what we have to disk.
+          if(!m_msgGrabber.accumulator.addHeaderBytes(dup, foundEndOfHeaders)) {
+            m_logger.error("Unable to write header bytes to disk.  Punt on this message");
+            
+            //Grab anything trapped thus far in the file (if we can
+            recoverTrappedHeaderBytes(toks);
+            
+            //Add the chunk we could not write to file
+            toks.add(new UnparsableMIMEChunk(dup));
+            
+            if(m_msgGrabber.hasMsgRemaining()) {
+              changeParserState(ISPState.DRAINING_HOSED);
+            }
+            else {
+              m_msgGrabber = null;
+              changeParserState(ISPState.SCANNING);
+            }
+            break;
+          }
+
+          if(foundEndOfHeaders) {//BEGIN End of Headers
+            MIMEMessageHeaders headers = m_msgGrabber.accumulator.parseHeaders();
+            if(headers == null) {//BEGIN Header PArse Error
+              m_logger.error("Unable to parse headers.  Pass accumulated " +
+                "bytes as a normal chunk, and passthru rest of message");
+              //Grab anything trapped thus far in the file (if we can
+              recoverTrappedHeaderBytes(toks);
+
+              //Figure out next state (in case that was the end of the message as well)
+              if(m_msgGrabber.hasMsgRemaining()) {
+                changeParserState(ISPState.DRAINING_HOSED);
+              }
+              else {
+                m_msgGrabber = null;
+                changeParserState(ISPState.SCANNING);
+              }
+              break;                             
+            }//ENDOF Header PArse Error
+            else {//BEGIN Headers parsed
+              m_logger.debug("Adding the BeginMIMEToken");
+              toks.add(
+                new BeginImapMIMEToken(
+                  m_msgGrabber.accumulator,
+                  createMessageInfo(headers),
+                  m_msgGrabber.getTotalMessageLength())
+                );
+              m_msgGrabber.noLongerAccumulatorMaster();
+              changeParserState(ISPState.DRAINING_BODY);
+  
+              //Check for an empty body
+              if(m_msgGrabber.scanner.isEmptyMessage()) {
+                m_logger.debug("Message blank.  Complete message tokens.");
+                toks.add(new ContinuedMIMEToken(m_msgGrabber.accumulator.createChunk(null, true)));
+                changeParserState(ISPState.SCANNING);
+                m_msgGrabber = null;
+              }
+            }//ENDOF Headers parsed
+          }//ENDOF End of Headers
+          else {
+            m_logger.debug("Need more header bytes");
+            return returnWithCompactedBuffer(buf, toks);
+          }
+          break;
+          
+        //===================================================          
+        case DRAINING_HOSED:
+          dup = getNextBodyChunkBuffer(buf);
+          m_logger.debug("Adding passthru body chunk of length " + dup.remaining());
+          toks.add(new UnparsableMIMEChunk(dup));
+
+          //Advance the buf past what we just transferred
+          buf.position(buf.position() + dup.remaining());
+
+          m_msgGrabber.decrementMsgRemaining(dup.remaining());
+
+          if(!m_msgGrabber.hasMsgRemaining()) {
+            m_logger.debug("Found message end");
+            changeParserState(ISPState.SCANNING);
+            m_msgGrabber.accumulator.dispose();//Redundant
+            m_msgGrabber = null;
+          }          
+          break;
+          
+        //===================================================          
+        case DRAINING_BODY:
+
+          MIMEAccumulator.MIMEChunk mimeChunk = null;
+        
+          if(m_msgGrabber.hasMsgRemaining()) {
+          
+            dup = getNextBodyChunkBuffer(buf);
+            m_msgGrabber.decrementMsgRemaining(dup.remaining());
+                        
+            m_logger.debug("Next body chunk of length " +
+              dup.remaining() + ", " + m_msgGrabber.getMsgRemaining() +
+              " message bytes remaining");
+          
+            buf.position(buf.position() + dup.remaining());
+            
+            if(m_msgGrabber.hasMsgRemaining()) {
+              m_logger.debug("Adding continued body chunk of length " + dup.remaining());
+              mimeChunk = m_msgGrabber.accumulator.createChunk(dup.slice(), false);              
+            }
+            else {
+              m_logger.debug("Adding final body chunk of length " + dup.remaining());
+              mimeChunk = m_msgGrabber.accumulator.createChunk(dup.slice(), true);
+              changeParserState(ISPState.SCANNING);
+              m_msgGrabber = null;          
+            }
+          }
+          else {
+            m_logger.debug("Adding terminal chunk (no data)");
+            mimeChunk = m_msgGrabber.accumulator.createChunk(null, true);
+            changeParserState(ISPState.SCANNING);
+            m_msgGrabber = null;          
+          }
+          toks.add(new ContinuedMIMEToken(mimeChunk));
+          break;          
+      }
+    }
+    //The only way to get here is an empty buffer.  I think
+    //this can only happen if the opening of a message is found at the end
+    //of a packet (or a complete body was found in one packet.  Eitherway,
+    //since the buffer is empty we don't worry about any remaining
+    //chunks.
+    m_logger.debug("Buffer empty.  Return tokens");
+    return new ParseResult(toks);
+  }
+
+  @Override
+  public TokenStreamer endSession() {
+    m_logger.debug("End Session");
+    return super.endSession();
+  }  
+
+  public ParseResult parseEnd(ByteBuffer buf) {
+    Chunk c = new Chunk(buf);
+
+    m_logger.debug(this + " passing chunk of size: " + buf.remaining());
+    return new ParseResult(c);
+  }
+
+
+
+  /**
+   * Helper which rewinds the buffer to the position *just before*
+   * a literal
+   */
   private void rewindLiteral(ByteBuffer buf) {
     for(int i = buf.limit()-1; i>=buf.position(); i--) {
       if(buf.get(i) == OPEN_BRACE_B) {
@@ -101,100 +320,63 @@ class ImapServerParser
     throw new RuntimeException("No \"{\" found to rewind-to");
   }
 
-  public ParseResult parse(ByteBuffer buf) {
-
-    //TEMP - so folks don't hit my unfinished code by accident
-    if(System.currentTimeMillis() > 0) {
-      return new ParseResult(new Chunk(buf));
-    }      
-  
-  
-    m_logger.debug("====== parse =====");
-    m_logger.debug("BEGIN ORIG");
-    m_logger.debug(bbToString(buf));
-    m_logger.debug("ENDOF ORIG");
-  
-    if(isPassthru()) {
-      return new ParseResult(new Chunk(buf));
+  private void changeParserState(ISPState state) {
+    if(m_state != state) {
+      m_logger.debug("Change state from \"" +
+        m_state + "\" to \"" + state + "\"");
+      m_state = state;
     }
-  
+    
+  }  
+
+  /**
+   * Helper method which duplicates buf with as-many body bytes as are appropriate
+   * based on the number of bytes remaining and the size of buf.  Does <b>not</b>
+   * advance "buf" to account for the transferred bytes.
+   */
+  private ByteBuffer getNextBodyChunkBuffer(ByteBuffer buf) {
     ByteBuffer dup = buf.duplicate();
-    List<Token> toks = new LinkedList<Token>();
-
-    //TODO bscott remove debugging "duplicate" calls to "dup"
-    while(buf.hasRemaining()) {
-      switch(m_state) {
-        case SCANNING:
-          if(m_msgBoundaryScanner.scanForMsgState(buf)) {
-            m_logger.debug("Found message boundary start.");
-            
-            //First off, we need to put into the returned token
-            //list a Chunk with the bytes which were NOT the
-            //message
-            dup.limit(buf.position());
-            rewindLiteral(dup);
-            m_logger.debug("Adding protocol chunk of length " + dup.remaining());
-            toks.add(new Chunk(dup.slice()));
-            
-            m_msgRemaining = m_msgBoundaryScanner.getMessageOctetCount();
-
-            //This is a simulation of stuff that'll be in place later.
-            toks.add(new Chunk(ByteBuffer.wrap(("{" + m_msgRemaining + "}\r\n").getBytes())));
-
-            //Replace the dup with stuff we haven't sent.
-            dup = buf.duplicate();
-            m_state = ISPState.DRAINING_MSG;
-            continue;
-          }
-          else {
-            m_logger.debug("We need more data in SCANNING state");
-            dup.limit(buf.position());
-            m_logger.debug("Adding protocol chunk of length " + dup.remaining());
-            toks.add(new Chunk(dup.slice()));
-            buf = compactIfNotEmpty(buf, m_tokenizer.getLongestWord());
-            m_logger.debug("Returning " + toks.size() + " tokens and a " +
-              (buf==null?"null buffer":"buffer at position " + buf.position()));
-            return new ParseResult(toks, buf);
-          }
-        case DRAINING_MSG:
-          int msgBytesInThisBuffer = m_msgRemaining > buf.remaining()?
-            buf.remaining():m_msgRemaining;
-          
-          dup.limit(dup.position() + msgBytesInThisBuffer);
-          m_logger.debug("Adding body chunk of length " + dup.remaining());
-          toks.add(new Chunk(dup.slice()));
-
-          //Assign the duplicate starting from the bytes we have not sent
-          //as tokens.  Also, advance the buf past what we sent
-          buf.position(buf.position() + msgBytesInThisBuffer);          
-          dup = buf.duplicate();
-                    
-          m_msgRemaining-=msgBytesInThisBuffer;
-          
-          if(m_msgRemaining <=0) {
-            m_logger.debug("Found message end");
-            m_state = ISPState.SCANNING;
-            m_msgRemaining = 0;
-          }
-          break;
-      }
+    dup.limit(dup.position() +
+      (m_msgGrabber.getMsgRemaining() > buf.remaining()?
+        buf.remaining():
+        m_msgGrabber.getMsgRemaining()));
+    return dup;
+  }
+  
+  /**
+   * Re-used logic broken-out to simplify "parse" method
+   */
+  private void recoverTrappedHeaderBytes(List<Token> toks) {
+    //Grab anything trapped thus far in the file (if we can
+    ByteBuffer trapped = m_msgGrabber.accumulator.drainFileToByteBuffer();
+    m_logger.debug("Close accumulator");
+    m_msgGrabber.accumulator.dispose();
+  
+    if(trapped == null) {
+      m_logger.debug("Could not recover buffered header bytes");
     }
-    //The only way to get here is an empty buffer.  I think
-    //this can only happen if the opening of a message is found at the end
-    //of a packet (or a complete body was found in one packet.  Eitherway,
-    //since the buffer is empty we don't worry about any remaining
-    //chunks.
-    m_logger.debug("Must have ended a message or msg opening at the end of a packet");
-    return new ParseResult(toks);
+    else {
+      m_logger.debug("Retreived " + trapped.remaining() + " bytes trapped in file");
+      toks.add(new UnparsableMIMEChunk(trapped));
+    }
+  }
+  
+  /**
+   * Helper method removing duplication in parse method
+   */
+  private ParseResult returnWithCompactedBuffer(ByteBuffer buf,
+    List<Token> toks) {
+    buf = compactIfNotEmpty(buf, m_tokenizer.getLongestWord());
+    m_logger.debug("Returning " + toks.size() + " tokens and a " +
+      (buf==null?"null buffer":"buffer at position " + buf.position()));
+    return new ParseResult(toks, buf);
   }
 
-  public ParseResult parseEnd(ByteBuffer buf) {
-    Chunk c = new Chunk(buf);
-
-    m_logger.debug(this + " passing chunk of size: " + buf.remaining());
-    return new ParseResult(c);
-  }
-
+  /**
+   * Open the MessageGrabber.  False is returned if the underlying
+   * MIMEAccumulator cannot be opened (however the message grabber
+   * is still created, to track the length of message consumed).
+   */
   private boolean openMessageGrabber(int totalMsgLen) {
     try {
       m_msgGrabber = new MessageGrabber(totalMsgLen,
@@ -203,6 +385,8 @@ class ImapServerParser
     }
     catch(IOException ex) {
       m_logger.error("Exception creating MIME Accumulator", ex);
+      m_msgGrabber = new MessageGrabber(totalMsgLen,
+        null);
       return false;
     }    
   }  
@@ -236,29 +420,39 @@ class ImapServerParser
     final MessageBoundaryScanner scanner;
     final MIMEAccumulator accumulator;
     private boolean m_isMasterOfAccumulator = true;
-    final int totalMsgLen;
+    private final int m_totalMsgLen;
     private int m_msgReadSoFar;
 
     MessageGrabber(int msgLength,
       MIMEAccumulator accumulator) {
       scanner = new MessageBoundaryScanner();
       this.accumulator = accumulator;
-      this.totalMsgLen = msgLength;
+      this.m_totalMsgLen = msgLength;
       m_msgReadSoFar = 0;
       
+    }
+    int getTotalMessageLength() {
+      return m_totalMsgLen;
+    }
+    boolean isAccumulatorHosed() {
+      return accumulator == null;
     }
     boolean hasMsgRemaining() {
       return getMsgRemaining() > 0;
     }
     int getMsgRemaining() {
-      return totalMsgLen - m_msgReadSoFar;
+      return m_totalMsgLen - m_msgReadSoFar;
     }
     void decrementMsgRemaining(int amt) {
-      m_msgReadSoFar-=amt;
+      m_msgReadSoFar+=amt;
     }
     boolean isMasterOfAccumulator() {
       return m_isMasterOfAccumulator;
     }
+    /**
+     * Called when we have passed-along the accumulator
+     * (in a "BeginMIMEToken").
+     */
     void noLongerAccumulatorMaster() {
       m_isMasterOfAccumulator = false;
     }
@@ -340,16 +534,19 @@ class ImapServerParser
     private int m_state = NL_XXXX_S;
     private int m_msgLength = -1;
     private int m_pushedStateForLiteral = -1;
-
+    private Logger m_logger =
+      Logger.getLogger(ImapServerParser.IMAPBodyScanner.class);
 
     IMAPBodyScanner() {
       changeState(NL_XXXX_S);
     }
 
     private void changeState(int newState) {
-      m_logger.debug("[$IMAPBodyScanner] Change state from " +
-        m_state + " to " + newState);
-      m_state = newState;
+      if(newState != m_state) {
+        m_logger.debug("Change state from " +
+          m_state + " to " + newState);
+        m_state = newState;
+      }
     }
 
     int getMessageOctetCount() {
@@ -364,8 +561,6 @@ class ImapServerParser
      */
     boolean scanForMsgState(ByteBuffer buf) {
 
-      m_logger.debug("BEGIN scanForMsgState");
-    
       //Reset the message length, as it never caries
       //over
       if(m_state == DRN_BDY_S) {
@@ -375,7 +570,6 @@ class ImapServerParser
       }
       
       while(buf.hasRemaining()) {
-        m_logger.debug("scanForMsgState (loop.  State " + m_state + ")");
         //Before we tokenize into a literal by-accident,
         //handle literal draining first
         if(m_state == SL_XXXX_S) {
