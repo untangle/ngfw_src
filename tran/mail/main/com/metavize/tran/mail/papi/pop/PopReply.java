@@ -48,12 +48,14 @@ public class PopReply implements Token
     private final String reply;
     private final String argument;
     private final String zMsgDataSz;
+    private final boolean hasSpace;
 
-    private PopReply(String reply, String argument, String zMsgDataSz)
+    private PopReply(String reply, String argument, String zMsgDataSz, boolean hasSpace)
     {
         this.reply = reply;
         this.argument = argument;
         this.zMsgDataSz = zMsgDataSz;
+        this.hasSpace = hasSpace;
     }
 
     // static factories ------------------------------------------------------
@@ -81,7 +83,7 @@ public class PopReply implements Token
             throw new ParseException("cannot identify reply: " + AsciiCharBuffer.wrap(buf));
         }
 
-        eatSpace(buf);
+        boolean space = eatSpace(buf);
 
         String arg;
         if (false == bIsMsgData) {
@@ -90,7 +92,7 @@ public class PopReply implements Token
             arg = consumeLine(buf, iEnd); /* consume up to end of line */
         }
 
-        return new PopReply(reply, (0 == arg.length()) ? null : arg, zMsgDataSz);
+        return new PopReply(reply, (0 == arg.length()) ? null : arg, zMsgDataSz, space);
     }
 
     // bean methods -----------------------------------------------------------
@@ -124,7 +126,7 @@ public class PopReply implements Token
      */
     public ByteBuffer getBytes()
     {
-        return getBytes(reply, argument);
+        return getBytes(reply, argument, hasSpace);
     }
 
     // Object methods ---------------------------------------------------------
@@ -135,14 +137,16 @@ public class PopReply implements Token
     }
 
     // private methods --------------------------------------------------------
-    private static ByteBuffer getBytes(String zReply, String zArgument)
+    private static ByteBuffer getBytes(String zReply, String zArgument, boolean bHasSpace)
     {
         int iLen = zReply.length() + (null == zArgument ? 0 : zArgument.length() + 1);
         ByteBuffer zBuf = ByteBuffer.allocate(iLen);
 
         zBuf.put(zReply.getBytes());
-        if (null != zArgument) {
+        if (true == bHasSpace) {
             zBuf.put((byte)SP); /* restore */
+        }
+        if (null != zArgument) {
             zBuf.put(zArgument.getBytes());
         }
 

@@ -146,15 +146,17 @@ public class PopCommand implements Token
     private final String command;
     private final String argument;
     private final String zUser;
+    private final boolean hasSpace;
     private final boolean bIsAuthLogin;
 
     // constructors -----------------------------------------------------------
 
-    private PopCommand(String command, String argument, String zUser, boolean bIsAuthLogin)
+    private PopCommand(String command, String argument, String zUser, boolean hasSpace, boolean bIsAuthLogin)
     {
         this.command = command;
         this.argument = argument;
         this.zUser = zUser;
+        this.hasSpace = hasSpace;
         this.bIsAuthLogin = bIsAuthLogin;
     }
 
@@ -168,9 +170,9 @@ public class PopCommand implements Token
             throw new ParseException("cannot identify command: " + AsciiCharBuffer.wrap(buf));
         }
 
-        eatSpace(zDup);
+        boolean space = eatSpace(zDup);
         String arg = consumeBuf(zDup); /* eat CRLF */
-        return new PopCommand(cmd, 0 == arg.length() ? null : arg, null, false);
+        return new PopCommand(cmd, 0 == arg.length() ? null : arg, null, space, false);
     }
 
     public static PopCommand parseUser(ByteBuffer buf) throws ParseException
@@ -196,9 +198,9 @@ public class PopCommand implements Token
             throw new ParseException("cannot identify command: " + AsciiCharBuffer.wrap(buf));
         }
 
-        eatSpace(zDup);
+        boolean space = eatSpace(zDup);
         String arg = consumeBuf(zDup); /* eat CRLF */
-        return new PopCommand(cmd, 0 == arg.length() ? null : arg, zUser, bIsAuthLogin);
+        return new PopCommand(cmd, 0 == arg.length() ? null : arg, zUser, space, bIsAuthLogin);
     }
 
     // accessors --------------------------------------------------------------
@@ -236,8 +238,10 @@ public class PopCommand implements Token
         ByteBuffer zBuf = ByteBuffer.allocate(iLen);
 
         zBuf.put(command.getBytes());
-        if (null != argument) {
+        if (true == hasSpace) {
             zBuf.put((byte)SP); /* restore */
+        }
+        if (null != argument) {
             zBuf.put(argument.getBytes());
         }
 
