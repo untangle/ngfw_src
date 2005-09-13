@@ -30,8 +30,8 @@ public class PolicyConfiguration implements Serializable
         systemPolicyRules = new ArrayList(sysRules.length);
         for (int i = 0; i < sysRules.length; i++)
             systemPolicyRules.add(sysRules[i]);
-        userPolicyRules = new ArrayList(sysRules.length);
-        for (int i = 0; i < sysRules.length; i++)
+        userPolicyRules = new ArrayList(userRules.length);
+        for (int i = 0; i < userRules.length; i++)
             userPolicyRules.add(userRules[i]);
     }
 
