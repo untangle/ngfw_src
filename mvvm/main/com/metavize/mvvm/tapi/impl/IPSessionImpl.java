@@ -190,7 +190,7 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
             // we're just using the stupid passthrough version.
             if (!released) {
                 String sideName = side == CLIENT ? "client" : "server";
-                error("Ignoring crumb for dead " + sideName + " outgoing socket queue");
+                warn("Ignoring crumb for dead " + sideName + " outgoing socket queue");
             }
             return;
         }
