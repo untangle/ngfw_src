@@ -29,6 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.metavize.mvvm.MackageDesc;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.logging.LogMailer;
+import com.metavize.mvvm.policy.Policy;
 import com.metavize.mvvm.security.Tid;
 import com.metavize.mvvm.tran.DeployException;
 import com.metavize.mvvm.tran.TransformContext;
@@ -149,6 +150,11 @@ class TransformManagerImpl implements TransformManager
         }
 
         return l.toArray(TID_PROTO);
+    }
+
+    public Tid[] transformInstances(Policy policy)
+    {
+        return new Tid[0]; // XXX implement
     }
 
     public TransformContext transformContext(Tid tid)

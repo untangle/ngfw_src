@@ -13,6 +13,7 @@ package com.metavize.mvvm.tran;
 
 import java.util.Map;
 
+import com.metavize.mvvm.policy.Policy;
 import com.metavize.mvvm.security.Tid;
 
 /**
@@ -39,10 +40,19 @@ public interface TransformManager
     Tid[] transformInstances(String name);
 
     /**
-     * Create a new transform instance.
+     * Transform instances by policy.
+     *
+     * @param policy policy of transform.
+     * @return tids of corresponding transforms.
+     */
+    Tid[] transformInstances(Policy policy);
+
+    /**
+     * Create a new transform instance under the default policy.
      *
      * @param name of the transform.
      * @return the <code>tid</code> of the instance.
+     * @exception DeployException if the instance cannot be created.
      */
     Tid instantiate(String name) throws DeployException;
 
