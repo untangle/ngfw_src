@@ -49,8 +49,10 @@ public class CasingPipeSpec extends PipeSpec
     {
         super(name, transform, subscriptions);
 
-        insideAdaptor = new CasingAdaptor(casingFactory, true, true);
-        outsideAdaptor = new CasingAdaptor(casingFactory, false, true);
+        insideAdaptor = new CasingAdaptor(transform, casingFactory, true,
+                                          true);
+        outsideAdaptor = new CasingAdaptor(transform, casingFactory, false,
+                                           true);
 
         this.input = input;
         this.output = output;
@@ -62,8 +64,10 @@ public class CasingPipeSpec extends PipeSpec
     {
         super(name, transform);
 
-        insideAdaptor = new CasingAdaptor(casingFactory, true, true);
-        outsideAdaptor = new CasingAdaptor(casingFactory, false, true);
+        insideAdaptor = new CasingAdaptor(transform, casingFactory, true,
+                                          true);
+        outsideAdaptor = new CasingAdaptor(transform, casingFactory, false,
+                                           true);
 
         this.input = input;
         this.output = output;

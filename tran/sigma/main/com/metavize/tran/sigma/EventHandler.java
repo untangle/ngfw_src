@@ -12,8 +12,6 @@
 package com.metavize.tran.sigma;
 
 import java.nio.*;
-import java.util.ArrayList;
-import java.util.regex.Pattern;
 
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.tapi.*;
@@ -31,7 +29,10 @@ public class EventHandler extends AbstractEventHandler
         public int myState;
     }
 
-    public EventHandler() {}
+    public EventHandler(Transform transform)
+    {
+        super(transform);
+    }
 
     public void setSettings(SigmaSettings settings)
     {
@@ -71,14 +72,14 @@ public class EventHandler extends AbstractEventHandler
     }
 
     public void handleUDPClientPacket (UDPPacketEvent e)
-	   throws MPipeException
+       throws MPipeException
     {
         UDPSession sess = e.session();
         sess.sendClientPacket(e.packet(), e.header());
     }
 
     public void handleUDPServerPacket (UDPPacketEvent e)
-	   throws MPipeException
+       throws MPipeException
     {
         UDPSession sess = e.session();
         sess.sendClientPacket(e.packet(), e.header());

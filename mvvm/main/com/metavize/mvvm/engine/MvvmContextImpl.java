@@ -160,11 +160,6 @@ public class MvvmContextImpl extends MvvmContextBase
         return adminManager.mvvmLogin();
     }
 
-    public TransformContext transformContext(ClassLoader cl)
-    {
-        return TransformContextImpl.getTransformContext(cl);
-    }
-
     // service methods --------------------------------------------------------
 
     public Session openSession()

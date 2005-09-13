@@ -12,7 +12,6 @@ package com.metavize.tran.reporting;
 
 import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.PipeSpec;
-import com.metavize.mvvm.tapi.TransformContextFactory;
 import net.sf.hibernate.HibernateException;
 import net.sf.hibernate.Query;
 import net.sf.hibernate.Session;
@@ -30,7 +29,7 @@ public class ReportingTransformImpl extends AbstractTransform implements Reporti
 
     public void setReportingSettings(ReportingSettings settings)
     {
-        Session s = TransformContextFactory.context().openSession();
+        Session s = getTransformContext().openSession();
         try {
             Transaction tx = s.beginTransaction();
 
@@ -62,7 +61,7 @@ public class ReportingTransformImpl extends AbstractTransform implements Reporti
 
     protected void postInit(String[] args)
     {
-        Session s = TransformContextFactory.context().openSession();
+        Session s = getTransformContext().openSession();
         try {
             Transaction tx = s.beginTransaction();
 

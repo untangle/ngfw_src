@@ -187,8 +187,6 @@ public interface MvvmLocalContext
      */
     MvvmLogin mvvmLogin();
 
-    TransformContext transformContext(ClassLoader cl);
-
     /**
      * Get a new Hibernate <code>Session</code>. This is session is
      * only good for persisting classes loaded by the MVVM's

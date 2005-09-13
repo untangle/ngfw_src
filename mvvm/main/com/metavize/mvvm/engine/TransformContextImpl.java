@@ -19,9 +19,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 import com.metavize.mvvm.MackageDesc;
 import com.metavize.mvvm.MvvmContextFactory;
@@ -47,11 +45,7 @@ import org.apache.log4j.Logger;
 
 class TransformContextImpl implements TransformContext
 {
-    private static final Map<ClassLoader, TransformContextImpl> CONTEXTS
-        = new ConcurrentHashMap<ClassLoader, TransformContextImpl>();
-
-    private static final Logger logger = Logger
-        .getLogger(TransformContextImpl.class);
+    private static final Logger logger = Logger.getLogger(TransformContextImpl.class);
 
     private static final URL[] URL_PROTO = new URL[0];
 
@@ -147,7 +141,6 @@ class TransformContextImpl implements TransformContext
 
         CasingClassLoader parentCl = transformManager.getCasingClassLoader();
         classLoader = new URLClassLoader(resources, parentCl);
-        CONTEXTS.put(classLoader, this);
     }
 
     void init(String[] args) throws DeployException
@@ -176,6 +169,7 @@ class TransformContextImpl implements TransformContext
         // entering transform ClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         ct.setContextClassLoader(classLoader);
         try {
+            transformManager.registerThreadContext(this);
             sessionFactory = Util.makeSessionFactory(classLoader);
 
             String tidName = tid.getName();
@@ -206,14 +200,10 @@ class TransformContextImpl implements TransformContext
         } catch (TransformException exn) {
             throw new DeployException(exn);
         } finally {
+            transformManager.deregisterThreadContext();
             ct.setContextClassLoader(oldCl);
             // left transform ClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         }
-    }
-
-    static TransformContext getTransformContext(ClassLoader cl)
-    {
-        return CONTEXTS.get(cl);
     }
 
     // TransformContext -------------------------------------------------------
@@ -286,12 +276,6 @@ class TransformContextImpl implements TransformContext
         return persistentState;
     }
 
-    static URLClassLoader[] getClassLoaders()
-    {
-        return CONTEXTS.keySet()
-            .toArray(new URLClassLoader[CONTEXTS.size()]);
-    }
-
     void destroy() throws UndeployException
     {
         Thread ct = Thread.currentThread();
@@ -299,6 +283,7 @@ class TransformContextImpl implements TransformContext
         // entering TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         ct.setContextClassLoader(classLoader);
         try {
+            transformManager.registerThreadContext(this);
             if (transform.getRunState() == TransformState.RUNNING) {
                 transform.stop();
             }
@@ -306,6 +291,7 @@ class TransformContextImpl implements TransformContext
         } catch (TransformException exn) {
             throw new UndeployException(exn);
         } finally {
+            transformManager.deregisterThreadContext();
             ct.setContextClassLoader(classLoader);
             // left TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         }
@@ -317,8 +303,6 @@ class TransformContextImpl implements TransformContext
         } catch (HibernateException exn) {
             logger.warn("could not close Hibernate SessionFactory", exn);
         }
-
-        CONTEXTS.remove(classLoader);
     }
 
     void unload()
@@ -328,13 +312,13 @@ class TransformContextImpl implements TransformContext
         // Entering TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         ct.setContextClassLoader(classLoader);
         try {
+            transformManager.registerThreadContext(this);
             transform.unload();
         } finally {
+            transformManager.deregisterThreadContext();
             Thread.currentThread().setContextClassLoader(oldCl);
             // Left TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         }
-
-        CONTEXTS.remove(classLoader);
     }
 
     // private methods --------------------------------------------------------

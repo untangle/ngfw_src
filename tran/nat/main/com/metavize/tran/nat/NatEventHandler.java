@@ -11,42 +11,33 @@
 
 package com.metavize.tran.nat;
 
-import java.util.List;
-import java.util.LinkedList;
-import java.util.Iterator;
 import java.net.InetAddress;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
-import com.metavize.mvvm.tapi.Protocol;
-
-import com.metavize.mvvm.NetworkingConfiguration;
-
-import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.ArgonManager;
-
+import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.NetworkingConfiguration;
 import com.metavize.mvvm.tapi.AbstractEventHandler;
 import com.metavize.mvvm.tapi.IPNewSessionRequest;
-import com.metavize.mvvm.tapi.UDPNewSessionRequest;
+import com.metavize.mvvm.tapi.IPSession;
 import com.metavize.mvvm.tapi.MPipeException;
-
+import com.metavize.mvvm.tapi.Protocol;
+import com.metavize.mvvm.tapi.UDPNewSessionRequest;
+import com.metavize.mvvm.tapi.UDPSession;
 import com.metavize.mvvm.tapi.event.TCPNewSessionRequestEvent;
+import com.metavize.mvvm.tapi.event.TCPSessionEvent;
 import com.metavize.mvvm.tapi.event.UDPNewSessionRequestEvent;
 import com.metavize.mvvm.tapi.event.UDPSessionEvent;
-import com.metavize.mvvm.tapi.event.TCPSessionEvent;
-
-import com.metavize.mvvm.tapi.IPSession;
-import com.metavize.mvvm.tapi.UDPSession;
-
+import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.Transform;
 import com.metavize.mvvm.tran.TransformException;
-import com.metavize.mvvm.argon.ArgonException;
-
-import org.apache.log4j.Logger;
-
-import com.metavize.mvvm.tran.IPaddr;
-import com.metavize.mvvm.tran.firewall.ProtocolMatcher;
 import com.metavize.mvvm.tran.firewall.IPMatcher;
-import com.metavize.mvvm.tran.firewall.PortMatcher;
 import com.metavize.mvvm.tran.firewall.IntfMatcher;
+import com.metavize.mvvm.tran.firewall.PortMatcher;
+import com.metavize.mvvm.tran.firewall.ProtocolMatcher;
+import org.apache.log4j.Logger;
 
 /* Import all of the constants from NatConstants (1.5 feature) */
 import static com.metavize.tran.nat.NatConstants.*;
@@ -58,7 +49,7 @@ class NatEventHandler extends AbstractEventHandler
 
     /* Number of milliseconds to wait in between updating the address and updating the mvvm */
     private static final int SLEEP_TIME = 1000;
-    
+
     /* match to determine whether a session is natted */
     /* XXX Probably need to initialized this with a value */
     private RedirectMatcher nat;
@@ -67,36 +58,38 @@ class NatEventHandler extends AbstractEventHandler
     /* match to determine  whether a session is directed for the dmz */
     /* XXX Probably need to initialized this with a value */
     private RedirectMatcher dmz = RedirectMatcher.MATCHER_DISABLED;
-    
+
     /* True if logging DMZ redirects */
     private boolean isDmzLoggingEnabled = false;
-    
+
     /* All of the other rules */
     /* Use an empty list rather than null */
     private List<RedirectMatcher> redirectList = new LinkedList<RedirectMatcher>();
 
     /* tracks the open TCP ports for NAT */
     private final PortList tcpPortList;
-    
+
     /* Tracks the open UDP ports for NAT */
     private final PortList udpPortList;
-    
+
     /* Tracks the open ICMP identifiers, Not exactly a port, but same kind of thing */
     private final PortList icmpPidList;
 
     /* The internal address */
     private IPaddr internalAddress;
     private IPaddr internalSubnet;
-    
+
     /* Nat Transform */
     private final NatImpl transform;
 
     /* NatStatisticManager */
     private final NatStatisticManager statisticManager;
-    
+
     /* Setup  */
     NatEventHandler( NatImpl transform )
     {
+        super(transform);
+
         tcpPortList = PortList.makePortList( TCP_NAT_PORT_START, TCP_NAT_PORT_END );
         udpPortList = PortList.makePortList( UDP_NAT_PORT_START, UDP_NAT_PORT_END );
         icmpPidList = PortList.makePortList( ICMP_PID_START, ICMP_PID_END );
@@ -106,7 +99,7 @@ class NatEventHandler extends AbstractEventHandler
 
     public void handleTCPNewSessionRequest( TCPNewSessionRequestEvent event )
         throws MPipeException
-    {        
+    {
         handleNewSessionRequest( event.sessionRequest(), Protocol.TCP );
     }
 
@@ -123,34 +116,34 @@ class NatEventHandler extends AbstractEventHandler
         int         clientPort = request.clientPort();
         InetAddress serverAddr = request.serverAddr();
         int         serverPort = request.serverPort();
-        
+
         NatAttachment attachment = new NatAttachment();
 
         request.attach( attachment );
-        
+
         /* Check for NAT, Redirects or DMZ */
         try {
             if ( isNat(  request, protocol ) ||
-                 isRedirect( request, protocol ) || 
+                 isRedirect( request, protocol ) ||
                  isDmz(  request,  protocol )) {
                 request.release( true );
-                
+
                 if ( isFtp( request, protocol )) {
                     transform.getSessionManager().registerSession( request, protocol,
                                                                    clientAddr, clientPort,
                                                                    serverAddr, serverPort );
-                    
+
                     attachment.isManagedSession( true );
                 }
                 return;
             }
-            
+
             /* If nat is on, and this session wasn't natted, redirected or dmzed, it
              * must be rejected */
             if ( nat.isEnabled()) {
                 /* Increment the block counter */
                 transform.incrementCount( BLOCK_COUNTER ); // BLOCK COUNTER
-                
+
                 /* XXX How should the session be rejected */
                 request.rejectSilently();
                 return;
@@ -160,7 +153,7 @@ class NatEventHandler extends AbstractEventHandler
             request.rejectSilently();
             return;
         }
-        
+
         /* Otherwise release the session, and don't care about the finalization */
         request.release(false);
     }
@@ -170,13 +163,13 @@ class NatEventHandler extends AbstractEventHandler
     {
         cleanupSession( Protocol.TCP, event.ipsession());
     }
-    
+
     public void handleUDPFinalized(UDPSessionEvent event)
         throws MPipeException
     {
         /* XXX Special case ICMP */
         UDPSession udpsession = (UDPSession)event.ipsession();
-        
+
         if ( udpsession.isPing()) {
             NatAttachment attachment = (NatAttachment)udpsession.attachment();
             int pid = udpsession.icmpId();
@@ -186,18 +179,18 @@ class NatEventHandler extends AbstractEventHandler
                 logger.error( "null attachment on Natd session" );
                 return;
             }
-            
+
             releasePid = attachment.releasePort();
-            
+
             if ( pid != releasePid ) {
-                logger.error( "Mismatch on the attached port and the session port " + 
+                logger.error( "Mismatch on the attached port and the session port " +
                               pid + "!=" + releasePid );
                 return;
             }
-            
+
             if ( releasePid != 0 ) {
                 logger.debug( "ICMP: Releasing pid: " + releasePid );
-                
+
                 icmpPidList.releasePort( releasePid );
             } else {
                 logger.debug( "Ignoring non-natted pid: " + pid );
@@ -207,7 +200,7 @@ class NatEventHandler extends AbstractEventHandler
             cleanupSession( Protocol.UDP, udpsession );
         }
     }
-    
+
     void configure( NatSettings settings, NetworkingConfiguration netConfig ) throws TransformException
     {
         IPMatcher localHostMatcher = IPMatcher.MATCHER_LOCAL;
@@ -222,16 +215,16 @@ class NatEventHandler extends AbstractEventHandler
             /* XXX Update to use local host */
             nat = new RedirectMatcher( true, ProtocolMatcher.MATCHER_ALL,
                                        IntfMatcher.MATCHER_IN, IntfMatcher.MATCHER_ALL,
-                                       natLocalNetwork, IPMatcher.MATCHER_ALL, 
+                                       natLocalNetwork, IPMatcher.MATCHER_ALL,
                                        PortMatcher.MATCHER_ALL, PortMatcher.MATCHER_ALL,
                                        false, null, -1 );
-            
+
             enableNat( netConfig );
         } else {
             nat = RedirectMatcher.MATCHER_DISABLED;
             disableNat( netConfig );
         }
-        
+
         /* Configure the DMZ */
         if ( settings.getDmzEnabled()) {
             dmz = new RedirectMatcher( true, ProtocolMatcher.MATCHER_ALL,
@@ -244,7 +237,7 @@ class NatEventHandler extends AbstractEventHandler
             dmz = RedirectMatcher.MATCHER_DISABLED;
             isDmzLoggingEnabled = false;
         }
-        
+
         /* Empty out the list */
         redirectList.clear();
 
@@ -258,7 +251,7 @@ class NatEventHandler extends AbstractEventHandler
             for ( Iterator<RedirectRule> iter = list.iterator() ; iter.hasNext() ; index++ ) {
                 redirectList.add( new RedirectMatcher( iter.next(), index ));
             }
-        }        
+        }
     }
 
     void deconfigure() throws TransformException
@@ -272,32 +265,32 @@ class NatEventHandler extends AbstractEventHandler
     {
         return nat;
     }
-    
+
 
     RedirectMatcher getDmz()
     {
         return dmz;
     }
-    
+
     List <RedirectMatcher> getRedirectList()
     {
         return redirectList;
     }
-    
+
     /**
      * Determine if a session is natted, and if necessary, rewrite its session information.
      */
-    private boolean isNat( IPNewSessionRequest request, Protocol protocol ) 
+    private boolean isNat( IPNewSessionRequest request, Protocol protocol )
         throws MPipeException, NatUnconfiguredException
     {
         int port;
-                
+
         if ( nat.isMatch( request, protocol )) {
             /* Check to see if this is destined to the NATd network, if it is drop it */
             if ( natLocalNetwork.isMatch( request.serverAddr())) {
                 return false;
             }
-            
+
             /* Check to see if this is redirect, check before changing the source address */
             isRedirect(  request, protocol );
 
@@ -310,7 +303,7 @@ class NatEventHandler extends AbstractEventHandler
             if (localAddr == null) throw NatUnconfiguredException.getInstance();
 
             request.clientAddr(localAddr);
-            
+
             /* Set the client port */
             /* XXX THIS IS A HACK, it really should check if the protocol is ICMP, but
              * for now there are only UDP sessions */
@@ -321,10 +314,10 @@ class NatEventHandler extends AbstractEventHandler
             } else {
                 port = getNextPort( protocol );
                 request.clientPort( port );
-                
+
                 logger.debug( "Redirecting session to port: " + port );
             }
-            
+
             ((NatAttachment)request.attachment()).releasePort( port );
 
             /* Increment the NAT counter */
@@ -332,7 +325,7 @@ class NatEventHandler extends AbstractEventHandler
 
             /* Log the stat */
             statisticManager.incrNatSessions();
-            
+
             return true;
         }
 
@@ -348,13 +341,13 @@ class NatEventHandler extends AbstractEventHandler
         if ( transform.getSessionManager().isSessionRedirect( request, protocol )) {
             /* Increment the NAT counter */
             transform.incrementCount( REDIR_COUNTER );
-            
+
             return true;
         }
 
         for ( Iterator<RedirectMatcher> iter = redirectList.iterator(); iter.hasNext(); ) {
             RedirectMatcher matcher = iter.next();
-            
+
             if ( matcher.isMatch( request, protocol )) {
                 /* Redirect the session */
                 matcher.redirect( request );
@@ -368,7 +361,7 @@ class NatEventHandler extends AbstractEventHandler
                 } else if ( matcher.rule().getLog()) {
                     eventLogger.info( new RedirectEvent( request.id(), matcher.rule(), matcher.ruleIndex()));
                 }
-                
+
                 /* Log the stat */
                 statisticManager.incrRedirect( protocol, request );
 
@@ -385,7 +378,7 @@ class NatEventHandler extends AbstractEventHandler
     {
         if ( dmz.isMatch( request, protocol )) {
             dmz.redirect( request );
-            
+
             /* Increment the DMZ counter */
             transform.incrementCount( DMZ_COUNTER ); // DMZ COUNTER
 
@@ -405,12 +398,12 @@ class NatEventHandler extends AbstractEventHandler
      * Retrieve the next port from the port list
      */
     int getNextPort( Protocol protocol )
-    {                
+    {
         return getPortList( protocol ).getNextPort();
     }
 
     /**
-     * Release a port 
+     * Release a port
      * Utility function for NatSessionManager.
      */
     void releasePort( Protocol protocol, int port )
@@ -423,9 +416,9 @@ class NatEventHandler extends AbstractEventHandler
      * Presently not implemented to handle ICMP sessions.
      */
     private void cleanupSession( Protocol protocol, IPSession session )
-    {        
+    {
         NatAttachment attachment = (NatAttachment)session.attachment();
-        
+
         if ( attachment == null ) {
             logger.error( "null attachment on Natd session" );
             return;
@@ -434,14 +427,14 @@ class NatEventHandler extends AbstractEventHandler
         int releasePort = attachment.releasePort();
 
         if ( releasePort != 0 ) {
-            if ( releasePort != session.clientPort() && 
+            if ( releasePort != session.clientPort() &&
                  releasePort != session.serverPort()) {
                 /* This happens for all NAT ftp PORT sessions */
                 logger.info( "Release port " + releasePort +" is neither client nor server port" );
             }
 
             logger.debug( "Releasing port: " + releasePort );
-            
+
             getPortList( protocol ).releasePort( releasePort );
         } else {
             logger.debug( "Ignoring non-natted port: " + session.clientPort() + "/" + session.serverPort());
@@ -469,7 +462,7 @@ class NatEventHandler extends AbstractEventHandler
     {
         try {
             ArgonManager argonManager = MvvmContextFactory.context().argonManager();
-            /* Local antisubscribe is only used in non-production environments, 
+            /* Local antisubscribe is only used in non-production environments,
              * in production environments it is never antisubscribed */
             argonManager.disableLocalAntisubscribe();
             argonManager.destroyBridge( netConfig, internalAddress.getAddr(), internalSubnet.getAddr());
@@ -484,23 +477,23 @@ class NatEventHandler extends AbstractEventHandler
         if (( protocol == Protocol.TCP ) && ( request.serverPort() == FTP_SERVER_PORT )) {
             return true;
         }
-        
+
         return false;
     }
-   
+
     private void disableNat( NetworkingConfiguration netConfig ) throws TransformException
     {
         /* Wait for this to finish */
         try {
             ArgonManager argonManager = MvvmContextFactory.context().argonManager();
-            /* Local antisubscribe is only used in non-production environments, 
+            /* Local antisubscribe is only used in non-production environments,
              * in production environments it is never antisubscribed */
             argonManager.enableLocalAntisubscribe();
             argonManager.restoreBridge( netConfig );
         } catch ( Exception e ) {
             logger.error( "Interrupting while reconfiguring interface" );
             throw new TransformException( "Interrupting while reconfiguring interface", e );
-        }        
+        }
     }
 }
 

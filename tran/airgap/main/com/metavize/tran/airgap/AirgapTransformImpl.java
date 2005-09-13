@@ -10,18 +10,16 @@
  */
 package com.metavize.tran.airgap;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Date;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.PipeSpec;
-import com.metavize.mvvm.tapi.TransformContextFactory;
 import com.metavize.mvvm.tran.TransformStats;
 import net.sf.hibernate.HibernateException;
 import net.sf.hibernate.Query;
@@ -36,7 +34,7 @@ public class AirgapTransformImpl extends AbstractTransform
         = "SELECT time_stamp, client_addr, client_intf, reputation, limited, dropped, rejected"
         + " FROM shield_rejection_evt "
         + " ORDER BY time_stamp DESC LIMIT ?";
-    
+
     private static final int CREATE_DATE_IDX =  1;
     private static final int CLIENT_ADDR_IDX =  2;
     private static final int CLIENT_INTF_IDX =  3;
@@ -44,7 +42,7 @@ public class AirgapTransformImpl extends AbstractTransform
     private static final int LIMITED_IDX     =  5;
     private static final int DROPPED_IDX     =  6;
     private static final int REJECTED_IDX    =  7;
-        
+
     private final Logger logger = Logger.getLogger(AirgapTransformImpl.class);
 
     private AirgapSettings settings;
@@ -56,7 +54,7 @@ public class AirgapTransformImpl extends AbstractTransform
 
     public void setAirgapSettings(AirgapSettings settings)
     {
-        Session s = TransformContextFactory.context().openSession();
+        Session s = getTransformContext().openSession();
         try {
             Transaction tx = s.beginTransaction();
 
@@ -88,7 +86,7 @@ public class AirgapTransformImpl extends AbstractTransform
 
     protected void postInit(String[] args)
     {
-        Session s = TransformContextFactory.context().openSession();
+        Session s = getTransformContext().openSession();
         try {
             Transaction tx = s.beginTransaction();
 
@@ -121,7 +119,7 @@ public class AirgapTransformImpl extends AbstractTransform
     {
         List<ShieldRejectionLogEntry> l = new ArrayList<ShieldRejectionLogEntry>(limit);
 
-        Session s = TransformContextFactory.context().openSession();
+        Session s = getTransformContext().openSession();
         try {
             Connection c = s.connection();
             PreparedStatement ps = c.prepareStatement( SHIELD_REJECTION_EVENT_QUERY );
@@ -134,12 +132,12 @@ public class AirgapTransformImpl extends AbstractTransform
 
                 /* XXX A Hack to convert the index to a number */
                 String clientIntf = ( rs.getByte( CLIENT_INTF_IDX ) == 0 ) ? "External" : "Internal";
-                
+
                 double reputation = rs.getDouble( REPUTATION_IDX );
                 int limited       = rs.getInt( LIMITED_IDX );
                 int dropped       = rs.getInt( DROPPED_IDX );
                 int rejected      = rs.getInt( REJECTED_IDX );
-                
+
                 ShieldRejectionLogEntry entry = new ShieldRejectionLogEntry
                     ( createDate, clientAddr, clientIntf, reputation, limited, dropped, rejected );
 

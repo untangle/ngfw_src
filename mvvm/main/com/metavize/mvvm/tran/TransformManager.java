@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2004 Metavize Inc.
+ * Copyright (c) 2003, 2004, 2005 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,8 +11,9 @@
 
 package com.metavize.mvvm.tran;
 
-import com.metavize.mvvm.security.Tid;
 import java.util.Map;
+
+import com.metavize.mvvm.security.Tid;
 
 /**
  * Manages transform instances in the pipeline.
@@ -71,9 +72,23 @@ public interface TransformManager
     TransformContext transformContext(Tid tid);
 
     /**
+     * Return the TransformContext for the thread.
+     *
+     * @return the TransformContext for the current thread, or null if
+     * none.
+     */
+    TransformContext threadContext();
+
+    /**
      * Get the statistics and counts for all transforms in one call.
      *
-     * @return a <code>Map</code> from Tid to TransformStats for all transforms in RUNNING state.
+     * @return a <code>Map</code> from Tid to TransformStats for all
+     * transforms in RUNNING state.
      */
     Map<Tid, TransformStats> allTransformStats();
+
+    // XXX when we move tapi.impl this will become package private
+    void registerThreadContext(TransformContext tctx);
+    // XXX when we move tapi.impl this will become package private
+    void deregisterThreadContext();
 }

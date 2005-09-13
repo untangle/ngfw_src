@@ -10,17 +10,12 @@
  */
 package com.metavize.tran.sigma;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 
 import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.Affinity;
 import com.metavize.mvvm.tapi.Fitting;
 import com.metavize.mvvm.tapi.PipeSpec;
 import com.metavize.mvvm.tapi.SoloPipeSpec;
-import com.metavize.mvvm.tapi.TransformContextFactory;
 import com.metavize.mvvm.tran.TransformException;
 import com.metavize.mvvm.tran.TransformStartException;
 import net.sf.hibernate.HibernateException;
@@ -31,7 +26,7 @@ import org.apache.log4j.Logger;
 
 public class SigmaImpl extends AbstractTransform implements Sigma
 {
-    private final EventHandler handler = new EventHandler();
+    private final EventHandler handler = new EventHandler(this);
     private final SoloPipeSpec pipeSpec =
         new SoloPipeSpec("sigma", this, handler, Fitting.OCTET_STREAM,Affinity.CLIENT, 0);
     private final PipeSpec[] pipeSpecs = new PipeSpec[] { pipeSpec };
@@ -46,7 +41,7 @@ public class SigmaImpl extends AbstractTransform implements Sigma
 
     public void setSigmaSettings(SigmaSettings settings)
     {
-        Session s = TransformContextFactory.context().openSession();
+        Session s = getTransformContext().openSession();
         try {
             Transaction tx = s.beginTransaction();
 
@@ -88,7 +83,7 @@ public class SigmaImpl extends AbstractTransform implements Sigma
 
     protected void postInit(String[] args)
     {
-        Session s = TransformContextFactory.context().openSession();
+        Session s = getTransformContext().openSession();
         try {
             Transaction tx = s.beginTransaction();
 

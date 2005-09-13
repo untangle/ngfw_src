@@ -12,17 +12,17 @@
 package com.metavize.mvvm.tapi;
 
 import com.metavize.mvvm.tapi.event.*;
-import com.metavize.mvvm.tran.TransformContext;
+import com.metavize.mvvm.tran.Transform;
 
 
 public abstract class AbstractEventHandler implements SessionEventListener {
 
     protected AbstractTransform xform;
 
-    protected AbstractEventHandler()
+    protected AbstractEventHandler(Transform xform)
     {
-        TransformContext tc = TransformContextFactory.context();
-        xform = (AbstractTransform)tc.transform();
+        // XXX
+        this.xform = (AbstractTransform)xform;
     }
 
     public void handleTimer(IPSessionEvent event)

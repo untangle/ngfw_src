@@ -11,41 +11,21 @@
 
 package com.metavize.tran.firewall;
 
-import java.util.List;
-
 import java.util.Iterator;
-
-import java.util.List;
 import java.util.LinkedList;
-import java.util.Iterator;
-
-import com.metavize.mvvm.tapi.Protocol;
-
-import com.metavize.mvvm.NetworkingManager;
-import com.metavize.mvvm.NetworkingConfiguration;
+import java.util.List;
 
 import com.metavize.mvvm.MvvmContextFactory;
-
 import com.metavize.mvvm.tapi.AbstractEventHandler;
 import com.metavize.mvvm.tapi.IPNewSessionRequest;
-import com.metavize.mvvm.tapi.TCPNewSessionRequest;
 import com.metavize.mvvm.tapi.MPipeException;
-
+import com.metavize.mvvm.tapi.Protocol;
+import com.metavize.mvvm.tapi.TCPNewSessionRequest;
 import com.metavize.mvvm.tapi.event.TCPNewSessionRequestEvent;
 import com.metavize.mvvm.tapi.event.UDPNewSessionRequestEvent;
-import com.metavize.mvvm.tapi.event.UDPSessionEvent;
-import com.metavize.mvvm.tapi.event.TCPSessionEvent;
-
-import com.metavize.mvvm.tapi.IPSession;
-
 import com.metavize.mvvm.tran.Transform;
 import org.apache.log4j.Logger;
 
-import com.metavize.mvvm.tran.IPaddr;
-import com.metavize.mvvm.tran.firewall.ProtocolMatcher;
-import com.metavize.mvvm.tran.firewall.IPMatcher;
-import com.metavize.mvvm.tran.firewall.PortMatcher;
-import com.metavize.mvvm.tran.firewall.IntfMatcher;
 
 class EventHandler extends AbstractEventHandler
 {
@@ -67,9 +47,11 @@ class EventHandler extends AbstractEventHandler
 
     /* Firewall Transform */
     private final FirewallImpl transform;
-    
-    EventHandler( FirewallImpl transform ) 
+
+    EventHandler( FirewallImpl transform )
     {
+        super(transform);
+
         this.transform = transform;
     }
 
@@ -91,13 +73,13 @@ class EventHandler extends AbstractEventHandler
         boolean reject    = !isDefaultAccept;
         FirewallRule rule = null;
         int ruleIndex     = 0;
-        
+
         for ( Iterator<FirewallMatcher> iter = firewallRuleList.iterator() ; iter.hasNext() ; ) {
             FirewallMatcher matcher = iter.next();
 
             if ( matcher.isMatch( request, protocol )) {
                 reject = matcher.isTrafficBlocker();
-                
+
                 if ( isQuickExit ) {
                     rule      = matcher.rule();
                     ruleIndex = matcher.ruleIndex();
@@ -118,7 +100,7 @@ class EventHandler extends AbstractEventHandler
                     ((TCPNewSessionRequest)request).rejectReturnRst();
                 }
             }
-            
+
             /* Increment the block counter */
             transform.incrementCount( BLOCK_COUNTER ); // BLOCK COUNTER
 
@@ -138,7 +120,7 @@ class EventHandler extends AbstractEventHandler
         /* Track the statistics */
         statisticManager.incrRequest( protocol, request, reject, rule == null );
     }
-    
+
     void configure( FirewallSettings settings )
     {
         this.isQuickExit = settings.isQuickExit();

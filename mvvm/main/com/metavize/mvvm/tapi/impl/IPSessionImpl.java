@@ -11,6 +11,8 @@
 
 package com.metavize.mvvm.tapi.impl;
 
+import static com.metavize.mvvm.tapi.impl.Dispatcher.SESSION_ID_MDC_KEY;
+
 import java.net.InetAddress;
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -21,14 +23,16 @@ import com.metavize.jvector.Crumb;
 import com.metavize.jvector.DataCrumb;
 import com.metavize.jvector.IncomingSocketQueue;
 import com.metavize.jvector.OutgoingSocketQueue;
+import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.argon.PipelineListener;
 import com.metavize.mvvm.engine.Main;
 import com.metavize.mvvm.tapi.*;
 import com.metavize.mvvm.tapi.event.IPStreamer;
 import com.metavize.mvvm.tran.Transform;
+import com.metavize.mvvm.tran.TransformContext;
+import com.metavize.mvvm.tran.TransformManager;
 import com.metavize.mvvm.tran.TransformState;
 import com.metavize.mvvm.util.MetaEnv;
-import static com.metavize.mvvm.tapi.impl.Dispatcher.SESSION_ID_MDC_KEY;
 import org.apache.log4j.Logger;
 import org.apache.log4j.MDC;
 import org.apache.log4j.helpers.AbsoluteTimeDateFormat;
@@ -50,6 +54,8 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
 
     private Logger timesLogger = null;
 
+    private final TransformManager transformManager;
+
     protected IPSessionImpl(Dispatcher disp, com.metavize.mvvm.argon.IPSession pSession)
     {
         super(disp.mPipe(), pSession);
@@ -57,6 +63,7 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
         this.stats = new RWSessionStats();
         if (RWSessionStats.DoDetailedTimes)
             timesLogger = Logger.getLogger("com.metavize.mvvm.tapi.SessionTimes");
+        transformManager = MvvmContextFactory.context().transformManager();
         logger = disp.mPipe().sessionLogger();
     }
 
@@ -89,7 +96,7 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
     {
         return stats;
     }
-    
+
     public void release()
     {
         // 8/8/05 jdi -- default changed to true -- finalization is almost always important
@@ -228,14 +235,17 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
             // killSession(message);
             return;
         }
-        ClassLoader classLoader = xform.getTransformContext().getClassLoader();
+
+        TransformContext tctx = xform.getTransformContext();
+        ClassLoader classLoader = tctx.getClassLoader();
         Thread ct = Thread.currentThread();
         ClassLoader oldCl = ct.getContextClassLoader();
 
         // entering TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         ct.setContextClassLoader(classLoader);
-        MDC.put(SESSION_ID_MDC_KEY, idForMDC());
         try {
+            transformManager.registerThreadContext(tctx);
+            MDC.put(SESSION_ID_MDC_KEY, idForMDC());
             if (released) {
                 debug("raze released");
             } else {
@@ -251,6 +261,7 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
             }
             closeFinal();
         } finally {
+            transformManager.deregisterThreadContext();
             MDC.remove(SESSION_ID_MDC_KEY);
             ct.setContextClassLoader(oldCl);
             // left TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -266,15 +277,18 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
             killSession(message);
             return;
         }
-        ClassLoader classLoader = xform.getTransformContext().getClassLoader();
+        TransformContext tctx = xform.getTransformContext();
+        ClassLoader classLoader = tctx.getClassLoader();
         Thread ct = Thread.currentThread();
         ClassLoader oldCl = ct.getContextClassLoader();
 
         // entering TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         ct.setContextClassLoader(classLoader);
         try {
+            transformManager.registerThreadContext(tctx);
             readEvent(CLIENT, in);
         } finally {
+            transformManager.deregisterThreadContext();
             ct.setContextClassLoader(oldCl);
             // left TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         }
@@ -289,15 +303,18 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
             killSession(message);
             return;
         }
-        ClassLoader classLoader = xform.getTransformContext().getClassLoader();
+        TransformContext tctx = xform.getTransformContext();
+        ClassLoader classLoader = tctx.getClassLoader();
         Thread ct = Thread.currentThread();
         ClassLoader oldCl = ct.getContextClassLoader();
 
         // entering TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         ct.setContextClassLoader(classLoader);
         try {
+            transformManager.registerThreadContext(tctx);
             readEvent(SERVER, in);
         } finally {
+            transformManager.deregisterThreadContext();
             ct.setContextClassLoader(oldCl);
             // left TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         }
@@ -312,15 +329,18 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
             killSession(message);
             return;
         }
-        ClassLoader classLoader = xform.getTransformContext().getClassLoader();
+        TransformContext tctx = xform.getTransformContext();
+        ClassLoader classLoader = tctx.getClassLoader();
         Thread ct = Thread.currentThread();
         ClassLoader oldCl = ct.getContextClassLoader();
 
         // entering TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         ct.setContextClassLoader(classLoader);
         try {
+            transformManager.registerThreadContext(tctx);
             writeEvent(CLIENT, out);
         } finally {
+            transformManager.deregisterThreadContext();
             ct.setContextClassLoader(oldCl);
             // left TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         }
@@ -335,15 +355,18 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
             killSession(message);
             return;
         }
-        ClassLoader classLoader = xform.getTransformContext().getClassLoader();
+        TransformContext tctx = xform.getTransformContext();
+        ClassLoader classLoader = tctx.getClassLoader();
         Thread ct = Thread.currentThread();
         ClassLoader oldCl = ct.getContextClassLoader();
 
         // entering TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         ct.setContextClassLoader(classLoader);
         try {
+            transformManager.registerThreadContext(tctx);
             writeEvent(SERVER, out);
         } finally {
+            transformManager.deregisterThreadContext();
             ct.setContextClassLoader(oldCl);
             // left TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         }
@@ -507,7 +530,7 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
         } finally {
           MDC.remove(SESSION_ID_MDC_KEY);
         }
-        
+
     }
 
 

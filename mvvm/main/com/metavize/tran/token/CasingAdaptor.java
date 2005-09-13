@@ -31,6 +31,7 @@ import com.metavize.mvvm.tapi.event.TCPChunkResult;
 import com.metavize.mvvm.tapi.event.TCPSessionEvent;
 import com.metavize.mvvm.tapi.event.TCPStreamer;
 import org.apache.log4j.Logger;
+import com.metavize.mvvm.tran.Transform;
 
 public class CasingAdaptor extends AbstractEventHandler
 {
@@ -45,9 +46,10 @@ public class CasingAdaptor extends AbstractEventHandler
 
     private volatile boolean releaseParseExceptions;
 
-    public CasingAdaptor(CasingFactory casingFactory, boolean clientSide,
-                         boolean releaseParseExceptions)
+    public CasingAdaptor(Transform transform, CasingFactory casingFactory,
+                         boolean clientSide, boolean releaseParseExceptions)
     {
+        super(transform);
         this.casingFactory = casingFactory;
         this.clientSide = clientSide;
         this.releaseParseExceptions = releaseParseExceptions;

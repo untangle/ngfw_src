@@ -41,6 +41,8 @@ public class SpywareEventHandler extends AbstractEventHandler
 
     public SpywareEventHandler(SpywareImpl transform)
     {
+        super(transform);
+
         this.transform = transform;
     }
 

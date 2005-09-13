@@ -33,7 +33,6 @@ import com.metavize.mvvm.tapi.PipelineFoundry;
 import com.metavize.mvvm.tapi.Protocol;
 import com.metavize.mvvm.tapi.SoloPipeSpec;
 import com.metavize.mvvm.tapi.Subscription;
-import com.metavize.mvvm.tapi.TransformContextFactory;
 import com.metavize.mvvm.tran.Direction;
 import com.metavize.mvvm.tran.Interface;
 import com.metavize.mvvm.tran.MimeType;
@@ -138,16 +137,16 @@ public class VirusTransformImpl extends AbstractTransform
 
     private final PipeSpec[] pipeSpecs = new PipeSpec[] {
         new SoloPipeSpec("virus-ftp", this,
-                         new TokenAdaptor(new VirusFtpFactory(this)),
+                         new TokenAdaptor(this, new VirusFtpFactory(this)),
                          Fitting.FTP_TOKENS, Affinity.SERVER, 5),
         new SoloPipeSpec("virus-http", this,
-                         new TokenAdaptor(new VirusHttpFactory(this)),
+                         new TokenAdaptor(this, new VirusHttpFactory(this)),
                          Fitting.HTTP_TOKENS, Affinity.SERVER, 5),
         new SoloPipeSpec("virus-smtp", this,
-                         new TokenAdaptor(new VirusSmtpFactory(this)),
+                         new TokenAdaptor(this, new VirusSmtpFactory(this)),
                          Fitting.SMTP_TOKENS, Affinity.CLIENT, 5),
         new SoloPipeSpec("virus-pop", this,
-                         new TokenAdaptor(new VirusPopFactory(this)),
+                         new TokenAdaptor(this, new VirusPopFactory(this)),
                          Fitting.POP_TOKENS, Affinity.SERVER, 5)
         };
 
@@ -192,7 +191,7 @@ public class VirusTransformImpl extends AbstractTransform
 
     public void setVirusSettings(VirusSettings settings)
     {
-        Session s = TransformContextFactory.context().openSession();
+        Session s = getTransformContext().openSession();
         try {
             Transaction tx = s.beginTransaction();
 
@@ -375,7 +374,7 @@ public class VirusTransformImpl extends AbstractTransform
 
     protected void preInit(String args[])
     {
-        Session s = TransformContextFactory.context().openSession();
+        Session s = getTransformContext().openSession();
         try {
             Transaction tx = s.beginTransaction();
 
@@ -460,7 +459,7 @@ public class VirusTransformImpl extends AbstractTransform
     private List<VirusLog> getEventLogs(String q, List<VirusLog> l,
                                         int limit)
     {
-        Session s = TransformContextFactory.context().openSession();
+        Session s = getTransformContext().openSession();
         try {
             Connection c = s.connection();
             PreparedStatement ps = c.prepareStatement(q);

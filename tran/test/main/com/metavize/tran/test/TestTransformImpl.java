@@ -17,7 +17,6 @@ import com.metavize.mvvm.tapi.PipeSpec;
 import com.metavize.mvvm.tapi.Protocol;
 import com.metavize.mvvm.tapi.SoloPipeSpec;
 import com.metavize.mvvm.tapi.Subscription;
-import com.metavize.mvvm.tapi.TransformContextFactory;
 import com.metavize.mvvm.tran.IPMaddr;
 import com.metavize.mvvm.tran.Interface;
 import com.metavize.mvvm.tran.PortRange;
@@ -51,7 +50,7 @@ public class TestTransformImpl extends AbstractTransform
 
     public TestTransformImpl()
     {
-        this.handler = new EventHandler(new TestSettings());
+        this.handler = new EventHandler(this, new TestSettings());
         pipeSpec = new SoloPipeSpec
             ("test", this, handler, Fitting.OCTET_STREAM,
              Affinity.SERVER, 0);
@@ -70,7 +69,7 @@ public class TestTransformImpl extends AbstractTransform
 
     public void setTestSettings(TestSettings settings)
     {
-        Session s = TransformContextFactory.context().openSession();
+        Session s = getTransformContext().openSession();
         try {
             Transaction tx = s.beginTransaction();
 
@@ -108,7 +107,7 @@ public class TestTransformImpl extends AbstractTransform
 
     protected void postInit(String[] args)
     {
-        Session s = TransformContextFactory.context().openSession();
+        Session s = getTransformContext().openSession();
         try {
             Transaction tx = s.beginTransaction();
 

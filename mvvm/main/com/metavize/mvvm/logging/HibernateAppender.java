@@ -25,7 +25,6 @@ import java.util.concurrent.TimeUnit;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.MvvmLocalContext;
 import com.metavize.mvvm.security.Tid;
-import com.metavize.mvvm.tapi.TransformContextFactory;
 import com.metavize.mvvm.tran.TransformContext;
 import net.sf.hibernate.HibernateException;
 import net.sf.hibernate.Session;
@@ -54,7 +53,7 @@ public class HibernateAppender extends AppenderSkeleton
 
     public HibernateAppender()
     {
-        loggers = new ConcurrentHashMap<Tid, LogWorker>();
+        this.loggers = new ConcurrentHashMap<Tid, LogWorker>();
 
         ProxoolFacade.addProxoolListener(new ProxoolListenerIF()
             {
@@ -78,7 +77,7 @@ public class HibernateAppender extends AppenderSkeleton
 
     protected void append(LoggingEvent event)
     {
-        TransformContext tctx = TransformContextFactory.context();
+        TransformContext tctx = MvvmContextFactory.context().transformManager().threadContext();
 
         Tid tid = null == tctx ? new Tid(0L) : tctx.getTid();
 
@@ -132,7 +131,8 @@ public class HibernateAppender extends AppenderSkeleton
                 tctxRef = null;
             } else {
                 TransformContext tctx = null == tid ? null
-                    : mctx.transformManager().transformContext(tid);
+                    : MvvmContextFactory.context().transformManager()
+                    .transformContext(tid);
                 tctxRef = new WeakReference(tctx);
             }
         }

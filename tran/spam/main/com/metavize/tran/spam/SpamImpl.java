@@ -25,7 +25,6 @@ import com.metavize.mvvm.tapi.Affinity;
 import com.metavize.mvvm.tapi.Fitting;
 import com.metavize.mvvm.tapi.PipeSpec;
 import com.metavize.mvvm.tapi.SoloPipeSpec;
-import com.metavize.mvvm.tapi.TransformContextFactory;
 import com.metavize.mvvm.tran.Direction;
 import com.metavize.tran.mail.papi.smtp.SMTPNotifyAction;
 import com.metavize.tran.token.TokenAdaptor;
@@ -77,9 +76,9 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
     // We want to make sure that spam is before virus in the pipeline (towards the client for smtp,
     // server for pop/imap).
     private final PipeSpec[] pipeSpecs = new PipeSpec[] {
-        new SoloPipeSpec("spam-smtp", this, new TokenAdaptor(new SpamSmtpFactory(this)), Fitting.SMTP_TOKENS, Affinity.CLIENT, 10),
-        new SoloPipeSpec("pop-smtp", this, new TokenAdaptor(new SpamPopFactory(this)), Fitting.POP_TOKENS, Affinity.SERVER, 10),
-        new SoloPipeSpec("imap-smtp", this, new TokenAdaptor(new SpamImapFactory(this)), Fitting.IMAP_TOKENS, Affinity.SERVER, 10)
+        new SoloPipeSpec("spam-smtp", this, new TokenAdaptor(this, new SpamSmtpFactory(this)), Fitting.SMTP_TOKENS, Affinity.CLIENT, 10),
+        new SoloPipeSpec("pop-smtp", this, new TokenAdaptor(this, new SpamPopFactory(this)), Fitting.POP_TOKENS, Affinity.SERVER, 10),
+        new SoloPipeSpec("imap-smtp", this, new TokenAdaptor(this, new SpamImapFactory(this)), Fitting.IMAP_TOKENS, Affinity.SERVER, 10)
     };
 
     private final SpamScanner scanner;
@@ -120,7 +119,7 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
 
     public void setSpamSettings(SpamSettings zSpamSettings)
     {
-        Session s = TransformContextFactory.context().openSession();
+        Session s = getTransformContext().openSession();
         try {
             Transaction tx = s.beginTransaction();
 
@@ -147,7 +146,7 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
     protected void initializeSettings()
     {
         logger.debug("Initializing Settings");
-      
+
         SpamSettings zTmpSpamSettings = new SpamSettings(getTid());
 
         zTmpSpamSettings.setSMTPInbound(
@@ -156,7 +155,7 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
                              SMTPNotifyAction.NEITHER,
                              SpamProtoConfig.DEFAULT_STRENGTH,
                              "Scan incoming SMTP e-mail" ));
-            
+
         zTmpSpamSettings.setSMTPOutbound(
           new SpamSMTPConfig(false,
                              SMTPSpamMessageAction.PASS,
@@ -169,7 +168,7 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
                             SpamMessageAction.MARK,
                             SpamProtoConfig.DEFAULT_STRENGTH,
                             "Scan incoming POP e-mail" ));
-            
+
         zTmpSpamSettings.setPOPOutbound(
           new SpamPOPConfig(false,
                             SpamMessageAction.PASS,
@@ -181,14 +180,14 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
                              SpamMessageAction.MARK,
                              SpamProtoConfig.DEFAULT_STRENGTH,
                              "Scan incoming IMAP e-mail" ));
-            
+
         zTmpSpamSettings.setIMAPOutbound(
           new SpamIMAPConfig(false,
                              SpamMessageAction.PASS,
                              SpamProtoConfig.DEFAULT_STRENGTH,
                              "Scan outgoing IMAP e-mail" ));
 
-            
+
         setSpamSettings(zTmpSpamSettings);
         return;
     }
@@ -203,7 +202,7 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
 
     protected void preInit(String args[])
     {
-        Session s = TransformContextFactory.context().openSession();
+        Session s = getTransformContext().openSession();
         try {
             Transaction tx = s.beginTransaction();
 
@@ -236,7 +235,7 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
     private List<SpamLog> getEventLogs(String q, List<SpamLog> l,
                                           int limit)
     {
-        Session s = TransformContextFactory.context().openSession();
+        Session s = getTransformContext().openSession();
         try {
             Connection c = s.connection();
             PreparedStatement ps = c.prepareStatement(q);

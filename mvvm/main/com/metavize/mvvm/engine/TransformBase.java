@@ -20,11 +20,11 @@ import com.metavize.mvvm.argon.SessionMatcherFactory;
 import com.metavize.mvvm.argon.VectronTable;
 import com.metavize.mvvm.security.Tid;
 import com.metavize.mvvm.tapi.MPipe;
-import com.metavize.mvvm.tapi.TransformContextFactory;
 import com.metavize.mvvm.tran.Transform;
 import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.tran.TransformDesc;
 import com.metavize.mvvm.tran.TransformException;
+import com.metavize.mvvm.tran.TransformManager;
 import com.metavize.mvvm.tran.TransformStartException;
 import com.metavize.mvvm.tran.TransformState;
 import com.metavize.mvvm.tran.TransformStats;
@@ -48,14 +48,15 @@ public abstract class TransformBase implements Transform
     private final Tid tid;
     private final Set<TransformBase> parents = new HashSet<TransformBase>();
     private final Set<Transform> children = new HashSet<Transform>();
+    private final TransformManager transformManager;
 
     private TransformState runState;
     private TransformStats stats = new TransformStats();
 
     protected TransformBase()
     {
-        transformContext = (TransformContextImpl)TransformContextFactory
-            .context();
+        transformManager = MvvmContextFactory.context().transformManager();
+        transformContext = (TransformContextImpl)transformManager.threadContext();
         tid = transformContext.getTid();
 
         runState = TransformState.LOADED;
@@ -318,10 +319,12 @@ public abstract class TransformBase implements Transform
                 ClassLoader oldCl = ct.getContextClassLoader();
                 // Entering TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 ct.setContextClassLoader(parentCl);
-
                 try {
+                    TransformContext pCtx = parent.getTransformContext();
+                    transformManager.registerThreadContext(pCtx);
                     parent.parentStart();
                 } finally {
+                    transformManager.registerThreadContext(transformContext);
                     ct.setContextClassLoader(oldCl);
                     // Left TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 }
@@ -359,8 +362,11 @@ public abstract class TransformBase implements Transform
                 ct.setContextClassLoader(parentCl);
 
                 try {
+                    TransformContext pCtx = parent.getTransformContext();
+                    transformManager.registerThreadContext(pCtx);
                     parent.parentStop();
                 } finally {
+                    transformManager.registerThreadContext(transformContext);
                     ct.setContextClassLoader(oldCl);
                     // Left TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 }

@@ -11,20 +11,18 @@
 
 package com.metavize.tran.mail;
 
-import com.metavize.tran.mail.PopCasingFactory;
-import com.metavize.tran.mail.papi.*;
 import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.CasingPipeSpec;
 import com.metavize.mvvm.tapi.Fitting;
 import com.metavize.mvvm.tapi.PipeSpec;
-import com.metavize.mvvm.tapi.TransformContextFactory;
+import com.metavize.tran.mail.impl.imap.ImapCasingFactory;
+import com.metavize.tran.mail.impl.smtp.SmtpCasingFactory;
+import com.metavize.tran.mail.papi.*;
 import net.sf.hibernate.HibernateException;
 import net.sf.hibernate.Query;
 import net.sf.hibernate.Session;
 import net.sf.hibernate.Transaction;
 import org.apache.log4j.Logger;
-import com.metavize.tran.mail.impl.imap.ImapCasingFactory;
-import com.metavize.tran.mail.impl.smtp.SmtpCasingFactory;
 
 public class MailTransformImpl extends AbstractTransform
     implements MailTransform, MailExport
@@ -64,7 +62,7 @@ public class MailTransformImpl extends AbstractTransform
 
     public void setMailTransformSettings(MailTransformSettings settings)
     {
-        Session s = TransformContextFactory.context().openSession();
+        Session s = getTransformContext().openSession();
         try {
             Transaction tx = s.beginTransaction();
 
@@ -127,7 +125,7 @@ public class MailTransformImpl extends AbstractTransform
 
     protected void postInit(String[] args)
     {
-        Session s = TransformContextFactory.context().openSession();
+        Session s = getTransformContext().openSession();
         try {
             Transaction tx = s.beginTransaction();
 

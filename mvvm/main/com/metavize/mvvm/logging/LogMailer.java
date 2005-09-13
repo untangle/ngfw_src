@@ -11,12 +11,11 @@
 
 package com.metavize.mvvm.logging;
 
-import java.lang.ref.WeakReference;
 import java.io.*;
 import java.util.*;
+import javax.mail.MessagingException;
 import javax.mail.Part;
 import javax.mail.internet.MimeBodyPart;
-import javax.mail.MessagingException;
 
 import com.metavize.mvvm.MailSender;
 import com.metavize.mvvm.MvvmContextFactory;
@@ -24,17 +23,9 @@ import com.metavize.mvvm.MvvmLocalContext;
 import com.metavize.mvvm.NetworkingConfiguration;
 import com.metavize.mvvm.engine.Version;
 import com.metavize.mvvm.security.Tid;
-import com.metavize.mvvm.tapi.TransformContextFactory;
 import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.tran.TransformManager;
-import org.apache.log4j.AppenderSkeleton;
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.apache.log4j.helpers.CyclicBuffer;
-import org.apache.log4j.spi.LoggingEvent;
-import org.logicalcobwebs.proxool.ConnectionPoolDefinitionIF;
-import org.logicalcobwebs.proxool.ProxoolFacade;
-import org.logicalcobwebs.proxool.ProxoolListenerIF;
 
 
 public class LogMailer implements Runnable
@@ -124,7 +115,7 @@ public class LogMailer implements Runnable
                 if (MvvmContextFactory.state() == MvvmLocalContext.MvvmState.RUNNING &&
                     MvvmContextFactory.context().networkingManager().get().isExceptionReportingEnabled())
                     sendMessage(triggerer);
-                lastSendTime = System.currentTimeMillis(); 
+                lastSendTime = System.currentTimeMillis();
             } catch (InterruptedException x) {
                 // Normal
                 logger.info("exiting from interrupt");
@@ -242,7 +233,7 @@ public class LogMailer implements Runnable
         ArrayList<String> lastLines = new ArrayList<String>(OTHER_LOG_LINES);
         try {
             RandomAccessFile olfile =  new RandomAccessFile(otherLog, "r");
-            
+
             byte[] buf = new byte[OTHER_BUF_SIZE];
             long otherLogLen = olfile.length();
             long pos = otherLogLen - OTHER_BUF_SIZE;

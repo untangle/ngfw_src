@@ -62,6 +62,8 @@ class TransformManagerImpl implements TransformManager
     private final TransformManagerState transformManagerState;
     private final Map<Tid, TransformContextImpl> tids
         = new ConcurrentHashMap<Tid, TransformContextImpl>();
+    private final ThreadLocal<TransformContext> threadContexts
+        = new InheritableThreadLocal<TransformContext>();
 
     // XXX create new cl on reload all
     private final CasingClassLoader casingClassLoader
@@ -154,6 +156,11 @@ class TransformManagerImpl implements TransformManager
         return tids.get(tid);
     }
 
+    public TransformContext threadContext()
+    {
+        return threadContexts.get();
+    }
+
     public Tid instantiate(String transformName, String[] args)
         throws DeployException
     {
@@ -238,6 +245,18 @@ class TransformManagerImpl implements TransformManager
     }
 
     // package protected methods ----------------------------------------------
+
+    // XXX make package private when i move stuff
+    public void registerThreadContext(TransformContext ctx)
+    {
+        threadContexts.set(ctx);
+    }
+
+    // XXX make package private when i move stuff
+    public void deregisterThreadContext()
+    {
+        threadContexts.remove();
+    }
 
     CasingClassLoader getCasingClassLoader()
     {

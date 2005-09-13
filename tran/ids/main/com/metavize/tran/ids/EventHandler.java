@@ -2,54 +2,56 @@ package com.metavize.tran.ids;
 
 import com.metavize.mvvm.tapi.*;
 import com.metavize.mvvm.tapi.event.*;
+import com.metavize.mvvm.tran.Transform;
 
 public class EventHandler extends AbstractEventHandler {
 
-	private IDSDetectionEngine idsEngine;
-	
-	public EventHandler() {
-		idsEngine = IDSDetectionEngine.instance();
-	}
+    private IDSDetectionEngine idsEngine;
 
-	public void handleTCPNewSessionRequest(TCPNewSessionRequestEvent event) throws MPipeException {
-		handleNewSessionRequest(event.sessionRequest(), Protocol.TCP);
-	}
+    public EventHandler(Transform transform) {
+        super(transform);
+        idsEngine = IDSDetectionEngine.instance();
+    }
 
-	public void handleUDPNewSessionRequest(UDPNewSessionRequestEvent event) throws MPipeException {
-		handleNewSessionRequest(event.sessionRequest(), Protocol.UDP);
-	}
+    public void handleTCPNewSessionRequest(TCPNewSessionRequestEvent event) throws MPipeException {
+        handleNewSessionRequest(event.sessionRequest(), Protocol.TCP);
+    }
 
-	private void handleNewSessionRequest(IPNewSessionRequest request, Protocol protocol) {
-		idsEngine.processNewSession(request, protocol);
-	}
-/*	public void handleTCPNewSession(TCPSessionEvent event) {
-		
-	}
+    public void handleUDPNewSessionRequest(UDPNewSessionRequestEvent event) throws MPipeException {
+        handleNewSessionRequest(event.sessionRequest(), Protocol.UDP);
+    }
 
-	public void handleUDPNewSession(UDPSessionEvent event) {
-		//UDPSession sess = event.session();
-	}*/
+    private void handleNewSessionRequest(IPNewSessionRequest request, Protocol protocol) {
+        idsEngine.processNewSession(request, protocol);
+    }
+/*  public void handleTCPNewSession(TCPSessionEvent event) {
 
-	public IPDataResult handleTCPClientChunk(TCPChunkEvent event) {
-		idsEngine.handleChunk(event, event.session(), false);
-		return IPDataResult.PASS_THROUGH;
-	}
+    }
 
-	public IPDataResult handleTCPServerChunk(TCPChunkEvent event) {
-		idsEngine.handleChunk(event, event.session(), true);
-		return IPDataResult.PASS_THROUGH;
-	}
+    public void handleUDPNewSession(UDPSessionEvent event) {
+        //UDPSession sess = event.session();
+    }*/
 
-	public void handleUDPClientPacket(UDPPacketEvent event) throws MPipeException {
-		idsEngine.handleChunk(event, event.session(),false);
-		super.handleUDPClientPacket(event);
-	}
+    public IPDataResult handleTCPClientChunk(TCPChunkEvent event) {
+        idsEngine.handleChunk(event, event.session(), false);
+        return IPDataResult.PASS_THROUGH;
+    }
 
-	public void handleUDPServerPacket(UDPPacketEvent event) throws MPipeException {
-		idsEngine.handleChunk(event, event.session(),true);
-		super.handleUDPServerPacket(event);
-	}
+    public IPDataResult handleTCPServerChunk(TCPChunkEvent event) {
+        idsEngine.handleChunk(event, event.session(), true);
+        return IPDataResult.PASS_THROUGH;
+    }
+
+    public void handleUDPClientPacket(UDPPacketEvent event) throws MPipeException {
+        idsEngine.handleChunk(event, event.session(),false);
+        super.handleUDPClientPacket(event);
+    }
+
+    public void handleUDPServerPacket(UDPPacketEvent event) throws MPipeException {
+        idsEngine.handleChunk(event, event.session(),true);
+        super.handleUDPServerPacket(event);
+    }
 /*
-	public void handleTCPFinalized(TCPChunkEvent event) {}
-	*/
+    public void handleTCPFinalized(TCPChunkEvent event) {}
+    */
 }

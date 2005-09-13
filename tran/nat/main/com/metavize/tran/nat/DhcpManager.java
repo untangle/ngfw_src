@@ -10,33 +10,28 @@
  */
 package com.metavize.tran.nat;
 
-import java.util.List;
-import java.util.LinkedList;
-import java.util.Iterator;
-import java.util.Date;
-import java.util.Map;
-import java.util.HashMap;
-
-import java.io.FileWriter;
-import java.io.FileReader;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
-import org.apache.log4j.Logger;
-
-import com.metavize.mvvm.NetworkingConfiguration;
 import com.metavize.mvvm.MvvmContextFactory;
-
-import com.metavize.mvvm.tran.IPaddr;
-import com.metavize.mvvm.tran.IPNullAddr;
+import com.metavize.mvvm.NetworkingConfiguration;
 import com.metavize.mvvm.tran.HostName;
 import com.metavize.mvvm.tran.HostNameList;
+import com.metavize.mvvm.tran.IPNullAddr;
+import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.ParseException;
-import com.metavize.mvvm.tran.firewall.MACAddress;
-
 import com.metavize.mvvm.tran.TransformStartException;
-import com.metavize.mvvm.tran.TransformException;
+import com.metavize.mvvm.tran.firewall.MACAddress;
+import org.apache.log4j.Logger;
 
 class DhcpManager
 {
@@ -49,7 +44,7 @@ class DhcpManager
     private static final String FLAG_DHCP_HOST        = "dhcp-host";
     private static final String FLAG_DHCP_OPTION      = "dhcp-option";
     private static final String FLAG_DNS_LOCAL_DOMAIN = "domain";
-    
+
     private static final String FLAG_DHCP_GATEWAY     = "3";
     private static final String FLAG_DHCP_NETMASK     = "1";
     private static final String FLAG_DHCP_NAMESERVERS = "6";
@@ -67,21 +62,21 @@ class DhcpManager
     private static final int DHCP_LEASE_ENTRY_MAC     = 1;
     private static final int DHCP_LEASE_ENTRY_IP      = 2;
     private static final int DHCP_LEASE_ENTRY_HOST    = 3;
-    
+
     private static final String DNS_MASQ_FILE         = "/etc/dnsmasq.conf";
     private static final String DNS_MASQ_CMD          = "/etc/init.d/dnsmasq ";
     private static final String DNS_MASQ_CMD_RESTART  = DNS_MASQ_CMD + " restart";
     private static final String DNS_MASQ_CMD_STOP     = DNS_MASQ_CMD + " stop";
     private static final HostName LOCAL_DOMAIN_DEFAULT;
-    
+
     private static final String HOST_FILE             = "/etc/hosts";
     private static final String HOST_NAME_FILE        = "/etc/hostname";
     private static final String DEFAULT_HOSTNAME      = "mv-edgeguard";
     private static final String[] HOST_FILE_START     = new String[] {
         HEADER,
-        "127.0.0.1	localhost"
+        "127.0.0.1  localhost"
     };
-    
+
     private static final String[] HOST_FILE_END       = new String[] {
         "# The following lines are desirable for IPv6 capable hosts",
         "# (added automatically by netbase upgrade)",
@@ -95,7 +90,7 @@ class DhcpManager
     };
 
     private final Logger logger = Logger.getLogger( DhcpManager.class );
-    
+
     private DhcpManager()
     {
     }
@@ -103,9 +98,9 @@ class DhcpManager
     void configure( NatSettings settings, NetworkingConfiguration netConfig ) throws TransformStartException
     {
 
-        try { 
+        try {
             writeConfiguration( settings, netConfig );
-            writeHosts( settings );            
+            writeHosts( settings );
         } catch ( Exception e ) {
             throw new TransformStartException( "Unable to reload DNS masq configuration", e );
         }
@@ -129,32 +124,32 @@ class DhcpManager
     void startDnsMasq() throws TransformStartException
     {
         int code;
-        
-        try { 
+
+        try {
             logger.debug( "Restarting DNS Masq server" );
-            
+
             /* restart dnsmasq */
             Process p = Runtime.getRuntime().exec( DNS_MASQ_CMD_RESTART );
             code = p.waitFor();
         } catch ( Exception e ) {
             throw new TransformStartException( "Unable to reload DNS masq configuration", e );
         }
-        
+
         if ( code != 0 ) {
             throw new TransformStartException( "Error starting DNS masq server" + code );
         }
     }
-    
+
     void deconfigure()
     {
         int code;
 
         try {
             writeDisabledConfiguration();
-            
+
             Process p = Runtime.getRuntime().exec( DNS_MASQ_CMD_RESTART );
             code = p.waitFor();
-            
+
             if ( code != 0 ) {
                 logger.error( "Error stopping DNS masq server, returned code: " + code );
             }
@@ -169,7 +164,7 @@ class DhcpManager
         } catch ( Exception e ) {
             logger.error( "Error enabling DHCP forwarding", e );
         }
-        
+
         /* Stop the DHCP Monitor */
         DhcpMonitor.getInstance().stop();
     }
@@ -184,8 +179,8 @@ class DhcpManager
 
         /* The time right now to determine if leases have been expired */
         Date now = new Date();
-        
-        
+
+
         /* Open up the interfaces file */
         try {
             in = new BufferedReader(new FileReader( DHCP_LEASES_FILE ));
@@ -204,16 +199,16 @@ class DhcpManager
                 logger.error( "Unable to close file: " + DHCP_LEASES_FILE, ex );
             }
         }
-            
+
         /* Lay over the settings from NAT */
         List <DhcpLeaseRule> staticList = settings.getDhcpLeaseList();
-        
+
         overlayStaticLeases( staticList, leaseList, macMap );
-        
+
         /* Set the list */
         settings.setDhcpLeaseList( leaseList );
     }
-    
+
     void parseLease( String str, List<DhcpLeaseRule> leaseList, Date now, Map<MACAddress,Integer> macMap )
     {
         str = str.trim();
@@ -222,12 +217,12 @@ class DhcpManager
         Date eol;
         MACAddress mac;
         IPNullAddr ip;
-        
+
         if ( strArray.length != DHCP_LEASE_ENTRY_LENGTH ) {
             logger.error( "Invalid DHCP lease: " + str );
             return;
         }
-        
+
         tmp  = strArray[DHCP_LEASE_ENTRY_EOL];
         try {
             eol = new Date( Long.parseLong( tmp ) * 1000 );
@@ -235,7 +230,7 @@ class DhcpManager
             logger.error( "Invalid DHCP date: " + tmp );
             return;
         }
-        
+
         if ( eol.before( now )) {
             logger.debug( "Lease already expired: " + str );
             return;
@@ -248,7 +243,7 @@ class DhcpManager
             logger.error( "Invalid MAC address: " + tmp );
             return;
         }
-        
+
         tmp  = strArray[DHCP_LEASE_ENTRY_IP];
         try {
             ip = IPNullAddr.parse( tmp );
@@ -256,12 +251,12 @@ class DhcpManager
             logger.error( "Invalid IP address: " + tmp );
             return;
         }
-        
+
         host  = strArray[DHCP_LEASE_ENTRY_HOST];
-    
+
         /* Insert the lease */
         DhcpLeaseRule rule  = new DhcpLeaseRule( mac, host, ip, IPNullAddr.getNullAddr(), eol, true );
-        
+
         /* Determine if the rule already exists */
         Integer index = macMap.get( mac );
 
@@ -274,27 +269,27 @@ class DhcpManager
         }
     }
 
-    private void overlayStaticLeases( List<DhcpLeaseRule> staticList, List<DhcpLeaseRule> leaseList, 
+    private void overlayStaticLeases( List<DhcpLeaseRule> staticList, List<DhcpLeaseRule> leaseList,
                                       Map<MACAddress,Integer> macMap )
     {
         if ( staticList == null ) {
             return;
         }
-        
+
         for ( Iterator<DhcpLeaseRule> iter = staticList.iterator() ; iter.hasNext() ; ) {
             DhcpLeaseRule rule = iter.next();
-            
+
             MACAddress mac = rule.getMacAddress();
             Integer index = macMap.get( mac );
             if ( index == null ) {
                 /* Insert a new rule */
-                DhcpLeaseRule currentRule = new DhcpLeaseRule( mac, "", IPNullAddr.getNullAddr(), 
+                DhcpLeaseRule currentRule = new DhcpLeaseRule( mac, "", IPNullAddr.getNullAddr(),
                                                                rule.getStaticAddress(), null, true );
                 currentRule.setDescription( rule.getDescription());
                 currentRule.setCategory( rule.getCategory());
-                
+
                 leaseList.add( currentRule );
-                
+
                 macMap.put( mac, leaseList.size() - 1 );
             } else {
                 DhcpLeaseRule currentRule = leaseList.get( index );
@@ -307,16 +302,16 @@ class DhcpManager
     }
 
     /* This removes all of the non-static leases */
-    void fleeceLeases( NatSettings settings ) 
+    void fleeceLeases( NatSettings settings )
     {
         /* Lay over the settings from NAT */
         List <DhcpLeaseRule> staticList = settings.getDhcpLeaseList();
 
         for ( Iterator<DhcpLeaseRule> iter = staticList.iterator() ; iter.hasNext() ; ) {
             DhcpLeaseRule rule = iter.next();
-            
+
             IPNullAddr staticAddress = rule.getStaticAddress();
-            
+
             if ( staticAddress == null || staticAddress.isEmpty()) {
                 iter.remove();
             }
@@ -326,7 +321,7 @@ class DhcpManager
     private void writeConfiguration( NatSettings settings, NetworkingConfiguration netConfig )
     {
         StringBuilder sb = new StringBuilder();
-        
+
         IPaddr externalAddress = netConfig.host();
 
         sb.append( HEADER );
@@ -347,19 +342,19 @@ class DhcpManager
                     logger.error( "Error retrieving inside interface, not binding to inside" );
                     inside = null;
                 }
-                
+
                 comment( sb, "Bind to the inside interface" );
                 sb.append( FLAG_DNS_BIND_INTERFACES + "\n" );
                 sb.append( FLAG_DNS_INTERFACE + "=" + inside + "\n\n" );
             }
-            
+
             /* Configure all of the hosts */
             List<DhcpLeaseRule> list = (List<DhcpLeaseRule>)settings.getDhcpLeaseList();
-            
+
             if ( list != null ) {
                 for ( Iterator<DhcpLeaseRule> iter = list.iterator() ; iter.hasNext() ; ) {
                     DhcpLeaseRule rule = iter.next();
-                    
+
                     if ( !rule.getStaticAddress().isEmpty()) {
                         comment( sb, "Static DHCP Host" );
                         if ( rule.getResolvedByMac()) {
@@ -372,10 +367,10 @@ class DhcpManager
                     }
                 }
             }
-            
+
             IPaddr gateway;
             IPaddr netmask;
-            
+
             /* If Nat is turned on, use the settings from nat, otherwise use
              * the settings from networking configuration */
             if ( settings.getNatEnabled()) {
@@ -385,21 +380,21 @@ class DhcpManager
                 gateway = netConfig.gateway();
                 netmask  = netConfig.netmask();
             }
-            
+
             comment( sb, "Setting the gateway" );
             sb.append( FLAG_DHCP_OPTION + "=" + FLAG_DHCP_GATEWAY );
             sb.append( "," + gateway.toString() + "\n\n" );
-            
+
             comment( sb, "Setting the subnet" );
             sb.append( FLAG_DHCP_OPTION + "=" + FLAG_DHCP_NETMASK );
             sb.append( "," + netmask.toString() + "\n\n" );
-            
-            
+
+
             appendNameServers( sb, settings, netConfig );
         } else {
             comment( sb, "DHCP is disabled, not using a range or any host rules\n" );
         }
-        
+
         if ( !settings.getDnsEnabled()) {
             /* Cannot bind to localhost, because that will also disable DHCP */
             comment( sb, "DNS is disabled, binding to port 54" );
@@ -408,12 +403,12 @@ class DhcpManager
             HostName localDomain = settings.getDnsLocalDomain();
             /* Write out the localdomain */
             comment( sb, "Setting the Local domain name" );
-            
+
             if ( localDomain.isEmpty()) {
                 comment( sb, "Local domain name is empty, using " + LOCAL_DOMAIN_DEFAULT.toString());
                 localDomain = LOCAL_DOMAIN_DEFAULT;
             }
-            
+
             sb.append( FLAG_DNS_LOCAL_DOMAIN + "=" + localDomain + "\n\n" );
         }
 
@@ -430,7 +425,7 @@ class DhcpManager
         for ( int c = 0 ; c < HOST_FILE_START.length ; c ++ ) {
             sb.append( HOST_FILE_START[c] + "\n" );
         }
-        
+
         String hostname = getHostName();
         sb.append( "127.0.0.1\t" + hostname );
         sb.append( "\n" );
@@ -478,8 +473,8 @@ class DhcpManager
         } catch ( Exception ex ) {
             /* Go to the default */
             hostname = DEFAULT_HOSTNAME;
-        } 
-        
+        }
+
         try {
             if ( in != null ) in.close();
         } catch ( Exception e ) {
@@ -488,15 +483,15 @@ class DhcpManager
 
         return hostname;
     }
-    
+
     /**
-     * Create a new list will all of entries for the same host in the same list 
+     * Create a new list will all of entries for the same host in the same list
      */
     private List<DnsStaticHostRule> mergeHosts( NatSettings settings )
     {
         List<DnsStaticHostRule> list = new LinkedList<DnsStaticHostRule>();
         Map<IPaddr,DnsStaticHostRule> map = new HashMap<IPaddr,DnsStaticHostRule>();
-        
+
         for ( Iterator iter = settings.getDnsStaticHostList().iterator(); iter.hasNext() ; ) {
             DnsStaticHostRule rule = (DnsStaticHostRule)iter.next();
             IPaddr addr  = rule.getStaticAddress();
@@ -514,25 +509,25 @@ class DhcpManager
 
         HostName localDomain = settings.getDnsLocalDomain();
         localDomain = ( localDomain.isEmpty()) ? LOCAL_DOMAIN_DEFAULT : localDomain;
-        
+
         for ( Iterator<DnsStaticHostRule> iter = list.iterator() ; iter.hasNext() ; ) {
             HostNameList hostNameList = iter.next().getHostNameList();
             hostNameList.qualify( localDomain );
             hostNameList.removeReserved();
         }
-        
+
         return list;
     }
 
     /* XXX This should go into a global util class */
-    private void writeFile( StringBuilder sb, String fileName ) 
+    private void writeFile( StringBuilder sb, String fileName )
     {
         BufferedWriter out = null;
-        
+
         /* Open up the interfaces file */
         try {
             String data = sb.toString();
-            
+
             out = new BufferedWriter(new FileWriter( fileName ));
             out.write( data, 0, data.length());
         } catch ( Exception ex ) {
@@ -540,9 +535,9 @@ class DhcpManager
              * then try again */
             logger.error( "Error writing file " + fileName + ":", ex );
         }
-        
+
         try {
-            if ( out != null ) 
+            if ( out != null )
                 out.close();
         } catch ( Exception ex ) {
             logger.error( "Unable to close file: " + fileName , ex );
@@ -553,7 +548,7 @@ class DhcpManager
     {
         String nameservers = "";
         IPaddr tmp;
-        
+
         if ( settings.getDnsEnabled()) {
             if ( settings.getNatEnabled()) {
                 nameservers += settings.getNatInternalAddress().toString();
@@ -561,22 +556,22 @@ class DhcpManager
                 nameservers += netConfig.host().toString();
             }
         } else {
-        
+
             tmp = netConfig.dns1();
 
             if ( tmp != null && !tmp.isEmpty()) {
                 nameservers += ( nameservers.length() == 0 ) ? "" : ",";
                 nameservers += tmp.toString();
             }
-            
+
             tmp = netConfig.dns2();
-            
+
             if ( tmp != null && !tmp.isEmpty()) {
                 nameservers += ( nameservers.length() == 0 ) ? "" : ",";
                 nameservers += tmp.toString();
             }
         }
-            
+
         if ( nameservers.length() == 0 ) {
             comment( sb, "No nameservers specified\n" );
         } else {
@@ -599,7 +594,7 @@ class DhcpManager
         sb.append( HEADER );
         comment( sb, "DNS is disabled, binding DNS to local host" );
         sb.append( FLAG_DNS_LISTEN + "=" + "127.0.0.1\n\n" );
-        
+
         writeFile( sb, DNS_MASQ_FILE );
     }
 
@@ -611,7 +606,7 @@ class DhcpManager
     static
     {
         HostName h;
-        
+
         try {
             h = HostName.parse( "local.domain" );
         } catch ( ParseException e ) {

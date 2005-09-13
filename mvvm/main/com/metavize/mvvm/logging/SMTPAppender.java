@@ -11,35 +11,19 @@
 
 package com.metavize.mvvm.logging;
 
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
-import javax.mail.internet.MimeBodyPart;
 import javax.mail.MessagingException;
+import javax.mail.internet.MimeBodyPart;
 
-import com.metavize.mvvm.MailSender;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.MvvmLocalContext;
 import com.metavize.mvvm.security.Tid;
-import com.metavize.mvvm.tapi.TransformContextFactory;
 import com.metavize.mvvm.tran.TransformContext;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Layout;
 import org.apache.log4j.Level;
-import org.apache.log4j.PatternLayout;
 import org.apache.log4j.helpers.CyclicBuffer;
 import org.apache.log4j.spi.LoggingEvent;
-import org.logicalcobwebs.proxool.ConnectionPoolDefinitionIF;
-import org.logicalcobwebs.proxool.ProxoolFacade;
-import org.logicalcobwebs.proxool.ProxoolListenerIF;
+
 
 
 public class SMTPAppender extends AppenderSkeleton
@@ -65,11 +49,13 @@ public class SMTPAppender extends AppenderSkeleton
             tid = new Tid(0L, null);
             tctx = null;
         } else {
-            tctx = TransformContextFactory.context();
-            if (tctx == null)
+            tctx = MvvmContextFactory.context().transformManager()
+                .threadContext();
+            if (tctx == null) {
                 tid = new Tid(0L, null);
-            else
+            } else {
                 tid = tctx.getTid();
+            }
         }
         if (tctx == null)
             name = "MVVM";

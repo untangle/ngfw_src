@@ -10,40 +10,35 @@
  */
 package com.metavize.mvvm.tran;
 
+import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.logging.StatisticEvent;
+import com.metavize.mvvm.security.Tid;
 import org.apache.log4j.Logger;
 
-import com.metavize.mvvm.tapi.Protocol;
-import com.metavize.mvvm.tapi.IPNewSessionRequest;
-
-import com.metavize.mvvm.logging.StatisticEvent;
-
-import com.metavize.mvvm.security.Tid;
-import com.metavize.mvvm.MvvmContextFactory;
-import com.metavize.mvvm.tapi.TransformContextFactory;
-
-import com.metavize.mvvm.tran.firewall.IntfMatcher;
-
 public abstract class StatisticManager implements Runnable
-{    
+{
     /* Log every five minutes */
     private static final long   SLEEP_TIME_MSEC = 5 * 60 * 1000;
 
     /* Delay a second while the thread is joining */
     private static final long   THREAD_JOIN_TIME_MSEC = 1000;
-            
+
+    private final Tid tid;
+
     /* The thread the monitor is running on */
     private Thread thread = null;
-    
+
     /* Status of the monitor */
     private volatile boolean isAlive = true;
-    
+
     private final Logger eventLogger = MvvmContextFactory.context().eventLogger();
     private final Logger logger = Logger.getLogger( this.getClass());
-        
-    protected StatisticManager()
+
+    protected StatisticManager(Tid tid)
     {
+        this.tid = tid;
     }
-    
+
     public void run()
     {
         logger.debug( "Starting" );
@@ -54,16 +49,16 @@ public abstract class StatisticManager implements Runnable
             logger.error( "died before starting" );
             return;
         }
-        
+
         StatisticEvent statisticEvent = getInitialStatisticEvent();
 
         while ( true ) {
-            try { 
+            try {
                 Thread.sleep( SLEEP_TIME_MSEC );
             } catch ( InterruptedException e ) {
                 logger.info( "Statistics manager was interrupted" );
             }
-            
+
             /* Only log the stats if there is something to log */
             if ( statisticEvent.hasStatistics()) {
                 /* Pre-cache the statistics to insure that no stats are lost */
@@ -73,7 +68,7 @@ public abstract class StatisticManager implements Runnable
             } else {
                 logger.debug( "No statistics available" );
             }
-            
+
             /* Check if the transform is still running */
             if ( !isAlive ) break;
         }
@@ -101,9 +96,9 @@ public abstract class StatisticManager implements Runnable
     {
         if ( thread != null ) {
             logger.debug( "Stopping Statistic Manager" );
-            
+
             isAlive = false;
-            try { 
+            try {
                 thread.interrupt();
                 thread.join( THREAD_JOIN_TIME_MSEC );
             } catch ( SecurityException e ) {
@@ -117,24 +112,22 @@ public abstract class StatisticManager implements Runnable
 
     private final void waitForTransformContext()
     {
-        Tid tid  = TransformContextFactory.context().getTid();
-        
         while ( true ) {
             if ( MvvmContextFactory.context().transformManager().transformContext( tid ) != null ) {
                 break;
             }
-            
+
             try {
                 Thread.sleep( 1000 );
             } catch ( InterruptedException e ) {
                 logger.info( "waitForTransformContext was interrupted" );
             }
-            
+
             if ( !isAlive ) return;
         }
     }
 
     protected abstract StatisticEvent getInitialStatisticEvent();
-    
+
     protected abstract StatisticEvent getNewStatisticEvent();
 }

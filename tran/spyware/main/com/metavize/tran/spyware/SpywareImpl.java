@@ -38,7 +38,6 @@ import com.metavize.mvvm.tapi.Affinity;
 import com.metavize.mvvm.tapi.Fitting;
 import com.metavize.mvvm.tapi.PipeSpec;
 import com.metavize.mvvm.tapi.SoloPipeSpec;
-import com.metavize.mvvm.tapi.TransformContextFactory;
 import com.metavize.mvvm.tran.Direction;
 import com.metavize.mvvm.tran.IPMaddr;
 import com.metavize.mvvm.tran.IPMaddrRule;
@@ -127,7 +126,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
     private static final int BYTE = 1;
 
     private final SpywareHttpFactory factory = new SpywareHttpFactory(this);
-    private final TokenAdaptor tokenAdaptor = new TokenAdaptor(factory);
+    private final TokenAdaptor tokenAdaptor = new TokenAdaptor(this, factory);
     private final SpywareEventHandler streamHandler = new SpywareEventHandler(this);
 
     private final Set urlBlacklist;
@@ -158,7 +157,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
 
     public void setSpywareSettings(SpywareSettings settings)
     {
-        Session s = TransformContextFactory.context().openSession();
+        Session s = getTransformContext().openSession();
         try {
             Transaction tx = s.beginTransaction();
 
@@ -254,7 +253,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
 
     protected void postInit(String[] args)
     {
-        Session s = TransformContextFactory.context().openSession();
+        Session s = getTransformContext().openSession();
         try {
             Transaction tx = s.beginTransaction();
 
@@ -520,7 +519,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
     {
         long t0 = System.currentTimeMillis();
 
-        Session s = TransformContextFactory.context().openSession();
+        Session s = getTransformContext().openSession();
         try {
             Connection c = s.connection();
             PreparedStatement ps = c.prepareStatement(q);

@@ -18,6 +18,7 @@ import java.util.*;
 import EDU.oswego.cs.dl.util.concurrent.ConcurrentHashMap;
 import EDU.oswego.cs.dl.util.concurrent.LinkedQueue;
 import EDU.oswego.cs.dl.util.concurrent.PooledExecutor;
+import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.argon.ArgonAgent;
 import com.metavize.mvvm.tapi.*;
 import com.metavize.mvvm.tapi.event.*;
@@ -59,7 +60,10 @@ class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {
 
     private Logger logger;
 
-    private MPipeImpl mPipe;
+    private final MPipeImpl mPipe;
+    private final Transform transform;
+    private final TransformContext transformContext;
+    private final TransformManager transformManager;
 
     /**
      * <code>mainThread</code> is the master thread started by <code>start</code>.  It handles
@@ -92,7 +96,7 @@ class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {
 
     /**
      * We need a single global <code>releasedHandler</code> for all sessions that have been release();
-     * ed after session request time.  We use the default abstract event handler implmentation to 
+     * ed after session request time.  We use the default abstract event handler implmentation to
      * become a transparent proxy.
      *
      */
@@ -172,11 +176,13 @@ class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {
     Dispatcher(MPipeImpl mPipe) {
         logger = Logger.getLogger(Dispatcher.class.getName());
         this.mPipe = mPipe;
+        this.transform = mPipe.transform();
+        this.transformContext = mPipe.transform().getTransformContext();
+        this.transformManager = MvvmContextFactory.context().transformManager();
         lastSessionReadTime = lastCommandReadTime = MetaEnv.currentTimeMillis();
         sessionEventListener = null;
         timers = new HashMap();
-        Transform tt = mPipe.transform();
-        TransformDesc td = tt.getTransformDesc();
+        TransformDesc td = transform.getTransformDesc();
         String tidn = td.getTid().getName();
         // dirtySessions = new LinkedQueue(); // FIFO
         // readySessions = new LinkedQueue(); // FIFO
@@ -197,7 +203,7 @@ class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {
 
         //singleThreadedSessions = td.isSingleThreadedSessions();
         sessionEventLogger = mPipe.sessionEventLogger();
-        releasedHandler = new ReleasedEventHandler();
+        releasedHandler = new ReleasedEventHandler(transform);
 
         // mainThread = ThreadPool.pool().allocate(this, threadNameBase + "disp");
         // mainThread = new Thread(this, threadNameBase + "mainDisp");
@@ -246,19 +252,21 @@ class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {
 
     public com.metavize.mvvm.argon.TCPSession newSession(com.metavize.mvvm.argon.TCPNewSessionRequest request)
     {
-        ClassLoader classLoader = mPipe().transform().getTransformContext().getClassLoader();
+        ClassLoader classLoader = transformContext.getClassLoader();
         Thread ct = Thread.currentThread();
         ClassLoader oldCl = ct.getContextClassLoader();
 
-        // entering TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        ct.setContextClassLoader(classLoader);
-
         StringBuilder sb = new StringBuilder("NT");
         sb.append(request.id());
-        MDC.put(SESSION_ID_MDC_KEY, sb.toString());
+
+        // entering TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        ct.setContextClassLoader(classLoader);
         try {
+            transformManager.registerThreadContext(transformContext);
+            MDC.put(SESSION_ID_MDC_KEY, sb.toString());
             return newSessionInternal(request);
         } finally {
+            transformManager.deregisterThreadContext();
             MDC.remove(SESSION_ID_MDC_KEY);
             ct.setContextClassLoader(oldCl);
             // left TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -267,19 +275,21 @@ class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {
 
     public com.metavize.mvvm.argon.UDPSession newSession(com.metavize.mvvm.argon.UDPNewSessionRequest request)
     {
-        ClassLoader classLoader = mPipe().transform().getTransformContext().getClassLoader();
+        ClassLoader classLoader = transformContext.getClassLoader();
         Thread ct = Thread.currentThread();
         ClassLoader oldCl = ct.getContextClassLoader();
 
-        // entering TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        ct.setContextClassLoader(classLoader);
-
         StringBuilder sb = new StringBuilder("NU");
         sb.append(request.id());
-        MDC.put(SESSION_ID_MDC_KEY, sb.toString());
+
+        // entering TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        ct.setContextClassLoader(classLoader);
         try {
+            transformManager.registerThreadContext(transformContext);
+            MDC.put(SESSION_ID_MDC_KEY, sb.toString());
             return newSessionInternal(request);
         } finally {
+            transformManager.deregisterThreadContext();
             MDC.remove(SESSION_ID_MDC_KEY);
             ct.setContextClassLoader(oldCl);
             // left TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -299,8 +309,7 @@ class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {
             if (RWSessionStats.DoDetailedTimes)
                 firstRequestHandleTime = MetaEnv.currentTimeMillis();
 
-            Transform tt = mPipe.transform();
-            TransformDesc td = tt.getTransformDesc();
+            TransformDesc td = transform.getTransformDesc();
             sessionId = request.id();
 
             TCPNewSessionRequestImpl treq = new TCPNewSessionRequestImpl(this, request);
@@ -413,8 +422,7 @@ class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {
             if (RWSessionStats.DoDetailedTimes)
                 firstRequestHandleTime = MetaEnv.currentTimeMillis();
 
-            Transform tt = mPipe.transform();
-            TransformDesc td = tt.getTransformDesc();
+            TransformDesc td = transform.getTransformDesc();
             sessionId = request.id();
 
             UDPNewSessionRequestImpl ureq = new UDPNewSessionRequestImpl(this, request);
@@ -714,7 +722,7 @@ class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {
     // This one is used to dump to our own log, including internal session state.
     void dumpSessions()
     {
-        System.out.println("Live session dump for " + mPipe.transform().getTransformDesc().getName());
+        System.out.println("Live session dump for " + transform.getTransformDesc().getName());
         System.out.println("ID\t\tDir\tC State\tC Addr\tC Port\tS State\tS Addr\tS Port\t" +
                            "Created\tLast Activity\tC->T Bs\tT->S Bs\tS->T Bs\tT->C Bs\t" +
                            "c2sDir\ts2cDir\tcio\tsio\tcro\tsro\tcreq\tsreq");

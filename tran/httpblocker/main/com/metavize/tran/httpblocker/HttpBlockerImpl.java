@@ -17,7 +17,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 
 import com.metavize.mvvm.tapi.AbstractTransform;
@@ -25,7 +24,6 @@ import com.metavize.mvvm.tapi.Affinity;
 import com.metavize.mvvm.tapi.Fitting;
 import com.metavize.mvvm.tapi.PipeSpec;
 import com.metavize.mvvm.tapi.SoloPipeSpec;
-import com.metavize.mvvm.tapi.TransformContextFactory;
 import com.metavize.mvvm.tran.Direction;
 import com.metavize.mvvm.tran.MimeType;
 import com.metavize.mvvm.tran.MimeTypeRule;
@@ -56,7 +54,7 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
     private final HttpBlockerFactory factory = new HttpBlockerFactory(this);
 
     private final PipeSpec pipeSpec = new SoloPipeSpec
-        ("http-blocker", this, new TokenAdaptor(factory), Fitting.HTTP_TOKENS,
+        ("http-blocker", this, new TokenAdaptor(this, factory), Fitting.HTTP_TOKENS,
          Affinity.CLIENT, 0);
     private final PipeSpec[] pipeSpecs = new PipeSpec[] { pipeSpec };
 
@@ -75,7 +73,7 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
 
     public void setHttpBlockerSettings(HttpBlockerSettings settings)
     {
-        Session s = TransformContextFactory.context().openSession();
+        Session s = getTransformContext().openSession();
         try {
             Transaction tx = s.beginTransaction();
 
@@ -100,7 +98,7 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
     {
         List<HttpRequestLog> l = new ArrayList<HttpRequestLog>(limit);
 
-        Session s = TransformContextFactory.context().openSession();
+        Session s = getTransformContext().openSession();
         try {
             Connection c = s.connection();
             PreparedStatement ps = c.prepareStatement(ALL_EVENTS_QUERY);
@@ -374,7 +372,7 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
 
     protected void postInit(String[] args)
     {
-        Session s = TransformContextFactory.context().openSession();
+        Session s = getTransformContext().openSession();
         try {
             Transaction tx = s.beginTransaction();
 

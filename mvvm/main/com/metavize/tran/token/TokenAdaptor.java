@@ -34,6 +34,7 @@ import com.metavize.mvvm.tapi.event.UDPNewSessionRequestEvent;
 import com.metavize.mvvm.tapi.event.UDPPacketEvent;
 import com.metavize.mvvm.tapi.event.UDPSessionEvent;
 import org.apache.log4j.Logger;
+import com.metavize.mvvm.tran.Transform;
 
 public class TokenAdaptor extends AbstractEventHandler
 {
@@ -46,8 +47,9 @@ public class TokenAdaptor extends AbstractEventHandler
         .pipelineFoundry();
     private final Logger logger = Logger.getLogger(TokenAdaptor.class);
 
-    public TokenAdaptor(TokenHandlerFactory thf)
+    public TokenAdaptor(Transform transform, TokenHandlerFactory thf)
     {
+        super(transform);
         this.handlerFactory = thf;
     }
 

@@ -26,7 +26,7 @@ public class EventHandler extends AbstractEventHandler
     private final Logger logger = Logger.getLogger(EventHandler.class);
     private final Logger eventLogger = MvvmContextFactory.context().eventLogger();
 
-    static final int SCAN_COUNTER   = Transform.GENERIC_0_COUNTER;    
+    static final int SCAN_COUNTER   = Transform.GENERIC_0_COUNTER;
     static final int DETECT_COUNTER = Transform.GENERIC_1_COUNTER;
     static final int BLOCK_COUNTER  = Transform.GENERIC_2_COUNTER;
 
@@ -58,6 +58,8 @@ public class EventHandler extends AbstractEventHandler
 
     EventHandler( ProtoFilterImpl transform )
     {
+        super(transform);
+
         this.transform = transform;
     }
 
@@ -96,7 +98,7 @@ public class EventHandler extends AbstractEventHandler
     }
 
     public void handleUDPClientPacket (UDPPacketEvent e)
-	   throws MPipeException
+       throws MPipeException
     {
         UDPSession sess = e.session();
         ByteBuffer packet = e.packet().duplicate(); // Save position/limit for sending.
@@ -105,7 +107,7 @@ public class EventHandler extends AbstractEventHandler
     }
 
     public void handleUDPServerPacket (UDPPacketEvent e)
-	   throws MPipeException
+       throws MPipeException
     {
         UDPSession sess = e.session();
         ByteBuffer packet = e.packet().duplicate(); // Save position/limit for sending.
@@ -224,7 +226,7 @@ public class EventHandler extends AbstractEventHandler
                 logger.debug(" ----------------LOG: "+ sessInfo.protocol + " traffic----------------");
             }
 
-            
+
             transform.incrementCount( DETECT_COUNTER );
 
             if(elem.getAlert()) {

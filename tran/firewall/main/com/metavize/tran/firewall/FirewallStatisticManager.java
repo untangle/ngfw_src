@@ -10,22 +10,22 @@
  */
 package com.metavize.tran.firewall;
 
-import org.apache.log4j.Logger;
 
-import com.metavize.mvvm.tran.StatisticManager;
+import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.logging.StatisticEvent;
-
-import com.metavize.mvvm.tapi.Protocol;
 import com.metavize.mvvm.tapi.IPNewSessionRequest;
+import com.metavize.mvvm.tapi.Protocol;
+import com.metavize.mvvm.tran.StatisticManager;
 
 class FirewallStatisticManager extends StatisticManager
-{    
+{
     private static FirewallStatisticManager INSTANCE = null;
-    
+
     private FirewallStatisticEvent statisticEvent = new FirewallStatisticEvent();
-    
+
     private FirewallStatisticManager()
     {
+        super(MvvmContextFactory.context().transformManager().threadContext().getTid());
     }
 
     protected StatisticEvent getInitialStatisticEvent()
@@ -37,7 +37,7 @@ class FirewallStatisticManager extends StatisticManager
     {
         return ( this.statisticEvent = new FirewallStatisticEvent());
     }
-        
+
     /**
      * Keep the stats on a request
      */
@@ -53,7 +53,7 @@ class FirewallStatisticManager extends StatisticManager
             }
         }
     }
-    
+
     /* XXX This is a lot of duplicated effort, but the only way to get around this is a class
      * hierarchy which makes hibernate a little more difficult */
     private void incrTcpSession( boolean isBlock, boolean isDefault )
@@ -91,7 +91,7 @@ class FirewallStatisticManager extends StatisticManager
 
     static synchronized FirewallStatisticManager getInstance()
     {
-        if ( INSTANCE == null ) 
+        if ( INSTANCE == null )
             INSTANCE = new FirewallStatisticManager();
 
         return INSTANCE;

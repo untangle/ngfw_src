@@ -15,7 +15,6 @@ import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.CasingPipeSpec;
 import com.metavize.mvvm.tapi.Fitting;
 import com.metavize.mvvm.tapi.PipeSpec;
-import com.metavize.mvvm.tapi.TransformContextFactory;
 import net.sf.hibernate.HibernateException;
 import net.sf.hibernate.Query;
 import net.sf.hibernate.Session;
@@ -33,6 +32,7 @@ public class HttpTransformImpl extends AbstractTransform
 
     private final PipeSpec[] pipeSpecs = new PipeSpec[] { pipeSpec };
 
+
     private HttpSettings settings;
 
     // constructors -----------------------------------------------------------
@@ -48,7 +48,7 @@ public class HttpTransformImpl extends AbstractTransform
 
     public void setHttpSettings(HttpSettings settings)
     {
-        Session s = TransformContextFactory.context().openSession();
+        Session s = getTransformContext().openSession();
         try {
             Transaction tx = s.beginTransaction();
 
@@ -89,7 +89,7 @@ public class HttpTransformImpl extends AbstractTransform
 
     protected void postInit(String[] args)
     {
-        Session s = TransformContextFactory.context().openSession();
+        Session s = getTransformContext().openSession();
         try {
             Transaction tx = s.beginTransaction();
 

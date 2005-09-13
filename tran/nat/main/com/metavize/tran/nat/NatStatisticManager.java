@@ -10,28 +10,27 @@
  */
 package com.metavize.tran.nat;
 
-import org.apache.log4j.Logger;
 
-import com.metavize.mvvm.tran.StatisticManager;
+import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.logging.StatisticEvent;
-
-import com.metavize.mvvm.tapi.Protocol;
 import com.metavize.mvvm.tapi.IPNewSessionRequest;
-
+import com.metavize.mvvm.tapi.Protocol;
+import com.metavize.mvvm.tran.StatisticManager;
 import com.metavize.mvvm.tran.firewall.IntfMatcher;
 
 class NatStatisticManager extends StatisticManager
-{    
+{
     private static NatStatisticManager INSTANCE = null;
-    
+
     /* Interface matcher to determine if the sessions is incoming or outgoing */
     final IntfMatcher matcherIncoming = IntfMatcher.MATCHER_IN;
     final IntfMatcher matcherOutgoing = IntfMatcher.MATCHER_OUT;
-        
+
     private NatStatisticEvent statisticEvent = new NatStatisticEvent();
-    
+
     private NatStatisticManager()
     {
+        super(MvvmContextFactory.context().transformManager().threadContext().getTid());
     }
 
     protected StatisticEvent getInitialStatisticEvent()
@@ -43,7 +42,7 @@ class NatStatisticManager extends StatisticManager
     {
         return ( this.statisticEvent = new NatStatisticEvent());
     }
-    
+
     void incrNatSessions()
     {
         this.statisticEvent.incrNatSessions();
@@ -106,7 +105,7 @@ class NatStatisticManager extends StatisticManager
 
     static synchronized NatStatisticManager getInstance()
     {
-        if ( INSTANCE == null ) 
+        if ( INSTANCE == null )
             INSTANCE = new NatStatisticManager();
 
         return INSTANCE;

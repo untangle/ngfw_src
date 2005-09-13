@@ -18,6 +18,7 @@ import com.metavize.mvvm.tapi.event.*;
 import com.metavize.mvvm.util.MetaEnv;
 import com.metavize.mvvm.util.SessionUtil;
 import org.apache.log4j.Logger;
+import com.metavize.mvvm.tran.Transform;
 
 public class EventHandler extends AbstractEventHandler
 {
@@ -28,8 +29,10 @@ public class EventHandler extends AbstractEventHandler
 
     private TestSettings settings;
 
-    public EventHandler(TestSettings settings)
+    public EventHandler(Transform transform, TestSettings settings)
     {
+        super(transform);
+
         if (settings == null) {
             throw new IllegalArgumentException("No settings");
         }

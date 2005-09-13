@@ -10,17 +10,16 @@
  */
 package com.metavize.tran.nat;
 
-import java.util.Iterator;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.Date;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.NetworkingConfiguration;
@@ -31,15 +30,14 @@ import com.metavize.mvvm.tapi.Affinity;
 import com.metavize.mvvm.tapi.Fitting;
 import com.metavize.mvvm.tapi.MPipe;
 import com.metavize.mvvm.tapi.PipeSpec;
-import com.metavize.mvvm.tapi.SoloPipeSpec;
-import com.metavize.mvvm.tapi.TransformContextFactory;
 import com.metavize.mvvm.tapi.Protocol;
-import com.metavize.mvvm.tran.IPaddr;
+import com.metavize.mvvm.tapi.SoloPipeSpec;
 import com.metavize.mvvm.tran.Direction;
+import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.TransformException;
 import com.metavize.mvvm.tran.TransformStartException;
-import com.metavize.mvvm.tran.TransformStopException;
 import com.metavize.mvvm.tran.TransformState;
+import com.metavize.mvvm.tran.TransformStopException;
 import com.metavize.mvvm.tran.firewall.IPMatcher;
 import com.metavize.mvvm.tran.firewall.IntfMatcher;
 import com.metavize.mvvm.tran.firewall.PortMatcher;
@@ -99,7 +97,7 @@ public class NatImpl extends AbstractTransform implements Nat
 
         /* This subscription has to evaluate after NAT */
         natFtpPipeSpec = new SoloPipeSpec
-            ("nat-ftp", this, new TokenAdaptor(new NatFtpFactory(this)),
+            ("nat-ftp", this, new TokenAdaptor(this, new NatFtpFactory(this)),
              Fitting.FTP_TOKENS, Affinity.SERVER, 0);
 
         pipeSpecs = new SoloPipeSpec[] { natPipeSpec, natFtpPipeSpec };
@@ -132,7 +130,7 @@ public class NatImpl extends AbstractTransform implements Nat
             throw e;
         }
 
-        Session s = TransformContextFactory.context().openSession();
+        Session s = getTransformContext().openSession();
 
         try {
             Transaction tx = s.beginTransaction();
@@ -173,7 +171,7 @@ public class NatImpl extends AbstractTransform implements Nat
     {
         List<NatRedirectLogEntry> l = new ArrayList<NatRedirectLogEntry>(limit);
 
-        Session s = TransformContextFactory.context().openSession();
+        Session s = getTransformContext().openSession();
         try {
             Connection c = s.connection();
             PreparedStatement ps = c.prepareStatement( REDIRECT_EVENT_QUERY );
@@ -203,7 +201,7 @@ public class NatImpl extends AbstractTransform implements Nat
 
                 /* Determine the reason
                  * The rule index is presently ignored, because the rule may have already
-                 * been modified, which could be confusing ot the user 
+                 * been modified, which could be confusing ot the user
                  */
                 boolean isDmz             = rs.getBoolean( IS_DMZ_IDX );
                 int ruleIndex             = rs.getInt( RULE_INDEX_IDX );
@@ -281,7 +279,7 @@ public class NatImpl extends AbstractTransform implements Nat
 
     protected void postInit(String[] args)
     {
-        Session s = TransformContextFactory.context().openSession();
+        Session s = getTransformContext().openSession();
         try {
             Transaction tx = s.beginTransaction();
 
@@ -339,7 +337,7 @@ public class NatImpl extends AbstractTransform implements Nat
         shutdownMatchingSessions();
 
         DhcpManager.getInstance().deconfigure();
-        
+
         /* deconfigure the event handle */
         try {
             handler.deconfigure();

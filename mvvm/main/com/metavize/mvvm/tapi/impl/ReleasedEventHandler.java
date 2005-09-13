@@ -6,12 +6,13 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: ReleasedEventHandler.java,v 1.4 2005/01/30 09:20:31 amread Exp $
+ *  $Id$
  */
 
 package com.metavize.mvvm.tapi.impl;
 
 import com.metavize.mvvm.tapi.AbstractEventHandler;
+import com.metavize.mvvm.tran.Transform;
 
 /**
  * <code>ReleasedEventHandler</code> is a plain vanilla event handler used for released
@@ -22,7 +23,7 @@ import com.metavize.mvvm.tapi.AbstractEventHandler;
  * @version 1.0
  */
 class ReleasedEventHandler extends AbstractEventHandler {
-    ReleasedEventHandler() {
-        super();
+    ReleasedEventHandler(Transform transform) {
+        super(transform);
     }
 }

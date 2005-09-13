@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 
 import com.metavize.mvvm.tapi.AbstractTransform;
@@ -26,7 +25,6 @@ import com.metavize.mvvm.tapi.Affinity;
 import com.metavize.mvvm.tapi.Fitting;
 import com.metavize.mvvm.tapi.PipeSpec;
 import com.metavize.mvvm.tapi.SoloPipeSpec;
-import com.metavize.mvvm.tapi.TransformContextFactory;
 import com.metavize.mvvm.tran.Direction;
 import com.metavize.mvvm.tran.TransformException;
 import com.metavize.mvvm.tran.TransformStartException;
@@ -70,7 +68,7 @@ public class ProtoFilterImpl extends AbstractTransform implements ProtoFilter
 
     public void setProtoFilterSettings(ProtoFilterSettings settings)
     {
-        Session s = TransformContextFactory.context().openSession();
+        Session s = getTransformContext().openSession();
         try {
             Transaction tx = s.beginTransaction();
 
@@ -100,7 +98,7 @@ public class ProtoFilterImpl extends AbstractTransform implements ProtoFilter
     {
         List<ProtoFilterLog> l = new ArrayList<ProtoFilterLog>(limit);
 
-        Session s = TransformContextFactory.context().openSession();
+        Session s = getTransformContext().openSession();
         try {
             Connection c = s.connection();
             PreparedStatement ps = c.prepareStatement(EVENT_QUERY);
@@ -166,7 +164,7 @@ public class ProtoFilterImpl extends AbstractTransform implements ProtoFilter
 
     protected void postInit(String[] args)
     {
-        Session s = TransformContextFactory.context().openSession();
+        Session s = getTransformContext().openSession();
         try {
             Transaction tx = s.beginTransaction();
 
