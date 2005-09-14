@@ -12,29 +12,61 @@
 package com.metavize.tran.spam;
 
 import com.metavize.mvvm.tapi.TCPSession;
+import com.metavize.mvvm.tapi.IPSessionDesc;
 import com.metavize.tran.token.TokenHandler;
 import com.metavize.tran.token.TokenHandlerFactory;
 import org.apache.log4j.Logger;
 import com.metavize.tran.mail.papi.imap.ImapTokenStream;
+import com.metavize.tran.mail.papi.MailExport;
+import com.metavize.tran.mail.papi.MailExportFactory;
+import com.metavize.tran.mail.papi.WrappedMessageGenerator;
 
-public class SpamImapFactory implements TokenHandlerFactory
-{
-    private static final Logger logger = Logger.getLogger(SpamImapFactory.class);
+public class SpamImapFactory
+  implements TokenHandlerFactory {
+  
+  private static final Logger m_logger =
+    Logger.getLogger(SpamImapFactory.class);
 
-    private final SpamImpl transform;
+  private final SpamImpl m_impl;
+  private final MailExport m_mailExport;
 
-    // constructors -----------------------------------------------------------
+  private WrappedMessageGenerator m_inWrapper =
+    new WrappedMessageGenerator(SpamSettings.IN_MOD_SUB_TEMPLATE, SpamSettings.IN_MOD_BODY_TEMPLATE);
 
-    SpamImapFactory(SpamImpl transform)
-    {
-        this.transform = transform;
-    }
+  private WrappedMessageGenerator m_outWrapper =
+    new WrappedMessageGenerator(SpamSettings.OUT_MOD_SUB_TEMPLATE, SpamSettings.OUT_MOD_BODY_TEMPLATE);  
 
-    // TokenHandlerFactory methods --------------------------------------------
+  SpamImapFactory(SpamImpl impl) {
+    m_impl = impl;
+    m_mailExport = MailExportFactory.getExport(); 
+  }
 
-    public TokenHandler tokenHandler(TCPSession session)
-    {
+
+  public TokenHandler tokenHandler(TCPSession session) {
+  
+    boolean inbound =
+      session.direction() == IPSessionDesc.INBOUND;
+  
+    SpamIMAPConfig config = inbound?
+      m_impl.getSpamSettings().getIMAPInbound():
+      m_impl.getSpamSettings().getIMAPOutbound();
+  
+    if(!config.getScan()) {
+      m_logger.debug("Scanning disabled.  Return passthrough token handler");
       return new ImapTokenStream(session);
-//        return new SpamImapHandler(session, transform);
     }
+  
+    long timeout = inbound?m_mailExport.getExportSettings().getImapInboundTimeout():
+      m_mailExport.getExportSettings().getImapOutboundTimeout();
+  
+    return new ImapTokenStream(session,
+        new SpamImapHandler(
+          session,
+          timeout,
+          timeout,
+          m_impl,
+          config,
+          inbound?m_inWrapper:m_outWrapper)
+      );
+  }
 }

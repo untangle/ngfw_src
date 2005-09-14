@@ -15,7 +15,6 @@ import com.metavize.tran.mail.papi.WrappedMessageGenerator;
 import com.metavize.tran.mail.papi.MessageInfo;
 import com.metavize.tran.mail.papi.imap.BufferingImapTokenStreamHandler;
 import com.metavize.mvvm.tapi.TCPSession;
-import com.metavize.tran.mail.papi.imap.ImapStateMachine;
 import com.metavize.tran.mime.MIMEMessage;
 import com.metavize.tran.mime.MIMEPart;
 import com.metavize.tran.mime.MIMEUtil;
@@ -61,7 +60,7 @@ public class VirusImapHandler
   }
 
   
-
+  @Override
   public HandleMailResult handleMessage(MIMEMessage msg,
     MessageInfo msgInfo) {
     m_logger.debug("[handleMessage]");

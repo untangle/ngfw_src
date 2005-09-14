@@ -14,20 +14,31 @@ package com.metavize.tran.clamphish;
 
 import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.tran.spam.SpamImapHandler;
-import com.metavize.tran.mail.papi.imap.ImapStateMachine;
+import com.metavize.tran.spam.SpamIMAPConfig;
+import com.metavize.tran.mime.LCString;
+import com.metavize.tran.mail.papi.WrappedMessageGenerator;
 import org.apache.log4j.Logger;
 
 class PhishImapHandler extends SpamImapHandler
 {
-    private final Logger logger = Logger.getLogger(PhishImapHandler.class);
+    private static final String SPAM_HEADER_NAME = "X-Phish-Flag";
+    private static final LCString SPAM_HEADER_NAME_LC = new LCString(SPAM_HEADER_NAME);
 
-    // constructors -----------------------------------------------------------
-
-    PhishImapHandler(TCPSession session, ClamPhishTransform transform)
-    {
-        super(session, transform);
+    PhishImapHandler(TCPSession session,
+      long maxClientWait,
+      long maxSvrWait,
+      ClamPhishTransform impl,
+      SpamIMAPConfig config,
+      WrappedMessageGenerator wrapper) {
+      super(session, maxClientWait, maxSvrWait, impl, config, wrapper);
     }
 
-    // ImapStateMachine methods -----------------------------------------------
-
+    @Override
+    protected String spamHeaderName() {
+        return SPAM_HEADER_NAME;
+    }
+    @Override
+    protected LCString spamHeaderNameLC() {
+        return SPAM_HEADER_NAME_LC;
+    }
 }

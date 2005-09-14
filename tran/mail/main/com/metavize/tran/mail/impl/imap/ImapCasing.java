@@ -34,7 +34,7 @@ class ImapCasing
   private final ImapParser m_parser;
   private final ImapUnparser m_unparser;
 
-  private static final boolean TRACE = true;
+  private static final boolean TRACE = false;
   private final boolean m_trace;
   private final CasingTracer m_tracer;
   

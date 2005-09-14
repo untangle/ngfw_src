@@ -33,6 +33,7 @@ import net.sf.hibernate.Query;
 import net.sf.hibernate.Session;
 import net.sf.hibernate.Transaction;
 import org.apache.log4j.Logger;
+import com.metavize.mvvm.tran.Transform;
 
 public class SpamImpl extends AbstractTransform implements SpamTransform
 {
@@ -140,6 +141,31 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
         reconfigure();
         return;
     }
+
+    /**
+     * Increment the counter for messages scanned
+     */
+    public void incrementScanCounter() {
+      incrementCount(Transform.GENERIC_0_COUNTER);
+    }
+    /**
+     * Increment the counter for blocked (SMTP only).
+     */
+    public void incrementBlockCounter() {
+      incrementCount(Transform.GENERIC_1_COUNTER);
+    }
+    /**
+     * Increment the counter for messages passed 
+     */
+    public void incrementPassCounter() {
+      incrementCount(Transform.GENERIC_2_COUNTER);
+    }
+    /**
+     * Increment the counter for messages marked 
+     */
+    public void incrementMarkCounter() {
+      incrementCount(Transform.GENERIC_3_COUNTER);
+    }            
 
     public void reconfigure() { return; }
 
