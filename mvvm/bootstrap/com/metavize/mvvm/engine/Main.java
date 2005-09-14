@@ -16,7 +16,6 @@ import java.io.FileInputStream;
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.Properties;
 
 import org.apache.catalina.Connector;
 import org.apache.catalina.Context;
@@ -30,8 +29,6 @@ import org.apache.catalina.session.StandardManager;
 import org.apache.catalina.startup.Embedded;
 import org.apache.coyote.tomcat5.CoyoteConnector;
 import org.apache.log4j.Logger;
-import org.logicalcobwebs.proxool.ProxoolException;
-import org.logicalcobwebs.proxool.ProxoolFacade;
 
 public class Main
 {
@@ -114,8 +111,6 @@ public class Main
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
                 public void run() { destroy(); }
             }));
-
-        initJdbcPool();
 
         ClassLoader cl = getClass().getClassLoader();
         Thread.currentThread().setContextClassLoader(cl);
@@ -217,32 +212,6 @@ public class Main
             Thread.currentThread().setContextClassLoader(oldCl);
             // restored classloader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         }
-    }
-
-    void initJdbcPool()
-    {
-        logger.info("Initializing Proxool");
-        try {
-            Class.forName("org.logicalcobwebs.proxool.ProxoolDriver");
-        } catch (ClassNotFoundException exn) {
-            throw new RuntimeException("could not load Proxool", exn);
-        }
-        Properties info = new Properties();
-        info.setProperty("proxool.maximum-connection-count", "50");
-        info.setProperty("proxool.house-keeping-test-sql", "select CURRENT_DATE");
-        /* XXX not for production: */
-        // info.setProperty("proxool.statistics", "1m,15m,1d");
-        info.setProperty("user", "metavize");
-        info.setProperty("password", "foo");
-        String alias = "mvvm";
-        String driverClass = "org.postgresql.Driver";
-        String driverUrl = "jdbc:postgresql://localhost/mvvm";
-        String jdbcUrl = "proxool." + alias + ":" + driverClass + ":" + driverUrl;
-        try {
-            ProxoolFacade.registerConnectionPool(jdbcUrl, info);
-        } catch (ProxoolException exn) {
-            logger.debug("could not set up Proxool", exn);
-         }
     }
 
     private void restartTransfoms() throws Exception

@@ -433,9 +433,6 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
         <include name="servlets.jar"/>
       </fileset>
     </copy>
-    <copy todir="${dist.mvvm.web}/proxool/WEB-INF/lib" flatten="yes">
-      <fileset refid="proxool.jarset"/>
-    </copy>
   </target>
 
   <!-- thirdparty -->
@@ -446,11 +443,11 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
     <!-- XXX move to own package(s) -->
     <copy todir="${dist.thirdparty.lib}" flatten="yes">
       <fileset refid="activation.jarset"/>
+      <fileset refid="c3p0.jarset"/>
       <fileset refid="concurrent.jarset"/>
       <fileset refid="hibernate.jarset"/>
       <fileset refid="itext.jarset"/>
       <fileset refid="jasperreports.jarset"/>
-      <!--       <fileset refid="jasperreports.lib.jarset"/> -->
       <fileset refid="javamail.jarset"/>
       <fileset refid="jfreechart.jarset"/>
       <fileset refid="junit.jarset"/>

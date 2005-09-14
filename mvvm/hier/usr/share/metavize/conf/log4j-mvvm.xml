@@ -63,6 +63,11 @@
     <appender-ref ref="eventlog"/>
   </category>
 
+  <!-- c3p0 JDCB connection pool -->
+  <category name="com.mchange">
+    <priority value="INFO"/>
+  </category>
+
   <!-- Engine's normal logging level is INFO -->
   <category name="com.metavize.mvvm.engine">
     <priority value="DEBUG"/>
