@@ -39,8 +39,783 @@ import com.metavize.tran.mail.papi.MessageInfoFactory;
 
 /**
  * 'name says it all...
+ *
+ * <br><br>
+ * For the sake of documentation, here is the state
+ * table for the embedded parser
+ * <br><br>
+<table cellpadding="3" cellspacing="0">
+  <tbody>
+    <tr>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0);"></td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="left" valign="bottom">EOL</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="left" valign="bottom">"FETCH"</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="left" valign="bottom">"BODY"</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="left" valign="bottom">"RFC822"</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="left" valign="bottom">"PEEK"</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="left" valign="bottom">word</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="left" valign="bottom">Qstr</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="left" valign="bottom">Literal</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="left" valign="bottom">OB [</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="left" valign="bottom">CB ]</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="left" valign="bottom">LT &lt;</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="left" valign="bottom">Paren (</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="left" valign="bottom">Dot .</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); border-right: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="left" valign="bottom">Delim</td>
+    </tr>
+    <tr>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="left" valign="bottom">(s1) Skipping Literal</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">0</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">0</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">0</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">0</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">0</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">0</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">0</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">0</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">0</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">0</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">0</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">0</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">0</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); border-right: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">0</td>
+    </tr>
+    <tr>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="left" valign="bottom">(s2) Draining Body</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">0</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">0</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">0</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">0</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">0</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">0</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">0</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">0</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">0</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">0</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">0</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">0</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">0</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); border-right: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">0</td>
+    </tr>
+    <tr>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="left" valign="bottom">(s3) Scanning New Line</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">4</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">2</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">1</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">1</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">1</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">1</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">1</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">3</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">4</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">4</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">4</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">4</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">4</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); border-right: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">4</td>
+    </tr>
+    <tr>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="left" valign="bottom">Saw "FETCH"</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">6</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">4</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">4</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">4</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">4</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">4</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">4</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">9</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">4</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">4</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">4</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">5</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">4</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); border-right: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">4</td>
+    </tr>
+    <tr>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="left" valign="bottom">(s4) Skipping to end of line</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">6</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">4</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">4</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">4</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">4</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">4</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">4</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">9</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">4</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">4</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">4</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">4</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">4</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); border-right: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">4</td>
+    </tr>
+    <tr>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="left" valign="bottom">(s5) Saw "FETCH .. ("</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">6</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">4</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">7</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">8</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">4</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">4</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">4</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">9</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">4</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">4</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">4</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">4</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">4</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); border-right: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">4</td>
+    </tr>
+    <tr>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="left" valign="bottom">(s6) Saw "FETCH...(...BODY"</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">6</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">5</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">4</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">8</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">5</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">5</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">5</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">10</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">11</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">5</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">5</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">5</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">12</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); border-right: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">5</td>
+    </tr>
+    <tr>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="left" valign="bottom">(s7) Saw "FETCH...(...RFC822"</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">6</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">5</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">7</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">4</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">5</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">5</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">5</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">13</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">5</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">5</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">5</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">5</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">14</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); border-right: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">5</td>
+    </tr>
+    <tr>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="left" valign="bottom">(s8) Saw "FETCH .. (...BODY["</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">6</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">14</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">14</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">14</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">14</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">14</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">14</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">10</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">5</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">15</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">5</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">5</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">14</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); border-right: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">5</td>
+    </tr>
+    <tr>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="left" valign="bottom">(s9) Saw "FETCH .. (...BODY[]"</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">6</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">6</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">7</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">8</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">5</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">5</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">5</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">13</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">5</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">5</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">5</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">5</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">5</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); border-right: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">5</td>
+    </tr>
+    <tr>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="left" valign="bottom">(s10) Checking for "BODY.PEEK"</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">6</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">5</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">5</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">5</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">7</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">5</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">5</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">10</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">5</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">5</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">5</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">5</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">5</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); border-right: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">5</td>
+    </tr>
+    <tr>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); border-bottom: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="left" valign="bottom">(s11) Skipping current Token, then going
+to s6</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); border-bottom: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">6</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); border-bottom: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">5</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); border-bottom: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">5</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); border-bottom: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">5</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); border-bottom: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">5</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); border-bottom: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">5</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); border-bottom: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">5</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); border-bottom: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">5</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); border-bottom: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">5</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); border-bottom: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">5</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); border-bottom: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">5</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); border-bottom: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">5</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); border-bottom: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">5</td>
+      <td style="border: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">5</td>
+    </tr>
+  </tbody>
+</table>
+ *
+ *
+ * <br><br>
+ * And here is the table of actions w/ descriptions
+<table cellpadding="3" cellspacing="0">
+  <tbody>
+    <tr>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="left" valign="bottom">Action</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); border-right: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="left" valign="bottom">Desc</td>
+    </tr>
+    <tr>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">0</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); border-right: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="left" valign="bottom">Assert (illegal)</td>
+    </tr>
+    <tr>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">1</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); border-right: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="left" valign="bottom">If line_word_count &lt; MAX, no change in
+state. Otherwise, change state to s5 ("Look for new line") and reset
+line_word_count</td>
+    </tr>
+    <tr>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">2</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); border-right: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="left" valign="bottom">Change to s4 ("Saw FETCH")</td>
+    </tr>
+    <tr>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">3</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); border-right: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="left" valign="bottom">Push current state, change to "Skipping
+Literal" (s1). Increment line_word_count</td>
+    </tr>
+    <tr>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">4</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); border-right: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="left" valign="bottom">No change in state</td>
+    </tr>
+    <tr>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">5</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); border-right: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="left" valign="bottom">Reset line_word_count, change state to s6
+("Saw 'FETCH' (")</td>
+    </tr>
+    <tr>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">6</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); border-right: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="left" valign="bottom">Change state to s3 ("new line"). Reset
+line_word_count</td>
+    </tr>
+    <tr>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">7</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); border-right: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="left" valign="bottom">Change state to s7 ("saw
+'FETCH...(...BODY'")</td>
+    </tr>
+    <tr>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">8</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); border-right: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="left" valign="bottom">Change state to s8 ("saw
+'FETCH...(...RFC822")</td>
+    </tr>
+    <tr>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">9</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); border-right: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="left" valign="bottom">Push Current state, change state to s1
+("Skipping Literal")</td>
+    </tr>
+    <tr>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">10</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); border-right: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="left" valign="bottom">Push s6 state as next, change to s1
+(skipping literal).</td>
+    </tr>
+    <tr>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">11</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); border-right: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="left" valign="bottom">Change state to s9 ("saw
+'FETCH...(...BODY[")</td>
+    </tr>
+    <tr>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">12</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); border-right: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="left" valign="bottom">Change state to s11 (If next token is
+"PEEK", change state to s7, otherwise assume failed "BODY")</td>
+    </tr>
+    <tr>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">13</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); border-right: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="left" valign="bottom">Found Message (change state to s2)</td>
+    </tr>
+    <tr>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">14</td>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); border-right: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="left" valign="bottom">Change state to s12 ("Skip current token,
+then change state to s5")</td>
+    </tr>
+    <tr>
+      <td
+ style="border-top: thin solid rgb(0, 0, 0); border-left: thin solid rgb(0, 0, 0); border-bottom: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="right" valign="bottom">15</td>
+      <td style="border: thin solid rgb(0, 0, 0); font-size: 10pt;"
+ align="left" valign="bottom">Change state to s10 ("saw
+'FETCH...(...BODY[]'")</td>
+    </tr>
+  </tbody>
+</table> 
  */
-class ImapServerParser
+public class ImapServerParser
   extends ImapParser {
 
   /**
@@ -466,85 +1241,134 @@ class ImapServerParser
 // class (since inner classes
 // cannot have static finals)
 
+  private static final int S01= 0;//Skipping Literal
+  private static final int S02= 1;//Draining Body
+  private static final int S03= 2;//Scanning New Line
+  private static final int S04= 3;//Saw "FETCH"
+  private static final int S05= 4;//Skipping to end of line
+  private static final int S06= 5;//Saw "FETCH .. ("
+  private static final int S07= 6;//Saw "FETCH...(...BODY"
+  private static final int S08= 7;//Saw "FETCH...(...RFC822"
+  private static final int S09= 8;//Saw "FETCH .. (...BODY["
+  private static final int S10= 9;//Saw "FETCH .. (...BODY[]"
+  private static final int S11=10;//Checking for "BODY.PEEK"
+  private static final int S12=11;//Skipping current Token, then going to s5 or s6
 
-  private static final int EOL__T = 0;
-  private static final int FTCH_T = 1;
-  private static final int BODY_T = 2;
-  private static final int R22__T = 3;
-  private static final int WORD_T = 4;
-  private static final int QSTR_T = 5;
-  private static final int LITR_T = 6;
-  private static final int OB_X_T = 7;
-  private static final int CB_X_T = 8;
-  private static final int LT_X_T = 9;
-  private static final int PARN_T = 10;
-  private static final int DELM_T = 11;
+  private static final String[] STATE_STRINGS = {
+    "Skipping Literal",
+    "Draining Body",
+    "Scanning New Line",
+    "Saw \"FETCH\"",
+    "Skipping to end of line",
+    "Saw \"FETCH .. (\"",
+    "Saw \"FETCH...(...BODY\"",
+    "Saw \"FETCH...(...RFC822\"",
+    "Saw \"FETCH .. (...BODY[\"",
+    "Saw \"FETCH .. (...BODY[]\"",
+    "Checking for \"BODY.PEEK\"",
+    "Skipping current Token, then going to s6"
+  };
+    
 
-  private static final int A01 = 0;
-  private static final int A02 = 1;
-  private static final int A03 = 2;
-  private static final int A04 = 3;
-  private static final int A05 = 4;
-  private static final int A06 = 5;
-  private static final int A07 = 6;
-  private static final int A08 = 7;
-  private static final int A09 = 8;
-  private static final int A10 = 9;
-  private static final int A11 = 10;
-  private static final int A12 = 11;
-  private static final int A13 = 12;
-  private static final int A14 = 13;
+  private static final int T01 =  0;//EOL
+  private static final int T02 =  1;//"FETCH"
+  private static final int T03 =  2;//"BODY"
+  private static final int T04 =  3;//"RFC822"
+  private static final int T05 =  4;//"PEEK"
+  private static final int T06 =  5;//(word)
+  private static final int T07 =  6;//(qstr)
+  private static final int T08 =  7;//(literal)
+  private static final int T09 =  8;//OB "["
+  private static final int T10 =  9;//CB "]"
+  private static final int T11 = 10;//LT "<"
+  private static final int T12 = 11;//Paren "("
+  private static final int T13 = 12;//Dot "."
+  private static final int T14 = 13;//(delim)
+  private static final int T15 = 14;//SYNTHETIC TOKEN FOR LOGGING (meaning, previous was a literal)
+  private static final int T16 = 15;//SYNTHETIC TOKEN FOR LOGGING (meaning, previous was a msg)
+  private static final int T17 = 16;//SYNTHETIC TOKEN FOR LOGGING (meaning, initial state)
 
-  private static final int LF_NL_X_S = 0;
-  private static final int SL_XXXX_S = 1;
-  private static final int NL_XXXX_S = 2;
-  private static final int F_XXXXX_S = 3;
-  private static final int FOP_XXX_S = 4;
-  private static final int F_B_XXX_S = 5;
-  private static final int F_B_R_X_S = 6;
-  private static final int F_B_R_R_S = 7;
-  private static final int DRN_BDY_S = 8;
+  private static final String[] TOKEN_STRINGS = {
+    "EOL",
+    "\"FETCH\"",
+    "\"BODY\"",
+    "\"RFC822\"",
+    "\"PEEK\"",
+    "(word)",
+    "(qstr)",
+    "(literal)",
+    "OB \"[\"",
+    "CB \"]\"",
+    "LT \"<\"",
+    "Paren \"(\"",
+    "Dot \".\"",
+    "(delim)",
+    "previous was a literal",
+    "previous was a msg",
+    "initial state"
+  };
 
+  private static final int A00 =  0;
+  private static final int A01 =  1;
+  private static final int A02 =  2;
+  private static final int A03 =  3;
+  private static final int A04 =  4;
+  private static final int A05 =  5;
+  private static final int A06 =  6;
+  private static final int A07 =  7;
+  private static final int A08 =  8;
+  private static final int A09 =  9;
+  private static final int A10 = 10;
+  private static final int A11 = 11;
+  private static final int A12 = 12;
+  private static final int A13 = 13;
+  private static final int A14 = 14;
+  private static final int A15 = 15;
 
   private static final int[][] TRAN_TBL = {
-            //EOL__T FTCH_T BODY_T R22__T WORD_T QSTR_T LITR_T OB_X_T CB_X_T LT_X_T PARN_T DELM_T
-/*LF_NL_X_S*/ {A01,   A02,   A02,   A02,   A02,   A02,   A11,   A02,   A02,   A02,   A02,   A02},
-/*SL_XXXX_S*/ {A14,   A14,   A14,   A14,   A14,   A14,   A14,   A14,   A14,   A14,   A14,   A14},
-/*NL_XXXX_S*/ {A01,   A03,   A02,   A02,   A04,   A04,   A12,   A02,   A04,   A04,   A04,   A04},
-/*F_XXXXX_S*/ {A01,   A02,   A02,   A02,   A02,   A02,   A13,   A02,   A02,   A02,   A05,   A02},
-/*FOP_XXX_S*/ {A01,   A05,   A07,   A06,   A05,   A05,   A12,   A05,   A05,   A05,   A05,   A05},
-/*F_B_XXX_S*/ {A01,   A02,   A02,   A02,   A02,   A02,   A13,   A08,   A02,   A02,   A02,   A02},
-/*F_B_R_X_S*/ {A01,   A02,   A02,   A02,   A02,   A02,   A13,   A02,   A09,   A02,   A02,   A02},
-/*F_B_R_R_S*/ {A01,   A02,   A02,   A02,   A02,   A02,   A10,   A02,   A02,   A02,   A02,   A02},
-/*DRN_BDY_S*/ {A14,   A14,   A14,   A14,   A14,   A14,   A14,   A14,   A14,   A14,   A14,   A14}
-    };
+    {A00, A00, A00, A00, A00, A00, A00, A00, A00, A00, A00, A00, A00, A00},
+    {A00, A00, A00, A00, A00, A00, A00, A00, A00, A00, A00, A00, A00, A00},
+    {A04, A02, A01, A01, A01, A01, A01, A03, A04, A04, A04, A04, A04, A04},
+    {A06, A04, A04, A04, A04, A04, A04, A09, A04, A04, A04, A05, A04, A04},
+    {A06, A04, A04, A04, A04, A04, A04, A09, A04, A04, A04, A04, A04, A04},
+    {A06, A04, A07, A08, A04, A04, A04, A09, A04, A04, A04, A04, A04, A04},
+    {A06, A05, A04, A08, A05, A05, A05, A10, A11, A05, A05, A05, A12, A05},
+    {A06, A05, A07, A04, A05, A05, A05, A13, A05, A05, A05, A05, A14, A05},
+    {A06, A14, A14, A14, A14, A14, A14, A10, A05, A15, A05, A05, A14, A05},
+    {A06, A06, A07, A08, A05, A05, A05, A13, A05, A05, A05, A05, A05, A05},
+    {A06, A05, A05, A05, A07, A05, A05, A10, A05, A05, A05, A05, A05, A05},
+    {A06, A05, A05, A05, A05, A05, A05, A05, A05, A05, A05, A05, A05, A05}
+  };
 
-  
-
-
-  private static final int MAX_TOKENS_BEFORE_FETCH = 6;
+  private static final int MAX_TOKENS_BEFORE_FETCH = 8;
   private static final byte[] FETCH_BYTES = "fetch".getBytes();
   private static final byte[] BODY_BYTES = "body".getBytes();
   private static final byte[] RFC822_BYTES = "rfc822".getBytes();
+  private static final byte[] PEEK_BYTES = "peek".getBytes();
   
   class IMAPBodyScanner {
 
     private int m_lineWordCount;
     private int m_toSkipLiteral;    
-    private int m_state = NL_XXXX_S;
+    private int m_state = S03;
     private int m_msgLength = -1;
     private int m_pushedStateForLiteral = -1;
     private Logger m_logger =
       Logger.getLogger(ImapServerParser.IMAPBodyScanner.class);
 
     IMAPBodyScanner() {
-      changeState(NL_XXXX_S);
+      changeState(S03, T17);
     }
 
-    private void changeState(int newState) {
+    private void changeState(int newState,
+      int tokenClass) {
       if(newState != m_state) {
-        m_logger.debug("Change state from " +
-          m_state + " to " + newState);
+        m_logger.debug("Change state from \"" +
+          STATE_STRINGS[m_state] +
+          "\" to \"" +
+          STATE_STRINGS[newState] +
+          "\" on token \"" +
+          TOKEN_STRINGS[tokenClass] + "\"");
         m_state = newState;
       }
     }
@@ -563,16 +1387,16 @@ class ImapServerParser
 
       //Reset the message length, as it never caries
       //over
-      if(m_state == DRN_BDY_S) {
+      if(m_state == S02) {
         m_msgLength = -1;
-        changeState(LF_NL_X_S);
+        changeState(S05, T16);
         m_lineWordCount = 0;
       }
       
       while(buf.hasRemaining()) {
         //Before we tokenize into a literal by-accident,
         //handle literal draining first
-        if(m_state == SL_XXXX_S) {
+        if(m_state == S01) {
           //Skipping literal
           int thisSkip = buf.remaining()>m_toSkipLiteral?
             m_toSkipLiteral:buf.remaining();
@@ -583,13 +1407,13 @@ class ImapServerParser
             if(m_pushedStateForLiteral == -1) {
               throw new RuntimeException("Draining literal without next state");
             }
-            changeState(m_pushedStateForLiteral);
+            changeState(m_pushedStateForLiteral, T15);
             m_pushedStateForLiteral = -1;
           }
           continue;
         }
 
-        //From here, the states "SL_XXXX_S" and "DRN_BDY_S" are illegal
+        //From here, the states "S01" and "S02" are illegal
         
         //Now, get the next result
         switch(m_tokenizer.next(buf)) {
@@ -608,43 +1432,49 @@ class ImapServerParser
         switch(m_tokenizer.getTokenType()) {
           case WORD:
             if(m_tokenizer.compareWordAgainst(buf, FETCH_BYTES, true)) {
-              tokenClass = FTCH_T;
+              tokenClass = T02;
             }
             else if(m_tokenizer.compareWordAgainst(buf, BODY_BYTES, true)) {
-              tokenClass = BODY_T;
+              tokenClass = T03;
             }
             else if(m_tokenizer.compareWordAgainst(buf, RFC822_BYTES, true)) {
-              tokenClass = R22__T;
+              tokenClass = T04;
             }
+            else if(m_tokenizer.compareWordAgainst(buf, PEEK_BYTES, true)) {
+              tokenClass = T05;
+            }            
             else {
-              tokenClass = WORD_T;
+              tokenClass = T06;
             }
             break;
           case QSTRING:
-            tokenClass = QSTR_T;
+            tokenClass = T07;
             break;
           case LITERAL:
-            tokenClass = LITR_T;
+            tokenClass = T08;
             break;
           case CONTROL_CHAR:
             if(buf.get(m_tokenizer.getTokenStart()) == OPEN_BRACKET_B) {
-              tokenClass = OB_X_T;
+              tokenClass = T09;
             }
             else if(buf.get(m_tokenizer.getTokenStart()) == CLOSE_BRACKET_B) {
-              tokenClass = CB_X_T;
+              tokenClass = T10;
             }
             else if(buf.get(m_tokenizer.getTokenStart()) == LT_B) {
-              tokenClass = LT_X_T;
+              tokenClass = T11;
             }
             else if(buf.get(m_tokenizer.getTokenStart()) == OPEN_PAREN_B) {
-              tokenClass = PARN_T;
+              tokenClass = T12;
+            }
+            else if(buf.get(m_tokenizer.getTokenStart()) == PERIOD_B) {
+              tokenClass = T13;
             }
             else {
-              tokenClass = DELM_T;
+              tokenClass = T14;
             }
             break;
           case NEW_LINE:
-            tokenClass = EOL__T;
+            tokenClass = T01;
             break;
           default:
             throw new RuntimeException("Unexpected token type: " + m_tokenizer.getTokenType());
@@ -654,64 +1484,98 @@ class ImapServerParser
         //Now, index into our function table for what to do based
         //on current state and the token class
         switch(TRAN_TBL[m_state][tokenClass]) {
+          //================================        
+          case A00:
+            //Assert (illegal)
+            throw new RuntimeException("Illegal state right now (" + m_state + ")");
+          //================================
           case A01:
-            changeState(NL_XXXX_S);
-            m_lineWordCount = 0;
-            break;
-          case A02:
-            changeState(LF_NL_X_S);
-            m_lineWordCount = 0;
-            break;
-          case A03:
-            if(m_lineWordCount > 1) {
-              changeState(F_XXXXX_S);
-              m_lineWordCount = 0;              
-            }
-            else {
-              m_logger.debug("Odd.  Encountered \"FECTH\" as first word on line");
-              m_lineWordCount++;              
-            }
-            break;
-          case A04:
+            //If line_word_count < MAX, no change in state.
+            //Otherwise, change state to s5 ("Look for new line") and reset line_word_count
             if(++m_lineWordCount > MAX_TOKENS_BEFORE_FETCH) {
-              changeState(LF_NL_X_S);
-              m_lineWordCount = 0;              
-            }          
+              changeState(S05, tokenClass);
+              m_lineWordCount = 0;
+            }
             break;
+          //================================
+          case A02:
+            //Change to s4 ("Saw FETCH")
+            changeState(S04, tokenClass);
+            break;
+          //================================
+          case A03:
+            //Push current state, change to "Skipping Literal" (s1).  Increment line_word_count
+            m_pushedStateForLiteral = m_state;
+            m_state = S01;
+            m_lineWordCount++;
+            break;
+          //================================
+          case A04:
+            //No change in state
+            break;
+          //================================
           case A05:
-            changeState(FOP_XXX_S);
+            //Reset line_word_count, change state to s6 ("Saw 'FETCH' (")
+            m_lineWordCount = 0;
+            changeState(S06, tokenClass);
             break;
-          case A09://Duplicate actions
+          //================================
           case A06:
-            changeState(F_B_R_R_S);
+            //Change state to s3 ("new line").  Reset line_word_count
+            m_lineWordCount = 0;
+            changeState(S03, tokenClass);            
             break;
+          //================================
           case A07:
-            changeState(F_B_XXX_S);
+            //Change state to s7 ("saw 'FETCH...(...BODY'")
+            changeState(S07, tokenClass);
             break;
+          //================================
           case A08:
-            changeState(F_B_R_X_S);
+            //Change state to s8 ("saw 'FETCH...(...RFC822")
+            changeState(S08, tokenClass);
             break;
+          //================================
+          case A09:
+            //Push Current state, change state to s1 ("Skipping Literal")
+            m_pushedStateForLiteral = m_state;
+            m_state = S01;
+            break;
+          //================================
           case A10:
+            //Push s6 state as next, change to s1 (skipping literal).
+            m_pushedStateForLiteral = S06;
+            changeState(S01, tokenClass);
+            break;
+          //================================
+          case A11:
+            //Change state to s9 ("saw 'FETCH...(...BODY[")
+            changeState(S09, tokenClass);
+            break;
+          //================================
+          case A12:
+            //Change state to s11 (If next token is "PEEK",
+            //change state to s7, otherwise assume failed "BODY")
+            changeState(S11, tokenClass);
+            break;
+          //================================
+          case A13:
+            //Found Message (change state to s2)
             m_logger.debug("Found body declaration");
             m_msgLength = m_tokenizer.getLiteralOctetCount();
-            changeState(DRN_BDY_S);
-            return true;
-          case A11:
-            m_pushedStateForLiteral = m_state;
-            m_toSkipLiteral = m_tokenizer.getLiteralOctetCount();
-            changeState(SL_XXXX_S);
-            break;
-          case A12:
-            m_toSkipLiteral = m_tokenizer.getLiteralOctetCount();
-            m_lineWordCount++;
-            changeState(SL_XXXX_S);
-            break;
-          case A13:
-            m_toSkipLiteral = m_tokenizer.getLiteralOctetCount();
-            m_pushedStateForLiteral = LF_NL_X_S;
-            changeState(SL_XXXX_S);
-            break;
+            changeState(S02, tokenClass);
+            return true;            
+          //================================
           case A14:
+            //Change state to s12 ("Skip current
+            //token, then change state to s5 or s6")
+            changeState(S12, tokenClass);
+            break;
+          //================================
+          case A15:
+            //Change state to s10 ("saw 'FETCH...(...BODY[]'")
+            changeState(S10, tokenClass);
+            break;
           default:
             throw new RuntimeException("Unknown action");
         }

@@ -25,18 +25,23 @@ import org.apache.log4j.Logger;
  */
 public class CasingTracer {
 
+  private static final String s_line_sep =
+    System.getProperty("line.separator");
+
   private static ByteBuffer s_parsePrefix = ByteBuffer.wrap((
-    System.getProperty("line.separator") +
+    s_line_sep +
     "============= PARSER =============" +
-    System.getProperty("line.separator")).getBytes());
+    s_line_sep).getBytes());
+    
   private static ByteBuffer s_unParsePrefix = ByteBuffer.wrap((
-    System.getProperty("line.separator") +
+    s_line_sep +
     "============ UNPARSER ============" +
-    System.getProperty("line.separator")).getBytes());
+    s_line_sep).getBytes());
+    
   private static ByteBuffer s_end = ByteBuffer.wrap((
-    System.getProperty("line.separator") +
+    s_line_sep +
     "============== END ===============" +
-    System.getProperty("line.separator")).getBytes());     
+    s_line_sep).getBytes());     
 
   private final Logger m_logger = Logger.getLogger(CasingTracer.class);
 
@@ -100,8 +105,11 @@ public class CasingTracer {
    * Called as the parser/unparser encounter the end of the session
    */
   public void endSession(boolean calledFromParser) {
-    String closeMsg =
-      "============= CLOSE (" + (calledFromParser?"parser":"unparser") + ") =============";
+    String closeMsg = s_line_sep + 
+      "============= CLOSE (" +
+      (calledFromParser?"parser":"unparser") +
+      ") =============" +
+      s_line_sep;
     traceWrite(ByteBuffer.wrap(closeMsg.getBytes()), null);
     if(++m_closeCount > 1) {
       close();
