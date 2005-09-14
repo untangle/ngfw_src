@@ -164,6 +164,18 @@ public class MMainJFrame extends javax.swing.JFrame {
 
     public Dimension getMinimumSize(){ return MIN_SIZE; } // used for form resizing
 
+    
+    
+    private Map<String,Map<ButtonKey,MTransformJButton>> viewMap;
+    
+    public void setToolboxView(String view){
+         
+    }
+    
+    public void addToolboxView(String view ){
+        
+        
+    }
 
     private void initComponents() {//GEN-BEGIN:initComponents
         java.awt.GridBagConstraints gridBagConstraints;
@@ -609,7 +621,9 @@ public class MMainJFrame extends javax.swing.JFrame {
     }//GEN-END:initComponents
 
     private void rackJComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rackJComboBoxActionPerformed
-        // TODO add your handling code here:
+        String view = (String) rackJComboBox.getSelectedItem();
+        Util.getMMainJFrame().setToolboxView(view);
+        //Util.getMPipelineJPanel().setView(view);
     }//GEN-LAST:event_rackJComboBoxActionPerformed
 
     private void metavizeJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_metavizeJButtonActionPerformed

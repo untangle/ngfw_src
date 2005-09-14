@@ -12,11 +12,8 @@
 
 package com.metavize.gui.pipeline;
 
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
+import java.awt.Insets;
+import java.util.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.table.*;
@@ -47,6 +44,10 @@ public class CustomPolicyJPanel extends MEditTableJPanel {
 
 
 class CustomPolicyTableModel extends MSortedTableModel{
+    
+    public CustomPolicyTableModel(){
+
+    }
 
     private static final int T_TW = Util.TABLE_TOTAL_WIDTH;
     private static final int C0_MW = Util.STATUS_MIN_WIDTH; /* status */
@@ -69,10 +70,22 @@ class CustomPolicyTableModel extends MSortedTableModel{
 
     private ComboBoxModel directionModel = super.generateComboBoxModel(new String[]{DIRECTION_INBOUND, DIRECTION_OUTBOUND},
 								       DIRECTION_INBOUND);
-    //    private ComboBoxModel policyModel = super.generateComboBoxModel( Util.getPolicyManager().getPolicyConfiguration().getPolicies().toArray(),
-    //								     Util.getPolicyManager().getDefaultPolicy());
 
-    private ComboBoxModel policyModel = super.generateComboBoxModel( new String[]{"A", "B"}, "A" );
+    private DefaultComboBoxModel policyModel = new DefaultComboBoxModel();
+    private Map<String,Policy> policyNames = new LinkedHashMap();
+    private void updatePolicyNames(){
+	policyNames.clear();
+	List<Policy> policyList = Util.getPolicyManager().getPolicyConfiguration().getPolicies();
+	for( Policy policy : policyList ){
+	    policyNames.put( policy.getName(), policy );
+	}
+    }
+    private void updatePolicyModel(){
+	policyModel.removeAllElements();
+	for( String name : policyNames.keySet() ){
+	    policyModel.addElement(name);
+	}
+    }
 
     public TableColumnModel getTableColumnModel(){
 
@@ -89,7 +102,7 @@ class CustomPolicyTableModel extends MSortedTableModel{
         addTableColumn( tableColumnModel,  8,  C8_MW,  true,  true,  false, false, String.class, "any", sc.html("server<br>port"));
         addTableColumn( tableColumnModel,  9,  C9_MW,  true,  true,  false, false, ComboBoxModel.class, directionModel, sc.html("direction"));
         addTableColumn( tableColumnModel,  10, C10_MW, true,  true,  false, false, ComboBoxModel.class, policyModel, sc.bold("policy<br>rack"));
-        addTableColumn( tableColumnModel,  11, C11_MW, true,  true,  false, true,  String.class, sc.EMPTY_DESCRIPTION, "" );
+        addTableColumn( tableColumnModel,  11, C11_MW, true,  true,  false, true,  String.class, sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION );
         addTableColumn( tableColumnModel,  12, 10,     false, false, true,  false, UserPolicyRule.class, null, "" );
 
         return tableColumnModel;
@@ -119,7 +132,7 @@ class CustomPolicyTableModel extends MSortedTableModel{
 	    try{ newElem.setServerPort( PortMatcher.parse((String) rowVector.elementAt(8)) ); }
 	    catch(Exception e){ throw new Exception("Invalid \"server port\" in row: " + rowIndex); }
             newElem.setInbound( ((ComboBoxModel)rowVector.elementAt(9)).getSelectedItem().equals(DIRECTION_INBOUND) );
-            newElem.setPolicy( (Policy) ((ComboBoxModel)rowVector.elementAt(10)).getSelectedItem() );
+            newElem.setPolicy( policyNames.get((String) ((ComboBoxModel)rowVector.elementAt(10)).getSelectedItem()) );
             newElem.setDescription( (String) rowVector.elementAt(11) );
             elemList.add(newElem);
         }
@@ -139,6 +152,9 @@ class CustomPolicyTableModel extends MSortedTableModel{
 	Vector tempRow = null;
 	int rowIndex = 0;
 
+	updatePolicyNames();
+	updatePolicyModel();
+
 	for( UserPolicyRule newElem : userPolicyRules ){
 	    rowIndex++;
 	    tempRow = new Vector(13);
@@ -157,7 +173,7 @@ class CustomPolicyTableModel extends MSortedTableModel{
 	    else
 		directionComboBoxModel.setSelectedItem(DIRECTION_OUTBOUND);
 	    tempRow.add( directionComboBoxModel );
-	    tempRow.add( super.generateComboBoxModel(policyConfiguration.getPolicies().toArray(), newElem.getPolicy()) );
+	    tempRow.add( super.generateComboBoxModel(policyNames.keySet().toArray(), newElem.getPolicy().getName()) );
 	    tempRow.add( newElem.getDescription() );
 	    tempRow.add( newElem );
 	    allRows.add( tempRow );

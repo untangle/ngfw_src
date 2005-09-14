@@ -12,11 +12,8 @@
 
 package com.metavize.gui.pipeline;
 
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
+import java.awt.Insets;
+import java.util.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.table.*;
@@ -58,6 +55,15 @@ class DefaultPolicyTableModel extends MSortedTableModel{
 
     protected boolean getSortable(){ return false; }
 
+    private Map<String,Policy> policyNames = new LinkedHashMap();
+    private void updatePolicyNames(){
+	policyNames.clear();
+	List<Policy> policyList = Util.getPolicyManager().getPolicyConfiguration().getPolicies();
+	for( Policy policy : policyList ){
+	    policyNames.put( policy.getName(), policy );
+	}
+    }
+
     public TableColumnModel getTableColumnModel(){
 
         DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
@@ -74,14 +80,13 @@ class DefaultPolicyTableModel extends MSortedTableModel{
         return tableColumnModel;
     }
 
-
     public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {
         List elemList = new ArrayList(tableVector.size());
 	SystemPolicyRule newElem = null;
 
 	for( Vector rowVector : tableVector ){
             newElem = (SystemPolicyRule) rowVector.elementAt(7);
-            newElem.setPolicy( (Policy) ((ComboBoxModel)rowVector.elementAt(5)).getSelectedItem() );
+            newElem.setPolicy( policyNames.get((String) ((ComboBoxModel)rowVector.elementAt(5)).getSelectedItem()) );
 	    newElem.setDescription( (String) rowVector.elementAt(6) );
             elemList.add(newElem);
         }
@@ -101,6 +106,8 @@ class DefaultPolicyTableModel extends MSortedTableModel{
 	Vector tempRow = null;
 	int rowIndex = 0;
 
+	updatePolicyNames();
+
 	for( SystemPolicyRule newElem : systemPolicyRules ){
 	    rowIndex++;
 	    tempRow = new Vector(8);
@@ -109,7 +116,7 @@ class DefaultPolicyTableModel extends MSortedTableModel{
 	    tempRow.add( ((Byte)newElem.getClientIntf()).toString() );
 	    tempRow.add( ((Byte)newElem.getServerIntf()).toString() );
 	    tempRow.add( (newElem.isInbound() ? "inbound" : "outbound") );
-	    tempRow.add( super.generateComboBoxModel(policyConfiguration.getPolicies().toArray(), newElem.getPolicy()) );
+	    tempRow.add( super.generateComboBoxModel(policyNames.keySet().toArray(), newElem.getPolicy().getName()) );
 	    tempRow.add( newElem.getDescription() );
 	    tempRow.add( newElem );
 	    allRows.add( tempRow );

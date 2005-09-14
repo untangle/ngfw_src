@@ -30,6 +30,7 @@ public class PolicyJDialog extends MConfigJDialog {
     private static final String NAME_POLICY_MANAGER = "Policy Manager";
     private static final String NAME_SYSTEM_POLICIES = "Default Policies";
     private static final String NAME_USER_POLICIES = "Custom Policies";
+    private static final String NAME_AVAILABLE_POLICIES = "Available Racks";
     
     public PolicyJDialog( ) {
     }
@@ -52,6 +53,12 @@ public class PolicyJDialog extends MConfigJDialog {
         this.contentJTabbedPane.addTab(NAME_USER_POLICIES, null, customPolicyJPanel);
 	super.savableMap.put(NAME_USER_POLICIES, customPolicyJPanel);
 	super.refreshableMap.put(NAME_USER_POLICIES, customPolicyJPanel);
+
+        // AVAILABLE RACKS //////
+        AvailablePolicyJPanel availablePolicyJPanel = new AvailablePolicyJPanel();
+        this.contentJTabbedPane.addTab(NAME_AVAILABLE_POLICIES, null, availablePolicyJPanel);
+	super.savableMap.put(NAME_AVAILABLE_POLICIES, availablePolicyJPanel);
+	super.refreshableMap.put(NAME_AVAILABLE_POLICIES, availablePolicyJPanel);
     }
     
     protected void sendSettings(Object settings) throws Exception {
