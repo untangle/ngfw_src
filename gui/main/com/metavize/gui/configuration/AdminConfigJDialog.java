@@ -91,21 +91,20 @@ class AdminConfigTableModel extends MSortedTableModel {
     }
 
 
-    private void prevalidate() throws Exception {                        
+    public void prevalidate(Object settings, Vector<Vector> tableVector) throws Exception {
         loginHashtable.clear();
 	boolean oneValidAccount = false;
         int rowIndex = 0;
-	Vector<Vector> rawDataVector = (Vector<Vector>) getDataVector();
 
         // go through all the rows and perform some tests
-	Util.printMessage("STATUS: STARTING VERIFICATION of " + rawDataVector.size() + " user(s)");	
-        for( Vector tempUser : rawDataVector ){
+        for( Vector tempUser : tableVector ){
             rowIndex++;
             byte[] origPasswd = ((MPasswordField)tempUser.elementAt(4)).getByteArray();
             char[] newPasswd = ((MPasswordField)tempUser.elementAt(5)).getPassword();
             char[] newConfPasswd  = ((MPasswordField)tempUser.elementAt(6)).getPassword();
             char[] proceedPasswd  = ((MPasswordField)tempUser.elementAt(7)).getPassword();
             String loginName = (String) tempUser.elementAt(3);
+	    String state = (String) tempUser.elementAt(0);
 
 	    // verify that the login name is at least one character long
             if( loginName.length() < 1 ){
@@ -130,6 +129,16 @@ class AdminConfigTableModel extends MSortedTableModel {
 		throw new Exception("The \"new\" and \"new confirm\" passwords are not the same for: \"" + loginName + "\" in row: " + rowIndex + ".");
             }
 
+	    
+	    if( ROW_REMOVE.equals(state) ){
+
+	    }
+	    else{
+		// record if the row was not removed, that way we know we had at least one valid account
+                oneValidAccount = true;
+
+	    }
+
             // verify that all of the original and proceed passwords are the same for any non-saved (changed) row
             if( !((String)tempUser.elementAt(0)).equals(super.ROW_SAVED)
 		&&  !PasswordUtil.check( String.valueOf(proceedPasswd), origPasswd )){
@@ -141,10 +150,7 @@ class AdminConfigTableModel extends MSortedTableModel {
 		throw new Exception("The \"new\" password has not been set for: \"" + loginName + "\" in row: " + rowIndex + ".");
             }
 
-            // record if the row was not removed, that way we know we had at least one valid account
-            if( !((String)tempUser.elementAt(0)).equals(super.ROW_REMOVE) ){
-                oneValidAccount = true;
-            }
+
 
         }
 
@@ -157,7 +163,6 @@ class AdminConfigTableModel extends MSortedTableModel {
     
     public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {
 
-	prevalidate();
 	Set allRows = new LinkedHashSet(tableVector.size());
 	User newElem = null;
 	Util.printMessage("STATUS: STARTING SAVING of accounts");
@@ -175,15 +180,16 @@ class AdminConfigTableModel extends MSortedTableModel {
             }
             else{
                 try{
-                if( newPasswd.length > 0 ){
-                    Util.printMessage("> UPDATE: saving row (changed password) " + rowIndex);
-		    newElem = new User( (String)rowVector.elementAt(3), new String(newPasswd), (String)rowVector.elementAt(2) );
+		    if( newPasswd.length > 0 ){
+			Util.printMessage("> UPDATE: saving row (changed password) " + rowIndex);
+			newElem = new User( (String)rowVector.elementAt(3), new String(newPasswd), (String)rowVector.elementAt(2) );
+		    }
+		    else{
+			Util.printMessage("> UPDATE: saving row (unchanged password) " + rowIndex);
+			newElem = new User( (String)rowVector.elementAt(3), origPasswd, (String)rowVector.elementAt(2) );
+		    }   
                 }
-                else{
-                    Util.printMessage("> UPDATE: saving row (unchanged password) " + rowIndex);
-		    newElem = new User( (String)rowVector.elementAt(3), origPasswd, (String)rowVector.elementAt(2) );
-                }   
-                }catch(Exception e) {
+		catch(Exception e) {
 		    Util.handleExceptionNoRestart("--> ERROR:  problem changing row", e);
 		    continue;
                 }

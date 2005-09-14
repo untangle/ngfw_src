@@ -513,7 +513,11 @@ public abstract class MSortedTableModel extends DefaultTableModel implements Ref
             return;
 	this.getTableHeader().getTable().getCellEditor().stopCellEditing();
 	this.getTableHeader().getTable().clearSelection();
+	prevalidate(settings, getDataVector());
 	generateSettings(settings, getFilteredDataVector(), validateOnly);
+    }
+    public void prevalidate(Object settings, Vector<Vector> tableVector) throws Exception {
+	// default implementation meant to do nothing
     }
     ///////////////////////////
 
