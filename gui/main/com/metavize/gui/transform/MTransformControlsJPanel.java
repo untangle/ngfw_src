@@ -158,6 +158,7 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
                 ((Validatable)settings).validate();
         }
         catch(Exception e){
+	    Util.handleExceptionNoRestart("ERROR VALIDATING: " + transformName, e);
             new ValidateFailureDialog( transformName, componentName, e.getMessage() );
 	    return;
         }
