@@ -110,9 +110,8 @@ public abstract class PopStateMachine extends AbstractTokenHandler
 
     public TokenResult handleClientToken(Token token) throws TokenException
     {
-        //logger.debug("current state: " + clientState);
         clientState = nextClientState(token);
-        //logger.debug("next state: " + clientState);
+        //logger.debug("next state: " + clientState + ", " + this);
 
         TokenResult zResult;
 
@@ -126,8 +125,9 @@ public abstract class PopStateMachine extends AbstractTokenHandler
             break;
 
         default:
+            ClientState tmpState = clientState;
             resetClient();
-            throw new IllegalStateException("unexpected state: " + clientState);
+            throw new IllegalStateException("unexpected state: " + tmpState);
         }
 
         return zResult;
@@ -135,9 +135,8 @@ public abstract class PopStateMachine extends AbstractTokenHandler
 
     public TokenResult handleServerToken(Token token) throws TokenException
     {
-        //logger.debug("current state: " + serverState + ", " + token.toString());
         serverState = nextServerState(token);
-        //logger.debug("next state: " + serverState);
+        //logger.debug("next state: " + serverState + ", " + this);
 
         TokenResult zResult;
 
@@ -184,8 +183,9 @@ public abstract class PopStateMachine extends AbstractTokenHandler
             break;
 
         default:
+            ServerState tmpState = serverState;
             resetServer();
-            throw new IllegalStateException("unexpected state: " + serverState);
+            throw new IllegalStateException("unexpected state: " + tmpState);
         }
 
         return zResult;
@@ -379,7 +379,7 @@ public abstract class PopStateMachine extends AbstractTokenHandler
         MIMEMessageTrickleT zMMTrickleT = new MIMEMessageTrickleT(zMMessageT);
         //logger.debug("trickling message: " + zMMessageT.toString() + ", " + zMMTrickleT.toString() + ", " + this);
         serverState = ServerState.TRICKLE_START;
-        //logger.debug("next state: " + serverState);
+        //logger.debug("next state: " + serverState + ", " + this);
         return new TokenResult(new Token[] { zMMTrickleT }, null);
     }
 
@@ -389,7 +389,7 @@ public abstract class PopStateMachine extends AbstractTokenHandler
         //logger.debug("trickling message w/chunk: " + zMMessageT.toString() + ", " + zMMTrickleT.toString() + ", " + this);
         zMMessageT = null;
         serverState = ServerState.TRICKLE_DATA;
-        //logger.debug("next state: " + serverState);
+        //logger.debug("next state: " + serverState + ", " + this);
         return new TokenResult(new Token[] { zMMTrickleT, zChunkT }, null);
     }
 
@@ -399,12 +399,13 @@ public abstract class PopStateMachine extends AbstractTokenHandler
         //logger.debug("trickling message w/marker: " + zMMessageT.toString() + ", " + zMMTrickleT.toString() + ", " + this);
         zMMessageT = null;
         serverState = ServerState.TRICKLE_MARKER;
-        //logger.debug("next state: " + serverState);
+        //logger.debug("next state: " + serverState + ", " + this);
         return new TokenResult(new Token[] { zMMTrickleT, zEndMarkerT }, null);
     }
 
     private ClientState nextClientState(Token token) throws TokenException
     {
+        //logger.debug("current state: " + clientState + ", " + token.toString() + ", " + this);
         switch (clientState) {
         case COMMAND:
         case COMMAND_MORE:
@@ -413,20 +414,23 @@ public abstract class PopStateMachine extends AbstractTokenHandler
             } else if (token instanceof PopCommandMore) {
                 clientState = ClientState.COMMAND_MORE;
             } else {
+                ClientState tmpState = clientState;
                 resetClient();
-                throw new TokenException("cur: " + clientState + ", next: bad token: " + token.toString());
+                throw new TokenException("cur: " + tmpState + ", next: bad token: " + token.toString());
             }
 
             return clientState;
 
         default:
+            ClientState tmpState = clientState;
             resetClient();
-            throw new IllegalStateException("bad state: " + clientState);
+            throw new IllegalStateException("bad state: " + tmpState);
         }
     }
 
     private ServerState nextServerState(Token token) throws TokenException
     {
+        //logger.debug("current state: " + serverState + ", " + token.toString() + ", " + this);
         switch (serverState) {
         case REPLY:
             if (token instanceof PopReply) {
@@ -440,8 +444,9 @@ public abstract class PopStateMachine extends AbstractTokenHandler
             } else if (token instanceof DoNotCareT) {
                 serverState = ServerState.DONOTCARE_START;
             } else {
+                ServerState tmpState = serverState;
                 resetServer();
-                throw new TokenException("cur: " + serverState + ", next: bad token: " + token.toString());
+                throw new TokenException("cur: " + tmpState + ", next: bad token: " + token.toString());
             }
 
             return serverState;
@@ -456,8 +461,9 @@ public abstract class PopStateMachine extends AbstractTokenHandler
             } else if (token instanceof PopReplyMore) {
                 // no change
             } else {
+                ServerState tmpState = serverState;
                 resetServer();
-                throw new TokenException("cur: " + serverState + ", next: bad token: " + token.toString());
+                throw new TokenException("cur: " + tmpState + ", next: bad token: " + token.toString());
             }
 
             return serverState;
@@ -470,8 +476,9 @@ public abstract class PopStateMachine extends AbstractTokenHandler
             } else if (token instanceof DoNotCareT) {
                 serverState = ServerState.DONOTCARE_START;
             } else {
+                ServerState tmpState = serverState;
                 resetServer();
-                throw new TokenException("cur: " + serverState + ", next: bad token: " + token.toString());
+                throw new TokenException("cur: " + tmpState + ", next: bad token: " + token.toString());
             }
 
             return serverState;
@@ -482,8 +489,9 @@ public abstract class PopStateMachine extends AbstractTokenHandler
             } else if (token instanceof EndMarker) {
                 serverState = ServerState.MARKER;
             } else {
+                ServerState tmpState = serverState;
                 resetServer();
-                throw new TokenException("cur: " + serverState + ", next: bad token: " + token.toString());
+                throw new TokenException("cur: " + tmpState + ", next: bad token: " + token.toString());
             }
 
             return serverState;
@@ -494,8 +502,9 @@ public abstract class PopStateMachine extends AbstractTokenHandler
             } else if (token instanceof EndMarker) {
                 serverState = ServerState.MARKER;
             } else {
+                ServerState tmpState = serverState;
                 resetServer();
-                throw new TokenException("cur: " + serverState + ", next: bad token: " + token.toString());
+                throw new TokenException("cur: " + tmpState + ", next: bad token: " + token.toString());
             }
 
             return serverState;
@@ -509,22 +518,44 @@ public abstract class PopStateMachine extends AbstractTokenHandler
                     serverState = ServerState.REPLY;
                 }
             } else {
+                ServerState tmpState = serverState;
                 resetServer();
-                throw new TokenException("cur: " + serverState + ", next: bad token: " + token.toString());
+                throw new TokenException("cur: " + tmpState + ", next: bad token: " + token.toString());
             }
 
             return serverState;
 
         case TRICKLE_START:
-            if (token instanceof Chunk) {
+            if (token instanceof PopReply) {
+                /* leading state machine has already re-assembled message that
+                 * we intended to trickle
+                 * so we will not receive anything else to trickle;
+                 * we must reset and restart
+                 */
+                resetServer();
+                if (true == ((PopReply) token).isMsgData()) {
+                    serverState = ServerState.DATA_REPLY;
+                } else {
+                    serverState = ServerState.REPLY;
+                }
+            } else if (token instanceof PopReplyMore) {
+                /* leading state machine has already re-assembled message that
+                 * we intended to trickle
+                 * so we will not receive anything else to trickle;
+                 * we must reset and restart
+                 */
+                resetServer();
+                serverState = ServerState.REPLY_MORE;
+            } else if (token instanceof Chunk) {
                 serverState = ServerState.TRICKLE_DATA;
             } else if (token instanceof EndMarker) {
                 serverState = ServerState.TRICKLE_MARKER;
             } else if (token instanceof DoNotCareT) {
                 serverState = ServerState.DONOTCARE_START;
             } else {
+                ServerState tmpState = serverState;
                 resetServer();
-                throw new TokenException("cur: " + serverState + ", next: bad token: " + token.toString());
+                throw new TokenException("cur: " + tmpState + ", next: bad token: " + token.toString());
             }
 
             return serverState;
@@ -535,8 +566,9 @@ public abstract class PopStateMachine extends AbstractTokenHandler
             } else if (token instanceof EndMarker) {
                 serverState = ServerState.TRICKLE_MARKER;
             } else {
+                ServerState tmpState = serverState;
                 resetServer();
-                throw new TokenException("cur: " + serverState + ", next: bad token: " + token.toString());
+                throw new TokenException("cur: " + tmpState + ", next: bad token: " + token.toString());
             }
 
             return serverState;
@@ -550,8 +582,9 @@ public abstract class PopStateMachine extends AbstractTokenHandler
             return serverState;
 
         default:
+            ServerState tmpState = serverState;
             resetServer();
-            throw new IllegalStateException("bad state: " + serverState);
+            throw new IllegalStateException("bad state: " + tmpState);
         }
     }
 
