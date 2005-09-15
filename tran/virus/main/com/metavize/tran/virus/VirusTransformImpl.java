@@ -148,7 +148,7 @@ public class VirusTransformImpl extends AbstractTransform
         new SoloPipeSpec("virus-pop", this,
                          new TokenAdaptor(this, new VirusPopFactory(this)),
                          Fitting.POP_TOKENS, Affinity.SERVER, 5),
-        new SoloPipeSpec("imap-smtp", this,
+        new SoloPipeSpec("virus-imap", this,
                          new TokenAdaptor(this, new VirusImapFactory(this)),
                          Fitting.IMAP_TOKENS, Affinity.SERVER, 5)
         };
