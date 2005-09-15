@@ -109,7 +109,7 @@ diff -urN linux-2.6.12.3/net/ipv4/fib_frontend.c linux-2.6.12.3-fib/net/ipv4/fib
 +	dev_hold(dev_out);
 +	fib_res_put(&res);
 +	strcpy(p, dev_out->name);
-+       fl.oif = dev_out->oif;
++       fl.oif = dev_out->ifindex;
 +	dev_put(dev_out);
 +	return fl.oif;
 +}
