@@ -26,6 +26,11 @@ public class TransformState implements Serializable
     private static final long serialVersionUID = 2291079542779127610L;
 
     /**
+     * The transform instance has not been created yet.
+     */
+    public static final TransformState NOT_LOADED = new TransformState("not-loaded");
+
+    /**
      * Instantiated, but not initialized. This is a transient state, just
      * after the main transform class has been instantiated, but before
      * init has been called.

@@ -127,7 +127,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
            optimize="false"
            deprecation="on"
            source="1.5"
-       target="1.5"
+           target="1.5"
            includeAntRuntime="false">
 
       <classpath refid="mvvm.thirdparty.classpath"/>
@@ -394,7 +394,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
            optimize="false"
            deprecation="on"
            source="1.5"
-       target="1.5"
+           target="1.5"
            includeAntRuntime="false">
 
       <classpath refid="mvvm.thirdparty.classpath"/>
@@ -472,8 +472,8 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
 
   <target name="install.reports" depends="install.hier">
     <!-- XXX originally images were here, but they are now located in hier
-    <copy todir="${dist.mvvm.reports}">
-    </copy>
+         <copy todir="${dist.mvvm.reports}">
+         </copy>
     -->
   </target>
 
@@ -525,20 +525,20 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
   </target>
 
   <!--
-    Copy source files to ${jdoc.bigtree.src}
-    for inclusion in big JavaDoc generation
+      Copy source files to ${jdoc.bigtree.src}
+      for inclusion in big JavaDoc generation
   -->
   <target name="bigjdoc">
     <copydir src="main"
-      dest="${jdoc.bigtree.src}"
-      includes="**/*.java"
-      excludes="**/Test.java"
-      forceoverwrite="true"/>
+             dest="${jdoc.bigtree.src}"
+             includes="**/*.java"
+             excludes="**/Test.java"
+             forceoverwrite="true"/>
     <copydir src="bootstrap"
-      dest="${jdoc.bigtree.src}"
-      includes="**/*.java"
-      excludes="**/Test.java"
-      forceoverwrite="true"/>
+             dest="${jdoc.bigtree.src}"
+             includes="**/*.java"
+             excludes="**/Test.java"
+             forceoverwrite="true"/>
   </target>
 
 </project>

@@ -255,7 +255,8 @@ class TransformContextImpl implements TransformContext
 
     public TransformState getRunState()
     {
-        return transform.getRunState();
+        return null == transform ? TransformState.NOT_LOADED
+            : transform.getRunState();
     }
 
     public TransformStats getStats()
