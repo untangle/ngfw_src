@@ -14,26 +14,23 @@ package com.metavize.mvvm.engine;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.util.*;
-import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import javax.mail.*;
-import javax.mail.internet.*;
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
 import javax.activation.MimetypesFileTypeMap;
+import javax.mail.*;
+import javax.mail.internet.*;
 
 import com.metavize.mvvm.MailSender;
 import com.metavize.mvvm.MailSettings;
 import com.metavize.mvvm.MvvmContextFactory;
-import com.metavize.mvvm.NetworkingConfiguration;
 import com.metavize.mvvm.security.AdminSettings;
 import com.metavize.mvvm.security.User;
 import net.sf.hibernate.HibernateException;
 import net.sf.hibernate.Query;
 import net.sf.hibernate.Transaction;
 import org.apache.log4j.Logger;
-import org.logicalcobwebs.proxool.ProxoolException;
 import org.logicalcobwebs.proxool.ProxoolFacade;
 
 /**
@@ -95,8 +92,8 @@ public class MailSenderImpl implements MailSender
 
     private void init()
     {
-	mimetypesFileTypeMap.addMimeTypes("application/pdf pdf PDF");
-	mimetypesFileTypeMap.addMimeTypes("text/css css CSS");
+    mimetypesFileTypeMap.addMimeTypes("application/pdf pdf PDF");
+    mimetypesFileTypeMap.addMimeTypes("text/css css CSS");
 
         net.sf.hibernate.Session s = getSession();
         try {
@@ -151,7 +148,7 @@ public class MailSenderImpl implements MailSender
             return s;
         }
     }
-        
+
     public void setMailSettings(MailSettings settings)
     {
         net.sf.hibernate.Session s = getSession();
@@ -324,7 +321,7 @@ public class MailSenderImpl implements MailSender
                     String location = extraLocations.get(i);
                     File extra = extras.get(i);
                     DataSource ds = new FileDataSource(extra);
-		    ((FileDataSource)ds).setFileTypeMap( mimetypesFileTypeMap );
+            ((FileDataSource)ds).setFileTypeMap( mimetypesFileTypeMap );
                     DataHandler dh = new DataHandler(ds);
                     MimeBodyPart part = new MimeBodyPart();
                     part.setDataHandler(dh);
@@ -394,7 +391,7 @@ public class MailSenderImpl implements MailSender
       //     dead letters causing a loop).
 
       MimeMessage msg = null;
-      
+
       try {
         msg = new MimeMessage(alertSession, msgStream);
         msg.setHeader("X-Mailer", Mailer);
@@ -586,38 +583,6 @@ public class MailSenderImpl implements MailSender
         System.exit(1);
     }
 
-
-    // This *so* does not belong here. XXXXXXXXXXXXXXXXXXXXXXXX
-    private static void initJdbcPool()
-    {
-        // logger.info("Initializing Proxool");
-        try {
-            Class.forName("org.logicalcobwebs.proxool.ProxoolDriver");
-        } catch (ClassNotFoundException exn) {
-            throw new RuntimeException("could not load Proxool", exn);
-        }
-        Properties info = new Properties();
-        info.setProperty("proxool.maximum-connection-count", "10");
-        info.setProperty("proxool.house-keeping-test-sql", "select CURRENT_DATE");
-        /* XXX not for production: */
-        info.setProperty("proxool.statistics", "1m,15m,1d");
-        info.setProperty("user", "metavize");
-        info.setProperty("password", "foo");
-        String alias = "mvvm";
-        String driverClass = "org.postgresql.Driver";
-        String driverUrl = "jdbc:postgresql://localhost/mvvm";
-        String jdbcUrl = "proxool." + alias + ":" + driverClass + ":" + driverUrl;
-        try {
-            ProxoolFacade.registerConnectionPool(jdbcUrl, info);
-        } catch (ProxoolException exn) {
-            // logger.debug("could not set up Proxool", exn);
-        }
-
-        String bunniculaHome = System.getProperty("bunnicula.home");
-
-        System.setProperty("derby.system.home", bunniculaHome + "/db");
-    }
-
     public static void main(String[] args)
     {
         String subject = "Metavize EdgeGuard Reports"; // XXX Make default unsuck.
@@ -651,7 +616,7 @@ public class MailSenderImpl implements MailSender
                             extraLocation = grandParentFile.getName() + File.separator + parentFile.getName() + File.separator + extraFile.getName();
                         }
                     }
-                            
+
                     extraLocations.add(extraLocation);
                     extraFiles.add(extraFile);
                 }
@@ -659,7 +624,6 @@ public class MailSenderImpl implements MailSender
             if (mvvmJarFile == null || bodyFile == null)
                 usage();
 
-            initJdbcPool();
             List<JarFile> jfs = new ArrayList<JarFile>();
             jfs.add(mvvmJarFile);
             net.sf.hibernate.SessionFactory sessionFactory = Util.makeStandaloneSessionFactory(jfs);
@@ -678,7 +642,7 @@ public class MailSenderImpl implements MailSender
             us.sendReports(subject, bodyHTML, extraLocations, extraFiles);
             ProxoolFacade.shutdown(0);
         } catch (IOException x) {
-            System.err.println("Unable to send message" + x);   
+            System.err.println("Unable to send message" + x);
             x.printStackTrace();
             System.exit(2);
         }

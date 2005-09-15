@@ -307,13 +307,6 @@ public class Main
         ctx.setManager(mgr);
         baseHost.addChild(ctx);
 
-        // XXX for internal use only
-        ctx = emb.createContext("/proxool", bunniculaWeb + "/proxool");
-        mgr = new StandardManager();
-        mgr.setPathname(null); /* disable session persistence */
-        ctx.setManager(mgr);
-        baseHost.addChild(ctx);
-
         // add new Engine to set of
         // Engine for embedded server
         emb.addEngine(baseEngine);
