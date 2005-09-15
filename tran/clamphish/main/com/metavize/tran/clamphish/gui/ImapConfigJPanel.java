@@ -80,9 +80,7 @@ class ImapTableModel extends MSortedTableModel{
 	for( Vector rowVector : tableVector ){
             SpamIMAPConfig spamIMAPConfig = (SpamIMAPConfig) rowVector.elementAt(6);
             spamIMAPConfig.setScan( (Boolean) rowVector.elementAt(3) );
-	    String actionString = (String) ((ComboBoxModel)rowVector.elementAt(4)).getSelectedItem();
-	    SpamMessageAction messageAction = SpamMessageAction.getInstance( actionString );
-            spamIMAPConfig.setMsgAction( messageAction );
+            spamIMAPConfig.setMsgAction( (SpamMessageAction) ((ComboBoxModel)rowVector.elementAt(4)).getSelectedItem() );
             spamIMAPConfig.setNotes( (String) rowVector.elementAt(5) );
 	    
 	    if( ((String)rowVector.elementAt(2)).equals(SOURCE_INBOUND) ){
@@ -115,8 +113,7 @@ class ImapTableModel extends MSortedTableModel{
         inboundRow.add( rowIndex );
         inboundRow.add( SOURCE_INBOUND );
         inboundRow.add( spamIMAPConfigInbound.getScan() );
-        ComboBoxModel inboundActionComboBoxModel =  super.generateComboBoxModel( SpamMessageAction.getValues(), spamIMAPConfigInbound.getMsgAction() );
-        inboundRow.add( inboundActionComboBoxModel );
+	inboundRow.add( super.generateComboBoxModel(SpamMessageAction.getValues(), spamIMAPConfigInbound.getMsgAction()) );
         inboundRow.add( spamIMAPConfigInbound.getNotes() );
 	inboundRow.add( spamIMAPConfigInbound );
 	allRows.add(inboundRow);
@@ -129,8 +126,7 @@ class ImapTableModel extends MSortedTableModel{
         outboundRow.add( rowIndex );
         outboundRow.add( SOURCE_OUTBOUND );
         outboundRow.add( spamIMAPConfigOutbound.getScan() );
-        ComboBoxModel outboundActionComboBoxModel =  super.generateComboBoxModel( SpamMessageAction.getValues(), spamIMAPConfigOutbound.getMsgAction() );
-        outboundRow.add( outboundActionComboBoxModel );
+	outboundRow.add( super.generateComboBoxModel(SpamMessageAction.getValues(), spamIMAPConfigOutbound.getMsgAction()) );
         outboundRow.add( spamIMAPConfigOutbound.getNotes() );
 	outboundRow.add( spamIMAPConfigOutbound );
 	allRows.add(outboundRow);

@@ -81,9 +81,7 @@ class ImapTableModel extends MSortedTableModel{
 	for( Vector rowVector : tableVector ){
             VirusIMAPConfig virusIMAPConfig = (VirusIMAPConfig) rowVector.elementAt(6);
             virusIMAPConfig.setScan( (Boolean) rowVector.elementAt(3) );
-	    String actionString = (String) ((ComboBoxModel)rowVector.elementAt(4)).getSelectedItem();
-	    VirusMessageAction messageAction = VirusMessageAction.getInstance( actionString );
-            virusIMAPConfig.setMsgAction( messageAction );
+            virusIMAPConfig.setMsgAction( (VirusMessageAction) ((ComboBoxModel)rowVector.elementAt(4)).getSelectedItem() );
             virusIMAPConfig.setNotes( (String) rowVector.elementAt(5) );
 	    
 	    if( ((String)rowVector.elementAt(2)).equals(SOURCE_INBOUND) ){
@@ -116,8 +114,7 @@ class ImapTableModel extends MSortedTableModel{
         inboundRow.add( rowIndex );
         inboundRow.add( SOURCE_INBOUND );
         inboundRow.add( virusIMAPConfigInbound.getScan() );
-        ComboBoxModel inboundActionComboBoxModel =  super.generateComboBoxModel( VirusMessageAction.getValues(), virusIMAPConfigInbound.getMsgAction() );
-        inboundRow.add( inboundActionComboBoxModel );
+	inboundRow.add( super.generateComboBoxModel(VirusMessageAction.getValues(), virusIMAPConfigInbound.getMsgAction()) );
         inboundRow.add( virusIMAPConfigInbound.getNotes() );
 	inboundRow.add( virusIMAPConfigInbound );
 	allRows.add(inboundRow);
@@ -130,8 +127,7 @@ class ImapTableModel extends MSortedTableModel{
         outboundRow.add( rowIndex );
         outboundRow.add( SOURCE_OUTBOUND );
         outboundRow.add( virusIMAPConfigOutbound.getScan() );
-        ComboBoxModel outboundActionComboBoxModel =  super.generateComboBoxModel( VirusMessageAction.getValues(), virusIMAPConfigOutbound.getMsgAction() );
-        outboundRow.add( outboundActionComboBoxModel );
+	outboundRow.add( super.generateComboBoxModel(VirusMessageAction.getValues(), virusIMAPConfigOutbound.getMsgAction()) );
         outboundRow.add( virusIMAPConfigOutbound.getNotes() );
 	outboundRow.add( virusIMAPConfigOutbound );
 	allRows.add(outboundRow);

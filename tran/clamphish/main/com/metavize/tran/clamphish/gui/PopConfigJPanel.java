@@ -80,9 +80,7 @@ class PopTableModel extends MSortedTableModel{
 	for( Vector rowVector : tableVector ){
             SpamPOPConfig spamPOPConfig = (SpamPOPConfig) rowVector.elementAt(6);
             spamPOPConfig.setScan( (Boolean) rowVector.elementAt(3) );
-	    String actionString = (String) ((ComboBoxModel)rowVector.elementAt(4)).getSelectedItem();
-	    SpamMessageAction messageAction = SpamMessageAction.getInstance( actionString );
-            spamPOPConfig.setMsgAction( messageAction );
+            spamPOPConfig.setMsgAction( (SpamMessageAction) ((ComboBoxModel)rowVector.elementAt(4)).getSelectedItem() );
             spamPOPConfig.setNotes( (String) rowVector.elementAt(5) );
 	    
 	    if( ((String)rowVector.elementAt(2)).equals(SOURCE_INBOUND) ){
@@ -115,8 +113,7 @@ class PopTableModel extends MSortedTableModel{
         inboundRow.add( rowIndex );
         inboundRow.add( SOURCE_INBOUND );
         inboundRow.add( spamPOPConfigInbound.getScan() );
-        ComboBoxModel inboundActionComboBoxModel =  super.generateComboBoxModel( SpamMessageAction.getValues(), spamPOPConfigInbound.getMsgAction() );
-        inboundRow.add( inboundActionComboBoxModel );
+	inboundRow.add( super.generateComboBoxModel(SpamMessageAction.getValues(), spamPOPConfigInbound.getMsgAction()) );
         inboundRow.add( spamPOPConfigInbound.getNotes() );
 	inboundRow.add( spamPOPConfigInbound );
 	allRows.add(inboundRow);
@@ -129,8 +126,7 @@ class PopTableModel extends MSortedTableModel{
         outboundRow.add( rowIndex );
         outboundRow.add( SOURCE_OUTBOUND );
         outboundRow.add( spamPOPConfigOutbound.getScan() );
-        ComboBoxModel outboundActionComboBoxModel =  super.generateComboBoxModel( SpamMessageAction.getValues(), spamPOPConfigOutbound.getMsgAction() );
-        outboundRow.add( outboundActionComboBoxModel );
+	outboundRow.add( super.generateComboBoxModel(SpamMessageAction.getValues(), spamPOPConfigOutbound.getMsgAction()) );
         outboundRow.add( spamPOPConfigOutbound.getNotes() );
 	outboundRow.add( spamPOPConfigOutbound );
 	allRows.add(outboundRow);

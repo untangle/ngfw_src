@@ -84,14 +84,9 @@ class SmtpTableModel extends MSortedTableModel{
 	for( Vector rowVector : tableVector ){
             SpamSMTPConfig spamSMTPConfig = (SpamSMTPConfig) rowVector.elementAt(8);
             spamSMTPConfig.setScan( (Boolean) rowVector.elementAt(3) );
-	    String strengthString = (String) ((ComboBoxModel)rowVector.elementAt(4)).getSelectedItem();
-	    spamSMTPConfig.setStrengthByName( strengthString );
-	    String actionString = (String) ((ComboBoxModel)rowVector.elementAt(5)).getSelectedItem();
-	    SMTPSpamMessageAction messageAction = SMTPSpamMessageAction.getInstance( actionString );
-            spamSMTPConfig.setMsgAction( messageAction );
-	    String notifyString = (String) ((ComboBoxModel)rowVector.elementAt(6)).getSelectedItem();
-	    SMTPNotifyAction notifyAction = SMTPNotifyAction.getInstance( notifyString );
-            spamSMTPConfig.setNotifyAction( notifyAction );
+	    spamSMTPConfig.setStrengthByName( (String) ((ComboBoxModel)rowVector.elementAt(4)).getSelectedItem() );
+            spamSMTPConfig.setMsgAction( (SMTPSpamMessageAction) ((ComboBoxModel)rowVector.elementAt(5)).getSelectedItem() );
+            spamSMTPConfig.setNotifyAction( (SMTPNotifyAction) ((ComboBoxModel)rowVector.elementAt(6)).getSelectedItem() );
             spamSMTPConfig.setNotes( (String) rowVector.elementAt(7) );
 	    
 	    if( ((String)rowVector.elementAt(2)).equals(SOURCE_INBOUND) ){
@@ -124,12 +119,9 @@ class SmtpTableModel extends MSortedTableModel{
         inboundRow.add( rowIndex );
         inboundRow.add( SOURCE_INBOUND );
         inboundRow.add( spamSMTPConfigInbound.getScan() );
-	ComboBoxModel inboundStrengthComboBoxModel = super.generateComboBoxModel( SpamSMTPConfig.getScanStrengthEnumeration(), spamSMTPConfigInbound.getStrengthByName());
-	inboundRow.add( inboundStrengthComboBoxModel );
-        ComboBoxModel inboundActionComboBoxModel =  super.generateComboBoxModel( SMTPSpamMessageAction.getValues(), spamSMTPConfigInbound.getMsgAction() );
-        inboundRow.add( inboundActionComboBoxModel );
-        ComboBoxModel inboundNotificationComboBoxModel = super.generateComboBoxModel( SMTPNotifyAction.getValues(), spamSMTPConfigInbound.getNotifyAction() );
-        inboundRow.add( inboundNotificationComboBoxModel );
+	inboundRow.add( super.generateComboBoxModel(SpamSMTPConfig.getScanStrengthEnumeration(), spamSMTPConfigInbound.getStrengthByName()) );
+	inboundRow.add( super.generateComboBoxModel(SMTPSpamMessageAction.getValues(), spamSMTPConfigInbound.getMsgAction()) );
+        inboundRow.add( super.generateComboBoxModel(SMTPNotifyAction.getValues(), spamSMTPConfigInbound.getNotifyAction()) );
         inboundRow.add( spamSMTPConfigInbound.getNotes() );
 	inboundRow.add( spamSMTPConfigInbound );
 	allRows.add(inboundRow);
@@ -142,12 +134,9 @@ class SmtpTableModel extends MSortedTableModel{
         outboundRow.add( rowIndex );
         outboundRow.add( SOURCE_OUTBOUND );
         outboundRow.add( spamSMTPConfigOutbound.getScan() );
-	ComboBoxModel outboundStrengthComboBoxModel = super.generateComboBoxModel( SpamSMTPConfig.getScanStrengthEnumeration(), spamSMTPConfigOutbound.getStrengthByName());
-	outboundRow.add( outboundStrengthComboBoxModel );
-        ComboBoxModel outboundActionComboBoxModel =  super.generateComboBoxModel( SMTPSpamMessageAction.getValues(), spamSMTPConfigOutbound.getMsgAction() );
-        outboundRow.add( outboundActionComboBoxModel );
-        ComboBoxModel outboundNotificationComboBoxModel = super.generateComboBoxModel( SMTPNotifyAction.getValues(), spamSMTPConfigOutbound.getNotifyAction() );
-        outboundRow.add( outboundNotificationComboBoxModel );
+	outboundRow.add( super.generateComboBoxModel(SpamSMTPConfig.getScanStrengthEnumeration(), spamSMTPConfigOutbound.getStrengthByName()) );
+	outboundRow.add( super.generateComboBoxModel(SMTPSpamMessageAction.getValues(), spamSMTPConfigOutbound.getMsgAction()) );
+        outboundRow.add( super.generateComboBoxModel(SMTPNotifyAction.getValues(), spamSMTPConfigOutbound.getNotifyAction()) );
         outboundRow.add( spamSMTPConfigOutbound.getNotes() );
 	outboundRow.add( spamSMTPConfigOutbound );
 	allRows.add(outboundRow);
