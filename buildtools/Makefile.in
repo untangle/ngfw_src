@@ -23,8 +23,8 @@ build_prefix   ?= $(build_dist)
 build_lib_path  = ${build_dist}/usr/lib/mvvm
 build_inc_path  = ${build_dist}/usr/include
 
-JAVA_HOME      ?= /opt/java
-java_include_base=$(JAVA_HOME)/include
+JDK_HOME      ?= /opt/jdk1.5.0
+java_include_base=$(JDK_HOME)/include
 
 local_lib_path=lib
 
@@ -70,11 +70,12 @@ STRIP         = strip
 ANT_HOME        = $(alpine_root)/../downloads/output/apache-ant-1.6.3
 ANTCONTRIB_VERSION = 0.6
 ANTCONTRIB_HOME = $(alpine_root)/../downloads/output/ant-contrib-$(ANTCONTRIB_VERSION)
+ANTPACK200_HOME = $(alpine_root)/../downloads/output/ant-pack200
 JASPER_REPORTS_VERSION = 0.6.4
 JASPER_REPORTS_HOME = $(alpine_root)/../downloads/output/jasperreports-$(JASPER_REPORTS_VERSION)
 # ANT_CLASSPATH   = $(ANT_HOME)/lib/ant.jar:$(ANTCONTRIB_HOME)/lib/ant-contrib-$(ANTCONTRIB_VERSION).jar:$(JASPER_REPORTS_HOME)/dist/jasperreports-$(JASPER_REPORTS_VERSION).jar
-ANT_CLASSPATH   = $(ANTCONTRIB_HOME)/lib/ant-contrib-$(ANTCONTRIB_VERSION).jar:${JAVA_HOME}/lib/tools.jar
-ANT             = CLASSPATH=$(ANT_CLASSPATH) JAVA_HOME=$(JAVA_HOME) $(ANT_HOME)/bin/ant -Dworld.root=$(build_dist) -Dbuild.prefix=$(build_prefix) -emacs
+ANT_CLASSPATH   = $(ANTCONTRIB_HOME)/lib/ant-contrib-$(ANTCONTRIB_VERSION).jar:$(ANTPACK200_HOME)/Pack200Task.jar:${JDK_HOME}/lib/tools.jar
+ANT             = CLASSPATH=$(ANT_CLASSPATH) JDK_HOME=$(JDK_HOME) $(ANT_HOME)/bin/ant -Dworld.root=$(build_dist) -Dbuild.prefix=$(build_prefix) -emacs
 
 ENSUREDIR   =   $(BINDIR)/ensure-dir.sh
 INSTALL_DATA=   $(BINDIR)/install.sh

@@ -15,6 +15,7 @@ $Id: common-properties.xml,v 1.25 2005/03/23 04:52:36 amread Exp $
 
   <property environment="env"/>
   <property file="${buildtool.base}/antbuildprops.txt"/>
+  <property name="JDK_HOME" value="${env.JDK_HOME}"/>
 
   <!-- We use ant-contrib extension to get 'if' and 'foreach' -->
   <taskdef resource="net/sf/antcontrib/antcontrib.properties">
@@ -22,6 +23,14 @@ $Id: common-properties.xml,v 1.25 2005/03/23 04:52:36 amread Exp $
       <pathelement location="${ANTCONTRIB_HOME}/lib/ant-contrib-0.6.jar"/>
     </classpath>
   </taskdef>
+
+  <!-- We use ant-pack200 to get pack200 packing/unpacking -->
+  <taskdef name="pack200"
+           classname="com.sun.tools.apache.ant.pack200.Pack200Task"
+           classpath="${ANTPACK200_HOME}/Pack200Task.jar"/>
+  <taskdef name="unpack200"
+           classname="com.sun.tools.apache.ant.pack200.Unpack200Task"
+           classpath="${ANTPACK200_HOME}/Pack200Task.jar"/>
 
   <!-- Most configureable locations come from antbuildprops.txt -->
   <property name="JAXBHOME" value="${JWSDP_HOME}/jaxb"/>

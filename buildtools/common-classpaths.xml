@@ -176,12 +176,20 @@ $Id: common-classpaths.xml,v 1.32 2005/02/10 23:25:44 jdi Exp $
     <fileset refid="jfreechart.jarset"/>
   </path>
 
-  <fileset id="jnlp.jarset" dir="${JNLP_HOME}">
+  <fileset id="jnlp.jarset" dir="${JDK_HOME}/sample/jnlp/servlet">
     <include name="jnlp.jar"/>
   </fileset>
 
   <path id="jnlp.classpath">
     <fileset refid="jnlp.jarset"/>
+  </path>
+
+  <fileset id="jnlp-servlet.jarset" dir="${JDK_HOME}/sample/jnlp/servlet">
+    <include name="jnlp-servlet.jar"/>
+  </fileset>
+
+  <path id="jnlp-servlet.classpath">
+    <fileset refid="jnlp-servlet.jarset"/>
   </path>
 
   <fileset id="jasperreports.jarset" dir="${JASPER_REPORTS_HOME}/dist">
@@ -239,6 +247,7 @@ $Id: common-classpaths.xml,v 1.32 2005/02/10 23:25:44 jdi Exp $
   </path>
 
   <path id="mvvm.thirdparty.classpath">
+    <path refid="jnlp-servlet.classpath"/>
     <path refid="activation.classpath"/>
     <path refid="bcel.classpath"/>
     <path refid="concurrent.classpath"/>
