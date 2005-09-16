@@ -1,6 +1,82 @@
-For 2.5
--------
-change 'clean' to 'remove'
+postrm stop doesn't seem to work
+
+Fix up email addr schema
+
+3 interface isues
+-----------------
+Add to pipeline endpoints:
+    policy_id int8
+    inbound   bool
+
+check all uses of Direction class (most should use policy direction instead)
+    otugoing -> outbound
+
+not done yet:
+    pipeline endpoints
+    argon.weld passes isInbound to newSession
+    http subscriptions not using interface, but instead session.isInbound() 
+
+  UI: mapping from interface number to name (0 = external, 1 = internal, 2 = dmz, 3 = "vpn foo", 4 = "all vpn", etc)
+
+    create top level mvvm settings tabe to hang singletons off of
+
+policy manager needs changePolicy()
+
+upgrade warnings in creation of initial hibernate objects (admin manager, etc), and in saving settings
+
+--
+
+make sure all serializable classes have:
+    serial #
+    hashcode
+    equals
+
+postgres analyze hourly
+
+
+@report_max_count@ instead of 15 in report templates
+
+-------------------------------------------------------------------------------
+
+Mime/extension
+--------------
+In fortinet but not us:
+doc
+hta
+ppt
+tgz
+vb?
+wps
+xl?
+
+
+For 2.5.2
+----------
+Phishing
+  -- put emails into svn/public place
+  -- get order wrt spamassassin fixed somehow
+  -- don't have phish score name in events (like virus name)
+
+don't put .jrxml into transform jar files
+
+Could use straight from Spam transform:
+  SpamMessageAction, SMTPSpamMessageAction
+
+Could be separated into base + spam/phish specific:
+  SmtpSessionHandler
+  SpamProtoConfig
+  SpamIMAPConfig
+  SpamImapFactory
+  SpamImapHandler
+  SpamLog
+
+Belongs with spam only:
+  ReportItem
+  SpamImpl
+
+
+
+
 
 What should be semantics when a shutdown arrives for a disabled queue.
 
