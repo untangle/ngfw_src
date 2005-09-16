@@ -131,6 +131,7 @@ $Id: build.xml,v 1.22 2005/03/25 04:00:30 jdi Exp $
   <target name="install.hier">
     <copy todir="${dist.mvvm.webstart}/WEB-INF/lib">
       <fileset refid="mvvm-client.jarset"/>
+      <fileset refid="jnlp-servlet.jarset"/>
     </copy>
 
     <!-- filtered files -->
@@ -169,6 +170,16 @@ $Id: build.xml,v 1.22 2005/03/25 04:00:30 jdi Exp $
       <fileset refid="netbeans.jarset"/>
     </copy>
 
+    <!-- First must repack to "normalize" the jar file (Thanks Sun!) -->
+    <if> <isset property="use-pack200"/> <then>
+      <foreach target="repack.200" param="jarfile" inheritall="true"
+               parallel="false">
+        <fileset dir="${dist.mvvm.webstart}">
+          <include name="*.jar"/>
+        </fileset>
+      </foreach>
+      </then></if>
+
     <signjar keystore="./keystore" alias="software key"
              storepass="WbDP5uz\N" lazy="true">
       <fileset dir="${dist.mvvm.webstart}">
@@ -176,8 +187,33 @@ $Id: build.xml,v 1.22 2005/03/25 04:00:30 jdi Exp $
       </fileset>
     </signjar>
 
+    <!-- Now we can do the real packing -->
+    <if> <isset property="use-pack200"/> <then>
+      <foreach target="pack.200" param="jarfile" inheritall="true"
+               parallel="false">
+        <fileset dir="${dist.mvvm.webstart}">
+          <include name="*.jar"/>
+        </fileset>
+      </foreach>
+      </then></if>
+
   </target> <!-- install.webstart -->
 
+  <!-- Used in install.webstart target only -->
+  <target name="repack.200">
+    <pack200 src="${jarfile}"
+             destfile="${jarfile}.pack"/>
+    <unpack200 src="${jarfile}.pack"
+               dest="${jarfile}"/>
+    <delete file="${jarfile}.pack"/>
+  </target>
+
+  <!-- Used in install.webstart target only -->
+  <target name="pack.200">
+    <pack200 src="${jarfile}"
+             destfile="${jarfile}.pack.gz"
+             gzipoutput="true"/>
+  </target>
 
   <!-- Javadoc target -->
   <target name="jdoc" depends="pkg.jar">
