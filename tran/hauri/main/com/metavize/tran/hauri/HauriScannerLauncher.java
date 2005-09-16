@@ -100,9 +100,25 @@ public class HauriScannerLauncher implements Runnable
             try {
                 while ((s = in.readLine()) != null) {
                     /**
-                     * virobot output
-                     * "/home/dmorris/q347558.exe.2  Infection: W32/Swen.A@mm"
-                     * This returns the 3rd word
+                     * virobot output:
+                     * -------------------------------------------------------------------------------
+                     * ViRobot SDK Example ( Heuristic & Feature detection )        1 Feb 2002 Korea
+                     * Copyright (c) 1998-2002 HAURI Inc.                        All rights reserved
+                     * E-mail : hauri98@hauri.co.kr                                     Version 2.00
+                     * -------------------------------------------------------------------------------
+                     * 
+                     * Probing into q347558.exe
+                     * Detected [I-Worm.Win32.Swen.106496] Virus - Recover ? (y/N)  <Virus Infected>
+                     * 
+                     * 
+                     * 
+                     * Engine Version : 2005-09-15
+                     * 
+                     * 1 Virus detected files.
+                     */
+
+                     /*
+                     * This returns the 2nd word
                      */
                     if (s.startsWith(" Detected")) {
                         StringTokenizer st = new StringTokenizer(s);
