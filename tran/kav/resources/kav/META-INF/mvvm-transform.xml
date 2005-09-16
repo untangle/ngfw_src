@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+Copyright (c) 2004, 2005 Metavize Inc.
+All rights reserved.
+
+This software is the confidential and proprietary information of
+Metavize Inc. ("Confidential Information").  You shall
+not disclose such Confidential Information.
+
+$Id$
+-->
+
+<mvvm-transform>
+  <transform-desc name="kav-transform"
+                  display-name="Kaspersky AntiVirus Scanner"
+                  classname="com.metavize.tran.kav.KavTransform"
+                  gui-classname="com.metavize.tran.kav.gui.MTransformJPanel"
+                  transform-base="virus-base"/>
+  <parent>http-casing</parent>
+  <parent>mail-casing</parent>
+  <parent>ftp-casing</parent>
+</mvvm-transform>
