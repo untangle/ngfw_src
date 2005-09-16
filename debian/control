@@ -76,8 +76,20 @@ XB-Website: http://www.metavize.com/hauri_antivirus.html
 XB-Rack-Position: 6
 Description: The Hauri AntiVirus Scanner
  The Hauri AntiVirus Scanner, based on Hauri's viRobot, is able to
- scan and block inbound and outbound viruses, on HTTP, FTP, and email
- (with SpamGuard).  Updates are automatically installed daily.
+ scan and block inbound and outbound viruses, on HTTP, FTP, and email.
+ Updates are automatically installed hourly.
+
+Package: kav-transform
+Architecture: any
+Depends: mvvm, virus-base, kav-mv, http-casing, ftp-casing, mail-casing
+XB-Price: 599
+XB-Display-Name: Kaspersky AntiVirus Scanner
+XB-Website: http://www.metavize.com/kaspersky_antivirus.html
+XB-Rack-Position: 5
+Description: The Kaspersky AntiVirus Scanner
+ The Kaspersky AntiVirus Scanner, based on Kaspersky's award winning Anti-Virus, is able to
+ scan and block inbound and outbound viruses, on HTTP, FTP, and email 
+ Updates are automatically installed hourly.
 
 Package: clam-transform
 Architecture: any
@@ -88,8 +100,8 @@ XB-Website: http://www.metavize.com/clam_antivirus.html
 XB-Rack-Position: 7
 Description: The Clam AntiVirus Scanner
  The Clam AntiVirus Scanner, based on ClamAV, is able to scan and
- block inbound and outbound viruses, on HTTP, FTP, and email (with
- SpamGuard).  Updates are automatically installed daily.
+ block inbound and outbound viruses, on HTTP, FTP, and email.
+ Updates are automatically installed hourly.
 
 Package: protofilter-transform
 Architecture: any

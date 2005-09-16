@@ -1,0 +1,3 @@
+#! /bin/sh
+
+mcli -t 30 unregister kav-transform 2>/dev/null || true
