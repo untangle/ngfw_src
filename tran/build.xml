@@ -30,7 +30,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <property name="bases"
         value="virus,spam"/>
   <property name="transforms"
-        value="nat,firewall,airgap,reporting,protofilter,test,sigma,hauri,clam,spyware,httpblocker,spamassassin,clamphish,ids"/>
+        value="nat,firewall,airgap,reporting,protofilter,test,sigma,hauri,clam,kav,spyware,httpblocker,spamassassin,clamphish,ids"/>
 
   <!--              -->
   <!-- main targets -->
@@ -79,6 +79,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       <if> <equals arg1="${tran.name}" arg2="virus"/> <then>
             <delete><fileset dir="${build.dist}" includes="stamp-transform-clam"/></delete>
             <delete><fileset dir="${build.dist}" includes="stamp-transform-hauri"/></delete>
+            <delete><fileset dir="${build.dist}" includes="stamp-transform-kav"/></delete>
       </then> </if>
       <if> <equals arg1="${tran.name}" arg2="spam"/> <then>
             <delete><fileset dir="${build.dist}" includes="stamp-transform-spamasssassin"/></delete>
@@ -187,7 +188,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
 
     <!-- FIXME email special case -->
     <if> <equals arg1="${tran.name}" arg2="email"/> <then>
-        <var name="extra.classes" value="../tran/output/jar/hauri-transform.mar:../tran/output/jar/clam-transform.mar"/>
+        <var name="extra.classes" value="../tran/output/jar/kav-transform.mar:../tran/output/jar/hauri-transform.mar:../tran/output/jar/clam-transform.mar"/>
     </then> </if>
 
     <!-- FIXME clamphish special case -->
@@ -264,9 +265,21 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
 
     <antcall target="install.${tran.name}" inheritAll="true"/>
 
+    <if> <isset property="use-pack200"/> <then>
+      <pack200 src="${dist.mvvm.webstart}/${tran.name}-${tran.type}.mar"
+               destfile="${dist.mvvm.webstart}/${tran.name}-${tran.type}.mar.pack"/>
+      <unpack200 src="${dist.mvvm.webstart}/${tran.name}-${tran.type}.mar.pack"
+                 dest="${dist.mvvm.webstart}/${tran.name}-${tran.type}.mar"/>
+      </then></if>
+    <delete file="${dist.mvvm.webstart}/${tran.name}-${tran.type}.mar.pack"/>
     <signjar jar="${dist.mvvm.webstart}/${tran.name}-${tran.type}.mar"
           keystore="../gui/keystore" alias="software key"
           storepass="WbDP5uz\N" />
+    <if> <isset property="use-pack200"/> <then>
+      <pack200 src="${dist.mvvm.webstart}/${tran.name}-${tran.type}.mar"
+               destfile="${dist.mvvm.webstart}/${tran.name}-${tran.type}.mar.pack.gz"
+               gzipoutput="true"/>
+      </then></if>
 
   </target>
 
@@ -300,6 +313,15 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
 <!--       <fileset dir="virus/hier/${suffix.mvvm.schema}/virus-base"/> -->
 <!--     </copy> -->
     <jar update="true" destfile="${dist.mvvm.webstart}/hauri-transform.mar">
+      <fileset dir="${build.root}/mail"/>
+    </jar>
+  </target>
+
+  <target name="install.kav">
+<!--     <copy todir="${dist.mvvm.schema}/kav-transform"> -->
+<!--       <fileset dir="virus/hier/${suffix.mvvm.schema}/virus-base"/> -->
+<!--     </copy> -->
+    <jar update="true" destfile="${dist.mvvm.webstart}/kav-transform.mar">
       <fileset dir="${build.root}/mail"/>
     </jar>
   </target>
@@ -438,11 +460,15 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <target name="jar.sigma"/>
   <target name="jar.airgap"/>
   <target name="jar.reporting"/>
-  <target name="jar.email"> <!-- include Clam, and Hauri Scanners -->
+  <target name="jar.email"> <!-- include KAV, Clam, and Hauri Scanners -->
     <jar destfile="${build.jar}/${tran.name}-${tran.type}.mar" index="yes"
          update="true">
       <fileset dir="${build.root}/hauri"/>
       <fileset dir="hauri/${src.main}">
+        <include name="**/*png"/>
+      </fileset>
+      <fileset dir="${build.root}/kav"/>
+      <fileset dir="kav/${src.main}">
         <include name="**/*png"/>
       </fileset>
       <fileset dir="${build.root}/clam"/>
@@ -453,6 +479,15 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
     </jar>
   </target>
   <target name="jar.hauri"> <!-- include Virus Abstract transform -->
+    <jar destfile="${build.jar}/${tran.name}-${tran.type}.mar" index="yes"
+         update="true">
+      <fileset dir="${build.root}/virus"/>
+      <fileset dir="${build.gensrc}/virus">
+        <exclude name="**/*jrxml"/>
+      </fileset>
+    </jar>
+  </target>
+  <target name="jar.kav"> <!-- include Virus Abstract transform -->
     <jar destfile="${build.jar}/${tran.name}-${tran.type}.mar" index="yes"
          update="true">
       <fileset dir="${build.root}/virus"/>
@@ -506,6 +541,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <target name="compile.virus"/>
   <target name="compile.spam"/>
   <target name="compile.hauri"/>
+  <target name="compile.kav"/>
   <target name="compile.clam"/>
   <target name="compile.spamassassin"/>
   <target name="compile.clamphish"/>
