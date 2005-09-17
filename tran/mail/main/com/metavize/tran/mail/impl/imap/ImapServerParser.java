@@ -21,6 +21,7 @@ import com.metavize.tran.token.AbstractParser;
 import com.metavize.tran.token.TokenStreamer;
 import com.metavize.tran.token.Chunk;
 import com.metavize.tran.token.Token;
+import com.metavize.tran.token.PassThruToken;
 import com.metavize.tran.token.ParseException;
 import com.metavize.tran.token.ParseResult;
 import java.util.List;
@@ -853,6 +854,27 @@ public class ImapServerParser
 
   public ParseResult parse(ByteBuffer buf) {
 
+    ByteBuffer dup = buf.duplicate();
+
+    //Perform the parse
+    ParseResult ret = parseImpl(buf);
+
+    if(ret.getReadBuffer() != null) {
+      //Trace what was not pushed-back.  We know that
+      //the position of the returned read buffer is equal
+      //to the tail of the original buffer not
+      //consumed.
+      dup.limit(dup.limit() - ret.getReadBuffer().position());
+    }
+    
+    //do tracing stuff
+    getImapCasing().traceParse(dup);
+    
+    return ret;
+  }
+  
+  private ParseResult parseImpl(ByteBuffer buf) {
+
 
     //TEMP - so folks don't hit my unfinished code by accident
 //    if(System.currentTimeMillis() > 0) {
@@ -860,16 +882,28 @@ public class ImapServerParser
 //      return new ParseResult(new Chunk(buf));
 //    }
 
-    //do tracing stuff
-    getImapCasing().traceParse(buf);
 
     //Check for passthru
     if(isPassthru()) {
       return new ParseResult(new Chunk(buf));
     }
+
+    List<Token> toks = new LinkedList<Token>();
+
+    //Get SessionMonitor to inspect bytes.  Its OK that we do not
+    //align on token boundaries (as we do with the ClientParser),
+    //because the tokenizing for the message body will cause
+    //the return (in the read buffer) of any word-fragments.
+    if(getImapCasing().getSessionMonitor().bytesFromServer(buf.duplicate())) {
+      m_logger.debug("Declare passthru as-per advice of SessionMonitor");
+      declarePassthru();
+      toks.add(PassThruToken.PASSTHRU);
+      toks.add(new Chunk(buf));
+      return new ParseResult(toks, null);
+    }
   
     ByteBuffer dup = null;
-    List<Token> toks = new LinkedList<Token>();
+    
 
     while(buf.hasRemaining()) {
       switch(m_state) {
@@ -1180,8 +1214,14 @@ public class ImapServerParser
       getSession().id(),
       getSession().serverPort());
 
-    m_logger.debug("Setting fake USER on MessageInfo");
-    ret.addAddress(AddressKind.USER, "nobody@nowhere", null);
+    
+    String username = getImapCasing().getSessionMonitor().getUserName();
+    if(username == null) {
+      username = "UNKNOWN";
+      m_logger.debug("Unable to determine client login name.  Use \"" +
+        username + "\" instead");
+    }
+    ret.addAddress(AddressKind.USER, username, null);
 
     return ret;
   }

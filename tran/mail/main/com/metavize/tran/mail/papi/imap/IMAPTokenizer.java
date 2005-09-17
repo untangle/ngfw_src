@@ -75,7 +75,7 @@ import java.nio.ByteBuffer;
  */
 public class IMAPTokenizer {
 
-  private static final int DEF_LONGEST_WORD = 1024*2;
+  private static final int DEF_LONGEST_WORD = 1024*8;
 
   private static final byte[] BLANK_BYTES = new byte[0];
 
@@ -247,6 +247,27 @@ public class IMAPTokenizer {
   public boolean isTokenEOL() {
     return getTokenType() == IMAPTokenizer.IMAPTT.NEW_LINE;
   }
+  /**
+   * Helper method, shortcut for
+   * <code>m_tokenizer.getTokenType() == IMAPTokenizer.IMAPTT.QSTRING</code>
+   *
+   * @return true if current token is a QSTRING
+   */
+  public boolean isTokenQSTRING() {
+    return getTokenType() == IMAPTokenizer.IMAPTT.QSTRING;
+  }  
+
+
+  /**
+   * Compare the current CONTROL_CHAR token against
+   * the given byte.  Returns true if the
+   * current token is a CONTROL_CHAR, and the byte matches.
+   */
+  public boolean compareCtlAgainstByte(ByteBuffer buf,
+    byte compare) {
+    return isTokenCtl()?
+      (buf.get(getTokenStart()) == compare):false;
+  }
 
   public boolean compareWordAgainst(ByteBuffer buf,
     byte[] bytes,
@@ -342,10 +363,7 @@ public class IMAPTokenizer {
   public String tokenToStringDebug(ByteBuffer buf) {
     switch(m_tt) {
       case WORD:
-        ByteBuffer dup = buf.duplicate();
-        dup.position(getTokenStart());
-        dup.limit(dup.position() + getTokenLength());
-        return bbToString(dup);
+        return getWordAsString(buf);
       case QSTRING:
         return new String(getQStringToken(buf));
       case LITERAL:
@@ -358,6 +376,22 @@ public class IMAPTokenizer {
         return "<NONE>";
     }
     throw new RuntimeException("Unknown Token type: " + m_tt);
+  }
+
+  /**
+   * Converts the current WORD to a String.  If the current
+   * token type is not WORD, then this returns null.
+   *
+   * @param buf the buffer which was just passed to {@link #next next}
+   */
+  public String getWordAsString(ByteBuffer buf) {
+    if(m_tt != IMAPTT.WORD) {
+      return null;
+    }
+    ByteBuffer dup = buf.duplicate();
+    dup.position(getTokenStart());
+    dup.limit(dup.position() + getTokenLength());
+    return bbToString(dup);
   }
   
   /**
@@ -402,11 +436,28 @@ public class IMAPTokenizer {
     return ret;
   }
 
+  /**
+   * If {@link getTokenType the token type} is LITERAL, this method
+   * instructs the Tokenizer to skip-past the number of octets
+   * defined by the literal.  Subsequent calls to {@link #next next}
+   * may return NEED_MORE_DATA for several buffers until the literal
+   * is consumed.
+   * <br><br>
+   * If the current token is not a literal, this has no effect.         
+   */
+  public void skipCurrentLiteral() {
+    if(isTokenLiteral()) {
+      m_tokenizer.skip(getLiteralOctetCount());
+    }
+  }
+
   
 
 //=======================================
 // Token Consumption methods  
 //=======================================
+
+
 
   /**
    * Advance this ByteBuffer to the next token.  If

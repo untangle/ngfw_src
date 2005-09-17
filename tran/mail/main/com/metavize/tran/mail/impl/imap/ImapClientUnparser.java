@@ -58,17 +58,31 @@ class ImapClientUnparser
     if(token instanceof UnparsableMIMEChunk) {
       m_logger.debug("Unparsing UnparsableMIMEChunk");
       ByteBuffer buf = ((UnparsableMIMEChunk)token).getBytes();
+      //Do not bother giving these to the session monitor
       getImapCasing().traceUnparse(buf);
       return new UnparseResult(buf);
     }    
     if(token instanceof ImapChunk) {
       m_logger.debug("Unparsing ImapChunk");
       ByteBuffer buf = ((ImapChunk)token).getBytes();
+      if(getImapCasing().getSessionMonitor().bytesFromServer(buf.duplicate())) {
+        if(!isPassthru()) {
+          m_logger.warn("Declaring passthru on advice of SessionMonitor, yet " +
+            "should have already been declared by other half of casing");
+          declarePassthru();
+        }
+      }
       getImapCasing().traceUnparse(buf);
       return new UnparseResult(buf);      
     }
     if(token instanceof Chunk) {
-      m_logger.debug("Unparsing Chunk");
+      //This should only follow declaration of "PASSTHRU"
+      if(!isPassthru()) {
+        m_logger.warn("Unparsing Chunk (unexpected)");
+      }
+      else {
+        m_logger.debug("Unparsing Chunk");
+      }
       ByteBuffer buf = ((Chunk)token).getBytes();
       getImapCasing().traceUnparse(buf);
       return new UnparseResult(buf);      

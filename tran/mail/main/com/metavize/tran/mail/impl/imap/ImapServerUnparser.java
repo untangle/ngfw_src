@@ -49,14 +49,21 @@ class ImapServerUnparser
       m_logger.debug("Received PASSTHRU token");
       declarePassthru();//Inform the parser of this state
       return UnparseResult.NONE;
-    }    
-    
-    Chunk c = (Chunk)token;
-    ByteBuffer buf = c.getBytes();
+    }
 
+    ByteBuffer buf = ((Chunk)token).getBytes();
     getImapCasing().traceUnparse(buf);
-    return new UnparseResult(buf);
 
+    if(!isPassthru()) {
+      if(getImapCasing().getSessionMonitor().bytesFromClient(buf.duplicate())) {
+        if(!isPassthru()) {
+          m_logger.warn("Declaring passthru on advice of SessionMonitor, yet " +
+            "should have already been declared by other half of casing");
+        }
+        declarePassthru();
+      }
+    }
+    return new UnparseResult(buf);
   }
 
   @Override

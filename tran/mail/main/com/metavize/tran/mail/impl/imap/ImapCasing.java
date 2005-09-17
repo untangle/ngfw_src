@@ -34,9 +34,10 @@ class ImapCasing
   private final ImapParser m_parser;
   private final ImapUnparser m_unparser;
 
-  private static final boolean TRACE = false;
+  private static final boolean TRACE = true;
   private final boolean m_trace;
   private final CasingTracer m_tracer;
+  private final ImapSessionMonitor m_sessionMonitor;
   
   ImapCasing(TCPSession session,
     boolean clientSide) {
@@ -61,8 +62,20 @@ class ImapCasing
     }
 
     m_logger.debug("Created");
+    m_sessionMonitor = new ImapSessionMonitor();
     m_parser = clientSide? new ImapClientParser(session, this): new ImapServerParser(session, this);
     m_unparser = clientSide? new ImapClientUnparser(session, this): new ImapServerUnparser(session, this);
+  }
+
+  /**
+   * Get the SessionMonitor for this Casing, which
+   * performs read-only examination of the IMAP
+   * conversation looking for username, as well
+   * as commands like STARTTLS which require
+   * passthru
+   */
+  ImapSessionMonitor getSessionMonitor() {
+    return m_sessionMonitor;
   }
 
   /**

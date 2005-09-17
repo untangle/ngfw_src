@@ -74,6 +74,7 @@ public class BBTokenizer {
   private int m_start = -1;
   private int m_len = -1;
   private TT m_tt = TT.NONE;
+  private int m_toSkip = 0;
 
   public BBTokenizer() {
   }
@@ -146,7 +147,18 @@ public class BBTokenizer {
   public void setDelims(byte[] delims, byte[] toSkip) {
     m_delimHolder = new BAHolder(delims);  
     m_delimsToSkipHolder = new BAHolder(toSkip==null?BLANK_BYTES:toSkip);  
-  }  
+  }
+
+  /**
+   * Instruct the tokenizer to skip-past the next
+   * <code>quantity</code> bytes.  Skipping begins
+   * on the next call to {@link #next next}.  This may result
+   * in some calls to {@link #next next}
+   * returning NEED_MORE_DATA.
+   */
+  public void skip(int quantity) {
+    m_toSkip = quantity;
+  }
 
 
   /**
@@ -170,6 +182,16 @@ public class BBTokenizer {
     m_tt = TT.NONE;
     m_start = -1;
     m_len = -1;
+
+    if(m_toSkip > 0) {
+      int q = m_toSkip>bb.remaining()?
+        bb.remaining():m_toSkip;
+      bb.position(bb.position() + q);
+      m_toSkip-=q;
+      if(!bb.hasRemaining()) {
+        return NextResult.NEED_MORE_DATA;
+      }
+    }
 
     
     NextResult ret = null;

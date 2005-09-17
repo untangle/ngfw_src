@@ -104,12 +104,12 @@ abstract class ImapParser
    * just returns null.
    */
   protected static ByteBuffer compactIfNotEmpty(ByteBuffer buf,
-    int maxSz) {
+    int maxTokenSz) {
     if(buf.hasRemaining()) {
       //Note - do not compact, copy instead.  There was an issue
       //w/ the original buffer being passed as tokens (and we were modifying
       //the head).
-      ByteBuffer ret = ByteBuffer.allocate(maxSz);
+      ByteBuffer ret = ByteBuffer.allocate(maxTokenSz+1024);
       ret.put(buf);
       return ret;
 

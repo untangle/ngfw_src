@@ -171,7 +171,7 @@ public final class ImapTokenStream
       return m_handler.handleChunkFromServer((ImapChunk) token);
     }
     if(token instanceof Chunk) {
-      m_logger.debug("Received Chunk");
+      m_logger.debug("Received Chunk (assume passthru)");
       return new TokenResult(new Token[] { token }, null);
     }    
     if(token instanceof BeginImapMIMEToken) {
