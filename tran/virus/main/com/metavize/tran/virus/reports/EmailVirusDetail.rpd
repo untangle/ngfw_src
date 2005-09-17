@@ -35,8 +35,8 @@ QUERY=(SELECT evt.time_stamp, \
  JOIN tr_virus_evt_smtp evt ON msg.id = evt.msg_id \
  JOIN pl_endp USING (session_id) \
  WHERE evt.time_stamp > $P{startTime} AND evt.time_stamp < $P{endTime} \
- AND vendor_name = $P{virusVendor} \
  AND NOT clean \
+ AND vendor_name = $P{virusVendor} \
  ORDER BY evt.time_stamp DESC) \
 UNION \
 (SELECT evt.time_stamp, \
@@ -53,8 +53,8 @@ UNION \
  JOIN tr_virus_evt_mail evt ON msg.id = evt.msg_id \
  JOIN pl_endp USING (session_id) \
  WHERE evt.time_stamp > $P{startTime} AND evt.time_stamp < $P{endTime} \
- AND vendor_name = $P{virusVendor} \
  AND NOT clean \
+ AND vendor_name = $P{virusVendor} \
  ORDER BY evt.time_stamp DESC)
 TOPLEFT.label=Timestamp
 TOPLMID.label=Virus name
