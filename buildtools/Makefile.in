@@ -26,6 +26,9 @@ build_inc_path  = ${build_dist}/usr/include
 JDK_HOME      ?= /opt/jdk1.5.0
 java_include_base=$(JDK_HOME)/include
 
+# We need to set JAVA_HOME too as the 'ant' binary needs it.
+JAVA_HOME     ?= /opt/java
+
 local_lib_path=lib
 
 ## Permissions
