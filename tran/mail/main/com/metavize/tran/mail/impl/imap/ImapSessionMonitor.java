@@ -23,7 +23,7 @@ import sun.misc.BASE64Decoder;
  * is on the client or server casing), and cannot
  * request more data (via "returning" a read buffer).  
  * The first point does not matter, as this class does
- * not care about mail data.  For the second point, we 
+ * not care about mail data.  For the second point, we ensure
  * that the Parser takes care to only pass ByteBuffers
  * aligned on token boundaries.  Even if this is located
  * before the Parser's logic, the parser will cause bytes
