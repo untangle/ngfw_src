@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -40,7 +41,7 @@ class AptLogTail implements Runnable
 
     static {
         FETCH_PATTERN = Pattern.compile("'(http://.*)' (.*\\.deb) ([0-9]+) ([0-9a-z]+)");
-        DOWNLOAD_PATTERN = Pattern.compile("( *[0-9]+)K[ .]+([0-9]+)% *([0-9]+\\.[0-9]+) *MB/s");
+        DOWNLOAD_PATTERN = Pattern.compile("( *[0-9]+)K[ .]+([0-9]+)% *([0-9]+\\.[0-9]+) .*/s");
     }
 
     private final long key;
@@ -87,10 +88,12 @@ class AptLogTail implements Runnable
     List<InstallProgress> getEvents()
     {
         logger.debug("getting events");
-        List<InstallProgress> l = new LinkedList<InstallProgress>();
+        List<InstallProgress> l;
 
         synchronized (events) {
+            l = new ArrayList<InstallProgress>(events.size());
             l.addAll(events);
+            events.clear();
         }
 
         logger.debug("returning events: " + l);
