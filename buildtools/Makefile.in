@@ -23,7 +23,7 @@ build_prefix   ?= $(build_dist)
 build_lib_path  = ${build_dist}/usr/lib/mvvm
 build_inc_path  = ${build_dist}/usr/include
 
-JDK_HOME      ?= /opt/jdk1.5.0
+JDK_HOME      ?= /opt/jdk
 java_include_base=$(JDK_HOME)/include
 
 # We need to set JAVA_HOME too as the 'ant' binary needs it.
@@ -61,7 +61,7 @@ LDDIR         = ../lib $(build_lib_path)
 LDDIR_FLAGS   = $(patsubst %,-L%,$(LDDIR))
 LIBS	      =
 LIBS_FLAGS    = -pthread $(patsubst %,-l%,$(LIBS)) --warn-common
-FLAGS        += 
+FLAGS        +=
 CFLAGS        =  $(FLAGS) $(DEFINES) $(WARNINGS) $(OPTIMIZATIONS) $(INC_FLAGS) $(LDDIR_FLAGS)
 
 RANLIB        = ranlib
