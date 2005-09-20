@@ -18,11 +18,11 @@ MVVM_USER=root
 MVVM_ARGS=""
 
 ## Set here, if unset, they will be set to eth1, eth0 respectively later
-#MVVM_INSIDE_INTF=""
+MVVM_INSIDE_INTF=vmnet1
 #MVVM_OUTSIDE_INTF=""
 
 ## Set inside and outside interface to a default if it is not set
-MVVM_INSIDE_INTF=${MVVM_INSIDE_INTF:-"eth1"}
+MVVM_INSIDE_INTF=vmnet1
 MVVM_OUTSIDE_INTF=${MVVM_OUTSIDE_INTF:-"eth0"}
 
 if [ "x${USER}" = "xroot" ]; then

@@ -266,6 +266,62 @@ public final class ASCIIUtil {
   }
 
   /**
+   * Compare two arrays, optionally ignoring case
+   * (assuming the arrays are ASCII bytes).
+   *
+   * 
+   */  
+  public static final boolean compareArrays(final byte[] a1,
+    final byte[] a2,
+    final boolean ignoreCase) {
+    return compareArrays(a1,
+      0,
+      a1==null?0:a1.length,
+      a2,
+      0,
+      a2==null?0:a2.length,
+      ignoreCase);
+      
+  }
+
+  /**
+   * Compare two arrays, optionally ignoring case
+   * (assuming the arrays are ASCII bytes).
+   *
+   * 
+   */
+  public static final boolean compareArrays(final byte[] a1,
+    final int a1Start,
+    final int a1Len,
+    final byte[] a2,
+    final int a2Start,
+    final int a2Len,
+    final boolean ignoreCase) {
+    
+    if(a1 == null || a2 == null) {
+      return a1==null && a2 == null;
+    }
+    
+    if(a1Len != a2Len) {
+      return false;
+    }
+    
+    for(int i = 0; i<a1Len; i++) {
+      if(ignoreCase) {
+        if(toLower(a1[a1Start + i]) != toLower(a2[a2Start + i])) {
+          return false;
+        }
+      }
+      else {
+        if(a1[a1Start + i] != a2[a2Start + i]) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  /**
    * Test if the buffers contain the same bytes. 
    * <br><br>
    * This has been added to this class for case-insensitive compares.

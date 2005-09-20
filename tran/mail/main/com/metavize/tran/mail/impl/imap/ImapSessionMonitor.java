@@ -14,6 +14,7 @@ package com.metavize.tran.mail.impl.imap;
 import com.metavize.tran.mail.papi.imap.IMAPTokenizer;
 import java.nio.ByteBuffer;
 import static com.metavize.tran.util.Ascii.*;
+import static com.metavize.tran.util.ASCIIUtil.*;
 import org.apache.log4j.Logger;
 import sun.misc.BASE64Decoder;
 
@@ -28,6 +29,13 @@ import sun.misc.BASE64Decoder;
  * aligned on token boundaries.  Even if this is located
  * before the Parser's logic, the parser will cause bytes
  * to be pushed-back and re-seen.
+ * <br><br>
+ * An ImapSessionMonitor works by passing tokens and literals
+ * to an internal collection of {@link com.metavize.tran.mail.impl.ima.TokMon TokMon}s.
+ * The design of the TokMon API was to prevent having to duplicate and have
+ * each "independent area of interest" re-tokenize the buffers.  Instead,
+ * the ImapSessionMonitor performs tokenizing, and passes each token to
+ * its consisuent TokMons.
  */
 class ImapSessionMonitor {
 
@@ -40,21 +48,23 @@ class ImapSessionMonitor {
   private IntHolder m_literalFromServerCount;
   private IntHolder m_literalFromClientCount;
 
-  private TokenMonitor[] m_tokMons;
+  private TokMon[] m_tokMons;
 
-  private static final String LOGIN_SASL_MECH_NAME = "LOGIN";
-  private static final String PLAIN_SASL_MECH_NAME = "PLAIN";
-  private static final String GSSAPI_SASL_MECH_NAME = "GSSAPI";
-  private static final String ANONYMOUS_SASL_MECH_NAME = "ANONYMOUS";
-  private static final String CRAM_MD5_SASL_MECH_NAME = "CRAM-MD5";
-  private static final String DIGEST_MD5_SASL_MECH_NAME = "DIGEST-MD5";
-  private static final String KERBEROS_V4_SASL_MECH_NAME = "KERBEROS_V4";
-  private static final String SKEY_SASL_MECH_NAME = "SKEY";
-  private static final String EXTERNAL_SASL_MECH_NAME = "EXTERNAL";
-  private static final String SECURID_SASL_MECH_NAME = "SECURID";
-  private static final String SRP_SASL_MECH_NAME = "SRP";
-  private static final String SCRAM_MD5_SASL_MECH_NAME = "SCRAM-MD5";
-  private static final String NTLM_SASL_MECH_NAME = "NTLM";
+  private static final String LOGIN_SASL_MECH_NAME = "LOGIN";//Undocumented, I assume no encryption
+  private static final String PLAIN_SASL_MECH_NAME = "PLAIN";//Cannot be encrypted (or, more to the
+                                                             //point, should already be over an
+                                                             //encrypted channel).  RFC 2595
+  private static final String GSSAPI_SASL_MECH_NAME = "GSSAPI";//May be encrypted, RFC 2222
+  private static final String ANONYMOUS_SASL_MECH_NAME = "ANONYMOUS";//Auth only, RFC 2245
+  private static final String CRAM_MD5_SASL_MECH_NAME = "CRAM-MD5";//Auth only, RFC 2195
+  private static final String DIGEST_MD5_SASL_MECH_NAME = "DIGEST-MD5";//May be encrypted, RFC 2831
+  private static final String KERBEROS_V4_SASL_MECH_NAME = "KERBEROS_V4";//May be encrypted, RFC 2222
+  private static final String SKEY_SASL_MECH_NAME = "SKEY";//No security, RFC 2222
+  private static final String EXTERNAL_SASL_MECH_NAME = "EXTERNAL";//Assume can be encrypted, RFC 2222
+  private static final String SECURID_SASL_MECH_NAME = "SECURID";//Auth only,  RFC 2808
+  private static final String SRP_SASL_MECH_NAME = "SRP";//May be encrypted
+  private static final String SCRAM_MD5_SASL_MECH_NAME = "SCRAM-MD5";//Don't know, assume encrypted
+  private static final String NTLM_SASL_MECH_NAME = "NTLM";//Undocumented, assume encrypted
 
 
   ImapSessionMonitor() {
@@ -62,18 +72,37 @@ class ImapSessionMonitor {
     m_fromClientTokenizer = new IMAPTokenizer();
     m_literalFromServerCount = new IntHolder();
     m_literalFromClientCount = new IntHolder();
-    m_tokMons = new TokenMonitor[] {
-//      new AuthenticateTokenMonitor(),
-      new LoginTokenMonitor(),
-      new TLSMonitor()
+    m_tokMons = new TokMon[] {
+      new AUTHENTICATETokMon(this),
+      new LOGINTokMon(this),
+      new STARTTLSTokMon(this)
     };
   }
 
   boolean hasUserName() {
     return m_userName != null;
   }
+
+  /**
+   * Get the UserName, as observed by one of the TokMons.
+   * This may be null for the entire duration of the
+   * session
+   *
+   * @return the username, or null.
+   */
   String getUserName() {
     return m_userName;
+  }
+
+  /**
+   * Call to set the UserName.  This is intended for use
+   * by the various {@link com.metavize.tran.mail.impl.imap.SASLTransactionTokMon SASL monitors}
+   * or the vanilla {@link com.metavize.tran.mail.impl.imap.LOGINTokMon LOGIN command TokMon}
+   *
+   * @param userName the userName
+   */
+  void setUserName(String userName) {
+    m_userName = userName;
   }
 
   /**
@@ -96,12 +125,12 @@ class ImapSessionMonitor {
   }
 
   /**
-   * Replace one TokenMonitor with another.  This is used for
+   * Replace one TokMon with another.  This is used for
    * the situation like SASL, where one monitor detects the start
    * of a SASL negotiation, and delegates to the specfic mechanism's
    * Monitor.  When complete, the reverse replacement can be made.
    */
-  private void replaceMonitor(TokenMonitor old, TokenMonitor replacement) {
+  void replaceMonitor(TokMon old, TokMon replacement) {
     for(int i = 0; i<m_tokMons.length; i++) {
       if(m_tokMons[i] == old) {
         m_tokMons[i] = replacement;
@@ -110,18 +139,43 @@ class ImapSessionMonitor {
     }
   }
 
-  private TokenMonitor getSASLMonitor(TokenMonitor currentMonitor,
+  SASLTransactionTokMon getSASLMonitor(TokMon currentMonitor,
     String mechanismName) {
-    //Just to be anoying, RFC 3501 doesn't define the valid syntax for
-    //mechanism name other than ATOM, which I *think* excludes QString
-    //or literal
-    //
-    //
+
+    if(mechanismName == null) {
+      m_logger.debug("Null SASL mechanism.  Return null");
+      return null;
+    }
+    mechanismName = mechanismName.trim();
+
+    if(mechanismName.equalsIgnoreCase(LOGIN_SASL_MECH_NAME)) {
+      return new LOGINSaslTokMon(this, currentMonitor);
+    }
+    if(mechanismName.equalsIgnoreCase(PLAIN_SASL_MECH_NAME)) {
+      return new PLAINSaslTokMon(this, currentMonitor);
+    }
+    if(
+      mechanismName.equalsIgnoreCase(ANONYMOUS_SASL_MECH_NAME) ||
+      mechanismName.equalsIgnoreCase(CRAM_MD5_SASL_MECH_NAME) ||
+      mechanismName.equalsIgnoreCase(SKEY_SASL_MECH_NAME) ||
+      mechanismName.equalsIgnoreCase(SECURID_SASL_MECH_NAME)) {
+      m_logger.debug("SASL Mechanism \"" +
+        mechanismName + "\" has no handler, but it cannot result " +
+        "in encrypted channel.  Return passthru handler");
+      return new PassthruSaslTokMon(this, currentMonitor);
+    }
+
+    m_logger.warn("Unable to provide SASL handler for mechanism \"" +
+      mechanismName + "\".  Punt");
+    //TODO bscott we *could* at least see if server rejects *then*
+    //punt, but that it likely overkill
     return null;
   }
 
   private boolean handleBytes(final ByteBuffer buf,
     final boolean fromClient) {
+
+    TokMon[] tokMons = m_tokMons;
 
     final IMAPTokenizer tokenizer = fromClient?
       m_fromClientTokenizer:m_fromServerTokenizer;
@@ -133,7 +187,7 @@ class ImapSessionMonitor {
       if(intHolder.val > 0) {
         int toSkip = intHolder.val > buf.remaining()?
           buf.remaining():intHolder.val;
-        for(TokenMonitor tm : m_tokMons) {
+        for(TokMon tm : tokMons) {
           if(tm.handleLiteral(buf, toSkip, fromClient)) {
             return true;
           }
@@ -154,7 +208,7 @@ class ImapSessionMonitor {
         return true;
       }
 
-      for(TokenMonitor tm : m_tokMons) {
+      for(TokMon tm : tokMons) {
         if(tm.handleToken(tokenizer, buf, fromClient)) {
           return true;
         }
@@ -170,543 +224,421 @@ class ImapSessionMonitor {
   private final class IntHolder {
     int val = 0;
   }
+}   
+
+
+
+
+
+
+class STARTTLSTokMon
+  extends TokMon {
 
   private static final byte[] STARTTLS_BYTES = "starttls".getBytes();
-  private static final byte[] LOGIN_BYTES = "login".getBytes();
-  private static final int MAX_REASONABLE_UID_AS_LITERAL = 1024*2;
 
+  private final Logger m_logger =
+    Logger.getLogger(STARTTLSTokMon.class);
 
-
-  private enum ClientReqType {
-    CONTINUATION,
-    TAGGED,
-    UNKNOWN//Positioned at start of new line
-  };
-
-  private enum ServerRespType {
-    CONTINUATION_REQUEST,
-    UNTAGGED,
-    TAGGED,
-    UNKNOWN//Positioned at start of new line
-  };
-
-  private static final String USERNAME_CHALLENGE = "User Name";
-  private static final String PWD_CHALLENGE = "Password";
-  /**
-   * After extensive investigations, I've determined that
-   * there is no standard for this type of authentication
-   *
-   * Begins life just after the "plain" mechanism
-   * has been declared.
-   *
-   * General protocol *seems* to be as follows:
-   *
-   * s: User Name
-   * c: + my_user_name
-   * s: Password
-   * c: + my_password
-   *
-   * Where all data is base64 encoded (except the "+").
-   *
-   * We thus wait for the first EOL from the server, and begin
-   * examining.  We end when a line from the server is
-   * not a continuation request.
-   *
-   * The anoying thing is that "+" is part of the Base64 alphabet,
-   * as well as the IMAP token set.  Rather than changing the delimiters/tokens
-   * for the Tokenizer, I'll just concatenate concurrent tokens until an EOL.
-   *
-   * This will break if Client pipelines (sends UID/PWD before the server
-   * prompts).  The alternative is to simply use the first complete
-   * line from the client, but we risk (if things were out-or-order) printing
-   * folks passwords into reports.
-   *
-   * TODO Handle the case of the failed login request!
-   */
-  private class AUTH_PLAINMonitor
-    extends TokenMonitor {
-
-    private boolean m_seenFirstServerNewLine = false;
-    private boolean m_prevServerLineWasUsername = false;
-    private StringBuilder m_serverLineBuilder;
-    private StringBuilder m_clientLineBuilder;
-
-    AUTH_PLAINMonitor(TokenMonitor state) {
-      super(state);
-    }
-
-    boolean handleTokenFromClient(IMAPTokenizer tokenizer,
-      ByteBuffer buf) {
-      if(m_prevServerLineWasUsername) {
-        //Previious server response was "User Name".  Now,
-        //This can only be the username if the type of this
-        //line is ClientReqType.CONTINUATION
-        if(getClientReqType() != ClientReqType.CONTINUATION) {
-          m_logger.debug("Previous server line was \"UserName\" yet " +
-            "this is not a continued line.  Give up");
-          replaceMonitor(this, new AuthenticateTokenMonitor());
-          return false;
-        }
-        if(tokenizer.isTokenEOL()) {
-          if(m_clientLineBuilder != null) {
-            m_userName = base64Decode(m_clientLineBuilder);
-            m_logger.debug("Found Username to be \"" +
-              m_userName + "\"");
-          }
-          else {
-            m_logger.debug("Giving up without having found Username (no username provided)");
-          }
-          replaceMonitor(this, new AuthenticateTokenMonitor());
-          return false;
-        }
-        else {
-          if(m_clientLineBuilder == null) {
-            m_clientLineBuilder = new StringBuilder();
-          }
-          m_clientLineBuilder.append(tokenizer.tokenToStringDebug(buf));
-          return false;
-        }
-      }
-      else {
-        return false;
-      }
-    }
-    boolean handleTokenFromServer(IMAPTokenizer tokenizer,
-      ByteBuffer buf) {
-      if(!m_seenFirstServerNewLine) {
-        m_seenFirstServerNewLine = tokenizer.isTokenEOL();
-        return false;
-      }
-      if(getServerRespType() != ServerRespType.CONTINUATION_REQUEST) {
-        m_logger.debug("Done with AUTHENTICATE PLAIN");
-        replaceMonitor(this, new AuthenticateTokenMonitor());
-        return false;
-      }
-      if(getServerResponseTokenCount() > 1) {
-        if(tokenizer.isTokenEOL()) {
-          if(m_serverLineBuilder != null) {
-            m_prevServerLineWasUsername =
-              compare(m_serverLineBuilder, USERNAME_CHALLENGE);
-            m_serverLineBuilder = null;
-          }
-        }
-        else {
-          //Ignore literals for now
-          if(m_serverLineBuilder == null) {
-            m_serverLineBuilder = new StringBuilder();
-          }
-          m_serverLineBuilder.append(tokenizer.tokenToStringDebug(buf));
-        }
-        return false;
-      }
-      return false;
-    }
-
-
-    private boolean compare(StringBuilder base64String, String str) {
-      String s = base64Decode(base64String);
-      if(s == null) {
-        return false;
-      }
-      s = s.trim();
-      return s.equalsIgnoreCase(str);
-    }
-
-    private String base64Decode(StringBuilder sb) {
-      try {
-        return new String(new BASE64Decoder().decodeBuffer(sb.toString()));
-      }
-      catch(Exception ex) {
-        m_logger.warn(ex);
-        return null;
-      }
-    }
-    
+  STARTTLSTokMon(ImapSessionMonitor sesMon) {
+    super(sesMon);
+    m_logger.debug("Created");
   }
-  
-  
-  private class TLSMonitor
-    extends TokenMonitor {
-    
-    boolean handleTokenFromClient(IMAPTokenizer tokenizer,
-      ByteBuffer buf) {
 
-      if(
-        getClientRequestTokenCount() == 2 &&
-        !tokenizer.isTokenEOL() &&
-        getClientReqType() == ClientReqType.TAGGED &&
-        tokenizer.compareWordAgainst(buf, STARTTLS_BYTES, true)
-        ) {
-        m_logger.debug("STARTTLS command issued from client.  Assume" +
-          "this will succeed and thus go into passthru mode");
-        return true;
-      }
-      return false;
+  protected boolean handleTokenFromClient(IMAPTokenizer tokenizer,
+    ByteBuffer buf) {
+
+    if(
+      getClientRequestTokenCount() == 2 &&
+      !tokenizer.isTokenEOL() &&
+      getClientReqType() == ClientReqType.TAGGED &&
+      tokenizer.compareWordAgainst(buf, STARTTLS_BYTES, true)
+      ) {
+      m_logger.debug("STARTTLS command issued from client.  Assume" +
+        "this will succeed and thus go into passthru mode");
+      return true;
     }
-  }  
+    return false;
+  }
+}
 
+
+    
+class LOGINTokMon
+  extends TokMon {
+
+  private static final byte[] LOGIN_BYTES = "login".getBytes();
+  private static final int MAX_REASONABLE_UID_AS_LITERAL = 1024*2;  
 
   private enum LTMState {
     NONE,
     TAGGED_SUSPECT,
     LOGIN_FOUND
-  }    
-    
-  private class LoginTokenMonitor
-    extends TokenMonitor {
+  };
 
-    private LTMState m_state = LTMState.NONE;
-    private byte[] m_literalUID;
-    private int m_nextLiteralPos;
+  private final Logger m_logger =
+    Logger.getLogger(LOGINTokMon.class);
 
+  private LTMState m_state = LTMState.NONE;
+  private byte[] m_literalUID;
+  private int m_nextLiteralPos;
 
-    boolean handleLiteralFromClient(ByteBuffer buf, int bytesFromPosAsLiteral) {
-      if(m_literalUID == null) {
-        return false;
-      }
-      if((m_literalUID.length - m_nextLiteralPos) < bytesFromPosAsLiteral) {
-        m_logger.error("Expecting to collect a literal of length " +
-          m_literalUID.length + " as username, yet received too many" +
-          "bytes.  Tracking error");
-        m_literalUID = null;
-        return false;
-      }
-      for(int i = 0; i<bytesFromPosAsLiteral; i++) {
-        m_literalUID[m_nextLiteralPos++] = buf.get(buf.position() + i);
-      }
-      if(m_nextLiteralPos >= m_literalUID.length) {
-        m_literalUID = null;
-        m_nextLiteralPos = 0;
-        m_userName = new String(m_literalUID);
-        m_logger.debug("Completed accumulation of literal for username (\"" +
-          m_userName + "\"");
-      }
-      return false;
-    }    
-    
-    boolean handleTokenFromClient(IMAPTokenizer tokenizer,
-      ByteBuffer buf) {
-
-      //Quick bypass for impossible lines
-      if(getClientRequestTokenCount() > 3) {
-//        m_logger.debug("FOOO (login guy) getClientRequestTokenCount() " + getClientRequestTokenCount());
-        m_state = LTMState.NONE;
-        return false;
-      }
-
-//      m_logger.debug("FOOO (login guy) Token: " +
-//        tokenizer.tokenToStringDebug(buf) + ", state: " +
-//        m_state + ", getClientRequestTokenCount(): " + getClientRequestTokenCount() +
-//        ", getClientReqType(): " + getClientReqType());
-      
-      switch(m_state) {
-        case NONE:
-          if(
-            getClientRequestTokenCount() == 1 &&
-            !tokenizer.isTokenEOL() &&
-            getClientReqType() == ClientReqType.TAGGED
-            ) {
-            m_state = LTMState.TAGGED_SUSPECT;
-          }
-          break;
-        case TAGGED_SUSPECT:
-          if(getClientRequestTokenCount() == 2 &&
-            !tokenizer.isTokenEOL() &&
-            tokenizer.compareWordAgainst(buf, LOGIN_BYTES, true)
-            ) {
-            m_state = LTMState.LOGIN_FOUND;
-          }
-          else {
-            m_state = LTMState.NONE;
-          }
-          break;
-        case LOGIN_FOUND:
-          //TODO bscott Remove this from the list of Monitors.  The odds
-          //of someone re-authenticating or having the login fail and another
-          //come in is really low
-          switch(tokenizer.getTokenType()) {
-            case WORD:
-              m_userName = tokenizer.getWordAsString(buf);
-              m_logger.debug("Found WORD username \"" + m_userName + "\"");
-              break;
-            case QSTRING:
-              m_userName = new String(tokenizer.getQStringToken(buf));
-              m_logger.debug("Found QSTRING username \"" + m_userName + "\"");
-              break;            
-            case LITERAL:
-              m_logger.debug("username is a LITERAL (collect on subsequent calls)");
-              if(tokenizer.getLiteralOctetCount() > MAX_REASONABLE_UID_AS_LITERAL) {
-                m_logger.error("Received a LOGIN uid as a literal or length: " +
-                  tokenizer.getLiteralOctetCount() + ".  This exceeds the reasonable" +
-                  " limit of " + MAX_REASONABLE_UID_AS_LITERAL + ".  This is either a " +
-                  "state-tracking bug, or someone really clever trying to cause some " +
-                  "DOS-style attack on this process");
-              }
-              else {
-                m_literalUID = new byte[tokenizer.getLiteralOctetCount()];
-                m_nextLiteralPos = 0;
-              }
-              break;
-            case CONTROL_CHAR:
-              m_userName = new String(new byte[] {buf.get(tokenizer.getTokenStart())});
-              m_logger.warn("Username is also a control character \"" + m_userName + "\" (?!?)");
-              break;
-            case NEW_LINE:
-              m_logger.debug("Expecting username token, got EOL.  Assume server will return error");
-            case NONE:
-          }
-          m_state = LTMState.NONE;
-          break;//Redundant
-      }
-      return false;
-    }     
-    
-  }  
-
-  private class AuthenticateTokenMonitor
-    extends TokenMonitor {
-
-    boolean handleTokenFromServer(IMAPTokenizer tokenizer,
-      ByteBuffer buf) {
-      if(getServerResponseTokenCount() == 1 && !tokenizer.isTokenEOL()) {
-//        m_logger.debug("FOOO " +
-//          "First token of " + getServerRespType() + " server line: " + 
-//          tokenizer.tokenToStringDebug(buf));
-      }
-      return false;
-    }
-      
-    boolean handleTokenFromClient(IMAPTokenizer tokenizer,
-      ByteBuffer buf) {
-      if(getClientRequestTokenCount() == 1 && !tokenizer.isTokenEOL()) {
-//        m_logger.debug("FOOO " +
-//          "First token of " + getClientReqType() + " client line: " +
-//          tokenizer.tokenToStringDebug(buf));
-      }
-      return false;
-    }     
-    
+  LOGINTokMon(ImapSessionMonitor sesMon) {
+    super(sesMon);
+    m_logger.debug("Created");
   }
 
 
-  private abstract class TokenMonitor {
 
-    private ServerRespType m_serverLineType = ServerRespType.UNKNOWN;
-    private ClientReqType m_clientLineType = ClientReqType.UNKNOWN;
-    private boolean m_clientAtNewLine = true;
-    private boolean m_serverAtNewLine = true;
-    private boolean m_lastServerLineContReq = false;
-    private int m_serverLineTokenCount = 0;
-    private int m_clientLineTokenCount = 0;
+  protected boolean handleLiteralFromClient(ByteBuffer buf, int bytesFromPosAsLiteral) {
+    if(m_literalUID == null) {
+      return false;
+    }
+    if((m_literalUID.length - m_nextLiteralPos) < bytesFromPosAsLiteral) {
+      m_logger.error("Expecting to collect a literal of length " +
+        m_literalUID.length + " as username, yet received too many" +
+        "bytes.  Tracking error");
+      m_literalUID = null;
+      return false;
+    }
+    for(int i = 0; i<bytesFromPosAsLiteral; i++) {
+      m_literalUID[m_nextLiteralPos++] = buf.get(buf.position() + i);
+    }
+    if(m_nextLiteralPos >= m_literalUID.length) {
+      m_literalUID = null;
+      m_nextLiteralPos = 0;
+      setSessionUserName(new String(m_literalUID));
+    }
+    return false;
+  }
 
-    TokenMonitor() {
+  private void setSessionUserName(String userName) {
+    if(userName == null) {
+      getSessionMonitor().setUserName(userName);
     }
-    TokenMonitor(TokenMonitor cloneState) {
-      m_serverLineType = cloneState.m_serverLineType;
-      m_clientLineType = cloneState.m_clientLineType;
-      m_clientAtNewLine = cloneState.m_clientAtNewLine;
-      m_serverAtNewLine = cloneState.m_serverAtNewLine;
-      m_lastServerLineContReq = cloneState.m_lastServerLineContReq;
-      m_serverLineTokenCount = cloneState.m_serverLineTokenCount;
-      m_clientLineTokenCount = cloneState.m_clientLineTokenCount;
+    else {
+      m_logger.debug("Found username \"" + userName + "\" in LOGIN authentication");
     }
+  }
 
-    /**
-     * Transfer state from <i>this</i>
-     * monitor to the other.
-     */
-    private void transferState(TokenMonitor other) {
-    }
-    
+  protected boolean handleTokenFromClient(IMAPTokenizer tokenizer,
+    ByteBuffer buf) {
 
-    final int getClientRequestTokenCount() {
-      return m_clientLineTokenCount;
-    }
-    final int getServerResponseTokenCount() {
-      return m_serverLineTokenCount;
-    }
-    final ClientReqType getClientReqType() {
-      return m_clientLineType;
-    }
-    final ServerRespType getServerRespType() {
-      return m_serverLineType;
+    //Quick bypass for impossible lines
+    if(getClientRequestTokenCount() > 3) {
+      m_state = LTMState.NONE;
+      return false;
     }
 
-    final boolean handleLiteral(ByteBuffer buf, int bytesFromPosAsLiteral, boolean client) {
-      if(client) {
-        return handleLiteralFromClient(buf, bytesFromPosAsLiteral);
-      }
-      else {
-        return handleLiteralFromServer(buf, bytesFromPosAsLiteral);
-      }
-    }
-
-    
-    
-    final boolean handleToken(IMAPTokenizer tokenizer,
-      ByteBuffer buf,
-      boolean fromClient) {
-      if(fromClient) {
-        if(m_clientAtNewLine) {
-          //Two EOLs in a row we'll skip
-          if(tokenizer.isTokenEOL()) {
-            //Just leave the state as-is
-            return handleTokenFromClient(tokenizer, buf);
-          }
-          //Based on the last Server line, determine
-          //the type of this client request
-          m_clientLineType = m_lastServerLineContReq?
-            ClientReqType.CONTINUATION:ClientReqType.TAGGED;
-            
-          m_clientAtNewLine = false;
-          m_clientLineTokenCount = 1;
+    switch(m_state) {
+      case NONE:
+        if(
+          getClientRequestTokenCount() == 1 &&
+          !tokenizer.isTokenEOL() &&
+          getClientReqType() == ClientReqType.TAGGED
+          ) {
+          m_state = LTMState.TAGGED_SUSPECT;
+        }
+        break;
+      case TAGGED_SUSPECT:
+        if(getClientRequestTokenCount() == 2 &&
+          !tokenizer.isTokenEOL() &&
+          tokenizer.compareWordAgainst(buf, LOGIN_BYTES, true)
+          ) {
+          m_state = LTMState.LOGIN_FOUND;
         }
         else {
-          if(tokenizer.isTokenEOL()) {
-            m_clientAtNewLine = true;
-          }
-          else {
-            m_clientLineTokenCount++;
-          }
+          m_state = LTMState.NONE;
         }
-        return handleTokenFromClient(tokenizer, buf);
-      }
-      else {//BEGIN Server Token
-        if(m_serverAtNewLine) {
-          //This means the last token we saw was an EOL.
-
-          //Two EOLs in a row we'll skip
-          if(tokenizer.isTokenEOL()) {
-            //Just leave the state as-is
-            return handleTokenFromServer(tokenizer, buf);
-          }
-          else {
-            m_serverAtNewLine = false;
-            m_serverLineTokenCount = 1;
-
-            //Figure out what type of response this is
-            if(tokenizer.compareCtlAgainstByte(buf, PLUS_B)) {
-              m_serverLineType = ServerRespType.CONTINUATION_REQUEST;
-            }
-            else if(tokenizer.compareCtlAgainstByte(buf, STAR_B)) {
-              m_serverLineType = ServerRespType.UNTAGGED;
+        break;
+      case LOGIN_FOUND:
+        //TODO bscott Remove this from the list of Monitors.  The odds
+        //of someone re-authenticating or having the login fail and another
+        //come in is really low
+        switch(tokenizer.getTokenType()) {
+          case WORD:
+            setSessionUserName(tokenizer.getWordAsString(buf));
+            break;
+          case QSTRING:
+            setSessionUserName(new String(tokenizer.getQStringToken(buf)));
+            break;
+          case LITERAL:
+            m_logger.debug("username is a LITERAL (collect on subsequent calls)");
+            if(tokenizer.getLiteralOctetCount() > MAX_REASONABLE_UID_AS_LITERAL) {
+              m_logger.error("Received a LOGIN uid as a literal or length: " +
+                tokenizer.getLiteralOctetCount() + ".  This exceeds the reasonable" +
+                " limit of " + MAX_REASONABLE_UID_AS_LITERAL + ".  This is either a " +
+                "state-tracking bug, or someone really clever trying to cause some " +
+                "DOS-style attack on this process");
             }
             else {
-              m_serverLineType = ServerRespType.TAGGED;
+              m_literalUID = new byte[tokenizer.getLiteralOctetCount()];
+              m_nextLiteralPos = 0;
             }
-          }
+            break;
+          case CONTROL_CHAR:
+            String ctlUserName = new String(new byte[] {buf.get(tokenizer.getTokenStart())});
+            m_logger.warn("Username is also a control character \"" + ctlUserName + "\" (?!?)");
+            setSessionUserName(ctlUserName);
+            break;
+          case NEW_LINE:
+            m_logger.debug("Expecting username token, got EOL.  Assume server will return error");
+          case NONE:
+        }
+        m_state = LTMState.NONE;
+        break;//Redundant
+    }
+    return false;
+  }
+
+}
+ 
+
+/**
+ * Looks for the AUTHENTICATE command,
+ * then replaces itself with an appropriate
+ * SASL TokMon
+ */
+class AUTHENTICATETokMon
+  extends CommandTokMon {
+
+  private static final byte[] AUTHENTICATE_BYTES =
+    "authenticate".getBytes();
+
+  private final Logger m_logger =
+    Logger.getLogger(AuthenticateTokenMonitor.class);
+
+  private StringBuilder m_mechNameSB;
+
+  AUTHENTICATETokMon(ImapSessionMonitor sesMon) {
+    super(sesMon);
+    m_logger.debug("Created");
+  }
+  AUTHENTICATETokMon(ImapSessionMonitor sesMon,
+    TokMon tokMon) {
+    super(sesMon, tokMon);
+    m_logger.debug("Created");
+  }
+
+  @Override
+  protected final boolean testCommand(IMAPTokenizer tokenizer,
+    ByteBuffer buf) {
+    return tokenizer.compareWordAgainst(buf, AUTHENTICATE_BYTES, true);
+  }
+
+
+  @Override
+  protected boolean handleTokenFromServer(IMAPTokenizer tokenizer,
+    ByteBuffer buf) {
+    //We never care about this
+    return false;
+  }
+
+  protected boolean handleTokenFromClient(IMAPTokenizer tokenizer,
+    ByteBuffer buf) {
+    //Instances of this class will only care about the "OPEN"
+    //state, as "NONE" means we're not in an AUTHENTICATE
+    //command, and "CLOSING" means we've been swapped-back
+    //
+    if(getCommandState() == CommandState.OPEN) {
+      //Make sure not to grab the "AUTHENTICATE"
+      //word itself
+      if(getClientRequestTokenCount() <= 2) {
+        return false;
+      }
+      //Things are tricky/nasty, as I'm not sure
+      //if our IMAP tokens can apear in a mechanism
+      //name.  As-such, we do our old "trick" to
+      //accumulate a ByteByffer
+      if(tokenizer.isTokenEOL()) {
+        if(m_mechNameSB == null || m_mechNameSB.length() == 0) {
+          m_logger.warn("Unable to determine AUTHENTICATE mechanism.  Assume " +
+            "worst case that this channel will become encrypted and " +
+            "punt");
+          return true;
+        }
+        String mechName = m_mechNameSB.toString();
+        m_logger.debug("Mechanism name: \"" + mechName + "\"");
+
+        SASLTransactionTokMon newMon = getSessionMonitor().getSASLMonitor(
+          this,
+          mechName);
+
+        if(newMon != null) {
+          getSessionMonitor().replaceMonitor(this, newMon);
+          return false;
         }
         else {
-          if(tokenizer.isTokenEOL()) {
-            m_serverAtNewLine = true;
-            //Record if the *previous* server line was a continuation request
-            m_lastServerLineContReq = m_serverLineType==ServerRespType.CONTINUATION_REQUEST;
-          }
-          else {
-            m_serverLineTokenCount++;
-          }
+          m_logger.warn("Unknown SASL mechanism \"" +
+            mechName + "\".  Give up on this session (passthru)");
+          return true;
         }
-        return handleTokenFromServer(tokenizer, buf);
-      }//ENDOF Server Token
+      }
+      else {
+        if(m_mechNameSB == null) {
+          m_mechNameSB = new StringBuilder();
+        }
+        m_mechNameSB.append(tokenizer.tokenToStringDebug(buf));
+      }
     }
-
-    boolean handleLiteralFromClient(ByteBuffer buf, int bytesFromPosAsLiteral) {
-      return false;
-    }
-    boolean handleLiteralFromServer(ByteBuffer buf, int bytesFromPosAsLiteral) {
-      return false;
-    }
-  
-    boolean handleTokenFromServer(IMAPTokenizer tokenizer,
-      ByteBuffer buf) {
-      return false;
-    }
-      
-    boolean handleTokenFromClient(IMAPTokenizer tokenizer,
-      ByteBuffer buf) {
-      return false;
-    }      
+    return false;
   }
-  
-
-/*  
-  private abstract class TokenMonitor {
-
-    private int m_skippingClientLiteralCount;
-    private int m_skippingServerLiteralCount;
-    private boolean m_skippingLineClient = false;
-    private boolean m_skippingLineServer = false;
-
-    final void skipLiteral(int length, boolean fromClient) {
-      if(fromClient) {
-        m_skippingClientLiteralCount=length;
-      }
-      else {
-        m_skippingServerLiteralCount=length;
-      }
-    }
-    final void skipToNewLine(boolean fromClient) {
-      if(fromClient) {
-        m_skippingLineClient=true;
-      }
-      else {
-        m_skippingLineServer=true;
-      }      
-    }
-
-    final boolean handleLiteral(ByteBuffer buf, int bytesFromPosAsLiteral, boolean client) {
-      if(client) {
-        if(m_skippingClientLiteralCount>0) {
-          m_skippingClientLiteralCount-=bytesFromPosAsLiteral;
-          return false;
-        }
-        return handleLiteralFromClient(buf, bytesFromPosAsLiteral);
-      }
-      else {
-        if(m_skippingServerLiteralCount>0) {
-          m_skippingServerLiteralCount-=bytesFromPosAsLiteral;
-          return false;
-        }
-        return handleLiteralFromServer(buf, bytesFromPosAsLiteral);
-      }
-    }
-    
-    final boolean handleToken(IMAPTokenizer tokenizer,
-      ByteBuffer buf,
-      boolean fromClient) {
-      if(fromClient) {
-        if(m_skippingLineClient && !tokenizer.isTokenEOL()) {
-          return false;
-        }
-        m_skippingLineClient = false;
-        return handleTokenFromClient(tokenizer, buf);
-      }
-      else {
-        if(m_skippingLineServer && !tokenizer.isTokenEOL()) {
-          return false;
-        }
-        m_skippingLineServer = false;
-        return handleTokenFromServer(tokenizer, buf);
-      }
-    }
-
-    boolean handleLiteralFromClient(ByteBuffer buf, int bytesFromPosAsLiteral) {
-      return false;
-    }
-    boolean handleLiteralFromServer(ByteBuffer buf, int bytesFromPosAsLiteral) {
-      return false;
-    }
-  
-    boolean handleTokenFromServer(IMAPTokenizer tokenizer,
-      ByteBuffer buf) {
-      return false;
-    }
-      
-    boolean handleTokenFromClient(IMAPTokenizer tokenizer,
-      ByteBuffer buf) {
-      return false;
-    }      
-    
-  }
-*/  
 }
+
+
+class PLAINSaslTokMon
+  extends SASLTransactionTokMon {
+
+  private final Logger m_logger =
+    Logger.getLogger(PLAINSaslTokMon.class);
+
+  
+
+  PLAINSaslTokMon(ImapSessionMonitor sesMon,
+    TokMon state) {
+    super(sesMon, state);
+    m_logger.debug("Created");
+  }
+
+
+  protected boolean clientMessage(IMAPTokenizer tokenizer,
+    ByteBuffer buf,
+    byte[] message) {
+    return false;
+  }
+    
+  protected boolean serverMessage(IMAPTokenizer tokenizer,
+    ByteBuffer buf,
+    byte[] message) {
+    return false;
+  }
+
+
+  
+}
+
+
+
+/**
+  * After extensive investigations, I've determined that
+  * there is no standard for this type of authentication
+  *
+  * Begins life just after the "plain" mechanism
+  * has been declared.
+  *
+  * General protocol *seems* to be as follows:
+  *
+  * s: User Name null
+  * c: + my_user_name
+  * s: Password null
+  * c: + my_password
+  *
+  * Where all data is base64 encoded (except the "+").  There seems
+  * to be a null byte (0) at the end of each server challenge, although
+  * I'm going to make it optional.
+  *
+  * We thus wait for the first EOL from the server, and begin
+  * examining.  We end when a line from the server is
+  * not a continuation request.
+  *
+  * The anoying thing is that "+" is part of the Base64 alphabet,
+  * as well as the IMAP token set.  Rather than changing the delimiters/tokens
+  * for the Tokenizer, I'll just concatenate concurrent tokens until an EOL.
+  *
+  * This will break if Client pipelines (sends UID/PWD before the server
+  * prompts).  The alternative is to simply use the first complete
+  * line from the client, but we risk (if things were out-or-order) printing
+  * folks passwords into reports.
+  *
+  */
+class LOGINSaslTokMon
+  extends SASLTransactionTokMon {
+
+  private final Logger m_logger =
+    Logger.getLogger(LOGINSaslTokMon.class);
+
+
+  private static final byte[] USERNAME_CHALLENGE_BYTES =
+    "User Name".getBytes();
+
+  private boolean m_serverLastWasUserName = false;       
+  
+  LOGINSaslTokMon(ImapSessionMonitor sesMon,
+    TokMon state) {
+    super(sesMon, state);
+    m_logger.debug("Created");
+  }
+
+  protected boolean clientMessage(IMAPTokenizer tokenizer,
+    ByteBuffer buf,
+    byte[] message) {
+
+    if(m_serverLastWasUserName) {
+      try {
+        String uid = new String(message);
+        m_logger.debug("Found AUTHENTICATE PLAIN username to be \"" +
+          uid + "\"");
+        getSessionMonitor().setUserName(uid);
+      }
+      catch(Exception ex) {
+        m_logger.warn("Exception converting AUTHENTICATION PLAIN username to a String", ex);
+      }
+    }
+    return false;
+  }
+    
+  protected boolean serverMessage(IMAPTokenizer tokenizer,
+    ByteBuffer buf,
+    byte[] message) {
+
+    boolean nullTerminated = message[message.length-1] == (byte) 0;
+    
+    m_serverLastWasUserName = compareArrays(
+      USERNAME_CHALLENGE_BYTES,
+      0,
+      USERNAME_CHALLENGE_BYTES.length,
+      message,
+      0,
+      nullTerminated?message.length-1:message.length,
+      true);
+
+    return false;
+  }    
+
+
+}
+
+class PassthruSaslTokMon
+  extends SASLTransactionTokMon {
+
+  private final Logger m_logger =
+    Logger.getLogger(PassthruSaslTokMon.class);  
+  
+  PassthruSaslTokMon(ImapSessionMonitor sesMon,
+    TokMon state) {
+    super(sesMon, state);
+    m_logger.debug("Created");
+  }
+
+  protected boolean clientMessage(IMAPTokenizer tokenizer,
+    ByteBuffer buf,
+    byte[] message) {
+    return false;
+  }
+    
+  protected boolean serverMessage(IMAPTokenizer tokenizer,
+    ByteBuffer buf,
+    byte[] message) {
+    return false;
+  }
+
+  
+  
+}
+
+
+
+
+
+
+
+
