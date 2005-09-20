@@ -405,7 +405,7 @@ class AUTHENTICATETokMon
     "authenticate".getBytes();
 
   private final Logger m_logger =
-    Logger.getLogger(AuthenticateTokenMonitor.class);
+    Logger.getLogger(AUTHENTICATETokMon.class);
 
   private StringBuilder m_mechNameSB;
 
