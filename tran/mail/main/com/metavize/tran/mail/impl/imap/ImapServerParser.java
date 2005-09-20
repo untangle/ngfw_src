@@ -1220,11 +1220,12 @@ public class ImapServerParser
     
     String username = getImapCasing().getSessionMonitor().getUserName();
     if(username == null) {
-      username = "UNKNOWN";
-      m_logger.debug("Unable to determine client login name.  Use \"" +
-        username + "\" instead");
+//      username = "UNKNOWN";
+      m_logger.debug("Unable to determine client login name");
     }
-    ret.addAddress(AddressKind.USER, username, null);
+    else {
+      ret.addAddress(AddressKind.USER, username, null);
+    }
 
     return ret;
   }
