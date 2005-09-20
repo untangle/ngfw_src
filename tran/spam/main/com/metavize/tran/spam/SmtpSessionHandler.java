@@ -280,10 +280,34 @@ public class SmtpSessionHandler
    */
   private File messageToFile(MIMEMessage msg) {
     //Get the part as a file
+    java.net.InetAddress clientAddr = getSession().getClientAddress();
+    String remoteHostname = clientAddr.getHostName();//Either host name or IP, if not resolvable
+
+    String crlf = "\r\n";
+    
+    StringBuilder sb = new StringBuilder();
+    sb.append("Received: ");
+    sb.append("from ").
+      append(remoteHostname).append(" ([").append(clientAddr.getHostAddress()).append("])").append(crlf);
+    sb.append("\tby mv-edgeguard; ").append(MIMEUtil.getRFC822Date());
+    File ret = null;
+    FileOutputStream fOut = null;
     try {
-      return msg.toFile(m_fileFactory);
+      ret = m_fileFactory.createFile("spamc_mv");
+      fOut = new FileOutputStream(ret);
+      BufferedOutputStream bOut = new BufferedOutputStream(fOut);
+      MIMEOutputStream mimeOut = new MIMEOutputStream(bOut);
+      mimeOut.writeLine(sb.toString());
+      msg.writeTo(mimeOut);
+      mimeOut.flush();
+      bOut.flush();
+      fOut.flush();
+      fOut.close();
+      return ret;
     }
     catch(Exception ex) {
+      try {fOut.close();}catch(Exception ignore){}
+      try {ret.delete();}catch(Exception ignore){}
       m_logger.error("Exception writing MIME Message to file", ex);
       return null;
     }

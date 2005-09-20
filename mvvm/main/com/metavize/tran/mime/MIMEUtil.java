@@ -24,7 +24,7 @@ public class MIMEUtil {
 
 
   private static final Logger m_logger = Logger.getLogger(MIMEUtil.class);
-  public static final String MAIL_FORMAT_STR = "EEE, d MMM yyyy HH:mm:ss 'ZZZZZ'";
+  public static final String MAIL_FORMAT_STR = "EEE, d MMM yyyy HH:mm:ss Z";
 
 
   public static final byte[] MIME_SPECIALS = {

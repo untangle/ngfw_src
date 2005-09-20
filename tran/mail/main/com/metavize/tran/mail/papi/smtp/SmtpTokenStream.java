@@ -18,9 +18,11 @@ import org.apache.log4j.Logger;
 import com.metavize.mvvm.tapi.Pipeline;
 import com.metavize.mvvm.MvvmContextFactory;
 import java.util.*;
+import java.net.InetAddress;
 import com.metavize.tran.mail.papi.BeginMIMEToken;
 import com.metavize.tran.mail.papi.ContinuedMIMEToken;
 import com.metavize.tran.mail.papi.CompleteMIMEToken;
+
 
 
 
@@ -94,6 +96,13 @@ public class SmtpTokenStream
    */
   public long getLastServerTimestamp() {
     return m_serverTimestamp;
+  }
+
+  /**
+   * Get the client IP address
+   */
+  public InetAddress getClientAddress() {
+    return getSession().clientAddr();
   }  
 
   /**

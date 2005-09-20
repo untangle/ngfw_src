@@ -681,7 +681,8 @@ public final class Session
         (!(cmd instanceof UnparsableCommand)) &&
         !m_allowedCommandsSet.contains(cmdStrLower)) {
         m_logger.warn("Enqueuing negative response to " +
-          "non-allowed command \"" + cmd.getCmdString() + "\"");
+          "non-allowed command \"" + cmd.getCmdString() + "\"" +
+          " (" + cmd.getArgString() + ")");
         actions.appendSyntheticResponse(new FixedSyntheticResponse(500, "Syntax error, command unrecognized"));
         actions.followup();
         return;
