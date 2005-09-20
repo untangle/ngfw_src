@@ -12,7 +12,7 @@
 package com.metavize.tran.mail.impl.imap;
 
 import java.nio.ByteBuffer;
-import org.apache.log4j.Logger;
+import com.metavize.tran.util.MVLogger;
 import com.metavize.tran.mail.papi.imap.IMAPTokenizer;
 import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.tran.mime.MIMEPart;
@@ -829,8 +829,8 @@ public class ImapServerParser
     DRAINING_HOSED,
   };
   
-  private final Logger m_logger =
-    Logger.getLogger(ImapServerParser.class);
+  private final MVLogger m_logger =
+    new MVLogger(ImapServerParser.class);
 
   private final IMAPTokenizer m_tokenizer;
   private IMAPBodyScanner m_msgBoundaryScanner;
@@ -911,7 +911,7 @@ public class ImapServerParser
         case SCANNING:
           dup = buf.duplicate();
           if(m_msgBoundaryScanner.scanForMsgState(buf)) {
-            m_logger.debug("Found message boundary start. Octet count: " +
+            m_logger.debug("Found message boundary start. Octet count: ",
               m_msgBoundaryScanner.getMessageOctetCount());
             
             //First off, we need to put into the returned token
@@ -919,7 +919,7 @@ public class ImapServerParser
             //message
             dup.limit(buf.position());
             rewindLiteral(dup);
-            m_logger.debug("Adding protocol chunk of length " + dup.remaining());
+            m_logger.debug("Adding protocol chunk of length ", dup.remaining());
             toks.add(new ImapChunk(dup));
 
             //Open-up the message grabber
@@ -935,7 +935,7 @@ public class ImapServerParser
           else {
             m_logger.debug("We need more data in SCANNING state");
             dup.limit(buf.position());
-            m_logger.debug("Adding protocol chunk of length " + dup.remaining());
+            m_logger.debug("Adding protocol chunk of length ", dup.remaining());
             toks.add(new ImapChunk(dup));
             return returnWithCompactedBuffer(buf, toks);
           }
@@ -961,14 +961,18 @@ public class ImapServerParser
           m_msgGrabber.decrementMsgRemaining(dup.remaining());
 
           if(m_msgGrabber.scanner.isHeadersBlank()) {
-            m_logger.debug("Headers are blank. " +
-              m_msgGrabber.getMsgRemaining() + " msg bytes remain");
+            m_logger.debug("Headers are blank. ",
+              m_msgGrabber.getMsgRemaining(),
+              " msg bytes remain");
           }
           else {
-            m_logger.debug("About to write the " +
-              (foundEndOfHeaders?"last":"next") + " " +
-              dup.remaining() + " header bytes to disk. " +
-              m_msgGrabber.getMsgRemaining() + " msg bytes remain");
+            m_logger.debug("About to write the ",
+              (foundEndOfHeaders?"last":"next"),
+              " ",
+              dup.remaining(),
+              " header bytes to disk. ",
+              m_msgGrabber.getMsgRemaining(),
+              " msg bytes remain");
           }
 
           //Write what we have to disk.
@@ -994,7 +998,7 @@ public class ImapServerParser
           if(foundEndOfHeaders) {//BEGIN End of Headers
             MIMEMessageHeaders headers = m_msgGrabber.accumulator.parseHeaders();
             if(headers == null) {//BEGIN Header PArse Error
-              m_logger.error("Unable to parse headers.  Pass accumulated " +
+              m_logger.error("Unable to parse headers.  Pass accumulated ",
                 "bytes as a normal chunk, and passthru rest of message");
               //Grab anything trapped thus far in the file (if we can
               recoverTrappedHeaderBytes(toks);
@@ -1038,7 +1042,7 @@ public class ImapServerParser
         //===================================================          
         case DRAINING_HOSED:
           dup = getNextBodyChunkBuffer(buf);
-          m_logger.debug("Adding passthru body chunk of length " + dup.remaining());
+          m_logger.debug("Adding passthru body chunk of length ", dup.remaining());
           toks.add(new UnparsableMIMEChunk(dup));
 
           //Advance the buf past what we just transferred
@@ -1064,18 +1068,18 @@ public class ImapServerParser
             dup = getNextBodyChunkBuffer(buf);
             m_msgGrabber.decrementMsgRemaining(dup.remaining());
                         
-            m_logger.debug("Next body chunk of length " +
-              dup.remaining() + ", " + m_msgGrabber.getMsgRemaining() +
+            m_logger.debug("Next body chunk of length ",
+              dup.remaining(), ", ", m_msgGrabber.getMsgRemaining(),
               " message bytes remaining");
           
             buf.position(buf.position() + dup.remaining());
             
             if(m_msgGrabber.hasMsgRemaining()) {
-              m_logger.debug("Adding continued body chunk of length " + dup.remaining());
+              m_logger.debug("Adding continued body chunk of length ", dup.remaining());
               mimeChunk = m_msgGrabber.accumulator.createChunk(dup.slice(), false);              
             }
             else {
-              m_logger.debug("Adding final body chunk of length " + dup.remaining());
+              m_logger.debug("Adding final body chunk of length ", dup.remaining());
               mimeChunk = m_msgGrabber.accumulator.createChunk(dup.slice(), true);
               changeParserState(ISPState.SCANNING);
               m_msgGrabber = null;          
@@ -1110,7 +1114,7 @@ public class ImapServerParser
     if(buf != null && buf.remaining() > 0) {
       Chunk c = new Chunk(buf);
   
-      m_logger.debug("Passing final chunk of size: " + buf.remaining());
+      m_logger.debug("Passing final chunk of size: ", buf.remaining());
       return new ParseResult(c);
     }
     return new ParseResult();
@@ -1134,8 +1138,9 @@ public class ImapServerParser
 
   private void changeParserState(ISPState state) {
     if(m_state != state) {
-      m_logger.debug("Change state from \"" +
-        m_state + "\" to \"" + state + "\"");
+      m_logger.debug("Change state from \"",
+        m_state,
+        "\" to \"", state, "\"");
       m_state = state;
     }
     
@@ -1168,7 +1173,7 @@ public class ImapServerParser
       m_logger.debug("Could not recover buffered header bytes");
     }
     else {
-      m_logger.debug("Retreived " + trapped.remaining() + " bytes trapped in file");
+      m_logger.debug("Retreived ", trapped.remaining(), " bytes trapped in file");
       toks.add(new UnparsableMIMEChunk(trapped));
     }
   }
@@ -1179,7 +1184,7 @@ public class ImapServerParser
   private ParseResult returnWithCompactedBuffer(ByteBuffer buf,
     List<Token> toks) {
     buf = compactIfNotEmpty(buf, m_tokenizer.getLongestWord());
-    m_logger.debug("Returning " + toks.size() + " tokens and a " +
+    m_logger.debug("Returning ", toks.size(), " tokens and a ",
       (buf==null?"null buffer":"buffer at position " + buf.position()));
     return new ParseResult(toks, buf);
   }
@@ -1196,7 +1201,7 @@ public class ImapServerParser
       return true;
     }
     catch(IOException ex) {
-      m_logger.error("Exception creating MIME Accumulator", ex);
+      m_logger.error(ex, "Exception creating MIME Accumulator");
       m_msgGrabber = new MessageGrabber(totalMsgLen,
         null);
       return false;
@@ -1397,8 +1402,8 @@ public class ImapServerParser
     private int m_state = S03;
     private int m_msgLength = -1;
     private int m_pushedStateForLiteral = -1;
-    private Logger m_logger =
-      Logger.getLogger(ImapServerParser.IMAPBodyScanner.class);
+    private MVLogger m_logger =
+      new MVLogger(ImapServerParser.IMAPBodyScanner.class);
 
     IMAPBodyScanner() {
       changeState(S03, T17);
@@ -1407,12 +1412,13 @@ public class ImapServerParser
     private void changeState(int newState,
       int tokenClass) {
       if(newState != m_state) {
-        m_logger.debug("Change state from \"" +
-          STATE_STRINGS[m_state] +
-          "\" to \"" +
-          STATE_STRINGS[newState] +
-          "\" on token \"" +
-          TOKEN_STRINGS[tokenClass] + "\"");
+        m_logger.debug("Change state from \"",
+          STATE_STRINGS[m_state],
+          "\" to \"",
+          STATE_STRINGS[newState],
+          "\" on token \"",
+          TOKEN_STRINGS[tokenClass],
+          "\"");
         m_state = newState;
       }
     }
@@ -1444,7 +1450,7 @@ public class ImapServerParser
           //Skipping literal
           int thisSkip = buf.remaining()>m_toSkipLiteral?
             m_toSkipLiteral:buf.remaining();
-          m_logger.debug("Continuing to skip next: " + thisSkip + " bytes");
+          m_logger.debug("Continuing to skip next: ", thisSkip, " bytes");
           buf.position(buf.position() + thisSkip);
           m_toSkipLiteral-=thisSkip;
           if(m_toSkipLiteral == 0) {
