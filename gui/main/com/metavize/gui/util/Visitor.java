@@ -37,8 +37,8 @@ public class Visitor implements ProgressVisitor{
     
     public void visitDownloadProgress(final DownloadProgress dp){
 	SwingUtilities.invokeLater( new Runnable(){ public void run(){
-	    progressBar.setString( "Downloading: " + dp.getName() + " (" + dp.getSpeed() + " MB/s" );
-	    progressBar.setValue( dp.getBytesDownloaded() / dp.getSize() );
+	    progressBar.setString( "Downloading: " + dp.getName() + " (" + dp.getSpeed() + ")");
+	    progressBar.setValue( (int) (50f*(((float)dp.getBytesDownloaded()) / ((float)dp.getSize()))) );
 	}});
     }
     
@@ -62,7 +62,7 @@ public class Visitor implements ProgressVisitor{
 		progressBar.setString( "Download succeeded" );
 	    else
 		progressBar.setString( "Download failed" );
-	    progressBar.setValue( 100 );
+	    progressBar.setValue( 50 );
 	}});
     }
     
