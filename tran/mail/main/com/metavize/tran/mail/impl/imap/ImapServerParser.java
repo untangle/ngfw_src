@@ -1110,7 +1110,7 @@ public class ImapServerParser
     if(buf != null && buf.remaining() > 0) {
       Chunk c = new Chunk(buf);
   
-      m_logger.debug(this + " passing chunk of size: " + buf.remaining());
+      m_logger.debug("Passing final chunk of size: " + buf.remaining());
       return new ParseResult(c);
     }
     return new ParseResult();

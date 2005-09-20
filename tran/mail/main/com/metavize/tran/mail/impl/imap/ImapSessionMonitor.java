@@ -195,7 +195,7 @@ class ImapSessionMonitor {
       
       if(result == IMAPTokenizer.IMAPNextResult.NEED_MORE_DATA) {
         m_logger.debug("Need more data");
-        return true;
+        return false;
       }
       if(result == IMAPTokenizer.IMAPNextResult.EXCEEDED_LONGEST_WORD) {
         m_logger.warn("Exceeded longest WORD.  Assume some encryption and enter passthru");
@@ -451,7 +451,7 @@ class AUTHENTICATETokMon
           return true;
         }
         String mechName = m_mechNameSB.toString();
-        m_logger.debug("Mechanism name: \"" + mechName + "\"");
+        m_logger.debug("SASL Mechanism name: \"" + mechName + "\"");
 
         SASLExchangeTokMon newMon = getSessionMonitor().getSASLMonitor(
           this,

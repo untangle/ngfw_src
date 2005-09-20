@@ -216,7 +216,11 @@ class SASLExchangeTokMon
         getSessionMonitor().setUserName(m_observer.getAuthID());
       }
     }
-    return isChannelSecured();
+    boolean ret = isChannelSecured();
+    if(ret) {
+      m_logger.debug("[clientMessage()] Returning true (channel encrypted) upon advice of SASLObserver");
+    }
+    return ret;
   }
 
   /**
@@ -241,6 +245,10 @@ class SASLExchangeTokMon
         getSessionMonitor().setUserName(m_observer.getAuthID());
       }
     }
+    boolean ret = isChannelSecured();
+    if(ret) {
+      m_logger.debug("[serverMessage()] Returning true (channel encrypted) upon advice of SASLObserver");
+    }    
     return isChannelSecured();
   }
 
@@ -264,7 +272,11 @@ class SASLExchangeTokMon
    */  
   protected boolean transactionComplete(SASLCompletion compl) {
     swapBackAUTHENTICATEHandler();
-    return isChannelUnsecure()?false:true;
+    boolean ret = isChannelUnsecure()?false:true;
+    if(ret) {
+      m_logger.debug("[transactionComplete()] Returning true (channel maybe encrypted) upon advice of SASLObserver");
+    }
+    return ret;     
   }
 
   private boolean isChannelSecured() {
