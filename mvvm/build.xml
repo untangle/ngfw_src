@@ -284,6 +284,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       <include name="com/metavize/tran/token/**"/>
       <include name="com/metavize/tran/util/**"/>
       <include name="com/metavize/tran/mime/**"/>
+      <include name="com/metavize/tran/sasl/**"/>
       <include name="com/metavize/mvvm/reporting/**"/>
       <include name="com/metavize/mvvm/reporting/Util.java"/>
     </javac>

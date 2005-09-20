@@ -238,6 +238,8 @@ public final class ASCIIUtil {
     return true;
   }
 
+  
+
   /**
    * Converts the byte to lower-case, if it is in the alpha range.
    *
@@ -339,6 +341,9 @@ public final class ASCIIUtil {
    * Test if the target ByteBuffer starts with the bytes in compare.
    * <br><br>
    * This has been added to this class for case-insensitive compares.
+   * <br><br>
+   * Note that this method does <b>not</b> modify the
+   * source or target buffers.
    */
   public static final boolean startsWith(final ByteBuffer target,
     final ByteBuffer compare,
@@ -353,12 +358,12 @@ public final class ASCIIUtil {
     
     for(int i = 0; i<len; i++) {
       if(ignoreCase) {
-        if(!equalsIgnoreCase(compare.get(comparePos+i), target.get(targetPos+1))) {
+        if(!equalsIgnoreCase(compare.get(comparePos+i), target.get(targetPos+i))) {
           return false;
         }
       }
       else {
-        if(compare.get(comparePos+i) != target.get(targetPos+1)) {
+        if(compare.get(comparePos+i) != target.get(targetPos+i)) {
           return false;
         }      
       }

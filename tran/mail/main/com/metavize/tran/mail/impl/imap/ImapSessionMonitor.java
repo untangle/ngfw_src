@@ -17,6 +17,8 @@ import static com.metavize.tran.util.Ascii.*;
 import static com.metavize.tran.util.ASCIIUtil.*;
 import org.apache.log4j.Logger;
 import sun.misc.BASE64Decoder;
+import com.metavize.tran.sasl.SASLObserverFactory;
+import com.metavize.tran.sasl.SASLObserver;
 
 /**
  * Receives ByteBuffers to/from server.  A subtle point
@@ -102,6 +104,7 @@ class ImapSessionMonitor {
    * @param userName the userName
    */
   void setUserName(String userName) {
+    m_logger.debug("Setting UserName to \"" + userName + "\"");
     m_userName = userName;
   }
 
@@ -133,36 +136,27 @@ class ImapSessionMonitor {
   void replaceMonitor(TokMon old, TokMon replacement) {
     for(int i = 0; i<m_tokMons.length; i++) {
       if(m_tokMons[i] == old) {
+//        m_logger.debug("Replacing \"" + old + "\" monitor with \"" +
+//          replacement + "\"");
         m_tokMons[i] = replacement;
         break;
       }
     }
   }
 
-  SASLTransactionTokMon getSASLMonitor(TokMon currentMonitor,
+  SASLExchangeTokMon getSASLMonitor(TokMon currentMonitor,
     String mechanismName) {
 
     if(mechanismName == null) {
       m_logger.debug("Null SASL mechanism.  Return null");
       return null;
     }
-    mechanismName = mechanismName.trim();
 
-    if(mechanismName.equalsIgnoreCase(LOGIN_SASL_MECH_NAME)) {
-      return new LOGINSaslTokMon(this, currentMonitor);
-    }
-    if(mechanismName.equalsIgnoreCase(PLAIN_SASL_MECH_NAME)) {
-      return new PLAINSaslTokMon(this, currentMonitor);
-    }
-    if(
-      mechanismName.equalsIgnoreCase(ANONYMOUS_SASL_MECH_NAME) ||
-      mechanismName.equalsIgnoreCase(CRAM_MD5_SASL_MECH_NAME) ||
-      mechanismName.equalsIgnoreCase(SKEY_SASL_MECH_NAME) ||
-      mechanismName.equalsIgnoreCase(SECURID_SASL_MECH_NAME)) {
-      m_logger.debug("SASL Mechanism \"" +
-        mechanismName + "\" has no handler, but it cannot result " +
-        "in encrypted channel.  Return passthru handler");
-      return new PassthruSaslTokMon(this, currentMonitor);
+    SASLObserver observer = SASLObserverFactory.createObserverForMechanism(mechanismName);
+
+    if(observer != null) {
+      m_logger.debug("Found SASLObserver for mechanism \"" + mechanismName + "\"");
+      return new SASLExchangeTokMon(this, currentMonitor, observer);
     }
 
     m_logger.warn("Unable to provide SASL handler for mechanism \"" +
@@ -459,7 +453,7 @@ class AUTHENTICATETokMon
         String mechName = m_mechNameSB.toString();
         m_logger.debug("Mechanism name: \"" + mechName + "\"");
 
-        SASLTransactionTokMon newMon = getSessionMonitor().getSASLMonitor(
+        SASLExchangeTokMon newMon = getSessionMonitor().getSASLMonitor(
           this,
           mechName);
 
@@ -484,7 +478,7 @@ class AUTHENTICATETokMon
   }
 }
 
-
+/*
 class PLAINSaslTokMon
   extends SASLTransactionTokMon {
 
@@ -516,40 +510,9 @@ class PLAINSaslTokMon
   
 }
 
+*/
 
-
-/**
-  * After extensive investigations, I've determined that
-  * there is no standard for this type of authentication
-  *
-  * Begins life just after the "plain" mechanism
-  * has been declared.
-  *
-  * General protocol *seems* to be as follows:
-  *
-  * s: User Name null
-  * c: + my_user_name
-  * s: Password null
-  * c: + my_password
-  *
-  * Where all data is base64 encoded (except the "+").  There seems
-  * to be a null byte (0) at the end of each server challenge, although
-  * I'm going to make it optional.
-  *
-  * We thus wait for the first EOL from the server, and begin
-  * examining.  We end when a line from the server is
-  * not a continuation request.
-  *
-  * The anoying thing is that "+" is part of the Base64 alphabet,
-  * as well as the IMAP token set.  Rather than changing the delimiters/tokens
-  * for the Tokenizer, I'll just concatenate concurrent tokens until an EOL.
-  *
-  * This will break if Client pipelines (sends UID/PWD before the server
-  * prompts).  The alternative is to simply use the first complete
-  * line from the client, but we risk (if things were out-or-order) printing
-  * folks passwords into reports.
-  *
-  */
+/*
 class LOGINSaslTokMon
   extends SASLTransactionTokMon {
 
@@ -634,6 +597,8 @@ class PassthruSaslTokMon
   
   
 }
+
+*/
 
 
 

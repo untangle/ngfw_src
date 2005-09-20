@@ -14,7 +14,9 @@ import org.apache.log4j.Logger;
 import com.metavize.tran.mail.papi.imap.IMAPTokenizer;
 import java.nio.ByteBuffer;
 import static com.metavize.tran.util.Ascii.*;
+import com.metavize.tran.sasl.SASLObserver;
 import sun.misc.BASE64Decoder;
+
 
 /**
  * Class which understands the semantics of Imap's SASL
@@ -23,14 +25,14 @@ import sun.misc.BASE64Decoder;
  * back and forth.  Passes only the data
  * in pure SASL format (i.e. removing the encoding/semantics
  * of the IMAP profile RFC 3501 sec 6.2.2) to the
- * clientMessage/serverMessage methods.
+ * passed-in {@link com.metavize.tran.sasl.SASLObserver SASLObserver}.
  * <br><br>
  * This class is intended to be swapped-in
  * after AUTHENTICATE XXXXX has been issued.  As-such
  * there is no use to the {@link #testCommand testCommand}
  * method (which simply returns false).
  */
-abstract class SASLTransactionTokMon
+class SASLExchangeTokMon
   extends CommandTokMon {
 
   /**
@@ -44,14 +46,20 @@ abstract class SASLTransactionTokMon
   };
 
   private final Logger m_logger =
-    Logger.getLogger(SASLTransactionTokMon.class);    
+    Logger.getLogger(SASLExchangeTokMon.class);    
 
   private StringBuilder m_clientSB;
   private StringBuilder m_serverSB;
+  private final SASLObserver m_observer;
 
-  SASLTransactionTokMon(ImapSessionMonitor sesMon,
-    TokMon state) {
+  SASLExchangeTokMon(ImapSessionMonitor sesMon,
+    TokMon state,
+    SASLObserver observer) {
     super(sesMon, state);
+    
+    m_observer = observer;
+
+    m_logger.debug("Created");
   }
 
   @Override
@@ -101,13 +109,13 @@ abstract class SASLTransactionTokMon
         //This token should be the final disposition
         //of this transaction
         if(tokenizer.compareWordAgainst(buf, OK_BYTES, true)) {
-          transactionComplete(SASLCompletion.OK);
+          return transactionComplete(SASLCompletion.OK);
         }
         else if(tokenizer.compareWordAgainst(buf, NO_BYTES, true)) {
-          transactionComplete(SASLCompletion.NO);
+          return transactionComplete(SASLCompletion.NO);
         }
         else if(tokenizer.compareWordAgainst(buf, BAD_BYTES, true)) {
-          transactionComplete(SASLCompletion.BAD);
+          return transactionComplete(SASLCompletion.BAD);
         }
         else {
           m_logger.warn("Unknown Server response disposition \"" +
@@ -198,9 +206,18 @@ abstract class SASLTransactionTokMon
    *         session unparsable, and abandon scanning (i.e. if
    *         encryption is encountered).
    */
-  protected abstract boolean clientMessage(IMAPTokenizer tokenizer,
+  protected boolean clientMessage(IMAPTokenizer tokenizer,
     ByteBuffer buf,
-    byte[] message);
+    byte[] message) {
+
+    if(m_observer.clientData(ByteBuffer.wrap(message))) {
+
+      if(m_observer.exchangeAuthIDFound() == SASLObserver.FeatureStatus.YES) {
+        getSessionMonitor().setUserName(m_observer.getAuthID());
+      }
+    }
+    return isChannelSecured();
+  }
 
   /**
    * Handle a server message.  These bytes are in pure SASL
@@ -215,9 +232,17 @@ abstract class SASLTransactionTokMon
    *         session unparsable, and abandon scanning (i.e. if
    *         encryption is encountered).
    */    
-  protected abstract boolean serverMessage(IMAPTokenizer tokenizer,
+  protected boolean serverMessage(IMAPTokenizer tokenizer,
     ByteBuffer buf,
-    byte[] message);
+    byte[] message) {
+
+    if(m_observer.serverData(ByteBuffer.wrap(message))) {
+      if(m_observer.exchangeAuthIDFound() == SASLObserver.FeatureStatus.YES) {
+        getSessionMonitor().setUserName(m_observer.getAuthID());
+      }
+    }
+    return isChannelSecured();
+  }
 
   /**
    * Called after a client issues a SASL cancel ("*").
@@ -237,8 +262,20 @@ abstract class SASLTransactionTokMon
    *
    * @param compl the server's response to the client's SASL command.
    */  
-  protected void transactionComplete(SASLCompletion compl) {
+  protected boolean transactionComplete(SASLCompletion compl) {
     swapBackAUTHENTICATEHandler();
+    return isChannelUnsecure()?false:true;
+  }
+
+  private boolean isChannelSecured() {
+    return 
+      m_observer.exchangeUsingPrivacy() == SASLObserver.FeatureStatus.YES &&
+      m_observer.exchangeUsingIntegrity() == SASLObserver.FeatureStatus.YES; 
+  }
+  private boolean isChannelUnsecure() {
+    return 
+      m_observer.exchangeUsingPrivacy() == SASLObserver.FeatureStatus.NO &&
+      m_observer.exchangeUsingIntegrity() == SASLObserver.FeatureStatus.NO; 
   }
     
   
