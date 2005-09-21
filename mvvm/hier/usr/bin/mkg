@@ -145,11 +145,15 @@ else
     if [ "$1" = "installed" ] ; then
         cat $pkglist | awk ' /^Package: / { print $2 " 10.0" } '
     elif [ "$1" = "install" ] ; then
-        cat $pkglist | awk ' /^Package: / { print $2 " 10.0" } '
+        aptlog "start $stamp"
+        echo "END PACKAGE LIST" >>$APT_LOG
+        aptlog "done $stamp"
     elif [ "$1" = "update" ] ; then
         : # XXX
     elif [ "$1" = "upgrade" ] ; then
-        : # XXX
+        aptlog "start $stamp"
+        echo "END PACKAGE LIST" >>$APT_LOG
+        aptlog "done $stamp"
     elif [ "$1" = "remove" ] ; then
         echo "remove not supported in build environment"
     elif [ "$1" = "available" ] ; then
