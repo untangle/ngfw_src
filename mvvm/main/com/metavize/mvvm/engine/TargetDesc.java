@@ -31,12 +31,12 @@ class TargetDesc
 
     // constructors -----------------------------------------------------------
 
-    TargetDesc(LoginSession ls, int targetId, WeakReference targetRef)
+    TargetDesc(LoginSession ls, int targetId, WeakReference targetRef, Class c)
     {
         this.targetRef = targetRef;
 
         Object target = targetRef.get();
-        Class[] ifaces = interfaces(target.getClass());
+        Class[] ifaces = interfaces(c);
         ClassLoader cl = target.getClass().getClassLoader();
 
         Map<String, Method> ms = new HashMap<String, Method>();
