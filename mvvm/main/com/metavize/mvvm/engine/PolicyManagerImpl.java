@@ -373,7 +373,7 @@ class PolicyManagerImpl implements PolicyManager
             for (Policy oldp : allPolicies) {
                 boolean foundIt = false;
                 for (Policy newp : newAllPolicies) {
-                    if (newp.getId().equals(oldp.getId())) {
+                    if (oldp.getId().equals(newp.getId())) {
                         foundIt = true;
                         break;
                     }
