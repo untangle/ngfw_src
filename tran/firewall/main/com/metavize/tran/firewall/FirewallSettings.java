@@ -11,16 +11,14 @@
 
 package com.metavize.tran.firewall;
 
-import java.util.List;
-import java.util.LinkedList;
 import java.io.Serializable;
-
 import java.util.Iterator;
-
-import com.metavize.mvvm.tran.Validatable;
-import com.metavize.mvvm.tran.ParseException;
+import java.util.LinkedList;
+import java.util.List;
 
 import com.metavize.mvvm.security.Tid;
+import com.metavize.mvvm.tran.ParseException;
+import com.metavize.mvvm.tran.Validatable;
 
 /**
  * Settings for the Firewall transform.
@@ -37,7 +35,7 @@ public class FirewallSettings implements Serializable, Validatable
 
     /* XXX Must be updated */
     private static final long serialVersionUID = 1629094295874759581L;
-    
+
     private List firewallRuleList = null;
 
     private boolean quickExit = true;
@@ -90,11 +88,11 @@ public class FirewallSettings implements Serializable, Validatable
      * unique="true"
      * not-null="true"
      */
-    public Tid getTid() 
+    public Tid getTid()
     {
         return tid;
     }
-    
+
     public void setTid( Tid tid )
     {
         this.tid = tid;
@@ -112,7 +110,7 @@ public class FirewallSettings implements Serializable, Validatable
         return this.quickExit;
     }
 
-    public void setQuickExit( boolean b ) 
+    public void setQuickExit( boolean b )
     {
         this.quickExit = b;
     }
@@ -129,7 +127,7 @@ public class FirewallSettings implements Serializable, Validatable
         return this.rejectSilently;
     }
 
-    public void setRejectSilently( boolean b ) 
+    public void setRejectSilently( boolean b )
     {
         this.rejectSilently = b;
     }
@@ -145,7 +143,7 @@ public class FirewallSettings implements Serializable, Validatable
         return this.isDefaultAccept;
     }
 
-    public void setDefaultAccept( boolean b ) 
+    public void setDefaultAccept( boolean b )
     {
         this.isDefaultAccept = b;
     }
@@ -155,7 +153,7 @@ public class FirewallSettings implements Serializable, Validatable
      *
      * @return the list of the redirect rules.
      * @hibernate.list
-     * cascade="save-update"
+     * cascade="all"
      * table="TR_FIREWALL_RULES"
      * @hibernate.collection-key
      * column="SETTING_ID"
@@ -170,8 +168,8 @@ public class FirewallSettings implements Serializable, Validatable
         return firewallRuleList;
     }
 
-    public void setFirewallRuleList(List s ) 
-    { 
+    public void setFirewallRuleList(List s )
+    {
         this.firewallRuleList = s;
     }
 }

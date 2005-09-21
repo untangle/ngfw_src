@@ -33,8 +33,8 @@ public class Subscription
     private static final Logger logger = Logger.getLogger(Subscription.class);
 
     private final Protocol protocol;
-    private final Interface clientInterface;
-    private final Interface serverInterface;
+    private final boolean inbound;
+    private final boolean outbound;
     private final IPMaddr serverAddress;
     private final IPMaddr clientAddress;
     private final PortRange serverRange;
@@ -43,13 +43,13 @@ public class Subscription
     // constructors -----------------------------------------------------------
 
     public Subscription(Protocol protocol,
-                        Interface clientInterface, Interface serverInterface,
+                        boolean inbound, boolean outbound,
                         IPMaddr clientAddress, PortRange clientRange,
                         IPMaddr serverAddress, PortRange serverRange)
     {
         this.protocol = protocol;
-        this.clientInterface = clientInterface;
-        this.serverInterface = serverInterface;
+        this.inbound = inbound;
+        this.outbound = outbound;
         this.clientAddress = clientAddress;
         this.clientRange = clientRange;
         this.serverAddress = serverAddress;
@@ -59,22 +59,19 @@ public class Subscription
     public Subscription(Protocol protocol)
     {
         this.protocol = protocol;
-
-        this.clientInterface = Interface.ANY;
-        this.serverInterface = Interface.ANY;
+        this.inbound = true;
+        this.outbound = true;
         this.serverAddress = IPMaddr.anyAddr;
         this.clientAddress = IPMaddr.anyAddr;
         this.serverRange = PortRange.ANY;
         this.clientRange = PortRange.ANY;
     }
 
-    public Subscription(Protocol protocol, Interface clientInterface,
-                        Interface serverInterface)
+    public Subscription(Protocol protocol, boolean inbound, boolean outbound)
     {
         this.protocol = protocol;
-        this.clientInterface = clientInterface;
-        this.serverInterface = serverInterface;
-
+        this.inbound = inbound;
+        this.outbound = outbound;
         this.serverAddress = IPMaddr.anyAddr;
         this.clientAddress = IPMaddr.anyAddr;
         this.serverRange = PortRange.ANY;
@@ -83,7 +80,7 @@ public class Subscription
 
     // business methods -------------------------------------------------------
 
-    public boolean matches(IPSessionDesc sessionDesc)
+    public boolean matches(IPSessionDesc sessionDesc, boolean sessionInbound)
     {
         switch (sessionDesc.protocol()) {
         case Netcap.IPPROTO_TCP:
@@ -99,9 +96,7 @@ public class Subscription
             return false;
         }
 
-        if (!clientInterface.matches(sessionDesc.clientIntf())) {
-            return false;
-        } else if (!serverInterface.matches(sessionDesc.serverIntf())) {
+        if ((sessionInbound && !inbound) || (!sessionInbound && !outbound)) {
             return false;
         } else if (!clientAddress.contains(sessionDesc.clientAddr())) {
             return false;
@@ -129,23 +124,23 @@ public class Subscription
     }
 
     /**
-     * Interface of client.
+     * Whether or not to match for inbound sessions
      *
-     * @return the client interface.
+     * @return true if we should match inbound sessions
      */
-    public Interface getClientInterface()
+    public boolean isInbound()
     {
-        return clientInterface;
+        return inbound;
     }
 
     /**
-     * Interface of server.
+     * Whether or not to match for outbound sessions
      *
-     * @return the server interface.
+     * @return true if we should match outbound sessions
      */
-    public Interface getServerInterface()
+    public boolean isOutbound()
     {
-        return serverInterface;
+        return outbound;
     }
 
     /**
@@ -194,8 +189,8 @@ public class Subscription
     {
         Subscription s = (Subscription)o;
         return s.protocol == protocol
-            && s.clientInterface == clientInterface
-            && s.serverInterface == serverInterface
+            && s.inbound == inbound
+            && s.outbound == outbound
             && s.clientAddress.equals(clientAddress)
             && s.serverAddress.equals(serverAddress)
             && s.clientRange.equals(clientRange)
@@ -206,8 +201,10 @@ public class Subscription
     {
         int result = 17;
         result = 37 * result + protocol.hashCode();
-        result = 37 * result + clientInterface.hashCode();
-        result = 37 * result + serverInterface.hashCode();
+        if (inbound)
+            result = 23 * result;
+        if (outbound)
+            result = 27 * result;
         result = 37 * result + clientAddress.hashCode();
         result = 37 * result + serverAddress.hashCode();
         result = 37 * result + clientRange.hashCode();

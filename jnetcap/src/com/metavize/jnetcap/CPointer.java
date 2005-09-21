@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: CPointer.java,v 1.3 2004/12/31 05:18:27 rbscott Exp $
+ *  $Id$
  */
 
 package com.metavize.jnetcap;

@@ -6,19 +6,20 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: ProtocolUserType.java,v 1.2 2005/01/30 09:20:30 amread Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.type;
 
+import java.io.Serializable;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 
 import com.metavize.mvvm.tapi.Protocol;
-import net.sf.hibernate.HibernateException;
-import net.sf.hibernate.UserType;
+import org.hibernate.HibernateException;
+import org.hibernate.usertype.UserType;
 
 public class ProtocolUserType implements UserType
 {
@@ -45,5 +46,25 @@ public class ProtocolUserType implements UserType
         } else {
             ps.setString(i, v.toString());
         }
+    }
+
+    public Object replace(Object original, Object target, Object owner)
+    {
+        return original;
+    }
+
+    public Object assemble(Serializable cached, Object owner)
+    {
+        return deepCopy(cached);
+    }
+
+    public Serializable disassemble(Object value)
+    {
+        return (Serializable)deepCopy(value);
+    }
+
+    public int hashCode(Object x)
+    {
+        return x.hashCode();
     }
 }

@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: SNAddress.java,v 1.1.1.1 2004/12/01 23:32:24 amread Exp $
+ *  $Id$
  */
 package com.metavize.tran.util;
 

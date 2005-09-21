@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: NewSessionEventListener.java,v 1.3 2005/01/06 20:53:44 rbscott Exp $
+ *  $Id$
  */
 
 package com.metavize.mvvm.argon;
@@ -18,12 +18,12 @@ public interface NewSessionEventListener
      * 
      * @param request - A UDP Session request.
      */
-    public UDPSession newSession( UDPNewSessionRequest request );
+    public UDPSession newSession( UDPNewSessionRequest request, boolean isInbound );
 
     /**
      * A new TCP session event event.  This function converts a request into a session.</p>
      * 
      * @param request - A TCP Session request.
      */
-    public TCPSession newSession( TCPNewSessionRequest request );
+    public TCPSession newSession( TCPNewSessionRequest request, boolean isInbound );
 }

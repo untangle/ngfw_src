@@ -56,7 +56,9 @@ c_src= netcap_version.c \
        netcap_load.c \
        netcap_tuple.c \
        netcap_icmp_msg.c \
-       netcap_ip.c
+       netcap_ip.c \
+       netcap_intf_db.c \
+       netcap_route.c
 
 objects=$(c_src:.c=.o)
 

@@ -108,6 +108,7 @@ JNIEXPORT jint JNICALL JF_Session( getIntValue )
 {
     netcap_session_t* session;
     netcap_endpoint_t* endpoint;
+    netcap_endpoints_t* endpoints;
     JLONG_TO_SESSION( session, session_ptr );
 
     switch( req_id & JN_Session( FLAG_MASK )) { 
@@ -123,6 +124,7 @@ JNIEXPORT jint JNICALL JF_Session( getIntValue )
         if ( session->protocol != IPPROTO_TCP ) return errlog( ERR_CRITICAL, "Expecting TCP\n" );
         return (!session->syn_mode) & 1;
 
+        /* XXXXXXXX This will have to change for ICMP session */
     case JN_UDPSession( FLAG_TTL ): 
         if ( session->protocol != IPPROTO_UDP ) return errlog( ERR_CRITICAL, "Expecting UDP\n" );
         return session->ttl;
@@ -140,12 +142,13 @@ JNIEXPORT jint JNICALL JF_Session( getIntValue )
         return session->icmp.server_id;
     }
     
-    endpoint = _get_endpoint( session, req_id );
-    if ( endpoint == NULL ) return errlog( ERR_CRITICAL, "_get_endpoint" );
+    endpoint  = _get_endpoint( session, req_id );
+    endpoints = _get_endpoints( session, req_id );
+    if ( NULL == endpoint || NULL == endpoints ) return errlog( ERR_CRITICAL, "_get_endpoint(s)" );
     
     switch( req_id & JN_Session( FLAG_MASK )) {
     case JN_Session( FLAG_PORT ): return endpoint->port;
-    case JN_Session( FLAG_INTERFACE ): return endpoint->intf;
+    case JN_Session( FLAG_INTERFACE ): return endpoints->intf;
     }
 
     return errlogargs();
@@ -160,18 +163,18 @@ JNIEXPORT jstring JNICALL JF_Session( getStringValue )
   (JNIEnv* env, jclass _this, jint req_id, jlong session_ptr )
 {
     netcap_session_t* session;
-    netcap_endpoint_t* endpoint;
+    netcap_endpoints_t* endpoints;
     char buf[NETCAP_MAX_IF_NAME_LEN]; /* XXX Update to the longest possible string returned */
     JLONG_TO_SESSION_NULL( session, session_ptr );
     
-    endpoint = _get_endpoint( session, req_id );
-    if ( endpoint == NULL ) return (jstring)errlog_null( ERR_CRITICAL, "_get_endpoint" );
+    endpoints = _get_endpoints( session, req_id );
+    if ( endpoints == NULL ) return (jstring)errlog_null( ERR_CRITICAL, "_get_endpoints" );
 
     switch( req_id & JN_Session( FLAG_MASK )) {
     case JN_Session( FLAG_INTERFACE ):
-        if ( endpoint->intf == NC_INTF_UNK ) return (*env)->NewStringUTF( env, "" );
+        if ( endpoints->intf == NC_INTF_UNK ) return (*env)->NewStringUTF( env, "" );
         
-        if ( netcap_interface_intf_to_string( endpoint->intf, buf, sizeof( buf )) < 0 ) {
+        if ( netcap_interface_intf_to_string( endpoints->intf, buf, sizeof( buf )) < 0 ) {
             return errlog_null( ERR_CRITICAL, "netcap_intf_to_string\n" );
         }
 
@@ -196,4 +199,24 @@ JNIEXPORT void JNICALL JF_Session( raze )
     if ( netcap_session_raze( session ) < 0 ) {
         errlog( ERR_CRITICAL, "netcap_session_raze\n" );
     }
+}
+
+/*
+ * Class:     com_metavize_jnetcap_NetcapSession
+ * Method:    serverInterfaceId
+ * Signature: (JB)V
+ */
+JNIEXPORT void JNICALL JF_Session( serverInterfaceId )
+  ( JNIEnv *env, jobject _this, jlong session_ptr, jbyte j_intf )
+{
+    netcap_session_t* session;
+    netcap_intf_t intf = (netcap_intf_t)j_intf;
+
+    JLONG_TO_SESSION_VOID( session, session_ptr );
+    if ( netcap_interface_intf_verify( intf ) < 0 ) {
+        return jmvutil_error_void( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "Invalid interface %d\n", intf );
+    }
+    
+    /* Modify the server interface */
+    session->srv.intf = intf;
 }

@@ -32,6 +32,8 @@ public class Policy implements Serializable
     private String name;
     private String notes = NO_NOTES;
 
+    // Constructors -----------------------------------------------------------
+
     /**
      * Hibernate constructor.
      */
@@ -53,13 +55,22 @@ public class Policy implements Serializable
         this.notes = notes;
     }
 
+    public Policy(String name)
+    {
+        this.isDefault = false;
+        this.name = name;
+        this.notes = NO_NOTES;
+    }
+
+    // accessors --------------------------------------------------------------
+
     /**
      * @hibernate.id
      * column="ID"
      * not-null="true"
      * generator-class="native"
      */
-    private Long getId()
+    public Long getId()
     {
         return id;
     }
@@ -126,5 +137,28 @@ public class Policy implements Serializable
     public void setNotes(String notes)
     {
         this.notes = notes;
+    }
+
+    // Object methods ---------------------------------------------------------
+
+    public boolean equals(Object o)
+    {
+        if (!(o instanceof Policy)) {
+            return false;
+        } else {
+            Policy p = (Policy)o;
+            return id.equals(p.id);
+        }
+    }
+
+    public int hashCode()
+    {
+        return id.hashCode();
+    }
+
+    public String toString()
+    {
+        return "Policy(" + (isDefault ? "default" : "non-default")
+            + ": " + name + ")";
     }
 }

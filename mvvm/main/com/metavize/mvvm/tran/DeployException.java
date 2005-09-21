@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: DeployException.java,v 1.1 2004/12/21 08:42:59 amread Exp $
+ *  $Id$
  */
 
 package com.metavize.mvvm.tran;

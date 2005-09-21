@@ -19,7 +19,7 @@ import com.metavize.mvvm.*;
 import com.metavize.mvvm.security.*;
 import com.metavize.mvvm.tran.*;
 
-import java.awt.*;
+//import java.awt.*;
 import java.lang.reflect.Constructor;
 import java.util.*;
 import javax.swing.*;
@@ -27,12 +27,7 @@ import javax.swing.*;
 
 public class MPipelineJPanel extends javax.swing.JPanel {
 
-    // FOR PROGRESS BAR DURING STARTUP
-    private int initialInstallCount;
-    private int installedCount = 0;
 
-
-    /** Creates new form MPipeline */
     public MPipelineJPanel() {
         Util.setMPipelineJPanel(this);
 
@@ -41,183 +36,8 @@ public class MPipelineJPanel extends javax.swing.JPanel {
         mPipelineJScrollPane.getVerticalScrollBar().setUnitIncrement(10);
         mPipelineJScrollPane.getVerticalScrollBar().setBorder( new javax.swing.border.EmptyBorder(15, 0, 15, 0) );
         mPipelineJScrollPane.getVerticalScrollBar().setOpaque(false);
-
-        // ADD TRANSFORMS
-	SwingUtilities.invokeLater( new Runnable(){ public void run(){
-	    Util.getStatusJProgressBar().setString("adding Software Appliances...");
-	}});
-        Tid installedTransformID[] = Util.getTransformManager().transformInstances();
-        initialInstallCount = installedTransformID.length;
-        TransformContext installedTransformContext;
-	MackageDesc installedMackageDesc;
-        for(int i=0; i<installedTransformID.length; i++){
-	    installedTransformContext = Util.getTransformManager().transformContext(installedTransformID[i]);
-	    installedMackageDesc = installedTransformContext.getMackageDesc();
-	    if( installedMackageDesc.getType() != MackageDesc.TRANSFORM_TYPE ){
-		synchronized(this){
-		    installedCount++;
-		}
-		continue;
-	    }
-	    else if( installedMackageDesc.getRackPosition() < 0 ){
-		synchronized(this){
-		    installedCount++;
-		}
-		continue;
-	    }
-	    else{
-		new AddTransformThread(installedTransformContext, installedMackageDesc.getDisplayName());
-	    }	    
-        }
-	if( installedTransformID.length == 0 ){
-	    SwingUtilities.invokeLater( new Runnable(){ public void run(){
-		Util.getStatusJProgressBar().setValue(54);
-	    }});
-	}
-	
-        while(installedCount < initialInstallCount){
-            try{
-                Thread.sleep(100l);
-            }
-            catch(Exception e){}
-        }
-	loadAllCasings(false);
-	SwingUtilities.invokeLater( new Runnable(){ public void run(){
-	    Util.getStatusJProgressBar().setValue(64);
-	}});
     }
     
-    // USED FOR LOADING/PRELOADING OF CASINGS
-    public MCasingJPanel[] loadAllCasings(boolean generateGuis){
-	final String casingNames[] = {"mail-casing", "http-casing", "ftp-casing"};
-	Vector<MCasingJPanel> mCasingJPanels = new Vector<MCasingJPanel>();
-	Tid casingInstances[] = null;
-	TransformContext transformContext = null;
-	TransformDesc transformDesc = null;
-	String casingGuiClassName = null;
-	Class casingGuiClass = null;
-	Constructor casingGuiConstructor = null;
-	MCasingJPanel mCasingJPanel = null;
-        for(String casingName : casingNames){
-	    try{
-		casingInstances = Util.getTransformManager().transformInstances(casingName);
-		if( Util.isArrayEmpty(casingInstances) )
-		    continue;
-		transformContext = Util.getTransformManager().transformContext(casingInstances[0]);
-		transformDesc = transformContext.getTransformDesc();
-		casingGuiClassName = transformDesc.getGuiClassName();
-		casingGuiClass = Util.getClassLoader().loadClass( casingGuiClassName, casingName );
-		if(generateGuis){
-		    casingGuiConstructor = casingGuiClass.getConstructor(new Class[]{TransformContext.class});
-		    mCasingJPanel = (MCasingJPanel) casingGuiConstructor.newInstance(new Object[]{transformContext});
-		    mCasingJPanels.add(mCasingJPanel);
-		}
-	    }
-	    catch(Exception e){
-		Util.handleExceptionNoRestart("Error building gui from casing context: " + casingName, e);
-	    }
-	}
-	return mCasingJPanels.toArray( new MCasingJPanel[0] );
-    }
-
-    public synchronized void removeTransform(final MTransformJPanel mTransformJPanel) {
-	String removableName = null;
-	int removablePosition;
-        ButtonKey buttonKey = null;
-	Tid removableTid = null;
-        try{
-	    // REMOVE AT SERVER SIDE
-            removableName = mTransformJPanel.getMackageDesc().getDisplayName();
-            buttonKey = new ButtonKey(mTransformJPanel);
-            removableTid = mTransformJPanel.getTransformContext().getTid();
-            Util.getTransformManager().destroy( removableTid );
-
-	    // REMOVE AT CLIENT SIDE
-	    SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
-		((MRackJPanel)MPipelineJPanel.this.transformJPanel).removeTransform( mTransformJPanel );
-	    }});
-	    
-            Util.getMMainJFrame().getToolboxMap().get(buttonKey).setDeployableView();
-	}
-	catch(Exception e){
-            try{
-                Util.handleExceptionWithRestart("Error removing transform: " + removableName,  e);
-            }
-            catch(Exception f){
-                Util.handleExceptionNoRestart("Error removing transform: " + removableName,  f);
-		Util.getMMainJFrame().getToolboxMap().get(buttonKey).setFailedRemoveFromRackView();
-            }
-        }
-
-    }
-
-
-
-    public MTransformJPanel addTransform(Object reference) throws Exception {
-
-	String transformName = "unnamed";
-	TransformDesc transformDesc = null;
-	TransformContext transformContext = null;
-	Class transformGUIClass = null;
-	Constructor transformGUIConstructor = null;
-        MTransformJPanel mTransformJPanel = null;
-
-	// GET A TRANSFORM CONTEXT, OR BAIL
-        if(reference instanceof String){ // ADD FROM BUTTON CLICK
-            try{
-		Tid tID = Util.getTransformManager().instantiate((String)reference);
-		transformContext = Util.getTransformManager().transformContext(tID);
-		transformDesc = transformContext.getTransformDesc();
-		transformName = transformDesc.getDisplayName();
-            }
-            catch(Exception e){
-                Util.handleExceptionWithRestart("Error building transform context from string " + (String) reference, e);
-            }
-        }
-        else if(reference instanceof TransformContext){  // ADD DURING CLIENT INIT
-	    transformContext = (TransformContext) reference;
-	    transformDesc = transformContext.getTransformDesc();
-	    transformName = transformDesc.getDisplayName();
-	}
-	else{
-            Util.printMessage("unknown reference type: " + reference);
-            return null;
-        }
-	
-	// CONSTRUCT A GUI FROM THE TRANSFORM CONTEXT
-	try{
-	    transformGUIClass = Util.getClassLoader().loadClass( transformDesc.getGuiClassName(), transformDesc.getName() );
-	    transformGUIConstructor = transformGUIClass.getConstructor(new Class[]{TransformContext.class});
-	    mTransformJPanel = (MTransformJPanel) transformGUIConstructor.newInstance(new Object[]{transformContext});
-	    ((MRackJPanel)transformJPanel).addTransform(mTransformJPanel);
-	}
-	catch(Exception e){
-	    Util.handleExceptionWithRestart("Error building appliance from transform context: " + transformName, e);
-	}
-	finally{
-	    synchronized(this){
-		if( installedCount < initialInstallCount ){ // only increment progress bar during startup, not during later installs
-		    SwingUtilities.invokeLater( new Runnable(){ public void run(){
-			installedCount++;
-			Util.getStatusJProgressBar().setValue(16 + (int) ((((float)installedCount)/(float)initialInstallCount)*38f) );
-		    }});
-		}
-	    }
-	}
-	return mTransformJPanel;
-    }
-
-
-    public synchronized void focusMTransformJPanel(Rectangle newBounds){
-        if(newBounds == null)
-            return;
-        newBounds.x += transformJPanel.getX();
-        newBounds.y += transformJPanel.getY() - 1;
-        newBounds.x -= mPipelineJScrollPane.getViewport().getViewPosition().x;
-        newBounds.y -= mPipelineJScrollPane.getViewport().getViewPosition().y;
-        mPipelineJScrollPane.getViewport().scrollRectToVisible(newBounds);
-    }
-
 
 
     private void initComponents() {//GEN-BEGIN:initComponents
@@ -276,29 +96,6 @@ public class MPipelineJPanel extends javax.swing.JPanel {
     private javax.swing.JLabel scrollbarBackground;
     private javax.swing.JPanel transformJPanel;
     // End of variables declaration//GEN-END:variables
-
-    class AddTransformThread extends Thread {
-        
-	private TransformContext transformContext;
-	private String transformName;
-        
-	AddTransformThread(TransformContext transformContext, String transformName){
-	    super("MVCLIENT-AddTransformThread: " + transformName);
-            this.transformContext = transformContext;
-	    this.transformName = transformName;
-	    this.setContextClassLoader( Util.getClassLoader() );
-	    this.start();
-        }
-        public void run(){
-            try{
-                addTransform(transformContext);
-            }
-            catch(Exception e){
-                Util.handleExceptionNoRestart("Error adding appliance during startup: " + transformName, e);
-
-            }
-        }
-    }
 
 
 }

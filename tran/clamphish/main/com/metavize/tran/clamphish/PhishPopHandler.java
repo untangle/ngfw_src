@@ -51,7 +51,7 @@ public class PhishPopHandler extends SpamPopHandler
 
         WrappedMessageGenerator zWMGenerator;
 
-        if (IntfConverter.INSIDE == session.clientIntf()) {
+        if (!session.isInbound()) {
             zWMGenerator = new WrappedMessageGenerator(PhishSmtpFactory.IN_MOD_SUB_TEMPLATE, PhishSmtpFactory.IN_MOD_BODY_TEMPLATE);
         } else {
             zWMGenerator = new WrappedMessageGenerator(PhishSmtpFactory.OUT_MOD_SUB_TEMPLATE, PhishSmtpFactory.OUT_MOD_BODY_TEMPLATE);

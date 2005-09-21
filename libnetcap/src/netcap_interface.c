@@ -23,22 +23,32 @@
 #include <mvutil/errlog.h>
 #include <mvutil/debug.h>
 #include <mvutil/unet.h>
+#include <mvutil/utime.h>
 
 #include "libnetcap.h"
 #include "netcap_globals.h"
 #include "netcap_init.h"
+#include "netcap_sched.h"
+#include "netcap_intf_db.h"
 
-#define IF_TABLE_SIZE 31
+/* The htonl doesn't do anything */
+#define BROADCAST_MASK          htonl(0xFF000000)
 
-#define BRIDGE_PREFIX "br"
+/* This is in network byte order */
+#define MULTICAST_MASK          htonl(0xF0000000)
+#define MULTICAST_FLAG          htonl(0xE0000000)
+
+#define LOCAL_HOST              htonl(0x7F000001)
+
+#define BRIDGE_PREFIX            "br"
 /* XXXX brif is magic string, it is normally SYSFS_BRIDGE_ATTR, but the header that has this
  * doesn't have that value set */
 #ifndef SYSFS_BRIDGE_ATTR
-#define SYSFS_BRIDGE_ATTR       "bridge"
+#define SYSFS_BRIDGE_ATTR        "bridge"
 #endif
 
 #ifndef SYSFS_BRIDGE_FDB
-#define SYSFS_BRIDGE_FDB        "brforward"
+#define SYSFS_BRIDGE_FDB         "brforward"
 #endif
 
 #ifndef SYSFS_BRIDGE_PORT_SUBDIR
@@ -53,181 +63,85 @@
 #define SYSFS_BRIDGE_PORT_LINK  "bridge"
 #endif
 
-/**
- * XXXXXXXXXXXXXXXXXXXXXXXXXXX
- * RBS:
- * It seems that all of the netcap_interface functions are no longer
- * necessary.  Since it is now the "rule-generators" responsibility to
- * properly mark all packets, most of this functionality is no longer 
- * important.
- *
- * As of now, these are being left around just in case they are needed one day.
- *
- * It is actually needed to maintain the new map from interface name to dev_info.
- */
+#define NETCAP_MARK_INTF_MAX    8 // temp lowered
+#define NETCAP_MARK_INTF_MASK   0xF
 
-#define NETCAP_MARK_INTF_MAX 4 // temp lowered
-#define NETCAP_MARK_INTF_MASK 0xF
+// Wait this amount of time before freeing an old bridge configuration
+#define _GARBAGE_DELAY_USEC     SEC_TO_USEC( 10 )
 
-/* This is in network byte order */
-#define MULTICAST_MASK htonl(0xF0000000)
-#define MULTICAST_FLAG htonl(0xE0000000)
+// Wait this amount of time on shutdown before freeing all of the bridge conf
+#define _CLEANUP_DELAY_USEC     SEC_TO_USEC( 2 )
+
+#define _GARBAGE_ID     0x24BD74E4
 
 typedef struct
 {
-    char is_valid;
-    char index;
-    char is_in_bridge;
-    char bridge_index;
-
-    char name[NETCAP_MAX_IF_NAME_LEN];
-
-    /* 
-     * For each of these parameters, they are either the value for the interface
-     * or the value for the bridge that contains the interface.  The case where an
-     * interface contains an address and is in a bridge should ALWAYS be prevented.
+    /* ID should be set to _GARBAGE_ID.  This is a tag on the trash to
+     * insure the cleanup function is not being called with random
+     * pointers, or it is not called with the same pointer twice.
      */
-    struct in_addr address;
-    struct in_addr netmask;
-    struct in_addr broadcast;
-} _dev_info_t;
+    unsigned int      id;
+    netcap_intf_db_t* db;
+} _garbage_t;
 
 /* 
- * Interface (eg. eth,eth1) to address map
+ * Interface database. (eg. eth,eth1) to address map
  */
-static struct {
-    /* Hash table that maps strings to the device info */
-    ht_t table;
+static struct 
+{
+    /* Interface database */
+    netcap_intf_db_t* db;
     
-    /* Array of the values that are stored in the interface array */
-    _dev_info_t dev_info_array[NETCAP_MAX_INTERFACES];
-    
-    /* is the hash table initialized */
-    char is_initialized;
-
-    /* Number of items currently in the interface table */
-    int count;
-
     /* Bridge class for sysfs */
     struct sysfs_class* sysfs_class_net;
-} _interface = {
-    .is_initialized  0,
-    .count           0,
-    .sysfs_class_net NULL
+
+    /* Interface array, this is a cache of the values from configure_intf so the
+     * user doesn't have to run configure_intf every time they refresh all of the
+     * settings */
+    netcap_intf_string_t intf_name_array[NETCAP_MAX_INTERFACES];
+    
+    /* Number of interfaces in intf_name_array */
+    int intf_count;    
+    
+    /* Mutex for reconfiguring the interface database */
+    pthread_mutex_t  mutex;
+} _interface = 
+{
+    .db              NULL,
+    .intf_count      0,
+    .sysfs_class_net NULL,
+    .mutex           PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP
 };
 
-static char      _if_names_assigned[NETCAP_MAX_INTERFACES][NETCAP_MAX_IF_NAME_LEN];
-static in_addr_t _if_addrs[NETCAP_MAX_INTERFACES];
-static in_addr_t _netmasks[NETCAP_MAX_INTERFACES];
-static in_addr_t _broadcasts[NETCAP_MAX_INTERFACES];
-static int       _num_if = 0;
-static char      _if_names[NETCAP_MAX_INTERFACES][NETCAP_MAX_IF_NAME_LEN];
-static int       _if_count = 0;
-static ht_t      _if_name_to_id;
+static int _update_intf_info         ( void );
+static int _update_bridge_devices    ( netcap_intf_db_t* db );
+static int _update_bridge_device     ( netcap_intf_db_t* db, netcap_intf_info_t* bridge_intf_info, 
+                                       struct sysfs_class_device* dev );
 
-pthread_mutex_t  _update_address_mutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
+/* Retrieve and update all of the aliases for all of the interfaces */
+static int _update_aliases           ( netcap_intf_db_t* db, int sockfd );
 
-static __inline__ int _check_intf( netcap_intf_t intf )
-{
-    if ( intf < NC_INTF_0 || intf > _if_count ) {
-        return errlog( ERR_CRITICAL, "Invalid interface: %d\n", intf );
-    }
-    
-    return 0;
-}
-
-static int _interface_update_addrs( void );
-
-static int _update_dev_info( void );
-
-static int _update_bridge_devices( void );
-static int _update_bridge_device( _dev_info_t* bridge_dev_info, struct sysfs_class_device* dev );
-
-/* Lookup the information for a device, if the device is in a bridge, this will return
- * the information about the bridge.
- */
-static _dev_info_t* _get_dev_info( char* name );
+/* This retrieves the interface info, it will look into a bridge if the interface name is
+ * in a bridge */
+static netcap_intf_info_t* _get_intf_info  ( netcap_intf_db_t* db, char* name );
 
 /**
- * Return 1 if the bridge exists, 0 otherwise
+ * A scheduled function to delay the deletion of bridge configurations.  This way
+ * the bridge interfaces can be reconfigured without requiring a lock around all arp 
+ * functions.
  */
-int netcap_interface_bridge_exists( void )
-{
-    struct ifreq interfaces[NETCAP_MAX_INTERFACES];
-    struct ifconf conf;
-    int  sockfd, i;
-    
-    /* Clear out all of the interface names */
-    bzero( _if_names, sizeof(_if_names));
-
-    /* XXX Have to make sure to close this socket */
-    sockfd = socket( PF_INET, SOCK_DGRAM, 0 );
-
-    if ( sockfd < 0 ) return perrlog("socket");
-
-    conf.ifc_len = sizeof(interfaces);
-    conf.ifc_req = interfaces;
-
-    if ( ioctl( sockfd, SIOCGIFCONF, &conf ) < 0 )
-        return perrlog("ioctl");
-
-    if ( close( sockfd ))
-        perrlog( "close" );
-    
-    i = conf.ifc_len / sizeof(struct ifreq);
-    
-    for ( ; --i >= 0 ; ) {
-        if ( strncmp( interfaces[i].ifr_name, "br0", 3 ) == 0 ) {
-            return 1;
-        }
-    }
-    
-    return 0;
-}
+static void _empty_garbage       ( void* arg );
 
 /**
  *
  */
-int netcap_interface_init ()
+int netcap_interface_init ( void )
 {
-    int i, j;
-    char if_name[NETCAP_MAX_IF_NAME_LEN];
-    
-    /* Clear out all of the interface names */
-    bzero(_if_names,sizeof(_if_names));    
-
-    if ( _interface_update_addrs() < 0 ) {
-        return errlog( ERR_CRITICAL, "netcap_interface_update_addrs\n" );
-    }
-    
-    /* The code above only gets the "active" interfaces, which means it only
-     * retrieves the bridge */
-    /* Retrieve all of the interface names */
-    if (ht_init(&_if_name_to_id,IF_TABLE_SIZE,string_hash_func,string_equ_func,0)<0){
-        return errlog(ERR_CRITICAL,"ht_init");
-    }
-
-    /* XXX Is it an error if you reach the max */
-    j = 0;
-    for ( i = 1 ; i < NETCAP_MAX_INTERFACES ; i++ ) {
-        if ( if_indextoname(i,if_name) == NULL ) continue;
-        
-        if ( strncmp(if_name,"lo",2) == 0 ) continue;
-        if ( strncmp(if_name,"br",2) == 0 ) continue;
-        if ( strncmp(if_name,"sit",3) == 0 ) continue;
-        
-        strncpy(_if_names[j],if_name,NETCAP_MAX_IF_NAME_LEN);
-        ht_add(&_if_name_to_id,(void*)_if_names[j],(void*)(j+1));
-        j++;
-    }
-
-    _if_count = j;
-
     if (( _interface.sysfs_class_net = sysfs_open_class( "net" )) == NULL ) {
         return perrlog( "sysfs_open_class" );
     }
-
-    if ( _update_dev_info() < 0 ) return errlog( ERR_CRITICAL, "_update_dev_info\n" );
+    
+    if ( _update_intf_info() < 0 ) return errlog( ERR_CRITICAL, "_update_intf_info\n" );
     
     return 0;
 }
@@ -237,108 +151,151 @@ int netcap_interface_init ()
  */
 int netcap_interface_cleanup( void )
 {
-    /* Destroy the hash table */
-    ht_destroy( &_if_name_to_id );
+    netcap_intf_db_t* db = _interface.db;
 
-    // if ( _interface.sysfs_class_net != NULL ) sysfs_close_class( _interface.sysfs_class_net );
-    // _interface.sysfs_class_net = NULL;
+    _interface.db = NULL;
+        
+    if ( db != NULL ) {
+        _garbage_t* garbage = NULL;
+        if (( garbage = malloc( sizeof( *garbage ))) == NULL ) return errlogmalloc();
+        garbage->id   = _GARBAGE_ID;
+        garbage->db   = db;
+        netcap_sched_event( _empty_garbage, garbage, _CLEANUP_DELAY_USEC );
+    }
 
     return 0;
 }
 
 int netcap_interface_update_address( void )
 {
-    int ret = 0;
-    
-    if ( pthread_mutex_lock( &_update_address_mutex ) < 0 ) {
-        return errlog ( ERR_CRITICAL, "pthread_mutex_lock" );
-    }
-    
-    do {
+    int _critical_section( void ) {
         /* Nothing to do if netcap is not initialized */
         if ( !netcap_is_initialized()) {
-            break;
+            debug( 4, "Netcap is not initialized\n" );
+            return 0;
         }
 
-        if ( _update_dev_info() < 0 ) {
-            ret = errlog( ERR_CRITICAL, "_update_dev_info\n" );
-            break;
-        }
-        
-        /* Update all of the addresses */
-        /* XXXXX this might be fatal */
-        if ( _interface_update_addrs() < 0 ) { 
-            errlog( ERR_CRITICAL, "Critical Error, unable to update the address table\n" );
-            ret = errlog( ERR_CRITICAL, "_interface_update_addrs\n" );
-            break;
-        }        
-    } while ( 0 );
-    
-    if ( pthread_mutex_unlock( &_update_address_mutex ) < 0 ) {
-        return errlog ( ERR_CRITICAL, "pthread_mutex_lock" );
+        if ( _update_intf_info() < 0 ) return errlog( ERR_CRITICAL, "_update_intf_info\n" );
+
+        return 0;
     }
+    int ret;
+
+    if ( pthread_mutex_lock( &_interface.mutex ) < 0 ) return perrlog( "pthread_mutex_lock" );
+    
+    ret = _critical_section();
+    
+    if ( pthread_mutex_unlock( &_interface.mutex ) < 0 ) return perrlog( "pthread_mutex_unlock" );
     
     return ret;
 }
 
-/* Returns 1 if it is a broadcast */
-int netcap_interface_is_broadcast (in_addr_t addr)
+/* Setup the mapping between netcap interfaces and interface info */
+int netcap_interface_configure_intf( netcap_intf_string_t* intf_name_array, int intf_count )
 {
-    int i;
-
-    if (addr == ((in_addr_t) 0xffffffff))
-        return 1;
-
-    for (i=0;i<_num_if;i++) {
-        if (addr == _broadcasts[i]) return 1;
-
-        if ((addr & ~_netmasks[i]) == (_broadcasts[i] & ~_netmasks[i])) {
-            return 1;
-        }
+    if ( intf_name_array == NULL || intf_count < 0 || intf_count > NETCAP_MAX_INTERFACES ) {
+        return errlog( ERR_CRITICAL, "Invalid argument %#10x %d\n", intf_name_array, intf_count );
     }
     
+    debug( 4, "INTERFACE: Reconfiguring netcap interface mapping %d interfaces.\n", intf_count );
+    
+    int _critical_section( void ) {
+        /* Copy in the new interface array */
+        bzero( &_interface.intf_name_array, sizeof( _interface.intf_name_array ));
+        memcpy( &_interface.intf_name_array, intf_name_array, intf_count * sizeof( netcap_intf_string_t ));
+        _interface.intf_count = intf_count;
+        
+        /* Update the address */
+        return _update_intf_info();
+    }
+
+    int ret = 0;
+    
+    if ( pthread_mutex_lock( &_interface.mutex ) < 0 ) return perrlog( "pthread_mutex_lock" );
+
+    if (( ret = _critical_section()) < 0 ) {
+        errlog( ERR_CRITICAL, "_critical_section\n" );
+        bzero( &_interface.intf_name_array, sizeof( _interface.intf_name_array ));
+        _interface.intf_count = 0;
+    }
+    
+    if ( pthread_mutex_unlock( &_interface.mutex ) < 0 ) return perrlog( "pthread_mutex_unlock" );
+    
+    return ret;
+}
+
+
+/* Returns 1 if addr is a broadcast address, 
+ * Use index > 0 if you want to lookup for a particular index
+ */
+int netcap_interface_is_broadcast ( in_addr_t addr, int index )
+{
+    if ((((unsigned int)addr) & BROADCAST_MASK ) == BROADCAST_MASK ) return 1;
+
+    /* ???? May need a mutex or something */
+    netcap_intf_db_t* db = _interface.db;
+    if ( db == NULL ) return errlog( ERR_CRITICAL, "interface.db is not initialized\n" );
+
+    if ( index == 0 ) {
+        int c;
+        for ( c = 0 ; c < db->intf_count ; c++ ) {
+            netcap_intf_info_t* info = db->intf_to_info[c];
+            int d;
+
+            if ( info == NULL || ( !info->is_valid ) || ( info->data_count <= 0 ) || 
+                 ( info->data == NULL )) {
+                continue;
+            }
+            
+            for( d = 0 ; ( info->data != NULL ) && ( d < info->data_count ) ; d++ ) {
+                in_addr_t broadcast = info->data[d].broadcast.s_addr;
+                in_addr_t netmask   = info->data[d].netmask.s_addr;
+                if (( addr == broadcast ) || ( addr & ~netmask ) == ( broadcast & netmask )) return 1;
+            }
+        }
+    } else {
+        netcap_intf_info_t* info;
+        int d;
+                
+        if (( info = netcap_intf_db_index_to_info( db, index )) == NULL ) {
+            errlog( ERR_WARNING, "netcap_intf_db_index_to_info %d\n", index );
+        }
+
+        if (( !info->is_valid ) || ( info->data_count <= 0 ) || ( info->data == NULL )) return 0;
+
+        for( d = 0 ; ( info->data != NULL ) && ( d < info->data_count ) ; d++ ) {
+            in_addr_t broadcast = info->data[d].broadcast.s_addr;
+            in_addr_t netmask   = info->data[d].netmask.s_addr;
+            if (( addr == broadcast ) || ( addr & ~netmask ) == ( broadcast & netmask )) return 1;
+        }
+    }
     return 0;
 }
 
 /* Returns 1 if it is a multicast, 0 otherwise */
 int netcap_interface_is_multicast (in_addr_t addr)
 {
-    if ((((unsigned int)addr) & MULTICAST_MASK ) == MULTICAST_FLAG ) {
-        return 1;
-    }
+    if ((((unsigned int)addr) & MULTICAST_MASK ) == MULTICAST_FLAG ) return 1;
 
     return 0;
-}
- 
-int netcap_interface_is_local (in_addr_t addr)
-{
-    int i;
-    for (i=0 ; i<_num_if; i++) {
-        if (addr == _if_addrs[i]) return 1;
-    }
-    
-      return 0;
 }
 
 int netcap_interface_count (void)
 {
-    return _num_if;
+    return _interface.intf_count;
 }
 
-in_addr_t* netcap_interface_addrs (void)
-{
-    return _if_addrs;
-}
-
-/* This function should either go away or become a macro now that the interface is 
- * just an int */
+/* Convert an interface mark to a netcap interface
+ * (the netcap interfaces are equivalent to the netcap interfaces, so this is really just
+ * for verification).
+ */
 int  netcap_interface_mark_to_intf(int nfmark, netcap_intf_t* intf)
 {
     if ( intf == NULL ) return errlogargs();
 
     nfmark &= NETCAP_MARK_INTF_MASK;
     
-    if ( nfmark < 0 || nfmark > NETCAP_MARK_INTF_MAX ) {
+    if ( nfmark <= 0 || nfmark > NETCAP_MARK_INTF_MAX ) {
         *intf = 0;
         return errlog( ERR_CRITICAL, "Invalid interface mark\n");
     }
@@ -349,356 +306,238 @@ int  netcap_interface_mark_to_intf(int nfmark, netcap_intf_t* intf)
     return 0;
 }
 
-int netcap_interface_intf_verify( netcap_intf_t intf )
-{
-    return _check_intf( intf );
-}
-
 int netcap_interface_intf_to_string ( netcap_intf_t intf, char *intf_str, int str_len )
 {
-    if ( str_len <= 0 || intf_str == NULL ) return errlogargs();
+    if (( str_len < sizeof( netcap_intf_string_t )) || ( intf_str == NULL )) return errlogargs();
 
-    if ( _check_intf( intf ) < 0 ) return errlog( ERR_CRITICAL, "_check_intf\n" );
-
-    strncpy( intf_str, _if_names[ intf - NC_INTF_0 ], str_len );
-
-    return 0;
-}
-
-int netcap_interface_string_to_intf (char *intf_str, netcap_intf_t *intf )
-{
-    if ( intf_str == NULL || intf_str[0] == '\0' || intf == NULL ) return errlogargs();
-    *intf = (netcap_intf_t)ht_lookup(&_if_name_to_id,(void*)intf_str);
+    /* ???? May need a mutex or something */
+    netcap_intf_db_t* db = _interface.db;
+    if ( db == NULL ) return errlog( ERR_CRITICAL, "interface.db is not initialized\n" );
     
-    if ( *intf == (netcap_intf_t)NULL ) {
-        return errlog(ERR_WARNING,"Invalid interface: %s\n", intf_str);
+    netcap_intf_info_t* tmp;
+    int ret = 0;
+    
+    if (( tmp = netcap_intf_db_intf_to_info( db, intf )) == NULL ) {
+        return errlog( ERR_WARNING, "netcap_intf_db_intf_to_info %d\n", intf );
     }
-        
-    return 0;
-}
-
-int netcap_interface_get_address( char* name, struct in_addr* address )
-{
-    _dev_info_t* dev_info;
-
-    if ( address == NULL || name == NULL ) return errlogargs();
-
-    if (( dev_info = _get_dev_info( name )) == NULL ) {
-        return errlog( ERR_CRITICAL, "_get_dev_info\n" );
-    }
-
-    memcpy( address, &dev_info->address, sizeof( dev_info->address ));
-    
-    return 0;
-}
-
-int netcap_interface_get_netmask( char* name, struct in_addr* netmask )
-{
-    _dev_info_t* dev_info;
-
-    if ( netmask == NULL || name == NULL ) return errlogargs();
-
-    if (( dev_info = _get_dev_info( name )) == NULL ) {
-        return errlog( ERR_CRITICAL, "_get_dev_info\n" );
-    }
-
-    memcpy( netmask, &dev_info->netmask, sizeof( dev_info->netmask ));
-    
-    return 0;
-}
-
-int netcap_interface_get_broadcast( char* name, struct in_addr* broadcast )
-{
-    _dev_info_t* dev_info;
-
-    if ( broadcast == NULL || name == NULL ) return errlogargs();
-
-    if (( dev_info = _get_dev_info( name )) == NULL ) {
-        return errlog( ERR_CRITICAL, "_get_dev_info\n" );
-    }
-
-    memcpy( broadcast, &dev_info->broadcast, sizeof( dev_info->broadcast ));
-    
-    return 0;
-}
-
-
-/* XXX This is just a function that is used by test_xml inside of xenon in order
- * to initialize the interface hash table and array */
-void netcap_interface_ht_init (void) {
-    int i,j;
-    char if_name[NETCAP_MAX_IF_NAME_LEN];
-
-    /* The code above only gets the "active" interfaces, which means it only
-     * retrieves the bridge */
-    /* Retrieve all of the interface names */
-    
-    if (ht_init(&_if_name_to_id,IF_TABLE_SIZE,string_hash_func,string_equ_func,0)<0){
-        errlog(ERR_CRITICAL,"ht_init");
-        return;
-    }
-    
-    j = 0;
-    for ( i = 1 ; i < NETCAP_MAX_INTERFACES ; i++ ) {
-        if ( if_indextoname(i,if_name) == NULL ) continue;
-        
-        if ( strncmp(if_name,"lo",2) == 0 ) continue;
-        if ( strncmp(if_name,"br",2) == 0 ) continue;
-        if ( strncmp(if_name,"sit",3) == 0 ) continue;
-        
-        strncpy(_if_names[j],if_name,NETCAP_MAX_IF_NAME_LEN);
-        ht_add(&_if_name_to_id,(void*)_if_names[j],(void*)(j+1));
-        j++;
-    }
-
-    _if_count = j;
-}
-
-static int _interface_update_addrs( void )
-{
-    struct ifconf conf;
-    struct ifreq interfaces[NETCAP_MAX_INTERFACES];
-    int i, ret = 0;
-    int sockfd;
-    
-    debug(2, "NETCAP: Updating interface addresses\n" );
-        
-    /* XXX Have to make sure to close this socket */
-    if (( sockfd = socket( PF_INET, SOCK_DGRAM, 0 )) < 0 ) return perrlog( "socket" );
-    
-    do {
-        conf.ifc_len = sizeof( interfaces );
-        conf.ifc_req = interfaces;
-        if ( ioctl( sockfd,SIOCGIFCONF,&conf ) < 0 ) {
-            ret = perrlog("ioctl");
-            break;
-        }
-        
-        i =  conf.ifc_len / sizeof(struct ifreq);
-        _num_if = 0;
-        
-        for ( ; ( --i >= 0 ) && ( ret == 0 ) ; ) {
-            struct in_addr addr;
-            struct in_addr broadcast;
-            struct in_addr netmask;
-            struct ifreq ifr;
-            
-            memcpy(&addr,&(*(struct sockaddr_in*)&interfaces[i].ifr_addr).sin_addr,sizeof(struct in_addr));
-            
-            strncpy(ifr.ifr_name, interfaces[i].ifr_name, sizeof(interfaces[i].ifr_name));
-            
-            if (ioctl(sockfd, SIOCGIFBRDADDR, &ifr) < 0) {
-                ret = perrlog("ioctl");
-                break;
-            } else {
-                broadcast = (*(struct sockaddr_in*)&ifr.ifr_broadaddr).sin_addr; 
-            }
-            
-            if (ioctl(sockfd, SIOCGIFNETMASK, &ifr) < 0) {
-                ret = perrlog("ioctl");
-                break;
-            } else {
-                netmask = (*(struct sockaddr_in*)&ifr.ifr_netmask).sin_addr;
-            }
-            
-            if ( addr.s_addr != inet_addr("127.0.0.1")) {
-                debug(4,"Interface : %i\n",_num_if);
-                debug(4,"Name      : %s\n", interfaces[i].ifr_name );
-                debug(4,"IP        : %s\n",inet_ntoa(addr));
-                debug(4,"Netmask   : %s\n",inet_ntoa(netmask));
-                debug(4,"Broadcast : %s\n",inet_ntoa(broadcast));
-                
-                _if_addrs[_num_if]    = addr.s_addr;
-                _broadcasts[_num_if]  = broadcast.s_addr;
-                _netmasks[_num_if]    = netmask.s_addr;
-                strncpy( _if_names_assigned[_num_if], interfaces[i].ifr_name, NETCAP_MAX_IF_NAME_LEN);
-
-                _num_if++;            
-            }
-        }
-    } while ( 0 );
-
-    if ( close( sockfd ) < 0 ) 
-        return perrlog( "close" );
+    else strncpy( intf_str, tmp->name.s, sizeof( netcap_intf_string_t ));
     
     return ret;
 }
 
-static int _update_dev_info( void )
+int netcap_interface_string_to_intf ( char *intf_name, netcap_intf_t *intf )
 {
-    int i, ret = 0;
+    if ( intf_name == NULL || intf_name[0] == '\0' || intf == NULL ) return errlogargs();
+
+    /* ???? May need a mutex or something */
+    netcap_intf_db_t* db = _interface.db;
+    if ( db == NULL ) return errlog( ERR_CRITICAL, "interface.db is not initialized\n" );
+
+    netcap_intf_info_t* tmp;
+    *intf = NC_INTF_UNK;
+    
+    if (( tmp = netcap_intf_db_name_to_info( db, (netcap_intf_string_t*)intf_name )) == NULL ) {
+        return errlog( ERR_WARNING, "netcap_intf_db_name_to_info\n" );
+    }
+
+    *intf = tmp->netcap_intf;
+    
+    return 0;
+}
+
+int netcap_interface_get_data       ( char* name, netcap_intf_address_data_t* data, int data_size )
+{
+    netcap_intf_info_t* info = NULL;
+
+    netcap_intf_db_t* db = _interface.db;
+    if ( db == NULL ) return errlog( ERR_CRITICAL, "interface.db is not initialized\n" );
+    
+    /* Validate all of the arguments */
+    if ( name == NULL || data == NULL || data_size <= sizeof( *data )) return errlogargs();
+    if ( strnlen( name, sizeof( netcap_intf_string_t ) + 1 ) > sizeof( netcap_intf_string_t )) {
+        return errlogargs();
+    }
+
+    if (( info = _get_intf_info( db, name )) == NULL ) {
+        return errlog( ERR_CRITICAL, "Nothing is known about the interface '%s'\n", name );
+    }
+    
+    if (( info->data_count <= 0 ) || ( NULL == info->data )) {
+        return errlog( ERR_CRITICAL, "There are no address for interface '%s'\n", name );
+    }
+    
+    if ( info->data_count > NETCAP_MAX_INTERFACES ) {
+        return errlog( ERR_CRITICAL, "Interface database is corrupted for interface '%s'\n", name );
+    }
+
+    if ( info->data_count > ( data_size / sizeof( *data ))) return errlogargs();
+    
+    memcpy( data, info->data, info->data_count * sizeof( *data ));
+    
+    return info->data_count;
+}
+
+netcap_intf_t netcap_interface_index_to_intf( int index )
+{
+    netcap_intf_info_t* tmp;
+    
+    netcap_intf_db_t* db = _interface.db;
+    if ( db == NULL ) {
+        errlog( ERR_CRITICAL, "interface.db is not initialized\n" );
+        return NC_INTF_UNK;
+    }
+
+    if (( tmp = netcap_intf_db_index_to_info( db, index )) == NULL ) {
+        errlog( ERR_WARNING, "netcap_intf_db_index_to_info %d\n", index );
+        return NC_INTF_UNK;
+    }
+    
+    return tmp->netcap_intf;
+}
+
+netcap_intf_db_t* netcap_interface_get_db    ( void )
+{
+    /* XXX Possible a mutex or something around here, only if setting a 32-bit value is not atomic */
+    return _interface.db;
+}
+
+int           netcap_interface_other_intf    ( netcap_intf_t* intf, netcap_intf_t src )
+{
+    return 0;
+}
+
+int netcap_interface_intf_to_index( netcap_intf_t netcap_intf )
+{
+    netcap_intf_info_t* tmp;
+
+    netcap_intf_db_t* db = _interface.db;
+    if ( db == NULL ) return errlog( ERR_CRITICAL, "interface.db is not initialized\n" );
+    
+    if (( tmp = netcap_intf_db_intf_to_info( db, netcap_intf )) == NULL ) {
+        return errlog( ERR_CRITICAL, "netcap_intf_db_intf_to_info\n" );
+    }
+    
+    return tmp->index;
+}
+
+int netcap_interface_dst_intf       ( netcap_intf_t* intf, netcap_intf_t src_intf, struct in_addr* src_ip, 
+                                      struct in_addr* dst_ip )
+{
+    return netcap_arp_dst_intf( intf, src_intf, src_ip, dst_ip );
+}
+
+int netcap_interface_dst_intf_delay ( netcap_intf_t* intf, netcap_intf_t src_intf, struct in_addr* src_ip, 
+                                      struct in_addr* dst_ip, unsigned long* delay_array )
+{
+    return netcap_arp_dst_intf_delay( intf, src_intf, src_ip, dst_ip, delay_array );
+}
+
+/* This should be called with the mutex lock */
+static int _update_intf_info( void )
+{
+    int ret = 0;
     int sockfd;
-    char if_name[NETCAP_MAX_IF_NAME_LEN];
-    struct ifreq ifr;
-    _dev_info_t* dev_info = NULL;
-    struct in_addr* ioctl_data = &((*(struct sockaddr_in*)&ifr.ifr_addr).sin_addr);
-
-    debug( 2, "INTERFACE: Updating interface addresses\n" );
-
-    if (( _interface.is_initialized != 0 ) && ht_destroy( &_interface.table ) < 0 ) {
-        errlog( ERR_CRITICAL, "Error destroying table\n" );
-    }
-
-    /* Null out the device interface arrray */
-    bzero( _interface.dev_info_array, sizeof( _interface.dev_info_array ));
-   
-    if ( ht_init( &_interface.table, IF_TABLE_SIZE, string_hash_func, string_equ_func, 0 ) < 0 ) {
-        return errlog( ERR_CRITICAL, "Error initializing table\n" );
-    }
+    netcap_intf_db_t* db = NULL;
     
-    _interface.is_initialized = 1;
-    
-    if (( sockfd = socket( PF_INET, SOCK_DGRAM, 0 )) < 0 ) return perrlog( "socket" );
-    
-    do {
-        _interface.count = 0;
-                
-        struct ifconf conf;
-        struct ifreq interfaces[NETCAP_MAX_INTERFACES];
+    int _critical_section( void ) {
+        int i;
 
-        conf.ifc_len = sizeof( interfaces );
-        conf.ifc_req = interfaces;
-        if ( ioctl( sockfd, SIOCGIFCONF, &conf ) < 0 ) {
-            ret = perrlog("ioctl");
-            break;
-        }
-        
-        i =  conf.ifc_len / sizeof(struct ifreq);
-        _num_if = 0;
-        
-        for ( ; ( --i >= 0 ) && ( ret == 0 ) ; ) {
-            struct in_addr addr;
-            struct in_addr broadcast;
-            struct in_addr netmask;
-            struct ifreq ifr;
-            
-            memcpy(&addr,&(*(struct sockaddr_in*)&interfaces[i].ifr_addr).sin_addr,sizeof(struct in_addr));
-            
-            strncpy(ifr.ifr_name, interfaces[i].ifr_name, sizeof(interfaces[i].ifr_name));
-            
-            if (ioctl(sockfd, SIOCGIFBRDADDR, &ifr) < 0) {
-                ret = perrlog("ioctl");
-                break;
-            } else {
-                broadcast = (*(struct sockaddr_in*)&ifr.ifr_broadaddr).sin_addr; 
-            }
-            
-            if (ioctl(sockfd, SIOCGIFNETMASK, &ifr) < 0) {
-                ret = perrlog("ioctl");
-                break;
-            } else {
-                netmask = (*(struct sockaddr_in*)&ifr.ifr_netmask).sin_addr;
-            }
-            
-            if ( addr.s_addr != inet_addr("127.0.0.1")) {
-                debug( 3, "INTERFACE: Retrieving information for device: %s\n", interfaces[i].ifr_name );
-                
-                dev_info = &_interface.dev_info_array[_interface.count];
-                dev_info->index = _interface.count++;
-                /* Copy in the interface name */
-                strncpy( dev_info->name, interfaces[i].ifr_name, NETCAP_MAX_IF_NAME_LEN );
-                memcpy( &dev_info->address, &addr, sizeof( dev_info->address ));
-                memcpy( &dev_info->netmask, &netmask, sizeof( dev_info->netmask ));
-                memcpy( &dev_info->broadcast, &broadcast, sizeof( dev_info->broadcast ));
-
-                if ( ht_add( &_interface.table, dev_info->name, dev_info ) < 0 ) {
-                    ret = errlog( ERR_CRITICAL, "ht_add\n" );
-                    break;
-                }
-
-                dev_info->is_valid = 1;
-            }
-        }
-
-        if ( ret < 0 ) break;             
-        
         for ( i = 1 ; i < NETCAP_MAX_INTERFACES ; i++ ) {
-            if ( if_indextoname( i, if_name ) == NULL ) {
+            netcap_intf_info_t intf_info;
+            netcap_intf_info_t* intf_info_dst;
+            netcap_intf_string_t intf_name;
+
+            bzero( &intf_info, sizeof ( netcap_intf_info_t ));
+            
+            if ( if_indextoname( i, intf_name.s ) == NULL ) {
                 debug( 10, "INTERFACE: %d doesn't exist\n", i );
                 continue;
             }
             
-            if (( strncmp( if_name, "lo", 2 ) == 0 ) ||
-                ( strncmp( if_name, "sit", 3 ) == 0 )  ||
-                ( strncmp( if_name, "dummy", 5 ) == 0 )) {
-                debug( 10, "INTERFACE: skipping %s\n", if_name );
+            if (( strncmp( intf_name.s, "sit",   3 ) == 0 )  ||
+                ( strncmp( intf_name.s, "dummy", 5 ) == 0 )) {
+                debug( 10, "INTERFACE: skipping %s\n", intf_name.s );
                 continue;
             }
 
-            debug( 3, "INTERFACE: Retrieving information for device: %s\n", if_name );
+            debug( 3, "INTERFACE: Retrieving information for device '%s'\n", intf_name.s );
 
-            if ( ht_lookup( &_interface.table, if_name ) != NULL ) {
-                debug( 3, "INTERFACE: Is %s already in the table, skipping\n", if_name );
+            if ( ht_lookup( &db->name_to_info, intf_name.s ) != NULL ) {
+                errlog( ERR_WARNING, "INTERFACE: Is '%s' already in the table, skipping\n", intf_name.s );
                 continue;
             }
 
-            dev_info = &_interface.dev_info_array[_interface.count];
-            dev_info->index = _interface.count++;
+            intf_info.is_valid = 1;
+            intf_info.index = i;
 
+            if ( strncmp( intf_name.s, "lo", sizeof( "lo" )) == 0 ) {
+                debug( 10, "INTERFACE: Loopback interface at index %d\n", i );
+                intf_info.netcap_intf = NC_INTF_LOOPBACK;
+                intf_info.is_localhost = 1;
+            } else {
+                intf_info.is_localhost = 0;
+            }
+            
             /* Copy in the interface name */
-            strncpy( dev_info->name, if_name, NETCAP_MAX_IF_NAME_LEN );
-            strncpy( ifr.ifr_name, if_name, sizeof(if_name));
-            
+            strncpy( intf_info.name.s, intf_name.s, sizeof( intf_info.name ));
+                        
+            switch( netcap_intf_db_fill_data( &intf_info, sockfd, &intf_name )) {
+            case 1: intf_info.is_valid = 1; break;
+            case 0: intf_info.is_valid = 0; break;
+            default: return errlog( ERR_CRITICAL, "netcap_intf_db_fill_info\n" );
+            }
+
             /* Insert the device into the hash table */
-            if ( ht_add( &_interface.table, dev_info->name, dev_info ) < 0 ) {
-                ret = errlog( ERR_CRITICAL, "ht_add\n" );
-                break;
-            }
+            intf_info_dst = &db->index_to_info[i-1];
+            memcpy( intf_info_dst, &intf_info, sizeof( intf_info ));
             
-            /* Get the address */
-            if (ioctl( sockfd, SIOCGIFADDR, &ifr ) < 0 ) {
-                if ( errno == EADDRNOTAVAIL ) {
-                    dev_info->is_valid = 0;
-                    continue;
-                } else {
-                    ret = perrlog( "ioctl" );
-                    break;
-                }
+            if ( ht_add( &db->name_to_info, intf_info_dst->name.s, intf_info_dst ) < 0 ) {
+                return errlog( ERR_CRITICAL, "ht_add\n" );
             }
-            memcpy( &dev_info->address, ioctl_data, sizeof( dev_info->address ));
-            
-            /* Get the netmask */
-            if (ioctl( sockfd, SIOCGIFNETMASK, &ifr ) < 0 ) {
-                if ( errno == EADDRNOTAVAIL ) {
-                    dev_info->is_valid = 0;
-                    continue;
-                } else {
-                    ret = perrlog( "ioctl" );
-                    break;
-                }                
-            }
-            memcpy( &dev_info->netmask, ioctl_data, sizeof( dev_info->netmask ));
-
-            /* Get the broadcast address */
-            if (ioctl( sockfd, SIOCGIFBRDADDR, &ifr ) < 0 ) {
-                if ( errno == EADDRNOTAVAIL ) {
-                    dev_info->is_valid = 0;
-                    continue;
-                } else {
-                    ret = perrlog( "ioctl" );
-                    break;
-                }                
-            }
-            memcpy( &dev_info->broadcast, ioctl_data, sizeof( dev_info->broadcast ));
-            
-            debug( 3, "INTERFACE: Device configuration: %s address %s netmask %s broadcast %s\n", 
-                   dev_info->name,
-                   unet_next_inet_ntoa( dev_info->address.s_addr ),
-                   unet_next_inet_ntoa( dev_info->netmask.s_addr ),
-                   unet_next_inet_ntoa( dev_info->broadcast.s_addr ));
-            
-            dev_info->is_valid = 1;            
         }
 
-        if (( ret >= 0 ) && ( _update_bridge_devices() < 0 )) { 
-            ret = errlog( ERR_CRITICAL, "_update_bridge_devices\n" );
+        /* Update the bridge devices */
+        if ( _update_bridge_devices( db ) < 0 ) return errlog( ERR_CRITICAL, "_update_bridge_devices\n" );
+
+        /* Update the aliases after initializing the bridges */
+        if ( _update_aliases( db, sockfd ) < 0 ) return errlog( ERR_CRITICAL, "_update_aliases\n" );
+        
+        /* Update the interface array */
+        if (( _interface.intf_count > 0 ) && 
+            ( netcap_intf_db_configure_intf( db, _interface.intf_name_array, _interface.intf_count ) < 0 )) {
+            return errlog( ERR_CRITICAL, "netcap_intf_db_configure_intf\n" );
+        }
+        
+        /* XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX Look into this */
+        /* If the database is not null, then schedule it to be deleted later */
+        if ( _interface.db != NULL ) {
+            _garbage_t* garbage = NULL;
+            if (( garbage = malloc( sizeof( *garbage ))) == NULL ) return errlogmalloc();
+            garbage->id   = _GARBAGE_ID;
+            garbage->db   = _interface.db;
+            netcap_sched_event( _empty_garbage, garbage, _GARBAGE_DELAY_USEC );
         }
 
-    } while ( 0 );            
+        /* XXXX Consider a mutex here, no need table is already locked. */
+        _interface.db = db;
+        
+        return 0;
+    }
 
+    debug( 2, "INTERFACE: Updating interface addresses\n" );
+    
+    /* Open up the socket for querying the interfaces */
+    if (( sockfd = socket( PF_INET, SOCK_DGRAM, 0 )) < 0 ) return perrlog( "socket" );
 
-    if ( close( sockfd ) < 0 )
-        return perrlog( "close" );
+    /* Create the new interface database */
+    if (( db = netcap_intf_db_create()) == NULL) return errlog( ERR_CRITICAL, "netcap_intf_db_create\n" );
+
+    /* Configure the new interface database */
+    ret = _critical_section();
+    if ( close( sockfd ) < 0 ) perrlog( "close" );
+    
+    /* If there was an error, free the memory that the interface database used. */
+    if (( ret < 0 ) && ( netcap_intf_db_raze( db ) < 0 )) errlog( ERR_CRITICAL, "netcap_intf_db_raze\n" );
     
     return ret;
 }
@@ -707,48 +546,55 @@ static int _update_dev_info( void )
  * Update the info for all of the bridges all of the bridges
  */
 
-static int _update_bridge_devices( void )
+static int _update_bridge_devices( netcap_intf_db_t* db )
 {
     int c;
     int ret = 0;
+    struct sysfs_class_device* dev;
 
-    for ( c = 0 ; c < _interface.count ; c++ ) {
-        _dev_info_t* dev_info = &_interface.dev_info_array[c];
-        struct sysfs_class_device* dev;
-
-        /* Don't include the null character in the comparison */
-        if ( strncmp( dev_info->name, BRIDGE_PREFIX, sizeof(BRIDGE_PREFIX) - 1 ) != 0 ) {
-            /* Not a bridge */
-            debug( 4, "Ignoring non-bridge interface %s\n", dev_info->name );
+    for ( c = 0 ; c < NETCAP_MAX_INTERFACES ; c++ ) {
+        netcap_intf_info_t* intf_info = &db->index_to_info[c];
+        
+        if ( !intf_info->is_valid ) {
+            debug( 11, "Skipping invalid interface %d\n", c );
             continue;
         }
 
-        debug( 3, "Retrieving interfaces for bridge '%s'\n", dev_info->name );
+        /* Don't include the null character in the comparison */
+        /* XXX Kind of a jenky way of determining if this is a bridge */
+        if ( strncmp( intf_info->name.s, BRIDGE_PREFIX, sizeof( BRIDGE_PREFIX ) - 1 ) != 0 ) {
+            debug( 4, "Ignoring non-bridge interface %s\n", intf_info->name.s );
+            continue;
+        }
+
+        debug( 3, "INTERFACE: Retrieving interfaces for bridge '%s'\n", intf_info->name.s );
         
         if ( _interface.sysfs_class_net == NULL ) {
             return errlog( ERR_CRITICAL, "sysfs_class_net is not initialzed\n" );
         }
         
-        if (( dev = sysfs_get_class_device( _interface.sysfs_class_net, dev_info->name )) == NULL ) {
+        if (( dev = sysfs_get_class_device( _interface.sysfs_class_net, intf_info->name.s )) == NULL ) {
             return perrlog( "sysfs_get_class_device" );
         }
         
         /* dev must be closed */
-        ret = _update_bridge_device( dev_info, dev );
+        ret = _update_bridge_device( db, intf_info, dev );
         
         // XXX Not sure if these have to be closed
+        // Probably should check for leaks
         // sysfs_close_class_device( dev );
         
-        if ( ret < 0 ) return errlog( ERR_CRITICAL, "_update_bridge_device\n" );        
+        if ( ret < 0 ) return errlog( ERR_CRITICAL, "_update_bridge_device\n" );
     }
     
     return 0;
 }
 
 /**
- * Register any of bridge devices of for the last interface that was registered
+ * Register any of bridge devices for bridge_info.
  */
-static int _update_bridge_device( _dev_info_t* bridge_dev_info, struct sysfs_class_device* dev )
+static int _update_bridge_device( netcap_intf_db_t* db, netcap_intf_info_t* bridge_info, 
+                                  struct sysfs_class_device* dev )
 {
     char path[SYSFS_PATH_MAX];
     struct sysfs_directory* dir;
@@ -756,32 +602,47 @@ static int _update_bridge_device( _dev_info_t* bridge_dev_info, struct sysfs_cla
     int _critical_section( void ) {
         struct dlist* dir_links;
         struct sysfs_link* plink;
-        _dev_info_t* dev_info;
-
+        netcap_intf_info_t* intf_info;
+            
         /* Retrieve a list of all of the directories that link to
          * this, these are all of the interfaces in the bridge */
         if (( dir_links = sysfs_get_dir_links( dir )) == NULL ) return perrlog( "sysfs_get_dir_links" );
+
+        /* Reset the number of bridges */
+        bridge_info->bridge_info->intf_count = 0;
         
         /* Iterate through all of the entries */
         dlist_for_each_data( dir_links, plink, struct sysfs_link ) {
-            debug( 3, "Bridge %s contains interface %s\n", bridge_dev_info->name, plink->name );
-            if (( dev_info = ht_lookup( &_interface.table, plink->name )) == NULL ) {
-                return errlog( ERR_CRITICAL, "Interface table does not contain %s\n", plink->name );
+            debug( 4, "INTERFACE: Bridge[%s] contains '%s'\n", bridge_info->name.s, plink->name );
+                   
+            if (( intf_info = ht_lookup( &db->name_to_info, plink->name )) == NULL ) {
+                return errlog( ERR_CRITICAL, "INTERFACE: table does not contain '%s'\n", plink->name );
             }
             
-            if ( dev_info->is_in_bridge != 0 ) {
-                return errlog( ERR_CRITICAL, "Interface %s is already in a bridge\n", dev_info->name );
+            if ( intf_info->bridge != NULL ) {
+                return errlog( ERR_CRITICAL, "INTERFACE: %s is already in a bridge\n", intf_info->name.s );
             }
             
-            dev_info->is_valid     = 1;
-            dev_info->is_in_bridge = 1;
-            dev_info->bridge_index = bridge_dev_info->index;
+            if ( intf_info->bridge_info != NULL ) {
+                errlog( ERR_CRITICAL, "INTERFACE: %s is a bridge\n", intf_info->name.s );
+            }
+            
+            intf_info->is_valid  = 1;
+            intf_info->bridge    = bridge_info;
+            bridge_info->bridge_info->ports[bridge_info->bridge_info->intf_count++] = intf_info;
         }
         
         return 0;
     }
 
     int ret = 0;
+
+    /* A quick check to make sure there is no NULL derefenced */
+    if ( netcap_arp_configure_bridge( db, bridge_info ) < 0 ) {
+        return errlog( ERR_CRITICAL, "netcap_arp_configure_bridge\n" );
+    }
+    
+    if ( bridge_info->bridge_info == NULL ) return errlog( ERR_CRITICAL, "netcap_arp_configure_bridge\n" );
 
     snprintf( path, sizeof( path ), "%s/%s", dev->path, SYSFS_BRIDGE_PORT_SUBDIR );
     
@@ -794,25 +655,118 @@ static int _update_bridge_device( _dev_info_t* bridge_dev_info, struct sysfs_cla
     return ret;
 }
 
-static _dev_info_t* _get_dev_info( char* name )
+static int _update_aliases           ( netcap_intf_db_t* db, int sockfd )
 {
-    _dev_info_t* dev_info = NULL;
+    struct ifreq ifreq_array[NETCAP_MAX_INTERFACES];
+    struct ifconf conf;
+    int c = 0;
+    
+    conf.ifc_len = sizeof( ifreq_array );
+    conf.ifc_req = ifreq_array;
+    
+    bzero( ifreq_array, sizeof( ifreq_array ));
 
-    if (( dev_info = ht_lookup( &_interface.table, name )) == NULL ) {
-        return errlog_null( ERR_CRITICAL, "Nothing is known about the interface: '%s'\n", name );
+    if ( ioctl( sockfd, SIOCGIFCONF, &conf ) < 0 ) return perrlog( "ioctl" );
+    
+    if ( sizeof( ifreq_array ) == conf.ifc_len ) {
+        errlog( ERR_WARNING, "SIOCGIFCONF overflowed, using first %d interfaces\n", NETCAP_MAX_INTERFACES );
+    } else if ( sizeof( ifreq_array ) < conf.ifc_len ) {
+        errlog( ERR_WARNING, "SIOCGIFCONF returns invalid length %d\n", conf.ifc_len );
+        c = NETCAP_MAX_INTERFACES;
+    } else {
+        c = conf.ifc_len / sizeof( ifreq_array[0] );
     }
     
-    if ( dev_info->is_in_bridge ) {
-        if ( dev_info->bridge_index < 0 || dev_info->bridge_index >= NETCAP_MAX_INTERFACES ) {
-            return errlog_null( ERR_CRITICAL, "Database is broken for interface: '%s'\n", name );
+    for (  ;  c-- > 0 ; ) {
+        struct ifreq* ifreq = &ifreq_array[c];
+        netcap_intf_string_t name;
+        int d;
+        
+        /* Retrieve the device information using the name */
+        bzero( &name, sizeof( name ));
+        
+        /* Split the name using the : character to look for aliases */
+        /* Use the -1 to guarantee that there is always a '\0' (it is bzerod above) */
+        for ( d = 0 ; d < sizeof( name ) - 1 ; d++ ) {
+            switch( ifreq->ifr_name[d] ) {
+            case ':':
+            case '\0':
+                name.s[d] = '\0';
+                break;
+            default:
+                name.s[d] = ifreq->ifr_name[d];
+                break;
+            }
+
+            if ( '\0' == name.s[d] ) break;
         }
-        dev_info = &_interface.dev_info_array[(int)dev_info->bridge_index];
+                
+        netcap_intf_info_t* intf_info = netcap_intf_db_name_to_info( db, &name );
+                                         
+        if ( intf_info == NULL ) {
+            errlog( ERR_CRITICAL, "Unknown interface '%s', continuing\n", ifreq->ifr_name );
+            continue;
+        }
+        
+        if ( intf_info->bridge != NULL ) {
+            errlog( ERR_CRITICAL, "The interface '%s' is in a bridge, continuing\n", ifreq->ifr_name );
+            continue;
+        }
+        
+        switch( netcap_intf_db_fill_data( intf_info, sockfd, (netcap_intf_string_t*)ifreq->ifr_name )) {
+        case 1: intf_info->is_valid = 1; break;
+        case 0: break;
+        default: return errlog( ERR_CRITICAL, "netcap_intf_db_fill_info\n" );
+        }
+    }
+    
+    
+    return 0;
+}
+
+static netcap_intf_info_t* _get_intf_info( netcap_intf_db_t* db, char* name )
+{
+    netcap_intf_info_t* intf_info = NULL;
+
+    if (( intf_info = netcap_intf_db_name_to_info( db, (netcap_intf_string_t*)name )) == NULL ) {
+        return errlog_null( ERR_CRITICAL, "netcap_intf_db_name_to_info\n" );
+    }
+        
+    /* Lookup the bridge interface if necessary */
+    if ( intf_info->bridge != NULL ) intf_info = intf_info->bridge;
+
+    if ( !intf_info->is_valid ) {
+        return errlog_null( ERR_CRITICAL, "The interface '%s' is not valid\n", intf_info->name.s );
     }
 
-    if ( !dev_info->is_valid ) {
-        return errlog_null( ERR_CRITICAL, "The interface '%s' is not valid\n", dev_info->name );
+    return intf_info;
+}
+
+static void _empty_garbage       ( void* arg )
+{    
+    _garbage_t* garbage = arg;
+    unsigned int id;
+
+    if ( garbage == NULL ) {
+        errlogargs();
+        return;
     }
 
-    return dev_info;
+    /* Set it t something else so it can't be reused. */
+    id = garbage->id;
+    garbage->id = ~_GARBAGE_ID;
 
+    debug( 4, "INTERFACE: EMPTY GARBAGE %#010x/%#010x/%#010x\n", arg, id, garbage->db );
+
+    if ( id != _GARBAGE_ID ) {
+        errlog( ERR_CRITICAL, "Unable to throw away the argument %#08x, invalid id: %#08x != %#08x\n",
+                garbage, id, _GARBAGE_ID );
+        return;
+    }
+    
+    if ( garbage->db == NULL ) errlog( ERR_WARNING, "NULL garbage\n" );
+    else netcap_intf_db_raze( garbage->db );
+    garbage->db = NULL;
+
+    free( garbage );
 }

@@ -43,6 +43,7 @@ abstract class ArgonHook implements Runnable
     /**
      * List of all of the transforms( ArgonAgents )
      */
+    protected PipelineDesc pipelineDesc;
     protected List pipeline;
     protected List<Session> sessionList = new ArrayList<Session>();
     protected List<Session> releasedSessionList = new ArrayList<Session>();
@@ -78,14 +79,21 @@ abstract class ArgonHook implements Runnable
 
             sessionGlobalState = new SessionGlobalState( netcapSession(), clientSideListener(),
                                                          serverSideListener(), this );
-            
+
             if ( logger.isDebugEnabled())
-                logger.debug( "New thread for session id: " + netcapSession().id() + 
+                logger.debug( "New thread for session id: " + netcapSession().id() +
                               " " + sessionGlobalState );
 
+            /* Update the server interface with the override table */
+            NetcapSession netcapSession = sessionGlobalState.netcapSession();
+            InterfaceOverride.getInstance().updateDestinationInterface( netcapSession );
+            
             clientSide = new NetcapIPSessionDescImpl( sessionGlobalState, true );
+            
             serverSide = clientSide;
-            pipeline = pipelineFoundry.weld( clientSide );
+
+            pipelineDesc = pipelineFoundry.weld( clientSide );
+            pipeline = pipelineDesc.getAgents();
 
             /* Initialize all of the transforms */
             initTransforms();
@@ -97,7 +105,7 @@ abstract class ArgonHook implements Runnable
              * modified the endpoints (we can't do it until we connect to the server since
              * that is what actually modifies the session global state. */
             serverSide = new NetcapIPSessionDescImpl( sessionGlobalState, false );
-
+            
             /* Connect to the client */
             boolean clientActionCompleted = connectClient();
 
@@ -142,25 +150,25 @@ abstract class ArgonHook implements Runnable
         try {
             /* Let the pipeline foundy know */
             pipelineFoundry.destroy( clientSide, serverSide );
-            
+
             /* Remove the vector from the vectron table */
-            /* You must remove the vector before razing, or else 
+            /* You must remove the vector before razing, or else
              * the vector may receive a message(eg shutdown) from another thread */
             activeVectrons.remove( vector );
-            
+
             /* Delete the vector */
             if ( vector != null ) {
                 vector.raze();
             }
-            
+
             /* Delete everything else */
             raze();
-            
+
             if ( logger.isDebugEnabled())
                 logger.debug( "Exiting thread: " + sessionGlobalState );
         } catch ( Exception e ) {
             logger.error( "Exception exiting hook:", e );
-        }        
+        }
     }
 
     /**
@@ -345,15 +353,15 @@ abstract class ArgonHook implements Runnable
                  * modify session parameters */
                 break;
             }
-            
+
             if ( session.isVectored()) {
                 throw new IllegalStateException( "Released session trying to vector: " + request.state());
             }
-           
+
             if ( logger.isDebugEnabled())
                 logger.debug( "Adding released session: " + session );
 
-            
+
             /* Add to the session list, and then move it in buildPipeline,
              * this way, any modifications to the session will occur in order */
             sessionList.add( session );
@@ -431,12 +439,12 @@ abstract class ArgonHook implements Runnable
 
         for ( ListIterator<Session> iter = sessionList.listIterator( size ) ; iter.hasPrevious(); ) {
             SessionImpl session = (SessionImpl)iter.previous();
-            
+
             if ( !session.isVectored ) {
                 logger.debug( "vectorReset: skipping non-vectored session" );
                 continue;
             }
-            
+
             session.serverIncomingSocketQueue.send_event( reset );
 
             /* Make sure the guardian didn't leave a crumb in the queue */

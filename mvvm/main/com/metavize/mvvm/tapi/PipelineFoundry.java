@@ -12,11 +12,10 @@
 package com.metavize.mvvm.tapi;
 
 import java.net.InetSocketAddress;
-import java.util.List;
 
 import com.metavize.jnetcap.NetcapSession;
-import com.metavize.mvvm.argon.ArgonAgent;
 import com.metavize.mvvm.argon.IPSessionDesc;
+import com.metavize.mvvm.argon.PipelineDesc;
 
 /**
  * Compiles pipes based on subscriptions and interest sets.
@@ -32,7 +31,7 @@ public interface PipelineFoundry
      * @param sessionDesc XXX
      * @return a list of <code>ArgonAgents</code>.
      */
-    List<ArgonAgent> weld(IPSessionDesc sessionDesc);
+    PipelineDesc weld(IPSessionDesc sessionDesc);
 
     void registerEndpoints(IPSessionDesc start, IPSessionDesc end);
     void destroy(IPSessionDesc start, IPSessionDesc end);

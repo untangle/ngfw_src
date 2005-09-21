@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: ArgonAgent.java,v 1.5 2005/01/07 01:28:57 rbscott Exp $
+ *  $Id$
  */
 
 package com.metavize.mvvm.argon;

@@ -9,9 +9,9 @@
  *  $Id$
  */
 
-package com.metavize.mvvm.tapi.impl;
+package com.metavize.mvvm.engine;
 
-import static com.metavize.mvvm.tapi.impl.Dispatcher.SESSION_ID_MDC_KEY;
+import static com.metavize.mvvm.engine.Dispatcher.SESSION_ID_MDC_KEY;
 
 import java.net.InetAddress;
 import java.text.DateFormat;
@@ -23,14 +23,11 @@ import com.metavize.jvector.Crumb;
 import com.metavize.jvector.DataCrumb;
 import com.metavize.jvector.IncomingSocketQueue;
 import com.metavize.jvector.OutgoingSocketQueue;
-import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.argon.PipelineListener;
-import com.metavize.mvvm.engine.Main;
 import com.metavize.mvvm.tapi.*;
 import com.metavize.mvvm.tapi.event.IPStreamer;
 import com.metavize.mvvm.tran.Transform;
 import com.metavize.mvvm.tran.TransformContext;
-import com.metavize.mvvm.tran.TransformManager;
 import com.metavize.mvvm.tran.TransformState;
 import com.metavize.mvvm.util.MetaEnv;
 import org.apache.log4j.Logger;
@@ -41,6 +38,7 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
 
     protected boolean released = false;
     protected boolean needsFinalization = true;
+    protected boolean isInbound;
 
     protected Dispatcher dispatcher;
 
@@ -54,17 +52,28 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
 
     private Logger timesLogger = null;
 
-    private final TransformManager transformManager;
+    private final TransformManagerImpl transformManager;
 
-    protected IPSessionImpl(Dispatcher disp, com.metavize.mvvm.argon.IPSession pSession)
+    protected IPSessionImpl(Dispatcher disp, com.metavize.mvvm.argon.IPSession pSession, boolean isInbound)
     {
         super(disp.mPipe(), pSession);
         this.dispatcher = disp;
+        this.isInbound = isInbound;
         this.stats = new RWSessionStats();
         if (RWSessionStats.DoDetailedTimes)
             timesLogger = Logger.getLogger("com.metavize.mvvm.tapi.SessionTimes");
-        transformManager = MvvmContextFactory.context().transformManager();
+        transformManager = MvvmContextImpl.getInstance().transformManager();
         logger = disp.mPipe().sessionLogger();
+    }
+
+    public boolean isInbound()
+    {
+        return isInbound;
+    }
+
+    public boolean isOutbound()
+    {
+        return !isInbound;
     }
 
     public short protocol()
@@ -150,15 +159,6 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
     public void cancelTimer()
     {
         // xenon.cancelTimer(this);
-    }
-
-    // XX Only works for max two interfaces.
-    public byte direction()
-    {
-        if (clientIntf() == 0)
-            return INBOUND;
-        else
-            return OUTBOUND;
     }
 
     protected Crumb getNextCrumb2Send(int side) {

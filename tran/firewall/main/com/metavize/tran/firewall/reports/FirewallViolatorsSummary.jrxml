@@ -39,8 +39,7 @@
 				     count(CASE proto WHEN 1 THEN 1 WHEN 6 THEN 1 WHEN 17 THEN 1 ELSE NULL END) as TOTAL_BLOCKS
 FROM tr_firewall_evt evt
 JOIN pl_endp USING (session_id)
-JOIN firewall_rule USING (rule_id)
-WHERE evt.time_stamp > $P{startTime} AND evt.time_stamp < $P{endTime} AND is_traffic_blocker = 't'
+WHERE evt.time_stamp > $P{startTime} AND evt.time_stamp < $P{endTime} AND was_blocked = 't'
 GROUP BY HOST
 ORDER BY TOTAL_BLOCKS DESC, HOST ASC]]></queryString>
 	<field name="HOST" class="java.lang.String"/>

@@ -68,7 +68,7 @@ public class VirusPopHandler extends PopStateMachine
         VirusPOPConfig zConfig;
         WrappedMessageGenerator zWMGenerator;
 
-        if (IntfConverter.INSIDE == session.clientIntf()) {
+        if (!session.isInbound()) {
             zConfig = transform.getVirusSettings().getPOPInbound();
             zWMGenerator = new WrappedMessageGenerator(VirusSettings.IN_MOD_SUB_TEMPLATE, VirusSettings.IN_MOD_BODY_TEMPLATE);
             lTimeout = zMTSettings.getPopInboundTimeout();

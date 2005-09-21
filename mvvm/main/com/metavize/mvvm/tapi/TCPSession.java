@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: TCPSession.java,v 1.11 2005/01/23 23:04:33 jdi Exp $
+ *  $Id$
  */
 
 package com.metavize.mvvm.tapi;

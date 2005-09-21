@@ -28,7 +28,7 @@ public class Protocol
         INSTANCES.put(UDP.getId(), UDP);
     }
 
-    private String name;
+    private final String name;
     private final int id;
 
     public static Protocol getInstance(String name)
@@ -56,6 +56,25 @@ public class Protocol
     {
         return id;
     }
+
+    // Object methods ---------------------------------------------------------
+
+    public boolean equals(Object o)
+    {
+        if (!(o instanceof Protocol)) {
+            return false;
+        } else {
+            Protocol p = (Protocol)o;
+            return id == p.id;
+        }
+    }
+
+    public int hashCode()
+    {
+        return id;
+    }
+
+    // serialization helpers --------------------------------------------------
 
     Object readResolve()
     {

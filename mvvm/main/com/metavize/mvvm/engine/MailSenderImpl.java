@@ -27,11 +27,11 @@ import com.metavize.mvvm.MailSettings;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.security.AdminSettings;
 import com.metavize.mvvm.security.User;
-import net.sf.hibernate.HibernateException;
-import net.sf.hibernate.Query;
-import net.sf.hibernate.Transaction;
 import org.apache.log4j.Logger;
-import org.logicalcobwebs.proxool.ProxoolFacade;
+
+import org.hibernate.HibernateException;
+import org.hibernate.Query;
+import org.hibernate.Transaction;
 
 /**
  * Note that this class is designed to be used <b>BOTH</b> inside the MVVM and
@@ -41,7 +41,7 @@ import org.logicalcobwebs.proxool.ProxoolFacade;
  * @author <a href="mailto:jdi@metavize.com">John Irwin</a>
  * @version 1.0
  */
-public class MailSenderImpl implements MailSender
+class MailSenderImpl implements MailSender
 {
     public static final String DEFAULT_FROM_ADDRESS = "reports@local.domain";
 
@@ -77,14 +77,14 @@ public class MailSenderImpl implements MailSender
     private static final Logger logger = Logger.getLogger(MailSenderImpl.class.getName());
 
     // NOTE: Only used for stand-alone operation.
-    private net.sf.hibernate.SessionFactory sessionFactory;
+    private org.hibernate.SessionFactory sessionFactory;
 
     private MailSenderImpl() {
         sessionFactory = null;
         init();
     }
 
-    private MailSenderImpl(net.sf.hibernate.SessionFactory sessionFactory)
+    private MailSenderImpl(org.hibernate.SessionFactory sessionFactory)
     {
         this.sessionFactory = sessionFactory;
         init();
@@ -95,7 +95,7 @@ public class MailSenderImpl implements MailSender
     mimetypesFileTypeMap.addMimeTypes("application/pdf pdf PDF");
     mimetypesFileTypeMap.addMimeTypes("text/css css CSS");
 
-        net.sf.hibernate.Session s = getSession();
+        org.hibernate.Session s = getSession();
         try {
             Transaction tx = s.beginTransaction();
 
@@ -132,12 +132,12 @@ public class MailSenderImpl implements MailSender
         return MAIL_SENDER;
     }
 
-    private net.sf.hibernate.Session getSession()
+    private org.hibernate.Session getSession()
     {
         if (sessionFactory == null) {
             return MvvmContextFactory.context().openSession();
         } else {
-            net.sf.hibernate.Session s = null;
+            org.hibernate.Session s = null;
 
             try {
                 s = sessionFactory.openSession();
@@ -151,11 +151,11 @@ public class MailSenderImpl implements MailSender
 
     public void setMailSettings(MailSettings settings)
     {
-        net.sf.hibernate.Session s = getSession();
+        org.hibernate.Session s = getSession();
         try {
             Transaction tx = s.beginTransaction();
 
-            s.saveOrUpdateCopy(settings);
+            s.merge(settings);
 
             tx.commit();
         } catch (HibernateException exn) {
@@ -175,7 +175,7 @@ public class MailSenderImpl implements MailSender
     {
         MailSettings ms = null;
 
-        net.sf.hibernate.Session s = getSession();
+        org.hibernate.Session s = getSession();
         try {
             Transaction tx = s.beginTransaction();
 
@@ -626,7 +626,7 @@ public class MailSenderImpl implements MailSender
 
             List<JarFile> jfs = new ArrayList<JarFile>();
             jfs.add(mvvmJarFile);
-            net.sf.hibernate.SessionFactory sessionFactory = Util.makeStandaloneSessionFactory(jfs);
+            org.hibernate.SessionFactory sessionFactory = Util.makeStandaloneSessionFactory(jfs);
             MailSenderImpl us = new MailSenderImpl(sessionFactory);
 
             // Read in the body file.
@@ -640,7 +640,6 @@ public class MailSenderImpl implements MailSender
             String bodyHTML = sbmain.toString();
 
             us.sendReports(subject, bodyHTML, extraLocations, extraFiles);
-            ProxoolFacade.shutdown(0);
         } catch (IOException x) {
             System.err.println("Unable to send message" + x);
             x.printStackTrace();

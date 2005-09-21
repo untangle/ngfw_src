@@ -27,7 +27,7 @@ MARK_LOCAL="0x00001000"
 MARK_LOCAL_ADDRESS_BASE="0x00000010"
 
 ## This list must get longer when there are more interfaces
-INTERFACE_ORDER="${MVVM_OUTSIDE_INTF} ${MVVM_INSIDE_INTF}"
+INTERFACE_ORDER="${MVVM_OUTSIDE_INTF} ${MVVM_INSIDE_INTF} ${MVVM_DMZ_INTF}"
 
 ## List of ICMP types to antisubscribe to.
 ANTISUBSCRIBES_ICMP="parameter-problem source-quench fragmentation-needed"

@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: IPSet.java,v 1.2 2004/12/20 02:48:19 amread Exp $
+ * $Id$
  */
 package com.metavize.tran.util;
 

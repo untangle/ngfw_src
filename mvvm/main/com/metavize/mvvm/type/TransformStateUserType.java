@@ -1,24 +1,25 @@
 /*
- * Copyright (c) 2004 Metavize Inc.
+ * Copyright (c) 2004, 2005 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: TransformStateUserType.java,v 1.1 2004/12/20 02:47:38 amread Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.type;
 
+import java.io.Serializable;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 
 import com.metavize.mvvm.tran.TransformState;
-import net.sf.hibernate.HibernateException;
-import net.sf.hibernate.UserType;
+import org.hibernate.HibernateException;
+import org.hibernate.usertype.UserType;
 
 public class TransformStateUserType implements UserType
 {
@@ -45,5 +46,25 @@ public class TransformStateUserType implements UserType
         } else {
             ps.setString(i, v.toString());
         }
+    }
+
+    public Object replace(Object original, Object target, Object owner)
+    {
+        return original;
+    }
+
+    public Object assemble(Serializable cached, Object owner)
+    {
+        return deepCopy(cached);
+    }
+
+    public Serializable disassemble(Object value)
+    {
+        return (Serializable)deepCopy(value);
+    }
+
+    public int hashCode(Object o)
+    {
+        return o.hashCode();
     }
 }

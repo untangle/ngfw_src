@@ -33,10 +33,11 @@ public interface Pipeline
 
     /**
      * Makes a temporary file that will be destroyed on Session
-     * finalization.  The file name will start with the given prefix (for debugging purposes).
+     * finalization.  The file name will start with the given prefix
+     * (for debugging purposes).
      *
-     * NOTE: the prefix <b>must not</b> come from user data, it should be a
-     *       constant like 'ftp-virus'.
+     * NOTE: the prefix <b>must not</b> come from user data, it should
+     * be a constant like 'ftp-virus'.
      *
      * @return the temp file.
      * @exception IOException the temp file cannot be created.

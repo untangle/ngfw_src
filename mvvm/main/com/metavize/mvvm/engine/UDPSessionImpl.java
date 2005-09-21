@@ -9,32 +9,24 @@
  *  $Id$
  */
 
-package com.metavize.mvvm.tapi.impl;
+package com.metavize.mvvm.engine;
 
-import com.metavize.mvvm.tapi.*;
-import com.metavize.mvvm.tran.MutateTStats;
-import com.metavize.mvvm.tapi.event.*;
-import com.metavize.mvvm.util.MetaEnv;
+import java.net.InetAddress;
+import java.nio.ByteBuffer;
 
-import com.metavize.mvvm.tapi.client.UDPSessionDescImpl;
-import com.metavize.jnetcap.UDPPacket;
+import com.metavize.jvector.Crumb;
+import com.metavize.jvector.DataCrumb;
+import com.metavize.jvector.ICMPPacketCrumb;
 import com.metavize.jvector.IncomingSocketQueue;
 import com.metavize.jvector.OutgoingSocketQueue;
-import com.metavize.jvector.Crumb;
-import com.metavize.jvector.UDPPacketCrumb;
-import com.metavize.jvector.ICMPPacketCrumb;
-import com.metavize.jvector.DataCrumb;
 import com.metavize.jvector.PacketCrumb;
 import com.metavize.jvector.ShutdownCrumb;
-import com.metavize.jvector.ResetCrumb;
-import com.metavize.jvector.SocketQueueListener;
-
-import java.lang.ref.WeakReference;
-import java.net.InetAddress;
-import org.apache.log4j.Level;
-import java.nio.ByteBuffer;
-import java.nio.channels.SocketChannel;
-import org.apache.log4j.Logger;
+import com.metavize.jvector.UDPPacketCrumb;
+import com.metavize.mvvm.tapi.*;
+import com.metavize.mvvm.tapi.client.UDPSessionDescImpl;
+import com.metavize.mvvm.tapi.event.*;
+import com.metavize.mvvm.tran.MutateTStats;
+import com.metavize.mvvm.util.MetaEnv;
 
 class UDPSessionImpl extends IPSessionImpl implements UDPSession
 {
@@ -42,10 +34,11 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
 
     protected UDPSessionImpl(Dispatcher disp,
                              com.metavize.mvvm.argon.UDPSession pSession,
+                             boolean isInbound,
                              int clientMaxPacketSize,
                              int serverMaxPacketSize)
     {
-        super(disp, pSession);
+        super(disp, pSession, isInbound);
 
         if (clientMaxPacketSize < 2 || clientMaxPacketSize > UDP_MAX_MESG_SIZE)
             throw new IllegalArgumentException("Illegal maximum client packet bufferSize: " + clientMaxPacketSize);
@@ -87,7 +80,7 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
     {
         return new UDPSessionDescImpl(id(), new SessionStats(stats), clientState(), serverState(),
                                       clientIntf(), serverIntf(),
-                                      clientAddr(), serverAddr(), clientPort(), serverPort());
+                                      clientAddr(), serverAddr(), clientPort(), serverPort(), isInbound());
     }
 
     public byte clientState()
@@ -168,7 +161,7 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
     {
         byte[] array;
         int offset = packet.position();
-	int limit = packet.remaining();
+    int limit = packet.remaining();
         if (packet.hasArray()) {
             array = packet.array();
             offset += packet.arrayOffset();
@@ -180,7 +173,7 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
             packet.position(offset);
             offset = 0;
         }
-                
+
         UDPPacketCrumb crumb = new UDPPacketCrumb(header.ttl(), header.tos(), header.options(),
                                                   array, offset, limit);
         addCrumb(side, crumb);
@@ -200,7 +193,7 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
     {
         byte[] array;
         int offset = icmpData.position();
-	int limit = icmpData.remaining();
+    int limit = icmpData.remaining();
         if (icmpData.hasArray()) {
             array = icmpData.array();
             offset += icmpData.arrayOffset();
@@ -229,7 +222,7 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
                 debug("tryWrite to full outgoing queue");
         } else {
             // Note: This can be an ICMP or UDP packet.
-	    Crumb nc = getNextCrumb2Send(side);
+        Crumb nc = getNextCrumb2Send(side);
             PacketCrumb packet2send = (PacketCrumb) nc;
             assert packet2send != null;
             int numWritten = sendCrumb(packet2send, out);
@@ -250,7 +243,7 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
         throws MPipeException
     {
 
-	/* Not Yet supported
+    /* Not Yet supported
         UDPStreamer streamer = (UDPStreamer)ipStreamer;
 
         String sideName = (side == CLIENT ? "client" : "server");
@@ -261,7 +254,7 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
             streamer = null;
             return;
         }
-        
+
         // Ug. XXX
         addBuf(side, packet2send);
 
@@ -291,7 +284,7 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
     }
 
     // Handles the actual reading from the client
-    void tryRead(int side, IncomingSocketQueue in, boolean warnIfUnable)        
+    void tryRead(int side, IncomingSocketQueue in, boolean warnIfUnable)
         throws MPipeException
     {
         int numRead = 0;
@@ -357,7 +350,7 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
 
         stats.readData(side, numRead);
         MutateTStats.readData(side, this, numRead);
-            
+
         // We have received bytes.  Give them to the user.
 
         // We no longer duplicate the buffer so that the event handler can mess up
@@ -381,8 +374,8 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
                 dispatcher.dispatchUDPClientPacket(event);
             else
                 dispatcher.dispatchUDPServerPacket(event);
-	}
-        // Nothing more to do, any packets to be sent were queued by called to sendClientPacket(), etc, 
+    }
+        // Nothing more to do, any packets to be sent were queued by called to sendClientPacket(), etc,
         // from transform's packet handler.
     }
 
@@ -412,17 +405,17 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
 
     @Override
     protected void killSession(String reason)
-    {   
+    {
         // Sends a RST both directions and nukes the socket queues.
         pSession.killSession();
-    } 
-        
+    }
+
     // Don't need equal or hashcode since we can only have one of these objects per
     // session (so the memory address is ok for equals/hashcode).
 }
 
 
 
-                
 
-    
+
+

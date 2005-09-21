@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: NetcapHook.java,v 1.1 2005/01/05 10:17:13 rbscott Exp $
+ *  $Id$
  */
 
 package com.metavize.jnetcap;

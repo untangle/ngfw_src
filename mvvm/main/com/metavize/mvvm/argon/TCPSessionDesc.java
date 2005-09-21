@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: TCPSessionDesc.java,v 1.2 2005/01/05 20:05:24 rbscott Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.argon;

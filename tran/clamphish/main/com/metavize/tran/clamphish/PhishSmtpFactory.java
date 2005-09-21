@@ -11,21 +11,20 @@
 
 package com.metavize.tran.clamphish;
 
-import com.metavize.mvvm.tapi.*;
-import com.metavize.tran.token.TokenHandler;
-import com.metavize.tran.token.TokenHandlerFactory;
-import org.apache.log4j.Logger;
+import static com.metavize.tran.util.Ascii.*;
 
+import com.metavize.mvvm.MailSender;
+import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.policy.Policy;
+import com.metavize.mvvm.tapi.*;
+import com.metavize.tran.mail.*;
 import com.metavize.tran.mail.papi.*;
 import com.metavize.tran.mail.papi.smtp.*;
 import com.metavize.tran.mail.papi.smtp.sapi.Session;
-import com.metavize.tran.mail.papi.smtp.sapi.SimpleSessionHandler;
-import com.metavize.tran.mail.*;
 import com.metavize.tran.spam.SpamSMTPConfig;
-import com.metavize.tran.util.Template;
-import static com.metavize.tran.util.Ascii.*;
-import com.metavize.mvvm.MailSender;
-import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.tran.token.TokenHandler;
+import com.metavize.tran.token.TokenHandlerFactory;
+import org.apache.log4j.Logger;
 
 
 public class PhishSmtpFactory
@@ -46,7 +45,7 @@ public class PhishSmtpFactory
       "[FRAUD] $MIMEMessage:SUBJECT$";
     public static final String OUT_MOD_BODY_TEMPLATE =
       "The attached message from $MIMEMessage:FROM$ was determined\r\n " +
-      "to be PHISH (a fraudulent email intended to steal information)\r\n." + 
+      "to be PHISH (a fraudulent email intended to steal information)\r\n." +
       "The details of the report are as follows:\r\n\r\n" +
       "$SPAMReport:FULL$";
     public static final String OUT_MOD_BODY_SMTP_TEMPLATE =
@@ -61,15 +60,15 @@ public class PhishSmtpFactory
 
   private static final String OUT_NOTIFY_SUB_TEMPLATE =
     "[FRAUD NOTIFICATION] re: $MIMEMessage:SUBJECT$";
-    
+
   private static final String OUT_NOTIFY_BODY_TEMPLATE =
-    "On $MIMEHeader:DATE$ a message from $MIMEMessage:FROM$ ($SMTPTransaction:FROM$) was received " + CRLF +
+      "On $MIMEHeader:DATE$ a message from $MIMEMessage:FROM$ ($SMTPTransaction:FROM$) was received " + CRLF +
     "and determined to be PHISH.  The details of the report are as follows:" + CRLF + CRLF +
     "$SPAMReport:FULL$";
 
   private static final String IN_NOTIFY_SUB_TEMPLATE = OUT_NOTIFY_SUB_TEMPLATE;
   private static final String IN_NOTIFY_BODY_TEMPLATE = OUT_NOTIFY_BODY_TEMPLATE;
-  
+
   private MailExport m_mailExport;
   private ClamPhishTransform m_phishImpl;
   private static final Logger m_logger =
@@ -85,10 +84,11 @@ public class PhishSmtpFactory
   private SmtpNotifyMessageGenerator m_outNotifier;
 
   public PhishSmtpFactory(ClamPhishTransform impl) {
-    m_mailExport = MailExportFactory.getExport();
+    Policy p = impl.getTid().getPolicy();
+    m_mailExport = MailExportFactory.factory().getExport(p);
     m_phishImpl = impl;
     MailSender mailSender = MvvmContextFactory.context().mailSender();
-    
+
     m_inNotifier = new SmtpNotifyMessageGenerator(
       IN_NOTIFY_SUB_TEMPLATE,
       IN_NOTIFY_BODY_TEMPLATE,
@@ -99,13 +99,13 @@ public class PhishSmtpFactory
       OUT_NOTIFY_SUB_TEMPLATE,
       OUT_NOTIFY_BODY_TEMPLATE,
       false,
-      mailSender);      
+      mailSender);
   }
 
 
   public TokenHandler tokenHandler(TCPSession session) {
 
-    boolean inbound = session.direction() == IPSessionDesc.INBOUND;
+      boolean inbound = session.isInbound();
 
     SpamSMTPConfig spamConfig = inbound?
       m_phishImpl.getSpamSettings().getSMTPInbound():

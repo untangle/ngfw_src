@@ -84,6 +84,12 @@ public abstract class NetcapSession {
 
         pointer.raze();
     }
+
+    /** Interface should be a netcap interface id */
+    public void serverInterfaceId( byte intf )
+    {
+        serverInterfaceId( pointer.value(), intf );
+    }
     
     protected abstract Endpoints makeEndpoints( boolean ifClient );
 
@@ -96,6 +102,8 @@ public abstract class NetcapSession {
     protected static native long   getLongValue  ( int id, long session );
     protected static native int    getIntValue   ( int id, long session );
     protected static native String getStringValue( int id, long session );
+
+    private native void serverInterfaceId( long session, byte intf );
 
     static
     {
@@ -117,6 +125,21 @@ public abstract class NetcapSession {
         public Endpoint client() { return client; }
         public Endpoint server() { return server; }
 
+        public String interfaceName()
+        {
+            return getStringValue( buildMask( FLAG_INTERFACE ), pointer.value());
+        }
+        
+        public byte interfaceId()
+        {
+            return (byte)getIntValue( buildMask( FLAG_INTERFACE ), pointer.value());
+        }
+
+        protected int buildMask( int type )
+        {
+            return (( ifClientSide ) ? FLAG_IF_CLIENT_MASK : 0) | type;
+        }
+
         protected class SessionEndpoint implements Endpoint {
             private final boolean ifClient;
 
@@ -136,17 +159,6 @@ public abstract class NetcapSession {
             {
                 return getIntValue( buildMask( FLAG_PORT ), pointer.value());
             }
-
-            public String interfaceName()
-            {
-                return getStringValue( buildMask( FLAG_INTERFACE ), pointer.value());
-            }
-
-            public byte interfaceId()
-            {
-                return (byte)getIntValue( buildMask( FLAG_INTERFACE ), pointer.value());
-            }
-
 
             protected int buildMask( int type )
             {

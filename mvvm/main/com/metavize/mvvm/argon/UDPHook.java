@@ -13,6 +13,7 @@ package com.metavize.mvvm.argon;
 
 import java.util.Iterator;
 
+import com.metavize.mvvm.policy.PolicyRule;
 import com.metavize.jnetcap.IPTraffic;
 import com.metavize.jnetcap.Netcap;
 import com.metavize.jnetcap.NetcapHook;
@@ -145,9 +146,9 @@ public class UDPHook implements NetcapHook
             serverTraffic.mark( IntfConverter.toNetcap( clientSide.clientIntf()));
             
             serverTraffic.lock();
-
-            byte intf = IntfConverter.toNetcap( clientSide.serverIntf());
-
+            
+            byte intf = IntfConverter.toNetcap( serverSide.serverIntf());
+                        
             /* XXXX ICMP HACK */
             if ( isIcmpSession ) {
                 if ( !netcapUDPSession.icmpMerge( serverTraffic, icmpServerId, intf )) {
@@ -180,7 +181,7 @@ public class UDPHook implements NetcapHook
             clientTraffic.isMarkEnabled( true );
 
             /* Packets cannot go back out on the server interface */
-            clientTraffic.mark( IntfConverter.toNetcap( clientSide.serverIntf()));
+            clientTraffic.mark( IntfConverter.toNetcap( serverSide.serverIntf()));
             
             clientTraffic.lock();
             return true;
@@ -228,8 +229,9 @@ public class UDPHook implements NetcapHook
             else
                 request = new UDPNewSessionRequestImpl( prevSession, agent );
                     
-
-            UDPSession session = agent.getNewSessionEventListener().newSession( request );
+            PolicyRule pr = pipelineDesc.getPolicyRule();
+            boolean isInbound = pr == null ? true : pr.isInbound();
+            UDPSession session = agent.getNewSessionEventListener().newSession( request, isInbound );
 
             processSession( request, session );
 

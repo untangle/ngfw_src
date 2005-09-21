@@ -11,20 +11,19 @@
 
 package com.metavize.tran.spam;
 
-import com.metavize.mvvm.tapi.*;
-import com.metavize.tran.token.TokenHandler;
-import com.metavize.tran.token.TokenHandlerFactory;
-import org.apache.log4j.Logger;
+import static com.metavize.tran.util.Ascii.*;
 
+import com.metavize.mvvm.MailSender;
+import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.policy.Policy;
+import com.metavize.mvvm.tapi.*;
+import com.metavize.tran.mail.*;
 import com.metavize.tran.mail.papi.*;
 import com.metavize.tran.mail.papi.smtp.*;
 import com.metavize.tran.mail.papi.smtp.sapi.Session;
-import com.metavize.tran.mail.papi.smtp.sapi.SimpleSessionHandler;
-import com.metavize.tran.mail.*;
-import com.metavize.tran.util.Template;
-import static com.metavize.tran.util.Ascii.*;
-import com.metavize.mvvm.MailSender;
-import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.tran.token.TokenHandler;
+import com.metavize.tran.token.TokenHandlerFactory;
+import org.apache.log4j.Logger;
 
 
 public class SpamSmtpFactory
@@ -43,10 +42,10 @@ public class SpamSmtpFactory
 
   //TODO bscott why the heck would someone want to be notified of spam?
   //     isn't that spam itself?
-    
+
   private static final String OUT_NOTIFY_SUB_TEMPLATE =
     "[SPAM NOTIFICATION] re: $MIMEMessage:SUBJECT$";
-    
+
   private static final String OUT_NOTIFY_BODY_TEMPLATE =
     "On $MIMEHeader:DATE$ a message from $MIMEMessage:FROM$ ($SMTPTransaction:FROM$) was received " + CRLF +
     "and determined to be spam based on a score of $SPAMReport:SCORE$ (where anything " + CRLF +
@@ -55,7 +54,7 @@ public class SpamSmtpFactory
 
   private static final String IN_NOTIFY_SUB_TEMPLATE = OUT_NOTIFY_SUB_TEMPLATE;
   private static final String IN_NOTIFY_BODY_TEMPLATE = OUT_NOTIFY_BODY_TEMPLATE;
-  
+
   private MailExport m_mailExport;
   private SpamImpl m_spamImpl;
   private static final Logger m_logger =
@@ -71,10 +70,11 @@ public class SpamSmtpFactory
   private SmtpNotifyMessageGenerator m_outNotifier;
 
   public SpamSmtpFactory(SpamImpl impl) {
-    m_mailExport = MailExportFactory.getExport();
+    Policy p = impl.getTid().getPolicy();
+    m_mailExport = MailExportFactory.factory().getExport(p);
     m_spamImpl = impl;
     MailSender mailSender = MvvmContextFactory.context().mailSender();
-    
+
     m_inNotifier = new SmtpNotifyMessageGenerator(
       IN_NOTIFY_SUB_TEMPLATE,
       IN_NOTIFY_BODY_TEMPLATE,
@@ -85,13 +85,13 @@ public class SpamSmtpFactory
       OUT_NOTIFY_SUB_TEMPLATE,
       OUT_NOTIFY_BODY_TEMPLATE,
       false,
-      mailSender);      
+      mailSender);
   }
 
 
   public TokenHandler tokenHandler(TCPSession session) {
 
-    boolean inbound = session.direction() == IPSessionDesc.INBOUND;
+      boolean inbound = session.isInbound();
 
     SpamSMTPConfig spamConfig = inbound?
       m_spamImpl.getSpamSettings().getSMTPInbound():

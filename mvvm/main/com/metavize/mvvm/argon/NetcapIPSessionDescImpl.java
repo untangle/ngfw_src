@@ -28,12 +28,15 @@ class NetcapIPSessionDescImpl implements IPSessionDesc
     protected final InetAddress serverAddr;
     protected final int clientPort;
     protected final int serverPort;
+    /* XXXXXXXX Get rid of the server and client interface, 
+       there should just be one interface for the side */
     protected final byte clientIntf;
     protected final byte serverIntf;
 
     NetcapIPSessionDescImpl( SessionGlobalState sessionGlobalState, boolean ifClientSide )
     {
         Endpoints side;
+        
         NetcapSession session;
 
         this.sessionGlobalState = sessionGlobalState;
@@ -49,25 +52,14 @@ class NetcapIPSessionDescImpl implements IPSessionDesc
         Endpoint client = side.client();
         Endpoint server = side.server();
 
-        clientAddr = client.host();
-        clientPort = client.port();
-        clientIntf = IntfConverter.toArgon( client.interfaceId());
+        this.clientAddr = client.host();
+        this.clientPort = client.port();
+        this.clientIntf = IntfConverter.toArgon( session.clientSide().interfaceId());
 
-        serverAddr = server.host();
-        serverPort = server.port();
-
-        /* XXX Need to actually retrieve the server interface once we go to
-         * multiple interface */
-        if ( clientIntf == IntfConverter.INSIDE ) {
-            serverIntf = IntfConverter.OUTSIDE;
-        } else if ( clientIntf == IntfConverter.OUTSIDE ) {
-            serverIntf = IntfConverter.INSIDE;
-        } else {
-            logger.warn( "Unknown client interface" );
-            serverIntf = IntfConverter.UNKNOWN_INTERFACE;
-        }
-    }
-    
+        this.serverAddr = server.host();
+        this.serverPort = server.port();
+        this.serverIntf = IntfConverter.toArgon( session.serverSide().interfaceId());
+    }    
     
     /**
      * Returns the ID of this session.</p>

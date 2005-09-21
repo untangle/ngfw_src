@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: TCPStreamer.java,v 1.1 2005/01/21 19:35:23 jdi Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.tapi.event;

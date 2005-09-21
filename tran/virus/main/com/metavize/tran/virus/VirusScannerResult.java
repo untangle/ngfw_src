@@ -86,15 +86,6 @@ public class VirusScannerResult
         return virusCleaned;
     }
 
-    // Object methods ---------------------------------------------------------
-
-    public String toString()
-    {
-        if (clean)
-            return "Clean";
-        else
-            return new String("Infected(" + virusName + ")");
-    }
     /**
     * For use in Templates (see JavaDoc at the top of this class
     * for explanation of the key which can be used).
@@ -105,5 +96,29 @@ public class VirusScannerResult
         return getVirusName();
       }
       return null;
+    }
+
+    // Object methods ---------------------------------------------------------
+
+    public boolean equals(Object o)
+    {
+        if (!(o instanceof VirusScannerResult)) {
+            return false;
+        } else {
+            VirusScannerResult vsr = (VirusScannerResult)o;
+            return clean == vsr.clean
+                && (null == virusName
+                    ? null == virusName : virusName.equals(vsr.virusName))
+                && virusCleaned == vsr.virusCleaned;
+        }
+    }
+
+    public String toString()
+    {
+        if (clean) {
+            return "Clean";
+        } else {
+            return new String("Infected(" + virusName + ")");
+        }
     }
 }

@@ -17,6 +17,8 @@ import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.Rule;
 import com.metavize.mvvm.tran.ParseException;
 
+import com.metavize.mvvm.argon.IntfConverter;
+
 /**
  * Rule for matching based on IP addresses and subnets.
  *
@@ -217,14 +219,14 @@ public abstract class TrafficRule extends Rule
     public void setDirection( String direction ) throws ParseException
     {
         if ( direction.equalsIgnoreCase( DIRECTION_BOTH )) {
-            setSrcIntf( IntfMatcher.MATCHER_ALL );
-            setDstIntf( IntfMatcher.MATCHER_ALL );
+            setSrcIntf( IntfMatcher.getMatcher( 3 ));
+            setDstIntf( IntfMatcher.getMatcher( 3 ));
         } else if ( direction.equalsIgnoreCase( DIRECTION_IN )) {
-            setSrcIntf( IntfMatcher.MATCHER_OUT );
-            setDstIntf( IntfMatcher.MATCHER_ALL );
+            setSrcIntf( IntfMatcher.getOutside());
+            setDstIntf( IntfMatcher.getInside());
         } else if ( direction.equalsIgnoreCase( DIRECTION_OUT )) {
-            setSrcIntf( IntfMatcher.MATCHER_IN );
-            setDstIntf( IntfMatcher.MATCHER_ALL );
+            setSrcIntf( IntfMatcher.getInside());
+            setDstIntf( IntfMatcher.getOutside());
         } else {
             throw new ParseException( "Invalid direction: " + direction );
         }
@@ -234,21 +236,24 @@ public abstract class TrafficRule extends Rule
     {
         /* XXX For now just use the src interface */
         if ( srcIntf == null ) {
-            srcIntf = IntfMatcher.MATCHER_ALL;
-            dstIntf = IntfMatcher.MATCHER_ALL;
+            srcIntf = IntfMatcher.getAll();
+            dstIntf = IntfMatcher.getAll();
             return DIRECTION_BOTH;
         } else {
-            if ( srcIntf.isInsideEnabled && srcIntf.isOutsideEnabled ) {
+            boolean isInsideEnabled = srcIntf.isMatch( IntfConverter.INSIDE );
+            boolean isOutsideEnabled = srcIntf.isMatch( IntfConverter.OUTSIDE );
+            
+            if ( isInsideEnabled && isOutsideEnabled ) {
                 return DIRECTION_BOTH;
-            } else if ( srcIntf.isInsideEnabled ) {
+            } else if ( isInsideEnabled ) {
                 return DIRECTION_OUT;
-            } else if ( srcIntf.isOutsideEnabled ) {
+            } else if ( isOutsideEnabled ) {
                 return DIRECTION_IN;
             }
         }
         /* Restore to default, something has gone wrong */
-        srcIntf = IntfMatcher.MATCHER_ALL;
-        dstIntf = IntfMatcher.MATCHER_ALL;
+        srcIntf = IntfMatcher.getAll();
+        dstIntf = IntfMatcher.getAll();
         return DIRECTION_BOTH;
     }
     

@@ -94,9 +94,8 @@ public class CasingAdaptor extends AbstractEventHandler
     public IPDataResult handleTCPClientChunk(TCPChunkEvent e)
     {
         logger.debug("handling client chunk, session: " + e.session().id());
-        boolean inbound = e.session().direction() == IPSessionDesc.INBOUND;
+        boolean inbound = e.session().isInbound();
 
-        logger.debug("client direction: " + e.session().direction());
         logger.debug("client inbound: " + inbound);
 
         if (clientSide) {
@@ -110,9 +109,8 @@ public class CasingAdaptor extends AbstractEventHandler
     public IPDataResult handleTCPServerChunk(TCPChunkEvent e)
     {
         logger.debug("handling server chunk, session: " + e.session().id());
-        boolean inbound = e.session().direction() == IPSessionDesc.INBOUND;
+        boolean inbound = e.session().isInbound();
 
-        logger.debug("server direction: " + e.session().direction());
         logger.debug("server inbound: " + inbound);
 
         if (clientSide) {
@@ -126,9 +124,8 @@ public class CasingAdaptor extends AbstractEventHandler
     public IPDataResult handleTCPClientDataEnd(TCPChunkEvent e)
     {
         logger.debug("handling client chunk, session: " + e.session().id());
-        boolean inbound = e.session().direction() == IPSessionDesc.INBOUND;
+        boolean inbound = e.session().isInbound();
 
-        logger.debug("client direction: " + e.session().direction());
         logger.debug("client inbound: " + inbound);
 
         if (clientSide) {
@@ -145,9 +142,8 @@ public class CasingAdaptor extends AbstractEventHandler
     public IPDataResult handleTCPServerDataEnd(TCPChunkEvent e)
     {
         logger.debug("handling server chunk, session: " + e.session().id());
-        boolean inbound = e.session().direction() == IPSessionDesc.INBOUND;
+        boolean inbound = e.session().isInbound();
 
-        logger.debug("server direction: " + e.session().direction());
         logger.debug("server inbound: " + inbound);
 
         if (clientSide) {

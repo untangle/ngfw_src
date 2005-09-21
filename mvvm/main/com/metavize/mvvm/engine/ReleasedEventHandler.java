@@ -9,7 +9,7 @@
  *  $Id$
  */
 
-package com.metavize.mvvm.tapi.impl;
+package com.metavize.mvvm.engine;
 
 import com.metavize.mvvm.tapi.AbstractEventHandler;
 import com.metavize.mvvm.tran.Transform;

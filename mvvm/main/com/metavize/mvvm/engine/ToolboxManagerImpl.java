@@ -38,11 +38,11 @@ import com.metavize.mvvm.Period;
 import com.metavize.mvvm.ToolboxManager;
 import com.metavize.mvvm.UpgradeSettings;
 import com.metavize.mvvm.security.Tid;
-import net.sf.hibernate.HibernateException;
-import net.sf.hibernate.Query;
-import net.sf.hibernate.Session;
-import net.sf.hibernate.Transaction;
 import org.apache.log4j.Logger;
+import org.hibernate.HibernateException;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 class ToolboxManagerImpl implements ToolboxManager
 {
@@ -101,8 +101,7 @@ class ToolboxManagerImpl implements ToolboxManager
         return TOOLBOX_MANAGER;
     }
 
-    // XXX permissions
-    public void destroy()
+    void destroy()
     {
         logger.info("ToolboxManager destroyed");
         updateDaemon.destroy();
@@ -270,10 +269,10 @@ class ToolboxManagerImpl implements ToolboxManager
         // stop mackage intances
         TransformManagerImpl tm = (TransformManagerImpl)MvvmContextFactory
             .context().transformManager();
-        Tid[] tids = tm.transformInstances(pkgName);
-        logger.debug("unloading " + tids.length + " transforms");
-        for (int i = 0; i < tids.length; i++) {
-            tm.unload(tids[i]); // XXX not destroy, release
+        List<Tid> tids = tm.transformInstances(pkgName);
+        logger.debug("unloading " + tids.size() + " transforms");
+        for (Tid t : tids) {
+            tm.unload(t); // XXX not destroy, release
         }
     }
 
@@ -283,7 +282,7 @@ class ToolboxManagerImpl implements ToolboxManager
         try {
             Transaction tx = s.beginTransaction();
 
-            s.saveOrUpdateCopy(us);
+            s.merge(us);
 
             tx.commit();
         } catch (HibernateException exn) {
@@ -303,7 +302,7 @@ class ToolboxManagerImpl implements ToolboxManager
     {
         UpgradeSettings us = null;
 
-        net.sf.hibernate.Session s = MvvmContextFactory.context()
+        org.hibernate.Session s = MvvmContextFactory.context()
             .openSession();
         try {
             Transaction tx = s.beginTransaction();

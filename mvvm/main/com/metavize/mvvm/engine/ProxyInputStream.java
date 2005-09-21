@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: ProxyInputStream.java,v 1.1 2005/01/31 00:48:52 amread Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.engine;

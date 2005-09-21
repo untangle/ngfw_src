@@ -21,11 +21,11 @@ import java.util.List;
 import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.PipeSpec;
 import com.metavize.mvvm.tran.TransformStats;
-import net.sf.hibernate.HibernateException;
-import net.sf.hibernate.Query;
-import net.sf.hibernate.Session;
-import net.sf.hibernate.Transaction;
 import org.apache.log4j.Logger;
+import org.hibernate.HibernateException;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 public class AirgapTransformImpl extends AbstractTransform
     implements AirgapTransform
@@ -58,7 +58,7 @@ public class AirgapTransformImpl extends AbstractTransform
         try {
             Transaction tx = s.beginTransaction();
 
-            s.saveOrUpdateCopy(settings);
+            s.merge(settings);
             this.settings = settings;
 
             tx.commit();

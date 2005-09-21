@@ -11,9 +11,10 @@
 
 package com.metavize.mvvm.engine;
 
+import java.net.InetAddress;
+
 import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.mvvm.security.LoginFailureReason;
-import java.net.InetAddress;
 
 /**
  * Log event for a login/login-attempt.

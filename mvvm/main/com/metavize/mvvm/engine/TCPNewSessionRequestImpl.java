@@ -6,19 +6,19 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: TCPNewSessionRequestImpl.java,v 1.1 2005/01/06 20:51:29 jdi Exp $
+ *  $Id$
  */
 
-package com.metavize.mvvm.tapi.impl;
+package com.metavize.mvvm.engine;
 
-import java.net.InetAddress;
 import com.metavize.mvvm.tapi.TCPNewSessionRequest;
-import com.metavize.mvvm.tapi.MPipe;
 
 class TCPNewSessionRequestImpl extends IPNewSessionRequestImpl implements TCPNewSessionRequest {
 
-    protected TCPNewSessionRequestImpl(Dispatcher disp, com.metavize.mvvm.argon.TCPNewSessionRequest pRequest) {
-        super(disp, pRequest);
+    protected TCPNewSessionRequestImpl(Dispatcher disp,
+                                       com.metavize.mvvm.argon.TCPNewSessionRequest pRequest,
+                                       boolean isInbound) {
+        super(disp, pRequest, isInbound);
     }
 
     public boolean acked() {

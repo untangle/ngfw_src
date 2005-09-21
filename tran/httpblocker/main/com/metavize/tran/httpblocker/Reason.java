@@ -46,8 +46,8 @@ public class Reason implements Serializable
         INSTANCES.put('N', DEFAULT);
     }
 
-    private char key;
-    private String reason;
+    private final char key;
+    private final String reason;
 
     private Reason(char key, String reason)
     {

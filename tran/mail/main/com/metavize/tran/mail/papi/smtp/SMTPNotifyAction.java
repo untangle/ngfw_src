@@ -36,8 +36,8 @@ public class SMTPNotifyAction implements Serializable
         INSTANCES.put(NEITHER.getKey(), NEITHER);
     }
 
-    private String name;
-    private char key;
+    private final String name;
+    private final char key;
 
     private SMTPNotifyAction(char key, String name)
     {

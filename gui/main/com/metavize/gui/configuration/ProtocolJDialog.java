@@ -35,7 +35,7 @@ public class ProtocolJDialog extends MConfigJDialog {
         this.setTitle(NAME_MANUAL_OVERRIDE_SETTINGS);
 
         // ADD ALL CASINGS TO THE PANEL
-        MCasingJPanel[] mCasingJPanels = Util.getMPipelineJPanel().loadAllCasings(true);
+        MCasingJPanel[] mCasingJPanels = Util.getPolicyStateMachine().loadAllCasings(true);
         JScrollPane contentJScrollPane = null;
         String casingDisplayName = null;
         boolean addedSomething = false;

@@ -16,6 +16,7 @@ import java.util.Iterator;
 
 import org.apache.log4j.Logger;
 
+import com.metavize.mvvm.policy.PolicyRule;
 import com.metavize.jnetcap.Netcap;
 import com.metavize.jnetcap.NetcapHook;
 import com.metavize.jnetcap.NetcapSession;
@@ -257,8 +258,10 @@ public class TCPHook implements NetcapHook
                 request = new TCPNewSessionRequestImpl( sessionGlobalState, agent );
             else
                 request = new TCPNewSessionRequestImpl( prevSession, agent );
-                            
-            TCPSession session = agent.getNewSessionEventListener().newSession( request );
+                         
+            PolicyRule pr = pipelineDesc.getPolicyRule();
+            boolean isInbound = pr == null ? true : pr.isInbound();
+            TCPSession session = agent.getNewSessionEventListener().newSession( request, isInbound );
             
             processSession( request, session );
             

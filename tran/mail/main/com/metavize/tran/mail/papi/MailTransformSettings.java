@@ -13,7 +13,6 @@ package com.metavize.tran.mail.papi;
 
 import java.io.Serializable;
 
-import com.metavize.mvvm.security.Tid;
 
 /**
  * Mail casing settings.
@@ -28,7 +27,6 @@ public class MailTransformSettings implements Serializable
     private static final long serialVersionUID = -6466793822226799781L;
 
     private Long id;
-    private Tid tid;
 
     private boolean smtpEnabled = true;
     private boolean popEnabled = true;
@@ -36,7 +34,7 @@ public class MailTransformSettings implements Serializable
 
     public static final long TIMEOUT_MAX = 86400000l;
     public static final long TIMEOUT_MIN = 0l;
-    
+
     private long smtpInboundTimeout;
     private long smtpOutboundTimeout;
     private long popInboundTimeout;
@@ -63,25 +61,6 @@ public class MailTransformSettings implements Serializable
     private void setId(Long id)
     {
         this.id = id;
-    }
-
-    /**
-     * Transform id for these settings.
-     *
-     * @return tid for these settings.
-     * @hibernate.many-to-one
-     * column="TID"
-     * unique="true"
-     * not-null="true"
-     */
-    public Tid getTid()
-    {
-        return tid;
-    }
-
-    public void setTid(Tid tid)
-    {
-        this.tid = tid;
     }
 
     /**

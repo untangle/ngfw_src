@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: SinkEndpointListener.java,v 1.1 2005/01/29 01:34:42 rbscott Exp $
+ * $Id$
  */
 
 package com.metavize.jvector;

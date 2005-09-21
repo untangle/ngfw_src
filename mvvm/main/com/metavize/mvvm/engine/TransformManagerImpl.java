@@ -13,9 +13,12 @@ package com.metavize.mvvm.engine;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -38,11 +41,11 @@ import com.metavize.mvvm.tran.TransformManager;
 import com.metavize.mvvm.tran.TransformState;
 import com.metavize.mvvm.tran.TransformStats;
 import com.metavize.mvvm.tran.UndeployException;
-import net.sf.hibernate.HibernateException;
-import net.sf.hibernate.Query;
-import net.sf.hibernate.Session;
-import net.sf.hibernate.Transaction;
 import org.apache.log4j.Logger;
+import org.hibernate.HibernateException;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -51,7 +54,6 @@ import org.xml.sax.helpers.XMLReaderFactory;
 class TransformManagerImpl implements TransformManager
 {
     private static final String DESC_PATH = "META-INF/mvvm-transform.xml";
-    private static final Tid[] TID_PROTO = new Tid[0];
 
     private static final Object LOCK = new Object();
 
@@ -109,52 +111,87 @@ class TransformManagerImpl implements TransformManager
 
     // TransformManager -------------------------------------------------------
 
-    public Tid[] transformInstances()
+
+    public List<Tid> transformInstances()
     {
-        Tid[] tidArray = tids.keySet().toArray(TID_PROTO);
+        List<Tid> l = new ArrayList<Tid>(tids.keySet());
 
-        try {
-            // Sort the returned list by rack position.  This allows
-            // for nice fixed report ordering, etc.
-            Arrays.sort(tidArray, new Comparator<Tid>() {
-                public int compare(Tid t1, Tid t2) {
-                    TransformContextImpl tci1 = tids.get(t1);
-                    TransformContextImpl tci2 = tids.get(t2);
-                    int rpi1 = tci1.getMackageDesc().getRackPosition();
-                    int rpi2 = tci2.getMackageDesc().getRackPosition();
-                    if (rpi1 == rpi2)
-                        return 0;
-                    else if (rpi1 < rpi2)
-                        return -1;
-                    else
-                        return 1;
-                }
-            });
-        } catch (Exception x) {
-            logger.error("Unexpected expection: " + x);
-        }
+        // only reports requires sorting
+        // XXX the client should do its own sorting
+        Collections.sort(l, new Comparator<Tid>() {
+            public int compare(Tid t1, Tid t2) {
+                TransformContextImpl tci1 = tids.get(t1);
+                TransformContextImpl tci2 = tids.get(t2);
+                int rpi1 = tci1.getMackageDesc().getRackPosition();
+                int rpi2 = tci2.getMackageDesc().getRackPosition();
+                if (rpi1 == rpi2)
+                    return 0;
+                else if (rpi1 < rpi2)
+                    return -1;
+                else
+                    return 1;
+            }
+        });
 
-        return tidArray;
+        return l;
     }
 
-    public Tid[] transformInstances(String mackageName)
+    public List<Tid> transformInstances(String mackageName)
     {
         List<Tid> l = new LinkedList<Tid>();
 
-        for (Iterator i = tids.keySet().iterator(); i.hasNext(); ) {
-            Tid tid = (Tid)i.next();
+        for (Tid tid : tids.keySet()) {
             TransformContext tc = tids.get(tid);
-            if (tc.getTransformDesc().getName().equals(mackageName)) {
-                l.add(tid);
+            if (null != tc) {
+                if (tc.getTransformDesc().getName().equals(mackageName)) {
+                    l.add(tid);
+                }
             }
         }
 
-        return l.toArray(TID_PROTO);
+        return l;
     }
 
-    public Tid[] transformInstances(Policy policy)
+    public List<Tid> transformInstances(String name, Policy policy)
     {
-        return new Tid[0]; // XXX implement
+        List<Tid> l = new ArrayList<Tid>(tids.size());
+
+        for (Tid tid : tids.keySet()) {
+            TransformContext tc = tids.get(tid);
+            if (null != tc) {
+                String n = tc.getTransformDesc().getName();
+
+                Policy p = tid.getPolicy();
+                assert null != p && null != policy;
+
+                if (n.equals(name) && policy.equals(p)) {
+                    l.add(tid);
+                }
+            }
+        }
+
+        return l;
+    }
+
+    public List<Tid> transformInstances(Policy policy)
+    {
+        List<Tid> l = new ArrayList<Tid>(tids.size());
+
+        for (Tid tid : tids.keySet()) {
+            TransformContext tc = tids.get(tid);
+
+            if (null != tc) {
+                String n = tc.getTransformDesc().getName();
+
+                Policy p = tid.getPolicy();
+
+                if (policy.equals(p)) {
+                    l.add(tid);
+                }
+            }
+        }
+
+        return l;
     }
 
     public TransformContext transformContext(Tid tid)
@@ -167,16 +204,28 @@ class TransformManagerImpl implements TransformManager
         return threadContexts.get();
     }
 
-    public Tid instantiate(String transformName, String[] args)
-        throws DeployException
-    {
-        return instantiate(transformName, newTid(), args);
-    }
-
     public Tid instantiate(String transformName)
         throws DeployException
     {
-        return instantiate(transformName, newTid(), new String[0]);
+        return instantiate(transformName, newTid(null, transformName), new String[0]);
+    }
+
+    public Tid instantiate(String transformName, String[] args)
+        throws DeployException
+    {
+        return instantiate(transformName, newTid(null, transformName), args);
+    }
+
+    public Tid instantiate(String transformName, Policy policy)
+        throws DeployException
+    {
+        return instantiate(transformName, newTid(policy, transformName), new String[0]);
+    }
+
+    public Tid instantiate(String transformName, Policy policy, String[] args)
+        throws DeployException
+    {
+        return instantiate(transformName, newTid(policy, transformName), args);
     }
 
     public void destroy(Tid tid) throws UndeployException
@@ -252,21 +301,14 @@ class TransformManagerImpl implements TransformManager
 
     // package protected methods ----------------------------------------------
 
-    // XXX make package private when i move stuff
-    public void registerThreadContext(TransformContext ctx)
+    void registerThreadContext(TransformContext ctx)
     {
         threadContexts.set(ctx);
     }
 
-    // XXX make package private when i move stuff
-    public void deregisterThreadContext()
+    void deregisterThreadContext()
     {
         threadContexts.remove();
-    }
-
-    CasingClassLoader getCasingClassLoader()
-    {
-        return casingClassLoader;
     }
 
     void unload(Tid tid)
@@ -294,6 +336,7 @@ class TransformManagerImpl implements TransformManager
             TransformPersistentState tps = i.next();
             URL[] urls = tbm.resources(tps.getName());
             Tid tid = tps.getTid();
+            tid.setTransformName(tps.getName());
 
             try {
                 logger.info("initializing transform desc for: " + tps.getName());
@@ -342,9 +385,12 @@ class TransformManagerImpl implements TransformManager
                     MackageDesc mackageDesc = tbm.mackageDesc(name);
                     String[] args = tps.getArgArray();
                     logger.info("Restarting: " + tid + " (" + name + ")");
+
+                    URLClassLoader cl = getClassLoader(tDesc, urls);
+
                     try {
                         TransformContextImpl tc = new TransformContextImpl
-                            (urls, tDesc, mackageDesc, false);
+                            (cl, tDesc, mackageDesc, false);
                         tids.put(tid, tc);
                         tc.init(args);
                         logger.info("Restarted: " + tid);
@@ -355,6 +401,20 @@ class TransformManagerImpl implements TransformManager
                     }
                 }
             }
+        }
+    }
+
+    // private classes --------------------------------------------------------
+
+    private static class UrlComparator implements Comparator<URL>
+    {
+        public static final UrlComparator COMPARATOR = new UrlComparator();
+
+        private UrlComparator() { }
+
+        public int compare(URL o1, URL o2)
+        {
+            return o1.toString().compareTo(o2.toString());
         }
     }
 
@@ -398,19 +458,74 @@ class TransformManagerImpl implements TransformManager
         ToolboxManagerImpl tbm = (ToolboxManagerImpl)MvvmContextFactory
             .context().toolboxManager();
 
-        URL[] urls = tbm.resources(transformName);
+        URL[] resUrls = tbm.resources(transformName);
+
         MackageDesc mackageDesc = tbm.mackageDesc(transformName);
         logger.info("initializing transform desc for: " + transformName);
-        TransformDesc tDesc = initTransformDesc(urls, tid);
+        TransformDesc tDesc = initTransformDesc(resUrls, tid);
 
         synchronized (this) {
+            URLClassLoader cl = getClassLoader(tDesc, resUrls);
+
             TransformContextImpl tc = new TransformContextImpl
-                (urls, tDesc, mackageDesc, true);
+                (cl, tDesc, mackageDesc, true);
             tids.put(tid, tc);
             tc.init(args);
         }
 
         return tid;
+    }
+
+    private URLClassLoader getClassLoader(TransformDesc tDesc, URL[] resUrls)
+    {
+        String name = tDesc.getName();
+
+        Arrays.sort(resUrls, UrlComparator.COMPARATOR);
+
+        for (TransformContextImpl tc : tids.values()) {
+            if (name.equals(tc.getTransformDesc().getName())) {
+                URLClassLoader cl = tc.getClassLoader();
+                URL[] clUrls = cl.getURLs();
+                Arrays.sort(clUrls, UrlComparator.COMPARATOR);
+                if (Arrays.equals(resUrls, clUrls)) {
+                    logger.debug(name + " reusing classLoader: " + cl);
+                    return cl;
+                } else {
+                    logger.warn("transform: " + name
+                                + " with different resources");
+                }
+            }
+        }
+
+        logger.debug("creating new ClassLoader for: " + name);
+        for (String export : tDesc.getExports()) {
+            try {
+                logger.debug("exporting: " + export);
+                URL url = new URL(ToolboxManagerImpl.TOOLBOX_URL, export);
+                casingClassLoader.addResource(url);
+            } catch (MalformedURLException exn) {
+                logger.warn("could not add resource: " + export);
+            }
+        }
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("CasingClassLoader urls");
+            for (URL url : casingClassLoader.getURLs()) {
+                logger.debug("  " + url);
+            }
+
+            logger.debug("new URLClassLoader:");
+            for (URL url : resUrls) {
+                logger.debug("  " + url);
+            }
+        }
+
+        if (null != tDesc.getTransformBase()) {
+            SchemaUtil.initSchema(tDesc.getTransformBase());
+        }
+        SchemaUtil.initSchema(name);
+
+        return new URLClassLoader(resUrls, casingClassLoader);
     }
 
     /**
@@ -448,18 +563,23 @@ class TransformManagerImpl implements TransformManager
         return transformDesc;
     }
 
-    private Tid newTid()
+    private Tid newTid(Policy policy, String transformName)
     {
+        if (null == policy) {
+            policy = MvvmContextFactory.context().policyManager()
+                .getDefaultPolicy();
+        }
+
         Tid tid;
         synchronized (transformManagerState) {
-            tid = transformManagerState.nextTid();
+            tid = transformManagerState.nextTid(policy, transformName);
         }
 
         Session s = MvvmContextFactory.context().openSession();
         try {
             Transaction tx = s.beginTransaction();
 
-            s.saveOrUpdateCopy(transformManagerState);
+            s.merge(transformManagerState);
             s.save(tid);
 
             tx.commit();

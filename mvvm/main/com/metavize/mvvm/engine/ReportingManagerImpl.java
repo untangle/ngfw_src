@@ -9,20 +9,21 @@
  *  $Id: ReportingManagerImpl.java 1185 2005-06-27 21:26:25Z rbscott $
  */
 
-package com.metavize.mvvm.reporting;
+package com.metavize.mvvm.engine;
 
 import java.io.File;
-import org.apache.log4j.Logger;
+import java.util.List;
 
-import com.metavize.mvvm.MvvmLocalContext;
 import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.MvvmLocalContext;
 import com.metavize.mvvm.ReportingManager;
 import com.metavize.mvvm.security.Tid;
 import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.tran.TransformManager;
 import com.metavize.mvvm.tran.TransformState;
+import org.apache.log4j.Logger;
 
-public class ReportingManagerImpl implements ReportingManager
+class ReportingManagerImpl implements ReportingManager
 {
     private static final String BUNNICULA_WEB = System.getProperty( "bunnicula.web.dir" );
 
@@ -31,12 +32,11 @@ public class ReportingManagerImpl implements ReportingManager
 
     private static final Logger logger = Logger.getLogger( ReportingManagerImpl.class );
 
-    private static ReportingManager REPORTING_MANAGER   = new ReportingManagerImpl();
-    
-    private ReportingManagerImpl() {
-    }
+    private static ReportingManagerImpl REPORTING_MANAGER = new ReportingManagerImpl();
 
-    public static ReportingManager reportingManager()
+    private ReportingManagerImpl() { }
+
+    static ReportingManagerImpl reportingManager()
     {
         return REPORTING_MANAGER;
     }
@@ -44,11 +44,11 @@ public class ReportingManagerImpl implements ReportingManager
     public boolean isReportingEnabled() {
         MvvmLocalContext mvvm = MvvmContextFactory.context();
         TransformManager transformManager = mvvm.transformManager();
-        Tid[] tids = transformManager.transformInstances("reporting-transform");
-        if(tids == null || tids.length == 0)
+        List<Tid> tids = transformManager.transformInstances("reporting-transform");
+        if(tids == null || tids.size() == 0)
             return false;
         // What if more than one? Shouldn't happen. XX
-        TransformContext context = transformManager.transformContext(tids[0]);
+        TransformContext context = transformManager.transformContext(tids.get(0));
         if (context == null)
             return false;
         TransformState state = context.getRunState();

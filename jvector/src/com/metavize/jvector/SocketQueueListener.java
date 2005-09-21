@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: SocketQueueListener.java,v 1.3 2005/01/20 22:20:54 rbscott Exp $
+ * $Id$
  */
 
 package com.metavize.jvector;

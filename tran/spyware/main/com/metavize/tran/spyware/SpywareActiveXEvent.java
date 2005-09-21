@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: SpywareActiveXEvent.java,v 1.5 2005/03/25 03:51:16 amread Exp $
+ * $Id$
  */
 
 package com.metavize.tran.spyware;

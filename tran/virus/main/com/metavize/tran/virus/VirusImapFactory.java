@@ -48,14 +48,14 @@ public final class VirusImapFactory
 
   VirusImapFactory(VirusTransformImpl transform) {
     m_virusImpl = transform;
-    m_mailExport = MailExportFactory.getExport();    
+    /* XXX RBS I don't know if this will work */
+    m_mailExport = MailExportFactory.factory().getExport( transform.getTid().getPolicy());    
   }
 
 
   public TokenHandler tokenHandler(TCPSession session) {
     
-    boolean inbound =
-      session.direction() == IPSessionDesc.INBOUND;
+    boolean inbound = session.isInbound();  
 
     VirusIMAPConfig virusConfig = inbound?
       m_virusImpl.getVirusSettings().getIMAPInbound():

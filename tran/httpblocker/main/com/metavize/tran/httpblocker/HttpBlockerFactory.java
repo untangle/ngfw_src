@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: HttpBlockerFactory.java,v 1.2 2005/01/28 10:27:31 amread Exp $
+ * $Id$
  */
 
 package com.metavize.tran.httpblocker;

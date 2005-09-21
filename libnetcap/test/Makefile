@@ -1,6 +1,8 @@
 # $Id: Makefile,v 1.4 2005/01/24 04:11:53 dmorris Exp $
 # 
 
+include ../../buildtools/Makefile.in
+
 BUILD_ROOT ?= $(shell echo ~/build)
 DESTDIR     = ${BUILD_ROOT}
 
@@ -15,18 +17,24 @@ FLAGS         =
 DEFINES       = -D_GNU_SOURCE -D_REENTRANT -DNETCAP_IPTABLES 
 WARNINGS      = -Wall
 OPTIMIZATIONS = -fomit-frame-pointer
-INCLUDEDIR    = -I../include -I${BUILD_ROOT}/usr/include -I/usr/local/include/libxml2 -I/usr/include/libxml2
-LDDIR         = -L../lib -L${BUILD_ROOT}/usr/lib 
-LIBS          = -lnetcap -pthread -lmvutil -lipq -lm -lxml2 #-lefence 
+#INCLUDEDIR    = -I../include -I${build_inc_path} -I/usr/include/libxml2
+INCLUDEDIR    = -I${build_inc_path} -I/usr/include/libxml2 -I../src
+LDDIR         = -L../lib
+LIBS          = -lipq -lm -lxml2 -lsysfs #-lefence 
 
-DEFINES  +=  -DDEBUG_ON -DDEBUG_PKG=1
-FLAGS    += -g -ggdb 
+DEFINES      +=  -DDEBUG_ON -DDEBUG_PKG=1
+FLAGS        += -g -ggdb 
 
-CFLAGS      =  $(FLAGS) $(DEFINES) $(WARNINGS) $(OPTIMIZATIONS) $(INCLUDEDIR) $(LDDIR) $(LIBS)
+CFLAGS        =  $(FLAGS) $(DEFINES) $(WARNINGS) $(OPTIMIZATIONS) $(INCLUDEDIR) $(LDDIR) $(LIBS)
 
-LIB = $(LIBDIR)/libnetcap.a
+archives_base = netcap mvutil
+archives      = $(patsubst %,$(build_lib_path)/lib%.a,$(archives_base))
 
-BINS = test_trie test1 test2 test3 test4 test_udp test_udp_mark
+LIB = $(archives)
+
+## XXX Most of these tests no longer works.
+#BINS = test_trie test1 test2 test3 test4 test_udp test_udp_mark
+BINS = test_interface
 
 all:	$(BINS)
 
@@ -55,6 +63,9 @@ test_broadcast: test_broadcast.c $(LIB)
 
 test_queue: test_queue.c $(LIB)
 	${CC} test_queue.c ${UTIL_OBJS} ${LDLIBS} ${CFLAGS} -o $@
+
+test_interface: test_interface.c $(LIB)
+	${CC} test_interface.c ${archives} ${UTIL_OBJS} ${LDLIBS} ${CFLAGS} -o $@
 
 test_trie: test_trie.c $(LIB)
 	${CC} $@.c -I../src/ ${UTIL_OBJS} ${LDLIBS} ${CFLAGS} -o $@

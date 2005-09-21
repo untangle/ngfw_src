@@ -76,7 +76,7 @@ public class SpamPopHandler extends PopStateMachine
         SpamPOPConfig zConfig;
         WrappedMessageGenerator zWMGenerator;
 
-        if (IntfConverter.INSIDE == session.clientIntf()) {
+        if (!session.isInbound()) {
             zConfig = transform.getSpamSettings().getPOPInbound();
             zWMGenerator = new WrappedMessageGenerator(SpamSettings.IN_MOD_SUB_TEMPLATE, SpamSettings.IN_MOD_BODY_TEMPLATE);
             lTimeout = zMTSettings.getPopInboundTimeout();

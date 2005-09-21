@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,15 +25,12 @@ import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.MvvmLocalContext;
 import com.metavize.mvvm.security.Tid;
 import com.metavize.mvvm.tran.TransformContext;
-import net.sf.hibernate.HibernateException;
-import net.sf.hibernate.Session;
-import net.sf.hibernate.Transaction;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
-import org.logicalcobwebs.proxool.ConnectionPoolDefinitionIF;
-import org.logicalcobwebs.proxool.ProxoolFacade;
-import org.logicalcobwebs.proxool.ProxoolListenerIF;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 public class HibernateAppender extends AppenderSkeleton
 {
@@ -54,23 +50,6 @@ public class HibernateAppender extends AppenderSkeleton
     public HibernateAppender()
     {
         this.loggers = new ConcurrentHashMap<Tid, LogWorker>();
-
-        ProxoolFacade.addProxoolListener(new ProxoolListenerIF()
-            {
-                public void onRegistration(ConnectionPoolDefinitionIF def,
-                                           Properties props) { }
-
-
-                public void onShutdown(String alias)
-                {
-                    if (alias.equals("mvvm")) {
-                        logger.info("shutting down appender");
-                        shutdownLoggers();
-                    } else {
-                        logger.warn("ignoring: " + alias);
-                    }
-                }
-            });
     }
 
     // Appender methods -------------------------------------------------------

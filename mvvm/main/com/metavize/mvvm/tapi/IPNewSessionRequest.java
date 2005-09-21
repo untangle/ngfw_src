@@ -17,6 +17,23 @@ import com.metavize.mvvm.argon.SessionEndpoints;
 public interface IPNewSessionRequest extends NewSessionRequest, SessionEndpoints {
 
     /**
+     * Sessions are inbound when the inbound side of the policy is selected.  This is decided
+     * at welding time and is no longer dependent only on the client/server interfaces.
+     *
+     * @return true if the session is inbound, false if it is outbound
+     */
+    boolean isInbound();
+
+    /**
+     * Sessions are outbound when the outbound side of the policy is selected.  This is decided
+     * at welding time and is no longer dependent only on the client/server interfaces.  This is
+     * the inverse of <code>isInbound</code>
+     *
+     * @return true if the session is outbound, false if it is inbound
+     */
+    boolean isOutbound();
+
+    /**
      * Sets the client address for this session.</p>
      */
     void clientAddr( InetAddress addr );

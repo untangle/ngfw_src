@@ -19,23 +19,31 @@ import java.util.Iterator;
 
 import org.apache.log4j.Logger;
 
+import com.metavize.jvector.Vector;
+
 import com.metavize.jnetcap.Netcap;
 import com.metavize.jnetcap.Shield;
 import com.metavize.jnetcap.JNetcapException;
 
 import com.metavize.mvvm.MvvmContextFactory;
 
-import com.metavize.jvector.Vector;
+import com.metavize.mvvm.tran.firewall.PortMatcher;
+import com.metavize.mvvm.tran.firewall.ProtocolMatcher;
+import com.metavize.mvvm.tran.firewall.IntfMatcher;
+import com.metavize.mvvm.tran.firewall.IPMatcher;
 
 import com.metavize.mvvm.shield.ShieldMonitor;
 
 public class Argon
 {    
     /* Number of times to try and shutdown all vectoring machines cleanly before giving up */
-    protected static final int SHUTDOWN_ATTEMPTS = 5;
+    static final int SHUTDOWN_ATTEMPTS = 5;
 
     /* Amount of time between subsequent calls to shutdown all of the vectoring machines */
-    protected static final int SHUTDOWN_PAUSE    = 2000;
+    static final int SHUTDOWN_PAUSE    = 2000;
+
+    /* Separator in between each user defined interface */
+    private static final String USER_INTERFACE_SEPARATOR = ",";
 
     /* Maximum number of threads allowed at any time */
     private static int MAX_THREADS = 10000;
@@ -47,25 +55,28 @@ public class Argon
     private int totalThreads;
     private int activeThreads;
     
-    protected int netcapDebugLevel    = 1;
-    protected int jnetcapDebugLevel   = 1;
-    protected int vectorDebugLevel    = 0;
-    protected int jvectorDebugLevel   = 0;
-    protected int mvutilDebugLevel    = 0;
-    protected boolean isShieldEnabled = true;
-    protected String shieldFile       = null;
-    protected Shield shield;
+    int netcapDebugLevel    = 1;
+    int jnetcapDebugLevel   = 1;
+    int vectorDebugLevel    = 0;
+    int jvectorDebugLevel   = 0;
+    int mvutilDebugLevel    = 0;
+    boolean isShieldEnabled = true;
+    String shieldFile       = null;
+    Shield shield;
     
     /* Number of threads to donate to netcap */
-    protected int numThreads        = 15;
+    int numThreads        = 15;
 
     /* Debugging */
     private final Logger logger = Logger.getLogger( this.getClass());
 
-    /* Inside device */
-    protected String inside  = "eth1";
-    protected String outside = "eth0";
-    protected String dmz[]   = null;
+    /* Default device values */
+    String outside = "eth0";
+    String inside  = "eth1";
+
+    /* If there is a DMZ interface, it is passed in using the system property */
+    String dmz     = "";
+    String user[]  = new String[0];
 
     /* Singleton */
     private Argon()
@@ -80,7 +91,6 @@ public class Argon
         INSTANCE.run( args );
     }
     
-    /* For some reason this also can't be called main, even though one is static and one is not */
     public void run( String args[] )
     {
         /* Get an instance of the shield */
@@ -107,14 +117,23 @@ public class Argon
         if (( temp = System.getProperty( "argon.outside" )) != null ) {
             outside = temp;
         }
+        
+        if (( temp = System.getProperty( "argon.dmz" )) != null ) {
+            dmz = temp;
+        }
+
+        if (( temp = System.getProperty( "argon.userintf" )) != null ) {
+            user = temp.split( USER_INTERFACE_SEPARATOR );
+        }
 
         if (( temp = System.getProperty( "argon.numthreads" )) != null ) {
             int count;
             count = Integer.parseInt( temp );
             if ( count < 0 ) {
-                throw new IllegalArgumentException( "argon.numthreads must be > 0. " + count ) ;
+                logger.error( "argon.numthreads must be > 0." + count + " continuing" );
+            } else {
+                numThreads = count;
             }
-            numThreads = count;
         }
 
         if (( temp = System.getProperty( "argon.debug.netcap" )) != null ) {
@@ -182,7 +201,7 @@ public class Argon
 
         /* Convert all of the interface names from strings to bytes */
         try {
-            IntfConverter.init( inside, outside, dmz );
+            IntfConverter.init( inside, outside, dmz, user );
         } catch ( ArgonException e ) {
             logger.error( "Error initializing IntfConverter, continuing", e );
         }
@@ -195,6 +214,10 @@ public class Argon
         } catch ( ArgonException e ) {
             logger.error( "Unable to initialize iptables rules!!!!", e );
         }
+
+        /* Initialize the InterfaceOverride table, this is just so the logger doesn't get into the NAT
+         * transform context */
+        InterfaceOverride.getInstance().clearOverrideList();
     }
 
     public void destroy() 

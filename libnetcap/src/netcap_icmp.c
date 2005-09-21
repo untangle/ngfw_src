@@ -182,7 +182,7 @@ static netcap_session_t* _icmp_get_error_session( netcap_pkt_t* pkt, mailbox_t**
             /* Error packet from the server wrg packet from the client */
             debug( 10, "ICMP: Server mailbox\n" );
             *mb  =  &netcap_sess->srv_mb;
-            intf = netcap_sess->srv.srv.intf;
+            intf = netcap_sess->srv.intf;
         } else if ( src_host == netcap_sess->cli.cli.host.s_addr ) {
             /* Error packet from the client wrg to a packet from the server */
             debug( 10, "ICMP: Client mailbox\n" );
@@ -192,7 +192,7 @@ static netcap_session_t* _icmp_get_error_session( netcap_pkt_t* pkt, mailbox_t**
                 *mb = NULL;
             } else {
                 *mb  = &netcap_sess->cli_mb;
-                intf = netcap_sess->cli.cli.intf;
+                intf = netcap_sess->cli.intf;
             }
         } else {
             *mb = NULL;
@@ -202,10 +202,10 @@ static netcap_session_t* _icmp_get_error_session( netcap_pkt_t* pkt, mailbox_t**
                                 unet_next_inet_ntoa( netcap_sess->srv.srv.host.s_addr ));
         }
 
-        if (( *mb != NULL ) && ( pkt->src.intf != intf )) {
+        if (( *mb != NULL ) && ( pkt->src_intf != intf )) {
             *mb = NULL;
             debug( 5, "ICMP: Packet from the incorrect interface expected %d actual %d\n", 
-                    intf, pkt->src.intf );
+                    intf, pkt->src_intf );
             return NULL;
         }
     } else {
@@ -266,12 +266,12 @@ static int _icmp_get_mailbox( netcap_pkt_t* pkt, netcap_session_t* session,
         debug( 10, "ICMP: Client mailbox\n" );
         *mb      = &session->cli_mb;
         *icmp_mb = &session->icmp_cli_mb;
-        intf = session->cli_intf;
+        intf = session->cli.intf;
     } else if ( pkt->src.host.s_addr == session->srv.srv.host.s_addr ) {
         debug( 10, "ICMP: Server mailbox\n" );
         *mb = &session->srv_mb;
         *icmp_mb = &session->icmp_srv_mb;
-        intf = session->srv_intf;
+        intf = session->srv.intf;
     } else {
         return errlog( ERR_CRITICAL, "Cannot determine correct mailbox: pkt %s, cli %s, srv %s\n",
                        unet_next_inet_ntoa( pkt->src.host.s_addr ), 
@@ -279,9 +279,9 @@ static int _icmp_get_mailbox( netcap_pkt_t* pkt, netcap_session_t* session,
                        unet_next_inet_ntoa( session->srv.srv.host.s_addr ));
     }
     
-    if ( pkt->src.intf != intf ) {
+    if ( pkt->src_intf != intf ) {
         debug( 5, "ICMP: Packet from the incorrect interface expected %d actual %d\n",
-               intf, pkt->src.intf );
+               intf, pkt->src_intf );
         return _FIND_DROP;
     }
     
@@ -635,7 +635,7 @@ static int  _netcap_icmp_send( char *data, int data_len, netcap_pkt_t* pkt, int 
     u_int              nfmark = ( MARK_ANTISUB | MARK_NOTRACK | (pkt->is_marked ? pkt->nfmark : 0 )); 
     /* mark is  antisub + notrack + whatever packet marks are specified */
 
-    if ( pkt->dst.intf != NC_INTF_UNK ) {
+    if ( pkt->dst_intf != NC_INTF_UNK ) {
         errlog(ERR_CRITICAL,"NC_INTF_UNK Unsupported (IP_DEVICE)\n");
     }
 
@@ -710,7 +710,7 @@ static int  _netcap_icmp_send( char *data, int data_len, netcap_pkt_t* pkt, int 
         CMSG_SPACE(sizeof(nfmark));
 
     /* Send Packet */
-    debug( 10, "sending ICMP %s -> %s  data_len:%i ttl:%i tos:%i nfmark:%i\n",
+    debug( 10, "sending ICMP %s -> %s  data_len:%i ttl:%i tos:%i nfmark:%#10x\n",
            unet_next_inet_ntoa(pkt->src.host.s_addr), 
            unet_next_inet_ntoa(pkt->dst.host.s_addr),
            data_len, pkt->ttl, pkt->tos, nfmark);
@@ -722,7 +722,7 @@ static int  _netcap_icmp_send( char *data, int data_len, netcap_pkt_t* pkt, int 
         } else {
             errlog(ERR_CRITICAL,"sendmsg: %s | ",errstr);
             errlog_noprefix(ERR_CRITICAL, "(%s -> ", inet_ntoa(pkt->src.host));
-            errlog_noprefix(ERR_CRITICAL, "%s) data_len:%i ttl:%i tos:%i nfmark:%i\n",
+            errlog_noprefix(ERR_CRITICAL, "%s) data_len:%i ttl:%i tos:%i nfmark:%#10x\n",
                             inet_ntoa(pkt->dst.host),data_len, pkt->ttl, pkt->tos, nfmark);
         }
     }
@@ -793,7 +793,7 @@ static _find_t _icmp_find_session( netcap_pkt_t* pkt, netcap_session_t** netcap_
         case ICMP_ECHO:
             if (( session = _icmp_get_tuple( pkt )) == NULL ) {
                 /* Check if this sessions should be allowed */
-                if ( _shield_check_reputation( pkt, pkt->src.host.s_addr, pkt->src.intf ) < 0 ) {
+                if ( _shield_check_reputation( pkt, pkt->src.host.s_addr, pkt->src_intf ) < 0 ) {
                     ret = _FIND_DROP;
                     break;
                 }
@@ -832,7 +832,7 @@ static _find_t _icmp_find_session( netcap_pkt_t* pkt, netcap_session_t** netcap_
                 }
 
                 /* Check if this sessions should be allowed */
-                if ( _shield_check_reputation( pkt, session->cli.cli.host.s_addr, session->cli.cli.intf ) < 0 ) {
+                if ( _shield_check_reputation( pkt, session->cli.cli.host.s_addr, session->cli.intf ) < 0 ) {
                     ret = _FIND_DROP;
                     break;
                 }
@@ -884,7 +884,7 @@ static _find_t _icmp_find_session( netcap_pkt_t* pkt, netcap_session_t** netcap_
             }
 
             /* Check if this sessions should be allowed */
-            if ( _shield_check_reputation( pkt, session->cli.cli.host.s_addr, session->cli.cli.intf ) < 0 ) {
+            if ( _shield_check_reputation( pkt, session->cli.cli.host.s_addr, session->cli.intf ) < 0 ) {
                 ret = _FIND_DROP;
                 break;
             }

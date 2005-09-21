@@ -10,34 +10,38 @@
 
 #include <libnetcap.h>
 
-
 #include "netcap_queue.h"
 #include "netcap_session.h"
 #include "netcap_sesstable.h"
 #include "netcap_tcp.h"
+#include "netcap_route.h"
 
 int netcap_tcp_session_init( netcap_session_t* netcap_sess,
                              in_addr_t client_addr, u_short client_port, int client_sock,
                              in_addr_t server_addr, u_short server_port, int server_sock,
-                             int protocol, netcap_intf_t cli_intf, netcap_intf_t srv_intf, 
+                             netcap_intf_t cli_intf, netcap_intf_t srv_intf, 
                              int flags, u_int seq )
 {
     netcap_endpoints_t endpoints;
 
     netcap_endpoints_bzero(&endpoints);
 
-    endpoints.protocol = IPPROTO_TCP;
     endpoints.cli.port = client_port;
     endpoints.srv.port = server_port;
 
     memcpy( &endpoints.cli.host, &client_addr, sizeof( in_addr_t ));
     memcpy( &endpoints.srv.host, &server_addr, sizeof( in_addr_t ));
 
-    netcap_sess->cli_intf = endpoints.cli.intf = cli_intf;
-    netcap_sess->srv_intf = endpoints.srv.intf = srv_intf;
+    endpoints.intf = cli_intf;
+
+    if ( NC_INTF_UNK == srv_intf ) {
+        if ( netcap_arp_dst_intf( &srv_intf, cli_intf, &endpoints.cli.host, &endpoints.srv.host ) < 0 ) {
+            return errlog( ERR_CRITICAL, "netcap_arp_dst_intf\n" );
+        }
+    }
     
     // Create a new session without mailboxes
-    if ( netcap_session_init( netcap_sess, &endpoints, !NC_SESSION_IF_MB ) < 0 ) {
+    if ( netcap_session_init( netcap_sess, &endpoints, srv_intf, !NC_SESSION_IF_MB ) < 0 ) {
         return errlog(ERR_CRITICAL,"netcap_session_init");
     }
     
@@ -54,24 +58,21 @@ int netcap_tcp_session_init( netcap_session_t* netcap_sess,
     netcap_sess->server_sock = server_sock;
 
     /* XXX The if statement isn't necessary since this function is only for TCP */
-    netcap_sess->protocol = protocol;
+    netcap_sess->protocol = IPPROTO_TCP;
 
-    if (netcap_sess->protocol == IPPROTO_TCP) {
-
-        if (netcap_sess->client_sock > 0) {
-            netcap_sess->cli_state = CONN_STATE_COMPLETE;
-        } else {
-            netcap_sess->cli_state = CONN_STATE_INCOMPLETE;
-        }
-        
-        if (netcap_sess->server_sock > 0) {
-            netcap_sess->srv_state = CONN_STATE_COMPLETE;
-        } else {
-            netcap_sess->srv_state = CONN_STATE_INCOMPLETE;
-        }
-
-        netcap_sess->callback = netcap_tcp_callback;
+    if (netcap_sess->client_sock > 0) {
+        netcap_sess->cli_state = CONN_STATE_COMPLETE;
+    } else {
+        netcap_sess->cli_state = CONN_STATE_INCOMPLETE;
     }
+    
+    if (netcap_sess->server_sock > 0) {
+        netcap_sess->srv_state = CONN_STATE_COMPLETE;
+    } else {
+        netcap_sess->srv_state = CONN_STATE_INCOMPLETE;
+    }
+    
+    netcap_sess->callback = netcap_tcp_callback;
 
     /* Create it in SYN mode by default */
     netcap_sess->syn_mode = 1;
@@ -81,7 +82,6 @@ int netcap_tcp_session_init( netcap_session_t* netcap_sess,
 
 netcap_session_t* netcap_tcp_session_create(in_addr_t client_addr, u_short client_port, int client_sock,
                                             in_addr_t server_addr, u_short server_port, int server_sock,
-                                            int protocol,
                                             netcap_intf_t cli_intf, netcap_intf_t srv_intf, 
                                             int flags, u_int seq )
 {
@@ -94,7 +94,7 @@ netcap_session_t* netcap_tcp_session_create(in_addr_t client_addr, u_short clien
 
     ret = netcap_tcp_session_init ( netcap_sess, client_addr, client_port,
                                     client_sock, server_addr, server_port,
-                                    server_sock, protocol, cli_intf, srv_intf, flags,seq );
+                                    server_sock, cli_intf, srv_intf, flags,seq );
 
     if ( ret < 0) {
         if ( netcap_tcp_session_free(netcap_sess)) {

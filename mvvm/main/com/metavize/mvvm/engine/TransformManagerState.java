@@ -1,16 +1,17 @@
 /*
- * Copyright (c) 2004 Metavize Inc.
+ * Copyright (c) 2004, 2005 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: TransformManagerState.java,v 1.1 2004/12/22 07:51:16 amread Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.engine;
 
+import com.metavize.mvvm.policy.Policy;
 import com.metavize.mvvm.security.Tid;
 
 /**
@@ -65,8 +66,8 @@ class TransformManagerState
      *
      * @return a <code>Long</code> value
      */
-    Tid nextTid()
+    Tid nextTid(Policy policy, String transformName)
     {
-        return new Tid(++lastTid);
+        return new Tid(++lastTid, policy, transformName);
     }
 }

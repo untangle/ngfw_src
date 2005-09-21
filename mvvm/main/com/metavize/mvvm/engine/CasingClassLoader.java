@@ -13,17 +13,31 @@ package com.metavize.mvvm.engine;
 
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.HashSet;
+import java.util.Set;
 
 class CasingClassLoader extends URLClassLoader
 {
+    private final Set<String> resources = new HashSet<String>();
+
     CasingClassLoader(ClassLoader parent)
     {
         super(new URL[0], parent); // XXX transform-lib ?
     }
 
-    void addResources(URL[] resources)
+    /**
+     * Adds resource to classloader. Should be externally synchronized.
+     *
+     * @param resource to add.
+     */
+    void addResource(URL resource)
     {
-        for (URL resource : resources) {
+        String resStr = resource.toString();
+
+        if (resources.contains(resStr)) {
+            return;
+        } else {
+            resources.add(resStr);
             addURL(resource);
         }
     }

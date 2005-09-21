@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: ArgonAgentImpl.java,v 1.7 2005/03/22 07:58:02 rbscott Exp $
+ *  $Id$
  */
 
 package com.metavize.mvvm.argon;
@@ -44,14 +44,14 @@ public class ArgonAgentImpl implements ArgonAgent {
     private static final Logger logger = Logger.getLogger( ArgonAgentImpl.class );
 
     private static final NewSessionEventListener NULL_NEW_SESSION_LISTENER = new NewSessionEventListener() {
-            public UDPSession newSession( UDPNewSessionRequest request )
+            public UDPSession newSession( UDPNewSessionRequest request, boolean isInbound )
             {
                 /* Release everything */
                 request.release();
                 return null;
             }
             
-            public TCPSession newSession( TCPNewSessionRequest request )
+            public TCPSession newSession( TCPNewSessionRequest request, boolean isInbound )
             {
                 /* Release everything */
                 request.release();

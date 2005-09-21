@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: TokenManager.java,v 1.4 2005/01/14 00:41:20 amread Exp $
+ * $Id$
  */
 
 package com.metavize.tran.token;

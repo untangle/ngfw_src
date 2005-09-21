@@ -13,19 +13,26 @@ package com.metavize.mvvm.argon;
 
 import java.net.InetAddress;
 
+import java.util.List;
+import java.util.Collections;
+
 import org.apache.log4j.Logger;
 
 import com.metavize.jnetcap.Netcap;
+import com.metavize.jnetcap.InterfaceData;
 import com.metavize.jnetcap.Shield;
+import com.metavize.jnetcap.JNetcapException;
 
 import com.metavize.mvvm.ArgonManager;
 import com.metavize.mvvm.NetworkingConfiguration;
 
 import com.metavize.mvvm.tran.firewall.IPMatcher;
+import com.metavize.mvvm.tran.firewall.InterfaceRedirect;
 
 public class ArgonManagerImpl implements ArgonManager
 {    
     private static final Shield shield = Shield.getInstance();
+
     private static final String BOGUS_OUTSIDE_ADDRESS_STRING = "169.254.210.51";
     private static final String BOGUS_INSIDE_ADDRESS_STRING  = "169.254.210.52";
 
@@ -33,25 +40,16 @@ public class ArgonManagerImpl implements ArgonManager
     private static final InetAddress BOGUS_INSIDE_ADDRESS;
 
     private static final ArgonManagerImpl INSTANCE = new ArgonManagerImpl();
-    private static final String PUMP_FLAG = "pump";
+    
+    private static final List<InterfaceData> EMPTY_INTF_DATA_LIST = Collections.emptyList();
 
     private final Logger logger = Logger.getLogger( ArgonManagerImpl.class );
 
     private final Netcap netcap = Netcap.getInstance();
-
-    private final String BUNNICULA_BASE = System.getProperty( "bunnicula.home" );
-    private final String BRIDGE_DISABLE_SCRIPT = BUNNICULA_BASE + "/networking/bridge-disable";
-    private final String BRIDGE_ENABLE_SCRIPT  = BUNNICULA_BASE + "/networking/bridge-enable";
-
-    private InetAddress insideAddress  = null;
-    private InetAddress insideNetmask  = null;
-
-    private InetAddress outsideAddress = null;
-    private InetAddress outsideNetmask = null;
-
-    private boolean isBridgeEnabled = true;
-    private InetAddress natInsideAddress = null;
-    private InetAddress natInsideNetmask = null;
+    
+    
+    private List<InterfaceData> insideIntfDataList  = EMPTY_INTF_DATA_LIST;
+    private List<InterfaceData> outsideIntfDataList = EMPTY_INTF_DATA_LIST;
 
     private boolean isShutdown = false;
         
@@ -87,41 +85,34 @@ public class ArgonManagerImpl implements ArgonManager
 
         IntfConverter intfConverter = IntfConverter.getInstance();
 
-        String inside  = intfConverter.addressString( IntfConverter.INSIDE );
-        String outside = intfConverter.addressString( IntfConverter.OUTSIDE );
+        String inside  = intfConverter.argonIntfToString( IntfConverter.INSIDE );
+        String outside = intfConverter.argonIntfToString( IntfConverter.OUTSIDE );
             
         Netcap.updateAddress();
-        try {
-            this.insideAddress  = netcap.getInterfaceAddress( inside );
-        } catch ( Exception e ) {
-            logger.warn( "Exception retrieving inside address, setting to null" );
-            this.insideAddress = null;
-        }
         
         try {
-            this.insideNetmask  = netcap.getInterfaceNetmask( inside );
+            this.insideIntfDataList = netcap.getInterfaceData( inside );
         } catch ( Exception e ) {
-            logger.warn( "Exception retrieving inside netmask, setting to null" );
-            this.insideNetmask = null;
-        }
-        
-        try {
-            this.outsideAddress = netcap.getInterfaceAddress( outside );
-        } catch ( Exception e ) {
-            logger.warn( "Exception retrieving outside address, setting to null" );
-            this.outsideAddress = null;
+            logger.warn( "Exception retrieving inside interface data, setting to an empty list" );
+            this.insideIntfDataList = EMPTY_INTF_DATA_LIST;
         }
 
+        if ( this.insideIntfDataList == null ) this.insideIntfDataList = EMPTY_INTF_DATA_LIST;
+        
         try {
-            this.outsideNetmask = netcap.getInterfaceNetmask( outside );
+            this.outsideIntfDataList = netcap.getInterfaceData( outside );
         } catch ( Exception e ) {
-            logger.warn( "Exception retrieving outside netmask, setting to null" );
-            this.outsideNetmask = null;
+            logger.warn( "Exception retrieving inside interface data, setting to an empty list" );
+            this.outsideIntfDataList = EMPTY_INTF_DATA_LIST;
         }
         
-        IPMatcher.setInsideAddress( insideAddress, insideNetmask );
+        if ( this.outsideIntfDataList == null ) this.outsideIntfDataList = EMPTY_INTF_DATA_LIST;
+                
+        IPMatcher.setInsideAddress( getInsideAddress(), getInsideNetmask());
+        InetAddress outsideAddress = getOutsideAddress();
+        InetAddress outsideNetmask = getOutsideNetmask();
         
-        if (( this.outsideAddress == null ) || ( this.outsideAddress.equals( BOGUS_OUTSIDE_ADDRESS ))) {
+        if (( outsideAddress == null ) || ( outsideAddress.equals( BOGUS_OUTSIDE_ADDRESS ))) {
             IPMatcher.setOutsideAddress((InetAddress)null, (InetAddress)null );
         } else {
             IPMatcher.setOutsideAddress( outsideAddress, outsideNetmask );
@@ -134,197 +125,49 @@ public class ArgonManagerImpl implements ArgonManager
     synchronized public void loadNetworkingConfiguration( NetworkingConfiguration netConfig ) 
         throws ArgonException
     {
-        if ( isBridgeEnabled ) {
-            restoreBridge( netConfig );
-        } else {
-            if ( !natInsideAddress.equals( insideAddress )) {
-                logger.error( "Nat inside address(" + natInsideAddress + ") does not equal current " + 
-                              "inside address(" + natInsideAddress + ")" );
-            }
-
-            if ( !natInsideNetmask.equals( insideNetmask )) {
-                logger.error( "Nat inside netmask(" + natInsideNetmask + ") does not equal current " + 
-                              "inside netmask(" + natInsideNetmask + ")" );
-            }
-
-            destroyBridge( netConfig, this.natInsideAddress, this.natInsideNetmask );
-        }
+        BridgeConfigurationManager.getInstance().reconfigureBridge( netConfig );
     }
+    
+    /* Indicate that the shutdown process has started, this is used to prevent NAT from both
+     * re-enabling the bridge during shutdown, Argon will do that automatically. */
+    synchronized void isShutdown() 
+    {
+        isShutdown = true;
+    }    
 
-    /* Break down the bridge, (Only useful for NAT)
-     * This will automatically update the iptables rules
-     */
-    synchronized public void destroyBridge( NetworkingConfiguration netConfig, InetAddress insideAddress, 
-                                            InetAddress insideNetmask ) 
-        throws ArgonException
+    synchronized public void destroyBridge( NetworkingConfiguration netConfig, InetAddress internalAddress, 
+                                            InetAddress internalNetmask ) throws ArgonException
     {
         if ( isShutdown ) {
             logger.warn( "MVVM is already shutting down, no longer able to destroy bridge" );
             return;
         }
 
-        try {
-            IntfConverter intfConverter = IntfConverter.getInstance();
-            
-            String inside  = intfConverter.addressString( IntfConverter.INSIDE );
-            String outside = intfConverter.addressString( IntfConverter.OUTSIDE );
-            
-            String args;
-
-            args  = " br0 ";
-            args += inside  + " " + insideAddress.getHostAddress() + " " + 
-                insideNetmask.getHostAddress() + " ";
-
-            if ( netConfig.isDhcpEnabled()) {
-                args += outside + " " + PUMP_FLAG;
-            } else {
-                String outsideAddress = netConfig.host().getAddr().getHostAddress();
-                String outsideNetmask = netConfig.netmask().getAddr().getHostAddress();
-                String gateway        = netConfig.gateway().getAddr().getHostAddress();
-                
-                args += outside  + " " + outsideAddress + " " + outsideNetmask + " " + gateway;
-            }
-            
-            /* Call the rule generator */
-            Process p = Runtime.getRuntime().exec( "sh " + BRIDGE_DISABLE_SCRIPT + args );
-            
-            if ( p.waitFor() != 0 ) {
-                throw new ArgonException( "Error while destroying bridge" );
-            }
-
-            /* Dust settling */
-            try {
-                Thread.sleep( 2000 );
-            } catch ( Exception e ) {
-            }
-
-            /* Generate new rules and then update the address database */
-            updateAddress();
-
-            this.isBridgeEnabled = false;
-            this.natInsideAddress = insideAddress;
-            this.natInsideNetmask = insideNetmask;
-        } catch ( Exception e ) {
-            logger.error( "Error while destroying the bridge", e );
-            throw new ArgonException( "Unable to destroy bridge", e );
-        }        
+        BridgeConfigurationManager.getInstance().destroyBridge( netConfig, 
+                                                                internalAddress, internalNetmask );
+        pause();
+        updateAddress();
     }
     
-    /* Restore the bridge and shutdown at the same time */
-    synchronized void isShutdown() 
-    {
-        isShutdown = true;
-    }
-    
-    /* XXXXXXXXXXXXXX Bad idea, basically a quick hack for argon to be the only package
-     * that can restore the bridge after a shutdown */
-    synchronized void argonRestoreBridge( NetworkingConfiguration netConfig ) throws ArgonException
-    {
-        /* Nothing to do, bridge was never modified */
-        if ( this.isBridgeEnabled ) {
-            logger.debug( "Bridge was already enabled, ignoring" );
-            return;
-        }
-
-        try {
-            IntfConverter intfConverter = IntfConverter.getInstance();
-            
-            String inside  = intfConverter.addressString( IntfConverter.INSIDE );
-            String outside = intfConverter.addressString( IntfConverter.OUTSIDE );
-            
-            String args;
-
-            args  = " br0 " + inside + " " + outside + " ";
-            
-            if ( netConfig.isDhcpEnabled()) {
-                args += PUMP_FLAG;
-            } else {
-                String outsideAddress = netConfig.host().getAddr().getHostAddress();
-                String outsideNetmask = netConfig.netmask().getAddr().getHostAddress();
-                String gateway        = netConfig.gateway().getAddr().getHostAddress();
-                
-                args += " " + outsideAddress + " " + outsideNetmask + " " + gateway;
-            }
-            
-            /* Call the rule generator */
-            Process p = Runtime.getRuntime().exec( "sh " + BRIDGE_ENABLE_SCRIPT + args );
-            
-            if ( p.waitFor() != 0 ) {
-                throw new ArgonException( "Error while restoring bridge" );
-            }
-
-            /* Dust settling */
-            try {
-                Thread.sleep( 2000 );
-            } catch ( Exception e ) {
-            }
-
-            /* Generate new rules and then update the address database */
-            updateAddress();
-
-            isBridgeEnabled = true;
-            this.natInsideAddress = null;
-            this.natInsideNetmask = null;
-        } catch ( Exception e ) {
-            logger.error( "Error while restoring the bridge", e );
-            throw new ArgonException( "Error restoring bridge", e );
-        }        
-    }
-
-    
-    /* Restore the bridge, (only useful for NAT)
-     * This will automatically update the iptables rules
-     */
     synchronized public void restoreBridge( NetworkingConfiguration netConfig ) throws ArgonException
     {
         if ( isShutdown ) {
             logger.warn( "MVVM is already shutting down, no longer able to restore bridge" );
             return;
         }
-        
-        try {
-            IntfConverter intfConverter = IntfConverter.getInstance();
-            
-            String inside  = intfConverter.addressString( IntfConverter.INSIDE );
-            String outside = intfConverter.addressString( IntfConverter.OUTSIDE );
-            
-            String args;
 
-            args  = " br0 " + inside + " " + outside + " ";
-            
-            if ( netConfig.isDhcpEnabled()) {
-                args += PUMP_FLAG;
-            } else {
-                String outsideAddress = netConfig.host().getAddr().getHostAddress();
-                String outsideNetmask = netConfig.netmask().getAddr().getHostAddress();
-                String gateway        = netConfig.gateway().getAddr().getHostAddress();
-                
-                args += " " + outsideAddress + " " + outsideNetmask + " " + gateway;
-            }
-            
-            /* Call the rule generator */
-            Process p = Runtime.getRuntime().exec( "sh " + BRIDGE_ENABLE_SCRIPT + args );
-            
-            if ( p.waitFor() != 0 ) {
-                throw new ArgonException( "Error while restoring bridge" );
-            }
+        BridgeConfigurationManager.getInstance().restoreBridge( netConfig );
+        pause();
+        updateAddress();
+    }
 
-            /* Dust settling */
-            try {
-                Thread.sleep( 2000 );
-            } catch ( Exception e ) {
-            }
-
-            /* Generate new rules and then update the address database */
-            updateAddress();
-
-            isBridgeEnabled = true;
-            this.natInsideAddress = null;
-            this.natInsideNetmask = null;
-        } catch ( Exception e ) {
-            logger.error( "Error while restoring the bridge", e );
-            throw new ArgonException( "Error restoring bridge", e );
-        }        
+    /* This re-enables the bridge, but checks if it is already enabled before attempting to 
+     * re-enable it */
+    synchronized public void argonRestoreBridge( NetworkingConfiguration netConfig ) throws ArgonException
+    {
+        BridgeConfigurationManager.getInstance().argonRestoreBridge( netConfig );
+        pause();
+        updateAddress();
     }
 
     public void disableLocalAntisubscribe()
@@ -355,37 +198,79 @@ public class ArgonManagerImpl implements ArgonManager
 
     public String getInside() throws ArgonException
     {
-        return IntfConverter.getInstance().addressString( IntfConverter.INSIDE );
+        return IntfConverter.getInstance().argonIntfToString( IntfConverter.INSIDE );
     }
 
     public InetAddress getInsideAddress()
     {
-        return this.insideAddress;
+        if ( this.insideIntfDataList.size() < 1 ) return null;
+        return insideIntfDataList.get( 0 ).getAddress();
     }
 
     public InetAddress getInsideNetmask()
     {
-        return this.insideNetmask;
+        if ( this.insideIntfDataList.size() < 1 ) return null;
+        return insideIntfDataList.get( 0 ).getNetmask();
     }
 
     public String getOutside() throws ArgonException
     {
-        return IntfConverter.getInstance().addressString( IntfConverter.OUTSIDE );
+        return IntfConverter.getInstance().argonIntfToString( IntfConverter.OUTSIDE );
     }
 
     public InetAddress getOutsideAddress()
     {
-        return this.outsideAddress;
+        if ( this.outsideIntfDataList.size() < 1 ) return null;
+        return outsideIntfDataList.get( 0 ).getAddress();
     }
 
     public InetAddress getOutsideNetmask()
     {
-        return this.outsideNetmask;
+        if ( this.outsideIntfDataList.size() < 1 ) return null;
+        return outsideIntfDataList.get( 0 ).getNetmask();
+    }
+
+    public List<InterfaceData> getOutsideAliases()
+    {
+        if ( this.outsideIntfDataList.size() < 2 ) return EMPTY_INTF_DATA_LIST;
+        return Collections.unmodifiableList( outsideIntfDataList.subList( 1, outsideIntfDataList.size()));
+    }
+        
+    /* Set the interface override list. */
+    public void setInterfaceOverrideList( List<InterfaceRedirect> overrideList )
+    {
+        InterfaceOverride.getInstance().setOverrideList( overrideList );
+    }
+
+    /* Set the interface override list. */
+    public void clearInterfaceOverrideList()
+    {
+        InterfaceOverride.getInstance().clearOverrideList();
+    }
+    
+    /* Get the outgoing argon interface for an IP address */
+    public byte getOutgoingInterface( InetAddress destination ) throws ArgonException
+    {
+        try {
+            byte netcapIntf = netcap.getOutgoingInterface( destination );
+            return IntfConverter.toArgon( netcapIntf );
+        } catch ( JNetcapException e ) {
+            throw new ArgonException( e );
+        }
     }
 
     public static final ArgonManagerImpl getInstance()
     {
         return INSTANCE;
+    }
+
+    private void pause()
+    {
+        try {
+            Thread.sleep( 2000 );
+        } catch ( Exception e ) {
+            logger.warn( "Interrupted while pausing", e );
+        }
     }
 
     static {

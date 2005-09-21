@@ -16,27 +16,21 @@ import com.metavize.mvvm.argon.SessionEndpoints;
 
 public interface IPSessionDesc extends SessionDesc, SessionEndpoints {
     /**
-     * Sessions have a direction of INBOUND when the client interface is 0 and the server
-     * interface is 1.
+     * Sessions are inbound when the inbound side of the policy is selected.  This is decided
+     * at welding time and is no longer dependent only on the client/server interfaces.
      *
+     * @return true if the session is inbound, false if it is outbound
      */
-    static final byte INBOUND = 1;
+    boolean isInbound();
 
     /**
-     * Sessions have a direction of OUTBOUND when the client interface is 1 and the server
-     * interface is 0.
+     * Sessions are outbound when the outbound side of the policy is selected.  This is decided
+     * at welding time and is no longer dependent only on the client/server interfaces.  This is
+     * the inverse of <code>isInbound</code>
      *
+     * @return true if the session is outbound, false if it is inbound
      */
-    static final byte OUTBOUND = 0;
-
-    /**
-      * Deprecated.  (Only works when there are only two possible interfaces)
-      * Returns the direction of the session, either:
-      * <code>INBOUND</code> or <code>OUTBOUND</code>
-      *
-      * @return a <code>byte</code> value giving the direction of the session
-      */
-    byte direction();
+    boolean isOutbound();
 
     /**
      * IP clients and servers have a state of <code>CLOSED</code> when both the input and

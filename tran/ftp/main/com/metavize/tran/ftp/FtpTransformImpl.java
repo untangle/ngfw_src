@@ -14,11 +14,11 @@ import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.CasingPipeSpec;
 import com.metavize.mvvm.tapi.Fitting;
 import com.metavize.mvvm.tapi.PipeSpec;
-import net.sf.hibernate.HibernateException;
-import net.sf.hibernate.Query;
-import net.sf.hibernate.Session;
-import net.sf.hibernate.Transaction;
 import org.apache.log4j.Logger;
+import org.hibernate.HibernateException;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 public class FtpTransformImpl extends AbstractTransform
     implements FtpTransform
@@ -54,7 +54,7 @@ public class FtpTransformImpl extends AbstractTransform
         try {
             Transaction tx = s.beginTransaction();
 
-            s.saveOrUpdateCopy(settings);
+            s.merge(settings);
             this.settings = settings;
 
             tx.commit();

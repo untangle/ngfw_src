@@ -9,9 +9,10 @@
  *  $Id$
  */
 
-package com.metavize.mvvm.tapi.impl;
+package com.metavize.mvvm.engine;
 
 import java.net.InetAddress;
+
 import com.metavize.mvvm.tapi.IPNewSessionRequest;
 import com.metavize.mvvm.tapi.MPipe;
 
@@ -23,6 +24,7 @@ abstract class IPNewSessionRequestImpl implements IPNewSessionRequest {
 
     protected boolean needsFinalization = true;
     protected boolean modified = false;
+    protected boolean isInbound;
 
     /**
      * The pipeline request that corresponds to this (transform) request.
@@ -30,9 +32,12 @@ abstract class IPNewSessionRequestImpl implements IPNewSessionRequest {
      */
     protected com.metavize.mvvm.argon.IPNewSessionRequest pRequest;
 
-    protected IPNewSessionRequestImpl(Dispatcher disp, com.metavize.mvvm.argon.IPNewSessionRequest pRequest) {
+    protected IPNewSessionRequestImpl(Dispatcher disp,
+                                      com.metavize.mvvm.argon.IPNewSessionRequest pRequest,
+                                      boolean isInbound) {
         this.mPipe = disp.mPipe();
         this.pRequest = pRequest;
+        this.isInbound = isInbound;
     }
 
     public MPipe mPipe() {
@@ -41,6 +46,14 @@ abstract class IPNewSessionRequestImpl implements IPNewSessionRequest {
 
     public int id() {
         return pRequest.id();
+    }
+
+    public boolean isInbound() {
+        return isInbound;
+    }
+
+    public boolean isOutbound() {
+        return !isInbound;
     }
 
     public short protocol() {
@@ -61,7 +74,7 @@ abstract class IPNewSessionRequestImpl implements IPNewSessionRequest {
 
     public int serverPort() {
         return pRequest.serverPort();
-    } 
+    }
 
     public byte clientIntf() {
         return pRequest.clientIntf();
@@ -74,31 +87,31 @@ abstract class IPNewSessionRequestImpl implements IPNewSessionRequest {
     public void clientAddr(InetAddress addr)
     {
         pRequest.clientAddr(addr);
-        modified = true; 
+        modified = true;
    }
 
     public void serverAddr(InetAddress addr)
     {
         pRequest.serverAddr(addr);
-        modified = true; 
+        modified = true;
     }
 
     public void clientPort(int port)
     {
         pRequest.clientPort(port);
-        modified = true; 
+        modified = true;
     }
 
     public void serverPort(int port)
     {
         pRequest.serverPort(port);
-        modified = true; 
+        modified = true;
     }
 
     public void serverIntf(byte intf)
     {
         pRequest.serverIntf(intf);
-        modified = true; 
+        modified = true;
     }
 
     public void rejectSilently()

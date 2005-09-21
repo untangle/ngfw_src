@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: SophosTransform.java,v 1.1 2005/01/22 06:06:25 dmorris Exp $
+ * $Id$
  */
 
 package com.metavize.tran.sophos;

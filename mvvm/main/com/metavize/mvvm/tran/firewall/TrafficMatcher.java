@@ -29,16 +29,17 @@ public class TrafficMatcher {
         
     private final boolean isEnabled;
         
-    private final ProtocolMatcher protocol;
+    /* Package protected so the InterfaceRedirect has access to these variables */
+    final ProtocolMatcher protocol;
 
-    private final IntfMatcher srcIntf;
-    private final IntfMatcher dstIntf;
+    final IntfMatcher srcIntf;
+    final IntfMatcher dstIntf;
 
-    private final IPMatcher   srcAddress;
-    private final IPMatcher   dstAddress;
+    final IPMatcher   srcAddress;
+    final IPMatcher   dstAddress;
 
-    private final PortMatcher srcPort;
-    private final PortMatcher dstPort;
+    final PortMatcher srcPort;
+    final PortMatcher dstPort;
 
     protected final boolean isPingMatcher;
 
@@ -49,6 +50,7 @@ public class TrafficMatcher {
                            IPMatcher   srcAddress, IPMatcher       dstAddress,
                            PortMatcher srcPort,    PortMatcher     dstPort )
     {
+        if ( srcIntf == null || dstIntf == null ) throw new NullPointerException( "No null" );
         this.isEnabled  = isEnabled;
         this.protocol   = protocol;
         this.srcIntf    = srcIntf;
@@ -105,6 +107,19 @@ public class TrafficMatcher {
                  isMatchPort( session.clientPort(), session.serverPort()) &&
                  isTimeMatch());
     }
+    
+    public boolean isMatch( Protocol protocol, byte srcIntf, byte dstIntf,
+                            InetAddress srcAddress, InetAddress dstAddress,
+                            int srcPort, int dstPort )
+    {
+        return ( isEnabled && 
+                 isMatchProtocol( protocol ) &&
+                 isMatchIntf( srcIntf, dstIntf ) &&
+                 isMatchAddress( srcAddress, dstAddress) &&
+                 isMatchPort( srcPort, dstPort ) &&
+                 isTimeMatch());
+    }
+
 
     public boolean isMatchProtocol( Protocol protocol ) 
     {

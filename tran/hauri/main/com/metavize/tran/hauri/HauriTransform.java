@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: HauriTransform.java,v 1.1 2005/02/26 04:11:31 dmorris Exp $
+ * $Id$
  */
 package com.metavize.tran.hauri;
 

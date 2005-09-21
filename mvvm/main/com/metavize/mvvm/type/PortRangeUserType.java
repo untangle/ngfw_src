@@ -1,12 +1,12 @@
 /*
- * Copyright (c) 2004 Metavize Inc.
+ * Copyright (c) 2004, 2005 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: PortRangeUserType.java,v 1.1 2004/12/20 02:47:38 amread Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.type;
@@ -18,11 +18,11 @@ import java.sql.SQLException;
 import java.sql.Types;
 
 import com.metavize.mvvm.tran.PortRange;
-import net.sf.hibernate.CompositeUserType;
-import net.sf.hibernate.Hibernate;
-import net.sf.hibernate.HibernateException;
-import net.sf.hibernate.engine.SessionImplementor;
-import net.sf.hibernate.type.Type;
+import org.hibernate.Hibernate;
+import org.hibernate.HibernateException;
+import org.hibernate.engine.SessionImplementor;
+import org.hibernate.type.Type;
+import org.hibernate.usertype.CompositeUserType;
 
 public class PortRangeUserType implements CompositeUserType
 {
@@ -102,5 +102,16 @@ public class PortRangeUserType implements CompositeUserType
         throws HibernateException
     {
         return (Serializable)v;
+    }
+
+    public Object replace(Object original, Object target,
+                          SessionImplementor session, Object owner)
+    {
+        return original;
+    }
+
+    public int hashCode(Object x)
+    {
+        return x.hashCode();
     }
 }

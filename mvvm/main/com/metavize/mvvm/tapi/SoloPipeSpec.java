@@ -14,15 +14,15 @@ package com.metavize.mvvm.tapi;
 import java.util.Set;
 
 import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.MvvmLocalContext;
 import com.metavize.mvvm.tapi.event.SessionEventListener;
 import com.metavize.mvvm.tran.Transform;
 import org.apache.log4j.Logger;
 
 public class SoloPipeSpec extends PipeSpec
 {
-    private static final MPipeManager MPIPE_MANAGER = MPipeManager.manager();
-    private static final PipelineFoundry FOUNDRY = MvvmContextFactory.context()
-        .pipelineFoundry();
+    private static final MPipeManager MPIPE_MANAGER;
+    private static final PipelineFoundry FOUNDRY;
 
     public static final int MIN_STRENGTH = 0;
     public static final int MAX_STRENGTH = 32;
@@ -156,5 +156,13 @@ public class SoloPipeSpec extends PipeSpec
         } else {
             return new IPSessionDesc[0];
         }
+    }
+
+    // static initialization --------------------------------------------------
+
+    static {
+        MvvmLocalContext mlc = MvvmContextFactory.context();
+        MPIPE_MANAGER = mlc.mPipeManager();
+        FOUNDRY = mlc.pipelineFoundry();
     }
 }

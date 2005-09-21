@@ -504,13 +504,12 @@ static int _netcap_sesstable_merge_tuple( netcap_session_t* netcap_sess, int pro
         errlog( ERR_WARNING, "Invalid interface intf: %d for %s\n", intf, unet_next_inet_ntoa( src ));
     }
 
-    if ( intf == netcap_sess->cli_intf ) {
+    if ( intf == netcap_sess->cli.intf ) {
         errlog( ERR_WARNING, "Matching client and server interface %d for %s\n", intf,
                 unet_next_inet_ntoa( src ));
     }
 
-    netcap_sess->srv_intf            = intf;
-    netcap_sess->srv.srv.intf        = intf;
+    netcap_sess->srv.intf            = intf;
     netcap_sess->srv.srv.host.s_addr = src;
     netcap_sess->srv.srv.port        = sport;
     netcap_sess->srv.cli.host.s_addr = dst;

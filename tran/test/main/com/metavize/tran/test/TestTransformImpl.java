@@ -18,13 +18,12 @@ import com.metavize.mvvm.tapi.Protocol;
 import com.metavize.mvvm.tapi.SoloPipeSpec;
 import com.metavize.mvvm.tapi.Subscription;
 import com.metavize.mvvm.tran.IPMaddr;
-import com.metavize.mvvm.tran.Interface;
 import com.metavize.mvvm.tran.PortRange;
-import net.sf.hibernate.HibernateException;
-import net.sf.hibernate.Query;
-import net.sf.hibernate.Session;
-import net.sf.hibernate.Transaction;
 import org.apache.log4j.Logger;
+import org.hibernate.HibernateException;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 public class TestTransformImpl extends AbstractTransform
     implements TestTransform
@@ -73,7 +72,7 @@ public class TestTransformImpl extends AbstractTransform
         try {
             Transaction tx = s.beginTransaction();
 
-            s.saveOrUpdateCopy(settings);
+            s.merge(settings);
             this.settings = settings;
 
             tx.commit();
@@ -165,7 +164,7 @@ public class TestTransformImpl extends AbstractTransform
         if (!this.noTCP && (this.tcpSub == null)) {
             logger.debug("Adding TCP Sub");
             tcpSub = new Subscription
-                (Protocol.TCP, Interface.ANY, Interface.ANY,
+                (Protocol.TCP, true, true,
                  IPMaddr.anyAddr, PortRange.ANY, IPMaddr.anyAddr,
                  new PortRange(minPort, maxPort));
             pipeSpec.addSubscription(tcpSub);
@@ -174,7 +173,7 @@ public class TestTransformImpl extends AbstractTransform
         if (!noUDP && (udpSub == null)) {
             logger.debug("Adding UDP Sub");
             udpSub = new Subscription
-                (Protocol.UDP, Interface.ANY, Interface.ANY,
+                (Protocol.UDP, true, true,
                  IPMaddr.anyAddr, PortRange.ANY, IPMaddr.anyAddr,
                  new PortRange(minPort,maxPort));
             pipeSpec.addSubscription(udpSub);

@@ -12,21 +12,14 @@
 package com.metavize.tran.nat;
 
 import java.io.Serializable;
-
-import java.util.List;
-import java.util.LinkedList;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
-// XXX jdi -- Hibernate classes must not import or use MVVM stuff -- put that
-//  stuff in a static helper class, etc.
-//import com.metavize.mvvm.MvvmContextFactory;
-//import com.metavize.mvvm.NetworkingManager;
 import com.metavize.mvvm.NetworkingConfiguration;
-
 import com.metavize.mvvm.security.Tid;
-
-import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.HostName;
+import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.Validatable;
 
 /**
@@ -57,7 +50,7 @@ public class NatSettings implements Serializable, Validatable
 
     /* Redirect rules */
     private List    redirectList = new LinkedList();
-    
+
     /* Is dhcp enabled */
     private boolean dhcpEnabled = false;
     private IPaddr  dhcpStartAddress;
@@ -66,14 +59,14 @@ public class NatSettings implements Serializable, Validatable
 
     /* Dhcp leasess */
     private List    dhcpLeaseList = new LinkedList();
-    
+
     /* DNS Masquerading settings */
     private boolean  dnsEnabled = false;
     private HostName dnsLocalDomain = HostName.getEmptyHostName();
 
     /* DNS Static Hosts */
     private List    dnsStaticHostList = new LinkedList();
-    
+
     /**
      * Hibernate constructor.
      */
@@ -88,7 +81,7 @@ public class NatSettings implements Serializable, Validatable
     {
         this.tid = tid;
     }
-    
+
     public void validate() throws Exception
     {
         validate( null );
@@ -104,7 +97,7 @@ public class NatSettings implements Serializable, Validatable
         for ( Iterator iter = this.redirectList.iterator(); iter.hasNext() ; ) {
             ((RedirectRule)iter.next()).fixPing();
         }
-        
+
         if ( natEnabled && ( natInternalAddress == null || natInternalSubnet == null ))
             throw new Exception( "Enablng NAT requires an Internal IP address and an Internal Subnet" );
 
@@ -112,7 +105,7 @@ public class NatSettings implements Serializable, Validatable
             if ( dmzAddress == null ) {
                 throw new Exception( "Enabling DMZ requires a target IP address" );
             }
-            
+
             if ( natEnabled && !dmzAddress.isInNetwork( natInternalAddress, natInternalSubnet )) {
                 throw new Exception( "When NAT is enabled, DMZ address must be in the internal network." );
             }
@@ -131,14 +124,14 @@ public class NatSettings implements Serializable, Validatable
                 /* XXX Currently a bug, getting around by ignoring */
                 if ( netConfig == null ) {
                     //netConfig = MvvmContextFactory.context().networkingManager().get();
-                } 
-                
+                }
+
                 if ( netConfig != null ) {
                     host    = netConfig.host();
                     netmask = netConfig.netmask();
                 }
             }
-            
+
             if ( host != null && !dhcpStartAddress.isInNetwork( host, netmask )) {
                 isStartAddressValid = false;
 
@@ -152,11 +145,11 @@ public class NatSettings implements Serializable, Validatable
                 throw new Exception( "IP Address Range End must be in the network: " + host.toString() + "/" + netmask.toString());
             }
         }
-        
+
         /* Setup this way to allow reporting of multiple errors in one place */
-        isValid = isStartAddressValid & isEndAddressValid;        
+        isValid = isStartAddressValid & isEndAddressValid;
     }
-        
+
     /**
      * @hibernate.id
      * column="SETTINGS_ID"
@@ -181,11 +174,11 @@ public class NatSettings implements Serializable, Validatable
      * unique="true"
      * not-null="true"
      */
-    public Tid getTid() 
+    public Tid getTid()
     {
         return tid;
     }
-    
+
     public void setTid( Tid tid )
     {
         this.tid = tid;
@@ -200,14 +193,14 @@ public class NatSettings implements Serializable, Validatable
      */
     public boolean getNatEnabled()
     {
-	return natEnabled;
+    return natEnabled;
     }
 
     public void setNatEnabled( boolean enabled )
     {
-	natEnabled = enabled;
+    natEnabled = enabled;
     }
-    
+
     /**
      * Get the base of the internal address.
      *
@@ -222,8 +215,8 @@ public class NatSettings implements Serializable, Validatable
     {
         return natInternalAddress;
     }
-    
-    public void setNatInternalAddress( IPaddr addr ) 
+
+    public void setNatInternalAddress( IPaddr addr )
     {
         natInternalAddress = addr;
     }
@@ -242,8 +235,8 @@ public class NatSettings implements Serializable, Validatable
     {
         return natInternalSubnet;
     }
-    
-    public void setNatInternalSubnet( IPaddr addr ) 
+
+    public void setNatInternalSubnet( IPaddr addr )
     {
         natInternalSubnet = addr;
     }
@@ -257,12 +250,12 @@ public class NatSettings implements Serializable, Validatable
      */
     public boolean getDmzEnabled()
     {
-	return dmzEnabled;
+    return dmzEnabled;
     }
 
     public void setDmzEnabled( boolean enabled )
     {
-	dmzEnabled = enabled;
+    dmzEnabled = enabled;
     }
 
     /**
@@ -274,12 +267,12 @@ public class NatSettings implements Serializable, Validatable
      */
     public boolean getDmzLoggingEnabled()
     {
-	return this.dmzLoggingEnabled;
+    return this.dmzLoggingEnabled;
     }
 
     public void setDmzLoggingEnabled( boolean enabled )
     {
-	this.dmzLoggingEnabled = enabled;
+    this.dmzLoggingEnabled = enabled;
     }
 
 
@@ -308,7 +301,7 @@ public class NatSettings implements Serializable, Validatable
      *
      * @return the list of the redirect rules.
      * @hibernate.list
-     * cascade="save-update"
+     * cascade="all"
      * table="TR_NAT_REDIRECTS"
      * @hibernate.collection-key
      * column="SETTING_ID"
@@ -318,13 +311,13 @@ public class NatSettings implements Serializable, Validatable
      * class="com.metavize.tran.nat.RedirectRule"
      * column="RULE_ID"
      */
-    public List getRedirectList() 
+    public List getRedirectList()
     {
         return redirectList;
     }
-    
-    public void setRedirectList( List s ) 
-    { 
+
+    public void setRedirectList( List s )
+    {
         redirectList = s;
     }
 
@@ -339,7 +332,7 @@ public class NatSettings implements Serializable, Validatable
         return dhcpEnabled;
     }
 
-    public void setDhcpEnabled( boolean b ) 
+    public void setDhcpEnabled( boolean b )
     {
         this.dhcpEnabled = b;
     }
@@ -403,7 +396,7 @@ public class NatSettings implements Serializable, Validatable
             }
         }
     }
-    
+
     /**
      * Get the default length of the DHCP lease in seconds.
      *
@@ -415,12 +408,12 @@ public class NatSettings implements Serializable, Validatable
     {
         return this.dhcpLeaseTime;
     }
-    
+
     public void setDhcpLeaseTime( int time )
     {
         this.dhcpLeaseTime = time;
     }
-    
+
     /**
      * List of the dhcp leases.
      *
@@ -436,13 +429,13 @@ public class NatSettings implements Serializable, Validatable
      * class="com.metavize.tran.nat.DhcpLeaseRule"
      * column="RULE_ID"
      */
-    public List getDhcpLeaseList() 
+    public List getDhcpLeaseList()
     {
         return dhcpLeaseList;
     }
-    
-    public void setDhcpLeaseList( List s ) 
-    { 
+
+    public void setDhcpLeaseList( List s )
+    {
         dhcpLeaseList = s;
     }
 
@@ -457,7 +450,7 @@ public class NatSettings implements Serializable, Validatable
         return dnsEnabled;
     }
 
-    public void setDnsEnabled( boolean b ) 
+    public void setDnsEnabled( boolean b )
     {
         this.dnsEnabled = b;
     }
@@ -497,13 +490,13 @@ public class NatSettings implements Serializable, Validatable
      * class="com.metavize.tran.nat.DnsStaticHostRule"
      * column="RULE_ID"
      */
-    public List getDnsStaticHostList() 
+    public List getDnsStaticHostList()
     {
         return dnsStaticHostList;
     }
-    
-    public void setDnsStaticHostList( List s ) 
-    { 
+
+    public void setDnsStaticHostList( List s )
+    {
         dnsStaticHostList = s;
     }
 }

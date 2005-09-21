@@ -169,6 +169,7 @@ public class MTransformJButton extends JButton {
 
 
     // CONVENIENCE WRAPPERS FOR MACKAGE /////////
+    public MackageDesc getMackageDesc(){ return mackageDesc; }
     public String getFullDescription(){ return new String( mackageDesc.getLongDescription() ); }
     public String getShortDescription(){ return new String( mackageDesc.getShortDescription() ); }
     public String getName(){ return mackageDesc.getName(); }
@@ -272,8 +273,8 @@ public class MTransformJButton extends JButton {
 	
         public void run(){
 	    try{
-		Util.getMPipelineJPanel().addTransform(MTransformJButton.this.getName());  // add to the rack
-                Util.getMPipelineJPanel().loadAllCasings(false); // to load casings, but not their GUIs
+		// Util.getMPipelineJPanel().addTransform(MTransformJButton.this.getName());  // add to the rack
+                // Util.getMPipelineJPanel().loadAllCasings(false); // to load casings, but not their GUIs
 		// LET THE USER KNOW WERE DONE
 		MTransformJButton.this.setDeployedView();
 	    }
@@ -335,9 +336,9 @@ public class MTransformJButton extends JButton {
 		    SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
 			dialog.setVisible(false);
 		    }});
-		    Util.getMMainJFrame().addMTransformJButtonToToolbox(MTransformJButton.this);
+		    // Util.getMMainJFrame().addMTransformJButtonToToolbox(MTransformJButton.this);
 		    MTransformJButton.this.setDeployableView();
-		    Util.getMMainJFrame().focusInToolbox(MTransformJButton.this);
+		    //Util.getMMainJFrame().focusInToolbox(MTransformJButton.this);
 		}
 		else{
 		    SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
@@ -382,7 +383,7 @@ public class MTransformJButton extends JButton {
 	    try{
 		int dashIndex = MTransformJButton.this.getName().indexOf('-');
 		Util.getToolboxManager().uninstall(MTransformJButton.this.getName().substring(0, dashIndex));
-		Util.getMMainJFrame().addMTransformJButtonToStore(MTransformJButton.this);
+		// Util.getMMainJFrame().addMTransformJButtonToStore(MTransformJButton.this);
 		// LET THE USER KNOW WE ARE DONE
 		MTransformJButton.this.setProcurableView();
 	    }

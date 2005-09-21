@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: Period.java,v 1.7 2005/02/22 23:50:29 amread Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm;

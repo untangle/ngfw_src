@@ -9,16 +9,16 @@
  *  $Id$
  */
 
-package com.metavize.mvvm.tapi.impl;
+package com.metavize.mvvm.engine;
 
-import java.net.InetAddress;
 import com.metavize.mvvm.tapi.UDPNewSessionRequest;
-import com.metavize.mvvm.tapi.MPipe;
 
 class UDPNewSessionRequestImpl extends IPNewSessionRequestImpl implements UDPNewSessionRequest {
 
-    protected UDPNewSessionRequestImpl(Dispatcher disp, com.metavize.mvvm.argon.UDPNewSessionRequest pRequest) {
-        super(disp, pRequest);
+    protected UDPNewSessionRequestImpl(Dispatcher disp,
+                                       com.metavize.mvvm.argon.UDPNewSessionRequest pRequest,
+                                       boolean isInbound) {
+        super(disp, pRequest, isInbound);
     }
 
         /**

@@ -1,4 +1,4 @@
-<%@ page language="java" import="com.metavize.mvvm.*, com.metavize.mvvm.client.*, com.metavize.mvvm.security.Tid, com.metavize.mvvm.tran.*, com.metavize.mvvm.tapi.*, com.metavize.mvvm.util.SessionUtil, org.apache.log4j.helpers.AbsoluteTimeDateFormat, java.util.Properties, java.net.URL, java.io.PrintWriter, javax.naming.*" %>
+<%@ page language="java" import="com.metavize.mvvm.*, com.metavize.mvvm.client.*, com.metavize.mvvm.security.Tid, com.metavize.mvvm.tran.*, com.metavize.mvvm.tapi.*, com.metavize.mvvm.util.SessionUtil, org.apache.log4j.helpers.AbsoluteTimeDateFormat, java.util.List, java.util.Properties, java.net.URL, java.io.PrintWriter, javax.naming.*" %>
 
 <HTML>
 <HEAD>
@@ -10,10 +10,9 @@
   AbsoluteTimeDateFormat atdf = new AbsoluteTimeDateFormat();
   MvvmRemoteContext mc = MvvmRemoteContextFactory.factory().systemLogin(0);
   TransformManager tm = mc.transformManager();
-  Tid[] tids = tm.transformInstances();
   StringBuffer buf;
-  for (int i = 0; i < tids.length; i++) {
-      TransformContext tctx = tm.transformContext(tids[i]);
+  for (Tid tid : tm.transformInstances()) {
+      TransformContext tctx = tm.transformContext(tid);
       if (tctx.getRunState() != TransformState.RUNNING)
           continue;
       TransformDesc tdesc = tctx.getTransformDesc();
@@ -102,7 +101,7 @@
 %>
           <TR>
              <TD><%= proto %><%= sd.id() %>
-             <TD><%= sd.direction() == IPSessionDesc.INBOUND ? "In" : "Out" %>
+             <TD><%= sd.isInbound() ? "In" : "Out" %>
              <TD><%= SessionUtil.prettyState(sd.clientState()) %>
              <TD><%= sd.clientAddr().getHostAddress() %>:<%= sd.clientPort() %>
              <TD><%= SessionUtil.prettyState(sd.serverState()) %>

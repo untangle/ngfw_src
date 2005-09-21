@@ -17,13 +17,12 @@ import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.security.AdminManager;
 import com.metavize.mvvm.security.AdminSettings;
 import com.metavize.mvvm.security.LoginSession;
-import com.metavize.mvvm.security.MvvmLogin;
 import com.metavize.mvvm.security.User;
-import net.sf.hibernate.HibernateException;
-import net.sf.hibernate.Query;
-import net.sf.hibernate.Session;
-import net.sf.hibernate.Transaction;
 import org.apache.log4j.Logger;
+import org.hibernate.HibernateException;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 class AdminManagerImpl implements AdminManager
 {
@@ -33,12 +32,11 @@ class AdminManagerImpl implements AdminManager
 
     private static final AdminManagerImpl ADMIN_MANAGER = new AdminManagerImpl();
 
-    private final MvvmLogin mvvmLogin;
+    private final MvvmLoginImpl mvvmLogin;
 
     private final Logger logger = Logger.getLogger(AdminManagerImpl.class);
 
     private AdminSettings adminSettings;
-
 
     private AdminManagerImpl()
     {
@@ -46,7 +44,7 @@ class AdminManagerImpl implements AdminManager
         try {
             Transaction tx = s.beginTransaction();
 
-            Query q = s.createQuery("from AdminSettings as");
+            Query q = s.createQuery("from AdminSettings");
             adminSettings = (AdminSettings)q.uniqueResult();
 
             if (null == adminSettings) {
@@ -78,7 +76,7 @@ class AdminManagerImpl implements AdminManager
         return ADMIN_MANAGER;
     }
 
-    MvvmLogin mvvmLogin() {
+    MvvmLoginImpl mvvmLogin() {
         return mvvmLogin;
     }
 
@@ -106,7 +104,7 @@ class AdminManagerImpl implements AdminManager
         try {
             Transaction tx = s.beginTransaction();
 
-            s.saveOrUpdateCopy(as);
+            s.merge(as);
 
             tx.commit();
         } catch (HibernateException exn) {

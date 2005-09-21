@@ -84,6 +84,8 @@ static int _netcap_init( int shield_enable )
     if ( pthread_key_create( &_init.tls_key, uthread_tls_free ) != 0 )
         return perrlog( "pthread_key_create\n" );
 
+    if (netcap_arp_init()<0) 
+        return perrlog("netcap_arp_init");
     if (netcap_interface_init()<0) 
         return perrlog("netcap_interface_init");
     if (netcap_sesstable_init()<0)
@@ -130,8 +132,10 @@ int netcap_cleanup()
     if ( pthread_mutex_unlock( &_init.mutex ) < 0 )
         perrlog( "pthread_mutex_lock" );
 
-    if ( ret < 0 )
-        return errlog( ERR_CRITICAL, "NETCAP: Skipping second clean\n" );;
+    if ( ret < 0 ) {
+        _init.status = STATUS_CLEAN;
+        return errlog( ERR_CRITICAL, "NETCAP: Skipping second clean\n" );
+    }
 
     if (netcap_server_shutdown()<0)
         perrlog("netcap_server_shutdown");
@@ -143,13 +147,14 @@ int netcap_cleanup()
         perrlog("netcap_udp_cleanup");
     if (netcap_hooks_cleanup()<0) 
         perrlog("netcap_hooks_cleanup");
-    /* XXX Should these return */
     if (netcap_sessions_cleanup()<0)
-        return perrlog("netcap_sessions_cleanup");
+        perrlog("netcap_sessions_cleanup");
     if (netcap_sesstable_cleanup()<0)
-        return perrlog("netcap_sesstable_cleanup");
+        perrlog("netcap_sesstable_cleanup");
     if (netcap_interface_cleanup()<0) 
-        return perrlog("netcap_interface_cleanup");
+        perrlog("netcap_interface_cleanup");
+    if (netcap_arp_cleanup()<0) 
+        perrlog("netcap_arp_cleanup");
     if (netcap_shield_cleanup()<0)
         perrlog("netcap_shield_cleanup");
     if (netcap_sched_cleanup_z ( NULL ) < 0 )
@@ -159,10 +164,6 @@ int netcap_cleanup()
 
     /* No need to lock since it has already moved out of the initialized state. */
     _init.status = STATUS_CLEAN;
-
-    if ( ret < 0 )
-        return errlog( ERR_CRITICAL, "NETCAP: Skipping second clean\n" );;
-
 
     return 0;
 }

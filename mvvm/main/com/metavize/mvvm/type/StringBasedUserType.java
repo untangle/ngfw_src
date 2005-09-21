@@ -12,52 +12,61 @@
 package com.metavize.mvvm.type;
 
 import java.io.Serializable;
-
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 
-import net.sf.hibernate.HibernateException;
-import net.sf.hibernate.UserType;
+import org.hibernate.HibernateException;
+import org.hibernate.usertype.UserType;
 
+// NOTE: for immutable objects, please at least override the deepCopy
 public abstract class StringBasedUserType implements UserType, Serializable
 {
     private static final int[] SQL_TYPES = { Types.VARCHAR };
 
+    // abstract methods -------------------------------------------------------
+    public abstract Class returnedClass();
+
+    protected abstract String userTypeToString( Object v );
+
+    protected abstract Object createUserType( String val ) throws Exception;
+
+    // UserType methods -------------------------------------------------------
+
     public int[] sqlTypes() { return SQL_TYPES; }
-    
+
     public boolean equals( Object x, Object y )
     {
         if ( x == y ) return true;
-        
+
         if ( x == null || y == null ) return false;
 
-        return x.equals( y ); 
+        return x.equals( y );
     }
-    
+
     public Object deepCopy( Object value )
-    { 
+    {
         return value;
     }
-    
+
     public boolean isMutable()
     {
         return false;
     }
-    
+
     public Object nullSafeGet( ResultSet rs, String[] names, Object owner )
         throws HibernateException, SQLException
     {
         String name = rs.getString( names[0] );
         Object val;
-                
+
         try {
             val = rs.wasNull() ? null : createUserType( name );
         } catch ( Exception exn ) {
             throw new HibernateException( exn );
         }
-        
+
         return val;
     }
 
@@ -70,11 +79,24 @@ public abstract class StringBasedUserType implements UserType, Serializable
             ps.setString(i, userTypeToString( v ));
         }
     }
-    
-    /** Abstract methods */
-    public abstract Class returnedClass();
-    
-    protected abstract String userTypeToString( Object v );
-    
-    protected abstract Object createUserType( String val ) throws Exception;
+
+    public Object replace(Object original, Object target, Object owner)
+    {
+        return deepCopy(original);
+    }
+
+    public Object assemble(Serializable cached, Object owner)
+    {
+        return deepCopy(cached);
+    }
+
+    public Serializable disassemble(Object value)
+    {
+        return (Serializable)deepCopy(value);
+    }
+
+    public int hashCode(Object x)
+    {
+        return userTypeToString(x).hashCode();
+    }
 }

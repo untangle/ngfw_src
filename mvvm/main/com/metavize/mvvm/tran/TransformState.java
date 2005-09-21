@@ -72,9 +72,12 @@ public class TransformState implements Serializable
 
     private TransformState(String state) { this.state = state; }
 
+    // Object methods ---------------------------------------------------------
+
     public String toString() { return state; }
 
     // Serialization ----------------------------------------------------------
+
     Object readResolve()
     {
         return getInstance(state);

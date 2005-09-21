@@ -25,6 +25,8 @@ class IPSessionDescImpl extends SessionDescImpl implements IPSessionDesc {
     protected byte clientIntf;
     protected byte serverIntf;
 
+    protected boolean isInbound;
+
     protected InetAddress clientAddr;
     protected InetAddress serverAddr;
 
@@ -35,7 +37,7 @@ class IPSessionDescImpl extends SessionDescImpl implements IPSessionDesc {
                                 byte clientState, byte serverState,
                                 byte clientIntf, byte serverIntf,
                                 InetAddress clientAddr, InetAddress serverAddr,
-                                int clientPort, int serverPort)
+                                int clientPort, int serverPort, boolean isInbound)
     {
         super(id, stats);
         this.protocol = protocol;
@@ -47,6 +49,7 @@ class IPSessionDescImpl extends SessionDescImpl implements IPSessionDesc {
         this.serverAddr = serverAddr;
         this.clientPort = clientPort;
         this.serverPort = serverPort;
+        this.isInbound = isInbound;
     }
 
     public short protocol()
@@ -62,15 +65,6 @@ class IPSessionDescImpl extends SessionDescImpl implements IPSessionDesc {
     public byte serverIntf()
     {
         return serverIntf;
-    }
-
-    // XX Only works for max two interfaces.
-    public byte direction()
-    {
-        if (clientIntf == 0)
-            return INBOUND;
-        else
-            return OUTBOUND;
     }
 
     public byte clientState()
@@ -101,5 +95,15 @@ class IPSessionDescImpl extends SessionDescImpl implements IPSessionDesc {
     public int serverPort()
     {
         return serverPort;
+    }
+
+    public boolean isInbound()
+    {
+        return isInbound;
+    }
+
+    public boolean isOutbound()
+    {
+        return !isInbound;
     }
 }

@@ -11,13 +11,14 @@
 
 package com.metavize.mvvm.security;
 
+import java.io.Serializable;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 
-import net.sf.hibernate.HibernateException;
-import net.sf.hibernate.UserType;
+import org.hibernate.HibernateException;
+import org.hibernate.usertype.UserType;
 
 public class LoginFailureReasonUserType implements UserType
 {
@@ -50,6 +51,26 @@ public class LoginFailureReasonUserType implements UserType
             LoginFailureReason r = (LoginFailureReason)v;
             ps.setString(i, Character.toString(r.getKey()));
         }
+    }
+
+    public Object replace(Object original, Object target, Object owner)
+    {
+        return original;
+    }
+
+    public Object assemble(Serializable cached, Object owner)
+    {
+        return deepCopy(cached);
+    }
+
+    public Serializable disassemble(Object value)
+    {
+        return (Serializable)deepCopy(value);
+    }
+
+    public int hashCode(Object x)
+    {
+        return x.hashCode();
     }
 }
 

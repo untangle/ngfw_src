@@ -9,7 +9,7 @@
  *  $Id$
  */
 
-package com.metavize.mvvm.tapi.impl;
+package com.metavize.mvvm.engine;
 
 import java.net.*;
 import java.util.*;
@@ -32,14 +32,18 @@ import com.metavize.mvvm.tapi.event.SessionEventListener;
  * @author <a href="mailto:jdi@SLAB"></a>
  * @version 1.0
  */
-class MPipeManagerImpl extends MPipeManager {
+class MPipeManagerImpl implements MPipeManager
+{
+    private static final MPipeManagerImpl MANAGER = new MPipeManagerImpl();
 
     // List of mPipes we manage for the transform
-    protected List allMPipes;
+    protected final List allMPipes = new ArrayList();
 
-    protected MPipeManagerImpl()
+    protected MPipeManagerImpl() { }
+
+    static final MPipeManagerImpl manager()
     {
-        allMPipes = new ArrayList();
+        return MANAGER;
     }
 
     /**
@@ -74,10 +78,9 @@ class MPipeManagerImpl extends MPipeManager {
         }
     }
 
-    // MVVM Context calls in here when restarting the whole mvvm, after destroying all
-    // the transforms.  We just do cleanup.
+    // MVVM Context calls in here when restarting the whole mvvm,
+    // after destroying all the transforms.  We just do cleanup.
     public void destroy() {
-        allMPipes = null;
-        super.destroy();
+        allMPipes.clear();
     }
 }

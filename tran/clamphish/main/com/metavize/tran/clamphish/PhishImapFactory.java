@@ -62,15 +62,15 @@ public class PhishImapFactory implements TokenHandlerFactory
 
     PhishImapFactory(ClamPhishTransform transform) {
       m_transform = transform;
-      m_mailExport = MailExportFactory.getExport();    
+      /* XXX RBS I don't know if this will work */
+      m_mailExport = MailExportFactory.factory().getExport( transform.getTid().getPolicy());    
     }
 
     // TokenHandlerFactory methods --------------------------------------------
 
     public TokenHandler tokenHandler(TCPSession session) {
     
-      boolean inbound =
-        session.direction() == IPSessionDesc.INBOUND;
+      boolean inbound = session.isInbound();
     
       SpamIMAPConfig config = inbound?
         m_transform.getSpamSettings().getIMAPInbound():

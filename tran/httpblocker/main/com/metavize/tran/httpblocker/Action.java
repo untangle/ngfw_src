@@ -31,8 +31,8 @@ public class Action implements Serializable
         INSTANCES.put('B', BLOCK);
     }
 
-    private char key;
-    private String action;
+    private final char key;
+    private final String action;
 
     private Action(char key, String action)
     {

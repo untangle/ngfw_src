@@ -45,5 +45,4 @@ int  libmvutil_init (void)
 
 void libmvutil_cleanup(void)
 {
-    _errlog_cleanup();
 }

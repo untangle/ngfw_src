@@ -13,7 +13,6 @@ package com.metavize.tran.http;
 
 import java.io.Serializable;
 
-import com.metavize.mvvm.security.Tid;
 
 /**
  * Http casing settings.
@@ -33,7 +32,6 @@ public class HttpSettings implements Serializable
     private static final long serialVersionUID = -8901463578794639216L;
 
     private Long id;
-    private Tid tid;
 
     private boolean enabled = true;
     private boolean nonHttpBlocked = false;
@@ -61,25 +59,6 @@ public class HttpSettings implements Serializable
     private void setId(Long id)
     {
         this.id = id;
-    }
-
-    /**
-     * Transform id for these settings.
-     *
-     * @return tid for these settings.
-     * @hibernate.many-to-one
-     * column="TID"
-     * unique="true"
-     * not-null="true"
-     */
-    public Tid getTid()
-    {
-        return tid;
-    }
-
-    public void setTid(Tid tid)
-    {
-        this.tid = tid;
     }
 
     /**

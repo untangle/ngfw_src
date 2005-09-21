@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.metavize.mvvm.tapi.impl;
+package com.metavize.mvvm.engine;
 
 import java.util.*;
 

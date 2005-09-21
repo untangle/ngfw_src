@@ -21,13 +21,13 @@ import com.metavize.mvvm.policy.PolicyManager;
 import com.metavize.mvvm.policy.SystemPolicyRule;
 import com.metavize.mvvm.policy.UserPolicyRule;
 import com.metavize.mvvm.policy.UserPolicyRuleSet;
-import net.sf.hibernate.HibernateException;
-import net.sf.hibernate.Query;
-import net.sf.hibernate.Session;
-import net.sf.hibernate.Transaction;
 import org.apache.log4j.Logger;
+import org.hibernate.HibernateException;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 
-public class PolicyManagerImpl implements PolicyManager
+class PolicyManagerImpl implements PolicyManager
 {
     private static final String INITIAL_POLICY_NAME = "Default";
     private static final String INITIAL_POLICY_NOTES = "The default policy";
@@ -36,13 +36,15 @@ public class PolicyManagerImpl implements PolicyManager
 
     private static PolicyManagerImpl POLICY_MANAGER = new PolicyManagerImpl();
 
+    // package protected variables (used by PipelineFoundryImpl)
+    volatile UserPolicyRule[] userRules;
+    volatile SystemPolicyRule[] sysRules;
+
     private List<Policy> allPolicies; // Also contains default one
     private Policy defaultPolicy;
 
     private Object policyRuleLock = new Object();
     private UserPolicyRuleSet userRuleSet;
-    private SystemPolicyRule[] sysRules;
-    private UserPolicyRule[] userRules;
 
     private PolicyManagerImpl() {
         allPolicies = new ArrayList<Policy>();
@@ -95,16 +97,26 @@ public class PolicyManagerImpl implements PolicyManager
         logger.info("Initialized PolicyManager");
     }
 
-    public static PolicyManagerImpl policyManager()
+    static PolicyManagerImpl policyManager()
     {
         return POLICY_MANAGER;
     }
-
 
     private static final Policy[] POLICY_ARRAY_PROTO = new Policy[0];
 
     public Policy[] getPolicies() {
         return (Policy[]) allPolicies.toArray(POLICY_ARRAY_PROTO);
+    }
+
+    public Policy getPolicy(String name)
+    {
+        for (Policy p : allPolicies) {
+            if (name.equals(p.getName())) {
+                return p;
+            }
+        }
+
+        return null;
     }
 
     public Policy getDefaultPolicy() {
@@ -128,7 +140,7 @@ public class PolicyManagerImpl implements PolicyManager
             try {
                 Transaction tx = s.beginTransaction();
 
-                s.saveOrUpdateCopy(p);
+                s.merge(p);
 
                 tx.commit();
             } catch (HibernateException exn) {
@@ -195,7 +207,7 @@ public class PolicyManagerImpl implements PolicyManager
             try {
                 Transaction tx = s.beginTransaction();
 
-                s.saveOrUpdateCopy(p);
+                s.merge(p);
 
                 tx.commit();
             } catch (HibernateException exn) {
@@ -242,7 +254,7 @@ public class PolicyManagerImpl implements PolicyManager
 
                         rule.setPolicy(p);
                         rule.setInbound(inbound);
-                        s.saveOrUpdateCopy(rule);
+                        s.merge(rule);
 
                         tx.commit();
                     } catch (HibernateException exn) {
@@ -270,7 +282,7 @@ public class PolicyManagerImpl implements PolicyManager
             try {
                 Transaction tx = s.beginTransaction();
 
-                s.saveOrUpdateCopy(ruleSet);
+                s.merge(ruleSet);
                 userRuleSet = ruleSet;
                 userRules = (UserPolicyRule[]) ruleSet.getRules().toArray(new UserPolicyRule[] { });
 
@@ -345,12 +357,14 @@ public class PolicyManagerImpl implements PolicyManager
         synchronized(policyRuleLock) {
             for (Policy newp : newAllPolicies) {
                 boolean foundIt = false;
-                for (Policy oldp : allPolicies) {
-                    if (newp == oldp) {
-                        if (foundIt)
-                            throw new PolicyException("Policy duplicated");
-                        foundIt = true;
-                        setPolicy(oldp, newp.getName(), newp.getNotes());
+                if (newp.getId() != null) {
+                    for (Policy oldp : allPolicies) {
+                        if (newp.getId().equals(oldp.getId())) {
+                            if (foundIt)
+                                throw new PolicyException("Policy duplicated");
+                            foundIt = true;
+                            setPolicy(oldp, newp.getName(), newp.getNotes());
+                        }
                     }
                 }
                 if (!foundIt)
@@ -359,7 +373,7 @@ public class PolicyManagerImpl implements PolicyManager
             for (Policy oldp : allPolicies) {
                 boolean foundIt = false;
                 for (Policy newp : newAllPolicies) {
-                    if (newp == oldp) {
+                    if (newp.getId().equals(oldp.getId())) {
                         foundIt = true;
                         break;
                     }
@@ -372,7 +386,7 @@ public class PolicyManagerImpl implements PolicyManager
             for (SystemPolicyRule newspr : newSysRules) {
                 boolean foundIt = false;
                 for (SystemPolicyRule oldspr : sysRules) {
-                    if (newspr == oldspr) {
+                    if (newspr.isSameRow(oldspr)) {
                         if (foundIt)
                             throw new PolicyException("System Policy rule duplicated");
                         foundIt = true;
@@ -468,7 +482,7 @@ public class PolicyManagerImpl implements PolicyManager
                 // Get rid of the extra user rules.
                 existingUser.retainAll(goodUser);
                 uprs.setRules(existingUser);
-                s.saveOrUpdateCopy(uprs);
+                s.merge(uprs);
 
                 // Finally, get rid of the extra system ones.
                 existingSys.removeAll(goodSys);

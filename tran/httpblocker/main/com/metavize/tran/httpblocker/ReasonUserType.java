@@ -16,8 +16,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 
-import net.sf.hibernate.HibernateException;
-import net.sf.hibernate.UserType;
+import org.hibernate.HibernateException;
+import org.hibernate.usertype.UserType;
+import java.io.Serializable;
 
 public class ReasonUserType implements UserType
 {
@@ -53,6 +54,26 @@ public class ReasonUserType implements UserType
             }
             ps.setString(i, Character.toString(r.getKey()));
         }
+    }
+
+    public Object replace(Object original, Object target, Object owner)
+    {
+        return original;
+    }
+
+    public Object assemble(Serializable cached, Object owner)
+    {
+        return deepCopy(cached);
+    }
+
+    public Serializable disassemble(Object value)
+    {
+        return (Serializable)deepCopy(value);
+    }
+
+    public int hashCode(Object o)
+    {
+        return o.hashCode();
     }
 }
 

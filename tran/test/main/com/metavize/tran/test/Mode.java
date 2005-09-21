@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: Mode.java,v 1.3 2005/02/25 02:45:29 amread Exp $
+ * $Id$
  */
 
 package com.metavize.tran.test;
@@ -37,7 +37,7 @@ public class Mode implements Serializable
         // INSTANCES.put(READ_ONLY.toString(), READ_ONLY);
     }
 
-    private String mode;
+    private final String mode;
 
     public static Mode getInstance(String mode)
     {

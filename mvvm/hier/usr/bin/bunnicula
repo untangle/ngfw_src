@@ -8,7 +8,7 @@ JAVA_HOME=${JAVA_HOME:-/opt/java}
 procset() {
     if [ -f $1 ] ; then
         echo $2 > $1 ;
-        if [ $? != 0 ] ; then 
+        if [ $? != 0 ] ; then
             echo "WARNING: Failed to set proc setting \"$1\""  >&2
             if [ "$3" != "" ] ; then
                 echo "ERROR: Failed to set required proc setting \"$1\""  >&2
@@ -21,7 +21,7 @@ procset() {
 }
 
 # check ip_queue
-if [ "`grep Peer /proc/net/ip_queue  | awk '{ print $4 }'`" != "0" ] ; then 
+if [ "`grep Peer /proc/net/ip_queue  | awk '{ print $4 }'`" != "0" ] ; then
     echo "ERROR: ip_queue allocated, exiting" >&2
     exit 1
 fi
@@ -109,5 +109,6 @@ exec $JAVA_HOME/bin/java \
     -Djava.library.path=@ALPINE_LIB@ \
     -Dbunnicula.home=@MVVM_HOME@ \
     -Dargon.shield.cfg_file=@MVVM_HOME@/conf/shield.cfg \
+    -Djdbc.drivers=org.postgresql.Driver \
     ${JAVA_OPTS} $* \
     com.metavize.mvvm.engine.Main

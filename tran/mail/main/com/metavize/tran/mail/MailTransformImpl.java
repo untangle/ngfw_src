@@ -18,10 +18,6 @@ import com.metavize.mvvm.tapi.PipeSpec;
 import com.metavize.tran.mail.impl.imap.ImapCasingFactory;
 import com.metavize.tran.mail.impl.smtp.SmtpCasingFactory;
 import com.metavize.tran.mail.papi.*;
-import net.sf.hibernate.HibernateException;
-import net.sf.hibernate.Query;
-import net.sf.hibernate.Session;
-import net.sf.hibernate.Transaction;
 import org.apache.log4j.Logger;
 
 public class MailTransformImpl extends AbstractTransform
@@ -42,7 +38,7 @@ public class MailTransformImpl extends AbstractTransform
     private final PipeSpec[] pipeSpecs = new PipeSpec[]
         { SMTP_PIPE_SPEC, POP_PIPE_SPEC, IMAP_PIPE_SPEC };
 
-    private MailTransformSettings settings;
+    private MailTransformCommon common;
 
     // constructors -----------------------------------------------------------
 
@@ -50,43 +46,21 @@ public class MailTransformImpl extends AbstractTransform
     {
         logger.debug("MailTransformImpl");
 
-        MailExportFactory.init(this);
+        MailExportFactory.factory().registerExport(getTid().getPolicy(), this);
     }
 
     // MailTransform methods --------------------------------------------------
 
     public MailTransformSettings getMailTransformSettings()
     {
-        return settings;
+        return null == common ? null : common.getMailTransformSettings();
     }
 
     public void setMailTransformSettings(MailTransformSettings settings)
     {
-        Session s = getTransformContext().openSession();
-        try {
-            Transaction tx = s.beginTransaction();
-
-            s.saveOrUpdateCopy(settings);
-            this.settings = settings;
-
-            tx.commit();
-        } catch (HibernateException exn) {
-            logger.warn("could not get MailTransformSettings", exn);
-        } finally {
-            try {
-                s.close();
-            } catch (HibernateException exn) {
-                logger.warn("could not close hibernate session", exn);
-            }
+        if (null != common) {
+            common.setMailTransformSettings(this, settings);
         }
-
-        /* release session if parser doesn't catch or
-         * explicitly throws its own parse exception
-         * (parser will catch certain parse exceptions)
-         */
-        POP_PIPE_SPEC.setReleaseParseExceptions(true);
-
-        reconfigure();
     }
 
     // MailExport methods -----------------------------------------------------
@@ -100,56 +74,24 @@ public class MailTransformImpl extends AbstractTransform
 
     public void reconfigure()
     {
-        if (null != settings) {
-            SMTP_PIPE_SPEC.setEnabled(settings.isSmtpEnabled());
-            POP_PIPE_SPEC.setEnabled(settings.isPopEnabled());
-            IMAP_PIPE_SPEC.setEnabled(settings.isImapEnabled());
+        if (null != common) {
+            common.reconfigure();
         }
     }
-    protected void initializeSettings()
-    {
-        settings = new MailTransformSettings();
-        settings.setTid(getTid());
-        //Set the defaults
-        settings.setSmtpEnabled(true);
-        settings.setPopEnabled(true);
-        settings.setImapEnabled(false);//TODO bscott this is currently neutered
-        settings.setSmtpInboundTimeout(1000*30);
-        settings.setSmtpOutboundTimeout(1000*30);
-        settings.setPopInboundTimeout(1000*30);
-        settings.setPopOutboundTimeout(1000*30);
-        settings.setImapInboundTimeout(1000*30);
-        settings.setImapOutboundTimeout(1000*30);
-        setMailTransformSettings(settings);
-    }
+
+    protected void initializeSettings() { }
 
     protected void postInit(String[] args)
     {
-        Session s = getTransformContext().openSession();
-        try {
-            Transaction tx = s.beginTransaction();
+        common = MailTransformCommon.common(this);
+        common.registerListener(this);
+        doReconfigure(common.getMailTransformSettings());
+    }
 
-            Query q = s.createQuery
-                ("from MailTransformSettings hbs where hbs.tid = :tid");
-            q.setParameter("tid", getTid());
-            settings = (MailTransformSettings)q.uniqueResult();
-
-            tx.commit();
-        } catch (HibernateException exn) {
-            logger.warn("Could not get MailTransformSettings", exn);
-        } finally {
-            try {
-                s.close();
-            } catch (HibernateException exn) {
-                logger.warn("could not close Hibernate session", exn);
-            }
-        }
-
-        if (null == settings) {
-            initializeSettings();
-        }
-
-        reconfigure();
+    protected void preDestroy()
+    {
+        common.deregisterListener(this);
+        common = null;
     }
 
     // AbstractTransform methods ----------------------------------------------
@@ -158,6 +100,22 @@ public class MailTransformImpl extends AbstractTransform
     protected PipeSpec[] getPipeSpecs()
     {
         return pipeSpecs;
+    }
+
+    // package protected methods ----------------------------------------------
+
+    void doReconfigure(MailTransformSettings settings)
+    {
+        SMTP_PIPE_SPEC.setEnabled(settings.isSmtpEnabled());
+        POP_PIPE_SPEC.setEnabled(settings.isPopEnabled());
+        IMAP_PIPE_SPEC.setEnabled(settings.isImapEnabled());
+
+        /* release session if parser doesn't catch or
+         * explicitly throws its own parse exception
+         * (parser will catch certain parse exceptions)
+         */
+        POP_PIPE_SPEC.setReleaseParseExceptions(true);
+
     }
 
     // XXX soon to be deprecated ----------------------------------------------

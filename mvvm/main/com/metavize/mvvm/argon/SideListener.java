@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: SideListener.java,v 1.1 2005/01/31 03:34:10 rbscott Exp $
+ *  $Id$
  */
 
 package com.metavize.mvvm.argon;

@@ -44,7 +44,9 @@ public class FirewallRule extends TrafficRule
     /**
      * Hibernate constructor.
      */
-    public FirewallRule() { }
+    public FirewallRule()
+    {
+    }
 
     public FirewallRule( boolean     isLive,     ProtocolMatcher protocol,
                          IntfMatcher srcIntf,    IntfMatcher     dstIntf,

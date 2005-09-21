@@ -35,7 +35,7 @@ class RedirectMatcher extends TrafficMatcher {
     
     public static final RedirectMatcher MATCHER_DISABLED = 
         new RedirectMatcher( false, ProtocolMatcher.MATCHER_NIL,
-                             IntfMatcher.MATCHER_NIL, IntfMatcher.MATCHER_NIL,
+                             IntfMatcher.getNothing(), IntfMatcher.getNothing(),
                              IPMatcher.MATCHER_NIL,   IPMatcher.MATCHER_ALL, 
                              PortMatcher.MATCHER_NIL, PortMatcher.MATCHER_NIL,
                              false, null, -1 );
@@ -50,7 +50,7 @@ class RedirectMatcher extends TrafficMatcher {
      * If so, there should be a 2 addresses and 2 ports.
      */
     private final InetAddress redirectAddress;
-
+    
     /**
      * Port for the redirect. (0 to not redirect)
      */

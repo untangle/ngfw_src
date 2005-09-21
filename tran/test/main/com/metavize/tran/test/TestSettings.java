@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: TestSettings.java,v 1.6 2005/03/16 03:43:13 rbscott Exp $
+ * $Id$
  */
 
 package com.metavize.tran.test;

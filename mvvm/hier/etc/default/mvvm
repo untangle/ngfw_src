@@ -6,6 +6,7 @@ join_string() {
     echo $1 | sed -e 's/^ *//g' -e 's/ *$//g' -e "s/ \\+/$2/g"
 }
 
+DEFAULT_DMZ="eth2"
 
 # Use the following to configure your local installation
 MVVM_LOGDIR=@PREFIX@/var/log/mvvm
@@ -17,9 +18,10 @@ MVVM_CMD=@PREFIX@/usr/bin/mvvm.sh
 MVVM_USER=root
 MVVM_ARGS=""
 
-## Set here, if unset, they will be set to eth1, eth0 respectively later
+## For testing, setup the interfaces here
 #MVVM_INSIDE_INTF=""
 #MVVM_OUTSIDE_INTF=""
+#MVVM_DMZ_INTF=""
 
 ## Set inside and outside interface to a default if it is not set
 MVVM_INSIDE_INTF=${MVVM_INSIDE_INTF:-"eth1"}
@@ -32,6 +34,15 @@ else
 fi
 
 MVVM_ARGS="${MVVM_ARGS} -Dargon.inside=${MVVM_INSIDE_INTF} -Dargon.outside=${MVVM_OUTSIDE_INTF}"
+
+## Check for a DMZ Interface if the default is not set, (just check for eth2)
+if [ -z "${MVVM_DMZ_INTF}" ] && [ -d "/sys/class/net/${DEFAULT_DMZ}" ]; then
+    MVVM_DMZ_INTF=${DEFAULT_DMZ}
+fi
+
+if [ -n "${MVVM_DMZ_INTF}" ]; then
+    MVVM_ARGS="${MVVM_ARGS} -Dargon.dmz=${MVVM_DMZ_INTF}"
+fi
 
 #
 # Profiling

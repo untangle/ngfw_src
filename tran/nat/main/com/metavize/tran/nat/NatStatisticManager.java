@@ -23,8 +23,8 @@ class NatStatisticManager extends StatisticManager
     private static NatStatisticManager INSTANCE = null;
 
     /* Interface matcher to determine if the sessions is incoming or outgoing */
-    final IntfMatcher matcherIncoming = IntfMatcher.MATCHER_IN;
-    final IntfMatcher matcherOutgoing = IntfMatcher.MATCHER_OUT;
+    final IntfMatcher matcherIncoming = IntfMatcher.getInside();
+    final IntfMatcher matcherOutgoing = IntfMatcher.getOutside();
 
     private NatStatisticEvent statisticEvent = new NatStatisticEvent();
 

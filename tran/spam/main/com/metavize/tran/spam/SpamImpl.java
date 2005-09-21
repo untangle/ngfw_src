@@ -28,12 +28,12 @@ import com.metavize.mvvm.tapi.SoloPipeSpec;
 import com.metavize.mvvm.tran.Direction;
 import com.metavize.tran.mail.papi.smtp.SMTPNotifyAction;
 import com.metavize.tran.token.TokenAdaptor;
-import net.sf.hibernate.HibernateException;
-import net.sf.hibernate.Query;
-import net.sf.hibernate.Session;
-import net.sf.hibernate.Transaction;
 import org.apache.log4j.Logger;
 import com.metavize.mvvm.tran.Transform;
+import org.hibernate.HibernateException;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 public class SpamImpl extends AbstractTransform implements SpamTransform
 {
@@ -53,6 +53,7 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
         + "LEFT OUTER JOIN tr_mail_message_info_addr rcpt ON info.id = rcpt.msg_id AND rcpt.kind = 'B' "
         + "LEFT OUTER JOIN tr_mail_message_info_addr send ON info.id = send.msg_id AND send.kind = 'G' "
         + "WHERE vendor_name = ? "
+        + "AND endp.policy_id = ? "
         + "ORDER BY evt.time_stamp DESC LIMIT ?";
 
     private static final String MAIL_QUERY
@@ -69,6 +70,7 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
         + "LEFT OUTER JOIN tr_mail_message_info_addr rcpt ON info.id = rcpt.msg_id AND rcpt.kind = 'U' "
         + "LEFT OUTER JOIN tr_mail_message_info_addr send ON info.id = send.msg_id AND send.kind = 'T' "
         + "WHERE vendor_name = ? "
+        + "AND endp.policy_id = ? "
         + "ORDER BY evt.time_stamp DESC LIMIT ?";
 
     private static final String[] QUERIES = new String[]
@@ -85,7 +87,7 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
     private final SpamScanner scanner;
     private final Logger logger = Logger.getLogger(getClass());
 
-    private SpamSettings zSpamSettings;
+    private volatile SpamSettings zSpamSettings;
 
     // constructors -----------------------------------------------------------
 
@@ -124,8 +126,10 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
         try {
             Transaction tx = s.beginTransaction();
 
-            s.saveOrUpdateCopy(zSpamSettings);
+            s.merge(zSpamSettings);
             this.zSpamSettings = zSpamSettings;
+
+            reconfigure();
 
             tx.commit();
         } catch (HibernateException exn) {
@@ -138,7 +142,6 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
             }
         }
 
-        reconfigure();
         return;
     }
 
@@ -237,6 +240,8 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
             q.setParameter("tid", getTid());
             zSpamSettings = (SpamSettings)q.uniqueResult();
 
+            reconfigure();
+
             tx.commit();
         } catch (HibernateException exn) {
             logger.warn("could not get SpamSettings", exn);
@@ -266,7 +271,8 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
             Connection c = s.connection();
             PreparedStatement ps = c.prepareStatement(q);
             ps.setString(1, scanner.getVendorName());
-            ps.setInt(2, limit);
+            ps.setLong(2, getPolicy().getId());
+            ps.setInt(3, limit);
             long l0 = System.currentTimeMillis();
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {

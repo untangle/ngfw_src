@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: BlacklistCategory.java,v 1.7 2005/03/25 03:19:52 amread Exp $
+ * $Id$
  */
 
 package com.metavize.tran.httpblocker;

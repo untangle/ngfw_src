@@ -13,7 +13,6 @@ package com.metavize.mvvm.engine;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.metavize.mvvm.tapi.Fitting;
 import com.metavize.mvvm.tapi.MPipe;
 import com.metavize.mvvm.tapi.Pipeline;
+import java.util.Iterator;
 
 class PipelineImpl implements Pipeline
 {
@@ -29,8 +29,7 @@ class PipelineImpl implements Pipeline
         = new File(System.getProperty("bunnicula.tmp.dir"));
 
     private final int sessionId;
-    private final List<MPipe> mPipes;
-    private final List<Fitting> fittings;
+    private final List<MPipeFitting> mPipeFittings;
     private final String sessionPrefix;
 
     private final Map objects = new ConcurrentHashMap();
@@ -40,11 +39,10 @@ class PipelineImpl implements Pipeline
 
     // constructors -----------------------------------------------------------
 
-    PipelineImpl(int sessionId, List<MPipe> mPipes, List<Fitting> fittings)
+    PipelineImpl(int sessionId, List<MPipeFitting> mPipeFittings)
     {
         this.sessionId = sessionId;
-        this.mPipes = new ArrayList<MPipe>(mPipes);
-        this.fittings = new ArrayList<Fitting>(fittings);
+        this.mPipeFittings = mPipeFittings;
         this.sessionPrefix = "sess-" + sessionId + "-";
     }
 
@@ -91,24 +89,24 @@ class PipelineImpl implements Pipeline
 
     public Fitting getClientFitting(MPipe mPipe)
     {
-        int i = 0;
-        for (MPipe mp : mPipes) {
-            if (mp == mPipe) {
-                return fittings.get(i);
+        for (MPipeFitting mpf : mPipeFittings) {
+            if (mpf.mPipe == mPipe) {
+                return mpf.fitting;
             }
-            i++;
         }
         throw new IllegalArgumentException("mPipe not in pipeline: " + mPipe);
     }
 
     public Fitting getServerFitting(MPipe mPipe)
     {
-        int i = 1;
-        for (MPipe mp : mPipes) {
-            if (mp == mPipe) {
-                return fittings.get(mPipes.size() == i ? 0 : i);
+        for (Iterator<MPipeFitting> i = mPipeFittings.iterator(); i.hasNext(); ) {
+            MPipeFitting mpf = i.next();
+            if (mpf.mPipe == mPipe) {
+                if (i.hasNext()) {
+                    mpf = i.next();
+                    return mpf.fitting;
+                }
             }
-            i++;
         }
         throw new IllegalArgumentException("mPipe not in pipeline: " + mPipe);
     }

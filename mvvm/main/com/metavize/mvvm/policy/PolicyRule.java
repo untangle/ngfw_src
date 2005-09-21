@@ -11,22 +11,22 @@
 
 package com.metavize.mvvm.policy;
 
-import com.metavize.mvvm.tran.Rule;
-import java.io.Serializable;
 import java.util.*;
 
+import com.metavize.mvvm.argon.IPSessionDesc;
+import com.metavize.mvvm.tran.Rule;
+
 /**
- *
  * Hibernate mappings for this class are in the subclasses UserPolicyRule
  * and SystemPolicyRule.
  */
 public abstract class PolicyRule extends Rule
 {
     /* settings */
-    private Policy policy;
-    private byte clientIntf;
-    private byte serverIntf;
-    private boolean inbound;
+    protected Policy policy;
+    protected byte clientIntf;
+    protected byte serverIntf;
+    protected boolean inbound;
 
     // constructors -----------------------------------------------------------
 
@@ -39,10 +39,14 @@ public abstract class PolicyRule extends Rule
         this.inbound = inbound;
     }
 
+    // abstract methods -------------------------------------------------------
+
+    public abstract boolean matches(IPSessionDesc sessionDesc);
+
     // accessors --------------------------------------------------------------
 
     /**
-     * Returns the client interface 
+     * Returns the client interface
      *
      * @return the interface the client must be on to match this rule
      * @hibernate.property
@@ -60,7 +64,7 @@ public abstract class PolicyRule extends Rule
     }
 
     /**
-     * Returns the server interface 
+     * Returns the server interface
      *
      * @return the interface the server must be on to match this rule
      * @hibernate.property

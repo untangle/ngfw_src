@@ -9,7 +9,7 @@
  *  $Id$
  */
 
-package com.metavize.mvvm.tapi.impl;
+package com.metavize.mvvm.engine;
 
 import java.nio.ByteBuffer;
 
@@ -38,10 +38,11 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
 
     protected TCPSessionImpl(Dispatcher disp,
                              com.metavize.mvvm.argon.TCPSession pSession,
+                             boolean isInbound,
                              int clientReadBufferSize,
                              int serverReadBufferSize)
     {
-        super(disp, pSession);
+        super(disp, pSession, isInbound);
 
         if (clientReadBufferSize < 2 || clientReadBufferSize > TCP_MAX_CHUNK_SIZE)
             throw new IllegalArgumentException("Illegal maximum client read bufferSize: " + clientReadBufferSize);
@@ -118,7 +119,7 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
     {
         return new TCPSessionDescImpl(id(), new SessionStats(stats),
                                       clientState(), serverState(), clientIntf(), serverIntf(),
-                                      clientAddr(), serverAddr(), clientPort(), serverPort());
+                                      clientAddr(), serverAddr(), clientPort(), serverPort(), isInbound());
     }
 
     public byte clientState()
@@ -282,8 +283,8 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
                 debug("tryWrite to full outgoing queue");
         } else {
             // Old busted comment:
-	    // We know it's a data crumb since there can be nothing else
-	    // enqueued for TCP.  
+        // We know it's a data crumb since there can be nothing else
+        // enqueued for TCP.
             // New hotness comment:
             // It can be a shutdown crumb as well as a data crumb.
             Crumb crumb2send = getNextCrumb2Send(side);
@@ -334,7 +335,7 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
     {
         byte[] array;
         int offset = buf2send.position();
-	int limit = buf2send.remaining();
+    int limit = buf2send.remaining();
         if (limit <= 0) {
             if (logger.isInfoEnabled())
                 info("ignoring empty send to " + (side == CLIENT ? "client" : "server") + ", pos: " +
@@ -342,7 +343,7 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
                      buf2send.arrayOffset());
             return;
         }
-            
+
         if (buf2send.hasArray()) {
             array = buf2send.array();
             offset += buf2send.arrayOffset();

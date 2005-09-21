@@ -1,25 +1,26 @@
 /*
- * Copyright (c) 2003 Metavize Inc.
+ * Copyright (c) 2003, 2005 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: DefaultMPipeManager.java,v 1.1 2004/12/18 00:44:23 jdi Exp $
+ *  $Id$
  */
 
-package com.metavize.mvvm.tapi.impl;
+package com.metavize.mvvm.engine;
+
+import java.net.*;
 
 import com.metavize.mvvm.tapi.MPipeManager;
-import java.net.*;
 
 
 /**
  * Creates this platform's default MPipeManager
  */
 
-public class DefaultMPipeManager {
+class DefaultMPipeManager {
     /**
      * Prevent instantiation.
      */

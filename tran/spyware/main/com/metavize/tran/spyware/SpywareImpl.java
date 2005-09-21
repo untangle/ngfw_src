@@ -43,11 +43,11 @@ import com.metavize.mvvm.tran.IPMaddr;
 import com.metavize.mvvm.tran.IPMaddrRule;
 import com.metavize.mvvm.tran.StringRule;
 import com.metavize.tran.token.TokenAdaptor;
-import net.sf.hibernate.HibernateException;
-import net.sf.hibernate.Query;
-import net.sf.hibernate.Session;
-import net.sf.hibernate.Transaction;
 import org.apache.log4j.Logger;
+import org.hibernate.HibernateException;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 public class SpywareImpl extends AbstractTransform implements Spyware
 {
@@ -60,9 +60,10 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         +        "c_client_addr, c_client_port, s_server_addr, s_server_port, "
         +        "client_intf, server_intf "
         + "FROM tr_http_evt_req req "
-        + "JOIN pl_endp USING (session_id) "
+        + "JOIN pl_endp endp USING (session_id) "
         + "JOIN tr_http_req_line rl USING (request_id) "
         + "JOIN tr_spyware_evt_cookie cookie USING (request_id) "
+        + "WHERE endp.policy_id = ? "
         + "ORDER BY req.time_stamp DESC LIMIT ?";
 
     private static final String ACTIVEX_QUERY
@@ -77,6 +78,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         + "JOIN pl_endp endp USING (session_id) "
         + "JOIN tr_http_req_line rl USING (request_id) "
         + "JOIN tr_spyware_evt_activex ax USING (request_id) "
+        + "WHERE endp.policy_id = ? "
         + "ORDER BY req.time_stamp DESC LIMIT ?";
 
     private static final String BLACKLIST_QUERY
@@ -91,6 +93,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         + "JOIN pl_endp endp USING (session_id) "
         + "JOIN tr_http_req_line rl USING (request_id) "
         + "JOIN tr_spyware_evt_blacklist bl USING (request_id) "
+        + "WHERE endp.policy_id = ? "
         + "ORDER BY req.time_stamp DESC LIMIT ?";
 
     private static final String ACCESS_QUERY
@@ -103,6 +106,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         +        "client_intf, server_intf "
         + "FROM tr_spyware_evt_access acc "
         + "JOIN pl_endp endp USING (session_id) "
+        + "WHERE endp.policy_id = ? "
         + "ORDER BY create_date DESC LIMIT ?";
 
     private static final String[] QUERIES = new String[]
@@ -114,8 +118,6 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         = "com/metavize/tran/spyware/cookie.txt";
     private static final String SUBNET_LIST
         = "com/metavize/tran/spyware/subnet.txt";
-    private static final String URL_LIST
-        = "com/metavize/tran/spyware/urlblacklist.txt";
 
     private static final Pattern ACTIVEX_PATTERN = Pattern
         .compile(".*\\{([a-fA-F0-9\\-]+)\\}.*");
@@ -145,7 +147,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
 
     public SpywareImpl()
     {
-        urlBlacklist = buildUrlList();
+        urlBlacklist = SpywareCache.cache().getUrls();
     }
 
     // SpywareTransform methods -----------------------------------------------
@@ -161,7 +163,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         try {
             Transaction tx = s.beginTransaction();
 
-            s.saveOrUpdateCopy(settings);
+            s.merge(settings);
             this.settings = settings;
 
             tx.commit();
@@ -323,37 +325,6 @@ public class SpywareImpl extends AbstractTransform implements Spyware
 
     // private methods --------------------------------------------------------
 
-    private Set buildUrlList()
-    {
-        InputStream is = getClass().getClassLoader().getResourceAsStream(URL_LIST);
-        HashSet urls = new HashSet();
-
-        if (null == is) {
-            logger.error("Could not find: " + URL_LIST);
-            return null;
-        }
-
-        try {
-            InputStreamReader isr = new InputStreamReader(is);
-            BufferedReader br = new BufferedReader(isr);
-
-            for (String line = br.readLine(); null != line; line = br.readLine()) {
-                logger.debug("ADDING URL: " + line);
-                urls.add(line);
-            }
-        } catch (IOException exn) {
-            logger.error("Could not read file: " + URL_LIST, exn);
-        } finally {
-            try {
-                is.close();
-            } catch (IOException exn) {
-                logger.warn("Could not close file: " + URL_LIST, exn);
-            }
-        }
-
-        return urls;
-    }
-
     private void updateActiveX(SpywareSettings settings)
     {
         List rules = settings.getActiveXRules();
@@ -383,7 +354,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
 
                     if (!ruleHash.contains(clsid)) {
                         logger.debug("ADDING activeX Rule: " + clsid);
-                        rules.add(new StringRule(clsid));
+                        rules.add(new StringRule(clsid.intern()));
                     }
                 }
             }
@@ -425,7 +396,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
             for (String l = br.readLine(); null != l; l = br.readLine()) {
                 if (!ruleHash.contains(l)) {
                     logger.debug("ADDING cookie Rule: " + l);
-                    rules.add(new StringRule(l));
+                    rules.add(new StringRule(l.intern()));
                 }
             }
         } catch (IOException exn) {
@@ -523,7 +494,8 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         try {
             Connection c = s.connection();
             PreparedStatement ps = c.prepareStatement(q);
-            ps.setInt(1, limit);
+            ps.setLong(1, getPolicy().getId());
+            ps.setInt(2, limit);
             long l0 = System.currentTimeMillis();
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {

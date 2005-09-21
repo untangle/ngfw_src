@@ -34,17 +34,16 @@ import com.metavize.mvvm.tapi.Protocol;
 import com.metavize.mvvm.tapi.SoloPipeSpec;
 import com.metavize.mvvm.tapi.Subscription;
 import com.metavize.mvvm.tran.Direction;
-import com.metavize.mvvm.tran.Interface;
 import com.metavize.mvvm.tran.MimeType;
 import com.metavize.mvvm.tran.MimeTypeRule;
 import com.metavize.mvvm.tran.StringRule;
 import com.metavize.tran.mail.papi.smtp.SMTPNotifyAction;
 import com.metavize.tran.token.TokenAdaptor;
-import net.sf.hibernate.HibernateException;
-import net.sf.hibernate.Query;
-import net.sf.hibernate.Session;
-import net.sf.hibernate.Transaction;
 import org.apache.log4j.Logger;
+import org.hibernate.HibernateException;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 public class VirusTransformImpl extends AbstractTransform
     implements VirusTransform
@@ -64,8 +63,9 @@ public class VirusTransformImpl extends AbstractTransform
         +        "c_client_addr, c_client_port, s_server_addr, s_server_port, "
         +        "client_intf, server_intf "
         + "FROM tr_virus_evt evt "
-        + "JOIN pl_endp USING (session_id) "
+        + "JOIN pl_endp endp USING (session_id) "
         + "WHERE vendor_name = ? "
+        + "AND endp.policy_id = ? "
         + "ORDER BY create_date DESC LIMIT ?";
 
     private static final String HTTP_QUERY
@@ -85,6 +85,7 @@ public class VirusTransformImpl extends AbstractTransform
         + "JOIN pl_endp endp ON req.session_id = endp.session_id "
         + "JOIN tr_http_req_line rl ON rl.request_id = req.request_id "
         + "WHERE vendor_name = ? "
+        + "AND endp.policy_id = ? "
         + "ORDER BY req.time_stamp DESC LIMIT ?";
 
     private static final String MAIL_QUERY
@@ -102,6 +103,7 @@ public class VirusTransformImpl extends AbstractTransform
         + "JOIN tr_mail_message_info info ON evt.msg_id = info.id "
         + "JOIN pl_endp endp ON info.session_id = endp.session_id "
         + "WHERE vendor_name = ? "
+        + "AND endp.policy_id = ? "
         + "ORDER BY create_date DESC LIMIT ?";
 
     private static final String SMTP_QUERY
@@ -120,6 +122,7 @@ public class VirusTransformImpl extends AbstractTransform
         + "JOIN tr_mail_message_info info ON evt.msg_id = info.id "
         + "JOIN pl_endp endp ON info.session_id = endp.session_id "
         + "WHERE vendor_name = ? "
+        + "AND endp.policy_id = ? "
         + "ORDER BY create_date DESC LIMIT ?";
 
     private static final String[] QUERIES
@@ -198,8 +201,10 @@ public class VirusTransformImpl extends AbstractTransform
         try {
             Transaction tx = s.beginTransaction();
 
-            s.saveOrUpdateCopy(settings);
+            s.merge(settings);
             this.settings = settings;
+
+            virusReconfigure();
 
             tx.commit();
         } catch (HibernateException exn) {
@@ -211,8 +216,6 @@ public class VirusTransformImpl extends AbstractTransform
                 logger.warn("could not close hibernate session", exn);
             }
         }
-
-        virusReconfigure();
     }
 
     public VirusSettings getVirusSettings()
@@ -242,8 +245,7 @@ public class VirusTransformImpl extends AbstractTransform
         // FTP
         Set subscriptions = new HashSet();
         {
-            Subscription subscription = new Subscription
-                (Protocol.TCP, Interface.ANY, Interface.ANY);
+            Subscription subscription = new Subscription(Protocol.TCP);
             subscriptions.add(subscription);
         }
 
@@ -252,16 +254,16 @@ public class VirusTransformImpl extends AbstractTransform
         // HTTP
         subscriptions = new HashSet();
         if (settings.getHttpInbound().getScan()) {
-            // XXX i get -2 on my home machine
+            // Incoming settings for outbound sessions
             Subscription subscription = new Subscription
-                (Protocol.TCP, Interface.INSIDE, Interface.OUTSIDE);
+                (Protocol.TCP, false, true);
             subscriptions.add(subscription);
         }
 
         if (settings.getHttpOutbound().getScan()) {
-            // XXX i get -2 on my home machine
+            // Outgoing settings for inbound sessions
             Subscription subscription = new Subscription
-                (Protocol.TCP, Interface.OUTSIDE, Interface.INSIDE );
+                (Protocol.TCP, true, false);
             subscriptions.add(subscription);
         }
 
@@ -270,8 +272,7 @@ public class VirusTransformImpl extends AbstractTransform
         // SMTP
         subscriptions = new HashSet();
         {
-            Subscription subscription = new Subscription
-                (Protocol.TCP, Interface.ANY, Interface.ANY);
+            Subscription subscription = new Subscription(Protocol.TCP);
             subscriptions.add(subscription);
         }
 
@@ -280,8 +281,7 @@ public class VirusTransformImpl extends AbstractTransform
         // POP
         subscriptions = new HashSet();
         {
-            Subscription subscription = new Subscription
-                (Protocol.TCP, Interface.ANY, Interface.ANY);
+            Subscription subscription = new Subscription(Protocol.TCP);
             subscriptions.add(subscription);
         }
 
@@ -467,7 +467,8 @@ public class VirusTransformImpl extends AbstractTransform
             Connection c = s.connection();
             PreparedStatement ps = c.prepareStatement(q);
             ps.setString(1, scanner.getVendorName());
-            ps.setInt(2, limit);
+            ps.setLong(2, getPolicy().getId());
+            ps.setInt(3, limit);
             long l0 = System.currentTimeMillis();
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {

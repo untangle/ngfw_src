@@ -14,15 +14,16 @@ package com.metavize.mvvm.engine;
 import java.lang.IllegalAccessException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import com.metavize.mvvm.MackageDesc;
 import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.policy.Policy;
 import com.metavize.mvvm.security.Tid;
 import com.metavize.mvvm.tapi.IPSessionDesc;
 import com.metavize.mvvm.tran.DeployException;
@@ -35,11 +36,11 @@ import com.metavize.mvvm.tran.TransformPreferences;
 import com.metavize.mvvm.tran.TransformState;
 import com.metavize.mvvm.tran.TransformStats;
 import com.metavize.mvvm.tran.UndeployException;
-import net.sf.hibernate.HibernateException;
-import net.sf.hibernate.Query;
-import net.sf.hibernate.Session;
-import net.sf.hibernate.SessionFactory;
-import net.sf.hibernate.Transaction;
+import org.hibernate.HibernateException;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Logger;
 
@@ -54,7 +55,7 @@ class TransformContextImpl implements TransformContext
     private final TransformPreferences transformPreferences;
     private final TransformPersistentState persistentState;
     private final MackageDesc mackageDesc;
-    private final ClassLoader classLoader;
+    private final URLClassLoader classLoader;
     private final boolean isNew;
 
     private TransformBase transform;
@@ -63,16 +64,13 @@ class TransformContextImpl implements TransformContext
     private final TransformManagerImpl transformManager = TransformManagerImpl
         .manager();
 
-    TransformContextImpl(URL[] resources, TransformDesc transformDesc,
+    TransformContextImpl(URLClassLoader classLoader, TransformDesc tDesc,
                          MackageDesc mackageDesc, boolean isNew)
         throws DeployException
     {
-        if (null != transformDesc.getTransformBase()) {
-            SchemaUtil.initSchema(transformDesc.getTransformBase());
-        }
-        SchemaUtil.initSchema(transformDesc.getName());
+        this.classLoader = classLoader;
 
-        this.transformDesc = transformDesc;
+        this.transformDesc = tDesc;
         this.tid = transformDesc.getTid();
         this.mackageDesc = mackageDesc;
         this.isNew = isNew;
@@ -99,7 +97,12 @@ class TransformContextImpl implements TransformContext
 
                 tx.commit();
             } catch (HibernateException exn) {
+                Throwable t = exn.getCause();
                 logger.warn(exn, exn);
+                if (t instanceof SQLException) {
+                    SQLException se = (SQLException)t;
+                    logger.warn("next exception", se.getNextException());
+                }
                 throw new DeployException(exn);
             } finally {
                 try {
@@ -138,30 +141,14 @@ class TransformContextImpl implements TransformContext
 
         logger.info("Creating transform context for: " + tid
                     + " (" + transformDesc.getName() + ")");
-
-        CasingClassLoader parentCl = transformManager.getCasingClassLoader();
-        classLoader = new URLClassLoader(resources, parentCl);
     }
 
     void init(String[] args) throws DeployException
     {
-        List<String> exports = transformDesc.getExports();
-        URL[] urls = new URL[exports.size()];
-        int i = 0;
-        for (String export : exports) {
-            try {
-                URL url = new URL(ToolboxManagerImpl.TOOLBOX_URL, export);
-                urls[i++] = url;
-            } catch (MalformedURLException exn) {
-                throw new DeployException("bad export: " + export, exn);
-            }
-        }
-        transformManager.getCasingClassLoader().addResources(urls);
-
         Set<TransformContext>parentCtxs = new HashSet<TransformContext>();
         List<String> parents = transformDesc.getParents();
         for (String parent : parents) {
-            parentCtxs.add(startParent(parent));
+            parentCtxs.add(startParent(parent, tid.getPolicy()));
         }
 
         Thread ct = Thread.currentThread();
@@ -264,8 +251,7 @@ class TransformContextImpl implements TransformContext
         return transform.getStats();
     }
 
-    // XXX make private when/if we move all impls to engine
-    public ClassLoader getClassLoader()
+    public URLClassLoader getClassLoader()
     {
         return classLoader;
     }
@@ -328,17 +314,16 @@ class TransformContextImpl implements TransformContext
         throws TooManyInstancesException
     {
         if (transformDesc.isSingleInstance()) {
-            Tid[] tids = transformManager
-                .transformInstances(transformDesc.getName());
+            String n = transformDesc.getName();
+            Policy p = transformDesc.getTid().getPolicy();
+            List<Tid> l = transformManager.transformInstances(n, p);
 
-            if (1 == tids.length) {
-                if (!tid.equals(tids[0])) {
-                    throw new TooManyInstancesException
-                        ("too many instances: " + transformDesc.getName());
+            if (1 == l.size()) {
+                if (!tid.equals(l.get(0))) {
+                    throw new TooManyInstancesException("too many instances: " + n);
                 }
-            } else if (1 < tids.length) {
-                throw new TooManyInstancesException
-                    ("too many instances: " + transformDesc.getName());
+            } else if (1 < l.size()) {
+                throw new TooManyInstancesException("too many instances: " + n);
             }
         }
     }
@@ -362,42 +347,48 @@ class TransformContextImpl implements TransformContext
         }
     }
 
-    private TransformContext startParent(String parentTransform)
+    private TransformContext startParent(String parent, Policy policy)
         throws DeployException
     {
-        if (null == parentTransform) {
+        if (null == parent) {
             return null;
         }
 
-        logger.debug("Starting parent: " + parentTransform + " for: " + tid);
+        logger.debug("Starting parent: " + parent + " for: " + tid);
 
-        TransformContext ctx = null;
+        TransformContext pctx = getParentContext(parent);
 
-        Tid[] tids = transformManager.transformInstances(parentTransform);
-        if (0 == tids.length) {
+        if (null == pctx) {
             logger.debug("Parent does not exist, instantiating");
+
             try {
-                Tid parentTid = transformManager.instantiate(parentTransform);
-                ctx = transformManager.transformContext(parentTid);
+                Tid parentTid = transformManager.instantiate(parent, policy);
+                pctx = transformManager.transformContext(parentTid);
             } catch (TooManyInstancesException exn) {
-                tids = transformManager.transformInstances(parentTransform);
-                if (1 != tids.length) {
-                    logger.warn("Too many instances name: " + parentTransform
-                                + " instances: " + tids.length);
-                    throw new TooManyInstancesException("could not create");
-                }
-                ctx = transformManager.transformContext(tids[0]);
+                pctx = getParentContext(parent);
             }
-        } else if (1 == tids.length) {
-            logger.debug("Parent exists, using parent context");
-            ctx = transformManager.transformContext(tids[0]);
-        } else if (1 < tids.length) {
-            logger.warn(parentTransform + " has multiple instances");
-            throw new TooManyInstancesException
-                ("too many instances: " + parentTransform);
         }
 
-        return ctx;
+        if (null == pctx) {
+            throw new DeployException("could not create parent: " + parent);
+        } else {
+            return pctx;
+        }
+    }
+
+    private TransformContext getParentContext(String parent)
+    {
+        List<Tid> l = transformManager.transformInstances(parent, tid.getPolicy());
+
+        switch (l.size()) {
+        case 0:
+            return null;
+        case 1:
+            return transformManager.transformContext(l.get(0));
+        default:
+            logger.warn("multiple parents found, returning first");
+            return transformManager.transformContext(l.get(0));
+        }
     }
 
     // Object methods ---------------------------------------------------------

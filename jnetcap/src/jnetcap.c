@@ -68,6 +68,9 @@ static struct {
         jobject   tcp_hook;       /* TCP Hook */
         jobject   udp_hook;       /* UDP hook */
     } java;
+
+    /* For outgoing interface lookups, don't want to wait the whole time. */
+    unsigned long delay_array[];
 } _jnetcap = 
 {
     .scheduler _UNINITIALIZED, 
@@ -78,6 +81,17 @@ static struct {
         .hook_method_id NULL,
         .tcp_hook       NULL,
         .udp_hook       NULL
+    },
+
+    .delay_array  {
+        3000,
+        6000,
+        20000,
+        60000,
+        250000,
+        700000,
+        10000,
+        0
     }
 };
 
@@ -183,62 +197,55 @@ JNIEXPORT jint JNICALL JF_Netcap( init )
     return ret;
 }
 
+/* XXXX This is a magic number used to convert netcap_intf_address_data_t into java 
+ * 0, address, 1 netmask, 2 broadcast
+ */
+#define _DATA_NUM_ITEMS 3
 /*
  * Class:     com_metavize_jnetcap_Netcap
- * Method:    getInterfaceAddressLong
+ * Method:    getInterfaceDataArray
  * Signature: ();
  */
-JNIEXPORT jlong JNICALL JF_Netcap( getInterfaceAddressLong )
-  (JNIEnv *env, jobject _this, jstring j_interface_string )
+JNIEXPORT jint JNICALL JF_Netcap( getInterfaceDataArray )
+  ( JNIEnv *env, jobject _this, jstring j_interface_string, jlongArray j_data )
 {
     const char* str;
-    struct in_addr address;
     int ret;
+
+    netcap_intf_address_data_t netcap_data[NETCAP_MAX_INTERFACES];
     
     if (( str = (*env)->GetStringUTFChars( env, j_interface_string, NULL )) == NULL ) {
         return jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "(*env)->GetStringUTFChars\n" );
     }
     
-    ret = netcap_interface_get_address((char*)str, &address );
+    ret = netcap_interface_get_data((char*)str, netcap_data, sizeof( netcap_data ));
 
     (*env)->ReleaseStringUTFChars( env, j_interface_string, str );
 
-    if ( ret < 0 ) {
-        jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "Unable to retrieve interface address.\n" );
-        return (jlong)-1L;
+    if ( ret < 0 || ret > NETCAP_MAX_INTERFACES ) {
+        return jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, 
+                              "Unable to retrieve interface data %d\n", ret );
     }
-        
-    return (jlong)address.s_addr;
-}
 
-/*
- * Class:     com_metavize_jnetcap_Netcap
- * Method:    getInterfaceNetmaskLong
- * Signature: ()Z;
- */
-JNIEXPORT jlong JNICALL JF_Netcap( getInterfaceNetmaskLong )
-    (JNIEnv *env, jobject _this, jstring j_interface_string )
-{
-    const char* str;
-    struct in_addr netmask;
-    int ret;
+    /* An array to copy the returned data into */
+    jlong data[NETCAP_MAX_INTERFACES* _DATA_NUM_ITEMS];
     
-    if (( str = (*env)->GetStringUTFChars( env, j_interface_string, NULL )) == NULL ) {
-        return jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "(*env)->GetStringUTFChars\n" );
+    if ((*env)->GetArrayLength( env, j_data ) < ret * _DATA_NUM_ITEMS ) {
+        return jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, 
+                              "Use a larger array in order to receive data %d\n", ret );
     }
-
-    ret = netcap_interface_get_netmask((char*)str, &netmask );
     
-    (*env)->ReleaseStringUTFChars( env, j_interface_string, str );
-
-    if ( ret < 0 ) {
-        jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "Unable to netmask for interface.\n" );
-        return (jlong)-1L;
+    int c;
+    for ( c = 0 ; c < ret ; c++ ) {
+        data[( _DATA_NUM_ITEMS * c ) + 0] = (jlong)netcap_data[c].address.s_addr;
+        data[( _DATA_NUM_ITEMS * c ) + 1] = (jlong)netcap_data[c].netmask.s_addr;
+        data[( _DATA_NUM_ITEMS * c ) + 2] = (jlong)netcap_data[c].broadcast.s_addr;
     }
-        
-    return (jlong)netmask.s_addr;
-}
+    
+    (*env)->SetLongArrayRegion( env, j_data, 0, ret * _DATA_NUM_ITEMS, data );
 
+    return ret;
+}
 
 /*
  * Class:     Netcap
@@ -471,21 +478,7 @@ JNIEXPORT jboolean JNICALL JF_Netcap( isBroadcast )
 {
     in_addr_t addr = (in_addr_t)JLONG_TO_UINT( address );
     
-    if ( netcap_interface_is_broadcast( addr ))
-        return JNI_TRUE;
-        
-    return JNI_FALSE;
-}
-
-/*
- * Class:     com_metavize_jnetcap_Netcap
- * Method:    isBridgeAlive
- * Signature: ()Z
- */
-JNIEXPORT jboolean JNICALL JF_Netcap( isBridgeAlive )
-    ( JNIEnv* env, jclass _class )
-{    
-    if ( netcap_interface_bridge_exists() == 1 )
+    if ( netcap_interface_is_broadcast( addr, 0 ))
         return JNI_TRUE;
         
     return JNI_FALSE;
@@ -602,6 +595,73 @@ JNIEXPORT jint JNICALL JF_Netcap( cUdpDivertPort )
     }
 
     return port;
+}
+
+/*
+ * Class:     com_metavize_jnetcap_Netcap
+ * Method:    cGetOutgoingInterface
+ * Signature: (J)B
+ */
+JNIEXPORT jbyte JNICALL Java_com_metavize_jnetcap_Netcap_cGetOutgoingInterface
+  (JNIEnv* env, jobject _this, jlong j_address )
+{
+    struct in_addr address = {
+        .s_addr   UINT_TO_JLONG(j_address)
+    };
+    netcap_intf_t netcap_intf;
+    
+    /* Retrieve the outgoing netcap interface */
+    if ( netcap_interface_dst_intf_delay( &netcap_intf, NC_INTF_0, NULL, &address, 
+                                          _jnetcap.delay_array ) < 0 ) {
+        jmvutil_error_void( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "netcap_interface_dst_intf_delay\n" );
+        return 0;
+    }
+
+    return netcap_intf;
+}
+
+/*
+ * Class:     com_metavize_jnetcap_Netcap
+ * Method:    cConfigureInterfaceArray
+ * Signature: ([Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_metavize_jnetcap_Netcap_cConfigureInterfaceArray
+  (JNIEnv* env , jobject _this, jobjectArray j_interface_array )
+{
+    int  num_intf;
+    netcap_intf_string_t intf_name_array[NETCAP_MAX_INTERFACES];
+    int c;
+
+    if ( NULL == j_interface_array ) return jmvutil_error_void( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "NULL" );
+    
+    if (( num_intf = (*env)->GetArrayLength( env, j_interface_array )) <= 0 ) {
+        return jmvutil_error_void( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "Invalid array %d\n", num_intf );
+    }
+    
+    if ( num_intf > NETCAP_MAX_INTERFACES ) {
+        return jmvutil_error_void( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, 
+                                   "Too many elements in the %d\n", num_intf );
+    }
+    bzero( intf_name_array, sizeof( intf_name_array ));
+    
+    for ( c = 0 ; c < num_intf ; c++ ) {
+        const char* name = NULL;
+        jstring j_name = (*env)->GetObjectArrayElement( env, j_interface_array, c );
+        if ( j_name == NULL ) {
+            return jmvutil_error_void( JMVUTIL_ERROR_STT, ERR_CRITICAL, "Null element at %d\n", c );
+        }
+        
+        if (( name = (*env)->GetStringUTFChars( env, j_name, NULL )) == NULL ) {
+            return jmvutil_error_void( JMVUTIL_ERROR_STT, ERR_CRITICAL, "(*env)->GetStringUTFChars\n" );
+        }
+        
+        strncpy( intf_name_array[c].s, name, sizeof( netcap_intf_string_t ));
+        (*env)->ReleaseStringUTFChars( env, j_name, name );
+    }
+    
+    if ( netcap_interface_configure_intf( intf_name_array, num_intf ) < 0 ) {
+        return jmvutil_error_void( JMVUTIL_ERROR_STT, ERR_CRITICAL, "netcap_interface_configure_intf\n" );
+    }
 }
 
 

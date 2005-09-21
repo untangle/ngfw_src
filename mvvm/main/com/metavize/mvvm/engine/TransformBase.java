@@ -18,21 +18,21 @@ import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.argon.SessionMatcher;
 import com.metavize.mvvm.argon.SessionMatcherFactory;
 import com.metavize.mvvm.argon.VectronTable;
+import com.metavize.mvvm.policy.Policy;
 import com.metavize.mvvm.security.Tid;
 import com.metavize.mvvm.tapi.MPipe;
 import com.metavize.mvvm.tran.Transform;
 import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.tran.TransformDesc;
 import com.metavize.mvvm.tran.TransformException;
-import com.metavize.mvvm.tran.TransformManager;
 import com.metavize.mvvm.tran.TransformStartException;
 import com.metavize.mvvm.tran.TransformState;
 import com.metavize.mvvm.tran.TransformStats;
 import com.metavize.mvvm.tran.TransformStopException;
-import net.sf.hibernate.HibernateException;
-import net.sf.hibernate.Session;
-import net.sf.hibernate.Transaction;
 import org.apache.log4j.Logger;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 /**
  * A base class for transform instances, both normal and casing.
@@ -48,14 +48,14 @@ public abstract class TransformBase implements Transform
     private final Tid tid;
     private final Set<TransformBase> parents = new HashSet<TransformBase>();
     private final Set<Transform> children = new HashSet<Transform>();
-    private final TransformManager transformManager;
+    private final TransformManagerImpl transformManager;
 
     private TransformState runState;
     private TransformStats stats = new TransformStats();
 
     protected TransformBase()
     {
-        transformManager = MvvmContextFactory.context().transformManager();
+        transformManager = MvvmContextImpl.getInstance().transformManager();
         transformContext = (TransformContextImpl)transformManager.threadContext();
         tid = transformContext.getTid();
 
@@ -67,7 +67,7 @@ public abstract class TransformBase implements Transform
     protected abstract void connectMPipe();
     protected abstract void disconnectMPipe();
 
-    // lifecycle methods -----------------------------------------------------
+    // Transform methods ------------------------------------------------------
 
     public final TransformState getRunState()
     {
@@ -94,8 +94,6 @@ public abstract class TransformBase implements Transform
 
     public void reconfigure() throws TransformException { }
 
-    // public methods --------------------------------------------------------
-
     public TransformContext getTransformContext()
     {
         return transformContext;
@@ -104,6 +102,11 @@ public abstract class TransformBase implements Transform
     public Tid getTid()
     {
         return tid;
+    }
+
+    public Policy getPolicy()
+    {
+        return tid.getPolicy();
     }
 
     public TransformDesc getTransformDesc()
@@ -259,7 +262,7 @@ public abstract class TransformBase implements Transform
             try {
                 Transaction tx = s.beginTransaction();
 
-                s.saveOrUpdateCopy(tps);
+                s.merge(tps);
 
                 tx.commit();
             } catch (HibernateException exn) {

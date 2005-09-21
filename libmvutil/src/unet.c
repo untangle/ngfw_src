@@ -405,6 +405,21 @@ int     unet_reset_and_close (int fd)
     return 0;
 }
 
+/**
+ * Close a file descriptor and set its value to negative one.
+ */
+int     unet_close( int* fd_ptr )
+{
+    if ( fd_ptr == NULL ) return errlogargs();
+
+    int fd  = *fd_ptr;
+    *fd_ptr = -1;
+    
+    if (( fd > 0 ) && ( close( fd ) < 0 )) return perrlog( "close" );
+    
+    return 0;
+}
+
 void    unet_reset_inet_ntoa( void )
 {
     unet_tls_t* tls;

@@ -11,6 +11,7 @@
 
 package com.metavize.mvvm.tran;
 
+import java.util.List;
 import java.util.Map;
 
 import com.metavize.mvvm.policy.Policy;
@@ -27,9 +28,9 @@ public interface TransformManager
     /**
      * Get <code>Tid</code>s of transforms in the pipeline.
      *
-     * @return a <code>Tid[]</code> value
+     * @return list of all transform ids.
      */
-    Tid[] transformInstances();
+    List<Tid> transformInstances();
 
     /**
      * Transform instances by name.
@@ -37,7 +38,7 @@ public interface TransformManager
      * @param name name of the transform.
      * @return tids of corresponding transforms.
      */
-    Tid[] transformInstances(String name);
+    List<Tid> transformInstances(String name);
 
     /**
      * Transform instances by policy.
@@ -45,7 +46,48 @@ public interface TransformManager
      * @param policy policy of transform.
      * @return tids of corresponding transforms.
      */
-    Tid[] transformInstances(Policy policy);
+    List<Tid> transformInstances(Policy policy);
+
+    /**
+     * Transform instances by name policy.
+     *
+     * @param name name of transform.
+     * @param policy policy of transform.
+     * @return tids of corresponding transforms.
+     */
+    List<Tid> transformInstances(String name, Policy policy);
+
+    /**
+     * Create a new transform instance under the given policy.
+     *
+     * @param name of the transform.
+     * @param policy the policy this instance is applied to.
+     * @return the <code>tid</code> of the instance.
+     * @exception DeployException if the instance cannot be created.
+     */
+    Tid instantiate(String name, Policy policy) throws DeployException;
+
+    /**
+     * Create a new transform instance under the given policy.
+     *
+     * @param name of the transform.
+     * @param policy the policy this instance is applied to.
+     * @param args transform args.
+     * @return the <code>tid</code> of the instance.
+     * @exception DeployException if the instance cannot be created.
+     */
+    Tid instantiate(String name, Policy policy, String[] args)
+        throws DeployException;
+
+    /**
+     * Create a new transform instance.
+     *
+     * @param name of the transform.
+     * @param args transform args.
+     * @return the <code>tid</code> of the instance.
+     * @exception DeployException if the instance cannot be created.
+     */
+    Tid instantiate(String name, String[] args) throws DeployException;
 
     /**
      * Create a new transform instance under the default policy.
@@ -55,15 +97,6 @@ public interface TransformManager
      * @exception DeployException if the instance cannot be created.
      */
     Tid instantiate(String name) throws DeployException;
-
-    /**
-     * Create a new transform instance.
-     *
-     * @param name of the transform.
-     * @param args transform args.
-     * @return the <code>tid</code> of the instance.
-     */
-    Tid instantiate(String name, String[] args) throws DeployException;
 
     /**
      * Remove transform instance from the pipeline.
@@ -96,9 +129,4 @@ public interface TransformManager
      * transforms in RUNNING state.
      */
     Map<Tid, TransformStats> allTransformStats();
-
-    // XXX when we move tapi.impl this will become package private
-    void registerThreadContext(TransformContext tctx);
-    // XXX when we move tapi.impl this will become package private
-    void deregisterThreadContext();
 }

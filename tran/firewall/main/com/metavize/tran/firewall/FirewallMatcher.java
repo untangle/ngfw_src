@@ -35,7 +35,7 @@ class FirewallMatcher extends TrafficMatcher {
     
     public static final FirewallMatcher MATCHER_DISABLED = 
         new FirewallMatcher( false, ProtocolMatcher.MATCHER_NIL,
-                             IntfMatcher.MATCHER_NIL, IntfMatcher.MATCHER_NIL,
+                             IntfMatcher.getNothing(), IntfMatcher.getNothing(),
                              IPMatcher.MATCHER_NIL,   IPMatcher.MATCHER_ALL, 
                              PortMatcher.MATCHER_NIL, PortMatcher.MATCHER_NIL,
                              false );

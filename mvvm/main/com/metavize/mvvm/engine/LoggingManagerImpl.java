@@ -1,12 +1,12 @@
 /*
- * Copyright (c) 2004 Metavize Inc.
+ * Copyright (c) 2004, 2005 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: LoggingManagerImpl.java,v 1.7 2004/12/25 11:30:17 amread Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.engine;
@@ -17,13 +17,13 @@ import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.mvvm.logging.LoggingManager;
 import com.metavize.mvvm.security.Tid;
-import net.sf.hibernate.HibernateException;
-import net.sf.hibernate.Query;
-import net.sf.hibernate.Session;
-import net.sf.hibernate.Transaction;
+import org.hibernate.HibernateException;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.apache.log4j.Logger;
 
-public class LoggingManagerImpl implements LoggingManager
+class LoggingManagerImpl implements LoggingManager
 {
     private static final Object LOCK = new Object();
     private static final LogEvent[] LOG_PROTO = new LogEvent[0];

@@ -1,19 +1,18 @@
 /*
- * Copyright (c) 2003, 2004 Metavize Inc.
+ * Copyright (c) 2003, 2004, 2005 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: SessionImpl.java,v 1.18 2005/01/08 00:55:09 jdi Exp $
+ *  $Id$
  */
 
-package com.metavize.mvvm.tapi.impl;
+package com.metavize.mvvm.engine;
 
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.tapi.*;
-import com.metavize.mvvm.argon.ArgonAgent;
 // import org.apache.commons.jxpath.JXPathContext;
 
 abstract class SessionImpl implements Session {

@@ -22,6 +22,8 @@ import com.metavize.mvvm.InstallTimeout;
 import com.metavize.mvvm.MackageDesc;
 import com.metavize.mvvm.ProgressVisitor;
 import com.metavize.mvvm.ToolboxManager;
+import com.metavize.mvvm.policy.Policy;
+import com.metavize.mvvm.policy.PolicyException;
 import com.metavize.mvvm.security.LoginSession;
 import com.metavize.mvvm.security.MvvmPrincipal;
 import com.metavize.mvvm.security.Tid;
@@ -42,6 +44,8 @@ public class RemoteClient
     private static String host = "localhost";
     private static String username = "admin";
     private static String passwd = "passwd";
+    private static String policyName = null;
+    private static Policy policy = null;
 
     private static boolean verbose = false;
     private static int timeout = 120000;
@@ -65,6 +69,8 @@ public class RemoteClient
                 verbose = true;
             } else if (args[i].equals("-t")) {
                 timeout = 1000 * Integer.parseInt(args[++i]);
+            } else if (args[i].equals("-p")) {
+                policyName = args[++i];
             } else {
                 pass.add(args[i]);
             }
@@ -88,6 +94,10 @@ public class RemoteClient
             System.out.println("Running");
             factory.logout();
             System.exit(0);
+        }
+
+        if (null != policyName) {
+            policy = mc.policyManager().getPolicy(policyName);
         }
 
         tool = mc.toolboxManager();
@@ -165,6 +175,10 @@ public class RemoteClient
             updateAddress();
         } else if (args[0].equalsIgnoreCase("gc")) {
             doFullGC();
+        } else if (args[0].equalsIgnoreCase("addPolicy")) {
+            addPolicy(args[1], 3 > args.length ? null : args[2]);
+        } else if (args[0].equalsIgnoreCase("listPolicies")) {
+            listPolicies();
         } else if (args[0].equalsIgnoreCase("aptTail")) {
             doAptTail(Long.parseLong(args[1]));
         } else {
@@ -313,7 +327,7 @@ public class RemoteClient
     private static Tid instantiate(String mackageName, String[] args)
         throws Exception
     {
-        Tid tid = tm.instantiate(mackageName, args);
+        Tid tid = tm.instantiate(mackageName, policy, args);
         System.out.println(tid.getName());
 
         return tid;
@@ -347,21 +361,21 @@ public class RemoteClient
     {
         String pkg = pkgName(shortName);
 
-        Tid tids[] = tm.transformInstances();
-        for (int i = 0; i < tids.length; i++) {
-            TransformContext tctx = tm.transformContext(tids[i]);
+        List<Tid> tids = tm.transformInstances();
+        for (Tid t : tm.transformInstances()) {
+            TransformContext tctx = tm.transformContext(t);
             if (tctx == null) {
-                System.err.println("NULL Transform Context (tid:" + i + ")");
-                throw new Exception("NULL Transform Context (tid:" + i + ")");
+                System.err.println("NULL Transform Context (tid:" + t + ")");
+                throw new Exception("NULL Transform Context (tid:" + t + ")");
             }
             Transform tran = tctx.transform();
             if (tran == null) {
-                System.err.println("NULL Transform (tid:" + tids[i] + ")");
-                throw new Exception("NULL Transform (tid:" + i + ")");
+                System.err.println("NULL Transform (tid:" + t + ")");
+                throw new Exception("NULL Transform (tid:" + t + ")");
             }
             String name = tctx.getTransformDesc().getName();
             if (name.equals(pkg)) {
-                tm.destroy(tids[i]);
+                tm.destroy(t);
             }
         }
     }
@@ -415,35 +429,34 @@ public class RemoteClient
 
     private static void instances()
     {
-        Tid tids[] = tm.transformInstances();
-        for (int i = 0; i < tids.length; i++) {
-            TransformContext tctx = tm.transformContext(tids[i]);
+        for (Tid t : tm.transformInstances()) {
+            TransformContext tctx = tm.transformContext(t);
             if (tctx == null) {
-                System.err.println(tids[i] + "\tNULL Transform Context");
+                System.err.println(t + "\tNULL Transform Context");
                 continue;
             }
             Transform tran = tctx.transform();
             if (tran == null) {
-                System.err.println(tids[i] + "\tNULL Transform Context");
+                System.err.println(t + "\tNULL Transform Context");
                 continue;
             }
             String name = pad(tctx.getTransformDesc().getName(), 25);
-            System.out.println(tids[i].getName() + "\t" + name + tran.getRunState());
+            System.out.println(t.getName() + "\t" + name + "\t" + t.getPolicy()
+                               + "\t" + tran.getRunState());
         }
     }
 
     private static void dumpSessions()
     {
-        Tid[] tids = tm.transformInstances();
-        for (int i = 0; i < tids.length; i++) {
-            TransformContext tctx = tm.transformContext(tids[i]);
+        for (Tid t : tm.transformInstances()) {
+            TransformContext tctx = tm.transformContext(t);
             if (tctx == null) {
-                System.err.println("NULL Transform Context (tid:" + tids[i] + ")");
+                System.err.println("NULL Transform Context (tid:" + t + ")");
                 continue;
             }
             Transform tran = tctx.transform();
             if (tran == null) {
-                System.err.println("NULL Transform (tid:" + tids[i] + ")");
+                System.err.println("NULL Transform (tid:" + t + ")");
                 continue;
             }
             tran.dumpSessions();
@@ -453,26 +466,25 @@ public class RemoteClient
     private static void sessions(boolean clearScreen)
     {
         AbsoluteTimeDateFormat atdf = new AbsoluteTimeDateFormat();
-        Tid[] tids = tm.transformInstances();
-        for (int i = 0; i < tids.length; i++) {
-            TransformContext tctx = tm.transformContext(tids[i]);
+        for (Tid t : tm.transformInstances()) {
+            TransformContext tctx = tm.transformContext(t);
             if (tctx == null) {
-                System.out.println("NULL Transform Context (tid:" + tids[i] + ")");
+                System.out.println("NULL Transform Context (tid:" + t + ")");
                 continue;
             }
             Transform tran = tctx.transform();
             if (tran == null) {
-                System.out.println("NULL Transform (tid:" + tids[i] + ")");
+                System.out.println("NULL Transform (tid:" + t + ")");
                 continue;
             }
             TransformDesc tdesc = tctx.getTransformDesc();
             if (tdesc == null) {
-                System.out.println("NULL Transform Desc (tid:" + tids[i] + ")");
+                System.out.println("NULL Transform Desc (tid:" + t + ")");
                 continue;
             }
             SessionDesc[] sdescs = tran.liveSessionDescs();
             if (sdescs == null) {
-                System.out.println("NULL Session Desc (tid:" + tids[i] + ")");
+                System.out.println("NULL Session Desc (tid:" + t + ")");
                 continue;
             }
             if (clearScreen) {
@@ -495,7 +507,7 @@ public class RemoteClient
                     result.append("T");
                 result.append(sd.id());
                 result.append("\t");
-                result.append(sd.direction() == IPSessionDesc.INBOUND ? "In" : "Out");
+                result.append(sd.isInbound() ? "In" : "Out");
                 result.append("\t");
                 result.append(SessionUtil.prettyState(sd.clientState()));
                 result.append("\t");
@@ -597,7 +609,6 @@ public class RemoteClient
      * (jboss, mvvm, all tran instances).  This allows changing
      * logging levels, etc.  The old output files will be erased and
      * new files begun.
-     *
      */
     private static void resetLogs()
     {
@@ -607,6 +618,19 @@ public class RemoteClient
     private static void doFullGC()
     {
         mc.doFullGC();
+    }
+
+    private static void addPolicy(String policy, String notes)
+        throws PolicyException
+    {
+        mc.policyManager().addPolicy(policy, null == notes ? Policy.NO_NOTES : notes);
+    }
+
+    private static void listPolicies()
+    {
+        for (Policy p : mc.policyManager().getPolicies()) {
+            System.out.println(p);
+        }
     }
 
     private static void doAptTail(long key)
@@ -693,6 +717,7 @@ public class RemoteClient
         System.out.println("    -u username");
         System.out.println("    -w password");
         System.out.println("    -t timeout (default 120000)");
+        System.out.println("    -p policy");
         System.out.println("    -v");
         System.out.println("  toolbox commands:");
         System.out.println("    mcli install mackage-name");
@@ -723,6 +748,9 @@ public class RemoteClient
         System.out.println("    mcli shutdown");
         System.out.println("    mcli serverStats");
         System.out.println("    mcli gc");
+        System.out.println("  policy manager:");
+        System.out.println("    mcli addPolicy name [notes]");
+        System.out.println("    mcli listPolicies");
         System.out.println("  reporting manager: ");
         System.out.println("    mcli isReportingEnabled");
         System.out.println("    mcli areReportsAvailable");

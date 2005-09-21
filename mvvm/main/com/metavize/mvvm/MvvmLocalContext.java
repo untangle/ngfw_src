@@ -24,7 +24,7 @@ import com.metavize.mvvm.tapi.MPipeManager;
 import com.metavize.mvvm.tapi.PipelineFoundry;
 import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.tran.TransformManager;
-import net.sf.hibernate.Session;
+import org.hibernate.Session;
 import org.apache.log4j.Logger;
 
 /**

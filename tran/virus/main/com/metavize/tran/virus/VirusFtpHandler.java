@@ -71,10 +71,10 @@ class VirusFtpHandler extends FtpStateMachine
 
         VirusSettings vs = transform.getVirusSettings();
 
-        if (IntfConverter.INSIDE == session.clientIntf()) { // outgoing
+        if (!session.isInbound()) { // outgoing
             scanClient = vs.getFtpOutbound().getScan();
             scanServer = vs.getFtpInbound().getScan();
-        } else { // XXX might not be inbound w/ multiple interfaces
+        } else {
             scanClient = vs.getFtpInbound().getScan();
             scanServer = vs.getFtpOutbound().getScan();
         }

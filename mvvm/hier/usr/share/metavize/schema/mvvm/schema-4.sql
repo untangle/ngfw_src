@@ -248,6 +248,8 @@ CREATE TABLE events.pl_endp (
     s_client_port int4,
     c_server_port int4,
     s_server_port int4,
+    policy_id int8,
+    policy_inbound bool,
     PRIMARY KEY (event_id));
 
 -- com.metavize.mvvm.tran.PipelineStats

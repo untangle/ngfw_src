@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: FProtTest.java,v 1.1 2005/01/25 04:41:57 dmorris Exp $
+ * $Id$
  */
 package com.metavize.tran.fprot;
 

@@ -26,7 +26,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.metavize.mvvm.argon.ArgonAgent;
 import com.metavize.mvvm.argon.IPSessionDesc;
 import com.metavize.mvvm.argon.IntfConverter;
+import com.metavize.mvvm.argon.PipelineDesc;
 import com.metavize.mvvm.argon.SessionEndpoints;
+import com.metavize.mvvm.policy.Policy;
+import com.metavize.mvvm.policy.PolicyRule;
+import com.metavize.mvvm.policy.SystemPolicyRule;
+import com.metavize.mvvm.policy.UserPolicyRule;
 import com.metavize.mvvm.tapi.CasingPipeSpec;
 import com.metavize.mvvm.tapi.Fitting;
 import com.metavize.mvvm.tapi.MPipe;
@@ -47,13 +52,22 @@ class PipelineFoundryImpl implements PipelineFoundry
     private static final Logger logger
         = Logger.getLogger(PipelineFoundryImpl.class);
 
-    private final Map incomingMPipes = new ConcurrentHashMap();
-    private final Map outgoingMPipes = new ConcurrentHashMap();
+    private final Map<Fitting, List<MPipe>> incomingMPipes
+        = new ConcurrentHashMap<Fitting, List<MPipe>>();
+    private final Map<Fitting, List<MPipe>> outgoingMPipes
+        = new ConcurrentHashMap<Fitting, List<MPipe>>();
+
     private final Map casings = new ConcurrentHashMap();
+
     private final Map<InetSocketAddress, Fitting> connectionFittings
         = new ConcurrentHashMap<InetSocketAddress, Fitting>();
     private final Map<Integer, PipelineImpl> pipelines
         = new ConcurrentHashMap<Integer, PipelineImpl>();
+
+    private static final Map<Policy, Map<Fitting, List<MPipeFitting>>> incomingChains
+        = new ConcurrentHashMap<Policy, Map<Fitting, List<MPipeFitting>>>();
+    private static final Map<Policy, Map<Fitting, List<MPipeFitting>>> outgoingChains
+        = new ConcurrentHashMap<Policy, Map<Fitting, List<MPipeFitting>>>();
 
     private PipelineFoundryImpl() { }
 
@@ -62,19 +76,23 @@ class PipelineFoundryImpl implements PipelineFoundry
         return PIPELINE_FOUNDRY_IMPL;
     }
 
-    // XXX probably return Pipeline instead
-    public List<ArgonAgent> weld(IPSessionDesc sessionDesc)
+    public PipelineDesc weld(IPSessionDesc sd)
     {
-        Fitting start;
+        Long t0 = System.nanoTime();
 
-        InetAddress sAddr = sessionDesc.serverAddr();
-        int sPort = sessionDesc.serverPort();
+        PolicyRule pr = selectPolicy(sd);
+        if (pr == null) {
+            logger.error("No policy rule found for session " + sd);
+        }
+        Policy p = null == pr ? null : pr.getPolicy();
+
+        InetAddress sAddr = sd.serverAddr();
+        int sPort = sd.serverPort();
 
         InetSocketAddress socketAddress = new InetSocketAddress(sAddr, sPort);
+        Fitting start = connectionFittings.remove(socketAddress);
 
-        start = connectionFittings.remove(socketAddress);
-
-        if (SessionEndpoints.PROTO_TCP == sessionDesc.protocol()) {
+        if (SessionEndpoints.PROTO_TCP == sd.protocol()) {
             if (null == start) {
                 switch (sPort) {
                 case 21:
@@ -106,38 +124,26 @@ class PipelineFoundryImpl implements PipelineFoundry
             start = Fitting.OCTET_STREAM; // XXX we should have UDP hier.
         }
 
-        Long t0 = System.currentTimeMillis();
+        long ct0 = System.nanoTime();
+        List<MPipeFitting> chain = makeChain(sd, p, start);
+        long ct1 = System.nanoTime();
 
-        Map<Fitting, List<MPipe>> mp
-            = sessionDesc.clientIntf() == IntfConverter.OUTSIDE
-            ? incomingMPipes : outgoingMPipes;
-        Map<Fitting, List<MPipe>> availMPipes
-            = new HashMap<Fitting, List<MPipe>>(mp);
+        long ft0 = System.nanoTime();
+        List<ArgonAgent> agents = filter(chain, sd, pr);
+        long ft1 = System.nanoTime();
 
-        Map<MPipe, MPipe> availCasings = new HashMap(casings);
+        PipelineImpl pipeline = new PipelineImpl(sd.id(), chain);
+        pipelines.put(sd.id(), pipeline);
 
-        List<MPipe> mPipes = new LinkedList<MPipe>();
-        List<Fitting> fittings = new LinkedList<Fitting>();
-
-        weld(mPipes, fittings, start, sessionDesc, availMPipes, availCasings);
-
-        Long t1 = System.currentTimeMillis();
-
-        PipelineImpl pipeline = new PipelineImpl(sessionDesc.id(), mPipes,
-                                                 fittings);
-        pipelines.put(sessionDesc.id(), pipeline);
-
+        Long t1 = System.nanoTime();
         if (logger.isDebugEnabled()) {
-            logger.debug("sid: " + sessionDesc.id() + " pipe in " + (t1 - t0)
-                         + " millis: " + mPipes);
+            logger.debug("sid: " + sd.id() + " pipe in " + (t1 - t0)
+                         + " made: " + (ct1 - ct0)
+                         + " filtered: " + (ft1 - ft0)
+                         + " nanos: " + chain);
         }
 
-        List<ArgonAgent> l = new ArrayList<ArgonAgent>(mPipes.size());
-        for (MPipe mPipe : mPipes) {
-            l.add(mPipe.getArgonAgent());
-        }
-
-        return l;
+        return new PipelineDesc(pr, agents);
     }
 
     public void registerEndpoints(IPSessionDesc start, IPSessionDesc end)
@@ -160,14 +166,18 @@ class PipelineFoundryImpl implements PipelineFoundry
 
     public void registerMPipe(MPipe mPipe)
     {
-        registerMPipe(incomingMPipes, mPipe, new MPipeComparator(true));
-        registerMPipe(outgoingMPipes, mPipe, new MPipeComparator(false));
+        synchronized (this) {
+            registerMPipe(incomingMPipes, mPipe, new MPipeComparator(true));
+            registerMPipe(outgoingMPipes, mPipe, new MPipeComparator(false));
+        }
     }
 
     public void deregisterMPipe(MPipe mPipe)
     {
-        deregisterMPipe(incomingMPipes, mPipe, new MPipeComparator(true));
-        deregisterMPipe(outgoingMPipes, mPipe, new MPipeComparator(false));
+        synchronized (this) {
+            deregisterMPipe(incomingMPipes, mPipe, new MPipeComparator(true));
+            deregisterMPipe(outgoingMPipes, mPipe, new MPipeComparator(false));
+        }
     }
 
     public void registerCasing(MPipe insideMPipe, MPipe outsideMPipe)
@@ -176,12 +186,18 @@ class PipelineFoundryImpl implements PipelineFoundry
             throw new IllegalArgumentException("casing constraint violated");
         }
 
-        casings.put(insideMPipe, outsideMPipe);
+       synchronized (this) {
+           casings.put(insideMPipe, outsideMPipe);
+           clearCache();
+       }
     }
 
     public void deregisterCasing(MPipe insideMPipe)
     {
-        casings.remove(insideMPipe);
+        synchronized (this) {
+            casings.remove(insideMPipe);
+            clearCache();
+        }
     }
 
     public void registerConnection(InetSocketAddress socketAddress,
@@ -197,17 +213,92 @@ class PipelineFoundryImpl implements PipelineFoundry
 
     // private methods --------------------------------------------------------
 
-    private void weld(List<MPipe> mPipes, List<Fitting> fittings,
-                      Fitting start, IPSessionDesc sd,
-                      Map<Fitting, List<MPipe>> availMPipes,
-                      Map<MPipe, MPipe> availCasings)
+    private List<MPipeFitting> makeChain(IPSessionDesc sd, Policy p,
+                                         Fitting start)
     {
-        weldMPipes(mPipes, fittings, start, sd, availMPipes, availCasings);
-        weldCasings(mPipes, fittings, start, sd, availMPipes, availCasings);
+        boolean incoming = sd.clientIntf() == IntfConverter.OUTSIDE;
+
+        Map<Policy, Map<Fitting, List<MPipeFitting>>> chains = incoming
+            ? incomingChains : outgoingChains;
+
+        List<MPipeFitting> mPipeFittings = null;
+
+        Map<Fitting, List<MPipeFitting>> fcs = chains.get(p);
+
+        if (null != fcs) {
+            mPipeFittings = fcs.get(start);
+        }
+
+        if (null == mPipeFittings) {
+            synchronized (this) {
+                fcs = chains.get(p);
+
+                if (null == fcs) {
+                    fcs = new HashMap<Fitting, List<MPipeFitting>>();
+                    chains.put(p, fcs);
+                } else {
+                    mPipeFittings = fcs.get(start);
+                }
+
+                if (null == mPipeFittings) {
+                    mPipeFittings = new LinkedList<MPipeFitting>();
+
+                    Map<MPipe, MPipe> availCasings = new HashMap(casings);
+
+                    Map<Fitting, List<MPipe>> mp = incoming ? incomingMPipes
+                        : outgoingMPipes;
+                    Map<Fitting, List<MPipe>> availMPipes
+                        = new HashMap<Fitting, List<MPipe>>(mp);
+
+                    weld(mPipeFittings, start, p, availMPipes, availCasings);
+
+                    fcs.put(start, mPipeFittings);
+                }
+            }
+        }
+
+        return mPipeFittings;
     }
 
-    private void weldMPipes(List<MPipe> mPipes, List<Fitting> fittings,
-                            Fitting start, IPSessionDesc sd,
+    private List<ArgonAgent> filter(List<MPipeFitting> mPipeFittings,
+                                    IPSessionDesc sd, PolicyRule pr)
+    {
+        List<ArgonAgent> l = new ArrayList<ArgonAgent>(mPipeFittings.size());
+
+        MPipe end = null;
+
+        for (Iterator<MPipeFitting> i = mPipeFittings.iterator(); i.hasNext(); ) {
+            MPipeFitting mpf = i.next();
+
+            if (null != end) {
+                i.remove();
+                if (mpf.mPipe == end) {
+                    end = null;
+                }
+            } else {
+                MPipe mPipe = mpf.mPipe;
+                if (mPipe.getPipeSpec().matches(pr, sd)) {
+                    l.add(mPipe.getArgonAgent());
+                } else {
+                    i.remove();
+                    end = mpf.end;
+                }
+            }
+        }
+
+        return l;
+    }
+
+    private void weld(List<MPipeFitting> mPipeFittings, Fitting start,
+                      Policy p, Map<Fitting, List<MPipe>> availMPipes,
+                      Map<MPipe, MPipe> availCasings)
+    {
+        weldMPipes(mPipeFittings, start, p, availMPipes, availCasings);
+        weldCasings(mPipeFittings, start, p, availMPipes, availCasings);
+    }
+
+    private void weldMPipes(List<MPipeFitting> mPipeFittings,
+                            Fitting start, Policy p,
                             Map<Fitting, List<MPipe>> availMPipes,
                             Map<MPipe, MPipe> availCasings)
     {
@@ -220,13 +311,10 @@ class PipelineFoundryImpl implements PipelineFoundry
                 for (Iterator<MPipe> j = l.iterator(); j.hasNext(); ) {
                     MPipe mPipe = j.next();
                     if (null == mPipe) {
-                        weldCasings(mPipes, fittings, start, sd,
-                                    availMPipes, availCasings);
-                    } else {
-                        if (mPipe.getPipeSpec().matches(sd)) {
-                            mPipes.add(mPipe);
-                            fittings.add(start);
-                        }
+                        weldCasings(mPipeFittings, start, p, availMPipes,
+                                    availCasings);
+                    } else if (mPipe.getPipeSpec().matchesPolicy(p)) {
+                        mPipeFittings.add(new MPipeFitting(mPipe, start));
                     }
                 }
                 break TRY_AGAIN;
@@ -234,9 +322,8 @@ class PipelineFoundryImpl implements PipelineFoundry
         }
     }
 
-    private void weldCasings(List<MPipe> mPipes, List<Fitting> fittings,
-                             Fitting start, IPSessionDesc sd,
-                             Map<Fitting, List<MPipe>> availMPipes,
+    private void weldCasings(List<MPipeFitting> mPipeFittings, Fitting start,
+                             Policy p, Map<Fitting, List<MPipe>> availMPipes,
                              Map<MPipe, MPipe> availCasings)
     {
         TRY_AGAIN:
@@ -244,18 +331,20 @@ class PipelineFoundryImpl implements PipelineFoundry
             MPipe insideMPipe = i.next();
             CasingPipeSpec ps = (CasingPipeSpec)insideMPipe.getPipeSpec();
             Fitting f = ps.getInput();
-            if (start.instanceOf(f) && ps.matches(sd)) {
+
+            if (!ps.matchesPolicy(p)) {
+                i.remove();
+            } else if (start.instanceOf(f)) {
                 MPipe outsideMPipe = availCasings.get(insideMPipe);
                 i.remove();
-                mPipes.add(insideMPipe);
-                fittings.add(start);
-
-                CasingPipeSpec cps = (CasingPipeSpec)insideMPipe.getPipeSpec();
+                mPipeFittings.add(new MPipeFitting(insideMPipe, start,
+                                                   outsideMPipe));
+                CasingPipeSpec cps = (CasingPipeSpec)insideMPipe
+                    .getPipeSpec();
                 Fitting insideFitting = cps.getOutput();
-                weldMPipes(mPipes, fittings, insideFitting, sd,
-                           availMPipes, availCasings);
-                mPipes.add(outsideMPipe);
-                fittings.add(insideFitting);
+                weldMPipes(mPipeFittings, insideFitting, p, availMPipes,
+                           availCasings);
+                mPipeFittings.add(new MPipeFitting(outsideMPipe, insideFitting));
                 break TRY_AGAIN;
             }
         }
@@ -266,38 +355,62 @@ class PipelineFoundryImpl implements PipelineFoundry
         SoloPipeSpec sps = (SoloPipeSpec)mPipe.getPipeSpec();
         Fitting f = sps.getFitting();
 
-        synchronized (this) {
-            List l = (List)mPipes.get(f);
+        List l = (List)mPipes.get(f);
 
-            if (null == l) {
-                l = new ArrayList();
-                l.add(null);
-            } else {
-                l = new ArrayList(l);
-            }
-
-            int i = Collections.binarySearch(l, mPipe, c);
-            l.add(0 > i ? -i - 1 : i, mPipe);
+        if (null == l) {
+            l = new ArrayList();
+            l.add(null);
             mPipes.put(f, l);
         }
+
+        int i = Collections.binarySearch(l, mPipe, c);
+        l.add(0 > i ? -i - 1 : i, mPipe);
+
+        clearCache();
     }
 
-    private void deregisterMPipe(Map mPipes, MPipe mPipe, Comparator c)
+    private void deregisterMPipe(Map<Fitting, List<MPipe>> mPipes,
+                                 MPipe mPipe, Comparator c)
     {
         SoloPipeSpec sps = (SoloPipeSpec)mPipe.getPipeSpec();
         Fitting f = sps.getFitting();
 
-        synchronized (this) {
-            List l = new ArrayList((List)mPipes.get(f));
+        List l = mPipes.get(f);
 
-            int i = Collections.binarySearch(l, mPipe, c);
-            if (0 > i) {
-                logger.warn("deregistering nonregistered pipe");
-            } else {
-                l.remove(i);
-            }
-
-            mPipes.put(f, l);
+        int i = Collections.binarySearch(l, mPipe, c);
+        if (0 > i) {
+            logger.warn("deregistering nonregistered pipe");
+        } else {
+            l.remove(i);
         }
+
+        clearCache();
+    }
+
+    private PolicyRule selectPolicy(IPSessionDesc sd)
+    {
+        PolicyManagerImpl pmi = PolicyManagerImpl.policyManager();
+        UserPolicyRule[] userRules = pmi.userRules;
+        SystemPolicyRule[] sysRules = pmi.sysRules;
+
+        for (UserPolicyRule upr : userRules) {
+            if (upr.matches(sd)) {
+                return upr;
+            }
+        }
+
+        for (SystemPolicyRule spr : sysRules) {
+            if (spr.matches(sd)) {
+                return spr;
+            }
+        }
+
+        return null;
+    }
+
+    private void clearCache()
+    {
+        incomingChains.clear();
+        outgoingChains.clear();
     }
 }

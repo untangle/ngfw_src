@@ -202,8 +202,8 @@ int  netcap_queue_read (char *buffer, int max, netcap_pkt_t* pkt)
     pkt->proto = iph->protocol;
     pkt->nfmark  = (u_int)msg->mark;
     
-    netcap_interface_mark_to_intf(msg->mark,&pkt->src.intf);
-    pkt->dst.intf = NC_INTF_UNK;
+    netcap_interface_mark_to_intf( msg->mark, &pkt->src_intf );
+    pkt->dst_intf = NC_INTF_UNK;
 
     return msg->data_len;
 }

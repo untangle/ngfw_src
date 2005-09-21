@@ -79,11 +79,11 @@ JNIEXPORT jlong JNICALL JF_IPTraffic( createIPTraffic )
     pkt->proto           = IPPROTO_UDP;
     pkt->src.host.s_addr = JLONG_TO_UINT( src );
     pkt->src.port        = (u_short)src_port;
-    pkt->src.intf        = NC_INTF_UNK;
+    pkt->src_intf        = NC_INTF_UNK;
 
     pkt->dst.host.s_addr = JLONG_TO_UINT( dst );
     pkt->dst.port        = (u_short)dst_port;
-    pkt->dst.intf        = NC_INTF_UNK;
+    pkt->dst_intf        = NC_INTF_UNK;
 
     pkt->ttl             = 255;
     pkt->tos             = 0;
@@ -161,12 +161,14 @@ JNIEXPORT jint JNICALL JF_IPTraffic( getIntValue )
 {
     netcap_pkt_t* pkt;
 
-    netcap_endpoint_t* endpoint;
+    netcap_endpoint_t* endpoint   = NULL;
 
     /* XXX What happens on the long return */
     JLONG_TO_PACKET( pkt, pkt_ptr );
 
-    endpoint = _get_endpoint( pkt, req );
+    
+
+    if (( endpoint  = _get_endpoint( pkt, req )) == NULL ) return errlogargs();
 
     switch( req & JN_IPTraffic( FLAG_MASK )) {
     case JN_IPTraffic( FLAG_PORT ): return endpoint->port;
@@ -174,7 +176,10 @@ JNIEXPORT jint JNICALL JF_IPTraffic( getIntValue )
     case JN_IPTraffic( FLAG_TOS ): return pkt->tos;
     case JN_IPTraffic( FLAG_MARK_EN ): return pkt->is_marked;
     case JN_IPTraffic( FLAG_MARK ): return pkt->nfmark;
-    case JN_IPTraffic( FLAG_INTERFACE ): return endpoint->intf;
+    case JN_IPTraffic( FLAG_INTERFACE ):
+        if (( req & JN_IPTraffic( FLAG_SRC_MASK )) == JN_IPTraffic( FLAG_SRC )) return pkt->src_intf;
+        return pkt->dst_intf;
+
     case JN_IPTraffic( FLAG_PROTOCOL ): return pkt->proto;
     case JN_ICMPTraffic( FLAG_TYPE ): return _icmp_get_info( pkt, ICMP_GET_INFO_TYPE );
     case JN_ICMPTraffic( FLAG_CODE ): return _icmp_get_info( pkt, ICMP_GET_INFO_CODE );
@@ -194,14 +199,13 @@ JNIEXPORT jstring JNICALL JF_IPTraffic( getStringValue )
     netcap_pkt_t* pkt;
     char buf[NETCAP_MAX_IF_NAME_LEN]; /* XXX Update to the longest possible string returned */
     netcap_intf_t intf;
-    netcap_endpoint_t* endpoint;
 
     JLONG_TO_PACKET_NULL( pkt, pkt_ptr );
     
-    endpoint = _get_endpoint( pkt, req );
-
     switch( req & JN_IPTraffic( FLAG_MASK )) {
-    case JN_IPTraffic( FLAG_INTERFACE ): intf = endpoint->intf; break;
+    case JN_IPTraffic( FLAG_INTERFACE ): 
+        intf = (( req & JN_IPTraffic( FLAG_SRC_MASK )) == JN_IPTraffic( FLAG_SRC )) ? pkt->src_intf : pkt->dst_intf;
+        break;
     default: return errlogargs_null();
     }
     
@@ -263,7 +267,11 @@ JNIEXPORT jint JNICALL JF_IPTraffic( setIntValue )
         if ( netcap_interface_intf_verify( value ) < 0 ) {
             return errlog( ERR_CRITICAL, "netcap_interface_intf_verify\n" );
         }
-        endpoint->intf = value; 
+        if (( req & JN_IPTraffic( FLAG_SRC_MASK )) == JN_IPTraffic( FLAG_SRC )) {
+            pkt->src_intf = value;
+        } else {
+            pkt->dst_intf = value; 
+        }
         break;
     default:
         return errlogargs();        
@@ -282,15 +290,18 @@ JNIEXPORT jint JNICALL JF_IPTraffic( setStringValue )
 {
     netcap_pkt_t* pkt;
     const char* str;
-    netcap_endpoint_t* endpoint;
-    netcap_intf_t *intf;
+    netcap_intf_t* intf;
     int ret;
 
     JLONG_TO_PACKET( pkt, pkt_ptr );
-    endpoint = _get_endpoint( pkt, req );
+    if (( req & JN_IPTraffic( FLAG_SRC_MASK )) == JN_IPTraffic( FLAG_SRC )) {
+        intf = &pkt->src_intf;
+    } else {
+        intf = &pkt->dst_intf;
+    }
     
     switch( req & JN_IPTraffic( FLAG_MASK ) ) {
-    case JN_IPTraffic( FLAG_INTERFACE ): intf = &endpoint->intf; break;
+    case JN_IPTraffic( FLAG_INTERFACE ): break;
     default: 
         return errlogargs();
     }

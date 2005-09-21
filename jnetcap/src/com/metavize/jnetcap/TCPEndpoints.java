@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: TCPEndpoints.java,v 1.4 2005/01/17 21:12:10 rbscott Exp $
+ *  $Id$
  */
 
 

@@ -43,11 +43,11 @@ import com.metavize.mvvm.tran.firewall.IntfMatcher;
 import com.metavize.mvvm.tran.firewall.PortMatcher;
 import com.metavize.mvvm.tran.firewall.ProtocolMatcher;
 import com.metavize.tran.token.TokenAdaptor;
-import net.sf.hibernate.HibernateException;
-import net.sf.hibernate.Query;
-import net.sf.hibernate.Session;
-import net.sf.hibernate.Transaction;
 import org.apache.log4j.Logger;
+import org.hibernate.HibernateException;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 public class NatImpl extends AbstractTransform implements Nat
 {
@@ -135,7 +135,7 @@ public class NatImpl extends AbstractTransform implements Nat
         try {
             Transaction tx = s.beginTransaction();
 
-            s.saveOrUpdateCopy(settings);
+            s.merge(settings);
             this.settings = settings;
 
             tx.commit();
@@ -411,7 +411,7 @@ public class NatImpl extends AbstractTransform implements Nat
             settings.setDmzAddress( IPaddr.parse( "192.168.1.2" ));
 
             RedirectRule tmp = new RedirectRule( false, ProtocolMatcher.MATCHER_ALL,
-                                                 IntfMatcher.MATCHER_OUT, IntfMatcher.MATCHER_ALL,
+                                                 IntfMatcher.getOutside(), IntfMatcher.getAll(),
                                                  IPMatcher.MATCHER_ALL, IPMatcher.MATCHER_LOCAL,
                                                  PortMatcher.MATCHER_ALL, new PortMatcher( 8080 ),
                                                  true, IPaddr.parse( "192.168.1.16" ), 80 );
@@ -421,7 +421,7 @@ public class NatImpl extends AbstractTransform implements Nat
             redirectList.add( tmp );
 
             tmp = new RedirectRule( false, ProtocolMatcher.MATCHER_ALL,
-                                    IntfMatcher.MATCHER_OUT, IntfMatcher.MATCHER_ALL,
+                                    IntfMatcher.getOutside(), IntfMatcher.getAll(),
                                     IPMatcher.MATCHER_ALL, IPMatcher.MATCHER_ALL,
                                     PortMatcher.MATCHER_ALL, new PortMatcher( 6000, 10000 ),
                                     true, (IPaddr)null, 6000 );
@@ -429,7 +429,7 @@ public class NatImpl extends AbstractTransform implements Nat
             redirectList.add( tmp );
 
             tmp = new RedirectRule( false, ProtocolMatcher.MATCHER_ALL,
-                                    IntfMatcher.MATCHER_IN, IntfMatcher.MATCHER_ALL,
+                                    IntfMatcher.getInside(), IntfMatcher.getAll(),
                                     IPMatcher.MATCHER_ALL, IPMatcher.parse( "1.2.3.4" ),
                                     PortMatcher.MATCHER_ALL, PortMatcher.MATCHER_ALL,
                                     true, IPaddr.parse( "4.3.2.1" ), 0 );
@@ -487,14 +487,14 @@ public class NatImpl extends AbstractTransform implements Nat
 
             /* This rule is enabled, redirect port 7000 to the redirect host port 7 */
             redirectList.add( new RedirectRule( true, ProtocolMatcher.MATCHER_ALL,
-                                                IntfMatcher.MATCHER_OUT, IntfMatcher.MATCHER_ALL,
+                                                IntfMatcher.getOutside(), IntfMatcher.getAll(),
                                                 IPMatcher.MATCHER_ALL, localHostMatcher,
                                                 PortMatcher.MATCHER_ALL, new PortMatcher( 7000 ),
                                                 true, redirectHost, 7 ));
 
             /* This rule is disabled, to verify the on off switch works */
             redirectList.add( new RedirectRule( false, ProtocolMatcher.MATCHER_ALL,
-                                                IntfMatcher.MATCHER_OUT, IntfMatcher.MATCHER_IN,
+                                                IntfMatcher.getInside(), IntfMatcher.getInside(),
                                                 IPMatcher.MATCHER_ALL, localHostMatcher,
                                                 PortMatcher.MATCHER_ALL, new PortMatcher( 5901 ),
                                                 true, redirectHost, 5900 ));

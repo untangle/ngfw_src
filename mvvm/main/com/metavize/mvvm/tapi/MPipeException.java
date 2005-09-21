@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: MPipeException.java,v 1.2 2005/01/30 09:20:31 amread Exp $
+ *  $Id$
  */
 
 package com.metavize.mvvm.tapi;

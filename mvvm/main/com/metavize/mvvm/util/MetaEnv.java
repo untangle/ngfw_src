@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: MetaEnv.java,v 1.1 2005/01/01 00:39:29 jdi Exp $
+ *  $Id$
  */
 
 package com.metavize.mvvm.util;

@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: SessionGlobalState.java,v 1.4 2005/02/07 08:40:26 rbscott Exp $
+ *  $Id$
  */
 
 package com.metavize.mvvm.argon;

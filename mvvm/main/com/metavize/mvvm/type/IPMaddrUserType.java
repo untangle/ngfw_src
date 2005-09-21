@@ -6,19 +6,20 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: IPMaddrUserType.java,v 1.5 2005/02/01 09:59:22 amread Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.type;
 
+import java.io.Serializable;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 
 import com.metavize.mvvm.tran.IPMaddr;
-import net.sf.hibernate.HibernateException;
-import net.sf.hibernate.UserType;
+import org.hibernate.HibernateException;
+import org.hibernate.usertype.UserType;
 
 public class IPMaddrUserType implements UserType
 {
@@ -55,5 +56,25 @@ public class IPMaddrUserType implements UserType
             IPMaddr addr = (IPMaddr)v;
             ps.setString(i, addr.toString());
         }
+    }
+
+    public Object replace(Object original, Object target, Object owner)
+    {
+        return original;
+    }
+
+    public Object assemble(Serializable cached, Object owner)
+    {
+        return deepCopy(cached);
+    }
+
+    public Serializable disassemble(Object value)
+    {
+        return (Serializable)deepCopy(value);
+    }
+
+    public int hashCode(Object x)
+    {
+        return x.hashCode();
     }
 }

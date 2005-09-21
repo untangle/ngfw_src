@@ -88,7 +88,6 @@ extern int _netcap_tcp_cli_send_reset( netcap_pkt_t* pkt );
 static netcap_session_t* _netcap_get_or_create_sess( int* created_flag,
                                                      in_addr_t cli_addr, u_short cli_port, int cli_sock,
                                                      in_addr_t srv_addr, u_short srv_port, int srv_sock,
-                                                     int protocol,
                                                      netcap_intf_t cli_intf, netcap_intf_t srv_intf, 
                                                      int flags, u_int seq );
 
@@ -190,7 +189,7 @@ int  netcap_tcp_syn_hook ( netcap_pkt_t* syn )
     /**
      * Check the reputation
      */
-    response = netcap_shield_rep_check ( syn->src.host.s_addr, IPPROTO_TCP, syn->src.intf );
+    response = netcap_shield_rep_check ( syn->src.host.s_addr, IPPROTO_TCP, syn->src_intf );
     if ( response == NULL ) {
         errlog( ERR_WARNING, "netcap_shield_rep_check\n" );
         return netcap_pkt_action_raze( syn, NF_ACCEPT );
@@ -393,7 +392,7 @@ static int  _netcap_tcp_accept_hook ( int cli_sock, struct sockaddr_in client )
     sess = _netcap_get_or_create_sess(&new_sess_flag,
                                       cli_addr,cli_port,cli_sock,
                                       srv_addr,srv_port,-1,
-                                      IPPROTO_TCP,cli_intf_idx,NC_INTF_UNK,
+                                      cli_intf_idx,NC_INTF_UNK,
                                       flags,0);
 
     if (!sess)
@@ -438,7 +437,7 @@ static int  _netcap_tcp_syn_hook ( netcap_pkt_t* syn )
     cli_port = syn->src.port;
     srv_addr = syn->dst.host.s_addr;
     srv_port = syn->dst.port;
-    cli_intf_idx = syn->src.intf;
+    cli_intf_idx = syn->src_intf;
 
     arg   = NULL; /* XXX */
     flags = 0;    /* XXX */
@@ -450,7 +449,7 @@ static int  _netcap_tcp_syn_hook ( netcap_pkt_t* syn )
     /* XXXXX Need to hold a lock between calling the get and putting the SYN in the mailbox
      * so the mailbox cannot be deleted from underneath the function */
     sess = _netcap_get_or_create_sess( &new_sess_flag, cli_addr, cli_port, -1, srv_addr, srv_port, -1,
-                                       IPPROTO_TCP, cli_intf_idx, NC_INTF_UNK, flags, 0 );
+                                       cli_intf_idx, NC_INTF_UNK, flags, 0 );
 
     if ( sess == NULL ) {
         return errlog( ERR_CRITICAL, "Could not find or create new session\n" );
@@ -486,7 +485,7 @@ static int  _session_put_syn      ( netcap_session_t* netcap_sess, netcap_pkt_t*
         return netcap_pkt_action_raze( syn, NF_DROP );
     }
 
-    if ( syn->src.intf != netcap_sess->cli.cli.intf ) {
+    if ( syn->src_intf != netcap_sess->cli.intf ) {
         debug( 5, "TCP: (%10u) SYN from the incorrect side\n", netcap_sess->session_id );
         return netcap_pkt_action_raze( syn, NF_DROP );
     }
@@ -583,7 +582,6 @@ static int  _session_put_complete_fd ( netcap_session_t* netcap_sess, int client
 static netcap_session_t* _netcap_get_or_create_sess ( int* created_flag,
                                                       in_addr_t cli_addr, u_short cli_port, int cli_sock,
                                                       in_addr_t srv_addr, u_short srv_port, int srv_sock,
-                                                      int protocol,
                                                       netcap_intf_t cli_intf, netcap_intf_t srv_intf, 
                                                       int flags, u_int seq )
 {
@@ -617,12 +615,11 @@ static netcap_session_t* _netcap_get_or_create_sess ( int* created_flag,
 
     sess = netcap_tcp_session_create( cli_addr, cli_port, cli_sock,
                                       srv_addr, srv_port, srv_sock,
-                                      protocol,
                                       cli_intf, srv_intf, flags, seq );
 
-    if ( netcap_nc_sesstable_add_tuple(!NC_SESSTABLE_LOCK,sess,protocol,
-                                       cli_addr,srv_addr,
-                                       cli_port,srv_port,seq) < 0) {
+    if ( netcap_nc_sesstable_add_tuple( !NC_SESSTABLE_LOCK, sess, IPPROTO_TCP,
+                                        cli_addr, srv_addr,
+                                        cli_port, srv_port, seq ) < 0 ) {
         netcap_tcp_session_raze(!NC_SESSTABLE_LOCK,sess);
         SESSTABLE_UNLOCK();
         return perrlog_null("netcap_nc_sesstable_add_tuple\n");

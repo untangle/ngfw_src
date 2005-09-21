@@ -32,8 +32,8 @@ public class LoginFailureReason implements Serializable
         INSTANCES.put('D', DISABLED);
     }
 
-    private char key;
-    private String reason;
+    private final char key;
+    private final String reason;
 
     private LoginFailureReason(char key, String reason)
     {
@@ -59,5 +59,22 @@ public class LoginFailureReason implements Serializable
     public static LoginFailureReason getInstance(char key)
     {
         return (LoginFailureReason)INSTANCES.get(key);
+    }
+
+    // Object methods ---------------------------------------------------------
+
+    public boolean equals(Object o)
+    {
+        if (!(o instanceof LoginFailureReason)) {
+            return false;
+        } else {
+            LoginFailureReason lfr = (LoginFailureReason)o;
+            return key == lfr.key;
+        }
+    }
+
+    public int hashCode()
+    {
+        return (int)key;
     }
 }

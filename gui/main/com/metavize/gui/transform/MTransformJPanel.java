@@ -1,3 +1,4 @@
+
 /*
  * Copyright (c) 2004, 2005 Metavize Inc.
  * All rights reserved.
@@ -15,6 +16,7 @@ import com.metavize.gui.util.*;
 import com.metavize.gui.util.*;
 import com.metavize.gui.util.*;
 
+import com.metavize.mvvm.security.*;
 import com.metavize.mvvm.tran.*;
 import com.metavize.mvvm.*;
 
@@ -38,14 +40,25 @@ public class MTransformJPanel extends javax.swing.JPanel {
 
     protected MStateMachine mStateMachine;
 
+    private Tid tid;
+    public Tid getTid(){ return tid; }
+
 
     // GUI assets
     private static Dimension maxDimension, minDimension;
 
+    public static MTransformJPanel instantiate(TransformContext transformContext) throws Exception {
+	TransformDesc transformDesc = transformContext.getTransformDesc();
+	Class guiClass = Util.getClassLoader().loadClass( transformDesc.getGuiClassName(), transformDesc.getName() );
+	Constructor guiConstructor = guiClass.getConstructor( new Class[]{TransformContext.class} );
+	MTransformJPanel mTransformJPanel = (MTransformJPanel) guiConstructor.newInstance(new Object[]{transformContext});
+	return mTransformJPanel;
+    }
     
     public MTransformJPanel(TransformContext transformContext) {
         this.transformContext = transformContext;
 	this.mackageDesc = transformContext.getMackageDesc();
+	this.tid = transformContext.getTid();
 	
         // INIT GUI
         initComponents();
@@ -121,7 +134,7 @@ public class MTransformJPanel extends javax.swing.JPanel {
 	
     }
     
-    void doShutdown(){
+    public void doShutdown(){
 	try{
 	    SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
 		mTransformControlsJPanel.doShutdown();
@@ -253,7 +266,7 @@ public class MTransformJPanel extends javax.swing.JPanel {
         Rectangle newBounds = this.getBounds();
         newBounds.width = this.getPreferredSize().width;
         newBounds.height = this.getPreferredSize().height;
-        Util.getMPipelineJPanel().focusMTransformJPanel(newBounds);
+        //Util.getMPipelineJPanel().focusMTransformJPanel(newBounds);
     }
 
 

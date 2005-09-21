@@ -11,6 +11,7 @@
 
 package com.metavize.mvvm.type;
 
+import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.PreparedStatement;
@@ -18,8 +19,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 
-import net.sf.hibernate.HibernateException;
-import net.sf.hibernate.UserType;
+import org.hibernate.HibernateException;
+import org.hibernate.usertype.UserType;
 
 public class UriUserType implements UserType
 {
@@ -68,5 +69,25 @@ public class UriUserType implements UserType
             if (s.length() > DEFAULT_STRING_SIZE) s = s.substring(0, DEFAULT_STRING_SIZE);
             ps.setString(i, s);
         }
+    }
+
+    public Object replace(Object original, Object target, Object owner)
+    {
+        return original;
+    }
+
+    public Object assemble(Serializable cached, Object owner)
+    {
+        return deepCopy(cached);
+    }
+
+    public Serializable disassemble(Object value)
+    {
+        return (Serializable)deepCopy(value);
+    }
+
+    public int hashCode(Object o)
+    {
+        return o.hashCode();
     }
 }

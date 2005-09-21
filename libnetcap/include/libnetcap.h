@@ -24,11 +24,11 @@
 
 #define IPPROTO_ALL  IPPROTO_MAX
 
-#define NETCAP_MAX_IF_NAME_LEN  IF_NAMESIZE/* XXX */
+#define NETCAP_MAX_IF_NAME_LEN  IF_NAMESIZE
 
 #define NETCAP_MAX_INTERFACES   32 /* XXX */
 
-#define NC_INTF_MAX NC_INTF_15
+#define NC_INTF_MAX NC_INTF_LOOPBACK
 
 typedef enum {
     ACTION_NULL=0,
@@ -57,7 +57,8 @@ typedef enum {
     NC_INTF_12,
     NC_INTF_13,
     NC_INTF_14,
-    NC_INTF_15    
+    NC_INTF_15,
+    NC_INTF_LOOPBACK
 } netcap_intf_t;
 
 typedef enum {
@@ -78,20 +79,21 @@ enum {
     TCP_CLI_DEAD_NULL
 };
 
+typedef struct
+{
+    char s[NETCAP_MAX_IF_NAME_LEN];
+} netcap_intf_string_t;
+
+/** XXXX
+ * This should be changed to a sockaddr_in if possible.
+ */
 typedef struct netcap_endpoint_t {
-    netcap_intf_t  intf;
     struct in_addr host;
     u_short        port;
 } netcap_endpoint_t;
 
 typedef struct netcap_endpoints {
-    /*! \brief the protocol
-     *  this must be IPPROTO_TCP or IPPROTO_UDP \n
-     *  you must fill this out before registering the module \n
-     */
-    /* XXX This should go away since this is specific to a session */
-    int protocol;
-
+    netcap_intf_t     intf;
     netcap_endpoint_t cli;
     netcap_endpoint_t srv;
 } netcap_endpoints_t;
@@ -102,7 +104,24 @@ typedef struct netcap_pkt {
      */
     int proto;
 
+    /**
+     * The interace that the packet came in on
+     */
+    netcap_intf_t     src_intf;
+    
+    /**
+     * Source host and port of the machine that sent the packet.
+     */
     netcap_endpoint_t src;
+
+    /**
+     * The interace that the packet came should go out on.
+     */
+    netcap_intf_t     dst_intf;
+
+    /**
+     * Destination host and port of the machine the packet should be sent to.
+     */
     netcap_endpoint_t dst;
     
     /**
@@ -276,12 +295,14 @@ typedef struct netcap_session {
      * A number indicating the client interface or 0 if it is unknown.
      * 
      */
-    netcap_intf_t cli_intf;
+    // XXX This is now stored inside of the endpoints structure.
+    // netcap_intf_t cli_intf;
 
     /**
      * A number indicating the server interface or 0 if it is unknown.
      */
-    netcap_intf_t srv_intf;
+    // XXX This is now stored inside of the endpoints structure.
+    // netcap_intf_t srv_intf;
 
     /**
      * For ICMP echo session, this is the message id for the client side and server side.
@@ -322,7 +343,7 @@ typedef void (*netcap_icmp_hook_t) (netcap_session_t* netcap_sess, netcap_pkt_t*
 /**
  * Initialization, and global controls
  */
-int netcap_init( int shield_enable );
+int   netcap_init( int shield_enable );
 int   netcap_cleanup (void);
 const char* netcap_version (void);
 void  netcap_debug_set_level   (int lev);
@@ -392,17 +413,65 @@ int netcap_session_raze(netcap_session_t* session);
 /**
  * Interface management
  */
-int netcap_interface_intf_verify( netcap_intf_t intf );
-int netcap_interface_refresh (void);
-int netcap_interface_is_broadcast (in_addr_t addr);
-int netcap_interface_is_multicast (in_addr_t addr);
-int netcap_interface_is_local (in_addr_t addr);
-int netcap_interface_count (void);
 
-int netcap_interface_get_address( char* interface_name, struct in_addr* address );
-int netcap_interface_get_netmask( char* interface_name, struct in_addr* netmask );
+/* Convert a string representation of an interface to a netcap representation */
+/* blocking on configuration */
+int netcap_interface_string_to_intf ( char *intf_str, netcap_intf_t *intf );
 
-in_addr_t* netcap_interface_addrs (void);
+/* Convert a netcap representation (eg 1) of an interface to a string representation ( eg eth0 ) */
+/* blocking on configuration */
+int netcap_interface_intf_to_string ( netcap_intf_t intf, char *intf_str, int str_len );
+
+/**
+ * netcap_interface_configure_intf:
+ * Configure the mapping from mark indices to interfaces(blocking on configuration)
+ * This must be configured at startup (after initialization but before processing any sessions).
+ * @param intf_name_array - 
+ *      An array of interface names.
+ *        The first index should correspond to the interface with the mark 1, the second with the
+ *        mark 2, etc.
+ * @param num_intf - The number of interfaces in intf_name_array.
+ */
+int netcap_interface_configure_intf ( netcap_intf_string_t* intf_name_array, int intf_count );
+
+int netcap_interface_intf_verify    ( netcap_intf_t intf );
+
+/* blocking on configuration */
+int netcap_interface_update_address ( void );
+
+/* blocking on configuration */
+int netcap_interface_is_broadcast   ( in_addr_t addr, int index );
+int netcap_interface_is_multicast   ( in_addr_t addr );
+
+int netcap_interface_count          ( void );
+
+/* Holder for interface data for a particular interface or one of its aliases */
+typedef struct 
+{
+    struct in_addr address;
+    struct in_addr netmask;
+    struct in_addr broadcast;    
+} netcap_intf_address_data_t;
+
+/* Retrieve an array of interface data for an interface. 
+ * @parameter interface_name: name of the interface to lookup.
+ * @parameter data: data structure to fill in.
+ * @parameter data_size: Size of data in bytes.
+ * @return number of elements filled in data or -1 on error.
+ */
+int netcap_interface_get_data       ( char* name, netcap_intf_address_data_t* data, int data_size );
+
+/* blocking on configuration.
+ * Retrieve the netmask for an interface */
+int netcap_interface_get_netmask    ( char* interface_name, struct in_addr* netmask );
+
+/* Retrieve the destination interface
+ * blocking on configuration */
+int netcap_interface_dst_intf       ( netcap_intf_t* intf, netcap_intf_t src_intf, struct in_addr* src_ip, 
+                                      struct in_addr* dst_ip );
+
+int netcap_interface_dst_intf_delay ( netcap_intf_t* intf, netcap_intf_t src_intf, struct in_addr* src_ip, 
+                                      struct in_addr* dst_ip, unsigned long* delay_array );
 
 /**
  * Query information about the redirect and divert ports
@@ -454,19 +523,6 @@ int               netcap_sesstable_merge_icmp_tuple ( netcap_session_t* netcap_s
 
 int  netcap_endpoints_copy          ( netcap_endpoints_t* dst, netcap_endpoints_t* src );
 int  netcap_endpoints_bzero         ( netcap_endpoints_t* tuple );
-
-/**
- * Interface functions
- */
-
-/* Return 1 if the bridge exists, 0 otherwise */
-int netcap_interface_bridge_exists( void );
-
-/* Convert a string representation of an interface to a netcap representation */
-int netcap_interface_string_to_intf (char *intf_str, netcap_intf_t *intf);
-
-/* Convert a netcap representation (eg 1) of an interface to a string representation ( eg eth0 ) */
-int netcap_interface_intf_to_string (netcap_intf_t intf, char *intf_str,int str_len);
 
 /**
  * Toggle opaque mode

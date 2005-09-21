@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: InvocationConnectionException.java,v 1.1 2005/01/30 05:35:59 amread Exp $
+ *  $Id$
  */
 
 package com.metavize.mvvm.client;

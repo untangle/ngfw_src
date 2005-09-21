@@ -8,17 +8,32 @@
  *
  * $Id$
  */
-#ifndef __INTERFACE_H
-#define __INTERFACE_H
+#ifndef _NETCAP_INTERFACE_H_
+#define _NETCAP_INTERFACE_H_
 
 #include "libnetcap.h"
+#include <netinet/if_ether.h>
+#include <linux/if_packet.h>
 
-int netcap_interface_init (void);
-int netcap_interface_cleanup (void);
-int netcap_interface_marking(int ifAdd);
+#include "netcap_route.h"
+#include "netcap_intf_db.h"
 
-int netcap_interface_mark_to_intf(int nfmark, netcap_intf_t* intf);
+int            netcap_interface_init         ( void );
 
-int netcap_interface_update_address( void );
+/* blocking on configuration */
+int           netcap_interface_cleanup       ( void );
 
-#endif
+int           netcap_interface_mark_to_intf  ( int nfmark, netcap_intf_t* intf );
+
+netcap_intf_t netcap_interface_index_to_intf ( int index );
+
+netcap_intf_db_t* netcap_interface_get_db    ( void );
+
+/* Retrieve the other interface */
+int           netcap_interface_other_intf    ( netcap_intf_t* intf, netcap_intf_t src );
+
+/* blocking on configuration. */
+int           netcap_interface_intf_to_index ( netcap_intf_t intf );
+
+
+#endif // _NETCAP_INTERFACE_H_

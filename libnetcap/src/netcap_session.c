@@ -32,6 +32,7 @@
 #include "netcap_icmp.h"
 #include "netcap_icmp_msg.h"
 #include "netcap_sesstable.h"
+#include "netcap_route.h"
 
 static u_int session_index = 1;
 static lock_t session_index_lock;
@@ -203,12 +204,13 @@ netcap_session_t* netcap_session_malloc(void)
 {
     netcap_session_t* netcap_sess = NULL;
     
-    if ( (netcap_sess = calloc(1,sizeof(netcap_session_t))) == NULL ) return errlogmalloc_null();
+    if (( netcap_sess = calloc( 1, sizeof(netcap_session_t))) == NULL ) return errlogmalloc_null();
 
     return netcap_sess;
  }
 
-int netcap_session_init(netcap_session_t* netcap_sess, netcap_endpoints_t *endpoints, int if_mb)
+int netcap_session_init( netcap_session_t* netcap_sess, netcap_endpoints_t *endpoints, 
+                         netcap_intf_t srv_intf, int if_mb )
 {
     if ( endpoints == NULL ) {
         return errlog(ERR_CRITICAL, "Invalid arguments");
@@ -226,6 +228,8 @@ int netcap_session_init(netcap_session_t* netcap_sess, netcap_endpoints_t *endpo
     // Set the traffic structures
     netcap_endpoints_copy( &netcap_sess->srv, endpoints );
     netcap_endpoints_copy( &netcap_sess->cli, endpoints );
+
+    netcap_sess->srv.intf = srv_intf;
 
     if ( netcap_sess->session_id == 0 ) {
         return errlog( ERR_CRITICAL, "netcap_session_next_id\n" );
@@ -272,7 +276,8 @@ int netcap_session_init(netcap_session_t* netcap_sess, netcap_endpoints_t *endpo
     return 0;
 }
 
-netcap_session_t* netcap_session_create(netcap_endpoints_t *endpoints, int if_mb)
+netcap_session_t* netcap_session_create( netcap_endpoints_t *endpoints, netcap_intf_t srv_intf, 
+                                         int if_mb )
 {
     netcap_session_t* netcap_sess = NULL;
 
@@ -282,9 +287,9 @@ netcap_session_t* netcap_session_create(netcap_endpoints_t *endpoints, int if_mb
         return errlog_null(ERR_CRITICAL,"netcap_session_malloc");
     }
 
-    if ( netcap_session_init ( netcap_sess, endpoints, if_mb ) < 0 ) {
+    if ( netcap_session_init( netcap_sess, endpoints, srv_intf, if_mb ) < 0 ) {
         free ( netcap_sess );
-        return errlog_null(ERR_CRITICAL,"netcap_session_create");
+        return errlog_null( ERR_CRITICAL, "netcap_session_init" );
     }
 
     return (netcap_sess);

@@ -101,6 +101,12 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
           <fileset refid="xdoclet.fileset"/>
           <hibernate version="2.0"/>
         </hibernatedoclet>
+
+        <!-- xdoclet is re re -->
+        <exec executable="${util.bin}/fix-hbm">
+          <arg value="${build.gensrc}"/>
+        </exec>
+
         <touch file="${build.gensrc}/stamp-xdoclet"/>
       </then>
     </if>
@@ -181,6 +187,8 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       <src path="${build.gensrc}"/>
 
       <include name="com/metavize/mvvm/*.java"/>
+      <include name="com/metavize/mvvm/argon/SessionDesc.java"/>
+      <include name="com/metavize/mvvm/argon/IPSessionDesc.java"/>
       <include name="com/metavize/mvvm/argon/SessionEndpoints.java"/>
       <include name="com/metavize/mvvm/argon/ArgonException.java"/>
       <include name="com/metavize/mvvm/client/*.java"/>
@@ -208,6 +216,8 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
     <jar destfile="${build.jar}/mvvm-client.jar" index="yes">
       <fileset dir="${build.mvvm-client}">
         <include name="com/metavize/mvvm/*.class"/>
+        <include name="com/metavize/mvvm/argon/SessionDesc.class"/>
+        <include name="com/metavize/mvvm/argon/IPSessionDesc.class"/>
         <include name="com/metavize/mvvm/argon/SessionEndpoints*.class"/>
         <include name="com/metavize/mvvm/argon/ArgonException.class"/>
         <include name="com/metavize/mvvm/client/*.class"/>

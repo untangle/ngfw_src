@@ -80,8 +80,7 @@ JNIEXPORT jint JNICALL JF_TCPSession( setServerEndpoint )
         /* XXXX Consider making this a warning */
         debug( 5, "Invalid interface: %d\n", intf );
     } else {
-        session->srv_intf     = intf;
-        session->srv.srv.intf = intf;
+        session->srv.intf     = intf;
     }
 
     return 0;
@@ -322,7 +321,7 @@ static void _tcp_callback( jlong session_ptr, netcap_callback_action_t action, j
     if ( session->callback( session, action, flags ) < 0 ) {
         debug( 2, "TCP: callback failed=%d\n", action );
 
-        /* Throw an error, but print a debugging message */
+        /* Throw an error, but don't print an error message */
         jmvutil_error_throw( JMVUTIL_ERROR_STT, "TCP: callback failed action=%d\n", action );
     }
 }

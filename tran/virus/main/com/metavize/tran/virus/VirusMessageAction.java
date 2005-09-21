@@ -32,8 +32,8 @@ public class VirusMessageAction implements Serializable
         INSTANCES.put(REMOVE.getKey(), REMOVE);
     }
 
-    private String name;
-    private char key;
+    private final String name;
+    private final char key;
 
     private VirusMessageAction(char key, String name)
     {

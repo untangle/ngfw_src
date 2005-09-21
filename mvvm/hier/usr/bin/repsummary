@@ -16,7 +16,7 @@ JAVA_HOME=${JAVA_HOME:-@DEFAULT_JAVA_HOME@}
 
 PATH=${JAVA_HOME}/bin:$PATH
 
-CLASSPATH="@MVVM_LIB@/mvvm.jar:@THIRDPARTY_LIB@/log4j-1.2.9.jar:@THIRDPARTY_LIB@/hibernate2.jar:@THIRDPARTY_LIB@/odmg-3.0.jar:@THIRDPARTY_LIB@/commons-collections-3.1.jar:@THIRDPARTY_LIB@/commons-digester.jar:@THIRDPARTY_LIB@/commons-logging.jar:@THIRDPARTY_LIB@/commons-beanutils.jar:@THIRDPARTY_LIB@/jcommon-0.9.6.jar:@THIRDPARTY_LIB@/itext-1.2.jar:@THIRDPARTY_LIB@/jfreechart-0.9.21.jar:@THIRDPARTY_LIB@/jasperreports-0.6.4.jar:@THIRDPARTY_LIB@/pg74.215.jdbc3.jar:$CLASSPATH"
+CLASSPATH="@MVVM_LIB@/mvvm.jar:@THIRDPARTY_LIB@/log4j-1.2.9.jar:@THIRDPARTY_LIB@/hibernate3.jar:@THIRDPARTY_LIB@/odmg-3.0.jar:@THIRDPARTY_LIB@/commons-collections-3.1.jar:@THIRDPARTY_LIB@/commons-digester.jar:@THIRDPARTY_LIB@/commons-logging.jar:@THIRDPARTY_LIB@/commons-beanutils.jar:@THIRDPARTY_LIB@/jcommon-0.9.6.jar:@THIRDPARTY_LIB@/itext-1.2.jar:@THIRDPARTY_LIB@/jfreechart-0.9.21.jar:@THIRDPARTY_LIB@/jasperreports-0.6.4.jar:@THIRDPARTY_LIB@/pg74.215.jdbc3.jar:$CLASSPATH"
 
 for m in @MVVM_TOOLBOX@/*.mar; do CLASSPATH="$CLASSPATH:$m"; done
 

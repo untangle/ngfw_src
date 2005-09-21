@@ -54,14 +54,15 @@ MackageDesc[] mds = mvvm.toolboxManager().installed();
     <jar href="./mvvm-client.jar"/>
 
     <jar href="./commons-logging-1.0.4.jar"/>
-    <jar href="./hibernate2.jar"/>
+    <jar href="./hibernate3.jar"/>
+    <jar href="./cglib-2.1.jar"/>
+    <jar href="./asm.jar"/>
     <jar href="./jcommon-0.9.6.jar"/>
     <jar href="./jfreechart-0.9.21.jar"/>
     <jar href="./jnlp.jar"/>
     <jar href="./kunststoff-mv.jar"/>
     <jar href="./log4j-1.2.9.jar"/>
     <jar href="./netbeans-3.5.jar"/>
-    <jar href="./odmg-3.0.jar"/>
 
     <%
     for(int i = 0; i < mds.length; i++){

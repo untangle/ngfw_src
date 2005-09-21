@@ -109,6 +109,11 @@ int     unet_reset( int sock );
  */
 int     unet_reset_and_close (int sock);
 
+/**
+ * Close a file descriptor and set its value to negative one.
+ */
+int     unet_close( int* fd_ptr );
+
 #define NTOA_BUF_COUNT 16
 char*   unet_inet_ntoa (in_addr_t addr);
 

@@ -1,12 +1,12 @@
 /*
- * Copyright (c) 2004 Metavize Inc.
+ * Copyright (c) 2004, 2005 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: ModeUserType.java,v 1.2 2004/12/23 02:28:29 amread Exp $
+ * $Id$
  */
 
 package com.metavize.tran.test;
@@ -16,8 +16,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 
-import net.sf.hibernate.HibernateException;
-import net.sf.hibernate.UserType;
+import org.hibernate.HibernateException;
+import org.hibernate.usertype.UserType;
+import java.io.Serializable;
 
 public class ModeUserType implements UserType
 {
@@ -44,5 +45,25 @@ public class ModeUserType implements UserType
         } else {
             ps.setString(i, v.toString());
         }
+    }
+
+    public Object replace(Object original, Object target, Object owner)
+    {
+        return original;
+    }
+
+    public Object assemble(Serializable cached, Object owner)
+    {
+        return deepCopy(cached);
+    }
+
+    public Serializable disassemble(Object value)
+    {
+        return (Serializable)deepCopy(value);
+    }
+
+    public int hashCode(Object o)
+    {
+        return o.hashCode();
     }
 }

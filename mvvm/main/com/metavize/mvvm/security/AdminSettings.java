@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: AdminSettings.java,v 1.6 2005/02/25 02:45:29 amread Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.security;

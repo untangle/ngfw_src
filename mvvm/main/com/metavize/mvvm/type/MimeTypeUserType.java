@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: MimeTypeUserType.java,v 1.1 2005/01/12 10:59:57 amread Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.type;
@@ -17,8 +17,9 @@ import java.sql.SQLException;
 import java.sql.Types;
 
 import com.metavize.mvvm.tran.MimeType;
-import net.sf.hibernate.HibernateException;
-import net.sf.hibernate.UserType;
+import org.hibernate.HibernateException;
+import org.hibernate.usertype.UserType;
+import java.io.Serializable;
 
 public class MimeTypeUserType implements UserType
 {
@@ -45,5 +46,25 @@ public class MimeTypeUserType implements UserType
         } else {
             ps.setString(i, v.toString());
         }
+    }
+
+    public Object replace(Object original, Object target, Object owner)
+    {
+        return original;
+    }
+
+    public Object assemble(Serializable cached, Object owner)
+    {
+        return deepCopy(cached);
+    }
+
+    public Serializable disassemble(Object value)
+    {
+        return (Serializable)deepCopy(value);
+    }
+
+    public int hashCode(Object x)
+    {
+        return x.hashCode();
     }
 }

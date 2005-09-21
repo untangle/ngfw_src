@@ -11,60 +11,71 @@
 
 package com.metavize.gui.util;
 
-import java.text.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.Insets;
+import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.net.*;
-import java.util.*;
+import java.text.*;
+import java.util.List;
+import java.util.StringTokenizer;
+import java.util.Vector;
 import javax.jnlp.*;
 import javax.swing.*;
 
 import com.metavize.gui.login.*;
 import com.metavize.gui.main.MMainJFrame;
+import com.metavize.gui.main.PolicyStateMachine;
 import com.metavize.gui.pipeline.MPipelineJPanel;
 import com.metavize.gui.pipeline.MRackJPanel;
 import com.metavize.gui.widgets.editTable.*;
 import com.metavize.mvvm.*;
 import com.metavize.mvvm.client.*;
+import com.metavize.mvvm.policy.*;
 import com.metavize.mvvm.security.*;
 import com.metavize.mvvm.tran.*;
-import com.metavize.mvvm.policy.*;
 
 public class Util {
 
     static{
-	daemonThreadVector = new Vector<Killable>();
-	logDateFormat = new SimpleDateFormat("EEE, MMM d HH:mm:ss");
+        daemonThreadVector = new Vector<Killable>();
+        logDateFormat = new SimpleDateFormat("EEE, MMM d HH:mm:ss");
         log = new Vector();
-	ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-	iconOnState = new ImageIcon( classLoader.getResource("com/metavize/gui/transform/IconOnState28x28.png") );
-	iconOffState = new ImageIcon( classLoader.getResource("com/metavize/gui/transform/IconOffState28x28.png") );    
-	iconStoppedState = new ImageIcon( classLoader.getResource("com/metavize/gui/transform/IconStoppedState28x28.png") );
-	iconPausedState = new ImageIcon( classLoader.getResource("com/metavize/gui/transform/IconAttentionState28x28.png") );
-	buttonReloading = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Reloading_106x17.png") );
-	buttonReloadSettings = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Reload_Settings_106x17.png") );
-	buttonSaving = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Saving_106x17.png") );
-	buttonSaveSettings = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Save_Settings_106x17.png") );
-	buttonRefreshLog = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Refresh_Log_106x17.png") );
-	buttonRefreshing = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Refreshing_106x17.png") );
-	buttonStartAutoRefresh = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Start_Auto_Refresh_106x17.png") );
-	buttonStopAutoRefresh = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Stop_Auto_Refresh_106x17.png") );
-	buttonExpandSettings = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Expand_Settings_106x17.png") );
-	buttonCollapseSettings = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Collapse_Settings_106x17.png") );
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        iconOnState = new ImageIcon( classLoader.getResource("com/metavize/gui/transform/IconOnState28x28.png") );
+        iconOffState = new ImageIcon( classLoader.getResource("com/metavize/gui/transform/IconOffState28x28.png") );
+        iconStoppedState = new ImageIcon( classLoader.getResource("com/metavize/gui/transform/IconStoppedState28x28.png") );
+        iconPausedState = new ImageIcon( classLoader.getResource("com/metavize/gui/transform/IconAttentionState28x28.png") );
+        buttonReloading = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Reloading_106x17.png") );
+        buttonReloadSettings = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Reload_Settings_106x17.png") );
+        buttonSaving = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Saving_106x17.png") );
+        buttonSaveSettings = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Save_Settings_106x17.png") );
+        buttonRefreshLog = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Refresh_Log_106x17.png") );
+        buttonRefreshing = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Refreshing_106x17.png") );
+        buttonStartAutoRefresh = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Start_Auto_Refresh_106x17.png") );
+        buttonStopAutoRefresh = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Stop_Auto_Refresh_106x17.png") );
+        buttonExpandSettings = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Expand_Settings_106x17.png") );
+        buttonCollapseSettings = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Collapse_Settings_106x17.png") );
 
-	buttonCancelPowerOn = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Cancel_Power_On_130x17.png") );
-	buttonContinuePowerOn = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Continue_Power_On_130x17.png") );
-	buttonCancelPowerOff = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Cancel_Power_Off_130x17.png") );
-	buttonContinuePowerOff = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Continue_Power_Off_130x17.png") );
-	buttonCancelRemove = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Cancel_Remove_106x17.png") );
-	buttonContinueRemoving = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Continue_Removing_130x17.png") );
-	buttonCancelSave = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Cancel_Save_106x17.png") );
-	buttonContinueSaving = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Continue_Saving_106x17.png") );
-	buttonCancel = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Cancel_106x17.png") );
-	buttonCancelling = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Cancelling_106x17.png") );
-	buttonProcure = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Procure_106x17.png") );
-	buttonProcuring = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Procuring_106x17.png") );
-	buttonBackupToHardDisk = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Backup_To_Hard_Disk_130x17.png") );
-	buttonBackupToUsbKey = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Backup_To_Usb_Key_130x17.png") );
+        buttonCancelPowerOn = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Cancel_Power_On_130x17.png") );
+        buttonContinuePowerOn = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Continue_Power_On_130x17.png") );
+        buttonCancelPowerOff = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Cancel_Power_Off_130x17.png") );
+        buttonContinuePowerOff = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Continue_Power_Off_130x17.png") );
+        buttonCancelRemove = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Cancel_Remove_106x17.png") );
+        buttonContinueRemoving = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Continue_Removing_130x17.png") );
+        buttonCancelSave = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Cancel_Save_106x17.png") );
+        buttonContinueSaving = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Continue_Saving_106x17.png") );
+        buttonCancel = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Cancel_106x17.png") );
+        buttonCancelling = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Cancelling_106x17.png") );
+        buttonProcure = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Procure_106x17.png") );
+        buttonProcuring = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Procuring_106x17.png") );
+        buttonBackupToHardDisk = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Backup_To_Hard_Disk_130x17.png") );
+        buttonBackupToUsbKey = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Backup_To_Usb_Key_130x17.png") );
     }
 
 
@@ -73,7 +84,7 @@ public class Util {
     public static final long LOGIN_RETRY_SLEEP = 3000l;
     ///////////////////////////////
 
-    
+
     // SERVER PROXIES ///////////////
     private static MvvmRemoteContext mvvmContext;
     private static ToolboxManager toolboxManager;
@@ -84,14 +95,14 @@ public class Util {
     private static PolicyManager policyManager;
 
     public static void setMvvmContext(MvvmRemoteContext mvvmContextX){
-	mvvmContext = mvvmContextX;
-	toolboxManager = mvvmContext.toolboxManager();
-	transformManager = mvvmContext.transformManager();
-	adminManager = mvvmContext.adminManager();
-	networkingManager = mvvmContext.networkingManager();
-	policyManager = mvvmContext.policyManager();
-	// Somewhere else this should go? XXX jdi
-	statsCache = new StatsCache();
+        mvvmContext = mvvmContextX;
+        toolboxManager = mvvmContext.toolboxManager();
+        transformManager = mvvmContext.transformManager();
+        adminManager = mvvmContext.adminManager();
+        networkingManager = mvvmContext.networkingManager();
+        policyManager = mvvmContext.policyManager();
+        // Somewhere else this should go? XXX jdi
+        statsCache = new StatsCache();
     }
 
     public static MvvmRemoteContext getMvvmContext(){ return mvvmContext; }
@@ -176,40 +187,40 @@ public class Util {
 
     public static void setLocal(boolean isLocalX){ isLocal = isLocalX; }
     public static boolean isLocal(){ return isLocal; }
-    //////////////////////////////    
+    //////////////////////////////
 
 
     // CODEBASE /////////////////
     private static URL serverCodeBase;
 
     public static URL getServerCodeBase(){
-	if(serverCodeBase != null)
-	    return serverCodeBase;
-	else{
-	    try{
-		BasicService basicService = (BasicService) ServiceManager.lookup("javax.jnlp.BasicService");
-		serverCodeBase = basicService.getCodeBase();
-	    }
-	    catch(Exception e){
-		Util.handleExceptionNoRestart("Error:", e);
-	    }
-	    finally{
-		return serverCodeBase;
-	    }
-	}
+        if(serverCodeBase != null)
+            return serverCodeBase;
+        else{
+            try{
+                BasicService basicService = (BasicService) ServiceManager.lookup("javax.jnlp.BasicService");
+                serverCodeBase = basicService.getCodeBase();
+            }
+            catch(Exception e){
+                Util.handleExceptionNoRestart("Error:", e);
+            }
+            finally{
+                return serverCodeBase;
+            }
+        }
     }
-    
+
     public static boolean isSecureViaHttps(){
-	try{
-	    String protocol = getServerCodeBase().getProtocol();
-	    if( protocol.equals("https") )
-		return true;
-	    else
-		return false;
-	}
-	catch(Exception e){
-	    return false;
-	}
+        try{
+            String protocol = getServerCodeBase().getProtocol();
+            if( protocol.equals("https") )
+                return true;
+            else
+                return false;
+        }
+        catch(Exception e){
+            return false;
+        }
     }
     /////////////////////////////////
 
@@ -223,16 +234,16 @@ public class Util {
     private static int upgradeCount = UPGRADE_CHECKING;
 
     public static synchronized void setUpgradeCount(int upgradeCountX){
-	upgradeCount = upgradeCountX;
-	lastUpgradeCheck = System.currentTimeMillis();
+        upgradeCount = upgradeCountX;
+        lastUpgradeCheck = System.currentTimeMillis();
     }
     public static synchronized int getUpgradeCount(){ return upgradeCount; }
     public static synchronized boolean mustCheckUpgrades(){
-	if( (System.currentTimeMillis() - lastUpgradeCheck > UPGRADE_STORE_CHECK_FRESH_MILLIS)
+        if( (System.currentTimeMillis() - lastUpgradeCheck > UPGRADE_STORE_CHECK_FRESH_MILLIS)
             || (upgradeCount != 0) )
-	    return true;
-	else
-	    return false;
+            return true;
+        else
+            return false;
     }
     ///////////////////////////////
 
@@ -255,6 +266,7 @@ public class Util {
     private static MRackJPanel mRackJPanel;
     private static MLoginJFrame mLoginJFrame;
     private static MMainJFrame mMainJFrame;
+    private static PolicyStateMachine policyStateMachine;
 
     public static ClassLoader getInitClassLoader(){ return initClassLoader; }
     public static void setInitClassLoader(ClassLoader initClassLoaderX){ initClassLoader = initClassLoaderX;}
@@ -272,6 +284,8 @@ public class Util {
     public static JFrame getMLoginJFrame(){ return mLoginJFrame; }
     public static void setMMainJFrame(MMainJFrame mMainJFrameX){ mMainJFrame = mMainJFrameX; }
     public static MMainJFrame getMMainJFrame(){ return mMainJFrame; }
+    public static void setPolicyStateMachine(PolicyStateMachine xPolicyStateMachine){ policyStateMachine = xPolicyStateMachine; }
+    public static PolicyStateMachine getPolicyStateMachine(){ return policyStateMachine; }
     ////////////////////////////////////////////
 
 
@@ -287,32 +301,32 @@ public class Util {
         System.exit(i);
     }
     public static void addKillableThread(Killable killable){
-	daemonThreadVector.add(killable);
+        daemonThreadVector.add(killable);
     }
     public static void killDaemonThreads(){
-	for( Killable killable : daemonThreadVector ){
-	    killable.setKilled(true);
-	}
-	daemonThreadVector.clear();
+        for( Killable killable : daemonThreadVector ){
+            killable.setKilled(true);
+        }
+        daemonThreadVector.clear();
     }
     ////////////////////////////////////////////
-    
-    
+
+
     // WINDOW PLACEMENT AND FORMATTING /////////
     public static GraphicsConfiguration getGraphicsConfiguration(){
-	GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
         GraphicsDevice graphicsDevice = graphicsEnvironment.getDefaultScreenDevice();
         GraphicsConfiguration graphicsConfiguration = graphicsDevice.getDefaultConfiguration();
-	return graphicsConfiguration;
+        return graphicsConfiguration;
     }
-    
+
     public static Rectangle generateCenteredBounds(Rectangle parentBounds, int childWidth, int childHeight){
         Rectangle childBounds;
         Rectangle defaultScreenBounds;
 
         GraphicsConfiguration graphicsConfiguration = getGraphicsConfiguration();
         defaultScreenBounds = graphicsConfiguration.getBounds();
-	
+
         if(parentBounds == null){
             parentBounds = defaultScreenBounds;
         }
@@ -331,37 +345,37 @@ public class Util {
 
         return childBounds;
     }
-    
+
     public static int determineMinHeight(int attemptedMinHeight){
         GraphicsConfiguration graphicsConfiguration = getGraphicsConfiguration();
-	Insets screenInsets = Toolkit.getDefaultToolkit().getScreenInsets( graphicsConfiguration );
-	int screenHeight = graphicsConfiguration.getBounds().height - screenInsets.top - screenInsets.bottom;
-	//System.err.println("Screen height: " + graphicsConfiguration.getBounds().height);
-	//System.err.println("Screen width: " + graphicsConfiguration.getBounds().width);
-	//System.err.println("Top insets: " + screenInsets.top);
-	//System.err.println("Bottom insets: " + screenInsets.bottom);
-	//System.err.println("Right insets: " + screenInsets.right);
-	//System.err.println("Left insets: " + screenInsets.left);
-	//  System.err.println("Determined screen height to be: " + screenHeight);
-	if( screenHeight < attemptedMinHeight)
-	    return screenHeight;
-	else
-	    return attemptedMinHeight;
+        Insets screenInsets = Toolkit.getDefaultToolkit().getScreenInsets( graphicsConfiguration );
+        int screenHeight = graphicsConfiguration.getBounds().height - screenInsets.top - screenInsets.bottom;
+        //System.err.println("Screen height: " + graphicsConfiguration.getBounds().height);
+        //System.err.println("Screen width: " + graphicsConfiguration.getBounds().width);
+        //System.err.println("Top insets: " + screenInsets.top);
+        //System.err.println("Bottom insets: " + screenInsets.bottom);
+        //System.err.println("Right insets: " + screenInsets.right);
+        //System.err.println("Left insets: " + screenInsets.left);
+        //  System.err.println("Determined screen height to be: " + screenHeight);
+        if( screenHeight < attemptedMinHeight)
+            return screenHeight;
+        else
+            return attemptedMinHeight;
     }
-    
+
     public static void resizeCheck(final Component resizableComponent, Dimension minSize, Dimension maxSize){
 
         final int currentWidth = resizableComponent.getWidth();
         final int currentHeight = resizableComponent.getHeight();
         int newWidth = currentWidth;
         int newHeight = currentHeight;
-    /*
-    System.err.println("----------------------");
-        System.err.println("| Initial size: " + currentSize);
-        System.err.println("| Min size: " + minSize);
-        System.err.println("| Max size: " + maxSize);
-    System.err.println("----------------------");
-    */
+        /*
+          System.err.println("----------------------");
+          System.err.println("| Initial size: " + currentSize);
+          System.err.println("| Min size: " + minSize);
+          System.err.println("| Max size: " + maxSize);
+          System.err.println("----------------------");
+        */
         boolean resetSize = false;
         if(currentWidth < minSize.width){
             newWidth = minSize.width;
@@ -380,22 +394,22 @@ public class Util {
             resetSize = true;
         }
         if(resetSize){
-	    //Rectangle rectangle = resizableComponent.getBounds();
+            //Rectangle rectangle = resizableComponent.getBounds();
             //resizableComponent.setBounds( rectangle.x, rectangle.y, currentSize.width, currentSize.height);
-	    //final Dimension newSize = currentSize;
-	    //SwingUtilities.invokeLater( new Runnable() { public void run(){
-        resizableComponent.setSize( newWidth, newHeight );
-        //System.err.println(" SCREEN CHANGE ---> New size: " + newSize);
-        //}});
+            //final Dimension newSize = currentSize;
+            //SwingUtilities.invokeLater( new Runnable() { public void run(){
+            resizableComponent.setSize( newWidth, newHeight );
+            //System.err.println(" SCREEN CHANGE ---> New size: " + newSize);
+            //}});
         }
         //else{
-            //System.err.println(" NO SCREEN CHANGE");
+        //System.err.println(" NO SCREEN CHANGE");
         //}
 
     }
     //////////////////////////////////////////////////////
 
-    
+
     // EXCEPTION HANDLING AND MESSAGE PRINTING ////////////
     private static final boolean PRINT_MESSAGES = true;
     private static Vector log;
@@ -409,48 +423,48 @@ public class Util {
     }
 
     public static void handleExceptionWithRestart(String output, Exception e) throws Exception {
-	Throwable throwableRef = e;
-	
-	while( throwableRef != null){
-	    if( throwableRef instanceof InvocationConnectionException ){
-		killDaemonThreads();
-		mLoginJFrame.resetLogin("Server communication failure.  Re-login.");
-		mLoginJFrame.reshowLogin();
-		return;
-	    }
-	    else if( throwableRef instanceof InvocationTargetExpiredException ){
-		killDaemonThreads();
-		mLoginJFrame.resetLogin("Server synchronization failure.  Re-login.");
-		mLoginJFrame.reshowLogin();
-		return;
-	    }
-	    else if( throwableRef instanceof com.metavize.mvvm.client.LoginExpiredException ){
-		killDaemonThreads();
-		mLoginJFrame.resetLogin("Login expired.  Re-login.");
-		mLoginJFrame.reshowLogin();
-		return;
-	    }
-	    else if(    (throwableRef instanceof ConnectException)
-		     || (throwableRef instanceof SocketException)
-		     || (throwableRef instanceof SocketTimeoutException) ){
-		killDaemonThreads();
-		mLoginJFrame.resetLogin("Server connection failure.  Re-login.");
-		mLoginJFrame.reshowLogin();
-		return;
-	    }
-	    else if( throwableRef instanceof LoginStolenException ){
-		String loginName = ((LoginStolenException)throwableRef).getThief().getMvvmPrincipal().getName();
-		String loginAddress = ((LoginStolenException)throwableRef).getThief().getClientAddr().getHostAddress();
-		new LoginStolenJDialog(loginName, loginAddress);
-		killDaemonThreads();
-		mLoginJFrame.resetLogin("Login ended by: " + loginName + " at " + loginAddress);
-		mLoginJFrame.reshowLogin();
-		return;
-	    }
-	    throwableRef = throwableRef.getCause();
-	}
-        
-	throw e;
+        Throwable throwableRef = e;
+
+        while( throwableRef != null){
+            if( throwableRef instanceof InvocationConnectionException ){
+                killDaemonThreads();
+                mLoginJFrame.resetLogin("Server communication failure.  Re-login.");
+                mLoginJFrame.reshowLogin();
+                return;
+            }
+            else if( throwableRef instanceof InvocationTargetExpiredException ){
+                killDaemonThreads();
+                mLoginJFrame.resetLogin("Server synchronization failure.  Re-login.");
+                mLoginJFrame.reshowLogin();
+                return;
+            }
+            else if( throwableRef instanceof com.metavize.mvvm.client.LoginExpiredException ){
+                killDaemonThreads();
+                mLoginJFrame.resetLogin("Login expired.  Re-login.");
+                mLoginJFrame.reshowLogin();
+                return;
+            }
+            else if(    (throwableRef instanceof ConnectException)
+                        || (throwableRef instanceof SocketException)
+                        || (throwableRef instanceof SocketTimeoutException) ){
+                killDaemonThreads();
+                mLoginJFrame.resetLogin("Server connection failure.  Re-login.");
+                mLoginJFrame.reshowLogin();
+                return;
+            }
+            else if( throwableRef instanceof LoginStolenException ){
+                String loginName = ((LoginStolenException)throwableRef).getThief().getMvvmPrincipal().getName();
+                String loginAddress = ((LoginStolenException)throwableRef).getThief().getClientAddr().getHostAddress();
+                new LoginStolenJDialog(loginName, loginAddress);
+                killDaemonThreads();
+                mLoginJFrame.resetLogin("Login ended by: " + loginName + " at " + loginAddress);
+                mLoginJFrame.reshowLogin();
+                return;
+            }
+            throwableRef = throwableRef.getCause();
+        }
+
+        throw e;
     }
 
 
@@ -466,23 +480,29 @@ public class Util {
     public static int chooseMax(int iValue, int iMinValue)
     {
         if (iValue >= iMinValue)
-        {
-            return iValue;
-        }
+            {
+                return iValue;
+            }
         else
-        {
-            return iMinValue;
-        }
+            {
+                return iMinValue;
+            }
     }
 
     public static boolean isArrayEmpty(Object[] inArray){
-	if( inArray == null )
-	    return true;
-	else if( inArray.length <= 0 )
-	    return true;
-	else
-	    return false;
+        if( inArray == null )
+            return true;
+        else if( inArray.length <= 0 )
+            return true;
+        else
+            return false;
     }
+
+    public static boolean isListEmpty(List inList)
+    {
+        return null == inList || 0 == inList.size();
+    }
+
     ///////////////////////////////////////////
 
 
@@ -493,32 +513,32 @@ public class Util {
     public static DateFormat getLogDateFormat(){ return logDateFormat; }
 
     public static String padZero(long number){
-	if( number >= 100 )  // uses all 3 digits
-	    return Long.toString(number);
-	else if( number >= 10 ) // uses only 2 digits
-	    return "0" + Long.toString(number);
-	else // uses only 1 digit
-	    return "00" + Long.toString(number);
+        if( number >= 100 )  // uses all 3 digits
+            return Long.toString(number);
+        else if( number >= 10 ) // uses only 2 digits
+            return "0" + Long.toString(number);
+        else // uses only 1 digit
+            return "00" + Long.toString(number);
     }
 
     public static String wrapString(String originalString, int lineLength){
-	StringTokenizer stringTokenizer = new StringTokenizer(originalString);
-	StringBuffer stringBuffer = new StringBuffer();
-	String tempString;
-	int currentLineLength = 0;
-	while( stringTokenizer.hasMoreTokens() ){
-	    tempString = stringTokenizer.nextToken();
-	    
-	    if( currentLineLength + tempString.length() >= lineLength ){
-		stringBuffer.append("<br>" + tempString + " ");
-		currentLineLength = tempString.length() + 1;
-	    }
-	    else{
-		stringBuffer.append(tempString + " ");
-		currentLineLength += (tempString.length() + 1);
-	    }
-	}
-	return stringBuffer.toString();
+        StringTokenizer stringTokenizer = new StringTokenizer(originalString);
+        StringBuffer stringBuffer = new StringBuffer();
+        String tempString;
+        int currentLineLength = 0;
+        while( stringTokenizer.hasMoreTokens() ){
+            tempString = stringTokenizer.nextToken();
+
+            if( currentLineLength + tempString.length() >= lineLength ){
+                stringBuffer.append("<br>" + tempString + " ");
+                currentLineLength = tempString.length() + 1;
+            }
+            else{
+                stringBuffer.append(tempString + " ");
+                currentLineLength += (tempString.length() + 1);
+            }
+        }
+        return stringBuffer.toString();
     }
     ///////////////////////////////////////////
 }

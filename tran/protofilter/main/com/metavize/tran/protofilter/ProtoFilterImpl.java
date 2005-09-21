@@ -28,11 +28,11 @@ import com.metavize.mvvm.tapi.SoloPipeSpec;
 import com.metavize.mvvm.tran.Direction;
 import com.metavize.mvvm.tran.TransformException;
 import com.metavize.mvvm.tran.TransformStartException;
-import net.sf.hibernate.HibernateException;
-import net.sf.hibernate.Query;
-import net.sf.hibernate.Session;
-import net.sf.hibernate.Transaction;
 import org.apache.log4j.Logger;
+import org.hibernate.HibernateException;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 public class ProtoFilterImpl extends AbstractTransform implements ProtoFilter
 {
@@ -44,6 +44,7 @@ public class ProtoFilterImpl extends AbstractTransform implements ProtoFilter
         + "client_intf, server_intf "
         + "FROM pl_endp endp "
         + "JOIN tr_protofilter_evt USING (session_id) "
+        + "WHERE endp.policy_id = ? "
         + "ORDER BY create_date DESC LIMIT ?";
 
     private final SoloPipeSpec pipeSpec = new SoloPipeSpec
@@ -72,7 +73,7 @@ public class ProtoFilterImpl extends AbstractTransform implements ProtoFilter
         try {
             Transaction tx = s.beginTransaction();
 
-            s.saveOrUpdateCopy(settings);
+            s.merge(settings);
             this.settings = settings;
 
             tx.commit();
@@ -102,7 +103,8 @@ public class ProtoFilterImpl extends AbstractTransform implements ProtoFilter
         try {
             Connection c = s.connection();
             PreparedStatement ps = c.prepareStatement(EVENT_QUERY);
-            ps.setInt(1, limit);
+            ps.setLong(1, getPolicy().getId());
+            ps.setInt(2, limit);
             long l0 = System.currentTimeMillis();
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {

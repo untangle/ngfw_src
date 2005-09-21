@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: ColorUserType.java,v 1.2 2005/01/12 10:59:57 amread Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.type;
@@ -18,11 +18,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 
-import net.sf.hibernate.CompositeUserType;
-import net.sf.hibernate.Hibernate;
-import net.sf.hibernate.HibernateException;
-import net.sf.hibernate.engine.SessionImplementor;
-import net.sf.hibernate.type.Type;
+import org.hibernate.Hibernate;
+import org.hibernate.HibernateException;
+import org.hibernate.engine.SessionImplementor;
+import org.hibernate.type.Type;
+import org.hibernate.usertype.CompositeUserType;
 
 public class ColorUserType implements CompositeUserType
 {
@@ -115,5 +115,16 @@ public class ColorUserType implements CompositeUserType
         throws HibernateException
     {
         return (Serializable)v;
+    }
+
+    public Object replace(Object original, Object target,
+                          SessionImplementor session, Object owner)
+    {
+        return original;
+    }
+
+    public int hashCode(Object x)
+    {
+        return x.hashCode();
     }
 }

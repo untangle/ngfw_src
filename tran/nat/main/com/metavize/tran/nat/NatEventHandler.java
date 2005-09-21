@@ -19,6 +19,8 @@ import java.util.List;
 import com.metavize.mvvm.ArgonManager;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.NetworkingConfiguration;
+import com.metavize.mvvm.argon.IntfConverter;
+
 import com.metavize.mvvm.tapi.AbstractEventHandler;
 import com.metavize.mvvm.tapi.IPNewSessionRequest;
 import com.metavize.mvvm.tapi.IPSession;
@@ -37,6 +39,7 @@ import com.metavize.mvvm.tran.firewall.IPMatcher;
 import com.metavize.mvvm.tran.firewall.IntfMatcher;
 import com.metavize.mvvm.tran.firewall.PortMatcher;
 import com.metavize.mvvm.tran.firewall.ProtocolMatcher;
+import com.metavize.mvvm.tran.firewall.InterfaceRedirect;
 import org.apache.log4j.Logger;
 
 /* Import all of the constants from NatConstants (1.5 feature) */
@@ -122,10 +125,10 @@ class NatEventHandler extends AbstractEventHandler
         request.attach( attachment );
 
         /* Check for NAT, Redirects or DMZ */
-        try {
-            if ( isNat(  request, protocol ) ||
+        try {            
+            if ( isNat( request, protocol )      ||
                  isRedirect( request, protocol ) ||
-                 isDmz(  request,  protocol )) {
+                 isDmzHost( request,  protocol )) {
                 request.release( true );
 
                 if ( isFtp( request, protocol )) {
@@ -138,6 +141,12 @@ class NatEventHandler extends AbstractEventHandler
                 return;
             }
 
+            /* DMZ Sessions do not require finalization */
+            if ( isDmz( request, protocol )) {
+                request.release( false );
+                return;
+            }
+            
             /* If nat is on, and this session wasn't natted, redirected or dmzed, it
              * must be rejected */
             if ( nat.isEnabled()) {
@@ -205,16 +214,20 @@ class NatEventHandler extends AbstractEventHandler
     {
         IPMatcher localHostMatcher = IPMatcher.MATCHER_LOCAL;
 
+        ArgonManager argonManager = MvvmContextFactory.context().argonManager();
+        
+        List<InterfaceRedirect> overrideList = new LinkedList<InterfaceRedirect>();
+        
         if ( settings.getNatEnabled()) {
             internalAddress = settings.getNatInternalAddress();
-            internalSubnet = settings.getNatInternalSubnet();
+            internalSubnet  = settings.getNatInternalSubnet();
 
             /* Create the nat redirect */
             natLocalNetwork = new IPMatcher( internalAddress, internalSubnet, false );
 
             /* XXX Update to use local host */
             nat = new RedirectMatcher( true, ProtocolMatcher.MATCHER_ALL,
-                                       IntfMatcher.MATCHER_IN, IntfMatcher.MATCHER_ALL,
+                                       IntfMatcher.getInside(), IntfMatcher.getAll(),
                                        natLocalNetwork, IPMatcher.MATCHER_ALL,
                                        PortMatcher.MATCHER_ALL, PortMatcher.MATCHER_ALL,
                                        false, null, -1 );
@@ -228,7 +241,7 @@ class NatEventHandler extends AbstractEventHandler
         /* Configure the DMZ */
         if ( settings.getDmzEnabled()) {
             dmz = new RedirectMatcher( true, ProtocolMatcher.MATCHER_ALL,
-                                       IntfMatcher.MATCHER_OUT, IntfMatcher.MATCHER_ALL,
+                                       IntfMatcher.getAll(), IntfMatcher.getInside(),
                                        IPMatcher.MATCHER_ALL, localHostMatcher,
                                        PortMatcher.MATCHER_ALL, PortMatcher.MATCHER_ALL,
                                        true, settings.getDmzAddress().getAddr(), -1 );
@@ -236,6 +249,21 @@ class NatEventHandler extends AbstractEventHandler
         } else {
             dmz = RedirectMatcher.MATCHER_DISABLED;
             isDmzLoggingEnabled = false;
+        }
+        
+        if ( settings.getDmzEnabled() || settings.getNatEnabled()) {
+            /* Create a new redirect to redirect all traffic destined
+             * to the outside interface to the inside.  This handles sessions
+             * both sessions that are managed for FTP and sessions that are for 
+             * the DMZ. */
+            InterfaceRedirect redirect = 
+                new InterfaceRedirect( ProtocolMatcher.MATCHER_ALL,
+                                       IntfMatcher.getNotInside(), IntfMatcher.getAll(),
+                                       IPMatcher.MATCHER_ALL, localHostMatcher,
+                                       PortMatcher.MATCHER_ALL, PortMatcher.MATCHER_ALL,
+                                       IntfConverter.INSIDE );
+            
+            overrideList.add( redirect );
         }
 
         /* Empty out the list */
@@ -248,16 +276,36 @@ class NatEventHandler extends AbstractEventHandler
         } else {
             int index =1;
             /* Update all of the rules */
-            for ( Iterator<RedirectRule> iter = list.iterator() ; iter.hasNext() ; index++ ) {
-                redirectList.add( new RedirectMatcher( iter.next(), index ));
+            for ( RedirectRule rule : list ) {
+                if ( rule.isLive()) {
+                    RedirectMatcher redirect = new RedirectMatcher( rule, index );
+                    redirectList.add( redirect );
+                    
+                    /* Insert the rule into the interface overrides */
+                    InetAddress redirectAddress = redirect.getRedirectAddress();
+                    
+                    /* Only need to insert an address redirect if the address is being redirected */
+                    if ( redirectAddress != null ) {
+                        InterfaceRedirect interfaceRedirect = InterfaceRedirect.
+                            makeInterfaceRedirect( redirect, redirectAddress );
+                        
+                        overrideList.add( interfaceRedirect );
+                    }
+                }
+                index++;
             }
         }
+
+        argonManager.setInterfaceOverrideList( overrideList );
     }
 
     void deconfigure() throws TransformException
     {
         /* Bring down NAT */
         disableNat( MvvmContextFactory.context().networkingManager().get());
+
+        /* Remove all of the interface override redirects */        
+        MvvmContextFactory.context().argonManager().clearInterfaceOverrideList();
     }
 
 
@@ -292,7 +340,10 @@ class NatEventHandler extends AbstractEventHandler
             }
 
             /* Check to see if this is redirect, check before changing the source address */
-            isRedirect(  request, protocol );
+            isRedirect( request, protocol );
+
+            /* Check if is going to the DMZ, this is mainly to trigger the counter */
+            isDmz( request, protocol );
 
             /* Change the source in the request */
             /* All redirecting occurs here */
@@ -374,7 +425,7 @@ class NatEventHandler extends AbstractEventHandler
     /**
      * Determine if a session is for the DMZ, and if necessary, rewrite its session information.
      */
-    private boolean isDmz( IPNewSessionRequest request, Protocol protocol )
+    private boolean isDmzHost( IPNewSessionRequest request, Protocol protocol )
     {
         if ( dmz.isMatch( request, protocol )) {
             dmz.redirect( request );
@@ -391,6 +442,19 @@ class NatEventHandler extends AbstractEventHandler
 
             return true;
         }
+        return false;
+    }
+
+    private boolean isDmz( IPNewSessionRequest request, Protocol protocol )
+    {
+        /* Check for sessions that are going to or coming from the dmz */
+        if ( request.clientIntf() == IntfConverter.DMZ || request.serverIntf() == IntfConverter.DMZ ) {
+            /* Increment the DMZ counter */
+            transform.incrementCount( DMZ_COUNTER ); // DMZ COUNTER
+            
+            return true;
+        }
+
         return false;
     }
 

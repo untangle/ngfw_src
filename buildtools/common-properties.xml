@@ -32,9 +32,9 @@ $Id: common-properties.xml,v 1.25 2005/03/23 04:52:36 amread Exp $
            classname="com.sun.tools.apache.ant.pack200.Unpack200Task"
            classpath="${ANTPACK200_HOME}/Pack200Task.jar"/>
 
-  <!-- Most configureable locations come from antbuildprops.txt -->
-  <property name="JAXBHOME" value="${JWSDP_HOME}/jaxb"/>
-  <property name="JAXPHOME" value="${JWSDP_HOME}/jaxp"/>
+  <!-- build util -->
+
+  <property name="util.bin" value="${basedir}/../util"/>
 
   <!-- standard src places -->
   <property name="src.main" value="main"/>

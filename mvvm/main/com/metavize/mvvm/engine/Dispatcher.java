@@ -9,7 +9,7 @@
  *  $Id$
  */
 
-package com.metavize.mvvm.tapi.impl;
+package com.metavize.mvvm.engine;
 
 import java.io.*;
 import java.nio.channels.*;
@@ -18,7 +18,6 @@ import java.util.*;
 import EDU.oswego.cs.dl.util.concurrent.ConcurrentHashMap;
 import EDU.oswego.cs.dl.util.concurrent.LinkedQueue;
 import EDU.oswego.cs.dl.util.concurrent.PooledExecutor;
-import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.argon.ArgonAgent;
 import com.metavize.mvvm.tapi.*;
 import com.metavize.mvvm.tapi.event.*;
@@ -63,7 +62,7 @@ class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {
     private final MPipeImpl mPipe;
     private final Transform transform;
     private final TransformContext transformContext;
-    private final TransformManager transformManager;
+    private final TransformManagerImpl transformManager;
 
     /**
      * <code>mainThread</code> is the master thread started by <code>start</code>.  It handles
@@ -178,7 +177,7 @@ class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {
         this.mPipe = mPipe;
         this.transform = mPipe.transform();
         this.transformContext = mPipe.transform().getTransformContext();
-        this.transformManager = MvvmContextFactory.context().transformManager();
+        this.transformManager = MvvmContextImpl.getInstance().transformManager();
         lastSessionReadTime = lastCommandReadTime = MetaEnv.currentTimeMillis();
         sessionEventListener = null;
         timers = new HashMap();
@@ -250,7 +249,8 @@ class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {
             agent.removeSession(sess.pSession);
     }
 
-    public com.metavize.mvvm.argon.TCPSession newSession(com.metavize.mvvm.argon.TCPNewSessionRequest request)
+    public com.metavize.mvvm.argon.TCPSession newSession(com.metavize.mvvm.argon.TCPNewSessionRequest request,
+                                                         boolean isInbound)
     {
         ClassLoader classLoader = transformContext.getClassLoader();
         Thread ct = Thread.currentThread();
@@ -264,7 +264,7 @@ class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {
         try {
             transformManager.registerThreadContext(transformContext);
             MDC.put(SESSION_ID_MDC_KEY, sb.toString());
-            return newSessionInternal(request);
+            return newSessionInternal(request, isInbound);
         } finally {
             transformManager.deregisterThreadContext();
             MDC.remove(SESSION_ID_MDC_KEY);
@@ -273,7 +273,8 @@ class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {
         }
     }
 
-    public com.metavize.mvvm.argon.UDPSession newSession(com.metavize.mvvm.argon.UDPNewSessionRequest request)
+    public com.metavize.mvvm.argon.UDPSession newSession(com.metavize.mvvm.argon.UDPNewSessionRequest request,
+                                                         boolean isInbound)
     {
         ClassLoader classLoader = transformContext.getClassLoader();
         Thread ct = Thread.currentThread();
@@ -287,7 +288,7 @@ class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {
         try {
             transformManager.registerThreadContext(transformContext);
             MDC.put(SESSION_ID_MDC_KEY, sb.toString());
-            return newSessionInternal(request);
+            return newSessionInternal(request, isInbound);
         } finally {
             transformManager.deregisterThreadContext();
             MDC.remove(SESSION_ID_MDC_KEY);
@@ -298,7 +299,7 @@ class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {
 
 
     // Here's the callback that Argon calls to notify of a new TCP session:
-    public com.metavize.mvvm.argon.TCPSession newSessionInternal(com.metavize.mvvm.argon.TCPNewSessionRequest request)
+    public com.metavize.mvvm.argon.TCPSession newSessionInternal(com.metavize.mvvm.argon.TCPNewSessionRequest request, boolean isInbound)
     {
         int sessionId = -1;
 
@@ -312,7 +313,7 @@ class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {
             TransformDesc td = transform.getTransformDesc();
             sessionId = request.id();
 
-            TCPNewSessionRequestImpl treq = new TCPNewSessionRequestImpl(this, request);
+            TCPNewSessionRequestImpl treq = new TCPNewSessionRequestImpl(this, request, isInbound);
             if (RWSessionStats.DoDetailedTimes)
                 dispatchRequestTime = MetaEnv.currentTimeMillis();
             MutateTStats.requestTCPSession(mPipe);
@@ -357,7 +358,7 @@ class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {
             // Create the session, client and server channels
             com.metavize.mvvm.argon.TCPSession pSession =
                 new com.metavize.mvvm.argon.TCPSessionImpl(request);
-            TCPSessionImpl session = new TCPSessionImpl(this, pSession,
+            TCPSessionImpl session = new TCPSessionImpl(this, pSession, isInbound,
                                                         td.getTcpClientReadBufferSize(),
                                                         td.getTcpServerReadBufferSize());
             session.attach(treq.attachment());
@@ -411,7 +412,7 @@ class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {
         }
     }
 
-    public com.metavize.mvvm.argon.UDPSession newSessionInternal(com.metavize.mvvm.argon.UDPNewSessionRequest request)
+    public com.metavize.mvvm.argon.UDPSession newSessionInternal(com.metavize.mvvm.argon.UDPNewSessionRequest request, boolean isInbound)
     {
         int sessionId = -1;
 
@@ -425,7 +426,7 @@ class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {
             TransformDesc td = transform.getTransformDesc();
             sessionId = request.id();
 
-            UDPNewSessionRequestImpl ureq = new UDPNewSessionRequestImpl(this, request);
+            UDPNewSessionRequestImpl ureq = new UDPNewSessionRequestImpl(this, request, isInbound);
             if (RWSessionStats.DoDetailedTimes)
                 dispatchRequestTime = MetaEnv.currentTimeMillis();
             MutateTStats.requestUDPSession(mPipe);
@@ -470,7 +471,7 @@ class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {
             // Create the session, client and server channels
             com.metavize.mvvm.argon.UDPSession pSession =
                 new com.metavize.mvvm.argon.UDPSessionImpl(request);
-            UDPSessionImpl session = new UDPSessionImpl(this, pSession,
+            UDPSessionImpl session = new UDPSessionImpl(this, pSession, isInbound,
                                                         td.getUdpMaxPacketSize(),
                                                         td.getUdpMaxPacketSize());
             session.attach(ureq.attachment());
@@ -735,7 +736,7 @@ class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {
                 System.out.print("T");
             System.out.print(sd.id());
             System.out.print("\t");
-            System.out.print(sd.direction() == IPSessionDesc.INBOUND ? "In" : "Out");
+            System.out.print(sd.isInbound() ? "In" : "Out");
             System.out.print("\t");
             System.out.print(SessionUtil.prettyState(sd.clientState()));
             System.out.print("\t");

@@ -11,9 +11,10 @@
 
 package com.metavize.mvvm.security;
 
-import com.metavize.mvvm.policy.Policy;
 import java.io.Serializable;
 import java.security.Principal;
+
+import com.metavize.mvvm.policy.Policy;
 
 /**
  * Transform ID.
@@ -23,29 +24,35 @@ import java.security.Principal;
  * @hibernate.class
  * table="TID"
  */
-public final class Tid implements Principal, Serializable, Comparable
+public class Tid implements Principal, Serializable, Comparable
 {
-    private static final long serialVersionUID = -5009447155713499894L;
+    private static final long serialVersionUID = -3752177143597737103L;
 
     private Long id;
-
     private Policy policy;
 
-    public Tid() { }
+    // non persistent property XXX maybe we should collapse this and
+    // TransformPersistentState and also make a immutable token for
+    // tid?
+    private String transformName;
 
-    public Tid(Long id, Policy policy)
+    public Tid()
+    {
+        transformName = null;
+    }
+
+    public Tid(Long id, Policy policy, String transformName)
     {
         this.id = id;
         this.policy = policy;
+        this.transformName = transformName;
     }
 
-    // Temporary for backwards compatibility.  SHOULD GO AWAY. XXXX
     public Tid(Long id)
     {
-        com.metavize.mvvm.policy.PolicyManager pm = com.metavize.mvvm.MvvmContextFactory.context().policyManager();
-        Policy p = pm.getDefaultPolicy();
         this.id = id;
-        this.policy = p;
+        this.policy = null;
+        this.transformName = null;
     }
 
     /**
@@ -72,6 +79,7 @@ public final class Tid implements Principal, Serializable, Comparable
      * @return Policy for this Tid
      * @hibernate.many-to-one
      * column="POLICY_ID"
+     * cascade="all"
      */
     public Policy getPolicy()
     {
@@ -81,6 +89,16 @@ public final class Tid implements Principal, Serializable, Comparable
     public void setPolicy(Policy policy)
     {
         this.policy = policy;
+    }
+
+    public String getTransformName()
+    {
+        return transformName;
+    }
+
+    public void setTransformName(String transformName)
+    {
+        this.transformName = transformName;
     }
 
     // XXX something more appropriate

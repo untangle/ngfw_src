@@ -15,6 +15,9 @@ import java.io.FileReader;
 import java.io.BufferedReader;
 
 import java.util.regex.Pattern;
+import java.util.List;
+import java.util.LinkedList;
+import java.util.Collections;
 
 import java.net.InetAddress;
 import org.apache.log4j.Logger;
@@ -39,11 +42,12 @@ public final class Netcap {
     private static final String GATEWAY_PATTERN = "^[^\t]*\t00000000\t([^\t]*)\t.*";
     private static final String GATEWAY_REPLACE = "$1";
 
-
     /* Maximum number of lines to read from the routing table */
     private static final int ROUTE_READ_LIM  = 50;
 
     private static final Netcap INSTANCE = new Netcap();
+    
+    private static final List<InterfaceData> EMPTY_INTERFACE_DATA_LIST = Collections.emptyList();
 
     protected static final Logger logger = Logger.getLogger( Netcap.class );
 
@@ -203,52 +207,56 @@ public final class Netcap {
     /**
      * Retrieve the address of an interface
      */
-    public InetAddress getInterfaceAddress( String interfaceString ) throws JNetcapException
+    public List<InterfaceData> getInterfaceData( String interfaceString ) throws JNetcapException
     {
         InetAddress address;
         try {
-            address = Inet4AddressConverter.toAddress( getInterfaceAddressLong( interfaceString ));
+            /* XXXX 3 is the magic number, this magic number and this comment makes no sense */
+            long input[] = new long[MAX_INTERFACE*3];
+            int numIntf = getInterfaceDataArray( interfaceString, input );
+            if ( numIntf <= 0 ) return EMPTY_INTERFACE_DATA_LIST;
+            List<InterfaceData> dataList = new LinkedList<InterfaceData>();
+
+            for ( int c = 0 ; c < numIntf ; c++ ) {
+                dataList.add( new InterfaceData( input[(3 * c) + 0], 
+                                                 input[(3 * c) + 1], 
+                                                 input[(3 * c) + 2] ));
+            }
+            return dataList;
         } catch ( Exception e ) {
             throw new JNetcapException( "Error retrieving interface address", e );
         }
-        
-        return address;
     }
 
     /**
-     * Retrieve the netmask of an interface
+     * Configure the netcap interface array
      */
-    public InetAddress getInterfaceNetmask( String interfaceString ) throws JNetcapException
+    public void configureInterfaceArray( String interfaceArray[] ) throws JNetcapException
     {
-        InetAddress netmask;
         try {
-            netmask = Inet4AddressConverter.toAddress( getInterfaceNetmaskLong( interfaceString ));
+            cConfigureInterfaceArray( interfaceArray );
         } catch ( Exception e ) {
-            throw new JNetcapException( "Error retrieving interface address", e );
+            throw new JNetcapException( "Error configuring interface array", e );
         }
-        
-        return netmask;
+
     }
-    
-    /**
-     * Retrieve the IP address of the box (br0).
-     */
-    private static native long getHostLong();
 
     /**
-     * Retrieve the Netmask of the box (br0).
+     * Retrieve the netcap interface that an ip will go out on.
      */
-    private static native long getNetmaskLong();
+    public byte getOutgoingInterface( InetAddress destination ) throws JNetcapException
+    {
+        try {
+            return cGetOutgoingInterface( Inet4AddressConverter.toLong( destination ));
+        } catch ( Exception e ) {
+            throw new JNetcapException( "Error retrieving outgoing interface", e );
+        }        
+    }
 
     /**
      * Retrieve the IP address of an interface
      */
-    private native long getInterfaceAddressLong( String interfaceString );
-    
-    /**
-     * Retrieve the netmask of an interface
-     */
-    private native long getInterfaceNetmaskLong( String interfaceString );
+    private native int getInterfaceDataArray( String interfaceString, long input[] );
     
     public static void jnetcapDebugLevel( int level ) { debugLevel( JNETCAP_DEBUG, level ); }
     public static void netcapDebugLevel( int level ) { debugLevel( NETCAP_DEBUG, level ); }
@@ -397,4 +405,14 @@ public final class Netcap {
      * Function to retrieve the UDP divert port 
      */
     private native int cUdpDivertPort();
+
+    /**
+     * Function to configure the netcap interface array 
+     */
+    private native void cConfigureInterfaceArray( String interfaceArray[] );
+
+    /**
+     * Function to retrieve the outgoing interface for an ip address
+     */
+    private native byte cGetOutgoingInterface( long destination );
 }

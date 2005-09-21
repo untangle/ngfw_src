@@ -96,13 +96,6 @@ int  _errlog_init (void)
 {
     errlog_output = stderr; 
 
-    /*
-    if (!output_lock) {
-        if (sem_init(&_output_lock,0,1)<0)
-            return -1;
-        output_lock = &_output_lock;
-    }
-    */
 
     return 0;
 }
@@ -110,15 +103,5 @@ int  _errlog_init (void)
 void _errlog_set_fatal_func (errlog_fatal_func_t func)
 {
     fatal_func = func;
-}
-
-void _errlog_cleanup()
-{
-    /*
-    if ( output_lock ) {
-        sem_destroy(output_lock);
-        output_lock = NULL;
-    }
-    */
 }
 

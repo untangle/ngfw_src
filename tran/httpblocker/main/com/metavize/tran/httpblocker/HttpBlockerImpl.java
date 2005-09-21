@@ -29,11 +29,11 @@ import com.metavize.mvvm.tran.MimeType;
 import com.metavize.mvvm.tran.MimeTypeRule;
 import com.metavize.mvvm.tran.StringRule;
 import com.metavize.tran.token.TokenAdaptor;
-import net.sf.hibernate.HibernateException;
-import net.sf.hibernate.Query;
-import net.sf.hibernate.Session;
-import net.sf.hibernate.Transaction;
 import org.apache.log4j.Logger;
+import org.hibernate.HibernateException;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
 {
@@ -43,10 +43,11 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
         +         "resp.content_length, c_client_addr, c_client_port, "
         +         "s_server_addr, s_server_port, client_intf, server_intf "
         + "FROM tr_http_evt_req req "
-        + "JOIN pl_endp USING (session_id) "
+        + "JOIN pl_endp endp USING (session_id) "
         + "JOIN tr_http_req_line rl USING (request_id) "
-        + "LEFT OUTER JOIN tr_http_evt_resp resp USING (request_id)"
-        + "LEFT OUTER JOIN tr_httpblk_evt_blk blk USING (request_id)"
+        + "LEFT OUTER JOIN tr_http_evt_resp resp USING (request_id) "
+        + "LEFT OUTER JOIN tr_httpblk_evt_blk blk USING (request_id) "
+        + "WHERE endp.policy_id = ? "
         + "ORDER BY req.time_stamp DESC LIMIT ?";
 
     private static final Logger logger = Logger.getLogger(HttpBlockerImpl.class);
@@ -57,6 +58,8 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
         ("http-blocker", this, new TokenAdaptor(this, factory), Fitting.HTTP_TOKENS,
          Affinity.CLIENT, 0);
     private final PipeSpec[] pipeSpecs = new PipeSpec[] { pipeSpec };
+
+    private final Blacklist blacklist = new Blacklist();
 
     private volatile HttpBlockerSettings settings;
 
@@ -77,7 +80,7 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
         try {
             Transaction tx = s.beginTransaction();
 
-            s.saveOrUpdateCopy(settings);
+            s.merge(settings);
             this.settings = settings;
 
             tx.commit();
@@ -91,7 +94,7 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
             }
         }
 
-        Blacklist.BLACKLIST.configure(settings);
+        blacklist.configure(settings);
     }
 
     public List<HttpRequestLog> getEvents(int limit)
@@ -102,7 +105,8 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
         try {
             Connection c = s.connection();
             PreparedStatement ps = c.prepareStatement(ALL_EVENTS_QUERY);
-            ps.setInt(1, limit);
+            ps.setLong(1, getPolicy().getId());
+            ps.setInt(2, limit);
             long l0 = System.currentTimeMillis();
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -157,9 +161,7 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
     {
         new Thread(new Runnable() {
                 public void run() {
-                    synchronized (Blacklist.BLACKLIST) {
-                        Blacklist.BLACKLIST.reconfigure();
-                    }
+                    blacklist.reconfigure();
                 }
             }).start();
     }
@@ -393,13 +395,13 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
         }
 
         logger.debug("IN POSTINIT SET BLACKLIST " + settings);
-        Blacklist.BLACKLIST.configure(settings);
+        blacklist.configure(settings);
         reconfigure();
     }
 
     protected void postDestroy()
     {
-        Blacklist.BLACKLIST.destroy();
+        blacklist.destroy();
     }
 
     // XXX soon to be deprecated ----------------------------------------------
@@ -412,5 +414,12 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
     public void setSettings(Object settings)
     {
         setHttpBlockerSettings((HttpBlockerSettings)settings);
+    }
+
+    // package protected methods ----------------------------------------------
+
+    Blacklist getBlacklist()
+    {
+        return blacklist;
     }
 }

@@ -13,30 +13,17 @@ package com.metavize.mvvm.engine;
 
 import java.io.IOException;
 
-import com.metavize.mvvm.ArgonManager;
-import com.metavize.mvvm.ConnectivityTester;
-import com.metavize.mvvm.MailSender;
 import com.metavize.mvvm.MvvmLocalContext;
-import com.metavize.mvvm.NetworkingManager;
-import com.metavize.mvvm.ReportingManager;
 import com.metavize.mvvm.ToolboxManager;
 import com.metavize.mvvm.argon.Argon;
 import com.metavize.mvvm.argon.ArgonManagerImpl;
 import com.metavize.mvvm.client.MvvmRemoteContext;
-import com.metavize.mvvm.logging.LoggingManager;
-import com.metavize.mvvm.policy.PolicyManager;
-import com.metavize.mvvm.reporting.ReportingManagerImpl;
-import com.metavize.mvvm.security.AdminManager;
-import com.metavize.mvvm.security.MvvmLogin;
 import com.metavize.mvvm.tapi.MPipeManager;
-import com.metavize.mvvm.tapi.PipelineFoundry;
-import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.tran.TransformManager;
-import net.sf.hibernate.HibernateException;
-import net.sf.hibernate.Session;
-import net.sf.hibernate.SessionFactory;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.apache.log4j.Logger;
-
 
 public class MvvmContextImpl extends MvvmContextBase
     implements MvvmLocalContext
@@ -54,15 +41,15 @@ public class MvvmContextImpl extends MvvmContextBase
 
     private MvvmState state;
     private AdminManagerImpl adminManager;
-    private ArgonManager argonManager;
+    private ArgonManagerImpl argonManager;
     private HttpInvoker httpInvoker;
     private LoggingManagerImpl loggingManager;
     private PolicyManagerImpl policyManager;
-    private MPipeManager mPipeManager;
+    private MPipeManagerImpl mPipeManager;
     private MailSenderImpl mailSender;
-    private NetworkingManager networkingManager;
-    private ReportingManager reportingManager;
-    private ConnectivityTester connectivityTester;
+    private NetworkingManagerImpl networkingManager;
+    private ReportingManagerImpl reportingManager;
+    private ConnectivityTesterImpl connectivityTester;
     private PipelineFoundryImpl pipelineFoundry;
     private ToolboxManagerImpl toolboxManager;
     private TransformManagerImpl transformManager;
@@ -95,67 +82,67 @@ public class MvvmContextImpl extends MvvmContextBase
 
     // singletons -------------------------------------------------------------
 
-    public ToolboxManager toolboxManager()
+    public ToolboxManagerImpl toolboxManager()
     {
         return toolboxManager;
     }
 
-    public TransformManager transformManager()
+    public TransformManagerImpl transformManager()
     {
         return transformManager;
     }
 
-    public LoggingManager loggingManager()
+    public LoggingManagerImpl loggingManager()
     {
         return loggingManager;
     }
 
-    public PolicyManager policyManager()
+    public PolicyManagerImpl policyManager()
     {
         return policyManager;
     }
 
-    public MailSender mailSender()
+    public MailSenderImpl mailSender()
     {
         return mailSender;
     }
 
-    public AdminManager adminManager()
+    public AdminManagerImpl adminManager()
     {
         return adminManager;
     }
 
-    public NetworkingManager networkingManager()
+    public NetworkingManagerImpl networkingManager()
     {
         return networkingManager;
     }
 
-    public ReportingManager reportingManager()
+    public ReportingManagerImpl reportingManager()
     {
         return reportingManager;
     }
 
-    public ConnectivityTester getConnectivityTester()
+    public ConnectivityTesterImpl getConnectivityTester()
     {
         return connectivityTester;
     }
 
-    public ArgonManager argonManager()
+    public ArgonManagerImpl argonManager()
     {
         return argonManager;
     }
 
-    public MPipeManager mPipeManager()
+    public MPipeManagerImpl mPipeManager()
     {
         return mPipeManager;
     }
 
-    public PipelineFoundry pipelineFoundry()
+    public PipelineFoundryImpl pipelineFoundry()
     {
         return pipelineFoundry;
     }
 
-    public MvvmLogin mvvmLogin()
+    public MvvmLoginImpl mvvmLogin()
     {
         return adminManager.mvvmLogin();
     }
@@ -232,7 +219,7 @@ public class MvvmContextImpl extends MvvmContextBase
 
         toolboxManager = ToolboxManagerImpl.toolboxManager();
 
-        mPipeManager = MPipeManager.manager();
+        mPipeManager = MPipeManagerImpl.manager();
         pipelineFoundry = PipelineFoundryImpl.foundry();
 
         // start transforms:

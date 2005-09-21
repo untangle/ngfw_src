@@ -204,7 +204,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
 	public void run(){
 	    try{
 		mTransformJPanel.doShutdown();
-		Util.getMPipelineJPanel().removeTransform(mTransformJPanel);
+		// Util.getMPipelineJPanel().removeTransform(mTransformJPanel);
 	    }
 	    catch(Exception e){
 		try{

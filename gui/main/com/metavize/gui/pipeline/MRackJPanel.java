@@ -24,14 +24,9 @@ import javax.swing.border.*;
 
 public class MRackJPanel extends JPanel {
 
-    private Map<ButtonKey,MTransformJPanel> rackMap;
-    public Map<ButtonKey,MTransformJPanel> getRackMap(){ return rackMap; }
-    
     private static final int MIN_RACK_HEIGHT = 3;
     private static final int RACK_BUFFER = 1;
 
-    private GridBagConstraints transformConstraints;
-    private GridBagConstraints transformPanelConstraints;
     // private ImageIcon RackBottom;
     // private ImageIcon RackTop;
     private ImageIcon RackLeftFull;
@@ -42,18 +37,21 @@ public class MRackJPanel extends JPanel {
     private GridBagConstraints rackTopConstraints, rackMiddleConstraints, rackBottomConstraints, glueConstraints;
     private JLabel rackTopJLabel, rackBottomJLabel;
 
-    private JPanel transformJPanel;
 
-
-    /** Creates a new instance of MRackJPanel */
     public MRackJPanel() {
 
-        transformConstraints = new GridBagConstraints(0, GridBagConstraints.RELATIVE, 1, 1, 0d, 0d, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(1,0,0,0), 0, 0);
-        glueConstraints = new GridBagConstraints(0, GridBagConstraints.REMAINDER, 1, 1, 0d, 1d, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0,0,0,0), 0, 0);
-
-        rackTopConstraints    = new GridBagConstraints(0, 0, 1, 1, 0d, 0d, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0,0,101*RACK_BUFFER,12), 0, 0);
-        rackMiddleConstraints = new GridBagConstraints(0, 1, 1, 1, 0d, 0d, GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(0,0,0,12), 0, 0);
-        rackBottomConstraints = new GridBagConstraints(0, 2, 1, 1, 0d, 1d, GridBagConstraints.CENTER, GridBagConstraints.VERTICAL, new Insets(1 + 101*RACK_BUFFER,0,0,12), 0, 0);
+        glueConstraints = new GridBagConstraints(0, GridBagConstraints.REMAINDER, 1, 1, 0d, 1d,
+						 GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+						 new Insets(0,0,0,0), 0, 0);
+        rackTopConstraints = new GridBagConstraints(0, 0, 1, 1, 0d, 0d,
+						    GridBagConstraints.CENTER, GridBagConstraints.NONE,
+						    new Insets(0,0,101*RACK_BUFFER,12), 0, 0);
+        rackMiddleConstraints = new GridBagConstraints(0, 1, 1, 1, 0d, 0d,
+						       GridBagConstraints.NORTH, GridBagConstraints.NONE,
+						       new Insets(0,0,0,12), 0, 0);
+        rackBottomConstraints = new GridBagConstraints(0, 2, 1, 1, 0d, 1d,
+						       GridBagConstraints.CENTER, GridBagConstraints.VERTICAL,
+						       new Insets(1 + 101*RACK_BUFFER,0,0,12), 0, 0);
 
         // RackBottom = new ImageIcon( getClass().getResource("/com/metavize/gui/pipeline/BottomRack718x39.png") );
         // RackTop = new ImageIcon( getClass().getResource("/com/metavize/gui/pipeline/TopRack718x39.png") );
@@ -77,41 +75,14 @@ public class MRackJPanel extends JPanel {
         //rackBottomJLabel.setVisible(false);
         //rackBottomJLabel.add(Box.createVerticalStrut(39));
 
-
-
-        transformJPanel = new JPanel();
-        transformJPanel.setOpaque(false);
-        transformJPanel.setBackground(Color.RED);
-        transformJPanel.setLayout(new GridBagLayout());
-
-
         this.setLayout(new GridBagLayout());
         this.add(rackTopJLabel, rackTopConstraints);
-        this.add(transformJPanel, rackMiddleConstraints);
         this.add(Box.createRigidArea(new Dimension(718, 101*MIN_RACK_HEIGHT)), rackMiddleConstraints);
         this.add(rackBottomJLabel, rackBottomConstraints);
 
-        rackMap = new TreeMap<ButtonKey,MTransformJPanel>();
 	Util.setMRackJPanel(this);
     }
 
-    public synchronized void addTransform(MTransformJPanel mTransformJPanel){
-        ButtonKey buttonKey = new ButtonKey(mTransformJPanel);
-	if( rackMap.containsKey(buttonKey) )
-	    Util.printMessage("Warning: duplicate appliance found: " + buttonKey.getApplianceName() );
-        
-        rackMap.put(buttonKey, mTransformJPanel);
-        int position = ((TreeMap)rackMap).headMap(buttonKey).size();
-        transformJPanel.add(mTransformJPanel, transformConstraints, position);
-        this.revalidate();
-    }
-
-    public synchronized void removeTransform(MTransformJPanel mTransformJPanel){
-        ButtonKey buttonKey = new ButtonKey(mTransformJPanel);
-        rackMap.remove(buttonKey);
-        transformJPanel.remove(mTransformJPanel);
-        this.revalidate();
-    }
 
     private int paintIndex;
     private int paintHeight;

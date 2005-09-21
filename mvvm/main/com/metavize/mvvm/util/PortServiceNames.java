@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: PortServiceNames.java,v 1.4 2005/02/03 19:30:57 jdi Exp $
+ *  $Id$
  */
 
 package com.metavize.mvvm.util;

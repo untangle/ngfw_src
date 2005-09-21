@@ -1,0 +1,11 @@
+#!/bin/sh
+
+dir="$1"
+
+echo "Fixing hbm.xml in $dir"
+
+find "$dir" -name '*hbm.xml' -exec sed -i \
+    -e 's/Hibernate Mapping DTD 2.0/Hibernate Mapping DTD 3.0/' \
+    -e 's/hibernate-mapping-2.0.dtd/hibernate-mapping-3.0.dtd/' \
+    -e 's/<hibernate-mapping *$/<hibernate-mapping default-lazy="false"/' \
+    '{}' ';'

@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: TCPNewSessionRequestEvent.java,v 1.4 2005/01/05 01:57:03 jdi Exp $
+ *  $Id$
  */
 
 package com.metavize.mvvm.tapi.event;

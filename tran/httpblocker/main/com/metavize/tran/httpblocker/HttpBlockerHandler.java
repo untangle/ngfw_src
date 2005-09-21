@@ -68,7 +68,7 @@ public class HttpBlockerHandler extends HttpStateMachine
     // HttpStateMachine methods -----------------------------------------------
 
     @Override
-    protected TokenResult doRequestLine(RequestLine requestLine)
+        protected TokenResult doRequestLine(RequestLine requestLine)
     {
         logger.debug("in doRequestLine: " + requestLine);
 
@@ -79,7 +79,7 @@ public class HttpBlockerHandler extends HttpStateMachine
     }
 
     @Override
-    protected TokenResult doRequestHeader(Header requestHeader)
+        protected TokenResult doRequestHeader(Header requestHeader)
     {
         logger.debug("in doRequestHeader(): " + requestHeader);
 
@@ -87,7 +87,7 @@ public class HttpBlockerHandler extends HttpStateMachine
         c2sPersistent = isPersistent(requestHeader);
 
         transform.incrementCount(SCAN, 1);
-        c2sReplacement = Blacklist.BLACKLIST
+        c2sReplacement = transform.getBlacklist()
             .checkRequest(getSession().clientAddr(),
                           requestLine, requestHeader);
         logger.debug("check request returns: " + c2sReplacement);
@@ -104,7 +104,7 @@ public class HttpBlockerHandler extends HttpStateMachine
     }
 
     @Override
-    protected TokenResult doRequestBody(Chunk c)
+        protected TokenResult doRequestBody(Chunk c)
     {
         logger.debug("in doRequestBody(): " + c);
 
@@ -116,7 +116,7 @@ public class HttpBlockerHandler extends HttpStateMachine
     }
 
     @Override
-    protected TokenResult doRequestBodyEnd(EndMarker endMarker)
+        protected TokenResult doRequestBodyEnd(EndMarker endMarker)
     {
         logger.debug("in doRequestBodyEnd: " + endMarker);
 
@@ -136,7 +136,7 @@ public class HttpBlockerHandler extends HttpStateMachine
     }
 
     @Override
-    protected TokenResult doStatusLine(StatusLine statusLine)
+        protected TokenResult doStatusLine(StatusLine statusLine)
     {
         logger.debug("in doStatusLine: " + statusLine);
 
@@ -150,13 +150,13 @@ public class HttpBlockerHandler extends HttpStateMachine
     }
 
     @Override
-    protected TokenResult doResponseHeader(Header header)
+        protected TokenResult doResponseHeader(Header header)
     {
         logger.debug("in doResponseHeader: " + header);
 
         this.responseHeader = header;
 
-        s2cReplacement = Blacklist.BLACKLIST
+        s2cReplacement = transform.getBlacklist()
             .checkResponse(getSession().clientAddr(), responseRequest,
                            responseHeader);
         logger.debug("chekResponse returns: " + s2cReplacement);
@@ -176,7 +176,7 @@ public class HttpBlockerHandler extends HttpStateMachine
     }
 
     @Override
-    protected TokenResult doResponseBody(Chunk c)
+        protected TokenResult doResponseBody(Chunk c)
     {
         logger.debug("in doResponseBody: " + c);
 
@@ -188,7 +188,7 @@ public class HttpBlockerHandler extends HttpStateMachine
     }
 
     @Override
-    protected TokenResult doResponseBodyEnd(EndMarker em)
+        protected TokenResult doResponseBodyEnd(EndMarker em)
     {
         logger.debug("in doResponseBodyEnd: " + em);
 
@@ -211,7 +211,7 @@ public class HttpBlockerHandler extends HttpStateMachine
     }
 
     @Override
-    public TokenResult releaseFlush()
+        public TokenResult releaseFlush()
     {
         // XXX we do not even attempt to deal with outstanding block pages
         if (ClientState.REQ_LINE_STATE == getClientState()) {

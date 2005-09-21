@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: MvvmRealm.java,v 1.1 2005/02/10 04:11:10 amread Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.engine;
@@ -42,7 +42,9 @@ class MvvmRealm extends RealmBase
     {
         Connection c = null;
         try {
-            c = DriverManager.getConnection("proxool.mvvm");
+            // XXX use pool
+            c = DriverManager.getConnection("jdbc:postgresql://localhost/mvvm",
+                                            "metavize", "foo");
 
             logger.debug("doing query: " + userQuery);
             PreparedStatement ps = c.prepareStatement(userQuery);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003 Metavize Inc.
+ * Copyright (c) 2003, 2005 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -20,12 +20,12 @@ public class PortRange {
      * @param low - low value (inclusive).
      * @param high - high value (inclusive).
      */
-    public PortRange( int low, int high ) throws JNetcapException
+    public PortRange(int low, int high) throws JNetcapException
     {
-        if ( low > high ) {
-            throw new JNetcapException( "Reversed port range: low=" + low + " high=" + high );
+        if (low > high) {
+            throw new JNetcapException("Reversed port range: low=" + low + " high=" + high);
         }
-        
+
         this.low  = low;
         this.high = high;
     }
@@ -33,7 +33,7 @@ public class PortRange {
     /**
      * Retrieve the low value
      */
-    public int low() 
+    public int low()
     {
         return low;
     }
@@ -44,5 +44,17 @@ public class PortRange {
     public int high()
     {
         return high;
+    }
+
+    // Object methods ---------------------------------------------------------
+
+    public boolean equals(Object o)
+    {
+        if (!(o instanceof PortRange)) {
+            return false;
+        } else {
+            PortRange pr = (PortRange)o;
+            return low == pr.low && high == pr.high;
+        }
     }
 }

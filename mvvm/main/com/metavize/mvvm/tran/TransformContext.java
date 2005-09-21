@@ -11,10 +11,12 @@
 
 package com.metavize.mvvm.tran;
 
+
+
 import com.metavize.mvvm.MackageDesc;
 import com.metavize.mvvm.security.Tid;
 import com.metavize.mvvm.tapi.IPSessionDesc;
-import net.sf.hibernate.Session;
+import org.hibernate.Session;
 
 /**
  * Holds the context for a Transform instance.
@@ -61,7 +63,6 @@ public interface TransformContext
 
     Session openSession();
 
-    // XXX make private when/if we move all impls to engine
     ClassLoader getClassLoader();
 
     // call-through methods ---------------------------------------------------

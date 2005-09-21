@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: SpywareHttpFactory.java,v 1.4 2005/01/28 10:27:31 amread Exp $
+ * $Id$
  */
 
 package com.metavize.tran.spyware;

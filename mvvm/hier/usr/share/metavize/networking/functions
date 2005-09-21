@@ -17,6 +17,9 @@ CHAINS_ORDER="${CHAIN_MARKINTF} ${CHAIN_GUARDS} ${CHAIN_ANTISUB} ${CHAIN_INTERCE
 BOGUS_ADDRESS="169.254.210.51"
 BOGUS_NETMASK="255.255.0.0"
 
+## Base SYSFS path for interfaces
+SYSFS_INTERFACE_PATH="/sys/class/net"
+
 ## Utility functions for the mv-networking scripts, use t_ flag for temporary variables, this
 ## way global variables like bridge do not get overriden in functions.
 
@@ -34,7 +37,7 @@ function generateConfiguration() {
 
 function generateBridges() {
     bridgeList=""
-    for t_bridge in `brctl show | sed -e '1,1d' | grep "^br" | awk '{ print $1 }'` ; do
+    for t_bridge in `getAllBridges` ; do
         generateBridge $t_bridge
         bridgeList="${bridgeList} ${t_bridge}"
     done
@@ -45,7 +48,7 @@ function generateBridge() {
 
     t_name="${t_bridge}"
     t_addresses=`generateAddresses ${t_bridge}`
-    t_interfaces=`generateBridgeInterfaces ${t_bridge}`
+    t_interfaces=`bridgeInterfaceList ${t_bridge}`
     
     for t_intf in ${t_interfaces} ; do
         ## Set the bridge identifier for each interface
@@ -93,10 +96,14 @@ function generateAddresses() {
     ifconfig | grep -A 4 $1 | awk '/inet/ { print $2 "/" $4 }' | sed -e 's/addr://' -e 's/Mask://' | grep -v "^$" | joinLines
 }
 
+function getAllInterfaces() {
+    ls ${SYSFS_INTERFACE_PATH} | grep -v dummy | grep -v lo
+}
+
 ## Returns all of the interfaces that participate in a bridge
-function generateBridgeInterfaces() {
-## DBG    echo "generateBridgeInterfaces $1" # XDBG
-    brctl showstp $1 | grep -v '^$' | grep -v '^ ' | grep -v "can't" | grep -v $1 | awk '{ print $1 }' | joinLines
+## Get a list of all of the interfaces in a bridge
+function bridgeInterfaceList() {
+    ls ${SYSFS_INTERFACE_PATH}/${1}/brif/ 2> /dev/null
 }
 
 function getAddresses() {
@@ -127,7 +134,7 @@ function isPumpRunning() {
 }
 
 function pumpInterface() {
-    t_interface=$1
+    local t_interface=$1
     echo "Pumping interface ${t_interface}"
     pump -i ${t_interface}
     if [ $? != 0 ]; then
@@ -141,22 +148,64 @@ function killPump() {
     killall -KILL pump
 }
 
-function deleteBridge() {
-    t_bridge=$1
-    if [ -n ${t_bridge} ]; then
-        echo "Deleting bridge ${bridge}"
-        ifconfig ${t_bridge} down 
-        brctl delbr ${t_bridge}
+function bridgeContainsInterface() {
+    local l_bridge=$1
+    local l_interface=$2
+
+    if [ -h "${SYSFS_INTERFACE_PATH}/${l_bridge}/brif/${l_interface}" ]; then
+        echo "true"
     fi
 }
 
+function getAllBridges() {
+    find  ${SYSFS_INTERFACE_PATH} -name 'bridge_id' | sed -e 's/\/sys\/class\/net\///' \
+        -e 's/\.\///' -e 's/\/.*//'
+}
+
+function deleteAllBridges() {
+    local t_bridge
+    local l_bridgeList=`getAllBridges`
+    echo "Deleting all bridges: ${l_bridgeList}"
+    for t_bridge in ${l_bridgeList}; do 
+        deleteBridge ${t_bridge}
+    done
+}
+
+function deconfigureAllInterfaces() {
+    killPump
+    local l_interface
+    local l_interfaceList=`getAllInterfaces`
+    echo "Deconfiguring all interfaces: ${l_interfaceList}"
+    for l_interface in ${l_interfaceList}; do
+        ifconfig ${l_interface} 0.0.0.0 -promisc down
+    done
+}
+
+## Thisjust removes all of the interfaces from the bridge, 
+## Removing and adding a bridge creates a new index
+function deleteBridge() {
+    local l_bridge=$1
+    local l_port
+    if [ -n "${l_bridge}" ]; then
+        echo "Deleting all interfaces in bridge '${l_bridge}'"
+        ifconfig ${l_bridge} down
+        for l_port in `bridgeInterfaceList ${l_bridge}`; do
+            brctl delif ${l_bridge} ${l_port}
+            ifconfig ${l_port} 0.0.0.0
+            ifconfig ${l_port} down
+        done
+    fi
+}
+
+## Use this function to echo the iptables command to standard out for logging and execute it
+## at the same time
 function iptablesDbg() {
     echo /sbin/iptables $@
     /sbin/iptables $@
 }
 
 function addGateway() {
-    t_gateway=$1
+    local t_gateway=$1
     
     if [ "${t_gateway}x" != "x" ] && [ "${t_gateway}x" != "0.0.0.0x" ]; then
         route add default gw ${t_gateway}
@@ -164,6 +213,7 @@ function addGateway() {
 }
 
 function deleteGateways() {
+    local t_gateway
     for t_gateway in `route -n | grep "^0.0.0.0" | awk '{ print $2}'`; do
         route del default gw ${t_gateway}
         ## No returning an error here

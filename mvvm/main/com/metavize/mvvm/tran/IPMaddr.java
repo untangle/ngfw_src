@@ -7,7 +7,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: IPMaddr.java,v 1.5 2005/02/25 02:45:29 amread Exp $
+ *  $Id$
  */
 
 package com.metavize.mvvm.tran;

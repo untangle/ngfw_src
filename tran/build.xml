@@ -84,7 +84,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       <if> <equals arg1="${tran.name}" arg2="spam"/> <then>
             <delete><fileset dir="${build.dist}" includes="stamp-transform-spamasssassin"/></delete>
             <delete><fileset dir="${build.dist}" includes="stamp-transform-clamphish"/></delete>
-	  </then> </if>
+      </then> </if>
         </then> </if>
 
     <echo message="Building '${tran.name}'"/>
@@ -138,6 +138,11 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       </fileset>
       <hibernate version="2.0"/>
     </hibernatedoclet>
+
+    <!-- xdoclet is re re -->
+    <exec executable="${util.bin}/fix-hbm">
+      <arg value="${build.gensrc}"/>
+    </exec>
 
     <jrc srcdir="${build.gensrc}/${tran.name}" destdir="${build.root}/${tran.name}" tempdir="${build.tmp}"
          keepjava="true" xmlvalidation="true">

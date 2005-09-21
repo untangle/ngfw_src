@@ -149,6 +149,64 @@ public class IPTraffic {
         setIntValue( FLAG_MARK, value );
     }
 
+    public String srcInterfaceName()
+    {
+        return interfaceName( true );
+    }
+
+    public String dstInterfaceName()
+    {
+        return interfaceName( false );
+    }
+
+    public byte srcInterfaceId()
+    {
+        return interfaceId( true );
+    }
+
+    public byte dstInterfaceId()
+    {
+        return interfaceId( false );
+    }
+
+    public void srcInterfaceName( String name )
+    {
+        interfaceName( true, name );
+    }
+
+    public void dstInterfaceName( String name )
+    {
+        interfaceName( false, name );
+    }
+
+    public void srcInterfaceId( byte id )
+    {
+        interfaceId( true, id );
+    }
+
+    public void dstInterfaceId( byte id )
+    {
+        interfaceId( false, id );
+    }
+
+    private String interfaceName( boolean isSrc )
+    {
+        return getStringValue( buildMask( isSrc, FLAG_INTERFACE ));
+    }
+
+    private byte interfaceId( boolean isSrc )
+    {
+        return (byte)getIntValue( buildMask( isSrc, FLAG_INTERFACE ));
+    }
+    
+    private void interfaceName( boolean isSrc, String name ) {
+        setStringValue( buildMask( isSrc, FLAG_INTERFACE ), name );
+    }
+    
+    private void interfaceId( boolean isSrc, byte id )
+    {
+        setIntValue( buildMask( isSrc, FLAG_INTERFACE ), id );
+    }
 
     public void raze()
     { 
@@ -209,6 +267,11 @@ public class IPTraffic {
         }
     }
 
+    private int buildMask( boolean isSrc, int type )
+    {
+        return (( isSrc ) ? FLAG_SRC_MASK : 0 ) | type;
+    }
+
     static
     {
         Netcap.load();
@@ -244,16 +307,6 @@ public class IPTraffic {
             return getIntValue( buildMask( FLAG_PORT ));
         }
 
-        public String interfaceName() 
-        {
-            return getStringValue( buildMask( FLAG_INTERFACE ));
-        }
-
-        public byte interfaceId()
-        {
-            return (byte)getIntValue( buildMask( FLAG_INTERFACE ));
-        }
-
         public void host( InetAddress address ) 
         {
             setLongValue( buildMask( FLAG_HOST ), Inet4AddressConverter.toLong( address ));
@@ -263,21 +316,10 @@ public class IPTraffic {
         { 
             setIntValue( buildMask( FLAG_PORT ), port );
         }
-        
-        public void interfaceName( String name ) {
-            setStringValue( buildMask( FLAG_INTERFACE ), name );
-        }
-
-        public void interfaceId( byte id )
-        {
-            setIntValue( buildMask( FLAG_INTERFACE ), id );
-        }
-
 
         private int buildMask( int type ) 
         {
-            int mask = ( ifSrc ) ? FLAG_SRC_MASK : 0;
-            return mask | type;
+            return (( ifSrc ) ? FLAG_SRC_MASK : 0 ) | type;
         }
     }
 }

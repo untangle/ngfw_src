@@ -15,6 +15,8 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import com.metavize.mvvm.policy.Policy;
+import com.metavize.mvvm.policy.PolicyRule;
 import com.metavize.mvvm.tran.Transform;
 import org.apache.log4j.Logger;
 
@@ -116,21 +118,33 @@ public abstract class PipeSpec
 
     // public methods ---------------------------------------------------------
 
-
-    public boolean matches(com.metavize.mvvm.argon.IPSessionDesc sessionDesc)
+    public boolean matches(PolicyRule pr, com.metavize.mvvm.argon.IPSessionDesc sd)
     {
-        if (enabled) {
+        Policy tp = transform.getTid().getPolicy();
+        Policy p = null == pr ? null : pr.getPolicy();
+        boolean sessionInbound = null == pr ? true : pr.isInbound();
+
+        // We want the transform if its policy matches, or the transform has no
+        // policy (is a service).
+        if (enabled && (null == tp || tp.equals(p))) {
             Set s = subscriptions;
 
             for (Iterator i = s.iterator(); i.hasNext(); ) {
                 Subscription subscription = (Subscription)i.next();
-                if (subscription.matches(sessionDesc)) {
+                if (subscription.matches(sd, sessionInbound)) {
                     return true;
                 }
             }
         }
 
         return false;
+    }
+
+    public boolean matchesPolicy(Policy p)
+    {
+        Policy tp = transform.getTid().getPolicy();
+
+        return null == tp ? tp == p : tp.equals(p);
     }
 
     public void setSubscriptions(Set<Subscription> subscriptions)

@@ -13,7 +13,10 @@ package com.metavize.mvvm;
 
 import java.net.InetAddress;
 
+import java.util.List;
+
 import com.metavize.mvvm.argon.ArgonException;
+import com.metavize.mvvm.tran.firewall.InterfaceRedirect;
 
 public interface ArgonManager
 {
@@ -81,4 +84,13 @@ public interface ArgonManager
     
     /* Get the netmask of the outside interface */
     public InetAddress getOutsideNetmask();
+    
+    /* Set the list of interface overrides */
+    public void setInterfaceOverrideList( List<InterfaceRedirect>overrideList );
+
+    /* Clear the list of interface overrides */
+    public void clearInterfaceOverrideList();
+
+    /* Get the outgoing argon interface for an IP address */
+    public byte getOutgoingInterface( InetAddress destination ) throws ArgonException;
 }

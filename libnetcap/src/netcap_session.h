@@ -41,8 +41,8 @@ int netcap_session_tls_init( session_tls_t* tls );
 
 netcap_session_t* netcap_session_malloc ( void );
 int netcap_session_init                 ( netcap_session_t* netcap_sess, netcap_endpoints_t* endpoints, 
-                                          int if_mb );
-netcap_session_t* netcap_session_create ( netcap_endpoints_t* endpoints, int if_mb );
+                                          netcap_intf_t srv_intf, int if_mb );
+netcap_session_t* netcap_session_create ( netcap_endpoints_t* endpoints, netcap_intf_t srv_intf, int if_mb );
 
 int netcap_session_free(netcap_session_t* session);
 int netcap_session_destroy(netcap_session_t* netcap_sess);
@@ -63,19 +63,17 @@ int netcap_udp_session_raze(int if_lock, netcap_session_t* netcap_sess);
 #define netcap_tcp_session_malloc() netcap_session_malloc()
 
 
-int netcap_tcp_session_init(netcap_session_t* netcap_sess, 
-                            in_addr_t client_addr, u_short client_port,
-                            int client_sock, in_addr_t server_addr, 
-                            u_short server_port, int server_sock,
-                            int protocol, netcap_intf_t cli_intf, 
-                            netcap_intf_t srv_intf, 
-                            int flags, u_int seq );
+int netcap_tcp_session_init( netcap_session_t* netcap_sess, 
+                             in_addr_t client_addr, u_short client_port,
+                             int client_sock, in_addr_t server_addr, 
+                             u_short server_port, int server_sock,
+                             netcap_intf_t cli_intf, netcap_intf_t srv_intf, 
+                             int flags, u_int seq );
 
 netcap_session_t* netcap_tcp_session_create(in_addr_t client_addr, u_short client_port,
-                                            int client_sock, in_addr_t server_addr, 
+                                            int client_sock, in_addr_t server_addr,
                                             u_short server_port, int server_sock,
-                                            int protocol, netcap_intf_t cli_intf, 
-                                            netcap_intf_t srv_intf, 
+                                            netcap_intf_t cli_intf, netcap_intf_t srv_intf,
                                             int flags, u_int seq);
 
 void netcap_tcp_session_debug(netcap_session_t* netcap_sess, int level, char *msg);

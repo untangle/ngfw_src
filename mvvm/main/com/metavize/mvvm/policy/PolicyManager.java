@@ -11,8 +11,8 @@
 
 package com.metavize.mvvm.policy;
 
-public interface PolicyManager {
-
+public interface PolicyManager
+{
     /**
      * Returns all policies.  Don't count on the return order, it will
      * be the insertion order which isn't very interesting.
@@ -29,6 +29,15 @@ public interface PolicyManager {
      * @return the default <code>Policy</code>
      */
     Policy getDefaultPolicy();
+
+    /**
+     * Get policy by name.
+     *
+     * @param name name of the policy.
+     * @return the policy, or null if there is no policy with the
+     * given name.
+     */
+    Policy getPolicy(String name);
 
     /**
      * Adds a new policy to the system.

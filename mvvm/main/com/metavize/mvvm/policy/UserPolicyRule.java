@@ -11,13 +11,13 @@
 
 package com.metavize.mvvm.policy;
 
-import com.metavize.mvvm.tran.Rule;
+import java.util.*;
+
+import com.metavize.mvvm.argon.IPSessionDesc;
 import com.metavize.mvvm.tran.ParseException;
 import com.metavize.mvvm.tran.firewall.IPMatcher;
 import com.metavize.mvvm.tran.firewall.PortMatcher;
 import com.metavize.mvvm.tran.firewall.ProtocolMatcher;
-import java.io.Serializable;
-import java.util.*;
 
 /**
  * User Policy Rules.  These are the policy rules that are created by the user.  All of
@@ -54,8 +54,19 @@ public class UserPolicyRule extends PolicyRule
         this.serverPort = serverPort;
     }
 
+    // PolicyRule methods -----------------------------------------------------
 
-    // accessors -----------------------------------------------------------
+    public boolean matches(IPSessionDesc sd)
+    {
+        return clientIntf == sd.clientIntf()
+            && serverIntf == sd.serverIntf()
+            && clientAddr.isMatch(sd.clientAddr())
+            && serverAddr.isMatch(sd.serverAddr())
+            && clientPort.isMatch(sd.clientPort())
+            && serverPort.isMatch(sd.serverPort());
+    }
+
+    // accessors --------------------------------------------------------------
 
     /* Hack that sets the ports to zero for Ping sessions */
     public void fixPing() throws ParseException
@@ -63,7 +74,7 @@ public class UserPolicyRule extends PolicyRule
         if ( this.protocol.equals( ProtocolMatcher.MATCHER_PING )) {
             this.clientPort = PortMatcher.MATCHER_PING;
             this.serverPort = PortMatcher.MATCHER_PING;
-        } else if ( this.clientPort.equals( PortMatcher.MATCHER_PING ) || 
+        } else if ( this.clientPort.equals( PortMatcher.MATCHER_PING ) ||
                     this.serverPort.equals( PortMatcher.MATCHER_PING )) {
             throw new ParseException( "Invalid port for a non-ping traffic type" );
         }
@@ -87,7 +98,7 @@ public class UserPolicyRule extends PolicyRule
     {
         this.protocol = protocol;
     }
-        
+
     /**
      * client address IPMatcher
      *
@@ -125,7 +136,7 @@ public class UserPolicyRule extends PolicyRule
     {
         this.serverAddr = serverAddr;
     }
-    
+
     /**
      * client port PortMatcher
      *
@@ -162,5 +173,36 @@ public class UserPolicyRule extends PolicyRule
     public void setServerPort(PortMatcher serverPort)
     {
         this.serverPort = serverPort;
+    }
+
+    public boolean isSameRow(UserPolicyRule pr)
+    {
+        return getId().equals(pr.getId());
+    }
+
+    // Object methods ---------------------------------------------------------
+
+    public boolean equals(Object o)
+    {
+        if (!(o instanceof UserPolicyRule)) {
+            return false;
+        } else {
+            UserPolicyRule pr = (UserPolicyRule)o;
+            return (policy.equals(pr.policy) &&
+                    clientIntf == pr.clientIntf &&
+                    serverIntf == pr.serverIntf &&
+                    inbound == pr.inbound &&
+                    protocol.equals(pr.protocol) &&
+                    clientAddr.equals(pr.clientAddr) &&
+                    serverAddr.equals(pr.serverAddr) &&
+                    clientPort.equals(pr.clientPort) &&
+                    serverPort.equals(pr.serverPort));
+        }
+    }
+
+    public int hashCode()
+    {
+        // Should be fixed to include other stuff, once those are fixed. XXX
+        return policy.hashCode() + clientIntf * 7 + serverIntf * 5;
     }
 }

@@ -6,10 +6,10 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: RWSessionStats.java,v 1.2 2005/02/25 02:45:29 amread Exp $
+ *  $Id$
  */
 
-package com.metavize.mvvm.tapi.impl;
+package com.metavize.mvvm.engine;
 
 import java.util.Date;
 
@@ -24,7 +24,7 @@ import com.metavize.mvvm.util.MetaEnv;
  * @author <a href="mailto:jdi@SLAB"></a>
  * @version 1.0
  */
-public class RWSessionStats extends SessionStats {
+class RWSessionStats extends SessionStats {
 
     // Make this a config param. XXX
     public static boolean DoDetailedTimes = false;

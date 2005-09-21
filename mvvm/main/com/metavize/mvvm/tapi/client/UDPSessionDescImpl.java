@@ -21,10 +21,10 @@ public class UDPSessionDescImpl extends IPSessionDescImpl implements UDPSessionD
                               byte clientState, byte serverState, 
                               byte clientIntf, byte serverIntf, 
                               InetAddress clientAddr, InetAddress serverAddr,
-                              int clientPort, int serverPort)
+                              int clientPort, int serverPort, boolean isInbound)
     {
         super(id, SessionEndpoints.PROTO_UDP, stats, clientState, serverState,
-              clientIntf, serverIntf, clientAddr, serverAddr, clientPort, serverPort);
+              clientIntf, serverIntf, clientAddr, serverAddr, clientPort, serverPort, isInbound);
     }
 
     public boolean isPing()

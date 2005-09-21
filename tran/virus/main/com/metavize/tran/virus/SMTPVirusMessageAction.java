@@ -34,8 +34,8 @@ public class SMTPVirusMessageAction implements Serializable
         INSTANCES.put(BLOCK.getKey(), BLOCK);
     }
 
-    private String name;
-    private char key;
+    private final String name;
+    private final char key;
 
     private SMTPVirusMessageAction(char key, String name)
     {

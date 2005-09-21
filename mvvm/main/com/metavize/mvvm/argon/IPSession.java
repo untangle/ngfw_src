@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: IPSession.java,v 1.5 2005/01/06 20:53:44 rbscott Exp $
+ *  $Id$
  */
 
 package com.metavize.mvvm.argon;

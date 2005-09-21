@@ -43,7 +43,7 @@ class ConnectivityTesterImpl implements ConnectivityTester
 
     private static final Random RANDOM = new Random();
 
-    private static ConnectivityTester INSTANCE   = new ConnectivityTesterImpl();
+    private static ConnectivityTesterImpl INSTANCE = new ConnectivityTesterImpl();
 
     /* Address of release */
     private InetAddress address;
@@ -111,7 +111,7 @@ class ConnectivityTesterImpl implements ConnectivityTester
         return tcpTest.isWorking;
     }
 
-    static ConnectivityTester getInstance()
+    static ConnectivityTesterImpl getInstance()
     {
         return INSTANCE;
     }

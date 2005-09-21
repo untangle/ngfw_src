@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.MvvmLocalContext;
 import com.metavize.mvvm.tran.Transform;
 import com.metavize.tran.token.CasingAdaptor;
 import com.metavize.tran.token.CasingFactory;
@@ -23,9 +24,8 @@ import org.apache.log4j.Logger;
 
 public class CasingPipeSpec extends PipeSpec
 {
-    private static final MPipeManager MPIPE_MANAGER = MPipeManager.manager();
-    private static final PipelineFoundry FOUNDRY = MvvmContextFactory.context()
-        .pipelineFoundry();
+    private static final MPipeManager MPIPE_MANAGER;
+    private static final PipelineFoundry FOUNDRY;
 
     private final Fitting input;
     private final Fitting output;
@@ -163,5 +163,13 @@ public class CasingPipeSpec extends PipeSpec
         }
 
         return l.toArray(new IPSessionDesc[l.size()]);
+    }
+
+    // static initialization --------------------------------------------------
+
+    static {
+        MvvmLocalContext mlc = MvvmContextFactory.context();
+        MPIPE_MANAGER = mlc.mPipeManager();
+        FOUNDRY = mlc.pipelineFoundry();
     }
 }

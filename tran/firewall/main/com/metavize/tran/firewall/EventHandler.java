@@ -114,7 +114,7 @@ class EventHandler extends AbstractEventHandler
 
         /* If necessary log the event */
         if ( rule != null && rule.getLog()) {
-            eventLogger.info( new FirewallEvent( request.id(), rule, ruleIndex ));
+            eventLogger.info( new FirewallEvent( request.id(), reject, ruleIndex ));
         }
 
         /* Track the statistics */

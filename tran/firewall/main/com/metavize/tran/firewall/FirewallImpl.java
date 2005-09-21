@@ -36,21 +36,21 @@ import com.metavize.mvvm.tran.firewall.IPMatcher;
 import com.metavize.mvvm.tran.firewall.IntfMatcher;
 import com.metavize.mvvm.tran.firewall.PortMatcher;
 import com.metavize.mvvm.tran.firewall.ProtocolMatcher;
-import net.sf.hibernate.HibernateException;
-import net.sf.hibernate.Query;
-import net.sf.hibernate.Session;
-import net.sf.hibernate.Transaction;
 import org.apache.log4j.Logger;
+import org.hibernate.HibernateException;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 public class FirewallImpl extends AbstractTransform implements Firewall
 {
     private static final String EVENT_QUERY
-        = "SELECT create_date, is_traffic_blocker, "
+        = "SELECT create_date, was_blocked, "
         + "c_client_addr, c_client_port, s_server_addr, s_server_port, "
         + "client_intf, server_intf, rule_index "
         + "FROM pl_endp endp "
         + "JOIN tr_firewall_evt evt ON endp.session_id = evt.session_id "
-        + "JOIN firewall_rule rule ON evt.rule_id = rule.rule_id "
+        + "WHERE endp.policy_id = ? "
         + "ORDER BY create_date DESC LIMIT ?";
 
     private final EventHandler handler;
@@ -86,7 +86,7 @@ public class FirewallImpl extends AbstractTransform implements Firewall
         try {
             Transaction tx = s.beginTransaction();
 
-            s.saveOrUpdateCopy(settings);
+            s.merge(settings);
             this.settings = settings;
 
             tx.commit();
@@ -116,13 +116,14 @@ public class FirewallImpl extends AbstractTransform implements Firewall
         try {
             Connection c = s.connection();
             PreparedStatement ps = c.prepareStatement(EVENT_QUERY);
-            ps.setInt(1, limit);
+            ps.setLong(1, getPolicy().getId());
+            ps.setInt(2, limit);
             long l0 = System.currentTimeMillis();
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 long ts = rs.getTimestamp("create_date").getTime();
                 Date createDate = new Date(ts);
-                boolean trafficBlocker = rs.getBoolean("is_traffic_blocker");
+                boolean trafficBlocker = rs.getBoolean("was_blocked");
                 String clientAddr = rs.getString("c_client_addr");
                 int clientPort = rs.getInt("c_client_port");
                 String serverAddr = rs.getString("s_server_addr");
@@ -269,7 +270,7 @@ public class FirewallImpl extends AbstractTransform implements Firewall
 
 
             FirewallRule tmp = new FirewallRule( false, ProtocolMatcher.MATCHER_ALL,
-                                                 IntfMatcher.MATCHER_OUT, IntfMatcher.MATCHER_ALL,
+                                                 IntfMatcher.getOutside(), IntfMatcher.getAll(),
                                                  IPMatcher.MATCHER_ALL, IPMatcher.MATCHER_ALL,
                                                  PortMatcher.MATCHER_ALL, new PortMatcher( 21 ),
                                                  true );
@@ -279,7 +280,7 @@ public class FirewallImpl extends AbstractTransform implements Firewall
 
             /* Block all traffic TCP traffic from the network 1.2.3.4/255.255.255.0 */
             tmp = new FirewallRule( false, ProtocolMatcher.MATCHER_TCP,
-                                    IntfMatcher.MATCHER_ALL, IntfMatcher.MATCHER_ALL,
+                                    IntfMatcher.getAll(), IntfMatcher.getAll(),
                                     IPMatcher.parse( "1.2.3.0/255.255.255.0" ), IPMatcher.MATCHER_ALL,
                                     PortMatcher.MATCHER_ALL, PortMatcher.MATCHER_ALL,
                                     true );
@@ -287,7 +288,7 @@ public class FirewallImpl extends AbstractTransform implements Firewall
             firewallList.add( tmp );
 
             tmp = new FirewallRule( false, ProtocolMatcher.MATCHER_ALL,
-                                    IntfMatcher.MATCHER_ALL, IntfMatcher.MATCHER_ALL,
+                                    IntfMatcher.getAll(), IntfMatcher.getAll(),
                                     IPMatcher.MATCHER_ALL, IPMatcher.parse( "1.2.3.1-1.2.3.10" ),
                                     new PortMatcher( 1000, 5000 ), PortMatcher.MATCHER_ALL,
                                     false );
@@ -296,7 +297,7 @@ public class FirewallImpl extends AbstractTransform implements Firewall
             firewallList.add( tmp );
 
             tmp = new FirewallRule( false, ProtocolMatcher.MATCHER_PING,
-                                    IntfMatcher.MATCHER_ALL, IntfMatcher.MATCHER_ALL,
+                                    IntfMatcher.getAll(), IntfMatcher.getAll(),
                                     IPMatcher.MATCHER_ALL, IPMatcher.parse( "1.2.3.1" ),
                                     PortMatcher.MATCHER_PING, PortMatcher.MATCHER_PING,
                                     false );

@@ -7,6 +7,7 @@
 
 #include "netcap_session.h"
 #include "netcap_sesstable.h"
+#include "netcap_route.h"
 
 int netcap_udp_session_init(netcap_session_t* netcap_sess, netcap_pkt_t* pkt) 
 {
@@ -16,15 +17,23 @@ int netcap_udp_session_init(netcap_session_t* netcap_sess, netcap_pkt_t* pkt)
 
     netcap_endpoints_bzero( &endpoints );
         
-    endpoints.protocol    = IPPROTO_UDP;
-    endpoints.cli.port    = pkt->src.port;
-    endpoints.srv.port    = pkt->dst.port;
-
-    memcpy(&endpoints.cli.host,&pkt->src.host,sizeof(in_addr_t));
-    memcpy(&endpoints.srv.host,&pkt->dst.host,sizeof(in_addr_t));
-
-    netcap_sess->cli_intf = endpoints.cli.intf = pkt->src.intf;
-    netcap_sess->srv_intf = endpoints.srv.intf = pkt->dst.intf;
+    memcpy( &endpoints.cli, &pkt->src, sizeof( endpoints.cli ));
+    memcpy( &endpoints.srv, &pkt->dst, sizeof( endpoints.srv ));
+    
+    endpoints.intf = pkt->src_intf;
+    if ( NC_INTF_UNK == pkt->dst_intf ) {
+        if ( netcap_arp_dst_intf( &pkt->dst_intf, pkt->src_intf, &pkt->src.host, &pkt->dst.host ) < 0 ) {
+            return errlog( ERR_CRITICAL, "netcap_arp_dst_intf\n" );
+        }
+        
+        if ( pkt->dst_intf == NC_INTF_UNK ) {
+            /* XXXXXXXXXXXXX For now just say it is going out the other interface, this is really BAD, 
+             * dirk told me(rbs) to do it */
+            if ( pkt->src_intf == NC_INTF_0 ) pkt->dst_intf = NC_INTF_1;
+            else pkt->dst_intf = NC_INTF_0;
+        }
+        /* XXX What to do if it can't complete XXX */
+    }
 
     /* Set alive to true */
     netcap_sess->alive = 1;
@@ -36,8 +45,8 @@ int netcap_udp_session_init(netcap_session_t* netcap_sess, netcap_pkt_t* pkt)
     netcap_sess->ttl      = pkt->ttl;
     netcap_sess->tos      = pkt->tos;
 
-    if ( netcap_session_init(netcap_sess, &endpoints, NC_SESSION_IF_MB) < 0 ) {
-        return errlog(ERR_CRITICAL, "netcap_session_create");
+    if ( netcap_session_init( netcap_sess, &endpoints, pkt->dst_intf, NC_SESSION_IF_MB ) < 0 ) {
+        return errlog( ERR_CRITICAL, "netcap_session_init\n" );
     }
 
     return 0;
@@ -54,10 +63,10 @@ netcap_session_t* netcap_udp_session_create(netcap_pkt_t* pkt)
 
     if ( netcap_udp_session_init(netcap_sess,pkt) < 0) {
         if ( netcap_udp_session_free(netcap_sess)) {
-            errlog(ERR_CRITICAL,"netcap_udp_session_free");
+            errlog( ERR_CRITICAL, "netcap_udp_session_free\n" );
         }
 
-        return errlog_null(ERR_CRITICAL,"netcap_udp_session_init");        
+        return errlog_null( ERR_CRITICAL, "netcap_udp_session_init\n" );
     }
 
     return netcap_sess;

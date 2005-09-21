@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: Inet4AddressConverter.java,v 1.8 2005/02/26 02:36:03 rbscott Exp $
+ *  $Id$
  */
 
 package com.metavize.jnetcap;

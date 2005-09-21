@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: VirusScannerResultUserType.java,v 1.3 2005/02/25 02:45:28 amread Exp $
+ * $Id$
  */
 
 package com.metavize.tran.virus;
@@ -17,11 +17,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 
-import net.sf.hibernate.CompositeUserType;
-import net.sf.hibernate.Hibernate;
-import net.sf.hibernate.HibernateException;
-import net.sf.hibernate.engine.SessionImplementor;
-import net.sf.hibernate.type.Type;
+import org.hibernate.Hibernate;
+import org.hibernate.HibernateException;
+import org.hibernate.engine.SessionImplementor;
+import org.hibernate.type.Type;
+import org.hibernate.usertype.CompositeUserType;
 
 public class VirusScannerResultUserType implements CompositeUserType
 {
@@ -109,5 +109,16 @@ public class VirusScannerResultUserType implements CompositeUserType
         throws HibernateException
     {
         return (Serializable)v;
+    }
+
+    public Object replace(Object original, Object target,
+                          SessionImplementor session, Object owner)
+    {
+        return original;
+    }
+
+    public int hashCode(Object x)
+    {
+        return x.hashCode();
     }
 }

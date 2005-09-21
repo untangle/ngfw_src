@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: FileMapper.java,v 1.3 2005/01/11 08:38:51 amread Exp $
+ * $Id$
  */
 package com.metavize.tran.util;
 

@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: FileStreamer.java,v 1.5 2005/02/07 03:24:19 jdi Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.tapi;

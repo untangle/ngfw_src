@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: IPNewSessionRequestImpl.java,v 1.13 2005/02/07 08:37:27 rbscott Exp $
+ *  $Id$
  */
 
 package com.metavize.mvvm.argon;
@@ -48,29 +48,20 @@ public abstract class IPNewSessionRequestImpl extends NewSessionRequestImpl impl
     {
         super( sessionGlobalState, agent );
         
-        /* Everything comes from the client side */
-        Endpoint client = sessionGlobalState.netcapSession().clientSide().client();
-        Endpoint server = sessionGlobalState.netcapSession().clientSide().server();
+        Endpoints clientSide = sessionGlobalState.netcapSession().clientSide();
+        Endpoints serverSide = sessionGlobalState.netcapSession().serverSide();
+        
+        Endpoint client = clientSide.client();
+        Endpoint server = clientSide.server();
 
         /* Get the server and client from the client end of the endpoint from the netcap session */
         clientAddr = client.host();
         clientPort = client.port();
-        clientIntf = IntfConverter.toArgon( client.interfaceId());
+        clientIntf = IntfConverter.toArgon( clientSide.interfaceId());
+        serverIntf = IntfConverter.toArgon( serverSide.interfaceId());
         
         serverAddr = server.host();
         serverPort = server.port();
-
-        /** Set the interface to unknown */
-        /* ??? A little dirty hack to just flip the interfaces
-         * How are we going to setup the interface */
-        if ( clientIntf == IntfConverter.INSIDE )
-            serverIntf = IntfConverter.OUTSIDE;
-        else if ( clientIntf == IntfConverter.OUTSIDE )
-            serverIntf = IntfConverter.INSIDE;
-        else {
-            logger.warn( "Unknown client interface: " + clientIntf );
-            serverIntf = IntfConverter.UNKNOWN_INTERFACE;
-        }
     }
 
 

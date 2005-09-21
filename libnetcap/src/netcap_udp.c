@@ -204,14 +204,16 @@ int  netcap_udp_recvfrom (int sock, void* buf, size_t len, int flags, netcap_pkt
     /* Set the source interface for the packet */
     /* XXXX Should never catch packets with a mark of 0 */
     if ( pkt->nfmark == 0 ) {
-        debug( 4, "Packet with mark: %d\n", pkt->nfmark );
+        debug( 4, "Packet with mark: %#10x\n", pkt->nfmark );
     }
-    if ( netcap_interface_mark_to_intf(pkt->nfmark,&pkt->src.intf) < 0) {
-        errlog(ERR_WARNING,"Unable to determine the source interface from mark\n");
+    if ( netcap_interface_mark_to_intf( pkt->nfmark,&pkt->src_intf ) < 0 ) {
+        errlog( ERR_WARNING, "Unable to determine the source interface from mark[%s:%d -> %s:%d]\n",
+                unet_next_inet_ntoa( cli.sin_addr.s_addr ), cli.sin_port,
+                unet_next_inet_ntoa( pkt->dst.host.s_addr ), pkt->dst.port );
     }
     
     /* Clear the output interface */
-    pkt->dst.intf = NC_INTF_UNK;
+    pkt->dst_intf = NC_INTF_UNK;
 
     memcpy(&pkt->src.host,&cli.sin_addr,sizeof(struct in_addr));
     pkt->src.port = ntohs(cli.sin_port);
@@ -253,7 +255,7 @@ int  netcap_udp_call_hooks (netcap_pkt_t* pkt, void* arg)
             errlog ( ERR_CRITICAL, "netcap_shield_rep_add_session\n" );
         }
         
-        response = netcap_shield_rep_check( pkt->src.host.s_addr, IPPROTO_UDP, pkt->src.intf );
+        response = netcap_shield_rep_check( pkt->src.host.s_addr, IPPROTO_UDP, pkt->src_intf );
         if ( response == NULL ) {
             errlog ( ERR_CRITICAL, "netcap_shield_rep_check\n" );
         } else {
@@ -350,11 +352,11 @@ int  netcap_udp_call_hooks (netcap_pkt_t* pkt, void* arg)
         if ( pkt->src.host.s_addr == session->cli.cli.host.s_addr ) {
             mb      = &session->cli_mb;
             icmp_mb = &session->icmp_cli_mb;
-            intf    = session->cli_intf;
+            intf    = session->cli.intf;
         } else if ( pkt->src.host.s_addr == session->srv.srv.host.s_addr ) {
             mb      = &session->srv_mb;
             icmp_mb = &session->icmp_srv_mb;
-            intf    = session->srv_intf;
+            intf    = session->srv.intf;
         } else {
             netcap_pkt_raze( pkt );
             SESSTABLE_UNLOCK();
@@ -365,16 +367,16 @@ int  netcap_udp_call_hooks (netcap_pkt_t* pkt, void* arg)
         }
 
         /* Verify the packet is from the same interface */
-        if ( intf != pkt->src.intf ) {
+        if ( intf != pkt->src_intf ) {
             debug( 5, "UDP: Packet from the incorrect interface expected %d actual %d\n", 
-                   intf, pkt->src.intf );
+                   intf, pkt->src_intf );
             
             netcap_pkt_raze( pkt );
             SESSTABLE_UNLOCK();
             return 0;
         }
         
-        response = netcap_shield_rep_check( session->cli.cli.host.s_addr, IPPROTO_UDP, session->cli.cli.intf );
+        response = netcap_shield_rep_check( session->cli.cli.host.s_addr, IPPROTO_UDP, session->cli.intf );
 
         if ( response == NULL ) {
             errlog( ERR_CRITICAL, "netcap_shield_rep_check\n" );
@@ -495,7 +497,7 @@ static int _netcap_udp_sendto (int sock, void* data, size_t data_len, int flags,
     u_int              nfmark = ( MARK_ANTISUB | MARK_NOTRACK | (pkt->is_marked ? pkt->nfmark : 0 )); 
     /* mark is  antisub + notrack + whatever packet marks are specified */
 
-    if ( pkt->dst.intf != NC_INTF_UNK ) {
+    if ( pkt->dst_intf != NC_INTF_UNK ) {
         errlog(ERR_CRITICAL,"NC_INTF_UNK Unsupported (IP_DEVICE)\n");
     }
 
@@ -583,7 +585,7 @@ static int _netcap_udp_sendto (int sock, void* data, size_t data_len, int flags,
         CMSG_SPACE(sizeof(pkt->src.host));
 
     /* Send Packet */
-    debug( 10, "sending UDP %s:%i -> %s:%i data_len:%i ttl:%i tos:%i nfmark:%i\n",
+    debug( 10, "sending UDP %s:%i -> %s:%i data_len:%i ttl:%i tos:%i nfmark:%#10x\n",
            unet_next_inet_ntoa(pkt->src.host.s_addr), pkt->src.port,
            unet_next_inet_ntoa(pkt->dst.host.s_addr),pkt->dst.port,
            data_len, pkt->ttl, pkt->tos, nfmark);
@@ -603,7 +605,7 @@ static int _netcap_udp_sendto (int sock, void* data, size_t data_len, int flags,
             ret = data_len;
             break;
         default:
-            errlog( ERR_CRITICAL, "sendmsg: %s | (%s:%i -> %s:%i) data_len:%i ttl:%i tos:%i nfmark:%i\n", 
+            errlog( ERR_CRITICAL, "sendmsg: %s | (%s:%i -> %s:%i) data_len:%i ttl:%i tos:%i nfmark:%#10x\n", 
                     errstr, 
                     unet_next_inet_ntoa( pkt->src.host.s_addr ), pkt->src.port,
                     unet_next_inet_ntoa( pkt->dst.host.s_addr ), pkt->dst.port,
@@ -752,5 +754,3 @@ static struct cmsghdr * my__cmsg_nxthdr(struct msghdr *msg, struct cmsghdr *cmsg
 
 	return ptr;
 }
-
-

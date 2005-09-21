@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: LoggingManager.java,v 1.3 2005/01/26 10:25:33 amread Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.logging;

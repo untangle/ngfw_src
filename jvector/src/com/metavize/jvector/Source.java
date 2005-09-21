@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: Source.java,v 1.6 2005/01/30 00:07:38 rbscott Exp $
+ * $Id$
  */
 
 package com.metavize.jvector;

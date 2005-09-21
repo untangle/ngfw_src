@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: MackageUninstallException.java,v 1.1.1.1 2004/12/01 23:32:21 amread Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm;

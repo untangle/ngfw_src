@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: VirusPattern.java,v 1.1 2005/01/17 09:04:46 amread Exp $
+ * $Id$
  */
 package com.metavize.tran.virus;
 

@@ -18,11 +18,11 @@ import com.metavize.mvvm.tapi.PipeSpec;
 import com.metavize.mvvm.tapi.SoloPipeSpec;
 import com.metavize.mvvm.tran.TransformException;
 import com.metavize.mvvm.tran.TransformStartException;
-import net.sf.hibernate.HibernateException;
-import net.sf.hibernate.Query;
-import net.sf.hibernate.Session;
-import net.sf.hibernate.Transaction;
 import org.apache.log4j.Logger;
+import org.hibernate.HibernateException;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 public class SigmaImpl extends AbstractTransform implements Sigma
 {
@@ -45,7 +45,7 @@ public class SigmaImpl extends AbstractTransform implements Sigma
         try {
             Transaction tx = s.beginTransaction();
 
-            s.saveOrUpdateCopy(settings);
+            s.merge(settings);
             this.settings = settings;
 
             tx.commit();

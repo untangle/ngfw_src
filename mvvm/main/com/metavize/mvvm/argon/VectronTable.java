@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: VectronTable.java,v 1.3 2005/02/10 00:44:54 rbscott Exp $
+ * $Id$
  */
 
 package com.metavize.mvvm.argon;

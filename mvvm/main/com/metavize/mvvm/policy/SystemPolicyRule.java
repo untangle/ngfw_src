@@ -13,6 +13,8 @@ package com.metavize.mvvm.policy;
 
 import java.util.*;
 
+import com.metavize.mvvm.argon.IPSessionDesc;
+
 /**
  * System Policy Rules.  These are the "fallback" matchers in the
  * policy selector, rows are created automatically by the system when
@@ -32,5 +34,38 @@ public class SystemPolicyRule extends PolicyRule
     public SystemPolicyRule(byte clientIntf, byte serverIntf, Policy policy,
                             boolean inbound) {
         super(clientIntf, serverIntf, policy, inbound);
+    }
+
+    public boolean isSameRow(SystemPolicyRule pr)
+    {
+        return getId().equals(pr.getId());
+    }
+
+    // PolicyRule methods -----------------------------------------------------
+
+    public boolean matches(IPSessionDesc sd)
+    {
+        return clientIntf == sd.clientIntf()
+            && serverIntf == sd.serverIntf();
+    }
+
+    // Object methods ---------------------------------------------------------
+
+    public boolean equals(Object o)
+    {
+        if (!(o instanceof SystemPolicyRule)) {
+            return false;
+        } else {
+            SystemPolicyRule pr = (SystemPolicyRule)o;
+            return (policy.equals(pr.policy) &&
+                    clientIntf == pr.clientIntf &&
+                    serverIntf == pr.serverIntf &&
+                    inbound == pr.inbound);
+        }
+    }
+
+    public int hashCode()
+    {
+        return policy.hashCode() + clientIntf * 7 + serverIntf * 5;
     }
 }

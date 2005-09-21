@@ -13,18 +13,12 @@ package com.metavize.tran.httpblocker;
 
 import java.net.InetAddress;
 import java.net.URI;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.tran.IPMaddrRule;
@@ -43,35 +37,24 @@ import org.apache.log4j.Logger;
  */
 class Blacklist
 {
-    static final Blacklist BLACKLIST = new Blacklist();
-
-    private static final String DB_URL
-        = "jdbc:postgresql://localhost/blacklist?charSet=SQL_ASCII";
-    private static final String DB_USER = "metavize";
-    private static final String DB_PASSWD = "foo";
-
-    private static final String CUSTOM = "custom";
+    private final Logger logger = Logger.getLogger(Blacklist.class);
 
     private final Logger eventLogger = MvvmContextFactory.context()
         .eventLogger();
-    private final Logger logger = Logger.getLogger(Blacklist.class);
 
-    private volatile String[] urls = null;
-    private volatile String urlClause = null;
-    private volatile String[] domains = null;
-    private volatile String domClause = null;
+    private volatile Map<String, String[]> urls = Collections.emptyMap();
+    private volatile Map<String, String[]> domains = Collections.emptyMap();
 
-    private volatile String[] blockedUrls = null;
-    private volatile String[] passedUrls = null;
+    private volatile String[] blockedUrls = new String[0];
+    private volatile String[] passedUrls = new String[0];
 
-    private volatile long tid;
     private volatile HttpBlockerSettings settings;
 
     // XXX support expressions
 
     // constructors -----------------------------------------------------------
 
-    private Blacklist()
+    Blacklist()
     {
         try {
             Class.forName("org.postgresql.Driver");
@@ -82,90 +65,42 @@ class Blacklist
 
     // blacklist methods ------------------------------------------------------
 
-    void destroy()
+    void configure(HttpBlockerSettings settings)
     {
-        urls = null;
-        domains = null;
+        this.settings = settings;
     }
 
-    void reconfigure()
+    synchronized void reconfigure()
     {
-        tid = settings.getTid().getId();
+        Map<String, String[]> u = new HashMap<String, String[]>();
+        Map<String, String[]> d = new HashMap<String, String[]>();
 
-        Connection c = null;
-        try {
-            c = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWD);
+        BlacklistCache cache = BlacklistCache.cache();
 
-            List<String> domCats = new LinkedList<String>();
-            List<String> urlCats = new LinkedList<String>();
-
-            for (BlacklistCategory cat : (List<BlacklistCategory>)settings.getBlacklistCategories()) {
-                if (cat.getBlockDomains()) {
-                    domCats.add(cat.getName());
-                }
-
-                if (cat.getBlockUrls()) {
-                    urlCats.add(cat.getName());
-                }
+        for (BlacklistCategory cat : (List<BlacklistCategory>)settings.getBlacklistCategories()) {
+            String name = cat.getName();
+            if (cat.getBlockUrls()) {
+                u.put(name, cache.getUrlBlacklist(name));
             }
 
-            String clause = makeInClause("domains", domCats);
-
-            Statement s = c.createStatement();
-
-            ResultSet rs = s.executeQuery("SELECT count(*) " + clause);
-            rs.next();
-            int count = rs.getInt(1);
-
-            domains = null;
-            String[] l1 = new String[count];
-
-            rs = s.executeQuery("SELECT domain " + clause
-                                + " ORDER BY domain ASC");
-            int i = 0;
-            while(rs.next()) {
-                l1[i++] = rs.getString(1);
-            }
-            domains = l1;
-            domClause = clause + " AND domain = ?";
-
-            clause = makeInClause("urls", urlCats);
-
-            rs = s.executeQuery("SELECT count(*) " + clause);
-            rs.next();
-            count = rs.getInt(1);
-
-            urls = null;
-            l1 = new String[count];
-
-            rs = s.executeQuery("SELECT url " + clause + " ORDER BY url ASC");
-            i = 0;
-
-            while (rs.next()) {
-                l1[i++] = rs.getString(1);
-            }
-
-            urls = l1;
-            urlClause = clause + " AND url = ?";
-        } catch (SQLException exn) {
-            logger.warn("could not query uris", exn);
-        } finally {
-            try {
-                if (null != c) {
-                    c.close();
-                }
-            } catch (SQLException exn) {
-                logger.warn("could not close connection", exn);
+            if (cat.getBlockDomains()) {
+                d.put(name, cache.getDomainBlacklist(name));
             }
         }
+
+        urls = u;
+        domains = d;
 
         blockedUrls = makeCustomList((List<StringRule>)settings.getBlockedUrls());
         passedUrls = makeCustomList((List<StringRule>)settings.getPassedUrls());
     }
 
-    synchronized void configure(HttpBlockerSettings settings)
+    void destroy()
     {
-        this.settings = settings;
+        urls = Collections.emptyMap();
+        domains = Collections.emptyMap();
+        blockedUrls = new String[0];
+        passedUrls = new String[0];
     }
 
     /**
@@ -297,13 +232,13 @@ class Blacklist
         sb.append(".");
         String revHost = sb.toString();
 
-        String category = findCategory(domains, revHost, domClause);
+        String category = findCategory(domains, revHost);
         Reason reason = null == category ? null : Reason.BLOCK_CATEGORY;
 
         String dom = host;
         while (null == category && null != dom) {
             String url = dom + uri.toString();
-            category = findCategory(urls, url, urlClause);
+            category = findCategory(urls, url);
 
             if (null != category) {
                 reason = Reason.BLOCK_URL;
@@ -338,10 +273,17 @@ class Blacklist
         return 0 > i ? null : lookupCategory(strs[i], rules);
     }
 
-    private String findCategory(String[] strs, String val, String clause)
+    private String findCategory(Map<String, String[]> cats, String val)
     {
-        int i = findMatch(strs, val);
-        return 0 > i ? null : lookupCategory(strs[i], clause);
+        for (String cat : cats.keySet()) {
+            String[] strs = cats.get(cat);
+            int i = findMatch(strs, val);
+            if (0 <= i) {
+                return cat;
+            }
+        }
+
+        return null;
     }
 
     private int findMatch(String[] strs, String val)
@@ -376,36 +318,6 @@ class Blacklist
         }
 
         return null;
-    }
-
-    private String lookupCategory(String match, String clause)
-    {
-        String category = null;
-
-        Connection c = null;
-        try {
-            c = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWD);
-
-            PreparedStatement ps = c.prepareStatement
-                ("SELECT category " + clause);
-            ps.setString(1, match);
-
-            ResultSet rs = ps.executeQuery();
-            rs.next();
-            category = rs.getString(1);
-        } catch (SQLException exn) {
-            logger.warn("could not query uris", exn);
-        } finally {
-            try {
-                if (null != c) {
-                    c.close();
-                }
-            } catch (SQLException exn) {
-                logger.warn("could not close connection", exn);
-            }
-        }
-
-        return category;
     }
 
     /**
@@ -447,24 +359,5 @@ class Blacklist
         Collections.sort(strings);
 
         return strings.toArray(new String[strings.size()]);
-    }
-
-    private String makeInClause(String table, List<String> cats)
-    {
-        StringBuilder clause = new StringBuilder("FROM ");
-        clause.append(table);
-        if (0 < cats.size()) {
-            clause.append(" WHERE category IN (");
-            for (Iterator<String> i = cats.iterator(); i.hasNext();) {
-                clause.append("'");
-                clause.append(i.next());
-                clause.append("'");
-                clause.append(i.hasNext() ? ", " : ")");
-            }
-        } else {
-            clause.append("WHERE 1 != 1");
-        }
-
-        return clause.toString();
     }
 }

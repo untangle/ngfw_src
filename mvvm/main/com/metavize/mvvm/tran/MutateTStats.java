@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: MutateTStats.java,v 1.8 2005/01/11 20:13:43 jdi Exp $
+ *  $Id$
  */
 
 package com.metavize.mvvm.tran;

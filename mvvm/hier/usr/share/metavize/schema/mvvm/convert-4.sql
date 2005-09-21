@@ -66,6 +66,16 @@ INSERT INTO settings.system_policy_rule (
 -- com.metavize.mvvm.security.Tid
 ALTER TABLE settings.tid ADD COLUMN policy_id int8;
 UPDATE settings.tid SET policy_id = 0;
+
+-- com.metavize.mvvm.tran.PipelineEndpoints
+ALTER TABLE events.pl_endp ADD COLUMN policy_id int8;
+UPDATE events.pl_endp SET policy_id = 0;
+ALTER TABLE events.pl_endp ADD COLUMN policy_inbound bool;
+UPDATE events.pl_endp SET policy_inbound = true where client_intf = 0;
+UPDATE events.pl_endp SET policy_inbound = false where client_intf = 1;
+
+
+-- Constraints
  
 ALTER TABLE settings.tid
     ADD CONSTRAINT fk_tid_policy

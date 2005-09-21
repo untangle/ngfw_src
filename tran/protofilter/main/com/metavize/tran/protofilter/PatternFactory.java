@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: PatternFactory.java,v 1.3 2005/02/06 05:00:55 rbscott Exp $
+ * $Id$
  */
 package com.metavize.tran.protofilter;
 

@@ -16,6 +16,7 @@ import java.util.Date;
 
 import com.metavize.mvvm.argon.IPSessionDesc;
 import com.metavize.mvvm.logging.LogEvent;
+import com.metavize.mvvm.policy.Policy;
 
 /**
  * Used to record the Session stats at session end time.
@@ -54,11 +55,16 @@ public class PipelineEndpoints extends LogEvent
     private int cServerPort;
     private int sServerPort;
 
+    private Policy policy;
+    private boolean policy_inbound;
+
     // constructors -----------------------------------------------------------
 
     public PipelineEndpoints() { }
 
-    public PipelineEndpoints(IPSessionDesc begin, IPSessionDesc end)
+    public PipelineEndpoints(IPSessionDesc begin, IPSessionDesc end
+                             // Not just yet XXXX: , Policy policy, boolean policy_inbound
+                             )
     {
         sessionId = begin.id();
 
@@ -78,6 +84,9 @@ public class PipelineEndpoints extends LogEvent
 
         clientIntf = begin.clientIntf();
         serverIntf = end.serverIntf(); /* XXX never filled out */
+
+        // this.policy = policy;
+        // this.policy_inbound = policy_inbound;
     }
 
     // accessors --------------------------------------------------------------
@@ -314,5 +323,40 @@ public class PipelineEndpoints extends LogEvent
     public void setSServerPort(int sServerPort)
     {
         this.sServerPort = sServerPort;
+    }
+
+    /**
+     * Policy that was applied for this pipeline.
+     *
+     * @return Policy for this pipeline
+     * @hibernate.many-to-one
+     * column="POLICY_ID"
+     */
+    public Policy getPolicy()
+    {
+        return policy;
+    }
+
+    public void setPolicy(Policy policy)
+    {
+        this.policy = policy;
+    }
+
+    /**
+     * Was the the inbound side of the policy chosen?  If false, the outbound side was chosen.
+     *
+     * @return true if the inbound side of policy was chosen, false if outbound
+     * @hibernate.property
+     * column="POLICY_INBOUND"
+     * not-null="true"
+     */
+    public boolean isInbound()
+    {
+        return policy_inbound;
+    }
+
+    public void setInbound(boolean inbound)
+    {
+        this.policy_inbound = inbound;
     }
 }

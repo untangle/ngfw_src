@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: TooManyInstancesException.java,v 1.1 2005/02/07 22:31:44 amread Exp $
+ *  $Id$
  */
 
 package com.metavize.mvvm.tran;

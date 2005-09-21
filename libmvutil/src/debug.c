@@ -164,14 +164,6 @@ int  _debug_init()
         pkgs[i].output = OUT_DEFAULT;
     }
 
-/* -RBS: Changed to a mutex
-    if (!output_lock) {
-        if (sem_init(&_output_lock,0,1)<0)
-            return -1;
-        output_lock = &_output_lock;
-    }
-*/
-
     return 0;
 }
 
