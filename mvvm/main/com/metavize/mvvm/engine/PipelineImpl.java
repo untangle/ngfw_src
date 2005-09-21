@@ -13,6 +13,7 @@ package com.metavize.mvvm.engine;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +22,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.metavize.mvvm.tapi.Fitting;
 import com.metavize.mvvm.tapi.MPipe;
 import com.metavize.mvvm.tapi.Pipeline;
-import java.util.Iterator;
 
 class PipelineImpl implements Pipeline
 {
@@ -105,6 +105,9 @@ class PipelineImpl implements Pipeline
                 if (i.hasNext()) {
                     mpf = i.next();
                     return mpf.fitting;
+                } else {
+                    /* pipelines end as they begin */
+                    return mPipeFittings.get(0).fitting;
                 }
             }
         }
