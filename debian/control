@@ -154,11 +154,11 @@ Package: clamphish-transform
 Architecture: any
 Depends: mvvm, spam-base, clamav-mv, mail-casing
 XB-Price: 0
-XB-Display-Name: Fraud Protection
-XB-Website: http://www.metavize.com/phish.html
+XB-Display-Name: PhishNet
+XB-Website: http://www.metavize.com/phishnet.html
 XB-Rack-Position: 1
-Description: The Metavize Fraud Protection Software Appliance
- The Fraud Protection Software Appliance protects users from emails,
+Description: The Metavize PhishNet Software Appliance
+ The PhishNet Software Appliance protects users from emails,
  commonly known as "phish," intended to steal identity, credit card
  information, and more.
 

@@ -1,6 +1,6 @@
 TEMPLATE=Detail
 REPORT_NAME=PhishSmtpDetail
-REPORT_TITLE=Fraud Protection - Emails (SMTP)
+REPORT_TITLE=PhishNet - Emails (SMTP)
 EXTRA_PARAM_1.name=spamVendor
 EXTRA_PARAM_1.type=java.lang.String
 EXTRA_PARAM_2.name=reportTitlePrefix
