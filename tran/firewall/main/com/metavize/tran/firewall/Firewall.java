@@ -20,4 +20,6 @@ public interface Firewall extends Transform
     void setFirewallSettings( FirewallSettings settings );
 
     List<FirewallLog> getEventLogs(int limit);
+
+    List<FirewallLog> getEventLogs(int limit, boolean blockedOnly);
 }

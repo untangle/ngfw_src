@@ -37,7 +37,7 @@ import org.hibernate.Transaction;
 
 public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
 {
-    private static final String ALL_EVENTS_QUERY
+    private static final String ALL_EVENTS_QUERY_BASE
         = "SELECT req.event_id, blk.event_id, req.time_stamp, host, uri, "
         +         "action, reason, category, content_type, "
         +         "resp.content_length, c_client_addr, c_client_port, "
@@ -47,7 +47,15 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
         + "JOIN tr_http_req_line rl USING (request_id) "
         + "LEFT OUTER JOIN tr_http_evt_resp resp USING (request_id) "
         + "LEFT OUTER JOIN tr_httpblk_evt_blk blk USING (request_id) "
-        + "WHERE endp.policy_id = ? "
+        + "WHERE endp.policy_id = ? ";
+
+    private static final String ALL_EVENTS_QUERY
+        = ALL_EVENTS_QUERY_BASE
+        + "ORDER BY req.time_stamp DESC LIMIT ?";
+
+    private static final String ALL_EVENTS_BLOCKED_QUERY
+        = ALL_EVENTS_QUERY_BASE
+        + "AND blk.action = '" + Action.BLOCK.getKey() + "' "
         + "ORDER BY req.time_stamp DESC LIMIT ?";
 
     private static final Logger logger = Logger.getLogger(HttpBlockerImpl.class);
@@ -97,14 +105,24 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
         blacklist.configure(settings);
     }
 
+    // Backwards compat
     public List<HttpRequestLog> getEvents(int limit)
+    {
+        return getEvents(limit, false);
+    }
+
+    public List<HttpRequestLog> getEvents(int limit, boolean blockedOnly)
     {
         List<HttpRequestLog> l = new ArrayList<HttpRequestLog>(limit);
 
         Session s = getTransformContext().openSession();
         try {
             Connection c = s.connection();
-            PreparedStatement ps = c.prepareStatement(ALL_EVENTS_QUERY);
+            PreparedStatement ps;
+            if (blockedOnly)
+                ps = c.prepareStatement(ALL_EVENTS_BLOCKED_QUERY);
+            else
+                ps = c.prepareStatement(ALL_EVENTS_QUERY);
             ps.setLong(1, getPolicy().getId());
             ps.setInt(2, limit);
             long l0 = System.currentTimeMillis();

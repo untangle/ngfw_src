@@ -20,4 +20,6 @@ public interface ProtoFilter extends Transform
     void setProtoFilterSettings(ProtoFilterSettings settings);
 
     List<ProtoFilterLog> getLogs(int limit);
+
+    List<ProtoFilterLog> getLogs(int limit, boolean blockedOnly);
 }

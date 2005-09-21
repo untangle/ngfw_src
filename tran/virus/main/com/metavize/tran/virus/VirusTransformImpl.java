@@ -85,7 +85,7 @@ public class VirusTransformImpl extends AbstractTransform
 
     // XXX these queries need to be optimized once I have some real
     // data from the mail transform
-    private static final String FTP_QUERY
+    private static final String FTP_QUERY_BASE
         = "SELECT create_date, "
         +        "'FTP' AS type, "
         +        "'file' AS location, "
@@ -100,10 +100,18 @@ public class VirusTransformImpl extends AbstractTransform
         + "FROM tr_virus_evt evt "
         + "JOIN pl_endp endp USING (session_id) "
         + "WHERE vendor_name = ? "
-        + "AND endp.policy_id = ? "
+        + "AND endp.policy_id = ? ";
+
+    private static final String FTP_QUERY
+        = FTP_QUERY_BASE
         + "ORDER BY create_date DESC LIMIT ?";
 
-    private static final String HTTP_QUERY
+    private static final String FTP_VIRUS_QUERY
+        = FTP_QUERY_BASE
+        + "AND NOT clean "
+        + "ORDER BY create_date DESC LIMIT ?";
+
+    private static final String HTTP_QUERY_BASE
         = "SELECT create_date, "
         +        "'HTTP' AS type, "
         +        "'http://' || host || uri AS location, "
@@ -120,10 +128,18 @@ public class VirusTransformImpl extends AbstractTransform
         + "JOIN pl_endp endp ON req.session_id = endp.session_id "
         + "JOIN tr_http_req_line rl ON rl.request_id = req.request_id "
         + "WHERE vendor_name = ? "
-        + "AND endp.policy_id = ? "
+        + "AND endp.policy_id = ? ";
+
+    private static final String HTTP_QUERY
+        = HTTP_QUERY_BASE
         + "ORDER BY req.time_stamp DESC LIMIT ?";
 
-    private static final String MAIL_QUERY
+    private static final String HTTP_VIRUS_QUERY
+        = HTTP_QUERY_BASE
+        + "AND NOT clean "
+        + "ORDER BY req.time_stamp DESC LIMIT ?";
+
+    private static final String MAIL_QUERY_BASE
         = "SELECT create_date, "
         +        "'MAIL' AS type, "
         +        "subject AS location, "
@@ -138,10 +154,18 @@ public class VirusTransformImpl extends AbstractTransform
         + "JOIN tr_mail_message_info info ON evt.msg_id = info.id "
         + "JOIN pl_endp endp ON info.session_id = endp.session_id "
         + "WHERE vendor_name = ? "
-        + "AND endp.policy_id = ? "
+        + "AND endp.policy_id = ? ";
+
+    private static final String MAIL_QUERY
+        = MAIL_QUERY_BASE
         + "ORDER BY create_date DESC LIMIT ?";
 
-    private static final String SMTP_QUERY
+    private static final String MAIL_VIRUS_QUERY
+        = MAIL_QUERY_BASE
+        + "AND NOT clean "
+        + "ORDER BY create_date DESC LIMIT ?";
+
+    private static final String SMTP_QUERY_BASE
         = "SELECT create_date, "
         +        "'MAIL' AS type, "
         +        "subject AS location, "
@@ -157,11 +181,22 @@ public class VirusTransformImpl extends AbstractTransform
         + "JOIN tr_mail_message_info info ON evt.msg_id = info.id "
         + "JOIN pl_endp endp ON info.session_id = endp.session_id "
         + "WHERE vendor_name = ? "
-        + "AND endp.policy_id = ? "
+        + "AND endp.policy_id = ? ";
+
+    private static final String SMTP_QUERY
+        = SMTP_QUERY_BASE
+        + "ORDER BY create_date DESC LIMIT ?";
+
+    private static final String SMTP_VIRUS_QUERY
+        = SMTP_QUERY_BASE
+        + "AND NOT clean "
         + "ORDER BY create_date DESC LIMIT ?";
 
     private static final String[] QUERIES
         = { FTP_QUERY, HTTP_QUERY, MAIL_QUERY, SMTP_QUERY };
+
+    private static final String[] VIRUS_QUERIES
+        = { FTP_VIRUS_QUERY, HTTP_VIRUS_QUERY, MAIL_VIRUS_QUERY, SMTP_VIRUS_QUERY };
 
     private static final PipelineFoundry FOUNDRY = MvvmContextFactory.context()
         .pipelineFoundry();
@@ -261,11 +296,23 @@ public class VirusTransformImpl extends AbstractTransform
         return settings;
     }
 
+    // backwards compat
     public List<VirusLog> getEventLogs(int limit)
     {
-        List<VirusLog> l = new ArrayList<VirusLog>(QUERIES.length * limit);
+        return getEventLogs(limit, false);
+    }
 
-        for (String q : QUERIES) {
+    public List<VirusLog> getEventLogs(int limit, boolean virusOnly)
+    {
+        String[] queries;
+        if (virusOnly)
+            queries = VIRUS_QUERIES;
+        else
+            queries = QUERIES;
+
+        List<VirusLog> l = new ArrayList<VirusLog>(queries.length * limit);
+
+        for (String q : queries) {
             getEventLogs(q, l, limit);
         }
 

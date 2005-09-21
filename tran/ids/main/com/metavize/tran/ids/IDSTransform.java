@@ -9,4 +9,6 @@ public interface IDSTransform extends Transform {
 	void setIDSSettings(IDSSettings settings);
 
 	List<IDSLog> getLogs(int limit);
+
+	List<IDSLog> getLogs(int limit, boolean blockedOnly);
 }

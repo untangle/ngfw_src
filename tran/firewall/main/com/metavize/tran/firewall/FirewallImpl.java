@@ -44,13 +44,21 @@ import org.hibernate.Transaction;
 
 public class FirewallImpl extends AbstractTransform implements Firewall
 {
-    private static final String EVENT_QUERY
+    private static final String EVENT_QUERY_BASE
         = "SELECT create_date, was_blocked, "
         + "c_client_addr, c_client_port, s_server_addr, s_server_port, "
         + "client_intf, server_intf, rule_index "
         + "FROM pl_endp endp "
         + "JOIN tr_firewall_evt evt ON endp.session_id = evt.session_id "
-        + "WHERE endp.policy_id = ? "
+        + "WHERE endp.policy_id = ? ";
+
+    private static final String EVENT_QUERY
+        = EVENT_QUERY_BASE
+        + "ORDER BY create_date DESC LIMIT ?";
+
+    private static final String EVENT_BLOCKED_QUERY
+        = EVENT_QUERY_BASE
+        + "AND was_blocked "
         + "ORDER BY create_date DESC LIMIT ?";
 
     private final EventHandler handler;
@@ -108,14 +116,24 @@ public class FirewallImpl extends AbstractTransform implements Firewall
         }
     }
 
+    // Backwards compat
     public List<FirewallLog> getEventLogs(int limit)
+    {
+        return getEventLogs(limit, false);
+    }
+    
+    public List<FirewallLog> getEventLogs(int limit, boolean blockedOnly)
     {
         List<FirewallLog> l = new ArrayList<FirewallLog>(limit);
 
         Session s = getTransformContext().openSession();
         try {
             Connection c = s.connection();
-            PreparedStatement ps = c.prepareStatement(EVENT_QUERY);
+            PreparedStatement ps;
+            if (blockedOnly)
+                ps = c.prepareStatement(EVENT_BLOCKED_QUERY);
+            else
+                ps = c.prepareStatement(EVENT_QUERY);
             ps.setLong(1, getPolicy().getId());
             ps.setInt(2, limit);
             long l0 = System.currentTimeMillis();

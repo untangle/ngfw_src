@@ -37,14 +37,23 @@ import org.hibernate.Transaction;
 public class ProtoFilterImpl extends AbstractTransform implements ProtoFilter
 {
     private final EventHandler handler = new EventHandler( this );
-    private static final String EVENT_QUERY
+
+    private static final String EVENT_QUERY_BASE
         = "SELECT create_date, protocol, blocked, "
         + "c_client_addr, c_client_port, "
         + "s_server_addr, s_server_port, "
         + "client_intf, server_intf "
         + "FROM pl_endp endp "
         + "JOIN tr_protofilter_evt USING (session_id) "
-        + "WHERE endp.policy_id = ? "
+        + "WHERE endp.policy_id = ? ";
+
+    private static final String EVENT_QUERY
+        = EVENT_QUERY_BASE
+        + "ORDER BY create_date DESC LIMIT ?";
+
+    private static final String EVENT_BLOCKED_QUERY
+        = EVENT_QUERY_BASE
+        + "AND blocked "
         + "ORDER BY create_date DESC LIMIT ?";
 
     private final SoloPipeSpec pipeSpec = new SoloPipeSpec
@@ -95,14 +104,24 @@ public class ProtoFilterImpl extends AbstractTransform implements ProtoFilter
         }
     }
 
+    // backwards compat
     public List<ProtoFilterLog> getLogs(int limit)
+    {
+        return getLogs(limit, false);
+    }
+
+    public List<ProtoFilterLog> getLogs(int limit, boolean blockedOnly)
     {
         List<ProtoFilterLog> l = new ArrayList<ProtoFilterLog>(limit);
 
         Session s = getTransformContext().openSession();
         try {
             Connection c = s.connection();
-            PreparedStatement ps = c.prepareStatement(EVENT_QUERY);
+            PreparedStatement ps;
+            if (blockedOnly)
+                ps = c.prepareStatement(EVENT_BLOCKED_QUERY);
+            else
+                ps = c.prepareStatement(EVENT_QUERY);
             ps.setLong(1, getPolicy().getId());
             ps.setInt(2, limit);
             long l0 = System.currentTimeMillis();

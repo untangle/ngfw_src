@@ -21,4 +21,6 @@ public interface SpamTransform extends Transform
     SpamSettings getSpamSettings();
 
     List<SpamLog> getEventLogs(int limit);
+
+    List<SpamLog> getEventLogs(int limit, boolean spamOnly);
 }

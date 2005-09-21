@@ -30,14 +30,22 @@ import org.hibernate.Transaction;
 
 public class IDSTransformImpl extends AbstractTransform implements IDSTransform {
 
-    private static final String EVENT_QUERY
+    private static final String EVENT_QUERY_BASE
         = "SELECT create_date, message, blocked, "
         + "c_client_addr, c_client_port, "
         + "s_server_addr, s_server_port, "
         + "client_intf, server_intf "
         + "FROM pl_endp endp "
         + "JOIN tr_ids_evt USING (session_id) "
-        + "WHERE endp.policy_id = ? "
+        + "WHERE endp.policy_id = ? ";
+
+    private static final String EVENT_QUERY
+        = EVENT_QUERY_BASE
+        + "ORDER BY create_date DESC LIMIT ?";
+
+    private static final String EVENT_BLOCKED_QUERY
+        = EVENT_QUERY_BASE
+        + "AND blocked "
         + "ORDER BY create_date DESC LIMIT ?";
 
     private static final Logger log = Logger.getLogger(IDSTransformImpl.class);
@@ -66,13 +74,22 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
         return pipeSpecs;
     }
 
+    // backwards compat
     public List<IDSLog> getLogs(int limit) {
+        return getLogs(limit, false);
+    }
+
+    public List<IDSLog> getLogs(int limit, boolean blockedOnly) {
         List<IDSLog> l = new ArrayList<IDSLog>(limit);
 
         Session s = getTransformContext().openSession();
         try {
             Connection c = s.connection();
-            PreparedStatement ps = c.prepareStatement(EVENT_QUERY);
+            PreparedStatement ps;
+            if (blockedOnly)
+                ps = c.prepareStatement(EVENT_BLOCKED_QUERY);
+            else
+                ps = c.prepareStatement(EVENT_QUERY);
             ps.setLong(1, getPolicy().getId());
             ps.setInt(2, limit);
             long l0 = System.currentTimeMillis();

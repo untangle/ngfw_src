@@ -38,7 +38,7 @@ import org.hibernate.Transaction;
 public class SpamImpl extends AbstractTransform implements SpamTransform
 {
     // XXX not yet tested, still need to index, etc...
-    private static final String SMTP_QUERY
+    private static final String SMTP_QUERY_BASE
         = "SELECT evt.time_stamp, score, "
         + "       CASE WHEN action = 'P' OR NOT is_spam THEN 'PASS' "
         + "            WHEN action = 'M' THEN 'MARK' "
@@ -53,10 +53,18 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
         + "LEFT OUTER JOIN tr_mail_message_info_addr rcpt ON info.id = rcpt.msg_id AND rcpt.kind = 'B' "
         + "LEFT OUTER JOIN tr_mail_message_info_addr send ON info.id = send.msg_id AND send.kind = 'G' "
         + "WHERE vendor_name = ? "
-        + "AND endp.policy_id = ? "
+        + "AND endp.policy_id = ? ";
+
+    private static final String SMTP_QUERY
+        = SMTP_QUERY_BASE
         + "ORDER BY evt.time_stamp DESC LIMIT ?";
 
-    private static final String MAIL_QUERY
+    private static final String SMTP_SPAM_QUERY
+        = SMTP_QUERY_BASE
+        + "AND is_spam "
+        + "ORDER BY evt.time_stamp DESC LIMIT ?";
+
+    private static final String MAIL_QUERY_BASE
         = "SELECT evt.time_stamp, score, "
         + "       CASE WHEN action = 'P' OR NOT is_spam THEN 'PASS' "
         + "            WHEN action = 'M' THEN 'MARK' "
@@ -70,11 +78,22 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
         + "LEFT OUTER JOIN tr_mail_message_info_addr rcpt ON info.id = rcpt.msg_id AND rcpt.kind = 'U' "
         + "LEFT OUTER JOIN tr_mail_message_info_addr send ON info.id = send.msg_id AND send.kind = 'T' "
         + "WHERE vendor_name = ? "
-        + "AND endp.policy_id = ? "
+        + "AND endp.policy_id = ? ";
+
+    private static final String MAIL_QUERY
+        = MAIL_QUERY_BASE
         + "ORDER BY evt.time_stamp DESC LIMIT ?";
 
+    private static final String MAIL_SPAM_QUERY
+        = MAIL_QUERY_BASE
+        + "AND is_spam "
+        + "ORDER BY evt.time_stamp DESC LIMIT ?";
+        
     private static final String[] QUERIES = new String[]
         { SMTP_QUERY, MAIL_QUERY };
+
+    private static final String[] SPAM_QUERIES = new String[]
+        { SMTP_SPAM_QUERY, MAIL_SPAM_QUERY };
 
     // We want to make sure that spam is before virus in the pipeline (towards the client for smtp,
     // server for pop/imap).
@@ -98,11 +117,23 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
 
     // Spam methods -----------------------------------------------------------
 
+    // backwards compat
     public List<SpamLog> getEventLogs(int limit)
     {
-        List<SpamLog> l = new ArrayList<SpamLog>(QUERIES.length * limit);
+        return getEventLogs(limit, false);
+    }
 
-        for (String q : QUERIES) {
+    public List<SpamLog> getEventLogs(int limit, boolean spamOnly)
+    {   
+        String[] queries;
+        if (spamOnly)
+            queries = SPAM_QUERIES;
+        else
+            queries = QUERIES;
+
+        List<SpamLog> l = new ArrayList<SpamLog>(queries.length * limit);
+
+        for (String q : queries) {
             getEventLogs(q, l, limit);
         }
 

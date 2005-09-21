@@ -20,4 +20,6 @@ public interface VirusTransform extends Transform
     VirusSettings getVirusSettings();
 
     List<VirusLog> getEventLogs(int limit);
+
+    List<VirusLog> getEventLogs(int limit, boolean virusOnly);
 }

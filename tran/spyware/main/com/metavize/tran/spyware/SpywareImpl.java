@@ -66,6 +66,8 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         + "WHERE endp.policy_id = ? "
         + "ORDER BY req.time_stamp DESC LIMIT ?";
 
+    private static final String COOKIE_BLOCKED_QUERY = COOKIE_QUERY;
+
     private static final String ACTIVEX_QUERY
         = "SELECT req.time_stamp, "
         +        "'ACTIVEX' AS type, "
@@ -80,6 +82,8 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         + "JOIN tr_spyware_evt_activex ax USING (request_id) "
         + "WHERE endp.policy_id = ? "
         + "ORDER BY req.time_stamp DESC LIMIT ?";
+
+    private static final String ACTIVEX_BLOCKED_QUERY = ACTIVEX_QUERY;
 
     private static final String BLACKLIST_QUERY
         = "SELECT req.time_stamp, "
@@ -96,7 +100,9 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         + "WHERE endp.policy_id = ? "
         + "ORDER BY req.time_stamp DESC LIMIT ?";
 
-    private static final String ACCESS_QUERY
+    private static final String BLACKLIST_BLOCKED_QUERY = BLACKLIST_QUERY;
+
+    private static final String ACCESS_QUERY_BASE
         = "SELECT create_date AS time_stamp, "
         +        "'ACCESS' AS type, "
         +        "text(ipmaddr) AS location, "
@@ -106,11 +112,22 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         +        "client_intf, server_intf "
         + "FROM tr_spyware_evt_access acc "
         + "JOIN pl_endp endp USING (session_id) "
-        + "WHERE endp.policy_id = ? "
+        + "WHERE endp.policy_id = ? ";
+
+    private static final String ACCESS_QUERY
+        = ACCESS_QUERY_BASE
+        + "ORDER BY create_date DESC LIMIT ?";
+
+    private static final String ACCESS_BLOCKED_QUERY
+        = ACCESS_QUERY_BASE
+        + "AND blocked "
         + "ORDER BY create_date DESC LIMIT ?";
 
     private static final String[] QUERIES = new String[]
         { COOKIE_QUERY, ACTIVEX_QUERY, BLACKLIST_QUERY, ACCESS_QUERY };
+
+    private static final String[] BLOCKED_QUERIES = new String[]
+        { COOKIE_BLOCKED_QUERY, ACTIVEX_BLOCKED_QUERY, BLACKLIST_BLOCKED_QUERY, ACCESS_BLOCKED_QUERY };
 
     private static final String ACTIVEX_LIST
         = "com/metavize/tran/spyware/blocklist.reg";
@@ -182,9 +199,19 @@ public class SpywareImpl extends AbstractTransform implements Spyware
 
     public List<SpywareLog> getEventLogs(int limit)
     {
-        List<SpywareLog> l = new ArrayList<SpywareLog>(QUERIES.length * limit);
+        return getEventLogs(limit, false);
+    }
 
-        for (String q : QUERIES) {
+    public List<SpywareLog> getEventLogs(int limit, boolean blockedOnly)
+    {
+        String[] queries;
+        if (blockedOnly)
+            queries = BLOCKED_QUERIES;
+        else
+            queries = QUERIES;
+        List<SpywareLog> l = new ArrayList<SpywareLog>(queries.length * limit);
+
+        for (String q : queries) {
             getEventLogs(q, l, limit);
         }
 
