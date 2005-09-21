@@ -271,20 +271,20 @@ class PolicyManagerImpl implements PolicyManager
         }
     }
 
-    public UserPolicyRuleSet getUserPolicyRules() {
-        return userRuleSet;
+    public UserPolicyRule[] getUserPolicyRules() {
+        return userRules;
     }
 
-    public void setUserPolicyRules(UserPolicyRuleSet ruleSet) {
+    public void setUserPolicyRules(List rules) {
         // Sanity checking XXX
         synchronized(policyRuleLock) {
             Session s = MvvmContextFactory.context().openSession();
             try {
                 Transaction tx = s.beginTransaction();
 
-                s.merge(ruleSet);
-                userRuleSet = ruleSet;
-                userRules = (UserPolicyRule[]) ruleSet.getRules().toArray(new UserPolicyRule[] { });
+                userRuleSet.setRules(rules);
+                userRules = (UserPolicyRule[]) rules.toArray(new UserPolicyRule[] { });
+                s.merge(userRuleSet);
 
                 tx.commit();
             } catch (HibernateException exn) {
@@ -397,8 +397,7 @@ class PolicyManagerImpl implements PolicyManager
                     throw new PolicyException("System Policy rule to be changed not found");
             }
 
-            userRuleSet.setRules(newUserRules);
-            setUserPolicyRules(userRuleSet);
+            setUserPolicyRules(newUserRules);
         }
     }
 

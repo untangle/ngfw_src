@@ -11,6 +11,9 @@
 
 package com.metavize.mvvm.policy;
 
+import  java.util.List;
+
+
 public interface PolicyManager
 {
     /**
@@ -84,17 +87,17 @@ public interface PolicyManager
     /**
      * Returns all user policies rules.
      *
-     * @return a <code>UserPolicyRuleSet</code> containing the ordered
+     * @return a <code>UserPolicyRulep[</code> array containing the ordered
      * list of UserPolicyRules
      */
-    UserPolicyRuleSet getUserPolicyRules();
+    UserPolicyRule[] getUserPolicyRules();
 
     /**
      * Changes the entire user policy rule set to the given.
      *
-     * @param ruleSet an <code>UserPolicyRuleSet</code> value
+     * @param rules an <code>List</code> of <code>UserPolicyRule</code> values
      */
-    void setUserPolicyRules(UserPolicyRuleSet ruleSet);
+    void setUserPolicyRules(List rules);
 
     /**
      * Helper for the UI -- get all Policy related configuration in a
