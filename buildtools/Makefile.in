@@ -78,7 +78,7 @@ JASPER_REPORTS_VERSION = 0.6.4
 JASPER_REPORTS_HOME = $(alpine_root)/../downloads/output/jasperreports-$(JASPER_REPORTS_VERSION)
 # ANT_CLASSPATH   = $(ANT_HOME)/lib/ant.jar:$(ANTCONTRIB_HOME)/lib/ant-contrib-$(ANTCONTRIB_VERSION).jar:$(JASPER_REPORTS_HOME)/dist/jasperreports-$(JASPER_REPORTS_VERSION).jar
 ANT_CLASSPATH   = $(ANTCONTRIB_HOME)/lib/ant-contrib-$(ANTCONTRIB_VERSION).jar:$(ANTPACK200_HOME)/Pack200Task.jar:${JDK_HOME}/lib/tools.jar
-ANT             = CLASSPATH=$(ANT_CLASSPATH) JDK_HOME=$(JDK_HOME) $(ANT_HOME)/bin/ant -Dworld.root=$(build_dist) -Dbuild.prefix=$(build_prefix) -emacs
+ANT             = CLASSPATH=$(ANT_CLASSPATH) JDK_HOME=$(JDK_HOME) JAVA_HOME=$(JAVA_HOME) $(ANT_HOME)/bin/ant -Dworld.root=$(build_dist) -Dbuild.prefix=$(build_prefix) -emacs
 
 ENSUREDIR   =   $(BINDIR)/ensure-dir.sh
 INSTALL_DATA=   $(BINDIR)/install.sh
