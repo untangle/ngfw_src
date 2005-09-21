@@ -20,10 +20,10 @@ public class DownloadProgress implements InstallProgress, Serializable
     private final String name;
     private final int bytesDownloaded;
     private final int size;
-    private final float speed;
+    private final String speed;
 
     public DownloadProgress(String name, int bytesDownloaded, int size,
-                            float speed)
+                            String speed)
     {
         this.name = name;
         this.bytesDownloaded = bytesDownloaded;
@@ -48,7 +48,7 @@ public class DownloadProgress implements InstallProgress, Serializable
         return size;
     }
 
-    public float getSpeed()
+    public String getSpeed()
     {
         return speed;
     }

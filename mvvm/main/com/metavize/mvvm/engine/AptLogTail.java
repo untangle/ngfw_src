@@ -42,7 +42,7 @@ class AptLogTail implements Runnable
 
     static {
         FETCH_PATTERN = Pattern.compile("'(http://.*)' (.*\\.deb) ([0-9]+) ([0-9a-z]+)");
-        DOWNLOAD_PATTERN = Pattern.compile("( *[0-9]+)K[ .]+([0-9]+)% *([0-9]+\\.[0-9]+) .*/s");
+        DOWNLOAD_PATTERN = Pattern.compile("( *[0-9]+)K[ .]+([0-9]+)% *([0-9]+\\.[0-9]+ .*/s)");
     }
 
     private final long key;
@@ -184,7 +184,7 @@ class AptLogTail implements Runnable
                 } else if (m.matches()) {
                     int bytesDownloaded = Integer.parseInt(m.group(1)) * 100;
                     int percent = Integer.parseInt(m.group(2));
-                    float speed = Float.parseFloat(m.group(3));
+                    String speed = m.group(3);
 
                     // enqueue event
                     DownloadProgress dpe = new DownloadProgress

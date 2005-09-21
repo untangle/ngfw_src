@@ -219,7 +219,7 @@ public class RemoteClient
         {
             System.out.println("Downloading " + dp.getName() + " "
                                + dp.getBytesDownloaded() + "/" + dp.getSize()
-                               + " " + dp.getSpeed() + "M/s");
+                               + " " + dp.getSpeed());
         }
 
         public void visitInstallComplete(InstallComplete ic)
