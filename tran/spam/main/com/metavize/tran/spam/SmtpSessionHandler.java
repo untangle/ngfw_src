@@ -24,6 +24,8 @@ import com.metavize.tran.mime.*;
 import com.metavize.tran.util.*;
 import org.apache.log4j.Logger;
 import com.metavize.mvvm.tran.Transform;
+import static com.metavize.tran.util.Ascii.CRLF;
+import java.net.InetAddress;
 
 
 /**
@@ -256,17 +258,17 @@ public class SmtpSessionHandler
    * null if there is a problem
    */
   private File messageToFile(MIMEMessage msg) {
-    //Get the part as a file
-    java.net.InetAddress clientAddr = getSession().getClientAddress();
-    String remoteHostname = clientAddr.getHostName();//Either host name or IP, if not resolvable
-
-    String crlf = "\r\n";
-    
+  
+    //Build the "fake" received header for SpamAssassin
+    InetAddress clientAddr = getSession().getClientAddress();
     StringBuilder sb = new StringBuilder();
     sb.append("Received: ");
-    sb.append("from ").
-      append(remoteHostname).append(" ([").append(clientAddr.getHostAddress()).append("])").append(crlf);
+    sb.append("from ").append(getHELOEHLOName()).
+      append(" (").append(clientAddr.getHostName()).
+        append(" [").append(clientAddr.getHostAddress()).append("])").append(CRLF);
     sb.append("\tby mv-edgeguard; ").append(MIMEUtil.getRFC822Date());
+
+    
     File ret = null;
     FileOutputStream fOut = null;
     try {
@@ -280,6 +282,20 @@ public class SmtpSessionHandler
       bOut.flush();
       fOut.flush();
       fOut.close();
+/*
+      File copy = new File("TEMP_SPAM" + System.currentTimeMillis());
+      FileOutputStream copyOut = new FileOutputStream(copy);
+      byte[] buf = new byte[1024];
+      FileInputStream copyIn = new FileInputStream(ret);
+      int read = copyIn.read(buf);
+      while(read > 0) {
+        copyOut.write(buf, 0, read);
+        read = copyIn.read(buf);
+      }
+      copyOut.flush();
+      copyOut.close();
+      copyIn.close();
+*/      
       return ret;
     }
     catch(Exception ex) {

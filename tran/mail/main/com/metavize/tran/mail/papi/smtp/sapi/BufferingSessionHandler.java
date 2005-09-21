@@ -130,6 +130,7 @@ public abstract class BufferingSessionHandler
   private final long m_maxClientWait;
   private final long m_maxServerWait;
   private final boolean m_isBufferAndTrickle;
+  private String m_heloName = null;
 
 
   protected BufferingSessionHandler(int giveUpSz,
@@ -219,6 +220,16 @@ public abstract class BufferingSessionHandler
     MessageInfo msgInfo);
 
 
+  /**
+   * Get the name fhe client used on a HELO/EHLO line.
+   * This *should* be the remote client's hostname
+   *
+   * @return the name String
+   */
+  protected String getHELOEHLOName() {
+    return m_heloName;
+  }
+    
     
   //================================
   // SessionHandler methods
@@ -241,6 +252,11 @@ public abstract class BufferingSessionHandler
 
     actions.sendResponseToClient(resp);
   }
+
+  @Override
+  public void observeEHLOCommand(Command cmd) {
+    m_heloName = cmd.getArgString();
+  }  
 
   @Override
   public final TransactionHandler createTxHandler(SmtpTransaction tx) {
