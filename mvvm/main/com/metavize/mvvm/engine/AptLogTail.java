@@ -23,6 +23,7 @@ import java.util.regex.Pattern;
 
 import com.metavize.mvvm.DownloadComplete;
 import com.metavize.mvvm.DownloadProgress;
+import com.metavize.mvvm.DownloadSummary;
 import com.metavize.mvvm.InstallComplete;
 import com.metavize.mvvm.InstallProgress;
 import com.metavize.mvvm.InstallTimeout;
@@ -135,6 +136,8 @@ class AptLogTail implements Runnable
 
         // 'uri' package size hash
         List<PackageInfo> downloadQueue = new LinkedList<PackageInfo>();
+
+        int totalSize = 0;
         while (true) {
             String line = readLine();
 
@@ -143,14 +146,22 @@ class AptLogTail implements Runnable
                 logger.debug("found: END PACKAGE LIST");
                 break;
             } else if (m.matches()) {
-                PackageInfo pi = new PackageInfo(m.group(1), m.group(2),
-                                                 new Integer(m.group(3)),
-                                                 m.group(4));
+                String url = m.group(1);
+                String file = m.group(2);
+                int size = new Integer(m.group(3));
+                String hash = m.group(4);
+
+                PackageInfo pi = new PackageInfo(url, file, size, hash);
                 logger.debug("adding package: " + pi);
                 downloadQueue.add(pi);
+                totalSize += size;
             } else {
                 logger.debug("does not match FETCH_PATTERN: " + line);
             }
+        }
+
+        synchronized (events) {
+            events.add(new DownloadSummary(downloadQueue.size(), totalSize));
         }
 
         for (PackageInfo pi : downloadQueue) {

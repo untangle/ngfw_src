@@ -13,6 +13,7 @@ package com.metavize.mvvm;
 
 public interface ProgressVisitor
 {
+    public void visitDownloadSummary(DownloadSummary ds);
     public void visitDownloadProgress(DownloadProgress dp);
     public void visitDownloadComplete(DownloadComplete dc);
     public void visitInstallComplete(InstallComplete ic);

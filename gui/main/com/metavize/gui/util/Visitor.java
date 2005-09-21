@@ -11,8 +11,9 @@
 
 package com.metavize.gui.util;
 
-import com.metavize.mvvm.*;
 import javax.swing.*;
+
+import com.metavize.mvvm.*;
 
 
 public class Visitor implements ProgressVisitor{
@@ -20,57 +21,61 @@ public class Visitor implements ProgressVisitor{
     private boolean successful = false;
     private JProgressBar progressBar;
     // public methods ----------------------------------------------------
-    
+
     public Visitor(JProgressBar progressBar){
-	this.progressBar = progressBar;
+    this.progressBar = progressBar;
     }
-    
+
     public boolean isDone(){
-	return done;
+    return done;
     }
-    
+
     public boolean isSuccessful(){
-	return successful;
+    return successful;
     }
 
     // ProgressVisitor methods -------------------------------------------
-    
+
+    public void visitDownloadSummary(final DownloadSummary ds){
+        // XXX do something here
+    }
+
     public void visitDownloadProgress(final DownloadProgress dp){
-	SwingUtilities.invokeLater( new Runnable(){ public void run(){
-	    progressBar.setString( "Downloading: " + dp.getName() + " (" + dp.getSpeed() + ")");
-	    progressBar.setValue( (int) (50f*(((float)dp.getBytesDownloaded()) / ((float)dp.getSize()))) );
-	}});
+    SwingUtilities.invokeLater( new Runnable(){ public void run(){
+        progressBar.setString( "Downloading: " + dp.getName() + " (" + dp.getSpeed() + ")");
+        progressBar.setValue( (int) (50f*(((float)dp.getBytesDownloaded()) / ((float)dp.getSize()))) );
+    }});
     }
-    
+
     public void visitInstallComplete(final InstallComplete ic){
-	final boolean success = ic.getSuccess();
-	SwingUtilities.invokeLater( new Runnable(){ public void run(){
-	    if(success)
-		progressBar.setString( "Installation succeeded" );
-	    else
-		progressBar.setString( "Installation failed" );
-	    progressBar.setValue( 100 );
-	}});
-	done = true;
-	successful = success;
+    final boolean success = ic.getSuccess();
+    SwingUtilities.invokeLater( new Runnable(){ public void run(){
+        if(success)
+        progressBar.setString( "Installation succeeded" );
+        else
+        progressBar.setString( "Installation failed" );
+        progressBar.setValue( 100 );
+    }});
+    done = true;
+    successful = success;
     }
-    
+
     public void visitDownloadComplete(final DownloadComplete dc){
-	final boolean success = dc.getSuccess();
-	SwingUtilities.invokeLater( new Runnable(){ public void run(){
-	    if(success)
-		progressBar.setString( "Download succeeded" );
-	    else
-		progressBar.setString( "Download failed" );
-	    progressBar.setValue( 50 );
-	}});
+    final boolean success = dc.getSuccess();
+    SwingUtilities.invokeLater( new Runnable(){ public void run(){
+        if(success)
+        progressBar.setString( "Download succeeded" );
+        else
+        progressBar.setString( "Download failed" );
+        progressBar.setValue( 50 );
+    }});
     }
-    
+
     public void visitInstallTimeout(final InstallTimeout it){
-	SwingUtilities.invokeLater( new Runnable(){ public void run(){
-	    progressBar.setString( "Installation failed due to a time out." );
-	    progressBar.setValue( 100 );
-	}});
-	done = true;
+    SwingUtilities.invokeLater( new Runnable(){ public void run(){
+        progressBar.setString( "Installation failed due to a time out." );
+        progressBar.setValue( 100 );
+    }});
+    done = true;
     }
 }

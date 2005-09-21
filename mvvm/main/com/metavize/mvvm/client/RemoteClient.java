@@ -16,6 +16,7 @@ import java.util.List;
 
 import com.metavize.mvvm.DownloadComplete;
 import com.metavize.mvvm.DownloadProgress;
+import com.metavize.mvvm.DownloadSummary;
 import com.metavize.mvvm.InstallComplete;
 import com.metavize.mvvm.InstallProgress;
 import com.metavize.mvvm.InstallTimeout;
@@ -207,6 +208,12 @@ public class RemoteClient
         }
 
         // ProgressVisitor methods -------------------------------------------
+
+        public void visitDownloadSummary(DownloadSummary ds)
+        {
+            System.out.println("Downloading " + ds.getCount() + " packages "
+                               + ds.getSize() + " bytes.");
+        }
 
         public void visitDownloadProgress(DownloadProgress dp)
         {
