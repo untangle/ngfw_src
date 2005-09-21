@@ -70,11 +70,11 @@ public class VirusPopHandler extends PopStateMachine
 
         if (!session.isInbound()) {
             zConfig = transform.getVirusSettings().getPOPInbound();
-            zWMGenerator = new WrappedMessageGenerator(VirusSettings.IN_MOD_SUB_TEMPLATE, VirusSettings.IN_MOD_BODY_TEMPLATE);
+            zWMGenerator = zConfig.getMessageGenerator();
             lTimeout = zMTSettings.getPopInboundTimeout();
         } else {
             zConfig = transform.getVirusSettings().getPOPOutbound();
-            zWMGenerator = new WrappedMessageGenerator(VirusSettings.OUT_MOD_SUB_TEMPLATE, VirusSettings.OUT_MOD_BODY_TEMPLATE);
+            zWMGenerator = zConfig.getMessageGenerator();
             lTimeout = zMTSettings.getPopOutboundTimeout();
         }
 

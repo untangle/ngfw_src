@@ -60,7 +60,7 @@ public final class VirusImapFactory
       m_mailExport.getExportSettings().getImapOutboundTimeout();
     
     return new ImapTokenStream(session,
-        new VirusImapHandler(
+        new VirusImapHandler(session,
           timeout,
           timeout,
           m_virusImpl,

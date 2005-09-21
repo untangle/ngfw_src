@@ -24,6 +24,7 @@ import com.metavize.tran.mime.*;
 import com.metavize.tran.util.*;
 import org.apache.log4j.Logger;
 import com.metavize.mvvm.tran.Transform;
+import com.metavize.mvvm.MailSender;
 
 
 /**
@@ -39,52 +40,23 @@ public class SmtpSessionHandler
   private final Pipeline m_pipeline;
   private final TempFileFactory m_fileFactory;
 
-  private final long m_maxClientWait;
-  private final long m_maxServerWait;
   private final VirusTransformImpl m_virusImpl;
   private final VirusSMTPConfig m_config;
-  private final SmtpNotifyMessageGenerator m_notifier;
 
 
   public SmtpSessionHandler(TCPSession session,
     long maxClientWait,
     long maxSvrWait,
     VirusTransformImpl impl,
-    VirusSMTPConfig config,
-    SmtpNotifyMessageGenerator notifier) {
+    VirusSMTPConfig config) {
 
-//    m_logger.debug("Created with client wait " +
-//      maxClientWait + " and server wait " + maxSvrWait);
-    m_maxClientWait = maxClientWait<=0?Integer.MAX_VALUE:maxClientWait;
-    m_maxServerWait = maxSvrWait<=0?Integer.MAX_VALUE:maxSvrWait;
+    super(Integer.MAX_VALUE, maxClientWait, maxSvrWait, true);
+
     m_virusImpl = impl;
     m_config = config;
-    m_notifier = notifier;
     m_pipeline = MvvmContextFactory.context().
       pipelineFoundry().getPipeline(session.id());
     m_fileFactory = new TempFileFactory(m_pipeline);
-  }
-
-  @Override
-  public int getGiveupSz() {
-    return Integer.MAX_VALUE;
-  }
-
-  @Override
-  public long getMaxClientWait() {
-    return m_maxClientWait;
-  }
-
-  @Override
-  public long getMaxServerWait() {
-    return m_maxServerWait;
-  }
-
-  @Override
-  public boolean isBufferAndTrickle() {
-    //For virus, we allow buffer-then-trickle so we can
-    //(at worst) drop the connection to prevent a virus.
-    return true;
   }
 
   @Override
@@ -171,7 +143,8 @@ public class SmtpSessionHandler
 
     if(foundVirus) {
       //Perform notification (if we should)
-      if(m_notifier.sendNotification(
+      if(m_config.getNotificationMessageGenerator().sendNotification(
+        MvvmContextFactory.context().mailSender(),
         m_config.getNotifyAction(),
         msg,
         tx,
@@ -271,7 +244,8 @@ public class SmtpSessionHandler
     }
     if(foundVirus) {
       //Make notification
-      if(m_notifier.sendNotification(
+      if(m_config.getNotificationMessageGenerator().sendNotification(
+        MvvmContextFactory.context().mailSender(),
         m_config.getNotifyAction(),
         msg,
         tx,

@@ -13,7 +13,6 @@ package com.metavize.tran.spam;
 
 import static com.metavize.tran.util.Ascii.*;
 
-import com.metavize.mvvm.MailSender;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.policy.Policy;
 import com.metavize.mvvm.tapi.*;
@@ -73,19 +72,16 @@ public class SpamSmtpFactory
     Policy p = impl.getTid().getPolicy();
     m_mailExport = MailExportFactory.factory().getExport(p);
     m_spamImpl = impl;
-    MailSender mailSender = MvvmContextFactory.context().mailSender();
 
     m_inNotifier = new SmtpNotifyMessageGenerator(
       IN_NOTIFY_SUB_TEMPLATE,
       IN_NOTIFY_BODY_TEMPLATE,
-      false,
-      mailSender);
+      false);
 
     m_outNotifier = new SmtpNotifyMessageGenerator(
       OUT_NOTIFY_SUB_TEMPLATE,
       OUT_NOTIFY_BODY_TEMPLATE,
-      false,
-      mailSender);
+      false);
   }
 
 

@@ -21,18 +21,14 @@ import java.io.Serializable;
  * @hibernate.class
  * table="TR_VIRUS_POP_CONFIG"
  */
-public class VirusPOPConfig implements Serializable
+public class VirusPOPConfig
+  extends VirusMailConfig
+  implements Serializable
 {
     private static final long serialVersionUID = 7520156745253589017L;
 
-    public static final String NO_NOTES = "no description";
-
-    private Long id;
-
     /* settings */
     private VirusMessageAction zMsgAction = VirusMessageAction.REMOVE;
-    private boolean bScan = false;
-    private String zNotes = NO_NOTES;
 
     // constructor ------------------------------------------------------------
 
@@ -41,63 +37,14 @@ public class VirusPOPConfig implements Serializable
      */
     public VirusPOPConfig() {}
 
-    public VirusPOPConfig(boolean bScan, VirusMessageAction zMsgAction, String zNotes)
+    public VirusPOPConfig(boolean bScan,
+      VirusMessageAction zMsgAction,
+      String zNotes,
+      String subjectTemplate,
+      String bodyTemplate)
     {
-        this.bScan = bScan;
+        super(bScan, zNotes, subjectTemplate, bodyTemplate);    
         this.zMsgAction = zMsgAction;
-        this.zNotes = zNotes;
-    }
-
-    // business methods ------------------------------------------------------
-
-    /*
-    public String render(String site, String category)
-    {
-        String message = BLOCK_TEMPLATE.replace("@HEADER@", header);
-        message = message.replace("@SITE@", site);
-        message = message.replace("@CATEGORY@", category);
-        message = message.replace("@CONTACT@", contact);
-
-        return message;
-    }
-    */
-
-    // accessors --------------------------------------------------------------
-
-    /**
-     * @hibernate.id
-     * column="CONFIG_ID"
-     * generator-class="native"
-     * not-null="true"
-     */
-    public Long getId()
-    {
-        return id;
-    }
-
-    public void setId(Long id)
-    {
-        this.id = id;
-        return;
-    }
-
-    /**
-     * scan: a boolean specifying whether or not to scan a message for virus (defaults to true)
-     *
-     * @return whether or not to scan message for virus
-     * @hibernate.property
-     * column="SCAN"
-     * not-null="true"
-     */
-    public boolean getScan()
-    {
-        return bScan;
-    }
-
-    public void setScan(boolean bScan)
-    {
-        this.bScan = bScan;
-        return;
     }
 
     /**
@@ -134,21 +81,4 @@ public class VirusPOPConfig implements Serializable
         return azStr;
     }
 
-    /**
-     * notes: a string containing notes (defaults to NO_NOTES)
-     *
-     * @return the notes for this virus config
-     * @hibernate.property
-     * column="NOTES"
-     */
-    public String getNotes()
-    {
-        return zNotes;
-    }
-
-    public void setNotes(String zNotes)
-    {
-        this.zNotes = zNotes;
-        return;
-    }
 }

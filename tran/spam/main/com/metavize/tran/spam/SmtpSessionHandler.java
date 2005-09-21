@@ -44,8 +44,6 @@ public class SmtpSessionHandler
   private static final Logger m_eventLogger = MvvmContextFactory
     .context().eventLogger();
 
-  private final long m_maxClientWait;
-  private final long m_maxServerWait;
   private final SpamImpl m_spamImpl;
   private final SpamSMTPConfig m_config;
 
@@ -60,10 +58,8 @@ public class SmtpSessionHandler
     WrappedMessageGenerator wrapper,
     SmtpNotifyMessageGenerator notifier) {
 
-//    m_logger.debug("Created with client wait " +
-//      maxClientWait + " and server wait " + maxSvrWait);
-    m_maxClientWait = maxClientWait<=0?Integer.MAX_VALUE:maxClientWait;
-    m_maxServerWait = maxSvrWait<=0?Integer.MAX_VALUE:maxSvrWait;
+    super(config.getMsgSizeLimit(), maxClientWait, maxSvrWait, false);
+
     m_spamImpl = impl;
     m_config = config;
     m_wrapper = wrapper;
@@ -73,26 +69,6 @@ public class SmtpSessionHandler
     m_fileFactory = new TempFileFactory(m_pipeline);
   }
 
-  @Override
-  public int getGiveupSz() {
-    return m_config.getMsgSizeLimit();
-  }
-
-  @Override
-  public long getMaxClientWait() {
-    return m_maxClientWait;
-  }
-
-  @Override
-  public long getMaxServerWait() {
-    return m_maxServerWait;
-  }
-
-  @Override
-  public boolean isBufferAndTrickle() {
-    //TODO bscott Should we trickle?  Sounds complicated for little mails
-    return false;
-  }
 
   @Override
   public BPMEvaluationResult blockPassOrModify(MIMEMessage msg,
@@ -154,6 +130,7 @@ public class SmtpSessionHandler
 
       //Perform notification (if we should)
       if(m_notifier.sendNotification(
+        MvvmContextFactory.context().mailSender(),
         m_config.getNotifyAction(),
         msg,
         tx,

@@ -126,9 +126,24 @@ public abstract class BufferingSessionHandler
 
   private final Logger m_logger = Logger.getLogger(BufferingSessionHandler.class);
 
+  private final int m_giveupSz;
+  private final long m_maxClientWait;
+  private final long m_maxServerWait;
+  private final boolean m_isBufferAndTrickle;
+
+
+  protected BufferingSessionHandler(int giveUpSz,
+    long maxClientWait,
+    long maxServerWait,
+    boolean isBufferAndTrickle) {
+    m_giveupSz = giveUpSz;
+    m_maxClientWait = maxClientWait<=0?Integer.MAX_VALUE:maxClientWait;
+    m_maxServerWait = maxServerWait<=0?Integer.MAX_VALUE:maxServerWait;
+    m_isBufferAndTrickle = isBufferAndTrickle;
+  }
 
   //==================================
-  // Abstract Methods
+  // (these were abstract)
   //==================================
 
   /**
@@ -137,20 +152,26 @@ public abstract class BufferingSessionHandler
    * Buffering is abandoned and the
    * <i>giveup-then-trickle</i> state is entered.
    */
-  public abstract int getGiveupSz();
+  protected final int getGiveupSz() {
+    return m_giveupSz;
+  }
 
   /**
    * The maximum time (in relative milliseconds)
    * that the client can wait for a response
    * to DATA transmission.
    */
-  public abstract long getMaxClientWait();
+  protected final long getMaxClientWait() {
+    return m_maxClientWait;
+  }
 
   /**
    * The maximum time that the server can wait
    * for a subsequent ("DATA") command.
    */
-  public abstract long getMaxServerWait();
+  protected final long getMaxServerWait() {
+    return m_maxServerWait;
+  }
 
   /**
    * If true, this handler will continue to buffer even after 
@@ -160,7 +181,9 @@ public abstract class BufferingSessionHandler
    * {@link #blockOrPass blockOrPass()} will still be called
    * once the complete message has been seen.
    */
-  public abstract boolean isBufferAndTrickle();
+  protected final boolean isBufferAndTrickle() {
+    return m_isBufferAndTrickle;
+  }
 
   /**
    * Callback once an entire mail has been buffered.  Subclasses

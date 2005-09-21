@@ -38,6 +38,7 @@ import com.metavize.mvvm.tran.MimeType;
 import com.metavize.mvvm.tran.MimeTypeRule;
 import com.metavize.mvvm.tran.StringRule;
 import com.metavize.mvvm.tran.Transform;
+import static com.metavize.tran.util.Ascii.CRLF;
 import com.metavize.tran.mail.papi.smtp.SMTPNotifyAction;
 import com.metavize.tran.token.TokenAdaptor;
 import org.apache.log4j.Logger;
@@ -68,6 +69,19 @@ public class VirusTransformImpl extends AbstractTransform
     private static final String IN_MOD_SUB_TEMPLATE = OUT_MOD_SUB_TEMPLATE;
     private static final String IN_MOD_BODY_TEMPLATE = OUT_MOD_BODY_TEMPLATE;
     private static final String IN_MOD_BODY_SMTP_TEMPLATE = OUT_MOD_BODY_SMTP_TEMPLATE;
+
+    private static final String OUT_NOTIFY_SUB_TEMPLATE =
+      "[VIRUS NOTIFICATION] re: $MIMEMessage:SUBJECT$";
+  
+    private static final String OUT_NOTIFY_BODY_TEMPLATE =
+      "On $MIMEHeader:DATE$ a message from $MIMEMessage:FROM$ ($SMTPTransaction:FROM$) was received " + CRLF +
+      "and found to contain the virus \"$VirusReport:VIRUS_NAME$\".  The infected portion of the email " + CRLF +
+      "was removed";
+  
+    private static final String IN_NOTIFY_SUB_TEMPLATE = OUT_NOTIFY_SUB_TEMPLATE;
+    private static final String IN_NOTIFY_BODY_TEMPLATE = OUT_NOTIFY_BODY_TEMPLATE;
+
+      
 
     // XXX these queries need to be optimized once I have some real
     // data from the mail transform
@@ -337,10 +351,20 @@ public class VirusTransformImpl extends AbstractTransform
       vs.getIMAPInbound().setBodyWrapperTemplate(IN_MOD_BODY_TEMPLATE);
       vs.getIMAPOutbound().setBodyWrapperTemplate(OUT_MOD_BODY_TEMPLATE);
 
+      vs.getPOPInbound().setSubjectWrapperTemplate(IN_MOD_SUB_TEMPLATE);
+      vs.getPOPOutbound().setSubjectWrapperTemplate(OUT_MOD_SUB_TEMPLATE);
+      vs.getPOPInbound().setBodyWrapperTemplate(IN_MOD_BODY_TEMPLATE);
+      vs.getPOPOutbound().setBodyWrapperTemplate(OUT_MOD_BODY_TEMPLATE);
+
       vs.getSMTPInbound().setSubjectWrapperTemplate(IN_MOD_SUB_TEMPLATE);
-      vs.getSMTPOutbound().setSubjectWrapperTemplate(OUT_MOD_SUB_TEMPLATE);
-      vs.getSMTPInbound().setBodyWrapperTemplate(IN_MOD_BODY_SMTP_TEMPLATE);
+      vs.getSMTPOutbound().setSubjectWrapperTemplate(IN_MOD_BODY_SMTP_TEMPLATE);
+      vs.getSMTPInbound().setBodyWrapperTemplate(IN_MOD_BODY_TEMPLATE);
       vs.getSMTPOutbound().setBodyWrapperTemplate(OUT_MOD_BODY_SMTP_TEMPLATE);
+
+      vs.getSMTPInbound().setNotifySubjectTemplate(IN_NOTIFY_SUB_TEMPLATE);
+      vs.getSMTPOutbound().setNotifySubjectTemplate(OUT_NOTIFY_SUB_TEMPLATE);
+      vs.getSMTPInbound().setNotifyBodyTemplate(IN_NOTIFY_BODY_TEMPLATE);
+      vs.getSMTPOutbound().setNotifyBodyTemplate(OUT_NOTIFY_BODY_TEMPLATE);
     }
 
     protected void initializeSettings()
@@ -358,7 +382,9 @@ public class VirusTransformImpl extends AbstractTransform
             SMTPNotifyAction.NEITHER,
             "Scan incoming SMTP e-mail",
             IN_MOD_SUB_TEMPLATE,
-            IN_MOD_BODY_SMTP_TEMPLATE));
+            IN_MOD_BODY_SMTP_TEMPLATE,
+            IN_NOTIFY_SUB_TEMPLATE,
+            IN_NOTIFY_BODY_TEMPLATE));
             
         vs.setSMTPOutbound(
           new VirusSMTPConfig(false,
@@ -366,17 +392,33 @@ public class VirusTransformImpl extends AbstractTransform
             SMTPNotifyAction.NEITHER,
             "Scan outgoing SMTP e-mail",
             OUT_MOD_SUB_TEMPLATE,
-            OUT_MOD_BODY_SMTP_TEMPLATE));
+            OUT_MOD_BODY_SMTP_TEMPLATE,
+            OUT_NOTIFY_SUB_TEMPLATE,
+            OUT_NOTIFY_BODY_TEMPLATE));
 
-        vs.setPOPInbound(new VirusPOPConfig(true, VirusMessageAction.REMOVE, "Scan incoming POP e-mail" ));
-        vs.setPOPOutbound(new VirusPOPConfig(false, VirusMessageAction.PASS, "Scan outgoing POP e-mail" ));
+            
+        vs.setPOPInbound(
+          new VirusPOPConfig(true,
+            VirusMessageAction.REMOVE,
+            "Scan incoming POP e-mail",
+            IN_MOD_SUB_TEMPLATE,
+            IN_MOD_BODY_TEMPLATE));
+            
+        vs.setPOPOutbound(
+          new VirusPOPConfig(false,
+            VirusMessageAction.PASS,
+            "Scan outgoing POP e-mail",
+            OUT_MOD_SUB_TEMPLATE,
+            OUT_MOD_BODY_TEMPLATE));
 
+            
         vs.setIMAPInbound(
           new VirusIMAPConfig(true,
             VirusMessageAction.REMOVE,
             "Scan incoming IMAP e-mail",
             IN_MOD_SUB_TEMPLATE,
             IN_MOD_BODY_TEMPLATE));
+            
         vs.setIMAPOutbound(
           new VirusIMAPConfig(false,
             VirusMessageAction.PASS,

@@ -39,7 +39,8 @@ public class VirusImapHandler
   private final VirusIMAPConfig m_config;
   private TempFileFactory m_fileFactory;
   
-  protected VirusImapHandler(long maxClientWait,
+  protected VirusImapHandler(TCPSession session,
+    long maxClientWait,
     long maxServerWait,
     VirusTransformImpl transform,
     VirusIMAPConfig config) {
@@ -47,6 +48,10 @@ public class VirusImapHandler
     super(maxClientWait, maxServerWait, Integer.MAX_VALUE);
     m_virusImpl = transform;
     m_config = config;
+    m_fileFactory = new TempFileFactory(
+      MvvmContextFactory.context().
+        pipelineFoundry().getPipeline(session.id())
+    );
   }
 
   
@@ -144,15 +149,6 @@ public class VirusImapHandler
    */
   private VirusScannerResult scanPart(MIMEPart part) {
 
-    if(m_fileFactory == null) {
-      //This is created lazy, because of SessionID reference availability
-      //issues in the constructor.
-      m_fileFactory = new TempFileFactory(
-        MvvmContextFactory.context().
-          pipelineFoundry().getPipeline(getStream().getTCPSession().id())      
-      );      
-    }
-  
     //Get the part as a file
     File f = null;
     try {

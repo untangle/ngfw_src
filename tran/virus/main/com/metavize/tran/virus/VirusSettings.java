@@ -27,7 +27,7 @@ import com.metavize.mvvm.security.Tid;
 public class VirusSettings implements Serializable
 {
     private static final long serialVersionUID = -7246008133224046834L;
-
+/*
     public static final String OUT_MOD_SUB_TEMPLATE =
       "[VIRUS] $MIMEMessage:SUBJECT$";
     public static final String OUT_MOD_BODY_TEMPLATE =
@@ -42,7 +42,7 @@ public class VirusSettings implements Serializable
     public static final String IN_MOD_SUB_TEMPLATE = OUT_MOD_SUB_TEMPLATE;
     public static final String IN_MOD_BODY_TEMPLATE = OUT_MOD_BODY_TEMPLATE;
     public static final String IN_MOD_BODY_SMTP_TEMPLATE = OUT_MOD_BODY_SMTP_TEMPLATE;
-
+*/
     private Long id;
     private Tid tid;
     private boolean ftpDisableResume = true;

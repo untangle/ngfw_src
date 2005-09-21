@@ -23,23 +23,19 @@ import java.nio.*;
  * Subclass of MessageGenerator which understands
  * the SMTPNotifyAction and creates a MIME Message
  * accordingly (or not, of the SMTPNotifyAction
- * is "NEITHER").  Also takes care of
- * getting the message over to the MailSender
- * for delivery.
+ * is "NEITHER").
  *
  */
 public class SmtpNotifyMessageGenerator
   extends MessageGenerator {
 
-  private final Logger m_logger = Logger.getLogger(SmtpNotifyMessageGenerator.class);
+  private final Logger m_logger =
+    Logger.getLogger(SmtpNotifyMessageGenerator.class);
 
-  private MailSender m_mailSender;
   private boolean m_attachCause;
   
-  public SmtpNotifyMessageGenerator(MailSender mailSender) {
-    super(null, null);
-    m_mailSender = mailSender;
-    m_attachCause = false;
+  public SmtpNotifyMessageGenerator() {
+    this(null, null, false);
   }
 
   /**
@@ -47,10 +43,10 @@ public class SmtpNotifyMessageGenerator
    */
   public SmtpNotifyMessageGenerator(String subjectTemplate,
     String bodyTemplate,
-    boolean attachCause,
-    MailSender mailSender) {
+    boolean attachCause) {
+    
     super(subjectTemplate, bodyTemplate);
-    m_mailSender = mailSender;
+    
     m_attachCause = attachCause;
   }
 
@@ -76,17 +72,20 @@ public class SmtpNotifyMessageGenerator
    * The transaction is <b>not</b> implicitly added
    * to the <code>substitutionSources</code>
    *
+   * @param sender the MailSender
    * @param action the action to take
    * @param cause the message which, when inspected, caused this notification
    * @param tx the current transaction (which had <code>cause</code> as its
    *        message data).
    * @param substitutionSources Any TemplateValues used for substitution values
    */
-  public boolean sendNotification(SMTPNotifyAction action,
+  public boolean sendNotification(MailSender sender,
+    SMTPNotifyAction action,
     MIMEMessage cause,
     SmtpTransaction tx,
     TemplateValues... substitutionSources) {
-    return sendNotification(action,
+    return sendNotification(sender,
+      action,
       cause,
       tx,
       new TemplateValuesChain(substitutionSources));
@@ -102,13 +101,15 @@ public class SmtpNotifyMessageGenerator
    * The transaction is <b>not</b> implicitly added
    * to the <code>substitutionSources</code>
    *
+   * @param sender the MailSender
    * @param action the action to take
    * @param cause the message which, when inspected, caused this notification
    * @param tx the current transaction (which had <code>cause</code> as its
    *        message data).
    * @param substitutionSources TEmplate values for substitution
    */
-  public boolean sendNotification(SMTPNotifyAction action,
+  public boolean sendNotification(MailSender sender,
+    SMTPNotifyAction action,
     MIMEMessage cause,
     SmtpTransaction tx,
     TemplateValuesChain substitutionSources) {
@@ -180,7 +181,7 @@ public class SmtpNotifyMessageGenerator
     }
 
     //Attempt the send
-    boolean ret = m_mailSender.sendMessage(in);
+    boolean ret = sender.sendMessage(in);
 
     try {in.close();}catch(Exception ignore){}
 
