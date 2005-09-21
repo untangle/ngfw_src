@@ -12,7 +12,7 @@
 package com.metavize.tran.virus;
 
 import java.io.Serializable;
-
+import com.metavize.tran.mail.papi.WrappedMessageGenerator;
 import com.metavize.tran.mail.papi.smtp.SMTPNotifyAction;
 
 /**
@@ -36,6 +36,9 @@ public class VirusSMTPConfig implements Serializable
     private SMTPNotifyAction zNotifyAction = SMTPNotifyAction.NEITHER;
     private boolean bScan = false;
     private String zNotes = NO_NOTES;
+    private transient WrappedMessageGenerator m_msgGenerator;
+    private String m_subjectWrapperTemplate;
+    private String m_bodyWrapperTemplate;       
 
     // constructor ------------------------------------------------------------
 
@@ -44,12 +47,19 @@ public class VirusSMTPConfig implements Serializable
      */
     public VirusSMTPConfig() {}
 
-    public VirusSMTPConfig(boolean bScan, SMTPVirusMessageAction zMsgAction, SMTPNotifyAction zNotifyAction, String zNotes)
+    public VirusSMTPConfig(boolean bScan,
+      SMTPVirusMessageAction zMsgAction,
+      SMTPNotifyAction zNotifyAction,
+      String zNotes,
+      String subjectTemplate,
+      String bodyTemplate)
     {
         this.bScan = bScan;
         this.zMsgAction = zMsgAction;
         this.zNotifyAction = zNotifyAction;
         this.zNotes = zNotes;
+        m_subjectWrapperTemplate = subjectTemplate;
+        m_bodyWrapperTemplate = bodyTemplate;           
     }
 
     // business methods ------------------------------------------------------
@@ -68,6 +78,47 @@ public class VirusSMTPConfig implements Serializable
 
     // accessors --------------------------------------------------------------
 
+    public String getSubjectWrapperTemplate() {
+      return m_subjectWrapperTemplate;
+    }
+    
+    public void setSubjectWrapperTemplate(String template) {
+      m_subjectWrapperTemplate = template;
+      ensureMessageGenerator();
+      m_msgGenerator.setSubject(template);
+    }
+    
+    public String getBodyWrapperTemplate() {
+      return m_bodyWrapperTemplate;
+    }
+    
+    public void setBodyWrapperTemplate(String template) {
+      m_bodyWrapperTemplate = template;
+      ensureMessageGenerator();
+      m_msgGenerator.setBody(template);
+    }
+
+    /**
+     * Access the helper object, for wrapping messages
+     * based on the values of the
+     * {@link #getSubjectWrapperTemplate subject} and
+     * {@link #getBodyWrapperTemplate body} templates.
+     *
+     *
+     */
+    public WrappedMessageGenerator getMessageGenerator() {
+      ensureMessageGenerator();
+      return m_msgGenerator;
+    }
+
+    private void ensureMessageGenerator() {
+      if(m_msgGenerator == null) {
+        m_msgGenerator = new WrappedMessageGenerator(
+          getSubjectWrapperTemplate(),
+          getBodyWrapperTemplate());
+      }
+    }
+    
     /**
      * @hibernate.id
      * column="CONFIG_ID"

@@ -11,7 +11,6 @@
 
 package com.metavize.tran.virus;
 
-import com.metavize.tran.mail.papi.WrappedMessageGenerator;
 import com.metavize.tran.mail.papi.MessageInfo;
 import com.metavize.tran.mail.papi.imap.BufferingImapTokenStreamHandler;
 import com.metavize.mvvm.tapi.TCPSession;
@@ -19,7 +18,6 @@ import com.metavize.tran.mime.MIMEMessage;
 import com.metavize.tran.mime.MIMEPart;
 import com.metavize.tran.mime.MIMEUtil;
 import com.metavize.tran.util.TempFileFactory;
-import com.metavize.mvvm.tran.Transform;
 import com.metavize.mvvm.MvvmContextFactory;
 import org.apache.log4j.Logger;
 import java.io.File;
@@ -37,26 +35,18 @@ public class VirusImapHandler
   private static final Logger m_eventLogger = MvvmContextFactory
     .context().eventLogger();    
 
-  //For "Blingie-blingers"
-  private final static int SCAN_COUNTER = Transform.GENERIC_0_COUNTER;
-  private final static int PASS_COUNTER = Transform.GENERIC_2_COUNTER;
-  private final static int REMOVE_COUNTER = Transform.GENERIC_3_COUNTER;    
-
   private final VirusTransformImpl m_virusImpl;
   private final VirusIMAPConfig m_config;
-  private final WrappedMessageGenerator m_wrapper;
   private TempFileFactory m_fileFactory;
   
   protected VirusImapHandler(long maxClientWait,
     long maxServerWait,
     VirusTransformImpl transform,
-    VirusIMAPConfig config,
-    WrappedMessageGenerator wrapper) {
+    VirusIMAPConfig config) {
     
     super(maxClientWait, maxServerWait, Integer.MAX_VALUE);
     m_virusImpl = transform;
     m_config = config;
-    m_wrapper = wrapper;
   }
 
   
@@ -65,7 +55,7 @@ public class VirusImapHandler
     MessageInfo msgInfo) {
     m_logger.debug("[handleMessage]");
     
-    m_virusImpl.incrementCount(SCAN_COUNTER);
+    m_virusImpl.incrementScanCounter();
 
     MIMEPart[] candidateParts = MIMEUtil.getCandidateParts(msg);
     m_logger.debug("Message has: " + candidateParts.length + " scannable parts");
@@ -137,15 +127,15 @@ public class VirusImapHandler
     if(foundVirus) {
       if(action == VirusMessageAction.REMOVE) {
         m_logger.debug("REMOVE (wrap) message");
-        MIMEMessage wrappedMsg = m_wrapper.wrap(msg, scanResultForWrap);
-        m_virusImpl.incrementCount(REMOVE_COUNTER);
+        MIMEMessage wrappedMsg = m_config.getMessageGenerator().wrap(msg, scanResultForWrap);
+        m_virusImpl.incrementRemoveCounter();
         return HandleMailResult.forReplaceMessage(wrappedMsg);
       }
       else {
         m_logger.debug("Passing infected message (as-per policy)");
       }
     }
-    m_virusImpl.incrementCount(PASS_COUNTER);
+    m_virusImpl.incrementPassCounter();
     return HandleMailResult.forPassMessage();
   }
 

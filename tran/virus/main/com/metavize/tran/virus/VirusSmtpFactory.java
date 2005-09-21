@@ -41,12 +41,6 @@ public class VirusSmtpFactory
   private final Logger m_logger =
     Logger.getLogger(VirusSmtpFactory.class);
 
-  //TODO bscott These should be paramaterized in the Config objects
-  private WrappedMessageGenerator m_inWrapper =
-    new WrappedMessageGenerator(VirusSettings.IN_MOD_SUB_TEMPLATE, VirusSettings.IN_MOD_BODY_SMTP_TEMPLATE);
-
-  private WrappedMessageGenerator m_outWrapper =
-    new WrappedMessageGenerator(VirusSettings.OUT_MOD_SUB_TEMPLATE, VirusSettings.OUT_MOD_BODY_SMTP_TEMPLATE);
 
   private SmtpNotifyMessageGenerator m_inNotifier;
   private SmtpNotifyMessageGenerator m_outNotifier;
@@ -87,9 +81,6 @@ public class VirusSmtpFactory
       return Session.createPassthruSession(session);
     }
 
-    WrappedMessageGenerator msgWrapper =
-      inbound?m_inWrapper:m_outWrapper;
-
     SmtpNotifyMessageGenerator notifier =
       inbound?m_inNotifier:m_outNotifier;
 
@@ -101,7 +92,6 @@ public class VirusSmtpFactory
         inbound?casingSettings.getSmtpInboundTimeout():casingSettings.getSmtpOutboundTimeout(),
         m_virusImpl,
         virusConfig,
-        msgWrapper,
         notifier));
 
 

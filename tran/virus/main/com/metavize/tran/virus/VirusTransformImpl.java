@@ -37,6 +37,7 @@ import com.metavize.mvvm.tran.Direction;
 import com.metavize.mvvm.tran.MimeType;
 import com.metavize.mvvm.tran.MimeTypeRule;
 import com.metavize.mvvm.tran.StringRule;
+import com.metavize.mvvm.tran.Transform;
 import com.metavize.tran.mail.papi.smtp.SMTPNotifyAction;
 import com.metavize.tran.token.TokenAdaptor;
 import org.apache.log4j.Logger;
@@ -48,6 +49,26 @@ import org.hibernate.Transaction;
 public class VirusTransformImpl extends AbstractTransform
     implements VirusTransform
 {
+
+    //Programatic defaults for the contents
+    //of the "message" emails generated as a result
+    //of a virus being found (and "notify" being
+    //enabled.
+    private static final String OUT_MOD_SUB_TEMPLATE =
+      "[VIRUS] $MIMEMessage:SUBJECT$";
+    private static final String OUT_MOD_BODY_TEMPLATE =
+      "The attached message from $MIMEMessage:FROM$ was found to contain\r\n" +
+      "the virus \"$VirusReport:VIRUS_NAME$\".  The infected portion of the attached email was removed\r\n" +
+      "by Metavize EdgeGuard.\r\n";
+    private static final String OUT_MOD_BODY_SMTP_TEMPLATE =
+      "The attached message from $MIMEMessage:FROM$ ($SMTPTransaction:FROM$) was found to contain\r\n" +
+      "the virus \"$VirusReport:VIRUS_NAME$\".  The infected portion of the attached email was removed\r\n" +
+      "by Metavize EdgeGuard.\r\n";
+
+    private static final String IN_MOD_SUB_TEMPLATE = OUT_MOD_SUB_TEMPLATE;
+    private static final String IN_MOD_BODY_TEMPLATE = OUT_MOD_BODY_TEMPLATE;
+    private static final String IN_MOD_BODY_SMTP_TEMPLATE = OUT_MOD_BODY_SMTP_TEMPLATE;
+
     // XXX these queries need to be optimized once I have some real
     // data from the mail transform
     private static final String FTP_QUERY
@@ -197,6 +218,9 @@ public class VirusTransformImpl extends AbstractTransform
 
     public void setVirusSettings(VirusSettings settings)
     {
+        //TEMP hack - bscott
+        ensureTemplateSettings(settings);
+        
         Session s = getTransformContext().openSession();
         try {
             Transaction tx = s.beginTransaction();
@@ -296,6 +320,29 @@ public class VirusTransformImpl extends AbstractTransform
         return pipeSpecs;
     }
 
+    /**
+     * The settings for the IMAP/POP/SMTP
+     * templates have been added to the
+     * Config objects, yet not in the database
+     * (9/05).  This method makes sure that
+     * they are set to the programatic
+     * default.
+     *
+     * Once we move these to the database,
+     * this method is obsolete.
+     */
+    private void ensureTemplateSettings(VirusSettings vs) {
+      vs.getIMAPInbound().setSubjectWrapperTemplate(IN_MOD_SUB_TEMPLATE);
+      vs.getIMAPOutbound().setSubjectWrapperTemplate(OUT_MOD_SUB_TEMPLATE);
+      vs.getIMAPInbound().setBodyWrapperTemplate(IN_MOD_BODY_TEMPLATE);
+      vs.getIMAPOutbound().setBodyWrapperTemplate(OUT_MOD_BODY_TEMPLATE);
+
+      vs.getSMTPInbound().setSubjectWrapperTemplate(IN_MOD_SUB_TEMPLATE);
+      vs.getSMTPOutbound().setSubjectWrapperTemplate(OUT_MOD_SUB_TEMPLATE);
+      vs.getSMTPInbound().setBodyWrapperTemplate(IN_MOD_BODY_SMTP_TEMPLATE);
+      vs.getSMTPOutbound().setBodyWrapperTemplate(OUT_MOD_BODY_SMTP_TEMPLATE);
+    }
+
     protected void initializeSettings()
     {
         VirusSettings vs = new VirusSettings(getTid());
@@ -304,14 +351,38 @@ public class VirusTransformImpl extends AbstractTransform
         vs.setFtpInbound(new VirusConfig(true, true, "Scan incoming FTP files on inbound and outbound sessions" ));
         vs.setFtpOutbound(new VirusConfig(false, true, "Scan outgoing FTP files on inbound and outbound sessions" ));
 
-        vs.setSMTPInbound(new VirusSMTPConfig(true, SMTPVirusMessageAction.REMOVE, SMTPNotifyAction.NEITHER, "Scan incoming SMTP e-mail" ));
-        vs.setSMTPOutbound(new VirusSMTPConfig(false, SMTPVirusMessageAction.PASS, SMTPNotifyAction.NEITHER, "Scan outgoing SMTP e-mail" ));
+       
+        vs.setSMTPInbound(
+          new VirusSMTPConfig(true,
+            SMTPVirusMessageAction.REMOVE,
+            SMTPNotifyAction.NEITHER,
+            "Scan incoming SMTP e-mail",
+            IN_MOD_SUB_TEMPLATE,
+            IN_MOD_BODY_SMTP_TEMPLATE));
+            
+        vs.setSMTPOutbound(
+          new VirusSMTPConfig(false,
+            SMTPVirusMessageAction.PASS,
+            SMTPNotifyAction.NEITHER,
+            "Scan outgoing SMTP e-mail",
+            OUT_MOD_SUB_TEMPLATE,
+            OUT_MOD_BODY_SMTP_TEMPLATE));
 
         vs.setPOPInbound(new VirusPOPConfig(true, VirusMessageAction.REMOVE, "Scan incoming POP e-mail" ));
         vs.setPOPOutbound(new VirusPOPConfig(false, VirusMessageAction.PASS, "Scan outgoing POP e-mail" ));
 
-        vs.setIMAPInbound(new VirusIMAPConfig(true, VirusMessageAction.REMOVE, "Scan incoming IMAP e-mail" ));
-        vs.setIMAPOutbound(new VirusIMAPConfig(false, VirusMessageAction.PASS, "Scan outgoing IMAP e-mail" ));
+        vs.setIMAPInbound(
+          new VirusIMAPConfig(true,
+            VirusMessageAction.REMOVE,
+            "Scan incoming IMAP e-mail",
+            IN_MOD_SUB_TEMPLATE,
+            IN_MOD_BODY_TEMPLATE));
+        vs.setIMAPOutbound(
+          new VirusIMAPConfig(false,
+            VirusMessageAction.PASS,
+            "Scan outgoing IMAP e-mail",
+            OUT_MOD_SUB_TEMPLATE,
+            OUT_MOD_BODY_TEMPLATE));
 
 
         List s = new ArrayList();
@@ -372,6 +443,9 @@ public class VirusTransformImpl extends AbstractTransform
         s.add(new StringRule("avi", "video", "stream", false));
         vs.setExtensions(s);
 
+        //TEMP hack - bscott
+        ensureTemplateSettings(vs);        
+        
         setVirusSettings(vs);
     }
 
@@ -456,6 +530,32 @@ public class VirusTransformImpl extends AbstractTransform
     {
         return VIRUS_SESSION_MATCHER;
     }
+
+    /**
+     * Increment the counter for messages scanned
+     */
+    public void incrementScanCounter() {
+      incrementCount(Transform.GENERIC_0_COUNTER);
+    }
+    /**
+     * Increment the counter for blocked (SMTP only).
+     */
+    public void incrementBlockCounter() {
+      incrementCount(Transform.GENERIC_1_COUNTER);
+    }
+    /**
+     * Increment the counter for messages passed 
+     */
+    public void incrementPassCounter() {
+      incrementCount(Transform.GENERIC_2_COUNTER);
+    }
+    /**
+     * Increment the counter for messages where we
+     * removed a virus 
+     */
+    public void incrementRemoveCounter() {
+      incrementCount(Transform.GENERIC_3_COUNTER);
+    }     
 
     // private methods --------------------------------------------------------
 

@@ -33,11 +33,6 @@ import com.metavize.mvvm.tran.Transform;
 public class SmtpSessionHandler
   extends BufferingSessionHandler {
 
-  private final static int SCAN_COUNTER = Transform.GENERIC_0_COUNTER;
-  private final static int BLOCK_COUNTER = Transform.GENERIC_1_COUNTER;
-  private final static int PASS_COUNTER = Transform.GENERIC_2_COUNTER;
-  private final static int REMOVE_COUNTER = Transform.GENERIC_3_COUNTER;
-
   private final Logger m_logger = Logger.getLogger(SmtpSessionHandler.class);
   private final Logger m_eventLogger = MvvmContextFactory
     .context().eventLogger();
@@ -48,7 +43,6 @@ public class SmtpSessionHandler
   private final long m_maxServerWait;
   private final VirusTransformImpl m_virusImpl;
   private final VirusSMTPConfig m_config;
-  private final WrappedMessageGenerator m_wrapper;
   private final SmtpNotifyMessageGenerator m_notifier;
 
 
@@ -57,7 +51,6 @@ public class SmtpSessionHandler
     long maxSvrWait,
     VirusTransformImpl impl,
     VirusSMTPConfig config,
-    WrappedMessageGenerator wrapper,
     SmtpNotifyMessageGenerator notifier) {
 
 //    m_logger.debug("Created with client wait " +
@@ -66,7 +59,6 @@ public class SmtpSessionHandler
     m_maxServerWait = maxSvrWait<=0?Integer.MAX_VALUE:maxSvrWait;
     m_virusImpl = impl;
     m_config = config;
-    m_wrapper = wrapper;
     m_notifier = notifier;
     m_pipeline = MvvmContextFactory.context().
       pipelineFoundry().getPipeline(session.id());
@@ -100,7 +92,7 @@ public class SmtpSessionHandler
     SmtpTransaction tx,
     MessageInfo msgInfo) {
     m_logger.debug("[handleMessageCanBlock] called");
-    m_virusImpl.incrementCount(SCAN_COUNTER);
+    m_virusImpl.incrementScanCounter();
 
     MIMEPart[] candidateParts = MIMEUtil.getCandidateParts(msg);
     m_logger.debug("Message has: " + candidateParts.length + " scannable parts");
@@ -192,20 +184,20 @@ public class SmtpSessionHandler
 
       if(action == SMTPVirusMessageAction.BLOCK) {
         m_logger.debug("Returning BLOCK as-per policy");
-        m_virusImpl.incrementCount(BLOCK_COUNTER);
+        m_virusImpl.incrementBlockCounter();
         return BLOCK_MESSAGE;
       }
       else if(action == SMTPVirusMessageAction.REMOVE) {
         m_logger.debug("REMOVE (wrap) message");
-        MIMEMessage wrappedMsg = m_wrapper.wrap(msg, tx, scanResultForWrap);
-        m_virusImpl.incrementCount(REMOVE_COUNTER);
+        MIMEMessage wrappedMsg = m_config.getMessageGenerator().wrap(msg, tx, scanResultForWrap);
+        m_virusImpl.incrementRemoveCounter();
         return new BPMEvaluationResult(wrappedMsg);
       }
       else {
         m_logger.debug("Passing infected message (as-per policy)");
       }
     }
-    m_virusImpl.incrementCount(PASS_COUNTER);
+    m_virusImpl.incrementPassCounter();
     return PASS_MESSAGE;
   }
 
@@ -215,7 +207,7 @@ public class SmtpSessionHandler
     SmtpTransaction tx,
     MessageInfo msgInfo) {
     m_logger.debug("[handleMessageCanNotBlock]");
-    m_virusImpl.incrementCount(SCAN_COUNTER);
+    m_virusImpl.incrementScanCounter();
 
     //TODO bscott There has to be a way to share more code
     //     with the "blockPassOrModify" method
@@ -291,11 +283,11 @@ public class SmtpSessionHandler
       }
       if(action == SMTPVirusMessageAction.BLOCK) {
         m_logger.debug("Blocking mail as-per policy");
-        m_virusImpl.incrementCount(BLOCK_COUNTER);
+        m_virusImpl.incrementBlockCounter();
         return BlockOrPassResult.BLOCK;
       }
     }
-    m_virusImpl.incrementCount(PASS_COUNTER);
+    m_virusImpl.incrementPassCounter();
     return BlockOrPassResult.PASS;
   }
 

@@ -20,8 +20,6 @@ import org.apache.log4j.Logger;
 import com.metavize.tran.mail.papi.imap.ImapTokenStream;
 import com.metavize.tran.mail.papi.MailExport;
 import com.metavize.tran.mail.papi.MailExportFactory;
-import com.metavize.tran.mail.papi.WrappedMessageGenerator;
-
 
 /**
  * Factory to create the protocol handler for IMAP
@@ -33,14 +31,6 @@ public final class VirusImapFactory
   
   private static final Logger m_logger =
     Logger.getLogger(VirusImapFactory.class);
-      
-  private WrappedMessageGenerator m_inWrapper =
-    new WrappedMessageGenerator(VirusSettings.IN_MOD_SUB_TEMPLATE,
-      VirusSettings.IN_MOD_BODY_TEMPLATE);
-
-  private WrappedMessageGenerator m_outWrapper =
-    new WrappedMessageGenerator(VirusSettings.OUT_MOD_SUB_TEMPLATE,
-      VirusSettings.OUT_MOD_BODY_TEMPLATE);      
 
   private final VirusTransformImpl m_virusImpl;
   private final MailExport m_mailExport;    
@@ -74,8 +64,7 @@ public final class VirusImapFactory
           timeout,
           timeout,
           m_virusImpl,
-          virusConfig,
-          inbound?m_inWrapper:m_outWrapper)
+          virusConfig)
       );
   }
 }
