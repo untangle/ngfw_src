@@ -258,7 +258,7 @@ int netcap_interface_is_broadcast ( in_addr_t addr, int index )
         int d;
                 
         if (( info = netcap_intf_db_index_to_info( db, index )) == NULL ) {
-            errlog( ERR_WARNING, "netcap_intf_db_index_to_info %d\n", index );
+            return errlog( ERR_WARNING, "netcap_intf_db_index_to_info %d\n", index );
         }
 
         if (( !info->is_valid ) || ( info->data_count <= 0 ) || ( info->data == NULL )) return 0;
