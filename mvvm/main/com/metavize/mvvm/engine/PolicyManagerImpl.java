@@ -153,6 +153,7 @@ class PolicyManagerImpl implements PolicyManager
                 }
             }
 
+            logger.debug("Added new policy, id: " + p.getId() + ", name: " + p.getName());
             allPolicies.add(p);
         }
     }
@@ -160,6 +161,7 @@ class PolicyManagerImpl implements PolicyManager
     public void removePolicy(Policy p)
         throws PolicyException
     {
+        logger.debug("Trying to remove policy, id: " + p.getId() + ", name: " + p.getName());
         synchronized(policyRuleLock) {
             if (p == null)
                 throw new PolicyException("Must specify a policy to remove");
@@ -187,6 +189,7 @@ class PolicyManagerImpl implements PolicyManager
                 }
             }
 
+            logger.debug("Removed policy, id: " + p.getId() + ", name: " + p.getName());
             allPolicies.remove(p);
         }
     }
@@ -220,6 +223,7 @@ class PolicyManagerImpl implements PolicyManager
                 }
             }
         }
+        logger.debug("Changed policy, id: " + p.getId() + ", new name: " + p.getName());
     }
 
     protected boolean isInUse(Policy p)
@@ -316,20 +320,7 @@ class PolicyManagerImpl implements PolicyManager
         // Sanity check the policies
         if (confpc == null || confpc.size() < 1)
             throw new PolicyException("List of policies missing or empty");
-        List<Policy> newAllPolicies = new ArrayList<Policy>(confpc.size());
-        Policy newDefaultPolicy = null;
-        for (Object o : confpc) {
-            Policy policy = (Policy)o;
-            if (policy.isDefault()) {
-                if (newDefaultPolicy != null)
-                    throw new PolicyException("Cannot have more than one default policy");
-                newDefaultPolicy = policy;
-            }
-            newAllPolicies.add(policy);
-        }
-        if (newDefaultPolicy == null)
-            throw new PolicyException("Default policy missing");
-
+        List<Policy> newAllPolicies = new ArrayList<Policy>(confpc);
 
         // Sanity check the system rules
         if (syspc == null || syspc.size() < 1)
@@ -352,10 +343,25 @@ class PolicyManagerImpl implements PolicyManager
             newUserRules.add(upr);
         }
 
+        List<Policy> pToAdd = new ArrayList<Policy>();
+        List<Policy> pToRemove = new ArrayList<Policy>();
+
+        // what's happening here.
+        for (Policy oldp : allPolicies) {   
+            if (oldp.getId() == null)
+                throw new Error("Policy" + oldp.getName() + " has null id");
+        }
+        
         // Now do the actual setting
         synchronized(policyRuleLock) {
+            Policy newDefaultPolicy = null;
             for (Policy newp : newAllPolicies) {
                 boolean foundIt = false;
+                if (newp.isDefault()) {
+                    if (newDefaultPolicy != null)
+                        throw new PolicyException("Cannot have more than one default policy");
+                    newDefaultPolicy = newp;
+                }
                 if (newp.getId() != null) {
                     for (Policy oldp : allPolicies) {
                         if (newp.getId().equals(oldp.getId())) {
@@ -367,18 +373,28 @@ class PolicyManagerImpl implements PolicyManager
                     }
                 }
                 if (!foundIt)
-                    addPolicy(newp.getName(), newp.getNotes());
+                    pToAdd.add(newp);
             }
+            if (newDefaultPolicy == null)
+                throw new PolicyException("Default policy missing");
+
             for (Policy oldp : allPolicies) {
                 boolean foundIt = false;
                 for (Policy newp : newAllPolicies) {
                     if (oldp.getId().equals(newp.getId())) {
                         foundIt = true;
+                        logger.debug("Not removing policy " + oldp.getId() + ", found in new list");
                         break;
                     }
                 }
                 if (!foundIt)
-                    removePolicy(oldp);
+                    pToRemove.add(oldp);
+            }
+            for (Policy newp : pToAdd) {
+                addPolicy(newp.getName(), newp.getNotes());
+            }
+            for (Policy oldp : pToRemove) {
+                removePolicy(oldp);
             }
             defaultPolicy = newDefaultPolicy;
 
