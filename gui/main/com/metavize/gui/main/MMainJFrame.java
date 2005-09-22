@@ -54,9 +54,9 @@ public class MMainJFrame extends javax.swing.JFrame {
         setBounds((screenSize.width-1024)/2, (screenSize.height-768)/2, 1024, 768);
 
 	PolicyStateMachine policyStateMachine = new PolicyStateMachine(mTabbedPane,rackJComboBox,Util.getMRackJPanel(),
-								       toolboxJScrollPane,storeJPanel);
-	Util.setPolicyStateMachine(policyStateMachine);
+								       toolboxJScrollPane,storeScrollJPanel,metavizeJButton);
 	rackJComboBox.addActionListener(policyStateMachine);
+	metavizeJButton.addActionListener(policyStateMachine);
 		
         // UPDATE/UPGRADE
         new UpdateCheckThread();
@@ -97,6 +97,7 @@ public class MMainJFrame extends javax.swing.JFrame {
     
     public Dimension getMinimumSize(){ return MIN_SIZE; } // used for form resizing
     
+
     private void initComponents() {//GEN-BEGIN:initComponents
         java.awt.GridBagConstraints gridBagConstraints;
 
@@ -542,21 +543,10 @@ public class MMainJFrame extends javax.swing.JFrame {
     }//GEN-END:initComponents
 
     private void rackJComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rackJComboBoxActionPerformed
+        //System.err.println("action performed");
     }//GEN-LAST:event_rackJComboBoxActionPerformed
 
     private void metavizeJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_metavizeJButtonActionPerformed
-        try{
-	    metavizeJButton.setEnabled(false);
-	    PolicyJDialog policyJDialog = new PolicyJDialog();
-	    policyJDialog.setVisible(true);
-	}
-	catch(Exception e){
-	    try{ Util.handleExceptionWithRestart("Error showing policy management settings", e); }
-	    catch(Exception f){ Util.handleExceptionNoRestart("Error showing policy management settings", f); }
-	}
-	finally{
-            metavizeJButton.setEnabled(true);
-	}
     }//GEN-LAST:event_metavizeJButtonActionPerformed
     
 

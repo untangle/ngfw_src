@@ -68,6 +68,8 @@ class CustomPolicyTableModel extends MSortedTableModel{
     private static final String DIRECTION_INBOUND = "inbound";
     private static final String DIRECTION_OUTBOUND = "outbound";
 
+    private ComboBoxModel protocolModel = super.generateComboBoxModel( ProtocolMatcher.getProtocolEnumeration(),
+								       ProtocolMatcher.getProtocolDefault() );
     private ComboBoxModel directionModel = super.generateComboBoxModel(new String[]{DIRECTION_INBOUND, DIRECTION_OUTBOUND},
 								       DIRECTION_INBOUND);
 
@@ -93,7 +95,7 @@ class CustomPolicyTableModel extends MSortedTableModel{
         //                                 #   min     rsz    edit   remv   desc   typ            def
         addTableColumn( tableColumnModel,  0,  C0_MW,  false, false, false, false, String.class,  null, sc.TITLE_STATUS );
         addTableColumn( tableColumnModel,  1,  C1_MW,  false, false, false, false, Integer.class, null, sc.TITLE_INDEX );
-        addTableColumn( tableColumnModel,  2,  C2_MW,  true,  true,  false, false, String.class, "any", sc.html("protocol"));
+        addTableColumn( tableColumnModel,  2,  C2_MW,  true,  true,  false, false, ComboBoxModel.class, protocolModel, sc.html("protocol"));
         addTableColumn( tableColumnModel,  3,  C3_MW,  true,  true,  false, false, String.class, "0", sc.html("client<br>interface"));
         addTableColumn( tableColumnModel,  4,  C4_MW,  true,  true,  false, false, String.class, "1", sc.html("server<br>interface"));
         addTableColumn( tableColumnModel,  5,  C5_MW,  true,  true,  false, false, String.class, "any", sc.html("client<br>address"));
@@ -117,7 +119,7 @@ class CustomPolicyTableModel extends MSortedTableModel{
 	for( Vector rowVector : tableVector ){
 	    rowIndex++;
             newElem = (UserPolicyRule) rowVector.elementAt(12);
-	    try{ newElem.setProtocol( ProtocolMatcher.parse((String) rowVector.elementAt(2)) ); }
+	    try{ newElem.setProtocol( ProtocolMatcher.parse(((ComboBoxModel) rowVector.elementAt(2)).getSelectedItem().toString()) ); }
 	    catch(Exception e){ throw new Exception("Invalid \"protocol\" in row: " + rowIndex); }
 	    try{ newElem.setClientIntf( Byte.decode((String) rowVector.elementAt(3)) ); }
 	    catch(Exception e){ throw new Exception("Invalid \"client interface\" in row: " + rowIndex); }
@@ -160,7 +162,7 @@ class CustomPolicyTableModel extends MSortedTableModel{
 	    tempRow = new Vector(13);
 	    tempRow.add( super.ROW_SAVED );
 	    tempRow.add( rowIndex );
-	    tempRow.add( newElem.getProtocol().toString() );
+	    tempRow.add( super.copyComboBoxModel(protocolModel) );
 	    tempRow.add( ((Byte)newElem.getClientIntf()).toString() );
 	    tempRow.add( ((Byte)newElem.getServerIntf()).toString() );
 	    tempRow.add( newElem.getClientAddr().toString() );

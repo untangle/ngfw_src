@@ -43,7 +43,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
          this.mTransformControlsJPanel = mTransformJPanel.mTransformControlsJPanel();
          this.mTransformDisplayJPanel = mTransformJPanel.mTransformDisplayJPanel();
          this.powerJToggleButton = mTransformJPanel.powerJToggleButton();
-         this.transformContext = mTransformJPanel.transformContext();
+         this.transformContext = mTransformJPanel.getTransformContext();
 	 this.mackageDesc = mTransformJPanel.getMackageDesc();
          this.stateJLabel = mTransformJPanel.stateJLabel();
          this.saveJButton = mTransformControlsJPanel.saveJButton();
@@ -81,7 +81,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
             else if( source.equals(removeJButton) ){
 		removeJButton.setEnabled(false);
                 if( (new RemoveProceedDialog(displayName)).isProceeding() ){
-                    new RemoveThread(false);
+                    Util.getPolicyStateMachine().moveFromRackToToolbox(mTransformJPanel.getPolicy(),mTransformJPanel);
                 }
 		removeJButton.setEnabled(true);
             }
@@ -91,7 +91,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
 		if( (modifiers & java.awt.event.ActionEvent.SHIFT_MASK) > 0 ){
 		    if( (modifiers & java.awt.event.ActionEvent.CTRL_MASK) == 0 ){
                         if( (new RemoveProceedDialog(displayName)).isProceeding() ){
-                            new RemoveThread(false);
+			    Util.getPolicyStateMachine().moveFromRackToToolbox(mTransformJPanel.getPolicy(),mTransformJPanel);
                         }
                         else{
                             powerJToggleButton.setSelected( !powerJToggleButton.isSelected() );
@@ -99,7 +99,6 @@ public class MStateMachine implements java.awt.event.ActionListener {
                         }
 		    }
 		    else{
-			// new RemoveThread(true); not implemented properly now
 			powerJToggleButton.setEnabled(true);
 		    }
 		}
@@ -193,31 +192,6 @@ public class MStateMachine implements java.awt.event.ActionListener {
 	}
     }
 
-    class RemoveThread extends Thread{
-	private boolean removeAll;
-	public RemoveThread(boolean removeAll){
-	    super("MVCLIENT-MStateMachine.RemoveThread: " + mackageDesc.getDisplayName());
-	    this.removeAll = removeAll;
-	    setRemovingView(false);
-	    this.start();
-	}
-	public void run(){
-	    try{
-		mTransformJPanel.doShutdown();
-		// Util.getMPipelineJPanel().removeTransform(mTransformJPanel);
-	    }
-	    catch(Exception e){
-		try{
-		    Util.handleExceptionWithRestart("Error doing remove", e);
-		}
-		catch(Exception f){
-		    Util.handleExceptionNoRestart("Error doing remove", f);
-		    setProblemView(true);
-		}
-	    }
-	}
-    }
-
     class PowerThread extends Thread{
 	private final boolean powerOn;
 	public PowerThread(){
@@ -260,10 +234,10 @@ public class MStateMachine implements java.awt.event.ActionListener {
     
     // VIEW SETTING //////////////////////////////// 
     private void setProcessingView(boolean doLater){ setView( doLater, false, false, false, false, false, null, true, BlinkJLabel.PROCESSING_STATE ); }
-    private void setProblemView(boolean doLater){    setView( doLater, false, false, false, true,  false, null, true, BlinkJLabel.PROBLEM_STATE ); }
+            void setProblemView(boolean doLater){    setView( doLater, false, false, false, true,  false, null, true, BlinkJLabel.PROBLEM_STATE ); }
     private void setStartingView(boolean doLater){ setView( doLater, false, false, false, false, false, null, false, BlinkJLabel.STARTING_STATE ); }
     private void setStoppingView(boolean doLater){ setView( doLater, false, false, false, false, false, null, false, BlinkJLabel.STOPPING_STATE ); }
-    private void setRemovingView(boolean doLater){ setStoppingView(doLater); }
+            void setRemovingView(boolean doLater){ setStoppingView(doLater); }
     private void setOnView(boolean doLater){ 	    setView( doLater, true, true, true, true, true, true, true,  BlinkJLabel.ON_STATE ); }
     private void setOffView(boolean doLater){ 	    setView( doLater, true, true, true, true, true, false, false, BlinkJLabel.OFF_STATE ); }
     

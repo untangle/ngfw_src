@@ -16,6 +16,7 @@ import com.metavize.gui.util.*;
 import com.metavize.gui.util.*;
 import com.metavize.gui.util.*;
 
+import com.metavize.mvvm.policy.*;
 import com.metavize.mvvm.security.*;
 import com.metavize.mvvm.tran.*;
 import com.metavize.mvvm.*;
@@ -28,23 +29,24 @@ import javax.swing.*;
 
 public class MTransformJPanel extends javax.swing.JPanel {
 
+    // MVVM MODEL
     protected TransformContext transformContext;
-    public TransformContext transformContext() { return transformContext; }
     public TransformContext getTransformContext(){ return transformContext; }
     protected MackageDesc mackageDesc;
-    public MackageDesc mackageDesc(){ return mackageDesc; }
     public MackageDesc getMackageDesc(){ return mackageDesc; }
+    protected Tid tid;
+    public Tid getTid(){ return tid; }
+    protected Policy policy;
+    public Policy getPolicy(){ return policy; }
+
+    // GUI VIEW MODEL
     private MTransformControlsJPanel mTransformControlsJPanel; protected MTransformControlsJPanel mTransformControlsJPanel(){ return mTransformControlsJPanel; }
     private MTransformDisplayJPanel mTransformDisplayJPanel;  protected MTransformDisplayJPanel mTransformDisplayJPanel() { return mTransformDisplayJPanel; }
 
-
+    // GUI DATA MODEL
     protected MStateMachine mStateMachine;
 
-    private Tid tid;
-    public Tid getTid(){ return tid; }
-
-
-    // GUI assets
+    // GUI CONSTANTS
     private static Dimension maxDimension, minDimension;
 
     public static MTransformJPanel instantiate(TransformContext transformContext) throws Exception {
@@ -59,6 +61,7 @@ public class MTransformJPanel extends javax.swing.JPanel {
         this.transformContext = transformContext;
 	this.mackageDesc = transformContext.getMackageDesc();
 	this.tid = transformContext.getTid();
+	this.policy = tid.getPolicy();
 	
         // INIT GUI
         initComponents();
@@ -133,6 +136,9 @@ public class MTransformJPanel extends javax.swing.JPanel {
         mTransformControlsJPanel.removeJButton().addActionListener(mStateMachine);
 	
     }
+
+    public void setProblemView(boolean doLater){ mStateMachine.setProblemView(doLater); }
+    public void setRemovingView(boolean doLater){ mStateMachine.setRemovingView(doLater); }
     
     public void doShutdown(){
 	try{

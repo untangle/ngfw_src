@@ -37,8 +37,7 @@ import org.jfree.data.category.*;
 
 
 public class MTransformDisplayJPanel extends javax.swing.JPanel {
-    
-    
+        
     // GENERAL TRANSFORM
     protected MTransformJPanel mTransformJPanel;
     
@@ -49,7 +48,6 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
     protected UpdateGraphThread updateGraphThread;
     private volatile boolean updateGraph = false;
     private volatile boolean killGraph = false;
-    private Tid graphTransformTid;
     
     // THROUGHPUT & SESSION COUNT DISPLAY
     private static long SLEEP_MILLIS = 1000l;
@@ -68,11 +66,8 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
     private DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
     
-    /** Creates new form MTransformDisplayJPanel */
     public MTransformDisplayJPanel(MTransformJPanel mTransformJPanel) {
         this.mTransformJPanel = mTransformJPanel;
-        
-        graphTransformTid = mTransformJPanel.transformContext().getTid();
         
         throughputDynamicTimeSeriesCollection = new AreaDynamicTimeSeriesCollection(1, 60, new Second());
         throughputDynamicTimeSeriesCollection.setTimeBase(new Second());
@@ -514,7 +509,7 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
                     Thread.sleep(SLEEP_MILLIS);     
 
                     // GET TRANSFORM STATS AND UPDATE COUNTS
-                    Transform fakeTran = Util.getStatsCache().getFakeTransform(graphTransformTid);
+                    Transform fakeTran = Util.getStatsCache().getFakeTransform(mTransformJPanel.getTid());
                     currentStats = fakeTran.getStats();
 
                     sessionCountCurrent = currentStats.tcpSessionCount()

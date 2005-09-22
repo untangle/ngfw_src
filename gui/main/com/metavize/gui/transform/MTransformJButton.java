@@ -11,6 +11,7 @@
 
 package com.metavize.gui.transform;
 
+import com.metavize.mvvm.policy.Policy;
 import com.metavize.gui.main.*;
 import com.metavize.gui.pipeline.*;
 import com.metavize.gui.util.*;
@@ -200,20 +201,20 @@ public class MTransformJButton extends JButton {
 	}
     }
 
-    public void setDeployableView(){ updateView(null, "Ready to be Installed into Rack.", true, false); }
-    public void setProcurableView(){ updateView(null, "Ready to be Purchased from Store.", true, false); }
+    public void setDeployableView(){ updateView(null, "Ready to be installed into the rack.", true, false); }
+    public void setProcurableView(){ updateView(null, "Ready to be purchased from the store.", true, false); }
     public void setDeployedView(){ updateView(null, "Installed into rack.", false, false); }
 
-    public void setDeployingView(){ updateView("installing", "Installing.", false, true); }
-    public void setProcuringView(){ updateView("purchasing", "Purchasing.", false, true); }
-    public void setRemovingFromToolboxView(){ updateView("removing", "Removing from Toolbox.", false, true); }
-    public void setRemovingFromRackView(){ updateView("removing", "Removing from Rack.", false, false); }
+    public void setDeployingView(){ updateView("Installing", "Installing.", false, true); }
+    public void setProcuringView(){ updateView("Purchasing", "Purchasing.", false, true); }
+    public void setRemovingFromToolboxView(){ updateView("Removing", "Removing from the toolbox.", false, true); }
+    public void setRemovingFromRackView(){ updateView("Removing", "Removing from the rack.", false, false); }
 
-    public void setFailedInitView(){ updateView(null, "Failed Graphical Initialization.", false, false); }
-    public void setFailedProcureView(){ updateView(null, "Failed Purchase.", true, false); }
-    public void setFailedDeployView(){ updateView(null, "Failed Installation.", true, false); }
-    public void setFailedRemoveFromToolboxView(){ updateView(null, "Failed Removal from Toolbox.", true, false); }
-    public void setFailedRemoveFromRackView(){ updateView(null, "Failed Removal from Rack.", false, false); }
+    public void setFailedInitView(){ updateView(null, "Failed graphical initialization.", false, false); }
+    public void setFailedProcureView(){ updateView(null, "Failed purchase.", true, false); }
+    public void setFailedDeployView(){ updateView(null, "Failed installation.", true, false); }
+    public void setFailedRemoveFromToolboxView(){ updateView(null, "Failed removal from toolbox.", true, false); }
+    public void setFailedRemoveFromRackView(){ updateView(null, "Failed removal from rack.", false, false); }
     /////////////////////////////
 
 
@@ -245,61 +246,30 @@ public class MTransformJButton extends JButton {
     ///////////////////////////////////
 
     // PROCURE, DEPLOY, AND REMOVAL ////////////////
-    public void install(){
+
+    public void procure(){
         if(Util.getIsDemo())
             return;
-        new InstallThread();
+        new ProcureThread();
     }
 
-    public void uninstall(){
-        if(Util.getIsDemo())
-            return;
-        new UninstallThread();
-    }
 
-    public Thread purchase( JProgressBar progressBar, JDialog dialog ){
-        if(Util.getIsDemo())
-            return null;
-        return new PurchaseThread(progressBar, dialog);
-    }
-
-    private class InstallThread extends Thread {
-
-        public InstallThread(){
-	    this.setContextClassLoader( Util.getClassLoader() );
-	    MTransformJButton.this.setDeployingView();
-	    this.start();
-        }
-	
-        public void run(){
-	    try{
-		// Util.getMPipelineJPanel().addTransform(MTransformJButton.this.getName());  // add to the rack
-                // Util.getMPipelineJPanel().loadAllCasings(false); // to load casings, but not their GUIs
-		// LET THE USER KNOW WERE DONE
-		MTransformJButton.this.setDeployedView();
-	    }
-	    catch(Exception e){
-		try{
-		    Util.handleExceptionWithRestart("Error installing transform",  e);
-		}
-		catch(Exception f){
-                        Util.handleExceptionNoRestart("Error installing transform",  f);
-			MTransformJButton.this.setFailedDeployView();
-			new MOneButtonJDialog(MTransformJButton.this.getDisplayName(), "A problem occurred while installing:<br>" + MTransformJButton.this.getDisplayName() + "<br>Please contact Metavize support.");
-		}
-	    }
-        }
-    }
-    
-
-    private class PurchaseThread extends Thread {
+    private class ProcureThread extends Thread {
+	/*		    targetMTransformJButton.setEnabled(false);
+	    StoreJDialog storeJDialog = new StoreJDialog(targetMTransformJButton);
+	    storeJDialog.setVisible(true);
+	    if( storeJDialog.getPurchasedMTransformJButton() == null)
+		targetMTransformJButton.setEnabled(true); // nothing was purchased
+	    // else - something was purchased, handled in the above dialog
+	    */
 	private JProgressBar progressBar;
 	private JDialog dialog;
-        public PurchaseThread(JProgressBar progressBar, JDialog dialog){
+	
+        public ProcureThread(){
 	    this.setContextClassLoader( Util.getClassLoader() );
 	    MTransformJButton.this.setProcuringView();
-	    this.progressBar = progressBar;
-	    this.dialog = dialog;
+	    this.progressBar = null;//progressBar;
+	    this.dialog = null;//dialog;
 
             progressBar.setIndeterminate(true);
 	    progressBar.setString("Starting download...");
@@ -371,35 +341,6 @@ public class MTransformJButton extends JButton {
     }
     
 
-    private class UninstallThread extends Thread {
-
-        public UninstallThread(){
-	    this.setContextClassLoader( Util.getClassLoader() );
-	    MTransformJButton.this.setRemovingFromToolboxView();
-	    this.start();
-	}
-
-        public void run() {
-	    try{
-		int dashIndex = MTransformJButton.this.getName().indexOf('-');
-		Util.getToolboxManager().uninstall(MTransformJButton.this.getName().substring(0, dashIndex));
-		// Util.getMMainJFrame().addMTransformJButtonToStore(MTransformJButton.this);
-		// LET THE USER KNOW WE ARE DONE
-		MTransformJButton.this.setProcurableView();
-	    }
-	    catch(Exception e){
-		try{
-		    Util.handleExceptionWithRestart("error removing transform: " +  MTransformJButton.this.getName(),  e);
-		}
-		catch(Exception f){
-		    Util.handleExceptionNoRestart("Error removing transform:", f);
-		    MTransformJButton.this.setFailedRemoveFromToolboxView();
-		    new MOneButtonJDialog(MTransformJButton.this.getDisplayName(), "A problem occurred while removing:<br>" + MTransformJButton.this.getDisplayName() + "<br>Please contact Metavize support.");
-		}
-	    }
-
-        }
-    }
     ///////////////////////////////////////
 
     private class FadeTask implements ActionListener{
