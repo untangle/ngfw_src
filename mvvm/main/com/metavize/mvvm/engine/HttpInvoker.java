@@ -37,6 +37,9 @@ import org.apache.log4j.Logger;
 
 class HttpInvoker extends InvokerBase
 {
+    private static final boolean ALLOW_MULTIPLE_LOGINS
+        = Boolean.parseBoolean(System.getProperty("mvvm.login.multiuser"));
+
     private static final HttpInvoker INVOKER = new HttpInvoker();
     private static final int LOGIN_TIMEOUT_MINUTES = 30;
     private static final int LOGIN_REAPER_PERIOD = 60000;
@@ -280,7 +283,7 @@ class HttpInvoker extends InvokerBase
 
     private LoginSession checkSessions(LoginSession ls, boolean force)
     {
-        if (ls.isInteractive()) {
+        if (!ALLOW_MULTIPLE_LOGINS && ls.isInteractive()) {
             for (Iterator<LoginSession> i = logins.keySet().iterator();
                  i.hasNext(); ) {
                 LoginSession ols = i.next();

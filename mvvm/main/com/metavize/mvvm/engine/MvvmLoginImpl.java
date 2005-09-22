@@ -23,11 +23,11 @@ import com.metavize.mvvm.security.MvvmLogin;
 import com.metavize.mvvm.security.MvvmPrincipal;
 import com.metavize.mvvm.security.PasswordUtil;
 import com.metavize.mvvm.security.User;
+import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import org.apache.log4j.Logger;
 
 class MvvmLoginImpl implements MvvmLogin
 {
