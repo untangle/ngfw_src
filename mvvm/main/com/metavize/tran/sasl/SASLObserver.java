@@ -13,7 +13,7 @@ import java.nio.ByteBuffer;
 
 
 /**
- * Interface for Object which observes a SASL
+ * Base class for Object which observes a SASL
  * exchange, based on a given SASL mechanism.
  * <br><br>
  * The interesting thing about this interface
@@ -40,7 +40,9 @@ import java.nio.ByteBuffer;
  * does not mean that a given SASL exchange
  * will result in an encrypted channel).
  */
-public interface SASLObserver {
+public abstract class SASLObserver {
+
+  protected static final int DEF_MAX_MSG_SZ = 1024*4;
 
   /**
    * Enumeration of values for
@@ -61,13 +63,30 @@ public interface SASLObserver {
     UNKNOWN
   };
 
+  private final String m_mechName;
+  private final boolean m_supportsPrivacy;
+  private final boolean m_supportsIntegrity;
+  private final int m_maxMessageSz;
+  
+  SASLObserver(String mechName,
+    boolean supportsPrivacy,
+    boolean supportsIntegrity,
+    int maxMessageSz) {
+    m_mechName = mechName;
+    m_supportsPrivacy = supportsPrivacy;
+    m_supportsIntegrity = supportsIntegrity;
+    m_maxMessageSz = maxMessageSz;
+  }
+
   /**
    * Query this Observer about the mechansim's
    * support for privacy (encryption).
    *
    * @return true if this mechanism supports privacy
    */
-  public boolean mechanismSupportsPrivacy();
+  public final boolean mechanismSupportsPrivacy() {
+    return m_supportsPrivacy;
+  }
 
   /**
    * Query this Observer about the mechansim's
@@ -78,13 +97,36 @@ public interface SASLObserver {
    *
    * @return true if this mechanism supports integrity protection
    */
-  public boolean mechanismSupportsIntegrity();
+  public boolean mechanismSupportsIntegrity() {
+    return m_supportsIntegrity;
+  }
 
-  public FeatureStatus exchangeUsingPrivacy();
+  /**
+   * Get the maximum reasonable message size for this
+   * mechanism.  Note that this is without the enveloping
+   * protocol.  For example, if things are base64 encoded
+   * the number should be multiplied by 4 then divided by 3.
+   *
+   * @return the max reasonable message size.
+   */
+  public int getMaxReasonableMessageSz() {
+    return m_maxMessageSz;
+  }
 
-  public FeatureStatus exchangeUsingIntegrity();
+  /**
+   * Get the SASL name of this mechanism
+   *
+   * @return the name
+   */
+  public final String getMechanismName() {
+    return m_mechName;
+  }
 
-  public FeatureStatus exchangeAuthIDFound();
+  public abstract FeatureStatus exchangeUsingPrivacy();
+
+  public abstract FeatureStatus exchangeUsingIntegrity();
+
+  public abstract FeatureStatus exchangeAuthIDFound();
 
   /**
    * Get the AuthorizationID, if {@link #exchangeAuthIDFound it has been found}.
@@ -94,7 +136,7 @@ public interface SASLObserver {
    *
    * @return the Authorization ID, or null if not (yet?) found.
    */
-  public String getAuthID();
+  public abstract String getAuthID();
 
 
   /**
@@ -109,7 +151,7 @@ public interface SASLObserver {
    * This method then acts as a "hint" as to the disposition
    * of the exchange, based on the SASL data.
    */
-  public FeatureStatus exchangeComplete();
+  public abstract FeatureStatus exchangeComplete();
 
   /**
    * Pass-in initial client data.  This is an
@@ -126,10 +168,10 @@ public interface SASLObserver {
    * @return true if this data has changed any of the
    *         observed properties of this exchange.
    */
-  public boolean initialClientData(ByteBuffer buf);
+  public abstract boolean initialClientData(ByteBuffer buf);
 
-  public boolean clientData(ByteBuffer buf);
+  public abstract boolean clientData(ByteBuffer buf);
 
-  public boolean serverData(ByteBuffer buf);
+  public abstract boolean serverData(ByteBuffer buf);
 
 }

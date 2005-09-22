@@ -26,5 +26,7 @@ class CRAM_MD5Observer
     "CRAM-MD5".toLowerCase()
   };
 
-  CRAM_MD5Observer() {}
+  CRAM_MD5Observer() {
+    super(MECH_NAMES[0], DEF_MAX_MSG_SZ);
+  }
 }

@@ -24,7 +24,10 @@ abstract class InitialIDObserver
   private String m_id;
   private boolean m_seenInitialClientData = false;
   
-  InitialIDObserver() {}
+  InitialIDObserver(String mechName,
+    int maxMsgSize) {
+    super(mechName, maxMsgSize);
+  }
 
   @Override
   public FeatureStatus exchangeAuthIDFound() {

@@ -49,6 +49,8 @@ public class CommandParser {
         return new MAILCommand(cmdStr, argStr);
       case RCPT:
         return new RCPTCommand(cmdStr, argStr);
+      case AUTH:
+        return new AUTHCommand(cmdStr, argStr);
       default:
         return new Command(type, cmdStr, argStr);    
     }

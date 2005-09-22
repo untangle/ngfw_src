@@ -23,5 +23,7 @@ class ANONYMOUSObserver
     "ANONYMOUS".toLowerCase()
   };
 
-  ANONYMOUSObserver() {}
+  ANONYMOUSObserver() {
+    super(MECH_NAMES[0], DEF_MAX_MSG_SZ);
+  }
 }

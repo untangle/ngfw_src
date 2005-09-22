@@ -80,6 +80,18 @@ public class ByteBufferBuilder {
   public void add(byte[] bytes) {
     add(bytes, 0, bytes.length);
   }
+  /**
+   * Adds any available content from
+   * the given ByteBuffer.  Note that
+   * this method does <b>not</b> alter
+   * the position of the buffer.
+   */
+  public void add(ByteBuffer buf) {
+    final int remaining = buf.remaining();
+    ensure(remaining);
+    buf.get(m_bytes, m_pos, remaining);
+    m_pos+=remaining;
+  }
   
   /**
    * Remove the last <code>num</code> bytes 
@@ -90,6 +102,14 @@ public class ByteBufferBuilder {
   public void remove(int num) {
     m_pos-=num;
     m_pos = m_pos<0?0:m_pos;
+  }
+
+  /**
+   * Removes all bytes from this builder.
+   * Same as <code>m_builder.remove(m_builder.size());</code>
+   */
+  public void clear() {
+    m_pos = 0;
   }
   
   /**
@@ -122,7 +142,7 @@ public class ByteBufferBuilder {
   }
   
   private void ensure(int cap) {
-    if(m_pos >= m_bytes.length) {
+    if(m_pos+cap >= m_bytes.length) {
       //Increase.  Note we handle the boundary
       //case where the increased capabity is greater than
       //a single growth occurance

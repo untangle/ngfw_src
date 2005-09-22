@@ -173,11 +173,14 @@ class SASLExchangeTokMon
   }
 
   private byte[] base64Decode(StringBuilder sb) {
+    if(sb == null) {
+      return null;
+    }
     try {
       return new BASE64Decoder().decodeBuffer(sb.toString());
     }
     catch(Exception ex) {
-      m_logger.warn(ex);
+      m_logger.warn("Exception base 64 decoding \"" + sb.toString() + "\"", ex);
       return null;
     }
   }
@@ -281,7 +284,7 @@ class SASLExchangeTokMon
 
   private boolean isChannelSecured() {
     return 
-      m_observer.exchangeUsingPrivacy() == SASLObserver.FeatureStatus.YES &&
+      m_observer.exchangeUsingPrivacy() == SASLObserver.FeatureStatus.YES ||
       m_observer.exchangeUsingIntegrity() == SASLObserver.FeatureStatus.YES; 
   }
   private boolean isChannelUnsecure() {

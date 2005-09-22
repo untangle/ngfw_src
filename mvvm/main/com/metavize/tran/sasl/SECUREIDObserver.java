@@ -28,7 +28,9 @@ class SECUREIDObserver
   private String m_id;
   private boolean m_seenInitialClientMessage = false;
 
-  SECUREIDObserver() {}  
+  SECUREIDObserver() {
+    super(MECH_NAMES[0], DEF_MAX_MSG_SZ);
+  }  
   
   @Override
   public FeatureStatus exchangeAuthIDFound() {

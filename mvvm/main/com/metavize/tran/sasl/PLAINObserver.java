@@ -26,7 +26,9 @@ class PLAINObserver
   private String m_id;
 
 
-  PLAINObserver() {}
+  PLAINObserver() {
+    super(MECH_NAMES[0], DEF_MAX_MSG_SZ);
+  }
   
   @Override
   public FeatureStatus exchangeAuthIDFound() {

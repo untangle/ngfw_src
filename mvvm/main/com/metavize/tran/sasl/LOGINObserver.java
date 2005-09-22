@@ -57,7 +57,9 @@ class LOGINObserver
   private boolean m_lastServerResponseUsername = false;
 
 
-  LOGINObserver() {}
+  LOGINObserver() {
+    super(MECH_NAMES[0], DEF_MAX_MSG_SZ);
+  }
   
   @Override
   public FeatureStatus exchangeAuthIDFound() {

@@ -21,44 +21,48 @@ import java.nio.ByteBuffer;
  * privacy cannot result from the exchange.
  */
 abstract class ClearObserver
-  implements SASLObserver {
+  extends SASLObserver {
 
-  public boolean mechanismSupportsPrivacy() {
-    return false;
+  ClearObserver(String mechName, int maxMessageSz) {
+    super(mechName, false, false, maxMessageSz);
   }
 
-  public boolean mechanismSupportsIntegrity() {
-    return false;
-  }
-
+  @Override
   public FeatureStatus exchangeUsingPrivacy() {
     return FeatureStatus.NO;
   }
 
+  @Override
   public FeatureStatus exchangeUsingIntegrity() {
     return FeatureStatus.NO;
   }
 
+  @Override
   public FeatureStatus exchangeAuthIDFound() {
     return FeatureStatus.UNKNOWN;
   }
 
+  @Override
   public String getAuthID() {
     return null;
   }
 
+  @Override
   public FeatureStatus exchangeComplete() {
     return FeatureStatus.UNKNOWN;
   }
 
+  @Override
   public boolean initialClientData(ByteBuffer buf) {
     return false;
   }
 
+  @Override
   public boolean clientData(ByteBuffer buf) {
     return false;
   }
 
+  @Override
   public boolean serverData(ByteBuffer buf) {
     return false;
   }

@@ -23,5 +23,7 @@ class SKEYObserver
     "SKEY".toLowerCase()
   };
 
-  SKEYObserver() {}
+  SKEYObserver() {
+    super(MECH_NAMES[0], DEF_MAX_MSG_SZ);
+  }
 }

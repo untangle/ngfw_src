@@ -21,44 +21,49 @@ import java.nio.ByteBuffer;
  * privacy mey result from the exchange.
  */
 abstract class PrivIntObserver
-  implements SASLObserver {
+  extends SASLObserver {
 
-  public boolean mechanismSupportsPrivacy() {
-    return true;
+
+  PrivIntObserver(String mechName, int maxMessageSz) {
+    super(mechName, true, true, maxMessageSz);
   }
 
-  public boolean mechanismSupportsIntegrity() {
-    return true;
-  }
-
+  @Override
   public FeatureStatus exchangeUsingPrivacy() {
     return FeatureStatus.UNKNOWN;
   }
 
+  @Override
   public FeatureStatus exchangeUsingIntegrity() {
     return FeatureStatus.UNKNOWN;
   }
 
+  @Override
   public FeatureStatus exchangeAuthIDFound() {
     return FeatureStatus.UNKNOWN;
   }
 
+  @Override
   public String getAuthID() {
     return null;
   }
 
+  @Override
   public FeatureStatus exchangeComplete() {
     return FeatureStatus.UNKNOWN;
   }
 
+  @Override
   public boolean initialClientData(ByteBuffer buf) {
     return false;
   }
 
+  @Override
   public boolean clientData(ByteBuffer buf) {
     return false;
   }
 
+  @Override
   public boolean serverData(ByteBuffer buf) {
     return false;
   }
