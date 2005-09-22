@@ -28,7 +28,6 @@ import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.security.AdminSettings;
 import com.metavize.mvvm.security.User;
 import org.apache.log4j.Logger;
-
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Transaction;
@@ -155,7 +154,7 @@ class MailSenderImpl implements MailSender
         try {
             Transaction tx = s.beginTransaction();
 
-            s.merge(settings);
+            s.saveOrUpdate(settings);
 
             tx.commit();
         } catch (HibernateException exn) {

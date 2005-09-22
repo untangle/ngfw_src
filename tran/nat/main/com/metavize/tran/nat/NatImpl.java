@@ -135,7 +135,7 @@ public class NatImpl extends AbstractTransform implements Nat
         try {
             Transaction tx = s.beginTransaction();
 
-            s.merge(settings);
+            s.saveOrUpdate(settings);
             this.settings = settings;
 
             tx.commit();

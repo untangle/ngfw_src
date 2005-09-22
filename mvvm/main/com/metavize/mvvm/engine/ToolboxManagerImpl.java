@@ -282,7 +282,7 @@ class ToolboxManagerImpl implements ToolboxManager
         try {
             Transaction tx = s.beginTransaction();
 
-            s.merge(us);
+            s.saveOrUpdate(us);
 
             tx.commit();
         } catch (HibernateException exn) {

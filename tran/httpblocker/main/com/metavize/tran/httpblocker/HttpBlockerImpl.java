@@ -88,7 +88,7 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
         try {
             Transaction tx = s.beginTransaction();
 
-            s.merge(settings);
+            s.saveOrUpdate(settings);
             this.settings = settings;
 
             tx.commit();

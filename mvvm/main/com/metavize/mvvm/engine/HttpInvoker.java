@@ -164,7 +164,6 @@ class HttpInvoker extends InvokerBase
 
             if (retVal instanceof MvvmRemoteContext) { // XXX if is to login()
                 NewLoginDesc nld = newLogin.get();
-                System.out.println("RETREIVED NEW LOGIN: " + nld);
                 newLogin.remove();
 
                 if (null != nld) {
@@ -250,7 +249,6 @@ class HttpInvoker extends InvokerBase
 
     void login(LoginSession loginSession, boolean force)
     {
-        System.out.println("LOGGING IN : " + loginSession);
         newLogin.set(new NewLoginDesc(loginSession, force));
     }
 
@@ -292,7 +290,6 @@ class HttpInvoker extends InvokerBase
                         if (force) {
                             ld.steal(ls);
                         } else {
-                            System.out.println("LOGIN ALREADY: " + ols);
                             return ols;
                         }
                     }

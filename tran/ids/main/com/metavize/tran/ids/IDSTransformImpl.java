@@ -135,7 +135,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
         Session s = getTransformContext().openSession();
         try {
             Transaction tx = s.beginTransaction();
-            s.merge(settings);
+            s.saveOrUpdate(settings);
             this.settings = settings;
             IDSDetectionEngine.instance().setSettings(settings);
             tx.commit();

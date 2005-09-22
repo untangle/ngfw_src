@@ -11,6 +11,8 @@
 
 package com.metavize.tran.virus;
 
+import static com.metavize.tran.util.Ascii.CRLF;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -38,7 +40,6 @@ import com.metavize.mvvm.tran.MimeType;
 import com.metavize.mvvm.tran.MimeTypeRule;
 import com.metavize.mvvm.tran.StringRule;
 import com.metavize.mvvm.tran.Transform;
-import static com.metavize.tran.util.Ascii.CRLF;
 import com.metavize.tran.mail.papi.smtp.SMTPNotifyAction;
 import com.metavize.tran.token.TokenAdaptor;
 import org.apache.log4j.Logger;
@@ -72,16 +73,16 @@ public class VirusTransformImpl extends AbstractTransform
 
     private static final String OUT_NOTIFY_SUB_TEMPLATE =
       "[VIRUS NOTIFICATION] re: $MIMEMessage:SUBJECT$";
-  
+
     private static final String OUT_NOTIFY_BODY_TEMPLATE =
       "On $MIMEHeader:DATE$ a message from $MIMEMessage:FROM$ ($SMTPTransaction:FROM$) was received " + CRLF +
       "and found to contain the virus \"$VirusReport:VIRUS_NAME$\".  The infected portion of the email " + CRLF +
       "was removed";
-  
+
     private static final String IN_NOTIFY_SUB_TEMPLATE = OUT_NOTIFY_SUB_TEMPLATE;
     private static final String IN_NOTIFY_BODY_TEMPLATE = OUT_NOTIFY_BODY_TEMPLATE;
 
-      
+
 
     // XXX these queries need to be optimized once I have some real
     // data from the mail transform
@@ -269,12 +270,12 @@ public class VirusTransformImpl extends AbstractTransform
     {
         //TEMP hack - bscott
         ensureTemplateSettings(settings);
-        
+
         Session s = getTransformContext().openSession();
         try {
             Transaction tx = s.beginTransaction();
 
-            s.merge(settings);
+            s.saveOrUpdate(settings);
             this.settings = settings;
 
             virusReconfigure();
@@ -422,7 +423,7 @@ public class VirusTransformImpl extends AbstractTransform
         vs.setFtpInbound(new VirusConfig(true, true, "Scan incoming FTP files on inbound and outbound sessions" ));
         vs.setFtpOutbound(new VirusConfig(false, true, "Scan outgoing FTP files on inbound and outbound sessions" ));
 
-       
+
         vs.setSMTPInbound(
           new VirusSMTPConfig(true,
             SMTPVirusMessageAction.REMOVE,
@@ -432,7 +433,7 @@ public class VirusTransformImpl extends AbstractTransform
             IN_MOD_BODY_SMTP_TEMPLATE,
             IN_NOTIFY_SUB_TEMPLATE,
             IN_NOTIFY_BODY_TEMPLATE));
-            
+
         vs.setSMTPOutbound(
           new VirusSMTPConfig(false,
             SMTPVirusMessageAction.PASS,
@@ -443,14 +444,14 @@ public class VirusTransformImpl extends AbstractTransform
             OUT_NOTIFY_SUB_TEMPLATE,
             OUT_NOTIFY_BODY_TEMPLATE));
 
-            
+
         vs.setPOPInbound(
           new VirusPOPConfig(true,
             VirusMessageAction.REMOVE,
             "Scan incoming POP e-mail",
             IN_MOD_SUB_TEMPLATE,
             IN_MOD_BODY_TEMPLATE));
-            
+
         vs.setPOPOutbound(
           new VirusPOPConfig(false,
             VirusMessageAction.PASS,
@@ -458,14 +459,14 @@ public class VirusTransformImpl extends AbstractTransform
             OUT_MOD_SUB_TEMPLATE,
             OUT_MOD_BODY_TEMPLATE));
 
-            
+
         vs.setIMAPInbound(
           new VirusIMAPConfig(true,
             VirusMessageAction.REMOVE,
             "Scan incoming IMAP e-mail",
             IN_MOD_SUB_TEMPLATE,
             IN_MOD_BODY_TEMPLATE));
-            
+
         vs.setIMAPOutbound(
           new VirusIMAPConfig(false,
             VirusMessageAction.PASS,
@@ -533,8 +534,8 @@ public class VirusTransformImpl extends AbstractTransform
         vs.setExtensions(s);
 
         //TEMP hack - bscott
-        ensureTemplateSettings(vs);        
-        
+        ensureTemplateSettings(vs);
+
         setVirusSettings(vs);
     }
 
@@ -633,18 +634,18 @@ public class VirusTransformImpl extends AbstractTransform
       incrementCount(Transform.GENERIC_1_COUNTER);
     }
     /**
-     * Increment the counter for messages passed 
+     * Increment the counter for messages passed
      */
     public void incrementPassCounter() {
       incrementCount(Transform.GENERIC_2_COUNTER);
     }
     /**
      * Increment the counter for messages where we
-     * removed a virus 
+     * removed a virus
      */
     public void incrementRemoveCounter() {
       incrementCount(Transform.GENERIC_3_COUNTER);
-    }     
+    }
 
     // private methods --------------------------------------------------------
 

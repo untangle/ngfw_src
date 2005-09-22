@@ -26,10 +26,10 @@ import com.metavize.mvvm.tapi.Fitting;
 import com.metavize.mvvm.tapi.PipeSpec;
 import com.metavize.mvvm.tapi.SoloPipeSpec;
 import com.metavize.mvvm.tran.Direction;
+import com.metavize.mvvm.tran.Transform;
 import com.metavize.tran.mail.papi.smtp.SMTPNotifyAction;
 import com.metavize.tran.token.TokenAdaptor;
 import org.apache.log4j.Logger;
-import com.metavize.mvvm.tran.Transform;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -88,7 +88,7 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
         = MAIL_QUERY_BASE
         + "AND is_spam "
         + "ORDER BY evt.time_stamp DESC LIMIT ?";
-        
+
     private static final String[] QUERIES = new String[]
         { SMTP_QUERY, MAIL_QUERY };
 
@@ -124,7 +124,7 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
     }
 
     public List<SpamLog> getEventLogs(int limit, boolean spamOnly)
-    {   
+    {
         String[] queries;
         if (spamOnly)
             queries = SPAM_QUERIES;
@@ -157,7 +157,7 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
         try {
             Transaction tx = s.beginTransaction();
 
-            s.merge(zSpamSettings);
+            s.saveOrUpdate(zSpamSettings);
             this.zSpamSettings = zSpamSettings;
 
             reconfigure();
@@ -189,17 +189,17 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
       incrementCount(Transform.GENERIC_1_COUNTER);
     }
     /**
-     * Increment the counter for messages passed 
+     * Increment the counter for messages passed
      */
     public void incrementPassCounter() {
       incrementCount(Transform.GENERIC_2_COUNTER);
     }
     /**
-     * Increment the counter for messages marked 
+     * Increment the counter for messages marked
      */
     public void incrementMarkCounter() {
       incrementCount(Transform.GENERIC_3_COUNTER);
-    }            
+    }
 
     public void reconfigure() { return; }
 

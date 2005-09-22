@@ -140,7 +140,7 @@ class PolicyManagerImpl implements PolicyManager
             try {
                 Transaction tx = s.beginTransaction();
 
-                s.merge(p);
+                s.save(p);
 
                 tx.commit();
             } catch (HibernateException exn) {
@@ -207,7 +207,7 @@ class PolicyManagerImpl implements PolicyManager
             try {
                 Transaction tx = s.beginTransaction();
 
-                s.merge(p);
+                s.saveOrUpdate(p);
 
                 tx.commit();
             } catch (HibernateException exn) {
@@ -253,7 +253,7 @@ class PolicyManagerImpl implements PolicyManager
 
                         rule.setPolicy(p);
                         rule.setInbound(inbound);
-                        s.merge(rule);
+                        s.saveOrUpdate(rule);
 
                         tx.commit();
                     } catch (HibernateException exn) {
@@ -283,7 +283,7 @@ class PolicyManagerImpl implements PolicyManager
 
                 userRuleSet.setRules(rules);
                 userRules = (UserPolicyRule[]) rules.toArray(new UserPolicyRule[] { });
-                s.merge(userRuleSet);
+                s.saveOrUpdate(userRuleSet);
 
                 tx.commit();
             } catch (HibernateException exn) {
@@ -480,7 +480,7 @@ class PolicyManagerImpl implements PolicyManager
                 // Get rid of the extra user rules.
                 existingUser.retainAll(goodUser);
                 uprs.setRules(existingUser);
-                s.merge(uprs);
+                s.saveOrUpdate(uprs);
 
                 // Finally, get rid of the extra system ones.
                 existingSys.removeAll(goodSys);

@@ -72,7 +72,7 @@ public class TestTransformImpl extends AbstractTransform
         try {
             Transaction tx = s.beginTransaction();
 
-            s.merge(settings);
+            s.saveOrUpdate(settings);
             this.settings = settings;
 
             tx.commit();

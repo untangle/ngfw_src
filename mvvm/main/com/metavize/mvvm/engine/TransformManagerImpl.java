@@ -579,7 +579,7 @@ class TransformManagerImpl implements TransformManager
         try {
             Transaction tx = s.beginTransaction();
 
-            s.merge(transformManagerState);
+            s.saveOrUpdate(transformManagerState);
             s.save(tid);
 
             tx.commit();

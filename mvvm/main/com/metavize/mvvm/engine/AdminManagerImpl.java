@@ -104,7 +104,7 @@ class AdminManagerImpl implements AdminManager
         try {
             Transaction tx = s.beginTransaction();
 
-            s.merge(as);
+            s.saveOrUpdate(as);
 
             tx.commit();
         } catch (HibernateException exn) {

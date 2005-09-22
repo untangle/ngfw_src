@@ -262,7 +262,7 @@ public abstract class TransformBase implements Transform
             try {
                 Transaction tx = s.beginTransaction();
 
-                s.merge(tps);
+                s.saveOrUpdate(tps);
 
                 tx.commit();
             } catch (HibernateException exn) {

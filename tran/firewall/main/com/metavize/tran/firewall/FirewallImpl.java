@@ -94,7 +94,7 @@ public class FirewallImpl extends AbstractTransform implements Firewall
         try {
             Transaction tx = s.beginTransaction();
 
-            s.merge(settings);
+            s.saveOrUpdate(settings);
             this.settings = settings;
 
             tx.commit();
@@ -121,7 +121,7 @@ public class FirewallImpl extends AbstractTransform implements Firewall
     {
         return getEventLogs(limit, false);
     }
-    
+
     public List<FirewallLog> getEventLogs(int limit, boolean blockedOnly)
     {
         List<FirewallLog> l = new ArrayList<FirewallLog>(limit);
