@@ -235,8 +235,7 @@ class PolicyManagerImpl implements PolicyManager
             }
         }
 
-        // Here we need to check the transform manager to make sure. XXXXXXXX
-        throw new Error("ack");
+        return 0 < TransformManager.manager().transformInstances(p).size();
     }
 
     public SystemPolicyRule[] getSystemPolicyRules() {
