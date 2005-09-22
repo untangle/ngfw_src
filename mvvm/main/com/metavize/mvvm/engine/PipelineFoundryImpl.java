@@ -18,7 +18,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -53,11 +52,10 @@ class PipelineFoundryImpl implements PipelineFoundry
         = Logger.getLogger(PipelineFoundryImpl.class);
 
     private final Map<Fitting, List<MPipe>> incomingMPipes
-        = new ConcurrentHashMap<Fitting, List<MPipe>>();
+        = new HashMap<Fitting, List<MPipe>>();
     private final Map<Fitting, List<MPipe>> outgoingMPipes
-        = new ConcurrentHashMap<Fitting, List<MPipe>>();
-
-    private final Map casings = new ConcurrentHashMap();
+        = new HashMap<Fitting, List<MPipe>>();
+    private final Map<MPipe, MPipe> casings = new HashMap<MPipe, MPipe>();
 
     private final Map<InetSocketAddress, Fitting> connectionFittings
         = new ConcurrentHashMap<InetSocketAddress, Fitting>();
@@ -128,11 +126,35 @@ class PipelineFoundryImpl implements PipelineFoundry
         List<MPipeFitting> chain = makeChain(sd, p, start);
         long ct1 = System.nanoTime();
 
+        // filter list
         long ft0 = System.nanoTime();
-        List<ArgonAgent> agents = filter(chain, sd, pr);
+
+        List<ArgonAgent> al = new ArrayList<ArgonAgent>(chain.size());
+        List<MPipeFitting> ml = new ArrayList<MPipeFitting>(chain.size());
+
+        MPipe end = null;
+
+        for (Iterator<MPipeFitting> i = chain.iterator(); i.hasNext(); ) {
+            MPipeFitting mpf = i.next();
+
+            if (null != end) {
+                if (mpf.mPipe == end) {
+                    end = null;
+                }
+            } else {
+                MPipe mPipe = mpf.mPipe;
+                if (mPipe.getPipeSpec().matches(pr, sd)) {
+                    ml.add(mpf);
+                    al.add(mPipe.getArgonAgent());
+                } else {
+                    end = mpf.end;
+                }
+            }
+        }
+
         long ft1 = System.nanoTime();
 
-        PipelineImpl pipeline = new PipelineImpl(sd.id(), chain);
+        PipelineImpl pipeline = new PipelineImpl(sd.id(), ml);
         pipelines.put(sd.id(), pipeline);
 
         Long t1 = System.nanoTime();
@@ -140,10 +162,10 @@ class PipelineFoundryImpl implements PipelineFoundry
             logger.debug("sid: " + sd.id() + " pipe in " + (t1 - t0)
                          + " made: " + (ct1 - ct0)
                          + " filtered: " + (ft1 - ft0)
-                         + " nanos: " + chain);
+                         + " nanos chain: " + chain);
         }
 
-        return new PipelineDesc(pr, agents);
+        return new PipelineDesc(pr, al);
     }
 
     public void registerEndpoints(IPSessionDesc start, IPSessionDesc end)
@@ -241,14 +263,15 @@ class PipelineFoundryImpl implements PipelineFoundry
                 }
 
                 if (null == mPipeFittings) {
-                    mPipeFittings = new LinkedList<MPipeFitting>();
-
                     Map<MPipe, MPipe> availCasings = new HashMap(casings);
 
                     Map<Fitting, List<MPipe>> mp = incoming ? incomingMPipes
                         : outgoingMPipes;
                     Map<Fitting, List<MPipe>> availMPipes
                         = new HashMap<Fitting, List<MPipe>>(mp);
+
+                    int s = availCasings.size() + availMPipes.size();
+                    mPipeFittings = new ArrayList<MPipeFitting>(s);
 
                     weld(mPipeFittings, start, p, availMPipes, availCasings);
 
@@ -258,35 +281,6 @@ class PipelineFoundryImpl implements PipelineFoundry
         }
 
         return mPipeFittings;
-    }
-
-    private List<ArgonAgent> filter(List<MPipeFitting> mPipeFittings,
-                                    IPSessionDesc sd, PolicyRule pr)
-    {
-        List<ArgonAgent> l = new ArrayList<ArgonAgent>(mPipeFittings.size());
-
-        MPipe end = null;
-
-        for (Iterator<MPipeFitting> i = mPipeFittings.iterator(); i.hasNext(); ) {
-            MPipeFitting mpf = i.next();
-
-            if (null != end) {
-                i.remove();
-                if (mpf.mPipe == end) {
-                    end = null;
-                }
-            } else {
-                MPipe mPipe = mpf.mPipe;
-                if (mPipe.getPipeSpec().matches(pr, sd)) {
-                    l.add(mPipe.getArgonAgent());
-                } else {
-                    i.remove();
-                    end = mpf.end;
-                }
-            }
-        }
-
-        return l;
     }
 
     private void weld(List<MPipeFitting> mPipeFittings, Fitting start,
