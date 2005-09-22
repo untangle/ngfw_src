@@ -235,7 +235,7 @@ class PolicyManagerImpl implements PolicyManager
             }
         }
 
-        return 0 < TransformManager.manager().transformInstances(p).size();
+        return 0 < TransformManagerImpl.manager().transformInstances(p).size();
     }
 
     public SystemPolicyRule[] getSystemPolicyRules() {
