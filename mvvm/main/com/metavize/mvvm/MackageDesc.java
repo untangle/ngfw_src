@@ -36,6 +36,7 @@ public class MackageDesc implements Serializable
     private final byte[] orgIcon;
     private final byte[] descIcon;
     private final int rackPosition;
+    private final boolean isService;
 
     public MackageDesc(Map<String, String> m, String installedVersion,
                        byte[] orgIcon, byte[] descIcon)
@@ -66,6 +67,10 @@ public class MackageDesc implements Serializable
         // rack position
         String v = m.get("rack-position");
         rackPosition = null == v ? 0 : Integer.parseInt(v);
+
+        // service or not
+        v = m.get("is-service");
+        isService = null == v ? false : Boolean.parseBoolean(v);
 
         // size
         v = m.get("size");
@@ -187,5 +192,10 @@ public class MackageDesc implements Serializable
     public int getRackPosition()
     {
         return rackPosition;
+    }
+
+    public boolean isService()
+    {
+        return isService;
     }
 }

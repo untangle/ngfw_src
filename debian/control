@@ -39,6 +39,7 @@ XB-Price: 0
 XB-Display-Name: Packet Attack Shield
 XB-Website: http://www.metavize.com/packetshield.html
 XB-Rack-Position: 1001
+XB-Is-Service: true
 Description: The Metavize Packet Attack Shield
  The Packet Attack Shield prevents packet based attacks on your
  network.
@@ -124,6 +125,7 @@ XB-Price: 0
 XB-Display-Name: Network Sharing
 XB-Website: http://www.metavize.com/networksharing.html
 XB-Rack-Position: 9
+XB-Is-Service: true
 Description: The Metavize Network Sharing Software Appliance
  The Network Sharing Software Appliance allows a single public IP
  address to be shared by an entire network of computers.
@@ -192,6 +194,7 @@ XB-Price: 0
 XB-Display-Name: EdgeReport
 XB-Website: http://www.metavize.com/reports.html
 XB-Rack-Position: 10000
+XB-Is-Service: true
 Description: The Metavize Report Generator
  EdgeReport generates document reports about activities on your
  network.  EdgeReport will report general network activity, and
