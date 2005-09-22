@@ -125,6 +125,8 @@ class CustomPolicyTableModel extends MSortedTableModel{
 	    catch(Exception e){ throw new Exception("Invalid \"client interface\" in row: " + rowIndex); }
 	    try{ newElem.setServerIntf( Byte.decode((String) rowVector.elementAt(4)) ); }
 	    catch(Exception e){ throw new Exception("Invalid \"server interface\" in row: " + rowIndex); }
+	    if( (new Byte(newElem.getClientIntf())).equals(new Byte(newElem.getServerIntf())) )
+		throw new Exception("In row: " + rowIndex + ". The \"client address\" cannot match the \"server address\"");
 	    try{ newElem.setClientAddr( IPMatcher.parse((String) rowVector.elementAt(5)) ); }
 	    catch(Exception e){ throw new Exception("Invalid \"client address\" in row: " + rowIndex); }
 	    try{ newElem.setServerAddr( IPMatcher.parse((String) rowVector.elementAt(6)) ); }
@@ -144,7 +146,6 @@ class CustomPolicyTableModel extends MSortedTableModel{
 	   PolicyConfiguration policyConfiguration = (PolicyConfiguration) settings;
 	   policyConfiguration.setUserPolicyRules( elemList );
 	}
-
     }
 
     public Vector<Vector> generateRows(Object settings){
