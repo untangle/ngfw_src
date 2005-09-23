@@ -212,8 +212,6 @@ int netcap_lru_permanent_clear( netcap_lru_t* lru )
     return ret;    
 }
 
-
-
 /* Move a node to the front of the LRU, node should be a value returned from a previous
  * execution of lru_add */
 int netcap_lru_move_front( netcap_lru_t* lru, netcap_lru_node_t* node )
@@ -264,13 +262,15 @@ int netcap_lru_cut( netcap_lru_t* lru, netcap_lru_node_t** node_array, int node_
 
         if (( length = list_length ( &lru->lru_list )) < 0 ) return errlog(ERR_CRITICAL,"list_length\n");
 
+        debug( 0, "LRU: Update - length %d items\n", length );
+
+
         /* Make sure the LRU doesn't get too short */
         if ( length < _LRU_MIN_LENGTH ) return 0;
         
         if ( length < lru->high_water ) {
             /* No check function, no way to sift nodes */
             if ( lru->is_deletable == NULL ) {
-                errlog( ERR_WARNING, "NULL is_deletable, unable to sift old nodes\n" );
                 return 0;
             }
             
@@ -279,9 +279,11 @@ int netcap_lru_cut( netcap_lru_t* lru, netcap_lru_node_t** node_array, int node_
             
             /* Max it out at the size of the sieve */
             c = ( c < lru->sieve_size ) ? c : lru->sieve_size;
-            debug( _LRU_DEBUG_LOW, "LRU: Update - sifting %d items\n", c );
+
+            /* XXX Debug should be higher */
+            debug( 0, "LRU: Update - sifting %d items\n", c );
             
-            for ( ; ( c-- > 0 ) && ( node_count < node_array_size ) ; ) {
+            for ( ; c-- > 0 ; ) {
                 int is_deletable;
                 netcap_lru_node_t* node;
 
@@ -297,15 +299,18 @@ int netcap_lru_cut( netcap_lru_t* lru, netcap_lru_node_t** node_array, int node_
                     debug( _LRU_DEBUG_LOW, "LRU: Non-deletable node, continuing to sift\n" );
                 } else {
                     if ( _lru_remove( lru, node ) < 0 ) return errlog( ERR_CRITICAL, "_lru_remove\n" );
-                    if ( node_array != NULL ) node_array[node_count++] = node;
+                    if ( node_array != NULL &&  ( node_count < node_array_size )) {
+                        node_array[node_count++] = node;
+                    } else node_count++;
                 }
             }
         } else {
             /* XXX May need to check for is_deletable */
             c = length - lru->low_water;
-            debug ( _LRU_DEBUG_LOW, "TRIE: LRU Update - cutting %d items\n", c );
+            /* XXX Debug level */
+            debug ( 0, "TRIE: LRU Update - cutting %d items\n", c );
             
-            for (  ; ( c-- > 0 ) && ( node_count < node_array_size ) ; ) {
+            for (  ; c-- > 0 ; ) {
                 netcap_lru_node_t* node;
                 
                 if (( node = list_tail_val( &lru->lru_list )) == NULL ) {
@@ -314,7 +319,9 @@ int netcap_lru_cut( netcap_lru_t* lru, netcap_lru_node_t** node_array, int node_
                 
                 if ( _lru_remove( lru, node ) < 0 ) return errlog( ERR_CRITICAL, "_lru_remove\n" );
                 
-                if ( node_array != NULL ) node_array[node_count++] = node;
+                if ( node_array != NULL &&  ( node_count < node_array_size )) {
+                    node_array[node_count++] = node;
+                } else node_count++;
             }
         }
 
