@@ -30,6 +30,18 @@ public class AsciiCharBuffer implements CharSequence
         return new AsciiCharBuffer(bb.duplicate(), false);
     }
 
+    public static AsciiCharBuffer wrap(byte[] ba)
+    {
+        ByteBuffer newBuf = ByteBuffer.wrap(ba);
+        return new AsciiCharBuffer(newBuf, false);
+    }
+
+    public static AsciiCharBuffer allocate(int capacity, boolean readOnly)
+    {
+        ByteBuffer newBuf = ByteBuffer.allocate(capacity);
+        return new AsciiCharBuffer(newBuf, readOnly);
+    }
+
     public ByteBuffer getWrappedBuffer()
     {
         return bb;
