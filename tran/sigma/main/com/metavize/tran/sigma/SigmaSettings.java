@@ -65,7 +65,6 @@ public class SigmaSettings implements java.io.Serializable
      * @return tid for these settings
      * @hibernate.many-to-one
      * column="TID"
-     * unique="true"
      * not-null="true"
      */
     public Tid getTid() {return tid;}

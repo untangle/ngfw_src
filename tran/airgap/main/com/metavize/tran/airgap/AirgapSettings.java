@@ -53,7 +53,6 @@ public class AirgapSettings implements Serializable
      * @return tid for these settings
      * @hibernate.many-to-one
      * column="TID"
-     * unique="true"
      * not-null="true"
      */
     public Tid getTid()

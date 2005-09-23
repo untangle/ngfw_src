@@ -171,7 +171,6 @@ public class NatSettings implements Serializable, Validatable
      * @return tid for these settings
      * @hibernate.many-to-one
      * column="TID"
-     * unique="true"
      * not-null="true"
      */
     public Tid getTid()

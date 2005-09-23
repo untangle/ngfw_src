@@ -29,9 +29,6 @@ import com.metavize.tran.token.Token;
  */
 public class RequestLine implements Token
 {
-    // How big a varchar() do we get for default String fields.  This should be elsewhere. XXX
-    public static final int DEFAULT_STRING_SIZE = 255;
-
     private Long id;
     private HttpMethod method;
     private URI requestUri;
@@ -46,9 +43,12 @@ public class RequestLine implements Token
 
     public RequestLine(HttpMethod method, URI requestUri, String httpVersion)
     {
+        if (httpVersion != null && httpVersion.length() > 10) {
+            throw new IllegalArgumentException("http-version too long");
+        }
+
         this.method = method;
         this.requestUri = requestUri;
-        if (httpVersion != null && httpVersion.length() > DEFAULT_STRING_SIZE) httpVersion = httpVersion.substring(0, DEFAULT_STRING_SIZE);
         this.httpVersion = httpVersion;
     }
 
@@ -122,7 +122,10 @@ public class RequestLine implements Token
 
     public void setHttpVersion(String httpVersion)
     {
-        if (httpVersion != null && httpVersion.length() > 10) httpVersion = httpVersion.substring(0, 10);
+        if (httpVersion != null && httpVersion.length() > 10) {
+            throw new IllegalArgumentException("http-version too long");
+        }
+
         this.httpVersion = httpVersion;
     }
 

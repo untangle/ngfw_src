@@ -51,7 +51,7 @@ class HttpUnparser extends AbstractUnparser
     private String sessStr;
 
     HttpUnparser(TCPSession session, boolean clientSide,
-                    HttpCasing httpCasing)
+                 HttpCasing httpCasing)
     {
         super(session, clientSide);
         this.httpCasing = httpCasing;

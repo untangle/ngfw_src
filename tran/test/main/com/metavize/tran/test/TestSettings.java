@@ -41,9 +41,9 @@ public class TestSettings implements Serializable
 
     public TestSettings () { }
 
-    public TestSettings( Tid tid) 
-    { 
-	this.tid = tid;
+    public TestSettings( Tid tid)
+    {
+    this.tid = tid;
     }
 
     public void resetSettings()
@@ -75,7 +75,6 @@ public class TestSettings implements Serializable
      * @return tid for these settings
      * @hibernate.many-to-one
      * column="TID"
-     * unique="true"
      * not-null="true"
      */
     public Tid getTid()
