@@ -54,7 +54,7 @@ public class PolicyJDialog extends MConfigJDialog {
 	super.savableMap.put(NAME_USER_POLICIES, customPolicyJPanel);
 	super.refreshableMap.put(NAME_USER_POLICIES, customPolicyJPanel);
 
-        // AVAILABLE RACKS //////
+        // AVAILABLE RACKS ////// (THIS MUST BE LAST BECAUSE IT VALIDATES SETTINGS)
         AvailablePolicyJPanel availablePolicyJPanel = new AvailablePolicyJPanel();
         this.contentJTabbedPane.addTab(NAME_AVAILABLE_POLICIES, null, availablePolicyJPanel);
 	super.savableMap.put(NAME_AVAILABLE_POLICIES, availablePolicyJPanel);
