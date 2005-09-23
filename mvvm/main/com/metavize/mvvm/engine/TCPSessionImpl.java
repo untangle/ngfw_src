@@ -60,6 +60,8 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
         if (numBytes < 2 || numBytes > TCP_MAX_CHUNK_SIZE)
             throw new IllegalArgumentException("Illegal maximum read bufferSize: " + numBytes);
         readBufferSize[SERVER] = numBytes;
+        if (readLimit[SERVER] > numBytes)
+            readLimit[SERVER] = numBytes;
     }
 
     public int clientReadBufferSize() {
@@ -69,6 +71,8 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
         if (numBytes < 2 || numBytes > TCP_MAX_CHUNK_SIZE)
             throw new IllegalArgumentException("Illegal maximum read bufferSize: " + numBytes);
         readBufferSize[CLIENT] = numBytes;
+        if (readLimit[CLIENT] > numBytes)
+            readLimit[CLIENT] = numBytes;
     }
 
     public int serverReadLimit() {
