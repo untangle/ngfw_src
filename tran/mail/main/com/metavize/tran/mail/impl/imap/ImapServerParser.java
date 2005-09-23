@@ -18,7 +18,6 @@ import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.tran.mime.MIMEPart;
 import com.metavize.tran.mime.MIMEMessageHeaders;
 import com.metavize.tran.token.AbstractParser;
-import com.metavize.tran.token.TokenStreamer;
 import com.metavize.tran.token.Chunk;
 import com.metavize.tran.token.Token;
 import com.metavize.tran.token.PassThruToken;
@@ -852,41 +851,8 @@ public class ImapServerParser
   }
 
 
-  public ParseResult parse(ByteBuffer buf) {
-
-    ByteBuffer dup = buf.duplicate();
-
-    //Perform the parse
-    ParseResult ret = parseImpl(buf);
-
-    if(ret.getReadBuffer() != null) {
-      //Trace what was not pushed-back.  We know that
-      //the position of the returned read buffer is equal
-      //to the tail of the original buffer not
-      //consumed.
-      dup.limit(dup.limit() - ret.getReadBuffer().position());
-    }
-    
-    //do tracing stuff
-    getImapCasing().traceParse(dup);
-    
-    return ret;
-  }
-  
-  private ParseResult parseImpl(ByteBuffer buf) {
-
-
-    //TEMP - so folks don't hit my unfinished code by accident
-//    if(System.currentTimeMillis() > 0) {
-//      getImapCasing().traceParse(buf);
-//      return new ParseResult(new Chunk(buf));
-//    }
-
-
-    //Check for passthru
-    if(isPassthru()) {
-      return new ParseResult(new Chunk(buf));
-    }
+  @Override
+  protected ParseResult doParse(ByteBuffer buf) {
 
     List<Token> toks = new LinkedList<Token>();
 
@@ -1105,21 +1071,15 @@ public class ImapServerParser
   }
 
   @Override
-  public TokenStreamer endSession() {
-    m_logger.debug("End Session");
-    return super.endSession();
-  }  
-
-  public ParseResult parseEnd(ByteBuffer buf) {
-    if(buf != null && buf.remaining() > 0) {
-      Chunk c = new Chunk(buf);
-  
-      m_logger.debug("Passing final chunk of size: ", buf.remaining());
-      return new ParseResult(c);
+  public void handleFinalized() {
+    super.handleFinalized();
+    if(m_msgGrabber != null) {
+      m_logger.debug("Unexpected finalized in state " + m_state);
+      if(m_msgGrabber.accumulator != null) {
+        m_msgGrabber.accumulator.dispose();
+      }
     }
-    return new ParseResult();
-  }
-
+  }  
 
 
   /**

@@ -11,15 +11,14 @@
 
 package com.metavize.tran.mail.impl.smtp;
 
-import static com.metavize.tran.util.Ascii.*;
-import static com.metavize.tran.util.BufferUtil.*;
-
-import com.metavize.mvvm.*;
-import com.metavize.mvvm.tapi.*;
-import com.metavize.mvvm.tapi.event.TCPStreamer;
-import com.metavize.tran.mail.papi.smtp.*;
-import com.metavize.tran.token.*;
-import com.metavize.tran.util.*;
+import com.metavize.tran.mail.impl.smtp.SmtpSASLObserver;
+import com.metavize.tran.token.Token;
+import com.metavize.tran.token.MetadataToken;
+import com.metavize.tran.token.UnparseResult;
+import com.metavize.mvvm.tapi.TCPSession;
+import com.metavize.tran.mail.papi.smtp.SASLExchangeToken;
+import com.metavize.tran.mail.papi.smtp.Response;
+import java.nio.ByteBuffer;
 import org.apache.log4j.Logger;
 
 /**
@@ -28,7 +27,8 @@ import org.apache.log4j.Logger;
 class SmtpClientUnparser
   extends SmtpUnparser {
 
-  private final Logger m_logger = Logger.getLogger(SmtpClientUnparser.class);
+  private final Logger m_logger =
+    Logger.getLogger(SmtpClientUnparser.class);
 
   SmtpClientUnparser(TCPSession session,
     SmtpCasing parent,
@@ -38,15 +38,33 @@ class SmtpClientUnparser
   }
 
 
-  public UnparseResult unparse(Token token)
-    throws UnparseException {
-    
+  @Override
+  protected UnparseResult doUnparse(Token token) {
+
     //-----------------------------------------------------------
-    if(token instanceof PassThruToken) {
-      m_logger.debug("Received PASSTHRU token.  Enter passthru mode");
-      declarePassthru();//Inform the parser of this state
-      return UnparseResult.NONE;
-    }
+    if(token instanceof SASLExchangeToken) {
+      m_logger.debug("Received SASLExchangeToken token");
+
+      ByteBuffer buf = token.getBytes();
+
+      if(!getSmtpCasing().isInSASLLogin()) {
+        m_logger.error("Received SASLExchangeToken without an open exchange");
+      }
+      else {
+        switch(getSmtpCasing().getSASLObserver().serverData(buf.duplicate())) {
+          case EXCHANGE_COMPLETE:
+            m_logger.debug("SASL Exchange complete");
+            getSmtpCasing().closeSASLExchange();
+          case IN_PROGRESS:
+            //Nothing to do
+            break;
+          case RECOMMEND_PASSTHRU:
+            m_logger.debug("Entering passthru on advice of SASLObserver");
+            declarePassthru();
+        }
+      }
+      return new UnparseResult(buf);
+    }    
 
     //-----------------------------------------------------------
     if(token instanceof MetadataToken) {
@@ -67,7 +85,6 @@ class SmtpClientUnparser
       m_logger.debug("Unparse token of type " + (token==null?"null":token.getClass().getName()));
     }
 
-    getSmtpCasing().traceUnparse(token.getBytes());
     return new UnparseResult(token.getBytes());
   }
 

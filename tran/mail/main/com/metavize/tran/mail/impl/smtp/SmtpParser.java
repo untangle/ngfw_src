@@ -11,35 +11,20 @@
 
 package com.metavize.tran.mail.impl.smtp;
 
-import static com.metavize.tran.util.Ascii.*;
-import static com.metavize.tran.util.BufferUtil.*;
-
-import com.metavize.tran.mail.papi.smtp.*;
-
-import com.metavize.tran.mail.papi.ByteBufferByteStuffer;
-
-import java.io.*;
-
-import java.nio.ByteBuffer;
-
-import com.metavize.mvvm.*;
-import com.metavize.mvvm.tapi.*;
-import com.metavize.mvvm.tapi.event.TCPStreamer;
-import com.metavize.tran.mail.papi.ByteBufferByteStuffer;
-import com.metavize.tran.mail.papi.smtp.*;
-import com.metavize.tran.token.*;
-import com.metavize.tran.util.*;
+import com.metavize.tran.mail.impl.AbstractMailParser;
 import org.apache.log4j.Logger;
+import java.nio.ByteBuffer;
+import com.metavize.mvvm.tapi.TCPSession;
+
 
 /**
  * Base class for the SmtpClient/ServerParser
  */
 abstract class SmtpParser
-  extends AbstractParser {
+  extends AbstractMailParser {
 
-  private final Pipeline m_pipeline;
-  private final SmtpCasing m_parentCasing;
-  private final Logger m_logger = Logger.getLogger(SmtpParser.class);
+  private final Logger m_logger =
+    Logger.getLogger(SmtpParser.class);
   private boolean m_passthru = false;
   private CasingSessionTracker m_tracker;
 
@@ -48,64 +33,16 @@ abstract class SmtpParser
     CasingSessionTracker tracker,
     boolean clientSide) {
     
-    super(session, clientSide);
+    super(session, parent, clientSide, "smtp");
     m_tracker = tracker;
-    m_parentCasing = parent;
-    m_pipeline = MvvmContextFactory.context().
-      pipelineFoundry().getPipeline(session.id());
   }
 
-  protected SmtpCasing getSmtpCasing() {
-    return m_parentCasing;
+  SmtpCasing getSmtpCasing() {
+    return (SmtpCasing) getParentCasing();
   }
-  protected Pipeline getPipeline() {
-    return m_pipeline;
-  }
-  protected CasingSessionTracker getSessionTracker() {
+  CasingSessionTracker getSessionTracker() {
     return m_tracker;
   }
-
-  /**
-   * Is the casing currently in passthru mode
-   */
-  protected boolean isPassthru() {
-    return m_passthru;
-  }
-
-  /**
-   * Called by the unparser to declare that
-   * we are now in passthru mode.  This is called
-   * either because of a parsing error by the caller,
-   * or the reciept of a passthru token.
-   * 
-   */
-  protected void declarePassthru() {
-    m_passthru = true;
-    m_parentCasing.passthru();
-  }
-
-  /**
-   * Called by the casing to declare that this
-   * instance should now be in passthru mode.
-   */
-  protected final void passthru() {
-    m_passthru = true;
-  }
-
-  public TokenStreamer endSession() {
-    m_logger.debug("End Session");
-    getSmtpCasing().endSession(isClientSide());
-    return null;
-  }
-
-  public ParseResult parseEnd(ByteBuffer chunk)
-    throws ParseException {
-    if (chunk.hasRemaining()) {
-      m_logger.debug("data trapped in read buffer: "
-        + AsciiCharBuffer.wrap(chunk));
-    }
-    return new ParseResult();       
-  }  
 
   /**
    * Helper which compacts (and possibly expands)

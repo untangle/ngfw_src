@@ -11,26 +11,38 @@
 
 package com.metavize.tran.mail.impl.smtp;
 
-import com.metavize.tran.mail.*;
-import com.metavize.tran.mail.papi.*;
-
-import com.metavize.tran.mail.papi.smtp.*;
-import static com.metavize.tran.util.Ascii.*;
-import static com.metavize.tran.util.ASCIIUtil.*;
-import static com.metavize.tran.util.BufferUtil.*;
-
-import java.io.*;
-import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
-import java.util.LinkedList;
-import java.util.List;
-
-import com.metavize.mvvm.*;
-import com.metavize.mvvm.tapi.*;
-import com.metavize.tran.token.*;
-import com.metavize.tran.util.*;
 import org.apache.log4j.Logger;
-import com.metavize.tran.mime.*;
+import com.metavize.tran.token.Chunk;
+import com.metavize.tran.token.Token;
+import com.metavize.tran.token.ParseResult;
+import com.metavize.tran.token.PassThruToken;
+import com.metavize.tran.token.ParseException;
+import com.metavize.mvvm.tapi.TCPSession;
+import com.metavize.tran.mime.MIMEMessageHeaders;
+import com.metavize.tran.mime.EmailAddress;
+import java.nio.ByteBuffer;
+import java.io.IOException;
+import java.util.List;
+import java.util.LinkedList;
+import static com.metavize.tran.util.BufferUtil.*;
+import com.metavize.tran.util.ASCIIUtil;
+import com.metavize.tran.mail.papi.smtp.SASLExchangeToken;
+import com.metavize.tran.mail.papi.smtp.CommandParser;
+import com.metavize.tran.mail.papi.smtp.Command;
+import com.metavize.tran.mail.papi.smtp.UnparsableCommand;
+import com.metavize.tran.mail.papi.smtp.AUTHCommand;
+import com.metavize.tran.mail.papi.smtp.SmtpTransaction;
+import com.metavize.tran.mail.papi.BeginMIMEToken;
+import com.metavize.tran.mail.papi.ContinuedMIMEToken;
+import com.metavize.tran.mail.papi.MIMEAccumulator;
+import com.metavize.tran.mail.papi.MessageInfo;
+import com.metavize.tran.mail.papi.MessageInfoFactory;
+import com.metavize.tran.mail.papi.AddressKind;
+import com.metavize.tran.mail.papi.MessageBoundaryScanner;
+
+
+
+
 
 
 /**
@@ -66,7 +78,8 @@ class SmtpClientParser
   
 
   
-  public ParseResult parse(ByteBuffer buf) {
+  @Override
+  protected ParseResult doParse(ByteBuffer buf) {
 
     //===============================================
     // This method is very procedural, to make
@@ -79,15 +92,6 @@ class SmtpClientParser
     //   -wrs 7/05
     //
 
-    //Do tracing stuff
-    getSmtpCasing().traceParse(buf);
-
-    //Check for passthru
-    if(isPassthru()) {
-      m_logger.debug("Passthru buffer (" + buf.remaining() + " bytes)");
-      return new ParseResult(new Chunk(buf));
-    }       
-    
     List<Token> toks = new LinkedList<Token>();
     boolean done = false;
     
@@ -98,13 +102,43 @@ class SmtpClientParser
       //Re-check passthru, in case we hit it while looping in
       //this method.
       if(isPassthru()) {
-        return new ParseResult(new Chunk(buf));
-      }         
+        if(buf.hasRemaining()) {
+          toks.add(new Chunk(buf));
+        }
+        return new ParseResult(toks);
+      }
         
       switch(m_state) {
       
         //==================================================
         case COMMAND:
+
+          if(getSmtpCasing().isInSASLLogin()) {
+            m_logger.debug("In SASL Exchange");
+            SmtpSASLObserver observer =
+              getSmtpCasing().getSASLObserver();
+            ByteBuffer dup = buf.duplicate();
+            switch(observer.clientData(buf)) {
+              case EXCHANGE_COMPLETE:
+                m_logger.debug("SASL Exchange complete");
+                getSmtpCasing().closeSASLExchange();          
+              case IN_PROGRESS:
+                //There should not be any extra bytes
+                //left with "in progress", but what the hell
+                dup.limit(buf.position());
+                toks.add(new SASLExchangeToken(dup));
+                break;
+              case RECOMMEND_PASSTHRU:
+                m_logger.debug("Entering passthru on advice of SASLObserver");
+                declarePassthru();
+                toks.add(PassThruToken.PASSTHRU);
+                toks.add(new Chunk(dup.slice()));
+                buf.position(buf.limit());
+                return new ParseResult(toks);
+            }
+            break;
+          }
+        
           if(findCrLf(buf) >= 0) {//BEGIN Complete Command
             //Parse the next command.  If there is a parse error,
             //pass along the original chunk
@@ -135,32 +169,47 @@ class SmtpClientParser
             }
 
             //If we're here, we have a legitimate command
-            m_logger.debug("Received command: " + cmd.toDebugString());
+            toks.add(cmd);
+            
 
             if(cmd.getType() == Command.CommandType.AUTH) {
-              m_logger.debug("Going into passthru mode.  Received AUTH request " +
-                "(\"" + cmd.getArgString() + "\")");
-              declarePassthru();
-              toks.add(PassThruToken.PASSTHRU);
-              toks.add(new Chunk(cmd.getBytes()));
-              toks.add(new Chunk(buf));
-              return new ParseResult(toks, null);
-              
-//              String authType = cmd.getArgString();
-//              authType=authType==null?null:authType.toLowerCase();
-//              if(authType != null &&
-//                (authType.startsWith("login") || authType.startsWith("plain"))) {
-//                m_logger.debug("Received Auth login/plain request.  Pass to server");
-//              }
-//              else {
-//                m_logger.debug("Going into passthru mode.  Received AUTH request " +
-//                  "which was not LOGIN/PLAIN (\"" + cmd.getArgString() + "\")");
-//                declarePassthru();
-//              }
+              m_logger.debug("Received an AUTH command (hiding details for privacy reasons)");
+              AUTHCommand authCmd = (AUTHCommand) cmd;
+              String mechName = authCmd.getMechanismName();
+              if(!getSmtpCasing().openSASLExchange(mechName)) {
+                m_logger.debug("Unable to find SASLObserver for \"" +
+                  mechName + "\"");
+                declarePassthru();
+                toks.add(PassThruToken.PASSTHRU);
+                toks.add(new Chunk(buf));
+                return new ParseResult(toks, null);        
+              }
+              else {
+                m_logger.debug("Opening SASL Exchange");
+              }
+
+              switch(getSmtpCasing().getSASLObserver().initialClientResponse(
+                authCmd.getInitialResponse())) {
+                case EXCHANGE_COMPLETE:
+                  m_logger.debug("SASL Exchange complete");
+                  getSmtpCasing().closeSASLExchange();                   
+                case IN_PROGRESS:
+                  break;//Nothing interesting to do
+                case RECOMMEND_PASSTHRU:
+                  m_logger.debug("Entering passthru on advice of SASLObserver");
+                  declarePassthru();
+                  toks.add(PassThruToken.PASSTHRU);
+                  toks.add(new Chunk(buf));
+                  return new ParseResult(toks);                
+              }
+              break;
+            }
+            else {
+              //This is broken off so we don't put folks
+              //passwords into the log
+              m_logger.debug("Received command: " + cmd.toDebugString());
             }
 
-            toks.add(cmd);            
-                        
             if(cmd.getType() == Command.CommandType.STARTTLS) {
               m_logger.debug("Enqueue observer for response to STARTTLS, " +
                 "to go into passthru if accepted");
@@ -208,17 +257,8 @@ class SmtpClientParser
         case HEADERS:
           //Duplicate the buffer, in case we have a problem
           ByteBuffer dup = buf.duplicate();
-          boolean endOfHeaders = false;
-//          try {
-            endOfHeaders = m_sac.scanner.processHeaders(buf, 1024*4);//TODO bscott a real value here
-//          }
-//          catch(LineTooLongException ltle) {
-            //TODO bscott THis still needs to be more gracefully unwound
-            //     in the stateful transforms
-//            m_logger.error("Exception looking for headers end", ltle);
-//            puntDuringHeaders(toks, dup);
-//            return new ParseResult(toks, null);
-//          }
+          boolean endOfHeaders =
+            m_sac.scanner.processHeaders(buf, 1024*4);//TODO bscott a real value here
 
           //If we're here, we didn't get a line which was too long.  Write
           //what we have to disk.
@@ -308,13 +348,8 @@ class SmtpClientParser
   }
 
   @Override
-  public TokenStreamer endSession() {
-    return super.endSession();
-  }
-
-  @Override
   public void handleFinalized() {
-    m_logger.debug("[handleFinalized()]");
+    super.handleFinalized();
     if(m_sac != null) {
       m_logger.debug("Unexpected finalized in state " + m_state);
       m_sac.accumulator.dispose();
@@ -406,7 +441,7 @@ class SmtpClientParser
     private String m_offendingCommand;
 
     CommandParseErrorResponseCallback(ByteBuffer bufWithOffendingLine) {
-      m_offendingCommand = bbToString(bufWithOffendingLine);
+      m_offendingCommand = ASCIIUtil.bbToString(bufWithOffendingLine);
     }
     
     public void response(int code) {

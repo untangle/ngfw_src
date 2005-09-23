@@ -148,6 +148,7 @@ class SmtpSASLObserver {
       boolean foundEOL = index != -1;
       if(foundEOL) {
         buf.position(index+2);
+        dup.limit(index+2);
       }
       else {
         buf.position(buf.limit());
@@ -167,7 +168,8 @@ class SmtpSASLObserver {
           Response resp = new ResponseParser().parse(respBuffer);
           if(resp == null) {
             //Odd
-            m_logger.warn("Multiline response during SASL is unexpected, but tolerated.");
+            m_logger.warn("Multiline response during SASL is unexpected, but tolerated (\"" +
+              bbToString(respBuffer) + "\")");
             continue;
           }
           //Clear the buffer builder.

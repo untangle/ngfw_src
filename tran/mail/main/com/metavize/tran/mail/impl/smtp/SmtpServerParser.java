@@ -11,22 +11,19 @@
 
 package com.metavize.tran.mail.impl.smtp;
 
-
 import com.metavize.tran.mail.papi.smtp.ResponseParser;
 import com.metavize.tran.mail.papi.smtp.Response;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import com.metavize.tran.mail.papi.smtp.SASLExchangeToken;
 import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
-import java.util.*;
-
-import com.metavize.mvvm.*;
-import com.metavize.mvvm.tapi.*;
-import com.metavize.tran.token.*;
-import com.metavize.tran.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.log4j.Logger;
+import com.metavize.mvvm.tapi.TCPSession;
+import com.metavize.tran.token.ParseResult;
+import com.metavize.tran.token.PassThruToken;
+import com.metavize.tran.token.Chunk;
+import com.metavize.tran.token.Token;
+
 
 /**
  * ...name says it all...
@@ -34,9 +31,9 @@ import org.apache.log4j.Logger;
 class SmtpServerParser
   extends SmtpParser {
 
-  private final Logger m_logger = Logger.getLogger(SmtpServerParser.class);
-  private ResponseParser m_parser = new ResponseParser();
-  
+  private final Logger m_logger =
+    Logger.getLogger(SmtpServerParser.class);
+
   SmtpServerParser(TCPSession session,
     SmtpCasing parent,
     CasingSessionTracker tracker) {
@@ -46,36 +43,53 @@ class SmtpServerParser
     lineBuffering(false);
   }
   
-  public ParseResult parse(ByteBuffer buf) 
-    throws ParseException {
-//    m_logger.debug("parse");
+  @Override
+  protected ParseResult doParse(ByteBuffer buf) {
 
-    //Trace stuff
-    getSmtpCasing().traceParse(buf);
-    
-    //Check for passthru
-    if(isPassthru()) {
-      m_logger.debug("Passthru buffer (" + buf.remaining() + " bytes )");
-      return new ParseResult(new Chunk(buf));
-    }
-
-    //Duplicate the buffer, so if we have an exception we can enter passthru
-    //mode.    
-    ByteBuffer dup = buf.duplicate();
-
-        
     List<Token> toks = new ArrayList<Token>();
     boolean done = false;
     
     while(buf.hasRemaining() && ! done) {
+
+      if(isPassthru()) {
+        m_logger.debug("Passthru buffer (" + buf.remaining() + " bytes )");
+        toks.add(new Chunk(buf));
+        return new ParseResult(toks);
+      }
+
+      if(getSmtpCasing().isInSASLLogin()) {
+        m_logger.debug("In SASL Exchange");
+        ByteBuffer dup = buf.duplicate();
+        switch(getSmtpCasing().getSASLObserver().serverData(buf)) {
+          case EXCHANGE_COMPLETE:
+            m_logger.debug("SASL Exchange complete");
+            getSmtpCasing().closeSASLExchange();
+          case IN_PROGRESS:
+            //There should not be any extra bytes
+            //left with "in progress", but what the hell
+            dup.limit(buf.position());
+            toks.add(new SASLExchangeToken(dup));
+            break;
+          case RECOMMEND_PASSTHRU:
+            m_logger.debug("Entering passthru on advice of SASLObserver");
+            declarePassthru();
+            toks.add(PassThruToken.PASSTHRU);
+            toks.add(new Chunk(dup.slice()));
+            buf.position(buf.limit());
+            return new ParseResult(toks);
+        }
+        continue;
+      }
+    
       try {
-        Response resp = m_parser.parse(buf);
+        ByteBuffer dup = buf.duplicate();
+        Response resp = new ResponseParser().parse(dup);
         if(resp != null) {
+          buf.position(dup.position());
           getSessionTracker().responseReceived(resp);
           m_logger.debug("Received response: " +
             resp.toDebugString());
           toks.add(resp);
-          m_parser.reset();
         }
         else {
           done = true;
@@ -84,11 +98,9 @@ class SmtpServerParser
       }
       catch(Exception ex) {
         m_logger.warn("Exception parsing server response", ex);
-        m_parser = null;
         declarePassthru();
-        toks.clear();//Could truncate some stuff, but I suspect we're already hosed anyway.
         toks.add(PassThruToken.PASSTHRU);
-        toks.add(new Chunk(dup));
+        toks.add(new Chunk(buf));
         return new ParseResult(toks);
       }
     }
@@ -96,11 +108,7 @@ class SmtpServerParser
     //Compact the buffer
     buf = compactIfNotEmpty(buf, (1024*2));//TODO bscott a real value
     
-    if(buf == null) {
-//      m_logger.debug("returning ParseResult with " +
-//        toks.size() + " tokens and a null buffer");    
-    }
-    else {
+    if(buf != null) {
       m_logger.debug("returning ParseResult with " +
         toks.size() + " tokens and a buffer with " + buf.remaining() + " remaining");
     }

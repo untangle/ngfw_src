@@ -113,6 +113,9 @@ public class WrappedMessageGenerator
         m_logger.error(ex);
       }
     }
+    else {
+      m_logger.debug("No template to wrap body");
+    }
     Template subjectTemplate = getSubjectTemplate();
     if(subjectTemplate != null) {
       try {
@@ -122,6 +125,9 @@ public class WrappedMessageGenerator
       catch(Exception ex) {
         m_logger.error(ex);
       }    
+    }
+    else {
+      m_logger.debug("No template for new subject");
     }
     return ret;
   }  

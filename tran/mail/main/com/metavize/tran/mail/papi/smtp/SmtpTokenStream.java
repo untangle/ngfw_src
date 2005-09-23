@@ -246,6 +246,18 @@ public class SmtpTokenStream
       return;
     }
 
+    if(token instanceof SASLExchangeToken) {
+      m_logger.debug("Received SASL token");
+      trb.addTokenForServer(token);
+      return;
+    }
+
+    if(token instanceof AUTHCommand) {
+      m_logger.debug("Received AUTHCommand");
+      trb.addTokenForServer(token);
+      return;
+    }    
+
     //Passthru
     if(token instanceof PassThruToken) {
       m_logger.debug("(client token) Entering Passthru");
@@ -301,6 +313,12 @@ public class SmtpTokenStream
       trb.addTokenForClient(token);
       return;
     }
+
+    if(token instanceof SASLExchangeToken) {
+      m_logger.debug("Received SASL token");
+      trb.addTokenForClient(token);
+      return;
+    }    
     
     //Passthru
     if(token instanceof PassThruToken) {

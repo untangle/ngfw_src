@@ -11,31 +11,24 @@
 
 package com.metavize.tran.mail.impl.smtp;
 
-import static com.metavize.tran.util.Ascii.*;
-import static com.metavize.tran.util.BufferUtil.*;
 import static com.metavize.tran.util.ASCIIUtil.bbToString;
-
-import com.metavize.tran.mail.papi.smtp.*;
-
 import com.metavize.tran.mail.papi.ByteBufferByteStuffer;
-
-import java.io.*;
-
-import java.nio.ByteBuffer;
-
-import com.metavize.mvvm.*;
-import com.metavize.mvvm.tapi.*;
-import com.metavize.mvvm.tapi.event.TCPStreamer;
-import com.metavize.tran.mail.papi.ByteBufferByteStuffer;
-import com.metavize.tran.mail.papi.smtp.*;
-import com.metavize.tran.token.*;
-import com.metavize.tran.util.*;
 import org.apache.log4j.Logger;
-import java.util.*;
+import java.nio.ByteBuffer;
 import com.metavize.tran.mail.papi.MIMEAccumulator;
 import com.metavize.tran.mail.papi.CompleteMIMEToken;
 import com.metavize.tran.mail.papi.BeginMIMEToken;
 import com.metavize.tran.mail.papi.ContinuedMIMEToken;
+import com.metavize.tran.mail.papi.smtp.AUTHCommand;
+import com.metavize.tran.mail.papi.smtp.Command;
+import com.metavize.tran.mail.papi.smtp.UnparsableCommand;
+import com.metavize.tran.mail.papi.smtp.SASLExchangeToken;
+import com.metavize.mvvm.tapi.TCPSession;
+import com.metavize.tran.token.Token;
+import com.metavize.tran.token.UnparseResult;
+import com.metavize.tran.token.MetadataToken;
+import com.metavize.tran.token.Chunk;
+
 
 /**
  * ...name says it all...
@@ -43,7 +36,8 @@ import com.metavize.tran.mail.papi.ContinuedMIMEToken;
 class SmtpServerUnparser
   extends SmtpUnparser {
 
-  private final Logger m_logger = Logger.getLogger(SmtpServerUnparser.class);
+  private final Logger m_logger =
+    Logger.getLogger(SmtpServerUnparser.class);
 
   private ByteBufferByteStuffer m_byteStuffer;
   private MIMEAccumulator m_accumulator;
@@ -56,16 +50,64 @@ class SmtpServerUnparser
   }
 
 
-  public UnparseResult unparse(Token token)
-    throws UnparseException {
-    
-//    m_logger.debug("unparse token of type " + (token==null?"null":token.getClass().getName()));
+  @Override
+  protected UnparseResult doUnparse(Token token) {
 
     //-----------------------------------------------------------
-    if(token instanceof PassThruToken) {
-      m_logger.debug("Received PASSTHRU token");
-      declarePassthru();//Inform the parser of this state
-      return UnparseResult.NONE;
+    if(token instanceof AUTHCommand) {
+      m_logger.debug("Received AUTHCommand token");
+
+      ByteBuffer buf = token.getBytes();
+
+      AUTHCommand authCmd = (AUTHCommand) token;
+      String mechName = authCmd.getMechanismName();
+
+      if(!getSmtpCasing().openSASLExchange(mechName)) {
+        m_logger.debug("Unable to find SASLObserver for \"" +
+          mechName + "\"");
+        declarePassthru();
+      }
+      else {
+        m_logger.debug("Opening SASL Exchange");
+        switch(getSmtpCasing().getSASLObserver().initialClientResponse(
+          authCmd.getInitialResponse())) {
+          case EXCHANGE_COMPLETE:
+            m_logger.debug("SASL Exchange complete");
+            getSmtpCasing().closeSASLExchange();
+          case IN_PROGRESS:
+            break;//Nothing interesting to do
+          case RECOMMEND_PASSTHRU:
+            m_logger.debug("Entering passthru on advice of SASLObserver");
+            declarePassthru();
+        }
+      }
+
+      return new UnparseResult(buf);
+    }
+
+    //-----------------------------------------------------------
+    if(token instanceof SASLExchangeToken) {
+      m_logger.debug("Received SASLExchangeToken token");
+
+      ByteBuffer buf = token.getBytes();
+
+      if(!getSmtpCasing().isInSASLLogin()) {
+        m_logger.error("Received SASLExchangeToken without an open exchange");
+      }
+      else {
+        switch(getSmtpCasing().getSASLObserver().clientData(buf.duplicate())) {
+          case EXCHANGE_COMPLETE:
+            m_logger.debug("SASL Exchange complete");
+            getSmtpCasing().closeSASLExchange();
+          case IN_PROGRESS:
+            //Nothing to do
+            break;
+          case RECOMMEND_PASSTHRU:
+            m_logger.debug("Entering passthru on advice of SASLObserver");
+            declarePassthru();
+        }
+      }
+      return new UnparseResult(buf);
     }
 
     //-----------------------------------------------------------
@@ -89,9 +131,7 @@ class SmtpServerUnparser
           command.toDebugString());
         getSessionTracker().commandReceived(command);  
       }
-      ByteBuffer buf = token.getBytes();
-      getSmtpCasing().traceUnparse(buf);
-      return new UnparseResult(buf);
+      return new UnparseResult(token.getBytes());
     }
 
     //-----------------------------------------------------------
@@ -103,8 +143,7 @@ class SmtpServerUnparser
       m_byteStuffer = new ByteBufferByteStuffer();
       m_accumulator = bmt.getMIMEAccumulator();
       return new UnparseResult(
-        getSmtpCasing().wrapUnparseStreamerForTrace(
-          bmt.toStuffedTCPStreamer(m_byteStuffer)));
+          bmt.toStuffedTCPStreamer(m_byteStuffer));
     }
 
     //-----------------------------------------------------------
@@ -112,8 +151,7 @@ class SmtpServerUnparser
       m_logger.debug("Send CompleteMIMEToken to server");
       getSessionTracker().beginMsgTransmission();
       return new UnparseResult(
-        getSmtpCasing().wrapUnparseStreamerForTrace(
-        ((CompleteMIMEToken) token).toStuffedTCPStreamer(getPipeline(), true)));
+        ((CompleteMIMEToken) token).toStuffedTCPStreamer(getPipeline(), true));
     }
     //-----------------------------------------------------------
     if(token instanceof ContinuedMIMEToken) {
@@ -122,7 +160,6 @@ class SmtpServerUnparser
       ByteBuffer sink = null;
       if(continuedToken.shouldUnparse()) {
         m_logger.debug("Sending continued MIME chunk to server");
-//        continuedToken.getMIMEChunk().superDebugMe(m_logger, "[handleContinuedMIME()]");
         ByteBuffer buf = token.getBytes();
         sink = ByteBuffer.allocate(buf.remaining() + (m_byteStuffer.getLeftoverCount()*2));
         m_byteStuffer.transfer(buf, sink);
@@ -134,10 +171,6 @@ class SmtpServerUnparser
       if(continuedToken.getMIMEChunk().isLast()) {
         m_logger.debug("Last MIME chunk");
         ByteBuffer remainder = m_byteStuffer.getLast(true);
-        if(sink != null) {
-          getSmtpCasing().traceUnparse(sink);
-        }
-        getSmtpCasing().traceUnparse(remainder);
         m_byteStuffer = null;
         m_accumulator.dispose();
         m_accumulator = null;
@@ -148,7 +181,6 @@ class SmtpServerUnparser
       }
       else {
         if(sink != null) {
-          getSmtpCasing().traceUnparse(sink);
           return new UnparseResult(sink);
         }
         else {
@@ -161,7 +193,6 @@ class SmtpServerUnparser
     if(token instanceof Chunk) {
       ByteBuffer buf = token.getBytes();
       m_logger.debug("Sending chunk (" + buf.remaining() + " bytes) to server");
-      getSmtpCasing().traceUnparse(buf);
       return new UnparseResult(buf);
     }
 
@@ -183,7 +214,7 @@ class SmtpServerUnparser
 
   @Override
   public void handleFinalized() {
-    m_logger.debug("[handleFinalized()]");
+    super.handleFinalized();
     if(m_accumulator != null) {
       m_accumulator.dispose();
       m_accumulator = null;

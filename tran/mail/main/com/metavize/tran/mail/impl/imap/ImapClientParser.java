@@ -15,7 +15,6 @@ import java.nio.ByteBuffer;
 import com.metavize.tran.mail.papi.imap.IMAPTokenizer;
 import com.metavize.tran.mail.papi.imap.ImapChunk;
 import com.metavize.mvvm.tapi.TCPSession;
-import com.metavize.tran.token.TokenStreamer;
 import com.metavize.tran.token.PassThruToken;
 import com.metavize.tran.token.Token;
 import com.metavize.tran.token.Chunk;
@@ -47,14 +46,8 @@ class ImapClientParser
     m_logger.debug("Created");
   }
 
-
-  public ParseResult parse(ByteBuffer buf) {
-
-    //Check for passthru
-    if(isPassthru()) {
-      getImapCasing().traceParse(buf);
-      return new ParseResult(new Chunk(buf));
-    }
+  @Override
+  protected ParseResult doParse(ByteBuffer buf) {
 
     //Create copy of buffer for the case of
     //the SessionMonitor telling us to punt
@@ -84,7 +77,6 @@ class ImapClientParser
     //believe we should punt.  Pass along the bytes
     //aligned on the token boundary, and return the rest
     //in the read buffer
-    getImapCasing().traceParse(dupToScan);
     buf = compactIfNotEmpty(buf, m_tokenizer.getLongestWord());
 
     m_logger.debug("Returning ImapChunk of length: " +
@@ -92,17 +84,6 @@ class ImapClientParser
       (buf==null?"no":Integer.toString(buf.position())) +
       " bytes for next read");
     return new ParseResult(new ImapChunk(dupToScan), buf);
-  }
-
-  @Override  
-  public TokenStreamer endSession() {
-    m_logger.debug("End Session");
-    return super.endSession();
-  }
-
-  public ParseResult parseEnd(ByteBuffer buf) {
-    Chunk c = new Chunk(buf);
-    return new ParseResult(c);
   }
 
 

@@ -550,6 +550,8 @@ public class VirusTransformImpl extends AbstractTransform
             q.setParameter("tid", getTid());
             settings = (VirusSettings)q.uniqueResult();
 
+            ensureTemplateSettings(settings);
+
             tx.commit();
         } catch (HibernateException exn) {
             logger.warn("Could not get VirusSettings", exn);
