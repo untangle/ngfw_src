@@ -142,10 +142,8 @@ public class PolicyStateMachine implements ActionListener {
     private void handleViewSelector(){
 	System.out.println("handleViewSelector()");
 	Policy currentPolicy = (Policy) viewSelector.getSelectedItem();
-	if( currentPolicy.equals(selectedPolicy) ){
-	    System.err.println("Policy unchanged");
+	if( currentPolicy.equals(selectedPolicy) )
 	    return;
-	}
 	JPanel toolboxJPanel = policyToolboxJPanelMap.get(currentPolicy);
 	int currentScrollPosition = toolboxJScrollPane.getVerticalScrollBar().getValue();
 	toolboxJScrollPane.setViewportView( toolboxJPanel );
@@ -156,20 +154,16 @@ public class PolicyStateMachine implements ActionListener {
 	lastScrollPosition = currentScrollPosition;
 	JPanel rackJPanel = policyRackJPanelMap.get(currentPolicy);
 	int lastScrollPosition = 0;
-	if( lastRackJPanelSelected != null ){
+	if( lastRackJPanelSelected != null )
 	    rackViewJPanel.remove( lastRackJPanelSelected );
-	    System.err.println("REMOVING OLD PANEL");
-	}
-	else
-	    System.err.println("NOT REMOVING OLD PANEL");
 	lastRackJPanelSelected = rackJPanel;
 	rackViewJPanel.add( rackJPanel, rackGridBagConstraints );
 	rackJPanel.revalidate();
 	rackViewJPanel.repaint();
-	if( selectedPolicy == null )
-	    System.err.println("Policy set:" + currentPolicy.getName());
-	else
-	    System.err.println("Policy changed: " + selectedPolicy.getName() + " -> " + currentPolicy.getName());
+	//if( selectedPolicy == null )
+	//    System.err.println("Policy Rack view set:" + currentPolicy.getName());
+	//else
+	//    System.err.println("Policy Rack view changed: " + selectedPolicy.getName() + " -> " + currentPolicy.getName());
 	selectedPolicy = currentPolicy;
     }
     private void handlePolicyManagerJButton() {
@@ -201,7 +195,6 @@ public class PolicyStateMachine implements ActionListener {
 	    currentPolicyRacks.put( (Policy) ((DefaultComboBoxModel)viewSelector.getModel()).getElementAt(i), null );
 	for( Policy policy : (List<Policy>) Util.getPolicyManager().getPolicyConfiguration().getPolicies() ){
 	    newPolicyRacks.put( policy, null );
-	    System.err.println("new policy: " + policy.getName());
 	}
 	// FIND THE DIFFERENCES
 	Vector<Policy> addedPolicyVector = new Vector<Policy>();
@@ -217,7 +210,6 @@ public class PolicyStateMachine implements ActionListener {
 	DefaultComboBoxModel defaultComboBoxModel = new DefaultComboBoxModel();
 	for( Policy newPolicy : newPolicyRacks.keySet() ){
 	    defaultComboBoxModel.addElement(newPolicy);
-	    System.err.println("added: " + newPolicy.getName() + (selectedPolicy.equals(newPolicy) ? "(default)" : "") );
 	    if( selectedPolicy.equals(newPolicy) ){
 		defaultComboBoxModel.setSelectedItem(newPolicy);
 	    }
@@ -659,7 +651,7 @@ public class PolicyStateMachine implements ActionListener {
 	    toolboxJPanel.add(mTransformJButton, buttonGridBagConstraints, position);
 	    toolboxJPanel.revalidate();				    
 	}});
-	System.err.println("Added to toolbox (" + policy.getName() + "): " + mackageDesc.getDisplayName() + " deployed: " + isDeployed);
+	//System.err.println("Added to toolbox (" + policy.getName() + "): " + mackageDesc.getDisplayName() + " deployed: " + isDeployed);
     }
     private synchronized void addToRack(final Policy policy, final MTransformJPanel mTransformJPanel){
 	final ButtonKey buttonKey = new ButtonKey(mTransformJPanel);
@@ -672,7 +664,7 @@ public class PolicyStateMachine implements ActionListener {
 	    rackJPanel.add(mTransformJPanel, applianceGridBagConstraints, position);
 	    rackJPanel.revalidate();		
 	}});
-	System.err.println("Added to rack (" + policy.getName() + "): " + mTransformJPanel.getMackageDesc().getDisplayName() );
+	//System.err.println("Added to rack (" + policy.getName() + "): " + mTransformJPanel.getMackageDesc().getDisplayName() );
     }
     ///////////////////////////////////////
     // ADD API ////////////////////////////
