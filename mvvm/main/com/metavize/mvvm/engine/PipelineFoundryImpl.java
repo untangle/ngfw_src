@@ -162,7 +162,7 @@ class PipelineFoundryImpl implements PipelineFoundry
             logger.debug("sid: " + sd.id() + " pipe in " + (t1 - t0)
                          + " made: " + (ct1 - ct0)
                          + " filtered: " + (ft1 - ft0)
-                         + " nanos chain: " + chain);
+                         + " chain: " + chain);
         }
 
         return new PipelineDesc(pr, al);

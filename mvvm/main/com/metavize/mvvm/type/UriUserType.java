@@ -24,7 +24,8 @@ import org.hibernate.usertype.UserType;
 
 public class UriUserType implements UserType
 {
-    // How big a varchar() do we get for default String fields.  This should be elsewhere. XXX
+    // How big a varchar() do we get for default String fields.  This
+    // should be elsewhere. XXX
     public static final int DEFAULT_STRING_SIZE = 255;
 
     private static final int[] SQL_TYPES = { Types.VARCHAR };

@@ -93,7 +93,7 @@ class MvvmLoginImpl implements MvvmLogin
                                             LoginFailureReason.UNKNOWN_USER));
             try {
                 Thread.sleep(LOGIN_FAIL_SLEEP_TIME);
-            } catch (InterruptedException exn) { /* whateva */ }
+            } catch (InterruptedException exn) { }
 
             throw new FailedLoginException("no such user: " + login);
         } else if (!PasswordUtil.check(password, user.getPassword())) {
@@ -103,7 +103,7 @@ class MvvmLoginImpl implements MvvmLogin
 
             try {
                 Thread.sleep(LOGIN_FAIL_SLEEP_TIME);
-            } catch (InterruptedException exn) { /* whateva */ }
+            } catch (InterruptedException exn) { }
 
             throw new FailedLoginException("incorrect password");
         } else {
@@ -132,7 +132,7 @@ class MvvmLoginImpl implements MvvmLogin
 
             try {
                 Thread.sleep(LOGIN_FAIL_SLEEP_TIME);
-            } catch (InterruptedException exn) { /* whateva */ }
+            } catch (InterruptedException exn) { }
 
             throw new FailedLoginException("system login not from localhost");
         } else if (!isSystemLogin(username, password)) {
@@ -140,7 +140,7 @@ class MvvmLoginImpl implements MvvmLogin
                                             false));
             try {
                 Thread.sleep(LOGIN_FAIL_SLEEP_TIME);
-            } catch (InterruptedException exn) { /* whateva */ }
+            } catch (InterruptedException exn) { }
 
             throw new FailedLoginException("bad system login");
         } else {

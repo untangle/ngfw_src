@@ -28,9 +28,8 @@ public abstract class StringBasedUserType implements UserType, Serializable
     // abstract methods -------------------------------------------------------
     public abstract Class returnedClass();
 
-    protected abstract String userTypeToString( Object v );
-
-    protected abstract Object createUserType( String val ) throws Exception;
+    protected abstract String userTypeToString(Object v);
+    protected abstract Object createUserType(String val) throws Exception;
 
     // UserType methods -------------------------------------------------------
 
