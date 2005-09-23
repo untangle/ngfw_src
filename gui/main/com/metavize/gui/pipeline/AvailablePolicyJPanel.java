@@ -69,21 +69,15 @@ class AvailablePolicyTableModel extends MSortedTableModel{
 	PolicyConfiguration policyConfiguration = (PolicyConfiguration) settings;
 	boolean oneRackLeft = false;
 	int rowIndex = 0;
-	Hashtable nameHashtable = new Hashtable();
-	Hashtable systemUsageHashtable = new Hashtable();
-	Hashtable userUsageHashtable = new Hashtable();
-
-	List<SystemPolicyRule> systemPolicyRules = policyConfiguration.getSystemPolicyRules();
-	for( SystemPolicyRule systemPolicyRule : systemPolicyRules ){
-	    if( !systemUsageHashtable.containsKey(systemPolicyRule.getPolicy().getName()) )
-		systemUsageHashtable.put(systemPolicyRule.getPolicy().getName(), "");
-	}
-
-	List<UserPolicyRule> userPolicyRules = policyConfiguration.getUserPolicyRules();
-	for( UserPolicyRule userPolicyRule : userPolicyRules ){
-	    if( !userUsageHashtable.containsKey(userPolicyRule.getPolicy().getName()) )
-		userUsageHashtable.put(userPolicyRule.getPolicy().getName(), "");
-	}
+	Map<String,Object> nameMap = new HashMap<String,Object>();
+	Map<String,Object> systemUsageMap = new HashMap<String,Object>();
+	Map<String,Object> userUsageMap = new HashMap<String,Object>();
+	// BUILD THE LIST OF SYSTEM-NEEDED POLICIES
+	for( SystemPolicyRule systemPolicyRule : (List<SystemPolicyRule>) policyConfiguration.getSystemPolicyRules() )
+	    systemUsageMap.put(systemPolicyRule.getPolicy().getName(), null);
+	// BUILD THE LIST OF USER-NEEDED POLICIES
+	for( UserPolicyRule userPolicyRule : (List<UserPolicyRule>) policyConfiguration.getUserPolicyRules() )
+	    userUsageMap.put(userPolicyRule.getPolicy().getName(), null);
 
 	for( Vector rowVector : tableVector ){
 	    rowIndex++;
@@ -91,29 +85,27 @@ class AvailablePolicyTableModel extends MSortedTableModel{
 	    String name = (String) rowVector.elementAt(2);
 
 	    if( ROW_REMOVE.equals(state) ){
-		// verify that if the rack is being removed, that it is not already in use by a default
-		if( systemUsageHashtable.containsKey(name) ){
+		// verify that if the rack is being removed, that it is not already in use by a system rule
+		if( systemUsageMap.containsKey(name) ){
 		    throw new Exception("The rack in row: " + rowIndex + " cannot be removed because it is currently being used in \"Default Policies\".");
 		}
-		// verify that if the rack is being removed, that it is not already in use by a custom rule
-		else if( userUsageHashtable.containsKey(name) ){
+		// verify that if the rack is being removed, that it is not already in use by a user rule
+		else if( userUsageMap.containsKey(name) ){
 		    throw new Exception("The rack in row: " + rowIndex + " cannot be removed because it is currently being used in \"Custom Policies\".");
 		}
 	    }
 	    else{
 		// verify there is no name collision
-		if( nameHashtable.containsKey(name) ){
+		if( nameMap.containsKey(name) ){
 		    throw new Exception("The rack named: " + name + " in row: " + rowIndex + " already exists.");
 		}
 		else{
-		    nameHashtable.put(name, name);
-		}
-		
+		    nameMap.put(name,null);
+		}		
 		// racord that one rack is left
 		oneRackLeft = true;
 	    }
 	}
-
 	// make sure there is at least one rack left
 	if( !oneRackLeft ){
 	    throw new Exception("There must always be at least one available rack.");
