@@ -25,6 +25,7 @@ import com.metavize.tran.util.*;
 import org.apache.log4j.Logger;
 import com.metavize.mvvm.tran.Transform;
 import static com.metavize.tran.util.Ascii.CRLF;
+import com.metavize.tran.mime.LCString;
 import java.net.InetAddress;
 
 
@@ -35,11 +36,6 @@ import java.net.InetAddress;
 public class SmtpSessionHandler
   extends BufferingSessionHandler {
 
-  private static final String SPAM_HEADER_NAME = "X-Spam-Flag";
-  private static final LCString SPAM_HEADER_NAME_LC = new LCString(SPAM_HEADER_NAME);
-  private static final String IS_SPAM_HEADER_VALUE = "YES";
-  private static final String IS_HAM_HEADER_VALUE = "NO";
-
   private final Logger m_logger = Logger.getLogger(SmtpSessionHandler.class);
   private final Pipeline m_pipeline;
   private final TempFileFactory m_fileFactory;
@@ -48,8 +44,6 @@ public class SmtpSessionHandler
 
   private final SpamImpl m_spamImpl;
   private final SpamSMTPConfig m_config;
-
-  private final WrappedMessageGenerator m_wrapper;
   private final SmtpNotifyMessageGenerator m_notifier;
 
   public SmtpSessionHandler(TCPSession session,
@@ -57,14 +51,12 @@ public class SmtpSessionHandler
     long maxSvrWait,
     SpamImpl impl,
     SpamSMTPConfig config,
-    WrappedMessageGenerator wrapper,
     SmtpNotifyMessageGenerator notifier) {
 
     super(config.getMsgSizeLimit(), maxClientWait, maxSvrWait, false);
 
     m_spamImpl = impl;
     m_config = config;
-    m_wrapper = wrapper;
     m_notifier = notifier;
     m_pipeline = MvvmContextFactory.context().
       pipelineFoundry().getPipeline(session.id());
@@ -119,9 +111,9 @@ public class SmtpSessionHandler
 
     //Mark headers regardless of other actions
     try {
-      msg.getMMHeaders().removeHeaderFields(spamHeaderNameLC());
-      msg.getMMHeaders().addHeaderField(spamHeaderName(),
-        report.isSpam()?IS_SPAM_HEADER_VALUE:IS_HAM_HEADER_VALUE);
+      msg.getMMHeaders().removeHeaderFields(new LCString(m_config.getHeaderName()));
+      msg.getMMHeaders().addHeaderField(m_config.getHeaderName(),
+        m_config.getHeaderValue(report.isSpam()));
     }
     catch(HeaderParseException shouldNotHappen) {
       m_logger.error(shouldNotHappen);
@@ -151,7 +143,7 @@ public class SmtpSessionHandler
       else if(action == SMTPSpamMessageAction.MARK) {
         m_logger.debug("Marking message as-per policy");
         m_spamImpl.incrementMarkCounter();
-        MIMEMessage wrappedMsg = m_wrapper.wrap(msg, tx, report);
+        MIMEMessage wrappedMsg = m_config.getMessageGenerator().wrap(msg, tx, report);
         return new BPMEvaluationResult(wrappedMsg);
       }
       else {//BLOCK
@@ -244,14 +236,6 @@ public class SmtpSessionHandler
       return BlockOrPassResult.PASS;
     }
   }
-
-    // A method so it can be overriden
-    protected String spamHeaderName() {
-        return SPAM_HEADER_NAME;
-    }
-    protected LCString spamHeaderNameLC() {
-        return SPAM_HEADER_NAME_LC;
-    }
 
   /**
    * Wrapper that handles exceptions, and returns

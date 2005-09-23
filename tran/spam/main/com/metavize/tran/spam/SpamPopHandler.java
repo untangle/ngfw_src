@@ -24,7 +24,6 @@ import com.metavize.tran.mail.papi.MIMEMessageT;
 import com.metavize.tran.mail.papi.WrappedMessageGenerator;
 import com.metavize.tran.mail.papi.pop.PopStateMachine;
 import com.metavize.tran.mime.HeaderParseException;
-import com.metavize.tran.mime.LCString;
 import com.metavize.tran.mime.MIMEMessage;
 import com.metavize.tran.mime.MIMEUtil;
 import com.metavize.tran.token.Token;
@@ -32,17 +31,13 @@ import com.metavize.tran.token.TokenException;
 import com.metavize.tran.token.TokenResult;
 import com.metavize.tran.util.FileFactory;
 import com.metavize.tran.util.TempFileFactory;
+import com.metavize.tran.mime.LCString;
 import org.apache.log4j.Logger;
 
 public class SpamPopHandler extends PopStateMachine
 {
     private final static Logger logger = Logger.getLogger(SpamPopHandler.class);
     private final static Logger eventLogger = MvvmContextFactory.context().eventLogger();
-
-    private final static String SPAM_HDR_NAME = "X-Spam-Flag";
-    private final static LCString SPAM_HDR_NAME_LC = new LCString(SPAM_HDR_NAME);
-    private final static String IS_SPAM_HDR_VALUE = "YES";
-    private final static String IS_HAM_HDR_VALUE = "NO";
 
     /* no block counter */
     private final static int SCAN_COUNTER = Transform.GENERIC_0_COUNTER;
@@ -54,12 +49,12 @@ public class SpamPopHandler extends PopStateMachine
     private final String zVendorName;
 
     private final SpamMessageAction zMsgAction;
+    private final SpamPOPConfig zConfig;
     private final boolean bScan;
     private final int strength; 
     private final int giveUpSize;
 
-    // This one needs to be changable by subclasses
-    protected WrappedMessageGenerator zWMsgGenerator;
+    private WrappedMessageGenerator zWMsgGenerator;
 
     // constructors -----------------------------------------------------------
 
@@ -73,16 +68,15 @@ public class SpamPopHandler extends PopStateMachine
 
         MailTransformSettings zMTSettings = zMExport.getExportSettings();
 
-        SpamPOPConfig zConfig;
         WrappedMessageGenerator zWMGenerator;
 
         if (!session.isInbound()) {
             zConfig = transform.getSpamSettings().getPOPInbound();
-            zWMGenerator = new WrappedMessageGenerator(SpamSettings.IN_MOD_SUB_TEMPLATE, SpamSettings.IN_MOD_BODY_TEMPLATE);
+            zWMGenerator = zConfig.getMessageGenerator();
             lTimeout = zMTSettings.getPopInboundTimeout();
         } else {
             zConfig = transform.getSpamSettings().getPOPOutbound();
-            zWMGenerator = new WrappedMessageGenerator(SpamSettings.OUT_MOD_SUB_TEMPLATE, SpamSettings.OUT_MOD_BODY_TEMPLATE);
+            zWMGenerator = zWMGenerator = zConfig.getMessageGenerator();
             lTimeout = zMTSettings.getPopOutboundTimeout();
         }
         bScan = zConfig.getScan();
@@ -145,8 +139,9 @@ public class SpamPopHandler extends PopStateMachine
             eventLogger.info(event);
 
             try {
-                zMMessage.getMMHeaders().removeHeaderFields(spamHeaderNameLC());
-                zMMessage.getMMHeaders().addHeaderField(spamHeaderName(), true == zReport.isSpam() ? IS_SPAM_HDR_VALUE : IS_HAM_HDR_VALUE);
+                zMMessage.getMMHeaders().removeHeaderFields(new LCString(zConfig.getHeaderName()));
+                zMMessage.getMMHeaders().addHeaderField(zConfig.getHeaderName(),
+                  zConfig.getHeaderValue(zReport.isSpam()));
             }
             catch (HeaderParseException exn) {
                 /* we'll reuse original message */
@@ -163,13 +158,5 @@ public class SpamPopHandler extends PopStateMachine
             /* we'll reuse original message */
             throw new TokenException("cannot scan message/mime part file: " + exn);
         }
-    }
-
-    // A method so it can be overriden
-    protected String spamHeaderName() {
-        return SPAM_HDR_NAME;
-    }
-    protected LCString spamHeaderNameLC() {
-        return SPAM_HDR_NAME_LC;
     }
 }

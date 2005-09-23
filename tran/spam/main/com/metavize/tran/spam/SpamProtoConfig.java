@@ -11,6 +11,7 @@
 
 package com.metavize.tran.spam;
 
+import com.metavize.tran.mail.papi.WrappedMessageGenerator;
 import java.io.Serializable;
 import java.util.*;
 
@@ -33,15 +34,34 @@ public abstract class SpamProtoConfig implements Serializable
     private int strength = DEFAULT_STRENGTH;
     private int msgSizeLimit = DEFAULT_MESSAGE_SIZE_LIMIT;
     private String zNotes = NO_NOTES;
+    private transient WrappedMessageGenerator m_msgGenerator;
+    private String m_subjectWrapperTemplate;
+    private String m_bodyWrapperTemplate;
+    private String m_headerName = "X-Spam-Flag";//To prevent assertion by LCString in initialized-only state
+    private String m_isSpamHeaderValue;
+    private String m_isHamHeaderValue;
 
     // constructors -----------------------------------------------------------
 
     protected SpamProtoConfig() { }
 
-    protected SpamProtoConfig(boolean bScan, int strength, String zNotes) {
+    protected SpamProtoConfig(boolean bScan,
+        int strength,
+        String zNotes,
+        String subjectTemplate,
+        String bodyTemplate,
+        String headerName,
+        String isSpamHeaderValue,
+        String isHamHeaderValue) {
         this.bScan = bScan;
         this.strength = strength;
         this.zNotes = zNotes;
+        m_subjectWrapperTemplate = subjectTemplate;
+        m_bodyWrapperTemplate = bodyTemplate;
+        m_headerName = headerName;
+        m_isSpamHeaderValue = isSpamHeaderValue;
+        m_isHamHeaderValue = isHamHeaderValue;
+        
     }
 
     // accessors --------------------------------------------------------------
@@ -62,6 +82,95 @@ public abstract class SpamProtoConfig implements Serializable
         this.id = id;
         return;
     }
+
+    /**
+     * Get the name of the header (e.g. "X-SPAM")
+     * used to indicate the SPAM/HAM
+     * value of this email
+     */
+    public String getHeaderName() {
+      return m_headerName;
+    }
+    public void setHeaderName(String headerName) {
+      m_headerName = headerName;
+    }
+    /**
+     * Get the name of the header value (e.g. "YES")
+     * used to indicate the SPAM/HAM
+     * value of this email
+     */
+    public String getHeaderValue(boolean isSpam) {
+      return isSpam?m_isSpamHeaderValue:m_isHamHeaderValue;
+    }
+
+    /**
+     * Set the value of the {@link #getHeaderName header}
+     * used when the mail is HAM/SPAM
+     *
+     *
+     * param headerValue the value of the header
+     * param isSpam true if this is the value for spam,
+     *        false for ham
+     */
+    public void setHeaderValue(String headerValue, boolean isSpam) {
+      if(isSpam) {
+        m_isSpamHeaderValue = headerValue;
+      }
+      else {
+        m_isHamHeaderValue = headerValue;
+      }
+    }
+    
+
+    /**
+    * Get the tempalte used to create the subject
+    * for a wrapped message.
+    */
+    public String getSubjectWrapperTemplate() {
+      return m_subjectWrapperTemplate;
+    }
+  
+    public void setSubjectWrapperTemplate(String template) {
+      m_subjectWrapperTemplate = template;
+      ensureMessageGenerator();
+      m_msgGenerator.setSubject(template);
+    }
+  
+    /**
+    * Get the tempalte used to create the body
+    * for a wrapped message.
+    */
+    public String getBodyWrapperTemplate() {
+      return m_bodyWrapperTemplate;
+    }
+  
+    public void setBodyWrapperTemplate(String template) {
+      m_bodyWrapperTemplate = template;
+      ensureMessageGenerator();
+      m_msgGenerator.setBody(template);
+    }
+  
+    /**
+      * Access the helper object, for wrapping messages
+      * based on the values of the
+      * {@link #getSubjectWrapperTemplate subject} and
+      * {@link #getBodyWrapperTemplate body} templates.
+      *
+      *
+      */
+    public WrappedMessageGenerator getMessageGenerator() {
+      ensureMessageGenerator();
+      return m_msgGenerator;
+    }
+  
+    private void ensureMessageGenerator() {
+      if(m_msgGenerator == null) {
+        m_msgGenerator = new WrappedMessageGenerator(
+          getSubjectWrapperTemplate(),
+          getBodyWrapperTemplate());
+      }
+    }
+    
 
     /**
      * scan: a boolean specifying whether or not to scan a message for spam (defaults to true)

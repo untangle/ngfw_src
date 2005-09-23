@@ -59,12 +59,6 @@ public class SpamSmtpFactory
   private static final Logger m_logger =
     Logger.getLogger(SpamSmtpFactory.class);
 
-  private WrappedMessageGenerator m_inWrapper =
-    new WrappedMessageGenerator(SpamSettings.IN_MOD_SUB_TEMPLATE, SpamSettings.IN_MOD_BODY_SMTP_TEMPLATE);
-
-  private WrappedMessageGenerator m_outWrapper =
-    new WrappedMessageGenerator(SpamSettings.OUT_MOD_SUB_TEMPLATE, SpamSettings.OUT_MOD_BODY_SMTP_TEMPLATE);
-
   private SmtpNotifyMessageGenerator m_inNotifier;
   private SmtpNotifyMessageGenerator m_outNotifier;
 
@@ -98,9 +92,6 @@ public class SpamSmtpFactory
       return Session.createPassthruSession(session);
     }
 
-    WrappedMessageGenerator msgWrapper =
-      inbound?m_inWrapper:m_outWrapper;
-
     SmtpNotifyMessageGenerator notifier =
       inbound?m_inNotifier:m_outNotifier;
 
@@ -111,7 +102,6 @@ public class SpamSmtpFactory
         inbound?casingSettings.getSmtpInboundTimeout():casingSettings.getSmtpOutboundTimeout(),
         m_spamImpl,
         spamConfig,
-        msgWrapper,
         notifier));
 
   }

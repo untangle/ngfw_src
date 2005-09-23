@@ -37,9 +37,24 @@ public class SpamPOPConfig extends SpamProtoConfig
      */
     public SpamPOPConfig() {}
 
-    public SpamPOPConfig(boolean bScan, SpamMessageAction zMsgAction, int strength, String zNotes)
+    public SpamPOPConfig(boolean bScan,
+        SpamMessageAction zMsgAction,
+        int strength,
+        String zNotes,
+        String subjectTemplate,
+        String bodyTemplate,
+        String headerName,
+        String isSpamHeaderValue,
+        String isHamHeaderValue)
     {
-        super(bScan, strength, zNotes);
+        super(bScan,
+          strength,
+          zNotes,
+          subjectTemplate,
+          bodyTemplate,
+          headerName,
+          isSpamHeaderValue,
+          isHamHeaderValue);
         this.zMsgAction = zMsgAction;   
     }
 

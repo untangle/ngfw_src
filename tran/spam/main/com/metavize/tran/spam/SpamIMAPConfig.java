@@ -36,9 +36,24 @@ public class SpamIMAPConfig extends SpamProtoConfig
      */
     public SpamIMAPConfig() {}
 
-    public SpamIMAPConfig(boolean bScan, SpamMessageAction zMsgAction, int strength, String zNotes)
+    public SpamIMAPConfig(boolean bScan,
+        SpamMessageAction zMsgAction,
+        int strength,
+        String zNotes,
+        String subjectTemplate,
+        String bodyTemplate,
+        String headerName,
+        String isSpamHeaderValue,
+        String isHamHeaderValue)
     {
-        super(bScan, strength, zNotes);
+        super(bScan,
+          strength,
+          zNotes,
+          subjectTemplate,
+          bodyTemplate,
+          headerName,
+          isSpamHeaderValue,
+          isHamHeaderValue);
         this.zMsgAction = zMsgAction;   
     }
 

@@ -29,34 +29,6 @@ import org.apache.log4j.Logger;
 public class PhishSmtpFactory
   implements TokenHandlerFactory {
 
-  //==================================
-  // Note that there are a lot
-  // of literals burned-into the
-  // code.  In a later version,
-  // these should be moved to
-  // user-controled params in the
-  // database
-  //==================================
-
-  //TODO bscott These should be paramaterized in the Config objects
-
-    public static final String OUT_MOD_SUB_TEMPLATE =
-      "[FRAUD] $MIMEMessage:SUBJECT$";
-    public static final String OUT_MOD_BODY_TEMPLATE =
-      "The attached message from $MIMEMessage:FROM$ was determined\r\n " +
-      "to be PHISH (a fraudulent email intended to steal information)\r\n." +
-      "The details of the report are as follows:\r\n\r\n" +
-      "$SPAMReport:FULL$";
-    public static final String OUT_MOD_BODY_SMTP_TEMPLATE =
-      "The attached message from $MIMEMessage:FROM$ ($SMTPTransaction:FROM$) was determined\r\n " +
-      "to be PHISH (a fraudulent email intended to steal information)\r\n." +
-      "The details of the report are as follows:\r\n\r\n" +
-      "$SPAMReport:FULL$";
-
-    public static final String IN_MOD_SUB_TEMPLATE = OUT_MOD_SUB_TEMPLATE;
-    public static final String IN_MOD_BODY_TEMPLATE = OUT_MOD_BODY_TEMPLATE;
-    public static final String IN_MOD_BODY_SMTP_TEMPLATE = OUT_MOD_BODY_SMTP_TEMPLATE;
-
   private static final String OUT_NOTIFY_SUB_TEMPLATE =
     "[FRAUD NOTIFICATION] re: $MIMEMessage:SUBJECT$";
 
@@ -72,12 +44,6 @@ public class PhishSmtpFactory
   private ClamPhishTransform m_phishImpl;
   private static final Logger m_logger =
     Logger.getLogger(PhishSmtpFactory.class);
-
-  private WrappedMessageGenerator m_inWrapper =
-    new WrappedMessageGenerator(IN_MOD_SUB_TEMPLATE, IN_MOD_BODY_SMTP_TEMPLATE);
-
-  private WrappedMessageGenerator m_outWrapper =
-    new WrappedMessageGenerator(OUT_MOD_SUB_TEMPLATE, OUT_MOD_BODY_SMTP_TEMPLATE);
 
   private SmtpNotifyMessageGenerator m_inNotifier;
   private SmtpNotifyMessageGenerator m_outNotifier;
@@ -112,9 +78,6 @@ public class PhishSmtpFactory
       return Session.createPassthruSession(session);
     }
 
-    WrappedMessageGenerator msgWrapper =
-      inbound?m_inWrapper:m_outWrapper;
-
     SmtpNotifyMessageGenerator notifier =
       inbound?m_inNotifier:m_outNotifier;
 
@@ -125,7 +88,6 @@ public class PhishSmtpFactory
         inbound?casingSettings.getSmtpInboundTimeout():casingSettings.getSmtpOutboundTimeout(),
         m_phishImpl,
         spamConfig,
-        msgWrapper,
         notifier));
 
   }

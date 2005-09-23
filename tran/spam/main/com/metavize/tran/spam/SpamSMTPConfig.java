@@ -38,9 +38,25 @@ public class SpamSMTPConfig extends SpamProtoConfig
      */
     public SpamSMTPConfig() {}
 
-    public SpamSMTPConfig(boolean bScan, SMTPSpamMessageAction zMsgAction, SMTPNotifyAction zNotifyAction, int strength, String zNotes)
+    public SpamSMTPConfig(boolean bScan,
+        SMTPSpamMessageAction zMsgAction,
+        SMTPNotifyAction zNotifyAction,
+        int strength,
+        String zNotes,
+        String subjectTemplate,
+        String bodyTemplate,
+        String headerName,
+        String isSpamHeaderValue,
+        String isHamHeaderValue)
     {
-        super(bScan, strength, zNotes);
+        super(bScan,
+          strength,
+          zNotes,
+          subjectTemplate,
+          bodyTemplate,
+          headerName,
+          isSpamHeaderValue,
+          isHamHeaderValue);
         this.zMsgAction = zMsgAction;   
         this.zNotifyAction = zNotifyAction;   
     }

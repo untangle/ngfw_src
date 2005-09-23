@@ -19,7 +19,6 @@ import org.apache.log4j.Logger;
 import com.metavize.tran.mail.papi.imap.ImapTokenStream;
 import com.metavize.tran.mail.papi.MailExport;
 import com.metavize.tran.mail.papi.MailExportFactory;
-import com.metavize.tran.mail.papi.WrappedMessageGenerator;
 
 public class SpamImapFactory
   implements TokenHandlerFactory {
@@ -29,12 +28,6 @@ public class SpamImapFactory
 
   private final SpamImpl m_impl;
   private final MailExport m_mailExport;
-
-  private WrappedMessageGenerator m_inWrapper =
-    new WrappedMessageGenerator(SpamSettings.IN_MOD_SUB_TEMPLATE, SpamSettings.IN_MOD_BODY_TEMPLATE);
-
-  private WrappedMessageGenerator m_outWrapper =
-    new WrappedMessageGenerator(SpamSettings.OUT_MOD_SUB_TEMPLATE, SpamSettings.OUT_MOD_BODY_TEMPLATE);  
 
   SpamImapFactory(SpamImpl impl) {
     m_impl = impl;
@@ -65,8 +58,7 @@ public class SpamImapFactory
           timeout,
           timeout,
           m_impl,
-          config,
-          inbound?m_inWrapper:m_outWrapper)
+          config)
       );
   }
 }
