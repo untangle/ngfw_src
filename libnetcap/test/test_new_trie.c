@@ -24,9 +24,12 @@
 #include "netcap_interface.h"
 #include "netcap_sched.h"
 
-#define HIGH_WATER 2000
-#define LOW_WATER  1000
-#define SIEVE_SIZE 400
+#define HIGH_WATER 768
+#define LOW_WATER  512
+#define SIEVE_SIZE 16
+
+#define NUM_INSERT_THREADS 3
+#define NUM_GET_THREADS    3
 
 struct _basic_test;
 
@@ -316,27 +319,36 @@ static int   _validate_lru( void )
     };
     
     int _critical_section( void ) {
-        pthread_t thread_insert;
-        pthread_t thread_get;
+        pthread_t thread_insert[NUM_INSERT_THREADS];
+        pthread_t thread_get[NUM_GET_THREADS];
         pthread_t thread_lru;
+        int c;
 
-        if ( pthread_create ( &thread_insert, NULL, _lru_insert, &data ) < 0 ) {
-            return perrlog("pthread_create");
+        for ( c = 0 ; c < NUM_INSERT_THREADS ; c++ ) {
+            if ( pthread_create ( &thread_insert[c], NULL, _lru_insert, &data ) < 0 ) {
+                return perrlog("pthread_create");
+            }
         }
-
-        if ( pthread_create ( &thread_get, NULL, _lru_get, &data ) < 0 ) {
-            return perrlog("pthread_create");
+        
+        for ( c = 0 ; c < NUM_GET_THREADS ; c++ ) {
+            if ( pthread_create ( &thread_get[c], NULL, _lru_get, &data ) < 0 ) {
+                return perrlog("pthread_create");
+            }
         }
+        
+        if ( pthread_create ( &thread_lru, NULL, _lru_lru, &data ) < 0 ) return perrlog("pthread_create");
 
-        if ( pthread_create ( &thread_lru, NULL, _lru_lru, &data ) < 0 ) {
-            return perrlog("pthread_create");
-        }
-
-        sleep ( 10 );
+        sleep ( 30 );
 
         data.is_alive = 0;
-        if ( pthread_join( thread_insert, NULL ) < 0 ) return perrlog( "pthread_join" );
-        if ( pthread_join( thread_get, NULL ) < 0 ) return perrlog( "pthread_join" );
+        for ( c = 0 ; c < NUM_INSERT_THREADS ; c++ ) {
+            if ( pthread_join( thread_insert[c], NULL ) < 0 ) return perrlog( "pthread_join" );
+        }
+        
+        for ( c = 0 ; c < NUM_GET_THREADS ; c++ ) {
+            if ( pthread_join( thread_get[c], NULL ) < 0 ) return perrlog( "pthread_join" );
+        }
+
         if ( pthread_join( thread_lru, NULL ) < 0 ) return perrlog( "pthread_join" );
 
         return 0;
@@ -354,7 +366,8 @@ static int   _validate_lru( void )
     if ( _test.trie.root.base.data == NULL ) { errlog( ERR_CRITICAL, "malloc\n" ); exit( -1 ); }
     
 
-    if ( netcap_lru_init( &_test.lru, HIGH_WATER, LOW_WATER, SIEVE_SIZE, _lru_is_deletable, _lru_remove ) < 0 ) {
+    if ( netcap_lru_init( &_test.lru, HIGH_WATER, LOW_WATER, SIEVE_SIZE, _lru_is_deletable, 
+                          _lru_remove, &_test.trie.mutex ) < 0 ) {
         return errlog( ERR_CRITICAL, "netcap_lru_init\n" );
     }
 
@@ -487,7 +500,7 @@ static void* _lru_lru     ( void* arg )
     unsigned int seed = 0x19C8603B;
     
     while ( data->is_alive ) {
-        usleep( _get_sleep_value( &seed ) * 256 );
+        usleep( _get_sleep_value( &seed ) * 1024 );
         
         if ( netcap_lru_cut( lru, NULL, 0 ) < 0 ) {
             errlog( ERR_CRITICAL, "netcap_lru_cut\n" );
