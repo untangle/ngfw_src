@@ -43,7 +43,7 @@ static __inline__ int _validate_lru( netcap_lru_t* lru )
 
 
 int netcap_lru_init( netcap_lru_t* lru, int high_water, int low_water, int sieve_size, 
-                     netcap_lru_check_t* is_deletable, netcap_lru_remove_t* remove )
+                     netcap_lru_check_t* is_deletable, netcap_lru_remove_t* remove, pthread_mutex_t* mutex )
 {
     if ( lru == NULL || remove == NULL ) return errlogargs();
 
@@ -59,7 +59,7 @@ int netcap_lru_init( netcap_lru_t* lru, int high_water, int low_water, int sieve
     }
 
     /* Initialize the LRU mutex */
-    if ( pthread_mutex_init( &lru->mutex, NULL ) < 0 ) return perrlog( "pthread_mutex_init" );
+    // XXX if ( pthread_mutex_init( &lru->mutex, NULL ) < 0 ) return perrlog( "pthread_mutex_init" );
 
     lru->length       = 0;
     lru->high_water   = high_water;
@@ -67,6 +67,7 @@ int netcap_lru_init( netcap_lru_t* lru, int high_water, int low_water, int sieve
     lru->sieve_size   = sieve_size;
     lru->is_deletable = is_deletable;
     lru->remove       = remove;
+    lru->mutex        = mutex;
          
     return 0;
 }
@@ -80,13 +81,13 @@ int netcap_lru_config( netcap_lru_t* lru, int high_water, int low_water, int sie
     }
 
     /* Get the mutex lock */
-    if ( pthread_mutex_lock ( &lru->mutex ) < 0 ) return perrlog( "pthread_mutex_lock" );
+    if ( pthread_mutex_lock ( lru->mutex ) < 0 ) return perrlog( "pthread_mutex_lock" );
     
     lru->low_water  = low_water;
     lru->high_water = high_water;
     lru->sieve_size = sieve_size;
 
-    if ( pthread_mutex_unlock ( &lru->mutex ) < 0 ) return perrlog ( "pthread_mutex_unlock" );
+    if ( pthread_mutex_unlock ( lru->mutex ) < 0 ) return perrlog ( "pthread_mutex_unlock" );
     
     return 0;
 }
@@ -113,9 +114,9 @@ int netcap_lru_add( netcap_lru_t* lru, netcap_lru_node_t* node, void* data )
 
     int ret;
 
-    if ( pthread_mutex_lock( &lru->mutex ) < 0 ) return perrlog( "pthread_mutex_lock\n" );
+    // if ( pthread_mutex_lock( lru->mutex ) < 0 ) return perrlog( "pthread_mutex_lock\n" );
     ret = _critical_section();
-    if ( pthread_mutex_unlock( &lru->mutex ) < 0 ) perrlog( "pthread_mutex_unlock\n" );
+    // if ( pthread_mutex_unlock( lru->mutex ) < 0 ) perrlog( "pthread_mutex_unlock\n" );
     
     return ret;
 }
@@ -160,9 +161,9 @@ int netcap_lru_permanent_add( netcap_lru_t* lru, netcap_lru_node_t* node, void* 
 
     int ret;
 
-    if ( pthread_mutex_lock( &lru->mutex ) < 0 ) return perrlog( "pthread_mutex_lock\n" );
+    if ( pthread_mutex_lock( lru->mutex ) < 0 ) return perrlog( "pthread_mutex_lock\n" );
     ret = _critical_section();
-    if ( pthread_mutex_unlock( &lru->mutex ) < 0 ) perrlog( "pthread_mutex_unlock\n" );
+    if ( pthread_mutex_unlock( lru->mutex ) < 0 ) perrlog( "pthread_mutex_unlock\n" );
     
     return ret;    
 }
@@ -205,9 +206,9 @@ int netcap_lru_permanent_clear( netcap_lru_t* lru )
 
     int ret;
 
-    if ( pthread_mutex_lock( &lru->mutex ) < 0 ) return perrlog( "pthread_mutex_lock\n" );
+    if ( pthread_mutex_lock( lru->mutex ) < 0 ) return perrlog( "pthread_mutex_lock\n" );
     ret = _critical_section();
-    if ( pthread_mutex_unlock( &lru->mutex ) < 0 ) perrlog( "pthread_mutex_unlock\n" );
+    if ( pthread_mutex_unlock( lru->mutex ) < 0 ) perrlog( "pthread_mutex_unlock\n" );
     
     return ret;    
 }
@@ -242,9 +243,9 @@ int netcap_lru_move_front( netcap_lru_t* lru, netcap_lru_node_t* node )
         return 0;
     }
     
-    if ( pthread_mutex_lock( &lru->mutex ) < 0 ) return perrlog( "pthread_mutex_lock\n" );
+    if ( pthread_mutex_lock( lru->mutex ) < 0 ) return perrlog( "pthread_mutex_lock\n" );
     ret = _critical_section();
-    if ( pthread_mutex_unlock( &lru->mutex ) < 0 ) perrlog( "pthread_mutex_unlock\n" );
+    if ( pthread_mutex_unlock( lru->mutex ) < 0 ) perrlog( "pthread_mutex_unlock\n" );
     
     return ret;
 }
@@ -337,9 +338,9 @@ int netcap_lru_cut( netcap_lru_t* lru, netcap_lru_node_t** node_array, int node_
 
     int ret = 0;
     
-    if ( pthread_mutex_lock( &lru->mutex ) < 0 ) return perrlog( "pthread_mutex_lock\n" );
+    if ( pthread_mutex_lock( lru->mutex ) < 0 ) return perrlog( "pthread_mutex_lock\n" );
     ret = _critical_section();
-    if ( pthread_mutex_unlock( &lru->mutex ) < 0 ) perrlog( "pthread_mutex_unlock\n" );
+    if ( pthread_mutex_unlock( lru->mutex ) < 0 ) perrlog( "pthread_mutex_unlock\n" );
     
     return ret;
 }

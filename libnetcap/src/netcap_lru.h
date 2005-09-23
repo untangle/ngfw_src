@@ -33,7 +33,7 @@ typedef struct
     netcap_lru_remove_t* remove;
 
     /* Retrieve this when moving a node to the front of the LRU or delete a node */
-    pthread_mutex_t mutex;
+    pthread_mutex_t* mutex;
 } netcap_lru_t;
 
 
@@ -55,7 +55,7 @@ typedef struct
 } netcap_lru_node_t;
 
 int netcap_lru_init( netcap_lru_t* lru, int high_water, int low_water, int sieve_size, 
-                     netcap_lru_check_t* is_deletable, netcap_lru_remove_t* remove );
+                     netcap_lru_check_t* is_deletable, netcap_lru_remove_t* remove, pthread_mutex_t* mutex );
 
 int netcap_lru_config( netcap_lru_t* lru, int high_water, int low_water, int sieve_size );
 
