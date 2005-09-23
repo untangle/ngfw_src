@@ -44,7 +44,9 @@ echo "Updating schema: $component on $(date)"
 echo "Current schema version: $ver"
 echo "Latest schema version: $latest_ver"
 
-if [ "x$ver" == "x" ]; then
+if [ "x$latest_ver" = "x" ]; then
+    echo "No schema"
+elif [ "x$ver" = "x" ]; then
     echo "Initializing schema"
     psql -e -f $schema_dir/schema-$latest_ver.sql -U metavize mvvm
 
@@ -52,7 +54,8 @@ cat <<EOF | $PSQL
 DELETE FROM schema_ver WHERE component = '$component';
 INSERT INTO schema_ver VALUES ('$component', $latest_ver);
 EOF
-
+elif [ "$ver" -gt "$latest_ver" ]; then
+    echo "Installed version is greater than latest version."
 else
     if [ "$ver" -ne "$latest_ver" ]; then
         echo "Updating Schema..."
