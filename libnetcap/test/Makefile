@@ -34,7 +34,7 @@ LIB = $(archives)
 
 ## XXX Most of these tests no longer works.
 #BINS = test_trie test1 test2 test3 test4 test_udp test_udp_mark
-BINS = test_interface
+BINS = test_interface test_new_trie
 
 all:	$(BINS)
 
@@ -65,10 +65,10 @@ test_queue: test_queue.c $(LIB)
 	${CC} test_queue.c ${UTIL_OBJS} ${LDLIBS} ${CFLAGS} -o $@
 
 test_interface: test_interface.c $(LIB)
-	${CC} test_interface.c ${archives} ${UTIL_OBJS} ${LDLIBS} ${CFLAGS} -o $@
+	${CC} $@.c ${archives} ${UTIL_OBJS} ${LDLIBS} ${CFLAGS} -o $@
 
-test_trie: test_trie.c $(LIB)
-	${CC} $@.c -I../src/ ${UTIL_OBJS} ${LDLIBS} ${CFLAGS} -o $@
+test_new_trie: test_new_trie.c $(LIB)
+	${CC} $@.c ${archives} ${UTIL_OBJS} ${LDLIBS} ${CFLAGS} -o $@
 
 test_shield_cfg: test_shield_cfg.c $(LIB)
 	${CC} $@.c -I../src/ ${UTIL_OBJS} ${LDLIBS} ${CFLAGS} -o $@
