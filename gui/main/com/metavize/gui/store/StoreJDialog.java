@@ -336,7 +336,8 @@ public class StoreJDialog extends javax.swing.JDialog implements java.awt.event.
         }
         
         // PURCHASE /////// launch a thread, close dialog when done
-        //purchaseThread = mTransformJButton.purchase( statusProgressBar, this );        
+	purchaseThread = Util.getPolicyStateMachine().moveFromStoreToToolbox(mTransformJButton,statusProgressBar,this);
+
     }//GEN-LAST:event_saveJButtonActionPerformed
 
     private void reloadJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reloadJButtonActionPerformed

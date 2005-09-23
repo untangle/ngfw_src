@@ -71,6 +71,10 @@ public class PolicyStateMachine implements ActionListener {
     private GridBagConstraints buttonGridBagConstraints;
     private GridBagConstraints applianceGridBagConstraints;
     private GridBagConstraints rackGridBagConstraints;
+    // DOWNLOAD DELAYS //////////////
+    private static final int DOWNLOAD_INITIAL_SLEEP_MILLIS = 3000;
+    private static final int DOWNLOAD_SLEEP_MILLIS = 500;
+    private static final int DOWNLOAD_FINAL_SLEEP_MILLIS = 3000;
 
     public PolicyStateMachine(JTabbedPane actionJTabbedPane, JComboBox viewSelector, JPanel rackViewJPanel,
 			      JScrollPane toolboxJScrollPane, JPanel storeJPanel, JButton policyManagerJButton) {
@@ -140,7 +144,6 @@ public class PolicyStateMachine implements ActionListener {
 	}
     }
     private void handleViewSelector(){
-	System.out.println("handleViewSelector()");
 	Policy currentPolicy = (Policy) viewSelector.getSelectedItem();
 	if( currentPolicy.equals(selectedPolicy) )
 	    return;
@@ -302,7 +305,6 @@ public class PolicyStateMachine implements ActionListener {
 	    loadAllCasings(false);
 	}
     }
-
     public void moveFromRackToToolbox(final Policy policy, final MTransformJPanel mTransformJPanel){
 	new MoveFromRackToToolboxThread(policy,mTransformJPanel);
     }
@@ -397,22 +399,87 @@ public class PolicyStateMachine implements ActionListener {
 	    }
 	}
     }
-    public void moveFromStoreToToolbox(final MTransformJButton mTransformJButton){
-	try{
-	    // VIEW: PROCURING
+    public Thread moveFromStoreToToolbox(final MTransformJButton mTransformJButton, final JProgressBar progressBar, final JDialog dialog){
+	return new MoveFromStoreToToolboxThread(mTransformJButton, progressBar, dialog);
+    }
+    private class MoveFromStoreToToolboxThread extends Thread{
+	private MTransformJButton mTransformJButton;
+	private JProgressBar progressBar;
+	private JDialog dialog;
+	public MoveFromStoreToToolboxThread(final MTransformJButton mTransformJButton, final JProgressBar progressBar, final JDialog dialog){
+	    this.mTransformJButton = mTransformJButton;
+	    this.progressBar = progressBar;
+	    this.dialog = dialog;
+	    ButtonKey buttonKey = new ButtonKey(mTransformJButton);
+	    setContextClassLoader( Util.getClassLoader() );
+	    setName("MVCLIENT-MoveFromStoreToToolboxThread: " + mTransformJButton.getDisplayName() );
 	    mTransformJButton.setProcuringView();
-	    // INSTALL IN MVVM
-	    Util.getToolboxManager().install(mTransformJButton.getName());
-	    // REMOVE FROM STORE
-	    removeFromStore(mTransformJButton.getMackageDesc());
-	    // ADD TO TOOLBOX (VIEW: DEPLOYABLE)
-	    for( Policy policy : policyToolboxMap.keySet() ){
-		addToToolbox(policy,mTransformJButton.getMackageDesc(),false);
-	    }
+	    start();
 	}
-	catch(Exception e){
-	    try{ Util.handleExceptionWithRestart("Error moving from store to toolbox", e); }
-	    catch(Exception f){ Util.handleExceptionNoRestart("Error moving from store to toolbox", f); }
+	public void run(){
+	    try{
+		// WARM UP
+		SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+		    progressBar.setValue(0);
+		    progressBar.setString("Starting download...");
+		    progressBar.setIndeterminate(true);		    
+		}});
+		Thread.currentThread().sleep(DOWNLOAD_INITIAL_SLEEP_MILLIS);                		
+		// DO THE DOWNLOAD AND INSTALL
+		SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+		    progressBar.setIndeterminate(false);
+		}});
+                long key = Util.getToolboxManager().install(mTransformJButton.getName());
+		com.metavize.gui.util.Visitor visitor = new com.metavize.gui.util.Visitor(progressBar);
+		while (!visitor.isDone()) {
+		    java.util.List<InstallProgress> lip = Util.getToolboxManager().getProgress(key);
+		    for (InstallProgress ip : lip) {
+			ip.accept(visitor);
+		    }
+		    if (0 == lip.size()) {
+			Thread.currentThread().sleep(DOWNLOAD_SLEEP_MILLIS);
+		    }
+		}
+		// GIVE OPTIONS BASED ON RESULTS
+		if( visitor.isSuccessful() ){
+		    Thread.currentThread().sleep(DOWNLOAD_FINAL_SLEEP_MILLIS);
+		    SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+			dialog.setVisible(false);
+		    }});
+		    removeFromStore(mTransformJButton.getMackageDesc());
+		    for( Policy policy : policyToolboxMap.keySet() )
+			addToToolbox(policy,mTransformJButton.getMackageDesc(),false);
+		}
+		else{
+		    SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+			progressBar.setValue(0);
+			((StoreJDialog)dialog).resetButtons();
+		    }});
+		    mTransformJButton.setFailedProcureView();
+		    new MOneButtonJDialog(mTransformJButton.getDisplayName(),
+					  "A problem occurred while purchasing:<br>"
+					  + mTransformJButton.getDisplayName()
+					  + "<br>Please contact Metavize for assistance.");
+		}				
+	    }
+	    catch(Exception e){
+		try{
+		    Util.handleExceptionWithRestart("error purchasing transform: " +  mTransformJButton.getName(),  e);
+		}
+		catch(Exception f){
+		    Util.handleExceptionNoRestart("Error purchasing transform:", f);
+		    mTransformJButton.setFailedProcureView();
+                    SwingUtilities.invokeLater( new Runnable(){ public void run(){
+                        progressBar.setString("Purchase problem occurred...");
+                        progressBar.setValue(0);
+                        dialog.setVisible(false);
+                        new MOneButtonJDialog(mTransformJButton.getDisplayName(),
+					      "A problem occurred while purchasing:<br>"
+					      + mTransformJButton.getDisplayName()
+					      + "<br>Please contact Metavize for assistance.");
+                    }});		    
+		}
+	    }	    	    
 	}
     }
     ///////////////////////////////////////////////////////
@@ -726,7 +793,13 @@ public class PolicyStateMachine implements ActionListener {
 	    this.mTransformJButton = mTransformJButton;
 	}
 	public void actionPerformed(java.awt.event.ActionEvent evt){
-	    mTransformJButton.procure();
+	    // ASK IF THY REALLY WANT THE STUFF
+	    mTransformJButton.setEnabled(false);
+	    StoreJDialog storeJDialog = new StoreJDialog(mTransformJButton);
+	    storeJDialog.setVisible(true);
+	    if( storeJDialog.getPurchasedMTransformJButton() == null ){
+		mTransformJButton.setEnabled(true);
+	    }
 	}
     }
     private class ToolboxActionListener implements java.awt.event.ActionListener {
