@@ -405,8 +405,8 @@ public class VirusTransformImpl extends AbstractTransform
       vs.getPOPOutbound().setBodyWrapperTemplate(OUT_MOD_BODY_TEMPLATE);
 
       vs.getSMTPInbound().setSubjectWrapperTemplate(IN_MOD_SUB_TEMPLATE);
-      vs.getSMTPOutbound().setSubjectWrapperTemplate(IN_MOD_BODY_SMTP_TEMPLATE);
-      vs.getSMTPInbound().setBodyWrapperTemplate(IN_MOD_BODY_TEMPLATE);
+      vs.getSMTPOutbound().setSubjectWrapperTemplate(OUT_MOD_SUB_TEMPLATE);
+      vs.getSMTPInbound().setBodyWrapperTemplate(IN_MOD_BODY_SMTP_TEMPLATE);
       vs.getSMTPOutbound().setBodyWrapperTemplate(OUT_MOD_BODY_SMTP_TEMPLATE);
 
       vs.getSMTPInbound().setNotifySubjectTemplate(IN_NOTIFY_SUB_TEMPLATE);

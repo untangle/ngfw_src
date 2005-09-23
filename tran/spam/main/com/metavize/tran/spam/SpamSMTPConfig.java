@@ -12,7 +12,7 @@
 package com.metavize.tran.spam;
 
 import java.io.Serializable;
-
+import com.metavize.tran.mail.papi.smtp.SmtpNotifyMessageGenerator;
 import com.metavize.tran.mail.papi.smtp.SMTPNotifyAction;
 
 /**
@@ -30,6 +30,9 @@ public class SpamSMTPConfig extends SpamProtoConfig
     /* settings */
     private SMTPSpamMessageAction zMsgAction = SMTPSpamMessageAction.MARK;
     private SMTPNotifyAction zNotifyAction = SMTPNotifyAction.NEITHER;
+    private transient SmtpNotifyMessageGenerator m_notifyMsgGenerator;
+    private String m_notifySubjectWrapperTemplate;
+    private String m_notifyBodyWrapperTemplate;
 
     // constructor ------------------------------------------------------------
 
@@ -47,7 +50,9 @@ public class SpamSMTPConfig extends SpamProtoConfig
         String bodyTemplate,
         String headerName,
         String isSpamHeaderValue,
-        String isHamHeaderValue)
+        String isHamHeaderValue,
+        String notifySubjectTemplate,
+        String notifyBodyTemplate)
     {
         super(bScan,
           strength,
@@ -58,24 +63,64 @@ public class SpamSMTPConfig extends SpamProtoConfig
           isSpamHeaderValue,
           isHamHeaderValue);
         this.zMsgAction = zMsgAction;   
-        this.zNotifyAction = zNotifyAction;   
+        this.zNotifyAction = zNotifyAction;
+        m_notifySubjectWrapperTemplate = notifySubjectTemplate;
+        m_notifyBodyWrapperTemplate =  notifyBodyTemplate;
     }
-
-    // business methods ------------------------------------------------------
-
-    /*
-    public String render(String site, String category)
-    {
-        String message = BLOCK_TEMPLATE.replace("@HEADER@", header);
-        message = message.replace("@SITE@", site);
-        message = message.replace("@CATEGORY@", category);
-        message = message.replace("@CONTACT@", contact);
-
-        return message;
-    }
-    */
 
     // accessors --------------------------------------------------------------
+
+
+
+    /**
+    * Get the tempalte used to create the subject
+    * for a notification message.
+    */
+    public String getNotifySubjectTemplate() {
+      return m_notifySubjectWrapperTemplate;
+    }
+  
+    public void setNotifySubjectTemplate(String template) {
+      m_notifySubjectWrapperTemplate = template;
+      ensureNotifyMessageGenerator();
+      m_notifyMsgGenerator.setSubject(template);
+    }
+  
+    /**
+    * Get the tempalte used to create the body
+    * for a notification message.
+    */
+    public String getNotifyBodyTemplate() {
+      return m_notifyBodyWrapperTemplate;
+    }
+  
+    public void setNotifyBodyTemplate(String template) {
+      m_notifyBodyWrapperTemplate = template;
+      ensureNotifyMessageGenerator();
+      m_notifyMsgGenerator.setBody(template);
+    }
+  
+    /**
+      * Access the helper object, for producing
+      * notifications based on the values of the
+      * {@link #getNotifySubjectTemplate subject} and
+      * {@link #getNotifyBodyTemplate body} templates.
+      *
+      *
+      */
+    public SmtpNotifyMessageGenerator getNotifyMessageGenerator() {
+      ensureNotifyMessageGenerator();
+      return m_notifyMsgGenerator;
+    }
+  
+    private void ensureNotifyMessageGenerator() {
+      if(m_notifyMsgGenerator == null) {
+        m_notifyMsgGenerator = new SmtpNotifyMessageGenerator(
+          getNotifySubjectTemplate(),
+          getNotifyBodyTemplate(),
+          false);
+      }
+    }
 
     /**
      * messageAction: a string specifying a response if a message contains spam (defaults to MARK)

@@ -13,8 +13,6 @@ package com.metavize.tran.clamphish;
 
 import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.tran.spam.SpamSMTPConfig;
-import com.metavize.tran.mail.papi.smtp.SmtpNotifyMessageGenerator;
-
 
 /**
  * Protocol Handler which is called-back as scanable messages
@@ -26,8 +24,7 @@ public class PhishSmtpHandler extends com.metavize.tran.spam.SmtpSessionHandler 
                      long maxClientWait,
                      long maxSvrWait,
                      ClamPhishTransform impl,
-                     SpamSMTPConfig config,
-                     SmtpNotifyMessageGenerator notifier) {
-        super(session, maxClientWait, maxSvrWait, impl, config, notifier);
+                     SpamSMTPConfig config) {
+        super(session, maxClientWait, maxSvrWait, impl, config);
     }
 }

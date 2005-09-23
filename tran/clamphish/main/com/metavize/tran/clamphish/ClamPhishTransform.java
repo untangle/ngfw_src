@@ -16,6 +16,7 @@ import com.metavize.mvvm.tapi.PipeSpec;
 import com.metavize.mvvm.tapi.SoloPipeSpec;
 import com.metavize.tran.spam.SpamImpl;
 import com.metavize.tran.token.TokenAdaptor;
+import static com.metavize.tran.util.Ascii.CRLF;
 
 public class ClamPhishTransform extends SpamImpl
 {
@@ -41,12 +42,23 @@ public class ClamPhishTransform extends SpamImpl
 
     private static final String PHISH_HEADER_NAME = "X-Phish-Flag";
 
+    private static final String OUT_NOTIFY_SUB_TEMPLATE =
+      "[FRAUD NOTIFICATION] re: $MIMEMessage:SUBJECT$";
+  
+    private static final String OUT_NOTIFY_BODY_TEMPLATE =
+        "On $MIMEHeader:DATE$ a message from $MIMEMessage:FROM$ ($SMTPTransaction:FROM$) was received " + CRLF +
+      "and determined to be PHISH.  The details of the report are as follows:" + CRLF + CRLF +
+      "$SPAMReport:FULL$";
+  
+    private static final String IN_NOTIFY_SUB_TEMPLATE = OUT_NOTIFY_SUB_TEMPLATE;
+    private static final String IN_NOTIFY_BODY_TEMPLATE = OUT_NOTIFY_BODY_TEMPLATE;    
+
     // We want to make sure that phish is after spam, before virus in the pipeline (towards the client for smtp,
     // server for pop/imap).
     private final PipeSpec[] pipeSpecs = new PipeSpec[] {
-        new SoloPipeSpec("spam-smtp", this, new TokenAdaptor(this, new PhishSmtpFactory(this)), Fitting.SMTP_TOKENS, Affinity.CLIENT, 8),
-        new SoloPipeSpec("pop-smtp", this, new TokenAdaptor(this, new PhishPopFactory(this)), Fitting.POP_TOKENS, Affinity.SERVER, 8),
-        new SoloPipeSpec("imap-smtp", this, new TokenAdaptor(this, new PhishImapFactory(this)), Fitting.IMAP_TOKENS, Affinity.SERVER, 8)
+        new SoloPipeSpec("phish-smtp", this, new TokenAdaptor(this, new PhishSmtpFactory(this)), Fitting.SMTP_TOKENS, Affinity.CLIENT, 8),
+        new SoloPipeSpec("phish-pop", this, new TokenAdaptor(this, new PhishPopFactory(this)), Fitting.POP_TOKENS, Affinity.SERVER, 8),
+        new SoloPipeSpec("phish-imap", this, new TokenAdaptor(this, new PhishImapFactory(this)), Fitting.IMAP_TOKENS, Affinity.SERVER, 8)
     };
 
     public ClamPhishTransform()
@@ -83,6 +95,16 @@ public class ClamPhishTransform extends SpamImpl
     @Override
     public String getDefaultIndicatorHeaderName() {
       return PHISH_HEADER_NAME;
+    }
+
+    @Override
+    public String getDefaultNotifySubjectTemplate(boolean inbound) {
+      return inbound?IN_NOTIFY_SUB_TEMPLATE:OUT_NOTIFY_SUB_TEMPLATE;
+    }
+
+    @Override
+    public String getDefaultNotifyBodyTemplate(boolean inbound) {
+      return inbound?IN_NOTIFY_BODY_TEMPLATE:OUT_NOTIFY_BODY_TEMPLATE;
     }     
 
 }

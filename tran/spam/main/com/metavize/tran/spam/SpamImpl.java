@@ -28,6 +28,7 @@ import com.metavize.mvvm.tapi.SoloPipeSpec;
 import com.metavize.mvvm.tran.Direction;
 import com.metavize.mvvm.tran.Transform;
 import com.metavize.tran.mail.papi.smtp.SMTPNotifyAction;
+import static com.metavize.tran.util.Ascii.CRLF;
 import com.metavize.tran.token.TokenAdaptor;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
@@ -95,6 +96,10 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
     private static final String[] SPAM_QUERIES = new String[]
         { SMTP_SPAM_QUERY, MAIL_SPAM_QUERY };
 
+
+    //===============================
+    // Defaults for templates
+        
     private static final String OUT_MOD_SUB_TEMPLATE =
       "[SPAM] $MIMEMessage:SUBJECT$";
     private static final String OUT_MOD_BODY_TEMPLATE =
@@ -114,7 +119,19 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
 
     private static final String SPAM_HEADER_NAME = "X-Spam-Flag";
     private final static String IS_SPAM_HDR_VALUE = "YES";
-    private final static String IS_HAM_HDR_VALUE = "NO";    
+    private final static String IS_HAM_HDR_VALUE = "NO";
+
+    private static final String OUT_NOTIFY_SUB_TEMPLATE =
+      "[SPAM NOTIFICATION] re: $MIMEMessage:SUBJECT$";
+  
+    private static final String OUT_NOTIFY_BODY_TEMPLATE =
+      "On $MIMEHeader:DATE$ a message from $MIMEMessage:FROM$ ($SMTPTransaction:FROM$) was received " + CRLF +
+      "and determined to be spam based on a score of $SPAMReport:SCORE$ (where anything " + CRLF +
+      "above $SPAMReport:THRESHOLD$ is SPAM).  The details of the report are as follows:" + CRLF + CRLF +
+      "$SPAMReport:FULL$";
+  
+    private static final String IN_NOTIFY_SUB_TEMPLATE = OUT_NOTIFY_SUB_TEMPLATE;
+    private static final String IN_NOTIFY_BODY_TEMPLATE = OUT_NOTIFY_BODY_TEMPLATE;    
 
     // We want to make sure that spam is before virus in the pipeline (towards the client for smtp,
     // server for pop/imap).
@@ -210,7 +227,24 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
      */
     public String getDefaultIndicatorHeaderValue(boolean isSpam) {
       return isSpam?IS_SPAM_HDR_VALUE:IS_HAM_HDR_VALUE;
-    }    
+    }
+
+    /**
+     * Get the default template used for notification messages'
+     * subject
+     */
+    public String getDefaultNotifySubjectTemplate(boolean inbound) {
+      return inbound?IN_NOTIFY_SUB_TEMPLATE:OUT_NOTIFY_SUB_TEMPLATE;
+    }
+
+    /**
+     * Get the default template used to create notification
+     * messages' bodies
+     */
+    public String getDefaultNotifyBodyTemplate(boolean inbound) {
+      return inbound?IN_NOTIFY_BODY_TEMPLATE:OUT_NOTIFY_BODY_TEMPLATE;
+    }  
+    
 
     /**
      * The settings for the IMAP/POP/SMTP
@@ -256,6 +290,10 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
       ss.getSMTPInbound().setHeaderValue(getDefaultIndicatorHeaderValue(false), false);
       ss.getSMTPOutbound().setHeaderValue(getDefaultIndicatorHeaderValue(true), true);
       ss.getSMTPOutbound().setHeaderValue(getDefaultIndicatorHeaderValue(false), false);
+      ss.getSMTPOutbound().setNotifySubjectTemplate(getDefaultNotifySubjectTemplate(false));
+      ss.getSMTPInbound().setNotifySubjectTemplate(getDefaultNotifySubjectTemplate(true));
+      ss.getSMTPOutbound().setNotifyBodyTemplate(getDefaultNotifyBodyTemplate(false));
+      ss.getSMTPInbound().setNotifyBodyTemplate(getDefaultNotifyBodyTemplate(true));
     }
        
 
@@ -334,7 +372,9 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
                              getDefaultBodyWrapperTemplate(true),
                              getDefaultIndicatorHeaderName(),
                              getDefaultIndicatorHeaderValue(true),
-                             getDefaultIndicatorHeaderValue(false) ));
+                             getDefaultIndicatorHeaderValue(false),
+                             getDefaultNotifySubjectTemplate(true),
+                             getDefaultNotifyBodyTemplate(true) ));
 
         zTmpSpamSettings.setSMTPOutbound(
           new SpamSMTPConfig(false,
@@ -346,7 +386,9 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
                              getDefaultBodyWrapperTemplate(false),
                              getDefaultIndicatorHeaderName(),
                              getDefaultIndicatorHeaderValue(true),
-                             getDefaultIndicatorHeaderValue(false) ));
+                             getDefaultIndicatorHeaderValue(false),
+                             getDefaultNotifySubjectTemplate(false),
+                             getDefaultNotifyBodyTemplate(false)  ));
 
         zTmpSpamSettings.setPOPInbound(
           new SpamPOPConfig(true,

@@ -11,22 +11,23 @@
 
 package com.metavize.tran.spam;
 
-import java.io.*;
-import java.util.*;
-
-import com.metavize.mvvm.MvvmContextFactory;
-import com.metavize.mvvm.tapi.*;
-import com.metavize.tran.mail.*;
-import com.metavize.tran.mail.papi.*;
-import com.metavize.tran.mail.papi.smtp.*;
-import com.metavize.tran.mail.papi.smtp.sapi.*;
-import com.metavize.tran.mime.*;
-import com.metavize.tran.util.*;
 import org.apache.log4j.Logger;
-import com.metavize.mvvm.tran.Transform;
-import static com.metavize.tran.util.Ascii.CRLF;
-import com.metavize.tran.mime.LCString;
 import java.net.InetAddress;
+import java.io.BufferedOutputStream;
+import java.io.FileOutputStream;
+import java.io.File;
+import com.metavize.tran.mime.LCString;
+import com.metavize.tran.mime.MIMEUtil;
+import com.metavize.tran.mime.MIMEMessage;
+import com.metavize.tran.mime.MIMEOutputStream;
+import com.metavize.tran.mime.HeaderParseException;
+import com.metavize.tran.util.TempFileFactory;
+import static com.metavize.tran.util.Ascii.CRLF;
+import com.metavize.tran.mail.papi.MessageInfo;
+import com.metavize.tran.mail.papi.smtp.SmtpTransaction;
+import com.metavize.tran.mail.papi.smtp.sapi.BufferingSessionHandler;
+import com.metavize.mvvm.tapi.TCPSession;
+import com.metavize.mvvm.MvvmContextFactory;
 
 
 /**
@@ -37,30 +38,25 @@ public class SmtpSessionHandler
   extends BufferingSessionHandler {
 
   private final Logger m_logger = Logger.getLogger(SmtpSessionHandler.class);
-  private final Pipeline m_pipeline;
   private final TempFileFactory m_fileFactory;
   private static final Logger m_eventLogger = MvvmContextFactory
     .context().eventLogger();
 
   private final SpamImpl m_spamImpl;
   private final SpamSMTPConfig m_config;
-  private final SmtpNotifyMessageGenerator m_notifier;
 
   public SmtpSessionHandler(TCPSession session,
     long maxClientWait,
     long maxSvrWait,
     SpamImpl impl,
-    SpamSMTPConfig config,
-    SmtpNotifyMessageGenerator notifier) {
+    SpamSMTPConfig config) {
 
     super(config.getMsgSizeLimit(), maxClientWait, maxSvrWait, false);
 
     m_spamImpl = impl;
     m_config = config;
-    m_notifier = notifier;
-    m_pipeline = MvvmContextFactory.context().
-      pipelineFoundry().getPipeline(session.id());
-    m_fileFactory = new TempFileFactory(m_pipeline);
+    m_fileFactory = new TempFileFactory(MvvmContextFactory.context().
+      pipelineFoundry().getPipeline(session.id()));
   }
 
 
@@ -123,7 +119,7 @@ public class SmtpSessionHandler
       m_logger.debug("Spam found");
 
       //Perform notification (if we should)
-      if(m_notifier.sendNotification(
+      if(m_config.getNotifyMessageGenerator().sendNotification(
         MvvmContextFactory.context().mailSender(),
         m_config.getNotifyAction(),
         msg,
@@ -308,25 +304,5 @@ public class SmtpSessionHandler
       m_logger.error("Exception scanning message", ex);
       return null;
     }
-
-
-/*
-    //Fake Negative
-    m_logger.debug("Currently pretending this mail is not spam");
-    ReportItem ri = new ReportItem(0,
-      "FakeCategory");
-    List<ReportItem> list = new ArrayList<ReportItem>();
-    list.add(ri);
-    return new SpamReport(list, THRESHOLD);
-*/
-/*
-    //Fake Positive
-    m_logger.debug("Currently pretending this mail is spam");
-    ReportItem ri = new ReportItem(THRESHOLD + 1,
-      "FakeCategory");
-    List<ReportItem> list = new ArrayList<ReportItem>();
-    list.add(ri);
-    return new SpamReport(list, THRESHOLD);
-*/
   }
 }

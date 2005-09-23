@@ -50,7 +50,7 @@ public class MailTransformCommon
                 //Set the defaults
                 settings.setSmtpEnabled(true);
                 settings.setPopEnabled(true);
-                settings.setImapEnabled(false);//TODO bscott this is currently neutered
+                settings.setImapEnabled(true);
                 settings.setSmtpInboundTimeout(1000*30);
                 settings.setSmtpOutboundTimeout(1000*30);
                 settings.setPopInboundTimeout(1000*30);
