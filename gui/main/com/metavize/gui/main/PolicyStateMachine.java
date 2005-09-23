@@ -63,6 +63,7 @@ public class PolicyStateMachine implements ActionListener {
     private JButton policyManagerJButton;
     private JTabbedPane actionJTabbedPane;
     private JComboBox viewSelector;
+    private Policy selectedPolicy;
     private JPanel lastRackJPanelSelected;
     private int lastScrollPosition = -1;
     private volatile static int applianceLoadProgress = 0;
@@ -139,24 +140,37 @@ public class PolicyStateMachine implements ActionListener {
 	}
     }
     private void handleViewSelector(){
+	System.out.println("handleViewSelector()");
 	Policy currentPolicy = (Policy) viewSelector.getSelectedItem();
-	JPanel toolboxJPanel = policyToolboxJPanelMap.get(currentPolicy);
-	if( toolboxJScrollPane.getViewport().getView().equals(toolboxJPanel) )
+	if( currentPolicy.equals(selectedPolicy) ){
+	    System.err.println("Policy unchanged");
 	    return;
+	}
+	JPanel toolboxJPanel = policyToolboxJPanelMap.get(currentPolicy);
 	int currentScrollPosition = toolboxJScrollPane.getVerticalScrollBar().getValue();
 	toolboxJScrollPane.setViewportView( toolboxJPanel );
 	toolboxJPanel.revalidate();
+	toolboxJScrollPane.repaint();
 	if( lastScrollPosition >= 0 )
 	    toolboxJScrollPane.getVerticalScrollBar().setValue( currentScrollPosition );
 	lastScrollPosition = currentScrollPosition;
 	JPanel rackJPanel = policyRackJPanelMap.get(currentPolicy);
 	int lastScrollPosition = 0;
-	if( lastRackJPanelSelected != null )
+	if( lastRackJPanelSelected != null ){
 	    rackViewJPanel.remove( lastRackJPanelSelected );
+	    System.err.println("REMOVING OLD PANEL");
+	}
+	else
+	    System.err.println("NOT REMOVING OLD PANEL");
 	lastRackJPanelSelected = rackJPanel;
 	rackViewJPanel.add( rackJPanel, rackGridBagConstraints );
-	rackViewJPanel.revalidate();
-	System.err.println("Changed toolbox and rack view to policy: " + currentPolicy.getName());
+	rackJPanel.revalidate();
+	rackViewJPanel.repaint();
+	if( selectedPolicy == null )
+	    System.err.println("Policy set:" + currentPolicy.getName());
+	else
+	    System.err.println("Policy changed: " + selectedPolicy.getName() + " -> " + currentPolicy.getName());
+	selectedPolicy = currentPolicy;
     }
     private void handlePolicyManagerJButton() {
 	try{
@@ -185,8 +199,10 @@ public class PolicyStateMachine implements ActionListener {
 	Map<Policy,Object> newPolicyRacks = new HashMap<Policy,Object>();
 	for(int i=0; i<((DefaultComboBoxModel)viewSelector.getModel()).getSize(); i++)
 	    currentPolicyRacks.put( (Policy) ((DefaultComboBoxModel)viewSelector.getModel()).getElementAt(i), null );
-	for( Policy policy : (List<Policy>) Util.getPolicyManager().getPolicyConfiguration().getPolicies() )
+	for( Policy policy : (List<Policy>) Util.getPolicyManager().getPolicyConfiguration().getPolicies() ){
 	    newPolicyRacks.put( policy, null );
+	    System.err.println("new policy: " + policy.getName());
+	}
 	// FIND THE DIFFERENCES
 	Vector<Policy> addedPolicyVector = new Vector<Policy>();
 	Vector<Policy> removedPolicyVector = new Vector<Policy>();
@@ -201,16 +217,19 @@ public class PolicyStateMachine implements ActionListener {
 	DefaultComboBoxModel defaultComboBoxModel = new DefaultComboBoxModel();
 	for( Policy newPolicy : newPolicyRacks.keySet() ){
 	    defaultComboBoxModel.addElement(newPolicy);
-	    if( selectedPolicy.equals(newPolicy) )
+	    System.err.println("added: " + newPolicy.getName() + (selectedPolicy.equals(newPolicy) ? "(default)" : "") );
+	    if( selectedPolicy.equals(newPolicy) ){
 		defaultComboBoxModel.setSelectedItem(newPolicy);
+	    }
 	}
+	if( defaultComboBoxModel.getSelectedItem() == null )
+	    defaultComboBoxModel.setSelectedItem( defaultComboBoxModel.getElementAt(0)  );
 	viewSelector.setModel(defaultComboBoxModel);
 	// ADD THE NEW AND REMOVE THE OLD
 	addedPolicyRacks(addedPolicyVector);
 	removedPolicyRacks(removedPolicyVector);
 	// UPDATE VIEW
-	if(defaultComboBoxModel.getSelectedItem() == null)
-	    viewSelector.setSelectedIndex(0);
+	handleViewSelector();
     }
     private void addedPolicyRacks(final List<Policy> policies){
 	Policy firstPolicy = policyToolboxMap.keySet().iterator().next();
@@ -227,8 +246,6 @@ public class PolicyStateMachine implements ActionListener {
 	    rackJPanel.setLayout(new GridBagLayout());
 	    rackJPanel.setOpaque(false);
 	    policyRackJPanelMap.put(policy, rackJPanel);
-	    // ADD TO VIEW SELECTOR
-	    viewSelector.addItem(policy);
 	    // POPULATE THE TOOLBOX
 	    for( Map.Entry<ButtonKey,MTransformJButton> firstPolicyEntry : policyToolboxMap.get(firstPolicy).entrySet() ){
 		addToToolbox(policy,firstPolicyEntry.getValue().getMackageDesc(),false);
@@ -247,8 +264,6 @@ public class PolicyStateMachine implements ActionListener {
 	    // REMOVE FROM GUI VIEW MODEL
 	    policyRackJPanelMap.get(policy).removeAll();
 	    policyRackJPanelMap.remove(policy);
-	    // REMOVE FROM VIEW SELECTOR
-	    viewSelector.removeItem(policy);
 	}
     }
     /////////////////////////////////////////
@@ -644,7 +659,7 @@ public class PolicyStateMachine implements ActionListener {
 	    toolboxJPanel.add(mTransformJButton, buttonGridBagConstraints, position);
 	    toolboxJPanel.revalidate();				    
 	}});
-	//System.err.println("Added to toolbox (" + policy.getName() + "): " + mackageDesc.getDisplayName() + " deployed: " + isDeployed);
+	System.err.println("Added to toolbox (" + policy.getName() + "): " + mackageDesc.getDisplayName() + " deployed: " + isDeployed);
     }
     private synchronized void addToRack(final Policy policy, final MTransformJPanel mTransformJPanel){
 	final ButtonKey buttonKey = new ButtonKey(mTransformJPanel);
@@ -657,13 +672,13 @@ public class PolicyStateMachine implements ActionListener {
 	    rackJPanel.add(mTransformJPanel, applianceGridBagConstraints, position);
 	    rackJPanel.revalidate();		
 	}});
-	//System.err.println("Added to rack (" + policy.getName() + "): " + mTransformJPanel.getMackageDesc().getDisplayName() );
+	System.err.println("Added to rack (" + policy.getName() + "): " + mTransformJPanel.getMackageDesc().getDisplayName() );
     }
     ///////////////////////////////////////
     // ADD API ////////////////////////////
 
 
-    // PRIVATE CLASSES & UTILS /////////////////////
+    // Private CLASSES & UTILS /////////////////////
     ////////////////////////////////////////////////
     public synchronized MCasingJPanel[] loadAllCasings(boolean generateGuis){
 	final String casingNames[] = {"mail-casing", "http-casing", "ftp-casing"};
