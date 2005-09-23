@@ -259,7 +259,7 @@ class ToolboxManagerImpl implements ToolboxManager
 
         TransformManagerImpl tm = (TransformManagerImpl)MvvmContextFactory
             .context().transformManager();
-        tm.restartUnloaded();
+        tm.restart(pkgName);
     }
 
     // unregisters a mackage and unloads all instances

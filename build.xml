@@ -39,8 +39,8 @@ $Id: build.xml,v 1.20 2005/01/29 07:14:04 amread Exp $
   </target>
 
   <target name="world">
-<!--     <splash imageurl="http://metaloft.com/virus/dog.jpg" showduration="5000"/> -->
-<subant target="install">
+    <!--     <splash imageurl="http://metaloft.com/virus/dog.jpg" showduration="5000"/> -->
+    <subant target="install">
       <property name="build.dist" value="${world.root}"/>
       <filelist refid="antfiles"/>
     </subant>
@@ -83,11 +83,11 @@ $Id: build.xml,v 1.20 2005/01/29 07:14:04 amread Exp $
     </delete>
 
     <javadoc
-      destdir="${basedir}/jdoc/all"
-      author="false"
-      version="true"
-      use="true"
-      verbose="false">
+        destdir="${basedir}/jdoc/all"
+        author="false"
+        version="true"
+        use="true"
+        verbose="false">
 
       <packageset dir="/tmp/jdoc/bigtree" defaultexcludes="yes">
       </packageset>

@@ -72,6 +72,8 @@ class TransformManagerImpl implements TransformManager
     private final CasingClassLoader casingClassLoader
         = new CasingClassLoader(getClass().getClassLoader());
 
+    private boolean live = true;
+
     private TransformManagerImpl()
     {
         Session s = MvvmContextFactory.context().openSession();
@@ -110,7 +112,6 @@ class TransformManagerImpl implements TransformManager
     }
 
     // TransformManager -------------------------------------------------------
-
 
     public List<Tid> transformInstances()
     {
@@ -230,13 +231,17 @@ class TransformManagerImpl implements TransformManager
 
     public void destroy(Tid tid) throws UndeployException
     {
-        TransformContextImpl tc = tids.get(tid);
-        if (null == tc) {
-            logger.error("Destroy Failed: Transform " + tid + " not found");
-            throw new UndeployException("Transform " + tid + " not found");
+        TransformContextImpl tc;
+
+        synchronized (this) {
+            tc = tids.get(tid);
+            if (null == tc) {
+                logger.error("Destroy Failed: " + tid + " not found");
+                throw new UndeployException("Transform " + tid + " not found");
+            }
+            tc.destroy();
+            tids.remove(tid);
         }
-        tc.destroy();
-        tids.remove(tid);
 
         Session s = MvvmContextFactory.context().openSession();
         try {
@@ -283,17 +288,21 @@ class TransformManagerImpl implements TransformManager
     // destroy the transform manager
     void destroy()
     {
-        Set s = new HashSet(tids.keySet());
+        synchronized (this) {
+            live = false;
 
-        for (Iterator i = s.iterator(); i.hasNext(); ) {
-            Tid tid = (Tid)i.next();
-            if (null != tid) {
-                unload(tid);
+            Set s = new HashSet(tids.keySet());
+
+            for (Iterator i = s.iterator(); i.hasNext(); ) {
+                Tid tid = (Tid)i.next();
+                if (null != tid) {
+                    unload(tid);
+                }
             }
-        }
 
-        if (tids.size() > 0) {
-            logger.warn("transform instances not destroyed: " + tids.size());
+            if (tids.size() > 0) {
+                logger.warn("transform instances not destroyed: " + tids.size());
+            }
         }
 
         logger.info("TransformManager destroyed");
@@ -313,16 +322,33 @@ class TransformManagerImpl implements TransformManager
 
     void unload(Tid tid)
     {
-        TransformContextImpl tc = tids.get(tid);
-        logger.info("Unloading: " + tid
-                    + " (" + tc.getTransformDesc().getName() + ")");
+        synchronized (this) {
+            TransformContextImpl tc = tids.get(tid);
+            logger.info("Unloading: " + tid
+                        + " (" + tc.getTransformDesc().getName() + ")");
 
-        tc.unload();
-        tids.remove(tid);
+            tc.unload();
+            tids.remove(tid);
+        }
     }
 
-    void restartUnloaded()
+    void restart(String mackageName)
     {
+        synchronized (this) {
+            List<Tid> tids = transformInstances(mackageName);
+            for (Tid tid : tids) {
+                unload(tid);
+            }
+            restartUnloaded();
+        }
+    }
+
+    synchronized void restartUnloaded()
+    {
+        if (!live) {
+            throw new RuntimeException("TransformManager is shut down");
+        }
+
         logger.info("Restarting unloaded transforms...");
 
         ToolboxManagerImpl tbm = (ToolboxManagerImpl)MvvmContextFactory
@@ -465,6 +491,10 @@ class TransformManagerImpl implements TransformManager
         TransformDesc tDesc = initTransformDesc(resUrls, tid);
 
         synchronized (this) {
+            if (!live) {
+                throw new DeployException("TransformManager is shut down");
+            }
+
             URLClassLoader cl = getClassLoader(tDesc, resUrls);
 
             TransformContextImpl tc = new TransformContextImpl
