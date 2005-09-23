@@ -54,7 +54,7 @@ int netcap_lru_init( netcap_lru_t* lru, int high_water, int low_water, int sieve
     }
 
     /* Initialize the two lists maintained by the LRU */
-    if (( list_init( &lru->lru_list, 0 ) < 0 ) || ( list_init( &lru->undeletable_list, 0 ) < 0 )) {
+    if (( list_init( &lru->lru_list, 0 ) < 0 ) || ( list_init( &lru->permanent_list, 0 ) < 0 )) {
         return errlog( ERR_CRITICAL, "list_init\n" );
     }
 
@@ -91,8 +91,6 @@ int netcap_lru_config( netcap_lru_t* lru, int high_water, int low_water, int sie
     return 0;
 }
 
-
-
 /* Add a node to the front of the LRU, node is updated to contain the necessary information for the LRU */
 int netcap_lru_add( netcap_lru_t* lru, netcap_lru_node_t* node, void* data )
 {
@@ -101,6 +99,10 @@ int netcap_lru_add( netcap_lru_t* lru, netcap_lru_node_t* node, void* data )
     _validate_lru( lru );
     
     int _critical_section( void ) {
+        if (( node->state == _LRU_PERMANENT ) && ( node->list_node != NULL )) {
+            return errlog( ERR_CRITICAL, "Node is on the permanent list, cannot be added to LRU\n" );
+        }
+
         node->state     = _LRU_READY;
         node->data      = data;
         if (( node->list_node = list_add_head( &lru->lru_list, node )) == NULL ) {
@@ -117,6 +119,99 @@ int netcap_lru_add( netcap_lru_t* lru, netcap_lru_node_t* node, void* data )
     
     return ret;
 }
+
+int netcap_lru_permanent_add( netcap_lru_t* lru, netcap_lru_node_t* node, void* data )
+{
+    if ( lru == NULL || node == NULL || data == NULL ) return errlogargs();
+
+    if ( _validate_lru( lru ) < 0 ) return errlog( ERR_CRITICAL, "_validate_lru\n" );
+    
+    int _critical_section( void ) {
+        if ( node->list_node != NULL ) {
+            if ( data != node->data ) {
+                errlog( ERR_WARNING, "Data mismatch %#10x != %#10x, could be harmless\n", data, node->data );
+            }
+            switch( node->state ) {
+            case _LRU_READY:
+                /* Must remove this node */
+                /* Remove the node from the list */
+                if ( list_remove( &lru->lru_list, node->list_node ) < 0 ) perrlog( "list_remove\n" );
+                
+                /* Null out the list node */
+                node->list_node = NULL;                
+                break;
+                
+            case _LRU_PERMANENT:
+                /* Already there, nothing left to do */
+                errlog( ERR_WARNING, "Node[%#10x] was already on the permanent list\n", data );
+                return 0;
+
+            default:
+                debug( _LRU_DEBUG_HIGH, "LRU: Node[%#10x] being added to permanent list\n", data );
+            }
+        }
+
+        if (( node->list_node = list_add_head( &lru->permanent_list, node )) == NULL ) {
+            return errlog( ERR_CRITICAL, "list_add_head\n" );
+        }
+        
+        return 0;
+    }
+
+    int ret;
+
+    if ( pthread_mutex_lock( &lru->mutex ) < 0 ) return perrlog( "pthread_mutex_lock\n" );
+    ret = _critical_section();
+    if ( pthread_mutex_unlock( &lru->mutex ) < 0 ) perrlog( "pthread_mutex_unlock\n" );
+    
+    return ret;    
+}
+
+/* Remove all of the nodes on the permanent list and add them to the LRU */
+int netcap_lru_permanent_clear( netcap_lru_t* lru )
+{
+    if ( lru == NULL ) return errlogargs();
+    
+    if ( _validate_lru( lru ) < 0 ) return errlog( ERR_CRITICAL, "_validate_lru\n" );
+
+    int _critical_section( void ) {
+        int length = 0;
+
+        if (( length = list_length ( &lru->permanent_list )) < 0 ) {
+            return errlog(ERR_CRITICAL,"list_length\n");
+        }
+
+        while ( length-- > 0 ) {
+            netcap_lru_node_t* node;
+            
+            node = NULL;
+            /* Move the node off the permanent */
+            if (( list_pop_head( &lru->permanent_list, (void**)&node ) < 0 ) || node == NULL ) {
+                errlog( ERR_CRITICAL, "list_pop_head\n" );
+                continue;
+            }
+            
+            if ( node->state != _LRU_PERMANENT ) errlog( ERR_WARNING, "Node not in the permanent state\n" );
+
+            /* Move onto the LRU */
+            node->state = _LRU_READY;
+            if (( node->list_node = list_add_head( &lru->lru_list, node )) == NULL ) {
+                return errlog( ERR_CRITICAL, "list_add_head\n" );
+            }
+        }
+        
+        return 0;
+    }
+
+    int ret;
+
+    if ( pthread_mutex_lock( &lru->mutex ) < 0 ) return perrlog( "pthread_mutex_lock\n" );
+    ret = _critical_section();
+    if ( pthread_mutex_unlock( &lru->mutex ) < 0 ) perrlog( "pthread_mutex_unlock\n" );
+    
+    return ret;    
+}
+
 
 
 /* Move a node to the front of the LRU, node should be a value returned from a previous
@@ -260,7 +355,7 @@ static int _lru_remove( netcap_lru_t* lru, netcap_lru_node_t* node )
     if ( list_remove( &lru->lru_list, list_node ) < 0 ) perrlog( "list_remove\n" );
 
     /* Null out the list node */
-    list_node = NULL;
+    node->list_node = NULL;
 
     return 0;
 }

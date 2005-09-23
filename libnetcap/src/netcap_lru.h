@@ -15,7 +15,7 @@ typedef struct
     list_t lru_list;
     
     /* List of nodes that are permanently non-deletable */
-    list_t undeletable_list;
+    list_t permanent_list;
 
     /* High water for the LRU */
     int high_water;
@@ -45,8 +45,9 @@ typedef struct
     /* Must have the lock in order to change the state */
     enum
     {
-        _LRU_READY   =  0x7E5873CB,  /* Node can be moved to the front of the LRU */
-        _LRU_REMOVED =  0x5D436B9B   /* Once a node is removed, it cannot be put back onto the LRU */
+        _LRU_READY     =  0x7E5873CB,  /* Node can be moved to the front of the LRU */
+        _LRU_REMOVED   =  0x5D436B9B,  /* Once a node is removed, it cannot be put back onto the LRU */
+        _LRU_PERMANENT =  0x769A1D28   /* Node is on the permanent LRU */
     } state;
 
     /* Data associated with this node */
@@ -60,6 +61,12 @@ int netcap_lru_config( netcap_lru_t* lru, int high_water, int low_water, int sie
 
 /* Add a node to the front of the LRU, node is updated to contain the necessary information for the LRU */
 int netcap_lru_add( netcap_lru_t* lru, netcap_lru_node_t* node, void* data );
+
+/* Add a node to the permanent list, if node */
+int netcap_lru_permanent_add   ( netcap_lru_t* lru, netcap_lru_node_t* node, void* data );
+
+/* Remove all of the nodes on the permanent list and add them to the LRU */
+int netcap_lru_permanent_clear ( netcap_lru_t* lru );
 
 /* Move a node to the front of the LRU, node should be a value returned from a previous
  * execution of lru_add */
