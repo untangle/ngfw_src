@@ -14,22 +14,27 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 
+#include <sys/time.h>
+#include <time.h>
 
 #include <mvutil/libmvutil.h>
 #include <mvutil/errlog.h>
 #include <mvutil/debug.h>
+#include <mvutil/utime.h>
 
 #include "netcap_trie.h"
 #include "netcap_lru.h"
 #include "netcap_interface.h"
 #include "netcap_sched.h"
 
-#define HIGH_WATER 768
+#define HIGH_WATER 832
 #define LOW_WATER  512
-#define SIEVE_SIZE 16
+#define SIEVE_SIZE 48
 
-#define NUM_INSERT_THREADS 3
-#define NUM_GET_THREADS    3
+#define NUM_INSERT_THREADS 10
+#define NUM_GET_THREADS    10
+
+#define _LRU_TRASH_DELAY   SEC_TO_USEC( 1 )
 
 struct _basic_test;
 
@@ -46,8 +51,9 @@ typedef struct _basic_test
 typedef struct 
 {
     netcap_trie_t* trie;
-    netcap_lru_t* lru;
-    volatile int is_alive;
+    netcap_lru_t*  lru;
+    int            mask_index;  /* Zero if unusued, otherwise the index this thread should use */
+    volatile int   is_alive;
 } _lru_thread_t;
 
 typedef struct
@@ -72,11 +78,20 @@ static void* _lru_get         ( void* arg );
 static void* _lru_lru         ( void* arg );
 static int   _lru_remove      ( void* data );
 static int   _lru_is_deletable( void* data );
+static void  _lru_empty_trash ( void* arg );
+static int   _lru_add_trash   ( netcap_trie_line_t* line );
 
-static in_addr_t _get_ip ( unsigned int* seed );
+static in_addr_t _get_ip ( unsigned int* seed, int mask_index );
 static unsigned long _get_sleep_value( unsigned int* seed );
 
+#define TRASH_SIZE   1024
+
 #define _NFO_ .line __LINE__
+
+typedef struct {
+    int size;
+    netcap_trie_line_t* bucket[TRASH_SIZE];
+} _lru_trash_bin_t;
 
 static struct
 {
@@ -88,15 +103,22 @@ static struct
     netcap_trie_t trie;
 
     /* Range of IPs to use for the LRU test */
-    in_addr_t mask[5];
+    in_addr_t mask[6];
+
+    /* Trash bin */
+    _lru_trash_bin_t* bin;
+
     _basic_test_t vectors[];
 } _test = {
+    .bin  = NULL,
+    
     .mask = {
         0x0000FFF0,
         0x00FF0000,
         0x000FF000,
         0x0000FF10,
-        0x0000000F
+        0x0000000F,
+        0x01010103, /* Random values that overlap, a lot */
     },
 
     .vectors = {
@@ -132,6 +154,7 @@ static struct
 
 int main ( int argc, char **argv )
 {
+    pthread_t thread_sched;
     int _critical_section( void ) {
         /* See basic operations work ( get, insert and remove), no threads */
         if ( _validate_basics() < 0 ) return errlog( ERR_CRITICAL, "_validate_basics\n" );
@@ -154,12 +177,18 @@ int main ( int argc, char **argv )
     netcap_debug_set_level( 11 );
     debug_set_mylevel( 11 );
     netcap_sched_init();
+
+    if ( pthread_create ( &thread_sched, NULL, netcap_sched_donate, NULL ) < 0 ) {
+        return perrlog("pthread_create");
+    }
     
     ret = _critical_section();
 
     // showMemStats( 1 );
 
     libmvutil_cleanup();
+
+    if ( netcap_sched_cleanup_z ( NULL ) < 0 ) ret -= errlog ( ERR_CRITICAL, "netcap_sched_cleanup_z\n" );
 
     return ret;
 }
@@ -313,10 +342,19 @@ static int  _remove     ( netcap_trie_t* trie, struct _basic_test* vector )
 static int   _validate_lru( void )
 {    
     _lru_thread_t data = {
-        .trie &_test.trie,
-        .lru  &_test.lru,
-        .is_alive 1
+        .trie       &_test.trie,
+        .lru        &_test.lru,
+        .is_alive   1,
+        .mask_index 0
     };
+
+    _lru_thread_t overlap_data = {
+        .trie       &_test.trie,
+        .lru        &_test.lru,
+        .is_alive   1,
+        .mask_index 5
+    };
+
     
     int _critical_section( void ) {
         pthread_t thread_insert[NUM_INSERT_THREADS];
@@ -325,22 +363,26 @@ static int   _validate_lru( void )
         int c;
 
         for ( c = 0 ; c < NUM_INSERT_THREADS ; c++ ) {
-            if ( pthread_create ( &thread_insert[c], NULL, _lru_insert, &data ) < 0 ) {
+            _lru_thread_t* _data = ( c < 2 ) ? &overlap_data : &data;
+            if ( pthread_create ( &thread_insert[c], NULL, _lru_insert, _data ) < 0 ) {
                 return perrlog("pthread_create");
             }
         }
         
         for ( c = 0 ; c < NUM_GET_THREADS ; c++ ) {
-            if ( pthread_create ( &thread_get[c], NULL, _lru_get, &data ) < 0 ) {
+            _lru_thread_t* _data = ( c < 2 ) ? &overlap_data : &data;
+            if ( pthread_create ( &thread_get[c], NULL, _lru_get, _data ) < 0 ) {
                 return perrlog("pthread_create");
             }
         }
         
         if ( pthread_create ( &thread_lru, NULL, _lru_lru, &data ) < 0 ) return perrlog("pthread_create");
 
-        sleep ( 30 );
+        /* The first part is where there is the greatest potential for error */
+        sleep ( 600 );
 
         data.is_alive = 0;
+        overlap_data.is_alive = 0;
         for ( c = 0 ; c < NUM_INSERT_THREADS ; c++ ) {
             if ( pthread_join( thread_insert[c], NULL ) < 0 ) return perrlog( "pthread_join" );
         }
@@ -412,7 +454,7 @@ static int   _lru_init ( netcap_trie_item_t* item, in_addr_t ip )
 
     item->data = data;
 
-    debug_nodate( 0, "'[%d]%#010x'\n", item->depth, data->answer );
+    debug_nodate( 11, "'[%d]%#010x'\n", item->depth, data->answer );
     
     return 0;
 }
@@ -425,10 +467,15 @@ static void* _lru_insert  ( void* arg )
     unsigned int seed = 0xABCDEF01;
     netcap_lru_t* lru = data->lru;  /* Used the LRU to move to the front */
     netcap_trie_line_t line;
+    struct timeval tv;
+
+    gettimeofday( &tv, NULL );
+    seed += tv.tv_usec;
+
     
     while ( data->is_alive ) {
         usleep( _get_sleep_value( &seed ));
-        struct in_addr ip = { .s_addr _get_ip( &seed ) };
+        struct in_addr ip = { .s_addr _get_ip( &seed, data->mask_index ) };
         if ( new_netcap_trie_insert_and_get( trie, &ip, &line ) < 0 ) {
             errlog( ERR_CRITICAL, "new_netcap_trie_insert_and_get\n" );
             exit( -1 );
@@ -450,6 +497,16 @@ static void* _lru_insert  ( void* arg )
                 exit( -1 );
             }
         }
+        
+        /* Possibly move to the front of the lru */
+        /* ( 1 in 16 chance ) */
+        if ( rand_r( &seed ) < ( RAND_MAX >> 4 ) && line.is_bottom_up ) {
+            _lru_trie_data_t* node_data = line.d[0].base->data;
+            if ( netcap_lru_move_front( lru, &node_data->lru_node ) <  0 ) {
+                errlog( ERR_CRITICAL, "netcap_lru_move_front\n" );
+                exit( -1 );
+            }
+        }
     }
         
     return NULL;
@@ -460,12 +517,18 @@ static void* _lru_get     ( void* arg )
     _lru_thread_t* data = arg;
 
     netcap_trie_t* trie = data->trie;
+    struct timeval tv;
+
     unsigned int seed = 0x73C21C8D;
+
     netcap_trie_line_t line;
+
+    gettimeofday( &tv, NULL );
+    seed += tv.tv_usec;
     
     while ( data->is_alive ) {
         usleep( _get_sleep_value( &seed ));
-        struct in_addr ip = { .s_addr _get_ip( &seed ) };
+        struct in_addr ip = { .s_addr _get_ip( &seed, data->mask_index ) };
         if ( new_netcap_trie_get( trie, &ip, &line ) < 0 ) {
             errlog( ERR_CRITICAL, "new_netcap_trie_insert_and_get\n" );
             exit( -1 );
@@ -498,6 +561,12 @@ static void* _lru_lru     ( void* arg )
     // netcap_trie_t* trie = data->trie;
     netcap_lru_t* lru = data->lru;
     unsigned int seed = 0x19C8603B;
+
+    struct timeval tv;
+
+    gettimeofday( &tv, NULL );
+    seed += tv.tv_usec;
+
     
     while ( data->is_alive ) {
         usleep( _get_sleep_value( &seed ) * 1024 );
@@ -529,8 +598,35 @@ static int _lru_remove ( void* arg )
         exit( -1 );
     }
     
-    /* XXXXX Must free the stuff with the scheduler */
+    /* XXX Probably want to accumulate a bunch of stuff, but for the test program who cares */
+    _lru_add_trash( line );
     
+    return 0;
+}
+
+static int   _lru_add_trash   ( netcap_trie_line_t* line )
+{
+    _lru_trash_bin_t* new_bin = NULL;
+
+    if ( _test.bin == NULL || _test.bin->size >= TRASH_SIZE ) {
+        if (( new_bin = calloc( 1, sizeof( _lru_trash_bin_t ))) == NULL ) {
+            perrlog( "calloc" );
+            exit( -1 );
+        }
+    }
+    
+    /* If necessary, schedule the trash to be taken out */
+    if ( new_bin != NULL ) {
+        if ( _test.bin != NULL && netcap_sched_event( _lru_empty_trash, _test.bin, _LRU_TRASH_DELAY ) < 0 ) {
+            errlog( ERR_CRITICAL, "netcap_sched_event\n" );
+            exit( -1 );
+        }
+        _test.bin = new_bin;
+    }
+    
+    /* Append the item to the trash bin */
+    _test.bin->bucket[_test.bin->size++] = line;
+
     return 0;
 }
 
@@ -540,19 +636,52 @@ static int   _lru_is_deletable( void* data )
 }
 
 
-static in_addr_t _get_ip ( unsigned int* seed )
+static in_addr_t _get_ip ( unsigned int* seed, int mask_index )
 {
     in_addr_t ip = ( rand_r( seed ) & 0xFFFF ) | (( rand_r( seed ) << 16 ) & 0xFFFF0000 );
     
     /* This must match the size of the masks in the global structure */
-    int j=(int)(5.0*rand_r( seed )/(RAND_MAX+1.0));
-    
+    int j;
+    unsigned int base;
+
+    if ( 0 == mask_index ) {
+        j = (int)(5.0*rand_r( seed )/(RAND_MAX+1.0));
+        base = 0;
+    } else {
+        j = mask_index;
+        base = htonl( 0x80000000 );
+    }
+
     /* Only get the necessary bits */
-    return ( ip & htonl( _test.mask[j] ));
+    return (( ip & htonl( _test.mask[j] )) | base );
 }
 
 static unsigned long _get_sleep_value( unsigned int* seed ) {
     return (unsigned long)( rand_r( seed ) & 0xFF );
 }
+
+static void _lru_empty_trash ( void* arg )
+{
+    _lru_trash_bin_t* bin = arg;
+    
+    int c;
+
+    debug( 0, "EMPTY TRASH %d\n", bin->size );
+    if ( bin->size > TRASH_SIZE ) {
+        errlog( ERR_CRITICAL, "trash bin is too large %d\n", bin->size );
+        bin->size = TRASH_SIZE;
+    }
+    
+    for ( c = 0 ; c < bin->size ; c++ ) {
+        if ( new_netcap_trie_line_raze( &_test.trie, bin->bucket[c] ) < 0 ) {
+            errlog( ERR_CRITICAL, "new_netcap_trie_line_raze\n" );
+        }
+        bin->bucket[c] = NULL;
+    }
+
+    bin->size = 0;
+    free( bin );
+}
+
 
 
