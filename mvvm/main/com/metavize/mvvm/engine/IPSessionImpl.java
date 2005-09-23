@@ -118,6 +118,8 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
     {
         cancelTimer();
 
+        // We could theoretically detach the attachment here (maybe only when !needsFinalization) XXX
+
         /** Someday...
         try {
             Mnp req = RequestUtil.createReleaseNewSession();
