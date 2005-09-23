@@ -38,6 +38,8 @@ import com.metavize.mvvm.tran.Transform;
 
 public class TokenAdaptor extends AbstractEventHandler
 {
+    private static final int TOKEN_SIZE = 8; /* XXX + magic */
+
     private static final ByteBuffer[] BYTE_BUFFER_PROTO = new ByteBuffer[0];
 
     private final TokenHandlerFactory handlerFactory;
@@ -70,10 +72,11 @@ public class TokenAdaptor extends AbstractEventHandler
         addHandler(s, h, pipeline);
         logger.debug("new session, s: " + s + " h: " + h);
 
-        s.clientReadLimit(8); /* XXX + magic */
+        s.clientReadBufferSize(TOKEN_SIZE);
         s.clientLineBuffering(false);
-        s.serverReadLimit(8); /* XXX + magic */
+        s.serverReadBufferSize(TOKEN_SIZE);
         s.serverLineBuffering(false);
+        // (read limits are automatically set to the buffer size)
     }
 
     @Override
@@ -253,19 +256,19 @@ public class TokenAdaptor extends AbstractEventHandler
 
         ByteBuffer b = e.chunk();
 
-        if (b.remaining() < 8) { /* XXX remember + magic */
-            // read limit 8
+        if (b.remaining() < TOKEN_SIZE) {
+            // read limit to token size
             b.compact();
-            b.limit(8);
+            b.limit(TOKEN_SIZE);
             logger.debug("returning buffer, for more: " + b);
             return new TCPChunkResult(BYTE_BUFFER_PROTO, BYTE_BUFFER_PROTO, b);
         }
 
         Long key = new Long(b.getLong());
-        b.position(0).limit(8); /* XXX + magic */
 
         Token token = (Token)pipeline.detach(key);
-        logger.debug("RETRIEVED object " + token + " with key: " + key);
+        if (logger.isDebugEnabled()) 
+            logger.debug("RETRIEVED object " + token + " with key: " + key);
 
         TCPSession session = e.session();
 
@@ -293,22 +296,24 @@ public class TokenAdaptor extends AbstractEventHandler
                 session.beginServerStream(ts);
             }
             // just means nothing extra to send before beginning stream.
-            return IPDataResult.DO_NOT_PASS;
+            return IPDataResult.SEND_NOTHING;
         } else {
             logger.debug("processing s2c tokens");
             ByteBuffer[] cr = processResults(tr.s2cTokens(), pipeline);
             logger.debug("processing c2s");
             ByteBuffer[] sr = processResults(tr.c2sTokens(), pipeline);
 
-            logger.debug("returning results, readBuffer: " + b);
-            for (int i = 0; null != cr && i < cr.length; i++) {
-                logger.debug("  to client: " + cr[i]);
-            }
-            for (int i = 0; null != sr && i < sr.length; i++) {
-                logger.debug("  to server: " + sr[i]);
+            if (logger.isDebugEnabled()) {
+                logger.debug("returning results: ");
+                for (int i = 0; null != cr && i < cr.length; i++) {
+                    logger.debug("  to client: " + cr[i]);
+                }
+                for (int i = 0; null != sr && i < sr.length; i++) {
+                    logger.debug("  to server: " + sr[i]);
+                }
             }
 
-            return new TCPChunkResult(cr, sr, b);
+            return new TCPChunkResult(cr, sr, null);
         }
     }
 
@@ -370,14 +375,14 @@ public class TokenAdaptor extends AbstractEventHandler
     private ByteBuffer[] processResults(Token[] results, Pipeline pipeline)
     {
         // XXX factor out token writing
-        // XXX add magic:
-        ByteBuffer bb = ByteBuffer.allocate(8 * results.length);
+        ByteBuffer bb = ByteBuffer.allocate(TOKEN_SIZE * results.length);
 
         for (int i = 0; i < results.length; i++) {
             if (null == results[i]) { continue; }
 
             Long key = pipeline.attach(results[i]);
-            logger.debug("SAVED object " + results[i] + " with key: " + key);
+            if (logger.isDebugEnabled())
+                logger.debug("SAVED object " + results[i] + " with key: " + key);
 
             bb.putLong(key);
         }
