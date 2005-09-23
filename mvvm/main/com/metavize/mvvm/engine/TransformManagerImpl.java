@@ -81,8 +81,7 @@ class TransformManagerImpl implements TransformManager
             Transaction tx = s.beginTransaction();
 
             Query q = s.createQuery("from TransformManagerState tms");
-            TransformManagerState tms = (TransformManagerState)q
-                .uniqueResult();
+            TransformManagerState tms = (TransformManagerState)q.uniqueResult();
             if (null == tms) {
                 tms = new TransformManagerState();
                 s.save(tms);
@@ -335,11 +334,22 @@ class TransformManagerImpl implements TransformManager
     void restart(String mackageName)
     {
         synchronized (this) {
-            List<Tid> tids = transformInstances(mackageName);
-            for (Tid tid : tids) {
-                unload(tid);
+            List<Tid> mkgTids = transformInstances(mackageName);
+            if (0 < mkgTids.size()) {
+                Tid t = mkgTids.get(0);
+                TransformContext tc = tids.get(t);
+                if (0 < tc.getTransformDesc().getExports().size()) {
+                    // exported resources, must restart everything
+                    for (Tid tid : tids.keySet()) {
+                        unload(tid);
+                    }
+                } else {
+                    for (Tid tid : mkgTids) {
+                        unload(tid);
+                    }
+                }
+                restartUnloaded();
             }
-            restartUnloaded();
         }
     }
 
