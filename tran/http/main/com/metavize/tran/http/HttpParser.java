@@ -61,7 +61,7 @@ public class HttpParser extends AbstractParser
     private static final int END_MARKER_STATE = 10;
 
     private final HttpCasing casing;
-    private final byte[] buf;
+    private byte[] buf;
     private final int maxHeader;
     private final boolean blockLongHeaders;
     private final int maxUri;
@@ -90,10 +90,12 @@ public class HttpParser extends AbstractParser
         this.maxHeader = settings.getMaxHeaderLength();
         this.blockLongHeaders = settings.getBlockLongHeaders();
         this.maxUri = settings.getMaxUriLength();
-        this.buf = new byte[maxUri];
         this.blockLongUris = settings.getBlockLongUris();
         this.casing = casing;
         this.sessStr = "HttpParser" + (clientSide ? " client-side " : " server-side ");
+
+        // This is now initialized just before we need it and removed afterwards
+        this.buf = null;
 
         lineBuffering(true);
     }
@@ -104,7 +106,8 @@ public class HttpParser extends AbstractParser
     {
         cancelTimer();
 
-        logger.debug(sessStr + "parsing chunk: " + b);
+        if (logger.isDebugEnabled())
+            logger.debug(sessStr + "parsing chunk: " + b);
         List l = new LinkedList();
 
         boolean done = false;
@@ -135,6 +138,9 @@ public class HttpParser extends AbstractParser
                 }
             case FIRST_LINE_STATE:
                 {
+                    // Initialize the buffer, we'll need it until we''re done with HEADER state.
+                    this.buf = new byte[maxUri];
+
                     logger.debug(sessStr + "in FIRST_LINE_STATE");
                     if (completeLine(b)) {
                         l.add(firstLine(b));
@@ -184,6 +190,9 @@ public class HttpParser extends AbstractParser
                     logger.debug(sessStr + "in HEADER_STATE");
                     header = header(b);
                     l.add(header);
+
+                    // Done with buf now
+                    this.buf = null;
 
                     assert !b.hasRemaining();
 
@@ -363,7 +372,8 @@ public class HttpParser extends AbstractParser
             }
         }
 
-        logger.debug(sessStr + "returing readBuffer: " + b);
+        if (logger.isDebugEnabled())
+            logger.debug(sessStr + "returing readBuffer: " + b);
 
         scheduleTimer(TIMEOUT);
 
@@ -404,10 +414,10 @@ public class HttpParser extends AbstractParser
         }
     }
 
-    public ParseResult parseEnd(ByteBuffer buf) throws ParseException
+    public ParseResult parseEnd(ByteBuffer b) throws ParseException
     {
-        if (buf.hasRemaining()) {
-            logger.warn("data trapped in read buffer: " + buf.remaining());
+        if (b.hasRemaining()) {
+            logger.warn("data trapped in read buffer: " + b.remaining());
         }
 
         // we should implement this to make sure end markers get sent always
@@ -608,7 +618,8 @@ public class HttpParser extends AbstractParser
         eat(data, ':');
         String value = eatText(data).trim();
 
-        logger.debug(sessStr + "field key: " + key + " value: " + value);
+        if (logger.isDebugEnabled())
+            logger.debug(sessStr + "field key: " + key + " value: " + value);
 
         // 4.3: The presence of a message-body in a request is signaled by the
         // inclusion of a Content-Length or Transfer-Encoding header field in
@@ -677,12 +688,6 @@ public class HttpParser extends AbstractParser
         assert 0 <= contentLength;
 
         return new Chunk(buffer.slice());
-    }
-
-    // trailer        = *(entity-header CRLF)
-    private void handleTrailer(ByteBuffer data) throws ParseException
-    {
-        header(data);
     }
 
     // Request-URI    = "*" | absoluteURI | abs_path | authority
