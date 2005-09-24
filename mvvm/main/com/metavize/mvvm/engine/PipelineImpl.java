@@ -13,11 +13,11 @@ package com.metavize.mvvm.engine;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import com.metavize.mvvm.tapi.Fitting;
 import com.metavize.mvvm.tapi.MPipe;
@@ -32,7 +32,8 @@ class PipelineImpl implements Pipeline
     private final List<MPipeFitting> mPipeFittings;
     private final String sessionPrefix;
 
-    private final Map objects = new ConcurrentHashMap();
+    // This does not need to be concurrent since there is only one thread per pipeline.
+    private final Map objects = new HashMap();
     private final List<File> files = new LinkedList<File>();
 
     private int id = 0;
