@@ -13,7 +13,6 @@ package com.metavize.tran.ftp;
 
 import java.io.Serializable;
 
-import com.metavize.mvvm.security.Tid;
 
 /**
  * Ftp casing settings.
@@ -28,7 +27,6 @@ public class FtpSettings implements Serializable
     private static final long serialVersionUID = -828243820153242416L;
 
     private Long id;
-    private Tid tid;
 
     private boolean enabled = true;
 
@@ -51,24 +49,6 @@ public class FtpSettings implements Serializable
     private void setId(Long id)
     {
         this.id = id;
-    }
-
-    /**
-     * Transform id for these settings.
-     *
-     * @return tid for these settings.
-     * @hibernate.many-to-one
-     * column="TID"
-     * not-null="true"
-     */
-    public Tid getTid()
-    {
-        return tid;
-    }
-
-    public void setTid(Tid tid)
-    {
-        this.tid = tid;
     }
 
     /**

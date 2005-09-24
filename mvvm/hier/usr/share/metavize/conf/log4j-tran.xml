@@ -82,11 +82,11 @@
   </category>
 
   <category name="com.metavize.tran.token">
-    <priority value="WARN"/>
+    <priority value="DEBUG"/>
   </category>
 
   <category name="com.metavize.tran.virus">
-    <priority value="WARN"/>
+    <priority value="DEBUG"/>
   </category>
 
   <category name="com.metavize.tran.spam">
@@ -98,7 +98,7 @@
   </category>
 
   <category name="com.metavize.tran.http">
-    <priority value="WARN"/>
+    <priority value="DEBUG"/>
   </category>
 
   <category name="com.metavize.tran.httpblocker">

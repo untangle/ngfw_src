@@ -33,8 +33,8 @@ public abstract class PipeSpec
     private final String name;
     private final Transform transform;
 
-    private transient Set<Subscription> subscriptions;
-    private transient boolean enabled = true;
+    private volatile Set<Subscription> subscriptions;
+    private volatile boolean enabled = true;
 
     // constructors -----------------------------------------------------------
 

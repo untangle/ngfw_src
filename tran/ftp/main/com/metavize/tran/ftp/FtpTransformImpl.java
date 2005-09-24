@@ -15,10 +15,6 @@ import com.metavize.mvvm.tapi.CasingPipeSpec;
 import com.metavize.mvvm.tapi.Fitting;
 import com.metavize.mvvm.tapi.PipeSpec;
 import org.apache.log4j.Logger;
-import org.hibernate.HibernateException;
-import org.hibernate.Query;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
 
 public class FtpTransformImpl extends AbstractTransform
     implements FtpTransform
@@ -35,7 +31,7 @@ public class FtpTransformImpl extends AbstractTransform
         { ctlPipeSpec, dataPipeSpec };
     private final Logger logger = Logger.getLogger(getClass());
 
-    private FtpSettings settings;
+    private FtpTransformCommon common;
 
     // constructors -----------------------------------------------------------
 
@@ -45,76 +41,36 @@ public class FtpTransformImpl extends AbstractTransform
 
     public FtpSettings getFtpSettings()
     {
-        return settings;
+        return null == common ? null : common.getFtpSettings();
     }
 
     public void setFtpSettings(FtpSettings settings)
     {
-        Session s = getTransformContext().openSession();
-        try {
-            Transaction tx = s.beginTransaction();
-
-            s.saveOrUpdate(settings);
-            this.settings = settings;
-
-            tx.commit();
-        } catch (HibernateException exn) {
-            logger.warn("could not get FtpSettings", exn);
-        } finally {
-            try {
-                s.close();
-            } catch (HibernateException exn) {
-                logger.warn("could not close hibernate session", exn);
-            }
+        if (null != common) {
+            common.setFtpSettings(this, settings);
         }
-
-        reconfigure();
     }
 
     // Transform methods ------------------------------------------------------
 
     public void reconfigure()
     {
-        if (null != settings) {
-            ctlPipeSpec.setEnabled(settings.isEnabled());
-            dataPipeSpec.setEnabled(settings.isEnabled());
-        }
+        common.reconfigure();
     }
 
-    protected void initializeSettings()
-    {
-        settings = new FtpSettings();
-        settings.setTid(getTid());
-        setFtpSettings(settings);
-    }
+    protected void initializeSettings() { }
 
     protected void postInit(String[] args)
     {
-        Session s = getTransformContext().openSession();
-        try {
-            Transaction tx = s.beginTransaction();
+        common = FtpTransformCommon.common(this);
+        common.registerListener(this);
+        doReconfigure(common.getFtpSettings());
+    }
 
-            Query q = s.createQuery
-                ("from FtpSettings hbs where hbs.tid = :tid");
-            q.setParameter("tid", getTid());
-            settings = (FtpSettings)q.uniqueResult();
-
-            tx.commit();
-        } catch (HibernateException exn) {
-            logger.warn("Could not get FtpSettings", exn);
-        } finally {
-            try {
-                s.close();
-            } catch (HibernateException exn) {
-                logger.warn("could not close Hibernate session", exn);
-            }
-        }
-
-        if (null == settings) {
-            initializeSettings();
-        }
-
-        reconfigure();
+    protected void preDestroy()
+    {
+        common.deregisterListener(this);
+        common = null;
     }
 
     // AbstractTransform methods ----------------------------------------------
@@ -123,6 +79,16 @@ public class FtpTransformImpl extends AbstractTransform
     protected PipeSpec[] getPipeSpecs()
     {
         return pipeSpecs;
+    }
+
+    // package protected methods ----------------------------------------------
+
+    void doReconfigure(FtpSettings settings)
+    {
+        if (null != common) {
+            ctlPipeSpec.setEnabled(settings.isEnabled());
+            dataPipeSpec.setEnabled(settings.isEnabled());
+        }
     }
 
     // XXX soon to be deprecated ----------------------------------------------
