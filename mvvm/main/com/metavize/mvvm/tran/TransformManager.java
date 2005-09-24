@@ -58,7 +58,8 @@ public interface TransformManager
     List<Tid> transformInstances(String name, Policy policy);
 
     /**
-     * Create a new transform instance under the given policy.
+     * Create a new transform instance under the given policy.  Note that it is an error
+     * to specify a non-null policy for a service, or a null policy for a non-service.
      *
      * @param name of the transform.
      * @param policy the policy this instance is applied to.
@@ -68,7 +69,8 @@ public interface TransformManager
     Tid instantiate(String name, Policy policy) throws DeployException;
 
     /**
-     * Create a new transform instance under the given policy.
+     * Create a new transform instance under the given policy.  Note that it is an error
+     * to specify a non-null policy for a service, or a null policy for a non-service.
      *
      * @param name of the transform.
      * @param policy the policy this instance is applied to.
@@ -80,7 +82,8 @@ public interface TransformManager
         throws DeployException;
 
     /**
-     * Create a new transform instance.
+     * Create a new transform instance under the default policy, or in the null policy if the
+     * transform is a service.
      *
      * @param name of the transform.
      * @param args transform args.
@@ -90,7 +93,8 @@ public interface TransformManager
     Tid instantiate(String name, String[] args) throws DeployException;
 
     /**
-     * Create a new transform instance under the default policy.
+     * Create a new transform instance under the default policy, or in the null policy if the
+     * transform is a service.
      *
      * @param name of the transform.
      * @return the <code>tid</code> of the instance.

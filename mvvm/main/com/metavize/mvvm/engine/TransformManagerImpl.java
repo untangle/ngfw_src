@@ -162,9 +162,9 @@ class TransformManagerImpl implements TransformManager
                 String n = tc.getTransformDesc().getName();
 
                 Policy p = tid.getPolicy();
-                assert null != p && null != policy;
 
-                if (n.equals(name) && policy.equals(p)) {
+                if (n.equals(name) &&
+                    ((policy == null && p == null) || (policy != null && policy.equals(p)))) {
                     l.add(tid);
                 }
             }
@@ -185,7 +185,7 @@ class TransformManagerImpl implements TransformManager
 
                 Policy p = tid.getPolicy();
 
-                if (policy.equals(p)) {
+                if ((policy == null && p == null) || (policy != null && policy.equals(p))) {
                     l.add(tid);
                 }
             }
@@ -207,12 +207,14 @@ class TransformManagerImpl implements TransformManager
     public Tid instantiate(String transformName)
         throws DeployException
     {
+        Policy policy = getDefaultPolicyForTransform(transformName);
         return instantiate(transformName, newTid(null, transformName), new String[0]);
     }
 
     public Tid instantiate(String transformName, String[] args)
         throws DeployException
     {
+        Policy policy = getDefaultPolicyForTransform(transformName);
         return instantiate(transformName, newTid(null, transformName), args);
     }
 
@@ -497,6 +499,11 @@ class TransformManagerImpl implements TransformManager
         URL[] resUrls = tbm.resources(transformName);
 
         MackageDesc mackageDesc = tbm.mackageDesc(transformName);
+        if (mackageDesc.isService() && tid.getPolicy() != null)
+            throw new DeployException("Cannot specify a policy for a service: " + transformName);
+        if (!mackageDesc.isService() && tid.getPolicy() == null)
+            throw new DeployException("Cannot have null policy for a non-service: " + transformName);
+
         logger.info("initializing transform desc for: " + transformName);
         TransformDesc tDesc = initTransformDesc(resUrls, tid);
 
@@ -603,13 +610,22 @@ class TransformManagerImpl implements TransformManager
         return transformDesc;
     }
 
+    private Policy getDefaultPolicyForTransform(String transformName)
+        throws DeployException
+    {
+        ToolboxManagerImpl tbm = (ToolboxManagerImpl)MvvmContextFactory
+            .context().toolboxManager();
+        MackageDesc mackageDesc = tbm.mackageDesc(transformName);
+        if (mackageDesc == null)
+            throw new DeployException("Transform named " + transformName + " not found");
+        if (mackageDesc.isService())
+            return null;
+        else
+            return MvvmContextFactory.context().policyManager().getDefaultPolicy();
+    }
+
     private Tid newTid(Policy policy, String transformName)
     {
-        if (null == policy) {
-            policy = MvvmContextFactory.context().policyManager()
-                .getDefaultPolicy();
-        }
-
         Tid tid;
         synchronized (transformManagerState) {
             tid = transformManagerState.nextTid(policy, transformName);
