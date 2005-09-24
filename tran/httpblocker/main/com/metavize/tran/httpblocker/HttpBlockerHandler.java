@@ -44,9 +44,7 @@ public class HttpBlockerHandler extends HttpStateMachine
     private List requests = new LinkedList();
 
     private RequestLine requestLine;
-    private Header requestHeader;
     private StatusLine statusLine;
-    private Header responseHeader;
 
     private RequestLine responseRequest;
 
@@ -83,7 +81,6 @@ public class HttpBlockerHandler extends HttpStateMachine
     {
         logger.debug("in doRequestHeader(): " + requestHeader);
 
-        this.requestHeader = requestHeader;
         c2sPersistent = isPersistent(requestHeader);
 
         transform.incrementCount(SCAN, 1);
@@ -150,11 +147,9 @@ public class HttpBlockerHandler extends HttpStateMachine
     }
 
     @Override
-        protected TokenResult doResponseHeader(Header header)
+        protected TokenResult doResponseHeader(Header responseHeader)
     {
-        logger.debug("in doResponseHeader: " + header);
-
-        this.responseHeader = header;
+        logger.debug("in doResponseHeader: " + responseHeader);
 
         s2cReplacement = transform.getBlacklist()
             .checkResponse(getSession().clientAddr(), responseRequest,
