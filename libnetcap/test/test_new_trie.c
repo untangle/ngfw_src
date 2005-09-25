@@ -108,6 +108,9 @@ static struct
     /* Trash bin */
     _lru_trash_bin_t* bin;
 
+    /* Trie/LRU mutex */
+    pthread_mutex_t mutex;
+
     _basic_test_t vectors[];
 } _test = {
     .bin  = NULL,
@@ -120,6 +123,8 @@ static struct
         0x0000000F,
         0x01010103, /* Random values that overlap, a lot */
     },
+    
+    .mutex = PTHREAD_MUTEX_INITIALIZER,
 
     .vectors = {
         { .exec _insert, .ip 0x00000000, .expected  4, _NFO_ },
@@ -241,7 +246,7 @@ static int  _insert     ( netcap_trie_t* trie, struct _basic_test* vector )
     struct in_addr ip = { .s_addr htonl( vector->ip ) };
     
     /* First do the insert */
-    if ( new_netcap_trie_insert_and_get( trie, &ip, &line ) < 0 ) {
+    if ( new_netcap_trie_insert_and_get( trie, &ip, NULL, &line ) < 0 ) {
         return errlog( ERR_CRITICAL, "new_netcap_trie_insert_and_get\n" );
     }
     
@@ -315,7 +320,7 @@ static int  _remove     ( netcap_trie_t* trie, struct _basic_test* vector )
     netcap_trie_line_t line;
 
     /* Remove a node */
-    if ( new_netcap_trie_remove( trie, &ip, &line ) < 0 ) {
+    if ( new_netcap_trie_remove( trie, &ip, NULL, &line ) < 0 ) {
         return errlog( ERR_CRITICAL, "new_netcap_trie_remove\n" );
     }
     
@@ -409,7 +414,7 @@ static int   _validate_lru( void )
     
 
     if ( netcap_lru_init( &_test.lru, HIGH_WATER, LOW_WATER, SIEVE_SIZE, _lru_is_deletable, 
-                          _lru_remove, &_test.trie.mutex ) < 0 ) {
+                          _lru_remove ) < 0 ) {
         return errlog( ERR_CRITICAL, "netcap_lru_init\n" );
     }
 
@@ -447,7 +452,7 @@ static int   _lru_init ( netcap_trie_item_t* item, in_addr_t ip )
     data->ip.s_addr = ip;
     bzero( &data->lru_node, sizeof( data->lru_node ));
     if (( NC_TRIE_DEPTH_TOTAL == item->depth ) && 
-        ( netcap_lru_add( &_test.lru, &data->lru_node, item ) < 0 )) {
+        ( netcap_lru_add( &_test.lru, &data->lru_node, item, NULL ) < 0 )) {
         errlog( ERR_CRITICAL, "netcap_lru_add\n" );
         exit( -1 );
     }
@@ -476,7 +481,7 @@ static void* _lru_insert  ( void* arg )
     while ( data->is_alive ) {
         usleep( _get_sleep_value( &seed ));
         struct in_addr ip = { .s_addr _get_ip( &seed, data->mask_index ) };
-        if ( new_netcap_trie_insert_and_get( trie, &ip, &line ) < 0 ) {
+        if ( new_netcap_trie_insert_and_get( trie, &ip, &_test.mutex, &line ) < 0 ) {
             errlog( ERR_CRITICAL, "new_netcap_trie_insert_and_get\n" );
             exit( -1 );
         }
@@ -502,7 +507,7 @@ static void* _lru_insert  ( void* arg )
         /* ( 1 in 16 chance ) */
         if ( rand_r( &seed ) < ( RAND_MAX >> 4 ) && line.is_bottom_up ) {
             _lru_trie_data_t* node_data = line.d[0].base->data;
-            if ( netcap_lru_move_front( lru, &node_data->lru_node ) <  0 ) {
+            if ( netcap_lru_move_front( lru, &node_data->lru_node, &_test.mutex ) <  0 ) {
                 errlog( ERR_CRITICAL, "netcap_lru_move_front\n" );
                 exit( -1 );
             }
@@ -571,7 +576,7 @@ static void* _lru_lru     ( void* arg )
     while ( data->is_alive ) {
         usleep( _get_sleep_value( &seed ) * 1024 );
         
-        if ( netcap_lru_cut( lru, NULL, 0 ) < 0 ) {
+        if ( netcap_lru_cut( lru, NULL, 0, &_test.mutex ) < 0 ) {
             errlog( ERR_CRITICAL, "netcap_lru_cut\n" );
             exit( -1 );
         }
@@ -592,8 +597,9 @@ static int _lru_remove ( void* arg )
         exit( -1 );
     }
 
-    /* Just remove the item from the trie */
-    if ( new_netcap_trie_remove( &_test.trie, &data->ip, line ) < 0 ) {
+    /* Just remove the item from the trie, Don't use the mutex because it is
+     * already locked by the LRU. */
+    if ( new_netcap_trie_remove( &_test.trie, &data->ip, NULL, line ) < 0 ) {
         errlog( ERR_CRITICAL, "new_netcap_trie_remove\n" );
         exit( -1 );
     }
