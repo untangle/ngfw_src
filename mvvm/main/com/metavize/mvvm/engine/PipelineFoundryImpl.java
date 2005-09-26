@@ -24,7 +24,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.metavize.mvvm.argon.ArgonAgent;
 import com.metavize.mvvm.argon.IPSessionDesc;
-import com.metavize.mvvm.argon.IntfConverter;
 import com.metavize.mvvm.argon.PipelineDesc;
 import com.metavize.mvvm.argon.SessionEndpoints;
 import com.metavize.mvvm.policy.Policy;
@@ -51,9 +50,9 @@ class PipelineFoundryImpl implements PipelineFoundry
     private static final Logger logger
         = Logger.getLogger(PipelineFoundryImpl.class);
 
-    private final Map<Fitting, List<MPipe>> incomingMPipes
+    private final Map<Fitting, List<MPipe>> inboundMPipes
         = new HashMap<Fitting, List<MPipe>>();
-    private final Map<Fitting, List<MPipe>> outgoingMPipes
+    private final Map<Fitting, List<MPipe>> outboundMPipes
         = new HashMap<Fitting, List<MPipe>>();
     private final Map<MPipe, MPipe> casings = new HashMap<MPipe, MPipe>();
 
@@ -62,9 +61,9 @@ class PipelineFoundryImpl implements PipelineFoundry
     private final Map<Integer, PipelineImpl> pipelines
         = new ConcurrentHashMap<Integer, PipelineImpl>();
 
-    private static final Map<Policy, Map<Fitting, List<MPipeFitting>>> incomingChains
+    private static final Map<Policy, Map<Fitting, List<MPipeFitting>>> inboundChains
         = new ConcurrentHashMap<Policy, Map<Fitting, List<MPipeFitting>>>();
-    private static final Map<Policy, Map<Fitting, List<MPipeFitting>>> outgoingChains
+    private static final Map<Policy, Map<Fitting, List<MPipeFitting>>> outboundChains
         = new ConcurrentHashMap<Policy, Map<Fitting, List<MPipeFitting>>>();
 
     private PipelineFoundryImpl() { }
@@ -83,6 +82,7 @@ class PipelineFoundryImpl implements PipelineFoundry
             logger.error("No policy rule found for session " + sd);
         }
         Policy p = null == pr ? null : pr.getPolicy();
+        boolean isInbound = pr == null ? false : pr.isInbound();
 
         InetAddress sAddr = sd.serverAddr();
         int sPort = sd.serverPort();
@@ -123,7 +123,7 @@ class PipelineFoundryImpl implements PipelineFoundry
         }
 
         long ct0 = System.nanoTime();
-        List<MPipeFitting> chain = makeChain(sd, p, start);
+        List<MPipeFitting> chain = makeChain(sd, p, isInbound, start);
         long ct1 = System.nanoTime();
 
         // filter list
@@ -189,16 +189,16 @@ class PipelineFoundryImpl implements PipelineFoundry
     public void registerMPipe(MPipe mPipe)
     {
         synchronized (this) {
-            registerMPipe(incomingMPipes, mPipe, new MPipeComparator(true));
-            registerMPipe(outgoingMPipes, mPipe, new MPipeComparator(false));
+            registerMPipe(inboundMPipes, mPipe, new MPipeComparator(true));
+            registerMPipe(outboundMPipes, mPipe, new MPipeComparator(false));
         }
     }
 
     public void deregisterMPipe(MPipe mPipe)
     {
         synchronized (this) {
-            deregisterMPipe(incomingMPipes, mPipe, new MPipeComparator(true));
-            deregisterMPipe(outgoingMPipes, mPipe, new MPipeComparator(false));
+            deregisterMPipe(inboundMPipes, mPipe, new MPipeComparator(true));
+            deregisterMPipe(outboundMPipes, mPipe, new MPipeComparator(false));
         }
     }
 
@@ -235,13 +235,11 @@ class PipelineFoundryImpl implements PipelineFoundry
 
     // private methods --------------------------------------------------------
 
-    private List<MPipeFitting> makeChain(IPSessionDesc sd, Policy p,
+    private List<MPipeFitting> makeChain(IPSessionDesc sd, Policy p, boolean inbound,
                                          Fitting start)
     {
-        boolean incoming = sd.clientIntf() == IntfConverter.OUTSIDE;
-
-        Map<Policy, Map<Fitting, List<MPipeFitting>>> chains = incoming
-            ? incomingChains : outgoingChains;
+        Map<Policy, Map<Fitting, List<MPipeFitting>>> chains = inbound
+            ? inboundChains : outboundChains;
 
         List<MPipeFitting> mPipeFittings = null;
 
@@ -265,8 +263,8 @@ class PipelineFoundryImpl implements PipelineFoundry
                 if (null == mPipeFittings) {
                     Map<MPipe, MPipe> availCasings = new HashMap(casings);
 
-                    Map<Fitting, List<MPipe>> mp = incoming ? incomingMPipes
-                        : outgoingMPipes;
+                    Map<Fitting, List<MPipe>> mp = inbound ? inboundMPipes
+                        : outboundMPipes;
                     Map<Fitting, List<MPipe>> availMPipes
                         = new HashMap<Fitting, List<MPipe>>(mp);
 
@@ -404,7 +402,7 @@ class PipelineFoundryImpl implements PipelineFoundry
 
     private void clearCache()
     {
-        incomingChains.clear();
-        outgoingChains.clear();
+        inboundChains.clear();
+        outboundChains.clear();
     }
 }

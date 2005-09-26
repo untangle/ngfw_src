@@ -15,7 +15,6 @@ package com.metavize.tran.virus;
 import java.io.File;
 import java.io.IOException;
 
-import com.metavize.mvvm.argon.IntfConverter;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.mvvm.tran.Transform;
