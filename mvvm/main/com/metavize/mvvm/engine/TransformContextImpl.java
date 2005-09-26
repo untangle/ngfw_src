@@ -36,13 +36,13 @@ import com.metavize.mvvm.tran.TransformPreferences;
 import com.metavize.mvvm.tran.TransformState;
 import com.metavize.mvvm.tran.TransformStats;
 import com.metavize.mvvm.tran.UndeployException;
+import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.apache.commons.logging.LogFactory;
-import org.apache.log4j.Logger;
 
 class TransformContextImpl implements TransformContext
 {
@@ -63,6 +63,8 @@ class TransformContextImpl implements TransformContext
 
     private final TransformManagerImpl transformManager = TransformManagerImpl
         .manager();
+    private final ToolboxManagerImpl toolboxManager = ToolboxManagerImpl
+        .toolboxManager();
 
     TransformContextImpl(URLClassLoader classLoader, TransformDesc tDesc,
                          MackageDesc mackageDesc, boolean isNew)
@@ -354,6 +356,11 @@ class TransformContextImpl implements TransformContext
             return null;
         }
 
+        MackageDesc md = toolboxManager.mackageDesc(parent);
+        if (md.isService()) {
+            policy = null;
+        }
+
         logger.debug("Starting parent: " + parent + " for: " + tid);
 
         TransformContext pctx = getParentContext(parent);
@@ -378,17 +385,15 @@ class TransformContextImpl implements TransformContext
 
     private TransformContext getParentContext(String parent)
     {
-        List<Tid> l = transformManager.transformInstances(parent, tid.getPolicy());
+        for (Tid t : transformManager.transformInstances(parent)) {
+            Policy p = t.getPolicy();
+            if (null == p || p.equals(tid.getPolicy())) {
+                return transformManager.transformContext(t);
+            }
 
-        switch (l.size()) {
-        case 0:
-            return null;
-        case 1:
-            return transformManager.transformContext(l.get(0));
-        default:
-            logger.warn("multiple parents found, returning first");
-            return transformManager.transformContext(l.get(0));
         }
+
+        return null;
     }
 
     // Object methods ---------------------------------------------------------

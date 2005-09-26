@@ -339,11 +339,10 @@ class VirusHttpHandler extends HttpStateMachine
         }
 
         /*
-         * XXX This is inefficient, but typically there are only a
-         * few rules in this list.
+         * XXX This is inefficient, but typically there are only a few
+         * rules in this list.
          */
-        for (Iterator i = transform.getHttpMimeTypes().iterator();
-             i.hasNext();) {
+        for (Iterator i = transform.getHttpMimeTypes().iterator(); i.hasNext();) {
 
             MimeTypeRule mtr = (MimeTypeRule)i.next();
             String currentMt = mtr.getMimeType().getType();
@@ -370,8 +369,10 @@ class VirusHttpHandler extends HttpStateMachine
             }
         }
 
-        if (logger.isDebugEnabled())
-            logger.debug("Mapped: " + mimeType + " to: '" + match + "' scan: "+ isLive);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Mapped: " + mimeType + " to: '" + match
+                         + "' scan: "+ isLive);
+        }
 
         return isLive;
     }
@@ -385,8 +386,9 @@ class VirusHttpHandler extends HttpStateMachine
 
             this.fileName = fileBuf.getAbsolutePath();
 
-            if (logger.isDebugEnabled())
+            if (logger.isDebugEnabled()) {
                 logger.debug("VIRUS: Using temporary file: " + this.fileName);
+            }
 
             this.outFile = (new FileOutputStream(fileBuf)).getChannel();
             this.inFile = (new FileInputStream(fileBuf)).getChannel();

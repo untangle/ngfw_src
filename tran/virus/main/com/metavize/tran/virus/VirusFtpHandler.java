@@ -211,7 +211,7 @@ class VirusFtpHandler extends FtpStateMachine
         VirusScannerResult result;
 
         try {
-            transform.incrementCount( SCAN_COUNTER );
+            transform.incrementCount(SCAN_COUNTER);
             result = transform.getScanner().scanFile(file.getPath());
         } catch (Exception exn) {
             // Should never happen
@@ -223,13 +223,13 @@ class VirusFtpHandler extends FtpStateMachine
         eventLogger.info(new VirusLogEvent(getSession().id(), result, transform.getScanner().getVendorName()));
 
         if (result.isClean()) {
-            transform.incrementCount( PASS_COUNTER );
+            transform.incrementCount(PASS_COUNTER);
             Pipeline p = getPipeline();
             TokenStreamer tokSt = new FileChunkStreamer
                 (file, inChannel, null, EndMarker.MARKER, true);
             return new TokenStreamerAdaptor(p, tokSt);
         } else {
-            transform.incrementCount( BLOCK_COUNTER );
+            transform.incrementCount(BLOCK_COUNTER);
             // Todo: Quarantine (for now, don't delete the file) XXX
             TCPSession s = getSession();
             s.shutdownClient();

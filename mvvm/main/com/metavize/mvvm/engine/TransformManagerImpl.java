@@ -215,13 +215,14 @@ class TransformManagerImpl implements TransformManager
         throws DeployException
     {
         Policy policy = getDefaultPolicyForTransform(transformName);
-        return instantiate(transformName, newTid(null, transformName), args);
+        return instantiate(transformName, newTid(policy, transformName), args);
     }
 
     public Tid instantiate(String transformName, Policy policy)
         throws DeployException
     {
-        return instantiate(transformName, newTid(policy, transformName), new String[0]);
+        return instantiate(transformName, newTid(policy, transformName),
+                           new String[0]);
     }
 
     public Tid instantiate(String transformName, Policy policy, String[] args)
@@ -499,10 +500,13 @@ class TransformManagerImpl implements TransformManager
         URL[] resUrls = tbm.resources(transformName);
 
         MackageDesc mackageDesc = tbm.mackageDesc(transformName);
-        if (mackageDesc.isService() && tid.getPolicy() != null)
-            throw new DeployException("Cannot specify a policy for a service: " + transformName);
+        if (mackageDesc.isService() && tid.getPolicy() != null) {
+            throw new DeployException("Cannot specify a policy for a service: "
+                                      + transformName);
+        }
         if (!mackageDesc.isService() && tid.getPolicy() == null)
-            throw new DeployException("Cannot have null policy for a non-service: " + transformName);
+            throw new DeployException("Cannot have null policy for a non-service: "
+                                      + transformName);
 
         logger.info("initializing transform desc for: " + transformName);
         TransformDesc tDesc = initTransformDesc(resUrls, tid);

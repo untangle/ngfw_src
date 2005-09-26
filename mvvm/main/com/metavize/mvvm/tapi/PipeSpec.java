@@ -144,7 +144,7 @@ public abstract class PipeSpec
     {
         Policy tp = transform.getTid().getPolicy();
 
-        return null == tp ? tp == p : tp.equals(p);
+        return null == tp || tp.equals(p);
     }
 
     public void setSubscriptions(Set<Subscription> subscriptions)

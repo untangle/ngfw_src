@@ -10,6 +10,7 @@ Architecture: any
 Depends: mvvm
 XB-Display-Name: FTP
 XB-Website: http://www.metavize.com
+XB-Is-Service: true
 Description: The Metavize FTP Decoder
  The FTP Casing allows other software appliances to parse and analyze
  FTP traffic and documents.
@@ -19,6 +20,7 @@ Architecture: any
 Depends: mvvm
 XB-Display-Name: Web
 XB-Website: http://www.metavize.com
+XB-Is-Service: true
 Description: The Metavize Web/HTTP Decoder
  The HTTP Casing allows other software appliances to parse and analyze
  HTTP traffic and documents.
@@ -28,6 +30,7 @@ Architecture: any
 Depends: mvvm
 XB-Display-Name: Email
 XB-Website: http://www.metavize.com
+XB-Is-Service: true
 Description: The Metavize eMail Decoder
  The Mail Casing allows other software appliances to parse and analyze
  eMail (SMTP/IMAP/POP3) traffic and documents.
@@ -89,7 +92,7 @@ XB-Website: http://www.metavize.com/kaspersky_antivirus.html
 XB-Rack-Position: 5
 Description: The Kaspersky AntiVirus Scanner
  The Kaspersky AntiVirus Scanner, based on Kaspersky's award winning Anti-Virus, is able to
- scan and block inbound and outbound viruses, on HTTP, FTP, and email 
+ scan and block inbound and outbound viruses, on HTTP, FTP, and email
  Updates are automatically installed hourly.
 
 Package: clam-transform

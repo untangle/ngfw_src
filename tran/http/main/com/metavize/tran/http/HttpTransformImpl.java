@@ -17,6 +17,10 @@ import com.metavize.mvvm.tapi.CasingPipeSpec;
 import com.metavize.mvvm.tapi.Fitting;
 import com.metavize.mvvm.tapi.PipeSpec;
 import org.apache.log4j.Logger;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+import org.hibernate.Query;
 
 public class HttpTransformImpl extends AbstractTransform
     implements HttpTransform
@@ -29,7 +33,7 @@ public class HttpTransformImpl extends AbstractTransform
 
     private final PipeSpec[] pipeSpecs = new PipeSpec[] { pipeSpec };
 
-    private HttpTransformCommon common;
+    private HttpSettings settings;
 
     // constructors -----------------------------------------------------------
 
@@ -39,36 +43,71 @@ public class HttpTransformImpl extends AbstractTransform
 
     public HttpSettings getHttpSettings()
     {
-        return null == common ? null : common.getHttpSettings();
+        return settings;
     }
 
     public void setHttpSettings(HttpSettings settings)
     {
-        if (null != common) {
-            common.setHttpSettings(this, settings);
+        Session s = getTransformContext().openSession();
+        try {
+            Transaction tx = s.beginTransaction();
+
+            s.saveOrUpdate(settings);
+            this.settings = settings;
+
+            tx.commit();
+        } catch (HibernateException exn) {
+            logger.warn("could not get HttpSettings", exn);
+        } finally {
+            try {
+                s.close();
+
+            } catch (HibernateException exn) {
+                logger.warn("could not close hibernate session", exn);
+            }
         }
+
+        reconfigure();
     }
 
     // Transform methods ------------------------------------------------------
 
     public void reconfigure()
     {
-        common.reconfigure();
+        if (null != settings) {
+            pipeSpec.setEnabled(settings.isEnabled());
+            pipeSpec.setReleaseParseExceptions(!settings.isNonHttpBlocked());
+        }
     }
 
     protected void initializeSettings() { }
 
     protected void postInit(String[] args)
     {
-        common = HttpTransformCommon.common(this);
-        common.registerListener(this);
-        doReconfigure(common.getHttpSettings());
-    }
+        Session s = getTransformContext().openSession();
+        try {
+            Transaction tx = s.beginTransaction();
 
-    protected void preDestroy()
-    {
-        common.deregisterListener(this);
-        common = null;
+            Query q = s.createQuery("from HttpSettings hbs");
+            settings = (HttpSettings)q.uniqueResult();
+
+            if (null == settings) {
+                settings = new HttpSettings();
+                s.save(settings);
+            }
+
+            reconfigure();
+
+            tx.commit();
+        } catch (HibernateException exn) {
+            logger.warn("Could not get HttpSettings", exn);
+        } finally {
+            try {
+                s.close();
+            } catch (HibernateException exn) {
+                logger.warn("could not close Hibernate session", exn);
+            }
+        }
     }
 
     // AbstractTransform methods ----------------------------------------------
@@ -77,16 +116,6 @@ public class HttpTransformImpl extends AbstractTransform
     protected PipeSpec[] getPipeSpecs()
     {
         return pipeSpecs;
-    }
-
-    // package protected methods ----------------------------------------------
-
-    void doReconfigure(HttpSettings settings)
-    {
-        if (null != common) {
-            pipeSpec.setEnabled(settings.isEnabled());
-            pipeSpec.setReleaseParseExceptions(!settings.isNonHttpBlocked());
-        }
     }
 
     // XXX soon to be deprecated ----------------------------------------------

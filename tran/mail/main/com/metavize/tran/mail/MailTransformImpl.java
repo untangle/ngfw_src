@@ -19,6 +19,10 @@ import com.metavize.tran.mail.impl.imap.ImapCasingFactory;
 import com.metavize.tran.mail.impl.smtp.SmtpCasingFactory;
 import com.metavize.tran.mail.papi.*;
 import org.apache.log4j.Logger;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+import org.hibernate.Query;
 
 public class MailTransformImpl extends AbstractTransform
     implements MailTransform, MailExport
@@ -38,7 +42,7 @@ public class MailTransformImpl extends AbstractTransform
     private final PipeSpec[] pipeSpecs = new PipeSpec[]
         { SMTP_PIPE_SPEC, POP_PIPE_SPEC, IMAP_PIPE_SPEC };
 
-    private MailTransformCommon common;
+    private MailTransformSettings settings;
 
     // constructors -----------------------------------------------------------
 
@@ -53,14 +57,31 @@ public class MailTransformImpl extends AbstractTransform
 
     public MailTransformSettings getMailTransformSettings()
     {
-        return null == common ? null : common.getMailTransformSettings();
+        return settings;
     }
 
     public void setMailTransformSettings(MailTransformSettings settings)
     {
-        if (null != common) {
-            common.setMailTransformSettings(this, settings);
+        Session s = getTransformContext().openSession();
+        try {
+            Transaction tx = s.beginTransaction();
+
+            s.saveOrUpdate(settings);
+            this.settings = settings;
+
+            tx.commit();
+        } catch (HibernateException exn) {
+            logger.warn("could not get MailTransformSettings", exn);
+        } finally {
+            try {
+                s.close();
+
+            } catch (HibernateException exn) {
+                logger.warn("could not close hibernate session", exn);
+            }
         }
+
+        reconfigure();
     }
 
     // MailExport methods -----------------------------------------------------
@@ -74,38 +95,6 @@ public class MailTransformImpl extends AbstractTransform
 
     public void reconfigure()
     {
-        if (null != common) {
-            common.reconfigure();
-        }
-    }
-
-    protected void initializeSettings() { }
-
-    protected void postInit(String[] args)
-    {
-        common = MailTransformCommon.common(this);
-        common.registerListener(this);
-        doReconfigure(common.getMailTransformSettings());
-    }
-
-    protected void preDestroy()
-    {
-        common.deregisterListener(this);
-        common = null;
-    }
-
-    // AbstractTransform methods ----------------------------------------------
-
-    @Override
-    protected PipeSpec[] getPipeSpecs()
-    {
-        return pipeSpecs;
-    }
-
-    // package protected methods ----------------------------------------------
-
-    void doReconfigure(MailTransformSettings settings)
-    {
         SMTP_PIPE_SPEC.setEnabled(settings.isSmtpEnabled());
         POP_PIPE_SPEC.setEnabled(settings.isPopEnabled());
         IMAP_PIPE_SPEC.setEnabled(settings.isImapEnabled());
@@ -115,7 +104,55 @@ public class MailTransformImpl extends AbstractTransform
          * (parser will catch certain parse exceptions)
          */
         POP_PIPE_SPEC.setReleaseParseExceptions(true);
+    }
 
+    protected void initializeSettings() { }
+
+    protected void postInit(String[] args)
+    {
+        Session s = getTransformContext().openSession();
+        try {
+            Transaction tx = s.beginTransaction();
+
+            Query q = s.createQuery("from MailTransformSettings ms");
+            settings = (MailTransformSettings)q.uniqueResult();
+
+            if (null == settings) {
+                settings = new MailTransformSettings();
+                //Set the defaults
+                settings.setSmtpEnabled(true);
+                settings.setPopEnabled(true);
+                settings.setImapEnabled(true);
+                settings.setSmtpInboundTimeout(1000*30);
+                settings.setSmtpOutboundTimeout(1000*30);
+                settings.setPopInboundTimeout(1000*30);
+                settings.setPopOutboundTimeout(1000*30);
+                settings.setImapInboundTimeout(1000*30);
+                settings.setImapOutboundTimeout(1000*30);
+
+                s.save(settings);
+            }
+
+            reconfigure();
+
+            tx.commit();
+        } catch (HibernateException exn) {
+            logger.warn("Could not get MailTransformSettings", exn);
+        } finally {
+            try {
+                s.close();
+            } catch (HibernateException exn) {
+                logger.warn("could not close Hibernate session", exn);
+            }
+        }
+    }
+
+    // AbstractTransform methods ----------------------------------------------
+
+    @Override
+    protected PipeSpec[] getPipeSpecs()
+    {
+        return pipeSpecs;
     }
 
     // XXX soon to be deprecated ----------------------------------------------
