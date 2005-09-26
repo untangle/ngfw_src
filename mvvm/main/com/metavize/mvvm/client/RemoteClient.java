@@ -147,9 +147,11 @@ public class RemoteClient
         } else if (args[0].equalsIgnoreCase("instances")) {
             instances();
         } else if (args[0].equalsIgnoreCase("sessions")) {
-            sessions(false);
-        } else if (args[0].equalsIgnoreCase("tops")) {
-            tops();
+            if (1 == args.length) {
+                sessions();
+            } else {
+                sessions(args[1]);
+            }
         } else if (args[0].equalsIgnoreCase("who")) {
             who();
         } else if (args[0].equalsIgnoreCase("dumpSessions")) {
@@ -470,89 +472,86 @@ public class RemoteClient
         }
     }
 
-    private static void sessions(boolean clearScreen)
+    private static void sessions(String tidStr)
     {
-        AbsoluteTimeDateFormat atdf = new AbsoluteTimeDateFormat();
+        Tid t = new Tid(Long.parseLong(tidStr));
+        sessions(t);
+    }
+
+    private static void sessions()
+    {
         for (Tid t : tm.transformInstances()) {
-            TransformContext tctx = tm.transformContext(t);
-            if (tctx == null) {
-                System.out.println("NULL Transform Context (tid:" + t + ")");
-                continue;
-            }
-            Transform tran = tctx.transform();
-            if (tran == null) {
-                System.out.println("NULL Transform (tid:" + t + ")");
-                continue;
-            }
-            TransformDesc tdesc = tctx.getTransformDesc();
-            if (tdesc == null) {
-                System.out.println("NULL Transform Desc (tid:" + t + ")");
-                continue;
-            }
-            SessionDesc[] sdescs = tran.liveSessionDescs();
-            if (sdescs == null) {
-                System.out.println("NULL Session Desc (tid:" + t + ")");
-                continue;
-            }
-            if (clearScreen) {
-                System.out.println("\033[2J\033[H"); /* hope you are a vt100 */
-            }
-            StringBuffer result = new StringBuffer(128);
-            result.append("Live sessions for ");
-            result.append(tdesc.getName());
-            result.append("\n");
-            result.append("ID\t\tDir\tC State\tC Addr : C Port\tS State\tS Addr : S Port\t");
-            result.append("Created\t\tLast Activity\tC->T B\tT->S B\tS->T B\tT->C B");
-            System.out.println(result.toString());
-            for (int j = 0; j < sdescs.length; j++) {
-                result.setLength(0);
-                IPSessionDesc sd = (IPSessionDesc) sdescs[j];
-                SessionStats stats = sd.stats();
-                if (sd instanceof UDPSessionDesc)
-                    result.append("U");
-                else if (sd instanceof TCPSessionDesc)
-                    result.append("T");
-                result.append(sd.id());
-                result.append("\t");
-                result.append(sd.isInbound() ? "In" : "Out");
-                result.append("\t");
-                result.append(SessionUtil.prettyState(sd.clientState()));
-                result.append("\t");
-                result.append(sd.clientAddr().getHostAddress());
-                result.append(":");
-                result.append(sd.clientPort());
-                result.append("\t");
-                result.append(SessionUtil.prettyState(sd.serverState()));
-                result.append("\t");
-                result.append(sd.serverAddr().getHostAddress());
-                result.append(":");
-                result.append(sd.serverPort());
-                result.append("\t");
-                atdf.format(stats.creationDate(), result, null);
-                result.append("\t");
-                atdf.format(stats.lastActivityDate(), result, null);
-                result.append("\t");
-                result.append(stats.c2tBytes());
-                result.append("\t");
-                result.append(stats.t2sBytes());
-                result.append("\t");
-                result.append(stats.s2tBytes());
-                result.append("\t");
-                result.append(stats.t2cBytes());
-                System.out.println(result.toString());
-            }
+            sessions(t);
         }
     }
 
-    private static void tops()
+    private static void sessions(Tid t)
     {
-        while (true) {
-            sessions(true);
-            try {
-                Thread.currentThread().sleep(2000);
-            } catch (InterruptedException exn) {
-                break;
-            }
+        AbsoluteTimeDateFormat atdf = new AbsoluteTimeDateFormat();
+        TransformContext tctx = tm.transformContext(t);
+        if (tctx == null) {
+            System.out.println("NULL Transform Context (tid:" + t + ")");
+            return;
+        }
+        Transform tran = tctx.transform();
+        if (tran == null) {
+            System.out.println("NULL Transform (tid:" + t + ")");
+            return;
+        }
+        TransformDesc tdesc = tctx.getTransformDesc();
+        if (tdesc == null) {
+            System.out.println("NULL Transform Desc (tid:" + t + ")");
+            return;
+        }
+        SessionDesc[] sdescs = tran.liveSessionDescs();
+        if (sdescs == null) {
+            System.out.println("NULL Session Desc (tid:" + t + ")");
+            return;
+        }
+
+        StringBuffer result = new StringBuffer(128);
+        result.append("Live sessions for ");
+        result.append(tdesc.getName());
+        result.append("\n");
+        result.append("ID\t\tDir\tC State\tC Addr : C Port\tS State\tS Addr : S Port\t");
+        result.append("Created\t\tLast Activity\tC->T B\tT->S B\tS->T B\tT->C B");
+        System.out.println(result.toString());
+        for (int j = 0; j < sdescs.length; j++) {
+            result.setLength(0);
+            IPSessionDesc sd = (IPSessionDesc) sdescs[j];
+            SessionStats stats = sd.stats();
+            if (sd instanceof UDPSessionDesc)
+                result.append("U");
+            else if (sd instanceof TCPSessionDesc)
+                result.append("T");
+            result.append(sd.id());
+            result.append("\t");
+            result.append(sd.isInbound() ? "In" : "Out");
+            result.append("\t");
+            result.append(SessionUtil.prettyState(sd.clientState()));
+            result.append("\t");
+            result.append(sd.clientAddr().getHostAddress());
+            result.append(":");
+            result.append(sd.clientPort());
+            result.append("\t");
+            result.append(SessionUtil.prettyState(sd.serverState()));
+            result.append("\t");
+            result.append(sd.serverAddr().getHostAddress());
+            result.append(":");
+            result.append(sd.serverPort());
+            result.append("\t");
+            atdf.format(stats.creationDate(), result, null);
+            result.append("\t");
+            atdf.format(stats.lastActivityDate(), result, null);
+            result.append("\t");
+            result.append(stats.c2tBytes());
+            result.append("\t");
+            result.append(stats.t2sBytes());
+            result.append("\t");
+            result.append(stats.s2tBytes());
+            result.append("\t");
+            result.append(stats.t2cBytes());
+            System.out.println(result.toString());
         }
     }
 
@@ -748,7 +747,6 @@ public class RemoteClient
         System.out.println("    mcli instances");
         System.out.println("  transform live sessions:");
         System.out.println("    mcli sessions [ TID ]");
-        System.out.println("    mcli tops");
         System.out.println("  admin manager:");
         System.out.println("    mcli who");
         System.out.println("  mvvm commands:");
