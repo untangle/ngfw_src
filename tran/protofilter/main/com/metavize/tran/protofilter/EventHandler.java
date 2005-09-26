@@ -19,6 +19,7 @@ import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.tapi.*;
 import com.metavize.mvvm.tapi.event.*;
 import com.metavize.mvvm.tran.Transform;
+import com.metavize.tran.util.AsciiCharBuffer;
 import org.apache.log4j.Logger;
 
 public class EventHandler extends AbstractEventHandler
@@ -30,19 +31,18 @@ public class EventHandler extends AbstractEventHandler
     static final int DETECT_COUNTER = Transform.GENERIC_1_COUNTER;
     static final int BLOCK_COUNTER  = Transform.GENERIC_2_COUNTER;
 
-
-    private ArrayList  _patternList = null;
-    private int        _bufferSize = 4096;
-    private int        _byteLimit  = 2048;
-    private int        _chunkLimit = 8;
-    private String     _unknownString  = "unknown";
-    private boolean    _stripZeros = false;
+    // These are all set at preStart() time by reconfigure()
+    private ArrayList  _patternList;
+    private int        _byteLimit;
+    private int        _chunkLimit;
+    private String     _unknownString;
+    private boolean    _stripZeros;
     private ProtoFilterImpl transform;
 
     private class SessionInfo {
 
-        public byte[] serverBuffer;
-        public byte[] clientBuffer;
+        public AsciiCharBuffer serverBuffer;
+        public AsciiCharBuffer clientBuffer;
 
         public int serverBufferSize;
         public int clientBufferSize;
@@ -68,8 +68,9 @@ public class EventHandler extends AbstractEventHandler
         TCPSession sess = event.session();
 
         SessionInfo sessInfo = new SessionInfo();
-        sessInfo.clientBuffer = new byte[this._bufferSize];
-        sessInfo.serverBuffer = new byte[this._bufferSize];
+        // We now don't allocate memory until we need it.
+        sessInfo.clientBuffer = null;
+        sessInfo.serverBuffer = null;
         sessInfo.pipeline = MvvmContextFactory.context().pipelineFoundry().getPipeline(sess.id());
         sess.attach(sessInfo);
     }
@@ -79,8 +80,9 @@ public class EventHandler extends AbstractEventHandler
         UDPSession sess = event.session();
 
         SessionInfo sessInfo = new SessionInfo();
-        sessInfo.clientBuffer = new byte[this._bufferSize];
-        sessInfo.serverBuffer = new byte[this._bufferSize];
+        // We now don't allocate memory until we need it.
+        sessInfo.clientBuffer = null;
+        sessInfo.serverBuffer = null;
         sessInfo.pipeline = MvvmContextFactory.context().pipelineFoundry().getPipeline(sess.id());
         sess.attach(sessInfo);
     }
@@ -115,19 +117,9 @@ public class EventHandler extends AbstractEventHandler
         sess.sendClientPacket(packet, e.header());
     }
 
-    public void handleTCPFinalized(TCPChunkEvent event)
-    {
-        /* XXX */
-    }
-
     public void patternList (ArrayList patternList)
     {
         _patternList = patternList;
-    }
-
-    public void bufferSize (int bufferSize)
-    {
-        _bufferSize = bufferSize;
     }
 
     public void chunkLimit (int chunkLimit)
@@ -151,49 +143,66 @@ public class EventHandler extends AbstractEventHandler
     }
 
 
-
     private void _handleChunk (IPDataEvent event, IPSession sess, boolean server)
     {
-        ByteBuffer buffer = event.data();
+        ByteBuffer chunk = event.data();
         SessionInfo sessInfo = (SessionInfo)sess.attachment();
 
-        if (sessInfo.identified == true)
-            return;
-
+        int chunkBytes = chunk.remaining();
         int bufferSize = server ? sessInfo.serverBufferSize: sessInfo.clientBufferSize;
-        if (bufferSize >= this._byteLimit)
-            return;
-
-        int bytesToWrite = (buffer.remaining() > (this._byteLimit - bufferSize) ?
-                            this._byteLimit - bufferSize : buffer.remaining());
-        byte[] buf;
+        int bytesToWrite = chunkBytes > (this._byteLimit - bufferSize) ? this._byteLimit - bufferSize :
+            chunkBytes;
+        AsciiCharBuffer buf;
         int chunkCount;
         int written = 0;
 
         /**
-         * grab the buffer
+         * grab the chunk
          */
         if (server) {
             buf = sessInfo.serverBuffer;
             chunkCount = sessInfo.serverChunkCount;
-        }
-        else {
+        } else {
             buf = sessInfo.clientBuffer;
             chunkCount = sessInfo.clientChunkCount;
         }
 
+        if (logger.isDebugEnabled()) {
+            logger.debug("Got #" + chunkCount + " chunk from " + (server ? "server" : "client") + " of size " +
+                         chunkBytes + ", writing " + bytesToWrite + " of that");
+        }
+
+        if (buf == null) {
+            // We thought about an optimization for the first chunk of
+            // actually wrapping the chunk buffer itself. This would be
+            // dangerous if anyone else in the pipeline held onto the
+            // buffer for any reason (such as another protofilter). Too
+            // scary for now.
+            if (logger.isDebugEnabled()) {
+                logger.debug("Creating new buffer of size " + bytesToWrite);
+            }
+            buf = AsciiCharBuffer.allocate(bytesToWrite, true);
+        } else {
+            buf = ensureRoomFor(buf, bytesToWrite);
+        }
+        ByteBuffer bbuf = buf.getWrappedBuffer();
+
         /**
          * copy the data into buf, possibly stripping zeros
          */
-        for (int i=0;i<bytesToWrite;i++){
-            byte b = buffer.get();
-            if ((!_stripZeros) || (b != 0x00)) {
-                buf[bufferSize+written] = b;
+        for (int i = 0; i < bytesToWrite; i++) {
+            byte b = chunk.get();
+            if ((b != 0x00) || (!_stripZeros)) {
+                bbuf.put(b);
                 written++;
             }
         }
         bufferSize += written;
         chunkCount++;
+        if (logger.isDebugEnabled()) {
+            logger.debug("Wrote " + written + " bytes to buffer, now have " + bufferSize + " with capacity " +
+                         buf.capacity());
+        }
 
         /**
          * update the buffer metadata
@@ -219,13 +228,15 @@ public class EventHandler extends AbstractEventHandler
             if (sess instanceof UDPSession)
                 l4prot = "UDP";
 
-            if (logger.isDebugEnabled()) {
-                logger.debug(" ----------------LOG: " + sessInfo.protocol + " traffic----------------");
-                logger.debug( l4prot + ": " + sess.clientAddr().getHostAddress() + ":" + sess.clientPort() + " -> " +
-                              sess.serverAddr().getHostAddress() + ":" + sess.serverPort() + " matched " + sessInfo.protocol);
-                logger.debug(" ----------------LOG: "+ sessInfo.protocol + " traffic----------------");
+            if (logger.isInfoEnabled()) {
+                if (!elem.isBlocked()) {
+                    // No sense logging twice.
+                    logger.info(" ----------------LOG: " + sessInfo.protocol + " traffic----------------");
+                    logger.info( l4prot + ": " + sess.clientAddr().getHostAddress() + ":" + sess.clientPort() + " -> " +
+                                 sess.serverAddr().getHostAddress() + ":" + sess.serverPort() + " matched " + sessInfo.protocol);
+                    logger.info(" ----------------LOG: "+ sessInfo.protocol + " traffic----------------");
+                }
             }
-
 
             transform.incrementCount( DETECT_COUNTER );
 
@@ -236,11 +247,11 @@ public class EventHandler extends AbstractEventHandler
             if (elem.isBlocked()) {
                 transform.incrementCount( BLOCK_COUNTER );
 
-                if (logger.isDebugEnabled()) {
-                    logger.debug(" ----------------BLOCKED: " + sessInfo.protocol + " traffic----------------");
-                    logger.debug( l4prot + ": " + sess.clientAddr().getHostAddress() + ":" + sess.clientPort() + " -> " +
+                if (logger.isInfoEnabled()) {
+                    logger.info(" ----------------BLOCKED: " + sessInfo.protocol + " traffic----------------");
+                    logger.info( l4prot + ": " + sess.clientAddr().getHostAddress() + ":" + sess.clientPort() + " -> " +
                                   sess.serverAddr().getHostAddress() + ":" + sess.serverPort() + " matched " + sessInfo.protocol);
-                    logger.debug(" ----------------BLOCKED: "+ sessInfo.protocol + " traffic----------------");
+                    logger.info(" ----------------BLOCKED: "+ sessInfo.protocol + " traffic----------------");
                 }
 
                 if (sess instanceof TCPSession) {
@@ -252,35 +263,63 @@ public class EventHandler extends AbstractEventHandler
                     ((UDPSession)sess).expireServer(); /* XXX correct? */
                 }
 
-                sess.release();
             }
 
             ProtoFilterLogEvent evt = new ProtoFilterLogEvent
                 (sess.id(), sessInfo.protocol, elem.isBlocked());
             eventLogger.info(evt);
 
+            // We release session immediately upon first match.
+            sess.attach(null);
+            sess.release();
         } else if (bufferSize >= this._byteLimit || (sessInfo.clientChunkCount+sessInfo.serverChunkCount) >= this._chunkLimit) {
-            sessInfo.protocol = this._unknownString;
-            sessInfo.identified = true;
+            // Since we don't log this it isn't interesting
+            // sessInfo.protocol = this._unknownString;
+            // sessInfo.identified = true;
+            if (logger.isDebugEnabled())
+                logger.debug("Giving up after " + bufferSize + " bytes and " +
+                             (sessInfo.clientChunkCount+sessInfo.serverChunkCount) + " chunks");
+            sess.attach(null);
             sess.release();
         }
     }
 
     private ProtoFilterPattern _findMatch (SessionInfo sessInfo, IPSession sess, boolean server)
     {
-        /**
-         * FIXME - creates a copy
-         */
-        String buffer = server ? new String(sessInfo.serverBuffer) : new String(sessInfo.clientBuffer);
+        AsciiCharBuffer buffer = server ? sessInfo.serverBuffer : sessInfo.clientBuffer;
+        AsciiCharBuffer toScan = buffer.asReadOnlyBuffer();
+        toScan.flip();
 
         for (int i = 0; i < _patternList.size(); i++) {
             ProtoFilterPattern elem = (ProtoFilterPattern)_patternList.get(i);
             Pattern pat = PatternFactory.createRegExPattern(elem.getDefinition());
-            if (pat.matcher(buffer).find())
+            if (pat.matcher(toScan).find())
                 return elem; /* XXX - can match multiple patterns */
         }
 
         return null;
     }
 
+    // Only works with non-direct ByteBuffers.  Ignores mark.
+    private AsciiCharBuffer ensureRoomFor(AsciiCharBuffer abuf, int bytesToAdd) {
+        if (abuf.remaining() < bytesToAdd) {
+            ByteBuffer buf = abuf.getWrappedBuffer();
+            int oldCapacity = buf.capacity();
+            // Make the buffer twice as big, or as big as needed, whichever is less.
+            int newCapacity = (oldCapacity + 1) * 2;
+            if (oldCapacity + bytesToAdd > newCapacity)
+                newCapacity = oldCapacity + bytesToAdd;
+            if (logger.isDebugEnabled()) {
+                logger.debug("Expanding buffer to size " + newCapacity);
+            }
+            byte[] oldBytes = buf.array();
+            byte[] newBytes = new byte[newCapacity];
+            System.arraycopy(oldBytes, 0, newBytes, 0, oldBytes.length);
+            AsciiCharBuffer newBuf = AsciiCharBuffer.wrap(newBytes);
+            newBuf.position(buf.position());
+            return  newBuf;
+        } else {
+            return abuf;
+        }
+    }
 }

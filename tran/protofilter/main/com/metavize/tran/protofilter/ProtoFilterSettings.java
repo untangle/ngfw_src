@@ -30,9 +30,8 @@ public class ProtoFilterSettings implements java.io.Serializable
 
     private Long id;
     private Tid tid;
-    private int bufferSize = 4096;
     private int byteLimit  = 2048;
-    private int chunkLimit = 8;
+    private int chunkLimit = 10;
     private String unknownString = "[unknown]";
     private boolean stripZeros = true;
     private List patterns = null;
@@ -69,15 +68,6 @@ public class ProtoFilterSettings implements java.io.Serializable
      */
     public Tid getTid() {return tid;}
     public void setTid(Tid tid) {this.tid = tid;}
-
-    /**
-     * Max buffer size for scanning
-     *
-     * @hibernate.property
-     * column="BUFFERSIZE"
-     */
-    public int getBufferSize() {return this.bufferSize;}
-    public void setBufferSize(int i) {this.bufferSize = i;}
 
     /**
      * Byte limit for scanning
