@@ -237,8 +237,9 @@ public class MvvmContextImpl extends MvvmContextBase
         // Retrieve the argon manager
         argonManager = ArgonManagerImpl.getInstance();
 
-        // Fake interfaces for now, get them from Argon for real. XXX
-        byte[] interfaces = new byte[] { 0, 1};
+        // Ensure Networking Manager has built intf list.
+        networkingManager.buildIntfEnum();
+        byte[] interfaces = networkingManager.getIntfEnum().getIntfNums();
         policyManager.reconfigure(interfaces);
 
         // start vectoring:

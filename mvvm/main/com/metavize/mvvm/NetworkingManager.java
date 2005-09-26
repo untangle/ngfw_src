@@ -23,6 +23,7 @@ public interface NetworkingManager  {
      */
     void set( NetworkingConfiguration configuration );
     
-    
-    public NetworkingConfiguration renewDhcpLease() throws Exception;
+    NetworkingConfiguration renewDhcpLease() throws Exception;
+
+    IntfEnum getIntfEnum();
 }
