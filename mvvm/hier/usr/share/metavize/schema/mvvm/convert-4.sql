@@ -65,7 +65,9 @@ INSERT INTO settings.system_policy_rule (
 
 -- com.metavize.mvvm.security.Tid
 ALTER TABLE settings.tid ADD COLUMN policy_id int8;
-UPDATE settings.tid SET policy_id = 0;
+UPDATE settings.tid SET policy_id = 0 FROM
+ (SELECT tps.tid FROM transform_persistent_state tps WHERE tps.name NOT LIKE '%-casing' AND tps.name NOT IN ('nat-transform', 'reporting-transform', 'airgap-transform')) AS foo
+ WHERE id = foo.tid;
 
 -- com.metavize.mvvm.tran.PipelineEndpoints
 ALTER TABLE events.pl_endp ADD COLUMN policy_id int8;
