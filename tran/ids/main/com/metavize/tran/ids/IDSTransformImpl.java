@@ -34,7 +34,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
         = "SELECT create_date, message, blocked, "
         + "c_client_addr, c_client_port, "
         + "s_server_addr, s_server_port, "
-        + "client_intf, server_intf "
+        + "policy_inbound AS incoming "
         + "FROM pl_endp endp "
         + "JOIN tr_ids_evt USING (session_id) "
         + "WHERE endp.policy_id = ? ";
@@ -103,10 +103,9 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
                 int clientPort = rs.getInt("c_client_port");
                 String serverAddr = rs.getString("s_server_addr");
                 int serverPort = rs.getInt("s_server_port");
-                byte clientIntf = rs.getByte("client_intf");
-                byte serverIntf = rs.getByte("server_intf");
+                boolean incoming = rs.getBoolean("incoming");
 
-                Direction d = Direction.getDirection(clientIntf, serverIntf);
+                Direction d = incoming ? Direction.INCOMING : Direction.OUTGOING;
                 IDSLog rl = new IDSLog(createDate, message, blocked, clientAddr, clientPort, serverAddr, serverPort, d);
                 l.add(rl);
             }

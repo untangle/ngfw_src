@@ -197,7 +197,8 @@ public class NatImpl extends AbstractTransform implements Nat
                 /* Set the direction */
                 byte clientIntf           = rs.getByte( CLIENT_INTF_IDX );
                 byte serverIntf           = rs.getByte( SERVER_INTF_IDX );
-                Direction direction       = Direction.getDirection( clientIntf, serverIntf );
+                // XXXX What does direction mean here? FIXME 
+                Direction direction       = Direction.INCOMING;
 
                 /* Determine the reason
                  * The rule index is presently ignored, because the rule may have already

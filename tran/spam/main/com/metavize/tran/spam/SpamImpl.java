@@ -47,7 +47,7 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
         + "       END AS action, "
         + "       subject, rcpt.addr AS receiver, send.addr AS sender, "
         + "       c_client_addr, c_client_port, s_server_addr, s_server_port, "
-        + "       client_intf, server_intf "
+        + "       policy_inbound AS incoming "
         + "FROM tr_spam_evt_smtp evt "
         + "JOIN tr_mail_message_info info ON evt.msg_id = info.id "
         + "JOIN pl_endp endp ON info.session_id = endp.session_id "
@@ -72,7 +72,7 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
         + "       END AS action, "
         + "       subject, rcpt.addr AS receiver, send.addr AS sender, "
         + "       c_client_addr, c_client_port, s_server_addr, s_server_port, "
-        + "       client_intf, server_intf "
+        + "       NOT policy_inbound AS incoming "
         + "FROM tr_spam_evt evt "
         + "JOIN tr_mail_message_info info ON evt.msg_id = info.id "
         + "JOIN pl_endp endp ON info.session_id = endp.session_id "
@@ -507,10 +507,9 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
                 int clientPort = rs.getInt("c_client_port");
                 String serverAddr = rs.getString("s_server_addr");
                 int serverPort = rs.getInt("s_server_port");
-                byte clientIntf = rs.getByte("client_intf");
-                byte serverIntf = rs.getByte("server_intf");
+                boolean incoming = rs.getBoolean("incoming");
 
-                Direction d = Direction.getDirection(clientIntf, serverIntf);
+                Direction d = incoming ? Direction.INCOMING : Direction.OUTGOING;
 
                 SpamLog rl = new SpamLog
                     (timeStamp, score, action, subject, receiver, sender,

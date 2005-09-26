@@ -97,9 +97,10 @@ public class VirusTransformImpl extends AbstractTransform
         +        "END AS action, "
         +        "virus_name, "
         +        "c_client_addr, c_client_port, s_server_addr, s_server_port, "
-        +        "client_intf, server_intf "
+        +        "CASE WHEN pls.p2c_bytes > pls.p2s_bytes THEN NOT policy_inbound ELSE policy_inbound END AS incoming "
         + "FROM tr_virus_evt evt "
         + "JOIN pl_endp endp USING (session_id) "
+        + "JOIN pl_stats pls USING (session_id) "
         + "WHERE vendor_name = ? "
         + "AND endp.policy_id = ? ";
 
@@ -112,6 +113,7 @@ public class VirusTransformImpl extends AbstractTransform
         + "AND NOT clean "
         + "ORDER BY create_date DESC LIMIT ?";
 
+    // (Direction is easy for now since we don't handle PUT)
     private static final String HTTP_QUERY_BASE
         = "SELECT create_date, "
         +        "'HTTP' AS type, "
@@ -123,7 +125,7 @@ public class VirusTransformImpl extends AbstractTransform
         +        "END AS action, "
         +        "virus_name, "
         +        "c_client_addr, c_client_port, s_server_addr, s_server_port, "
-        +        "client_intf, server_intf "
+        +        "NOT policy_inbound as incoming "
         + "FROM tr_virus_evt_http evt "
         + "JOIN tr_http_evt_req req ON evt.request_line = req.request_id "
         + "JOIN pl_endp endp ON req.session_id = endp.session_id "
@@ -150,7 +152,7 @@ public class VirusTransformImpl extends AbstractTransform
         +        "END AS action, "
         +        "virus_name, "
         +        "c_client_addr, c_client_port, s_server_addr, s_server_port, "
-        +        "client_intf, server_intf "
+        +        "NOT policy_inbound as incoming "
         + "FROM tr_virus_evt_mail evt "
         + "JOIN tr_mail_message_info info ON evt.msg_id = info.id "
         + "JOIN pl_endp endp ON info.session_id = endp.session_id "
@@ -177,7 +179,7 @@ public class VirusTransformImpl extends AbstractTransform
         +        "END AS action, "
         +        "virus_name, "
         +        "c_client_addr, c_client_port, s_server_addr, s_server_port, "
-        +        "client_intf, server_intf "
+        +        "policy_inbound as incoming "
         + "FROM tr_virus_evt_smtp evt "
         + "JOIN tr_mail_message_info info ON evt.msg_id = info.id "
         + "JOIN pl_endp endp ON info.session_id = endp.session_id "
@@ -675,10 +677,9 @@ public class VirusTransformImpl extends AbstractTransform
                 int clientPort = rs.getInt("c_client_port");
                 String serverAddr = rs.getString("s_server_addr");
                 int serverPort = rs.getInt("s_server_port");
-                byte clientIntf = rs.getByte("client_intf");
-                byte serverIntf = rs.getByte("server_intf");
+                boolean incoming = rs.getBoolean("incoming");
 
-                Direction d = Direction.getDirection(clientIntf, serverIntf);
+                Direction d = incoming ? Direction.INCOMING : Direction.OUTGOING;
 
                 VirusLog rl = new VirusLog
                     (createDate, type, location, infected, action,

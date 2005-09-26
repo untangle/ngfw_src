@@ -58,7 +58,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         +        "ident, "
         +        "true AS blocked, "
         +        "c_client_addr, c_client_port, s_server_addr, s_server_port, "
-        +        "client_intf, server_intf "
+        +        "NOT policy_inbound as incoming "
         + "FROM tr_http_evt_req req "
         + "JOIN pl_endp endp USING (session_id) "
         + "JOIN tr_http_req_line rl USING (request_id) "
@@ -75,7 +75,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         +        "ident, "
         +        "true AS blocked, "
         +        "c_client_addr, c_client_port, s_server_addr, s_server_port, "
-        +        "client_intf, server_intf "
+        +        "NOT policy_inbound as incoming "
         + "FROM tr_http_evt_req req "
         + "JOIN pl_endp endp USING (session_id) "
         + "JOIN tr_http_req_line rl USING (request_id) "
@@ -92,7 +92,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         +        "host AS ident, "
         +        "true AS blocked, "
         +        "c_client_addr, c_client_port, s_server_addr, s_server_port, "
-        +        "client_intf, server_intf "
+        +        "NOT policy_inbound as incoming "
         + "FROM tr_http_evt_req req "
         + "JOIN pl_endp endp USING (session_id) "
         + "JOIN tr_http_req_line rl USING (request_id) "
@@ -109,7 +109,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         +        "ident, "
         +        "blocked, "
         +        "c_client_addr, c_client_port, s_server_addr, s_server_port, "
-        +        "client_intf, server_intf "
+        +        "NOT policy_inbound as incoming "
         + "FROM tr_spyware_evt_access acc "
         + "JOIN pl_endp endp USING (session_id) "
         + "WHERE endp.policy_id = ? ";
@@ -536,10 +536,9 @@ public class SpywareImpl extends AbstractTransform implements Spyware
                 int clientPort = rs.getInt("c_client_port");
                 String serverAddr = rs.getString("s_server_addr");
                 int serverPort = rs.getInt("s_server_port");
-                byte clientIntf = rs.getByte("client_intf");
-                byte serverIntf = rs.getByte("server_intf");
+                boolean incoming = rs.getBoolean("incoming");
 
-                Direction d = Direction.getDirection(clientIntf, serverIntf);
+                Direction d = incoming ? Direction.INCOMING : Direction.OUTGOING;
 
                 SpywareLog rl = new SpywareLog
                     (createDate, type, location, ident, blocked, clientAddr,
