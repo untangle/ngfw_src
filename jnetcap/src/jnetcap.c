@@ -551,7 +551,7 @@ JNIEXPORT void JNICALL JF_Netcap( updateAddress )
     ( JNIEnv* env, jclass _class )
 {
     if ( netcap_update_address() < 0 ) {
-        jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "netcap_update_address" );
+        jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "netcap_update_address\n" );
     }
 }
 
@@ -567,12 +567,12 @@ JNIEXPORT jintArray JNICALL JF_Netcap( cTcpRedirectPorts )
     jintArray j_ports;
 
     if ( netcap_tcp_redirect_ports( &ports[0], &ports[1] ) < 0 ) {
-        return jmvutil_error_null( JMVUTIL_ERROR_STT, ERR_CRITICAL, "netcap_tcp_redirect_ports" );
+        return jmvutil_error_null( JMVUTIL_ERROR_STT, ERR_CRITICAL, "netcap_tcp_redirect_ports\n" );
     }
 
     /** Make an array to return the two values */
     if (( j_ports = (*env)->NewIntArray( env, 2 )) == NULL ) {
-        return jmvutil_error_null( JMVUTIL_ERROR_STT, ERR_CRITICAL, "(*env)->NewByteArray" );
+        return jmvutil_error_null( JMVUTIL_ERROR_STT, ERR_CRITICAL, "(*env)->NewByteArray\n" );
     }
     
     (*env)->SetIntArrayRegion( env, j_ports, 0, 2, (jint*)ports );
@@ -591,7 +591,7 @@ JNIEXPORT jint JNICALL JF_Netcap( cUdpDivertPort )
     int port = -1;
 
     if (( port = netcap_udp_divert_port()) < 0 ) {
-        return jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "netcap_udp_divert_port" );
+        return jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "netcap_udp_divert_port\n" );
     }
 
     return port;
@@ -632,7 +632,7 @@ JNIEXPORT void JNICALL Java_com_metavize_jnetcap_Netcap_cConfigureInterfaceArray
     netcap_intf_string_t intf_name_array[NETCAP_MAX_INTERFACES];
     int c;
 
-    if ( NULL == j_interface_array ) return jmvutil_error_void( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "NULL" );
+    if ( NULL == j_interface_array ) return jmvutil_error_void( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "NULL\n" );
     
     if (( num_intf = (*env)->GetArrayLength( env, j_interface_array )) <= 0 ) {
         return jmvutil_error_void( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "Invalid array %d\n", num_intf );
