@@ -69,8 +69,12 @@ public class MackageDesc implements Serializable
         rackPosition = null == v ? 0 : Integer.parseInt(v);
 
         // service or not
-        v = m.get("is-service");
-        isService = null == v ? false : Boolean.parseBoolean(v);
+        if (isCasing) {
+            isService = true;
+        } else {
+            v = m.get("is-service");
+            isService = (v != null && Boolean.parseBoolean(v));
+        }
 
         // size
         v = m.get("size");
