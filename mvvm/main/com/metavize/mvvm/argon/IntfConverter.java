@@ -85,6 +85,23 @@ public final class IntfConverter
         return 3;
     }
 
+    public boolean hasDmz()
+    {
+        return ( this.dmzString != null && this.dmzString.length() > 0 );
+    }
+
+    public byte[] getArgonIntfArray()
+    {
+        /* XXX User interfaces, how to do VPN, etc. */
+        if ( hasDmz()) {
+            return new byte[]{ 0, 1, 2 };
+        } else {
+            return new byte[]{ 0, 1 };
+        }
+    }
+
+    
+
     public String argonIntfToString( byte argonInterface ) throws ArgonException
     {
         switch ( argonInterface ) {
@@ -188,8 +205,9 @@ public final class IntfConverter
             else dmz = dmz.trim();
 
             INSTANCE = new IntfConverter( inside, outside, dmz, user );
-            INSTANCE.logger.info( "IntfConverted init: inside = " + inside + ", outside =  " + outside );
-            INSTANCE.logger.info( "IntfConverted init: dmz " + dmz );
+            INSTANCE.logger.info( "IntfConverted init: inside = '" + inside + "', outside = '" + 
+                                  outside + "'" );
+            INSTANCE.logger.info( "IntfConverted init: dmz '" + dmz + "'" );
                                     
             /* Create a new array large enough to hold all of the elements */
             List tmp = new LinkedList<String>();

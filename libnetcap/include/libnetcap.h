@@ -587,6 +587,17 @@ typedef struct
     } data;
 } netcap_shield_event_data_t;
 
+typedef struct {
+    double divider;
+    struct in_addr address;
+    struct in_addr netmask;
+} netcap_shield_bless_t;
+
+typedef struct {
+    int count;
+    netcap_shield_bless_t* d;
+} netcap_shield_bless_array_t;
+
 /** Hook that can be called whenever a shield rejection/opaque/block event occurs, 
  * or gather statistics about the shield 
  */
@@ -602,6 +613,11 @@ int   netcap_shield_register_hook     ( netcap_shield_event_hook_t hook );
  */
 void  netcap_shield_unregister_hook   ( void );
 
+/**
+ * Reconfigure all of the node settings 
+ */
+int netcap_shield_bless_users( netcap_shield_bless_array_t* nodes );
+
 
 /**
  * netcap_shield_rep_add_chunk: Add a chunk to the reputation of ip.
@@ -609,12 +625,12 @@ void  netcap_shield_unregister_hook   ( void );
  *  protocol: Either IPPROTO_UDP, IPPROTO_ICMP or IPPROTO_TCP.
  *  size: Size of the chunk in bytes.
  */
-int   netcap_shield_rep_add_chunk      ( in_addr_t ip, int protocol, u_short size );
+int   netcap_shield_rep_add_chunk      ( struct in_addr* ip, int protocol, u_short size );
 
 /**
  * netcap_shield_rep_end_session: Inform the shield that IP has ended a session.
  */
-int   netcap_shield_rep_end_session    ( in_addr_t ip );
+int   netcap_shield_rep_end_session    ( struct in_addr* ip );
 
 /**
  * When calling netcap_init, pass in this value to initialize the shield, otherwise pass in 0

@@ -104,34 +104,3 @@ void                 netcap_trie_item_raze     ( netcap_trie_t* trie, netcap_tri
 
     netcap_trie_item_free( trie, item );
 }
-
-/* This copies the item itself, not a netcap_trie_item */
-int                  netcap_trie_copy_data     ( netcap_trie_t* trie, netcap_trie_item_t* dest, void* src, 
-                                                 in_addr_t _ip, int depth )
-{
-    void *temp;
-
-    if ( dest == NULL ) return errlogargs();
-    
-    if ( src == NULL ) { dest->data = NULL; return 0; }
-    
-    if ( trie->flags & NC_TRIE_COPY ) {
-        if (( temp = malloc ( trie->item_size )) == NULL ) {
-            return errlogmalloc();
-        }
-        
-        memcpy( temp, src, trie->item_size);
-        src = temp;
-    }
-
-    dest->data = src;
-
-    /* Execute the inititalization function */
-    if ( ( trie->init != NULL ) && ( trie->init( dest, _ip ) < 0 )) {
-        if ( trie->flags & NC_TRIE_COPY ) free ( temp );
-        dest->data = NULL;
-        return errlog(ERR_WARNING,"trie->init");
-    }
-    
-    return 0;
-}

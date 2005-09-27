@@ -12,10 +12,8 @@
 #define __NETCAP_INIT_
 
 #include "netcap_session.h"
-#include "netcap_shield.h"
 
 typedef struct {
-    shield_tls_t  shield;
     session_tls_t session;
 } netcap_tls_t;
 

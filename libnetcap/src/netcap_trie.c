@@ -14,11 +14,10 @@
 #include <mvutil/debug.h>
 #include <mvutil/errlog.h>
 #include <mvutil/list.h>
+#include <mvutil/unet.h>
 
 #include "netcap_trie.h"
 #include "netcap_trie_support.h"
-
-#define _IF_CREATE_NEW -1
 
 #define _trie_verify_depth( depth )  if ((depth)<0||(depth)>NC_TRIE_DEPTH_TOTAL ) \
         return errlog(ERR_CRITICAL,"TRIE: Invalid level: %d", (depth))
@@ -26,366 +25,375 @@
 #define _trie_verify_depth_null( depth )  if ((depth)<0||(depth)>NC_TRIE_DEPTH_TOTAL ) \
         return errlog_null(ERR_CRITICAL,"TRIE: Invalid level: %d", (depth))
 
-static netcap_trie_item_t*   _get             ( netcap_trie_t* trie, in_addr_t _ip, int depth );
+#define _validate_depth( expected_depth, actual_depth ) \
+if (( expected_depth ) != ( actual_depth )) \
+    errlog( ERR_WARNING, "Depth mismatch [%d,%d]\n", ( expected_depth ), ( actual_depth ))
 
-static netcap_trie_item_t*   _set             ( netcap_trie_t* trie, in_addr_t _ip, void *item, 
-                                                netcap_trie_func_t* func, void* arg, int depth );
+static netcap_trie_element_t _create_element( netcap_trie_t* trie, netcap_trie_level_t* parent, 
+                                              struct in_addr* ip, u_char pos );
 
-static int                   _delete          ( netcap_trie_t* trie, in_addr_t _ip, int depth );
+static int _set_line( netcap_trie_line_t* line, netcap_trie_base_t* base );
 
-static netcap_trie_element_t _create_element ( netcap_trie_t* trie,  netcap_trie_level_t* parent, void* data,
-                                               netcap_trie_func_t* func, void* arg, in_addr_t _ip, int depth,
-                                               int depth_target );
-
-static int                   _update_element ( netcap_trie_t* trie, netcap_trie_element_t element, 
-                                               void* data, netcap_trie_func_t* func, void* arg,
-                                               in_addr_t _ip, int depth );
-                                               
-
-void* netcap_trie_get             ( netcap_trie_t* trie, in_addr_t ip )
+/* Get the closest item to ip, this never creates a new item  */
+int new_netcap_trie_get            ( netcap_trie_t* trie, struct in_addr* _ip, netcap_trie_line_t* line )
 {
-    return _get( trie, ip, NC_TRIE_DEPTH_TOTAL );
-}
-
-void* netcap_trie_get_close       ( netcap_trie_t* trie, in_addr_t ip )
-{
-    return _get( trie, ip, _IF_CREATE_NEW );
-}
-
-
-void* netcap_trie_get_depth      ( netcap_trie_t* trie, in_addr_t ip, int depth )
-{
-    if ( trie == NULL ) return errlogargs_null();
+    if ( trie == NULL || _ip == NULL || line == NULL ) return errlogargs();
     
-    _trie_verify_depth_null( depth );
-    
-    return _get( trie, ip, depth );
-}
-
-netcap_trie_item_t* netcap_trie_apply       ( netcap_trie_t* trie, in_addr_t ip, netcap_trie_func_t* func, 
-                                              void* arg ) 
-{
-    return netcap_trie_apply_depth ( trie, ip, func, arg, NC_TRIE_DEPTH_TOTAL );
-}
-
-netcap_trie_item_t* netcap_trie_apply_close ( netcap_trie_t* trie, in_addr_t ip, netcap_trie_func_t* func,
-                                              void* arg )
-{
-    if ( func == NULL ) return errlogargs_null();
-    return _set ( trie, ip, NULL, func, arg, _IF_CREATE_NEW );
-}
-                                             
-
-netcap_trie_item_t* netcap_trie_apply_depth ( netcap_trie_t* trie, in_addr_t ip, netcap_trie_func_t* func, 
-                                              void* arg, int depth ) 
-{
-    if ( func == NULL ) return errlogargs_null();
-
-    _trie_verify_depth_null( depth );
-
-    return _set ( trie, ip, NULL, func, arg, depth );
-}
-
-netcap_trie_item_t* netcap_trie_set         ( netcap_trie_t* trie, in_addr_t ip, void *item )
-{
-    return netcap_trie_set_depth( trie, ip, item, NC_TRIE_DEPTH_TOTAL );
-}
-
-netcap_trie_item_t* netcap_trie_set_depth   ( netcap_trie_t* trie, in_addr_t ip, void *data, int depth )
-{
-    if ( trie == NULL ) return errlogargs_null();
-
-    _trie_verify_depth_null( depth );
-    
-    if ( !(trie->flags & NC_TRIE_INHERIT ) && data == NULL ) return errlogargs_null();
-    
-    return _set ( trie, ip, data, NULL, NULL, depth );
-}
-
-int   netcap_trie_delete       ( netcap_trie_t* trie, in_addr_t _ip )
-{
-    return netcap_trie_delete_depth ( trie, _ip, NC_TRIE_DEPTH_TOTAL );
-}
-
-int   netcap_trie_delete_depth ( netcap_trie_t* trie, in_addr_t _ip, int depth )
-{
-    if ( trie == NULL ) return errlogargs();
-
-    if ( trie->flags & NC_TRIE_LRU ) return errlog(ERR_CRITICAL,"TRIE: Cannot delete with LRU flag set\n");
-    
-    _trie_verify_depth ( depth );
-    
-    return _delete ( trie, _ip, depth );
-}
-
-static netcap_trie_item_t* _get   (netcap_trie_t* trie, in_addr_t _ip,  int depth )
-{
-    u_char* ip;
-    netcap_trie_element_t child;
-    netcap_trie_level_t* parent;
+    netcap_trie_level_t* parent = &trie->root;
+    netcap_trie_level_t* child;
     int c;
-    int if_lock = trie->flags & NC_TRIE_LRU;
-    int if_get_close = 0;
-
-    if ( depth == _IF_CREATE_NEW ) { depth = NC_TRIE_DEPTH_TOTAL;  if_get_close = 1; }
-
-    child.level = parent = &trie->root;
-
-    ip = (u_char*)&_ip;
-
-    debug(NC_TRIE_DEBUG_HIGH,"_trie_get(%d): 0x%08x", depth, _ip); 
+    u_char* ip = (u_char*)&_ip->s_addr;
     
-    /* Grab the trie */
-    for ( c = 0 ; c < depth ; c++ ) {
+    bzero( line->d, sizeof( line->d ));
+    /* There is at least the root */
+    line->d[0].level = &trie->root;
+    line->count = 1;
+    line->is_bottom_up = 0;
+    
+    debug( NC_TRIE_DEBUG_HIGH, "new_netcap_trie_get: %#010x", _ip->s_addr ); 
+
+    for ( c = 0 ; c < NC_TRIE_DEPTH_TOTAL ; c++ ) {
         if ( parent->base.depth != c ) {
-            errlog(ERR_WARNING, "TRIE: Incorrect depth (%d,%d)\n", c, parent->base.depth );
+            errlog( ERR_WARNING, "TRIE: Incorrect depth (%d,%d)\n", c, parent->base.depth );
         }
 
-        debug_nodate (NC_TRIE_DEBUG_HIGH," -(%d-%d)- ", ip[c], parent->count);
-
-        if ( if_lock && pthread_mutex_lock ( &parent->base.mutex ) < 0 ) {
-            return perrlog_null("pthread_mutex_lock");
-        }
-
-        child = parent->r[ip[c]];
-
-        if ( if_lock && pthread_mutex_unlock ( &parent->base.mutex ) < 0 ) {
-            return perrlog_null("pthread_mutex_unlock");
+        debug_nodate ( NC_TRIE_DEBUG_HIGH," -(%d %d)- ", ip[c], parent->count );
+        
+        child = parent->r[ip[c]].level;
+        
+        if ( child == NULL ) {
+            debug_nodate( NC_TRIE_DEBUG_HIGH,"\n");
+            return 0;
         }
         
-        /* Item does not exist */
-        if ( child.base == NULL ) {
-            debug_nodate(NC_TRIE_DEBUG_HIGH,"\n");
-            if ( if_get_close )  return (netcap_trie_item_t*)parent;
-            return NULL;
-        }
-
-        if ( child.base->type != NC_TRIE_BASE_LEVEL ) break;
-
-        parent = child.level;
+        /* Add the next item down to the lineage */
+        line->d[line->count++].level = child;
+        
+        parent = child;
     }
 
-    debug_nodate(NC_TRIE_DEBUG_HIGH,"\n");
+    debug_nodate( NC_TRIE_DEBUG_HIGH,"\n");
 
-    return child.item;
+    return 0;
 }
 
-static netcap_trie_item_t* _set ( netcap_trie_t* trie, in_addr_t _ip, void *data, 
-                                  netcap_trie_func_t* func, void* arg, int depth )
+/* Insert an item into at ip, and the fill the line with item, if the
+ * item is already in the trie, this just returns its line. */
+int new_netcap_trie_insert_and_get ( netcap_trie_t* trie, struct in_addr* _ip, pthread_mutex_t* mutex,
+                                     netcap_trie_line_t* line )
 {
+    if ( trie == NULL || _ip == NULL || line == NULL ) return errlogargs();
+    
+    netcap_trie_item_t* item = NULL;
+
+    int _critical_section( void ) {
+        u_char* ip;
+        ip = (u_char*)&_ip->s_addr;
+        netcap_trie_level_t* parent = &trie->root;
+        netcap_trie_element_t child;
+
+        int depth;
+        u_char pos;
+        
+        /* Try to lookup the item, once more, it could have been inserted while waiting 
+         * for the mutex lock */
+        if (( item = ht_lookup( &trie->ip_element_table, (void*)_ip->s_addr )) != NULL ) {
+            if ( _set_line( line, (netcap_trie_base_t*)item ) < 0 ) {
+                return errlog( ERR_CRITICAL, "_set_line\n" );
+            }
+            return 0;
+        }
+
+        bzero( line->d, sizeof( line->d ));
+
+        /* There is at least the root */
+        line->d[0].level = &trie->root;
+        line->count = 1;
+        line->is_bottom_up = 0;
+        
+        debug( NC_TRIE_DEBUG_HIGH, "new_netcap_trie_insert_and_get: %#010x", _ip->s_addr );
+
+        for ( depth = 0 ; depth < NC_TRIE_DEPTH_TOTAL ; depth++ ) {            
+            _validate_depth( depth, parent->base.depth );
+
+            pos = ip[depth];
+            
+            debug_nodate ( NC_TRIE_DEBUG_HIGH," -(%d %d)- ", pos, parent->count );
+            
+            child = parent->r[pos];
+            
+            if ( child.base == NULL ) {
+                child = _create_element( trie, parent, _ip, pos );
+                if ( child.base == NULL ) return errlog( ERR_CRITICAL, "_create_element\n" );
+            }
+            
+            line->d[line->count++].level = child.level;
+            parent = child.level;
+        }
+
+        debug_nodate ( NC_TRIE_DEBUG_HIGH, "\n" );
+
+        /* Insert the node into the hash table */
+        if ( ht_add( &trie->ip_element_table, (void*)_ip->s_addr, child.base ) < 0 ) {
+            return errlog( ERR_CRITICAL, "ht_add\n" );
+        }
+        
+        /* All done */
+        return 0;
+    }
+        
+
+    /* Try to lookup the item, if it is in there, then return it */
+    if (( item = ht_lookup( &trie->ip_element_table, (void*)_ip->s_addr )) != NULL ) {
+        if ( _set_line( line, (netcap_trie_base_t*)item ) < 0 ) return errlog( ERR_CRITICAL, "_set_line\n" );
+        return 0;
+    }
+
+    int ret = 0;
+
+    /* Now lock the mutex, and check again */
+    if ( mutex != NULL && pthread_mutex_lock( mutex ) < 0 ) return perrlog( "pthread_mutex_lock" );
+    
+    ret = _critical_section();
+    
+    if ( mutex != NULL && pthread_mutex_unlock( mutex ) < 0 ) return perrlog( "pthread_mutex_unlock" );
+    
+    return ret;    
+}
+
+/* Remove an item from the trie and return the memory it used in line.
+ *   Depending on the application, this memory shouldn't be freed immediately
+ *   as it may be used by other threads.
+ */
+int new_netcap_trie_remove         ( netcap_trie_t* trie, struct in_addr* _ip, pthread_mutex_t* mutex,
+                                     netcap_trie_line_t* line )
+{
+    if ( trie == NULL || _ip == NULL || line == NULL ) return errlogargs();
+    
+    int ret = 0;
+
+    int _critical_section( void ) {
+        netcap_trie_level_t* parent = &trie->root;
+        netcap_trie_element_t child;
+        
+        u_char depth;
+
+        /* Set this before hand, this way the user knows if it didn't remove anything */
+        line->is_bottom_up = 1;
+        line->count = 0;
+        bzero( line->d, sizeof( line->d ));
+        
+        /* Try to lookup the item, if it exists, then it needs to be removed,
+         * if it doesn't then who cares */
+        if (( child.base = ht_lookup( &trie->ip_element_table, (void*)_ip->s_addr )) == NULL ) {
+            debug_nodate( NC_TRIE_DEBUG_LOW, "\nTRIE: ignoring remove for ip %#010x\n", _ip->s_addr );
+            return 0;
+        }
+
+        line->d[line->count++] = child;
+
+        /* Remove the item right away, ??? return the error */
+        if ( ht_remove( &trie->ip_element_table, (void*)_ip->s_addr ) < 0 ) {
+            errlog( ERR_CRITICAL, "ht_remove\n" );
+        }
+        
+        for ( depth = NC_TRIE_DEPTH_TOTAL ; depth-- > 0 ; ) {
+            u_char pos = child.base->pos;
+
+            if (( parent = child.base->parent ) == NULL ) {
+                errlog( ERR_CRITICAL, "Disconnected node in trie for ip %#010x\n", _ip->s_addr );
+                return 0;
+            }
+            
+            _validate_depth( depth, parent->base.depth );
+
+            /* Check if the correct item is being pointed to here */
+            if ( parent->r[pos].base != child.base ) {
+                errlog( ERR_CRITICAL, "ignoring, node mismatch depth %d parent: %#010x child: %#010x\n",
+                        depth, parent->r[pos], child );
+                child.base->parent = NULL;
+                return 0;
+            }
+
+            if ( parent->count > 1 || depth == 0 ) {
+                /* Otherwise remove the child and decrement the number of nodes. */
+                parent->r[pos].base = NULL;
+                parent->count--;
+                child.base->parent = NULL;
+                return 0;
+            }
+
+            child.level =parent;
+            line->d[line->count++] = child;
+        }
+
+        return 0;
+    }
+
+    /* Now lock the mutex, and check again */
+    if ( mutex != NULL && pthread_mutex_lock( mutex ) < 0 ) return perrlog( "pthread_mutex_lock" );
+
+    debug( NC_TRIE_DEBUG_HIGH, "new_netcap_trie_remove: %#010x", _ip->s_addr );
+    
+    ret = _critical_section();
+
+    debug_nodate( NC_TRIE_DEBUG_HIGH, "\n" );
+    
+    if ( mutex != NULL && pthread_mutex_unlock( mutex ) < 0 ) return perrlog( "pthread_mutex_unlock" );
+    
+    return ret;    
+}
+
+
+int new_netcap_trie_line_free      ( netcap_trie_line_t* line )
+{
+    if ( line == NULL ) return errlogargs();
+
+    free( line );
+    return 0;
+}
+
+int new_netcap_trie_line_destroy   ( netcap_trie_t* trie, netcap_trie_line_t* line )
+{
+    /* Raze a line, this deletes all of the elements in it,  */
+    if ( trie == NULL || line == NULL ) return errlogargs();
+    
+    int count = line->count;
+    
+    if ( count > NC_TRIE_DEPTH_TOTAL ) {
+        errlog( ERR_WARNING, "line has too many nodes %d\n", line->count );
+        count = NC_TRIE_DEPTH_TOTAL;
+    }
+
+    debug( NC_TRIE_DEBUG_HIGH, "Destroying %d items\n", count );
+    
+    /* Destroy the item */
     int c;
-    int if_create_new = 1;
-    u_char *ip;
-    u_char pos;
-    netcap_trie_element_t parent;
-    netcap_trie_element_t element;
-    pthread_mutex_t*      mutex;       
-    int if_lock = trie->flags & NC_TRIE_LRU;
     
-    ip = (u_char*)&_ip;
-
-    debug( NC_TRIE_DEBUG_HIGH, "_trie_set(%d): 0x%08x\n", depth, _ip );
-    
-    if ( depth == _IF_CREATE_NEW ) { depth = NC_TRIE_DEPTH_TOTAL;  if_create_new = 0; }
-
-    parent.level = &trie->root;
-
-    if ( depth == 0 ) {
-        if ( _update_element ( trie, parent, data, func, arg, _ip, depth ) < 0 ) {
-            return errlog_null(ERR_CRITICAL,"_update_element\n");
+    for ( c = 0 ; c < count ; c++ ) {
+        if ( line->d[c].level == &trie->root ) {
+            errlog( ERR_CRITICAL, "REMOVE contains root node\n" );
+            continue;
         }
-        return parent.item;
+
+        debug( NC_TRIE_DEBUG_HIGH, "razing:  %#010x\n", line->d[c].base );
+        netcap_trie_element_raze( trie, line->d[c] );
+        line->d[c].item = NULL;
     }
-
-    for ( c = 0 ; c < depth ; c++ )  {
-        pos = ip[c];
-
-        if ( ( parent.base->data != NULL ) && ( func != NULL )) {
-            if ( func ( parent.item, arg, _ip ) < 0 ) return errlog_null(ERR_CRITICAL, "TRIE: Apply func\n");
-        }
-
-        if ( parent.base->type == NC_TRIE_BASE_LEVEL ) {
-            mutex = &parent.base->mutex;
-
-            /* XXX Change to a do while ( 0 ) 
-             * XXX way to many levels of nesting */
-            if ( if_lock && pthread_mutex_lock ( mutex ) < 0 ) {
-                return perrlog_null("pthread_mutex_lock");
-            }
-
-            /* Check if the item exists */
-            if ( parent.level->r[pos].level == NULL ) {
-                if ( if_create_new == 0 ) {
-                    if ( if_lock ) pthread_mutex_unlock ( mutex );
-                    break;
-                }
-                
-                element = _create_element ( trie, parent.level, data, func, arg, _ip, c+1, depth );
-                
-                if ( element.base == NULL ) {
-                    if ( if_lock ) pthread_mutex_unlock ( mutex );
-                    return errlog_null(ERR_CRITICAL,"_create_element\n");
-                }
-
-                /* Before adding the item, check to see if this level is on the LRU */
-                if ( ( trie->flags & NC_TRIE_LRU ) && ( parent.base->lru_node != NULL ) ) {
-                    /* If so, remove it */
-                    if ( netcap_trie_lru_del ( trie, parent ) < 0 ) {
-                        if ( if_lock ) pthread_mutex_unlock ( mutex );
-                        return errlog_null ( ERR_CRITICAL, "netcap_trie_lru_del\n" );
-                    }
-                }
-                
-                if ( netcap_trie_level_insert( trie, parent.level, element, pos ) < 0 ) {
-                    if ( if_lock ) pthread_mutex_unlock ( mutex );
-                    return errlog_null(ERR_CRITICAL,"netcap_trie_insert\n");
-                }
-            } else if (( c + 1 ) == depth ) {
-                if ( _update_element ( trie, parent.level->r[pos], data, func, arg, _ip, depth ) < 0 ) {
-                    if ( if_lock ) pthread_mutex_unlock ( mutex );
-                    return errlog_null(ERR_CRITICAL,"_update_element\n");
-                }
-            }
-
-            /* Do this before unlocking the element */
-            parent.level = parent.level->r[pos].level;
-
-            if ( if_lock && pthread_mutex_unlock ( mutex ) < 0 ) {
-                return perrlog_null("pthread_mutex_unlock");
-            }
-        } else {
-            break;
-        }
+    /* Check if any of the other items are non-null, if they are report an error */
+    for ( ; c < NC_TRIE_DEPTH_TOTAL + 1 ; c++ ) {
+        if ( line->d[c].item != NULL ) errlog( ERR_WARNING, "Non-null item in line at index %d\n", c );
     }
     
-    return parent.item;
+    return 0;
 }
 
-static int                   _delete          ( netcap_trie_t* trie, in_addr_t _ip, int depth )
+int new_netcap_trie_line_raze      ( netcap_trie_t* trie, netcap_trie_line_t* line )
 {
-    u_char* ip;
+    /* Raze a line, this deletes all of the elements in it,  */
+    if ( trie == NULL || line == NULL ) return errlogargs();
+    
+    if ( new_netcap_trie_line_destroy( trie, line ) < 0 ) {
+        errlog( ERR_CRITICAL, "new_netcap_trie_line_destroy\n" );
+    }
+
+    if ( new_netcap_trie_line_free( line ) < 0 ) {
+        errlog( ERR_CRITICAL, "new_netcap_trie_line_raze\n" );
+    }
+    
+    return 0;
+}
+
+/* This copies the item itself, not a netcap_trie_item */
+int netcap_trie_init_data          ( netcap_trie_t* trie, netcap_trie_item_t* dest, void* src, 
+                                     struct in_addr* ip, int depth )
+{
+    void *temp;
+
+    if ( dest == NULL || ip == NULL ) return errlogargs();
+    
+    if ( src == NULL ) { dest->data = NULL; return 0; }
+    
+    if ( trie->flags & NC_TRIE_COPY ) {
+        if (( temp = malloc ( trie->item_size )) == NULL ) {
+            return errlogmalloc();
+        }
+        
+        memcpy( temp, src, trie->item_size);
+        src = temp;
+    }
+
+    dest->data = src;
+
+    /* Execute the inititalization function */
+    if (( trie->init != NULL ) && ( trie->init( dest, ip ) < 0 )) {
+        if ( trie->flags & NC_TRIE_COPY ) free ( temp );
+        dest->data = NULL;
+        return errlog( ERR_WARNING, "trie->init" );
+    }
+    
+    return 0;
+}
+
+static netcap_trie_element_t _create_element( netcap_trie_t* trie, netcap_trie_level_t* parent, 
+                                              struct in_addr* ip, u_char pos )
+{
+    int depth = parent->base.depth + 1;
     netcap_trie_element_t child;
-    netcap_trie_level_t*   parent;
-    u_char pos;
+    child.base = NULL;
+
+    debug_nodate ( NC_TRIE_DEBUG_HIGH, "n" );
     
-    ip = (u_char*)&_ip;
-
-    parent = &trie->root;
-
-    child.item = _get ( trie, _ip, depth );
-
-    /* Nothing to delete */
-    if ( child.item == NULL ) return 0;
-    
-    for ( depth = child.base->depth ; depth >= 0 ; depth-- ) {
-
-        if ( ( parent = child.item->parent ) == NULL ) {
-            if ( depth == 0 ) {
-                if ( netcap_trie_remove_all ( trie ) < 0 ) {
-                    return errlog(ERR_CRITICAL,"netcap_trie_remove_all\n");
-                }
-            } else {
-                netcap_trie_element_raze ( trie, child );
-            }
-            break;
+    /* Have to create a new item */
+    if ( NC_TRIE_DEPTH_TOTAL == depth ) {
+        if (( child.item = netcap_trie_item_create( trie, parent, pos, depth )) == NULL ) {
+            debug_nodate ( NC_TRIE_DEBUG_HIGH,"\n" );
+            errlog( ERR_CRITICAL, "netcap_trie_item_create\n" );
+            return child;
         }
-
-        pos = child.base->pos;
-        
-        if ( parent->r[pos].item != child.item ) {
-            netcap_trie_element_raze ( trie, child );
-            return errlog( ERR_CRITICAL, "TRIE: Child no longer belongs to this parent\n" );
+    } else {
+        if (( child.level = netcap_trie_level_create( trie, parent, pos, depth )) == NULL ) {
+            debug_nodate ( NC_TRIE_DEBUG_HIGH,"\n" );
+            errlog( ERR_CRITICAL, "netcap_trie_level_create\n" );
+            return child;
         }
-        
-        if ( netcap_trie_level_remove ( trie, parent, pos ) < 0 ) {
-            return errlog( ERR_CRITICAL, "netcap_trie_level_remove\n" );
-        }
-
-        if ( parent->count == 0 ) child.level = parent;
-        else  break;
     }
 
+    /* Initialize the data */
+    /* This always inherits from the parent */
+    if ( netcap_trie_init_data( trie, child.item, parent->base.data, ip, depth ) < 0 ) {
+        netcap_trie_element_raze( trie, child );
+        errlog( ERR_CRITICAL, "netcap_trie_init_data\n" );
+        child.base = NULL;
+        return child;
+    }
+    
+    /* Insert the new item */
+    parent->r[pos] = child;
+    
+    /* Increment the number of items */
+    parent->count++;
+
+    return child;
+}
+
+static int _set_line( netcap_trie_line_t* line, netcap_trie_base_t* base )
+{
+    int c = base->depth;
+
+    line->is_bottom_up = 1;
+    line->count = 0;
+    bzero( line->d, sizeof( line->d ));
+    
+    if ( c > NC_TRIE_DEPTH_TOTAL ) return errlog( ERR_CRITICAL, "Invalid depth %d\n", c );
+    
+    for (  ; c >= 0 && ( base != NULL ) ; c-- ) {
+        _validate_depth( c, base->depth );
+        line->d[line->count++].base = base;
+        base = (netcap_trie_base_t*)base->parent;
+    }
+    
     return 0;
 }
 
-static netcap_trie_element_t _create_element ( netcap_trie_t* trie,  netcap_trie_level_t* parent, void* data,
-                                               netcap_trie_func_t* func, void* arg, in_addr_t _ip, int depth,
-                                               int depth_target )
-{
-    netcap_trie_element_t element;
-    u_char* ip = (u_char*)&_ip;
-    u_char pos;
-    void *src;
-
-    pos = ip[depth-1];
-
-    if ( depth == NC_TRIE_DEPTH_TOTAL ) {
-        element.item  = netcap_trie_item_create  ( trie, parent, pos, depth );
-        if ( element.item == NULL ) {
-            errlog ( ERR_CRITICAL, "netcap_trie_item_create\n" );
-            return element;
-        }
-    } else {
-        element.level = netcap_trie_level_create ( trie, parent, pos, depth );
-        if ( element.level == NULL ) {
-            errlog_null ( ERR_CRITICAL, "netcap_trie_level_create\n" );
-            return element;
-        }
-    }
-    
-    if ( trie->flags & NC_TRIE_INHERIT ) {
-        if ( depth == depth_target && data != NULL ) {
-            src = data;
-        } else {
-            src = parent->base.data;
-        }
-        
-        if ( netcap_trie_copy_data ( trie, element.base, src, _ip, depth ) < 0 ) {
-            netcap_trie_element_raze ( trie, element );
-            errlog (ERR_CRITICAL, "netcap_trie_copy_data\n" );
-            element.item = NULL; return element;
-        }
-    } else {
-        if ( ( depth == depth_target )  &&
-             ( netcap_trie_copy_data ( trie, element.base, data, _ip, depth ) < 0 )) {
-            netcap_trie_element_raze ( trie, element );
-            errlog ( ERR_CRITICAL, "netcap_trie_copy_data\n" );
-            element.item = NULL; return element;
-        }
-    }
-
-    /* XXX Small hole.  This should read depth == depth_target.  because, if the user creates a node
-     * that doesn't reach the TOTAL depth, and then never creates any children, that node will never 
-     * get onto the LRU.  Until there are new test cases in place, leave this as is. (That case will
-     * never happen in the shield) */
-    if ( depth == NC_TRIE_DEPTH_TOTAL  && ( trie->flags & NC_TRIE_LRU ) ) {
-        if ( netcap_trie_lru_add ( trie, element ) < 0 ) {
-            netcap_trie_element_raze ( trie, element );
-            errlog_null( ERR_CRITICAL,"netcap_trie_lru_add\n" );
-            element.item = NULL; return element;
-        }
-    }
-
-    return element;
-}
-
-static int                   _update_element ( netcap_trie_t* trie, netcap_trie_element_t element, 
-                                               void* data, netcap_trie_func_t* func, void* arg,
-                                               in_addr_t _ip, int depth )
-{
-    if ( data != NULL ) {
-        /* If necessary free the associated item */
-        _data_destroy ( trie, element );
-        
-        if ( netcap_trie_copy_data ( trie, element.item, data, _ip, depth ) < 0 ) {
-            return errlog( ERR_CRITICAL, "netcap_trie_copy_data\n" );
-        }
-    }
-        
-    if ( ( func != NULL )  && ( func ( element.item, arg, _ip ) < 0) ) {
-        return errlog( ERR_CRITICAL, "TRIE: Apply function\n" );
-    }
-
-    return 0;
-}
 

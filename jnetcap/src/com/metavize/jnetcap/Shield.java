@@ -13,6 +13,8 @@ package com.metavize.jnetcap;
 
 import java.net.InetAddress;
 
+import java.util.List;
+
 public final class Shield 
 {
     private static final Shield INSTANCE = new Shield();
@@ -49,26 +51,7 @@ public final class Shield
     {
         addChunk( Inet4AddressConverter.toLong( address ), protocol, size );
     }
-    
-    /****************** Native methods ****************/
-
-    /**
-     * Load a shield configuration from a file, This will throw an error if there
-     * is an error loading the configuration.
-     *
-     * @param fileName a <code>String</code> value that defines the path to the file to load.
-     */    
-    public native void config( String fileName );
-
-    /**
-     * Adds a chunk for a particular IP.  This should only be used for TCP since the UDP chunks
-     * are added automatically.
-     * @param ip - a <code>long</code> containing the ip for the user.
-     * @param protocol - Either Netcap.IPPROTO_TCP or Netcap.IPPROTO_UDP
-     * @param size - Size of the chunk in bytes.
-     */
-    public native void addChunk( long address, short protocol, int size );
-    
+        
     /**
      * Dump out the state of the shield in XML and return it in String
      */
@@ -90,6 +73,27 @@ public final class Shield
         this.listener = NULL_EVENT_LISTENER;
     }
 
+    public void setNodeSettings( List<ShieldNodeSettings> settings ) throws JNetcapException
+    {
+        /* Create some new arrays to pass in the settings */
+        double divider[] = new double[settings.size()];
+        long address[]   = new long[settings.size()];
+        long netmask[]   = new long[settings.size()];
+
+        int c = 0;
+        for ( ShieldNodeSettings setting : settings ) {
+            divider[c] = setting.divider();
+            address[c] = setting.addressLong();
+            netmask[c++] = setting.netmaskLong();
+        }
+        
+        try {
+            setNodeSettings( divider, address, netmask );
+        } catch( Exception e ) {
+            throw new JNetcapException( "Unable to set node settings", e );
+        }
+    }
+
     /* This function is called from C to get into java */
     private void callRejectionEventListener( long ip, byte clientIntf, double reputation, int mode, 
                                              int limited, int dropped, int rejected )
@@ -104,11 +108,31 @@ public final class Shield
     {
         this.listener.statisticEvent( accepted, limited, dropped, rejected, relaxed, lax, tight, closed );
     }
-    
+
+    /****************** Native methods ****************/
+
+    /**
+     * Load a shield configuration from a file, This will throw an error if there
+     * is an error loading the configuration.
+     *
+     * @param fileName a <code>String</code> value that defines the path to the file to load.
+     */    
+    public native void config( String fileName );
+
+    /**
+     * Adds a chunk for a particular IP.  This should only be used for TCP since the UDP chunks
+     * are added automatically.
+     * @param ip - a <code>long</code> containing the ip for the user.
+     * @param protocol - Either Netcap.IPPROTO_TCP or Netcap.IPPROTO_UDP
+     * @param size - Size of the chunk in bytes.
+     */
+    public native void addChunk( long address, short protocol, int size );
+
     private native void status( long ip, int port );
     private native void registerEventListener();
-    private native void removeEventListener();                                      
+    private native void removeEventListener();
 
+    private native void setNodeSettings( double divider[], long address[], long netmask[] );
 
     /* Singleton enforcement */    
     public static Shield getInstance()

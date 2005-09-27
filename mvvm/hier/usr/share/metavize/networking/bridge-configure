@@ -152,7 +152,6 @@ function createBridge() {
     fi
 
     echo "Creating the bridge: ${l_name} (May already exist, creating anyway)"
-
     brctl addbr ${l_name}
     
     for l_port in ${l_ports}; do
@@ -165,7 +164,6 @@ function createBridge() {
 function createAllBridges() {
     local l_interfaceList=$1
     local l_interface
-    
     
     for l_interface in ${l_interfaceList}; do
         if [ -n "`isInterfaceBridge ${l_interface}`" ]; then
@@ -180,6 +178,9 @@ function configureInterface() {
     local l_address=`interfaceGetAddress ${l_interface}`
     local l_netmask=`interfaceGetNetmask ${l_interface}`
     local l_dhcp=`interfaceGetDhcpFlag ${l_interface}`
+    local l_port
+    local l_ports
+
 
     ### XXX Must handle aliases, 
         
@@ -191,9 +192,14 @@ function configureInterface() {
         echo "ERR:   an address '${l_address}' or a netmask '${l_netmask}' '${l_dhcp}'"
         return
     fi
-    
+        
     if [ -n "`isInterfaceBridge ${l_interface}`" ]; then
-        l_name=`interfaceGetName ${l_interface}`        
+        l_name=`interfaceGetName ${l_interface}`
+        l_ports=`interfaceGetPorts ${l_interface}`
+        for l_port in ${l_ports}; do
+            echo "Bringing interface ${l_port} up"
+            ifconfig ${l_port} 0.0.0.0 promisc up        
+        done
     else
         l_name=`interfaceGetPort ${l_interface}`
     fi
@@ -208,8 +214,23 @@ function configureInterface() {
         pumpInterface ${l_name}
     else
         echo "Configuring the interface: ${l_interface} ${l_name} ${l_address} ${l_netmask}"
-        ifconfig ${l_name} ${l_address} netmask ${l_netmask}
+
+        if [ "${l_address}x" = "0.0.0.0x" ] || [ "${l_netmask}x" = "0.0.0.0x" ]; then
+            echo "ERR: The interface is missing an address '${l_address}' or a netmask '${l_netmask}'"
+            return
+        fi
+
+        ## Do not bring the interface up in promiscuous mode.
+        ifconfig ${l_name} ${l_address} netmask ${l_netmask} -promisc
     fi
+}
+
+function unconfigureInterfaces() {
+    local l_t
+    for l_t in `ifconfig -a | grep '^[^ ]' | awk '{print $1}' | grep -v 'lo' | grep -v dummy`; do 
+        echo "Unconfiguringing interface '$l_t'"
+        sudo ifconfig $l_t 0.0.0.0 down
+    done
 }
 
 function configureInterfaces() {
@@ -249,6 +270,11 @@ if [ -z "`areInterfacesCurrent \"${INTERFACE_LIST}\"`" ]; then
     createAllBridges "${INTERFACE_LIST}"
 fi
 
+## Unconfigure all interfaces This gets rid of any active interfaces
+## that are not in the current configuration
+unconfigureInterfaces
+
+## Reconfigure all interfaces
 configureInterfaces "${INTERFACE_LIST}"
 
 ## Guarantee there are no "errors"

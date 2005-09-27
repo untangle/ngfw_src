@@ -14,9 +14,13 @@
 #include <mvutil/debug.h>
 #include <mvutil/errlog.h>
 #include <mvutil/list.h>
+#include <mvutil/hash.h>
 
 #include "netcap_trie.h"
 #include "netcap_trie_support.h"
+
+/* Something slightly larger than 1337 for speed */
+#define TRIE_HASH_SIZE 2777
 
 netcap_trie_t* netcap_trie_malloc     ( void )
 {
@@ -28,8 +32,7 @@ netcap_trie_t* netcap_trie_malloc     ( void )
 }
 
 int            netcap_trie_init       ( netcap_trie_t* trie, int flags, void* item, int item_size, 
-                                        netcap_trie_init_t* init, netcap_trie_destroy_t* destroy,
-                                        netcap_trie_check_t* check, int high_water, int low_water )
+                                        netcap_trie_init_t* init, netcap_trie_destroy_t* destroy )
 {
     if ( trie == NULL ) return errlogargs();
     
@@ -55,41 +58,17 @@ int            netcap_trie_init       ( netcap_trie_t* trie, int flags, void* it
     trie->init = init;
     trie->destroy = destroy;
     
-    if ( flags & NC_TRIE_LRU ) {
-        trie->flags |= NC_TRIE_LRU;
-        if ( low_water > high_water ) {
-            return errlog ( ERR_CRITICAL,"TRIE: low_water > high_water\n");
-        }
-
-        if ( list_init ( &trie->lru_list, 0 ) < 0 ) {
-            return errlog(ERR_CRITICAL,"list_init");
-        }
-        
-        if ( pthread_mutex_init ( &trie->lru_mutex, NULL ) < 0 ) {
-            return perrlog("pthread_mutex_init\n");
-        }
-        
-        trie->lru_low_water  = low_water;
-        trie->lru_high_water = high_water;
-        trie->check          = check;
-
-    } else {
-        if ( low_water != 0 || high_water != 0 ) {
-            errlog(ERR_WARNING,"TRIE: When the LRU is disabled high_water and low_water are ignored\n");
-        }
-        if ( check != NULL ) {
-            errlog(ERR_WARNING,"TRIE: When the LRU is disabled, the check function is unused\n");
-        }
-
-        trie->lru_low_water = trie->lru_high_water = 0;
-        trie->check = NULL;
+    /* Use a better hashing function */
+    if ( ht_init( &trie->ip_element_table, TRIE_HASH_SIZE, int_hash_func, int_equ_func, 0 ) < 0 ) {
+        return errlog( ERR_CRITICAL, "ht_init\n" );
     }
     
     if ( netcap_trie_level_init ( trie, &trie->root, NULL, 0, 0 ) < 0 ) {
         return errlog(ERR_CRITICAL,"netcap_trie_level_init\n");
     }
             
-    if ( netcap_trie_copy_data ( trie, &trie->root.base, item, 0, 0 ) < 0 ) {
+    struct in_addr null_addr = { .s_addr 0 };
+    if ( netcap_trie_init_data ( trie, &trie->root.base, item, &null_addr, 0 ) < 0 ) {
         return errlog(ERR_CRITICAL,"netcap_trie_copy_item");
     }
 
@@ -97,8 +76,7 @@ int            netcap_trie_init       ( netcap_trie_t* trie, int flags, void* it
 }
 
 netcap_trie_t* netcap_trie_create     ( int flags, void* item, int item_size, 
-                                        netcap_trie_init_t* init,  netcap_trie_destroy_t* destroy,
-                                        netcap_trie_check_t* check, int high_water, int low_water )
+                                        netcap_trie_init_t* init,  netcap_trie_destroy_t* destroy )
 {
     netcap_trie_t* trie;
     
@@ -106,7 +84,7 @@ netcap_trie_t* netcap_trie_create     ( int flags, void* item, int item_size,
         return errlog_null ( ERR_CRITICAL,"netcap_trie_malloc\n");
     }
     
-    if ( netcap_trie_init ( trie, flags, item, item_size, init, destroy, check, high_water, low_water ) < 0 ) {
+    if ( netcap_trie_init ( trie, flags, item, item_size, init, destroy ) < 0 ) {
         netcap_trie_free ( trie );
         return errlog_null ( ERR_CRITICAL,"netcap_trie_init\n");
     }
@@ -125,13 +103,7 @@ void           netcap_trie_destroy    ( netcap_trie_t* trie )
 {
     if ( trie == NULL ) return (void)errlogargs();
 
-    if ( trie->flags & NC_TRIE_LRU ) {
-        if ( netcap_trie_lru_clean ( trie ) < 0 ) errlog ( ERR_CRITICAL, "netcap_trie_lru_clean\n" );
-
-        if ( list_destroy ( &trie->lru_list ) < 0 ) perrlog ( "list_destroy" );
-
-        if ( pthread_mutex_destroy ( &trie->lru_mutex ) < 0 ) perrlog("pthread_mutex_destroy");
-    }
+    if ( ht_destroy( &trie->ip_element_table ) < 0 ) perrlog( "ht_destroy" );
 
     netcap_trie_level_destroy ( trie, &trie->root );
 
@@ -186,8 +158,6 @@ int            netcap_trie_remove_all ( netcap_trie_t* trie )
 
 int            netcap_trie_remove     ( netcap_trie_t* trie, netcap_trie_element_t element )
 {
-    int status;
-
     if ( trie == NULL || element.base == NULL ) return errlogargs();
 
     switch ( element.base->type ) {
@@ -205,7 +175,7 @@ int            netcap_trie_remove     ( netcap_trie_t* trie, netcap_trie_element
         break;
         
     default:
-        return errlog( ERR_WARNING,"TRIE: Uknown item type removed (%d)\n", status );
+        return errlog( ERR_WARNING,"TRIE: Uknown item type removed (%d)\n", element.base->type );
     }
 
     return 0;

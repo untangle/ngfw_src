@@ -48,8 +48,8 @@ void                 netcap_trie_item_destroy  ( netcap_trie_t* trie, netcap_tri
 void                 netcap_trie_item_raze     ( netcap_trie_t* trie, netcap_trie_item_t* item );
 
 /* This copies the data itself, not a netcap_trie_item */
-int                  netcap_trie_copy_data     ( netcap_trie_t* trie, netcap_trie_base_t* dest, void* src, 
-                                                 in_addr_t _ip, int depth );
+int                  netcap_trie_init_data     ( netcap_trie_t* trie, netcap_trie_base_t* dest, void* src, 
+                                                 struct in_addr* ip, int depth );
 
 netcap_trie_level_t* netcap_trie_level_malloc     ( netcap_trie_t* trie );
 

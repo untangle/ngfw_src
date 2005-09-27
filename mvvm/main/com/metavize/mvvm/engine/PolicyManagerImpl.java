@@ -27,7 +27,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
-class PolicyManagerImpl implements PolicyManager
+class PolicyManagerImpl implements PolicyManagerPrivileged
 {
     private static final String INITIAL_POLICY_NAME = "Default";
     private static final String INITIAL_POLICY_NOTES = "The default policy";
@@ -422,7 +422,7 @@ class PolicyManagerImpl implements PolicyManager
     // added or removed, passing all interfaces.  We automatically add
     // or removeSystemPolicyRules as appropriate.  We also build the
     // in-memory UserPolicyRule list.
-    void reconfigure(byte[] interfaces)
+    public void reconfigure(byte[] interfaces)
     {
         // For now do nothing
         if (allPolicies.size() == 0)

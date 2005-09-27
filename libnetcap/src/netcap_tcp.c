@@ -162,7 +162,7 @@ int  netcap_tcp_callback ( netcap_session_t* netcap_sess, netcap_callback_action
 
 int  netcap_tcp_syn_hook ( netcap_pkt_t* syn )
 {
-    netcap_shield_response_t* response;
+    netcap_shield_response_t response;
 
     if ( syn == NULL )
         return errlogargs();
@@ -182,25 +182,24 @@ int  netcap_tcp_syn_hook ( netcap_pkt_t* syn )
     /**
      * Indicate that the user sent a syn
      */
-    if ( netcap_shield_rep_add_request ( syn->src.host.s_addr ) < 0 ) {
+    if ( netcap_shield_rep_add_request ( &syn->src.host ) < 0 ) {
         errlog( ERR_CRITICAL, "netcap_shield_rep_add_request\n" );
     }
 
     /**
-     * Check the reputation
+     * Check the reputation, (Failures are released in opaque mode)
      */
-    response = netcap_shield_rep_check ( syn->src.host.s_addr, IPPROTO_TCP, syn->src_intf );
-    if ( response == NULL ) {
+    if ( netcap_shield_rep_check ( &response, &syn->src.host, IPPROTO_TCP, syn->src_intf ) < 0 ) {
         errlog( ERR_WARNING, "netcap_shield_rep_check\n" );
         return netcap_pkt_action_raze( syn, NF_ACCEPT );
     }
     
-    switch( response->ans ) {
+    switch( response.ans ) {
     case NC_SHIELD_YES:
         break;
 
     case NC_SHIELD_LIMITED:
-        if ( response->if_print ) {
+        if ( response.if_print ) {
             debug( 4, "TCP: Session in opaque mode: %s:%d -> %s:%d\n", 
                    unet_next_inet_ntoa ( syn->src.host.s_addr ), syn->src.port,
                    unet_next_inet_ntoa ( syn->dst.host.s_addr ), syn->dst.port );
@@ -213,16 +212,16 @@ int  netcap_tcp_syn_hook ( netcap_pkt_t* syn )
         }
         /* fallthrough */
     case NC_SHIELD_DROP:
-        if ( response->if_print ) {
+        if ( response.if_print ) {
             debug( 4, "TCP: SYN packet %s: %s:%d -> %s:%d\n",
-                   ( response->ans == NC_SHIELD_RESET ) ? "reset" : "dropped",
+                   ( response.ans == NC_SHIELD_RESET ) ? "reset" : "dropped",
                    unet_next_inet_ntoa( syn->src.host.s_addr ), syn->src.port,
                    unet_next_inet_ntoa( syn->dst.host.s_addr ), syn->dst.port );
         }
         return netcap_pkt_action_raze( syn, NF_DROP );
         
     default:
-        errlog( ERR_WARNING, "netcap_shield_rep_check: invalid verdict: %d\n", response->ans );
+        errlog( ERR_WARNING, "netcap_shield_rep_check: invalid verdict: %d\n", response.ans );
         return netcap_pkt_action_raze( syn, NF_ACCEPT );
     }
     
@@ -586,6 +585,7 @@ static netcap_session_t* _netcap_get_or_create_sess ( int* created_flag,
                                                       int flags, u_int seq )
 {
     netcap_session_t* sess;
+    struct in_addr address = { .s_addr cli_addr };
 
     if (!created_flag)
         return errlogargs_null();
@@ -634,7 +634,7 @@ static netcap_session_t* _netcap_get_or_create_sess ( int* created_flag,
     SESSTABLE_UNLOCK();
 
     /* Update their reputation */
-    netcap_shield_rep_add_session( cli_addr );
+    netcap_shield_rep_add_session( &address );
 
     return sess;
 }

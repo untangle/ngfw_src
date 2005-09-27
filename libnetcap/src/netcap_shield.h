@@ -16,6 +16,7 @@
 #include <pthread.h>
 
 #include "libnetcap.h"
+#include "netcap_lru.h"
 #include "netcap_load.h"
 #include "netcap_shield_cfg.h"
 
@@ -23,6 +24,13 @@
 #ifdef DEBUG_ON
 #define _TRIE_DEBUG_PRINT
 #endif
+
+#define NC_SHIELD_DEBUG_LOW   7
+#define NC_SHIELD_DEBUG_HIGH 11
+
+// This is the minimum value for the divider.
+#define NC_SHIELD_DIVIDER_MAX  ( 50.0 )
+#define NC_SHIELD_DIVIDER_MIN  ( 1.0 / 50.0 )
 
 enum {
     NC_SHIELD_ERR_1 = 5,
@@ -48,20 +56,24 @@ typedef struct {
 } netcap_shield_response_t;
 
 typedef struct {
-    netcap_shield_response_t ans;
-} shield_tls_t;
-
-typedef struct {
     int limited;      /* Total number of requests given limited access */
     int dropped;      /* Total number of dropped requests */    
     int rejected;     /* Total number of requests that are rejected */
 } nc_shield_rejection_counter_t;
 
-typedef struct reputation {
+typedef struct
+{
     pthread_mutex_t mutex;
+    
+    /* Node to track this item inside of the LRU */
+    netcap_lru_node_t lru_node;
+
+    /* Configuration data */
+    double divider;
+
+    struct in_addr ip;
 
 #ifdef _TRIE_DEBUG_PRINT
-    in_addr_t       ip;
     /* Pointer to the value on the ip_list, must have the dbg_mutex to read or set this value*/
     list_node_t*    self;
 #endif
@@ -71,7 +83,7 @@ typedef struct reputation {
     /* xxx terrible waste of space, but it is efficient */
     nc_shield_rejection_counter_t counters[NC_INTF_MAX];
     
-    nc_shield_rep_t rep;           /* The current reputation for the IP */
+    nc_shield_score_t score;       /* The current score for the IP */
     netcap_load_t   evil_load;     /* Evil events per second */
     netcap_load_t   request_load;  /* Number of request this IP makes */
     netcap_load_t   session_load;  /* Active number of sessions used */
@@ -86,20 +98,18 @@ typedef struct reputation {
 } nc_shield_reputation_t;
 
 /* Indicate if an IP should allowed in */
-netcap_shield_response_t* netcap_shield_rep_check        ( in_addr_t ip, int protocol, netcap_intf_t intf );
+int netcap_shield_rep_check ( netcap_shield_response_t* response, struct in_addr* ip, int protocol, 
+                              netcap_intf_t intf );
 
-int                       netcap_shield_rep_add_request  ( in_addr_t ip );
+int netcap_shield_rep_add_request  ( struct in_addr* ip );
 
-int                       netcap_shield_rep_add_session  ( in_addr_t ip );
+int netcap_shield_rep_add_session  ( struct in_addr* ip );
 
-int                       netcap_shield_rep_add_srv_conn ( in_addr_t ip );
+int netcap_shield_rep_add_srv_conn ( struct in_addr* ip );
 
-int                       netcap_shield_rep_add_srv_fail ( in_addr_t ip );
+int netcap_shield_rep_add_srv_fail ( struct in_addr* ip );
 
-int                       netcap_shield_rep_blame        ( in_addr_t ip, int amount );
-
-int                       netcap_shield_tls_init         ( shield_tls_t* tls );
-
+int netcap_shield_rep_blame        ( struct in_addr* ip, int amount );
 
 /* Local utility functions that should only used internally by the shield */
 
@@ -117,6 +127,6 @@ int nc_shield_reputation_update( nc_shield_reputation_t* reputation );
 int nc_shield_event_hook( netcap_shield_event_data_t* event );
 
 /* Add an session to the global stats */
-int nc_shield_stats_add_session( int protocol, netcap_shield_ans_t response );
+int nc_shield_stats_add_request( int protocol, netcap_shield_ans_t response );
 
 #endif /* __NETCAP_SHIELD_H_ */

@@ -11,7 +11,11 @@
 
 package com.metavize.mvvm;
 
+import java.util.List;
+import java.util.Collections;
+
 import java.io.Serializable;
+
 import java.net.Inet4Address;
 import java.net.InetAddress;
 
@@ -19,12 +23,15 @@ import com.metavize.mvvm.tran.IPaddr;
 
 public class NetworkingConfiguration implements Serializable
 {
-    private static final long serialVersionUID = -8235095115996174553L;
+    private static final long serialVersionUID = -7446681327586273258L;
 
     public static final IPaddr  EMPTY_IPADDR;
     public static final IPaddr  DEF_OUTSIDE_NETWORK;
     public static final IPaddr  DEF_OUTSIDE_NETMASK;
 
+    /* The default empty list of aliases */
+    public static final List<InterfaceAlias> DEF_ALIAS_LIST = Collections.emptyList();
+    
     public static final boolean DEF_IS_DHCP_EN            = false;
     public static final boolean DEF_IS_INSIDE_INSECURE_EN = true;
     public static final boolean DEF_IS_OUTSIDE_EN         = false;
@@ -43,6 +50,11 @@ public class NetworkingConfiguration implements Serializable
      */
     private IPaddr host = EMPTY_IPADDR;
     private IPaddr netmask = EMPTY_IPADDR;
+
+    /**
+     * List of aliases for the outside interface.
+     */
+    private List<InterfaceAlias> aliasList = DEF_ALIAS_LIST;
 
     /**
      * Default route/gateway for the EdgeGuard GSP
@@ -188,6 +200,20 @@ public class NetworkingConfiguration implements Serializable
         return ( this.dns2 != null && !this.dns2.equals( EMPTY_IPADDR ));
     }
 
+    /* Retrieve the current list of interface aliases */
+    public List<InterfaceAlias> getAliasList()
+    {
+        if ( this.aliasList == null ) this.aliasList = DEF_ALIAS_LIST;
+        return this.aliasList;
+    }
+         
+    /* Set the current list of interface aliaes */
+    public void setAliasList( List<InterfaceAlias> aliasList )
+    {
+        if ( aliasList == null ) aliasList = DEF_ALIAS_LIST;
+        this.aliasList = aliasList;
+    }
+
     public boolean isSshEnabled()
     {
         return this.isSshEnabled;
@@ -301,7 +327,8 @@ public class NetworkingConfiguration implements Serializable
         return this.outsideNetmask;
     }
 
-    static {
+    static
+    {
         Inet4Address emptyAddr      = null;
         Inet4Address outsideNetwork = null;
         Inet4Address outsideNetmask = null;

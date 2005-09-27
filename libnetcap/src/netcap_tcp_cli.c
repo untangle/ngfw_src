@@ -135,7 +135,7 @@ int _netcap_tcp_callback_cli_complete( netcap_session_t* netcap_sess, netcap_cal
                  * Although this happens if the client decides not to connect before the server connection completes
                  * (e.g. the person presses the stop button in their browser before connected)
                  */
-                netcap_shield_rep_blame( netcap_sess->cli.cli.host.s_addr, NC_SHIELD_ERR_3 );
+                netcap_shield_rep_blame( &netcap_sess->cli.cli.host, NC_SHIELD_ERR_3 );
                 return -1;
             }
             else

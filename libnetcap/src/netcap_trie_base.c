@@ -30,10 +30,6 @@ int  netcap_trie_base_init  ( netcap_trie_t* trie, netcap_trie_base_t* base, net
     base->depth    = depth;
     base->data     = NULL;
     base->parent   = parent;
-    base->lru_rdy  = 1;
-    base->lru_node = NULL;
-
-    if ( pthread_mutex_init ( &base->mutex, NULL ) < 0 ) return perrlog("pthread_mutex_init");
     
     return 0;
 }
@@ -50,9 +46,6 @@ void netcap_trie_base_destroy ( netcap_trie_t* trie, netcap_trie_base_t* base )
     
     /* If necessary free the associated item */
     _data_destroy ( trie, (netcap_trie_element_t)base );
-
-    /* Delete the mutex */
-    if ( pthread_mutex_destroy ( &base->mutex ) < 0 ) perrlog("pthread_mutex_destroy");
 }
 
 /* Returns the number of children that an item has (1 for terminal nodes) */
@@ -112,7 +105,8 @@ void netcap_trie_element_raze    ( netcap_trie_t* trie, netcap_trie_element_t el
         break;
 
     default:
-        errlog(ERR_CRITICAL, "TRIE: Trying to raze an unknown structure: %d\n", element.base->type );
+        errlog(ERR_CRITICAL, "TRIE: Trying to raze an unknown structure: %#010x %d\n", element, 
+               element.base->type );
     }
 }
 

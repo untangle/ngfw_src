@@ -160,8 +160,9 @@ JNIEXPORT void JNICALL JF_Shield( status )
 JNIEXPORT void JNICALL JF_Shield( addChunk )
   (JNIEnv *env, jobject _this, jlong ip, jshort protocol, jint num_bytes )
 {
+    struct in_addr address = { .s_addr (in_addr_t)JLONG_TO_UINT( ip ) };
     /* Could throw an error, but shield errors are currently ignored. */
-    if ( netcap_shield_rep_add_chunk((in_addr_t)ip, protocol, (u_short)num_bytes ) < 0 )
+    if ( netcap_shield_rep_add_chunk( &address, protocol, (u_short)num_bytes ) < 0 )
         errlog( ERR_WARNING, "netcap_shield_rep_add_chunk\n" );  
 }
 
@@ -234,6 +235,67 @@ JNIEXPORT void JNICALL JF_Shield( removeEventListener )
     /* To avoid synchronization issues, the global references are never removed
      * (the shield is a singleton anyway) */
 }
+
+/*
+ * Class:     com_metavize_jnetcap_Shield
+ * Method:    setNodeSettings
+ * Signature: ([D[J[J)V
+ */
+JNIEXPORT void JNICALL JF_Shield( setNodeSettings )
+( JNIEnv *env, jobject _this, jdoubleArray j_dividerArray, jlongArray j_addressArray, 
+  jlongArray j_netmaskArray )
+{
+    if ( j_dividerArray == NULL || j_addressArray == NULL || j_netmaskArray == NULL ) {
+        return jmvutil_error_void( JMVUTIL_ERROR_STT, ERR_CRITICAL, "NULL argument\n" );
+    }
+
+    int length;
+
+    if (( length = (*env)->GetArrayLength( env, j_dividerArray )) < 0 ) {
+        return jmvutil_error_void( JMVUTIL_ERROR_STT, ERR_CRITICAL, "(*env)->GetArrayLength\n" );
+    }
+    
+    jdouble* dividerArray;
+    jlong*   addressArray;
+    jlong*   netmaskArray;
+
+    if (( dividerArray = (*env)->GetDoubleArrayElements( env, j_dividerArray, NULL )) == NULL ) {
+        return jmvutil_error_void( JMVUTIL_ERROR_STT, ERR_CRITICAL, "(*env)->GetDoubleArrayElements\n" );
+    }
+    
+    if (( addressArray = (*env)->GetLongArrayElements( env, j_addressArray, NULL )) == NULL ) {
+        (*env)->ReleaseDoubleArrayElements( env, j_dividerArray, dividerArray, 0 );
+        return jmvutil_error_void( JMVUTIL_ERROR_STT, ERR_CRITICAL, "(*env)->GetDoubleArrayElements\n" );
+    }
+
+    if (( netmaskArray = (*env)->GetLongArrayElements( env, j_netmaskArray, NULL )) == NULL ) {
+        (*env)->ReleaseDoubleArrayElements( env, j_dividerArray, dividerArray, 0 );
+        (*env)->ReleaseLongArrayElements( env, j_addressArray, addressArray, 0 );
+        return jmvutil_error_void( JMVUTIL_ERROR_STT, ERR_CRITICAL, "(*env)->GetDoubleArrayElements\n" );
+    }
+
+    netcap_shield_bless_t data[length];
+    int c;
+    netcap_shield_bless_array_t bless_array = {
+        .count length,
+        .d     data
+    };
+    
+    for ( c = 0 ; c < length ; c++ ) {
+        data[c].divider = dividerArray[c];
+        data[c].address.s_addr = (in_addr_t)JLONG_TO_UINT( addressArray[c] );
+        data[c].netmask.s_addr = (in_addr_t)JLONG_TO_UINT( netmaskArray[c] );
+    }
+    
+    (*env)->ReleaseDoubleArrayElements( env, j_dividerArray, dividerArray, 0 );
+    (*env)->ReleaseLongArrayElements( env, j_addressArray, addressArray, 0 );
+    (*env)->ReleaseLongArrayElements( env, j_netmaskArray, netmaskArray, 0 );
+    
+    if ( netcap_shield_bless_users( &bless_array ) < 0 ) {
+        return jmvutil_error_void( JMVUTIL_ERROR_STT, ERR_CRITICAL, "netcap_shield_bless_users\n" );
+    }    
+}
+
 
 static void _event_hook ( netcap_shield_event_data_t* event )
 {

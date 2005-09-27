@@ -89,10 +89,10 @@ int  _netcap_tcp_callback_srv_complete ( netcap_session_t* netcap_sess, netcap_c
     if ( ret < 0 ) return errlog( ERR_CRITICAL, "_icmp_mailbox_init\n" );    
 
     if ( _srv_complete_connection( netcap_sess, flags ) < 0 ) {
-        netcap_shield_rep_add_srv_fail( netcap_sess->cli.cli.host.s_addr );
+        netcap_shield_rep_add_srv_fail( &netcap_sess->cli.cli.host );
         ret = -1;
     } else {
-        netcap_shield_rep_add_srv_conn( netcap_sess->cli.cli.host.s_addr );
+        netcap_shield_rep_add_srv_conn( &netcap_sess->cli.cli.host );
         ret = 0;
     }
     

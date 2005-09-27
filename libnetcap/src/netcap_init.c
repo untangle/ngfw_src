@@ -215,11 +215,7 @@ static int _tls_init( void* buf, size_t size )
     netcap_tls_t* tls = buf;
 
     if (( size != sizeof( netcap_tls_t )) || ( tls == NULL )) return errlogargs();
-    
-    if (( netcap_shield_tls_init( &tls->shield )) < 0 ) {
-        return errlog( ERR_CRITICAL, "netcap_shield_tls_init\n" );
-    }
-    
+        
     if (( netcap_session_tls_init( &tls->session )) < 0 ) {
         return errlog( ERR_CRITICAL, "netcap_session_tls_init\n" );
     }

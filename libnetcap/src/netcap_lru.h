@@ -31,11 +31,7 @@ typedef struct
 
     /* A function to call !before removing the node from the LRU */
     netcap_lru_remove_t* remove;
-
-    /* Retrieve this when moving a node to the front of the LRU or delete a node */
-    pthread_mutex_t* mutex;
 } netcap_lru_t;
-
 
 typedef struct
 {
@@ -55,24 +51,27 @@ typedef struct
 } netcap_lru_node_t;
 
 int netcap_lru_init( netcap_lru_t* lru, int high_water, int low_water, int sieve_size, 
-                     netcap_lru_check_t* is_deletable, netcap_lru_remove_t* remove, pthread_mutex_t* mutex );
+                     netcap_lru_check_t* is_deletable, netcap_lru_remove_t* remove );
 
-int netcap_lru_config( netcap_lru_t* lru, int high_water, int low_water, int sieve_size );
+int netcap_lru_config( netcap_lru_t* lru, int high_water, int low_water, int sieve_size, 
+                       pthread_mutex_t* mutex );
 
 /* Add a node to the front of the LRU, node is updated to contain the necessary information for the LRU */
-int netcap_lru_add( netcap_lru_t* lru, netcap_lru_node_t* node, void* data );
+int netcap_lru_add( netcap_lru_t* lru, netcap_lru_node_t* node, void* data, pthread_mutex_t* mutex );
 
 /* Add a node to the permanent list, if node */
-int netcap_lru_permanent_add   ( netcap_lru_t* lru, netcap_lru_node_t* node, void* data );
+int netcap_lru_permanent_add   ( netcap_lru_t* lru, netcap_lru_node_t* node, void* data,
+                                 pthread_mutex_t* mutex );
 
 /* Remove all of the nodes on the permanent list and add them to the LRU */
-int netcap_lru_permanent_clear ( netcap_lru_t* lru );
+int netcap_lru_permanent_clear ( netcap_lru_t* lru, pthread_mutex_t* mutex );
 
 /* Move a node to the front of the LRU, node should be a value returned from a previous
  * execution of lru_add */
-int netcap_lru_move_front( netcap_lru_t* lru, netcap_lru_node_t* node );
+int netcap_lru_move_front( netcap_lru_t* lru, netcap_lru_node_t* node, pthread_mutex_t* mutex );
 
 /* Cut any excessive nodes, and place the results into the node_array if it is not null */
-int netcap_lru_cut( netcap_lru_t* lru, netcap_lru_node_t** node_array, int node_array_size );
+int netcap_lru_cut( netcap_lru_t* lru, netcap_lru_node_t** node_array, int node_array_size, 
+                    pthread_mutex_t* mutex );
 
 #endif // _NETCAP_LRU_H_

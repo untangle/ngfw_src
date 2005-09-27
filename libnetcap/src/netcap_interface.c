@@ -103,7 +103,17 @@ static struct
     /* Number of interfaces in intf_name_array */
     int intf_count;    
     
-    /* Mutex for reconfiguring the interface database */
+    /* Mutex for reconfiguring the interface database.  This
+     * guarantees that the database isn't being reconfigured twice at
+     * the same time.  According to
+     * http://www.gnu.org/software/libc/manual/html_node/Atomic-Types.html,
+     * writing all pointer types is atomic.  This means most
+     * operations here do not need to use this mutex because they deal
+     * with an instance of the interface database which gets freed in
+     * the scheduler at least 10 seconds later.  (If the function has
+     * returned at that point then there is something far more serious
+     * going on.)
+     */
     pthread_mutex_t  mutex;
 } _interface = 
 {
@@ -232,7 +242,6 @@ int netcap_interface_is_broadcast ( in_addr_t addr, int index )
 {
     if ((((unsigned int)addr) & BROADCAST_MASK ) == BROADCAST_MASK ) return 1;
 
-    /* ???? May need a mutex or something */
     netcap_intf_db_t* db = _interface.db;
     if ( db == NULL ) return errlog( ERR_CRITICAL, "interface.db is not initialized\n" );
 
@@ -310,7 +319,6 @@ int netcap_interface_intf_to_string ( netcap_intf_t intf, char *intf_str, int st
 {
     if (( str_len < sizeof( netcap_intf_string_t )) || ( intf_str == NULL )) return errlogargs();
 
-    /* ???? May need a mutex or something */
     netcap_intf_db_t* db = _interface.db;
     if ( db == NULL ) return errlog( ERR_CRITICAL, "interface.db is not initialized\n" );
     
@@ -329,7 +337,6 @@ int netcap_interface_string_to_intf ( char *intf_name, netcap_intf_t *intf )
 {
     if ( intf_name == NULL || intf_name[0] == '\0' || intf == NULL ) return errlogargs();
 
-    /* ???? May need a mutex or something */
     netcap_intf_db_t* db = _interface.db;
     if ( db == NULL ) return errlog( ERR_CRITICAL, "interface.db is not initialized\n" );
 
@@ -397,7 +404,6 @@ netcap_intf_t netcap_interface_index_to_intf( int index )
 
 netcap_intf_db_t* netcap_interface_get_db    ( void )
 {
-    /* XXX Possible a mutex or something around here, only if setting a 32-bit value is not atomic */
     return _interface.db;
 }
 
@@ -518,7 +524,7 @@ static int _update_intf_info( void )
             netcap_sched_event( _empty_garbage, garbage, _GARBAGE_DELAY_USEC );
         }
 
-        /* XXXX Consider a mutex here, no need table is already locked. */
+        /* Setup the new interface database */
         _interface.db = db;
         
         return 0;

@@ -12,7 +12,7 @@
 #ifndef __NETCAP_SHIELD_CFG_H_
 #define __NETCAP_SHIELD_CFG_H_
 
-typedef double nc_shield_rep_t;
+typedef double nc_shield_score_t;
 
 typedef struct {
     double lax;
@@ -23,7 +23,7 @@ typedef struct {
 typedef struct {
     /* Probability the fence post is used, if it isn't the level below is used */
     double          prob;
-    nc_shield_rep_t post;
+    nc_shield_score_t post;
 } nc_shield_post_t;
 
 typedef struct {

@@ -17,6 +17,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Collections;
 
 import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.PipeSpec;
@@ -26,6 +27,16 @@ import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+
+import com.metavize.mvvm.tran.TransformStopException;
+import com.metavize.mvvm.tran.TransformStartException;
+
+import com.metavize.mvvm.ArgonManager;
+import com.metavize.mvvm.MvvmContextFactory;
+
+import com.metavize.mvvm.shield.ShieldNodeRule;
+
+import com.metavize.mvvm.tran.TransformState;
 
 public class AirgapTransformImpl extends AbstractTransform
     implements AirgapTransform
@@ -71,6 +82,16 @@ public class AirgapTransformImpl extends AbstractTransform
                 logger.warn(exn); // XXX TransExn
             }
         }
+
+        if ( getRunState() == TransformState.RUNNING ) {
+            ArgonManager argonManager = MvvmContextFactory.context().argonManager();
+            
+            try {
+                argonManager.setShieldNodeRules( this.settings.getShieldNodeRuleList());
+            } catch ( Exception e ) {
+                logger.error( "Error setting shield node rules", e );
+            }
+        }
     }
 
     public AirgapSettings getAirgapSettings()
@@ -84,6 +105,13 @@ public class AirgapTransformImpl extends AbstractTransform
         return new PipeSpec[0];
     }
 
+    protected void initializeSettings()
+    {
+        AirgapSettings settings = new AirgapSettings(this.getTid());
+        logger.info("Initializing Settings...");
+        setAirgapSettings( settings);
+    }
+
     protected void postInit(String[] args)
     {
         Session s = getTransformContext().openSession();
@@ -93,7 +121,7 @@ public class AirgapTransformImpl extends AbstractTransform
             Query q = s.createQuery
                 ("from AirgapSettings ts where ts.tid = :tid");
             q.setParameter("tid", getTid());
-            settings = (AirgapSettings)q.uniqueResult();
+            this.settings = (AirgapSettings)q.uniqueResult();
 
             tx.commit();
         } catch (HibernateException exn) {
@@ -166,7 +194,33 @@ public class AirgapTransformImpl extends AbstractTransform
             String[] args = {""};
             postInit(args);
         }
+        
         fakeStats = new FakeTransformStats();
+    }
+
+    protected void postStart() throws TransformStartException
+    {
+        ArgonManager argonManager = MvvmContextFactory.context().argonManager();
+                
+        try {
+            argonManager.setShieldNodeRules( this.settings.getShieldNodeRuleList());
+        } catch ( Exception e ) {
+            throw new TransformStartException( e );
+        }
+    }
+
+    protected void postStop() throws TransformStopException
+    {
+        ArgonManager argonManager = MvvmContextFactory.context().argonManager();
+        
+        List<ShieldNodeRule> emptyList = Collections.emptyList();
+        
+        try {
+            /* Deconfigure all of the nodes */
+            argonManager.setShieldNodeRules( emptyList );
+        } catch ( Exception e ) {
+            throw new TransformStopException( e );
+        }
     }
 
     // XXX soon to be deprecated ----------------------------------------------

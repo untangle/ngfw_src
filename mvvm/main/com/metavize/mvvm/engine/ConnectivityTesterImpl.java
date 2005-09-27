@@ -149,7 +149,7 @@ class ConnectivityTesterImpl implements ConnectivityTester
                 logger.debug( "Completed lookup" );
             } catch ( UnknownHostException e ) {
                 this.address   = null;
-                    logger.error( "Unable to look up host: ", e );
+                logger.warn( "Unable to look up host: " + TEST_HOSTNAME_BASE + "." + TEST_HOSTNAME_DOMAIN );
             }
 
             this.isWorking = false;
@@ -189,7 +189,7 @@ class ConnectivityTesterImpl implements ConnectivityTester
                 logger.debug( "Completed TCP Connection test" );
             } catch ( IOException e ) {
                 this.isWorking = false;
-                logger.error( "Unable to connect to " + this.address, e );
+                logger.warn( "Unable to connect to " + this.address );
             }
         }
     }

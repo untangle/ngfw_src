@@ -14,6 +14,7 @@ package com.metavize.mvvm.argon;
 import java.net.InetAddress;
 
 import java.util.List;
+import java.util.LinkedList;
 import java.util.Collections;
 
 import org.apache.log4j.Logger;
@@ -21,6 +22,7 @@ import org.apache.log4j.Logger;
 import com.metavize.jnetcap.Netcap;
 import com.metavize.jnetcap.InterfaceData;
 import com.metavize.jnetcap.Shield;
+import com.metavize.jnetcap.ShieldNodeSettings;
 import com.metavize.jnetcap.JNetcapException;
 
 import com.metavize.mvvm.ArgonManager;
@@ -28,6 +30,8 @@ import com.metavize.mvvm.NetworkingConfiguration;
 
 import com.metavize.mvvm.tran.firewall.IPMatcher;
 import com.metavize.mvvm.tran.firewall.InterfaceRedirect;
+
+import com.metavize.mvvm.shield.ShieldNodeRule;
 
 public class ArgonManagerImpl implements ArgonManager
 {    
@@ -126,6 +130,8 @@ public class ArgonManagerImpl implements ArgonManager
         throws ArgonException
     {
         BridgeConfigurationManager.getInstance().reconfigureBridge( netConfig );
+        pause();
+        updateAddress();
     }
     
     /* Indicate that the shutdown process has started, this is used to prevent NAT from both
@@ -230,7 +236,7 @@ public class ArgonManagerImpl implements ArgonManager
         return outsideIntfDataList.get( 0 ).getNetmask();
     }
 
-    public List<InterfaceData> getOutsideAliases()
+    public List<InterfaceData> getOutsideAliasList()
     {
         if ( this.outsideIntfDataList.size() < 2 ) return EMPTY_INTF_DATA_LIST;
         return Collections.unmodifiableList( outsideIntfDataList.subList( 1, outsideIntfDataList.size()));
@@ -256,6 +262,41 @@ public class ArgonManagerImpl implements ArgonManager
             return IntfConverter.toArgon( netcapIntf );
         } catch ( JNetcapException e ) {
             throw new ArgonException( e );
+        }
+    }
+
+    /* Update the shield node settings */
+    public void setShieldNodeRules( List<ShieldNodeRule> shieldNodeRuleList ) throws ArgonException
+    {
+        List <ShieldNodeSettings> settings = new LinkedList<ShieldNodeSettings>();
+
+        for ( ShieldNodeRule rule : shieldNodeRuleList ) {
+            if ( rule == null ) {
+                logger.error( "NULL Rule in list\n" );
+                continue;
+            }
+
+            if ( !rule.isLive()) {
+                logger.debug( "Ignoring disabled rule" );
+                continue;
+            }
+
+            if ( rule.getAddress().isEmpty() || rule.getNetmask().isEmpty()) {
+                logger.error( "Rule with empty address or netmask, ignoring" );
+                continue;
+            }
+            
+            logger.debug( "Adding shield node setting " + rule.getAddress().toString() + "/" + 
+                          rule.getNetmask().toString() + " divider: " + rule.getDivider());
+            
+            settings.add( new ShieldNodeSettings( rule.getDivider(), rule.getAddress().getAddr(), 
+                                                  rule.getNetmask().getAddr()));
+        }
+
+        try {
+            Shield.getInstance().setNodeSettings( settings );
+        } catch ( Exception e ) {
+            throw new ArgonException( "Unable to set the shield node rules", e );
         }
     }
 

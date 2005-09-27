@@ -13,7 +13,12 @@ package com.metavize.tran.airgap;
 
 import java.io.Serializable;
 
+import java.util.List;
+import java.util.LinkedList;
+
 import com.metavize.mvvm.security.Tid;
+
+import com.metavize.mvvm.shield.ShieldNodeRule;
 
 /**
  * Settings for the Airgap Transform.
@@ -25,24 +30,31 @@ import com.metavize.mvvm.security.Tid;
  */
 public class AirgapSettings implements Serializable
 {
-    private static final long serialVersionUID = -565947423325544018L;
+    private static final long serialVersionUID = -4330737456182204381L;
 
     private Long id;
     private Tid tid;
 
+    private List shieldNodeRuleList = new LinkedList();
+    
     public AirgapSettings() { }
+
+    public AirgapSettings(Tid tid)
+    {
+        this.tid = tid;
+    }
 
     /**
      * @hibernate.id
-     * column="ID"
+     * column="SETTINGS_ID"
      * generator-class="native"
      */
-    private Long getId()
+    public Long getId()
     {
         return id;
     }
 
-    private void setId(Long id)
+    public void setId(Long id)
     {
         this.id = id;
     }
@@ -63,5 +75,36 @@ public class AirgapSettings implements Serializable
     public void setTid(Tid tid)
     {
         this.tid = tid;
+    }
+
+    /**
+     * Shield node configuration rules.
+     *
+     * @return the list of user settings
+     * @hibernate.list
+     * cascade="all-delete-orphan"
+     * @hibernate.collection-key
+     * column="SETTINGS_ID"
+     * @hibernate.collection-index
+     * column="POSITION"
+     * @hibernate.collection-one-to-many
+     * class="com.metavize.mvvm.shield.ShieldNodeRule"
+     */
+    public List getShieldNodeRuleList()
+    {
+        if ( null == this.shieldNodeRuleList ) {
+            this.shieldNodeRuleList = new LinkedList();
+        }
+
+        return this.shieldNodeRuleList;
+    }
+    
+    public void setShieldNodeRuleList( List shieldNodeRuleList )
+    {
+        if ( null == shieldNodeRuleList  ) {
+            shieldNodeRuleList = new LinkedList();
+        }
+
+        this.shieldNodeRuleList = shieldNodeRuleList;
     }
 }

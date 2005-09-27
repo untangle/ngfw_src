@@ -17,6 +17,12 @@
 #define _LRU_DEBUG_HIGH 11
 #define _LRU_DEBUG_LOW  7
 
+#define _CHECK_AND_LOCK( mutex ) \
+  if (((mutex) != NULL ) && ( pthread_mutex_lock((mutex)) < 0 )) return perrlog( "pthread_mutex_lock\n" )
+
+#define _CHECK_AND_UNLOCK( mutex ) \
+  if (((mutex) != NULL ) && ( pthread_mutex_unlock((mutex)) < 0 )) return perrlog( "pthread_mutex_unlock\n" )
+
 static int _lru_remove( netcap_lru_t* lru, netcap_lru_node_t* node );
 
 static __inline__ int _validate_args( int high_water, int low_water, int sieve_size )
@@ -43,7 +49,7 @@ static __inline__ int _validate_lru( netcap_lru_t* lru )
 
 
 int netcap_lru_init( netcap_lru_t* lru, int high_water, int low_water, int sieve_size, 
-                     netcap_lru_check_t* is_deletable, netcap_lru_remove_t* remove, pthread_mutex_t* mutex )
+                     netcap_lru_check_t* is_deletable, netcap_lru_remove_t* remove )
 {
     if ( lru == NULL || remove == NULL ) return errlogargs();
 
@@ -58,21 +64,18 @@ int netcap_lru_init( netcap_lru_t* lru, int high_water, int low_water, int sieve
         return errlog( ERR_CRITICAL, "list_init\n" );
     }
 
-    /* Initialize the LRU mutex */
-    // XXX if ( pthread_mutex_init( &lru->mutex, NULL ) < 0 ) return perrlog( "pthread_mutex_init" );
-
     lru->length       = 0;
     lru->high_water   = high_water;
     lru->low_water    = low_water;
     lru->sieve_size   = sieve_size;
     lru->is_deletable = is_deletable;
     lru->remove       = remove;
-    lru->mutex        = mutex;
          
     return 0;
 }
 
-int netcap_lru_config( netcap_lru_t* lru, int high_water, int low_water, int sieve_size )
+int netcap_lru_config( netcap_lru_t* lru, int high_water, int low_water, int sieve_size, 
+                       pthread_mutex_t* mutex )
 {
     if ( lru == NULL ) return errlogargs();
     
@@ -81,19 +84,19 @@ int netcap_lru_config( netcap_lru_t* lru, int high_water, int low_water, int sie
     }
 
     /* Get the mutex lock */
-    if ( pthread_mutex_lock ( lru->mutex ) < 0 ) return perrlog( "pthread_mutex_lock" );
+    _CHECK_AND_LOCK( mutex );
     
     lru->low_water  = low_water;
     lru->high_water = high_water;
     lru->sieve_size = sieve_size;
 
-    if ( pthread_mutex_unlock ( lru->mutex ) < 0 ) return perrlog ( "pthread_mutex_unlock" );
+    _CHECK_AND_UNLOCK( mutex );
     
     return 0;
 }
 
 /* Add a node to the front of the LRU, node is updated to contain the necessary information for the LRU */
-int netcap_lru_add( netcap_lru_t* lru, netcap_lru_node_t* node, void* data )
+int netcap_lru_add( netcap_lru_t* lru, netcap_lru_node_t* node, void* data, pthread_mutex_t* mutex )
 {
     if ( lru == NULL || node == NULL || data == NULL ) return errlogargs();
 
@@ -113,15 +116,16 @@ int netcap_lru_add( netcap_lru_t* lru, netcap_lru_node_t* node, void* data )
     }
 
     int ret;
-
-    // if ( pthread_mutex_lock( lru->mutex ) < 0 ) return perrlog( "pthread_mutex_lock\n" );
-    ret = _critical_section();
-    // if ( pthread_mutex_unlock( lru->mutex ) < 0 ) perrlog( "pthread_mutex_unlock\n" );
     
+    _CHECK_AND_LOCK( mutex );
+    ret = _critical_section();
+    _CHECK_AND_UNLOCK( mutex );
+
     return ret;
 }
 
-int netcap_lru_permanent_add( netcap_lru_t* lru, netcap_lru_node_t* node, void* data )
+int netcap_lru_permanent_add( netcap_lru_t* lru, netcap_lru_node_t* node, void* data, 
+                              pthread_mutex_t* mutex  )
 {
     if ( lru == NULL || node == NULL || data == NULL ) return errlogargs();
 
@@ -156,20 +160,21 @@ int netcap_lru_permanent_add( netcap_lru_t* lru, netcap_lru_node_t* node, void* 
             return errlog( ERR_CRITICAL, "list_add_head\n" );
         }
         
+        node->state = _LRU_PERMANENT;
         return 0;
     }
 
     int ret;
 
-    if ( pthread_mutex_lock( lru->mutex ) < 0 ) return perrlog( "pthread_mutex_lock\n" );
+    _CHECK_AND_LOCK( mutex );
     ret = _critical_section();
-    if ( pthread_mutex_unlock( lru->mutex ) < 0 ) perrlog( "pthread_mutex_unlock\n" );
+    _CHECK_AND_UNLOCK( mutex );
     
     return ret;    
 }
 
 /* Remove all of the nodes on the permanent list and add them to the LRU */
-int netcap_lru_permanent_clear( netcap_lru_t* lru )
+int netcap_lru_permanent_clear( netcap_lru_t* lru, pthread_mutex_t* mutex )
 {
     if ( lru == NULL ) return errlogargs();
     
@@ -206,16 +211,16 @@ int netcap_lru_permanent_clear( netcap_lru_t* lru )
 
     int ret;
 
-    if ( pthread_mutex_lock( lru->mutex ) < 0 ) return perrlog( "pthread_mutex_lock\n" );
+    _CHECK_AND_LOCK( mutex );
     ret = _critical_section();
-    if ( pthread_mutex_unlock( lru->mutex ) < 0 ) perrlog( "pthread_mutex_unlock\n" );
+    _CHECK_AND_UNLOCK( mutex );
     
     return ret;    
 }
 
 /* Move a node to the front of the LRU, node should be a value returned from a previous
  * execution of lru_add */
-int netcap_lru_move_front( netcap_lru_t* lru, netcap_lru_node_t* node )
+int netcap_lru_move_front( netcap_lru_t* lru, netcap_lru_node_t* node, pthread_mutex_t* mutex )
 {
     if ( lru == NULL || node == NULL ) return errlogargs();
 
@@ -243,16 +248,17 @@ int netcap_lru_move_front( netcap_lru_t* lru, netcap_lru_node_t* node )
         return 0;
     }
     
-    if ( pthread_mutex_lock( lru->mutex ) < 0 ) return perrlog( "pthread_mutex_lock\n" );
+    _CHECK_AND_LOCK( mutex );
     ret = _critical_section();
-    if ( pthread_mutex_unlock( lru->mutex ) < 0 ) perrlog( "pthread_mutex_unlock\n" );
+    _CHECK_AND_UNLOCK( mutex );
     
     return ret;
 }
 
 
 /* Cut any excessive nodes, and place the results into the node_array */
-int netcap_lru_cut( netcap_lru_t* lru, netcap_lru_node_t** node_array, int node_array_size )
+int netcap_lru_cut( netcap_lru_t* lru, netcap_lru_node_t** node_array, int node_array_size, 
+                    pthread_mutex_t* mutex )
 {
     if ( lru == NULL || node_array_size < 0 ) return errlogargs();
     
@@ -263,8 +269,7 @@ int netcap_lru_cut( netcap_lru_t* lru, netcap_lru_node_t** node_array, int node_
 
         if (( length = list_length ( &lru->lru_list )) < 0 ) return errlog(ERR_CRITICAL,"list_length\n");
 
-        debug( 0, "LRU: Update - length %d items\n", length );
-
+        debug( _LRU_DEBUG_LOW, "LRU: Update - length %d items\n", length );
 
         /* Make sure the LRU doesn't get too short */
         if ( length < _LRU_MIN_LENGTH ) return 0;
@@ -281,8 +286,7 @@ int netcap_lru_cut( netcap_lru_t* lru, netcap_lru_node_t** node_array, int node_
             /* Max it out at the size of the sieve */
             c = ( c < lru->sieve_size ) ? c : lru->sieve_size;
 
-            /* XXX Debug should be higher */
-            debug( 0, "LRU: Update - sifting %d items\n", c );
+            debug( _LRU_DEBUG_HIGH, "LRU: Update - sifting %d items\n", c );
             
             for ( ; c-- > 0 ; ) {
                 int is_deletable;
@@ -308,8 +312,7 @@ int netcap_lru_cut( netcap_lru_t* lru, netcap_lru_node_t** node_array, int node_
         } else {
             /* XXX May need to check for is_deletable */
             c = length - lru->low_water;
-            /* XXX Debug level */
-            debug ( 0, "TRIE: LRU Update - cutting %d items\n", c );
+            debug ( _LRU_DEBUG_LOW, "TRIE: LRU Update - cutting %d items\n", c );
             
             for (  ; c-- > 0 ; ) {
                 netcap_lru_node_t* node;
@@ -338,9 +341,9 @@ int netcap_lru_cut( netcap_lru_t* lru, netcap_lru_node_t** node_array, int node_
 
     int ret = 0;
     
-    if ( pthread_mutex_lock( lru->mutex ) < 0 ) return perrlog( "pthread_mutex_lock\n" );
+    _CHECK_AND_LOCK( mutex );
     ret = _critical_section();
-    if ( pthread_mutex_unlock( lru->mutex ) < 0 ) perrlog( "pthread_mutex_unlock\n" );
+    _CHECK_AND_UNLOCK( mutex );
     
     return ret;
 }

@@ -230,7 +230,7 @@ JNIEXPORT jint JNICALL JF_Netcap( getInterfaceDataArray )
     /* An array to copy the returned data into */
     jlong data[NETCAP_MAX_INTERFACES* _DATA_NUM_ITEMS];
     
-    if ((*env)->GetArrayLength( env, j_data ) < ret * _DATA_NUM_ITEMS ) {
+    if ((*env)->GetArrayLength( env, j_data ) < ( ret * _DATA_NUM_ITEMS )) {
         return jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, 
                               "Use a larger array in order to receive data %d\n", ret );
     }

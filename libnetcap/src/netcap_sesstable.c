@@ -438,6 +438,7 @@ static int _netcap_sesstable_merge_tuple( netcap_session_t* netcap_sess, int pro
     netcap_session_t* current_sess;
     session_tuple_t* st = NULL;
     netcap_pkt_t* pkt;
+    struct in_addr address = { .s_addr src };
     
     if ( netcap_sess == NULL || ( proto != IPPROTO_UDP && proto != IPPROTO_ICMP )) {
        return errlogargs();
@@ -452,7 +453,7 @@ static int _netcap_sesstable_merge_tuple( netcap_session_t* netcap_sess, int pro
 
         /* Expire one session inside of the shield */
         /* XXX Should a failure in the shield return an error condition */
-        if ( netcap_shield_rep_end_session( src ) < 0 ) {
+        if ( netcap_shield_rep_end_session( &address ) < 0 ) {
             errlog(ERR_CRITICAL,"netcap_shield_rep_end_session\n");
         }
 

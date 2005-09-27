@@ -131,7 +131,7 @@ int nc_shield_mode_cleanup( void )
     return 0;
 }
 
-int nc_shield_stats_add_session( int protocol, netcap_shield_ans_t response )
+int nc_shield_stats_add_request( int protocol, netcap_shield_ans_t response )
 {
     netcap_shield_response_counters_t* protocol_counter = NULL;
     
@@ -178,6 +178,7 @@ int nc_shield_stats_add_session( int protocol, netcap_shield_ans_t response )
         default: 
             return errlog( ERR_CRITICAL, "Invalid response: %d\n", response );
         }
+        /* XXX Add the interface also */
     } else {
         debug( 4, "Shield monitor is no longer runnning\n" );
     }

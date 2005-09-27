@@ -11,6 +11,9 @@
 
 package com.metavize.mvvm.engine;
 
+import java.util.List;
+import java.util.LinkedList;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -20,13 +23,19 @@ import java.io.FileWriter;
 import java.net.Inet4Address;
 
 import com.metavize.jnetcap.Netcap;
+import com.metavize.jnetcap.InterfaceData;
+
 import com.metavize.mvvm.ArgonManager;
 import com.metavize.mvvm.IntfEnum;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.MvvmException;
 import com.metavize.mvvm.NetworkingConfiguration;
 import com.metavize.mvvm.NetworkingManager;
+import com.metavize.mvvm.ArgonManager;
+import com.metavize.mvvm.MvvmException;
+import com.metavize.mvvm.InterfaceAlias;
 import com.metavize.mvvm.argon.ArgonManagerImpl;
+import com.metavize.mvvm.InterfaceAlias;
 import com.metavize.mvvm.tran.IPaddr;
 import org.apache.log4j.Logger;
 
@@ -129,6 +138,14 @@ class NetworkingManagerImpl implements NetworkingManager
         configuration.host( new IPaddr((Inet4Address)argon.getOutsideAddress()));
         configuration.netmask( new IPaddr((Inet4Address)argon.getOutsideNetmask()));
         configuration.gateway( new IPaddr((Inet4Address)Netcap.getGateway()));
+
+        List<InterfaceAlias> list = new LinkedList<InterfaceAlias>();
+        /* XXX Should be exposed in the manager, but the the InterfaceData from jnetcap has
+         * to be exposed */
+        for ( InterfaceData data : ((ArgonManagerImpl)argon).getOutsideAliasList()) {
+            list.add( new InterfaceAlias( data.getAddress(), data.getNetmask(), data.getBroadcast()));
+        }
+        configuration.setAliasList( list );
     }
 
     private void getDhcp()
@@ -284,7 +301,24 @@ class NetworkingManagerImpl implements NetworkingManager
         sb.append( "\tbridge_ports all\n" );
         sb.append( "\tbridge_maxwait 0\n" );
 
-        /* XXX write both files */
+        int c = 0;
+        for ( InterfaceAlias alias : configuration.getAliasList()) {
+            if ( !alias.isValid()) {
+                logger.warn( "Ignoring an invalid alias" );
+                continue;
+            }
+            String aliasName = "br0:" + c++;
+            
+            /* Indicate that the alias should be configured at startup */
+            sb.append( "\nauto " + aliasName + "\n" );
+            
+            /* Write out the alias configuration */
+            sb.append( "iface " + aliasName + " inet static\n" );
+            sb.append( "\taddress " + alias.getAddress() + "\n" );
+            sb.append( "\tnetmask " + alias.getNetmask() + "\n" );
+            sb.append( "\n\n" );
+        }
+        
         writeFile( sb, IP_CFG_FILE );
         writeFile( sb, BUNNICULA_CONF + IP_CFG_FILE );
     }

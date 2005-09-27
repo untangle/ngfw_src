@@ -23,14 +23,21 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
     
     private static final String NAME_GENERAL_SETTINGS = "General Settings";
     private static final String NAME_LOG = "Event Log";
+    private static final String NAME_SHIELD_PANEL = "Shield Configuration";
+
     
     public MTransformControlsJPanel(MTransformJPanel mTransformJPanel) {
         super(mTransformJPanel);
         
-	super.contentJPanel.remove(super.saveJButton);
-	super.contentJPanel.remove(super.reloadJButton);
+        // SHIELD CONFIGURATION SETTINGS /////
+        ShieldNodeConfigurationJPanel shieldJPanel = new ShieldNodeConfigurationJPanel();
+        super.mTabbedPane.addTab(NAME_SHIELD_PANEL, null, shieldJPanel );
+	super.savableMap.put(NAME_SHIELD_PANEL, shieldJPanel );
+	super.refreshableMap.put(NAME_SHIELD_PANEL, shieldJPanel );
 
-	// GENERAL SETTINGS //////
+
+        /* No more general settings */
+        /*
 	JPanel messageJPanel = new JPanel();
 	messageJPanel.setLayout(new GridBagLayout());
 	JLabel messageJLabel = new JLabel();
@@ -40,6 +47,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	messageJLabel.setVerticalAlignment(SwingConstants.CENTER);
 	messageJPanel.add(messageJLabel, new GridBagConstraints(0,0,1,1,0d,0d,GridBagConstraints.CENTER,GridBagConstraints.BOTH,new Insets(0,0,0,0),0,0));
 	super.mTabbedPane.add(NAME_GENERAL_SETTINGS, messageJPanel);
+        */
 
 	// EVENT LOG ///////////////
 	LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransformContext().transform(), this);

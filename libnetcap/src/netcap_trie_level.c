@@ -81,9 +81,10 @@ void                 netcap_trie_level_destroy    ( netcap_trie_t* trie, netcap_
     }
 
     level->base.parent = NULL;
-    
-    netcap_trie_level_remove_all ( trie, level );
 
+    /* It is assumed that all of the items have already been removed */
+    // netcap_trie_level_remove_all ( trie, level );
+    
     /* Destroy the base */
     netcap_trie_base_destroy ( trie, &level->base );
 }

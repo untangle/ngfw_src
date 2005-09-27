@@ -23,7 +23,7 @@
 #include "netcap_sched.h"
 
 /* Number of seconds to wait before just exiting the scheduler */
-#define _EXIT_TIMEOUT_SEC 2
+#define _EXIT_TIMEOUT_SEC 4
 
 /* Return 1 when ts1 is before ts2 (both arguments should be pointers)*/
 static __inline int _ts_before ( struct timespec* ts1, struct timespec* ts2 ) 

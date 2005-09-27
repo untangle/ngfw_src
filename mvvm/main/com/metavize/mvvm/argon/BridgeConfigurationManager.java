@@ -19,7 +19,7 @@ import java.net.InetAddress;
 import org.apache.log4j.Logger;
 
 import com.metavize.mvvm.NetworkingConfiguration;
-
+import com.metavize.mvvm.InterfaceAlias;
 
 /**
  * This is going to have to get more complicated down the line, which is why this functionality 
@@ -40,6 +40,7 @@ class BridgeConfigurationManager
     private static final String NAT_NAME           = "NAT";
     private static final String BRIDGE_NAME        = "MAIN_BRIDGE";
     private static final String OUTSIDE_NAME       = "OUTSIDE";
+    private static final String ALIAS_NAME         = "OUTSIDE_ALIAS";
     private static final String BRIDGE_LIST_SEP    = " ";
     private static final String INTF_LIST_SEP      = " ";
     private static final String TYPE_SUFFIX        = "type";
@@ -200,11 +201,13 @@ class BridgeConfigurationManager
         /* Check if there is only the outside interface interface in the bridge list.
          * (no need for a bridge) */
         String name = "";
+        String outsideInterfaceName = "";
         if ( bridgeInterfaceList.equals( outside )) {
             name = OUTSIDE_NAME;
             appendComment  ( sb, "Outside interface configuration" );
             appendParameter( sb, name, TYPE_SUFFIX, TYPE_POINT );
-            appendParameter( sb, name, PORT_SUFFIX, outside );
+            appendParameter( sb, name, PORT_SUFFIX, outside );            
+            outsideInterfaceName = outside;
         } else {
             name = BRIDGE_NAME;
             appendComment  ( sb, "Main bridge configuration" );
@@ -212,6 +215,7 @@ class BridgeConfigurationManager
             appendParameter( sb, name, PORT_LIST_SUFFIX, bridgeInterfaceList );
             /* XXX Hardwired to be br0 */
             appendParameter( sb, name, BRIDGE_NAME_SUFFIX, "br0" );
+            outsideInterfaceName = "br0";
         }
 
         if ( netConfig.isDhcpEnabled()) {
@@ -224,10 +228,33 @@ class BridgeConfigurationManager
             appendParameter( sb, name, ADDRESS_SUFFIX, outsideAddress );
             appendParameter( sb, name, NETMASK_SUFFIX, outsideNetmask );
             appendVariable ( sb, GATEWAY_VARIABLE, gateway );
+            sb.append( "\n\n" );
         }
         
         /* Add the outside interface to the list of configured interfaces */
         interfaceList = name + INTF_LIST_SEP + interfaceList;
+
+        int c = 0;
+        for ( InterfaceAlias alias : netConfig.getAliasList()) {
+            String aliasName = ALIAS_NAME + "_" + c;
+            String aliasInterfaceName = outsideInterfaceName + ":" + c;
+
+            if ( !alias.isValid()) {
+                logger.info( "Ignoring invalid alias" );
+                continue;
+            }
+            
+            appendComment( sb, "Outside interface alias #" + c );
+            appendParameter( sb, aliasName, TYPE_SUFFIX, TYPE_POINT );
+            appendParameter( sb, aliasName, PORT_SUFFIX, aliasInterfaceName );
+            appendParameter( sb, aliasName, ADDRESS_SUFFIX, alias.getAddress().toString());
+            appendParameter( sb, aliasName, NETMASK_SUFFIX, alias.getNetmask().toString());
+            
+            // Append the alias to the list of interfaces
+            interfaceList += INTF_LIST_SEP + aliasName;
+            c++;
+        }
+
         
         sb.append( "\n\n" );
 

@@ -27,6 +27,8 @@ import javax.swing.*;
 public class NetworkJDialog extends MConfigJDialog {
 
     private static final String NAME_NETWORK_SETTINGS = "Network Settings";
+    /* XXX Better name */
+    private static final String NAME_ALIAS_PANEL      = "Outside Interface Aliases";
 
     public NetworkJDialog( ) {
     }
@@ -46,6 +48,12 @@ public class NetworkJDialog extends MConfigJDialog {
         this.contentJTabbedPane.addTab(NAME_NETWORK_SETTINGS, null, contentJScrollPane);
 	super.savableMap.put(NAME_NETWORK_SETTINGS, networkJPanel);
 	super.refreshableMap.put(NAME_NETWORK_SETTINGS, networkJPanel);
+
+        // ALIASES Panel /////
+        InterfaceAliasJPanel aliasJPanel = new InterfaceAliasJPanel();
+        super.contentJTabbedPane.addTab(NAME_ALIAS_PANEL, null, aliasJPanel );
+	super.savableMap.put(NAME_ALIAS_PANEL, aliasJPanel );
+	super.refreshableMap.put(NAME_ALIAS_PANEL, aliasJPanel );
     }
     
     protected void sendSettings(Object settings) throws Exception {

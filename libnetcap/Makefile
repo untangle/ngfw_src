@@ -47,7 +47,6 @@ c_src= netcap_version.c \
        netcap_trie_item.c \
        netcap_trie_level.c \
        netcap_trie_root.c \
-       netcap_trie_lru.c \
        netcap_trie_base.c \
        netcap_shield.c \
        netcap_shield_cfg.c \
@@ -58,7 +57,8 @@ c_src= netcap_version.c \
        netcap_icmp_msg.c \
        netcap_ip.c \
        netcap_intf_db.c \
-       netcap_route.c
+       netcap_route.c \
+       netcap_lru.c
 
 objects=$(c_src:.c=.o)
 

@@ -18,6 +18,8 @@ import java.util.List;
 import com.metavize.mvvm.argon.ArgonException;
 import com.metavize.mvvm.tran.firewall.InterfaceRedirect;
 
+import com.metavize.mvvm.shield.ShieldNodeRule;
+
 public interface ArgonManager
 {
     void shieldStatus( InetAddress ip, int port );
@@ -93,4 +95,7 @@ public interface ArgonManager
 
     /* Get the outgoing argon interface for an IP address */
     public byte getOutgoingInterface( InetAddress destination ) throws ArgonException;
+
+    /* Set the shield node rules */
+    public void setShieldNodeRules( List<ShieldNodeRule> shieldNodeRuleList ) throws ArgonException;
 }

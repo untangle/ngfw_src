@@ -26,6 +26,7 @@ import com.metavize.jnetcap.Shield;
 import com.metavize.jnetcap.JNetcapException;
 
 import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.engine.PolicyManagerPrivileged;
 
 import com.metavize.mvvm.tran.firewall.PortMatcher;
 import com.metavize.mvvm.tran.firewall.ProtocolMatcher;
@@ -82,16 +83,8 @@ public class Argon
     private Argon()
     {
     }
-        
-    /* XXX
-     * This should be able to throw an exception
-     */
-    public static void main( String args[] ) // throws ArgonException
-    {
-        INSTANCE.run( args );
-    }
     
-    public void run( String args[] )
+    public void run( PolicyManagerPrivileged policyManager  )
     {
         /* Get an instance of the shield */
         shield = Shield.getInstance();
@@ -99,7 +92,7 @@ public class Argon
         /* Parse all of the properties */
         parseProperties();
 
-        init();
+        init( policyManager );
 
         registerHooks();
     }
@@ -178,7 +171,7 @@ public class Argon
     /**
      * Initialize Netcap and any other supporting libraries.
      */
-    private void init()
+    private void init( PolicyManagerPrivileged policyManager )
     {
         Netcap.init( isShieldEnabled, netcapDebugLevel, jnetcapDebugLevel );
 
@@ -198,7 +191,7 @@ public class Argon
 
         /* Start the scheduler */
         Netcap.startScheduler();
-
+        
         /* Convert all of the interface names from strings to bytes */
         try {
             IntfConverter.init( inside, outside, dmz, user );
@@ -206,6 +199,9 @@ public class Argon
             logger.error( "Error initializing IntfConverter, continuing", e );
         }
 
+        /* Configure the array of active interfaces */
+        policyManager.reconfigure( IntfConverter.getInstance().getArgonIntfArray());
+        
         if ( isShieldEnabled && shieldFile != null )
             shield.config( shieldFile );
 
