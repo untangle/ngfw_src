@@ -15,7 +15,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -40,11 +39,12 @@ class MvvmRealm extends RealmBase
 
     public Principal authenticate(String username, String credentials)
     {
+        DataSourceFactory dsf = DataSourceFactory.factory();
+
         Connection c = null;
         try {
             // XXX use pool
-            c = DriverManager.getConnection("jdbc:postgresql://localhost/mvvm",
-                                            "metavize", "foo");
+            c = dsf.getConnection();
 
             logger.debug("doing query: " + userQuery);
             PreparedStatement ps = c.prepareStatement(userQuery);
@@ -66,7 +66,7 @@ class MvvmRealm extends RealmBase
         } finally {
             try {
                 if (null != c) {
-                    c.close();
+                    dsf.closeConnection(c);
                 }
             } catch (SQLException exn) {
                 logger.warn(exn);

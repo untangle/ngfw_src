@@ -251,6 +251,7 @@ $Id: common-classpaths.xml,v 1.32 2005/02/10 23:25:44 jdi Exp $
     <path refid="jnlp-servlet.classpath"/>
     <path refid="activation.classpath"/>
     <path refid="bcel.classpath"/>
+    <path refid="c3p0.classpath"/>
     <path refid="concurrent.classpath"/>
     <path refid="hibernate.classpath"/>
     <path refid="jasperreports.classpath"/>

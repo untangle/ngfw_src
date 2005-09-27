@@ -26,6 +26,7 @@
     (mapcar (lambda (a)
               (concat "./tran/output/" a)) casings)
     '("../downloads/output/bcel-5.1/bcel-5.1.jar"
+      "../downloads/output/c3p0-0.9.0.2/lib/c3p0-0.9.0.2.jar"
       "../downloads/output/concurrent-1.3.4/lib/concurrent.jar"
       "../downloads/output/hibernate-3.0/hibernate3.jar"
       "../downloads/output/jakarta-tomcat-5.0.28-embed/lib/catalina-optional.jar"

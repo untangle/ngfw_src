@@ -16,6 +16,7 @@ import java.io.FileInputStream;
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.sql.SQLException;
 
 import org.apache.catalina.Connector;
 import org.apache.catalina.Context;
@@ -61,7 +62,6 @@ public class Main
     private String bunniculaToolbox;
     private String bunniculaWeb;
     private String bunniculaTmp;
-
 
     // constructor ------------------------------------------------------------
 
@@ -142,6 +142,11 @@ public class Main
         }
 
         mvvmContext.doDestroy();
+        try {
+            DataSourceFactory.factory().destroy();
+        } catch (SQLException exn) {
+            logger.warn("could not destory DataSourceFactory", exn);
+        }
         System.out.println("MVVM shutdown complete.");
     }
 
