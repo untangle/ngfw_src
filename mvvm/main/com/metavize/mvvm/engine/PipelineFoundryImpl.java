@@ -291,8 +291,8 @@ class PipelineFoundryImpl implements PipelineFoundry
 
     private boolean weldMPipes(List<MPipeFitting> mPipeFittings,
                                Fitting start, Policy p,
-                            Map<Fitting, List<MPipe>> availMPipes,
-                            Map<MPipe, MPipe> availCasings)
+                               Map<Fitting, List<MPipe>> availMPipes,
+                               Map<MPipe, MPipe> availCasings)
     {
         boolean welded = false;
 
