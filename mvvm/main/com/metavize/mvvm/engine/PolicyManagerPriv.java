@@ -13,7 +13,7 @@ package com.metavize.mvvm.engine;
 
 import com.metavize.mvvm.policy.PolicyManager;
 
-public interface PolicyManagerPrivileged extends PolicyManager
+public interface PolicyManagerPriv extends PolicyManager
 {
     void reconfigure( byte[] interfaces );
 }

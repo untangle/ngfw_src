@@ -11,32 +11,18 @@
 
 package com.metavize.mvvm.argon;
 
-import java.net.InetAddress;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Iterator;
-
-import org.apache.log4j.Logger;
-
-import com.metavize.jvector.Vector;
 
 import com.metavize.jnetcap.Netcap;
 import com.metavize.jnetcap.Shield;
-import com.metavize.jnetcap.JNetcapException;
-
+import com.metavize.jvector.Vector;
 import com.metavize.mvvm.MvvmContextFactory;
-import com.metavize.mvvm.engine.PolicyManagerPrivileged;
-
-import com.metavize.mvvm.tran.firewall.PortMatcher;
-import com.metavize.mvvm.tran.firewall.ProtocolMatcher;
-import com.metavize.mvvm.tran.firewall.IntfMatcher;
-import com.metavize.mvvm.tran.firewall.IPMatcher;
-
+import com.metavize.mvvm.engine.PolicyManagerPriv;
 import com.metavize.mvvm.shield.ShieldMonitor;
+import org.apache.log4j.Logger;
 
 public class Argon
-{    
+{
     /* Number of times to try and shutdown all vectoring machines cleanly before giving up */
     static final int SHUTDOWN_ATTEMPTS = 5;
 
@@ -48,14 +34,14 @@ public class Argon
 
     /* Maximum number of threads allowed at any time */
     private static int MAX_THREADS = 10000;
-    
+
     /* Singleton */
     private static final Argon INSTANCE = new Argon();
-        
+
     private int sleepingThreads;
     private int totalThreads;
     private int activeThreads;
-    
+
     int netcapDebugLevel    = 1;
     int jnetcapDebugLevel   = 1;
     int vectorDebugLevel    = 0;
@@ -64,7 +50,7 @@ public class Argon
     boolean isShieldEnabled = true;
     String shieldFile       = null;
     Shield shield;
-    
+
     /* Number of threads to donate to netcap */
     int numThreads        = 15;
 
@@ -83,8 +69,8 @@ public class Argon
     private Argon()
     {
     }
-    
-    public void run( PolicyManagerPrivileged policyManager  )
+
+    public void run( PolicyManagerPriv policyManager  )
     {
         /* Get an instance of the shield */
         shield = Shield.getInstance();
@@ -110,7 +96,7 @@ public class Argon
         if (( temp = System.getProperty( "argon.outside" )) != null ) {
             outside = temp;
         }
-        
+
         if (( temp = System.getProperty( "argon.dmz" )) != null ) {
             dmz = temp;
         }
@@ -171,14 +157,14 @@ public class Argon
     /**
      * Initialize Netcap and any other supporting libraries.
      */
-    private void init( PolicyManagerPrivileged policyManager )
+    private void init( PolicyManagerPriv policyManager )
     {
         Netcap.init( isShieldEnabled, netcapDebugLevel, jnetcapDebugLevel );
 
-        if ( isShieldEnabled ) { 
+        if ( isShieldEnabled ) {
             shield.registerEventListener( ShieldMonitor.getInstance());
         }
-        
+
         Vector.mvutilDebugLevel( mvutilDebugLevel );
         Vector.vectorDebugLevel( vectorDebugLevel );
         Vector.jvectorDebugLevel( jvectorDebugLevel );
@@ -191,7 +177,7 @@ public class Argon
 
         /* Start the scheduler */
         Netcap.startScheduler();
-        
+
         /* Convert all of the interface names from strings to bytes */
         try {
             IntfConverter.init( inside, outside, dmz, user );
@@ -201,7 +187,7 @@ public class Argon
 
         /* Configure the array of active interfaces */
         policyManager.reconfigure( IntfConverter.getInstance().getArgonIntfArray());
-        
+
         if ( isShieldEnabled && shieldFile != null )
             shield.config( shieldFile );
 
@@ -216,16 +202,16 @@ public class Argon
         InterfaceOverride.getInstance().clearOverrideList();
     }
 
-    public void destroy() 
+    public void destroy()
     {
         logger.debug( "Shutting down" );
         ArgonManagerImpl argonManager = ArgonManagerImpl.getInstance();
-        
+
         RuleManager.getInstance().isShutdown();
         argonManager.isShutdown();
-        
+
         shield.unregisterEventListener();
-        
+
         /* Remove both of the hooks to guarantee that no new sessions are created */
         Netcap.unregisterTCPHook();
         Netcap.unregisterUDPHook();
@@ -237,7 +223,7 @@ public class Argon
             if ( logger.isInfoEnabled()) {
                 logger.info( "" + activeVectrons.count() + " active sessions remaining" );
             }
-            
+
             if ( !activeVectrons.shutdownActive()) break;
 
             /* Sleep a little while vectrons shutdown. */
@@ -255,7 +241,7 @@ public class Argon
         } catch ( ArgonException e ) {
             logger.error( "Unable to remove restore bridge!!!!", e );
         }
-        
+
         try {
             RuleManager.getInstance().destroyIptablesRules();
         } catch ( ArgonException e ) {

@@ -13,7 +13,6 @@ package com.metavize.mvvm.engine;
 
 import java.lang.ref.WeakReference;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,8 +25,8 @@ class LoginDesc
 
     private final Map<Integer, TargetDesc> targets
         = new ConcurrentHashMap<Integer, TargetDesc>();
-    private final Map<Object, Map<Class, TargetDesc>> proxies
-        = new WeakHashMap<Object, Map<Class, TargetDesc>>();
+    private final Map<Object, TargetDesc> proxies
+        = new WeakHashMap<Object, TargetDesc>();
 
     private volatile Date lastAccess;
     private volatile LoginSession loginThief;
@@ -44,17 +43,11 @@ class LoginDesc
 
     // package protected methods ----------------------------------------------
 
-    TargetDesc getTargetDesc(Object target, Class c, TargetReaper targetReaper)
+    TargetDesc getTargetDesc(Object target, TargetReaper targetReaper)
     {
-        TargetDesc targetDesc = null;
+        TargetDesc targetDesc;
         synchronized (proxies) {
-            Map <Class, TargetDesc> ctd = proxies.get(target);
-            if (null == ctd) {
-                ctd = new HashMap<Class, TargetDesc>();
-                proxies.put(target, ctd);
-            } else {
-                targetDesc = ctd.get(c);
-            }
+            targetDesc = proxies.get(target);
 
             if (null == targetDesc) {
                 final int targetId = ++lastId;
@@ -69,10 +62,10 @@ class LoginDesc
 
                 WeakReference tRef = targetReaper.makeReference(target, r);
 
-                targetDesc = new TargetDesc(loginSession, targetId, tRef, c);
+                targetDesc = new TargetDesc(loginSession, targetId, tRef);
 
                 targets.put(targetId, targetDesc);
-                ctd.put(c, targetDesc);
+                proxies.put(target, targetDesc);
             }
         }
 
@@ -93,9 +86,9 @@ class LoginDesc
     {
         this.loginThief = loginThief;
             targets.clear();
-        synchronized (proxies) {
-            proxies.clear();
-        }
+            synchronized (proxies) {
+                proxies.clear();
+            }
     }
 
     LoginSession getLoginThief()

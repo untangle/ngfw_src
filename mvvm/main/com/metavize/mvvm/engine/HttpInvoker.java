@@ -186,8 +186,7 @@ class HttpInvoker extends InvokerBase
             }
 
             if (null != retVal && !(retVal instanceof Serializable)) {
-                Class c = method.getReturnType();
-                targetDesc = loginDesc.getTargetDesc(retVal, c, targetReaper);
+                targetDesc = loginDesc.getTargetDesc(retVal, targetReaper);
                 retVal = targetDesc.getProxy();
             }
 

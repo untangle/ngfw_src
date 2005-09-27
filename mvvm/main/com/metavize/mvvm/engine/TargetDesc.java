@@ -31,12 +31,12 @@ class TargetDesc
 
     // constructors -----------------------------------------------------------
 
-    TargetDesc(LoginSession ls, int targetId, WeakReference targetRef, Class c)
+    TargetDesc(LoginSession ls, int targetId, WeakReference targetRef)
     {
         this.targetRef = targetRef;
 
         Object target = targetRef.get();
-        Class[] ifaces = interfaces(c);
+        Class[] ifaces = interfaces(target.getClass());
         ClassLoader cl = target.getClass().getClassLoader();
 
         Map<String, Method> ms = new HashMap<String, Method>();
@@ -82,7 +82,7 @@ class TargetDesc
     private Set<Class> interfaces(Class c, Set s)
     {
         // XXX Is there are more structural way of accomplishing this
-        if (c.isInterface()) {
+        if (c.isInterface() && !c.getName().endsWith("Priv")) {
             s.add(c);
         }
 
@@ -94,6 +94,7 @@ class TargetDesc
         if (null != superclass) {
             interfaces(superclass, s);
         }
+
         return s;
     }
 }

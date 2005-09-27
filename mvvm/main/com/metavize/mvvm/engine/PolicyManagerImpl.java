@@ -27,7 +27,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
-class PolicyManagerImpl implements PolicyManagerPrivileged
+class PolicyManagerImpl implements PolicyManagerPriv
 {
     private static final String INITIAL_POLICY_NAME = "Default";
     private static final String INITIAL_POLICY_NOTES = "The default policy";
@@ -347,11 +347,11 @@ class PolicyManagerImpl implements PolicyManagerPrivileged
         List<Policy> pToRemove = new ArrayList<Policy>();
 
         // what's happening here.
-        for (Policy oldp : allPolicies) {   
+        for (Policy oldp : allPolicies) {
             if (oldp.getId() == null)
                 throw new Error("Policy" + oldp.getName() + " has null id");
         }
-        
+
         // Now do the actual setting
         synchronized(policyRuleLock) {
             Policy newDefaultPolicy = null;

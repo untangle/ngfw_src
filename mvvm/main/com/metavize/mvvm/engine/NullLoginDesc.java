@@ -30,8 +30,7 @@ final class NullLoginDesc extends LoginDesc
 
         MvvmLogin login = MvvmContextFactory.context().mvvmLogin();
 
-        targetDesc = new TargetDesc(null, 0, new WeakReference(login),
-                                    login.getClass());
+        targetDesc = new TargetDesc(null, 0, new WeakReference(login));
     }
 
     // static factories -------------------------------------------------------
@@ -51,7 +50,7 @@ final class NullLoginDesc extends LoginDesc
     // LoginDesc methods ------------------------------------------------------
 
     @Override
-    TargetDesc getTargetDesc(Object target, Class c, TargetReaper targetReaper)
+    TargetDesc getTargetDesc(Object target, TargetReaper targetReaper)
     {
         return targetDesc;
     }
