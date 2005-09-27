@@ -221,7 +221,7 @@ static int   _validate_basics( void )
     int ret;
     /* Initialize the trie */
     /* Get the flags right */
-    if ( netcap_trie_init( &trie, 0, NULL, 0, _basic_init, NULL, NULL, 0, 0 ) < 0 ) {
+    if ( netcap_trie_init( &trie, 0, NULL, 0, _basic_init, NULL ) < 0 ) {
         return errlog( ERR_CRITICAL, "netcap_trie_init\n" );
     }
 
@@ -404,7 +404,7 @@ static int   _validate_lru( void )
     int ret;
     /* Initialize the trie */
     /* Get the flags right */
-    if ( netcap_trie_init( &_test.trie, 0, NULL, 0, _lru_init, NULL, NULL, 0, 0 ) < 0 ) {
+    if ( netcap_trie_init( &_test.trie, 0, NULL, 0, _lru_init, NULL ) < 0 ) {
         return errlog( ERR_CRITICAL, "netcap_trie_init\n" );
     }
     
@@ -550,7 +550,8 @@ static void* _lru_get     ( void* arg )
             unsigned int answer   =  ((_lru_trie_data_t*)line.d[c].base->data)->answer;
             unsigned int expected = _get_value( ip.s_addr, depth  );
             if ( answer != expected ) {
-                errlog( ERR_CRITICAL, "Data mismatch, done %#010x != %#010x, %d\n", expected, answer, line.d[c].base->depth );
+                errlog( ERR_CRITICAL, "Data mismatch, done %#010x != %#010x, %d\n", expected, answer, 
+                        line.d[c].base->depth );
                 exit( -1 );
             }
         }
