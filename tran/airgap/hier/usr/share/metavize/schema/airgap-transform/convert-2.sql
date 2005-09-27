@@ -11,6 +11,6 @@ CREATE TABLE settings.shield_node_rule (
     address     INET,
     netmask     INET,
     divider     REAL,
-    settings_id int8 NOT NULL,
-    position    int4 NOT NULL,
+    settings_id int8,
+    position    int4,
     PRIMARY KEY (rule_id)); 

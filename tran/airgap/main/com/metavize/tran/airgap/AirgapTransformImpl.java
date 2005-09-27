@@ -96,6 +96,7 @@ public class AirgapTransformImpl extends AbstractTransform
 
     public AirgapSettings getAirgapSettings()
     {
+        validateSettings();
         return settings;
     }
 
@@ -159,6 +160,7 @@ public class AirgapTransformImpl extends AbstractTransform
                 String clientAddr = rs.getString( CLIENT_ADDR_IDX );
 
                 /* XXX A Hack to convert the index to a number */
+                /* XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX FIXME BEFORE CHECKIN */
                 String clientIntf = ( rs.getByte( CLIENT_INTF_IDX ) == 0 ) ? "External" : "Internal";
 
                 double reputation = rs.getDouble( REPUTATION_IDX );
@@ -190,16 +192,14 @@ public class AirgapTransformImpl extends AbstractTransform
 
     protected void preStart()
     {
-        if (this.settings == null) {
-            String[] args = {""};
-            postInit(args);
-        }
+        validateSettings();
         
         fakeStats = new FakeTransformStats();
     }
 
     protected void postStart() throws TransformStartException
     {
+        validateSettings();
         ArgonManager argonManager = MvvmContextFactory.context().argonManager();
                 
         try {
@@ -220,6 +220,18 @@ public class AirgapTransformImpl extends AbstractTransform
             argonManager.setShieldNodeRules( emptyList );
         } catch ( Exception e ) {
             throw new TransformStopException( e );
+        }
+    }
+
+    /* This just checks if the settings are null, tries to load them from the database
+     * if they are still null it will then initialize a new set of settings */
+    private void validateSettings()
+    {
+        if (this.settings == null) {
+            String args[] = { "" };
+            postInit( args );
+            /* If the settings are still null, initialize them */
+            if ( this.settings == null ) initializeSettings();
         }
     }
 
