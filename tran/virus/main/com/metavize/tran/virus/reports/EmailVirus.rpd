@@ -13,30 +13,31 @@ FIELD_3.type=Long
 QUERY=SELECT virus_name AS name, count(virus_name), total_count \
         FROM (SELECT count(*) AS total_count \
                 FROM tr_virus_evt_mail \
-                WHERE time_stamp > $P{startTime} \
+                WHERE time_stamp >= $P{startTime} \
                   AND time_stamp < $P{endTime} \
                   AND NOT clean \
                   AND vendor_name = $P{virusVendor}) AS foo, \
              tr_virus_evt_mail evt \
-        WHERE evt.time_stamp > $P{startTime} \
+        WHERE evt.time_stamp >= $P{startTime} \
           AND evt.time_stamp < $P{endTime} \
           AND NOT clean \
           AND vendor_name = $P{virusVendor} \
         GROUP BY name, total_count \
-        UNION SELECT virus_name AS name, count(virus_name), total_count \
-                FROM (SELECT count(*) AS total_count \
-                        FROM tr_virus_evt_smtp \
-                        WHERE time_stamp > $P{startTime} \
-                          AND time_stamp < $P{endTime} \
-                          AND NOT clean \
-                          AND vendor_name = $P{virusVendor}) AS foo2, \
-                     tr_virus_evt_smtp evt \
-                WHERE evt.time_stamp > $P{startTime} \
-                  AND evt.time_stamp < $P{endTime} \
+      UNION \
+      SELECT virus_name AS name, count(virus_name), total_count \
+        FROM (SELECT count(*) AS total_count \
+                FROM tr_virus_evt_smtp \
+                WHERE time_stamp >= $P{startTime} \
+                  AND time_stamp < $P{endTime} \
                   AND NOT clean \
-                  AND vendor_name = $P{virusVendor} \
-                GROUP BY name, total_count \
-                ORDER BY count DESC
+                  AND vendor_name = $P{virusVendor}) AS foo2, \
+             tr_virus_evt_smtp evt \
+        WHERE evt.time_stamp >= $P{startTime} \
+          AND evt.time_stamp < $P{endTime} \
+          AND NOT clean \
+          AND vendor_name = $P{virusVendor} \
+        GROUP BY name, total_count \
+      ORDER BY count DESC
 LEFT.label=Virus Name
 MIDDLE.label=Count
 RIGHT.label=%
