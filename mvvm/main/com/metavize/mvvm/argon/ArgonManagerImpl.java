@@ -22,7 +22,6 @@ import org.apache.log4j.Logger;
 import com.metavize.jnetcap.Netcap;
 import com.metavize.jnetcap.InterfaceData;
 import com.metavize.jnetcap.Shield;
-import com.metavize.jnetcap.ShieldNodeSettings;
 import com.metavize.jnetcap.JNetcapException;
 
 import com.metavize.mvvm.ArgonManager;
@@ -31,7 +30,7 @@ import com.metavize.mvvm.NetworkingConfiguration;
 import com.metavize.mvvm.tran.firewall.IPMatcher;
 import com.metavize.mvvm.tran.firewall.InterfaceRedirect;
 
-import com.metavize.mvvm.shield.ShieldNodeRule;
+import com.metavize.mvvm.shield.ShieldNodeSettings;
 
 public class ArgonManagerImpl implements ArgonManager
 {    
@@ -266,37 +265,40 @@ public class ArgonManagerImpl implements ArgonManager
     }
 
     /* Update the shield node settings */
-    public void setShieldNodeRules( List<ShieldNodeRule> shieldNodeRuleList ) throws ArgonException
+    public void setShieldNodeSettings( List<ShieldNodeSettings> shieldNodeSettingsList ) 
+        throws ArgonException
     {
-        List <ShieldNodeSettings> settings = new LinkedList<ShieldNodeSettings>();
+        List <com.metavize.jnetcap.ShieldNodeSettings> settingsList = 
+            new LinkedList<com.metavize.jnetcap.ShieldNodeSettings>();
 
-        for ( ShieldNodeRule rule : shieldNodeRuleList ) {
-            if ( rule == null ) {
-                logger.error( "NULL Rule in list\n" );
+        for ( ShieldNodeSettings settings : shieldNodeSettingsList ) {
+            if ( settings == null ) {
+                logger.error( "NULL Settings in list\n" );
                 continue;
             }
 
-            if ( !rule.isLive()) {
-                logger.debug( "Ignoring disabled rule" );
+            if ( !settings.isLive()) {
+                logger.debug( "Ignoring disabled settings" );
                 continue;
             }
 
-            if ( rule.getAddress().isEmpty() || rule.getNetmask().isEmpty()) {
-                logger.error( "Rule with empty address or netmask, ignoring" );
+            if ( settings.getAddress().isEmpty() || settings.getNetmask().isEmpty()) {
+                logger.error( "Settings with empty address or netmask, ignoring" );
                 continue;
             }
             
-            logger.debug( "Adding shield node setting " + rule.getAddress().toString() + "/" + 
-                          rule.getNetmask().toString() + " divider: " + rule.getDivider());
-            
-            settings.add( new ShieldNodeSettings( rule.getDivider(), rule.getAddress().getAddr(), 
-                                                  rule.getNetmask().getAddr()));
+            logger.debug( "Adding shield node setting " + settings.getAddress().toString() + "/" + 
+                          settings.getNetmask().toString() + " divider: " + settings.getDivider());
+                        
+            settingsList.add( new com.metavize.jnetcap.ShieldNodeSettings( settings.getDivider(), 
+                                                                           settings.getAddress().getAddr(), 
+                                                                           settings.getNetmask().getAddr()));
         }
 
         try {
-            Shield.getInstance().setNodeSettings( settings );
+            Shield.getInstance().setNodeSettings( settingsList );
         } catch ( Exception e ) {
-            throw new ArgonException( "Unable to set the shield node rules", e );
+            throw new ArgonException( "Unable to set the shield node settingss", e );
         }
     }
 

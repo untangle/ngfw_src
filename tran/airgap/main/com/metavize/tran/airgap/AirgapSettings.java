@@ -18,7 +18,7 @@ import java.util.LinkedList;
 
 import com.metavize.mvvm.security.Tid;
 
-import com.metavize.mvvm.shield.ShieldNodeRule;
+import com.metavize.tran.airgap.ShieldNodeRule;
 
 /**
  * Settings for the Airgap Transform.
@@ -88,7 +88,7 @@ public class AirgapSettings implements Serializable
      * @hibernate.collection-index
      * column="POSITION"
      * @hibernate.collection-one-to-many
-     * class="com.metavize.mvvm.shield.ShieldNodeRule"
+     * class="com.metavize.tran.airgap.ShieldNodeRule"
      */
     public List getShieldNodeRuleList()
     {

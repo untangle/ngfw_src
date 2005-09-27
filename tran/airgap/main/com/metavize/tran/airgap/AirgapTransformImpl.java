@@ -34,9 +34,9 @@ import com.metavize.mvvm.tran.TransformStartException;
 import com.metavize.mvvm.ArgonManager;
 import com.metavize.mvvm.MvvmContextFactory;
 
-import com.metavize.mvvm.shield.ShieldNodeRule;
-
 import com.metavize.mvvm.tran.TransformState;
+
+import com.metavize.mvvm.shield.ShieldNodeSettings;
 
 public class AirgapTransformImpl extends AbstractTransform
     implements AirgapTransform
@@ -55,6 +55,8 @@ public class AirgapTransformImpl extends AbstractTransform
     private static final int REJECTED_IDX    =  7;
 
     private final Logger logger = Logger.getLogger(AirgapTransformImpl.class);
+
+    private final List<ShieldNodeSettings> emptyList = Collections.emptyList();
 
     private AirgapSettings settings;
 
@@ -87,7 +89,7 @@ public class AirgapTransformImpl extends AbstractTransform
             ArgonManager argonManager = MvvmContextFactory.context().argonManager();
             
             try {
-                argonManager.setShieldNodeRules( this.settings.getShieldNodeRuleList());
+                argonManager.setShieldNodeSettings( this.settings.getShieldNodeRuleList());
             } catch ( Exception e ) {
                 logger.error( "Error setting shield node rules", e );
             }
@@ -203,7 +205,7 @@ public class AirgapTransformImpl extends AbstractTransform
         ArgonManager argonManager = MvvmContextFactory.context().argonManager();
                 
         try {
-            argonManager.setShieldNodeRules( this.settings.getShieldNodeRuleList());
+            argonManager.setShieldNodeSettings( this.settings.getShieldNodeRuleList());
         } catch ( Exception e ) {
             throw new TransformStartException( e );
         }
@@ -213,11 +215,9 @@ public class AirgapTransformImpl extends AbstractTransform
     {
         ArgonManager argonManager = MvvmContextFactory.context().argonManager();
         
-        List<ShieldNodeRule> emptyList = Collections.emptyList();
-        
         try {
             /* Deconfigure all of the nodes */
-            argonManager.setShieldNodeRules( emptyList );
+            argonManager.setShieldNodeSettings( this.emptyList );
         } catch ( Exception e ) {
             throw new TransformStopException( e );
         }

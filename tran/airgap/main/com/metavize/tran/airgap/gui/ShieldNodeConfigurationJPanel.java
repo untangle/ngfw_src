@@ -27,7 +27,7 @@ import com.metavize.tran.airgap.AirgapSettings;
 
 import com.metavize.mvvm.tran.IPaddr;
 
-import com.metavize.mvvm.shield.ShieldNodeRule;
+import com.metavize.tran.airgap.ShieldNodeRule;
 
 public class ShieldNodeConfigurationJPanel extends MEditTableJPanel{
     

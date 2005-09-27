@@ -10,7 +10,7 @@ CREATE TABLE settings.tr_airgap_settings (
     tid         int8 NOT NULL UNIQUE,
     PRIMARY KEY (settings_id));
 
-CREATE TABLE settings.shield_node_rule (
+CREATE TABLE settings.tr_airgap_shield_node_rule (
     rule_id     INT8 NOT NULL,
     name        VARCHAR(255),
     category    VARCHAR(255),
@@ -33,3 +33,7 @@ CREATE TABLE settings.shield_node_rule (
 
 ALTER TABLE settings.tr_airgap_settings
     ADD CONSTRAINT fk_tr_airgap_settings FOREIGN KEY (tid) REFERENCES tid;
+
+ALTER TABLE settings.tr_airgap_shield_node_rule
+    ADD CONSTRAINT fk_tr_airgap_shield_node_rule
+        FOREIGN KEY (settings_id) REFERENCES settings.tr_airgap_settings;

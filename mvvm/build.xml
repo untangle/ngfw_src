@@ -191,7 +191,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       <include name="com/metavize/mvvm/argon/IPSessionDesc.java"/>
       <include name="com/metavize/mvvm/argon/SessionEndpoints.java"/>
       <include name="com/metavize/mvvm/argon/ArgonException.java"/>
-      <include name="com/metavize/mvvm/shield/ShieldNodeRule.java"/>
+      <include name="com/metavize/mvvm/shield/ShieldNodeSettings.java"/>
       <include name="com/metavize/mvvm/client/*.java"/>
       <include name="com/metavize/mvvm/engine/HttpInvocation.java"/>
       <include name="com/metavize/mvvm/engine/HttpInvokerStub.java"/>
@@ -221,7 +221,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
         <include name="com/metavize/mvvm/argon/IPSessionDesc.class"/>
         <include name="com/metavize/mvvm/argon/SessionEndpoints*.class"/>
         <include name="com/metavize/mvvm/argon/ArgonException.class"/>
-        <include name="com/metavize/mvvm/shield/ShieldNodeRule.class"/>
+        <include name="com/metavize/mvvm/shield/ShieldNodeSettings.class"/>
         <include name="com/metavize/mvvm/client/*.class"/>
         <include name="com/metavize/mvvm/engine/HttpInvocation*.class"/>
         <include name="com/metavize/mvvm/engine/HttpInvokerStub*.class"/>

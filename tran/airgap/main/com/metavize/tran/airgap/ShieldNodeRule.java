@@ -9,12 +9,13 @@
  * $Id$
  */
 
-package com.metavize.mvvm.shield;
+package com.metavize.tran.airgap;
 
 import java.net.UnknownHostException;
 
 import com.metavize.mvvm.tran.Rule;
 import com.metavize.mvvm.tran.IPaddr;
+import com.metavize.mvvm.shield.ShieldNodeSettings;
 
 import com.metavize.mvvm.tran.ParseException;
 
@@ -25,10 +26,12 @@ import com.metavize.mvvm.tran.ParseException;
  * @author <a href="mailto:rbscott@metavize.com">Robert Scott</a>
  * @version 1.0
  * @hibernate.class
- * table="SHIELD_NODE_RULE"
+ * table="TR_AIRGAP_SHIELD_NODE_RULE"
  */
-public class ShieldNodeRule extends Rule 
+public class ShieldNodeRule extends Rule implements ShieldNodeSettings
 {
+    private static final long serialVersionUID = -6393845685680833335L;
+
     /* ip address this is configuring */
     private IPaddr address;
     
