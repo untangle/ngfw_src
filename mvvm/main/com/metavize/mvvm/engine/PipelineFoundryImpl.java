@@ -289,11 +289,13 @@ class PipelineFoundryImpl implements PipelineFoundry
         weldCasings(mPipeFittings, start, p, availMPipes, availCasings);
     }
 
-    private void weldMPipes(List<MPipeFitting> mPipeFittings,
-                            Fitting start, Policy p,
+    private boolean weldMPipes(List<MPipeFitting> mPipeFittings,
+                               Fitting start, Policy p,
                             Map<Fitting, List<MPipe>> availMPipes,
                             Map<MPipe, MPipe> availCasings)
     {
+        boolean welded = false;
+
         TRY_AGAIN:
         for (Iterator<Fitting> i = availMPipes.keySet().iterator(); i.hasNext(); ) {
             Fitting f = i.next();
@@ -303,21 +305,33 @@ class PipelineFoundryImpl implements PipelineFoundry
                 for (Iterator<MPipe> j = l.iterator(); j.hasNext(); ) {
                     MPipe mPipe = j.next();
                     if (null == mPipe) {
-                        weldCasings(mPipeFittings, start, p, availMPipes,
-                                    availCasings);
+                        boolean w = weldCasings(mPipeFittings, start, p,
+                                                availMPipes, availCasings);
+                        if (w) {
+                            welded = true;
+                        }
                     } else if (mPipe.getPipeSpec().matchesPolicy(p)) {
-                        mPipeFittings.add(new MPipeFitting(mPipe, start));
+                        MPipeFitting mpf = new MPipeFitting(mPipe, start);
+                        boolean w = mPipeFittings.add(mpf);
+                        if (w) {
+                            welded = true;
+                        }
                     }
                 }
                 break TRY_AGAIN;
             }
         }
+
+        return welded;
     }
 
-    private void weldCasings(List<MPipeFitting> mPipeFittings, Fitting start,
-                             Policy p, Map<Fitting, List<MPipe>> availMPipes,
-                             Map<MPipe, MPipe> availCasings)
+    private boolean weldCasings(List<MPipeFitting> mPipeFittings,
+                                Fitting start, Policy p, Map<Fitting,
+                                List<MPipe>> availMPipes,
+                                Map<MPipe, MPipe> availCasings)
     {
+        boolean welded = false;
+
         TRY_AGAIN:
         for (Iterator<MPipe> i = availCasings.keySet().iterator(); i.hasNext(); ) {
             MPipe insideMPipe = i.next();
@@ -329,17 +343,30 @@ class PipelineFoundryImpl implements PipelineFoundry
             } else if (start.instanceOf(f)) {
                 MPipe outsideMPipe = availCasings.get(insideMPipe);
                 i.remove();
+                int s = mPipeFittings.size();
                 mPipeFittings.add(new MPipeFitting(insideMPipe, start,
                                                    outsideMPipe));
                 CasingPipeSpec cps = (CasingPipeSpec)insideMPipe
                     .getPipeSpec();
                 Fitting insideFitting = cps.getOutput();
-                weldMPipes(mPipeFittings, insideFitting, p, availMPipes,
-                           availCasings);
-                mPipeFittings.add(new MPipeFitting(outsideMPipe, insideFitting));
+
+                boolean w = weldMPipes(mPipeFittings, insideFitting, p,
+                                       availMPipes, availCasings);
+
+                if (w) {
+                    welded = true;
+                    mPipeFittings.add(new MPipeFitting(outsideMPipe, insideFitting));
+                } else {
+                    while (mPipeFittings.size() > s) {
+                        mPipeFittings.remove(mPipeFittings.size() - 1);
+                    }
+                }
+
                 break TRY_AGAIN;
             }
         }
+
+        return welded;
     }
 
     private void registerMPipe(Map mPipes, MPipe mPipe, Comparator c)
