@@ -303,7 +303,7 @@ int netcap_shield_init    ( void )
 
 int netcap_shield_cleanup ( void )
 {
-    if ( !_shield.enabled ) return 0;
+    if ( _shield.enabled != NETCAP_SHIELD_ENABLE ) return 0;
 
     _shield.enabled = 0;
 
@@ -334,7 +334,7 @@ int netcap_shield_rep_check ( netcap_shield_response_t* response, struct in_addr
     response->if_print = 0; /* ??? What should the default be */
     
     /* If the shield is not enabled return true */
-    if ( !_shield.enabled ) return 0;
+    if ( _shield.enabled != NETCAP_SHIELD_ENABLE ) return 0;
         
     /* If things are really bad, do not let anything in */
     if ( _shield.mode == NC_SHIELD_MODE_CLOSED ) {
@@ -392,7 +392,9 @@ int                  netcap_shield_rep_blame        ( struct in_addr* ip, int am
     _apply_func_t func = { .func _add_evil, .arg (void*)amount };
 
     /* Do not create nodes, only update the nodes that exist */
-    if ( _apply_close( ip, &func ) < 0 ) return errlog( ERR_CRITICAL, "_apply_close\n" );
+    if ( _shield.enabled == NETCAP_SHIELD_ENABLE && _apply_close( ip, &func ) < 0 ) {
+        return errlog( ERR_CRITICAL, "_apply_close\n" );
+    }
     
     return 0;    
 }
@@ -404,7 +406,9 @@ int                  netcap_shield_rep_add_request  ( struct in_addr* ip )
     _apply_func_t func = { .func _add_request, .arg NULL };
 
     /* Do not create nodes, only update the nodes that exist */
-    if ( _apply_close( ip, &func ) < 0 ) return errlog( ERR_CRITICAL, "_apply_close\n" );
+    if ( _shield.enabled == NETCAP_SHIELD_ENABLE && _apply_close( ip, &func ) < 0 ) {
+        return errlog( ERR_CRITICAL, "_apply_close\n" );
+    }
     
     return 0;    
 }
@@ -415,7 +419,9 @@ int                  netcap_shield_rep_add_session  ( struct in_addr* ip )
 {
     _apply_func_t func = { .func _add_session, .arg NULL };
 
-    if ( _apply( ip, &func ) < 0 ) return errlog( ERR_CRITICAL, "_apply\n" );
+    if ( _shield.enabled == NETCAP_SHIELD_ENABLE && _apply( ip, &func ) < 0 ) {
+        return errlog( ERR_CRITICAL, "_apply\n" );
+    }
 
     return 0;
 }
@@ -424,7 +430,9 @@ int                  netcap_shield_rep_end_session  ( struct in_addr* ip )
 {
     _apply_func_t func = { .func _end_session, .arg NULL };
     
-    if ( _apply( ip, &func ) < 0 ) return errlog( ERR_CRITICAL, "_apply\n" );
+    if ( _shield.enabled == NETCAP_SHIELD_ENABLE && _apply( ip, &func ) < 0 ) {
+        return errlog( ERR_CRITICAL, "_apply\n" );
+    }
 
     return 0;
 }
@@ -434,7 +442,9 @@ int                  netcap_shield_rep_add_srv_conn ( struct in_addr* ip )
 {
     _apply_func_t func = { .func _add_srv_conn, .arg NULL };
 
-    if ( _apply( ip, &func ) < 0 ) return errlog( ERR_CRITICAL, "_apply\n" );
+    if ( _shield.enabled == NETCAP_SHIELD_ENABLE && _apply( ip, &func ) < 0 ) {
+        return errlog( ERR_CRITICAL, "_apply\n" );
+    }
 
     return 0;
 }
@@ -444,7 +454,9 @@ int                  netcap_shield_rep_add_srv_fail ( struct in_addr* ip )
 {
     _apply_func_t func = { .func _add_srv_fail, .arg NULL };
 
-    if ( _apply( ip, &func ) < 0 ) return errlog( ERR_CRITICAL, "_apply\n" );
+    if ( _shield.enabled == NETCAP_SHIELD_ENABLE && _apply( ip, &func ) < 0 ) {
+        return errlog( ERR_CRITICAL, "_apply\n" );
+    }
 
     return 0;
 }
@@ -454,7 +466,9 @@ int                  netcap_shield_rep_add_chunk ( struct in_addr* ip, int proto
     _chk_t chk = { .size size, .if_rx 1, .protocol protocol };
     _apply_func_t func = { .func _add_chunk, .arg (void*)&chk };
 
-    if ( _apply_close( ip, &func ) < 0 ) return errlog( ERR_CRITICAL, "_apply_close\n" );
+    if ( _shield.enabled == NETCAP_SHIELD_ENABLE && _apply_close( ip, &func ) < 0 ) {
+        return errlog( ERR_CRITICAL, "_apply_close\n" );
+    }
 
     return 0;
 }
@@ -464,6 +478,8 @@ int                  netcap_shield_cfg_load      ( char *buf, int buf_len )
     int lw, hw, ss;
 
     if ( buf == NULL || buf_len < 0 ) return errlogargs();
+
+    if ( _shield.enabled != NETCAP_SHIELD_ENABLE ) return 0;
 
     if ( nc_shield_cfg_load ( &_shield.cfg, buf, buf_len ) < 0 ) {
         return errlog ( ERR_CRITICAL, "nc_shield_cfg_load\n" );
@@ -490,7 +506,7 @@ int                  netcap_shield_status        ( int conn, struct sockaddr_in 
 
     if ( conn < 0 || dst_addr == NULL ) return errlogargs();
 
-    if ( !_shield.enabled ) return 0;
+    if ( _shield.enabled != NETCAP_SHIELD_ENABLE ) return 0;
 
     if ( pthread_mutex_lock ( &_shield.dbg_mutex ) < 0 ) return perrlog ( "pthread_mutex_lock" );
     
@@ -536,7 +552,8 @@ int netcap_shield_bless_users( netcap_shield_bless_array_t* nodes )
         return errlog( ERR_CRITICAL, "Invalid node count %d\n", nodes->count );
     }
 
-    if ( !_shield.enabled ) {
+
+    if ( _shield.enabled != NETCAP_SHIELD_ENABLE ) {
         debug( NC_SHIELD_DEBUG_LOW, "Shield is disabled, ignoring blessings\n" );
         return 0;
     }
@@ -617,7 +634,7 @@ static int _set_node_settings ( double divider, struct in_addr* ip, struct in_ad
 
 static void  _trash_fill         ( void* arg )
 {
-    if ( _shield.enabled ) {
+    if ( _shield.enabled == NETCAP_SHIELD_ENABLE ) {
 #ifdef _TRIE_DEBUG_PRINT
         if ( pthread_mutex_lock ( &_shield.dbg_mutex ) < 0 ) perrlog ( "pthread_mutex_lock" );
 #endif
@@ -647,7 +664,7 @@ static int  _apply_func          ( netcap_trie_element_t element, void* arg, str
     if ( element.item == NULL || ( reputation = netcap_trie_item_data( element.item )) == NULL ) {
         return errlogargs();
     }
-
+    
     if ( arg == NULL || ((_apply_func_t*)arg)->func == NULL ) return errlogargs();
     
     func = (_apply_func_t*)arg;
@@ -1151,6 +1168,9 @@ static int  _apply_close( struct in_addr* ip, _apply_func_t* func )
     netcap_trie_element_t element;
     
     if ( ip == NULL ) return errlogargs();
+
+    /* If the shield is not enabled return */
+    if ( _shield.enabled != NETCAP_SHIELD_ENABLE ) return 0;
     
     if ( new_netcap_trie_get( &_shield.trie, ip, &line ) < 0 ) {
         return errlog( ERR_CRITICAL, "new_netcap_trie_get\n" );
@@ -1183,6 +1203,9 @@ static int  _apply      ( struct in_addr* ip, _apply_func_t* func )
     int c;
 
     if ( ip == NULL ) return errlogargs();
+
+    /* If the shield is not enabled return */
+    if ( _shield.enabled != NETCAP_SHIELD_ENABLE ) return 0;
 
     if ( new_netcap_trie_insert_and_get( &_shield.trie, ip, &_shield.mutex, &line ) < 0 ) {
         return errlog( ERR_CRITICAL, "new_netcap_trie_insert_and_get\n" );
