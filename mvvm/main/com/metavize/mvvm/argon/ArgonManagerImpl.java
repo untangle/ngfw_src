@@ -12,6 +12,7 @@
 package com.metavize.mvvm.argon;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import java.util.List;
 import java.util.LinkedList;
@@ -272,6 +273,14 @@ public class ArgonManagerImpl implements ArgonManager
             new LinkedList<com.metavize.jnetcap.ShieldNodeSettings>();
 
         for ( ShieldNodeSettings settings : shieldNodeSettingsList ) {
+            InetAddress netmask;
+            try {
+                netmask = InetAddress.getByAddress( new byte[]{ (byte)255, (byte)255, (byte)255, (byte)255 } );
+            } catch( UnknownHostException e ) {
+                logger.error( "Unable to parse default netmask", e );
+                throw new ArgonException( e );
+            }
+
             if ( settings == null ) {
                 logger.error( "NULL Settings in list\n" );
                 continue;
@@ -282,17 +291,24 @@ public class ArgonManagerImpl implements ArgonManager
                 continue;
             }
 
-            if ( settings.getAddress().isEmpty() || settings.getNetmask().isEmpty()) {
-                logger.error( "Settings with empty address or netmask, ignoring" );
+            if ( settings.getAddress() == null || settings.getAddress().isEmpty()) {
+                logger.error( "Settings with empty address, ignoring" );
                 continue;
             }
             
+            if ( settings.getNetmask() != null && !settings.getNetmask().isEmpty()) {
+                logger.warn( "Settings with non-empty netmask, ignoring netmask using 255.255.255.255" );
+            }
+            
+            
+
+            
             logger.debug( "Adding shield node setting " + settings.getAddress().toString() + "/" + 
-                          settings.getNetmask().toString() + " divider: " + settings.getDivider());
+                          netmask.getHostAddress() + " divider: " + settings.getDivider());
                         
             settingsList.add( new com.metavize.jnetcap.ShieldNodeSettings( settings.getDivider(), 
                                                                            settings.getAddress().getAddr(), 
-                                                                           settings.getNetmask().getAddr()));
+                                                                           netmask ));
         }
 
         try {

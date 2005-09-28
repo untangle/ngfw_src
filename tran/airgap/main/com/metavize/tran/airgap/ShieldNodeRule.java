@@ -11,6 +11,9 @@
 
 package com.metavize.tran.airgap;
 
+import java.util.Map;
+import java.util.HashMap;
+
 import java.net.UnknownHostException;
 
 import com.metavize.mvvm.tran.Rule;
@@ -30,7 +33,7 @@ import com.metavize.mvvm.tran.ParseException;
  */
 public class ShieldNodeRule extends Rule implements ShieldNodeSettings
 {
-    private static final long serialVersionUID = -6393845685680833335L;
+    private static final long serialVersionUID = -6928365798856031269L;
 
     /* ip address this is configuring */
     private IPaddr address;
@@ -39,7 +42,14 @@ public class ShieldNodeRule extends Rule implements ShieldNodeSettings
     private IPaddr netmask;
     
     /* divider for this rule (between0 and whatever, not inclusive) */
-    private float divider;
+    private float divider = DIVIDER_VALUES[0];
+
+    /* Enumeration of all of the possible dividers */    
+    private static final String DIVIDER_ENUMERATION[];
+    private static final float  DIVIDER_VALUES[];
+
+    private static final Map DIVIDER_MAP_FLOAT_TO_STRING = new HashMap();
+    private static final Map DIVIDER_MAP_STRING_TO_FLOAT = new HashMap();
 
     /* Hibernate constructor */
     public ShieldNodeRule()
@@ -133,16 +143,65 @@ public class ShieldNodeRule extends Rule implements ShieldNodeSettings
      */
     public float getDivider()
     {
-        return divider;
+        /* This will "fix" dividers that have values that are not the enumeration */
+        getDividerString();
+        return this.divider;
     }
 
     public void setDivider( float divider )
     {
         this.divider = divider;
+        getDividerString();
     }
 
+    /* These are all guarded to guarantee the user doesn't set to an invalid value */
+    public String getDividerString()
+    {
+        String dividerString = (String)DIVIDER_MAP_FLOAT_TO_STRING.get( this.divider );
+        if ( dividerString == null ) {
+            this.divider  = DIVIDER_VALUES[0];
+            dividerString = DIVIDER_ENUMERATION[0];
+        }
+        
+        return dividerString;
+    }
 
-    
-    
-    
+    public void setDivider( String divider )
+    {
+        Float dividerValue = (Float)DIVIDER_MAP_STRING_TO_FLOAT.get( divider );
+        if ( dividerValue == null ) {
+            this.divider = DIVIDER_VALUES[0];
+        } else {
+            this.divider = dividerValue;
+        }
+    }
+
+    public static String[] getDividerEnumeration()
+    {
+        return DIVIDER_ENUMERATION;
+    }
+
+    public static String getDividerDefault()
+    {
+        return DIVIDER_ENUMERATION[0];
+    }
+
+    static
+    {
+        DIVIDER_ENUMERATION = new String[] {
+            "5 users",
+            "25 users",
+            "50 users",
+            "100 users"
+        };
+
+        /* A little bit of a tapering off starting at 50 for 100 (capped in netcap to the value 
+         * NC_SHIELD_DIVIDER_MAX */
+        DIVIDER_VALUES = new float[] { 5.0f, 25.0f, 40.0f, 75.0f };
+        
+        for ( int c = 0 ; c < DIVIDER_ENUMERATION.length ; c++ ) {
+            DIVIDER_MAP_FLOAT_TO_STRING.put( DIVIDER_VALUES[c], DIVIDER_ENUMERATION[c] );
+            DIVIDER_MAP_STRING_TO_FLOAT.put( DIVIDER_ENUMERATION[c], DIVIDER_VALUES[c] );
+        }
+    }
 }

@@ -23,33 +23,21 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
     
     private static final String NAME_GENERAL_SETTINGS = "General Settings";
     private static final String NAME_LOG = "Event Log";
-    private static final String NAME_SHIELD_PANEL = "Shield Configuration";
+    private static final String NAME_SHIELD_PANEL = "Shield Exception";
 
     
     public MTransformControlsJPanel(MTransformJPanel mTransformJPanel) {
         super(mTransformJPanel);
-        
+    }
+    
+    protected void generateGui() {
         // SHIELD CONFIGURATION SETTINGS /////
         ShieldNodeConfigurationJPanel shieldJPanel = new ShieldNodeConfigurationJPanel();
         super.mTabbedPane.addTab(NAME_SHIELD_PANEL, null, shieldJPanel );
 	super.savableMap.put(NAME_SHIELD_PANEL, shieldJPanel );
 	super.refreshableMap.put(NAME_SHIELD_PANEL, shieldJPanel );
 
-
-        /* No more general settings */
-        /*
-	JPanel messageJPanel = new JPanel();
-	messageJPanel.setLayout(new GridBagLayout());
-	JLabel messageJLabel = new JLabel();
-	messageJLabel.setText("<html>The Packet Attack Shield has no configurable settings.</html>");
-	messageJLabel.setFont(new java.awt.Font("Arial", 0, 12));
-	messageJLabel.setHorizontalAlignment(SwingConstants.CENTER);
-	messageJLabel.setVerticalAlignment(SwingConstants.CENTER);
-	messageJPanel.add(messageJLabel, new GridBagConstraints(0,0,1,1,0d,0d,GridBagConstraints.CENTER,GridBagConstraints.BOTH,new Insets(0,0,0,0),0,0));
-	super.mTabbedPane.add(NAME_GENERAL_SETTINGS, messageJPanel);
-        */
-
-	// EVENT LOG ///////////////
+	// EVENT LOG //////////
 	LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransformContext().transform(), this);
 	super.mTabbedPane.addTab(NAME_LOG, null, logJPanel);
 	super.shutdownableMap.put(NAME_LOG, logJPanel);

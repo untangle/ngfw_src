@@ -28,8 +28,10 @@
 #define NC_SHIELD_DEBUG_LOW   7
 #define NC_SHIELD_DEBUG_HIGH 11
 
+// This is the maximum value for the divider, 100.1, to allow for 100.0
+#define NC_SHIELD_DIVIDER_MAX  ( 100.1 )
+
 // This is the minimum value for the divider.
-#define NC_SHIELD_DIVIDER_MAX  ( 50.0 )
 #define NC_SHIELD_DIVIDER_MIN  ( 1.0 / 50.0 )
 
 enum {

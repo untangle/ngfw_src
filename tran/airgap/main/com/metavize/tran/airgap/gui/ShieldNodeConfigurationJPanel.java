@@ -42,7 +42,6 @@ public class ShieldNodeConfigurationJPanel extends MEditTableJPanel{
         // create actual table model
         ShieldNodeConfigurationModel interfaceAliasModel = new ShieldNodeConfigurationModel();
         this.setTableModel( interfaceAliasModel );
-
     }
 }
     
@@ -56,13 +55,13 @@ class ShieldNodeConfigurationModel extends MSortedTableModel{
     private static final int  C1_MW = Util.LINENO_MIN_WIDTH; /* # */
     private static final int  C2_MW = 55;  /* enable  */
     private static final int  C3_MW = 120; /* address */
-    private static final int  C4_MW = 120; /* netmask */
-    private static final int  C5_MW = 80;  /* divider (should be a slider) */
-    private static final int  C6_MW = 80;  /* category (should be a slider) */
+    private static final int  C4_MW = 105; /* divider */
+    private static final int  C5_MW = 120; /* category */
     /* description */
-    private static final int  C7_MW = Util.chooseMax(T_TW - (C0_MW + C1_MW + C2_MW + C3_MW + C4_MW + C5_MW + C6_MW), 120);
+    private static final int  C6_MW = Util.chooseMax(T_TW - (C0_MW + C1_MW + C2_MW + C3_MW + C4_MW + C5_MW), 120);
 
-
+    private ComboBoxModel dividerModel = super.generateComboBoxModel( ShieldNodeRule.getDividerEnumeration(),
+                                                                      ShieldNodeRule.getDividerDefault());
     
     protected boolean getSortable(){ return true; }
     
@@ -74,11 +73,10 @@ class ShieldNodeConfigurationModel extends MSortedTableModel{
         addTableColumn( tableColumnModel,  1,  C1_MW, false, false, false, false, Integer.class, null, sc.TITLE_INDEX );
         addTableColumn( tableColumnModel,  2,  C2_MW, false, true,  false, false, Boolean.class, "false", sc.bold("enable"));
         addTableColumn( tableColumnModel,  3,  C3_MW, false, true,  false, false, String.class, "1.2.3.4", sc.bold("address") );
-        addTableColumn( tableColumnModel,  4,  C4_MW, false, true,  false, false, String.class, "255.255.255.255", sc.bold("netmask") );
-        addTableColumn( tableColumnModel,  5,  C5_MW, false, true,  false, false, Float.class, "2.0", sc.bold("divider") );
-        addTableColumn( tableColumnModel,  6,  C6_MW, true,  true,  false, false, String.class, sc.EMPTY_CATEGORY, sc.TITLE_CATEGORY );
-        addTableColumn( tableColumnModel,  7,  C7_MW, true,  true,  false, true,  String.class, sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION );
-        addTableColumn( tableColumnModel,  8,     10, false, false, true,  false, ShieldNodeRule.class, null, "");
+        addTableColumn( tableColumnModel,  4,  C4_MW, false, true,  false, false, ComboBoxModel.class, dividerModel, sc.bold("divider") );
+        addTableColumn( tableColumnModel,  5,  C5_MW, true,  true,  false, false, String.class, sc.EMPTY_CATEGORY, sc.TITLE_CATEGORY );
+        addTableColumn( tableColumnModel,  6,  C6_MW, true,  true,  false, true,  String.class, sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION );
+        addTableColumn( tableColumnModel,  7,     10, false, false, true,  false, ShieldNodeRule.class, null, "");
         return tableColumnModel;
     }
     
@@ -90,15 +88,15 @@ class ShieldNodeConfigurationModel extends MSortedTableModel{
 
         for( Vector rowVector : tableVector ){
 	    rowIndex++;
-            newElem = (ShieldNodeRule)rowVector.elementAt(8);
+            newElem = (ShieldNodeRule)rowVector.elementAt(7);
             newElem.setLive((Boolean)rowVector.elementAt(2));
             try{ newElem.setAddress((String)rowVector.elementAt(3)); }
             catch(Exception e){ throw new Exception("Invalid \"address\" in row: " + rowIndex); }
-            try{ newElem.setNetmask( (String)rowVector.elementAt(4)); }
-            catch(Exception e){ throw new Exception("Invalid \"address\" in row: " + rowIndex); }
-            newElem.setDivider((Float)rowVector.elementAt(5));
-            newElem.setCategory((String)rowVector.elementAt(6));
-            newElem.setDescription((String)rowVector.elementAt(7));
+            // try{ newElem.setNetmask( (String)rowVector.elementAt(4)); }
+            // catch(Exception e){ throw new Exception("Invalid \"NETMASK\" in row: " + rowIndex); }
+            newElem.setDivider(((ComboBoxModel)rowVector.elementAt(4)).getSelectedItem().toString());
+            newElem.setCategory((String)rowVector.elementAt(5));
+            newElem.setDescription((String)rowVector.elementAt(6));
             elemList.add(newElem);
         }
         
@@ -124,8 +122,7 @@ class ShieldNodeConfigurationModel extends MSortedTableModel{
 	    tempRow.add( rowIndex );
             tempRow.add( newElem.isLive());
             tempRow.add( newElem.getAddressString());
-            tempRow.add( newElem.getNetmaskString());
-	    tempRow.add( newElem.getDivider());
+	    tempRow.add( super.generateComboBoxModel( ShieldNodeRule.getDividerEnumeration(), newElem.getDividerString()));
             tempRow.add( newElem.getCategory() );
             tempRow.add( newElem.getDescription() );
             tempRow.add( newElem );

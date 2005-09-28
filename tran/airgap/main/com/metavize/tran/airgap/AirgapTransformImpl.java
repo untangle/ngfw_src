@@ -58,6 +58,8 @@ public class AirgapTransformImpl extends AbstractTransform
 
     private final List<ShieldNodeSettings> emptyList = Collections.emptyList();
 
+    private final PipeSpec pipeSpec[] = new PipeSpec[0];
+
     private AirgapSettings settings;
 
     // We keep a stats around so we don't have to create one each time.
@@ -105,7 +107,7 @@ public class AirgapTransformImpl extends AbstractTransform
     @Override
     protected PipeSpec[] getPipeSpecs()
     {
-        return new PipeSpec[0];
+        return pipeSpec;
     }
 
     protected void initializeSettings()

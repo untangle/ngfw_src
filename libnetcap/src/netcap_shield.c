@@ -599,10 +599,18 @@ static int _set_node_settings ( double divider, struct in_addr* ip, struct in_ad
     netcap_trie_element_t   element;
     nc_shield_reputation_t* reputation;
     
-    if (( divider < NC_SHIELD_DIVIDER_MIN ) || ( divider > NC_SHIELD_DIVIDER_MAX )) {
-        return errlog( ERR_CRITICAL, "divider[%g] must be between %g and %g\n", divider,
-                       NC_SHIELD_DIVIDER_MIN, NC_SHIELD_DIVIDER_MAX );
+    if ( divider < NC_SHIELD_DIVIDER_MIN ) {
+        errlog( ERR_CRITICAL, "divider[%g] must greater than %g, using min\n", 
+                divider, NC_SHIELD_DIVIDER_MIN );
+        divider = NC_SHIELD_DIVIDER_MIN;
     }
+    
+    if ( divider > NC_SHIELD_DIVIDER_MAX ) {
+        errlog( ERR_CRITICAL, "divider[%g] must less than %g, using max\n", 
+                divider, NC_SHIELD_DIVIDER_MAX );
+        divider = NC_SHIELD_DIVIDER_MAX;
+    }
+
     if (( ip == NULL ) || ( netmask == NULL )) return errlogargs();
 
     if ( netmask->s_addr != 0xFFFFFFFF ) {
