@@ -56,15 +56,14 @@ public class PipelineEndpoints extends LogEvent
     private int sServerPort;
 
     private Policy policy;
-    private boolean policy_inbound;
+    private boolean policyInbound;
 
     // constructors -----------------------------------------------------------
 
     public PipelineEndpoints() { }
 
-    public PipelineEndpoints(IPSessionDesc begin, IPSessionDesc end
-                             // Not just yet XXXX: , Policy policy, boolean policy_inbound
-                             )
+    public PipelineEndpoints(IPSessionDesc begin, IPSessionDesc end,
+                             Policy policy, boolean policyInbound)
     {
         sessionId = begin.id();
 
@@ -83,10 +82,10 @@ public class PipelineEndpoints extends LogEvent
         sServerPort = end.serverPort();
 
         clientIntf = begin.clientIntf();
-        serverIntf = end.serverIntf(); /* XXX never filled out */
+        serverIntf = end.serverIntf();
 
-        // this.policy = policy;
-        // this.policy_inbound = policy_inbound;
+        this.policy = policy;
+        this.policyInbound = policyInbound;
     }
 
     // accessors --------------------------------------------------------------
@@ -352,11 +351,11 @@ public class PipelineEndpoints extends LogEvent
      */
     public boolean isInbound()
     {
-        return policy_inbound;
+        return policyInbound;
     }
 
     public void setInbound(boolean inbound)
     {
-        this.policy_inbound = inbound;
+        this.policyInbound = inbound;
     }
 }

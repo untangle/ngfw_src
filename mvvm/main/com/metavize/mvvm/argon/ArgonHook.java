@@ -26,6 +26,7 @@ import com.metavize.jvector.Sink;
 import com.metavize.jvector.Source;
 import com.metavize.jvector.Vector;
 import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.policy.PolicyRule;
 import com.metavize.mvvm.tapi.PipelineFoundry;
 import org.apache.log4j.Logger;
 
@@ -87,9 +88,9 @@ abstract class ArgonHook implements Runnable
             /* Update the server interface with the override table */
             NetcapSession netcapSession = sessionGlobalState.netcapSession();
             InterfaceOverride.getInstance().updateDestinationInterface( netcapSession );
-            
+
             clientSide = new NetcapIPSessionDescImpl( sessionGlobalState, true );
-            
+
             serverSide = clientSide;
 
             pipelineDesc = pipelineFoundry.weld( clientSide );
@@ -105,12 +106,14 @@ abstract class ArgonHook implements Runnable
              * modified the endpoints (we can't do it until we connect to the server since
              * that is what actually modifies the session global state. */
             serverSide = new NetcapIPSessionDescImpl( sessionGlobalState, false );
-            
+
             /* Connect to the client */
             boolean clientActionCompleted = connectClient();
 
-            if (serverActionCompleted && clientActionCompleted)
-                pipelineFoundry.registerEndpoints( clientSide, serverSide );
+            if (serverActionCompleted && clientActionCompleted) {
+                PolicyRule pr = pipelineDesc.getPolicyRule();
+                pipelineFoundry.registerEndpoints( clientSide, serverSide, pr.getPolicy(), pr.isInbound());
+            }
 
             /* Only start vectoring if the session is alive */
             if ( alive()) {

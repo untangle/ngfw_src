@@ -16,6 +16,7 @@ import java.net.InetSocketAddress;
 import com.metavize.jnetcap.NetcapSession;
 import com.metavize.mvvm.argon.IPSessionDesc;
 import com.metavize.mvvm.argon.PipelineDesc;
+import com.metavize.mvvm.policy.Policy;
 
 /**
  * Compiles pipes based on subscriptions and interest sets.
@@ -33,7 +34,8 @@ public interface PipelineFoundry
      */
     PipelineDesc weld(IPSessionDesc sessionDesc);
 
-    void registerEndpoints(IPSessionDesc start, IPSessionDesc end);
+    void registerEndpoints(IPSessionDesc start, IPSessionDesc end,
+                           Policy policy, boolean policyInbound);
     void destroy(IPSessionDesc start, IPSessionDesc end);
 
     void registerMPipe(MPipe mPipe);
