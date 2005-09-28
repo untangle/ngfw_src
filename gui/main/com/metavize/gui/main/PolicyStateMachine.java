@@ -28,6 +28,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.HashMap;
+import java.util.concurrent.*;
 import javax.swing.*;
 import javax.swing.border.*;
 
@@ -84,6 +85,8 @@ public class PolicyStateMachine implements ActionListener {
     private GridBagConstraints serviceGridBagConstraints;
     private static final String POLICY_MANAGER_SEPARATOR = "____________";
     private static final String POLICY_MANAGER_OPTION = "Show Policy Manager";
+    private static final int CONCURRENT_LOAD_MAX = 2;
+    private static Semaphore loadSemaphore;
     // DOWNLOAD DELAYS //////////////
     private static final int DOWNLOAD_INITIAL_SLEEP_MILLIS = 3000;
     private static final int DOWNLOAD_SLEEP_MILLIS = 500;
@@ -137,7 +140,7 @@ public class PolicyStateMachine implements ActionListener {
         serviceGridBagConstraints = new GridBagConstraints(0, 2, 1, 1, 0d, 0d,
 							   GridBagConstraints.NORTH, GridBagConstraints.NONE,
 							   new Insets(51,0,0,12), 0, 0);
-	
+	loadSemaphore = new Semaphore(CONCURRENT_LOAD_MAX);
 	try{
 	    // LET THE FUN BEGIN
 	    initMvvmModel();
@@ -709,8 +712,10 @@ public class PolicyStateMachine implements ActionListener {
 	    if( isMackageVisible(mackageDesc) ){
 		// CONSTRUCT AND ADD THE APPLIANCE
 		try{
-		    final MTransformJPanel mTransformJPanel = MTransformJPanel.instantiate(transformContext);
+		    loadSemaphore.acquire();
+		    MTransformJPanel mTransformJPanel = MTransformJPanel.instantiate(transformContext);
 		    addToRack(policy,mTransformJPanel);
+		    loadSemaphore.release();
 		}
 		catch(Exception e){
 		    try{ Util.handleExceptionWithRestart("Error instantiating appliance", e); }
