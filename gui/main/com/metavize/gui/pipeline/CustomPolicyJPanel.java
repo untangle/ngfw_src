@@ -103,7 +103,7 @@ class CustomPolicyTableModel extends MSortedTableModel{
         addTableColumn( tableColumnModel,  7,  C7_MW,  true,  true,  false, false, String.class, "any", sc.html("client<br>port"));
         addTableColumn( tableColumnModel,  8,  C8_MW,  true,  true,  false, false, String.class, "any", sc.html("server<br>port"));
         addTableColumn( tableColumnModel,  9,  C9_MW,  true,  true,  false, false, ComboBoxModel.class, directionModel, sc.html("direction"));
-        addTableColumn( tableColumnModel,  10, C10_MW, true,  true,  false, false, ComboBoxModel.class, policyModel, sc.bold("policy<br>rack"));
+        addTableColumn( tableColumnModel,  10, C10_MW, true,  true,  false, false, ComboBoxModel.class, policyModel, sc.bold("rack"));
         addTableColumn( tableColumnModel,  11, C11_MW, true,  true,  false, true,  String.class, sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION );
         addTableColumn( tableColumnModel,  12, 10,     false, false, true,  false, UserPolicyRule.class, null, "" );
 

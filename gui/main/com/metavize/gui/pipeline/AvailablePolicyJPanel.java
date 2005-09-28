@@ -24,6 +24,7 @@ import com.metavize.gui.widgets.editTable.*;
 import com.metavize.mvvm.*;
 import com.metavize.mvvm.tran.*;
 import com.metavize.mvvm.policy.*;
+import com.metavize.mvvm.security.*;
 
 public class AvailablePolicyJPanel extends MEditTableJPanel {
 
@@ -83,16 +84,27 @@ class AvailablePolicyTableModel extends MSortedTableModel{
 	    rowIndex++;
 	    String state = (String) rowVector.elementAt(0);
 	    String name = (String) rowVector.elementAt(2);
+	    Policy policy = (Policy) rowVector.elementAt(4);
 
 	    if( ROW_REMOVE.equals(state) ){
-		// verify that if the rack is being removed, that it is not already in use by a system rule
+		// if the rack is being removed, it cannot be in use by a system rule
 		if( systemUsageMap.containsKey(name) ){
 		    throw new Exception("The rack in row: " + rowIndex + " cannot be removed because it is currently being used in \"Default Policies\".");
 		}
-		// verify that if the rack is being removed, that it is not already in use by a user rule
+		// if the rack is being removed, it cannot be in use by a user rule
 		else if( userUsageMap.containsKey(name) ){
 		    throw new Exception("The rack in row: " + rowIndex + " cannot be removed because it is currently being used in \"Custom Policies\".");
 		}
+		// if the rack is being removed, it cannot be non-empty
+		List<Tid> transformInstances;
+		try{
+		    transformInstances = Util.getTransformManager().transformInstances(policy);
+		}
+		catch(Exception e){
+		    throw new Exception("Network communication failure.  Please try again.");
+		}
+		if( transformInstances.size() > 0 )
+		    throw new Exception("The rack in row: " + rowIndex + " cannot be removed because it is not empty.  Please remove all appliances first.");
 	    }
 	    else{
 		// verify there is no name collision

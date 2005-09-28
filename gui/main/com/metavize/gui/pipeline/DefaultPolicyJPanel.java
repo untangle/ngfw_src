@@ -73,7 +73,7 @@ class DefaultPolicyTableModel extends MSortedTableModel{
         addTableColumn( tableColumnModel,  2, C2_MW, true,  false, false, false, String.class, null, sc.html("client<br>interface"));
         addTableColumn( tableColumnModel,  3, C3_MW, true,  false, false, false, String.class, null, sc.html("server<br>interface"));
         addTableColumn( tableColumnModel,  4, C4_MW, true,  false, false, false, String.class, null, sc.html("direction"));
-        addTableColumn( tableColumnModel,  5, C5_MW, true,  true,  false, false, ComboBoxModel.class, null, sc.bold("policy<br>rack"));
+        addTableColumn( tableColumnModel,  5, C5_MW, true,  true,  false, false, ComboBoxModel.class, null, sc.bold("rack"));
         addTableColumn( tableColumnModel,  6, C6_MW, true,  true,  false, true,  String.class, null, "description" );
         addTableColumn( tableColumnModel,  7, 10,    false, false, true,  false, SystemPolicyRule.class, null, "" );
 

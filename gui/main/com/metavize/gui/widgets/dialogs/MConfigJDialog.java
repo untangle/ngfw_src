@@ -99,8 +99,8 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
 		Util.handleExceptionWithRestart("Error saving settings", e);
 	    }
 	    catch(Exception g){
-		Util.handleExceptionNoRestart("Error saving settings", g);
-		new ValidateFailureDialog( this.getTitle(), componentName, e.getMessage() );
+		//Util.handleExceptionNoRestart("Error saving settings", g);
+		new ValidateFailureDialog( this.getTitle(), componentName, g.getMessage() );
 		return;
 	    }
         }
