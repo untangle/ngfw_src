@@ -82,6 +82,8 @@ public class PolicyStateMachine implements ActionListener {
     private GridBagConstraints applianceGridBagConstraints;
     private GridBagConstraints rackGridBagConstraints;
     private GridBagConstraints serviceGridBagConstraints;
+    private static final String POLICY_MANAGER_SEPARATOR = "____________";
+    private static final String POLICY_MANAGER_OPTION = "Show Policy Manager";
     // DOWNLOAD DELAYS //////////////
     private static final int DOWNLOAD_INITIAL_SLEEP_MILLIS = 3000;
     private static final int DOWNLOAD_SLEEP_MILLIS = 500;
@@ -167,14 +169,34 @@ public class PolicyStateMachine implements ActionListener {
 	if( actionEvent.getSource().equals(viewSelector) ){
 	    handleViewSelector();
 	}
-	else if(actionEvent.getSource().equals(policyManagerJButton)){
-	    handlePolicyManagerJButton();
-	}
+	//else if(actionEvent.getSource().equals(policyManagerJButton)){
+	//    handlePolicyManagerJButton();
+	//}
     }
     private void handleViewSelector(){
-	Policy newPolicy = (Policy) viewSelector.getSelectedItem();
-	if( newPolicy.equals(selectedPolicy) )
+	Policy newPolicy;
+	if( viewSelector.getSelectedItem() instanceof String ){
+	    if( viewSelector.getSelectedItem().equals(POLICY_MANAGER_OPTION) ){
+		try{
+		    PolicyJDialog policyJDialog = new PolicyJDialog();
+		    policyJDialog.setVisible(true);
+		    viewSelector.setSelectedItem(selectedPolicy);
+		    updatePolicyRacks();
+		}
+		catch(Exception e){
+		    try{ Util.handleExceptionWithRestart("Error handling policy manager action", e); }
+		    catch(Exception f){ Util.handleExceptionNoRestart("Error handling policy manager action", f); }
+		}		
+	    }
+	    else
+		viewSelector.setSelectedItem(selectedPolicy);
 	    return;
+	}
+	else{
+	    newPolicy = (Policy) viewSelector.getSelectedItem();
+	    if( newPolicy.equals(selectedPolicy) )
+		return;
+	}	
 	// TOOLBOX VIEW AND SCROLL POSITION
 	JPanel newPolicyToolboxJPanel = policyToolboxJPanelMap.get(newPolicy);
 	int currentScrollPosition = toolboxJScrollPane.getVerticalScrollBar().getValue();
@@ -234,7 +256,7 @@ public class PolicyStateMachine implements ActionListener {
 	// BUILD A GUI MODEL AND MVVM MODEL
 	Map<Policy,Object> currentPolicyRacks = new HashMap<Policy,Object>();
 	Map<Policy,Object> newPolicyRacks = new HashMap<Policy,Object>();
-	for(int i=0; i<((DefaultComboBoxModel)viewSelector.getModel()).getSize(); i++)
+	for(int i=0; i<((DefaultComboBoxModel)viewSelector.getModel()).getSize()-2; i++) // -2 for the last 2 policy manager options
 	    currentPolicyRacks.put( (Policy) ((DefaultComboBoxModel)viewSelector.getModel()).getElementAt(i), null );
 	for( Policy policy : (List<Policy>) Util.getPolicyManager().getPolicyConfiguration().getPolicies() )
 	    newPolicyRacks.put( policy, null );
@@ -249,16 +271,18 @@ public class PolicyStateMachine implements ActionListener {
 		removedPolicyVector.add( currentPolicy );
 	// UPDATE VIEW SELECTOR
 	Policy activePolicy = (Policy) viewSelector.getSelectedItem();
-	DefaultComboBoxModel defaultComboBoxModel = new DefaultComboBoxModel();
+	DefaultComboBoxModel newModel = new DefaultComboBoxModel();
 	for( Policy newPolicy : newPolicyRacks.keySet() ){
-	    defaultComboBoxModel.addElement(newPolicy);
+	    newModel.addElement(newPolicy);
 	    if( activePolicy.equals(newPolicy) ){
-		defaultComboBoxModel.setSelectedItem(newPolicy);
+		newModel.setSelectedItem(newPolicy);
 	    }
 	}
-	if( defaultComboBoxModel.getSelectedItem() == null )
-	    defaultComboBoxModel.setSelectedItem( defaultComboBoxModel.getElementAt(0)  );
-	viewSelector.setModel(defaultComboBoxModel);
+	newModel.addElement(POLICY_MANAGER_SEPARATOR);
+	newModel.addElement(POLICY_MANAGER_OPTION);
+	if( newModel.getSelectedItem() == null )
+	    newModel.setSelectedItem( newModel.getElementAt(0)  );
+	viewSelector.setModel(newModel);
 	// ADD THE NEW AND REMOVE THE OLD
 	addedPolicyRacks(addedPolicyVector);
 	removedPolicyRacks(removedPolicyVector);
@@ -705,6 +729,8 @@ public class PolicyStateMachine implements ActionListener {
 	DefaultComboBoxModel newModel = new DefaultComboBoxModel();
 	for( Policy policy : policyTidMap.keySet() )
 		newModel.addElement(policy);
+	newModel.addElement(POLICY_MANAGER_SEPARATOR);
+	newModel.addElement(POLICY_MANAGER_OPTION);
 	newModel.setSelectedItem( newModel.getElementAt(0) );
 	viewSelector.setModel(newModel);
 	viewSelector.setRenderer( new PolicyRenderer(viewSelector.getRenderer()) );
@@ -906,7 +932,7 @@ public class PolicyStateMachine implements ActionListener {
 	    this.listCellRenderer = listCellRenderer;
 	}
 	public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean hasFocus){
-	    return listCellRenderer.getListCellRendererComponent(list, ((Policy)value).getName(), index, isSelected, hasFocus);
+	    return listCellRenderer.getListCellRendererComponent(list, (value instanceof Policy?((Policy)value).getName():value.toString()), index, isSelected, hasFocus);
 	}
     }
     private class StoreActionListener implements java.awt.event.ActionListener {
