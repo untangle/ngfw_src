@@ -128,8 +128,8 @@ public class MMainJFrame extends javax.swing.JFrame {
         maintenanceJButton = new javax.swing.JButton();
         aboutJButton = new javax.swing.JButton();
         configurationSpacerJPanel1 = new javax.swing.JPanel();
-        upgradeJButton = new javax.swing.JButton();
         rackJComboBox = new javax.swing.JComboBox();
+        upgradeJButton = new javax.swing.JButton();
         mPipelineJPanel = new com.metavize.gui.pipeline.MPipelineJPanel();
         backgroundJLabel = new com.metavize.gui.widgets.MTiledIconLabel();
 
@@ -496,6 +496,22 @@ public class MMainJFrame extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 10);
         controlsJPanel.add(mTabbedPane, gridBagConstraints);
 
+        rackJComboBox.setFont(new java.awt.Font("Dialog", 0, 12));
+        rackJComboBox.setFocusable(false);
+        rackJComboBox.setMinimumSize(new java.awt.Dimension(160, 24));
+        rackJComboBox.setPreferredSize(new java.awt.Dimension(160, 24));
+        rackJComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rackJComboBoxActionPerformed(evt);
+            }
+        });
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.insets = new java.awt.Insets(15, 0, 0, 0);
+        controlsJPanel.add(rackJComboBox, gridBagConstraints);
+
         upgradeJButton.setFont(new java.awt.Font("Default", 0, 12));
         upgradeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/upgrade/IconAvailable32x32.png")));
         upgradeJButton.setText("<html>Upgrade<br></html>");
@@ -512,26 +528,10 @@ public class MMainJFrame extends javax.swing.JFrame {
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridy = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(15, 20, 10, 20);
         controlsJPanel.add(upgradeJButton, gridBagConstraints);
-
-        rackJComboBox.setFont(new java.awt.Font("Dialog", 0, 12));
-        rackJComboBox.setFocusable(false);
-        rackJComboBox.setMinimumSize(new java.awt.Dimension(160, 24));
-        rackJComboBox.setPreferredSize(new java.awt.Dimension(160, 24));
-        rackJComboBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                rackJComboBoxActionPerformed(evt);
-            }
-        });
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.insets = new java.awt.Insets(147, 0, 0, 0);
-        controlsJPanel.add(rackJComboBox, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
