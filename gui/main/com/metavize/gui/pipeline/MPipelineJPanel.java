@@ -38,7 +38,7 @@ public class MPipelineJPanel extends javax.swing.JPanel {
         mPipelineJScrollPane.getVerticalScrollBar().setOpaque(false);
     }
     
-
+    public JScrollPane getJScrollPane(){ return mPipelineJScrollPane; }
 
     private void initComponents() {//GEN-BEGIN:initComponents
         java.awt.GridBagConstraints gridBagConstraints;

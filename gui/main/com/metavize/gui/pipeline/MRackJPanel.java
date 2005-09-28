@@ -24,7 +24,7 @@ import javax.swing.border.*;
 
 public class MRackJPanel extends JPanel {
 
-    private static final int MIN_RACK_HEIGHT = 3;
+    private static final int MIN_RACK_HEIGHT = 1;
     private static final int RACK_BUFFER = 1;
 
     // private ImageIcon RackBottom;
@@ -49,7 +49,7 @@ public class MRackJPanel extends JPanel {
         rackMiddleConstraints = new GridBagConstraints(0, 1, 1, 1, 0d, 0d,
 						       GridBagConstraints.NORTH, GridBagConstraints.NONE,
 						       new Insets(0,0,0,12), 0, 0);
-        rackBottomConstraints = new GridBagConstraints(0, 2, 1, 1, 0d, 1d,
+        rackBottomConstraints = new GridBagConstraints(0, 3, 1, 1, 0d, 1d,
 						       GridBagConstraints.CENTER, GridBagConstraints.VERTICAL,
 						       new Insets(1 + 101*RACK_BUFFER,0,0,12), 0, 0);
 

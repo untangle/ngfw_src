@@ -18,9 +18,10 @@ public class ButtonKey implements Comparable<ButtonKey> {
 
     private String applianceName;
     private int rackPosition;
+    private boolean isService;
 
     public ButtonKey(MTransformJButton mTransformJButton){
-        init(mTransformJButton.getName(), mTransformJButton.getRackPosition() );
+        init(mTransformJButton.getName(), mTransformJButton.getRackPosition(), mTransformJButton.getMackageDesc().isService());
     }
     
     public ButtonKey(MTransformJPanel mTransformJPanel){
@@ -28,29 +29,37 @@ public class ButtonKey implements Comparable<ButtonKey> {
     }
     
     public ButtonKey(MackageDesc mackageDesc){
-        init(mackageDesc.getName(), mackageDesc.getRackPosition() );
+        init(mackageDesc.getName(), mackageDesc.getRackPosition(), mackageDesc.isService());
     }
 
-    public ButtonKey(String applianceName, int rackPosition){
-        init(applianceName, rackPosition);
+    public ButtonKey(String applianceName, int rackPosition, boolean isService){
+        init(applianceName, rackPosition, isService);
     }
 
         
-    private void init(String applianceName, int rackPosition){
+    private void init(String applianceName, int rackPosition, boolean isService){
         this.applianceName = applianceName;
         this.rackPosition = rackPosition;
+	this.isService = isService;
     }
     
     public int getRackPosition(){ return rackPosition; }
     public String getApplianceName(){ return applianceName; }
+    public boolean isService(){ return isService; }
     
     public int compareTo(ButtonKey b){
-        if( this.getRackPosition() < b.getRackPosition() )
-            return -1;
-        else if ( this.getRackPosition() > b.getRackPosition() )
-            return 1;
-        else
-            return this.getApplianceName().compareToIgnoreCase( b.getApplianceName() );
+	if( this.isService() == b.isService() ){
+	    if( this.getRackPosition() < b.getRackPosition() )
+		return -1;
+	    else if ( this.getRackPosition() > b.getRackPosition() )
+		return 1;
+	    else
+		return this.getApplianceName().compareToIgnoreCase( b.getApplianceName() );
+	}
+	else if( this.isService() )
+	    return 1;
+	else
+	    return -1;
         
     }
 

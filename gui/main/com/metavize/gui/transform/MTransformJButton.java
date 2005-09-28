@@ -33,12 +33,6 @@ import javax.swing.border.*;
 
 public class MTransformJButton extends JButton {
 
-    // FADED BACKGROUND /////////////
-    private static final int FADE_DELAY_MILLIS = 150;
-    private static final float FADE_DECREMENT = .1f;
-    private static Color BACKGROUND_COLOR = null;
-    private int fadeIteration = -1;
-    /////////////////////////////////
 
     private MackageDesc mackageDesc;
     private GridBagConstraints gridBagConstraints;
@@ -51,7 +45,6 @@ public class MTransformJButton extends JButton {
     private String toolTipString;
 
 
-    /** Creates a new instance of MTransformJButton */
     public MTransformJButton(MackageDesc mackageDesc) {
 
         this.mackageDesc = mackageDesc;
@@ -153,8 +146,6 @@ public class MTransformJButton extends JButton {
         this.setContentAreaFilled(true);
         this.setOpaque(true);
 
-	if(BACKGROUND_COLOR == null)
-	    BACKGROUND_COLOR = this.getBackground();
     }
 
     public MTransformJButton duplicate(){
@@ -174,7 +165,7 @@ public class MTransformJButton extends JButton {
     ////////////////////////////////////////////
 
     public void highlight(){
-	new FadeTask();
+	new FadeTask(this);
     }
 
 
@@ -237,44 +228,6 @@ public class MTransformJButton extends JButton {
         nameJLabel.setEnabled(enabled);
     }
     ///////////////////////////////////
-
-
-    
-
-    ///////////////////////////////////////
-
-    private class FadeTask implements ActionListener{
-	private float fadeLeft = 1f;
-	private javax.swing.Timer fadeTimer;
-	private int redInit;
-	private int greenInit;
-	private int blueInit;
-	public FadeTask(){
-	    fadeTimer = new javax.swing.Timer(FADE_DELAY_MILLIS, this);
-	    redInit = BACKGROUND_COLOR.getRed();
-	    greenInit = BACKGROUND_COLOR.getGreen();
-	    blueInit = BACKGROUND_COLOR.getBlue();
-	    fadeTimer.start();
-	}
-	public void actionPerformed(ActionEvent evt){
-	    if( fadeLeft == 1f ){
-		MTransformJButton.this.setBackground(new Color(0, 0, 255));
-	    }
-	    else if ( fadeLeft > 0f ) {
-		MTransformJButton.this.setBackground(new Color( (int)(((float)redInit)*(1f-fadeLeft)), 
-								(int)(((float)greenInit)*(1f-fadeLeft)), 
-								blueInit + (int)((255f-(float)blueInit)*fadeLeft) ));
-	    }
-	    else{
-		MTransformJButton.this.setBackground(BACKGROUND_COLOR);
-		fadeTimer.stop();
-	    }
-	    fadeLeft -= FADE_DECREMENT;
-	    if(fadeLeft<0f)
-		fadeLeft = 0f;
-	}
-    }
-
 
 
 

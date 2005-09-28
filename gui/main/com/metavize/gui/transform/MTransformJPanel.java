@@ -90,26 +90,28 @@ public class MTransformJPanel extends javax.swing.JPanel {
             mTransformControlsJPanel = new MTransformControlsJPanel(this);
             Util.handleExceptionNoRestart("Error adding control panel", e);
         }
-        
-	
-	
+        	
 	// DYNAMICALLY LOAD ICONS
 	String name = null;
 	try{
 	    name = getMackageDesc().getName();
 	    name = name.substring(0, name.indexOf('-'));
 	    
-	    descriptionIconJLabel.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/metavize/tran/" + name +  "/gui/IconDesc42x42.png")));
-	    organizationIconJLabel.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/metavize/tran/" + name + "/gui/IconOrg42x42.png")));
+	    descriptionIconJLabel.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/metavize/tran/" 
+												       + name 
+												       +  "/gui/IconDesc42x42.png")));
+	    organizationIconJLabel.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/metavize/tran/" 
+													+ name 
+													+ "/gui/IconOrg42x42.png")));
 	}
 	catch(Exception e){
 	    Util.handleExceptionNoRestart("Error adding icons: " + name , e);
 	}
 	
-	
 	// SIZES
 	if(maxDimension == null)
-            maxDimension = new Dimension((int)this.getPreferredSize().getWidth(), (int)(this.getPreferredSize().getHeight() + mTransformControlsJPanel.getPreferredSize().getHeight()));
+            maxDimension = new Dimension((int)this.getPreferredSize().getWidth(), (int)(this.getPreferredSize().getHeight() 
+											+ mTransformControlsJPanel.getPreferredSize().getHeight()));
         if(minDimension == null)
             minDimension = new Dimension((int)this.getPreferredSize().getWidth(), (int)(this.getPreferredSize().getHeight()));
         setPreferredSize(minDimension);
@@ -123,19 +125,18 @@ public class MTransformJPanel extends javax.swing.JPanel {
         //mTransformControlsJPanel.setVisible(false);
         setPreferredSize(minDimension);
         
-        
         // SETUP COLORS and name
         descriptionTextJLabel.setText( getMackageDesc().getDisplayName() );
-	
 	
         // SETUP STATE
         mStateMachine = new MStateMachine(this);
         powerJToggleButton.addActionListener(mStateMachine);
         mTransformControlsJPanel.saveJButton().addActionListener(mStateMachine);
         mTransformControlsJPanel.reloadJButton().addActionListener(mStateMachine);
-        mTransformControlsJPanel.removeJButton().addActionListener(mStateMachine);
-	
+        mTransformControlsJPanel.removeJButton().addActionListener(mStateMachine);	
     }
+
+    public void highlight(){ new FadeTask(effectsJPanel); }
 
     public void setProblemView(boolean doLater){ mStateMachine.setProblemView(doLater); }
     public void setRemovingView(boolean doLater){ mStateMachine.setRemovingView(doLater); }
@@ -164,14 +165,15 @@ public class MTransformJPanel extends javax.swing.JPanel {
         descriptionIconJLabel = new javax.swing.JLabel();
         organizationIconJLabel = new javax.swing.JLabel();
         powerJToggleButton = new javax.swing.JToggleButton();
+        effectsJPanel = new javax.swing.JPanel();
         backgroundJLabel = new javax.swing.JLabel();
 
         setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         setMaximumSize(new java.awt.Dimension(688, 500));
         setMinimumSize(new java.awt.Dimension(688, 100));
-        setPreferredSize(new java.awt.Dimension(688, 100));
         setOpaque(false);
+        setPreferredSize(new java.awt.Dimension(688, 100));
         descriptionTextJLabel.setFont(new java.awt.Font("Arial", 0, 18));
         descriptionTextJLabel.setForeground(new java.awt.Color(124, 123, 123));
         descriptionTextJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -235,6 +237,9 @@ public class MTransformJPanel extends javax.swing.JPanel {
         powerJToggleButton.setSelectedIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/metavize/gui/transform/IconPowerOnState28x28.png")));
         add(powerJToggleButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(606, 54, 28, 28));
 
+        effectsJPanel.setOpaque(false);
+        add(effectsJPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 688, 100));
+
         backgroundJLabel.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/metavize/gui/transform/TransformBackground688x100.png")));
         backgroundJLabel.setDisabledIcon(new javax.swing.ImageIcon(""));
         backgroundJLabel.setDoubleBuffered(true);
@@ -283,6 +288,7 @@ public class MTransformJPanel extends javax.swing.JPanel {
     protected javax.swing.JToggleButton controlsJToggleButton;
     protected javax.swing.JLabel descriptionIconJLabel;
     protected javax.swing.JLabel descriptionTextJLabel;
+    private javax.swing.JPanel effectsJPanel;
     private javax.swing.ButtonGroup onOffbuttonGroup;
     protected javax.swing.JLabel organizationIconJLabel;
     protected javax.swing.JToggleButton powerJToggleButton;

@@ -54,7 +54,9 @@ public class MMainJFrame extends javax.swing.JFrame {
         setBounds((screenSize.width-1024)/2, (screenSize.height-768)/2, 1024, 768);
 
 	PolicyStateMachine policyStateMachine = new PolicyStateMachine(mTabbedPane,rackJComboBox,Util.getMRackJPanel(),
-								       toolboxJScrollPane,storeScrollJPanel,metavizeJButton);
+								       toolboxJScrollPane,policyToolboxJPanel,serviceToolboxJPanel,
+								       storeScrollJPanel,metavizeJButton,
+								       Util.getMPipelineJPanel().getJScrollPane());
 	rackJComboBox.addActionListener(policyStateMachine);
 	metavizeJButton.addActionListener(policyStateMachine);
 		
@@ -111,6 +113,8 @@ public class MMainJFrame extends javax.swing.JFrame {
         toolboxJPanel = new javax.swing.JPanel();
         toolboxJScrollPane = new javax.swing.JScrollPane();
         toolboxScrollJPanel = new javax.swing.JPanel();
+        policyToolboxJPanel = new javax.swing.JPanel();
+        serviceToolboxJPanel = new javax.swing.JPanel();
         toolboxSpacerJPanel = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         configurationJPanel = new javax.swing.JPanel();
@@ -236,8 +240,28 @@ public class MMainJFrame extends javax.swing.JFrame {
 
         toolboxScrollJPanel.setFocusable(false);
         toolboxScrollJPanel.setOpaque(false);
+        policyToolboxJPanel.setLayout(new javax.swing.BoxLayout(policyToolboxJPanel, javax.swing.BoxLayout.Y_AXIS));
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        toolboxScrollJPanel.add(policyToolboxJPanel, gridBagConstraints);
+
+        serviceToolboxJPanel.setLayout(new java.awt.GridLayout(1, 1));
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        toolboxScrollJPanel.add(serviceToolboxJPanel, gridBagConstraints);
+
         toolboxSpacerJPanel.setFocusable(false);
+        toolboxSpacerJPanel.setMinimumSize(new java.awt.Dimension(0, 0));
         toolboxSpacerJPanel.setOpaque(false);
+        toolboxSpacerJPanel.setPreferredSize(new java.awt.Dimension(0, 0));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
@@ -697,9 +721,11 @@ public class MMainJFrame extends javax.swing.JFrame {
     private javax.swing.JButton maintenanceJButton;
     private javax.swing.JButton metavizeJButton;
     private javax.swing.JButton networkJButton;
+    private javax.swing.JPanel policyToolboxJPanel;
     private javax.swing.JButton protocolJButton;
     private javax.swing.JComboBox rackJComboBox;
     private javax.swing.JButton remoteJButton;
+    private javax.swing.JPanel serviceToolboxJPanel;
     private javax.swing.JPanel storeJPanel;
     private javax.swing.JScrollPane storeJScrollPane;
     private javax.swing.JPanel storeScrollJPanel;
