@@ -409,7 +409,7 @@ ALTER TABLE pl_stats
     ADD CONSTRAINT pl_stats_pkey PRIMARY KEY (event_id);
 ALTER TABLE pl_stats ALTER COLUMN event_id SET NOT NULL;
 
-CREATE INDEX pl_endp_sid ON events.pl_endp (session_id);
+CREATE INDEX pl_endp_sid_idx ON events.pl_endp (session_id);
 CREATE INDEX pl_endp_cdate_idx ON events.pl_endp (create_date);
 
 DROP TABLE public.pipeline_info;

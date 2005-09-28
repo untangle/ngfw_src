@@ -70,12 +70,39 @@ UPDATE settings.tid SET policy_id = 0 FROM
  WHERE id = foo.tid;
 
 -- com.metavize.mvvm.tran.PipelineEndpoints
-ALTER TABLE events.pl_endp ADD COLUMN policy_id int8;
-UPDATE events.pl_endp SET policy_id = 0;
-ALTER TABLE events.pl_endp ADD COLUMN policy_inbound bool;
-UPDATE events.pl_endp SET policy_inbound = true where client_intf = 0;
-UPDATE events.pl_endp SET policy_inbound = false where client_intf = 1;
+CREATE TABLE events.pl_endp_new (
+    event_id int8 NOT NULL,
+    time_stamp timestamp,
+    session_id int4,
+    proto int2,
+    create_date timestamp,
+    client_intf int2,
+    server_intf int2,
+    c_client_addr inet,
+    s_client_addr inet,
+    c_server_addr inet,
+    s_server_addr inet,
+    c_client_port int4,
+    s_client_port int4,
+    c_server_port int4,
+    s_server_port int4,
+    policy_id int8,
+    policy_inbound bool);
 
+INSERT INTO events.pl_endp_new
+SELECT event_id, time_stamp, session_id, proto, create_date, client_intf, server_intf, c_client_addr,
+       s_client_addr, c_server_addr, s_server_addr, c_client_port, s_client_port, c_server_port, s_server_port,
+       0, CASE WHEN client_intf = 0 THEN true ELSE false END
+  FROM events.pl_endp;
+
+DROP INDEX pl_endp_sid;
+DROP INDEX pl_endp_sid_idx;
+DROP INDEX pl_endp_cdate_idx;
+DROP TABLE events.pl_endp;
+
+ALTER TABLE events.pl_endp_new RENAME TO pl_endp;
+CREATE INDEX pl_endp_sid_idx ON events.pl_endp (session_id);
+CREATE INDEX pl_endp_cdate_idx ON events.pl_endp (create_date);
 
 -- Constraints
  
