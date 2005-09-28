@@ -17,15 +17,17 @@ import java.net.URLClassLoader;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.WeakHashMap;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.MappingException;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
-import org.apache.log4j.Logger;
 
 /**
  * These are internal utility methods for internal use by the MVVM or
@@ -38,29 +40,21 @@ class Util
 {
     private static final Logger logger = Logger.getLogger(Util.class);
 
+    private static final Map<ClassLoader, SessionFactory> sessionFactories
+        = new WeakHashMap<ClassLoader, SessionFactory>();
+
     static SessionFactory makeSessionFactory(ClassLoader cl)
     {
         SessionFactory sessionFactory = null;
-
-        try {
-            Configuration cfg = new Configuration();
-
-            Set seen = new HashSet();
-            while (null != cl) {
-                if (cl instanceof URLClassLoader) {
-                    addClassLoader((URLClassLoader)cl, cfg, seen);
+        synchronized (sessionFactories) {
+            sessionFactory = sessionFactories.get(cl);
+            if (null == sessionFactory) {
+                sessionFactory = createSessionFactory(cl);
+                if (null != sessionFactory) {
+                    sessionFactories.put(cl, sessionFactory);
                 }
-                cl = cl.getParent();
             }
-
-            long t0 = System.currentTimeMillis();
-            sessionFactory = cfg.buildSessionFactory();
-            long t1 = System.currentTimeMillis();
-            logger.info("session factory in " + (t1 - t0) + " millis");
-        } catch (HibernateException exn) {
-            logger.warn("could not create SessionFactory", exn);
         }
-
         return sessionFactory;
     }
 
@@ -74,6 +68,34 @@ class Util
             Set seen = new HashSet();
             for (JarFile jf : jfs) {
                 addJar(jf, cfg, seen);
+            }
+
+            long t0 = System.currentTimeMillis();
+            sessionFactory = cfg.buildSessionFactory();
+            long t1 = System.currentTimeMillis();
+            logger.info("session factory in " + (t1 - t0) + " millis");
+        } catch (HibernateException exn) {
+            logger.warn("could not create SessionFactory", exn);
+        }
+
+        return sessionFactory;
+    }
+
+    // private methods --------------------------------------------------------
+
+    private static SessionFactory createSessionFactory(ClassLoader cl)
+    {
+        SessionFactory sessionFactory = null;
+
+        try {
+            Configuration cfg = new Configuration();
+
+            Set seen = new HashSet();
+            while (null != cl) {
+                if (cl instanceof URLClassLoader) {
+                    addClassLoader((URLClassLoader)cl, cfg, seen);
+                }
+                cl = cl.getParent();
             }
 
             long t0 = System.currentTimeMillis();
