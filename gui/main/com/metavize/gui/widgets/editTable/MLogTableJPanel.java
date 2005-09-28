@@ -41,7 +41,6 @@ public abstract class MLogTableJPanel extends javax.swing.JPanel implements Shut
     public MLogTableJPanel(Transform logTransform, MTransformControlsJPanel mTransformControlsJPanel) {
         this.logTransform = logTransform;
 	this.mTransformControlsJPanel = mTransformControlsJPanel;
-
 	try{
 	    SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
 		// INIT GUI & CUSTOM INIT
@@ -265,6 +264,7 @@ public abstract class MLogTableJPanel extends javax.swing.JPanel implements Shut
 	private boolean isAutoRefresh;
 	public RefreshThread(boolean isAutoRefresh){
 	    super("MVCLIENT-MLogTableJPanel.RefreshThread: " + logTransform.getTransformDesc().getDisplayName());
+	    setContextClassLoader(Util.getClassLoader());
 	    this.isAutoRefresh = isAutoRefresh;
 	    if( !isAutoRefresh // a button was pressed, stop other streaming
 		&& (MLogTableJPanel.this.lastMLogTableJPanel != null)
