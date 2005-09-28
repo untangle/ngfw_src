@@ -327,7 +327,7 @@ public abstract class TransformBase implements Transform
                     transformManager.registerThreadContext(pCtx);
                     parent.parentStart();
                 } finally {
-                    transformManager.registerThreadContext(transformContext);
+                    transformManager.deregisterThreadContext();
                     ct.setContextClassLoader(oldCl);
                     // Left TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 }
@@ -369,7 +369,7 @@ public abstract class TransformBase implements Transform
                     transformManager.registerThreadContext(pCtx);
                     parent.parentStop();
                 } finally {
-                    transformManager.registerThreadContext(transformContext);
+                    transformManager.deregisterThreadContext();
                     ct.setContextClassLoader(oldCl);
                     // Left TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 }
