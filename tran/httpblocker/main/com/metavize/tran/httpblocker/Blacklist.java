@@ -27,6 +27,7 @@ import com.metavize.mvvm.tran.MimeTypeRule;
 import com.metavize.mvvm.tran.StringRule;
 import com.metavize.tran.http.RequestLine;
 import com.metavize.tran.token.Header;
+import com.metavize.tran.util.CharSequenceUtil;
 import org.apache.log4j.Logger;
 
 /**
@@ -42,8 +43,8 @@ class Blacklist
     private final Logger eventLogger = MvvmContextFactory.context()
         .eventLogger();
 
-    private volatile Map<String, String[]> urls = Collections.emptyMap();
-    private volatile Map<String, String[]> domains = Collections.emptyMap();
+    private volatile Map<String, CharSequence[]> urls = Collections.emptyMap();
+    private volatile Map<String, CharSequence[]> domains = Collections.emptyMap();
 
     private volatile String[] blockedUrls = new String[0];
     private volatile String[] passedUrls = new String[0];
@@ -72,8 +73,8 @@ class Blacklist
 
     synchronized void reconfigure()
     {
-        Map<String, String[]> u = new HashMap<String, String[]>();
-        Map<String, String[]> d = new HashMap<String, String[]>();
+        Map<String, CharSequence[]> u = new HashMap<String, CharSequence[]>();
+        Map<String, CharSequence[]> d = new HashMap<String, CharSequence[]>();
 
         BlacklistCache cache = BlacklistCache.cache();
 
@@ -125,6 +126,7 @@ class Blacklist
                 host = clientIp.getHostAddress();
             }
         }
+
         host = host.toLowerCase();
         while ('.' == host.charAt(host.length() - 1)) {
             host = host.substring(0, host.length() - 1);
@@ -266,17 +268,17 @@ class Blacklist
         return null;
     }
 
-    private String findCategory(String[] strs, String val,
+    private String findCategory(CharSequence[] strs, String val,
                                 List<StringRule> rules)
     {
         int i = findMatch(strs, val);
         return 0 > i ? null : lookupCategory(strs[i], rules);
     }
 
-    private String findCategory(Map<String, String[]> cats, String val)
+    private String findCategory(Map<String, CharSequence[]> cats, String val)
     {
         for (String cat : cats.keySet()) {
-            String[] strs = cats.get(cat);
+            CharSequence[] strs = cats.get(cat);
             int i = findMatch(strs, val);
             if (0 <= i) {
                 return cat;
@@ -286,18 +288,19 @@ class Blacklist
         return null;
     }
 
-    private int findMatch(String[] strs, String val)
+    private int findMatch(CharSequence[] strs, String val)
     {
         if (null == val || null == strs) {
             return -1;
         }
 
-        int i = Arrays.binarySearch(strs, val);
+        int i = Arrays.binarySearch(strs, val, CharSequenceUtil.COMPARATOR);
         if (0 <= i) {
             return i;
         } else {
             int j = -i - 2;
-            if (0 <= j && j < strs.length && val.startsWith(strs[j])) {
+            if (0 <= j && j < strs.length
+                && CharSequenceUtil.startsWith(val, strs[j])) {
                 return j;
             }
         }
@@ -305,7 +308,7 @@ class Blacklist
         return -1;
     }
 
-    private String lookupCategory(String match, List<StringRule> rules)
+    private String lookupCategory(CharSequence match, List<StringRule> rules)
     {
         for (StringRule rule : rules) {
             String url = rule.getString().toLowerCase();

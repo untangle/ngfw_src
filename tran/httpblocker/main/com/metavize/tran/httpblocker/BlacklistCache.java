@@ -20,6 +20,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.metavize.tran.util.AsciiString;
 import org.apache.log4j.Logger;
 
 class BlacklistCache
@@ -33,10 +34,10 @@ class BlacklistCache
     private static final BlacklistCache CACHE = new BlacklistCache();
 
     // We can leak HashMap entries, there are a small number of categories
-    private final Map<String, WeakReference<String[]>> urls
-        = new HashMap<String, WeakReference<String[]>>();
-    private final Map<String, WeakReference<String[]>>domains
-        = new HashMap<String, WeakReference<String[]>>();
+    private final Map<String, WeakReference<CharSequence[]>> urls
+        = new HashMap<String, WeakReference<CharSequence[]>>();
+    private final Map<String, WeakReference<CharSequence[]>>domains
+        = new HashMap<String, WeakReference<CharSequence[]>>();
 
     private final Logger logger = Logger.getLogger(BlacklistCache.class);
 
@@ -53,12 +54,12 @@ class BlacklistCache
 
     // package protected methods ----------------------------------------------
 
-    String[] getUrlBlacklist(String category)
+    CharSequence[] getUrlBlacklist(String category)
     {
-        String[] blacklist;
+        CharSequence[] blacklist;
 
         synchronized (urls) {
-            WeakReference<String[]> ref = urls.get(category);
+            WeakReference<CharSequence[]> ref = urls.get(category);
             blacklist = null == ref ? null : ref.get();
 
             if (null == blacklist) {
@@ -70,12 +71,12 @@ class BlacklistCache
         return blacklist;
     }
 
-    String[] getDomainBlacklist(String category)
+    CharSequence[] getDomainBlacklist(String category)
     {
-        String[] blacklist;
+        CharSequence[] blacklist;
 
         synchronized (domains) {
-            WeakReference<String[]> ref = domains.get(category);
+            WeakReference<CharSequence[]> ref = domains.get(category);
             blacklist = null == ref ? null : ref.get();
 
             if (null == blacklist) {
@@ -89,10 +90,10 @@ class BlacklistCache
 
     // private methods --------------------------------------------------------
 
-    private String[] populateArray(String table, String column,
-                                   String category)
+    private CharSequence[] populateArray(String table, String column,
+                                        String category)
     {
-        String[] a;
+        CharSequence[] a;
 
         Connection c = null;
         try {
@@ -106,7 +107,7 @@ class BlacklistCache
 
             int n = rs.getInt(1);
 
-            a = new String[n];
+            a = new CharSequence[n];
 
             ps = c.prepareStatement
                 ("SELECT " + column + " FROM " + table + " WHERE category = ?");
@@ -115,7 +116,7 @@ class BlacklistCache
             rs = ps.executeQuery();
             int i = 0;
             while (rs.next()) {
-                a[i++] = rs.getString(1);
+                a[i++] = new AsciiString(rs.getBytes(1));
             }
 
             if (n != i) {
@@ -124,7 +125,7 @@ class BlacklistCache
 
         } catch (SQLException exn) {
             logger.warn("could not populate blacklist array", exn);
-            a = new String[0];
+            a = new CharSequence[0];
         } finally {
             try {
                 if (null != c) {
