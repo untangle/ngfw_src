@@ -341,6 +341,8 @@ class NetworkingManagerImpl implements NetworkingManager
         sb.append( HEADER );
         sb.append( NS_PARAM + " " + configuration.dns1() + "\n" );
 
+        /* Set the System property for DNS */
+
         if ( !configuration.dns2().isEmpty())
             sb.append( NS_PARAM + " " + configuration.dns2() + "\n" );
 

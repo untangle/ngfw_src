@@ -23,14 +23,14 @@ import com.metavize.mvvm.tran.firewall.PortMatcher;
 import com.metavize.mvvm.tran.firewall.ProtocolMatcher;
 import com.metavize.mvvm.tran.firewall.IntfMatcher;
 import com.metavize.mvvm.tran.firewall.IPMatcher;
-import com.metavize.mvvm.tran.firewall.TrafficMatcher;
+import com.metavize.mvvm.tran.firewall.TrafficIntfMatcher;
 
 /**
  * A class for matching redirects
  *   This is cannot be squashed into a RedirectRule because all of its elements are final. 
  *   This is a property which is not possible in hibernate objects.
  */
-class RedirectMatcher extends TrafficMatcher {
+class RedirectMatcher extends TrafficIntfMatcher {
     private static final Logger logger = Logger.getLogger( RedirectMatcher.class );
     
     public static final RedirectMatcher MATCHER_DISABLED = 

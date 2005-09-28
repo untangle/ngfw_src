@@ -5,14 +5,14 @@ CREATE TABLE settings.tr_airgap_shield_node_rule (
     name        VARCHAR(255),
     category    VARCHAR(255),
     description VARCHAR(255),
-    live        bool,
-    alert       bool,
-    log         bool,
+    live        BOOL,
+    alert       BOOL,
+    log         BOOL,
     address     INET,
     netmask     INET,
     divider     REAL,
-    settings_id int8,
-    position    int4,
+    settings_id INT8,
+    position    INT4,
     PRIMARY KEY (rule_id));
 
 ALTER TABLE settings.tr_airgap_shield_node_rule

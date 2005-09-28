@@ -287,7 +287,7 @@ public class FirewallImpl extends AbstractTransform implements Firewall
 
 
             FirewallRule tmp = new FirewallRule( false, ProtocolMatcher.MATCHER_ALL,
-                                                 IntfMatcher.getOutside(), IntfMatcher.getAll(),
+                                                 false, true,
                                                  IPMatcher.MATCHER_ALL, IPMatcher.MATCHER_ALL,
                                                  PortMatcher.MATCHER_ALL, new PortMatcher( 21 ),
                                                  true );
@@ -297,7 +297,7 @@ public class FirewallImpl extends AbstractTransform implements Firewall
 
             /* Block all traffic TCP traffic from the network 1.2.3.4/255.255.255.0 */
             tmp = new FirewallRule( false, ProtocolMatcher.MATCHER_TCP,
-                                    IntfMatcher.getAll(), IntfMatcher.getAll(),
+                                    true, true,
                                     IPMatcher.parse( "1.2.3.0/255.255.255.0" ), IPMatcher.MATCHER_ALL,
                                     PortMatcher.MATCHER_ALL, PortMatcher.MATCHER_ALL,
                                     true );
@@ -305,7 +305,7 @@ public class FirewallImpl extends AbstractTransform implements Firewall
             firewallList.add( tmp );
 
             tmp = new FirewallRule( false, ProtocolMatcher.MATCHER_ALL,
-                                    IntfMatcher.getAll(), IntfMatcher.getAll(),
+                                    true, true,
                                     IPMatcher.MATCHER_ALL, IPMatcher.parse( "1.2.3.1-1.2.3.10" ),
                                     new PortMatcher( 1000, 5000 ), PortMatcher.MATCHER_ALL,
                                     false );
@@ -314,7 +314,7 @@ public class FirewallImpl extends AbstractTransform implements Firewall
             firewallList.add( tmp );
 
             tmp = new FirewallRule( false, ProtocolMatcher.MATCHER_PING,
-                                    IntfMatcher.getAll(), IntfMatcher.getAll(),
+                                    true, true,
                                     IPMatcher.MATCHER_ALL, IPMatcher.parse( "1.2.3.1" ),
                                     PortMatcher.MATCHER_PING, PortMatcher.MATCHER_PING,
                                     false );

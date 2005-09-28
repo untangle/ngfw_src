@@ -139,7 +139,9 @@ class EventHandler extends AbstractEventHandler
 
             /* Update all of the rules */
             for ( Iterator<FirewallRule> iter = list.iterator() ; iter.hasNext() ; index++ ) {
-                logger.debug( "Inserting rule" );
+                FirewallRule rule = iter.next();
+                /* Don't insert inactive rules */
+                if ( !rule.isLive()) continue;
                 firewallRuleList.add( new FirewallMatcher( iter.next(), index ));
             }
         }

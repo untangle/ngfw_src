@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: MimeTypeRule.java 229 2005-04-07 22:25:00Z amread $
+ * $Id$
  */
 
 package com.metavize.mvvm.tran.firewall;
@@ -17,27 +17,17 @@ import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.Rule;
 import com.metavize.mvvm.tran.ParseException;
 
-import com.metavize.mvvm.argon.IntfConverter;
-
 /**
  * Rule for matching based on IP addresses and subnets.
  *
  * @author <a href="mailto:rbscott@metavize.com">Robert Scott</a>
  * @version 1.0
  */
-public abstract class TrafficRule extends Rule
+abstract class TrafficRule extends Rule
 {
-    private static final String DIRECTION_BOTH = "Inbound & Outbound";
-    private static final String DIRECTION_IN   = "Inbound";
-    private static final String DIRECTION_OUT  = "Outbound";
-
-    private static final String[] DIRECTION_ENUMERATION = { DIRECTION_BOTH, DIRECTION_IN, DIRECTION_OUT };
-
-    private static final long serialVersionUID   =  337184355738935251L;
+    private static final long serialVersionUID = -3950973798403822835L;
 
     private ProtocolMatcher protocol;
-    private IntfMatcher srcIntf;
-    private IntfMatcher dstIntf;
 
     private IPMatcher   srcAddress;
     private IPMatcher   dstAddress;
@@ -50,17 +40,16 @@ public abstract class TrafficRule extends Rule
     /**
      * Hibernate constructor.
      */
-    public TrafficRule() { }
+    public TrafficRule()
+    {
+    }
 
     public TrafficRule( boolean     isLive,  ProtocolMatcher protocol, 
-                        IntfMatcher srcIntf,    IntfMatcher     dstIntf, 
                         IPMatcher   srcAddress, IPMatcher       dstAddress,
                         PortMatcher srcPort,    PortMatcher     dstPort )
     {
         setLive( isLive );
         this.protocol   = protocol;
-        this.srcIntf    = srcIntf;
-        this.dstIntf    = dstIntf;
         this.srcAddress = srcAddress;
         this.dstAddress = dstAddress;
         this.srcPort    = srcPort;
@@ -175,96 +164,4 @@ public abstract class TrafficRule extends Rule
     {
         this.dstPort = dstPort;
     }
-
-    /**
-     * source IntfMatcher
-     *
-     * @return the source IP matcher.
-     * @hibernate.property
-     * type="com.metavize.mvvm.type.firewall.IntfMatcherUserType"
-     * @hibernate.column
-     * name="SRC_INTF_MATCHER"
-     */
-    public IntfMatcher getSrcIntf()
-    {
-        return srcIntf;
-    }
-
-    public void setSrcIntf( IntfMatcher srcIntf )
-    {
-        this.srcIntf = srcIntf;
-    }
-    
-    /**
-     * destination IntfMatcher
-     *
-     * @return the destination IP matcher.
-     * @hibernate.property
-     * type="com.metavize.mvvm.type.firewall.IntfMatcherUserType"
-     * @hibernate.column
-     * name="DST_INTF_MATCHER"
-     */
-    public IntfMatcher getDstIntf()
-    {
-        return dstIntf;
-    }
-
-    public void setDstIntf( IntfMatcher dstIntf )
-    {
-        this.dstIntf = dstIntf;
-    }
-
-    /* ----- */
-       
-    public void setDirection( String direction ) throws ParseException
-    {
-        if ( direction.equalsIgnoreCase( DIRECTION_BOTH )) {
-            setSrcIntf( IntfMatcher.getMatcher( 3 ));
-            setDstIntf( IntfMatcher.getMatcher( 3 ));
-        } else if ( direction.equalsIgnoreCase( DIRECTION_IN )) {
-            setSrcIntf( IntfMatcher.getOutside());
-            setDstIntf( IntfMatcher.getInside());
-        } else if ( direction.equalsIgnoreCase( DIRECTION_OUT )) {
-            setSrcIntf( IntfMatcher.getInside());
-            setDstIntf( IntfMatcher.getOutside());
-        } else {
-            throw new ParseException( "Invalid direction: " + direction );
-        }
-    }
-
-    public String getDirection()
-    {
-        /* XXX For now just use the src interface */
-        if ( srcIntf == null ) {
-            srcIntf = IntfMatcher.getAll();
-            dstIntf = IntfMatcher.getAll();
-            return DIRECTION_BOTH;
-        } else {
-            boolean isInsideEnabled = srcIntf.isMatch( IntfConverter.INSIDE );
-            boolean isOutsideEnabled = srcIntf.isMatch( IntfConverter.OUTSIDE );
-            
-            if ( isInsideEnabled && isOutsideEnabled ) {
-                return DIRECTION_BOTH;
-            } else if ( isInsideEnabled ) {
-                return DIRECTION_OUT;
-            } else if ( isOutsideEnabled ) {
-                return DIRECTION_IN;
-            }
-        }
-        /* Restore to default, something has gone wrong */
-        srcIntf = IntfMatcher.getAll();
-        dstIntf = IntfMatcher.getAll();
-        return DIRECTION_BOTH;
-    }
-    
-    public static String[] getDirectionEnumeration()
-    {
-        return DIRECTION_ENUMERATION;
-    }
-
-    public static String getDirectionDefault()
-    {
-        return DIRECTION_ENUMERATION[0];
-    }
-
 }

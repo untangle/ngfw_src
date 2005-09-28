@@ -20,7 +20,7 @@ import com.metavize.mvvm.tran.firewall.IPMatcher;
 import com.metavize.mvvm.tran.firewall.PortMatcher;
 import com.metavize.mvvm.tran.firewall.IntfMatcher;
 import com.metavize.mvvm.tran.firewall.ProtocolMatcher;
-import com.metavize.mvvm.tran.firewall.TrafficRule;
+import com.metavize.mvvm.tran.firewall.TrafficIntfRule;
 
 import com.metavize.mvvm.security.Tid;
 
@@ -32,11 +32,9 @@ import com.metavize.mvvm.security.Tid;
  * @hibernate.class
  * table="REDIRECT_RULE"
  */
-public class RedirectRule extends TrafficRule
+public class RedirectRule extends TrafficIntfRule
 {
-    /* XXX The varchar probably should just be chars */
-
-    private static final long serialVersionUID =   7015498486016408054L;
+    private static final long serialVersionUID = -7898386470255279187L;
     
     private static final String REDIRECT_PORT_PING         = "n/a";
     private static final String REDIRECT_PORT_UNCHANGED    = "unchanged";

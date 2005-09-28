@@ -1,4 +1,4 @@
--- schema for release 2.5
+-- schema for release 3.0
 
 -------------
 -- settings |
@@ -7,20 +7,20 @@
 -- com.metavize.tran.firewall.FirewallRule
 CREATE TABLE settings.firewall_rule (
     rule_id int8 NOT NULL,
-    is_traffic_blocker bool,
-    protocol_matcher varchar(255),
-    src_ip_matcher varchar(255),
-    dst_ip_matcher varchar(255),
-    src_port_matcher varchar(255),
-    dst_port_matcher varchar(255),
-    src_intf_matcher varchar(255),
-    dst_intf_matcher varchar(255),
-    name varchar(255),
-    category varchar(255),
-    description varchar(255),
-    live bool,
-    alert bool,
-    log bool,
+    is_traffic_blocker BOOL,
+    protocol_matcher VARCHAR(255),
+    src_ip_matcher VARCHAR(255),
+    dst_ip_matcher VARCHAR(255),
+    src_port_matcher VARCHAR(255),
+    dst_port_matcher VARCHAR(255),
+    inbound BOOL,
+    outbound BOOL,
+    name VARCHAR(255),
+    category VARCHAR(255),
+    description VARCHAR(255),
+    live BOOL,
+    alert BOOL,
+    log BOOL,
     PRIMARY KEY (rule_id));
 
 -- com.metavize.tran.firewall.FirewallSettings.firewallRuleList
@@ -34,9 +34,9 @@ CREATE TABLE settings.tr_firewall_rules (
 CREATE TABLE settings.tr_firewall_settings (
     settings_id int8 NOT NULL,
     tid int8 NOT NULL UNIQUE,
-    is_quickexit bool,
-    is_reject_silent bool,
-    is_default_accept bool,
+    is_quickexit BOOL,
+    is_reject_silent BOOL,
+    is_default_accept BOOL,
     PRIMARY KEY (settings_id));
 
 -----------

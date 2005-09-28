@@ -21,21 +21,21 @@ import com.metavize.mvvm.tapi.IPSessionDesc;
 
 import com.metavize.mvvm.tran.firewall.PortMatcher;
 import com.metavize.mvvm.tran.firewall.ProtocolMatcher;
-import com.metavize.mvvm.tran.firewall.IntfMatcher;
 import com.metavize.mvvm.tran.firewall.IPMatcher;
-import com.metavize.mvvm.tran.firewall.TrafficMatcher;
+import com.metavize.mvvm.tran.firewall.DirectionMatcher;
+import com.metavize.mvvm.tran.firewall.TrafficDirectionMatcher;
 
 /**
  * A class for matching redirects
  *   This is cannot be squashed into a FirewallRule because all of its elements are final. 
  *   This is a property which is not possible in hibernate objects.
  */
-class FirewallMatcher extends TrafficMatcher {
+class FirewallMatcher extends TrafficDirectionMatcher {
     private static final Logger logger = Logger.getLogger( FirewallMatcher.class );
     
     public static final FirewallMatcher MATCHER_DISABLED = 
         new FirewallMatcher( false, ProtocolMatcher.MATCHER_NIL,
-                             IntfMatcher.getNothing(), IntfMatcher.getNothing(),
+                             DirectionMatcher.getInstance( false, false ),
                              IPMatcher.MATCHER_NIL,   IPMatcher.MATCHER_ALL, 
                              PortMatcher.MATCHER_NIL, PortMatcher.MATCHER_NIL,
                              false );
@@ -46,16 +46,13 @@ class FirewallMatcher extends TrafficMatcher {
 
     private final boolean isTrafficBlocker;
 
-
-    // XXX For the future
-    // TimeMatcher time;
     public FirewallMatcher( boolean     isEnabled,  ProtocolMatcher protocol, 
-                            IntfMatcher srcIntf,    IntfMatcher     dstIntf, 
+                            DirectionMatcher direction,
                             IPMatcher   srcAddress, IPMatcher       dstAddress,
                             PortMatcher srcPort,    PortMatcher     dstPort,
                             boolean isTrafficBlocker )
     {
-        super( isEnabled, protocol, srcIntf, dstIntf, srcAddress, dstAddress, srcPort, dstPort );
+        super( isEnabled, protocol, direction, srcAddress, dstAddress, srcPort, dstPort );
 
         /* Attributes of the firewall rule */
         this.isTrafficBlocker = isTrafficBlocker;

@@ -21,7 +21,7 @@ import com.metavize.mvvm.argon.IntfConverter;
 import com.metavize.mvvm.argon.ArgonException;
 
 
-public class InterfaceRedirect extends TrafficMatcher
+public class InterfaceRedirect extends TrafficIntfMatcher
 {
     private final byte argonIntf;
     private static final Logger logger = Logger.getLogger( InterfaceRedirect.class );
@@ -62,7 +62,7 @@ public class InterfaceRedirect extends TrafficMatcher
 
     /* Creates an interface redirect by looking up the interface that the new destination
      * would go out on, may want to update these every few hours??? */
-    public static InterfaceRedirect makeInterfaceRedirect( TrafficMatcher matcher,  
+    public static InterfaceRedirect makeInterfaceRedirect( TrafficIntfMatcher matcher,  
                                                            InetAddress newDestination )
     {
         /* Lookup the interface for the new destination */

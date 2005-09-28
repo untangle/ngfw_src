@@ -13,10 +13,9 @@ package com.metavize.tran.firewall;
 
 import com.metavize.mvvm.tran.ParseException;
 import com.metavize.mvvm.tran.firewall.IPMatcher;
-import com.metavize.mvvm.tran.firewall.IntfMatcher;
 import com.metavize.mvvm.tran.firewall.PortMatcher;
 import com.metavize.mvvm.tran.firewall.ProtocolMatcher;
-import com.metavize.mvvm.tran.firewall.TrafficRule;
+import com.metavize.mvvm.tran.firewall.TrafficDirectionRule;
 
 /**
  * Rule for matching based on IP addresses and subnets.
@@ -26,11 +25,9 @@ import com.metavize.mvvm.tran.firewall.TrafficRule;
  * @hibernate.class
  * table="FIREWALL_RULE"
  */
-public class FirewallRule extends TrafficRule
+public class FirewallRule extends TrafficDirectionRule
 {
-    /* XXX The varchar probably should just be chars */
-
-    private static final long serialVersionUID = 1886689190345445284L;
+    private static final long serialVersionUID = -5024800839738084290L;
 
     private static final String ACTION_BLOCK     = "Block";
     private static final String ACTION_PASS      = "Pass";
@@ -49,13 +46,13 @@ public class FirewallRule extends TrafficRule
     }
 
     public FirewallRule( boolean     isLive,     ProtocolMatcher protocol,
-                         IntfMatcher srcIntf,    IntfMatcher     dstIntf,
+                         boolean     inbound,    boolean outbound,
                          IPMatcher   srcAddress, IPMatcher       dstAddress,
                          PortMatcher srcPort,    PortMatcher     dstPort,
                          boolean isTrafficBlocker )
     {
-        super( isLive, protocol, srcIntf, dstIntf, srcAddress, dstAddress, srcPort, dstPort );
-
+        super( isLive, protocol, inbound, outbound, srcAddress, dstAddress, srcPort, dstPort );
+        
         /* Attributes of the firewall */
         this.isTrafficBlocker = isTrafficBlocker;
     }

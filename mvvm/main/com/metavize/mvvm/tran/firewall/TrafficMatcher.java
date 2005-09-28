@@ -24,16 +24,13 @@ import com.metavize.mvvm.tapi.IPSessionDesc;
  *   This is cannot be squashed into a RedirectRule because all of its elements are final. 
  *   This is a property which is not possible in hibernate objects.
  */
-public class TrafficMatcher {
+abstract class TrafficMatcher {
     private static final Logger logger = Logger.getLogger( TrafficMatcher.class );
         
     private final boolean isEnabled;
         
     /* Package protected so the InterfaceRedirect has access to these variables */
     final ProtocolMatcher protocol;
-
-    final IntfMatcher srcIntf;
-    final IntfMatcher dstIntf;
 
     final IPMatcher   srcAddress;
     final IPMatcher   dstAddress;
@@ -45,16 +42,12 @@ public class TrafficMatcher {
 
     // XXX For the future
     // TimeMatcher time;
-    public TrafficMatcher( boolean     isEnabled,  ProtocolMatcher protocol, 
-                           IntfMatcher srcIntf,    IntfMatcher     dstIntf, 
-                           IPMatcher   srcAddress, IPMatcher       dstAddress,
-                           PortMatcher srcPort,    PortMatcher     dstPort )
+    protected TrafficMatcher( boolean     isEnabled,  ProtocolMatcher protocol, 
+                              IPMatcher   srcAddress, IPMatcher       dstAddress,
+                              PortMatcher srcPort,    PortMatcher     dstPort )
     {
-        if ( srcIntf == null || dstIntf == null ) throw new NullPointerException( "No null" );
         this.isEnabled  = isEnabled;
         this.protocol   = protocol;
-        this.srcIntf    = srcIntf;
-        this.dstIntf    = dstIntf;
         this.srcAddress = srcAddress;
         this.dstAddress = dstAddress;
 
@@ -72,7 +65,7 @@ public class TrafficMatcher {
 
     protected TrafficMatcher( TrafficRule rule )
     {
-        this( rule.isLive(), rule.getProtocol(), rule.getSrcIntf(), rule.getDstIntf(),
+        this( rule.isLive(), rule.getProtocol(),
               rule.getSrcAddress(), rule.getDstAddress(), rule.getSrcPort(), rule.getDstPort());
     }
     
@@ -86,7 +79,6 @@ public class TrafficMatcher {
         boolean isMatch = 
             isEnabled && 
             isMatchProtocol( protocol ) &&
-            isMatchIntf( request.clientIntf(), request.serverIntf()) &&
             isMatchAddress( request.clientAddr(), request.serverAddr()) &&
             isMatchPort( request.clientPort(), request.serverPort()) &&
             isTimeMatch();
@@ -102,19 +94,16 @@ public class TrafficMatcher {
     {
         return ( isEnabled && 
                  isMatchProtocol( protocol ) &&
-                 isMatchIntf( session.clientIntf(), session.serverIntf()) &&
                  isMatchAddress( session.clientAddr(), session.serverAddr()) &&
                  isMatchPort( session.clientPort(), session.serverPort()) &&
                  isTimeMatch());
     }
     
-    public boolean isMatch( Protocol protocol, byte srcIntf, byte dstIntf,
-                            InetAddress srcAddress, InetAddress dstAddress,
+    public boolean isMatch( Protocol protocol, InetAddress srcAddress, InetAddress dstAddress,
                             int srcPort, int dstPort )
     {
         return ( isEnabled && 
                  isMatchProtocol( protocol ) &&
-                 isMatchIntf( srcIntf, dstIntf ) &&
                  isMatchAddress( srcAddress, dstAddress) &&
                  isMatchPort( srcPort, dstPort ) &&
                  isTimeMatch());
@@ -125,12 +114,7 @@ public class TrafficMatcher {
     {
         return this.protocol.isMatch( protocol );
     }
-    
-    public boolean isMatchIntf( byte src, byte dst )
-    {
-        return ( this.srcIntf.isMatch( src ) && this.dstIntf.isMatch( dst ));
-    }
-    
+        
     public boolean isMatchAddress( InetAddress src, InetAddress dst ) 
     {
         return ( this.srcAddress.isMatch( src ) && this.dstAddress.isMatch( dst ));

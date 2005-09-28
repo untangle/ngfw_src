@@ -162,7 +162,7 @@ class ConnectivityTesterImpl implements ConnectivityTester
                 InetAddress invalidAddress;
                 logger.debug( "Looking up invalid address: " +  host );
                 invalidAddress = InetAddress.getByName( host );
-                System.out.println( "Finished the bad lookup" );
+                logger.debug( "Finished the bad lookup" );
                 this.isWorking = false;
             } catch ( UnknownHostException e ) {
                 this.isWorking = true;

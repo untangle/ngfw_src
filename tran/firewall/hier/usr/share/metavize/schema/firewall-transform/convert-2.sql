@@ -1,10 +1,14 @@
 -- convert script for release 3.0
 
------------------------------------------------
--- Firewall events no longer references rules |
--- whether or not the session was blocked is  |
--- stored in the event itself                 |
------------------------------------------------
+--------------------------------------------------
+-- 1. Firewall events no longer references rules |
+-- whether or not the session was blocked is     |
+-- stored in the event itself.                   |
+--                                               |
+-- 2. Firewall rules no longer use source and    |
+-- client interface, instead use inbound and     |
+-- outbound booleans.                            |
+--------------------------------------------------
 
 -- com.metavize.tran.firewall.FirewallEvent (adding was_blocked)
 ALTER TABLE events.tr_firewall_evt ADD COLUMN was_blocked BOOL;
@@ -24,3 +28,20 @@ ALTER TABLE tr_firewall_evt DROP COLUMN rule_id;
 -- Delete all of the dangling firewall rules( rules that were only referenced by events)
 DELETE FROM firewall_rule WHERE 
        rule_id NOT IN ( SELECT rule_id FROM tr_firewall_rules );
+
+-- Convert from source and destination interface to inbound and outbound
+ALTER TABLE settings.firewall_rule ADD COLUMN inbound BOOL;
+ALTER TABLE settings.firewall_rule ADD COLUMN outbound BOOL;
+
+-- fallback in case something fails in the conversion
+UPDATE settings.firewall_rule SET inbound=true, outbound=true;
+
+-- Set all of the values, just using the src_intf_matcher
+UPDATE settings.firewall_rule SET
+        inbound =CASE WHEN src_intf_matcher='O' OR src_intf_matcher='*' THEN true ELSE false END,
+        outbound=CASE WHEN src_intf_matcher='I' OR src_intf_matcher='*' THEN true ELSE false END;
+
+-- Drop the old columns
+ALTER TABLE settings.firewall_rule DROP COLUMN src_intf_matcher;
+ALTER TABLE settings.firewall_rule DROP COLUMN dst_intf_matcher;
+ 

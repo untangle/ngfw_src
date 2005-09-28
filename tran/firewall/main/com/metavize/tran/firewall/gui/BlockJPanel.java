@@ -66,7 +66,7 @@ class BlockTableModel extends MSortedTableModel{
 
     
     private ComboBoxModel protocolModel = super.generateComboBoxModel( ProtocolMatcher.getProtocolEnumeration(), ProtocolMatcher.getProtocolDefault() );
-    private ComboBoxModel directionModel = super.generateComboBoxModel( TrafficRule.getDirectionEnumeration(), TrafficRule.getDirectionDefault() );
+    private ComboBoxModel directionModel = super.generateComboBoxModel( TrafficDirectionRule.getDirectionEnumeration(), TrafficDirectionRule.getDirectionDefault() );
     private ComboBoxModel actionModel = super.generateComboBoxModel( FirewallRule.getActionEnumeration(), FirewallRule.getActionDefault() );
     
     
@@ -145,7 +145,7 @@ class BlockTableModel extends MSortedTableModel{
 	    tempRow.add( super.generateComboBoxModel( FirewallRule.getActionEnumeration(), firewallRule.getAction().toString() ) );
 	    tempRow.add( firewallRule.getLog() );
 	    tempRow.add( super.generateComboBoxModel( ProtocolMatcher.getProtocolEnumeration(), firewallRule.getProtocol().toString() ) );
-	    tempRow.add( super.generateComboBoxModel( TrafficRule.getDirectionEnumeration(), firewallRule.getDirection().toString() ) );
+	    tempRow.add( super.generateComboBoxModel( TrafficDirectionRule.getDirectionEnumeration(), firewallRule.getDirection().toString() ) );
 	    tempRow.add( firewallRule.getSrcAddress().toString() );
 	    tempRow.add( firewallRule.getDstAddress().toString() );
 	    tempRow.add( firewallRule.getSrcPort().toString() );
