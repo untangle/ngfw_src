@@ -424,6 +424,9 @@ class PolicyManagerImpl implements PolicyManagerPriv
     // in-memory UserPolicyRule list.
     public void reconfigure(byte[] interfaces)
     {
+        /* Reconfigure the networking interfaces */
+        NetworkingManagerImpl.getInstance().buildIntfEnum();
+        
         // For now do nothing
         if (allPolicies.size() == 0)
             // Always

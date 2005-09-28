@@ -35,6 +35,7 @@ import com.metavize.mvvm.ArgonManager;
 import com.metavize.mvvm.MvvmException;
 import com.metavize.mvvm.InterfaceAlias;
 import com.metavize.mvvm.argon.ArgonManagerImpl;
+import com.metavize.mvvm.argon.IntfConverter;
 import com.metavize.mvvm.InterfaceAlias;
 import com.metavize.mvvm.tran.IPaddr;
 import org.apache.log4j.Logger;
@@ -72,6 +73,13 @@ class NetworkingManagerImpl implements NetworkingManager
     private static final String FLAG_OUT_NET   = "MVVM_ALLOW_OUT_NET";
     private static final String FLAG_OUT_MASK  = "MVVM_ALLOW_OUT_MASK";
     private static final String FLAG_EXCEPTION = "MVVM_IS_EXCEPTION_REPORTING_EN";
+
+    private static final String[] INTF_ARRAY_DMZ    = 
+        new String[]{ INTF_EXTERNAL_NAME, INTF_INTERNAL_NAME, INTF_DMZ_NAME };
+
+    private static final String[] INTF_ARRAY_NO_DMZ = 
+        new String[]{ INTF_EXTERNAL_NAME, INTF_INTERNAL_NAME };
+    
 
     private static final Logger logger = Logger.getLogger( NetworkingManagerImpl.class );
 
@@ -460,15 +468,16 @@ class NetworkingManagerImpl implements NetworkingManager
     
     void buildIntfEnum()
     {
-        ArgonManager argon = ArgonManagerImpl.getInstance();
-
-        byte[] argonInterfaces = 
-            // XXXX
-            // argon.getInterfaces();
-            new byte[] { INTF_EXTERNAL_NUM, INTF_INTERNAL_NUM };
-        String[] intfNames =
-            new String[] { INTF_EXTERNAL_NAME, INTF_INTERNAL_NAME };
-        intfEnum = new IntfEnum(argonInterfaces, intfNames);
-    }
+        IntfConverter converter = IntfConverter.getInstance();
+        if ( converter == null ) { /* Running in fake mode */
+            intfEnum = new IntfEnum( new byte[] { 0, 1 }, INTF_ARRAY_NO_DMZ );
+            return;
+        }
         
+        byte[] argonInterfaces = converter.getArgonIntfArray();
+
+        String[] intfNames = ( argonInterfaces.length == 3 ) ? INTF_ARRAY_DMZ : INTF_ARRAY_NO_DMZ;
+
+        intfEnum = new IntfEnum(argonInterfaces, intfNames);
+    }        
 }

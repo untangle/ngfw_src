@@ -20,6 +20,9 @@
 #include "jnetcap.h"
 #include JH_Shield
 
+// There is also a value for this inside of netcap_shield.c, make sure they are the same conflict.
+#define BLESS_COUNT_MAX          128
+
 #define _SHIELD_OBJ_STR          JP_BUILD_NAME( Shield )
 #define _SHIELD_METHOD_REJ_NAME  "callRejectionEventListener"
 #define _SHIELD_METHOD_REJ_DESC  "(JBDIIII)V"
@@ -272,6 +275,12 @@ JNIEXPORT void JNICALL JF_Shield( setNodeSettings )
         (*env)->ReleaseDoubleArrayElements( env, j_dividerArray, dividerArray, 0 );
         (*env)->ReleaseLongArrayElements( env, j_addressArray, addressArray, 0 );
         return jmvutil_error_void( JMVUTIL_ERROR_STT, ERR_CRITICAL, "(*env)->GetDoubleArrayElements\n" );
+    }
+
+    /* Just use some maximum */
+    if ( length > BLESS_COUNT_MAX ) {
+        errlog( ERR_WARNING, "Too many nodes in the blessing list, limiting to %d\n", BLESS_COUNT_MAX );
+        length = BLESS_COUNT_MAX;
     }
 
     netcap_shield_bless_t data[length];

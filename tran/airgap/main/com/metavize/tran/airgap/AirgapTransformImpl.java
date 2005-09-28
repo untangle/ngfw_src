@@ -32,7 +32,10 @@ import com.metavize.mvvm.tran.TransformStopException;
 import com.metavize.mvvm.tran.TransformStartException;
 
 import com.metavize.mvvm.ArgonManager;
+import com.metavize.mvvm.NetworkingManager;
+import com.metavize.mvvm.IntfEnum;
 import com.metavize.mvvm.MvvmContextFactory;
+
 
 import com.metavize.mvvm.tran.TransformState;
 
@@ -154,6 +157,9 @@ public class AirgapTransformImpl extends AbstractTransform
 
         Session s = getTransformContext().openSession();
         try {
+            NetworkingManager networkingManager = MvvmContextFactory.context().networkingManager();
+            IntfEnum intfEnum = networkingManager.getIntfEnum();
+
             Connection c = s.connection();
             PreparedStatement ps = c.prepareStatement( SHIELD_REJECTION_EVENT_QUERY );
             ps.setInt( 1, limit );
@@ -163,9 +169,8 @@ public class AirgapTransformImpl extends AbstractTransform
                 Date createDate   = new Date( rs.getTimestamp( CREATE_DATE_IDX ).getTime());
                 String clientAddr = rs.getString( CLIENT_ADDR_IDX );
 
-                /* XXX A Hack to convert the index to a number */
-                /* XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX FIXME BEFORE CHECKIN */
-                String clientIntf = ( rs.getByte( CLIENT_INTF_IDX ) == 0 ) ? "External" : "Internal";
+                String clientIntf = ( intfEnum.getIntfName( rs.getByte( CLIENT_INTF_IDX )));
+                if ( clientIntf == null ) clientIntf = "unknown";
 
                 double reputation = rs.getDouble( REPUTATION_IDX );
                 int limited       = rs.getInt( LIMITED_IDX );

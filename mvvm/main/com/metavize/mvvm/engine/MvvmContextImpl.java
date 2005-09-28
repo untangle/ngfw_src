@@ -237,21 +237,17 @@ public class MvvmContextImpl extends MvvmContextBase
         // Retrieve the argon manager
         argonManager = ArgonManagerImpl.getInstance();
 
-        // Ensure Networking Manager has built intf list.
-        // XXX This needs a little work
-        networkingManager.buildIntfEnum();
-        byte[] interfaces = networkingManager.getIntfEnum().getIntfNums();
-        policyManager.reconfigure(interfaces);
-
         // start vectoring:
         String argonFake = System.getProperty(ARGON_FAKE_KEY);
         if (null == argonFake || !argonFake.equalsIgnoreCase("yes")) {
             Argon.getInstance().run( policyManager );
         } else {
-            logger.info( "Argon not activated, using fake interfaces in the policy manager." );
-            interfaces = new byte[] { 0, 1};
+            logger.info( "Argon not activated, using fake interfaces in the policy manager" +
+                         " and networking manager." );
+            byte interfaces[] = new byte[] { 0, 1 };
             policyManager.reconfigure(interfaces);
-
+            // this is done by the policy manager, but leave it here just in case.
+            networkingManager.buildIntfEnum();
         }
 
         httpInvoker = HttpInvoker.invoker();

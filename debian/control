@@ -42,7 +42,7 @@ XB-Price: 0
 XB-Display-Name: Packet Attack Shield
 XB-Website: http://www.metavize.com/packetshield.html
 XB-Rack-Position: 1001
-XB-Is-Service: true
+XB-Is-Service: false
 Description: The Metavize Packet Attack Shield
  The Packet Attack Shield prevents packet based attacks on your
  network.

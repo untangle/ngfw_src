@@ -40,7 +40,7 @@
 #define _LOAD_INTERVAL_SEC     1000000
 
 /* A limit check to make sure it doesn't go into a long loop */
-#define BLESS_COUNT_MAX        64
+#define BLESS_COUNT_MAX        128
 
 #define _DEFAULT_DIVIDER       1.0
 
@@ -551,7 +551,6 @@ int netcap_shield_bless_users( netcap_shield_bless_array_t* nodes )
     if ( nodes->count < 0 || nodes->count > BLESS_COUNT_MAX  ) {
         return errlog( ERR_CRITICAL, "Invalid node count %d\n", nodes->count );
     }
-
 
     if ( _shield.enabled != NETCAP_SHIELD_ENABLE ) {
         debug( NC_SHIELD_DEBUG_LOW, "Shield is disabled, ignoring blessings\n" );
