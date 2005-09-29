@@ -231,9 +231,17 @@ Description: The Metavize Client
  The Metavize Client is the User Interface for accessing and
  controlling EdgeGuard.
 
+Package: libmvvm-thirdparty
+Architecture: any
+Depends: jre-mv
+XB-Display-Name: Metavize Server Thirdparty Libraries
+XB-Website: http://www.metavize.com
+Description: The third party libraries needed for the MVVM
+ The redistributable java libraries needed for the Metavize Virrual Machine
+
 Package: mvvm
 Architecture: any
-Depends: jre-mv, sudo, iptables-mv, restore-mv, kiosk-mv, libxml2, kernel-mv, pump-mv, ntp-simple
+Depends: jre-mv, libmvvm-thirdparty, sudo, iptables-mv, restore-mv, kiosk-mv, libxml2, kernel-mv, pump-mv, ntp-simple
 Pre-Depends: postgresql-mv
 Conflicts: xenon, xenon-dbg
 XB-Display-Name: Metavize Server
