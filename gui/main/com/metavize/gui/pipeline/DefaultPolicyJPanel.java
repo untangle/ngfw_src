@@ -120,8 +120,8 @@ class DefaultPolicyTableModel extends MSortedTableModel{
 					+ rowIndex 
 					+ " must be in opposite directions.");
 		}
-		else{
-		    		    throw new Exception("The racks chosen in rows " 
+		else if( !policy.equals(firstPolicy) ){
+		    throw new Exception("The racks chosen in rows " 
 					+ (rowIndex-1) 
 					+ " and " 
 					+ rowIndex 
