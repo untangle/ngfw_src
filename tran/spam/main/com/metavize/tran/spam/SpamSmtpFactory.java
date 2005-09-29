@@ -11,15 +11,15 @@
 
 package com.metavize.tran.spam;
 
-import com.metavize.tran.token.TokenHandlerFactory;
+import com.metavize.mvvm.policy.Policy;
+import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.tran.mail.papi.MailExport;
 import com.metavize.tran.mail.papi.MailExportFactory;
 import com.metavize.tran.mail.papi.MailTransformSettings;
-import org.apache.log4j.Logger;
-import com.metavize.mvvm.policy.Policy;
-import com.metavize.tran.token.TokenHandler;
-import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.tran.mail.papi.smtp.sapi.Session;
+import com.metavize.tran.token.TokenHandler;
+import com.metavize.tran.token.TokenHandlerFactory;
+import org.apache.log4j.Logger;
 
 
 public class SpamSmtpFactory
@@ -32,7 +32,7 @@ public class SpamSmtpFactory
 
   public SpamSmtpFactory(SpamImpl impl) {
     Policy p = impl.getTid().getPolicy();
-    m_mailExport = MailExportFactory.factory().getExport(p);
+    m_mailExport = MailExportFactory.factory().getExport();
     m_spamImpl = impl;
   }
 

@@ -29,7 +29,7 @@ public class SpamPopFactory implements TokenHandlerFactory
     {
         this.transform = transform;
         Policy p = transform.getTid().getPolicy();
-        zMExport = MailExportFactory.factory().getExport(p);
+        zMExport = MailExportFactory.factory().getExport();
     }
 
     // TokenHandlerFactory methods --------------------------------------------

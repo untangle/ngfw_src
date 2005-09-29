@@ -20,9 +20,9 @@ import com.metavize.tran.mail.impl.smtp.SmtpCasingFactory;
 import com.metavize.tran.mail.papi.*;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import org.hibernate.Query;
 
 public class MailTransformImpl extends AbstractTransform
     implements MailTransform, MailExport
@@ -50,7 +50,7 @@ public class MailTransformImpl extends AbstractTransform
     {
         logger.debug("MailTransformImpl");
 
-        MailExportFactory.factory().registerExport(getTid().getPolicy(), this);
+        MailExportFactory.factory().registerExport(this);
     }
 
     // MailTransform methods --------------------------------------------------

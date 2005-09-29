@@ -11,13 +11,9 @@
 
 package com.metavize.tran.mail.papi;
 
-import java.util.Map;
-import java.util.WeakHashMap;
 
-import com.metavize.mvvm.policy.Policy;
 import com.metavize.mvvm.tapi.ProxyGenerator;
 import org.apache.log4j.Logger;
-
 
 /**
  * Factory for the exported MailTransform interface.
@@ -29,15 +25,15 @@ public class MailExportFactory
 {
     private static final MailExportFactory FACTORY = new MailExportFactory();
 
-    private final Map<Policy, MailExport> exports;
+    private static final Object LOCK = new Object();
+
     private final Logger logger = Logger.getLogger(MailExportFactory.class);
+
+    private MailExport export;
 
     // constructors -----------------------------------------------------------
 
-    private MailExportFactory()
-    {
-        exports = new WeakHashMap<Policy, MailExport>();
-    }
+    private MailExportFactory() { }
 
     // static factories -------------------------------------------------------
 
@@ -54,16 +50,15 @@ public class MailExportFactory
      * @param policy policy for these Exports.
      * @param export exported interface.
      */
-    public void registerExport(Policy policy, MailExport export)
+    public void registerExport(MailExport export)
     {
-        synchronized (exports) {
-            if (exports.containsKey(policy)) {
-                logger.warn("replacing export for policy: " + policy);
+        synchronized (LOCK) {
+            if (null != export) {
+                logger.warn("replacing export");
             }
 
-            MailExport pxy = (MailExport)ProxyGenerator
-                .generateProxy(MailExport.class, export);
-            exports.put(policy, pxy);
+            export = (MailExport)ProxyGenerator.generateProxy(MailExport.class,
+                                                              export);
         }
     }
 
@@ -73,10 +68,10 @@ public class MailExportFactory
      * @param policy the policy of the exported interface.
      * @return the exported interface.
      */
-    public MailExport getExport(Policy policy)
+    public MailExport getExport()
     {
-        synchronized (exports) {
-            return exports.get(policy);
+        synchronized (LOCK) {
+            return export;
         }
     }
 }

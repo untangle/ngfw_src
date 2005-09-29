@@ -10,9 +10,6 @@
  */
 package com.metavize.tran.virus;
 
-import com.metavize.mvvm.MailSender;
-import com.metavize.mvvm.MvvmContextFactory;
-import com.metavize.mvvm.policy.Policy;
 import com.metavize.mvvm.tapi.*;
 import com.metavize.tran.mail.*;
 import com.metavize.tran.mail.papi.*;
@@ -33,8 +30,7 @@ public class VirusSmtpFactory
 
   VirusSmtpFactory(VirusTransformImpl transform) {
     m_virusImpl = transform;
-    Policy p = transform.getTid().getPolicy();
-    m_mailExport = MailExportFactory.factory().getExport(p);
+    m_mailExport = MailExportFactory.factory().getExport();
   }
 
   public TokenHandler tokenHandler(TCPSession session) {

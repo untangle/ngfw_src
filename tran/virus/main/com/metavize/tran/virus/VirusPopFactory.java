@@ -10,12 +10,11 @@
  */
 package com.metavize.tran.virus;
 
-import com.metavize.mvvm.policy.Policy;
+import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.tran.mail.papi.MailExport;
 import com.metavize.tran.mail.papi.MailExportFactory;
 import com.metavize.tran.token.TokenHandler;
 import com.metavize.tran.token.TokenHandlerFactory;
-import com.metavize.mvvm.tapi.TCPSession;
 
 public class VirusPopFactory implements TokenHandlerFactory
 {
@@ -25,8 +24,7 @@ public class VirusPopFactory implements TokenHandlerFactory
     VirusPopFactory(VirusTransformImpl transform)
     {
         this.transform = transform;
-        Policy p = transform.getTid().getPolicy();
-        zMExport = MailExportFactory.factory().getExport(p);
+        zMExport = MailExportFactory.factory().getExport();
     }
 
     public TokenHandler tokenHandler(TCPSession session)

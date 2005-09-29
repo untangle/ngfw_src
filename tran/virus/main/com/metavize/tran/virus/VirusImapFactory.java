@@ -13,13 +13,12 @@ package com.metavize.tran.virus;
 
 
 import com.metavize.mvvm.tapi.TCPSession;
-import com.metavize.mvvm.tapi.IPSessionDesc;
+import com.metavize.tran.mail.papi.MailExport;
+import com.metavize.tran.mail.papi.MailExportFactory;
+import com.metavize.tran.mail.papi.imap.ImapTokenStream;
 import com.metavize.tran.token.TokenHandler;
 import com.metavize.tran.token.TokenHandlerFactory;
 import org.apache.log4j.Logger;
-import com.metavize.tran.mail.papi.imap.ImapTokenStream;
-import com.metavize.tran.mail.papi.MailExport;
-import com.metavize.tran.mail.papi.MailExportFactory;
 
 /**
  * Factory to create the protocol handler for IMAP
@@ -28,24 +27,24 @@ import com.metavize.tran.mail.papi.MailExportFactory;
 public final class VirusImapFactory
   implements TokenHandlerFactory {
 
-  
+
   private static final Logger m_logger =
     Logger.getLogger(VirusImapFactory.class);
 
   private final VirusTransformImpl m_virusImpl;
-  private final MailExport m_mailExport;    
+  private final MailExport m_mailExport;
 
 
   VirusImapFactory(VirusTransformImpl transform) {
     m_virusImpl = transform;
     /* XXX RBS I don't know if this will work */
-    m_mailExport = MailExportFactory.factory().getExport( transform.getTid().getPolicy());    
+    m_mailExport = MailExportFactory.factory().getExport();
   }
 
 
   public TokenHandler tokenHandler(TCPSession session) {
-    
-    boolean inbound = session.isInbound();  
+
+    boolean inbound = session.isInbound();
 
     VirusIMAPConfig virusConfig = inbound?
       m_virusImpl.getVirusSettings().getIMAPInbound():
@@ -58,7 +57,7 @@ public final class VirusImapFactory
 
     long timeout = inbound?m_mailExport.getExportSettings().getImapInboundTimeout():
       m_mailExport.getExportSettings().getImapOutboundTimeout();
-    
+
     return new ImapTokenStream(session,
         new VirusImapHandler(session,
           timeout,

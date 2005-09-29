@@ -11,7 +11,6 @@
 
 package com.metavize.tran.clamphish;
 
-import com.metavize.mvvm.policy.Policy;
 import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.tran.mail.papi.MailExport;
 import com.metavize.tran.mail.papi.MailExportFactory;
@@ -28,8 +27,7 @@ public class PhishPopFactory implements TokenHandlerFactory
     PhishPopFactory(ClamPhishTransform transform)
     {
         this.transform = transform;
-        Policy p = transform.getTid().getPolicy();
-        zMExport = MailExportFactory.factory().getExport(p);
+        zMExport = MailExportFactory.factory().getExport();
     }
 
     // TokenHandlerFactory methods --------------------------------------------
