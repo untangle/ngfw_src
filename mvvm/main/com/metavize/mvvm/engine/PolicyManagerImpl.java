@@ -445,7 +445,7 @@ class PolicyManagerImpl implements PolicyManagerPriv
                 UserPolicyRuleSet uprs = (UserPolicyRuleSet) userq.uniqueResult();
                 List existingUser = uprs.getRules();
 
-                Set goodSys = new HashSet();
+                List goodSys = new ArrayList();
                 Set goodUser = new HashSet();
 
                 // For each interface pair
