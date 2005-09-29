@@ -123,9 +123,9 @@ public class HostName implements Serializable {
         Pattern p;
 
         try {
-            /* According RFC 1035, a host label must start a letter (allowing digits), and not end
-             * in a hyphen */
-            p = Pattern.compile( "^[0-9A-Za-z]([-0-9A-Za-z]*[0-9A-Za-z])?$" );
+            /* According RFC2317, a host label must start a letter (allowing digits), and must end
+             * in a digit. */
+            p = Pattern.compile( "^[0-9A-Za-z]([/-_0-9A-Za-z]*[0-9A-Za-z])?$" );
         } catch ( PatternSyntaxException e ) {
             System.err.println( "Unable to intialize the host label pattern" );
             p = null;

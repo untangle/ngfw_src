@@ -280,7 +280,7 @@ class DhcpMonitor implements Runnable
                 host = HostName.parse( tmp );
             }
         } catch ( ParseException e ) {
-            logger.error( "Invalid hostname: " + tmp );
+            logger.warn( "Invalid hostname: " + tmp );
             return;
         }
 

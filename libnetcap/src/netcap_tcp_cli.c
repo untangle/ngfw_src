@@ -214,8 +214,8 @@ int  _netcap_tcp_setsockopt_cli( int sock )
 {
     int one        = 1;
     int thirty     = 30;
-    int threehundo = 300;
-    int twohours   = 7200;
+    int sixhundo   = 600;
+    int nine       = 9;
     
     if (setsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, &one, sizeof(one))<0)
         perrlog("setsockopt");
@@ -223,9 +223,11 @@ int  _netcap_tcp_setsockopt_cli( int sock )
         perrlog("setsockopt");
     if (setsockopt(sock,SOL_TCP,TCP_LINGER2,&thirty,sizeof(thirty))<0) 
         perrlog("setsockopt");
-    if (setsockopt(sock,SOL_TCP,TCP_KEEPINTVL,&threehundo,sizeof(threehundo))<0) 
+    if (setsockopt(sock,SOL_TCP,TCP_KEEPIDLE,&sixhundo,sizeof(sixhundo)) < 0 )
         perrlog("setsockopt");
-    if (setsockopt(sock,SOL_TCP,TCP_KEEPIDLE,&twohours,sizeof(twohours)) < 0 )
+    if (setsockopt(sock,SOL_TCP,TCP_KEEPINTVL,&thirty,sizeof(thirty))<0) 
+        perrlog("setsockopt");
+    if (setsockopt(sock,SOL_TCP,TCP_KEEPCNT,&nine,sizeof(nine)) < 0 )
         perrlog("setsockopt");
 
     return 0;
