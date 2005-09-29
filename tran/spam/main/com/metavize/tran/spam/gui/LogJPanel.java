@@ -24,13 +24,17 @@ import java.util.*;
 
 public class LogJPanel extends MLogTableJPanel {
 
+    private static final String SPAM_EVENTS_STRING = "Spam detected only";
+
     public LogJPanel(Transform transform, MTransformControlsJPanel mTransformControlsJPanel){
         super(transform, mTransformControlsJPanel);
 	setTableModel(new LogTableModel());
+	queryJComboBox.addItem(SPAM_EVENTS_STRING);
     }
 
     protected void refreshSettings(){
-	settings = ((SpamTransform)super.logTransform).getEventLogs(depthJSlider.getValue());
+	settings = ((SpamTransform)super.logTransform).getEventLogs(depthJSlider.getValue(),
+								    queryJComboBox.getSelectedItem().equals(SPAM_EVENTS_STRING));
     }
     
     class LogTableModel extends MSortedTableModel{

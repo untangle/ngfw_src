@@ -28,6 +28,8 @@ import java.awt.event.*;
 
 public abstract class MLogTableJPanel extends javax.swing.JPanel implements Shutdownable {
 
+    protected static final String ALL_EVENTS_STRING = "All events";    
+
     protected Object settings;
 
     protected static MLogTableJPanel lastMLogTableJPanel;
@@ -55,6 +57,7 @@ public abstract class MLogTableJPanel extends javax.swing.JPanel implements Shut
 		    if(object instanceof JComponent) ((JComponent)object).setFont(new Font("Dialog", 0, 9));
 		}
 		depthJSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
+                queryJComboBox.addItem(ALL_EVENTS_STRING);
 	    }});
 	}
 	catch(Exception e){ Util.handleExceptionNoRestart("Error building Log Table", e); }
@@ -92,6 +95,7 @@ public abstract class MLogTableJPanel extends javax.swing.JPanel implements Shut
         java.awt.GridBagConstraints gridBagConstraints;
 
         contentJPanel = new javax.swing.JPanel();
+        queryJComboBox = new javax.swing.JComboBox();
         tableJPanel = new javax.swing.JPanel();
         entryJScrollPane = new javax.swing.JScrollPane();
         entryJTable = new MColoredJTable();
@@ -106,6 +110,16 @@ public abstract class MLogTableJPanel extends javax.swing.JPanel implements Shut
         contentJPanel.setLayout(new java.awt.GridBagLayout());
 
         contentJPanel.setOpaque(false);
+        queryJComboBox.setFont(new java.awt.Font("Dialog", 0, 12));
+        queryJComboBox.setFocusable(false);
+        queryJComboBox.setMinimumSize(new java.awt.Dimension(230, 24));
+        queryJComboBox.setPreferredSize(new java.awt.Dimension(230, 24));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 0);
+        contentJPanel.add(queryJComboBox, gridBagConstraints);
+
         tableJPanel.setLayout(new java.awt.GridBagLayout());
 
         tableJPanel.setMinimumSize(new java.awt.Dimension(40, 40));
@@ -126,9 +140,9 @@ public abstract class MLogTableJPanel extends javax.swing.JPanel implements Shut
         tableJPanel.add(entryJScrollPane, gridBagConstraints);
 
         depthJSlider.setFont(new java.awt.Font("Dialog", 0, 12));
-        depthJSlider.setMajorTickSpacing(100);
-        depthJSlider.setMaximum(1000);
-        depthJSlider.setMinimum(100);
+        depthJSlider.setMajorTickSpacing(50);
+        depthJSlider.setMaximum(500);
+        depthJSlider.setMinimum(50);
         depthJSlider.setMinorTickSpacing(25);
         depthJSlider.setOrientation(javax.swing.JSlider.VERTICAL);
         depthJSlider.setPaintLabels(true);
@@ -138,10 +152,7 @@ public abstract class MLogTableJPanel extends javax.swing.JPanel implements Shut
         depthJSlider.setDebugGraphicsOptions(javax.swing.DebugGraphics.NONE_OPTION);
         depthJSlider.setDoubleBuffered(true);
         depthJSlider.setFocusable(false);
-        depthJSlider.setMaximumSize(null);
-        depthJSlider.setMinimumSize(null);
         depthJSlider.setOpaque(false);
-        depthJSlider.setPreferredSize(null);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -153,7 +164,7 @@ public abstract class MLogTableJPanel extends javax.swing.JPanel implements Shut
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridy = 1;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
@@ -254,6 +265,7 @@ public abstract class MLogTableJPanel extends javax.swing.JPanel implements Shut
     protected javax.swing.JScrollPane entryJScrollPane;
     protected javax.swing.JTable entryJTable;
     private javax.swing.JPanel eventJPanel;
+    protected javax.swing.JComboBox queryJComboBox;
     private javax.swing.JButton refreshLogJButton;
     private javax.swing.JToggleButton streamingJToggleButton;
     private javax.swing.JPanel tableJPanel;

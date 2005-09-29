@@ -23,13 +23,17 @@ import com.metavize.tran.virus.*;
 
 public class LogJPanel extends MLogTableJPanel {
 
+    private static final String VIRUS_EVENTS_STRING = "Virus detected events";
+
     public LogJPanel(Transform transform, MTransformControlsJPanel mTransformControlsJPanel){
         super(transform, mTransformControlsJPanel);
 	setTableModel(new LogTableModel());
+	queryJComboBox.addItem(VIRUS_EVENTS_STRING);
     }
 
     protected void refreshSettings(){
-	settings = ((VirusTransform)super.logTransform).getEventLogs(depthJSlider.getValue());
+	settings = ((VirusTransform)super.logTransform).getEventLogs(depthJSlider.getValue(),
+								     queryJComboBox.getSelectedItem().equals(VIRUS_EVENTS_STRING));
     }
 
     

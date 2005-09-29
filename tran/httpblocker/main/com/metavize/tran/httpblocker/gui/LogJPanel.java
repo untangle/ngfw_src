@@ -26,13 +26,17 @@ import com.metavize.tran.httpblocker.Reason;
 
 public class LogJPanel extends MLogTableJPanel {
 
+    private static final String BLOCKED_EVENTS_STRING = "Website blocked events";
+
     public LogJPanel(Transform transform, MTransformControlsJPanel mTransformControlsJPanel){
         super(transform, mTransformControlsJPanel);
 	setTableModel(new LogTableModel());
+	queryJComboBox.addItem(BLOCKED_EVENTS_STRING);
     }
 
     protected void refreshSettings(){
-	settings = ((HttpBlocker)super.logTransform).getEvents(depthJSlider.getValue());
+	settings = ((HttpBlocker)super.logTransform).getEvents(depthJSlider.getValue(),
+							       queryJComboBox.getSelectedItem().equals(BLOCKED_EVENTS_STRING));
     }
     
     class LogTableModel extends MSortedTableModel{
