@@ -25,8 +25,6 @@ public class MailExportFactory
 {
     private static final MailExportFactory FACTORY = new MailExportFactory();
 
-    private static final Object LOCK = new Object();
-
     private final Logger logger = Logger.getLogger(MailExportFactory.class);
 
     private MailExport export;
@@ -52,13 +50,13 @@ public class MailExportFactory
      */
     public void registerExport(MailExport export)
     {
-        synchronized (LOCK) {
+        synchronized (this) {
             if (null != export) {
                 logger.warn("replacing export");
             }
 
-            export = (MailExport)ProxyGenerator.generateProxy(MailExport.class,
-                                                              export);
+            this.export = (MailExport)ProxyGenerator
+                .generateProxy(MailExport.class, export);
         }
     }
 
@@ -70,7 +68,7 @@ public class MailExportFactory
      */
     public MailExport getExport()
     {
-        synchronized (LOCK) {
+        synchronized (this) {
             return export;
         }
     }
