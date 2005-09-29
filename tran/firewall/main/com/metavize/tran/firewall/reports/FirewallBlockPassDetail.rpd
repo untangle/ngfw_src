@@ -21,7 +21,7 @@ FIELD_8.name=c_client_port
 FIELD_8.type=Integer
 
 QUERY=SELECT evt.time_stamp, was_blocked, c_client_addr, c_client_port, c_server_addr, c_server_port, rule_index, \
-   CASE WHEN proto=1 THEN 'PING' \
+   CASE WHEN proto=17 and c_client_port=0 THEN 'PING' \
      WHEN proto=6 THEN 'TCP' \
      WHEN proto=17 THEN 'UDP' \
    END as protocol \
@@ -42,7 +42,7 @@ TOPRMID.expr=$F{c_server_addr}
 TOPLMID.expr=$F{was_blocked}.booleanValue() ? "blocked" : "passed"
 TOPLEFT.expr=$F{time_stamp}
 BOTRMID.expr=$F{c_client_addr}
-BOTLMID.expr=
+BOTLMID.expr=""
 BOTRIGHT.expr=($F{c_client_port}).toString()
 TOPRIGHT.expr=($F{c_server_port}).toString()
 TOPMMID.expr=$F{protocol}

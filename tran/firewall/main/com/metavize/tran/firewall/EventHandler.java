@@ -114,7 +114,7 @@ class EventHandler extends AbstractEventHandler
 
         /* If necessary log the event */
         if ( rule != null && rule.getLog()) {
-            eventLogger.info( new FirewallEvent( request.id(), reject, ruleIndex ));
+            eventLogger.info( new FirewallEvent( request.id(), rule, reject, ruleIndex ));
         }
 
         /* Track the statistics */
@@ -142,7 +142,7 @@ class EventHandler extends AbstractEventHandler
                 FirewallRule rule = iter.next();
                 /* Don't insert inactive rules */
                 if ( !rule.isLive()) continue;
-                firewallRuleList.add( new FirewallMatcher( iter.next(), index ));
+                firewallRuleList.add( new FirewallMatcher( rule, index ));
             }
         }
     }

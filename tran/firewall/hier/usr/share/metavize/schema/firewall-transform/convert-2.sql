@@ -22,9 +22,6 @@ UPDATE tr_firewall_evt SET was_blocked = is_traffic_blocker
         FROM tr_firewall_evt evt JOIN firewall_rule rule ON evt.rule_id = rule.rule_id 
         WHERE tr_firewall_evt.event_id=evt.event_id;
 
--- Remove the rule_id column
-ALTER TABLE tr_firewall_evt DROP COLUMN rule_id;
-
 -- Delete all of the dangling firewall rules( rules that were only referenced by events)
 DELETE FROM firewall_rule WHERE 
        rule_id NOT IN ( SELECT rule_id FROM tr_firewall_rules );

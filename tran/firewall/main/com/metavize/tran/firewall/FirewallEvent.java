@@ -30,6 +30,7 @@ public class FirewallEvent extends LogEvent implements Serializable
     private int     sessionId;
     private boolean wasBlocked;
     private int     ruleIndex;
+    private FirewallRule rule;
     
     // Constructors 
     /**
@@ -39,11 +40,12 @@ public class FirewallEvent extends LogEvent implements Serializable
     {
     }
 
-    public FirewallEvent( int sessionId, boolean wasBlocked, int ruleIndex )
+    public FirewallEvent( int sessionId,  FirewallRule rule, boolean wasBlocked, int ruleIndex )
     {
         this.sessionId  = sessionId;
         this.wasBlocked = wasBlocked;
         this.ruleIndex  = ruleIndex;
+        this.rule       = rule;
     }
 
     /**
@@ -63,9 +65,8 @@ public class FirewallEvent extends LogEvent implements Serializable
         this.sessionId = sessionId;
     }
 
-
     /**
-     * Firewall rule that triggered this event
+     * Whether or not the session was blocked.
      *
      * @return If the session was passed or blocked.
      * @hibernate.property
@@ -97,4 +98,22 @@ public class FirewallEvent extends LogEvent implements Serializable
     {
         this.ruleIndex = ruleIndex;
     }
+
+    /**
+     * Firewall rule that triggered this event
+     *
+     * @return firewall rule that triggered this event
+     * @hibernate.many-to-one
+     * class="com.metavize.tran.firewall.FirewallRule"
+     * column="RULE_ID"
+      */
+    public FirewallRule getRule()
+     {
+        return rule;
+     }
+ 
+    public void setRule( FirewallRule rule )
+     {
+        this.rule = rule;
+     }
 }

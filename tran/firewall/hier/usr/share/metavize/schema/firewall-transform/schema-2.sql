@@ -48,6 +48,7 @@ CREATE TABLE events.tr_firewall_evt (
     event_id int8 NOT NULL,
     session_id int4,
     was_blocked bool,
+    rule_id int8,
     rule_index int4,
     time_stamp timestamp,
     PRIMARY KEY (event_id));
