@@ -364,6 +364,8 @@ public class HttpParser extends AbstractParser
                         eventLogger.info(evt);
                     }
 
+		    // Free up header storage
+		    header = null;
                     done = true;
                     break;
                 }
