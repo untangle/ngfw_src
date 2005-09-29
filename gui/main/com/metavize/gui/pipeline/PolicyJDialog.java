@@ -36,7 +36,7 @@ public class PolicyJDialog extends MConfigJDialog {
     }
 
     protected Dimension getMinSize(){
-	return new Dimension(640, 480);
+	return new Dimension(700, 480);
     }
     
     protected void generateGui(){

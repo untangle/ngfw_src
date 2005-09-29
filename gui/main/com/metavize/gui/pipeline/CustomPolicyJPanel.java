@@ -59,19 +59,21 @@ class CustomPolicyTableModel extends MSortedTableModel{
     private static final int C6_MW = 100; /* server address */
     private static final int C7_MW = 100; /* client port */
     private static final int C8_MW = 100; /* server port */
-    private static final int C9_MW = 100; /* direction */
-    private static final int C10_MW = 100; /* policy */
-    private static final int C11_MW = Util.chooseMax(T_TW - (C0_MW + C1_MW + C2_MW + C3_MW + C4_MW + C5_MW + C6_MW + C7_MW + C8_MW + C9_MW + C10_MW), 125); /* description */
+    private static final int C9_MW = 200; /* policy / direction */
+    private static final int C10_MW = Util.chooseMax(T_TW - (C0_MW + C1_MW + C2_MW + C3_MW + C4_MW + C5_MW + C6_MW + C7_MW + C8_MW + C9_MW), 125); /* description */
 
     protected boolean getSortable(){ return false; }
 
-    private static final String DIRECTION_INBOUND = "inbound";
-    private static final String DIRECTION_OUTBOUND = "outbound";
+    private static final String INBOUND_STRING = " (inbound)";
+    private static final String OUTBOUND_STRING = " (outbound)";
+
+    private IntfEnum intfEnum = Util.getNetworkingManager().getIntfEnum();
 
     private ComboBoxModel protocolModel = super.generateComboBoxModel( ProtocolMatcher.getProtocolEnumeration(),
 								       ProtocolMatcher.getProtocolDefault() );
-    private ComboBoxModel directionModel = super.generateComboBoxModel(new String[]{DIRECTION_INBOUND, DIRECTION_OUTBOUND},
-								       DIRECTION_INBOUND);
+
+    private ComboBoxModel interfaceModel = super.generateComboBoxModel( intfEnum.getIntfNames(),
+									intfEnum.getIntfNames()[0] );
 
     private DefaultComboBoxModel policyModel = new DefaultComboBoxModel();
     private Map<String,Policy> policyNames = new LinkedHashMap();
@@ -79,7 +81,8 @@ class CustomPolicyTableModel extends MSortedTableModel{
 	policyNames.clear();
 	List<Policy> policyList = Util.getPolicyManager().getPolicyConfiguration().getPolicies();
 	for( Policy policy : policyList ){
-	    policyNames.put( policy.getName(), policy );
+	    policyNames.put( policy.getName()+INBOUND_STRING, policy );
+	    policyNames.put( policy.getName()+OUTBOUND_STRING, policy );
 	}
     }
     private void updatePolicyModel(){
@@ -96,16 +99,15 @@ class CustomPolicyTableModel extends MSortedTableModel{
         addTableColumn( tableColumnModel,  0,  C0_MW,  false, false, false, false, String.class,  null, sc.TITLE_STATUS );
         addTableColumn( tableColumnModel,  1,  C1_MW,  false, false, false, false, Integer.class, null, sc.TITLE_INDEX );
         addTableColumn( tableColumnModel,  2,  C2_MW,  true,  true,  false, false, ComboBoxModel.class, protocolModel, sc.html("protocol"));
-        addTableColumn( tableColumnModel,  3,  C3_MW,  true,  true,  false, false, String.class, "0", sc.html("client<br>interface"));
-        addTableColumn( tableColumnModel,  4,  C4_MW,  true,  true,  false, false, String.class, "1", sc.html("server<br>interface"));
+        addTableColumn( tableColumnModel,  3,  C3_MW,  true,  true,  false, false, ComboBoxModel.class, interfaceModel, sc.html("client<br>interface"));
+        addTableColumn( tableColumnModel,  4,  C4_MW,  true,  true,  false, false, ComboBoxModel.class, interfaceModel, sc.html("server<br>interface"));
         addTableColumn( tableColumnModel,  5,  C5_MW,  true,  true,  false, false, String.class, "any", sc.html("client<br>address"));
         addTableColumn( tableColumnModel,  6,  C6_MW,  true,  true,  false, false, String.class, "any", sc.html("server<br>address"));
-        addTableColumn( tableColumnModel,  7,  C7_MW,  true,  true,  false, false, String.class, "any", sc.html("client<br>port"));
+        addTableColumn( tableColumnModel,  7,  C7_MW,  true,  true,  true,  false, String.class, "any", sc.html("client<br>port"));
         addTableColumn( tableColumnModel,  8,  C8_MW,  true,  true,  false, false, String.class, "any", sc.html("server<br>port"));
-        addTableColumn( tableColumnModel,  9,  C9_MW,  true,  true,  false, false, ComboBoxModel.class, directionModel, sc.html("direction"));
-        addTableColumn( tableColumnModel,  10, C10_MW, true,  true,  false, false, ComboBoxModel.class, policyModel, sc.bold("rack"));
-        addTableColumn( tableColumnModel,  11, C11_MW, true,  true,  false, true,  String.class, sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION );
-        addTableColumn( tableColumnModel,  12, 10,     false, false, true,  false, UserPolicyRule.class, null, "" );
+        addTableColumn( tableColumnModel,  9,  C9_MW,  true,  true,  false, false, ComboBoxModel.class, policyModel, sc.bold("rack"));
+        addTableColumn( tableColumnModel,  10, C10_MW, true,  true,  false, true,  String.class, sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION );
+        addTableColumn( tableColumnModel,  11, 10,     false, false, true,  false, UserPolicyRule.class, null, "" );
 
         return tableColumnModel;
     }
@@ -118,15 +120,13 @@ class CustomPolicyTableModel extends MSortedTableModel{
 
 	for( Vector rowVector : tableVector ){
 	    rowIndex++;
-            newElem = (UserPolicyRule) rowVector.elementAt(12);
+            newElem = (UserPolicyRule) rowVector.elementAt(11);
 	    try{ newElem.setProtocol( ProtocolMatcher.parse(((ComboBoxModel) rowVector.elementAt(2)).getSelectedItem().toString()) ); }
-	    catch(Exception e){ throw new Exception("Invalid \"protocol\" in row: " + rowIndex); }
-	    try{ newElem.setClientIntf( Byte.decode((String) rowVector.elementAt(3)) ); }
-	    catch(Exception e){ throw new Exception("Invalid \"client interface\" in row: " + rowIndex); }
-	    try{ newElem.setServerIntf( Byte.decode((String) rowVector.elementAt(4)) ); }
-	    catch(Exception e){ throw new Exception("Invalid \"server interface\" in row: " + rowIndex); }
-	    if( (new Byte(newElem.getClientIntf())).equals(new Byte(newElem.getServerIntf())) )
-		throw new Exception("In row: " + rowIndex + ". The \"client address\" cannot match the \"server address\"");
+	    catch(Exception e){ throw new Exception("Invalid \"protocol\" in row: " + rowIndex); }	   
+	    newElem.setClientIntf( intfEnum.getIntfNum((String)((ComboBoxModel)rowVector.elementAt(3)).getSelectedItem()) );
+	    newElem.setServerIntf( intfEnum.getIntfNum((String)((ComboBoxModel)rowVector.elementAt(4)).getSelectedItem()) );
+	    if( newElem.getClientIntf() == newElem.getServerIntf() )
+		throw new Exception("In row: " + rowIndex + ". The \"client interface\" cannot match the \"server interface\"");
 	    try{ newElem.setClientAddr( IPMatcher.parse((String) rowVector.elementAt(5)) ); }
 	    catch(Exception e){ throw new Exception("Invalid \"client address\" in row: " + rowIndex); }
 	    try{ newElem.setServerAddr( IPMatcher.parse((String) rowVector.elementAt(6)) ); }
@@ -135,9 +135,11 @@ class CustomPolicyTableModel extends MSortedTableModel{
 	    catch(Exception e){ throw new Exception("Invalid \"client port\" in row: " + rowIndex); }
 	    try{ newElem.setServerPort( PortMatcher.parse((String) rowVector.elementAt(8)) ); }
 	    catch(Exception e){ throw new Exception("Invalid \"server port\" in row: " + rowIndex); }
-            newElem.setInbound( ((ComboBoxModel)rowVector.elementAt(9)).getSelectedItem().equals(DIRECTION_INBOUND) );
-            newElem.setPolicy( policyNames.get((String) ((ComboBoxModel)rowVector.elementAt(10)).getSelectedItem()) );
-            newElem.setDescription( (String) rowVector.elementAt(11) );
+	    Policy policy = policyNames.get((String) ((ComboBoxModel)rowVector.elementAt(9)).getSelectedItem());
+            newElem.setPolicy( policy );
+	    boolean isInbound = ((String) ((ComboBoxModel)rowVector.elementAt(9)).getSelectedItem()).contains(INBOUND_STRING);
+            newElem.setInbound( isInbound );
+            newElem.setDescription( (String) rowVector.elementAt(10) );
             elemList.add(newElem);
         }
 
@@ -163,20 +165,19 @@ class CustomPolicyTableModel extends MSortedTableModel{
 	    tempRow = new Vector(13);
 	    tempRow.add( super.ROW_SAVED );
 	    tempRow.add( rowIndex );
-	    tempRow.add( super.copyComboBoxModel(protocolModel) );
-	    tempRow.add( ((Byte)newElem.getClientIntf()).toString() );
-	    tempRow.add( ((Byte)newElem.getServerIntf()).toString() );
+	    tempRow.add( super.generateComboBoxModel(ProtocolMatcher.getProtocolEnumeration(),
+						     newElem.getProtocol()) );
+	    tempRow.add( super.generateComboBoxModel(intfEnum.getIntfNames(),
+						     intfEnum.getIntfName(newElem.getClientIntf())) );
+	    tempRow.add( super.generateComboBoxModel(intfEnum.getIntfNames(),
+						     intfEnum.getIntfName(newElem.getServerIntf())) );
 	    tempRow.add( newElem.getClientAddr().toString() );
 	    tempRow.add( newElem.getServerAddr().toString() );
 	    tempRow.add( newElem.getClientPort().toString() );
 	    tempRow.add( newElem.getServerPort().toString() );
-	    ComboBoxModel directionComboBoxModel = super.copyComboBoxModel(directionModel);
-	    if( newElem.isInbound() )
-		directionComboBoxModel.setSelectedItem(DIRECTION_INBOUND);
-	    else
-		directionComboBoxModel.setSelectedItem(DIRECTION_OUTBOUND);
-	    tempRow.add( directionComboBoxModel );
-	    tempRow.add( super.generateComboBoxModel(policyNames.keySet().toArray(), newElem.getPolicy().getName()) );
+	    tempRow.add( super.generateComboBoxModel(policyNames.keySet().toArray(),
+						     newElem.getPolicy().getName()
+						     +(newElem.isInbound()?INBOUND_STRING:OUTBOUND_STRING)) );
 	    tempRow.add( newElem.getDescription() );
 	    tempRow.add( newElem );
 	    allRows.add( tempRow );
