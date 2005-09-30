@@ -88,6 +88,15 @@ abstract class ArgonHook implements Runnable
             /* Update the server interface with the override table */
             NetcapSession netcapSession = sessionGlobalState.netcapSession();
             InterfaceOverride.getInstance().updateDestinationInterface( netcapSession );
+            
+            /* If the server interface is still unknown, drop the session */
+            byte serverIntf = netcapSession.serverSide().interfaceId();
+            if ( IntfConverter.NETCAP_UNKNOWN == serverIntf || 
+                 IntfConverter.NETCAP_LOOPBACK == serverIntf ) {
+                logger.info( "Session destined to an unknown or local interface[" + serverIntf + 
+                             "], destroying" );
+                return;
+            }
 
             clientSide = new NetcapIPSessionDescImpl( sessionGlobalState, true );
 
@@ -158,19 +167,20 @@ abstract class ArgonHook implements Runnable
             /* You must remove the vector before razing, or else
              * the vector may receive a message(eg shutdown) from another thread */
             activeVectrons.remove( vector );
-
+        } catch ( Exception e ) {
+            logger.error( "Exception destroying pipeline", e );
+        }
+        
+        try {
             /* Delete the vector */
-            if ( vector != null ) {
-                vector.raze();
-            }
+            if ( vector != null ) vector.raze();
 
             /* Delete everything else */
             raze();
-
-            if ( logger.isDebugEnabled())
-                logger.debug( "Exiting thread: " + sessionGlobalState );
+            
+            if ( logger.isDebugEnabled()) logger.debug( "Exiting thread: " + sessionGlobalState );
         } catch ( Exception e ) {
-            logger.error( "Exception exiting hook:", e );
+            logger.error( "Exception razing vector and session", e );
         }
     }
 

@@ -493,7 +493,8 @@ static int  _out_interface     ( int* index, struct in_addr* src_ip, struct in_a
         return errlog( ERR_CRITICAL, "SIOCFINDEV[%s] %s\n", unet_inet_ntoa( dst_ip->s_addr ), errstr );
     }
 
-    /* If the next hop is local, the ioctl returns 0 */
+    /* If the next hop is on the local network, (eg. the next hop is the destination), 
+     * the ioctl returns 0 */
     if ( args.nh != 0x00000000 ) {
         next_hop->s_addr = args.nh;
     } else {

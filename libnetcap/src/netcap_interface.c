@@ -479,9 +479,9 @@ static int _update_intf_info( void )
             if ( strncmp( intf_name.s, "lo", sizeof( "lo" )) == 0 ) {
                 debug( 10, "INTERFACE: Loopback interface at index %d\n", i );
                 intf_info.netcap_intf = NC_INTF_LOOPBACK;
-                intf_info.is_localhost = 1;
+                intf_info.is_loopback = 1;
             } else {
-                intf_info.is_localhost = 0;
+                intf_info.is_loopback = 0;
             }
             
             /* Copy in the interface name */

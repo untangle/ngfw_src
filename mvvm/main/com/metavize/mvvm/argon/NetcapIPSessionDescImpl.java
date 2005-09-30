@@ -139,6 +139,13 @@ class NetcapIPSessionDescImpl implements IPSessionDesc
         return serverPort;
     }
 
+    public String toString()
+    {
+        return String.format( "netcap session: [%d]%s:%d -> [%d]%s:%d",
+                              this.clientIntf, this.clientAddr.getHostAddress(), this.clientPort,
+                              this.serverIntf, this.serverAddr.getHostAddress(), this.serverPort );
+    }
+
     /**
      * Number of bytes received from the client.
      */

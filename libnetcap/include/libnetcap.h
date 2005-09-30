@@ -41,7 +41,7 @@ typedef enum {
 } netcap_callback_action_t;
 
 typedef enum {
-    NC_INTF_UNK = 0,
+    NC_INTF_ERR = 0,
     NC_INTF_0 = 1,
     NC_INTF_1,
     NC_INTF_2,
@@ -58,7 +58,8 @@ typedef enum {
     NC_INTF_13,
     NC_INTF_14,
     NC_INTF_15,
-    NC_INTF_LOOPBACK
+    NC_INTF_LOOPBACK = 17,
+    NC_INTF_UNK      = 18
 } netcap_intf_t;
 
 typedef enum {

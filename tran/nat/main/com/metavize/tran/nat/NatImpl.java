@@ -79,6 +79,8 @@ public class NatImpl extends AbstractTransform implements Nat
     private final SoloPipeSpec natFtpPipeSpec;
 
     private final PipeSpec[] pipeSpecs;
+    
+    private final DhcpManager dhcpManager;
 
     private final Logger logger = Logger.getLogger( NatImpl.class );
 
@@ -88,6 +90,7 @@ public class NatImpl extends AbstractTransform implements Nat
     {
         handler = new NatEventHandler(this);
         sessionManager = new NatSessionManager(this);
+        dhcpManager = new DhcpManager( this );
 
         /* Have to figure out pipeline ordering, this should always next
          * to towards the outside */
@@ -107,10 +110,10 @@ public class NatImpl extends AbstractTransform implements Nat
     {
         if (settings.getDhcpEnabled()) {
             /* Insert all of the leases from DHCP */
-            DhcpManager.getInstance().loadLeases(settings);
+            dhcpManager.loadLeases(settings);
         } else {
             /* remove any leftover leases from DHCP */
-            DhcpManager.getInstance().fleeceLeases(settings);
+            dhcpManager.fleeceLeases(settings);
         }
 
         return this.settings;
@@ -119,7 +122,7 @@ public class NatImpl extends AbstractTransform implements Nat
     public void setNatSettings(NatSettings settings) throws Exception
     {
         /* Remove all of the non-static addresses before saving */
-        DhcpManager.getInstance().fleeceLeases( settings );
+        dhcpManager.fleeceLeases( settings );
 
         /* Validate the settings */
         try {
@@ -158,9 +161,9 @@ public class NatImpl extends AbstractTransform implements Nat
                 NetworkingConfiguration netConfig = MvvmContextFactory.context().networkingManager().get();
 
                 /* Have to configure DHCP before the handler */
-                DhcpManager.getInstance().configure(settings, netConfig);
+                dhcpManager.configure(settings, netConfig);
                 this.handler.configure(settings, netConfig);
-                DhcpManager.getInstance().startDnsMasq();
+                dhcpManager.startDnsMasq();
             }
         } catch (TransformException exn) {
             logger.error( "Could not save Nat settings", exn );
@@ -265,7 +268,7 @@ public class NatImpl extends AbstractTransform implements Nat
         /* Disable everything */
 
         /* deconfigure the event handle and the dhcp manager */
-        DhcpManager.getInstance().deconfigure();
+        dhcpManager.deconfigure();
 
         try {
             setNatSettings(settings);
@@ -315,13 +318,13 @@ public class NatImpl extends AbstractTransform implements Nat
             .networkingManager().get();
 
 
-        DhcpManager.getInstance().configure( settings, netConfig );
+        dhcpManager.configure( settings, netConfig );
         try {
             handler.configure( settings, netConfig );
         } catch ( TransformException e ) {
             throw new TransformStartException(e);
         }
-        DhcpManager.getInstance().startDnsMasq();
+        dhcpManager.startDnsMasq();
 
         NatStatisticManager.getInstance().start();
     }
@@ -337,7 +340,7 @@ public class NatImpl extends AbstractTransform implements Nat
         /* Kill all active sessions */
         shutdownMatchingSessions();
 
-        DhcpManager.getInstance().deconfigure();
+        dhcpManager.deconfigure();
 
         /* deconfigure the event handle */
         try {
@@ -355,13 +358,10 @@ public class NatImpl extends AbstractTransform implements Nat
 
         logger.info("Reconfigure()");
 
-        /* XXXX, what goes here. Configure the handler */
+        /* ????, what goes here. Configure the handler */
 
         /* Settings will always be null right now */
-        if (settings == null) {
-            throw new TransformException("Failed to get Nat settings: "
-                                         + settings);
-        }
+        if (settings == null) throw new TransformException("Failed to get Nat settings: " + settings);
     }
 
     private void updateToCurrent(NatSettings settings)

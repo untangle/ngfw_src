@@ -31,6 +31,8 @@ import com.metavize.mvvm.tran.firewall.MACAddress;
  */
 public class DhcpLeaseEvent extends LogEvent
 {
+    private static final long serialVersionUID = -6582660598334287365L;
+
     static final int REGISTER = 0;
     static final int RENEW    = 1;
     static final int EXPIRE   = 2;

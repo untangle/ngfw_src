@@ -21,13 +21,27 @@ public final class IntfConverter
 {
     /** This class is a singleton that must be initialized */
 
-    /* Inside and outside interface constants */
+    /* Inside and outside interface argon constants */
     public static final byte  OUTSIDE   = 0;
     public static final byte  INSIDE    = 1;
     public static final byte  DMZ       = 2;
+    
+    /* Special argon interfaces */
+    public static final byte  ARGON_MIN      = 0;
+    public static final byte  ARGON_MAX      = 8;
 
-    public static final byte  LOCALHOST = 17;
+    public static final byte  ARGON_ERROR    = ARGON_MIN - 1;
+    public static final byte  ARGON_LOOPBACK = ARGON_MAX + 1;
+    public static final byte  ARGON_UNKNOWN  = ARGON_MAX + 2;
 
+    public static final byte  NETCAP_MIN      = 1;
+    public static final byte  NETCAP_MAX      = 9;
+
+    /* Magic numbers, all of them */
+    public static final byte  NETCAP_ERROR    = 0;
+    public static final byte  NETCAP_LOOPBACK = 17;
+    public static final byte  NETCAP_UNKNOWN  = 18;
+    
     /* The constants for the DMZ zones should be looked up with the function
      * dmz( zone ), this will throw an error if that zone doesn't exist */
     private static final byte USER_BASE = 3;
@@ -127,10 +141,16 @@ public final class IntfConverter
      */
     public static byte toNetcap( byte argonIntf )
     {
-        /* Currently 16 is a special interface for loopback */
-        /* XXX Serious magic number */
-        if ( argonIntf < 0 || argonIntf > 16 ) {
-            throw new IllegalArgumentException( "Invalid argon interface: " + argonIntf );
+        switch ( argonIntf ) {
+        case ARGON_ERROR:
+            throw new IllegalArgumentException( "Invalid argon interface[" + argonIntf + "]" );
+        case ARGON_UNKNOWN:  return NETCAP_UNKNOWN;
+        case ARGON_LOOPBACK: return NETCAP_LOOPBACK;
+        }
+        
+        /* May actually want to check if interfaces exists */
+        if ( argonIntf < ARGON_MIN  || argonIntf > ARGON_MAX ) {
+            throw new IllegalArgumentException( "Invalid argon interface[" + argonIntf + "]" );
         }
         
         return (byte)(argonIntf + 1);
@@ -142,9 +162,16 @@ public final class IntfConverter
      */
     public static byte toArgon( byte netcapIntf )
     {
-        /* Currently 17 is a special interface for loopback */
-        if ( netcapIntf < 1  || netcapIntf > 17 ) {
-            throw new IllegalArgumentException( "Invalid netcap interface: " + netcapIntf );
+        switch ( netcapIntf ) {
+        case NETCAP_ERROR:
+            throw new IllegalArgumentException( "Invalid netcap interface[" + netcapIntf + "]" );
+        case NETCAP_UNKNOWN:  return ARGON_UNKNOWN;
+        case NETCAP_LOOPBACK: return ARGON_LOOPBACK;
+        }
+        
+        /* May actually want to check if interfaces exists */
+        if ( netcapIntf < NETCAP_MIN  || netcapIntf > NETCAP_MAX ) {
+            throw new IllegalArgumentException( "Invalid netcap interface[" + netcapIntf + "]" );
         }
         
         return (byte)(netcapIntf - 1);

@@ -32,7 +32,6 @@ import org.apache.log4j.Logger;
 
 class DhcpMonitor implements Runnable
 {
-    private static DhcpMonitor  INSTANCE = null;
     private static final int    DHCP_LEASE_ENTRY_LENGTH = 5;
 
     /* How often to poll the leases file, in milliseconds */
@@ -61,8 +60,6 @@ class DhcpMonitor implements Runnable
     /* File being monitored */
     private final File dhcpFile = new File( DHCP_LEASES_FILE );
 
-    private final Tid tid;
-
     /* Last time the event log was updated */
     private long lastUpdate = -1L;
 
@@ -76,11 +73,14 @@ class DhcpMonitor implements Runnable
     private final Map<IPaddr,DhcpLease> currentLeaseMap = new HashMap<IPaddr,DhcpLease>();
 
     private final Logger logger = Logger.getLogger( this.getClass());
-    private final Logger eventLogger = MvvmContextFactory.context().eventLogger();
+    private final Logger eventLogger;
+    private final NatImpl transform;
 
-    private DhcpMonitor()
+    DhcpMonitor( NatImpl transform )
     {
-        tid = MvvmContextFactory.context().transformManager().threadContext().getTid();
+        this.transform = transform;
+        
+        this.eventLogger = MvvmContextFactory.context().eventLogger();
     }
 
     public void run()
@@ -90,11 +90,13 @@ class DhcpMonitor implements Runnable
 
         waitForTransformContext();
 
+        Thread.currentThread().setContextClassLoader( transform.getTransformContext().getClassLoader());
+
         if ( !isAlive ) {
             logger.error( "died before starting" );
             return;
         }
-
+        
         while ( true ) {
             if ( c <= 0 ) {
                 logAbsolute();
@@ -342,26 +344,19 @@ class DhcpMonitor implements Runnable
 
     private void waitForTransformContext()
     {
-        while ( true ) {
-            if ( MvvmContextFactory.context().transformManager().transformContext( tid ) != null ) {
-                break;
-            }
+        Tid tid = this.transform.getTid();
+                        
+        while ( true ) {            
+            if ( MvvmContextFactory.context().transformManager().transformContext( tid ) != null ) break;
 
             try {
                 Thread.sleep( 1000 );
             } catch ( InterruptedException e ) {
                 logger.info( "Interrupted" );
+                if ( !isAlive ) return;
             }
 
             if ( !isAlive ) return;
         }
-    }
-
-    static synchronized DhcpMonitor getInstance()
-    {
-        if ( INSTANCE == null )
-            INSTANCE = new DhcpMonitor();
-
-        return INSTANCE;
     }
 }

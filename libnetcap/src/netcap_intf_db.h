@@ -29,7 +29,7 @@ typedef struct netcap_intf_info
 {
     char is_valid;
     char index;
-    char is_localhost;
+    char is_loopback;
 
     netcap_intf_t netcap_intf;
     netcap_intf_string_t name;

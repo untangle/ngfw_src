@@ -39,6 +39,8 @@ import com.metavize.mvvm.tran.firewall.IPMatcher;
 import com.metavize.mvvm.tran.firewall.IntfMatcher;
 import com.metavize.mvvm.tran.firewall.PortMatcher;
 import com.metavize.mvvm.tran.firewall.ProtocolMatcher;
+import com.metavize.mvvm.tran.firewall.InterfaceStaticRedirect;
+import com.metavize.mvvm.tran.firewall.InterfaceAddressRedirect;
 import com.metavize.mvvm.tran.firewall.InterfaceRedirect;
 import org.apache.log4j.Logger;
 
@@ -251,21 +253,6 @@ class NatEventHandler extends AbstractEventHandler
             isDmzLoggingEnabled = false;
         }
         
-        if ( settings.getDmzEnabled() || settings.getNatEnabled()) {
-            /* Create a new redirect to redirect all traffic destined
-             * to the outside interface to the inside.  This handles sessions
-             * both sessions that are managed for FTP and sessions that are for 
-             * the DMZ. */
-            InterfaceRedirect redirect = 
-                new InterfaceRedirect( ProtocolMatcher.MATCHER_ALL,
-                                       IntfMatcher.getNotInside(), IntfMatcher.getAll(),
-                                       IPMatcher.MATCHER_ALL, localHostMatcher,
-                                       PortMatcher.MATCHER_ALL, PortMatcher.MATCHER_ALL,
-                                       IntfConverter.INSIDE );
-            
-            overrideList.add( redirect );
-        }
-
         /* Empty out the list */
         redirectList.clear();
 
@@ -286,8 +273,8 @@ class NatEventHandler extends AbstractEventHandler
                     
                     /* Only need to insert an address redirect if the address is being redirected */
                     if ( redirectAddress != null ) {
-                        InterfaceRedirect interfaceRedirect = InterfaceRedirect.
-                            makeInterfaceRedirect( redirect, redirectAddress );
+                        InterfaceRedirect interfaceRedirect = 
+                            new InterfaceAddressRedirect( rule, redirectAddress );
                         
                         overrideList.add( interfaceRedirect );
                     }
@@ -295,6 +282,23 @@ class NatEventHandler extends AbstractEventHandler
                 index++;
             }
         }
+        
+        /* This override has to go after the rules */
+        if ( settings.getDmzEnabled() || settings.getNatEnabled()) {
+            /* Create a new redirect to redirect all traffic destined
+             * to the outside interface to the inside.  This handles sessions
+             * both sessions that are managed for FTP and sessions that are for 
+             * the DMZ. */
+            InterfaceRedirect redirect = 
+                new InterfaceStaticRedirect( ProtocolMatcher.MATCHER_ALL,
+                                             IntfMatcher.getNotInside(), IntfMatcher.getAll(),
+                                             IPMatcher.MATCHER_ALL, localHostMatcher,
+                                             PortMatcher.MATCHER_ALL, PortMatcher.MATCHER_ALL,
+                                             IntfConverter.INSIDE );
+            
+            overrideList.add( redirect );
+        }
+
 
         argonManager.setInterfaceOverrideList( overrideList );
     }
