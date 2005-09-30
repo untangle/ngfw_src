@@ -497,6 +497,7 @@ public class MMainJFrame extends javax.swing.JFrame {
         controlsJPanel.add(mTabbedPane, gridBagConstraints);
 
         rackJComboBox.setFont(new java.awt.Font("Dialog", 0, 12));
+        rackJComboBox.setMaximumRowCount(17);
         rackJComboBox.setFocusable(false);
         rackJComboBox.setMinimumSize(new java.awt.Dimension(160, 24));
         rackJComboBox.setPreferredSize(new java.awt.Dimension(160, 24));
