@@ -271,13 +271,7 @@ class NatEventHandler extends AbstractEventHandler
                     /* Insert the rule into the interface overrides */
                     InetAddress redirectAddress = redirect.getRedirectAddress();
                     
-                    /* Only need to insert an address redirect if the address is being redirected */
-                    if ( redirectAddress != null ) {
-                        InterfaceRedirect interfaceRedirect = 
-                            new InterfaceAddressRedirect( rule, redirectAddress );
-                        
-                        overrideList.add( interfaceRedirect );
-                    }
+                    overrideList.add( new InterfaceAddressRedirect( rule, redirectAddress ));
                 }
                 index++;
             }

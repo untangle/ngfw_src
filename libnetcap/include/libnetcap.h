@@ -293,19 +293,6 @@ typedef struct netcap_session {
     // int flags;
 
     /**
-     * A number indicating the client interface or 0 if it is unknown.
-     * 
-     */
-    // XXX This is now stored inside of the endpoints structure.
-    // netcap_intf_t cli_intf;
-
-    /**
-     * A number indicating the server interface or 0 if it is unknown.
-     */
-    // XXX This is now stored inside of the endpoints structure.
-    // netcap_intf_t srv_intf;
-
-    /**
      * For ICMP echo session, this is the message id for the client side and server side.
      * These values are in host byte order
      */

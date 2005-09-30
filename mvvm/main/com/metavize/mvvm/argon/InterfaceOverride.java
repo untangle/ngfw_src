@@ -49,8 +49,6 @@ final class InterfaceOverride
             logger.info( "Found redirect for session, setting to interface: " + overrideInterface );
             netcapSession.serverInterfaceId( overrideInterface );
         }
-
-        /* XXXX May want to drop the session if it is still destined to local host */
     }
 
 
@@ -91,9 +89,9 @@ final class InterfaceOverride
         
         for ( InterfaceRedirect redirect : currentOverrideList ) {
             if ( redirect.isMatch( protocol, srcIntf, dstIntf, srcAddress, dstAddress, srcPort, dstPort )) {
-                logger.debug( "Found redirect for session, setting to interface: " + redirect.netcapIntf());
-                            
-                return redirect.netcapIntf();
+                byte intf = redirect.netcapIntf( dstIntf );
+                logger.debug( "Found redirect for session, setting to interface: " + intf );
+                return intf;
             }
         }
         

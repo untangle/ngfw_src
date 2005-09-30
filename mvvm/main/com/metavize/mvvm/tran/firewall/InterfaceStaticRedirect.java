@@ -39,12 +39,12 @@ public class InterfaceStaticRedirect extends InterfaceRedirect
         this.argonIntf = argonIntf;
     }
 
-    public byte netcapIntf()
+    public byte netcapIntf( byte argonDstIntf )
     {
         return IntfConverter.toNetcap( this.argonIntf );
     }
 
-    public byte argonIntf()
+    public byte argonIntf( byte argonDstIntf )
     {
         return this.argonIntf;
     }

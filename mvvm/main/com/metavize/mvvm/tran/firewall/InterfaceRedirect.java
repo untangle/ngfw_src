@@ -33,7 +33,7 @@ public abstract class InterfaceRedirect extends TrafficIntfMatcher
         super( trafficRule );
     }
 
-    public abstract byte netcapIntf();
+    public abstract byte netcapIntf( byte argonDstIntf );
 
-    public abstract byte argonIntf();
+    public abstract byte argonIntf( byte argonDstIntf );
 }

@@ -61,14 +61,19 @@ public class InterfaceAddressRedirect extends InterfaceRedirect
     }
 
 
-    public byte netcapIntf()
+    public byte netcapIntf( byte argonDstIntf )
     {
-        return IntfConverter.toNetcap( argonIntf() );
+        return IntfConverter.toNetcap( argonIntf( argonDstIntf ));
     }
-
-    public byte argonIntf()
+    
+    public byte argonIntf( byte argonDstIntf )
     {
+        /* If the redirect address is null, return the current destination interface */
+        if ( null == this.redirectAddress ) return argonDstIntf;
+
         long check = this.lastUpdate;
+
+        /* If then there is nothing to do */
         if (( System.currentTimeMillis() - check ) > UPDATE_TIME_MS ) updateInterface( check );
         
         return this.argonIntf;
@@ -76,8 +81,8 @@ public class InterfaceAddressRedirect extends InterfaceRedirect
 
     private synchronized void updateInterface( long check )
     {
-        /* Check if it has already been updated */
-        if ( check != this.lastUpdate ) return;
+        /* If the redirect address is null or the update already occured, there is nothing to do */
+        if (( null == this.redirectAddress ) || ( check != this.lastUpdate )) return;
         
         try {
             byte newIntf = MvvmContextFactory.context().argonManager().
@@ -94,9 +99,8 @@ public class InterfaceAddressRedirect extends InterfaceRedirect
             this.argonIntf = IntfConverter.NETCAP_LOOPBACK;
         }
         
-        /* XXX logger.debug */
-        System.out.println( "Redirect[" + this.redirectAddress +  "] is going out netcap interface " + 
-                            this.argonIntf );
+        logger.debug( "Redirect[" + this.redirectAddress +  "] is going out netcap interface " + 
+                      this.argonIntf );
 
         /* Update the last time the interface was modified */
         this.lastUpdate = System.currentTimeMillis();

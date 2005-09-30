@@ -272,7 +272,6 @@ int netcap_shield_init    ( void )
 
     /* The init function will initialize the mutex, the functions above, *
      * guarantee that the last update times all get set */
-    /* XXX Update the default keep size and delete size to something useful */
     if ( netcap_trie_init( &_shield.trie, flags, &rep, sizeof( rep ), _reputation_init, 
                            _reputation_destroy ) < 0 ) {
         return errlog(ERR_CRITICAL,"netcap_trie_root_init\n");
@@ -350,9 +349,9 @@ int netcap_shield_rep_check ( netcap_shield_response_t* response, struct in_addr
 
     /* XXX This should not be debug 0, but it is kind of strange because this is the client
      * interface which should always be known */
-    if ( intf < 1 || intf > NC_INTF_MAX ) {
-        debug( 0, "Unable to track session for interface %d, using %d\n", intf, 1 );
-        intf = 1;
+    if ( intf < NC_INTF_0 || intf > NC_INTF_MAX ) {
+        debug( 0, "Unable to track session for interface %d, using %d\n", intf, NC_INTF_0 );
+        intf = NC_INTF_0;
     }
 
     

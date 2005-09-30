@@ -490,7 +490,7 @@ static int  _out_interface     ( int* index, struct in_addr* src_ip, struct in_a
     
     if (( *index = ioctl( _netcap_arp.sock, SIOCFINDEV, &args )) < 0) {
         /* XXX Fix for net unreachable */
-        return errlog( ERR_CRITICAL, "SIOCFINDEV[%s] %s\n", unet_inet_ntoa( dst_ip->s_addr ), errstr );
+        return errlog( ERR_CRITICAL, "SIOCFINDEV[%s] %s.\n", unet_inet_ntoa( dst_ip->s_addr ), errstr );
     }
 
     /* If the next hop is on the local network, (eg. the next hop is the destination), 
@@ -524,23 +524,27 @@ static int  _fake_connect      ( struct in_addr* src_ip, struct in_addr* dst_ip,
         int name_len = strnlen( intf_info->name.s, sizeof( intf_info->name )) + 1;
 
         if ( setsockopt( fake_fd, SOL_SOCKET, SO_BINDTODEVICE, intf_info->name.s, name_len ) < 0 ) {
-            perrlog( "setsockopt" );
+            perrlog( "setsockopt(SO_BINDTODEVICE)" );
         }
-                
+
+        if ( setsockopt( fake_fd, SOL_SOCKET, SO_BROADCAST,  &one, sizeof(one)) < 0 ) {
+            perrlog( "setsockopt(SO_BROADCAST)" );
+        }
+
         if ( setsockopt( fake_fd, SOL_SOCKET, SO_DONTROUTE, &one, sizeof( one )) < 0 ) {
-            return ( ret = perrlog( "setsockopt(SO_DONTROUTE)" ));
+            return perrlog( "setsockopt(SO_DONTROUTE)" );
         }
         
         if ( connect( fake_fd, (struct sockaddr*)&dst_addr, sizeof( dst_addr )) < 0 ) {
-            return ( ret = perrlog("connect"));
+            return errlog( ERR_CRITICAL, "connect[%s] %s.\n", unet_inet_ntoa( dst_ip->s_addr ), errstr );
         }
         
         if ( getsockname( fake_fd, (struct sockaddr*)&dst_addr, &addr_len ) < 0 ) {
-            return ( ret = perrlog("getsockname"));
+            return perrlog( "getsockname" );
         }
         
         memcpy( src_ip, &dst_addr.sin_addr, sizeof( dst_addr.sin_addr ));
-        return ( ret = NETCAP_ARP_NOERROR );
+        return NETCAP_ARP_NOERROR;
     }
     
     dst_addr.sin_family = AF_INET;
@@ -549,7 +553,7 @@ static int  _fake_connect      ( struct in_addr* src_ip, struct in_addr* dst_ip,
 
     if (( fake_fd = socket( AF_INET, SOCK_DGRAM, 0 )) < 0 ) return perrlog( "socket" );
     
-    _critical_section();
+    ret = _critical_section();
     
     if ( close( fake_fd ) < 0 ) perrlog( "close" );
     

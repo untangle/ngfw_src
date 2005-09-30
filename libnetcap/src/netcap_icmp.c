@@ -37,9 +37,9 @@
 #define _ICMP_CACHE_CLEANUP_MAX 2
 
 static struct {
-    int fd;
+    int send_sock;
 } _icmp = {
-    .fd -1
+    .send_sock -1
 };
 
 typedef enum
@@ -319,21 +319,25 @@ static struct cmsghdr * my__cmsg_nxthdr(struct msghdr *msg, struct cmsghdr *cmsg
 
 int  netcap_icmp_init()
 {
-    if (( _icmp.fd = socket( AF_INET, SOCK_RAW, IPPROTO_ICMP )) < 0 )
-        return perrlog("socket");
+    int one = 1;
+
+    if (( _icmp.send_sock = socket( AF_INET, SOCK_RAW, IPPROTO_ICMP )) < 0 ) return perrlog( "socket" );
+
+    if ( setsockopt( _icmp.send_sock, SOL_SOCKET, SO_BROADCAST, &one, sizeof(one)) < 0) {
+        perrlog( "setsockopt" );
+        if ( close( _icmp.send_sock ) < 0 ) perrlog( "close\n" );
+        return -1;
+    }
 
     return 0;
 }
 
 int  netcap_icmp_cleanup()
 {
-    int fd;
-    fd = _icmp.fd;
-    _icmp.fd = -1;
+    int send_sock = _icmp.send_sock;
+    _icmp.send_sock = -1;
 
-    if (( fd > 0 ) && close( fd ) < 0 ) {
-        perrlog( "close" );
-    }
+    if (( send_sock > 0 ) && close( send_sock ) < 0 ) perrlog( "close" );
 
     return 0;
 }
@@ -716,7 +720,7 @@ static int  _netcap_icmp_send( char *data, int data_len, netcap_pkt_t* pkt, int 
            data_len, pkt->ttl, pkt->tos, nfmark);
 
     
-    if (( ret = sendmsg( _icmp.fd, &msg, flags )) < 0 ) {
+    if (( ret = sendmsg( _icmp.send_sock, &msg, flags )) < 0 ) {
         if ( errno == EPERM ) {
             errlog( ERR_CRITICAL, "ICMP: EPERM sending an ICMP packet\n" );
         } else {
