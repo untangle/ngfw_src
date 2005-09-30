@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.LinkedHashMap;
 import java.util.HashMap;
 import java.util.concurrent.*;
 import javax.swing.*;
@@ -98,7 +99,7 @@ public class PolicyStateMachine implements ActionListener {
 	// MVVM DATA MODELS
 	purchasableMackageMap = new HashMap<String,MackageDesc>();
 	installedMackageMap = new HashMap<String,MackageDesc>();
-	policyTidMap = new HashMap<Policy,List<Tid>>();
+	policyTidMap = new LinkedHashMap<Policy,List<Tid>>(); // Linked so view selector order is consistent (initially)
 	policyNameMap = new HashMap<Policy,Map<String,Object>>();
 	serviceTidList = new Vector<Tid>();
 	serviceNameMap = new HashMap<String,Object>();
@@ -258,7 +259,7 @@ public class PolicyStateMachine implements ActionListener {
     private void updatePolicyRacks() throws Exception {
 	// BUILD A GUI MODEL AND MVVM MODEL
 	Map<Policy,Object> currentPolicyRacks = new HashMap<Policy,Object>();
-	Map<Policy,Object> newPolicyRacks = new HashMap<Policy,Object>();
+	Map<Policy,Object> newPolicyRacks = new LinkedHashMap<Policy,Object>();
 	for(int i=0; i<((DefaultComboBoxModel)viewSelector.getModel()).getSize()-2; i++) // -2 for the last 2 policy manager options
 	    currentPolicyRacks.put( (Policy) ((DefaultComboBoxModel)viewSelector.getModel()).getElementAt(i), null );
 	for( Policy policy : (List<Policy>) Util.getPolicyManager().getPolicyConfiguration().getPolicies() )
@@ -733,7 +734,7 @@ public class PolicyStateMachine implements ActionListener {
     private void initViewSelector(){
 	DefaultComboBoxModel newModel = new DefaultComboBoxModel();
 	for( Policy policy : policyTidMap.keySet() )
-		newModel.addElement(policy);
+	    newModel.addElement(policy);
 	newModel.addElement(POLICY_MANAGER_SEPARATOR);
 	newModel.addElement(POLICY_MANAGER_OPTION);
 	newModel.setSelectedItem( newModel.getElementAt(0) );
