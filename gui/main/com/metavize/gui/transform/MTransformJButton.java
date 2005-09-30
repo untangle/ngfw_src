@@ -165,7 +165,7 @@ public class MTransformJButton extends JButton {
     ////////////////////////////////////////////
 
     public void highlight(){
-	new FadeTask(this);
+	new FadeTask(this,false);
     }
 
 

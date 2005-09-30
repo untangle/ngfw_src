@@ -136,7 +136,7 @@ public class MTransformJPanel extends javax.swing.JPanel {
         mTransformControlsJPanel.removeJButton().addActionListener(mStateMachine);	
     }
 
-    public void highlight(){ new FadeTask(effectsJPanel); }
+    public void highlight(){ new FadeTask(effectsJPanel,true); }
 
     public void setProblemView(boolean doLater){ mStateMachine.setProblemView(doLater); }
     public void setRemovingView(boolean doLater){ mStateMachine.setRemovingView(doLater); }
@@ -237,7 +237,7 @@ public class MTransformJPanel extends javax.swing.JPanel {
         powerJToggleButton.setSelectedIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/metavize/gui/transform/IconPowerOnState28x28.png")));
         add(powerJToggleButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(606, 54, 28, 28));
 
-        effectsJPanel.setOpaque(false);
+        effectsJPanel.setBackground(new Color(255,255,255,0));
         add(effectsJPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 688, 100));
 
         backgroundJLabel.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/metavize/gui/transform/TransformBackground688x100.png")));

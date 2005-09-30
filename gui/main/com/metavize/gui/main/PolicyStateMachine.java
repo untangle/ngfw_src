@@ -341,6 +341,7 @@ public class PolicyStateMachine implements ActionListener {
 	    setContextClassLoader( Util.getClassLoader() );
 	    setName("MVCLIENT-MoveFromToolboxToRackThread: " + mTransformJButton.getDisplayName() + " -> " + (mTransformJButton.getMackageDesc().isService()?"services":policy.getName()));
 	    mTransformJButton.setDeployingView();
+	    focusInToolbox(mTransformJButton, false);
 	    start();
 	}
 	public void run(){
@@ -415,10 +416,13 @@ public class PolicyStateMachine implements ActionListener {
 		}
 	    }
 	    // VIEW: DEPLOYABLE
+	    MTransformJButton targetMTransformJButton;
 	    if( mTransformJPanel.getMackageDesc().isService() )
-		serviceToolboxMap.get(buttonKey).setDeployableView();
+		targetMTransformJButton = serviceToolboxMap.get(buttonKey);
 	    else
-		policyToolboxMap.get(policy).get(buttonKey).setDeployableView();
+		targetMTransformJButton = policyToolboxMap.get(policy).get(buttonKey);
+	    targetMTransformJButton.setDeployableView();
+	    focusInToolbox(targetMTransformJButton, true);
 	}
     }
     private class MoveFromToolboxToStoreThread extends Thread{
@@ -535,7 +539,7 @@ public class PolicyStateMachine implements ActionListener {
 			    addToToolbox(policy,mTransformJButton.getMackageDesc(),false);
 		    }
 		    // FOCUS AND HIGHLIGHT IN CURRENT TOOLBOX
-		    focusInToolbox(mTransformJButton);
+		    focusInToolbox(mTransformJButton, true);
 		}
 		else{
 		    SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
@@ -980,11 +984,13 @@ public class PolicyStateMachine implements ActionListener {
 	    Rectangle scrollRect = SwingUtilities.convertRectangle(mTransformJPanel.getParent(),
 								   mTransformJPanel.getBounds(),
 								   rackJScrollPane.getViewport());
+	    scrollRect.y -= 20;
+	    scrollRect.height += 40;
 	    rackJScrollPane.getViewport().scrollRectToVisible(scrollRect);
 	    mTransformJPanel.highlight();
 	}});
     }
-    private void focusInToolbox(final MTransformJButton mTransformJButton){
+    private void focusInToolbox(final MTransformJButton mTransformJButton, final boolean doHighlight){
         SwingUtilities.invokeLater( new Runnable() { public void run() {
 	    MTransformJButton focusMTransformJButton;
 	    ButtonKey buttonKey = new ButtonKey(mTransformJButton);
@@ -1000,7 +1006,8 @@ public class PolicyStateMachine implements ActionListener {
 								   focusMTransformJButton.getBounds(),
 								   toolboxJScrollPane.getViewport());
 	    toolboxJScrollPane.getViewport().scrollRectToVisible(scrollRect);
-	    focusMTransformJButton.highlight();
+	    if( doHighlight )
+		focusMTransformJButton.highlight();
 	} } );
     }
     

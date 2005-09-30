@@ -177,7 +177,9 @@
     </Component>
     <Container class="javax.swing.JPanel" name="effectsJPanel">
       <Properties>
-        <Property name="opaque" type="boolean" value="false"/>
+        <Property name="background" type="java.awt.Color" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection code="new Color(255,255,255,0)" type="code"/>
+        </Property>
       </Properties>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">

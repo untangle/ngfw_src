@@ -19,10 +19,12 @@ import javax.swing.*;
 public class FadeTask implements ActionListener{
     
     // FADED BACKGROUND /////////////
-    private static final int FADE_DELAY_MILLIS = 150;
-    private static final float FADE_DECREMENT = .1f;
+    private static final int FADE_DELAY_MILLIS = 100;
+    private static final float FADE_DECREMENT = .05f;
+    private static final int FADE_CONSTANT_COUNTS = 6;
     /////////////////////////////////
     
+    private int fadeConstantCount = 0;
     private float fadeLeft = 1f;
     private javax.swing.Timer fadeTimer;
     private int redInit;
@@ -31,36 +33,40 @@ public class FadeTask implements ActionListener{
     private int alpha;
     private JComponent jComponent;
     private Color backgroundColor;
-    private boolean wasOpaque;
-    public FadeTask(JComponent jComponent){
+    private boolean hasBackground;
+    public FadeTask(JComponent jComponent, boolean hasBackground){
 	fadeTimer = new javax.swing.Timer(FADE_DELAY_MILLIS, this);
 	backgroundColor = jComponent.getBackground();
-	wasOpaque = jComponent.isOpaque();
+	this.hasBackground = hasBackground;
 	redInit = backgroundColor.getRed();
 	greenInit = backgroundColor.getGreen();
 	blueInit = backgroundColor.getBlue();
 	this.jComponent = jComponent;
-	jComponent.setOpaque(true);
 	fadeTimer.start();
     }
     public void actionPerformed(ActionEvent evt){
-	if( fadeLeft == 1f ){
-	    jComponent.setBackground(new Color(0, 0, 255));
-	}
-	else if ( fadeLeft > 0f ) {
+        if ( fadeLeft > 0f ) {
 	    jComponent.setBackground(new Color( (int)(((float)redInit)*(1f-fadeLeft)), 
 						(int)(((float)greenInit)*(1f-fadeLeft)), 
 						blueInit + (int)((255f-(float)blueInit)*fadeLeft),
-						(int) (wasOpaque ? 255f  : 255f*fadeLeft  ) ));
+						(int) (hasBackground ? 200f*fadeLeft : 255 ) ));
+	    if( hasBackground )
+		jComponent.getParent().repaint();
+	    else
+		jComponent.repaint();
 	}
 	else{
 	    jComponent.setBackground(backgroundColor);
-	    jComponent.setOpaque(wasOpaque);
-	    if( !wasOpaque )
+	    if( hasBackground )
 		jComponent.getParent().repaint();
+	    else
+		jComponent.repaint();
 	    fadeTimer.stop();
 	}
-	fadeLeft -= FADE_DECREMENT;
+	if( fadeConstantCount < FADE_CONSTANT_COUNTS )
+	    fadeConstantCount++;
+	else
+	    fadeLeft -= FADE_DECREMENT;
 	if(fadeLeft<0f)
 	    fadeLeft = 0f;
     }
