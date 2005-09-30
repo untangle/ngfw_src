@@ -444,9 +444,9 @@ public class PolicyStateMachine implements ActionListener {
 			new MOneButtonJDialog(mTransformJButton.getDisplayName(),
 					      mTransformJButton.getDisplayName()
 					      + " cannot be removed from the toolbox because it is being"
-					      + " used by the following policy rack:<br>"
+					      + " used by the following policy rack:<br><b>"
 					      + policyToolboxMapEntry.getKey().getName()
-					      + "<br><br>You must remove the appliance from all policy racks first.");
+					      + "</b><br><br>You must remove the appliance from all policy racks first.");
 			return;
 		    }
 		}
@@ -976,7 +976,8 @@ public class PolicyStateMachine implements ActionListener {
     // PRIVATE CLASSES AND UTILS /////////
     private void focusInRack(final MTransformJPanel mTransformJPanel){
         SwingUtilities.invokeLater( new Runnable() { public void run() {
-	    Rectangle scrollRect = SwingUtilities.convertRectangle(mTransformJPanel,
+	    rackJScrollPane.getViewport().validate();
+	    Rectangle scrollRect = SwingUtilities.convertRectangle(mTransformJPanel.getParent(),
 								   mTransformJPanel.getBounds(),
 								   rackJScrollPane.getViewport());
 	    rackJScrollPane.getViewport().scrollRectToVisible(scrollRect);
@@ -994,7 +995,8 @@ public class PolicyStateMachine implements ActionListener {
 		focusMTransformJButton = policyToolboxMap.get(selectedPolicy).get(buttonKey);
 	    }
 	    actionJTabbedPane.setSelectedIndex(1);
-	    Rectangle scrollRect = SwingUtilities.convertRectangle(focusMTransformJButton,
+	    toolboxJScrollPane.getViewport().validate();
+	    Rectangle scrollRect = SwingUtilities.convertRectangle(focusMTransformJButton.getParent(),
 								   focusMTransformJButton.getBounds(),
 								   toolboxJScrollPane.getViewport());
 	    toolboxJScrollPane.getViewport().scrollRectToVisible(scrollRect);
