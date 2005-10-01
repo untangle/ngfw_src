@@ -30,6 +30,8 @@ public class MessageInfoAddr implements Serializable
     private Long id; /* msg_id */
     // private MLHandlerInfo handlerInfo; /* hdl_id */
 
+    private MessageInfo messageInfo;
+    private int position;
     private AddressKind kind;
     private String addr;
     private String personal;
@@ -37,11 +39,19 @@ public class MessageInfoAddr implements Serializable
     /* constructors */
     public MessageInfoAddr() {}
 
-    public MessageInfoAddr(AddressKind kind, String addr, String personal) {
+    public MessageInfoAddr(MessageInfo messageInfo, int position,
+                           AddressKind kind, String addr, String personal) {
+        this.messageInfo = messageInfo;
+        this.position = position;
         this.kind = kind;
-        if (addr.length() > MessageInfo.DEFAULT_STRING_SIZE) addr = addr.substring(0, MessageInfo.DEFAULT_STRING_SIZE);
+        if (addr.length() > MessageInfo.DEFAULT_STRING_SIZE) {
+            addr = addr.substring(0, MessageInfo.DEFAULT_STRING_SIZE);
+        }
         this.addr = addr;
-        if (personal != null && personal.length() > MessageInfo.DEFAULT_STRING_SIZE) personal = personal.substring(0, MessageInfo.DEFAULT_STRING_SIZE);
+        if (personal != null
+            && personal.length() > MessageInfo.DEFAULT_STRING_SIZE) {
+            personal = personal.substring(0, MessageInfo.DEFAULT_STRING_SIZE);
+        }
         this.personal = personal;
     }
 
@@ -63,6 +73,42 @@ public class MessageInfoAddr implements Serializable
     }
 
     /**
+     * The MessageInfo object.
+     * @hibernate.many-to-one
+     * column="MSG_ID"
+     * not-null="true"
+     */
+    public MessageInfo getMessageInfo()
+    {
+        return messageInfo;
+    }
+
+    public void setMessageInfo(MessageInfo messageInfo)
+    {
+        this.messageInfo = messageInfo;
+    }
+
+    /**
+     * The relative position of the field in the set. XXX yes, its a
+     * dirty hack, but this enables us to do INSERT without an UPDATE
+     * and also helps the reporting.
+     *
+     * @return the relative position to other MessageInfoAddr
+     * @hibernate.property
+     * column="POSITION"
+     * not-null="true"
+     */
+    public int getPosition()
+    {
+        return position;
+    }
+
+    public void setPosition(int position)
+    {
+        this.position = position;
+    }
+
+    /**
      * The email address, in RFC822 format
      *
      * @return email address.
@@ -77,7 +123,9 @@ public class MessageInfoAddr implements Serializable
 
     public void setAddr(String addr)
     {
-        if (addr.length() > MessageInfo.DEFAULT_STRING_SIZE) addr = addr.substring(0, MessageInfo.DEFAULT_STRING_SIZE);
+        if (addr.length() > MessageInfo.DEFAULT_STRING_SIZE) {
+            addr = addr.substring(0, MessageInfo.DEFAULT_STRING_SIZE);
+        }
         this.addr = addr;
     }
 
@@ -95,7 +143,10 @@ public class MessageInfoAddr implements Serializable
 
     public void setPersonal(String personal)
     {
-        if (personal != null && personal.length() > MessageInfo.DEFAULT_STRING_SIZE) personal = personal.substring(0,MessageInfo.DEFAULT_STRING_SIZE);
+        if (personal != null
+            && personal.length() > MessageInfo.DEFAULT_STRING_SIZE) {
+            personal = personal.substring(0,MessageInfo.DEFAULT_STRING_SIZE);
+        }
         this.personal = personal;
     }
 

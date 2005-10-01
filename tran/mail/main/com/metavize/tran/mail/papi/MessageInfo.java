@@ -11,8 +11,10 @@
 package com.metavize.tran.mail.papi;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import com.metavize.tran.mime.*;
 import org.apache.log4j.Logger;
@@ -33,7 +35,8 @@ public class MessageInfo implements Serializable
     public static final int POP3_PORT = 110;
     public static final int IMAP4_PORT = 143;
 
-    // How big a varchar() do we get for default String fields.  This should be elsewhere. XXX
+    // How big a varchar() do we get for default String fields.  This
+    // should be elsewhere. XXX
     public static final int DEFAULT_STRING_SIZE = 255;
 
     // private static final Logger zLog = Logger.getLogger(MessageInfo.class.getName());
@@ -49,20 +52,24 @@ public class MessageInfo implements Serializable
     private char serverType;
 
     /* Senders/Receivers */
-    private List addressList = new ArrayList();
+    private Set addresses = new HashSet();
 
+    /* non-persistent fields */
+    public Map counts = new HashMap();
 
     /* constructors */
     public MessageInfo() {}
 
     public MessageInfo(int sessionId, int serverPort, String subject)
     {
-        // Subject really shouldn't be NOT NULL, but it's easier for now to fix by using an empty
-        // string... XXX jdi 8/9/05
+        // Subject really shouldn't be NOT NULL, but it's easier for
+        // now to fix by using an empty string... XXX jdi 8/9/05
         if (subject == null)
             subject = "";
 
-        if (subject != null && subject.length() > DEFAULT_STRING_SIZE) subject = subject.substring(0, DEFAULT_STRING_SIZE);
+        if (subject != null && subject.length() > DEFAULT_STRING_SIZE) {
+            subject = subject.substring(0, DEFAULT_STRING_SIZE);
+        }
         this.subject = subject;
         this.sessionId = sessionId;
 
@@ -85,8 +92,14 @@ public class MessageInfo implements Serializable
     /* Business methods */
     public void addAddress(AddressKind kind, String address, String personal)
     {
-        MessageInfoAddr newAddr = new MessageInfoAddr(kind, address, personal);
-        addressList.add(newAddr);
+        Integer p = (Integer)counts.get(kind);
+        if (null == p) {
+            p = 0;
+        }
+        counts.put(kind, ++p);
+
+        MessageInfoAddr newAddr = new MessageInfoAddr(this, p, kind, address, personal);
+        addresses.add(newAddr);
     }
 
     /* public methods */
@@ -108,26 +121,25 @@ public class MessageInfo implements Serializable
     }
 
     /**
-     * List of the addresses involved (to, from, etc) in the email.
+     * Set of the addresses involved (to, from, etc) in the email.
      *
-     * @return the list of the email addresses involved in the email
-     * @hibernate.list
+     * @return the set of the email addresses involved in the email
+     * @hibernate.set
+     * inverse="true"
      * cascade="all-delete-orphan"
      * @hibernate.collection-key
      * column="MSG_ID"
-     * @hibernate.collection-index
-     * column="POSITION"
      * @hibernate.collection-one-to-many
      * class="com.metavize.tran.mail.papi.MessageInfoAddr"
      */
-    public List getAddresses()
+    public Set getAddresses()
     {
-        return addressList;
+        return addresses;
     }
 
-    public void setAddresses( List s )
+    public void setAddresses(Set s)
     {
-        addressList = s;
+        addresses = s;
     }
 
     /**
@@ -162,7 +174,9 @@ public class MessageInfo implements Serializable
 
     public void setSubject(String subject)
     {
-        if (subject != null && subject.length() > DEFAULT_STRING_SIZE) subject = subject.substring(0, DEFAULT_STRING_SIZE);
+        if (subject != null && subject.length() > DEFAULT_STRING_SIZE) {
+            subject = subject.substring(0, DEFAULT_STRING_SIZE);
+        }
         this.subject = subject;
     }
 
@@ -185,5 +199,4 @@ public class MessageInfo implements Serializable
     {
         this.serverType = serverType;
     }
-
 }

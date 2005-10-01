@@ -93,7 +93,7 @@
     <priority value="WARN"/>
   </category>
 
-  <category name="net.sf.hibernate">
+  <category name="org.hibernate">
     <priority value="WARN"/>
   </category>
 
