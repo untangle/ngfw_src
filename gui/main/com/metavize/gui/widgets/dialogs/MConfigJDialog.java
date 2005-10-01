@@ -19,6 +19,7 @@ import com.metavize.gui.util.*;
 
 import com.metavize.mvvm.security.PasswordUtil;
 import com.metavize.mvvm.*;
+import com.metavize.mvvm.tran.*;
 
 import javax.swing.*;
 import javax.swing.text.*;
@@ -93,6 +94,8 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
 		if(saveException != null)
 		    throw saveException;
 	    }
+            if( settings instanceof Validatable )
+                ((Validatable)settings).validate();
         }
         catch(Exception e){
 	    try{
