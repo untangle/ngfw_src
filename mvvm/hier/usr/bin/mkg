@@ -85,11 +85,11 @@ if [ -z $prefix ] ; then
     elif [ "$1" = "install" ] ; then
         aptlog "start $stamp"
 
-        aptlog "downloading: \"$2-transform\""
+        aptlog "downloading: \"$2\""
         # XXX the way i create mackage name is wrong:
         aptlist=$(mktemp)
 
-        apt-get install $INST_OPTS --print-uris "$2-transform" \
+        apt-get install $INST_OPTS --print-uris "$2" \
             | awk " /^'http:\\/\\// { print \$0 } " >$aptlist
 
         cat $aptlist >>$APT_LOG
@@ -108,9 +108,9 @@ if [ -z $prefix ] ; then
             rm -r $dltmp
         done
 
-        aptlog "installing: \"$2-transform\""
+        aptlog "installing: \"$2\""
         # XXX the way i create mackage name is wrong:
-        apt-get install $INST_OPTS "$2-transform" >>$APT_LOG 2>&1
+        apt-get install $INST_OPTS "$2" >>$APT_LOG 2>&1
         RET=$?
 
         aptlog "done $stamp"
@@ -135,8 +135,8 @@ if [ -z $prefix ] ; then
 
         aptlog "done $stamp"
     elif [ "$1" = "remove" ] ; then
-        aptlog "start $stamp" "apt-get remove $REMO_OPTS \"$2-transform\""
-        apt-get remove $REMO_OPTS "$2-transform" >>$APT_LOG 2>&1
+        aptlog "start $stamp" "apt-get remove $REMO_OPTS \"$2\""
+        apt-get remove $REMO_OPTS "$2" >>$APT_LOG 2>&1
         RET=$?
         aptlog "done $stamp"
     fi

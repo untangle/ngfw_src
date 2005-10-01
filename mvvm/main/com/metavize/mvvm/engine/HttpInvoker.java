@@ -158,6 +158,8 @@ class HttpInvoker extends InvokerBase
             } catch (Exception exn) {
                 logger.warn("exception in RPC call", exn);
                 retVal = exn;
+            } catch (Error err) {
+                logger.warn("error in RPC call", err);
             } finally {
                 activeLogin.remove();
                 clientAddr.remove();

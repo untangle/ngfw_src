@@ -118,6 +118,15 @@ public class HttpInvokerStub implements InvocationHandler, Serializable
             System.arraycopy(l, 0, t, r.length, l.length);
             e.setStackTrace(t);
             throw e;
+        } else if (o instanceof Error) {
+            Error e = (Error)o;
+            StackTraceElement[] r = e.getStackTrace();
+            StackTraceElement[] l = Thread.currentThread().getStackTrace();
+            StackTraceElement[] t = new StackTraceElement[r.length + l.length];
+            System.arraycopy(r, 0, t, 0, r.length);
+            System.arraycopy(l, 0, t, r.length, l.length);
+            e.setStackTrace(t);
+            throw e;
         } else {
             return o;
         }
