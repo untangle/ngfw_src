@@ -86,7 +86,7 @@ class AdminConfigTableModel extends MSortedTableModel {
         addTableColumn( tableColumnModel,  6, 260, true,  true,  false, false, MPasswordField.class, "",     sc.html("confirm new password<br>(for new accounts or to change password)"));
         addTableColumn( tableColumnModel,  7, 250, true,  true,  false, false, MPasswordField.class, "12345678",     sc.html("<b>original user's password</b><br>(required to change or remove account)"));
         addTableColumn( tableColumnModel,  8,  85, true,  true,  false, false, String.class,     "[no email]", sc.html("email<br>address"));
-        addTableColumn( tableColumnModel,  9,  85, true,  true,  false, false, Boolean.class,    "false",    sc.html("send critical<br>alerts"));
+        addTableColumn( tableColumnModel,  9,  10, false, false, true,  false, User.class,    null, "");
         return tableColumnModel;
     }
 
@@ -169,34 +169,21 @@ class AdminConfigTableModel extends MSortedTableModel {
 	int rowIndex = 0;
         for( Vector rowVector : tableVector ){
 	    rowIndex++;
-            
+            newElem = (User) rowVector.elementAt(9);
             byte[] origPasswd = ((MPasswordField)rowVector.elementAt(4)).getByteArray();
             char[] newPasswd = ((MPasswordField)rowVector.elementAt(5)).getPassword();            
-	    Util.printMessage("> UPDATE: row status " + (String) rowVector.elementAt(0) );
 
             if( ((String)rowVector.elementAt(0)).equals(super.ROW_REMOVE) ){
-                Util.printMessage("> UPDATE: removing row " + rowIndex);
+		// THIS IS HERE FOR SAFETY
                 continue; // those removed and of a strange state are never even added            
             }
             else{
-                try{
-		    if( newPasswd.length > 0 ){
-			Util.printMessage("> UPDATE: saving row (changed password) " + rowIndex);
-			newElem = new User( (String)rowVector.elementAt(3), new String(newPasswd), (String)rowVector.elementAt(2) );
-		    }
-		    else{
-			Util.printMessage("> UPDATE: saving row (unchanged password) " + rowIndex);
-			newElem = new User( (String)rowVector.elementAt(3), origPasswd, (String)rowVector.elementAt(2) );
-		    }   
-                }
-		catch(Exception e) {
-		    Util.handleExceptionNoRestart("--> ERROR:  problem changing row", e);
-		    continue;
-                }
+		newElem.setName( (String) rowVector.elementAt(2) );
+		newElem.setLogin( (String) rowVector.elementAt(3) );
+		if( newPasswd.length > 0 )
+		    newElem.setClearPassword( new String(newPasswd) );
             }
-
             newElem.setEmail( (String) rowVector.elementAt(8) );
-            newElem.setSendAlerts( (Boolean) rowVector.elementAt(9) );
             allRows.add(newElem);
         }
         
@@ -230,7 +217,7 @@ class AdminConfigTableModel extends MSortedTableModel {
 	    originalMPasswordField.setGeneratesChangeEvent(false);
             tempRow.add( originalMPasswordField );
             tempRow.add( user.getEmail() );
-            tempRow.add( user.getSendAlerts() );
+            tempRow.add( user );
             allRows.add( tempRow );
         }
         
