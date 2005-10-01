@@ -29,7 +29,7 @@ KUNSTSTOFF_HOME=../../downloads/output/kunststoff-2_0_1
 LOG4J_HOME=../../downloads/output/logging-log4j-1.2.9
 TOMCAT_EMBED_HOME=../../downloads/output/jakarta-tomcat-5.0.28-embed
 TROVE_HOME=../../downloads/output/trove-1.0.2
-POSTGRES_HOME=../../downloads/output/postgres-jdbc-8.0_312
+POSTGRES_HOME=../../downloads/output/postgres-jdbc-7.4_215
 XDOCLET_HOME=../../downloads/output/xdoclet-1.2.3
 NETBEANS_HOME=../../downloads/output/netbeans-3.5
 
