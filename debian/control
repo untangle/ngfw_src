@@ -234,6 +234,7 @@ Description: The Metavize Client
 Package: libmvvm-thirdparty
 Architecture: any
 Depends: jre-mv
+Conflicts: mvvm (<< 3.0.0-39)
 XB-Display-Name: Metavize Server Thirdparty Libraries
 XB-Website: http://www.metavize.com
 Description: The third party libraries needed for the MVVM
