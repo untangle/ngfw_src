@@ -63,7 +63,7 @@
     <appender-ref ref="eventlog"/>
   </category>
 
-  <!-- c3p0 JDCB connection pool -->
+  <!-- c3p0 JDBC connection pool -->
   <category name="com.mchange">
     <priority value="INFO"/>
   </category>
