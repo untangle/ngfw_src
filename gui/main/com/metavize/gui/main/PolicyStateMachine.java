@@ -77,7 +77,8 @@ public class PolicyStateMachine implements ActionListener {
     private JComboBox viewSelector;
     private Policy selectedPolicy;
     private JPanel selectedRackJPanel;
-    private int lastScrollPosition = -1;
+    private int lastToolboxScrollPosition = -1;
+    private Map<Policy,Integer> lastRackScrollPosition;
     private volatile static int applianceLoadProgress = 0;
     // CONSTANTS /////////////
     private GridBagConstraints buttonGridBagConstraints;
@@ -128,6 +129,7 @@ public class PolicyStateMachine implements ActionListener {
 	// MISC REFERENCES
 	this.actionJTabbedPane = actionJTabbedPane;
 	this.viewSelector = viewSelector;
+	lastRackScrollPosition = new HashMap<Policy,Integer>();
 	// CONSTANTS
         buttonGridBagConstraints = new GridBagConstraints(0, GridBagConstraints.RELATIVE, 1, 1, 1d, 0d,
 							  GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
@@ -203,7 +205,7 @@ public class PolicyStateMachine implements ActionListener {
 	}	
 	// TOOLBOX VIEW AND SCROLL POSITION
 	JPanel newPolicyToolboxJPanel = policyToolboxJPanelMap.get(newPolicy);
-	int currentScrollPosition = toolboxJScrollPane.getVerticalScrollBar().getValue();
+	int currentToolboxScrollPosition = toolboxJScrollPane.getVerticalScrollBar().getValue();
 	policyToolboxSocketJPanel.removeAll();
 	policyToolboxSocketJPanel.add( newPolicyToolboxJPanel );
 	newPolicyToolboxJPanel.revalidate();
@@ -212,12 +214,12 @@ public class PolicyStateMachine implements ActionListener {
 	    serviceToolboxJPanel.revalidate();
 	}
 	toolboxJScrollPane.repaint();
-	if( lastScrollPosition >= 0 )
-	    toolboxJScrollPane.getVerticalScrollBar().setValue( currentScrollPosition );
-	lastScrollPosition = currentScrollPosition;
-	// RACK VIEW
+	if( lastToolboxScrollPosition >= 0 )
+	    toolboxJScrollPane.getVerticalScrollBar().setValue( currentToolboxScrollPosition );
+	lastToolboxScrollPosition = currentToolboxScrollPosition;
+	// RACK VIEW AND SCROLL POSITION
+	lastRackScrollPosition.put(selectedPolicy, rackJScrollPane.getVerticalScrollBar().getValue());
 	JPanel newPolicyRackJPanel = policyRackJPanelMap.get(newPolicy);
-	int lastScrollPosition = 0;
 	if( selectedRackJPanel != null ){ // this is not the first rack viewed
 	    rackViewJPanel.remove( selectedRackJPanel );
 	}
@@ -228,6 +230,7 @@ public class PolicyStateMachine implements ActionListener {
 	rackViewJPanel.add( newPolicyRackJPanel, rackGridBagConstraints );
 	newPolicyRackJPanel.revalidate();
 	rackViewJPanel.repaint();
+	rackJScrollPane.getVerticalScrollBar().setValue( lastRackScrollPosition.get(newPolicy) );
 	//if( selectedPolicy == null )
 	//    System.err.println("Policy Rack view set:" + newPolicy.getName());
 	//else
@@ -235,6 +238,7 @@ public class PolicyStateMachine implements ActionListener {
 	selectedRackJPanel = newPolicyRackJPanel;
 	selectedPolicy = newPolicy;
     }
+    /*
     private void handlePolicyManagerJButton() {
 	try{
 	    policyManagerJButton.setEnabled(false);
@@ -250,6 +254,7 @@ public class PolicyStateMachine implements ActionListener {
 	    policyManagerJButton.setEnabled(true);
 	}
     }
+    */
     ///////////////////////////////////////////////////////
     // HANDLERS ///////////////////////////////////////////
 
@@ -308,6 +313,8 @@ public class PolicyStateMachine implements ActionListener {
 	    rackJPanel.setLayout(new GridBagLayout());
 	    rackJPanel.setOpaque(false);
 	    policyRackJPanelMap.put(policy, rackJPanel);
+	    // ADD TO SCROLL POSITION
+	    lastRackScrollPosition.put(policy,0);
 	    // POPULATE THE TOOLBOX
 	    for( Map.Entry<ButtonKey,MTransformJButton> firstPolicyEntry : policyToolboxMap.get(firstPolicy).entrySet() )
 		addToToolbox(policy,firstPolicyEntry.getValue().getMackageDesc(),false);
@@ -325,6 +332,8 @@ public class PolicyStateMachine implements ActionListener {
 	    // REMOVE FROM GUI VIEW MODEL
 	    policyRackJPanelMap.get(policy).removeAll();
 	    policyRackJPanelMap.remove(policy);
+	    // REMOVE FROM SCROLL POSITION
+	    lastRackScrollPosition.remove(policy);
 	}
     }
     /////////////////////////////////////////
@@ -674,6 +683,7 @@ public class PolicyStateMachine implements ActionListener {
 	overall += serviceTidList.size();
 	// APPLIANCES
 	for( Policy policy : policyTidMap.keySet() ){
+	    lastRackScrollPosition.put(policy,0);
 	    JPanel rackJPanel = new JPanel();
 	    rackJPanel.setLayout(new GridBagLayout());
 	    rackJPanel.setOpaque(false);
