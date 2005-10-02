@@ -22,6 +22,9 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.net.Inet4Address;
 
+
+import org.apache.log4j.Logger;
+
 import com.metavize.jnetcap.Netcap;
 import com.metavize.jnetcap.InterfaceData;
 
@@ -38,7 +41,7 @@ import com.metavize.mvvm.argon.ArgonManagerImpl;
 import com.metavize.mvvm.argon.IntfConverter;
 import com.metavize.mvvm.InterfaceAlias;
 import com.metavize.mvvm.tran.IPaddr;
-import org.apache.log4j.Logger;
+import com.metavize.mvvm.tran.ValidateException;
 
 class NetworkingManagerImpl implements NetworkingManager
 {
@@ -107,8 +110,11 @@ class NetworkingManagerImpl implements NetworkingManager
      * Set a network configuration.
      * @param configuration - Configuration to save
      */
-    public synchronized void set( NetworkingConfiguration netConfig )
+    public synchronized void set( NetworkingConfiguration netConfig ) throws ValidateException
     {
+        /* Validate the networking configuration before saving it. */
+        netConfig.validate();
+
         this.configuration = netConfig;
 
         save();

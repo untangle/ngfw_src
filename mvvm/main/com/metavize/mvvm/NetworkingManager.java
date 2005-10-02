@@ -11,6 +11,8 @@
 
 package com.metavize.mvvm;
 
+import com.metavize.mvvm.tran.ValidateException;
+
 public interface NetworkingManager  {
     /**
      * Retrieve the current network configuration
@@ -21,7 +23,7 @@ public interface NetworkingManager  {
      * Set a network configuration.
      * @param configuration - Configuration to save
      */
-    void set( NetworkingConfiguration configuration );
+    void set( NetworkingConfiguration configuration ) throws ValidateException;
     
     NetworkingConfiguration renewDhcpLease() throws Exception;
 

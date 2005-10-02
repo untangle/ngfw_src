@@ -9,7 +9,7 @@
  *  $Id$
  */
 
-package com.metavize.mvvm;
+package com.metavize.mvvm.tran;
 
 public class ValidateException extends Exception
 {

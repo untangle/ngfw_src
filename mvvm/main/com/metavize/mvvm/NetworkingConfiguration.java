@@ -12,6 +12,8 @@
 package com.metavize.mvvm;
 
 import java.util.List;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.Collections;
 
 import java.io.Serializable;
@@ -20,8 +22,10 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 
 import com.metavize.mvvm.tran.IPaddr;
+import com.metavize.mvvm.tran.Validatable;
+import com.metavize.mvvm.tran.ValidateException;
 
-public class NetworkingConfiguration implements Serializable
+public class NetworkingConfiguration implements Serializable, Validatable
 {
     private static final long serialVersionUID = -7446681327586273258L;
 
@@ -327,6 +331,38 @@ public class NetworkingConfiguration implements Serializable
         return this.outsideNetmask;
     }
 
+    public void validate() throws ValidateException
+    {
+        /* Check for collisions in the alias list */
+        Set<InetAddress> addressSet = new HashSet<InetAddress>();
+
+        InetAddress defaultRoute = gateway().getAddr();
+        InetAddress host = host().getAddr();
+
+
+        if ( host.equals( defaultRoute )) {
+            throw new ValidateException( "The \"Default Route\" and \"IP Address\" are the same." );
+        }
+
+        addressSet.add( host );
+        
+        for ( InterfaceAlias alias : getAliasList()) {
+            InetAddress address = alias.getAddress().getAddr();
+            
+            /* Check if the address is already used */
+            if ( !addressSet.add( address )) {
+                throw new ValidateException( "The address " + address.getHostAddress() + 
+                                             " is duplicated.\n" );
+            }
+
+            /* Check if the address is the default route */
+            if ( address.equals( defaultRoute )) {
+                throw new ValidateException( "The address " + address.getHostAddress() +
+                                             " is the \"Default Route\" and an alias." );
+            }
+        }
+    }
+
     static
     {
         Inet4Address emptyAddr      = null;
@@ -338,7 +374,7 @@ public class NetworkingConfiguration implements Serializable
             outsideNetwork = (Inet4Address)InetAddress.getByName( "1.2.3.4" );
             outsideNetmask = (Inet4Address)InetAddress.getByName( "255.255.255.0" );
         } catch( Exception e ) {
-            System.out.println( "this should never happen: " + e );
+            System.err.println( "this should never happen: " + e );
             /* THIS SHOULD NEVER HAPPEN */
         }
 
