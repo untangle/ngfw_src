@@ -63,6 +63,10 @@ function buildFoundation() {
 }
 
 function blockForwarding() {
+    local l_outFlag
+    local l_inFlag
+    local l_modules
+
     ## Flush the forward table
     ${IPTABLES} -t filter -F FORWARD
     
@@ -70,16 +74,27 @@ function blockForwarding() {
     ${IPTABLES} -t filter -A FORWARD -m mark -p tcp --mark 0/${MARK_ANTISUB} \
         -j REJECT --reject-with tcp-reset
 
-    ## XXX Not sure if this is necessary with two interfaces
     if [ "${DHCP_BLOCK_FORWARDING}x" = "truex" ]; then
-        ${IPTABLES} -t filter -A FORWARD -p udp --source-port ${DHCP_PORT_RANGE} \
-            --destination-port ${DHCP_PORT_RANGE} -j DROP
-
-        ## Drop anything to the DHCP server on the outside
-        ${IPTABLES} -t filter -A INPUT -p udp -i ${MVVM_OUTSIDE_INTF} \
-            --destination-port ${DHCP_SERVER_PORT} -j DROP
-
-        ${IPTABLES} -t filter -A INPUT -p udp -m physdev --physdev-in ${MVVM_OUTSIDE_INTF} \
+        if [ -z `getBridge ${MVVM_INSIDE_INTF}` ]; then
+            l_modules=" "
+            l_inFlag=" -i "
+            l_outFlag=" -o "
+        else
+            l_modules=" -m physdev "
+            l_inFlag=" --physdev-in "
+            l_outFlag=" --physdev-out "
+        fi
+        
+        ## Block forwarded DHCP traffic to the inside interface
+        ${IPTABLES} ${l_modules} -t filter -A FORWARD -p udp --source-port ${DHCP_PORT_RANGE} \
+            --destination-port ${DHCP_PORT_RANGE} ${l_outFlag} ${MVVM_INSIDE_INTF} -j DROP
+        
+        ## Block forwarded DHCP traffic from the inside interface
+        ${IPTABLES} ${l_modules} -t filter -A FORWARD -p udp --source-port ${DHCP_PORT_RANGE} \
+            --destination-port ${DHCP_PORT_RANGE} ${l_inFlag} ${MVVM_INSIDE_INTF} -j DROP
+        
+        ## Drop anything to the DHCP server that is not from the inside interface
+        ${IPTABLES} ${l_modules} -t filter -A INPUT ! ${l_inFlag} ${MVVM_INSIDE_INTF} -p udp  \
             --destination-port ${DHCP_SERVER_PORT} -j DROP
     fi
 }
@@ -186,7 +201,7 @@ function markIntfRules () {
             matchType="-i "
         else
             addresses=`getBridgeAddresses $interface`
-            matchType="-m physdev --physdev-in"
+            matchType="-m physdev --physdev-in "
         fi
 
         ${IPTABLES} -t mangle -A ${CHAIN_MARKINTF} ${matchType} ${interface} -j MARK --set-mark ${c}
