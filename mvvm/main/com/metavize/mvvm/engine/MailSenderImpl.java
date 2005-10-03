@@ -11,6 +11,12 @@
 
 package com.metavize.mvvm.engine;
 
+import com.metavize.mvvm.MailSender;
+import com.metavize.mvvm.MailSettings;
+import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.security.AdminSettings;
+import com.metavize.mvvm.security.User;
+
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.util.*;
@@ -21,12 +27,7 @@ import javax.activation.FileDataSource;
 import javax.activation.MimetypesFileTypeMap;
 import javax.mail.*;
 import javax.mail.internet.*;
-
-import com.metavize.mvvm.MailSender;
-import com.metavize.mvvm.MailSettings;
-import com.metavize.mvvm.MvvmContextFactory;
-import com.metavize.mvvm.security.AdminSettings;
-import com.metavize.mvvm.security.User;
+import com.sun.mail.smtp.SMTPTransport;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
@@ -55,6 +56,8 @@ class MailSenderImpl implements MailSender
 
     private static final String MAIL_HOST_PROP = "mail.host";
     private static final String MAIL_FROM_PROP = "mail.from";
+    private static final String MAIL_TRANSPORT_PROTO_PROP = "mail.transport.protocol";
+
     private static final Object LOCK = new Object();
 
     private static MailSenderImpl MAIL_SENDER;
@@ -62,6 +65,8 @@ class MailSenderImpl implements MailSender
     public static boolean SessionDebug = false;
 
     private static final MimetypesFileTypeMap mimetypesFileTypeMap = new MimetypesFileTypeMap();
+
+    private MailSettings mailSettings;
 
     // This is the session used to send alert mail inside the organization, including
     // SMTP spam/virus notification.
@@ -91,23 +96,23 @@ class MailSenderImpl implements MailSender
 
     private void init()
     {
-    mimetypesFileTypeMap.addMimeTypes("application/pdf pdf PDF");
-    mimetypesFileTypeMap.addMimeTypes("text/css css CSS");
+        mimetypesFileTypeMap.addMimeTypes("application/pdf pdf PDF");
+        mimetypesFileTypeMap.addMimeTypes("text/css css CSS");
 
         org.hibernate.Session s = getSession();
         try {
             Transaction tx = s.beginTransaction();
 
             Query q = s.createQuery("from MailSettings");
-            MailSettings ms = (MailSettings)q.uniqueResult();
+            mailSettings = (MailSettings)q.uniqueResult();
 
-            if (null == ms) {
+            if (null == mailSettings) {
                 logger.info("Creating initial default mail settings");
-                ms = new MailSettings();
-                ms.setFromAddress(DEFAULT_FROM_ADDRESS);
-                s.save(ms);
+                mailSettings = new MailSettings();
+                mailSettings.setFromAddress(DEFAULT_FROM_ADDRESS);
+                s.save(mailSettings);
             } else {
-                refreshSessions(ms);
+                refreshSessions();
             }
 
             tx.commit();
@@ -154,7 +159,7 @@ class MailSenderImpl implements MailSender
         try {
             Transaction tx = s.beginTransaction();
 
-            s.saveOrUpdate(settings);
+            s.saveOrUpdate(mailSettings);
 
             tx.commit();
         } catch (HibernateException exn) {
@@ -167,54 +172,34 @@ class MailSenderImpl implements MailSender
             }
         }
 
-        refreshSessions(settings);
+        mailSettings = settings;
+        refreshSessions();
     }
 
     public MailSettings getMailSettings()
     {
-        MailSettings ms = null;
-
-        org.hibernate.Session s = getSession();
-        try {
-            Transaction tx = s.beginTransaction();
-
-            Query q = s.createQuery("from MailSettings ms");
-            ms = (MailSettings)q.uniqueResult();
-
-            tx.commit();
-        } catch (HibernateException exn) {
-            logger.warn("could not save MailSettings", exn);
-        } finally {
-            try {
-                s.close();
-            } catch (HibernateException exn) {
-                logger.warn("could not close session", exn);
-            }
-        }
-
-        return ms;
+        return mailSettings;
     }
 
     // Called when settings updated.
-    private void refreshSessions(MailSettings settings) {
-        Properties mvProps = new Properties();
-        // This one uses our SMTP host.
+    private void refreshSessions() {
+        Properties commonProps = new Properties();
+        if (mailSettings.getSmtpHost() != null && !"".equals(mailSettings.getSmtpHost()))
+            commonProps.put(MAIL_HOST_PROP, mailSettings.getSmtpHost());
+        commonProps.put(MAIL_FROM_PROP, mailSettings.getFromAddress());
+        commonProps.put(MAIL_TRANSPORT_PROTO_PROP, "smtp");
+
+        Properties mvProps = (Properties) commonProps.clone();
+        // This one always uses our SMTP host.
         mvProps.put(MAIL_HOST_PROP, METAVIZE_SMTP_RELAY);
         // What we really want here is something that will uniquely identify the customer,
         // including the serial # stamped on the CD. XXXX
-        mvProps.put(MAIL_FROM_PROP, settings.getFromAddress());
         mvSession = Session.getInstance(mvProps);
 
-        Properties alertProps = new Properties();
-        if (settings.getSmtpHost() != null)
-            alertProps.put(MAIL_HOST_PROP, settings.getSmtpHost());
-        alertProps.put(MAIL_FROM_PROP, settings.getFromAddress());
+        Properties alertProps = (Properties) commonProps.clone();
         alertSession = Session.getInstance(alertProps);
 
-        Properties reportProps = new Properties();
-        if (settings.getSmtpHost() != null)
-            reportProps.put(MAIL_HOST_PROP, settings.getSmtpHost());
-        reportProps.put(MAIL_FROM_PROP, settings.getFromAddress());
+        Properties reportProps = (Properties) commonProps.clone();
         reportSession = Session.getInstance(reportProps);
     }
 
@@ -285,7 +270,7 @@ class MailSenderImpl implements MailSender
 
     // Not currently used
     public void sendReport(String subject, String bodyText) {
-        String reportEmailAddr = getMailSettings().getReportEmail();
+        String reportEmailAddr = mailSettings.getReportEmail();
         if (reportEmailAddr == null) {
             logger.info("Not sending report email, no address");
         } else {
@@ -296,7 +281,7 @@ class MailSenderImpl implements MailSender
     }
 
     public void sendReports(String subject, String bodyHTML, List<String> extraLocations, List<File> extras) {
-        String reportEmailAddr = getMailSettings().getReportEmail();
+        String reportEmailAddr = mailSettings.getReportEmail();
         if (reportEmailAddr == null) {
             logger.info("Not sending report email, no address");
         } else {
@@ -402,7 +387,7 @@ class MailSenderImpl implements MailSender
 
       //Send the message
       try {
-        Transport.send(msg);
+        dosend(alertSession, msg);
         logIt(msg);
         return true;
       }
@@ -504,7 +489,7 @@ class MailSenderImpl implements MailSender
             }
 
             // send it
-            Transport.send(msg);
+            dosend(session, msg);
             logIt(msg);
             return true;
         } catch (MessagingException x) {
@@ -536,7 +521,7 @@ class MailSenderImpl implements MailSender
             msg.setContent(mp);
 
             // send it
-            Transport.send(msg);
+            dosend(session, msg);
             logIt(msg);
             return true;
         } catch (MessagingException x) {
@@ -568,7 +553,7 @@ class MailSenderImpl implements MailSender
             msg.setContent(mp);
 
             // send it
-            Transport.send(msg);
+            dosend(session, msg);
             logIt(msg);
             return true;
         } catch (MessagingException x) {
@@ -576,6 +561,43 @@ class MailSenderImpl implements MailSender
             return false;
         }
     }
+
+    // --
+
+    // Here's where we actually do the sending
+    private void dosend(Session session, Message msg)
+        throws MessagingException
+    {
+        SMTPTransport transport = null;
+        try {
+            transport = (SMTPTransport) session.getTransport();
+            // We get the host from the session since it can differ (mv errors).
+            String host = session.getProperty(MAIL_HOST_PROP);
+            String localhost = mailSettings.getLocalHostName();
+            int port = mailSettings.getSmtpPort();
+            String user = mailSettings.getAuthUser();
+            String pass = mailSettings.getAuthPass();
+            if ((user == null && pass != null) || (user != null && pass == null)) {
+                logger.warn("SMTP AUTH user/pass -- only one set, ignoring");
+                user = null;
+                pass = null;
+            }
+            transport.setStartTLS(mailSettings.isUseTls());
+            transport.setLocalHost(mailSettings.getLocalHostName());
+            transport.connect(host, port, user, pass);
+            transport.send(msg);
+        } catch (MessagingException x) {
+            throw x;
+        } catch (Exception x) {
+            // Uh oh...
+            logger.error("Unexpected exception in dosend", x);
+            throw new MessagingException("Unexpected exception in dosend", x);
+        } finally {
+            try { if (transport != null) transport.close(); } catch (MessagingException x) { }
+        }
+    }
+
+    // --
 
     private static void usage() {
         System.err.println("usage: mail-reports [-s subject] bodyhtmlfile { extrafile }");

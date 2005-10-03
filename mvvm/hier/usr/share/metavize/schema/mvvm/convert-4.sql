@@ -104,6 +104,18 @@ ALTER TABLE events.pl_endp_new RENAME TO pl_endp;
 CREATE INDEX pl_endp_sid_idx ON events.pl_endp (session_id);
 CREATE INDEX pl_endp_cdate_idx ON events.pl_endp (create_date);
 
+-- com.metavize.mvvm.MailSettings
+ALTER TABLE settings.mail_settings ADD COLUMN smtp_port int4;
+ALTER TABLE settings.mail_settings ADD COLUMN use_tls bool;
+ALTER TABLE settings.mail_settings ADD COLUMN auth_user varchar(255);
+ALTER TABLE settings.mail_settings ADD COLUMN auth_pass varchar(255);
+ALTER TABLE settings.mail_settings ADD COLUMN local_host_name varchar(255);
+UPDATE settings.mail_settings SET smtp_port = 25;
+UPDATE settings.mail_settings SET use_tls = false;
+ALTER TABLE settings.mail_settings ALTER COLUMN smtp_port SET NOT NULL;
+ALTER TABLE settings.mail_settings ALTER COLUMN use_tls SET NOT NULL;
+
+
 -- Constraints
  
 ALTER TABLE settings.tid

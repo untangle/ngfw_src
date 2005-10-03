@@ -25,10 +25,26 @@ public class MailSettings implements Serializable
 {
     private static final long serialVersionUID = 6722526215093951941L;
 
-    private Long id;
-    private String reportEmail;
-    private String smtpHost;
-    private String fromAddress;
+    private Long    id;
+
+    // Specific settings for reports
+    private String  reportEmail;
+    private String  fromAddress;
+
+    // Specific settings for notifications
+    // private String  notificationFromAddress;
+
+    // Specific settings for alerts
+    // private String  alertEmail;
+    // private String  alertFromAddress;
+
+    // Common settings follow
+    private String  smtpHost;
+    private int     smtpPort = 25;
+    private boolean useTls = false;
+    private String  authUser;
+    private String  authPass;
+    private String  localHostName;
 
     /**
      * @hibernate.id
@@ -75,14 +91,49 @@ public class MailSettings implements Serializable
      */
     public String getSmtpHost()
     {
-    if( smtpHost == null )
-        smtpHost = new String();
         return smtpHost;
     }
 
     public void setSmtpHost(String smtpHost)
     {
         this.smtpHost = smtpHost;
+    }
+
+    /**
+     * The port used to connect to the SMTP mail host.  If the SMTP_HOST
+     * is null, this is ignored.
+     *
+     * @return a <code>int</code> giving the TCP port to connect to the SMTP_HOST at
+     * @hibernate.property
+     * not-null="true"
+     * column="SMTP_PORT"
+     */
+    public int getSmtpPort()
+    {
+        return smtpPort;
+    }
+
+    public void setSmtpPort(int smtpPort)
+    {
+        this.smtpPort = smtpPort;
+    }
+
+    /**
+     * Specifies if we should use TLS if the mail server supports it.
+     *
+     * @return true if should use TLS when availaable
+     * @hibernate.property
+     * column="USE_TLS"
+     * not-null="true"
+     */
+    public boolean isUseTls()
+    {
+        return useTls;
+    }
+
+    public void setUseTls(boolean useTls)
+    {
+        this.useTls = useTls;
     }
 
     /**
@@ -100,5 +151,60 @@ public class MailSettings implements Serializable
     public void setFromAddress(String fromAddress)
     {
         this.fromAddress = fromAddress;
+    }
+
+    /**
+     * The User to use for SMTP Auth.  If null or if the pass is null, don't use SMTP auth.
+     *
+     * @return a <code>String</code> giving the user name for SMTP Auth
+     * @hibernate.property
+     * not-null="true"
+     * column="AUTH_USER"
+     */
+    public String getAuthUser()
+    {
+        return authUser;
+    }
+
+    public void setAuthUser(String authUser)
+    {
+        this.authUser = authUser;
+    }
+
+    /**
+     * The Password to use for SMTP Auth.  If null or if the user is null, don't use SMTP auth.
+     *
+     * @return a <code>String</code> giving the password for SMTP Auth
+     * @hibernate.property
+     * not-null="true"
+     * column="AUTH_PASS"
+     */
+    public String getAuthPass()
+    {
+        return authPass;
+    }
+
+    public void setAuthPass(String authPass)
+    {
+        this.authPass = authPass;
+    }
+
+    /**
+     * The Local host name to use for sending (SMTP HELO).  If null, use the actual
+     * local host name (currently always mv-edgeguard).
+     *
+     * @return a <code>String</code> giving the local host name for HELO
+     * @hibernate.property
+     * not-null="true"
+     * column="LOCAL_HOST_NAME"
+     */
+    public String getLocalHostName()
+    {
+        return localHostName;
+    }
+
+    public void setLocalHostName(String localHostName)
+    {
+        this.localHostName = localHostName;
     }
 }

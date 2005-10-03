@@ -40,6 +40,11 @@ CREATE TABLE settings.mail_settings (
     report_email varchar(255),
     smtp_host varchar(255),
     from_address varchar(255),
+    smtp_port int4 NOT NULL,
+    use_tls bool NOT NULL,
+    auth_user varchar(255),
+    auth_pass varchar(255),
+    local_host_name varchar(255),
     PRIMARY KEY (mail_settings_id));
 
 -- com.metavize.mvvm.policy.Policy
