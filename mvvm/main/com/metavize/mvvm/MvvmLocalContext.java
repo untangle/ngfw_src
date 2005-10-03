@@ -22,10 +22,9 @@ import com.metavize.mvvm.security.AdminManager;
 import com.metavize.mvvm.security.MvvmLogin;
 import com.metavize.mvvm.tapi.MPipeManager;
 import com.metavize.mvvm.tapi.PipelineFoundry;
-import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.tran.TransformManager;
-import org.hibernate.Session;
 import org.apache.log4j.Logger;
+import org.hibernate.Session;
 
 /**
  * Provides an interface to get all local MVVM components from an MVVM
@@ -83,7 +82,7 @@ public interface MvvmLocalContext
 
         public String toString() { return state; }
 
-        // Serialization ----------------------------------------------------------
+        // Serialization ------------------------------------------------------
         Object readResolve()
         {
             return getInstance(state);
@@ -195,6 +194,8 @@ public interface MvvmLocalContext
      * @return a new Hibernate <code>Session</code>.
      */
     Session openSession();
+
+    Thread newThread(Runnable runnable);
 
     Logger eventLogger();
 }

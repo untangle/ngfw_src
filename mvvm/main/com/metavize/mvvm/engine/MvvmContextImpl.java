@@ -19,11 +19,12 @@ import com.metavize.mvvm.argon.Argon;
 import com.metavize.mvvm.argon.ArgonManagerImpl;
 import com.metavize.mvvm.client.MvvmRemoteContext;
 import com.metavize.mvvm.tapi.MPipeManager;
+import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.tran.TransformManager;
+import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.apache.log4j.Logger;
 
 public class MvvmContextImpl extends MvvmContextBase
     implements MvvmLocalContext
@@ -160,6 +161,26 @@ public class MvvmContextImpl extends MvvmContextBase
         }
 
         return s;
+    }
+
+    public Thread newThread(final Runnable runnable)
+    {
+        return new Thread(new Runnable()
+            {
+                TransformContext tctx = transformManager.threadContext();
+
+                public void run()
+                {
+                    transformManager.registerThreadContext(tctx);
+                    try {
+                        runnable.run();
+                    } catch (Exception exn) {
+                        logger.error("Exception running: " + runnable, exn);
+                    } finally {
+                        transformManager.deregisterThreadContext();
+                    }
+                }
+            });
     }
 
     public void shutdown()
