@@ -286,10 +286,15 @@ public abstract class TransformBase implements Transform
             throw new IllegalStateException("Init called in state: " + runState);
         }
 
-        preInit(args);
-        changeState(TransformState.INITIALIZED, syncState, args);
+        try {
+            transformManager.registerThreadContext(transformContext);
+            preInit(args);
+            changeState(TransformState.INITIALIZED, syncState, args);
 
-        postInit(args); // XXX if exception, state == ?
+            postInit(args); // XXX if exception, state == ?
+        } finally {
+            transformManager.deregisterThreadContext();
+        }
     }
 
     private void disable(boolean syncState)
@@ -335,10 +340,16 @@ public abstract class TransformBase implements Transform
         }
 
         connectMPipe();
-        preStart(); // XXX why is prestart after connectMPipe??
 
-        changeState(TransformState.RUNNING, syncState);
-        postStart(); // XXX if exception, state == ?
+        try {
+            transformManager.registerThreadContext(transformContext);
+            preStart(); // XXX why is prestart after connectMPipe??
+
+            changeState(TransformState.RUNNING, syncState);
+            postStart(); // XXX if exception, state == ?
+        } finally {
+            transformManager.deregisterThreadContext();
+        }
         logger.info("started transform");
     }
 
@@ -349,10 +360,15 @@ public abstract class TransformBase implements Transform
             throw new IllegalStateException("Stop called in state: "
                                             + getRunState());
         }
-        preStop();
 
-        disconnectMPipe();
-        changeState(TransformState.INITIALIZED, syncState);
+        try {
+            transformManager.registerThreadContext(transformContext);
+            preStop();
+            disconnectMPipe();
+            changeState(TransformState.INITIALIZED, syncState);
+        } finally {
+            transformManager.deregisterThreadContext();
+        }
 
         for (TransformBase parent : parents) {
             if (TransformState.RUNNING == parent.getRunState()) {
@@ -376,7 +392,12 @@ public abstract class TransformBase implements Transform
             }
         }
 
-        postStop(); // XXX if exception, state == ?
+        try {
+            transformManager.registerThreadContext(transformContext);
+            postStop(); // XXX if exception, state == ?
+        } finally {
+            transformManager.deregisterThreadContext();
+        }
         logger.info("stopped transform");
     }
 
@@ -389,10 +410,16 @@ public abstract class TransformBase implements Transform
             && TransformState.LOADED != runState) {
             throw new IllegalStateException("Destroy in state: " + runState);
         }
-        preDestroy();
-        changeState(TransformState.DESTROYED, syncState);
 
-        postDestroy(); // XXX if exception, state == ?
+        try {
+            transformManager.registerThreadContext(transformContext);
+            preDestroy();
+            changeState(TransformState.DESTROYED, syncState);
+
+            postDestroy(); // XXX if exception, state == ?
+        } finally {
+            transformManager.deregisterThreadContext();
+        }
     }
 
     private void resumeState(TransformPersistentState tps)
