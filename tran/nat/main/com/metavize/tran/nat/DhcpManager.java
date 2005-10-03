@@ -153,9 +153,7 @@ class DhcpManager
             Process p = Runtime.getRuntime().exec( DNS_MASQ_CMD_RESTART );
             code = p.waitFor();
 
-            if ( code != 0 ) {
-                logger.error( "Error stopping DNS masq server, returned code: " + code );
-            }
+            if ( code != 0 ) logger.error( "Error stopping DNS masq server, returned code: " + code );
         } catch ( Exception e ) {
             logger.error( "Error while disabling the DNS masq server", e );
         }
@@ -335,20 +333,24 @@ class DhcpManager
             sb.append( FLAG_DHCP_RANGE + "=" + settings.getDhcpStartAddress().toString());
             sb.append( "," + settings.getDhcpEndAddress().toString() + ",4h\n\n\n" );
 
+            
+            /* XXXX Could move this outside of the is dhcp enabled, which would bind to the 
+             * inside interface if using NAT, without DHCP but with DNS forwarding
+             */
             /* Bind to the inside interface if using Nat */
             if ( settings.getNatEnabled()) {
                 String inside = null;
 
                 try {
                     inside = MvvmContextFactory.context().argonManager().getInside();
+
+                    comment( sb, "Bind to the inside interface" );
+                    sb.append( FLAG_DNS_BIND_INTERFACES + "\n" );
+                    sb.append( FLAG_DNS_INTERFACE + "=" + inside + "\n\n" );
                 } catch( Exception e ) {
                     logger.error( "Error retrieving inside interface, not binding to inside" );
                     inside = null;
                 }
-
-                comment( sb, "Bind to the inside interface" );
-                sb.append( FLAG_DNS_BIND_INTERFACES + "\n" );
-                sb.append( FLAG_DNS_INTERFACE + "=" + inside + "\n\n" );
             }
 
             /* Configure all of the hosts */

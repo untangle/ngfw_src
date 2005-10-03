@@ -24,6 +24,10 @@ echo "Reconstructing all of the tables"
 MARK_ANTISUB="0x01000000"
 MARK_NOTRACK="0x02000000"
 MARK_LOCAL="0x00001000"
+## This is not the interface index (1,2,3, etc), this is the special bit that
+## is set to indicate that the traffic entered on the inside interface.
+## This makes all of the guard rules a little bit easier to deal with
+MARK_INSIDE_INTF="0x00002000"
 MARK_LOCAL_ADDRESS_BASE="0x00000010"
 
 ## This list must get longer when there are more interfaces
@@ -100,8 +104,11 @@ function blockForwarding() {
 }
 
 function guardRules() {
-    ## Flush the forward table
+    ## Flush the guard table
     ${IPTABLES} -t mangle -F ${CHAIN_GUARDS}
+
+    ## Return for anything that is not local
+    ${IPTABLES} -t mangle -A ${CHAIN_GUARDS} -m mark --mark 0/${MARK_LOCAL} -j RETURN
     
     ## Drop stuff going to the UDP divert port from outside.
     ${IPTABLES} -t mangle -A ${CHAIN_GUARDS} -p udp -m mark --mark ${MARK_LOCAL}/${MARK_LOCAL} \
@@ -129,10 +136,12 @@ function guardRules() {
     done
 
     for ports in ${GUARD_BOTH_UDP_PORTS}; do
+        echo "UNSUPPORTED: udp guard both ports ${ports}"
         generateGuardRule udp $ports ${FLAG_BOTH_INTF}
     done
 
     for ports in ${GUARD_BOTH_TCP_PORTS}; do
+        echo "UNSUPPORTED: tcp guard both ports ${ports}"
         generateGuardRule tcp $ports ${FLAG_BOTH_INTF}
     done
 }
@@ -161,18 +170,20 @@ function generateGuardRule() {
     
     ## This will have to be pushed into each guard rule when there are more than two interfaces.x
     if [ "${intf}x" == "${FLAG_INSIDE_INTF}x" ]; then
-        mark=2
+        mark=${MARK_INSIDE_INTF}
+        markMask=${MARK_INSIDE_INTF}
     elif [ "${intf}x" == "${FLAG_OUTSIDE_INTF}x" ]; then
-        mark=1
+        ## This is actually anything but the inside
+        mark=0
+        markMask=${MARK_INSIDE_INTF}
     elif [ "${intf}x" == "${FLAG_BOTH_INTF}x" ]; then
-        mark=3
+        ## This would be anything that is local(local is guaranteed by the return rule at the top)
+        mark=0
+        markMask=0
     else
         echo "Unable to determine which interface to put the guard for ports $ports protocol $protocol"
         return
     fi
-
-    mark=$(( ${mark} | ${MARK_LOCAL} ))
-    markMask=$(( ${MARK_LOCAL} | 0xF ))
     
     if [ "${regulated}x" != "x" ]; then
         ${IPTABLES} -t mangle -A ${CHAIN_GUARDS} -p ${protocol} ${regulated} \
@@ -187,10 +198,13 @@ function generateGuardRule() {
             -m mark --mark ${mark}/${markMask} \
             --destination-port ${ports} -j DROP
     fi
-    
 }
 
 function markIntfRules () {
+    local c
+    local d
+    local mask
+
     ## Flush the interface marking table
     ${IPTABLES} -t mangle -F ${CHAIN_MARKINTF}
     
@@ -204,12 +218,19 @@ function markIntfRules () {
             matchType="-m physdev --physdev-in "
         fi
 
-        ${IPTABLES} -t mangle -A ${CHAIN_MARKINTF} ${matchType} ${interface} -j MARK --set-mark ${c}
+        if [ "${c}x" == "2x" ]; then
+            ## Set the special flag for inside traffic
+            mask=$(( ${c} | MARK_INSIDE_INTF ))
+        else
+            mask=${c}
+        fi
+
+        ${IPTABLES} -t mangle -A ${CHAIN_MARKINTF} ${matchType} ${interface} -j MARK --set-mark ${mask}
         
         d=${MARK_LOCAL_ADDRESS_BASE}
         for address in $addresses; do
             ${IPTABLES} -t mangle -A ${CHAIN_MARKINTF} ${matchType} ${interface} --destination ${address} \
-                -j MARK --set-mark $(( $c | $d | ${MARK_LOCAL} ))
+                -j MARK --set-mark $(( ${mask} | $d | ${MARK_LOCAL} ))
             d="$(( $d << 1 ))"
         done
         c=$(( $c + 1 ))
@@ -366,7 +387,6 @@ function uturnRules() {
 ###############################################################
 generateConfiguration
 
-## XXXX Flush all of the rules
 flush
 
 buildFoundation
