@@ -217,7 +217,7 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
         getContentPane().add(contentJTabbedPane, gridBagConstraints);
 
         closeJButton.setFont(new java.awt.Font("Default", 0, 12));
-        closeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/images/Button_Close_Window_106x17.png")));
+        closeJButton.setText("<html><b>Close</b> Window</html>");
         closeJButton.setDoubleBuffered(true);
         closeJButton.setFocusPainted(false);
         closeJButton.setFocusable(false);
