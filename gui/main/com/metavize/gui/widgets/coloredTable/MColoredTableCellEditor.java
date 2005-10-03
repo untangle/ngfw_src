@@ -13,6 +13,7 @@ package com.metavize.gui.widgets.coloredTable;
 
 import com.metavize.gui.util.*;
 import com.metavize.gui.widgets.editTable.*;
+import com.metavize.gui.widgets.MPasswordField;
 
 import javax.swing.*;
 import java.awt.event.*;

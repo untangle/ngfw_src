@@ -11,6 +11,7 @@
 
 package com.metavize.gui.configuration;
 
+import com.metavize.gui.widgets.MPasswordField;
 import com.metavize.gui.widgets.dialogs.*;
 import com.metavize.gui.widgets.editTable.*;
 import com.metavize.gui.util.*;

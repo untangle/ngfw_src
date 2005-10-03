@@ -12,6 +12,7 @@
 package com.metavize.gui.widgets.coloredTable;
 
 import com.metavize.gui.widgets.editTable.MSortedTableModel;
+import com.metavize.gui.widgets.MPasswordField;
 import com.metavize.gui.util.Util;
 
 import javax.swing.*;
@@ -20,7 +21,7 @@ import javax.swing.table.*;
 import javax.swing.border.*;
 import java.util.Date;
 
-import com.metavize.gui.util.MPasswordField;
+
  
  
  
@@ -218,9 +219,9 @@ public class MColoredTableCellRenderer extends DefaultTableCellRenderer {
 	    }
             else{
                 if(value != null)
-                    renderJLabel.setText("UNSUPPORTED RENDER for: " + value.getClass());
+                    renderJLabel.setText("UNSUPPORTED RENDERER for: " + value.getClass());
                 else
-                    renderJLabel.setText("UNSUPPORTED RENDER for: null" );
+                    renderJLabel.setText("UNSUPPORTED RENDERER for: null" );
                 renderJLabel.setIcon(null);
                 renderJComponent = renderJLabel;
             }

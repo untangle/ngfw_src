@@ -14,6 +14,7 @@ package com.metavize.tran.reporting.gui;
 import com.metavize.gui.transform.*;
 import com.metavize.gui.pipeline.MPipelineJPanel;
 import com.metavize.gui.widgets.editTable.*;
+import com.metavize.gui.widgets.MPasswordField;
 import com.metavize.gui.util.*;
 
 import com.metavize.mvvm.*;
@@ -67,15 +68,39 @@ class EmailGeneralTableModel extends MSortedTableModel{
     public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {
         Vector tempRowVector;
 	
-        // outgoing mail server
+        // OUTGOING MAIL SERVER
         tempRowVector = tableVector.elementAt(0);
-	String outgoingMailServer = (String) tempRowVector.elementAt(3);
-	String outgoingMailServerDetails = (String) tempRowVector.elementAt(4);
+	String smtpHost = (String) tempRowVector.elementAt(3);
+	String smtpHostDetails = (String) tempRowVector.elementAt(4);
         
+	// OUTGOING MAIL PORT
+        tempRowVector = tableVector.elementAt(1);
+	int smtpPort = (Integer) ((SpinnerNumberModel)tempRowVector.elementAt(3)).getValue();
+	String smtpPortDetails = (String) tempRowVector.elementAt(4);
+
+	// FROM ADDRESS
+        tempRowVector = tableVector.elementAt(2);
+	String fromAddress = (String) tempRowVector.elementAt(3);
+	String fromAddressDetails = (String) tempRowVector.elementAt(4);	
+
+	// SMTP AUTHENTICATION LOGIN
+	tempRowVector = tableVector.elementAt(3);
+	String authUser = (String) tempRowVector.elementAt(3);
+	String authUserDetails = (String) tempRowVector.elementAt(4);
+
+	// SMTP AUTHENTICATION PASSWORD
+	tempRowVector = tableVector.elementAt(4);
+	String authPass = new String(((MPasswordField) tempRowVector.elementAt(3)).getPassword());
+	String authPassDetails = (String) tempRowVector.elementAt(4);
+
 	// SAVE SETTINGS //////////
 	if( !validateOnly ){
 	    MailSettings mailSettings = Util.getAdminManager().getMailSettings();
-	    mailSettings.setSmtpHost( outgoingMailServer ); 
+	    mailSettings.setSmtpHost( (smtpHost.length()==0?null:smtpHost) );
+	    mailSettings.setSmtpPort( smtpPort );
+	    mailSettings.setFromAddress( fromAddress );
+	    mailSettings.setAuthUser( (authUser.length()==0?null:authUser) );
+	    mailSettings.setAuthPass( (authPass.length()==0?null:authPass) );
 	    Util.getAdminManager().setMailSettings( (MailSettings) mailSettings );
 	}
 
@@ -87,14 +112,56 @@ class EmailGeneralTableModel extends MSortedTableModel{
 	int rowIndex = 0;
         Vector tempRow;
 
-        // outgoing mail server
+        // OUTGOING MAIL SERVER
 	rowIndex++;
         tempRow = new Vector(5);
         tempRow.add( super.ROW_SAVED );
         tempRow.add( rowIndex );
-        tempRow.add( "outgoing email server" );
-        tempRow.add( mailSettings.getSmtpHost() );
+        tempRow.add( "Outgoing Email Server" );
+        tempRow.add( (mailSettings.getSmtpHost()==null?"":mailSettings.getSmtpHost()) );
         tempRow.add( "An SMTP email host (either IP address or hostname), which is required to send internal report emails." );
+        allRows.add( tempRow );
+
+	// OUTGOING MAIL SERVER PORT
+	rowIndex++;
+        tempRow = new Vector(5);
+        tempRow.add( super.ROW_SAVED );
+        tempRow.add( rowIndex );
+        tempRow.add( "Outgoing Email Server Port" );
+        tempRow.add( new SpinnerNumberModel( mailSettings.getSmtpPort(), 0, 65536, 1) );
+        tempRow.add( "An SMTP email server port, which is required to send internal report emails." );
+        allRows.add( tempRow );
+
+	// FROM ADDRESS
+	rowIndex++;
+        tempRow = new Vector(5);
+        tempRow.add( super.ROW_SAVED );
+        tempRow.add( rowIndex );
+        tempRow.add( "\"From\" address" );
+        tempRow.add( mailSettings.getFromAddress() );
+        tempRow.add( "The email address which report emails will appear to have been sent from." );
+        allRows.add( tempRow );
+	
+	// SMTP AUTHENTICATION LOGIN
+	rowIndex++;
+        tempRow = new Vector(5);
+        tempRow.add( super.ROW_SAVED );
+        tempRow.add( rowIndex );
+        tempRow.add( "SMTP Authentication Login" );
+        tempRow.add( (mailSettings.getAuthUser()==null?"":mailSettings.getAuthUser()) );
+        tempRow.add( "The login name to use for SMTP Authentication."
+		     + "  If this field (or the password field below) is blank, SMTP Authentication will not be used." );
+        allRows.add( tempRow );
+
+	// SMTP AUTHENTICATION PASSWORD
+	rowIndex++;
+        tempRow = new Vector(5);
+        tempRow.add( super.ROW_SAVED );
+        tempRow.add( rowIndex );
+        tempRow.add( "SMTP Authentication Password" );
+        tempRow.add( new MPasswordField((mailSettings.getAuthPass()==null?"":mailSettings.getAuthPass())) );
+        tempRow.add( "The password to use for SMTP Authentication."
+		     + "  If this field (or the login name field above) is blank, SMTP Authentication will not be used." );
         allRows.add( tempRow );
 
         return allRows;

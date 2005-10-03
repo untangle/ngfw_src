@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.metavize.gui.util;
+package com.metavize.gui.widgets;
 
 import javax.swing.JPasswordField;
 
