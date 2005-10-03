@@ -32,41 +32,41 @@ public class IDSSummarizer extends BaseSummarizer {
     public String getSummaryHtml(Connection conn, Timestamp startDate, Timestamp endDate)
     {
         long scannedEvtCount 	= 0;
-		long passedEvtCount 	= 0;
-		long blockedEvtCount	= 0;
-		
+	long passedEvtCount 	= 0;
+	long blockedEvtCount	= 0;
+	
         try {
 	    String sql;
 	    PreparedStatement ps;
 	    ResultSet rs;
-
+	    
             sql = "select sum(ids_scanned), sum(ids_passed), sum(ids_blocked) from tr_ids_statistic_evt where time_stamp >= ? and time_stamp < ?";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
             rs = ps.executeQuery();
             rs.first();
-			
+	    
             scannedEvtCount = rs.getLong(1);
-			passedEvtCount = rs.getLong(2);
-			blockedEvtCount = rs.getLong(3);
-    
-			rs.close();
+	    passedEvtCount = rs.getLong(2);
+	    blockedEvtCount = rs.getLong(3);
+	    
+	    rs.close();
             ps.close();
-			
+	    
         } catch (SQLException exn) {
             log.warn("could not summarize", exn);
         }
-
+	
         long matchedEvtCount = blockedEvtCount + passedEvtCount;
-		addEntry("Total Scan Events", Util.trimNumber("",scannedEvtCount));
+	addEntry("Total Scan Events", Util.trimNumber("",scannedEvtCount));
         addEntry("&nbsp;&nbsp;&nbsp;Unmatched", Util.trimNumber("",scannedEvtCount - matchedEvtCount), Util.percentNumber(scannedEvtCount-matchedEvtCount,scannedEvtCount));
         addEntry("&nbsp;&nbsp;&nbsp;Matched &amp; Passed", Util.trimNumber("",passedEvtCount), Util.percentNumber(passedEvtCount,scannedEvtCount));
         addEntry("&nbsp;&nbsp;&nbsp;Matched &amp; Blocked", Util.trimNumber("",blockedEvtCount), Util.percentNumber(blockedEvtCount,scannedEvtCount));
-
+	
         // XXXX
         String tranName = "Intrusion Prevention";
-
+	
         return summarizeEntries(tranName);
     }
 }
