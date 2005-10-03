@@ -37,6 +37,10 @@ public class NetworkJPanel extends javax.swing.JPanel implements Savable, Refres
 
     public void doSave(Object settings, boolean validateOnly) throws Exception {
 
+	// DISABLE BUTTONS
+	renewDhcpLeaseJButton.setEnabled(false);
+	connectivityTestJButton.setEnabled(false);
+
         // DHCP ENABLED //////////
 	boolean isDhcpEnabled = dhcpEnabledRadioButton.isSelected();
 
@@ -168,6 +172,10 @@ public class NetworkJPanel extends javax.swing.JPanel implements Savable, Refres
             dnsSecondaryJTextField.setText( EMPTY_DNS2 );
         }
 	dnsSecondaryJTextField.setBackground( Color.WHITE );
+
+	// ENABLE BUTTONS
+	connectivityTestJButton.setEnabled(true); // dhcp lease is take care of above
+
     }
     
     
