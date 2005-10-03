@@ -66,7 +66,7 @@ class TransformManagerImpl implements TransformManager
     private final Map<Tid, TransformContextImpl> tids
         = new ConcurrentHashMap<Tid, TransformContextImpl>();
     private final ThreadLocal<TransformContext> threadContexts
-        = new InheritableThreadLocal<TransformContext>();
+        = new ThreadLocal<TransformContext>();
 
     // XXX create new cl on reload all
     private final CasingClassLoader casingClassLoader
