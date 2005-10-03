@@ -87,8 +87,6 @@ class NatEventHandler extends AbstractEventHandler
     /* Nat Transform */
     private final NatImpl transform;
 
-    /* NatStatisticManager */
-    private final NatStatisticManager statisticManager;
 
     /* Setup  */
     NatEventHandler( NatImpl transform )
@@ -99,7 +97,6 @@ class NatEventHandler extends AbstractEventHandler
         udpPortList = PortList.makePortList( UDP_NAT_PORT_START, UDP_NAT_PORT_END );
         icmpPidList = PortList.makePortList( ICMP_PID_START, ICMP_PID_END );
         this.transform = transform;
-        this.statisticManager = NatStatisticManager.getInstance();
     }
 
     public void handleTCPNewSessionRequest( TCPNewSessionRequestEvent event )
@@ -373,7 +370,7 @@ class NatEventHandler extends AbstractEventHandler
             transform.incrementCount( NAT_COUNTER ); // NAT COUNTER
 
             /* Log the stat */
-            statisticManager.incrNatSessions();
+            transform.statisticManager.incrNatSessions();
 
             return true;
         }
@@ -412,7 +409,7 @@ class NatEventHandler extends AbstractEventHandler
                 }
 
                 /* Log the stat */
-                statisticManager.incrRedirect( protocol, request );
+                transform.statisticManager.incrRedirect( protocol, request );
 
                 return true;
             }
@@ -436,7 +433,7 @@ class NatEventHandler extends AbstractEventHandler
                 eventLogger.info( new RedirectEvent( request.id()));
             }
 
-            statisticManager.incrDmzSessions();
+            transform.statisticManager.incrDmzSessions();
 
             return true;
         }

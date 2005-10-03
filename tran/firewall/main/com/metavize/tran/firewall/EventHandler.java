@@ -35,8 +35,6 @@ class EventHandler extends AbstractEventHandler
     private final Logger logger = Logger.getLogger( EventHandler.class );
     private final Logger eventLogger = MvvmContextFactory.context().eventLogger();
 
-    private final FirewallStatisticManager statisticManager = FirewallStatisticManager.getInstance();
-
     private List <FirewallMatcher> firewallRuleList = new LinkedList<FirewallMatcher>();
 
     private boolean isQuickExit = true;
@@ -118,7 +116,7 @@ class EventHandler extends AbstractEventHandler
         }
 
         /* Track the statistics */
-        statisticManager.incrRequest( protocol, request, reject, rule == null );
+        transform.statisticManager.incrRequest( protocol, request, reject, rule == null );
     }
 
     void configure( FirewallSettings settings )

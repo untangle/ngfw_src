@@ -11,6 +11,7 @@
 package com.metavize.mvvm.tran;
 
 import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.MvvmLocalContext;
 import com.metavize.mvvm.logging.StatisticEvent;
 import com.metavize.mvvm.security.Tid;
 import org.apache.log4j.Logger;
@@ -23,8 +24,6 @@ public abstract class StatisticManager implements Runnable
     /* Delay a second while the thread is joining */
     private static final long   THREAD_JOIN_TIME_MSEC = 1000;
 
-    private final Tid tid;
-
     /* The thread the monitor is running on */
     private Thread thread = null;
 
@@ -33,17 +32,21 @@ public abstract class StatisticManager implements Runnable
 
     private final Logger eventLogger = MvvmContextFactory.context().eventLogger();
     private final Logger logger = Logger.getLogger( this.getClass());
+    private final MvvmLocalContext localContext;
 
-    protected StatisticManager(Tid tid)
+    protected StatisticManager()
     {
-        this.tid = tid;
+        this.localContext = MvvmContextFactory.context();
+    }
+
+    protected StatisticManager( MvvmLocalContext localContext )
+    {
+        this.localContext = localContext;
     }
 
     public void run()
     {
         logger.debug( "Starting" );
-
-        waitForTransformContext();
 
         if ( !isAlive ) {
             logger.error( "died before starting" );
@@ -88,7 +91,7 @@ public abstract class StatisticManager implements Runnable
             return;
         }
 
-        thread = new Thread( this );
+        thread = this.localContext.newThread( this );
         thread.start();
     }
 
@@ -107,23 +110,6 @@ public abstract class StatisticManager implements Runnable
                 logger.error( "interrupted while stopping", e );
             }
             thread = null;
-        }
-    }
-
-    private final void waitForTransformContext()
-    {
-        while ( true ) {
-            if ( MvvmContextFactory.context().transformManager().transformContext( tid ) != null ) {
-                break;
-            }
-
-            try {
-                Thread.sleep( 1000 );
-            } catch ( InterruptedException e ) {
-                logger.info( "waitForTransformContext was interrupted" );
-            }
-
-            if ( !isAlive ) return;
         }
     }
 

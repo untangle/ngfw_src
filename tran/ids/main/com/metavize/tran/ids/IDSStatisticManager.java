@@ -25,7 +25,7 @@ class IDSStatisticManager extends StatisticManager {
     private IDSStatisticEvent statisticEvent = new IDSStatisticEvent();
 
     private IDSStatisticManager() {
-        super(MvvmContextFactory.context().transformManager().threadContext().getTid());
+        super();
     }
 
     protected StatisticEvent getInitialStatisticEvent() {

@@ -95,7 +95,7 @@ class DhcpManager
     DhcpManager( NatImpl transform )
     {
         this.transform = transform;
-        this.dhcpMonitor = new DhcpMonitor( transform );
+        this.dhcpMonitor = new DhcpMonitor( transform, MvvmContextFactory.context());
     }
 
     void configure( NatSettings settings, NetworkingConfiguration netConfig ) throws TransformStartException

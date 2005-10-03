@@ -68,10 +68,12 @@ public class FirewallImpl extends AbstractTransform implements Firewall
     private final Logger logger = Logger.getLogger(FirewallImpl.class);
 
     private FirewallSettings settings = null;
+    final FirewallStatisticManager statisticManager;
 
     public FirewallImpl()
     {
         this.handler = new EventHandler( this );
+        this.statisticManager = new FirewallStatisticManager();
 
         /* Have to figure out pipeline ordering, this should always
          * next to towards the outside */
@@ -190,7 +192,7 @@ public class FirewallImpl extends AbstractTransform implements Firewall
 
         setFirewallSettings(settings);
 
-        FirewallStatisticManager.getInstance().stop();
+        statisticManager.stop();
     }
 
     protected void postInit(String[] args)
@@ -225,7 +227,7 @@ public class FirewallImpl extends AbstractTransform implements Firewall
             throw new TransformStartException(e);
         }
 
-        FirewallStatisticManager.getInstance().start();
+        statisticManager.start();
     }
 
     protected void postStart()
@@ -239,7 +241,7 @@ public class FirewallImpl extends AbstractTransform implements Firewall
         /* Kill all active sessions */
         shutdownMatchingSessions();
 
-        FirewallStatisticManager.getInstance().stop();
+        statisticManager.stop();
     }
 
     public    void reconfigure() throws TransformException

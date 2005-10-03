@@ -12,6 +12,7 @@ package com.metavize.tran.nat;
 
 
 import com.metavize.mvvm.MvvmContextFactory;
+
 import com.metavize.mvvm.logging.StatisticEvent;
 import com.metavize.mvvm.tapi.IPNewSessionRequest;
 import com.metavize.mvvm.tapi.Protocol;
@@ -20,17 +21,15 @@ import com.metavize.mvvm.tran.firewall.IntfMatcher;
 
 class NatStatisticManager extends StatisticManager
 {
-    private static NatStatisticManager INSTANCE = null;
-
     /* Interface matcher to determine if the sessions is incoming or outgoing */
     final IntfMatcher matcherIncoming = IntfMatcher.getInside();
     final IntfMatcher matcherOutgoing = IntfMatcher.getOutside();
 
     private NatStatisticEvent statisticEvent = new NatStatisticEvent();
 
-    private NatStatisticManager()
+    NatStatisticManager()
     {
-        super(MvvmContextFactory.context().transformManager().threadContext().getTid());
+        super();
     }
 
     protected StatisticEvent getInitialStatisticEvent()
@@ -50,12 +49,14 @@ class NatStatisticManager extends StatisticManager
 
     void incrRedirect( Protocol protocol, IPNewSessionRequest request )
     {
+        /* XXX Incoming/outgoing is all wrong */
         boolean isOutgoing = matcherIncoming.isMatch( request.clientIntf());
 
         if ( protocol == Protocol.TCP ) {
             if ( isOutgoing ) incrTcpOutgoingRedirects();
             else              incrTcpIncomingRedirects();
         } else {
+            /* XXX ICMP Hack */
             if (( request.clientPort() == 0 ) && ( request.serverPort() == 0 )) {
                 /* Ping Sessions */
                 if ( isOutgoing ) incrIcmpOutgoingRedirects();
@@ -101,13 +102,5 @@ class NatStatisticManager extends StatisticManager
     void incrDmzSessions()
     {
         this.statisticEvent.incrDmzSessions();
-    }
-
-    static synchronized NatStatisticManager getInstance()
-    {
-        if ( INSTANCE == null )
-            INSTANCE = new NatStatisticManager();
-
-        return INSTANCE;
     }
 }

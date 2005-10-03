@@ -74,6 +74,7 @@ public class NatImpl extends AbstractTransform implements Nat
 
     private final NatEventHandler handler;
     private final NatSessionManager sessionManager;
+    final NatStatisticManager statisticManager;
 
     private final SoloPipeSpec natPipeSpec;
     private final SoloPipeSpec natFtpPipeSpec;
@@ -91,6 +92,7 @@ public class NatImpl extends AbstractTransform implements Nat
         handler = new NatEventHandler(this);
         sessionManager = new NatSessionManager(this);
         dhcpManager = new DhcpManager( this );
+        statisticManager = new NatStatisticManager();
 
         /* Have to figure out pipeline ordering, this should always next
          * to towards the outside */
@@ -278,7 +280,7 @@ public class NatImpl extends AbstractTransform implements Nat
         }
 
         /* Stop the statistics manager */
-        NatStatisticManager.getInstance().stop();
+        statisticManager.stop();
     }
 
     protected void postInit(String[] args)
@@ -326,7 +328,7 @@ public class NatImpl extends AbstractTransform implements Nat
         }
         dhcpManager.startDnsMasq();
 
-        NatStatisticManager.getInstance().start();
+        statisticManager.start();
     }
 
     protected void postStart()
@@ -349,7 +351,7 @@ public class NatImpl extends AbstractTransform implements Nat
             throw new TransformStopException( e );
         }
 
-        NatStatisticManager.getInstance().stop();
+        statisticManager.stop();
     }
 
     public void reconfigure() throws TransformException

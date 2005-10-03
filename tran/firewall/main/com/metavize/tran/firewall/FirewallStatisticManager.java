@@ -19,13 +19,11 @@ import com.metavize.mvvm.tran.StatisticManager;
 
 class FirewallStatisticManager extends StatisticManager
 {
-    private static FirewallStatisticManager INSTANCE = null;
-
     private FirewallStatisticEvent statisticEvent = new FirewallStatisticEvent();
 
-    private FirewallStatisticManager()
+    FirewallStatisticManager()
     {
-        super(MvvmContextFactory.context().transformManager().threadContext().getTid());
+        super();
     }
 
     protected StatisticEvent getInitialStatisticEvent()
@@ -87,13 +85,5 @@ class FirewallStatisticManager extends StatisticManager
             if ( isDefault ) this.statisticEvent.incrIcmpPassedDefault();
             else             this.statisticEvent.incrIcmpPassedRule();
         }
-    }
-
-    static synchronized FirewallStatisticManager getInstance()
-    {
-        if ( INSTANCE == null )
-            INSTANCE = new FirewallStatisticManager();
-
-        return INSTANCE;
     }
 }

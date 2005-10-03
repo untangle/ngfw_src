@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.MvvmLocalContext;
 import com.metavize.mvvm.security.Tid;
 import com.metavize.mvvm.tran.HostName;
 import com.metavize.mvvm.tran.IPaddr;
@@ -75,11 +76,13 @@ class DhcpMonitor implements Runnable
     private final Logger logger = Logger.getLogger( this.getClass());
     private final Logger eventLogger;
     private final NatImpl transform;
+    private final MvvmLocalContext localContext;
 
-    DhcpMonitor( NatImpl transform )
+
+    DhcpMonitor( NatImpl transform, MvvmLocalContext localContext )
     {
         this.transform = transform;
-        
+        this.localContext = localContext;
         this.eventLogger = MvvmContextFactory.context().eventLogger();
     }
 
@@ -87,10 +90,6 @@ class DhcpMonitor implements Runnable
     {
         logger.debug( "Starting" );
         int c = 0;
-
-        waitForTransformContext();
-
-        Thread.currentThread().setContextClassLoader( transform.getTransformContext().getClassLoader());
 
         if ( !isAlive ) {
             logger.error( "died before starting" );
@@ -146,7 +145,7 @@ class DhcpMonitor implements Runnable
             return;
         }
 
-        thread = new Thread( this );
+        thread = this.localContext.newThread( this );
         thread.start();
     }
 
@@ -340,23 +339,5 @@ class DhcpMonitor implements Runnable
         }
 
         if ( lease.isActive() && nextExpiration.after( eol )) nextExpiration = eol;
-    }
-
-    private void waitForTransformContext()
-    {
-        Tid tid = this.transform.getTid();
-                        
-        while ( true ) {            
-            if ( MvvmContextFactory.context().transformManager().transformContext( tid ) != null ) break;
-
-            try {
-                Thread.sleep( 1000 );
-            } catch ( InterruptedException e ) {
-                logger.info( "Interrupted" );
-                if ( !isAlive ) return;
-            }
-
-            if ( !isAlive ) return;
-        }
     }
 }

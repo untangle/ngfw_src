@@ -175,6 +175,8 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
         //setIDSSettings(settings);
         log.info(ruleList.size() + " rules loaded");
         //}
+        
+        IDSStatisticManager.instance().stop();
     }
 
     /** Temp subroutines for loading local snort rules.
@@ -253,6 +255,11 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
         }
 
         IDSStatisticManager.instance().start();
+    }
+
+    protected void postStop()
+    {
+        IDSStatisticManager.instance().stop();
     }
 
     public void reconfigure() throws TransformException {
