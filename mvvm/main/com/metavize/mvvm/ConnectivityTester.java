@@ -13,7 +13,7 @@ package com.metavize.mvvm;
 
 public interface ConnectivityTester {
     /**
-     * Retrieve the connectivity tester
+     * Retrieve the connectivity status of the network.
      */
     Status getStatus();
 

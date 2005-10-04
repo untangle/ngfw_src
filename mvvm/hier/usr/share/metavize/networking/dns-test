@@ -1,0 +1,39 @@
+#!/bin/sh
+
+exec >> @MVVM_LOG@/iptables.log 2>&1
+
+DNS_TRIES=7
+DNS_TIMEOUT=2
+DNS_TEST_FAIL=-1
+DNS_TEST_PASS=0
+
+
+TEST_HOSTNAME_BASE="release"
+TEST_DOMAIN="metavize.com"
+
+DNS_SERVER=$1
+
+
+if [ -z "${DNS_SERVER}" ]; then
+    exit ${DNS_TEST_FAIL}
+fi
+
+function lookup() {
+    local address=$1
+    local server=$2
+    
+    dig @${server} +tries=${DNS_TRIES} +time=${DNS_TIMEOUT} +short ${address}
+}
+
+lookup ${TEST_HOSTNAME_BASE}.${TEST_DOMAIN} ${DNS_SERVER}
+if [ $? != "0" ]; then
+    exit ${DNS_TEST_FAIL}
+fi
+
+lookup ${TEST_HOSTNAME_BASE}-${RANDOM}-${RANDOM}.${TEST_DOMAIN} ${DNS_SERVER}
+if [ $? != "0" ]; then
+    echo "Unable to lookup" 
+    exit ${DNS_TEST_FAIL}
+fi
+
+exit ${DNS_TEST_PASS}

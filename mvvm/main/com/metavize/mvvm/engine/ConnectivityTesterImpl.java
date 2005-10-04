@@ -17,12 +17,19 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Random;
 
+import com.metavize.mvvm.NetworkingConfiguration;
+import com.metavize.mvvm.MvvmContextFactory;
+
+
 import com.metavize.mvvm.ConnectivityTester;
 import org.apache.log4j.Logger;
 
 class ConnectivityTesterImpl implements ConnectivityTester
 {
     private static final Logger logger = Logger.getLogger( ConnectivityTesterImpl.class );
+
+    private static final String BUNNICULA_BASE  = System.getProperty( "bunnicula.home" );
+    private static final String DNS_TEST_SCRIPT = BUNNICULA_BASE + "/networking/dns-test";
 
     /* Name of the host to lookup */
     private static final String TEST_HOSTNAME_BASE    = "release";
@@ -38,8 +45,11 @@ class ConnectivityTesterImpl implements ConnectivityTester
     private static final int TCP_TEST_PORT = 80;
 
     /* The amount of time before giving up on the DNS attempt in milliseconds */
-    private static final int DNS_TEST_TIMEOUT_MS = 10000;
+    private static final int DNS_TEST_TIMEOUT_MS = 5000;
     private static final int TCP_TEST_TIMEOUT_MS = 10000;
+    
+    /* Exit code for a DNS test that passed */
+    private static final int DNS_TEST_PASS = 0;
 
     private static final Random RANDOM = new Random();
 
@@ -53,32 +63,51 @@ class ConnectivityTesterImpl implements ConnectivityTester
      */
     public Status getStatus()
     {
+        NetworkingConfiguration netConfig = MvvmContextFactory.context().networkingManager().get();
+        
+        InetAddress dnsPrimary   = netConfig.dns1().getAddr();
+        InetAddress dnsSecondary = ( netConfig.dns2().isEmpty()) ? null : netConfig.dns2().getAddr();
+            
         /* Returns the lookuped address if DNS is working, or null if it is not */
-        return ConnectionStatus.makeConnectionStatus( isDnsWorking(), isTcpWorking());
+        return ConnectionStatus.
+            makeConnectionStatus( isDnsWorking( dnsPrimary, dnsSecondary ), isTcpWorking());
     }
 
     /**
      * Test that DNS is working
      */
-    private boolean isDnsWorking()
+    private boolean isDnsWorking( InetAddress dnsPrimaryServer, InetAddress dnsSecondaryServer )
     {
-        DnsTest dnsTest = new DnsTest();
-        Thread test = new Thread( dnsTest );
+        boolean isWorking = false;
+        /* Run the DNS script first, this will indicate whether or not DNS is working */
+        try {
+            String script = "sh " + DNS_TEST_SCRIPT + " " + dnsPrimaryServer.getHostAddress();
+            if ( null != dnsSecondaryServer ) script = script + " " + dnsSecondaryServer.getHostAddress();
+
+            Process p = Runtime.getRuntime().exec( script );
+            
+            if ( p.waitFor() == DNS_TEST_PASS ) isWorking=true;
+        } catch( Exception e ) {
+            logger.error( "Error testing dns", e );
+            isWorking=false;
+        }
+
+        /* Now run the dns test just to get the address of release */
+        DnsLookup dnsLookup = new DnsLookup();
+        Thread test = new Thread( dnsLookup );
 
         test.start();
 
         try {
             test.join( DNS_TEST_TIMEOUT_MS );
-            if ( test.isAlive()) {
-                test.interrupt();
-            }
+            if ( test.isAlive()) test.interrupt();
         } catch( InterruptedException e ) {
             logger.error( "Interrupted while testing DNS connectivity.", e );
         }
 
-        this.address = dnsTest.address;
+        this.address = dnsLookup.address;
 
-        return dnsTest.isWorking;
+        return isWorking;
     }
 
     /**
@@ -129,12 +158,14 @@ class ConnectivityTesterImpl implements ConnectivityTester
         BACKUP_ADDRESS = address;
     }
 
-    class DnsTest implements Runnable
+    /* This isn't a test, it is just a method used to lookup the address
+     * of release.metavize.com with a timeout.  The real test is now executed by
+     * the script.  For the original test, look at subversion R2828 */
+    class DnsLookup implements Runnable
     {
         InetAddress address = null;
-        boolean isWorking = false;
 
-        public DnsTest()
+        public DnsLookup()
         {
         }
 
@@ -150,22 +181,6 @@ class ConnectivityTesterImpl implements ConnectivityTester
             } catch ( UnknownHostException e ) {
                 this.address   = null;
                 logger.warn( "Unable to look up host: " + TEST_HOSTNAME_BASE + "." + TEST_HOSTNAME_DOMAIN );
-            }
-
-            this.isWorking = false;
-
-            /* Try a random host that doesn't exist.    *
-             * the negative response should be returned *
-             * immediately */
-            try {
-                String host = TEST_HOSTNAME_BASE + "-" + RANDOM.nextInt() + "." + TEST_HOSTNAME_DOMAIN;
-                InetAddress invalidAddress;
-                logger.debug( "Looking up invalid address: " +  host );
-                invalidAddress = InetAddress.getByName( host );
-                logger.debug( "Finished the bad lookup" );
-                this.isWorking = false;
-            } catch ( UnknownHostException e ) {
-                this.isWorking = true;
             }
         }
     }
