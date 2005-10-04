@@ -33,9 +33,6 @@ import org.jfree.data.category.*;
 
 
 
-
-
-
 public class MTransformDisplayJPanel extends javax.swing.JPanel {
         
     // GENERAL TRANSFORM
@@ -46,8 +43,6 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
     protected boolean getUpdateSessions(){ return true; }
     protected boolean getUpdateThroughput(){ return true; }
     protected UpdateGraphThread updateGraphThread;
-    private volatile boolean updateGraph = false;
-    private volatile boolean killGraph = false;
     
     // THROUGHPUT & SESSION COUNT DISPLAY
     private static long SLEEP_MILLIS = 1000l;
@@ -81,7 +76,6 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
 
         initComponents();
 
-
         if( !getUpdateActivity() ){
             this.remove(activityJPanel);
             this.remove(activityJLabel);
@@ -100,9 +94,12 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
     }
     
     void doShutdown(){
-	killGraph();
+	updateGraphThread.kill();
     }
 
+    public void setUpdateGraph(boolean updateGraph){
+	updateGraphThread.setUpdateGraph( updateGraph );
+    }
     
     private ChartPanel createBarChart(CategoryDataset dataset) {    
         
@@ -215,7 +212,6 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
         chartPanel.setMinimumDrawHeight(20);
         chartPanel.setMinimumDrawWidth(20);
         return chartPanel;
-
     }
     
     
@@ -371,21 +367,22 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
 
     }//GEN-END:initComponents
 
-    protected void setUpdateGraph(boolean updateGraph){
-        if(this.updateGraph == updateGraph)
-            return;
-        this.updateGraph = updateGraph;    
-    }
     
-    protected synchronized void killGraph(){
-        killGraph = true;
-    }
-    
-    private class UpdateGraphThread extends Thread implements Killable{
-	// KILLABLE ////////
-	private volatile boolean killed;
-	public void setKilled(boolean killed){ this.killed = killed; }
-	////////////////////
+    private class UpdateGraphThread extends Thread implements Killable {
+
+	// GRAPH CONTROL //////
+	private boolean killed;
+	public synchronized void kill(){
+	    this.killed = true;
+	    notify();
+	}
+	private boolean updateGraph;
+	public synchronized void setUpdateGraph(boolean updateGraph){ 
+	    this.updateGraph = updateGraph;
+	    if( updateGraph )
+		notify();
+	}
+	//////////////////////
 
         TransformStats currentStats = null;
         long sessionCountCurrent = 0;
@@ -404,7 +401,6 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
         
         int newestIndex;
         double activityTotal;
-
         
         public UpdateGraphThread(){
 	    super("MVCLIENT-UpdateGraphThread: " + MTransformDisplayJPanel.this.mTransformJPanel.getMackageDesc().getDisplayName());
@@ -415,15 +411,11 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
         }
         
         
-        private synchronized void doUpdateGraph() throws Exception {       
-            // update readouts
-            if(killGraph)
-                return;
-            
+        private void doUpdateGraph() throws Exception {       
             SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
 		if(!updateGraph){
 		    resetCounters();
-		    for(int i=0; i< 60; i++){
+		    for(int i=0; i<60; i++){
 			newestIndex = sessionDynamicTimeSeriesCollection.getNewestIndex();
 			sessionDynamicTimeSeriesCollection.addValue(0, newestIndex, 0f);
 			sessionDynamicTimeSeriesCollection.addValue(1, newestIndex, 0f);
@@ -487,36 +479,22 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
         public void run() {
             while(true){
                 try{
-                    // KILL GRAPHING IF NECESSARY
-                    if(killGraph)
-                        return;
-                    if(killed)
-                        return;
-
-                    // DEAL WITH TURNING THE GRAPHS OFF
-                    if(!updateGraph){                 
-                        doUpdateGraph();
-                        while(!updateGraph){
-                            Thread.sleep(SLEEP_MILLIS);
-			    if(killGraph)
-				return;
-			    if(killed)
-				return;			   
+                    // GET TRANSFORM STATS AND HANDLE KILL/PAUSE
+		    synchronized(this){			
+			if( !updateGraph ){
+			    doUpdateGraph();
+			    wait();
 			}
-                    }
+			if( killed )
+			    return;
+			currentStats = Util.getStatsCache().getFakeTransform(mTransformJPanel.getTid()).getStats();
+		    }
 
-                    // PAUSE A NORMAL AMOUNT OF TIME
-                    Thread.sleep(SLEEP_MILLIS);     
-
-                    // GET TRANSFORM STATS AND UPDATE COUNTS
-                    Transform fakeTran = Util.getStatsCache().getFakeTransform(mTransformJPanel.getTid());
-                    currentStats = fakeTran.getStats();
-
+		    // UPDATE COUNTS
                     sessionCountCurrent = currentStats.tcpSessionCount()
                                         + currentStats.udpSessionCount();
                     sessionCountTotal = currentStats.tcpSessionTotal()
                                       + currentStats.udpSessionTotal();
-
                     sessionRequestCurrent = currentStats.tcpSessionRequestTotal()
                                           + currentStats.udpSessionRequestTotal();
                     byteCountCurrent = currentStats.c2tBytes()
@@ -537,6 +515,8 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
                     // UPDATE GRAPHS
                     doUpdateGraph();
 
+                    // PAUSE A NORMAL AMOUNT OF TIME
+                    Thread.sleep(SLEEP_MILLIS);     
                 }
                 catch(Exception e){  // handle this exception much more gracefully
 		    try{ Thread.currentThread().sleep(10000); } catch(Exception f){}

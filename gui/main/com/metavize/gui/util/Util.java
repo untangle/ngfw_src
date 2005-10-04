@@ -305,7 +305,7 @@ public class Util {
     }
     public static void killDaemonThreads(){
         for( Killable killable : daemonThreadVector ){
-            killable.setKilled(true);
+            killable.kill();
         }
         daemonThreadVector.clear();
     }

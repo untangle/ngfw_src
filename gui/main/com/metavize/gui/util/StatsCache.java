@@ -38,14 +38,14 @@ public class StatsCache
         return fakies.get(tid);
     }
 
-    protected void killUpdate(){
-        killUpdate = true;
+    protected void kill(){
+        updateThread.kill();
     }
 
     protected class UpdateThread extends Thread implements Killable {
 	// KILLABLE //////////
 	private volatile boolean killed;
-	public void setKilled(boolean killed){ this.killed = killed; }
+	public void kill(){ this.killed = true; }
 	///////////////////////
 
         protected UpdateThread() {
@@ -58,8 +58,6 @@ public class StatsCache
             while(true) {
                 try {
                     // KILL UPDATE IF NECESSARY
-                    if(killUpdate)
-                        return;
                     if(killed)
                         return;
 

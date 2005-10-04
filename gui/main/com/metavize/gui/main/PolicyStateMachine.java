@@ -58,6 +58,7 @@ public class PolicyStateMachine implements ActionListener {
     private Map<ButtonKey,MTransformJButton> storeMap;
     private Map<Policy,Map<ButtonKey,MTransformJButton>> policyToolboxMap;
     private Map<Policy,Map<ButtonKey,MTransformJPanel>> policyRackMap;
+    public Map<Policy,Map<ButtonKey,MTransformJPanel>> getPolicyRackMap(){ return policyRackMap; }
     private Map<ButtonKey,MTransformJButton> serviceToolboxMap;
     private Map<ButtonKey,MTransformJPanel> serviceRackMap;
     // GUI VIEW MODELS //////////

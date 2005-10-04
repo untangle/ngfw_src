@@ -20,6 +20,7 @@ import com.metavize.gui.widgets.editTable.*;
 import com.metavize.gui.widgets.dialogs.*;
 
 import com.metavize.mvvm.*;
+import com.metavize.mvvm.policy.*;
 
 import java.awt.*;
 import java.text.*;
@@ -678,6 +679,12 @@ public class UpgradeJDialog extends javax.swing.JDialog implements Savable, Refr
 		    UpgradeJDialog.this.actionJProgressBar.setIndeterminate(false);
 		}});		
 		Thread.currentThread().sleep(DOWNLOAD_INITIAL_SLEEP_MILLIS);
+
+		// DISABLE ALL GRAPHS SO NO EXCEPTIONS ARE CAUSED
+		Map<Policy,Map<ButtonKey,MTransformJPanel>> policyRackMap = Util.getPolicyStateMachine().getPolicyRackMap();
+		for( Policy policy : policyRackMap.keySet() )
+		    for( MTransformJPanel mTransformJPanel : policyRackMap.get(policy).values() )
+			mTransformJPanel.mTransformDisplayJPanel().setUpdateGraph(false);
 		
 		// DO THE DOWNLOAD AND INSTALL
                 long key = Util.getToolboxManager().upgrade();

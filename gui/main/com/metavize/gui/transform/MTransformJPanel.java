@@ -41,7 +41,7 @@ public class MTransformJPanel extends javax.swing.JPanel {
 
     // GUI VIEW MODEL
     private MTransformControlsJPanel mTransformControlsJPanel; protected MTransformControlsJPanel mTransformControlsJPanel(){ return mTransformControlsJPanel; }
-    private MTransformDisplayJPanel mTransformDisplayJPanel;  protected MTransformDisplayJPanel mTransformDisplayJPanel() { return mTransformDisplayJPanel; }
+    private MTransformDisplayJPanel mTransformDisplayJPanel;  public MTransformDisplayJPanel mTransformDisplayJPanel() { return mTransformDisplayJPanel; }
 
     // GUI DATA MODEL
     protected MStateMachine mStateMachine;

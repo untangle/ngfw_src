@@ -743,7 +743,7 @@ public class MMainJFrame extends javax.swing.JFrame {
     private class UpdateCheckThread extends Thread implements Killable {
     // KILLABLE //////
     private volatile boolean killed;
-    public void setKilled(boolean killed){ this.killed = killed; }
+    public void kill(){ this.killed = true; }
     //////////////////
 
         public UpdateCheckThread(){

@@ -13,5 +13,5 @@ package com.metavize.gui.util;
 
 
 public interface Killable {
-    public void setKilled(boolean killed);
+    public void kill();
 }
