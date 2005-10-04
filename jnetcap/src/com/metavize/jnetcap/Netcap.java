@@ -242,6 +242,11 @@ public final class Netcap {
     }
 
     /**
+     * Set the hardlimit on the number of sessions to process at a time
+     */
+    public native void setSessionLimit( int limit );
+
+    /**
      * Retrieve the netcap interface that an ip will go out on.
      */
     public byte getOutgoingInterface( InetAddress destination ) throws JNetcapException

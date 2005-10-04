@@ -16,6 +16,9 @@ MVVM_WRAPPER_LOG=$MVVM_LOGDIR/wrapper.log
 MVVM_GC_LOG=$MVVM_LOGDIR/gc.log
 MVVM_CMD=@PREFIX@/usr/bin/mvvm.sh
 MVVM_USER=root
+## Defaults to 10000 in the code, set here if you want something else
+MVVM_SESSION_LIMIT=""
+
 MVVM_ARGS=""
 
 ## For testing, setup the interfaces here
@@ -42,6 +45,11 @@ fi
 
 if [ -n "${MVVM_DMZ_INTF}" ]; then
     MVVM_ARGS="${MVVM_ARGS} -Dargon.dmz=${MVVM_DMZ_INTF}"
+fi
+
+## Append the session limit if it is set
+if [ -n "${MVVM_SESSION_LIMIT}" ]; then 
+    MVVM_ARGS="${MVVM_ARGS} -Dargon.sessionlimit=${MVVM_SESSION_LIMIT}"
 fi
 
 #

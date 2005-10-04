@@ -47,6 +47,8 @@ public class Argon
     int vectorDebugLevel    = 0;
     int jvectorDebugLevel   = 0;
     int mvutilDebugLevel    = 0;
+
+    int sessionThreadLimit  = 10000;
     boolean isShieldEnabled = true;
     String shieldFile       = null;
     Shield shield;
@@ -142,6 +144,10 @@ public class Argon
         if (( temp = System.getProperty( "argon.shield.cfg_file" )) != null ) {
             shieldFile = temp;
         }
+        
+        if (( temp = System.getProperty( "argon.sessionlimit" )) != null ) {
+            sessionThreadLimit  = Integer.parseInt( temp );
+        }
     }
 
     /**
@@ -174,6 +180,7 @@ public class Argon
         sleepingThreads = numThreads;
         totalThreads    = numThreads;
         activeThreads   = 0;
+        Netcap.getInstance().setSessionLimit( this.sessionThreadLimit );
 
         /* Start the scheduler */
         Netcap.startScheduler();

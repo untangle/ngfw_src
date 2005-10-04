@@ -444,9 +444,7 @@ class NatEventHandler extends AbstractEventHandler
     {
         /* Check for sessions that are going to or coming from the dmz */
         if ( request.clientIntf() == IntfConverter.DMZ || request.serverIntf() == IntfConverter.DMZ ) {
-            /* Increment the DMZ counter */
-            transform.incrementCount( DMZ_COUNTER ); // DMZ COUNTER
-            
+            /* XXX This is suspect */
             return true;
         }
 

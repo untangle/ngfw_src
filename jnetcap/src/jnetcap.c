@@ -46,6 +46,11 @@
 #define _HOOK_METHOD_NAME "event"
 #define _HOOK_METHOD_DESC "(I)V"
 
+/* 10,000 sessions is the default session limit */
+#define _SESSION_LIMIT_DEFAULT 10000
+// XXXX Set this to 20 or something.
+#define _SESSION_LIMIT_MIN     5
+
 #define _STATION_GUARD  0x53AD4332
 #define _RELIEVE_GUARD  0xDEADD00D
 
@@ -68,7 +73,14 @@ static struct {
         jobject   tcp_hook;       /* TCP Hook */
         jobject   udp_hook;       /* UDP hook */
     } java;
+    
+    int session_limit;
+    
+    int session_count;
 
+    /* Used to guarantee that session_limit increases and decreases atomically */
+    pthread_mutex_t session_mutex; 
+    
     /* For outgoing interface lookups, don't want to wait the whole time. */
     unsigned long delay_array[];
 } _jnetcap = 
@@ -82,6 +94,10 @@ static struct {
         .tcp_hook       NULL,
         .udp_hook       NULL
     },
+
+    .session_limit _SESSION_LIMIT_DEFAULT,
+    .session_count 0,
+    .session_mutex PTHREAD_MUTEX_INITIALIZER,
 
     .delay_array  {
         3000,
@@ -119,6 +135,9 @@ static jnetcap_thread_t* jnetcap_thread_create( void* (*thread_func)(void*), voi
 static void              jnetcap_thread_free    ( jnetcap_thread_t* input );
 static void              jnetcap_thread_destroy ( jnetcap_thread_t* input );
 static void              jnetcap_thread_raze    ( jnetcap_thread_t* input );
+
+static int _increment_session_count();
+static int _decrement_session_count();
 
 static __inline__ void     _detach_thread( JavaVM* jvm ) 
 {
@@ -196,6 +215,25 @@ JNIEXPORT jint JNICALL JF_Netcap( init )
     
     return ret;
 }
+
+/*
+ * Class:     com_metavize_jnetcap_Netcap
+ * Method:    setSessionLimit
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL JF_Netcap( setSessionLimit )
+  (JNIEnv *env, jobject _this, jint limit )
+{
+    if ( limit < _SESSION_LIMIT_MIN )  {
+        errlog( ERR_CRITICAL, "The session limit must be greater than %d\n", _SESSION_LIMIT_MIN );
+        return;
+    }
+
+    debug( 0, "Setting session limit to %d\n", limit );
+
+    _jnetcap.session_limit = limit;
+}
+
 
 /* XXXX This is a magic number used to convert netcap_intf_address_data_t into java 
  * 0, address, 1 netmask, 2 broadcast
@@ -706,136 +744,187 @@ static void*             _icmp_run_thread( void* arg )
 
 static void              _udp_hook( netcap_session_t* netcap_sess, void* arg )
 {
-    pthread_t id;
-    jnetcap_thread_t* thread_arg;
+    jnetcap_thread_t* thread_arg = NULL;
     
-    if (( thread_arg = jnetcap_thread_create( _udp_run_thread, netcap_sess, SCHED_OTHER, NULL )) == NULL ) {
-        /* FIXME XXX Possible leak */
-        errlog( ERR_CRITICAL, "jnetcap_thread_create" );
+    if ( netcap_sess == NULL ) { 
+        errlogargs();
         return;
-    }
-    
-    if ( pthread_create( &id, &uthread_attr.other.medium, _run_thread, thread_arg )) {
-        perrlog( "pthread_create" );
-        return;
-        /* XXX FIXME Possible leak of the netcap session */
     }
 
-    //_hook( IPPROTO_UDP, netcap_sess, arg );
+    int _critical_section() {
+        pthread_t id;
+        
+        thread_arg = jnetcap_thread_create( _udp_run_thread, netcap_sess, SCHED_OTHER, NULL );
+        if ( thread_arg == NULL  ) return errlog( ERR_CRITICAL, "jnetcap_thread_create\n" );
+        
+        if ( pthread_create( &id, &uthread_attr.other.medium, _run_thread, thread_arg )) {
+            return perrlog( "pthread_create" );
+        }
+
+        return 0;
+    }
+
+    if ( _increment_session_count() < 0 ) {
+        netcap_session_raze( netcap_sess );
+        errlog( ERR_CRITICAL, "Hit session limit %d\n", _jnetcap.session_limit );
+        return;
+    }
+
+    if ( _critical_section() < 0 ) {
+        if ( thread_arg != NULL ) jnetcap_thread_raze( thread_arg );
+        thread_arg = NULL;
+        netcap_session_raze( netcap_sess );
+        _decrement_session_count();
+    }
 }
 
 static void              _icmp_hook( netcap_session_t* netcap_sess, netcap_pkt_t* pkt, void* arg)
 {
-    pthread_t id;
-    jnetcap_thread_t* thread_arg;
+    jnetcap_thread_t* thread_arg = NULL;
     
-    if (( thread_arg = jnetcap_thread_create( _icmp_run_thread, netcap_sess, SCHED_OTHER, NULL )) == NULL ) {
-        /* FIXME XXX Possible leak */
-        errlog( ERR_CRITICAL, "jnetcap_thread_create" );
+    if ( netcap_sess == NULL ) {
+        if ( pkt != NULL ) netcap_pkt_raze( pkt );
+        errlogargs();
         return;
     }
     
-    if ( pthread_create( &id, &uthread_attr.other.medium, _run_thread, thread_arg )) {
-        perrlog( "pthread_create" );
-        return;
-        /* XXX FIXME Possible leak of the netcap session */
-    }
-/*     if ( pkt != NULL ) { */
-/*         errlog( ERR_CRITICAL, "_icmp_hook: Unable to handle packet" ); */
-/*         netcap_pkt_raze( pkt ); */
-/*     } */
+    int _critical_section() {
+        pthread_t id;
+        
+        thread_arg = jnetcap_thread_create( _icmp_run_thread, netcap_sess, SCHED_OTHER, NULL );
+        if ( thread_arg == NULL ) return errlog( ERR_CRITICAL, "jnetcap_thread_create" );
+    
+        if ( pthread_create( &id, &uthread_attr.other.medium, _run_thread, thread_arg )) {
+            return perrlog( "pthread_create" );
+        }
 
-/*     if ( netcap_sess != NULL ) { */
-/*         _hook( IPPROTO_UDP, netcap_sess, arg ); */
-/*     } */
+        return 0;
+    }
+    
+    if ( _increment_session_count() < 0 ) {
+        netcap_session_raze( netcap_sess );
+        errlog( ERR_CRITICAL, "Hit session limit %d\n", _jnetcap.session_limit );
+        return;
+    }
+
+    if ( _critical_section() < 0 ) {
+        if ( thread_arg != NULL ) jnetcap_thread_raze( thread_arg );
+        thread_arg = NULL;
+        netcap_session_raze( netcap_sess );
+        _decrement_session_count();
+    }
 }
 
 static void              _tcp_hook( netcap_session_t* netcap_sess, void* arg )
 {
-    pthread_t id;
-    jnetcap_thread_t* thread_arg;
-    
-    if (( thread_arg = jnetcap_thread_create( _tcp_run_thread, netcap_sess, SCHED_OTHER, NULL )) == NULL ) {
-        /* FIXME XXX Possible leak */
-        errlog( ERR_CRITICAL, "jnetcap_thread_create" );
+    jnetcap_thread_t* thread_arg = NULL;
+
+    if ( netcap_sess == NULL ) { 
+        errlogargs();
         return;
     }
     
-    if ( pthread_create( &id, &uthread_attr.other.medium, _run_thread, thread_arg )) {
-        perrlog( "pthread_create" );
-        return;
-        /* XXX FIXME Possible leak of the netcap session */
+    int _critical_section() {
+        pthread_t id;
+        
+        thread_arg = jnetcap_thread_create( _tcp_run_thread, netcap_sess, SCHED_OTHER, NULL );
+        if ( thread_arg == NULL ) return errlog( ERR_CRITICAL, "jnetcap_thread_create" );
+        
+        if ( pthread_create( &id, &uthread_attr.other.medium, _run_thread, thread_arg )) {
+            return perrlog( "pthread_create" );
+        }
+
+        return 0;
     }
-    
-//    _hook( IPPROTO_TCP, netcap_sess, arg );
+
+    if ( _increment_session_count() < 0 ) {
+        netcap_session_raze( netcap_sess );
+        errlog( ERR_CRITICAL, "Hit session limit %d\n", _jnetcap.session_limit );
+        return;
+    }
+
+    if ( _critical_section() < 0 ) {
+        if ( thread_arg != NULL ) jnetcap_thread_raze( thread_arg );
+        thread_arg = NULL;
+        netcap_session_raze( netcap_sess );
+        _decrement_session_count();
+    }
 }
 
-/* shared hook between the UDP and TCP hooks, these just get the program into java */
+/* shared hook between the UDP and TCP hooks, this is executed in its own thread, so it
+ * must decrement the session count */
 static void              _hook( int protocol, netcap_session_t* netcap_sess, void* arg )
 {
     jobject global_hook = NULL;
-    JNIEnv* env;
-    u_int session_id;
-    netcap_session_t* netcap_sess_cleanup;
 
-    if (( env = jmvutil_get_java_env()) == NULL ) {
-        errlog( ERR_CRITICAL, "jmvutil_get_java_env\n" );
-        netcap_session_raze( netcap_sess );
-        return;
-    }
+    int _critical_section( void ) {
+        JNIEnv* env = jmvutil_get_java_env();
+        u_int session_id;
 
-    if ( _jnetcap.netcap != _INITIALIZED || _jnetcap.java.hook_class == NULL || 
-         _jnetcap.java.hook_method_id == NULL) { 
-        errlog( ERR_CRITICAL, "_hook: unintialized\n" );
-        netcap_session_raze( netcap_sess );
-        return;
-    }
-    
-    switch( protocol ) {
-    case IPPROTO_ICMP: global_hook = _jnetcap.java.udp_hook; break;
-    case IPPROTO_UDP:  global_hook = _jnetcap.java.udp_hook; break;
-    case IPPROTO_TCP:  global_hook = _jnetcap.java.tcp_hook; break;
-    default: 
-        errlog( ERR_CRITICAL, "_hook: invalid protocol(%d)\n", protocol );
-    }
+        if ( NULL == env ) return errlog( ERR_CRITICAL, "jmvutil_get_java_env\n" );
 
-    if ( global_hook == NULL ) {
-        errlog( ERR_CRITICAL, "_hook: invalid hook\n" );
-        /* Remove the session */
-        netcap_session_raze( netcap_sess);
-        return;
-    }
-
-    debug( 10, "jnetcap.c: Calling hook\n" );
-
-    /* cache the session_id */
-    session_id = netcap_sess->session_id;
-    
-    /* Call the global method */
-    (*env)->CallVoidMethod( env, global_hook, _jnetcap.java.hook_method_id, netcap_sess->session_id );
-
-    debug( 10, "JNETCAP: Exiting hook\n" );
-
-    /* Check to see if there was an exception, this assumes that a new
-     * thread was not spawned if there was an exception.  If there was
-     * an exception, make sure that the session is taken out of the
-     * sesion table */
-    if ( jmvutil_error_exception_clear() < 0 ) {
-        /* Get the session out from the session table !!! If this
-         * happens, it is pretty bad, this really should NEVER happen
-         */
-        if (( netcap_sess_cleanup = netcap_sesstable_get( session_id )) != NULL ) {
-            errlog( ERR_CRITICAL, "Session (%10u) left in table after hook\n", session_id );
-            if ( netcap_sess_cleanup != netcap_sess ) {
-                errlog( ERR_CRITICAL, "NetcapSession replaced, assuming previous was razed\n" );
-                return;
-            }
-
-            /* XXX Do not know how to handle this, the session still may need to be used,
-             * if there was an exception and a new thread */ 
-           netcap_session_raze( netcap_sess_cleanup );
+        if (( _jnetcap.netcap != _INITIALIZED ) || ( NULL == _jnetcap.java.hook_class ) ||
+            ( NULL == _jnetcap.java.hook_method_id )) { 
+            return errlog( ERR_CRITICAL, "_hook: unintialized\n" );
         }
+        
+        switch( protocol ) {
+        case IPPROTO_ICMP: global_hook = _jnetcap.java.udp_hook; break;
+        case IPPROTO_UDP:  global_hook = _jnetcap.java.udp_hook; break;
+        case IPPROTO_TCP:  global_hook = _jnetcap.java.tcp_hook; break;
+        default: 
+            return errlog( ERR_CRITICAL, "_hook: invalid protocol(%d)\n", protocol );
+        }
+
+        if ( NULL == global_hook ) return errlog( ERR_CRITICAL, "_hook: invalid hook\n" );
+
+        debug( 10, "jnetcap.c: Calling hook\n" );
+
+        /* cache the session_id for cleanup */
+        session_id = netcap_sess->session_id;
+        
+        /* Call the global method */
+        (*env)->CallVoidMethod( env, global_hook, _jnetcap.java.hook_method_id, netcap_sess->session_id );
+
+        debug( 10, "JNETCAP: Exiting hook\n" );
+
+        /* Check to see if there was an exception, this assumes that a new
+         * thread was not spawned if there was an exception.  If there was
+         * an exception, make sure that the session is taken out of the
+         * sesion table */
+        if ( jmvutil_error_exception_clear() < 0 ) {
+            netcap_session_t* netcap_sess_cleanup;
+
+            /* Get the session out from the session table !!! If this
+             * happens, it is pretty bad, this really should NEVER happen
+             */
+            if (( netcap_sess_cleanup = netcap_sesstable_get( session_id )) != NULL ) {
+                errlog( ERR_CRITICAL, "Session (%10u) left in table after hook\n", session_id );
+                if ( netcap_sess_cleanup == netcap_sess ) {
+                    /* Since the thread was created in C, there is no way that another
+                     * thread could possible raze this session */
+                    return errlog( ERR_CRITICAL, "Session (%10u) not razed in hook, razing in cleanup\n", 
+                                   session_id );
+                } else {
+                    netcap_sess = NULL;
+                    return errlog( ERR_CRITICAL, "Session (%10u) replaced, assuming previous was razed\n",
+                                   session_id );
+                }
+            }
+        }
+
+        /* Assume the session has been razed */
+        netcap_sess = NULL;
+        return 0;
     }
+    int ret;
+    
+    ret = _critical_section();
+    
+    if (ret < 0 && ( netcap_sess != NULL )) netcap_session_raze( netcap_sess );
+    
+    /* Make sure to always decrement the session count */
+    _decrement_session_count();        
 }
 
 /* XXX Probably want a lock around this function */
@@ -1015,3 +1104,29 @@ static void              jnetcap_thread_raze    ( jnetcap_thread_t* input )
     jnetcap_thread_destroy(input);
     jnetcap_thread_free(input);
 }
+
+static int _increment_session_count()
+{
+    int ret = 0;
+    if ( pthread_mutex_lock( &_jnetcap.session_mutex ) < 0 ) perrlog( "pthread_mutex_lock" );
+    
+    if ( _jnetcap.session_count < _jnetcap.session_limit ) _jnetcap.session_count++;
+    else ret = -1;
+                                                              
+    if ( pthread_mutex_unlock( &_jnetcap.session_mutex ) < 0 ) perrlog( "pthread_mutex_unlock" );
+    return ret;
+}
+
+static int _decrement_session_count()
+{
+    if ( pthread_mutex_lock( &_jnetcap.session_mutex ) < 0 ) perrlog( "pthread_mutex_lock\n" );
+    
+    if ( _jnetcap.session_count < 0 ) {
+        errlog( ERR_CRITICAL, "_jnetcap.session_count < 0\n" );
+        _jnetcap.session_count = 0;
+    } else _jnetcap.session_count--;
+    
+    if ( pthread_mutex_unlock( &_jnetcap.session_mutex ) < 0 ) perrlog( "pthread_mutex_unlock\n" );
+    return 0;
+}
+
