@@ -49,7 +49,7 @@ create table settings.TR_IDS_RULE (
 create table events.TR_IDS_EVT (
 	event_id int8 NOT NULL,
 	session_id int4,
-	message char(512),
+	message varchar(512),
 	blocked bool,
 	time_stamp timestamp,
 	PRIMARY KEY (event_id));
