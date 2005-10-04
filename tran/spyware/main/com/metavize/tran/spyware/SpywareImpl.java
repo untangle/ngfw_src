@@ -159,7 +159,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
     private volatile SpywareSettings settings;
     private volatile Map<String, StringRule> activeXRules;
     private volatile Map<String, StringRule> cookieRules;
-    private volatile Set<String> urlWhitelist;
+    private volatile Set<String> domainWhitelist;
 
     // constructors -----------------------------------------------------------
 
@@ -258,13 +258,13 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         }
 
         Set<String> s = new HashSet<String>();
-        l = (List<StringRule>)settings.getUrlWhitelist();
+        l = (List<StringRule>)settings.getDomainWhitelist();
         for (StringRule sr : l) {
             if (sr.isLive()) {
                 s.add(sr.getString());
             }
         }
-        urlWhitelist = s;
+        domainWhitelist = s;
     }
 
     // AbstractTransform methods ----------------------------------------------
@@ -304,6 +304,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
             updateCookie(this.settings);
             updateSubnet(this.settings);
 
+
             tx.commit();
         } catch (HibernateException exn) {
             logger.warn("Could not get SpywareSettings", exn);
@@ -333,7 +334,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         }
 
         for (String d = domain; match && null != d; d = nextHost(d)) {
-            match = !urlWhitelist.contains(domain);
+            match = !domainWhitelist.contains(domain);
         }
 
         return match;

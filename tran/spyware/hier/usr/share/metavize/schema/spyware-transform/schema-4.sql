@@ -20,28 +20,28 @@ CREATE TABLE settings.tr_spyware_settings (
     url_blacklist_details varchar(255),
     PRIMARY KEY (settings_id));
 
--- List<com.metavize.mvvm.tran.StringRule>
+-- com.metavize.tran.spyware.SpywareSettings.cookieRules
 CREATE TABLE settings.tr_spyware_cr (
     settings_id int8 NOT NULL,
     rule_id int8 NOT NULL,
     position int4 NOT NULL,
     PRIMARY KEY (settings_id, position));
 
--- List<com.metavize.mvvm.tran.StringRule>
+-- com.metavize.tran.spyware.SpywareSettings.activeXRules
 CREATE TABLE settings.tr_spyware_ar (
     settings_id int8 NOT NULL,
     rule_id int8 NOT NULL,
     position int4 NOT NULL,
     PRIMARY KEY (settings_id, position));
 
--- List<com.metavize.mvvm.tran.IPMaddrRule>
+-- com.metavize.tran.spyware.SpywareSettings.subnetRules
 CREATE TABLE settings.tr_spyware_sr (
     settings_id int8 NOT NULL,
     rule_id int8 NOT NULL,
     position int4 NOT NULL,
     PRIMARY KEY (settings_id, position));
 
--- List<com.metavize.mvvm.tran.StringRule>
+-- com.metavize.tran.spyware.SpywareSettings.domainWhitelist
 CREATE TABLE settings.tr_spyware_wl (
     settings_id int8 NOT NULL,
     rule_id int8 NOT NULL,

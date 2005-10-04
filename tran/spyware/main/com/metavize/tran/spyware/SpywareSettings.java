@@ -44,7 +44,7 @@ public class SpywareSettings implements Serializable
     private List activeXRules;
     private List cookieRules;
     private List subnetRules;
-    private List urlWhitelist = new ArrayList();
+    private List domainWhitelist = new ArrayList();
 
     // constructors -----------------------------------------------------------
 
@@ -339,9 +339,9 @@ public class SpywareSettings implements Serializable
     }
 
     /**
-     * URLs not subject to blacklist checking.
+     * Domains not subject to blacklist checking.
      *
-     * @return the list of passed URLs.
+     * @return the list of passed domains.
      * @hibernate.list
      * cascade="all-delete-orphan"
      * table="TR_SPYWARE_WL"
@@ -353,13 +353,13 @@ public class SpywareSettings implements Serializable
      * class="com.metavize.mvvm.tran.StringRule"
      * column="RULE_ID"
      */
-    public List getUrlWhitelist()
+    public List getDomainWhitelist()
     {
-        return urlWhitelist;
+        return domainWhitelist;
     }
 
-    public void setUrlWhitelist(List urlWhitelist)
+    public void setDomainWhitelist(List domainWhitelist)
     {
-        this.urlWhitelist = urlWhitelist;
+        this.domainWhitelist = domainWhitelist;
     }
 }
