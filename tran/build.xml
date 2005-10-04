@@ -385,6 +385,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
         <include name="com/metavize/tran/http/HttpRequestEvent.class"/>
         <include name="com/metavize/tran/http/HttpResponseEvent.class"/>
         <include name="com/metavize/tran/http/HttpStateMachine*.class"/>
+        <include name="com/metavize/tran/http/BlockingHttpStateMachine*.class"/>
         <include name="com/metavize/tran/http/RequestLine.class"/>
         <include name="com/metavize/tran/http/StatusLine.class"/>
       </fileset>
