@@ -49,6 +49,12 @@ public abstract class BlockingHttpStateMachine extends AbstractTokenHandler
         BLOCKED
     };
 
+    private enum Task {
+        NONE,
+        REQUEST,
+        RESPONSE
+    }
+
     private final List<RequestLine> requests = new LinkedList<RequestLine>();
 
     private final List<Token[]> outstandingResponses = new LinkedList<Token[]>();
@@ -61,6 +67,7 @@ public abstract class BlockingHttpStateMachine extends AbstractTokenHandler
 
     private Mode requestMode = Mode.QUEUEING;
     private Mode responseMode = Mode.QUEUEING;
+    private Task task = Task.NONE;
 
     private RequestLine requestLine;
     private RequestLine responseRequest;
@@ -140,7 +147,9 @@ public abstract class BlockingHttpStateMachine extends AbstractTokenHandler
 
     protected void releaseRequest()
     {
-        if (Mode.QUEUEING != requestMode) {
+        if (Task.REQUEST != task) {
+            throw new IllegalStateException("releaseRequest in: " + task);
+        } else if (Mode.QUEUEING != requestMode) {
             throw new IllegalStateException("releaseRequest in: " + requestMode);
         }
 
@@ -149,7 +158,9 @@ public abstract class BlockingHttpStateMachine extends AbstractTokenHandler
 
     protected void blockRequest(Token[] response)
     {
-        if (Mode.QUEUEING != requestMode) {
+        if (Task.REQUEST != task) {
+            throw new IllegalStateException("blockRequest in: " + task);
+        } else if (Mode.QUEUEING != requestMode) {
             throw new IllegalStateException("blockRequest in: " + requestMode);
         }
 
@@ -159,7 +170,9 @@ public abstract class BlockingHttpStateMachine extends AbstractTokenHandler
 
     protected void releaseResponse()
     {
-        if (Mode.QUEUEING != responseMode) {
+        if (Task.RESPONSE != task) {
+            throw new IllegalStateException("releaseResponse in: " + task);
+        } else if (Mode.QUEUEING != responseMode) {
             throw new IllegalStateException("releaseResponse in: " + responseMode);
         }
 
@@ -168,8 +181,10 @@ public abstract class BlockingHttpStateMachine extends AbstractTokenHandler
 
     protected void blockResponse(Token[] response)
     {
-        if (Mode.QUEUEING != responseMode) {
-            throw new IllegalStateException("releaseResponse in: " + responseMode);
+        if (Task.RESPONSE != task) {
+            throw new IllegalStateException("blockResponse in: " + task);
+        } else if (Mode.QUEUEING != responseMode) {
+            throw new IllegalStateException("blockResponse in: " + responseMode);
         }
 
         responseMode = Mode.BLOCKED;
@@ -181,6 +196,40 @@ public abstract class BlockingHttpStateMachine extends AbstractTokenHandler
 
     public TokenResult handleClientToken(Token token) throws TokenException
     {
+        try {
+            task = Task.REQUEST;
+            return doHandleClientToken(token);
+        } finally {
+            task = Task.NONE;
+        }
+    }
+
+    public TokenResult handleServerToken(Token token) throws TokenException
+    {
+        try {
+            task = Task.RESPONSE;
+            return doHandleServerToken(token);
+        } finally {
+            task = Task.NONE;
+        }
+    }
+
+    @Override
+    public TokenResult releaseFlush()
+    {
+        // XXX we do not even attempt to deal with outstanding block pages
+        Token[] req = new Token[requestQueue.size()];
+        req = requestQueue.toArray(req);
+        Token[] resp = new Token[responseQueue.size()];
+        resp = responseQueue.toArray(resp);
+        return new TokenResult(resp, req);
+    }
+
+    // private methods --------------------------------------------------------
+
+    private TokenResult doHandleClientToken(Token token) throws TokenException
+    {
+
         clientState = nextClientState(token);
 
         switch (clientState) {
@@ -341,7 +390,7 @@ public abstract class BlockingHttpStateMachine extends AbstractTokenHandler
         }
     }
 
-    public TokenResult handleServerToken(Token token) throws TokenException
+    private TokenResult doHandleServerToken(Token token) throws TokenException
     {
         serverState = nextServerState(token);
 
@@ -472,19 +521,6 @@ public abstract class BlockingHttpStateMachine extends AbstractTokenHandler
             throw new IllegalStateException("programmer malfunction");
         }
     }
-
-    @Override
-    public TokenResult releaseFlush()
-    {
-        // XXX we do not even attempt to deal with outstanding block pages
-        Token[] req = new Token[requestQueue.size()];
-        req = requestQueue.toArray(req);
-        Token[] resp = new Token[responseQueue.size()];
-        resp = responseQueue.toArray(resp);
-        return new TokenResult(resp, req);
-    }
-
-    // private methods --------------------------------------------------------
 
     private ClientState nextClientState(Object o)
     {

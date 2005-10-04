@@ -1,57 +1,52 @@
 package com.metavize.tran.ids;
 
 import com.metavize.mvvm.tapi.TCPSession;
-import com.metavize.tran.http.HttpStateMachine;
+import com.metavize.tran.http.BlockingHttpStateMachine;
 import com.metavize.tran.http.RequestLine;
 import com.metavize.tran.http.StatusLine;
 import com.metavize.tran.token.Chunk;
-import com.metavize.tran.token.Token;
 import com.metavize.tran.token.Header;
-import com.metavize.tran.token.TokenResult;
-import com.metavize.tran.token.EndMarker;
 
-class IDSHttpHandler extends HttpStateMachine {
+class IDSHttpHandler extends BlockingHttpStateMachine {
 
-	//private IDSTransform transform; //Do i need this?
-	private IDSSessionInfo info;
-	
-	IDSHttpHandler(TCPSession session, IDSTransformImpl transform) {
-		super(session);
-		IDSDetectionEngine.instance().mapSessionInfo(session.id(),new IDSSessionInfo());
-	}
-	
-	protected TokenResult doRequestLine(RequestLine requestLine) {
-		String path = requestLine.getRequestUri().getPath();
-		IDSSessionInfo info = IDSDetectionEngine.instance().getSessionInfo(super.getSession().id());
-		info.setUriPath(path);
-		return new TokenResult(null, new Token[] { requestLine });
-	}
+    //private IDSTransform transform; //Do i need this?
+    private IDSSessionInfo info;
 
-	protected TokenResult doRequestHeader(Header requestHeader) {
-		return new TokenResult(null, new Token[] { requestHeader });
-	}
+    IDSHttpHandler(TCPSession session, IDSTransformImpl transform) {
+        super(session);
+        IDSDetectionEngine.instance().mapSessionInfo(session.id(),new IDSSessionInfo());
+    }
 
-	protected TokenResult doRequestBodyEnd(EndMarker endMarker) {		
-		return new TokenResult(null, new Token[] { endMarker });
-	}
+    protected RequestLine doRequestLine(RequestLine requestLine) {
+        String path = requestLine.getRequestUri().getPath();
+        IDSSessionInfo info = IDSDetectionEngine.instance().getSessionInfo(super.getSession().id());
+        info.setUriPath(path);
+        releaseRequest();
+        return requestLine;
+    }
 
-	protected TokenResult doResponseBodyEnd(EndMarker endMarker) {
-		return new TokenResult(new Token[] { endMarker }, null);
-	}
+    protected Header doRequestHeader(Header requestHeader) {
+        return requestHeader;
+    }
 
-	protected TokenResult doResponseBody(Chunk chunk) {
-		return new TokenResult(new Token[] { chunk }, null);
-	}
+    protected void doRequestBodyEnd() { }
 
-	protected TokenResult doResponseHeader(Header header) {
-		return new TokenResult(new Token[] { header }, null);
-	}
-	
-	protected TokenResult doRequestBody(Chunk chunk) {
-		return new TokenResult(null, new Token[] { chunk });
-	}
-	
-	protected TokenResult doStatusLine(StatusLine statusLine) {
-		return new TokenResult(new Token[] { statusLine }, null);
-	}
+    protected void doResponseBodyEnd() { }
+
+    protected Chunk doResponseBody(Chunk chunk) {
+        return chunk;
+    }
+
+    protected Header doResponseHeader(Header header) {
+        return header;
+    }
+
+    protected Chunk doRequestBody(Chunk chunk) {
+        return chunk;
+    }
+
+    protected StatusLine doStatusLine(StatusLine statusLine) {
+        releaseResponse();
+        return statusLine;
+    }
 }
