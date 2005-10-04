@@ -634,7 +634,7 @@ public class UpgradeJDialog extends javax.swing.JDialog implements Savable, Refr
         getContentPane().add(backgroundJLabel, gridBagConstraints);
 
         java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-        setBounds((screenSize.width-640)/2, (screenSize.height-480)/2, 640, 480);
+        setBounds((screenSize.width-660)/2, (screenSize.height-480)/2, 660, 480);
     }//GEN-END:initComponents
 
     private void reloadJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reloadJButtonActionPerformed
