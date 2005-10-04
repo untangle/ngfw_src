@@ -23,7 +23,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
     
     private static final String NAME_GENERAL_SETTINGS = "General Settings";
     private static final String NAME_LOG = "Event Log";
-    private static final String NAME_SHIELD_PANEL = "Shield Exception";
+    private static final String NAME_SHIELD_PANEL = "Exception List";
 
     
     public MTransformControlsJPanel(MTransformJPanel mTransformJPanel) {
