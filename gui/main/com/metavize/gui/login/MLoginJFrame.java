@@ -42,11 +42,6 @@ public class MLoginJFrame extends javax.swing.JFrame {
 		Util.setLocal(true);
 		break;
 	    }
-	for( String arg : args )
-	    if( arg.equals("egdemo") ){ // isEgdemo
-		isEgdemo = true;
-		break;
-	    }
 	
 	// PRINT THE LOCATION OF THE CLIENT
 	if( Util.isLocal() )
@@ -68,9 +63,8 @@ public class MLoginJFrame extends javax.swing.JFrame {
 	    MLoginJFrame.this.setVisible(true);
 	}});
 	resetLogin("Please enter your login and password.");
-	final boolean isEgdemoFinal = isEgdemo;
 	SwingUtilities.invokeLater( new Runnable(){ public void run(){
-	    if( isEgdemoFinal ){
+	    if( Util.getServerCodeBase().getHost().equals("egdemo.metavize.com") ){
 		loginJTextField.setText("egdemo");
 		passJPasswordField.setText("egdemo");
 	    }
