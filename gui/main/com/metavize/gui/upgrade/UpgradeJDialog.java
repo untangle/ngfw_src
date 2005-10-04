@@ -35,7 +35,7 @@ public class UpgradeJDialog extends javax.swing.JDialog implements Savable, Refr
 
     // DOWNLOAD DELAYS //////////////
     private static final int DOWNLOAD_INITIAL_SLEEP_MILLIS = 3000;
-    private static final int DOWNLOAD_SLEEP_MILLIS = 3000;
+    private static final int DOWNLOAD_SLEEP_MILLIS = 1000;
     private static final int DOWNLOAD_FINAL_SLEEP_MILLIS = 3000;
     /////////////////////////////////
 
@@ -658,15 +658,16 @@ public class UpgradeJDialog extends javax.swing.JDialog implements Savable, Refr
     private class PerformUpgradeThread extends Thread {
 	public PerformUpgradeThread(){
 	    super("MVCLIENT-PerformUpgradeThread");
+	    this.setContextClassLoader(Util.getClassLoader());
 	    this.start();
 	}
         public void run() {
+	    // ASK THE USER IF HE REALLY WANTS TO UPGRADE
+	    ProceedJDialog proceedJDialog = new ProceedJDialog();
+	    if( !proceedJDialog.isUpgrading() )
+		return;
+	    
 	    try{
-		// ASK THE USER IF HE REALLY WANTS TO UPGRADE
-		ProceedJDialog proceedJDialog = new ProceedJDialog();
-		if( !proceedJDialog.isUpgrading() )
-		    return;
-
 		// LET THE USER KNOW WERE STARTING
 		SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
 		    // prevent GUI from interacting
