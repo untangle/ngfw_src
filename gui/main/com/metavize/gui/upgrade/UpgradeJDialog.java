@@ -685,6 +685,7 @@ public class UpgradeJDialog extends javax.swing.JDialog implements Savable, Refr
 		for( Policy policy : policyRackMap.keySet() )
 		    for( MTransformJPanel mTransformJPanel : policyRackMap.get(policy).values() )
 			mTransformJPanel.mTransformDisplayJPanel().setUpdateGraph(false);
+		Util.getStatsCache().kill();
 		
 		// DO THE DOWNLOAD AND INSTALL
                 long key = Util.getToolboxManager().upgrade();
@@ -699,10 +700,9 @@ public class UpgradeJDialog extends javax.swing.JDialog implements Savable, Refr
 		    }
 		}
 
-
 		Thread.currentThread().sleep(DOWNLOAD_FINAL_SLEEP_MILLIS);
 
-		// LET THE USER KNOW WERE FINISHED
+		// LET THE USER KNOW WERE FINISHED NORMALLY
 		SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
 		    UpgradeJDialog.this.actionJProgressBar.setIndeterminate(true);
 		    UpgradeJDialog.this.actionJProgressBar.setValue(0);
@@ -711,6 +711,12 @@ public class UpgradeJDialog extends javax.swing.JDialog implements Savable, Refr
 	    }
             catch(Exception e){
 		Util.handleExceptionNoRestart("Termination of upgrade:", e);
+		// LET THE USER KNOW WERE FINISHED ABNORMALLY
+		SwingUtilities.invokeLater( new Runnable(){ public void run(){
+		    UpgradeJDialog.this.actionJProgressBar.setIndeterminate(true);
+		    UpgradeJDialog.this.actionJProgressBar.setValue(0);
+		    UpgradeJDialog.this.actionJProgressBar.setString("Shutting down abnormally.  Please contact Metavize.");
+		}});
 	    }
 	    finally{
 		new RestartDialog();

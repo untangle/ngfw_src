@@ -24,10 +24,8 @@ public class StatsCache
     protected UpdateThread updateThread;
 
     protected HashMap<Tid, FakeTransform> fakies;
-    private volatile boolean killUpdate = false;
 
-    public StatsCache()
-    {
+    public StatsCache(){
         fakies = new HashMap<Tid, FakeTransform>();
         updateThread = new UpdateThread();
         updateThread.start();
@@ -38,14 +36,14 @@ public class StatsCache
         return fakies.get(tid);
     }
 
-    protected void kill(){
+    public void kill(){
         updateThread.kill();
     }
 
     protected class UpdateThread extends Thread implements Killable {
 	// KILLABLE //////////
-	private volatile boolean killed;
-	public void kill(){ this.killed = true; }
+	private boolean killed;
+	public synchronized void kill(){ this.killed = true; }
 	///////////////////////
 
         protected UpdateThread() {
@@ -57,21 +55,19 @@ public class StatsCache
         public void run() {
             while(true) {
                 try {
-                    // KILL UPDATE IF NECESSARY
-                    if(killed)
-                        return;
-
-                    // get all transform stats
-                    Map<Tid, TransformStats> allStats = Util.getTransformManager().allTransformStats();
-
-                    fakies.clear();
-                    for (Iterator<Tid> iter = allStats.keySet().iterator(); iter.hasNext();) {
-                        Tid tid = iter.next();
-                        TransformStats stats = allStats.get(tid);
-                        FakeTransform fakie = new FakeTransform(stats);
-                        fakies.put(tid, fakie);
-                    }
-
+                    // GET ALL TRANSFORM STATS, AND KILL IF NECESSSARY
+		    synchronized(this){
+			if( killed )
+			    return;
+			Map<Tid, TransformStats> allStats = Util.getTransformManager().allTransformStats();
+			fakies.clear();
+			for (Iterator<Tid> iter = allStats.keySet().iterator(); iter.hasNext();) {
+			    Tid tid = iter.next();
+			    TransformStats stats = allStats.get(tid);
+			    FakeTransform fakie = new FakeTransform(stats);
+			    fakies.put(tid, fakie);
+			}
+		    }
                     // PAUSE A NORMAL AMOUNT OF TIME
                     Thread.sleep(SLEEP_MILLIS);
                 }
