@@ -92,7 +92,7 @@ public class HttpBlockerHandler extends BlockingHttpStateMachine
     protected Header doResponseHeader(Header responseHeader)
     {
         if (100 == getStatusLine().getStatusCode()) {
-            releaseRequest();
+            releaseResponse();
         } else {
             logger.debug("in doResponseHeader: " + responseHeader);
 
