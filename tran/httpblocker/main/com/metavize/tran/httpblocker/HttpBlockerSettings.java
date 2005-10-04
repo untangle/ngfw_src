@@ -166,7 +166,7 @@ public class HttpBlockerSettings implements Serializable
      * @return the list of passed URLs.
      * @hibernate.list
      * cascade="all-delete-orphan"
-    * table="TR_HTTPBLK_PASSED_URLS"
+     * table="TR_HTTPBLK_PASSED_URLS"
      * @hibernate.collection-key
      * column="SETTING_ID"
      * @hibernate.collection-index

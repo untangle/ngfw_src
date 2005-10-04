@@ -12,6 +12,7 @@
 package com.metavize.tran.spyware;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.metavize.mvvm.security.Tid;
@@ -43,6 +44,7 @@ public class SpywareSettings implements Serializable
     private List activeXRules;
     private List cookieRules;
     private List subnetRules;
+    private List urlWhitelist = new ArrayList();
 
     // constructors -----------------------------------------------------------
 
@@ -269,7 +271,7 @@ public class SpywareSettings implements Serializable
      * cascade="all-delete-orphan"
      * table="TR_SPYWARE_AR"
      * @hibernate.collection-key
-     * column="SETTING_ID"
+     * column="SETTINGS_ID"
      * @hibernate.collection-index
      * column="POSITION"
      * @hibernate.collection-many-to-many
@@ -294,7 +296,7 @@ public class SpywareSettings implements Serializable
      * cascade="all-delete-orphan"
      * table="TR_SPYWARE_CR"
      * @hibernate.collection-key
-     * column="SETTING_ID"
+     * column="SETTINGS_ID"
      * @hibernate.collection-index
      * column="POSITION"
      * @hibernate.collection-many-to-many
@@ -334,5 +336,30 @@ public class SpywareSettings implements Serializable
     public void setSubnetRules(List subnetRules)
     {
         this.subnetRules = subnetRules;
+    }
+
+    /**
+     * URLs not subject to blacklist checking.
+     *
+     * @return the list of passed URLs.
+     * @hibernate.list
+     * cascade="all-delete-orphan"
+     * table="TR_SPYWARE_WL"
+     * @hibernate.collection-key
+     * column="SETTINGS_ID"
+     * @hibernate.collection-index
+     * column="POSITION"
+     * @hibernate.collection-many-to-many
+     * class="com.metavize.mvvm.tran.StringRule"
+     * column="RULE_ID"
+     */
+    public List getUrlWhitelist()
+    {
+        return urlWhitelist;
+    }
+
+    public void setUrlWhitelist(List urlWhitelist)
+    {
+        this.urlWhitelist = urlWhitelist;
     }
 }
