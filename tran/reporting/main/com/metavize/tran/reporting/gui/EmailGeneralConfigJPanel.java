@@ -137,7 +137,7 @@ class EmailGeneralTableModel extends MSortedTableModel{
         tempRow = new Vector(5);
         tempRow.add( super.ROW_SAVED );
         tempRow.add( rowIndex );
-        tempRow.add( "\"From\" address" );
+        tempRow.add( "From address" );
         tempRow.add( mailSettings.getFromAddress() );
         tempRow.add( "The email address which report emails will appear to have been sent from." );
         allRows.add( tempRow );
