@@ -149,6 +149,7 @@ public abstract class MLogTableJPanel extends javax.swing.JPanel implements Shut
         depthJSlider.setPaintTicks(true);
         depthJSlider.setSnapToTicks(true);
         depthJSlider.setToolTipText("<html>\n<b>Event Log Depth Slider</b><br>\nThis slider allows you to specify the maximum number of visible events<br>\nwhen the \"Refresh Log\" or \"Start Auto-refresh\" buttons are pressed.</html>");
+        depthJSlider.setValue(100);
         depthJSlider.setDebugGraphicsOptions(javax.swing.DebugGraphics.NONE_OPTION);
         depthJSlider.setDoubleBuffered(true);
         depthJSlider.setFocusable(false);

@@ -687,6 +687,8 @@ public abstract class MSortedTableModel extends DefaultTableModel implements Ref
 	    // dont allow sorting of passwords, images, or generic objects
             TableColumnModel columnModel = tableHeader.getColumnModel();
             int viewColumn = columnModel.getColumnIndexAtX(e.getX());
+	    if( viewColumn == -1 )
+		return;				  
             int modelColumn = columnModel.getColumn(viewColumn).getModelIndex();
             Class columnClass = MSortedTableModel.this.getColumnClass(modelColumn);
             if(    (modelColumn == -1)
