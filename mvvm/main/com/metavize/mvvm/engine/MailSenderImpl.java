@@ -159,7 +159,7 @@ class MailSenderImpl implements MailSender
         try {
             Transaction tx = s.beginTransaction();
 
-            s.saveOrUpdate(mailSettings);
+            s.saveOrUpdate(settings);
 
             tx.commit();
         } catch (HibernateException exn) {

@@ -123,8 +123,8 @@ public class MailSettings implements Serializable
      *
      * @return true if should use TLS when availaable
      * @hibernate.property
-     * column="USE_TLS"
      * not-null="true"
+     * column="USE_TLS"
      */
     public boolean isUseTls()
     {
@@ -158,7 +158,6 @@ public class MailSettings implements Serializable
      *
      * @return a <code>String</code> giving the user name for SMTP Auth
      * @hibernate.property
-     * not-null="true"
      * column="AUTH_USER"
      */
     public String getAuthUser()
@@ -176,7 +175,6 @@ public class MailSettings implements Serializable
      *
      * @return a <code>String</code> giving the password for SMTP Auth
      * @hibernate.property
-     * not-null="true"
      * column="AUTH_PASS"
      */
     public String getAuthPass()
@@ -195,7 +193,6 @@ public class MailSettings implements Serializable
      *
      * @return a <code>String</code> giving the local host name for HELO
      * @hibernate.property
-     * not-null="true"
      * column="LOCAL_HOST_NAME"
      */
     public String getLocalHostName()
