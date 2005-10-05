@@ -524,18 +524,20 @@ public class PolicyStateMachine implements ActionListener {
 		}});
                 long key = Util.getToolboxManager().install(mTransformJButton.getName());
 		com.metavize.gui.util.Visitor visitor = new com.metavize.gui.util.Visitor(progressBar);
-		while (!visitor.isDone()) {
+		while (true) {
 		    java.util.List<InstallProgress> lip = Util.getToolboxManager().getProgress(key);
 		    for (InstallProgress ip : lip) {
 			ip.accept(visitor);
+			if( visitor.isDone() )
+			    break;
 		    }
 		    if (0 == lip.size()) {
 			Thread.currentThread().sleep(DOWNLOAD_SLEEP_MILLIS);
 		    }
 		}
+		Thread.currentThread().sleep(DOWNLOAD_FINAL_SLEEP_MILLIS);
 		// GIVE OPTIONS BASED ON RESULTS
 		if( visitor.isSuccessful() ){
-		    Thread.currentThread().sleep(DOWNLOAD_FINAL_SLEEP_MILLIS);
 		    SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
 			dialog.setVisible(false);
 		    }});
@@ -552,15 +554,7 @@ public class PolicyStateMachine implements ActionListener {
 		    focusInToolbox(mTransformJButton, true);
 		}
 		else{
-		    SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
-			progressBar.setValue(0);
-			((StoreJDialog)dialog).resetButtons();
-		    }});
-		    mTransformJButton.setFailedProcureView();
-		    new MOneButtonJDialog(mTransformJButton.getDisplayName(),
-					  "A problem occurred while purchasing:<br>"
-					  + mTransformJButton.getDisplayName()
-					  + "<br>Please contact Metavize for assistance.");
+		    throw new Exception();
 		}				
 	    }
 	    catch(Exception e){
@@ -571,6 +565,7 @@ public class PolicyStateMachine implements ActionListener {
 		    Util.handleExceptionNoRestart("Error purchasing transform:", f);
 		    mTransformJButton.setFailedProcureView();
                     SwingUtilities.invokeLater( new Runnable(){ public void run(){
+			((StoreJDialog)dialog).resetButtons();
                         progressBar.setString("Purchase problem occurred...");
                         progressBar.setValue(0);
                         dialog.setVisible(false);

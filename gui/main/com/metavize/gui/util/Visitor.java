@@ -17,8 +17,8 @@ import com.metavize.mvvm.*;
 
 
 public class Visitor implements ProgressVisitor{
-    private boolean done = false;
-    private boolean successful = false;
+    private boolean isDone = false;
+    private boolean isSuccessful = false;
     private int fileCountTotal = 0;
     private int byteCountTotal = 0;
     private int currentFileIndex = 0;
@@ -32,11 +32,11 @@ public class Visitor implements ProgressVisitor{
     }
     
     public boolean isDone(){
-	return done;
+	return isDone;
     }
     
     public boolean isSuccessful(){
-	return successful;
+	return isSuccessful;
     }
 
     // ProgressVisitor methods -------------------------------------------
@@ -54,33 +54,35 @@ public class Visitor implements ProgressVisitor{
 				   + " (" + dp.getSpeed() + ")" );
 	    progressBar.setValue( (int) (90f*(((float)(currentByteIndex+dp.getBytesDownloaded())) / ((float)byteCountTotal))) );
 	}});
-    }
-    
+    }    
     
     public void visitDownloadComplete(final DownloadComplete dc){
 	final boolean success = dc.getSuccess();
 	SwingUtilities.invokeLater( new Runnable(){ public void run(){
 	    currentByteIndex += currentByteIncrement;
 	    currentFileIndex++;
-	    if(success)
-		progressBar.setString( "Download succeeded" );
-	    else
-		progressBar.setString( "Download failed" );
-	    progressBar.setValue( 90 );
+	    if(!success){
+		progressBar.setString( "Download failed.  Please try again." );
+		progressBar.setValue( 100 );
+	    }
 	}});
+	if(!success){
+	    isDone = true;
+	    isSuccessful = false;
+	}
     }
     
     public void visitInstallComplete(final InstallComplete ic){
 	final boolean success = ic.getSuccess();
 	SwingUtilities.invokeLater( new Runnable(){ public void run(){
 	    if(success)
-		progressBar.setString( "Installation succeeded" );
+		progressBar.setString( "Installation successful" );
 	    else
 		progressBar.setString( "Installation failed.  Please try again." );
 	    progressBar.setValue( 100 );
 	}});
-	done = true;
-	successful = success;
+	isDone = true;
+	isSuccessful = success;
     }
 
     public void visitInstallTimeout(final InstallTimeout it){
@@ -88,6 +90,7 @@ public class Visitor implements ProgressVisitor{
 	    progressBar.setString( "Installation timed out.  Please try again." );
 	    progressBar.setValue( 100 );
 	}});
-	done = true;
+	isDone = true;
+	isSuccessful = false;
     }
 }

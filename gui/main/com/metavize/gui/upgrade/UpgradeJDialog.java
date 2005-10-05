@@ -691,10 +691,12 @@ public class UpgradeJDialog extends javax.swing.JDialog implements Savable, Refr
 		// DO THE DOWNLOAD AND INSTALL
                 long key = Util.getToolboxManager().upgrade();
 		com.metavize.gui.util.Visitor visitor = new com.metavize.gui.util.Visitor(actionJProgressBar);
-		while (!visitor.isDone()) {
+		while (true) {
 		    java.util.List<InstallProgress> lip = Util.getToolboxManager().getProgress(key);
 		    for (InstallProgress ip : lip) {
 			ip.accept(visitor);
+			if( visitor.isDone() )
+			    break;
 		    }
 		    if (0 == lip.size()) {
 			Thread.currentThread().sleep(DOWNLOAD_SLEEP_MILLIS);
@@ -703,12 +705,17 @@ public class UpgradeJDialog extends javax.swing.JDialog implements Savable, Refr
 
 		Thread.currentThread().sleep(DOWNLOAD_FINAL_SLEEP_MILLIS);
 
-		// LET THE USER KNOW WERE FINISHED NORMALLY
-		SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
-		    UpgradeJDialog.this.actionJProgressBar.setIndeterminate(true);
-		    UpgradeJDialog.this.actionJProgressBar.setValue(0);
-		    UpgradeJDialog.this.actionJProgressBar.setString("Shutting down...");
-		}});
+		if( visitor.isSuccessful() ){
+		    // LET THE USER KNOW WERE FINISHED NORMALLY
+		    SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+			UpgradeJDialog.this.actionJProgressBar.setIndeterminate(true);
+			UpgradeJDialog.this.actionJProgressBar.setValue(0);
+			UpgradeJDialog.this.actionJProgressBar.setString("Shutting down...");
+		    }});
+		}
+		else{
+		    throw new Exception();
+		}
 	    }
             catch(Exception e){
 		Util.handleExceptionNoRestart("Termination of upgrade:", e);
