@@ -366,15 +366,20 @@ class VirusHttpHandler extends HttpStateMachine
 
         if (buffering) {
             buffering = TIMEOUT > (System.currentTimeMillis() - bufferingStart)
-                && SIZE_LIMIT > outstanding;
+                && SIZE_LIMIT > totalSize;
             if (buffering) {    /* remain in buffering mode */
                 logger.debug("buffering");
                 return chunk;
             } else {            /* switch to trickle mode */
                 logger.debug("switching to trickling");
-                Chunk c = trickle();
+                try {
+                    inFile.position(outstanding);
+                } catch (IOException exn) {
+                    logger.warn("could not change file pointer", exn);
+                }
+                outstanding = 0;
                 releaseResponse();
-                return c;
+                return chunk;
             }
         } else {                /* stay in trickle mode */
             logger.debug("trickling");
