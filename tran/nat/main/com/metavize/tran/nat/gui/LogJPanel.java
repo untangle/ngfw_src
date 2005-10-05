@@ -44,7 +44,7 @@ public class LogJPanel extends MLogTableJPanel
             addTableColumn( tableColumnModel,  4,  165, true,  false, false, false, String.class, null, "original destination" );
             addTableColumn( tableColumnModel,  5,  165, true,  false, false, false, String.class, null, "redirected destination" );
 	    addTableColumn( tableColumnModel,  6,  150, true,  false, false, false, String.class, null, sc.html("reason for<br>action") );
-	    addTableColumn( tableColumnModel,  7,  100, true,  false, false, false, String.class, null, sc.html("request<br>direction") );
+	    addTableColumn( tableColumnModel,  7,  100, true,  false, false, false, String.class, null, sc.html("direction") );
 	    return tableColumnModel;                                                                                                     
 	}
 	
