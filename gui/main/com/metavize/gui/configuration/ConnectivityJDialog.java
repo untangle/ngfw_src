@@ -210,7 +210,7 @@ public class ConnectivityJDialog extends javax.swing.JDialog implements java.awt
             final String result;
             if( status.isDnsWorking() ){
                 if( status.isTcpWorking() ){
-                    result = "Success!  DNS and internet are both contactable.";
+                    result = "Success!  DNS and internet are both working.";
                 }
                 else{
                     result = "Warning!  Internet connectivity is not working.";
