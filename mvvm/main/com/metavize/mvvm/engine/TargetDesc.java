@@ -45,6 +45,9 @@ class TargetDesc
                 ms.put(m.toString(), m);
             }
         }
+        for (Method m : Object.class.getMethods()) {
+            ms.put(m.toString(), m);
+        }
         this.methods = Collections.unmodifiableMap(ms);
 
         HttpInvokerStub his = new HttpInvokerStub(ls, targetId);
@@ -73,9 +76,7 @@ class TargetDesc
     private Class[] interfaces(Class c)
     {
         Set<Class> s = new HashSet<Class>();
-
         interfaces(c, s);
-
         return s.toArray(new Class[s.size()]);
     }
 
