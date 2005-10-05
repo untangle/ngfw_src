@@ -34,9 +34,10 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 
     private static final String NAME_BLOCK = "Block Lists";
     private static final String NAME_BLOCK_ACTIVEX = "ActiveX List";
-    private static final String NAME_BLOCK_SPYWARE = "Subnet List";
+    private static final String NAME_BLOCK_SUBNET = "Subnet List";
     private static final String NAME_BLOCK_COOKIE = "Cookie List";
     private static final String NAME_BLOCK_URL = "URL List";
+    private static final String NAME_PASS_DOMAIN = "Pass List";    
     private static final String NAME_SETTINGS = "General Settings";
     private static final String NAME_LOG = "Event Log";
     
@@ -60,11 +61,11 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	super.savableMap.put(NAME_BLOCK + " " + NAME_BLOCK_COOKIE, cookieConfigJPanel);
 	super.refreshableMap.put(NAME_BLOCK + " " + NAME_BLOCK_COOKIE, cookieConfigJPanel);
 
-	// SPYWARE ///////////////
-	SpywareConfigJPanel spywareConfigJPanel = new SpywareConfigJPanel();
-        blockJTabbedPane.addTab(NAME_BLOCK_SPYWARE, null, spywareConfigJPanel);
-	super.savableMap.put(NAME_BLOCK + " " + NAME_BLOCK_SPYWARE, spywareConfigJPanel);
-	super.refreshableMap.put(NAME_BLOCK + " " + NAME_BLOCK_SPYWARE, spywareConfigJPanel);
+	// SUBNETS ///////////////
+	SubnetConfigJPanel subnetConfigJPanel = new SubnetConfigJPanel();
+        blockJTabbedPane.addTab(NAME_BLOCK_SUBNET, null, subnetConfigJPanel);
+	super.savableMap.put(NAME_BLOCK + " " + NAME_BLOCK_SUBNET, subnetConfigJPanel);
+	super.refreshableMap.put(NAME_BLOCK + " " + NAME_BLOCK_SUBNET, subnetConfigJPanel);
 
 	// ACTIVEX ///////////////
 	ActiveXConfigJPanel activeXConfigJPanel = new ActiveXConfigJPanel();
@@ -77,6 +78,12 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
         blockJTabbedPane.addTab(NAME_BLOCK_URL, null, urlConfigJPanel);
 	super.savableMap.put(NAME_BLOCK + " " + NAME_BLOCK_URL, urlConfigJPanel);
 	super.refreshableMap.put(NAME_BLOCK + " " + NAME_BLOCK_URL, urlConfigJPanel);
+
+	// PASS DOMAIN //////////////
+	PassDomainConfigJPanel passDomainConfigJPanel = new PassDomainConfigJPanel();
+        super.mTabbedPane.addTab(NAME_PASS_DOMAIN, null, passDomainConfigJPanel);
+	super.savableMap.put(NAME_PASS_DOMAIN, passDomainConfigJPanel);
+	super.refreshableMap.put(NAME_PASS_DOMAIN, passDomainConfigJPanel);
 
         // GENERAL SETTINGS ////////
 	GeneralConfigJPanel generalConfigJPanel = new GeneralConfigJPanel();

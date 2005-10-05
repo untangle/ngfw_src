@@ -32,10 +32,10 @@ import javax.swing.table.*;
 import java.util.*;
 //import javax.swing.event.*;
 
-public class SpywareConfigJPanel extends MEditTableJPanel{
+public class SubnetConfigJPanel extends MEditTableJPanel{
     
     
-    public SpywareConfigJPanel() {
+    public SubnetConfigJPanel() {
         super(true, true);
         super.setInsets(new Insets(4, 4, 2, 2));
         super.setTableTitle("spyware sources");
