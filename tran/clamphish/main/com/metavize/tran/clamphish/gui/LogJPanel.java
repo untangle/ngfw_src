@@ -44,7 +44,7 @@ public class LogJPanel extends MLogTableJPanel {
 	    addTableColumn( tableColumnModel,  3,  100, true,  false, false, false, String.class, null, "subject" );
 	    addTableColumn( tableColumnModel,  4,  100, true,  false, false, false, String.class, null, "receiver" );
 	    addTableColumn( tableColumnModel,  5,  100, true,  false, false, false, String.class, null, "sender" );
-	    addTableColumn( tableColumnModel,  6,  100, true,  false, false, false, String.class, null, sc.html("PHISH<br>direction") );
+	    addTableColumn( tableColumnModel,  6,  100, true,  false, false, false, String.class, null, sc.html("direction") );
 	    addTableColumn( tableColumnModel,  7,  165, true,  false, false, false, String.class, null, "server" );
 	    return tableColumnModel;
 	}
