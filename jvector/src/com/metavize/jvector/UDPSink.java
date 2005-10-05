@@ -104,7 +104,7 @@ public class UDPSink extends Sink
                     /* Update to the new length */
                     icmpCrumb.limit( icmpCrumb.updatePacket( icmpId, icmpMailbox ));
                 } catch( Exception e ) {
-                    Vector.logError( "Unable to fix ICMP Crumb: " + e );
+                    Vector.logWarn( "Unable to fix ICMP Crumb: " + e );
                     return Vector.ACTION_DEQUEUE;
                 }
             }

@@ -149,7 +149,8 @@ static netcap_session_t* _icmp_get_error_session( netcap_pkt_t* pkt, mailbox_t**
         protocol = IPPROTO_UDP;
         
         if ( netcap_icmp_verify_type_and_code( icmp_header->icmp_type, icmp_header->icmp_code ) < 0 ) {
-            return errlog_null( ERR_WARNING, "netcap_icmp_verify_type_and_code\n" );
+            return errlog_null( ERR_WARNING, "netcap_icmp_verify_type_and_code[%d,%d]\n",
+                                icmp_header->icmp_type, icmp_header->icmp_code );
         }
         
         if ( icmp_header->icmp_type == ICMP_ECHO || icmp_header->icmp_type == ICMP_ECHOREPLY ) {
@@ -447,7 +448,7 @@ int  netcap_icmp_update_pkt( char* data, int data_len, int data_lim,
     }
 
     if ( netcap_icmp_verify_type_and_code( icmp_type, icmp_code ) < 0 ) {
-        return errlog( ERR_WARNING, "netcap_icmp_verify_type_and_code\n" );
+        return errlog( ERR_WARNING, "netcap_icmp_verify_type_and_code[%d,%d]\n", icmp_type, icmp_code );
     }
 
 
@@ -563,7 +564,8 @@ int  netcap_icmp_get_source( char* data, int data_len, netcap_pkt_t* pkt, struct
     icmp_pkt = (struct icmp*)data;
 
     if ( netcap_icmp_verify_type_and_code( icmp_pkt->icmp_type, icmp_pkt->icmp_code ) < 0 ) {
-        errlog( ERR_WARNING, "netcap_icmp_verify_type_and_code\n" );
+        errlog( ERR_WARNING, "netcap_icmp_verify_type_and_code[%d,%d]\n", 
+                icmp_pkt->icmp_type, icmp_pkt->icmp_code );
     }
     
     if ( ICMP_INFOTYPE( icmp_pkt->icmp_type )) {
