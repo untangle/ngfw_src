@@ -98,8 +98,12 @@ public class NatSettings implements Serializable, Validatable
             ((RedirectRule)iter.next()).fixPing();
         }
 
-        if ( natEnabled && ( natInternalAddress == null || natInternalSubnet == null ))
-            throw new Exception( "Enablng NAT requires an Internal IP address and an Internal Subnet" );
+        if ( natEnabled &&
+             ( natInternalAddress == null || natInternalSubnet == null  ||
+               natInternalAddress.isEmpty() || natInternalSubnet.isEmpty())) {
+            throw new Exception( "Enablng NAT requires an \"Internal IP address\" and " +
+                                 "an \"Internal Subnet\"" );
+        }
 
         if ( dmzEnabled ) {
             if ( dmzAddress == null ) {
@@ -107,7 +111,8 @@ public class NatSettings implements Serializable, Validatable
             }
 
             if ( natEnabled && !dmzAddress.isInNetwork( natInternalAddress, natInternalSubnet )) {
-                throw new Exception( "When NAT is enabled, DMZ address must be in the internal network." );
+                throw new Exception( "When NAT is enabled, the \"DMZ address\" in the DMZ Host panel " +
+                                     "must be in the internal network." );
             }
         }
 
@@ -135,14 +140,32 @@ public class NatSettings implements Serializable, Validatable
             if ( host != null && !dhcpStartAddress.isInNetwork( host, netmask )) {
                 isStartAddressValid = false;
 
-                throw new Exception( "IP Address Range Start must be in the network: " + host.toString() + "/" + netmask.toString());
+                throw new Exception( "\"IP Address Range Start\" in the DHCP panel must be in the network: "
+                                     + host.toString() + "/" + netmask.toString());
 
             }
 
             if ( host != null && !dhcpEndAddress.isInNetwork( host, netmask )) {
                 isEndAddressValid = false;
 
-                throw new Exception( "IP Address Range End must be in the network: " + host.toString() + "/" + netmask.toString());
+                throw new Exception( "\"IP Address Range End\" in the DHCP panel must be in the network: " 
+                                     + host.toString() + "/" + netmask.toString());
+            }
+            
+            if ( host != null && netmask != null && !host.isEmpty() && !netmask.isEmpty()) {
+                int c = 1;
+                for ( Iterator iter = this.dhcpLeaseList.iterator() ; iter.hasNext() ; c++ ) {
+                    DhcpLeaseRule rule =  (DhcpLeaseRule)iter.next();
+                    IPaddr address = rule.getStaticAddress();
+                    if ( address.getAddr() == null ) continue;
+                    
+                    if ( !address.isInNetwork( host, netmask )) {
+                        throw new 
+                            Exception( "\"target static IP address\" for DHCP Address Map entry '" +
+                                       address.toString() + "' must be in the network: " + 
+                                       host.toString() + "/" + netmask.toString());
+                    }
+                }
             }
         }
 

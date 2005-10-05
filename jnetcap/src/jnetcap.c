@@ -229,7 +229,7 @@ JNIEXPORT void JNICALL JF_Netcap( setSessionLimit )
         return;
     }
 
-    debug( 0, "Setting session limit to %d\n", limit );
+    debug( 0, "JNETCAP: Setting session limit to %d\n", limit );
 
     _jnetcap.session_limit = limit;
 }
