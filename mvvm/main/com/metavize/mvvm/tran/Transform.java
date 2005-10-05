@@ -63,14 +63,6 @@ public interface Transform
     void start() throws TransformStartException, IllegalStateException;
 
     /**
-     * Disables the transform.
-     *
-     * @exception TransformStopException if an error occurs
-     * @exception IllegalStateException if an error occurs
-     */
-    void disable() throws TransformStopException, IllegalStateException;
-
-    /**
      * Stops transform and disconnects from the MetaPipe. A call to
      * this method is only valid when the instance is in the {@link
      * TransformState#RUNNING} state. After successful return, the

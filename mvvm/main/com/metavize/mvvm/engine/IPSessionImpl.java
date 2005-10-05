@@ -262,6 +262,11 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
                 }
             }
             closeFinal();
+        } catch (Exception x) {
+            String message = "" + x.getClass().getName() + " in raze";
+            error(message, x);
+        } catch (OutOfMemoryError x) {
+            Main.fatalError("SessionHandler", x);
         } finally {
             transformManager.deregisterThreadContext();
             MDC.remove(SESSION_ID_MDC_KEY);

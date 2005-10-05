@@ -44,11 +44,6 @@ public class TransformState implements Serializable
     public static final TransformState RUNNING = new TransformState("running");
 
     /**
-     * Disabled. Initialized, but cannot be put into RUNNING state.
-     */
-    public static final TransformState DISABLED = new TransformState("disabled");
-
-    /**
      * Destroyed, this instance should not be used.
      */
     public static final TransformState DESTROYED = new TransformState("destroyed");
@@ -57,7 +52,6 @@ public class TransformState implements Serializable
 
     static {
         INSTANCES.put(LOADED.toString(), LOADED);
-        INSTANCES.put(DISABLED.toString(), DISABLED);
         INSTANCES.put(INITIALIZED.toString(), INITIALIZED);
         INSTANCES.put(RUNNING.toString(), RUNNING);
         INSTANCES.put(DESTROYED.toString(), DESTROYED);

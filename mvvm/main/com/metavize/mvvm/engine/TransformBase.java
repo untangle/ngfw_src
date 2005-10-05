@@ -50,6 +50,8 @@ public abstract class TransformBase implements Transform
     private final Set<Transform> children = new HashSet<Transform>();
     private final TransformManagerImpl transformManager;
 
+    private final Object stateChangeLock = new Object();
+
     private TransformState runState;
     private TransformStats stats = new TransformStats();
 
@@ -74,22 +76,20 @@ public abstract class TransformBase implements Transform
         return runState;
     }
 
-    public final void disable()
-        throws TransformStopException, IllegalStateException
-    {
-        disable(true);
-    }
-
     public final void start()
         throws TransformStartException, IllegalStateException
     {
-        start(true);
+        synchronized (stateChangeLock) {
+            start(true);
+        }
     }
 
     public final void stop()
         throws TransformStopException, IllegalStateException
     {
-        stop(true);
+        synchronized (stateChangeLock) {
+            stop(true);
+        }
     }
 
     public void reconfigure() throws TransformException { }
@@ -197,13 +197,17 @@ public abstract class TransformBase implements Transform
     void init(String[] args)
         throws TransformException, IllegalStateException
     {
-        init(true, args);
+        synchronized (stateChangeLock) {
+            init(true, args);
+        }
     }
 
     void destroy()
         throws TransformException, IllegalStateException
     {
-        destroy(true);
+        synchronized (stateChangeLock) {
+            destroy(true);
+        }
     }
 
     /**
@@ -297,20 +301,6 @@ public abstract class TransformBase implements Transform
         }
     }
 
-    private void disable(boolean syncState)
-        throws TransformStopException, IllegalStateException
-    {
-        if (TransformState.RUNNING == runState) {
-            stop();
-        }
-
-        if (TransformState.INITIALIZED == runState) {
-            changeState(TransformState.DISABLED, syncState);
-        } else {
-            throw new IllegalStateException("disable called in: " + runState);
-        }
-    }
-
     private void start(boolean syncState) throws TransformStartException
     {
         if (TransformState.INITIALIZED != getRunState()) {
@@ -339,11 +329,11 @@ public abstract class TransformBase implements Transform
             }
         }
 
-        connectMPipe();
-
         try {
             transformManager.registerThreadContext(transformContext);
-            preStart(); // XXX why is prestart after connectMPipe??
+            preStart();
+
+            connectMPipe();
 
             changeState(TransformState.RUNNING, syncState);
             postStart(); // XXX if exception, state == ?
@@ -434,10 +424,6 @@ public abstract class TransformBase implements Transform
             logger.debug("bringing into RUNNING state: " + tid);
             init(false, tps.getArgArray());
             start(false);
-        } else if (TransformState.DISABLED == tps.getTargetState()) {
-            logger.debug("bringing into DISABLED state: " + tid);
-            init(false, tps.getArgArray());
-            runState = TransformState.DISABLED;
         } else if (TransformState.DESTROYED == tps.getTargetState()) {
             logger.debug("bringing into DESTROYED state: " + tid);
             runState = TransformState.DESTROYED;
@@ -452,7 +438,6 @@ public abstract class TransformBase implements Transform
             start();
         }
     }
-
     private void parentStop()
         throws TransformStopException, IllegalStateException
     {
