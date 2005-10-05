@@ -91,6 +91,16 @@ public abstract class NetcapSession {
         serverInterfaceId( pointer.value(), intf );
     }
     
+    public String toString( boolean ifClient )
+    {
+        return toString( pointer.value(), ifClient );
+    }
+
+    public String toString()
+    {
+        return toString( pointer.value(), true );
+    }
+    
     protected abstract Endpoints makeEndpoints( boolean ifClient );
 
     public Endpoints clientSide() { return clientSide; }
@@ -102,6 +112,8 @@ public abstract class NetcapSession {
     protected static native long   getLongValue  ( int id, long session );
     protected static native int    getIntValue   ( int id, long session );
     protected static native String getStringValue( int id, long session );
+
+    protected static native String toString( long session, boolean ifClient );
 
     private native void serverInterfaceId( long session, byte intf );
 

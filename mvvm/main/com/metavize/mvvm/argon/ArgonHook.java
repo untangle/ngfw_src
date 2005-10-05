@@ -72,7 +72,7 @@ abstract class ArgonHook implements Runnable
     /**
      * Thread hook
      */
-    public void run()
+    public final void run()
     {
         try {
             ClassLoader cl = getClass().getClassLoader();
@@ -88,20 +88,26 @@ abstract class ArgonHook implements Runnable
             /* Update the server interface with the override table */
             NetcapSession netcapSession = sessionGlobalState.netcapSession();
             InterfaceOverride.getInstance().updateDestinationInterface( netcapSession );
+
+            if ( logger.isDebugEnabled()) logger.debug( netcapSession );
             
             /* If the server interface is still unknown, drop the session */
             byte serverIntf = netcapSession.serverSide().interfaceId();
             byte clientIntf = netcapSession.clientSide().interfaceId();
             if ( IntfConverter.NETCAP_UNKNOWN == serverIntf || 
                  IntfConverter.NETCAP_LOOPBACK == serverIntf ) {
-                logger.info( "Session destined to an unknown or local interface[" + serverIntf + 
-                             "], destroying" );
+                if ( logger.isInfoEnabled()) {
+                    logger.info( "" + netcapSession + " destined to unknown or local interface, raze." );
+                }
+                raze();
                 return;
             }
             
             if ( serverIntf == clientIntf ) {
-                logger.info( "Session <" + netcapSession +
-                             " > has matching client and server interfaces, destroying" );
+                if ( logger.isInfoEnabled()) {
+                    logger.info( "" + netcapSession + " has matching client and server interface, raze." );
+                }
+                raze();
                 return;
             }
 

@@ -21,6 +21,7 @@
 #include <mvutil/errlog.h>
 #include <mvutil/debug.h>
 #include <mvutil/uthread.h>
+#include <mvutil/unet.h>
 #include <jmvutil.h>
 
 #include <jni.h>
@@ -177,7 +178,7 @@ JNIEXPORT jstring JNICALL JF_Session( getStringValue )
         if ( netcap_interface_intf_to_string( endpoints->intf, buf, sizeof( buf )) < 0 ) {
             return errlog_null( ERR_CRITICAL, "netcap_intf_to_string\n" );
         }
-
+        
         return (*env)->NewStringUTF( env, buf );
     }
 
@@ -200,6 +201,34 @@ JNIEXPORT void JNICALL JF_Session( raze )
         errlog( ERR_CRITICAL, "netcap_session_raze\n" );
     }
 }
+
+/*
+ * Class:     com_metavize_jnetcap_NetcapSession
+ * Method:    toString
+ * Signature: (J)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_metavize_jnetcap_NetcapSession_toString
+  (JNIEnv *env, jclass _this, jlong session_ptr, jboolean ifClient )
+{
+    netcap_session_t* session = NULL;
+    netcap_endpoints_t* endpoints;
+    /* Just leaving some slack in case */
+    char buf[sizeof( "[c]xxx.xxx.xxx.xxx:ppppp -> [c]xxx.xxx.xxx.xxx:ppppp" ) + 16];
+
+    JLONG_TO_SESSION_NULL( session, session_ptr );
+
+    if ( ifClient == JNI_TRUE ) endpoints = &session->cli;
+    else                        endpoints = &session->srv;
+    
+    bzero( buf, sizeof( buf ));
+
+    snprintf( buf, sizeof( buf ), "[%d]%s:%d -> [%d]%s:%d",
+              session->cli.intf, unet_next_inet_ntoa( endpoints->cli.host.s_addr ), endpoints->cli.port,
+              session->srv.intf, unet_next_inet_ntoa( endpoints->srv.host.s_addr ), endpoints->srv.port );
+
+    return (*env)->NewStringUTF( env, buf );
+}
+
 
 /*
  * Class:     com_metavize_jnetcap_NetcapSession
