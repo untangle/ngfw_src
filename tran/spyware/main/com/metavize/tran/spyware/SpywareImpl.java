@@ -15,7 +15,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -261,7 +263,17 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         l = (List<StringRule>)settings.getDomainWhitelist();
         for (StringRule sr : l) {
             if (sr.isLive()) {
-                s.add(sr.getString());
+                String str = sr.getString();
+                if (str.toLowerCase().startsWith("http://")) {
+                    try {
+                        URL url = new URL(str);
+                        s.add(url.getHost());
+                    } catch (MalformedURLException exn) {
+                        logger.warn("skipping non-url: " + s, exn);
+                    }
+                } else {
+                    s.add(sr.getString());
+                }
             }
         }
         domainWhitelist = s;
