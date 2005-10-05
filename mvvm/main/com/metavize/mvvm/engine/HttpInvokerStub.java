@@ -16,9 +16,11 @@ import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import com.metavize.mvvm.client.InvocationConnectionException;
 import com.metavize.mvvm.security.LoginSession;
 
 public class HttpInvokerStub implements InvocationHandler, Serializable
@@ -63,6 +65,18 @@ public class HttpInvokerStub implements InvocationHandler, Serializable
     // InvocationHandler methods ----------------------------------------------
 
     public Object invoke(Object proxy, Method method, Object[] args)
+        throws Exception
+    {
+        try {
+            return doInvoke(proxy, method, args);
+        } catch (ConnectException exn) {
+            throw new InvocationConnectionException("could not connect", exn);
+        }
+    }
+
+    // private methods --------------------------------------------------------
+
+    private Object doInvoke(Object proxy, Method method, Object[] args)
         throws Exception
     {
         HttpURLConnection huc = (HttpURLConnection)url.openConnection();
