@@ -2,7 +2,7 @@
 <!-- Created with iReport - A designer for JasperReports -->
 <!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
 <jasperReport
-		 name="IDSTopEvents"
+		 name="IDSTopClients"
 		 columnCount="1"
 		 printOrder="Vertical"
 		 orientation="Portrait"
@@ -32,14 +32,18 @@
 	<import value="net.sf.jasperreports.engine.data.*" />
 	<parameter name="startTime" isForPrompting="true" class="java.sql.Timestamp"/>
 	<parameter name="endTime" isForPrompting="true" class="java.sql.Timestamp"/>
-	<queryString><![CDATA[SELECT COUNT(evt.message) as TOTAL_ACTIONS, evt.message as DESCRIPTION, evt.blocked as ACTION
+	<queryString><![CDATA[SELECT c_client_addr as CLIENT, 	COUNT(CASE blocked WHEN true THEN 1 ELSE NULL END) as BLOCKED,
+								COUNT(CASE blocked WHEN false THEN 1 ELSE NULL END) as PASSED,
+								COUNT(c_client_addr) as TOTAL_ACTIONS
 FROM tr_ids_event evt
+JOIN pl_endp USING (session_id)
 WHERE evt.time_stamp >= $P{startTime} and evt.time_stamp <= $P{endTime}
-GROUP BY evt.message, evt.blocked
+GROUP BY c_client_addr
 ORDER BY TOTAL_ACTIONS DESC]]></queryString>
 	<field name="RULE_INDEX" class="java.lang.Long"/>
-	<field name="DESCRIPTION" class="java.lang.String"/>
-	<field name="ACTION" class="java.lang.String"/>
+	<field name="CLIENT" class="java.lang.String"/>
+	<field name="BLOCKED" class="java.lang.Long"/>
+	<field name="PASSED" class="java.lang.Long"/>
 	<field name="TOTAL_ACTIONS" class="java.lang.Long"/>
 	<variable name="RANK" class="java.lang.Integer" resetType="Report" calculation="Count">
 		<variableExpression><![CDATA[$F{RULE_INDEX}]]></variableExpression>
@@ -81,7 +85,7 @@ ORDER BY TOTAL_ACTIONS DESC]]></queryString>
 						mode="Opaque"
 						x="40"
 						y="0"
-						width="205"
+						width="129"
 						height="13"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -96,7 +100,7 @@ ORDER BY TOTAL_ACTIONS DESC]]></queryString>
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
 						<font fontName="SansSerif" pdfFontName="Helvetica" size="9" isBold="false" isItalic="true" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<text><![CDATA[Description]]></text>
+				<text><![CDATA[Client]]></text>
 				</staticText>
 				<staticText>
 					<reportElement
@@ -140,7 +144,7 @@ ORDER BY TOTAL_ACTIONS DESC]]></queryString>
 					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
 						<font fontName="SansSerif" pdfFontName="Helvetica" size="9" isBold="false" isItalic="true" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<text><![CDATA[Action]]></text>
+				<text><![CDATA[Blocked]]></text>
 				</staticText>
 				<staticText>
 					<reportElement
@@ -162,7 +166,29 @@ ORDER BY TOTAL_ACTIONS DESC]]></queryString>
 					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
 						<font fontName="SansSerif" pdfFontName="Helvetica" size="9" isBold="false" isItalic="true" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<text><![CDATA[Count]]></text>
+				<text><![CDATA[Total Actions]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="205"
+						y="0"
+						width="41"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-6"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#FFFFFF" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="SansSerif" pdfFontName="Helvetica" size="9" isBold="false" isItalic="true" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[Passed]]></text>
 				</staticText>
 			</band>
 		</pageHeader>
@@ -178,7 +204,7 @@ ORDER BY TOTAL_ACTIONS DESC]]></queryString>
 						mode="Opaque"
 						x="40"
 						y="0"
-						width="205"
+						width="128"
 						height="13"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -193,7 +219,7 @@ ORDER BY TOTAL_ACTIONS DESC]]></queryString>
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
 						<font fontName="SansSerif" pdfFontName="Helvetica" size="9" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$F{DESCRIPTION}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{CLIENT}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
@@ -237,7 +263,7 @@ ORDER BY TOTAL_ACTIONS DESC]]></queryString>
 					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
 						<font fontName="Monospaced" pdfFontName="Helvetica" size="9" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$F{ACTION}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.Long"><![CDATA[$F{BLOCKED}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
@@ -260,6 +286,28 @@ ORDER BY TOTAL_ACTIONS DESC]]></queryString>
 						<font fontName="Monospaced" pdfFontName="Helvetica" size="9" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
 				<textFieldExpression   class="java.lang.Long"><![CDATA[$F{TOTAL_ACTIONS}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						mode="Opaque"
+						x="205"
+						y="0"
+						width="41"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-5"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#FFFFFF" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Monospaced" pdfFontName="Helvetica" size="9" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.Long"><![CDATA[$F{PASSED}]]></textFieldExpression>
 				</textField>
 			</band>
 		</detail>
