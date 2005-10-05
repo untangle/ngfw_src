@@ -338,8 +338,11 @@ static int _arp_dst_intf ( netcap_intf_db_t* db, netcap_intf_t* intf, netcap_int
             return errlog( ERR_CRITICAL, "_arp_bridge_interface\n" );
         }
 
-        /* XXXX should use the db rather than the default one, synchronization issues */
-        if (( ret = netcap_interface_is_broadcast( dst_ip->s_addr, src_intf )) < 0 ) {
+        /* XXXX should pass in the db rather than the default one to avoid synchronization issues */
+        /* If the packet is multicast or broadcast, you have to force it out the other
+         * interface */
+        if ((( ret = netcap_interface_is_multicast( dst_ip->s_addr )) != 1 ) &&
+            ( ret = netcap_interface_is_broadcast( dst_ip->s_addr, src_intf )) < 0 ) {
             errlog( ERR_CRITICAL, "netcap_inetface_is_broadcast\n" );
         } else if ( ret == 1 ) {
             netcap_intf_bridge_info_t* bridge_info = intf_info->bridge_info;

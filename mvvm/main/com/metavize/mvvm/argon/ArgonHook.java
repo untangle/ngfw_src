@@ -91,10 +91,17 @@ abstract class ArgonHook implements Runnable
             
             /* If the server interface is still unknown, drop the session */
             byte serverIntf = netcapSession.serverSide().interfaceId();
+            byte clientIntf = netcapSession.clientSide().interfaceId();
             if ( IntfConverter.NETCAP_UNKNOWN == serverIntf || 
                  IntfConverter.NETCAP_LOOPBACK == serverIntf ) {
                 logger.info( "Session destined to an unknown or local interface[" + serverIntf + 
                              "], destroying" );
+                return;
+            }
+            
+            if ( serverIntf == clientIntf ) {
+                logger.info( "Session <" + netcapSession +
+                             " > has matching client and server interfaces, destroying" );
                 return;
             }
 
