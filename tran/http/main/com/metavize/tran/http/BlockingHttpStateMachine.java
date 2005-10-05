@@ -12,19 +12,23 @@
 package com.metavize.tran.http;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.tran.token.AbstractTokenHandler;
+import com.metavize.tran.token.ArrayTokenStreamer;
 import com.metavize.tran.token.Chunk;
 import com.metavize.tran.token.EndMarker;
 import com.metavize.tran.token.Header;
+import com.metavize.tran.token.SeriesTokenStreamer;
 import com.metavize.tran.token.Token;
 import com.metavize.tran.token.TokenException;
 import com.metavize.tran.token.TokenResult;
+import com.metavize.tran.token.TokenStreamer;
 
-// XXX will probably roll this into a more general system
 public abstract class BlockingHttpStateMachine extends AbstractTokenHandler
 {
     protected enum ClientState {
@@ -61,6 +65,7 @@ public abstract class BlockingHttpStateMachine extends AbstractTokenHandler
 
     private final List<Token> requestQueue = new ArrayList<Token>();
     private final List<Token> responseQueue = new ArrayList<Token>();
+    private final Map<RequestLine, String> hosts = new HashMap<RequestLine, String>();
 
     private ClientState clientState = ClientState.REQ_START_STATE;
     private ServerState serverState = ServerState.RESP_START_STATE;
@@ -75,6 +80,9 @@ public abstract class BlockingHttpStateMachine extends AbstractTokenHandler
 
     private Token[] requestResponse = null;
     private Token[] responseResponse = null;
+
+    private TokenStreamer preStreamer = null;
+    private TokenStreamer postStreamer = null;
 
     private boolean requestPersistent;
     private boolean responsePersistent;
@@ -135,6 +143,11 @@ public abstract class BlockingHttpStateMachine extends AbstractTokenHandler
         return statusLine;
     }
 
+    protected String getResponseHost()
+    {
+        return hosts.get(responseRequest);
+    }
+
     protected boolean isRequestPersistent()
     {
         return requestPersistent;
@@ -154,6 +167,72 @@ public abstract class BlockingHttpStateMachine extends AbstractTokenHandler
         }
 
         requestMode = Mode.RELEASED;
+    }
+
+    protected void preStream(TokenStreamer preStreamer)
+    {
+        switch (task) {
+        case REQUEST:
+            if (Mode.RELEASED != requestMode) {
+                throw new IllegalStateException("preStream in: " + requestMode);
+            } else if (ClientState.REQ_BODY_STATE != clientState
+                       && ClientState.REQ_BODY_END_STATE != clientState) {
+                throw new IllegalStateException("preStream in: " + clientState);
+            } else {
+                this.preStreamer = preStreamer;
+            }
+            break;
+
+        case RESPONSE:
+            if (Mode.RELEASED != responseMode) {
+                throw new IllegalStateException("preStream in: " + responseMode);
+            } else if (ServerState.RESP_BODY_STATE != serverState
+                       && ServerState.RESP_BODY_END_STATE != serverState) {
+                throw new IllegalStateException("preStream in: " + serverState);
+            } else {
+                this.preStreamer = preStreamer;
+            }
+            break;
+
+        case NONE:
+            throw new IllegalStateException("stream in: " + task);
+
+        default:
+            throw new IllegalStateException("programmer malfunction");
+        }
+    }
+
+    protected void postStream(TokenStreamer postStreamer)
+    {
+        switch (task) {
+        case REQUEST:
+            if (Mode.RELEASED != requestMode) {
+                throw new IllegalStateException("postStream in: " + requestMode);
+            } else if (ClientState.REQ_HEADER_STATE != clientState
+                       && ClientState.REQ_BODY_STATE != clientState) {
+                throw new IllegalStateException("postStream in: " + clientState);
+            } else {
+                this.postStreamer = postStreamer;
+            }
+            break;
+
+        case RESPONSE:
+            if (Mode.RELEASED != responseMode) {
+                throw new IllegalStateException("postStream in: " + responseMode);
+            } else if (ServerState.RESP_HEADER_STATE != serverState
+                       && ServerState.RESP_BODY_STATE != serverState) {
+                throw new IllegalStateException("postStream in: " + serverState);
+            } else {
+                this.postStreamer = postStreamer;
+            }
+            break;
+
+        case NONE:
+            throw new IllegalStateException("stream in: " + task);
+
+        default:
+            throw new IllegalStateException("programmer malfunction");
+        }
     }
 
     protected void blockRequest(Token[] response)
@@ -196,22 +275,71 @@ public abstract class BlockingHttpStateMachine extends AbstractTokenHandler
 
     public TokenResult handleClientToken(Token token) throws TokenException
     {
+        TokenResult tr;
+
+        task = Task.REQUEST;
         try {
-            task = Task.REQUEST;
-            return doHandleClientToken(token);
+            tr = doHandleClientToken(token);
+
+            if (null != preStreamer || null != postStreamer) {
+                Token[] s2cToks = tr.s2cTokens();
+                TokenStreamer s2c = new ArrayTokenStreamer(s2cToks, false);
+
+                List<TokenStreamer> l = new ArrayList<TokenStreamer>(3);
+                if (null != preStreamer) {
+                    l.add(preStreamer);
+                }
+                Token[] c2sToks = tr.c2sTokens();
+                TokenStreamer c2sAts = new ArrayTokenStreamer(c2sToks, false);
+                l.add(c2sAts);
+                if (null != postStreamer) {
+                    l.add(postStreamer);
+                }
+                TokenStreamer c2s = new SeriesTokenStreamer(l);
+
+
+                tr = new TokenResult(s2c, c2s);
+            }
         } finally {
             task = Task.NONE;
         }
+
+        return tr;
     }
 
     public TokenResult handleServerToken(Token token) throws TokenException
     {
+        TokenResult tr;
+
+        task = Task.RESPONSE;
         try {
-            task = Task.RESPONSE;
-            return doHandleServerToken(token);
+            tr = doHandleServerToken(token);
+
+            if (null != preStreamer || null != postStreamer) {
+                List<TokenStreamer> l = new ArrayList<TokenStreamer>(3);
+                if (null != preStreamer) {
+                    l.add(preStreamer);
+                }
+
+                Token[] s2cToks = tr.s2cTokens();
+                TokenStreamer s2cAts = new ArrayTokenStreamer(s2cToks, false);
+                l.add(s2cAts);
+                if (null != postStreamer) {
+                    l.add(postStreamer);
+                }
+
+                TokenStreamer s2c = new SeriesTokenStreamer(l);
+
+                Token[] c2sToks = tr.c2sTokens();
+                TokenStreamer c2s = new ArrayTokenStreamer(c2sToks, false);
+
+                tr = new TokenResult(s2c, c2s);
+            }
         } finally {
             task = Task.NONE;
         }
+
+        return tr;
     }
 
     @Override
@@ -272,6 +400,9 @@ public abstract class BlockingHttpStateMachine extends AbstractTokenHandler
                 Header h = (Header)token;
                 requestPersistent = isPersistent(h);
                 h = doRequestHeader(h);
+
+                String host = h.getValue("host");
+                hosts.put(getRequestLine(), host);
 
                 switch (requestMode) {
                 case QUEUEING:
@@ -491,6 +622,7 @@ public abstract class BlockingHttpStateMachine extends AbstractTokenHandler
             if (Mode.BLOCKED != responseMode) {
                 EndMarker em = (EndMarker)token;
                 doResponseBodyEnd();
+                hosts.remove(responseRequest);
 
                 switch (responseMode) {
                 case QUEUEING:

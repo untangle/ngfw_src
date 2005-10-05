@@ -75,34 +75,34 @@ public class TokenResult
      * Test if this TokenResult has data (Streamer or tokens)
      * for the client (s2c)
      */
-    
+
     public boolean hasDataForClient() {
       return s2cStreamer != null || (s2c!=null && s2c.length>0);
     }
 
     // accessors --------------------------------------------------------------
 
-    Token[] s2cTokens()
+    public Token[] s2cTokens()
     {
         return s2c;
     }
 
-    Token[] c2sTokens()
+    public Token[] c2sTokens()
     {
         return c2s;
     }
 
-    TokenStreamer s2cStreamer()
+    public TokenStreamer s2cStreamer()
     {
         return s2cStreamer;
     }
 
-    TokenStreamer c2sStreamer()
+    public TokenStreamer c2sStreamer()
     {
         return c2sStreamer;
     }
 
-    boolean isStreamer()
+    public boolean isStreamer()
     {
         return streamer;
     }

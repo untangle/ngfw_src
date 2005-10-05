@@ -13,6 +13,6 @@ package com.metavize.tran.token;
 
 public interface TokenStreamer
 {
-    boolean closeWhenDone();
     Token nextToken();
+    boolean closeWhenDone();
 }

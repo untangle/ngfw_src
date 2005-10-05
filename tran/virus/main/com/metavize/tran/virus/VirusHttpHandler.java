@@ -17,17 +17,15 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.mvvm.tran.MimeTypeRule;
 import com.metavize.mvvm.tran.StringRule;
 import com.metavize.mvvm.tran.Transform;
+import com.metavize.tran.http.BlockingHttpStateMachine;
 import com.metavize.tran.http.HttpMethod;
-import com.metavize.tran.http.HttpStateMachine;
 import com.metavize.tran.http.RequestLine;
 import com.metavize.tran.http.StatusLine;
 import com.metavize.tran.token.Chunk;
@@ -36,11 +34,10 @@ import com.metavize.tran.token.FileChunkStreamer;
 import com.metavize.tran.token.Header;
 import com.metavize.tran.token.Token;
 import com.metavize.tran.token.TokenException;
-import com.metavize.tran.token.TokenResult;
 import com.metavize.tran.util.TempFileFactory;
 import org.apache.log4j.Logger;
 
-class VirusHttpHandler extends HttpStateMachine
+class VirusHttpHandler extends BlockingHttpStateMachine
 {
     // make configurable
     private static final int TIMEOUT = 30000;
@@ -71,18 +68,12 @@ class VirusHttpHandler extends HttpStateMachine
 
     private final String vendor;
     private final VirusTransformImpl transform;
-    private final List<Token> requestQueue = new ArrayList<Token>();
-    private final List<String> hostQueue = new ArrayList<String>();
-    private final List<Token> responseQueue = new ArrayList<Token>();
 
-    private RequestLine responseRequest;
-    private String responseHost;
     private boolean scan;
     private long bufferingStart;
     private boolean buffering;
     private int outstanding;
     private int totalSize;
-    private boolean persistent;
     private String extension;
     private String fileName;
     private FileChannel outFile;
@@ -102,10 +93,8 @@ class VirusHttpHandler extends HttpStateMachine
     // HttpStateMachine methods -----------------------------------------------
 
     @Override
-    protected TokenResult doRequestLine(RequestLine requestLine)
+    protected RequestLine doRequestLine(RequestLine requestLine)
     {
-        requestQueue.add(requestLine);
-
         this.scan = false;
         String path = requestLine.getRequestUri().getPath();
 
@@ -113,58 +102,45 @@ class VirusHttpHandler extends HttpStateMachine
         extension = (0 <= i && path.length() - 1 > i)
             ? path.substring(i + 1) : null;
 
-        return new TokenResult(null, new Token[] { requestLine });
+        releaseRequest();
+        return requestLine;
     }
 
     @Override
-    protected TokenResult doRequestHeader(Header requestHeader)
+    protected Header doRequestHeader(Header requestHeader)
     {
         logger.debug("got a request header");
 
-        String host = requestHeader.getValue("host");
-        hostQueue.add(host);
-
         requestHeader.removeField("range");
 
-        return new TokenResult(null, new Token[] { requestHeader });
+        return requestHeader;
     }
 
     @Override
-    protected TokenResult doRequestBody(Chunk chunk)
+    protected Chunk doRequestBody(Chunk chunk)
     {
-        return new TokenResult(null, new Token[] { chunk });
+        return chunk;
     }
 
     @Override
-    protected TokenResult doRequestBodyEnd(EndMarker endMarker)
+    protected void doRequestBodyEnd() { }
+
+    @Override
+    protected StatusLine doStatusLine(StatusLine statusLine)
     {
-        return new TokenResult(null, new Token[] { endMarker });
+        return statusLine;
     }
 
     @Override
-    protected TokenResult doStatusLine(StatusLine statusLine)
-    {
-        if (100 != statusLine.getStatusCode()) {
-            responseRequest = (RequestLine)requestQueue.remove(0);
-            responseHost = (String)hostQueue.remove(0);
-        }
-
-        assert 0 == responseQueue.size();
-
-        responseQueue.add(statusLine);
-
-        return TokenResult.NONE;
-    }
-
-    @Override
-    protected TokenResult doResponseHeader(Header header)
+    protected Header doResponseHeader(Header header)
     {
         logger.debug("doing response header");
 
         String reason = "";
 
-        if (null == responseRequest
-            || HttpMethod.HEAD == responseRequest.getMethod()) {
+        RequestLine rl = getResponseRequest();
+
+        if (null == rl || HttpMethod.HEAD == rl.getMethod()) {
             logger.debug("CONTINUE or HEAD");
         } else if (matchesExtension(extension)) {
             logger.debug("matches extension");
@@ -179,36 +155,28 @@ class VirusHttpHandler extends HttpStateMachine
             reason = mimeType;
         }
 
-        responseQueue.add(header);
         if (scan) {
-            persistent = isPersistent(header);
             buffering = true;
             bufferingStart = System.currentTimeMillis();
             outstanding = 0;
             totalSize = 0;
             setupFile(reason);
-            return TokenResult.NONE;
         } else {
             header.replaceField("accept-ranges", "none");
-            Token[] toks = responseQueue.toArray(new Token[responseQueue.size()]);
-            responseQueue.clear();
-            return new TokenResult(toks, null);
+            releaseResponse();
         }
+
+        return header;
     }
 
     @Override
-    protected TokenResult doResponseBody(Chunk chunk) throws TokenException
+    protected Chunk doResponseBody(Chunk chunk) throws TokenException
     {
-        if (scan) {
-            return bufferOrTrickle(chunk);
-        } else {
-            logger.debug("passing through");
-            return new TokenResult(new Token[] { chunk }, null);
-        }
+        return scan ? bufferOrTrickle(chunk) : chunk;
     }
 
     @Override
-    protected TokenResult doResponseBodyEnd(EndMarker endMarker)
+    protected void doResponseBodyEnd()
     {
         if (scan) {
             try {
@@ -216,23 +184,13 @@ class VirusHttpHandler extends HttpStateMachine
             } catch (IOException exn) {
                 logger.warn("could not close channel", exn);
             }
-            return scanFile();
-        } else {
-            return new TokenResult(new Token[] { endMarker }, null);
+            scanFile();
         }
-    }
-
-    // TokenHandler methods ---------------------------------------------------
-
-    @Override
-    public TokenResult releaseFlush()
-    {
-        return TokenResult.NONE;
     }
 
     // private methods --------------------------------------------------------
 
-    private TokenResult scanFile()
+    private void scanFile()
     {
         VirusScannerResult result;
         try {
@@ -251,26 +209,21 @@ class VirusHttpHandler extends HttpStateMachine
             result = VirusScannerResult.ERROR;
         }
 
-        eventLogger.info(new VirusHttpEvent(responseRequest, result,  vendor));
+        eventLogger.info(new VirusHttpEvent(getResponseRequest(), result,  vendor));
 
         if (result.isClean()) {
             transform.incrementCount(PASS_COUNTER, 1);
 
-             if (result.isVirusCleaned()) {
+            if (result.isVirusCleaned()) {
                 logger.info("Cleaned infected file");
             } else {
                 logger.info("Clean");
             }
 
             if (buffering) {
-                responseQueue.add(EndMarker.MARKER);
-                Token[] toks = responseQueue.toArray(new Token[responseQueue.size()]);
-                responseQueue.clear();
-                return new TokenResult(toks, null);
+                releaseResponse();
             } else {
-                FileChunkStreamer streamer = new FileChunkStreamer
-                    (file, inFile, null, EndMarker.MARKER, false);
-                return new TokenResult(streamer, null);
+                preStream(new FileChunkStreamer(file, inFile, null, null, false));
             }
 
         } else {
@@ -279,38 +232,35 @@ class VirusHttpHandler extends HttpStateMachine
             transform.incrementCount(BLOCK_COUNTER, 1);
 
             if (buffering) {
-                responseQueue.clear();
-                return blockMessage();
+                blockResponse(blockMessage());
             } else {
                 TCPSession s = getSession();
                 s.shutdownClient();
                 s.shutdownServer();
                 s.release();
-                return TokenResult.NONE;
             }
         }
     }
 
-    private TokenResult blockMessage()
+    private Token[] blockMessage()
     {
         StatusLine sl = new StatusLine("HTTP/1.1", 403, "Forbidden");
 
-        String message = String.format(BLOCK_MESSAGE,
-                                       vendor,
-                                       responseHost,
-                                       responseRequest.getRequestUri());
+        String message = String.format(BLOCK_MESSAGE, vendor,
+                                       getResponseHost(),
+                                       getResponseRequest().getRequestUri());
 
         Header h = new Header();
         h.addField("Content-Length", Integer.toString(message.length()));
         h.addField("Content-Type", "text/html");
-        h.addField("Connection", persistent ? "Keep-Alive" : "Close");
+        h.addField("Connection", isResponsePersistent() ? "Keep-Alive" : "Close");
 
         ByteBuffer buf = ByteBuffer.allocate(message.length());
         buf.put(message.getBytes());
         buf.flip();
         Chunk c = new Chunk(buf);
 
-        return new TokenResult(new Token[] { sl, h, c, EndMarker.MARKER }, null);
+        return new Token[] { sl, h, c, EndMarker.MARKER };
     }
 
     private boolean matchesExtension(String extension)
@@ -400,7 +350,7 @@ class VirusHttpHandler extends HttpStateMachine
         }
     }
 
-    private TokenResult bufferOrTrickle(Chunk chunk) throws TokenException
+    private Chunk bufferOrTrickle(Chunk chunk) throws TokenException
     {
         ByteBuffer buf = chunk.getData();
 
@@ -419,15 +369,12 @@ class VirusHttpHandler extends HttpStateMachine
                 && SIZE_LIMIT > outstanding;
             if (buffering) {    /* remain in buffering mode */
                 logger.debug("buffering");
-                responseQueue.add(chunk);
-                return TokenResult.NONE;
+                return chunk;
             } else {            /* switch to trickle mode */
                 logger.debug("switching to trickling");
                 Chunk c = trickle();
-                StatusLine sl = (StatusLine)responseQueue.get(0);
-                Header h = (Header)responseQueue.get(1);
-                responseQueue.clear();
-                return new TokenResult(new Token[] { sl, h, c }, null);
+                releaseResponse();
+                return c;
             }
         } else {                /* stay in trickle mode */
             logger.debug("trickling");
@@ -436,11 +383,13 @@ class VirusHttpHandler extends HttpStateMachine
                 scan = false;
                 FileChunkStreamer streamer = new FileChunkStreamer
                     (file, inFile, null, EndMarker.MARKER, false);
-                return new TokenResult(streamer, null);
+                preStream(streamer);
+
+                return Chunk.EMPTY;
             } else {
                 logger.debug("continuing to trickle: " + totalSize);
                 Chunk c = trickle();
-                return new TokenResult(new Token[] { c }, null);
+                return c;
             }
         }
     }
