@@ -1,3 +1,9 @@
+metavize-java (0.2.0-678) stable; urgency=low
+
+  * auto build
+
+ -- Aaron Read <amread@metavize.com>  Wed,  5 Oct 2005 11:19:07 -0700
+
 metavize-java (0.2.0-677) stable; urgency=low
 
   * auto build
