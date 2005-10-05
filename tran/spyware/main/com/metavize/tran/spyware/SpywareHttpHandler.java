@@ -57,7 +57,6 @@ public class SpywareHttpHandler extends HttpStateMachine
     private final TCPSession session;
 
     private final List cookieQueue = new LinkedList();
-    private final List reqHostQueue = new LinkedList();
 
     private final Logger logger = Logger.getLogger(getClass());
     private final Logger eventLogger = MvvmContextFactory.context()
@@ -102,7 +101,12 @@ public class SpywareHttpHandler extends HttpStateMachine
         RequestLine requestLine = getRequestLine();
         String host = requestHeader.getValue("host");
         URI uri = requestLine.getRequestUri();
-        if (transform.isBlacklistDomain(host, uri)) {
+
+        if (transform.isWhitelistDomain(host)) {
+            getSession().release();
+            releaseRequest();
+            return requestHeader;
+        } else if (transform.isBlacklistDomain(host, uri)) {
             SpywareBlacklistEvent evt = new SpywareBlacklistEvent
                 (getSession().id(), requestLine);
             eventLogger.info(evt);
@@ -111,11 +115,11 @@ public class SpywareHttpHandler extends HttpStateMachine
 
             blockRequest(generateResponse(host, uri.toString(),
                                           isRequestPersistent()));
+            return requestHeader;
         } else {
             releaseRequest();
+            return clientCookie(requestLine, requestHeader);
         }
-
-        return clientCookie(requestLine, requestHeader);
     }
 
     @Override
@@ -141,8 +145,9 @@ public class SpywareHttpHandler extends HttpStateMachine
         mimeType = header.getValue("content-type");
 
         if (100 != getStatusLine().getStatusCode()) {
+            String host = getResponseHost();
             header = serverCookie(getResponseRequest(), header);
-            header  = addCookieKillers(header);
+            header = addCookieKillers(header);
         }
 
         return header;
@@ -208,8 +213,6 @@ public class SpywareHttpHandler extends HttpStateMachine
         String host = h.getValue("host");
         List cookies = h.getValues("cookie"); // XXX cookie2 ???
 
-        reqHostQueue.add(host);
-
         if (null == cookies) {
             return h;
         }
@@ -248,7 +251,7 @@ public class SpywareHttpHandler extends HttpStateMachine
         logger.debug("checking server cookie");
         // XXX if deferred 0ttl cookie, send it and nullify
 
-        String reqDomain = (String)reqHostQueue.remove(0);
+        String reqDomain = getResponseHost();
 
         List setCookies = h.getValues("set-cookie");
 
@@ -272,7 +275,6 @@ public class SpywareHttpHandler extends HttpStateMachine
                 logger.debug("using request domain: " + domain);
             }
 
-
             boolean badDomain = transform.isBlockedCookie(domain);
 
             if (badDomain) {
@@ -288,7 +290,7 @@ public class SpywareHttpHandler extends HttpStateMachine
         return h;
     }
 
-    private Header addCookieKillers( Header h )
+    private Header addCookieKillers(Header h)
     {
         List cookieKillers = (List)cookieQueue.remove(0);
         for (Iterator i = cookieKillers.iterator(); i.hasNext(); ) {

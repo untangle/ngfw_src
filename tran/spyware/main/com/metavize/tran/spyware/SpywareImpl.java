@@ -345,8 +345,15 @@ public class SpywareImpl extends AbstractTransform implements Spyware
             match = urlBlacklist.contains(domain);
         }
 
-        for (String d = domain; match && null != d; d = nextHost(d)) {
-            match = !domainWhitelist.contains(domain);
+        return match;
+    }
+
+    boolean isWhitelistDomain(String domain)
+    {
+        boolean match = false;
+
+        for (String d = domain; !match && null != d; d = nextHost(d)) {
+            match = domainWhitelist.contains(domain);
         }
 
         return match;
