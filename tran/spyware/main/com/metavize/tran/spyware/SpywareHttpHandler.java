@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.mvvm.tran.StringRule;
-import com.metavize.tran.http.BlockingHttpStateMachine;
+import com.metavize.tran.http.HttpStateMachine;
 import com.metavize.tran.http.RequestLine;
 import com.metavize.tran.http.StatusLine;
 import com.metavize.tran.token.Chunk;
@@ -33,7 +33,7 @@ import com.metavize.tran.token.Token;
 import com.metavize.tran.util.AsciiCharBuffer;
 import org.apache.log4j.Logger;
 
-public class SpywareHttpHandler extends BlockingHttpStateMachine
+public class SpywareHttpHandler extends HttpStateMachine
 {
     private static final Pattern OBJECT_PATTERN
         = Pattern.compile("<object", Pattern.CASE_INSENSITIVE);

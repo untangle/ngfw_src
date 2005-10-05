@@ -15,7 +15,7 @@ import java.nio.ByteBuffer;
 
 import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.mvvm.tran.Transform;
-import com.metavize.tran.http.BlockingHttpStateMachine;
+import com.metavize.tran.http.HttpStateMachine;
 import com.metavize.tran.http.RequestLine;
 import com.metavize.tran.http.StatusLine;
 import com.metavize.tran.token.Chunk;
@@ -24,7 +24,7 @@ import com.metavize.tran.token.Header;
 import com.metavize.tran.token.Token;
 import org.apache.log4j.Logger;
 
-public class HttpBlockerHandler extends BlockingHttpStateMachine
+public class HttpBlockerHandler extends HttpStateMachine
 {
     private static final int SCAN = Transform.GENERIC_0_COUNTER;
     private static final int BLOCK = Transform.GENERIC_1_COUNTER;

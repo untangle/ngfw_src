@@ -1,13 +1,13 @@
 package com.metavize.tran.ids;
 
 import com.metavize.mvvm.tapi.TCPSession;
-import com.metavize.tran.http.BlockingHttpStateMachine;
+import com.metavize.tran.http.HttpStateMachine;
 import com.metavize.tran.http.RequestLine;
 import com.metavize.tran.http.StatusLine;
 import com.metavize.tran.token.Chunk;
 import com.metavize.tran.token.Header;
 
-class IDSHttpHandler extends BlockingHttpStateMachine {
+class IDSHttpHandler extends HttpStateMachine {
 
     //private IDSTransform transform; //Do i need this?
     private IDSSessionInfo info;

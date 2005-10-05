@@ -24,8 +24,8 @@ import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.mvvm.tran.MimeTypeRule;
 import com.metavize.mvvm.tran.StringRule;
 import com.metavize.mvvm.tran.Transform;
-import com.metavize.tran.http.BlockingHttpStateMachine;
 import com.metavize.tran.http.HttpMethod;
+import com.metavize.tran.http.HttpStateMachine;
 import com.metavize.tran.http.RequestLine;
 import com.metavize.tran.http.StatusLine;
 import com.metavize.tran.token.Chunk;
@@ -37,7 +37,7 @@ import com.metavize.tran.token.TokenException;
 import com.metavize.tran.util.TempFileFactory;
 import org.apache.log4j.Logger;
 
-class VirusHttpHandler extends BlockingHttpStateMachine
+class VirusHttpHandler extends HttpStateMachine
 {
     // make configurable
     private static final int TIMEOUT = 30000;
