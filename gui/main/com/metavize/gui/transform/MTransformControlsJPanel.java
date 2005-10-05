@@ -189,8 +189,8 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
 	String transformName = mTransformJPanel.getMackageDesc().getDisplayName();
 	StringBuilder message = new StringBuilder();
 	try{
-	    settings = mTransformJPanel.getTransformContext().transform().getSettings();
 	    message.append("Refreshing: " + transformName );
+	    settings = mTransformJPanel.getTransformContext().transform().getSettings();
 	    for( Map.Entry<String, Refreshable> refreshableMapEntry : refreshableMap.entrySet() ){
 		String componentName = refreshableMapEntry.getKey();
 		final Refreshable refreshableComponent = refreshableMapEntry.getValue();

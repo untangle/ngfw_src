@@ -696,8 +696,9 @@ public class PolicyStateMachine implements ActionListener {
 	    new LoadApplianceThread(null,tid,overall,progressBar);
 	}
 	try{
-	    while( applianceLoadProgress < overall )
+	    while( applianceLoadProgress < overall ){
 		Thread.currentThread().sleep(100);
+	    }
 	}
 	catch(Exception e){ Util.handleExceptionNoRestart("Error sleeping while appliances loading",e); }
 	SwingUtilities.invokeLater( new Runnable(){ public void run(){

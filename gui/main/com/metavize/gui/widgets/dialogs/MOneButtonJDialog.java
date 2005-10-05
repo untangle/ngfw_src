@@ -19,12 +19,14 @@ public class MOneButtonJDialog extends javax.swing.JDialog implements java.awt.e
     
     
     public MOneButtonJDialog() {
-	super(Util.getMMainJFrame(), true);
+	super( (Util.getMMainJFrame()!=null?Util.getMMainJFrame():Util.getMLoginJFrame() ),
+	       (Util.getMMainJFrame()!=null?true:false) );
 	init();
     }
     
     public MOneButtonJDialog(String applianceName, String warning) {
-	super(Util.getMMainJFrame(), true);
+	super( (Util.getMMainJFrame()!=null?Util.getMMainJFrame():Util.getMLoginJFrame() ),
+	       (Util.getMMainJFrame()!=null?true:false) );
 	init();
         this.setTitle(applianceName + " Warning");
         messageJLabel.setText("<html><center>" + warning + "</center></html>");
