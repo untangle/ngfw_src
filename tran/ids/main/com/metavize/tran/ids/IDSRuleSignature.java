@@ -115,7 +115,7 @@ public class IDSRuleSignature {
 		
 		for(IDSOption option : options) {
 			if(!option.run()) {
-				IDSDetectionEngine.instance().updateUICount(PASS_COUNTER);
+				IDSTransformImpl.getEngine().updateUICount(PASS_COUNTER);
 				IDSStatisticManager.instance().incrScanned();
 				return false;
 			}
@@ -130,20 +130,20 @@ public class IDSRuleSignature {
 			case IDSRuleManager.ALERT:
 				log.debug("Alert: "+message);
 				IDSStatisticManager.instance().incrPassed();
-				IDSDetectionEngine.instance().updateUICount(ALERT_COUNTER);
+				IDSTransformImpl.getEngine().updateUICount(ALERT_COUNTER);
 				break;
 			
 			case IDSRuleManager.LOG:
 				log.debug("Log: "+message);
 				IDSStatisticManager.instance().incrPassed();
-				IDSDetectionEngine.instance().updateUICount(LOG_COUNTER);
+				IDSTransformImpl.getEngine().updateUICount(LOG_COUNTER);
 				break;
 			
 			case IDSRuleManager.BLOCK:
 				log.debug("Block: "+message);
 				blocked = true;
 				IDSStatisticManager.instance().incrBlocked();
-				IDSDetectionEngine.instance().updateUICount(BLOCK_COUNTER);
+				IDSTransformImpl.getEngine().updateUICount(BLOCK_COUNTER);
 				info.blockSession();
 				break;
 		}

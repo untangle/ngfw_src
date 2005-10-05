@@ -10,7 +10,7 @@ public class EventHandler extends AbstractEventHandler {
 
     public EventHandler(Transform transform) {
         super(transform);
-        idsEngine = IDSDetectionEngine.instance();
+        idsEngine = IDSTransformImpl.getEngine();
     }
 
     public void handleTCPNewSessionRequest(TCPNewSessionRequestEvent event) throws MPipeException {

@@ -14,12 +14,12 @@ class IDSHttpHandler extends HttpStateMachine {
 
     IDSHttpHandler(TCPSession session, IDSTransformImpl transform) {
         super(session);
-        IDSDetectionEngine.instance().mapSessionInfo(session.id(),new IDSSessionInfo());
+        IDSTransformImpl.getEngine().mapSessionInfo(session.id(),new IDSSessionInfo());
     }
 
     protected RequestLine doRequestLine(RequestLine requestLine) {
         String path = requestLine.getRequestUri().getPath();
-        IDSSessionInfo info = IDSDetectionEngine.instance().getSessionInfo(super.getSession().id());
+        IDSSessionInfo info = IDSTransformImpl.getEngine().getSessionInfo(super.getSession().id());
         info.setUriPath(path);
         releaseRequest();
         return requestLine;

@@ -19,7 +19,7 @@ import com.metavize.mvvm.tran.Transform;
 
 public class IDSDetectionEngine {
 
-	private int 			maxChunks 	= 8;
+	private int 	        maxChunks 	= 8;
 	private IDSSettings 	settings 	= null;
 	private IDSRuleManager 	rules 		= new IDSRuleManager();
 	
@@ -27,22 +27,22 @@ public class IDSDetectionEngine {
 	
 	//Er - I need to remove stuff from the seesion Map??
 	Map<Integer,IDSSessionInfo> 		sessionInfoMap 	= new ConcurrentHashMap<Integer,IDSSessionInfo>();
-	Map<Integer,List<IDSRuleHeader>> 	portS2CMap 		= new ConcurrentHashMap<Integer,List<IDSRuleHeader>>();
-	Map<Integer,List<IDSRuleHeader>> 	portC2SMap 		= new ConcurrentHashMap<Integer,List<IDSRuleHeader>>();
+	Map<Integer,List<IDSRuleHeader>> 	portS2CMap      = new ConcurrentHashMap<Integer,List<IDSRuleHeader>>();
+	Map<Integer,List<IDSRuleHeader>> 	portC2SMap 	= new ConcurrentHashMap<Integer,List<IDSRuleHeader>>();
 	
 	private static final Logger log = Logger.getLogger(IDSDetectionEngine.class);
 	static {
 		log.setLevel(Level.INFO);
 	}
 	
-	private static IDSDetectionEngine instance = new IDSDetectionEngine();
+	/*private static IDSDetectionEngine instance = new IDSDetectionEngine();
 	public  static IDSDetectionEngine instance() {
 		if(instance == null) 
 			instance = new IDSDetectionEngine();
 		return instance;
-	}
+	}*/
 
-	private IDSDetectionEngine() {
+	public IDSDetectionEngine() {
 		//The Goggles! They do nothing!
 		/*String test = "alert tcp 10.0.0.40-10.0.0.101 any -> 66.35.250.0/24 80 (content:\"slashdot\"; msg:\"OMG teH SLASHd0t\";)";
 		String tesT = "alert tcp 10.0.0.1/24 any -> any any (content: \"spOOns|FF FF FF FF|spoons\"; msg:\"Matched binary FF FF FF and spoons\"; nocase;)";

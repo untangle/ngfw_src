@@ -60,13 +60,14 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
     private final PipeSpec[] pipeSpecs;
 
     private List ruleList = Collections.synchronizedList(new ArrayList());
+	private static IDSDetectionEngine engine;
 
     public IDSTransformImpl() {
         handler = new EventHandler(this);
         octetPipeSpec = new SoloPipeSpec("ids-octet", this, handler,Fitting.OCTET_STREAM, Affinity.SERVER,10);
         httpPipeSpec = new SoloPipeSpec("ids-http", this, new TokenAdaptor(this, new IDSHttpFactory(this)), Fitting.HTTP_TOKENS, Affinity.SERVER,0);
         pipeSpecs = new PipeSpec[] { httpPipeSpec, octetPipeSpec };
-        IDSDetectionEngine.instance().setTransform(this);
+        engine.setTransform(this);
     }
 
     protected PipeSpec[] getPipeSpecs() {
@@ -136,7 +137,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
             Transaction tx = s.beginTransaction();
             s.saveOrUpdate(settings);
             this.settings = settings;
-            IDSDetectionEngine.instance().setSettings(settings);
+            engine.setSettings(settings);
             tx.commit();
         }catch(HibernateException e) {
             log.warn("Could not set IDSSettings", e);
@@ -165,7 +166,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
             File file = new File(path+"/idsrules");
             visitAllFiles(file);
 
-            settings.setMaxChunks(IDSDetectionEngine.instance().getMaxChunks());
+            settings.setMaxChunks(engine.getMaxChunks());
             settings.setRules(ruleList);
             setIDSSettings(settings);
         }
@@ -222,7 +223,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
             Query q = s.createQuery("from IDSSettings ids where ids.tid = :tid");
             q.setParameter("tid", getTid());
             this.settings = (IDSSettings)q.uniqueResult();
-            //IDSDetectionEngine.instance().setSettings(settings);
+            //engine.setSettings(settings);
             tx.commit();
         } catch (HibernateException exn) {
             //logger.warn("Could not get Intrusion Detection settings", exn);
@@ -246,8 +247,8 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
         IDSTest test = new IDSTest();
         if(!test.runTest())
           throw new TransformStartException("IDS Test failed"); // */
-
-        try {
+		
+		try {
             reconfigure();
         }
         catch (Exception e) {
@@ -257,12 +258,17 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
         IDSStatisticManager.instance().start();
     }
 
-    protected void postStop()
-    {
+	public static IDSDetectionEngine getEngine() {
+		if(engine == null) 
+			engine = new IDSDetectionEngine();
+		return engine;
+	}
+    
+    protected void postStop() {
         IDSStatisticManager.instance().stop();
-    }
-
-    public void reconfigure() throws TransformException {
+	}
+	
+	public void reconfigure() throws TransformException {
 
         if(settings == null) {
             settings = queryDBForSettings();
@@ -271,12 +277,12 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
                 throw new TransformException("Failed to get IDS settings: " + settings);
         }
 
-        IDSDetectionEngine.instance().setSettings(settings);
-        IDSDetectionEngine.instance().onReconfigure();
-        IDSDetectionEngine.instance().setMaxChunks(settings.getMaxChunks());
+        engine.setSettings(settings);
+        engine.onReconfigure();
+        engine.setMaxChunks(settings.getMaxChunks());
         List<IDSRule> rules = (List<IDSRule>) settings.getRules();
         for(IDSRule rule : rules) {
-            IDSDetectionEngine.instance().updateRule(rule);
+            engine.updateRule(rule);
         }
         //remove all deleted rules
 

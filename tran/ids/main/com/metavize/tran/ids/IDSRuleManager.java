@@ -243,10 +243,10 @@ public class IDSRuleManager {
 		Matcher match = variablePattern.matcher(string);
 		if(match.find()) {
 			List<IDSVariable> varList;
-			if(IDSDetectionEngine.instance().getSettings() == null)
+			if(IDSTransformImpl.getEngine().getSettings() == null)
 				varList = defaultVariables;
 			else {
-				varList = (List<IDSVariable>) IDSDetectionEngine.instance().getSettings().getVariables();
+				varList = (List<IDSVariable>) IDSTransformImpl.getEngine().getSettings().getVariables();
 			}
 			for(IDSVariable var : varList) {
 				string = string.replaceAll("\\"+var.getVariable(),var.getDefinition());
