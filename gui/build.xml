@@ -180,8 +180,8 @@ $Id: build.xml,v 1.22 2005/03/25 04:00:30 jdi Exp $
       </foreach>
       </then></if>
 
-    <signjar keystore="./keystore" alias="software key"
-             storepass="WbDP5uz\N" lazy="true">
+    <signjar keystore="./keystore" alias="key"
+             storepass="0x7a0f4b2f2b0560fa" lazy="true">
       <fileset dir="${dist.mvvm.webstart}">
         <include name="*.jar"/>
       </fileset>

@@ -278,8 +278,8 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       </then></if>
     <delete file="${dist.mvvm.webstart}/${tran.name}-${tran.type}.mar.pack"/>
     <signjar jar="${dist.mvvm.webstart}/${tran.name}-${tran.type}.mar"
-          keystore="../gui/keystore" alias="software key"
-          storepass="WbDP5uz\N" />
+          keystore="../gui/keystore" alias="key"
+          storepass="0x7a0f4b2f2b0560fa" />
     <if> <isset property="use-pack200"/> <then>
       <pack200 src="${dist.mvvm.webstart}/${tran.name}-${tran.type}.mar"
                destfile="${dist.mvvm.webstart}/${tran.name}-${tran.type}.mar.pack.gz"
