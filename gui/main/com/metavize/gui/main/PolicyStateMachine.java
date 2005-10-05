@@ -531,6 +531,8 @@ public class PolicyStateMachine implements ActionListener {
 			if( visitor.isDone() )
 			    break;
 		    }
+		    if( visitor.isDone() )
+			break;
 		    if (0 == lip.size()) {
 			Thread.currentThread().sleep(DOWNLOAD_SLEEP_MILLIS);
 		    }

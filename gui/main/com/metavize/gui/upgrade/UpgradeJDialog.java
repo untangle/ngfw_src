@@ -698,6 +698,8 @@ public class UpgradeJDialog extends javax.swing.JDialog implements Savable, Refr
 			if( visitor.isDone() )
 			    break;
 		    }
+		    if( visitor.isDone() )
+			break;
 		    if (0 == lip.size()) {
 			Thread.currentThread().sleep(DOWNLOAD_SLEEP_MILLIS);
 		    }
