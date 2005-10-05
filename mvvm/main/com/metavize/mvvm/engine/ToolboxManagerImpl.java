@@ -225,7 +225,7 @@ class ToolboxManagerImpl implements ToolboxManager
 
     public long upgrade() throws MackageException
     {
-        AptLogTail alt;
+        final AptLogTail alt;
 
         synchronized (tails) {
             long i = ++lastTailKey;
@@ -239,7 +239,7 @@ class ToolboxManagerImpl implements ToolboxManager
                 public void run()
                 {
                     try {
-                        execMkg("upgrade");
+                        execMkg("upgrade", alt.getKey());
                     } catch (MackageException exn) {
                         logger.warn("could not upgrade", exn);
                     }

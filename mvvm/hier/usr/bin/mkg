@@ -55,6 +55,27 @@ my_dpkg_query()
     fi
 }
 
+download()
+{
+    aptlist=$1
+
+    cat $aptlist >>$APT_LOG
+    echo "END PACKAGE LIST" >>$APT_LOG
+
+    for u in $(cat $aptlist | awk '{ print $1 }' | sed "s/'//g"); do
+        echo "downloading: $u" >>$APT_LOG
+        dltmp=$(mktemp -d)
+        wget --progress=dot -P "$dltmp" "$u" >>$APT_LOG 2>&1
+        if [ $? -eq 0 ]; then
+            mv $dltmp/* /var/cache/apt/archives
+            echo "DOWNLOAD SUCCEEDED: $u" >>$APT_LOG
+        else
+            echo "DOWNLOAD FAILED: $u" >>$APT_LOG
+        fi
+        rm -r $dltmp
+    done
+}
+
 while getopts k: f; do
   case $f in
       k) stamp=$OPTARG
@@ -86,27 +107,12 @@ if [ -z $prefix ] ; then
         aptlog "start $stamp"
 
         aptlog "downloading: \"$2\""
+
         # XXX the way i create mackage name is wrong:
         aptlist=$(mktemp)
-
         apt-get install $INST_OPTS --print-uris "$2" \
             | awk " /^'http:\\/\\// { print \$0 } " >$aptlist
-
-        cat $aptlist >>$APT_LOG
-        echo "END PACKAGE LIST" >>$APT_LOG
-
-        for u in $(cat $aptlist | awk '{ print $1 }' | sed "s/'//g"); do
-            echo "downloading: $u" >>$APT_LOG
-            dltmp=$(mktemp -d)
-            wget --progress=dot -P "$dltmp" "$u" >>$APT_LOG 2>&1
-            if [ $? -eq 0 ]; then
-                mv $dltmp/* /var/cache/apt/archives
-                echo "DOWNLOAD SUCCEEDED: $u" >>$APT_LOG
-            else
-                echo "DOWNLOAD FAILED: $u" >>$APT_LOG
-            fi
-            rm -r $dltmp
-        done
+        download $aptlist
 
         aptlog "installing: \"$2\""
         # XXX the way i create mackage name is wrong:
@@ -122,6 +128,11 @@ if [ -z $prefix ] ; then
         aptlog "done $stamp"
     elif [ "$1" = "upgrade" ] ; then
         aptlog "start $stamp"  "apt-get upgrade $UPGD_OPTS"
+
+        aptlist=$(mktemp)
+        apt-get dist-upgrade $UPGD_OPTS --print-uris \
+            | awk " /^'http:\\/\\// { print \$0 } " >$aptlist
+        download $aptlist
 
         t0=$(stat -L -c %Y /vmlinuz)
         apt-get dist-upgrade $UPGD_OPTS >>$APT_LOG 2>&1
