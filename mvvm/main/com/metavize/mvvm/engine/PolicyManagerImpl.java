@@ -460,31 +460,42 @@ class PolicyManagerImpl implements PolicyManagerPriv
                         byte secondIntf = interfaces[j];
 
                         // Add in the missing system rules
-                        boolean foundSys = false;
+                        boolean foundForward = false;
+                        boolean foundBackward = false;
                         for (Object o : existingSys) {
                             SystemPolicyRule spr = (SystemPolicyRule)o;
                             byte clientIntf = spr.getClientIntf();
                             byte serverIntf = spr.getServerIntf();
-                            if ((clientIntf == firstIntf && serverIntf == secondIntf) ||
-                                (clientIntf == secondIntf && serverIntf == firstIntf)) {
-                                if (foundSys) {
+                            if (clientIntf == firstIntf && serverIntf == secondIntf) {
+                                if (foundForward) {
                                     logger.fatal("Found extra SystemPolicyRule for ci: " + clientIntf + ", si: " + serverIntf);
                                 } else {
                                     if (logger.isDebugEnabled())
                                         logger.debug("Found existing SystemPolicyRule for ci: " + clientIntf + ", si: " + serverIntf);
                                     goodSys.add(spr);
-                                    foundSys = true;
+                                    foundForward = true;
+                                }
+                            } else if (clientIntf == secondIntf && serverIntf == firstIntf) {
+                                if (foundBackward) {
+                                    logger.fatal("Found extra SystemPolicyRule for ci: " + clientIntf + ", si: " + serverIntf);
+                                } else {
+                                    if (logger.isDebugEnabled())
+                                        logger.debug("Found existing SystemPolicyRule for ci: " + clientIntf + ", si: " + serverIntf);
+                                    goodSys.add(spr);
+                                    foundBackward = true;
                                 }
                             }
                         }
-                        if (!foundSys) {
+                        if (!foundForward) {
                             logger.info("Adding new default inbound SystemPolicyRule for ci: " + firstIntf + ", si: " + secondIntf);
                             SystemPolicyRule newInRule = new SystemPolicyRule(firstIntf, secondIntf, defaultPolicy, true);
+                            s.save(newInRule);
+                            goodSys.add(newInRule);
+                        }
+                        if (!foundBackward) {
                             logger.info("Adding new default outbound SystemPolicyRule for ci: " + secondIntf + ", si: " + firstIntf);
                             SystemPolicyRule newOutRule = new SystemPolicyRule(secondIntf, firstIntf, defaultPolicy, false);
-                            s.save(newInRule);
                             s.save(newOutRule);
-                            goodSys.add(newInRule);
                             goodSys.add(newOutRule);
                         }
 
