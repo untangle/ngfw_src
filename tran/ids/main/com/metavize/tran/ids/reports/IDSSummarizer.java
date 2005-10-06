@@ -60,10 +60,9 @@ public class IDSSummarizer extends BaseSummarizer {
 	
         long matchedEvtCount = blockedEvtCount + passedEvtCount;
 	addEntry("Total Scan Events", Util.trimNumber("",scannedEvtCount));
-        addEntry("&nbsp;&nbsp;&nbsp;Unmatched", Util.trimNumber("",scannedEvtCount - matchedEvtCount), Util.percentNumber(scannedEvtCount-matchedEvtCount,scannedEvtCount));
         addEntry("&nbsp;&nbsp;&nbsp;Matched &amp; Passed", Util.trimNumber("",passedEvtCount), Util.percentNumber(passedEvtCount,scannedEvtCount));
         addEntry("&nbsp;&nbsp;&nbsp;Matched &amp; Blocked", Util.trimNumber("",blockedEvtCount), Util.percentNumber(blockedEvtCount,scannedEvtCount));
-	
+        addEntry("&nbsp;&nbsp;&nbsp;Unmatched", Util.trimNumber("",scannedEvtCount - matchedEvtCount), Util.percentNumber(scannedEvtCount-matchedEvtCount,scannedEvtCount));	
         // XXXX
         String tranName = "Intrusion Prevention";
 	
