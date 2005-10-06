@@ -35,8 +35,7 @@ public class NatSettings implements Serializable, Validatable
     private Long id;
     private Tid tid;
 
-    /* XXX Must be updated */
-    private static final long serialVersionUID = 2664348127860496780L;
+    private static final long serialVersionUID = 4349679825783697834L;
 
     /* Nat Settings */
     private boolean natEnabled = false;

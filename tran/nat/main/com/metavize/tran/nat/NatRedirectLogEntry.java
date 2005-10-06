@@ -14,10 +14,10 @@ package com.metavize.tran.nat;
 import java.io.Serializable;
 import java.util.Date;
 
-import com.metavize.mvvm.tran.Direction;
-
 public class NatRedirectLogEntry implements Serializable
 {
+    private static final long serialVersionUID = 7234639235747894138L;
+
     private static final String ACTION_DMZ            = "dmz";
     private static final String ACTION_REDIRECT       = "redirect";
     
@@ -35,7 +35,8 @@ public class NatRedirectLogEntry implements Serializable
     private final int       originalServerPort;
     private final String    redirectServerAddr;
     private final int       redirectServerPort;
-    private final Direction direction;
+    private final String    clientIntf;
+    private final String    serverIntf;
     private final boolean   isDmz;
     private final int       ruleIndex;
     private final boolean   isNatd;
@@ -44,7 +45,8 @@ public class NatRedirectLogEntry implements Serializable
                          String clientAddr, int clientPort, boolean isNatd,
                          String originalServerAddr, int originalServerPort,
                          String redirectServerAddr, int redirectServerPort,
-                         Direction direction, boolean isDmz, int ruleIndex )
+                         String clientIntf, String serverIntf, 
+                         boolean isDmz, int ruleIndex )
     {
         this.createDate         = createDate;
         this.protocol           = protocol;
@@ -55,7 +57,8 @@ public class NatRedirectLogEntry implements Serializable
         this.originalServerPort = originalServerPort;
         this.redirectServerAddr = redirectServerAddr;
         this.redirectServerPort = redirectServerPort;
-        this.direction          = direction;
+        this.clientIntf         = clientIntf;
+        this.serverIntf         = serverIntf;
         this.isDmz              = isDmz;
         this.ruleIndex          = ruleIndex;
     }
@@ -140,8 +143,13 @@ public class NatRedirectLogEntry implements Serializable
         return this.redirectServerPort;
     }
 
-    public Direction getDirection()
+    public String getClientIntf()
     {
-        return direction;
+        return this.clientIntf;
+    }
+    
+    public String getServerIntf()
+    {
+        return this.serverIntf;
     }
 }

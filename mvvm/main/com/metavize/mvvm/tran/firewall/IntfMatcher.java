@@ -14,9 +14,15 @@ package com.metavize.mvvm.tran.firewall;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
+import java.util.LinkedList;
+import java.util.Collections;
 
 import com.metavize.mvvm.argon.IntfConverter;
 import com.metavize.mvvm.tran.ParseException;
+
+import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.IntfEnum;
 
 /**
  * The class <code>IntfMatcher</code> represents a class for filtering on one of the interfaces
@@ -26,12 +32,14 @@ import com.metavize.mvvm.tran.ParseException;
  * @author <a href="mailto:rbscott@metavize.com">rbscott</a>
  * @version 1.0
  */
-public final class IntfMatcher  implements Serializable
+public final class IntfMatcher implements Serializable
 {
-    private static final long serialVersionUID = 2595951584766427055L;
+    private static final long serialVersionUID = 6995354637973561046L;
+
+    public static IntfEnum INTF_ENUM = null;
 
     /* The maximum number of interfaces */
-    public static final int    INTERFACE_MAX   = 8;
+    public static final int    INTERFACE_MAX   = 5;
     public static final int    BITSET_MASK     = ( 1 << INTERFACE_MAX ) - 1;
     public static final String MARKER_INSIDE   = "I";
     public static final String MARKER_OUTSIDE  = "O";
@@ -39,12 +47,14 @@ public final class IntfMatcher  implements Serializable
 
     public static final String MARKER_WILDCARD  = MatcherStringConstants.WILDCARD;
     public static final String MARKER_SEP       = MatcherStringConstants.SEPERATOR;
+
     private static final String MARKER_NOTHING  = MatcherStringConstants.NOTHING;
 
     private static final int BITSET_ALL     = -1;
     private static final int BITSET_NOTHING = 0;
     private static final int BITSET_OUTSIDE = 1;
     private static final int BITSET_INSIDE  = 2;
+    private static final int BITSET_DMZ     = 4;
 
     /* Using a map for the off chance that the number of interfaces may need to change
      * on the fly?, If there are more interface, this could be a caching structure
@@ -54,23 +64,32 @@ public final class IntfMatcher  implements Serializable
     public static final Map<Byte,String> INTF_MARKER_MAP = new HashMap<Byte,String>();
     public static final Map<String,Byte> MARKER_INTF_MAP = new HashMap<String,Byte>();
 
+    private static IntfMatcher ENUMERATION[] = new IntfMatcher[0];
+
     /**
      * A bit set of interfaces. (This only uses the first 8 bits, so it is safe that it is
      * signed).
      */
     public final int interfaceBitSet;
-    public final String stringRepresentation;
+    final String databaseRepresentation;
+    String userRepresentation = null;
 
-    private IntfMatcher( int interfaceBitSet, String stringRepresentation )
+    private IntfMatcher( int interfaceBitSet, String databaseRepresentation )
     {
-        this.interfaceBitSet      = interfaceBitSet;
-        this.stringRepresentation = stringRepresentation;
+        this.interfaceBitSet        = interfaceBitSet;
+        this.databaseRepresentation = databaseRepresentation;
     }
 
-    public boolean isMatch( byte intf ) {
+    public boolean isMatch( byte intf )
+    {
         /* This matches everything */
         if ( BITSET_ALL == this.interfaceBitSet ) return true;
+        
+        if ( BITSET_NOTHING == this.interfaceBitSet ) return false;
 
+        /* Unknown and loopback always matches on outside */
+        if ( IntfConverter.ARGON_UNKNOWN == intf || IntfConverter.ARGON_LOOPBACK == intf ) return true;
+                
         /* XXX Possibly throw an exception */
         if ( intf >= INTERFACE_MAX ) return false;
 
@@ -82,7 +101,24 @@ public final class IntfMatcher  implements Serializable
 
     public String toString()
     {
-        return stringRepresentation;
+        /* XXX This function is horrendous XXX */
+        if ( this.userRepresentation == null ) {
+            if ( this.interfaceBitSet == BITSET_ALL ) this.userRepresentation = "any";
+            else {
+                String s = null;
+                if ( isMatch((byte)0 )) s = "Internal";
+                if ( isMatch((byte)1 )) s = (( s == null ) ? "" : s + " & " ) + "External";
+                if ( isMatch((byte)2 )) s = (( s == null ) ? "" : s + " & " ) + "DMZ";
+                this.userRepresentation = s;
+            }
+        }
+        
+        return userRepresentation;
+    }
+    
+    public String toDatabaseString()
+    {
+        return this.databaseRepresentation;
     }
 
     public boolean equals( Object o )
@@ -169,7 +205,7 @@ public final class IntfMatcher  implements Serializable
     }
 
     /**
-     * I love java
+     * I love java?
      */
     private static void addMarker( int intf, String marker )
     {
@@ -182,6 +218,41 @@ public final class IntfMatcher  implements Serializable
         INTF_MARKER_MAP.put( intf, marker );
     }
 
+    public static synchronized void updateEnumeration( IntfEnum intfEnum )
+    {
+        if ( INTF_ENUM == intfEnum ) return;
+
+        IntfMatcher user[] = ( intfEnum.getIntfNums().length == 3 ) ? new IntfMatcher[5] : new IntfMatcher[3];
+        int c=0;
+
+        /* XXX This is just for DMZ */
+        user[c++] = getInside();
+        user[c++] = getOutside();
+
+        if ( intfEnum.getIntfNums().length == 3 ) {
+            user[c++] = getMatcher( BITSET_DMZ );
+            user[c++] = getMatcher( BITSET_DMZ | BITSET_OUTSIDE );
+        }
+
+        user[c++] = getAll();
+        
+        /* Convert to an immutable list */
+        ENUMERATION = user;
+        
+        /* Set the cache */
+        INTF_ENUM = intfEnum;
+    }
+
+    public static IntfMatcher[] getEnumeration()
+    {
+        return ENUMERATION;
+    }
+
+    public static IntfMatcher getDefault()
+    {
+        return getEnumeration()[0];
+    }
+    
     static
     {
         addMarker( IntfConverter.OUTSIDE, MARKER_OUTSIDE );    // 0
@@ -194,10 +265,10 @@ public final class IntfMatcher  implements Serializable
         addMarker( 7, "U5" );
 
         for ( int c = 0 ; c < ( 1 << INTERFACE_MAX ) ; c++ ) {
-            String stringRepresentation = null;
+            String databaseRepresentation = null;
             /* XXX This will have to change if the number of interfaces can change */
             if ( BITSET_NOTHING == c ) {
-                stringRepresentation = MARKER_NOTHING;
+                databaseRepresentation = MARKER_NOTHING;
             } else {
                 /* Cycle through each bit of checking for each interface */
                 for ( int d = 0 ; d < INTERFACE_MAX ; d++ ) {
@@ -206,15 +277,15 @@ public final class IntfMatcher  implements Serializable
 
                     if (( c & mask ) == mask ) {
                         String intfString = INTF_MARKER_MAP.get((byte)d );
-                        if ( stringRepresentation == null ) {
-                            stringRepresentation = intfString;
+                        if ( databaseRepresentation == null ) {
+                            databaseRepresentation = intfString;
                         } else {
-                            stringRepresentation = stringRepresentation + MARKER_SEP + intfString;
+                            databaseRepresentation = databaseRepresentation + MARKER_SEP + intfString;
                         }
                     }
                 }
             }
-            MATCHER_MAP.put( c, new IntfMatcher( c, stringRepresentation ));
+            MATCHER_MAP.put( c, new IntfMatcher( c, databaseRepresentation ));
         }
 
         MATCHER_MAP.put( BITSET_ALL, new IntfMatcher( BITSET_ALL, MARKER_WILDCARD ));

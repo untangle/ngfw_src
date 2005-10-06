@@ -62,7 +62,7 @@ class NatEventHandler extends AbstractEventHandler
 
     /* match to determine  whether a session is directed for the dmz */
     /* XXX Probably need to initialized this with a value */
-    private RedirectMatcher dmz = RedirectMatcher.MATCHER_DISABLED;
+    private RedirectMatcher dmzHost = RedirectMatcher.MATCHER_DISABLED;
 
     /* True if logging DMZ redirects */
     private boolean isDmzLoggingEnabled = false;
@@ -242,14 +242,14 @@ class NatEventHandler extends AbstractEventHandler
 
         /* Configure the DMZ */
         if ( settings.getDmzEnabled()) {
-            dmz = new RedirectMatcher( true, ProtocolMatcher.MATCHER_ALL,
+            dmzHost = new RedirectMatcher( true, ProtocolMatcher.MATCHER_ALL,
                                        IntfMatcher.getAll(), IntfMatcher.getInside(),
                                        IPMatcher.MATCHER_ALL, localHostMatcher,
                                        PortMatcher.MATCHER_ALL, PortMatcher.MATCHER_ALL,
                                        true, settings.getDmzAddress().getAddr(), -1 );
             isDmzLoggingEnabled = settings.getDmzLoggingEnabled();
         } else {
-            dmz = RedirectMatcher.MATCHER_DISABLED;
+            dmzHost = RedirectMatcher.MATCHER_DISABLED;
             isDmzLoggingEnabled = false;
         }
         
@@ -313,9 +313,9 @@ class NatEventHandler extends AbstractEventHandler
     }
 
 
-    RedirectMatcher getDmz()
+    RedirectMatcher getDmzHost()
     {
-        return dmz;
+        return dmzHost;
     }
 
     List <RedirectMatcher> getRedirectList()
@@ -341,9 +341,6 @@ class NatEventHandler extends AbstractEventHandler
 
             /* Check to see if this is redirect, check before changing the source address */
             isRedirect( request, protocol );
-
-            /* Check if is going to the DMZ, this is mainly to trigger the counter */
-            isDmz( request, protocol );
 
             /* Change the source in the request */
             /* All redirecting occurs here */
@@ -427,8 +424,8 @@ class NatEventHandler extends AbstractEventHandler
      */
     private boolean isDmzHost( IPNewSessionRequest request, Protocol protocol )
     {
-        if ( dmz.isMatch( request, protocol )) {
-            dmz.redirect( request );
+        if ( dmzHost.isMatch( request, protocol )) {
+            dmzHost.redirect( request );
 
             /* Increment the DMZ counter */
             transform.incrementCount( DMZ_COUNTER ); // DMZ COUNTER
@@ -447,9 +444,11 @@ class NatEventHandler extends AbstractEventHandler
 
     private boolean isDmz( IPNewSessionRequest request, Protocol protocol )
     {
-        /* Check for sessions that are going to or coming from the dmz */
-        if ( request.clientIntf() == IntfConverter.DMZ || request.serverIntf() == IntfConverter.DMZ ) {
-            /* XXX This is suspect */
+        byte clientIntf = request.clientIntf();
+        byte serverIntf = request.serverIntf();
+
+        if (( clientIntf == IntfConverter.DMZ && serverIntf == IntfConverter.OUTSIDE ) ||
+            ( clientIntf == IntfConverter.OUTSIDE && serverIntf == IntfConverter.DMZ )) {
             return true;
         }
 

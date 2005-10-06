@@ -30,6 +30,8 @@ import com.metavize.mvvm.tran.ParseException;
  */
 public final class IPMatcher implements Serializable
 {
+    private static final long serialVersionUID = 4434011701205200059L;
+    
     public static final String MARKER_SUBNET    = "/";
     public static final String MARKER_ANY       = "any";
     public static final String MARKER_ALL       = "all";

@@ -24,7 +24,7 @@ public class IntfMatcherUserType extends StringBasedUserType
 
     protected String userTypeToString( Object v )
     {
-        return ((IntfMatcher)v).toString();
+        return ((IntfMatcher)v).toDatabaseString();
     }
 
     public Object createUserType( String val ) throws Exception

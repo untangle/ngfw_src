@@ -23,6 +23,9 @@ import java.util.Set;
 
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.NetworkingConfiguration;
+import com.metavize.mvvm.NetworkingManager;
+import com.metavize.mvvm.IntfEnum;
+
 import com.metavize.mvvm.argon.SessionMatcher;
 import com.metavize.mvvm.argon.SessionMatcherFactory;
 import com.metavize.mvvm.tapi.AbstractTransform;
@@ -176,6 +179,9 @@ public class NatImpl extends AbstractTransform implements Nat
     {
         List<NatRedirectLogEntry> l = new ArrayList<NatRedirectLogEntry>(limit);
 
+        NetworkingManager networkingManager = MvvmContextFactory.context().networkingManager();
+        IntfEnum intfEnum = networkingManager.getIntfEnum();
+
         Session s = getTransformContext().openSession();
         try {
             Connection c = s.connection();
@@ -200,11 +206,9 @@ public class NatImpl extends AbstractTransform implements Nat
                 if ( clientPort == 0 ) protocol = "Ping";
 
                 /* Set the direction */
-                byte clientIntf           = rs.getByte( CLIENT_INTF_IDX );
-                byte serverIntf           = rs.getByte( SERVER_INTF_IDX );
-                // XXXX What does direction mean here? FIXME 
-                Direction direction       = Direction.INCOMING;
-
+                String clientIntf           = intfEnum.getIntfName( rs.getByte( CLIENT_INTF_IDX ));
+                String serverIntf           = intfEnum.getIntfName( rs.getByte( SERVER_INTF_IDX ));
+                
                 /* Determine the reason
                  * The rule index is presently ignored, because the rule may have already
                  * been modified, which could be confusing ot the user
@@ -215,7 +219,7 @@ public class NatImpl extends AbstractTransform implements Nat
                 NatRedirectLogEntry redirectLogEntry = new NatRedirectLogEntry
                     ( createDate, protocol, clientAddr, clientPort, isNatd,
                       originalServerAddr, originalServerPort, redirectServerAddr, redirectServerPort,
-                      direction, isDmz, ruleIndex );
+                      clientIntf, serverIntf, isDmz, ruleIndex );
 
                 l.add(redirectLogEntry );
             }

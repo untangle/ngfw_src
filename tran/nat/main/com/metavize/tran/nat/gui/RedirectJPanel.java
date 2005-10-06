@@ -20,6 +20,9 @@ import com.metavize.mvvm.tran.*;
 import com.metavize.mvvm.tran.firewall.*;
 import com.metavize.tran.nat.*;
 
+/* XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX This shouldn't be necessary */
+import com.metavize.mvvm.IntfEnum;
+
 import java.awt.*;
 import java.util.*;
 import java.util.List;
@@ -54,8 +57,8 @@ class RedirectTableModel extends MSortedTableModel{
     private static final int  C2_MW = 75;   /* redirect */
     private static final int  C3_MW = 55;   /* log */
     private static final int  C4_MW = 100;  /* traffic type */
-    private static final int  C5_MW = 80;   /* source interface */
-    private static final int  C6_MW = 80;   /* destination interface */
+    private static final int  C5_MW = 120;  /* source interface */
+    private static final int  C6_MW = 120;  /* destination interface */
     private static final int  C7_MW = 130;  /* source address */
     private static final int  C8_MW = 130;  /* destination address */
     private static final int  C9_MW = 110;  /* source port */
@@ -66,15 +69,20 @@ class RedirectTableModel extends MSortedTableModel{
     
     private final int C14_MW = Util.chooseMax(T_TW - (C0_MW + C1_MW + C2_MW + C3_MW + C4_MW + C5_MW + C6_MW + C7_MW + C8_MW + C9_MW + C10_MW + C11_MW + C12_MW + C13_MW), 120); /* description */
 
-
     
     private ComboBoxModel protocolModel = super.generateComboBoxModel( ProtocolMatcher.getProtocolEnumeration(), ProtocolMatcher.getProtocolDefault() );
-    
+        
 
     protected boolean getSortable(){ return false; }
     
     public TableColumnModel getTableColumnModel(){
+        IntfEnum intfEnum = Util.getNetworkingManager().getIntfEnum();
+
+        /* XXXXX This is not where this code should be executed */
+        IntfMatcher.updateEnumeration( intfEnum );
         
+        ComboBoxModel intfMatcherModel = super.generateComboBoxModel( IntfMatcher.getEnumeration(), IntfMatcher.getDefault());
+            
         DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
         //                                 #   min    rsz    edit   remv   desc   typ            def
         addTableColumn( tableColumnModel,  0,  C0_MW, false, false, false, false, String.class,  null, sc.TITLE_STATUS );
@@ -82,8 +90,8 @@ class RedirectTableModel extends MSortedTableModel{
         addTableColumn( tableColumnModel,  2,  C2_MW, false, true,  false, false, Boolean.class, "false", sc.bold("redirect") );
         addTableColumn( tableColumnModel,  3,  C3_MW, false, true,  false, false, Boolean.class, "false",  sc.bold("log"));
         addTableColumn( tableColumnModel,  4,  C4_MW, false, true,  false, false, ComboBoxModel.class, protocolModel, sc.html("traffic<br>type") );
-        addTableColumn( tableColumnModel,  5,  C5_MW, false, true,  false, false, String.class, "I", sc.html( "source<br>interface" ));
-        addTableColumn( tableColumnModel,  6,  C6_MW, false, true,  false, false, String.class, "*", sc.html( "destination<br>interface" ));
+        addTableColumn( tableColumnModel,  5,  C5_MW, false, true,  false, false, ComboBoxModel.class, intfMatcherModel, sc.html( "source<br>interface" ));
+        addTableColumn( tableColumnModel,  6,  C6_MW, false, true,  false, false, ComboBoxModel.class, intfMatcherModel, sc.html( "destination<br>interface" ));
         addTableColumn( tableColumnModel,  7,  C7_MW, true,  true,  false, false, String.class, "1.2.3.4", sc.html("source<br>address") );
         addTableColumn( tableColumnModel,  8,  C8_MW, true,  true,  false, false, String.class, "1.2.3.4", sc.html("destination<br>address") );
         addTableColumn( tableColumnModel,  9,  C9_MW, true,  true,  false, false, String.class, "2-5", sc.html("source<br>port") );
@@ -108,10 +116,8 @@ class RedirectTableModel extends MSortedTableModel{
             newElem.setLive( (Boolean) rowVector.elementAt(2) );
             newElem.setLog( (Boolean) rowVector.elementAt(3) );
             newElem.setProtocol( ProtocolMatcher.parse(((ComboBoxModel) rowVector.elementAt(4)).getSelectedItem().toString()) );
-            try { newElem.setSrcIntf( IntfMatcher.parse((String)rowVector.elementAt(5)) ); }
-            catch( Exception e  ) { throw new Exception("Invalid \"source interface\" in row: " + rowIndex); }
-            try { newElem.setDstIntf( IntfMatcher.parse((String)rowVector.elementAt(6)) ); }
-            catch( Exception e  ) { throw new Exception("Invalid \"destination interface\" in row: " + rowIndex); }
+            newElem.setSrcIntf( (IntfMatcher) ((ComboBoxModel) rowVector.elementAt(5)).getSelectedItem());
+            newElem.setDstIntf( (IntfMatcher) ((ComboBoxModel) rowVector.elementAt(6)).getSelectedItem());
             try{ newElem.setSrcAddress( IPMatcher.parse((String) rowVector.elementAt(7)) ); }
             catch(Exception e){ throw new Exception("Invalid \"source address\" in row: " + rowIndex); }
             try{ newElem.setDstAddress( IPMatcher.parse((String) rowVector.elementAt(8)) ); }
@@ -154,8 +160,8 @@ class RedirectTableModel extends MSortedTableModel{
 	    tempRow.add( redirectRule.isLive() );
 	    tempRow.add( redirectRule.getLog() );
 	    tempRow.add( super.generateComboBoxModel( ProtocolMatcher.getProtocolEnumeration(), redirectRule.getProtocol().toString() ) );
-            tempRow.add( redirectRule.getSrcIntf().toString() );
-	    tempRow.add( redirectRule.getDstIntf().toString() );
+            tempRow.add( super.generateComboBoxModel( IntfMatcher.getEnumeration(), redirectRule.getSrcIntf() ));
+	    tempRow.add( super.generateComboBoxModel( IntfMatcher.getEnumeration(), redirectRule.getDstIntf() ));
 	    tempRow.add( redirectRule.getSrcAddress().toString() );
 	    tempRow.add( redirectRule.getDstAddress().toString() );
 	    tempRow.add( redirectRule.getSrcPort().toString() );

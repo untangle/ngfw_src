@@ -41,6 +41,7 @@ import com.metavize.mvvm.argon.ArgonManagerImpl;
 import com.metavize.mvvm.argon.IntfConverter;
 import com.metavize.mvvm.InterfaceAlias;
 import com.metavize.mvvm.tran.IPaddr;
+import com.metavize.mvvm.tran.firewall.IntfMatcher;
 import com.metavize.mvvm.tran.ValidateException;
 
 class NetworkingManagerImpl implements NetworkingManager
@@ -487,5 +488,7 @@ class NetworkingManagerImpl implements NetworkingManager
         String[] intfNames = ( argonInterfaces.length == 3 ) ? INTF_ARRAY_DMZ : INTF_ARRAY_NO_DMZ;
 
         intfEnum = new IntfEnum(argonInterfaces, intfNames);
-    }        
+        
+        IntfMatcher.updateEnumeration( intfEnum );
+    }
 }

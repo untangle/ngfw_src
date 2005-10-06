@@ -44,8 +44,9 @@ public class LogJPanel extends MLogTableJPanel
             addTableColumn( tableColumnModel,  4,  165, true,  false, false, false, String.class, null, "original destination" );
             addTableColumn( tableColumnModel,  5,  165, true,  false, false, false, String.class, null, "redirected destination" );
 	    addTableColumn( tableColumnModel,  6,  150, true,  false, false, false, String.class, null, sc.html("reason for<br>action") );
-	    addTableColumn( tableColumnModel,  7,  100, true,  false, false, false, String.class, null, sc.html("direction") );
-	    return tableColumnModel;                                                                                                     
+	    addTableColumn( tableColumnModel,  7,  100, true,  false, false, false, String.class, null, sc.html("client interface") );
+	    addTableColumn( tableColumnModel,  8,  105, true,  false, false, false, String.class, null, sc.html("redirected<br>server interface") );
+	    return tableColumnModel;
 	}
 	
 	public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly ) throws Exception {}
@@ -64,7 +65,8 @@ public class LogJPanel extends MLogTableJPanel
 		event.add( log.getOriginalServer() );
 		event.add( log.getRedirectServer() );
 		event.add( log.getReason() );
-		event.add( log.getDirection().getDirectionName() );
+		event.add( log.getClientIntf());
+                event.add( log.getServerIntf());
 		allEvents.add( event );
 	    }
 	    

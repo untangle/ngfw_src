@@ -27,6 +27,8 @@ import com.metavize.mvvm.tran.ParseException;
  */
 public final class PortMatcher implements Serializable
 {
+    private static final long serialVersionUID = -7392124742130751354L;
+
     public static  final String MARKER_RANGE     = MatcherStringConstants.RANGE;
     public static  final String MARKER_WILDCARD  = MatcherStringConstants.WILDCARD;
     public static  final String MARKER_ANY       = "any";

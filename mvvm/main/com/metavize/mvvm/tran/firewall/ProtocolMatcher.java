@@ -26,6 +26,8 @@ import com.metavize.mvvm.tran.ParseException;
  */
 public final class ProtocolMatcher implements Serializable
 {
+    private static final long serialVersionUID = 6026959848409522258L;
+    
     public static final String MARKER_TCP       = "TCP";
     public static final String MARKER_UDP       = "UDP";
     public static final String MARKER_WILDCARD  = MatcherStringConstants.WILDCARD;
