@@ -6,6 +6,8 @@
 
 #include "libnetcap.h"
 
+#define INTF_DB_NO_LOCKS 0x80
+
 struct netcap_intf_info;
 
 /* Information pertinent to a bridge */
@@ -28,8 +30,9 @@ typedef struct
 typedef struct netcap_intf_info
 {
     char is_valid;
-    char index;
     char is_loopback;
+
+    int index;
 
     netcap_intf_t netcap_intf;
     netcap_intf_string_t name;
@@ -59,7 +62,10 @@ typedef struct
     /* Array of the values that are stored in the interface array */
     /* This is the map from "os_index - 1" to interface into */
     /* This array holds the actually data, not pointers to it */
-    netcap_intf_info_t index_to_info[NETCAP_MAX_INTERFACES];
+    netcap_intf_info_t info[NETCAP_MAX_INTERFACES];
+
+    /* Number of entries in the info array */
+    int info_count;
     
     /* An array mapping a "netcap interfaces" to interface info */
     netcap_intf_info_t* intf_to_info[NETCAP_MAX_INTERFACES];
@@ -75,17 +81,23 @@ typedef struct
 
     /* Hash table that maps device names to the device info */
     ht_t name_to_info;
+
+    /* Hash table that maps device indices to device info */
+    ht_t index_to_info;
 } netcap_intf_db_t;
 
 /* Functions for allocating memory and creating interface databases */
 netcap_intf_db_t*   netcap_intf_db_malloc  ( void );
-int                 netcap_intf_db_init    ( netcap_intf_db_t* db );
-netcap_intf_db_t*   netcap_intf_db_create  ( void );
+int                 netcap_intf_db_init    ( netcap_intf_db_t* db, int flags );
+netcap_intf_db_t*   netcap_intf_db_create  ( int flags );
 
 /* Functions for deleting interface database structures */
 int                 netcap_intf_db_free    ( netcap_intf_db_t* db );
 int                 netcap_intf_db_destroy ( netcap_intf_db_t* db );
 int                 netcap_intf_db_raze    ( netcap_intf_db_t* db );
+
+/* Add info to the interface database */
+int                 netcap_intf_db_add_info( netcap_intf_db_t* db, netcap_intf_info_t* intf_info );
 
 /* Configure the mapping from netcap interfaces to interface info */ 
 int                 netcap_intf_db_configure_intf( netcap_intf_db_t* db, 

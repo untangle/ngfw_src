@@ -55,6 +55,10 @@
 #define SYSFS_BRIDGE_PORT_SUBDIR "brif"
 #endif
 
+#ifndef SYSFS_CLASS_NET
+#define SYSFS_CLASS_NET "net"
+#endif
+
 #ifndef SYSFS_BRIDGE_PORT_ATTR
 #define SYSFS_BRIDGE_PORT_ATTR  "brport"
 #endif
@@ -62,6 +66,8 @@
 #ifndef SYSFS_BRIDGE_PORT_LINK
 #define SYSFS_BRIDGE_PORT_LINK  "bridge"
 #endif
+
+#define SYSFS_ATTRIBUTE_INDEX  "ifindex"
 
 #define NETCAP_MARK_INTF_MAX    8 // temp lowered
 #define NETCAP_MARK_INTF_MASK   0xF
@@ -123,10 +129,19 @@ static struct
     .mutex           PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP
 };
 
+typedef struct
+{
+    int index;
+    netcap_intf_string_t name;
+} _intf_index_name_t;
+
 static int _update_intf_info         ( void );
 static int _update_bridge_devices    ( netcap_intf_db_t* db );
 static int _update_bridge_device     ( netcap_intf_db_t* db, netcap_intf_info_t* bridge_intf_info, 
                                        struct sysfs_class_device* dev );
+
+/* Retrieve a list of all of the interfaces names and their corresponding indices */
+static int _get_interface_list       ( _intf_index_name_t* intf_array, int size );
 
 /* Retrieve and update all of the aliases for all of the interfaces */
 static int _update_aliases           ( netcap_intf_db_t* db, int sockfd );
@@ -147,7 +162,7 @@ static void _empty_garbage       ( void* arg );
  */
 int netcap_interface_init ( void )
 {
-    if (( _interface.sysfs_class_net = sysfs_open_class( "net" )) == NULL ) {
+    if (( _interface.sysfs_class_net = sysfs_open_class( SYSFS_CLASS_NET )) == NULL ) {
         return perrlog( "sysfs_open_class" );
     }
     
@@ -447,36 +462,40 @@ static int _update_intf_info( void )
     
     int _critical_section( void ) {
         int i;
+        int num_intf;
+        
+        _intf_index_name_t intf_index_array[NETCAP_MAX_INTERFACES];
+        bzero( intf_index_array, sizeof( intf_index_array ));
+        
+        if (( num_intf = _get_interface_list( intf_index_array, sizeof( intf_index_array ))) < 0 ) {
+            return errlog( ERR_CRITICAL, "_get_interface_list\n" );
+        }
 
-        for ( i = 1 ; i < NETCAP_MAX_INTERFACES ; i++ ) {
+        for ( i = 0 ; i < num_intf ; i++ ) {
             netcap_intf_info_t intf_info;
-            netcap_intf_info_t* intf_info_dst;
-            netcap_intf_string_t intf_name;
+            _intf_index_name_t* in;
+            
+            in = &intf_index_array[i];
 
             bzero( &intf_info, sizeof ( netcap_intf_info_t ));
             
-            if ( if_indextoname( i, intf_name.s ) == NULL ) {
-                debug( 10, "INTERFACE: %d doesn't exist\n", i );
+            if ( in->index <= 0  ) {
+                errlog( ERR_CRITICAL, "invalid index[%d] at position %d\n", in->index, i );
                 continue;
             }
             
-            if (( strncmp( intf_name.s, "sit",   3 ) == 0 )  ||
-                ( strncmp( intf_name.s, "dummy", 5 ) == 0 )) {
-                debug( 10, "INTERFACE: skipping %s\n", intf_name.s );
+            if (( strncmp( in->name.s, "sit",   3 ) == 0 )  ||
+                ( strncmp( in->name.s, "dummy", 5 ) == 0 )) {
+                debug( 10, "INTERFACE: skipping %s\n", in->name.s );
                 continue;
             }
 
-            debug( 3, "INTERFACE: Retrieving information for device '%s'\n", intf_name.s );
-
-            if ( ht_lookup( &db->name_to_info, intf_name.s ) != NULL ) {
-                errlog( ERR_WARNING, "INTERFACE: Is '%s' already in the table, skipping\n", intf_name.s );
-                continue;
-            }
-
+            debug( 3, "INTERFACE: Retrieving information for device '%s'\n", in->name.s );
+            
             intf_info.is_valid = 1;
-            intf_info.index = i;
+            intf_info.index = in->index;
 
-            if ( strncmp( intf_name.s, "lo", sizeof( "lo" )) == 0 ) {
+            if ( strncmp( in->name.s, "lo", sizeof( "lo" )) == 0 ) {
                 debug( 10, "INTERFACE: Loopback interface at index %d\n", i );
                 intf_info.netcap_intf = NC_INTF_LOOPBACK;
                 intf_info.is_loopback = 1;
@@ -485,20 +504,17 @@ static int _update_intf_info( void )
             }
             
             /* Copy in the interface name */
-            strncpy( intf_info.name.s, intf_name.s, sizeof( intf_info.name ));
+            strncpy( intf_info.name.s, in->name.s, sizeof( intf_info.name ));
                         
-            switch( netcap_intf_db_fill_data( &intf_info, sockfd, &intf_name )) {
+            switch( netcap_intf_db_fill_data( &intf_info, sockfd, &in->name )) {
             case 1: intf_info.is_valid = 1; break;
             case 0: intf_info.is_valid = 0; break;
             default: return errlog( ERR_CRITICAL, "netcap_intf_db_fill_info\n" );
             }
 
-            /* Insert the device into the hash table */
-            intf_info_dst = &db->index_to_info[i-1];
-            memcpy( intf_info_dst, &intf_info, sizeof( intf_info ));
-            
-            if ( ht_add( &db->name_to_info, intf_info_dst->name.s, intf_info_dst ) < 0 ) {
-                return errlog( ERR_CRITICAL, "ht_add\n" );
+            /* Insert the device into the hash table, this automatically checks for duplicates. */
+            if ( netcap_intf_db_add_info( db, &intf_info ) < 0 ) {
+                return errlog( ERR_CRITICAL, "netcap_intf_db_set_info\n" );
             }
         }
 
@@ -536,7 +552,9 @@ static int _update_intf_info( void )
     if (( sockfd = socket( PF_INET, SOCK_DGRAM, 0 )) < 0 ) return perrlog( "socket" );
 
     /* Create the new interface database */
-    if (( db = netcap_intf_db_create()) == NULL) return errlog( ERR_CRITICAL, "netcap_intf_db_create\n" );
+    if (( db = netcap_intf_db_create( INTF_DB_NO_LOCKS )) == NULL ) {
+        return errlog( ERR_CRITICAL, "netcap_intf_db_create\n" );
+    }
 
     /* Configure the new interface database */
     ret = _critical_section();
@@ -559,7 +577,7 @@ static int _update_bridge_devices( netcap_intf_db_t* db )
     struct sysfs_class_device* dev;
 
     for ( c = 0 ; c < NETCAP_MAX_INTERFACES ; c++ ) {
-        netcap_intf_info_t* intf_info = &db->index_to_info[c];
+        netcap_intf_info_t* intf_info = &db->info[c];
         
         if ( !intf_info->is_valid ) {
             debug( 11, "Skipping invalid interface %d\n", c );
@@ -619,6 +637,11 @@ static int _update_bridge_device( netcap_intf_db_t* db, netcap_intf_info_t* brid
         
         /* Iterate through all of the entries */
         dlist_for_each_data( dir_links, plink, struct sysfs_link ) {
+            if ( plink == NULL ) {
+                errlog( ERR_CRITICAL, "NULL plink, continuing\n" );
+                continue;
+            }
+
             debug( 4, "INTERFACE: Bridge[%s] contains '%s'\n", bridge_info->name.s, plink->name );
                    
             if (( intf_info = ht_lookup( &db->name_to_info, plink->name )) == NULL ) {
@@ -651,12 +674,92 @@ static int _update_bridge_device( netcap_intf_db_t* db, netcap_intf_info_t* brid
     if ( bridge_info->bridge_info == NULL ) return errlog( ERR_CRITICAL, "netcap_arp_configure_bridge\n" );
 
     snprintf( path, sizeof( path ), "%s/%s", dev->path, SYSFS_BRIDGE_PORT_SUBDIR );
-    
+
     if (( dir = sysfs_open_directory( path )) == NULL ) return perrlog( "sysfs_open_directory" );
 
     ret = _critical_section();
     
     sysfs_close_directory( dir );
+    
+    return ret;
+}
+
+static int _get_interface_list       ( _intf_index_name_t* intf_array, int size )
+{
+    if ( _interface.sysfs_class_net == NULL ) return errlog( ERR_CRITICAL, "sysfs_class_net is NULL\n" );
+    
+    struct sysfs_directory* dir = NULL;
+    struct sysfs_attribute* attribute = NULL;
+
+    int _critical_section( void ) {
+        struct dlist* dir_subdirs;
+        struct sysfs_directory* sub_dir;
+        char path[SYSFS_PATH_MAX];
+        int index = 0;
+        int ifindex = 0;
+        int c;
+        
+        if (( dir_subdirs = sysfs_get_dir_subdirs( dir )) == NULL ) {
+            return perrlog( "sysfs_get_dir_subdirs" );
+        }
+
+        dlist_for_each_data( dir_subdirs, sub_dir, struct sysfs_directory ) {
+            if ( sub_dir == NULL ) {
+                errlog( ERR_WARNING, "NULL sub directory\n" );
+                continue;
+            }
+            
+            debug( 4, "INTERFACE: Found interface: [%s]\n", sub_dir->name );
+            snprintf( path, sizeof( path ), "%s/%s", sub_dir->path, SYSFS_ATTRIBUTE_INDEX );
+            
+            if (( attribute = sysfs_open_attribute( path )) == NULL ) {
+                return perrlog( "sysfs_open_attribute" );
+            }
+
+            if ( sysfs_read_attribute( attribute ) < 0 ) return perrlog( "sysfs_read_attribute" );
+
+
+            /* Convert the value to an int, (assuming no errors) */
+            ifindex = atoi( attribute->value );
+            
+            if ( ifindex <= 0 ) {
+                errlog( ERR_CRITICAL, "Invalid interface index for interface[%s]\n", sub_dir->name );
+                sysfs_close_attribute( attribute );
+                continue;
+            }
+
+            for ( c = 0 ; c < index ; c++ ) {
+                if ( intf_array[c].index == ifindex ) {
+                    errlog( ERR_CRITICAL, "Index %d used twice, continuing\n", ifindex );
+                    sysfs_close_attribute( attribute );
+                    continue;
+                }
+            }
+            
+            intf_array[index].index = ifindex;
+            strncpy( intf_array[index++].name.s, sub_dir->name, sizeof( netcap_intf_string_t ));
+            
+            sysfs_close_attribute( attribute );
+            attribute = NULL;
+
+            if ( index >= size ) return errlog( ERR_CRITICAL, "input array is not large enough\n" );
+        }
+
+        return index;
+    }
+
+    /* Convert the byte size to the number of items */
+    size = size / sizeof( _intf_index_name_t );
+        
+    int ret = 0;
+    if (( dir = sysfs_open_directory( _interface.sysfs_class_net->path )) == NULL ) {
+        return perrlog( "sysfs_open_directory" );
+    }
+    
+    ret = _critical_section();
+            
+    sysfs_close_directory( dir );
+    if ( attribute != NULL ) sysfs_close_attribute( attribute );
     
     return ret;
 }

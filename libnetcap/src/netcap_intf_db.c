@@ -23,9 +23,7 @@ static __inline__ int _check_intf  ( netcap_intf_t intf )
 
 static __inline__ int _check_index    ( int index )
 {
-    if ( index < 1 || index > NETCAP_MAX_INTERFACES ) {
-        return errlog( ERR_CRITICAL, "Invalid index %d\n", index );
-    }
+    if ( index < 1  ) return errlog( ERR_CRITICAL, "Invalid index %d\n", index );
     
     return 0;
 }
@@ -39,27 +37,34 @@ netcap_intf_db_t* netcap_intf_db_malloc  ( void )
     return db;
 }
 
-int               netcap_intf_db_init    ( netcap_intf_db_t* db )
+int               netcap_intf_db_init    ( netcap_intf_db_t* db, int flags )
 {
     if ( db == NULL ) return errlogargs();
     bzero( db, sizeof( netcap_intf_db_t ));
 
+    int hash_flags = ( flags & INTF_DB_NO_LOCKS ) ? HASH_FLAG_NO_LOCKS : 0;
+
     /* Initialize the hash table */
-    if ( ht_init( &db->name_to_info, IF_TABLE_SIZE, string_hash_func, string_equ_func, 0 ) < 0 ) {
+    /* Once these tables are populated, they are never modified in a multithreaded environment */
+    if ( ht_init( &db->name_to_info, IF_TABLE_SIZE, string_hash_func, string_equ_func, hash_flags ) < 0 ) {
         return errlog( ERR_CRITICAL, "ht_init\n" );
     }
 
+    if ( ht_init( &db->index_to_info, IF_TABLE_SIZE, int_hash_func, int_equ_func, hash_flags ) < 0 ) {
+        return errlog( ERR_CRITICAL, "ht_init\n" );
+    }
+    
     return 0;
 }
 
-netcap_intf_db_t* netcap_intf_db_create  ( void )
+netcap_intf_db_t* netcap_intf_db_create  ( int flags )
 {
     netcap_intf_db_t* db;
     if (( db = netcap_intf_db_malloc()) == NULL ) {
         return errlog_null( ERR_CRITICAL, "netcap_intf_db_malloc\n" );
     }
 
-    if ( netcap_intf_db_init( db ) < 0 ) {
+    if ( netcap_intf_db_init( db, flags ) < 0 ) {
         netcap_intf_db_raze( db );
         return errlog_null( ERR_CRITICAL, "netcap_intf_db_init\n" );
     }
@@ -82,15 +87,16 @@ int               netcap_intf_db_destroy ( netcap_intf_db_t* db )
     /* Destroy all of the bridge devices */
     int c = 0;
     for ( c = 0 ; c < NETCAP_MAX_INTERFACES ; c++ ) {
-        if ( db->index_to_info[c].bridge_info != NULL ) free( db->index_to_info[c].bridge_info );
-        if ( db->index_to_info[c].data != NULL ) free( db->index_to_info[c].data );
-        db->index_to_info[c].bridge_info = NULL;
-        db->index_to_info[c].data = NULL;
-        db->index_to_info[c].data_count = 0;
+        if ( db->info[c].bridge_info != NULL ) free( db->info[c].bridge_info );
+        if ( db->info[c].data != NULL ) free( db->info[c].data );
+        db->info[c].bridge_info = NULL;
+        db->info[c].data = NULL;
+        db->info[c].data_count = 0;
     }
 
-    /* Destroy the hash table */
+    /* Destroy the hash tables */
     ht_destroy( &db->name_to_info );
+    ht_destroy( &db->index_to_info );
 
     return 0;
 }
@@ -107,6 +113,50 @@ int               netcap_intf_db_raze         ( netcap_intf_db_t* db )
     if ( netcap_intf_db_destroy( db ) < 0 ) errlog( ERR_CRITICAL, "netcap_intf_db_destroy\n" );
     
     if ( netcap_intf_db_free( db ) < 0 ) errlog( ERR_CRITICAL, "netcap_intf_db_free\n" );
+
+    return 0;
+}
+
+int               netcap_intf_db_add_info( netcap_intf_db_t* db, netcap_intf_info_t* intf_info )
+{
+    netcap_intf_info_t* intf_info_dst = NULL;
+
+    if ( db == NULL || intf_info == NULL ) return errlogargs();
+
+    if ( db->info_count < 0 ) {
+        errlog( ERR_WARNING, "Data count isn't initialized, resetting to zero\n" );
+        db->info_count = 0;
+    }
+
+    if ( db->info_count > NETCAP_MAX_INTERFACES ) {
+        return errlog( ERR_WARNING, "Data count[%d] exceeded\n", db->info_count );
+    }
+
+    if ( _check_index( intf_info->index ) < 0 ) return errlog( ERR_CRITICAL, "_check_index\n" );
+
+    if ( ht_lookup( &db->index_to_info, (void*)intf_info->index ) != NULL ) {
+        errlog( ERR_CRITICAL, "The interface[%d] is already in the database.", intf_info->index );
+        return 0;
+    }
+
+    if ( ht_lookup( &db->name_to_info, intf_info->name.s ) != NULL ) {
+        errlog( ERR_CRITICAL, "The interface[%s] is already in the database.", intf_info->name.s );
+        return 0;
+    }
+    
+    intf_info_dst = &db->info[db->info_count];
+    memcpy( intf_info_dst, intf_info, sizeof( *intf_info ));
+
+    if ( ht_add( &db->index_to_info, (void*)intf_info_dst->index, intf_info_dst ) < 0 ) {
+        return errlog( ERR_CRITICAL, "ht_add\n" );
+    }
+
+    if ( ht_add( &db->name_to_info, intf_info_dst->name.s, intf_info_dst ) < 0 ) {
+        ht_remove( &db->index_to_info, (void*)intf_info_dst->index );
+        return errlog( ERR_CRITICAL, "ht_add\n" );
+    }
+
+    db->info_count++;
 
     return 0;
 }
@@ -166,11 +216,11 @@ netcap_intf_info_t* netcap_intf_db_index_to_info ( netcap_intf_db_t* db, int ind
 
     netcap_intf_info_t* intf_info = NULL;
 
-    intf_info = &db->index_to_info[index - 1];
-    if ( intf_info->is_valid ) return intf_info;
+    if (( intf_info = ht_lookup( &db->index_to_info, (void*)index )) == NULL || !intf_info->is_valid ) {
+        return errlog_null( ERR_CRITICAL, "Nothing is known about '%d'\n", index );
+    }
 
-    /* XXX Should this print an error message */
-    return NULL;
+    return intf_info;
 }
 
 netcap_intf_info_t* netcap_intf_db_intf_to_info  ( netcap_intf_db_t* db, netcap_intf_t intf )
@@ -194,7 +244,6 @@ netcap_intf_info_t* netcap_intf_db_name_to_info  ( netcap_intf_db_t* db, netcap_
     if ( strnlen( name->s, sizeof( netcap_intf_string_t ) + 1 ) > sizeof( netcap_intf_string_t )) {
         return errlog_null( ERR_CRITICAL, "Invalid interface name" );
     }
-
     
     if (( intf_info = ht_lookup( &db->name_to_info, name )) == NULL || !intf_info->is_valid ) {
         return errlog_null( ERR_CRITICAL, "Nothing is known about '%s'\n", name );

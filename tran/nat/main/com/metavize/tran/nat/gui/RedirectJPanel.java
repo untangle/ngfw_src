@@ -94,7 +94,7 @@ class RedirectTableModel extends MSortedTableModel{
         addTableColumn( tableColumnModel,  6,  C6_MW, false, true,  false, false, ComboBoxModel.class, intfMatcherModel, sc.html( "destination<br>interface" ));
         addTableColumn( tableColumnModel,  7,  C7_MW, true,  true,  false, false, String.class, "1.2.3.4", sc.html("source<br>address") );
         addTableColumn( tableColumnModel,  8,  C8_MW, true,  true,  false, false, String.class, "1.2.3.4", sc.html("destination<br>address") );
-        addTableColumn( tableColumnModel,  9,  C9_MW, true,  true,  false, false, String.class, "2-5", sc.html("source<br>port") );
+        addTableColumn( tableColumnModel,  9,  C9_MW, true,  true,  false, false, String.class, "any", sc.html("source<br>port") );
         addTableColumn( tableColumnModel, 10, C10_MW, true,  true,  false, false, String.class, "2-5", sc.html("destination<br>port") );
         addTableColumn( tableColumnModel, 11, C11_MW, true,  true,  false, false, String.class, "1.2.3.4", sc.html("redirect<br>address") );
         addTableColumn( tableColumnModel, 12, C12_MW, true,  true,  false, false, String.class, "5", sc.html("redirect<br>port") );
