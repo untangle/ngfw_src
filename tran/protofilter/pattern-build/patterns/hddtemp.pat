@@ -1,5 +1,5 @@
 # hddtemp - Hard drive temperature reporting
-# Pattern quality: great
+# Pattern quality: great veryfast
 # 
 # Usually runs on port 7634
 #

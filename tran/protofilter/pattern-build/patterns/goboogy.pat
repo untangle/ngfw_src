@@ -1,5 +1,5 @@
 # GoBoogy - A Japanese (?) P2P protocol
-# pattern quality: marginal
+# pattern quality: marginal notsofast
 # 
 # This pattern is untested and likely does not work in all cases!  If it
 # does not work for you, or you believe it could be improved, please

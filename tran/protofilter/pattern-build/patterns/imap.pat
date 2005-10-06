@@ -1,5 +1,5 @@
 # IMAP - Internet Message Access Protocol (A common e-mail protocol)
-# Pattern quality: good
+# Pattern quality: good veryfast
 # This matches IMAP4 (RFC 3501) and probably IMAP2 (RFC 1176)
 #
 # This pattern has been tested and is believed to work well.  If it does not

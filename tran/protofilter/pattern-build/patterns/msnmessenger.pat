@@ -1,5 +1,5 @@
 # MSN Messenger - Microsoft Network chat client
-# Pattern quality: good
+# Pattern quality: good veryfast
 #
 # Usually uses port 1863
 # http://www.hypothetic.org/docs/msn/index.php

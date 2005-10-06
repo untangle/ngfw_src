@@ -1,4 +1,4 @@
-# Tencent QQ Protocol - a Chinese instant messenger protocol - www.qq.com
+# Tencent QQ Protocol - Chinese instant messenger protocol - http://www.qq.com
 # Pattern quality: good veryfast
 #
 # Over six million people use QQ in China, according to wsgtrsys.

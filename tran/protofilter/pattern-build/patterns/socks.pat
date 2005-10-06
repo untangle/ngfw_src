@@ -1,11 +1,11 @@
-# SOCKS Version 5 - Firewall traversal protocol (RFC 1928)
-# Pattern quality: marginal
+# SOCKS Version 5 - Firewall traversal protocol - RFC 1928
+# Pattern quality: marginal fast
 # Usually runs on port 1080
 # Also useful: http://www.iana.org/assignments/socks-methods
 #
-# This pattern is untested.  If it does not work for you, or you believe
-# it could be improved, please post to l7-filter-developers@lists.sf.net
-# This list may be subscribed to at
+# This pattern is untested!  If it does works for you, does not work for
+# you, or you believe it could be improved, please post to
+# l7-filter-developers@lists.sf.net This list may be subscribed to at
 # http://lists.sourceforge.net/lists/listinfo/l7-filter-developers
 
 # method request, no private methods	\x05[\x01-\x08]*

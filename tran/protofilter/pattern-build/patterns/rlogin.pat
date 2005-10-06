@@ -1,5 +1,5 @@
-# rlogin - remote login (RFC 1282)
-# Pattern quality: ok
+# rlogin - remote login - RFC 1282
+# Pattern quality: ok veryfast
 #
 # usually runs on port 443
 #

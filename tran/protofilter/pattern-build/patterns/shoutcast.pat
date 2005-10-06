@@ -1,5 +1,5 @@
 # Shoutcast & Icecast - streaming audio
-# Pattern quality: good
+# Pattern quality: good fast
 # usually runs on port 80
 #
 # Pattern contributed by Deepak Seshadri <dseshadri AT broadbandmaritime.com>

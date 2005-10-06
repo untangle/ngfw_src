@@ -1,5 +1,5 @@
-# Samba/SMB - Server Message Block - Microsoft File Sharing
-# Pattern quality: good
+# Samba/SMB - Server Message Block - Microsoft Windows filesharing
+# Pattern quality: good fast
 #
 # "This protocol is sometimes also referred to as the Common Internet File 
 # System (CIFS), LanManager or NetBIOS protocol." -- "man samba"

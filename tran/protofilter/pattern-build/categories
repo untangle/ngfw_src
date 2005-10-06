@@ -1,7 +1,6 @@
 100bao|: Peer to Peer
 AIM|: Instant Messenger
 AIM web content|: Instant Messenger
-Audiogalaxy|: Music
 Apple Juice|: Peer to Peer
 Ares|: Peer to Peer]
 Battlefield 1942|: Video Game
@@ -11,7 +10,7 @@ Biff|: Email
 Bittorrent|: Peer to Peer
 Cisco VPN|: Networking
 Code Red|: Worm
-Counter Strike|: Video Game
+Counterstrike (using the new Source engine)|: Video Game
 CVS|: Software Development
 DHCP|: Networking
 Direct Connect|: Peer to Peer
@@ -19,11 +18,10 @@ Doom 3|: Video Game
 DNS|: Networking
 eDonkey2000|: Peer to Peer
 FastTrack|: Peer to Peer
-Finger|: Networking
 Freenet|: Peer to Peer
 FTP|: File Transfer
 Gkrellm|: System Administration
-GnucleusLAN (the LAN-only version)|: Peer to Peer
+GnucleusLAN|: Peer to Peer
 Gnutella|: Peer to Peer
 GoBoogy|: Peer to Peer
 Gopher|: Networking
@@ -43,16 +41,19 @@ LPD|: Printing
 MSN Filetransfers|: Instant Messenger
 MSN Messenger|: Instant Messenger
 MUTE|: Peer to Peer
+NBNS|: Networking
+Napster|: Peer to Peer
 Netbios name service|: Networking
 NetBIOS|: Networking
 NCP|: Networking
 Nimda|: Worm
 NNTP|: Internet News
-(Simple) Network Time Protocol|: Networking
-OpenFT : P2P network (implemented in giFT library)|: Peer to Peer
+(S)NTP|: Networking
+OpenFT|: Peer to Peer
+POCO and PP365|: Peer to Peer
 POP3|: Email
 pressplay|: Music
-Quake 2, Quake 3, Quake World, Half Life|: Video Game
+Half Life 1 engine games (HL 1, Quake 2/3/World, Counterstrike 1.6, etc.)|: Video Game
 Quake 1|: Video Game
 RDP|: Remote Deskop
 rlogin|: System Administration
@@ -60,26 +61,25 @@ RTSP|: Networking
 Shoutcast & Icecast|: Music
 Samba/SMB|: Networking
 SIP|: Voice over IP
-Skype|: Voice over IP
-Skype to phone|: Voice over IP
-Skype to Skype|: Voice over IP
 SMTP|: Email
 SNMP|: Networking
 Soribada|: Peer to Peer
+Soulseek|: Peer to Peer
 SOCKS Version 5|: Networking
-SSDP (Simple Service Discovery Protocol): helps computers find network devices|: Networking
+SSDP|: Networking
 SSH|: System Administration
 Subspace|: Video Game
 Telnet|: System Administration
 Tencent QQ Protocol|: Instant Messenger
 Tesla Advanced Communication|: Peer to Peer
 TFTP|: File Transfer
-TLS|: Networking
+SSL and TLS|: Networking
 TSP|: Time
 Unknown|: Unknown
 Valid certificate SSL|: Networking
 VNC|: Remote Desktop
 X Windows Version 11|: Remote Desktop
 XBoxLive|: Video Game
+Xunlei|: Peer to Peer
 Yahoo messenger|: Instant Messenger
 ZMAAP|: Networking

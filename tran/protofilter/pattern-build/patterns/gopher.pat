@@ -1,5 +1,5 @@
-# Gopher - A precursor to HTTP (RFC 1436)
-# Pattern quality: good veryfast undermatch
+# Gopher - A precursor to HTTP - RFC 1436
+# Pattern quality: good notsofast undermatch
 # Usually runs on port 70
 #
 # This pattern is untested.  If it does not

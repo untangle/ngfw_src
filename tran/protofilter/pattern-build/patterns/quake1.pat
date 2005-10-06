@@ -1,5 +1,5 @@
 # Quake 1 - A popular computer game.
-# Pattern quality: marginal
+# Pattern quality: marginal veryfast
 #
 # This pattern is untested and unconfirmed.
 # Please post to l7-filter-developers@lists.sf.net as to whether it works

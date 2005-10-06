@@ -1,5 +1,5 @@
-# MUTE - Peer to Peer filesharing - http://mute-net.sourceforge.net/
-# Pattern quality: marginal
+# MUTE - P2P filesharing - http://mute-net.sourceforge.net
+# Pattern quality: marginal veryfast
 #
 # This pattern is lightly tested.  I don't know for sure that it will 
 # match the actual file transfers.

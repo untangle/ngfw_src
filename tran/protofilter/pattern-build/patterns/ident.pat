@@ -1,5 +1,5 @@
 # Ident - Identification Protocol - RFC 1413
-# Pattern quality: good
+# Pattern quality: good veryfast
 # Usually runs on port 113
 #
 # This pattern is believed to work.  If it does not

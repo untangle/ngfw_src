@@ -1,19 +1,19 @@
-# DHCP - Dynamic Host Configuration Protocol (RFC 1541)
-# Pattern quality: good
+# DHCP - Dynamic Host Configuration Protocol - RFC 1541
+# Pattern quality: good veryfast
 # Usually runs on ports 67 (server) and 68 (client)
 #
 # Also matches BOOTP (Bootstrap Protocol (RFC 951)) in the case that 
 # the "vendor specific options" are used (these options were made standard
 # for DHCP).
 #
-# This pattern is unconfirmed. 
+# This pattern is lightly tested.
 # Please post to l7-filter-developers@lists.sf.net as to whether it works 
 # for you or not.  If you believe it could be improved please post your 
 # suggestions to that list as well. You may subscribe to this list at 
 # http://lists.sourceforge.net/lists/listinfo/l7-filter-developers
 
 dhcp
-^(\x01|\x02)[\x01- ]\x06.*c\x82sc
+^[\x01\x02][\x01- ]\x06.*c\x82sc
 
 # Let's break that down:
 #

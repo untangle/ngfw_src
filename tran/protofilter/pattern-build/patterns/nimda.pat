@@ -1,5 +1,5 @@
 # Nimda - a worm that attacks Microsoft IIS web servers, and MORE!
-# Pattern quality: ok
+# Pattern quality: ok fast
 
 # If this pattern does not
 # work for you, or you believe it could be improved, please post to 

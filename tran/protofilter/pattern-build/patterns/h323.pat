@@ -1,5 +1,5 @@
 # H.323 - Voice over IP.
-# Pattern quality: ok
+# Pattern quality: ok veryfast
 #
 # This pattern is written without knowledge of the principles of H.323.
 # It has only been tested with gnomemeeting and may not work for other

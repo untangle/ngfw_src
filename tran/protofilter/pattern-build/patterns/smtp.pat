@@ -1,5 +1,5 @@
-# SMTP - Simple Mail Transfer Protocol (RFC 2821)  (See also RFC 1869)
-# Pattern quality: good
+# SMTP - Simple Mail Transfer Protocol - RFC 2821 (See also RFC 1869)
+# Pattern quality: great fast
 # usually runs on port 25
 # 
 # This pattern has been tested and is believed to work well.  If it does not
@@ -13,6 +13,9 @@ smtp
 # does not, so we match those too, just in case anyone has copied them 
 # literally.
 ^220[\x09-\x0d -~]* (e?smtp|simple mail)
+
+# This is ~3x faster if the stream starts with "220" 
+#^220.* (e?smtp|simple mail)
 
 # Some examples:
 # 220 mail.stalker.com ESMTP CommuniGate Pro 4.1.3

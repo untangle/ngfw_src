@@ -1,5 +1,5 @@
 # Cisco VPN - VPN client software to a Cisco VPN server
-# Pattern quality: ok
+# Pattern quality: ok veryfast
 # 
 # This pattern contributed by Myles Uyema <myles AT uyema.net>
 #

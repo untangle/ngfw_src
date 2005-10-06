@@ -1,5 +1,5 @@
 # Jabber (XMPP) - an open instant messenger protocol - http://jabber.org
-# Pattern quality: good
+# Pattern quality: good fast
 #
 # This pattern has been tested with Gaim and Gabber.  It is only tested 
 # with non-SSL mode Jabber with no proxies.  If it does not

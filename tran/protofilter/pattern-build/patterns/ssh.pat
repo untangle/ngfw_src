@@ -1,5 +1,5 @@
 # SSH - Secure SHell
-# Pattern quality: great
+# Pattern quality: great veryfast
 # usually runs on port 22
 #
 # http://www.ietf.org/internet-drafts/draft-ietf-secsh-transport-22.txt

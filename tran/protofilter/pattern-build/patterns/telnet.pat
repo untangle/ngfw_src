@@ -1,5 +1,5 @@
-# Telnet - Insecure remote login (RFC 854)
-# Pattern quality: good
+# Telnet - Insecure remote login - RFC 854
+# Pattern quality: good veryfast
 # Usually runs on port 23
 #
 # This pattern is lightly tested.  If it does not work for you, or you

@@ -1,5 +1,5 @@
-# live365 - An Internet radio site (http://live365.com)
-# Pattern quality: marginal
+# live365 - An Internet radio site - http://live365.com
+# Pattern quality: marginal fast
 #
 # This pattern was "contributed" (taken with permission) by the bandwidth 
 # arbitrator project (www.bandwidtharbitrator.com).

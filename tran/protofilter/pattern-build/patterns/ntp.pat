@@ -1,4 +1,4 @@
-# (Simple) Network Time Protocol - RFC 1305, 2030
+# (S)NTP - (Simple) Network Time Protocol - RFCs 1305 and 2030
 # Pattern quality: good veryfast overmatch 
 #
 # This pattern is tested and is believed to work. If this does not work

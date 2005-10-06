@@ -1,4 +1,4 @@
-# RTSP - Real Time Streaming Protocol - http://www.rtsp.org/
+# RTSP - Real Time Streaming Protocol - http://www.rtsp.org
 # Pattern quality: good fast
 # usually runs on port 554
 #

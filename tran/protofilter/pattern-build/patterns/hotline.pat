@@ -1,5 +1,5 @@
-# Hotline - An old P2P protocol
-# pattern quality: marginal
+# Hotline - An old P2P filesharing protocol
+# pattern quality: marginal veryfast
 # 
 # This pattern is untested!  If it does not work for you, or you believe
 # it could be improved, please post to l7-filter-developers@lists.sf.net

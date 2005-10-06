@@ -1,5 +1,5 @@
 # POP3 - Post Office Protocol version 3 (popular e-mail protocol) - RFC 1939
-# Pattern quality: good
+# Pattern quality: good veryfast
 #
 # This pattern has been tested somewhat.  If it does not
 # work for you, or you believe it could be improved, please post to 

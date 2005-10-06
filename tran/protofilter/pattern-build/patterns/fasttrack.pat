@@ -1,5 +1,5 @@
-# FastTrack - Peer to Peer filesharing (Kazaa, Morpheus, iMesh, Grokster, etc)
-# Pattern quality: good
+# FastTrack - P2P filesharing (Kazaa, Morpheus, iMesh, Grokster, etc)
+# Pattern quality: good notsofast
 #
 # Tested with Kazaa Lite Resurrection 0.0.7.6F
 #
@@ -19,4 +19,7 @@ fasttrack
 
 # This pattern is kinda slow, but not too bad.
 ^get (/.download/[ -~]*|/.supernode[ -~]|/.status[ -~]|/.network[ -~]*|/.files|/.hash=[0-9a-f]*/[ -~]*) http/1.1|user-agent: kazaa|x-kazaa(-username|-network|-ip|-supernodeip|-xferid|-xferuid|tag)|^give [0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]?[0-9]?[0-9]?
+
+# This isn't much faster:
+#^get (/.download/.*|/.supernode.|/.status.|/.network.*|/.files|/.hash=[0-9a-f]*/.*) http/1.1|user-agent: kazaa|x-kazaa(-username|-network|-ip|-supernodeip|-xferid|-xferuid|tag)|^give [0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]?[0-9]?[0-9]?
 

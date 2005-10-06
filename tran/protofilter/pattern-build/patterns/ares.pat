@@ -1,4 +1,4 @@
-# Ares - A P2P program - http://www.aresgalaxy.org/
+# Ares - P2P filesharing - http://www.aresgalaxy.org
 # Pattern quality: good veryfast undermatch
 
 # This pattern catches only client-server connect messages.  This is

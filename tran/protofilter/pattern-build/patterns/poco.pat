@@ -1,4 +1,4 @@
-# KuGoo - a Chinese P2P program - http://www.kugoo.com
+# POCO and PP365 - Chinese P2P filesharing - http://pp365.com http://poco.cn
 # Pattern quality: ok veryfast
 #
 # The author of this pattern says it works, but this is unconfirmed. If
@@ -9,6 +9,6 @@
 #
 # Written by www.routerclub.com wsgtrsys.
 
-kugoo
-^\x31..\x8e
+poco
+^\x80\x94\x0a\x01....\x1f\x9e
 

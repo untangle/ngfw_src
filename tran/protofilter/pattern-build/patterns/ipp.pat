@@ -1,5 +1,5 @@
 # IP printing - a new standard for UNIX printing - RFC 2911
-# Pattern quality: good
+# Pattern quality: good fast
 #
 # This pattern has been tested and is believed to work well.  If it does not
 # work for you, or you believe it could be improved, please post to 

@@ -1,4 +1,4 @@
-# 100bao - a Chinese P2P program - www.100bao.com
+# 100bao - a Chinese P2P protocol/program - http://www.100bao.com
 # Pattern quality: ok veryfast
 #
 # The author of this pattern says it works, but this is unconfirmed. If

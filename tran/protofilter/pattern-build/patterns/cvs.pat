@@ -1,5 +1,5 @@
 # CVS - Concurrent Versions System
-# Pattern quality: good
+# Pattern quality: good veryfast
 #
 # Please post to l7-filter-developers@lists.sf.net as to whether this pattern 
 # works for you or not.  If you believe it could be improved please post your 

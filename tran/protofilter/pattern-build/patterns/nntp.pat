@@ -1,5 +1,5 @@
-# NNTP - Network News Transfer Protocol (RFC 977, 2980)
-# Pattern quality: good
+# NNTP - Network News Transfer Protocol - RFCs 977 and 2980
+# Pattern quality: good veryfast
 # usually runs on port 119
 
 # This pattern is tested and is believed to work well (but could use
@@ -16,5 +16,5 @@ nntp
 # so it's quite possible that this pattern will miss some nntp traffic.)
 ^(20[01][\x09-\x0d -~]*AUTHINFO USER|20[01][\x09-\x0d -~]*news)
 
-# same thing, slightly more accurate, but about 8 times slower
-#20[01][\x09-\x0d -~]*\x0d\x0a[\x09-\x0d -~]*AUTHINFO USER|20[01][\x09-\x0d -~]*news
+# same thing, slightly more accurate, but 100+ times slower
+#^20[01][\x09-\x0d -~]*\x0d\x0a[\x09-\x0d -~]*AUTHINFO USER|20[01][\x09-\x0d -~]*news

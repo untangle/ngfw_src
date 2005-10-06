@@ -1,5 +1,5 @@
 # Code Red - a worm that attacks Microsoft IIS web servers
-# Pattern quality: ok
+# Pattern quality: ok fast
 
 # If this pattern does not
 # work for you, or you believe it could be improved, please post to 

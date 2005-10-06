@@ -10,24 +10,22 @@ cd $BUILD_DIR
 
 if [ ! -d patterns/ ] ; then
     echo "No patterns"
-    exit
+    exit -1
 fi 
 
 cd patterns/
 echo > $FILE
 
 cat ../LoadPatterns_start.java >> $FILE
-echo "" >> $FILE
 
 for i in `ls ./*.pat` ; do
     cat $i | sed -e '/^[ \t]*#/d' | sed -e '/^[ \t]*$/d' > $i.new
-    STR="`cat $i | head -n 1 | sed -e 's/.*#//'`"
+    STR="`cat $i | head -n 1 | sed -e 's/.*#//' -e 's/"//g'`"
     NAME="`echo $STR | perl -p -e 's/(.*?) +-.*/\1/g'`"
     DESC="`echo $STR | perl -p -e 's/.*?-(.*)/\1/g'`"
     QUAL="`cat $i | head -n 2 | tail -n 1 | sed -e 's/.*: //'`"
     DEF="`head -n 2 $i.new  | tail -n 1 | sed -e 's/\\\\/\\\\\\\\/g' | sed -e 's/\\\"/\\\\\"/g' `"
     CATEGORY="`grep \"^$NAME|:\" $category_file | sed -e 's/[^|]*|: *//g' -e 's/\([^ ].*[^ ]\) */\1/g'`"
-
 
     if [ "x$CATEGORY" == "x" ]; then
         echo "No category for $NAME"
@@ -40,7 +38,7 @@ for i in `ls ./*.pat` ; do
 
     echo " ==> " $NAME
 
-    echo -ne "\t\tpats.put(\"" >> $FILE
+    echo -ne "\tpats.put(\"" >> $FILE
     echo -n "$NAME" >> $FILE
     echo -n "\",new ProtoFilterPattern(\"" >> $FILE
     echo -n "$NAME"  >> $FILE
@@ -58,8 +56,8 @@ for i in `ls ./*.pat` ; do
     echo    "false,false,false));" >> $FILE
 done
 
-echo -e "\t\treturn pats;" >> $FILE
-echo -e "\t}" >> $FILE
+rm *.new
+
 cat ../LoadPatterns_end.java >> $FILE
 
 cd ..

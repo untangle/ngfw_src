@@ -1,4 +1,4 @@
-# eDonkey2000 - P2P filesharing (http://edonkey2000.com)
+# eDonkey2000 - P2P filesharing - http://edonkey2000.com
 # Pattern quality: good veryfast overmatch
 #
 # Please post to l7-filter-developers@lists.sf.net as to whether this pattern 

@@ -1,5 +1,5 @@
-# SSDP (Simple Service Discovery Protocol): helps computers find network devices
-# Pattern quality: good
+# SSDP - Simple Service Discovery Protocol - easy discovery of network devices
+# Pattern quality: good notsofast
 #
 # If this pattern does not work for you, or you believe it could be
 # improved, please post to l7-filter-developers@lists.sf.net . Subscribe:

@@ -1,5 +1,5 @@
-# DNS - Domain Name System (RFC 1035)
-# Pattern quality: good
+# DNS - Domain Name System - RFC 1035
+# Pattern quality: great notsofast
 #
 # Please post to l7-filter-developers@lists.sf.net as to whether this pattern 
 # works for you or not.  If you believe it could be improved please post your 
@@ -56,7 +56,7 @@ dns
 
 # This way assumes that TLDs are any alpha string 2-6 characters long.
 # If TLDs are added, this is a good fallback.
-#[\x01\x02].?.?.?.?.?.?[\x01-\x3F][a-z][\x01-\x3Fa-z]*[\x02-\x06][a-z][a-z][a-z]?[a-z]?[a-z]?[a-z]?[\x01-\x10][\x01\x03\x04\xFF]
+#^.?.?.?.?[\x01\x02].?.?.?.?.?.?[\x01-\x3F][a-z][\x01-\x3Fa-z]*[\x02-\x06][a-z][a-z][a-z]?[a-z]?[a-z]?[a-z]?[\x01-\x10][\x01\x03\x04\xFF]
 
 # If you have more processing power than me, you can substitute this for
 # the [a-z][a-z][a-z]?[a-z]?[a-z]?[a-z]?

@@ -1,7 +1,7 @@
-# Soribada - A Korean P2P client/protocal - http://www.soribada.com/
+# Soribada - A Korean P2P filesharing program/protocol - http://www.soribada.com
 # Pattern quality: good notsofast
 
-# I am told that there are three versions of this protocal, the first no
+# I am told that there are three versions of this protocol, the first no
 # longer being used.  That would probably explain why incoming searches
 # have two different formats...
 
