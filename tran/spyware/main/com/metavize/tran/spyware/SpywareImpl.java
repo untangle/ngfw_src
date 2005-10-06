@@ -263,8 +263,8 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         l = (List<StringRule>)settings.getDomainWhitelist();
         for (StringRule sr : l) {
             if (sr.isLive()) {
-                String str = sr.getString();
-                if (str.toLowerCase().startsWith("http://")) {
+                String str = sr.getString().toLowerCase();
+                if (str.startsWith("http://")) {
                     try {
                         URL url = new URL(str);
                         s.add(url.getHost());

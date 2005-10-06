@@ -138,7 +138,8 @@ public class HttpParser extends AbstractParser
                 }
             case FIRST_LINE_STATE:
                 {
-                    // Initialize the buffer, we'll need it until we''re done with HEADER state.
+                    // Initialize the buffer, we'll need it until
+                    // we're done with HEADER state.
                     this.buf = new byte[maxUri];
 
                     logger.debug(sessStr + "in FIRST_LINE_STATE");
@@ -364,8 +365,8 @@ public class HttpParser extends AbstractParser
                         eventLogger.info(evt);
                     }
 
-		    // Free up header storage
-		    header = null;
+                    // Free up header storage
+                    header = null;
                     done = true;
                     break;
                 }
@@ -374,10 +375,17 @@ public class HttpParser extends AbstractParser
             }
         }
 
-        if (logger.isDebugEnabled())
+        if (logger.isDebugEnabled()) {
             logger.debug(sessStr + "returing readBuffer: " + b);
+        }
 
         scheduleTimer(TIMEOUT);
+
+        if (null != b && !b.hasRemaining()) {
+            String msg = "b does not have remaining: " + b + " in state: " + state;
+            logger.error(msg);
+            throw new ParseException(msg);
+        }
 
         return new ParseResult(l, b);
     }
