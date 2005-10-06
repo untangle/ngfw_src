@@ -59,6 +59,11 @@ public interface IPNewSessionRequest extends NewSessionRequest, SessionEndpoints
      */
     void serverIntf( byte intf );
 
+    /**
+     * Get the original server interface before any of the overrides occurred 
+     */
+    byte originalServerIntf();
+
     // May only be called before session is established (from UDPNewSessionRequestEvent handler)
     void rejectSilently();
 

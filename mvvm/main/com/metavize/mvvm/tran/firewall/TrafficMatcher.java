@@ -74,7 +74,7 @@ abstract class TrafficMatcher {
         return isEnabled;
     }
     
-    public boolean isMatch( IPNewSessionRequest request, Protocol protocol )
+    protected boolean isMatch( IPNewSessionRequest request, Protocol protocol )
     {
         boolean isMatch = 
             isEnabled && 
@@ -90,7 +90,7 @@ abstract class TrafficMatcher {
     
     }
 
-    public boolean isMatch( IPSessionDesc session, Protocol protocol )
+    protected boolean isMatch( IPSessionDesc session, Protocol protocol )
     {
         return ( isEnabled && 
                  isMatchProtocol( protocol ) &&
@@ -99,8 +99,8 @@ abstract class TrafficMatcher {
                  isTimeMatch());
     }
     
-    public boolean isMatch( Protocol protocol, InetAddress srcAddress, InetAddress dstAddress,
-                            int srcPort, int dstPort )
+    protected boolean isMatch( Protocol protocol, InetAddress srcAddress, InetAddress dstAddress,
+                               int srcPort, int dstPort )
     {
         return ( isEnabled && 
                  isMatchProtocol( protocol ) &&

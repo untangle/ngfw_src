@@ -40,10 +40,14 @@ public abstract class TrafficDirectionMatcher extends TrafficMatcher
     {
         return ( isMatchDirection( session.isInbound()) && super.isMatch( session, protocol ));
     }
+
+    public boolean isMatch( IPNewSessionRequest request, Protocol protocol )
+    {
+        return ( isMatchDirection( request.isInbound()) && super.isMatch( request, protocol ));
+    }
     
     public boolean isMatch( Protocol protocol, boolean isInbound, InetAddress srcAddress, 
                             InetAddress dstAddress, int srcPort, int dstPort )
-                            
     {
         return ( isMatchDirection( isInbound ) && 
                  super.isMatch( protocol, srcAddress, dstAddress, srcPort, dstPort ));

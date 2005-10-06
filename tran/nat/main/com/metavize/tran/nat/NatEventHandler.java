@@ -128,6 +128,9 @@ class NatEventHandler extends AbstractEventHandler
             if ( isNat( request, protocol )      ||
                  isRedirect( request, protocol ) ||
                  isDmzHost( request,  protocol )) {
+                /* Nothing left to do */
+                if ( request.attachment() == null ) return;
+
                 request.release( true );
 
                 if ( isFtp( request, protocol )) {
@@ -331,7 +334,9 @@ class NatEventHandler extends AbstractEventHandler
         if ( nat.isMatch( request, protocol )) {
             /* Check to see if this is destined to the NATd network, if it is drop it */
             if ( natLocalNetwork.isMatch( request.serverAddr())) {
-                return false;
+                request.rejectSilently();
+                request.attach( null );
+                return true;
             }
 
             /* Check to see if this is redirect, check before changing the source address */

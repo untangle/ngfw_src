@@ -23,9 +23,9 @@ public abstract class TrafficIntfMatcher extends TrafficMatcher
     final IntfMatcher dstIntf;
     
     public TrafficIntfMatcher( boolean     isEnabled,  ProtocolMatcher protocol, 
-                                    IntfMatcher srcIntf,    IntfMatcher     dstIntf,
-                                    IPMatcher   srcAddress, IPMatcher       dstAddress,
-                                    PortMatcher srcPort,    PortMatcher     dstPort )
+                               IntfMatcher srcIntf,    IntfMatcher     dstIntf,
+                               IPMatcher   srcAddress, IPMatcher       dstAddress,
+                               PortMatcher srcPort,    PortMatcher     dstPort )
     {
         super( isEnabled, protocol, srcAddress, dstAddress, srcPort, dstPort );
         this.srcIntf  = srcIntf;
@@ -43,6 +43,12 @@ public abstract class TrafficIntfMatcher extends TrafficMatcher
     {
         return ( isMatchIntf( session.clientIntf(), session.serverIntf()) && 
                  super.isMatch( session, protocol )); 
+    }
+
+    public boolean isMatch( IPNewSessionRequest request, Protocol protocol )
+    {
+        return ( isMatchIntf( request.clientIntf(), request.originalServerIntf()) && 
+                 super.isMatch( request, protocol ));     
     }
     
     public boolean isMatch( Protocol protocol, byte srcIntf, byte dstIntf, 

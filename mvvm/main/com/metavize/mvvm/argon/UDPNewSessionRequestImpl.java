@@ -23,9 +23,10 @@ class UDPNewSessionRequestImpl extends IPNewSessionRequestImpl implements UDPNew
     protected byte[] options;
     protected int icmpId;
 
-    public UDPNewSessionRequestImpl( SessionGlobalState sessionGlobalState, ArgonAgent agent )
+    public UDPNewSessionRequestImpl( SessionGlobalState sessionGlobalState, ArgonAgent agent,
+                                     byte originalServerIntf )
     {
-        super( sessionGlobalState, agent );
+        super( sessionGlobalState, agent, originalServerIntf );
         
         /* Grab the TTL, TOS and ICMP Identifier from the udp session */
         this.ttl    = sessionGlobalState.netcapUDPSession().ttl();
@@ -33,9 +34,9 @@ class UDPNewSessionRequestImpl extends IPNewSessionRequestImpl implements UDPNew
         this.icmpId = sessionGlobalState.netcapUDPSession().icmpClientId();
     }
     
-    public UDPNewSessionRequestImpl( UDPSession session, ArgonAgent agent )
+    public UDPNewSessionRequestImpl( UDPSession session, ArgonAgent agent, byte originalServerIntf )
     {
-        super( session, agent );
+        super( session, agent, originalServerIntf );
 
         /* Grab the TTL and TOS from the last request */
         this.ttl    = session.ttl();

@@ -220,14 +220,15 @@ public class UDPHook implements NetcapHook
             return new UDPSource( netcapUDPSession.serverMailbox(), serverSideListener );
         }
 
-        protected void newSessionRequest( ArgonAgent agent, Iterator iter )
+        protected void newSessionRequest( ArgonAgent agent, Iterator iter, byte originalServerIntf )
         {
             UDPNewSessionRequest request;
 
-            if ( prevSession == null )
-                request = new UDPNewSessionRequestImpl( sessionGlobalState, agent );
-            else
-                request = new UDPNewSessionRequestImpl( prevSession, agent );
+            if ( prevSession == null ) {
+                request = new UDPNewSessionRequestImpl( sessionGlobalState, agent, originalServerIntf );
+            } else {
+                request = new UDPNewSessionRequestImpl( prevSession, agent, originalServerIntf );
+            }
                     
             PolicyRule pr = pipelineDesc.getPolicyRule();
             boolean isInbound = pr == null ? true : pr.isInbound();

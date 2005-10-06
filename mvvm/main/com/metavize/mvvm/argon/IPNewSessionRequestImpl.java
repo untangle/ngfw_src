@@ -31,6 +31,7 @@ public abstract class IPNewSessionRequestImpl extends NewSessionRequestImpl impl
     
     protected InetAddress serverAddr;
     protected int serverPort;
+    final byte originalServerIntf;
     protected byte serverIntf;
 
     protected byte state = REQUESTED;
@@ -44,7 +45,8 @@ public abstract class IPNewSessionRequestImpl extends NewSessionRequestImpl impl
     /* Two ways to create an IPNewSessionRequest:
      * A. Pass in the netcap session and get the parameters from there.
      */
-    public IPNewSessionRequestImpl( SessionGlobalState sessionGlobalState, ArgonAgent agent )
+    public IPNewSessionRequestImpl( SessionGlobalState sessionGlobalState, ArgonAgent agent,
+                                    byte originalServerIntf )
     {
         super( sessionGlobalState, agent );
         
@@ -59,6 +61,7 @@ public abstract class IPNewSessionRequestImpl extends NewSessionRequestImpl impl
         clientPort = client.port();
         clientIntf = IntfConverter.toArgon( clientSide.interfaceId());
         serverIntf = IntfConverter.toArgon( serverSide.interfaceId());
+        this.originalServerIntf = originalServerIntf;
         
         serverAddr = server.host();
         serverPort = server.port();
@@ -68,7 +71,7 @@ public abstract class IPNewSessionRequestImpl extends NewSessionRequestImpl impl
     /* Two ways to create an IPNewSessionRequest:
      * B. Pass in the previous request and get the parameters from there
      */
-    public IPNewSessionRequestImpl( IPSession session, ArgonAgent agent )
+    public IPNewSessionRequestImpl( IPSession session, ArgonAgent agent, byte originalServerIntf )
     {
         super( session.sessionGlobalState(), agent);
   
@@ -80,6 +83,8 @@ public abstract class IPNewSessionRequestImpl extends NewSessionRequestImpl impl
         serverAddr = session.serverAddr();
         serverPort = session.serverPort();
         serverIntf = session.serverIntf();
+
+        this.originalServerIntf = originalServerIntf;
     }
 
     public short protocol()
@@ -141,6 +146,11 @@ public abstract class IPNewSessionRequestImpl extends NewSessionRequestImpl impl
     {
         IntfConverter.validateArgonIntf( intf );
         serverIntf = intf;
+    }
+
+    public byte originalServerIntf()
+    {
+        return this.originalServerIntf;
     }
 
     // One of REQUESTED, REJECTED, RELEASED 

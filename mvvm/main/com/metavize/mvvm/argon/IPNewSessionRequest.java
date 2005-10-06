@@ -44,6 +44,11 @@ public interface IPNewSessionRequest extends NewSessionRequest, IPSessionDesc
     void serverIntf( byte intf );
 
     /**
+     * Get the original server interface before any of the overrides occurred 
+     */
+    byte originalServerIntf();
+
+    /**
      * Session requests have a state of <code>REQUESTED</code> when the session request has not
      * been rejected or released by the transform.
      */

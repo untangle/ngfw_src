@@ -87,6 +87,7 @@ abstract class ArgonHook implements Runnable
 
             /* Update the server interface with the override table */
             NetcapSession netcapSession = sessionGlobalState.netcapSession();
+            byte originalServerIntf = IntfConverter.toArgon( netcapSession.serverSide().interfaceId());
             InterfaceOverride.getInstance().updateDestinationInterface( netcapSession );
 
             if ( logger.isDebugEnabled()) logger.debug( netcapSession );
@@ -119,7 +120,7 @@ abstract class ArgonHook implements Runnable
             pipeline = pipelineDesc.getAgents();
 
             /* Initialize all of the transforms */
-            initTransforms();
+            initTransforms( originalServerIntf );
 
             /* Connect to the server */
             boolean serverActionCompleted = connectServer();
@@ -200,13 +201,13 @@ abstract class ArgonHook implements Runnable
     /**
      * Initialize each of the transforms for the new session. </p>
      */
-    protected void initTransforms()
+    private void initTransforms( byte originalServerIntf )
     {
         for ( Iterator<ArgonAgent> iter = pipeline.iterator() ; iter.hasNext() ; ) {
             ArgonAgent agent = iter.next();
 
             if ( state == IPNewSessionRequest.REQUESTED ) {
-                newSessionRequest( agent, iter );
+                newSessionRequest( agent, iter, originalServerIntf );
             } else {
                 /* Session has been rejected or endpointed, remaining transforms need not be informed */
                 // Don't need to remove anything from the pipeline, it is just used here
@@ -555,7 +556,7 @@ abstract class ArgonHook implements Runnable
     protected abstract Source makeClientSource();
     protected abstract Source makeServerSource();
 
-    protected abstract void newSessionRequest( ArgonAgent agent, Iterator iter );
+    protected abstract void newSessionRequest( ArgonAgent agent, Iterator iter, byte originalServerIntf );
 
     protected abstract void raze();
 

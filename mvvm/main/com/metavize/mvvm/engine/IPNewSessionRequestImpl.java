@@ -84,6 +84,10 @@ abstract class IPNewSessionRequestImpl implements IPNewSessionRequest {
         return pRequest.serverIntf();
     }
 
+    public byte originalServerIntf() {
+        return pRequest.originalServerIntf();
+    }
+
     public void clientAddr(InetAddress addr)
     {
         pRequest.clientAddr(addr);

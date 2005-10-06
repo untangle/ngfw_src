@@ -250,14 +250,15 @@ public class TCPHook implements NetcapHook
             return new TCPSource( netcapTCPSession.tcpServerSide().fd(), serverSideListener );
         }
 
-        protected void newSessionRequest( ArgonAgent agent, Iterator iter )
+        protected void newSessionRequest( ArgonAgent agent, Iterator iter, byte originalServerIntf )
         {
             TCPNewSessionRequest request;
 
-            if ( prevSession == null )
-                request = new TCPNewSessionRequestImpl( sessionGlobalState, agent );
-            else
-                request = new TCPNewSessionRequestImpl( prevSession, agent );
+            if ( prevSession == null ) {
+                request = new TCPNewSessionRequestImpl( sessionGlobalState, agent, originalServerIntf );
+            } else {
+                request = new TCPNewSessionRequestImpl( prevSession, agent, originalServerIntf );
+            }
                          
             PolicyRule pr = pipelineDesc.getPolicyRule();
             boolean isInbound = pr == null ? true : pr.isInbound();
