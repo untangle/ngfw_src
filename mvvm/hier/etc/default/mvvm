@@ -58,6 +58,14 @@ fi
 PROFILE_MVVM_YJP=${PROFILE_MVVM_YJP=$:-no}
 export PROFILE_MVVM_YJP
 
+# Use the Throughput or Concurrent-Low-Pause garbage collector?
+# We normally want to use the Concurrent collector as it gives the lowest possible pause
+# times.
+USE_THROUGHPUT_COLLECTOR=no
+if [ "x$PROFILE_MVVM_YJP" = "xyes" ] ; then
+    USE_THROUGHPUT_COLLECTOR=yes
+fi
+
 #
 # JAVA options
 #
@@ -66,17 +74,18 @@ export PROFILE_MVVM_YJP
 # JAVA_HOME=/usr/lib/j2se/1.4/jre
 JAVA_HOME=${JAVA_HOME:-@DEFAULT_JAVA_HOME@}
 
-if [ "x$PROFILE_MVVM_YJP" = "xyes" ] ; then
-    JAVA_OPTS_SUN="-XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:NewRatio=3"
+if [ "x$USE_THROUGHPUT_COLLECTOR" = "xyes" ] ; then
+# Goals: 20ms maximum pause time, 95% throughput, finally minimum footprint
+    JAVA_OPTS_SUN="-XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+UseParallelGC -XX:MaxGCPauseMillis=20 -XX:GCTimeRatio=19"
 else
-    JAVA_OPTS_SUN="-XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+UseConcMarkSweepGC -XX:+UseParNewGC -XX:NewRatio=3"
+    JAVA_OPTS_SUN="-XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+UseConcMarkSweepGC -XX:+CMSIncrementalMode -XX:+CMSIncrementalPacing -XX:CMSIncrementalDutyCycleMin=0 -XX:CMSIncrementalDutyCycle=10 -XX:+UseParNewGC -XX:NewRatio=4"
 fi
 JAVA_OPTS_BEA="-Xgcpause -Xgcprio:pausetime"
 # Java Options:
 #  Minimum at 128m so we don't blow out smaller (512MB) machines
-#  Maximum at 256m so we leave a lot of space for stacks
-#  Stack size 96k which is the smallest possible value that doesn't work
-JAVA_OPTS_COMMON="-ea -Xdebug -verbose:gc -Xloggc:$MVVM_GC_LOG -Xms128m -Xmx256m -Xss96k -server"
+#  Maximum at 320m so we leave a lot of space for stacks but still have enough for 10,000 sessions
+#  Stack size 96k which is small enough but still works
+JAVA_OPTS_COMMON="-ea -verbose:gc -Xloggc:$MVVM_GC_LOG -Xms128m -Xmx320m -Xss96k -server"
 
 if [ -f $JAVA_HOME/bin/console ] ; then
     JAVA_OPTS="$JAVA_OPTS_COMMON $JAVA_OPTS_BEA" #   BEA
