@@ -286,12 +286,15 @@ public class PolicyStateMachine implements ActionListener {
 	    newModel.addElement(newPolicy);
 	    if( activePolicy.equals(newPolicy) ){
 		newModel.setSelectedItem(newPolicy);
+		selectedPolicy = newPolicy;
 	    }
 	}
 	newModel.addElement(POLICY_MANAGER_SEPARATOR);
 	newModel.addElement(POLICY_MANAGER_OPTION);
-	if( newModel.getSelectedItem() == null )
-	    newModel.setSelectedItem( newModel.getElementAt(0)  );
+	if( newModel.getSelectedItem() == null ){
+	    newModel.setSelectedItem( newModel.getElementAt(0) );
+	    selectedPolicy = (Policy) newModel.getElementAt(0);
+	}
 	viewSelector.setModel(newModel);
 	// ADD THE NEW AND REMOVE THE OLD
 	addedPolicyRacks(addedPolicyVector);
