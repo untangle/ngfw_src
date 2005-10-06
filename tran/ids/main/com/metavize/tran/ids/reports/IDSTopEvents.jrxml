@@ -33,7 +33,7 @@
 	<parameter name="startTime" isForPrompting="true" class="java.sql.Timestamp"/>
 	<parameter name="endTime" isForPrompting="true" class="java.sql.Timestamp"/>
 	<queryString><![CDATA[SELECT COUNT(evt.message) as TOTAL_ACTIONS, evt.message as DESCRIPTION, evt.blocked as ACTION
-FROM tr_ids_event evt
+FROM tr_ids_evt evt
 WHERE evt.time_stamp >= $P{startTime} and evt.time_stamp <= $P{endTime}
 GROUP BY evt.message, evt.blocked
 ORDER BY TOTAL_ACTIONS DESC]]></queryString>

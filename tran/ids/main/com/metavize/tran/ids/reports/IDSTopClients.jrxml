@@ -35,7 +35,7 @@
 	<queryString><![CDATA[SELECT c_client_addr as CLIENT, 	COUNT(CASE blocked WHEN true THEN 1 ELSE NULL END) as BLOCKED,
 								COUNT(CASE blocked WHEN false THEN 1 ELSE NULL END) as PASSED,
 								COUNT(c_client_addr) as TOTAL_ACTIONS
-FROM tr_ids_event evt
+FROM tr_ids_evt evt
 JOIN pl_endp USING (session_id)
 WHERE evt.time_stamp >= $P{startTime} and evt.time_stamp <= $P{endTime}
 GROUP BY c_client_addr

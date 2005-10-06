@@ -1,3 +1,4 @@
+reports/IDSMaster.jasper:Intrusion_Prevention--Summary:Summary
 reports/IDSDetail.jasper:Intrusion_Prevention--Events:Intrusion Prevention Events
 com.metavize.tran.ids.reports.IDSSummarizer:summarizer:Summarizer
 reportTitlePrefix:parameter:none
