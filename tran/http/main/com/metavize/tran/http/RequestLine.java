@@ -42,7 +42,7 @@ public class RequestLine implements Token
     public RequestLine() { }
 
     public RequestLine(HttpMethod method, URI requestUri, String httpVersion)
-    {
+     {
         if (httpVersion != null && httpVersion.length() > 10) {
             throw new IllegalArgumentException("http-version too long");
         }
@@ -146,6 +146,6 @@ public class RequestLine implements Token
     public String toString()
     {
         return "RequestLine id: " + id + " length: "
-            + requestUri.toString().length();
+            + requestUri.toString().length() + " (" + super.toString() + ")";
     }
 }

@@ -145,7 +145,6 @@ public class SpywareHttpHandler extends HttpStateMachine
         mimeType = header.getValue("content-type");
 
         if (100 != getStatusLine().getStatusCode()) {
-            String host = getResponseHost();
             header = serverCookie(getResponseRequest(), header);
             header = addCookieKillers(header);
         }
