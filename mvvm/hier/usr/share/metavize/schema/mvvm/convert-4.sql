@@ -7,7 +7,7 @@ CREATE TABLE settings.policy (
     PRIMARY KEY (id));
 
 INSERT INTO settings.policy
-    VALUES (0, true, 'Default', 'The default policy');
+    VALUES (0, true, 'Default Rack', 'The default rack');
 
 -- com.metavize.mvvm.policy.UserPolicyRuleSet
 CREATE TABLE settings.mvvm_user_policy_rules (

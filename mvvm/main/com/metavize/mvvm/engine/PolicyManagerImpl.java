@@ -29,8 +29,8 @@ import org.hibernate.Transaction;
 
 class PolicyManagerImpl implements PolicyManagerPriv
 {
-    private static final String INITIAL_POLICY_NAME = "Default";
-    private static final String INITIAL_POLICY_NOTES = "The default policy";
+    private static final String INITIAL_POLICY_NAME = "Default Rack";
+    private static final String INITIAL_POLICY_NOTES = "The default rack";
 
     private static final Logger logger = Logger.getLogger( PolicyManagerImpl.class );
 
