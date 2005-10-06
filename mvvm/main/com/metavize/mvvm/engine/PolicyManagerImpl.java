@@ -75,13 +75,18 @@ class PolicyManagerImpl implements PolicyManagerPriv
             }
 
             q = s.createQuery("from UserPolicyRuleSet uprs");
-            UserPolicyRuleSet uprs = (UserPolicyRuleSet) q.uniqueResult();
-            if (uprs == null) {
+            results = q.list();
+            if (results.size() == 0) {
                 logger.info("Empty User Policy Rule Set.  Creating empty one.");
-                uprs = new UserPolicyRuleSet();
+                UserPolicyRuleSet uprs = new UserPolicyRuleSet();
                 s.save(uprs);
+            } else if (results.size() > 1) {
+                logger.fatal("Found " + results.size() + " user policy rule sets! Deleting all but first");
+                for (int i = 1; i < results.size(); i++) {
+                    UserPolicyRuleSet uprs = (UserPolicyRuleSet) results.get(i);
+                    s.delete(uprs);
+                }
             }
-
             tx.commit();
         } catch (HibernateException exn) {
             logger.fatal("could not get Policies", exn);
@@ -462,11 +467,14 @@ class PolicyManagerImpl implements PolicyManagerPriv
                             byte serverIntf = spr.getServerIntf();
                             if ((clientIntf == firstIntf && serverIntf == secondIntf) ||
                                 (clientIntf == secondIntf && serverIntf == firstIntf)) {
-                                // Good to go.
-                                if (logger.isDebugEnabled())
-                                    logger.debug("Found existing SystemPolicyRule for ci: " + clientIntf + ", si: " + serverIntf);
-                                goodSys.add(spr);
-                                foundSys = true;
+                                if (foundSys) {
+                                    logger.fatal("Found extra SystemPolicyRule for ci: " + clientIntf + ", si: " + serverIntf);
+                                } else {
+                                    if (logger.isDebugEnabled())
+                                        logger.debug("Found existing SystemPolicyRule for ci: " + clientIntf + ", si: " + serverIntf);
+                                    goodSys.add(spr);
+                                    foundSys = true;
+                                }
                             }
                         }
                         if (!foundSys) {

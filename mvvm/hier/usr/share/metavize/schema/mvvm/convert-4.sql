@@ -35,8 +35,8 @@ CREATE TABLE settings.user_policy_rule (
     live bool,
     alert bool,
     log bool,
-    set_id int8 NOT NULL,
-    position int4 NOT NULL,
+    set_id int8,
+    position int4,
     PRIMARY KEY (rule_id));
 
 -- com.metavize.mvvm.policy.SystemPolicyRule
