@@ -85,7 +85,6 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
             incomingDataset = new TimeSeries(incomingSeriesTitle, Minute.class);
         }
 
-        System.out.println("ACK2!");
 
         // Load up the datasets
         String sql = "SELECT client_intf, create_date, raze_date, c2p_bytes, p2s_bytes, s2p_bytes, p2c_bytes FROM pl_endp JOIN pl_stats USING (session_id) where ";
@@ -113,17 +112,15 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
         System.out.println("start: " + ourStart);
         System.out.println("end: " + ourEnd);
         System.out.println("mins: " + ourMins);
-        // Protect against really big dataset.  Should usally just be 1440.
-        if (ourMins > 1441) {
-            System.out.println("Warning, too many minutes: " + ourMins);
-            ourMins = 1440;
-        }
-        double counts[] = new double[ourMins];
+
+	final int BUCKETS = 1440;
+
+        double counts[] = new double[ (ourMins>BUCKETS?BUCKETS:ourMins) ];
         double incomingCounts[] = null;
         double outgoingCounts[] = null;
         if (doThreeSeries) {
-            incomingCounts = new double[ourMins];
-            outgoingCounts = new double[ourMins];
+            incomingCounts = new double[ (ourMins>BUCKETS?BUCKETS:ourMins) ];
+            outgoingCounts = new double[ (ourMins>BUCKETS?BUCKETS:ourMins) ];
         }
 
         // Process each row.
@@ -157,26 +154,26 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
             }
             double outgoingBytesPerInterval = (double)outgoingByteCount / numIntervals;
 
-            System.out.println("hires line doing row, in: " + incomingBytesPerInterval +
-                               ", out: " + outgoingBytesPerInterval);
+            // System.out.println("hires line doing row, in: " + incomingBytesPerInterval +
+            //                   ", out: " + outgoingBytesPerInterval);
             if (doThreeSeries) {
                 for (int interval = startInterval; interval < endInterval; interval++) {
-                    incomingCounts[interval] += incomingBytesPerInterval;
-                    outgoingCounts[interval] += outgoingBytesPerInterval;
-                    counts[interval] += incomingBytesPerInterval + outgoingBytesPerInterval;
+                    incomingCounts[interval%BUCKETS] += incomingBytesPerInterval;
+                    outgoingCounts[interval%BUCKETS] += outgoingBytesPerInterval;
+                    counts[interval%BUCKETS] += incomingBytesPerInterval + outgoingBytesPerInterval;
                 }
             } else {
                 for (int interval = startInterval; interval < endInterval; interval++) {
                     if (countIncomingBytes)
-                        counts[interval] += incomingBytesPerInterval;
+                        counts[interval%BUCKETS] += incomingBytesPerInterval;
                     if (countOutgoingBytes)
-                        counts[interval] += outgoingBytesPerInterval;
+                        counts[interval%BUCKETS] += outgoingBytesPerInterval;
                 }
             }
         }
 
         // Post-process to produce the dataset(s) scaled to KBytes/sec.
-        for (int i = 0; i < ourMins; i++) {
+        for (int i = 0; i < (ourMins>BUCKETS?BUCKETS:ourMins); i++) {
             java.util.Date date = new java.util.Date(ourStart + i * MINUTE_INTERVAL);
             double byteCountPerMin = counts[i];
             double kBPerSec = byteCountPerMin / 60.0d / 1024.0d;

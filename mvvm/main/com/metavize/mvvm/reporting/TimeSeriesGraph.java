@@ -59,6 +59,7 @@ public abstract class TimeSeriesGraph extends ReportGraph
         super.initParams();
 
         // Get the parameters
+	/*
         Boolean hiResBool = (Boolean) gpv(PARAM_HIGH_TIME_RESOLUTION);
         if (hiResBool == null)
             highTimeResolution = endDate.getTime() - startDate.getTime() <= DAY_INTERVAL ? true : false;
@@ -70,7 +71,9 @@ public abstract class TimeSeriesGraph extends ReportGraph
                 timeAxisLabel = "time of day";
             else
                 timeAxisLabel = "day of week";
-        }
+	}
+	*/
+	timeAxisLabel = "time of day";
         valueAxisLabel = (String) gpv(PARAM_VALUE_AXIS_LABEL);
         if (valueAxisLabel == null)
             valueAxisLabel = "kB/sec";
