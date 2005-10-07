@@ -243,11 +243,17 @@ int  netcap_tcp_accept_hook ( int cli_sock, struct sockaddr_in client )
 
 void netcap_tcp_null_hook ( netcap_session_t* netcap_sess, void *arg )
 {
-    errlog( ERR_CRITICAL, "netcap_tcp_null_hook: No TCP hook registered\n" );
-
-    /* Remove the session */
-    netcap_tcp_session_raze(1, netcap_sess);
+    errlog( ERR_WARNING, "netcap_tcp_null_hook: No TCP hook registered\n" );
+    
+    netcap_tcp_cleanup_hook( netcap_sess, arg );
 }
+
+void netcap_tcp_cleanup_hook ( netcap_session_t* netcap_sess, void *arg )
+{
+    /* Remove the session */
+    netcap_session_raze( netcap_sess );
+}
+
 
 tcp_msg_t* netcap_tcp_msg_malloc  ( void )
 {
@@ -342,13 +348,18 @@ static void _redirect_ports_close( void )
     _tcp.base_port = -1;
 }
 
-
 int  netcap_tcp_syn_null_hook ( netcap_pkt_t* syn )
 {
     errlog( ERR_CRITICAL, "netcap_tcp_syn_null_hook: No TCP SYN hook registered\n" );
+    
+    netcap_tcp_syn_cleanup_hook( syn );
+    return 0;
+}
 
-    netcap_pkt_action_raze(syn,NF_DROP);
-    return 0;    
+int  netcap_tcp_syn_cleanup_hook ( netcap_pkt_t* syn )
+{
+    netcap_pkt_action_raze( syn, NF_DROP );
+    return 0;
 }
 
 static int  _netcap_tcp_accept_hook ( int cli_sock, struct sockaddr_in client )

@@ -424,12 +424,17 @@ int  netcap_udp_call_hooks (netcap_pkt_t* pkt, void* arg)
     return 0;
 }
 
+void netcap_udp_cleanup_hook (netcap_session_t* netcap_sess, void *arg)
+{
+    /* Remove the session */
+    netcap_session_raze( netcap_sess );
+}
+
 void netcap_udp_null_hook (netcap_session_t* netcap_sess, void *arg)
 {
-    errlog(ERR_WARNING,"netcap_udp_null_hook: No UDP hook registered\n");
-
-    /* Remove the session */
-    netcap_udp_session_raze(NC_SESSTABLE_LOCK, netcap_sess);
+    errlog( ERR_WARNING, "netcap_udp_null_hook: No UDP hook registered\n" );
+    
+    netcap_udp_cleanup_hook( netcap_sess, arg );    
 }
 
 int netcap_udp_divert_sock( void )

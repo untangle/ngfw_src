@@ -44,8 +44,12 @@ int  netcap_tcp_accept_hook ( int cli_sock, struct sockaddr_in client );
 
 int  netcap_tcp_callback ( netcap_session_t* tcp_sess, netcap_callback_action_t action, netcap_callback_flag_t flags );
 
-void netcap_tcp_null_hook ( netcap_session_t* netcap_sess, void *arg );
-int  netcap_tcp_syn_null_hook ( netcap_pkt_t* pkt );
+void netcap_tcp_null_hook         ( netcap_session_t* netcap_sess, void *arg );
+int  netcap_tcp_syn_null_hook     ( netcap_pkt_t* pkt );
+
+void netcap_tcp_cleanup_hook      ( netcap_session_t* netcap_sess, void *arg );
+int  netcap_tcp_syn_cleanup_hook  ( netcap_pkt_t* pkt );
+
 
 /* Helper functions for TCP messages */
 tcp_msg_t* netcap_tcp_msg_malloc  ( void );

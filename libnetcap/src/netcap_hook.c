@@ -16,21 +16,21 @@ netcap_tcp_syn_hook_t global_tcp_syn_hook = netcap_tcp_syn_null_hook;
 netcap_udp_hook_t     global_udp_hook     = netcap_udp_null_hook;
 netcap_icmp_hook_t    global_icmp_hook    = netcap_icmp_null_hook;
 
-int  netcap_hooks_init()
+int  netcap_hooks_init           ( void )
 {
-    netcap_udp_hook_unregister();
-    netcap_tcp_hook_unregister();
+    /* These are all initialized statically above */
     return 0;
 }
 
-int  netcap_hooks_cleanup()
+int  netcap_hooks_cleanup        ( void )
 {
     netcap_udp_hook_unregister();
     netcap_tcp_hook_unregister();
+    netcap_icmp_hook_unregister();
     return 0;
 }
 
-int  netcap_tcp_hook_register   (netcap_tcp_hook_t hook)
+int  netcap_tcp_hook_register    ( netcap_tcp_hook_t hook )
 {
     if ( hook == NULL ) return errlogargs();
     global_tcp_hook = hook;
@@ -38,36 +38,36 @@ int  netcap_tcp_hook_register   (netcap_tcp_hook_t hook)
     return 0;
 }
 
-int  netcap_tcp_hook_unregister ()
+int  netcap_tcp_hook_unregister  ( void )
 {
-    global_tcp_hook = netcap_tcp_null_hook;
-    global_tcp_syn_hook = netcap_tcp_syn_null_hook;
+    global_tcp_hook     = netcap_tcp_cleanup_hook;
+    global_tcp_syn_hook = netcap_tcp_syn_cleanup_hook;
     return 0;
 }
 
-int  netcap_udp_hook_register   (netcap_udp_hook_t hook)
+int  netcap_udp_hook_register    ( netcap_udp_hook_t hook )
 {
     if ( hook == NULL ) return errlogargs();
     global_udp_hook = hook;
     return 0;
 }
 
-int  netcap_udp_hook_unregister ()
+int  netcap_udp_hook_unregister  ( void )
 {
-    global_udp_hook = netcap_udp_null_hook;
+    global_udp_hook = netcap_udp_cleanup_hook;
     return 0;
 }
 
-int  netcap_icmp_hook_register   (netcap_icmp_hook_t hook)
+int  netcap_icmp_hook_register   ( netcap_icmp_hook_t hook )
 {
     if ( hook == NULL ) return errlogargs();
     global_icmp_hook = hook;
     return 0;
 }
 
-int  netcap_icmp_hook_unregister ()
+int  netcap_icmp_hook_unregister ( void )
 {
     global_icmp_hook = NULL;
-    global_icmp_hook = netcap_icmp_null_hook;
+    global_icmp_hook = netcap_icmp_cleanup_hook;
     return 0;
 }

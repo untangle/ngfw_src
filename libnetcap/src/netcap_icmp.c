@@ -345,15 +345,16 @@ int  netcap_icmp_cleanup()
 
 void netcap_icmp_null_hook( netcap_session_t* netcap_sess, netcap_pkt_t* pkt, void* arg)
 {
-    errlog( ERR_CRITICAL, "ICMP: NULL HOOK, freeing packet(%#10x) and session(%#10x)\n", pkt, netcap_sess );
+    errlog( ERR_WARNING, "ICMP: NULL HOOK, razing packet(%#10x), session(%#10x)\n", pkt, netcap_sess );
 
-    if ( pkt != NULL ) {
-        netcap_pkt_raze( pkt );
-    }
+    netcap_icmp_cleanup_hook( netcap_sess, pkt, arg );
+}
 
-    if ( netcap_sess != NULL ) {
-        netcap_session_raze( netcap_sess );
-    }
+void netcap_icmp_cleanup_hook( netcap_session_t* netcap_sess, netcap_pkt_t* pkt, void* arg)
+{
+    if ( pkt != NULL ) netcap_pkt_raze( pkt );
+
+    if ( netcap_sess != NULL ) netcap_session_raze( netcap_sess );
 }
 
 int  netcap_icmp_call_hook( netcap_pkt_t* pkt )

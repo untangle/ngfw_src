@@ -17,11 +17,12 @@
 
 
 
-int  netcap_icmp_init();
-int  netcap_icmp_cleanup();
-int  netcap_icmp_send (char *data, int data_len, netcap_pkt_t* pkt);
-int  netcap_icmp_call_hook( netcap_pkt_t* pkt );
-void netcap_icmp_null_hook( netcap_session_t* netcap_sess, netcap_pkt_t* pkt, void* arg);
+int  netcap_icmp_init         ( void );
+int  netcap_icmp_cleanup      ( void );
+int  netcap_icmp_send         ( char *data, int data_len, netcap_pkt_t* pkt );
+int  netcap_icmp_call_hook    ( netcap_pkt_t* pkt );
+void netcap_icmp_null_hook    ( netcap_session_t* netcap_sess, netcap_pkt_t* pkt, void* arg);
+void netcap_icmp_cleanup_hook ( netcap_session_t* netcap_sess, netcap_pkt_t* pkt, void* arg);
 
 int  netcap_icmp_verify_type_and_code( u_int type, u_int code );
 
