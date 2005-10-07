@@ -67,7 +67,21 @@ public class UriUserType implements UserType
             // XXX we don't know the column length (it might not be default)
             // XXX should we break uri's into multiple columns? just path?
             String s = v.toString();
-            if (s.length() > DEFAULT_STRING_SIZE) s = s.substring(0, DEFAULT_STRING_SIZE);
+
+            // need to count bytes, not chars
+            int j = 0;
+            int count = 0;
+            for ( ; j < s.length(); j++) {
+                char c = s.charAt(j);
+                count += c <= 0xFF ? 1 : 2;
+                if (DEFAULT_STRING_SIZE < count) {
+                    j--;
+                    break;
+                }
+            }
+
+            s = s.substring(0, j);
+
             ps.setString(i, s);
         }
     }
