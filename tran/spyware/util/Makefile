@@ -8,12 +8,12 @@ build: url activex cookie subnet
 
 url:
 	@echo -e "\n\n\nCreating URL List... "
-	@( cd ./files ; wget http://www.geocities.com/spywarekilla/hosts.zip && unzip -o hosts.zip)
+	@( cd ./files ; wget http://www.geocities.com/spywarekilla/hosts.zip && unzip -a -o hosts.zip)
 	@( cd ./files ; wget http://www.mvps.org/winhelp2002/hosts.txt )
 	@cat ./files/hosts > ./files/urlblacklist
 	@cat ./files/hosts.txt >> ./files/urlblacklist
-	@cat ./files/urlblacklist | grep -v "^#.*" | grep "^127.0.0.1" | awk '{print $$2}' | sed 's/\#.*//' | sort > ./files/urlblacklist.txt
-	@cat ./files/urlblacklist.txt | grep -v "yimg.com" | grep -v "google" > urlblacklist.txt
+	@cat ./files/urlblacklist | grep -v "^#.*" | grep "^127.0.0.1" | awk '{print $$2}' | sed -e 's/\#.*//' -e 's///' | sort > ./files/urlblacklist.txt
+	@cat ./files/urlblacklist.txt | grep -vwf domains.clean > urlblacklist.txt
 	@echo -e "\n\ndone (urlblacklist.txt) \n\n"
 
 activex:
@@ -28,7 +28,7 @@ cookie:
 	@cat ./files/Spyware\ blacklist\ auto-installer.reg | tr -d '\377' | tr -d '\376' | tr -d '\000' >| ./files/cookies
 	@cat ./files/cookies | grep HKEY | sed 's/^.*History\\\(.*\)\]/\1/' | grep -v HKEY > ./files/cookie.txt.tmp
 	@cat ./files/cookie.txt.tmp | \
-	egrep -v "(google.com|yahoo.com|cnet.com|paypal.com|msn.com|microsoft.com|hotmail.com|macromedia.com|lycos.com|bestbuy.com|aol.com|amazon.com)" > cookie.txt
+	grep -vwf domains.clean > cookie.txt
 	@echo -e "\n\ndone (cookie.txt) \n\n"
 
 subnet:
