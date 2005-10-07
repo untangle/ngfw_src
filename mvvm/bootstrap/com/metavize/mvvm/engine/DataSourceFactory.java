@@ -32,7 +32,7 @@ public class DataSourceFactory
         } catch (PropertyVetoException exn) {
             throw new RuntimeException(exn); // won't happen
         }
-        dataSource.setJdbcUrl("jdbc:postgresql://localhost/mvvm");
+        dataSource.setJdbcUrl("jdbc:postgresql://localhost/mvvm?charset=unicode");
         dataSource.setUser("metavize");
         dataSource.setPassword("foo");
         dataSource.setMaxStatements(180);
