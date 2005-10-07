@@ -85,106 +85,127 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
             incomingDataset = new TimeSeries(incomingSeriesTitle, Minute.class);
         }
 
+	final int MINUTES_PER_BUCKET = 5;
+	final int BUCKETS = 1440 / MINUTES_PER_BUCKET;
 
-        // Load up the datasets
-        String sql = "SELECT client_intf, create_date, raze_date, c2p_bytes, p2s_bytes, s2p_bytes, p2c_bytes FROM pl_endp JOIN pl_stats USING (session_id) where ";
-        if (!doIncomingSessions || !doOutgoingSessions)
-            sql += "client_intf = ? AND ";
-        sql += "create_date <= ? AND raze_date >= ? ORDER BY create_date";
-        int sidx = 1;
-        PreparedStatement stmt = con.prepareStatement(sql);
-        if (doIncomingSessions && !doOutgoingSessions) {
-            stmt.setShort(sidx++, (short)0);
-        } else if (!doIncomingSessions && doOutgoingSessions) {
-            stmt.setShort(sidx++, (short)1);
-        }
-        stmt.setTimestamp(sidx++, endDate);
-        stmt.setTimestamp(sidx++, startDate);
-        ResultSet rs = stmt.executeQuery();
+        // TRUNCATE TIME TO MINUTES, COMPUTE NUMBER OF QUERIES
+        long startMinuteInMillis = (startDate.getTime() / MINUTE_INTERVAL) * MINUTE_INTERVAL;
+        long endMinuteInMillis = (endDate.getTime() / MINUTE_INTERVAL) * MINUTE_INTERVAL;
+        long periodMillis = endMinuteInMillis - startMinuteInMillis;
+        int periodMinutes = (int)(periodMillis / MINUTE_INTERVAL);
+	int queries = periodMinutes/(BUCKETS*MINUTES_PER_BUCKET) + (periodMinutes%(BUCKETS*MINUTES_PER_BUCKET)>0?1:0);
+	int periodBuckets = periodMinutes/(MINUTES_PER_BUCKET) + (periodMinutes%(MINUTES_PER_BUCKET)>0?1:0);
+        System.out.println("start: " + startMinuteInMillis);
+        System.out.println("end: " + endMinuteInMillis);
+        System.out.println("mins: " + periodMinutes);
+	System.out.println("queries,days: " + queries);
 
-        // Truncate the start time to the minute.
-        long ourStart = startDate.getTime();
-        ourStart = (ourStart / MINUTE_INTERVAL) * MINUTE_INTERVAL;
-        long ourEnd = endDate.getTime();
-        ourEnd = (ourEnd / MINUTE_INTERVAL) * MINUTE_INTERVAL;
-        long ourInterval = ourEnd - ourStart;
-        int ourMins = (int)(ourInterval / MINUTE_INTERVAL);
-        System.out.println("start: " + ourStart);
-        System.out.println("end: " + ourEnd);
-        System.out.println("mins: " + ourMins);
-
-	final int BUCKETS = 1440;
-
-        double counts[] = new double[ (ourMins>BUCKETS?BUCKETS:ourMins) ];
+	// ALLOCATE COUNTS
+	int size;
+	if( periodMinutes >= BUCKETS*MINUTES_PER_BUCKET )
+	    size = BUCKETS;
+	else
+	    size = periodMinutes/(BUCKETS*MINUTES_PER_BUCKET) + (periodMinutes%(BUCKETS*MINUTES_PER_BUCKET)>0?1:0);
+        double counts[] = new double[ size ];
         double incomingCounts[] = null;
         double outgoingCounts[] = null;
         if (doThreeSeries) {
-            incomingCounts = new double[ (ourMins>BUCKETS?BUCKETS:ourMins) ];
-            outgoingCounts = new double[ (ourMins>BUCKETS?BUCKETS:ourMins) ];
+            incomingCounts = new double[ size ];
+            outgoingCounts = new double[ size ];
         }
 
-        // Process each row.
-        while (rs.next()) {
-            short clientIntf = rs.getShort(1);
-            Timestamp createDate = rs.getTimestamp(2);
-            Timestamp razeDate = rs.getTimestamp(3);
-            long c2pBytes = rs.getLong(4);
-            long p2sBytes = rs.getLong(5);
-            long s2pBytes = rs.getLong(6);
-            long p2cBytes = rs.getLong(7);
-            // Allocate count to each minute we were alive, equally.
-            long sesStart = (createDate.getTime() / MINUTE_INTERVAL) * MINUTE_INTERVAL;
-            int numIntervals = (int)((razeDate.getTime() - createDate.getTime()) / MINUTE_INTERVAL) + 1;
-            long realStart = sesStart < ourStart ? (long) 0 : sesStart - ourStart;
-            int startInterval = (int)(realStart / MINUTE_INTERVAL);
-            int endInterval = Math.min(startInterval + numIntervals, ourMins);
+	// ITERATE A QUERY FOR EACH DAY
+	Timestamp startTimestamp, endTimestamp;
+	for(int i=0; i<queries; i++){
+	    System.err.println("Starting query " + (i+1) + " of " + queries);
+	    startTimestamp = new Timestamp(startMinuteInMillis + i*DAY_INTERVAL);
+	    if( i == queries-1 )
+		endTimestamp = new Timestamp(endMinuteInMillis);
+	    else
+		endTimestamp = new Timestamp(startMinuteInMillis + (i+1)*DAY_INTERVAL);
 
-            long incomingByteCount = 0;
-            if (clientIntf == 0) {
-                incomingByteCount += c2pBytes;
-            } else {
-                incomingByteCount += s2pBytes;
-            }
-            double incomingBytesPerInterval = (double)incomingByteCount / numIntervals;
-            long outgoingByteCount = 0;
-            if (clientIntf == 0) {
-                outgoingByteCount += p2cBytes;
-            } else {
-                outgoingByteCount += p2sBytes;
-            }
-            double outgoingBytesPerInterval = (double)outgoingByteCount / numIntervals;
+	    // GENERATE THE QUERY TO ITERATE AND THE RESULT SET
+	    String sql = "SELECT client_intf, create_date, raze_date, c2p_bytes, p2s_bytes, s2p_bytes, p2c_bytes"
+		+ " FROM pl_endp JOIN pl_stats USING (session_id) where ";
+	    if (!doIncomingSessions || !doOutgoingSessions)
+		sql += "client_intf = ? AND ";
+	    sql += "create_date <= ? AND raze_date >= ? ORDER BY create_date";
+	    int sidx = 1;
+	    PreparedStatement stmt = con.prepareStatement(sql);
+	    if (doIncomingSessions && !doOutgoingSessions) 
+		stmt.setShort(sidx++, (short)0);
+	    else if (!doIncomingSessions && doOutgoingSessions)
+		stmt.setShort(sidx++, (short)1);        
+	    stmt.setTimestamp(sidx++, endTimestamp);
+	    stmt.setTimestamp(sidx++, startTimestamp);
+	    ResultSet rs = stmt.executeQuery();
 
-            // System.out.println("hires line doing row, in: " + incomingBytesPerInterval +
-            //                   ", out: " + outgoingBytesPerInterval);
-            if (doThreeSeries) {
-                for (int interval = startInterval; interval < endInterval; interval++) {
-                    incomingCounts[interval%BUCKETS] += incomingBytesPerInterval;
-                    outgoingCounts[interval%BUCKETS] += outgoingBytesPerInterval;
-                    counts[interval%BUCKETS] += incomingBytesPerInterval + outgoingBytesPerInterval;
-                }
-            } else {
-                for (int interval = startInterval; interval < endInterval; interval++) {
-                    if (countIncomingBytes)
-                        counts[interval%BUCKETS] += incomingBytesPerInterval;
-                    if (countOutgoingBytes)
-                        counts[interval%BUCKETS] += outgoingBytesPerInterval;
-                }
-            }
-        }
+	    // PROCESS EACH ROW
+	    while (rs.next()) {
+		// GET RESULTS
+		short clientIntf = rs.getShort(1);
+		Timestamp createDate = rs.getTimestamp(2);
+		Timestamp razeDate = rs.getTimestamp(3);
+		long c2pBytes = rs.getLong(4);
+		long p2sBytes = rs.getLong(5);
+		long s2pBytes = rs.getLong(6);
+		long p2cBytes = rs.getLong(7);
+		// ALLOCATE COUNT TO EACH MINUTE WE WERE ALIVE EQUALLY
+		long sesStart = (createDate.getTime() / MINUTE_INTERVAL) * MINUTE_INTERVAL;
+		int numIntervals = (int)((razeDate.getTime() - createDate.getTime()) / MINUTE_INTERVAL)/MINUTES_PER_BUCKET + 1;
+		long realStart = sesStart < startMinuteInMillis ? (long) 0 : sesStart - startMinuteInMillis;
+		int startInterval = (int)(realStart / MINUTE_INTERVAL)/MINUTES_PER_BUCKET;
+		int endInterval = Math.min(startInterval + numIntervals, periodBuckets);
+		// COMPUTE BYTE COUNTS
+		long incomingByteCount = 0;
+		if (clientIntf == 0)
+		    incomingByteCount += c2pBytes;
+		else
+		    incomingByteCount += s2pBytes;
+		double incomingBytesPerInterval = (double)incomingByteCount / numIntervals;
+		long outgoingByteCount = 0;
+		if (clientIntf == 0)
+		    outgoingByteCount += p2cBytes;
+		else
+		    outgoingByteCount += p2sBytes;
+		double outgoingBytesPerInterval = (double)outgoingByteCount / numIntervals;
+		// INCREMENT COUNTS
+		if (doThreeSeries) {
+		    for (int interval = startInterval; interval < endInterval; interval++) {
+			incomingCounts[interval%BUCKETS] += incomingBytesPerInterval;
+			outgoingCounts[interval%BUCKETS] += outgoingBytesPerInterval;
+			counts[interval%BUCKETS] += incomingBytesPerInterval + outgoingBytesPerInterval;
+		    }
+		}
+		else {
+		    for (int interval = startInterval; interval < endInterval; interval++) {
+			if (countIncomingBytes)
+			    counts[interval%BUCKETS] += incomingBytesPerInterval;
+			if (countOutgoingBytes)
+			    counts[interval%BUCKETS] += outgoingBytesPerInterval;
+		    }
+		}
+	    }
 
-        // Post-process to produce the dataset(s) scaled to KBytes/sec.
-        for (int i = 0; i < (ourMins>BUCKETS?BUCKETS:ourMins); i++) {
-            java.util.Date date = new java.util.Date(ourStart + i * MINUTE_INTERVAL);
-            double byteCountPerMin = counts[i];
-            double kBPerSec = byteCountPerMin / 60.0d / 1024.0d;
+	    try { stmt.close(); } catch (SQLException x) { }	    
+	}
+	
+        // POST PROCESS: PRODUCE UNITS OF KBytes/sec., AVERAGED PER DAY, FROM BYTES PER BUCKET
+        for (int i = 0; i < size; i++) {
+            double kBPerBucketPerDay = counts[i] / 1024.0d / (double)queries / (double)(60*MINUTES_PER_BUCKET);
+	    double incomingCount = incomingCounts[i] / 1024.0d / (double)queries / (double)(60*MINUTES_PER_BUCKET);
+	    double outgoingCount = outgoingCounts[i] / 1024.0d / (double)queries / (double)(60*MINUTES_PER_BUCKET);
             // System.out.println("at " + date + ":\t" + kBPerSec);
-            dataset.add(new Minute(date), kBPerSec);
-            if (doThreeSeries) {
-                incomingDataset.add(new Minute(date), incomingCounts[i] / 60.0d / 1024.0d);
-                outgoingDataset.add(new Minute(date), outgoingCounts[i] / 60.0d / 1024.0d);
-            }
+	    for(int j=0; j<MINUTES_PER_BUCKET; j++){
+		java.util.Date date = new java.util.Date(startMinuteInMillis + i * MINUTE_INTERVAL * MINUTES_PER_BUCKET + j * MINUTE_INTERVAL);
+		dataset.add(new Minute(date), kBPerBucketPerDay);
+		if (doThreeSeries) {
+		    incomingDataset.add(new Minute(date), incomingCount);
+		    outgoingDataset.add(new Minute(date), outgoingCount);
+		}
+	    }
         }
-        try { stmt.close(); } catch (SQLException x) { }
+
 
         TimeSeriesCollection tsc = new TimeSeriesCollection(dataset);
         if (doThreeSeries) {
