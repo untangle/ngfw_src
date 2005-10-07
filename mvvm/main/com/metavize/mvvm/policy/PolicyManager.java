@@ -81,8 +81,9 @@ public interface PolicyManager
      * @param rule a <code>SystemPolicyRule</code> to be changed
      * @param p a <code>Policy</code> giving the new policy
      * @param inbound a <code>boolean</code> giving the new direction
+     * @param description a <code>String</code> giving the new description
      */
-    void setSystemPolicyRule(SystemPolicyRule rule, Policy p, boolean inbound);
+    void setSystemPolicyRule(SystemPolicyRule rule, Policy p, boolean inbound, String description);
 
     /**
      * Returns all user policies rules.

@@ -251,7 +251,7 @@ class PolicyManagerImpl implements PolicyManagerPriv
         return sysRules;
     }
 
-    public void setSystemPolicyRule(SystemPolicyRule rule, Policy p, boolean inbound) {
+    public void setSystemPolicyRule(SystemPolicyRule rule, Policy p, boolean inbound, String description) {
         // more Sanity checking (policy) XXX
         synchronized(policyRuleLock) {
             for (int i = 0; i < sysRules.length; i++) {
@@ -262,6 +262,7 @@ class PolicyManagerImpl implements PolicyManagerPriv
 
                         rule.setPolicy(p);
                         rule.setInbound(inbound);
+                        rule.setDescription(description);
                         s.saveOrUpdate(rule);
 
                         tx.commit();
@@ -410,7 +411,7 @@ class PolicyManagerImpl implements PolicyManagerPriv
                         if (foundIt)
                             throw new PolicyException("System Policy rule duplicated");
                         foundIt = true;
-                        setSystemPolicyRule(oldspr, newspr.getPolicy(), newspr.isInbound());
+                        setSystemPolicyRule(oldspr, newspr.getPolicy(), newspr.isInbound(), newspr.getDescription());
                     }
                 }
                 if (!foundIt)
