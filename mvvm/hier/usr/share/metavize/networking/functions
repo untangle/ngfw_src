@@ -44,6 +44,11 @@ function generateBridges() {
 }
 
 function generateBridge() {
+    local t_bridge
+    local t_name
+    local t_addresses
+    local t_interfaces
+
     t_bridge=$1
 
     t_name="${t_bridge}"
@@ -108,13 +113,13 @@ function bridgeInterfaceList() {
 
 function getAddresses() {
     if [ -n $1 ]; then
-        eval echo \$${1}_addresses | sed 's/\/.*//'
+        eval echo \$${1}_addresses | sed 's/\/[^ ]*//g'
     fi
 }
 
 function getNetmasks() {
     if [ -n $1 ]; then
-        eval echo \$${1}_addresses | sed 's/[^/]*\///'
+        eval echo \$${1}_addresses | sed 's/[^ /]*\///g'
     fi
 }
 
@@ -125,6 +130,10 @@ function getBridge() {
 
 function getBridgeAddresses() {    
     getAddresses `getBridge $1`
+}
+
+function getBridgeNetmasks() {
+    getNetmasks `getBridge $1`
 }
 
 function isPumpRunning() {

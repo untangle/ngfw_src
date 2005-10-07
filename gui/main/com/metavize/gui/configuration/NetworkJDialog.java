@@ -28,7 +28,7 @@ public class NetworkJDialog extends MConfigJDialog {
 
     private static final String NAME_NETWORK_SETTINGS = "Network Settings";
     /* XXX Better name */
-    private static final String NAME_ALIAS_PANEL      = "Outside Interface Aliases";
+    private static final String NAME_ALIAS_PANEL      = "Address Aliases";
 
     public NetworkJDialog( ) {
     }

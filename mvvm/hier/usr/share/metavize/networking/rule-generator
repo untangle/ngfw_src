@@ -204,6 +204,8 @@ function markIntfRules () {
     local c
     local d
     local mask
+    local interface
+    local addresses
 
     ## Flush the interface marking table
     ${IPTABLES} -t mangle -F ${CHAIN_MARKINTF}
@@ -213,9 +215,13 @@ function markIntfRules () {
         if [ -z `getBridge $interface` ]; then
             addresses=`getAddresses $interface`
             matchType="-i "
+            echo "${addresses}"
+            echo `getNetmasks $interface`
         else
             addresses=`getBridgeAddresses $interface`
             matchType="-m physdev --physdev-in "
+            echo "${addresses}"
+            echo `getBridgeNetmasks $interface`
         fi
 
         if [ "${c}x" == "2x" ]; then
@@ -231,7 +237,7 @@ function markIntfRules () {
         for address in $addresses; do
             ${IPTABLES} -t mangle -A ${CHAIN_MARKINTF} ${matchType} ${interface} --destination ${address} \
                 -j MARK --set-mark $(( ${mask} | $d | ${MARK_LOCAL} ))
-            d="$(( $d << 1 ))"
+            d="$(( $d + ${MARK_LOCAL_ADDRESS_BASE} ))"
         done
         c=$(( $c + 1 ))
     done

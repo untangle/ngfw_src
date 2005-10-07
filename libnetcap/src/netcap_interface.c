@@ -530,7 +530,6 @@ static int _update_intf_info( void )
             return errlog( ERR_CRITICAL, "netcap_intf_db_configure_intf\n" );
         }
         
-        /* XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX Look into this */
         /* If the database is not null, then schedule it to be deleted later */
         if ( _interface.db != NULL ) {
             _garbage_t* garbage = NULL;
@@ -605,7 +604,9 @@ static int _update_bridge_devices( netcap_intf_db_t* db )
         ret = _update_bridge_device( db, intf_info, dev );
         
         // XXX Not sure if these have to be closed
-        // Probably should check for leaks
+        // Probably should check for leaks, it doesn't look like the value from get_class_device
+        // has to be closed, in fact if it is it causes errors.  This may be the incorrect function
+        // to use, it seems if it used open_class_device then it would have to be closed.
         // sysfs_close_class_device( dev );
         
         if ( ret < 0 ) return errlog( ERR_CRITICAL, "_update_bridge_device\n" );

@@ -36,14 +36,14 @@ BOTRIGHT.label=End of Lease
 TOPMMID.label=Action
 BOTMMID.label=
 TOPRMID.expr=$F{ip}
-TOPLMID.expr=
+TOPLMID.expr=""
 TOPLEFT.expr=$F{time_stamp}
 BOTRMID.expr=$F{hostname}
-BOTLMID.expr=
+BOTLMID.expr=""
 BOTRIGHT.expr=$F{end_of_lease}
 TOPRIGHT.expr=$F{mac}
 TOPMMID.expr=$F{action}
-BOTMMID.expr=
+BOTMMID.expr=""
 
 
 
