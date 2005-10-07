@@ -64,6 +64,7 @@ class CustomPolicyTableModel extends MSortedTableModel{
 
     protected boolean getSortable(){ return false; }
 
+    private static final String NULL_STRING = "> No rack";
     private static final String INBOUND_STRING = " (inbound)";
     private static final String OUTBOUND_STRING = " (outbound)";
 
@@ -84,6 +85,7 @@ class CustomPolicyTableModel extends MSortedTableModel{
 	    policyNames.put( policy.getName()+INBOUND_STRING, policy );
 	    policyNames.put( policy.getName()+OUTBOUND_STRING, policy );
 	}
+	policyNames.put( NULL_STRING, null);
     }
     private void updatePolicyModel(){
 	policyModel.removeAllElements();
@@ -175,9 +177,13 @@ class CustomPolicyTableModel extends MSortedTableModel{
 	    tempRow.add( newElem.getServerAddr().toString() );
 	    tempRow.add( newElem.getClientPort().toString() );
 	    tempRow.add( newElem.getServerPort().toString() );
+	    String policyName;
+	    if( newElem.getPolicy() != null )
+		policyName = newElem.getPolicy().getName() + (newElem.isInbound()?INBOUND_STRING:OUTBOUND_STRING);
+	    else
+		policyName = NULL_STRING;
 	    tempRow.add( super.generateComboBoxModel(policyNames.keySet().toArray(),
-						     newElem.getPolicy().getName()
-						     +(newElem.isInbound()?INBOUND_STRING:OUTBOUND_STRING)) );
+						     policyName) );
 	    tempRow.add( newElem.getDescription() );
 	    tempRow.add( newElem );
 	    allRows.add( tempRow );

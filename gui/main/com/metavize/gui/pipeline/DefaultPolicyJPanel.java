@@ -56,6 +56,7 @@ class DefaultPolicyTableModel extends MSortedTableModel{
 
     private IntfEnum intfEnum = Util.getNetworkingManager().getIntfEnum();
 
+    private static final String NULL_STRING = "> No rack";
     private static final String INBOUND_STRING = " (inbound)";
     private static final String OUTBOUND_STRING = " (outbound)";
     private Map<String,Policy> policyNames = new LinkedHashMap();
@@ -66,6 +67,7 @@ class DefaultPolicyTableModel extends MSortedTableModel{
 	    policyNames.put( policy.getName() + INBOUND_STRING, policy );
 	    policyNames.put( policy.getName() + OUTBOUND_STRING, policy );
 	}
+	policyNames.put( NULL_STRING, null );
     }
 
     public TableColumnModel getTableColumnModel(){
@@ -106,7 +108,7 @@ class DefaultPolicyTableModel extends MSortedTableModel{
 		firstInbound = isInbound;
 	    }
 	    else{
-		if( (!policy.equals(firstPolicy)) && (isInbound == firstInbound) ){
+		if( (!areEqual(policy,firstPolicy)) && (isInbound == firstInbound) ){
 		    throw new Exception("The racks chosen in rows " 
 					+ (rowIndex-1) 
 					+ " and " 
@@ -120,7 +122,7 @@ class DefaultPolicyTableModel extends MSortedTableModel{
 					+ rowIndex 
 					+ " must be in opposite directions.");
 		}
-		else if( !policy.equals(firstPolicy) ){
+		else if( !areEqual(policy,firstPolicy) ){
 		    throw new Exception("The racks chosen in rows " 
 					+ (rowIndex-1) 
 					+ " and " 
@@ -155,9 +157,13 @@ class DefaultPolicyTableModel extends MSortedTableModel{
 	    tempRow.add( rowIndex );
 	    tempRow.add( intfEnum.getIntfName( newElem.getClientIntf() ) );
 	    tempRow.add( intfEnum.getIntfName( newElem.getServerIntf() ) );
+	    String policyName;
+	    if( newElem.getPolicy() != null )
+		policyName = newElem.getPolicy().getName() + (newElem.isInbound()?INBOUND_STRING:OUTBOUND_STRING);
+	    else
+		policyName = NULL_STRING;
 	    tempRow.add( super.generateComboBoxModel(policyNames.keySet().toArray(),
-						     newElem.getPolicy().getName()
-						     +(newElem.isInbound()?INBOUND_STRING:OUTBOUND_STRING)));
+						     policyName) );
 	    tempRow.add( newElem.getDescription() );
 	    tempRow.add( newElem );
 	    allRows.add( tempRow );
@@ -165,4 +171,14 @@ class DefaultPolicyTableModel extends MSortedTableModel{
 
         return allRows;
     }
+
+    private boolean areEqual(Object o1, Object o2){
+	if( (o1==null) && (o2==null) )
+	    return true;
+	else if( (o1==null) ^ (o2==null) )
+	    return false;
+	else
+	    return o1.equals(o2);	       
+    }
+
 }

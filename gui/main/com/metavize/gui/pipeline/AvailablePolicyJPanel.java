@@ -75,10 +75,16 @@ class AvailablePolicyTableModel extends MSortedTableModel{
 	Map<String,Object> userUsageMap = new HashMap<String,Object>();
 	// BUILD THE LIST OF SYSTEM-NEEDED POLICIES
 	for( SystemPolicyRule systemPolicyRule : (List<SystemPolicyRule>) policyConfiguration.getSystemPolicyRules() )
-	    systemUsageMap.put(systemPolicyRule.getPolicy().getName(), null);
+	    if( systemPolicyRule.getPolicy() != null )
+		systemUsageMap.put(systemPolicyRule.getPolicy().getName(), null);
+	    else
+		systemUsageMap.put( null, null );
 	// BUILD THE LIST OF USER-NEEDED POLICIES
 	for( UserPolicyRule userPolicyRule : (List<UserPolicyRule>) policyConfiguration.getUserPolicyRules() )
-	    userUsageMap.put(userPolicyRule.getPolicy().getName(), null);
+	    if( userPolicyRule.getPolicy() != null )
+		userUsageMap.put(userPolicyRule.getPolicy().getName(), null);
+	    else
+		userUsageMap.put( null, null );
 
 	for( Vector rowVector : tableVector ){
 	    rowIndex++;
