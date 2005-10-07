@@ -159,6 +159,8 @@ static netcap_shield_ans_t _put_in_fence    ( nc_shield_fence_t* fence, nc_shiel
 
 static int _reset_dividers( void );
 
+static int _clean_lru_and_trie( void );
+
 static netcap_trie_element_t _get_end_of_line ( netcap_trie_line_t* line );
 
 
@@ -306,11 +308,17 @@ int netcap_shield_cleanup ( void )
 
     _shield.enabled = 0;
 
+    /* Give any threads time to get out */
+    sleep( 1 );
+
     /* Exit the mode thread */
     nc_shield_mode_cleanup();
 
     /* Null out the event hook */
     netcap_shield_unregister_hook();
+
+    /* Remove everything from the trie */
+    _clean_lru_and_trie();
 
     netcap_trie_destroy( &_shield.trie );
 
@@ -1251,7 +1259,7 @@ static int _check_lru( int depth, nc_shield_reputation_t* reputation )
     if ( lru_load < _shield.cfg.lru.ip_rate ) {
         debug( NC_SHIELD_DEBUG_HIGH, "moving to front of lru %lg\n", lru_load );
             
-        if ( netcap_lru_move_front( &_shield.lru, &reputation->lru_node, NULL ) < 0 ) {
+        if ( netcap_lru_move_front( &_shield.lru, &reputation->lru_node, &_shield.mutex ) < 0 ) {
             return errlog( ERR_CRITICAL, "netcap_lru_move_front\n" );
         }
 
@@ -1262,6 +1270,67 @@ static int _check_lru( int depth, nc_shield_reputation_t* reputation )
 
     return 0;
 }
+
+static int _clean_lru_and_trie( void )
+{
+    int ret;
+
+    int _critical_section( void ) {
+        int length;
+        int c;
+
+        if (( length = list_length ( &_shield.lru.lru_list )) < 0 ) {
+            return errlog( ERR_CRITICAL, "list_length\n" );
+        }
+        
+        debug( NC_SHIELD_DEBUG_LOW, "SHIELD: CLEAN - length %d items\n", length );
+        
+        for ( c = length ; c-- > 0 ; ) {
+            netcap_lru_node_t* node;
+            netcap_trie_line_t line;
+            nc_shield_reputation_t* reputation = NULL;
+            netcap_trie_item_t* item;
+
+            if (( node = list_tail_val( &_shield.lru.lru_list )) == NULL ) {
+                errlog( ERR_CRITICAL, "list_tail_val\n" );
+                continue;
+            }
+            
+            if (( item = node->data ) == NULL ) {
+                errlog( ERR_CRITICAL, "NULL item data\n" );
+                continue;
+            }
+            
+            if (( reputation = item->data ) == NULL ) {
+                errlog( ERR_CRITICAL, "NULL reputation\n" );
+                continue;
+            }
+            
+            if ( new_netcap_trie_remove( &_shield.trie, &reputation->ip, NULL, &line ) < 0 ) {
+                errlog( ERR_CRITICAL, "new_netcap_trie_remove\n" );
+                continue;
+            }
+            
+            if ( new_netcap_trie_line_destroy( &_shield.trie, &line) < 0 ) {
+                errlog( ERR_CRITICAL, "new_netcap_trie_line_raze\n" );
+            }
+
+            if ( list_remove( &_shield.lru.lru_list, node->list_node ) < 0 ) perrlog( "list_remove\n" );
+        }
+
+        return 0;
+    }
+    
+    /* Ignore locking and unlocking errors */
+    if ( pthread_mutex_lock( &_shield.mutex ) < 0 ) perrlog( "pthread_mutex_lock" );
+    
+    ret = _critical_section();
+    
+    if ( pthread_mutex_unlock( &_shield.mutex ) < 0 ) perrlog( "pthread_mutex_unlock" );
+
+    return ret;
+}
+
 
 #ifdef _TRIE_DEBUG_PRINT
 static int  _status             ( int conn, struct sockaddr_in *dst_addr )

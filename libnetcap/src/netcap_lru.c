@@ -293,7 +293,7 @@ int netcap_lru_cut( netcap_lru_t* lru, netcap_lru_node_t** node_array, int node_
                 netcap_lru_node_t* node;
 
                 if (( node = list_tail_val( &lru->lru_list )) == NULL ) {
-                    return errlog( ERR_CRITICAL, "list_tail\n" );
+                    return errlog( ERR_CRITICAL, "list_tail_val\n" );
                 }
                 
                 if (( is_deletable = lru->is_deletable( node->data )) < 0 ) {
