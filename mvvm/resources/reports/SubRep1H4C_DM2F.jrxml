@@ -2,16 +2,8 @@
 <!-- Created using an evaluation version of JasperAssistant (http://www.jasperassistant.com) -->
 <!DOCTYPE jasperReport PUBLIC "-//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
 
-<jasperReport name="HttpUsers" whenNoDataType="AllSectionsNoDetail" pageWidth="276" pageHeight="791" columnWidth="276" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" isFloatColumnFooter="true">
-    <property name="com.jasperassistant.designer.HGuides" value="91,93,154,154,156,156,233,233,235"/>
-    <property name="com.jasperassistant.designer.GridWidth" value="12"/>
-    <property name="com.jasperassistant.designer.GridHeight" value="12"/>
-    <property name="com.jasperassistant.designer.Rulers" value="true"/>
-    <property name="com.jasperassistant.designer.SnapToGrid" value="true"/>
-    <property name="com.jasperassistant.designer.Margins" value="true"/>
-    <property name="ireport.scriptlethandling" value="2"/>
-    <property name="com.jasperassistant.designer.Grid" value="true"/>
-    <property name="com.jasperassistant.designer.SnapToGuides" value="true"/>
+<!-- 1 header line, 4 columns (double middle column), 2 footer lines (last line only uses left and middle) -->
+<jasperReport name="@REPORT_NAME@" whenNoDataType="AllSectionsNoDetail" pageWidth="276" pageHeight="791" columnWidth="276" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" isFloatColumnFooter="true">
     <import value="java.util.*"/>
     <import value="net.sf.jasperreports.engine.*"/>
     <import value="net.sf.jasperreports.engine.data.*"/>
@@ -19,33 +11,13 @@
     </parameter>
     <parameter name="endTime" class="java.sql.Timestamp">
     </parameter>
-    <queryString><![CDATA[SELECT COALESCE(name, host(c_client_addr)) as hname, count(*) AS hits, sum(resp.content_length), total_size
-  FROM (SELECT sum(resp.content_length) AS total_size FROM tr_http_evt_resp AS resp
-  WHERE resp.time_stamp > $P{startTime} AND resp.time_stamp < $P{endTime}) AS size,
-  tr_http_evt_req req JOIN pl_endp endp USING (session_id)
-  JOIN tr_http_evt_resp resp USING (request_id)
-  LEFT OUTER JOIN merged_address_map mam ON addr = c_client_addr AND resp.time_stamp >= mam.start_time AND resp.time_stamp < mam.end_time
-  WHERE resp.time_stamp > $P{startTime} AND resp.time_stamp < $P{endTime}
-  AND NOT c_client_addr ISNULL
-  GROUP BY hname, total_size
-  ORDER BY sum DESC]]></queryString>
-    <field name="hname" class="java.lang.String">
-    </field>
-    <field name="hits" class="java.lang.Long">
-    </field>
-    <field name="sum" class="java.lang.Long">
-    </field>
-    <field name="total_size" class="java.lang.Long">
-    </field>
-    <variable name="totalSize" class="java.lang.Long" calculation="Sum">
-        <variableExpression><![CDATA[$F{sum}]]></variableExpression>
+    @EXTRA_PARAMS@
+    <queryString><![CDATA[@QUERY@]]></queryString>
+    @FIELDS@
+    <variable name="_idx" class="java.lang.Integer" calculation="Count">
+        <variableExpression><![CDATA[@UNIQUE_COUNT.expr@]]></variableExpression>
     </variable>
-    <variable name="totalPages" class="java.lang.Long" calculation="Sum">
-        <variableExpression><![CDATA[$F{hits}]]></variableExpression>
-    </variable>
-    <variable name="n" class="java.lang.Integer" calculation="Count">
-        <variableExpression><![CDATA[$F{hname}]]></variableExpression>
-    </variable>
+    @EXTRA_VARS@
     <background>
         <band>
         </band>
@@ -58,7 +30,7 @@
                 <textElement textAlignment="Center">
                     <font fontName="SansSerif" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
                 </textElement>
-                <text><![CDATA[Top 15 Web Users]]></text>
+                <text><![CDATA[@REPORT_TITLE@]]></text>
             </staticText>
         </band>
     </title>
@@ -70,7 +42,7 @@
                 <textElement>
                     <font fontName="SansSerif" size="9" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
                 </textElement>
-                <text><![CDATA[User]]></text>
+                <text><![CDATA[@LEFT.label@]]></text>
             </staticText>
             <staticText>
                 <reportElement key="staticText" positionType="Float" mode="Opaque" x="92" y="0" width="62" height="13"/>
@@ -78,22 +50,22 @@
                 <textElement textAlignment="Right">
                     <font fontName="SansSerif" size="9" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
                 </textElement>
-                <text><![CDATA[Hits]]></text>
+                <text><![CDATA[@LEFTMID.label@]]></text>
             </staticText>
             <staticText>
-                <reportElement key="staticText-1" mode="Opaque" x="156" y="0" width="77" height="13"/>
+                <reportElement key="staticText" positionType="Float" mode="Opaque" x="156" y="0" width="77" height="13"/>
                 <box topBorder="None" topBorderColor="#0" leftBorder="None" leftBorderColor="#0" bottomBorder="None" bottomBorderColor="#0" rightBorder="None" rightBorderColor="#ffffff"/>
                 <textElement textAlignment="Right">
                     <font fontName="SansSerif" size="9" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
                 </textElement>
-                <text><![CDATA[Size (MB)]]></text>
+                <text><![CDATA[@MIDDLE.label@]]></text>
             </staticText>
             <staticText>
                 <reportElement positionType="Float" x="234" y="0" width="42" height="13"/>
                 <textElement textAlignment="Right">
                     <font fontName="SansSerif" size="9" isItalic="true"/>
                 </textElement>
-                <text><![CDATA[%Size]]></text>
+                <text><![CDATA[@RIGHT.label@]]></text>
             </staticText>
         </band>
     </pageHeader>
@@ -103,14 +75,14 @@
     </columnHeader>
     <detail>
         <band height="13">
-            <printWhenExpression><![CDATA[new Boolean($V{n}.intValue() <= 15)]]></printWhenExpression>
+            <printWhenExpression><![CDATA[new Boolean($V{_idx}.intValue() <= @REPORT_MAX_LENGTH@)]]></printWhenExpression>
             <textField pattern="">
                 <reportElement key="textField" positionType="Float" mode="Opaque" x="92" y="0" width="62" height="13"/>
                 <box topBorderColor="#0" leftBorderColor="#0" bottomBorderColor="#0" rightBorderColor="#ffffff"/>
                 <textElement textAlignment="Right">
                     <font fontName="Monospaced" size="9" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
                 </textElement>
-                <textFieldExpression class="java.lang.Long"><![CDATA[$F{hits}]]></textFieldExpression>
+                <textFieldExpression class="java.lang.String"><![CDATA[@LEFTMID.expr@]]></textFieldExpression>
             </textField>
             <textField pattern="">
                 <reportElement key="textField" positionType="Float" mode="Opaque" x="0" y="0" width="91" height="13"/>
@@ -118,58 +90,79 @@
                 <textElement>
                     <font fontName="SansSerif" size="9" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
                 </textElement>
-                <textFieldExpression class="java.lang.String"><![CDATA[$F{hname}]]></textFieldExpression>
+                <textFieldExpression class="java.lang.String"><![CDATA[@LEFT.expr@]]></textFieldExpression>
             </textField>
-            <textField pattern="">
-                <reportElement key="textField" mode="Opaque" x="155" y="0" width="78" height="13"/>
-                <box topBorderColor="#0" leftBorderColor="#0" bottomBorderColor="#0" rightBorderColor="#ffffff"/>
+            <textField>
+                <reportElement positionType="Float" x="156" y="0" width="77" height="13"/>
                 <textElement textAlignment="Right">
-                    <font fontName="Monospaced" size="9" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+                    <font fontName="Monospaced" size="9" isItalic="true"/>
                 </textElement>
-                <textFieldExpression class="java.lang.String"><![CDATA[new Formatter().format("%,.2f", new Object[] { new Double($F{sum}.doubleValue() / 1048576) }).toString()]]></textFieldExpression>
+                <textFieldExpression class="java.lang.String"><![CDATA[new Formatter().format("%,.2f", new Object[] { new Double(@MIDDLE.expr@) }).toString()]]></textFieldExpression>
             </textField>
             <textField>
                 <reportElement positionType="Float" x="234" y="0" width="42" height="13"/>
                 <textElement textAlignment="Right">
                     <font fontName="Monospaced" size="9" isItalic="true"/>
                 </textElement>
-                <textFieldExpression class="java.lang.String"><![CDATA[Math.round($F{sum}.doubleValue() / $F{total_size}.doubleValue() * 100) + "%"]]></textFieldExpression>
+                <textFieldExpression class="java.lang.String"><![CDATA[@RIGHT.expr@]]></textFieldExpression>
             </textField>
         </band>
     </detail>
     <columnFooter>
-        <band height="13">
+        <band height="26">
             <textField pattern="">
-                <reportElement key="textField" positionType="Float" mode="Opaque" x="92" y="0" width="62" height="13"/>
+                <reportElement key="textField" positionType="Float" mode="Opaque" x="156" y="0" width="77" height="13"/>
                 <box topBorder="None" topBorderColor="#0" leftBorder="None" leftBorderColor="#0" bottomBorder="None" bottomBorderColor="#0" rightBorder="None" rightBorderColor="#ffffff"/>
                 <textElement textAlignment="Right">
                     <font fontName="Monospaced" size="9" isBold="true" isItalic="true" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
                 </textElement>
-                <textFieldExpression class="java.lang.Long"><![CDATA[$V{totalPages}]]></textFieldExpression>
+                <textFieldExpression class="java.lang.String"><![CDATA[new Formatter().format("%,.2f", new Object[] { new Double(@MIDDLE.total@) }).toString()]]></textFieldExpression>
             </textField>
             <staticText>
                 <reportElement key="staticText" positionType="Float" mode="Opaque" x="0" y="0" width="91" height="13"/>
                 <box topBorder="None" topBorderColor="#0" leftBorder="None" leftBorderColor="#0" bottomBorder="None" bottomBorderColor="#0" rightBorder="None" rightBorderColor="#ffffff"/>
                 <textElement>
-                    <font fontName="SansSerif" size="9" isBold="true" isItalic="true" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+                  <font fontName="SansSerif" size="9" isBold="true" isItalic="true" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
                 </textElement>
-                <text><![CDATA[Totals:]]></text>
+                <text><![CDATA[@LEFT.total@]]></text>
             </staticText>
-            <textField pattern="">
-                <reportElement key="textField" mode="Opaque" x="156" y="0" width="77" height="13"/>
-                <box topBorder="None" topBorderColor="#0" leftBorder="None" leftBorderColor="#0" bottomBorder="None" bottomBorderColor="#0" rightBorder="None" rightBorderColor="#ffffff"/>
+            <textField>
+                <reportElement positionType="Float" x="92" y="0" width="62" height="13"/>
                 <textElement textAlignment="Right">
-                    <font fontName="Monospaced" size="9" isBold="true" isItalic="true" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+                    <font fontName="Monospaced" size="9" isBold="true" isItalic="true"/>
                 </textElement>
-                <textFieldExpression class="java.lang.String"><![CDATA[new Formatter().format("%,.2f", new Object[] { new Double($V{totalSize}.doubleValue() / 1048576)}).toString()]]></textFieldExpression>
+                <textFieldExpression class="java.lang.String"><![CDATA[@LEFTMID.total@]]></textFieldExpression>
             </textField>
-            <staticText>
+            <textField>
                 <reportElement positionType="Float" x="234" y="0" width="42" height="13"/>
                 <textElement textAlignment="Right">
                     <font fontName="Monospaced" size="9" isBold="true" isItalic="true"/>
                 </textElement>
-                <text><![CDATA[100%]]></text>
+                <textFieldExpression class="java.lang.String"><![CDATA[@RIGHT.total@]]></textFieldExpression>
+            </textField>
+            <textField pattern="">
+                <reportElement key="textField" positionType="Float" mode="Opaque" x="156" y="13" width="77" height="13"/>
+                <box topBorder="None" topBorderColor="#0" leftBorder="None" leftBorderColor="#0" bottomBorder="None" bottomBorderColor="#0" rightBorder="None" rightBorderColor="#ffffff"/>
+                <textElement textAlignment="Right">
+                    <font fontName="Monospaced" size="9" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+                </textElement>
+                <textFieldExpression class="java.lang.String"><![CDATA[new Formatter().format("%,.2f", new Object[] { new Double(@MIDDLE.alltotal@) }).toString()]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement key="staticText" positionType="Float" mode="Opaque" x="0" y="13" width="91" height="13"/>
+                <box topBorder="None" topBorderColor="#0" leftBorder="None" leftBorderColor="#0" bottomBorder="None" bottomBorderColor="#0" rightBorder="None" rightBorderColor="#ffffff"/>
+                <textElement>
+                  <font fontName="SansSerif" size="9" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+                </textElement>
+                <text><![CDATA[@LEFT.alltotal@]]></text>
             </staticText>
+            <textField>
+                <reportElement positionType="Float" x="92" y="13" width="62" height="13"/>
+                <textElement textAlignment="Right">
+                    <font fontName="Monospaced" size="9" isBold="false" isItalic="true"/>
+                </textElement>
+                <textFieldExpression class="java.lang.String"><![CDATA[@LEFTMID.alltotal@]]></textFieldExpression>
+            </textField>
         </band>
     </columnFooter>
     <pageFooter>

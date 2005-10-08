@@ -3,5 +3,5 @@ REPORT_NAME=ProtoMaster
 REPORT_TITLE=Rogue Protocol Control - Summary
 EXTRA_PARAM_1.name=reportTitlePrefix
 EXTRA_PARAM_1.type=java.lang.String
-SUBREPORT_1=com/metavize/tran/protofilter/reports/ProtoFilterLogged.jasper
-SUBREPORT_2=com/metavize/tran/protofilter/reports/ProtoFilterBlocked.jasper
+SUBREPORT_1=reports/ProtoFilterLogged.jasper
+SUBREPORT_2=reports/ProtoFilterBlocked.jasper

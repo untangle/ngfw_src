@@ -32,14 +32,17 @@
 	<import value="net.sf.jasperreports.engine.data.*" />
 	<parameter name="startTime" isForPrompting="true" class="java.sql.Timestamp"/>
 	<parameter name="endTime" isForPrompting="true" class="java.sql.Timestamp"/>
-	<queryString><![CDATA[SELECT rule_index as RULE,
-				     sum(p2c_bytes) + sum(c2p_bytes) as DATA_TRANSFERRED
-FROM tr_nat_redirect_evt evt
-JOIN pl_endp USING (session_id)
-JOIN pl_stats USING (session_id)
-WHERE evt.time_stamp > $P{startTime} AND evt.time_stamp < $P{endTime} AND NOT IS_DMZ
-GROUP BY rule_id, rule_index
-ORDER BY DATA_TRANSFERRED DESC, RULE ASC]]></queryString>
+	<queryString><![CDATA[
+SELECT rule_index AS RULE,
+       SUM(p2c_bytes) + SUM(c2p_bytes) AS DATA_TRANSFERRED
+  FROM tr_nat_redirect_evt
+         JOIN pl_endp USING (session_id)
+         JOIN pl_stats USING (session_id)
+  WHERE time_stamp >= $P{startTime} AND time_stamp < $P{endTime} AND NOT is_dmz
+  GROUP BY rule_id, RULE
+  ORDER BY DATA_TRANSFERRED DESC, RULE ASC
+  LIMIT 15
+         ]]></queryString>
 	<field name="RULE" class="java.lang.String"/>
 	<field name="DATA_TRANSFERRED" class="java.lang.Long"/>
 	<variable name="RANK" class="java.lang.Integer" resetType="Report" calculation="Count">
@@ -71,7 +74,7 @@ ORDER BY DATA_TRANSFERRED DESC, RULE ASC]]></queryString>
 					<textElement textAlignment="Center" verticalAlignment="Top" rotation="None" lineSpacing="Single">
 						<font fontName="SansSerif" pdfFontName="Helvetica" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<text><![CDATA[Top 10 Redirect Rules]]></text>
+				<text><![CDATA[Top 15 Redirect Rules]]></text>
 				</staticText>
 			</band>
 		</title>
@@ -151,7 +154,7 @@ ORDER BY DATA_TRANSFERRED DESC, RULE ASC]]></queryString>
 		</columnHeader>
 		<detail>
 			<band height="13"  isSplitAllowed="true" >
-				<printWhenExpression><![CDATA[new Boolean($V{RANK}.intValue() <= 10)]]></printWhenExpression>
+				<printWhenExpression><![CDATA[new Boolean($V{RANK}.intValue() <= 15)]]></printWhenExpression>
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
 						mode="Opaque"

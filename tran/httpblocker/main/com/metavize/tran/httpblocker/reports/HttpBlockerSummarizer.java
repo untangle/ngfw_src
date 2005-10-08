@@ -34,7 +34,7 @@ public class HttpBlockerSummarizer extends BaseSummarizer {
 	    PreparedStatement ps;
 	    ResultSet rs;
 
-            sql = "SELECT count(*) FROM tr_http_evt_req WHERE time_stamp >= ? AND time_stamp < ?";
+            sql = "SELECT COUNT(*) FROM tr_http_evt_req WHERE time_stamp >= ? AND time_stamp < ?";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
@@ -44,7 +44,7 @@ public class HttpBlockerSummarizer extends BaseSummarizer {
             rs.close();
             ps.close();
 
-            sql = "SELECT count(*) FROM tr_httpblk_evt_blk WHERE time_stamp >= ? AND time_stamp < ?";
+            sql = "SELECT COUNT(*) FROM tr_httpblk_evt_blk WHERE time_stamp >= ? AND time_stamp < ?";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
@@ -54,7 +54,7 @@ public class HttpBlockerSummarizer extends BaseSummarizer {
             rs.close();
             ps.close();
 
-            sql = "SELECT sum(c2p_bytes), sum(s2p_bytes), sum(p2c_bytes), sum(p2s_bytes) FROM tr_http_evt_req AS h, pl_stats AS p WHERE h.time_stamp >= ? AND h.time_stamp < ? AND h.session_id = p.session_id";
+            sql = "SELECT SUM(c2p_bytes), SUM(s2p_bytes), SUM(p2c_bytes), SUM(p2s_bytes) FROM tr_http_evt_req AS h, pl_stats AS p WHERE h.time_stamp >= ? AND h.time_stamp < ? AND h.session_id = p.session_id";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
@@ -76,10 +76,9 @@ public class HttpBlockerSummarizer extends BaseSummarizer {
 
         addEntry("&nbsp;", "&nbsp;");
 
-        addEntry("Total web hits", Util.trimNumber("",hitCount));
-        addEntry("&nbsp;&nbsp;&nbsp;Blocked hits", Util.trimNumber("",blockCount), Util.percentNumber(blockCount,hitCount));
-        addEntry("&nbsp;&nbsp;&nbsp;Passed hits", Util.trimNumber("",hitCount-blockCount), Util.percentNumber(hitCount-blockCount,hitCount));
-
+        addEntry("Total domain visits", Util.trimNumber("",hitCount));
+        addEntry("&nbsp;&nbsp;&nbsp;Blocked domain visits", Util.trimNumber("",blockCount), Util.percentNumber(blockCount,hitCount));
+        addEntry("&nbsp;&nbsp;&nbsp;Passed domain visits", Util.trimNumber("",hitCount-blockCount), Util.percentNumber(hitCount-blockCount,hitCount));
 
         // XXXX
         String tranName = "Web Content Control";
@@ -87,4 +86,3 @@ public class HttpBlockerSummarizer extends BaseSummarizer {
         return summarizeEntries(tranName);
     }
 }
-

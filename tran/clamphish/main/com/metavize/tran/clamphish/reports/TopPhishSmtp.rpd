@@ -1,39 +1,80 @@
-TEMPLATE=Sub3
+TEMPLATE=SubRep1H3C2F
+REPORT_MAX_LENGTH=15
 REPORT_NAME=TopPhishSmtp
-REPORT_TITLE=Top SMTP Phish Recipients
-REPORT_MAX_LENGTH=20
+REPORT_TITLE=Top @REPORT_MAX_LENGTH@ SMTP Phish Recipients
+
 EXTRA_PARAM_1.name=spamVendor
 EXTRA_PARAM_1.type=java.lang.String
-EXTRA_VAR_1.name=total_count
-EXTRA_VAR_1.type=java.lang.Long
-EXTRA_VAR_1.value=$F{count}
-EXTRA_VAR_1.calculation=Sum
-EXTRA_VAR_2.name=total_percent
-EXTRA_VAR_2.type=java.lang.Float
-EXTRA_VAR_2.value=$F{spam_percent}
-EXTRA_VAR_2.calculation=Sum
+
 FIELD_1.name=addr
 FIELD_1.type=String
 FIELD_2.name=count
 FIELD_2.type=Long
-FIELD_3.name=spam_percent
-FIELD_3.type=Float
-QUERY=SELECT addr, \
-       count(CASE WHEN is_spam = TRUE THEN 1 ELSE NULL END) AS count, \
-       count(CASE WHEN is_spam = TRUE THEN 1 ELSE NULL END)::float / COALESCE(NULLIF((SELECT count(*) FROM tr_spam_evt_smtp evt WHERE vendor_name = $P{spamVendor} AND evt.time_stamp > $P{startTime} AND evt.time_stamp < $P{endTime} AND is_spam), 0), 1) * 100 AS spam_percent \
-FROM tr_mail_message_info info \
-JOIN tr_spam_evt_smtp evt ON id = msg_id \
-JOIN tr_mail_message_info_addr addr ON info.id = addr.msg_id \
-WHERE vendor_name = $P{spamVendor} AND kind = 'B' AND evt.time_stamp > $P{startTime} AND evt.time_stamp < $P{endTime} \
-GROUP BY addr \
-ORDER BY count DESC LIMIT @REPORT_MAX_LENGTH@
+FIELD_3.name=top_count
+FIELD_3.type=Long
+FIELD_4.name=all_count
+FIELD_4.type=Long
+
+QUERY=\
+SELECT addr, count, top_count, all_count \
+  FROM (SELECT addr, COUNT(addr) \
+          FROM tr_mail_message_info msg \
+                 JOIN tr_mail_message_info_addr user_addr \
+                   ON (msg.id = user_addr.msg_id \
+                     AND user_addr.kind = 'B') \
+                 JOIN tr_spam_evt_smtp evt \
+                   ON (msg.id = evt.msg_id \
+                     AND evt.is_spam \
+                     AND evt.time_stamp >= $P{startTime} \
+                     AND evt.time_stamp < $P{endTime} \
+                     AND evt.vendor_name = $P{spamVendor}) \
+          GROUP BY addr \
+          ORDER BY count DESC \
+          LIMIT @REPORT_MAX_LENGTH@) AS foo, \
+       (SELECT SUM(count) AS top_count \
+          FROM (SELECT COUNT(addr) \
+                  FROM tr_mail_message_info msg \
+                         JOIN tr_mail_message_info_addr user_addr \
+                           ON (msg.id = user_addr.msg_id \
+                             AND user_addr.kind = 'B') \
+                         JOIN tr_spam_evt_smtp evt \
+                           ON (msg.id = evt.msg_id \
+                             AND evt.is_spam \
+                             AND evt.time_stamp >= $P{startTime} \
+                             AND evt.time_stamp < $P{endTime} \
+                             AND evt.vendor_name = $P{spamVendor}) \
+                  GROUP BY addr \
+                  ORDER BY count DESC \
+                  LIMIT @REPORT_MAX_LENGTH@) AS foo2) AS foo3, \
+       (SELECT SUM(count) AS all_count \
+          FROM (SELECT COUNT(addr) \
+                  FROM tr_mail_message_info msg \
+                         JOIN tr_mail_message_info_addr user_addr \
+                           ON (msg.id = user_addr.msg_id \
+                             AND user_addr.kind = 'B') \
+                         JOIN tr_spam_evt_smtp evt \
+                           ON (msg.id = evt.msg_id \
+                             AND evt.is_spam \
+                             AND evt.time_stamp >= $P{startTime} \
+                             AND evt.time_stamp < $P{endTime} \
+                             AND evt.vendor_name = $P{spamVendor}) \
+                  GROUP BY addr \
+                  ORDER BY count DESC) AS foo4) AS foo5 \
+  ORDER BY count DESC
+
 LEFT.label=Recipient
 MIDDLE.label=Count
 RIGHT.label=%
+
 LEFT.expr=$F{addr}
 MIDDLE.expr=$F{count}
-RIGHT.expr=String.format("%d%%", Math.round($F{spam_percent}))
-LEFT.total=Totals:
-MIDDLE.total=$V{total_count}
-RIGHT.total=String.format("%d%%", Math.round($V{total_percent}))
+RIGHT.expr=Math.round($F{count}.doubleValue() / $F{top_count}.doubleValue() * 100) + "%"
+
+LEFT.total=Top @REPORT_MAX_LENGTH@ Totals:
+MIDDLE.total=$F{top_count}
+RIGHT.total="100%"
+
+LEFT.alltotal=Overall Total:
+MIDDLE.alltotal=$F{all_count}
+
 UNIQUE_COUNT.expr=$F{addr}

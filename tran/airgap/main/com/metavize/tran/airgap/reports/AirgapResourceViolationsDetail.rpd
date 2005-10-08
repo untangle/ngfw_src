@@ -1,8 +1,10 @@
 TEMPLATE=DetailFourCol
 REPORT_NAME=PacketAttackShieldResourceViolations
 REPORT_TITLE=Packet Attack Shield - Resource Violations
+
 EXTRA_PARAM_1.name=reportTitlePrefix
 EXTRA_PARAM_1.type=java.lang.String
+
 FIELD_1.name=time_stamp
 FIELD_1.type=Timestamp
 FIELD_2.name=client_addr
@@ -16,10 +18,14 @@ FIELD_5.type=Long
 FIELD_6.name=total_actions
 FIELD_6.type=Long
 
-QUERY=SELECT evt.time_stamp, evt.client_addr, evt.dropped, evt.rejected, evt.limited, (evt.dropped + evt.rejected + evt.limited) as total_actions \
- FROM shield_rejection_evt as evt \
- WHERE evt.time_stamp > $P{startTime} AND evt.time_stamp < $P{endTime} \
- ORDER BY evt.time_stamp DESC
+QUERY=\
+SELECT time_stamp, client_addr, dropped, rejected, limited, \
+       (dropped + rejected + limited) AS total_actions \
+  FROM shield_rejection_evt \
+  WHERE time_stamp >= $P{startTime} \
+    AND time_stamp < $P{endTime} \
+  ORDER BY time_stamp DESC
+
 TOPLEFT.label=Timestamp
 TOPLMID.label=Host
 BOTLMID.label=
@@ -29,6 +35,7 @@ TOPRIGHT.label=Total Actions
 BOTRIGHT.label=
 TOPMMID.label=Drops
 BOTMMID.label=Rejects
+
 TOPRMID.expr=$F{limited}.toString()
 TOPLMID.expr=$F{client_addr}
 TOPLEFT.expr=$F{time_stamp}
@@ -38,6 +45,3 @@ BOTRIGHT.expr=
 TOPRIGHT.expr=$F{total_actions}.toString()
 TOPMMID.expr=$F{dropped}.toString()
 BOTMMID.expr=$F{rejected}.toString()
-
-
-

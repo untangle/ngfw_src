@@ -1,0 +1,6 @@
+TEMPLATE=MasterOfOneChild
+REPORT_NAME=FirewallMaster
+REPORT_TITLE=Firewall - Summary
+EXTRA_PARAM_1.name=reportTitlePrefix
+EXTRA_PARAM_1.type=java.lang.String
+SUBREPORT_1=com/metavize/tran/firewall/reports/FirewallViolatorsSummary.jasper

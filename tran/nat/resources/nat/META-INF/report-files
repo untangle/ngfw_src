@@ -1,4 +1,4 @@
-com/metavize/tran/nat/reports/NatMaster.jasper:Network_Sharing--Summary:Summary
+reports/NatMaster.jasper:Network_Sharing--Summary:Summary
 reports/NatRedirectDetail.jasper:Network_Sharing--Redirect_Events:Redirect Events
 reports/NatDmzDetail.jasper:Network_Sharing--DMZ_Events:DMZ Events
 reports/NatDhcpDetail.jasper:Network_Sharing--DHCP_Events:DHCP Events

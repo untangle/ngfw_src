@@ -41,7 +41,7 @@ public class AirgapSummarizer extends BaseSummarizer {
 	    PreparedStatement ps;
 	    ResultSet rs;
 
-	    sql = "select sum(accepted), sum(limited), sum(rejected), sum(dropped), sum(relaxed), sum(lax), sum(tight), sum(closed) from shield_statistic_evt where time_stamp >= ? and time_stamp < ?";
+	    sql = "SELECT SUM(accepted), SUM(limited), SUM(rejected), SUM(dropped), SUM(relaxed), SUM(lax), SUM(tight), SUM(closed) FROM shield_statistic_evt WHERE time_stamp >= ? AND time_stamp < ?";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
@@ -57,7 +57,6 @@ public class AirgapSummarizer extends BaseSummarizer {
 	    loadClosed = rs.getLong(8);
             rs.close();
             ps.close();
-
 
         } catch (SQLException exn) {
             logger.warn("could not summarize", exn);
@@ -79,11 +78,9 @@ public class AirgapSummarizer extends BaseSummarizer {
         addEntry("&nbsp;&nbsp;&nbsp;High", "", Util.percentNumber(loadTight, loadTotal));
         addEntry("&nbsp;&nbsp;&nbsp;Defensive", "", Util.percentNumber(loadClosed, loadTotal));
 
-
         // XXXX
         String tranName = "Packet Attack Shield";
 
         return summarizeEntries(tranName);
     }
 }
-

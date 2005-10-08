@@ -28,7 +28,7 @@ public class PhishSummarizer extends BaseSummarizer {
         // XXX shouldn't have this constant here.
         String spamVendor = (String) extraParams.get("spamVendor");
 
-        logger.info("Spam Vendor: " + spamVendor);
+        logger.info("Phish Vendor: " + spamVendor);
 
         int smtpScanned = 0;
         int smtpMarked = 0;
@@ -43,7 +43,7 @@ public class PhishSummarizer extends BaseSummarizer {
             PreparedStatement ps;
             ResultSet rs;
 
-            sql = "SELECT count(*) FROM tr_spam_evt_smtp WHERE time_stamp >= ? AND time_stamp < ? AND vendor_name = ? AND NOT msg_id IS NULL";
+            sql = "SELECT COUNT(*) FROM tr_spam_evt_smtp WHERE time_stamp >= ? AND time_stamp < ? AND vendor_name = ?";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
@@ -54,7 +54,7 @@ public class PhishSummarizer extends BaseSummarizer {
             rs.close();
             ps.close();
 
-            sql = "SELECT count(*) FROM tr_spam_evt_smtp WHERE time_stamp >= ? AND time_stamp < ? AND vendor_name = ? AND is_spam AND action = 'M' AND NOT msg_id IS NULL";
+            sql = "SELECT COUNT(*) FROM tr_spam_evt_smtp WHERE time_stamp >= ? AND time_stamp < ? AND vendor_name = ? AND is_spam AND action = 'M'";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
@@ -65,7 +65,7 @@ public class PhishSummarizer extends BaseSummarizer {
             rs.close();
             ps.close();
 
-            sql = "SELECT count(*) FROM tr_spam_evt_smtp WHERE time_stamp >= ? AND time_stamp < ? AND vendor_name = ? AND is_spam AND action = 'P' AND NOT msg_id IS NULL";
+            sql = "SELECT COUNT(*) FROM tr_spam_evt_smtp WHERE time_stamp >= ? AND time_stamp < ? AND vendor_name = ? AND is_spam AND action = 'P'";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
@@ -76,7 +76,7 @@ public class PhishSummarizer extends BaseSummarizer {
             rs.close();
             ps.close();
 
-            sql = "SELECT count(*) FROM tr_spam_evt_smtp WHERE time_stamp >= ? AND time_stamp < ? AND vendor_name = ? AND is_spam AND action = 'B' AND NOT msg_id IS NULL";
+            sql = "SELECT COUNT(*) FROM tr_spam_evt_smtp WHERE time_stamp >= ? AND time_stamp < ? AND vendor_name = ? AND is_spam AND action = 'B'";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
@@ -87,7 +87,7 @@ public class PhishSummarizer extends BaseSummarizer {
             rs.close();
             ps.close();
 
-            sql = "SELECT count(*) FROM tr_spam_evt WHERE time_stamp >= ? AND time_stamp < ? AND vendor_name = ? AND NOT msg_id IS NULL";
+            sql = "SELECT COUNT(*) FROM tr_spam_evt WHERE time_stamp >= ? AND time_stamp < ? AND vendor_name = ?";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
@@ -98,7 +98,7 @@ public class PhishSummarizer extends BaseSummarizer {
             rs.close();
             ps.close();
 
-            sql = "SELECT count(*) FROM tr_spam_evt WHERE time_stamp >= ? AND time_stamp < ? AND vendor_name = ? AND is_spam AND action = 'P' AND NOT msg_id IS NULL";
+            sql = "SELECT COUNT(*) FROM tr_spam_evt WHERE time_stamp >= ? AND time_stamp < ? AND vendor_name = ? AND is_spam AND action = 'P'";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
@@ -109,7 +109,7 @@ public class PhishSummarizer extends BaseSummarizer {
             rs.close();
             ps.close();
 
-            sql = "SELECT count(*) FROM tr_spam_evt WHERE time_stamp >= ? AND time_stamp < ? AND vendor_name = ? AND is_spam AND action = 'M' AND NOT msg_id IS NULL";
+            sql = "SELECT COUNT(*) FROM tr_spam_evt WHERE time_stamp >= ? AND time_stamp < ? AND vendor_name = ? AND is_spam AND action = 'M'";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);

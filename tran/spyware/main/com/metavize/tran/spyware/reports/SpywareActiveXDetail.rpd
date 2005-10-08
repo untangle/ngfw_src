@@ -1,8 +1,10 @@
 TEMPLATE=Detail
 REPORT_NAME=ActiveXDetail
 REPORT_TITLE=Spyware Blocker - ActiveX Incidents
+
 EXTRA_PARAM_1.name=reportTitlePrefix
 EXTRA_PARAM_1.type=java.lang.String
+
 FIELD_1.name=time_stamp
 FIELD_1.type=Timestamp
 FIELD_2.name=name
@@ -17,14 +19,23 @@ FIELD_6.name=ident
 FIELD_6.type=String
 FIELD_7.name=host
 FIELD_7.type=String
-QUERY=SELECT evt.time_stamp, name, c_client_addr, c_server_addr, c_server_port, ident, host, p2c_bytes \
-FROM tr_spyware_evt_activex evt \
-JOIN pl_endp USING (session_id) \
-JOIN pl_stats USING (session_id) \
-JOIN tr_http_evt_req USING (request_id) \
-LEFT OUTER JOIN merged_address_map mam ON addr = c_client_addr AND evt.time_stamp >= mam.start_time AND evt.time_stamp < mam.end_time \
-WHERE evt.time_stamp > $P{startTime} AND evt.time_stamp < $P{endTime} \
-ORDER BY time_stamp DESC
+
+QUERY=\
+SELECT activex.time_stamp, name, c_client_addr, c_server_addr, c_server_port, \
+       ident, host \
+  FROM tr_spyware_evt_activex activex \
+         JOIN pl_endp endp \
+           USING (session_id) \
+         JOIN tr_http_evt_req evt \
+           ON (activex.request_id = evt.request_id \
+             AND activex.time_stamp >= $P{startTime} \
+             AND activex.time_stamp < $P{endTime}) \
+         LEFT OUTER JOIN merged_address_map mam \
+           ON (endp.c_client_addr = mam.addr \
+             AND activex.time_stamp >= mam.start_time \
+             AND activex.time_stamp < mam.end_time) \
+  ORDER BY activex.time_stamp DESC
+
 TOPLEFT.label=Timestamp
 TOPLMID.label=User
 BOTLMID.label=Client
@@ -32,6 +43,7 @@ TOPRMID.label=ActiveX ID
 BOTRMID.label=Host
 TOPRIGHT.label=Server
 BOTRIGHT.label=Port
+
 TOPRMID.expr=$F{ident}
 TOPLMID.expr=$F{name} == null ? "" : $F{name}
 TOPLEFT.expr=$F{time_stamp}

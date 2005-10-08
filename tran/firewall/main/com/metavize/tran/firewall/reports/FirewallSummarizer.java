@@ -25,7 +25,6 @@ public class FirewallSummarizer extends BaseSummarizer {
 
     public String getSummaryHtml(Connection conn, Timestamp startDate, Timestamp endDate)
     {
-
 	long totalSessionsBlocked = 0l;
 	long totalSessionsBlockedRule = 0l;
 	long totalSessionsBlockedDefault = 0l;
@@ -52,14 +51,13 @@ public class FirewallSummarizer extends BaseSummarizer {
 	    PreparedStatement ps;
 	    ResultSet rs;
 
-
-	    sql = " SELECT sum(TCP_BLOCK_DEFAULT),  sum(TCP_BLOCK_RULE)," +
-                  " sum(TCP_PASS_DEFAULT),   sum(TCP_PASS_RULE)," +
-                  " sum(UDP_BLOCK_DEFAULT),  sum(UDP_BLOCK_RULE)," +
-                  " sum(UDP_PASS_DEFAULT),   sum(UDP_PASS_RULE)," +
-                  " sum(ICMP_BLOCK_DEFAULT), sum(ICMP_BLOCK_RULE)," +
-                  " sum(ICMP_PASS_DEFAULT),  sum(ICMP_PASS_RULE)" +
-                  " FROM tr_firewall_statistic_evt evt where evt.time_stamp >= ? and evt.time_stamp < ?";
+	    sql = " SELECT SUM(TCP_BLOCK_DEFAULT),  SUM(TCP_BLOCK_RULE)," +
+                  " SUM(TCP_PASS_DEFAULT),   SUM(TCP_PASS_RULE)," +
+                  " SUM(UDP_BLOCK_DEFAULT),  SUM(UDP_BLOCK_RULE)," +
+                  " SUM(UDP_PASS_DEFAULT),   SUM(UDP_PASS_RULE)," +
+                  " SUM(ICMP_BLOCK_DEFAULT), SUM(ICMP_BLOCK_RULE)," +
+                  " SUM(ICMP_PASS_DEFAULT),  SUM(ICMP_PASS_RULE)" +
+                  " FROM tr_firewall_statistic_evt WHERE time_stamp >= ? and time_stamp < ?";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
@@ -80,11 +78,9 @@ public class FirewallSummarizer extends BaseSummarizer {
             rs.close();
             ps.close();
 
-
         } catch (SQLException exn) {
             logger.warn("could not summarize", exn);
         }
-
 
  	totalSessionsPassedDefault = tcpSessionsPassedDefault + udpSessionsPassedDefault + pingSessionsPassedDefault;
 	totalSessionsPassedRule = tcpSessionsPassedRule + udpSessionsPassedRule + pingSessionsPassedRule;
@@ -127,13 +123,9 @@ public class FirewallSummarizer extends BaseSummarizer {
         addEntry("&nbsp;&nbsp;&nbsp;Passed", Util.trimNumber("",pingSessionsPassedRule+pingSessionsPassedDefault),
 		 Util.percentNumber(pingSessionsPassedRule+pingSessionsPassedDefault, totalSessionsExamined));
 
-
-
-
         // XXXX
         String tranName = "Firewall";
 
         return summarizeEntries(tranName);
     }
 }
-

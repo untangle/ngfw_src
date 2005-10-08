@@ -32,16 +32,19 @@
 	<import value="net.sf.jasperreports.engine.data.*" />
 	<parameter name="startTime" isForPrompting="true" class="java.sql.Timestamp"/>
 	<parameter name="endTime" isForPrompting="true" class="java.sql.Timestamp"/>
-	<queryString><![CDATA[SELECT c_client_addr as HOST,
-				     count(CASE proto WHEN 6  THEN 1 ELSE NULL END) as TCP_BLOCKS,
-				     count(CASE proto WHEN 17 THEN 1 ELSE NULL END) as UDP_BLOCKS,
-				     count(CASE proto WHEN 1  THEN 1 ELSE NULL END) as PING_BLOCKS,
-				     count(CASE proto WHEN 1 THEN 1 WHEN 6 THEN 1 WHEN 17 THEN 1 ELSE NULL END) as TOTAL_BLOCKS
-FROM tr_firewall_evt evt
-JOIN pl_endp USING (session_id)
-WHERE evt.time_stamp > $P{startTime} AND evt.time_stamp < $P{endTime} AND was_blocked = 't'
-GROUP BY HOST
-ORDER BY TOTAL_BLOCKS DESC, HOST ASC]]></queryString>
+	<queryString><![CDATA[
+SELECT c_client_addr AS HOST,
+       COUNT(CASE proto WHEN 6  THEN 1 ELSE NULL END) AS TCP_BLOCKS,
+       COUNT(CASE proto WHEN 17 THEN 1 ELSE NULL END) AS UDP_BLOCKS,
+       COUNT(CASE proto WHEN 1  THEN 1 ELSE NULL END) AS PING_BLOCKS,
+       COUNT(CASE proto WHEN 1 THEN 1 WHEN 6 THEN 1 WHEN 17 THEN 1 ELSE NULL END) AS TOTAL_BLOCKS
+  FROM tr_firewall_evt evt
+         JOIN pl_endp USING (session_id)
+  WHERE evt.time_stamp >= $P{startTime} AND evt.time_stamp < $P{endTime} AND evt.was_blocked
+  GROUP BY HOST
+  ORDER BY TOTAL_BLOCKS DESC, HOST ASC
+  LIMIT 15
+         ]]></queryString>
 	<field name="HOST" class="java.lang.String"/>
 	<field name="TCP_BLOCKS" class="java.lang.Long"/>
 	<field name="UDP_BLOCKS" class="java.lang.Long"/>
@@ -76,7 +79,7 @@ ORDER BY TOTAL_BLOCKS DESC, HOST ASC]]></queryString>
 					<textElement textAlignment="Center" verticalAlignment="Top" rotation="None" lineSpacing="Single">
 						<font fontName="SansSerif" pdfFontName="Helvetica" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<text><![CDATA[Top 10 Firewall Violators]]></text>
+				<text><![CDATA[Top 15 Firewall Violators]]></text>
 				</staticText>
 			</band>
 		</title>
@@ -222,7 +225,7 @@ ORDER BY TOTAL_BLOCKS DESC, HOST ASC]]></queryString>
 		</columnHeader>
 		<detail>
 			<band height="13"  isSplitAllowed="true" >
-				<printWhenExpression><![CDATA[new Boolean($V{RANK}.intValue() <= 10)]]></printWhenExpression>
+				<printWhenExpression><![CDATA[new Boolean($V{RANK}.intValue() <= 15)]]></printWhenExpression>
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
 						mode="Opaque"

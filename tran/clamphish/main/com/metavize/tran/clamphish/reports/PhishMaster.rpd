@@ -1,9 +1,9 @@
 TEMPLATE=MasterOfTwoChildren
 REPORT_NAME=PhishMaster
-REPORT_TITLE=Phish - Summary
-SUBREPORT_1=reports/TopPhishSmtp.jasper
-SUBREPORT_2=reports/TopPhishPop.jasper
+REPORT_TITLE=Fraud Protection - Summary
 EXTRA_PARAM_1.name=spamVendor
 EXTRA_PARAM_1.type=java.lang.String
 EXTRA_PARAM_2.name=reportTitlePrefix
 EXTRA_PARAM_2.type=java.lang.String
+SUBREPORT_1=reports/TopPhishSmtp.jasper
+SUBREPORT_2=reports/TopPhishPop.jasper

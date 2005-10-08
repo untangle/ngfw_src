@@ -36,7 +36,7 @@ public class SpywareSummarizer extends BaseSummarizer {
 	    PreparedStatement ps;
 	    ResultSet rs;
 
-            sql = "select count(*) from tr_spyware_evt_cookie where time_stamp >= ? and time_stamp < ?";
+            sql = "SELECT COUNT(*) FROM tr_spyware_evt_cookie WHERE time_stamp >= ? AND time_stamp < ?";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
@@ -46,7 +46,7 @@ public class SpywareSummarizer extends BaseSummarizer {
             rs.close();
             ps.close();
 
-            sql = "select count(*) from tr_spyware_evt_access where time_stamp >= ? and time_stamp < ? and blocked = 't'";
+            sql = "SELECT COUNT(*) FROM tr_spyware_evt_access WHERE time_stamp >= ? AND time_stamp < ? AND blocked";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
@@ -56,7 +56,7 @@ public class SpywareSummarizer extends BaseSummarizer {
             rs.close();
             ps.close();
 
-            sql = "select count(*) from tr_spyware_evt_access where time_stamp >= ? and time_stamp < ? and blocked = 'f'";
+            sql = "SELECT COUNT(*) FROM tr_spyware_evt_access WHERE time_stamp >= ? AND time_stamp < ? AND NOT blocked";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
@@ -66,7 +66,7 @@ public class SpywareSummarizer extends BaseSummarizer {
             rs.close();
             ps.close();
 
-            sql = "select count(*) from tr_spyware_evt_activex where time_stamp >= ? and time_stamp < ?";
+            sql = "SELECT COUNT(*) FROM tr_spyware_evt_activex WHERE time_stamp >= ? AND time_stamp < ?";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
@@ -76,7 +76,7 @@ public class SpywareSummarizer extends BaseSummarizer {
             rs.close();
             ps.close();
 
-            sql = "select count(*) from tr_spyware_evt_blacklist where time_stamp >= ? and time_stamp < ?";
+            sql = "SELECT COUNT(*) FROM tr_spyware_evt_blacklist WHERE time_stamp >= ? AND time_stamp < ?";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
@@ -99,11 +99,9 @@ public class SpywareSummarizer extends BaseSummarizer {
         addEntry("&nbsp;&nbsp;&nbsp;Blocked URLs", Util.trimNumber("",urlBlockCount), Util.percentNumber(urlBlockCount,totalCount));
         addEntry("&nbsp;&nbsp;&nbsp;Passed subnets", Util.trimNumber("",subnetPassCount), Util.percentNumber(subnetPassCount,totalCount));
 
-
         // XXXX
         String tranName = "Spyware Blocker";
 
         return summarizeEntries(tranName);
     }
 }
-

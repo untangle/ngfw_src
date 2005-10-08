@@ -2,7 +2,7 @@
 <!-- Created using an evaluation version of JasperAssistant (http://www.jasperassistant.com) -->
 <!DOCTYPE jasperReport PUBLIC "-//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
 
-<jasperReport name="NatMaster" whenNoDataType="AllSectionsNoDetail" pageWidth="612" pageHeight="791" columnWidth="572" leftMargin="20" rightMargin="20" topMargin="50" bottomMargin="50">
+<jasperReport name="@REPORT_NAME@" whenNoDataType="AllSectionsNoDetail" pageWidth="612" pageHeight="791" columnWidth="572" leftMargin="20" rightMargin="20" topMargin="50" bottomMargin="50">
     <property name="com.jasperassistant.designer.HGuides" value="101,108,183,189,510,515"/>
     <property name="com.jasperassistant.designer.GridHeight" value="12"/>
     <property name="com.jasperassistant.designer.Rulers" value="true"/>
@@ -21,6 +21,7 @@
     </parameter>
     <parameter name="endTime" class="java.sql.Timestamp">
     </parameter>
+    @EXTRA_PARAMS@
     <queryString><![CDATA[SELECT 1]]></queryString>
     <background>
         <band>
@@ -28,14 +29,14 @@
     </background>
     <title>
         <band height="180">
-            <staticText>
-                <reportElement key="staticText" positionType="Float" mode="Opaque" x="0" y="28" width="193" height="17"/>
+            <textField pattern="">
+                <reportElement key="textField" positionType="Float" mode="Opaque" x="0" y="28" width="500" height="17"/>
                 <box topBorder="None" topBorderColor="#0" leftBorder="None" leftBorderColor="#0" bottomBorder="None" bottomBorderColor="#0" rightBorder="None" rightBorderColor="#ffffff"/>
                 <textElement>
                     <font fontName="SansSerif" size="14" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
                 </textElement>
-                <text><![CDATA[Network Sharing - Summary]]></text>
-            </staticText>
+                <textFieldExpression class="java.lang.String"><![CDATA[new String( ((new String($P{reportTitlePrefix})).equals("none") ? "" : $P{reportTitlePrefix} + " ") + "@REPORT_TITLE@")]]></textFieldExpression>
+	    </textField>
             <textField pattern="">
                 <reportElement key="textField" mode="Opaque" x="0" y="50" width="305" height="15"/>
                 <box topBorder="None" topBorderColor="#0" leftBorder="None" leftBorderColor="#0" bottomBorder="None" bottomBorderColor="#0" rightBorder="None" rightBorderColor="#ffffff"/>
@@ -68,43 +69,11 @@
                 <subreportParameter name="endTime">
                     <subreportParameterExpression><![CDATA[$P{endTime}]]></subreportParameterExpression>
                 </subreportParameter>
+                @SUBREPORT_EXTRA_PARAMS@
                 <connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-                <subreportExpression class="java.lang.String"><![CDATA["com/metavize/tran/nat/reports/NatDmzSummary.jasper"]]></subreportExpression>
+                <subreportExpression class="java.lang.String"><![CDATA["@SUBREPORT_1@"]]></subreportExpression>
             </subreport>
-            <subreport>
-                <reportElement key="subreport-1" positionType="Float" mode="Opaque" x="297" y="74" width="276" height="45"/>
-                <subreportParameter name="startTime">
-                    <subreportParameterExpression><![CDATA[$P{startTime}]]></subreportParameterExpression>
-                </subreportParameter>
-                <subreportParameter name="endTime">
-                    <subreportParameterExpression><![CDATA[$P{endTime}]]></subreportParameterExpression>
-                </subreportParameter>
-                <connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-                <subreportExpression class="java.lang.String"><![CDATA["com/metavize/tran/nat/reports/NatRedirectSummary.jasper"]]></subreportExpression>
-            </subreport>
-<!--             <subreport> -->
-<!--                 <reportElement key="subreport-2" positionType="Float" mode="Opaque" x="0" y="130" width="276" height="44"/> -->
-<!--                 <subreportParameter name="startTime"> -->
-<!--                     <subreportParameterExpression><![CDATA[$P{startTime}]]></subreportParameterExpression> -->
-<!--                 </subreportParameter> -->
-<!--                 <subreportParameter name="endTime"> -->
-<!--                     <subreportParameterExpression><![CDATA[$P{endTime}]]></subreportParameterExpression> -->
-<!--                 </subreportParameter> -->
-<!--                 <connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression> -->
-<!--                 <subreportExpression class="java.lang.String"><![CDATA["com/metavize/tran/airgap/AirgapProtocols.jasper"]]></subreportExpression> -->
-<!--             </subreport> -->
-<!--             <subreport isUsingCache="false"> -->
-<!--                 <reportElement key="subreport" positionType="Float" mode="Opaque" x="297" y="130" width="276" height="44"/> -->
-<!--                 <subreportParameter name="startTime"> -->
-<!--                     <subreportParameterExpression><![CDATA[$P{startTime}]]></subreportParameterExpression> -->
-<!--                 </subreportParameter> -->
-<!--                 <subreportParameter name="endTime"> -->
-<!--                     <subreportParameterExpression><![CDATA[$P{endTime}]]></subreportParameterExpression> -->
-<!--                 </subreportParameter> -->
-<!--                 <connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression> -->
-<!--                 <subreportExpression class="java.lang.String"><![CDATA["com/metavize/tran/airgap/AirgapProtocols.jasper"]]></subreportExpression> -->
-<!--             </subreport> -->
-        </band>
+         </band>
     </title>
     <pageHeader>
         <band>

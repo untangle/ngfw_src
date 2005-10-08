@@ -1,10 +1,12 @@
 TEMPLATE=Detail
 REPORT_NAME=EmailVirusDetail
 REPORT_TITLE=AntiVirus - Email Incidents
-EXTRA_PARAM_1.name=reportTitlePrefix
+
+EXTRA_PARAM_1.name=virusVendor
 EXTRA_PARAM_1.type=java.lang.String
-EXTRA_PARAM_2.name=virusVendor
+EXTRA_PARAM_2.name=reportTitlePrefix
 EXTRA_PARAM_2.type=java.lang.String
+
 FIELD_1.name=time_stamp
 FIELD_1.type=Timestamp
 FIELD_2.name=server_type
@@ -21,62 +23,58 @@ FIELD_7.name=action
 FIELD_7.type=String
 FIELD_8.name=notify_action
 FIELD_8.type=String
-QUERY=(SELECT evt.time_stamp, \
-              server_type, \
-              recip_addr.addr as recip_addr, \
-              from_addr.addr as from_addr, \
-              virus_name, \
-              c_client_addr as ip_addr, \
-              action, \
-              notify_action \
-         FROM tr_mail_message_info msg \
-           LEFT OUTER JOIN tr_mail_message_info_addr recip_addr \
-             ON msg.id = recip_addr.msg_id \
-               AND recip_addr.kind = 'B' \
-           LEFT OUTER JOIN tr_mail_message_info_addr from_addr \
-             ON msg.id = from_addr.msg_id \
-               AND from_addr.kind = 'F' \
-           JOIN tr_virus_evt_smtp evt \
-             ON msg.id = evt.msg_id \
-           JOIN pl_endp \
-             USING (session_id) \
-         WHERE evt.time_stamp >= $P{startTime} \
-           AND evt.time_stamp < $P{endTime} \
-           AND NOT clean \
-           AND vendor_name = $P{virusVendor} \
-         ORDER BY evt.time_stamp DESC) \
-       UNION \
-      (SELECT evt.time_stamp, \
-              server_type, \
-              recip_addr.addr as recip_addr, \
-              from_addr.addr as from_addr, \
-              virus_name, \
-              s_server_addr as ip_addr, \
-              action, \
-              'N' as notify_action \
-         FROM tr_mail_message_info msg  \
-           LEFT OUTER JOIN tr_mail_message_info_addr recip_addr \
-             ON msg.id = recip_addr.msg_id \
-               AND recip_addr.kind = 'U' \
-           LEFT OUTER JOIN tr_mail_message_info_addr from_addr \
-             ON msg.id = from_addr.msg_id \
-               AND from_addr.kind = 'F' \
-           JOIN tr_virus_evt_mail evt \
-             ON msg.id = evt.msg_id \
-           JOIN pl_endp \
-             USING (session_id) \
-         WHERE evt.time_stamp >= $P{startTime} \
-           AND evt.time_stamp < $P{endTime} \
-           AND NOT clean \
-           AND vendor_name = $P{virusVendor} \
-         ORDER BY evt.time_stamp DESC)
+
+QUERY=\
+(SELECT evt.time_stamp, msg.server_type, \
+        recip_addr.addr AS recip_addr, from_addr.addr AS from_addr, \
+        evt.virus_name, c_client_addr AS ip_addr, \
+        evt.action, evt.notify_action \
+   FROM tr_mail_message_info msg \
+          LEFT OUTER JOIN tr_mail_message_info_addr recip_addr \
+            ON (msg.id = recip_addr.msg_id \
+              AND recip_addr.kind = 'B') \
+          LEFT OUTER JOIN tr_mail_message_info_addr from_addr \
+            ON (msg.id = from_addr.msg_id \
+              AND from_addr.kind = 'F') \
+          JOIN tr_virus_evt_smtp evt \
+            ON (msg.id = evt.msg_id \
+              AND NOT evt.clean \
+              AND evt.time_stamp >= $P{startTime} \
+              AND evt.time_stamp < $P{endTime} \
+              AND evt.vendor_name = $P{virusVendor}) \
+          JOIN pl_endp \
+            USING (session_id) \
+   ORDER BY evt.time_stamp DESC) \
+ UNION \
+(SELECT evt.time_stamp, msg.server_type, \
+        recip_addr.addr AS recip_addr, from_addr.addr AS from_addr, \
+        evt.virus_name, \
+        s_server_addr AS ip_addr, evt.action, 'N' AS notify_action \
+   FROM tr_mail_message_info msg  \
+          LEFT OUTER JOIN tr_mail_message_info_addr recip_addr \
+            ON (msg.id = recip_addr.msg_id \
+                  AND recip_addr.kind = 'U') \
+          LEFT OUTER JOIN tr_mail_message_info_addr from_addr \
+            ON (msg.id = from_addr.msg_id \
+                  AND from_addr.kind = 'F') \
+          JOIN tr_virus_evt_mail evt \
+            ON (msg.id = evt.msg_id \
+                  AND NOT evt.clean \
+                  AND evt.time_stamp >= $P{startTime} \
+                  AND evt.time_stamp < $P{endTime} \
+                  AND evt.vendor_name = $P{virusVendor}) \
+          JOIN pl_endp \
+            USING (session_id) \
+   ORDER BY evt.time_stamp DESC)
+
 TOPLEFT.label=Timestamp
 TOPLMID.label=Virus name
 BOTLMID.label=Action
 TOPRMID.label=Msg sender
-BOTRMID.label=Msg receiver
+BOTRMID.label=Msg receiver/User account
 TOPRIGHT.label=Source IP
 BOTRIGHT.label=Source type
+
 TOPLEFT.expr=$F{time_stamp}
 TOPLMID.expr=$F{virus_name}
 BOTLMID.expr=$F{action}.charAt(0) == 'P' ? "pass infection" : $F{action}.charAt(0) == 'R' ? "remove infection" : $F{action}.charAt(0) == 'B' ? "block message" : "unknown"
@@ -84,4 +82,5 @@ TOPRMID.expr=$F{from_addr}
 BOTRMID.expr=$F{recip_addr}
 TOPRIGHT.expr=$F{ip_addr}
 BOTRIGHT.expr=$F{server_type}.charAt(0) == 'S' ? "SMTP" : $F{server_type}.charAt(0) == 'P' ? "POP3" : $F{server_type}.charAt(0) == 'I' ? "IMAP" : "unknown"
+
 BOTRIGHT.type=java.lang.String

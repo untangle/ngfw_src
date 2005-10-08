@@ -2,7 +2,8 @@
 <!-- Created using an evaluation version of JasperAssistant (http://www.jasperassistant.com) -->
 <!DOCTYPE jasperReport PUBLIC "-//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
 
-<jasperReport name="SpywareCookies" whenNoDataType="AllSectionsNoDetail" pageWidth="276" pageHeight="791" columnWidth="276" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" isFloatColumnFooter="true">
+<!-- 1 header line, 3 columns (middle column is wide), 0 footer lines -->
+<jasperReport name="@REPORT_NAME@" whenNoDataType="AllSectionsNoDetail" pageWidth="276" pageHeight="791" columnWidth="276" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" isFloatColumnFooter="true">
     <import value="java.util.*"/>
     <import value="net.sf.jasperreports.engine.*"/>
     <import value="net.sf.jasperreports.engine.data.*"/>
@@ -10,26 +11,13 @@
     </parameter>
     <parameter name="endTime" class="java.sql.Timestamp">
     </parameter>
-    <queryString><![CDATA[
-SELECT COALESCE(name, host(c_client_addr)) as hname, count(*) AS hits, total_hits
-  FROM (SELECT count(*) AS total_hits FROM tr_spyware_evt_activex) as total_count,
-  tr_spyware_evt_activex evt
-  JOIN pl_endp endp USING (session_id)
-  LEFT OUTER JOIN merged_address_map mam ON addr = c_client_addr AND evt.time_stamp >= mam.start_time AND evt.time_stamp < mam.end_time
-  WHERE evt.time_stamp > $P{startTime} AND evt.time_stamp < $P{endTime}
-  AND NOT c_client_addr ISNULL
-  GROUP BY hname, total_hits
-  ORDER BY hits DESC
-]]></queryString>
-    <field name="hname" class="java.lang.String">
-    </field>
-    <field name="hits" class="java.lang.Long">
-    </field>
-    <field name="total_hits" class="java.lang.Long">
-    </field>
-    <variable name="n" class="java.lang.Integer" calculation="Count">
-        <variableExpression><![CDATA[$F{hname}]]></variableExpression>
+    @EXTRA_PARAMS@
+    <queryString><![CDATA[@QUERY@]]></queryString>
+    @FIELDS@
+    <variable name="_idx" class="java.lang.Integer" calculation="Count">
+        <variableExpression><![CDATA[@UNIQUE_COUNT.expr@]]></variableExpression>
     </variable>
+    @EXTRA_VARS@
     <background>
         <band>
         </band>
@@ -42,34 +30,34 @@ SELECT COALESCE(name, host(c_client_addr)) as hname, count(*) AS hits, total_hit
                 <textElement textAlignment="Center">
                     <font fontName="SansSerif" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
                 </textElement>
-                <text><![CDATA[Top 15 ActiveX]]></text>
+                <text><![CDATA[@REPORT_TITLE@]]></text>
             </staticText>
         </band>
     </title>
     <pageHeader>
         <band height="13">
             <staticText>
-                <reportElement key="staticText" positionType="Float" mode="Opaque" x="0" y="0" width="169" height="13"/>
+                <reportElement key="staticText" positionType="Float" mode="Opaque" x="0" y="0" width="80" height="13"/>
                 <box topBorder="None" topBorderColor="#0" leftBorder="None" leftBorderColor="#0" bottomBorder="None" bottomBorderColor="#0" rightBorder="None" rightBorderColor="#ffffff"/>
                 <textElement>
                     <font fontName="SansSerif" size="9" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
                 </textElement>
-                <text><![CDATA[ActiveX]]></text>
+                <text><![CDATA[@LEFT.label@]]></text>
             </staticText>
             <staticText>
-                <reportElement key="staticText" positionType="Float" mode="Opaque" x="172" y="0" width="62" height="13"/>
+                <reportElement key="staticText" positionType="Float" mode="Opaque" x="82" y="0" width="150" height="13"/>
                 <box topBorder="None" topBorderColor="#0" leftBorder="None" leftBorderColor="#0" bottomBorder="None" bottomBorderColor="#0" rightBorder="None" rightBorderColor="#ffffff"/>
                 <textElement textAlignment="Right">
                     <font fontName="SansSerif" size="9" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
                 </textElement>
-                <text><![CDATA[Count]]></text>
+                <text><![CDATA[@MIDDLE.label@]]></text>
             </staticText>
             <staticText>
                 <reportElement positionType="Float" x="234" y="0" width="42" height="13"/>
                 <textElement textAlignment="Right">
                     <font fontName="SansSerif" size="9" isItalic="true"/>
                 </textElement>
-                <text><![CDATA[%]]></text>
+                <text><![CDATA[@RIGHT.label@]]></text>
             </staticText>
         </band>
     </pageHeader>
@@ -79,57 +67,34 @@ SELECT COALESCE(name, host(c_client_addr)) as hname, count(*) AS hits, total_hit
     </columnHeader>
     <detail>
         <band height="13">
-            <printWhenExpression><![CDATA[new Boolean($V{n}.intValue() <= 15)]]></printWhenExpression>
+            <printWhenExpression><![CDATA[new Boolean($V{_idx}.intValue() <= @REPORT_MAX_LENGTH@)]]></printWhenExpression>
             <textField pattern="">
-                <reportElement key="textField" positionType="Float" mode="Opaque" x="172" y="0" width="62" height="13"/>
+                <reportElement key="textField" positionType="Float" mode="Opaque" x="82" y="0" width="150" height="13"/>
                 <box topBorderColor="#0" leftBorderColor="#0" bottomBorderColor="#0" rightBorderColor="#ffffff"/>
                 <textElement textAlignment="Right">
                     <font fontName="Monospaced" size="9" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
                 </textElement>
-                <textFieldExpression class="java.lang.Long"><![CDATA[$F{hits}]]></textFieldExpression>
+                <textFieldExpression class="java.lang.Long"><![CDATA[@MIDDLE.expr@]]></textFieldExpression>
             </textField>
             <textField pattern="">
-                <reportElement key="textField" positionType="Float" mode="Opaque" x="0" y="0" width="169" height="13"/>
+                <reportElement key="textField" positionType="Float" mode="Opaque" x="0" y="0" width="80" height="13"/>
                 <box topBorderColor="#0" leftBorderColor="#0" bottomBorderColor="#0" rightBorderColor="#ffffff"/>
                 <textElement>
                     <font fontName="SansSerif" size="9" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
                 </textElement>
-                <textFieldExpression class="java.lang.String"><![CDATA[$F{hname}]]></textFieldExpression>
+                <textFieldExpression class="java.lang.String"><![CDATA[@LEFT.expr@]]></textFieldExpression>
             </textField>
             <textField>
                 <reportElement positionType="Float" x="234" y="0" width="42" height="13"/>
                 <textElement textAlignment="Right">
                     <font fontName="Monospaced" size="9" isItalic="true"/>
                 </textElement>
-                <textFieldExpression class="java.lang.String"><![CDATA[Math.round($F{hits}.doubleValue() / $F{total_hits}.doubleValue() * 100) + "%"]]></textFieldExpression>
+                <textFieldExpression class="java.lang.String"><![CDATA[@RIGHT.expr@]]></textFieldExpression>
             </textField>
         </band>
     </detail>
     <columnFooter>
         <band height="13">
-            <textField pattern="">
-                <reportElement key="textField" positionType="Float" mode="Opaque" x="172" y="0" width="62" height="13"/>
-                <box topBorder="None" topBorderColor="#0" leftBorder="None" leftBorderColor="#0" bottomBorder="None" bottomBorderColor="#0" rightBorder="None" rightBorderColor="#ffffff"/>
-                <textElement textAlignment="Right">
-                    <font fontName="Monospaced" size="9" isBold="true" isItalic="true" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-                </textElement>
-                <textFieldExpression class="java.lang.Long"><![CDATA[$F{total_hits}]]></textFieldExpression>
-            </textField>
-            <staticText>
-                <reportElement key="staticText" positionType="Float" mode="Opaque" x="0" y="0" width="169" height="13"/>
-                <box topBorder="None" topBorderColor="#0" leftBorder="None" leftBorderColor="#0" bottomBorder="None" bottomBorderColor="#0" rightBorder="None" rightBorderColor="#ffffff"/>
-                <textElement>
-                    <font fontName="SansSerif" size="9" isBold="true" isItalic="true" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-                </textElement>
-                <text><![CDATA[Totals:]]></text>
-            </staticText>
-            <staticText>
-                <reportElement positionType="Float" x="234" y="0" width="42" height="13"/>
-                <textElement textAlignment="Right">
-                    <font fontName="Monospaced" size="9" isBold="true" isItalic="true"/>
-                </textElement>
-                <text><![CDATA[100%]]></text>
-            </staticText>
         </band>
     </columnFooter>
     <pageFooter>

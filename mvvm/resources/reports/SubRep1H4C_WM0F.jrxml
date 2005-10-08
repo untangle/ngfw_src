@@ -2,7 +2,8 @@
 <!-- Created using an evaluation version of JasperAssistant (http://www.jasperassistant.com) -->
 <!DOCTYPE jasperReport PUBLIC "-//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
 
-<jasperReport name="SpywareCookies" whenNoDataType="AllSectionsNoDetail" pageWidth="276" pageHeight="791" columnWidth="276" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" isFloatColumnFooter="true">
+<!-- 1 header line, 4 columns (left column is narrow, middle column is wide), 0 footer lines -->
+<jasperReport name="@REPORT_NAME@" whenNoDataType="AllSectionsNoDetail" pageWidth="276" pageHeight="791" columnWidth="276" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" isFloatColumnFooter="true">
     <import value="java.util.*"/>
     <import value="net.sf.jasperreports.engine.*"/>
     <import value="net.sf.jasperreports.engine.data.*"/>
@@ -10,25 +11,13 @@
     </parameter>
     <parameter name="endTime" class="java.sql.Timestamp">
     </parameter>
-    <queryString><![CDATA[
-SELECT ident, count(ident) AS cookies, total_cookies
-FROM (SELECT count(ident) AS total_cookies FROM tr_spyware_evt_cookie AS evt
-      WHERE evt.time_stamp > $P{startTime} AND evt.time_stamp < $P{endTime}) AS total_size,
-tr_spyware_evt_cookie evt
-WHERE evt.time_stamp > $P{startTime}
-AND evt.time_stamp < $P{endTime}
-GROUP BY ident, total_cookies
-ORDER BY cookies DESC
-]]></queryString>
-    <field name="ident" class="java.lang.String">
-    </field>
-    <field name="cookies" class="java.lang.Long">
-    </field>
-    <field name="total_cookies" class="java.lang.Long">
-    </field>
-    <variable name="n" class="java.lang.Integer" calculation="Count">
-        <variableExpression><![CDATA[$F{ident}]]></variableExpression>
+    @EXTRA_PARAMS@
+    <queryString><![CDATA[@QUERY@]]></queryString>
+    @FIELDS@
+    <variable name="_idx" class="java.lang.Integer" calculation="Count">
+        <variableExpression><![CDATA[@UNIQUE_COUNT.expr@]]></variableExpression>
     </variable>
+    @EXTRA_VARS@
     <background>
         <band>
         </band>
@@ -41,34 +30,42 @@ ORDER BY cookies DESC
                 <textElement textAlignment="Center">
                     <font fontName="SansSerif" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
                 </textElement>
-                <text><![CDATA[Top 15 Cookies]]></text>
+                <text><![CDATA[@REPORT_TITLE@]]></text>
             </staticText>
         </band>
     </title>
     <pageHeader>
         <band height="13">
             <staticText>
-                <reportElement key="staticText" positionType="Float" mode="Opaque" x="0" y="0" width="169" height="13"/>
+                <reportElement key="staticText" positionType="Float" mode="Opaque" x="0" y="0" width="10" height="13"/>
                 <box topBorder="None" topBorderColor="#0" leftBorder="None" leftBorderColor="#0" bottomBorder="None" bottomBorderColor="#0" rightBorder="None" rightBorderColor="#ffffff"/>
                 <textElement>
                     <font fontName="SansSerif" size="9" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
                 </textElement>
-                <text><![CDATA[Domain]]></text>
+                <text><![CDATA[@LEFT.label@]]></text>
             </staticText>
             <staticText>
-                <reportElement key="staticText" positionType="Float" mode="Opaque" x="172" y="0" width="62" height="13"/>
+                <reportElement key="staticText" positionType="Float" mode="Opaque" x="12" y="0" width="78" height="13"/>
                 <box topBorder="None" topBorderColor="#0" leftBorder="None" leftBorderColor="#0" bottomBorder="None" bottomBorderColor="#0" rightBorder="None" rightBorderColor="#ffffff"/>
                 <textElement textAlignment="Right">
                     <font fontName="SansSerif" size="9" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
                 </textElement>
-                <text><![CDATA[Count]]></text>
+                <text><![CDATA[@LEFTMID.label@]]></text>
+            </staticText>
+            <staticText>
+                <reportElement key="staticText" positionType="Float" mode="Opaque" x="92" y="0" width="140" height="13"/>
+                <box topBorder="None" topBorderColor="#0" leftBorder="None" leftBorderColor="#0" bottomBorder="None" bottomBorderColor="#0" rightBorder="None" rightBorderColor="#ffffff"/>
+                <textElement textAlignment="Right">
+                    <font fontName="SansSerif" size="9" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+                </textElement>
+                <text><![CDATA[@MIDDLE.label@]]></text>
             </staticText>
             <staticText>
                 <reportElement positionType="Float" x="234" y="0" width="42" height="13"/>
                 <textElement textAlignment="Right">
                     <font fontName="SansSerif" size="9" isItalic="true"/>
                 </textElement>
-                <text><![CDATA[%]]></text>
+                <text><![CDATA[@RIGHT.label@]]></text>
             </staticText>
         </band>
     </pageHeader>
@@ -78,57 +75,41 @@ ORDER BY cookies DESC
     </columnHeader>
     <detail>
         <band height="13">
-            <printWhenExpression><![CDATA[new Boolean($V{n}.intValue() <= 15)]]></printWhenExpression>
+            <printWhenExpression><![CDATA[new Boolean($V{_idx}.intValue() <= @REPORT_MAX_LENGTH@)]]></printWhenExpression>
             <textField pattern="">
-                <reportElement key="textField" positionType="Float" mode="Opaque" x="172" y="0" width="62" height="13"/>
+                <reportElement key="textField" positionType="Float" mode="Opaque" x="12" y="0" width="78" height="13"/>
                 <box topBorderColor="#0" leftBorderColor="#0" bottomBorderColor="#0" rightBorderColor="#ffffff"/>
                 <textElement textAlignment="Right">
                     <font fontName="Monospaced" size="9" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
                 </textElement>
-                <textFieldExpression class="java.lang.Long"><![CDATA[$F{cookies}]]></textFieldExpression>
+                <textFieldExpression class="java.lang.String"><![CDATA[@LEFTMID.expr@]]></textFieldExpression>
             </textField>
             <textField pattern="">
-                <reportElement key="textField" positionType="Float" mode="Opaque" x="0" y="0" width="169" height="13"/>
+                <reportElement key="textField" positionType="Float" mode="Opaque" x="0" y="0" width="10" height="13"/>
                 <box topBorderColor="#0" leftBorderColor="#0" bottomBorderColor="#0" rightBorderColor="#ffffff"/>
                 <textElement>
                     <font fontName="SansSerif" size="9" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
                 </textElement>
-                <textFieldExpression class="java.lang.String"><![CDATA[$F{ident}]]></textFieldExpression>
+                <textFieldExpression class="java.lang.String"><![CDATA[@LEFT.expr@]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement positionType="Float" x="92" y="0" width="140" height="13"/>
+                <textElement textAlignment="Right">
+                    <font fontName="Monospaced" size="9" isItalic="true"/>
+                </textElement>
+                <textFieldExpression class="java.lang.Long"><![CDATA[@MIDDLE.expr@]]></textFieldExpression>
             </textField>
             <textField>
                 <reportElement positionType="Float" x="234" y="0" width="42" height="13"/>
                 <textElement textAlignment="Right">
                     <font fontName="Monospaced" size="9" isItalic="true"/>
                 </textElement>
-                <textFieldExpression class="java.lang.String"><![CDATA[Math.round($F{cookies}.doubleValue() / $F{total_cookies}.doubleValue() * 100) + "%"]]></textFieldExpression>
+                <textFieldExpression class="java.lang.String"><![CDATA[@RIGHT.expr@]]></textFieldExpression>
             </textField>
         </band>
     </detail>
     <columnFooter>
         <band height="13">
-            <textField pattern="">
-                <reportElement key="textField" positionType="Float" mode="Opaque" x="172" y="0" width="62" height="13"/>
-                <box topBorder="None" topBorderColor="#0" leftBorder="None" leftBorderColor="#0" bottomBorder="None" bottomBorderColor="#0" rightBorder="None" rightBorderColor="#ffffff"/>
-                <textElement textAlignment="Right">
-                    <font fontName="Monospaced" size="9" isBold="true" isItalic="true" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-                </textElement>
-                <textFieldExpression class="java.lang.Long"><![CDATA[$F{total_cookies}]]></textFieldExpression>
-            </textField>
-            <staticText>
-                <reportElement key="staticText" positionType="Float" mode="Opaque" x="0" y="0" width="169" height="13"/>
-                <box topBorder="None" topBorderColor="#0" leftBorder="None" leftBorderColor="#0" bottomBorder="None" bottomBorderColor="#0" rightBorder="None" rightBorderColor="#ffffff"/>
-                <textElement>
-                    <font fontName="SansSerif" size="9" isBold="true" isItalic="true" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-                </textElement>
-                <text><![CDATA[Totals:]]></text>
-            </staticText>
-            <staticText>
-                <reportElement positionType="Float" x="234" y="0" width="42" height="13"/>
-                <textElement textAlignment="Right">
-                    <font fontName="Monospaced" size="9" isBold="true" isItalic="true"/>
-                </textElement>
-                <text><![CDATA[100%]]></text>
-            </staticText>
         </band>
     </columnFooter>
     <pageFooter>

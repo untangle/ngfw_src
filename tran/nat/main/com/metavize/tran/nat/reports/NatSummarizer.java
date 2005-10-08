@@ -26,7 +26,6 @@ public class NatSummarizer extends BaseSummarizer {
 
     public String getSummaryHtml(Connection conn, Timestamp startDate, Timestamp endDate)
     {
-
 	long totalOutboundSessionsCreated = 0l;
 	long totalRedirections = 0l;
 	long tcpRedirections = 0l;
@@ -40,18 +39,16 @@ public class NatSummarizer extends BaseSummarizer {
 	long pingOutboundRedirections = 0l;
 	long dmzRedirections = 0l;
 
-
-
         try {
             String sql;
 	    PreparedStatement ps;
 	    ResultSet rs;
 	    
-	    sql = " SELECT sum(nat_sessions), sum(dmz_sessions)," +
-		" sum(tcp_incoming), sum(tcp_outgoing)," +
-		" sum(udp_incoming), sum(udp_outgoing)," +
-		" sum(icmp_incoming), sum(icmp_outgoing)" +
-		" from tr_nat_statistic_evt evt where time_stamp >= ? and time_stamp < ?";
+	    sql = " SELECT SUM(nat_sessions), SUM(dmz_sessions)," +
+		" SUM(tcp_incoming), SUM(tcp_outgoing)," +
+		" SUM(udp_incoming), SUM(udp_outgoing)," +
+		" SUM(icmp_incoming), SUM(icmp_outgoing)" +
+		" FROM tr_nat_statistic_evt WHERE time_stamp >= ? AND time_stamp < ?";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
@@ -102,13 +99,9 @@ public class NatSummarizer extends BaseSummarizer {
         addEntry("NAT outbound sessions created", Util.trimNumber("",totalOutboundSessionsCreated));
         addEntry("DMZ inbound redirections", Util.trimNumber("",dmzRedirections) );
 
-
-
-
         // XXXX
         String tranName = "Network Sharing";
 
         return summarizeEntries(tranName);
     }
 }
-

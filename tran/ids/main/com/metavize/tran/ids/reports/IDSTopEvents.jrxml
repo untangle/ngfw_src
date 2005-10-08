@@ -32,11 +32,15 @@
 	<import value="net.sf.jasperreports.engine.data.*" />
 	<parameter name="startTime" isForPrompting="true" class="java.sql.Timestamp"/>
 	<parameter name="endTime" isForPrompting="true" class="java.sql.Timestamp"/>
-	<queryString><![CDATA[SELECT COUNT(evt.message) as TOTAL_ACTIONS, evt.message as DESCRIPTION, evt.blocked as ACTION
-FROM tr_ids_evt evt
-WHERE evt.time_stamp >= $P{startTime} and evt.time_stamp <= $P{endTime}
-GROUP BY evt.message, evt.blocked
-ORDER BY TOTAL_ACTIONS DESC]]></queryString>
+	<queryString><![CDATA[
+SELECT COUNT(message) AS TOTAL_ACTIONS, message AS DESCRIPTION, 
+       blocked AS ACTION
+  FROM tr_ids_evt
+  WHERE time_stamp >= $P{startTime} AND time_stamp < $P{endTime}
+  GROUP BY message, blocked
+  ORDER BY TOTAL_ACTIONS DESC
+  LIMIT 15
+         ]]></queryString>
 	<field name="RULE_INDEX" class="java.lang.Long"/>
 	<field name="DESCRIPTION" class="java.lang.String"/>
 	<field name="ACTION" class="java.lang.String"/>
@@ -70,7 +74,7 @@ ORDER BY TOTAL_ACTIONS DESC]]></queryString>
 					<textElement textAlignment="Center" verticalAlignment="Top" rotation="None" lineSpacing="Single">
 						<font fontName="SansSerif" pdfFontName="Helvetica" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<text><![CDATA[Top 15 Events]]></text>
+				<text><![CDATA[Top 15 IPS Events]]></text>
 				</staticText>
 			</band>
 		</title>

@@ -1,8 +1,10 @@
 TEMPLATE=Detail
 REPORT_NAME=ProtoFilterDetail
 REPORT_TITLE=Rogue Protocol Control - Protocol Policy Violations
+
 EXTRA_PARAM_1.name=reportTitlePrefix
 EXTRA_PARAM_1.type=java.lang.String
+
 FIELD_1.name=time_stamp
 FIELD_1.type=Timestamp
 FIELD_2.name=c_client_addr
@@ -17,13 +19,21 @@ FIELD_6.name=blocked
 FIELD_6.type=Boolean
 FIELD_7.name=name
 FIELD_7.type=String
-QUERY=SELECT evt.time_stamp, name, c_client_addr, c_server_addr, c_server_port, protocol, blocked, p2c_bytes \
- FROM tr_protofilter_evt evt \
- JOIN pl_stats USING (session_id) \
- JOIN pl_endp USING (session_id) \
- LEFT OUTER JOIN merged_address_map mam ON c_client_addr = addr AND evt.time_stamp >= mam.start_time AND evt.time_stamp < mam.end_time \
- WHERE evt.time_stamp > $P{startTime} AND evt.time_stamp < $P{endTime} \
- ORDER BY time_stamp DESC
+
+QUERY=\
+SELECT evt.time_stamp, c_client_addr, c_server_addr, c_server_port, \
+       protocol, blocked, name \
+  FROM tr_protofilter_evt evt \
+         JOIN pl_endp endp \
+           USING (session_id) \
+         LEFT OUTER JOIN merged_address_map mam \
+           ON (endp.c_client_addr = mam.addr \
+             AND evt.time_stamp >= mam.start_time \
+             AND evt.time_stamp < mam.end_time) \
+  WHERE evt.time_stamp >= $P{startTime} \
+    AND evt.time_stamp < $P{endTime} \
+  ORDER BY evt.time_stamp DESC
+
 TOPLEFT.label=Timestamp
 TOPLMID.label=User
 BOTLMID.label=Client
@@ -31,6 +41,7 @@ TOPRMID.label=Protocol
 BOTRMID.label=Action
 TOPRIGHT.label=Server
 BOTRIGHT.label=Port
+
 TOPRMID.expr=$F{protocol}
 TOPLMID.expr=$F{name} == null ? "" : $F{name}
 TOPLEFT.expr=$F{time_stamp}

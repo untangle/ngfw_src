@@ -40,7 +40,7 @@ public class IDSSummarizer extends BaseSummarizer {
 	    PreparedStatement ps;
 	    ResultSet rs;
 	    
-            sql = "select sum(ids_scanned), sum(ids_passed), sum(ids_blocked) from tr_ids_statistic_evt where time_stamp >= ? and time_stamp < ?";
+            sql = "SELECT SUM(ids_scanned), SUM(ids_passed), SUM(ids_blocked) FROM tr_ids_statistic_evt WHERE time_stamp >= ? AND time_stamp < ?";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
@@ -69,4 +69,3 @@ public class IDSSummarizer extends BaseSummarizer {
         return summarizeEntries(tranName);
     }
 }
-

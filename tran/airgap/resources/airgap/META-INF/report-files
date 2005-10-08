@@ -1,4 +1,4 @@
-com/metavize/tran/airgap/reports/AirgapMaster.jasper:Packet_Attack_Shield--Summary:Summary
+reports/AirgapMaster.jasper:Packet_Attack_Shield--Summary:Summary
 reports/AirgapResourceViolationsDetail.jasper:Packet_Attack_Shield--Resource_Violations:Resource Violations
 com.metavize.tran.airgap.reports.AirgapSummarizer:summarizer:Summarizer
 reportTitlePrefix:parameter:none

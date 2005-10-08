@@ -32,14 +32,18 @@
 	<import value="net.sf.jasperreports.engine.data.*" />
 	<parameter name="startTime" isForPrompting="true" class="java.sql.Timestamp"/>
 	<parameter name="endTime" isForPrompting="true" class="java.sql.Timestamp"/>
-	<queryString><![CDATA[SELECT c_client_addr as CLIENT, 	COUNT(CASE blocked WHEN true THEN 1 ELSE NULL END) as BLOCKED,
-								COUNT(CASE blocked WHEN false THEN 1 ELSE NULL END) as PASSED,
-								COUNT(c_client_addr) as TOTAL_ACTIONS
-FROM tr_ids_evt evt
-JOIN pl_endp USING (session_id)
-WHERE evt.time_stamp >= $P{startTime} and evt.time_stamp <= $P{endTime}
-GROUP BY c_client_addr
-ORDER BY TOTAL_ACTIONS DESC]]></queryString>
+	<queryString><![CDATA[
+SELECT c_client_addr AS CLIENT,
+       COUNT(CASE blocked WHEN true THEN 1 ELSE NULL END) AS BLOCKED,
+       COUNT(CASE blocked WHEN false THEN 1 ELSE NULL END) AS PASSED,
+       COUNT(c_client_addr) AS TOTAL_ACTIONS
+  FROM tr_ids_evt evt
+         JOIN pl_endp USING (session_id)
+  WHERE evt.time_stamp >= $P{startTime} AND evt.time_stamp < $P{endTime}
+  GROUP BY c_client_addr
+  ORDER BY TOTAL_ACTIONS DESC
+  LIMIT 15
+          ]]></queryString>
 	<field name="RULE_INDEX" class="java.lang.Long"/>
 	<field name="CLIENT" class="java.lang.String"/>
 	<field name="BLOCKED" class="java.lang.Long"/>
@@ -74,7 +78,7 @@ ORDER BY TOTAL_ACTIONS DESC]]></queryString>
 					<textElement textAlignment="Center" verticalAlignment="Top" rotation="None" lineSpacing="Single">
 						<font fontName="SansSerif" pdfFontName="Helvetica" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<text><![CDATA[Top 15 Events]]></text>
+				<text><![CDATA[Top 15 Client IPS Events]]></text>
 				</staticText>
 			</band>
 		</title>

@@ -1,8 +1,10 @@
 TEMPLATE=DetailFourCol
 REPORT_NAME=NetworkSharingRedirectEvents
 REPORT_TITLE=Network Sharing - Redirect Events
+
 EXTRA_PARAM_1.name=reportTitlePrefix
 EXTRA_PARAM_1.type=java.lang.String
+
 FIELD_1.name=time_stamp
 FIELD_1.type=Timestamp
 FIELD_2.name=rule_index
@@ -22,15 +24,21 @@ FIELD_8.type=Integer
 FIELD_9.name=protocol
 FIELD_9.type=String
 
-QUERY=SELECT evt.time_stamp, rule_index, c_client_addr, c_client_port, c_server_addr, c_server_port, s_server_addr, s_server_port, \
-   CASE WHEN proto=1 THEN 'PING' \
-     WHEN proto=6 THEN 'TCP' \
-     WHEN proto=17 THEN 'UDP' \
-   END as protocol \
- FROM tr_nat_redirect_evt evt \
- JOIN pl_endp USING (session_id) \
- WHERE evt.time_stamp > $P{startTime} AND evt.time_stamp < $P{endTime} AND NOT IS_DMZ \
- ORDER BY evt.time_stamp DESC
+QUERY=\
+SELECT evt.time_stamp, rule_index, c_client_addr, c_client_port, \
+       c_server_addr, c_server_port, s_server_addr, s_server_port, \
+       (CASE \
+          WHEN proto = 1 THEN 'PING' \
+          WHEN proto = 6 THEN 'TCP' \
+          WHEN proto = 17 THEN 'UDP' \
+        END) AS protocol \
+  FROM tr_nat_redirect_evt evt \
+         JOIN pl_endp \
+           USING (session_id) \
+  WHERE NOT evt.is_dmz \
+    AND evt.time_stamp >= $P{startTime} \
+    AND evt.time_stamp < $P{endTime} \
+  ORDER BY evt.time_stamp DESC
 
 TOPLEFT.label=Timestamp
 TOPLMID.label=Protocol
@@ -41,6 +49,7 @@ TOPRIGHT.label=Redirect IP
 BOTRIGHT.label=Redirect Port
 TOPMMID.label=Source IP
 BOTMMID.label=Source Port
+
 TOPRMID.expr=$F{c_server_addr}
 TOPLMID.expr=$F{protocol}
 TOPLEFT.expr=$F{time_stamp}
@@ -50,6 +59,3 @@ BOTRIGHT.expr=($F{s_server_port}).toString()
 TOPRIGHT.expr=$F{s_server_addr}
 TOPMMID.expr=$F{c_client_addr}
 BOTMMID.expr=($F{c_client_port}).toString()
-
-
-

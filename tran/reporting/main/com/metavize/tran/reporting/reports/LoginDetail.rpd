@@ -1,8 +1,10 @@
 TEMPLATE=Detail
 REPORT_NAME=LoginDetail
 REPORT_TITLE=EdgeGuard Appliance - Administrative Logins
+
 EXTRA_PARAM_1.name=reportTitlePrefix
 EXTRA_PARAM_1.type=java.lang.String
+
 FIELD_1.name=time_stamp
 FIELD_1.type=Timestamp
 FIELD_2.name=client_addr
@@ -15,11 +17,19 @@ FIELD_5.name=reason
 FIELD_5.type=String
 FIELD_6.name=name
 FIELD_6.type=String
-QUERY=SELECT evt.time_stamp, evt.client_addr, evt.login, evt.succeeded, evt.reason, name \
-FROM mvvm_login_evt evt \
-LEFT OUTER JOIN merged_address_map mam ON client_addr = addr AND evt.time_stamp >= mam.start_time AND evt.time_stamp < mam.end_time \
-WHERE evt.time_stamp > $P{startTime} AND evt.time_stamp < $P{endTime} AND NOT evt.local \
-ORDER BY evt.time_stamp DESC
+
+QUERY=\
+SELECT evt.time_stamp, client_addr, login, succeeded, reason, name \
+  FROM mvvm_login_evt evt \
+         LEFT OUTER JOIN merged_address_map mam \
+           ON (evt.client_addr = mam.addr \
+             AND evt.time_stamp >= mam.start_time \
+             AND evt.time_stamp < mam.end_time) \
+  WHERE NOT evt.local \
+    AND evt.time_stamp >= $P{startTime} \
+    AND evt.time_stamp < $P{endTime} \
+  ORDER BY evt.time_stamp DESC
+
 TOPLEFT.label=Timestamp
 TOPLMID.label=
 BOTLMID.label=
@@ -27,6 +37,7 @@ TOPRMID.label=User
 BOTRMID.label=Result
 TOPRIGHT.label=Client
 BOTRIGHT.label=
+
 TOPRMID.expr=$F{login}
 TOPLMID.expr=""
 TOPLEFT.expr=$F{time_stamp}
