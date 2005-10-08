@@ -20,13 +20,12 @@ import com.metavize.mvvm.tapi.SoloPipeSpec;
 import com.metavize.mvvm.tran.Direction;
 import com.metavize.mvvm.tran.TransformException;
 import com.metavize.mvvm.tran.TransformStartException;
+import com.metavize.mvvm.util.TransactionWork;
 import com.metavize.tran.token.TokenAdaptor;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 
 public class IDSTransformImpl extends AbstractTransform implements IDSTransform {
 
@@ -60,7 +59,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
     private final PipeSpec[] pipeSpecs;
 
     private List ruleList = Collections.synchronizedList(new ArrayList());
-	private static IDSDetectionEngine engine;
+    private static IDSDetectionEngine engine;
 
     public IDSTransformImpl() {
         handler = new EventHandler(this);
@@ -80,50 +79,48 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
         return getLogs(limit, false);
     }
 
-    public List<IDSLog> getLogs(int limit, boolean blockedOnly) {
-        List<IDSLog> l = new ArrayList<IDSLog>(limit);
+    public List<IDSLog> getLogs(final int limit, final boolean blockedOnly) {
+        final List<IDSLog> l = new ArrayList<IDSLog>(limit);
 
-        Session s = getTransformContext().openSession();
-        try {
-            Connection c = s.connection();
-            PreparedStatement ps;
-            if (blockedOnly)
-                ps = c.prepareStatement(EVENT_BLOCKED_QUERY);
-            else
-                ps = c.prepareStatement(EVENT_QUERY);
-            ps.setLong(1, getPolicy().getId());
-            ps.setInt(2, limit);
-            long l0 = System.currentTimeMillis();
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                long cd = rs.getTimestamp("create_date").getTime();
-                Date createDate = new Date(cd);
-                String message = rs.getString("message");
-                boolean blocked = rs.getBoolean("blocked");
-                String clientAddr = rs.getString("c_client_addr");
-                int clientPort = rs.getInt("c_client_port");
-                String serverAddr = rs.getString("s_server_addr");
-                int serverPort = rs.getInt("s_server_port");
-                boolean incoming = rs.getBoolean("incoming");
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(Session s) throws SQLException
+                {
+                    Connection c = s.connection();
+                    PreparedStatement ps;
+                    if (blockedOnly)
+                        ps = c.prepareStatement(EVENT_BLOCKED_QUERY);
+                    else
+                        ps = c.prepareStatement(EVENT_QUERY);
+                    ps.setLong(1, getPolicy().getId());
+                    ps.setInt(2, limit);
+                    long l0 = System.currentTimeMillis();
+                    ResultSet rs = ps.executeQuery();
+                    while (rs.next()) {
+                        long cd = rs.getTimestamp("create_date").getTime();
+                        Date createDate = new Date(cd);
+                        String message = rs.getString("message");
+                        boolean blocked = rs.getBoolean("blocked");
+                        String clientAddr = rs.getString("c_client_addr");
+                        int clientPort = rs.getInt("c_client_port");
+                        String serverAddr = rs.getString("s_server_addr");
+                        int serverPort = rs.getInt("s_server_port");
+                        boolean incoming = rs.getBoolean("incoming");
 
-                Direction d = incoming ? Direction.INCOMING : Direction.OUTGOING;
-                IDSLog rl = new IDSLog(createDate, message, blocked, clientAddr, clientPort, serverAddr, serverPort, d);
-                l.add(rl);
-            }
-            long l1 = System.currentTimeMillis();
-            log.debug("getAccessLogs() in: " + (l1 - l0));
+                        Direction d = incoming ? Direction.INCOMING : Direction.OUTGOING;
+                        IDSLog rl = new IDSLog(createDate, message, blocked, clientAddr, clientPort, serverAddr, serverPort, d);
+                        l.add(rl);
+                    }
+                    long l1 = System.currentTimeMillis();
+                    log.debug("getAccessLogs() in: " + (l1 - l0));
 
-        } catch (SQLException exn) {
-            log.warn("could not get events", exn);
-        } catch (HibernateException exn) {
-            log.warn("could not get events", exn);
-        } finally {
-            try {
-                s.close();
-            } catch (HibernateException exn) {
-                log.warn("could not close Hibernate session", exn);
-            }
-        }
+                    return true;
+                }
+
+                public Object getResult() { return null; }
+            };
+        getTransformContext().runTransaction(tw);
+
         return l;
     }
 
@@ -131,24 +128,21 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
         return this.settings;
     }
 
-    public void setIDSSettings(IDSSettings settings) {
-        Session s = getTransformContext().openSession();
-        try {
-            Transaction tx = s.beginTransaction();
-            s.saveOrUpdate(settings);
-            this.settings = settings;
-            engine.setSettings(settings);
-            tx.commit();
-        }catch(HibernateException e) {
-            log.warn("Could not set IDSSettings", e);
-        } finally {
-            try {
-                s.close();
-            }
-            catch(HibernateException e) {
-                log.warn("Could not close hibernate session",e);
-            }
-        }
+    public void setIDSSettings(final IDSSettings settings) {
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(Session s)
+                {
+                    s.saveOrUpdate(settings);
+                    IDSTransformImpl.this.settings = settings;
+                    engine.setSettings(settings);
+
+                    return true;
+                }
+
+                public Object getResult() { return null; }
+            };
+        getTransformContext().runTransaction(tw);
     }
 
     protected void initializeSettings() {
@@ -176,7 +170,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
         //setIDSSettings(settings);
         log.info(ruleList.size() + " rules loaded");
         //}
-        
+
         IDSStatisticManager.instance().stop();
     }
 
@@ -216,25 +210,20 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
     }
 
     private IDSSettings queryDBForSettings() {
-        Session s = getTransformContext().openSession();
-        try {
-            Transaction tx = s.beginTransaction();
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(Session s)
+                {
+                    Query q = s.createQuery("from IDSSettings ids where ids.tid = :tid");
+                    q.setParameter("tid", getTid());
+                    IDSTransformImpl.this.settings = (IDSSettings)q.uniqueResult();
+                    return true;
+                }
 
-            Query q = s.createQuery("from IDSSettings ids where ids.tid = :tid");
-            q.setParameter("tid", getTid());
-            this.settings = (IDSSettings)q.uniqueResult();
-            //engine.setSettings(settings);
-            tx.commit();
-        } catch (HibernateException exn) {
-            //logger.warn("Could not get Intrusion Detection settings", exn);
-        } finally {
-            try {
-                s.close();
-                return settings;
-            } catch (HibernateException exn) {
-                //logger.warn("could not close Hibernate session", exn);
-            }
-        }
+                public Object getResult() { return null; }
+            };
+        getTransformContext().runTransaction(tw);
+
         return null;
     }
 
@@ -247,8 +236,8 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
         IDSTest test = new IDSTest();
         if(!test.runTest())
           throw new TransformStartException("IDS Test failed"); // */
-		
-		try {
+
+        try {
             reconfigure();
         }
         catch (Exception e) {
@@ -258,17 +247,17 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
         IDSStatisticManager.instance().start();
     }
 
-	public static IDSDetectionEngine getEngine() {
-		if(engine == null) 
-			engine = new IDSDetectionEngine();
-		return engine;
-	}
-    
+    public static IDSDetectionEngine getEngine() {
+        if(engine == null)
+            engine = new IDSDetectionEngine();
+        return engine;
+    }
+
     protected void postStop() {
         IDSStatisticManager.instance().stop();
-	}
-	
-	public void reconfigure() throws TransformException {
+    }
+
+    public void reconfigure() throws TransformException {
 
         if(settings == null) {
             settings = queryDBForSettings();

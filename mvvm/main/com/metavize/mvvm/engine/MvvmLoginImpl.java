@@ -23,11 +23,10 @@ import com.metavize.mvvm.security.MvvmLogin;
 import com.metavize.mvvm.security.MvvmPrincipal;
 import com.metavize.mvvm.security.PasswordUtil;
 import com.metavize.mvvm.security.User;
+import com.metavize.mvvm.util.TransactionWork;
 import org.apache.log4j.Logger;
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 
 class MvvmLoginImpl implements MvvmLogin
 {
@@ -58,34 +57,31 @@ class MvvmLoginImpl implements MvvmLogin
 
     // MvvmLogin methods ------------------------------------------------------
 
-    public MvvmRemoteContext interactiveLogin(String login, String password,
+    public MvvmRemoteContext interactiveLogin(final String login,
+                                              String password,
                                               boolean force)
         throws FailedLoginException, MultipleLoginsException
     {
         HttpInvoker invoker = HttpInvoker.invoker();
         InetAddress clientAddr = invoker.getClientAddr();
 
-        User user = null;
-        Session s = MvvmContextFactory.context().openSession();
-        try {
-            Transaction tx = s.beginTransaction();
+        TransactionWork<User> tw = new TransactionWork<User>()
+            {
+                private User user = null;
 
-            Query q = s.createQuery("from User u where u.login = :login");
-            q.setString("login", login);
-            user = (User)q.uniqueResult();
-
-            tx.commit();
-        } catch (HibernateException exn) {
-            logger.warn("could not get User: " + login, exn);
-        } finally {
-            if (null != s) {
-                try {
-                    s.close();
-                } catch (HibernateException exn) {
-                    logger.warn("could not close session", exn);
+                public boolean doWork(Session s)
+                {
+                    Query q = s.createQuery("from User u where u.login = :login");
+                    q.setString("login", login);
+                    user = (User)q.uniqueResult();
+                    return true;
                 }
-            }
-        }
+
+                public User getResult() { return user; }
+            };
+        MvvmContextFactory.context().runTransaction(tw);
+
+        User user = tw.getResult();
 
         if (null == user) {
             logger.debug("no user found with login: " + login);

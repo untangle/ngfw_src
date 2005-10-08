@@ -25,12 +25,11 @@ import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.MvvmLocalContext;
 import com.metavize.mvvm.security.Tid;
 import com.metavize.mvvm.tran.TransformContext;
+import com.metavize.mvvm.util.TransactionWork;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
-import org.hibernate.HibernateException;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 
 public class HibernateAppender extends AppenderSkeleton
 {
@@ -188,38 +187,32 @@ public class HibernateAppender extends AppenderSkeleton
             }
         }
 
-        private void persist(List<LogEvent> l)
+        private void persist(final List<LogEvent> l)
         {
             logger.debug(tid + " persisting: " + l.size());
 
-            Session s;
+            TransactionWork tw = new TransactionWork()
+                {
+                    public boolean doWork(Session s)
+                    {
+                        for (LogEvent logEvent : l) {
+                            s.save(logEvent);
+                        }
+                        return true;
+                    }
+
+                    public Object getResult() { return null; }
+                };
+
             if (null == tctxRef) {
-                s = mctx.openSession();
+                mctx.runTransaction(tw);
             } else {
                 TransformContext tctx = tctxRef.get();
                 if (null == tctx) {
                     logger.warn("transform context no longer exists");
                     return;
                 } else {
-                    s = tctx.openSession();
-                }
-            }
-
-            try {
-                Transaction tx = s.beginTransaction();
-
-                for (LogEvent logEvent : l) {
-                    s.save(logEvent);
-                }
-
-                tx.commit();
-            } catch (Exception exn) {
-                logger.warn("could not persist log events: tctxRef[" + tctxRef + "]", exn);
-            } finally {
-                try {
-                    s.close();
-                } catch (HibernateException exn) {
-                    logger.warn("could not close Hibernate session" , exn);
+                    tctx.runTransaction(tw);
                 }
             }
         }

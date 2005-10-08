@@ -44,12 +44,11 @@ import com.metavize.mvvm.tran.Direction;
 import com.metavize.mvvm.tran.IPMaddr;
 import com.metavize.mvvm.tran.IPMaddrRule;
 import com.metavize.mvvm.tran.StringRule;
+import com.metavize.mvvm.util.TransactionWork;
 import com.metavize.tran.token.TokenAdaptor;
 import org.apache.log4j.Logger;
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 
 public class SpywareImpl extends AbstractTransform implements Spyware
 {
@@ -177,25 +176,20 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         return settings;
     }
 
-    public void setSpywareSettings(SpywareSettings settings)
+    public void setSpywareSettings(final SpywareSettings settings)
     {
-        Session s = getTransformContext().openSession();
-        try {
-            Transaction tx = s.beginTransaction();
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(Session s)
+                {
+                    s.saveOrUpdate(settings);
+                    SpywareImpl.this.settings = settings;
+                    return true;
+                }
 
-            s.saveOrUpdate(settings);
-            this.settings = settings;
-
-            tx.commit();
-        } catch (HibernateException exn) {
-            logger.warn("could not get SpywareSettings", exn);
-        } finally {
-            try {
-                s.close();
-            } catch (HibernateException exn) {
-                logger.warn("could not close hibernate session", exn);
-            }
-        }
+                public Object getResult() { return null; }
+            };
+        getTransformContext().runTransaction(tw);
 
         reconfigure();
     }
@@ -303,30 +297,25 @@ public class SpywareImpl extends AbstractTransform implements Spyware
 
     protected void postInit(String[] args)
     {
-        Session s = getTransformContext().openSession();
-        try {
-            Transaction tx = s.beginTransaction();
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(Session s)
+                {
+                    Query q = s.createQuery
+                        ("from SpywareSettings ss where ss.tid = :tid");
+                    q.setParameter("tid", getTid());
+                    SpywareImpl.this.settings = (SpywareSettings)q.uniqueResult();
 
-            Query q = s.createQuery
-                ("from SpywareSettings ss where ss.tid = :tid");
-            q.setParameter("tid", getTid());
-            this.settings = (SpywareSettings)q.uniqueResult();
+                    updateActiveX(SpywareImpl.this.settings);
+                    updateCookie(SpywareImpl.this.settings);
+                    updateSubnet(SpywareImpl.this.settings);
 
-            updateActiveX(this.settings);
-            updateCookie(this.settings);
-            updateSubnet(this.settings);
+                    return true;
+                }
 
-
-            tx.commit();
-        } catch (HibernateException exn) {
-            logger.warn("Could not get SpywareSettings", exn);
-        } finally {
-            try {
-                s.close();
-            } catch (HibernateException exn) {
-                logger.warn("could not close Hibernate session", exn);
-            }
-        }
+                public Object getResult() { return null; }
+            };
+        getTransformContext().runTransaction(tw);
 
         reconfigure();
     }
@@ -550,55 +539,49 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         return host.substring(i + 1);
     }
 
-    private List<SpywareLog> getEventLogs(String q, List<SpywareLog> l,
-                                          int limit)
+    private List<SpywareLog> getEventLogs(final String q,
+                                          final List<SpywareLog> l,
+                                          final int limit)
     {
-        long t0 = System.currentTimeMillis();
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(Session s) throws SQLException
+                {
+                    Connection c = s.connection();
+                    PreparedStatement ps = c.prepareStatement(q);
+                    ps.setLong(1, getPolicy().getId());
+                    ps.setInt(2, limit);
+                    long l0 = System.currentTimeMillis();
+                    ResultSet rs = ps.executeQuery();
+                    while (rs.next()) {
+                        long ts = rs.getTimestamp("time_stamp").getTime();
+                        Date createDate = new Date(ts);
+                        String type = rs.getString("type");
+                        String location = rs.getString("location");
+                        String ident = rs.getString("ident");
+                        boolean blocked = rs.getBoolean("blocked");
+                        String clientAddr = rs.getString("c_client_addr");
+                        int clientPort = rs.getInt("c_client_port");
+                        String serverAddr = rs.getString("s_server_addr");
+                        int serverPort = rs.getInt("s_server_port");
+                        boolean incoming = rs.getBoolean("incoming");
 
-        Session s = getTransformContext().openSession();
-        try {
-            Connection c = s.connection();
-            PreparedStatement ps = c.prepareStatement(q);
-            ps.setLong(1, getPolicy().getId());
-            ps.setInt(2, limit);
-            long l0 = System.currentTimeMillis();
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                long ts = rs.getTimestamp("time_stamp").getTime();
-                Date createDate = new Date(ts);
-                String type = rs.getString("type");
-                String location = rs.getString("location");
-                String ident = rs.getString("ident");
-                boolean blocked = rs.getBoolean("blocked");
-                String clientAddr = rs.getString("c_client_addr");
-                int clientPort = rs.getInt("c_client_port");
-                String serverAddr = rs.getString("s_server_addr");
-                int serverPort = rs.getInt("s_server_port");
-                boolean incoming = rs.getBoolean("incoming");
+                        Direction d = incoming ? Direction.INCOMING : Direction.OUTGOING;
 
-                Direction d = incoming ? Direction.INCOMING : Direction.OUTGOING;
+                        SpywareLog rl = new SpywareLog
+                            (createDate, type, location, ident, blocked, clientAddr,
+                             clientPort, serverAddr, serverPort, d);
 
-                SpywareLog rl = new SpywareLog
-                    (createDate, type, location, ident, blocked, clientAddr,
-                     clientPort, serverAddr, serverPort, d);
+                        l.add(rl);
+                    }
+                    long l1 = System.currentTimeMillis();
+                    logger.debug("getActiveXLogs() in: " + (l1 - l0));
+                    return true;
+                }
 
-                l.add(rl);
-            }
-            long l1 = System.currentTimeMillis();
-            logger.debug("getActiveXLogs() in: " + (l1 - l0));
-        } catch (SQLException exn) {
-            logger.warn("could not get events", exn);
-        } catch (HibernateException exn) {
-            logger.warn("could not get events", exn);
-        } finally {
-            try {
-                s.close();
-            } catch (HibernateException exn) {
-                logger.warn("could not close Hibernate session", exn);
-            }
-        }
-
-        long t1 = System.currentTimeMillis();
+                public Object getResult() { return null; }
+            };
+        getTransformContext().runTransaction(tw);
 
         return l;
     }

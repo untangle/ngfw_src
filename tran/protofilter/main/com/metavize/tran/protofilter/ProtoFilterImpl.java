@@ -28,11 +28,10 @@ import com.metavize.mvvm.tapi.SoloPipeSpec;
 import com.metavize.mvvm.tran.Direction;
 import com.metavize.mvvm.tran.TransformException;
 import com.metavize.mvvm.tran.TransformStartException;
+import com.metavize.mvvm.util.TransactionWork;
 import org.apache.log4j.Logger;
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 
 public class ProtoFilterImpl extends AbstractTransform implements ProtoFilter
 {
@@ -76,25 +75,20 @@ public class ProtoFilterImpl extends AbstractTransform implements ProtoFilter
         return this.settings;
     }
 
-    public void setProtoFilterSettings(ProtoFilterSettings settings)
+    public void setProtoFilterSettings(final ProtoFilterSettings settings)
     {
-        Session s = getTransformContext().openSession();
-        try {
-            Transaction tx = s.beginTransaction();
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(Session s)
+                {
+                    s.saveOrUpdate(settings);
+                    ProtoFilterImpl.this.settings = settings;
+                    return true;
+                }
 
-            s.saveOrUpdate(settings);
-            this.settings = settings;
-
-            tx.commit();
-        } catch (HibernateException exn) {
-            logger.warn("could not set ProtoFilterSettings", exn);
-        } finally {
-            try {
-                s.close();
-            } catch (HibernateException exn) {
-                logger.warn("could not close hibernate session", exn);
-            }
-        }
+                public Object getResult() { return null; }
+            };
+        getTransformContext().runTransaction(tw);
 
         try {
             reconfigure();
@@ -110,54 +104,52 @@ public class ProtoFilterImpl extends AbstractTransform implements ProtoFilter
         return getLogs(limit, false);
     }
 
-    public List<ProtoFilterLog> getLogs(int limit, boolean blockedOnly)
+    public List<ProtoFilterLog> getLogs(final int limit,
+                                        final boolean blockedOnly)
     {
-        List<ProtoFilterLog> l = new ArrayList<ProtoFilterLog>(limit);
+        final List<ProtoFilterLog> l = new ArrayList<ProtoFilterLog>(limit);
 
-        Session s = getTransformContext().openSession();
-        try {
-            Connection c = s.connection();
-            PreparedStatement ps;
-            if (blockedOnly)
-                ps = c.prepareStatement(EVENT_BLOCKED_QUERY);
-            else
-                ps = c.prepareStatement(EVENT_QUERY);
-            ps.setLong(1, getPolicy().getId());
-            ps.setInt(2, limit);
-            long l0 = System.currentTimeMillis();
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                long cd = rs.getTimestamp("create_date").getTime();
-                Date createDate = new Date(cd);
-                String protocol = rs.getString("protocol");
-                boolean blocked = rs.getBoolean("blocked");
-                String clientAddr = rs.getString("c_client_addr");
-                int clientPort = rs.getInt("c_client_port");
-                String serverAddr = rs.getString("s_server_addr");
-                int serverPort = rs.getInt("s_server_port");
-                boolean incoming = rs.getBoolean("incoming");
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(Session s) throws SQLException
+                {
+                    Connection c = s.connection();
+                    PreparedStatement ps;
+                    if (blockedOnly)
+                        ps = c.prepareStatement(EVENT_BLOCKED_QUERY);
+                    else
+                        ps = c.prepareStatement(EVENT_QUERY);
+                    ps.setLong(1, getPolicy().getId());
+                    ps.setInt(2, limit);
+                    long l0 = System.currentTimeMillis();
+                    ResultSet rs = ps.executeQuery();
+                    while (rs.next()) {
+                        long cd = rs.getTimestamp("create_date").getTime();
+                        Date createDate = new Date(cd);
+                        String protocol = rs.getString("protocol");
+                        boolean blocked = rs.getBoolean("blocked");
+                        String clientAddr = rs.getString("c_client_addr");
+                        int clientPort = rs.getInt("c_client_port");
+                        String serverAddr = rs.getString("s_server_addr");
+                        int serverPort = rs.getInt("s_server_port");
+                        boolean incoming = rs.getBoolean("incoming");
 
-                Direction d = incoming ? Direction.INCOMING : Direction.OUTGOING;
+                        Direction d = incoming ? Direction.INCOMING : Direction.OUTGOING;
 
-                ProtoFilterLog rl = new ProtoFilterLog
-                    (createDate, protocol, blocked, clientAddr, clientPort,
-                     serverAddr, serverPort, d);
+                        ProtoFilterLog rl = new ProtoFilterLog
+                            (createDate, protocol, blocked, clientAddr, clientPort,
+                             serverAddr, serverPort, d);
 
-                l.add(rl);
-            }
-            long l1 = System.currentTimeMillis();
-            logger.debug("getAccessLogs() in: " + (l1 - l0));
-        } catch (SQLException exn) {
-            logger.warn("could not get events", exn);
-        } catch (HibernateException exn) {
-            logger.warn("could not get events", exn);
-        } finally {
-            try {
-                s.close();
-            } catch (HibernateException exn) {
-                logger.warn("could not close Hibernate session", exn);
-            }
-        }
+                        l.add(rl);
+                    }
+                    long l1 = System.currentTimeMillis();
+                    logger.debug("getAccessLogs() in: " + (l1 - l0));
+                    return true;
+                }
+
+                public Object getResult() { return null; }
+            };
+        getTransformContext().runTransaction(tw);
 
         return l;
     }
@@ -184,26 +176,22 @@ public class ProtoFilterImpl extends AbstractTransform implements ProtoFilter
 
     protected void postInit(String[] args)
     {
-        Session s = getTransformContext().openSession();
-        try {
-            Transaction tx = s.beginTransaction();
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(Session s)
+                {
+                    Query q = s.createQuery("from ProtoFilterSettings hbs where hbs.tid = :tid");
+                    q.setParameter("tid", getTid());
+                    ProtoFilterImpl.this.settings = (ProtoFilterSettings)q.uniqueResult();
 
-            Query q = s.createQuery("from ProtoFilterSettings hbs where hbs.tid = :tid");
-            q.setParameter("tid", getTid());
-            this.settings = (ProtoFilterSettings)q.uniqueResult();
+                    updateToCurrent(ProtoFilterImpl.this.settings);
 
-            updateToCurrent(this.settings);
+                    return true;
+                }
 
-            tx.commit();
-        } catch (HibernateException exn) {
-            logger.warn("Could not get HttpBlockerSettings", exn);
-        } finally {
-            try {
-                s.close();
-            } catch (HibernateException exn) {
-                logger.warn("could not close Hibernate session", exn);
-            }
-        }
+                public Object getResult() { return null; }
+            };
+        getTransformContext().runTransaction(tw);
     }
 
     protected void preStart() throws TransformStartException

@@ -18,11 +18,10 @@ import com.metavize.mvvm.tapi.PipeSpec;
 import com.metavize.mvvm.tapi.SoloPipeSpec;
 import com.metavize.mvvm.tran.TransformException;
 import com.metavize.mvvm.tran.TransformStartException;
+import com.metavize.mvvm.util.TransactionWork;
 import org.apache.log4j.Logger;
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 
 public class SigmaImpl extends AbstractTransform implements Sigma
 {
@@ -39,25 +38,20 @@ public class SigmaImpl extends AbstractTransform implements Sigma
         return this.settings;
     }
 
-    public void setSigmaSettings(SigmaSettings settings)
+    public void setSigmaSettings(final SigmaSettings settings)
     {
-        Session s = getTransformContext().openSession();
-        try {
-            Transaction tx = s.beginTransaction();
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(Session s)
+                {
+                    s.saveOrUpdate(settings);
+                    SigmaImpl.this.settings = settings;
+                    return true;
+                }
 
-            s.saveOrUpdate(settings);
-            this.settings = settings;
-
-            tx.commit();
-        } catch (HibernateException exn) {
-            logger.warn("could not get SigmaSettings", exn);
-        } finally {
-            try {
-                s.close();
-            } catch (HibernateException exn) {
-                logger.warn("could not close hibernate sessino", exn);
-            }
-        }
+                public Object getResult() { return null; }
+            };
+        getTransformContext().runTransaction(tw);
 
         try {
             reconfigure();
@@ -83,24 +77,19 @@ public class SigmaImpl extends AbstractTransform implements Sigma
 
     protected void postInit(String[] args)
     {
-        Session s = getTransformContext().openSession();
-        try {
-            Transaction tx = s.beginTransaction();
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(Session s)
+                {
+                    Query q = s.createQuery("from SigmaSettings hbs where hbs.tid = :tid");
+                    q.setParameter("tid", getTid());
+                    SigmaImpl.this.settings = (SigmaSettings)q.uniqueResult();
+                    return true;
+                }
 
-            Query q = s.createQuery("from SigmaSettings hbs where hbs.tid = :tid");
-            q.setParameter("tid", getTid());
-            this.settings = (SigmaSettings)q.uniqueResult();
-
-            tx.commit();
-        } catch (HibernateException exn) {
-            logger.warn("Could not get SigmaSettings", exn);
-        } finally {
-            try {
-                s.close();
-            } catch (HibernateException exn) {
-                logger.warn("could not close Hibernate session", exn);
-            }
-        }
+                public Object getResult() { return null; }
+            };
+        getTransformContext().runTransaction(tw);
     }
 
     protected void preStart() throws TransformStartException

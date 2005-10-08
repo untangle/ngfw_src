@@ -23,8 +23,8 @@ import com.metavize.mvvm.security.MvvmLogin;
 import com.metavize.mvvm.tapi.MPipeManager;
 import com.metavize.mvvm.tapi.PipelineFoundry;
 import com.metavize.mvvm.tran.TransformManager;
+import com.metavize.mvvm.util.TransactionWork;
 import org.apache.log4j.Logger;
-import org.hibernate.Session;
 
 /**
  * Provides an interface to get all local MVVM components from an MVVM
@@ -186,14 +186,7 @@ public interface MvvmLocalContext
      */
     MvvmLogin mvvmLogin();
 
-    /**
-     * Get a new Hibernate <code>Session</code>. This is session is
-     * only good for persisting classes loaded by the MVVM's
-     * ClassLoader.
-     *
-     * @return a new Hibernate <code>Session</code>.
-     */
-    Session openSession();
+    boolean runTransaction(TransactionWork tw);
 
     Thread newThread(Runnable runnable);
 

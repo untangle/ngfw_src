@@ -14,11 +14,10 @@ import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.CasingPipeSpec;
 import com.metavize.mvvm.tapi.Fitting;
 import com.metavize.mvvm.tapi.PipeSpec;
+import com.metavize.mvvm.util.TransactionWork;
 import org.apache.log4j.Logger;
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
 import org.hibernate.Query;
+import org.hibernate.Session;
 
 public class FtpTransformImpl extends AbstractTransform
     implements FtpTransform
@@ -48,26 +47,20 @@ public class FtpTransformImpl extends AbstractTransform
         return settings;
     }
 
-    public void setFtpSettings(FtpSettings settings)
+    public void setFtpSettings(final FtpSettings settings)
     {
-        Session s = getTransformContext().openSession();
-        try {
-            Transaction tx = s.beginTransaction();
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(Session s)
+                {
+                    s.saveOrUpdate(settings);
+                    FtpTransformImpl.this.settings = settings;
+                    return true;
+                }
 
-            s.saveOrUpdate(settings);
-            this.settings = settings;
-
-            tx.commit();
-        } catch (HibernateException exn) {
-            logger.warn("could not get FtpSettings", exn);
-        } finally {
-            try {
-                s.close();
-
-            } catch (HibernateException exn) {
-                logger.warn("could not close hibernate session", exn);
-            }
-        }
+                public Object getResult() { return null; }
+            };
+        getTransformContext().runTransaction(tw);
 
         reconfigure();
     }
@@ -86,30 +79,25 @@ public class FtpTransformImpl extends AbstractTransform
 
     protected void postInit(String[] args)
     {
-        Session s = getTransformContext().openSession();
-        try {
-            Transaction tx = s.beginTransaction();
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(Session s)
+                {
+                    Query q = s.createQuery("from FtpSettings fs");
+                    settings = (FtpSettings)q.uniqueResult();
 
-            Query q = s.createQuery("from FtpSettings fs");
-            settings = (FtpSettings)q.uniqueResult();
+                    if (null == settings) {
+                        settings = new FtpSettings();
+                        s.save(settings);
+                    }
 
-            if (null == settings) {
-                settings = new FtpSettings();
-                s.save(settings);
-            }
+                    reconfigure();
+                    return true;
+                }
 
-            reconfigure();
-
-            tx.commit();
-        } catch (HibernateException exn) {
-            logger.warn("Could not get FtpSettings", exn);
-        } finally {
-            try {
-                s.close();
-            } catch (HibernateException exn) {
-                logger.warn("could not close Hibernate session", exn);
-            }
-        }
+                public Object getResult() { return null; }
+            };
+        getTransformContext().runTransaction(tw);
     }
 
     // AbstractTransform methods ----------------------------------------------

@@ -12,11 +12,10 @@ package com.metavize.tran.reporting;
 
 import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.PipeSpec;
+import com.metavize.mvvm.util.TransactionWork;
 import org.apache.log4j.Logger;
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 
 public class ReportingTransformImpl extends AbstractTransform implements ReportingTransform
 {
@@ -27,25 +26,20 @@ public class ReportingTransformImpl extends AbstractTransform implements Reporti
 
     public ReportingTransformImpl() {}
 
-    public void setReportingSettings(ReportingSettings settings)
+    public void setReportingSettings(final ReportingSettings settings)
     {
-        Session s = getTransformContext().openSession();
-        try {
-            Transaction tx = s.beginTransaction();
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(Session s)
+                {
+                    s.saveOrUpdate(settings);
+                    ReportingTransformImpl.this.settings = settings;
+                    return true;
+                }
 
-            s.saveOrUpdate(settings);
-            this.settings = settings;
-
-            tx.commit();
-        } catch (HibernateException exn) {
-            logger.warn("could not save ReportingSettings", exn);
-        } finally {
-            try {
-                s.close();
-            } catch (HibernateException exn) {
-                logger.warn("could not close session", exn);
-            }
-        }
+                public Object getResult() { return null; }
+            };
+        getTransformContext().runTransaction(tw);
     }
 
     public ReportingSettings getReportingSettings()
@@ -61,25 +55,20 @@ public class ReportingTransformImpl extends AbstractTransform implements Reporti
 
     protected void postInit(String[] args)
     {
-        Session s = getTransformContext().openSession();
-        try {
-            Transaction tx = s.beginTransaction();
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(Session s)
+                {
+                    Query q = s.createQuery
+                        ("from ReportingSettings ts where ts.tid = :tid");
+                    q.setParameter("tid", getTid());
+                    settings = (ReportingSettings)q.uniqueResult();
+                    return true;
+                }
 
-            Query q = s.createQuery
-                ("from ReportingSettings ts where ts.tid = :tid");
-            q.setParameter("tid", getTid());
-            settings = (ReportingSettings)q.uniqueResult();
-
-            tx.commit();
-        } catch (HibernateException exn) {
-            logger.warn("could not get ReportingSettings", exn);
-        } finally {
-            try {
-                s.close();
-            } catch (HibernateException exn) {
-                logger.warn("Could not close settings", exn);
-            }
-        }
+                public Object getResult() { return null; }
+            };
+        getTransformContext().runTransaction(tw);
     }
 
     protected void preStart()

@@ -17,11 +17,10 @@ import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.mvvm.logging.LoggingManager;
 import com.metavize.mvvm.security.Tid;
-import org.hibernate.HibernateException;
+import com.metavize.mvvm.util.TransactionWork;
+import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
-import org.apache.log4j.Logger;
 
 class LoggingManagerImpl implements LoggingManager
 {
@@ -45,32 +44,33 @@ class LoggingManagerImpl implements LoggingManager
         return LOGGING_MANAGER;
     }
 
-    public LogEvent[] userLogs(Tid tid)
+    public LogEvent[] userLogs(final Tid tid)
     {
         LogEvent[] logs = null;
 
-        Session s = MvvmContextFactory.context().openSession();
-        try {
-            Transaction tx = s.beginTransaction();
+        TransactionWork<LogEvent[]> tw = new TransactionWork<LogEvent[]>()
+            {
+                private LogEvent[] logs = null;
 
-            Query q = s.createQuery("from LogEvent le where le.tid = :tid");
-            q.setParameter("tid", tid);
-            List result = q.list();
+                public boolean doWork(Session s)
+                {
+                    Query q = s.createQuery("from LogEvent le where le.tid = :tid");
+                    q.setParameter("tid", tid);
+                    List result = q.list();
 
-            logs = (LogEvent[])result.toArray(LOG_PROTO);
+                    logs = (LogEvent[])result.toArray(LOG_PROTO);
 
-            tx.commit();
-        } catch (HibernateException exn) {
-            logger.warn("could not get LogEvents", exn);
-        } finally {
-            try {
-                s.close();
-            } catch (HibernateException exn) {
-                logger.warn("could not close session", exn);
-            }
-        }
+                    return true;
+                }
 
-        return logs;
+                public LogEvent[] getResult()
+                {
+                    return logs;
+                }
+            };
+        MvvmContextFactory.context().runTransaction(tw);
+
+        return tw.getResult();
     }
 
     public String[] userLogStrings(Tid tid)

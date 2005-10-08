@@ -16,11 +16,10 @@ import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.CasingPipeSpec;
 import com.metavize.mvvm.tapi.Fitting;
 import com.metavize.mvvm.tapi.PipeSpec;
+import com.metavize.mvvm.util.TransactionWork;
 import org.apache.log4j.Logger;
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
 import org.hibernate.Query;
+import org.hibernate.Session;
 
 public class HttpTransformImpl extends AbstractTransform
     implements HttpTransform
@@ -46,26 +45,20 @@ public class HttpTransformImpl extends AbstractTransform
         return settings;
     }
 
-    public void setHttpSettings(HttpSettings settings)
+    public void setHttpSettings(final HttpSettings settings)
     {
-        Session s = getTransformContext().openSession();
-        try {
-            Transaction tx = s.beginTransaction();
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(Session s)
+                {
+                    s.saveOrUpdate(settings);
+                    HttpTransformImpl.this.settings = settings;
+                    return true;
+                }
 
-            s.saveOrUpdate(settings);
-            this.settings = settings;
-
-            tx.commit();
-        } catch (HibernateException exn) {
-            logger.warn("could not get HttpSettings", exn);
-        } finally {
-            try {
-                s.close();
-
-            } catch (HibernateException exn) {
-                logger.warn("could not close hibernate session", exn);
-            }
-        }
+                public Object getResult() { return null; }
+            };
+        getTransformContext().runTransaction(tw);
 
         reconfigure();
     }
@@ -84,30 +77,25 @@ public class HttpTransformImpl extends AbstractTransform
 
     protected void postInit(String[] args)
     {
-        Session s = getTransformContext().openSession();
-        try {
-            Transaction tx = s.beginTransaction();
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(Session s)
+                {
+                    Query q = s.createQuery("from HttpSettings hbs");
+                    settings = (HttpSettings)q.uniqueResult();
 
-            Query q = s.createQuery("from HttpSettings hbs");
-            settings = (HttpSettings)q.uniqueResult();
+                    if (null == settings) {
+                        settings = new HttpSettings();
+                        s.save(settings);
+                    }
 
-            if (null == settings) {
-                settings = new HttpSettings();
-                s.save(settings);
-            }
+                    reconfigure();
+                    return true;
+                }
 
-            reconfigure();
-
-            tx.commit();
-        } catch (HibernateException exn) {
-            logger.warn("Could not get HttpSettings", exn);
-        } finally {
-            try {
-                s.close();
-            } catch (HibernateException exn) {
-                logger.warn("could not close Hibernate session", exn);
-            }
-        }
+                public Object getResult() { return null; }
+            };
+        getTransformContext().runTransaction(tw);
     }
 
     // AbstractTransform methods ----------------------------------------------

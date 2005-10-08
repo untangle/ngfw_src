@@ -21,9 +21,10 @@ import com.metavize.mvvm.client.MvvmRemoteContext;
 import com.metavize.mvvm.tapi.MPipeManager;
 import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.tran.TransformManager;
+import com.metavize.mvvm.util.TransactionRunner;
+import com.metavize.mvvm.util.TransactionWork;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
 public class MvvmContextImpl extends MvvmContextBase
@@ -37,6 +38,7 @@ public class MvvmContextImpl extends MvvmContextBase
     private static final String ARGON_FAKE_KEY;
 
     private final SessionFactory sessionFactory;
+    private final TransactionRunner transactionRunner;
     private final Logger logger = Logger.getLogger(MvvmContextImpl.class);
     private final Logger eventLogger = Logger.getLogger("eventlog");
 
@@ -61,6 +63,7 @@ public class MvvmContextImpl extends MvvmContextBase
     private MvvmContextImpl()
     {
         sessionFactory = Util.makeSessionFactory(getClass().getClassLoader());
+        transactionRunner = new TransactionRunner(sessionFactory);
         state = MvvmState.LOADED;
     }
 
@@ -150,17 +153,9 @@ public class MvvmContextImpl extends MvvmContextBase
 
     // service methods --------------------------------------------------------
 
-    public Session openSession()
+    public boolean runTransaction(TransactionWork tw)
     {
-        Session s = null;
-
-        try {
-            s = sessionFactory.openSession();
-        } catch (HibernateException exn) {
-            logger.warn("Could not create Hibernate Session", exn);
-        }
-
-        return s;
+        return transactionRunner.runTransaction(tw);
     }
 
     public Thread newThread(final Runnable runnable)

@@ -38,11 +38,10 @@ import com.metavize.mvvm.Period;
 import com.metavize.mvvm.ToolboxManager;
 import com.metavize.mvvm.UpgradeSettings;
 import com.metavize.mvvm.security.Tid;
+import com.metavize.mvvm.util.TransactionWork;
 import org.apache.log4j.Logger;
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 
 class ToolboxManagerImpl implements ToolboxManager
 {
@@ -276,61 +275,50 @@ class ToolboxManagerImpl implements ToolboxManager
         }
     }
 
-    public void setUpgradeSettings(UpgradeSettings us)
+    public void setUpgradeSettings(final UpgradeSettings us)
     {
-        Session s = MvvmContextFactory.context().openSession();
-        try {
-            Transaction tx = s.beginTransaction();
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(Session s)
+                {
+                    s.saveOrUpdate(us);
+                    return true;
+                }
 
-            s.saveOrUpdate(us);
-
-            tx.commit();
-        } catch (HibernateException exn) {
-            logger.warn("could not save UpgradeSettings", exn);
-        } finally {
-            try {
-                s.close();
-            } catch (HibernateException exn) {
-                logger.warn("could not close Session", exn); // XXX TransExn
-            }
-        }
+                public Object getResult() { return null; }
+            };
+        MvvmContextFactory.context().runTransaction(tw);
 
         updateDaemon.reschedule(us);
     }
 
     public UpgradeSettings getUpgradeSettings()
     {
-        UpgradeSettings us = null;
+        TransactionWork<UpgradeSettings> tw = new TransactionWork<UpgradeSettings>()
+            {
+                private UpgradeSettings us;
 
-        org.hibernate.Session s = MvvmContextFactory.context()
-            .openSession();
-        try {
-            Transaction tx = s.beginTransaction();
+                public boolean doWork(org.hibernate.Session s)
+                {
+                    Query q = s.createQuery("from UpgradeSettings us");
+                    us = (UpgradeSettings)q.uniqueResult();
 
-            Query q = s.createQuery("from UpgradeSettings us");
-            us = (UpgradeSettings)q.uniqueResult();
+                    if (null == us) {
+                        logger.info("creating new UpgradeSettings");
+                        // pick a random time.
+                        Random rand = new Random();
+                        Period period = new Period(rand.nextInt(5), rand.nextInt(60), true);
+                        us = new UpgradeSettings(period);
+                        s.save(us);
+                    }
+                    return true;
+                }
 
-            if (null == us) {
-                logger.info("creating new UpgradeSettings");
-                // pick a random time.
-                Random rand = new Random();
-                Period period = new Period(rand.nextInt(5), rand.nextInt(60), true);
-                us = new UpgradeSettings(period);
-                s.save(us);
-            }
+                public UpgradeSettings getResult() { return us; }
+            };
+        MvvmContextFactory.context().runTransaction(tw);
 
-            tx.commit();
-        } catch (HibernateException exn) {
-            logger.warn("could not get UpgradeSettings", exn);
-        } finally {
-            try {
-                s.close();
-            } catch (HibernateException exn) {
-                logger.warn("could not close Session", exn);
-            }
-        }
-
-        return us;
+        return tw.getResult();
     }
 
     // package private methods ------------------------------------------------

@@ -15,14 +15,13 @@ import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.CasingPipeSpec;
 import com.metavize.mvvm.tapi.Fitting;
 import com.metavize.mvvm.tapi.PipeSpec;
+import com.metavize.mvvm.util.TransactionWork;
 import com.metavize.tran.mail.impl.imap.ImapCasingFactory;
 import com.metavize.tran.mail.impl.smtp.SmtpCasingFactory;
 import com.metavize.tran.mail.papi.*;
 import org.apache.log4j.Logger;
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 
 public class MailTransformImpl extends AbstractTransform
     implements MailTransform, MailExport
@@ -60,26 +59,20 @@ public class MailTransformImpl extends AbstractTransform
         return settings;
     }
 
-    public void setMailTransformSettings(MailTransformSettings settings)
+    public void setMailTransformSettings(final MailTransformSettings settings)
     {
-        Session s = getTransformContext().openSession();
-        try {
-            Transaction tx = s.beginTransaction();
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(Session s)
+                {
+                    s.saveOrUpdate(settings);
+                    MailTransformImpl.this.settings = settings;
+                    return true;
+                }
 
-            s.saveOrUpdate(settings);
-            this.settings = settings;
-
-            tx.commit();
-        } catch (HibernateException exn) {
-            logger.warn("could not get MailTransformSettings", exn);
-        } finally {
-            try {
-                s.close();
-
-            } catch (HibernateException exn) {
-                logger.warn("could not close hibernate session", exn);
-            }
-        }
+                public Object getResult() { return null; }
+            };
+        getTransformContext().runTransaction(tw);
 
         reconfigure();
     }
@@ -110,41 +103,36 @@ public class MailTransformImpl extends AbstractTransform
 
     protected void postInit(String[] args)
     {
-        Session s = getTransformContext().openSession();
-        try {
-            Transaction tx = s.beginTransaction();
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(Session s)
+                {
+                    Query q = s.createQuery("from MailTransformSettings ms");
+                    settings = (MailTransformSettings)q.uniqueResult();
 
-            Query q = s.createQuery("from MailTransformSettings ms");
-            settings = (MailTransformSettings)q.uniqueResult();
+                    if (null == settings) {
+                        settings = new MailTransformSettings();
+                        //Set the defaults
+                        settings.setSmtpEnabled(true);
+                        settings.setPopEnabled(true);
+                        settings.setImapEnabled(true);
+                        settings.setSmtpInboundTimeout(1000*30);
+                        settings.setSmtpOutboundTimeout(1000*30);
+                        settings.setPopInboundTimeout(1000*30);
+                        settings.setPopOutboundTimeout(1000*30);
+                        settings.setImapInboundTimeout(1000*30);
+                        settings.setImapOutboundTimeout(1000*30);
 
-            if (null == settings) {
-                settings = new MailTransformSettings();
-                //Set the defaults
-                settings.setSmtpEnabled(true);
-                settings.setPopEnabled(true);
-                settings.setImapEnabled(true);
-                settings.setSmtpInboundTimeout(1000*30);
-                settings.setSmtpOutboundTimeout(1000*30);
-                settings.setPopInboundTimeout(1000*30);
-                settings.setPopOutboundTimeout(1000*30);
-                settings.setImapInboundTimeout(1000*30);
-                settings.setImapOutboundTimeout(1000*30);
+                        s.save(settings);
+                    }
 
-                s.save(settings);
-            }
+                    reconfigure();
+                    return true;
+                }
 
-            reconfigure();
-
-            tx.commit();
-        } catch (HibernateException exn) {
-            logger.warn("Could not get MailTransformSettings", exn);
-        } finally {
-            try {
-                s.close();
-            } catch (HibernateException exn) {
-                logger.warn("could not close Hibernate session", exn);
-            }
-        }
+                public Object getResult() { return null; }
+            };
+        getTransformContext().runTransaction(tw);
     }
 
     // AbstractTransform methods ----------------------------------------------

@@ -21,11 +21,10 @@ import com.metavize.mvvm.policy.PolicyManager;
 import com.metavize.mvvm.policy.SystemPolicyRule;
 import com.metavize.mvvm.policy.UserPolicyRule;
 import com.metavize.mvvm.policy.UserPolicyRuleSet;
+import com.metavize.mvvm.util.TransactionWork;
 import org.apache.log4j.Logger;
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 
 class PolicyManagerImpl implements PolicyManagerPriv
 {
@@ -49,55 +48,51 @@ class PolicyManagerImpl implements PolicyManagerPriv
     private PolicyManagerImpl() {
         allPolicies = new ArrayList<Policy>();
 
-        Session s = MvvmContextFactory.context().openSession();
-        try {
-            Transaction tx = s.beginTransaction();
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(Session s)
+                {
+                    Query q = s.createQuery("from Policy p order by id asc");
+                    List results = q.list();
 
-            Query q = s.createQuery("from Policy p order by id asc");
-            List results = q.list();
-
-            if (results.size() == 0) {
-                logger.info("Empty policy table.  Creating default policy.");
-                defaultPolicy = new Policy(true, INITIAL_POLICY_NAME, INITIAL_POLICY_NOTES);
-                allPolicies.add(defaultPolicy);
-                s.save(defaultPolicy);
-            } else {
-                for (Object o : results) {
-                    Policy policy = (Policy)o;
-                    if (policy.isDefault()) {
-                        assert allPolicies.size() == 0;
-                        assert defaultPolicy == null;
-                        defaultPolicy = policy;
+                    if (results.size() == 0) {
+                        logger.info("Empty policy table.  Creating default policy.");
+                        defaultPolicy = new Policy(true, INITIAL_POLICY_NAME, INITIAL_POLICY_NOTES);
+                        allPolicies.add(defaultPolicy);
+                        s.save(defaultPolicy);
+                    } else {
+                        for (Object o : results) {
+                            Policy policy = (Policy)o;
+                            if (policy.isDefault()) {
+                                assert allPolicies.size() == 0;
+                                assert defaultPolicy == null;
+                                defaultPolicy = policy;
+                            }
+                            allPolicies.add(policy);
+                        }
+                        assert defaultPolicy != null;
                     }
-                    allPolicies.add(policy);
-                }
-                assert defaultPolicy != null;
-            }
 
-            q = s.createQuery("from UserPolicyRuleSet uprs");
-            results = q.list();
-            if (results.size() == 0) {
-                logger.info("Empty User Policy Rule Set.  Creating empty one.");
-                UserPolicyRuleSet uprs = new UserPolicyRuleSet();
-                s.save(uprs);
-            } else if (results.size() > 1) {
-                logger.fatal("Found " + results.size() + " user policy rule sets! Deleting all but first");
-                for (int i = 1; i < results.size(); i++) {
-                    UserPolicyRuleSet uprs = (UserPolicyRuleSet) results.get(i);
-                    s.delete(uprs);
+                    q = s.createQuery("from UserPolicyRuleSet uprs");
+                    results = q.list();
+                    if (results.size() == 0) {
+                        logger.info("Empty User Policy Rule Set.  Creating empty one.");
+                        UserPolicyRuleSet uprs = new UserPolicyRuleSet();
+                        s.save(uprs);
+                    } else if (results.size() > 1) {
+                        logger.fatal("Found " + results.size() + " user policy rule sets! Deleting all but first");
+                        for (int i = 1; i < results.size(); i++) {
+                            UserPolicyRuleSet uprs = (UserPolicyRuleSet) results.get(i);
+                            s.delete(uprs);
+                        }
+                    }
+                    return true;
                 }
-            }
-            tx.commit();
-        } catch (HibernateException exn) {
-            logger.fatal("could not get Policies", exn);
-            // Now what? XXX
-        } finally {
-            try {
-                s.close();
-            } catch (HibernateException exn) {
-                logger.warn("could not close session", exn);
-            }
-        }
+
+                public Object getResult() { return null; }
+            };
+
+        MvvmContextFactory.context().runTransaction(tw);
 
         logger.info("Initialized PolicyManager");
     }
@@ -139,96 +134,90 @@ class PolicyManagerImpl implements PolicyManagerPriv
                     throw new PolicyException("A policy named " + name + " already exists");
             }
 
-            Policy p = new Policy(false, name, notes);
+            final Policy p = new Policy(false, name, notes);
 
-            Session s = MvvmContextFactory.context().openSession();
-            try {
-                Transaction tx = s.beginTransaction();
+            TransactionWork tw = new TransactionWork()
+                {
+                    public boolean doWork(Session s)
+                    {
+                        s.save(p);
+                        return true;
+                    }
 
-                s.save(p);
-
-                tx.commit();
-            } catch (HibernateException exn) {
-                logger.error("could not save Policy", exn);
-            } finally {
-                try {
-                    s.close();
-                } catch (HibernateException exn) {
-                    logger.warn("could not close session", exn); // XXX TransExn
-                }
-            }
+                    public Object getResult()
+                    {
+                        return null;
+                    }
+                };
+            MvvmContextFactory.context().runTransaction(tw);
 
             logger.debug("Added new policy, id: " + p.getId() + ", name: " + p.getName());
             allPolicies.add(p);
         }
     }
 
-    public void removePolicy(Policy p)
-        throws PolicyException
+    public void removePolicy(final Policy p) throws PolicyException
     {
-        logger.debug("Trying to remove policy, id: " + p.getId() + ", name: " + p.getName());
+        logger.debug("Trying to remove policy, id: " + p.getId()
+                     + ", name: " + p.getName());
         synchronized(policyRuleLock) {
-            if (p == null)
+            if (p == null) {
                 throw new PolicyException("Must specify a policy to remove");
-            if (p.isDefault())
+            } else if (p.isDefault()) {
                 throw new PolicyException("Cannot remove the default policy");
-            if (!allPolicies.contains(p))
-                throw new PolicyException("Policy " + p.getName() + " not found in all policies");
-            if (isInUse(p))
-                throw new PolicyException("Policy " + p.getName() + " cannot be removed because it is in use");
-
-            Session s = MvvmContextFactory.context().openSession();
-            try {
-                Transaction tx = s.beginTransaction();
-
-                s.delete(p);
-
-                tx.commit();
-            } catch (HibernateException exn) {
-                logger.error("could not remove Policy", exn);
-            } finally {
-                try {
-                    s.close();
-                } catch (HibernateException exn) {
-                    logger.warn("could not close session", exn); // XXX TransExn
-                }
+            } else if (!allPolicies.contains(p)) {
+                throw new PolicyException("Policy " + p.getName()
+                                          + " not found in all policies");
+            } else if (isInUse(p)) {
+                throw new PolicyException("Policy " + p.getName()
+                                          + " cannot be removed because it is in use");
             }
 
-            logger.debug("Removed policy, id: " + p.getId() + ", name: " + p.getName());
+            TransactionWork tw = new TransactionWork()
+                {
+                    public boolean doWork(Session s)
+                    {
+                        s.delete(p);
+                        return true;
+                    }
+
+                    public Object getResult() { return null; }
+                };
+            MvvmContextFactory.context().runTransaction(tw);
+
+            logger.debug("Removed policy, id: " + p.getId()
+                         + ", name: " + p.getName());
             allPolicies.remove(p);
         }
     }
 
-    public void setPolicy(Policy p, String name, String notes)
+    public void setPolicy(final Policy p, String name, String notes)
         throws PolicyException
     {
         synchronized(policyRuleLock) {
             if (p == null)
                 throw new PolicyException("Must specify a policy to remove");
             if (!allPolicies.contains(p))
-                throw new PolicyException("Policy " + p.getName() + " not found in all policies");
+                throw new PolicyException("Policy " + p.getName()
+                                          + " not found in all policies");
 
             p.setName(name);
             p.setNotes(notes);
 
-            Session s = MvvmContextFactory.context().openSession();
-            try {
-                Transaction tx = s.beginTransaction();
+            TransactionWork tw = new TransactionWork()
+                {
+                    public boolean doWork(Session s)
+                    {
+                        s.saveOrUpdate(p);
+                        return true;
+                    }
 
-                s.saveOrUpdate(p);
-
-                tx.commit();
-            } catch (HibernateException exn) {
-                logger.error("could not change Policy", exn);
-            } finally {
-                try {
-                    s.close();
-                } catch (HibernateException exn) {
-                    logger.warn("could not close session", exn); // XXX TransExn
-                }
-            }
+                    public Object getResult() { return null; }
+                };
+            MvvmContextFactory.context().runTransaction(tw);
         }
-        logger.debug("Changed policy, id: " + p.getId() + ", new name: " + p.getName());
+        logger.debug("Changed policy, id: " + p.getId()
+                     + ", new name: " + p.getName());
     }
 
     protected boolean isInUse(Policy p)
@@ -251,30 +240,27 @@ class PolicyManagerImpl implements PolicyManagerPriv
         return sysRules;
     }
 
-    public void setSystemPolicyRule(SystemPolicyRule rule, Policy p, boolean inbound, String description) {
+    public void setSystemPolicyRule(final SystemPolicyRule rule,
+                                    final Policy p, final boolean inbound,
+                                    final String description) {
         // more Sanity checking (policy) XXX
         synchronized(policyRuleLock) {
             for (int i = 0; i < sysRules.length; i++) {
                 if (sysRules[i] == rule) {
-                    Session s = MvvmContextFactory.context().openSession();
-                    try {
-                        Transaction tx = s.beginTransaction();
+                    TransactionWork tw = new TransactionWork()
+                        {
+                            public boolean doWork(Session s)
+                            {
+                                rule.setPolicy(p);
+                                rule.setInbound(inbound);
+                                rule.setDescription(description);
+                                s.saveOrUpdate(rule);
+                                return true;
+                            }
 
-                        rule.setPolicy(p);
-                        rule.setInbound(inbound);
-                        rule.setDescription(description);
-                        s.saveOrUpdate(rule);
-
-                        tx.commit();
-                    } catch (HibernateException exn) {
-                        logger.error("could not save change to SystemRule", exn);
-                    } finally {
-                        try {
-                            s.close();
-                        } catch (HibernateException exn) {
-                            logger.warn("could not close hibernate session", exn);
-                        }
-                    }
+                            public Object getResult() { return null; }
+                        };
+                    MvvmContextFactory.context().runTransaction(tw);
                 }
             }
         }
@@ -284,30 +270,24 @@ class PolicyManagerImpl implements PolicyManagerPriv
         return userRules;
     }
 
-    public void setUserPolicyRules(List rules) {
+    public void setUserPolicyRules(final List rules) {
         // Sanity checking XXX
         synchronized(policyRuleLock) {
-            Session s = MvvmContextFactory.context().openSession();
-            try {
-                Transaction tx = s.beginTransaction();
+            TransactionWork tw = new TransactionWork()
+                {
+                    public boolean doWork(Session s)
+                    {
+                        userRuleSet.setRules(rules);
+                        userRules = (UserPolicyRule[])rules.toArray(new UserPolicyRule[] { });
+                        s.saveOrUpdate(userRuleSet);
+                        return true;
+                    }
 
-                userRuleSet.setRules(rules);
-                userRules = (UserPolicyRule[]) rules.toArray(new UserPolicyRule[] { });
-                s.saveOrUpdate(userRuleSet);
-
-                tx.commit();
-            } catch (HibernateException exn) {
-                logger.warn("could not get HttpSettings", exn);
-            } finally {
-                try {
-                    s.close();
-                } catch (HibernateException exn) {
-                    logger.warn("could not close hibernate session", exn);
-                }
-            }
+                    public Object getResult() { return null; }
+                };
+            MvvmContextFactory.context().runTransaction(tw);
         }
     }
-
 
     // For da UI
     public PolicyConfiguration getPolicyConfiguration() {
@@ -428,122 +408,118 @@ class PolicyManagerImpl implements PolicyManagerPriv
     // added or removed, passing all interfaces.  We automatically add
     // or removeSystemPolicyRules as appropriate.  We also build the
     // in-memory UserPolicyRule list.
-    public void reconfigure(byte[] interfaces)
+    public void reconfigure(final byte[] interfaces)
     {
         /* Reconfigure the networking interfaces */
         NetworkingManagerImpl.getInstance().buildIntfEnum();
-        
+
         // For now do nothing
         if (allPolicies.size() == 0)
             // Always
             return;
 
         synchronized(policyRuleLock) {
-            if (logger.isDebugEnabled())
+            if (logger.isDebugEnabled()) {
                 logger.debug("Setting interfaces to " + interfaces);
-            Session s = MvvmContextFactory.context().openSession();
-            try {
-                Transaction tx = s.beginTransaction();
+            }
 
-                Query sysq = s.createQuery("from SystemPolicyRule spr");
-                List existingSys = sysq.list();
-                Query userq = s.createQuery("from UserPolicyRuleSet uprs");
-                UserPolicyRuleSet uprs = (UserPolicyRuleSet) userq.uniqueResult();
-                List existingUser = uprs.getRules();
+            TransactionWork tw = new TransactionWork()
+                {
+                    public boolean doWork(Session s)
+                    {
+                        Query sysq = s.createQuery("from SystemPolicyRule spr");
+                        List existingSys = sysq.list();
+                        Query userq = s.createQuery("from UserPolicyRuleSet uprs");
+                        UserPolicyRuleSet uprs = (UserPolicyRuleSet) userq.uniqueResult();
+                        List existingUser = uprs.getRules();
 
-                List goodSys = new ArrayList();
-                Set goodUser = new HashSet();
+                        List goodSys = new ArrayList();
+                        Set goodUser = new HashSet();
 
-                // For each interface pair
-                for (int i = 0; i < interfaces.length - 1; i++) {
-                    for (int j = i+1; j < interfaces.length; j++) {
-                        byte firstIntf = interfaces[i];
-                        byte secondIntf = interfaces[j];
+                        // For each interface pair
+                        for (int i = 0; i < interfaces.length - 1; i++) {
+                            for (int j = i+1; j < interfaces.length; j++) {
+                                byte firstIntf = interfaces[i];
+                                byte secondIntf = interfaces[j];
 
-                        // Add in the missing system rules
-                        boolean foundForward = false;
-                        boolean foundBackward = false;
+                                // Add in the missing system rules
+                                boolean foundForward = false;
+                                boolean foundBackward = false;
+                                for (Object o : existingSys) {
+                                    SystemPolicyRule spr = (SystemPolicyRule)o;
+                                    byte clientIntf = spr.getClientIntf();
+                                    byte serverIntf = spr.getServerIntf();
+                                    if (clientIntf == firstIntf && serverIntf == secondIntf) {
+                                        if (foundForward) {
+                                            logger.fatal("Found extra SystemPolicyRule for ci: " + clientIntf + ", si: " + serverIntf);
+                                        } else {
+                                            if (logger.isDebugEnabled())
+                                                logger.debug("Found existing SystemPolicyRule for ci: " + clientIntf + ", si: " + serverIntf);
+                                            goodSys.add(spr);
+                                            foundForward = true;
+                                        }
+                                    } else if (clientIntf == secondIntf && serverIntf == firstIntf) {
+                                        if (foundBackward) {
+                                            logger.fatal("Found extra SystemPolicyRule for ci: " + clientIntf + ", si: " + serverIntf);
+                                        } else {
+                                            if (logger.isDebugEnabled())
+                                                logger.debug("Found existing SystemPolicyRule for ci: " + clientIntf + ", si: " + serverIntf);
+                                            goodSys.add(spr);
+                                            foundBackward = true;
+                                        }
+                                    }
+                                }
+                                if (!foundForward) {
+                                    logger.info("Adding new default inbound SystemPolicyRule for ci: " + firstIntf + ", si: " + secondIntf);
+                                    SystemPolicyRule newInRule = new SystemPolicyRule(firstIntf, secondIntf, defaultPolicy, true);
+                                    s.save(newInRule);
+                                    goodSys.add(newInRule);
+                                }
+                                if (!foundBackward) {
+                                    logger.info("Adding new default outbound SystemPolicyRule for ci: " + secondIntf + ", si: " + firstIntf);
+                                    SystemPolicyRule newOutRule = new SystemPolicyRule(secondIntf, firstIntf, defaultPolicy, false);
+                                    s.save(newOutRule);
+                                    goodSys.add(newOutRule);
+                                }
+
+                                // Record good user rules.
+                                for (Object o : existingUser) {
+                                    UserPolicyRule upr = (UserPolicyRule)o;
+                                    byte clientIntf = upr.getClientIntf();
+                                    byte serverIntf = upr.getServerIntf();
+                                    if ((clientIntf == firstIntf && serverIntf == secondIntf) ||
+                                        (clientIntf == secondIntf && serverIntf == firstIntf)) {
+                                        // Good to go.
+                                        if (logger.isDebugEnabled())
+                                            logger.debug("Found existing UserPolicyRule for ci: " + clientIntf + ", si: " + serverIntf);
+                                        goodUser.add(upr);
+                                    }
+                                }
+                            }
+                        }
+
+                        // Get rid of the extra user rules.
+                        existingUser.retainAll(goodUser);
+                        uprs.setRules(existingUser);
+                        s.saveOrUpdate(uprs);
+
+                        // Finally, get rid of the extra system ones.
+                        existingSys.removeAll(goodSys);
                         for (Object o : existingSys) {
                             SystemPolicyRule spr = (SystemPolicyRule)o;
-                            byte clientIntf = spr.getClientIntf();
-                            byte serverIntf = spr.getServerIntf();
-                            if (clientIntf == firstIntf && serverIntf == secondIntf) {
-                                if (foundForward) {
-                                    logger.fatal("Found extra SystemPolicyRule for ci: " + clientIntf + ", si: " + serverIntf);
-                                } else {
-                                    if (logger.isDebugEnabled())
-                                        logger.debug("Found existing SystemPolicyRule for ci: " + clientIntf + ", si: " + serverIntf);
-                                    goodSys.add(spr);
-                                    foundForward = true;
-                                }
-                            } else if (clientIntf == secondIntf && serverIntf == firstIntf) {
-                                if (foundBackward) {
-                                    logger.fatal("Found extra SystemPolicyRule for ci: " + clientIntf + ", si: " + serverIntf);
-                                } else {
-                                    if (logger.isDebugEnabled())
-                                        logger.debug("Found existing SystemPolicyRule for ci: " + clientIntf + ", si: " + serverIntf);
-                                    goodSys.add(spr);
-                                    foundBackward = true;
-                                }
-                            }
-                        }
-                        if (!foundForward) {
-                            logger.info("Adding new default inbound SystemPolicyRule for ci: " + firstIntf + ", si: " + secondIntf);
-                            SystemPolicyRule newInRule = new SystemPolicyRule(firstIntf, secondIntf, defaultPolicy, true);
-                            s.save(newInRule);
-                            goodSys.add(newInRule);
-                        }
-                        if (!foundBackward) {
-                            logger.info("Adding new default outbound SystemPolicyRule for ci: " + secondIntf + ", si: " + firstIntf);
-                            SystemPolicyRule newOutRule = new SystemPolicyRule(secondIntf, firstIntf, defaultPolicy, false);
-                            s.save(newOutRule);
-                            goodSys.add(newOutRule);
+                            logger.info("Removing unused SystemPolicyRule for ci: " + spr.getClientIntf() + ", si: " + spr.getServerIntf());
+                            s.delete(spr);
                         }
 
-                        // Record good user rules.
-                        for (Object o : existingUser) {
-                            UserPolicyRule upr = (UserPolicyRule)o;
-                            byte clientIntf = upr.getClientIntf();
-                            byte serverIntf = upr.getServerIntf();
-                            if ((clientIntf == firstIntf && serverIntf == secondIntf) ||
-                                (clientIntf == secondIntf && serverIntf == firstIntf)) {
-                                // Good to go.
-                                if (logger.isDebugEnabled())
-                                    logger.debug("Found existing UserPolicyRule for ci: " + clientIntf + ", si: " + serverIntf);
-                                goodUser.add(upr);
-                            }
-                        }
+                        userRuleSet = uprs;
+                        userRules = (UserPolicyRule[]) existingUser.toArray(new UserPolicyRule[] { });
+                        sysRules = (SystemPolicyRule[]) goodSys.toArray(new SystemPolicyRule[] { });
+                        return true;
                     }
-                }
 
-                // Get rid of the extra user rules.
-                existingUser.retainAll(goodUser);
-                uprs.setRules(existingUser);
-                s.saveOrUpdate(uprs);
-
-                // Finally, get rid of the extra system ones.
-                existingSys.removeAll(goodSys);
-                for (Object o : existingSys) {
-                    SystemPolicyRule spr = (SystemPolicyRule)o;
-                    logger.info("Removing unused SystemPolicyRule for ci: " + spr.getClientIntf() + ", si: " + spr.getServerIntf());
-                    s.delete(spr);
-                }
-
-                userRuleSet = uprs;
-                userRules = (UserPolicyRule[]) existingUser.toArray(new UserPolicyRule[] { });
-                sysRules = (SystemPolicyRule[]) goodSys.toArray(new SystemPolicyRule[] { });
-
-                tx.commit();
-            } catch (HibernateException exn) {
-                logger.fatal("could not get PolicyRules", exn);
-                // Now what? XXX
-            } finally {
-                try {
-                    s.close();
-                } catch (HibernateException exn) {
-                    logger.warn("could not close session", exn);
-                }
-            }
+                    public Object getResult() { return null; }
+                };
+            MvvmContextFactory.context().runTransaction(tw);
         }
     }
 }

@@ -15,31 +15,25 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Collections;
-
-import com.metavize.mvvm.tapi.AbstractTransform;
-import com.metavize.mvvm.tapi.PipeSpec;
-import com.metavize.mvvm.tran.TransformStats;
-import org.apache.log4j.Logger;
-import org.hibernate.HibernateException;
-import org.hibernate.Query;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
-
-import com.metavize.mvvm.tran.TransformStopException;
-import com.metavize.mvvm.tran.TransformStartException;
 
 import com.metavize.mvvm.ArgonManager;
-import com.metavize.mvvm.NetworkingManager;
 import com.metavize.mvvm.IntfEnum;
 import com.metavize.mvvm.MvvmContextFactory;
-
-
-import com.metavize.mvvm.tran.TransformState;
-
+import com.metavize.mvvm.NetworkingManager;
 import com.metavize.mvvm.shield.ShieldNodeSettings;
+import com.metavize.mvvm.tapi.AbstractTransform;
+import com.metavize.mvvm.tapi.PipeSpec;
+import com.metavize.mvvm.tran.TransformStartException;
+import com.metavize.mvvm.tran.TransformState;
+import com.metavize.mvvm.tran.TransformStats;
+import com.metavize.mvvm.tran.TransformStopException;
+import com.metavize.mvvm.util.TransactionWork;
+import org.apache.log4j.Logger;
+import org.hibernate.Query;
+import org.hibernate.Session;
 
 public class AirgapTransformImpl extends AbstractTransform
     implements AirgapTransform
@@ -70,29 +64,24 @@ public class AirgapTransformImpl extends AbstractTransform
 
     public AirgapTransformImpl() {}
 
-    public void setAirgapSettings(AirgapSettings settings)
+    public void setAirgapSettings(final AirgapSettings settings)
     {
-        Session s = getTransformContext().openSession();
-        try {
-            Transaction tx = s.beginTransaction();
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(Session s)
+                {
+                    s.saveOrUpdate(settings);
+                    AirgapTransformImpl.this.settings = settings;
+                    return true;
+                }
 
-            s.saveOrUpdate(settings);
-            this.settings = settings;
-
-            tx.commit();
-        } catch (HibernateException exn) {
-            logger.warn(exn);
-        } finally {
-            try {
-                s.close();
-            } catch (HibernateException exn) {
-                logger.warn(exn); // XXX TransExn
-            }
-        }
+                public Object getResult() { return null; }
+            };
+        getTransformContext().runTransaction(tw);
 
         if ( getRunState() == TransformState.RUNNING ) {
             ArgonManager argonManager = MvvmContextFactory.context().argonManager();
-            
+
             try {
                 argonManager.setShieldNodeSettings( this.settings.getShieldNodeRuleList());
             } catch ( Exception e ) {
@@ -122,27 +111,20 @@ public class AirgapTransformImpl extends AbstractTransform
 
     protected void postInit(String[] args)
     {
-        Session s = getTransformContext().openSession();
-        try {
-            Transaction tx = s.beginTransaction();
-
-            Query q = s.createQuery
-                ("from AirgapSettings ts where ts.tid = :tid");
-            q.setParameter("tid", getTid());
-            this.settings = (AirgapSettings)q.uniqueResult();
-
-            tx.commit();
-        } catch (HibernateException exn) {
-            logger.warn(exn);
-        } finally {
-            try {
-                if (null != s) {
-                    s.close();
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(Session s)
+                {
+                    Query q = s.createQuery
+                        ("from AirgapSettings ts where ts.tid = :tid");
+                    q.setParameter("tid", getTid());
+                    AirgapTransformImpl.this.settings = (AirgapSettings)q.uniqueResult();
+                    return true;
                 }
-            } catch (HibernateException exn) {
-                logger.warn(exn);
-            }
-        }
+
+                public Object getResult() { return null; }
+            };
+        getTransformContext().runTransaction(tw);
     }
 
     public TransformStats getStats() throws IllegalStateException
@@ -151,50 +133,47 @@ public class AirgapTransformImpl extends AbstractTransform
         return fakeStats;
     }
 
-    public List<ShieldRejectionLogEntry> getLogs( int limit )
+    public List<ShieldRejectionLogEntry> getLogs( final int limit )
     {
-        List<ShieldRejectionLogEntry> l = new ArrayList<ShieldRejectionLogEntry>(limit);
+        final List<ShieldRejectionLogEntry> l = new ArrayList<ShieldRejectionLogEntry>(limit);
 
-        Session s = getTransformContext().openSession();
-        try {
-            NetworkingManager networkingManager = MvvmContextFactory.context().networkingManager();
-            IntfEnum intfEnum = networkingManager.getIntfEnum();
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(Session s) throws SQLException
+                {
+                    NetworkingManager networkingManager = MvvmContextFactory.context().networkingManager();
+                    IntfEnum intfEnum = networkingManager.getIntfEnum();
 
-            Connection c = s.connection();
-            PreparedStatement ps = c.prepareStatement( SHIELD_REJECTION_EVENT_QUERY );
-            ps.setInt( 1, limit );
-            long l0 = System.currentTimeMillis();
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                Date createDate   = new Date( rs.getTimestamp( CREATE_DATE_IDX ).getTime());
-                String clientAddr = rs.getString( CLIENT_ADDR_IDX );
+                    Connection c = s.connection();
+                    PreparedStatement ps = c.prepareStatement( SHIELD_REJECTION_EVENT_QUERY );
+                    ps.setInt( 1, limit );
+                    long l0 = System.currentTimeMillis();
+                    ResultSet rs = ps.executeQuery();
+                    while (rs.next()) {
+                        Date createDate   = new Date( rs.getTimestamp( CREATE_DATE_IDX ).getTime());
+                        String clientAddr = rs.getString( CLIENT_ADDR_IDX );
 
-                String clientIntf = ( intfEnum.getIntfName( rs.getByte( CLIENT_INTF_IDX )));
-                if ( clientIntf == null ) clientIntf = "unknown";
+                        String clientIntf = ( intfEnum.getIntfName( rs.getByte( CLIENT_INTF_IDX )));
+                        if ( clientIntf == null ) clientIntf = "unknown";
 
-                double reputation = rs.getDouble( REPUTATION_IDX );
-                int limited       = rs.getInt( LIMITED_IDX );
-                int dropped       = rs.getInt( DROPPED_IDX );
-                int rejected      = rs.getInt( REJECTED_IDX );
+                        double reputation = rs.getDouble( REPUTATION_IDX );
+                        int limited       = rs.getInt( LIMITED_IDX );
+                        int dropped       = rs.getInt( DROPPED_IDX );
+                        int rejected      = rs.getInt( REJECTED_IDX );
 
-                ShieldRejectionLogEntry entry = new ShieldRejectionLogEntry
-                    ( createDate, clientAddr, clientIntf, reputation, limited, dropped, rejected );
+                        ShieldRejectionLogEntry entry = new ShieldRejectionLogEntry
+                            ( createDate, clientAddr, clientIntf, reputation, limited, dropped, rejected );
 
-                l.add(entry);
-            }
-            long l1 = System.currentTimeMillis();
-            logger.debug( "getAccessLogs() in: " + ( l1 - l0 ));
-        } catch (SQLException exn) {
-            logger.warn( "could not get events", exn );
-        } catch (HibernateException exn) {
-            logger.warn( "could not get events", exn );
-        } finally {
-            try {
-                s.close();
-            } catch (HibernateException exn) {
-                logger.warn("could not close Hibernate session", exn);
-            }
-        }
+                        l.add(entry);
+                    }
+                    long l1 = System.currentTimeMillis();
+                    logger.debug( "getAccessLogs() in: " + ( l1 - l0 ));
+                    return true;
+                }
+
+                public Object getResult() { return null; }
+            };
+        getTransformContext().runTransaction(tw);
 
         return l;
     }
@@ -202,7 +181,7 @@ public class AirgapTransformImpl extends AbstractTransform
     protected void preStart()
     {
         validateSettings();
-        
+
         fakeStats = new FakeTransformStats();
     }
 
@@ -210,7 +189,7 @@ public class AirgapTransformImpl extends AbstractTransform
     {
         validateSettings();
         ArgonManager argonManager = MvvmContextFactory.context().argonManager();
-                
+
         try {
             argonManager.setShieldNodeSettings( this.settings.getShieldNodeRuleList());
         } catch ( Exception e ) {
@@ -221,7 +200,7 @@ public class AirgapTransformImpl extends AbstractTransform
     protected void postStop() throws TransformStopException
     {
         ArgonManager argonManager = MvvmContextFactory.context().argonManager();
-        
+
         try {
             /* Deconfigure all of the nodes */
             argonManager.setShieldNodeSettings( this.emptyList );

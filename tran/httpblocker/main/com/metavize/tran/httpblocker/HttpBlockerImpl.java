@@ -28,12 +28,11 @@ import com.metavize.mvvm.tran.Direction;
 import com.metavize.mvvm.tran.MimeType;
 import com.metavize.mvvm.tran.MimeTypeRule;
 import com.metavize.mvvm.tran.StringRule;
+import com.metavize.mvvm.util.TransactionWork;
 import com.metavize.tran.token.TokenAdaptor;
 import org.apache.log4j.Logger;
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 
 public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
 {
@@ -83,25 +82,20 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
         return settings;
     }
 
-    public void setHttpBlockerSettings(HttpBlockerSettings settings)
+    public void setHttpBlockerSettings(final HttpBlockerSettings settings)
     {
-        Session s = getTransformContext().openSession();
-        try {
-            Transaction tx = s.beginTransaction();
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(Session s)
+                {
+                    s.saveOrUpdate(settings);
+                    HttpBlockerImpl.this.settings = settings;
+                    return true;
+                }
 
-            s.saveOrUpdate(settings);
-            this.settings = settings;
-
-            tx.commit();
-        } catch (HibernateException exn) {
-            logger.warn("could not get HttpBlockerSettings", exn);
-        } finally {
-            try {
-                s.close();
-            } catch (HibernateException exn) {
-                logger.warn("could not close hibernate session", exn);
-            }
-        }
+                public Object getResult() { return null; }
+            };
+        getTransformContext().runTransaction(tw);
 
         blacklist.configure(settings);
     }
@@ -112,60 +106,59 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
         return getEvents(limit, false);
     }
 
-    public List<HttpRequestLog> getEvents(int limit, boolean blockedOnly)
+    public List<HttpRequestLog> getEvents(final int limit,
+                                          final boolean blockedOnly)
     {
-        List<HttpRequestLog> l = new ArrayList<HttpRequestLog>(limit);
+        final List<HttpRequestLog> l = new ArrayList<HttpRequestLog>(limit);
 
-        Session s = getTransformContext().openSession();
-        try {
-            Connection c = s.connection();
-            PreparedStatement ps;
-            if (blockedOnly)
-                ps = c.prepareStatement(ALL_EVENTS_BLOCKED_QUERY);
-            else
-                ps = c.prepareStatement(ALL_EVENTS_QUERY);
-            ps.setLong(1, getPolicy().getId());
-            ps.setInt(2, limit);
-            long l0 = System.currentTimeMillis();
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                long ts = rs.getTimestamp("time_stamp").getTime();
-                Date timeStamp = new Date(ts);
-                String host = rs.getString("host");
-                String uri = rs.getString("uri");
-                String actionStr = rs.getString("action");
-                String reasonStr = rs.getString("reason");
-                String category = rs.getString("category");
-                String contentType = rs.getString("content_type");
-                int contentLength = rs.getInt("content_length");
-                String clientAddr = rs.getString("c_client_addr");
-                int clientPort = rs.getInt("c_client_port");
-                String serverAddr = rs.getString("s_server_addr");
-                int serverPort = rs.getInt("s_server_port");
-                boolean incoming = rs.getBoolean("incoming");
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(Session s) throws SQLException
+                {
+                    Connection c = s.connection();
+                    PreparedStatement ps;
+                    if (blockedOnly)
+                        ps = c.prepareStatement(ALL_EVENTS_BLOCKED_QUERY);
+                    else
+                        ps = c.prepareStatement(ALL_EVENTS_QUERY);
+                    ps.setLong(1, getPolicy().getId());
+                    ps.setInt(2, limit);
+                    long l0 = System.currentTimeMillis();
+                    ResultSet rs = ps.executeQuery();
+                    while (rs.next()) {
+                        long ts = rs.getTimestamp("time_stamp").getTime();
+                        Date timeStamp = new Date(ts);
+                        String host = rs.getString("host");
+                        String uri = rs.getString("uri");
+                        String actionStr = rs.getString("action");
+                        String reasonStr = rs.getString("reason");
+                        String category = rs.getString("category");
+                        String contentType = rs.getString("content_type");
+                        int contentLength = rs.getInt("content_length");
+                        String clientAddr = rs.getString("c_client_addr");
+                        int clientPort = rs.getInt("c_client_port");
+                        String serverAddr = rs.getString("s_server_addr");
+                        int serverPort = rs.getInt("s_server_port");
+                        boolean incoming = rs.getBoolean("incoming");
 
-                Direction d = incoming ? Direction.INCOMING : Direction.OUTGOING;
+                        Direction d = incoming ? Direction.INCOMING : Direction.OUTGOING;
 
-                HttpRequestLog rl = new HttpRequestLog
-                    (timeStamp, host, uri, actionStr, reasonStr, category,
-                     contentType, contentLength, clientAddr, clientPort,
-                     serverAddr, serverPort, d);
+                        HttpRequestLog rl = new HttpRequestLog
+                            (timeStamp, host, uri, actionStr, reasonStr, category,
+                             contentType, contentLength, clientAddr, clientPort,
+                             serverAddr, serverPort, d);
 
-                l.add(rl);
-            }
-            long l1 = System.currentTimeMillis();
-            logger.debug("getEvents() in: " + (l1 - l0));
-        } catch (SQLException exn) {
-            logger.warn("could not get events", exn);
-        } catch (HibernateException exn) {
-            logger.warn("could not get events", exn);
-        } finally {
-            try {
-                s.close();
-            } catch (HibernateException exn) {
-                logger.warn("could not close Hibernate session", exn);
-            }
-        }
+                        l.add(rl);
+                    }
+                    long l1 = System.currentTimeMillis();
+                    logger.debug("getEvents() in: " + (l1 - l0));
+
+                    return true;
+                }
+
+                public Object getResult() { return null; }
+            };
+        getTransformContext().runTransaction(tw);
 
         return l;
     }
@@ -392,25 +385,21 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
 
     protected void postInit(String[] args)
     {
-        Session s = getTransformContext().openSession();
-        try {
-            Transaction tx = s.beginTransaction();
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(Session s)
+                {
+                    Query q = s.createQuery
+                        ("from HttpBlockerSettings hbs where hbs.tid = :tid");
+                    q.setParameter("tid", getTid());
+                    settings = (HttpBlockerSettings)q.uniqueResult();
 
-            Query q = s.createQuery
-                ("from HttpBlockerSettings hbs where hbs.tid = :tid");
-            q.setParameter("tid", getTid());
-            settings = (HttpBlockerSettings)q.uniqueResult();
+                    return true;
+                }
 
-            tx.commit();
-        } catch (HibernateException exn) {
-            logger.warn("Could not get HttpBlockerSettings", exn);
-        } finally {
-            try {
-                s.close();
-            } catch (HibernateException exn) {
-                logger.warn("could not close Hibernate session", exn);
-            }
-        }
+                public Object getResult() { return null; }
+            };
+        getTransformContext().runTransaction(tw);
 
         logger.debug("IN POSTINIT SET BLACKLIST " + settings);
         blacklist.configure(settings);

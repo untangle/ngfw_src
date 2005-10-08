@@ -29,10 +29,9 @@ import com.metavize.mvvm.tran.TransformStartException;
 import com.metavize.mvvm.tran.TransformState;
 import com.metavize.mvvm.tran.TransformStats;
 import com.metavize.mvvm.tran.TransformStopException;
+import com.metavize.mvvm.util.TransactionWork;
 import org.apache.log4j.Logger;
-import org.hibernate.HibernateException;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 
 /**
  * A base class for transform instances, both normal and casing.
@@ -251,33 +250,26 @@ public abstract class TransformBase implements Transform
         changeState(ts, syncState, null);
     }
 
-    private void changeState(TransformState ts, boolean syncState,
-                               String[] args)
+    private void changeState(final TransformState ts, boolean syncState,
+                             String[] args)
     {
         runState = ts;
 
-
         if (syncState) {
-            TransformPersistentState tps = transformContext
-                .getPersistentState();
-            tps.setTargetState(ts);
+            TransactionWork tw = new TransactionWork()
+                {
+                    public boolean doWork(Session s)
+                    {
+                        TransformPersistentState tps = transformContext
+                            .getPersistentState();
+                        tps.setTargetState(ts);
+                        s.saveOrUpdate(tps);
+                        return true;
+                    }
 
-            Session s = MvvmContextFactory.context().openSession();
-            try {
-                Transaction tx = s.beginTransaction();
-
-                s.saveOrUpdate(tps);
-
-                tx.commit();
-            } catch (HibernateException exn) {
-                logger.warn("could not get TransformDesc", exn);
-            } finally {
-                try {
-                    s.close();
-                } catch (HibernateException exn) {
-                    logger.warn("could not close Session", exn);
-                }
-            }
+                    public Object getResult() { return null; }
+                };
+            MvvmContextFactory.context().runTransaction(tw);
         }
     }
 

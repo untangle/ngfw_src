@@ -16,7 +16,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -36,13 +35,14 @@ import com.metavize.mvvm.tran.TransformPreferences;
 import com.metavize.mvvm.tran.TransformState;
 import com.metavize.mvvm.tran.TransformStats;
 import com.metavize.mvvm.tran.UndeployException;
+import com.metavize.mvvm.util.TransactionRunner;
+import com.metavize.mvvm.util.TransactionWork;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
 
 class TransformContextImpl implements TransformContext
 {
@@ -60,6 +60,7 @@ class TransformContextImpl implements TransformContext
 
     private TransformBase transform;
     private SessionFactory sessionFactory;
+    private TransactionRunner transactionRunner;
 
     private final TransformManagerImpl transformManager = TransformManagerImpl
         .manager();
@@ -90,55 +91,23 @@ class TransformContextImpl implements TransformContext
 
             transformPreferences = new TransformPreferences(tid);
 
-            Session s = MvvmContextFactory.context().openSession();
-            try {
-                Transaction tx = s.beginTransaction();
+            TransactionWork tw = new TransactionWork()
+                {
+                    public boolean doWork(Session s)
+                    {
+                        s.save(persistentState);
+                        s.save(transformPreferences);
+                        return true;
+                    }
 
-                s.save(persistentState);
-                s.save(transformPreferences);
-
-                tx.commit();
-            } catch (HibernateException exn) {
-                Throwable t = exn.getCause();
-                logger.warn(exn, exn);
-                if (t instanceof SQLException) {
-                    SQLException se = (SQLException)t;
-                    logger.warn("next exception", se.getNextException());
-                }
-                throw new DeployException(exn);
-            } finally {
-                try {
-                    s.close();
-                } catch (HibernateException exn) {
-                    logger.warn("could not close Session", exn);
-                }
-            }
+                    public Object getResult() { return null; }
+                };
+            MvvmContextFactory.context().runTransaction(tw);
         } else {
-            Session s = MvvmContextFactory.context().openSession();
-            try {
-                Transaction tx = s.beginTransaction();
-
-                Query q = s.createQuery
-                    ("from TransformPersistentState tps where tps.tid = :tid");
-                q.setParameter("tid", tid);
-                persistentState = (TransformPersistentState)q.uniqueResult();
-
-                q = s.createQuery
-                    ("from TransformPreferences tp where tp.tid = :tid");
-                q.setParameter("tid", tid);
-                transformPreferences = (TransformPreferences)q.uniqueResult();
-
-                tx.commit();
-            } catch (HibernateException exn) {
-                logger.warn(exn, exn);
-                throw new DeployException(exn);
-            } finally {
-                try {
-                    s.close();
-                } catch (HibernateException exn) {
-                    logger.warn("could not close Session", exn);
-                }
-            }
+            LoadSettings ls = new LoadSettings(tid);
+            MvvmContextFactory.context().runTransaction(ls);
+            this.persistentState = ls.getPersistentState();
+            this.transformPreferences = ls.getTransformPreferences();
         }
 
         logger.info("Creating transform context for: " + tid
@@ -160,6 +129,7 @@ class TransformContextImpl implements TransformContext
         try {
             transformManager.registerThreadContext(this);
             sessionFactory = Util.makeSessionFactory(classLoader);
+            transactionRunner = new TransactionRunner(sessionFactory);
 
             String tidName = tid.getName();
             logger.debug("setting tran " + tidName + " log4j repository");
@@ -217,17 +187,9 @@ class TransformContextImpl implements TransformContext
         return mackageDesc;
     }
 
-    public Session openSession()
+    public boolean runTransaction(TransactionWork tw)
     {
-        Session s = null;
-
-        try {
-            s = sessionFactory.openSession();
-        } catch (HibernateException exn) {
-            logger.warn("Could not create Hibernate Session", exn);
-        }
-
-        return s;
+        return transactionRunner.runTransaction(tw);
     }
 
     public Transform transform()
@@ -307,6 +269,47 @@ class TransformContextImpl implements TransformContext
             transformManager.deregisterThreadContext();
             Thread.currentThread().setContextClassLoader(oldCl);
             // Left TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        }
+    }
+
+    // private classes --------------------------------------------------------
+
+    private static class LoadSettings implements TransactionWork
+    {
+        private final Tid tid;
+
+        private TransformPersistentState persistentState;
+        private TransformPreferences transformPreferences;
+
+        public LoadSettings(Tid tid)
+        {
+            this.tid = tid;
+        }
+
+        public boolean doWork(Session s)
+        {
+            Query q = s.createQuery
+                ("from TransformPersistentState tps where tps.tid = :tid");
+            q.setParameter("tid", tid);
+            persistentState = (TransformPersistentState)q.uniqueResult();
+
+            q = s.createQuery
+                ("from TransformPreferences tp where tp.tid = :tid");
+            q.setParameter("tid", tid);
+            transformPreferences = (TransformPreferences)q.uniqueResult();
+            return true;
+        }
+
+        public Object getResult() { return null; }
+
+        public TransformPersistentState getPersistentState()
+        {
+            return persistentState;
+        }
+
+        public TransformPreferences getTransformPreferences()
+        {
+            return transformPreferences;
         }
     }
 

@@ -33,14 +33,12 @@ import com.metavize.mvvm.tran.Direction;
 import com.metavize.mvvm.tran.TransformException;
 import com.metavize.mvvm.tran.TransformStartException;
 import com.metavize.mvvm.tran.firewall.IPMatcher;
-import com.metavize.mvvm.tran.firewall.IntfMatcher;
 import com.metavize.mvvm.tran.firewall.PortMatcher;
 import com.metavize.mvvm.tran.firewall.ProtocolMatcher;
+import com.metavize.mvvm.util.TransactionWork;
 import org.apache.log4j.Logger;
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 
 public class FirewallImpl extends AbstractTransform implements Firewall
 {
@@ -90,25 +88,20 @@ public class FirewallImpl extends AbstractTransform implements Firewall
         return settings;
     }
 
-    public void setFirewallSettings(FirewallSettings settings)
+    public void setFirewallSettings(final FirewallSettings settings)
     {
-        Session s = getTransformContext().openSession();
-        try {
-            Transaction tx = s.beginTransaction();
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(Session s)
+                {
+                    s.saveOrUpdate(settings);
+                    FirewallImpl.this.settings = settings;
+                    return true;
+                }
 
-            s.saveOrUpdate(settings);
-            this.settings = settings;
-
-            tx.commit();
-        } catch (HibernateException exn) {
-            logger.warn("could not get FirewallSettings", exn);
-        } finally {
-            try {
-                s.close();
-            } catch (HibernateException exn) {
-                logger.warn("could not close hibernate sessino", exn);
-            }
-        }
+                public Object getResult() { return null; }
+            };
+        getTransformContext().runTransaction(tw);
 
         try {
             reconfigure();
@@ -124,54 +117,52 @@ public class FirewallImpl extends AbstractTransform implements Firewall
         return getEventLogs(limit, false);
     }
 
-    public List<FirewallLog> getEventLogs(int limit, boolean blockedOnly)
+    public List<FirewallLog> getEventLogs(final int limit,
+                                          final boolean blockedOnly)
     {
-        List<FirewallLog> l = new ArrayList<FirewallLog>(limit);
+        final List<FirewallLog> l = new ArrayList<FirewallLog>(limit);
 
-        Session s = getTransformContext().openSession();
-        try {
-            Connection c = s.connection();
-            PreparedStatement ps;
-            if (blockedOnly)
-                ps = c.prepareStatement(EVENT_BLOCKED_QUERY);
-            else
-                ps = c.prepareStatement(EVENT_QUERY);
-            ps.setLong(1, getPolicy().getId());
-            ps.setInt(2, limit);
-            long l0 = System.currentTimeMillis();
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                long ts = rs.getTimestamp("create_date").getTime();
-                Date createDate = new Date(ts);
-                boolean trafficBlocker = rs.getBoolean("was_blocked");
-                String clientAddr = rs.getString("c_client_addr");
-                int clientPort = rs.getInt("c_client_port");
-                String serverAddr = rs.getString("s_server_addr");
-                int serverPort = rs.getInt("s_server_port");
-                boolean incoming = rs.getBoolean("incoming");
-                int ruleIndex = rs.getInt("rule_index");
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(Session s) throws SQLException
+                {
+                    Connection c = s.connection();
+                    PreparedStatement ps;
+                    if (blockedOnly)
+                        ps = c.prepareStatement(EVENT_BLOCKED_QUERY);
+                    else
+                        ps = c.prepareStatement(EVENT_QUERY);
+                    ps.setLong(1, getPolicy().getId());
+                    ps.setInt(2, limit);
+                    long l0 = System.currentTimeMillis();
+                    ResultSet rs = ps.executeQuery();
+                    while (rs.next()) {
+                        long ts = rs.getTimestamp("create_date").getTime();
+                        Date createDate = new Date(ts);
+                        boolean trafficBlocker = rs.getBoolean("was_blocked");
+                        String clientAddr = rs.getString("c_client_addr");
+                        int clientPort = rs.getInt("c_client_port");
+                        String serverAddr = rs.getString("s_server_addr");
+                        int serverPort = rs.getInt("s_server_port");
+                        boolean incoming = rs.getBoolean("incoming");
+                        int ruleIndex = rs.getInt("rule_index");
 
-                Direction d = incoming ? Direction.INCOMING : Direction.OUTGOING;
+                        Direction d = incoming ? Direction.INCOMING : Direction.OUTGOING;
 
-                FirewallLog rl = new FirewallLog
-                    (createDate, trafficBlocker, clientAddr, clientPort,
-                     serverAddr, serverPort, d, ruleIndex);
+                        FirewallLog rl = new FirewallLog
+                            (createDate, trafficBlocker, clientAddr, clientPort,
+                             serverAddr, serverPort, d, ruleIndex);
 
-                l.add(rl);
-            }
-            long l1 = System.currentTimeMillis();
-            logger.debug("getEventLogs() in: " + (l1 - l0));
-        } catch (SQLException exn) {
-            logger.warn("could not get events", exn);
-        } catch (HibernateException exn) {
-            logger.warn("could not get events", exn);
-        } finally {
-            try {
-                s.close();
-            } catch (HibernateException exn) {
-                logger.warn("could not close Hibernate session", exn);
-            }
-        }
+                        l.add(rl);
+                    }
+                    long l1 = System.currentTimeMillis();
+                    logger.debug("getEventLogs() in: " + (l1 - l0));
+                    return true;
+                }
+
+                public Object getResult() { return null; }
+            };
+        getTransformContext().runTransaction(tw);
 
         return l;
     }
@@ -197,26 +188,22 @@ public class FirewallImpl extends AbstractTransform implements Firewall
 
     protected void postInit(String[] args)
     {
-        Session s = getTransformContext().openSession();
-        try {
-            Transaction tx = s.beginTransaction();
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(Session s)
+                {
+                    Query q = s.createQuery("from FirewallSettings hbs where hbs.tid = :tid");
+                    q.setParameter("tid", getTid());
+                    FirewallImpl.this.settings = (FirewallSettings)q.uniqueResult();
 
-            Query q = s.createQuery("from FirewallSettings hbs where hbs.tid = :tid");
-            q.setParameter("tid", getTid());
-            this.settings = (FirewallSettings)q.uniqueResult();
+                    updateToCurrent(FirewallImpl.this.settings);
 
-            updateToCurrent(this.settings);
+                    return true;
+                }
 
-            tx.commit();
-        } catch (HibernateException exn) {
-            logger.warn("Could not get FirewallSettings", exn);
-        } finally {
-            try {
-                s.close();
-            } catch (HibernateException exn) {
-                logger.warn("could not close Hibernate session", exn);
-            }
-        }
+                public Object getResult() { return null; }
+            };
+        getTransformContext().runTransaction(tw);
     }
 
     protected void preStart() throws TransformStartException

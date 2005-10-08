@@ -11,12 +11,6 @@
 
 package com.metavize.mvvm.engine;
 
-import com.metavize.mvvm.MailSender;
-import com.metavize.mvvm.MailSettings;
-import com.metavize.mvvm.MvvmContextFactory;
-import com.metavize.mvvm.security.AdminSettings;
-import com.metavize.mvvm.security.User;
-
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.util.*;
@@ -27,11 +21,18 @@ import javax.activation.FileDataSource;
 import javax.activation.MimetypesFileTypeMap;
 import javax.mail.*;
 import javax.mail.internet.*;
+
+import com.metavize.mvvm.MailSender;
+import com.metavize.mvvm.MailSettings;
+import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.security.AdminSettings;
+import com.metavize.mvvm.security.User;
+import com.metavize.mvvm.util.TransactionRunner;
+import com.metavize.mvvm.util.TransactionWork;
 import com.sun.mail.smtp.SMTPTransport;
 import org.apache.log4j.Logger;
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
-import org.hibernate.Transaction;
+import org.hibernate.SessionFactory;
 
 /**
  * Note that this class is designed to be used <b>BOTH</b> inside the MVVM and
@@ -81,16 +82,16 @@ class MailSenderImpl implements MailSender
     private static final Logger logger = Logger.getLogger(MailSenderImpl.class.getName());
 
     // NOTE: Only used for stand-alone operation.
-    private org.hibernate.SessionFactory sessionFactory;
+    private final TransactionRunner transactionRunner;
 
     private MailSenderImpl() {
-        sessionFactory = null;
+        transactionRunner = null;
         init();
     }
 
     private MailSenderImpl(org.hibernate.SessionFactory sessionFactory)
     {
-        this.sessionFactory = sessionFactory;
+        transactionRunner = new TransactionRunner(sessionFactory);
         init();
     }
 
@@ -99,32 +100,27 @@ class MailSenderImpl implements MailSender
         mimetypesFileTypeMap.addMimeTypes("application/pdf pdf PDF");
         mimetypesFileTypeMap.addMimeTypes("text/css css CSS");
 
-        org.hibernate.Session s = getSession();
-        try {
-            Transaction tx = s.beginTransaction();
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(org.hibernate.Session s)
+                {
+                    Query q = s.createQuery("from MailSettings");
+                    mailSettings = (MailSettings)q.uniqueResult();
 
-            Query q = s.createQuery("from MailSettings");
-            mailSettings = (MailSettings)q.uniqueResult();
+                    if (null == mailSettings) {
+                        logger.info("Creating initial default mail settings");
+                        mailSettings = new MailSettings();
+                        mailSettings.setFromAddress(DEFAULT_FROM_ADDRESS);
+                        s.save(mailSettings);
+                    } else {
+                        refreshSessions();
+                    }
+                    return true;
+                }
 
-            if (null == mailSettings) {
-                logger.info("Creating initial default mail settings");
-                mailSettings = new MailSettings();
-                mailSettings.setFromAddress(DEFAULT_FROM_ADDRESS);
-                s.save(mailSettings);
-            } else {
-                refreshSessions();
-            }
-
-            tx.commit();
-        } catch (HibernateException exn) {
-            logger.warn("could not get MailSettings", exn);
-        } finally {
-            try {
-                s.close();
-            } catch (HibernateException exn) {
-                logger.warn("could not close Session", exn);
-            }
-        }
+                public Object getResult() { return null; }
+            };
+        runTransaction(tw);
     }
 
     static MailSenderImpl mailSender() {
@@ -136,41 +132,28 @@ class MailSenderImpl implements MailSender
         return MAIL_SENDER;
     }
 
-    private org.hibernate.Session getSession()
+    private boolean runTransaction(TransactionWork tw)
     {
-        if (sessionFactory == null) {
-            return MvvmContextFactory.context().openSession();
+        if (null == transactionRunner) {
+            return MvvmContextFactory.context().runTransaction(tw);
         } else {
-            org.hibernate.Session s = null;
-
-            try {
-                s = sessionFactory.openSession();
-            } catch (HibernateException exn) {
-                logger.warn("Could not create Hibernate Session", exn);
-            }
-
-            return s;
+            return transactionRunner.runTransaction(tw);
         }
     }
 
-    public void setMailSettings(MailSettings settings)
+    public void setMailSettings(final MailSettings settings)
     {
-        org.hibernate.Session s = getSession();
-        try {
-            Transaction tx = s.beginTransaction();
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(org.hibernate.Session s)
+                {
+                    s.saveOrUpdate(settings);
+                    return true;
+                }
 
-            s.saveOrUpdate(settings);
-
-            tx.commit();
-        } catch (HibernateException exn) {
-            logger.warn("could not save MailSettings", exn);
-        } finally {
-            try {
-                s.close();
-            } catch (HibernateException exn) {
-                logger.warn("could not close Session", exn);
-            }
-        }
+                public Object getResult() { return null; }
+            };
+        runTransaction(tw);
 
         mailSettings = settings;
         refreshSessions();

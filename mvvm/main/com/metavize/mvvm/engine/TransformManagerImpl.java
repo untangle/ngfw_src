@@ -41,11 +41,10 @@ import com.metavize.mvvm.tran.TransformManager;
 import com.metavize.mvvm.tran.TransformState;
 import com.metavize.mvvm.tran.TransformStats;
 import com.metavize.mvvm.tran.UndeployException;
+import com.metavize.mvvm.util.TransactionWork;
 import org.apache.log4j.Logger;
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -76,28 +75,25 @@ class TransformManagerImpl implements TransformManager
 
     private TransformManagerImpl()
     {
-        Session s = MvvmContextFactory.context().openSession();
-        try {
-            Transaction tx = s.beginTransaction();
+        TransactionWork<TransformManagerState> tw = new TransactionWork<TransformManagerState>()
+            {
+                private TransformManagerState tms;
 
-            Query q = s.createQuery("from TransformManagerState tms");
-            TransformManagerState tms = (TransformManagerState)q.uniqueResult();
-            if (null == tms) {
-                tms = new TransformManagerState();
-                s.save(tms);
-            }
-            transformManagerState = tms;
+                public boolean doWork(Session s)
+                {
+                    Query q = s.createQuery("from TransformManagerState tms");
+                    tms = (TransformManagerState)q.uniqueResult();
+                    if (null == tms) {
+                        tms = new TransformManagerState();
+                        s.save(tms);
+                    }
+                    return true;
+                }
 
-            tx.commit();
-        } catch (HibernateException exn) {
-            throw new RuntimeException("couldn't start TransformManager", exn);
-        } finally {
-            try {
-                s.close();
-            } catch (HibernateException exn) {
-                logger.warn("could not close Session", exn);
-            }
-        }
+                public TransformManagerState getResult() { return tms; }
+            };
+        MvvmContextFactory.context().runTransaction(tw);
+        this.transformManagerState = tw.getResult();
     }
 
     static TransformManagerImpl manager()
@@ -233,7 +229,7 @@ class TransformManagerImpl implements TransformManager
 
     public void destroy(Tid tid) throws UndeployException
     {
-        TransformContextImpl tc;
+        final TransformContextImpl tc;
 
         synchronized (this) {
             tc = tids.get(tid);
@@ -245,23 +241,18 @@ class TransformManagerImpl implements TransformManager
             tids.remove(tid);
         }
 
-        Session s = MvvmContextFactory.context().openSession();
-        try {
-            Transaction tx = s.beginTransaction();
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(Session s)
+                {
+                    s.delete(tc.getPersistentState());
+                    s.delete(tc.getTransformPreferences());
+                    return true;
+                }
 
-            s.delete(tc.getPersistentState());
-            s.delete(tc.getTransformPreferences());
-
-            tx.commit();
-        } catch (HibernateException exn) {
-            logger.warn("could not get TransformManagerState", exn);
-        } finally {
-            try {
-                s.close();
-            } catch (HibernateException exn) {
-                logger.warn("could not close Session", exn);
-            }
-        }
+                public Object getResult() { return null; }
+            };
+        MvvmContextFactory.context().runTransaction(tw);
 
         // Free up our logger.  This kind of stuff should be in a hook. XXX
         LogMailer lm = LogMailer.get();
@@ -461,32 +452,27 @@ class TransformManagerImpl implements TransformManager
 
     private List<TransformPersistentState> getUnloaded()
     {
-        List<TransformPersistentState> unloaded
+        final List<TransformPersistentState> unloaded
             = new LinkedList<TransformPersistentState>();
 
-        Session s = MvvmContextFactory.context().openSession();
-        try {
-            Transaction tx = s.beginTransaction();
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(Session s)
+                {
+                    Query q = s.createQuery("from TransformPersistentState tps");
+                    List<TransformPersistentState> result = q.list();
 
-            Query q = s.createQuery("from TransformPersistentState tps");
-            List<TransformPersistentState> result = q.list();
-
-            for (TransformPersistentState persistentState : result) {
-                if (!tids.containsKey(persistentState.getTid())) {
-                    unloaded.add(persistentState);
+                    for (TransformPersistentState persistentState : result) {
+                        if (!tids.containsKey(persistentState.getTid())) {
+                            unloaded.add(persistentState);
+                        }
+                    }
+                    return true;
                 }
-            }
 
-            tx.commit();
-        } catch (HibernateException exn) {
-            logger.warn("could not get TransformDesc", exn);
-        } finally {
-            try {
-                s.close();
-            } catch (HibernateException exn) {
-                logger.warn("could not close Session", exn);
-            }
-        }
+                public Object getResult() { return null; }
+            };
+        MvvmContextFactory.context().runTransaction(tw);
 
         return unloaded;
     }
@@ -630,28 +616,23 @@ class TransformManagerImpl implements TransformManager
 
     private Tid newTid(Policy policy, String transformName)
     {
-        Tid tid;
+        final Tid tid;
         synchronized (transformManagerState) {
             tid = transformManagerState.nextTid(policy, transformName);
         }
 
-        Session s = MvvmContextFactory.context().openSession();
-        try {
-            Transaction tx = s.beginTransaction();
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(Session s)
+                {
+                    s.saveOrUpdate(transformManagerState);
+                    s.save(tid);
+                    return true;
+                }
 
-            s.saveOrUpdate(transformManagerState);
-            s.save(tid);
-
-            tx.commit();
-        } catch (HibernateException exn) {
-            logger.warn("could not get TransformManagerState", exn);
-        } finally {
-            try {
-                s.close();
-            } catch (HibernateException exn) {
-                logger.warn("could not close Session", exn);
-            }
-        }
+                public Object getResult() { return null; }
+            };
+        MvvmContextFactory.context().runTransaction(tw);
 
         return tid;
     }

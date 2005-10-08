@@ -18,11 +18,10 @@ import com.metavize.mvvm.security.AdminManager;
 import com.metavize.mvvm.security.AdminSettings;
 import com.metavize.mvvm.security.LoginSession;
 import com.metavize.mvvm.security.User;
+import com.metavize.mvvm.util.TransactionWork;
 import org.apache.log4j.Logger;
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 
 class AdminManagerImpl implements AdminManager
 {
@@ -40,31 +39,27 @@ class AdminManagerImpl implements AdminManager
 
     private AdminManagerImpl()
     {
-        Session s = MvvmContextFactory.context().openSession();
-        try {
-            Transaction tx = s.beginTransaction();
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(Session s)
+                {
+                    Query q = s.createQuery("from AdminSettings");
+                    adminSettings = (AdminSettings)q.uniqueResult();
 
-            Query q = s.createQuery("from AdminSettings");
-            adminSettings = (AdminSettings)q.uniqueResult();
+                    if (null == adminSettings) {
+                        adminSettings = new AdminSettings();
+                        adminSettings.addUser(new User(INITIAL_USER_LOGIN,
+                                                       INITIAL_USER_PASSWORD,
+                                                       INITIAL_USER_NAME));
+                        s.save(adminSettings);
 
-            if (null == adminSettings) {
-                adminSettings = new AdminSettings();
-                adminSettings.addUser(new User(INITIAL_USER_LOGIN,
-                                               INITIAL_USER_PASSWORD,
-                                               INITIAL_USER_NAME));
-                s.save(adminSettings);
-            }
+                    }
+                    return true;
+                }
 
-            tx.commit();
-        } catch (HibernateException exn) {
-            logger.warn("could not get AdminSettings", exn);
-        } finally {
-            try {
-                s.close();
-            } catch (HibernateException exn) {
-                logger.warn("could not close session", exn);
-            }
-        }
+                public Object getResult() { return null; }
+            };
+        MvvmContextFactory.context().runTransaction(tw);
 
         mvvmLogin = MvvmLoginImpl.mvvmLogin();
 
@@ -97,25 +92,20 @@ class AdminManagerImpl implements AdminManager
         return adminSettings;
     }
 
-    public void setAdminSettings(AdminSettings as)
+    public void setAdminSettings(final AdminSettings as)
     {
         // Do something with summaryPeriod? XXX
-        Session s = MvvmContextFactory.context().openSession();
-        try {
-            Transaction tx = s.beginTransaction();
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(Session s)
+                {
+                    s.saveOrUpdate(as);
+                    return true;
+                }
 
-            s.saveOrUpdate(as);
-
-            tx.commit();
-        } catch (HibernateException exn) {
-            logger.warn("could not save AdminSettings", exn);
-        } finally {
-            try {
-                s.close();
-            } catch (HibernateException exn) {
-                logger.warn("could not close session", exn); // XXX TransExn
-            }
-        }
+                public Object getResult() { return null; }
+            };
+        MvvmContextFactory.context().runTransaction(tw);
 
         this.adminSettings = as;
     }

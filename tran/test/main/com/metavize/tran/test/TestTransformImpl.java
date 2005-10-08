@@ -19,11 +19,10 @@ import com.metavize.mvvm.tapi.SoloPipeSpec;
 import com.metavize.mvvm.tapi.Subscription;
 import com.metavize.mvvm.tran.IPMaddr;
 import com.metavize.mvvm.tran.PortRange;
+import com.metavize.mvvm.util.TransactionWork;
 import org.apache.log4j.Logger;
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 
 public class TestTransformImpl extends AbstractTransform
     implements TestTransform
@@ -66,25 +65,20 @@ public class TestTransformImpl extends AbstractTransform
 
     // TestTransform methods --------------------------------------------------
 
-    public void setTestSettings(TestSettings settings)
+    public void setTestSettings(final TestSettings settings)
     {
-        Session s = getTransformContext().openSession();
-        try {
-            Transaction tx = s.beginTransaction();
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(Session s)
+                {
+                    s.saveOrUpdate(settings);
+                    TestTransformImpl.this.settings = settings;
+                    return true;
+                }
 
-            s.saveOrUpdate(settings);
-            this.settings = settings;
-
-            tx.commit();
-        } catch (HibernateException exn) {
-            logger.warn(exn);
-        } finally {
-            try {
-                s.close();
-            } catch (HibernateException exn) {
-                logger.warn(exn); // XXX TransExn
-            }
-        }
+                public Object getResult() { return null; }
+            };
+        getTransformContext().runTransaction(tw);
 
         reconfigure();
     }
@@ -104,32 +98,24 @@ public class TestTransformImpl extends AbstractTransform
 
     // lifecycle --------------------------------------------------------------
 
-    protected void postInit(String[] args)
+    protected void postInit(final String[] args)
     {
-        Session s = getTransformContext().openSession();
-        try {
-            Transaction tx = s.beginTransaction();
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(Session s)
+                {
+                    Query q = s.createQuery
+                        ("from TestSettings ts where ts.tid = :tid");
+                    q.setParameter("tid", getTid());
 
-            Query q = s.createQuery
-                ("from TestSettings ts where ts.tid = :tid");
-            q.setParameter("tid", getTid());
-
-
-            settings = (TestSettings)q.uniqueResult();
-            parseArgs(args);
-
-            tx.commit();
-        } catch (HibernateException exn) {
-            logger.warn(exn);
-        } finally {
-            try {
-                if (null != s) {
-                    s.close();
+                    settings = (TestSettings)q.uniqueResult();
+                    parseArgs(args);
+                    return true;
                 }
-            } catch (HibernateException exn) {
-                logger.warn(exn);
-            }
-        }
+
+                public Object getResult() { return null; }
+            };
+        getTransformContext().runTransaction(tw);
 
         reconfigure();
     }

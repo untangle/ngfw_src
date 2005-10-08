@@ -40,13 +40,12 @@ import com.metavize.mvvm.tran.MimeType;
 import com.metavize.mvvm.tran.MimeTypeRule;
 import com.metavize.mvvm.tran.StringRule;
 import com.metavize.mvvm.tran.Transform;
+import com.metavize.mvvm.util.TransactionWork;
 import com.metavize.tran.mail.papi.smtp.SMTPNotifyAction;
 import com.metavize.tran.token.TokenAdaptor;
 import org.apache.log4j.Logger;
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 
 public class VirusTransformImpl extends AbstractTransform
     implements VirusTransform
@@ -268,30 +267,26 @@ public class VirusTransformImpl extends AbstractTransform
 
     // VirusTransform methods -------------------------------------------------
 
-    public void setVirusSettings(VirusSettings settings)
+    public void setVirusSettings(final VirusSettings settings)
     {
         //TEMP hack - bscott
         ensureTemplateSettings(settings);
 
-        Session s = getTransformContext().openSession();
-        try {
-            Transaction tx = s.beginTransaction();
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(Session s)
+                {
+                    s.saveOrUpdate(settings);
+                    VirusTransformImpl.this.settings = settings;
 
-            s.saveOrUpdate(settings);
-            this.settings = settings;
+                    virusReconfigure();
 
-            virusReconfigure();
+                    return true;
+                }
 
-            tx.commit();
-        } catch (HibernateException exn) {
-            logger.warn("could not get VirusSettings", exn);
-        } finally {
-            try {
-                s.close();
-            } catch (HibernateException exn) {
-                logger.warn("could not close hibernate session", exn);
-            }
-        }
+                public Object getResult() { return null; }
+            };
+        getTransformContext().runTransaction(tw);
     }
 
     public VirusSettings getVirusSettings()
@@ -308,10 +303,11 @@ public class VirusTransformImpl extends AbstractTransform
     public List<VirusLog> getEventLogs(int limit, boolean virusOnly)
     {
         String[] queries;
-        if (virusOnly)
+        if (virusOnly) {
             queries = VIRUS_QUERIES;
-        else
+        } else {
             queries = QUERIES;
+        }
 
         List<VirusLog> l = new ArrayList<VirusLog>(queries.length * limit);
 
@@ -543,27 +539,22 @@ public class VirusTransformImpl extends AbstractTransform
 
     protected void preInit(String args[])
     {
-        Session s = getTransformContext().openSession();
-        try {
-            Transaction tx = s.beginTransaction();
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(Session s)
+                {
+                    Query q = s.createQuery
+                        ("from VirusSettings vs where vs.tid = :tid");
+                    q.setParameter("tid", getTid());
+                    settings = (VirusSettings)q.uniqueResult();
 
-            Query q = s.createQuery
-                ("from VirusSettings vs where vs.tid = :tid");
-            q.setParameter("tid", getTid());
-            settings = (VirusSettings)q.uniqueResult();
+                    ensureTemplateSettings(settings);
+                    return true;
+                }
 
-            ensureTemplateSettings(settings);
-
-            tx.commit();
-        } catch (HibernateException exn) {
-            logger.warn("Could not get VirusSettings", exn);
-        } finally {
-            try {
-                s.close();
-            } catch (HibernateException exn) {
-                logger.warn("could not close Hibernate session", exn);
-            }
-        }
+                public Object getResult() { return null; }
+            };
+        getTransformContext().runTransaction(tw);
     }
 
     protected void preStart()
@@ -653,54 +644,51 @@ public class VirusTransformImpl extends AbstractTransform
 
     // private methods --------------------------------------------------------
 
-    private List<VirusLog> getEventLogs(String q, List<VirusLog> l,
-                                        int limit)
+    private List<VirusLog> getEventLogs(final String q, final List<VirusLog> l,
+                                        final int limit)
     {
-        Session s = getTransformContext().openSession();
-        try {
-            Connection c = s.connection();
-            PreparedStatement ps = c.prepareStatement(q);
-            ps.setString(1, scanner.getVendorName());
-            ps.setLong(2, getPolicy().getId());
-            ps.setInt(3, limit);
-            long l0 = System.currentTimeMillis();
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                long ts = rs.getTimestamp("create_date").getTime();
-                Date createDate = new Date(ts);
-                String type = rs.getString("type");
-                String location = rs.getString("location");
-                boolean infected = rs.getBoolean("infected");
-                String action = rs.getString("action");
-                String virusName = rs.getString("virus_name");
-                String clientAddr = rs.getString("c_client_addr");
-                int clientPort = rs.getInt("c_client_port");
-                String serverAddr = rs.getString("s_server_addr");
-                int serverPort = rs.getInt("s_server_port");
-                boolean incoming = rs.getBoolean("incoming");
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(Session s) throws SQLException
+                {
+                    Connection c = s.connection();
+                    PreparedStatement ps = c.prepareStatement(q);
+                    ps.setString(1, scanner.getVendorName());
+                    ps.setLong(2, getPolicy().getId());
+                    ps.setInt(3, limit);
+                    long l0 = System.currentTimeMillis();
+                    ResultSet rs = ps.executeQuery();
+                    while (rs.next()) {
+                        long ts = rs.getTimestamp("create_date").getTime();
+                        Date createDate = new Date(ts);
+                        String type = rs.getString("type");
+                        String location = rs.getString("location");
+                        boolean infected = rs.getBoolean("infected");
+                        String action = rs.getString("action");
+                        String virusName = rs.getString("virus_name");
+                        String clientAddr = rs.getString("c_client_addr");
+                        int clientPort = rs.getInt("c_client_port");
+                        String serverAddr = rs.getString("s_server_addr");
+                        int serverPort = rs.getInt("s_server_port");
+                        boolean incoming = rs.getBoolean("incoming");
 
-                Direction d = incoming ? Direction.INCOMING : Direction.OUTGOING;
+                        Direction d = incoming ? Direction.INCOMING : Direction.OUTGOING;
 
-                VirusLog rl = new VirusLog
-                    (createDate, type, location, infected, action,
-                     virusName, clientAddr, clientPort, serverAddr,
-                     serverPort, d);
+                        VirusLog rl = new VirusLog
+                            (createDate, type, location, infected, action,
+                             virusName, clientAddr, clientPort, serverAddr,
+                             serverPort, d);
 
-                l.add(rl);
-            }
-            long l1 = System.currentTimeMillis();
-            logger.debug("getActiveXLogs() in: " + (l1 - l0));
-        } catch (SQLException exn) {
-            logger.warn("could not get events", exn);
-        } catch (HibernateException exn) {
-            logger.warn("could not get events", exn);
-        } finally {
-            try {
-                s.close();
-            } catch (HibernateException exn) {
-                logger.warn("could not close Hibernate session", exn);
-            }
-        }
+                        l.add(rl);
+                    }
+                    long l1 = System.currentTimeMillis();
+                    logger.debug("getActiveXLogs() in: " + (l1 - l0));
+                    return true;
+                }
+
+                public Object getResult() { return null; }
+            };
+        getTransformContext().runTransaction(tw);
 
         return l;
     }

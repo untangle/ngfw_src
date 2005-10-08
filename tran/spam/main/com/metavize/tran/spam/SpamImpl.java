@@ -11,6 +11,8 @@
 
 package com.metavize.tran.spam;
 
+import static com.metavize.tran.util.Ascii.CRLF;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -27,14 +29,12 @@ import com.metavize.mvvm.tapi.PipeSpec;
 import com.metavize.mvvm.tapi.SoloPipeSpec;
 import com.metavize.mvvm.tran.Direction;
 import com.metavize.mvvm.tran.Transform;
+import com.metavize.mvvm.util.TransactionWork;
 import com.metavize.tran.mail.papi.smtp.SMTPNotifyAction;
-import static com.metavize.tran.util.Ascii.CRLF;
 import com.metavize.tran.token.TokenAdaptor;
 import org.apache.log4j.Logger;
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 
 public class SpamImpl extends AbstractTransform implements SpamTransform
 {
@@ -99,7 +99,7 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
 
     //===============================
     // Defaults for templates
-        
+
     private static final String OUT_MOD_SUB_TEMPLATE =
       "[SPAM] $MIMEMessage:SUBJECT$";
     private static final String OUT_MOD_BODY_TEMPLATE =
@@ -123,15 +123,15 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
 
     private static final String OUT_NOTIFY_SUB_TEMPLATE =
       "[SPAM NOTIFICATION] re: $MIMEMessage:SUBJECT$";
-  
+
     private static final String OUT_NOTIFY_BODY_TEMPLATE =
-      "On $MIMEHeader:DATE$ a message from $MIMEMessage:FROM$ ($SMTPTransaction:FROM$) was received " + CRLF +
+        "On $MIMEHeader:DATE$ a message from $MIMEMessage:FROM$ ($SMTPTransaction:FROM$) was received " + CRLF +
       "and determined to be spam based on a score of $SPAMReport:SCORE$ (where anything " + CRLF +
       "above $SPAMReport:THRESHOLD$ is SPAM).  The details of the report are as follows:" + CRLF + CRLF +
       "$SPAMReport:FULL$";
-  
+
     private static final String IN_NOTIFY_SUB_TEMPLATE = OUT_NOTIFY_SUB_TEMPLATE;
-    private static final String IN_NOTIFY_BODY_TEMPLATE = OUT_NOTIFY_BODY_TEMPLATE;    
+    private static final String IN_NOTIFY_BODY_TEMPLATE = OUT_NOTIFY_BODY_TEMPLATE;
 
     // We want to make sure that spam is before virus in the pipeline (towards the client for smtp,
     // server for pop/imap).
@@ -243,8 +243,8 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
      */
     public String getDefaultNotifyBodyTemplate(boolean inbound) {
       return inbound?IN_NOTIFY_BODY_TEMPLATE:OUT_NOTIFY_BODY_TEMPLATE;
-    }  
-    
+    }
+
 
     /**
      * The settings for the IMAP/POP/SMTP
@@ -268,7 +268,7 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
       ss.getIMAPInbound().setHeaderValue(getDefaultIndicatorHeaderValue(false), false);
       ss.getIMAPOutbound().setHeaderValue(getDefaultIndicatorHeaderValue(true), true);
       ss.getIMAPOutbound().setHeaderValue(getDefaultIndicatorHeaderValue(false), false);
-      
+
       ss.getPOPInbound().setSubjectWrapperTemplate(getDefaultSubjectWrapperTemplate(true));
       ss.getPOPOutbound().setSubjectWrapperTemplate(getDefaultSubjectWrapperTemplate(false));
       ss.getPOPInbound().setBodyWrapperTemplate(getDefaultBodyWrapperTemplate(true));
@@ -295,36 +295,31 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
       ss.getSMTPOutbound().setNotifyBodyTemplate(getDefaultNotifyBodyTemplate(false));
       ss.getSMTPInbound().setNotifyBodyTemplate(getDefaultNotifyBodyTemplate(true));
     }
-       
+
 
     public SpamSettings getSpamSettings()
     {
         return this.zSpamSettings;
     }
 
-    public void setSpamSettings(SpamSettings newSettings)
+    public void setSpamSettings(final SpamSettings newSettings)
     {
         //TEMP HACK, Until we move the templates to database
-        ensureTemplateSettings(newSettings);      
-        Session s = getTransformContext().openSession();
-        try {
-            Transaction tx = s.beginTransaction();
+        ensureTemplateSettings(newSettings);
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(Session s)
+                {
+                    s.saveOrUpdate(newSettings);
+                    SpamImpl.this.zSpamSettings = newSettings;
 
-            s.saveOrUpdate(newSettings);
-            this.zSpamSettings = newSettings;
+                    reconfigure();
+                    return true;
+                }
 
-            reconfigure();
-
-            tx.commit();
-        } catch (HibernateException exn) {
-            logger.warn("could not get SpamSettings", exn);
-        } finally {
-            try {
-                s.close();
-            } catch (HibernateException exn) {
-                logger.warn("could not close hibernate session", exn);
-            }
-        }
+                public Object getResult() { return null; }
+            };
+        getTransformContext().runTransaction(tw);
 
         return;
     }
@@ -449,29 +444,24 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
 
     protected void preInit(String args[])
     {
-        Session s = getTransformContext().openSession();
-        try {
-            Transaction tx = s.beginTransaction();
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(Session s)
+                {
+                    Query q = s.createQuery
+                        ("from SpamSettings ss where ss.tid = :tid");
+                    q.setParameter("tid", getTid());
+                    zSpamSettings = (SpamSettings)q.uniqueResult();
 
-            Query q = s.createQuery
-                ("from SpamSettings ss where ss.tid = :tid");
-            q.setParameter("tid", getTid());
-            zSpamSettings = (SpamSettings)q.uniqueResult();
+                    ensureTemplateSettings(zSpamSettings);
 
-            ensureTemplateSettings(zSpamSettings);
+                    reconfigure();
+                    return true;
+                }
 
-            reconfigure();
-
-            tx.commit();
-        } catch (HibernateException exn) {
-            logger.warn("could not get SpamSettings", exn);
-        } finally {
-            try {
-                s.close();
-            } catch (HibernateException exn) {
-                logger.warn("could not close hibernate session", exn);
-            }
-        }
+                public Object getResult() { return null; }
+            };
+        getTransformContext().runTransaction(tw);
 
         return;
     }
@@ -483,53 +473,50 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
 
     // private methods --------------------------------------------------------
 
-    private List<SpamLog> getEventLogs(String q, List<SpamLog> l,
-                                          int limit)
+    private List<SpamLog> getEventLogs(final String q, final List<SpamLog> l,
+                                       final int limit)
     {
-        Session s = getTransformContext().openSession();
-        try {
-            Connection c = s.connection();
-            PreparedStatement ps = c.prepareStatement(q);
-            ps.setString(1, scanner.getVendorName());
-            ps.setLong(2, getPolicy().getId());
-            ps.setInt(3, limit);
-            long l0 = System.currentTimeMillis();
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                long ts = rs.getTimestamp("time_stamp").getTime();
-                Date timeStamp = new Date(ts);
-                float score = rs.getFloat("score");
-                String action = rs.getString("action");
-                String subject = rs.getString("subject");
-                String receiver = rs.getString("receiver");
-                String sender = rs.getString("sender");
-                String clientAddr = rs.getString("c_client_addr");
-                int clientPort = rs.getInt("c_client_port");
-                String serverAddr = rs.getString("s_server_addr");
-                int serverPort = rs.getInt("s_server_port");
-                boolean incoming = rs.getBoolean("incoming");
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(Session s) throws SQLException
+                {
+                    Connection c = s.connection();
+                    PreparedStatement ps = c.prepareStatement(q);
+                    ps.setString(1, scanner.getVendorName());
+                    ps.setLong(2, getPolicy().getId());
+                    ps.setInt(3, limit);
+                    long l0 = System.currentTimeMillis();
+                    ResultSet rs = ps.executeQuery();
+                    while (rs.next()) {
+                        long ts = rs.getTimestamp("time_stamp").getTime();
+                        Date timeStamp = new Date(ts);
+                        float score = rs.getFloat("score");
+                        String action = rs.getString("action");
+                        String subject = rs.getString("subject");
+                        String receiver = rs.getString("receiver");
+                        String sender = rs.getString("sender");
+                        String clientAddr = rs.getString("c_client_addr");
+                        int clientPort = rs.getInt("c_client_port");
+                        String serverAddr = rs.getString("s_server_addr");
+                        int serverPort = rs.getInt("s_server_port");
+                        boolean incoming = rs.getBoolean("incoming");
 
-                Direction d = incoming ? Direction.INCOMING : Direction.OUTGOING;
+                        Direction d = incoming ? Direction.INCOMING : Direction.OUTGOING;
 
-                SpamLog rl = new SpamLog
-                    (timeStamp, score, action, subject, receiver, sender,
-                     clientAddr, clientPort, serverAddr, serverPort, d);
+                        SpamLog rl = new SpamLog
+                            (timeStamp, score, action, subject, receiver, sender,
+                             clientAddr, clientPort, serverAddr, serverPort, d);
 
-                l.add(rl);
-            }
-            long l1 = System.currentTimeMillis();
-            logger.debug("getSpamLogs() in: " + (l1 - l0));
-        } catch (SQLException exn) {
-            logger.warn("could not get events", exn);
-        } catch (HibernateException exn) {
-            logger.warn("could not get events", exn);
-        } finally {
-            try {
-                s.close();
-            } catch (HibernateException exn) {
-                logger.warn("could not close Hibernate session", exn);
-            }
-        }
+                        l.add(rl);
+                    }
+                    long l1 = System.currentTimeMillis();
+                    logger.debug("getSpamLogs() in: " + (l1 - l0));
+                    return true;
+                }
+
+                public Object getResult() { return null; }
+            };
+        getTransformContext().runTransaction(tw);
 
         return l;
     }

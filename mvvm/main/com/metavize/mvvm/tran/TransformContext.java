@@ -16,7 +16,7 @@ package com.metavize.mvvm.tran;
 import com.metavize.mvvm.MackageDesc;
 import com.metavize.mvvm.security.Tid;
 import com.metavize.mvvm.tapi.IPSessionDesc;
-import org.hibernate.Session;
+import com.metavize.mvvm.util.TransactionWork;
 
 /**
  * Holds the context for a Transform instance.
@@ -61,7 +61,7 @@ public interface TransformContext
      */
     MackageDesc getMackageDesc();
 
-    Session openSession();
+    boolean runTransaction(TransactionWork tw);
 
     ClassLoader getClassLoader();
 
