@@ -412,7 +412,7 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
         
         
         private void doUpdateGraph() throws Exception {       
-            SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+            SwingUtilities.invokeLater( new Runnable(){ public void run(){
 		if(!updateGraph){
 		    resetCounters();
 		    for(int i=0; i<60; i++){

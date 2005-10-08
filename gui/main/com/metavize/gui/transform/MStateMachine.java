@@ -201,6 +201,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
 		setStartingView(false);
 	    else
 		setStoppingView(false);
+	    System.err.println("STARTING");
 	    this.start();
 	}
 
@@ -211,12 +212,10 @@ public class MStateMachine implements java.awt.event.ActionListener {
 		else
 		    transformContext.transform().stop();
 		
-		SwingUtilities.invokeLater( new Runnable() { public void run(){
-		    if( powerOn )
-			setOnView(true);
-		    else
-			setOffView(true);
-		}});
+		if( powerOn )
+		    setOnView(true);
+		else
+		    setOffView(true);
 	    }
 	    catch(Exception e){
 		try{
@@ -226,7 +225,10 @@ public class MStateMachine implements java.awt.event.ActionListener {
 		    Util.handleExceptionNoRestart("Error doing power", f);
 		    setProblemView(true);
 		}
-	    }	    
+	    }
+	    finally{
+		System.err.println("STOPPING");
+	    }
 	}
     }
     ///////////////////////////////////////////////
