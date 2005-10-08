@@ -51,7 +51,7 @@ if [ -x "/etc/init.d/mvvm" ]; then
 fi
 
 ## Touch all of the webstart files so the client always loads the new version
-find /usr/share/metavize/web | xargs touch 2>1 > /dev/null
+find /usr/share/metavize/web 2>/dev/null  | xargs touch > /dev/null 2>&1
 
 # delete old files
 rm -f /etc/default/bunnicula
