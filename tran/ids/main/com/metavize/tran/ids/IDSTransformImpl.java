@@ -59,14 +59,16 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
     private final PipeSpec[] pipeSpecs;
 
     private List ruleList = Collections.synchronizedList(new ArrayList());
-    private static IDSDetectionEngine engine;
+    private IDSDetectionEngine engine;
 
     public IDSTransformImpl() {
         handler = new EventHandler(this);
         octetPipeSpec = new SoloPipeSpec("ids-octet", this, handler,Fitting.OCTET_STREAM, Affinity.SERVER,10);
         httpPipeSpec = new SoloPipeSpec("ids-http", this, new TokenAdaptor(this, new IDSHttpFactory(this)), Fitting.HTTP_TOKENS, Affinity.SERVER,0);
         pipeSpecs = new PipeSpec[] { httpPipeSpec, octetPipeSpec };
-        engine.setTransform(this);
+        
+		engine = new IDSDetectionEngine();
+		engine.setTransform(this);
     }
 
     protected PipeSpec[] getPipeSpecs() {
@@ -149,7 +151,8 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 
         log.info("Loading Rules...");
         //IDSSettings settings = new IDSSettings(getTid());
-        settings = queryDBForSettings();
+        //settings = queryDBForSettings();
+		queryDBForSettings();
         if(settings == null || settings.getRules() == null) {
             settings = new IDSSettings(getTid());
             settings.setVariables(IDSRuleManager.defaultVariables);
@@ -209,7 +212,8 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
         }
     }
 
-    private IDSSettings queryDBForSettings() {
+    //private IDSSettings queryDBForSettings() {
+	private void queryDBForSettings() {
         TransactionWork tw = new TransactionWork()
             {
                 public boolean doWork(Session s)
@@ -224,12 +228,13 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
             };
         getTransformContext().runTransaction(tw);
 
-        return null;
+      //  return null;
     }
 
     protected void postInit(String args[]) {
         log.info("Post init");
-        settings = queryDBForSettings();
+		queryDBForSettings();
+        //settings = queryDBForSettings();
     }
 
     protected void preStart() throws TransformStartException {
@@ -247,9 +252,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
         IDSStatisticManager.instance().start();
     }
 
-    public static IDSDetectionEngine getEngine() {
-        if(engine == null)
-            engine = new IDSDetectionEngine();
+    public IDSDetectionEngine getEngine() {
         return engine;
     }
 
@@ -260,7 +263,8 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
     public void reconfigure() throws TransformException {
 
         if(settings == null) {
-            settings = queryDBForSettings();
+          //  settings = queryDBForSettings();
+		queryDBForSettings();
 
             if(settings == null)
                 throw new TransformException("Failed to get IDS settings: " + settings);

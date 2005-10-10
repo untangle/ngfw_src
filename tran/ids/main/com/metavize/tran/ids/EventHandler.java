@@ -3,6 +3,7 @@ package com.metavize.tran.ids;
 import com.metavize.mvvm.tapi.*;
 import com.metavize.mvvm.tapi.event.*;
 import com.metavize.mvvm.tran.Transform;
+import com.metavize.mvvm.MvvmContextFactory;
 
 public class EventHandler extends AbstractEventHandler {
 
@@ -10,7 +11,6 @@ public class EventHandler extends AbstractEventHandler {
 
     public EventHandler(Transform transform) {
         super(transform);
-        idsEngine = IDSTransformImpl.getEngine();
     }
 
     public void handleTCPNewSessionRequest(TCPNewSessionRequestEvent event) throws MPipeException {
@@ -22,7 +22,10 @@ public class EventHandler extends AbstractEventHandler {
     }
 
     private void handleNewSessionRequest(IPNewSessionRequest request, Protocol protocol) {
-        idsEngine.processNewSession(request, protocol);
+        if(idsEngine == null) 
+			idsEngine =
+				 ((IDSTransformImpl)MvvmContextFactory.context().transformManager().threadContext().transform()).getEngine();
+		idsEngine.processNewSession(request, protocol);
     }
 /*  public void handleTCPNewSession(TCPSessionEvent event) {
 

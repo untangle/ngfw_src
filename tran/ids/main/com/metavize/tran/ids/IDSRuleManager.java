@@ -16,6 +16,7 @@ import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.PortRange;
 import com.metavize.mvvm.tran.firewall.IPMatcher;
 import com.metavize.mvvm.tran.ParseException;
+import com.metavize.mvvm.MvvmContextFactory;
 
 public class IDSRuleManager {
 
@@ -241,12 +242,13 @@ public class IDSRuleManager {
 		//string = string.replaceAll("\\$EXTERNAL_NET","!10.0.0.1/24");
 		
 		Matcher match = variablePattern.matcher(string);
+		IDSDetectionEngine engine = ((IDSTransformImpl)MvvmContextFactory.context().transformManager().threadContext().transform()).getEngine();
 		if(match.find()) {
 			List<IDSVariable> varList;
-			if(IDSTransformImpl.getEngine().getSettings() == null)
+			if(engine.getSettings() == null)
 				varList = defaultVariables;
 			else {
-				varList = (List<IDSVariable>) IDSTransformImpl.getEngine().getSettings().getVariables();
+				varList = (List<IDSVariable>) engine.getSettings().getVariables();
 			}
 			for(IDSVariable var : varList) {
 				string = string.replaceAll("\\"+var.getVariable(),var.getDefinition());

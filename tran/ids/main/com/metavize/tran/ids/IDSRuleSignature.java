@@ -111,11 +111,13 @@ public class IDSRuleSignature {
 	}
 
 	public boolean execute(IDSSessionInfo info) {
+		IDSDetectionEngine engine = 
+			((IDSTransformImpl)MvvmContextFactory.context().transformManager().threadContext().transform()).getEngine();
 		this.info = info;
 		
 		for(IDSOption option : options) {
 			if(!option.run()) {
-				IDSTransformImpl.getEngine().updateUICount(PASS_COUNTER);
+				engine.updateUICount(PASS_COUNTER);
 				IDSStatisticManager.instance().incrScanned();
 				return false;
 			}
@@ -125,25 +127,27 @@ public class IDSRuleSignature {
 	}
 
 	private void doAction() {
+		 IDSDetectionEngine engine =
+			 ((IDSTransformImpl)MvvmContextFactory.context().transformManager().threadContext().transform()).getEngine();
 		boolean blocked = false;
 		switch(action) {
 			case IDSRuleManager.ALERT:
 				log.debug("Alert: "+message);
 				IDSStatisticManager.instance().incrPassed();
-				IDSTransformImpl.getEngine().updateUICount(ALERT_COUNTER);
+				engine.updateUICount(ALERT_COUNTER);
 				break;
 			
 			case IDSRuleManager.LOG:
 				log.debug("Log: "+message);
 				IDSStatisticManager.instance().incrPassed();
-				IDSTransformImpl.getEngine().updateUICount(LOG_COUNTER);
+				engine.updateUICount(LOG_COUNTER);
 				break;
 			
 			case IDSRuleManager.BLOCK:
 				log.debug("Block: "+message);
 				blocked = true;
 				IDSStatisticManager.instance().incrBlocked();
-				IDSTransformImpl.getEngine().updateUICount(BLOCK_COUNTER);
+				engine.updateUICount(BLOCK_COUNTER);
 				info.blockSession();
 				break;
 		}
