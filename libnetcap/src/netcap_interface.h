@@ -32,7 +32,6 @@ netcap_intf_db_t* netcap_interface_get_db    ( void );
 /* Retrieve the other interface */
 int           netcap_interface_other_intf    ( netcap_intf_t* intf, netcap_intf_t src );
 
-/* blocking on configuration. */
 int           netcap_interface_intf_to_index ( netcap_intf_t intf );
 
 

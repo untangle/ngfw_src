@@ -311,7 +311,7 @@ static int _arp_dst_intf ( netcap_intf_db_t* db, netcap_intf_t* intf, netcap_int
     int intf_index;
     struct in_addr next_hop;
     netcap_intf_info_t* intf_info;
-    
+
     if ( _out_interface( &intf_index, src_ip, dst_ip, &next_hop ) < 0 ) {
         return errlog( ERR_CRITICAL, "_out_interface\n" );
     }
@@ -324,6 +324,8 @@ static int _arp_dst_intf ( netcap_intf_db_t* db, netcap_intf_t* intf, netcap_int
     if ( intf_info->bridge_info != NULL ) {
         int ret;
         struct ether_addr mac_address;
+        // int src_intf_index = 0;
+        // netcap_intf_info_t* src_intf_info = NULL;
         
         if (( ret = _arp_address( db, &next_hop, &mac_address, intf_info, delay_array )) < 0 ) {
             return errlog( ERR_CRITICAL, "_arp_address\n" );
@@ -338,11 +340,19 @@ static int _arp_dst_intf ( netcap_intf_db_t* db, netcap_intf_t* intf, netcap_int
             return errlog( ERR_CRITICAL, "_arp_bridge_interface\n" );
         }
 
+        /* Convert the source interface from a netcap index to a linux index, not necessary,
+         * just use the bridge it is going out on. */
+        // if (( src_intf_info = netcap_intf_db_info_to_info( db, src_intf )) == NULL ) {
+        // errlog( ERR_WARNING, "netcap_intf_db_info_to_info[%d]\n", src_intf );
+        // } else {
+        // src_intf_index = src_intf_info->index;
+        // }
+
         /* XXXX should pass in the db rather than the default one to avoid synchronization issues */
         /* If the packet is multicast or broadcast, you have to force it out the other
          * interface */
         if ((( ret = netcap_interface_is_multicast( dst_ip->s_addr )) != 1 ) &&
-            ( ret = netcap_interface_is_broadcast( dst_ip->s_addr, src_intf )) < 0 ) {
+            ( ret = netcap_interface_is_broadcast( dst_ip->s_addr, intf_info->index )) < 0 ) {
             errlog( ERR_CRITICAL, "netcap_inetface_is_broadcast\n" );
         } else if ( ret == 1 ) {
             netcap_intf_bridge_info_t* bridge_info = intf_info->bridge_info;

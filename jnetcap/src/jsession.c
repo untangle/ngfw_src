@@ -44,7 +44,7 @@
  * Signature: (II)J
  */
 JNIEXPORT jlong JNICALL JF_Session( getSession )
-( JNIEnv *env, jclass _this, jint session_id, jshort protocol )
+    ( JNIEnv *env, jclass _class, jint session_id, jshort protocol )
 {
     netcap_session_t* session;
 
@@ -207,13 +207,13 @@ JNIEXPORT void JNICALL JF_Session( raze )
  * Method:    toString
  * Signature: (J)Ljava/lang/String;
  */
-JNIEXPORT jstring JNICALL Java_com_metavize_jnetcap_NetcapSession_toString
+JNIEXPORT jstring JNICALL JF_Session( toString )
   (JNIEnv *env, jclass _this, jlong session_ptr, jboolean ifClient )
 {
     netcap_session_t* session = NULL;
     netcap_endpoints_t* endpoints;
     /* Just leaving some slack in case */
-    char buf[sizeof( "[c]xxx.xxx.xxx.xxx:ppppp -> [c]xxx.xxx.xxx.xxx:ppppp" ) + 16];
+    char buf[sizeof( "[cc]xxx.xxx.xxx.xxx:ppppp -> [cc]xxx.xxx.xxx.xxx:ppppp" ) + 16];
 
     JLONG_TO_SESSION_NULL( session, session_ptr );
 
@@ -229,6 +229,22 @@ JNIEXPORT jstring JNICALL Java_com_metavize_jnetcap_NetcapSession_toString
     return (*env)->NewStringUTF( env, buf );
 }
 
+/*
+ * Class:     com_metavize_jnetcap_NetcapSession
+ * Method:    updateServerIntf
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_com_metavize_jnetcap_NetcapSession_updateServerIntf
+(JNIEnv *env, jobject _this, jlong session_ptr )
+{
+    netcap_session_t* session;
+    JLONG_TO_SESSION_VOID( session, session_ptr );
+
+    if ( netcap_interface_dst_intf( &session->srv.intf, session->cli.intf, 
+                                    &session->cli.cli.host, &session->cli.srv.host ) < 0 ) {
+        return jmvutil_error_void( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "netcap_arp_dst_intf\n" );
+    }
+}
 
 /*
  * Class:     com_metavize_jnetcap_NetcapSession

@@ -55,11 +55,13 @@ public abstract class NetcapSession {
     }
 
     /* Returns one of Netcap.IPPROTO_UDP, Netcap.IPPROTO_TCP, Netcap.IPPROTO_ICMP */
-    public short protocol() {
+    public short protocol()
+    {
         return (short)getIntValue( FLAG_PROTOCOL, pointer.value());
     }
 
-    public int id() {
+    public int id() 
+    {
         return getIntValue( FLAG_ID, pointer.value());
     }
 
@@ -79,7 +81,8 @@ public abstract class NetcapSession {
         return icmpServerMailbox;
     }
 
-    public void raze() {
+    public void raze()
+    {
         raze( pointer.value());
 
         pointer.raze();
@@ -100,6 +103,11 @@ public abstract class NetcapSession {
     {
         return toString( pointer.value(), true );
     }
+
+    public void updateServerIntf()
+    {
+        updateServerIntf( pointer.value());
+    }
     
     protected abstract Endpoints makeEndpoints( boolean ifClient );
 
@@ -114,6 +122,8 @@ public abstract class NetcapSession {
     protected static native String getStringValue( int id, long session );
 
     protected static native String toString( long session, boolean ifClient );
+
+    private native void updateServerIntf( long session );
 
     private native void serverInterfaceId( long session, byte intf );
 

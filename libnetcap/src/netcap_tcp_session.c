@@ -33,12 +33,6 @@ int netcap_tcp_session_init( netcap_session_t* netcap_sess,
     memcpy( &endpoints.srv.host, &server_addr, sizeof( in_addr_t ));
 
     endpoints.intf = cli_intf;
-
-    if ( NC_INTF_UNK == srv_intf ) {
-        if ( netcap_arp_dst_intf( &srv_intf, cli_intf, &endpoints.cli.host, &endpoints.srv.host ) < 0 ) {
-            return errlog( ERR_CRITICAL, "netcap_arp_dst_intf\n" );
-        }
-    }
     
     // Create a new session without mailboxes
     if ( netcap_session_init( netcap_sess, &endpoints, srv_intf, !NC_SESSION_IF_MB ) < 0 ) {
@@ -57,7 +51,6 @@ int netcap_tcp_session_init( netcap_session_t* netcap_sess,
     /* server */
     netcap_sess->server_sock = server_sock;
 
-    /* XXX The if statement isn't necessary since this function is only for TCP */
     netcap_sess->protocol = IPPROTO_TCP;
 
     if (netcap_sess->client_sock > 0) {
@@ -89,7 +82,7 @@ netcap_session_t* netcap_tcp_session_create(in_addr_t client_addr, u_short clien
     netcap_session_t* netcap_sess;
     
     if ((netcap_sess = netcap_tcp_session_malloc()) == NULL) {
-        return errlog_null(ERR_CRITICAL,"netcap_udp_session_malloc");
+        return errlog_null( ERR_CRITICAL, "netcap_udp_session_malloc\n" );
     }
 
     ret = netcap_tcp_session_init ( netcap_sess, client_addr, client_port,
@@ -98,10 +91,10 @@ netcap_session_t* netcap_tcp_session_create(in_addr_t client_addr, u_short clien
 
     if ( ret < 0) {
         if ( netcap_tcp_session_free(netcap_sess)) {
-            errlog(ERR_CRITICAL,"netcap_udp_session_free");
+            errlog( ERR_CRITICAL, "netcap_udp_session_free\n" );
         }
 
-        return errlog_null(ERR_CRITICAL,"netcap_udp_session_init");        
+        return errlog_null( ERR_CRITICAL, "netcap_tcp_session_init\n" );
     }
 
     return netcap_sess;

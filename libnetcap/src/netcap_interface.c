@@ -31,7 +31,6 @@
 #include "netcap_sched.h"
 #include "netcap_intf_db.h"
 
-/* The htonl doesn't do anything */
 #define BROADCAST_MASK          htonl(0xFF000000)
 
 /* This is in network byte order */
@@ -274,7 +273,7 @@ int netcap_interface_is_broadcast ( in_addr_t addr, int index )
             for( d = 0 ; ( info->data != NULL ) && ( d < info->data_count ) ; d++ ) {
                 in_addr_t broadcast = info->data[d].broadcast.s_addr;
                 in_addr_t netmask   = info->data[d].netmask.s_addr;
-                if (( addr == broadcast ) || ( addr & ~netmask ) == ( broadcast & netmask )) return 1;
+                if (( addr == broadcast ) || ( addr & ~netmask ) == ( broadcast & ~netmask )) return 1;
             }
         }
     } else {
@@ -290,7 +289,7 @@ int netcap_interface_is_broadcast ( in_addr_t addr, int index )
         for( d = 0 ; ( info->data != NULL ) && ( d < info->data_count ) ; d++ ) {
             in_addr_t broadcast = info->data[d].broadcast.s_addr;
             in_addr_t netmask   = info->data[d].netmask.s_addr;
-            if (( addr == broadcast ) || ( addr & ~netmask ) == ( broadcast & netmask )) return 1;
+            if (( addr == broadcast ) || ( addr & ~netmask ) == ( broadcast & ~netmask )) return 1;
         }
     }
     return 0;
@@ -429,7 +428,7 @@ int           netcap_interface_other_intf    ( netcap_intf_t* intf, netcap_intf_
 
 int netcap_interface_intf_to_index( netcap_intf_t netcap_intf )
 {
-    netcap_intf_info_t* tmp;
+    netcap_intf_info_t* tmp = NULL;
 
     netcap_intf_db_t* db = _interface.db;
     if ( db == NULL ) return errlog( ERR_CRITICAL, "interface.db is not initialized\n" );

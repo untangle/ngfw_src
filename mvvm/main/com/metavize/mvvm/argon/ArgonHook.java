@@ -81,12 +81,23 @@ abstract class ArgonHook implements Runnable
             sessionGlobalState = new SessionGlobalState( netcapSession(), clientSideListener(),
                                                          serverSideListener(), this );
 
-            if ( logger.isDebugEnabled())
-                logger.debug( "New thread for session id: " + netcapSession().id() +
+            if ( logger.isDebugEnabled()) {
+                logger.debug( "New thread for session id: " + netcapSession().id() + 
                               " " + sessionGlobalState );
+                              
+            }
+
+            /* Update the server interface with the current server address */
+            NetcapSession netcapSession = sessionGlobalState.netcapSession();
+            try {
+                netcapSession.updateServerIntf();
+            } catch ( Exception e ) {
+                logger.warn( "Unable to update server intf for the following session " + netcapSession, e );
+                raze();
+                return;
+            }
 
             /* Update the server interface with the override table */
-            NetcapSession netcapSession = sessionGlobalState.netcapSession();
             byte originalServerIntf = IntfConverter.toArgon( netcapSession.serverSide().interfaceId());
             InterfaceOverride.getInstance().updateDestinationInterface( netcapSession );
 

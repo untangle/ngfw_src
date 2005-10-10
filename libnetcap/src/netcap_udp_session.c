@@ -21,19 +21,6 @@ int netcap_udp_session_init(netcap_session_t* netcap_sess, netcap_pkt_t* pkt)
     memcpy( &endpoints.srv, &pkt->dst, sizeof( endpoints.srv ));
     
     endpoints.intf = pkt->src_intf;
-    if ( NC_INTF_UNK == pkt->dst_intf ) {
-        if ( netcap_arp_dst_intf( &pkt->dst_intf, pkt->src_intf, &pkt->src.host, &pkt->dst.host ) < 0 ) {
-            return errlog( ERR_CRITICAL, "netcap_arp_dst_intf\n" );
-        }
-        
-        if ( pkt->dst_intf == NC_INTF_UNK ) {
-            /* XXXXXXXXXXXXX For now just say it is going out the other interface, this is really BAD, 
-             * dirk told me(rbs) to do it */
-            if ( pkt->src_intf == NC_INTF_0 ) pkt->dst_intf = NC_INTF_1;
-            else pkt->dst_intf = NC_INTF_0;
-        }
-        /* XXX What to do if it can't complete XXX */
-    }
 
     /* Set alive to true */
     netcap_sess->alive = 1;
@@ -45,7 +32,7 @@ int netcap_udp_session_init(netcap_session_t* netcap_sess, netcap_pkt_t* pkt)
     netcap_sess->ttl      = pkt->ttl;
     netcap_sess->tos      = pkt->tos;
 
-    if ( netcap_session_init( netcap_sess, &endpoints, pkt->dst_intf, NC_SESSION_IF_MB ) < 0 ) {
+    if ( netcap_session_init( netcap_sess, &endpoints, NC_INTF_UNK, NC_SESSION_IF_MB ) < 0 ) {
         return errlog( ERR_CRITICAL, "netcap_session_init\n" );
     }
 

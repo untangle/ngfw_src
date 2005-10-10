@@ -724,13 +724,14 @@ static int  _netcap_icmp_send( char *data, int data_len, netcap_pkt_t* pkt, int 
 
     
     if (( ret = sendmsg( _icmp.send_sock, &msg, flags )) < 0 ) {
-        if ( errno == EPERM ) {
-            errlog( ERR_CRITICAL, "ICMP: EPERM sending an ICMP packet\n" );
+        if ( errno == EINVAL && ( netcap_interface_is_broadcast( pkt->src.host.s_addr, 0 ))) {
+            /* This is an attempt to send a message from a broadcast address, which is obviously,
+             * not allowed */
+            debug( 4, "ICMP: (%s -> %s) attempt to send ICMP message from a broadcast address\n" );
         } else {
-            errlog(ERR_CRITICAL,"sendmsg: %s | ",errstr);
-            errlog_noprefix(ERR_CRITICAL, "(%s -> ", inet_ntoa(pkt->src.host));
-            errlog_noprefix(ERR_CRITICAL, "%s) data_len:%i ttl:%i tos:%i nfmark:%#10x\n",
-                            inet_ntoa(pkt->dst.host),data_len, pkt->ttl, pkt->tos, nfmark);
+            errlog( ERR_CRITICAL, "sendmsg: %s | (%s -> %s) len:%i ttl:%i tos:%i nfmark:%#10x\n", errstr,
+                    unet_next_inet_ntoa( pkt->src.host.s_addr ), unet_next_inet_ntoa( pkt->dst.host.s_addr ),
+                    data_len, pkt->ttl, pkt->tos, nfmark );            
         }
     }
     
