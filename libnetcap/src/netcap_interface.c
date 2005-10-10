@@ -72,9 +72,9 @@
 #define NETCAP_MARK_INTF_MASK   0xF
 
 // Wait this amount of time before freeing an old bridge configuration
-#define _GARBAGE_DELAY_USEC     SEC_TO_USEC( 10 )
+#define _GARBAGE_DELAY_USEC     SEC_TO_USEC( 20 )
 
-// Wait this amount of time on shutdown before freeing all of the bridge conf
+// Wait this amount of time on shutdown before freeing all of the interface conf
 #define _CLEANUP_DELAY_USEC     SEC_TO_USEC( 2 )
 
 #define _GARBAGE_ID     0x24BD74E4
