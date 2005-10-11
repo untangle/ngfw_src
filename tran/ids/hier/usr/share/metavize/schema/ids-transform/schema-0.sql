@@ -1,3 +1,5 @@
+-- schema for release 3.0
+
 -------------
 -- settings |
 -------------
@@ -61,3 +63,8 @@ create table events.TR_IDS_STATISTIC_EVT (
 	ids_blocked int4,
 	time_stamp timestamp,
 	PRIMARY KEY (event_id));
+
+-- indeces for reporting
+
+CREATE INDEX tr_ids_evt_sid_idx ON events.tr_ids_evt (session_id);
+

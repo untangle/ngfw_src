@@ -118,6 +118,8 @@ ALTER TABLE settings.mail_settings ALTER COLUMN use_tls SET NOT NULL;
 
 -- Constraints
  
+CREATE INDEX pl_stats_sid_idx ON events.pl_stats (session_id);
+
 ALTER TABLE settings.tid
     ADD CONSTRAINT fk_tid_policy
     FOREIGN KEY (policy_id) REFERENCES settings.policy;
