@@ -2,3 +2,4 @@
 
 mcli -t 30 register sophos-transform 2>/dev/null || true
 
+touch /usr/share/metavize/web/webstart/sophos-transform.mar > /dev/null 2>&1 
