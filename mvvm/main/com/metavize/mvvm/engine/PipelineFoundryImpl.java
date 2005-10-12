@@ -61,10 +61,12 @@ class PipelineFoundryImpl implements PipelineFoundry
     private final Map<Integer, PipelineImpl> pipelines
         = new ConcurrentHashMap<Integer, PipelineImpl>();
 
+    // These don't need to be concurrent and being able to use a null key
+    // is currently useful for the null policy.
     private static final Map<Policy, Map<Fitting, List<MPipeFitting>>> inboundChains
-        = new ConcurrentHashMap<Policy, Map<Fitting, List<MPipeFitting>>>();
+        = new HashMap<Policy, Map<Fitting, List<MPipeFitting>>>();
     private static final Map<Policy, Map<Fitting, List<MPipeFitting>>> outboundChains
-        = new ConcurrentHashMap<Policy, Map<Fitting, List<MPipeFitting>>>();
+        = new HashMap<Policy, Map<Fitting, List<MPipeFitting>>>();
 
     private PipelineFoundryImpl() { }
 
