@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.metavize.mvvm.MackageDesc;
 import com.metavize.mvvm.security.Tid;
 
 /**
@@ -42,6 +43,8 @@ public class TransformDesc implements Serializable
 
     private final String displayName;
 
+    private final MackageDesc mackageDesc;
+
     private final int tcpClientReadBufferSize = 8192;
     private final int tcpServerReadBufferSize = 8192;
     private final int udpMaxPacketSize = 16384;
@@ -49,7 +52,8 @@ public class TransformDesc implements Serializable
     public TransformDesc(Tid tid, String name, String className,
                          String guiClassName, String transformBase,
                          List<String> exports, List<String> parents,
-                         boolean singleInstance, String displayName)
+                         boolean singleInstance, String displayName,
+                         MackageDesc mackageDesc)
     {
         this.tid = tid;
         this.name = name;
@@ -62,6 +66,7 @@ public class TransformDesc implements Serializable
         this.parents = Collections.unmodifiableList(l);
         this.singleInstance = singleInstance;
         this.displayName = displayName;
+        this.mackageDesc = mackageDesc;
     }
 
     // accessors --------------------------------------------------------------
@@ -164,6 +169,16 @@ public class TransformDesc implements Serializable
     public String getDisplayName()
     {
         return displayName;
+    }
+
+    /**
+     * The MackageDesc of the transform.
+     *
+     * @return a <code>MackageDesc</code> value
+     */
+    public MackageDesc getMackageDesc()
+    {
+        return mackageDesc;
     }
 
     /**

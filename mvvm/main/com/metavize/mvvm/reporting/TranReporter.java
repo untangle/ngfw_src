@@ -21,7 +21,6 @@ import java.util.jar.*;
 import com.metavize.mvvm.engine.MvvmTransformHandler;
 import com.metavize.mvvm.reporting.summary.*;
 import com.metavize.mvvm.security.Tid;
-import com.metavize.mvvm.reporting.Util;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.export.*;
 import org.apache.log4j.Logger;
@@ -42,52 +41,52 @@ public class TranReporter {
     private static final String SUMMARY_FRAGMENT_DAILY = "sum-daily.html";
     private static final String SUMMARY_FRAGMENT_WEEKLY = "sum-weekly.html";
     private static final String SUMMARY_FRAGMENT_MONTHLY = "sum-monthly.html";
-    
+
     private final String tranName;
     private final URLClassLoader ucl;
     private final JarFile jf;
     private final File tranDir;
 
     private Map<String,Object> extraParams = new HashMap<String,Object>();
-    
+
     TranReporter(File outputDir, String tranName, JarFile jf, URLClassLoader ucl)
     {
-	this.tranName = tranName;
-	// These next two are the same, just different forms.
-	this.jf = jf;
-	this.ucl = ucl;
-	
-	tranDir = new File(outputDir, tranName);
+    this.tranName = tranName;
+    // These next two are the same, just different forms.
+    this.jf = jf;
+    this.ucl = ucl;
+
+    tranDir = new File(outputDir, tranName);
     }
 
-    
+
     public void process(Connection conn) throws Exception
     {
-	tranDir.mkdir();
-	
-	File imagesDir = new File(tranDir, "images");
-	File globalImagesDir = new File(tranDir, "../images");
-	MvvmTransformHandler mth = new MvvmTransformHandler();
-	
-	InputStream is = ucl.getResourceAsStream("META-INF/report-files");
-	if (null == is) {
-	    logger.warn("No reports for: " + ucl.getURLs()[0]);
-	    return;
-	} else {
+    tranDir.mkdir();
+
+    File imagesDir = new File(tranDir, "images");
+    File globalImagesDir = new File(tranDir, "../images");
+    MvvmTransformHandler mth = new MvvmTransformHandler(null);
+
+    InputStream is = ucl.getResourceAsStream("META-INF/report-files");
+    if (null == is) {
+        logger.warn("No reports for: " + ucl.getURLs()[0]);
+        return;
+    } else {
             logger.info("Beginning generation for: " + tranName);
         }
 
-	// Need to do the parameters first.
-	BufferedReader br = new BufferedReader(new InputStreamReader(is));
-	for (String line = br.readLine(); null != line; line = br.readLine()) {
+    // Need to do the parameters first.
+    BufferedReader br = new BufferedReader(new InputStreamReader(is));
+    for (String line = br.readLine(); null != line; line = br.readLine()) {
             if (line.startsWith("#"))
                 continue;
-	    StringTokenizer tok = new StringTokenizer(line, ":");
-	    if (!tok.hasMoreTokens()) { continue; }
-	    String resourceOrClassname = tok.nextToken();
-	    if (!tok.hasMoreTokens()) { continue; }
-	    String type = tok.nextToken();
-	    if (type.equalsIgnoreCase("parameter")) {
+        StringTokenizer tok = new StringTokenizer(line, ":");
+        if (!tok.hasMoreTokens()) { continue; }
+        String resourceOrClassname = tok.nextToken();
+        if (!tok.hasMoreTokens()) { continue; }
+        String type = tok.nextToken();
+        if (type.equalsIgnoreCase("parameter")) {
                 String paramName = resourceOrClassname;
                 if (!tok.hasMoreTokens())
                     throw new Error("Missing parameter value");
@@ -99,133 +98,133 @@ public class TranReporter {
         is.close();
 
         // Now do everything else.
-	is = ucl.getResourceAsStream("META-INF/report-files");
-	br = new BufferedReader(new InputStreamReader(is));
-	for (String line = br.readLine(); null != line; line = br.readLine()) {
+    is = ucl.getResourceAsStream("META-INF/report-files");
+    br = new BufferedReader(new InputStreamReader(is));
+    for (String line = br.readLine(); null != line; line = br.readLine()) {
             if (line.startsWith("#"))
                 continue;
-	    StringTokenizer tok = new StringTokenizer(line, ":");
-	    if (!tok.hasMoreTokens()) { continue; }
-	    String resourceOrClassname = tok.nextToken();
-	    if (!tok.hasMoreTokens()) { continue; }
-	    String type = tok.nextToken();
-	    if (type.equalsIgnoreCase("parameter")) {
+        StringTokenizer tok = new StringTokenizer(line, ":");
+        if (!tok.hasMoreTokens()) { continue; }
+        String resourceOrClassname = tok.nextToken();
+        if (!tok.hasMoreTokens()) { continue; }
+        String type = tok.nextToken();
+        if (type.equalsIgnoreCase("parameter")) {
                 continue;
             } else if (type.equalsIgnoreCase("summarizer")) {
-		String className = resourceOrClassname;
-		ClassLoader cl = Thread.currentThread().getContextClassLoader();
-		try {
-		    Class reportClass = cl.loadClass(className);
-		    ReportSummarizer reportSummarizer;
-		    reportSummarizer = (ReportSummarizer) reportClass.newInstance();
-		    logger.debug("Found summarizer: " + className);
-		    String dailyFile = new File(tranDir, SUMMARY_FRAGMENT_DAILY).getCanonicalPath();
-		    processReportSummarizer(reportSummarizer, conn, dailyFile, Util.lastday, Util.midnight);
-		    reportSummarizer = (ReportSummarizer) reportClass.newInstance();
-		    String weeklyFile = new File(tranDir, SUMMARY_FRAGMENT_WEEKLY).getCanonicalPath();
-		    processReportSummarizer(reportSummarizer, conn, weeklyFile, Util.lastweek, Util.midnight);
-		    reportSummarizer = (ReportSummarizer) reportClass.newInstance();
-		    String monthlyFile = new File(tranDir, SUMMARY_FRAGMENT_MONTHLY).getCanonicalPath();
-		    processReportSummarizer(reportSummarizer, conn, monthlyFile, Util.lastmonth, Util.midnight);
-		} catch (Exception x) {
-		    logger.warn("No such class: " + className);
-		}
-	    }
-	    else if (type.equalsIgnoreCase("summaryGraph")) {
-		String className = resourceOrClassname;
-		ClassLoader cl = Thread.currentThread().getContextClassLoader();
-		String outputName = type;
-		try {
-		    Class reportClass = cl.loadClass(className);
-		    ReportGraph reportGraph;
-		    String name = tok.nextToken();
-		    reportGraph = (ReportGraph) reportClass.newInstance();
-		    logger.debug("Found graph: " + className);
-		    String dailyFile = new File(tranDir, name + "--daily.jpg").getCanonicalPath();
-		    processReportGraph(reportGraph, conn, dailyFile, Util.REPORT_TYPE_DAILY, Util.lastday, Util.midnight);
-		    String weeklyFile = new File(tranDir, name + "--weekly.jpg").getCanonicalPath();
-		    processReportGraph(reportGraph, conn, weeklyFile, Util.REPORT_TYPE_WEEKLY, Util.lastweek, Util.midnight);
-		    String monthlyFile = new File(tranDir, name + "--monthly.jpg").getCanonicalPath();
-		    processReportGraph(reportGraph, conn, monthlyFile, Util.REPORT_TYPE_MONTHLY, Util.lastmonth, Util.midnight);
-		} catch (Exception x) {
-		    logger.warn("No such class: " + className);
-		}
-	    }
-	    else {
-		String resource = resourceOrClassname;
-		String outputName = type;
-		String outputFile = new File(tranDir, outputName).getCanonicalPath();
-		String outputImages = globalImagesDir.getCanonicalPath();
-		processReport(resource, conn, outputFile + "--daily", outputImages, Util.lastday, Util.midnight);
-		processReport(resource, conn, outputFile + "--weekly", outputImages, Util.lastweek, Util.midnight);
-		processReport(resource, conn, outputFile + "--monthly", outputImages, Util.lastmonth, Util.midnight);
-	    }
-	}
-	is.close();
-	
-	// We can't use ucl.getResourceAsStream(ICON_ORG); since we don't know the path.
-	for (Enumeration e = jf.entries(); e.hasMoreElements(); ) {
-	    JarEntry je = (JarEntry)e.nextElement();
-	    String name = je.getName();
-	    // System.out.println("Jar contains " + name);
-	    if (name.endsWith(File.separator + ICON_ORG)) {
-		is = jf.getInputStream(je);
-		imagesDir.mkdir();
-		FileOutputStream fos = new FileOutputStream(new File(imagesDir, ICON_ORG));
-		byte[] buf = new byte[256];
-		int count;
-		while ((count = is.read(buf)) > 0) {
-		    fos.write(buf, 0, count);
-		}
-		fos.close();
-		is.close();
-	    } else if (name.endsWith(File.separator + ICON_DESC)) {
-		is = jf.getInputStream(je);
-		imagesDir.mkdir();
-		FileOutputStream fos = new FileOutputStream(new File(imagesDir, ICON_DESC));
-		byte[] buf = new byte[256];
-		int count;
-		while ((count = is.read(buf)) > 0) {
-		    fos.write(buf, 0, count);
-		}
-		fos.close();
-		is.close();
-	    }
-	}
-	
-	is = ucl.getResourceAsStream("META-INF/mvvm-transform.xml");
-	XMLReader xr = XMLReaderFactory.createXMLReader();
-	xr.setContentHandler(mth);
-	xr.parse(new InputSource(is));
-	is.close();
-	
-	String mktName = mth.getTransformDesc(new Tid()).getDisplayName();
-	// HACK O RAMA XXXXXXXXX
-	if (mktName.startsWith("EdgeReport"))
-	    mktName = "EdgeGuard Appliance";
-	logger.debug("Writing transform name: " + mktName);
-	FileOutputStream fos = new FileOutputStream(new File(tranDir, "name"));
-	PrintWriter pw = new PrintWriter(fos);
-	pw.println(mktName);
-	pw.close();
-	
-	logger.debug("copying report-files");
-	is = ucl.getResourceAsStream("META-INF/report-files");
-	br = new BufferedReader(new InputStreamReader(is));
-	fos = new FileOutputStream(new File(tranDir, "report-files"));
-	pw = new PrintWriter(fos);
-	for (String line = br.readLine(); null != line; line = br.readLine()) {
-	    pw.println(line);
-	}
-	is.close();
-	pw.close();
+        String className = resourceOrClassname;
+        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        try {
+            Class reportClass = cl.loadClass(className);
+            ReportSummarizer reportSummarizer;
+            reportSummarizer = (ReportSummarizer) reportClass.newInstance();
+            logger.debug("Found summarizer: " + className);
+            String dailyFile = new File(tranDir, SUMMARY_FRAGMENT_DAILY).getCanonicalPath();
+            processReportSummarizer(reportSummarizer, conn, dailyFile, Util.lastday, Util.midnight);
+            reportSummarizer = (ReportSummarizer) reportClass.newInstance();
+            String weeklyFile = new File(tranDir, SUMMARY_FRAGMENT_WEEKLY).getCanonicalPath();
+            processReportSummarizer(reportSummarizer, conn, weeklyFile, Util.lastweek, Util.midnight);
+            reportSummarizer = (ReportSummarizer) reportClass.newInstance();
+            String monthlyFile = new File(tranDir, SUMMARY_FRAGMENT_MONTHLY).getCanonicalPath();
+            processReportSummarizer(reportSummarizer, conn, monthlyFile, Util.lastmonth, Util.midnight);
+        } catch (Exception x) {
+            logger.warn("No such class: " + className);
+        }
+        }
+        else if (type.equalsIgnoreCase("summaryGraph")) {
+        String className = resourceOrClassname;
+        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        String outputName = type;
+        try {
+            Class reportClass = cl.loadClass(className);
+            ReportGraph reportGraph;
+            String name = tok.nextToken();
+            reportGraph = (ReportGraph) reportClass.newInstance();
+            logger.debug("Found graph: " + className);
+            String dailyFile = new File(tranDir, name + "--daily.jpg").getCanonicalPath();
+            processReportGraph(reportGraph, conn, dailyFile, Util.REPORT_TYPE_DAILY, Util.lastday, Util.midnight);
+            String weeklyFile = new File(tranDir, name + "--weekly.jpg").getCanonicalPath();
+            processReportGraph(reportGraph, conn, weeklyFile, Util.REPORT_TYPE_WEEKLY, Util.lastweek, Util.midnight);
+            String monthlyFile = new File(tranDir, name + "--monthly.jpg").getCanonicalPath();
+            processReportGraph(reportGraph, conn, monthlyFile, Util.REPORT_TYPE_MONTHLY, Util.lastmonth, Util.midnight);
+        } catch (Exception x) {
+            logger.warn("No such class: " + className);
+        }
+        }
+        else {
+        String resource = resourceOrClassname;
+        String outputName = type;
+        String outputFile = new File(tranDir, outputName).getCanonicalPath();
+        String outputImages = globalImagesDir.getCanonicalPath();
+        processReport(resource, conn, outputFile + "--daily", outputImages, Util.lastday, Util.midnight);
+        processReport(resource, conn, outputFile + "--weekly", outputImages, Util.lastweek, Util.midnight);
+        processReport(resource, conn, outputFile + "--monthly", outputImages, Util.lastmonth, Util.midnight);
+        }
+    }
+    is.close();
+
+    // We can't use ucl.getResourceAsStream(ICON_ORG); since we don't know the path.
+    for (Enumeration e = jf.entries(); e.hasMoreElements(); ) {
+        JarEntry je = (JarEntry)e.nextElement();
+        String name = je.getName();
+        // System.out.println("Jar contains " + name);
+        if (name.endsWith(File.separator + ICON_ORG)) {
+        is = jf.getInputStream(je);
+        imagesDir.mkdir();
+        FileOutputStream fos = new FileOutputStream(new File(imagesDir, ICON_ORG));
+        byte[] buf = new byte[256];
+        int count;
+        while ((count = is.read(buf)) > 0) {
+            fos.write(buf, 0, count);
+        }
+        fos.close();
+        is.close();
+        } else if (name.endsWith(File.separator + ICON_DESC)) {
+        is = jf.getInputStream(je);
+        imagesDir.mkdir();
+        FileOutputStream fos = new FileOutputStream(new File(imagesDir, ICON_DESC));
+        byte[] buf = new byte[256];
+        int count;
+        while ((count = is.read(buf)) > 0) {
+            fos.write(buf, 0, count);
+        }
+        fos.close();
+        is.close();
+        }
+    }
+
+    is = ucl.getResourceAsStream("META-INF/mvvm-transform.xml");
+    XMLReader xr = XMLReaderFactory.createXMLReader();
+    xr.setContentHandler(mth);
+    xr.parse(new InputSource(is));
+    is.close();
+
+    String mktName = mth.getTransformDesc(new Tid()).getDisplayName();
+    // HACK O RAMA XXXXXXXXX
+    if (mktName.startsWith("EdgeReport"))
+        mktName = "EdgeGuard Appliance";
+    logger.debug("Writing transform name: " + mktName);
+    FileOutputStream fos = new FileOutputStream(new File(tranDir, "name"));
+    PrintWriter pw = new PrintWriter(fos);
+    pw.println(mktName);
+    pw.close();
+
+    logger.debug("copying report-files");
+    is = ucl.getResourceAsStream("META-INF/report-files");
+    br = new BufferedReader(new InputStreamReader(is));
+    fos = new FileOutputStream(new File(tranDir, "report-files"));
+    pw = new PrintWriter(fos);
+    for (String line = br.readLine(); null != line; line = br.readLine()) {
+        pw.println(line);
+    }
+    is.close();
+    pw.close();
     }
 
 
     ////////////////////////////////////////////////////
     // PROCESSORS //////////////////////////////////////
     ////////////////////////////////////////////////////
-    
+
     // Used for both general and specific transforms.
     private void processReportSummarizer(ReportSummarizer reportSummarizer, Connection conn, String fileName, Timestamp startTime, Timestamp endTime)
         throws IOException
@@ -237,68 +236,68 @@ public class TranReporter {
     }
 
     private void processReport(String resource, Connection conn, String base, String imagesDir, Timestamp startTime, Timestamp endTime)
-	throws Exception
+    throws Exception
     {
-	logger.debug("From: " + startTime + " To: " + endTime);
-	
-	InputStream jasperIs = ucl.getResourceAsStream(resource);
-	if (null == jasperIs) {
-	    logger.warn("No such resource: " + resource);
-	    return;
-	}
-	
-	Map params = new HashMap();
-	params.put("startTime", startTime);
-	params.put("endTime", endTime);
+    logger.debug("From: " + startTime + " To: " + endTime);
+
+    InputStream jasperIs = ucl.getResourceAsStream(resource);
+    if (null == jasperIs) {
+        logger.warn("No such resource: " + resource);
+        return;
+    }
+
+    Map params = new HashMap();
+    params.put("startTime", startTime);
+    params.put("endTime", endTime);
         for (String paramName : extraParams.keySet()) {
             Object paramValue = extraParams.get(paramName);
             params.put(paramName, paramValue);
         }
-	params.put(JRParameter.REPORT_MAX_COUNT, Util.MAX_ROWS_PER_REPORT);
-	logger.debug("Filling report");
-	JasperPrint print = JasperFillManager.fillReport(jasperIs, params, conn);
-	
-	// PDF
-	String pdfFile = base + ".pdf";
-	logger.debug("Exporting report to: " + pdfFile);
-	JasperExportManager.exportReportToPdfFile(print, pdfFile);
-	
-	// HTML
-	String htmlFile = base + ".html";
-	logger.debug("Exporting report to: " + htmlFile);
-	JRHtmlExporter exporter = new JRHtmlExporter();
-	exporter.setParameter(JRExporterParameter.JASPER_PRINT, print);
-	exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, htmlFile);
-	exporter.setParameter(JRHtmlExporterParameter.IMAGES_DIR_NAME, imagesDir);
-	exporter.setParameter(JRHtmlExporterParameter.IMAGES_URI, "../images/");
-	exporter.exportReport();
-	// Was: JasperExportManager.exportReportToHtmlFile(print, htmlFile);
+    params.put(JRParameter.REPORT_MAX_COUNT, Util.MAX_ROWS_PER_REPORT);
+    logger.debug("Filling report");
+    JasperPrint print = JasperFillManager.fillReport(jasperIs, params, conn);
+
+    // PDF
+    String pdfFile = base + ".pdf";
+    logger.debug("Exporting report to: " + pdfFile);
+    JasperExportManager.exportReportToPdfFile(print, pdfFile);
+
+    // HTML
+    String htmlFile = base + ".html";
+    logger.debug("Exporting report to: " + htmlFile);
+    JRHtmlExporter exporter = new JRHtmlExporter();
+    exporter.setParameter(JRExporterParameter.JASPER_PRINT, print);
+    exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, htmlFile);
+    exporter.setParameter(JRHtmlExporterParameter.IMAGES_DIR_NAME, imagesDir);
+    exporter.setParameter(JRHtmlExporterParameter.IMAGES_URI, "../images/");
+    exporter.exportReport();
+    // Was: JasperExportManager.exportReportToHtmlFile(print, htmlFile);
     }
 
 
-    
+
     private void processReportGraph(ReportGraph reportGraph, Connection conn, String fileName, int type, Timestamp startTime, Timestamp endTime)
         throws IOException, JRScriptletException, SQLException, ClassNotFoundException
     {
-	Map<String,Object> params = new HashMap<String,Object>();
-	params.put(ReportGraph.PARAM_REPORT_START_DATE, startTime);
-	params.put(ReportGraph.PARAM_REPORT_END_DATE, endTime);
-	params.put(ReportGraph.PARAM_REPORT_TYPE, type);
-	JRDefaultScriptlet scriptlet = new FakeScriptlet(conn, params);
-	JFreeChart jFreeChart = reportGraph.doInternal(conn, scriptlet);
-	logger.debug("Exporting report to: " + fileName);
-	ChartUtilities.saveChartAsJPEG(new File(fileName), CHART_QUALITY, jFreeChart, CHART_WIDTH, CHART_HEIGHT);
+    Map<String,Object> params = new HashMap<String,Object>();
+    params.put(ReportGraph.PARAM_REPORT_START_DATE, startTime);
+    params.put(ReportGraph.PARAM_REPORT_END_DATE, endTime);
+    params.put(ReportGraph.PARAM_REPORT_TYPE, type);
+    JRDefaultScriptlet scriptlet = new FakeScriptlet(conn, params);
+    JFreeChart jFreeChart = reportGraph.doInternal(conn, scriptlet);
+    logger.debug("Exporting report to: " + fileName);
+    ChartUtilities.saveChartAsJPEG(new File(fileName), CHART_QUALITY, jFreeChart, CHART_WIDTH, CHART_HEIGHT);
     }
 
 
     private class FakeScriptlet extends JRDefaultScriptlet
     {
         Map<String,Object> ourParams;
-	
+
         FakeScriptlet(Connection con, Map params) {
             ourParams = params;
         }
-	
+
         public Object getParameterValue(String paramName) throws JRScriptletException
         {
             Object found = null;

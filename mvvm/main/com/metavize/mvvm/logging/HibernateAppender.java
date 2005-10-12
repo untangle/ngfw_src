@@ -11,7 +11,6 @@
 
 package com.metavize.mvvm.logging;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -91,8 +90,7 @@ public class HibernateAppender extends AppenderSkeleton
     {
         private final Tid tid;
         private final BlockingQueue<LogEvent> queue;
-        private final MvvmLocalContext mctx = MvvmContextFactory.context();
-        private final WeakReference<TransformContext> tctxRef;
+        private final MvvmLocalContext mctx;
 
         private Thread thread;
 
@@ -106,12 +104,9 @@ public class HibernateAppender extends AppenderSkeleton
             this.queue = new ArrayBlockingQueue<LogEvent>(QUEUE_SIZE);
 
             if (0 == tid.getId()) {
-                tctxRef = null;
+                mctx = MvvmContextFactory.context();
             } else {
-                TransformContext tctx = null == tid ? null
-                    : MvvmContextFactory.context().transformManager()
-                    .transformContext(tid);
-                tctxRef = new WeakReference(tctx);
+                mctx = null;
             }
         }
 
@@ -146,7 +141,7 @@ public class HibernateAppender extends AppenderSkeleton
 
             List<LogEvent> l = new ArrayList<LogEvent>(BATCH_SIZE);
 
-            while (!shutdown && (null == tctxRef ? true : null != tctxRef.get())) {
+            while (!shutdown && (null != mctx || null != getTctx())) {
                 try {
                     drainTo(l);
                     if (!shutdown) {
@@ -160,9 +155,19 @@ public class HibernateAppender extends AppenderSkeleton
 
                 l.clear();
             }
+
+            if (!shutdown) {
+                loggers.remove(tid);
+            }
         }
 
         // Private methods ----------------------------------------------------
+
+        private TransformContext getTctx()
+        {
+            return MvvmContextFactory.context().transformManager()
+                .transformContext(tid);
+        }
 
         private void drainTo(List<LogEvent> l)
         {
@@ -204,10 +209,10 @@ public class HibernateAppender extends AppenderSkeleton
                     public Object getResult() { return null; }
                 };
 
-            if (null == tctxRef) {
+            if (null != mctx) {
                 mctx.runTransaction(tw);
             } else {
-                TransformContext tctx = tctxRef.get();
+                TransformContext tctx = getTctx();
                 if (null == tctx) {
                     logger.warn("transform context no longer exists");
                     return;

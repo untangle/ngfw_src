@@ -325,21 +325,41 @@ class TransformManagerImpl implements TransformManager
         }
     }
 
-    void restart(String mackageName)
+    void restart(String name)
     {
+        ToolboxManagerImpl tbm = (ToolboxManagerImpl)MvvmContextFactory
+            .context().toolboxManager();
+
+        String availVer = tbm.mackageDesc(name).getInstalledVersion();
+
         synchronized (this) {
-            List<Tid> mkgTids = transformInstances(mackageName);
+            List<Tid> mkgTids = transformInstances(name);
             if (0 < mkgTids.size()) {
                 Tid t = mkgTids.get(0);
                 TransformContext tc = tids.get(t);
+
                 if (0 < tc.getTransformDesc().getExports().size()) {
                     // exported resources, must restart everything
                     for (Tid tid : tids.keySet()) {
-                        unload(tid);
+                        TransformDesc td = tids.get(tid).getTransformDesc();
+                        MackageDesc md = td.getMackageDesc();
+                        if (!md.getInstalledVersion().equals(availVer)) {
+                            logger.info("new version available: " + name);
+                            unload(tid);
+                        } else {
+                            logger.info("have latest version: " + name);
+                        }
                     }
                 } else {
                     for (Tid tid : mkgTids) {
-                        unload(tid);
+                        TransformDesc td = tids.get(tid).getTransformDesc();
+                        MackageDesc md = td.getMackageDesc();
+                        if (!md.getInstalledVersion().equals(availVer)) {
+                            logger.info("new version available: " + name);
+                            unload(tid);
+                        } else {
+                            logger.info("have latest version: " + name);
+                        }
                     }
                 }
                 restartUnloaded();
@@ -364,13 +384,15 @@ class TransformManagerImpl implements TransformManager
         for (Iterator<TransformPersistentState> i = unloaded.iterator();
              i.hasNext(); ) {
             TransformPersistentState tps = i.next();
-            URL[] urls = tbm.resources(tps.getName());
+            String name = tps.getName();
+            URL[] urls = tbm.resources(name);
             Tid tid = tps.getTid();
-            tid.setTransformName(tps.getName());
+            tid.setTransformName(name);
+            MackageDesc md = tbm.mackageDesc(name);
 
             try {
-                logger.info("initializing transform desc for: " + tps.getName());
-                TransformDesc tDesc = initTransformDesc(urls, tid);
+                logger.info("initializing transform desc for: " + name);
+                TransformDesc tDesc = initTransformDesc(md, urls, tid);
                 tDescs.put(tid, tDesc);
             } catch (DeployException exn) {
                 logger.warn("TransformDesc could not be parsed", exn);
@@ -495,7 +517,7 @@ class TransformManagerImpl implements TransformManager
                                       + transformName);
 
         logger.info("initializing transform desc for: " + transformName);
-        TransformDesc tDesc = initTransformDesc(resUrls, tid);
+        TransformDesc tDesc = initTransformDesc(mackageDesc, resUrls, tid);
 
         synchronized (this) {
             if (!live) {
@@ -573,7 +595,8 @@ class TransformManagerImpl implements TransformManager
      * @exception DeployException the descriptor does not parse or
      * parent cannot be loaded.
      */
-    private TransformDesc initTransformDesc(URL[] urls, Tid tid)
+    private TransformDesc initTransformDesc(MackageDesc mackageDesc,
+                                            URL[] urls, Tid tid)
         throws DeployException
     {
         // XXX assumes no parent cl has this file.
@@ -583,7 +606,7 @@ class TransformManagerImpl implements TransformManager
             throw new DeployException(DESC_PATH + " not found");
         }
 
-        MvvmTransformHandler mth = new MvvmTransformHandler();
+        MvvmTransformHandler mth = new MvvmTransformHandler(mackageDesc);
 
         try {
             XMLReader xr = XMLReaderFactory.createXMLReader();

@@ -14,6 +14,7 @@ package com.metavize.mvvm.engine;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.metavize.mvvm.MackageDesc;
 import com.metavize.mvvm.security.Tid;
 import com.metavize.mvvm.tran.TransformDesc;
 import org.apache.log4j.Logger;
@@ -32,6 +33,8 @@ public class MvvmTransformHandler extends DefaultHandler
     private static final Logger logger = Logger
         .getLogger(MvvmTransformHandler.class);
 
+    private final MackageDesc mackageDesc;
+
     private final List<String> parents = new LinkedList<String>();
     private final List<String> exports = new LinkedList<String>();
 
@@ -45,13 +48,18 @@ public class MvvmTransformHandler extends DefaultHandler
     private StringBuilder parentBuilder;
     private StringBuilder exportBuilder;
 
+    public MvvmTransformHandler(MackageDesc mackageDesc)
+    {
+        this.mackageDesc = mackageDesc;
+    }
+
     // public methods ---------------------------------------------------------
 
     public TransformDesc getTransformDesc(Tid tid)
     {
         return new TransformDesc(tid, name, className, guiClassName,
                                  transformBase, exports, parents,
-                                 singleInstance, displayName);
+                                 singleInstance, displayName, mackageDesc);
     }
 
     // DefaultHandler methods -------------------------------------------------
