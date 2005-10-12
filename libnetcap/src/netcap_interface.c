@@ -320,7 +320,7 @@ int  netcap_interface_mark_to_intf(int nfmark, netcap_intf_t* intf)
     
     if ( nfmark <= 0 || nfmark > NETCAP_MARK_INTF_MAX ) {
         *intf = 0;
-        return errlog( ERR_CRITICAL, "Invalid interface mark\n");
+        return errlog( ERR_CRITICAL, "Invalid interface mark[%d]\n", nfmark );
     }
 
     /* Map the marking to the corresponding interface */

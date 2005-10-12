@@ -97,7 +97,8 @@ JNIEXPORT jint JNICALL JF_TCPSource( read )
 
     do {
         /* XXX Do we need to check for EINTR */
-        ret = read( fd, (char*)data, data_len );
+        ret = read( fd, (char*)data, data_len );            
+        
         if ( ret < 0 ) {
             switch ( errno ) {
             case ECONNRESET:
@@ -114,6 +115,11 @@ JNIEXPORT jint JNICALL JF_TCPSource( read )
 
             case ETIMEDOUT:
                 debug( 5, "JVECTOR: TCPSource: fd %d connection time out (keep alive unaswered)\n", fd );
+                ret = JN_TCPSource( READ_RESET );
+                break;
+
+            case EHOSTUNREACH:
+                debug( 5, "JVECTOR: TCPSource: fd %d host unreachable\n", fd );
                 ret = JN_TCPSource( READ_RESET );
                 break;
 

@@ -26,9 +26,11 @@
 #include <netinet/ip.h>
 #include <netinet/tcp.h>
 #include <netinet/udp.h>
+
 #include <mvutil/errlog.h>
 #include <mvutil/debug.h>
 #include <mvutil/unet.h>
+
 #include "libnetcap.h"
 #include "netcap_globals.h"
 #include "netcap_interface.h"
@@ -173,8 +175,8 @@ int  netcap_queue_read (char *buffer, int max, netcap_pkt_t* pkt)
     /* XXX If nececssary, options should be copied out here */
 
     if (iph->protocol == IPPROTO_TCP) {
-        if (msg->data_len < (sizeof(struct iphdr)+sizeof(struct tcphdr)))
-            return errlogcons();
+        if (msg->data_len < (sizeof(struct iphdr)+sizeof(struct tcphdr))) return errlogcons();
+            
         pkt->src.port = ntohs(tcph->source);
         pkt->dst.port = ntohs(tcph->dest);
         if(tcph->ack)  pkt->th_flags |= TH_ACK;
@@ -185,8 +187,8 @@ int  netcap_queue_read (char *buffer, int max, netcap_pkt_t* pkt)
         if(tcph->psh)  pkt->th_flags |= TH_PUSH;	
     }
     else if (iph->protocol == IPPROTO_UDP) {
-        if (msg->data_len < (sizeof(struct iphdr)+sizeof(struct udphdr)))
-            return errlogcons();
+        if (msg->data_len < (sizeof(struct iphdr)+sizeof(struct udphdr))) return errlogcons();
+            
         pkt->src.port = ntohs(udph->source);
         pkt->dst.port = ntohs(udph->dest);
     }
@@ -202,7 +204,11 @@ int  netcap_queue_read (char *buffer, int max, netcap_pkt_t* pkt)
     pkt->proto = iph->protocol;
     pkt->nfmark  = (u_int)msg->mark;
     
-    netcap_interface_mark_to_intf( msg->mark, &pkt->src_intf );
+    if ( netcap_interface_mark_to_intf( msg->mark, &pkt->src_intf ) < 0 ) {
+        errlog( ERR_WARNING, "Unable to determine the source interface from mark[%s:%d -> %s:%d]\n",
+                unet_next_inet_ntoa( pkt->src.host.s_addr ), pkt->src.port,
+                unet_next_inet_ntoa( pkt->dst.host.s_addr ), pkt->dst.port );
+    }
     pkt->dst_intf = NC_INTF_UNK;
 
     return msg->data_len;
