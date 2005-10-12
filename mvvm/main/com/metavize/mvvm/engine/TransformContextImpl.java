@@ -162,6 +162,21 @@ class TransformContextImpl implements TransformContext
             transformManager.deregisterThreadContext();
             ct.setContextClassLoader(oldCl);
             // left transform ClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+            if (null == transform) {
+                TransactionWork tw = new TransactionWork()
+                    {
+                        public boolean doWork(Session s)
+                        {
+                            s.delete(persistentState);
+                            return true;
+                        }
+
+                        public Object getResult() { return null; }
+                    };
+                MvvmContextFactory.context().runTransaction(tw);
+            }
+
         }
     }
 

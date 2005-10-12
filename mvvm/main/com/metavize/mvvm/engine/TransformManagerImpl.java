@@ -440,9 +440,10 @@ class TransformManagerImpl implements TransformManager
 
                     URLClassLoader cl = getClassLoader(tDesc, urls);
 
+                    TransformContextImpl tc = null;
                     try {
-                        TransformContextImpl tc = new TransformContextImpl
-                            (cl, tDesc, mackageDesc, false);
+                        tc = new TransformContextImpl(cl, tDesc, mackageDesc,
+                                                      false);
                         tids.put(tid, tc);
                         tc.init(args);
                         logger.info("Restarted: " + tid);
@@ -450,6 +451,10 @@ class TransformManagerImpl implements TransformManager
                         logger.warn("Could not restart: " + tid, exn);
                     } catch (LinkageError err) {
                         logger.warn("Could not restart: " + tid, err);
+                    }
+
+                    if (null != tc && null == tc.transform()) {
+                        tids.remove(tid);
                     }
                 }
             }
@@ -529,7 +534,13 @@ class TransformManagerImpl implements TransformManager
             TransformContextImpl tc = new TransformContextImpl
                 (cl, tDesc, mackageDesc, true);
             tids.put(tid, tc);
-            tc.init(args);
+            try {
+                tc.init(args);
+            } finally {
+                if (null == tc.transform()) {
+                    tids.remove(tid);
+                }
+            }
         }
 
         return tid;
