@@ -477,6 +477,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       <fileset refid="tomcat.jarset"/>
       <fileset refid="trove.jarset"/>
       <fileset refid="yjp.jarset"/>
+      <fileset refid="velocity.jarset"/>
     </copy>
 
     <!-- java endorsed directory -->

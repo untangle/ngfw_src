@@ -27,11 +27,13 @@ public class SMTPSpamMessageAction implements Serializable
     public static final SMTPSpamMessageAction PASS = new SMTPSpamMessageAction('P', "pass message");
     public static final SMTPSpamMessageAction MARK = new SMTPSpamMessageAction('M', "mark message");
     public static final SMTPSpamMessageAction BLOCK = new SMTPSpamMessageAction('B', "block message");
+    public static final SMTPSpamMessageAction QUARANTINE = new SMTPSpamMessageAction('Q', "quarantine message");
 
     static {
         INSTANCES.put(PASS.getKey(), PASS);
         INSTANCES.put(MARK.getKey(), MARK);
         INSTANCES.put(BLOCK.getKey(), BLOCK);
+        INSTANCES.put(QUARANTINE.getKey(), QUARANTINE);
     }
 
     private String name;

@@ -19,6 +19,7 @@ import com.metavize.tran.mail.papi.MailTransformSettings;
 import com.metavize.tran.mail.papi.smtp.sapi.Session;
 import com.metavize.tran.token.TokenHandler;
 import com.metavize.tran.token.TokenHandlerFactory;
+import com.metavize.tran.mail.papi.quarantine.QuarantineTransformView;
 import org.apache.log4j.Logger;
 
 
@@ -26,6 +27,7 @@ public class SpamSmtpFactory
   implements TokenHandlerFactory {
 
   private MailExport m_mailExport;
+  private QuarantineTransformView m_quarantine;
   private SpamImpl m_spamImpl;
   private static final Logger m_logger =
     Logger.getLogger(SpamSmtpFactory.class);
@@ -33,6 +35,7 @@ public class SpamSmtpFactory
   public SpamSmtpFactory(SpamImpl impl) {
     Policy p = impl.getTid().getPolicy();
     m_mailExport = MailExportFactory.factory().getExport();
+    m_quarantine = m_mailExport.getQuarantineTransformView();
     m_spamImpl = impl;
   }
 
@@ -56,7 +59,8 @@ public class SpamSmtpFactory
         inbound?casingSettings.getSmtpInboundTimeout():casingSettings.getSmtpOutboundTimeout(),
         inbound?casingSettings.getSmtpInboundTimeout():casingSettings.getSmtpOutboundTimeout(),
         m_spamImpl,
-        spamConfig));
+        spamConfig,
+        m_quarantine));
 
   }
 }

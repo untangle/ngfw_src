@@ -357,20 +357,15 @@ class MailSenderImpl implements MailSender
       //     be blank for notifications (so other servers don't send
       //     dead letters causing a loop).
 
-      MimeMessage msg = null;
+      MimeMessage msg = streamToMIMEMessage(msgStream);
 
-      try {
-        msg = new MimeMessage(alertSession, msgStream);
-        msg.setHeader("X-Mailer", Mailer);
-      }
-      catch(Exception ex) {
-        logger.error("Unable to convert input stream to MIMEMessage", ex);
+      if(msg == null) {
         return false;
       }
 
       //Send the message
       try {
-        dosend(alertSession, msg);
+        dosend(reportSession, msg);
         logIt(msg);
         return true;
       }
@@ -378,6 +373,81 @@ class MailSenderImpl implements MailSender
         logger.warn("Unable to send Message", ex);
         return false;
       }
+    }
+
+    /*
+     * See doc on interface
+     */
+    public boolean sendMessage(InputStream msgStream, String...rcptStrs) {
+
+      //First, convert the addresses
+      Address[] addresses = parseAddresses(rcptStrs);
+      if(addresses == null || addresses.length == 0) {
+        logger.warn("No recipients for email");
+        return false;
+      }
+    
+      //TODO bscott Need better error handling
+      //TODO bscott by using JavaMail, we don't seem to be able to have
+      //     a null ("<>") MAIL FROM.  This is a violation of some spec
+      //     or another, which declares that the envelope from should
+      //     be blank for notifications (so other servers don't send
+      //     dead letters causing a loop).
+
+      MimeMessage msg = streamToMIMEMessage(msgStream);
+
+      if(msg == null) {
+        return false;
+      }
+
+      //Send the message
+      try {
+        dosend(reportSession, msg, addresses);
+        logIt(msg);
+        return true;
+      }
+      catch(Exception ex) {
+        logger.warn("Unable to send Message", ex);
+        return false;
+      }
+    }    
+
+      
+
+    /**
+     * Returns null if message could not be created, and logs
+     * any errors
+     */
+    private MimeMessage streamToMIMEMessage(InputStream in) {
+      try {
+        MimeMessage msg = new MimeMessage(alertSession, in);
+        msg.setHeader("X-Mailer", Mailer);
+        return msg;
+      }
+      catch(Exception ex) {
+        logger.error("Unable to convert input stream to MIMEMessage", ex);
+        return null;
+      }
+    }
+
+    private Address[] parseAddresses(String[] addrStrings) {
+      List<Address> ret = new ArrayList<Address>();
+      for(String s : addrStrings) {
+        try {
+          for(Address addr : InternetAddress.parse(s, false)) {
+            InternetAddress inetAddr = (InternetAddress) addr;
+            if(inetAddr.getAddress() != null &&
+              !"".equals(inetAddr.getAddress()) &&
+              !"<>".equals(inetAddr.getAddress())) {
+              ret.add(inetAddr);
+            }
+          }
+        }
+        catch(Exception ex) {
+          logger.warn("Unable to parse \"" + s + "\" into email address");
+        }
+      }
+      return (Address[]) ret.toArray(new Address[ret.size()]);
     }
 
 
@@ -551,6 +621,13 @@ class MailSenderImpl implements MailSender
     private void dosend(Session session, Message msg)
         throws MessagingException
     {
+      dosend(session, msg, msg.getAllRecipients());
+    }    
+    
+    // Here's where we actually do the sending
+    private void dosend(Session session, Message msg, Address[] recipients)
+        throws MessagingException
+    {
         SMTPTransport transport = null;
         try {
             transport = (SMTPTransport) session.getTransport();
@@ -568,7 +645,7 @@ class MailSenderImpl implements MailSender
             transport.setStartTLS(mailSettings.isUseTls());
             transport.setLocalHost(mailSettings.getLocalHostName());
             transport.connect(host, port, user, pass);
-            transport.send(msg);
+            transport.sendMessage(msg, recipients);
         } catch (MessagingException x) {
             throw x;
         } catch (Exception x) {

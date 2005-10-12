@@ -1,0 +1,363 @@
+## ######################################################################
+## Copyright (c) 2005 Metavize Inc.
+## All rights reserved.
+##
+## This software is the confidential and proprietary information of
+## Metavize Inc. ("Confidential Information").  You shall
+## not disclose such Confidential Information.
+##
+## $Id$
+## ######################################################################
+##
+##
+#*---------------------------------------------------------------
+Summary of Objects/variables referenced
+
+$user_email - the user's email address (a string)
+$image_root - URL root for image sources
+$linkgenerator - An object which creates a URL based on a mail ID  generateInboxLink, generateHelpLink
+$inboxrecords - An array of inbox records.  This array has been trimmed to be the
+                "correct" length of stuff to display
+
+Note that the next few *should* be able to be set from
+Velocity, but I had endless problems with their math
+
+$hasRecords - Boolean indicating if there are any records
+$hasRecsNotShown - Boolean indicating that there are extra records which could not be shown
+                   for space reasons
+$numRecsNotShown - Number of records which could not be shown for space reasons
+
+
+
+--------------------------------------------------------------- *#
+##
+##
+##
+##
+##
+##
+<!--
+  Preview
+  \$numRecsNotShown $numRecsNotShown
+  \$hasRecsNotShown $hasRecsNotShown
+  \$hasRecords $hasRecords
+-->
+<html>
+  <head>
+    <title>Quarantine Digest for $user_email</title>
+  <style>
+    
+    *{
+      margin:0;
+      padding:0;
+    }
+    
+    body {
+      background:#6495ED;
+      padding: 10;
+    }
+    
+    table.outertable {
+      background:#FFFFFF;
+      padding: 0;
+      margin: 0;  
+    }
+    
+    table.intro {
+      padding-left: 10;
+      padding-top: 15;
+    }
+    
+    
+    table.introUserInfo {
+      padding-left: 10;
+      text-align: right;
+    }
+    
+    .infotext {
+      color: #372F2F;
+      padding-left: 10;
+      padding-right: 20;
+      padding-top: 20;
+      padding-bottom: 10;
+    }
+    
+    table.actions {
+      margin: 0;
+      padding: 0;
+      color: #FFFFFF
+    }
+    
+    table.actions tbody TD {
+      background-color: #003399;
+      padding: 15;
+    }
+    
+    table.actions tbody TD + TD {
+      background-color: #003399;
+      text-align: right;
+      padding-right: 10;
+    }
+    
+    .msiehack1 {
+      background-color: #003399;
+      text-align: right;
+      padding-right: 10;
+    }
+    .msiehack2 {
+      background-color: #003399;
+      text-align: left;
+      padding-left: 10;
+    }
+    
+    
+    table.actions a {
+      color: #FFFFFF;
+    }
+    table.actions a:visited {
+      color: #CCFFFF;
+    }
+    table.actions a:hover {
+      color: #33FFFF;
+    }
+    table.actions a:active {
+      color: #FF0000;
+    }
+    
+    table.inbox {
+      border-collapse: collapse;
+      margin: 0;
+      padding: 0;
+    
+    }
+    
+    
+    table.inbox caption {
+      padding-bottom: 5px;
+      text-align: left;
+      text-transform: uppercase;
+    }
+    
+    table.inbox th, table.inbox td {
+      border-bottom: 1px solid #666;
+      border-top: 1px solid #666;
+      padding: 0.6em;
+      vertical-align: 4px;
+    }
+    
+    table.inbox th {
+      text-align: left;
+      text-transform: uppercase;
+    }
+    
+    table.inbox tbody td.first {
+      text-align: left;
+      padding-left: 20;
+    }
+    
+    table.inbox thead th, table.inbox tfoot th, table.inbox tfoot td {
+      background-color: #33CCFF;
+    }
+    
+    table.inbox thead th.first {
+      padding-left: 24px;
+    }
+    table.inbox tbody th {
+      padding-left: 24px;
+    }
+    table.inbox tbody th, table.inbox td {
+      background-color:#eee;
+    }
+    
+    table.inbox tr.even td, table.inbox tr.even th {
+      background-color:#eee;
+    }
+    
+    table.inbox tr.odd td, table.inbox tr.odd th {
+      background-color: #ddd;
+    }
+    
+    table.inbox tbody a {
+      color: #333;
+    }
+    table.inbox tbody a:visited {
+      color: #999999;
+    }
+    table.inbox tbody a:hover {
+      color: #33c;
+    }
+    table.inbox tbody a:active {
+      color: #33c;
+    }
+    table.inbox tfoot th {
+      text-align: right;
+    }
+    table.inbox tfoot th:after {
+      content: ":";
+    }
+    .smallLogo {
+      font:  normal 12 arial, helvetica, sans serif;
+      text-align: center;
+      padding-top: 30;
+      padding-bottom: 30;
+    }
+  </style>
+  </head>
+  <body>
+
+    <table class="outertable" cellpadding="0" cellspacing="0">
+      <!-- Outer table, first row -->
+      <tr>
+        ## Because of IE stupidity, there can be no LWS between the tags below 
+        <td WIDTH="20" valign="top"><img src="$image_root/tl.gif" ALT=""></td>
+        <td>
+           <table class="intro" border="0" cellpadding="0" cellspacing="0" height="100%" width="100%">
+              <tbody>
+                <tr>
+                  <!-- I cannot get things to work correctly w/o putting an absolute value here -->
+                  <td width="200">
+                    <table class="logoTable">
+                      <tbody><tr>
+                        <td>
+                          <img src="logo.gif">
+                        </td>
+                        <td class="logotext">
+                          &nbsp;&nbsp;Metavize EdgeGuard
+                        </td>
+                      </tr>
+                    </tbody></table>
+                  </td>
+                  <td>
+                    <table class="introUserInfo" height="100%" width="100%">
+                      <tbody>
+                        <tr>
+                          <td>
+                            Quarantine Digest for $user_email
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                </tr><tr>
+                </tr><tr>
+                  <td class="infotext" colspan="2">
+  The emails listed below have been quarantined by your Metavize
+  EdgeGuard appliance. They will be deleted automatically after 20 days.
+  To release any email from the quarantine and have them delivered to
+  your inbox, select the emails and click Release. To delete emails,
+  select the emails to be deleted and click Delete. <br><br><br><br>                
+                  </td>
+              </tr>
+             </tbody>
+           </table>
+        </td>
+        ## Because of IE stupidity, there can be no LWS between the tags below
+        <td WIDTH="20" valign="top"><img src="$image_root/tr.gif"></td>
+      </tr>
+      <!-- Outer table, middle row -->
+      <tr>
+        <td>
+        </td>
+        <td>
+          <table border="0" cellpadding="0" cellspacing="0" width="100%">
+            <tbody>
+              <tr>
+                <td>
+                  <table class="actions" border="0" cellpadding="0" cellspacing="0" width="100%">
+                    <tbody>
+                      <tr>
+                        <td>
+                          <div class="msiehack2">
+                            <a href="$linkgenerator.generateInboxLink()">Visit Your Inbox</a>
+                          </div>
+                        </td>
+                        <td>
+                          <div class="msiehack1">
+                            <a href="$linkgenerator.generateHelpLink()">Help</a>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  #if ($hasRecords)
+                    <table class="inbox" width="100%">
+                      <thead>
+                        <tr>
+                          <th class="first" scope="col">Actions</th>
+                          <th scope="col">From</th>
+                          <th scope="col">Score</th>
+                          <th scope="col">Subject</th>
+                        </tr>
+                      </thead>
+                      <tfoot>
+                      #if ($hasRecsNotShown)
+                        <tr>
+                          <th scope="row">Not Listed</th>
+                          <td colspan="4">
+                            $numRecsNotShown older mails
+                            <a href="$linkgenerator.generateInboxLink()">in your online inbox</a></td>
+                        </tr>
+                      #else                                         
+                        <tr>
+                          <th scope="row">Total</th>
+                          <td colspan="4">$inboxrecords.length mails</td>
+                        </tr>
+                      #end
+                      </tfoot>
+                      <tbody>
+                        #if ($hasRecords)
+                          ## Booleans don't seem to work with Velocity
+                          #set ($isEven = 0)
+                          #set ($parity = "even")
+                          #foreach( $record in $inboxrecords )
+                            #if ($isEven == 0)
+                              #set ($parity = "even")
+                            #else
+                              #set ($parity = "odd")
+                            #end
+                            <tr class="$parity">
+                              <td class="first">
+                                <a href="$linkgenerator.generatePurgeLink($record.getMailID())">Delete</a>&nbsp;|
+                                &nbsp;<a href="$linkgenerator.generateRescueLink($record.getMailID())">Release</a></td>
+                              <td>$record.getMailSummary().Sender</td>
+                              <td>$record.getMailSummary().QuarantineDetail</td>
+                              <td>$record.getMailSummary().Subject</td>
+                            </tr>
+                            #set ($isEven = $isEven + 1)
+                            #if ($isEven > 1)
+                              #set ($isEven = 0)
+                            #end
+                          #end
+                        #end
+                      </tbody>
+                    </table>
+                  #else
+                    There are no records (make me pretty)
+                  #end
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </td>
+        <td>
+        </td>
+      </tr>
+      <!-- Outer table, last row -->
+      <tr>
+        ## Because of IE stupidity, there can be no LWS between the tags below
+        <td WIDTH="20" valign="bottom"><img src="$image_root/bl.gif" ALT=""></td>
+        <td class="smallLogo" height="100%">
+          Powered by <br>
+          Metavize&reg; EdgeGuard&reg;
+        </td>
+        ## Because of IE stupidity, there can be no LWS between the tags below
+        <td WIDTH="20" valign="bottom"><img src="$image_root/br.gif" ALT=""></td>
+      </tr>
+    </table>
+    
+  </body>
+</html>

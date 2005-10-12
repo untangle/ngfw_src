@@ -32,6 +32,7 @@ TROVE_HOME=../../downloads/output/trove-1.0.2
 POSTGRES_HOME=../../downloads/output/postgres-jdbc-7.4_215
 XDOCLET_HOME=../../downloads/output/xdoclet-1.2.3
 NETBEANS_HOME=../../downloads/output/netbeans-3.5
+VELOCITY_HOME=../../downloads/output/velocity-1.4
 
 # ANT_OPTS="-DIVB_HOME=\"${XMLDIFFHOME}\""
 # export LD_LIBRARY_PATH=../../downloads/output/jss-3.4:4:../../downloads/output/nss-3.6/lib

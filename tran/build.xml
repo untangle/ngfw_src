@@ -222,6 +222,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       <classpath refid="mvvm-client.classpath"/>
       <classpath refid="mvvm.classpath"/>
       <classpath refid="netbeans.classpath"/>
+      <classpath refid="velocity.classpath"/>
 
       <include name="com/metavize/tran/${tran.name}/**"/>
     </javac>
@@ -401,47 +402,24 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <target name="jar.mail">
     <jar destfile="${build.jar}/mail-export.jar">
       <fileset dir="${build.root}/mail">
-<!--
-        <include name="com/metavize/tran/mail/AddressKind.class"/>
-        <include name="com/metavize/tran/mail/AddressKindUserType.class"/>
-        <include name="com/metavize/tran/mail/ImapCommand*.class"/>
-        <include name="com/metavize/tran/mail/ImapReply*.class"/>
-        <include name="com/metavize/tran/mail/ImapStateMachine*.class"/>
-        <include name="com/metavize/tran/mail/MailExport.class"/>
-        <include name="com/metavize/tran/mail/MailExportFactory.class"/>
-        <include name="com/metavize/tran/mail/MailTransformSettings.class"/>
-        <include name="com/metavize/tran/mail/MessageFile.class"/>
-        <include name="com/metavize/tran/mail/MessageInfo.class"/>
-        <include name="com/metavize/tran/mail/MessageInfoAddr.class"/>
-        <include name="com/metavize/tran/mail/MessageStats.class"/>
-        <include name="com/metavize/tran/mail/MimeBoundary.class"/>
-        <include name="com/metavize/tran/mail/MimeStateMachine*.class"/>
-        <include name="com/metavize/tran/mail/Rfc822Header*.class"/>
-        <include name="com/metavize/tran/mail/SMTPNotifyAction*.class"/>
-        <include name="com/metavize/tran/mail/SMTPNotifyActionUserType*.class"/>
-        <include name="com/metavize/tran/mail/SmtpCommand*.class"/>
-        <include name="com/metavize/tran/mail/SmtpReply*.class"/>
-        <include name="com/metavize/tran/mail/SmtpStateMachine*.class"/>
-        <include name="com/metavize/tran/mail/papi/smtp/sapi/*.class"/>
-        <include name="com/metavize/tran/mail/papi/smtp/*.class"/>
-        <include name="com/metavize/tran/mail/papi/pop/*.class"/>
-        <include name="com/metavize/tran/mail/papi/*.class"/>
-        <include name="com/metavize/tran/mail/MessageBoundaryScanner*.class"/>
--->
         <include name="com/metavize/tran/mail/papi/*.class"/>
         <include name="com/metavize/tran/mail/papi/pop/*.class"/>
         <include name="com/metavize/tran/mail/papi/imap/*.class"/>
         <include name="com/metavize/tran/mail/papi/smtp/*.class"/>
         <include name="com/metavize/tran/mail/papi/smtp/sapi/*.class"/>
+        <!--
+          For Quarantine stuff. Note that two classes
+          are from the impl (internal) package, but are
+          passed via RMI so must be included
+        -->
+        <include name="com/metavize/tran/mail/papi/quarantine/*.class"/>
+        <include name="com/metavize/tran/mail/impl/quarantine/store/InboxIndexImpl.class"/>
+        <include name="com/metavize/tran/mail/impl/quarantine/store/InboxRecordImpl.class"/>
+        
       </fileset>
       <fileset dir="${build.gensrc}/mail">
         <include name="com/metavize/tran/mail/papi/*.hbm.xml"/>
         <include name="com/metavize/tran/mail/papi/smtp/*.hbm.xml"/>
-<!--
-        <include name="com/metavize/tran/mail/papi/MessageInfo.hbm.xml"/>
-        <include name="com/metavize/tran/mail/papi/MessageInfoAddr.hbm.xml"/>
-        <include name="com/metavize/tran/mail/papi/MessageStats.hbm.xml"/>
--->
       </fileset>
     </jar>
   </target>

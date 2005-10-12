@@ -1,0 +1,8 @@
+## This should not be seen
+
+TODO bscott finishme!
+
+2937 2695
+ svn diff -r 2937:2695
+
+svn diff -r 2823:2909 tran/spam/main/com/metavize/tran/spam/SpamImpl.java

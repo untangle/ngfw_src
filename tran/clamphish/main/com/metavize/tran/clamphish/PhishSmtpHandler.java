@@ -13,6 +13,8 @@ package com.metavize.tran.clamphish;
 
 import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.tran.spam.SpamSMTPConfig;
+import com.metavize.tran.mail.papi.quarantine.QuarantineTransformView;
+import com.metavize.tran.spam.SpamReport;
 
 /**
  * Protocol Handler which is called-back as scanable messages
@@ -24,7 +26,19 @@ public class PhishSmtpHandler extends com.metavize.tran.spam.SmtpSessionHandler 
                      long maxClientWait,
                      long maxSvrWait,
                      ClamPhishTransform impl,
-                     SpamSMTPConfig config) {
-        super(session, maxClientWait, maxSvrWait, impl, config);
+                     SpamSMTPConfig config,
+                     QuarantineTransformView quarantine) {
+        super(session, maxClientWait, maxSvrWait, impl, config, quarantine);
     }
+
+  @Override
+  protected String getQuarantineCategory() {
+    return "FRAUD";
+  }
+
+  @Override
+  protected String getQuarantineDetail(SpamReport report) {
+    //TODO bscott Do something real here
+    return "Message determined to be a fraud attempt";
+  }  
 }

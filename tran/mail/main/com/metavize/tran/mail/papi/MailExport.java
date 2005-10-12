@@ -11,7 +11,16 @@
 
 package com.metavize.tran.mail.papi;
 
+import com.metavize.tran.mail.papi.quarantine.QuarantineTransformView;
+
+
 public interface MailExport
 {
     MailTransformSettings getExportSettings();
+
+    /**
+     * Access the Object which is used to submit Mails
+     * to the quarantine.
+     */
+    QuarantineTransformView getQuarantineTransformView();
 }

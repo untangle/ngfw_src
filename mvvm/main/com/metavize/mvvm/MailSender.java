@@ -37,6 +37,27 @@ public interface MailSender
      */
     boolean sendMessage(InputStream msgStream);
 
+
+    /**
+     * Sends an already formatted RFC822 (i.e. MIME) message.  The FROM
+     * for SMTP transport is lifted from the MIME message, but the
+     * recipients are specified.
+     * <br><br>
+     * With or without a positive outcome, the
+     * passed-in stream is <b>not</b> closed
+     * <br><br>
+     * All headers (date, to, from) should already
+     * be set.  The only header added is "X-Mailer".
+     *
+     * @param msgStream the stream containing the message, positioned
+     *        just before the headers and <b>not</b> byte stuffed (for SMTP).
+     * @param rcptStrs the recipients
+     *
+     * @return true if sent, false if an error.
+     */
+    
+    boolean sendMessage(InputStream msgStream, String...rcptStrs);
+
     /**
      * <code>sendAlert</code> sends an email to all administrative
      * users who have selected to receive alert emails.

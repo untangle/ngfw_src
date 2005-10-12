@@ -11,6 +11,8 @@
 
 package com.metavize.tran.util;
 
+import static com.metavize.tran.util.Ascii.CR;
+import static com.metavize.tran.util.Ascii.LF;
 import java.util.Comparator;
 
 public class CharSequenceUtil
@@ -31,6 +33,34 @@ public class CharSequenceUtil
         }
 
         return true;
+    }
+
+    /**
+     * Counts the number of new lines in the sequence.  New lines
+     * are CR, LF or CRLF.
+     * <br><br>
+     * If the sequence has no EOL, then 0 is returned.  If the
+     * sequence ends with an EOL, then 1 is returned.
+     */
+    public static int countLines(CharSequence cs) {
+      int ret = 0;
+      final int len = cs.length();
+
+      for(int i = 0; i<len; i++) {
+        if(cs.charAt(i) == CR) {
+          if(
+            (i+1<len) &&
+            (cs.charAt(i+1) == LF)) {
+            i++;
+          }
+          ret++;
+          continue;
+        }
+        if(cs.charAt(i) == LF) {
+          ret++;
+        }
+      }
+      return ret;
     }
 
     // private classes --------------------------------------------------------

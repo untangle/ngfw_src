@@ -288,6 +288,19 @@ public class EmailAddress {
     
   }
 
+  /**
+   * Same as {@link #parse parse} without exception.  Instead,
+   * null is returned.
+   */
+  public static EmailAddress parseNE(String str) {
+    try {
+      return parse(str);
+    }
+    catch(Exception ignore) {
+      return null;
+    }
+  }
+
   public static void main(String[] args)
     throws Exception {
     //Check bug w/ single quotes

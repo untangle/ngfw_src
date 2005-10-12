@@ -95,6 +95,14 @@ $Id: common-classpaths.xml,v 1.32 2005/02/10 23:25:44 jdi Exp $
     <fileset refid="hibernate.jarset"/>
   </path>
 
+  <fileset id="velocity.jarset" dir="${VELOCITY_HOME}">
+    <include name="velocity-1.4.jar"/>
+  </fileset>
+
+  <path id="velocity.classpath">
+    <fileset refid="velocity.jarset"/>
+  </path>
+
   <fileset id="c3p0.jarset" dir="${C3P0_HOME}/lib">
     <include name="c3p0-0.9.0.2.jar"/>
   </fileset>
@@ -261,5 +269,6 @@ $Id: common-classpaths.xml,v 1.32 2005/02/10 23:25:44 jdi Exp $
     <path refid="tomcat.classpath"/>
     <path refid="trove.classpath"/>
     <path refid="yjp.classpath"/>
+    <path refid="velocity.classpath"/>
   </path>
 </project>

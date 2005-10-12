@@ -348,6 +348,13 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
     public void incrementMarkCounter() {
       incrementCount(Transform.GENERIC_3_COUNTER);
     }
+    /**
+     * Increment the count for messages quarantined.
+     */
+    public void incrementQuarantineCount() {
+      //TODO bscott implement me
+    }
+    
 
     public void reconfigure() { return; }
 

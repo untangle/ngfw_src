@@ -19,9 +19,13 @@ import com.metavize.mvvm.util.TransactionWork;
 import com.metavize.tran.mail.impl.imap.ImapCasingFactory;
 import com.metavize.tran.mail.impl.smtp.SmtpCasingFactory;
 import com.metavize.tran.mail.papi.*;
+import com.metavize.tran.mail.impl.quarantine.Quarantine;
+import com.metavize.tran.mail.papi.quarantine.QuarantineTransformView;
+import com.metavize.tran.mail.papi.quarantine.QuarantineUserView;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
+
 
 public class MailTransformImpl extends AbstractTransform
     implements MailTransform, MailExport
@@ -42,6 +46,8 @@ public class MailTransformImpl extends AbstractTransform
         { SMTP_PIPE_SPEC, POP_PIPE_SPEC, IMAP_PIPE_SPEC };
 
     private MailTransformSettings settings;
+    private static Quarantine s_quarantine;//This will never be null for *instances* of
+                                           //MailTransformImpl    
 
     // constructors -----------------------------------------------------------
 
@@ -49,7 +55,21 @@ public class MailTransformImpl extends AbstractTransform
     {
         logger.debug("MailTransformImpl");
 
+        //TODO bscott I assume this class will only ever be instantiated
+        // on the server?!?
+        createQuarantineIfRequired();
+
         MailExportFactory.factory().registerExport(this);
+    }
+
+    private static synchronized void createQuarantineIfRequired() {
+      if(s_quarantine == null) {
+        s_quarantine = new Quarantine();
+      }
+    }
+     
+    protected void preDestroy() {
+      s_quarantine.close();
     }
 
     // MailTransform methods --------------------------------------------------
@@ -77,11 +97,19 @@ public class MailTransformImpl extends AbstractTransform
         reconfigure();
     }
 
+    public QuarantineUserView getQuarantineUserView() {
+      return s_quarantine;
+    }
+
     // MailExport methods -----------------------------------------------------
 
     public MailTransformSettings getExportSettings()
     {
         return getMailTransformSettings();
+    }
+    
+    public QuarantineTransformView getQuarantineTransformView() {
+      return s_quarantine;
     }
 
     // Transform methods ------------------------------------------------------

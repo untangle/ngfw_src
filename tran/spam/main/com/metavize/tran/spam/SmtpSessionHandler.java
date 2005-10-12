@@ -22,12 +22,16 @@ import com.metavize.tran.mime.MIMEMessage;
 import com.metavize.tran.mime.MIMEOutputStream;
 import com.metavize.tran.mime.HeaderParseException;
 import com.metavize.tran.util.TempFileFactory;
+import com.metavize.tran.mime.EmailAddress;
 import static com.metavize.tran.util.Ascii.CRLF;
 import com.metavize.tran.mail.papi.MessageInfo;
 import com.metavize.tran.mail.papi.smtp.SmtpTransaction;
 import com.metavize.tran.mail.papi.smtp.sapi.BufferingSessionHandler;
+import com.metavize.tran.mail.papi.quarantine.QuarantineTransformView;
+import com.metavize.tran.mail.papi.quarantine.MailSummary;
 import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.mvvm.MvvmContextFactory;
+import java.util.List;
 
 
 /**
@@ -44,20 +48,45 @@ public class SmtpSessionHandler
 
   private final SpamImpl m_spamImpl;
   private final SpamSMTPConfig m_config;
+  private final QuarantineTransformView m_quarantine;
 
   public SmtpSessionHandler(TCPSession session,
     long maxClientWait,
     long maxSvrWait,
     SpamImpl impl,
-    SpamSMTPConfig config) {
+    SpamSMTPConfig config,
+    QuarantineTransformView quarantine) {
 
     super(config.getMsgSizeLimit(), maxClientWait, maxSvrWait, false);
 
     m_spamImpl = impl;
+    m_quarantine = quarantine;
     m_config = config;
     m_fileFactory = new TempFileFactory(MvvmContextFactory.context().
       pipelineFoundry().getPipeline(session.id()));
   }
+
+
+  /**
+   * Method for subclasses (i.e. clamphish) to
+   * set the
+   * {@link com.metavize.tran.mail.papi.quarantine.MailSummary#getQuarantineCategory category}
+   * for a Quarantine submission.
+   */
+  protected String getQuarantineCategory() {
+    return "SPAM";
+  }
+
+  /**
+   * Method for subclasses (i.e. clamphish) to
+   * set the
+   * {@link com.metavize.tran.mail.papi.quarantine.MailSummary#getQuarantineDetail detail}
+   * for a Quarantine submission.
+   */
+  protected String getQuarantineDetail(SpamReport report) {
+    //TODO bscott Do something real here
+    return "" + report.getScore();
+  }    
 
 
   @Override
@@ -95,26 +124,6 @@ public class SmtpSessionHandler
       return PASS_MESSAGE;
     }
 
-
-    //Create an event for the reports
-    SpamSmtpEvent spamEvent = new SpamSmtpEvent(
-      msgInfo,
-      report.getScore(),
-      report.isSpam(),
-      report.isSpam()?action:SMTPSpamMessageAction.PASS,
-      m_spamImpl.getScanner().getVendorName());
-    m_eventLogger.info(spamEvent);
-
-    //Mark headers regardless of other actions
-    try {
-      msg.getMMHeaders().removeHeaderFields(new LCString(m_config.getHeaderName()));
-      msg.getMMHeaders().addHeaderField(m_config.getHeaderName(),
-        m_config.getHeaderValue(report.isSpam()));
-    }
-    catch(HeaderParseException shouldNotHappen) {
-      m_logger.error(shouldNotHappen);
-    }
-
     if(report.isSpam()) {//BEGIN SPAM
       m_logger.debug("Spam found");
 
@@ -133,22 +142,45 @@ public class SmtpSessionHandler
 
       if(action == SMTPSpamMessageAction.PASS) {
         m_logger.debug("Although SPAM detected, pass message as-per policy");
+        markHeaders(msg, report);
+        postSpamEvent(msgInfo, report, SMTPSpamMessageAction.PASS);
         m_spamImpl.incrementPassCounter();
         return PASS_MESSAGE;
       }
       else if(action == SMTPSpamMessageAction.MARK) {
         m_logger.debug("Marking message as-per policy");
+        postSpamEvent(msgInfo, report, SMTPSpamMessageAction.MARK);
+        markHeaders(msg, report);
         m_spamImpl.incrementMarkCounter();
         MIMEMessage wrappedMsg = m_config.getMessageGenerator().wrap(msg, tx, report);
         return new BPMEvaluationResult(wrappedMsg);
       }
+      else if(action == SMTPSpamMessageAction.QUARANTINE) {
+        m_logger.debug("Attempt to quarantine mail as-per policy");
+        if(quarantineMail(msg, tx, report, f)) {
+          m_spamImpl.incrementQuarantineCount();
+          postSpamEvent(msgInfo, report, SMTPSpamMessageAction.QUARANTINE);
+          return BLOCK_MESSAGE;
+        }
+        else {
+          m_logger.debug("Quarantine failed.  Fall back to mark");
+          m_spamImpl.incrementMarkCounter();
+          postSpamEvent(msgInfo, report, SMTPSpamMessageAction.MARK);
+          markHeaders(msg, report);
+          MIMEMessage wrappedMsg = m_config.getMessageGenerator().wrap(msg, tx, report);
+          return new BPMEvaluationResult(wrappedMsg);          
+        }
+      }
       else {//BLOCK
         m_logger.debug("Blocking SPAM message as-per policy");
+        postSpamEvent(msgInfo, report, SMTPSpamMessageAction.BLOCK);
         m_spamImpl.incrementBlockCounter();
         return BLOCK_MESSAGE;
       }
     }//ENDOF SPAM
     else {//BEGIN HAM
+      markHeaders(msg, report);
+      postSpamEvent(msgInfo, report, SMTPSpamMessageAction.PASS);
       m_logger.debug("Not spam");
       m_spamImpl.incrementPassCounter();
       return PASS_MESSAGE;
@@ -183,6 +215,7 @@ public class SmtpSessionHandler
     //Handle error case
     if(report == null) {
       m_logger.error("Error scanning message.  Assume pass");
+      postSpamEvent(msgInfo, report, SMTPSpamMessageAction.PASS);
       m_spamImpl.incrementPassCounter();
       return BlockOrPassResult.PASS;
     }
@@ -198,39 +231,78 @@ public class SmtpSessionHandler
       action = SMTPSpamMessageAction.PASS;
     }
 
-    //Create an event for the reports
-    SpamSmtpEvent spamEvent = new SpamSmtpEvent(
-      msgInfo,
-      report.getScore(),
-      report.isSpam(),
-      report.isSpam()?action:SMTPSpamMessageAction.PASS,
-      m_spamImpl.getScanner().getVendorName());
-    m_eventLogger.info(spamEvent);
-    
+
     if(report.isSpam()) {
       m_logger.debug("Spam");
 
       if(action == SMTPSpamMessageAction.PASS) {
         m_logger.debug("Although SPAM detected, pass message as-per policy");
+        postSpamEvent(msgInfo, report, SMTPSpamMessageAction.PASS);
         m_spamImpl.incrementPassCounter();
         return BlockOrPassResult.PASS;
       }
       else if(action == SMTPSpamMessageAction.MARK) {
         m_logger.debug("Cannot mark at this time.  Simply pass");
+        postSpamEvent(msgInfo, report, SMTPSpamMessageAction.PASS);
         m_spamImpl.incrementPassCounter();
         return BlockOrPassResult.PASS;
       }
+      else if(action == SMTPSpamMessageAction.QUARANTINE) {
+        m_logger.debug("Attempt to quarantine mail as-per policy");
+        if(quarantineMail(msg, tx, report, f)) {
+          m_logger.debug("Mail quarantined");
+          postSpamEvent(msgInfo, report, SMTPSpamMessageAction.QUARANTINE);
+          m_spamImpl.incrementQuarantineCount();
+          return BlockOrPassResult.BLOCK;
+        }
+        else {
+          m_logger.debug("Quarantine failed.  Fall back to pass");
+          postSpamEvent(msgInfo, report, SMTPSpamMessageAction.PASS);
+          m_spamImpl.incrementPassCounter();
+          return BlockOrPassResult.PASS;
+        }
+      }
       else {//BLOCK
         m_logger.debug("Blocking SPAM message as-per policy");
+        postSpamEvent(msgInfo, report, SMTPSpamMessageAction.BLOCK);
         m_spamImpl.incrementBlockCounter();
         return BlockOrPassResult.BLOCK;
       }
     }
     else {
       m_logger.debug("Not Spam");
+      postSpamEvent(msgInfo, report, SMTPSpamMessageAction.PASS);
       m_spamImpl.incrementPassCounter();
       return BlockOrPassResult.PASS;
     }
+  }
+
+  private void markHeaders(MIMEMessage msg,
+    SpamReport report) {
+    try {
+      msg.getMMHeaders().removeHeaderFields(new LCString(m_config.getHeaderName()));
+      msg.getMMHeaders().addHeaderField(m_config.getHeaderName(),
+        m_config.getHeaderValue(report.isSpam()));
+    }
+    catch(HeaderParseException shouldNotHappen) {
+      m_logger.error(shouldNotHappen);
+    }  
+  }
+
+  /**
+   * ...name says it all...
+   */
+  private void postSpamEvent(MessageInfo msgInfo,
+    SpamReport report,
+    SMTPSpamMessageAction action) {
+    
+    SpamSmtpEvent spamEvent = new SpamSmtpEvent(
+      msgInfo,
+      report.getScore(),
+      report.isSpam(),
+      action,
+      m_spamImpl.getScanner().getVendorName());
+    m_eventLogger.info(spamEvent);    
   }
 
   /**
@@ -304,5 +376,29 @@ public class SmtpSessionHandler
       m_logger.error("Exception scanning message", ex);
       return null;
     }
+  }
+
+  private boolean quarantineMail(MIMEMessage msg,
+    SmtpTransaction tx,
+    SpamReport report,
+    File file) {
+    
+    List<EmailAddress> addrList =
+      tx.getRecipients(true);
+    
+    EmailAddress[] addresses =
+      (EmailAddress[]) addrList.toArray(new EmailAddress[addrList.size()]);
+
+    return m_quarantine.quarantineMail(file,
+      new MailSummary(
+        msg.getMMHeaders().getFrom()==null?
+          (tx.getFrom()==null?
+            "<>":
+            tx.getFrom().getAddress()):
+          msg.getMMHeaders().getFrom().getAddress(),
+        msg.getMMHeaders().getSubject(),
+        getQuarantineCategory(),
+        getQuarantineDetail(report)),
+      addresses);
   }
 }
