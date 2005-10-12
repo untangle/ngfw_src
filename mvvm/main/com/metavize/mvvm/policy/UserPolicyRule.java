@@ -203,6 +203,6 @@ public class UserPolicyRule extends PolicyRule
     public int hashCode()
     {
         // Should be fixed to include other stuff, once those are fixed. XXX
-        return policy.hashCode() + clientIntf * 7 + serverIntf * 5;
+        return (null == policy ? 0 : policy.hashCode()) + clientIntf * 7 + serverIntf * 5;
     }
 }
