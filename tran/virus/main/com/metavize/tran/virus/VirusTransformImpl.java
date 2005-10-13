@@ -47,7 +47,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
-public class VirusTransformImpl extends AbstractTransform
+public abstract class VirusTransformImpl extends AbstractTransform
     implements VirusTransform
 {
 
@@ -210,23 +210,7 @@ public class VirusTransformImpl extends AbstractTransform
 
     private final VirusScanner scanner;
 
-    private final PipeSpec[] pipeSpecs = new PipeSpec[] {
-        new SoloPipeSpec("virus-ftp", this,
-                         new TokenAdaptor(this, new VirusFtpFactory(this)),
-                         Fitting.FTP_TOKENS, Affinity.SERVER, 5),
-        new SoloPipeSpec("virus-http", this,
-                         new TokenAdaptor(this, new VirusHttpFactory(this)),
-                         Fitting.HTTP_TOKENS, Affinity.SERVER, 5),
-        new SoloPipeSpec("virus-smtp", this,
-                         new TokenAdaptor(this, new VirusSmtpFactory(this)),
-                         Fitting.SMTP_TOKENS, Affinity.CLIENT, 5),
-        new SoloPipeSpec("virus-pop", this,
-                         new TokenAdaptor(this, new VirusPopFactory(this)),
-                         Fitting.POP_TOKENS, Affinity.SERVER, 5),
-        new SoloPipeSpec("virus-imap", this,
-                         new TokenAdaptor(this, new VirusImapFactory(this)),
-                         Fitting.IMAP_TOKENS, Affinity.SERVER, 5)
-        };
+    private PipeSpec[] pipeSpecs;
 
     private final Logger logger = Logger.getLogger(VirusTransformImpl.class);
 
@@ -322,10 +306,37 @@ public class VirusTransformImpl extends AbstractTransform
         return l;
     }
 
+    abstract protected int getStrength();
+
+    protected PipeSpec[] initialPipeSpecs()
+    {
+        int strength = getStrength();
+        PipeSpec[] result = new PipeSpec[] {
+            new SoloPipeSpec("virus-ftp", this,
+                             new TokenAdaptor(this, new VirusFtpFactory(this)),
+                             Fitting.FTP_TOKENS, Affinity.SERVER, strength),
+            new SoloPipeSpec("virus-http", this,
+                             new TokenAdaptor(this, new VirusHttpFactory(this)),
+                             Fitting.HTTP_TOKENS, Affinity.SERVER, strength),
+            new SoloPipeSpec("virus-smtp", this,
+                             new TokenAdaptor(this, new VirusSmtpFactory(this)),
+                             Fitting.SMTP_TOKENS, Affinity.CLIENT, strength),
+            new SoloPipeSpec("virus-pop", this,
+                             new TokenAdaptor(this, new VirusPopFactory(this)),
+                             Fitting.POP_TOKENS, Affinity.SERVER, strength),
+            new SoloPipeSpec("virus-imap", this,
+                             new TokenAdaptor(this, new VirusImapFactory(this)),
+                             Fitting.IMAP_TOKENS, Affinity.SERVER, strength)
+        };
+        return result;
+    }
+
     // Transform methods ------------------------------------------------------
 
     private void virusReconfigure()
     {
+        pipeSpecs = initialPipeSpecs();
+
         // FTP
         Set subscriptions = new HashSet();
         {

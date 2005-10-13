@@ -14,6 +14,11 @@ import com.metavize.tran.virus.VirusTransformImpl;
 
 public class ClamTransform extends VirusTransformImpl
 {
+    protected int getStrength()
+    {
+        return 5;
+    }
+
     public ClamTransform()
     {
         super(new ClamScanner());

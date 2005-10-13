@@ -18,4 +18,10 @@ public class HauriTransform extends VirusTransformImpl
     {
         super(new HauriScanner());
     }
+
+    protected int getStrength()
+    {
+        return 7;
+    }
+
 }
