@@ -24,8 +24,9 @@ public class MvvmContextFactory
     private static MvvmLocalContext MVVM_CONTEXT = null;
 
     /**
-     * Gets the current state of the MVVM.  This provides a way to get the state without creating
-     * the MvvmLocalContext in case we're calling this at a very early stage.
+     * Gets the current state of the MVVM.  This provides a way to get
+     * the state without creating the MvvmLocalContext in case we're
+     * calling this at a very early stage.
      *
      * @return a <code>MvvmState</code> enumerated value
      */

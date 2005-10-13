@@ -11,10 +11,10 @@
 
 package com.metavize.mvvm.util;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.apache.log4j.Logger;
 
 public class TransactionRunner
 {
@@ -54,7 +54,7 @@ public class TransactionRunner
                 return false;
             }
         } catch (Exception exn) {
-            logger.warn("something bad happened", exn);
+            logger.error("something bad happened", exn);
             if (null != tx) {
                 tx.rollback();
             }
