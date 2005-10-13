@@ -549,7 +549,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
                 {
                     Connection c = s.connection();
                     PreparedStatement ps = c.prepareStatement(q);
-                    ps.setLong(1, getPolicy().getId());
+                    ps.setString(1, getPolicy().getId().toString());
                     ps.setInt(2, limit);
                     long l0 = System.currentTimeMillis();
                     ResultSet rs = ps.executeQuery();

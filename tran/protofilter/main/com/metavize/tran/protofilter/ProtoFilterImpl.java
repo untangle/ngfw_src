@@ -119,7 +119,7 @@ public class ProtoFilterImpl extends AbstractTransform implements ProtoFilter
                         ps = c.prepareStatement(EVENT_BLOCKED_QUERY);
                     else
                         ps = c.prepareStatement(EVENT_QUERY);
-                    ps.setLong(1, getPolicy().getId());
+                    ps.setString(1, getPolicy().getId().toString());
                     ps.setInt(2, limit);
                     long l0 = System.currentTimeMillis();
                     ResultSet rs = ps.executeQuery();

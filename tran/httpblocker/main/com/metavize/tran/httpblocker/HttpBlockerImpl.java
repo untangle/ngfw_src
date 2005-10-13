@@ -121,7 +121,7 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
                         ps = c.prepareStatement(ALL_EVENTS_BLOCKED_QUERY);
                     else
                         ps = c.prepareStatement(ALL_EVENTS_QUERY);
-                    ps.setLong(1, getPolicy().getId());
+                    ps.setString(1, getPolicy().getId().toString());
                     ps.setInt(2, limit);
                     long l0 = System.currentTimeMillis();
                     ResultSet rs = ps.executeQuery();

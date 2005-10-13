@@ -490,7 +490,7 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
                     Connection c = s.connection();
                     PreparedStatement ps = c.prepareStatement(q);
                     ps.setString(1, scanner.getVendorName());
-                    ps.setLong(2, getPolicy().getId());
+                    ps.setString(2, getPolicy().getId().toString());
                     ps.setInt(3, limit);
                     long l0 = System.currentTimeMillis();
                     ResultSet rs = ps.executeQuery();
