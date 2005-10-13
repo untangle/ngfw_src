@@ -62,8 +62,8 @@ class InterfaceAliasModel extends MSortedTableModel{
         //                                 #   min    rsz    edit   remv   desc   typ            def
         addTableColumn( tableColumnModel,  0,  C0_MW, false, false, false, false, String.class,  null, sc.TITLE_STATUS );
         addTableColumn( tableColumnModel,  1,  C1_MW, false, false, false, false, Integer.class, null, sc.TITLE_INDEX );
-        addTableColumn( tableColumnModel,  2,  C2_MW, false, true,  false, false, String.class, "1.2.3.4", sc.bold("address") );
-        addTableColumn( tableColumnModel,  3,  C3_MW, false, true,  false, false, String.class, "255.255.255.0", sc.bold("netmask") );
+        addTableColumn( tableColumnModel,  2,  C2_MW, false, true,  false, false, String.class, "1.2.3.4", "address" );
+        addTableColumn( tableColumnModel,  3,  C3_MW, false, true,  false, false, String.class, "255.255.255.0", "netmask" );
         addTableColumn( tableColumnModel,  4, 10,     false, false, true,  false, InterfaceAlias.class, null, "");
         return tableColumnModel;
     }
