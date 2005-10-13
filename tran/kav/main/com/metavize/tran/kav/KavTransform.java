@@ -18,4 +18,9 @@ public class KavTransform extends VirusTransformImpl
     {
         super(new KavScanner());
     }
+
+    protected int getStrength()
+    {
+        return 8;
+    }
 }
