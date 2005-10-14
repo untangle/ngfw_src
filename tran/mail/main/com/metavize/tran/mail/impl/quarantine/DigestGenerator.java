@@ -11,6 +11,8 @@
 
 package com.metavize.tran.mail.impl.quarantine;
 
+import com.metavize.mvvm.MvvmContextFactory;
+
 import com.metavize.tran.mail.papi.quarantine.InboxIndex;
 import com.metavize.tran.mail.papi.quarantine.InboxRecord;
 
@@ -39,6 +41,7 @@ import java.util.Properties;
 import java.util.Arrays;
 
 import java.net.URLEncoder;
+
 import java.io.File;
 import java.io.InputStream;
 import java.io.FileOutputStream;
@@ -243,8 +246,8 @@ class DigestGenerator {
       //Create the Velocity context, for template generation
       VelocityContext context = new VelocityContext();
       context.put(USER_EMAIL_VV, to);
-      context.put(IMAGE_ROOT_VV, "http://www.yahoo.com");
-      context.put(LINK_GENERATOR_VV, new LinkGenerator());
+      context.put(IMAGE_ROOT_VV, "http://" + serverHost + "/quarantine/images");
+      context.put(LINK_GENERATOR_VV, new LinkGenerator(serverHost, authToken));
 
       InboxRecord[] allRecords = index.getAllRecords();
       if(allRecords == null || allRecords.length == 0) {
@@ -338,7 +341,7 @@ class DigestGenerator {
       return null;
     }
   }
-
+/*
   private static String makeURL(String host, String subPath,
     Pair<String, String>...arguments) {
     StringBuilder sb = new StringBuilder();
@@ -356,7 +359,7 @@ class DigestGenerator {
     }
     return sb.toString();
   }
-
+*/
   //$inbox.url$
   //$title$
   //$help.url$

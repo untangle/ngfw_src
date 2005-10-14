@@ -299,6 +299,13 @@ public class Main
         mgr.setPathname(null); /* disable session persistence */
         ctx.setManager(mgr);
         baseHost.addChild(ctx);
+//
+//        ctx = emb.createContext("/quarantine",
+//                                bunniculaWeb + "/quarantine");
+//        mgr = new StandardManager();
+//        mgr.setPathname(null); /* disable session persistence */
+//        ctx.setManager(mgr);
+//        baseHost.addChild(ctx);        
 
         ctx = emb.createContext("/webstart", bunniculaWeb + "/webstart");
         mgr = new StandardManager();

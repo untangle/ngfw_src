@@ -197,9 +197,11 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
     </then> </if>
 
     <!-- FIXME clamphish special case -->
-    <if> <equals arg1="${tran.name}" arg2="clamphish"/> <then>
+    <if><equals arg1="${tran.name}" arg2="clamphish"/>
+      <then>
         <var name="extra.classes" value="../tran/output/jar/clam-transform.mar:../tran/output/jar/spam-base.mar:../tran/output/jar/virus-base.mar:../tran/output/jar/mail-casing.mar"/>
-    </then> </if>
+      </then>
+    </if>
 
     <javac destdir="${build.root}/${tran.name}"
            debug="on"
@@ -305,6 +307,14 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
 
   <target name="install.mail">
     <copy file="${build.jar}/mail-export.jar" todir="${dist.mvvm.toolbox}"/>
+    <!--
+      Copy-over the web app.  Most of the interesting
+      logic for this was down when we made the mail.jar
+    -->
+    <mkdir dir="${dist.mvvm.web}/quarantine"/>
+    <copy todir="${dist.mvvm.web}/quarantine">
+      <fileset dir="${build.webapps}/quarantine"/>
+    </copy>  
   </target>
 
   <target name="install.ftp">
@@ -422,6 +432,103 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
         <include name="com/metavize/tran/mail/papi/smtp/*.hbm.xml"/>
       </fileset>
     </jar>
+    <!--
+    ====================================================
+      Create the whole web app.  Perhaps this should
+      be its own target, but I cannot make heads or tails
+      of the build system at this point.
+    -->
+    <mkdir dir="${build.webapps}/quarantine"/>
+
+    <!-- Copy over our static files (exclude the JSPs and the web.xml) -->
+    <copy todir="${build.webapps}/quarantine">
+      <fileset dir="mail/${src.webapps}/quarantine/root">
+        <exclude name="**/*.jsp"/>
+        <exclude name="WEB-INF/web.xml"/>
+      </fileset>
+    </copy>
+
+    <!-- Create the "classes" directory -->
+    <mkdir dir="${build.webapps}/quarantine/WEB-INF/classes"/>
+    
+    <!-- Compile the servlets and and supporting stuff -->
+    <javac destdir="${build.webapps}/quarantine/WEB-INF/classes"
+           debug="on"
+           optimize="false"
+           deprecation="on"
+           source="1.5"
+           includeAntRuntime="false">
+
+      <src path="mail/${src.webapps}/quarantine/src"/>
+
+      <classpath path="${build.jar}/mail-export.jar"/>
+      <classpath refid="log4j.classpath"/>
+      <classpath refid="mvvm-client.classpath"/>
+      <classpath refid="mvvm.classpath"/>
+      <classpath refid="tomcat.classpath"/>
+    </javac>
+
+    <!-- perform the JSPc stuff -->
+    <java classname="org.apache.jasper.JspC"
+          fork="true"
+          failonerror="true">
+      <arg line="-d ${build.webapps}/quarantine/WEB-INF/classes"/>
+      <arg line="-p com.metavize.tran.mail.web.jsp"/>
+      <arg line="-webinc ${build.webapps}/quarantine/WEB-INF/web-fragment.xml"/>
+      <arg line="-uriroot mail/${src.webapps}/quarantine/root/"/>
+      <classpath refid="mvvm.thirdparty.classpath"/>
+      <classpath refid="tomcat.classpath"/>
+      <classpath path="${build.webapps}/quarantine/WEB-INF/classes"/>
+      <classpath path="${build.jar}/mail-export.jar"/>
+    </java>
+
+    <!--
+      Compile again, as the JSPs are permitted to depend on java stuff
+      in the web app (and we could not do this earlier
+    -->
+    <javac destdir="${build.webapps}/quarantine/WEB-INF/classes"
+           debug="on"
+           optimize="false"
+           deprecation="on"
+           source="1.5"
+           includeAntRuntime="false">
+
+      <src path="${build.webapps}/quarantine/WEB-INF/classes"/>
+
+      <classpath path="${build.jar}/mail-export.jar"/>
+      <classpath refid="log4j.classpath"/>
+      <classpath refid="mvvm-client.classpath"/>
+      <classpath refid="mvvm.classpath"/>
+      <classpath refid="tomcat.classpath"/>
+    </javac>
+
+    <!-- Delete the .java files -->
+    <delete>
+      <fileset dir="${build.webapps}/quarantine/WEB-INF/classes" includes="**/*.java"/>
+    </delete>    
+
+    <!-- Create a "web.xml" file with substitution -->
+    <loadfile property="quar-enduser-generated-web.xml"
+      srcFile="${build.webapps}/quarantine/WEB-INF/web-fragment.xml"/>
+    <copy file="mail/${src.webapps}/quarantine/root/WEB-INF/web.xml"
+      toFile="${build.webapps}/quarantine/WEB-INF/web.xml" overwrite="true">
+      <filterset>
+        <filter token="JSP_PRE_COMPILED_SERVLETS" value="${quar-enduser-generated-web.xml}"/>
+      </filterset>
+    </copy>
+
+    <!-- Delete the web xml fragment -->
+    <delete file="${build.webapps}/quarantine/WEB-INF/web-fragment.xml"/>
+    
+    <!-- Copy-over required libraries -->
+    <mkdir dir="${build.webapps}/quarantine/WEB-INF/lib"/>
+    <copy toDir="${build.webapps}/quarantine/WEB-INF/lib">
+      <fileset refid="log4j.jarset"/>
+      <fileset refid="mvvm-client.jarset"/>
+      <fileset refid="mvvm.jarset"/>
+    </copy>
+    <copy toDir="${build.webapps}/quarantine/WEB-INF/lib" file="${build.jar}/mail-export.jar"/>
+
   </target>
 
   <target name="jar.ftp">

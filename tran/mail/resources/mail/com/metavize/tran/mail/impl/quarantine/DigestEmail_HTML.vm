@@ -36,12 +36,6 @@ $numRecsNotShown - Number of records which could not be shown for space reasons
 ##
 ##
 ##
-<!--
-  Preview
-  \$numRecsNotShown $numRecsNotShown
-  \$hasRecsNotShown $hasRecsNotShown
-  \$hasRecords $hasRecords
--->
 <html>
   <head>
     <title>Quarantine Digest for $user_email</title>
@@ -63,11 +57,15 @@ $numRecsNotShown - Number of records which could not be shown for space reasons
       margin: 0;  
     }
     
+    .logoTable {
+      padding-left: 15; 
+      padding-top: 15;
+    }
+    
     table.intro {
       padding-left: 10;
       padding-top: 15;
     }
-    
     
     table.introUserInfo {
       padding-left: 10;
@@ -110,7 +108,6 @@ $numRecsNotShown - Number of records which could not be shown for space reasons
       padding-left: 10;
     }
     
-    
     table.actions a {
       color: #FFFFFF;
     }
@@ -129,13 +126,6 @@ $numRecsNotShown - Number of records which could not be shown for space reasons
       margin: 0;
       padding: 0;
     
-    }
-    
-    
-    table.inbox caption {
-      padding-bottom: 5px;
-      text-align: left;
-      text-transform: uppercase;
     }
     
     table.inbox th, table.inbox td {
@@ -162,11 +152,9 @@ $numRecsNotShown - Number of records which could not be shown for space reasons
     table.inbox thead th.first {
       padding-left: 24px;
     }
+    
     table.inbox tbody th {
       padding-left: 24px;
-    }
-    table.inbox tbody th, table.inbox td {
-      background-color:#eee;
     }
     
     table.inbox tr.even td, table.inbox tr.even th {
@@ -180,33 +168,40 @@ $numRecsNotShown - Number of records which could not be shown for space reasons
     table.inbox tbody a {
       color: #333;
     }
+    
     table.inbox tbody a:visited {
       color: #999999;
     }
+    
     table.inbox tbody a:hover {
       color: #33c;
     }
+    
     table.inbox tbody a:active {
       color: #33c;
     }
+    
     table.inbox tfoot th {
       text-align: right;
     }
+    
     table.inbox tfoot th:after {
       content: ":";
     }
+    
     .smallLogo {
       font:  normal 12 arial, helvetica, sans serif;
       text-align: center;
       padding-top: 30;
       padding-bottom: 30;
     }
+
   </style>
   </head>
   <body>
 
     <table class="outertable" cellpadding="0" cellspacing="0">
-      <!-- Outer table, first row -->
+      ## Outer table, first row 
       <tr>
         ## Because of IE stupidity, there can be no LWS between the tags below 
         <td WIDTH="20" valign="top"><img src="$image_root/tl.gif" ALT=""></td>
@@ -214,18 +209,23 @@ $numRecsNotShown - Number of records which could not be shown for space reasons
            <table class="intro" border="0" cellpadding="0" cellspacing="0" height="100%" width="100%">
               <tbody>
                 <tr>
-                  <!-- I cannot get things to work correctly w/o putting an absolute value here -->
+                  ## I cannot get things to work correctly w/o putting an absolute value here 
                   <td width="200">
-                    <table class="logoTable">
-                      <tbody><tr>
-                        <td>
-                          <img src="logo.gif">
-                        </td>
-                        <td class="logotext">
-                          &nbsp;&nbsp;Metavize EdgeGuard
-                        </td>
-                      </tr>
-                    </tbody></table>
+                    ## Yet another IE hack
+                    <div class="logoTable">
+                      <table>
+                        <tbody>
+                          <tr>
+                            <td>
+                              <img src="$image_root/logo.gif">
+                            </td>
+                            <td class="logotext">
+                              &nbsp;&nbsp;Metavize EdgeGuard
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
                   </td>
                   <td>
                     <table class="introUserInfo" height="100%" width="100%">
@@ -251,10 +251,10 @@ $numRecsNotShown - Number of records which could not be shown for space reasons
              </tbody>
            </table>
         </td>
-        ## Because of IE stupidity, there can be no LWS between the tags below
+        ## Because of IE stupidity, there can be no LWS between the tags below 
         <td WIDTH="20" valign="top"><img src="$image_root/tr.gif"></td>
       </tr>
-      <!-- Outer table, middle row -->
+      ## Outer table, middle row 
       <tr>
         <td>
         </td>
@@ -336,7 +336,9 @@ $numRecsNotShown - Number of records which could not be shown for space reasons
                       </tbody>
                     </table>
                   #else
-                    There are no records (make me pretty)
+                    <tr colspan="4" align="center">
+                      There are no records (make me pretty)
+                    </tr>
                   #end
                 </td>
               </tr>
@@ -346,18 +348,17 @@ $numRecsNotShown - Number of records which could not be shown for space reasons
         <td>
         </td>
       </tr>
-      <!-- Outer table, last row -->
+      ## Outer table, last row 
       <tr>
-        ## Because of IE stupidity, there can be no LWS between the tags below
+        ## Because of IE stupidity, there can be no LWS between the tags below 
         <td WIDTH="20" valign="bottom"><img src="$image_root/bl.gif" ALT=""></td>
         <td class="smallLogo" height="100%">
           Powered by <br>
           Metavize&reg; EdgeGuard&reg;
         </td>
-        ## Because of IE stupidity, there can be no LWS between the tags below
+        ## Because of IE stupidity, there can be no LWS between the tags below 
         <td WIDTH="20" valign="bottom"><img src="$image_root/br.gif" ALT=""></td>
       </tr>
     </table>
-    
   </body>
 </html>

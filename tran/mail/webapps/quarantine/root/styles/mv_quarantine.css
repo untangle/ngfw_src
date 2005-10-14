@@ -1,0 +1,186 @@
+*{
+  margin:0;
+  padding:0;
+}
+
+body{
+  font-family:Arial,Verdana,Sans-Serif;
+  font-size:.9em;
+  background:#6495ED;
+  padding: 10
+}
+
+table.enteremail {
+  border-style: solid;
+  border-width: thin;
+  padding: 20;
+  background: #D0D0D0;
+}
+
+.paddedButton {
+  padding-top: 20;
+  padding-bottom: 10;
+}
+
+table.intro {
+  font-family: "Trebuchet MS", "Lucida Sans Unicode", verdana, lucida, helvetica, sans-serif;
+  padding-left: 10;
+  padding-top: 15;
+}
+
+table.logoTable {
+/*   background-image: url(metal-background.gif); */
+}
+
+table.intro table.introUserInfo {
+  border-left: 1px solid rgb(204, 204, 204);
+  padding-left: 10;
+}
+
+.logotext {
+  font:  arial, helvetica, sans serif; color: #006aff;
+}
+
+.infotext {
+  font:  normal 13 Geneva,Arial; color: #372F2F;
+  padding-left: 10;
+  padding-right: 20;
+  padding-top: 20;
+  padding-bottom: 10;
+}
+
+.errortext {
+  font:  normal 20 Geneva,Arial; color: #FF0000;
+  padding-left: 10;
+  padding-right: 10;
+  padding-bottom: 10;
+}
+
+.messageText {
+  font:  normal 20 Geneva,Arial; color: #339999;
+  padding-left: 10;
+  padding-right: 10;
+  padding-bottom: 10;
+}
+
+
+table.actions {
+  border-collapse: collapse;
+  font-family: "Trebuchet MS", "Lucida Sans Unicode", verdana, lucida, helvetica, sans-serif;
+  margin: 0;
+  padding: 0;
+  color: #FFFFFF
+}
+
+table.actions TD {
+  background-color: #003399;
+}
+
+table.actions TD {
+  padding-left: 5;
+}
+
+table.actions TD + TD {
+  text-align: right;
+  padding: 10;
+}
+
+table.actions a {
+  color: #FFFFFF;
+}
+table.actions a:visited {
+  color: #CCFFFF;
+}
+table.actions a:hover {
+  color: #33FFFF;
+}
+table.actions a:active {
+  color: #FF0000;
+}
+    
+table.inbox {
+  border-collapse: collapse;
+  font-family: "Trebuchet MS", "Lucida Sans Unicode", verdana, lucida, helvetica, sans-serif;
+  font-size: 0.8em;
+  margin: 0;
+  padding: 0;
+/* Doesn't work  
+  right: 1;
+  left: 1;
+*/  
+}
+
+
+table.inbox caption {
+  font-size: 1.4em;
+  font-stretch: condensed;
+  font-weight: bold;
+  padding-bottom: 5px;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+table.inbox th, table.inbox td {
+  border-bottom: 1px solid #666;
+  border-top: 1px solid #666;
+  padding: 0.6em;
+  vertical-align: 4px;
+}
+
+table.inbox th {
+  text-align: left;
+  text-transform: uppercase;
+}
+table.inbox thead th, table.inbox tfoot th, table.inbox tfoot td {
+  background-color: #33CCFF;
+  font-size: 1.1em;
+}
+
+table.inbox thead th.first {
+  padding-left: 24px;
+}
+table.inbox tbody th {
+/*  background: url(http://www.clacksweb.org.uk/images/bullet_vacancy.gif) no-repeat 6px 0.8em; */
+  padding-left: 24px;
+}
+table.inbox tbody th, table.inbox td {
+  background-color:#eee;
+}
+/*
+table.inbox tbody tr:hover td, tbody tr:hover th {
+  background-color: #E5E5CB;
+}
+*/
+table.inbox tr.odd td, table.inbox tr.odd th {
+  background-color: #ddd;
+}
+
+table.inbox tbody a {
+  color: #333;
+}
+table.inbox tbody a:visited {
+  color: #999999;
+}
+table.inbox tbody a:hover {
+  color: #33c;
+}
+table.inbox tbody a:active {
+  color: #33c;
+}
+table.inbox tbody td+td+td+td a {
+  background: url(http://www.clacksweb.org.uk/images/external.gif) no-repeat right 0.4em;
+  padding-right: 12px;
+}
+table.inbox tfoot th {
+  text-align: right;
+}
+table.inbox tfoot th:after {
+  content: ":";
+}
+
+.smallLogo {
+  font:  normal 12 arial, helvetica, sans serif;
+  text-align: center;
+  padding-top: 30;
+}
+

@@ -12,6 +12,7 @@
 package com.metavize.tran.mail.impl.quarantine;
 
 import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.MvvmLocalContext;
 import com.metavize.tran.mail.papi.quarantine.NoSuchInboxException;
 import com.metavize.tran.mail.papi.quarantine.InboxIndex;
 import com.metavize.tran.mail.impl.quarantine.store.InboxIndexImpl;
@@ -37,6 +38,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.BufferedInputStream;
 import java.io.InputStream;
+import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import org.apache.log4j.Logger;
 
@@ -87,6 +89,14 @@ public class Quarantine
   public void close() {
     m_store.close();
   }
+
+  private String getInternalIPAsString() {
+    InetAddress addr = MvvmContextFactory.context().argonManager().getInsideAddress();
+    if(addr == null) {
+      return null;
+    }
+    return addr.getHostAddress();
+  }
     
 
   //--QuarantineTransformView--
@@ -94,6 +104,16 @@ public class Quarantine
   public boolean quarantineMail(File file,
     MailSummary summary,
     EmailAddress...recipients) {
+
+    //If we do not have an internal IP, then
+    //don't even bother quarantining
+    if(getInternalIPAsString() == null) {
+      //TODO bscott It would be nice to not repeat
+      //     this warning msg
+      m_logger.warn("No inside interface, so no way for folks to release inbox.  Abort" +
+        "quarantining");
+      return false;
+    }
 
     //TODO Check size of store vs. max size
 
@@ -223,10 +243,16 @@ public class Quarantine
   private boolean sendDigestEmail(String account,
     InboxIndex index) {
 
+    String internalHost = getInternalIPAsString();
+    if(internalHost == null) {
+      m_logger.warn("Unable to determine internal interface");
+      return false;
+    }
+
     MIMEMessage msg = m_digestGenerator.generateMsg(index,
-      HACK_HOST,
+      internalHost,
       account,
-      "quarantine@" + HACK_HOST,
+      "quarantine@" + internalHost,
       this);
 
     if(msg == null) {
