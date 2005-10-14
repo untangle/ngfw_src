@@ -134,6 +134,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
            deprecation="on"
            source="1.5"
            target="1.5"
+           debug="true"
            includeAntRuntime="false">
 
       <classpath refid="mvvm.thirdparty.classpath"/>

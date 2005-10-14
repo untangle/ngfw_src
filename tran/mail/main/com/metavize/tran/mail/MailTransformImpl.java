@@ -22,9 +22,13 @@ import com.metavize.tran.mail.papi.*;
 import com.metavize.tran.mail.impl.quarantine.Quarantine;
 import com.metavize.tran.mail.papi.quarantine.QuarantineTransformView;
 import com.metavize.tran.mail.papi.quarantine.QuarantineUserView;
+import com.metavize.mvvm.tran.TransformException;
+import com.metavize.mvvm.tran.TransformStartException;
+import com.metavize.mvvm.tran.TransformStopException;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import com.metavize.mvvm.MvvmContextFactory;
 
 
 public class MailTransformImpl extends AbstractTransform
@@ -47,7 +51,9 @@ public class MailTransformImpl extends AbstractTransform
 
     private MailTransformSettings settings;
     private static Quarantine s_quarantine;//This will never be null for *instances* of
-                                           //MailTransformImpl    
+                                           //MailTransformImpl
+    private static boolean s_deployedWebApp = false;
+    private static boolean s_unDeployedWebApp = false;
 
     // constructors -----------------------------------------------------------
 
@@ -67,8 +73,46 @@ public class MailTransformImpl extends AbstractTransform
         s_quarantine = new Quarantine();
       }
     }
-     
-    protected void preDestroy() {
+    private static synchronized void deployWebAppIfRequired(Logger logger) {
+      if(!s_deployedWebApp) {
+        if(MvvmContextFactory.context().loadWebApp("/quarantine", "quarantine")) {
+          logger.debug("Deployed Quarantine web app");
+        }
+        else {
+          logger.error("Unable to deploy Quarantine web app");
+        }
+        s_deployedWebApp = true;
+      }
+    }
+    private static synchronized void unDeployWebAppIfRequired(Logger logger) {
+      if(!s_unDeployedWebApp) {
+        if(MvvmContextFactory.context().unloadWebApp("/quarantine")) {
+          logger.debug("Unloaded Quarantine web app");
+        }
+        else {
+          logger.error("Unable to unload Quarantine web app");
+        }
+        s_unDeployedWebApp = true;
+      }
+    }
+    
+
+
+    @Override
+    protected void postStart() throws TransformStartException {
+      super.postStart();
+      deployWebAppIfRequired(logger);
+    }
+
+    @Override
+    protected void preStop() throws TransformStopException {
+      super.preStop();
+      unDeployWebAppIfRequired(logger);
+    }
+
+    @Override
+    protected void preDestroy() throws TransformException {
+      super.preDestroy();
       s_quarantine.close();
     }
 
@@ -127,7 +171,9 @@ public class MailTransformImpl extends AbstractTransform
         POP_PIPE_SPEC.setReleaseParseExceptions(true);
     }
 
-    protected void initializeSettings() { }
+    protected void initializeSettings() {
+      
+    }
 
     protected void postInit(String[] args)
     {

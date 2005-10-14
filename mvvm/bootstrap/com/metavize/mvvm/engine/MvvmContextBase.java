@@ -20,13 +20,20 @@ package com.metavize.mvvm.engine;
  */
 public abstract class MvvmContextBase
 {
+    private Main m_main;
+
+    public final Main getMain() {
+      return m_main;
+    }
+
     protected abstract void init();
     protected abstract void destroy();
     protected abstract void postInit();
     protected abstract InvokerBase getInvoker();
 
-    void doInit()
+    void doInit(Main main)
     {
+        m_main = main;
         init();
     }
 

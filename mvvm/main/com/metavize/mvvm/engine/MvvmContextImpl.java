@@ -151,6 +151,25 @@ public class MvvmContextImpl extends MvvmContextBase
         return adminManager.mvvmLogin();
     }
 
+    //Aaron/John - I wasn't ready to
+    // (a) expose "main" to the transforms or
+    // (b) create a "WebServerManagerImpl" class
+    //
+    //So for now, I've stuck these two methods directly
+    //on "MvvmLocalContext".  Use of them is so
+    //limiited right now that refactoring shouldn't
+    //be an issue
+
+
+    public boolean loadWebApp(String urlBase,
+      String rootDir) {
+      return getMain().loadWebApp(urlBase, rootDir);
+    }
+    public boolean unloadWebApp(String contextRoot) {
+      return getMain().unloadWebApp(contextRoot);
+    }
+      
+
     // service methods --------------------------------------------------------
 
     public boolean runTransaction(TransactionWork tw)

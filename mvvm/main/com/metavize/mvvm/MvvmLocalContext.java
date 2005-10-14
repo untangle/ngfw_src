@@ -191,4 +191,18 @@ public interface MvvmLocalContext
     Thread newThread(Runnable runnable);
 
     Logger eventLogger();
+
+    /**
+     * Load a web app.  The web app's files are already assumed to be
+     * unpackaged into the root web apps directory of the edgeguard
+     * deployment
+     *
+     * @param urlBase the base URL (i.e. "http://edgeguard/<i>urlBase</i>/foo").
+     * @param rootDir the name of the root directory under the "web" directory
+     *        of edgeguard w/ the app.
+     */
+    boolean loadWebApp(String urlBase,
+      String rootDir);
+    
+    boolean unloadWebApp(String urlBase);
 }

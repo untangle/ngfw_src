@@ -259,6 +259,7 @@ $numRecsNotShown - Number of records which could not be shown for space reasons
         <td>
         </td>
         <td>
+          #if ($hasRecords)
           <table border="0" cellpadding="0" cellspacing="0" width="100%">
             <tbody>
               <tr>
@@ -283,67 +284,64 @@ $numRecsNotShown - Number of records which could not be shown for space reasons
               </tr>
               <tr>
                 <td>
-                  #if ($hasRecords)
-                    <table class="inbox" width="100%">
-                      <thead>
-                        <tr>
-                          <th class="first" scope="col">Actions</th>
-                          <th scope="col">From</th>
-                          <th scope="col">Score</th>
-                          <th scope="col">Subject</th>
-                        </tr>
-                      </thead>
-                      <tfoot>
-                      #if ($hasRecsNotShown)
-                        <tr>
-                          <th scope="row">Not Listed</th>
-                          <td colspan="4">
-                            $numRecsNotShown older mails
-                            <a href="$linkgenerator.generateInboxLink()">in your online inbox</a></td>
-                        </tr>
-                      #else                                         
-                        <tr>
-                          <th scope="row">Total</th>
-                          <td colspan="4">$inboxrecords.length mails</td>
-                        </tr>
-                      #end
-                      </tfoot>
-                      <tbody>
-                        #if ($hasRecords)
-                          ## Booleans don't seem to work with Velocity
-                          #set ($isEven = 0)
-                          #set ($parity = "even")
-                          #foreach( $record in $inboxrecords )
-                            #if ($isEven == 0)
-                              #set ($parity = "even")
-                            #else
-                              #set ($parity = "odd")
-                            #end
-                            <tr class="$parity">
-                              <td class="first">
-                                <a href="$linkgenerator.generatePurgeLink($record.getMailID())">Delete</a>&nbsp;|
-                                &nbsp;<a href="$linkgenerator.generateRescueLink($record.getMailID())">Release</a></td>
-                              <td>$record.getMailSummary().Sender</td>
-                              <td>$record.getMailSummary().QuarantineDetail</td>
-                              <td>$record.getMailSummary().Subject</td>
-                            </tr>
-                            #set ($isEven = $isEven + 1)
-                            #if ($isEven > 1)
-                              #set ($isEven = 0)
-                            #end
+                  <table class="inbox" width="100%">
+                    <thead>
+                      <tr>
+                        <th class="first" scope="col">Actions</th>
+                        <th scope="col">From</th>
+                        <th scope="col">Score</th>
+                        <th scope="col">Subject</th>
+                      </tr>
+                    </thead>
+                    <tfoot>
+                    #if ($hasRecsNotShown)
+                      <tr>
+                        <th scope="row">Not Listed</th>
+                        <td colspan="4">
+                          $numRecsNotShown older mails
+                          <a href="$linkgenerator.generateInboxLink()">in your online inbox</a></td>
+                      </tr>
+                    #else
+                      <tr>
+                        <th scope="row">Total</th>
+                        <td colspan="4">$inboxrecords.length mails</td>
+                      </tr>
+                    #end
+                    </tfoot>
+                    <tbody>
+                      #if ($hasRecords)
+                        ## Booleans don't seem to work with Velocity
+                        #set ($isEven = 0)
+                        #set ($parity = "even")
+                        #foreach( $record in $inboxrecords )
+                          #if ($isEven == 0)
+                            #set ($parity = "even")
+                          #else
+                            #set ($parity = "odd")
+                          #end
+                          <tr class="$parity">
+                            <td class="first">
+                              <a href="$linkgenerator.generatePurgeLink($record.getMailID())">Delete</a>&nbsp;|
+                              &nbsp;<a href="$linkgenerator.generateRescueLink($record.getMailID())">Release</a></td>
+                            <td>$record.getMailSummary().Sender</td>
+                            <td>$record.getMailSummary().QuarantineDetail</td>
+                            <td>$record.getMailSummary().Subject</td>
+                          </tr>
+                          #set ($isEven = $isEven + 1)
+                          #if ($isEven > 1)
+                            #set ($isEven = 0)
                           #end
                         #end
-                      </tbody>
-                    </table>
-                  #else
-                    <tr colspan="4" align="center">
-                      There are no records (make me pretty)
-                    </tr>
-                  #end
+                      #end
+                    </tbody>
+                  </table>
                 </td>
               </tr>
             </tbody>
           </table>
+          #else
+            There are no records but you can always <a href="$linkgenerator.generateInboxLink()">go to to your online inbox</a> (make me pretty)
+          #end
         </td>
         <td>
         </td>
