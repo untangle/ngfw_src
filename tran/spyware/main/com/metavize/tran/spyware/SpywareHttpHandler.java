@@ -45,13 +45,21 @@ public class SpywareHttpHandler extends HttpStateMachine
         = "<HTML><HEAD>"
         + "<TITLE>403 Forbidden</TITLE>"
         + "</HEAD><BODY>"
-        + "<center><b>Metavize Spyware Blocker</b></center>"
-        + "<p>This site blocked because it may be a spyware site.</p>"
-        + "<p>Host: %s</p>"
-        + "<p>URI: %s</p>"
-        + "<p>Please contact your network administrator.</p>"
-        + "<HR>"
-        + "<ADDRESS>Metavize EdgeGuard</ADDRESS>"
+        + "<script id='metavizeDetect' type='text/javascript'>\n"
+        + "var e = document.getElementById(\"metavizeDetect\")\n"
+        + "if (window == window.top && e.parentNode.tagName == \"BODY\") {\n"
+        + "  document.writeln(\"<center><b>Metavize Spyware Blocker</b></center>\")\n"
+        + "  document.writeln(\"<p>This site blocked because it may be a spyware site.</p>\")\n"
+        + "  document.writeln(\"<p>Host: %s</p>\")\n"
+        + "  document.writeln(\"<p>URI: %s</p>\")\n"
+        + "  document.writeln(\"<p>Please contact your network administrator.</p>\")\n"
+        + "  document.writeln(\"<HR>\")\n"
+        + "  document.writeln(\"<ADDRESS>Metavize EdgeGuard</ADDRESS>\")\n"
+
+        + "} else {\n"
+        + "  document.writeln(\"<b>Removed by Metavize Spyware</b>\")\n"
+        + "}\n"
+        + "</script>"
         + "</BODY></HTML>";
 
     private final TCPSession session;

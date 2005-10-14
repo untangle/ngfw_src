@@ -158,6 +158,7 @@ public class MvvmContextImpl extends MvvmContextBase
         return transactionRunner.runTransaction(tw);
     }
 
+
     public Thread newThread(final Runnable runnable)
     {
         return new Thread(new Runnable()
