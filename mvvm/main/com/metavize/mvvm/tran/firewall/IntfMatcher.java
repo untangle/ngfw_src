@@ -106,8 +106,8 @@ public final class IntfMatcher implements Serializable
             if ( this.interfaceBitSet == BITSET_ALL ) this.userRepresentation = "any";
             else {
                 String s = null;
-                if ( isMatch((byte)0 )) s = "Internal";
-                if ( isMatch((byte)1 )) s = (( s == null ) ? "" : s + " & " ) + "External";
+                if ( isMatch((byte)0 )) s = "External";
+                if ( isMatch((byte)1 )) s = (( s == null ) ? "" : s + " & " ) + "Internal";
                 if ( isMatch((byte)2 )) s = (( s == null ) ? "" : s + " & " ) + "DMZ";
                 this.userRepresentation = s;
             }
