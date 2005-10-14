@@ -67,6 +67,7 @@ public class TranReporter {
     File imagesDir = new File(tranDir, "images");
     File globalImagesDir = new File(tranDir, "../images");
     MvvmTransformHandler mth = new MvvmTransformHandler(null);
+    Object scanner = null;
 
     InputStream is = ucl.getResourceAsStream("META-INF/report-files");
     if (null == is) {
@@ -76,26 +77,36 @@ public class TranReporter {
             logger.info("Beginning generation for: " + tranName);
         }
 
-    // Need to do the parameters first.
+    // Need to do the parameters & scanners first.
     BufferedReader br = new BufferedReader(new InputStreamReader(is));
     for (String line = br.readLine(); null != line; line = br.readLine()) {
-            if (line.startsWith("#"))
-                continue;
+        if (line.startsWith("#"))
+            continue;
         StringTokenizer tok = new StringTokenizer(line, ":");
         if (!tok.hasMoreTokens()) { continue; }
         String resourceOrClassname = tok.nextToken();
         if (!tok.hasMoreTokens()) { continue; }
         String type = tok.nextToken();
         if (type.equalsIgnoreCase("parameter")) {
-                String paramName = resourceOrClassname;
-                if (!tok.hasMoreTokens())
-                    throw new Error("Missing parameter value");
-                // XXX String only right now.
-                String paramValue = tok.nextToken();
-                extraParams.put(paramName, paramValue);
-            }
+            String paramName = resourceOrClassname;
+            if (!tok.hasMoreTokens())
+                throw new Error("Missing parameter value");
+            // XXX String only right now.
+            String paramValue = tok.nextToken();
+            extraParams.put(paramName, paramValue);
         }
-        is.close();
+        else if (type.equalsIgnoreCase("scanner")) {
+            ClassLoader cl = Thread.currentThread().getContextClassLoader();
+            try {
+                Class scannerClass = cl.loadClass(resourceOrClassname);
+                scanner = scannerClass.newInstance();
+            } catch (Exception x) {
+                logger.warn("No such class: " + resourceOrClassname);
+            }
+            extraParams.put("scanner", scanner);
+        }
+    } 
+    is.close();
 
         // Now do everything else.
     is = ucl.getResourceAsStream("META-INF/report-files");
@@ -108,7 +119,8 @@ public class TranReporter {
         String resourceOrClassname = tok.nextToken();
         if (!tok.hasMoreTokens()) { continue; }
         String type = tok.nextToken();
-        if (type.equalsIgnoreCase("parameter")) {
+        if (type.equalsIgnoreCase("parameter") ||
+            type.equalsIgnoreCase("scanner")) {
                 continue;
             } else if (type.equalsIgnoreCase("summarizer")) {
         String className = resourceOrClassname;

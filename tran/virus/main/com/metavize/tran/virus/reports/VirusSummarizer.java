@@ -17,6 +17,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 
+import com.metavize.tran.virus.VirusScanner;
 import com.metavize.mvvm.reporting.BaseSummarizer;
 import com.metavize.mvvm.reporting.Util;
 import org.apache.log4j.Logger;
@@ -31,9 +32,13 @@ public class VirusSummarizer extends BaseSummarizer {
                                  Timestamp endDate)
     {
         // XXX shouldn't have this constant here.
-        String virusVendor = (String) extraParams.get("virusVendor");
+        VirusScanner scanner = (VirusScanner) extraParams.get("scanner");
 
+        String virusVendor = scanner.getVendorName();
         logger.info("Virus Vendor: " + virusVendor);
+
+        String sigVersion = scanner.getSigVersion();
+        logger.info("Virus Definitions: " + sigVersion);
 
         int httpScanned = 0;
         int httpBlocked = 0;
@@ -142,6 +147,8 @@ public class VirusSummarizer extends BaseSummarizer {
             logger.warn("could not summarize", exn);
         }
 
+        addEntry("Virus Definitions", sigVersion);
+        addEntry("&nbsp;","&nbsp;");
         addEntry("Scanned Web downloads", Util.trimNumber("",httpScanned));
         addEntry("&nbsp;&nbsp;&nbsp;Infected & Blocked", Util.trimNumber("",httpBlocked), Util.percentNumber(httpBlocked, httpScanned));
         addEntry("&nbsp;&nbsp;&nbsp;Clean & Passed", Util.trimNumber("",httpScanned-httpBlocked), Util.percentNumber(httpScanned-httpBlocked, httpScanned));

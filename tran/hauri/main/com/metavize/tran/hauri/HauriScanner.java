@@ -29,6 +29,8 @@ import com.metavize.tran.virus.VirusScannerResult;
 
 public class HauriScanner implements VirusScanner
 {
+    public static final String VERSION_ARG = "-V";
+
     private static final Logger logger = Logger.getLogger(HauriScanner.class.getName());
     private static final int timeout = 30000; /* XXX should be user configurable */
 
@@ -37,6 +39,48 @@ public class HauriScanner implements VirusScanner
     public String getVendorName()
     {
         return "Hauri";
+    }
+
+    public String getSigVersion()
+    {
+        String version = "unknown";
+
+        try {
+            Process scanProcess = Runtime.getRuntime().exec("virobot " + VERSION_ARG);
+            InputStream is  = scanProcess.getInputStream();
+            BufferedReader in = new BufferedReader(new InputStreamReader(is));
+
+            String line;
+            int i = -1;
+
+            /**
+             * Drain virobot output, one line like; 'Engine Version : 2005-10-14'
+             */
+            try {
+                if ((line = in.readLine()) != null) {
+                    StringTokenizer st = new StringTokenizer(line, ":");
+                    String str = null;
+
+                    if (st.hasMoreTokens()) {
+                        String label = st.nextToken();
+                        if (st.hasMoreTokens()) {
+                            version = st.nextToken();
+                        }
+                    }
+                }
+            }
+            catch (Exception e) {
+                logger.error("Scan Exception: " + e);
+            }
+
+            in.close();
+            is.close();
+            scanProcess.destroy(); // It should be dead already, just to be sure...
+        }
+        catch (java.io.IOException e) {
+            logger.error("virobot version exception: " + e);
+        }
+        return version;
     }
 
     public VirusScannerResult scanFile (String pathName)
