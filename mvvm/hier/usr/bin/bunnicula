@@ -86,7 +86,7 @@ for f in @THIRDPARTY_LIB@/*jar ; do
     CLASSPATH="$CLASSPATH:$f"
 done
 
-export PATH LD_LIBRARY_PATH JAVA _OPTS CLASSPATH JAVA_HOME
+export PATH LD_LIBRARY_PATH CLASSPATH JAVA_HOME
 
 #
 # profiling tweeks
