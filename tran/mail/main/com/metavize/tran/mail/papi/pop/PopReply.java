@@ -36,11 +36,12 @@ public class PopReply implements Token
 
     private final static String DIGVAL = "(\\p{Digit})++";
     private final static String SZVAL = DIGVAL + " octets";
-    private final static String OK = "+OK ";
-    private final static String OKREPLY = "^\\" + OK;
+    //private final static String OK = "+OK ";
+    private final static String OKREPLY = "^\\+OK ";
     private final static String EOLINE = CRLF; /* EOLINE */
 
     private final static String DATAOK = OKREPLY + SZVAL + ".*?" + EOLINE;
+    private final static String PASSWDOK = "^\\+ .*?" + EOLINE;
 
     private final static Pattern DIGVALP = Pattern.compile(DIGVAL);
     private final static Pattern SZVALP = Pattern.compile(SZVAL, Pattern.CASE_INSENSITIVE);
@@ -133,7 +134,13 @@ public class PopReply implements Token
 
     public String toString()
     {
-        return AsciiCharBuffer.wrap(getBytes()).toString();
+        String zTmp = AsciiCharBuffer.wrap(getBytes()).toString();
+        if (false == zTmp.matches(PASSWDOK))
+        {
+            return zTmp;
+        }
+
+        return "+ (encoded username/password)";
     }
 
     // private methods --------------------------------------------------------

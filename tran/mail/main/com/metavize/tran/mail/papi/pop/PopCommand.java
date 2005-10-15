@@ -143,6 +143,9 @@ public class PopCommand implements Token
 
     private final static String NO_USER = "unknown";
 
+    private final static String EOLINE = CRLF; /* EOLINE */
+    private final static String PASSWDOK = "^PASS .*?" + EOLINE;
+
     private final String command;
     private final String argument;
     private final String zUser;
@@ -254,7 +257,13 @@ public class PopCommand implements Token
 
     public String toString()
     {
-        return AsciiCharBuffer.wrap(getBytes()).toString();
+        String zTmp = AsciiCharBuffer.wrap(getBytes()).toString();
+        if (false == zTmp.matches(PASSWDOK))
+        {
+            return zTmp;
+        }
+
+        return "PASS";
     }
 
     /* consume rest of buffer (including any terminating CRLF) */

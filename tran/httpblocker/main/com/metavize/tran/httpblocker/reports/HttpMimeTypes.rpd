@@ -42,15 +42,15 @@ LEFT.label=Content Type
 MIDDLE.label=Size (MB)
 RIGHT.label=%
 
-LEFT.expr=$F{content_type} != null ? $F{content_type} : "(none)"
-MIDDLE.expr=($F{size}.doubleValue() / 1048576)
+LEFT.expr=(null != $F{content_type} ? $F{content_type} : "(none)")
+MIDDLE.expr=(null != $F{size} ? ($F{size}.doubleValue() / 1048576) : 0)
 RIGHT.expr=Math.round($F{size}.doubleValue() / $F{top_size}.doubleValue() * 100) + "%"
 
 LEFT.total=Top @REPORT_MAX_LENGTH@ Totals:
-MIDDLE.total=($F{top_size}.doubleValue() / 1048576)
+MIDDLE.total=(null != $F{top_size} ? ($F{top_size}.doubleValue() / 1048576) : 0)
 RIGHT.total="100%"
 
 LEFT.alltotal=Overall Total:
-MIDDLE.alltotal=($F{all_size}.doubleValue() / 1048576)
+MIDDLE.alltotal=(null != $F{all_size} ? ($F{all_size}.doubleValue() / 1048576) : 0)
 
 UNIQUE_COUNT.expr=$F{content_type}

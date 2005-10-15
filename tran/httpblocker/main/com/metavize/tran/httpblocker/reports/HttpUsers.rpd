@@ -77,17 +77,17 @@ MIDDLE.label=Size (MB)
 RIGHT.label=%Size
 
 LEFT.expr=$F{hname}
-LEFTMID.expr=$F{count} + ""
-MIDDLE.expr=($F{size}.doubleValue() / 1048576)
+LEFTMID.expr=(null != $F{count} ? $F{count} + "" : "0")
+MIDDLE.expr=(null != $F{size} ? ($F{size}.doubleValue() / 1048576) : 0)
 RIGHT.expr=Math.round($F{size}.doubleValue() / $F{top_size}.doubleValue() * 100) + "%"
 
 LEFT.total=Top @REPORT_MAX_LENGTH@ Totals:
-LEFTMID.total=$F{top_count} + ""
-MIDDLE.total=($F{top_size}.doubleValue() / 1048576)
+LEFTMID.total=(null != $F{top_count} ? $F{top_count} + "" : "0")
+MIDDLE.total=(null != $F{top_size} ? ($F{top_size}.doubleValue() / 1048576) : 0)
 RIGHT.total="100%"
 
 LEFT.alltotal=Overall Total:
-LEFTMID.alltotal=$F{all_count} + ""
-MIDDLE.alltotal=($F{all_size}.doubleValue() / 1048576)
+LEFTMID.alltotal=(null != $F{all_count} ? $F{all_count} + "" : "0")
+MIDDLE.alltotal=(null != $F{all_size} ? ($F{all_size}.doubleValue() / 1048576) : 0)
 
 UNIQUE_COUNT.expr=$F{hname}

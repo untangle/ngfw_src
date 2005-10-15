@@ -97,7 +97,7 @@
                 <textElement textAlignment="Right">
                     <font fontName="Monospaced" size="9" isItalic="true"/>
                 </textElement>
-                <textFieldExpression class="java.lang.Long"><![CDATA[@MIDDLE.expr@]]></textFieldExpression>
+                <textFieldExpression class="java.lang.Long"><![CDATA[null != @MIDDLE.expr@ ? @MIDDLE.expr@ : 0]]></textFieldExpression>
             </textField>
             <textField>
                 <reportElement positionType="Float" x="234" y="0" width="42" height="13"/>
