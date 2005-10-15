@@ -165,15 +165,22 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 
             settings.setMaxChunks(engine.getMaxChunks());
             settings.setRules(ruleList);
-            setIDSSettings(settings);
+			setIDSSettings(settings);
+			log.info(ruleList.size() + " rules loaded");
+			for(IDSRule rule : (List<IDSRule>) settings.getRules()) {
+				engine.updateRule(rule);
+			}
+							
         }
         else
             log.info("Settings was loaded from DB: " + settings);
 
-        //setIDSSettings(settings);
+        /*setIDSSettings(settings);
         log.info(ruleList.size() + " rules loaded");
-        //}
-
+        for(IDSRule rule : (List<IDSRule>) settings.getRules()) {
+            engine.updateRule(rule);
+		}*/
+		
         IDSStatisticManager.instance().stop();
     }
 
@@ -233,21 +240,22 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 
     protected void postInit(String args[]) {
         log.info("Post init");
-		queryDBForSettings();
+	//	queryDBForSettings();
         //settings = queryDBForSettings();
     }
 
     protected void preStart() throws TransformStartException {
-        IDSTest test = new IDSTest();
+/*        IDSTest test = new IDSTest();
+        log.info("Pre Start");
         if(!test.runTest())
           throw new TransformStartException("IDS Test failed"); // */
-
+/*
         try {
             reconfigure();
         }
         catch (Exception e) {
             throw new TransformStartException(e);
-        }
+        }*/
 
         IDSStatisticManager.instance().start();
     }
@@ -264,9 +272,8 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 
         if(settings == null) {
           //  settings = queryDBForSettings();
-		queryDBForSettings();
-
-            if(settings == null)
+			queryDBForSettings();
+			if(settings == null)
                 throw new TransformException("Failed to get IDS settings: " + settings);
         }
 
