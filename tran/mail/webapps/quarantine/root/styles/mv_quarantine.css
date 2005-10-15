@@ -1,52 +1,82 @@
+
 *{
   margin:0;
   padding:0;
 }
 
-body{
-  font-family:Arial,Verdana,Sans-Serif;
-  font-size:.9em;
+body {
   background:#6495ED;
-  padding: 10
+  padding: 10;
 }
 
-table.enteremail {
-  border-style: solid;
-  border-width: thin;
-  padding: 20;
-  background: #D0D0D0;
+table.outertable {
+  background:#FFFFFF;
+  padding: 0;
+  margin: 0;  
 }
 
-.paddedButton {
-  padding-top: 20;
-  padding-bottom: 10;
+.logoTable {
+  padding-left: 15; 
+  padding-top: 15;
 }
 
 table.intro {
-  font-family: "Trebuchet MS", "Lucida Sans Unicode", verdana, lucida, helvetica, sans-serif;
   padding-left: 10;
   padding-top: 15;
 }
 
-table.logoTable {
-/*   background-image: url(metal-background.gif); */
-}
-
-table.intro table.introUserInfo {
-  border-left: 1px solid rgb(204, 204, 204);
+table.introUserInfo {
   padding-left: 10;
-}
-
-.logotext {
-  font:  arial, helvetica, sans serif; color: #006aff;
+  text-align: right;
 }
 
 .infotext {
-  font:  normal 13 Geneva,Arial; color: #372F2F;
+  color: #372F2F;
   padding-left: 10;
   padding-right: 20;
   padding-top: 20;
   padding-bottom: 10;
+}
+
+table.actions {
+  margin: 0;
+  padding: 0;
+  color: #FFFFFF
+}
+
+table.actions tbody TD {
+  background-color: #003399;
+  padding: 15;
+}
+
+table.actions tbody TD + TD {
+  background-color: #003399;
+  text-align: right;
+  padding-right: 10;
+}
+
+.msiehack1 {
+  background-color: #003399;
+  text-align: right;
+  padding-right: 10;
+}
+.msiehack2 {
+  background-color: #003399;
+  text-align: left;
+  padding-left: 10;
+}
+
+table.actions a {
+  color: #FFFFFF;
+}
+table.actions a:visited {
+  color: #CCFFFF;
+}
+table.actions a:hover {
+  color: #33FFFF;
+}
+table.actions a:active {
+  color: #FF0000;
 }
 
 .errortext {
@@ -63,61 +93,11 @@ table.intro table.introUserInfo {
   padding-bottom: 10;
 }
 
-
-table.actions {
-  border-collapse: collapse;
-  font-family: "Trebuchet MS", "Lucida Sans Unicode", verdana, lucida, helvetica, sans-serif;
-  margin: 0;
-  padding: 0;
-  color: #FFFFFF
-}
-
-table.actions TD {
-  background-color: #003399;
-}
-
-table.actions TD {
-  padding-left: 5;
-}
-
-table.actions TD + TD {
-  text-align: right;
-  padding: 10;
-}
-
-table.actions a {
-  color: #FFFFFF;
-}
-table.actions a:visited {
-  color: #CCFFFF;
-}
-table.actions a:hover {
-  color: #33FFFF;
-}
-table.actions a:active {
-  color: #FF0000;
-}
-    
 table.inbox {
   border-collapse: collapse;
-  font-family: "Trebuchet MS", "Lucida Sans Unicode", verdana, lucida, helvetica, sans-serif;
-  font-size: 0.8em;
   margin: 0;
   padding: 0;
-/* Doesn't work  
-  right: 1;
-  left: 1;
-*/  
-}
 
-
-table.inbox caption {
-  font-size: 1.4em;
-  font-stretch: condensed;
-  font-weight: bold;
-  padding-bottom: 5px;
-  text-align: left;
-  text-transform: uppercase;
 }
 
 table.inbox th, table.inbox td {
@@ -131,26 +111,28 @@ table.inbox th {
   text-align: left;
   text-transform: uppercase;
 }
+
+table.inbox tbody td.first {
+  text-align: left;
+  padding-left: 20;
+}
+
 table.inbox thead th, table.inbox tfoot th, table.inbox tfoot td {
   background-color: #33CCFF;
-  font-size: 1.1em;
 }
 
 table.inbox thead th.first {
   padding-left: 24px;
 }
+
 table.inbox tbody th {
-/*  background: url(http://www.clacksweb.org.uk/images/bullet_vacancy.gif) no-repeat 6px 0.8em; */
   padding-left: 24px;
 }
-table.inbox tbody th, table.inbox td {
+
+table.inbox tr.even td, table.inbox tr.even th {
   background-color:#eee;
 }
-/*
-table.inbox tbody tr:hover td, tbody tr:hover th {
-  background-color: #E5E5CB;
-}
-*/
+
 table.inbox tr.odd td, table.inbox tr.odd th {
   background-color: #ddd;
 }
@@ -158,29 +140,37 @@ table.inbox tr.odd td, table.inbox tr.odd th {
 table.inbox tbody a {
   color: #333;
 }
+
 table.inbox tbody a:visited {
   color: #999999;
 }
+
 table.inbox tbody a:hover {
   color: #33c;
 }
+
 table.inbox tbody a:active {
   color: #33c;
 }
-table.inbox tbody td+td+td+td a {
-  background: url(http://www.clacksweb.org.uk/images/external.gif) no-repeat right 0.4em;
-  padding-right: 12px;
-}
+
 table.inbox tfoot th {
   text-align: right;
 }
+
 table.inbox tfoot th:after {
   content: ":";
+}
+
+.enteremail {
+  border-style: solid;
+  border-width: thin;
+  padding: 20;
+  background: #D0D0D0;
 }
 
 .smallLogo {
   font:  normal 12 arial, helvetica, sans serif;
   text-align: center;
   padding-top: 30;
+  padding-bottom: 30;
 }
-
