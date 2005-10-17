@@ -24,7 +24,7 @@ import java.util.*;
 
 public class LogJPanel extends MLogTableJPanel {
 
-    private static final String BLOCKED_EVENTS_STRING = "Phish blocked events";
+    private static final String BLOCKED_EVENTS_STRING = "Phish detected events";
 
     public LogJPanel(Transform transform, MTransformControlsJPanel mTransformControlsJPanel){
         super(transform, mTransformControlsJPanel);

@@ -32,8 +32,7 @@
 	<import value="net.sf.jasperreports.engine.data.*" />
 	<parameter name="startTime" isForPrompting="true" class="java.sql.Timestamp"/>
 	<parameter name="endTime" isForPrompting="true" class="java.sql.Timestamp"/>
-	<queryString><![CDATA[
-SELECT rule_index AS RULE,
+	<queryString><![CDATA[SELECT rule_index AS RULE,
        SUM(p2c_bytes + c2p_bytes) AS DATA_TRANSFERRED
   FROM tr_nat_redirect_evt evt
          JOIN pl_endp USING (session_id)
@@ -41,8 +40,7 @@ SELECT rule_index AS RULE,
   WHERE evt.time_stamp >= $P{startTime} AND evt.time_stamp < $P{endTime} AND NOT evt.is_dmz
   GROUP BY rule_id, RULE
   ORDER BY DATA_TRANSFERRED DESC, RULE ASC
-  LIMIT 15
-         ]]></queryString>
+  LIMIT 15]]></queryString>
 	<field name="RULE" class="java.lang.String"/>
 	<field name="DATA_TRANSFERRED" class="java.lang.Long"/>
 	<variable name="RANK" class="java.lang.Integer" resetType="Report" calculation="Count">
@@ -122,7 +120,7 @@ SELECT rule_index AS RULE,
 					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
 						<font fontName="SansSerif" pdfFontName="Helvetica" size="9" isBold="false" isItalic="true" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<text><![CDATA[Data Transferred]]></text>
+				<text><![CDATA[Bytes Transferred]]></text>
 				</staticText>
 				<staticText>
 					<reportElement

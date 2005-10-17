@@ -196,6 +196,7 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
             decimalFormat.setMinimumIntegerDigits(1);
             decimalFormat.setMinimumFractionDigits(0);
             axis.setNumberFormatOverride(decimalFormat);
+	    //axis.setTickUnit( new NumberTickUnit(1d) );
         }
         else{
             DecimalFormat decimalFormat = new DecimalFormat();
@@ -373,7 +374,7 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
 	// GRAPH CONTROL //////
 	private boolean killed;
 	public synchronized void kill(){
-	    this.killed = true;
+	    killed = true;
 	    notify();
 	}
 	private boolean updateGraph;
@@ -409,10 +410,13 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
             resetCounters();
 	    this.start();
         }
-        
-        
-        private void doUpdateGraph() throws Exception {       
-            SwingUtilities.invokeLater( new Runnable(){ public void run(){
+
+        private UpdateGraphRunnable updateGraphRunnable = new UpdateGraphRunnable();
+	private void doUpdateGraph(){
+	    SwingUtilities.invokeLater( updateGraphRunnable );
+	}
+	private class UpdateGraphRunnable implements Runnable {
+	    public void run(){
 		if(!updateGraph){
 		    resetCounters();
 		    for(int i=0; i<60; i++){
@@ -449,8 +453,9 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
 		    dataset.setValue( activity2Count.decayValue(), activitySeriesString, activityString2);
 		    dataset.setValue( activity3Count.decayValue(), activitySeriesString, activityString3);
 		}
-            }});
-        }
+	    }
+	}
+        
         
         private void generateCountLabel(long count, String suffix, JLabel label){
             if(count < 1000l)
@@ -481,12 +486,16 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
                 try{
                     // GET TRANSFORM STATS AND HANDLE KILL/PAUSE
 		    synchronized(this){			
+			if( killed ){
+			    return;
+			}
 			if( !updateGraph ){
 			    doUpdateGraph();
 			    wait();
 			}
-			if( killed )
+			if( killed ){
 			    return;
+			}
 			currentStats = Util.getStatsCache().getFakeTransform(mTransformJPanel.getTid()).getStats();
 		    }
 

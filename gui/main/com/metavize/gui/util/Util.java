@@ -202,7 +202,8 @@ public class Util {
                 serverCodeBase = basicService.getCodeBase();
             }
             catch(Exception e){
-                Util.handleExceptionNoRestart("Error:", e);
+                Util.handleExceptionNoRestart("Error (setting code base to http://127.0.0.1/webstart):", e);
+		serverCodeBase = new URL("http://127.0.0.1/webstart");
             }
             finally{
                 return serverCodeBase;

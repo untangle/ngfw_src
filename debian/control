@@ -8,11 +8,11 @@ Standards-Version: 3.5.2
 Package: ftp-casing
 Architecture: any
 Depends: mvvm
-XB-Display-Name: FTP
+XB-Display-Name: File Transfer
 XB-Website: http://www.metavize.com
 XB-Is-Service: true
-Description: The Metavize FTP Decoder
- The FTP Casing allows other software appliances to parse and analyze
+Description: The Metavize File Transfer/FTP Decoder
+ The FTP Decoder allows other software appliances to parse and analyze
  FTP traffic and documents.
 
 Package: http-casing
@@ -22,7 +22,7 @@ XB-Display-Name: Web
 XB-Website: http://www.metavize.com
 XB-Is-Service: true
 Description: The Metavize Web/HTTP Decoder
- The HTTP Casing allows other software appliances to parse and analyze
+ The HTTP Decoder allows other software appliances to parse and analyze
  HTTP traffic and documents.
 
 Package: mail-casing
@@ -31,9 +31,9 @@ Depends: mvvm
 XB-Display-Name: Email
 XB-Website: http://www.metavize.com
 XB-Is-Service: true
-Description: The Metavize eMail Decoder
- The Mail Casing allows other software appliances to parse and analyze
- eMail (SMTP/IMAP/POP3) traffic and documents.
+Description: The Metavize Email Decoder
+ The Email Decoder allows other software appliances to parse and analyze
+ email (SMTP/IMAP/POP3) traffic and documents.
 
 Package: airgap-transform
 Architecture: any
@@ -66,7 +66,7 @@ XB-Price: 0
 XB-Display-Name: Web Content Control
 XB-Website: http://www.metavize.com/webcontrol.html
 XB-Rack-Position: 3
-Description: The Metavize Web Content Filter
+Description: The Metavize Web Content Control
  Web Content Control enforces your web browsing policy.  It can filter
  based on content type (category), web address, MIME type, file
  extension, etc.

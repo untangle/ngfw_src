@@ -1,0 +1,32 @@
+#!/bin/sh
+
+#
+# PROFILING 
+#
+export PROFILE_GUI_YJP LD_LIBRARY_PATH
+PROFILE_GUI_YJP=yes
+if [ "x$PROFILE_GUI_YJP" = "xyes" ] ; then
+	echo "YJP profiling support enabled"
+	LD_LIBRARY_PATH=/opt/yjp/bin/linux:$LD_LIBRARY_PATH
+	JAVA_OPTS="-agentlib:yjpagent $JAVA_OPTS"
+fi
+
+echo "SET JAVA_OPTS"
+echo $JAVA_OPTS
+
+#
+# CLASSPATH
+#
+for f in /usr/share/metavize/web/webstart/*jar ; do
+    CLASSPATH="$CLASSPATH:$f"
+done
+for f in /usr/share/metavize/web/webstart/*mar ; do
+    CLASSPATH="$CLASSPATH:$f"
+done
+export CLASSPATH
+
+echo "SET CLASSPATH"
+echo $CLASSPATH
+
+
+exec /opt/java/bin/java ${JAVA_OPTS} com.metavize.gui.util.MLauncher

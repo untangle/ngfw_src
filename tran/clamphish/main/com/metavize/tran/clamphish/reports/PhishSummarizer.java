@@ -125,19 +125,19 @@ public class PhishSummarizer extends BaseSummarizer {
         }
 
         addEntry("Scanned Email messages (SMTP)", Util.trimNumber("",smtpScanned));
-        addEntry("&nbsp;&nbsp;&nbsp;Phish & Blocked", Util.trimNumber("",smtpBlocked) + " (" + Util.percentNumber(smtpBlocked, smtpScanned) + ")");
-        addEntry("&nbsp;&nbsp;&nbsp;Phish & Marked", Util.trimNumber("",smtpMarked) + " (" + Util.percentNumber(smtpMarked, smtpScanned) + ")");
-        addEntry("&nbsp;&nbsp;&nbsp;Phish & Passed", Util.trimNumber("",smtpPassed) + " (" + Util.percentNumber(smtpPassed, smtpScanned) + ")");
+        addEntry("&nbsp;&nbsp;&nbsp;Phish & Blocked", Util.trimNumber("",smtpBlocked), Util.percentNumber(smtpBlocked, smtpScanned));
+        addEntry("&nbsp;&nbsp;&nbsp;Phish & Marked", Util.trimNumber("",smtpMarked), Util.percentNumber(smtpMarked, smtpScanned));
+        addEntry("&nbsp;&nbsp;&nbsp;Phish & Passed", Util.trimNumber("",smtpPassed), Util.percentNumber(smtpPassed, smtpScanned));
         int totalSpam = smtpBlocked + smtpMarked + smtpPassed;
-        addEntry("&nbsp;&nbsp;&nbsp;Clean & Passed", Util.trimNumber("",smtpScanned-totalSpam) + " (" + Util.percentNumber(smtpScanned-totalSpam, smtpScanned) + ")");
+        addEntry("&nbsp;&nbsp;&nbsp;Clean & Passed", Util.trimNumber("",smtpScanned-totalSpam), Util.percentNumber(smtpScanned-totalSpam, smtpScanned));
 
         addEntry("&nbsp;","&nbsp;");
 
         addEntry("Scanned Email messages (POP/IMAP)", Util.trimNumber("",popimapScanned));
-        addEntry("&nbsp;&nbsp;&nbsp;Phish & Marked", Util.trimNumber("",popimapMarked) + " (" + Util.percentNumber(popimapMarked, popimapScanned) + ")");
-        addEntry("&nbsp;&nbsp;&nbsp;Phish & Passed", Util.trimNumber("",popimapPassed) + " (" + Util.percentNumber(popimapPassed, popimapScanned) + ")");
+        addEntry("&nbsp;&nbsp;&nbsp;Phish & Marked", Util.trimNumber("",popimapMarked), Util.percentNumber(popimapMarked, popimapScanned));
+        addEntry("&nbsp;&nbsp;&nbsp;Phish & Passed", Util.trimNumber("",popimapPassed), Util.percentNumber(popimapPassed, popimapScanned));
         totalSpam = popimapMarked + popimapPassed;
-        addEntry("&nbsp;&nbsp;&nbsp;Clean & Passed", Util.trimNumber("",popimapScanned-totalSpam) + " (" + Util.percentNumber(popimapScanned-totalSpam, popimapScanned) + ")");
+        addEntry("&nbsp;&nbsp;&nbsp;Clean & Passed", Util.trimNumber("",popimapScanned-totalSpam), Util.percentNumber(popimapScanned-totalSpam, popimapScanned));
 
         String tranName = "PhishNet";
 

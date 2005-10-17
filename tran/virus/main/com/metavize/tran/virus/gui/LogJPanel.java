@@ -23,7 +23,7 @@ import com.metavize.tran.virus.*;
 
 public class LogJPanel extends MLogTableJPanel {
 
-    private static final String VIRUS_EVENTS_STRING = "Virus detected events";
+    private static final String VIRUS_EVENTS_STRING = "Virus blocked events";
 
     public LogJPanel(Transform transform, MTransformControlsJPanel mTransformControlsJPanel){
         super(transform, mTransformControlsJPanel);

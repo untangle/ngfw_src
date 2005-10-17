@@ -672,7 +672,7 @@ public class PolicyStateMachine implements ActionListener {
     private void initRackModel(final JProgressBar progressBar){
 	SwingUtilities.invokeLater( new Runnable(){ public void run(){
 	    progressBar.setValue(16);
-	    if( policyTidMap.keySet().size() == 2 )
+	    if( policyTidMap.keySet().size() == 1 )
 		progressBar.setString("Populating Rack...");
 	    else
 		progressBar.setString("Populating Racks...");
@@ -910,7 +910,7 @@ public class PolicyStateMachine implements ActionListener {
     // Private CLASSES & UTILS /////////////////////
     ////////////////////////////////////////////////
     public synchronized MCasingJPanel[] loadAllCasings(boolean generateGuis){
-	final String casingNames[] = {"mail-casing", "http-casing", "ftp-casing"};
+	final String casingNames[] = {"http-casing", "mail-casing", "ftp-casing"};
 	Vector<MCasingJPanel> mCasingJPanels = new Vector<MCasingJPanel>();
 	List<Tid> casingInstances = null;
 	TransformContext transformContext = null;

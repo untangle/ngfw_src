@@ -52,14 +52,14 @@ class CustomPolicyTableModel extends MSortedTableModel{
     private static final int T_TW = Util.TABLE_TOTAL_WIDTH;
     private static final int C0_MW = Util.STATUS_MIN_WIDTH; /* status */
     private static final int C1_MW = Util.LINENO_MIN_WIDTH; /* # */
-    private static final int C2_MW = 100; /* protocol */
-    private static final int C3_MW = 100; /* client interface */
-    private static final int C4_MW = 100; /* server interface */
-    private static final int C5_MW = 100; /* client address */
-    private static final int C6_MW = 100; /* server address */
-    private static final int C7_MW = 100; /* client port */
-    private static final int C8_MW = 100; /* server port */
-    private static final int C9_MW = 200; /* policy / direction */
+    private static final int C2_MW = 100; /* client interface */
+    private static final int C3_MW = 100; /* server interface */
+    private static final int C4_MW = 200; /* policy / direction */
+    private static final int C5_MW = 100; /* protocol */
+    private static final int C6_MW = 100; /* client address */
+    private static final int C7_MW = 100; /* server address */
+    private static final int C8_MW = 100; /* client port */
+    private static final int C9_MW = 100; /* server port */
     private static final int C10_MW = Util.chooseMax(T_TW - (C0_MW + C1_MW + C2_MW + C3_MW + C4_MW + C5_MW + C6_MW + C7_MW + C8_MW + C9_MW), 125); /* description */
 
     protected boolean getSortable(){ return false; }
@@ -78,9 +78,8 @@ class CustomPolicyTableModel extends MSortedTableModel{
 
     private DefaultComboBoxModel policyModel = new DefaultComboBoxModel();
     private Map<String,Policy> policyNames = new LinkedHashMap();
-    private void updatePolicyNames(){
+    private void updatePolicyNames(List<Policy> policyList){
 	policyNames.clear();
-	List<Policy> policyList = Util.getPolicyManager().getPolicyConfiguration().getPolicies();
 	for( Policy policy : policyList ){
 	    policyNames.put( policy.getName()+INBOUND_STRING, policy );
 	    policyNames.put( policy.getName()+OUTBOUND_STRING, policy );
@@ -100,14 +99,15 @@ class CustomPolicyTableModel extends MSortedTableModel{
         //                                 #   min     rsz    edit   remv   desc   typ            def
         addTableColumn( tableColumnModel,  0,  C0_MW,  false, false, false, false, String.class,  null, sc.TITLE_STATUS );
         addTableColumn( tableColumnModel,  1,  C1_MW,  false, false, false, false, Integer.class, null, sc.TITLE_INDEX );
-        addTableColumn( tableColumnModel,  2,  C2_MW,  true,  true,  false, false, ComboBoxModel.class, protocolModel, sc.html("protocol"));
-        addTableColumn( tableColumnModel,  3,  C3_MW,  true,  true,  false, false, ComboBoxModel.class, interfaceModel, sc.html("client<br>interface"));
-        addTableColumn( tableColumnModel,  4,  C4_MW,  true,  true,  false, false, ComboBoxModel.class, interfaceModel, sc.html("server<br>interface"));
-        addTableColumn( tableColumnModel,  5,  C5_MW,  true,  true,  false, false, String.class, "any", sc.html("client<br>address"));
-        addTableColumn( tableColumnModel,  6,  C6_MW,  true,  true,  false, false, String.class, "any", sc.html("server<br>address"));
-        addTableColumn( tableColumnModel,  7,  C7_MW,  true,  true,  true,  false, String.class, "any", sc.html("client<br>port"));
-        addTableColumn( tableColumnModel,  8,  C8_MW,  true,  true,  false, false, String.class, "any", sc.html("server<br>port"));
-        addTableColumn( tableColumnModel,  9,  C9_MW,  true,  true,  false, false, ComboBoxModel.class, policyModel, sc.bold("rack"));
+
+        addTableColumn( tableColumnModel,  2,  C2_MW,  true,  true,  false, false, ComboBoxModel.class, interfaceModel, sc.html("client<br>interface"));
+        addTableColumn( tableColumnModel,  3,  C3_MW,  true,  true,  false, false, ComboBoxModel.class, interfaceModel, sc.html("server<br>interface"));
+        addTableColumn( tableColumnModel,  4,  C4_MW,  true,  true,  false, false, ComboBoxModel.class, policyModel, sc.bold("rack"));
+        addTableColumn( tableColumnModel,  5,  C5_MW,  true,  true,  false, false, ComboBoxModel.class, protocolModel, sc.html("protocol"));
+        addTableColumn( tableColumnModel,  6,  C6_MW,  true,  true,  false, false, String.class, "any", sc.html("client<br>address"));
+        addTableColumn( tableColumnModel,  7,  C7_MW,  true,  true,  false, false, String.class, "any", sc.html("server<br>address"));
+        addTableColumn( tableColumnModel,  8,  C8_MW,  true,  true,  true,  false, String.class, "any", sc.html("client<br>port"));
+        addTableColumn( tableColumnModel,  9,  C9_MW,  true,  true,  false, false, String.class, "any", sc.html("server<br>port"));
         addTableColumn( tableColumnModel,  10, C10_MW, true,  true,  false, true,  String.class, sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION );
         addTableColumn( tableColumnModel,  11, 10,     false, false, true,  false, UserPolicyRule.class, null, "" );
 
@@ -123,24 +123,24 @@ class CustomPolicyTableModel extends MSortedTableModel{
 	for( Vector rowVector : tableVector ){
 	    rowIndex++;
             newElem = (UserPolicyRule) rowVector.elementAt(11);
-	    try{ newElem.setProtocol( ProtocolMatcher.parse(((ComboBoxModel) rowVector.elementAt(2)).getSelectedItem().toString()) ); }
-	    catch(Exception e){ throw new Exception("Invalid \"protocol\" in row: " + rowIndex); }	   
-	    newElem.setClientIntf( intfEnum.getIntfNum((String)((ComboBoxModel)rowVector.elementAt(3)).getSelectedItem()) );
-	    newElem.setServerIntf( intfEnum.getIntfNum((String)((ComboBoxModel)rowVector.elementAt(4)).getSelectedItem()) );
+	    newElem.setClientIntf( intfEnum.getIntfNum((String)((ComboBoxModel)rowVector.elementAt(2)).getSelectedItem()) );
+	    newElem.setServerIntf( intfEnum.getIntfNum((String)((ComboBoxModel)rowVector.elementAt(3)).getSelectedItem()) );
 	    if( newElem.getClientIntf() == newElem.getServerIntf() )
 		throw new Exception("In row: " + rowIndex + ". The \"client interface\" cannot match the \"server interface\"");
-	    try{ newElem.setClientAddr( IPMatcher.parse((String) rowVector.elementAt(5)) ); }
-	    catch(Exception e){ throw new Exception("Invalid \"client address\" in row: " + rowIndex); }
-	    try{ newElem.setServerAddr( IPMatcher.parse((String) rowVector.elementAt(6)) ); }
-	    catch(Exception e){ throw new Exception("Invalid \"server address\" in row: " + rowIndex); }
-	    try{ newElem.setClientPort( PortMatcher.parse((String) rowVector.elementAt(7)) ); }
-	    catch(Exception e){ throw new Exception("Invalid \"client port\" in row: " + rowIndex); }
-	    try{ newElem.setServerPort( PortMatcher.parse((String) rowVector.elementAt(8)) ); }
-	    catch(Exception e){ throw new Exception("Invalid \"server port\" in row: " + rowIndex); }
-	    Policy policy = policyNames.get((String) ((ComboBoxModel)rowVector.elementAt(9)).getSelectedItem());
+	    Policy policy = policyNames.get((String) ((ComboBoxModel)rowVector.elementAt(4)).getSelectedItem());
             newElem.setPolicy( policy );
-	    boolean isInbound = ((String) ((ComboBoxModel)rowVector.elementAt(9)).getSelectedItem()).contains(INBOUND_STRING);
+	    boolean isInbound = ((String) ((ComboBoxModel)rowVector.elementAt(4)).getSelectedItem()).contains(INBOUND_STRING);
             newElem.setInbound( isInbound );
+	    try{ newElem.setProtocol( ProtocolMatcher.parse(((ComboBoxModel) rowVector.elementAt(5)).getSelectedItem().toString()) ); }
+	    catch(Exception e){ throw new Exception("Invalid \"protocol\" in row: " + rowIndex); }	   
+	    try{ newElem.setClientAddr( IPMatcher.parse((String) rowVector.elementAt(6)) ); }
+	    catch(Exception e){ throw new Exception("Invalid \"client address\" in row: " + rowIndex); }
+	    try{ newElem.setServerAddr( IPMatcher.parse((String) rowVector.elementAt(7)) ); }
+	    catch(Exception e){ throw new Exception("Invalid \"server address\" in row: " + rowIndex); }
+	    try{ newElem.setClientPort( PortMatcher.parse((String) rowVector.elementAt(8)) ); }
+	    catch(Exception e){ throw new Exception("Invalid \"client port\" in row: " + rowIndex); }
+	    try{ newElem.setServerPort( PortMatcher.parse((String) rowVector.elementAt(9)) ); }
+	    catch(Exception e){ throw new Exception("Invalid \"server port\" in row: " + rowIndex); }
             newElem.setDescription( (String) rowVector.elementAt(10) );
             elemList.add(newElem);
         }
@@ -159,7 +159,7 @@ class CustomPolicyTableModel extends MSortedTableModel{
 	Vector tempRow = null;
 	int rowIndex = 0;
 
-	updatePolicyNames();
+	updatePolicyNames( policyConfiguration.getPolicies() );
 	updatePolicyModel();
 
 	for( UserPolicyRule newElem : userPolicyRules ){
@@ -167,16 +167,10 @@ class CustomPolicyTableModel extends MSortedTableModel{
 	    tempRow = new Vector(13);
 	    tempRow.add( super.ROW_SAVED );
 	    tempRow.add( rowIndex );
-	    tempRow.add( super.generateComboBoxModel(ProtocolMatcher.getProtocolEnumeration(),
-						     newElem.getProtocol()) );
 	    tempRow.add( super.generateComboBoxModel(intfEnum.getIntfNames(),
 						     intfEnum.getIntfName(newElem.getClientIntf())) );
 	    tempRow.add( super.generateComboBoxModel(intfEnum.getIntfNames(),
 						     intfEnum.getIntfName(newElem.getServerIntf())) );
-	    tempRow.add( newElem.getClientAddr().toString() );
-	    tempRow.add( newElem.getServerAddr().toString() );
-	    tempRow.add( newElem.getClientPort().toString() );
-	    tempRow.add( newElem.getServerPort().toString() );
 	    String policyName;
 	    if( newElem.getPolicy() != null )
 		policyName = newElem.getPolicy().getName() + (newElem.isInbound()?INBOUND_STRING:OUTBOUND_STRING);
@@ -184,6 +178,12 @@ class CustomPolicyTableModel extends MSortedTableModel{
 		policyName = NULL_STRING;
 	    tempRow.add( super.generateComboBoxModel(policyNames.keySet().toArray(),
 						     policyName) );
+	    tempRow.add( super.generateComboBoxModel(ProtocolMatcher.getProtocolEnumeration(),
+						     newElem.getProtocol()) );
+	    tempRow.add( newElem.getClientAddr().toString() );
+	    tempRow.add( newElem.getServerAddr().toString() );
+	    tempRow.add( newElem.getClientPort().toString() );
+	    tempRow.add( newElem.getServerPort().toString() );
 	    tempRow.add( newElem.getDescription() );
 	    tempRow.add( newElem );
 	    allRows.add( tempRow );

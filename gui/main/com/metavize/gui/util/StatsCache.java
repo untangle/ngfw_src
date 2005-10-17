@@ -53,19 +53,22 @@ public class StatsCache
         }
 
         public void run() {
+	    Map<Tid, TransformStats> allStats;
+	    boolean mustClear = false;
             while(true) {
                 try {
                     // GET ALL TRANSFORM STATS, AND KILL IF NECESSSARY
 		    synchronized(this){
 			if( killed )
 			    return;
-			Map<Tid, TransformStats> allStats = Util.getTransformManager().allTransformStats();
-			fakies.clear();
-			for (Iterator<Tid> iter = allStats.keySet().iterator(); iter.hasNext();) {
-			    Tid tid = iter.next();
-			    TransformStats stats = allStats.get(tid);
-			    FakeTransform fakie = new FakeTransform(stats);
-			    fakies.put(tid, fakie);
+			allStats = Util.getTransformManager().allTransformStats();
+			if(fakies.size() != allStats.size())
+			    fakies.clear();
+			for(Tid tid : allStats.keySet()){
+			    if( fakies.containsKey(tid) )
+				fakies.get(tid).setStats(allStats.get(tid));
+			    else
+				fakies.put(tid, new FakeTransform(allStats.get(tid)));
 			}
 		    }
                     // PAUSE A NORMAL AMOUNT OF TIME
@@ -90,7 +93,7 @@ public class StatsCache
         private TransformStats stats;
 
         FakeTransform(TransformStats stats) {
-            this.stats = stats;
+            setStats(stats);
         }
 
         public Tid getTid() { throw new Error("Unsupported"); }
@@ -109,5 +112,8 @@ public class StatsCache
         public TransformStats getStats() {
             return stats;
         }
+	public void setStats(TransformStats stats){
+	    this.stats = stats;
+	}
     }
 }

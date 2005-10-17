@@ -46,11 +46,11 @@ class DefaultPolicyTableModel extends MSortedTableModel{
 
     private static final int T_TW = Util.TABLE_TOTAL_WIDTH;
     private static final int C0_MW = Util.STATUS_MIN_WIDTH; /* status */
-    private static final int C1_MW = Util.LINENO_MIN_WIDTH; /* # - invisible */
+    private static final int C1_MW = Util.LINENO_MIN_WIDTH; /* invisible */
     private static final int C2_MW = 100; /* client interface */
     private static final int C3_MW = 100; /* server interface */
     private static final int C4_MW = 200; /* policy / direction */
-    private static final int C5_MW = Util.chooseMax(T_TW - (C0_MW + C2_MW + C3_MW + C4_MW), 125); /* description */
+    private static final int C5_MW = Util.chooseMax(T_TW - (C0_MW + C1_MW + C2_MW + C3_MW + C4_MW), 125); /* description */
 
     protected boolean getSortable(){ return false; }
 
@@ -60,9 +60,8 @@ class DefaultPolicyTableModel extends MSortedTableModel{
     private static final String INBOUND_STRING = " (inbound)";
     private static final String OUTBOUND_STRING = " (outbound)";
     private Map<String,Policy> policyNames = new LinkedHashMap();
-    private void updatePolicyNames(){
+    private void updatePolicyNames(List<Policy> policyList){
 	policyNames.clear();
-	List<Policy> policyList = Util.getPolicyManager().getPolicyConfiguration().getPolicies();
 	for( Policy policy : policyList ){
 	    policyNames.put( policy.getName() + INBOUND_STRING, policy );
 	    policyNames.put( policy.getName() + OUTBOUND_STRING, policy );
@@ -75,7 +74,7 @@ class DefaultPolicyTableModel extends MSortedTableModel{
         DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
         //                                 #  min    rsz    edit   remv   desc   typ            def
         addTableColumn( tableColumnModel,  0, C0_MW, false, false, false, false, String.class,  null, sc.TITLE_STATUS );
-        addTableColumn( tableColumnModel,  1, C1_MW, false, false, true,  false, Integer.class, null, sc.TITLE_INDEX );
+        addTableColumn( tableColumnModel,  1, C1_MW, false, false, false, false, Integer.class, null, sc.TITLE_INDEX );
         addTableColumn( tableColumnModel,  2, C2_MW, true,  false, false, false, String.class, null, sc.html("client<br>interface"));
         addTableColumn( tableColumnModel,  3, C3_MW, true,  false, false, false, String.class, null, sc.html("server<br>interface"));
         addTableColumn( tableColumnModel,  4, C4_MW, true,  true,  false, false, ComboBoxModel.class, null, sc.bold("rack"));
@@ -108,26 +107,38 @@ class DefaultPolicyTableModel extends MSortedTableModel{
 		firstInbound = isInbound;
 	    }
 	    else{
-		if( (!areEqual(policy,firstPolicy)) && (isInbound == firstInbound) ){
-		    throw new Exception("The racks chosen in rows " 
-					+ (rowIndex-1) 
-					+ " and " 
-					+ rowIndex 
-					+ " must be the same rack, but in opposite directions.");
+		if( nullOk(policy,firstPolicy) ){
+		    // ok
 		}
-		else if( isInbound == firstInbound ){
-		    throw new Exception("The racks chosen in rows " 
-					+ (rowIndex-1) 
-					+ " and " 
-					+ rowIndex 
-					+ " must be in opposite directions.");
-		}
-		else if( !areEqual(policy,firstPolicy) ){
-		    throw new Exception("The racks chosen in rows " 
-					+ (rowIndex-1) 
-					+ " and " 
-					+ rowIndex 
-					+ " must be the same rack.");
+		else{
+		    if( policy.equals(firstPolicy) ){
+			if( isInbound != firstInbound ){
+			    // ok
+			}
+			else{
+			    throw new Exception("The racks chosen in rows " 
+						+ (rowIndex-1) 
+						+ " and " 
+						+ rowIndex 
+						+ " must be in opposite directions.");			    
+			}
+		    }
+		    else{
+			if( isInbound != firstInbound ){
+			    throw new Exception("The racks chosen in rows " 
+						+ (rowIndex-1) 
+						+ " and " 
+						+ rowIndex 
+						+ " must be the same rack.");
+			}
+			else{
+			    throw new Exception("The racks chosen in rows " 
+						+ (rowIndex-1) 
+						+ " and " 
+						+ rowIndex 
+						+ " must be the same rack, and in opposite directions.");			    
+			}
+		    }
 		}
 	    }
 	    parity = (parity+1)%2;
@@ -148,7 +159,7 @@ class DefaultPolicyTableModel extends MSortedTableModel{
 	Vector tempRow = null;
 	int rowIndex = 0;
 
-	updatePolicyNames();
+	updatePolicyNames( policyConfiguration.getPolicies() );
 
 	for( SystemPolicyRule newElem : systemPolicyRules ){
 	    rowIndex++;
@@ -172,13 +183,13 @@ class DefaultPolicyTableModel extends MSortedTableModel{
         return allRows;
     }
 
-    private boolean areEqual(Object o1, Object o2){
+    private boolean nullOk(Object o1, Object o2){
 	if( (o1==null) && (o2==null) )
 	    return true;
 	else if( (o1==null) ^ (o2==null) )
-	    return false;
+	    return true;
 	else
-	    return o1.equals(o2);	       
+	    return false;
     }
 
 }

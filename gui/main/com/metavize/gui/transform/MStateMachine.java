@@ -201,7 +201,6 @@ public class MStateMachine implements java.awt.event.ActionListener {
 		setStartingView(false);
 	    else
 		setStoppingView(false);
-	    System.err.println("STARTING");
 	    this.start();
 	}
 
@@ -225,9 +224,6 @@ public class MStateMachine implements java.awt.event.ActionListener {
 		    Util.handleExceptionNoRestart("Error doing power", f);
 		    setProblemView(true);
 		}
-	    }
-	    finally{
-		System.err.println("STOPPING");
 	    }
 	}
     }

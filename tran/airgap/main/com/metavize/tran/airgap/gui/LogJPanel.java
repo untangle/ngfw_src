@@ -25,6 +25,7 @@ public class LogJPanel extends MLogTableJPanel {
     public LogJPanel(Transform transform, MTransformControlsJPanel mTransformControlsJPanel){
         super(transform, mTransformControlsJPanel);
 	setTableModel(new LogTableModel());
+	queryJComboBox.setVisible(false);
     }
 
     protected void refreshSettings(){

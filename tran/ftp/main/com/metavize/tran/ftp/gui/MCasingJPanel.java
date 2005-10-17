@@ -73,14 +73,14 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
         setPreferredSize(new java.awt.Dimension(563, 120));
         ftpJPanel.setLayout(new java.awt.GridBagLayout());
 
-        ftpJPanel.setBorder(new javax.swing.border.TitledBorder(null, "FTP Override", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
+        ftpJPanel.setBorder(new javax.swing.border.TitledBorder(null, "File Transfer Override", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
         jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
         jLabel2.setText("Warning:  These settings should not be changed unless instructed to do so by support.");
         ftpJPanel.add(jLabel2, new java.awt.GridBagConstraints());
 
         ftpButtonGroup.add(ftpEnabledRadioButton);
         ftpEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        ftpEnabledRadioButton.setText("<html><b>Enable Processing</b> of FTP traffic.  (This is the default setting)</html>");
+        ftpEnabledRadioButton.setText("<html><b>Enable Processing</b> of File Transfer traffic.  (This is the default setting)</html>");
         ftpEnabledRadioButton.setFocusPainted(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -90,7 +90,7 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
 
         ftpButtonGroup.add(ftpDisabledRadioButton);
         ftpDisabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        ftpDisabledRadioButton.setText("<html><b>Disable Processing</b> of FTP traffic.</html>");
+        ftpDisabledRadioButton.setText("<html><b>Disable Processing</b> of File Transfer traffic.</html>");
         ftpDisabledRadioButton.setFocusPainted(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;

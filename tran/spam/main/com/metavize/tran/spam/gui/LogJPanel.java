@@ -24,7 +24,7 @@ import java.util.*;
 
 public class LogJPanel extends MLogTableJPanel {
 
-    private static final String SPAM_EVENTS_STRING = "Spam detected only";
+    private static final String SPAM_EVENTS_STRING = "Spam detected events";
 
     public LogJPanel(Transform transform, MTransformControlsJPanel mTransformControlsJPanel){
         super(transform, mTransformControlsJPanel);
