@@ -17,6 +17,8 @@ public class MackageDesc implements Serializable
 {
     private static final long serialVersionUID = 3662589795455307379L;
 
+    public static final int UNKNOWN_POSITION = -1;
+
     /* XXX change to enum in 1.5 */
     public static final int SYSTEM_TYPE = 0;
     public static final int TRANSFORM_TYPE = 1;
@@ -66,7 +68,7 @@ public class MackageDesc implements Serializable
 
         // rack position
         String v = m.get("rack-position");
-        rackPosition = null == v ? 0 : Integer.parseInt(v);
+        rackPosition = null == v ? UNKNOWN_POSITION : Integer.parseInt(v);
 
         // service or not
         if (isCasing) {

@@ -5,7 +5,7 @@ JAVA_HOME=${JAVA_HOME:-/opt/java}
 CLASSPATH="@MVVM_HOME@/lib/bootstrap.jar:@MVVM_HOME@/lib/mvvm.jar"
 
 is_reporting_enabled=$(@USR_BIN@/mcli isReportingEnabled)
-mars=$(@USR_BIN@/mcli instances | grep running | awk '{print $2}' | sed 's|^\(.*\)$|@MVVM_TOOLBOX@/\1.mar|')
+mars=$(@USR_BIN@/mcli instances | grep running | awk '{print $2}' | uniq | sed 's|^\(.*\)$|@MVVM_TOOLBOX@/\1.mar|')
 
 for f in @THIRDPARTY_LIB@/*jar ; do
     CLASSPATH="$CLASSPATH:$f"
