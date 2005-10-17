@@ -46,7 +46,7 @@ class FtpUtil
         StringBuffer sb = new StringBuffer();
         byte[] addr = socketAddress.getAddress().getAddress();
         for (byte a : addr) {
-            sb.append(((int)a) & 0xFF));
+            sb.append(((int) a) & 0xFF);
             sb.append(',');
         }
 
