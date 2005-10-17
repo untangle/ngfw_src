@@ -18,7 +18,7 @@ fi
 cd @MVVM_REPORTS@/current
 
 
-ordered_tran_list=`@USR_BIN@/mcli instances | awk '{print $2}' | sed 's|^\(.*\)$|@MVVM_REPORTS@/current/\1|'`
+ordered_tran_list=`@USR_BIN@/mcli instances | grep running | awk '{print $2}' | uniq | sed 's|^\(.*\)$|@MVVM_REPORTS@/current/\1|'`
 
 
 # generate email argument list
