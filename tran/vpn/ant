@@ -1,0 +1,13 @@
+#!/bin/sh
+
+JAVA_HOME=${JAVA_HOME:-/opt/java}
+BUILD_ROOT=${BUILD_ROOT:-$HOME/build}
+
+ANT_HOME=../../downloads/apache-ant-1.6.2
+ANTCONTRIB_HOME=../../downloads/ant-contrib-0.6
+
+CLASSPATH=$ANT_HOME/lib/ant.jar:$ANTCONTRIB_HOME/lib/ant-contrib-0.6.jar
+
+export JAVA_HOME BUILD_ROOT CLASSPATH
+
+$ANT_HOME/bin/ant -emacs -f ./build.xml $*
