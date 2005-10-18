@@ -70,6 +70,9 @@ public class MStateMachine implements java.awt.event.ActionListener {
                     if( (new SaveProceedDialog( displayName )).isProceeding() ){
 			new SaveThread();
 		    }
+		    else{
+			saveJButton.setEnabled(true);
+		    }
                 }
 		else{
                     new SaveThread();
