@@ -65,7 +65,7 @@ public class FtpReply implements Token
         String msg = "Entering Passive Mode ("
             + FtpUtil.unparsePort(socketAddress) + ").";
 
-        return makeReply( 227, msg );
+        return makeReply(227, msg);
     }
 
     // business methods ------------------------------------------------------

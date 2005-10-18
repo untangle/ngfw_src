@@ -11,9 +11,14 @@
 
 package com.metavize.mvvm.type;
 
+import java.io.ByteArrayInputStream;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetEncoder;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -29,6 +34,7 @@ public class UriUserType implements UserType
     public static final int DEFAULT_STRING_SIZE = 255;
 
     private static final int[] SQL_TYPES = { Types.VARCHAR };
+    private static final Charset UTF_8 = Charset.forName("UTF-8");
 
     public int[] sqlTypes() { return SQL_TYPES; }
     public Class returnedClass() { return URI.class; }
@@ -68,21 +74,12 @@ public class UriUserType implements UserType
             // XXX should we break uri's into multiple columns? just path?
             String s = v.toString();
 
-            // need to count bytes, not chars
-            int j = 0;
-            int count = 0;
-            for ( ; j < s.length(); j++) {
-                char c = s.charAt(j);
-                count += c <= 0xFF ? 1 : 2;
-                if (DEFAULT_STRING_SIZE < count) {
-                    j--;
-                    break;
-                }
-            }
-
-            s = s.substring(0, j);
-
-            ps.setString(i, s);
+            byte[] ba = new byte[DEFAULT_STRING_SIZE];
+            ByteBuffer bb = ByteBuffer.wrap(ba);
+            CharsetEncoder ce = UTF_8.newEncoder();
+            ce.encode(CharBuffer.wrap(s), bb, true);
+            ByteArrayInputStream bais = new ByteArrayInputStream(ba, 0, bb.position());
+            ps.setBinaryStream(i, bais, bb.position());
         }
     }
 

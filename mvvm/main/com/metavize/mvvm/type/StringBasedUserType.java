@@ -20,7 +20,7 @@ import java.sql.Types;
 import org.hibernate.HibernateException;
 import org.hibernate.usertype.UserType;
 
-// NOTE: for immutable objects, please at least override the deepCopy
+// NOTE: for mutable objects, please at least override the deepCopy
 public abstract class StringBasedUserType implements UserType, Serializable
 {
     private static final int[] SQL_TYPES = { Types.VARCHAR };
@@ -35,16 +35,16 @@ public abstract class StringBasedUserType implements UserType, Serializable
 
     public int[] sqlTypes() { return SQL_TYPES; }
 
-    public boolean equals( Object x, Object y )
+    public boolean equals(Object x, Object y)
     {
-        if ( x == y ) return true;
+        if (x == y) return true;
 
-        if ( x == null || y == null ) return false;
+        if (x == null || y == null) return false;
 
-        return x.equals( y );
+        return x.equals(y);
     }
 
-    public Object deepCopy( Object value )
+    public Object deepCopy(Object value)
     {
         return value;
     }
@@ -54,28 +54,28 @@ public abstract class StringBasedUserType implements UserType, Serializable
         return false;
     }
 
-    public Object nullSafeGet( ResultSet rs, String[] names, Object owner )
+    public Object nullSafeGet(ResultSet rs, String[] names, Object owner)
         throws HibernateException, SQLException
     {
-        String name = rs.getString( names[0] );
+        String name = rs.getString(names[0]);
         Object val;
 
         try {
-            val = rs.wasNull() ? null : createUserType( name );
-        } catch ( Exception exn ) {
-            throw new HibernateException( exn );
+            val = rs.wasNull() ? null : createUserType(name);
+        } catch (Exception exn) {
+            throw new HibernateException(exn);
         }
 
         return val;
     }
 
-    public void nullSafeSet( PreparedStatement ps, Object v, int i )
+    public void nullSafeSet(PreparedStatement ps, Object v, int i)
         throws HibernateException, SQLException
     {
         if (null == v) {
             ps.setNull(i, Types.VARCHAR);
         } else {
-            ps.setString(i, userTypeToString( v ));
+            ps.setString(i, userTypeToString(v));
         }
     }
 
