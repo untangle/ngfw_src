@@ -19,7 +19,7 @@ import java.util.List;
 public interface QuarantineMaintenenceView
   extends QuarantineManipulation {
 
-  public List<String> listInboxes()
+  public List<Inbox> listInboxes()
     throws QuarantineUserActionFailedException;
 
   public void deleteInbox(String account)

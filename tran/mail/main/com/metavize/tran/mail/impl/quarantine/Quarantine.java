@@ -24,9 +24,11 @@ import com.metavize.tran.mail.papi.quarantine.QuarantineTransformView;
 import com.metavize.tran.mail.papi.quarantine.QuarantineUserView;
 import com.metavize.tran.mail.papi.quarantine.QuarantineSettings;
 import com.metavize.tran.mail.papi.quarantine.InboxRecord;
+import com.metavize.tran.mail.papi.quarantine.Inbox;
 import com.metavize.tran.mail.papi.quarantine.QuarantineEjectionHandler;
 import com.metavize.tran.mail.papi.quarantine.MailSummary;
 import com.metavize.tran.mail.impl.quarantine.store.QuarantineStore;
+import com.metavize.tran.mail.impl.quarantine.store.QuarantinePruningObserver;
 import com.metavize.tran.mime.EmailAddress;
 import com.metavize.tran.mime.MIMEMessage;
 import com.metavize.tran.util.Pair;
@@ -42,9 +44,7 @@ import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import org.apache.log4j.Logger;
 
-//May be removed later
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
+
 
 /**
  *
@@ -53,15 +53,15 @@ public class Quarantine
   implements QuarantineTransformView,
     QuarantineMaintenenceView, QuarantineUserView {
 
-  //TODO This has to be made read
-  private final String HACK_HOST = "10.0.0.141";
-    
   private final Logger m_logger =
     Logger.getLogger(Quarantine.class);    
   private QuarantineStore m_store;
   private RescueEjectionHandler m_rescueHandler =
     new RescueEjectionHandler();
   private DigestGenerator m_digestGenerator;
+  private AuthTokenManager m_atm;
+  private QuarantineSettings m_settings = new QuarantineSettings();
+  private CronThread m_chronThread;
 
 
   public Quarantine() {
@@ -69,6 +69,8 @@ public class Quarantine
       new File(new File(System.getProperty("bunnicula.home")), "quarantine")
       );
     m_digestGenerator = new DigestGenerator();
+    m_atm = new AuthTokenManager();
+    m_chronThread = new CronThread(this);
   }
   
 
@@ -78,7 +80,36 @@ public class Quarantine
    * talk to the Quarantine).
    */
   public void setSettings(QuarantineSettings settings) {
-    //TODO Implement me
+    m_settings = settings;
+/*
+    //We currently have the silly hack
+    //of using a LONG for the key, so it must
+    //be converted to a byte[]
+    byte[] bytes = new byte[8];
+    long key = m_settings.getSecretKey();
+
+    for(int i = 0; i<8; i++) {
+      bytes[i] = (byte) (key >>> ((7-i) * 8));
+    }
+*/
+    m_atm.setKey(m_settings.getSecretKey());
+    m_chronThread.setHourInDay(m_settings.getDigestHourOfDay());
+    
+  }
+
+  private boolean m_opened = false;
+  /**
+   * Call that the Quarantine should "open"
+   */
+  public void open() {
+    if(!m_opened) {
+      synchronized(this) {
+        if(!m_opened) {
+          m_opened = true;
+          MvvmContextFactory.context().newThread(m_chronThread).start();
+        }
+      }
+    }
   }
 
   /**
@@ -88,6 +119,46 @@ public class Quarantine
    */
   public void close() {
     m_store.close();
+    m_chronThread.done();
+  }
+
+  /**
+   * Callback from the Chron thread that we should send
+   * digests and purge the store.
+   */
+  void cronCallback() {
+    //TODO bscott  There should be a way to combine
+    //pruning with collection of inboxes
+    m_logger.debug("Cron callback for sending digests/pruning things");
+    pruneStoreNow();
+    sendDigestsNow();
+  }
+
+  public void pruneStoreNow() {
+    m_store.prune(m_settings.getMaxMailIntern(),
+      m_settings.getMaxIdleInbox(),
+      QuarantinePruningObserver.NOOP);
+  }
+
+  /**
+   * Warning - this method executes synchronously
+   */
+  public void sendDigestsNow() {
+    
+    List<Inbox> allInboxes = m_store.listInboxes();
+
+    for(Inbox inbox : allInboxes) {
+      Pair<QuarantineStore.GenericStatus, InboxIndexImpl> result =
+        m_store.getIndex(inbox.getAddress());
+      if(result.a == QuarantineStore.GenericStatus.SUCCESS) {
+        if(sendDigestEmail(inbox.getAddress(), result.b)) {
+          m_logger.debug("Sent digest to \"" + inbox.getAddress() + "\"");
+        }
+        else {
+          m_logger.warn("Unable to send digest to \"" + inbox.getAddress() + "\"");
+        }
+      }
+    }
   }
 
   private String getInternalIPAsString() {
@@ -104,6 +175,19 @@ public class Quarantine
   public boolean quarantineMail(File file,
     MailSummary summary,
     EmailAddress...recipients) {
+
+    //Check for out-of-space condition
+    if(m_store.getTotalSize() > m_settings.getMaxQuarantineTotalSz()) {
+      //TODO This will be very anoying, as we'll have *way* too many
+      //error messages in the logs
+      //
+      //TODO bscott Shouldn't we at least once take a SWAG at
+      //pruning the store?  It should reduce the size by ~1/14th
+      //in a default configuration.
+      m_logger.warn("Quarantine size of " + m_store.getTotalSize() +
+        " exceeds max of " + m_settings.getMaxQuarantineTotalSz());
+      return false;
+    }
 
     //If we do not have an internal IP, then
     //don't even bother quarantining
@@ -198,15 +282,21 @@ public class Quarantine
 
   //--QuarantineMaintenenceView --
   
-  public List<String> listInboxes()
+  public List<Inbox> listInboxes()
     throws QuarantineUserActionFailedException {
-    //TODO bscott implement me
-    return null;
+    return m_store.listInboxes();
   }
 
   public void deleteInbox(String account)
     throws NoSuchInboxException, QuarantineUserActionFailedException {
-    //TODO bscott implement me
+    switch(m_store.deleteInbox(account)) {
+      case NO_SUCH_INBOX:
+        //Just supress this one for now
+      case SUCCESS:
+        break;//
+      case ERROR:
+        throw new QuarantineUserActionFailedException("Unable to delete inbox");
+    }
   }
 
 
@@ -215,15 +305,14 @@ public class Quarantine
   public String getAccountFromToken(String token)
     throws /*NoSuchInboxException, */BadTokenException {
 
-    String ret = decryptAuthToken(token);
-    if(ret == null) {
+    Pair<AuthTokenManager.DecryptOutcome, String> p = 
+      m_atm.decryptAuthToken(token);
+
+    if(p.a != AuthTokenManager.DecryptOutcome.OK) {
       throw new BadTokenException(token);
     }
-//    if(!m_store.inboxExists(ret)) {
-//      throw new NoSuchInboxException(ret);
-//    }
-    
-    return ret;
+
+    return p.b;
   }
 
   public boolean requestDigestEmail(String account)
@@ -239,7 +328,13 @@ public class Quarantine
     return true;
   }
 
+  
 
+  /**
+   * Helper method which sends a digest email.  Returns
+   * false if there was an error in sending of template
+   * merging
+   */
   private boolean sendDigestEmail(String account,
     InboxIndex index) {
 
@@ -252,8 +347,8 @@ public class Quarantine
     MIMEMessage msg = m_digestGenerator.generateMsg(index,
       internalHost,
       account,
-      "quarantine@" + internalHost,
-      this);
+      m_settings.getDigestFrom(),
+      m_atm);
 
     if(msg == null) {
       m_logger.debug("Unable to generate digest message " +
@@ -295,44 +390,8 @@ public class Quarantine
     }    
   }
 
-  /**
-   * Until I resolve how this should be done, this method
-   * is a placeholder for Token generation
-   *
-   * TODO bscott a real way to create tokens.
-   */
-  public String createAuthToken(String username) {
-    return base64Encode(username);
-  }
-  public String decryptAuthToken(String token) {
-    return new String(base64Decode(token));
-  }
 
-  private String base64Encode(String s) {
-    if(s == null) {
-      return null;
-    }
-    try {
-      return new BASE64Encoder().encode(s.getBytes());
-    }
-    catch(Exception ex) {
-      m_logger.warn("Exception base 64 encoding \"" + s + "\"", ex);
-      return null;
-    }
-  }   
-   
-  private byte[] base64Decode(String s) {
-    if(s == null) {
-      return null;
-    }
-    try {
-      return new BASE64Decoder().decodeBuffer(s);
-    }
-    catch(Exception ex) {
-      m_logger.warn("Exception base 64 decoding \"" + s + "\"", ex);
-      return null;
-    }
-  }
+  
 
   //------------- Inner Class --------------------
   

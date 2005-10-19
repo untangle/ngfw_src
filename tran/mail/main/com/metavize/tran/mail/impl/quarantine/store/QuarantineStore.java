@@ -13,6 +13,7 @@ package com.metavize.tran.mail.impl.quarantine.store;
 
 import com.metavize.tran.mail.papi.quarantine.MailSummary;
 import com.metavize.tran.mail.papi.quarantine.InboxRecord;
+import com.metavize.tran.mail.papi.quarantine.Inbox;
 import com.metavize.tran.mail.papi.quarantine.QuarantineEjectionHandler;
 import org.apache.log4j.Logger;
 import java.io.*;
@@ -20,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.Map;
+import java.util.Iterator;
 import com.metavize.tran.util.IOUtil;
 import com.metavize.tran.util.MVLogger;
 import com.metavize.tran.util.Pair;
@@ -121,6 +123,28 @@ public class QuarantineStore {
    */
   public void close() {
     m_masterTable.close();
+  }
+
+  /**
+   * Total size of the entire store (in bytes)
+   */
+  public long getTotalSize() {
+    return m_masterTable.getTotalQuarantineSize();
+  }
+
+  /**
+   * Provides a summary of all Inboxes.
+   */
+  public List<Inbox> listInboxes() {
+    Set<Map.Entry<String,InboxSummary>> allAccounts =
+      m_masterTable.entries();
+    ArrayList<Inbox> ret = new ArrayList<Inbox>(allAccounts.size());
+    for(Map.Entry<String,InboxSummary> entry : allAccounts) {
+      ret.add(new Inbox(entry.getKey(),
+        entry.getValue().getTotalSz(),
+        entry.getValue().getTotalMails()));
+    }
+    return ret;
   }
 
   /**
@@ -324,6 +348,33 @@ public class QuarantineStore {
       }
       m_addressLock.unlock(account);
     }
+  }
+
+  /**
+   * Force the delete of a given account.
+   *
+   * @param address the address
+   *
+   * @return the outcome.
+   */
+  public GenericStatus deleteInbox(String address) {
+    String account = address.toLowerCase();
+    m_addressLock.lock(account);
+
+    GenericStatus ret = null;
+    
+    //Get the RelativeFileName from the AddrDir map
+    RelativeFileName dirName = m_masterTable.getInboxDir(account);
+    if(dirName == null) {
+      ret =  GenericStatus.NO_SUCH_INBOX;
+    }
+    else {
+      m_dirTracker.deleteInboxDir(dirName);
+      m_masterTable.removeInbox(account);
+      ret = GenericStatus.SUCCESS;
+    }
+    m_addressLock.unlock(account);
+    return ret;    
   }
 
 

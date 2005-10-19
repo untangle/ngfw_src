@@ -69,9 +69,11 @@ class DigestGenerator {
   private static final String HAS_RECORDS_VV = "hasRecords";
   private static final String HAS_RECORDS_NOT_SHOWN_VV = "hasRecsNotShown";
   private static final String NUM_RECS_NOT_SHOWN_VV = "numRecsNotShown";
+  private static final String TOTAL_NUM_RECORDS_VV = "totalNumRecords";
+  
 
 
-  private static final Integer MAX_RECORDS_PER_EMAIL = new Integer(10);
+  private static final Integer MAX_RECORDS_PER_EMAIL = new Integer(25);
 
   private static String DIGEST_SUBJECT = "You've Got Spam!";
 
@@ -194,7 +196,7 @@ class DigestGenerator {
     String serverHost,
     String to,
     String from,
-    Quarantine quarantine) {
+    AuthTokenManager atm) {
 
     try {
       MIMEMessageHeaders headers = new MIMEMessageHeaders();
@@ -213,7 +215,7 @@ class DigestGenerator {
         ContentXFerEncodingHeaderField.SEVEN_BIT_STR);
   
       //Subject
-      headers.setSubject(DIGEST_SUBJECT);
+      headers.setSubject("Quarantine Digest for " + to);
   
       //Sender/Recipient
       EmailAddress toAddress =
@@ -241,7 +243,7 @@ class DigestGenerator {
 
 
       //Create the auth token
-      String authToken = quarantine.createAuthToken(to.trim());      
+      String authToken = atm.createAuthToken(to.trim());
 
       //Create the Velocity context, for template generation
       VelocityContext context = new VelocityContext();
@@ -254,8 +256,10 @@ class DigestGenerator {
         context.put(HAS_RECORDS_VV, Boolean.FALSE);
         context.put(HAS_RECORDS_NOT_SHOWN_VV, Boolean.FALSE);
         context.put(NUM_RECS_NOT_SHOWN_VV, new Integer(0));
+        context.put(TOTAL_NUM_RECORDS_VV, new Integer(0));
       }
       else {
+        context.put(TOTAL_NUM_RECORDS_VV, new Integer(allRecords.length));
         InboxRecord[] recsToDisplay = null;
         context.put(HAS_RECORDS_VV, Boolean.TRUE);
         if(allRecords.length > MAX_RECORDS_PER_EMAIL) {
@@ -341,282 +345,4 @@ class DigestGenerator {
       return null;
     }
   }
-/*
-  private static String makeURL(String host, String subPath,
-    Pair<String, String>...arguments) {
-    StringBuilder sb = new StringBuilder();
-    sb.append("http://").append(host).append(subPath);
-    if(arguments.length > 0) {
-      sb.append("?");
-      boolean first = true;
-      for(Pair<String, String> p : arguments) {
-        if(first) {first = false;}
-        else {sb.append('&');}
-        sb.append(p.a);
-        sb.append('=');
-        sb.append(URLEncoder.encode(p.b));
-      }
-    }
-    return sb.toString();
-  }
-*/
-  //$inbox.url$
-  //$title$
-  //$help.url$
-  //$digest.recipient$
-  private static final String BEGIN_HTML_TEMPLATE = 
-    "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\">"+
-    "<html>"+
-    "<head>"+
-    "  <meta http-equiv=\"Content-Type\""+
-    " content=\"text/html; charset=iso-8859-1\">"+
-    "  <style>"+
-    "  .maintable { font:  normal 11 Geneva,Arial; background-color: #FFFFFF; color: #000000;border: 0px solid #335687;}"+
-    "  .headingtable { border-bottom: 1px solid #; }"+
-    "  .labeldiv {  border-left: 1px solid #3666BB;}"+
-    "  .linkheader { font:  normal 11 Geneva,Arial; color: #FFFFFF; }"+
-    "  .digestable { font:  bold 11 Geneva,Arial; background-color: #F1F1F1; color: #372F2F; border: 1px solid #CDCDCD; }"+
-    "  .digesttable { background-color: #FFFFFF; font-size: bold 11 Geneva,Arial color: #5E76AA; border: 1px solid #335687; }"+
-    "  .tableitem0 { font: normal 11 Geneva,Arial; background-color: #FFFFFF; color: #372F2F; }"+
-    "  .tableitem1 { font: normal 11 Geneva,Arial; background-color: #F1F1F1; color: #372F2F; }"+
-    "  .tableheader { font:  bold 13 Geneva,Arial; background-color: #3666BB; color: #FFFFFF; }"+
-    "  .tableheaderc { font:  bold 11 Geneva,Arial; color: #000000; background-color:#B2CCF7; }"+
-    "  .bigheader { font:  bold 15 Geneva,Arial; color: #372F2F; }"+
-    "  .subbigheader { font:  bold 13 Geneva,Arial; color: #372F2F;}"+
-    "  .infotext { font:  normal 13 Geneva,Arial; color: #372F2F;}"+
-    "  .errortext { font:  bold 13 Geneva,Arial; color: #DD0000;}"+
-    "  .successtext { font:  bold 13 Geneva,Arial; color: #188218;}"+
-    "  .logo { font:  bold 18 arial, helvetica, sans serif; color: #686868; }"+
-    "  .logosub {  font:  bold 13 arial, helvetica, sans serif; color: #ED8D53; }"+
-    "  .custlogo { font:  bold 18 Geneva,Arial; color:#000000; }"+
-    "  .custsublogo {  font:  bold 13 Geneva,Arial; color:#000000; }"+
-    "  .commands { font:  normal 11 Geneva,Arial; }"+
-    "  .copyright { font:  normal 8 Geneva,Arial; text-align: center;}"+
-    "  .headercommands { font:  bold 11 Geneva,Arial; color: #FFFFFF; background-color:#3666BB; }"+
-    "  .buttonTable { font: bold 11 Geneva,Arial; color: #335587; background: #E7E9ED; border-bottom: 2px solid #716F64; border-right: 2px solid #716F64; border-top: 2px solid #FFFFFF; border-left: 2px solid #FFFFFF; }"+
-    "  .formButton { color : 335687; background-color : E7E9ED; font: bold 9 Geneva,Arial;vertical-align : middle; border-width : 1px;}"+
-    "  .table-head { color : 383333;background-color : BAB7B0; font : bold 10 Geneva,Arial; height : 17px; letter-spacing : 1px; text-transform: uppercase; }"+
-    "  .table-subhead { color : 686663; background-color : E9E8E6; font : bold 10 Geneva,Arial; height : 25px; vertical-align : middle; }"+
-    "  .table-cell { color : 335687; background-color : FFFFFF; font : bold 9 Geneva,Arial; height : 20px; vertical-align : middle; }"+
-    "  .table-cell-list { color : 335687;background-color : FFFFFF; font : bold 9 Geneva,Arial; height : 14; vertical-align : middle; }"+
-    "  .mailListBorder { background-color: #c0c0c0; }"+
-    "  .mailViewHeader { font-size: 10px; font-weight: bold;background-color: #E9E8E6;text-align: center;  color: #4f4f50; }"+
-    "  .mailViewHeaderLeft { font-size: 10px; font-weight: bold; background-color: #ECE9DB; text-align: left; color: #4f4f50; }"+
-    "  .mailViewRowUnreadOdd,.mvo {font-size: 10px; font-weight: bold; background-color: #ffffff; }"+
-    "  .mailViewRowUnreadEven { font-size: 10px; font-weight: bold; background-color: #ffffff; }"+
-    "  .mailViewCheckbox,.mvc { background-color: #ffffff; }"+
-    "  .mailViewRowReadEven { font-size: 10px; background-color: #ffffff; font-weight: normal; }"+
-    "  .mailViewRowReadOdd { font-size: 10px; background-color: #ffffff; font-weight: normal; }"+
-    "  .mailViewSmall { color: #5e76aa; text-decoration: none; text-indent: 0pt; font-size: 8px;text-align: left;}"+
-    "  .reportViewHeader { font-size: 10px; font-weight: bold; background-color: #ECE9DB; color: #4f4f50; }"+
-    "  </style>"+
-    "  <title>$title$</title>"+
-    "</head>"+
-    "<body alink=\"#3666bb\" bgcolor=\"#ffffff\" link=\"#3666bb\" vlink=\"#3666bb\">"+
-    ""+
-    "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">"+
-    "  <tbody>"+
-    "    <tr>"+
-    "      <td>"+
-    "      <table class=\"headingtable\" border=\"0\" cellpadding=\"0\" cellspacing=\"3\" height=\"50\" width=\"100%\">"+
-    "        <tbody>"+
-    "          <tr>"+
-    "            <td>&nbsp;</td>"+
-    "            <td width=\"200\">"+
-    "            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">"+
-    "              <tbody>"+
-    "                <tr>"+
-    "                  <td class=\"logo\"><font color=\"#006aff\" face=\"arial, helvetica, sans serif\" size=\"4\">Metavize</font></td>"+
-    "                </tr>"+
-    "                <tr>"+
-    "                  <td class=\"logosub\"><font color=\"#686868\" face=\"arial, helvetica, sans serif\" size=\"3\">EdgeGuard</font></td>"+
-    "                </tr>"+
-    "              </tbody>"+
-    "            </table>"+
-    "            </td>"+
-    "            <td>"+
-    "            <table style=\"border-left: 1px solid rgb(204, 204, 204);\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">"+
-    "              <tbody>"+
-    "                <tr>"+
-    "                  <td width=\"10\">&nbsp;</td>"+
-    "                  <td class=\"bigheader\" nowrap=\"nowrap\">"+
-    "                    <font face=\"Geneva,Arial\" size=\"2\">"+
-    "                      Quarantine Digest"+
-    "                    </font></td>"+
-    "                </tr>"+
-    "                <tr>"+
-    "                  <td width=\"10\">&nbsp;</td>"+
-    "                  <td class=\"subbigheader\" nowrap=\"nowrap\">"+
-    "                    <font face=\"Geneva,Arial\" size=\"2\">"+
-    "                      for $digest.recipient$"+
-    "                    </font>"+
-    "                  </td>"+
-    "                </tr>"+
-    "              </tbody>"+
-    "            </table>"+
-    "            </td>"+
-    "          </tr>"+
-    "        </tbody>"+
-    "      </table>"+
-    "      <table class=\"maintable\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">"+
-    "        <tbody>"+
-    "          <tr>"+
-    "            <td>"+
-    "            <table border=\"0\" cellpadding=\"5\" cellspacing=\"0\" width=\"100%\">"+
-    "              <tbody>"+
-    "                <tr>"+
-    "                  <td>&nbsp;</td>"+
-    "                </tr>"+
-    "                <tr>"+
-    "                  <td class=\"infotext\">"+
-    "                    <font face=\"Geneva,Arial\" size=\"2\">"+
-    "This is some blurb at the top of the digest email.  It may be conditional"+
-    "based on if there is anything in the inbox at all"+
-    "                    </font>"+
-    "                  </td>"+
-    "                </tr>"+
-    "                <tr>"+
-    "                  <td>"+
-    "                  <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">"+
-    "                    <tbody>"+
-    "                      <tr>"+
-    "                        <td class=\"commands\" align=\"right\">&nbsp;&nbsp;"+
-    "                          <a href=\"$help.url$\">"+
-    "                            <font face=\"Geneva,Arial\" size=\"2\">"+
-    "                              Help"+
-    "                            </font>"+
-    "                          </a>"+
-    "                          &nbsp;"+
-    "                        </td>"+
-    "                      </tr>"+
-    "                    </tbody>"+
-    "                  </table>"+
-    "                  </td>"+
-    "                </tr>"+
-    "              </tbody>"+
-    "            </table>"+
-    "            <table class=\"digestable\" bgcolor=\"#3666bb\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">"+
-    "              <tbody>"+
-    "                <tr>"+
-    "                  <td align=\"left\">"+
-    "                  <table border=\"0\" cellpadding=\"3\" cellspacing=\"0\" width=\"100%\">"+
-    "                    <tbody>"+
-    "                      <tr>"+
-    "                        <td class=\"tableheader\" nowrap=\"nowrap\">"+
-    "                          <font color=\"#ffffff\" face=\"Geneva,Arial\" size=\"2\">Quarantine Digest&nbsp;&nbsp;</font>"+
-    "                        </td>"+
-    "                        <td class=\"headercommands\" align=\"right\" nowrap=\"nowrap\">"+
-    "                          <font face=\"Geneva,Arial\" size=\"2\">"+
-    "                            &nbsp;&nbsp;&nbsp;"+
-    "                            <a class=\"linkheader\" href=\"$inbox.url$\">"+
-    "                              <font color=\"#ffffff\">"+
-    "                                <font color=\"#ffffff\" face=\"Geneva,Arial\" size=\"2\">"+
-    "                                  Visit Most Current Messages"+
-    "                                </font>"+
-    "                              </font>"+
-    "                            </a> &nbsp;"+
-    "                          </font>"+
-    "                        </td>"+
-    "                      </tr>"+
-    "                    </tbody>"+
-    "                  </table>"+
-    "                  </td>"+
-    "                </tr>"+
-    "                <tr>"+
-    "                  <td>"+
-    "                  <table border=\"0\" cellpadding=\"2\" cellspacing=\"0\" width=\"100%\">"+
-    "                    <tbody>"+
-    "                      <tr class=\"tableheaderc\" bgcolor=\"#b2ccf7\">"+
-    "                        <td>&nbsp;</td>"+
-    "                        <td class=\"labeldiv\"><font face=\"Geneva,Arial\" size=\"2\">From</font></td>"+
-    "                        <td class=\"labeldiv\"><font face=\"Geneva,Arial\" size=\"2\">Subject</font></td>"+
-    "                      </tr>";
-
-  //$sender$
-  //$subject$
-  //$rescue.url$
-  //$purge.url$
-  private static final String EVEN_ROW_TEMPLATE =
-    "                      <tr class=\"tableitem1\" bgcolor=\"#f1f1f1\" valign=\"top\">"+
-    "                        <td nowrap=\"nowrap\">"+
-    "                          <a href=\"$rescue.url$\">"+
-    "                            <font face=\"Geneva,Arial\" size=\"2\">"+
-    "                              Release"+
-    "                            </font>"+
-    "                          </a>"+
-    "                          &nbsp;|&nbsp;"+
-    "                          <a href=\"$purge.url$\">"+
-    "                            <font face=\"Geneva,Arial\" size=\"2\">"+
-    "                              Delete"+
-    "                            </font>"+
-    "                          </a>"+
-    "                        </td>"+
-    "                        <td><font face=\"Geneva,Arial\" size=\"2\">$sender$</font></td>"+
-    "                        <td><font face=\"Geneva,Arial\" size=\"2\">$subject$</font></td>"+
-    "                      </tr>";
-    
-  private static final String ODD_ROW_TEMPLATE =
-    "                      <tr class=\"tableitem0\" bgcolor=\"#ffffff\" valign=\"top\">"+
-    "                        <td nowrap=\"nowrap\">"+
-    "                          <a href=\"$rescue.url$\">"+
-    "                            <font face=\"Geneva,Arial\" size=\"2\">"+
-    "                              Release"+
-    "                            </font>"+
-    "                          </a>"+
-    "                          &nbsp;|&nbsp;"+
-    "                          <a href=\"$purge.url$\">"+
-    "                            <font face=\"Geneva,Arial\" size=\"2\">"+
-    "                              Delete"+
-    "                            </font>"+
-    "                          </a>"+
-    "                        </td>"+
-    "                        <td><font face=\"Geneva,Arial\" size=\"2\">$sender$</font></td>"+
-    "                        <td><font face=\"Geneva,Arial\" size=\"2\">$subject$</font></td>"+
-    "                      </tr>";
-    
-  private static final String END_HTML_TEMPLATE =
-    "                    </tbody>"+
-    "                  </table>"+
-    "                  </td>"+
-    "                </tr>"+
-    "              </tbody>"+
-    "            </table>"+
-    "            </td>"+
-    "          </tr>"+
-    "        </tbody>"+
-    "      </table>"+
-    "      </td>"+
-    "    </tr>"+
-    "    <tr>"+
-    "      <td>&nbsp;</td>"+
-    "    </tr>"+
-    "    <tr>"+
-    "      <td class=\"infotext\">"+
-    "        <font face=\"Geneva,Arial\" size=\"2\">"+
-    "          For more information contact your System Administrator."+
-    "        </font>"+
-    "      </td>"+
-    "    </tr>"+
-    "    <tr>"+
-    "      <td><br>"+
-    "      <br>"+
-    "      </td>"+
-    "    </tr>"+
-    "    <tr>"+
-    "      <td class=\"copyright\">"+
-    "        <font face=\"Geneva,Arial\" size=\"1\">"+
-    "          Powered by<br>"+
-    "      Metavize EdgeGuard"+
-    "        </font>"+
-    "      </td>"+
-    "    </tr>"+
-    "  </tbody>"+
-    "</table>"+
-    "</body>"+
-    "</html>";
-
-
-
-
-  
 }

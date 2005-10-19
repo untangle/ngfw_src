@@ -22,6 +22,23 @@ import java.io.File;
  */
 public interface QuarantinePruningObserver {
 
+  public static final QuarantinePruningObserver NOOP =
+    new QuarantinePruningObserver() {
+    public void preVisitInboxForOldMessages(String address, RelativeFileName inboxDir) {}
+  
+    public void pruningOldMessage(String recipient,
+      File data,
+      InboxRecord record) {}
+    
+    public void postVisitInboxForOldMessages(String address, RelativeFileName inboxDir) {}
+  
+    public void pruningOldMailbox(String account,
+      RelativeFileName dirName,
+      long lastTouched) {}    
+    
+  };
+
+
   public void preVisitInboxForOldMessages(String address, RelativeFileName inboxDir);
 
   public void pruningOldMessage(String recipient,

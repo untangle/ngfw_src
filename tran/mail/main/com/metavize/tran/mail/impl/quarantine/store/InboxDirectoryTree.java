@@ -16,8 +16,6 @@ import com.metavize.tran.util.IOUtil;
 import java.io.*;
 
 
-//TODO bscott Some way to ensure unique names of directories, in
-//an atomic fashon.
 
 /**
  * Responsible for creating/destroying directories for the
@@ -27,6 +25,9 @@ import java.io.*;
 class InboxDirectoryTree {
 
   private static final String DATA_DIR_NAME = "inboxes";
+  private static final int MAX_TRIES = 10000;//Just to avoid the infinite loop
+
+  private Object m_lock;
 
   private File m_rootDir;
 
@@ -74,13 +75,7 @@ class InboxDirectoryTree {
    *         underlying store.
    */
   RelativeFile createInboxDir() {
-    //TODO bscott this is temp
-    String dirName = Long.toString(System.currentTimeMillis());
-    File ret = new File(m_rootDir, dirName);
-    ret.mkdirs();
-    return new RelativeFile(
-      (DATA_DIR_NAME + File.separator + dirName),
-      ret);
+    return createInboxDirImpl();
   }
 
   /**
@@ -93,6 +88,29 @@ class InboxDirectoryTree {
    */
   void deleteInboxDir(RelativeFileName dir) {
     IOUtil.rmDir(new File(m_rootDir, dir.relativePath));
+  }
+
+  private RelativeFile createInboxDirImpl() {
+    long num = System.currentTimeMillis();
+    File f = null;
+    for(int i = 0; i<MAX_TRIES; i++) {
+      f = new File(m_rootDir, Long.toString(num + i));
+      synchronized(m_lock) {
+        if(!f.exists()) {
+          f.mkdirs();
+        }
+        else {
+          f = null;
+        }
+      }
+      if(f != null) {
+        break;
+      }
+    }
+    return f==null?
+      null:new RelativeFile(
+      (DATA_DIR_NAME + File.separator + f.getName()),
+      f);    
   }
 
 }

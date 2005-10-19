@@ -10,8 +10,24 @@
 ## ######################################################################
 ##
 ##
-#*---------------------------------------------------------------
-Summary of Objects/variables referenced
+#*
+---------------------------------------------------------------------------
+
+***** First off, this is the only place this documentation exists.  If you decide to re-write the contents of this file, please make sure to include this blurb at the top of your new file.  Otherwise, everyone will need to go back and learn "Velocity" and read the Java source for the types of Objects referenced.*****
+
+This is a template file.  It is merged with data at runtime to produce a text stream.  In this case, it is the HTML portion of a "multipart/alternative" email summarizing someone's Quarantine inbox.
+
+The template processing engine used is called "Velocity".  It's one of those Apache/Jakarta things.  There are decent docs on the web for Velocity, but I'll present some minimal docs here so you don't have to start from scratch.
+
+Velocity templates consist of the data to be outputted execept for directives and variable substitution.  So, things like whitespace, quoting, etc are taken literally.
+
+There are two comment conventions for Velocity.  Single-line comments begin with pound-pound, and multiline comments begine with pound-star, and end with star-pound.  This readme is within a multiline comment.
+
+Velocity follows the intuitive dollar ("$") syntax for variables.  For example, "$user_email" will become the current email address when the template is processed.  Some of the variables are treated as Object references, with methods being called.  If you want to know more, go read about Velocity.  Otherwise, I'll present the Objects used in *this* template below, along with any other potentialy confusing syntax.
+
+
+
+1) Summary of Objects/variables referenced
 
 $user_email - the user's email address (a string)
 $image_root - URL root for image sources
@@ -27,9 +43,49 @@ $hasRecsNotShown - Boolean indicating that there are extra records which could n
                    for space reasons
 $numRecsNotShown - Number of records which could not be shown for space reasons
 
+$totalNumRecords - total number of records (because this Velocity junk would
+                   not understand "$inboxrecords.length")
 
 
---------------------------------------------------------------- *#
+2) Conditionals
+
+There are a few places where conditionals are used.  The basic syntax is "#if"/"#else"/"#end".  For example:
+
+  #if ($hasRecsNotShown)
+    There are more records
+  #else
+    Here are all of your records
+  #end
+
+In the above example, "There are more records" will be included in the generated stream if "$hasRecsNotShown" evaluates to true.
+
+
+3) Methods
+
+The "$linkgenerator" class has a few methods called.  This follows normal Java syntax.  The methods are:
+
+$linkgenerator.generateInboxLink()
+$linkgenerator.generateHelpLink()
+$linkgenerator.generatePurgeLink(arg)
+$linkgenerator.generateRescueLink(arg)
+
+
+Hopefully, the names make sense.  Note that the link generator already "knows" the current user's address, so it need not be passed as an argument.  The purge/rescue links need to know the mailID.  There is an example of this below.
+
+
+4) Loops
+
+There is one loop you can use, iterating over the elements of $inboxrecords.  Example of the syntax for such a loop is:
+
+#foreach( $record in $inboxrecords )
+  ...
+#end
+
+Where "$record" will be replaced with the "current" record while iterating over the record set.
+
+
+---------------------------------------------------------------
+*#
 ##
 ##
 ##
@@ -304,7 +360,7 @@ $numRecsNotShown - Number of records which could not be shown for space reasons
                     #else
                       <tr>
                         <th scope="row">Total</th>
-                        <td colspan="4">$inboxrecords.length mails</td>
+                        <td colspan="4">$totalNumRecords mails</td>
                       </tr>
                     #end
                     </tfoot>

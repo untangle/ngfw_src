@@ -38,7 +38,7 @@
 
   <!--
     Includes everything between its tags if there are
-    messages of "type" "error" of "info"
+    messages of "type" "error" or "info"
   -->
   <tag>
     <name>hasMessages</name>

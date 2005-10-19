@@ -22,6 +22,7 @@ import com.metavize.tran.mail.papi.*;
 import com.metavize.tran.mail.impl.quarantine.Quarantine;
 import com.metavize.tran.mail.papi.quarantine.QuarantineTransformView;
 import com.metavize.tran.mail.papi.quarantine.QuarantineUserView;
+import com.metavize.tran.mail.papi.quarantine.QuarantineSettings;
 import com.metavize.mvvm.tran.TransformException;
 import com.metavize.mvvm.tran.TransformStartException;
 import com.metavize.mvvm.tran.TransformStopException;
@@ -97,11 +98,12 @@ public class MailTransformImpl extends AbstractTransform
     }
     
 
-
+   
     @Override
     protected void postStart() throws TransformStartException {
       super.postStart();
       deployWebAppIfRequired(logger);
+      s_quarantine.open();
     }
 
     @Override
@@ -139,6 +141,8 @@ public class MailTransformImpl extends AbstractTransform
         getTransformContext().runTransaction(tw);
 
         reconfigure();
+
+        s_quarantine.setSettings(settings.getQuarantineSettings());
     }
 
     public QuarantineUserView getQuarantineUserView() {
@@ -183,6 +187,7 @@ public class MailTransformImpl extends AbstractTransform
                 {
                     Query q = s.createQuery("from MailTransformSettings ms");
                     settings = (MailTransformSettings)q.uniqueResult();
+                    boolean shouldSave = false;
 
                     if (null == settings) {
                         settings = new MailTransformSettings();
@@ -196,8 +201,28 @@ public class MailTransformImpl extends AbstractTransform
                         settings.setPopOutboundTimeout(1000*30);
                         settings.setImapInboundTimeout(1000*30);
                         settings.setImapOutboundTimeout(1000*30);
+                        shouldSave = true;
+                    }
+                    if(settings.getQuarantineSettings() == null) {
+                    
+                      QuarantineSettings qs = new QuarantineSettings();
+                      
+                      qs.setMaxQuarantineTotalSz(10 * 1000000000);//10Gig - I hope
+                      qs.setDigestHourOfDay(6);//6 am
+                      qs.setDigestFrom("quarantine@local.host");
+                      byte[] secretKey = new byte[4];
+                      new java.util.Random().nextBytes(secretKey);
+                      qs.setSecretKey(secretKey);
+                      qs.setMaxMailIntern(QuarantineSettings.WEEK * 2);
+                      qs.setMaxIdleInbox(QuarantineSettings.WEEK * 4);
+                      
+                      settings.setQuarantineSettings(qs);
+                      
+                      shouldSave = true;
+                    }
 
-                        s.save(settings);
+                    if(shouldSave) {
+                      s.save(settings);
                     }
 
                     reconfigure();
@@ -207,6 +232,9 @@ public class MailTransformImpl extends AbstractTransform
                 public Object getResult() { return null; }
             };
         getTransformContext().runTransaction(tw);
+
+        s_quarantine.setSettings(settings.getQuarantineSettings());
+        
     }
 
     // AbstractTransform methods ----------------------------------------------
