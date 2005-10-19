@@ -234,6 +234,7 @@ class SessionRedirect
         this.key          = key;
     }
 
+    /* XXX I think this function is no longer used */
     synchronized void redirect( IPNewSessionRequest request, NatImpl transform ) throws MPipeException
     {
         NatAttachment attachment = (NatAttachment)request.attachment();

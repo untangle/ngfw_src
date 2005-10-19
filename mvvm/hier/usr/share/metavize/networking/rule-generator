@@ -215,13 +215,13 @@ function markIntfRules () {
         if [ -z `getBridge $interface` ]; then
             addresses=`getAddresses $interface`
             matchType="-i "
-            echo "${addresses}"
-            echo `getNetmasks $interface`
+            #echo "${addresses}"
+            #echo `getNetmasks $interface`
         else
             addresses=`getBridgeAddresses $interface`
             matchType="-m physdev --physdev-in "
-            echo "${addresses}"
-            echo `getBridgeNetmasks $interface`
+            #echo "${addresses}"
+            #echo `getBridgeNetmasks $interface`
         fi
 
         if [ "${c}x" == "2x" ]; then

@@ -266,7 +266,8 @@ public class NatImpl extends AbstractTransform implements Nat
 
         try {
             setNatSettings(settings);
-            handler.deconfigure();
+            // Handler doesn't need to be deconfigured at initialization.
+            // handler.deconfigure();
         } catch( Exception e ) {
             logger.error( "Unable to set Nat Settings", e );
         }
