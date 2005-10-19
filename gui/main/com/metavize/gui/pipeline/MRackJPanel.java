@@ -33,16 +33,18 @@ public class MRackJPanel extends JPanel {
     private ImageIcon RackRightFull;
     private ImageIcon RackLeftShort;
     private ImageIcon RackRightShort;
+    private ImageIcon ServicesSpacer;
 
-    private GridBagConstraints rackTopConstraints, rackMiddleConstraints, rackBottomConstraints, glueConstraints;
+    private GridBagConstraints rackTopConstraints, rackMiddleConstraints, rackBottomConstraints;//, glueConstraints;
     private JLabel rackTopJLabel, rackBottomJLabel;
 
 
     public MRackJPanel() {
-
+	/*
         glueConstraints = new GridBagConstraints(0, GridBagConstraints.REMAINDER, 1, 1, 0d, 1d,
 						 GridBagConstraints.CENTER, GridBagConstraints.BOTH,
 						 new Insets(0,0,0,0), 0, 0);
+	*/
         rackTopConstraints = new GridBagConstraints(0, 0, 1, 1, 0d, 0d,
 						    GridBagConstraints.CENTER, GridBagConstraints.NONE,
 						    new Insets(0,0,101*RACK_BUFFER,12), 0, 0);
@@ -59,19 +61,22 @@ public class MRackJPanel extends JPanel {
         RackRightFull = new ImageIcon( getClass().getResource("/com/metavize/gui/pipeline/RightRack59x100.png") );
         RackLeftShort = new ImageIcon( getClass().getResource("/com/metavize/gui/pipeline/LeftRack59x1.png") );
         RackRightShort = new ImageIcon( getClass().getResource("/com/metavize/gui/pipeline/RightRack59x1.png") );
+	ServicesSpacer = new ImageIcon( getClass().getResource("/com/metavize/gui/pipeline/ServiceSpacer688x50.png") );
 
         rackTopJLabel = new JLabel();
-        //rackTopJLabel.setIcon(RackTop);
-        rackTopJLabel.setOpaque(false);
+        rackTopJLabel.setOpaque(true);
+	rackTopJLabel.setBackground(Color.RED);
         rackTopJLabel.setHorizontalAlignment(SwingConstants.CENTER);
         rackTopJLabel.setVerticalAlignment(SwingConstants.BOTTOM);
+        //rackTopJLabel.setIcon(RackTop);
         //rackTopJLabel.setVisible(false);
         //rackTopJLabel.add(Box.createVerticalStrut(39));
         rackBottomJLabel = new JLabel();
-        //rackBottomJLabel.setIcon(RackBottom);
-        rackBottomJLabel.setOpaque(false);
+        rackBottomJLabel.setOpaque(true);
+	rackBottomJLabel.setBackground(Color.RED);
         rackBottomJLabel.setHorizontalAlignment(SwingConstants.CENTER);
         rackBottomJLabel.setVerticalAlignment(SwingConstants.TOP);
+        //rackBottomJLabel.setIcon(RackBottom);
         //rackBottomJLabel.setVisible(false);
         //rackBottomJLabel.add(Box.createVerticalStrut(39));
 

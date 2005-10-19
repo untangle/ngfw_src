@@ -86,6 +86,9 @@ public class PolicyStateMachine implements ActionListener {
     private GridBagConstraints applianceGridBagConstraints;
     private GridBagConstraints rackGridBagConstraints;
     private GridBagConstraints serviceGridBagConstraints;
+    private GridBagConstraints serviceSpacerGridBagConstraints;
+    private ImageIcon serviceSpacerImageIcon;
+    private JLabel serviceSpacerJLabel;
     private static final String POLICY_MANAGER_SEPARATOR = "____________";
     private static final String POLICY_MANAGER_OPTION = "Show Policy Manager";
     private static final int CONCURRENT_LOAD_MAX = 2;
@@ -144,6 +147,13 @@ public class PolicyStateMachine implements ActionListener {
         serviceGridBagConstraints = new GridBagConstraints(0, 2, 1, 1, 0d, 0d,
 							   GridBagConstraints.NORTH, GridBagConstraints.NONE,
 							   new Insets(51,0,0,12), 0, 0);
+        serviceSpacerGridBagConstraints = new GridBagConstraints(0, 2, 1, 1, 0d, 0d,
+								 GridBagConstraints.NORTH, GridBagConstraints.NONE,
+								 new Insets(1,0,0,12), 0, 0);
+	serviceSpacerImageIcon = new ImageIcon( getClass().getResource("/com/metavize/gui/pipeline/ServiceSpacer688x50.png") );
+	serviceSpacerJLabel = new JLabel();
+	serviceSpacerJLabel.setOpaque(false);
+	serviceSpacerJLabel.setIcon(serviceSpacerImageIcon);
 	loadSemaphore = new Semaphore(CONCURRENT_LOAD_MAX);
 	try{
 	    // LET THE FUN BEGIN
@@ -226,16 +236,15 @@ public class PolicyStateMachine implements ActionListener {
 	}
 	else{ // the first rack viewed (add services)
 	    rackViewJPanel.add( serviceRackJPanel, serviceGridBagConstraints );
+	    if( !serviceRackMap.isEmpty() ){
+		rackViewJPanel.add( serviceSpacerJLabel, serviceSpacerGridBagConstraints );
+	    }
 	    serviceRackJPanel.revalidate();
 	}
 	rackViewJPanel.add( newPolicyRackJPanel, rackGridBagConstraints );
 	newPolicyRackJPanel.revalidate();
 	rackViewJPanel.repaint();
 	rackJScrollPane.getVerticalScrollBar().setValue( lastRackScrollPosition.get(newPolicy) );
-	//if( selectedPolicy == null )
-	//    System.err.println("Policy Rack view set:" + newPolicy.getName());
-	//else
-	//    System.err.println("Policy Rack view changed: " + selectedPolicy.getName() + " -> " + newPolicy.getName());
 	selectedRackJPanel = newPolicyRackJPanel;
 	selectedPolicy = newPolicy;
     }
@@ -811,6 +820,11 @@ public class PolicyStateMachine implements ActionListener {
 		// REMOVE FROM RACK VIEW
 		serviceRackJPanel.remove(mTransformJPanel);
 		serviceRackJPanel.revalidate();
+		// DEAL WITH SPACER
+		if( serviceRackMap.isEmpty() ){
+		    rackViewJPanel.remove( serviceSpacerJLabel );
+		    rackViewJPanel.repaint();
+		}
 	    }
 	    else{
 		JPanel rackJPanel = policyRackJPanelMap.get(policy);
@@ -884,6 +898,11 @@ public class PolicyStateMachine implements ActionListener {
 	final ButtonKey buttonKey = new ButtonKey(mTransformJPanel);
 	SwingUtilities.invokeLater( new Runnable() { public void run() {
 	    if( mTransformJPanel.getMackageDesc().isService() ){
+		// DEAL WITH SPACER
+		if( serviceRackMap.isEmpty() ){
+		    rackViewJPanel.add( serviceSpacerJLabel, serviceSpacerGridBagConstraints );
+		    rackViewJPanel.repaint();
+		}
 		// ADD TO RACK MODEL
 		serviceRackMap.put(buttonKey,mTransformJPanel);
 		// UPDATE GUI VIEW MODEL
