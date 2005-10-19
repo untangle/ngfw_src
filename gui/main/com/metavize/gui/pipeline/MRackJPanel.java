@@ -33,7 +33,6 @@ public class MRackJPanel extends JPanel {
     private ImageIcon RackRightFull;
     private ImageIcon RackLeftShort;
     private ImageIcon RackRightShort;
-    private ImageIcon ServicesSpacer;
 
     private GridBagConstraints rackTopConstraints, rackMiddleConstraints, rackBottomConstraints;//, glueConstraints;
     private JLabel rackTopJLabel, rackBottomJLabel;
@@ -61,7 +60,6 @@ public class MRackJPanel extends JPanel {
         RackRightFull = new ImageIcon( getClass().getResource("/com/metavize/gui/pipeline/RightRack59x100.png") );
         RackLeftShort = new ImageIcon( getClass().getResource("/com/metavize/gui/pipeline/LeftRack59x1.png") );
         RackRightShort = new ImageIcon( getClass().getResource("/com/metavize/gui/pipeline/RightRack59x1.png") );
-	ServicesSpacer = new ImageIcon( getClass().getResource("/com/metavize/gui/pipeline/ServiceSpacer688x50.png") );
 
         rackTopJLabel = new JLabel();
         rackTopJLabel.setOpaque(true);
