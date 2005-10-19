@@ -40,6 +40,7 @@ import com.metavize.gui.transform.*;
 import com.metavize.gui.upgrade.*;
 import com.metavize.gui.util.*;
 import com.metavize.gui.widgets.dialogs.*;
+import com.metavize.gui.widgets.separator.Separator;
 import com.metavize.mvvm.*;
 import com.metavize.mvvm.security.*;
 import com.metavize.mvvm.tran.*;
@@ -85,10 +86,11 @@ public class PolicyStateMachine implements ActionListener {
     private GridBagConstraints buttonGridBagConstraints;
     private GridBagConstraints applianceGridBagConstraints;
     private GridBagConstraints rackGridBagConstraints;
+    private GridBagConstraints rackSeparatorGridBagConstraints;
     private GridBagConstraints serviceGridBagConstraints;
-    private GridBagConstraints serviceSpacerGridBagConstraints;
-    private ImageIcon serviceSpacerImageIcon;
-    private JLabel serviceSpacerJLabel;
+    private GridBagConstraints serviceSeparatorGridBagConstraints;
+    private Separator serviceSeparator;
+    private Separator rackSeparator;
     private static final String POLICY_MANAGER_SEPARATOR = "____________";
     private static final String POLICY_MANAGER_OPTION = "Show Policy Manager";
     private static final int CONCURRENT_LOAD_MAX = 2;
@@ -144,16 +146,18 @@ public class PolicyStateMachine implements ActionListener {
         rackGridBagConstraints = new GridBagConstraints(0, 1, 1, 1, 0d, 0d,
 							GridBagConstraints.NORTH, GridBagConstraints.NONE,
 							new Insets(0,0,0,12), 0, 0);
+	rackSeparatorGridBagConstraints = new GridBagConstraints(0, 0, 1, 1, 0d, 0d,
+								 GridBagConstraints.CENTER, GridBagConstraints.NONE,
+								 new Insets(51,0,0,12), 0, 0);	
         serviceGridBagConstraints = new GridBagConstraints(0, 2, 1, 1, 0d, 0d,
 							   GridBagConstraints.NORTH, GridBagConstraints.NONE,
 							   new Insets(51,0,0,12), 0, 0);
-        serviceSpacerGridBagConstraints = new GridBagConstraints(0, 2, 1, 1, 0d, 0d,
+        serviceSeparatorGridBagConstraints = new GridBagConstraints(0, 2, 1, 1, 0d, 0d,
 								 GridBagConstraints.NORTH, GridBagConstraints.NONE,
 								 new Insets(1,0,0,12), 0, 0);
-	serviceSpacerImageIcon = new ImageIcon( getClass().getResource("/com/metavize/gui/pipeline/ServiceSpacer688x50.png") );
-	serviceSpacerJLabel = new JLabel();
-	serviceSpacerJLabel.setOpaque(false);
-	serviceSpacerJLabel.setIcon(serviceSpacerImageIcon);
+
+	serviceSeparator = new Separator("Services");
+	rackSeparator = new Separator("[no selection]");
 	loadSemaphore = new Semaphore(CONCURRENT_LOAD_MAX);
 	try{
 	    // LET THE FUN BEGIN
@@ -231,17 +235,21 @@ public class PolicyStateMachine implements ActionListener {
 	// RACK VIEW AND SCROLL POSITION
 	lastRackScrollPosition.put(selectedPolicy, rackJScrollPane.getVerticalScrollBar().getValue());
 	JPanel newPolicyRackJPanel = policyRackJPanelMap.get(newPolicy);
-	if( selectedRackJPanel != null ){ // this is not the first rack viewed
+	if( selectedRackJPanel != null ){ // not the first rack viewed
 	    rackViewJPanel.remove( selectedRackJPanel );
 	}
-	else{ // the first rack viewed (add services)
+	else{ // the first rack viewed
+	    // ADD SERVICES AND SEPARATOR
 	    rackViewJPanel.add( serviceRackJPanel, serviceGridBagConstraints );
 	    if( !serviceRackMap.isEmpty() ){
-		rackViewJPanel.add( serviceSpacerJLabel, serviceSpacerGridBagConstraints );
+		rackViewJPanel.add( serviceSeparator, serviceSeparatorGridBagConstraints );
 	    }
+	    rackViewJPanel.add( rackSeparator, rackSeparatorGridBagConstraints );
 	    serviceRackJPanel.revalidate();
 	}
+	// ADD POLICY
 	rackViewJPanel.add( newPolicyRackJPanel, rackGridBagConstraints );
+	rackSeparator.setForegroundText( newPolicy.getName() );
 	newPolicyRackJPanel.revalidate();
 	rackViewJPanel.repaint();
 	rackJScrollPane.getVerticalScrollBar().setValue( lastRackScrollPosition.get(newPolicy) );
@@ -822,7 +830,7 @@ public class PolicyStateMachine implements ActionListener {
 		serviceRackJPanel.revalidate();
 		// DEAL WITH SPACER
 		if( serviceRackMap.isEmpty() ){
-		    rackViewJPanel.remove( serviceSpacerJLabel );
+		    rackViewJPanel.remove( serviceSeparator );
 		    rackViewJPanel.repaint();
 		}
 	    }
@@ -900,7 +908,7 @@ public class PolicyStateMachine implements ActionListener {
 	    if( mTransformJPanel.getMackageDesc().isService() ){
 		// DEAL WITH SPACER
 		if( serviceRackMap.isEmpty() ){
-		    rackViewJPanel.add( serviceSpacerJLabel, serviceSpacerGridBagConstraints );
+		    rackViewJPanel.add( serviceSeparator, serviceSeparatorGridBagConstraints );
 		    rackViewJPanel.repaint();
 		}
 		// ADD TO RACK MODEL
