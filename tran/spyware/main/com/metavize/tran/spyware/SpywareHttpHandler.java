@@ -75,9 +75,6 @@ public class SpywareHttpHandler extends HttpStateMachine
         + "  document.writeln(\"<p>Please contact your network administrator.</p>\")\n"
         + "  document.writeln(\"<HR>\")\n"
         + "  document.writeln(\"<ADDRESS>Metavize EdgeGuard</ADDRESS>\")\n"
-
-        + "} else {\n"
-        + "  document.writeln(\"<b>Removed by Metavize Spyware</b>\")\n"
         + "}\n"
         + "</script>"
         + "</BODY></HTML>";
