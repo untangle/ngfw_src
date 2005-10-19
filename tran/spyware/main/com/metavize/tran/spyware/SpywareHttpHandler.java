@@ -35,12 +35,32 @@ import org.apache.log4j.Logger;
 
 public class SpywareHttpHandler extends HttpStateMachine
 {
+    private static final String TEXT_HTML = "text/html";
+    private static final String IMAGE_GIF = "image/gif";
+    private static final String ACCEPT = "accept";
+
     private static final Pattern OBJECT_PATTERN
         = Pattern.compile("<object", Pattern.CASE_INSENSITIVE);
     private static final Pattern CLSID_PATTERN
         = Pattern.compile("clsid:([0-9\\-]*)", Pattern.CASE_INSENSITIVE);
+    private static final Pattern IMAGE_PATTERN
+        = Pattern.compile(".*((jpg)|(jpeg)|(gif)|(png)|(ico))",
+                          Pattern.CASE_INSENSITIVE);
 
-    // XXX someone, make this pretty
+    private static final byte[] WHITE_GIF = new byte[]
+        {
+            0x47, 0x49, 0x46, 0x38,
+            0x37, 0x61, 0x01, 0x00,
+            0x01, 0x00, (byte)0x80, 0x00,
+            0x00, (byte)0xff, (byte)0xff, (byte)0xff,
+            (byte)0xff, (byte)0xff, (byte)0xff, 0x2c,
+            0x00, 0x00, 0x00, 0x00,
+            0x01, 0x00, 0x01, 0x00,
+            0x00, 0x02, 0x02, 0x44,
+            0x01, 0x00, 0x3b
+        };
+
+    // XXX, someone,, make, this, pretty,
     private static final String BLOCK_TEMPLATE
         = "<HTML><HEAD>"
         + "<TITLE>403 Forbidden</TITLE>"
@@ -121,7 +141,7 @@ public class SpywareHttpHandler extends HttpStateMachine
             // XXX we could send a page back instead, this isn't really right
             logger.debug("detected spyware, shutting down");
 
-            blockRequest(generateResponse(host, uri.toString(),
+            blockRequest(generateResponse(requestHeader, host, uri.toString(),
                                           isRequestPersistent()));
             return requestHeader;
         } else {
@@ -179,24 +199,30 @@ public class SpywareHttpHandler extends HttpStateMachine
 
     // private methods --------------------------------------------------------
 
-    private Token[] generateResponse(String host, String uri,
+    private Token[] generateResponse(Header header, String host, String uri,
                                      boolean persistent)
     {
-        String replacement = String.format(BLOCK_TEMPLATE, host, uri);
-
         Token response[] = new Token[4];
 
-        // XXX make canned responses in constructor
-        // XXX Do template replacement
-        ByteBuffer buf = ByteBuffer.allocate(replacement.length());
-        buf.put(replacement.getBytes()).flip();
+        String contentType;
+        ByteBuffer buf;
+
+        Matcher m = IMAGE_PATTERN.matcher(uri);
+
+        if (m.matches() || imagePreferred(header)) {
+            buf = generateGif();
+            contentType = IMAGE_GIF;
+        } else {
+            buf = generateHtml(host, uri);
+            contentType = TEXT_HTML;
+        }
 
         StatusLine sl = new StatusLine("HTTP/1.1", 403, "Forbidden");
         response[0] = sl;
 
         Header h = new Header();
         h.addField("Content-Length", Integer.toString(buf.remaining()));
-        h.addField("Content-Type", "text/html");
+        h.addField("Content-Type", contentType);
         h.addField("Connection", persistent ? "Keep-Alive" : "Close");
         response[1] = h;
 
@@ -206,6 +232,37 @@ public class SpywareHttpHandler extends HttpStateMachine
         response[3] = EndMarker.MARKER;
 
         return response;
+    }
+
+    private boolean imagePreferred(Header header)
+    {
+        String accept = header.getValue(ACCEPT);
+
+        // firefox uses "image/png, */*;q=0.5" when expecting an image
+        // ie uses "*/*" no matter what it expects
+        return null != accept && accept.startsWith("image/png");
+    }
+
+    private ByteBuffer generateGif()
+    {
+        byte[] buf = new byte[WHITE_GIF.length];
+        System.arraycopy(WHITE_GIF, 0, buf, 0, buf.length);
+        ByteBuffer bb = ByteBuffer.wrap(buf);
+
+        return bb;
+    }
+
+    private ByteBuffer generateHtml(String host, String uri)
+    {
+        String replacement = String.format(BLOCK_TEMPLATE, host, uri);
+
+
+        // XXX make canned responses in constructor
+        // XXX Do template replacement
+        ByteBuffer buf = ByteBuffer.allocate(replacement.length());
+        buf.put(replacement.getBytes()).flip();
+
+        return buf;
     }
 
     // cookie stuff -----------------------------------------------------------
