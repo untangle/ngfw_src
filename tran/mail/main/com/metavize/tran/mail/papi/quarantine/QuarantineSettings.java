@@ -15,7 +15,8 @@ package com.metavize.tran.mail.papi.quarantine;
 /**
  * Settings for the quarantine stuff
  */
-public class QuarantineSettings {
+public class QuarantineSettings
+  implements java.io.Serializable {
 
   public static final long HOUR = 1000*60*60;
   public static final long DAY = HOUR*24;

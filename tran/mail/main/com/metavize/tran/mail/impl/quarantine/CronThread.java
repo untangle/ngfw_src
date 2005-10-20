@@ -76,9 +76,6 @@ class CronThread implements Runnable {
    * next <code>hourOfDay</code> hour.
    */
   private long getMillisUntilNext(int hourOfDay) {
-    if(System.currentTimeMillis() > 0) {
-      return 1000*30;
-    }
     GregorianCalendar calendar = new GregorianCalendar();
     while(calendar.get(Calendar.HOUR_OF_DAY) != hourOfDay) {
       calendar.add(Calendar.HOUR_OF_DAY, 1);
