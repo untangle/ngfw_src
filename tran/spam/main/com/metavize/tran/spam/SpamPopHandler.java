@@ -28,7 +28,6 @@ import com.metavize.tran.mime.MIMEUtil;
 import com.metavize.tran.token.Token;
 import com.metavize.tran.token.TokenException;
 import com.metavize.tran.token.TokenResult;
-import com.metavize.tran.util.FileFactory;
 import com.metavize.tran.util.TempFileFactory;
 import com.metavize.tran.mime.LCString;
 import org.apache.log4j.Logger;

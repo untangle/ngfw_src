@@ -281,7 +281,7 @@ public abstract class PopStateMachine extends AbstractTokenHandler
         }
 
         try {
-            zMMessage = new MIMEMessage(zMMessageT.getInputStream(), zMMessageT.getFileMIMESource(), new MIMEPolicy(), null, zMMHeader);
+            zMMessage = new MIMEMessage(zMMessageT.getInputStream(), zMMessageT.getFileMIMESource(), new MIMEPolicy(), null);
         } catch (IOException exn) {
             logger.warn("cannot get FileMIMESource MIMEParsingInputStream: " + exn);
             return handleException(ExceptionState.MESSAGE_MARKER, zEndMarkerT);

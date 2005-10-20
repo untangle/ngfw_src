@@ -1,4 +1,3 @@
-
 /*
  * Copyright (c) 2005 Metavize Inc.
  * All rights reserved.
@@ -30,7 +29,6 @@ import com.metavize.tran.mime.MIMEUtil;
 import com.metavize.tran.token.Token;
 import com.metavize.tran.token.TokenException;
 import com.metavize.tran.token.TokenResult;
-import com.metavize.tran.util.FileFactory;
 import com.metavize.tran.util.TempFileFactory;
 import org.apache.log4j.Logger;
 
