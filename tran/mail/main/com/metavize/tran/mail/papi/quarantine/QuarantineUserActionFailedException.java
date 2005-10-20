@@ -13,7 +13,9 @@ package com.metavize.tran.mail.papi.quarantine;
 import java.io.Serializable;
 
 /**
- * ...name says it all...
+ * Generic "something went wrong" exception.  <b>Not</b>
+ * the fault of the user or the data - the back-end
+ * is simply hosed.
  */
 public class QuarantineUserActionFailedException
   extends Exception

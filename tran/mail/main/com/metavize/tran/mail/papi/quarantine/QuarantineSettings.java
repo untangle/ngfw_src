@@ -10,7 +10,7 @@
  */
 
 package com.metavize.tran.mail.papi.quarantine;
-
+//BILL - see com.metavize.mvvm.security.User for example of byte[]
 
 /**
  * Settings for the quarantine stuff

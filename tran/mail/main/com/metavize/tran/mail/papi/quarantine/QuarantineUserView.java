@@ -20,6 +20,9 @@ public interface QuarantineUserView
   extends QuarantineManipulation {
 
   /**
+   * Get the account name from an encrypted
+   * token.
+   * <br><br>
    * Note that this does <b>not</b> throw
    * NoSuchInboxException.
    */
@@ -27,6 +30,9 @@ public interface QuarantineUserView
     throws BadTokenException;
 
   /**
+   * Request a digest email to the given address
+   *
+   * @param account the target account
    *
    * @return true if the digest email could be sent (not nessecerially
    *         delivered yet).  False if some rules (based on the address
