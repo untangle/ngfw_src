@@ -24,8 +24,11 @@ import javax.swing.border.*;
 
 public class MRackJPanel extends JPanel {
 
-    private static final int MIN_RACK_HEIGHT = 1;
-    private static final int RACK_BUFFER = 1;
+    private static final int HALF_U_HEIGHT = 50;
+    private static final int FULL_U_HEIGHT = 100;
+    private static final int MIN_RACK_HEIGHT = 2; // in half U
+    private static final int RACK_BUFFER_TOP = 1; // in half U
+    private static final int RACK_BUFFER_BOT = 1; // in half U
 
     // private ImageIcon RackBottom;
     // private ImageIcon RackTop;
@@ -46,13 +49,13 @@ public class MRackJPanel extends JPanel {
 	*/
         rackTopConstraints = new GridBagConstraints(0, 0, 1, 1, 0d, 0d,
 						    GridBagConstraints.CENTER, GridBagConstraints.NONE,
-						    new Insets(0,0,101*RACK_BUFFER,12), 0, 0);
+						    new Insets(0,0,1 + HALF_U_HEIGHT*RACK_BUFFER_TOP,12), 0, 0);
         rackMiddleConstraints = new GridBagConstraints(0, 1, 1, 1, 0d, 0d,
 						       GridBagConstraints.NORTH, GridBagConstraints.NONE,
 						       new Insets(0,0,0,12), 0, 0);
         rackBottomConstraints = new GridBagConstraints(0, 3, 1, 1, 0d, 1d,
 						       GridBagConstraints.CENTER, GridBagConstraints.VERTICAL,
-						       new Insets(1 + 101*RACK_BUFFER,0,0,12), 0, 0);
+						       new Insets(1 + 1 + HALF_U_HEIGHT*RACK_BUFFER_BOT,0,0,12), 0, 0);
 
         // RackBottom = new ImageIcon( getClass().getResource("/com/metavize/gui/pipeline/BottomRack718x39.png") );
         // RackTop = new ImageIcon( getClass().getResource("/com/metavize/gui/pipeline/TopRack718x39.png") );
@@ -80,7 +83,7 @@ public class MRackJPanel extends JPanel {
 
         this.setLayout(new GridBagLayout());
         this.add(rackTopJLabel, rackTopConstraints);
-        this.add(Box.createRigidArea(new Dimension(718, 101*MIN_RACK_HEIGHT)), rackMiddleConstraints);
+        this.add(Box.createRigidArea(new Dimension(718, 1+HALF_U_HEIGHT*MIN_RACK_HEIGHT)), rackMiddleConstraints);
         this.add(rackBottomJLabel, rackBottomConstraints);
 
 	Util.setMRackJPanel(this);
@@ -94,31 +97,31 @@ public class MRackJPanel extends JPanel {
 
     protected void paintComponent(Graphics g){
         super.paintComponent(g);
-
+	
         paintHeight = this.getHeight();
         paintWidth  = this.getWidth();
-
+	
         if (isOpaque()) { //paint background
             g.setColor(getBackground());
             g.fillRect(0, 0, paintWidth, paintHeight);
         }
-
-        Graphics2D g2d = (Graphics2D)g.create();
-
-        paintIndex = (paintHeight-1)/101;
+	
+        Graphics2D g2d = (Graphics2D) g.create();
+	
+        paintIndex = (paintHeight-1)/(1 + FULL_U_HEIGHT);
         if(paintIndex < MIN_RACK_HEIGHT)
             paintIndex = MIN_RACK_HEIGHT;
-
+	
         for(paintI=0; paintI <= paintIndex; paintI++){
-            RackLeftShort.paintIcon(this, g2d, (paintWidth-718)/2 -6, paintI*100 + (paintI));
-            RackRightShort.paintIcon(this, g2d, (paintWidth-718)/2 + 659 -6,  paintI*100 + (paintI));
-
-            RackLeftFull.paintIcon(this, g2d, (paintWidth-718)/2 -6, paintI*100 + (paintI+1));
-            RackRightFull.paintIcon(this, g2d, (paintWidth-718)/2 + 659 -6,  paintI*100 + (paintI+1));
-    }
-        RackLeftShort.paintIcon(this, g2d, (paintWidth-718)/2 -6, paintI*100 + (paintIndex));
-        RackRightShort.paintIcon(this, g2d, (paintWidth-718)/2 + 659 -6,  paintI*100 + (paintIndex));
-
+            RackLeftShort.paintIcon(this, g2d, (paintWidth-718)/2 -6, paintI*FULL_U_HEIGHT + (paintI));
+            RackRightShort.paintIcon(this, g2d, (paintWidth-718)/2 + 659 -6,  paintI*FULL_U_HEIGHT + (paintI));
+	    
+            RackLeftFull.paintIcon(this, g2d, (paintWidth-718)/2 -6, paintI*FULL_U_HEIGHT + (paintI+1));
+            RackRightFull.paintIcon(this, g2d, (paintWidth-718)/2 + 659 -6,  paintI*FULL_U_HEIGHT + (paintI+1));
+	}
+        RackLeftShort.paintIcon(this, g2d, (paintWidth-718)/2 -6, paintI*FULL_U_HEIGHT + (paintIndex));
+        RackRightShort.paintIcon(this, g2d, (paintWidth-718)/2 + 659 -6,  paintI*FULL_U_HEIGHT + (paintIndex));
+	
         g2d.dispose();
     }
 

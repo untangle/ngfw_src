@@ -17,13 +17,12 @@ import java.awt.*;
 public class Separator extends JLabel {
 
     private static ImageIcon backgroundImageIcon;
-    private String foregroundText;
+    private String foregroundText = "";
     private static Color foregroundTextColor;
     private static Font foregroundTextFont;
 
-    public Separator(String foregroundText){
+    public Separator(){
 	init();
-	setForegroundText(foregroundText);
     }
 
     private void init(){
@@ -43,11 +42,13 @@ public class Separator extends JLabel {
 
     public void paint(Graphics g){
 	super.paint(g);
-	Graphics2D g2 = (Graphics2D) g;
-	g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-			    RenderingHints.VALUE_ANTIALIAS_ON);
-	g.setColor(foregroundTextColor);
-	g.setFont(foregroundTextFont);
-	g.drawString(foregroundText, 51, 36);
+	if( foregroundText.length() > 0 ){
+	    Graphics2D g2 = (Graphics2D) g;
+	    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+				RenderingHints.VALUE_ANTIALIAS_ON);
+	    g.setColor(foregroundTextColor);
+	    g.setFont(foregroundTextFont);
+	    g.drawString(foregroundText, 51, 36);
+	}
     }
 }

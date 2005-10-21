@@ -156,8 +156,8 @@ public class PolicyStateMachine implements ActionListener {
 								 GridBagConstraints.NORTH, GridBagConstraints.NONE,
 								 new Insets(1,0,0,12), 0, 0);
 
-	serviceSeparator = new Separator("Services");
-	rackSeparator = new Separator("[no selection]");
+	serviceSeparator = new Separator();
+	rackSeparator = new Separator();	
 	loadSemaphore = new Semaphore(CONCURRENT_LOAD_MAX);
 	try{
 	    // LET THE FUN BEGIN
@@ -244,12 +244,12 @@ public class PolicyStateMachine implements ActionListener {
 	    if( !serviceRackMap.isEmpty() ){
 		rackViewJPanel.add( serviceSeparator, serviceSeparatorGridBagConstraints );
 	    }
-	    rackViewJPanel.add( rackSeparator, rackSeparatorGridBagConstraints );
+	    //rackViewJPanel.add( rackSeparator, rackSeparatorGridBagConstraints );
 	    serviceRackJPanel.revalidate();
 	}
 	// ADD POLICY
 	rackViewJPanel.add( newPolicyRackJPanel, rackGridBagConstraints );
-	rackSeparator.setForegroundText( newPolicy.getName() );
+	//rackSeparator.setForegroundText( newPolicy.getName() );
 	newPolicyRackJPanel.revalidate();
 	rackViewJPanel.repaint();
 	rackJScrollPane.getVerticalScrollBar().setValue( lastRackScrollPosition.get(newPolicy) );
