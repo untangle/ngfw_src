@@ -99,7 +99,6 @@ public class IDSRule extends Rule implements Serializable {
 	}
 
 	public boolean equals(Object other) {
-		System.out.println("Yay, Equals!");
 		if(other instanceof IDSRule) {
 			return ((IDSRule) other).getId() == this.getId();
 		}

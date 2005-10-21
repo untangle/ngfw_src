@@ -199,7 +199,6 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
     /** Temp subroutines for loading local snort rules.
      */
     private void processFile(File file) {
-        //System.out.println(file);
         IDSRuleManager testManager = new IDSRuleManager();
         try {
             BufferedReader in = new BufferedReader(new FileReader(file));
@@ -219,7 +218,6 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
         }
     }
 
-    //private IDSSettings queryDBForSettings() {
 	private void queryDBForSettings() {
         TransactionWork tw = new TransactionWork()
             {
@@ -234,8 +232,6 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
                 public Object getResult() { return null; }
             };
         getTransformContext().runTransaction(tw);
-
-      //  return null;
     }
 
     protected void postInit(String args[]) {
@@ -271,7 +267,6 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
     public void reconfigure() throws TransformException {
 
         if(settings == null) {
-          //  settings = queryDBForSettings();
 			queryDBForSettings();
 			if(settings == null)
                 throw new TransformException("Failed to get IDS settings: " + settings);

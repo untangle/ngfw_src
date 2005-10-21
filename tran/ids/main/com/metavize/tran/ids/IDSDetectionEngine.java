@@ -168,24 +168,29 @@ public class IDSDetectionEngine {
 	
 	//In process of fixing this
 	public void handleChunk(IPDataEvent event, IPSession session, boolean isServer) {
-		long startTime = System.nanoTime();
+		try {
+			long startTime = System.nanoTime();
 		
-		SessionStats stats = session.stats();
-		if(stats.s2tChunks() > maxChunks || stats.c2tChunks() > maxChunks)
-			session.release();
+			SessionStats stats = session.stats();
+			if(stats.s2tChunks() > maxChunks || stats.c2tChunks() > maxChunks)
+				session.release();
 		
-		IDSSessionInfo info = (IDSSessionInfo) session.attachment();
+			IDSSessionInfo info = (IDSSessionInfo) session.attachment();
 		
-		info.setSession(session);
-		info.setEvent(event);
-		info.setFlow(isServer);
+			info.setSession(session);
+			info.setEvent(event);
+			info.setFlow(isServer);
 		
-		if(isServer)
-			info.processC2SSignatures();
-		else
-			info.processS2CSignatures();
+			if(isServer)
+				info.processC2SSignatures();
+			else
+				info.processS2CSignatures();
 		
-		log.debug("Time: " + (float)(System.nanoTime() - startTime)/1000000f);
+			log.debug("Time: " + (float)(System.nanoTime() - startTime)/1000000f);
+		}
+		catch (Exception e) {
+			log.error("Erron parseing chunk: " +e.getMessage());
+		}
 	}
 
 	public void mapSessionInfo(int id, IDSSessionInfo info) {

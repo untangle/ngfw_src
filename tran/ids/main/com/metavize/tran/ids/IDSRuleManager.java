@@ -124,7 +124,7 @@ public class IDSRuleManager {
 					rule.setSignature(signature);
 					rule.setText(ruleText);
 					if(rule.isLive())
-						System.out.println("BLOCK!");
+						log.info("BLOCK!");
 					knownRules.put(rule.getKeyValue(),rule);
 					return true;
 				}
@@ -134,7 +134,7 @@ public class IDSRuleManager {
 			knownHeaders.add(header);
 
 			if(rule.isLive())
-				System.out.println("BLOCK!");
+				log.info("BLOCK!");
 			rule.setHeader(header);
 			rule.setSignature(signature);
 			rule.setText(ruleText);
