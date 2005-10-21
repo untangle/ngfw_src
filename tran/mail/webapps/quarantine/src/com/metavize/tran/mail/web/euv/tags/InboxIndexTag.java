@@ -13,6 +13,7 @@ package com.metavize.tran.mail.web.euv.tags;
 import javax.servlet.ServletRequest;
 import com.metavize.tran.mail.papi.quarantine.InboxIndex;
 import com.metavize.tran.mail.papi.quarantine.InboxRecord;
+import com.metavize.tran.mail.papi.quarantine.InboxRecordCursor;
 import java.util.Iterator;
 
 
@@ -22,7 +23,7 @@ import java.util.Iterator;
 public final class InboxIndexTag
   extends IteratingTag<InboxRecord> {
 
-  private static final String INBOX_INDEX_KEY = "metavize.inbox_index";
+  private static final String INBOX_CURSOR_KEY = "metavize.inbox_cursor";
 
   @Override
   protected Iterator<InboxRecord> createIterator() {
@@ -37,22 +38,22 @@ public final class InboxIndexTag
   }
 
   public static final void setCurrentIndex(ServletRequest request,
-    InboxIndex index) {
-    request.setAttribute(INBOX_INDEX_KEY, index);
+    InboxRecordCursor index) {
+    request.setAttribute(INBOX_CURSOR_KEY, index);
   }
   public static final void clearCurrentIndex(ServletRequest request) {
-    request.removeAttribute(INBOX_INDEX_KEY);
+    request.removeAttribute(INBOX_CURSOR_KEY);
   }
 
   /**
    * Returns null if there is no index
    */
-  static InboxIndex getCurrentIndex(ServletRequest request) {
-    return (InboxIndex) request.getAttribute(INBOX_INDEX_KEY);
+  static InboxRecordCursor getCurrentIndex(ServletRequest request) {
+    return (InboxRecordCursor) request.getAttribute(INBOX_CURSOR_KEY);
   }
 
   static boolean hasCurrentIndex(ServletRequest request) {
-    InboxIndex index = getCurrentIndex(request);
+    InboxRecordCursor index = getCurrentIndex(request);
     return index != null && index.size() > 0;
   }
 }

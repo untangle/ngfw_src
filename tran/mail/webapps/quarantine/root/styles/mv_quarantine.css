@@ -55,6 +55,11 @@ table.actions tbody TD + TD {
   padding-right: 10;
 }
 
+.tableFooter {
+  text-align: right;
+  padding-right: 10;
+}
+
 .msiehack1 {
   background-color: #003399;
   text-align: right;

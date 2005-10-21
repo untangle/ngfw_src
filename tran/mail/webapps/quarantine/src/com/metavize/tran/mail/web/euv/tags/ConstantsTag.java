@@ -53,7 +53,16 @@ public final class ConstantsTag
       }
       else if(keyName.equals(Constants.REQ_DIGEST_ADDR_RP)) {
         s = Constants.REQ_DIGEST_ADDR_RP;
-      }      
+      }
+      else if(keyName.equals(Constants.SORT_BY_RP)) {
+        s = Constants.SORT_BY_RP;
+      }
+      else if(keyName.equals(Constants.SORT_ASCEND_RP)) {
+        s = Constants.SORT_ASCEND_RP;
+      }
+      else if(keyName.equals(Constants.FIRST_RECORD_RP)) {
+        s = Constants.FIRST_RECORD_RP;
+      }                       
     }
     else if(getValueName() != null) {
       String valueName = getValueName().trim().toLowerCase();

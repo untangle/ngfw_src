@@ -60,7 +60,6 @@ public final class InboxRecordComparator {
 
     m_fwdComparitors.put(SortBy.SUBJECT, new SubjectComp().setReverse(false));
     m_bwdComparitors.put(SortBy.SUBJECT, new SubjectComp().setReverse(true));
-            
   }
 
   /**

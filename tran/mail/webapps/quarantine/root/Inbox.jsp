@@ -40,6 +40,29 @@
   </head>
   <body>
 
+<!--
+Prev link: <quarantine:pagnationLink linkType="prev"/>
+Next link: <quarantine:pagnationLink linkType="next"/>
+
+SEP
+<quarantine:hasPagnation linkType="prev" includeIfTrue="true">
+  LinkType="prev" includeIfTrue="true"
+</quarantine:hasPagnation>
+SEP
+<quarantine:hasPagnation linkType="prev" includeIfTrue="false">
+  LinkType="prev" includeIfTrue="false"
+</quarantine:hasPagnation>
+SEP
+<quarantine:hasPagnation linkType="next" includeIfTrue="true">
+  LinkType="next" includeIfTrue="true"
+</quarantine:hasPagnation>
+SEP
+<quarantine:hasPagnation linkType="next" includeIfTrue="false">
+  LinkType="next" includeIfTrue="false"
+</quarantine:hasPagnation>
+
+-->  
+
     <table class="outertable" cellpadding="0" cellspacing="0">
       <% // Outer table, first row %>
       <tr>
@@ -151,7 +174,18 @@
                           </td>
                           <td>
                             <div class="msiehack1">
-                              <a href="http://www.google.com/">Help</a>
+                              <quarantine:hasPagnation linkType="prev" includeIfTrue="true">
+                                <a href="/quarantine<quarantine:pagnationLink linkType="prev"/>">Prev</a>
+                              </quarantine:hasPagnation>
+                              <quarantine:hasPagnation linkType="prev" includeIfTrue="false">
+                                Prev
+                              </quarantine:hasPagnation>
+                              <quarantine:hasPagnation linkType="next" includeIfTrue="true">
+                                <a href="/quarantine<quarantine:pagnationLink linkType="next"/>">|Next</a>
+                              </quarantine:hasPagnation>
+                              <quarantine:hasPagnation linkType="next" includeIfTrue="false">
+                                |Next
+                              </quarantine:hasPagnation>
                             </div>
                           </td>                                
                        </tr>
@@ -177,8 +211,26 @@
                       </thead>
                       <tfoot>
                         <tr>
+                          <td colspan="4">
+                            <div class="tableFooter">
+                              <quarantine:hasPagnation linkType="prev" includeIfTrue="true">
+                                <a href="/quarantine<quarantine:pagnationLink linkType="prev"/>">Prev</a>
+                              </quarantine:hasPagnation>
+                              <quarantine:hasPagnation linkType="prev" includeIfTrue="false">
+                                Prev
+                              </quarantine:hasPagnation>
+                              <quarantine:hasPagnation linkType="next" includeIfTrue="true">
+                                <a href="/quarantine<quarantine:pagnationLink linkType="next"/>">|Next</a>
+                              </quarantine:hasPagnation>
+                              <quarantine:hasPagnation linkType="next" includeIfTrue="false">
+                                |Next
+                              </quarantine:hasPagnation>
+                            </div>
+                          </td>
+<!--                        
                           <th scope="row">Total</th>
                           <td colspan="4"><quarantine:indexMsgCount/> mails</td>
+-->                          
                         </tr>
                       </tfoot>
                       <tbody>

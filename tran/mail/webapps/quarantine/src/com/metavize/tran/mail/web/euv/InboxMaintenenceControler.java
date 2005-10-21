@@ -23,6 +23,8 @@ import com.metavize.tran.mail.papi.quarantine.InboxRecord;
 import com.metavize.tran.mail.papi.quarantine.BadTokenException;
 import com.metavize.tran.mail.papi.quarantine.QuarantineUserActionFailedException;
 import com.metavize.tran.mail.papi.quarantine.NoSuchInboxException;
+import com.metavize.tran.mail.papi.quarantine.InboxRecordComparator;
+import com.metavize.tran.mail.papi.quarantine.InboxRecordCursor;
 
 import com.metavize.tran.mail.web.euv.tags.MessagesSetTag;
 import com.metavize.tran.mail.web.euv.tags.CurrentEmailAddressTag;
@@ -34,7 +36,6 @@ import com.metavize.tran.mail.web.euv.tags.CurrentAuthTokenTag;
  */
 public class InboxMaintenenceControler
   extends HttpServlet {
-
 
   protected void service(HttpServletRequest req,
     HttpServletResponse resp)
@@ -80,6 +81,36 @@ public class InboxMaintenenceControler
         action = Constants.VIEW_INBOX_RV;
       }
 
+      //Defaults for the view of the user's list.
+      InboxRecordComparator.SortBy sortBy = InboxRecordComparator.SortBy.INTERN_DATE;
+      boolean ascending = true;
+      int startingAt = 0;
+
+      if(req.getParameter(Constants.FIRST_RECORD_RP) != null) {
+        try {
+          startingAt = Integer.parseInt(req.getParameter(Constants.FIRST_RECORD_RP));
+        }
+        catch(Exception ex) {
+        }
+      }
+
+      if(req.getParameter(Constants.SORT_ASCEND_RP) != null) {
+        try {
+          ascending = Boolean.parseBoolean(req.getParameter(Constants.SORT_ASCEND_RP));
+        }
+        catch(Exception ex) {
+        }
+      }
+      
+      if(req.getParameter(Constants.SORT_BY_RP) != null) {
+        try {
+          sortBy = Util.stringToSortBy(req.getParameter(Constants.SORT_BY_RP), sortBy);
+        }
+        catch(Exception ex) {
+        }
+      }         
+      
+
       //A "result" message, which may be displayed if
       //they requested an action
       String msg = null;
@@ -109,7 +140,14 @@ public class InboxMaintenenceControler
         index = quarantine.getInboxIndex(account);
       }
 
-      InboxIndexTag.setCurrentIndex(req, index);
+      InboxIndexTag.setCurrentIndex(req,
+        InboxRecordCursor.get(
+          index.getAllRecords(),
+          sortBy,
+          ascending,
+          startingAt,
+          Constants.RECORDS_PER_PAGE));
+
       if(msg != null) {
         MessagesSetTag.setInfoMessages(req, msg);
       }

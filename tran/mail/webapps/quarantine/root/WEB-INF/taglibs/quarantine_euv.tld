@@ -145,6 +145,48 @@
 
 
   <!--
+    Tag outputs the relative URL (from the web-app down) including
+    any parameters for a "next" and "prev" link.  Note that argument
+    "LinkType" can take the literal "next" and "prev" strings
+
+    This tag only makes sense if the "hasPagnation" tag tests true/false
+  -->
+  <tag>
+    <name>pagnationLink</name>
+    <tagclass>com.metavize.tran.mail.web.euv.tags.PagnationLinksTag</tagclass>
+    <bodycontent>empty</bodycontent>
+    <attribute>
+      <name>linkType</name>
+      <required>true</required>
+      <rtexpvalue>false</rtexpvalue>
+    </attribute>    
+  </tag>
+
+  <!--
+    Conditional tag which includes/excludes a block depending
+    on if there are "prev" and "next" pages to be shown.
+
+    Values for "LinkType" are "true" and "false"
+  -->
+  <tag>
+    <name>hasPagnation</name>
+    <tagclass>com.metavize.tran.mail.web.euv.tags.HasPagnationTag</tagclass>
+    <bodycontent>JSP</bodycontent>
+    <attribute>
+      <name>linkType</name>
+      <required>true</required>
+      <rtexpvalue>false</rtexpvalue>
+    </attribute>      
+    <attribute>
+      <name>includeIfTrue</name>
+      <required>true</required>
+      <rtexpvalue>false</rtexpvalue>
+    </attribute>  
+  </tag>    
+  
+
+
+  <!--
     Tag outputs the current email address, or null if not set
   -->
   <tag>

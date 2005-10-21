@@ -10,7 +10,7 @@
  */
 package com.metavize.tran.mail.web.euv.tags;
 
-import com.metavize.tran.mail.papi.quarantine.InboxIndex;
+import com.metavize.tran.mail.papi.quarantine.InboxRecordCursor;
 
 
 /**
@@ -22,7 +22,7 @@ public final class InboxMsgCountTag
 
   @Override
   protected String getValue() {
-    InboxIndex index = InboxIndexTag.getCurrentIndex(pageContext.getRequest());
+    InboxRecordCursor index = InboxIndexTag.getCurrentIndex(pageContext.getRequest());
     return Integer.toString(index==null?0:index.size());
   }
 }
