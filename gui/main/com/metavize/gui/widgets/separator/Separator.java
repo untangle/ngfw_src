@@ -29,7 +29,7 @@ public class Separator extends JLabel {
 	if( backgroundImageIcon == null ){
 	    backgroundImageIcon = new ImageIcon( getClass().getResource("/com/metavize/gui/widgets/separator/PlainSeparator688x50.png") );
 	    foregroundTextColor = new Color(129,129,129);
-	    foregroundTextFont = new Font("Arial",Font.BOLD, 30);
+	    foregroundTextFont = new Font("Arial",Font.PLAIN, 30);
 	}
 	super.setOpaque(false);
 	super.setIcon(backgroundImageIcon);
@@ -48,7 +48,7 @@ public class Separator extends JLabel {
 				RenderingHints.VALUE_ANTIALIAS_ON);
 	    g.setColor(foregroundTextColor);
 	    g.setFont(foregroundTextFont);
-	    g.drawString(foregroundText, 51, 36);
+	    g.drawString(foregroundText, 51, 35);
 	}
     }
 }

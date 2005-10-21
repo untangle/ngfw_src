@@ -157,6 +157,7 @@ public class PolicyStateMachine implements ActionListener {
 								 new Insets(1,0,0,12), 0, 0);
 
 	serviceSeparator = new Separator();
+	serviceSeparator.setForegroundText("System Services");
 	rackSeparator = new Separator();	
 	loadSemaphore = new Semaphore(CONCURRENT_LOAD_MAX);
 	try{
@@ -244,12 +245,12 @@ public class PolicyStateMachine implements ActionListener {
 	    if( !serviceRackMap.isEmpty() ){
 		rackViewJPanel.add( serviceSeparator, serviceSeparatorGridBagConstraints );
 	    }
-	    //rackViewJPanel.add( rackSeparator, rackSeparatorGridBagConstraints );
+	    rackViewJPanel.add( rackSeparator, rackSeparatorGridBagConstraints );
 	    serviceRackJPanel.revalidate();
 	}
 	// ADD POLICY
 	rackViewJPanel.add( newPolicyRackJPanel, rackGridBagConstraints );
-	//rackSeparator.setForegroundText( newPolicy.getName() );
+	rackSeparator.setForegroundText( newPolicy.getName() );
 	newPolicyRackJPanel.revalidate();
 	rackViewJPanel.repaint();
 	rackJScrollPane.getVerticalScrollBar().setValue( lastRackScrollPosition.get(newPolicy) );
