@@ -57,7 +57,7 @@ public class SystemPolicyRule extends PolicyRule
             return false;
         } else {
             SystemPolicyRule pr = (SystemPolicyRule)o;
-            return (policy.equals(pr.policy) &&
+            return (((policy == null && pr.policy == null) || policy.equals(pr.policy)) &&
                     clientIntf == pr.clientIntf &&
                     serverIntf == pr.serverIntf &&
                     inbound == pr.inbound);
@@ -66,6 +66,6 @@ public class SystemPolicyRule extends PolicyRule
 
     public int hashCode()
     {
-        return policy.hashCode() + clientIntf * 7 + serverIntf * 5;
+        return (null == policy ? 0 : policy.hashCode()) + clientIntf * 7 + serverIntf * 5;
     }
 }

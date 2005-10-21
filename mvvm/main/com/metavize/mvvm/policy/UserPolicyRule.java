@@ -188,15 +188,15 @@ public class UserPolicyRule extends PolicyRule
             return false;
         } else {
             UserPolicyRule pr = (UserPolicyRule)o;
-            return (policy.equals(pr.policy) &&
+            return (((policy == null && pr.policy == null) || policy.equals(pr.policy)) &&
                     clientIntf == pr.clientIntf &&
                     serverIntf == pr.serverIntf &&
                     inbound == pr.inbound &&
-                    protocol.equals(pr.protocol) &&
-                    clientAddr.equals(pr.clientAddr) &&
-                    serverAddr.equals(pr.serverAddr) &&
-                    clientPort.equals(pr.clientPort) &&
-                    serverPort.equals(pr.serverPort));
+                    ((protocol == null && pr.protocol == null) || protocol.equals(pr.protocol)) &&
+                    ((clientAddr == null && pr.clientAddr == null) || clientAddr.equals(pr.clientAddr)) &&
+                    ((serverAddr == null && pr.serverAddr == null) || serverAddr.equals(pr.serverAddr)) &&
+                    ((clientPort == null && pr.clientPort == null) || clientPort.equals(pr.clientPort)) &&
+                    ((serverPort == null && pr.serverPort == null) || serverPort.equals(pr.serverPort)));
         }
     }
 
