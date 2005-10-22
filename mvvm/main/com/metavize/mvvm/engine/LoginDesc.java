@@ -12,6 +12,7 @@
 package com.metavize.mvvm.engine;
 
 import java.lang.ref.WeakReference;
+import java.net.URL;
 import java.util.Date;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -21,6 +22,8 @@ import com.metavize.mvvm.security.LoginSession;
 
 class LoginDesc
 {
+    private final URL url;
+    private final int timeout;
     private final LoginSession loginSession;
 
     private final Map<Integer, TargetDesc> targets
@@ -35,8 +38,10 @@ class LoginDesc
 
     // constructors -----------------------------------------------------------
 
-    LoginDesc(LoginSession loginSession)
+    LoginDesc(URL url, int timeout, LoginSession loginSession)
     {
+        this.url = url;
+        this.timeout = timeout;
         this.loginSession = loginSession;
         this.lastAccess = new Date();
     }
@@ -62,7 +67,8 @@ class LoginDesc
 
                 WeakReference tRef = targetReaper.makeReference(target, r);
 
-                targetDesc = new TargetDesc(loginSession, targetId, tRef);
+                targetDesc = new TargetDesc(url, timeout, loginSession,
+                                            targetId, tRef);
 
                 targets.put(targetId, targetDesc);
                 proxies.put(target, targetDesc);

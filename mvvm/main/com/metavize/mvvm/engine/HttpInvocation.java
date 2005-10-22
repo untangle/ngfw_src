@@ -14,6 +14,7 @@ package com.metavize.mvvm.engine;
 import java.io.Serializable;
 
 import com.metavize.mvvm.security.LoginSession;
+import java.net.URL;
 
 class HttpInvocation implements Serializable
 {
@@ -23,13 +24,18 @@ class HttpInvocation implements Serializable
     final Integer targetId;
     final String methodSignature;
     final String definingClass;
+    final URL url;
+    final int timeout;
 
     HttpInvocation(LoginSession loginSession, Integer targetId,
-                   String methodSignature, String definingClass)
+                   String methodSignature, String definingClass,
+                   URL url, int timeout)
     {
         this.loginSession = loginSession;
         this.targetId = targetId;
         this.methodSignature = methodSignature;
         this.definingClass = definingClass;
+        this.url = url;
+        this.timeout = timeout;
     }
 }

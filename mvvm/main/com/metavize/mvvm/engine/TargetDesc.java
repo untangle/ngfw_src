@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.metavize.mvvm.security.LoginSession;
+import java.net.URL;
 
 
 class TargetDesc
@@ -31,7 +32,8 @@ class TargetDesc
 
     // constructors -----------------------------------------------------------
 
-    TargetDesc(LoginSession ls, int targetId, WeakReference targetRef)
+    TargetDesc(URL url, int timeout, LoginSession ls, int targetId,
+               WeakReference targetRef)
     {
         this.targetRef = targetRef;
 
@@ -50,7 +52,7 @@ class TargetDesc
         }
         this.methods = Collections.unmodifiableMap(ms);
 
-        HttpInvokerStub his = new HttpInvokerStub(ls, targetId);
+        HttpInvokerStub his = new HttpInvokerStub(url, timeout, ls, targetId);
         this.proxy = Proxy.newProxyInstance(cl, ifaces, his);
     }
 

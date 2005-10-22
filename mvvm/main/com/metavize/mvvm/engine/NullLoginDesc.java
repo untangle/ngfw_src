@@ -12,32 +12,25 @@
 package com.metavize.mvvm.engine;
 
 import java.lang.ref.WeakReference;
+import java.net.URL;
 
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.security.MvvmLogin;
 
 final class NullLoginDesc extends LoginDesc
 {
-    static final NullLoginDesc NULL_LOGIN = new NullLoginDesc();
-
     private final TargetDesc targetDesc;
 
     // constructors -----------------------------------------------------------
 
-    private NullLoginDesc()
+    NullLoginDesc(URL url, int timeout)
     {
-        super(null);
+        super(url, timeout, null);
 
         MvvmLogin login = MvvmContextFactory.context().mvvmLogin();
 
-        targetDesc = new TargetDesc(null, 0, new WeakReference(login));
-    }
-
-    // static factories -------------------------------------------------------
-
-    static NullLoginDesc getLoginDesc()
-    {
-        return NULL_LOGIN;
+        targetDesc = new TargetDesc(url, timeout, null, 0,
+                                    new WeakReference(login));
     }
 
     // package protected methods ----------------------------------------------

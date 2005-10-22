@@ -13,12 +13,14 @@ package com.metavize.mvvm.engine;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.NotSerializableException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.InetAddress;
+import java.net.URL;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
@@ -50,6 +52,7 @@ class HttpInvoker extends InvokerBase
     private final ThreadLocal<LoginSession> activeLogin;
     private final ThreadLocal<NewLoginDesc> newLogin;
     private final ThreadLocal<InetAddress> clientAddr;
+    private final ThreadLocal<LoginDesc> loginDescs;
     private final Timer loginReaper = new Timer(true);
     private final TargetReaper targetReaper = new TargetReaper();
 
@@ -61,6 +64,7 @@ class HttpInvoker extends InvokerBase
         activeLogin = new ThreadLocal<LoginSession>();
         newLogin = new ThreadLocal<NewLoginDesc>();
         clientAddr = new ThreadLocal<InetAddress>();
+        loginDescs = new ThreadLocal<LoginDesc>();
     }
 
     // static factories -------------------------------------------------------
@@ -76,14 +80,15 @@ class HttpInvoker extends InvokerBase
                                 boolean local, InetAddress remoteAddr)
     {
         newLogin.remove();
+        loginDescs.remove();
 
-        ObjectOutputStream oos = null;
+        ProxyOutputStream pos = null;
         ProxyInputStream pis = null;
 
         try {
             pis = new ProxyInputStream(is);
-            oos = new ObjectOutputStream(os);
             HttpInvocation hi = (HttpInvocation)pis.readObject();
+            pos = new ProxyOutputStream(os, hi.url, hi.timeout);
 
             LoginSession loginSession = hi.loginSession;
 
@@ -92,7 +97,7 @@ class HttpInvoker extends InvokerBase
 
                 LoginExpiredException exn = new LoginExpiredException
                     ("client address mismatch: " + remoteAddr);
-                oos.writeObject(exn);
+                pos.writeObject(exn);
                 return;
             }
 
@@ -102,27 +107,29 @@ class HttpInvoker extends InvokerBase
 
             if (null == targetId) {
                 if (null == loginSession) {  /* login request */
-                    NullLoginDesc loginDesc = NullLoginDesc.getLoginDesc();
+                    NullLoginDesc loginDesc = new NullLoginDesc(hi.url, hi.timeout);
+                    loginDescs.set(loginDesc);
                     TargetDesc targetDesc = loginDesc.getTargetDesc();
                     Object proxy = targetDesc.getProxy();
-                    oos.writeObject(proxy);
+                    pos.writeObject(proxy);
                     return;
                 } else {                     /* logout */
                     logins.remove(loginSession);
-                    oos.writeObject(null);
+                    pos.writeObject(null);
                     return;
                 }
             }
 
             LoginDesc loginDesc = null == loginSession
-                ? NullLoginDesc.getLoginDesc() /* access MvvmLogin only */
-                : logins.get(loginSession);    /* logged in */
+                ? new NullLoginDesc(hi.url, hi.timeout)
+                : logins.get(loginSession);
+            loginDescs.set(loginDesc);
 
             if (null == loginDesc) {
-                oos.writeObject(new LoginExpiredException("login expired"));
+                pos.writeObject(new LoginExpiredException("login expired"));
                 return;
             } else if (loginDesc.isStolen()) {
-                oos.writeObject(new LoginStolenException(loginDesc.getLoginThief()));
+                pos.writeObject(new LoginStolenException(loginDesc.getLoginThief()));
                 return;
             } else {
                 loginDesc.touch();
@@ -132,7 +139,7 @@ class HttpInvoker extends InvokerBase
             Object target = null == targetDesc ? null : targetDesc.getTarget();
 
             if (null == target) {
-                oos.writeObject(new InvocationTargetExpiredException
+                pos.writeObject(new InvocationTargetExpiredException
                                 ("target expired: " + methodName));
                 return;
             }
@@ -180,7 +187,9 @@ class HttpInvoker extends InvokerBase
                             retVal = new MultipleLoginsException(ols);
                         } else {
                             loginSession = ls;
-                            loginDesc = new LoginDesc(loginSession);
+                            loginDesc = new LoginDesc(hi.url, hi.timeout,
+                                                      loginSession);
+                            loginDescs.set(loginDesc);
                             logins.put(loginSession, loginDesc);
                         }
                     }
@@ -192,7 +201,7 @@ class HttpInvoker extends InvokerBase
                 retVal = targetDesc.getProxy();
             }
 
-            oos.writeObject(retVal);
+            pos.writeObject(retVal);
         } catch (IOException exn) {
             logger.warn("IOException in HttpInvoker", exn);
         } catch (ClassNotFoundException exn) {
@@ -200,9 +209,9 @@ class HttpInvoker extends InvokerBase
         } catch (Exception exn) {
             logger.warn("Exception in HttpInvoker", exn);
         } finally {
-            if (null != oos) {
+            if (null != pos) {
                 try {
-                    oos.close();
+                    pos.close();
                 } catch (IOException exn) {
                     logger.warn("could not close output stream", exn);
                 }
@@ -215,6 +224,8 @@ class HttpInvoker extends InvokerBase
                     logger.warn("could not close input stream", exn);
                 }
             }
+
+            loginDescs.remove();
         }
     }
 
@@ -277,6 +288,38 @@ class HttpInvoker extends InvokerBase
         {
             this.loginSession = loginSession;
             this.force = force;
+        }
+    }
+
+    private class ProxyOutputStream extends ObjectOutputStream
+    {
+        private final URL url;
+        private final int timeout;
+
+        ProxyOutputStream(OutputStream os, URL url, int timeout)
+            throws IOException
+        {
+            super(os);
+
+            this.url = url;
+            this.timeout = timeout;
+
+            enableReplaceObject(true);
+        }
+
+        protected Object replaceObject(Object o) throws IOException
+        {
+            if (null != o && !(o instanceof Serializable)) {
+                LoginDesc loginDesc = loginDescs.get();
+                if (null != loginDesc) {
+                    TargetDesc targetDesc = loginDesc.getTargetDesc(o, targetReaper);
+                    return targetDesc.getProxy();
+                } else {
+                    throw new NotSerializableException("loginDesc not set, cannot make a proxy");
+                }
+            } else {
+                return o;
+            }
         }
     }
 
