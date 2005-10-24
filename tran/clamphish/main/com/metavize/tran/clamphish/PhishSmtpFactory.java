@@ -20,6 +20,7 @@ import com.metavize.tran.spam.SpamSMTPConfig;
 import com.metavize.tran.token.TokenHandler;
 import com.metavize.tran.token.TokenHandlerFactory;
 import com.metavize.tran.mail.papi.quarantine.QuarantineTransformView;
+import com.metavize.tran.mail.papi.safelist.SafelistTransformView;
 import org.apache.log4j.Logger;
 
 
@@ -28,14 +29,16 @@ public class PhishSmtpFactory
 
   private MailExport m_mailExport;
   private ClamPhishTransform m_phishImpl;
-  private QuarantineTransformView m_quarantine;  
+  private QuarantineTransformView m_quarantine;
+  private SafelistTransformView m_safelist;  
   private static final Logger m_logger =
     Logger.getLogger(PhishSmtpFactory.class);
 
   public PhishSmtpFactory(ClamPhishTransform impl) {
     m_mailExport = MailExportFactory.factory().getExport();
     m_phishImpl = impl;
-    m_quarantine = m_mailExport.getQuarantineTransformView();    
+    m_quarantine = m_mailExport.getQuarantineTransformView();
+    m_safelist = m_mailExport.getSafelistTransformView();
   }
 
 
@@ -60,7 +63,8 @@ public class PhishSmtpFactory
         inbound?casingSettings.getSmtpInboundTimeout():casingSettings.getSmtpOutboundTimeout(),
         m_phishImpl,
         spamConfig,
-        m_quarantine));
+        m_quarantine,
+        m_safelist));
 
   }
 }

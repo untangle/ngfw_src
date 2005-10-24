@@ -29,6 +29,7 @@ import com.metavize.tran.mail.papi.smtp.SmtpTransaction;
 import com.metavize.tran.mail.papi.smtp.sapi.BufferingSessionHandler;
 import com.metavize.tran.mail.papi.quarantine.QuarantineTransformView;
 import com.metavize.tran.mail.papi.quarantine.MailSummary;
+import com.metavize.tran.mail.papi.safelist.SafelistTransformView;
 import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.mvvm.MvvmContextFactory;
 import java.util.List;
@@ -49,18 +50,21 @@ public class SmtpSessionHandler
   private final SpamImpl m_spamImpl;
   private final SpamSMTPConfig m_config;
   private final QuarantineTransformView m_quarantine;
+  private final SafelistTransformView m_safelist;
 
   public SmtpSessionHandler(TCPSession session,
     long maxClientWait,
     long maxSvrWait,
     SpamImpl impl,
     SpamSMTPConfig config,
-    QuarantineTransformView quarantine) {
+    QuarantineTransformView quarantine,
+    SafelistTransformView safelist) {
 
     super(config.getMsgSizeLimit(), maxClientWait, maxSvrWait, false);
 
     m_spamImpl = impl;
     m_quarantine = quarantine;
+    m_safelist = safelist;
     m_config = config;
     m_fileFactory = new TempFileFactory(MvvmContextFactory.context().
       pipelineFoundry().getPipeline(session.id()));
@@ -86,7 +90,7 @@ public class SmtpSessionHandler
   protected String getQuarantineDetail(SpamReport report) {
     //TODO bscott Do something real here
     return "" + report.getScore();
-  }    
+  }
 
 
   @Override
@@ -109,6 +113,14 @@ public class SmtpSessionHandler
 
     if(f.length() > getGiveupSz()) {
       m_logger.debug("Message larger than " + getGiveupSz() + ".  Don't bother to scan");
+      m_spamImpl.incrementPassCounter();
+      return PASS_MESSAGE;
+    }
+
+    if(m_safelist.isSafelisted(tx.getFrom(),
+      msg.getMMHeaders().getFrom(),
+      tx.getRecipients(false))) {
+      m_logger.debug("Message sender safelisted");
       m_spamImpl.incrementPassCounter();
       return PASS_MESSAGE;
     }
@@ -192,6 +204,7 @@ public class SmtpSessionHandler
   public BlockOrPassResult blockOrPass(MIMEMessage msg,
     SmtpTransaction tx,
     MessageInfo msgInfo) {
+
     m_logger.debug("[handleMessageCanNotBlock]");
 
     m_spamImpl.incrementScanCounter();
@@ -209,6 +222,14 @@ public class SmtpSessionHandler
       m_spamImpl.incrementPassCounter();
       return BlockOrPassResult.PASS;
     }
+
+    if(m_safelist.isSafelisted(tx.getFrom(),
+      msg.getMMHeaders().getFrom(),
+      tx.getRecipients(false))) {
+      m_logger.debug("Message sender safelisted");
+      m_spamImpl.incrementPassCounter();
+      return BlockOrPassResult.PASS;
+    }    
 
     SpamReport report = scanFile(f);
 

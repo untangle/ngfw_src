@@ -14,6 +14,7 @@ package com.metavize.tran.clamphish;
 import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.tran.spam.SpamSMTPConfig;
 import com.metavize.tran.mail.papi.quarantine.QuarantineTransformView;
+import com.metavize.tran.mail.papi.safelist.SafelistTransformView;
 import com.metavize.tran.spam.SpamReport;
 
 /**
@@ -27,8 +28,9 @@ public class PhishSmtpHandler extends com.metavize.tran.spam.SmtpSessionHandler 
                      long maxSvrWait,
                      ClamPhishTransform impl,
                      SpamSMTPConfig config,
-                     QuarantineTransformView quarantine) {
-        super(session, maxClientWait, maxSvrWait, impl, config, quarantine);
+                     QuarantineTransformView quarantine,
+                     SafelistTransformView safelist) {
+        super(session, maxClientWait, maxSvrWait, impl, config, quarantine, safelist);
     }
 
   @Override

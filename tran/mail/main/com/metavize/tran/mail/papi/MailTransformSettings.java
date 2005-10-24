@@ -12,6 +12,7 @@
 package com.metavize.tran.mail.papi;
 
 import com.metavize.tran.mail.papi.quarantine.QuarantineSettings;
+import com.metavize.tran.mail.papi.safelist.SafelistSettings;
 import java.io.Serializable;
 
 
@@ -43,6 +44,7 @@ public class MailTransformSettings implements Serializable
     private long imapInboundTimeout;
     private long imapOutboundTimeout;
     private QuarantineSettings quarantineSettings;
+    private SafelistSettings safelistSettings;
 
     // constructors -----------------------------------------------------------
 
@@ -227,10 +229,25 @@ public class MailTransformSettings implements Serializable
         this.imapOutboundTimeout = imapOutboundTimeout;
     }
 
+    /**
+     * Set the Quarantine properties associated with this
+     * casing
+     */
     public void setQuarantineSettings(QuarantineSettings s) {
        this.quarantineSettings = s;
     }
     public QuarantineSettings getQuarantineSettings() {
       return quarantineSettings;
     }
+
+    /**
+     * Set the Safelist properties associated with this
+     * casing
+     */
+    public void setSafelistSettings(SafelistSettings s) {
+      this.safelistSettings = s;
+    }
+    public SafelistSettings getSafelistSettings() {
+      return safelistSettings;
+    }    
 }

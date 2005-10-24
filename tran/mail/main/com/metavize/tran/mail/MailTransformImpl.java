@@ -21,8 +21,14 @@ import com.metavize.tran.mail.impl.smtp.SmtpCasingFactory;
 import com.metavize.tran.mail.papi.*;
 import com.metavize.tran.mail.impl.quarantine.Quarantine;
 import com.metavize.tran.mail.papi.quarantine.QuarantineTransformView;
+import com.metavize.tran.mail.papi.quarantine.QuarantineMaintenenceView;
 import com.metavize.tran.mail.papi.quarantine.QuarantineUserView;
 import com.metavize.tran.mail.papi.quarantine.QuarantineSettings;
+import com.metavize.tran.mail.papi.safelist.SafelistSettings;
+import com.metavize.tran.mail.papi.safelist.SafelistAdminView;
+import com.metavize.tran.mail.papi.safelist.SafelistEndUserView;
+import com.metavize.tran.mail.papi.safelist.SafelistTransformView;
+import com.metavize.tran.mail.impl.safelist.SafelistManager;
 import com.metavize.mvvm.tran.TransformException;
 import com.metavize.mvvm.tran.TransformStartException;
 import com.metavize.mvvm.tran.TransformStopException;
@@ -53,6 +59,7 @@ public class MailTransformImpl extends AbstractTransform
     private MailTransformSettings settings;
     private static Quarantine s_quarantine;//This will never be null for *instances* of
                                            //MailTransformImpl
+    private static SafelistManager s_safelistMngr;
     private static boolean s_deployedWebApp = false;
     private static boolean s_unDeployedWebApp = false;
 
@@ -64,15 +71,18 @@ public class MailTransformImpl extends AbstractTransform
 
         //TODO bscott I assume this class will only ever be instantiated
         // on the server?!?
-        createQuarantineIfRequired();
+        createSingletonsIfRequired();
 
         MailExportFactory.factory().registerExport(this);
     }
 
-    private static synchronized void createQuarantineIfRequired() {
+    private static synchronized void createSingletonsIfRequired() {
       if(s_quarantine == null) {
         s_quarantine = new Quarantine();
       }
+      if(s_safelistMngr == null) {
+        s_safelistMngr = new SafelistManager();
+      }      
     }
     private static synchronized void deployWebAppIfRequired(Logger logger) {
       if(!s_deployedWebApp) {
@@ -143,10 +153,23 @@ public class MailTransformImpl extends AbstractTransform
         reconfigure();
 
         s_quarantine.setSettings(settings.getQuarantineSettings());
+        s_safelistMngr.setSettings(settings.getSafelistSettings());
     }
 
     public QuarantineUserView getQuarantineUserView() {
       return s_quarantine;
+    }
+
+    public QuarantineMaintenenceView getQuarantineMaintenenceView() {
+      return s_quarantine;
+    }
+    
+    public SafelistEndUserView getSafelistEndUserView() {
+      return s_safelistMngr;
+    }
+
+    public SafelistAdminView getSafelistAdminView() {
+      return s_safelistMngr;
     }
 
     // MailExport methods -----------------------------------------------------
@@ -159,6 +182,10 @@ public class MailTransformImpl extends AbstractTransform
     public QuarantineTransformView getQuarantineTransformView() {
       return s_quarantine;
     }
+
+    public SafelistTransformView getSafelistTransformView() {
+      return s_safelistMngr;
+    }    
 
     // Transform methods ------------------------------------------------------
 
@@ -220,6 +247,16 @@ public class MailTransformImpl extends AbstractTransform
                       
                       shouldSave = true;
                     }
+                    if(settings.getSafelistSettings() == null) {
+                    
+                      SafelistSettings ss = new SafelistSettings();
+
+                      //TODO Set defaults here
+                      
+                      settings.setSafelistSettings(ss);
+                      
+                      shouldSave = true;
+                    }                    
 
                     if(shouldSave) {
                       s.save(settings);
@@ -234,7 +271,7 @@ public class MailTransformImpl extends AbstractTransform
         getTransformContext().runTransaction(tw);
 
         s_quarantine.setSettings(settings.getQuarantineSettings());
-        
+        s_safelistMngr.setSettings(settings.getSafelistSettings());
     }
 
     // AbstractTransform methods ----------------------------------------------
