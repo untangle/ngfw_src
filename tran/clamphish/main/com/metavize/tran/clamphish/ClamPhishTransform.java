@@ -22,7 +22,7 @@ public class ClamPhishTransform extends SpamImpl
 {
 
     private static final String OUT_MOD_SUB_TEMPLATE =
-      "[FRAUD] $MIMEMessage:SUBJECT$";
+      "[PHISH] $MIMEMessage:SUBJECT$";
     private static final String OUT_MOD_BODY_TEMPLATE =
       "The attached message from $MIMEMessage:FROM$ was determined\r\n " +
       "to be PHISH (a fraudulent email intended to steal information)\r\n." +
@@ -43,7 +43,7 @@ public class ClamPhishTransform extends SpamImpl
     private static final String PHISH_HEADER_NAME = "X-Phish-Flag";
 
     private static final String OUT_NOTIFY_SUB_TEMPLATE =
-      "[FRAUD NOTIFICATION] re: $MIMEMessage:SUBJECT$";
+      "[PHISH NOTIFICATION] re: $MIMEMessage:SUBJECT$";
   
     private static final String OUT_NOTIFY_BODY_TEMPLATE =
         "On $MIMEHeader:DATE$ a message from $MIMEMessage:FROM$ ($SMTPTransaction:FROM$) was received " + CRLF +
