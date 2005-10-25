@@ -212,7 +212,7 @@ public class MEditTableJPanel extends javax.swing.JPanel implements ListSelectio
 
         addJButton.setFont(new java.awt.Font("Dialog", 0, 12));
         addJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/widgets/editTable/IconPlus24x24.png")));
-        addJButton.setToolTipText("<html><b>Add New Row</b> - Use this button to insert new rows in a table.</html>");
+        addJButton.setToolTipText("<html><b>Add New Row</b> - Use this button to insert a new row at a selected point in the table.<br>Hold down the shift key when clicking in order to insert at the end of the table.</html>");
         addJButton.setDoubleBuffered(true);
         addJButton.setFocusPainted(false);
         addJButton.setFocusable(false);
@@ -238,7 +238,7 @@ public class MEditTableJPanel extends javax.swing.JPanel implements ListSelectio
 
         removeJButton.setFont(new java.awt.Font("Dialog", 0, 12));
         removeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/widgets/editTable/IconMinus24x24.png")));
-        removeJButton.setToolTipText("<html><b>Remove Row</b> - Use this button to remove a row in a table.</html>");
+        removeJButton.setToolTipText("<html><b>Remove Row</b> - Use this button to remove selected rows in a table.</html>");
         removeJButton.setDoubleBuffered(true);
         removeJButton.setFocusPainted(false);
         removeJButton.setFocusable(false);
@@ -264,7 +264,7 @@ public class MEditTableJPanel extends javax.swing.JPanel implements ListSelectio
 
         fillJButton.setFont(new java.awt.Font("Dialog", 0, 12));
         fillJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/widgets/editTable/IconFill24x24.png")));
-        fillJButton.setToolTipText("<html><b>Fill Check Boxes</b> - Use this button to check or uncheck all the checkboxes in a column.</html>");
+        fillJButton.setToolTipText("<html><b>Fill Check Boxes</b> - Use this button to check or uncheck all the checkboxes in a selected column.</html>");
         fillJButton.setDoubleBuffered(true);
         fillJButton.setFocusPainted(false);
         fillJButton.setFocusable(false);
@@ -372,11 +372,17 @@ public class MEditTableJPanel extends javax.swing.JPanel implements ListSelectio
 
     private void addJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addJButtonActionPerformed
 	try{
-	    // find the insertion point, at the top if none specified
-	    int[] selectedViewRows = entryJTable.getSelectedRows();
-	    if( (selectedViewRows==null) || (selectedViewRows.length==0) || (selectedViewRows[0]==-1) )
-		selectedViewRows = new int[]{0};
-	    
+	    int[] selectedViewRows;
+	    if( (evt.getModifiers() & java.awt.event.ActionEvent.SHIFT_MASK) > 0 ){
+		selectedViewRows = new int[]{-1};
+	    }
+	    else{
+		// find the insertion point, at the top if none specified
+		selectedViewRows = entryJTable.getSelectedRows();
+		if( (selectedViewRows==null) || (selectedViewRows.length==0) || (selectedViewRows[0]==-1) )
+		    selectedViewRows = new int[]{0};
+	    }
+
 	    // stop editing, if editing
 	    if(mColoredJTable.isEditing())
 		if(mColoredJTable.getCellEditor().stopCellEditing() == false)
@@ -384,7 +390,9 @@ public class MEditTableJPanel extends javax.swing.JPanel implements ListSelectio
 	    
 	    // translate view row, being careful in case there are no rows in the table that can be translated
 	    int selectedModelRow;
-	    if( getTableModel().getRowCount() == 0 )
+	    if( selectedViewRows[0] == -1 )
+		selectedModelRow = getTableModel().getRowCount();
+	    else if( getTableModel().getRowCount() == 0 )
 		selectedModelRow = 0;
 	    else
 		selectedModelRow = getTableModel().getRowViewToModelIndex(selectedViewRows[0]);
@@ -405,7 +413,6 @@ public class MEditTableJPanel extends javax.swing.JPanel implements ListSelectio
 	    Util.handleExceptionNoRestart("Error adding row", e);
 	}
     }//GEN-LAST:event_addJButtonActionPerformed
-
     
     
     private void removeJButtonActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeJButtonActionPerformed
@@ -451,7 +458,7 @@ public class MEditTableJPanel extends javax.swing.JPanel implements ListSelectio
 	catch(Exception e){
 	    Util.handleExceptionNoRestart("Error removing row", e);
 	}
-    }//GEN-LAST:event_removeJButtonActionPerformed   
+    }//GEN-LAST:event_removeJButtonActionPerformed
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addJButton;

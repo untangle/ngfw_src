@@ -69,7 +69,7 @@
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                   <Image iconType="3" name="/com/metavize/gui/widgets/editTable/IconPlus24x24.png"/>
                 </Property>
-                <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Add New Row&lt;/b&gt; - Use this button to insert new rows in a table.&lt;/html&gt;"/>
+                <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Add New Row&lt;/b&gt; - Use this button to insert a new row at a selected point in the table.&lt;br&gt;Hold down the shift key when clicking in order to insert at the end of the table.&lt;/html&gt;"/>
                 <Property name="doubleBuffered" type="boolean" value="true"/>
                 <Property name="focusPainted" type="boolean" value="false"/>
                 <Property name="focusable" type="boolean" value="false"/>
@@ -105,7 +105,7 @@
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                   <Image iconType="3" name="/com/metavize/gui/widgets/editTable/IconMinus24x24.png"/>
                 </Property>
-                <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Remove Row&lt;/b&gt; - Use this button to remove a row in a table.&lt;/html&gt;"/>
+                <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Remove Row&lt;/b&gt; - Use this button to remove selected rows in a table.&lt;/html&gt;"/>
                 <Property name="doubleBuffered" type="boolean" value="true"/>
                 <Property name="focusPainted" type="boolean" value="false"/>
                 <Property name="focusable" type="boolean" value="false"/>
@@ -141,7 +141,7 @@
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                   <Image iconType="3" name="/com/metavize/gui/widgets/editTable/IconFill24x24.png"/>
                 </Property>
-                <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Fill Check Boxes&lt;/b&gt; - Use this button to check or uncheck all the checkboxes in a column.&lt;/html&gt;"/>
+                <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Fill Check Boxes&lt;/b&gt; - Use this button to check or uncheck all the checkboxes in a selected column.&lt;/html&gt;"/>
                 <Property name="doubleBuffered" type="boolean" value="true"/>
                 <Property name="focusPainted" type="boolean" value="false"/>
                 <Property name="focusable" type="boolean" value="false"/>
