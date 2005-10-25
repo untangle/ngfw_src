@@ -57,7 +57,7 @@ public class SystemPolicyRule extends PolicyRule
             return false;
         } else {
             SystemPolicyRule pr = (SystemPolicyRule)o;
-            return (((policy == null && pr.policy == null) || policy.equals(pr.policy)) &&
+            return ((policy == null ? pr.policy == null : policy.equals(pr.policy)) &&
                     clientIntf == pr.clientIntf &&
                     serverIntf == pr.serverIntf &&
                     inbound == pr.inbound);

@@ -187,11 +187,11 @@ class CasingSessionTracker {
       if(!m_closing) {
         long diff = System.currentTimeMillis() - m_lastTransmissionTimestamp;
         if(diff > LIKELY_TIMEOUT_LENGTH) {
-          m_logger.error("Unsolicited response from server.  Likely a timeout notification as " +
+          m_logger.info("Unsolicited response from server.  Likely a timeout notification as " +
             diff + " milliseconds have transpired since last communication");
         }
         else {
-          m_logger.error("Misalignment of req/resp tracking.  No outstanding response.  " +
+          m_logger.warn("Misalignment of req/resp tracking.  No outstanding response.  " +
             "Recent history: " + historyToString());
         }
       }

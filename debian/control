@@ -27,6 +27,9 @@ Description: The Metavize Web/HTTP Decoder
 
 Package: mail-casing
 Architecture: any
+Conflicts: email-transform
+Replaces: email-transform
+Provides: email-transform
 Depends: mvvm
 XB-Display-Name: Email
 XB-Website: http://www.metavize.com
