@@ -82,6 +82,7 @@ public class MColoredTableCellRenderer extends DefaultTableCellRenderer {
         private static JCheckBox renderJCheckBox = new JCheckBox();
         private static JSlider renderJSlider = new JSlider();
         private static JSpinner renderJSpinner = new JSpinner();
+    private static SpinnerNumberModel indexSpinnerNumberModel = new SpinnerNumberModel(1, Integer.MIN_VALUE, Integer.MAX_VALUE, 1);
         private static MPasswordField renderMPasswordField = new MPasswordField();
         
 
@@ -146,6 +147,7 @@ public class MColoredTableCellRenderer extends DefaultTableCellRenderer {
             
             boolean isEditable = jTable.isCellEditable(row, col);
             JComponent renderJComponent;  //  renderComponent
+	    JComponent renderSecondaryJComponent = null;
             
             // CONTENT
             if(value instanceof ComboBoxModel){
@@ -185,16 +187,26 @@ public class MColoredTableCellRenderer extends DefaultTableCellRenderer {
                         renderJLabel.setIcon(null);
                         renderJLabel.setText(value.toString());
                     }
+		    renderJComponent = renderJLabel;
                 }
 		else if( (col == 1) && (value instanceof Integer) ){
-		    renderJLabel.setHorizontalAlignment(JTextField.CENTER);
-                    renderJLabel.setIcon(null);
+		    if(isEditable){
+			renderJSpinner.setModel( indexSpinnerNumberModel );
+			renderJSpinner.setValue( value );
+			renderJComponent = renderJSpinner;
+			renderSecondaryJComponent = ((JSpinner.DefaultEditor)renderJSpinner.getEditor()).getTextField();
+		    }
+		    else{
+			renderJLabel.setHorizontalAlignment(JTextField.CENTER);
+			renderJLabel.setIcon(null);
+			renderJComponent = renderJLabel;
+		    }
 		}
                 else{
                     renderJLabel.setHorizontalAlignment(JTextField.LEFT);
                     renderJLabel.setIcon(null);
+		    renderJComponent = renderJLabel;
                 }
-                renderJComponent = renderJLabel;
             }
             else if( value instanceof MPasswordField ){
                 char[] password = ((MPasswordField)value).getPassword();
@@ -236,50 +248,55 @@ public class MColoredTableCellRenderer extends DefaultTableCellRenderer {
             }*/
             
             // BORDER & BACKGROUND
+	    Color backgroundColor;
+	    MLineBorder borderColor;
             if(hasFocus && isSelected){
                 if(isEditable){
-                    renderJComponent.setBackground(focusBackgroundEditableColor);
-                    renderJComponent.setBorder(mLineHighlightedUnselectedEditableBorder);
+		    backgroundColor = focusBackgroundEditableColor;
+                    borderColor = mLineHighlightedUnselectedEditableBorder;
                 }
                 else{
-                    renderJComponent.setBackground(focusBackgroundUneditableColor);
-                    renderJComponent.setBorder(mLineHighlightedUnselectedUneditableBorder);
+                    backgroundColor = focusBackgroundUneditableColor;
+                    borderColor = mLineHighlightedUnselectedUneditableBorder;
                 }
                 
             }
             else if( !hasFocus && isSelected){
                 if(isEditable){
-                    renderJComponent.setBackground(selectedBackgroundEditableColor);
-                    renderJComponent.setBorder(mLineHighlightedSelectedEditableBorder);
+                    backgroundColor = selectedBackgroundEditableColor;
+                    borderColor = mLineHighlightedSelectedEditableBorder;
                 }
                 else{
-                    renderJComponent.setBackground(selectedBackgroundUneditableColor);
-                    renderJComponent.setBorder(mLineHighlightedSelectedUneditableBorder);
+                    backgroundColor = selectedBackgroundUneditableColor;
+                    borderColor = mLineHighlightedSelectedUneditableBorder;
                 }
             }
             else{
                 if(isEditable){
                     if(row % 2 == 0){
-                        renderJComponent.setBackground(unselectedEvenColor);
-                        renderJComponent.setBorder(unselectedEvenBorder);
+                        backgroundColor = unselectedEvenColor;
+                        borderColor = unselectedEvenBorder;
                     }
                     else{
-                        renderJComponent.setBackground(unselectedOddColor);
-                        renderJComponent.setBorder(unselectedOddBorder);
+                        backgroundColor = unselectedOddColor;
+                        borderColor = unselectedOddBorder;
                     }
                 }
                 else{
                     if(row % 2 == 0){
-                        renderJComponent.setBackground(uneditableEvenColor);
-                        renderJComponent.setBorder(uneditableEvenBorder);
+                        backgroundColor = uneditableEvenColor;
+                        borderColor = uneditableEvenBorder;
                     }
                     else{
-                        renderJComponent.setBackground(uneditableOddColor);
-                        renderJComponent.setBorder(uneditableOddBorder);
+                        backgroundColor = uneditableOddColor;
+                        borderColor = uneditableOddBorder;
                     }
                 }
             }
-
+	    renderJComponent.setBackground(backgroundColor);
+	    renderJComponent.setBorder(borderColor);
+	    if( renderSecondaryJComponent != null )
+		renderSecondaryJComponent.setBackground(backgroundColor);
             return renderJComponent;
         }
         

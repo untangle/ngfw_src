@@ -51,7 +51,7 @@ class CustomPolicyTableModel extends MSortedTableModel{
 
     private static final int T_TW = Util.TABLE_TOTAL_WIDTH;
     private static final int C0_MW = Util.STATUS_MIN_WIDTH; /* status */
-    private static final int C1_MW = Util.LINENO_MIN_WIDTH; /* # */
+    private static final int C1_MW = Util.LINENO_EDIT_MIN_WIDTH; /* # */
     private static final int C2_MW = 100; /* client interface */
     private static final int C3_MW = 100; /* server interface */
     private static final int C4_MW = 200; /* policy / direction */
@@ -98,7 +98,7 @@ class CustomPolicyTableModel extends MSortedTableModel{
         DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
         //                                 #   min     rsz    edit   remv   desc   typ            def
         addTableColumn( tableColumnModel,  0,  C0_MW,  false, false, false, false, String.class,  null, sc.TITLE_STATUS );
-        addTableColumn( tableColumnModel,  1,  C1_MW,  false, false, false, false, Integer.class, null, sc.TITLE_INDEX );
+        addTableColumn( tableColumnModel,  1,  C1_MW,  false, true,  false, false, Integer.class, null, sc.TITLE_INDEX );
 
         addTableColumn( tableColumnModel,  2,  C2_MW,  true,  true,  false, false, ComboBoxModel.class, interfaceModel, sc.html("client<br>interface"));
         addTableColumn( tableColumnModel,  3,  C3_MW,  true,  true,  false, false, ComboBoxModel.class, interfaceModel, sc.html("server<br>interface"));

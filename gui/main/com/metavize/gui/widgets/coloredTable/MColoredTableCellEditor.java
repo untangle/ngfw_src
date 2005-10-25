@@ -112,16 +112,13 @@ public class MColoredTableCellEditor extends DefaultCellEditor implements KeyLis
 	jSpinner = new JSpinner();
 	jSpinner.setFocusable(true);
 	jSpinner.setOpaque(false);
-	//            jSpinner.setBackground(new Color(0f, 0f, 0f, 0f));
 	jSpinner.setFont(new java.awt.Font("Default", 0, 10));
 	jSpinner.setBorder(mLineBorder);
 	jSpinner.getEditor().setOpaque(false);
-	//            jSpinner.getEditor().setBackground(new Color(0f, 0f, 0f, 0f));
-	// jSpinner.getTextField().setOpaque(false);
 	((JSpinner.DefaultEditor)jSpinner.getEditor()).getTextField().setOpaque(false);
-	//            ((JSpinner.DefaultEditor)jSpinner.getEditor()).getTextField().setBackground(new Color(0f, 0f, 0f, 0f));
+	((JSpinner.DefaultEditor)jSpinner.getEditor()).getTextField().setFocusable(true);
 	jSpinner.addChangeListener(this);
-	jSpinner.addKeyListener(this);
+
     }
     
     
@@ -141,7 +138,10 @@ public class MColoredTableCellEditor extends DefaultCellEditor implements KeyLis
 	    selectedValue  = (Integer) ((SpinnerNumberModel)value).getValue();
 	    editedComponent = jSpinner;
 	    ((JSpinner)editedComponent).setModel((SpinnerNumberModel) value);
-	    ((JSpinner.NumberEditor)jSpinner.getEditor()).getTextField().selectAll();
+	    SwingUtilities.invokeLater( new Runnable(){ public void run(){
+		((JSpinner.DefaultEditor)jSpinner.getEditor()).getTextField().requestFocusInWindow();
+		((JSpinner.DefaultEditor)jSpinner.getEditor()).getTextField().setCaretPosition(0);
+	    }});
 	}
 	else if(value instanceof Boolean){
 	    selectedValue = (Boolean) value;
@@ -164,8 +164,12 @@ public class MColoredTableCellEditor extends DefaultCellEditor implements KeyLis
 		 && (selectedModelCol == mSortedTableModel.getOrderModelIndex()) ){
 	    selectedValue  = value;
 	    editedComponent = jSpinner;
-	    ((JSpinner)editedComponent).setModel( new SpinnerNumberModel( ((Integer)value).intValue(), 0, mSortedTableModel.getRowCount()+1, 1 ));
-	    ((JSpinner.DefaultEditor)jSpinner.getEditor()).getTextField().selectAll();
+	    ((JSpinner)editedComponent).setModel( new SpinnerNumberModel( ((Integer)value).intValue(),
+									  1, mSortedTableModel.getRowCount(), 1 ));
+	    SwingUtilities.invokeLater( new Runnable(){ public void run(){
+		((JSpinner.DefaultEditor)jSpinner.getEditor()).getTextField().requestFocusInWindow();
+		((JSpinner.DefaultEditor)jSpinner.getEditor()).getTextField().setCaretPosition(0);
+	    }});
 	}
 	else{
 	    selectedValue = value;
@@ -228,39 +232,41 @@ public class MColoredTableCellEditor extends DefaultCellEditor implements KeyLis
 	    else{
 		mSortedTableModel.setRowChanged(selectedModelRow);
 	    }
-	}            
+	}
     }
 
     public Object getCellEditorValue(){
 	updateValues();
 	showStatusChange();
+
 	return returnValue;
     }
     
+    private void update(){
+	updateValues();
+	showStatusChange();
+    }
+
     // for check boxes, and combo boxes
     public void actionPerformed(java.awt.event.ActionEvent actionEvent) {
-	getCellEditorValue();
-	//mColoredJTable.changeSelection(selectedRow, selectedCol, false, false);
+	update();
     }        
     
     // for the sliders, spinners
     public void stateChanged(javax.swing.event.ChangeEvent changeEvent) {
-	getCellEditorValue();
-	//mColoredJTable.changeSelection(selectedModelRow, selectedModelCol, false, false);
+	update();
     }
 
     // for spinner
     public void keyPressed(KeyEvent e){}
     public void keyReleased(KeyEvent e){}
     public void keyTyped(KeyEvent e){
-	getCellEditorValue();
-	//mColoredJTable.changeSelection(selectedModelRow, selectedModelCol, false, false);
+	update();
     }
     
     // for text fields and password fields        
     public void caretUpdate(javax.swing.event.CaretEvent caretEvent) {
-	getCellEditorValue();
-	//((MSortedTableModel)mColoredJTable.getModel()).setRowChanged(selectedRow);
+	update();
     }
     
 }

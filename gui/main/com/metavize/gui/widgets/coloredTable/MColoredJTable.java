@@ -60,5 +60,5 @@ public class MColoredJTable extends JTable {
     public TableCellEditor getCellEditor(int row, int col){
         return tableCellEditor;
     }
-    
+
 }

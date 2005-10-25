@@ -416,6 +416,37 @@ public abstract class MSortedTableModel extends DefaultTableModel implements Ref
     ////////////////////////////////
 
     // ROW OPERATIONS //////////////
+    public void moveRow(final int fromModelRow, final int toModelRow){
+	if( fromModelRow != toModelRow ){
+	    // CREATE THE NEW INDEXES
+	    int orderModelIndex = getOrderModelIndex();
+	    int newIndex;
+	    if( fromModelRow < toModelRow){
+		for(int i=fromModelRow+1; i<=toModelRow; i++)
+		    changeRow(i, orderModelIndex, i);
+	    }
+	    else{ // fromModelRow > toModelRow
+		for(int i=toModelRow; i<fromModelRow; i++){
+		    changeRow(i, orderModelIndex, i+2);
+		}
+	    }
+	    // UPDATE THE MODEL
+	    Vector<Vector> dataVector = getDataVector();
+	    Vector movedRow = dataVector.remove(fromModelRow);
+	    dataVector.add(toModelRow, movedRow);
+	    fireTableDataChanged();
+	}
+	// HIGHLIGHT NEW ROW
+	SwingUtilities.invokeLater( new Runnable(){ public void run(){
+	    int newViewRow = getRowModelToViewIndex(toModelRow);
+	    JTable table = getTableHeader().getTable();
+	    table.clearSelection();
+	    table.getSelectionModel().addSelectionInterval(newViewRow, newViewRow);
+	    // SCROLL TO ROW
+	    Rectangle rect = table.getCellRect(newViewRow, 0, true);
+	    table.scrollRectToVisible(rect);
+	}});
+    }
     public void fillColumn(int modelRow, int modelCol){
         if( !getColumnClass( modelCol ).equals(Boolean.class) )
             return;   
@@ -485,6 +516,11 @@ public abstract class MSortedTableModel extends DefaultTableModel implements Ref
     // in model space.
     public void setValueAt(Object value, int viewRow, int viewCol){
 	super.setValueAt(value, getRowViewToModelIndex(viewRow), viewCol);
+	if( (getOrderModelIndex() != -1) && ( viewCol == getColModelToViewIndex(getOrderModelIndex())) ){
+	    // deal with row order changing
+	    int modelRow = getRowViewToModelIndex(viewRow);
+	    moveRow(modelRow, ((Integer)value)-1);
+	}
 	if( getSortingStatus(viewCol) != NOT_SORTED ){
 	    fireTableDataChanged();  // because otherwise the table will only update the view of the changed column
 	}
@@ -501,7 +537,7 @@ public abstract class MSortedTableModel extends DefaultTableModel implements Ref
     ///////////////////////////////////////////////////
             
     // SAVABLE / REFRESHABLE ///////////////
-    public void doRefresh(Object settings){
+    public void doRefresh(final Object settings){
 	this.getTableHeader().getTable().getCellEditor().stopCellEditing();
 	this.getTableHeader().getTable().clearSelection();
 	Vector<Vector> tableVector = generateRows( settings );

@@ -334,7 +334,7 @@ public class MEditTableJPanel extends javax.swing.JPanel implements ListSelectio
     }//GEN-END:initComponents
 
     private void fillJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fillJButtonActionPerformed
-        try{
+	try{
 	    // find the selection point, return if not a proper cell
 	    int[] selectedViewRows = entryJTable.getSelectedRows();
 	    if( (selectedViewRows==null) || (selectedViewRows.length!=1) || (selectedViewRows[0]==-1) )
@@ -342,11 +342,11 @@ public class MEditTableJPanel extends javax.swing.JPanel implements ListSelectio
 	    int[] selectedViewCols = entryJTable.getSelectedColumns();
 	    if( (selectedViewCols==null) || (selectedViewCols.length!=1) || (selectedViewCols[0]==-1) )
 		return;
-
+	    
 	    // translate view cell
 	    int selectedModelCol = getTableModel().getColViewToModelIndex(selectedViewCols[0]);
 	    int selectedModelRow = getTableModel().getRowViewToModelIndex(selectedViewRows[0]);
-
+	    
 	    // stop editing, if editing
 	    if(mColoredJTable.isEditing())
 		if(mColoredJTable.getCellEditor().stopCellEditing() == false)
@@ -355,11 +355,11 @@ public class MEditTableJPanel extends javax.swing.JPanel implements ListSelectio
 	    // fill actual rows, and determine the new view location
 	    getTableModel().fillColumn(selectedModelRow, selectedModelCol);
 	    int newViewRow = getTableModel().getRowModelToViewIndex(selectedModelRow);
-
+	    
 	    // highlight row
 	    entryJTable.clearSelection();
 	    entryJTable.getSelectionModel().addSelectionInterval(newViewRow, newViewRow);
-
+	    
 	    // scroll to row
 	    Rectangle rect = entryJTable.getCellRect(newViewRow, 0, true);
 	    entryJTable.scrollRectToVisible(rect);
@@ -371,51 +371,50 @@ public class MEditTableJPanel extends javax.swing.JPanel implements ListSelectio
 
 
     private void addJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addJButtonActionPerformed
-        try{
+	try{
 	    // find the insertion point, at the top if none specified
 	    int[] selectedViewRows = entryJTable.getSelectedRows();
 	    if( (selectedViewRows==null) || (selectedViewRows.length==0) || (selectedViewRows[0]==-1) )
 		selectedViewRows = new int[]{0};
-
+	    
 	    // stop editing, if editing
 	    if(mColoredJTable.isEditing())
 		if(mColoredJTable.getCellEditor().stopCellEditing() == false)
 		    return;
-
+	    
 	    // translate view row, being careful in case there are no rows in the table that can be translated
 	    int selectedModelRow;
 	    if( getTableModel().getRowCount() == 0 )
 		selectedModelRow = 0;
 	    else
 		selectedModelRow = getTableModel().getRowViewToModelIndex(selectedViewRows[0]);
-
+	    
 	    // insert actual row, and determine its new view location
-            getTableModel().insertNewRow(selectedModelRow);
+	    getTableModel().insertNewRow(selectedModelRow);
 	    int newViewRow = getTableModel().getRowModelToViewIndex(selectedModelRow);
-
+	    
 	    // highlight row
 	    entryJTable.clearSelection();
 	    entryJTable.getSelectionModel().addSelectionInterval(newViewRow, newViewRow);
-
+	    
 	    // scroll to row
 	    Rectangle rect = entryJTable.getCellRect(newViewRow, 0, true);
 	    entryJTable.scrollRectToVisible(rect);
-        }
-        catch(Exception e){
+	}
+	catch(Exception e){
 	    Util.handleExceptionNoRestart("Error adding row", e);
-        }
-
+	}
     }//GEN-LAST:event_addJButtonActionPerformed
 
     
     
-    private void removeJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeJButtonActionPerformed
-        try{
+    private void removeJButtonActionPerformed(final java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeJButtonActionPerformed
+	try{
 	    // find the removal selection, return if none
 	    int[] selectedViewRows = entryJTable.getSelectedRows();
 	    if( (selectedViewRows==null) || (selectedViewRows.length==0) || (selectedViewRows[0]==-1) )
 		return;
-
+	    
 	    // stop editing, if editing
 	    if(mColoredJTable.isEditing())
 		if(mColoredJTable.getCellEditor().stopCellEditing() == false)
@@ -436,15 +435,15 @@ public class MEditTableJPanel extends javax.swing.JPanel implements ListSelectio
 		    minViewPosition = selectedViewRows[i];
 		}	 
 	    }
-
+	    
 	    // remove the actual rows, and determine the view location of the first selection
-	    this.getTableModel().removeSelectedRows(selectedModelRows);
+	    MEditTableJPanel.this.getTableModel().removeSelectedRows(selectedModelRows);
 	    int newViewRow = getTableModel().getRowModelToViewIndex(selectedModelRows[minViewIndex]);
-
+	    
 	    // highlight row
 	    entryJTable.clearSelection();
 	    entryJTable.getSelectionModel().addSelectionInterval(newViewRow, newViewRow);
-
+	    
 	    // scroll to row
 	    Rectangle rect = entryJTable.getCellRect(newViewRow, 0, true);
 	    entryJTable.scrollRectToVisible(rect);
@@ -452,14 +451,7 @@ public class MEditTableJPanel extends javax.swing.JPanel implements ListSelectio
 	catch(Exception e){
 	    Util.handleExceptionNoRestart("Error removing row", e);
 	}
-    }//GEN-LAST:event_removeJButtonActionPerformed
-   
-    
- 
-    
-    
-    
-   
+    }//GEN-LAST:event_removeJButtonActionPerformed   
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addJButton;
